@@ -1,0 +1,12 @@
+{
+  "name": "electron-demon",
+  "version": "0.0.0",
+  "description": "electron-demon",
+  "main": "app.js",
+  "author": {
+    "name": "Alex"
+  },
+  "config": {
+    "arch": "ia32"
+  }
+}

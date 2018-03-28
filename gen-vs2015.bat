@@ -1,0 +1,1 @@
+node-gyp configure --target=1.8.3 --arch=ia32 --debug --msvs_version=2015 --dist-url=https://atom.io/download/electron
