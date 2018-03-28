@@ -246,7 +246,7 @@ namespace agora{
         {
             if (m_initialized){
                 m_peerUid = uid;
-                std::unique_ptr<JoinChannelCmd> cmd = std::make_unique<JoinChannelCmd>();
+                std::unique_ptr<JoinChannelCmd> cmd(new JoinChannelCmd());
                 if (token)
                     strncpy(cmd->token, token, MAX_TOKEN_LEN);
                 if (cname) {
