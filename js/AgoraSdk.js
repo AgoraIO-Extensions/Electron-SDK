@@ -373,10 +373,6 @@ class AgoraRtcEngine extends EventEmitter {
         return this.rtcengine.subscribe(uid);
     }
 
-    setupScreenVideo(uid, view) {
-        this.streams[uid] = this.initRender(view);
-    }
-
     setupLocalVideo(view) {
         this.streams["local"] = this.initRender(view);
         return this.rtcengine.setupLocalVideo();
@@ -390,8 +386,8 @@ class AgoraRtcEngine extends EventEmitter {
         this.streams["videosource"] = this.initRender(view);
     }
 
-    renewChannelKey(newKey) {
-        return this.rtcengine.renewChannelKey(newKey);
+    renewToken(newtoken) {
+        return this.rtcengine.renewToken(newtoken);
     }
 
     setChannelProfile(profile) {
