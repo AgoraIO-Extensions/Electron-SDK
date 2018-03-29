@@ -1,4 +1,4 @@
-AgoraSDK.js provide JS SDK API. It rely on AgoraRender.js and webgl-utils.js to render video, three JS files mute be included.
+AgoraSDK.js provide JS SDK API. It relies on AgoraRender.js and webgl-utils.js to render video, three JS files mute be included.
 
 ==============================================================================================
 Class AgoraRtcEngine provide SDK functionalities, and also it's one event emitter, client could listen on interested event.
@@ -26,11 +26,14 @@ APIs:
 	subscribe(uid, view)
 		After user with uid joined channel, subscribe used to bind user's video to the view.
 		
-	setupScreenVideo(uid, view)
-		When video source is used to share screen, uses setupScreenVideo to bind video source's video to the view.
+	setupLocalVideoSource(view)
+		When video source is used to share screen, uses setupLocalVideoSource to bind video source's video to the view for the preview.
 		
 	setupLocalVideo(view)
 		Used to bind local video to the view.
+		
+	setupLocalDevTest(view)
+		Used to bind dev test video to the view
 		
 	renewChannelKey(newKey)
 		To update key.
@@ -211,6 +214,15 @@ APIs:
 	updateScreenCapturRegion(rect)
 		To ask video source to update screen capture area.
 		
+	videoSourceRelease()
+		To stop video source process.
+		
+	startScreenCapturePreview()
+		To start preview screen capture video
+		
+	stopScreenCapturePreview()
+		To stop preview screen capture video
+		
 	getVideoDevices()
 	
 	setVideoDevice(deviceId)
@@ -346,4 +358,10 @@ Events:
 	videosourcerequestnewtoken
 	
 	videosourceleavechannel
+	
+	rtcstats
+	
+	localvideostats
+	
+	remotevideostats
 	
