@@ -118,7 +118,7 @@ namespace agora {
         class node_async_call
         {
         public:
-            static void async_call(task_type cb) {
+            static void async_call(task_type&& cb) {
                 node_async_call::instance().node_queue_->async_call(std::move(cb));
             }
 
