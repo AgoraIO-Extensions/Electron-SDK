@@ -33,48 +33,53 @@ namespace agora {
         }
 
 #define MAKE_JS_CALL_0(ev) \
-        if (m_callbacks.find(ev) != m_callbacks.end()) {\
+        auto it = m_callbacks.find(ev); \
+        if (it != m_callbacks.end()) {\
             Isolate *isolate = Isolate::GetCurrent();\
             HandleScope scope(isolate);\
-            NodeEventCallback& cb = *m_callbacks[ev];\
+            NodeEventCallback& cb = *it->second;\
             cb.callback.Get(isolate)->Call(cb.js_this.Get(isolate), 0, nullptr);\
         }
 
 #define MAKE_JS_CALL_1(ev, type, param) \
-        if (m_callbacks.find(ev) != m_callbacks.end()) {\
+        auto it = m_callbacks.find(ev); \
+        if (it != m_callbacks.end()) {\
             Isolate *isolate = Isolate::GetCurrent();\
             HandleScope scope(isolate);\
             Local<Value> argv[1]{ napi_create_##type##_(isolate, param)\
                                 };\
-            NodeEventCallback& cb = *m_callbacks[ev];\
+            NodeEventCallback& cb = *it->second;\
             cb.callback.Get(isolate)->Call(cb.js_this.Get(isolate), 1, argv);\
         }
 
 #define MAKE_JS_CALL_2(ev, type1, param1, type2, param2) \
-        if (m_callbacks.find(ev) != m_callbacks.end()) {\
+        auto it = m_callbacks.find(ev); \
+        if (it != m_callbacks.end()) {\
             Isolate *isolate = Isolate::GetCurrent();\
             HandleScope scope(isolate);\
             Local<Value> argv[2]{ napi_create_##type1##_(isolate, param1),\
                                   napi_create_##type2##_(isolate, param2)\
                                 };\
-            NodeEventCallback& cb = *m_callbacks[ev];\
+            NodeEventCallback& cb = *it->second;\
             cb.callback.Get(isolate)->Call(cb.js_this.Get(isolate), 2, argv);\
         }
 
 #define MAKE_JS_CALL_3(ev, type1, param1, type2, param2, type3, param3) \
-        if (m_callbacks.find(ev) != m_callbacks.end()) {\
+        auto it = m_callbacks.find(ev); \
+        if (it != m_callbacks.end()) {\
             Isolate *isolate = Isolate::GetCurrent();\
             HandleScope scope(isolate);\
             Local<Value> argv[3]{ napi_create_##type1##_(isolate, param1),\
                                   napi_create_##type2##_(isolate, param2),\
                                   napi_create_##type3##_(isolate, param3) \
                                 };\
-            NodeEventCallback& cb = *m_callbacks[ev];\
+            NodeEventCallback& cb = *it->second;\
             cb.callback.Get(isolate)->Call(cb.js_this.Get(isolate), 3, argv);\
         }
 
 #define MAKE_JS_CALL_4(ev, type1, param1, type2, param2, type3, param3, type4, param4) \
-        if (m_callbacks.find(ev) != m_callbacks.end()) {\
+        auto it = m_callbacks.find(ev); \
+        if (it != m_callbacks.end()) {\
             Isolate *isolate = Isolate::GetCurrent();\
             HandleScope scope(isolate);\
             Local<Value> argv[4]{ napi_create_##type1##_(isolate, param1),\
@@ -82,12 +87,13 @@ namespace agora {
                                   napi_create_##type3##_(isolate, param3), \
                                   napi_create_##type4##_(isolate, param4), \
                                 };\
-            NodeEventCallback& cb = *m_callbacks[ev];\
+            NodeEventCallback& cb = *it->second;\
             cb.callback.Get(isolate)->Call(cb.js_this.Get(isolate), 4, argv);\
         }
 
 #define MAKE_JS_CALL_5(ev, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5) \
-        if (m_callbacks.find(ev) != m_callbacks.end()) {\
+        auto it = m_callbacks.find(ev); \
+        if (it != m_callbacks.end()) {\
             Isolate *isolate = Isolate::GetCurrent();\
             HandleScope scope(isolate);\
             Local<Value> argv[5]{ napi_create_##type1##_(isolate, param1),\
@@ -96,9 +102,31 @@ namespace agora {
                                   napi_create_##type4##_(isolate, param4), \
                                   napi_create_##type5##_(isolate, param5), \
                                 };\
-            NodeEventCallback& cb = *m_callbacks[ev];\
+            NodeEventCallback& cb = *it->second;\
             cb.callback.Get(isolate)->Call(cb.js_this.Get(isolate), 5, argv);\
         }
+
+#define CHECK_NAPI_OBJ(obj) \
+    if (obj.IsEmpty()) \
+        break;
+
+#define NODE_SET_OBJ_PROP_UINT32(obj, name, val) \
+    { \
+        Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
+        CHECK_NAPI_OBJ(propName); \
+        Local<Value> propVal = v8::Uint32::New(isolate, val); \
+        CHECK_NAPI_OBJ(propVal); \
+        obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+    }
+
+#define NODE_SET_OBJ_PROP_NUMBER(obj, name, val) \
+    { \
+        Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
+        CHECK_NAPI_OBJ(propName); \
+        Local<Value> propVal = v8::Number::New(isolate, val); \
+        CHECK_NAPI_OBJ(propVal); \
+        obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+    }
 
         void NodeEventHandler::onJoinChannelSuccess_node(const char* channel, uid_t id, int elapsed)
         {
@@ -209,6 +237,29 @@ namespace agora {
             LOG_INFO("duration : %d, tx :%d, rx :%d, txbr :%d, rxbr :%d, txAudioBr :%d, rxAudioBr :%d, users :%d\n",
                 stats.duration, stats.txBytes, stats.rxBytes, stats.txKBitRate, stats.rxKBitRate, stats.txAudioKBitRate,
                 stats.rxAudioKBitRate, stats.userCount);
+            do {
+                Isolate *isolate = Isolate::GetCurrent();
+                HandleScope scope(isolate);
+                Local<Object> obj = Object::New(isolate);
+                CHECK_NAPI_OBJ(obj);
+                NODE_SET_OBJ_PROP_UINT32(obj, "duration", stats.duration);
+                NODE_SET_OBJ_PROP_UINT32(obj, "txBytes", stats.txBytes);
+                NODE_SET_OBJ_PROP_UINT32(obj, "rxBytes", stats.rxBytes);
+                NODE_SET_OBJ_PROP_UINT32(obj, "txKBitRate", stats.txKBitRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "rxKBitRate", stats.rxKBitRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "rxAudioKBitRate", stats.rxAudioKBitRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "txAudioKBitRate", stats.txAudioKBitRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "rxVideoKBitRate", stats.rxVideoKBitRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "txVideoKBitRate", stats.txVideoKBitRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "userCount", stats.userCount);
+                NODE_SET_OBJ_PROP_NUMBER(obj, "cpuAppUsage", stats.cpuAppUsage);
+                NODE_SET_OBJ_PROP_NUMBER(obj, "cpuTotalUsage", stats.cpuTotalUsage);
+                Local<Value> arg[1] = { obj };
+                auto it = m_callbacks.find(RTC_EVENT_RTC_STATS);
+                if (it != m_callbacks.end()) {
+                    it->second->callback.Get(isolate)->Call(it->second->js_this.Get(isolate), 1, arg); \
+                }
+            } while (false);
         }
 
         void NodeEventHandler::onRtcStats(const RtcStats& stats)
@@ -489,6 +540,19 @@ namespace agora {
         void NodeEventHandler::onLocalVideoStats_node(const LocalVideoStats& stats)
         {
             FUNC_TRACE;
+            do {
+                Isolate *isolate = Isolate::GetCurrent();
+                HandleScope scope(isolate);
+                Local<Object> obj = Object::New(isolate);
+                CHECK_NAPI_OBJ(obj);
+                NODE_SET_OBJ_PROP_UINT32(obj, "sentBitrate", stats.sentBitrate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "sentFrameRate", stats.sentFrameRate);
+                Local<Value> arg[1] = { obj };
+                auto it = m_callbacks.find(RTC_EVENT_RTC_STATS);
+                if (it != m_callbacks.end()) {
+                    it->second->callback.Get(isolate)->Call(it->second->js_this.Get(isolate), 1, arg); \
+                }
+            } while (false);
         }
 
         void NodeEventHandler::onLocalVideoStats(const LocalVideoStats& stats)
@@ -502,6 +566,24 @@ namespace agora {
         void NodeEventHandler::onRemoteVideoStats_node(const RemoteVideoStats& stats)
         {
             FUNC_TRACE;
+            do {
+                Isolate *isolate = Isolate::GetCurrent();
+                HandleScope scope(isolate);
+                Local<Object> obj = Object::New(isolate);
+                CHECK_NAPI_OBJ(obj);
+                NODE_SET_OBJ_PROP_UINT32(obj, "uid", stats.uid);
+                NODE_SET_OBJ_PROP_UINT32(obj, "delay", stats.delay);
+                NODE_SET_OBJ_PROP_UINT32(obj, "width", stats.width);
+                NODE_SET_OBJ_PROP_UINT32(obj, "height", stats.height);
+                NODE_SET_OBJ_PROP_UINT32(obj, "receivedBitrate", stats.receivedBitrate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "receivedFrameRate", stats.receivedFrameRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "rxStreamType", stats.rxStreamType);
+                Local<Value> arg[1] = { obj };
+                auto it = m_callbacks.find(RTC_EVENT_RTC_STATS);
+                if (it != m_callbacks.end()) {
+                    it->second->callback.Get(isolate)->Call(it->second->js_this.Get(isolate), 1, arg); \
+                }
+            } while (false);
         }
 
         void NodeEventHandler::onRemoteVideoStats(const RemoteVideoStats& stats)

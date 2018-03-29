@@ -40,6 +40,49 @@ class AgoraRtcEngine extends EventEmitter {
             self.emit("leavechannel");
         });
 
+        /**
+         * stats Properties:
+         *      unsigned int duration;
+       *        unsigned int txBytes;
+        *       unsigned int rxBytes;
+       *        unsigned short txKBitRate;
+       *        unsigned short rxKBitRate;
+       *        unsigned short rxAudioKBitRate;
+       *        unsigned short txAudioKBitRate;
+       *        unsigned short rxVideoKBitRate;
+       *        unsigned short txVideoKBitRate;
+        *       unsigned int userCount;
+       *        double cpuAppUsage;
+       *        double cpuTotalUsage;
+         */
+        this.rtcengine.onEvent("rtcstats", function(stats) {
+            self.emit("rtcstats", stats);
+        });
+
+        /**
+         * 
+         *        int sentBitrate;
+         *        int sentFrameRate;
+         */
+        this.rtcengine.onEvent("localvideostats", function(stats){
+            self.emit("localvideostats", stats);
+        });
+
+        /**
+         * 
+         *        uid_t uid;
+         *        int delay;  // obsolete
+	     *        int width;
+	     *        int height;
+	     *        int receivedBitrate;
+	     *        int receivedFrameRate;
+         *         REMOTE_VIDEO_STREAM_TYPE rxStreamType;
+         * 
+         */
+        this.rtcengine.onEvent("remotevideostats", function(stats){
+            self.emit("remotevideostats", stats);
+        });
+
         this.rtcengine.onEvent("audiodevicestatechanged", function (deviceId, deviceType, deviceState) {
             self.emit("audiodevicestatechanged", deviceId, deviceType, deviceState);
         });
@@ -270,6 +313,7 @@ class AgoraRtcEngine extends EventEmitter {
         var yBegin = headerLength;
         var yEnd = yBegin + yLength;
 
+        console.log("Draw image, width : " + width + " , height : " + height);
         var uLength = yLength / 4;
         var uBegin = yEnd;
         var uEnd = uBegin + uLength;
@@ -602,6 +646,14 @@ class AgoraRtcEngine extends EventEmitter {
         return this.rtcengine.setVideoQualityParameters(preferFrameRateOverImageQuality);
     }
 
+    /**
+     * 
+     * @param {*} windowId 
+     * @param {*} captureFreq 
+     * @param {*} rect 
+     *            right > left, top > bottom
+     * @param {*} bitrate 
+     */
     startScreenCapture(windowId, captureFreq, rect, bitrate) {
         return this.rtcengine.startScreenCapture(windowId, captureFreq, rect, bitrate);
     }
