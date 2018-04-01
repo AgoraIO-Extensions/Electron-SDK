@@ -2050,7 +2050,7 @@ namespace agora {
                 CHECK_NATIVE_THIS(pEngine);
                 AVideoDeviceManager vdm(pEngine->m_engine);
                 auto vdc = vdm->enumerateVideoDevices();
-                int count = vdc->getCount();
+				int count = vdc ? vdc->getCount() : 0;
                 Local<v8::Array> devices = v8::Array::New(args.GetIsolate(), count);
                 char deviceName[MAX_DEVICE_ID_LENGTH] = { 0 };
                 char deviceId[MAX_DEVICE_ID_LENGTH] = { 0 };
@@ -2139,7 +2139,7 @@ namespace agora {
                 CHECK_NATIVE_THIS(pEngine);
                 AAudioDeviceManager adm(pEngine->m_engine);
                 auto pdc = adm->enumeratePlaybackDevices();
-                int count = pdc->getCount();
+                int count = pdc ? pdc->getCount() : 0;
                 Local<v8::Array> devices = v8::Array::New(args.GetIsolate(), count);
                 char deviceName[MAX_DEVICE_ID_LENGTH] = { 0 };
                 char deviceId[MAX_DEVICE_ID_LENGTH] = { 0 };
@@ -2234,7 +2234,7 @@ namespace agora {
                 CHECK_NATIVE_THIS(pEngine);
                 AAudioDeviceManager adm(pEngine->m_engine);
                 auto pdc = adm->enumerateRecordingDevices();
-                int count = pdc->getCount();
+                int count = pdc ? pdc->getCount() : 0;
                 Local<v8::Array> devices = v8::Array::New(args.GetIsolate(), count);
                 char deviceName[MAX_DEVICE_ID_LENGTH] = { 0 };
                 char deviceId[MAX_DEVICE_ID_LENGTH] = { 0 };
