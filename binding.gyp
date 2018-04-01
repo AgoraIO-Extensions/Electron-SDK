@@ -9,7 +9,8 @@
 		'include_dirs': [
 		'./sdk/include',
         './sdk/include/internal',
-		'./common'
+		'./common',
+        './common/libyuv/include'
 		],
 		'sources': [
 		'./common/ipc_shm.h',
@@ -29,7 +30,31 @@
 		'./video_source/video_source_render.h',
 		'./video_source/video_source_transporter.cpp',
 		'./video_source/video_source_transporter.h',
-        './sdk/include/IAgoraRtcEngine.h'
+        './sdk/include/IAgoraRtcEngine.h',
+        './common/libyuv/source/compare_common.cc',
+        './common/libyuv/source/compare.cc',
+        './common/libyuv/source/convert_argb.cc',
+        './common/libyuv/source/convert_from_argb.cc',
+        './common/libyuv/source/convert_from.cc',
+        './common/libyuv/source/convert_jpeg.cc',
+        './common/libyuv/source/convert_to_argb.cc',
+        './common/libyuv/source/convert_to_i420.cc',
+        './common/libyuv/source/convert.cc',
+        './common/libyuv/source/cpu_id.cc',
+        './common/libyuv/source/mjpeg_decoder.cc',
+        './common/libyuv/source/mjpeg_validate.cc',
+        './common/libyuv/source/planar_functions.cc',
+        './common/libyuv/source/rotate_any.cc',
+        './common/libyuv/source/rotate_argb.cc',
+        './common/libyuv/source/rotate_common.cc',
+        './common/libyuv/source/rotate.cc',
+        './common/libyuv/source/row_any.cc',
+        './common/libyuv/source/row_common.cc',
+        './common/libyuv/source/scale_any.cc',
+        './common/libyuv/source/scale_argb.cc',
+        './common/libyuv/source/scale_common.cc',
+        './common/libyuv/source/scale.cc',
+        './common/libyuv/source/video_common.cc'
 		],
 		'conditions': [
 			[
@@ -48,7 +73,11 @@
                         '-liojs.lib',
                 ],
                 'sources': [
-				    './common/node_process_win.cpp'
+				    './common/node_process_win.cpp',
+                    './common/libyuv/source/compare_win.cc',
+                    './common/libyuv/source/rotate_win.cc',
+                    './common/libyuv/source/row_win.cc',
+                    './common/libyuv/source/scale_win.cc'
 				],
 				'defines!': [
                 '_USING_V110_SDK71_',
@@ -105,7 +134,11 @@
                     ]
                 },
                 'sources': [
-				    './common/node_process_unix.cpp'
+				    './common/node_process_unix.cpp',
+                    './common/libyuv/source/compare_gcc.cc',
+                    './common/libyuv/source/rotate_gcc.cc',
+                    './common/libyuv/source/row_gcc.cc',
+                    './common/libyuv/source/scale_gcc.cc'
 				],
                 'defines!': [
                 '_HAS_EXCEPTIONS=0',
