@@ -147,6 +147,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(stopScreenCatpure2)
                 PROPERTY_METHOD_DEFINE(videoSourceInitialize)
                 PROPERTY_METHOD_DEFINE(videoSourceJoin)
+                PROPERTY_METHOD_DEFINE(videoSourceLeave)
                 PROPERTY_METHOD_DEFINE(videoSourceRenewToken)
                 PROPERTY_METHOD_DEFINE(videoSourceSetChannelProfile)
                 PROPERTY_METHOD_DEFINE(videoSourceSetVideoProfile)
@@ -206,13 +207,13 @@ namespace agora {
 				m_engine->release();
 				m_engine = nullptr;
 			}
+            m_videoSourceSink.reset(nullptr);
             LOG_LEAVE;
         }
 
         void NodeRtcEngine::destroyVideoSource()
         {
             m_videoSourceSink->release();
-            m_videoSourceSink.reset(nullptr);
         }
 
         NAPI_API_DEFINE_WRAPPER_PARAM_0(startEchoTest);
@@ -972,6 +973,22 @@ namespace agora {
                 CHECK_NAPI_STATUS(status);
 
                 pEngine->m_videoSourceSink->join(key, name, chan_info, uid);
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, videoSourceLeave)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                pEngine->m_videoSourceSink->leave();
                 result = 0;
             } while (false);
             napi_set_int_result(args, result);
