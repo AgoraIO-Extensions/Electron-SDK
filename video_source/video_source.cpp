@@ -24,8 +24,9 @@ using agora::rtc::RtcEngineContext;
 using agora::rtc::uid_t;
 
 AgoraVideoSource::AgoraVideoSource(const std::string& param)
-    : m_initialized(false)
-    , m_params(param)
+	: m_initialized(false)
+	, m_params(param)
+	, m_videoProfile(agora::rtc::VIDEO_PROFILE_DEFAULT)
 {
     LOG_ENTER;
     LOG_LEAVE;
@@ -224,7 +225,16 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
             return;
         }
         VideoProfileCmd *cmd = (VideoProfileCmd*)payload;
-        m_rtcEngine->setVideoProfile(cmd->profile, cmd->swapWidthAndHeight);
+		if (cmd->profile > agora::rtc::VIDEO_PROFILE_PORTRAIT_4K_3) {
+			LOG_ERROR("%s, set video profile with invalid value : %d", __FUNCTION__, cmd->profile);
+		}
+		else {
+			this->m_videoProfile = (agora::rtc::VIDEO_PROFILE_TYPE)cmd->profile;
+			m_rtcEngine->setVideoProfile(cmd->profile, cmd->swapWidthAndHeight);
+		}
+    }
+    else if (msg == AGORA_IPC_LEAVE_CHANNEL) {
+        m_rtcEngine->leaveChannel();
     }
     else if (msg == AGORA_IPC_DISCONNECT){
         this->exit(false);
@@ -283,6 +293,11 @@ bool AgoraVideoSource::sendData(char* payload, int len)
         LOG_WARNING("IPC Sender not initialized before send data.");
         return false;
     }
+}
+
+agora::rtc::VIDEO_PROFILE_TYPE AgoraVideoSource::getVideoProfile()
+{
+	return m_videoProfile;
 }
 
 void initLogService()
