@@ -50,6 +50,7 @@ namespace agora{
             virtual bool initialize(IAgoraVideoSourceEventHandler *eventHandler) override;
             virtual node_error join(const char* token, const char* cname,
                 const char* chan_info, uid_t uid) override;
+            virtual node_error leave() override;
             virtual node_error release() override;
             virtual node_error renewVideoSourceToken(const char* token) override;
             virtual node_error setVideoSourceChannelProfile(agora::rtc::CHANNEL_PROFILE_TYPE profile) override;
@@ -110,8 +111,6 @@ namespace agora{
                 --count;
             }
             clear();
-            if(m_msgThread.joinable())
-                m_msgThread.join();
         }
 
         void AgoraVideoSourceSink::clear()
@@ -120,9 +119,13 @@ namespace agora{
             m_eventHandler = nullptr;
             m_ipcReceiver.reset();
             m_videoRender.reset();
-            if (m_ipcMsg.get())
+            if (m_ipcMsg.get()) {
+                m_ipcMsg->sendMessage(AGORA_IPC_DISCONNECT, nullptr, 0);
                 m_ipcMsg->disconnect();
+            }
             m_render.store(false);
+            if(m_msgThread.joinable())
+                m_msgThread.join();
         }
 
         node_error AgoraVideoSourceSink::release()
@@ -256,6 +259,14 @@ namespace agora{
                     strncpy(cmd->chan_info, chan_info, MAX_CHAN_INFO);
                 cmd->uid = uid;
                 return m_ipcMsg->sendMessage(AGORA_IPC_JOIN, (char*)cmd.get(), sizeof(JoinChannelCmd)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::leave()
+        {
+            if (m_initialized) {
+                return m_ipcMsg->sendMessage(AGORA_IPC_LEAVE_CHANNEL, nullptr, 0) ? node_ok : node_generic_error;
             }
             return node_status_error;
         }
