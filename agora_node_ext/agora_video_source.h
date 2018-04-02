@@ -68,6 +68,11 @@ namespace agora{
             virtual node_error join(const char* token, const char* cname, const char* chan_info, uid_t uid) = 0;
 
             /**
+            * To ask video source to leave channel.
+            */
+            virtual node_error leave() = 0;
+
+            /**
             * To start receive local video of video source.
             */
             virtual node_error startPreview() = 0;
