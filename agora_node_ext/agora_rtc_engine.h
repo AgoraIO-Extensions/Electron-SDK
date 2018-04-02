@@ -207,6 +207,7 @@ namespace agora {
              */
             NAPI_API(videoSourceInitialize);
             NAPI_API(videoSourceJoin);
+            NAPI_API(videoSourceLeave);
             NAPI_API(videoSourceRenewToken);
             NAPI_API(videoSourceSetChannelProfile);
             NAPI_API(videoSourceSetVideoProfile);

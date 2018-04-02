@@ -233,6 +233,9 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
 			m_rtcEngine->setVideoProfile(cmd->profile, cmd->swapWidthAndHeight);
 		}
     }
+    else if (msg == AGORA_IPC_LEAVE_CHANNEL) {
+        m_rtcEngine->leaveChannel();
+    }
     else if (msg == AGORA_IPC_DISCONNECT){
         this->exit(false);
     }
