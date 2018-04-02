@@ -79,6 +79,8 @@ public:
      * To send data via IPC
      */
     virtual bool sendData(char* payload, int len);
+
+	agora::rtc::VIDEO_PROFILE_TYPE getVideoProfile();
 protected:
     bool joinChannel(const char* key, const char* name, const char* chanInfo, agora::rtc::uid_t uid);
     void notifyJoinedChannel(agora::rtc::uid_t uid);
@@ -103,6 +105,7 @@ private:
     bool m_initialized;
     std::string m_params;
     std::unique_ptr<INodeProcess> m_process;
+	agora::rtc::VIDEO_PROFILE_TYPE m_videoProfile;
 };
 
 #endif
