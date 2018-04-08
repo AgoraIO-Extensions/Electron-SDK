@@ -154,6 +154,22 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(videoSourceRelease)
                 PROPERTY_METHOD_DEFINE(videoSourceStartPreview)
                 PROPERTY_METHOD_DEFINE(videoSourceStopPreview)
+                PROPERTY_METHOD_DEFINE(setBool);
+                PROPERTY_METHOD_DEFINE(setInt);
+                PROPERTY_METHOD_DEFINE(setUInt);
+                PROPERTY_METHOD_DEFINE(setNumber);
+                PROPERTY_METHOD_DEFINE(setString);
+                PROPERTY_METHOD_DEFINE(setObject);
+                PROPERTY_METHOD_DEFINE(getBool);
+                PROPERTY_METHOD_DEFINE(getInt);
+                PROPERTY_METHOD_DEFINE(getUInt);
+                PROPERTY_METHOD_DEFINE(getNumber);
+                PROPERTY_METHOD_DEFINE(getString);
+                PROPERTY_METHOD_DEFINE(getObject);
+                PROPERTY_METHOD_DEFINE(getArray);
+                PROPERTY_METHOD_DEFINE(setParameters);
+                PROPERTY_METHOD_DEFINE(setProfile);
+                PROPERTY_METHOD_DEFINE(convertPath);
             EN_PROPERTY_DEFINE()
             module->Set(String::NewFromUtf8(isolate, "NodeRtcEngine"), tpl->GetFunction());
         }
