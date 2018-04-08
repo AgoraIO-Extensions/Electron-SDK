@@ -1,7 +1,5 @@
 ﻿const EventEmitter = require("events");
-const agora = require("./agora_node_ext");
-require("./webgl-utils")
-require("./AgoraRender")
+
 class AgoraRtcEngine extends EventEmitter {
     constructor() {
         super();
@@ -384,6 +382,16 @@ class AgoraRtcEngine extends EventEmitter {
     
     setupLocalVideoSource(view) {
         this.streams["videosource"] = this.initRender(view);
+    }
+
+    setupViewContentMode(uid, mode) {
+      let render = this.streams[uid];
+      if (!render) {
+        return false;
+      }
+  
+      render.contentMode = mode;
+      return true;
     }
 
     renewToken(newtoken) {
