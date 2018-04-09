@@ -18,9 +18,11 @@ Assuming that you have [Node](https://nodejs.org/en/download/) installed, you ca
 
 Run `build.sh`/`build.bat` and wait some seconds.
 
-`Notice: Must create a developer account at [Agora.io](https://dashboard.agora.io/signin/), when you want to use Agora APIs.`
-`For macOS, please always use the latest Xcode.`
-`For Windows, if Visual Studio or Electron version are not the same as in script, change the corresponding parameters in the script. Electron 1.8.3+ needs Visual Studio 2015 or above.`
+`Notice:`
+
+- `Must create a developer account at [Agora.io](https://dashboard.agora.io/signin/), when you want to use Agora APIs.`
+- `For macOS, please always use the latest Xcode.`
+- `For Windows, if Visual Studio or Electron version are not the same as in script, change the corresponding parameters in the script. Electron 1.8.3+ needs Visual Studio 2015 or above.`
 
 
 ## Connect Us
