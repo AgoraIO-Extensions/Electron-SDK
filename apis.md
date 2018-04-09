@@ -1,14 +1,15 @@
 AgoraSDK.js provide JS SDK API. It relies on AgoraRender.js and webgl-utils.js to render video, three JS files mute be included.
 
-==============================================================================================
 Class AgoraRtcEngine provide SDK functionalities, and also it's one event emitter, client could listen on interested event.
 
 To create AgoraRtcEngine instance : 
+
 	const AgoraRtcEngine = require("AgoraSdk");
 	var engine = new AgoraRtcEngine(); 
 
 APIs:
-    initialize(appid, onSuccess, onFailed)
+		
+	initialize(appid, onSuccess, onFailed)
 		To initialize the AgoraRtcEngine instance with supplied appid. AgoraRtcEngine instance must be initialized before other functions invoked.
 		
 	getVersion()
