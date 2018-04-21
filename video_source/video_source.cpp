@@ -15,8 +15,6 @@
 #include "video_source_ipc.h"
 #include "node_log.h"
 
-static const char* s_appid = "***REMOVED***";
-
 #define PROCESS_RUN_EVENT_NAME "agora_video_source_process_ready_event_name"
 #define DATA_IPC_NAME "avsipc"
 
@@ -54,6 +52,13 @@ bool AgoraVideoSource::initialize()
     m_paramParser.reset(new VideoSourceParamParser());
     m_paramParser->initialize(m_params);
 
+    std::string appid = m_paramParser->getParameter("appid");
+    if (appid.empty()) {
+        LOG_ERROR("%s, appid is null\n", __FUNCTION__);
+        LOG_LEAVE;
+        return false;
+    }
+
     std::string id = m_paramParser->getParameter("id");
     if (id.empty()) {
         LOG_ERROR("%s, id is null\n", __FUNCTION__);
@@ -83,7 +88,8 @@ bool AgoraVideoSource::initialize()
     m_renderFactory.reset(new AgoraVideoSourceRenderFactory(*this));
     RtcEngineContext context;
     context.eventHandler = m_eventHandler.get();
-    context.appId = s_appid;
+    context.appId = appid.c_str();
+    LOG_ERROR("initialized: %s, appid\n", __FUNCTION__);
     if (m_rtcEngine->initialize(context) != 0){
         LOG_ERROR("%s, AgoraVideoSource initialize failed.\n", __FUNCTION__);
         LOG_LEAVE;

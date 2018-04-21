@@ -957,7 +957,10 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                if (!pEngine->m_videoSourceSink->initialize(pEngine->m_eventHandler.get())){
+                NodeString appid;
+                napi_status status = napi_get_value_nodestring_(args[0], appid);
+                CHECK_NAPI_STATUS(status);
+                if (!pEngine->m_videoSourceSink->initialize(pEngine->m_eventHandler.get(), appid)){
                     break;
                 }
                 result = 0;

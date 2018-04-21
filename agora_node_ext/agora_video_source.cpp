@@ -47,7 +47,7 @@ namespace agora{
             ~AgoraVideoSourceSink();
 
 
-            virtual bool initialize(IAgoraVideoSourceEventHandler *eventHandler) override;
+            virtual bool initialize(IAgoraVideoSourceEventHandler *eventHandler, const char* appid) override;
             virtual node_error join(const char* token, const char* cname,
                 const char* chan_info, uid_t uid) override;
             virtual node_error leave() override;
@@ -136,10 +136,12 @@ namespace agora{
             return node_ok;
         }
 
-        bool AgoraVideoSourceSink::initialize(IAgoraVideoSourceEventHandler *eventHandler)
+        bool AgoraVideoSourceSink::initialize(IAgoraVideoSourceEventHandler *eventHandler, const char* appid)
         {
             if (m_initialized)
                 return true;
+            if (!appid)
+                return false;
             clear();
             m_eventHandler = eventHandler;
 #ifdef _WIN32
@@ -190,7 +192,8 @@ namespace agora{
                 std::string cmdname = "VideoSource";
                 std::string idparam = "id:" + m_peerId;
                 std::string pidparam = "pid:" + ss.str();
-                const char* params[] = { cmdname.c_str(), idparam.c_str(), pidparam.c_str(), nullptr };
+                std::string appidparam = "appid:" + std::string(appid);
+                const char* params[] = { cmdname.c_str(), idparam.c_str(), pidparam.c_str(), appidparam.c_str(), nullptr };
                 m_sourceNodeProcess.reset(INodeProcess::CreateNodeProcess(path.c_str(), params));
                 if (!m_sourceNodeProcess.get()) {
                     break;
