@@ -9,24 +9,24 @@ To create AgoraRtcEngine instance :
 
 APIs:
 
-	To initialize the AgoraRtcEngine instance with supplied appid. AgoraRtcEngine instance must be initialized before other functions invoked.
+To initialize the AgoraRtcEngine instance with supplied appid. AgoraRtcEngine instance must be initialized before other functions invoked.
 
 	```
 	initialize(appid, onSuccess, onFailed)
 	```
 
-	To get current SDK version.
-	
+To get current SDK version.
+
 	```
 	getVersion()
 	```
-	To get description of errorCode.
+To get description of errorCode.
   ```
 	getErrorDescription(errorCode)
 	```
 
 
-	To join channel with supplied information.
+To join channel with supplied information.
 	```
 	joinChannel(key, name, chan_info, uid)
 	```
