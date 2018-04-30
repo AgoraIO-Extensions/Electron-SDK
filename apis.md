@@ -150,9 +150,9 @@ To set encryption secret.
 setEncryptionSecret(secret)
 ```
 
-createDataStream(reliable, ordered)
+	createDataStream(reliable, ordered)
 
-sendStreamMessage(streamId, msg)
+	sendStreamMessage(streamId, msg)
 
 Mute/unmute local audio.
 ```
@@ -189,9 +189,9 @@ Mute/unmute the users video with uid.
 muteRemoteVideoStream(uid, mute)
 ```
 
-setRemoteVideoStreamType(uid, streamType)
+	setRemoteVideoStreamType(uid, streamType)
 
-setRemoteDefaultVideoStreamType(streamType)
+	setRemoteDefaultVideoStreamType(streamType)
 
 Start audio recording.
 ```
@@ -238,47 +238,47 @@ Get audio mixing current position.
 getAudioMixingCurrentPosition()
 ```
 
-setAudioMixingPosition(position)
+	setAudioMixingPosition(position)
 
-setLocalVoicePitch(pitch)
+	setLocalVoicePitch(pitch)
 
-setInEarMonitoringVolume(volume)
+	setInEarMonitoringVolume(volume)
 
-pauseAudio()
+	pauseAudio()
 
-resumeAudio()
+	resumeAudio()
 
-stopScreenCapture()
+	stopScreenCapture()
 
-setLogFile(filepath)
+	setLogFile(filepath)
 
-setLogFilter(filter)
+	setLogFilter(filter)
 
-startRecordingService(recordingKey)
+	startRecordingService(recordingKey)
 
-stopRecordingService(recordingKey)
+	stopRecordingService(recordingKey)
 
-refreshRecordingServiceStatus()
+	refreshRecordingServiceStatus()
 
-enableDualStreamMode(enable)
+	enableDualStreamMode(enable)
 
-setRecordingAudioFrameParameters(sampleRate, channel, mode, samplesPerCall)
+	setRecordingAudioFrameParameters(sampleRate, channel, mode, samplesPerCall)
 
-setPlaybackAudioFrameParameters(sampleRate, channel, mode, samplesPerCall)
+	setPlaybackAudioFrameParameters(sampleRate, channel, mode, samplesPerCall)
 
-setMixedAudioFrameParaemters(sampelRate, samplesPerCall)
+	setMixedAudioFrameParaemters(sampelRate, samplesPerCall)
 
-adjustRecordingSignalVoluem(volume)
+	adjustRecordingSignalVoluem(volume)
 
-adjustPlaybackSignalVolume(volume)
+	adjustPlaybackSignalVolume(volume)
 
-setHighQualityAudioParameters(fullband, stereo, fullBitrate)
+	setHighQualityAudioParameters(fullband, stereo, fullBitrate)
 
-enableWebSdkInteroprability(enable)
+	enableWebSdkInteroprability(enable)
 
-setVideoQualityParameters(perferFrameRateOverImageQuality)
+	setVideoQualityParameters(perferFrameRateOverImageQuality)
 
-startScreenCapture(windowId, captureFreq, rect, bitrate)
+	startScreenCapture(windowId, captureFreq, rect, bitrate)
 
 If video source is needed, this API is used to initialize video source context.
 ```
@@ -335,144 +335,144 @@ To stop preview screen capture video
 stopScreenCapturePreview()
 ```
 
-getVideoDevices()
+	getVideoDevices()
 
-setVideoDevice(deviceId)
+	setVideoDevice(deviceId)
 
-getCurrentVideoDevice()
+	getCurrentVideoDevice()
 
-startVideoDeviceTest()
+	startVideoDeviceTest()
 
-stopVideoDeviceTest()
+	stopVideoDeviceTest()
 
-getAudioPlaybackDevices()
+	getAudioPlaybackDevices()
 
-setAudioPlaybackDevice(deviceid)
+	setAudioPlaybackDevice(deviceid)
 
-getCurrentAudioPlaybackDevice()
+	getCurrentAudioPlaybackDevice()
 
-setAudioPlaybackVolume(voluem)
+	setAudioPlaybackVolume(voluem)
 
-getAudioPlaybackVolume()
+	getAudioPlaybackVolume()
 
-getAudioRecordingDevices()
+	getAudioRecordingDevices()
 
-setAudioRecordingDevice(deviceid)
+	setAudioRecordingDevice(deviceid)
 
-getCurrentAudioRecordingDevice()
+	getCurrentAudioRecordingDevice()
 
-getAudioRecordingVolume()
+	getAudioRecordingVolume()
 
-setAudioRecordingVolume(volume)
+	setAudioRecordingVolume(volume)
 
-startAudioPlaybackDeviceTest(filepath)
+	startAudioPlaybackDeviceTest(filepath)
 
-stopAudioPlaybackDeviceTest()
+	stopAudioPlaybackDeviceTest()
 
-startAudioRecordingDeviceTest(indicationInterval)
+	startAudioRecordingDeviceTest(indicationInterval)
 
-stopAudioRecordingDeviceTest()
+	stopAudioRecordingDeviceTest()
 
-getAudioPlaybackDeviceMute()
+	getAudioPlaybackDeviceMute()
 
-setAudioPlaybackDeviceMute(mute)
+	setAudioPlaybackDeviceMute(mute)
 
-getAudioRecordingDeviceMute()
+	getAudioRecordingDeviceMute()
 
-setAudioRecordingDeviceMute(mute)
+	setAudioRecordingDeviceMute(mute)
 
 
 Events:
-joinedchannel : channel, uid, elapsed
+	joinedchannel : channel, uid, elapsed
 
-rejoinedchannel : channel, uid, elapsed
+	rejoinedchannel : channel, uid, elapsed
 
-warning : warn, msg
+	warning : warn, msg
 
-error : err, msg
+	error : err, msg
 
-audioquality : uid, quality, delay, lost
+	audioquality : uid, quality, delay, lost
 
-audiovolumeindication : uid, volume, speakerNumber, totalVolume
+	audiovolumeindication : uid, volume, speakerNumber, totalVolume
 
-leavechannel
+	leavechannel
 
-audiodevicestatechanged : deviceId, deviceType, deviceState
+	audiodevicestatechanged : deviceId, deviceType, deviceState
 
-audiomixingfinished
+	audiomixingfinished
 
-apicallexecuted : api, err
+	apicallexecuted : api, err
 
-remoteaudiomixingbegin
+	remoteaudiomixingbegin
 
-remoteaudiomixingend
+	remoteaudiomixingend
 
-audioeffectfinished
+	audioeffectfinished
 
-videodevicestatechagned : deviceId, deviceType, deviceState
+	videodevicestatechagned : deviceId, deviceType, deviceState
 
-networkquality : uid, txquality, rxquality
+	networkquality : uid, txquality, rxquality
 
-lastmilequality : quality
+	lastmilequality : quality
 
-firstlocalvideoframe : width, height, elapsed
+	firstlocalvideoframe : width, height, elapsed
 
-addstream : uid, elapsed
+	addstream : uid, elapsed
 
-videosizechagned : uid, width, height, rotation
+	videosizechagned : uid, width, height, rotation
 
-firstremotevideoframe : uid, width, height, elapsed
+	firstremotevideoframe : uid, width, height, elapsed
 
-userjoined : uid, elapsed
+	userjoined : uid, elapsed
 
-removestream : uid, reason
+	removestream : uid, reason
 
-usermuteaudio : uid, muted
+	usermuteaudio : uid, muted
 
-usermutevideo : uid, muted
+	usermutevideo : uid, muted
 
-userenablevideo : uid, enabled
+	userenablevideo : uid, enabled
 
-userenablelocalvideo : uid, enabled
+	userenablelocalvideo : uid, enabled
 
-cameraready
+	cameraready
 
-videostopped
+	videostopped
 
-connectionlost
+	connectionlost
 
-connectioninterrupted
+	connectioninterrupted
 
-connectionbanned
+	connectionbanned
 
-refreshrecordingservicestatus
+	refreshrecordingservicestatus
 
-streammessage
+	streammessage
 
-streammessageerror
+	streammessageerror
 
-mediaenginestartcallsuccess
+	mediaenginestartcallsuccess
 
-requestchannelkey
+	requestchannelkey
 
-firstlocalaudioframe : elapsed
+	firstlocalaudioframe : elapsed
 
-firstremoteaudioframe  uid, elapsed
+	firstremoteaudioframe  uid, elapsed
 
-activespeaker : uid
+	activespeaker : uid
 
-clientrolechanged : oldrole, newrole
+	clientrolechanged : oldrole, newrole
 
-audiodevicevolumechanged : deviceType, volume, muted
+	audiodevicevolumechanged : deviceType, volume, muted
 
-videosourcejoinedsuccess : uid
+	videosourcejoinedsuccess : uid
 
-videosourcerequestnewtoken
+	videosourcerequestnewtoken
 
-videosourceleavechannel
+	videosourceleavechannel
 
-rtcstats
+	rtcstats
 
-localvideostats
+	localvideostats
 
-remotevideostats
+	remotevideostats
