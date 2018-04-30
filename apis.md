@@ -10,10 +10,13 @@ To create AgoraRtcEngine instance :
 APIs:
 
 	To initialize the AgoraRtcEngine instance with supplied appid. AgoraRtcEngine instance must be initialized before other functions invoked.
+
 	```
 	initialize(appid, onSuccess, onFailed)
 	```
+
 	To get current SDK version.
+	
 	```
 	getVersion()
 	```
