@@ -2,367 +2,474 @@ AgoraSDK.js provide JS SDK API. It relies on AgoraRender.js and webgl-utils.js t
 
 Class AgoraRtcEngine provide SDK functionalities, and also it's one event emitter, client could listen on interested event.
 
-To create AgoraRtcEngine instance : 
+To create AgoraRtcEngine instance :
 
 	const AgoraRtcEngine = require("AgoraSdk");
-	var engine = new AgoraRtcEngine(); 
+	var engine = new AgoraRtcEngine();
 
 APIs:
-		
+
+	To initialize the AgoraRtcEngine instance with supplied appid. AgoraRtcEngine instance must be initialized before other functions invoked.
+	```
 	initialize(appid, onSuccess, onFailed)
-		To initialize the AgoraRtcEngine instance with supplied appid. AgoraRtcEngine instance must be initialized before other functions invoked.
-		
+	```
+	To get current SDK version.
+	```
 	getVersion()
-		To get current SDK version.
-		
+	```
+	To get description of errorCode.
+  ```
 	getErrorDescription(errorCode)
-		To get description of errorCode.
-		
+	```
+
+
+	To join channel with supplied information.
+	```
 	joinChannel(key, name, chan_info, uid)
-		To join channel with supplied information.
-		
+	```
+
+	To leave current channel
+	```
 	leaveChannel()
-		To leave current channel
-	
+	```
+
+	After user with uid joined channel, subscribe used to bind user's video to the view.
+	```
 	subscribe(uid, view)
-		After user with uid joined channel, subscribe used to bind user's video to the view.
-		
+	```
+
+	When video source is used to share screen, uses setupLocalVideoSource to bind video source's video to the view for the preview.
+	```
 	setupLocalVideoSource(view)
-		When video source is used to share screen, uses setupLocalVideoSource to bind video source's video to the view for the preview.
-		
+	```
+
+	Used to bind local video to the view.
+	```
 	setupLocalVideo(view)
-		Used to bind local video to the view.
-		
+	```
+
+	Used to bind dev test video to the view
+	```
 	setupLocalDevTest(view)
-		Used to bind dev test video to the view
-		
+	```
+
+	To update key.
+	```
 	renewChannelKey(newKey)
-		To update key.
-		
+	```
+
+	To setup channel profile
+	```
 	setChannelProfile(profile)
-		to setup channel profile.
-		
+	```
+
+	To setup client's role based on parameters.
+	```
 	setClientRole(role, permissionKey)
-		To setup client's role based on parameters.
-		
+	```
+
+	To start Echo test.
+	```
 	startEchoTest()
-		To start Echo test.
-		
+	```
+
+	To stop Echo test.
+	```
 	stopEchoTest()
-		To stop Echo test.
-		
+	```
+
+	To enable last mile test.
+	```
 	enableLastmileTest()
-		To enable last mile test.
-		
+	```
+
+	To disable last mile test.
+	```
 	disableLastmileTest()
-		To disable last mile test.
-		
+	```
+
+	Enable video.
+	```
 	enableVideo()
-		Enable video.
-		
+	```
+
+	Disable video
+	```
 	disableVideo()
-		Disable video
-	
+	```
+
+	Start video preview.
+	```
 	startPreview()
-		Start preview.
-		
+	```
+
+	Stop video preview.
+	```
 	stopPreview()
-		stop preview
-		
+	```
+
+	Setup video profile.
+	```
 	setVideoProfile(profile, swapWidthAndHeight)
-		Setup video profile.
-		
+	```
+
+	Enable audio.
+	```
 	enableAudio()
-		Enable audio.
-		
+	```
+
+	Disable audio.
+	```
 	disableAudio()
-		Disable audio.
-		
+	```
+	Setup audio profile.
+	```
 	setAudioProfile(profile, scenario)
-		Setup audio profile.
-		
+	```
+
+	Get current call id.
+	```
 	getCallId()
-		Get current call id.
-		
+	```
+
+	To rate SDK.
+	```
 	rate(callid, rating, desc)
-		To rate SDK.
-		
+	```
+
+	To complain about the SDK.
+	```
 	complain(callid, desc)
-		To complain SDK.
-		
+	```
+
+	To set encryption secret.
+	```
 	setEncryptionSecret(secret)
-		To set encryption secret.
-		
+	```
+
 	createDataStream(reliable, ordered)
-	
+
 	sendStreamMessage(streamId, msg)
-	
+
+	Mute/unmute local audio.
+	```
 	muteLocalAudioStream(mute)
-		Mute/unmute local audio.
-		
+	```
+
+	Mute/unmute all remote audios.
+	```
 	muteAllRemoteAudioStreams(mute)
-		Mute/unmute all remote audios.
-		
+	```
+
+	Mute/unmute the user's audio with uid.
+	```
 	muteRemoteAudioStream(uid, mute)
-		Mute/unmute the user's audio with uid.
-		
+	```
+
+	Mute/unmute local video stream.
+	```
 	muteLocalVideoStream(mute)
-		Mute/unmute local video stream.
-		
+	```
+
+	Enable/disable local video
+	```
 	enableLocalVideo(enable)
-		Enable/disable local video
-		
+	```
+
+	Mute/unmute all remote videos.
+	```
 	muteAllRemoteVideoStreams(mute)
-		Mute/unmute all remote videos.
-		
+	```
+
+	Mute/unmute the users video with uid.
+	```
 	muteRemoteVideoStream(uid, mute)
-		Mute/unmute the users video with uid.
-		
+	```
+
 	setRemoteVideoStreamType(uid, streamType)
-	
+
 	setRemoteDefaultVideoStreamType(streamType)
-	
+
+	Start audio recording.
+	```
 	startAudioRecording(filePath)
-		Start audio recording.
-		
+	```
+
+	Stop audio recording.
+	```
 	stopAudioRecording()
-		Stop audio recording.
-		
+	```
+
+	Start audio mixing
+	```
 	startAudioMixing(filepath, loopback, replace, cycle)
-		Start audio mixing
-		
+	```
+
+	Stop audio mixing.
+	```
 	stopAudioMixing()
-		Stop audio mixing.
-		
+	```
+
+	Pause audio mixing.
+	```
 	pauseAudioMixing()
-		Pause audio mixing.
-		
+	```
+
+	Resume audio mixing.
+	```
 	resumeAudioMixing()
-		Resume audio mixing.
-		
+		```
+
+	Adjust audio mixing volume.
+	```
 	adjustAudioMixingVolume(volume)
-		Adjust audio mixing volume.
-		
+	```
+
+	Get audio mixing duration.
+	```
 	getAudioMixingDuration()
-		Get audio mixing duration.
-		
+	```
+
+	Get audio mixing current position.
+	```
 	getAudioMixingCurrentPosition()
-		Get audio mixing current position.
-		
+	```
+
 	setAudioMixingPosition(position)
-	
+
 	setLocalVoicePitch(pitch)
-	
+
 	setInEarMonitoringVolume(volume)
-	
+
 	pauseAudio()
-	
+
 	resumeAudio()
-	
+
 	stopScreenCapture()
-	
+
 	setLogFile(filepath)
-	
+
 	setLogFilter(filter)
-	
+
 	startRecordingService(recordingKey)
-	
+
 	stopRecordingService(recordingKey)
-	
+
 	refreshRecordingServiceStatus()
-	
+
 	enableDualStreamMode(enable)
-	
+
 	setRecordingAudioFrameParameters(sampleRate, channel, mode, samplesPerCall)
-	
+
 	setPlaybackAudioFrameParameters(sampleRate, channel, mode, samplesPerCall)
-	
+
 	setMixedAudioFrameParaemters(sampelRate, samplesPerCall)
-	
+
 	adjustRecordingSignalVoluem(volume)
-	
+
 	adjustPlaybackSignalVolume(volume)
-	
+
 	setHighQualityAudioParameters(fullband, stereo, fullBitrate)
-	
+
 	enableWebSdkInteroprability(enable)
-	
+
 	setVideoQualityParameters(perferFrameRateOverImageQuality)
-	
+
 	startScreenCapture(windowId, captureFreq, rect, bitrate)
-	
+
+	If video source is needed, this API is used to initialize video source context.
+	```
 	videoSourceInitialize()
-		If video source is needed, this API is used to initialize video source context.
-		
+	```
+
+	To ask video source to join channel
+	```
 	videoSourceJoin(token, cname, chanInfo, uid)
-		To ask video source to join channel
-	
+	```
+
+	To ask video source to renew token
+	```
 	videoSourceRenewToken(token)
-		To ask video source to renew token
-		
+	```
+
+	To set video source's channel profile
+	```
 	videoSourceSetChannelProfile(profile)
-		To set video source's channel profile
-		
+	```
+
+	To set video source's video profile.
+	```
 	videoSourceSetVideoProfile(profile, swapWidthAndHeight)
-		To set video source's video profile.
-		
+	```
+
+	To ask video source to start screen capture.
+	```
 	startScreenCapture2(wndid, captureFreq, rect, bitrate)
-		To ask video source to start screen capture.
-		
+	```
+
+	To ask video source to stop screen capture.
+	```
 	stopScreenCapture2()
-		To ask video source to stop screen capture.
-		
+	```
+
+	To ask video source to update screen capture area.
+	```
 	updateScreenCapturRegion(rect)
-		To ask video source to update screen capture area.
-		
+	```
+
+	To stop video source process.
+	```
 	videoSourceRelease()
-		To stop video source process.
-		
+	```
+
+	To start preview screen capture video
+	```
 	startScreenCapturePreview()
-		To start preview screen capture video
-		
+	```
+
+	To stop preview screen capture video
+	```
 	stopScreenCapturePreview()
-		To stop preview screen capture video
-		
+	```
+
 	getVideoDevices()
-	
+
 	setVideoDevice(deviceId)
-	
+
 	getCurrentVideoDevice()
-	
+
 	startVideoDeviceTest()
-	
+
 	stopVideoDeviceTest()
-	
+
 	getAudioPlaybackDevices()
-	
+
 	setAudioPlaybackDevice(deviceid)
-	
+
 	getCurrentAudioPlaybackDevice()
-	
+
 	setAudioPlaybackVolume(voluem)
-	
+
 	getAudioPlaybackVolume()
-	
+
 	getAudioRecordingDevices()
-	
+
 	setAudioRecordingDevice(deviceid)
-	
+
 	getCurrentAudioRecordingDevice()
-	
+
 	getAudioRecordingVolume()
-	
+
 	setAudioRecordingVolume(volume)
-	
+
 	startAudioPlaybackDeviceTest(filepath)
-	
+
 	stopAudioPlaybackDeviceTest()
-	
+
 	startAudioRecordingDeviceTest(indicationInterval)
-	
+
 	stopAudioRecordingDeviceTest()
-	
+
 	getAudioPlaybackDeviceMute()
-	
+
 	setAudioPlaybackDeviceMute(mute)
-	
+
 	getAudioRecordingDeviceMute()
-	
+
 	setAudioRecordingDeviceMute(mute)
-	
-	
+
+
 Events:
 	joinedchannel : channel, uid, elapsed
-	
+
 	rejoinedchannel : channel, uid, elapsed
-	
+
 	warning : warn, msg
-	
+
 	error : err, msg
-	
+
 	audioquality : uid, quality, delay, lost
-	
+
 	audiovolumeindication : uid, volume, speakerNumber, totalVolume
-	
+
 	leavechannel
-	
+
 	audiodevicestatechanged : deviceId, deviceType, deviceState
-	
+
 	audiomixingfinished
-	
+
 	apicallexecuted : api, err
-	
+
 	remoteaudiomixingbegin
-	
+
 	remoteaudiomixingend
-	
+
 	audioeffectfinished
-	
+
 	videodevicestatechagned : deviceId, deviceType, deviceState
-	
+
 	networkquality : uid, txquality, rxquality
-	
+
 	lastmilequality : quality
-	
+
 	firstlocalvideoframe : width, height, elapsed
-	
+
 	addstream : uid, elapsed
-	
+
 	videosizechagned : uid, width, height, rotation
-	
+
 	firstremotevideoframe : uid, width, height, elapsed
-	
+
 	userjoined : uid, elapsed
-	
+
 	removestream : uid, reason
-	
+
 	usermuteaudio : uid, muted
-	
+
 	usermutevideo : uid, muted
-	
+
 	userenablevideo : uid, enabled
-	
+
 	userenablelocalvideo : uid, enabled
-	
+
 	cameraready
-	
+
 	videostopped
-	
+
 	connectionlost
-	
+
 	connectioninterrupted
-	
+
 	connectionbanned
-	
+
 	refreshrecordingservicestatus
-	
+
 	streammessage
-	
+
 	streammessageerror
-	
+
 	mediaenginestartcallsuccess
-	
+
 	requestchannelkey
-	
+
 	firstlocalaudioframe : elapsed
-	
+
 	firstremoteaudioframe  uid, elapsed
-	
+
 	activespeaker : uid
-	
+
 	clientrolechanged : oldrole, newrole
-	
+
 	audiodevicevolumechanged : deviceType, volume, muted
-	
+
 	videosourcejoinedsuccess : uid
-	
+
 	videosourcerequestnewtoken
-	
+
 	videosourceleavechannel
-	
+
 	rtcstats
-	
+
 	localvideostats
-	
+
 	remotevideostats
-	
