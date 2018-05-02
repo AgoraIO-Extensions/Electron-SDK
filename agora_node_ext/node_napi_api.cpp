@@ -57,6 +57,14 @@ bool NodeVideoFrameTransporter::initialize(v8::Isolate *isolate, const FunctionC
 int NodeVideoFrameTransporter::setVideoDimension(NodeRenderType type, agora::rtc::uid_t uid, uint32_t width, uint32_t height)
 {
     std::lock_guard<std::mutex> lck(m_lock);
+    if (type == NODE_RENDER_TYPE_REMOTE) {
+        auto it = m_remoteHighVideoFrames.find(uid);
+        if (it != m_remoteHighVideoFrames.end()) {
+            it->second.m_destWidth = width;
+            it->second.m_destHeight = height;
+            return 0;
+        }
+    }
     VideoFrameInfo& info = getVideoFrameInfo(type, uid);
     info.m_destWidth = width;
     info.m_destHeight = height;
