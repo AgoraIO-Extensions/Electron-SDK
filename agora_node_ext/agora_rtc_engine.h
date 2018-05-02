@@ -216,6 +216,7 @@ namespace agora {
             NAPI_API(videoSourceRelease);
             NAPI_API(videoSourceStartPreview);
             NAPI_API(videoSourceStopPreview);
+            NAPI_API(videoSourceSetParameter);
 
             /*
             * Native interface used to setup local and remote video canvas.
@@ -223,6 +224,11 @@ namespace agora {
             NAPI_API(subscribe);
             NAPI_API(unsubscribe);
             NAPI_API(setupLocalVideo);
+            NAPI_API(setVideoRenderDimension);
+            NAPI_API(setHighFPS);
+            NAPI_API(setFPS);
+            NAPI_API(addToHighVideo);
+            NAPI_API(removeFromHighVideo);
 
         public:
             Isolate* getIsolate() { return m_isolate; }
