@@ -16,7 +16,14 @@
 
 #include <node.h>
 #include <array>
+#include <vector>
+#include <unordered_map>
+#include <mutex>
+#include <atomic>
+#include <thread>
 #include <IAgoraRtcEngine.h>
+#include <IAgoraMediaEngine.h>
+#include <memory>
 using v8::Persistent;
 using v8::Function;
 using v8::Local;
@@ -61,6 +68,8 @@ struct buffer_info {
 };
 
 using buffer_list = std::array<buffer_info, 4>;
+using stream_buffer_type = std::vector<unsigned char>;
+using agora::media::IVideoFrame;
 
 enum NodeRenderType
 {
@@ -70,19 +79,106 @@ enum NodeRenderType
     NODE_RENDER_TYPE_VIDEO_SOURCE
 };
 
+#define MAX_MISS_COUNT 100
+
+class VideoFrameInfo
+{
+public:
+    NodeRenderType m_renderType;
+    agora::rtc::uid_t m_uid;
+    buffer_list m_bufferList;
+    stream_buffer_type m_buffer;
+    uint32_t m_destWidth;
+    uint32_t m_destHeight;
+    bool m_needUpdate;
+    uint32_t m_count;
+    VideoFrameInfo()
+        : m_renderType(NODE_RENDER_TYPE_REMOTE)
+        , m_uid(0)
+        , m_destWidth(0)
+        , m_destHeight(0)
+        , m_needUpdate(false)
+        , m_count(0)
+    {}
+    VideoFrameInfo(NodeRenderType type)
+        : m_renderType(type)
+        , m_uid(0)
+        , m_destWidth(0)
+        , m_destHeight(0)
+        , m_needUpdate(false)
+        , m_count(0)
+    {
+    }
+    VideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid)
+        : m_renderType(type)
+        , m_uid(uid)
+        , m_destWidth(0)
+        , m_destHeight(0)
+        , m_needUpdate(false)
+        , m_count(0)
+    {}
+};
+
 class NodeVideoFrameTransporter {
     public:
     NodeVideoFrameTransporter();
     ~NodeVideoFrameTransporter();
     
     bool initialize(Isolate *isolate, const FunctionCallbackInfo<Value>& callbackinfo);
-    bool deliveryFrame(enum NodeRenderType type, agora::rtc::uid_t uid, const buffer_list& buffers);
-    private:
+    int deliverFrame_I420(NodeRenderType type, agora::rtc::uid_t uid, const IVideoFrame& videoFrame, int rotation, bool mirrored);
+    int deliverVideoSourceFrame(const char* payload, int len);
+    int setVideoDimension(NodeRenderType, agora::rtc::uid_t uid, uint32_t width, uint32_t height);
+    void addToHighVideo(agora::rtc::uid_t uid);
+    void removeFromeHighVideo(agora::rtc::uid_t uid);
+    void setHighFPS(uint32_t fps);
+    void setFPS(uint32_t fps);
+    //bool deliveryFrame1(enum NodeRenderType type, agora::rtc::uid_t uid, const buffer_list& buffers);
+private:
+
+    struct image_frame_info {
+        int stride;
+        int stride0;
+        int width;
+        int height;
+        int strideU;
+        int strideV;
+    };
+
+    struct image_header_type {
+        uint8_t format;
+        uint8_t mirrored;
+        uint16_t width;
+        uint16_t height;
+        uint16_t left;
+        uint16_t top;
+        uint16_t right;
+        uint16_t bottom;
+        uint16_t rotation;
+        uint32_t timestamp;
+    };
+    VideoFrameInfo& getVideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid);
+    VideoFrameInfo& getHighVideoFrameInfo(agora::rtc::uid_t uid);
+    void setupFrameHeader(image_header_type*header, int stride, int width, int height);
+    void copyFrame(const agora::media::IVideoFrame& videoFrame, VideoFrameInfo& info, int dest_stride, int src_stride, int width, int height);
+    void FlushVideo();
+    void highFlushVideo();
+private:
     bool init;
     Isolate* env;
     Persistent<Function> callback;
     Persistent<Object> js_this;
-    
+    std::unordered_map<agora::rtc::uid_t, VideoFrameInfo> m_remoteVideoFrames;
+    std::unordered_map<agora::rtc::uid_t, VideoFrameInfo> m_remoteHighVideoFrames;
+    std::unique_ptr<VideoFrameInfo> m_localVideoFrame;
+    std::unique_ptr<VideoFrameInfo> m_devTestVideoFrame;
+    std::unique_ptr<VideoFrameInfo> m_videoSourceVideoFrame;
+    std::mutex m_lock;
+    int m_stopFlag;
+    std::unique_ptr<std::thread> m_thread;
+    std::unique_ptr<std::thread> m_highThread;
+    std::atomic_bool m_render;
+    uint32_t m_highFPS;
+    uint32_t m_FPS;
 };
 
 NodeVideoFrameTransporter* getNodeVideoFrameTransporter();

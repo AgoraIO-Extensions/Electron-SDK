@@ -216,7 +216,7 @@ function AgoraRender() {
     that.container.appendChild(that.canvas);
     try {
       // Try to grab the standard context. If it fails, fallback to experimental.
-      gl = that.canvas.getContext('webgl') || that.canvas.getContext('experimental-webgl');
+      gl = that.canvas.getContext('webgl', { preserveDrawingBuffer: true}) || that.canvas.getContext('experimental-webgl');
     } catch (e) {
       console.log(e);
     }

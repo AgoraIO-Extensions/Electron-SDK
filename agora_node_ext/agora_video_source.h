@@ -125,6 +125,11 @@ namespace agora{
              * @param swapWidthAndHeight : whether adjust width and height
              */
             virtual node_error setVideoSourceVideoProfile(agora::rtc::VIDEO_PROFILE_TYPE profile, bool swapWidthAndHeight) = 0;
+
+            /**
+            * To set parameters for video source.
+            */
+            virtual void setParameters(const char* parameters) = 0;
         };
 
         /**

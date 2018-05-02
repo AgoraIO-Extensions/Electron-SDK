@@ -245,6 +245,13 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
     else if (msg == AGORA_IPC_DISCONNECT){
         this->exit(false);
     }
+    else if (msg == AGORA_IPC_SET_PARAMETER) {
+        if (len != sizeof(SetParameterCmd))
+            return;
+        SetParameterCmd *cmd = (SetParameterCmd*)payload;
+        agora::rtc::AParameter rep(m_rtcEngine.get());
+        rep->setParameters(cmd->parameters);        
+    }
     LOG_LEAVE;
 }
 
