@@ -64,7 +64,9 @@ enum AgoraIpcMsg
     /** Node ADDON ==> video source, to stop transfer local video of video source. */
     AGORA_IPC_STOP_VS_PREVIEW,
     /** video source ==> Node ADDON, local video preview stopped.*/
-    AGORA_IPC_STOP_VS_PREVIEW_COMPLETE
+    AGORA_IPC_STOP_VS_PREVIEW_COMPLETE,
+    /** Node ADDON ==> video source, to set rtc parameters*/
+    AGORA_IPC_SET_PARAMETER
 };
 
 /**
@@ -118,6 +120,16 @@ struct VideoProfileCmd
     VideoProfileCmd(agora::rtc::VIDEO_PROFILE_TYPE type, bool swap)
         : profile(type)
         , swapWidthAndHeight(swap)
+    {}
+};
+
+#define MAX_PARAMETER_LEN 512
+struct SetParameterCmd
+{
+    char parameters[MAX_PARAMETER_LEN];
+public:
+    SetParameterCmd()
+        :parameters{ 0 }
     {}
 };
 

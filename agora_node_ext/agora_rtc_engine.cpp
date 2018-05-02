@@ -154,6 +154,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(videoSourceRelease)
                 PROPERTY_METHOD_DEFINE(videoSourceStartPreview)
                 PROPERTY_METHOD_DEFINE(videoSourceStopPreview)
+                PROPERTY_METHOD_DEFINE(videoSourceSetParameter)
                 PROPERTY_METHOD_DEFINE(setBool);
                 PROPERTY_METHOD_DEFINE(setInt);
                 PROPERTY_METHOD_DEFINE(setUInt);
@@ -170,6 +171,11 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setParameters);
                 PROPERTY_METHOD_DEFINE(setProfile);
                 PROPERTY_METHOD_DEFINE(convertPath);
+                PROPERTY_METHOD_DEFINE(setVideoRenderDimension);
+                PROPERTY_METHOD_DEFINE(setHighFPS);
+                PROPERTY_METHOD_DEFINE(setFPS);
+                PROPERTY_METHOD_DEFINE(addToHighVideo);
+                PROPERTY_METHOD_DEFINE(removeFromHighVideo);
             EN_PROPERTY_DEFINE()
             module->Set(String::NewFromUtf8(isolate, "NodeRtcEngine"), tpl->GetFunction());
         }
@@ -229,7 +235,8 @@ namespace agora {
 
         void NodeRtcEngine::destroyVideoSource()
         {
-            m_videoSourceSink->release();
+            if (m_videoSourceSink.get())
+                m_videoSourceSink->release();
         }
 
         NAPI_API_DEFINE_WRAPPER_PARAM_0(startEchoTest);
@@ -960,9 +967,10 @@ namespace agora {
                 NodeString appid;
                 napi_status status = napi_get_value_nodestring_(args[0], appid);
                 CHECK_NAPI_STATUS(status);
-                if (!pEngine->m_videoSourceSink->initialize(pEngine->m_eventHandler.get(), appid)){
+                if (!pEngine->m_videoSourceSink.get() || !pEngine->m_videoSourceSink->initialize(pEngine->m_eventHandler.get(), appid)) {
                     break;
                 }
+
                 result = 0;
             } while (false);
             napi_set_int_result(args, result);
@@ -990,8 +998,8 @@ namespace agora {
 
                 status = NodeUid::getUidFromNodeValue(args[3], uid);
                 CHECK_NAPI_STATUS(status);
-
-                pEngine->m_videoSourceSink->join(key, name, chan_info, uid);
+                if (pEngine->m_videoSourceSink.get())
+                    pEngine->m_videoSourceSink->join(key, name, chan_info, uid);
                 result = 0;
             } while (false);
             napi_set_int_result(args, result);
@@ -1006,8 +1014,8 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-
-                pEngine->m_videoSourceSink->leave();
+                if (pEngine->m_videoSourceSink.get())
+                    pEngine->m_videoSourceSink->leave();
                 result = 0;
             } while (false);
             napi_set_int_result(args, result);
@@ -1025,8 +1033,8 @@ namespace agora {
                 NodeString token;
                 napi_status status = napi_get_value_nodestring_(args[0], token);
                 CHECK_NAPI_STATUS(status);
-
-                pEngine->m_videoSourceSink->renewVideoSourceToken(token);
+                if (pEngine->m_videoSourceSink.get())
+                    pEngine->m_videoSourceSink->renewVideoSourceToken(token);
                 result = 0;
             } while (false);
             napi_set_int_result(args, result);
@@ -1044,8 +1052,8 @@ namespace agora {
                 int profile;
                 napi_status status = napi_get_value_int32_(args[0], profile);
                 CHECK_NAPI_STATUS(status);
-
-                pEngine->m_videoSourceSink->setVideoSourceChannelProfile((agora::rtc::CHANNEL_PROFILE_TYPE)profile);
+                if (pEngine->m_videoSourceSink.get())
+                    pEngine->m_videoSourceSink->setVideoSourceChannelProfile((agora::rtc::CHANNEL_PROFILE_TYPE)profile);
                 result = 0;
             } while (false);
             napi_set_int_result(args, result);
@@ -1066,8 +1074,8 @@ namespace agora {
                 CHECK_NAPI_STATUS(status);
                 status = napi_get_value_bool_(args[1], swapWidthAndHeight);
                 CHECK_NAPI_STATUS(status);
-
-                pEngine->m_videoSourceSink->setVideoSourceVideoProfile((agora::rtc::VIDEO_PROFILE_TYPE)profile, swapWidthAndHeight);
+                if (pEngine->m_videoSourceSink.get())
+                    pEngine->m_videoSourceSink->setVideoSourceVideoProfile((agora::rtc::VIDEO_PROFILE_TYPE)profile, swapWidthAndHeight);
                 result = 0;
             } while (false);
             napi_set_int_result(args, result);
@@ -1123,7 +1131,8 @@ namespace agora {
                 status = napi_get_value_uint32_(args[3], bitrate);
                 CHECK_NAPI_STATUS(status);
                 Rect region(top, left, bottom, right);
-                pEngine->m_videoSourceSink->captureScreen(windowId, captureFreq, &region, bitrate);
+                if (pEngine->m_videoSourceSink.get())
+                    pEngine->m_videoSourceSink->captureScreen(windowId, captureFreq, &region, bitrate);
             } while (false);
             napi_set_int_result(args, status);
             LOG_LEAVE;
@@ -1136,8 +1145,8 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-
-                pEngine->m_videoSourceSink->stopCaptureScreen();
+                if (pEngine->m_videoSourceSink.get())
+                    pEngine->m_videoSourceSink->stopCaptureScreen();
                 napi_set_int_result(args, 0);
             } while (false);
             LOG_LEAVE;
@@ -1150,8 +1159,8 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-
-                pEngine->m_videoSourceSink->release();
+                if (pEngine->m_videoSourceSink.get())
+                    pEngine->m_videoSourceSink->release();
                 napi_set_int_result(args, 0);
             } while (false);
             LOG_LEAVE;
@@ -1164,8 +1173,8 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-
-                pEngine->m_videoSourceSink->startPreview();
+                if (pEngine->m_videoSourceSink.get())
+                    pEngine->m_videoSourceSink->startPreview();
                 napi_set_int_result(args, 0);
             } while (false);
             LOG_LEAVE;
@@ -1179,8 +1188,27 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
 
-                pEngine->m_videoSourceSink->stopPreview();
+                if (pEngine->m_videoSourceSink.get())
+                    pEngine->m_videoSourceSink->stopPreview();
                 napi_set_int_result(args, 0);
+            } while (false);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetParameter)
+        {
+            LOG_ENTER;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                
+                nodestring param;
+                napi_status status = napi_ok;
+                status = napi_get_value_nodestring_(args[0], param);
+                CHECK_NAPI_STATUS(status);
+                if(pEngine->m_videoSourceSink.get())
+                    pEngine->m_videoSourceSink->setParameters(param);
             } while (false);
             LOG_LEAVE;
         }
@@ -1719,6 +1747,124 @@ namespace agora {
                 canvas.view = (view_t)context;
                 pEngine->m_engine->setupLocalVideo(canvas);
             } while (false);
+            LOG_LEAVE;
+        }
+        
+        NAPI_API_DEFINE(NodeRtcEngine, setVideoRenderDimension)
+        {
+            LOG_ENTER;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                NodeRenderType type;
+                int renderType, width, height;
+                agora::rtc::uid_t uid;
+                napi_status status = napi_ok;
+                status = napi_get_value_int32_(args[0], renderType);
+                CHECK_NAPI_STATUS(status);
+                if(renderType < NODE_RENDER_TYPE_LOCAL || renderType > NODE_RENDER_TYPE_VIDEO_SOURCE) {
+                    LOG_ERROR("Invalid render type : %d\n", renderType);
+                    break;
+                }
+                type = (NodeRenderType)renderType;
+                status = NodeUid::getUidFromNodeValue(args[1], uid);
+                CHECK_NAPI_STATUS(status);
+                status = napi_get_value_int32_(args[2], width);
+                CHECK_NAPI_STATUS(status);
+                status = napi_get_value_int32_(args[3], height);
+                CHECK_NAPI_STATUS(status);
+                
+                auto *pTransporter = getNodeVideoFrameTransporter();
+                if (pTransporter) {
+                    pTransporter->setVideoDimension(type, uid, width, height);
+                }
+            }while(false);
+            LOG_LEAVE;
+        }
+        
+        NAPI_API_DEFINE(NodeRtcEngine, setHighFPS)
+        {
+            LOG_ENTER;
+            napi_status status = napi_invalid_arg;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                uint32_t fps;
+                status = napi_get_value_uint32_(args[0], fps);
+                CHECK_NAPI_STATUS(status);
+                if(fps == 0) {
+                    status = napi_invalid_arg;
+                    break;
+                }
+                auto pTransporter = getNodeVideoFrameTransporter();
+                if(pTransporter) {
+                    pTransporter->setHighFPS(fps);
+                }
+            }while(false);
+            napi_set_int_result(args, status);
+            LOG_LEAVE;
+        }
+        
+        NAPI_API_DEFINE(NodeRtcEngine, setFPS)
+        {
+            LOG_ENTER;
+            napi_status status = napi_invalid_arg;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                uint32_t fps;
+                status = napi_get_value_uint32_(args[0], fps);
+                CHECK_NAPI_STATUS(status);
+                if(fps == 0) {
+                    status = napi_invalid_arg;
+                    break;
+                }
+                auto pTransporter = getNodeVideoFrameTransporter();
+                if(pTransporter)
+                    pTransporter->setFPS(fps);
+            } while(false);
+            napi_set_int_result(args, status);
+            LOG_LEAVE;
+        }
+        
+        NAPI_API_DEFINE(NodeRtcEngine, addToHighVideo)
+        {
+            LOG_ENTER;
+            napi_status status = napi_invalid_arg;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                agora::rtc::uid_t uid;
+                status = NodeUid::getUidFromNodeValue(args[0], uid);
+                CHECK_NAPI_STATUS(status);
+                auto pTransporter = getNodeVideoFrameTransporter();
+                if(pTransporter)
+                    pTransporter->addToHighVideo(uid);
+            }while(false);
+            napi_set_int_result(args, status);
+            LOG_LEAVE;
+        }
+        
+        NAPI_API_DEFINE(NodeRtcEngine, removeFromHighVideo)
+        {
+            LOG_ENTER;
+            napi_status status = napi_invalid_arg;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                agora::rtc::uid_t uid;
+                status = NodeUid::getUidFromNodeValue(args[0], uid);
+                CHECK_NAPI_STATUS(status);
+                auto pTransporter = getNodeVideoFrameTransporter();
+                if(pTransporter)
+                    pTransporter->removeFromeHighVideo(uid);
+            }while (false);
+            napi_set_int_result(args, status);
             LOG_LEAVE;
         }
 

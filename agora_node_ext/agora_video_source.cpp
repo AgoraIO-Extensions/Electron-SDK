@@ -61,6 +61,7 @@ namespace agora{
             virtual node_error stopCaptureScreen() override;
             virtual node_error startPreview() override;
             virtual node_error stopPreview() override;
+            virtual void setParameters(const char* parameters) override;
         private:
             void msgThread();
             void deliverFrame(const char* payload, int len);
@@ -243,6 +244,15 @@ namespace agora{
             return m_ipcMsg->sendMessage(AGORA_IPC_STOP_VS_PREVIEW, nullptr, 0) ? node_ok : node_generic_error;
         }
 
+        void AgoraVideoSourceSink::setParameters(const char* parameters)
+        {
+            if (!m_initialized)
+                return;
+            SetParameterCmd cmd;
+            strncpy(cmd.parameters, parameters, MAX_PARAMETER_LEN);
+            m_ipcMsg->sendMessage(AGORA_IPC_SET_PARAMETER, (char*)&cmd, sizeof(cmd));
+        }
+
         void AgoraVideoSourceSink::msgThread()
         {
             m_ipcMsg->run();
@@ -390,13 +400,15 @@ namespace agora{
 
         void AgoraVideoSourceSink::deliverFrame(const char* payload , int len)
         {
-            if(m_render.load())
-                return;
+            /*if(m_render.load())
+                return;*/
             if (len > (int)m_backBuf.size())
                 return;
             char* pBack = m_backBuf.data();
             memcpy(pBack, payload, len);
-            m_render.store(true);
+            auto *p = getNodeVideoFrameTransporter();
+            p->deliverVideoSourceFrame(pBack, len);
+            /*m_render.store(true);
             image_frame_info *info = (image_frame_info*)pBack;
             image_header_type *hdr = (image_header_type*)(pBack + sizeof(image_frame_info));
             unsigned int uv_len = (info->stride / 2) * (info->height / 2);
@@ -418,6 +430,7 @@ namespace agora{
                 }
                 m_render.store(false);
             });
+            */
         }
     }
 }
