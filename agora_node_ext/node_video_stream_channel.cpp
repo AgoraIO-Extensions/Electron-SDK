@@ -37,9 +37,13 @@ namespace agora {
         int NodeVideoStreamChannel::deliverFrame(const agora::media::IVideoFrame& videoFrame, int rotation, bool mirrored)
         {
             LOG_ENTER;
-            if(m_render.load())
-                return 0;
-            m_render.store(true);
+            /*if(m_render.load())
+                return 0;*/
+            auto *pTransporter = getNodeVideoFrameTransporter();
+            if (pTransporter) {
+                pTransporter->deliverFrame_I420(m_context->m_type, m_context->m_uid, videoFrame, rotation, mirrored);
+            }
+           /* m_render.store(true);
             int r = deliverFrame_I420(videoFrame, rotation, mirrored, buffers);
             if (!r) {
                 node_async_call::async_call([&]() {
@@ -53,9 +57,9 @@ namespace agora {
             else {
                 LOG_ERROR("deliverFrame i420 failed.");
                 m_render.store(false);
-            }
+            }*/
             LOG_LEAVE;
-            return r;
+            return 0;
         }
 
         int NodeVideoStreamChannel::deliverFrame_I420(const agora::media::IVideoFrame& videoFrame, int rotation, bool mirrored, buffer_list& buffers)

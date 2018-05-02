@@ -1,5 +1,7 @@
 ﻿const EventEmitter = require("events");
-
+const agora = require("./agora_node_ext");
+require("./webgl-utils")
+require("./AgoraRender")
 class AgoraRtcEngine extends EventEmitter {
     constructor() {
         super();
@@ -238,55 +240,63 @@ class AgoraRtcEngine extends EventEmitter {
         this.rtcengine.onEvent("videosourceleavechannel", function(){
             self.emit("videosourceleavechannel");
         });
-        this.rtcengine.registerDeliverFrame(function (type, uid, header, ydata, udata, vdata) {
-            if (!header || !ydata || !udata || !vdata) {
-                console.log("Invalid data param ： " + header + " " + ydata + " " + udata + " " + vdata);
-                return;
-            }
-            var render = null;
-            /*
-            * type 0 is local video
-            * type 1 is remote video
-            * type 2 is device test video
-            * type 3 is video source video
-            */
-            if (type < 2) {
-                if (uid == 0) {
-                    render = self.streams["local"];
+        this.rtcengine.registerDeliverFrame(function (infos) {
+            var len = infos.length;
+            //console.log("len : " + len);
+            for (var i = 0; i < len; i++) {
+                var info = infos[i];
+                var type = info.type;
+                var uid = info.uid;
+                var header = info.header;
+                var ydata = info.ydata;
+                var udata = info.udata;
+                var vdata = info.vdata;
+                //console.log("uid : " + uid);
+                if (!header || !ydata || !udata || !vdata) {
+                    console.log("Invalid data param ： " + header + " " + ydata + " " + udata + " " + vdata);
+                    continue;
                 }
-                else {
-                    render = self.streams[uid];
+                var render = null;
+                /*
+                * type 0 is local video
+                * type 1 is remote video
+                * type 2 is device test video
+                * type 3 is video source video
+                */
+                if (type < 2) {
+                    if (uid == 0) {
+                        render = self.streams["local"];
+                    }
+                    else {
+                        render = self.streams[uid];
+                    }
+                } else if (type == 2) {
+                    render = self.streams["devtest"];
+                } else if (type == 3) {
+                    render = self.streams["videosource"];
                 }
-            } else if (type == 2) {
-                render = self.streams["devtest"];
-            } else if (type == 3) {
-                render = self.streams["videosource"];
+                if (!render) {
+                    console.log("Can't find render for uid : " + uid);
+                    continue;
+                }
+                self.drawImage(render, header, ydata, udata, vdata);
             }
-            if (!render) {
-                console.log("Can't find render for uid : " + uid);
-                return;
-            }
-            self.drawImage(render, header, ydata, udata, vdata);            
         });
     }
 
     drawImage(render, header, yplanedata, uplanedata, vplanedata) {
-        //console.log("try to drawImage");
         if (header.byteLength != 20) {  //
             console.error('invalid image header ' + header.byteLength);
             return;
         }
-
         if (yplanedata.byteLength === 20) {
             console.error('invalid image yplane ' + yplane.byteLength);
             return
         }
-
         if (uplanedata.byteLength === 20) {
             console.error('invalid image uplanedata ' + uplanedata.byteLength);
             return
         }
-
         if (yplanedata.byteLength != uplanedata.byteLength * 4
             || uplanedata.byteLength != vplanedata.byteLength
         ) {
@@ -310,12 +320,9 @@ class AgoraRtcEngine extends EventEmitter {
         var yLength = xWidth * xHeight;
         var yBegin = headerLength;
         var yEnd = yBegin + yLength;
-
-        console.log("Draw image, width : " + width + " , height : " + height);
         var uLength = yLength / 4;
         var uBegin = yEnd;
         var uEnd = uBegin + uLength;
-
         var vLength = yLength / 4;
         var vBegin = uEnd;
         var vEnd = vBegin + vLength;
@@ -379,19 +386,29 @@ class AgoraRtcEngine extends EventEmitter {
     setupLocalDevTest(view) {
         this.streams["devtest"] = this.initRender(view);
     }
+
+    setVideoRenderDimension(rendertype, uid, width, height) {
+        this.rtcengine.setVideoRenderDimension(rendertype, uid, width, height);
+    }
+
+    setVideoRenderHighFPS(fps) {
+        this.rtcengine.setHighFPS(fps);
+    }
+
+    setVideoRenderFPS(fps) {
+        this.rtcengine.setFPS(fps);
+    }
+
+    addVideoRenderToHighFPS(uid) {
+        this.rtcengine.addToHighVideo(uid);
+    }
+
+    remoteVideoRenderFromHighFPS(uid) {
+        this.rtcengine.removeFromHighVideo(uid);
+    }
     
     setupLocalVideoSource(view) {
         this.streams["videosource"] = this.initRender(view);
-    }
-
-    setupViewContentMode(uid, mode) {
-      let render = this.streams[uid];
-      if (!render) {
-        return false;
-      }
-  
-      render.contentMode = mode;
-      return true;
     }
 
     renewToken(newtoken) {
@@ -868,8 +885,8 @@ class AgoraRtcEngine extends EventEmitter {
         return this.rtcengine.setProfile(profile, merge);
     }
 
-    videoSourceInitialize(){
-        return this.rtcengine.videoSourceInitialize();
+    videoSourceInitialize(appid){
+        return this.rtcengine.videoSourceInitialize(appid);
     }
 
     videoSourceJoin(token, cname, chanInfo, uid) {
@@ -914,6 +931,10 @@ class AgoraRtcEngine extends EventEmitter {
 
     stopScreenCapturePreview() {
         return this.rtcengine.videoSourceStopPreview();
+    }
+
+    videoSourceSetParameters(parameter) {
+        return this.rtcengine.videoSourceSetParameter(parameter);
     }
 
     getVideoDevices() {
