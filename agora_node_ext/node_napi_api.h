@@ -79,7 +79,7 @@ enum NodeRenderType
     NODE_RENDER_TYPE_VIDEO_SOURCE
 };
 
-#define MAX_MISS_COUNT 100
+#define MAX_MISS_COUNT 500
 
 class VideoFrameInfo
 {
@@ -176,7 +176,6 @@ private:
     int m_stopFlag;
     std::unique_ptr<std::thread> m_thread;
     std::unique_ptr<std::thread> m_highThread;
-    std::atomic_bool m_render;
     uint32_t m_highFPS;
     uint32_t m_FPS;
 };
