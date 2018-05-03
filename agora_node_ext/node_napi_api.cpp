@@ -27,7 +27,6 @@ NodeVideoFrameTransporter* getNodeVideoFrameTransporter()
 NodeVideoFrameTransporter::NodeVideoFrameTransporter()
 : init(false)
 , env(nullptr)
-, m_render(false)
 , m_highFPS(15)
 , m_FPS(10)
 {
@@ -107,14 +106,36 @@ int NodeVideoFrameTransporter::deliverVideoSourceFrame(const char* payload, int 
     char* v = u + uv_len;
     std::lock_guard<std::mutex> lck(m_lock);
     VideoFrameInfo& videoInfo = getVideoFrameInfo(NODE_RENDER_TYPE_VIDEO_SOURCE, 0);
-    videoInfo.m_bufferList[0].buffer = (unsigned char*)hdr;
-    videoInfo.m_bufferList[0].length = sizeof(*hdr);
-    videoInfo.m_bufferList[1].buffer = (unsigned char*)y;
-    videoInfo.m_bufferList[1].length = uv_len * 4;
-    videoInfo.m_bufferList[2].buffer = (unsigned char*)u;
-    videoInfo.m_bufferList[2].length = uv_len;
-    videoInfo.m_bufferList[3].buffer = (unsigned char*)v;
-    videoInfo.m_bufferList[3].length = uv_len;
+    int destWidth = videoInfo.m_destWidth ? videoInfo.m_destWidth : info->width;
+    int destHeight = videoInfo.m_destHeight ? videoInfo.m_destHeight : info->height;
+    size_t imageSize = sizeof(image_header_type) + destWidth * destHeight * 3 / 2;
+    auto s = videoInfo.m_buffer.size();
+    if (s < imageSize || s >= imageSize * 2)
+        videoInfo.m_buffer.resize(imageSize);
+    image_header_type *localHdr = (image_header_type*)&videoInfo.m_buffer[0];
+    localHdr->format = hdr->format;
+    localHdr->mirrored = hdr->mirrored;
+    localHdr->timestamp = htons(hdr->timestamp);
+    localHdr->rotation = htons(hdr->rotation);
+    localHdr->width = htons(destWidth);
+    localHdr->height = htons(destHeight);
+    localHdr->left = htons(0);
+    localHdr->right = htons(0);
+    localHdr->top = htons(0);
+    localHdr->bottom = htons(0);
+    unsigned char* desty = &videoInfo.m_buffer[0] + sizeof(image_header_type);
+    unsigned char* destu = desty + destWidth * destHeight;
+    unsigned char* destv = destu + destWidth / 2 * destHeight / 2;
+    I420Scale((const uint8*)y, info->stride0, (const uint8*)u, info->strideU, (const uint8*)v, info->strideV, info->width, info->height, 
+        (uint8*)desty, destWidth, (uint8*)destu, destWidth / 2, (uint8*)destv, destWidth / 2, destWidth, destHeight, kFilterNone);
+    videoInfo.m_bufferList[0].buffer = (unsigned char*)localHdr;
+    videoInfo.m_bufferList[0].length = sizeof(*localHdr);
+    videoInfo.m_bufferList[1].buffer = (unsigned char*)desty;
+    videoInfo.m_bufferList[1].length = destWidth * destHeight;
+    videoInfo.m_bufferList[2].buffer = (unsigned char*)destu;
+    videoInfo.m_bufferList[2].length = destWidth / 2 * destHeight / 2;
+    videoInfo.m_bufferList[3].buffer = (unsigned char*)destv;
+    videoInfo.m_bufferList[3].length = destWidth / 2 * destHeight / 2;
     videoInfo.m_count = 0;
     videoInfo.m_needUpdate = true;
     return 0;
@@ -278,52 +299,51 @@ void NodeVideoFrameTransporter::FlushVideo()
 {
     while (!m_stopFlag) {
         {
-                agora::rtc::node_async_call::async_call([this]() {
-                    Isolate *isolate = env;
-                    HandleScope scope(isolate);
-                    std::lock_guard<std::mutex> lock(m_lock);
-                    int count = m_remoteVideoFrames.size();
-                    count += m_localVideoFrame.get() ? 1 : 0;
-                    count += m_devTestVideoFrame.get() ? 1 : 0;
-                    count += m_videoSourceVideoFrame.get() ? 1 : 0;
-                    Local<v8::Array> infos = v8::Array::New(isolate);
-                    
-                    uint32_t i = 0;
-                    for (auto& it : m_remoteVideoFrames) {
-                        if (AddObj(isolate, infos, i, it.second))
-                            ++i;
-                        else {
-                            ++it.second.m_count;
-                        }
-                    }
-                    if (m_localVideoFrame.get()) {
-                        if (AddObj(isolate, infos, i, *m_localVideoFrame.get()))
-                            ++i;
-                        else {
-                            ++m_localVideoFrame->m_count;
-                        }
-                    }
+            std::unique_lock<std::mutex> lck(m_lock);
+            for (auto& it : m_remoteVideoFrames) {
+                if (it.second.m_count > MAX_MISS_COUNT)
+                    m_remoteVideoFrames.erase(it.first);
+            }
 
-                    if (m_videoSourceVideoFrame.get()) {
-                        if (AddObj(isolate, infos, i, *m_videoSourceVideoFrame.get()))
-                            ++i;
-                        else {
-                            ++m_videoSourceVideoFrame->m_count;
-                        }
-                    }
+            if (m_devTestVideoFrame.get()  && m_localVideoFrame->m_count > MAX_MISS_COUNT) {
+                m_devTestVideoFrame.reset();
+            }
+            lck.unlock();
 
-                    if (m_devTestVideoFrame.get()) {
-                        if (AddObj(isolate, infos, i, *m_devTestVideoFrame.get()))
-                            ++i;
-                        else {
-                            ++m_devTestVideoFrame->m_count;
-                        }
+            agora::rtc::node_async_call::async_call([this]() {
+                Isolate *isolate = env;
+                HandleScope scope(isolate);
+                std::lock_guard<std::mutex> lock(m_lock);
+                Local<v8::Array> infos = v8::Array::New(isolate);
+
+                uint32_t i = 0;
+                for (auto& it : m_remoteVideoFrames) {
+                    if (AddObj(isolate, infos, i, it.second))
+                        ++i;
+                    else {
+                        ++it.second.m_count;
                     }
-                    if (i > 0) {
-                        Local<v8::Value> args[1] = { infos };
-                        callback.Get(isolate)->Call(js_this.Get(isolate), 1, args);
+                }
+                if (m_localVideoFrame.get()) {
+                    if (AddObj(isolate, infos, i, *m_localVideoFrame.get()))
+                        ++i;
+                    else {
+                        ++m_localVideoFrame->m_count;
                     }
-                });
+                }
+
+                if (m_devTestVideoFrame.get()) {
+                    if (AddObj(isolate, infos, i, *m_devTestVideoFrame.get()))
+                        ++i;
+                    else {
+                        ++m_devTestVideoFrame->m_count;
+                    }
+                }
+                if (i > 0) {
+                    Local<v8::Value> args[1] = { infos };
+                    callback.Get(isolate)->Call(js_this.Get(isolate), 1, args);
+                }
+            });
             std::this_thread::sleep_for(std::chrono::milliseconds(1000 / m_FPS));
         }
     }
@@ -333,6 +353,17 @@ void NodeVideoFrameTransporter::highFlushVideo()
 {
     while (!m_stopFlag) {
         {
+            std::unique_lock<std::mutex> lck(m_lock);
+            for (auto& it : m_remoteHighVideoFrames) {
+                if (it.second.m_count > MAX_MISS_COUNT)
+                    m_remoteHighVideoFrames.erase(it.first);
+            }
+
+            if (m_videoSourceVideoFrame.get() && m_videoSourceVideoFrame->m_count > MAX_MISS_COUNT)
+                m_videoSourceVideoFrame.reset();
+
+            lck.unlock();
+
             agora::rtc::node_async_call::async_call([this]() {
                 Isolate *isolate = env;
                 HandleScope scope(isolate);
@@ -347,6 +378,15 @@ void NodeVideoFrameTransporter::highFlushVideo()
                         ++it.second.m_count;
                     }
                 }
+
+                if (m_videoSourceVideoFrame.get()) {
+                    if (AddObj(isolate, infos, i, *m_videoSourceVideoFrame.get()))
+                        ++i;
+                    else {
+                        ++m_videoSourceVideoFrame->m_count;
+                    }
+                }
+
                 if (i > 0) {
                     Local<v8::Value> args[1] = { infos };
                     callback.Get(isolate)->Call(js_this.Get(isolate), 1, args);
@@ -356,39 +396,6 @@ void NodeVideoFrameTransporter::highFlushVideo()
         }
     }
 }
-
-//bool NodeVideoFrameTransporter::deliveryFrame(enum NodeRenderType type, agora::rtc::uid_t uid, const buffer_list& buffers)
-//{
-//    std::lock_guard<std::mutex> lck(m_lock);
-//    VideoFrameInfo& info = m_videoFrames[uid];
-//}
-
-//bool NodeVideoFrameTransporter::deliveryFrame1(enum NodeRenderType type, agora::rtc::uid_t uid, const buffer_list &buffers)
-//{
-//    if (!init) {
-//        LOG_ERROR("NodeVideoFrameTransporter not init");
-//        return false;
-//    }
-//    
-//    Isolate *isolate = env;//Isolate::GetCurrent();
-//    HandleScope scope(isolate);
-//    Local<Value> args[6];
-//    args[0] = napi_create_uint32_(isolate, type);
-//    args[1] = napi_create_uid_(isolate, uid);
-//    int index = 2;
-//    for (auto it = buffers.begin(); it != buffers.end(); ++it, ++index) {
-//        Local<v8::ArrayBuffer> buff = v8::ArrayBuffer::New(isolate, it->buffer, it->length);
-//        if (it != buffers.begin()) {
-//            Local<v8::Uint8Array> array = v8::Uint8Array::New(buff, 0, it->length);
-//            args[index] = array;
-//        }
-//        else {
-//            args[index] = buff;
-//        }
-//    }
-//    callback.Get(isolate)->Call(js_this.Get(isolate), 6, args);
-//    return true;
-//}
 
 int napi_get_value_string_utf8_(const Local<Value>& str, char *buffer, uint32_t len)
 {

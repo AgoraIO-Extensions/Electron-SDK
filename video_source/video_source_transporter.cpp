@@ -112,14 +112,14 @@ int AgoraVideoSourceTransporter::deliverFrame_I420(const agora::media::IVideoFra
 
     image_header_type *hdr = (image_header_type*)(pbuf + sizeof(image_frame_info));
     hdr->mirrored = mirrored;
-    hdr->rotation = htons(rotation);
-    hdr->width = htons(destWidth);
-    hdr->height = htons(destHeight);
-    hdr->right = htons((unsigned short)(0));
-    hdr->left = htons((uint16_t)0);
-    hdr->top = htons((uint16_t)0);
-    hdr->bottom = htons((uint16_t)0);
-    hdr->timestamp = htons(0);
+    hdr->rotation = rotation;
+    hdr->width = destWidth;
+    hdr->height = destHeight;
+    hdr->right = 0;
+    hdr->left = 0;
+    hdr->top = 0;
+    hdr->bottom = 0;
+    hdr->timestamp = 0;
 
     char* y = pbuf + sizeof(image_frame_info) + sizeof(image_header_type);
 	char* u = y + destWidth * destHeight;
