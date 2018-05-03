@@ -14,7 +14,6 @@
 #include <memory>
 #include <mutex>
 #include <array>
-#include <atomic>
 #include "agora_rtc_engine.h"
 #pragma once
 
@@ -46,16 +45,11 @@ namespace agora {
                 uint16_t rotation;
                 uint32_t timestamp;
             };
-            
-            int deliverFrame_I420(const agora::media::IVideoFrame& videoFrame, int rotation, bool mirrored, buffer_list& buffers);
-            void setupFrameHeader(image_header_type *header, int stride, int width, int height);
-            void copyFrame(const agora::media::IVideoFrame& videoFrame, unsigned char *buffer, int dst_stride, int src_stride, int width, int height, buffer_list& buffers);
         private:
             typedef std::vector<unsigned char> stream_buffer_type;
             std::unique_ptr<NodeRenderContext> m_context;
             stream_buffer_type m_buffer;
             buffer_list buffers;
-            std::atomic_bool m_render;
         };
     }
 }
