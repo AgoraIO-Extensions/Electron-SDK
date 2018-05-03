@@ -27,7 +27,6 @@
 #include <functional>
 #include <string>
 #include <sstream>
-#include <atomic>
 #include <fstream>
 #include <memory>
 #include <vector>
@@ -71,7 +70,7 @@ namespace agora{
 
         private:
             std::thread m_msgThread;
-            mutable std::mutex m_lock;
+            std::mutex m_lock;
             std::unique_ptr<IAgoraIpc> m_ipcMsg;
             std::unique_ptr<AgoraIpcDataReceiver> m_ipcReceiver;
             std::unique_ptr<INodeProcess> m_sourceNodeProcess;
@@ -82,7 +81,6 @@ namespace agora{
             IAgoraVideoSourceEventHandler *m_eventHandler;
             uid_t m_peerUid;
             NodeEvent m_event;
-            std::atomic_bool m_render;
             buffer_list m_buffers;
             std::vector<char> m_backBuf;
         private:
@@ -100,17 +98,11 @@ namespace agora{
             , m_initialized(false)
             , m_event(false)
         {
-            m_render.store(false);
             m_backBuf.resize(AgoraVideoSourceSink::s_bufLen);
         }
 
         AgoraVideoSourceSink::~AgoraVideoSourceSink()
         {
-            int count = 4;
-            while (m_render.load() && count > 0) {
-                std::this_thread::sleep_for(std::chrono::milliseconds(10));
-                --count;
-            }
             clear();
         }
 
@@ -124,7 +116,6 @@ namespace agora{
                 m_ipcMsg->sendMessage(AGORA_IPC_DISCONNECT, nullptr, 0);
                 m_ipcMsg->disconnect();
             }
-            m_render.store(false);
             if(m_msgThread.joinable())
                 m_msgThread.join();
         }
@@ -400,37 +391,12 @@ namespace agora{
 
         void AgoraVideoSourceSink::deliverFrame(const char* payload , int len)
         {
-            /*if(m_render.load())
-                return;*/
             if (len > (int)m_backBuf.size())
                 return;
             char* pBack = m_backBuf.data();
             memcpy(pBack, payload, len);
             auto *p = getNodeVideoFrameTransporter();
             p->deliverVideoSourceFrame(pBack, len);
-            /*m_render.store(true);
-            image_frame_info *info = (image_frame_info*)pBack;
-            image_header_type *hdr = (image_header_type*)(pBack + sizeof(image_frame_info));
-            unsigned int uv_len = (info->stride / 2) * (info->height / 2);
-            char* y = (char*)(hdr + 1);
-            char* u = y + uv_len * 4;
-            char* v = u + uv_len;
-            m_buffers[0].buffer = (unsigned char*)hdr;
-            m_buffers[0].length = sizeof(*hdr);
-            m_buffers[1].buffer = (unsigned char*)y;
-            m_buffers[1].length = uv_len * 4;
-            m_buffers[2].buffer = (unsigned char*)u;
-            m_buffers[2].length = uv_len;
-            m_buffers[3].buffer = (unsigned char*)v;
-            m_buffers[3].length = uv_len;
-            node_async_call::async_call([this]() {
-                auto *p = getNodeVideoFrameTransporter();
-                if(p) {
-                    p->deliveryFrame(NODE_RENDER_TYPE_VIDEO_SOURCE, 0, m_buffers);
-                }
-                m_render.store(false);
-            });
-            */
         }
     }
 }
