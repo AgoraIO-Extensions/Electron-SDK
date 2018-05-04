@@ -35,15 +35,15 @@ NodeVideoFrameTransporter::NodeVideoFrameTransporter()
 
 NodeVideoFrameTransporter::~NodeVideoFrameTransporter()
 {
-    m_stopFlag = 1;
-    if (m_thread->joinable())
-        m_thread->join();
-    if(m_highThread->joinable())
-        m_highThread->join();
+    deinitialize();
 }
 
 bool NodeVideoFrameTransporter::initialize(v8::Isolate *isolate, const FunctionCallbackInfo<v8::Value> &callbackinfo)
 {
+    if (init) {
+        deinitialize();
+    }
+    m_stopFlag = false;
     env = isolate;
     callback.Reset(isolate, callbackinfo[0].As<Function>());
     js_this.Reset(isolate, callbackinfo.This());
@@ -53,8 +53,27 @@ bool NodeVideoFrameTransporter::initialize(v8::Isolate *isolate, const FunctionC
     return true;
 }
 
+bool NodeVideoFrameTransporter::deinitialize()
+{
+    if (!init)
+        return true;
+    m_stopFlag = 1;
+    if (m_thread->joinable())
+        m_thread->join();
+    if (m_highThread->joinable())
+        m_highThread->join();
+    init = false;
+    m_highThread.reset();
+    m_thread.reset();
+    env = nullptr;
+    callback.Reset();
+    js_this.Reset();
+}
+
 int NodeVideoFrameTransporter::setVideoDimension(NodeRenderType type, agora::rtc::uid_t uid, uint32_t width, uint32_t height)
 {
+    if (!init)
+        return -1;
     std::lock_guard<std::mutex> lck(m_lock);
     if (type == NODE_RENDER_TYPE_REMOTE) {
         auto it = m_remoteHighVideoFrames.find(uid);
@@ -98,6 +117,8 @@ VideoFrameInfo& NodeVideoFrameTransporter::getVideoFrameInfo(NodeRenderType type
 
 int NodeVideoFrameTransporter::deliverVideoSourceFrame(const char* payload, int len)
 {
+    if (!init)
+        return -1;
     image_frame_info *info = (image_frame_info*)payload;
     image_header_type *hdr = (image_header_type*)(payload + sizeof(image_frame_info));
     unsigned int uv_len = (info->stride / 2) * (info->height / 2);
@@ -143,6 +164,8 @@ int NodeVideoFrameTransporter::deliverVideoSourceFrame(const char* payload, int 
 
 int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type, agora::rtc::uid_t uid, const agora::media::IVideoFrame& videoFrame, int rotation, bool mirrored)
 {
+    if (!init)
+        return -1;
     int stride, stride0 = videoFrame.stride(IVideoFrame::Y_PLANE);
     stride = stride0;
     if (stride & 0xf) {
