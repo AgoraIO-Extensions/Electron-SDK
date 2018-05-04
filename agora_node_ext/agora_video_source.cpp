@@ -367,28 +367,6 @@ namespace agora{
             return node_status_error;
         }
 
-        struct image_frame_info {
-            int stride;
-            int stride0;
-            int width;
-            int height;
-            int strideU;
-            int strideV;
-        };
-
-        struct image_header_type {
-            unsigned char format;
-            unsigned char mirrored;
-            unsigned short width;
-            unsigned short height;
-            unsigned short left;
-            unsigned short top;
-            unsigned short right;
-            unsigned short bottom;
-            unsigned short rotation;
-            unsigned int timestamp;
-        };
-
         void AgoraVideoSourceSink::deliverFrame(const char* payload , int len)
         {
             if (len > (int)m_backBuf.size())

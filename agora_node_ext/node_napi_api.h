@@ -157,6 +157,7 @@ private:
         uint32_t timestamp;
     };
     VideoFrameInfo& getVideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid);
+    bool deinitialize();
     VideoFrameInfo& getHighVideoFrameInfo(agora::rtc::uid_t uid);
     void setupFrameHeader(image_header_type*header, int stride, int width, int height);
     void copyFrame(const agora::media::IVideoFrame& videoFrame, VideoFrameInfo& info, int dest_stride, int src_stride, int width, int height);
