@@ -411,6 +411,16 @@ class AgoraRtcEngine extends EventEmitter {
         this.streams["videosource"] = this.initRender(view);
     }
 
+    setupViewContentMode(uid, mode) {
+        let render = this.streams[uid];
+        if (!render) {
+          return false;
+        }
+    
+        render.contentMode = mode;
+        return true;
+      }
+
     renewToken(newtoken) {
         return this.rtcengine.renewToken(newtoken);
     }
