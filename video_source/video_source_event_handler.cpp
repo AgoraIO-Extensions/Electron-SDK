@@ -144,21 +144,6 @@ void AgoraVideoSourceEventHandler::onTranscodingUpdated()
     LOG_INFO("%s", __FUNCTION__);
 }
 
-void AgoraVideoSourceEventHandler::onPublishingRequestAnswered(uid_t owner, int response, int error)
-{
-    LOG_INFO("%s, uid :%d, response :%d, error :%d", __FUNCTION__, owner, response, error);
-}
-
-void AgoraVideoSourceEventHandler::onPublishingRequestReceived(uid_t uid)
-{
-    LOG_INFO("%s, uid :%d", __FUNCTION__, uid);
-}
-
-void AgoraVideoSourceEventHandler::onUnpublishingRequestReceived(uid_t owner)
-{
-    LOG_INFO("%s, uid :%d", __FUNCTION__, owner);
-}
-
 void AgoraVideoSourceEventHandler::onStreamInjectedStatus(const char* url, uid_t uid, int status)
 {
     LOG_INFO("%s, url :%s, uid :%d, status :%d", __FUNCTION__, url, uid, status);
