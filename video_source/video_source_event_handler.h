@@ -52,9 +52,6 @@ public:
     virtual void onStreamPublished(const char *url, int error) override;
     virtual void onStreamUnpublished(const char *url) override;
     virtual void onTranscodingUpdated() override;
-    virtual void onPublishingRequestAnswered(uid_t owner, int response, int error) override;
-    virtual void onPublishingRequestReceived(uid_t uid) override;
-    virtual void onUnpublishingRequestReceived(uid_t owner) override;
     virtual void onStreamInjectedStatus(const char* url, uid_t uid, int status) override;
 
 private:
