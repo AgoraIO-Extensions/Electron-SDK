@@ -103,9 +103,6 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setHighQualityAudioParameters)
                 PROPERTY_METHOD_DEFINE(enableWebSdkInteroperability)
                 PROPERTY_METHOD_DEFINE(setVideoQualityParameters)
-                PROPERTY_METHOD_DEFINE(sendPublishingRequest)
-                PROPERTY_METHOD_DEFINE(answerPublishingRequest)
-                PROPERTY_METHOD_DEFINE(sendUnpublishingRequest)
                 PROPERTY_METHOD_DEFINE(enableLoopbackRecording)
                 PROPERTY_METHOD_DEFINE(registerDeliverFrame)
                 PROPERTY_METHOD_DEFINE(setupLocalVideo)
@@ -880,63 +877,6 @@ namespace agora {
             LOG_LEAVE;
         }
 
-        NAPI_API_DEFINE(NodeRtcEngine, sendPublishingRequest)
-        {
-            LOG_ENTER;
-            napi_status status = napi_ok;
-            int result = -1;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                uid_t uid;
-                status = NodeUid::getUidFromNodeValue(args[0], uid);
-                CHECK_NAPI_STATUS(status);
-                RtcEngineParameters param(pEngine->m_engine);
-                result = param.sendPublishingRequest(uid);
-            } while (false);
-            napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
-        NAPI_API_DEFINE(NodeRtcEngine, answerPublishingRequest)
-        {
-            LOG_ENTER;
-            napi_status status = napi_ok;
-            int result = -1;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                uid_t uid;
-                bool accepted;
-                status = NodeUid::getUidFromNodeValue(args[0], uid);
-                CHECK_NAPI_STATUS(status);
-                status = napi_get_value_bool_(args[1], accepted);
-                CHECK_NAPI_STATUS(status);
-                RtcEngineParameters param(pEngine->m_engine);
-                result = param.answerPublishingRequest(uid, accepted);
-            } while (false);
-            napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
-        NAPI_API_DEFINE(NodeRtcEngine, sendUnpublishingRequest)
-        {
-            LOG_ENTER;
-            napi_status status = napi_ok;
-            int result = -1;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                uid_t uid;
-                status = NodeUid::getUidFromNodeValue(args[0], uid);
-                CHECK_NAPI_STATUS(status);
-                RtcEngineParameters param(pEngine->m_engine);
-                result = param.sendUnpublishingRequest(uid);
-            } while (false);
-            napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
         NAPI_API_DEFINE(NodeRtcEngine, enableLoopbackRecording)
         {
             LOG_ENTER;

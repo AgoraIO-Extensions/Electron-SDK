@@ -168,9 +168,6 @@ namespace agora {
             NAPI_API(enableWebSdkInteroperability);
             NAPI_API(setVideoQualityParameters);
 
-            NAPI_API(sendPublishingRequest);
-            NAPI_API(answerPublishingRequest);
-            NAPI_API(sendUnpublishingRequest);
             NAPI_API(enableLoopbackRecording);
             NAPI_API(onEvent);
             NAPI_API(registerDeliverFrame);
