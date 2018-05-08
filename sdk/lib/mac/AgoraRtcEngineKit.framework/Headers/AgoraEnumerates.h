@@ -73,6 +73,15 @@ typedef NS_ENUM(NSInteger, AgoraErrorCode) {
     AgoraErrorCodeBitrateLimit = 115,
     AgoraErrorCodeTooManyDataStreams = 116,
     AgoraErrorCodeDecryptionFailed = 120,
+    
+    AgoraErrorCodeWatermarkParam = 124,
+    AgoraErrorCodeWatermarkPath = 125,
+    AgoraErrorCodeWatermarkPng = 126,
+    AgoraErrorCodeWatermarkInfo = 127,
+    AgoraErrorCodeWatermarkAGRB = 128,
+    AgoraErrorCodeWatermarkRead = 129,
+
+    AgoraErrorCodeEncryptedStreamNotAllowedPublish = 130,
 
     AgoraErrorCodePublishFailed = 150,
 
@@ -150,6 +159,7 @@ typedef NS_ENUM(NSInteger, AgoraVideoProfile) {
     AgoraVideoProfileLandscape720P_3 = 52,      // 1280x720  30
     AgoraVideoProfileLandscape720P_5 = 54,      // 960x720   15
     AgoraVideoProfileLandscape720P_6 = 55,      // 960x720   30
+#if (!(TARGET_OS_IPHONE) && (TARGET_OS_MAC))
     AgoraVideoProfileLandscape1080P = 60,       // 1920x1080 15
     AgoraVideoProfileLandscape1080P_3 = 62,     // 1920x1080 30
     AgoraVideoProfileLandscape1080P_5 = 64,     // 1920x1080 60
@@ -157,7 +167,8 @@ typedef NS_ENUM(NSInteger, AgoraVideoProfile) {
     AgoraVideoProfileLandscape1440P_2 = 67,     // 2560x1440 60
     AgoraVideoProfileLandscape4K = 70,          // 3840x2160 30
     AgoraVideoProfileLandscape4K_3 = 72,        // 3840x2160 60
-
+#endif
+    
     AgoraVideoProfilePortrait120P = 1000,       // 120x160   15
 #if TARGET_OS_IPHONE
     AgoraVideoProfilePortrait120P_3 = 1002,     // 120x120   15
@@ -194,6 +205,7 @@ typedef NS_ENUM(NSInteger, AgoraVideoProfile) {
     AgoraVideoProfilePortrait720P_3 = 1052,     // 720x1280  30
     AgoraVideoProfilePortrait720P_5 = 1054,     // 720x960   15
     AgoraVideoProfilePortrait720P_6 = 1055,     // 720x960   30
+#if (!(TARGET_OS_IPHONE) && (TARGET_OS_MAC))
     AgoraVideoProfilePortrait1080P = 1060,      // 1080x1920 15
     AgoraVideoProfilePortrait1080P_3 = 1062,    // 1080x1920 30
     AgoraVideoProfilePortrait1080P_5 = 1064,    // 1080x1920 60
@@ -201,6 +213,7 @@ typedef NS_ENUM(NSInteger, AgoraVideoProfile) {
     AgoraVideoProfilePortrait1440P_2 = 1067,    // 1440x2560 60
     AgoraVideoProfilePortrait4K = 1070,         // 2160x3840 30
     AgoraVideoProfilePortrait4K_3 = 1072,       // 2160x3840 60
+#endif
     AgoraVideoProfileDEFAULT = AgoraVideoProfileLandscape360P,
 };
 
@@ -288,19 +301,25 @@ typedef NS_ENUM(NSInteger, AgoraVideoStreamType) {
 
 typedef NS_ENUM(NSUInteger, AgoraVideoRenderMode) {
     /**
-     Hidden(1): If the video size is different than that of the display window, crops the borders of the video (if the video is bigger) or stretch the video (if the video is smaller) to fit it in the window.
+     Hidden(1)
+     The replaced content is sized to maintain its aspect ratio while filling the View's rectangular area.
+     If the content's aspect ratio does not match the aspect ratio of its View, then the content will be clipped to fit.
+     The content is then centered in the view.
      */
     AgoraVideoRenderModeHidden = 1,
 
     /**
-     AgoraVideoRenderModeFit(2): If the video size is different than that of the display window, resizes the video proportionally to fit the window.
+     Fit(2)
+     The replaced content is scaled to maintain its aspect ratio while fitting within View's rectangular area.
+     The entire content is made to fill the box, while preserving its aspect ratio, so the content will be "letterboxed"
+     if its aspect ratio does not match the aspect ratio of the View.
      */
     AgoraVideoRenderModeFit = 2,
 
     /**
-     AgoraVideoRenderModeAdaptive(3)：If both callers use the same screen orientation, i.e., both use vertical screens or both use horizontal screens, the AgoraVideoRenderModeHidden mode applies; if they use different screen orientations, i.e., one vertical and one horizontal, the AgoraVideoRenderModeFit mode applies.
+     Adaptive(3)：If both callers use the same screen orientation, i.e., both use vertical screens or both use horizontal screens, the AgoraVideoRenderModeHidden mode applies; if they use different screen orientations, i.e., one vertical and one horizontal, the AgoraVideoRenderModeFit mode applies.
      */
-    AgoraVideoRenderModeAdaptive = 3,
+    AgoraVideoRenderModeAdaptive __deprecated_enum_msg("AgoraVideoRenderModeAdaptive is deprecated.") = 3,
 };
 
 typedef NS_ENUM(NSInteger, AgoraVideoCodecProfileType) {
@@ -315,6 +334,12 @@ typedef NS_ENUM(NSUInteger, AgoraVideoMirrorMode) {
     AgoraVideoMirrorModeDisabled = 2,
 };
 
+typedef NS_ENUM(NSUInteger, AgoraVideoRemoteState) {
+    AgoraVideoRemoteStateStopped = 0,
+    AgoraVideoRemoteStateRunning = 1,
+    AgoraVideoRemoteStateFrozen = 2,
+};
+
 // Audio
 typedef NS_ENUM(NSInteger, AgoraAudioSampleRateType) {
     AgoraAudioSampleRateType32000 = 32000,
@@ -326,8 +351,8 @@ typedef NS_ENUM(NSInteger, AgoraAudioProfile) {
     // sample rate, bit rate, mono/stereo, speech/music codec
     AgoraAudioProfileDefault = 0,                // use default settings
     AgoraAudioProfileSpeechStandard = 1,         // 32Khz, 18kbps, mono, speech
-    AgoraAudioProfileMusicStandard = 2,          // 48Khz, 50kbps, mono, music
-    AgoraAudioProfileMusicStandardStereo = 3,    // 48Khz, 50kbps, stereo, music
+    AgoraAudioProfileMusicStandard = 2,          // 48Khz, 48kbps, mono, music
+    AgoraAudioProfileMusicStandardStereo = 3,    // 48Khz, 56kbps, stereo, music
     AgoraAudioProfileMusicHighQuality = 4,       // 48Khz, 128kbps, mono, music
     AgoraAudioProfileMusicHighQualityStereo = 5, // 48Khz, 192kbps, stereo, music
 };

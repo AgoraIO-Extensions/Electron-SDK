@@ -72,6 +72,11 @@ __attribute__((visibility("default"))) @interface AgoraLiveTranscodingUser: NSOb
 @property (assign, nonatomic) NSInteger audioChannel;
 @end
 
+__attribute__((visibility("default"))) @interface AgoraImage: NSObject
+@property (strong, nonatomic) NSURL *_Nonnull url;
+@property (assign, nonatomic) CGRect rect;
+@end
+
 __attribute__((visibility("default"))) @interface AgoraLiveTranscoding: NSObject
 @property (assign, nonatomic) CGSize size;
 @property (assign, nonatomic) NSInteger videoBitrate;
@@ -84,6 +89,7 @@ __attribute__((visibility("default"))) @interface AgoraLiveTranscoding: NSObject
 @property (strong, nonatomic) COLOR_CLASS *_Nullable backgroundColor;
 @property (copy, nonatomic) NSArray<AgoraLiveTranscodingUser *> *_Nullable transcodingUsers;
 @property (copy, nonatomic) NSString *_Nullable transcodingExtraInfo;
+@property (strong, nonatomic) AgoraImage *_Nullable watermark;
 
 @property (assign, nonatomic) AgoraAudioSampleRateType audioSampleRate;
 @property (assign, nonatomic) NSInteger audioBitrate;  //kbps
@@ -105,6 +111,7 @@ __attribute__((visibility("default"))) @interface AgoraLiveInjectStreamConfig: N
 +(AgoraLiveInjectStreamConfig *_Nonnull) defaultConfig;
 @end
 
+__deprecated
 __attribute__((visibility("default"))) @interface AgoraRtcVideoCompositingRegion : NSObject
 @property (assign, nonatomic) NSUInteger uid;
 @property (assign, nonatomic) CGFloat x;
@@ -116,6 +123,7 @@ __attribute__((visibility("default"))) @interface AgoraRtcVideoCompositingRegion
 @property (assign, nonatomic) AgoraVideoRenderMode renderMode;
 @end
 
+__deprecated
 __attribute__((visibility("default"))) @interface AgoraRtcVideoCompositingLayout : NSObject
 @property (assign, nonatomic) NSInteger canvasWidth;
 @property (assign, nonatomic) NSInteger canvasHeight;
@@ -124,6 +132,7 @@ __attribute__((visibility("default"))) @interface AgoraRtcVideoCompositingLayout
 @property (copy, nonatomic) NSString * _Nullable appData;//app defined data
 @end
 
+__deprecated
 __attribute__((visibility("default"))) @interface AgoraPublisherConfiguration : NSObject
 @property (assign, nonatomic) BOOL owner;
 @property (assign, nonatomic) NSInteger width;
