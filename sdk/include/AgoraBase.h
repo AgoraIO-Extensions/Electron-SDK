@@ -78,7 +78,7 @@ public:
         {
             reset(p);
         }
-        return p != NULL;;
+        return p != NULL;
 	}
 private:
     AutoPtr(const AutoPtr&);
@@ -173,7 +173,6 @@ enum ERROR_CODE_TYPE
     ERR_INVALID_TOKEN = 110,
     ERR_CONNECTION_INTERRUPTED = 111, // only used in web sdk
     ERR_CONNECTION_LOST = 112, // only used in web sdk
-    ERR_DECRYPTION_FAILED = 120,
 
     ERR_NOT_IN_CHANNEL = 113,
     ERR_SIZE_TOO_LARGE = 114,
@@ -181,7 +180,17 @@ enum ERROR_CODE_TYPE
     ERR_TOO_MANY_DATA_STREAMS = 116,
     ERR_STREAM_MESSAGE_TIMEOUT = 117,
     ERR_SET_CLIENT_ROLE_NOT_AUTHORIZED = 119,
+    ERR_DECRYPTION_FAILED = 120,
     ERR_CLIENT_IS_BANNED_BY_SERVER = 123,
+    
+    ERR_WATERMARK_PARAM = 124,
+    ERR_WATERMARK_PATH = 125,
+    ERR_WATERMARK_PNG = 126,
+    ERR_WATERMARKR_INFO = 127,
+    ERR_WATERMARK_ARGB = 128,
+    ERR_WATERMARK_READ = 129,
+
+    ERR_ENCRYPTED_STREAM_NOT_ALLOWED_PUBLISH = 130,
 
     //signaling: 400~600
     ERR_LOGOUT_OTHER = 400,  //
