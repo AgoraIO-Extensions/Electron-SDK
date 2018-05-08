@@ -865,17 +865,17 @@ class AgoraRtcEngine extends EventEmitter {
         return this.rtcengine.setLocalVideoMirrorMode(mirrortype);
     }
 
-    sendPublishingRequest(uid) { 
-        return this.rtcengine.sendPublishingRequest(uid);
-    }
+    // sendPublishingRequest(uid) { 
+    //     return this.rtcengine.sendPublishingRequest(uid);
+    // }
 
-    answerPublishingRequest(uid, accepted) {
-        return this.rtcengine.answerPublishingRequest(uid, accepted);
-    }
+    // answerPublishingRequest(uid, accepted) {
+    //     return this.rtcengine.answerPublishingRequest(uid, accepted);
+    // }
 
-    sendUnpublishingRequest(uid) {
-        return this.rtcengine.sendUnpublishingRequest(uid);
-    }
+    // sendUnpublishingRequest(uid) {
+    //     return this.rtcengine.sendUnpublishingRequest(uid);
+    // }
 
     enableLoopbackRecording(enabled) {
         return this.rtcengine.enableLoopbackRecording(enabled);
