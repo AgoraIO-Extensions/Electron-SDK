@@ -82,13 +82,6 @@ namespace agora {
             }
 
 			/*
-			* When publishing request received, the function will be called.
-			*/
-            virtual void onPublishingRequestReceived(uid_t uid) {
-                (void)uid;
-            }
-
-			/*
 			* When inject stream requested, the funtion will be called.
 			*/
             virtual void onStreamInjectedStatus(const char* url, uid_t uid, int status) {
@@ -183,24 +176,7 @@ namespace agora {
 			*		 The video profile going to set.
 			*/
             virtual int setVideoProfile(VIDEO_PROFILE_TYPE profile) = 0;
-
-			/*
-			* To answer publish request
-			* @param [in] uid
-			*	     the remote user uid
-			* @param [in] accept
-			*		 if accept the request
-			*/
-            virtual int answerPublishingRequest(uid_t uid, bool accept) = 0;
-
-			/*
-			* send unpublish request
-			* @param [in] uid
-			*		 Remote user id.
-			*/
-            virtual int sendUnpublishingRequest(uid_t uid) = 0;
         };
-
     }
 }
 

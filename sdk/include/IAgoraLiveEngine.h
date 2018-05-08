@@ -182,22 +182,6 @@ public:
     virtual void onRequestToken() {
     }
 
-	/*
-	* Remote user answered the publishing request
-	*/
-    virtual void onPublishingRequestAnsweredByOwner(uid_t uid, bool accepted, int err) {
-        (void)uid;
-        (void)accepted;
-        (void)err;
-    }
-
-	/*
-	* Received unpublish request from remote user.
-	*/
-    virtual void onUnpublishingRequestReceivedFromOwner(uid_t uid) {
-        (void)uid;
-    }
-
 };
 
 class ILiveEngine
@@ -278,11 +262,6 @@ public:
     * @return return 0 if success or an error code
     */
     virtual int stopPreview() = 0;
-
-	/*
-	* send publishing request to remote user.
-	*/
-    virtual int sendPublishingRequestToOwner(uid_t uid) = 0;
 };
 
 
