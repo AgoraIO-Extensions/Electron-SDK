@@ -111,12 +111,7 @@ __attribute__((visibility("default"))) @interface AgoraLiveChannelConfig: NSObje
  *  @param rxQuality The receiving network quality
  */
 - (void)liveKit:(AgoraLiveKit *_Nonnull)kit networkQuality:(NSUInteger)uid txQuality:(AgoraNetworkQuality)txQuality rxQuality:(AgoraNetworkQuality)rxQuality;
-
-- (void)liveKit:(AgoraLiveKit *_Nonnull)kit publishingRequestAnsweredByOwner:(NSUInteger)uid accepted:(BOOL)accepted error:(AgoraErrorCode)error;
-
-- (void)liveKit:(AgoraLiveKit *_Nonnull)kit unpublishingRequestReceivedFromOwner:(NSUInteger)uid;
 @end
-
 
 __attribute__((visibility("default"))) @interface AgoraLiveKit : NSObject
 
@@ -199,8 +194,5 @@ __attribute__((visibility("default"))) @interface AgoraLiveKit : NSObject
  *  @return 0 when this method is called successfully, or negative value when this method failed.
  */
 - (int)stopPreview;
-
-
-- (int)sendPublishingRequestToOwner:(NSUInteger) uid;
 
 @end

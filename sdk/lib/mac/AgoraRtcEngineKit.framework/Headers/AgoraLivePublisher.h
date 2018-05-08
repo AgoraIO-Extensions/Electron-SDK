@@ -18,8 +18,6 @@
 -(void)publisher:(AgoraLivePublisher *_Nonnull)publisher streamUnpublishedWithUrl:(NSString *_Nonnull)url;
 -(void)publisherTranscodingUpdated: (AgoraLivePublisher *_Nonnull)publisher;
 
--(void)publisher:(AgoraLivePublisher *_Nonnull)publisher publishingRequestReceivedFromUid:(NSUInteger)uid;
-
 -(void)publisher:(AgoraLivePublisher *_Nonnull)publisher streamInjectedStatusOfUrl:(NSString *_Nonnull)url uid:(NSUInteger)uid status:(AgoraInjectStreamStatus)status;
 @end
 
@@ -34,6 +32,10 @@ __attribute__((visibility("default"))) @interface AgoraLivePublisher: NSObject
 
 -(void)setLiveTranscoding:(AgoraLiveTranscoding *_Nullable)transcoding;
 
+-(int)addVideoWatermark:(AgoraImage * _Nonnull)watermark  NS_SWIFT_NAME(addVideoWatermark(_:));
+
+-(void)clearVideoWatermarks;
+
 -(void)setMediaType:(AgoraMediaType)mediaType;
 
 -(void)addStreamUrl:(NSString *_Nullable)url transcodingEnabled:(BOOL)transcodingEnabled;
@@ -43,10 +45,6 @@ __attribute__((visibility("default"))) @interface AgoraLivePublisher: NSObject
 -(void)publish;
 
 -(void)unpublish;
-
-- (int)answerPublishingRequestOfUid:(NSUInteger)uid accepted:(bool)accepted;
-
-- (int)sendUnpublishingRequestToUid:(NSUInteger)uid;
 
 -(void)switchCamera;
 
