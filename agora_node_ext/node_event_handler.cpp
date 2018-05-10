@@ -548,7 +548,7 @@ namespace agora {
                 NODE_SET_OBJ_PROP_UINT32(obj, "sentBitrate", stats.sentBitrate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "sentFrameRate", stats.sentFrameRate);
                 Local<Value> arg[1] = { obj };
-                auto it = m_callbacks.find(RTC_EVENT_RTC_STATS);
+                auto it = m_callbacks.find(RTC_EVENT_LOCAL_VIDEO_STATS);
                 if (it != m_callbacks.end()) {
                     it->second->callback.Get(isolate)->Call(it->second->js_this.Get(isolate), 1, arg); \
                 }
@@ -579,7 +579,7 @@ namespace agora {
                 NODE_SET_OBJ_PROP_UINT32(obj, "receivedFrameRate", stats.receivedFrameRate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "rxStreamType", stats.rxStreamType);
                 Local<Value> arg[1] = { obj };
-                auto it = m_callbacks.find(RTC_EVENT_RTC_STATS);
+                auto it = m_callbacks.find(RTC_EVENT_REMOTE_VIDEO_STATS);
                 if (it != m_callbacks.end()) {
                     it->second->callback.Get(isolate)->Call(it->second->js_this.Get(isolate), 1, arg); \
                 }
