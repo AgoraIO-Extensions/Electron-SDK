@@ -323,9 +323,11 @@ void NodeVideoFrameTransporter::FlushVideo()
     while (!m_stopFlag) {
         {
             std::unique_lock<std::mutex> lck(m_lock);
-            for (auto& it : m_remoteVideoFrames) {
-                if (it.second.m_count > MAX_MISS_COUNT)
-                    m_remoteVideoFrames.erase(it.first);
+            for (auto it = m_remoteVideoFrames.begin(); it != m_remoteVideoFrames.end();) {
+                if (it->second.m_count > MAX_MISS_COUNT)
+                    it = m_remoteVideoFrames.erase(it);
+                else
+                    ++it;
             }
 
             if (m_devTestVideoFrame.get()  && m_localVideoFrame->m_count > MAX_MISS_COUNT) {
@@ -377,9 +379,11 @@ void NodeVideoFrameTransporter::highFlushVideo()
     while (!m_stopFlag) {
         {
             std::unique_lock<std::mutex> lck(m_lock);
-            for (auto& it : m_remoteHighVideoFrames) {
-                if (it.second.m_count > MAX_MISS_COUNT)
-                    m_remoteHighVideoFrames.erase(it.first);
+            for (auto it = m_remoteHighVideoFrames.begin(); it != m_remoteHighVideoFrames.end();) {
+                if (it->second.m_count > MAX_MISS_COUNT)
+                    it = m_remoteHighVideoFrames.erase(it);
+                else
+                    ++it;
             }
 
             if (m_videoSourceVideoFrame.get() && m_videoSourceVideoFrame->m_count > MAX_MISS_COUNT)
