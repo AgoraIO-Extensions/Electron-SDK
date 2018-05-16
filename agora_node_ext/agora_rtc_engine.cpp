@@ -77,6 +77,18 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(getAudioMixingDuration)
                 PROPERTY_METHOD_DEFINE(getAudioMixingCurrentPosition)
                 PROPERTY_METHOD_DEFINE(setAudioMixingPosition)
+				PROPERTY_METHOD_DEFINE(getEffectsVolume)
+				PROPERTY_METHOD_DEFINE(setEffectsVolume)
+				PROPERTY_METHOD_DEFINE(setVolumeOfEffect)
+				PROPERTY_METHOD_DEFINE(playEffect)
+				PROPERTY_METHOD_DEFINE(stopEffect)
+				PROPERTY_METHOD_DEFINE(stopAllEffects)
+				PROPERTY_METHOD_DEFINE(preloadEffect)
+				PROPERTY_METHOD_DEFINE(unloadEffect)
+				PROPERTY_METHOD_DEFINE(pauseEffect)
+				PROPERTY_METHOD_DEFINE(pauseAllEffects)
+				PROPERTY_METHOD_DEFINE(resumeEffect)
+				PROPERTY_METHOD_DEFINE(resumeAllEffects)
                 PROPERTY_METHOD_DEFINE(setLocalVoicePitch)
                 PROPERTY_METHOD_DEFINE(setLocalVoiceEqualization)
                 PROPERTY_METHOD_DEFINE(setLocalVoiceReverb)
@@ -137,6 +149,8 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(configPublisher)
                 PROPERTY_METHOD_DEFINE(addPublishStreamUrl)
                 PROPERTY_METHOD_DEFINE(removePublishStreamUrl)
+				PROPERTY_METHOD_DEFINE(addVideoWatermark)
+				PROPERTY_METHOD_DEFINE(clearVideoWatermarks)
                 PROPERTY_METHOD_DEFINE(setLiveTranscoding)
                 PROPERTY_METHOD_DEFINE(addInjectStreamUrl)
                 PROPERTY_METHOD_DEFINE(removeInjectStreamUrl)
@@ -274,6 +288,30 @@ namespace agora {
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(refreshRecordingServiceStatus);
 
+		NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(getEffectsVolume);
+
+		NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setEffectsVolume, int32);
+
+		NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(setVolumeOfEffect, int32, int32);
+
+		NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_7(playEffect, int32, nodestring, int32, double, double, int32, bool);
+
+		NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(stopEffect, int32);
+
+		NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(stopAllEffects);
+
+		NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(preloadEffect, int32, nodestring);
+
+		NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(unloadEffect, int32);
+
+		NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(pauseEffect, int32);
+
+		NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(pauseAllEffects);
+
+		NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(resumeEffect, int32);
+
+		NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(resumeAllEffects);
+
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(muteLocalAudioStream, bool);
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(muteAllRemoteAudioStreams, bool);
@@ -352,11 +390,51 @@ namespace agora {
             LOG_LEAVE;
         }
 
+		NAPI_API_DEFINE(NodeRtcEngine, addVideoWatermark)
+		{
+			LOG_ENTER;
+
+			do {
+				NodeRtcEngine *pEngine = nullptr;
+				napi_get_native_this(args, pEngine);
+				CHECK_NATIVE_THIS(pEngine);
+				nodestring url;
+				napi_status status = napi_get_value_nodestring_(args[0], url);
+				CHECK_NAPI_STATUS(status);
+				RtcImage vwm;
+				Local<Object> vmwObj = args[0]->ToObject(args.GetIsolate());
+				if (napi_get_object_property_nodestring_(args.GetIsolate(), vmwObj, "url", url) == napi_ok) {
+					vwm.url = url;
+				}
+				napi_get_object_property_int32_(args.GetIsolate(), vmwObj, "x", vwm.x);
+				napi_get_object_property_int32_(args.GetIsolate(), vmwObj, "y", vwm.y);
+				napi_get_object_property_int32_(args.GetIsolate(), vmwObj, "width", vwm.width);
+				napi_get_object_property_int32_(args.GetIsolate(), vmwObj, "height", vwm.height);
+				pEngine->m_engine->addVideoWatermark(vwm);
+			} while (false);
+			
+			LOG_LEAVE;
+		}
+
+		NAPI_API_DEFINE(NodeRtcEngine, clearVideoWatermarks)
+		{
+			LOG_ENTER;
+			do {
+				NodeRtcEngine *pEngine = nullptr;
+				napi_get_native_this(args, pEngine);
+				CHECK_NATIVE_THIS(pEngine);
+				int result = pEngine->m_engine->clearVideoWatermarks();
+				napi_set_int_result(args, result);
+			} while (false);
+			LOG_LEAVE;
+		}
+			
         NAPI_API_DEFINE(NodeRtcEngine, setLiveTranscoding)
         {
             LOG_ENTER;
             napi_status status = napi_ok;
             TranscodingUser *users = nullptr;
+			RtcImage* vwm = nullptr;
             do {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
@@ -365,6 +443,7 @@ namespace agora {
                 nodestring extrainfo;
                 int videoCodecProfile, audioSampleRateType;
                 Local<Object> obj = args[0]->ToObject(args.GetIsolate());
+				nodestring transcodingExtraInfo;
                 napi_get_object_property_int32_(args.GetIsolate(), obj, "width", transcoding.width);
                 napi_get_object_property_int32_(args.GetIsolate(), obj, "height", transcoding.height);
                 napi_get_object_property_int32_(args.GetIsolate(), obj, "videobitrate", transcoding.videoBitrate);
@@ -381,7 +460,31 @@ namespace agora {
                 }
                 napi_get_object_property_int32_(args.GetIsolate(), obj, "audiobitrate", transcoding.audioBitrate);
                 napi_get_object_property_int32_(args.GetIsolate(), obj, "audiochannels", transcoding.audioChannels);
-                if (transcoding.userCount > 0) {
+				
+				if (napi_get_object_property_nodestring_(args.GetIsolate(), obj, "transcodingExtraInfo", transcodingExtraInfo) == napi_ok) {
+					transcoding.transcodingExtraInfo = transcodingExtraInfo;
+				}
+
+				RtcImage* wm = new RtcImage;
+
+				Local<Name> keyName = String::NewFromUtf8(args.GetIsolate(), "watermark", NewStringType::kInternalized).ToLocalChecked();
+				Local<Value> wmValue = obj->Get(args.GetIsolate()->GetCurrentContext(), keyName).ToLocalChecked();
+				if (wmValue.IsEmpty()) {
+					status = napi_invalid_arg;
+					break;
+				}
+				Local<Object> objWm = wmValue->ToObject(args.GetIsolate());
+				nodestring wmurl;
+				if (napi_get_object_property_nodestring_(args.GetIsolate(), objWm, "url", wmurl) == napi_ok) {
+					wm->url = wmurl;
+				}
+				napi_get_object_property_int32_(args.GetIsolate(), objWm, "x", wm->x);
+				napi_get_object_property_int32_(args.GetIsolate(), objWm, "y", wm->y);
+				napi_get_object_property_int32_(args.GetIsolate(), objWm, "width", wm->width);
+				napi_get_object_property_int32_(args.GetIsolate(), objWm, "height", wm->height);
+
+				transcoding.watermark = wm;
+				if (transcoding.userCount > 0) {
                     users = new TranscodingUser[transcoding.userCount];
                     Local<Name> keyName = String::NewFromUtf8(args.GetIsolate(), "transcodingusers", NewStringType::kInternalized).ToLocalChecked();
                     Local<Value> objUsers = obj->Get(args.GetIsolate()->GetCurrentContext(), keyName).ToLocalChecked();
