@@ -422,12 +422,17 @@ typedef unsigned int uint32;
 #define CALL_MEM_FUNC_FROM_POINTER(pointer, func) pointer->##func()
 #define CALL_MEM_FUNC(cls, func) cls.##func()
 #define CALL_MEM_FUNC_WITH_PARAM(cls, func, param) cls.##func(param)
+
 #define CALL_MEM_FUNC_WITH_PARAM2(cls, func, param1, param2) cls.##func(param1, param2)
 #define CALL_MEM_FUNC_WITH_PARAM7(cls, func, param1, param2, param3, param4, param5, param6, param7) cls.##func(param1, param2, param3, param4, param5, param6, param7)
 #else
 #define CALL_MEM_FUNC_FROM_POINTER(pointer, func) pointer->func()
 #define CALL_MEM_FUNC(cls, func) cls.func()
 #define CALL_MEM_FUNC_WITH_PARAM(cls, func, param) cls.func(param)
+
+#define CALL_MEM_FUNC_WITH_PARAM2(cls, func, param1, param2) cls.func(param1, param2)
+#define CALL_MEM_FUNC_WITH_PARAM7(cls, func, param1, param2, param3, param4, param5, param6, param7) cls.func(param1, param2, param3, param4, param5, param6, param7)
+
 #endif
 /*
 * Helper macro to transfer JS call directly to RtcEngine
