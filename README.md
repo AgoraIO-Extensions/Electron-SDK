@@ -51,7 +51,7 @@ In order to build and run the sample application you must obtain an App ID:
 		node-gyp rebuild --target=1.8.3 --arch=ia32 --msvs_version=2015 --dist-url=https://atom.io/download/electron
 		```
 
-	On the command line, run the following installation command.
+	On the command line, run the following installation command:
 	
 		```
 		hope build.bat
@@ -62,7 +62,7 @@ In order to build and run the sample application you must obtain an App ID:
 
 
 ## Resources
-* Agora JavaScript API for Electron [reference doc](apis.md).
+* [Agora JavaScript API Reference for Electron](apis.md).
 * Complete API documentation is available at the [Document Center](https://docs.agora.io/en/).
 * You can file bugs about this sample [here](https://github.com/AgoraIO/Agora-RTC-SDK-for-Electron/issues).
 * Learn how to [contribute code](contribuitions.md) to the sample project.
