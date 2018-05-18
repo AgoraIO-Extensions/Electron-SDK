@@ -43,15 +43,15 @@ In order to build and run the sample application you must obtain an App ID:
 	
 	Update the `build.bat` script with the versions of Visual Studio and Electron installed on your machine.
 
-		The sample file uses Visual Studio 2015 `msvs_version=2015` and Electron version 1.8.3 `target=1.8.3`. 
+	The sample file uses Visual Studio 2015 `msvs_version=2015` and Electron version 1.8.3 `target=1.8.3`. 
 		
-		**Note:** Electron 1.8.3+ requires Visual Studio 2015 or above.
+	**Note:** Electron 1.8.3+ requires Visual Studio 2015 or above.
 	
 		```
 		node-gyp rebuild --target=1.8.3 --arch=ia32 --msvs_version=2015 --dist-url=https://atom.io/download/electron
 		```
 
-	In the command line, run the install command.
+	On the command line, run the following installation command.
 	
 		```
 		hope build.bat
