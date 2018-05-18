@@ -13,7 +13,7 @@ The sample is an open-source wrapper for [Electron](https://electronjs.org/) dev
 - MacOS 10.12+
 
 ## Quick Start
-This section shows you how to prepare, build, and run the sample application.
+This section shows you how to prepare and build the Agora Electron wrapper.
 
 ### Create an Account and Obtain an App ID
 In order to build and run the sample application you must obtain an App ID: 
@@ -58,11 +58,11 @@ In order to build and run the sample application you must obtain an App ID:
 		```
 
 
-3. Once the build is complete, the sample app will run.
+3. Once the build is complete, you can use the resulting Agora Electron wrapper to build your app.
 
 
 ## Resources
-* JavaScript API for Electron [reference doc](apis.md).
+* Agora JavaScript API for Electron [reference doc](apis.md).
 * Complete API documentation is available at the [Document Center](https://docs.agora.io/en/).
 * You can file bugs about this sample [here](https://github.com/AgoraIO/Agora-RTC-SDK-for-Electron/issues).
 * Learn how to [contribute code](contribuitions.md) to the sample project.
