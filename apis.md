@@ -1,6 +1,6 @@
 # Agora JavaScript SDK API Reference
 
-The [`AgoraSDK.js`](js/AgoraSdk.js) file enables the JavaScript Agora SDK API. The [`AgoraRender.js`](js/AgoraRender.js) and [`webgl-utils.js`](js/webgl-utils.js) files are used to render the video. You must include **all three** JavaScript files in your project.
+The [`AgoraSDK.js`](js/AgoraSdk.js) file enables usage of the JavaScript Agora SDK API. The [`AgoraRender.js`](js/AgoraRender.js) and [`webgl-utils.js`](js/webgl-utils.js) files are used to render the video. You must include **all three** JavaScript files in your project.
 
 The `AgoraRtcEngine` Class enables the SDK functionality. It also contains one event emitter, so the client can listen for events.
 
@@ -12,7 +12,7 @@ To create an `AgoraRtcEngine` instance:
 
 1. Declare `AgoraRtcEngine` as a constant using the `AgoraSdk` library.
 
-2. Create a new engine using `AgoraRtcEngine`
+2. Create a new engine using `AgoraRtcEngine`:
 
 	``` Javascript
 	const AgoraRtcEngine = require("AgoraSdk");
@@ -21,13 +21,13 @@ To create an `AgoraRtcEngine` instance:
 
 ### App Initialization
 
-Initialize the app using the Agora `appid`. The app must be initialized prior to invoking other API functions.
+Initialize the app using the Agora `appid` prior to invoking other API functions.
 
 ```
 initialize(appid, onSuccess, onFailed)
 ```
 
-Once the app is initialized, start adding Agora [API methods](#api-methods) or [event listeners](event-listeners)
+Once the app is initialized, start adding Agora [API methods](#api-methods) or [event listeners](event-listeners).
 
 
 ## API Methods
@@ -56,8 +56,8 @@ Method|Description
 `rate(callid, rating, desc)`|Rate the call.
 `complain(callid, desc)`|Complain about the call.
 `setEncryptionSecret(secret)`|Set the encryption as secret.
-`getCallId()`|Retrieve the current call id.
-`subscribe(uid, view)`|Subscribe the user to the view (bind the user's video to the view), after a user with a `uid` joins channel
+`getCallId()`|Retrieve the current call ID.
+`subscribe(uid, view)`|Subscribe the user to the view (bind the user's video to the view), after a user with `uid` joins the channel.
 	
 ### Logging and Testing Methods
 
@@ -67,8 +67,8 @@ Method|Description
 ----- | -----
 `setLogFile(filepath)`|Set the file path for logging.
 `setLogFilter(filter)`|Set a filter for logging.
-`startEchoTest()`|Start the Echo test.
-`stopEchoTest()`|Stop the Echo test.
+`startEchoTest()`|Start the echo test.
+`stopEchoTest()`|Stop the echo test.
 `enableLastmileTest()`|Enable the last mile test.
 `disableLastmileTest()`|Disable the last mile test.
 
@@ -82,7 +82,7 @@ Method|Description
 `setClientRole(role, permissionKey)`|Set the client's role.
 `joinChannel(key, name, chan_info, uid)`|Join a channel matching the supplied parameters.
 `leaveChannel()`|Leave the current channel.
-`renewChannelKey(newKey)`|Updates the channel key.
+`renewChannelKey(newKey)`|Update the channel key.
 `setChannelProfile(profile)`|Set the channel profile.
 `createDataStream(reliable, ordered)`|Create a data stream.
 `sendStreamMessage(streamId, msg)`|Send a message to a specific stream.
@@ -95,7 +95,7 @@ These methods manage the video source and video previews.
 Method|Description
 ----- | -----
 `setupLocalVideoSource(view)`|When a video source is used to share screen, bind the video source video to the view.
-`setupLocalVideo(view)`|Bind local video to the view.
+`setupLocalVideo(view)`|Bind the local video to the view.
 `setupLocalDevTest(view)`|Bind the dev test video to the view.
 `enableVideo()`|Enable video.
 `disableVideo()`|Disable video.
@@ -123,9 +123,9 @@ These methods manage the video devices.
 
 Method|Description
 ----- | -----
-`getVideoDevices()`|Retrieves a list of video devices.
-`setVideoDevice(deviceId)`|Sets the device to be used.
-`getCurrentVideoDevice()`|Retrieves the current video device.
+`getVideoDevices()`|Retrieve a list of video devices.
+`setVideoDevice(deviceId)`|Set the device to be used.
+`getCurrentVideoDevice()`|Retrieve the current video device.
 `startVideoDeviceTest()`|Start a video device test.
 `stopVideoDeviceTest()`|Stop a video device test.
 
@@ -136,9 +136,9 @@ These methods manage the video source.
 Method|Description
 ----- | -----
 `videoSourceInitialize()`|Initialize the video source context.
-`videoSourceJoin(token, cname, chanInfo, uid)`|Ask the video. source to join channel.
-`videoSourceRenewToken(token)`|Ask video source to renew the token.
-`videoSourceSetChannelProfile(profile)`|Set channel profile for the video source.
+`videoSourceJoin(token, cname, chanInfo, uid)`|Direct the video source to join channel.
+`videoSourceRenewToken(token)`|Direct the video source to renew the token.
+`videoSourceSetChannelProfile(profile)`|Set the channel profile for the video source.
 `videoSourceSetVideoProfile(profile, swapWidthAndHeight)`|Set the video profile for the video source.
 
 ### Screen Capture Methods
@@ -148,9 +148,9 @@ These methods manage the screen capture video.
 Method|Description
 ----- | -----
 `startScreenCapture(windowId, captureFreq, rect, bitrate)`|Start a screen capture.
-`startScreenCapture2(wndid, captureFreq, rect, bitrate)`|Ask the video source to start a screen capture.
-`stopScreenCapture2()`|Ask the video source to stop a screen capture.
-`updateScreenCapturRegion(rect)`|Ask a video source to update the screen capture area.
+`startScreenCapture2(wndid, captureFreq, rect, bitrate)`|Direct the video source to start a screen capture.
+`stopScreenCapture2()`|Direct the video source to stop a screen capture.
+`updateScreenCapturRegion(rect)`|Direct a video source to update the screen capture area.
 `videoSourceRelease()`|Stop the video source.
 `startScreenCapturePreview()`|Start the screen capture video preview.
 `stopScreenCapturePreview()`|Stop the screen capture video preview.
@@ -256,7 +256,7 @@ Listener Name|Callback Parameters|Description
 
 ### Channel and Stream Event Listeners
 
-These listeners check for changes in a channel or stream.
+These listeners detect changes in a channel or stream.
 
 Listener Name|Callback Parameters|Description
 ----- | ----- | -----
@@ -271,7 +271,7 @@ Listener Name|Callback Parameters|Description
 
 ### Audio Event Listeners
 
-These listeners check for audio event changes.
+These listeners detect audio event changes.
 
 Listener Name|Callback Parameters|Description
 ----- | ----- | -----
@@ -289,7 +289,7 @@ Listener Name|Callback Parameters|Description
 
 ### Video Event Listeners
 
-These listeners check for changes to the video.
+These listeners detect changes to the video.
 
 Listener Name|Callback Parameters|Description
 ----- | ----- | -----
@@ -304,7 +304,7 @@ Listener Name|Callback Parameters|Description
 
 ### User Event Listeners
 
-These event listeners check for changes to user information.
+These event listeners detect changes to user information.
 
 Listener Name|Callback Parameters|Description
 ----- | ----- | -----
@@ -316,7 +316,7 @@ Listener Name|Callback Parameters|Description
 
 ### Connection Event Listeners
 
-These event listeners check for connection changes.
+These event listeners detect connection changes.
 
 Listener Name|Callback Parameters|Description
 ----- | ----- | -----
@@ -329,10 +329,10 @@ Listener Name|Callback Parameters|Description
 
 ### Statistic Event Listeners
 
-These event listeners check for statistic changes.
+These event listeners detect statistical changes.
 
 Listener Name|Callback Parameters|Description
 ----- | ----- | -----
-`rtcstats`||Triggers when the RTC stats change.
-`localvideostats`||Triggers when the local video stats change.
-`remotevideostats`||Triggers when the remote video stats change.
+`rtcstats`||Triggers when the RTC statistics change.
+`localvideostats`||Triggers when the local video statistics change.
+`remotevideostats`||Triggers when the remote video statistics change.
