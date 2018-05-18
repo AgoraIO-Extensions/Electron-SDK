@@ -1,6 +1,6 @@
 # Contribute to the Agora Electron Wrapper Sample App
 
-This tutorial enables you to generate project files for MacOS and/or Windows, which will allow you to contribute code to the Agora Electron Wrapper sample app.
+This tutorial enables you to generate project files for MacOS and Windows, which will allow you to contribute code to the Agora Electron Wrapper sample app.
 
 ## Prerequisites
 - Agora.io Developer Account
@@ -39,8 +39,8 @@ This tutorial enables you to generate project files for MacOS and/or Windows, wh
 
 Folder name|Description
 ----- | -----
-[`agora_node_ext`](agora_node_ext.md)|Node.js C++ add-on, that wraps the functionality for the Agora RTC SDK for [Windows](https://docs.agora.io/en/2.2/product/Voice/API%20Reference/communication_windows_audio?platform=Windows) and [MacOS](https://docs.agora.io/en/2.2/product/Voice/API%20Reference/communication_mac_audio?platform=macOS).
-[`video_source`](video_source.md)|Applies `agora_node_ext` functionality to multiple video sources and ancillary facilities.
+[`agora_node_ext`](agora_node_ext.md)|Node.js C++ add-on that wraps the functionality for the Agora RTC SDK for [Windows](https://docs.agora.io/en/2.2/product/Voice/API%20Reference/communication_windows_audio?platform=Windows) and [MacOS](https://docs.agora.io/en/2.2/product/Voice/API%20Reference/communication_mac_audio?platform=macOS).
+[`video_source`](video_source.md)|Applies `agora_node_ext` functionality to multiple video sources and other resources.
 [`common`](common.md)|Common utilities used by `agora_node_ext` and `video_source`.
 
 
