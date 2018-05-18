@@ -65,7 +65,7 @@ In order to build and run the sample application you must obtain an App ID:
 * [Agora JavaScript API Reference for Electron](apis.md).
 * Complete API documentation is available at the [Document Center](https://docs.agora.io/en/).
 * You can file bugs about this sample [here](https://github.com/AgoraIO/Agora-RTC-SDK-for-Electron/issues).
-* Learn how to [contribute code](contribuitions.md) to the sample project.
+* Learn how to [contribute code](contributions.md) to the sample project.
 
 
 ## License
