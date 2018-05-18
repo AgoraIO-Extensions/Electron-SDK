@@ -1,6 +1,6 @@
 # Agora-RTC-SDK-for-Electron
 
-This tutorial enables you to quickly get started with creating an Agora account and using the Agora sample app to give you an overview on how to develop requests using the Node.js C++ Addons and the Agora RTC SDKs on [Windows](https://docs.agora.io/en/2.2/product/Voice/API%20Reference/communication_windows_audio?platform=Windows) / [MacOS](https://docs.agora.io/en/2.2/product/Voice/API%20Reference/communication_mac_audio?platform=macOS):
+This tutorial enables you to quickly get started by using a sample app to learn how to develop requests using the Node.js C++ Addons and the Agora RTC SDKs on [Windows](https://docs.agora.io/en/2.2/product/Voice/API%20Reference/communication_windows_audio?platform=Windows) / [MacOS](https://docs.agora.io/en/2.2/product/Voice/API%20Reference/communication_mac_audio?platform=macOS).
 
 The sample is an open-source wrapper for [Electron](https://electronjs.org/) developers.
 
@@ -41,7 +41,7 @@ In order to build and run the sample application you must obtain an App ID:
 	```
 	**Windows**
 	
-	1. Update the `build.bat` script with the versions of Visual Studio and Electron installed on your machine.
+	Update the `build.bat` script with the versions of Visual Studio and Electron installed on your machine.
 
 		The sample file uses Visual Studio 2015 `msvs_version=2015` and Electron version 1.8.3 `target=1.8.3`. 
 		
@@ -51,7 +51,7 @@ In order to build and run the sample application you must obtain an App ID:
 		node-gyp rebuild --target=1.8.3 --arch=ia32 --msvs_version=2015 --dist-url=https://atom.io/download/electron
 		```
 
-	2. In the command line, run the install command.
+	In the command line, run the install command.
 	
 		```
 		hope build.bat

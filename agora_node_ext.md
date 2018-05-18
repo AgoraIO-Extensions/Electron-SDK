@@ -4,7 +4,7 @@
 
 Electron integrates NodeJS and supports NodeJS C++ add-ons. The NodeJS add-ons use C++ functions to invoke the Electron JavaScript functions.
 
-If the add-on is a single C++ created thread, the add-on will not have permission to invoke the Electron JavaScript functions. The C++ origin thread needs to take advantage of default UV loop, in order to invoke the JavaScript functions.
+If the add-on is a single C++ created thread, the add-on will not have permission to invoke the Electron JavaScript functions. The C++ origin thread must take advantage of a default UV loop in order to invoke the JavaScript functions.
 	
 **Note:** Electron and NodeJS use different versions, so the NodeJS add-ons must be rebuilt using the Electron's library and headers, in order for NodeJS to run correctly with Electron.
 

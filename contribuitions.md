@@ -1,6 +1,6 @@
 # Contribute to the Agora Electron Wrapper Sample App
 
-This tutorial enables you to generate project files for MacOS and Windows, which will allow you to contribute code to the Agora Electron Wrapper sample app.
+This tutorial enables you to generate project files for MacOS and Windows, enabling you to contribute your own code to the Agora Electron Wrapper sample app.
 
 ## Prerequisites
 - Agora.io Developer Account
@@ -22,7 +22,7 @@ This tutorial enables you to generate project files for MacOS and Windows, which
 	```
 2. Open the resulting Xcode project and begin adding your code for contribution.
 
-3. Reference the [Agora JavaScript Electron API](apis.md) document to apply available API functionality.
+3. See [Agora JavaScript Electron API](apis.md) for information on how to apply the available API functionality.
 
 ### Windows
 
@@ -46,5 +46,5 @@ Folder name|Description
 
 ## Resources:
 
-* Agora RTC API for [Windows](https://docs.agora.io/en/2.2/product/Voice/API%20Reference/communication_windows_audio?platform=Windows) / [macOS](https://docs.agora.io/en/2.2/product/Voice/API%20Reference/communication_mac_audio?platform=macOS) - for building Node.js C++ addons.
+* Agora RTC API for [Windows](https://docs.agora.io/en/2.2/product/Voice/API%20Reference/communication_windows_audio?platform=Windows) / [macOS](https://docs.agora.io/en/2.2/product/Voice/API%20Reference/communication_mac_audio?platform=macOS) for building Node.js C++ addons.
 * Complete API documentation is available at the [Document Center](https://docs.agora.io/en/).
