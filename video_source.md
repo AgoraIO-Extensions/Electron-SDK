@@ -1,26 +1,43 @@
-Video source communicate with agora_node_ext via IPC.
+# About the `video_source` folder
 
-When agora_node_ext need multiple video source, it will create VideoSource process. After video source initialized, it then waiting for CMDs from agora_node_ext. Then use Agora SDK's self render interface to get video frame data, and transfer to agora_node_ext via IPC.
+The `video_source` folder contains files that communicate with `agora_node_ext` using IPC.
 
-=====================useage of video source===============================
-Video source API support join/leave channel, set channel/video profile, start/stop/update screen capture, start/stop screen capture preview.
+- If `agora_node_ext` needs multiple video sources, it creates a `VideoSource` process.
 
-To use Video source feature, follow following steps:
-1. initialize video source via API videoSourceInitialize
+- Once the video source is initialized, it waits for CMDs from `agora_node_ext`.
 
-2. join channel via API videoSourceJoin
+- The Agora SDK will then render the interface for the retrieved video frame data, and transfer it to `agora_node_ext` using IPC.
 
-3. set channel/video profile via API videoSourceSetChannelProfile/videoSourceSetVideoProfile
+## Video Source Usage
 
-4. start to share screen via API stopScreenCapture2
+The video source API supports the ability to:
 
-To preview screen sharing video:
+- Join / leave a channel
+- Set a profile for a channel / video
+- Start / stop / update screen captures
+- Start / stop screen capture previews
 
-5. bind video view via API setupLocaVideoSource
 
-6. start preview via API startScreenCapturePreview
+### Video Source API Methods
 
-7. stop Preview via API stopScreenCapturePreview
+1. `videoSourceInitialize` - Initializes the video source
 
-8. stop screen sharing via stopScreenCapture2
+2. `videoSourceJoin` - Joins the channel
+
+3. `videoSourceSetChannelProfile` - Sets the channel profile
+
+4. `videoSourceSetVideoProfile` - Sets the video profile
+
+5. `stopScreenCapture2` - Starts screen shares 
+
+
+### Shared Video Preview API Methods
+
+1. `setupLocaVideoSource` - Binds the video view
+
+2. `startScreenCapturePreview` - Starts the preview
+
+3. `stopScreenCapturePreview` - Stops the preview 
+
+4. `stopScreenCapture2 ` - Stops screen sharing
 

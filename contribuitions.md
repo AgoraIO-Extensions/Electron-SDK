@@ -1,23 +1,49 @@
-# Contribute your code
+# Contribute to the Agora Electron Wrapper Sample App
 
-## Source code structures:
+This tutorial enables you to generate project files for MacOS and/or Windows, which will allow you to contribute code to the Agora Electron Wrapper sample app.
 
-1. **[js](apis.md)**: JavaScript APIs for Electron developers.
-2.  **[agora_node_ext](agora_node_ext.md)**: Node.js C++ addon which wraps functionalities of Agora RTC SDK for Windows/macOS.
-3. **[video_source](video_source.md)**: **agora_node_ext** implement multiple video sources functionality by using multiple processes. Video source provides the ancillary facilities.
-4. **[common](common.md)**: Utilities that used by **agora_node_ext** and **video_source**
-5. **sdk**: Agora RTC SDK for Windows/macOS, used to build Node.js C++ addons.
-
-
-## Generate Project
-
-#### 1. macOS
-
-Run `gen-mac.sh` to generate project file and open it by Xcode
-
-#### 2. Windows
-
-Run `gen-vs2015.bat` to generate project file and open it by Visual Studio 2015
+## Prerequisites
+- Agora.io Developer Account
+- Node.js 6.9.1+ with C++11 support
+- Electron 1.8.3+
+- Agora RTC SDK Windows / MacOS 2.1.0+
+- Xcode 9+ (MacOS development)
+- Visual Studio 2015+ (Windows development)
 
 
-## Enjoy real-time world
+## Quick Start
+
+### MacOS
+
+1. Run the `gen-mac.sh` command to generate the project files.
+
+	```
+	sh gen-mac.sh
+	```
+2. Open the resulting Xcode project and begin adding your code for contribution.
+
+3. Reference the [JavaScript Electron API](apis.md) document to apply the available Agora API functionality.
+
+### Windows
+
+1. Run the `gen-vs2015.bat` command to generate the project files.
+
+	```
+	hope gen-vs2015.bat
+	```
+2. Open the resulting Visual Studio project and begin adding your code for contribution.
+
+3. Reference the [JavaScript Electron API](apis.md) document to apply the available Agora API functionality.
+
+## Folder and File Explanations
+
+* [`agora_node_ext`](agora_node_ext.md) folder - Node.js C++ add-on, that wraps the functionality for the Agora RTC SDK for [Windows](https://docs.agora.io/en/2.2/product/Voice/API%20Reference/communication_windows_audio?platform=Windows) and [MacOS](https://docs.agora.io/en/2.2/product/Voice/API%20Reference/communication_mac_audio?platform=macOS).
+
+* [`video_source`](video_source.md) folder - Applies `agora_node_ext` functionality to multiple video sources and ancillary facilities.
+
+* [`common`](common.md) folder - common utilities used by `agora_node_ext` and `video_source`
+
+## Resources:
+
+* Agora RTC API for [Windows](https://docs.agora.io/en/2.2/product/Voice/API%20Reference/communication_windows_audio?platform=Windows) / [macOS](https://docs.agora.io/en/2.2/product/Voice/API%20Reference/communication_mac_audio?platform=macOS) - for building Node.js C++ addons.
+* Complete API documentation is available at the [Document Center](https://docs.agora.io/en/).
