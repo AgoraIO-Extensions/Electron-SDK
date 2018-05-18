@@ -1,6 +1,6 @@
 # About the Common Folder
 
-The `common` folder contains files that provides IPC message exchange.
+The `common` folder contains files that provide IPC message exchange functionality.
 
 ## File Descriptions
 	
