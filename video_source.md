@@ -20,24 +20,24 @@ The video source API supports the ability to:
 
 ### Video Source API Methods
 
-1. `videoSourceInitialize` - Initializes the video source
+These methods manage the video source.
 
-2. `videoSourceJoin` - Joins the channel
-
-3. `videoSourceSetChannelProfile` - Sets the channel profile
-
-4. `videoSourceSetVideoProfile` - Sets the video profile
-
-5. `stopScreenCapture2` - Starts screen shares 
+Method name|Description
+---|---
+`videoSourceInitialize`|Initializes the video source.
+`videoSourceJoin`|Joins the channel.
+`videoSourceSetChannelProfile`|Sets the channel profile.
+`videoSourceSetVideoProfile`|Sets the video profile.
+`setupLocaVideoSource`|Binds the video view.
 
 
 ### Shared Video Preview API Methods
 
-1. `setupLocaVideoSource` - Binds the video view
+These methods handle screen capture functionality.
 
-2. `startScreenCapturePreview` - Starts the preview
-
-3. `stopScreenCapturePreview` - Stops the preview 
-
-4. `stopScreenCapture2 ` - Stops screen sharing
-
+Method name|Description
+---|---
+`startScreenCapturePreview`|Starts the preview.
+`stopScreenCapturePreview`|Stops the preview.
+`startScreenCapture2`|Starts screen sharing.
+`stopScreenCapture2`|Stops screen sharing.

@@ -22,7 +22,7 @@ This tutorial enables you to generate project files for MacOS and/or Windows, wh
 	```
 2. Open the resulting Xcode project and begin adding your code for contribution.
 
-3. Reference the [JavaScript Electron API](apis.md) document to apply the available Agora API functionality.
+3. Reference the [Agora JavaScript Electron API](apis.md) document to apply available API functionality.
 
 ### Windows
 
@@ -33,15 +33,16 @@ This tutorial enables you to generate project files for MacOS and/or Windows, wh
 	```
 2. Open the resulting Visual Studio project and begin adding your code for contribution.
 
-3. Reference the [JavaScript Electron API](apis.md) document to apply the available Agora API functionality.
+3. Reference the [Agora JavaScript Electron API](apis.md) document to apply the available Agora API functionality.
 
 ## Folder and File Explanations
 
-* [`agora_node_ext`](agora_node_ext.md) folder - Node.js C++ add-on, that wraps the functionality for the Agora RTC SDK for [Windows](https://docs.agora.io/en/2.2/product/Voice/API%20Reference/communication_windows_audio?platform=Windows) and [MacOS](https://docs.agora.io/en/2.2/product/Voice/API%20Reference/communication_mac_audio?platform=macOS).
+Folder name|Description
+----- | -----
+[`agora_node_ext`](agora_node_ext.md)|Node.js C++ add-on, that wraps the functionality for the Agora RTC SDK for [Windows](https://docs.agora.io/en/2.2/product/Voice/API%20Reference/communication_windows_audio?platform=Windows) and [MacOS](https://docs.agora.io/en/2.2/product/Voice/API%20Reference/communication_mac_audio?platform=macOS).
+[`video_source`](video_source.md)|Applies `agora_node_ext` functionality to multiple video sources and ancillary facilities.
+[`common`](common.md)|Common utilities used by `agora_node_ext` and `video_source`.
 
-* [`video_source`](video_source.md) folder - Applies `agora_node_ext` functionality to multiple video sources and ancillary facilities.
-
-* [`common`](common.md) folder - common utilities used by `agora_node_ext` and `video_source`
 
 ## Resources:
 
