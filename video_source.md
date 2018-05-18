@@ -2,20 +2,20 @@
 
 The `video_source` folder contains files that communicate with `agora_node_ext` using IPC.
 
-- If `agora_node_ext` needs multiple video sources, it creates a `VideoSource` process.
+- If `agora_node_ext` requires multiple video sources, it creates a `VideoSource` process.
 
-- Once the video source is initialized, it waits for CMDs from `agora_node_ext`.
+- Once the video source is initialized, it waits for commands from `agora_node_ext`.
 
-- The Agora SDK will then render the interface for the retrieved video frame data, and transfer it to `agora_node_ext` using IPC.
+- The Agora SDK then renders the interface for the retrieved video frame data, and transfers it to `agora_node_ext` using IPC.
 
 ## Video Source Usage
 
-The video source API supports the ability to:
+The video source API supports the actions:
 
-- Join / leave a channel
-- Set a profile for a channel / video
-- Start / stop / update screen captures
-- Start / stop screen capture previews
+- Join or leave a channel.
+- Set a profile for a channel or video.
+- Start, stop, or update screen captures.
+- Start or stop screen capture previews.
 
 
 ### Video Source API Methods
