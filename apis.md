@@ -1,478 +1,395 @@
-AgoraSDK.js provide JS SDK API. It relies on AgoraRender.js and webgl-utils.js to render video, three JS files mute be included.
+# Agora JavaScript SDK API Reference
 
-Class AgoraRtcEngine provide SDK functionalities, and also it's one event emitter, client could listen on interested event.
+The [`AgoraSDK.js`](js/AgoraSdk.js) file enables the JavaScript Agora SDK API. The [`AgoraRender.js`](js/AgoraRender.js) and [`webgl-utils.js`](js/webgl-utils.js) files are used to render the video. You must include **all three** JavaScript files in your project.
 
-To create AgoraRtcEngine instance :
+The `AgoraRtcEngine` Class enables the SDK functionality. It also contains one event emitter, so the client can listen for events.
 
-const AgoraRtcEngine = require("AgoraSdk");
-var engine = new AgoraRtcEngine();
+## Quick Start
 
-APIs:
+### Create the `AgoraRtcEngine`
 
-To initialize the AgoraRtcEngine instance with supplied appid. AgoraRtcEngine instance must be initialized before other functions invoked.
+To create an `AgoraRtcEngine` instance:
+
+1. Declare `AgoraRtcEngine` as a constant using the `AgoraSdk` library.
+
+2. Create a new engine using `AgoraRtcEngine`
+
+	``` Javascript
+	const AgoraRtcEngine = require("AgoraSdk");
+	var engine = new AgoraRtcEngine();
+	```
+
+### App Initialization
+
+Initialize the app using the Agora `appid`. The app must be initialized prior to invoking other API functions.
 
 ```
 initialize(appid, onSuccess, onFailed)
 ```
 
-To get current SDK version.
-
-```
-getVersion()
-```
-To get description of errorCode.
-```
-getErrorDescription(errorCode)
-```
-
-
-To join channel with supplied information.
-```
-joinChannel(key, name, chan_info, uid)
-```
-
-To leave current channel
-```
-leaveChannel()
-```
-
-After user with uid joined channel, subscribe used to bind user's video to the view.
-```
-subscribe(uid, view)
-```
-
-When video source is used to share screen, uses setupLocalVideoSource to bind video source's video to the view for the preview.
-```
-setupLocalVideoSource(view)
-```
-
-Used to bind local video to the view.
-```
-setupLocalVideo(view)
-```
-
-Used to bind dev test video to the view
-```
-setupLocalDevTest(view)
-```
-
-To update key.
-```
-renewChannelKey(newKey)
-```
-
-To setup channel profile
-```
-setChannelProfile(profile)
-```
-
-To setup client's role based on parameters.
-```
-setClientRole(role, permissionKey)
-```
-
-To start Echo test.
-```
-startEchoTest()
-```
-
-To stop Echo test.
-```
-stopEchoTest()
-```
-
-To enable last mile test.
-```
-enableLastmileTest()
-```
-
-To disable last mile test.
-```
-disableLastmileTest()
-```
-
-Enable video.
-```
-enableVideo()
-```
-
-Disable video
-```
-disableVideo()
-```
-
-Start video preview.
-```
-startPreview()
-```
-
-Stop video preview.
-```
-stopPreview()
-```
-
-Setup video profile.
-```
-setVideoProfile(profile, swapWidthAndHeight)
-```
-
-Enable audio.
-```
-enableAudio()
-```
-
-Disable audio.
-```
-disableAudio()
-```
-Setup audio profile.
-```
-setAudioProfile(profile, scenario)
-```
-
-Get current call id.
-```
-getCallId()
-```
-
-To rate SDK.
-```
-rate(callid, rating, desc)
-```
-
-To complain about the SDK.
-```
-complain(callid, desc)
-```
-
-To set encryption secret.
-```
-setEncryptionSecret(secret)
-```
-
-	createDataStream(reliable, ordered)
-
-	sendStreamMessage(streamId, msg)
-
-Mute/unmute local audio.
-```
-muteLocalAudioStream(mute)
-```
+Once the app is initialized, start adding Agora [API methods](#api-methods) or [event listeners](event-listeners)
 
-Mute/unmute all remote audios.
-```
-muteAllRemoteAudioStreams(mute)
-```
 
-Mute/unmute the user's audio with uid.
-```
-muteRemoteAudioStream(uid, mute)
-```
+## API Methods
 
-Mute/unmute local video stream.
-```
-muteLocalVideoStream(mute)
-```
+- [General Methods](#general-methods)
+- [Logging and Testing Methods](#logging-and-testing-methods)
+- [Client, Channel, and Stream Methods](#client,-channel,-and-stream-methods)
+- [Video Control Methods](#video-control-methods)
+- [Video Stream Methods](#video-stream-methods)
+- [Video Device Methods](#video-device-methods)
+- [Video Source Methods](#video-source-methods)
+- [Screen Capture Methods](#screen-capture-methods)
+- [Audio Control Methods](#audio-control-methods)
+- [Audio Recording Methods](#audio-recording-methods)
+- [Audio Mixing Methods](#audio-mixing-methods)
+- [Audio Playback Methods](#audio-playback-methods)
 
-Enable/disable local video
-```
-enableLocalVideo(enable)
-```
+### General Methods
 
-Mute/unmute all remote videos.
-```
-muteAllRemoteVideoStreams(mute)
-```
+- `getVersion()` - Get the current SDK version
 
-Mute/unmute the users video with uid.
-```
-muteRemoteVideoStream(uid, mute)
-```
+- `getErrorDescription(errorCode)` - Get the error code description
 
-	setRemoteVideoStreamType(uid, streamType)
+- `rate(callid, rating, desc)` - Rate the call
 
-	setRemoteDefaultVideoStreamType(streamType)
+- `complain(callid, desc)` - Complain about the call
 
-Start audio recording.
-```
-startAudioRecording(filePath)
-```
+- `setEncryptionSecret(secret)` - Set the encryption as secret
 
-Stop audio recording.
-```
-stopAudioRecording()
-```
+- `getCallId()` - Get current call id
+	
+### Logging and Testing Methods
 
-Start audio mixing
-```
-startAudioMixing(filepath, loopback, replace, cycle)
-```
+- `setLogFile(filepath)` - Set the file path for logging
 
-Stop audio mixing.
-```
-stopAudioMixing()
-```
+- `setLogFilter(filter)` - Set a filter for logging
 
-Pause audio mixing.
-```
-pauseAudioMixing()
-```
+- `startEchoTest()` - Start the Echo test
 
-Resume audio mixing.
-```
-resumeAudioMixing()
-	```
+- `stopEchoTest()` - Stop the Echo test
 
-Adjust audio mixing volume.
-```
-adjustAudioMixingVolume(volume)
-```
+- `enableLastmileTest()` - Enable the last mile test
 
-Get audio mixing duration.
-```
-getAudioMixingDuration()
-```
+- `disableLastmileTest()` - Disable the last mile test
 
-Get audio mixing current position.
-```
-getAudioMixingCurrentPosition()
-```
+### Client, Channel, and Stream Methods
 
-	setAudioMixingPosition(position)
+- `setClientRole(role, permissionKey)` - Set the client's role
 
-	setLocalVoicePitch(pitch)
+- `joinChannel(key, name, chan_info, uid)` - Join a channel matching the supplied parameters
 
-	setInEarMonitoringVolume(volume)
+- `leaveChannel()` - Leave the current channel
 
-	pauseAudio()
+- `subscribe(uid, view)` - Subscribe the user to the view (bind the user's video to the view), after a user with a `uid` joins channel
 
-	resumeAudio()
+- `renewChannelKey(newKey)` - Updates the channel key
 
-	stopScreenCapture()
+- `setChannelProfile(profile)` - Set the channel profile
 
-	setLogFile(filepath)
+- `createDataStream(reliable, ordered)` - Create a data stream
 
-	setLogFilter(filter)
+- `sendStreamMessage(streamId, msg)` - Send a message to a specific stream
 
-	startRecordingService(recordingKey)
+- `enableWebSdkInteroprability(enable)` - Enable/disable web SDK interoperability
 
-	stopRecordingService(recordingKey)
+### Video Control Methods
 
-	refreshRecordingServiceStatus()
+- `setupLocalVideoSource(view)` - When a video source is used to share screen, bind the video source video to the view
 
-	enableDualStreamMode(enable)
+- `setupLocalVideo(view)` - Bind local video to the view
 
-	setRecordingAudioFrameParameters(sampleRate, channel, mode, samplesPerCall)
+- `setupLocalDevTest(view)` - Bind the dev test video to the view
 
-	setPlaybackAudioFrameParameters(sampleRate, channel, mode, samplesPerCall)
+- `enableVideo()` - Enable video
 
-	setMixedAudioFrameParaemters(sampelRate, samplesPerCall)
+- `disableVideo()` - Disable video
 
-	adjustRecordingSignalVoluem(volume)
+- `startPreview()` - Start video preview
 
-	adjustPlaybackSignalVolume(volume)
+- `stopPreview()` - Stop video preview
 
-	setHighQualityAudioParameters(fullband, stereo, fullBitrate)
+- `setVideoProfile(profile, swapWidthAndHeight)` - Set the video profile
 
-	enableWebSdkInteroprability(enable)
+- `enableLocalVideo(enable)` - Enable/disable the local video
 
-	setVideoQualityParameters(perferFrameRateOverImageQuality)
+### Video Stream Methods
 
-	startScreenCapture(windowId, captureFreq, rect, bitrate)
+- `muteLocalVideoStream(mute)` - Mute/unmute the local video stream
 
-If video source is needed, this API is used to initialize video source context.
-```
-videoSourceInitialize()
-```
+- `muteAllRemoteVideoStreams(mute)` - Mute/unmute all remote videos.
 
-To ask video source to join channel
-```
-videoSourceJoin(token, cname, chanInfo, uid)
-```
+- `muteRemoteVideoStream(uid, mute)` - Mute/unmute the users video with `uid`
 
-To ask video source to renew token
-```
-videoSourceRenewToken(token)
-```
+- `setRemoteVideoStreamType(uid, streamType)` - Set the type of remote video stream
 
-To set video source's channel profile
-```
-videoSourceSetChannelProfile(profile)
-```
+- `setRemoteDefaultVideoStreamType(streamType)` - Set the type of the default remote video stream
 
-To set video source's video profile.
-```
-videoSourceSetVideoProfile(profile, swapWidthAndHeight)
-```
+- `setVideoQualityParameters(perferFrameRateOverImageQuality)` - Set the video quality
 
-To ask video source to start screen capture.
-```
-startScreenCapture2(wndid, captureFreq, rect, bitrate)
-```
+### Video Device Methods
 
-To ask video source to stop screen capture.
-```
-stopScreenCapture2()
-```
+- `getVideoDevices()` - Retrieves a list of video devices
 
-To ask video source to update screen capture area.
-```
-updateScreenCapturRegion(rect)
-```
+- `setVideoDevice(deviceId)` - Sets the device to be used
 
-To stop video source process.
-```
-videoSourceRelease()
-```
+- `getCurrentVideoDevice()` - Retrieves the current video device
 
-To start preview screen capture video
-```
-startScreenCapturePreview()
-```
+- `startVideoDeviceTest()` - Start a video device test
 
-To stop preview screen capture video
-```
-stopScreenCapturePreview()
-```
+- `stopVideoDeviceTest()` - Stop a video device test
 
-	getVideoDevices()
+### Video Source Methods
 
-	setVideoDevice(deviceId)
+- `videoSourceInitialize()` - Initialize the video source context
 
-	getCurrentVideoDevice()
+- `videoSourceJoin(token, cname, chanInfo, uid)` - Ask the video source to join channel
 
-	startVideoDeviceTest()
+- `videoSourceRenewToken(token)` - Ask video source to renew the token
 
-	stopVideoDeviceTest()
+- `videoSourceSetChannelProfile(profile)` - Set channel profile for the video source
 
-	getAudioPlaybackDevices()
+- `videoSourceSetVideoProfile(profile, swapWidthAndHeight)` - Set the video profile for the video source
 
-	setAudioPlaybackDevice(deviceid)
+### Screen Capture Methods
 
-	getCurrentAudioPlaybackDevice()
+- `startScreenCapture(windowId, captureFreq, rect, bitrate)` - Start a screen capture
 
-	setAudioPlaybackVolume(voluem)
+- `startScreenCapture2(wndid, captureFreq, rect, bitrate)` - Ask the video source to start a screen capture
 
-	getAudioPlaybackVolume()
+- `stopScreenCapture2()` - Ask the video source to stop a screen capture
 
-	getAudioRecordingDevices()
+- `updateScreenCapturRegion(rect)` - Ask a video source to update the screen capture area
 
-	setAudioRecordingDevice(deviceid)
+- `videoSourceRelease()` - Stop the video source
 
-	getCurrentAudioRecordingDevice()
+- `startScreenCapturePreview()` - Start the screen capture video preview
 
-	getAudioRecordingVolume()
+- `stopScreenCapturePreview()` - Stop the screen capture video preview
 
-	setAudioRecordingVolume(volume)
+- `stopScreenCapture()` - Stop the screen capture
 
-	startAudioPlaybackDeviceTest(filepath)
+### Audio Control Methods
 
-	stopAudioPlaybackDeviceTest()
+- `enableAudio()` - Enable audio
 
-	startAudioRecordingDeviceTest(indicationInterval)
+- `disableAudio()` - Disable audio
 
-	stopAudioRecordingDeviceTest()
+- `pauseAudio()` - Pause audio
 
-	getAudioPlaybackDeviceMute()
+- `resumeAudio()` - Resume audio
 
-	setAudioPlaybackDeviceMute(mute)
+- `setAudioProfile(profile, scenario)` - Set up the audio profile
 
-	getAudioRecordingDeviceMute()
+- `muteLocalAudioStream(mute)` - Mute/unmute the local audio
 
-	setAudioRecordingDeviceMute(mute)
+- `muteAllRemoteAudioStreams(mute)` - Mute/unmute all remote audio
 
+- `muteRemoteAudioStream(uid, mute)` - Mute/unmute the user's audio with a `uid`
 
-Events:
-	joinedchannel : channel, uid, elapsed
+- `setLocalVoicePitch(pitch)` - Set the local voice pitch
 
-	rejoinedchannel : channel, uid, elapsed
+- `setInEarMonitoringVolume(volume)` - Set the in-ear monitoring volume
 
-	warning : warn, msg
+### Audio Recording Methods
 
-	error : err, msg
+- `startAudioRecording(filePath)` - Start audio recording
 
-	audioquality : uid, quality, delay, lost
+- `stopAudioRecording()` - Stop the audio recording
 
-	audiovolumeindication : uid, volume, speakerNumber, totalVolume
+- `startRecordingService(recordingKey)` - Start a recording service
 
-	leavechannel
+- `stopRecordingService(recordingKey)` - Stop a recording service
 
-	audiodevicestatechanged : deviceId, deviceType, deviceState
+- `refreshRecordingServiceStatus()` - Refresh the status of the recording service
 
-	audiomixingfinished
+- `enableDualStreamMode(enable)` - Enable dual stream mode
 
-	apicallexecuted : api, err
+- `setRecordingAudioFrameParameters(sampleRate, channel, mode, samplesPerCall)` - Set the audio recording parameters
 
-	remoteaudiomixingbegin
+- `getAudioRecordingVolume()` - Retrieve the audio recording volume
 
-	remoteaudiomixingend
+- `setAudioRecordingVolume(volume)` - Set the audio recording volume
 
-	audioeffectfinished
+- `getAudioRecordingDevices()` - Retrieve the list of audio recording devices
 
-	videodevicestatechagned : deviceId, deviceType, deviceState
+- `setAudioRecordingDevice(deviceid)` - Set the device for audio recording
 
-	networkquality : uid, txquality, rxquality
+- `getCurrentAudioRecordingDevice()` - Retrieve the current device for audio recording
 
-	lastmilequality : quality
+- `stopAudioRecordingDeviceTest()` - Stop the audio recording device test
 
-	firstlocalvideoframe : width, height, elapsed
+- `startAudioRecordingDeviceTest(indicationInterval)` - Start the audio recording device test with a time interval
 
-	addstream : uid, elapsed
+- `adjustRecordingSignalVoluem(volume)` - Adjust the volume of the recording signal
 
-	videosizechagned : uid, width, height, rotation
+- `getAudioRecordingDeviceMute()` - Check if the audio recording device is muted
 
-	firstremotevideoframe : uid, width, height, elapsed
+- `setAudioRecordingDeviceMute(mute)` - Mute/unmute the audio recording device
 
-	userjoined : uid, elapsed
+### Audio Mixing Methods
 
-	removestream : uid, reason
+- `startAudioMixing(filepath, loopback, replace, cycle)` - Start audio mixing
 
-	usermuteaudio : uid, muted
+- `stopAudioMixing()` - Stop audio mixing
 
-	usermutevideo : uid, muted
+- `pauseAudioMixing()` - Pause audio mixing
 
-	userenablevideo : uid, enabled
+- `resumeAudioMixing()` - Resume audio mixing
 
-	userenablelocalvideo : uid, enabled
+- `adjustAudioMixingVolume(volume)` - Adjust the audio mix volume
 
-	cameraready
+- `getAudioMixingDuration()` - Get the audio mix duration
 
-	videostopped
+- `getAudioMixingCurrentPosition()` - Get the audio mix current position
 
-	connectionlost
+- `setAudioMixingPosition(position)` - Set the position of the audio mix
 
-	connectioninterrupted
+- `setPlaybackAudioFrameParameters(sampleRate, channel, mode, samplesPerCall)` - Set the playback parameters of the audio
 
-	connectionbanned
+- `setMixedAudioFrameParaemters(sampelRate, samplesPerCall)` - Set the parameters of the audio mix
 
-	refreshrecordingservicestatus
+### Audio Playback Methods
 
-	streammessage
+- `adjustPlaybackSignalVolume(volume)` - Adjust the volume of the playback signal
 
-	streammessageerror
+- `setHighQualityAudioParameters(fullband, stereo, fullBitrate)` - Set the quality of the audio
 
-	mediaenginestartcallsuccess
+- `getAudioPlaybackDevices()` - Retrieve the list of playback devices
 
-	requestchannelkey
+- `setAudioPlaybackDevice(deviceid)` - Set the playback device
 
-	firstlocalaudioframe : elapsed
+- `getCurrentAudioPlaybackDevice()` - Retrieve the current playback device
 
-	firstremoteaudioframe  uid, elapsed
+- `setAudioPlaybackVolume(voluem)` - Set the volume of the audio playback
 
-	activespeaker : uid
+- `getAudioPlaybackVolume()` - Retrieve the volume of the audio playback
 
-	clientrolechanged : oldrole, newrole
+- `startAudioPlaybackDeviceTest(filepath)` - Start the  audio playback device test
 
-	audiodevicevolumechanged : deviceType, volume, muted
+- `stopAudioPlaybackDeviceTest()` - Stop the audio playback device test
 
-	videosourcejoinedsuccess : uid
+- `getAudioPlaybackDeviceMute()` - Check if the audio playback device is muted
 
-	videosourcerequestnewtoken
+- `setAudioPlaybackDeviceMute(mute)` - Mute/unmute the audio playback device
 
-	videosourceleavechannel
+## Event Listeners
 
-	rtcstats
+**Note:** Value options of event listeners (if any) are below the listener name.
 
-	localvideostats
+- [General Event Listeners](#general-event-listeners)
+- [Channel and Stream Event Listeners](#channel-and-stream-event-listeners)
+- [Audio Event Listeners](#audio-event-listeners)
+- [Video Event Listeners](#video-event-listeners)
+- [User Event Listeners](#user-event-listeners)
+- [Connection Event Listeners](#connection-event-listeners)
+- [Statistic Event Listeners](#statistic-event-listeners)
 
-	remotevideostats
+### General Event Listeners
+
+- `warning` : warn, msg
+
+- `error` : err, msg
+
+- `apicallexecuted` : api, err
+
+- `networkquality` : uid, txquality, rxquality
+
+- `lastmilequality` : quality
+
+- `mediaenginestartcallsuccess`
+
+- `clientrolechanged` : oldrole, newrole
+
+### Channel and Stream Event Listeners
+
+- `joinedchannel` : channel, uid, elapsed
+
+- `rejoinedchannel` : channel, uid, elapsed
+
+- `leavechannel`
+
+- `requestchannelkey`
+
+- `addstream` : uid, elapsed
+
+- `removestream` : uid, reason
+
+- `streammessage`
+
+- `streammessageerror`
+
+### Audio Event Listeners
+
+- `audioquality` : uid, quality, delay, lost
+
+- `audiovolumeindication` : uid, volume, speakerNumber, totalVolume
+
+- `audiodevicestatechanged` : deviceId, deviceType, deviceState
+
+- `audiomixingfinished`
+
+- `remoteaudiomixingbegin`
+
+- `remoteaudiomixingend`
+
+- `audioeffectfinished`
+
+- `firstlocalaudioframe` : elapsed
+
+- `firstremoteaudioframe` : uid, elapsed
+
+- `audiodevicevolumechanged` : deviceType, volume, muted
+
+- `activespeaker` : uid
+
+### Video Event Listeners
+
+- `videodevicestatechagned` : deviceId, deviceType, deviceState
+
+- `firstlocalvideoframe` : width, height, elapsed
+
+- `videosizechagned` : uid, width, height, rotation
+
+- `firstremotevideoframe` : uid, width, height, elapsed
+
+- `videosourcejoinedsuccess` : uid
+
+- `videosourcerequestnewtoken`
+
+- `videosourceleavechannel`
+
+
+### User Event Listeners
+
+- `userjoined` : uid, elapsed
+
+- `usermuteaudio` : uid, muted
+
+- `usermutevideo` : uid, muted
+
+- `userenablevideo` : uid, enabled
+
+- `userenablelocalvideo` : uid, enabled
+
+### Connection Event Listeners
+
+- `cameraready`
+
+- `videostopped`
+
+- `connectionlost`
+
+- `connectioninterrupted`
+
+- `connectionbanned`
+
+- `refreshrecordingservicestatus`
+
+### Statistic Event Listeners
+
+- `rtcstats`
+
+- `localvideostats`
+
+- `remotevideostats`
