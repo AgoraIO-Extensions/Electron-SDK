@@ -236,6 +236,14 @@ namespace agora {
         NodeRtcEngine::~NodeRtcEngine()
         {
             LOG_ENTER;
+			if (m_audioVdm) {
+				delete[] m_audioVdm;
+				m_audioVdm = nullptr;
+			}
+			if (m_videoVdm) {
+				delete[] m_videoVdm;
+				m_videoVdm = nullptr;
+			}
 			if (m_engine) {
 				m_engine->release();
 				m_engine = nullptr;
