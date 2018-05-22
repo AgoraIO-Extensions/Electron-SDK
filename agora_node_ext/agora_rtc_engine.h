@@ -261,8 +261,8 @@ namespace agora {
              */
             std::unique_ptr<AgoraVideoSource> m_videoSourceSink;
 
-			AVideoDeviceManager* m_videoVdm;
-			AAudioDeviceManager* m_audioVdm;
+			AVideoDeviceManager* m_videoVdm = nullptr;
+			AAudioDeviceManager* m_audioVdm = nullptr;
         };
 
 /*
