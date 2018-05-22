@@ -1,13 +1,14 @@
-agora_node_ext.md
+# About the `agora_node_ext` folder
 
-=========================================================================================
-NOTE:
+### NodeJS Add-on support
 
-	1. agora_node_ext is the NodeJs addon which wraps functionalities of agora native SDK, and enables JS developers to develop Electron APPs.
+Electron integrates NodeJS and supports NodeJS C++ add-ons. The NodeJS add-ons use C++ functions to invoke the Electron JavaScript functions.
 
-	2. Electron integrates NodeJs, and support NodeJs c++ addons. But beacuse Electron and Nodejs use different V8, so NodeJs addons must be rebuilt using Electron's headers and library to run correctly with Electron;
+If the add-on is a single C++ created thread, the add-on will not have permission to invoke the Electron JavaScript functions. The C++ origin thread must take advantage of a default UV loop in order to invoke the JavaScript functions.
 	
-	3. In NodeJs Addon, in the context of JS thread, C++ functions could invoke JS function directly. But if it's one C++ created thread, it's not allowed to invoke JS functions. C++ origin thread need to take advantage of default UV loop to invoke JS function.
-	
-=========================================================================================
+**Note:** Electron and NodeJS use different versions, so the NodeJS add-ons must be rebuilt using the Electron's library and headers, in order for NodeJS to run correctly with Electron.
 
+
+### `agora_node_ext ` add-on
+
+The [`agora_node_ext`](agora_node_ext/agora_node_ext.cpp) is a NodeJS add-on. It wraps Agora's native SDK functionality and enables JavaScript developers to develop Electron Apps.
