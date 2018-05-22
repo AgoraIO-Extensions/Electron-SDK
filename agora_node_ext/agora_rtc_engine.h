@@ -260,6 +260,9 @@ namespace agora {
              * Currently we only support one video source. This maybe changed if more video source is needed.
              */
             std::unique_ptr<AgoraVideoSource> m_videoSourceSink;
+
+			AVideoDeviceManager* m_videoVdm;
+			AAudioDeviceManager* m_audioVdm;
         };
 
 /*
