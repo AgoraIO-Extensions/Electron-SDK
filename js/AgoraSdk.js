@@ -1038,6 +1038,73 @@ class AgoraRtcEngine extends EventEmitter {
     setAudioRecordingDeviceMute(mute) {
         return this.rtcengine.setAudioRecordingDeviceMute(mute);
     }
+
+    /*------------------------------------------------
+    |   v2.2.0 apis
+    \*----------------------------------------------*/
+    getEffectsVolume() {
+        return this.rtcengine.getEffectsVolume();
+    }
+    /**
+     * @param {int} volume - [0.0, 100.0] 
+     */
+    setEffectsVolume(volume) {
+        return this.rtcengine.setEffectsVolume(volume);
+    }
+    /**
+     * @param {int} soundId 
+     * @param {int} volume - [0.0, 100.0]
+     */
+    setVolumeOfEffect(soundId, volume) {
+        return this.setVolumeOfEffect(soundId, volume);
+    }
+    /**
+     * 
+     * @param {int} soundId 
+     * @param {string} filePath 
+     * @param {int} loopcount - 0: once, 1: twice, -1: infinite
+     * @param {double} pitch - [0.5, 2]
+     * @param {double} pan - [-1, 1]
+     * @param {int} gain - [0, 100]
+     * @param {boolean} publish 
+     */
+    playEffect(soundId, filePath, loopcount, pitch, pan, gain, publish) {
+        return this.rtcengine.playEffect(soundId, filePath, loopcount, pitch, pan, gain, publish);
+    }
+    /**
+     * 
+     * @param {int} soundId 
+     */
+    stopEffect(soundId) {
+        return this.rtcengine.stopEffect(soundId);
+    }
+    /**
+     * 
+     * @param {int} soundId 
+     * @param {string} filePath 
+     */
+    preloadEffect(soundId, filePath) {
+        return this.rtcengine.preloadEffect(soundId, filePath);
+    }
+    /**
+     * 
+     * @param {int} soundId 
+     */
+    unloadEffect(soundId) {
+        return this.rtcengine.unloadEffect(soundId);
+    }
+    pauseEffect(soundId) {
+        return this.rtcengine.pauseEffect(soundId);
+    }
+    pauseAllEffects() {
+        return this.rtcengine.pauseAllEffects();
+    }
+    resumeEffect(soundId) {
+        return this.rtcengine.resumeEffect(soundId);
+    }
+    resumeAllEffects() {
+        return this.rtcengine.resumeAllEffects();
+    }
 };
 
 module.exports = AgoraRtcEngine;
