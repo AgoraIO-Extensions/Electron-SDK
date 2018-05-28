@@ -197,7 +197,7 @@ class AgoraRtcEngine extends EventEmitter {
             self.emit("streammessage", uid, streamId, msg, len);
         });
 
-        this.rtcengine.onEvent("streammessageerror", function (uid, streamid, code, missed, cached) {
+        this.rtcengine.onEvent("streammessageerror", function (uid, streamId, code, missed, cached) {
             self.emit("streammessageerror", uid, streamId, code, missed, cached);
         });
 
@@ -353,7 +353,7 @@ class AgoraRtcEngine extends EventEmitter {
         return render;
     }
 
-    initialize(appid, onSuccess, onFailed) {
+    initialize(appid) {
         return this.rtcengine.initialize(appid);
     };
 
