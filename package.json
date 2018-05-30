@@ -2,11 +2,15 @@
   "name": "electron-demon",
   "version": "0.0.0",
   "description": "electron-demon",
-  "main": "app.js",
+  "main": "js/AgoraSdk.js",
   "author": {
     "name": "Alex"
   },
+  "gypfile": true,
   "config": {
     "arch": "ia32"
+  },
+  "dependencies": {
+    "bindings": "^1.3.0"
   }
 }
