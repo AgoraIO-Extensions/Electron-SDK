@@ -1,7 +1,8 @@
-﻿const EventEmitter = require("events");
-const agora = require("./agora_node_ext");
-require("./webgl-utils")
-require("./AgoraRender")
+﻿require("./webgl-utils")
+const EventEmitter = require('events').EventEmitter
+const AgoraRender = require('./AgoraRender')
+const agora = require('bindings')('agora_node_ext')
+
 class AgoraRtcEngine extends EventEmitter {
     constructor() {
         super();
@@ -1107,4 +1108,4 @@ class AgoraRtcEngine extends EventEmitter {
     }
 };
 
-module.exports = AgoraRtcEngine;
+module.exports = AgoraRtcEngine
