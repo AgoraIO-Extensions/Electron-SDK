@@ -263,6 +263,9 @@ namespace agora {
 
 			AVideoDeviceManager* m_videoVdm = nullptr;
 			AAudioDeviceManager* m_audioVdm = nullptr;
+
+			IVideoDeviceManager* getVideoDeviceManager();
+			IAudioDeviceManager* getAudioDeviceManager();
         };
 
 /*

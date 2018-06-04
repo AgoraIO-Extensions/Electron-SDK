@@ -258,6 +258,23 @@ namespace agora {
                 m_videoSourceSink->release();
         }
 
+		IVideoDeviceManager* NodeRtcEngine::getVideoDeviceManager()
+		{
+			if (!m_videoVdm) {
+				m_videoVdm = new AVideoDeviceManager(m_engine);
+			}
+
+			return m_videoVdm->get();
+		}
+		IAudioDeviceManager* NodeRtcEngine::getAudioDeviceManager()
+		{
+			if (!m_audioVdm) {
+				m_audioVdm = new AAudioDeviceManager(m_engine);
+			}
+			
+			return m_audioVdm->get();
+		}
+
         NAPI_API_DEFINE_WRAPPER_PARAM_0(startEchoTest);
 
         NAPI_API_DEFINE_WRAPPER_PARAM_0(stopEchoTest);
@@ -2281,13 +2298,9 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-
-                if (!pEngine->m_videoVdm) {
-                    pEngine->m_videoVdm = new AVideoDeviceManager(pEngine->m_engine);
-                }
-                IVideoDeviceManager* vdm = pEngine->m_videoVdm->get();
-                auto vdc =vdm->enumerateVideoDevices();
-                int count = vdc ? vdc->getCount() : 0;
+                IVideoDeviceManager* vdm = pEngine->getVideoDeviceManager();
+				auto vdc =vdm->enumerateVideoDevices();
+				int count = vdc ? vdc->getCount() : 0;
                 Local<v8::Array> devices = v8::Array::New(args.GetIsolate(), count);
                 char deviceName[MAX_DEVICE_ID_LENGTH] = { 0 };
                 char deviceId[MAX_DEVICE_ID_LENGTH] = { 0 };
@@ -2318,11 +2331,7 @@ namespace agora {
                 NodeString deviceId;
                 status = napi_get_value_nodestring_(args[0], deviceId);
                 CHECK_NAPI_STATUS(status);
-               
-                if (!pEngine->m_videoVdm) {
-                    pEngine->m_videoVdm = new AVideoDeviceManager(pEngine->m_engine);
-                }
-                IVideoDeviceManager* vdm = pEngine->m_videoVdm->get();
+	            IVideoDeviceManager* vdm = pEngine->getVideoDeviceManager();
                 int result = vdm->setDevice(deviceId);
                 napi_set_int_result(args, result);
             } while (false);
@@ -2337,11 +2346,7 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 char deviceId[MAX_DEVICE_ID_LENGTH] = { 0 };
-                
-                if (!pEngine->m_videoVdm) {
-                    pEngine->m_videoVdm = new AVideoDeviceManager(pEngine->m_engine);
-                }
-                IVideoDeviceManager* vdm = pEngine->m_videoVdm->get();
+                IVideoDeviceManager* vdm = pEngine->getVideoDeviceManager();
                 vdm->getDevice(deviceId);
                 napi_set_string_result(args, deviceId);
             } while (false);
@@ -2356,11 +2361,7 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 auto context = new NodeRenderContext(NODE_RENDER_TYPE_DEVICE_TEST);
-                
-                if (!pEngine->m_videoVdm) {
-                    pEngine->m_videoVdm = new AVideoDeviceManager(pEngine->m_engine);
-                }
-                IVideoDeviceManager* vdm = pEngine->m_videoVdm->get();
+                IVideoDeviceManager* vdm = pEngine->getVideoDeviceManager();
                 vdm->startDeviceTest(context);
             } while (false);
             LOG_LEAVE;
@@ -2373,11 +2374,7 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-               
-                if (!pEngine->m_videoVdm) {
-                    pEngine->m_videoVdm = new AVideoDeviceManager(pEngine->m_engine);
-                }
-                IVideoDeviceManager* vdm = pEngine->m_videoVdm->get();
+                IVideoDeviceManager* vdm = pEngine->getVideoDeviceManager();
                 vdm->stopDeviceTest();
             } while (false);
             LOG_LEAVE;
@@ -2390,12 +2387,8 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-              
-                if (!pEngine->m_audioVdm) {
-                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
-                }
-                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                auto pdc = adm->enumeratePlaybackDevices();
+				IAudioDeviceManager* adm = pEngine->getAudioDeviceManager();
+				auto pdc = adm->enumeratePlaybackDevices();
                 int count = pdc ? pdc->getCount() : 0;
                 Local<v8::Array> devices = v8::Array::New(args.GetIsolate(), count);
                 char deviceName[MAX_DEVICE_ID_LENGTH] = { 0 };
@@ -2427,11 +2420,7 @@ namespace agora {
                 NodeString deviceId;
                 status = napi_get_value_nodestring_(args[0], deviceId);
                 CHECK_NAPI_STATUS(status);
-               
-                if (!pEngine->m_audioVdm) {
-                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
-                }
-                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+                IAudioDeviceManager* adm = pEngine->getAudioDeviceManager();
                 int result = adm->setPlaybackDevice(deviceId);
                 napi_set_int_result(args, result);
             } while (false);
@@ -2446,12 +2435,8 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 char deviceId[MAX_DEVICE_ID_LENGTH] = { 0 };
-               
-                if (!pEngine->m_audioVdm) {
-                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
-                }
-                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                adm->getPlaybackDevice(deviceId);
+				IAudioDeviceManager* adm = pEngine->getAudioDeviceManager();
+				adm->getPlaybackDevice(deviceId);
                 napi_set_string_result(args, deviceId);
             } while (false);
             LOG_LEAVE;
@@ -2468,12 +2453,8 @@ namespace agora {
                 int volume;
                 status = napi_get_value_int32_(args[0], volume);
                 CHECK_NAPI_STATUS(status);
-               
-                if (!pEngine->m_audioVdm) {
-                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
-                }
-                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                int result = adm->setPlaybackDeviceVolume(volume);
+				IAudioDeviceManager* adm = pEngine->getAudioDeviceManager();
+				int result = adm->setPlaybackDeviceVolume(volume);
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
@@ -2487,12 +2468,8 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 int volume;
-               
-                if (!pEngine->m_audioVdm) {
-                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
-                }
-                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                adm->getPlaybackDeviceVolume(&volume);
+				IAudioDeviceManager* adm = pEngine->getAudioDeviceManager();
+				adm->getPlaybackDeviceVolume(&volume);
                 napi_set_int_result(args, volume);
             } while (false);
             LOG_LEAVE;
@@ -2505,12 +2482,9 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-               
-                if (!pEngine->m_audioVdm) {
-                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
-                }
-                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                auto pdc = adm->enumerateRecordingDevices();
+             
+				IAudioDeviceManager* adm = pEngine->getAudioDeviceManager();
+				auto pdc = adm->enumerateRecordingDevices();
                 int count = pdc ? pdc->getCount() : 0;
                 Local<v8::Array> devices = v8::Array::New(args.GetIsolate(), count);
                 char deviceName[MAX_DEVICE_ID_LENGTH] = { 0 };
@@ -2543,11 +2517,8 @@ namespace agora {
                 status = napi_get_value_nodestring_(args[0], deviceId);
                 CHECK_NAPI_STATUS(status);
                
-                if (!pEngine->m_audioVdm) {
-                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
-                }
-                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                int result = adm->setRecordingDevice(deviceId);
+				IAudioDeviceManager* adm = pEngine->getAudioDeviceManager();
+				int result = adm->setRecordingDevice(deviceId);
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
@@ -2560,13 +2531,9 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                char deviceId[MAX_DEVICE_ID_LENGTH] = { 0 };
-               
-                if (!pEngine->m_audioVdm) {
-                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
-                }
-                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                adm->getRecordingDevice(deviceId);
+                char deviceId[MAX_DEVICE_ID_LENGTH] = { 0 };            
+				IAudioDeviceManager* adm = pEngine->getAudioDeviceManager();
+				adm->getRecordingDevice(deviceId);
                 napi_set_string_result(args, deviceId);
             } while (false);
             LOG_LEAVE;
@@ -2580,12 +2547,8 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 int volume;
-               
-                if (!pEngine->m_audioVdm) {
-                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
-                }
-                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                adm->getRecordingDeviceVolume(&volume);
+				IAudioDeviceManager* adm = pEngine->getAudioDeviceManager();
+				adm->getRecordingDeviceVolume(&volume);
                 napi_set_int_result(args, volume);
             } while (false);
             LOG_LEAVE;
@@ -2602,12 +2565,8 @@ namespace agora {
                 int volume;
                 status = napi_get_value_int32_(args[0], volume);
                 CHECK_NAPI_STATUS(status);
-               
-                if (!pEngine->m_audioVdm) {
-                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
-                }
-                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                int result = adm->setRecordingDeviceVolume(volume);
+				IAudioDeviceManager* adm = pEngine->getAudioDeviceManager();
+				int result = adm->setRecordingDeviceVolume(volume);
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
@@ -2624,12 +2583,8 @@ namespace agora {
                 NodeString filePath;
                 status = napi_get_value_nodestring_(args[0], filePath);
                 CHECK_NAPI_STATUS(status);
-               
-                if (!pEngine->m_audioVdm) {
-                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
-                }
-                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                int result = adm->startPlaybackDeviceTest(filePath);
+				IAudioDeviceManager* adm = pEngine->getAudioDeviceManager();
+				int result = adm->startPlaybackDeviceTest(filePath);
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
@@ -2642,12 +2597,8 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-               
-                if (!pEngine->m_audioVdm) {
-                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
-                }
-                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                int result = adm->stopPlaybackDeviceTest();
+				IAudioDeviceManager* adm = pEngine->getAudioDeviceManager();
+				int result = adm->stopPlaybackDeviceTest();
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
@@ -2664,12 +2615,8 @@ namespace agora {
                 int indicateInterval;
                 status = napi_get_value_int32_(args[0], indicateInterval);
                 CHECK_NAPI_STATUS(status);
-               
-                if (!pEngine->m_audioVdm) {
-                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
-                }
-                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                int result = adm->startRecordingDeviceTest(indicateInterval);
+				IAudioDeviceManager* adm = pEngine->getAudioDeviceManager();
+				int result = adm->startRecordingDeviceTest(indicateInterval);
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
@@ -2682,11 +2629,7 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-               
-                if (!pEngine->m_audioVdm) {
-                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
-                }
-                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+				IAudioDeviceManager* adm = pEngine->getAudioDeviceManager();
                 int result = adm->stopRecordingDeviceTest();
                 napi_set_int_result(args, result);
             } while (false);
@@ -2701,12 +2644,8 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 bool mute;
-               
-                if (!pEngine->m_audioVdm) {
-                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
-                }
-                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                adm->getPlaybackDeviceMute(&mute);
+				IAudioDeviceManager* adm = pEngine->getAudioDeviceManager();
+				adm->getPlaybackDeviceMute(&mute);
                 napi_set_bool_result(args, mute);
             } while (false);
             LOG_LEAVE;
@@ -2723,12 +2662,8 @@ namespace agora {
                 bool mute;
                 status = napi_get_value_bool_(args[0], mute);
                 CHECK_NAPI_STATUS(status);
-               
-                if (!pEngine->m_audioVdm) {
-                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
-                }
-                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                int result = adm->setPlaybackDeviceMute(mute);
+				IAudioDeviceManager* adm = pEngine->getAudioDeviceManager();
+				int result = adm->setPlaybackDeviceMute(mute);
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
@@ -2742,11 +2677,7 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 bool mute;
-               
-                if (!pEngine->m_audioVdm) {
-                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
-                }
-                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+				IAudioDeviceManager* adm = pEngine->getAudioDeviceManager();
                 adm->getRecordingDeviceMute(&mute);
                 napi_set_bool_result(args, mute);
             } while (false);
@@ -2764,12 +2695,8 @@ namespace agora {
                 bool mute;
                 status = napi_get_value_bool_(args[0], mute);
                 CHECK_NAPI_STATUS(status);
-               
-                if (!pEngine->m_audioVdm) {
-                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
-                }
-                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                int result = adm->setRecordingDeviceMute(mute);
+				IAudioDeviceManager* adm = pEngine->getAudioDeviceManager();
+				int result = adm->setRecordingDeviceMute(mute);
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
