@@ -1,10 +1,10 @@
 {
-  "name": "electron-demon",
-  "version": "0.0.0",
-  "description": "electron-demon",
+  "name": "agora-electron-sdk",
+  "version": "2.2.1",
+  "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "author": {
-    "name": "Alex"
+    "name": "agora.io"
   },
   "scripts": {
     "install": "node ./scripts/install.js"
