@@ -1,7 +1,6 @@
-﻿require("./webgl-utils")
-const EventEmitter = require('events').EventEmitter
+﻿const EventEmitter = require('events').EventEmitter
 const AgoraRender = require('./AgoraRender')
-const agora = require('../build/agora_node_ext')
+const agora = require('../build/Release/agora_node_ext')
 
 class AgoraRtcEngine extends EventEmitter {
     constructor() {
