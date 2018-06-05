@@ -1,4 +1,6 @@
-function AgoraRender() {
+const createProgramFromSources = require("./webgl-utils").createProgramFromSources
+const EventEmitter = require('events').EventEmitter
+module.exports = function AgoraRender() {
   let gl;
   let program;
   let positionLocation;
