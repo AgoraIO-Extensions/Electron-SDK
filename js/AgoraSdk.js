@@ -397,7 +397,7 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * 
    * @description initialize agora real-time-communicating engine with appid
-   * @param {string} appid 
+   * @param {String} appid 
    */
   initialize(appid) {
     return this.rtcengine.initialize(appid);
@@ -424,9 +424,9 @@ class AgoraRtcEngine extends EventEmitter {
    * 
    * @description Join channel with token, channel, channel_info and uid
    * @requires channel
-   * @param {string} token 
-   * @param {string} channel 
-   * @param {string} chan_info 
+   * @param {String} token 
+   * @param {String} channel 
+   * @param {String} chan_info 
    * @param {Number} uid 
    */
   joinChannel(token, channel, chan_info, uid) {
@@ -492,10 +492,21 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcengine.renewToken(newtoken);
   }
 
+  /**
+   * @description Set channel profile(before join channel) since sdk will do optimization according to scenario.
+   * @description 0 (default) for communication, 1 for live broadcasting, 2 for in-game
+   * @param {Number} profile 
+   */
   setChannelProfile(profile) {
     return this.rtcengine.setChannelProfile(profile);
   }
 
+  /**
+   * 
+   * @description In live broadcasting mode, set client role, 1 for anchor, 2 for audience
+   * @param {Number} role 
+   * @param {*} permissionKey 
+   */
   setClientRole(role, permissionKey) {
     return this.rtcengine.setClientRole(role, permissionKey);
   }
@@ -544,6 +555,11 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcengine.disableAudio();
   }
 
+  /**
+   * @description Set audio profile (before join channel) depending on your scenario
+   * @param {Number} profile 
+   * @param {Number} scenario 
+   */
   setAudioProfile(profile, scenario) {
     return this.rtcengine.setAudioProfile(profile, scenario);
   }
@@ -1141,7 +1157,7 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    *
    * @param {int} soundId
-   * @param {string} filePath
+   * @param {String} filePath
    * @param {int} loopcount - 0: once, 1: twice, -1: infinite
    * @param {double} pitch - [0.5, 2]
    * @param {double} pan - [-1, 1]
@@ -1171,7 +1187,7 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    *
    * @param {int} soundId
-   * @param {string} filePath
+   * @param {String} filePath
    */
   preloadEffect(soundId, filePath) {
     return this.rtcengine.preloadEffect(soundId, filePath);
