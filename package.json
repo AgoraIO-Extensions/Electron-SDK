@@ -1,5 +1,9 @@
 {
   "name": "agora-electron-sdk",
+  "jest": {
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": ["/__tests__/utils/"]
+  },
   "version": "2.2.1",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
@@ -7,11 +11,22 @@
     "name": "agora.io"
   },
   "scripts": {
-    "install": "node ./scripts/install.js"
+    "install": "node ./scripts/install.js",
+    "lint": "eslint .",
+    "format": "eslint . --fix ",
+    "test": "jest"
   },
   "gypfile": true,
   "dependencies": {
     "node-gyp": "^3.6.2",
     "shelljs": "^0.8.2"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-config-xo": "^0.22.2",
+    "eslint-plugin-prettier": "^2.6.0",
+    "jest": "^23.1.0",
+    "prettier": "^1.13.4"
   }
 }
