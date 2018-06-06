@@ -462,4 +462,4 @@ const AgoraRender = () => {
   return that;
 };
 
-module.exports = AgoraRender
+module.exports = AgoraRender;
