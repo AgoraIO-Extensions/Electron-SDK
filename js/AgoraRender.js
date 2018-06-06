@@ -1,6 +1,7 @@
-const createProgramFromSources = require("./webgl-utils").createProgramFromSources
-const EventEmitter = require('events').EventEmitter
-module.exports = function AgoraRender() {
+const createProgramFromSources = require('./webgl-utils').createProgramFromSources;
+const EventEmitter = require('events').EventEmitter;
+
+const AgoraRender = () => {
   let gl;
   let program;
   let positionLocation;
@@ -28,11 +29,18 @@ module.exports = function AgoraRender() {
     firstFrameRender: false
   };
 
-  that.start = function (view, onFailure) {
-    initCanvas(view, that.mirrorView, view.clientWidth, view.clientHeight, that.initRotation, onFailure);
+  that.start = function(view, onFailure) {
+    initCanvas(
+      view,
+      that.mirrorView,
+      view.clientWidth,
+      view.clientHeight,
+      that.initRotation,
+      onFailure
+    );
   };
 
-  that.stop = function () {
+  that.stop = function() {
     gl = undefined;
     program = undefined;
     positionLocation = undefined;
@@ -64,27 +72,32 @@ module.exports = function AgoraRender() {
     that.mirrorView = false;
   };
 
-  that.renderImage = function (image) {
-    // rotation, width, height, left, top, right, bottom, yplane, uplane, vplane
+  that.renderImage = function(image) {
+    // Rotation, width, height, left, top, right, bottom, yplane, uplane, vplane
     if (!gl) {
       console.log('!gl');
       return;
     }
 
-    if (image.width != that.initWidth
-        || image.height != that.initHeight
-        || image.rotation != that.initRotation
-        || image.mirror != that.mirrorView
+    if (
+      image.width != that.initWidth ||
+      image.height != that.initHeight ||
+      image.rotation != that.initRotation ||
+      image.mirror != that.mirrorView
     ) {
       const view = that.view;
       that.stop();
-      // console.log('init canvas ' + image.width + "*" + image.height + " rotation " + image.rotation);
-      initCanvas(view, image.mirror, image.width, image.height, image.rotation, (e) => {
-        console.error(`init canvas ${image.width}*${image.height} rotation ${image.rotation} failed. ${e}`);
+      // Console.log('init canvas ' + image.width + "*" + image.height + " rotation " + image.rotation);
+      initCanvas(view, image.mirror, image.width, image.height, image.rotation, e => {
+        console.error(
+          `init canvas ${image.width}*${image.height} rotation ${
+            image.rotation
+          } failed. ${e}`
+        );
       });
     }
 
-    // console.log(image.width, "*", image.height, "planes "
+    // Console.log(image.width, "*", image.height, "planes "
     //    , " y ", image.yplane[0], image.yplane[image.yplane.length - 1]
     //    , " u ", image.uplane[0], image.uplane[image.uplane.length - 1]
     //    , " v ", image.vplane[0], image.vplane[image.vplane.length - 1]
@@ -92,14 +105,24 @@ module.exports = function AgoraRender() {
     gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
     const xWidth = image.width + image.left + image.right;
     const xHeight = image.height + image.top + image.bottom;
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-      image.left / xWidth, image.bottom / xHeight,
-      1 - image.right / xWidth, image.bottom / xHeight,
-      image.left / xWidth, 1 - image.top / xHeight,
-      image.left / xWidth, 1 - image.top / xHeight,
-      1 - image.right / xWidth, image.bottom / xHeight,
-      1 - image.right / xWidth, 1 - image.top / xHeight
-    ]), gl.STATIC_DRAW);
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      new Float32Array([
+        image.left / xWidth,
+        image.bottom / xHeight,
+        1 - image.right / xWidth,
+        image.bottom / xHeight,
+        image.left / xWidth,
+        1 - image.top / xHeight,
+        image.left / xWidth,
+        1 - image.top / xHeight,
+        1 - image.right / xWidth,
+        image.bottom / xHeight,
+        1 - image.right / xWidth,
+        1 - image.top / xHeight
+      ]),
+      gl.STATIC_DRAW
+    );
     gl.enableVertexAttribArray(texCoordLocation);
     gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
 
@@ -109,9 +132,9 @@ module.exports = function AgoraRender() {
     gl.drawArrays(gl.TRIANGLES, 0, 6);
     that.renderImageCount += 1;
 
-    if(!that.firstFrameRender){
+    if (!that.firstFrameRender) {
       that.firstFrameRender = true;
-      that.event.emit("ready");
+      that.event.emit('ready');
     }
   };
 
@@ -119,22 +142,53 @@ module.exports = function AgoraRender() {
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, yTexture);
 
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, width, height, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, yplane);
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.LUMINANCE,
+      width,
+      height,
+      0,
+      gl.LUMINANCE,
+      gl.UNSIGNED_BYTE,
+      yplane
+    );
     var e = gl.getError();
     if (e != gl.NO_ERROR) {
       console.log('upload y plane ', width, height, yplane.byteLength, ' error', e);
     }
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, uTexture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, width / 2, height / 2, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, uplane);
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.LUMINANCE,
+      width / 2,
+      height / 2,
+      0,
+      gl.LUMINANCE,
+      gl.UNSIGNED_BYTE,
+      uplane
+    );
     var e = gl.getError();
     if (e != gl.NO_ERROR) {
       console.log('upload u plane ', width, height, uplane.byteLength, '  error', e);
     }
 
     gl.activeTexture(gl.TEXTURE2);
-    gl.bindTexture(gl.TEXTURE_2D, vTexture); '';
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, width / 2, height / 2, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, vplane);
+    gl.bindTexture(gl.TEXTURE_2D, vTexture);
+    ('');
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.LUMINANCE,
+      width / 2,
+      height / 2,
+      0,
+      gl.LUMINANCE,
+      gl.UNSIGNED_BYTE,
+      vplane
+    );
     var e = gl.getError();
     if (e != gl.NO_ERROR) {
       console.log('upload v plane ', width, height, vplane.byteLength, '  error', e);
@@ -153,37 +207,39 @@ module.exports = function AgoraRender() {
     }
   }
 
-  const vertexShaderSource = 'attribute vec2 a_position;' +
-        'attribute vec2 a_texCoord;' +
-        'uniform vec2 u_resolution;' +
-        'varying vec2 v_texCoord;' +
-        'void main() {' +
-        'vec2 zeroToOne = a_position / u_resolution;' +
-        '   vec2 zeroToTwo = zeroToOne * 2.0;' +
-        '   vec2 clipSpace = zeroToTwo - 1.0;' +
-        '   gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);' +
-        'v_texCoord = a_texCoord;' +
-        '}';
-  const yuvShaderSource = 'precision mediump float;' +
-        'uniform sampler2D Ytex;' +
-        'uniform sampler2D Utex,Vtex;' +
-        'varying vec2 v_texCoord;' +
-        'void main(void) {' +
-        '  float nx,ny,r,g,b,y,u,v;' +
-        '  mediump vec4 txl,ux,vx;' +
-        '  nx=v_texCoord[0];' +
-        '  ny=v_texCoord[1];' +
-        '  y=texture2D(Ytex,vec2(nx,ny)).r;' +
-        '  u=texture2D(Utex,vec2(nx,ny)).r;' +
-        '  v=texture2D(Vtex,vec2(nx,ny)).r;' +
-        '  y=1.1643*(y-0.0625);' +
-        '  u=u-0.5;' +
-        '  v=v-0.5;' +
-        '  r=y+1.5958*v;' +
-        '  g=y-0.39173*u-0.81290*v;' +
-        '  b=y+2.017*u;' +
-        '  gl_FragColor=vec4(r,g,b,1.0);' +
-        '}';
+  const vertexShaderSource =
+    'attribute vec2 a_position;' +
+    'attribute vec2 a_texCoord;' +
+    'uniform vec2 u_resolution;' +
+    'varying vec2 v_texCoord;' +
+    'void main() {' +
+    'vec2 zeroToOne = a_position / u_resolution;' +
+    '   vec2 zeroToTwo = zeroToOne * 2.0;' +
+    '   vec2 clipSpace = zeroToTwo - 1.0;' +
+    '   gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);' +
+    'v_texCoord = a_texCoord;' +
+    '}';
+  const yuvShaderSource =
+    'precision mediump float;' +
+    'uniform sampler2D Ytex;' +
+    'uniform sampler2D Utex,Vtex;' +
+    'varying vec2 v_texCoord;' +
+    'void main(void) {' +
+    '  float nx,ny,r,g,b,y,u,v;' +
+    '  mediump vec4 txl,ux,vx;' +
+    '  nx=v_texCoord[0];' +
+    '  ny=v_texCoord[1];' +
+    '  y=texture2D(Ytex,vec2(nx,ny)).r;' +
+    '  u=texture2D(Utex,vec2(nx,ny)).r;' +
+    '  v=texture2D(Vtex,vec2(nx,ny)).r;' +
+    '  y=1.1643*(y-0.0625);' +
+    '  u=u-0.5;' +
+    '  v=v-0.5;' +
+    '  r=y+1.5958*v;' +
+    '  g=y-0.39173*u-0.81290*v;' +
+    '  b=y+2.017*u;' +
+    '  gl_FragColor=vec4(r,g,b,1.0);' +
+    '}';
 
   function initCanvas(view, mirror, width, height, rotation, onFailure) {
     that.clientWidth = view.clientWidth;
@@ -218,7 +274,9 @@ module.exports = function AgoraRender() {
     that.container.appendChild(that.canvas);
     try {
       // Try to grab the standard context. If it fails, fallback to experimental.
-      gl = that.canvas.getContext('webgl', { preserveDrawingBuffer: true}) || that.canvas.getContext('experimental-webgl');
+      gl =
+        that.canvas.getContext('webgl', { preserveDrawingBuffer: true }) ||
+        that.canvas.getContext('experimental-webgl');
     } catch (e) {
       console.log(e);
     }
@@ -238,7 +296,7 @@ module.exports = function AgoraRender() {
     // Clear the color as well as the depth buffer.
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    // setup GLSL program
+    // Setup GLSL program
     program = createProgramFromSources(gl, [vertexShaderSource, yuvShaderSource]);
     gl.useProgram(program);
 
@@ -299,33 +357,33 @@ module.exports = function AgoraRender() {
 
     try {
       if (that.contentMode === 0) {
-        // cover
+        // Cover
         if (rotation === 0 || rotation === 180) {
           if (that.clientWidth / that.clientHeight > width / height) {
             that.canvas.style.zoom = that.clientWidth / width;
           } else if (that.clientWidth / that.clientHeight < width / height) {
             that.canvas.style.zoom = that.clientHeight / height;
           }
-        } else { // 90, 270
+        } else {
+          // 90, 270
           if (that.clientHeight / that.clientWidth > width / height) {
             that.canvas.style.zoom = that.clientHeight / height;
           } else if (that.clientHeight / that.clientWidth < width / height) {
             that.canvas.style.zoom = that.clientWidth / width;
           }
         }
+      } else if (rotation === 0 || rotation === 180) {
+        if (that.clientWidth / that.clientHeight > width / height) {
+          that.canvas.style.zoom = that.clientHeight / height;
+        } else if (that.clientWidth / that.clientHeight < width / height) {
+          that.canvas.style.zoom = that.clientWidth / width;
+        }
       } else {
-        if (rotation === 0 || rotation === 180) {
-          if (that.clientWidth / that.clientHeight > width / height) {
-            that.canvas.style.zoom = that.clientHeight / height;
-          } else if (that.clientWidth / that.clientHeight < width / height) {
-            that.canvas.style.zoom = that.clientWidth / width;
-          }
-        } else { // 90, 270
-          if (that.clientHeight / that.clientWidth > width / height) {
-            that.canvas.style.zoom = that.clientWidth / width;
-          } else if (that.clientHeight / that.clientWidth < width / height) {
-            that.canvas.style.zoom = that.clientHeight / height;
-          }
+        // 90, 270
+        if (that.clientHeight / that.clientWidth > width / height) {
+          that.canvas.style.zoom = that.clientWidth / width;
+        } else if (that.clientHeight / that.clientWidth < width / height) {
+          that.canvas.style.zoom = that.clientHeight / height;
         }
       }
     } catch (e) {
@@ -339,7 +397,7 @@ module.exports = function AgoraRender() {
     gl.enableVertexAttribArray(positionLocation);
     gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
-    // console.log('image rotation from ', that.imageRotation, ' to ', rotation);
+    // Console.log('image rotation from ', that.imageRotation, ' to ', rotation);
     // 4 vertex, 1(x1,y1), 2(x2,y1), 3(x2,y2), 4(x1,y2)
     //  0: 1,2,4/4,2,3
     // 90: 2,3,1/1,3,4
@@ -377,19 +435,31 @@ module.exports = function AgoraRender() {
         break;
       default:
     }
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-      pp1.x, pp1.y,
-      pp2.x, pp2.y,
-      pp4.x, pp4.y,
-      pp4.x, pp4.y,
-      pp2.x, pp2.y,
-      pp3.x, pp3.y
-    ]), gl.STATIC_DRAW);
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      new Float32Array([
+        pp1.x,
+        pp1.y,
+        pp2.x,
+        pp2.y,
+        pp4.x,
+        pp4.y,
+        pp4.x,
+        pp4.y,
+        pp2.x,
+        pp2.y,
+        pp3.x,
+        pp3.y
+      ]),
+      gl.STATIC_DRAW
+    );
 
     const resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
     gl.uniform2f(resolutionLocation, width, height);
-    // that.canvasUpdated = true;
+    // That.canvasUpdated = true;
   }
 
   return that;
-}
+};
+
+module.exports = AgoraRender
