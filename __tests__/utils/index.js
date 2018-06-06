@@ -1,19 +1,20 @@
 const generateRandomString = length => {
-    let text = ''
-    let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789! #$%&,()+, -,:;<=.#$%&,()+,-,:;<=.,>?@[],^_,{|},~";
+  let text = '';
+  let possible =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789! #$%&,()+, -,:;<=.#$%&,()+,-,:;<=.,>?@[],^_,{|},~';
 
-    for (var i = 0; i < length; i++) {
-      text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
+  for (var i = 0; i < length; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
 
-    return text;
-}
+  return text;
+};
 
 const generateRandomNumber = max => {
-  return Math.floor(Math.random()*max)
-}
+  return Math.floor(Math.random() * max);
+};
 
 module.exports = {
   generateRandomString: generateRandomString,
   generateRandomNumber: generateRandomNumber
-}
+};
