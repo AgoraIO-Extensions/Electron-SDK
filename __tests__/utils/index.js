@@ -9,8 +9,8 @@ const generateRandomString = length => {
     return text;
 }
 
-const generateRandomNumber = maxLength => {
-  return Math.floor(Math.random()*maxLength)
+const generateRandomNumber = max => {
+  return Math.floor(Math.random()*max)
 }
 
 module.exports = {
