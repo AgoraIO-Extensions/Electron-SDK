@@ -16,33 +16,35 @@ describe('Basic API Coverage', () => {
   })
 
   // it('Get error description by code', () => {
-  //   console.log(rtcEngine.getErrorDescription(0))
-  //   expect(rtcEngine.getErrorDescription(0)).toBeDefined()
+  //   expect(rtcEngine.getErrorDescription(2)).toBeDefined()
   // })
 
-  // it('Join channel', async () => {
-  //   const joinHandler = jest.fn();
-  //   const promise = new Promise((resolve, reject) => {
-  //     rtcEngine.on('joinchannel', (res) => {
-  //       console.log('aa')
-  //       resolve(res)
-  //     })
-  //     rtcEngine.on('error', (err) => {
-  //       reject(err)
-  //     })
-  //     setTimeout(() => {
-  //       reject('timeout')
-  //     }, 9000)
-  //     rtcEngine.joinChannel('', generateRandomString(10), '', generateRandomNumber(100000))
-  //   })
-    
-  //   return promise.then(() => {
-  //     expect(joinHandler).toBeCalled()
-  //   }).catch(err => {
-  //     console.error(err)
-  //     expect(err).toBeDefined()
-  //   })
-  // }, 10000)
+  it('Set Channel Profile', () => {
+    expect(rtcEngine.setChannelProfile(0)).toBe(0)
+    expect(rtcEngine.setChannelProfile(4) < 0).toBeTruthy()
+    // expect(rtcEngine.setChannelProfile('0')).toBeDefined()
+  })
+
+  it('Set Client Role in live broadcasting mode', () => {
+    rtcEngine.setChannelProfile(1)
+    expect(rtcEngine.setClientRole(1)).toBe(0)
+    expect(rtcEngine.setClientRole(2)).toBe(0)
+    expect(rtcEngine.setClientRole(3) < 0).toBeTruthy()
+  })
+
+  it('Set Audio Profile', () => {
+    expect(rtcEngine.setAudioProfile(generateRandomNumber(5.9), generateRandomNumber(5.9))).toBe(0)
+    expect(rtcEngine.setAudioProfile(6, 6) < 0).toBeTruthy()
+  })
 
 
+  it('Join channel and event:joinnedchannel', async () => {
+    const doJoin = require('./utils/doJoin')
+    await doJoin(rtcEngine).then(() => {
+      expect()
+    }).catch(err => {
+      console.error(err)
+      expect(2).toBe(1)
+    })
+  }, 6000)
 })
