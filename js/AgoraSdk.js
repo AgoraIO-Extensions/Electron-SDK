@@ -395,16 +395,16 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * 
+   *
    * @description initialize agora real-time-communicating engine with appid
-   * @param {String} appid 
+   * @param {String} appid
    */
   initialize(appid) {
     return this.rtcengine.initialize(appid);
   }
 
   /**
-   * 
+   *
    * @description return current version and build of sdk
    */
   getVersion() {
@@ -412,22 +412,22 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * 
+   *
    * @description Get error description of the given errorCode
-   * @param {Number} errorCode 
+   * @param {Number} errorCode
    */
   getErrorDescription(errorCode) {
     return this.rtcengine.getErrorDescription();
   }
 
   /**
-   * 
+   *
    * @description Join channel with token, channel, channel_info and uid
    * @requires channel
-   * @param {String} token 
-   * @param {String} channel 
-   * @param {String} chan_info 
-   * @param {Number} uid 
+   * @param {String} token
+   * @param {String} channel
+   * @param {String} chan_info
+   * @param {Number} uid
    */
   joinChannel(token, channel, chan_info, uid) {
     return this.rtcengine.joinChannel(token, channel, chan_info, uid);
@@ -495,17 +495,17 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description Set channel profile(before join channel) since sdk will do optimization according to scenario.
    * @description 0 (default) for communication, 1 for live broadcasting, 2 for in-game
-   * @param {Number} profile 
+   * @param {Number} profile
    */
   setChannelProfile(profile) {
     return this.rtcengine.setChannelProfile(profile);
   }
 
   /**
-   * 
+   *
    * @description In live broadcasting mode, set client role, 1 for anchor, 2 for audience
-   * @param {Number} role 
-   * @param {*} permissionKey 
+   * @param {Number} role
+   * @param {*} permissionKey
    */
   setClientRole(role, permissionKey) {
     return this.rtcengine.setClientRole(role, permissionKey);
@@ -557,8 +557,8 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description Set audio profile (before join channel) depending on your scenario
-   * @param {Number} profile 
-   * @param {Number} scenario 
+   * @param {Number} profile
+   * @param {Number} scenario
    */
   setAudioProfile(profile, scenario) {
     return this.rtcengine.setAudioProfile(profile, scenario);
