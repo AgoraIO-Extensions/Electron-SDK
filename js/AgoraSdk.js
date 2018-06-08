@@ -496,6 +496,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @description Set channel profile(before join channel) since sdk will do optimization according to scenario.
    * @description 0 (default) for communication, 1 for live broadcasting, 2 for in-game
    * @param {Number} profile
+   * @returns 0 for success, <0 for failure
    */
   setChannelProfile(profile) {
     return this.rtcengine.setChannelProfile(profile);
@@ -506,6 +507,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @description In live broadcasting mode, set client role, 1 for anchor, 2 for audience
    * @param {Number} role
    * @param {*} permissionKey
+   * @returns 0 for success, <0 for failure
    */
   setClientRole(role, permissionKey) {
     return this.rtcengine.setClientRole(role, permissionKey);
@@ -527,10 +529,18 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcengine.disableLastmileTest();
   }
 
+  /**
+   * @description Use before join channel to enable video communication, or you will only join with audio-enabled
+   * @returns 0 for success, <0 for failure
+   */
   enableVideo() {
     return this.rtcengine.enableVideo();
   }
 
+  /**
+   * @description Use to disable video and use pure audio communication
+   * @returns 0 for success, <0 for failure
+   */
   disableVideo() {
     return this.rtcengine.disableVideo();
   }
@@ -559,6 +569,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @description Set audio profile (before join channel) depending on your scenario
    * @param {Number} profile
    * @param {Number} scenario
+   * @returns 0 for success, <0 for failure
    */
   setAudioProfile(profile, scenario) {
     return this.rtcengine.setAudioProfile(profile, scenario);
