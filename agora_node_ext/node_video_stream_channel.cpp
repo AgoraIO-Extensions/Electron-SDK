@@ -9,7 +9,6 @@
 */
 #include "node_video_stream_channel.h"
 #include "node_video_render.h"
-#include <util.h>
 #include "node_async_queue.h"
 #include "node.h"
 #include "node_buffer.h"
