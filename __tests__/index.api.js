@@ -1,6 +1,8 @@
 const AgoraRtcEngine = require('../js/AgoraSdk');
 const generateRandomString = require('./utils/index.js').generateRandomString;
 const generateRandomNumber = require('./utils/index.js').generateRandomNumber;
+const doJoin = require('./utils/doJoin');
+const doLeave = require('./utils/doLeave');
 
 const rtcEngine = new AgoraRtcEngine();
 
@@ -39,19 +41,22 @@ describe('Basic API Coverage', () => {
     expect(rtcEngine.setAudioProfile(6, 6) < 0).toBeTruthy();
   });
 
-  it(
-    'Join channel and event:joinnedchannel',
-    async () => {
-      const doJoin = require('./utils/doJoin');
-      await doJoin(rtcEngine)
-        .then(() => {
-          expect();
-        })
-        .catch(err => {
-          console.error(err);
-          expect(2).toBe(1);
-        });
-    },
-    6000
-  );
+  it('Enable/Disable Video', () => {
+    expect(rtcEngine.enableVideo() <= 0).toBeTruthy()
+    expect(rtcEngine.disableVideo() <= 0).toBeTruthy()
+  })
+
+  it('Join/Leave channel and event:joinedchannel/leavechannel', async () => {
+    await doJoin(rtcEngine).then(() => {
+      doLeave(rtcEngine).then(() => {
+        // expect(1).toBe(1);
+      }).catch(err => {
+        console.error(err);
+        expect(2).toBe(1);
+      })
+    }).catch(err => {
+      console.error(err);
+      expect(2).toBe(1);
+    })
+  })
 });
