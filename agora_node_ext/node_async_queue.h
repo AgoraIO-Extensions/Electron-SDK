@@ -19,7 +19,6 @@
 #include <queue>
 #include <functional>
 #include <string.h>
-#include <util.h>
 #include "uv.h"
 #include "node_log.h"
 namespace agora {

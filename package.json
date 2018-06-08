@@ -2,7 +2,9 @@
   "name": "agora-electron-sdk",
   "jest": {
     "testEnvironment": "node",
-    "testPathIgnorePatterns": ["/__tests__/utils/"]
+    "testPathIgnorePatterns": [
+      "/__tests__/utils/"
+    ]
   },
   "version": "2.2.1",
   "description": "agora-electron-sdk",
