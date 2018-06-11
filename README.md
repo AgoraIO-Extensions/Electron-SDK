@@ -8,7 +8,7 @@ The Agora-RTC-SDK-for-Electron is an open-source wrapper for **[Electron](https:
 
 - Node.js 6.9.1+
 - Electron 1.8.3+
-- Agora RTC SDK Windows/macOS 2.1.0+
+- Agora RTC SDK Windows/macOS 2.2.1+
 
 
 ## Building
@@ -16,7 +16,8 @@ The Agora-RTC-SDK-for-Electron is an open-source wrapper for **[Electron](https:
 Assuming that you have [Node](https://nodejs.org/en/download/) installed and can use `npm` in command line.
 
 - run `npm install` to install dependency
-- Usually npm will trigger building automatically, or you can build mannually by running `build.sh`/`build.bat`.
+- Usually npm will trigger building automatically, or you can build mannually by running `npm run build`.
+- If you want to debug with xcode/visual studio, run `npm run generate` to generate the project file.
 
 **Notice:**
 

@@ -1,1 +1,0 @@
-node-gyp rebuild --arch=ia32 --msvs_version=2015 --target=1.8.3 --dist-url=https://atom.io/download/electron

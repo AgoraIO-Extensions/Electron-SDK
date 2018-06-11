@@ -13,11 +13,11 @@
 
 #### 1. macOS
 
-Run `gen-mac.sh` to generate project file and open it by Xcode
+Run `npm run generate` to generate project file and open it by Xcode
 
 #### 2. Windows
 
-Run `gen-vs2015.bat` to generate project file and open it by Visual Studio 2015
+Run `npm run generate` to generate project file and open it by Visual Studio 2015
 
 
 ## Enjoy real-time world
