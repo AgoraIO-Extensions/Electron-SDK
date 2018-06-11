@@ -13,16 +13,17 @@
     "name": "agora.io"
   },
   "scripts": {
-    "install": "node ./scripts/install.js",
-    "build": "node ./scripts/install.js",
+    "install": "node ./scripts/install.js --runtime=electron",
+    "build": "node ./scripts/install.js --runtime=node",
     "generate": "node ./scripts/gen.js",
     "lint": "eslint .",
     "format": "eslint . --fix ",
-    "test": "jest"
+    "test": "npm run build && jest"
   },
   "gypfile": true,
   "dependencies": {
     "node-gyp": "^3.6.2",
+    "optimist": "^0.6.1",
     "shelljs": "^0.8.2"
   },
   "devDependencies": {
