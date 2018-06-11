@@ -204,18 +204,23 @@ namespace agora {
             });
         }
 
-        void NodeEventHandler::onAudioVolumeIndication_node(const AudioVolumeInfo* speaker, unsigned int speakerNumber, int totalVolume)
+        void NodeEventHandler::onAudioVolumeIndication_node(const AudioVolumeInfo& speaker, unsigned int speakerNumber, int totalVolume)
         {
             FUNC_TRACE;
-            MAKE_JS_CALL_4(RTC_EVENT_AUDIO_VOLUME_INDICATION, uid, speaker->uid, uint32, speaker->volume, uint32, speakerNumber, int32, totalVolume);
+            MAKE_JS_CALL_4(RTC_EVENT_AUDIO_VOLUME_INDICATION, uid, speaker.uid, uint32, speaker.volume, uint32, speakerNumber, int32, totalVolume);
         }
 
         void NodeEventHandler::onAudioVolumeIndication(const AudioVolumeInfo* speaker, unsigned int speakerNumber, int totalVolume)
         {
             FUNC_TRACE;
-            node_async_call::async_call([this, speaker, speakerNumber, totalVolume] {
-                this->onAudioVolumeIndication_node(speaker, speakerNumber, totalVolume);
-            });
+            if (speaker) {
+                AudioVolumeInfo localSpeaker = { 0 };
+                localSpeaker.uid = speaker->uid;
+                localSpeaker.volume = speaker->volume;
+                node_async_call::async_call([this, localSpeaker, speakerNumber, totalVolume] {
+                    this->onAudioVolumeIndication_node(localSpeaker, speakerNumber, totalVolume);
+                });
+            }
         }
 
         void NodeEventHandler::onLeaveChannel_node(const RtcStats& stats)
