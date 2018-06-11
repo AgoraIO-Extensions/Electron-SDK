@@ -1,14 +1,5 @@
 const shell = require('shelljs');
-
-const getPlatform = () => {
-  if (process.platform === 'darwin') {
-    return 'mac';
-  }
-  if (process.platform === 'win32') {
-    return 'win';
-  }
-  return 'unsupported';
-};
+const getPlatform = require('./utils/os')
 
 const install = () => {
   let platform = getPlatform();
