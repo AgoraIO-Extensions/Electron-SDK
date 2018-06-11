@@ -1,7 +1,7 @@
 const createProgramFromSources = require('./webgl-utils').createProgramFromSources;
 const EventEmitter = require('events').EventEmitter;
 
-const AgoraRender = () => {
+const AgoraRender = function() {
   let gl;
   let program;
   let positionLocation;
