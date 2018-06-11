@@ -14,6 +14,8 @@
   },
   "scripts": {
     "install": "node ./scripts/install.js",
+    "build": "node ./scripts/install.js",
+    "generate": "node ./scripts/gen.js",
     "lint": "eslint .",
     "format": "eslint . --fix ",
     "test": "jest"
