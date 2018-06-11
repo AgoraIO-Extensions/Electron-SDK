@@ -5,7 +5,7 @@ const doJoin = rtcEngine => {
   return new Promise((resolve, reject) => {
     rtcEngine.setChannelProfile(1);
     rtcEngine.setClientRole(2);
-    rtcEngine.setAduioProfile(0, 1);
+    rtcEngine.setAudioProfile(0, 1);
     rtcEngine.on('joinedchannel', () => {
       resolve();
     });
