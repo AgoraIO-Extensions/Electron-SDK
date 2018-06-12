@@ -42,21 +42,25 @@ describe('Basic API Coverage', () => {
   });
 
   it('Enable/Disable Video', () => {
-    expect(rtcEngine.enableVideo() <= 0).toBeTruthy()
-    expect(rtcEngine.disableVideo() <= 0).toBeTruthy()
-  })
+    expect(rtcEngine.enableVideo() <= 0).toBeTruthy();
+    expect(rtcEngine.disableVideo() <= 0).toBeTruthy();
+  });
 
   it('Join/Leave channel and event:joinedchannel/leavechannel', async () => {
-    await doJoin(rtcEngine).then(() => {
-      doLeave(rtcEngine).then(() => {
-        // expect(1).toBe(1);
-      }).catch(err => {
+    await doJoin(rtcEngine)
+      .then(() => {
+        doLeave(rtcEngine)
+          .then(() => {
+            // Expect(1).toBe(1);
+          })
+          .catch(err => {
+            console.error(err);
+            expect(2).toBe(1);
+          });
+      })
+      .catch(err => {
         console.error(err);
         expect(2).toBe(1);
-      })
-    }).catch(err => {
-      console.error(err);
-      expect(2).toBe(1);
-    })
-  })
+      });
+  });
 });

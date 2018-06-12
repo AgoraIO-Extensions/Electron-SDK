@@ -8,4 +8,4 @@ const getPlatform = () => {
   return 'unsupported';
 };
 
-module.exports = getPlatform
+module.exports = getPlatform;
