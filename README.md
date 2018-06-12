@@ -10,15 +10,25 @@ The Agora-RTC-SDK-for-Electron is an open-source wrapper for **[Electron](https:
 
 - Agora RTC SDK Windows/macOS 2.2.1+
 
-## Building
+## How to use
+
+```sh
+npm install agora-electron-sdk
+```
+
+```javascript
+const AgoraRtcEngine = require('agora-electron-sdk')
+```
+
+## How to develop
 
 Assuming that you have [Node](https://nodejs.org/en/download/) installed and can use `npm` in command line.
 
 - run `npm install` to install dependency
 
-- Usually npm will trigger building automatically, or you can build mannually by running `npm run build:electron` or `npm run build:node`, the former one is for releasing and using in electron runtime while the latter is for developing and testing in node runtime.
+- Usually npm will trigger building automatically, or you can build mannually by running `npm run build:electron` or `npm run build:node`, the former one is for releasing and using in electron runtime while the latter is for developing and testing in node runtime.
 
-- If you want to debug with xcode/visual studio, run `npm run generate` to generate the project file.
+- If you want to debug with xcode/visual studio, run `npm run generate` to generate the project file.
 
 **Notice:**
 
@@ -28,7 +38,7 @@ Assuming that you have [Node](https://nodejs.org/en/download/) installed and can
 
 - For Windows, if Visual Studio or Electron version are not the same as in script, change the corresponding parameters in the script. Electron 1.8.3+ needs Visual Studio 2015 or above.
 
-- For more information about develop environment, visit [node-gyp](https://github.com/nodejs/node-gyp/blob/master/README.md) for help.
+- For more information about develop environment, visit [node-gyp](https://github.com/nodejs/node-gyp/blob/master/README.md) for help.
 
 ## Contact Us
 
