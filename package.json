@@ -9,9 +9,7 @@
   "version": "2.2.1-alpha",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
-  "author": {
-    "name": "agora.io"
-  },
+  "author": "agora.io",
   "scripts": {
     "install": "npm run build:electron",
     "build:node": "node ./scripts/install.js --runtime=node",
@@ -35,5 +33,23 @@
     "eslint-plugin-prettier": "^2.6.0",
     "jest": "^23.1.0",
     "prettier": "^1.13.4"
-  }
+  },
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron.git"
+  },
+  "keywords": [
+    "electron",
+    "agora",
+    "sdk",
+    "native"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron/issues"
+  },
+  "homepage": "https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron#readme"
 }
