@@ -17,7 +17,7 @@
     "generate": "node ./scripts/gen.js",
     "lint": "eslint .",
     "format": "eslint . --fix ",
-    "test": "npm run build && jest"
+    "test": "npm run build:node && jest"
   },
   "gypfile": true,
   "dependencies": {
