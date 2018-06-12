@@ -139,7 +139,7 @@ namespace agora {
             void onWarning_node(int warn, const char* msg) ;
             void onError_node(int err, const char* msg) ;
             void onAudioQuality_node(uid_t uid, int quality, unsigned short delay, unsigned short lost) ;
-            void onAudioVolumeIndication_node(const AudioVolumeInfo* sperkers, unsigned int speakerNumber, int totalVolume) ;
+            void onAudioVolumeIndication_node(const AudioVolumeInfo& sperkers, unsigned int speakerNumber, int totalVolume) ;
             void onLeaveChannel_node(const RtcStats& stats) ;
             void onRtcStats_node(const RtcStats& stats) ;
             void onAudioDeviceStateChanged_node(const char* deviceId, int deviceType, int deviceState) ;
