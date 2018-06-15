@@ -1518,7 +1518,7 @@ namespace agora {
 					extra_info = "Electron";
 				}
 
-                int result = pEngine->m_engine->joinChannel(key, name, chan_info, uid);
+                int result = pEngine->m_engine->joinChannel(key, name, extra_info.c_str(), uid);
                 args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result));
             } while (false);
             LOG_LEAVE;
