@@ -553,7 +553,12 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcengine.stopPreview();
   }
 
-  setVideoProfile(profile, swapWidthAndHeight) {
+  /**
+   * 
+   * @param {number} profile - enumeration values represent video profile
+   * @param {boolean} [swapWidthAndHeight = false] - Whether to swap width and height
+   */
+  setVideoProfile(profile, swapWidthAndHeight=false) {
     return this.rtcengine.setVideoProfile(profile, swapWidthAndHeight);
   }
 
