@@ -361,28 +361,28 @@ const AgoraRender = function() {
         if (rotation === 0 || rotation === 180) {
           if (that.clientWidth / that.clientHeight > width / height) {
             that.canvas.style.zoom = that.clientWidth / width;
-          } else if (that.clientWidth / that.clientHeight < width / height) {
+          } else {
             that.canvas.style.zoom = that.clientHeight / height;
           }
         } else {
           // 90, 270
           if (that.clientHeight / that.clientWidth > width / height) {
             that.canvas.style.zoom = that.clientHeight / height;
-          } else if (that.clientHeight / that.clientWidth < width / height) {
+          } else {
             that.canvas.style.zoom = that.clientWidth / width;
           }
         }
       } else if (rotation === 0 || rotation === 180) {
         if (that.clientWidth / that.clientHeight > width / height) {
           that.canvas.style.zoom = that.clientHeight / height;
-        } else if (that.clientWidth / that.clientHeight < width / height) {
+        } else {
           that.canvas.style.zoom = that.clientWidth / width;
         }
       } else {
         // 90, 270
         if (that.clientHeight / that.clientWidth > width / height) {
           that.canvas.style.zoom = that.clientWidth / width;
-        } else if (that.clientHeight / that.clientWidth < width / height) {
+        } else {
           that.canvas.style.zoom = that.clientHeight / height;
         }
       }
