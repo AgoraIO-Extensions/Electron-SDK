@@ -1,7 +1,12 @@
+/**
+ * Building script for node and electron runtime
+ */
+
 const shell = require('shelljs');
 const getPlatform = require('./utils/os');
 const argv = require('optimist').argv;
 const chalk = require('chalk');
+const ora = require('ora')
 
 const install = () => {
   let platform = getPlatform();
@@ -9,33 +14,38 @@ const install = () => {
     argv.runtime === 'electron'
       ? ' --target=1.8.3 --dist-url=https://atom.io/download/electron'
       : '';
+  let spinner = ora(`Building for production in ${argv.runtime} runtime`)
+  let sh = ''
+  
   if (platform === 'mac') {
-    shell.echo(
-      chalk.blue('Building AgoraRTC SDK for mac, this will cost a little time...')
-    );
-    if (shell.exec('node-gyp rebuild' + electronArgs, { silent: true }).code !== 0) {
-      shell.echo(chalk.red('Building AgoraRTC SDK for mac failed.'));
-    } else {
-      shell.echo(chalk.green('Building finished successfully'));
-    }
+    sh = 'node-gyp rebuild' + electronArgs
   } else if (platform === 'win') {
-    shell.echo(
-      chalk.blue(
-        'Building AgoraRTC SDK for windows 32bit, this will cost a little time...'
-      )
-    );
-    if (
-      shell.exec('node-gyp rebuild --arch=ia32' + electronArgs, { silent: true }).code !==
-      0
-    ) {
-      shell.echo(chalk.red('Building AgoraRTC SDK for window 32bit failed.'));
-    } else {
-      shell.echo(chalk.green('Building finished successfully'));
-    }
+    sh = 'node-gyp rebuild --arch=ia32' + electronArgs
   } else {
-    shell(chalk.yellowBright('Sorry, this sdk only provide win32 and mac version.'));
+    shell.echo(chalk.red('Sorry, this sdk only provide win32 and mac version.'));
     shell.exit(1);
+    return false
   }
+
+  spinner.start()
+
+  let builder = shell.exec(sh, {silent: true, async: true})
+  builder.stdout.on('data', data => {
+    spinner.text = data
+  })
+  builder.stderr.on('data', data => {
+    shell.ShellString(data).to('error-log.txt')
+  })
+  builder.on('close', code => {
+    if(code !== 0) {
+      // failed to build
+      spinner.fail(chalk.red('Build failed\n'))
+      shell.echo('A complete log of this run can be found in:')
+      shell.echo('    '+shell.pwd()+'/error-log.txt')
+    } else {
+      spinner.succeed(chalk.green('Build complete\n'))
+    }
+  })
 };
 
 install();
