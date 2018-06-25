@@ -14,7 +14,7 @@
     "install": "npm run build:electron",
     "build:node": "node ./scripts/install.js --runtime=node",
     "build:electron": "node ./scripts/install.js --runtime=electron",
-    "generate": "node ./scripts/gen.js",
+    "debug": "node ./scripts/debug.js",
     "lint": "eslint .",
     "format": "eslint . --fix ",
     "test": "npm run build:node && jest"
@@ -24,6 +24,7 @@
     "chalk": "^2.4.1",
     "node-gyp": "^3.6.2",
     "optimist": "^0.6.1",
+    "ora": "^2.1.0",
     "shelljs": "^0.8.2"
   },
   "devDependencies": {
