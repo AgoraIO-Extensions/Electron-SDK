@@ -28,7 +28,7 @@ Assuming that you have [Node](https://nodejs.org/en/download/) installed and can
 
 - Usually npm will trigger building automatically, or you can build mannually by running `npm run build:electron` or `npm run build:node`, the former one is for releasing and using in electron runtime while the latter is for developing and testing in node runtime.
 
-- If you want to debug with xcode/visual studio, run `npm run generate` to generate the project file.
+- If you want to debug with xcode/visual studio, run `npm run debug` to generate the project file and sdk for debug env.
 
 **Notice:**
 
