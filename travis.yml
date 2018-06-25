@@ -1,0 +1,8 @@
+os: osx
+language: node_js
+node_js:
+  - v8
+install:
+  - npm install
+script:
+  - npm run test
