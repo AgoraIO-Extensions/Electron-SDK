@@ -1008,6 +1008,14 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcengine.videoSourceInitialize(appid);
   }
 
+  /**
+   * @description Set it to true to enable web interoperability
+   * @param {Boolean} bool 
+   */
+  videoSourceEnableWebSdkInteroperability(bool) {
+    return this.rtcengine.videoSourceEnableWebSdkInteroperability(bool)
+  }
+
   videoSourceJoin(token, cname, chanInfo, uid) {
     return this.rtcengine.videoSourceJoin(token, cname, chanInfo, uid);
   }
