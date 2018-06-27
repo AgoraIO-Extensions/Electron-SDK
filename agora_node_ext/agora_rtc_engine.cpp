@@ -165,6 +165,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(videoSourceRelease)
                 PROPERTY_METHOD_DEFINE(videoSourceStartPreview)
                 PROPERTY_METHOD_DEFINE(videoSourceStopPreview)
+                PROPERTY_METHOD_DEFINE(videoSourceEnableWebSdkInteroperability)
                 PROPERTY_METHOD_DEFINE(videoSourceSetParameter)
                 PROPERTY_METHOD_DEFINE(setBool);
                 PROPERTY_METHOD_DEFINE(setInt);
@@ -1243,6 +1244,28 @@ namespace agora {
                     pEngine->m_videoSourceSink->stopPreview();
                 napi_set_int_result(args, 0);
             } while (false);
+            LOG_LEAVE;
+        }
+        
+        NAPI_API_DEFINE(NodeRtcEngine, videoSourceEnableWebSdkInteroperability)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                
+                bool enabled;
+                napi_status status = napi_ok;
+                status = napi_get_value_bool_(args[0], enabled);
+                CHECK_NAPI_STATUS(status);
+                
+                if(pEngine->m_videoSourceSink.get())
+                    pEngine->m_videoSourceSink->enableWebSdkInteroperability(enabled);
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
