@@ -60,6 +60,7 @@ namespace agora{
             virtual node_error stopCaptureScreen() override;
             virtual node_error startPreview() override;
             virtual node_error stopPreview() override;
+            virtual node_error enableWebSdkInteroperability(bool enabled) override;
             virtual void setParameters(const char* parameters) override;
         private:
             void msgThread();
@@ -233,6 +234,14 @@ namespace agora{
 
             m_ipcReceiver.reset();
             return m_ipcMsg->sendMessage(AGORA_IPC_STOP_VS_PREVIEW, nullptr, 0) ? node_ok : node_generic_error;
+        }
+        
+        node_error AgoraVideoSourceSink::enableWebSdkInteroperability(bool enabled)
+        {
+            if (m_initialized){
+                return m_ipcMsg->sendMessage(AGORA_IPC_ENABLE_WEB_SDK_INTEROPERABILITY, (char*)&enabled, sizeof(enabled)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
         }
 
         void AgoraVideoSourceSink::setParameters(const char* parameters)
