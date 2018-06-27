@@ -227,6 +227,7 @@ namespace agora {
             NAPI_API(videoSourceRelease);
             NAPI_API(videoSourceStartPreview);
             NAPI_API(videoSourceStopPreview);
+            NAPI_API(videoSourceEnableWebSdkInteroperability);
             NAPI_API(videoSourceSetParameter);
 
             /*
