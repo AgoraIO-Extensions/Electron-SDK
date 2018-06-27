@@ -125,6 +125,12 @@ namespace agora{
              * @param swapWidthAndHeight : whether adjust width and height
              */
             virtual node_error setVideoSourceVideoProfile(agora::rtc::VIDEO_PROFILE_TYPE profile, bool swapWidthAndHeight) = 0;
+            
+            /**
+             * Enable interoperability with the Agora Web SDK.
+             * @param enabled : whether interoperability with the Agora Web SDK is enabled
+             */
+            virtual node_error enableWebSdkInteroperability(bool enabled) = 0;
 
             /**
             * To set parameters for video source.

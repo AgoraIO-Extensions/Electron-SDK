@@ -65,6 +65,8 @@ enum AgoraIpcMsg
     AGORA_IPC_STOP_VS_PREVIEW,
     /** video source ==> Node ADDON, local video preview stopped.*/
     AGORA_IPC_STOP_VS_PREVIEW_COMPLETE,
+    /** Node ADDON ==> video source, to enable interoperability with the Agora Web SDK*/
+    AGORA_IPC_ENABLE_WEB_SDK_INTEROPERABILITY,
     /** Node ADDON ==> video source, to set rtc parameters*/
     AGORA_IPC_SET_PARAMETER
 };
