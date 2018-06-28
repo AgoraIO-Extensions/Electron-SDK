@@ -20,6 +20,8 @@ npm install agora-electron-sdk
 const AgoraRtcEngine = require('agora-electron-sdk')
 ```
 
+And a newly provided quickstart boilerplate: [Agora-Electron-Quickstart](https://github.com/AgoraIO-Community/Agora-Electron-Quickstart)
+
 ## How to develop
 
 Assuming that you have [Node](https://nodejs.org/en/download/) installed and can use `npm` in command line.
