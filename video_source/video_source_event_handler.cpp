@@ -78,9 +78,9 @@ void AgoraVideoSourceEventHandler::onVideoSizeChanged(uid_t uid, int width, int 
     LOG_INFO("%s, uid :%d, width :%d, height:%d, rotation :%d", __FUNCTION__, uid, width, height, rotation);
 }
 
-void AgoraVideoSourceEventHandler::onApiCallExecuted(int err, const char* api, const char* result)
+void AgoraVideoSourceEventHandler::onApiCallExecuted(const char* api, int error)
 {
-    LOG_INFO("%s, err :%d, api :%s, result :%s", __FUNCTION__, err, api, result);
+    LOG_INFO("%s, err :%d, api :%s", __FUNCTION__, error, api);
 }
 
 void AgoraVideoSourceEventHandler::onLocalVideoStats(const LocalVideoStats& stats)
@@ -91,11 +91,6 @@ void AgoraVideoSourceEventHandler::onLocalVideoStats(const LocalVideoStats& stat
 void AgoraVideoSourceEventHandler::onCameraReady()
 {
     LOG_INFO("%s", __FUNCTION__);
-}
-
-void AgoraVideoSourceEventHandler::onCameraFocusAreaChanged(int x, int y, int width, int height)
-{
-    LOG_INFO("%s, x :%d, y:%d, width:%d, heigh:%d", __FUNCTION__, x, y, width, height);
 }
 
 void AgoraVideoSourceEventHandler::onVideoStopped()
@@ -123,28 +118,8 @@ void AgoraVideoSourceEventHandler::onRefreshRecordingServiceStatus(int status)
     LOG_INFO("%s, status :%d", __FUNCTION__, status);
 }
 
-void AgoraVideoSourceEventHandler::onRequestToken()
+void AgoraVideoSourceEventHandler::onRequestChannelKey()
 {
-    LOG_INFO("%s", __FUNCTION__);
-    m_videoSource.notifyRequestNewToken();
-}
-
-void AgoraVideoSourceEventHandler::onStreamPublished(const char *url, int error)
-{
-    LOG_INFO("%s, url :%s, error :%d", __FUNCTION__, url, error);
-}
-
-void AgoraVideoSourceEventHandler::onStreamUnpublished(const char* url)
-{
-    LOG_INFO("%s, url :%s", __FUNCTION__, url);
-}
-
-void AgoraVideoSourceEventHandler::onTranscodingUpdated()
-{
-    LOG_INFO("%s", __FUNCTION__);
-}
-
-void AgoraVideoSourceEventHandler::onStreamInjectedStatus(const char* url, uid_t uid, int status)
-{
-    LOG_INFO("%s, url :%s, uid :%d, status :%d", __FUNCTION__, url, uid, status);
+	LOG_INFO("%s", __FUNCTION__);
+	m_videoSource.notifyRequestNewChannel();
 }

@@ -7,13 +7,222 @@
 
 #ifndef AGORA_RTC_ENGINE_H
 #define AGORA_RTC_ENGINE_H
-#include "AgoraBase.h"
-#include "IAgoraService.h"
+
+#include <stddef.h>
+#include <stdio.h>
+#include <stdarg.h>
+
+#if defined(_WIN32)
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#define AGORA_CALL __cdecl
+#if defined(AGORARTC_EXPORT)
+#define AGORA_API extern "C" __declspec(dllexport)
+#else
+#define AGORA_API extern "C" __declspec(dllimport)
+#endif
+#elif defined(__APPLE__)
+#define AGORA_API __attribute__((visibility("default"))) extern "C"
+#define AGORA_CALL
+#elif defined(__ANDROID__) || defined(__linux__)
+#define AGORA_API extern "C" __attribute__((visibility("default")))
+#define AGORA_CALL
+#else
+#define AGORA_API extern "C"
+#define AGORA_CALL
+#endif
 
 namespace agora {
+    namespace util {
+
+template<class T>
+class AutoPtr {
+    typedef T value_type;
+    typedef T* pointer_type;
+public:
+    AutoPtr(pointer_type p=0)
+        :ptr_(p)
+    {}
+    ~AutoPtr() {
+        if (ptr_)
+            ptr_->release();
+    }
+    operator bool() const { return ptr_ != (pointer_type)0; }
+    value_type& operator*() const {
+        return *get();
+    }
+
+    pointer_type operator->() const {
+        return get();
+    }
+
+    pointer_type get() const {
+        return ptr_;
+    }
+
+    pointer_type release() {
+        pointer_type tmp = ptr_;
+        ptr_ = 0;
+        return tmp;
+    }
+
+    void reset(pointer_type ptr = 0) {
+        if (ptr != ptr_ && ptr_)
+            ptr_->release();
+        ptr_ = ptr;
+    }
+    template<class C1, class C2>
+    bool queryInterface(C1* c, C2 iid) {
+        pointer_type p = NULL;
+        if (c && !c->queryInterface(iid, (void**)&p))
+        {
+            reset(p);
+        }
+        return p != NULL;;
+	}
+private:
+    AutoPtr(const AutoPtr&);
+    AutoPtr& operator=(const AutoPtr&);
+private:
+    pointer_type ptr_;
+};
+class IString {
+public:
+    virtual bool empty() const = 0;
+    virtual const char* c_str() = 0;
+    virtual const char* data() = 0;
+    virtual size_t length() = 0;
+    virtual void release() = 0;
+};
+typedef AutoPtr<IString> AString;
+
+    }//namespace util
 namespace rtc {
     typedef unsigned int uid_t;
     typedef void* view_t;
+
+enum INTERFACE_ID_TYPE
+{
+    AGORA_IID_AUDIO_DEVICE_MANAGER = 1,
+    AGORA_IID_VIDEO_DEVICE_MANAGER = 2,
+    AGORA_IID_RTC_ENGINE_PARAMETER = 3,
+    AGORA_IID_MEDIA_ENGINE = 4,
+};
+
+enum WARN_CODE_TYPE
+{
+    WARN_INVALID_VIEW = 8,
+    WARN_INIT_VIDEO = 16,
+    WARN_PENDING = 20,
+	WARN_NO_AVAILABLE_CHANNEL = 103,
+    WARN_LOOKUP_CHANNEL_TIMEOUT = 104,
+    WARN_LOOKUP_CHANNEL_REJECTED = 105,
+    WARN_OPEN_CHANNEL_TIMEOUT = 106,
+    WARN_OPEN_CHANNEL_REJECTED = 107,
+
+    // sdk: 100~1000
+    WARN_SWITCH_LIVE_VIDEO_TIMEOUT = 111,
+    WARN_SET_CLIENT_ROLE_TIMEOUT = 118,
+    WARN_OPEN_CHANNEL_INVALID_TICKET = 121,
+    WARN_OPEN_CHANNEL_TRY_NEXT_VOS = 122,
+    WARN_AUDIO_MIXING_OPEN_ERROR = 701,
+
+    WARN_ADM_RUNTIME_PLAYOUT_WARNING = 1014,
+    WARN_ADM_RUNTIME_RECORDING_WARNING = 1016,
+    WARN_ADM_RECORD_AUDIO_SILENCE = 1019,
+    WARN_ADM_PLAYOUT_MALFUNCTION = 1020,
+    WARN_ADM_RECORD_MALFUNCTION = 1021,
+    WARN_ADM_WIN_CORE_NO_RECORDING_DEVICE = 1322,
+    WARN_ADM_WIN_CORE_NO_PLAYOUT_DEVICE = 1323,
+    WARN_ADM_WIN_CORE_IMPROPER_CAPTURE_RELEASE = 1324,
+    WARN_ADM_RECORD_AUDIO_LOWLEVEL = 1031,
+    WARN_ADM_WINDOWS_NO_DATA_READY_EVENT = 1040,
+    WARN_APM_HOWLING = 1051,
+};
+
+enum ERROR_CODE_TYPE
+{
+    ERR_OK = 0,
+    //1~1000
+    ERR_FAILED = 1,
+    ERR_INVALID_ARGUMENT = 2,
+    ERR_NOT_READY = 3,
+    ERR_NOT_SUPPORTED = 4,
+    ERR_REFUSED = 5,
+    ERR_BUFFER_TOO_SMALL = 6,
+    ERR_NOT_INITIALIZED = 7,
+    ERR_NO_PERMISSION = 9,
+    ERR_TIMEDOUT = 10,
+    ERR_CANCELED = 11,
+    ERR_TOO_OFTEN = 12,
+    ERR_BIND_SOCKET = 13,
+    ERR_NET_DOWN = 14,
+    ERR_NET_NOBUFS = 15,
+    ERR_JOIN_CHANNEL_REJECTED = 17,
+    ERR_LEAVE_CHANNEL_REJECTED = 18,
+	ERR_ALREADY_IN_USE = 19,
+	ERR_ABORTED = 20,
+    ERR_INIT_NET_ENGINE = 21,
+    ERR_INVALID_APP_ID = 101,
+    ERR_INVALID_CHANNEL_NAME = 102,
+    ERR_CHANNEL_KEY_EXPIRED = 109,
+    ERR_INVALID_CHANNEL_KEY = 110,
+	ERR_CONNECTION_INTERRUPTED = 111, // only used in web sdk
+	ERR_CONNECTION_LOST = 112, // only used in web sdk
+    ERR_DECRYPTION_FAILED = 120,
+
+    ERR_NOT_IN_CHANNEL = 113,
+    ERR_SIZE_TOO_LARGE = 114,
+	ERR_BITRATE_LIMIT = 115,
+	ERR_TOO_MANY_DATA_STREAMS = 116,
+	ERR_STREAM_MESSAGE_TIMEOUT = 117,
+    ERR_SET_CLIENT_ROLE_NOT_AUTHORIZED = 119,
+    ERR_CLIENT_IS_BANNED_BY_SERVER = 123,
+
+    //1001~2000
+    ERR_LOAD_MEDIA_ENGINE = 1001,
+    ERR_START_CALL = 1002,
+    ERR_START_CAMERA = 1003,
+    ERR_START_VIDEO_RENDER = 1004,
+    ERR_ADM_GENERAL_ERROR = 1005,
+    ERR_ADM_JAVA_RESOURCE = 1006,
+    ERR_ADM_SAMPLE_RATE = 1007,
+    ERR_ADM_INIT_PLAYOUT = 1008,
+    ERR_ADM_START_PLAYOUT = 1009,
+    ERR_ADM_STOP_PLAYOUT = 1010,
+    ERR_ADM_INIT_RECORDING = 1011,
+    ERR_ADM_START_RECORDING = 1012,
+    ERR_ADM_STOP_RECORDING = 1013,
+    ERR_ADM_RUNTIME_PLAYOUT_ERROR = 1015,
+    ERR_ADM_RUNTIME_RECORDING_ERROR = 1017,
+    ERR_ADM_RECORD_AUDIO_FAILED = 1018,
+    ERR_ADM_INIT_LOOPBACK = 1022,
+    ERR_ADM_START_LOOPBACK = 1023,
+    ERR_ADM_NO_PERMISSION = 1027,
+    // 1025, as warning for interruption of adm on ios
+    // 1026, as warning for route change of adm on ios
+    ERR_ADM_ANDROID_JNI_JAVA_RECORD_ERROR = 1115,
+
+    // VDM error code starts from 1500
+    ERR_VDM_CAMERA_NOT_AUTHORIZED  = 1501,
+
+    // VCM error code starts from 1600
+    ERR_VCM_UNKNOWN_ERROR = 1600,
+    ERR_VCM_ENCODER_INIT_ERROR = 1601,
+    ERR_VCM_ENCODER_ENCODE_ERROR = 1602,
+    ERR_VCM_ENCODER_SET_ERROR = 1603,
+};
+
+enum LOG_FILTER_TYPE
+{
+	LOG_FILTER_OFF = 0,
+    LOG_FILTER_DEBUG = 0x080f,
+    LOG_FILTER_INFO = 0x000f,
+    LOG_FILTER_WARN = 0x000e,
+    LOG_FILTER_ERROR = 0x000c,
+    LOG_FILTER_CRITICAL = 0x0008,
+	LOG_FILTER_MASK = 0x80f,
+};
 
 enum MAX_DEVICE_ID_LENGTH_TYPE
 {
@@ -44,6 +253,8 @@ enum MEDIA_ENGINE_EVENT_CODE_TYPE
     // iOS adm sample rate changed
     MEDIA_ENGINE_AUDIO_ADM_REQUIRE_RESTART = 110,
     MEDIA_ENGINE_AUDIO_ADM_SPECIAL_RESTART = 111,
+    // iOS keep AVAudioSession settings
+    MEDIA_ENGINE_AUDIO_KEEP_SESSION_CONFIG = 120
 };
 
 enum MEDIA_DEVICE_STATE_TYPE
@@ -80,7 +291,6 @@ enum QUALITY_TYPE
     QUALITY_BAD = 4,
     QUALITY_VBAD = 5,
     QUALITY_DOWN = 6,
-    QUALITY_UNSUPPORTED = 7,
 };
 
 enum RENDER_MODE_TYPE
@@ -98,101 +308,64 @@ enum VIDEO_MIRROR_MODE_TYPE
 };
 
 enum VIDEO_PROFILE_TYPE
-{                                             // res       fps
-    VIDEO_PROFILE_LANDSCAPE_120P = 0,         // 160x120   15
-    VIDEO_PROFILE_LANDSCAPE_120P_3 = 2,       // 120x120   15
-    VIDEO_PROFILE_LANDSCAPE_180P = 10,        // 320x180   15
-    VIDEO_PROFILE_LANDSCAPE_180P_3 = 12,      // 180x180   15
-    VIDEO_PROFILE_LANDSCAPE_180P_4 = 13,      // 240x180   15
-    VIDEO_PROFILE_LANDSCAPE_240P = 20,        // 320x240   15
-    VIDEO_PROFILE_LANDSCAPE_240P_3 = 22,      // 240x240   15
-    VIDEO_PROFILE_LANDSCAPE_240P_4 = 23,      // 424x240   15
-    VIDEO_PROFILE_LANDSCAPE_360P = 30,        // 640x360   15
-    VIDEO_PROFILE_LANDSCAPE_360P_3 = 32,      // 360x360   15
-    VIDEO_PROFILE_LANDSCAPE_360P_4 = 33,      // 640x360   30
-    VIDEO_PROFILE_LANDSCAPE_360P_6 = 35,      // 360x360   30
-    VIDEO_PROFILE_LANDSCAPE_360P_7 = 36,      // 480x360   15
-    VIDEO_PROFILE_LANDSCAPE_360P_8 = 37,      // 480x360   30
-    VIDEO_PROFILE_LANDSCAPE_360P_9 = 38,      // 640x360   15
-    VIDEO_PROFILE_LANDSCAPE_360P_10 = 39,     // 640x360   24
-    VIDEO_PROFILE_LANDSCAPE_360P_11 = 100,    // 640x360   24
-    VIDEO_PROFILE_LANDSCAPE_480P = 40,        // 640x480   15
-    VIDEO_PROFILE_LANDSCAPE_480P_3 = 42,      // 480x480   15
-    VIDEO_PROFILE_LANDSCAPE_480P_4 = 43,      // 640x480   30
-    VIDEO_PROFILE_LANDSCAPE_480P_6 = 45,      // 480x480   30
-    VIDEO_PROFILE_LANDSCAPE_480P_8 = 47,      // 848x480   15
-    VIDEO_PROFILE_LANDSCAPE_480P_9 = 48,      // 848x480   30
-    VIDEO_PROFILE_LANDSCAPE_480P_10 = 49,     // 640x480   10
-    VIDEO_PROFILE_LANDSCAPE_720P = 50,        // 1280x720  15
-    VIDEO_PROFILE_LANDSCAPE_720P_3 = 52,      // 1280x720  30
-    VIDEO_PROFILE_LANDSCAPE_720P_5 = 54,      // 960x720   15
-    VIDEO_PROFILE_LANDSCAPE_720P_6 = 55,      // 960x720   30
-    VIDEO_PROFILE_LANDSCAPE_1080P = 60,       // 1920x1080 15
-    VIDEO_PROFILE_LANDSCAPE_1080P_3 = 62,     // 1920x1080 30
-    VIDEO_PROFILE_LANDSCAPE_1080P_5 = 64,     // 1920x1080 60
-    VIDEO_PROFILE_LANDSCAPE_1440P = 66,       // 2560x1440 30
-    VIDEO_PROFILE_LANDSCAPE_1440P_2 = 67,     // 2560x1440 60
-    VIDEO_PROFILE_LANDSCAPE_4K = 70,          // 3840x2160 30
-    VIDEO_PROFILE_LANDSCAPE_4K_3 = 72,        // 3840x2160 60
-
-    VIDEO_PROFILE_PORTRAIT_120P = 1000,       // 120x160   15
-    VIDEO_PROFILE_PORTRAIT_120P_3 = 1002,     // 120x120   15
-    VIDEO_PROFILE_PORTRAIT_180P = 1010,       // 180x320   15
-    VIDEO_PROFILE_PORTRAIT_180P_3 = 1012,     // 180x180   15
-    VIDEO_PROFILE_PORTRAIT_180P_4 = 1013,     // 180x240   15
-    VIDEO_PROFILE_PORTRAIT_240P = 1020,       // 240x320   15
-    VIDEO_PROFILE_PORTRAIT_240P_3 = 1022,     // 240x240   15
-    VIDEO_PROFILE_PORTRAIT_240P_4 = 1023,     // 240x424   15
-    VIDEO_PROFILE_PORTRAIT_360P = 1030,       // 360x640   15
-    VIDEO_PROFILE_PORTRAIT_360P_3 = 1032,     // 360x360   15
-    VIDEO_PROFILE_PORTRAIT_360P_4 = 1033,     // 360x640   30
-    VIDEO_PROFILE_PORTRAIT_360P_6 = 1035,     // 360x360   30
-    VIDEO_PROFILE_PORTRAIT_360P_7 = 1036,     // 360x480   15
-    VIDEO_PROFILE_PORTRAIT_360P_8 = 1037,     // 360x480   30
-    VIDEO_PROFILE_PORTRAIT_360P_9 = 1038,     // 360x640   15
-    VIDEO_PROFILE_PORTRAIT_360P_10 = 1039,    // 360x640   24
-    VIDEO_PROFILE_PORTRAIT_360P_11 = 1100,    // 360x640   24
-    VIDEO_PROFILE_PORTRAIT_480P = 1040,       // 480x640   15
-    VIDEO_PROFILE_PORTRAIT_480P_3 = 1042,     // 480x480   15
-    VIDEO_PROFILE_PORTRAIT_480P_4 = 1043,     // 480x640   30
-    VIDEO_PROFILE_PORTRAIT_480P_6 = 1045,     // 480x480   30
-    VIDEO_PROFILE_PORTRAIT_480P_8 = 1047,     // 480x848   15
-    VIDEO_PROFILE_PORTRAIT_480P_9 = 1048,     // 480x848   30
-    VIDEO_PROFILE_PORTRAIT_480P_10 = 1049,    // 480x640   10
-    VIDEO_PROFILE_PORTRAIT_720P = 1050,       // 720x1280  15
-    VIDEO_PROFILE_PORTRAIT_720P_3 = 1052,     // 720x1280  30
-    VIDEO_PROFILE_PORTRAIT_720P_5 = 1054,     // 720x960   15
-    VIDEO_PROFILE_PORTRAIT_720P_6 = 1055,     // 720x960   30
-    VIDEO_PROFILE_PORTRAIT_1080P = 1060,      // 1080x1920 15
-    VIDEO_PROFILE_PORTRAIT_1080P_3 = 1062,    // 1080x1920 30
-    VIDEO_PROFILE_PORTRAIT_1080P_5 = 1064,    // 1080x1920 60
-    VIDEO_PROFILE_PORTRAIT_1440P = 1066,      // 1440x2560 30
-    VIDEO_PROFILE_PORTRAIT_1440P_2 = 1067,    // 1440x2560 60
-    VIDEO_PROFILE_PORTRAIT_4K = 1070,         // 2160x3840 30
-    VIDEO_PROFILE_PORTRAIT_4K_3 = 1072,       // 2160x3840 60
-    VIDEO_PROFILE_DEFAULT = VIDEO_PROFILE_LANDSCAPE_360P,
+{                                   // res       fps  kbps
+    VIDEO_PROFILE_120P = 0,         // 160x120   15   65
+    VIDEO_PROFILE_120P_3 = 2,       // 120x120   15   50
+    VIDEO_PROFILE_180P = 10,        // 320x180   15   140
+    VIDEO_PROFILE_180P_3 = 12,      // 180x180   15   100
+    VIDEO_PROFILE_180P_4 = 13,      // 240x180   15   120
+    VIDEO_PROFILE_240P = 20,        // 320x240   15   200
+    VIDEO_PROFILE_240P_3 = 22,      // 240x240   15   140
+    VIDEO_PROFILE_240P_4 = 23,      // 424x240   15   220
+    VIDEO_PROFILE_360P = 30,        // 640x360   15   400
+    VIDEO_PROFILE_360P_3 = 32,      // 360x360   15   260
+    VIDEO_PROFILE_360P_4 = 33,      // 640x360   30   600
+    VIDEO_PROFILE_360P_6 = 35,      // 360x360   30   400
+    VIDEO_PROFILE_360P_7 = 36,      // 480x360   15   320
+    VIDEO_PROFILE_360P_8 = 37,      // 480x360   30   490
+    VIDEO_PROFILE_360P_9 = 38,      // 640x360   15   800
+    VIDEO_PROFILE_360P_10 = 39,     // 640x360   24   800
+    VIDEO_PROFILE_360P_11 = 100,    // 640x360   24   1000
+    VIDEO_PROFILE_480P = 40,        // 640x480   15   500
+    VIDEO_PROFILE_480P_3 = 42,      // 480x480   15   400
+    VIDEO_PROFILE_480P_4 = 43,      // 640x480   30   750
+    VIDEO_PROFILE_480P_6 = 45,      // 480x480   30   600
+    VIDEO_PROFILE_480P_8 = 47,		// 848x480   15   610
+    VIDEO_PROFILE_480P_9 = 48,		// 848x480   30   930
+    VIDEO_PROFILE_480P_10 = 49,		// 640x480   10   400
+    VIDEO_PROFILE_720P = 50,        // 1280x720  15   1130
+    VIDEO_PROFILE_720P_3 = 52,      // 1280x720  30   1710
+    VIDEO_PROFILE_720P_5 = 54,      // 960x720   15   910
+    VIDEO_PROFILE_720P_6 = 55,      // 960x720   30   1380
+    VIDEO_PROFILE_1080P = 60,       // 1920x1080 15   2080
+    VIDEO_PROFILE_1080P_3 = 62,     // 1920x1080 30   3150
+    VIDEO_PROFILE_1080P_5 = 64,     // 1920x1080 60   4780
+    VIDEO_PROFILE_1440P = 66,       // 2560x1440 30   4850
+    VIDEO_PROFILE_1440P_2 = 67,     // 2560x1440 60   7350
+    VIDEO_PROFILE_4K = 70,          // 3840x2160 30   8910
+    VIDEO_PROFILE_4K_3 = 72,        // 3840x2160 60   13500
+    VIDEO_PROFILE_DEFAULT = VIDEO_PROFILE_360P,
 };
 
 enum AUDIO_PROFILE_TYPE // sample rate, bit rate, mono/stereo, speech/music codec
 {
     AUDIO_PROFILE_DEFAULT = 0, // use default settings
     AUDIO_PROFILE_SPEECH_STANDARD = 1, // 32Khz, 18kbps, mono, speech
-    AUDIO_PROFILE_MUSIC_STANDARD = 2, // 48Khz, 48kbps, mono, music
-    AUDIO_PROFILE_MUSIC_STANDARD_STEREO = 3, // 48Khz, 56kbps, stereo, music
+    AUDIO_PROFILE_MUSIC_STANDARD = 2, // 48Khz, 50kbps, mono, music
+    AUDIO_PROFILE_MUSIC_STANDARD_STEREO = 3, // 48Khz, 50kbps, stereo, music
     AUDIO_PROFILE_MUSIC_HIGH_QUALITY = 4, // 48Khz, 128kbps, mono, music
-    AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO = 5, // 48Khz, 192kbps, stereo, music
+    AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO = 5, // 48Khz, 128kbps, stereo, music
     AUDIO_PROFILE_NUM = 6,
 };
 
 enum AUDIO_SCENARIO_TYPE // set a suitable scenario for your app type
 {
     AUDIO_SCENARIO_DEFAULT = 0,
-    AUDIO_SCENARIO_CHATROOM_ENTERTAINMENT = 1,
+    AUDIO_SCENARIO_CHATROOM = 1,
     AUDIO_SCENARIO_EDUCATION = 2,
     AUDIO_SCENARIO_GAME_STREAMING = 3,
     AUDIO_SCENARIO_SHOWROOM = 4,
-    AUDIO_SCENARIO_CHATROOM_GAMING = 5,
-    AUDIO_SCENARIO_NUM = 6,
+    AUDIO_SCENARIO_NUM = 5,
 };
 
 enum CHANNEL_PROFILE_TYPE
@@ -215,21 +388,6 @@ enum USER_OFFLINE_REASON_TYPE
     USER_OFFLINE_BECOME_AUDIENCE = 2,
 };
 
-enum INJECT_STREAM_STATUS
-{
-    INJECT_STREAM_STATUS_START_SUCCESS = 0,
-    INJECT_STREAM_STATUS_START_ALREADY_EXISTS = 1,
-    INJECT_STREAM_STATUS_START_UNAUTHORIZED = 2,
-    INJECT_STREAM_STATUS_START_TIMEDOUT = 3,
-    INJECT_STREAM_STATUS_START_FAILED = 4,
-    INJECT_STREAM_STATUS_STOP_SUCCESS = 5,
-    INJECT_STREAM_STATUS_STOP_NOT_FOUND = 6,
-    INJECT_STREAM_STATUS_STOP_UNAUTHORIZED = 7,
-    INJECT_STREAM_STATUS_STOP_TIMEDOUT = 8,
-    INJECT_STREAM_STATUS_STOP_FAILED = 9,
-    INJECT_STREAM_STATUS_BROKEN = 10,
-};
-
 enum REMOTE_VIDEO_STREAM_TYPE
 {
     REMOTE_VIDEO_STREAM_HIGH = 0,
@@ -241,53 +399,6 @@ enum RAW_AUDIO_FRAME_OP_MODE_TYPE
     RAW_AUDIO_FRAME_OP_MODE_READ_ONLY = 0,
     RAW_AUDIO_FRAME_OP_MODE_WRITE_ONLY = 1,
     RAW_AUDIO_FRAME_OP_MODE_READ_WRITE = 2,
-};
-
-
-enum AUDIO_SAMPLE_RATE_TYPE
-{
-    AUDIO_SAMPLE_RATE_32000 = 32000,
-    AUDIO_SAMPLE_RATE_44100 = 44100,
-    AUDIO_SAMPLE_RATE_48000 = 48000,
-};
-
-
-enum VIDEO_CODEC_PROFILE_TYPE
-{
-    VIDEO_CODEC_PROFILE_BASELINE = 66,
-    VIDEO_CODEC_PROFILE_MAIN = 77,
-    VIDEO_CODEC_PROFILE_HIGH = 100,
-};
-
-enum AUDIO_EQUALIZATION_BAND_FREQUENCY
-{
-    AUDIO_EQUALIZATION_BAND_31 = 0,
-    AUDIO_EQUALIZATION_BAND_62 = 1,
-    AUDIO_EQUALIZATION_BAND_125 = 2,
-    AUDIO_EQUALIZATION_BAND_250 = 3,
-    AUDIO_EQUALIZATION_BAND_500 = 4,
-    AUDIO_EQUALIZATION_BAND_1K = 5,
-    AUDIO_EQUALIZATION_BAND_2K = 6,
-    AUDIO_EQUALIZATION_BAND_4K = 7,
-    AUDIO_EQUALIZATION_BAND_8K = 8,
-    AUDIO_EQUALIZATION_BAND_16K = 9,
-};
-
-enum AUDIO_REVERB_TYPE
-{
-    AUDIO_REVERB_DRY_LEVEL = 0, // (dB, [-20,10]), the level of the dry signal
-    AUDIO_REVERB_WET_LEVEL = 1, // (dB, [-20,10]), the level of the early reflection signal (wet signal)
-    AUDIO_REVERB_ROOM_SIZE = 2, // ([0, 100]), the room size of the reflection
-    AUDIO_REVERB_WET_DELAY = 3, // (ms, [0, 200]), the length of the initial delay of the wet signal in ms
-    AUDIO_REVERB_STRENGTH = 4, // ([0, 100]), the strength of the late reverberation
-};
-    
-enum REMOTE_VIDEO_STATE
-{
-    // REMOTE_VIDEO_STATE_STOPPED is not used at this version. Ignore this value.
-    // REMOTE_VIDEO_STATE_STOPPED = 0,  // Default state, video is started or remote user disabled/muted video stream
-    REMOTE_VIDEO_STATE_RUNNING = 1,  // Running state, remote video can be displayed normally
-    REMOTE_VIDEO_STATE_FROZEN = 2,    // Remote video is frozen, probably due to network issue.
 };
 
 struct AudioVolumeInfo
@@ -309,7 +420,8 @@ struct RtcStats
 
     unsigned short rxVideoKBitRate;
     unsigned short txVideoKBitRate;
-    unsigned int userCount;
+    unsigned short lastmileDelay;
+    unsigned int users;
     double cpuAppUsage;
     double cpuTotalUsage;
 };
@@ -323,7 +435,7 @@ struct LocalVideoStats
 struct RemoteVideoStats
 {
     uid_t uid;
-    int delay;  // obsolete
+    int delay;
 	int width;
 	int height;
 	int receivedBitrate;
@@ -386,107 +498,7 @@ typedef struct Rect {
     Rect(int t, int l, int b, int r): top(t), left(l), bottom(b), right(r) {}
 } Rect;
 
-
-typedef struct TranscodingUser {
-    uid_t uid;
-
-    int x;
-    int y;
-    int width;
-    int height;
-
-    int zOrder;
-    double alpha;
-    int audioChannel;
-    TranscodingUser()
-        : uid(0)
-        , x(0)
-        , y(0)
-        , width(0)
-        , height(0)
-        , zOrder(0)
-        , alpha(1.0)
-        , audioChannel(0)
-    {}
-
-} TranscodingUser;
-    
-typedef struct RtcImage {
-    RtcImage() :
-       url(nullptr),
-       x(0),
-       y(0),
-       width(0),
-       height(0)
-    {}
-    const char* url;
-    int x;
-    int y;
-    int width;
-    int height;
-} RtcImage;
-
-typedef struct LiveTranscoding {
-    int width;
-    int height;
-    int videoBitrate;
-    int videoFramerate;
-
-    bool lowLatency;
-
-    int videoGop;
-    VIDEO_CODEC_PROFILE_TYPE videoCodecProfile;
-    unsigned int backgroundColor;
-    unsigned int userCount;
-    TranscodingUser *transcodingUsers;
-    const char *transcodingExtraInfo;
-    RtcImage* watermark;
-
-    AUDIO_SAMPLE_RATE_TYPE audioSampleRate;
-    int audioBitrate;
-    int audioChannels;
-    
-    LiveTranscoding()
-        : width(360)
-        , height(640)
-        , videoBitrate(400)
-        , videoFramerate(15)
-        , lowLatency(false)
-        , backgroundColor(0x000000)
-        , videoGop(30)
-        , videoCodecProfile(VIDEO_CODEC_PROFILE_HIGH)
-        , userCount(0)
-        , transcodingUsers(nullptr)
-        , transcodingExtraInfo(nullptr)
-        , watermark(nullptr)
-        , audioSampleRate(AUDIO_SAMPLE_RATE_48000)
-        , audioBitrate(48)
-        , audioChannels(1)
-    {}
-} LiveTranscoding;
-
-struct InjectStreamConfig {
-    int width;
-    int height;
-    int videoGop;
-    int videoFramerate;
-    int videoBitrate;
-    AUDIO_SAMPLE_RATE_TYPE audioSampleRate;
-    int audioBitrate;
-    int audioChannels;
-
-    // width / height default set to 0 means pull the stream with its original resolution
-    InjectStreamConfig()
-        : width(0)
-        , height(0)
-        , videoGop(30)
-        , videoFramerate(15)
-        , videoBitrate(400)
-        , audioSampleRate(AUDIO_SAMPLE_RATE_48000)
-        , audioBitrate(48)
-        , audioChannels(1)
-    {}
-};
+#if defined(_WIN32)
 
 enum RTMP_STREAM_LIFE_CYCLE_TYPE
 {
@@ -527,7 +539,7 @@ struct PublisherConfiguration {
 	{}
 
 };
-
+#endif
 #if !defined(__ANDROID__)
 struct VideoCanvas
 {
@@ -834,11 +846,6 @@ public:
         (void)height;
         (void)rotation;
     }
-    
-    virtual void onRemoteVideoStateChanged(uid_t uid, REMOTE_VIDEO_STATE state) {
-        (void)uid;
-        (void)state;
-    }
 
     /**
     * when the first remote video frame displayed, the function will be called
@@ -916,7 +923,7 @@ public:
 		(void)enabled;
 	}
 	
-	/**
+    /**
     * when remote user enable local video function, the function will be called
     * @param [in] uid
     *        the UID of the remote user
@@ -932,13 +939,12 @@ public:
     * when api call executed completely, the function will be called
     * @param [in] api
     *        the api name
-    * @param [in] err
+    * @param [in] error
     *        error code while 0 means OK
     */
-    virtual void onApiCallExecuted(int err, const char* api, const char* result) {
-        (void)err;
+    virtual void onApiCallExecuted(const char* api, int error) {
         (void)api;
-        (void)result;
+        (void)error;
     }
 
     /**
@@ -964,13 +970,6 @@ public:
     */
     virtual void onCameraReady() {}
 
-    virtual void onCameraFocusAreaChanged(int x, int y, int width, int height) {
-        (void)x;
-        (void)y;
-        (void)width;
-        (void)height;
-    }
-
     /**
     * when all video stopped, the function will be called then you can repaint the video windows
     */
@@ -985,7 +984,7 @@ public:
     * when local user disconnected by accident, the function will be called(then SDK will try to reconnect itself)
     */
     virtual void onConnectionInterrupted() {}
-    
+
     /**
      * when local user is banned by the server, the function will be called
      */
@@ -1031,12 +1030,12 @@ public:
     virtual void onMediaEngineStartCallSuccess() {
     }
     /**
-    * when token is enabled, and specified token is invalid or expired, this function will be called.
-    * APP should generate a new token and call renewToken() to refresh the token.
-    * NOTE: to be compatible with previous version, ERR_TOKEN_EXPIRED and ERR_INVALID_TOKEN are also reported via onError() callback.
-    * You should move renew of token logic into this callback.
+    * when channel key is enabled, and specified channel key is invalid or expired, this function will be called.
+    * APP should generate a new channel key and call renewChannelKey() to refresh the key.
+    * NOTE: to be compatible with previous version, ERR_CHANNEL_KEY_EXPIRED and ERR_INVALID_CHANNEL_KEY are also reported via onError() callback.
+    * You should move renew of channel key logic into this callback.
     */
-    virtual void onRequestToken() {
+    virtual void onRequestChannelKey() {
     }
 
     /**
@@ -1078,24 +1077,49 @@ public:
         (void)muted;
     }
 
-    virtual void onStreamPublished(const char *url, int error) {
-        (void)url;
-        (void)error;
-    }
-
-    virtual void onStreamUnpublished(const char *url) {
-        (void)url;
-    }
-
-    virtual void onTranscodingUpdated() {
-    }
-
-    virtual void onStreamInjectedStatus(const char* url, uid_t uid, int status) {
-        (void)url;
+    /**
+     * This callback is triggered when receiving audio packet from remote user
+     * It implies the network statistics of audio packet
+     *
+     * @param [in] uid
+     *        the UID of the remote user
+     * @param [in] delay
+     *        the end to end delay(ms) from the remote user to local client
+     * @param [in] lost
+     *        the packet lost rate
+     * @param [in] rxKBitRate
+     *        the receive audio KBps from remote user
+     */
+    virtual void onRemoteAudioTransportStats(
+        uid_t uid, unsigned short delay, unsigned short lost,
+        unsigned short rxKBitRate) {
         (void)uid;
-        (void)status;
+        (void)delay;
+        (void)lost;
+        (void)rxKBitRate;
     }
 
+    /**
+     * This callback is triggered when receiving video packet from remote user
+     * It implies the network statistics of video packet
+     *
+     * @param [in] uid
+     *        the UID of the remote user
+     * @param [in] delay
+     *        the end to end delay(ms) from the remote user to local client
+     * @param [in] lost
+     *        the packet lost rate
+     * @param [in] rxKBitRate
+     *        the receive video KBps from remote user
+     */
+    virtual void onRemoteVideoTransportStats(
+        uid_t uid, unsigned short delay, unsigned short lost,
+        unsigned short rxKBitRate) {
+        (void)uid;
+        (void)delay;
+        (void)lost;
+        (void)rxKBitRate;
+    }
 };
 
 /**
@@ -1299,7 +1323,7 @@ public:
     * @return return 0 if success or an error code
     */
     virtual int getRecordingDeviceVolume(int *volume) = 0;
-
+  
     virtual int setPlaybackDeviceMute(bool mute) = 0;
     virtual int getPlaybackDeviceMute(bool *mute) = 0;
     virtual int setRecordingDeviceMute(bool mute) = 0;
@@ -1349,6 +1373,7 @@ struct RtcEngineContext
     {}
 };
 
+
 class IRtcEngine
 {
 public:
@@ -1397,17 +1422,17 @@ public:
 
     /**
     * join the channel, if the channel have not been created, it will been created automatically
-  * @param [in] token
-    *        the token, if you have initialized the engine with an available APP ID, it can be null here. If you enable token on the dashboard, specify token here
-    * @param [in] channelId
-    *        the channel id
+  * @param [in] channelKey
+    *        the channel key, if you have initialized the engine with an available APP ID, it can be null here. If you enable channel key on the dashboard, specify channel key here
+    * @param [in] channelName
+    *        the channel name
   * @param [in] info
     *        the additional information, it can be null here
     * @param [in] uid
     *        the uid of you, if 0 the system will automatically allocate one for you
     * @return return 0 if success or an error code
     */
-    virtual int joinChannel(const char* token, const char* channelId, const char* info, uid_t uid) = 0;
+    virtual int joinChannel(const char* channelKey, const char* channelName, const char* info, uid_t uid) = 0;
 
     /**
     * leave the current channel
@@ -1416,14 +1441,14 @@ public:
     virtual int leaveChannel() = 0;
 
     /**
-    * renew the token for the current channel
-    * @param [in] token the renewed token, if old token expired.
+    * renew the channel key for the current channel
+    * @param [in] channelKey the renewed channel key, if old channel key expired.
     * @return return 0 if success or an error code
     */
-    virtual int renewToken(const char* token) = 0;
+    virtual int renewChannelKey(const char* channelKey) = 0;
 
     virtual int setChannelProfile(CHANNEL_PROFILE_TYPE profile) = 0;
-    virtual int setClientRole(CLIENT_ROLE_TYPE role) = 0;
+    virtual int setClientRole(CLIENT_ROLE_TYPE role, const char* permissionKey) = 0;
 
     /**
     * start the echo testing, if every thing goes well you can hear your echo from the server
@@ -1504,39 +1529,6 @@ public:
 
     virtual int setAudioProfile(AUDIO_PROFILE_TYPE profile, AUDIO_SCENARIO_TYPE scenario) = 0;
 
-#if defined(__APPLE__) || defined(_WIN32)
-
-#if defined(__APPLE__)
-  typedef unsigned int WindowIDType;
-#elif defined(_WIN32)
-  typedef HWND WindowIDType;
-#endif
-  /**
-   * start screen/windows capture
-   *
-   *  @param windowId screen capture, if windowId is 0; windows capture if windowsId isn't 0;
-   *  @param rect     valid when windowId is 0; whole screen if rect is NULL.
-   *
-   *  @return return 0 if success or an error code
-   */
-  virtual int startScreenCapture(WindowIDType windowId, int captureFreq, const Rect *rect, int bitrate) = 0;
-  
-  /**
-   * stop screen capture
-   * @return return 0 if success or an error code
-   */
-  virtual int stopScreenCapture() = 0;
-  
-  /**
-   * update screen capture region
-   *
-   *  @param rect     valid when windowId is 0; whole screen if rect is NULL.
-   *
-   *  @return return 0 if success or an error code
-   */
-  virtual int updateScreenCaptureRegion(const Rect *rect) = 0;
-#endif
-
     /**
     * get self call id in the current channel
     * @param [in, out] callId
@@ -1578,20 +1570,10 @@ public:
 
     virtual int setVideoCompositingLayout(const VideoCompositingLayout& sei) = 0;
     virtual int clearVideoCompositingLayout() = 0;
+
+#if defined(_WIN32)
 	virtual int configPublisher(const PublisherConfiguration& config) = 0;
-
-    virtual int addPublishStreamUrl(const char *url, bool transcodingEnabled) = 0;
-    virtual int removePublishStreamUrl(const char *url) = 0;
-    virtual int setLiveTranscoding(const LiveTranscoding &transcoding) = 0;
-    
-    virtual int addVideoWatermark(const RtcImage& watermark) = 0;
-    virtual int clearVideoWatermarks() = 0;
-
-    virtual int addInjectStreamUrl(const char* url, const InjectStreamConfig& config) = 0;
-    virtual int removeInjectStreamUrl(const char* url) = 0;
-
-    virtual bool registerEventHandler(IRtcEngineEventHandler *eventHandler) = 0;
-    virtual bool unregisterEventHandler(IRtcEngineEventHandler *eventHandler) = 0;
+#endif
 };
 
 
@@ -1819,18 +1801,6 @@ public:
     }
 
     /**
-    * set default mute/unmute all the remote audio stream receiving
-    * default value is false
-    * @param [in] mute
-    *        true:  mute
-    *       false: unmute
-    * @return return 0 if success or an error code
-    */
-    int setDefaultMuteAllRemoteAudioStreams(bool mute) {
-        return m_parameter ? m_parameter->setBool("rtc.audio.set_default_mute_peers", mute) : -ERR_NOT_INITIALIZED;
-    }
-
-    /**
     * mute/unmute one remote audio stream receiving
     * @param [in] uid
     *        the uid of the remote user you want to mute/unmute
@@ -1866,18 +1836,6 @@ public:
     */
     int muteAllRemoteVideoStreams(bool mute) {
         return m_parameter ? m_parameter->setBool("rtc.video.mute_peers", mute) : -ERR_NOT_INITIALIZED;
-    }
-
-    /**
-    * set default mute/unmute all the remote video stream receiving
-    * default value is false
-    * @param [in] mute
-    *        true:  mute
-    *       false: unmute
-    * @return return 0 if success or an error code
-    */
-    int setDefaultMuteAllRemoteVideoStreams(bool mute) {
-        return m_parameter ? m_parameter->setBool("rtc.video.set_default_mute_peers", mute) : -ERR_NOT_INITIALIZED;
     }
 
     /**
@@ -2022,169 +1980,6 @@ public:
     int setAudioMixingPosition(int pos /*in ms*/) {
         return m_parameter ? m_parameter->setInt("che.audio.mixing.file.position", pos) : -ERR_NOT_INITIALIZED;
     }
-
-    /**
-     * Get audio effect volume.
-     * @return return audio effect volume on success, or one value less than 0 otherwise.
-     */
-    int getEffectsVolume() {
-        if (!m_parameter) return -ERR_NOT_INITIALIZED;
-        int volume = 0;
-        int r = m_parameter->getInt("che.audio.game_get_effects_volume", volume);
-        if (r == 0)
-            r = volume;
-        return r;
-    }
-
-    /**
-     * Set audio effect volume.
-     * param [in] volume
-             The volume to be set.
-     * @return return 0 on success or error number otherwise.
-     */
-    int setEffectsVolume(int volume) {
-        return m_parameter ? m_parameter->setInt("che.audio.game_set_effects_volume", volume) : -ERR_NOT_INITIALIZED;
-    }
-
-    /**
-     * Set audio effect volume for effect with id : soundId
-     * @param [in] soundId
-              The soundId of the effect to be set.
-     * @param [in] volume
-              The volume value to be set
-     * @return return 0 on success, and error number otherwise.
-     */
-    int setVolumeOfEffect(int soundId, int volume) {
-        return setObject(
-            "che.audio.game_adjust_effect_volume",
-            "{\"soundId\":%d,\"gain\":%d}",
-            soundId, volume);
-    }
-    
-    /**
-     * To play effect
-     * @param [in] soundId
-     *        effect id
-     * @param [in] filePath
-     *        effect file path
-     * @param [in] loopCount
-     *        if loopCount
-     * @param [in] sendToFar
-     *        if send the effect to remote
-     * @param [in] pitch
-     *        sound pitch
-     * @param [in] pan
-     *        sound pan
-     * @param [in] gain
-     *        sound gain
-     * @param [in] publish
-     *        true  indicates that when this sound effect is played locally,
-     *              it is also published to Agora Could, so it can be heard by remote audience.
-     *
-     *        false indicates that when any sound effect is only heard locally without published to Agora Cloud.
-     * @return return 0 on success, error code otherwise.
-     *      
-     */
-    int playEffect(int soundId, const char* filePath, int loopCount, double pitch, double pan, int gain, bool publish = false) {
-#if defined(_WIN32)
-        util::AString path;
-        if (!m_parameter->convertPath(filePath, path))
-            filePath = path->c_str();
-        else if (!filePath)
-            filePath = "";
-#endif
-        return setObject(
-            "che.audio.game_play_effect",
-            "{\"soundId\":%d,\"filePath\":\"%s\",\"loopCount\":%d, \"pitch\":%lf,\"pan\":%lf,\"gain\":%d, \"send2far\":%d}",
-            soundId, filePath, loopCount, pitch, pan, gain, publish);
-    }
-
-    /**
-     * To stop effect
-     * @param [in] soundId
-     *        The effect's soundId
-     * @return return 0 on success, error code otherwise
-     */
-    int stopEffect(int soundId) {
-        return m_parameter ? m_parameter->setInt(
-            "che.audio.game_stop_effect", soundId) : -ERR_NOT_INITIALIZED;
-    }
-
-    /**
-     * To stop all effects
-     * @return return 0 on success, error code otherwise
-     */
-    int stopAllEffects() {
-        return m_parameter ? m_parameter->setBool(
-            "che.audio.game_stop_all_effects", true) : -ERR_NOT_INITIALIZED;
-    }
-
-    /**
-     * To preload effect
-     * @param [in] sound Id
-     *        effect sound id
-     * @param [in] filepath
-     *        effect file path
-     * @return return 0 on success or error code otherwise
-     */
-    int preloadEffect(int soundId, char* filePath) {
-        return setObject(
-            "che.audio.game_preload_effect",
-            "{\"soundId\":%d,\"filePath\":\"%s\"}",
-            soundId, filePath);
-    }
-
-    /**
-     * To unload effect
-     * @param [in] soundId
-     *        effect id
-     * @return return 0 on success, error code otherwise
-     */
-    int unloadEffect(int soundId) {
-        return m_parameter ? m_parameter->setInt(
-            "che.audio.game_unload_effect", soundId) : -ERR_NOT_INITIALIZED;
-    }
-
-    /**
-     * To pause effect
-     * @param [in] soundId
-     *        effect id
-     * @return return 0 on success, error code otherwise.
-     */
-    int pauseEffect(int soundId) {
-        return m_parameter ? m_parameter->setInt(
-            "che.audio.game_pause_effect", soundId) : -ERR_NOT_INITIALIZED;
-    }
-
-    /**
-     * To pause all effects
-     * @return return 0 on success, error code otherwise.
-     */
-    int pauseAllEffects() {
-        return m_parameter ? m_parameter->setBool(
-            "che.audio.game_pause_all_effects", true) : -ERR_NOT_INITIALIZED;
-    }
-
-    /**
-     * To resume effect
-     * @param [in] soundId
-     *        effect id
-     * @return return 0 on success, error code otherwise
-     */
-    int resumeEffect(int soundId) {
-        return m_parameter ? m_parameter->setInt(
-            "che.audio.game_resume_effect", soundId) : -ERR_NOT_INITIALIZED;
-    }
-
-    /**
-     * To resume all effects
-     * @return return 0 on success, error code otherwise.
-     */
-    int resumeAllEffects() {
-        return m_parameter ? m_parameter->setBool(
-            "che.audio.game_resume_all_effects", true) : -ERR_NOT_INITIALIZED;
-    }
-
     /**
      * Change the pitch of local speaker's voice
      * @param [in] pitch
@@ -2194,20 +1989,8 @@ public:
      */
     int setLocalVoicePitch(double pitch) {
         return m_parameter ? m_parameter->setInt(
-            "che.audio.morph.pitch_shift",
+            "che.audio.game_local_pitch_shift",
             static_cast<int>(pitch * 100)) : -ERR_NOT_INITIALIZED;
-    }
-    int setLocalVoiceEqualization(AUDIO_EQUALIZATION_BAND_FREQUENCY bandFrequency, int bandGain) {
-        return setObject(
-            "che.audio.morph.equalization",
-            "{\"index\":%d,\"gain\":%d}",
-            static_cast<int>(bandFrequency), bandGain);
-    }
-    int setLocalVoiceReverb(AUDIO_REVERB_TYPE reverbKey, int value) {
-        return setObject(
-            "che.audio.morph.reverb",
-            "{\"key\":%d,\"value\":%d}",
-            static_cast<int>(reverbKey), value);
     }
     /**
      * Set the audio ears back's volume and effect
@@ -2259,6 +2042,81 @@ public:
         else
             return setParameters("{\"che.audio.external_capture\":false,\"che.audio.external_capture.push\":false}");
     }
+#if defined(__APPLE__)
+    /**
+     * start screen/windows capture
+     *
+     *  @param windowId screen capture, if windowId is 0; windows capture if windowsId isn't 0;
+     *  @param rect     valid when windowId is 0; whole screen if rect is NULL.
+     *
+     *  @return return 0 if success or an error code
+     */
+    int startScreenCapture(unsigned int windowId, int captureFreq, const Rect *rect) {
+        if (!rect)
+            return setObject("che.video.start_screen_capture", "{\"id\":%u,\"captureFreq\":%d}", windowId, captureFreq);
+        else
+            return setObject("che.video.start_screen_capture", "{\"id\":%u,\"captureFreq\":%d,\"top\":%d,\"left\":%d,\"bottom\":%d,\"right\":%d}", windowId, captureFreq, rect->top, rect->left, rect->bottom, rect->right);
+    }
+
+    /**
+     * stop screen capture
+     * @return return 0 if success or an error code
+     */
+    int stopScreenCapture() {
+        return m_parameter ? m_parameter->setBool("che.video.stop_screen_capture", true) : -ERR_NOT_INITIALIZED;
+    }
+
+    /**
+    * update screen capture region
+    *
+    *  @param rect     valid when windowId is 0; whole screen if rect is NULL.
+    *
+    *  @return return 0 if success or an error code
+    */
+    int updateScreenCaptureRegion(const Rect *rect) {
+      if (!rect)
+        return setObject("che.video.update_screen_capture_region", "{}");
+      else
+        return setObject("che.video.update_screen_capture_region", "{\"top\":%d,\"left\":%d,\"bottom\":%d,\"right\":%d}", rect->top, rect->left, rect->bottom, rect->right);
+    }
+#elif defined(_WIN32)
+    /**
+     * start screen/windows capture
+     *
+     *  @param windowId screen capture, if windowId is 0; windows capture if windowsId isn't 0;
+     *  @param rect     valid when windowId is 0; whole screen if rect is NULL.
+     *
+     *  @return return 0 if success or an error code
+     */
+    int startScreenCapture(HWND windowId, int captureFreq, const Rect *rect) {
+        if (!rect)
+            return setObject("che.video.start_screen_capture", "{\"id\":%u,\"captureFreq\":%d}", (unsigned int)windowId, captureFreq);
+        else
+            return setObject("che.video.start_screen_capture", "{\"id\":%u,\"captureFreq\":%d,\"top\":%d,\"left\":%d,\"bottom\":%d,\"right\":%d}", (unsigned int)windowId, captureFreq, rect->top, rect->left, rect->bottom, rect->right);
+    }
+
+    /**
+     * stop screen capture
+     * @return return 0 if success or an error code
+     */
+    int stopScreenCapture() {
+        return m_parameter ? m_parameter->setBool("che.video.stop_screen_capture", true) : -ERR_NOT_INITIALIZED;
+    }
+
+    /**
+    * update screen capture region
+    *
+    *  @param rect     valid when windowId is 0; whole screen if rect is NULL.
+    *
+    *  @return return 0 if success or an error code
+    */
+    int updateScreenCaptureRegion(const Rect *rect) {
+      if (!rect)
+        return setObject("che.video.update_screen_capture_region", "{}");
+      else
+        return setObject("che.video.update_screen_capture_region", "{\"top\":%d,\"left\":%d,\"bottom\":%d,\"right\":%d}", rect->top, rect->left, rect->bottom, rect->right);
+    }
+#endif
 
     /**
     * set path to save the log file
@@ -2366,10 +2224,6 @@ public:
             volume = 400;
         return m_parameter ? m_parameter->setInt("che.audio.playout.signal.volume", volume) : -ERR_NOT_INITIALIZED;
     }
-    /**
-     * @Deprecated. Agora does not recommend using this method.
-     * If you want to set the audio profile, see Set the Audio Profile (setAudioProfile).
-     */
     int setHighQualityAudioParameters(bool fullband, bool stereo, bool fullBitrate) {
         return setObject("che.audio.codec.hq", "{\"fullband\":%s,\"stereo\":%s,\"fullBitrate\":%s}", fullband ? "true" : "false", stereo ? "true" : "false", fullBitrate ? "true" : "false");
     }
@@ -2380,11 +2234,6 @@ public:
     int setVideoQualityParameters(bool preferFrameRateOverImageQuality) {
         return setParameters("{\"rtc.video.prefer_frame_rate\":%s,\"che.video.prefer_frame_rate\":%s}", preferFrameRateOverImageQuality ? "true" : "false", preferFrameRateOverImageQuality ? "true" : "false");
     }
-
-	int enableLoopbackRecording(bool enabled) {
-		return setParameters("{\"che.audio.loopback.recording\":%s}", enabled ? "true" : "false");
-	}
-
 protected:
     AParameter& parameter() {
         return m_parameter;
@@ -2424,14 +2273,13 @@ private:
 } //namespace rtc
 } // namespace agora
 
-
 /**
 * to get the version number of the SDK
 * @param [in, out] build
 *        the build number of Agora SDK
 * @return returns the string of the version of the SDK
 */
-#define getAgoraRtcEngineVersion getAgoraSdkVersion
+AGORA_API const char* AGORA_CALL getAgoraRtcEngineVersion(int* build);
 
 /**
 * create the RTC engine object and return the pointer
@@ -2445,7 +2293,8 @@ AGORA_API agora::rtc::IRtcEngine* AGORA_CALL createAgoraRtcEngine();
 *        the error code
 * @return returns the description of the error code
 */
-#define getAgoraRtcEngineErrorDescription getAgoraSdkErrorDescription
-#define setAgoraRtcEngineExternalSymbolLoader setAgoraSdkExternalSymbolLoader
+AGORA_API const char* AGORA_CALL getAgoraRtcEngineErrorDescription(int err);
+
+AGORA_API int AGORA_CALL setAgoraRtcEngineExternalSymbolLoader(void* (*func)(const char* symname));
 
 #endif
