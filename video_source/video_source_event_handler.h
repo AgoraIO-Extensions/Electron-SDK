@@ -39,21 +39,15 @@ public:
     virtual void onLastmileQuality(int quality) override;
     virtual void onFirstLocalVideoFrame(int width, int height, int elapsed) override;
     virtual void onVideoSizeChanged(uid_t uid, int width, int height, int rotation) override;
-    virtual void onApiCallExecuted(int err, const char* api, const char* result) override;
+    virtual void onApiCallExecuted(const char* api, int error) override;
     virtual void onLocalVideoStats(const LocalVideoStats& stats) override;
     virtual void onCameraReady() override;
-    virtual void onCameraFocusAreaChanged(int x, int y, int width, int height) override;
     virtual void onVideoStopped() override;
     virtual void onConnectionLost() override;
     virtual void onConnectionInterrupted() override;
     virtual void onConnectionBanned() override;
     virtual void onRefreshRecordingServiceStatus(int status) override;
-    virtual void onRequestToken() override;
-    virtual void onStreamPublished(const char *url, int error) override;
-    virtual void onStreamUnpublished(const char *url) override;
-    virtual void onTranscodingUpdated() override;
-    virtual void onStreamInjectedStatus(const char* url, uid_t uid, int status) override;
-
+	virtual void onRequestChannelKey() override;
 private:
     AgoraVideoSource& m_videoSource;
 };

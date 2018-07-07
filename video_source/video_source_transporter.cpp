@@ -135,189 +135,98 @@ int AgoraVideoSourceTransporter::deliverFrame_I420(const agora::media::IVideoFra
 void AgoraVideoSourceTransporter::getVideoSize(VIDEO_PROFILE_TYPE profile, int& width, int& height)
 {
     switch (profile) {
-    case VIDEO_PROFILE_LANDSCAPE_120P:         // 160x120   15
+    case VIDEO_PROFILE_120P:         // 160x120   15   65
         width = 160;
         height = 120;
         break;
-    case VIDEO_PROFILE_LANDSCAPE_120P_3:       // 120x120   15
-        width = 120;
-        height = 120;
-        break;
-    case VIDEO_PROFILE_LANDSCAPE_180P:        // 320x180   15
+	case VIDEO_PROFILE_120P_3:      // 120x120   15   50
+		width = 120;
+		height = 120;
+		break;
+    case VIDEO_PROFILE_180P:        // 320x180   15   140
         width = 320;
         height = 180;
         break;
-    case VIDEO_PROFILE_LANDSCAPE_180P_3:      // 180x180   15
-        width = 180;
-        height = 180;
-        break;
-    case VIDEO_PROFILE_LANDSCAPE_180P_4:      // 240x180   15
-        width = 240;
-        height = 180;
-        break;
-    case VIDEO_PROFILE_LANDSCAPE_240P:        // 320x240   15
+	case VIDEO_PROFILE_180P_3:     // 180x180   15   100
+		width = 180;
+		height = 180;
+		break;
+	case VIDEO_PROFILE_180P_4:     // 240x180   15   120
+		width = 240;
+		height = 180;
+		break;
+    case VIDEO_PROFILE_240P:       // 320x240   15   200
         width = 320;
         height = 240;
         break;
-    case VIDEO_PROFILE_LANDSCAPE_240P_3:      // 240x240   15
+    case VIDEO_PROFILE_240P_3:      // 240x240   15   140
         width = 240;
         height = 240;
         break;
-    case VIDEO_PROFILE_LANDSCAPE_240P_4:      // 424x240   15
-        width = 420;
+	case VIDEO_PROFILE_240P_4:     // 424x240   15   220
+        width = 424;
         height = 240;
         break;
-    case VIDEO_PROFILE_LANDSCAPE_360P_3:      // 360x360   15
-    case VIDEO_PROFILE_LANDSCAPE_360P_6:      // 360x360   30
+    case VIDEO_PROFILE_360P_3:    // 360x360   15   260
+	case VIDEO_PROFILE_360P_6:    // 360x360   30   400
         width = 360;
         height = 360;
         break;
-    case VIDEO_PROFILE_LANDSCAPE_360P_7:      // 480x360   15
-    case VIDEO_PROFILE_LANDSCAPE_360P_8:      // 480x360   30
-        width = 480;
-        height = 360;
-        break;
-    case VIDEO_PROFILE_LANDSCAPE_360P_9:      // 640x360   15
-    case VIDEO_PROFILE_LANDSCAPE_360P_10:     // 640x360   24
-    case VIDEO_PROFILE_LANDSCAPE_360P_11:    // 640x360   24
-    case VIDEO_PROFILE_LANDSCAPE_360P:        // 640x360   15
-    case VIDEO_PROFILE_LANDSCAPE_360P_4:      // 640x360   30
+    case VIDEO_PROFILE_360P_4:    // 640x360   30   600
+	case VIDEO_PROFILE_360P_9:    // 640x360   15   800
+	case VIDEO_PROFILE_360P_10:   // 640x360   24   800
+	case VIDEO_PROFILE_360P_11:   // 640x360   24   1000
         width = 640;
         height = 360;
         break;
-    case VIDEO_PROFILE_LANDSCAPE_480P:        // 640x480   15
-    case VIDEO_PROFILE_LANDSCAPE_480P_4:      // 640x480   30
-    case VIDEO_PROFILE_LANDSCAPE_480P_10:     // 640x480   10
-        width = 640;
-        height = 480;
-        break;
-    case VIDEO_PROFILE_LANDSCAPE_480P_3:      // 480x480   15
-    case VIDEO_PROFILE_LANDSCAPE_480P_6:      // 480x480   30
+    case VIDEO_PROFILE_360P_7:    // 480x360   15   320
+    case VIDEO_PROFILE_360P_8:    // 480x360   30   490
         width = 480;
-        height = 480;
-        break;
-    case VIDEO_PROFILE_LANDSCAPE_480P_8:      // 848x480   15
-    case VIDEO_PROFILE_LANDSCAPE_480P_9:      // 848x480   30
-        width = 840;
-        height = 480;
-        break;
-    case VIDEO_PROFILE_LANDSCAPE_720P:        // 1280x720  15
-    case VIDEO_PROFILE_LANDSCAPE_720P_3:      // 1280x720  30
-        width = 1280;
-        height = 720;
-        break;
-    case VIDEO_PROFILE_LANDSCAPE_720P_5:      // 960x720   15
-    case VIDEO_PROFILE_LANDSCAPE_720P_6:      // 960x720   30
-        width = 960;
-        height = 720;
-        break;
-    case VIDEO_PROFILE_LANDSCAPE_1080P:       // 1920x1080 15
-    case VIDEO_PROFILE_LANDSCAPE_1080P_3:     // 1920x1080 30
-    case VIDEO_PROFILE_LANDSCAPE_1080P_5:     // 1920x1080 60
-        width = 1920;
-        height = 1080;
-        break;
-    case VIDEO_PROFILE_LANDSCAPE_1440P:       // 2560x1440 30
-    case VIDEO_PROFILE_LANDSCAPE_1440P_2:     // 2560x1440 60
-    case VIDEO_PROFILE_LANDSCAPE_4K:          // 3840x2160 30
-    case VIDEO_PROFILE_LANDSCAPE_4K_3:        // 3840x2160 60
-        width = 2560;
-        height = 1440;
-        break;
-
-
-    case VIDEO_PROFILE_PORTRAIT_120P:       // 120x160   15
-        width = 120;
-        height = 160;
-        break;
-    case VIDEO_PROFILE_PORTRAIT_120P_3:     // 120x120   15
-        width = 120;
-        height = 120;
-        break;
-    case VIDEO_PROFILE_PORTRAIT_180P:       // 180x320   15
-        width = 180;
-        height = 320;
-        break;
-    case VIDEO_PROFILE_PORTRAIT_180P_3:     // 180x180   15
-        width = 180;
-        height = 180;
-        break;
-    case VIDEO_PROFILE_PORTRAIT_180P_4:     // 180x240   15
-        width = 180;
-        height = 240;
-        break;
-    case VIDEO_PROFILE_PORTRAIT_240P:       // 240x320   15
-        width = 240;
-        height = 320;
-        break;
-    case VIDEO_PROFILE_PORTRAIT_240P_3:     // 240x240   15
-        width = 240;
-        height = 240;
-        break;
-    case VIDEO_PROFILE_PORTRAIT_240P_4:     // 240x424   15
-        width = 240;
-        height = 420;
-        break;
-    case VIDEO_PROFILE_PORTRAIT_360P:       // 360x640   15
-        width = 360;
-        height = 640;
-        break;
-    case VIDEO_PROFILE_PORTRAIT_360P_3:     // 360x360   15
-    case VIDEO_PROFILE_PORTRAIT_360P_6:     // 360x360   30
-        width = 360;
         height = 360;
         break;
-    case VIDEO_PROFILE_PORTRAIT_360P_4:     // 360x640   30
-    case VIDEO_PROFILE_PORTRAIT_360P_9:     // 360x640   15
-    case VIDEO_PROFILE_PORTRAIT_360P_10:    // 360x640   24
-    case VIDEO_PROFILE_PORTRAIT_360P_11:    // 360x640   24
-        width = 360;
-        height = 640;
-        break;
-    case VIDEO_PROFILE_PORTRAIT_360P_7:     // 360x480   15
-    case VIDEO_PROFILE_PORTRAIT_360P_8:     // 360x480   30
-        width = 360;
-        height = 480;
-        break;
-    case VIDEO_PROFILE_PORTRAIT_480P:       // 480x640   15
-    case VIDEO_PROFILE_PORTRAIT_480P_4:     // 480x640   30
-    case VIDEO_PROFILE_PORTRAIT_480P_10:    // 480x640   10
-        width = 480;
-        height = 640;
-        break;
-    case VIDEO_PROFILE_PORTRAIT_480P_3:     // 480x480   15
-    case VIDEO_PROFILE_PORTRAIT_480P_6:     // 480x480   30
-        width = 480;
-        height = 480;
-        break;
-    case VIDEO_PROFILE_PORTRAIT_480P_8:     // 480x848   15
-    case VIDEO_PROFILE_PORTRAIT_480P_9:     // 480x848   30
-        width = 480;
-        height = 840;
-        break;
-    case VIDEO_PROFILE_PORTRAIT_720P:       // 720x1280  15
-    case VIDEO_PROFILE_PORTRAIT_720P_3:     // 720x1280  30
-        width = 720;
-        height = 1280;
-        break;
-    case VIDEO_PROFILE_PORTRAIT_720P_5:     // 720x960   15
-    case VIDEO_PROFILE_PORTRAIT_720P_6:     // 720x960   30
-        width = 720;
-        height = 960;
-        break;
-    case VIDEO_PROFILE_PORTRAIT_1080P:      // 1080x1920 15
-    case VIDEO_PROFILE_PORTRAIT_1080P_3:    // 1080x1920 30
-    case VIDEO_PROFILE_PORTRAIT_1080P_5:    // 1080x1920 60
-        width = 1080;
-        height = 1920;
-        break;
-    case VIDEO_PROFILE_PORTRAIT_1440P:      // 1440x2560 30
-    case VIDEO_PROFILE_PORTRAIT_1440P_2:    // 1440x2560 60
-    case VIDEO_PROFILE_PORTRAIT_4K:         // 2160x3840 30
-    case VIDEO_PROFILE_PORTRAIT_4K_3:       // 2160x3840 60
-        width = 1440;
-        height = 2560;
-        break;
+
+	case VIDEO_PROFILE_480P:      // 640x480   15   500
+	case VIDEO_PROFILE_480P_3:    // 480x480   15   400
+	case VIDEO_PROFILE_480P_4:    // 640x480   30   750
+	case VIDEO_PROFILE_480P_10:   // 640x480   10   400
+		width = 640;
+		height = 480;
+		break;
+	case VIDEO_PROFILE_480P_6:    // 480x480   30   600
+		width = 480;
+		height = 480;
+		break;
+	case VIDEO_PROFILE_480P_8:    // 848x480   15   610
+	case VIDEO_PROFILE_480P_9:    // 848x480   30   930
+		width = 848;
+		height = 480;
+		break;
+	case VIDEO_PROFILE_720P:      // 1280x720  15   1130
+	case VIDEO_PROFILE_720P_3:    // 1280x720  30   1710
+		width = 1280;
+		height = 720;
+		break;
+	case VIDEO_PROFILE_720P_5:    // 960x720   15   910
+	case VIDEO_PROFILE_720P_6:    // 960x720   30   1380
+		width = 960;
+		height = 720;
+		break;
+	case VIDEO_PROFILE_1080P:     // 1920x1080 15   2080
+	case VIDEO_PROFILE_1080P_3:   // 1920x1080 30   3150
+	case VIDEO_PROFILE_1080P_5:   // 1920x1080 60   4780
+		width = 1920;
+		height = 1080;
+		break;
+	case VIDEO_PROFILE_1440P:     // 2560x1440 30   4850
+	case VIDEO_PROFILE_1440P_2:   // 2560x1440 60   7350
+		width = 2560;
+		height = 1440;
+		break;
+	case VIDEO_PROFILE_4K:     // 2560x1440 30   4850
+	case VIDEO_PROFILE_4K_3:   // 2560x1440 60   7350
+		width = 3840;
+		height = 2160;
+		break;
     }
 }
 
