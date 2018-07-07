@@ -34,7 +34,6 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(getErrorDescription)
                 PROPERTY_METHOD_DEFINE(joinChannel)
                 PROPERTY_METHOD_DEFINE(leaveChannel)
-                PROPERTY_METHOD_DEFINE(renewToken)
                 PROPERTY_METHOD_DEFINE(setChannelProfile)
                 PROPERTY_METHOD_DEFINE(setClientRole)
                 PROPERTY_METHOD_DEFINE(startEchoTest)
@@ -57,12 +56,10 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(sendStreamMessage)
                 PROPERTY_METHOD_DEFINE(muteLocalAudioStream)
                 PROPERTY_METHOD_DEFINE(muteAllRemoteAudioStreams)
-                PROPERTY_METHOD_DEFINE(setDefaultMuteAllRemoteAudioStreams)
                 PROPERTY_METHOD_DEFINE(muteRemoteAudioStream)
                 PROPERTY_METHOD_DEFINE(muteLocalVideoStream)
                 PROPERTY_METHOD_DEFINE(enableLocalVideo)
                 PROPERTY_METHOD_DEFINE(muteAllRemoteVideoStreams)
-                PROPERTY_METHOD_DEFINE(setDefaultMuteAllRemoteVideoStreams)
                 PROPERTY_METHOD_DEFINE(muteRemoteVideoStream)
                 PROPERTY_METHOD_DEFINE(setRemoteVideoStreamType)
                 PROPERTY_METHOD_DEFINE(setRemoteDefaultVideoStreamType)
@@ -77,21 +74,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(getAudioMixingDuration)
                 PROPERTY_METHOD_DEFINE(getAudioMixingCurrentPosition)
                 PROPERTY_METHOD_DEFINE(setAudioMixingPosition)
-                PROPERTY_METHOD_DEFINE(getEffectsVolume)
-                PROPERTY_METHOD_DEFINE(setEffectsVolume)
-                PROPERTY_METHOD_DEFINE(setVolumeOfEffect)
-                PROPERTY_METHOD_DEFINE(playEffect)
-                PROPERTY_METHOD_DEFINE(stopEffect)
-                PROPERTY_METHOD_DEFINE(stopAllEffects)
-                PROPERTY_METHOD_DEFINE(preloadEffect)
-                PROPERTY_METHOD_DEFINE(unloadEffect)
-                PROPERTY_METHOD_DEFINE(pauseEffect)
-                PROPERTY_METHOD_DEFINE(pauseAllEffects)
-                PROPERTY_METHOD_DEFINE(resumeEffect)
-                PROPERTY_METHOD_DEFINE(resumeAllEffects)
                 PROPERTY_METHOD_DEFINE(setLocalVoicePitch)
-                PROPERTY_METHOD_DEFINE(setLocalVoiceEqualization)
-                PROPERTY_METHOD_DEFINE(setLocalVoiceReverb)
                 PROPERTY_METHOD_DEFINE(setInEarMonitoringVolume)
                 PROPERTY_METHOD_DEFINE(setAudioProfile)
                 PROPERTY_METHOD_DEFINE(pauseAudio)
@@ -147,19 +130,12 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setVideoCompositingLayout)
                 PROPERTY_METHOD_DEFINE(clearVideoCompositingLayout)
                 PROPERTY_METHOD_DEFINE(configPublisher)
-                PROPERTY_METHOD_DEFINE(addPublishStreamUrl)
-                PROPERTY_METHOD_DEFINE(removePublishStreamUrl)
-                PROPERTY_METHOD_DEFINE(addVideoWatermark)
-                PROPERTY_METHOD_DEFINE(clearVideoWatermarks)
-                PROPERTY_METHOD_DEFINE(setLiveTranscoding)
-                PROPERTY_METHOD_DEFINE(addInjectStreamUrl)
-                PROPERTY_METHOD_DEFINE(removeInjectStreamUrl)
                 PROPERTY_METHOD_DEFINE(startScreenCapture2)
                 PROPERTY_METHOD_DEFINE(stopScreenCatpure2)
                 PROPERTY_METHOD_DEFINE(videoSourceInitialize)
                 PROPERTY_METHOD_DEFINE(videoSourceJoin)
                 PROPERTY_METHOD_DEFINE(videoSourceLeave)
-                PROPERTY_METHOD_DEFINE(videoSourceRenewToken)
+                PROPERTY_METHOD_DEFINE(videoSourceRenewChannelKey)
                 PROPERTY_METHOD_DEFINE(videoSourceSetChannelProfile)
                 PROPERTY_METHOD_DEFINE(videoSourceSetVideoProfile)
                 PROPERTY_METHOD_DEFINE(videoSourceRelease)
@@ -279,7 +255,7 @@ namespace agora {
 
         NAPI_API_DEFINE_WRAPPER_PARAM_0(disableAudio);
 
-        NAPI_API_DEFINE_WRAPPER_PARAM_0(stopScreenCapture);
+		NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(stopScreenCapture);
 
         NAPI_API_DEFINE_WRAPPER_PARAM_0(clearVideoCompositingLayout)
 
@@ -297,43 +273,15 @@ namespace agora {
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(refreshRecordingServiceStatus);
 
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(getEffectsVolume);
-
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setEffectsVolume, int32);
-
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(setVolumeOfEffect, int32, int32);
-
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_7(playEffect, int32, nodestring, int32, double, double, int32, bool);
-
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(stopEffect, int32);
-
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(stopAllEffects);
-
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(preloadEffect, int32, nodestring);
-
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(unloadEffect, int32);
-
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(pauseEffect, int32);
-
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(pauseAllEffects);
-
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(resumeEffect, int32);
-
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(resumeAllEffects);
-
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(muteLocalAudioStream, bool);
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(muteAllRemoteAudioStreams, bool);
-
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setDefaultMuteAllRemoteAudioStreams, bool);
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(muteLocalVideoStream, bool);
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(enableLocalVideo, bool);
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(muteAllRemoteVideoStreams, bool);
-
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setDefaultMuteAllRemoteVideoStreams, bool);
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(adjustAudioMixingVolume, int32);
 
@@ -394,186 +342,6 @@ namespace agora {
                     config.extraInfo = extraInfo;
                 }
                 pEngine->m_engine->configPublisher(config);
-            } while (false);
-            napi_set_int_result(args, status);
-            LOG_LEAVE;
-        }
-
-        NAPI_API_DEFINE(NodeRtcEngine, addVideoWatermark)
-        {
-            LOG_ENTER;
-
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                nodestring url;
-                napi_status status = napi_get_value_nodestring_(args[0], url);
-                CHECK_NAPI_STATUS(status);
-                RtcImage vwm;
-                Local<Object> vmwObj = args[0]->ToObject(args.GetIsolate());
-                if (napi_get_object_property_nodestring_(args.GetIsolate(), vmwObj, "url", url) == napi_ok) {
-                    vwm.url = url;
-                }
-                napi_get_object_property_int32_(args.GetIsolate(), vmwObj, "x", vwm.x);
-                napi_get_object_property_int32_(args.GetIsolate(), vmwObj, "y", vwm.y);
-                napi_get_object_property_int32_(args.GetIsolate(), vmwObj, "width", vwm.width);
-                napi_get_object_property_int32_(args.GetIsolate(), vmwObj, "height", vwm.height);
-                pEngine->m_engine->addVideoWatermark(vwm);
-            } while (false);
-            
-            LOG_LEAVE;
-        }
-
-        NAPI_API_DEFINE(NodeRtcEngine, clearVideoWatermarks)
-        {
-            LOG_ENTER;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                int result = pEngine->m_engine->clearVideoWatermarks();
-                napi_set_int_result(args, result);
-            } while (false);
-            LOG_LEAVE;
-        }
-            
-        NAPI_API_DEFINE(NodeRtcEngine, setLiveTranscoding)
-        {
-            LOG_ENTER;
-            napi_status status = napi_ok;
-            TranscodingUser *users = nullptr;
-            RtcImage* vwm = nullptr;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                LiveTranscoding transcoding;
-                nodestring extrainfo;
-                int videoCodecProfile, audioSampleRateType;
-                Local<Object> obj = args[0]->ToObject(args.GetIsolate());
-                nodestring transcodingExtraInfo;
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "width", transcoding.width);
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "height", transcoding.height);
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "videobitrate", transcoding.videoBitrate);
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "videoframerate", transcoding.videoFramerate);
-                napi_get_object_property_bool_(args.GetIsolate(), obj, "lowlatency", transcoding.lowLatency);
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "videogop", transcoding.videoGop);
-                if (napi_get_object_property_int32_(args.GetIsolate(), obj, "videocodecprofile", videoCodecProfile) == napi_ok) {
-                    transcoding.videoCodecProfile = (VIDEO_CODEC_PROFILE_TYPE)videoCodecProfile;
-                }
-                napi_get_object_property_uint32_(args.GetIsolate(), obj, "backgroundcolor", transcoding.backgroundColor);
-                napi_get_object_property_uint32_(args.GetIsolate(), obj, "usercount", transcoding.userCount);
-                if (napi_get_object_property_int32_(args.GetIsolate(), obj, "audiosamplerate", audioSampleRateType) == napi_ok) {
-                    transcoding.audioSampleRate = (AUDIO_SAMPLE_RATE_TYPE)audioSampleRateType;
-                }
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "audiobitrate", transcoding.audioBitrate);
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "audiochannels", transcoding.audioChannels);
-                
-                if (napi_get_object_property_nodestring_(args.GetIsolate(), obj, "transcodingExtraInfo", transcodingExtraInfo) == napi_ok) {
-                    transcoding.transcodingExtraInfo = transcodingExtraInfo;
-                }
-
-                RtcImage* wm = new RtcImage;
-
-                Local<Name> keyName = String::NewFromUtf8(args.GetIsolate(), "watermark", NewStringType::kInternalized).ToLocalChecked();
-                Local<Value> wmValue = obj->Get(args.GetIsolate()->GetCurrentContext(), keyName).ToLocalChecked();
-                if (wmValue.IsEmpty()) {
-                    status = napi_invalid_arg;
-                    break;
-                }
-                Local<Object> objWm = wmValue->ToObject(args.GetIsolate());
-                nodestring wmurl;
-                if (napi_get_object_property_nodestring_(args.GetIsolate(), objWm, "url", wmurl) == napi_ok) {
-                    wm->url = wmurl;
-                }
-                napi_get_object_property_int32_(args.GetIsolate(), objWm, "x", wm->x);
-                napi_get_object_property_int32_(args.GetIsolate(), objWm, "y", wm->y);
-                napi_get_object_property_int32_(args.GetIsolate(), objWm, "width", wm->width);
-                napi_get_object_property_int32_(args.GetIsolate(), objWm, "height", wm->height);
-
-                transcoding.watermark = wm;
-                if (transcoding.userCount > 0) {
-                    users = new TranscodingUser[transcoding.userCount];
-                    Local<Name> keyName = String::NewFromUtf8(args.GetIsolate(), "transcodingusers", NewStringType::kInternalized).ToLocalChecked();
-                    Local<Value> objUsers = obj->Get(args.GetIsolate()->GetCurrentContext(), keyName).ToLocalChecked();
-                    if (objUsers.IsEmpty() || !objUsers->IsArray()) {
-                        status = napi_invalid_arg;
-                        break;
-                    }
-                    auto usersValue = v8::Array::Cast(*objUsers);
-                    if (usersValue->Length() != transcoding.userCount) {
-                        status = napi_invalid_arg;
-                        break;
-                    }
-                    for (uint32 i = 0; i < transcoding.userCount; i++) {
-                        Local<Value> value = usersValue->Get(i);
-                        Local<Object> userObj = value->ToObject(args.GetIsolate());
-                        if (userObj.IsEmpty())
-                            status = napi_invalid_arg;
-                        break;
-                        napi_get_object_property_uid_(args.GetIsolate(), userObj, "uid", users[i].uid);
-                        napi_get_object_property_int32_(args.GetIsolate(), userObj, "x", users[i].x);
-                        napi_get_object_property_int32_(args.GetIsolate(), userObj, "y", users[i].y);
-                        napi_get_object_property_int32_(args.GetIsolate(), userObj, "width", users[i].width);
-                        napi_get_object_property_int32_(args.GetIsolate(), userObj, "height", users[i].height);
-                        napi_get_object_property_int32_(args.GetIsolate(), userObj, "zorder", users[i].zOrder);
-                        napi_get_object_property_double_(args.GetIsolate(), userObj, "alpha", users[i].alpha);
-                        napi_get_object_property_int32_(args.GetIsolate(), userObj, "audiochannel", users[i].audioChannel);
-                    }
-                    transcoding.transcodingUsers = users;
-                }
-                pEngine->m_engine->setLiveTranscoding(transcoding);
-            } while (false);
-            if (users) {
-                delete[] users;
-            }
-            napi_set_int_result(args, status);
-            LOG_LEAVE;
-        }
-
-        NAPI_API_DEFINE(NodeRtcEngine, addInjectStreamUrl)
-        {
-            LOG_ENTER;
-            napi_status status = napi_ok;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                nodestring url;
-                InjectStreamConfig config;
-                status = napi_get_value_nodestring_(args[0], url);
-                CHECK_NAPI_STATUS(status);
-                Local<Object> configObj = args[1]->ToObject(args.GetIsolate());
-                int audioSampleRate;
-                napi_get_object_property_int32_(args.GetIsolate(), configObj, "width", config.width);
-                napi_get_object_property_int32_(args.GetIsolate(), configObj, "height", config.height);
-                napi_get_object_property_int32_(args.GetIsolate(), configObj, "videoGop", config.videoGop);
-                napi_get_object_property_int32_(args.GetIsolate(), configObj, "videoframerate", config.videoFramerate);
-                napi_get_object_property_int32_(args.GetIsolate(), configObj, "videobitrate", config.videoBitrate);
-                if (napi_get_object_property_int32_(args.GetIsolate(), configObj, "audiosamplerate", audioSampleRate) == napi_ok) {
-                    config.audioSampleRate = (AUDIO_SAMPLE_RATE_TYPE)audioSampleRate;
-                }
-                napi_get_object_property_int32_(args.GetIsolate(), configObj, "audiobitrate", config.audioBitrate);
-                napi_get_object_property_int32_(args.GetIsolate(), configObj, "audiochannels", config.audioChannels);
-                pEngine->m_engine->addInjectStreamUrl(url, config);
-            } while (false);
-            napi_set_int_result(args, status);
-            LOG_LEAVE;
-        }
-
-        NAPI_API_DEFINE(NodeRtcEngine, removeInjectStreamUrl)
-        {
-            LOG_ENTER;
-            napi_status status = napi_ok;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                nodestring url;
-                status = napi_get_value_nodestring_(args[0], url);
-                CHECK_NAPI_STATUS(status);
-                pEngine->m_engine->removeInjectStreamUrl(url);
             } while (false);
             napi_set_int_result(args, status);
             LOG_LEAVE;
@@ -904,48 +672,6 @@ namespace agora {
             LOG_LEAVE;
         }
 
-        NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceEqualization)
-        {
-            LOG_ENTER;
-            napi_status status = napi_ok;
-            int result = -1;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                RtcEngineParameters param(pEngine->m_engine);
-                int frenq, bandgain;
-                status = napi_get_value_int32_(args[0], frenq);
-                CHECK_NAPI_STATUS(status);
-                status = napi_get_value_int32_(args[1], bandgain);
-                CHECK_NAPI_STATUS(status);
-                result = param.setLocalVoiceEqualization((agora::rtc::AUDIO_EQUALIZATION_BAND_FREQUENCY)frenq, bandgain);
-            } while (false);
-            napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
-
-        NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceReverb)
-        {
-            LOG_ENTER;
-            napi_status status = napi_ok;
-            int result = -1;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                RtcEngineParameters param(pEngine->m_engine);
-                int key, value;
-                status = napi_get_value_int32_(args[0], key);
-                CHECK_NAPI_STATUS(status);
-                status = napi_get_value_int32_(args[1], value);
-                CHECK_NAPI_STATUS(status);
-                result = param.setLocalVoiceReverb((agora::rtc::AUDIO_REVERB_TYPE)key, value);
-            } while (false);
-            napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
-
         NAPI_API_DEFINE(NodeRtcEngine, setExternalAudioSource)
         {
             LOG_ENTER;
@@ -988,7 +714,6 @@ namespace agora {
             napi_set_int_result(args, result);
             LOG_LEAVE;
         }
-
         NAPI_API_DEFINE(NodeRtcEngine, enableLoopbackRecording)
         {
             LOG_ENTER;
@@ -1002,7 +727,8 @@ namespace agora {
                 status = napi_get_value_bool_(args[0], enable);
                 CHECK_NAPI_STATUS(status);
                 RtcEngineParameters param(pEngine->m_engine);
-                result = param.enableLoopbackRecording(enable);
+                //result = param.enableLoopbackRecording(enable);
+				result = node_generic_error;
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -1074,7 +800,7 @@ namespace agora {
             LOG_LEAVE;
         }
 
-        NAPI_API_DEFINE(NodeRtcEngine, videoSourceRenewToken)
+        NAPI_API_DEFINE(NodeRtcEngine, videoSourceRenewChannelKey)
         {
             LOG_ENTER;
             int result = -1;
@@ -1082,11 +808,11 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                NodeString token;
-                napi_status status = napi_get_value_nodestring_(args[0], token);
+                NodeString channelKey;
+                napi_status status = napi_get_value_nodestring_(args[0], channelKey);
                 CHECK_NAPI_STATUS(status);
                 if (pEngine->m_videoSourceSink.get())
-                    pEngine->m_videoSourceSink->renewVideoSourceToken(token);
+                    pEngine->m_videoSourceSink->renewVideoSourceChannelKey(channelKey);
                 result = 0;
             } while (false);
             napi_set_int_result(args, result);
@@ -1102,10 +828,15 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 int profile;
+				NodeString permissionKey;
                 napi_status status = napi_get_value_int32_(args[0], profile);
                 CHECK_NAPI_STATUS(status);
+
+				status = napi_get_value_nodestring_(args[1], permissionKey);
+				CHECK_NAPI_STATUS(status);
+
                 if (pEngine->m_videoSourceSink.get())
-                    pEngine->m_videoSourceSink->setVideoSourceChannelProfile((agora::rtc::CHANNEL_PROFILE_TYPE)profile);
+                    pEngine->m_videoSourceSink->setVideoSourceChannelProfile((agora::rtc::CHANNEL_PROFILE_TYPE)profile, permissionKey);
                 result = 0;
             } while (false);
             napi_set_int_result(args, result);
@@ -1453,45 +1184,6 @@ namespace agora {
             LOG_LEAVE;
         }
 
-        NAPI_API_DEFINE(NodeRtcEngine, addPublishStreamUrl)
-        {
-            LOG_ENTER;
-            do{
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                nodestring url;
-                bool transcodingEnabled;
-                napi_status status = napi_get_value_nodestring_(args[0], url);
-                CHECK_NAPI_STATUS(status);
-                status = napi_get_value_bool_(args[1], transcodingEnabled);
-                CHECK_NAPI_STATUS(status);
-
-                int result = pEngine->m_engine->addPublishStreamUrl(url, transcodingEnabled);
-                napi_set_int_result(args, result);
-            } while (false);
-            LOG_LEAVE;
-        }
-
-        NAPI_API_DEFINE(NodeRtcEngine, removePublishStreamUrl)
-        {
-            LOG_ENTER;
-            do{
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                nodestring url;
-                napi_status status = napi_get_value_nodestring_(args[0], url);
-                CHECK_NAPI_STATUS(status);
-                int result = pEngine->m_engine->removePublishStreamUrl(url);
-                napi_set_int_result(args, result);
-            } while (false);
-            LOG_LEAVE;
-        }
-        NAPI_API(setLiveTranscoding);
-        NAPI_API(addInjectStreamUrl);
-        NAPI_API(removeInjectStreamUrl);
-
         NAPI_API_DEFINE(NodeRtcEngine, getErrorDescription)
         {
             LOG_ENTER;
@@ -1547,23 +1239,6 @@ namespace agora {
             LOG_LEAVE;
         }
 
-        NAPI_API_DEFINE(NodeRtcEngine, renewToken)
-        {
-            LOG_ENTER;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                NodeString newkey;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                napi_status status = napi_get_value_nodestring_(args[0], newkey);
-                CHECK_NAPI_STATUS(status);
-
-                int result = pEngine->m_engine->renewToken(newkey);
-                napi_set_int_result(args, result);
-            } while (false);
-            LOG_LEAVE;
-        }
-
         NAPI_API_DEFINE(NodeRtcEngine, setChannelProfile)
         {
             LOG_ENTER;
@@ -1592,7 +1267,7 @@ namespace agora {
                 unsigned int role;
                 status = napi_get_value_uint32_(args[0], role);
                 CHECK_NAPI_STATUS(status);
-                int result = pEngine->m_engine->setClientRole(CLIENT_ROLE_TYPE(role));
+                int result = pEngine->m_engine->setClientRole(CLIENT_ROLE_TYPE(role), NULL);
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
@@ -2235,7 +1910,8 @@ namespace agora {
                 CHECK_NAPI_STATUS(status);
 
                 Rect region(top, left, bottom, right);
-                int result = pEngine->m_engine->startScreenCapture(windowId, captureFreq, &region, bitrate);
+				RtcEngineParameters rep(pEngine->m_engine);
+				int result = rep.startScreenCapture(windowId, captureFreq, &region);
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
@@ -2267,7 +1943,8 @@ namespace agora {
                 Local<Value> rightValue = rect->Get(args.GetIsolate()->GetCurrentContext(), rightKey).ToLocalChecked();
                 right = rightValue->Int32Value();
                 Rect region(top, left, bottom, right);
-                pEngine->m_engine->updateScreenCaptureRegion(&region);                
+				RtcEngineParameters rep(pEngine->m_engine);
+                rep.updateScreenCaptureRegion(&region);              
             } while (false);
             LOG_LEAVE;
         }
