@@ -64,7 +64,6 @@ namespace agora {
             NAPI_API(getErrorDescription);
             NAPI_API(joinChannel);
             NAPI_API(leaveChannel);
-            NAPI_API(renewToken);
             NAPI_API(setChannelProfile);
             NAPI_API(setClientRole);
             NAPI_API(startEchoTest);
@@ -87,17 +86,8 @@ namespace agora {
             NAPI_API(sendStreamMessage);       
             NAPI_API(setEncryptionMode);
             NAPI_API(setVideoCompositingLayout);
-            NAPI_API(addPublishStreamUrl);
-            NAPI_API(removePublishStreamUrl);
-
             NAPI_API(clearVideoCompositingLayout);
             NAPI_API(configPublisher);
-			NAPI_API(addVideoWatermark);
-			NAPI_API(clearVideoWatermarks);
-            NAPI_API(setLiveTranscoding);
-            NAPI_API(addInjectStreamUrl);
-            NAPI_API(removeInjectStreamUrl);
-
             /*
             * Wrapper for RtcEngineParameter API
             */
@@ -120,12 +110,10 @@ namespace agora {
 
             NAPI_API(muteLocalAudioStream);
             NAPI_API(muteAllRemoteAudioStreams);
-            NAPI_API(setDefaultMuteAllRemoteAudioStreams);
             NAPI_API(muteRemoteAudioStream);
             NAPI_API(muteLocalVideoStream);
             NAPI_API(enableLocalVideo);
             NAPI_API(muteAllRemoteVideoStreams);
-            NAPI_API(setDefaultMuteAllRemoteVideoStreams);
             NAPI_API(muteRemoteVideoStream);
             NAPI_API(setRemoteVideoStreamType);
             NAPI_API(setRemoteDefaultVideoStreamType);
@@ -140,21 +128,8 @@ namespace agora {
             NAPI_API(getAudioMixingDuration);
             NAPI_API(getAudioMixingCurrentPosition);
             NAPI_API(setAudioMixingPosition);
-			NAPI_API(getEffectsVolume);
-			NAPI_API(setEffectsVolume);
-			NAPI_API(setVolumeOfEffect);
-			NAPI_API(playEffect);
-			NAPI_API(stopEffect);
-			NAPI_API(stopAllEffects);
-			NAPI_API(preloadEffect);
-			NAPI_API(unloadEffect);
-			NAPI_API(pauseEffect);
-			NAPI_API(pauseAllEffects);
-			NAPI_API(resumeEffect);
-			NAPI_API(resumeAllEffects);
+
             NAPI_API(setLocalVoicePitch);
-            NAPI_API(setLocalVoiceEqualization);
-            NAPI_API(setLocalVoiceReverb);
             NAPI_API(setInEarMonitoringVolume);
             NAPI_API(pauseAudio);
             NAPI_API(resumeAudio);
@@ -219,7 +194,7 @@ namespace agora {
             NAPI_API(videoSourceInitialize);
             NAPI_API(videoSourceJoin);
             NAPI_API(videoSourceLeave);
-            NAPI_API(videoSourceRenewToken);
+            NAPI_API(videoSourceRenewChannelKey);
             NAPI_API(videoSourceSetChannelProfile);
             NAPI_API(videoSourceSetVideoProfile);
             NAPI_API(startScreenCapture2);

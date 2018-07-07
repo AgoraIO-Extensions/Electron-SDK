@@ -47,8 +47,8 @@ enum AgoraIpcMsg
     AGORA_IPC_STOP_CAPTURE_SCREEN,
     /** Node ADDON ==> video source to start video */
     AGORA_IPC_START_CAMERA,
-    /** Node ADDON ==> video source to update token */
-    AOGRA_IPC_RENEW_TOKEN,
+    /** Node ADDON ==> video source to update channelKey */
+    AOGRA_IPC_RENEW_CHANNEL_KEY,
     /** Node ADDON ==> video source to set channel profile */
     AGORA_IPC_SET_CHANNEL_PROFILE,
     /** Node ADDON ==> video source to set video profile */
@@ -76,7 +76,12 @@ enum AgoraIpcMsg
  */
 struct CaptureScreenCmd
 {
-    agora::rtc::IRtcEngine::WindowIDType windowid;
+#if defined(__APPLE__)
+	unsigned int windowid;
+#elif defined(_WIN32)
+	HWND windowid;
+#endif
+//   agora::rtc::IRtcEngine::WindowIDType windowid;
     int captureFreq;
     agora::rtc::Rect rect;
     int bitrate;
@@ -91,6 +96,7 @@ struct CaptureScreenCmd
 #define MAX_TOKEN_LEN 128
 #define MAX_CNAME_LEN 256
 #define MAX_CHAN_INFO 512
+#define MAX_PERMISSION_KEY 128
 /**
  * Join channel parameters when ADDON ask video source to join channel
  */
@@ -122,6 +128,19 @@ struct VideoProfileCmd
     VideoProfileCmd(agora::rtc::VIDEO_PROFILE_TYPE type, bool swap)
         : profile(type)
         , swapWidthAndHeight(swap)
+    {}
+};
+
+/**
+ * channel profile parameters whne ADDON ask video source to set channel profile
+ */
+struct ChannelProfileCmd
+{
+	agora::rtc::CHANNEL_PROFILE_TYPE profile;
+	char permissionKey[MAX_PERMISSION_KEY];
+	ChannelProfileCmd()
+		: profile(agora::rtc::CHANNEL_PROFILE_LIVE_BROADCASTING)
+        , permissionKey{ 0 }
     {}
 };
 
