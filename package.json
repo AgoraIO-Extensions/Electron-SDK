@@ -17,7 +17,8 @@
     "debug": "node ./scripts/debug.js",
     "lint": "eslint .",
     "format": "eslint . --fix ",
-    "test": "npm run build:node && jest"
+    "test": "npm run build:node && jest",
+    "quicktest": "jest"
   },
   "gypfile": true,
   "dependencies": {
