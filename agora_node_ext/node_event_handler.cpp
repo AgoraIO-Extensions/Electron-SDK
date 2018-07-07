@@ -241,7 +241,7 @@ namespace agora {
         {
             LOG_INFO("duration : %d, tx :%d, rx :%d, txbr :%d, rxbr :%d, txAudioBr :%d, rxAudioBr :%d, users :%d\n",
                 stats.duration, stats.txBytes, stats.rxBytes, stats.txKBitRate, stats.rxKBitRate, stats.txAudioKBitRate,
-                stats.rxAudioKBitRate, stats.userCount);
+                stats.rxAudioKBitRate, stats.users);
             do {
                 Isolate *isolate = Isolate::GetCurrent();
                 HandleScope scope(isolate);
@@ -256,7 +256,7 @@ namespace agora {
                 NODE_SET_OBJ_PROP_UINT32(obj, "txAudioKBitRate", stats.txAudioKBitRate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "rxVideoKBitRate", stats.rxVideoKBitRate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "txVideoKBitRate", stats.txVideoKBitRate);
-                NODE_SET_OBJ_PROP_UINT32(obj, "userCount", stats.userCount);
+                NODE_SET_OBJ_PROP_UINT32(obj, "users", stats.users);
                 NODE_SET_OBJ_PROP_NUMBER(obj, "cpuAppUsage", stats.cpuAppUsage);
                 NODE_SET_OBJ_PROP_NUMBER(obj, "cpuTotalUsage", stats.cpuTotalUsage);
                 Local<Value> arg[1] = { obj };
@@ -533,12 +533,12 @@ namespace agora {
             MAKE_JS_CALL_2(RTC_EVENT_APICALL_EXECUTED, string, api, int32, error);
         }
 
-        void NodeEventHandler::onApiCallExecuted(int err, const char* api, const char* result)
+        void NodeEventHandler::onApiCallExecuted(const char* api, int error)
         {
             FUNC_TRACE;
             std::string apiName(api);
-            node_async_call::async_call([this, apiName, err] {
-                this->onApiCallExecuted_node(apiName.c_str(), err);
+            node_async_call::async_call([this, apiName, error] {
+                this->onApiCallExecuted_node(apiName.c_str(), error);
             });
         }
 
@@ -747,13 +747,13 @@ namespace agora {
             MAKE_JS_CALL_0(RTC_EVENT_REQUEST_CHANNEL_KEY);
         }
 
-        void NodeEventHandler::onRequestToken()
-        {
-            FUNC_TRACE;
+		void NodeEventHandler::onRequestChannelKey()
+		{
+			FUNC_TRACE;
             node_async_call::async_call([this] {
-                this->onRequestChannelKey_node();
+				this->onRequestChannelKey_node();
             });
-        }
+		}
 
         void NodeEventHandler::onFirstLocalAudioFrame_node(int elapsed)
         {
@@ -825,6 +825,34 @@ namespace agora {
             });
         }
 
+        void NodeEventHandler::onRemoteAudioTransportStats_node(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)
+        {
+			FUNC_TRACE;
+            MAKE_JS_CALL_4(RTC_EVENT_REMOTE_AUDIO_TRANSPORT_STATS, uid, uid, uint16, delay, uint16, lost, uint16, rxKBitRate);
+        }
+
+        void NodeEventHandler::onRemoteVideoTransportStats_node(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)
+        {
+			FUNC_TRACE;
+            MAKE_JS_CALL_4(RTC_EVENT_REMOTE_VIDEO_STATS, uid, uid, uint16, delay, uint16, lost, uint16, rxKBitRate);
+        }
+
+        void NodeEventHandler::onRemoteAudioTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)
+        {
+            FUNC_TRACE;
+			node_async_call::async_call([this, uid, delay, lost, rxKBitRate] {
+				this->onRemoteAudioTransportStats_node(uid, delay, lost, rxKBitRate);
+            });
+        }
+
+        void NodeEventHandler::onRemoteVideoTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, uid, delay, lost, rxKBitRate] {
+                this->onRemoteVideoTransportStats_node(uid, delay, lost, rxKBitRate);
+            });
+        }
+
         void NodeEventHandler::onVideoSourceJoinedChannel(agora::rtc::uid_t uid)
         {
             FUNC_TRACE;
@@ -841,18 +869,18 @@ namespace agora {
             MAKE_JS_CALL_1(RTC_EVENT_VIDEO_SOURCE_JOIN_SUCCESS, uid, uid);
         }
 
-        void NodeEventHandler::onVideoSourceRequestNewToken()
+        void NodeEventHandler::onVideoSourceRequestNewChannelKey()
         {
             FUNC_TRACE;
             node_async_call::async_call([this]{
-                this->onVideoSourceRequestNewToken_node();
+                this->onVideoSourceRequestChannelKey_node();
             });
         }
 
-        void NodeEventHandler::onVideoSourceRequestNewToken_node()
+        void NodeEventHandler::onVideoSourceRequestChannelKey_node()
         {
             FUNC_TRACE;
-            MAKE_JS_CALL_0(RTC_EVENT_VIDEO_SOURCE_REQUEST_NEW_TOKEN);
+            MAKE_JS_CALL_0(RTC_EVENT_VIDEO_SOURCE_REQUEST_NEW_CHANNEL_KEY);
         }
 
         void NodeEventHandler::onVideoSourceExit()

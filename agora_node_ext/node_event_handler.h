@@ -65,8 +65,10 @@ namespace agora {
 #define RTC_EVENT_ACTIVE_SPEAKER "activespeaker"
 #define RTC_EVENT_CLIENT_ROLE_CHANGED "clientrolechanged"
 #define RTC_EVENT_AUDIO_DEVICE_VOLUME_CHANGED "audiodevicevolumechanged"
+#define RTC_EVENT_REMOTE_AUDIO_TRANSPORT_STATS "remoteAudioTransportStats"
+#define RTC_EVENT_REMOTE_VIDEO_TRANSPORT_STATS "remoteVideoTransportStats"
 #define RTC_EVENT_VIDEO_SOURCE_JOIN_SUCCESS "videosourcejoinsuccess"
-#define RTC_EVENT_VIDEO_SOURCE_REQUEST_NEW_TOKEN "videosourcerequestnewtoken"
+#define RTC_EVENT_VIDEO_SOURCE_REQUEST_NEW_CHANNEL_KEY "videosourcerequestnewchannelkey"
 #define RTC_EVENT_VIDEO_SOURCE_LEAVE_CHANNEL "videosourceleavechannel"
         class NodeRtcEngine;
         class NodeUid;
@@ -107,7 +109,7 @@ namespace agora {
             virtual void onUserMuteVideo(uid_t uid, bool muted) override;
             virtual void onUserEnableVideo(uid_t uid, bool enabled) override;
             virtual void onUserEnableLocalVideo(uid_t uid, bool enabled) override;
-            virtual void onApiCallExecuted(int err, const char* api, const char* result) override;
+            virtual void onApiCallExecuted(const char* api, int error) override;
             virtual void onLocalVideoStats(const LocalVideoStats& stats) override;
             virtual void onRemoteVideoStats(const RemoteVideoStats& stats) override;
             virtual void onCameraReady() override;
@@ -120,14 +122,16 @@ namespace agora {
             virtual void onStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached) override;
             virtual void onMediaEngineLoadSuccess() override;
             virtual void onMediaEngineStartCallSuccess() override;
-            virtual void onRequestToken() override;
+			virtual void onRequestChannelKey() override;
             virtual void onFirstLocalAudioFrame(int elapsed) override;
             virtual void onFirstRemoteAudioFrame(uid_t uid, int elapsed) override;
             virtual void onActiveSpeaker(uid_t uid) override;
             virtual void onClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole) override;
             virtual void onAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted) override;
+			virtual void onRemoteAudioTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)override;
+			virtual void onRemoteVideoTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)override;
             virtual void onVideoSourceJoinedChannel(agora::rtc::uid_t uid) override;
-            virtual void onVideoSourceRequestNewToken() override;
+            virtual void onVideoSourceRequestNewChannelKey() override;
             virtual void onVideoSourceLeaveChannel() override;
             virtual void onVideoSourceExit() override;
             
@@ -178,9 +182,11 @@ namespace agora {
             void onFirstRemoteAudioFrame_node(uid_t uid, int elapsed);
             void onActiveSpeaker_node(uid_t uid);
             void onClientRoleChanged_node(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole);
-            void onAudioDeviceVolumeChanged_node(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted); 
+            void onAudioDeviceVolumeChanged_node(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted);
+			void onRemoteAudioTransportStats_node(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
+			void onRemoteVideoTransportStats_node(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
             void onVideoSourceJoinedChannel_node(agora::rtc::uid_t uid);
-            void onVideoSourceRequestNewToken_node();
+            void onVideoSourceRequestChannelKey_node();
             void onVideoSourceLeaveChannel_node();
         private:
             std::unordered_map<std::string, NodeEventCallback*> m_callbacks;
