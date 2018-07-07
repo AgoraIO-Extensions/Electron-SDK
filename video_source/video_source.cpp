@@ -97,7 +97,7 @@ bool AgoraVideoSource::initialize()
     }
 
     agora::util::AutoPtr<agora::media::IMediaEngine> pMediaEngine;
-    pMediaEngine.queryInterface(m_rtcEngine.get(), agora::AGORA_IID_MEDIA_ENGINE);
+    pMediaEngine.queryInterface(m_rtcEngine.get(), agora::rtc::AGORA_IID_MEDIA_ENGINE);
 
     if (pMediaEngine.get()){
         pMediaEngine->registerVideoRenderFactory(m_renderFactory.get());
@@ -165,9 +165,9 @@ void AgoraVideoSource::notifyLeaveChannel()
     m_ipc->sendMessage(AGORA_IPC_LEAVE_CHANNEL, nullptr, 0);
 }
 
-void AgoraVideoSource::notifyRequestNewToken()
+void AgoraVideoSource::notifyRequestNewChannel()
 {
-    m_ipc->sendMessage(AOGRA_IPC_RENEW_TOKEN, nullptr, 0);
+    m_ipc->sendMessage(AOGRA_IPC_RENEW_CHANNEL_KEY, nullptr, 0);
 }
 
 void AgoraVideoSource::release()
@@ -200,14 +200,14 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
         rep.enableLocalVideo(true);
         CaptureScreenCmd *cmd = (CaptureScreenCmd*)payload;
         LOG_INFO("Start screen share, top : %d, left : %d, bottom :%d, right :%d\n", cmd->rect.top, cmd->rect.left, cmd->rect.bottom, cmd->rect.right);
-        if (m_rtcEngine->startScreenCapture(cmd->windowid, cmd->captureFreq, &cmd->rect, cmd->bitrate) != 0) {
+		if(rep.startScreenCapture(cmd->windowid, cmd->captureFreq, &cmd->rect) != 0){
             LOG_ERROR("start screen capture failed.");
             rep.enableLocalVideo(false);
         }
     }
     else if (msg == AGORA_IPC_STOP_CAPTURE_SCREEN){
-        m_rtcEngine->stopScreenCapture();
         agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
+		rep.stopScreenCapture();
         rep.enableLocalVideo(false);
     }
     else if (msg == AGORA_IPC_START_VS_PREVIEW) {
@@ -216,13 +216,17 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
     else if (msg == AGORA_IPC_STOP_VS_PREVIEW) {
         this->stopPreview();
     }
-    else if (msg == AOGRA_IPC_RENEW_TOKEN){
-        m_rtcEngine->renewToken(payload);
+    else if (msg == AOGRA_IPC_RENEW_CHANNEL_KEY){
+		m_rtcEngine->renewChannelKey(payload);
     }
     else if (msg == AGORA_IPC_SET_CHANNEL_PROFILE){
-        m_rtcEngine->setChannelProfile((agora::rtc::CHANNEL_PROFILE_TYPE)*payload);
-        if ((agora::rtc::CHANNEL_PROFILE_TYPE)*payload == agora::rtc::CHANNEL_PROFILE_LIVE_BROADCASTING)
-            m_rtcEngine->setClientRole(agora::rtc::CLIENT_ROLE_BROADCASTER);
+		if (payload) {
+			ChannelProfileCmd *cmd = (ChannelProfileCmd*)payload;
+			m_rtcEngine->setChannelProfile(cmd->profile);
+            if (cmd->profile == agora::rtc::CHANNEL_PROFILE_LIVE_BROADCASTING){
+				m_rtcEngine->setClientRole(agora::rtc::CLIENT_ROLE_BROADCASTER, cmd->permissionKey);
+            }
+        }
     }
     else if (msg == AGORA_IPC_SET_VIDEO_RPOFILE){
         if (len != sizeof(VideoProfileCmd)) {
@@ -231,7 +235,7 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
             return;
         }
         VideoProfileCmd *cmd = (VideoProfileCmd*)payload;
-		if (cmd->profile > agora::rtc::VIDEO_PROFILE_PORTRAIT_4K_3) {
+		if (cmd->profile > agora::rtc::VIDEO_PROFILE_4K_3) {
 			LOG_ERROR("%s, set video profile with invalid value : %d", __FUNCTION__, cmd->profile);
 		}
 		else {
