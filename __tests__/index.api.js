@@ -4,13 +4,17 @@ const generateRandomNumber = require('./utils/index.js').generateRandomNumber;
 const doJoin = require('./utils/doJoin');
 const doLeave = require('./utils/doLeave');
 
-const rtcEngine = new AgoraRtcEngine();
+let rtcEngine = null;
 
 describe('Basic API Coverage', () => {
   beforeAll(() => {
+    rtcEngine = new AgoraRtcEngine();
     rtcEngine.initialize('***REMOVED***');
   });
-  afterAll(() => setTimeout(() => process.exit(), 1000));
+  afterEach(() => {
+    // Restore mocks after each test
+    jest.restoreAllMocks();
+  });
 
   it('Get version', () => {
     expect(rtcEngine.getVersion()).toHaveProperty('version');
@@ -62,5 +66,36 @@ describe('Basic API Coverage', () => {
         console.error(err);
         expect(2).toBe(1);
       });
+  });
+});
+
+describe('Render coverage', () => {
+  beforeAll(() => {
+    rtcEngine = new AgoraRtcEngine();
+    rtcEngine.initialize('***REMOVED***');
+  });
+  afterAll(() => setTimeout(() => process.exit(), 1000));
+  afterEach(() => {
+    // Restore mocks after each test
+    // jest.restoreAllMocks();
+  });
+
+  it('Preview test', () => {
+    return new Promise(resolve => {
+      jest.spyOn(rtcEngine, 'onRegisterDeliverFrame').mockImplementation(infos => {
+        expect(rtcEngine.stopPreview()).toBe(0);
+        resolve();
+      });
+      // Ignore render functions
+      jest.spyOn(rtcEngine, 'initRender').mockImplementation(() => {});
+      rtcEngine.setChannelProfile(1);
+      rtcEngine.setClientRole(1);
+      rtcEngine.setupLocalVideo();
+      rtcEngine.setAudioProfile(0, 1);
+      rtcEngine.enableVideo();
+      rtcEngine.enableLocalVideo(true);
+      rtcEngine.setVideoProfile(10, false);
+      expect(rtcEngine.startPreview()).toBe(0);
+    });
   });
 });

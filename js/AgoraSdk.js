@@ -274,48 +274,52 @@ class AgoraRtcEngine extends EventEmitter {
       self.emit('videosourceleavechannel');
     });
     this.rtcengine.registerDeliverFrame(function(infos) {
-      var len = infos.length;
-      // Console.log("len : " + len);
-      for (var i = 0; i < len; i++) {
-        var info = infos[i];
-        var type = info.type;
-        var uid = info.uid;
-        var header = info.header;
-        var ydata = info.ydata;
-        var udata = info.udata;
-        var vdata = info.vdata;
-        // Console.log("uid : " + uid);
-        if (!header || !ydata || !udata || !vdata) {
-          console.log(
-            'Invalid data param ： ' + header + ' ' + ydata + ' ' + udata + ' ' + vdata
-          );
-          continue;
-        }
-        var render = null;
-        /*
-                * Type 0 is local video
-                * type 1 is remote video
-                * type 2 is device test video
-                * type 3 is video source video
-                */
-        if (type < 2) {
-          if (uid == 0) {
-            render = self.streams.local;
-          } else {
-            render = self.streams[uid];
-          }
-        } else if (type == 2) {
-          render = self.streams.devtest;
-        } else if (type == 3) {
-          render = self.streams.videosource;
-        }
-        if (!render) {
-          console.log("Can't find render for uid : " + uid);
-          continue;
-        }
-        self.drawImage(render, header, ydata, udata, vdata);
-      }
+      self.onRegisterDeliverFrame(infos);
     });
+  }
+
+  onRegisterDeliverFrame(infos) {
+    var len = infos.length;
+    // Console.log("len : " + len);
+    for (var i = 0; i < len; i++) {
+      var info = infos[i];
+      var type = info.type;
+      var uid = info.uid;
+      var header = info.header;
+      var ydata = info.ydata;
+      var udata = info.udata;
+      var vdata = info.vdata;
+      // Console.log("uid : " + uid);
+      if (!header || !ydata || !udata || !vdata) {
+        console.log(
+          'Invalid data param ： ' + header + ' ' + ydata + ' ' + udata + ' ' + vdata
+        );
+        continue;
+      }
+      var render = null;
+      /*
+              * Type 0 is local video
+              * type 1 is remote video
+              * type 2 is device test video
+              * type 3 is video source video
+              */
+      if (type < 2) {
+        if (uid === 0) {
+          render = this.streams.local;
+        } else {
+          render = this.streams[uid];
+        }
+      } else if (type === 2) {
+        render = this.streams.devtest;
+      } else if (type === 3) {
+        render = this.streams.videosource;
+      }
+      if (!render) {
+        console.log("Can't find render for uid : " + uid);
+        continue;
+      }
+      this.drawImage(render, header, ydata, udata, vdata);
+    }
   }
 
   drawImage(render, header, yplanedata, uplanedata, vplanedata) {
@@ -388,8 +392,8 @@ class AgoraRtcEngine extends EventEmitter {
 
   initRender(view) {
     var render = new AgoraRender();
-    render.start(view, function() {
-      console.log('render start fail.');
+    render.start(view, function(e) {
+      console.log(`render start fail: ${e.error}`);
     });
     return render;
   }
@@ -424,10 +428,11 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * @description Join channel with token, channel, channel_info and uid
    * @requires channel
-   * @param {String} token
-   * @param {String} channel
-   * @param {String} chan_info
-   * @param {Number} uid
+   * @param {String} token token
+   * @param {String} channel channel
+   * @param {String} chan_info channel info
+   * @param {Number} uid uid
+   * @returns {int} 0 for success, <0 for failure
    */
   joinChannel(token, channel, chan_info, uid) {
     return this.rtcengine.joinChannel(token, channel, chan_info, uid);
@@ -435,6 +440,7 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description Leave channel
+   * @returns {int} 0 for success, <0 for failure
    */
   leaveChannel() {
     return this.rtcengine.leaveChannel();
@@ -495,8 +501,8 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description Set channel profile(before join channel) since sdk will do optimization according to scenario.
    * @description 0 (default) for communication, 1 for live broadcasting, 2 for in-game
-   * @param {Number} profile
-   * @returns 0 for success, <0 for failure
+   * @param {Number} profile profile
+   * @returns {int} 0 for success, <0 for failure
    */
   setChannelProfile(profile) {
     return this.rtcengine.setChannelProfile(profile);
@@ -505,9 +511,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    *
    * @description In live broadcasting mode, set client role, 1 for anchor, 2 for audience
-   * @param {Number} role
-   * @param {*} permissionKey
-   * @returns 0 for success, <0 for failure
+   * @param {Number} role client role
+   * @param {*} permissionKey permission key
+   * @returns {int} 0 for success, <0 for failure
    */
   setClientRole(role, permissionKey) {
     return this.rtcengine.setClientRole(role, permissionKey);
@@ -531,7 +537,7 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description Use before join channel to enable video communication, or you will only join with audio-enabled
-   * @returns 0 for success, <0 for failure
+   * @returns {int} 0 for success, <0 for failure
    */
   enableVideo() {
     return this.rtcengine.enableVideo();
@@ -539,16 +545,29 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description Use to disable video and use pure audio communication
-   * @returns 0 for success, <0 for failure
+   * @returns {int} 0 for success, <0 for failure
    */
   disableVideo() {
     return this.rtcengine.disableVideo();
   }
 
+  /**
+   * @description This method starts the local video preview. Before starting the preview,
+   * always call setupLocalVideo to set up the preview window and configure the attributes,
+   * and also call the enableVideo method to enable video. If startPreview is called to start
+   * the local video preview before calling joinChannel to join a channel, the local preview
+   * will still be in the started state after leaveChannel is called to leave the channel.
+   * stopPreview can be called to close the local preview.
+   * @returns {int} 0 for success, <0 for failure
+   */
   startPreview() {
     return this.rtcengine.startPreview();
   }
 
+  /**
+   * @description This method stops the local video preview and closes the video.
+   * @returns {int} 0 for success, <0 for failure
+   */
   stopPreview() {
     return this.rtcengine.stopPreview();
   }
@@ -557,6 +576,7 @@ class AgoraRtcEngine extends EventEmitter {
    * 
    * @param {number} profile - enumeration values represent video profile
    * @param {boolean} [swapWidthAndHeight = false] - Whether to swap width and height
+   * @returns {int} 0 for success, <0 for failure
    */
   setVideoProfile(profile, swapWidthAndHeight=false) {
     return this.rtcengine.setVideoProfile(profile, swapWidthAndHeight);
@@ -572,9 +592,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description Set audio profile (before join channel) depending on your scenario
-   * @param {Number} profile
-   * @param {Number} scenario
-   * @returns 0 for success, <0 for failure
+   * @param {Number} profile audio profile
+   * @param {Number} scenario audio scenario
+   * @returns {int} 0 for success, <0 for failure
    */
   setAudioProfile(profile, scenario) {
     return this.rtcengine.setAudioProfile(profile, scenario);
@@ -732,7 +752,7 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcengine.startRecordingService(recordingKey);
   }
 
-  stopRecordingService(recordingKefy) {
+  stopRecordingService(recordingKey) {
     return this.rtcengine.stopRecordingService(recordingKey);
   }
 
@@ -848,6 +868,7 @@ class AgoraRtcEngine extends EventEmitter {
    *      zorder : int
    *      alpha : double
    *      audiochannel : int
+   * @returns {int} 0 for success, <0 for failure
    */
   setLiveTranscoding(liveTranscoding) {
     return this.rtcengine.setLiveTranscoding(liveTranscoding);
@@ -874,6 +895,7 @@ class AgoraRtcEngine extends EventEmitter {
    *      zorder : int
    *      alpha : double
    *      rendermode : int
+   * @returns {int} 0 for success, <0 for failure
    */
   setVideoCompositingLayout(layout) {
     return this.rtcengine.setVideoCompositingLayout(layout);
@@ -899,6 +921,7 @@ class AgoraRtcEngine extends EventEmitter {
    *      audiosamplerate : int
    *      audiobitrate : int
    *      audiochannels : int
+   * @returns {int} 0 for success, <0 for failure
    */
   addInjectStreamUrl(injectStreamConfig) {
     return this.rtcengine.addInjectStreamUrl(injectStreamConfig);
@@ -1010,10 +1033,11 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description Set it to true to enable web interoperability
-   * @param {Boolean} bool 
+   * @param {Boolean} enabled enalbe/disable web interoperability
+   * @returns {int} 0 for success, <0 for failure
    */
-  videoSourceEnableWebSdkInteroperability(bool) {
-    return this.rtcengine.videoSourceEnableWebSdkInteroperability(bool)
+  videoSourceEnableWebSdkInteroperability(enabled) {
+    return this.rtcengine.videoSourceEnableWebSdkInteroperability(enabled);
   }
 
   videoSourceJoin(token, cname, chanInfo, uid) {
@@ -1165,14 +1189,16 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @param {int} volume - [0.0, 100.0]
+   * @returns {int} 0 for success, <0 for failure
    */
   setEffectsVolume(volume) {
     return this.rtcengine.setEffectsVolume(volume);
   }
 
   /**
-   * @param {int} soundId
+   * @param {int} soundId soundId
    * @param {int} volume - [0.0, 100.0]
+   * @returns {int} 0 for success, <0 for failure
    */
   setVolumeOfEffect(soundId, volume) {
     return this.setVolumeOfEffect(soundId, volume);
@@ -1180,13 +1206,14 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    *
-   * @param {int} soundId
-   * @param {String} filePath
+   * @param {int} soundId soundId
+   * @param {String} filePath filepath
    * @param {int} loopcount - 0: once, 1: twice, -1: infinite
    * @param {double} pitch - [0.5, 2]
    * @param {double} pan - [-1, 1]
    * @param {int} gain - [0, 100]
-   * @param {boolean} publish
+   * @param {boolean} publish publish
+   * @returns {int} 0 for success, <0 for failure
    */
   playEffect(soundId, filePath, loopcount, pitch, pan, gain, publish) {
     return this.rtcengine.playEffect(
@@ -1202,7 +1229,8 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    *
-   * @param {int} soundId
+   * @param {int} soundId soundId
+   * @returns {int} 0 for success, <0 for failure
    */
   stopEffect(soundId) {
     return this.rtcengine.stopEffect(soundId);
@@ -1210,8 +1238,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    *
-   * @param {int} soundId
-   * @param {String} filePath
+   * @param {int} soundId soundId
+   * @param {String} filePath filepath
+   * @returns {int} 0 for success, <0 for failure
    */
   preloadEffect(soundId, filePath) {
     return this.rtcengine.preloadEffect(soundId, filePath);
@@ -1219,7 +1248,8 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    *
-   * @param {int} soundId
+   * @param {int} soundId soundId
+   * @returns {int} 0 for success, <0 for failure
    */
   unloadEffect(soundId) {
     return this.rtcengine.unloadEffect(soundId);
