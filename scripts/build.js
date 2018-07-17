@@ -22,11 +22,12 @@ const install = () => {
   } else if (platform === 'win') {
     sh = 'node-gyp rebuild --arch=ia32' + electronArgs
   } else {
-    shell.echo(chalk.red('Sorry, this sdk only provide win32 and mac version.'));
+    shell.echo(chalk.red('Sorry, this sdk only provide win32 and mac version.\n'));
     shell.exit(1);
     return false
   }
 
+  shell.echo('\n')
   spinner.start()
 
   let builder = shell.exec(sh, {silent: true, async: true})
@@ -39,9 +40,9 @@ const install = () => {
   builder.on('close', code => {
     if(code !== 0) {
       // failed to build
-      spinner.fail(chalk.red('Build failed\n'))
+      spinner.fail(chalk.red('Build failed'))
       shell.echo('A complete log of this run can be found in:')
-      shell.echo('    '+shell.pwd()+'/error-log.txt')
+      shell.echo('    '+shell.pwd()+'/error-log.txt\n')
     } else {
       spinner.succeed(chalk.green('Build complete\n'))
     }
