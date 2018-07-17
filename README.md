@@ -2,6 +2,10 @@
 
 The Agora-RTC-SDK-for-Electron is an open-source wrapper for **[Electron](https://electronjs.org/)** developers. This SDK takes advantage of Node.js C++ Addons and Agora RTC SDKs on Windows/macOS.
 
+## :heart_eyes: Important 
+
+v2.2.1-rc.1 has been released! Now node-gyp build environment are not neccessary any more, we will download built C++ addon from our cdn instead.
+
 ## Developer Environment Requirements
 
 - Node.js 6.9.1+
@@ -28,7 +32,7 @@ Assuming that you have [Node](https://nodejs.org/en/download/) installed and can
 
 - run `npm install` to install dependency
 
-- Usually npm will trigger building automatically, or you can build mannually by running `npm run build:electron` or `npm run build:node`, the former one is for releasing and using in electron runtime while the latter is for developing and testing in node runtime.
+- <del>Usually npm will trigger building automatically, or you can build mannually by running `npm run build:electron` or `npm run build:node`, the former one is for releasing and using in electron runtime while the latter is for developing and testing in node runtime.</del> Now we will download built C++ addon after dependencies installed.
 
 - If you want to debug with xcode/visual studio, run `npm run debug` to generate the project file and sdk for debug env.
 
