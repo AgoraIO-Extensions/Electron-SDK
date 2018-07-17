@@ -6,15 +6,16 @@
       "/__tests__/utils/"
     ]
   },
-  "version": "2.2.1-charlie",
+  "version": "2.2.1-rc.1",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "author": "agora.io",
   "scripts": {
-    "install": "npm run build:electron",
-    "build:node": "node ./scripts/install.js --runtime=node",
-    "build:electron": "node ./scripts/install.js --runtime=electron",
+    "install": "npm run download",
+    "build:node": "node ./scripts/build.js --runtime=node",
+    "build:electron": "node ./scripts/build.js --runtime=electron",
     "debug": "node ./scripts/debug.js",
+    "download": "node ./scripts/download.js",
     "lint": "eslint .",
     "format": "eslint . --fix ",
     "test": "npm run build:node && jest",
@@ -23,6 +24,7 @@
   "gypfile": true,
   "dependencies": {
     "chalk": "^2.4.1",
+    "download": "^7.1.0",
     "node-gyp": "^3.6.2",
     "optimist": "^0.6.1",
     "ora": "^2.1.0",
