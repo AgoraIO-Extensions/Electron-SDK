@@ -547,11 +547,10 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * @description In live broadcasting mode, set client role, 1 for anchor, 2 for audience
    * @param {Number} role client role
-   * @param {*} permissionKey permission key
    * @returns {int} 0 for success, <0 for failure
    */
-  setClientRole(role, permissionKey) {
-    return this.rtcengine.setClientRole(role, permissionKey);
+  setClientRole(role) {
+    return this.rtcengine.setClientRole(role);
   }
 
   startEchoTest() {
