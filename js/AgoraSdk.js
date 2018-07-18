@@ -12,6 +12,15 @@ class AgoraRtcEngine extends EventEmitter {
 
   initEventHandler() {
     var self = this;
+
+    this.rtcengine.onEvent('apierror', funcName => {
+      console.error(`api ${funcName} failed. this is an error 
+              thrown by c++ addon layer. it often means sth is 
+              going wrong with this function call and it refused 
+              to do what is asked. kindly check your parameter types 
+              to see if it matches properly.`);
+    });
+
     this.rtcengine.onEvent("joinchannel", function(channel, uid, elapsed) {
       self.emit("joinedchannel", channel, uid, elapsed);
     });
