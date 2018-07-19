@@ -139,6 +139,6 @@ describe('Multi-stream coverage', () => {
   });
 
   it('Local leave', async () => {
-    multistream.leaveLocal();
+    await multistream.leaveLocal();
   });
 });
