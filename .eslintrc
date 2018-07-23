@@ -15,6 +15,7 @@
         "singleQuote": true,
         "printWidth": 90
       }
-    ]
+    ],
+    "max-params": 0
   }
 }
