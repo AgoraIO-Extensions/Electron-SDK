@@ -139,11 +139,7 @@ class AgoraRtcEngine extends EventEmitter {
       self.emit('videodevicestatechanged', deviceId, deviceType, deviceState);
     });
 
-    this.rtcengine.onEvent('networkquality', function(
-      uid,
-      txquality,
-      rxquality
-    ) {
+    this.rtcengine.onEvent('networkquality', function(uid, txquality, rxquality) {
       self.emit('networkquality', uid, txquality, rxquality);
     });
 
@@ -151,11 +147,7 @@ class AgoraRtcEngine extends EventEmitter {
       self.emit('lastmilequality', quality);
     });
 
-    this.rtcengine.onEvent('firstlocalvideoframe', function(
-      width,
-      height,
-      elapsed
-    ) {
+    this.rtcengine.onEvent('firstlocalvideoframe', function(width, height, elapsed) {
       self.emit('firstlocalvideoframe', width, height, elapsed);
     });
 
@@ -169,12 +161,7 @@ class AgoraRtcEngine extends EventEmitter {
       self.emit('addstream', uid, elapsed);
     });
 
-    this.rtcengine.onEvent('videosizechanged', function(
-      uid,
-      width,
-      height,
-      rotation
-    ) {
+    this.rtcengine.onEvent('videosizechanged', function(uid, width, height, rotation) {
       self.emit('videosizechanged', uid, width, height, rotation);
     });
 
@@ -426,44 +413,48 @@ class AgoraRtcEngine extends EventEmitter {
     return render;
   }
 
+  // ===========================================================================
+  // BASIC METHODS
+  // ===========================================================================
+
   /**
-   *
    * @description initialize agora real-time-communicating engine with appid
-   * @param {String} appid
+   * @param {string} appid agora appid
+   * @returns {int} 0 for success, <0 for failure
    */
   initialize(appid) {
     return this.rtcengine.initialize(appid);
   }
 
   /**
-   *
    * @description return current version and build of sdk
+   * @returns {string} version
    */
   getVersion() {
     return this.rtcengine.getVersion();
   }
 
   /**
-   *
    * @description Get error description of the given errorCode
-   * @param {Number} errorCode
+   * @param {int} errorCode error code
+   * @returns {string} error description
    */
   getErrorDescription(errorCode) {
-    return this.rtcengine.getErrorDescription();
+    return this.rtcengine.getErrorDescription(errorCode);
   }
 
   /**
    *
    * @description Join channel with token, channel, channel_info and uid
    * @requires channel
-   * @param {String} token token
-   * @param {String} channel channel
-   * @param {String} chan_info channel info
-   * @param {Number} uid uid
+   * @param {string} token token
+   * @param {string} channel channel
+   * @param {string} info channel info
+   * @param {int} uid uid
    * @returns {int} 0 for success, <0 for failure
    */
-  joinChannel(token, channel, chan_info, uid) {
-    return this.rtcengine.joinChannel(token, channel, chan_info, uid);
+  joinChannel(token, channel, info, uid) {
+    return this.rtcengine.joinChannel(token, channel, info, uid);
   }
 
   /**
@@ -472,6 +463,18 @@ class AgoraRtcEngine extends EventEmitter {
    */
   leaveChannel() {
     return this.rtcengine.leaveChannel();
+  }
+
+  /**
+   * @description This method sets high-quality audio preferences. Call this method and set all the three
+   * modes before joining a channel. Do NOT call this method again after joining a channel.
+   * @param {*} fullband enable/disable fullband codec
+   * @param {*} stereo enable/disable stereo codec
+   * @param {*} fullBitrate enable/disable high bitrate mode
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setHighQualityAudioParameters(fullband, stereo, fullBitrate) {
+    return this.rtcengine.setHighQualityAudioParameters(fullband, stereo, fullBitrate);
   }
 
   /**
@@ -547,14 +550,6 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description setup render for video source
-   * @param {*} view dom element where video source should be displayed
-   */
-  setupLocalVideoSource(view) {
-    this.streams.videosource = this.initRender(view);
-  }
-
-  /**
    * @description setup view content mode
    * @param {*} uid stream uid to operate
    * @param {*} mode view content mode, 0 - fit, 1 - fill
@@ -587,7 +582,7 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description Set channel profile(before join channel) since sdk will do optimization according to scenario.
    * @description 0 (default) for communication, 1 for live broadcasting, 2 for in-game
-   * @param {Number} profile profile
+   * @param {int} profile profile
    * @returns {int} 0 for success, <0 for failure
    */
   setChannelProfile(profile) {
@@ -684,7 +679,7 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    *
-   * @param {number} profile - enumeration values represent video profile
+   * @param {int} profile - enumeration values represent video profile
    * @param {boolean} [swapWidthAndHeight = false] - Whether to swap width and height
    * @returns {int} 0 for success, <0 for failure
    */
@@ -719,38 +714,12 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description When a user joins a channel on a client using joinChannelByToken,
-   * a CallId is generated to identify the call from the client. Some methods such
-   * as rate and complain need to be called after the call ends in order to submit
-   * feedback to the SDK. These methods require assigned values of the CallId parameters.
-   * To use these feedback methods, call the getCallId method to retrieve the CallId during the call,
-   * and then pass the value as an argument in the feedback methods after the call ends.
-   * @returns {string} Current call ID.
-   */
-  getCallId() {
-    return this.rtcengine.getCallId();
-  }
-
-  /**
-   * @description This method lets the user rate the call. It is usually called after the call ends.
-   * @param {string} callid Call ID retrieved from the getCallId method.
-   * @param {int} rating Rating for the call between 1 (lowest score) to 10 (highest score).
-   * @param {*} desc A given description for the call with a length less than 800 bytes.
+   * @description This method allows users to set video preferences.
+   * @param {boolean} preferFrameRateOverImageQuality enable/disable framerate over image quality
    * @returns {int} 0 for success, <0 for failure
    */
-  rate(callid, rating, desc) {
-    return this.rtcengine.rate(callid, rating, desc);
-  }
-
-  /**
-   * @description This method allows the user to complain about the call quality. It is usually
-   * called after the call ends.
-   * @param {string} callid Call ID retrieved from the getCallId method.
-   * @param {string} desc A given description of the call with a length less than 800 bytes.
-   * @returns {int} 0 for success, <0 for failure
-   */
-  complain(callid, desc) {
-    return this.rtcengine.complain(callid, desc);
+  setVideoQualityParameters(preferFrameRateOverImageQuality) {
+    return this.rtcengine.setVideoQualityParameters(preferFrameRateOverImageQuality);
   }
 
   /**
@@ -763,31 +732,6 @@ class AgoraRtcEngine extends EventEmitter {
    */
   setEncryptionSecret(secret) {
     return this.rtcengine.setEncryptionSecret(secret);
-  }
-
-  /**
-   * @description This method creates a data stream. Each user can only have up to five data channels at the same time.
-   * @param {boolean} reliable true - The recipients will receive data from the sender within 5 seconds. If the recipient does not receive the sent data within 5 seconds, the data channel will report an error to the application.
-   *                     false - The recipients may not receive any data, while it will not report any error upon data missing.
-   * @param {boolean} ordered true - The recipients will receive data in the order of the sender.
-   *                    false - The recipients will not receive data in the order of the sender.
-   * @returns {int} <0 for failure, > 0 for stream id of data
-   */
-  createDataStream(reliable, ordered) {
-    return this.rtcengine.createDataStream(reliable, ordered);
-  }
-
-  /**
-   * @description This method sends data stream messages to all users in a channel.
-   * Up to 30 packets can be sent per second in a channel with each packet having a maximum size of 1 kB.
-   * The API controls the data channel transfer rate. Each client can send up to 6 kB of data per second.
-   * Each user can have up to five data channels simultaneously.
-   * @param {int} streamId Stream ID from createDataStream
-   * @param {string} msg Data to be sent
-   * @returns {int} 0 for success, <0 for failure
-   */
-  sendStreamMessage(streamId, msg) {
-    return this.rtcengine.sendStreamMessage(streamId, msg);
   }
 
   /**
@@ -891,6 +835,65 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @description This method sets the in ear monitoring volume.
+   * @param {*} volume Volume of the in-ear monitor, ranging from 0 to 100. The default value is 100.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setInEarMonitoringVolume(volume) {
+    return this.rtcengine.setInEarMonitoringVolume(volume);
+  }
+
+  /**
+   * @description disable audio function in channel, which will be recovered when leave channel.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  pauseAudio() {
+    return this.rtcengine.pauseAudio();
+  }
+
+  /**
+   * @description resume audio function in channel.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  resumeAudio() {
+    return this.rtcengine.resumeAudio();
+  }
+
+  /**
+   * @description set filepath of log
+   * @param {string} filepath filepath of log
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setLogFile(filepath) {
+    return this.rtcengine.setLogFile(filepath);
+  }
+
+  /**
+   * @description set log level
+   * @param {int} filter filter level
+   * LOG_FILTER_OFF = 0: Output no log.
+   * LOG_FILTER_DEBUG = 0x80f: Output all the API logs.
+   * LOG_FILTER_INFO = 0x0f: Output logs of the CRITICAL, ERROR, WARNING and INFO level.
+   * LOG_FILTER_WARNING = 0x0e: Output logs of the CRITICAL, ERROR and WARNING level.
+   * LOG_FILTER_ERROR = 0x0c: Output logs of the CRITICAL and ERROR level.
+   * LOG_FILTER_CRITICAL = 0x08: Output logs of the CRITICAL level.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setLogFilter(filter) {
+    return this.rtcengine.setLogFilter(filter);
+  }
+
+  /**
+   * @description This method sets the stream mode (only applicable to live broadcast) to 
+   * single- (default) or dual-stream mode.
+   * @param {boolean} enable enable/disable dual stream
+   * @returns {int} 0 for success, <0 for failure
+   */
+  enableDualStreamMode(enable) {
+    return this.rtcengine.enableDualStreamMode(enable);
+  }
+
+  /**
    * @description This method specifies the video-stream type of the remote user to be
    * received by the local user when the remote user sends dual streams.
    * If dual-stream mode is enabled by calling enableDualStreamMode, you will receive the
@@ -918,6 +921,407 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcengine.setRemoteDefaultVideoStreamType(streamType);
   }
 
+  /**
+   * @description This method enables interoperability with the Agora Web SDK.
+   * @param {*} enable enable/disable interop
+   * @returns {int} 0 for success, <0 for failure
+   */
+  enableWebSdkInteroperability(enable) {
+    return this.rtcengine.enableWebSdkInteroperability(enable);
+  }
+
+  /**
+   * @description This method sets the local video mirror mode. Use this method before startPreview, 
+   * or it does not take effect until you re-enable startPreview.
+   * @param {*} mirrortype mirror type
+   * 0: The default mirror mode, that is, the mode set by the SDK
+   * 1: Enable the mirror mode
+   * 2: Disable the mirror mode
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setLocalVideoMirrorMode(mirrortype) {
+    return this.rtcengine.setLocalVideoMirrorMode(mirrortype);
+  }
+
+  // ===========================================================================
+  // DEVICE MANAGEMENT
+  // ===========================================================================
+  /**
+   * @description This method sets the external audio source.
+   * @param {boolean} enabled Enable the function of the external audio source: true/false.
+   * @param {int} samplerate Sampling rate of the external audio source.
+   * @param {int} channels Number of the external audio source channels (two channels maximum).
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setExternalAudioSource(enabled, samplerate, channels) {
+    return this.rtcengine.setExternalAudioSource(enabled, samplerate, channels);
+  }
+
+  /**
+   * @description return list of video devices
+   * @returns {array} array of device object
+   */
+  getVideoDevices() {
+    return this.rtcengine.getVideoDevices();
+  }
+
+  /**
+   * @description set video device to use via device id
+   * @param {*} deviceid device id
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setVideoDevice(deviceid) {
+    return this.rtcengine.setVideoDevice(deviceid);
+  }
+
+  /**
+   * @description get current using video device
+   * @return {object} video device object
+   */
+  getCurrentVideoDevice() {
+    return this.rtcengine.getCurrentVideoDevice();
+  }
+
+  /**
+   * @description This method tests whether the video-capture device works properly.
+   * Before calling this method, ensure that you have already called enableVideo,
+   * and the HWND window handle of the incoming parameter is valid.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  startVideoDeviceTest() {
+    return this.rtcengine.startVideoDeviceTest();
+  }
+
+  /**
+   * @description stop video device test
+   * @returns {int} 0 for success, <0 for failure
+   */
+  stopVideoDeviceTest() {
+    return this.rtcengine.stopVideoDeviceTest();
+  }
+
+  /**
+   * @description return list of audio playback devices
+   * @returns {array} array of device object
+   */
+  getAudioPlaybackDevices() {
+    return this.rtcengine.getAudioPlaybackDevices();
+  }
+
+  /**
+   * @description set audio playback device to use via device id
+   * @param {*} deviceid device id
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setAudioPlaybackDevice(deviceid) {
+    return this.rtcengine.setAudioPlaybackDevice(deviceid);
+  }
+
+  /**
+   * @description get current using audio playback device
+   * @return {object} audio playback device object
+   */
+  getCurrentAudioPlaybackDevice() {
+    return this.rtcengine.getCurrentAudioPlaybackDevice();
+  }
+
+  /**
+   * @description set device playback volume
+   * @param {int} volume 0 - 255
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setAudioPlaybackVolume(volume) {
+    return this.rtcengine.setAudioPlaybackVolume(volume);
+  }
+
+  /**
+   * @description get device playback volume
+   * @returns {int} volume
+   */
+  getAudioPlaybackVolume() {
+    return this.rtcengine.getAudioPlaybackVolume();
+  }
+
+  /**
+   * @description get audio recording devices
+   * @returns {array} array of recording devices
+   */
+  getAudioRecordingDevices() {
+    return this.rtcengine.getAudioRecordingDevices();
+  }
+
+  /**
+   * @description set audio recording device
+   * @param {*} deviceid device id
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setAudioRecordingDevice(deviceid) {
+    return this.rtcengine.setAudioRecordingDevice(deviceid);
+  }
+
+  /**
+   * @description get current selected audio recording device
+   * @returns {object} audio recording device object
+   */
+  getCurrentAudioRecordingDevice() {
+    return this.rtcengine.getCurrentAudioRecordingDevice();
+  }
+
+  /**
+   * @description get audio recording volume
+   * @return {int} volume
+   */
+  getAudioRecordingVolume() {
+    return this.rtcengine.getAudioRecordingVolume();
+  }
+
+  /**
+   * @description set audio recording device volume
+   * @param {*} volume 0 - 255
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setAudioRecordingVolume(volume) {
+    return this.rtcengine.setAudioRecordingVolume(volume);
+  }
+
+  /**
+   * @description This method checks whether the playback device works properly. The SDK plays an audio file
+   * specified by the user. If the user can hear the sound, then the playback device works properly.
+   * @param {string} filepath filepath of sound file to play test
+   * @returns {int} 0 for success, <0 for failure
+   */
+  startAudioPlaybackDeviceTest(filepath) {
+    return this.rtcengine.startAudioPlaybackDeviceTest(filepath);
+  }
+
+  /**
+   * @description stop playback device test
+   * @returns {int} 0 for success, <0 for failure
+   */
+  stopAudioPlaybackDeviceTest() {
+    return this.rtcengine.stopAudioPlaybackDeviceTest();
+  }
+
+  /**
+   * @description This method checks whether the microphone works properly. Once the test starts, the SDK uses
+   * the onAudioVolumeIndication callback to notify the application about the volume information.
+   * @param {*} indicateInterval in second
+   * @returns {int} 0 for success, <0 for failure
+   */
+  startAudioRecordingDeviceTest(indicateInterval) {
+    return this.rtcengine.startAudioRecordingDeviceTest(indicateInterval);
+  }
+
+  /**
+   * @description stop audio recording device test
+   * @returns {int} 0 for success, <0 for failure
+   */
+  stopAudioRecordingDeviceTest() {
+    return this.rtcengine.stopAudioRecordingDeviceTest();
+  }
+
+  /**
+   * @description check whether selected audio playback device is muted
+   * @returns {boolean} muted/unmuted
+   */
+  getAudioPlaybackDeviceMute() {
+    return this.rtcengine.getAudioPlaybackDeviceMute();
+  }
+
+  /**
+   * @description set current audio playback device mute/unmute
+   * @param {boolean} mute mute/unmute
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setAudioPlaybackDeviceMute(mute) {
+    return this.rtcengine.setAudioPlaybackDeviceMute(mute);
+  }
+
+  /**
+   * @description check whether selected audio recording device is muted
+   * @returns {boolean} muted/unmuted
+   */
+  getAudioRecordingDeviceMute() {
+    return this.rtcengine.getAudioRecordingDeviceMute();
+  }
+
+  /**
+   * @description set current audio recording device mute/unmute
+   * @param {boolean} mute mute/unmute
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setAudioRecordingDeviceMute(mute) {
+    return this.rtcengine.setAudioRecordingDeviceMute(mute);
+  }
+
+  // ===========================================================================
+  // VIDEO SOURCE
+  // ===========================================================================
+  /**
+   * @description initialize agora real-time-communicating videosource with appid
+   * @param {string} appid agora appid
+   * @returns {int} 0 for success, <0 for failure
+   */
+  videoSourceInitialize(appid) {
+    return this.rtcengine.videoSourceInitialize(appid);
+  }
+
+  /**
+   * @description setup render for video source
+   * @param {*} view dom element where video source should be displayed
+   */
+  setupLocalVideoSource(view) {
+    this.streams.videosource = this.initRender(view);
+  }
+
+  /**
+   * @description Set it to true to enable videosource web interoperability
+   * @param {Boolean} enabled enalbe/disable web interoperability
+   * @returns {int} 0 for success, <0 for failure
+   */
+  videoSourceEnableWebSdkInteroperability(enabled) {
+    return this.rtcengine.videoSourceEnableWebSdkInteroperability(enabled);
+  }
+
+  /**
+   *
+   * @description let video source join channel with token, channel, channel_info and uid
+   * @requires channel
+   * @param {string} token token
+   * @param {string} cname channel
+   * @param {string} info channel info
+   * @param {int} uid uid
+   * @returns {int} 0 for success, <0 for failure
+   */
+  videoSourceJoin(token, cname, info, uid) {
+    return this.rtcengine.videoSourceJoin(token, cname, info, uid);
+  }
+
+  /**
+   * @description let video source Leave channel
+   * @returns {int} 0 for success, <0 for failure
+   */
+  videoSourceLeave() {
+    return this.rtcengine.videoSourceLeave();
+  }
+
+  /**
+   * @description This method updates the Token for video source
+   * @param {*} token new token to update
+   * @returns {int} 0 for success, <0 for failure
+   */
+  videoSourceRenewToken(token) {
+    return this.rtcengine.videoSourceRenewToken(token);
+  }
+
+  /**
+   * @description Set channel profile(before join channel) for video source
+   * @description 0 (default) for communication, 1 for live broadcasting, 2 for in-game
+   * @param {int} profile profile
+   * @returns {int} 0 for success, <0 for failure
+   */
+  videoSourceSetChannelProfile(profile) {
+    return this.rtcengine.videoSourceSetChannelProfile(profile);
+  }
+
+  /**
+   * @description set video profile for video source
+   * @param {int} profile - enumeration values represent video profile
+   * @param {boolean} [swapWidthAndHeight = false] - Whether to swap width and height
+   * @returns {int} 0 for success, <0 for failure
+   */
+  videoSourceSetVideoProfile(profile, swapWidthAndHeight) {
+    return this.rtcengine.videoSourceSetVideoProfile(profile, swapWidthAndHeight);
+  }
+
+  /**
+   * @description start video source screen capture
+   * @param {*} wndid windows id to capture
+   * @param {*} captureFreq fps of video source screencapture, 1 - 15
+   * @param {*} rect null/if specified, {x: 0, y: 0, width: 0, height: 0}
+   * @param {*} bitrate bitrate of video source screencapture
+   * @returns {int} 0 for success, <0 for failure
+   */
+  startScreenCapture2(wndid, captureFreq, rect, bitrate) {
+    return this.rtcengine.startScreenCapture2(wndid, captureFreq, rect, bitrate);
+  }
+
+  /**
+   * @description stop video source screen capture
+   * @returns {int} 0 for success, <0 for failure
+   */
+  stopScreenCapture2() {
+    return this.rtcengine.stopScreenCatpure2();
+  }
+
+  /**
+   * @description start video source preview
+   * @returns {int} 0 for success, <0 for failure
+   */
+  startScreenCapturePreview() {
+    return this.rtcengine.videoSourceStartPreview();
+  }
+
+  /**
+   * @description stop video source preview
+   * @returns {int} 0 for success, <0 for failure
+   */
+  stopScreenCapturePreview() {
+    return this.rtcengine.videoSourceStopPreview();
+  }
+
+  /**
+   * @description setParameters for video source
+   * @param {*} parameter parameter to set
+   * @returns {int} 0 for success, <0 for failure
+   */
+  videoSourceSetParameters(parameter) {
+    return this.rtcengine.videoSourceSetParameter(parameter);
+  }
+
+  /**
+   * @description release video source object
+   * @returns {int} 0 for success, <0 for failure
+   */
+  videoSourceRelease() {
+    return this.rtcengine.videoSourceRelease();
+  }
+
+  // ===========================================================================
+  // SCREEN SHARE
+  // ===========================================================================
+  /**
+   * @description start screen capture
+   * @param {*} windowId windows id to capture
+   * @param {*} captureFreq fps of screencapture, 1 - 15
+   * @param {*} rect null/if specified, {x: 0, y: 0, width: 0, height: 0}
+   * @param {*} bitrate bitrate of screencapture
+   * @returns {int} 0 for success, <0 for failure
+   */
+  startScreenCapture(windowId, captureFreq, rect, bitrate) {
+    return this.rtcengine.startScreenCapture(windowId, captureFreq, rect, bitrate);
+  }
+
+  /**
+   * @description stop screen capture
+   * @returns {int} 0 for success, <0 for failure
+   */
+  stopScreenCapture() {
+    return this.rtcengine.stopScreenCapture();
+  }
+
+  /**
+   * @description This method updates the screen capture region.
+   * @param {*} rect {x: 0, y: 0, width: 0, height: 0}
+   * @returns {int} 0 for success, <0 for failure
+   */
+  updateScreenCaptureRegion(rect) {
+    return this.rtcengine.updateScreenCaptureRegion(rect);
+  }
+
+  // ===========================================================================
+  // AUDIO MIXING
+  // ===========================================================================
   /**
    * @description This method mixes the specified local audio file with the audio stream
    * from the microphone; or, it replaces the microphone’s audio stream with the specified
@@ -995,159 +1399,9 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcengine.setAudioMixingPosition(position);
   }
 
-  /**
-   * @description This method changes the voice pitch of the local speaker.
-   * @param {number} pitch Voice frequency, in the range of [0.5, 2.0]. The default value is 1.0.
-   * @returns {int} 0 for success, <0 for failure
-   */
-  setLocalVoicePitch(pitch) {
-    return this.rtcengine.setLocalVoicePitch(pitch);
-  }
-
-  /**
-   * @description This method sets the in ear monitoring volume.
-   * @param {*} volume Volume of the in-ear monitor, ranging from 0 to 100. The default value is 100.
-   * @returns {int} 0 for success, <0 for failure
-   */
-  setInEarMonitoringVolume(volume) {
-    return this.rtcengine.setInEarMonitoringVolume(volume);
-  }
-
-  /**
-   * @description disable audio function in channel, which will be recovered when leave channel.
-   * @returns {int} 0 for success, <0 for failure
-   */
-  pauseAudio() {
-    return this.rtcengine.pauseAudio();
-  }
-
-  /**
-   * @description resume audio function in channel.
-   * @returns {int} 0 for success, <0 for failure
-   */
-  resumeAudio() {
-    return this.rtcengine.resumeAudio();
-  }
-
-  clearVideoCompositingLayout() {
-    return this.rtcengine.clearVideoCompositingLayout();
-  }
-
-  /**
-   * @description set filepath of log
-   * @param {string} filepath filepath of log
-   * @returns {int} 0 for success, <0 for failure
-   */
-  setLogFile(filepath) {
-    return this.rtcengine.setLogFile(filepath);
-  }
-
-  /**
-   * @description set log level
-   * @param {int} filter filter level
-   * LOG_FILTER_OFF = 0: Output no log.
-   * LOG_FILTER_DEBUG = 0x80f: Output all the API logs.
-   * LOG_FILTER_INFO = 0x0f: Output logs of the CRITICAL, ERROR, WARNING and INFO level.
-   * LOG_FILTER_WARNING = 0x0e: Output logs of the CRITICAL, ERROR and WARNING level.
-   * LOG_FILTER_ERROR = 0x0c: Output logs of the CRITICAL and ERROR level.
-   * LOG_FILTER_CRITICAL = 0x08: Output logs of the CRITICAL level.
-   * @returns {int} 0 for success, <0 for failure
-   */
-  setLogFilter(filter) {
-    return this.rtcengine.setLogFilter(filter);
-  }
-
-  /**
-   * @description This method sets the stream mode (only applicable to live broadcast) to 
-   * single- (default) or dual-stream mode.
-   * @param {boolean} enable enable/disable dual stream
-   * @returns {int} 0 for success, <0 for failure
-   */
-  enableDualStreamMode(enable) {
-    return this.rtcengine.enableDualStreamMode(enable);
-  }
-
-  /**
-   * @description This method enables interoperability with the Agora Web SDK.
-   * @param {*} enable enable/disable interop
-   * @returns {int} 0 for success, <0 for failure
-   */
-  enableWebSdkInteroperability(enable) {
-    return this.rtcengine.enableWebSdkInteroperability(enable);
-  }
-
-  /**
-   * @description This method sets the format of the callback data in onRecordAudioFrame.
-   * @param {*} sampleRate It specifies the sampling rate in the callback data returned by onRecordAudioFrame, 
-   * which can set be as 8000, 16000, 32000, 44100 or 48000.
-   * @param {*} channel 1 - mono, 2 - dual
-   * @param {*} mode 0 - read only mode, 1 - write-only mode, 2 - read and white mode
-   * @param {*} samplesPerCall It specifies the sampling points in the called data returned in onRecordAudioFrame, 
-   * for example, it is usually set as 1024 for stream pushing.
-   * @returns {int} 0 for success, <0 for failure
-   */
-  setRecordingAudioFrameParameters(sampleRate, channel, mode, samplesPerCall) {
-    return this.rtcengine.setRecordingAudioFrameParameters(
-      sampleRate,
-      channel,
-      mode,
-      samplesPerCall
-    );
-  }
-
-  /**
-   * This method sets the format of the callback data in onPlaybackAudioFrame.
-   * @param {*} sampleRate Specifies the sampling rate in the callback data returned by onPlaybackAudioFrame, 
-   * which can set be as 8000, 16000, 32000, 44100, or 48000.
-   * @param {*} channel 1 - mono, 2 - dual
-   * @param {*} mode 0 - read only mode, 1 - write-only mode, 2 - read and white mode
-   * @param {*} samplesPerCall It specifies the sampling points in the called data returned in onRecordAudioFrame, 
-   * for example, it is usually set as 1024 for stream pushing.
-   * @returns {int} 0 for success, <0 for failure
-   */
-  setPlaybackAudioFrameParameters(sampleRate, channel, mode, samplesPerCall) {
-    return this.rtcengine.setPlaybackAudioFrameParameters(
-      sampleRate,
-      channel,
-      mode,
-      samplesPerCall
-    );
-  }
-
-  /**
-   * This method sets the format of the callback data in onMixedAudioFrame.
-   * @param {*} sampleRate Specifies the sampling rate in the callback data returned by onMixedAudioFrame,
-   * which can set be as 8000, 16000, 32000, 44100, or 48000.
-   * @param {*} samplesPerCall Specifies the sampling points in the called data returned in onMixedAudioFrame,
-   * for example, it is usually set as 1024 for stream pushing.
-   * @returns {int} 0 for success, <0 for failure
-   */
-  setMixedAudioFrameParameters(sampleRate, samplesPerCall) {
-    return this.rtcengine.setMixedAudioFrameParameters(sampleRate, samplesPerCall);
-  }
-
-  adjustRecordingSignalVolume(volume) {
-    return this.rtcengine.adjustRecordingSignalVolume(volume);
-  }
-
-  adjustPlaybackSignalVolume(volume) {
-    return this.rtcengine.adjustPlaybackSignalVolume(volume);
-  }
-
-  setHighQualityAudioParameters(fullband, stereo, fullBitrate) {
-    return this.rtcengine.setHighQualityAudioParameters(
-      fullband,
-      stereo,
-      fullBitrate
-    );
-  }
-
-  setVideoQualityParameters(preferFrameRateOverImageQuality) {
-    return this.rtcengine.setVideoQualityParameters(
-      preferFrameRateOverImageQuality
-    );
-  }
-
+  // ===========================================================================
+  // PUSH STREAMS
+  // ===========================================================================
   /**
    *
    * @param {*} publisherConfiguration
@@ -1165,6 +1419,7 @@ class AgoraRtcEngine extends EventEmitter {
    *      publishurl : string
    *      rawstreamurl :string
    *      extrainfo : string
+   * @returns {int} 0 for success, <0 for failure
    *
    */
   configPublisher(publisherConfiguration) {
@@ -1231,14 +1486,89 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcengine.setVideoCompositingLayout(layout);
   }
 
+  /**
+   * @description This method removes the settings made after calling setVideoCompositingLayout.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  clearVideoCompositingLayout() {
+    return this.rtcengine.clearVideoCompositingLayout();
+  }
+
+  /**
+   * @description This method is used in CDN live. It adds the URL to which the host publishes the stream.
+   * @param {*} url cdn url
+   * @param {*} transcodingEnabled enable/disable transcoding
+   * @returns {int} 0 for success, <0 for failure
+   */
   addPublishStreamUrl(url, transcodingEnabled) {
     return this.rtcengine.addPublishStreamUrl(url, transcodingEnabled);
   }
 
+  /**
+   * @description This method is used in CDN live. It removes the URL to which the host publishes the stream.
+   * @param {*} url cdn url
+   * @returns {int} 0 for success, <0 for failure
+   */
   removePublishStreamUrl(url) {
     return this.rtcengine.removePublishStreamUrl(url);
   }
 
+  // ===========================================================================
+  // RAW DATA
+  // ===========================================================================
+  /**
+   * @description This method sets the format of the callback data in onRecordAudioFrame.
+   * @param {*} sampleRate It specifies the sampling rate in the callback data returned by onRecordAudioFrame, 
+   * which can set be as 8000, 16000, 32000, 44100 or 48000.
+   * @param {*} channel 1 - mono, 2 - dual
+   * @param {*} mode 0 - read only mode, 1 - write-only mode, 2 - read and white mode
+   * @param {*} samplesPerCall It specifies the sampling points in the called data returned in onRecordAudioFrame, 
+   * for example, it is usually set as 1024 for stream pushing.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setRecordingAudioFrameParameters(sampleRate, channel, mode, samplesPerCall) {
+    return this.rtcengine.setRecordingAudioFrameParameters(
+      sampleRate,
+      channel,
+      mode,
+      samplesPerCall
+    );
+  }
+
+  /**
+   * This method sets the format of the callback data in onPlaybackAudioFrame.
+   * @param {*} sampleRate Specifies the sampling rate in the callback data returned by onPlaybackAudioFrame, 
+   * which can set be as 8000, 16000, 32000, 44100, or 48000.
+   * @param {*} channel 1 - mono, 2 - dual
+   * @param {*} mode 0 - read only mode, 1 - write-only mode, 2 - read and white mode
+   * @param {*} samplesPerCall It specifies the sampling points in the called data returned in onRecordAudioFrame, 
+   * for example, it is usually set as 1024 for stream pushing.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setPlaybackAudioFrameParameters(sampleRate, channel, mode, samplesPerCall) {
+    return this.rtcengine.setPlaybackAudioFrameParameters(
+      sampleRate,
+      channel,
+      mode,
+      samplesPerCall
+    );
+  }
+
+  /**
+   * This method sets the format of the callback data in onMixedAudioFrame.
+   * @param {*} sampleRate Specifies the sampling rate in the callback data returned by onMixedAudioFrame,
+   * which can set be as 8000, 16000, 32000, 44100, or 48000.
+   * @param {*} samplesPerCall Specifies the sampling points in the called data returned in onMixedAudioFrame,
+   * for example, it is usually set as 1024 for stream pushing.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setMixedAudioFrameParameters(sampleRate, samplesPerCall) {
+    return this.rtcengine.setMixedAudioFrameParameters(sampleRate, samplesPerCall);
+  }
+
+  // ===========================================================================
+  // INJECT VIDEO STREAM
+  // ===========================================================================
   /**
    *
    * @param {*} injectStreamConfig
@@ -1257,10 +1587,238 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcengine.addInjectStreamUrl(injectStreamConfig);
   }
 
+  /**
+   * @description This method removes an injected stream URL.
+   * @param {*} url inject url
+   * @returns {int} 0 for success, <0 for failure
+   */
   removeInjectStreamUrl(url) {
     return this.rtcengine.removeInjectStreamUrl(url);
   }
 
+  // ===========================================================================
+  // AUDIO EFFECT
+  // ===========================================================================
+  /**
+   * @description This method changes the voice pitch of the local speaker.
+   * @param {number} pitch Voice frequency, in the range of [0.5, 2.0]. The default value is 1.0.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setLocalVoicePitch(pitch) {
+    return this.rtcengine.setLocalVoicePitch(pitch);
+  }
+
+  /**
+   * @description This method sets the local voice equalization effect.
+   * @param {int} freq The band frequency ranging from 0 to 9; representing the respective 10-band
+   * center frequencies of voice effects, including 31, 62, 125, 500, 1k, 2k, 4k, 8k, and 16k Hz.
+   * @param {int} bandgain Gain of each band in dB; ranging from -15 to 15.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setLocalVoiceEqualization(freq, bandgain) {
+    return this.rtcengine.setLocalVoiceEqualization(freq, bandgain);
+  }
+
+  /**
+   * @description This method sets local voice reverberation.
+   * @param {int} key The reverberation key. This method contains five reverberation keys.
+   * @param {int} value reverb values
+   * AUDIO_REVERB_DRY_LEVEL = 0, (dB, [-20,10]), level of the dry signal
+   * AUDIO_REVERB_WET_LEVEL = 1, (dB, [-20,10]), level of the early reflection signal (wet signal)
+   * AUDIO_REVERB_ROOM_SIZE = 2, ([0, 100]), room size of the reflection
+   * AUDIO_REVERB_WET_DELAY = 3, (ms, [0, 200]), length of the initial latency of the wet signal in ms
+   * AUDIO_REVERB_STRENGTH = 4, ([0, 100]), length of the late reverberation
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setLocalVoiceReverb(key, value) {
+    return this.rtcengine.setLocalVoiceReverb(key, value);
+  }
+
+  // ===========================================================================
+  // DATA CHANNEL
+  // ===========================================================================
+  /**
+   * @description This method creates a data stream. Each user can only have up to five data channels at the same time.
+   * @param {boolean} reliable true - The recipients will receive data from the sender within 5 seconds. If the recipient does not receive the sent data within 5 seconds, the data channel will report an error to the application.
+   *                     false - The recipients may not receive any data, while it will not report any error upon data missing.
+   * @param {boolean} ordered true - The recipients will receive data in the order of the sender.
+   *                    false - The recipients will not receive data in the order of the sender.
+   * @returns {int} <0 for failure, > 0 for stream id of data
+   */
+  createDataStream(reliable, ordered) {
+    return this.rtcengine.createDataStream(reliable, ordered);
+  }
+
+  /**
+   * @description This method sends data stream messages to all users in a channel.
+   * Up to 30 packets can be sent per second in a channel with each packet having a maximum size of 1 kB.
+   * The API controls the data channel transfer rate. Each client can send up to 6 kB of data per second.
+   * Each user can have up to five data channels simultaneously.
+   * @param {int} streamId Stream ID from createDataStream
+   * @param {string} msg Data to be sent
+   * @returns {int} 0 for success, <0 for failure
+   */
+  sendStreamMessage(streamId, msg) {
+    return this.rtcengine.sendStreamMessage(streamId, msg);
+  }
+
+  // ===========================================================================
+  // MANAGE AUDIO EFFECT
+  // ===========================================================================
+  /**
+   * @description get effects volume
+   * @returns {number} volume
+   */
+  getEffectsVolume() {
+    return this.rtcengine.getEffectsVolume();
+  }
+
+  /**
+   * @description set effects volume
+   * @param {int} volume - [0.0, 100.0]
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setEffectsVolume(volume) {
+    return this.rtcengine.setEffectsVolume(volume);
+  }
+
+  /**
+   * @description set effect volume of a sound id
+   * @param {int} soundId soundId
+   * @param {int} volume - [0.0, 100.0]
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setVolumeOfEffect(soundId, volume) {
+    return this.setVolumeOfEffect(soundId, volume);
+  }
+
+  /**
+   * @description play effect
+   * @param {int} soundId soundId
+   * @param {string} filePath filepath
+   * @param {int} loopcount - 0: once, 1: twice, -1: infinite
+   * @param {number} pitch - [0.5, 2]
+   * @param {number} pan - [-1, 1]
+   * @param {int} gain - [0, 100]
+   * @param {boolean} publish publish
+   * @returns {int} 0 for success, <0 for failure
+   */
+  playEffect(soundId, filePath, loopcount, pitch, pan, gain, publish) {
+    return this.rtcengine.playEffect(
+      soundId,
+      filePath,
+      loopcount,
+      pitch,
+      pan,
+      gain,
+      publish
+    );
+  }
+
+  /**
+   * @description stop effect via given sound id
+   * @param {int} soundId soundId
+   * @returns {int} 0 for success, <0 for failure
+   */
+  stopEffect(soundId) {
+    return this.rtcengine.stopEffect(soundId);
+  }
+
+  /**
+   * @description preload effect
+   * @param {int} soundId soundId
+   * @param {String} filePath filepath
+   * @returns {int} 0 for success, <0 for failure
+   */
+  preloadEffect(soundId, filePath) {
+    return this.rtcengine.preloadEffect(soundId, filePath);
+  }
+
+  /**
+   * This method releases a specific preloaded audio effect from the memory.
+   * @param {int} soundId soundId
+   * @returns {int} 0 for success, <0 for failure
+   */
+  unloadEffect(soundId) {
+    return this.rtcengine.unloadEffect(soundId);
+  }
+
+  /**
+   * @description This method pauses a specific audio effect.
+   * @param {*} soundId soundId
+   * @returns {int} 0 for success, <0 for failure
+   */
+  pauseEffect(soundId) {
+    return this.rtcengine.pauseEffect(soundId);
+  }
+
+  /**
+   * @description This method pauses all the audio effects.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  pauseAllEffects() {
+    return this.rtcengine.pauseAllEffects();
+  }
+
+  /**
+   * @description This method resumes playing a specific audio effect.
+   * @param {*} soundId soundid
+   * @returns {int} 0 for success, <0 for failure
+   */
+  resumeEffect(soundId) {
+    return this.rtcengine.resumeEffect(soundId);
+  }
+
+  /**
+   * @description This method resumes playing all the audio effects.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  resumeAllEffects() {
+    return this.rtcengine.resumeAllEffects();
+  }
+
+  // ===========================================================================
+  // EXTRA
+  // ===========================================================================
+
+  /**
+   * @description When a user joins a channel on a client using joinChannelByToken,
+   * a CallId is generated to identify the call from the client. Some methods such
+   * as rate and complain need to be called after the call ends in order to submit
+   * feedback to the SDK. These methods require assigned values of the CallId parameters.
+   * To use these feedback methods, call the getCallId method to retrieve the CallId during the call,
+   * and then pass the value as an argument in the feedback methods after the call ends.
+   * @returns {string} Current call ID.
+   */
+  getCallId() {
+    return this.rtcengine.getCallId();
+  }
+
+  /**
+   * @description This method lets the user rate the call. It is usually called after the call ends.
+   * @param {string} callid Call ID retrieved from the getCallId method.
+   * @param {int} rating Rating for the call between 1 (lowest score) to 10 (highest score).
+   * @param {*} desc A given description for the call with a length less than 800 bytes.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  rate(callid, rating, desc) {
+    return this.rtcengine.rate(callid, rating, desc);
+  }
+
+  /**
+   * @description This method allows the user to complain about the call quality. It is usually
+   * called after the call ends.
+   * @param {string} callid Call ID retrieved from the getCallId method.
+   * @param {string} desc A given description of the call with a length less than 800 bytes.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  complain(callid, desc) {
+    return this.rtcengine.complain(callid, desc);
+  }
+
+  // ===========================================================================
+  // replacement for setParameters call
+  // ===========================================================================
   setBool(key, value) {
     return this.rtcengine.setBool(key, value);
   }
@@ -1321,301 +1879,12 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcengine.convertPath(path);
   }
 
-  setLocalVoiceEqualization(freq, bandgain) {
-    return this.rtcengine.setLocalVoiceEqualization(freq, bandgain);
-  }
-
-  setLocalVoiceReverb(key, value) {
-    return this.rtcengine.setLocalVoiceReverb(key, value);
-  }
-
-  setExternalAudioSource(enabled, samplerate, channels) {
-    return this.rtcengine.setExternalAudioSource(enabled, samplerate, channels);
-  }
-
-  setLocalVideoMirrorMode(mirrortype) {
-    return this.rtcengine.setLocalVideoMirrorMode(mirrortype);
-  }
-
   enableLoopbackRecording(enabled) {
     return this.rtcengine.enableLoopbackRecording(enabled);
   }
 
   setProfile(profile, merge) {
     return this.rtcengine.setProfile(profile, merge);
-  }
-
-  videoSourceInitialize(appid) {
-    return this.rtcengine.videoSourceInitialize(appid);
-  }
-
-  /**
-   * @description Set it to true to enable web interoperability
-   * @param {Boolean} enabled enalbe/disable web interoperability
-   * @returns {int} 0 for success, <0 for failure
-   */
-  videoSourceEnableWebSdkInteroperability(enabled) {
-    return this.rtcengine.videoSourceEnableWebSdkInteroperability(enabled);
-  }
-
-  videoSourceJoin(token, cname, chanInfo, uid) {
-    return this.rtcengine.videoSourceJoin(token, cname, chanInfo, uid);
-  }
-
-  videoSourceLeave() {
-    return this.rtcengine.videoSourceLeave();
-  }
-
-  videoSourceRenewToken(token) {
-    return this.rtcengine.videoSourceRenewToken(token);
-  }
-
-  videoSourceSetChannelProfile(profile) {
-    return this.rtcengine.videoSourceSetChannelProfile(profile);
-  }
-
-  videoSourceSetVideoProfile(profile, swapWidthAndHeight) {
-    return this.rtcengine.videoSourceSetVideoProfile(
-      profile,
-      swapWidthAndHeight
-    );
-  }
-
-  startScreenCapture2(wndid, captureFreq, rect, bitrate) {
-    return this.rtcengine.startScreenCapture2(
-      wndid,
-      captureFreq,
-      rect,
-      bitrate
-    );
-  }
-
-  stopScreenCapture2() {
-    return this.rtcengine.stopScreenCatpure2();
-  }
-
-  /**
-   *
-   * @param {*} windowId
-   * @param {*} captureFreq
-   * @param {*} rect
-   *            right > left, top > bottom
-   * @param {*} bitrate
-   */
-  startScreenCapture(windowId, captureFreq, rect, bitrate) {
-    return this.rtcengine.startScreenCapture(
-      windowId,
-      captureFreq,
-      rect,
-      bitrate
-    );
-  }
-
-  stopScreenCapture() {
-    return this.rtcengine.stopScreenCapture();
-  }
-
-  videoSourceRelease() {
-    return this.rtcengine.videoSourceRelease();
-  }
-
-  updateScreenCaptureRegion(rect) {
-    return this.rtcengine.updateScreenCaptureRegion(rect);
-  }
-
-  startScreenCapturePreview() {
-    return this.rtcengine.videoSourceStartPreview();
-  }
-
-  stopScreenCapturePreview() {
-    return this.rtcengine.videoSourceStopPreview();
-  }
-
-  videoSourceSetParameters(parameter) {
-    return this.rtcengine.videoSourceSetParameter(parameter);
-  }
-
-  getVideoDevices() {
-    return this.rtcengine.getVideoDevices();
-  }
-
-  setVideoDevice(deviceid) {
-    return this.rtcengine.setVideoDevice(deviceid);
-  }
-
-  getCurrentVideoDevice() {
-    return this.rtcengine.getCurrentVideoDevice();
-  }
-
-  startVideoDeviceTest() {
-    return this.rtcengine.startVideoDeviceTest();
-  }
-
-  stopVideoDeviceTest() {
-    return this.rtcengine.stopVideoDeviceTest();
-  }
-
-  getAudioPlaybackDevices() {
-    return this.rtcengine.getAudioPlaybackDevices();
-  }
-
-  setAudioPlaybackDevice(deviceid) {
-    return this.rtcengine.setAudioPlaybackDevice(deviceid);
-  }
-
-  getCurrentAudioPlaybackDevice() {
-    return this.rtcengine.getCurrentAudioPlaybackDevice();
-  }
-
-  setAudioPlaybackVolume(volume) {
-    return this.rtcengine.setAudioPlaybackVolume(volume);
-  }
-
-  getAudioPlaybackVolume() {
-    return this.rtcengine.getAudioPlaybackVolume();
-  }
-
-  getAudioRecordingDevices() {
-    return this.rtcengine.getAudioRecordingDevices();
-  }
-
-  setAudioRecordingDevice(deviceid) {
-    return this.rtcengine.setAudioRecordingDevice(deviceid);
-  }
-
-  getCurrentAudioRecordingDevice() {
-    return this.rtcengine.getCurrentAudioRecordingDevice();
-  }
-
-  getAudioRecordingVolume() {
-    return this.rtcengine.getAudioRecordingVolume();
-  }
-
-  setAudioRecordingVolume(volume) {
-    return this.rtcengine.setAudioRecordingVolume(volume);
-  }
-
-  startAudioPlaybackDeviceTest(filepath) {
-    return this.rtcengine.startAudioPlaybackDeviceTest(filepath);
-  }
-
-  stopAudioPlaybackDeviceTest() {
-    return this.rtcengine.stopAudioPlaybackDeviceTest();
-  }
-
-  startAudioRecordingDeviceTest(indicateInterval) {
-    return this.rtcengine.startAudioRecordingDeviceTest(indicateInterval);
-  }
-
-  stopAudioRecordingDeviceTest() {
-    return this.rtcengine.stopAudioRecordingDeviceTest();
-  }
-
-  getAudioPlaybackDeviceMute() {
-    return this.rtcengine.getAudioPlaybackDeviceMute();
-  }
-
-  setAudioPlaybackDeviceMute(mute) {
-    return this.rtcengine.setAudioPlaybackDeviceMute(mute);
-  }
-
-  getAudioRecordingDeviceMute() {
-    return this.rtcengine.getAudioRecordingDeviceMute();
-  }
-
-  setAudioRecordingDeviceMute(mute) {
-    return this.rtcengine.setAudioRecordingDeviceMute(mute);
-  }
-
-  /*------------------------------------------------
-    |   v2.2.0 apis
-    \*----------------------------------------------*/
-  getEffectsVolume() {
-    return this.rtcengine.getEffectsVolume();
-  }
-
-  /**
-   * @param {int} volume - [0.0, 100.0]
-   * @returns {int} 0 for success, <0 for failure
-   */
-  setEffectsVolume(volume) {
-    return this.rtcengine.setEffectsVolume(volume);
-  }
-
-  /**
-   * @param {int} soundId soundId
-   * @param {int} volume - [0.0, 100.0]
-   * @returns {int} 0 for success, <0 for failure
-   */
-  setVolumeOfEffect(soundId, volume) {
-    return this.setVolumeOfEffect(soundId, volume);
-  }
-
-  /**
-   *
-   * @param {int} soundId soundId
-   * @param {String} filePath filepath
-   * @param {int} loopcount - 0: once, 1: twice, -1: infinite
-   * @param {double} pitch - [0.5, 2]
-   * @param {double} pan - [-1, 1]
-   * @param {int} gain - [0, 100]
-   * @param {boolean} publish publish
-   * @returns {int} 0 for success, <0 for failure
-   */
-  playEffect(soundId, filePath, loopcount, pitch, pan, gain, publish) {
-    return this.rtcengine.playEffect(
-      soundId,
-      filePath,
-      loopcount,
-      pitch,
-      pan,
-      gain,
-      publish
-    );
-  }
-
-  /**
-   *
-   * @param {int} soundId soundId
-   * @returns {int} 0 for success, <0 for failure
-   */
-  stopEffect(soundId) {
-    return this.rtcengine.stopEffect(soundId);
-  }
-
-  /**
-   *
-   * @param {int} soundId soundId
-   * @param {String} filePath filepath
-   * @returns {int} 0 for success, <0 for failure
-   */
-  preloadEffect(soundId, filePath) {
-    return this.rtcengine.preloadEffect(soundId, filePath);
-  }
-
-  /**
-   *
-   * @param {int} soundId soundId
-   * @returns {int} 0 for success, <0 for failure
-   */
-  unloadEffect(soundId) {
-    return this.rtcengine.unloadEffect(soundId);
-  }
-
-  pauseEffect(soundId) {
-    return this.rtcengine.pauseEffect(soundId);
-  }
-
-  pauseAllEffects() {
-    return this.rtcengine.pauseAllEffects();
-  }
-
-  resumeEffect(soundId) {
-    return this.rtcengine.resumeEffect(soundId);
-  }
-
-  resumeAllEffects() {
-    return this.rtcengine.resumeAllEffects();
   }
 }
 
