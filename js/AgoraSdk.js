@@ -1156,6 +1156,13 @@ class AgoraRtcEngine extends EventEmitter {
 
   // ===========================================================================
   // VIDEO SOURCE
+  // NOTE. video source is mainly used to do screenshare, the api basically
+  // aligns with normal sdk apis, e.g. videoSourceInitialize vs initialize.
+  // it is used to do screenshare with a separate process, in that case
+  // it allows user to do screensharing and camera stream pushing at the
+  // same time - which is not allowed in single sdk process.
+  // if you only need to display camera and screensharing one at a time
+  // use sdk original screenshare, if you want both, use video source.
   // ===========================================================================
   /**
    * @description initialize agora real-time-communicating videosource with appid
@@ -1289,6 +1296,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   // ===========================================================================
   // SCREEN SHARE
+  // When this api is called, your camera stream will be replaced with
+  // screenshare view. i.e. you can only see camera video or screenshare
+  // one at a time via this section's api
   // ===========================================================================
   /**
    * @description start screen capture
