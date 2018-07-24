@@ -313,11 +313,11 @@ class AgoraRtcEngine extends EventEmitter {
       }
       var render = null;
       /*
-              * Type 0 is local video
-              * type 1 is remote video
-              * type 2 is device test video
-              * type 3 is video source video
-              */
+      * Type 0 is local video
+      * type 1 is remote video
+      * type 2 is device test video
+      * type 3 is video source video
+      */
       if (type < 2) {
         if (uid === 0) {
           render = this.streams.local;
