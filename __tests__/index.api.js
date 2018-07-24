@@ -77,9 +77,9 @@ describe('Render coverage', () => {
     localRtcEngine = new AgoraRtcEngine();
     localRtcEngine.initialize('***REMOVED***');
   });
-  afterEach(() => {
+  beforeEach(() => {
     // Restore mocks after each test
-    // jest.restoreAllMocks();
+    jest.restoreAllMocks();
   });
 
   it('Preview test', () => {
@@ -112,7 +112,7 @@ describe('Multi-stream coverage', () => {
   beforeAll(() => {
     localRtcEngine = new AgoraRtcEngine();
     localRtcEngine.initialize('***REMOVED***');
-    multistream = new MultiStream(localRtcEngine, 'coverage');
+    multistream = new MultiStream(localRtcEngine, 'basic-coverage');
   });
   afterAll(() => {
     multistream.stopRemote();
@@ -138,7 +138,16 @@ describe('Multi-stream coverage', () => {
     await multistream.localJoinChannel(uid);
   });
 
+  it('Prepare videosource share', async () => {
+    await multistream.prepareScreenShare();
+  });
+
+  it('start videosource share', async () => {
+    await multistream.startShare();
+  });
+
   it('Local leave', async () => {
+    multistream.stopShare();
     await multistream.leaveLocal();
   });
 });
