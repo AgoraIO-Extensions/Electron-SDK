@@ -85,7 +85,7 @@ protected:
     bool joinChannel(const char* key, const char* name, const char* chanInfo, agora::rtc::uid_t uid);
     void notifyJoinedChannel(agora::rtc::uid_t uid);
     void notifyLeaveChannel();
-    void notifyRequestNewChannel();
+    void notifyRequestNewToken();
     void notifyRenderReady();
 private:
     void exit(bool notifySink);
