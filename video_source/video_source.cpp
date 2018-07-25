@@ -97,7 +97,11 @@ bool AgoraVideoSource::initialize()
     }
 
     agora::util::AutoPtr<agora::media::IMediaEngine> pMediaEngine;
+#if defined(_WIN32)
+    pMediaEngine.queryInterface(m_rtcEngine.get(), agora::rtc::AGORA_IID_MEDIA_ENGINE);
+#elif defined(__APPLE__)
     pMediaEngine.queryInterface(m_rtcEngine.get(), agora::AGORA_IID_MEDIA_ENGINE);
+#endif
 
     if (pMediaEngine.get()){
         pMediaEngine->registerVideoRenderFactory(m_renderFactory.get());
@@ -256,7 +260,11 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
             return;
         }
         VideoProfileCmd *cmd = (VideoProfileCmd*)payload;
+#if defined(_WIN32)
+        if (cmd->profile > agora::rtc::VIDEO_PROFILE_4K_3) {
+#elif defined(__APPLE__)
 		if (cmd->profile > agora::rtc::VIDEO_PROFILE_PORTRAIT_4K_3) {
+#endif
 			LOG_ERROR("%s, set video profile with invalid value : %d", __FUNCTION__, cmd->profile);
 		}
 		else {
