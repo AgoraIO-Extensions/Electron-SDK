@@ -754,7 +754,7 @@ namespace agora {
 				this->onRequestToken_node();
             });
 		}
-#elif deined(__APPLE__)
+#elif defined(__APPLE__)
         void NodeEventHandler::onRequestToken()
         {
             {
