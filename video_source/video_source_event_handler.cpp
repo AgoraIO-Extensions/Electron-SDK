@@ -78,10 +78,17 @@ void AgoraVideoSourceEventHandler::onVideoSizeChanged(uid_t uid, int width, int 
     LOG_INFO("%s, uid :%d, width :%d, height:%d, rotation :%d", __FUNCTION__, uid, width, height, rotation);
 }
 
+#if defined(_WIN32)
 void AgoraVideoSourceEventHandler::onApiCallExecuted(const char* api, int error)
 {
     LOG_INFO("%s, err :%d, api :%s", __FUNCTION__, error, api);
 }
+#elif defined(__APPLE__)
+void AgoraVideoSourceEventHandler::onApiCallExecuted(int err, const char* api, const char* result)
+{
+    LOG_INFO("%s, err :%d, api :%s", __FUNCTION__, err, api);
+}
+#endif
 
 void AgoraVideoSourceEventHandler::onLocalVideoStats(const LocalVideoStats& stats)
 {
