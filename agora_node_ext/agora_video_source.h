@@ -40,7 +40,7 @@ namespace agora{
             /**
              * Video source request new token event.
              */
-            virtual void onVideoSourceRequestNewChannelKey() = 0;
+            virtual void onVideoSourceRequestNewToken() = 0;
 
             /**
              * Video source leaved channel event.
@@ -117,7 +117,7 @@ namespace agora{
              * To renew video source's token.
              * @param token : new token
              */
-            virtual node_error renewVideoSourceChannelKey(const char* channelKey) = 0;
+            virtual node_error renewVideoSourceToken(const char* token) = 0;
 
             /**
              * To set video source channel profile
