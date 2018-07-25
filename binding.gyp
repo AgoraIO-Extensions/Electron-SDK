@@ -7,8 +7,6 @@
         'UNICODE'
         ],
         'include_dirs': [
-        './sdk/include',
-        './sdk/include/internal',
         './common',
         './common/libyuv/include'
         ],
@@ -79,6 +77,9 @@
                     './common/libyuv/source/row_win.cc',
                     './common/libyuv/source/scale_win.cc'
                 ],
+                'include_dirs': [
+                './sdk/include'
+                ],
                 'defines!': [
                 '_USING_V110_SDK71_',
                 '_HAS_EXCEPTIONS=0'
@@ -134,6 +135,9 @@
                     'AVFoundation.framework',
                     ]
                 },
+                'include_dirs': [
+                './sdk/lib/mac/AgoraRtcEngineKit.framework/Headers'
+                ],
                 'sources': [
                     './common/node_process_unix.cpp',
                     './common/libyuv/source/compare_gcc.cc',
