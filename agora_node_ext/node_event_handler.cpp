@@ -239,9 +239,14 @@ namespace agora {
 
         void NodeEventHandler::onRtcStats_node(const RtcStats& stats)
         {
+#if defined(_WIN32)
+            unsigned int usercount = stats.users;
+#elif defined(__APPLE__)
+            unsigned int usercount = stats.userCount;
+#endif
             LOG_INFO("duration : %d, tx :%d, rx :%d, txbr :%d, rxbr :%d, txAudioBr :%d, rxAudioBr :%d, users :%d\n",
                 stats.duration, stats.txBytes, stats.rxBytes, stats.txKBitRate, stats.rxKBitRate, stats.txAudioKBitRate,
-                stats.rxAudioKBitRate, stats.users);
+                stats.rxAudioKBitRate, usercount);
             do {
                 Isolate *isolate = Isolate::GetCurrent();
                 HandleScope scope(isolate);
@@ -256,7 +261,7 @@ namespace agora {
                 NODE_SET_OBJ_PROP_UINT32(obj, "txAudioKBitRate", stats.txAudioKBitRate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "rxVideoKBitRate", stats.rxVideoKBitRate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "txVideoKBitRate", stats.txVideoKBitRate);
-                NODE_SET_OBJ_PROP_UINT32(obj, "users", stats.users);
+                NODE_SET_OBJ_PROP_UINT32(obj, "users", usercount);
                 NODE_SET_OBJ_PROP_NUMBER(obj, "cpuAppUsage", stats.cpuAppUsage);
                 NODE_SET_OBJ_PROP_NUMBER(obj, "cpuTotalUsage", stats.cpuTotalUsage);
                 Local<Value> arg[1] = { obj };
@@ -526,7 +531,7 @@ namespace agora {
                 this->onUserEnableLocalVideo_node(uid, enabled);
             });
         }
-
+#if defined(_WIN32)
         void NodeEventHandler::onApiCallExecuted_node(const char* api, int error)
         {
             FUNC_TRACE;
@@ -599,7 +604,7 @@ namespace agora {
                 this->onRemoteVideoStats_node(stats);
             });
         }
-
+#endif
         void NodeEventHandler::onCameraReady_node()
         {
             FUNC_TRACE;
@@ -850,12 +855,12 @@ namespace agora {
             MAKE_JS_CALL_4(RTC_EVENT_REMOTE_VIDEO_STATS, uid, uid, uint16, delay, uint16, lost, uint16, rxKBitRate);
 #endif
         }
-
+#if defined(_WIN32)
         void NodeEventHandler::onRemoteAudioTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)
         {
             FUNC_TRACE;
-			node_async_call::async_call([this, uid, delay, lost, rxKBitRate] {
-				this->onRemoteAudioTransportStats_node(uid, delay, lost, rxKBitRate);
+            node_async_call::async_call([this, uid, delay, lost, rxKBitRate] {
+                this->onRemoteAudioTransportStats_node(uid, delay, lost, rxKBitRate);
             });
         }
 
@@ -866,7 +871,7 @@ namespace agora {
                 this->onRemoteVideoTransportStats_node(uid, delay, lost, rxKBitRate);
             });
         }
-
+#endif
         void NodeEventHandler::onVideoSourceJoinedChannel(agora::rtc::uid_t uid)
         {
             FUNC_TRACE;
