@@ -59,7 +59,7 @@ namespace agora {
 #define RTC_EVENT_STREAM_MESSAGE_ERROR "streammessageerror"
 #define RTC_EVENT_MEDIA_ENGINE_LOAD_SUCCESS "mediaengineloadsuccess"
 #define RTC_EVENT_MEDIA_ENGINE_STARTCALL_SUCCESS "mediaenginestartcallsuccess"
-#define RTC_EVENT_REQUEST_CHANNEL_KEY "requestchannelkey"
+#define RTC_EVENT_REQUEST_TOKEN "requesttoken"
 #define RTC_EVENT_FIRST_LOCAL_AUDIO_FRAME "firstlocalaudioframe"
 #define RTC_EVENT_FIRST_REMOTE_AUDIO_FRAME "firstremoteaudioframe"
 #define RTC_EVENT_ACTIVE_SPEAKER "activespeaker"
@@ -68,7 +68,7 @@ namespace agora {
 #define RTC_EVENT_REMOTE_AUDIO_TRANSPORT_STATS "remoteAudioTransportStats"
 #define RTC_EVENT_REMOTE_VIDEO_TRANSPORT_STATS "remoteVideoTransportStats"
 #define RTC_EVENT_VIDEO_SOURCE_JOIN_SUCCESS "videosourcejoinsuccess"
-#define RTC_EVENT_VIDEO_SOURCE_REQUEST_NEW_CHANNEL_KEY "videosourcerequestnewchannelkey"
+#define RTC_EVENT_VIDEO_SOURCE_REQUEST_NEW_TOKEN "videosourcerequestnewtoken"
 #define RTC_EVENT_VIDEO_SOURCE_LEAVE_CHANNEL "videosourceleavechannel"
 #define RTC_EVENT_API_ERROR "apierror"
         class NodeRtcEngine;
@@ -123,7 +123,11 @@ namespace agora {
             virtual void onStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached) override;
             virtual void onMediaEngineLoadSuccess() override;
             virtual void onMediaEngineStartCallSuccess() override;
+#if defined(_WIN32)
 			virtual void onRequestChannelKey() override;
+#elif deined(__APPLE__)
+            virtual void onRequestToken() override;
+#endif
             virtual void onFirstLocalAudioFrame(int elapsed) override;
             virtual void onFirstRemoteAudioFrame(uid_t uid, int elapsed) override;
             virtual void onActiveSpeaker(uid_t uid) override;
@@ -132,7 +136,7 @@ namespace agora {
 			virtual void onRemoteAudioTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)override;
 			virtual void onRemoteVideoTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)override;
             virtual void onVideoSourceJoinedChannel(agora::rtc::uid_t uid) override;
-            virtual void onVideoSourceRequestNewChannelKey() override;
+            virtual void onVideoSourceRequestNewToken() override;
             virtual void onVideoSourceLeaveChannel() override;
             virtual void onVideoSourceExit() override;
             void fireApiError(const char* funcName);
@@ -165,9 +169,13 @@ namespace agora {
             void onUserMuteVideo_node(uid_t uid, bool muted) ;
             void onUserEnableVideo_node(uid_t uid, bool enabled) ;
             void onUserEnableLocalVideo_node(uid_t uid, bool enabled) ;
+#if defined(_WIN32)
             void onApiCallExecuted_node(const char* api, int error) ;
             void onLocalVideoStats_node(const LocalVideoStats& stats) ;
             void onRemoteVideoStats_node(const RemoteVideoStats& stats);
+#elif defined(__APPLE__)
+
+#endif
             void onCameraReady_node();
             void onVideoStopped_node();
             void onConnectionLost_node();
@@ -178,7 +186,7 @@ namespace agora {
             void onStreamMessageError_node(uid_t uid, int streamId, int code, int missed, int cached);
             void onMediaEngineLoadSuccess_node();
             void onMediaEngineStartCallSuccess_node();
-            void onRequestChannelKey_node();
+            void onRequestToken_node();
             void onFirstLocalAudioFrame_node(int elapsed);
             void onFirstRemoteAudioFrame_node(uid_t uid, int elapsed);
             void onActiveSpeaker_node(uid_t uid);
@@ -187,7 +195,7 @@ namespace agora {
 			void onRemoteAudioTransportStats_node(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
 			void onRemoteVideoTransportStats_node(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
             void onVideoSourceJoinedChannel_node(agora::rtc::uid_t uid);
-            void onVideoSourceRequestChannelKey_node();
+            void onVideoSourceRequestToken_node();
             void onVideoSourceLeaveChannel_node();
         private:
             std::unordered_map<std::string, NodeEventCallback*> m_callbacks;

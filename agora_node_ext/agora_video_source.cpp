@@ -300,8 +300,10 @@ namespace agora{
             if (m_initialized){
                 std::unique_ptr<ChannelProfileCmd> cmd(new ChannelProfileCmd());
 				cmd->profile = profile;
+#if defined(_WIN32)
                 if (permissionKey)
                     strncpy(cmd->permissionKey, permissionKey, MAX_PERMISSION_KEY);
+#endif
                 return m_ipcMsg->sendMessage(AGORA_IPC_SET_CHANNEL_PROFILE, (char*)&profile, sizeof(profile)) ? node_ok : node_generic_error;
             }
             return node_status_error;
