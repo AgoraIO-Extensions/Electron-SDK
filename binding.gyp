@@ -162,8 +162,6 @@
     {
         'target_name': 'agora_node_ext',
         'include_dirs': [
-        './sdk/include',
-        './sdk/include/internal',
         './common',
         './common/libyuv/include'
         ],
@@ -252,6 +250,9 @@
                     './common/libyuv/source/row_win.cc',
                     './common/libyuv/source/scale_win.cc'
                 ],
+                'include_dirs': [
+                './sdk/include'
+                ],
                 'configurations': {
                     'Release': {
                         'msvs_settings': {
@@ -309,6 +310,9 @@
                     './common/libyuv/source/rotate_gcc.cc',
                     './common/libyuv/source/row_gcc.cc',
                     './common/libyuv/source/scale_gcc.cc'
+                ],
+                'include_dirs': [
+                './sdk/lib/mac/AgoraRtcEngineKit.framework/Headers'
                 ],
                 'defines!': [
                     '_NOEXCEPT',

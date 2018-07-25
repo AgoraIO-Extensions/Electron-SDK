@@ -110,7 +110,11 @@ namespace agora {
             virtual void onUserMuteVideo(uid_t uid, bool muted) override;
             virtual void onUserEnableVideo(uid_t uid, bool enabled) override;
             virtual void onUserEnableLocalVideo(uid_t uid, bool enabled) override;
+#if defined(_WIN32)
             virtual void onApiCallExecuted(const char* api, int error) override;
+#elif defined(__APPLE__)
+            virtual void onApiCallExecuted(int err, const char* api, const char* result) override;
+#endif
             virtual void onLocalVideoStats(const LocalVideoStats& stats) override;
             virtual void onRemoteVideoStats(const RemoteVideoStats& stats) override;
             virtual void onCameraReady() override;
@@ -125,7 +129,7 @@ namespace agora {
             virtual void onMediaEngineStartCallSuccess() override;
 #if defined(_WIN32)
 			virtual void onRequestChannelKey() override;
-#elif deined(__APPLE__)
+#elif defined(__APPLE__)
             virtual void onRequestToken() override;
 #endif
             virtual void onFirstLocalAudioFrame(int elapsed) override;
@@ -133,8 +137,10 @@ namespace agora {
             virtual void onActiveSpeaker(uid_t uid) override;
             virtual void onClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole) override;
             virtual void onAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted) override;
-			virtual void onRemoteAudioTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)override;
-			virtual void onRemoteVideoTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)override;
+#if defined(_WIN32)
+            virtual void onRemoteAudioTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)override;
+            virtual void onRemoteVideoTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)override;
+#endif
             virtual void onVideoSourceJoinedChannel(agora::rtc::uid_t uid) override;
             virtual void onVideoSourceRequestNewToken() override;
             virtual void onVideoSourceLeaveChannel() override;
