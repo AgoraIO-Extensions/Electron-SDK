@@ -1951,13 +1951,38 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
 
                 Rect region(top, left, bottom, right);
-				RtcEngineParameters rep(pEngine->m_engine);
-				int result = rep.startScreenCapture(windowId, captureFreq, &region);
+#if defined(_WIN32)
+                RtcEngineParameters rep(pEngine->m_engine);
+                int result = rep.startScreenCapture(windowId, captureFreq, &region);
+#elif defined(__APPLE__)
+                int result = pEngine->m_engine->startScreenCapture(windowId, captureFreq, &region, bitrate);
+#endif
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
         }
 
+        NAPI_API_DEFINE(NodeRtcEngine, stopScreenCapture)
+        {
+            LOG_ENTER;
+            do 
+            {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+#if defined(_WIN32)
+                RtcEngineParameters rep(pEngine->m_engine);
+                int result = rep.stopScreenCapture();
+#elif defined(__APPLE__)
+                int result = pEngine->m_engine->stopScreenCapture();
+#endif
+                napi_set_int_result(args, result);
+            } while (false);
+            LOG_LEAVE;
+        }
+        
         NAPI_API_DEFINE(NodeRtcEngine, updateScreenCaptureRegion)
         {
             LOG_ENTER;
@@ -1984,8 +2009,12 @@ namespace agora {
                 Local<Value> rightValue = rect->Get(args.GetIsolate()->GetCurrentContext(), rightKey).ToLocalChecked();
                 right = rightValue->Int32Value();
                 Rect region(top, left, bottom, right);
-				RtcEngineParameters rep(pEngine->m_engine);
-                rep.updateScreenCaptureRegion(&region);              
+#if defined(_WIN32)
+                RtcEngineParameters rep(pEngine->m_engine);
+                rep.updateScreenCaptureRegion(&region);
+#elif defined(__APPLE__)
+                pEngine->m_engine->updateScreenCaptureRegion(&region);
+#endif	           
             } while (false);
             LOG_LEAVE;
         }
