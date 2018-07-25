@@ -97,7 +97,7 @@ bool AgoraVideoSource::initialize()
     }
 
     agora::util::AutoPtr<agora::media::IMediaEngine> pMediaEngine;
-    pMediaEngine.queryInterface(m_rtcEngine.get(), agora::rtc::AGORA_IID_MEDIA_ENGINE);
+    pMediaEngine.queryInterface(m_rtcEngine.get(), agora::AGORA_IID_MEDIA_ENGINE);
 
     if (pMediaEngine.get()){
         pMediaEngine->registerVideoRenderFactory(m_renderFactory.get());
@@ -231,17 +231,21 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
     }
     else if (msg == AGORA_IPC_RENEW_TOKEN){
 #if defined(_WIN32)
-		m_rtcEngine->renewChannelKey(payload);
+        m_rtcEngine->renewChannelKey(payload);
 #elif defined(__APPLE__)
         m_rtcEngine->renewToken(payload);
 #endif
     }
     else if (msg == AGORA_IPC_SET_CHANNEL_PROFILE){
-		if (payload) {
-			ChannelProfileCmd *cmd = (ChannelProfileCmd*)payload;
+        if (payload) {
+            ChannelProfileCmd *cmd = (ChannelProfileCmd*)payload;
             m_rtcEngine->setChannelProfile(cmd->profile);
             if (cmd->profile == agora::rtc::CHANNEL_PROFILE_LIVE_BROADCASTING){
-				m_rtcEngine->setClientRole(agora::rtc::CLIENT_ROLE_BROADCASTER, cmd->permissionKey);
+#if defined(_WIN32)
+                m_rtcEngine->setClientRole(agora::rtc::CLIENT_ROLE_BROADCASTER, cmd->permissionKey);
+#elif defined(__APPLE__)
+                m_rtcEngine->setClientRole(agora::rtc::CLIENT_ROLE_BROADCASTER);
+#endif
             }
         }
     }
@@ -252,7 +256,7 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
             return;
         }
         VideoProfileCmd *cmd = (VideoProfileCmd*)payload;
-		if (cmd->profile > agora::rtc::VIDEO_PROFILE_4K_3) {
+		if (cmd->profile > agora::rtc::VIDEO_PROFILE_PORTRAIT_4K_3) {
 			LOG_ERROR("%s, set video profile with invalid value : %d", __FUNCTION__, cmd->profile);
 		}
 		else {
