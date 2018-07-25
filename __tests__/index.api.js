@@ -3,53 +3,60 @@ const generateRandomString = require('./utils/index.js').generateRandomString;
 const generateRandomNumber = require('./utils/index.js').generateRandomNumber;
 const doJoin = require('./utils/doJoin');
 const doLeave = require('./utils/doLeave');
+const MultiStream = require('./utils/multistream');
 
-const rtcEngine = new AgoraRtcEngine();
+let localRtcEngine = null;
+let remoteRtcEngine = null;
+let multistream = null;
 
 describe('Basic API Coverage', () => {
   beforeAll(() => {
-    rtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
+    localRtcEngine = new AgoraRtcEngine();
+    localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
   });
-  afterAll(() => setTimeout(() => process.exit(), 1000));
+  afterEach(() => {
+    // Restore mocks after each test
+    jest.restoreAllMocks();
+  });
 
   it('Get version', () => {
-    expect(rtcEngine.getVersion()).toHaveProperty('version');
-    expect(rtcEngine.getVersion()).toHaveProperty('build');
+    expect(localRtcEngine.getVersion()).toHaveProperty('version');
+    expect(localRtcEngine.getVersion()).toHaveProperty('build');
   });
 
   // It('Get error description by code', () => {
-  //   expect(rtcEngine.getErrorDescription(2)).toBeDefined()
+  //   expect(localRtcEngine.getErrorDescription(2)).toBeDefined()
   // })
 
   it('Set Channel Profile', () => {
-    expect(rtcEngine.setChannelProfile(0)).toBe(0);
-    expect(rtcEngine.setChannelProfile(4) < 0).toBeTruthy();
-    // Expect(rtcEngine.setChannelProfile('0')).toBeDefined()
+    expect(localRtcEngine.setChannelProfile(0)).toBe(0);
+    expect(localRtcEngine.setChannelProfile(4) < 0).toBeTruthy();
+    // Expect(localRtcEngine.setChannelProfile('0')).toBeDefined()
   });
 
   it('Set Client Role in live broadcasting mode', () => {
-    rtcEngine.setChannelProfile(1);
-    expect(rtcEngine.setClientRole(1)).toBe(0);
-    expect(rtcEngine.setClientRole(2)).toBe(0);
-    expect(rtcEngine.setClientRole(3) < 0).toBeTruthy();
+    localRtcEngine.setChannelProfile(1);
+    expect(localRtcEngine.setClientRole(1)).toBe(0);
+    expect(localRtcEngine.setClientRole(2)).toBe(0);
+    expect(localRtcEngine.setClientRole(3) < 0).toBeTruthy();
   });
 
   it('Set Audio Profile', () => {
     expect(
-      rtcEngine.setAudioProfile(generateRandomNumber(5.9), generateRandomNumber(5.9))
+      localRtcEngine.setAudioProfile(generateRandomNumber(5.9), generateRandomNumber(5.9))
     ).toBe(0);
-    expect(rtcEngine.setAudioProfile(6, 6) < 0).toBeTruthy();
+    expect(localRtcEngine.setAudioProfile(6, 6) < 0).toBeTruthy();
   });
 
   it('Enable/Disable Video', () => {
-    expect(rtcEngine.enableVideo() <= 0).toBeTruthy();
-    expect(rtcEngine.disableVideo() <= 0).toBeTruthy();
+    expect(localRtcEngine.enableVideo() <= 0).toBeTruthy();
+    expect(localRtcEngine.disableVideo() <= 0).toBeTruthy();
   });
 
   it('Join/Leave channel and event:joinedchannel/leavechannel', async () => {
-    await doJoin(rtcEngine)
+    await doJoin(localRtcEngine)
       .then(() => {
-        doLeave(rtcEngine)
+        doLeave(localRtcEngine)
           .then(() => {
             // Expect(1).toBe(1);
           })
@@ -62,5 +69,85 @@ describe('Basic API Coverage', () => {
         console.error(err);
         expect(2).toBe(1);
       });
+  });
+});
+
+describe('Render coverage', () => {
+  beforeAll(() => {
+    localRtcEngine = new AgoraRtcEngine();
+    localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
+  });
+  beforeEach(() => {
+    // Restore mocks after each test
+    jest.restoreAllMocks();
+  });
+
+  it('Preview test', () => {
+    return new Promise(resolve => {
+      jest.spyOn(localRtcEngine, 'onRegisterDeliverFrame').mockImplementation(infos => {
+        console.log(`infos: ${JSON.stringify(infos.length)}`);
+        for (let i = 0; i < infos.length; i++) {
+          let info = infos[i];
+          expect(info.uid).toBe(0);
+          // console.log(`uid: ${info.uid}, ydata: ${info.ydata.length}, udata: ${info.udata.length}, vdata: ${info.vdata.length}`);
+        }
+        expect(localRtcEngine.stopPreview()).toBe(0);
+        resolve();
+      });
+      // Ignore render functions
+      jest.spyOn(localRtcEngine, 'initRender').mockImplementation(() => {});
+      localRtcEngine.setChannelProfile(1);
+      localRtcEngine.setClientRole(1);
+      localRtcEngine.setupLocalVideo();
+      localRtcEngine.setAudioProfile(0, 1);
+      localRtcEngine.setVideoProfile(33, false);
+      localRtcEngine.enableVideo();
+      localRtcEngine.enableLocalVideo(true);
+      expect(localRtcEngine.startPreview()).toBe(0);
+    });
+  });
+});
+
+describe('Multi-stream coverage', () => {
+  beforeAll(() => {
+    localRtcEngine = new AgoraRtcEngine();
+    localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
+    multistream = new MultiStream(localRtcEngine, 'basic-coverage');
+  });
+  afterAll(() => {
+    multistream.stopRemote();
+    setTimeout(() => {
+      process.exit();
+    }, 1000);
+  });
+  afterEach(() => {
+    // Restore mocks after each test
+  });
+
+  it('Prepare remote', async () => {
+    let uid = generateRandomNumber(100000);
+    await multistream.initRemoteStream(uid);
+  });
+
+  it('Local join', async () => {
+    let uid = generateRandomNumber(100000);
+    console.log(`local uid ${uid}`);
+
+    // Wait remote stream to join channel first
+    multistream.initLocalEngine();
+    await multistream.localJoinChannel(uid);
+  });
+
+  it('Prepare videosource share', async () => {
+    await multistream.prepareScreenShare();
+  });
+
+  it('start videosource share', async () => {
+    await multistream.startShare();
+  });
+
+  it('Local leave', async () => {
+    multistream.stopShare();
+    await multistream.leaveLocal();
   });
 });
