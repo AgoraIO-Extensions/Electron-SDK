@@ -124,7 +124,7 @@ void AgoraVideoSourceEventHandler::onRequestChannelKey()
 	LOG_INFO("%s", __FUNCTION__);
 	m_videoSource.notifyRequestNewToken();
 }
-#elif deined(__APPLE__)
+#elif defined(__APPLE__)
 void AgoraVideoSourceEventHandler::onRequestToken()
 {
     LOG_INFO("%s", __FUNCTION__);
