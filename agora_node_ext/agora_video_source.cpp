@@ -52,7 +52,7 @@ namespace agora{
                 const char* chan_info, uid_t uid) override;
             virtual node_error leave() override;
             virtual node_error release() override;
-            virtual node_error renewVideoSourceChannelKey(const char* channelkey) override;
+            virtual node_error renewVideoSourceToken(const char* token) override;
             virtual node_error setVideoSourceChannelProfile(agora::rtc::CHANNEL_PROFILE_TYPE profile, const char* permissionKey) override;
             virtual node_error setVideoSourceVideoProfile(agora::rtc::VIDEO_PROFILE_TYPE profile, bool swapWidthAndHeight) override;
             virtual void onMessage(unsigned int msg, char* payload, unsigned int len) override;
@@ -285,12 +285,12 @@ namespace agora{
             return node_status_error;
         }
 
-        node_error AgoraVideoSourceSink::renewVideoSourceChannelKey(const char* channelkey)
+        node_error AgoraVideoSourceSink::renewVideoSourceToken(const char* token)
         {
-            if (!channelkey)
+            if (!token)
                 return node_invalid_args;
-            if (m_initialized){
-                return m_ipcMsg->sendMessage(AOGRA_IPC_RENEW_CHANNEL_KEY, (char*)channelkey, strlen(channelkey)) ? node_ok : node_generic_error;
+            if (m_initialized) {
+                return m_ipcMsg->sendMessage(AGORA_IPC_RENEW_TOKEN, (char*)token, strlen(token)) ? node_ok : node_generic_error;
             }
             return node_status_error;
         }
@@ -337,9 +337,9 @@ namespace agora{
                     m_eventHandler->onVideoSourceLeaveChannel();
                 }
             }
-            else if (msg == AOGRA_IPC_RENEW_CHANNEL_KEY){
+            else if (msg == AGORA_IPC_RENEW_TOKEN){
                 if (m_eventHandler){
-                    m_eventHandler->onVideoSourceRequestNewChannelKey();
+                    m_eventHandler->onVideoSourceRequestNewToken();
                 }
             }
             else if (msg == AGORA_IPC_RENDER_READY){
