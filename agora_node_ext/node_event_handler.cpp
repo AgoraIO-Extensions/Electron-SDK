@@ -741,20 +741,30 @@ namespace agora {
             });
         }
 
-        void NodeEventHandler::onRequestChannelKey_node()
+        void NodeEventHandler::onRequestToken_node()
         {
             FUNC_TRACE;
-            MAKE_JS_CALL_0(RTC_EVENT_REQUEST_CHANNEL_KEY);
+            MAKE_JS_CALL_0(RTC_EVENT_REQUEST_TOKEN);
         }
-
+#if defined(_WIN32)
 		void NodeEventHandler::onRequestChannelKey()
 		{
 			FUNC_TRACE;
             node_async_call::async_call([this] {
-				this->onRequestChannelKey_node();
+				this->onRequestToken_node();
             });
 		}
-
+#elif deined(__APPLE__)
+        void NodeEventHandler::onRequestToken()
+        {
+            {
+                FUNC_TRACE;
+                node_async_call::async_call([this] {
+                    this->onRequestToken_node();
+                });
+            }
+        }
+#endif
         void NodeEventHandler::onFirstLocalAudioFrame_node(int elapsed)
         {
             FUNC_TRACE;
