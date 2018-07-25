@@ -258,7 +258,6 @@ namespace agora {
 
         NAPI_API_DEFINE_WRAPPER_PARAM_0(disableAudio);
 
-		NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(stopScreenCapture);
 #if 0
         NAPI_API_DEFINE_WRAPPER_PARAM_0(clearVideoCompositingLayout)
 #endif
