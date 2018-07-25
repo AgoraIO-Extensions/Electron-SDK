@@ -129,7 +129,9 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setEncryptionMode)
                 PROPERTY_METHOD_DEFINE(setVideoCompositingLayout)
                 PROPERTY_METHOD_DEFINE(clearVideoCompositingLayout)
+#if defined(_WIN32)
                 PROPERTY_METHOD_DEFINE(configPublisher)
+#endif
                 PROPERTY_METHOD_DEFINE(startScreenCapture2)
                 PROPERTY_METHOD_DEFINE(stopScreenCatpure2)
                 PROPERTY_METHOD_DEFINE(videoSourceInitialize)
