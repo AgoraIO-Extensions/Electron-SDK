@@ -87,7 +87,9 @@ namespace agora {
             NAPI_API(setEncryptionMode);
             NAPI_API(setVideoCompositingLayout);
             NAPI_API(clearVideoCompositingLayout);
+#if defined(_WIN32)
             NAPI_API(configPublisher);
+#endif
             /*
             * Wrapper for RtcEngineParameter API
             */
@@ -369,9 +371,10 @@ namespace agora {
 /**
 * Helper MACRO to check whether the last API call return success.
 */
-#define CHECK_NAPI_STATUS(status) \
+#define CHECK_NAPI_STATUS(engine, status) \
         if(status != napi_ok) { \
             LOG_ERROR("Error :%s, :%d\n", __FUNCTION__, __LINE__); \
+            engine->m_eventHandler->fireApiError(__FUNCTION__); \
             break; \
         }
 
@@ -458,7 +461,7 @@ typedef unsigned int uint32;
             napi_status status = napi_ok;\
             type param;\
             napi_get_param_1(args, type, param);\
-            CHECK_NAPI_STATUS(status);\
+            CHECK_NAPI_STATUS(pEngine, status);\
             RtcEngineParameters rep(pEngine->m_engine);\
             int result = CALL_MEM_FUNC_WITH_PARAM(rep, method, param);\
             napi_set_int_result(args, result); \
@@ -478,7 +481,7 @@ typedef unsigned int uint32;
             type param;\
             type2 param2;\
             napi_get_param_2(args, type, param, type2, param2);\
-            CHECK_NAPI_STATUS(status);\
+            CHECK_NAPI_STATUS(pEngine, status);\
             RtcEngineParameters rep(pEngine->m_engine);\
             int result = CALL_MEM_FUNC_WITH_PARAM2(rep, method, param, param2);\
             napi_set_int_result(args, result); \
@@ -503,7 +506,7 @@ typedef unsigned int uint32;
             type6 param6;\
             type7 param7;\
             napi_get_param_7(args, type, param, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, type7, param7);\
-            CHECK_NAPI_STATUS(status);\
+            CHECK_NAPI_STATUS(pEngine, status);\
             RtcEngineParameters rep(pEngine->m_engine);\
             int result = CALL_MEM_FUNC_WITH_PARAM7(rep, method, param, param2, param3, param4, param5, param6, param7);\
             napi_set_int_result(args, result); \
