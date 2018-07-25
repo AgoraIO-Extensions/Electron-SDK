@@ -48,7 +48,7 @@ enum AgoraIpcMsg
     /** Node ADDON ==> video source to start video */
     AGORA_IPC_START_CAMERA,
     /** Node ADDON ==> video source to update channelKey */
-    AOGRA_IPC_RENEW_CHANNEL_KEY,
+    AGORA_IPC_RENEW_TOKEN,
     /** Node ADDON ==> video source to set channel profile */
     AGORA_IPC_SET_CHANNEL_PROFILE,
     /** Node ADDON ==> video source to set video profile */

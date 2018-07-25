@@ -47,7 +47,11 @@ public:
     virtual void onConnectionInterrupted() override;
     virtual void onConnectionBanned() override;
     virtual void onRefreshRecordingServiceStatus(int status) override;
-	virtual void onRequestChannelKey() override;
+#if defined(_WIN32)
+    virtual void onRequestChannelKey() override;
+#elif deined(__APPLE__)
+    virtual void onRequestToken() override;
+#endif
 private:
     AgoraVideoSource& m_videoSource;
 };
