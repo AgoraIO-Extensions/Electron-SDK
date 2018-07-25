@@ -64,6 +64,7 @@ namespace agora {
             NAPI_API(getErrorDescription);
             NAPI_API(joinChannel);
             NAPI_API(leaveChannel);
+            NAPI_API(renewToken);
             NAPI_API(setChannelProfile);
             NAPI_API(setClientRole);
             NAPI_API(startEchoTest);
@@ -85,9 +86,9 @@ namespace agora {
             NAPI_API(createDataStream);
             NAPI_API(sendStreamMessage);       
             NAPI_API(setEncryptionMode);
+#if 0
             NAPI_API(setVideoCompositingLayout);
             NAPI_API(clearVideoCompositingLayout);
-#if defined(_WIN32)
             NAPI_API(configPublisher);
 #endif
             /*

@@ -118,8 +118,30 @@ void AgoraVideoSourceEventHandler::onRefreshRecordingServiceStatus(int status)
     LOG_INFO("%s, status :%d", __FUNCTION__, status);
 }
 
+#if defined(_WIN32)
 void AgoraVideoSourceEventHandler::onRequestChannelKey()
 {
 	LOG_INFO("%s", __FUNCTION__);
 	m_videoSource.notifyRequestNewChannel();
+}
+#elif deined(__APPLE__)
+
+#endif
+
+void NodeEventHandler::onRequestChannelKey()
+{
+    FUNC_TRACE;
+    node_async_call::async_call([this] {
+        this->onRequestToken_node();
+    });
+}
+
+void NodeEventHandler::onRequestToken()
+{
+    {
+        FUNC_TRACE;
+        node_async_call::async_call([this] {
+            this->onRequestToken_node();
+        });
+    }
 }
