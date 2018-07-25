@@ -175,13 +175,9 @@ namespace agora {
             void onUserMuteVideo_node(uid_t uid, bool muted) ;
             void onUserEnableVideo_node(uid_t uid, bool enabled) ;
             void onUserEnableLocalVideo_node(uid_t uid, bool enabled) ;
-#if defined(_WIN32)
             void onApiCallExecuted_node(const char* api, int error) ;
             void onLocalVideoStats_node(const LocalVideoStats& stats) ;
             void onRemoteVideoStats_node(const RemoteVideoStats& stats);
-#elif defined(__APPLE__)
-
-#endif
             void onCameraReady_node();
             void onVideoStopped_node();
             void onConnectionLost_node();
