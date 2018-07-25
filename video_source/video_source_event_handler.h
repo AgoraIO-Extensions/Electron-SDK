@@ -39,7 +39,11 @@ public:
     virtual void onLastmileQuality(int quality) override;
     virtual void onFirstLocalVideoFrame(int width, int height, int elapsed) override;
     virtual void onVideoSizeChanged(uid_t uid, int width, int height, int rotation) override;
+#if defined(_WIN32)
     virtual void onApiCallExecuted(const char* api, int error) override;
+#elif defined(__APPLE__)
+    virtual void onApiCallExecuted(int err, const char* api, const char* result);
+#endif
     virtual void onLocalVideoStats(const LocalVideoStats& stats) override;
     virtual void onCameraReady() override;
     virtual void onVideoStopped() override;
@@ -49,7 +53,7 @@ public:
     virtual void onRefreshRecordingServiceStatus(int status) override;
 #if defined(_WIN32)
     virtual void onRequestChannelKey() override;
-#elif deined(__APPLE__)
+#elif defined(__APPLE__)
     virtual void onRequestToken() override;
 #endif
 private:
