@@ -165,9 +165,9 @@ void AgoraVideoSource::notifyLeaveChannel()
     m_ipc->sendMessage(AGORA_IPC_LEAVE_CHANNEL, nullptr, 0);
 }
 
-void AgoraVideoSource::notifyRequestNewChannel()
+void AgoraVideoSource::notifyRequestNewToken()
 {
-    m_ipc->sendMessage(AOGRA_IPC_RENEW_CHANNEL_KEY, nullptr, 0);
+    m_ipc->sendMessage(AOGRA_IPC_RENEW_TOKEN, nullptr, 0);
 }
 
 void AgoraVideoSource::release()
@@ -200,15 +200,28 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
         rep.enableLocalVideo(true);
         CaptureScreenCmd *cmd = (CaptureScreenCmd*)payload;
         LOG_INFO("Start screen share, top : %d, left : %d, bottom :%d, right :%d\n", cmd->rect.top, cmd->rect.left, cmd->rect.bottom, cmd->rect.right);
+#if defined(_WIN32)
 		if(rep.startScreenCapture(cmd->windowid, cmd->captureFreq, &cmd->rect) != 0){
             LOG_ERROR("start screen capture failed.");
             rep.enableLocalVideo(false);
         }
+#elif defined(__APPLE__)
+        if (m_rtcEngine->startScreenCapture(cmd->windowid, cmd->captureFreq, &cmd->rect, cmd->bitrate) != 0) {
+            LOG_ERROR("start screen capture failed.");
+            rep.enableLocalVideo(false);
+        }
+#endif
     }
     else if (msg == AGORA_IPC_STOP_CAPTURE_SCREEN){
+#if defined(_WIN32)
         agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
-		rep.stopScreenCapture();
+        rep.stopScreenCapture();
         rep.enableLocalVideo(false);
+#elif defined(__APPLE__)
+        m_rtcEngine->stopScreenCapture();
+        agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
+        rep.enableLocalVideo(false);
+#endif
     }
     else if (msg == AGORA_IPC_START_VS_PREVIEW) {
         this->startPreview();
@@ -216,13 +229,17 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
     else if (msg == AGORA_IPC_STOP_VS_PREVIEW) {
         this->stopPreview();
     }
-    else if (msg == AOGRA_IPC_RENEW_CHANNEL_KEY){
+    else if (msg == AOGRA_IPC_RENEW_TOKEN){
+#if defined(_WIN32)
 		m_rtcEngine->renewChannelKey(payload);
+#elif defined(__APPLE__)
+        m_rtcEngine->renewToken(payload);
+#endif
     }
     else if (msg == AGORA_IPC_SET_CHANNEL_PROFILE){
 		if (payload) {
 			ChannelProfileCmd *cmd = (ChannelProfileCmd*)payload;
-			m_rtcEngine->setChannelProfile(cmd->profile);
+            m_rtcEngine->setChannelProfile(cmd->profile);
             if (cmd->profile == agora::rtc::CHANNEL_PROFILE_LIVE_BROADCASTING){
 				m_rtcEngine->setClientRole(agora::rtc::CLIENT_ROLE_BROADCASTER, cmd->permissionKey);
             }
