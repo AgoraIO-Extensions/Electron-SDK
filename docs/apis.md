@@ -51,11 +51,6 @@ Used to bind local video to the view.
 setupLocalVideo(view)
 ```
 
-Used to bind dev test video to the view
-```
-setupLocalDevTest(view)
-```
-
 To update key.
 ```
 renewChannelKey(newKey)
