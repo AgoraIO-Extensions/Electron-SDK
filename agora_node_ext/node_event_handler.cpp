@@ -531,13 +531,13 @@ namespace agora {
                 this->onUserEnableLocalVideo_node(uid, enabled);
             });
         }
-#if defined(_WIN32)
+
         void NodeEventHandler::onApiCallExecuted_node(const char* api, int error)
         {
             FUNC_TRACE;
             MAKE_JS_CALL_2(RTC_EVENT_APICALL_EXECUTED, string, api, int32, error);
         }
-
+#if defined(_WIN32)
         void NodeEventHandler::onApiCallExecuted(const char* api, int error)
         {
             FUNC_TRACE;
@@ -546,6 +546,16 @@ namespace agora {
                 this->onApiCallExecuted_node(apiName.c_str(), error);
             });
         }
+#elif defined(__APPLE__)
+        void NodeEventHandler::onApiCallExecuted(int err, const char* api, const char* result)
+        {
+            FUNC_TRACE;
+            std::string apiName(api);
+            node_async_call::async_call([this, apiName, err] {
+                this->onApiCallExecuted_node(apiName.c_str(), err);
+            });
+        }
+#endif
 
         void NodeEventHandler::onLocalVideoStats_node(const LocalVideoStats& stats)
         {
@@ -604,7 +614,7 @@ namespace agora {
                 this->onRemoteVideoStats_node(stats);
             });
         }
-#endif
+
         void NodeEventHandler::onCameraReady_node()
         {
             FUNC_TRACE;
