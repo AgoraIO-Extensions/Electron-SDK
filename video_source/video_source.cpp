@@ -167,7 +167,7 @@ void AgoraVideoSource::notifyLeaveChannel()
 
 void AgoraVideoSource::notifyRequestNewToken()
 {
-    m_ipc->sendMessage(AOGRA_IPC_RENEW_TOKEN, nullptr, 0);
+    m_ipc->sendMessage(AGORA_IPC_RENEW_TOKEN, nullptr, 0);
 }
 
 void AgoraVideoSource::release()
@@ -229,7 +229,7 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
     else if (msg == AGORA_IPC_STOP_VS_PREVIEW) {
         this->stopPreview();
     }
-    else if (msg == AOGRA_IPC_RENEW_TOKEN){
+    else if (msg == AGORA_IPC_RENEW_TOKEN){
 #if defined(_WIN32)
 		m_rtcEngine->renewChannelKey(payload);
 #elif defined(__APPLE__)
