@@ -914,5 +914,11 @@ namespace agora {
             cb->callback.Reset(Isolate::GetCurrent(), callback);
             m_callbacks.emplace(eventName, cb);
         }
+
+        void NodeEventHandler::fireApiError(const char* funcName)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_1(RTC_EVENT_API_ERROR, string, funcName);
+        }
     }
 }
