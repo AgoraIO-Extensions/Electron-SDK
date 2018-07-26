@@ -593,10 +593,11 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * @description In live broadcasting mode, set client role, 1 for anchor, 2 for audience
    * @param {Number} role client role
+   * @param {string} permissionKey permission key
    * @returns {int} 0 for success, <0 for failure
    */
-  setClientRole(role) {
-    return this.rtcengine.setClientRole(role);
+  setClientRole(role, permissionKey) {
+    return this.rtcengine.setClientRole(role, permissionKey);
   }
 
   /**
@@ -754,15 +755,6 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description set default mute/unmute all the remote audio stream receiving
-   * @param {boolean} mute mute/unmute audio
-   * @returns {int} 0 for success, <0 for failure
-   */
-  setDefaultMuteAllRemoteAudioStreams(mute) {
-    return this.rtcengine.setDefaultMuteAllRemoteAudioStreams(mute);
-  }
-
-  /**
    * @description This method mutes/unmutes a specified user’s audio stream.
    * @param {int} uid user to mute/unmute
    * @param {boolean} mute mute/unmute audio
@@ -799,15 +791,6 @@ class AgoraRtcEngine extends EventEmitter {
    */
   muteAllRemoteVideoStreams(mute) {
     return this.rtcengine.muteAllRemoteVideoStreams(mute);
-  }
-
-  /**
-   * @description set default mute/unmute all the remote video stream receiving
-   * @param {boolean} mute mute/unmute video
-   * @returns {int} 0 for success, <0 for failure
-   */
-  setDefaultMuteAllRemoteVideoStreams(mute) {
-    return this.rtcengine.setDefaultMuteAllRemoteVideoStreams(mute);
   }
 
   /**
@@ -1410,120 +1393,6 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   // ===========================================================================
-  // PUSH STREAMS
-  // ===========================================================================
-  /**
-   *
-   * @param {*} publisherConfiguration
-   *    propertys :
-   *      width : int
-   *      height : int
-   *      framerate : int
-   *      bitrate : int
-   *      defaultlayout : int
-   *      lifecycle : int
-   *      owner : boolean
-   *      injectstreamwidth : int
-   *      injectstreamheight : int
-   *      injectstreamurl: string
-   *      publishurl : string
-   *      rawstreamurl :string
-   *      extrainfo : string
-   * @returns {int} 0 for success, <0 for failure
-   *
-   */
-  configPublisher(publisherConfiguration) {
-    return this.rtcengine.configPublisher(publisherConfiguration);
-  }
-
-  /**
-   *
-   * @param {*} liveTranscoding
-   *    Properties:
-   *      width : int
-   *      height : int
-   *      videobitrate : int
-   *      videoframerate : int
-   *      lowlatency : boolean
-   *      videogop : int
-   *      videocodecprofile : int
-   *      backgroundcolor : uint
-   *      usercount : uint
-   *      audiosamplerate : int
-   *      audiobitrate : int
-   *      audiochannels : int
-   *      transcodingusers : Array of object type TranscodingUser
-   *
-   *   Properties of TranscodingUser
-   *      uid : uint
-   *      x : int
-   *      y : int
-   *      width : int
-   *      height : int
-   *      zorder : int
-   *      alpha : double
-   *      audiochannel : int
-   * @returns {int} 0 for success, <0 for failure
-   */
-  setLiveTranscoding(liveTranscoding) {
-    return this.rtcengine.setLiveTranscoding(liveTranscoding);
-  }
-
-  /**
-   *
-   * @param {*} layout
-   *    Properties:
-   *      canvaswidth : int
-   *      canvasheight : int
-   *      backgroundcolor : string
-   *      regioncount : int
-   *      appdata : string
-   *      appdatalength : int
-   *      regions : Array of object type Region
-   *
-   *   Properties of Region
-   *      uid : uint
-   *      x : double
-   *      y : double
-   *      width : double
-   *      height : double
-   *      zorder : int
-   *      alpha : double
-   *      rendermode : int
-   * @returns {int} 0 for success, <0 for failure
-   */
-  setVideoCompositingLayout(layout) {
-    return this.rtcengine.setVideoCompositingLayout(layout);
-  }
-
-  /**
-   * @description This method removes the settings made after calling setVideoCompositingLayout.
-   * @returns {int} 0 for success, <0 for failure
-   */
-  clearVideoCompositingLayout() {
-    return this.rtcengine.clearVideoCompositingLayout();
-  }
-
-  /**
-   * @description This method is used in CDN live. It adds the URL to which the host publishes the stream.
-   * @param {*} url cdn url
-   * @param {*} transcodingEnabled enable/disable transcoding
-   * @returns {int} 0 for success, <0 for failure
-   */
-  addPublishStreamUrl(url, transcodingEnabled) {
-    return this.rtcengine.addPublishStreamUrl(url, transcodingEnabled);
-  }
-
-  /**
-   * @description This method is used in CDN live. It removes the URL to which the host publishes the stream.
-   * @param {*} url cdn url
-   * @returns {int} 0 for success, <0 for failure
-   */
-  removePublishStreamUrl(url) {
-    return this.rtcengine.removePublishStreamUrl(url);
-  }
-
-  // ===========================================================================
   // RAW DATA
   // ===========================================================================
   /**
@@ -1577,74 +1446,6 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   // ===========================================================================
-  // INJECT VIDEO STREAM
-  // ===========================================================================
-  /**
-   *
-   * @param {*} injectStreamConfig
-   *   properties :
-   *      width : int
-   *      height : int
-   *      videogop : int
-   *      videoframerate : int
-   *      videobitrate : int
-   *      audiosamplerate : int
-   *      audiobitrate : int
-   *      audiochannels : int
-   * @returns {int} 0 for success, <0 for failure
-   */
-  addInjectStreamUrl(injectStreamConfig) {
-    return this.rtcengine.addInjectStreamUrl(injectStreamConfig);
-  }
-
-  /**
-   * @description This method removes an injected stream URL.
-   * @param {*} url inject url
-   * @returns {int} 0 for success, <0 for failure
-   */
-  removeInjectStreamUrl(url) {
-    return this.rtcengine.removeInjectStreamUrl(url);
-  }
-
-  // ===========================================================================
-  // AUDIO EFFECT
-  // ===========================================================================
-  /**
-   * @description This method changes the voice pitch of the local speaker.
-   * @param {number} pitch Voice frequency, in the range of [0.5, 2.0]. The default value is 1.0.
-   * @returns {int} 0 for success, <0 for failure
-   */
-  setLocalVoicePitch(pitch) {
-    return this.rtcengine.setLocalVoicePitch(pitch);
-  }
-
-  /**
-   * @description This method sets the local voice equalization effect.
-   * @param {int} freq The band frequency ranging from 0 to 9; representing the respective 10-band
-   * center frequencies of voice effects, including 31, 62, 125, 500, 1k, 2k, 4k, 8k, and 16k Hz.
-   * @param {int} bandgain Gain of each band in dB; ranging from -15 to 15.
-   * @returns {int} 0 for success, <0 for failure
-   */
-  setLocalVoiceEqualization(freq, bandgain) {
-    return this.rtcengine.setLocalVoiceEqualization(freq, bandgain);
-  }
-
-  /**
-   * @description This method sets local voice reverberation.
-   * @param {int} key The reverberation key. This method contains five reverberation keys.
-   * @param {int} value reverb values
-   * AUDIO_REVERB_DRY_LEVEL = 0, (dB, [-20,10]), level of the dry signal
-   * AUDIO_REVERB_WET_LEVEL = 1, (dB, [-20,10]), level of the early reflection signal (wet signal)
-   * AUDIO_REVERB_ROOM_SIZE = 2, ([0, 100]), room size of the reflection
-   * AUDIO_REVERB_WET_DELAY = 3, (ms, [0, 200]), length of the initial latency of the wet signal in ms
-   * AUDIO_REVERB_STRENGTH = 4, ([0, 100]), length of the late reverberation
-   * @returns {int} 0 for success, <0 for failure
-   */
-  setLocalVoiceReverb(key, value) {
-    return this.rtcengine.setLocalVoiceReverb(key, value);
-  }
-
-  // ===========================================================================
   // DATA CHANNEL
   // ===========================================================================
   /**
@@ -1670,121 +1471,6 @@ class AgoraRtcEngine extends EventEmitter {
    */
   sendStreamMessage(streamId, msg) {
     return this.rtcengine.sendStreamMessage(streamId, msg);
-  }
-
-  // ===========================================================================
-  // MANAGE AUDIO EFFECT
-  // ===========================================================================
-  /**
-   * @description get effects volume
-   * @returns {number} volume
-   */
-  getEffectsVolume() {
-    return this.rtcengine.getEffectsVolume();
-  }
-
-  /**
-   * @description set effects volume
-   * @param {int} volume - [0.0, 100.0]
-   * @returns {int} 0 for success, <0 for failure
-   */
-  setEffectsVolume(volume) {
-    return this.rtcengine.setEffectsVolume(volume);
-  }
-
-  /**
-   * @description set effect volume of a sound id
-   * @param {int} soundId soundId
-   * @param {int} volume - [0.0, 100.0]
-   * @returns {int} 0 for success, <0 for failure
-   */
-  setVolumeOfEffect(soundId, volume) {
-    return this.setVolumeOfEffect(soundId, volume);
-  }
-
-  /**
-   * @description play effect
-   * @param {int} soundId soundId
-   * @param {string} filePath filepath
-   * @param {int} loopcount - 0: once, 1: twice, -1: infinite
-   * @param {number} pitch - [0.5, 2]
-   * @param {number} pan - [-1, 1]
-   * @param {int} gain - [0, 100]
-   * @param {boolean} publish publish
-   * @returns {int} 0 for success, <0 for failure
-   */
-  playEffect(soundId, filePath, loopcount, pitch, pan, gain, publish) {
-    return this.rtcengine.playEffect(
-      soundId,
-      filePath,
-      loopcount,
-      pitch,
-      pan,
-      gain,
-      publish
-    );
-  }
-
-  /**
-   * @description stop effect via given sound id
-   * @param {int} soundId soundId
-   * @returns {int} 0 for success, <0 for failure
-   */
-  stopEffect(soundId) {
-    return this.rtcengine.stopEffect(soundId);
-  }
-
-  /**
-   * @description preload effect
-   * @param {int} soundId soundId
-   * @param {String} filePath filepath
-   * @returns {int} 0 for success, <0 for failure
-   */
-  preloadEffect(soundId, filePath) {
-    return this.rtcengine.preloadEffect(soundId, filePath);
-  }
-
-  /**
-   * This method releases a specific preloaded audio effect from the memory.
-   * @param {int} soundId soundId
-   * @returns {int} 0 for success, <0 for failure
-   */
-  unloadEffect(soundId) {
-    return this.rtcengine.unloadEffect(soundId);
-  }
-
-  /**
-   * @description This method pauses a specific audio effect.
-   * @param {*} soundId soundId
-   * @returns {int} 0 for success, <0 for failure
-   */
-  pauseEffect(soundId) {
-    return this.rtcengine.pauseEffect(soundId);
-  }
-
-  /**
-   * @description This method pauses all the audio effects.
-   * @returns {int} 0 for success, <0 for failure
-   */
-  pauseAllEffects() {
-    return this.rtcengine.pauseAllEffects();
-  }
-
-  /**
-   * @description This method resumes playing a specific audio effect.
-   * @param {*} soundId soundid
-   * @returns {int} 0 for success, <0 for failure
-   */
-  resumeEffect(soundId) {
-    return this.rtcengine.resumeEffect(soundId);
-  }
-
-  /**
-   * @description This method resumes playing all the audio effects.
-   * @returns {int} 0 for success, <0 for failure
-   */
-  resumeAllEffects() {
-    return this.rtcengine.resumeAllEffects();
   }
 
   // ===========================================================================
@@ -1887,10 +1573,6 @@ class AgoraRtcEngine extends EventEmitter {
 
   convertPath(path) {
     return this.rtcengine.convertPath(path);
-  }
-
-  enableLoopbackRecording(enabled) {
-    return this.rtcengine.enableLoopbackRecording(enabled);
   }
 
   setProfile(profile, merge) {
