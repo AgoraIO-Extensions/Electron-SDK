@@ -36,7 +36,6 @@ class MultiStream {
         for (let i = 0; i < infos.length; i++) {
           let info = infos[i];
           let uid = info.uid;
-          console.log(uid);
           if (uid === this.remoteUid) {
             resolve();
           }
