@@ -27,7 +27,7 @@ fs.exists('./build/Release', function(exists) {
     };
     
     const platform = getPlatform();
-    const url = getUrl(platform, 'v2_2_1');
+    const url = getUrl(platform, 'v2_0_7');
     const outputDir = './build/Release/';
     
     let spinner = ora(`Downloading built C++ addon for Agora Electron SDK...`)
