@@ -58,7 +58,7 @@ class MultiStream {
   initRemoteStream(uid) {
     return new Promise(resolve => {
       this.remoteUid = uid;
-      exec(`./startpeer.sh ${this.channel} ${this.remoteUid}`, (err, stdout, stderr) => {
+      exec(`bash startpeer.sh ${this.channel} ${this.remoteUid}`, (err, stdout, stderr) => {
         console.log(`start result: ${err} ${stdout} ${stderr}`);
       });
       setTimeout(() => {
@@ -138,7 +138,7 @@ class MultiStream {
 
   stopRemote() {
     return new Promise(resolve => {
-      exec(`./stoppeer.sh`, () => {
+      exec(`bash stoppeer.sh`, () => {
         setTimeout(() => {
           resolve();
         }, 2000);
