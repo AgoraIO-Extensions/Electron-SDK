@@ -404,7 +404,7 @@ Events:
 
 	audioeffectfinished
 
-	videodevicestatechagned : deviceId, deviceType, deviceState
+	videodevicestatechanged : deviceId, deviceType, deviceState
 
 	networkquality : uid, txquality, rxquality
 
