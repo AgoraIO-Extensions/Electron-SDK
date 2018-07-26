@@ -36,6 +36,7 @@ class MultiStream {
         for (let i = 0; i < infos.length; i++) {
           let info = infos[i];
           let uid = info.uid;
+          console.log(uid);
           if (uid === this.remoteUid) {
             resolve();
           }
@@ -59,7 +60,7 @@ class MultiStream {
       this.remoteUid = uid;
       const appPath = path.join(__dirname, './peer.js');
       exec(
-        `nohup node ${appPath} ${this.channel} ${uid} > /dev/null 2>&1 &`,
+        `./startpeer.sh`,
         (err, stdout, stderr) => {
           console.log(`${err} ${stdout} ${stderr}`);
           setTimeout(() => {
@@ -141,7 +142,7 @@ class MultiStream {
 
   stopRemote() {
     return new Promise(resolve => {
-      exec(`kill -s 9 $(ps aux | grep "[n]ode.*peer.js.*"| awk '{print $2}')`, () => {
+      exec(`./stoppeer.sh`, () => {
         setTimeout(() => {
           resolve();
         }, 2000);
