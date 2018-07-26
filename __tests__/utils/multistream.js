@@ -58,16 +58,12 @@ class MultiStream {
   initRemoteStream(uid) {
     return new Promise(resolve => {
       this.remoteUid = uid;
-      const appPath = path.join(__dirname, './peer.js');
-      exec(
-        `./startpeer.sh`,
-        (err, stdout, stderr) => {
-          console.log(`${err} ${stdout} ${stderr}`);
-          setTimeout(() => {
-            resolve();
-          }, 2000);
-        }
-      );
+      exec(`./startpeer.sh ${this.channel} ${this.remoteUid}`, (err, stdout, stderr) => {
+        console.log(`start result: ${err} ${stdout} ${stderr}`);
+      });
+      setTimeout(() => {
+        resolve();
+      }, 2000);
     });
   }
 
