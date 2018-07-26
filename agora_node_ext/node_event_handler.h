@@ -33,7 +33,7 @@ namespace agora {
 #define RTC_EVENT_REMOTE_AUDIO_MIXING_BEGIN "remoteaudiomixingbegin"
 #define RTC_EVENT_REMOTE_AUDIO_MIXING_END "remoteaudiomixingend"
 #define RTC_EVENT_AUDIO_EFFECT_FINISHED "audioeffectfinished"
-#define RTC_EVENT_VIDEO_DEVICE_STATE_CHANGED "videodevicestatechagned"
+#define RTC_EVENT_VIDEO_DEVICE_STATE_CHANGED "videodevicestatechanged"
 #define RTC_EVENT_NETWORK_QUALITY "networkquality"
 #define RTC_EVENT_LASTMILE_QUALITY "lastmilequality"
 #define RTC_EVENT_FIRST_LOCAL_VIDEO_FRAME "firstlocalvideoframe"

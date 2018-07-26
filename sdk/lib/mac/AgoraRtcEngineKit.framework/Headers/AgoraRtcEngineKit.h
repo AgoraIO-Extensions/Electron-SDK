@@ -220,6 +220,16 @@
 - (void)rtcEngine:(AgoraRtcEngineKit * _Nonnull)engine cameraFocusDidChangedToRect:(CGRect)rect;
 #endif
 
+#if TARGET_OS_IPHONE
+/**
+ *  Event of camera focus position changed
+ *
+ *  @param engine The engine kit
+ *  @param rect   The focus rect in local preview
+ */
+- (void)rtcEngine:(AgoraRtcEngineKit * _Nonnull)engine cameraExposureDidChangedToRect:(CGRect)rect;
+#endif
+
 /**
  *  Event of camera stopped
  *
@@ -707,13 +717,6 @@ description:(NSString * _Nullable)description;
 - (int)stopPreview;
 
 /**
- *  Switches between front and back cameras.
- *
- *  @return 0 when executed successfully. return negative value if failed.
- */
-- (int)switchCamera;
-
-/**
  *  Set up the remote video view. The video canvus is initialized with video display setting. It could be called after receiving the remote video streams to configure the video settings.
  *
  *  @param remote the canvas is composed of view, renderMode and uid. How to initialize 'remote'? please take a look at 'AgoraRtcVideoCanvas'
@@ -795,11 +798,21 @@ description:(NSString * _Nullable)description;
 
 #if TARGET_OS_IPHONE
 #pragma mark Video camera control
+/**
+ *  Switches between front and back cameras.
+ *
+ *  @return 0 when executed successfully. return negative value if failed.
+ */
+- (int)switchCamera;
+
 - (BOOL)isCameraZoomSupported;
 - (CGFloat)setCameraZoomFactor:(CGFloat)zoomFactor;
 
 - (BOOL)isCameraFocusPositionInPreviewSupported;
 - (BOOL)setCameraFocusPositionInPreview:(CGPoint)position;
+
+- (BOOL)isCameraExposureCompensationSupported;
+- (BOOL)setCameraExposureCompensationPosition:(CGPoint)position;
 
 - (BOOL)isCameraTorchSupported;
 - (BOOL)setCameraTorchOn:(BOOL)isOn;
@@ -834,31 +847,6 @@ description:(NSString * _Nullable)description;
  *  @return 0 when this method is called successfully, or negative value when this method failed.
  */
 - (int)resumeAudio;
-
-/**
- *  Enable / Disable speaker of device
- *
- *  @param enableSpeaker YES: Switches to speakerphone. NO: Switches to headset.
- *
- *  @return 0 when executed successfully. return negative value if failed.
- */
-- (int)setEnableSpeakerphone:(BOOL)enableSpeaker;
-
-/**
- *  test if the speakerphone is enabled or not.
- *
- *  @return YES when speakerphone is enabled. NO when speakerphone is not enabled.
- */
-- (BOOL)isSpeakerphoneEnabled;
-
-/**
- *  Set default audio route to Speakerphone
- *
- *  @param defaultToSpeaker YES: default to speakerphone. NO: default to earpiece for voice chat, speaker for video chat.
- *
- *  @return 0 when executed successfully. return negative value if failed.
- */
-- (int)setDefaultAudioRouteToSpeakerphone:(BOOL)defaultToSpeaker;
 
 /**
  *  set audio profile and scenario
@@ -949,6 +937,31 @@ description:(NSString * _Nullable)description;
 - (int)setDefaultMuteAllRemoteAudioStreams:(BOOL)mute;
 
 #if TARGET_OS_IPHONE
+/**
+ *  Enable / Disable speaker of device
+ *
+ *  @param enableSpeaker YES: Switches to speakerphone. NO: Switches to headset.
+ *
+ *  @return 0 when executed successfully. return negative value if failed.
+ */
+- (int)setEnableSpeakerphone:(BOOL)enableSpeaker;
+
+/**
+ *  test if the speakerphone is enabled or not.
+ *
+ *  @return YES when speakerphone is enabled. NO when speakerphone is not enabled.
+ */
+- (BOOL)isSpeakerphoneEnabled;
+
+/**
+ *  Set default audio route to Speakerphone
+ *
+ *  @param defaultToSpeaker YES: default to speakerphone. NO: default to earpiece for voice chat, speaker for video chat.
+ *
+ *  @return 0 when executed successfully. return negative value if failed.
+ */
+- (int)setDefaultAudioRouteToSpeakerphone:(BOOL)defaultToSpeaker;
+
 - (int)enableInEarMonitoring:(BOOL)enabled;
 /**
  * Set the audio ears back's volume and effect
@@ -1153,7 +1166,9 @@ description:(NSString * _Nullable)description;
 #pragma mark Device test
 - (void)monitorDeviceChange:(BOOL)enabled;
 - (NSArray<AgoraRtcDeviceInfo *> * _Nullable)enumerateDevices:(AgoraMediaDeviceType)type;
-- (NSString * _Nullable)getDeviceId:(AgoraMediaDeviceType)type;
+- (AgoraRtcDeviceInfo * _Nullable)getDeviceInfo:(AgoraMediaDeviceType)type;
+- (NSString * _Nullable)getDeviceId:(AgoraMediaDeviceType)type __deprecated_msg("use getDeviceInfo instead.");
+
 - (int)setDevice:(AgoraMediaDeviceType)type deviceId:(NSString * _Nonnull)deviceId;
 - (int)getDeviceVolume:(AgoraMediaDeviceType)type;
 - (int)setDeviceVolume:(AgoraMediaDeviceType)type volume:(int)volume;
