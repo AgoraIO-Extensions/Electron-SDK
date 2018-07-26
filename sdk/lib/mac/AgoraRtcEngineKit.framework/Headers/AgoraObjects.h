@@ -152,7 +152,7 @@ __attribute__((visibility("default"))) @interface AgoraPublisherConfiguration : 
 
 #if (!(TARGET_OS_IPHONE) && (TARGET_OS_MAC))
 __attribute__((visibility("default"))) @interface AgoraRtcDeviceInfo : NSObject
-@property (assign, nonatomic) int index;
+@property (assign, nonatomic) int index __deprecated;
 @property (assign, nonatomic) AgoraMediaDeviceType type;
 @property (copy, nonatomic) NSString * _Nullable deviceId;
 @property (copy, nonatomic) NSString * _Nullable deviceName;
