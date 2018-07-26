@@ -971,6 +971,13 @@ public:
         (void)height;
     }
 
+    virtual void onCameraExposureAreaChanged(int x, int y, int width, int height) {
+        (void)x;
+        (void)y;
+        (void)width;
+        (void)height;
+    }
+
     /**
     * when all video stopped, the function will be called then you can repaint the video windows
     */
@@ -1096,6 +1103,9 @@ public:
         (void)status;
     }
 
+    virtual void onAudioRoutingChanged(int routing) {
+        (void)routing;
+    }
 };
 
 /**
@@ -1253,6 +1263,16 @@ public:
     virtual int getPlaybackDevice(char deviceId[MAX_DEVICE_ID_LENGTH]) = 0;
 
     /**
+     * get the current active playback device
+     * @param [in, out] deviceId
+     *        the device id of the current active video device
+     * @param [in, out] deviceName
+     *        the device name of the current active video device
+     * @return return 0 if success or an error code
+     */
+    virtual int getPlaybackDeviceInfo(char deviceId[MAX_DEVICE_ID_LENGTH], char deviceName[MAX_DEVICE_ID_LENGTH]) = 0;
+
+    /**
     * set current playback device volume
     * @param [in] volume
     *        the volume you want to set 0-255
@@ -1283,7 +1303,17 @@ public:
     * @return return 0 if success or an error code
     */
     virtual int getRecordingDevice(char deviceId[MAX_DEVICE_ID_LENGTH]) = 0;
-
+    
+    /**
+     * get the current active recording device
+     * @param [in, out] deviceId
+     *        the device id of the current active recording audio device
+     * @param [in, out] deviceName
+     *        the device name of the current active recording audio device
+     * @return return 0 if success or an error code
+     */
+    virtual int getRecordingDeviceInfo(char deviceId[MAX_DEVICE_ID_LENGTH], char deviceName[MAX_DEVICE_ID_LENGTH]) = 0;
+    
     /**
     * set current recording device volume
     * @param [in] volume

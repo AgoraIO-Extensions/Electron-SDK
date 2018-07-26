@@ -407,8 +407,8 @@ typedef NS_ENUM(NSInteger, AgoraAudioReverbType) {
 // device
 typedef NS_ENUM(NSInteger, AgoraMediaDeviceType) {
     AgoraMediaDeviceTypeAudioUnknown = -1,
-    AgoraMediaDeviceTypeAudioRecording = 0,
-    AgoraMediaDeviceTypeAudioPlayout = 1,
+    AgoraMediaDeviceTypeAudioPlayout = 0,
+    AgoraMediaDeviceTypeAudioRecording = 1,
     AgoraMediaDeviceTypeVideoRender = 2,
     AgoraMediaDeviceTypeVideoCapture = 3,
 };
