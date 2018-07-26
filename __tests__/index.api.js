@@ -125,6 +125,7 @@ describe('Multi-stream coverage', () => {
   });
 
   it('Prepare remote', async () => {
+    console.log(`preparing remote...`);
     let uid = generateRandomNumber(100000);
     await multistream.initRemoteStream(uid);
   });
