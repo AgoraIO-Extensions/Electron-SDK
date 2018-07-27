@@ -6,7 +6,7 @@
       "/__tests__/utils/"
     ]
   },
-  "version": "2.0.7-rc.1",
+  "version": "2.0.7-rc.2",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "author": "agora.io",
