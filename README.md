@@ -4,7 +4,7 @@ The Agora-RTC-SDK-for-Electron is an open-source wrapper for **[Electron](https:
 
 ## :heart_eyes: Important 
 
-v2.0.7-rc.1 has been released! It is a special version with lots of optimization for e-Edu situation.  
+v2.0.7-rc.2 has been released! It is a special version with lots of optimization for e-Edu situation.  
 
 ## Developer Environment Requirements
 
@@ -17,7 +17,7 @@ v2.0.7-rc.1 has been released! It is a special version with lots of optimization
 ## How to use
 
 ```sh
-npm install agora-electron-sdk@2.0.7-rc.1
+npm install agora-electron-sdk@2.0.7-rc.2
 ```
 
 ```javascript
