@@ -6,7 +6,6 @@ const doLeave = require('./utils/doLeave');
 const MultiStream = require('./utils/multistream');
 
 let localRtcEngine = null;
-let remoteRtcEngine = null;
 let multistream = null;
 
 describe('Basic API Coverage', () => {
@@ -69,6 +68,21 @@ describe('Basic API Coverage', () => {
         console.error(err);
         expect(2).toBe(1);
       });
+  });
+});
+
+describe('Basic API Coverage 2', () => {
+  beforeAll(() => {
+    localRtcEngine = new AgoraRtcEngine();
+    localRtcEngine.initialize('***REMOVED***');
+  });
+  afterEach(() => {
+    // Restore mocks after each test
+    jest.restoreAllMocks();
+  });
+
+  it('Enable/Disable videosource dualstream', () => {
+    expect(localRtcEngine.videoSourceEnableDualStreamMode(true) <= 0).toBeTruthy();
   });
 });
 
