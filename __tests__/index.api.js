@@ -89,7 +89,7 @@ describe('Render coverage', () => {
         for (let i = 0; i < infos.length; i++) {
           let info = infos[i];
           expect(info.uid).toBe(0);
-          // console.log(`uid: ${info.uid}, ydata: ${info.ydata.length}, udata: ${info.udata.length}, vdata: ${info.vdata.length}`);
+          // Console.log(`uid: ${info.uid}, ydata: ${info.ydata.length}, udata: ${info.udata.length}, vdata: ${info.vdata.length}`);
         }
         expect(localRtcEngine.stopPreview()).toBe(0);
         resolve();
