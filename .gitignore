@@ -5,3 +5,4 @@ error-log.txt
 .vscode
 peer.pid
 nohup.out
+.version-cache
