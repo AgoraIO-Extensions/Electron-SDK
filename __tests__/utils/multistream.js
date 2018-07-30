@@ -18,7 +18,7 @@ class MultiStream {
   initEngine(rtcEngine, options) {
     options = options || {};
     let videoProfile = options.videoProfile || 33;
-    jest.spyOn(rtcEngine, 'initRender').mockImplementation(() => { });
+    jest.spyOn(rtcEngine, 'initRender').mockImplementation(() => {});
     rtcEngine.setChannelProfile(1);
     rtcEngine.setClientRole(1);
     rtcEngine.setupLocalVideo();
@@ -57,9 +57,12 @@ class MultiStream {
   initRemoteStream(uid) {
     return new Promise(resolve => {
       this.remoteUid = uid;
-      exec(`bash startpeer.sh ${this.channel} ${this.remoteUid}`, (err, stdout, stderr) => {
-        console.log(`start result: ${err} ${stdout} ${stderr}`);
-      });
+      exec(
+        `bash startpeer.sh ${this.channel} ${this.remoteUid}`,
+        (err, stdout, stderr) => {
+          console.log(`start result: ${err} ${stdout} ${stderr}`);
+        }
+      );
       setTimeout(() => {
         resolve();
       }, 2000);
