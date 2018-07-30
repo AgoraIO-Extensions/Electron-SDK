@@ -122,7 +122,8 @@ describe('Render coverage', () => {
   });
 });
 
-describe('Multi-stream coverage', () => {
+const isMac = process.platform === 'darwin';
+const MultiStreamTests = () => {
   beforeAll(() => {
     localRtcEngine = new AgoraRtcEngine();
     localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
@@ -130,9 +131,6 @@ describe('Multi-stream coverage', () => {
   });
   afterAll(() => {
     multistream.stopRemote();
-    setTimeout(() => {
-      process.exit();
-    }, 1000);
   });
   afterEach(() => {
     // Restore mocks after each test
@@ -164,5 +162,23 @@ describe('Multi-stream coverage', () => {
   it('Local leave', async () => {
     multistream.stopShare();
     await multistream.leaveLocal();
+  });
+};
+
+if (isMac) {
+  describe('Multi-stream coverage', MultiStreamTests);
+} else {
+  describe.skip('Multi-stream coverage', MultiStreamTests);
+}
+
+describe('Exiting', () => {
+  afterAll(() => {
+    multistream.stopRemote();
+    setTimeout(() => {
+      process.exit();
+    }, 1000);
+  });
+  it('Cleanup', async () => {
+    expect(1).toBe(1);
   });
 });
