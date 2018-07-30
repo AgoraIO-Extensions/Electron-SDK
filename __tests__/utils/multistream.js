@@ -18,7 +18,7 @@ class MultiStream {
   initEngine(rtcEngine, options) {
     options = options || {};
     let videoProfile = options.videoProfile || 33;
-    jest.spyOn(rtcEngine, 'initRender').mockImplementation(() => { });
+    jest.spyOn(rtcEngine, 'initRender').mockImplementation(() => {});
     rtcEngine.setChannelProfile(1);
     rtcEngine.setClientRole(1);
     rtcEngine.setupLocalVideo();
