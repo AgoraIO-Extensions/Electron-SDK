@@ -113,6 +113,7 @@ bool AgoraVideoSource::initialize()
     agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
     rep.enableLocalVideo(false);
     rep.muteAllRemoteVideoStreams(true);
+    rep.muteAllRemoteAudioStreams(true);
     m_ipc->sendMessage(AGORA_IPC_SOURCE_READY, nullptr, 0);
     m_initialized = true;
     LOG_LEAVE;
@@ -249,12 +250,16 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
         agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
         rep.enableWebSdkInteroperability((bool)*payload);
     }
+    else if (msg == AGORA_IPC_ENABLE_DUAL_STREAM_MODE) {
+        agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
+        rep.enableDualStreamMode((bool)*payload);
+    }
     else if (msg == AGORA_IPC_SET_PARAMETER) {
         if (len != sizeof(SetParameterCmd))
             return;
         SetParameterCmd *cmd = (SetParameterCmd*)payload;
         agora::rtc::AParameter rep(m_rtcEngine.get());
-        rep->setParameters(cmd->parameters);        
+        rep->setParameters(cmd->parameters);
     }
     LOG_LEAVE;
 }

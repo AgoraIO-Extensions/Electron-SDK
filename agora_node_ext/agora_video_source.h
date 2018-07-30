@@ -132,6 +132,13 @@ namespace agora{
              */
             virtual node_error enableWebSdkInteroperability(bool enabled) = 0;
 
+            
+            /**
+             * Enable dual stream mode with the Agora Web SDK.
+             * @param enabled : whether dual stream with the Agora Web SDK is enabled
+             */
+            virtual node_error enableDualStreamMode(bool enabled) = 0;
+
             /**
             * To set parameters for video source.
             */

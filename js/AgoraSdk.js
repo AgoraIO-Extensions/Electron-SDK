@@ -1278,6 +1278,15 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @description enable dual stream mode for video source
+   * @param {*} enable whether dual stream mode is enabled
+   * @return {int} 0 for success, <0 for failure
+   */
+  videoSourceEnableDualStreamMode(enable) {
+    return this.rtcengine.videoSourceEnableDualStreamMode(enable);
+  }
+
+  /**
    * @description setParameters for video source
    * @param {*} parameter parameter to set
    * @returns {int} 0 for success, <0 for failure
