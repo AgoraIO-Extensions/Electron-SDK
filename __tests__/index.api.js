@@ -167,6 +167,7 @@ const MultiStreamTests = () => {
 if (isMac) {
   describe('Multi-stream coverage', MultiStreamTests);
 } else {
+  // In windows, only one process can access one camera at a time
   describe.skip('Multi-stream coverage', MultiStreamTests);
 }
 
