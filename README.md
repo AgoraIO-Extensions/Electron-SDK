@@ -4,7 +4,7 @@ The Agora-RTC-SDK-for-Electron is an open-source wrapper for **[Electron](https:
 
 ## :heart_eyes: Important 
 
-v2.2.1-rc.1 has been released! Now node-gyp build environment are not neccessary any more, we will download built C++ addon from our cdn instead.
+v2.2.1-rc.2 has been released! Now node-gyp build environment are not neccessary any more, we will download built C++ addon from our cdn instead.
 
 ## Developer Environment Requirements
 
