@@ -17,7 +17,7 @@ v2.0.7-rc.2 has been released! It is a special version with lots of optimization
 ## How to use
 
 ```sh
-npm install agora-electron-sdk@2.0.7-rc.2
+npm install agora-electron-sdk@2.0.7-rc.3
 ```
 
 ```javascript
