@@ -1,3 +1,7 @@
+## 2.0.7-rc.3 (August 1, 2018)
+#### :house: Internal
+* Now we remove `build` folder and re-download everytime you run npm install.
+
 ## 2.0.7-rc.1 (July 26, 2018)
 > Release for e-Education
 
