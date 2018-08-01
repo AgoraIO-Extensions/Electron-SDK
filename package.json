@@ -6,7 +6,7 @@
       "/__tests__/utils/"
     ]
   },
-  "version": "2.0.7-rc.2",
+  "version": "2.0.7-rc.3",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "author": "agora.io",
@@ -28,6 +28,7 @@
     "node-gyp": "^3.6.2",
     "optimist": "^0.6.1",
     "ora": "^2.1.0",
+    "rimraf": "^2.6.2",
     "shelljs": "^0.8.2"
   },
   "devDependencies": {
