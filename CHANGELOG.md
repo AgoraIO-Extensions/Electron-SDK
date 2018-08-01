@@ -1,4 +1,4 @@
-## 2.2.1-rc.1 (July 17, 2018)
+## 2.2.1-rc.1 (August 1, 2018)
 
 #### :house: Internal
 
