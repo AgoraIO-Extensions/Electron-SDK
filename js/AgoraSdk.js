@@ -1708,7 +1708,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setVolumeOfEffect(soundId, volume) {
-    return this.setVolumeOfEffect(soundId, volume);
+    return this.rtcengine.setVolumeOfEffect(soundId, volume);
   }
 
   /**
