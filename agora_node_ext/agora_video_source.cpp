@@ -234,7 +234,6 @@ namespace agora{
             if (!m_ipcReceiver)
                 return node_status_error;
 
-            m_ipcReceiver.reset();
             return m_ipcMsg->sendMessage(AGORA_IPC_STOP_VS_PREVIEW, nullptr, 0) ? node_ok : node_generic_error;
         }
         
@@ -356,6 +355,9 @@ namespace agora{
             }
             else if (msg == AGORA_IPC_START_VS_PREVIEW_COMPLETE) {
                 onStartPreviewComplete();
+            }
+            else if (msg == AGORA_IPC_STOP_VS_PREVIEW_COMPLETE) {
+                m_ipcReceiver.reset();
             }
         }
 
