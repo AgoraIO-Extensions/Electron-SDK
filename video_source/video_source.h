@@ -100,6 +100,7 @@ private:
     std::unique_ptr<IAgoraIpc> m_ipc;
     /** Used to transfer video data */
     std::unique_ptr<AgoraIpcDataSender> m_ipcSender;
+    std::mutex m_ipcSenderMutex;
     /** RTC engine. */
     agora::util::AutoPtr<agora::rtc::IRtcEngine> m_rtcEngine;
     bool m_initialized;
