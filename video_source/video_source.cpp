@@ -151,7 +151,11 @@ node_error AgoraVideoSource::stopPreview()
     agora::rtc::VideoCanvas canvas;
     m_rtcEngine->setupLocalVideo(canvas);
 
-    m_ipcSender.reset();
+    {
+        std::lock_guard<std::mutex> lock(m_ipcSenderMutex);
+        m_ipcSender.reset();
+    }
+
     return m_ipc->sendMessage(AGORA_IPC_STOP_VS_PREVIEW_COMPLETE, nullptr, 0) ? node_ok : node_generic_error;
 }
 
@@ -304,7 +308,10 @@ bool AgoraVideoSource::joinChannel(const char* key, const char* name, const char
 
 void AgoraVideoSource::exit(bool notifySink)
 {
-    m_ipcSender.reset();
+    {
+        std::lock_guard<std::mutex> lock(m_ipcSenderMutex);
+        m_ipcSender.reset();
+    }
     m_ipc->disconnect();
 }
 
@@ -339,6 +346,9 @@ bool AgoraVideoSource::sendData(char* payload, int len)
 {
     if (!payload || len == 0)
         return false;
+
+    std::lock_guard<std::mutex> lock(m_ipcSenderMutex);
+
     if (m_ipcSender) {
         m_ipcSender->sendData(payload, len);
         LOG_INFO("Send data success\n");
