@@ -17,6 +17,7 @@
 #include "node_process.h"
 #include "node_error.h"
 #include <thread>
+#include <mutex>
 
 class AgoraVideoSourceEventHandler;
 class AgoraVideoSourceRenderFactory;
