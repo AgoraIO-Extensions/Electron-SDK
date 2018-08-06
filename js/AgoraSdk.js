@@ -2,6 +2,9 @@
 const AgoraRender = require('./AgoraRender');
 const agora = require('../build/Release/agora_node_ext');
 
+/**
+ * @class AgoraRtcEngine
+ */
 class AgoraRtcEngine extends EventEmitter {
   constructor() {
     super();
@@ -10,6 +13,10 @@ class AgoraRtcEngine extends EventEmitter {
     this.streams = {};
   }
 
+  /**
+   * init event handler
+   * @private
+   */
   initEventHandler() {
     let self = this;
 
@@ -306,6 +313,11 @@ class AgoraRtcEngine extends EventEmitter {
     });
   }
 
+  /**
+   * register render for target info
+   * @private
+   * @param {*} infos 
+   */
   onRegisterDeliverFrame(infos) {
     var len = infos.length;
     // Console.log('len : ' + len);
@@ -350,6 +362,15 @@ class AgoraRtcEngine extends EventEmitter {
     }
   }
 
+  /**
+   * draw image with params
+   * @private
+   * @param {*} render 
+   * @param {*} header 
+   * @param {*} yplanedata 
+   * @param {*} uplanedata 
+   * @param {*} vplanedata 
+   */
   drawImage(render, header, yplanedata, uplanedata, vplanedata) {
     if (header.byteLength != 20) {
       //
@@ -418,6 +439,11 @@ class AgoraRtcEngine extends EventEmitter {
     var latency = now32 - ts;
   }
 
+  /**
+   * init render by AgoraRender
+   * @private
+   * @param {*} view 
+   */
   initRender(view) {
     var render = new AgoraRender();
     render.start(view, function(e) {

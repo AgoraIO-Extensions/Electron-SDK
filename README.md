@@ -2,9 +2,33 @@
 
 The Agora-RTC-SDK-for-Electron is an open-source wrapper for **[Electron](https://electronjs.org/)** developers. This SDK takes advantage of Node.js C++ Addons and Agora RTC SDKs on Windows/macOS.
 
-## :heart_eyes: Important 
+## Quick Overview
 
-v2.0.7-rc.3 has been released! It is a special version with lots of optimization for e-Edu situation.  
+**Attention to [Changelog](./CHANGELOG.md) for newest information**
+
+You can directly install the sdk through npm:
+
+``` bash
+# install newest sdk and we will download built binary file for you
+npm install agora-electron-sdk@2.0.7-rc.4
+```
+
+``` javascript
+// you can use require either
+import AgoraRtcEngine from 'agora-electron-sdk'
+```
+
+Other resources:
+
+[API Reference](./docs/apis.md)
+
+[CDN for Built Binary File(Windows)](http://download.agora.io/sdk/release/Agora_RTC_Electron_SDK_for_Windows_v2_0_7.zip)
+
+[CDN for Built Binary File(Mac)](http://download.agora.io/sdk/release/Agora_RTC_Electron_SDK_for_Mac_v2_0_7.zip)
+
+[A complete solution for e-Edu](https://github.com/AgoraIO/ARD-eEducation-with-Electron)
+
+[A quickstart demo](https://github.com/AgoraIO-Community/Agora-Electron-Quickstart)
 
 ## Developer Environment Requirements
 
@@ -14,27 +38,17 @@ v2.0.7-rc.3 has been released! It is a special version with lots of optimization
 
 - Agora RTC SDK Windows/macOS 2.2.1+
 
-## How to use
-
-```sh
-npm install agora-electron-sdk@2.0.7-rc.3
-```
-
-```javascript
-const AgoraRtcEngine = require('agora-electron-sdk')
-```
-
-And a newly provided quickstart boilerplate: [Agora-Electron-Quickstart](https://github.com/AgoraIO-Community/Agora-Electron-Quickstart)
-
 ## How to develop
 
 Assuming that you have [Node](https://nodejs.org/en/download/) installed and can use `npm` in command line.
 
-- run `npm install` to install dependency
+- Run `npm install` to install dependency
 
-- <del>Usually npm will trigger building automatically, or you can build mannually by running `npm run build:electron` or `npm run build:node`, the former one is for releasing and using in electron runtime while the latter is for developing and testing in node runtime.</del> Now we will download built C++ addon after dependencies installed.
+- Usually it will trigger `npm run download`, or you can run it manually.
 
 - If you want to debug with xcode/visual studio, run `npm run debug` to generate the project file and sdk for debug env.
+
+**Find more scripts in [package.json](./package.json)**
 
 **Notice:**
 
@@ -42,7 +56,7 @@ Assuming that you have [Node](https://nodejs.org/en/download/) installed and can
 
 - For macOS, please always use the latest Xcode.
 
-- For Windows, if Visual Studio or Electron version are not the same as in script, change the corresponding parameters in the script. Electron 1.8.3+ needs Visual Studio 2015 or above.
+- For Windows, if Visual Studio or Electron version are not the same as in script, change the corresponding parameters in the script. Electron 1.8.3+ needs Visual Studio 2015 or above. And **you have to install a 32-bit electron by `npm install -D --arch=ia32 electron`**
 
 - For more information about develop environment, visit [node-gyp](https://github.com/nodejs/node-gyp/blob/master/README.md) for help.
 
