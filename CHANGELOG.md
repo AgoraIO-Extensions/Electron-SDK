@@ -5,7 +5,7 @@
 #### :bug: Bug Fix
 * Fixed a crash in ipc which will influnece screen sharing.
 
-#### :Documentation: Documentation
+#### :memo: Documentation
 * Now we provide complete [Javascript API Reference](./docs/apis.md)!
 
 
