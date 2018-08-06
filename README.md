@@ -10,7 +10,7 @@ You can directly install the sdk through npm:
 
 ``` bash
 # install newest sdk and we will download built binary file for you
-npm install agora-electron-sdk@2.0.7-rc.4
+npm install agora-electron-sdk@2.0.7-rc.5
 ```
 
 ``` javascript
