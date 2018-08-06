@@ -1,4 +1,4 @@
-## 2.0.7-rc.5 (August 6, 2018)
+## 2.0.7-rc.6 (August 6, 2018)
 #### :house: Internal
 * Fixed a potential risk that will pend the promise.
 
