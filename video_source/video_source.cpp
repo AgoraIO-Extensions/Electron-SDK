@@ -268,7 +268,7 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
 #if defined(_WIN32)
         if (cmd->profile > agora::rtc::VIDEO_PROFILE_4K_3) {
 #elif defined(__APPLE__)
-		if (cmd->profile > agora::rtc::VIDEO_PROFILE_PORTRAIT_4K_3) {
+		if (cmd->profile > agora::rtc::VIDEO_PROFILE_LANDSCAPE_4K_3) {
 #endif
 			LOG_ERROR("%s, set video profile with invalid value : %d", __FUNCTION__, cmd->profile);
 		}
