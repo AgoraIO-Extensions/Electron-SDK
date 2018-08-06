@@ -1,3 +1,14 @@
+## 2.0.7-rc.4 (August 6, 2018)
+#### :house: Internal
+* Fixed a potential risk that will pend the promise.
+
+#### :bug: Bug Fix
+* Fixed a crash in ipc which will influnece screen sharing.
+
+#### :Documentation: Documentation
+* Now we provide complete [Javascript API Reference](./docs/apis.md)!
+
+
 ## 2.0.7-rc.3 (August 1, 2018)
 #### :house: Internal
 * Now we remove `build` folder and re-download everytime you run npm install.
