@@ -15,6 +15,10 @@
 #include "node_napi_api.h"
 #include <string>
 
+#if defined(__APPLE__)
+#include "node_screen_window_info.h"
+#endif
+
 using std::string;
 namespace agora {
     namespace rtc {
@@ -2606,6 +2610,9 @@ namespace agora {
                 napi_status status = napi_ok;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
+                
+                Isolate* isolate = pEngine->getIsolate();
+                Local<v8::Array> infos = v8::Array::New(isolate);
 #ifdef _WIN32
                 std::unordered_set<HWND> setHwnds;
                 setHwnds.clear();
@@ -2613,23 +2620,53 @@ namespace agora {
                 std::vector<ShareWindowInfo> wndsInfo;
                 wndsInfo.reserve(setHwnds.size());
                 notifyRetShareWindowId(setHwnds, wndsInfo);
-                Isolate* isolate = pEngine->getIsolate();
-                Local<v8::Array> infos = v8::Array::New(isolate);
                 for (int i = 0; i < wndsInfo.size(); ++i) {
                     ShareWindowInfo wndInfo = wndsInfo[i];
                     Local<v8::Object> obj = Object::New(isolate);
-                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowid", (int32)std::get<0>(wndInfo));
-                    buffer_info titleinfo;
-                    std::string title = std::get<1>(wndInfo);
-                    titleinfo.buffer = (unsigned char*)const_cast<char*>(title.c_str());
-                    titleinfo.length = title.length();
-                    NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "title", titleinfo);
-                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "bmpwidth", std::get<2>(wndInfo));
-                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "bmpheight", std::get<3>(wndInfo));
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowId", (int32)std::get<0>(wndInfo));
+                    buffer_info nameInfo;
+                    std::string name = std::get<1>(wndInfo);
+                    nameInfo.buffer = (unsigned char*)const_cast<char*>(name.c_str());
+                    nameInfo.length = title.length();
+                    NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "name", nameInfo);
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "bmpWidth", std::get<2>(wndInfo));
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "bmpHeight", std::get<3>(wndInfo));
                     buffer_info bmpinfo;
                     bmpinfo.buffer = (unsigned char*)std::get<5>(wndInfo);
                     bmpinfo.length = std::get<4>(wndInfo);
-                    NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "bmpdata", bmpinfo);
+                    NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "bmpData", bmpinfo);
+                    infos->Set(i, obj);
+                }
+#elif defined(__APPLE__)
+                std::vector<ScreenWindowInfo> allWindows = getAllWindowInfo();
+                for (unsigned int i = 0; i < allWindows.size(); ++i) {
+                    ScreenWindowInfo windowInfo = allWindows[i];
+                    Local<v8::Object> obj = Object::New(isolate);
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowId", windowInfo.windowId);
+                    
+                    buffer_info nameInfo;
+                    nameInfo.buffer = (unsigned char*)const_cast<char*>(windowInfo.name.c_str());
+                    nameInfo.length = windowInfo.name.length();
+                    NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "name", nameInfo);
+                    
+                    buffer_info ownerNameInfo;
+                    ownerNameInfo.buffer = (unsigned char*)const_cast<char*>(windowInfo.ownerName.c_str());
+                    ownerNameInfo.length = windowInfo.ownerName.length();
+                    NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "ownerName", ownerNameInfo);
+                    
+                    if (windowInfo.bmpData) {
+                        buffer_info bmpInfo;
+                        bmpInfo.buffer = windowInfo.bmpData;
+                        bmpInfo.length = windowInfo.bmpDataLength;
+                        NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "bmpData", bmpInfo);
+                        infos->Set(i, obj);
+                        
+                        NODE_SET_OBJ_PROP_UINT32(isolate, obj, "bmpWidth", windowInfo.bmpWidth);
+                        NODE_SET_OBJ_PROP_UINT32(isolate, obj, "bmpHeight", windowInfo.bmpHeight);
+                        
+                        free(windowInfo.bmpData);
+                    }
+                    
                     infos->Set(i, obj);
                 }
 #endif    
