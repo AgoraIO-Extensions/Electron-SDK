@@ -135,6 +135,7 @@ namespace agora {
 #endif
                 PROPERTY_METHOD_DEFINE(startScreenCapture2)
                 PROPERTY_METHOD_DEFINE(stopScreenCatpure2)
+                PROPERTY_METHOD_DEFINE(getShareWindowIds)
                 PROPERTY_METHOD_DEFINE(videoSourceInitialize)
                 PROPERTY_METHOD_DEFINE(videoSourceJoin)
                 PROPERTY_METHOD_DEFINE(videoSourceLeave)
@@ -993,6 +994,7 @@ namespace agora {
                 status = napi_get_value_uint32_(args[3], bitrate);
                 CHECK_NAPI_STATUS(pEngine, status);
                 Rect region(top, left, bottom, right);
+
                 if (pEngine->m_videoSourceSink.get())
                     pEngine->m_videoSourceSink->captureScreen(windowId, captureFreq, &region, bitrate);
             } while (false);
@@ -1288,7 +1290,7 @@ namespace agora {
 				else{
 					extra_info = "Electron";
 				}
-
+               
                 int result = pEngine->m_engine->joinChannel(key, name, extra_info.c_str(), uid);
                 args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result));
             } while (false);
@@ -2575,5 +2577,320 @@ namespace agora {
             } while (false);
             LOG_LEAVE;
         }
+#define CHECK_NAPI_OBJ(obj) \
+    if (obj.IsEmpty()) \
+        break;
+
+#define NODE_SET_OBJ_PROP_UINT32(isolate, obj, name, val) \
+    { \
+        Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
+        CHECK_NAPI_OBJ(propName); \
+        Local<Value> propVal = v8::Uint32::New(isolate, val); \
+        CHECK_NAPI_OBJ(propVal); \
+        obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+    }
+
+#define NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, name, info) \
+    { \
+        Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
+        Local<v8::ArrayBuffer> buff = v8::ArrayBuffer::New(isolate, info.buffer, info.length); \
+        Local<v8::Uint8Array> dataarray = v8::Uint8Array::New(buff, 0, info.length);\
+        obj->Set(isolate->GetCurrentContext(), propName, dataarray); \
+    }
+
+        NAPI_API_DEFINE(NodeRtcEngine, getShareWindowIds)
+        {
+            LOG_ENTER;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+#ifdef _WIN32
+                std::unordered_set<HWND> setHwnds;
+                setHwnds.clear();
+                EnumWindows(EnumWindowsProc, (LPARAM)(&setHwnds));
+                std::vector<ShareWindowInfo> wndsInfo;
+                wndsInfo.reserve(setHwnds.size());
+                notifyRetShareWindowId(setHwnds, wndsInfo);
+                Isolate* isolate = pEngine->getIsolate();
+                Local<v8::Array> infos = v8::Array::New(isolate);
+                for (int i = 0; i < wndsInfo.size(); ++i) {
+                    ShareWindowInfo wndInfo = wndsInfo[i];
+                    Local<v8::Object> obj = Object::New(isolate);
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowid", (int32)std::get<0>(wndInfo));
+                    buffer_info titleinfo;
+                    std::string title = std::get<1>(wndInfo);
+                    titleinfo.buffer = (unsigned char*)const_cast<char*>(title.c_str());
+                    titleinfo.length = title.length();
+                    NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "title", titleinfo);
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "bmpwidth", std::get<2>(wndInfo));
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "bmpheight", std::get<3>(wndInfo));
+                    buffer_info bmpinfo;
+                    bmpinfo.buffer = (unsigned char*)std::get<5>(wndInfo);
+                    bmpinfo.length = std::get<4>(wndInfo);
+                    NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "bmpdata", bmpinfo);
+                    infos->Set(i, obj);
+                }
+#endif    
+                napi_set_int_result(args, 0);
+            } while (false);
+            LOG_LEAVE;
+        }
+#ifdef _WIN32
+        /**
+        * https://chromium.googlesource.com/external/webrtc/+/lkgr/modules/desktop_capture/window_capturer_win.cc
+        */
+        BOOL CALLBACK NodeRtcEngine::EnumWindowsProc(_In_ HWND hwnd, _In_ LPARAM lParam)
+        {
+            // Skip windows that are invisible, minimized, have no title, or are owned,
+            // unless they have the app window style set.
+            HWND owner = GetWindow(hwnd, GW_OWNER);
+            LONG exstyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+            if (IsIconic(hwnd) || !IsWindowVisible(hwnd) ||
+                (owner && !(exstyle & WS_EX_APPWINDOW))) {
+                return TRUE;
+            }
+
+            // Skip the Program Manager window and the Start button.
+            const size_t kClassLength = 256;
+            char class_name[kClassLength];
+            const int class_name_length = GetClassNameA(hwnd, class_name, kClassLength);
+
+            //    RTC_DCHECK(class_name_length)
+            //        << "Error retrieving the application's class name";
+            // Skip Program Manager window and the Start button. This is the same logic
+            // that's used in Win32WindowPicker in libjingle. Consider filtering other
+            // windows as well (e.g. toolbars).
+            if (strcmp(class_name, "Progman") == 0 || strcmp(class_name, "Button") == 0)
+                return TRUE;
+
+            // Windows 8 introduced a "Modern App" identified by their class name being
+            // either ApplicationFrameWindow or windows.UI.Core.coreWindow. The
+            // associated windows cannot be captured, so we skip them.
+            // http://crbug.com/526883.
+
+            ULONGLONG dwConditionMask = 0;
+            VER_SET_CONDITION(dwConditionMask, VER_MAJORVERSION, VER_GREATER_EQUAL);
+            VER_SET_CONDITION(dwConditionMask, VER_MINORVERSION, VER_GREATER_EQUAL);
+            OSVERSIONINFOEX osx;
+            ZeroMemory(&osx, sizeof(OSVERSIONINFOEX));
+            osx.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+            osx.dwMajorVersion = 6;
+            osx.dwMinorVersion = 2;
+            int ret = VerifyVersionInfo(&osx, VER_MAJORVERSION | VER_MINORVERSION, dwConditionMask);
+            //win8ртио
+            if (ret &&
+                (strcmp(class_name, "ApplicationFrameWindow") == 0 ||
+                    strcmp(class_name, "Windows.UI.Core.CoreWindow") == 0)) {
+                return TRUE;
+            }
+
+            std::unordered_set<HWND> *pSet = reinterpret_cast<std::unordered_set<HWND> *>(lParam);
+            LONG lStyle = ::GetWindowLong(hwnd, GWL_STYLE);
+            if ((lStyle&WS_VISIBLE) != 0 && (lStyle&(WS_POPUP | WS_SYSMENU)) != 0) {
+                pSet->insert(hwnd);
+            }
+
+            return TRUE;
+        }
+
+       // bool NodeRtcEngine::captureAndSave(const HWND& hWnd, int nBitCount, const char* szFilePath, unsigned char* szBmp, int& bmpSize, int& bmpWidth, int& bmpHeight)
+        bool captureAndSave(int nBitCount, const char* szFilePath, char* szName, const HWND& hWnd, std::vector<ShareWindowInfo>& wndsInfo)
+        {
+#if 0
+            if (!szFilePath || !strlen(szFilePath))
+                return false;
+#endif
+            //calculate the number of color indexes in the color table
+            int nColorTableEntries = -1;
+            switch (nBitCount)
+            {
+            case 1:
+                nColorTableEntries = 2;
+                break;
+            case 4:
+                nColorTableEntries = 16;
+                break;
+            case 8:
+                nColorTableEntries = 256;
+                break;
+            case 16:
+            case 24:
+            case 32:
+                nColorTableEntries = 0;
+                break;
+            default:
+                nColorTableEntries = -1;
+                break;
+            }
+
+            if (nColorTableEntries == -1)
+                return false;
+
+            HDC hDC = GetDC(hWnd);
+            HDC hMemDC = CreateCompatibleDC(hDC);
+
+            int nWidth = 0;
+            int nHeight = 0;
+
+            if (hWnd != HWND_DESKTOP) {
+                RECT rect;
+                ::GetClientRect(hWnd, &rect);
+                nWidth = rect.right - rect.left;
+                nHeight = rect.bottom - rect.top;
+            }
+            else {
+                nWidth = ::GetSystemMetrics(SM_CXSCREEN);
+                nHeight = ::GetSystemMetrics(SM_CYSCREEN);
+            }
+
+            if (nWidth == 0 || nHeight == 0)
+                return false;
+
+            int bmpWidth = max_bmp_width;
+            int bmpHeight = max_bmp_height;
+            if (nWidth <= max_bmp_width && nHeight < max_bmp_height) {
+                bmpWidth = nWidth;
+                bmpHeight = nHeight;
+            }
+            else if (nWidth > nHeight && nWidth > 500) {
+                float rate = nWidth / 500.0f;
+                float h = (float)nHeight / rate;
+                bmpWidth = 500;
+                bmpHeight = (int)h;
+            }
+            else if (nHeight > nWidth && nHeight > 500) {
+                float rate = nHeight / 500.0f;
+                float w = (float)nWidth / rate;
+                bmpHeight = 500;
+                bmpWidth = (int)w;
+            }
+
+            HBITMAP hBMP = CreateCompatibleBitmap(hDC, nWidth, nHeight);
+            SelectObject(hMemDC, hBMP);
+            SetStretchBltMode(hMemDC, COLORONCOLOR);
+            StretchBlt(hMemDC, 0, 0, bmpWidth, bmpHeight, hDC, 0, 0, nWidth, nHeight, SRCCOPY);
+            int nStructLength = sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * nColorTableEntries;
+            LPBITMAPINFOHEADER lpBitmapInfoHeader = (LPBITMAPINFOHEADER)new char[nStructLength];
+            ::ZeroMemory(lpBitmapInfoHeader, nStructLength);
+
+            lpBitmapInfoHeader->biSize = sizeof(BITMAPINFOHEADER);
+            lpBitmapInfoHeader->biWidth = bmpWidth;
+            lpBitmapInfoHeader->biHeight = bmpHeight;
+            lpBitmapInfoHeader->biPlanes = 1;
+            lpBitmapInfoHeader->biBitCount = nBitCount;
+            lpBitmapInfoHeader->biCompression = BI_RGB;
+            lpBitmapInfoHeader->biXPelsPerMeter = 0;
+            lpBitmapInfoHeader->biYPelsPerMeter = 0;
+            lpBitmapInfoHeader->biClrUsed = nColorTableEntries;
+            lpBitmapInfoHeader->biClrImportant = nColorTableEntries;
+
+            DWORD dwBytes = ((DWORD)bmpWidth * nBitCount) / 32;
+            if (((DWORD)bmpWidth * nBitCount) % 32) {
+                dwBytes++;
+            }
+            dwBytes *= 4;
+
+            DWORD dwSizeImage = dwBytes * bmpHeight;
+            lpBitmapInfoHeader->biSizeImage = dwSizeImage;
+
+            LPBYTE lpDibBits = 0;
+            HBITMAP hBitmap = ::CreateDIBSection(hMemDC, (LPBITMAPINFO)lpBitmapInfoHeader, DIB_RGB_COLORS, (void**)&lpDibBits, NULL, 0);
+            SelectObject(hMemDC, hBitmap);
+            SetStretchBltMode(hMemDC, COLORONCOLOR);
+            StretchBlt(hMemDC, 0, 0, bmpWidth, bmpHeight, hDC, 0, 0, nWidth, nHeight, SRCCOPY);
+            ReleaseDC(hWnd, hDC);
+
+            BITMAPFILEHEADER bmfh;
+            bmfh.bfType = 0x4d42;  // 'BM'
+            int nHeaderSize = sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * nColorTableEntries;
+            bmfh.bfSize = 0;
+            bmfh.bfReserved1 = bmfh.bfReserved2 = 0;
+            bmfh.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * nColorTableEntries;
+#if 0
+            FILE *pFile = 0;
+            fopen_s(&pFile, szFilePath, "wb");
+            if (!pFile)
+            {
+                ::DeleteObject(hBMP);
+                ::DeleteObject(hBitmap);
+                delete[]lpBitmapInfoHeader;
+                return false;
+            }
+#endif
+            DWORD nColorTableSize = 0;
+            if (nBitCount != 24)
+                nColorTableSize = (1 << nBitCount) * sizeof(RGBQUAD);
+            else
+                nColorTableSize = 0;
+            int bmpSize = nColorTableEntries * sizeof(RGBQUAD) + sizeof(BITMAPFILEHEADER) + dwSizeImage + nHeaderSize;
+            unsigned char* szBmp = (unsigned char*)malloc(bmpSize);
+            memcpy(szBmp, &bmfh, sizeof(BITMAPFILEHEADER));
+            memcpy(szBmp + sizeof(BITMAPFILEHEADER), lpBitmapInfoHeader, nHeaderSize);
+            //fwrite(&bmfh, sizeof(BITMAPFILEHEADER), 1, pFile);
+            //fwrite(lpBitmapInfoHeader, nHeaderSize, 1, pFile);
+
+            if (nBitCount < 16)
+            {
+                int nBytesWritten = 0;
+                RGBQUAD *rgbTable = new RGBQUAD[nColorTableEntries * sizeof(RGBQUAD)];
+                //fill RGBQUAD table and write it in file
+                for (int i = 0; i < nColorTableEntries; ++i)
+                {
+                    rgbTable[i].rgbRed = rgbTable[i].rgbGreen = rgbTable[i].rgbBlue = i;
+                    rgbTable[i].rgbReserved = 0;
+                    memcpy(szBmp + sizeof(BITMAPFILEHEADER) + nHeaderSize + i * sizeof(RGBQUAD), &rgbTable[i], sizeof(RGBQUAD));
+                    //fwrite(&rgbTable[i], sizeof(RGBQUAD), 1, pFile);
+                }
+                delete[]rgbTable;
+            }
+
+            memcpy(szBmp + sizeof(BITMAPFILEHEADER) + nColorTableEntries * sizeof(RGBQUAD) + nHeaderSize, lpDibBits, dwSizeImage);
+            //fwrite(lpDibBits, dwSizeImage, 1, pFile);
+#if 0
+            fwrite(szBmp, nColorTableEntries * sizeof(RGBQUAD) + sizeof(BITMAPFILEHEADER) + dwSizeImage + nHeaderSize, 1, pFile);
+            fclose(pFile);
+#endif
+            ::DeleteObject(hBMP);
+            ::DeleteObject(hBitmap);
+            delete[]lpBitmapInfoHeader;
+
+            std::string name = szName;
+            ShareWindowInfo wndInfo = std::make_tuple(hWnd, name, bmpWidth, bmpHeight, bmpSize, std::move(szBmp));
+            wndsInfo.push_back(wndInfo);
+            return true;
+        }
+
+        void NodeRtcEngine::notifyRetShareWindowId(std::unordered_set<HWND> setHwnds, std::vector<ShareWindowInfo>& wndsInfo)
+        {
+            int i = 0;
+            for (auto iter = setHwnds.begin(); iter != setHwnds.end(); ++iter) {
+                char class_name[100] = { 0 };
+                char szName[MAX_PATH] = { 0 };
+                GetWindowTextA(*iter, szName, MAX_PATH);
+                GetClassNameA(*iter, class_name, 99);
+                HWND windowid = *iter;
+                if (strcmp(class_name, "EdgeUiInputTopWndClass") == 0
+                    || strcmp(class_name, "Shell_TrayWnd") == 0
+                    || strcmp(class_name, "DummyDWMListenerWindow") == 0
+                    || strcmp(class_name, "WorkerW") == 0
+                    || strcmp(class_name, "PopupRbWebDialog") == 0)//kuwo advertisement
+                {
+                    continue;
+                }
+                FILE *pFile = 0;
+                char szFilePath[MAX_PATH] = { 0 };
+                sprintf(szFilePath, "D:\\bmp\\%d.bmp", i++);  
+                captureAndSave(32, szFilePath, szName, windowid, wndsInfo);
+
+                /*if (captureAndSave(windowid, 32, szFilePath, bmpbuf, bmpsize, bmpwidth, bmpheight)) {
+                    std::string name = szName;
+                    ShareWindowInfo wndInfo = std::make_tuple(windowid, name, bmpwidth, bmpheight, bmpsize, bmpbuf);
+                    wndsInfo.push_back(wndInfo);
+                }*/
+            }
+        }
+#endif
     }
 }
