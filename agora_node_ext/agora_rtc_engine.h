@@ -22,7 +22,7 @@
 #include <functional>
 #include <list>
 #include <mutex>
-
+#include <unordered_set>
 /*
 * Used to declare native interface to nodejs
 */
@@ -39,7 +39,11 @@ namespace agora {
     namespace rtc {
         using media::IExternalVideoRenderFactory;
         using v8::Isolate;
-
+        const int max_bmp_width = 500;
+        const int max_bmp_height = 500;
+#ifdef _WIN32
+        typedef std::tuple<HWND, std::string, int, int, int, unsigned char*> ShareWindowInfo;
+#endif
         /*
         * class NodeRtcEngine is the wrapper for IAgoraRtcEngine, and is exposed to nodejs as the native interface.
         */
@@ -202,6 +206,7 @@ namespace agora {
             NAPI_API(videoSourceSetVideoProfile);
             NAPI_API(startScreenCapture2);
             NAPI_API(stopScreenCatpure2);
+            NAPI_API(getShareWindowIds);
             NAPI_API(videoSourceRelease);
             NAPI_API(videoSourceStartPreview);
             NAPI_API(videoSourceStopPreview);
@@ -229,6 +234,11 @@ namespace agora {
         protected:
             NodeRtcEngine(Isolate *isolate);
             ~NodeRtcEngine();
+#ifdef _WIN32
+            static BOOL CALLBACK EnumWindowsProc(_In_ HWND   hwnd, _In_ LPARAM lParam);
+            static void notifyRetShareWindowId(std::unordered_set<HWND> setHwnds, std::vector<ShareWindowInfo>& wndsInfo);
+           // static bool captureAndSave(const HWND& hWnd, int nBitCount, const char* szFilePath, unsigned char* szBmp, int& bmpSize, int& bmpWidth, int& bmpHeight);
+#endif
         private:
             DECLARE_CLASS;
             IRtcEngine *m_engine;
