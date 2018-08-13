@@ -1318,6 +1318,15 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @description setLogfile for video source
+   * @param {*} filepath path of logfile
+   * @returns {int} 0 for success, <0 for failure
+   */
+  videoSourceSetLogFile(filepath) {
+    return this.rtcengine.videoSourceSetLogFile(filepath);
+  }
+
+  /**
    * @description release video source object
    * @returns {int} 0 for success, <0 for failure
    */

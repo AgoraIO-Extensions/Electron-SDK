@@ -146,6 +146,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(videoSourceStopPreview)
                 PROPERTY_METHOD_DEFINE(videoSourceEnableWebSdkInteroperability)
                 PROPERTY_METHOD_DEFINE(videoSourceEnableDualStreamMode)
+                PROPERTY_METHOD_DEFINE(videoSourceSetLogFile)
                 PROPERTY_METHOD_DEFINE(videoSourceSetParameter)
                 PROPERTY_METHOD_DEFINE(setBool);
                 PROPERTY_METHOD_DEFINE(setInt);
@@ -1009,6 +1010,23 @@ namespace agora {
                 CHECK_NATIVE_THIS(pEngine);
                 if (pEngine->m_videoSourceSink.get())
                     pEngine->m_videoSourceSink->stopCaptureScreen();
+                napi_set_int_result(args, 0);
+            } while (false);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetLogFile)
+        {
+            LOG_ENTER;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                NodeString file;
+                napi_status status = napi_get_value_nodestring_(args[0], file);
+                CHECK_NAPI_STATUS(pEngine, status);
+                if (pEngine->m_videoSourceSink.get())
+                    pEngine->m_videoSourceSink->setLogFile(file);
                 napi_set_int_result(args, 0);
             } while (false);
             LOG_LEAVE;
