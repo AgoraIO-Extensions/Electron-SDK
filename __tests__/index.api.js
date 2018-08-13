@@ -4,6 +4,7 @@ const generateRandomNumber = require('./utils/index.js').generateRandomNumber;
 const doJoin = require('./utils/doJoin');
 const doLeave = require('./utils/doLeave');
 const MultiStream = require('./utils/multistream');
+const path = require('path');
 
 let localRtcEngine = null;
 let multistream = null;
@@ -83,6 +84,11 @@ describe('Basic API Coverage 2', () => {
 
   it('Enable/Disable videosource dualstream', () => {
     expect(localRtcEngine.videoSourceEnableDualStreamMode(true) <= 0).toBeTruthy();
+  });
+
+  it('set videosource log file', () => {
+    const filepath = path.join(__dirname, './videosource.log');
+    expect(localRtcEngine.videoSourceSetLogFile(filepath) <= 0).toBeTruthy();
   });
 });
 
