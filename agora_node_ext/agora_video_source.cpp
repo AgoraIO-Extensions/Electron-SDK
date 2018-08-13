@@ -63,6 +63,7 @@ namespace agora{
             virtual node_error stopPreview() override;
             virtual node_error enableWebSdkInteroperability(bool enabled) override;
             virtual node_error enableDualStreamMode(bool enabled) override;
+            virtual node_error setLogFile(const char* file) override;
             virtual void setParameters(const char* parameters) override;
         private:
             void msgThread();
@@ -249,6 +250,14 @@ namespace agora{
         {
             if (m_initialized){
                 return m_ipcMsg->sendMessage(AGORA_IPC_ENABLE_DUAL_STREAM_MODE, (char*)&enabled, sizeof(enabled)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::setLogFile(const char* file)
+        {
+            if (m_initialized){
+                return m_ipcMsg->sendMessage(AGORA_IPC_SET_LOGFILE, (char*)file, strlen(file)) ? node_ok : node_generic_error;
             }
             return node_status_error;
         }

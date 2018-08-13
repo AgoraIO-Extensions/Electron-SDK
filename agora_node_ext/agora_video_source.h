@@ -146,6 +146,12 @@ namespace agora{
             virtual node_error enableDualStreamMode(bool enabled) = 0;
 
             /**
+             * set log file path of videosource
+             * @param file : filepath of log
+             */
+            virtual node_error setLogFile(const char* file) = 0;
+
+            /**
             * To set parameters for video source.
             */
             virtual void setParameters(const char* parameters) = 0;
