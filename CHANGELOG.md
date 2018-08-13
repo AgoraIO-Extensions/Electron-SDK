@@ -17,6 +17,8 @@
 > Release for e-Education
 
 #### :house: Internal
+* Use 2.0.7 for Windows and 2.2.3 for Mac, which have done special optimization for e-Edu scenario. 
+
 * Docs and unit-tests are nearly completed.
 
 * Modify api:
