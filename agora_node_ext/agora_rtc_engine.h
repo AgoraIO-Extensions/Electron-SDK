@@ -142,6 +142,7 @@ namespace agora {
             NAPI_API(resumeAudio);
             NAPI_API(setExternalAudioSource);
 #if defined(__APPLE__) || defined(_WIN32)
+            NAPI_API(getShareWindowIds);
             NAPI_API(startScreenCapture);
             NAPI_API(stopScreenCapture);
             NAPI_API(updateScreenCaptureRegion);
@@ -206,7 +207,6 @@ namespace agora {
             NAPI_API(videoSourceSetVideoProfile);
             NAPI_API(startScreenCapture2);
             NAPI_API(stopScreenCatpure2);
-            NAPI_API(getShareWindowIds);
             NAPI_API(videoSourceRelease);
             NAPI_API(videoSourceStartPreview);
             NAPI_API(videoSourceStopPreview);
@@ -368,6 +368,11 @@ namespace agora {
 */
 #define napi_set_int_result(args, result) (args).GetReturnValue().Set(Integer::New(args.GetIsolate(), (result)))
 
+/*
+* to return array value for JS call.
+*/
+#define napi_set_array_result(args, data) \
+    args.GetReturnValue().Set(data);
 /**
 * to return bool value for JS call
 */
