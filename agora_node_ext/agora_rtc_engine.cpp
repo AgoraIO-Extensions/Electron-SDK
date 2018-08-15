@@ -2598,7 +2598,7 @@ namespace agora {
         { \
             Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
             CHECK_NAPI_OBJ(propName); \
-            Local<Value> propVal = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
+            Local<Value> propVal = String::NewFromUtf8(isolate, val, NewStringType::kInternalized).ToLocalChecked(); \
             CHECK_NAPI_OBJ(propVal); \
             obj->Set(isolate->GetCurrentContext(), propName, propVal); \
         }
