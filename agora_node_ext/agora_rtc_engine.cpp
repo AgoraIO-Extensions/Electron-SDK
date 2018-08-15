@@ -2629,7 +2629,7 @@ namespace agora {
                 std::vector<ShareWindowInfo> wndsInfo;
                 wndsInfo.reserve(setHwnds.size());
                 notifyRetShareWindowId(setHwnds, wndsInfo);
-                for (int i = 0; i < wndsInfo.size(); ++i) {
+                for (size_t i = 0; i < wndsInfo.size(); ++i) {
                     ShareWindowInfo wndInfo = wndsInfo[i];
                     Local<v8::Object> obj = Object::New(isolate);
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowId", (int32)std::get<0>(wndInfo));
