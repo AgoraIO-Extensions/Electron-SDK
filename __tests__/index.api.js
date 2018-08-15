@@ -84,6 +84,11 @@ describe('Basic API Coverage 2', () => {
   it('Enable/Disable videosource dualstream', () => {
     expect(localRtcEngine.videoSourceEnableDualStreamMode(true) <= 0).toBeTruthy();
   });
+
+  it('get share windows', () => {
+    const winIds = localRtcEngine.getShareWindowIds();
+    expect(winIds.length > 0).toBeTruthy();
+  });
 });
 
 describe('Render coverage', () => {
