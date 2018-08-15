@@ -85,6 +85,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(pauseAudio)
                 PROPERTY_METHOD_DEFINE(resumeAudio)
                 PROPERTY_METHOD_DEFINE(setExternalAudioSource)
+                PROPERTY_METHOD_DEFINE(getShareWindowIds)
                 PROPERTY_METHOD_DEFINE(startScreenCapture)
                 PROPERTY_METHOD_DEFINE(stopScreenCapture)
                 PROPERTY_METHOD_DEFINE(updateScreenCaptureRegion)
@@ -139,7 +140,6 @@ namespace agora {
 #endif
                 PROPERTY_METHOD_DEFINE(startScreenCapture2)
                 PROPERTY_METHOD_DEFINE(stopScreenCatpure2)
-                PROPERTY_METHOD_DEFINE(getShareWindowIds)
                 PROPERTY_METHOD_DEFINE(videoSourceInitialize)
                 PROPERTY_METHOD_DEFINE(videoSourceJoin)
                 PROPERTY_METHOD_DEFINE(videoSourceLeave)
@@ -2716,7 +2716,7 @@ namespace agora {
             osx.dwMajorVersion = 6;
             osx.dwMinorVersion = 2;
             int ret = VerifyVersionInfo(&osx, VER_MAJORVERSION | VER_MINORVERSION, dwConditionMask);
-            //win8ртио
+            //win8О©╫О©╫О©╫О©╫
             if (ret &&
                 (strcmp(class_name, "ApplicationFrameWindow") == 0 ||
                     strcmp(class_name, "Windows.UI.Core.CoreWindow") == 0)) {
