@@ -51,7 +51,7 @@ void copyBmpDataToWindowInfo(CGImageRef image, ScreenWindowInfo& windowInfo)
     CGContextRelease(context);
     CGColorSpaceRelease(colorSpace);
     
-    windowInfo.bmpData = bmpData;
+    windowInfo.bmpData = (unsigned char *)bmpData;
     windowInfo.bmpDataLength = bmpDataLength;
     windowInfo.bmpWidth = width;
     windowInfo.bmpHeight = height;
