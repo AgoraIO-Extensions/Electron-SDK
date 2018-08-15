@@ -2670,7 +2670,7 @@ namespace agora {
                     infos->Set(i, obj);
                 }
 #endif    
-                napi_set_int_result(args, 0);
+                napi_set_array_result(args, infos);
             } while (false);
             LOG_LEAVE;
         }
