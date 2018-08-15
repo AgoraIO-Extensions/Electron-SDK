@@ -2593,6 +2593,15 @@ namespace agora {
         CHECK_NAPI_OBJ(propVal); \
         obj->Set(isolate->GetCurrentContext(), propName, propVal); \
     }
+        
+#define NODE_SET_OBJ_PROP_String(isolate, obj, name, val) \
+        { \
+            Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
+            CHECK_NAPI_OBJ(propName); \
+            Local<Value> propVal = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
+            CHECK_NAPI_OBJ(propVal); \
+            obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+        }
 
 #define NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, name, info) \
     { \
@@ -2624,11 +2633,8 @@ namespace agora {
                     ShareWindowInfo wndInfo = wndsInfo[i];
                     Local<v8::Object> obj = Object::New(isolate);
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowId", (int32)std::get<0>(wndInfo));
-                    buffer_info nameInfo;
                     std::string name = std::get<1>(wndInfo);
-                    nameInfo.buffer = (unsigned char*)const_cast<char*>(name.c_str());
-                    nameInfo.length = title.length();
-                    NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "name", nameInfo);
+                    NODE_SET_OBJ_PROP_String(isolate, obj, "name", name.c_str());
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "bmpWidth", std::get<2>(wndInfo));
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "bmpHeight", std::get<3>(wndInfo));
                     buffer_info bmpinfo;
@@ -2643,16 +2649,8 @@ namespace agora {
                     ScreenWindowInfo windowInfo = allWindows[i];
                     Local<v8::Object> obj = Object::New(isolate);
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowId", windowInfo.windowId);
-                    
-                    buffer_info nameInfo;
-                    nameInfo.buffer = (unsigned char*)const_cast<char*>(windowInfo.name.c_str());
-                    nameInfo.length = windowInfo.name.length();
-                    NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "name", nameInfo);
-                    
-                    buffer_info ownerNameInfo;
-                    ownerNameInfo.buffer = (unsigned char*)const_cast<char*>(windowInfo.ownerName.c_str());
-                    ownerNameInfo.length = windowInfo.ownerName.length();
-                    NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "ownerName", ownerNameInfo);
+                    NODE_SET_OBJ_PROP_String(isolate, obj, "name", windowInfo.name.c_str());
+                    NODE_SET_OBJ_PROP_String(isolate, obj, "ownerName", windowInfo.ownerName.c_str());
                     
                     if (windowInfo.bmpData) {
                         buffer_info bmpInfo;
