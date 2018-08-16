@@ -10,6 +10,31 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreGraphics/CoreGraphics.h>
 
+# pragma pack(push, 1)
+typedef struct s_bitmap_header
+{
+    // Bitmap file header
+    UInt16 fileType;
+    UInt32 fileSize;
+    UInt16 reserved1;
+    UInt16 reserved2;
+    UInt32 bitmapOffset;
+    
+    // DIB Header
+    UInt32 headerSize;
+    UInt32 width;
+    UInt32 height;
+    UInt16 colorPlanes;
+    UInt16 bitsPerPixel;
+    UInt32 compression;
+    UInt32 bitmapSize;
+    UInt32 horizontalResolution;
+    UInt32 verticalResolution;
+    UInt32 colorsUsed;
+    UInt32 colorsImportant;
+} t_bitmap_header;
+#pragma pack(pop)
+
 void copyBmpDataToWindowInfo(CGImageRef image, ScreenWindowInfo& windowInfo)
 {
     unsigned int orgWidth = (unsigned int)CGImageGetWidth(image);
@@ -29,29 +54,47 @@ void copyBmpDataToWindowInfo(CGImageRef image, ScreenWindowInfo& windowInfo)
         height = MAX_BMP_WIDTH;
     }
     
-    unsigned int bytesPerPixel = 3;
+    unsigned int bytesPerPixel = 4;
     unsigned int bytesPerRow = bytesPerPixel * width;
-    unsigned int bmpDataLength = bytesPerRow * height;
+//    if (bytesPerRow % 4 > 0) {
+//        bytesPerRow = (bytesPerRow / 4 + 1) * 4;
+//    }
     
-    void *bmpData = calloc(bmpDataLength, sizeof(unsigned char));
+    unsigned int bitmapSize = bytesPerRow * height;
+    unsigned int bmpDataLength = sizeof(t_bitmap_header) + bitmapSize;
+    unsigned char *bmpData = (unsigned char *)calloc(bmpDataLength, sizeof(unsigned char));
     if (bmpData == NULL) {
         LOG_ERROR("Out of memory.");
         return;
     }
     
+    t_bitmap_header *header = (t_bitmap_header *)bmpData;
+    header->fileType = 0x4D42;
+    header->fileSize = bmpDataLength;
+    header->bitmapOffset = sizeof(t_bitmap_header);
+    header->headerSize = 40;
+    header->width = width;
+    header->height = height;
+    header->colorPlanes = 1;
+    header->bitsPerPixel = bytesPerPixel * 8;
+    header->compression = 0;
+    header->bitmapSize = bitmapSize;
+    
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    CGContextRef context = CGBitmapContextCreate(bmpData,
+    CGContextRef context = CGBitmapContextCreate(bmpData + sizeof(t_bitmap_header),
                                                  width,
                                                  height,
                                                  8,     // bits per component
                                                  bytesPerRow,
                                                  colorSpace,
-                                                 kCGImageAlphaNone | kCGBitmapByteOrder32Big);
+                                                 kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little);
+    CGContextTranslateCTM(context, 0, height);
+    CGContextScaleCTM(context, 1.0, -1.0);
     CGContextDrawImage(context, CGRectMake(0, 0, width, height), image);
     CGContextRelease(context);
     CGColorSpaceRelease(colorSpace);
     
-    windowInfo.bmpData = (unsigned char *)bmpData;
+    windowInfo.bmpData = bmpData;
     windowInfo.bmpDataLength = bmpDataLength;
     windowInfo.bmpWidth = width;
     windowInfo.bmpHeight = height;
@@ -122,9 +165,9 @@ std::vector<ScreenWindowInfo> getAllWindowInfo()
     std::vector<ScreenWindowInfo> windows;
     
     CGImageRef fullScreenShot = CGWindowListCreateImage(CGRectInfinite,
-                                               kCGWindowListOptionOnScreenOnly,
-                                               0,
-                                               kCGWindowImageDefault);
+                                                        kCGWindowListOptionOnScreenOnly,
+                                                        0,
+                                                        kCGWindowImageDefault);
     if (fullScreenShot) {
         ScreenWindowInfo fullScreenWindow;
         copyBmpDataToWindowInfo(fullScreenShot, fullScreenWindow);
@@ -153,7 +196,7 @@ std::vector<ScreenWindowInfo> getAllWindowInfo()
         CGImageRef screenShot = CGWindowListCreateImage(CGRectNull,
                                                         kCGWindowListOptionIncludingWindow,
                                                         screenWindow.windowId,
-                                                        kCGWindowImageDefault);
+                                                        kCGWindowImageBoundsIgnoreFraming);
         if (screenShot) {
             copyBmpDataToWindowInfo(screenShot, screenWindow);
             CGImageRelease(screenShot);
