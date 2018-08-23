@@ -281,7 +281,7 @@ void NodeVideoFrameTransporter::setFPS(uint32_t fps)
 #define NODE_SET_OBJ_PROP_UINT32(obj, name, val) \
     { \
         Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
-        Local<Value> propVal = v8::Int32::New(isolate, val); \
+        Local<Value> propVal = v8::Uint32::New(isolate, val); \
         obj->Set(isolate->GetCurrentContext(), propName, propVal); \
     }
 #define NODE_SET_OBJ_PROP_HEADER(obj, it) \
