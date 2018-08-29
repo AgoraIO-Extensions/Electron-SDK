@@ -1,5 +1,5 @@
 ﻿const EventEmitter = require('events').EventEmitter;
-const AgoraRender = require('./AgoraRender');
+const Renderer = require('./Renderer');
 const agora = require('../build/Release/agora_node_ext');
 
 /**
@@ -314,13 +314,74 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * register render for target info
    * @private
-   * @param {*} infos 
+   * @param {number} type 0-local 1-remote 2-device_test 3-video_source
+   * @param {number} uid uid get from native engine, differ from electron engine's uid
+   */
+  _getRenderer(type, uid) {
+    if (type < 2) {
+      if (uid === 0) {
+        return this.streams['local'];
+      } else {
+        return this.streams[uid];
+      }
+    } else if (type === 2) {
+      // return this.streams.devtest;
+      console.warning('Type 2 not support in production mode.');
+      return false;
+    } else if (type === 3) {
+      return this.streams.videosource;
+    } else {
+      console.warning('Invalid type for getRenderer, only accept 0~3.')
+      return false;
+    }
+  }
+
+  /**
+   * check if data is valid
+   * @param {*} header 
+   * @param {*} ydata 
+   * @param {*} udata 
+   * @param {*} vdata 
+   */
+  _checkData(header, ydata, udata, vdata) {
+    if (header.byteLength != 20) {
+      console.error('invalid image header ' + header.byteLength);
+      return false;
+    }
+    if (ydata.byteLength === 20) {
+      console.error('invalid image yplane ' + ydata.byteLength);
+      return false;
+    }
+    if (udata.byteLength === 20) {
+      console.error('invalid image uplanedata ' + udata.byteLength);
+      return false;
+    }
+    if (
+      ydata.byteLength != udata.byteLength * 4 ||
+      udata.byteLength != vdata.byteLength
+    ) {
+      console.error(
+        'invalid image header ' +
+          ydata.byteLength +
+          ' ' +
+          udata.byteLength +
+          ' ' +
+          vdata.byteLength
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * register renderer for target info
+   * @private
+   * @param {number} infos 
    */
   onRegisterDeliverFrame(infos) {
     var len = infos.length;
-    // Console.log('len : ' + len);
     for (var i = 0; i < len; i++) {
       var info = infos[i];
       var type = info.type;
@@ -329,127 +390,57 @@ class AgoraRtcEngine extends EventEmitter {
       var ydata = info.ydata;
       var udata = info.udata;
       var vdata = info.vdata;
-      // Console.log('uid : ' + uid);
       if (!header || !ydata || !udata || !vdata) {
         console.log(
           'Invalid data param ： ' + header + ' ' + ydata + ' ' + udata + ' ' + vdata
         );
         continue;
       }
-      var render = null;
-      /*
-      * Type 0 is local video
-      * type 1 is remote video
-      * type 2 is device test video
-      * type 3 is video source video
-      */
-      if (type < 2) {
-        if (uid === 0) {
-          render = this.streams.local;
-        } else {
-          render = this.streams[uid];
-        }
-      } else if (type === 2) {
-        render = this.streams.devtest;
-      } else if (type === 3) {
-        render = this.streams.videosource;
-      }
-      if (!render) {
-        console.log("Can't find render for uid : " + uid);
+      let renderer = this._getRenderer(type, uid);
+      if (!renderer) {
+        console.warning("Can't find renderer for uid : " + uid);
         continue;
       }
-      this.drawImage(render, header, ydata, udata, vdata);
+
+      if(this._checkData(header, ydata, udata, vdata)) {
+        renderer.drawFrame({
+          header, 
+          yUint8Array: ydata, 
+          uUint8Array: udata,
+          vUint8Array: vdata,
+        });
+      }
     }
   }
 
   /**
-   * draw image with params
-   * @private
-   * @param {*} render 
-   * @param {*} header 
-   * @param {*} yplanedata 
-   * @param {*} uplanedata 
-   * @param {*} vplanedata 
+   * init renderer
+   * @param {string} key key for the map that store the renderers, e.g, uid or `videosource` or `local`
+   * @param {*} view dom elements to render video
    */
-  drawImage(render, header, yplanedata, uplanedata, vplanedata) {
-    if (header.byteLength != 20) {
-      //
-      console.error('invalid image header ' + header.byteLength);
-      return;
+  initRender(key, view) {
+    if (this.streams.hasOwnProperty(key)) {
+      this.destroyRender(key);
     }
-    if (yplanedata.byteLength === 20) {
-      console.error('invalid image yplane ' + yplane.byteLength);
-      return;
-    }
-    if (uplanedata.byteLength === 20) {
-      console.error('invalid image uplanedata ' + uplanedata.byteLength);
-      return;
-    }
-    if (
-      yplanedata.byteLength != uplanedata.byteLength * 4 ||
-      uplanedata.byteLength != vplanedata.byteLength
-    ) {
-      console.error(
-        'invalid image header ' +
-          yplanedata.byteLength +
-          ' ' +
-          uplanedata.byteLength +
-          ' ' +
-          vplanedata.byteLength
-      );
-      return;
-    }
-    var headerLength = 20;
-    var dv = new DataView(header);
-    var format = dv.getUint8(0);
-    var mirror = dv.getUint8(1);
-    var width = dv.getUint16(2);
-    var height = dv.getUint16(4);
-    var left = dv.getUint16(6);
-    var top = dv.getUint16(8);
-    var right = dv.getUint16(10);
-    var bottom = dv.getUint16(12);
-    var rotation = dv.getUint16(14);
-    var ts = dv.getUint32(16);
-    var xWidth = width + left + right;
-    var xHeight = height + top + bottom;
-    var yLength = xWidth * xHeight;
-    var yBegin = headerLength;
-    var yEnd = yBegin + yLength;
-    var uLength = yLength / 4;
-    var uBegin = yEnd;
-    var uEnd = uBegin + uLength;
-    var vLength = yLength / 4;
-    var vBegin = uEnd;
-    var vEnd = vBegin + vLength;
-    render.renderImage({
-      mirror: mirror,
-      width: width,
-      height: height,
-      left: left,
-      top: top,
-      right: right,
-      bottom: bottom,
-      rotation: rotation,
-      yplane: new Uint8Array(yplanedata),
-      uplane: new Uint8Array(uplanedata),
-      vplane: new Uint8Array(vplanedata)
-    });
-    var now32 = (Date.now() & 0xffffffff) >>> 0;
-    var latency = now32 - ts;
+    let renderer = new Renderer();
+    renderer.bind(view);
+    this.streams[key] = renderer;
+    
   }
 
   /**
-   * init render by AgoraRender
-   * @private
-   * @param {*} view 
+   * destroy renderer
+   * @param {string} key key for the map that store the renders, e.g, uid or `videosource` or `local`
+   * @param {function} onFailure err callback for destroyRenderer
    */
-  initRender(view) {
-    var render = new AgoraRender();
-    render.start(view, function(e) {
-      console.log(`render start fail: ${e.error}`);
-    });
-    return render;
+  destroyRender(key, onFailure) {
+    let renderer = this.streams[key];
+    try {
+      renderer.unbind();
+      delete this.streams[key];
+    } catch (err) {
+      onFailure && onFailure(err)
+    }
   }
 
   // ===========================================================================
@@ -517,30 +508,30 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description subscribe remote uid and initialize corresponding render
+   * @description subscribe remote uid and initialize corresponding renderer
    * @param {int} uid remote uid
-   * @param {*} view dom where to initialize render
+   * @param {*} view dom where to initialize renderer
    * @returns {int} 0 for success, <0 for failure
    */
   subscribe(uid, view) {
-    this.streams[uid] = this.initRender(view);
+    this.initRender(uid, view);
     return this.rtcengine.subscribe(uid);
   }
 
   /**
-   * @description setup local video and corresponding render
+   * @description setup local video and corresponding renderer
    * @param {*} view dom element where we will initialize our view
    * @returns {int} 0 for success, <0 for failure
    */
   setupLocalVideo(view) {
-    this.streams.local = this.initRender(view);
+    this.initRender('local', view);
     return this.rtcengine.setupLocalVideo();
   }
 
   /**
    *
-   * @description force set render dimension of video, this ONLY affects size of data sent to js layer, native video size is determined by setVideoProfile
-   * @param {*} rendertype type of render, 0 - local, 1 - remote, 2 - device test, 3 - video source
+   * @description force set renderer dimension of video, this ONLY affects size of data sent to js layer, native video size is determined by setVideoProfile
+   * @param {*} rendertype type of renderer, 0 - local, 1 - remote, 2 - device test, 3 - video source
    * @param {*} uid target uid
    * @param {*} width target width
    * @param {*} height target height
@@ -550,7 +541,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description force set render fps globally. This is mainly used to improve the performance for js rendering
+   * @description force set renderer fps globally. This is mainly used to improve the performance for js rendering
    * once set, data will be forced to be sent with this fps. This can reduce cpu frequency of js rendering.
    * This applies to ALL views except ones added to High FPS stream.
    * @param {int} fps frame/s
@@ -560,7 +551,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description force set render fps for high stream. High stream here MEANS uid streams which has been
+   * @description force set renderer fps for high stream. High stream here MEANS uid streams which has been
    * added to high ones by calling addVideoRenderToHighFPS, note this has nothing to do with dual stream
    * high stream. This is often used when we want to set low fps for most of views, but high fps for one
    * or two special views, e.g. screenshare
@@ -591,17 +582,17 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description setup view content mode
    * @param {*} uid stream uid to operate
-   * @param {*} mode view content mode, 0 - fit, 1 - fill
+   * @param {*} mode view content mode, 0 - fill, 1 - fit
    * @returns {int} 0 - success, -1 - fail
    */
   setupViewContentMode(uid, mode) {
-    let render = this.streams[uid];
-    if (!render) {
+    if (this.streams.hasOwnProperty(uid)) {
+      let renderer = this.streams[uid];
+      renderer.contentMode = mode;
+      return 0;
+    } else {
       return -1;
     }
-
-    render.contentMode = mode;
-    return 0;
   }
 
   /**
@@ -1196,11 +1187,11 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description setup render for video source
+   * @description setup renderer for video source
    * @param {*} view dom element where video source should be displayed
    */
   setupLocalVideoSource(view) {
-    this.streams.videosource = this.initRender(view);
+    this.initRender('videosource', view);
   }
 
   /**
@@ -1264,6 +1255,14 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @description get list of all system window ids and relevant infos, the window id can be used for screen share
+   * @returns {array} list of window infos
+   */
+  getShareWindowIds() {
+    return this.rtcengine.getShareWindowIds();
+  }
+
+  /**
    * @description start video source screen capture
    * @param {*} wndid windows id to capture
    * @param {*} captureFreq fps of video source screencapture, 1 - 15
@@ -1315,15 +1314,6 @@ class AgoraRtcEngine extends EventEmitter {
    */
   videoSourceSetParameters(parameter) {
     return this.rtcengine.videoSourceSetParameter(parameter);
-  }
-
-  /**
-   * @description setLogfile for video source
-   * @param {*} filepath path of logfile
-   * @returns {int} 0 for success, <0 for failure
-   */
-  videoSourceSetLogFile(filepath) {
-    return this.rtcengine.videoSourceSetLogFile(filepath);
   }
 
   /**
