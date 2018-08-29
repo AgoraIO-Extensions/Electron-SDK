@@ -104,6 +104,17 @@ std::string convertCFStringToStdString(CFStringRef cfString)
 {
     std::string stdString;
     
+    CFRange rangeFirstNewLine;
+    CFStringRef newString = NULL;
+    if (CFStringFindCharacterFromSet(cfString,
+                                     CFCharacterSetGetPredefined(kCFCharacterSetNewline),
+                                     CFRangeMake(0, CFStringGetLength(cfString)),
+                                     0,
+                                     &rangeFirstNewLine)) {
+        newString = CFStringCreateWithSubstring(NULL, cfString, CFRangeMake(0, rangeFirstNewLine.location));
+        cfString = newString;
+    }
+    
     const char * cName = CFStringGetCStringPtr(cfString, kCFStringEncodingUTF8);
     if (cName) {
         stdString = std::string(cName);
@@ -123,6 +134,10 @@ std::string convertCFStringToStdString(CFStringRef cfString)
                 LOG_ERROR("Out of memory.");
             }
         }
+    }
+    
+    if (newString) {
+        CFRelease(newString);
     }
     
     return stdString;
