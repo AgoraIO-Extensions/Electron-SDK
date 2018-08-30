@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#define    MAX_BMP_WIDTH   500
+#define    IMAGE_MAX_PIXEL_SIZE   500
 
 struct ScreenWindowInfo
 {
@@ -24,17 +24,18 @@ struct ScreenWindowInfo
     std::string name;
     std::string ownerName;
     
-    unsigned char* bmpData;
-    unsigned int bmpDataLength;
-    unsigned int bmpWidth;
-    unsigned int bmpHeight;
+    unsigned int width;
+    unsigned int height;
+    
+    unsigned char* imageData;
+    unsigned int imageDataLength;
     
     ScreenWindowInfo()
     : windowId(0)
-    , bmpData(nullptr)
-    , bmpDataLength(0)
-    , bmpWidth(0)
-    , bmpHeight(0)
+    , width(0)
+    , height(0)
+    , imageData(nullptr)
+    , imageDataLength(0)
     {}
 };
 
