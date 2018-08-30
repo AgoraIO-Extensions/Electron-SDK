@@ -17,7 +17,7 @@ void copyImageDataToWindowInfo(CGImageRef image, ScreenWindowInfo& windowInfo)
     int maxSize = IMAGE_MAX_PIXEL_SIZE;
     
     CFMutableDataRef cfImageData = CFDataCreateMutable(NULL, 0);
-    CGImageDestinationRef destination = CGImageDestinationCreateWithData(cfImageData, kUTTypeJPEG2000, 1, NULL);
+    CGImageDestinationRef destination = CGImageDestinationCreateWithData(cfImageData, kUTTypeJPEG, 1, NULL);
     CFMutableDictionaryRef properties = CFDictionaryCreateMutable(nil, 0, &kCFTypeDictionaryKeyCallBacks,  &kCFTypeDictionaryValueCallBacks);
     CFNumberRef imageMaxSize = CFNumberCreate(NULL, kCFNumberIntType, &maxSize);
     CFDictionarySetValue(properties, kCGImageDestinationImageMaxPixelSize, (CFTypeRef)imageMaxSize);
