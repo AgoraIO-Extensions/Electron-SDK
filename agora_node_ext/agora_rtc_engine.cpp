@@ -85,7 +85,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(pauseAudio)
                 PROPERTY_METHOD_DEFINE(resumeAudio)
                 PROPERTY_METHOD_DEFINE(setExternalAudioSource)
-                PROPERTY_METHOD_DEFINE(getShareWindowIds)
+                PROPERTY_METHOD_DEFINE(getScreenWindowsInfo)
                 PROPERTY_METHOD_DEFINE(startScreenCapture)
                 PROPERTY_METHOD_DEFINE(stopScreenCapture)
                 PROPERTY_METHOD_DEFINE(updateScreenCaptureRegion)
@@ -2611,12 +2611,11 @@ namespace agora {
         obj->Set(isolate->GetCurrentContext(), propName, dataarray); \
     }
 
-        NAPI_API_DEFINE(NodeRtcEngine, getShareWindowIds)
+        NAPI_API_DEFINE(NodeRtcEngine, getScreenWindowsInfo)
         {
             LOG_ENTER;
             do {
                 NodeRtcEngine *pEngine = nullptr;
-                napi_status status = napi_ok;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 
@@ -2635,12 +2634,12 @@ namespace agora {
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowId", (int32)std::get<0>(wndInfo));
                     std::string name = std::get<1>(wndInfo);
                     NODE_SET_OBJ_PROP_String(isolate, obj, "name", name.c_str());
-                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "bmpWidth", std::get<2>(wndInfo));
-                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "bmpHeight", std::get<3>(wndInfo));
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", std::get<2>(wndInfo));
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "weight", std::get<3>(wndInfo));
                     buffer_info bmpinfo;
                     bmpinfo.buffer = (unsigned char*)std::get<5>(wndInfo);
                     bmpinfo.length = std::get<4>(wndInfo);
-                    NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "bmpData", bmpinfo);
+                    NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "image", bmpinfo);
                     infos->Set(i, obj);
                 }
 #elif defined(__APPLE__)
@@ -2651,18 +2650,17 @@ namespace agora {
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowId", windowInfo.windowId);
                     NODE_SET_OBJ_PROP_String(isolate, obj, "name", windowInfo.name.c_str());
                     NODE_SET_OBJ_PROP_String(isolate, obj, "ownerName", windowInfo.ownerName.c_str());
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", windowInfo.width);
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "weight", windowInfo.height);
                     
-                    if (windowInfo.bmpData) {
-                        buffer_info bmpInfo;
-                        bmpInfo.buffer = windowInfo.bmpData;
-                        bmpInfo.length = windowInfo.bmpDataLength;
-                        NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "bmpData", bmpInfo);
+                    if (windowInfo.imageData) {
+                        buffer_info imageInfo;
+                        imageInfo.buffer = windowInfo.imageData;
+                        imageInfo.length = windowInfo.imageDataLength;
+                        NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "image", imageInfo);
                         infos->Set(i, obj);
                         
-                        NODE_SET_OBJ_PROP_UINT32(isolate, obj, "bmpWidth", windowInfo.bmpWidth);
-                        NODE_SET_OBJ_PROP_UINT32(isolate, obj, "bmpHeight", windowInfo.bmpHeight);
-                        
-                        free(windowInfo.bmpData);
+                        free(windowInfo.imageData);
                     }
                     
                     infos->Set(i, obj);
