@@ -142,7 +142,7 @@ namespace agora {
             NAPI_API(resumeAudio);
             NAPI_API(setExternalAudioSource);
 #if defined(__APPLE__) || defined(_WIN32)
-            NAPI_API(getShareWindowIds);
+            NAPI_API(getScreenWindowsInfo);
             NAPI_API(startScreenCapture);
             NAPI_API(stopScreenCapture);
             NAPI_API(updateScreenCaptureRegion);
