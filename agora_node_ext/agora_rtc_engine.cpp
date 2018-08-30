@@ -2606,7 +2606,8 @@ namespace agora {
 #define NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, name, info) \
     { \
         Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
-        Local<v8::ArrayBuffer> buff = v8::ArrayBuffer::New(isolate, info.buffer, info.length); \
+        Local<v8::ArrayBuffer> buff = v8::ArrayBuffer::New(isolate, info.length); \
+        memcpy(buff->GetContents().Data(), info.buffer, info.length); \
         Local<v8::Uint8Array> dataarray = v8::Uint8Array::New(buff, 0, info.length);\
         obj->Set(isolate->GetCurrentContext(), propName, dataarray); \
     }
@@ -2640,6 +2641,7 @@ namespace agora {
                     bmpinfo.buffer = (unsigned char*)std::get<5>(wndInfo);
                     bmpinfo.length = std::get<4>(wndInfo);
                     NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "image", bmpinfo);
+                    free(bmpinfo.buffer);
                     infos->Set(i, obj);
                 }
 #elif defined(__APPLE__)
@@ -2658,7 +2660,6 @@ namespace agora {
                         imageInfo.buffer = windowInfo.imageData;
                         imageInfo.length = windowInfo.imageDataLength;
                         NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "image", imageInfo);
-                        infos->Set(i, obj);
                         
                         free(windowInfo.imageData);
                     }
