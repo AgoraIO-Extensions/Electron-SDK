@@ -1267,8 +1267,8 @@ class AgoraRtcEngine extends EventEmitter {
    * @description get list of all system window ids and relevant infos, the window id can be used for screen share
    * @returns {array} list of window infos
    */
-  getShareWindowIds() {
-    return this.rtcengine.getShareWindowIds();
+  getScreenWindowsInfo() {
+    return this.rtcengine.getScreenWindowsInfo();
   }
 
   /**
