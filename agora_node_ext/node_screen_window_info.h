@@ -11,6 +11,9 @@
 #include <string>
 #include <vector>
 
+#if defined(_WIN32)
+#include <windows.h>
+#endif
 #define    IMAGE_MAX_PIXEL_SIZE   500
 
 struct ScreenWindowInfo
@@ -40,5 +43,9 @@ struct ScreenWindowInfo
 };
 
 std::vector<ScreenWindowInfo> getAllWindowInfo();
+
+#if defined(_WIN32)
+void DestroyGdiplus();
+#endif
 
 #endif /* AGORA_SCREEN_WINDOW_INFO_H */
