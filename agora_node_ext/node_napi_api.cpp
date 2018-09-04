@@ -68,6 +68,7 @@ bool NodeVideoFrameTransporter::deinitialize()
     env = nullptr;
     callback.Reset();
     js_this.Reset();
+    return true;
 }
 
 int NodeVideoFrameTransporter::setVideoDimension(NodeRenderType type, agora::rtc::uid_t uid, uint32_t width, uint32_t height)
