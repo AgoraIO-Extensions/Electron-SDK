@@ -86,7 +86,7 @@ describe('Basic API Coverage 2', () => {
   });
 
   it('get share windows', () => {
-    const winIds = localRtcEngine.getShareWindowIds();
+    const winIds = localRtcEngine.getScreenWindowsInfo();
     expect(winIds.length > 0).toBeTruthy();
   });
 });
