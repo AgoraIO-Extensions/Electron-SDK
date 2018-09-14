@@ -807,8 +807,16 @@ namespace agora {
                 status = napi_get_value_bool_(args[0], enable);
                 CHECK_NAPI_STATUS(pEngine, status);
                 RtcEngineParameters param(pEngine->m_engine);
-                //result = param.enableLoopbackRecording(enable);
-				result = node_generic_error;
+#if defined(_WIN32)
+                AParameter ap(pEngine->m_engine);
+                if (enable) {
+                    result = ap->setParameters('{"che.audio.loopback.recording":true}');
+                } else {
+                    result = ap->setParameters('{"che.audio.loopback.recording":false}');
+                }
+#elif defined(__APPLE__)
+                result = param.enableLoopbackRecording(enable);
+#endif
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
