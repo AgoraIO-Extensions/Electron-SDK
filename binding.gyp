@@ -234,7 +234,8 @@
                     'libraries': [
                         '-lagora_rtc_sdk.lib',
                         '-lws2_32.lib',
-                        '-lRpcrt4.lib'
+                        '-lRpcrt4.lib',
+						'-lgdiplus.lib'
                     ]
                 },
                 'defines!': [
@@ -247,7 +248,9 @@
                     './common/libyuv/source/compare_win.cc',
                     './common/libyuv/source/rotate_win.cc',
                     './common/libyuv/source/row_win.cc',
-                    './common/libyuv/source/scale_win.cc'
+                    './common/libyuv/source/scale_win.cc',
+					'./agora_node_ext/node_screen_window_info_win.cpp',
+                    './agora_node_ext/node_screen_window_info.h'
                 ],
                 'include_dirs': [
                 './sdk/include'
@@ -308,7 +311,9 @@
                     './common/libyuv/source/compare_gcc.cc',
                     './common/libyuv/source/rotate_gcc.cc',
                     './common/libyuv/source/row_gcc.cc',
-                    './common/libyuv/source/scale_gcc.cc'
+                    './common/libyuv/source/scale_gcc.cc',
+                    './agora_node_ext/node_screen_window_info_mac.cpp',
+                    './agora_node_ext/node_screen_window_info.h'
                 ],
                 'include_dirs': [
                 './sdk/lib/mac/AgoraRtcEngineKit.framework/Headers'

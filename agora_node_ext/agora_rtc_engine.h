@@ -22,7 +22,7 @@
 #include <functional>
 #include <list>
 #include <mutex>
-
+#include <unordered_set>
 /*
 * Used to declare native interface to nodejs
 */
@@ -39,7 +39,8 @@ namespace agora {
     namespace rtc {
         using media::IExternalVideoRenderFactory;
         using v8::Isolate;
-
+        const int max_bmp_width = 500;
+        const int max_bmp_height = 500;
         /*
         * class NodeRtcEngine is the wrapper for IAgoraRtcEngine, and is exposed to nodejs as the native interface.
         */
@@ -138,6 +139,7 @@ namespace agora {
             NAPI_API(resumeAudio);
             NAPI_API(setExternalAudioSource);
 #if defined(__APPLE__) || defined(_WIN32)
+            NAPI_API(getScreenWindowsInfo);
             NAPI_API(startScreenCapture);
             NAPI_API(stopScreenCapture);
             NAPI_API(updateScreenCaptureRegion);
@@ -359,6 +361,11 @@ namespace agora {
 */
 #define napi_set_int_result(args, result) (args).GetReturnValue().Set(Integer::New(args.GetIsolate(), (result)))
 
+/*
+* to return array value for JS call.
+*/
+#define napi_set_array_result(args, data) \
+    args.GetReturnValue().Set(data);
 /**
 * to return bool value for JS call
 */
