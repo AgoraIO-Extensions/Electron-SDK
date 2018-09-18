@@ -815,9 +815,9 @@ namespace agora {
 #if defined(_WIN32)
                 AParameter ap(pEngine->m_engine);
                 if (enable) {
-                    result = ap->setParameters('{"che.audio.loopback.recording":true}');
+                    result = ap->setParameters("{\"che.audio.loopback.recording\":true}");
                 } else {
-                    result = ap->setParameters('{"che.audio.loopback.recording":false}');
+                    result = ap->setParameters("{\"che.audio.loopback.recording\":false}");
                 }
 #elif defined(__APPLE__)
                 result = param.enableLoopbackRecording(enable);
