@@ -1,3 +1,4 @@
+require('./utils/mock')
 const AgoraRtcEngine = require('../js/AgoraSdk');
 const generateRandomString = require('./utils/index.js').generateRandomString;
 const generateRandomNumber = require('./utils/index.js').generateRandomNumber;
@@ -86,10 +87,11 @@ describe('Basic API Coverage 2', () => {
     expect(localRtcEngine.videoSourceEnableDualStreamMode(true) <= 0).toBeTruthy();
   });
 
-  it('set videosource log file', () => {
-    const filepath = path.join(__dirname, './videosource.log');
-    expect(localRtcEngine.videoSourceSetLogFile(filepath) <= 0).toBeTruthy();
-  });
+  // it('set videosource log file', () => {
+  //   const filepath = path.join(__dirname, './videosource.log');
+  //   expect(localRtcEngine.videoSourceSetLogFile(filepath) <= 0).toBeTruthy();
+  // });
+
   it('get share windows', () => {
     const winIds = localRtcEngine.getScreenWindowsInfo();
     expect(winIds.length > 0).toBeTruthy();
@@ -180,15 +182,3 @@ if (isMac) {
 } else {
   describe.skip('Multi-stream coverage', MultiStreamTests);
 }
-
-describe('Exiting', () => {
-  afterAll(() => {
-    multistream.stopRemote();
-    setTimeout(() => {
-      process.exit();
-    }, 1000);
-  });
-  it('Cleanup', async () => {
-    expect(1).toBe(1);
-  });
-});
