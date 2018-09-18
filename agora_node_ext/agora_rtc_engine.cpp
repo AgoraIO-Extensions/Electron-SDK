@@ -15,6 +15,10 @@
 #include "node_napi_api.h"
 #include <string>
 
+#if defined(__APPLE__) || defined(_WIN32)
+#include "node_screen_window_info.h"
+#endif
+
 using std::string;
 namespace agora {
     namespace rtc {
@@ -81,6 +85,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(pauseAudio)
                 PROPERTY_METHOD_DEFINE(resumeAudio)
                 PROPERTY_METHOD_DEFINE(setExternalAudioSource)
+                PROPERTY_METHOD_DEFINE(getScreenWindowsInfo)
                 PROPERTY_METHOD_DEFINE(startScreenCapture)
                 PROPERTY_METHOD_DEFINE(stopScreenCapture)
                 PROPERTY_METHOD_DEFINE(updateScreenCaptureRegion)
@@ -994,6 +999,7 @@ namespace agora {
                 status = napi_get_value_uint32_(args[3], bitrate);
                 CHECK_NAPI_STATUS(pEngine, status);
                 Rect region(top, left, bottom, right);
+
                 if (pEngine->m_videoSourceSink.get())
                     pEngine->m_videoSourceSink->captureScreen(windowId, captureFreq, &region, bitrate);
             } while (false);
@@ -1298,7 +1304,7 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
 
 				std::string extra_info = "";
-				
+
 				if (chan_info && strlen(chan_info) > 0){
 					extra_info = "Electron_";
 					extra_info += chan_info;
@@ -1306,7 +1312,7 @@ namespace agora {
 				else{
 					extra_info = "Electron";
 				}
-
+               
                 int result = pEngine->m_engine->joinChannel(key, name, extra_info.c_str(), uid);
                 args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result));
             } while (false);
@@ -2590,6 +2596,96 @@ namespace agora {
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
                 int result = adm->setRecordingDeviceMute(mute);
                 napi_set_int_result(args, result);
+            } while (false);
+            LOG_LEAVE;
+        }
+#define CHECK_NAPI_OBJ(obj) \
+    if (obj.IsEmpty()) \
+        break;
+
+#define NODE_SET_OBJ_PROP_UINT32(isolate, obj, name, val) \
+    { \
+        Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
+        CHECK_NAPI_OBJ(propName); \
+        Local<Value> propVal = v8::Uint32::New(isolate, val); \
+        CHECK_NAPI_OBJ(propVal); \
+        obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+    }
+        
+#define NODE_SET_OBJ_PROP_String(isolate, obj, name, val) \
+        { \
+            Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
+            CHECK_NAPI_OBJ(propName); \
+            Local<Value> propVal = String::NewFromUtf8(isolate, val, NewStringType::kInternalized).ToLocalChecked(); \
+            CHECK_NAPI_OBJ(propVal); \
+            obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+        }
+
+#define NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, name, info) \
+    { \
+        Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
+        Local<v8::ArrayBuffer> buff = v8::ArrayBuffer::New(isolate, info.length); \
+        memcpy(buff->GetContents().Data(), info.buffer, info.length); \
+        Local<v8::Uint8Array> dataarray = v8::Uint8Array::New(buff, 0, info.length);\
+        obj->Set(isolate->GetCurrentContext(), propName, dataarray); \
+    }
+
+        NAPI_API_DEFINE(NodeRtcEngine, getScreenWindowsInfo)
+        {
+            LOG_ENTER;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                
+                Isolate* isolate = pEngine->getIsolate();
+                Local<v8::Array> infos = v8::Array::New(isolate);
+#ifdef _WIN32
+                std::vector<ScreenWindowInfo> allWindows = getAllWindowInfo();
+                for (unsigned int i = 0; i < allWindows.size(); ++i) {
+                    ScreenWindowInfo windowInfo = allWindows[i];
+                    Local<v8::Object> obj = Object::New(isolate);
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowId", (UINT32)windowInfo.windowId);
+                    NODE_SET_OBJ_PROP_String(isolate, obj, "name", windowInfo.name.c_str());
+                    NODE_SET_OBJ_PROP_String(isolate, obj, "ownerName", windowInfo.ownerName.c_str());
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", windowInfo.width);
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "weight", windowInfo.height);
+
+                    if (windowInfo.imageData) {
+                        buffer_info imageInfo;
+                        imageInfo.buffer = windowInfo.imageData;
+                        imageInfo.length = windowInfo.imageDataLength;
+                        NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "image", imageInfo);
+
+                        free(windowInfo.imageData);
+                    }
+
+                    infos->Set(i, obj);
+                }
+#elif defined(__APPLE__)
+                std::vector<ScreenWindowInfo> allWindows = getAllWindowInfo();
+                for (unsigned int i = 0; i < allWindows.size(); ++i) {
+                    ScreenWindowInfo windowInfo = allWindows[i];
+                    Local<v8::Object> obj = Object::New(isolate);
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowId", windowInfo.windowId);
+                    NODE_SET_OBJ_PROP_String(isolate, obj, "name", windowInfo.name.c_str());
+                    NODE_SET_OBJ_PROP_String(isolate, obj, "ownerName", windowInfo.ownerName.c_str());
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", windowInfo.width);
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "weight", windowInfo.height);
+                    
+                    if (windowInfo.imageData) {
+                        buffer_info imageInfo;
+                        imageInfo.buffer = windowInfo.imageData;
+                        imageInfo.length = windowInfo.imageDataLength;
+                        NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "image", imageInfo);
+                        
+                        free(windowInfo.imageData);
+                    }
+                    
+                    infos->Set(i, obj);
+                }
+#endif    
+                napi_set_array_result(args, infos);
             } while (false);
             LOG_LEAVE;
         }
