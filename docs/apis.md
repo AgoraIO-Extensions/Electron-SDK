@@ -4,6 +4,8 @@
 **Kind**: global class  
 
 * [AgoraRtcEngine](#AgoraRtcEngine)
+    * [.initRender(key, view)](#AgoraRtcEngine+initRender)
+    * [.destroyRender(key, onFailure)](#AgoraRtcEngine+destroyRender)
     * [.initialize(appid)](#AgoraRtcEngine+initialize) ⇒ <code>int</code>
     * [.getVersion()](#AgoraRtcEngine+getVersion) ⇒ <code>string</code>
     * [.getErrorDescription(errorCode)](#AgoraRtcEngine+getErrorDescription) ⇒ <code>string</code>
@@ -71,6 +73,7 @@
     * [.setAudioRecordingVolume(volume)](#AgoraRtcEngine+setAudioRecordingVolume) ⇒ <code>int</code>
     * [.startAudioPlaybackDeviceTest(filepath)](#AgoraRtcEngine+startAudioPlaybackDeviceTest) ⇒ <code>int</code>
     * [.stopAudioPlaybackDeviceTest()](#AgoraRtcEngine+stopAudioPlaybackDeviceTest) ⇒ <code>int</code>
+    * [.enableLoopbackRecording([enable])](#AgoraRtcEngine+enableLoopbackRecording)
     * [.startAudioRecordingDeviceTest(indicateInterval)](#AgoraRtcEngine+startAudioRecordingDeviceTest) ⇒ <code>int</code>
     * [.stopAudioRecordingDeviceTest()](#AgoraRtcEngine+stopAudioRecordingDeviceTest) ⇒ <code>int</code>
     * [.getAudioPlaybackDeviceMute()](#AgoraRtcEngine+getAudioPlaybackDeviceMute) ⇒ <code>boolean</code>
@@ -85,6 +88,7 @@
     * [.videoSourceRenewToken(token)](#AgoraRtcEngine+videoSourceRenewToken) ⇒ <code>int</code>
     * [.videoSourceSetChannelProfile(profile)](#AgoraRtcEngine+videoSourceSetChannelProfile) ⇒ <code>int</code>
     * [.videoSourceSetVideoProfile(profile, [swapWidthAndHeight])](#AgoraRtcEngine+videoSourceSetVideoProfile) ⇒ <code>int</code>
+    * [.getScreenWindowsInfo()](#AgoraRtcEngine+getScreenWindowsInfo) ⇒ <code>array</code>
     * [.startScreenCapture2(wndid, captureFreq, rect, bitrate)](#AgoraRtcEngine+startScreenCapture2) ⇒ <code>int</code>
     * [.stopScreenCapture2()](#AgoraRtcEngine+stopScreenCapture2) ⇒ <code>int</code>
     * [.startScreenCapturePreview()](#AgoraRtcEngine+startScreenCapturePreview) ⇒ <code>int</code>
@@ -111,6 +115,30 @@
     * [.getCallId()](#AgoraRtcEngine+getCallId) ⇒ <code>string</code>
     * [.rate(callid, rating, desc)](#AgoraRtcEngine+rate) ⇒ <code>int</code>
     * [.complain(callid, desc)](#AgoraRtcEngine+complain) ⇒ <code>int</code>
+
+<a name="AgoraRtcEngine+initRender"></a>
+
+### agoraRtcEngine.initRender(key, view)
+init renderer
+
+**Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| key | <code>string</code> | key for the map that store the renderers, e.g, uid or `videosource` or `local` |
+| view | <code>\*</code> | dom elements to render video |
+
+<a name="AgoraRtcEngine+destroyRender"></a>
+
+### agoraRtcEngine.destroyRender(key, onFailure)
+destroy renderer
+
+**Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| key | <code>string</code> | key for the map that store the renders, e.g, uid or `videosource` or `local` |
+| onFailure | <code>function</code> | err callback for destroyRenderer |
 
 <a name="AgoraRtcEngine+initialize"></a>
 
@@ -184,7 +212,7 @@ modes before joining a channel. Do NOT call this method again after joining a ch
 <a name="AgoraRtcEngine+subscribe"></a>
 
 ### agoraRtcEngine.subscribe(uid, view) ⇒ <code>int</code>
-subscribe remote uid and initialize corresponding render
+subscribe remote uid and initialize corresponding renderer
 
 **Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
 **Returns**: <code>int</code> - 0 for success, <0 for failure  
@@ -192,12 +220,12 @@ subscribe remote uid and initialize corresponding render
 | Param | Type | Description |
 | --- | --- | --- |
 | uid | <code>int</code> | remote uid |
-| view | <code>\*</code> | dom where to initialize render |
+| view | <code>\*</code> | dom where to initialize renderer |
 
 <a name="AgoraRtcEngine+setupLocalVideo"></a>
 
 ### agoraRtcEngine.setupLocalVideo(view) ⇒ <code>int</code>
-setup local video and corresponding render
+setup local video and corresponding renderer
 
 **Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
 **Returns**: <code>int</code> - 0 for success, <0 for failure  
@@ -209,13 +237,13 @@ setup local video and corresponding render
 <a name="AgoraRtcEngine+setVideoRenderDimension"></a>
 
 ### agoraRtcEngine.setVideoRenderDimension(rendertype, uid, width, height)
-force set render dimension of video, this ONLY affects size of data sent to js layer, native video size is determined by setVideoProfile
+force set renderer dimension of video, this ONLY affects size of data sent to js layer, native video size is determined by setVideoProfile
 
 **Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| rendertype | <code>\*</code> | type of render, 0 - local, 1 - remote, 2 - device test, 3 - video source |
+| rendertype | <code>\*</code> | type of renderer, 0 - local, 1 - remote, 2 - device test, 3 - video source |
 | uid | <code>\*</code> | target uid |
 | width | <code>\*</code> | target width |
 | height | <code>\*</code> | target height |
@@ -223,7 +251,7 @@ force set render dimension of video, this ONLY affects size of data sent to js l
 <a name="AgoraRtcEngine+setVideoRenderFPS"></a>
 
 ### agoraRtcEngine.setVideoRenderFPS(fps)
-force set render fps globally. This is mainly used to improve the performance for js rendering
+force set renderer fps globally. This is mainly used to improve the performance for js rendering
 once set, data will be forced to be sent with this fps. This can reduce cpu frequency of js rendering.
 This applies to ALL views except ones added to High FPS stream.
 
@@ -236,7 +264,7 @@ This applies to ALL views except ones added to High FPS stream.
 <a name="AgoraRtcEngine+setVideoRenderHighFPS"></a>
 
 ### agoraRtcEngine.setVideoRenderHighFPS(fps)
-force set render fps for high stream. High stream here MEANS uid streams which has been
+force set renderer fps for high stream. High stream here MEANS uid streams which has been
 added to high ones by calling addVideoRenderToHighFPS, note this has nothing to do with dual stream
 high stream. This is often used when we want to set low fps for most of views, but high fps for one
 or two special views, e.g. screenshare
@@ -282,7 +310,7 @@ setup view content mode
 | Param | Type | Description |
 | --- | --- | --- |
 | uid | <code>\*</code> | stream uid to operate |
-| mode | <code>\*</code> | view content mode, 0 - fit, 1 - fill |
+| mode | <code>\*</code> | view content mode, 0 - fill, 1 - fit |
 
 <a name="AgoraRtcEngine+renewToken"></a>
 
@@ -855,6 +883,17 @@ stop playback device test
 
 **Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
 **Returns**: <code>int</code> - 0 for success, <0 for failure  
+<a name="AgoraRtcEngine+enableLoopbackRecording"></a>
+
+### agoraRtcEngine.enableLoopbackRecording([enable])
+This method enables loopback recording. Once enabled, the SDK collects all local sounds.
+
+**Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| [enable] | <code>boolean</code> | <code>false</code> | whether to enable loop back recording |
+
 <a name="AgoraRtcEngine+startAudioRecordingDeviceTest"></a>
 
 ### agoraRtcEngine.startAudioRecordingDeviceTest(indicateInterval) ⇒ <code>int</code>
@@ -928,7 +967,7 @@ initialize agora real-time-communicating videosource with appid
 <a name="AgoraRtcEngine+setupLocalVideoSource"></a>
 
 ### agoraRtcEngine.setupLocalVideoSource(view)
-setup render for video source
+setup renderer for video source
 
 **Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
 
@@ -1008,6 +1047,13 @@ set video profile for video source
 | profile | <code>int</code> |  | enumeration values represent video profile |
 | [swapWidthAndHeight] | <code>boolean</code> | <code>false</code> | Whether to swap width and height |
 
+<a name="AgoraRtcEngine+getScreenWindowsInfo"></a>
+
+### agoraRtcEngine.getScreenWindowsInfo() ⇒ <code>array</code>
+get list of all system window ids and relevant infos, the window id can be used for screen share
+
+**Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
+**Returns**: <code>array</code> - list of window infos  
 <a name="AgoraRtcEngine+startScreenCapture2"></a>
 
 ### agoraRtcEngine.startScreenCapture2(wndid, captureFreq, rect, bitrate) ⇒ <code>int</code>
