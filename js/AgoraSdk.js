@@ -327,12 +327,12 @@ class AgoraRtcEngine extends EventEmitter {
       }
     } else if (type === 2) {
       // return this.streams.devtest;
-      console.warning('Type 2 not support in production mode.');
+      console.warn('Type 2 not support in production mode.');
       return false;
     } else if (type === 3) {
       return this.streams.videosource;
     } else {
-      console.warning('Invalid type for getRenderer, only accept 0~3.')
+      console.warn('Invalid type for getRenderer, only accept 0~3.')
       return false;
     }
   }
@@ -398,7 +398,7 @@ class AgoraRtcEngine extends EventEmitter {
       }
       let renderer = this._getRenderer(type, uid);
       if (!renderer) {
-        console.warning("Can't find renderer for uid : " + uid);
+        console.warn("Can't find renderer for uid : " + uid);
         continue;
       }
 
