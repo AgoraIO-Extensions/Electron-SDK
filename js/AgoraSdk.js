@@ -1264,6 +1264,14 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @description get list of all system window ids and relevant infos, the window id can be used for screen share
+   * @returns {array} list of window infos
+   */
+  getScreenWindowsInfo() {
+    return this.rtcengine.getScreenWindowsInfo();
+  }
+
+  /**
    * @description start video source screen capture
    * @param {*} wndid windows id to capture
    * @param {*} captureFreq fps of video source screencapture, 1 - 15
