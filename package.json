@@ -1,7 +1,7 @@
 {
   "name": "agora-electron-sdk",
   "jest": {
-    "testEnvironment": "node",
+    "testEnvironment": "jsdom",
     "testPathIgnorePatterns": [
       "/__tests__/utils/"
     ]
@@ -20,8 +20,8 @@
     "example": "npm run build:electron && cd example && npm install && npm run dev",
     "lint": "eslint .",
     "format": "eslint . --fix ",
-    "test": "npm run build:node && jest",
-    "quicktest": "jest"
+    "test": "npm run build:node && jest --detectOpenHandles --forceExit",
+    "quicktest": "jest --detectOpenHandles --forceExit"
   },
   "gypfile": true,
   "dependencies": {
