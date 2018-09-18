@@ -1,3 +1,4 @@
+require('./mock')
 const AgoraRtcEngine = require('../../js/AgoraSdk');
 
 if (process.argv.length < 4) {
