@@ -1,3 +1,12 @@
+## 2.0.7-rc.7 (Sep 18th, 2018)
+#### :house: Internal
+* Add new api `getScreenWindowsInfo` to provide window info and id. You can use this to realize sharing windows (You can only share the whole screen before).
+* Refactor renderer module. Now video source can be rendered without webgl.
+* Optimize unit tests.
+* Modify the build script for windows. (Use VS 2015 as msbuilder) 
+* Add new api `enableLoopbackRecording` to enable loopback recording. Once enabled, the SDK collects all local sounds.
+
+
 ## 2.0.7-rc.6 (August 6, 2018)
 #### :house: Internal
 * Fixed a potential risk that will pend the promise.
