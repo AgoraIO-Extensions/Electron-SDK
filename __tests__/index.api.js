@@ -89,6 +89,9 @@ describe('Basic API Coverage 2', () => {
   it('set videosource log file', () => {
     const filepath = path.join(__dirname, './videosource.log');
     expect(localRtcEngine.videoSourceSetLogFile(filepath) <= 0).toBeTruthy();
+  it('get share windows', () => {
+    const winIds = localRtcEngine.getScreenWindowsInfo();
+    expect(winIds.length > 0).toBeTruthy();
   });
 });
 
