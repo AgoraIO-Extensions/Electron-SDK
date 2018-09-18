@@ -20,7 +20,7 @@ const install = () => {
   if (platform === 'mac') {
     sh = 'node-gyp rebuild' + electronArgs;
   } else if (platform === 'win') {
-    sh = 'node-gyp rebuild --arch=ia32' + electronArgs;
+    sh = 'node-gyp rebuild --arch=ia32 --msvs_version=2015' + electronArgs;
   } else {
     shell.echo(chalk.red('Sorry, this sdk only provide win32 and mac version.\n'));
     shell.exit(1);
