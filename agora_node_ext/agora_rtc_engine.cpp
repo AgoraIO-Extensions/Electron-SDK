@@ -1007,7 +1007,7 @@ namespace agora {
                 status = napi_get_value_uint32_(args[3], bitrate);
                 CHECK_NAPI_STATUS(pEngine, status);
                 Rect region(top, left, bottom, right);
-
+               
                 if (pEngine->m_videoSourceSink.get())
                     pEngine->m_videoSourceSink->captureScreen(windowId, captureFreq, &region, bitrate);
             } while (false);
@@ -2010,6 +2010,7 @@ namespace agora {
 #elif defined(__APPLE__)
                 int result = pEngine->m_engine->startScreenCapture(windowId, captureFreq, &region, bitrate);
 #endif
+               
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
@@ -2648,12 +2649,17 @@ namespace agora {
                 
                 Isolate* isolate = pEngine->getIsolate();
                 Local<v8::Array> infos = v8::Array::New(isolate);
-#ifdef _WIN32
+
                 std::vector<ScreenWindowInfo> allWindows = getAllWindowInfo();
                 for (unsigned int i = 0; i < allWindows.size(); ++i) {
                     ScreenWindowInfo windowInfo = allWindows[i];
                     Local<v8::Object> obj = Object::New(isolate);
-                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowId", (UINT32)windowInfo.windowId);
+#ifdef _WIN32
+                    UINT32 windowId = (UINT32)windowInfo.windowId;
+#elif defined(__APPLE__)
+                    UINT32 windowId = windowInfo.windowId;
+#endif    
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowId", windowId);
                     NODE_SET_OBJ_PROP_String(isolate, obj, "name", windowInfo.name.c_str());
                     NODE_SET_OBJ_PROP_String(isolate, obj, "ownerName", windowInfo.ownerName.c_str());
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", windowInfo.width);
@@ -2670,7 +2676,7 @@ namespace agora {
 
                     infos->Set(i, obj);
                 }
-#elif defined(__APPLE__)
+#if 0 // APPLE
                 std::vector<ScreenWindowInfo> allWindows = getAllWindowInfo();
                 for (unsigned int i = 0; i < allWindows.size(); ++i) {
                     ScreenWindowInfo windowInfo = allWindows[i];
@@ -2692,7 +2698,8 @@ namespace agora {
                     
                     infos->Set(i, obj);
                 }
-#endif    
+#endif
+
                 napi_set_array_result(args, infos);
             } while (false);
             LOG_LEAVE;
