@@ -221,7 +221,9 @@ bool captureBmpToJpeg(const HWND& hWnd, char* szName, std::vector<ScreenWindowIn
 #if 0   
     bitmap.Save(szFilePath, &imageCLSID, &encoderParams);
 #endif
-    bitmap.Save(pOutIStream, &imageCLSID, &encoderParams);
+    if (bitmap.Save(pOutIStream, &imageCLSID, &encoderParams) != Gdiplus::Ok) {
+        return false;
+   }
     LARGE_INTEGER lnOffset;
     ULARGE_INTEGER ulnSize;
     lnOffset.QuadPart = 0;
@@ -235,10 +237,18 @@ bool captureBmpToJpeg(const HWND& hWnd, char* szName, std::vector<ScreenWindowIn
         return false;
     }
 
+    ULARGE_INTEGER ul;
+    LARGE_INTEGER l;
+    l.QuadPart = 0;
+    pOutIStream->Seek(l, STREAM_SEEK_SET, &ul);
+    
+
     //copy the stream JPG to memory
     DWORD dwJpgSize = (DWORD)ulnSize.QuadPart;
     BYTE* pJPG = new BYTE[dwJpgSize];
-    if (pOutIStream->Read(pJPG, dwJpgSize, NULL) != S_OK)
+    memset(pJPG, 0, dwJpgSize);
+    DWORD dwRead = 0;
+    if (pOutIStream->Read(pJPG, dwJpgSize, &dwRead) != S_OK)
     {
         LOG_ERROR("Failed to read pBMP!\n");
         pOutIStream->Release();
@@ -282,8 +292,10 @@ std::vector<ScreenWindowInfo> getAllWindowInfo()
 
         for (auto iter = setHwnds.begin(); iter != setHwnds.end(); ++iter) {
             char class_name[100] = { 0 };
-            char szName[MAX_PATH] = { 0 };
-            GetWindowTextA(*iter, szName, MAX_PATH);
+            WCHAR szName[MAX_PATH] = { 0 };
+            char name[MAX_PATH] = { 0 };
+            GetWindowTextW(*iter, szName, MAX_PATH);
+            ::WideCharToMultiByte(CP_UTF8, 0, szName, wcslen(szName), name, MAX_PATH, NULL, NULL);
             GetClassNameA(*iter, class_name, 99);
             HWND windowid = *iter;
             if (strcmp(class_name, "EdgeUiInputTopWndClass") == 0
@@ -294,7 +306,7 @@ std::vector<ScreenWindowInfo> getAllWindowInfo()
             {
                 continue;
             }  
-            captureBmpToJpeg(windowid, szName, windows);
+            captureBmpToJpeg(windowid, name, windows);
         }
     }
 
