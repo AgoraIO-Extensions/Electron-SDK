@@ -2657,7 +2657,7 @@ namespace agora {
 #ifdef _WIN32
                     UINT32 windowId = (UINT32)windowInfo.windowId;
 #elif defined(__APPLE__)
-                    UINT32 windowId = windowInfo.windowId;
+                    unsigned int windowId = windowInfo.windowId;
 #endif    
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowId", windowId);
                     NODE_SET_OBJ_PROP_String(isolate, obj, "name", windowInfo.name.c_str());
