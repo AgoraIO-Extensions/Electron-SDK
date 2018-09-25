@@ -295,6 +295,8 @@ std::vector<ScreenWindowInfo> getAllWindowInfo()
             WCHAR szName[MAX_PATH] = { 0 };
             char name[MAX_PATH] = { 0 };
             GetWindowTextW(*iter, szName, MAX_PATH);
+            if (wcslen(szName) == 0)//
+                continue;
             ::WideCharToMultiByte(CP_UTF8, 0, szName, wcslen(szName), name, MAX_PATH, NULL, NULL);
             GetClassNameA(*iter, class_name, 99);
             HWND windowid = *iter;
