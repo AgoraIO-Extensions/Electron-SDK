@@ -304,7 +304,8 @@ std::vector<ScreenWindowInfo> getAllWindowInfo()
                 || strcmp(class_name, "Shell_TrayWnd") == 0
                 || strcmp(class_name, "DummyDWMListenerWindow") == 0
                 || strcmp(class_name, "WorkerW") == 0
-                || strcmp(class_name, "PopupRbWebDialog") == 0)//kuwo advertisement
+                || strcmp(class_name, "PopupRbWebDialog") == 0
+                || strcmp(class_name, "TXGuiFoundation") == 0)//kuwo advertisement
             {
                 continue;
             }  
