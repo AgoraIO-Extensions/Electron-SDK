@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import AgoraRtcEngine from '../../../js/AgoraSdk';
 import { List } from 'immutable';
+import path from 'path';
 
 import {videoProfileList, audioProfileList, audioScenarioList, APP_ID } from '../utils/settings'
 
@@ -25,6 +26,8 @@ export default class App extends Component {
         speaker: 0,
         videoProfile: 43,
         showWindowPicker: false,
+        recordingTestOn: false,
+        playbackTestOn: false
       }
     }
     this.enableAudioMixing = false;
@@ -126,6 +129,31 @@ export default class App extends Component {
           console.warn(err);
         }
       })
+    })
+  }
+
+  togglePlaybackTest = e => {
+    if (!this.state.playbackTestOn) {
+      let filepath = '/Users/menthays/Projects/Agora-RTC-SDK-for-Electron/example/temp/music.mp3';
+      let result = this.rtcEngine.startAudioPlaybackDeviceTest(filepath);
+      console.log(result);
+    } else {
+      this.rtcEngine.stopAudioPlaybackDeviceTest();
+    }
+    this.setState({
+      playbackTestOn: !this.state.playbackTestOn
+    })
+  }
+
+  toggleRecordingTest = e => {
+    if (!this.state.recordingTestOn) {
+      let result = this.rtcEngine.startAudioRecordingDeviceTest(1000);
+      console.log(result);
+    } else {
+      this.rtcEngine.stopAudioRecordingDeviceTest();
+    }
+    this.setState({
+      recordingTestOn: !this.state.recordingTestOn
     })
   }
 
@@ -231,6 +259,19 @@ export default class App extends Component {
           <div className="field is-grouped is-grouped-right">
             <div className="control">
               <button onClick={this.handleGetWindowsInfo} className="button is-link">Get Window Info</button>
+            </div>
+          </div>
+
+          <div className="field">
+            <label className="label">Audio Playback Test</label>
+            <div className="control">
+              <button onClick={this.togglePlaybackTest} className="button is-link">{this.state.playbackTestOn ? 'stop' : 'start'}</button>
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">Audio Recording Test</label>
+            <div className="control">
+              <button onClick={this.toggleRecordingTest} className="button is-link">{this.state.recordingTestOn ? 'stop' : 'start'}</button>
             </div>
           </div>
         </div>
