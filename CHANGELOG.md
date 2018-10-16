@@ -1,3 +1,7 @@
+## latest (under constructing)
+#### :house: Internal
+* Now canvas zoom will be re-calculated when the size of container changes.
+
 ## 2.0.7-rc.7 (Sep 18th, 2018)
 #### :house: Internal
 * Add new api `getScreenWindowsInfo` to provide window info and id. You can use this to implement sharing windows (You can only share the whole screen before).
