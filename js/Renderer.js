@@ -15,8 +15,8 @@ class Renderer {
     this.element = {};
   }
 
-  _calcZoom(vertical = false, contentMode = 0, width, height) {
-    let localRatio = this.clientWidth / this.clientHeight;
+  _calcZoom(vertical = false, contentMode = 0, width, height, clientWidth, clientHeight) {
+    let localRatio = clientWidth / clientHeight;
     let tempRatio = width / height;
 
     if (isNaN(localRatio) || isNaN(tempRatio)) {
@@ -26,28 +26,25 @@ class Renderer {
     if (!contentMode) {
       if (vertical) {
         return localRatio > tempRatio ? 
-          this.clientHeight / height : this.clientWidth / width
+          clientHeight / height : clientWidth / width
       } else {
         return localRatio < tempRatio ? 
-          this.clientHeight / height : this.clientWidth / width
+          clientHeight / height : clientWidth / width
       }
     } else {
       if (vertical) {
         return localRatio < tempRatio ? 
-          this.clientHeight / height : this.clientWidth / width
+          clientHeight / height : clientWidth / width
       } else {
         return localRatio > tempRatio ? 
-          this.clientHeight / height : this.clientWidth / width
+          clientHeight / height : clientWidth / width
       }
     }
   }
 
   bind(element) {
-    // record client width/height
+    // record element
     this.element = element;
-    this.clientWidth = element.clientWidth;
-    this.clientHeight = element.clientHeight;
-
     // create container
     let container = document.createElement('div');
     Object.assign(container.style, {
@@ -80,7 +77,9 @@ class Renderer {
     height: 0,
     rotation: 0,
     mirrorView: false,
-    contentMode: 0
+    contentMode: 0,
+    clientWidth: 0,
+    clientHeight: 0,
   }) {
     // check if display options changed
     if (isEqual(this.cacheCanvasOpts, options)) {
@@ -104,7 +103,9 @@ class Renderer {
       options.rotation === 90 || options.rotation === 270,
       options.contentMode,
       options.width,
-      options.height
+      options.height,
+      options.clientWidth,
+      options.clientHeight
     );
 
     // check for mirror
@@ -135,7 +136,9 @@ class Renderer {
     this.updateCanvas({
       width, height, rotation, 
       mirrorView: mirror, 
-      contentMode: this.contentMode
+      contentMode: this.contentMode,
+      clientWidth: this.container.clientWidth,
+      clientHeight: this.container.clientHeight,
     })
 
     let format = YUVBuffer.format({
