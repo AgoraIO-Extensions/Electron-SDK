@@ -2663,7 +2663,7 @@ namespace agora {
                     NODE_SET_OBJ_PROP_String(isolate, obj, "name", windowInfo.name.c_str());
                     NODE_SET_OBJ_PROP_String(isolate, obj, "ownerName", windowInfo.ownerName.c_str());
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", windowInfo.width);
-                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "weight", windowInfo.height);
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", windowInfo.height);
 
                     if (windowInfo.imageData) {
                         buffer_info imageInfo;
@@ -2685,7 +2685,7 @@ namespace agora {
                     NODE_SET_OBJ_PROP_String(isolate, obj, "name", windowInfo.name.c_str());
                     NODE_SET_OBJ_PROP_String(isolate, obj, "ownerName", windowInfo.ownerName.c_str());
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", windowInfo.width);
-                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "weight", windowInfo.height);
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", windowInfo.height);
                     
                     if (windowInfo.imageData) {
                         buffer_info imageInfo;
