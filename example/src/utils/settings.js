@@ -1,5 +1,5 @@
 export const APP_ID = ''
-
+export const SHARE_ID = 2
 export const videoProfileList = [
   {
     value: 0,
