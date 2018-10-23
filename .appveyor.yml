@@ -6,7 +6,7 @@ cache:
   - '%APPDATA%\npm-cache'
 
 install:
-  - ps: Install-Product node 8 x64
+  - ps: Install-Product node 8 x86
   - npm install
 
 build_script:
