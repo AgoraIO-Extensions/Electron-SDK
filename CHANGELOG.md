@@ -1,3 +1,8 @@
+## 2.0.8-rc.1 (Oct 23th, 2018)
+#### :house: Internal
+* Update agora windows sdk to 2.0.8
+
+
 ## 2.0.7-rc.7 (Oct 23th, 2018)
 #### :house: Internal
 * Now canvas zoom will be re-calculated when the size of container changes.
