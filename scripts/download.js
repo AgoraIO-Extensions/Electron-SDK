@@ -24,7 +24,7 @@ const getUrl = (platform, version) => {
 };
 
 const platform = getPlatform();
-const url = getUrl(platform, 'v2_0_7_4');
+const url = getUrl(platform, 'v2_0_8');
 const outputDir = './build/Release/';
 
 rimraf(path.join(__dirname, '../build'), (err) => {
