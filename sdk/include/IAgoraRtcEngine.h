@@ -1980,6 +1980,169 @@ public:
     int setAudioMixingPosition(int pos /*in ms*/) {
         return m_parameter ? m_parameter->setInt("che.audio.mixing.file.position", pos) : -ERR_NOT_INITIALIZED;
     }
+
+    /**
+    * Get audio effect volume.
+    * @return return audio effect volume on success, or one value less than 0 otherwise.
+    */
+    int getEffectsVolume() {
+        if (!m_parameter) return -ERR_NOT_INITIALIZED;
+        int volume = 0;
+        int r = m_parameter->getInt("che.audio.game_get_effects_volume", volume);
+        if (r == 0)
+            r = volume;
+        return r;
+    }
+
+    /**
+    * Set audio effect volume.
+    * param [in] volume
+    The volume to be set.
+    * @return return 0 on success or error number otherwise.
+    */
+    int setEffectsVolume(int volume) {
+        return m_parameter ? m_parameter->setInt("che.audio.game_set_effects_volume", volume) : -ERR_NOT_INITIALIZED;
+    }
+
+    /**
+    * Set audio effect volume for effect with id : soundId
+    * @param [in] soundId
+    The soundId of the effect to be set.
+    * @param [in] volume
+    The volume value to be set
+    * @return return 0 on success, and error number otherwise.
+    */
+    int setVolumeOfEffect(int soundId, int volume) {
+        return setObject(
+            "che.audio.game_adjust_effect_volume",
+            "{\"soundId\":%d,\"gain\":%d}",
+            soundId, volume);
+    }
+
+    /**
+    * To play effect
+    * @param [in] soundId
+    *        effect id
+    * @param [in] filePath
+    *        effect file path
+    * @param [in] loopCount
+    *        if loopCount
+    * @param [in] sendToFar
+    *        if send the effect to remote
+    * @param [in] pitch
+    *        sound pitch
+    * @param [in] pan
+    *        sound pan
+    * @param [in] gain
+    *        sound gain
+    * @param [in] publish
+    *        true  indicates that when this sound effect is played locally,
+    *              it is also published to Agora Could, so it can be heard by remote audience.
+    *
+    *        false indicates that when any sound effect is only heard locally without published to Agora Cloud.
+    * @return return 0 on success, error code otherwise.
+    *
+    */
+    int playEffect(int soundId, const char* filePath, int loopCount, double pitch, double pan, int gain, bool publish = false) {
+#if defined(_WIN32)
+        util::AString path;
+        if (!m_parameter->convertPath(filePath, path))
+            filePath = path->c_str();
+        else if (!filePath)
+            filePath = "";
+#endif
+        return setObject(
+            "che.audio.game_play_effect",
+            "{\"soundId\":%d,\"filePath\":\"%s\",\"loopCount\":%d, \"pitch\":%lf,\"pan\":%lf,\"gain\":%d, \"send2far\":%d}",
+            soundId, filePath, loopCount, pitch, pan, gain, publish);
+    }
+
+    /**
+    * To stop effect
+    * @param [in] soundId
+    *        The effect's soundId
+    * @return return 0 on success, error code otherwise
+    */
+    int stopEffect(int soundId) {
+        return m_parameter ? m_parameter->setInt(
+            "che.audio.game_stop_effect", soundId) : -ERR_NOT_INITIALIZED;
+    }
+
+    /**
+    * To stop all effects
+    * @return return 0 on success, error code otherwise
+    */
+    int stopAllEffects() {
+        return m_parameter ? m_parameter->setBool(
+            "che.audio.game_stop_all_effects", true) : -ERR_NOT_INITIALIZED;
+    }
+
+    /**
+    * To preload effect
+    * @param [in] sound Id
+    *        effect sound id
+    * @param [in] filepath
+    *        effect file path
+    * @return return 0 on success or error code otherwise
+    */
+    int preloadEffect(int soundId, char* filePath) {
+        return setObject(
+            "che.audio.game_preload_effect",
+            "{\"soundId\":%d,\"filePath\":\"%s\"}",
+            soundId, filePath);
+    }
+
+    /**
+    * To unload effect
+    * @param [in] soundId
+    *        effect id
+    * @return return 0 on success, error code otherwise
+    */
+    int unloadEffect(int soundId) {
+        return m_parameter ? m_parameter->setInt(
+            "che.audio.game_unload_effect", soundId) : -ERR_NOT_INITIALIZED;
+    }
+
+    /**
+    * To pause effect
+    * @param [in] soundId
+    *        effect id
+    * @return return 0 on success, error code otherwise.
+    */
+    int pauseEffect(int soundId) {
+        return m_parameter ? m_parameter->setInt(
+            "che.audio.game_pause_effect", soundId) : -ERR_NOT_INITIALIZED;
+    }
+
+    /**
+    * To pause all effects
+    * @return return 0 on success, error code otherwise.
+    */
+    int pauseAllEffects() {
+        return m_parameter ? m_parameter->setBool(
+            "che.audio.game_pause_all_effects", true) : -ERR_NOT_INITIALIZED;
+    }
+
+    /**
+    * To resume effect
+    * @param [in] soundId
+    *        effect id
+    * @return return 0 on success, error code otherwise
+    */
+    int resumeEffect(int soundId) {
+        return m_parameter ? m_parameter->setInt(
+            "che.audio.game_resume_effect", soundId) : -ERR_NOT_INITIALIZED;
+    }
+
+    /**
+    * To resume all effects
+    * @return return 0 on success, error code otherwise.
+    */
+    int resumeAllEffects() {
+        return m_parameter ? m_parameter->setBool(
+            "che.audio.game_resume_all_effects", true) : -ERR_NOT_INITIALIZED;
+    }
+
     /**
      * Change the pitch of local speaker's voice
      * @param [in] pitch
