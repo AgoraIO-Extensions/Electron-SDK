@@ -1,6 +1,10 @@
-## latest (under constructing)
+## 2.0.7-rc.7 (Oct 23th, 2018)
 #### :house: Internal
 * Now canvas zoom will be re-calculated when the size of container changes.
+* Update test demo with window sharing.
+
+#### :bug: Bug fix
+* Fixed a typo in implementation for getScreenWindowInfos (weight => height)
 
 ## 2.0.7-rc.7 (Sep 18th, 2018)
 #### :house: Internal
