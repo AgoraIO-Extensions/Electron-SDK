@@ -1066,7 +1066,7 @@ start video source screen capture
 | --- | --- | --- |
 | wndid | <code>\*</code> | windows id to capture |
 | captureFreq | <code>\*</code> | fps of video source screencapture, 1 - 15 |
-| rect | <code>\*</code> | null/if specified, {x: 0, y: 0, width: 0, height: 0} |
+| rect | <code>\*</code> | null/if specified, e.g, {left: 0, right: 100, top: 0, bottom: 100} (relative distance from the left-top corner of the screen) |
 | bitrate | <code>\*</code> | bitrate of video source screencapture |
 
 <a name="AgoraRtcEngine+stopScreenCapture2"></a>
@@ -1133,7 +1133,7 @@ start screen capture
 | --- | --- | --- |
 | windowId | <code>\*</code> | windows id to capture |
 | captureFreq | <code>\*</code> | fps of screencapture, 1 - 15 |
-| rect | <code>\*</code> | null/if specified, {x: 0, y: 0, width: 0, height: 0} |
+| rect | <code>\*</code> | null/if specified, e.g, {left: 0, right: 100, top: 0, bottom: 100} (relative distance from the left-top corner of the screen) |
 | bitrate | <code>\*</code> | bitrate of screencapture |
 
 <a name="AgoraRtcEngine+stopScreenCapture"></a>

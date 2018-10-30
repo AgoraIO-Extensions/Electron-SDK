@@ -1275,7 +1275,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @description start video source screen capture
    * @param {*} wndid windows id to capture
    * @param {*} captureFreq fps of video source screencapture, 1 - 15
-   * @param {*} rect null/if specified, {x: 0, y: 0, width: 0, height: 0}
+   * @param {*} rect null/if specified, e.g, {left: 0, right: 100, top: 0, bottom: 100} (relative distance from the left-top corner of the screen)
    * @param {*} bitrate bitrate of video source screencapture
    * @returns {int} 0 for success, <0 for failure
    */
@@ -1343,7 +1343,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @description start screen capture
    * @param {*} windowId windows id to capture
    * @param {*} captureFreq fps of screencapture, 1 - 15
-   * @param {*} rect null/if specified, {x: 0, y: 0, width: 0, height: 0}
+   * @param {*} rect null/if specified, e.g, {left: 0, right: 100, top: 0, bottom: 100} (relative distance from the left-top corner of the screen)
    * @param {*} bitrate bitrate of screencapture
    * @returns {int} 0 for success, <0 for failure
    */
