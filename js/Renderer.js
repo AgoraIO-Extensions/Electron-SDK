@@ -60,7 +60,7 @@ class Renderer {
     // create canvas
     this.canvas = document.createElement('canvas')
     this.container.appendChild(this.canvas)
-    this.yuv = YUVCanvas.attach(this.canvas);
+    this.yuv = YUVCanvas.attach(this.canvas, { webGL: false });
   }
 
   unbind() {
