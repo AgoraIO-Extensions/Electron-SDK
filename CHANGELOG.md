@@ -1,3 +1,7 @@
+## 2.0.8-rc.2 (Nov 2nd, 2018)
+#### :bug: Bug Fix
+* Webgl render will cause some problem and will be fixed in next version, now we switch to use software rendering.
+
 ## 2.0.8-rc.1 (Oct 23th, 2018)
 #### :house: Internal
 * Update agora windows sdk to 2.0.8
