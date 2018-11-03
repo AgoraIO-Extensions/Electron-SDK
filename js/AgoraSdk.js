@@ -1,5 +1,6 @@
 ﻿const EventEmitter = require('events').EventEmitter;
 const Renderer = require('./Renderer');
+const OldRenderer = require('./OldRenderer')
 const agora = require('../build/Release/agora_node_ext');
 
 /**
@@ -11,6 +12,15 @@ class AgoraRtcEngine extends EventEmitter {
     this.rtcengine = new agora.NodeRtcEngine();
     this.initEventHandler();
     this.streams = {};
+    this.renderMode = 1;
+  }
+
+  /**
+   * Decide whether to use webgl or software rending 
+   * @param {number} mode - 1 for old webgl rendering, 2 for software rendering
+   */
+  setRenderMode (mode = 1) {
+    this.renderMode = mode
   }
 
   /**
@@ -423,7 +433,15 @@ class AgoraRtcEngine extends EventEmitter {
     if (this.streams.hasOwnProperty(key)) {
       this.destroyRender(key);
     }
-    let renderer = new Renderer();
+    let renderer;
+    if (this.renderMode === 1) {
+      renderer = new OldRenderer();
+    } else if (this.renderMode === 2) {
+      renderer = new Renderer();
+    } else {
+      console.warn('Unknown render mode, fallback to 1')
+      renderer = new OldRenderer();
+    }
     renderer.bind(view);
     this.streams[key] = renderer;
     
