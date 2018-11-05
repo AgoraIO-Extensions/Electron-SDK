@@ -41,7 +41,11 @@ const AgoraRender = function() {
   };
 
   that.unbind = function() {
-    gl = undefined;
+    try {
+      gl.getExtension('WEBGL_lose_context').loseContext();
+    } catch (err) {
+      console.warn(err)
+    }
     program = undefined;
     positionLocation = undefined;
     texCoordLocation = undefined;
@@ -57,6 +61,8 @@ const AgoraRender = function() {
     deleteBuffer(surfaceBuffer);
     texCoordBuffer = undefined;
     surfaceBuffer = undefined;
+    
+    gl = undefined;
 
     if (that.container) {
       that.container.removeChild(that.canvas);
