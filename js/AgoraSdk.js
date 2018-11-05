@@ -51,40 +51,7 @@ class AgoraRtcEngine extends EventEmitter {
       return false;
     }
     if (gl) {
-      var register = gl.TEXTURE0,
-        width = 4,
-        height = 4,
-        texture = gl.createTexture(),
-        data = new Uint8Array(width * height),
-        texWidth = WebGLFrameSink.stripe ? (width / 4) : width,
-        format = WebGLFrameSink.stripe ? gl.RGBA : gl.LUMINANCE,
-        filter = WebGLFrameSink.stripe ? gl.NEAREST : gl.LINEAR;
-
-      gl.activeTexture(register);
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filter);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter);
-      gl.texImage2D(
-        gl.TEXTURE_2D,
-        0, // mip level
-        format, // internal format
-        texWidth,
-        height,
-        0, // border
-        format, // format
-        gl.UNSIGNED_BYTE, //type
-        data // data!
-      );
-
-      var err = gl.getError();
-      if (err) {
-        // Doesn't support luminance textures?
-        return false;
-      } else {
-        return true;
-      }
+      return true;
     } else {
       return false;
     }
