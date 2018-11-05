@@ -1,3 +1,11 @@
+## 2.0.8-rc.3 (Nov 2nd, 2018)
+#### :bug: Bug Fix
+* Fixed webgl context related problems
+
+#### :house: Internal
+* New Api:
+  * setRenderMode(mode) - Set default rendering mode, 1 to webGL, 2 to software rendering. Default to be webGL.
+
 ## 2.0.8-rc.2 (Nov 2nd, 2018)
 #### :bug: Bug Fix
 * Webgl render will cause some problem and will be fixed in next version, now we switch to use software rendering.
