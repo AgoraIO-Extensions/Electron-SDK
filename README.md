@@ -78,5 +78,5 @@ We are still opmizing our project, welcome to help improve our Javascript Api Do
 
 The MIT License (MIT).
 
-
+[npm-image]: https://badge.fury.io/js/agora-electron-sdk.svg
 [npm-url]: https://npmjs.org/package/agora-electron-sdk
