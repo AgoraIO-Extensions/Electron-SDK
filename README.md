@@ -1,4 +1,4 @@
-# Agora-RTC-SDK-for-Electron
+# Agora-RTC-SDK-for-Electron [![NPM version][npm-image]][npm-url]
 
 The Agora-RTC-SDK-for-Electron is an open-source wrapper for **[Electron](https://electronjs.org/)** developers. This SDK takes advantage of Node.js C++ Addons and Agora RTC SDKs on Windows/macOS.
 
@@ -10,7 +10,7 @@ You can directly install the sdk through npm:
 
 ``` bash
 # install newest sdk and we will download built binary file for you
-npm install agora-electron-sdk@2.0.8-rc.1
+npm install agora-electron-sdk
 ```
 
 ``` javascript
@@ -77,3 +77,6 @@ We are still opmizing our project, welcome to help improve our Javascript Api Do
 ## License
 
 The MIT License (MIT).
+
+
+[npm-url]: https://npmjs.org/package/agora-electron-sdk
