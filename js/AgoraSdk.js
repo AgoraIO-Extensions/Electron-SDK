@@ -1,5 +1,6 @@
 ﻿const EventEmitter = require('events').EventEmitter;
 const Renderer = require('./Renderer');
+const OldRenderer = require('./OldRenderer')
 const agora = require('../build/Release/agora_node_ext');
 
 /**
@@ -11,6 +12,49 @@ class AgoraRtcEngine extends EventEmitter {
     this.rtcengine = new agora.NodeRtcEngine();
     this.initEventHandler();
     this.streams = {};
+    this.renderMode = this._checkWebGL() ? 1 : 2;
+  }
+
+  /**
+   * Decide whether to use webgl or software rending 
+   * @param {number} mode - 1 for old webgl rendering, 2 for software rendering
+   */
+  setRenderMode (mode = 1) {
+    this.renderMode = mode
+  }
+
+  /**
+   * @private
+   * check if WebGL will be available with appropriate features
+   * @returns {boolean}
+   */
+  _checkWebGL() {
+    var canvas = document.createElement('canvas'),
+      gl;
+    canvas.width = 1;
+    canvas.height = 1;
+    var options = {
+      // Turn off things we don't need
+      alpha: false,
+      depth: false,
+      stencil: false,
+      antialias: false,
+      preferLowPowerToHighPerformance: true
+
+      // Still dithering on whether to use this.
+      // Recommend avoiding it, as it's overly conservative
+      //failIfMajorPerformanceCaveat: true
+    };
+    try {
+      gl = canvas.getContext('webgl', options) || canvas.getContext('experimental-webgl', options);
+    } catch (e) {
+      return false;
+    }
+    if (gl) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**
@@ -423,7 +467,15 @@ class AgoraRtcEngine extends EventEmitter {
     if (this.streams.hasOwnProperty(key)) {
       this.destroyRender(key);
     }
-    let renderer = new Renderer();
+    let renderer;
+    if (this.renderMode === 1) {
+      renderer = new OldRenderer();
+    } else if (this.renderMode === 2) {
+      renderer = new Renderer();
+    } else {
+      console.warn('Unknown render mode, fallback to 1')
+      renderer = new OldRenderer();
+    }
     renderer.bind(view);
     this.streams[key] = renderer;
     
