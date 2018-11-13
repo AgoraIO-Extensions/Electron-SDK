@@ -79,6 +79,18 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(getAudioMixingDuration)
                 PROPERTY_METHOD_DEFINE(getAudioMixingCurrentPosition)
                 PROPERTY_METHOD_DEFINE(setAudioMixingPosition)
+                PROPERTY_METHOD_DEFINE(getEffectsVolume)	
+                PROPERTY_METHOD_DEFINE(setEffectsVolume)	
+                PROPERTY_METHOD_DEFINE(setVolumeOfEffect)	
+                PROPERTY_METHOD_DEFINE(playEffect)	
+                PROPERTY_METHOD_DEFINE(stopEffect)	
+                PROPERTY_METHOD_DEFINE(stopAllEffects)	
+                PROPERTY_METHOD_DEFINE(preloadEffect)	
+                PROPERTY_METHOD_DEFINE(unloadEffect)	
+                PROPERTY_METHOD_DEFINE(pauseEffect)	
+                PROPERTY_METHOD_DEFINE(pauseAllEffects)	
+                PROPERTY_METHOD_DEFINE(resumeEffect)	
+                PROPERTY_METHOD_DEFINE(resumeAllEffects)
                 PROPERTY_METHOD_DEFINE(setLocalVoicePitch)
                 PROPERTY_METHOD_DEFINE(setInEarMonitoringVolume)
                 PROPERTY_METHOD_DEFINE(setAudioProfile)
@@ -281,6 +293,30 @@ namespace agora {
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(resumeAudio);
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(refreshRecordingServiceStatus);
+
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(getEffectsVolume);	
+
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setEffectsVolume, int32);
+
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(setVolumeOfEffect, int32, int32);	
+        
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_7(playEffect, int32, nodestring, int32, double, double, int32, bool);	
+        
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(stopEffect, int32);	
+        
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(stopAllEffects);	
+        
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(preloadEffect, int32, nodestring);	
+        
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(unloadEffect, int32);	
+        
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(pauseEffect, int32);	
+        
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(pauseAllEffects);	
+        
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(resumeEffect, int32);	
+        
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(resumeAllEffects);
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(muteLocalAudioStream, bool);
 
