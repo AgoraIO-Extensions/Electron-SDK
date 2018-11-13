@@ -30,7 +30,7 @@ const install = () => {
   shell.echo('\n');
   spinner.start();
 
-  let builder = shell.exec(sh, { silent: true, async: true });
+  let builder = shell.exec(sh, { silent: false, async: true });
   builder.stdout.on('data', data => {
     spinner.text = data;
   });
