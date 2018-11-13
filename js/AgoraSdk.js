@@ -1581,6 +1581,111 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcengine.sendStreamMessage(streamId, msg);
   }
 
+  // ===========================================================================	
+  // MANAGE AUDIO EFFECT	
+  // ===========================================================================	
+  /**	
+   * @description get effects volume	
+   * @returns {number} volume	
+   */	
+  getEffectsVolume() {	
+    return this.rtcengine.getEffectsVolume();	
+  }	
+   /**	
+   * @description set effects volume	
+   * @param {int} volume - [0.0, 100.0]	
+   * @returns {int} 0 for success, <0 for failure	
+   */	
+  setEffectsVolume(volume) {	
+    return this.rtcengine.setEffectsVolume(volume);	
+  }	
+   /**	
+   * @description set effect volume of a sound id	
+   * @param {int} soundId soundId	
+   * @param {int} volume - [0.0, 100.0]	
+   * @returns {int} 0 for success, <0 for failure	
+   */	
+  setVolumeOfEffect(soundId, volume) {	
+    return this.setVolumeOfEffect(soundId, volume);	
+  }	
+   /**	
+   * @description play effect	
+   * @param {int} soundId soundId	
+   * @param {string} filePath filepath	
+   * @param {int} loopcount - 0: once, 1: twice, -1: infinite	
+   * @param {number} pitch - [0.5, 2]	
+   * @param {number} pan - [-1, 1]	
+   * @param {int} gain - [0, 100]	
+   * @param {boolean} publish publish	
+   * @returns {int} 0 for success, <0 for failure	
+   */	
+  playEffect(soundId, filePath, loopcount, pitch, pan, gain, publish) {	
+    return this.rtcengine.playEffect(	
+      soundId,	
+      filePath,	
+      loopcount,	
+      pitch,	
+      pan,	
+      gain,	
+      publish	
+    );	
+  }	
+   /**	
+   * @description stop effect via given sound id	
+   * @param {int} soundId soundId	
+   * @returns {int} 0 for success, <0 for failure	
+   */	
+  stopEffect(soundId) {	
+    return this.rtcengine.stopEffect(soundId);	
+  }	
+   /**	
+   * @description preload effect	
+   * @param {int} soundId soundId	
+   * @param {String} filePath filepath	
+   * @returns {int} 0 for success, <0 for failure	
+   */	
+  preloadEffect(soundId, filePath) {	
+    return this.rtcengine.preloadEffect(soundId, filePath);	
+  }	
+   /**	
+   * This method releases a specific preloaded audio effect from the memory.	
+   * @param {int} soundId soundId	
+   * @returns {int} 0 for success, <0 for failure	
+   */	
+  unloadEffect(soundId) {	
+    return this.rtcengine.unloadEffect(soundId);	
+  }	
+   /**	
+   * @description This method pauses a specific audio effect.	
+   * @param {*} soundId soundId	
+   * @returns {int} 0 for success, <0 for failure	
+   */	
+  pauseEffect(soundId) {	
+    return this.rtcengine.pauseEffect(soundId);	
+  }	
+   /**	
+   * @description This method pauses all the audio effects.	
+   * @returns {int} 0 for success, <0 for failure	
+   */	
+  pauseAllEffects() {	
+    return this.rtcengine.pauseAllEffects();	
+  }	
+   /**	
+   * @description This method resumes playing a specific audio effect.	
+   * @param {*} soundId soundid	
+   * @returns {int} 0 for success, <0 for failure	
+   */	
+  resumeEffect(soundId) {	
+    return this.rtcengine.resumeEffect(soundId);	
+  }	
+   /**	
+   * @description This method resumes playing all the audio effects.	
+   * @returns {int} 0 for success, <0 for failure	
+   */	
+  resumeAllEffects() {	
+    return this.rtcengine.resumeAllEffects();	
+  }
+
   // ===========================================================================
   // EXTRA
   // ===========================================================================

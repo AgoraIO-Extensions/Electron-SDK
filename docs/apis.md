@@ -4,6 +4,7 @@
 **Kind**: global class  
 
 * [AgoraRtcEngine](#AgoraRtcEngine)
+    * [.setRenderMode(mode)](#AgoraRtcEngine+setRenderMode)
     * [.initRender(key, view)](#AgoraRtcEngine+initRender)
     * [.destroyRender(key, onFailure)](#AgoraRtcEngine+destroyRender)
     * [.initialize(appid)](#AgoraRtcEngine+initialize) ⇒ <code>int</code>
@@ -112,9 +113,31 @@
     * [.setMixedAudioFrameParameters(sampleRate, samplesPerCall)](#AgoraRtcEngine+setMixedAudioFrameParameters) ⇒ <code>int</code>
     * [.createDataStream(reliable, ordered)](#AgoraRtcEngine+createDataStream) ⇒ <code>int</code>
     * [.sendStreamMessage(streamId, msg)](#AgoraRtcEngine+sendStreamMessage) ⇒ <code>int</code>
+    * [.getEffectsVolume()](#AgoraRtcEngine+getEffectsVolume) ⇒ <code>number</code>
+    * [.setEffectsVolume(volume)](#AgoraRtcEngine+setEffectsVolume) ⇒ <code>int</code>
+    * [.setVolumeOfEffect(soundId, volume)](#AgoraRtcEngine+setVolumeOfEffect) ⇒ <code>int</code>
+    * [.playEffect(soundId, filePath, loopcount, pitch, pan, gain, publish)](#AgoraRtcEngine+playEffect) ⇒ <code>int</code>
+    * [.stopEffect(soundId)](#AgoraRtcEngine+stopEffect) ⇒ <code>int</code>
+    * [.preloadEffect(soundId, filePath)](#AgoraRtcEngine+preloadEffect) ⇒ <code>int</code>
+    * [.unloadEffect(soundId)](#AgoraRtcEngine+unloadEffect) ⇒ <code>int</code>
+    * [.pauseEffect(soundId)](#AgoraRtcEngine+pauseEffect) ⇒ <code>int</code>
+    * [.pauseAllEffects()](#AgoraRtcEngine+pauseAllEffects) ⇒ <code>int</code>
+    * [.resumeEffect(soundId)](#AgoraRtcEngine+resumeEffect) ⇒ <code>int</code>
+    * [.resumeAllEffects()](#AgoraRtcEngine+resumeAllEffects) ⇒ <code>int</code>
     * [.getCallId()](#AgoraRtcEngine+getCallId) ⇒ <code>string</code>
     * [.rate(callid, rating, desc)](#AgoraRtcEngine+rate) ⇒ <code>int</code>
     * [.complain(callid, desc)](#AgoraRtcEngine+complain) ⇒ <code>int</code>
+
+<a name="AgoraRtcEngine+setRenderMode"></a>
+
+### agoraRtcEngine.setRenderMode(mode)
+Decide whether to use webgl or software rending
+
+**Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| mode | <code>number</code> | <code>1</code> | 1 for old webgl rendering, 2 for software rendering |
 
 <a name="AgoraRtcEngine+initRender"></a>
 
@@ -1307,6 +1330,131 @@ Each user can have up to five data channels simultaneously.
 | streamId | <code>int</code> | Stream ID from createDataStream |
 | msg | <code>string</code> | Data to be sent |
 
+<a name="AgoraRtcEngine+getEffectsVolume"></a>
+
+### agoraRtcEngine.getEffectsVolume() ⇒ <code>number</code>
+get effects volume
+
+**Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
+**Returns**: <code>number</code> - volume  
+<a name="AgoraRtcEngine+setEffectsVolume"></a>
+
+### agoraRtcEngine.setEffectsVolume(volume) ⇒ <code>int</code>
+set effects volume
+
+**Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
+**Returns**: <code>int</code> - 0 for success, <0 for failure  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| volume | <code>int</code> | [0.0, 100.0] |
+
+<a name="AgoraRtcEngine+setVolumeOfEffect"></a>
+
+### agoraRtcEngine.setVolumeOfEffect(soundId, volume) ⇒ <code>int</code>
+set effect volume of a sound id
+
+**Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
+**Returns**: <code>int</code> - 0 for success, <0 for failure  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| soundId | <code>int</code> | soundId |
+| volume | <code>int</code> | [0.0, 100.0] |
+
+<a name="AgoraRtcEngine+playEffect"></a>
+
+### agoraRtcEngine.playEffect(soundId, filePath, loopcount, pitch, pan, gain, publish) ⇒ <code>int</code>
+play effect
+
+**Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
+**Returns**: <code>int</code> - 0 for success, <0 for failure  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| soundId | <code>int</code> | soundId |
+| filePath | <code>string</code> | filepath |
+| loopcount | <code>int</code> | 0: once, 1: twice, -1: infinite |
+| pitch | <code>number</code> | [0.5, 2] |
+| pan | <code>number</code> | [-1, 1] |
+| gain | <code>int</code> | [0, 100] |
+| publish | <code>boolean</code> | publish |
+
+<a name="AgoraRtcEngine+stopEffect"></a>
+
+### agoraRtcEngine.stopEffect(soundId) ⇒ <code>int</code>
+stop effect via given sound id
+
+**Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
+**Returns**: <code>int</code> - 0 for success, <0 for failure  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| soundId | <code>int</code> | soundId |
+
+<a name="AgoraRtcEngine+preloadEffect"></a>
+
+### agoraRtcEngine.preloadEffect(soundId, filePath) ⇒ <code>int</code>
+preload effect
+
+**Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
+**Returns**: <code>int</code> - 0 for success, <0 for failure  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| soundId | <code>int</code> | soundId |
+| filePath | <code>String</code> | filepath |
+
+<a name="AgoraRtcEngine+unloadEffect"></a>
+
+### agoraRtcEngine.unloadEffect(soundId) ⇒ <code>int</code>
+This method releases a specific preloaded audio effect from the memory.
+
+**Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
+**Returns**: <code>int</code> - 0 for success, <0 for failure  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| soundId | <code>int</code> | soundId |
+
+<a name="AgoraRtcEngine+pauseEffect"></a>
+
+### agoraRtcEngine.pauseEffect(soundId) ⇒ <code>int</code>
+This method pauses a specific audio effect.
+
+**Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
+**Returns**: <code>int</code> - 0 for success, <0 for failure  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| soundId | <code>\*</code> | soundId |
+
+<a name="AgoraRtcEngine+pauseAllEffects"></a>
+
+### agoraRtcEngine.pauseAllEffects() ⇒ <code>int</code>
+This method pauses all the audio effects.
+
+**Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
+**Returns**: <code>int</code> - 0 for success, <0 for failure  
+<a name="AgoraRtcEngine+resumeEffect"></a>
+
+### agoraRtcEngine.resumeEffect(soundId) ⇒ <code>int</code>
+This method resumes playing a specific audio effect.
+
+**Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
+**Returns**: <code>int</code> - 0 for success, <0 for failure  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| soundId | <code>\*</code> | soundid |
+
+<a name="AgoraRtcEngine+resumeAllEffects"></a>
+
+### agoraRtcEngine.resumeAllEffects() ⇒ <code>int</code>
+This method resumes playing all the audio effects.
+
+**Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
+**Returns**: <code>int</code> - 0 for success, <0 for failure  
 <a name="AgoraRtcEngine+getCallId"></a>
 
 ### agoraRtcEngine.getCallId() ⇒ <code>string</code>
