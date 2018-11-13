@@ -132,7 +132,18 @@ namespace agora {
             NAPI_API(getAudioMixingDuration);
             NAPI_API(getAudioMixingCurrentPosition);
             NAPI_API(setAudioMixingPosition);
-
+            NAPI_API(getEffectsVolume);	
+			NAPI_API(setEffectsVolume);	
+			NAPI_API(setVolumeOfEffect);
+			NAPI_API(playEffect);	
+			NAPI_API(stopEffect);	
+			NAPI_API(stopAllEffects);	
+			NAPI_API(preloadEffect);	
+			NAPI_API(unloadEffect);	
+			NAPI_API(pauseEffect);	
+			NAPI_API(pauseAllEffects);	
+			NAPI_API(resumeEffect);	
+			NAPI_API(resumeAllEffects);
             NAPI_API(setLocalVoicePitch);
             NAPI_API(setInEarMonitoringVolume);
             NAPI_API(pauseAudio);

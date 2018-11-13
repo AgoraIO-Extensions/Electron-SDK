@@ -1,3 +1,22 @@
+## 2.0.8-rc.4 (Nov 13rd, 2018)
+#### :bug: Bug Fix
+* Optimize resource release for webgl context.
+
+#### :house: Internal
+* Add Play Effect Related Api:
+  * getEffectsVolume
+  * setEffectsVolume
+  * setVolumeOfEffect
+  * playEffect
+  * stopEffect
+  * stopAllEffects
+  * preloadEffect
+  * unloadEffect
+  * pauseEffect
+  * pauseAllEffects
+  * resumeEffect
+  * resumeAllEffects
+
 ## 2.0.8-rc.3 (Nov 2nd, 2018)
 #### :bug: Bug Fix
 * Fixed webgl context related problems
