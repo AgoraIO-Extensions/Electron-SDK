@@ -252,14 +252,14 @@ const AgoraRender = function() {
   }
 
   function deleteBuffer(buffer) {
-    if (buffer && that.gl) {
-      that.gl.deleteBuffer(buffer);
+    if (buffer && gl) {
+      gl.deleteBuffer(buffer);
     }
   }
 
   function deleteTexture(texture) {
-    if (texture && that.gl) {
-      that.gl.deleteTexture(texture);
+    if (texture && gl) {
+      gl.deleteTexture(texture);
     }
   }
 
