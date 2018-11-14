@@ -110,7 +110,7 @@ int AgoraVideoSourceTransporter::deliverFrame_I420(const agora::media::IVideoFra
 	info->strideU = destWidthU ;
 	info->strideV = destWidthU;
 
-  /*  image_header_type *hdr = (image_header_type*)(pbuf + sizeof(image_frame_info));
+    image_header_type *hdr = (image_header_type*)(pbuf + sizeof(image_frame_info));
     hdr->mirrored = mirrored;
     hdr->rotation = rotation;
     hdr->width = destWidth;
@@ -124,70 +124,11 @@ int AgoraVideoSourceTransporter::deliverFrame_I420(const agora::media::IVideoFra
     char* y = pbuf + sizeof(image_frame_info) + sizeof(image_header_type);
 	char* u = y + destWidth * destHeight;
 	char* v = u + destWidthU * destHeightU;
-	//black color
-	memset(y, 16, destWidth*destHeight);
-	memset(u, 128, destWidth*destHeight / 4);
-	memset(v, 128, destWidth*destHeight / 4);
-
-	const unsigned char* planeY = videoFrame.buffer(IVideoFrame::Y_PLANE);
-	const unsigned char* planeU = videoFrame.buffer(IVideoFrame::U_PLANE);
-	const unsigned char* planeV = videoFrame.buffer(IVideoFrame::V_PLANE);
-
-	I420Scale(planeY, stride0, planeU, strideU, planeV, strideV, width, height, 
-        (uint8*)y, destWidth, (uint8*)u, destWidthU, (uint8*)v, destWidthU, destWidth, destHeight, kFilterNone);*/
-
-    image_header_type *hdr = (image_header_type*)(pbuf + sizeof(image_frame_info));
-    hdr->mirrored = mirrored;
-    hdr->rotation = rotation;
-    hdr->width = destWidth;
-    hdr->height = destHeight;
-    hdr->right = 0;
-    hdr->left = 0;
-    hdr->top = 0;
-    hdr->bottom = 0;
-    hdr->timestamp = 0;
-
-    char* y = pbuf + sizeof(image_frame_info) + sizeof(image_header_type);
-    char* u = y + destWidth * destHeight;
-    char* v = u + destWidthU * destHeightU;
-    memset(y, 16, destWidth*destHeight);
-    memset(u, 128, destWidth*destHeight / 4);
-    memset(v, 128, destWidth*destHeight / 4);
-
     const unsigned char* planeY = videoFrame.buffer(IVideoFrame::Y_PLANE);
     const unsigned char* planeU = videoFrame.buffer(IVideoFrame::U_PLANE);
     const unsigned char* planeV = videoFrame.buffer(IVideoFrame::V_PLANE);
-
-    int top = 0, bottom = 0, left = 0, right = 0;
-    int targetPos = 0, targetLeft = 0;
-    int destWidthScale = destWidth;
-    int destHeightScale = destHeight;
-    if (stride * 9 / 16 > height) {
-        int w = stride;
-        int h = (w >> 4) * 9;
-        top = (h - height) / 2;
-
-        destHeightScale = (float)destWidth *height / stride + 1;
-        int destTop = (destHeight - destHeightScale + 1) >> 1;
-        destTop = (((destTop + 15) >> 4) << 4);
-        targetPos = destTop*destWidth;
-        // LOG_INFO("width=%d height=%d, stride=%d, destHeightScale=%d\n", width, height, stride, destHeightScale);
-
-    }
-    else if (stride * 9 / 16 < height) {
-        int w = height * 16 / 9;
-        int targetLeft = ((w - stride + 1) >> 1);
-        int destLeft = ((float)destHeight*targetLeft / height);
-        destWidthScale = ((float)destHeight*stride / height);
-        destWidthScale = (((destWidthScale + 15) >> 4) << 4);
-    }
-
-    I420Scale(planeY, stride0, planeU, strideU, planeV, strideV, width, height,
-        (uint8*)y + targetPos + targetLeft, destWidth,
-        (uint8*)u + targetPos / 4 + targetLeft / 2, destWidthU,
-        (uint8*)v + targetPos / 4 + targetLeft / 2, destWidthU,
-        destWidthScale, destHeightScale, kFilterNone);
-
+	I420Scale(planeY, stride0, planeU, strideU, planeV, strideV, width, height, 
+        (uint8*)y, destWidth, (uint8*)u, destWidthU, (uint8*)v, destWidthU, destWidth, destHeight, kFilterNone);
     return 0;
 }
 
