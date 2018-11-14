@@ -174,8 +174,8 @@ int AgoraVideoSourceTransporter::deliverFrame_I420(const agora::media::IVideoFra
     }
     else if (stride * 9 / 16 < height) {
         int w = height * 16 / 9;
-        int targetLeft = ((w - stride + 1) >> 1);
-        int destLeft = ((float)destHeight*targetLeft / height);
+        targetLeft = ((w - stride + 1) >> 1);
+        targetLeft = ((float)destHeight*targetLeft / height);
         destWidthScale = ((float)destHeight*stride / height);
         destWidthScale = (((destWidthScale + 15) >> 4) << 4);
     }
