@@ -43,7 +43,8 @@ const install = () => {
   // exec shell and write log
   let builder = shell.exec(sh, { silent: true, async: true });
   let logWriter = fs.createWriteStream('error-log.txt', {
-    flags: 'r+',
+    flags: 'a',
+
   })
   builder.stdout.on('data', data => {
     spinner.text = data;
