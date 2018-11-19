@@ -29,10 +29,10 @@ const getUrl = () => {
   // get electron dep
   let electronDep = getElectronVersion()
   let electronDepLabel = electronDep === '1.8.3' ? 'e2' : 'e3';
-  let url = `http://download.agora.io/sdk/release/Agora_RTC_Electron_SDK_for_${platformLabel}_${version}_${electronDepLabel}.zip`
+  let url = `http://download.agora.io/sdk/release/Agora_RTC_Electron_SDK_for_${platformLabel}_${versionLabel}_${electronDepLabel}.zip`
   
   // log download info
-  shell.echo(chalk.blue(`Package Version: ${versionLabel}`));
+  shell.echo(chalk.blue(`Package Version: ${version.version}`));
   shell.echo(chalk.blue(`Platform: ${platformLabel}`));
   shell.echo(chalk.blue(`Dependent Electron Version: ${electronDep}`));
   shell.echo(chalk.blue(`Download Url: ${url}`))
