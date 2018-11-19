@@ -3,21 +3,24 @@
  */
 
 const shell = require('shelljs');
-const getPlatform = require('./utils/os');
 const chalk = require('chalk');
 const ora = require('ora');
 
+const getPlatform = require('./utils/os');
+const getElectronVersion = require('./utils/checkElectron');
+
 const generate = () => {
   let platform = getPlatform();
+  let electronVersion = getElectronVersion();
   let spinner = ora('Building for debug');
   let sh = '';
 
   if (platform === 'mac') {
     sh =
-      'node-gyp rebuild --target=1.8.3 --dist-url=https://atom.io/download/electron --debug';
+      `node-gyp rebuild --target=${electronVersion} --dist-url=https://atom.io/download/electron --debug`;
   } else if (platform === 'win') {
     sh =
-      'node-gyp rebuild --target=1.8.3 --dist-url=https://atom.io/download/electron --arch=ia32 --debug';
+      `node-gyp rebuild --target=${electronVersion} --dist-url=https://atom.io/download/electron --arch=ia32 --debug`;
   } else {
     shell.echo(chalk.red('Sorry, this sdk only provide win32 and mac version.\n'));
     shell.exit(1);
