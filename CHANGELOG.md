@@ -1,3 +1,9 @@
+## 2.0.8-rc.5-alpha (Nov 19th, 2018)
+#### :house: Internal
+* support multi version of prebuilt addon
+  `In temp, you will automatically download addon built with 3.0.6 electron when your application use electron v3, and 1.8.3 for electron v2`
+* more detail info when doing building or downloading
+
 ## 2.0.8-rc.4 (Nov 13rd, 2018)
 #### :bug: Bug Fix
 * Optimize resource release for webgl context.
