@@ -1,6 +1,6 @@
 const semver = require('semver');
 
-const electronDepVersion = process.env.npm_package_dependencies_electron;
+const electronDepVersion = process.env.npm_package_dependencies_electron || process.env.npm_package_devDependencies_electron;
 
 const getElectronVersion = function() {
   if (!electronDepVersion) {
