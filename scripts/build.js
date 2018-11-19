@@ -3,20 +3,25 @@
  */
 
 const shell = require('shelljs');
-const getPlatform = require('./utils/os');
 const argv = require('optimist').argv;
 const chalk = require('chalk');
 const ora = require('ora');
+const fs = require('fs');
+
+const getPlatform = require('./utils/os');
+const getElectronVersion = require('./utils/checkElectron');
 
 const install = () => {
   let platform = getPlatform();
+  let electronVersion = argv.electronDep || getElectronVersion();
+  // if built for electron runtime
   let electronArgs =
     argv.runtime === 'electron'
-      ? ' --target=1.8.3 --dist-url=https://atom.io/download/electron'
+      ? ` --target=${electronVersion} --dist-url=https://atom.io/download/electron`
       : '';
-  let spinner = ora(`Building for production in ${argv.runtime} runtime`);
-  let sh = '';
 
+  // check platform and generate command to execute
+  let sh = '';
   if (platform === 'mac') {
     sh = 'node-gyp rebuild' + electronArgs;
   } else if (platform === 'win') {
@@ -27,15 +32,24 @@ const install = () => {
     return false;
   }
 
+  // log built info
+  argv.runtime === 'electron' && shell.echo(chalk.blue(`Dependent Electron Version: ${electronVersion}`))
+  shell.echo(chalk.blue(`Platform: ${platform}`))
   shell.echo('\n');
+
+  let spinner = ora(`Building for production in ${argv.runtime} runtime`);
   spinner.start();
 
-  let builder = shell.exec(sh, { silent: false, async: true });
+  // exec shell and write log
+  let builder = shell.exec(sh, { silent: true, async: true });
+  let logWriter = fs.createWriteStream('error-log.txt', {
+    flags: 'r+',
+  })
   builder.stdout.on('data', data => {
     spinner.text = data;
   });
   builder.stderr.on('data', data => {
-    shell.ShellString(data).to('error-log.txt');
+    logWriter.write(data, 'utf8')
   });
   builder.on('close', code => {
     if (code !== 0) {
