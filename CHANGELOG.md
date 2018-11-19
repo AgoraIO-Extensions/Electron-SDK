@@ -1,7 +1,7 @@
 ## 2.0.8-rc.5-alpha (Nov 19th, 2018)
 #### :house: Internal
 * support multi version of prebuilt addon
-  `In temp, you will automatically download addon built with 3.0.6 electron when your application use electron v3, and 1.8.3 for electron v2`
+  `In temp, you can switch prebuilt addon version by npm config or .npmrc, set agora_electron_dependent=<electron version in your app>, built with 1.8.3 for electron ranges from 1.8.3 to <3.0.0, and 3.0.6 for electron >= 3.0.0`
 * more detail info when doing building or downloading
 
 ## 2.0.8-rc.4 (Nov 13rd, 2018)

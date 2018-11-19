@@ -17,6 +17,15 @@ npm install agora-electron-sdk
 // you can use require either
 import AgoraRtcEngine from 'agora-electron-sdk'
 ```
+Switch prebuilt addon version in .npmrc (default to use 1.8.3)
+
+``` bash
+# range(1.8.3, <3.0.0) will download a prebuilt addon built with electron 1.8.3
+AGORA_ELECTRON_DEPENDENT=2.0.0
+# or
+# range(>=3.0.0) will download a prebuilt addon built with electron 3.0.6
+AGORA_ELECTRON_DEPENDENT=3.0.6
+```
 
 Other resources:
 
