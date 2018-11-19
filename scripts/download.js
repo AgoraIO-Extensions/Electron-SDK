@@ -4,12 +4,15 @@ const ora = require('ora');
 const path = require('path')
 const rimraf = require('rimraf');
 const shell = require('shelljs');
+const semver = require('semver');
 
-// const checkVersion = require('./utils/checkVersion');
-const getPlatform = require('./utils/os');
 const pkg = require('../package.json');
+const getPlatform = require('./utils/os');
+const getElectronVersion = require('./utils/checkElectron');
 
-const getUrl = (platform, version) => {
+const getUrl = () => {
+  // get platform label
+  let platform = getPlatform()
   let platformLabel = '';
   if (platform === 'mac') {
     platformLabel = 'Mac';
@@ -20,11 +23,25 @@ const getUrl = (platform, version) => {
     shell.exit(1);
     return false;
   }
-  return `http://download.agora.io/sdk/release/Agora_RTC_Electron_SDK_for_${platformLabel}_${version}.zip`;
+  // get version label
+  let version = semver.coerce(pkg.version);
+  let versionLabel = `v${version.major}_${version.minor}_${version.patch}`
+  // get electron dep
+  let electronDep = getElectronVersion()
+  let electronDepLabel = electronDep === '1.8.3' ? 'e2' : 'e3';
+  let url = `http://download.agora.io/sdk/release/Agora_RTC_Electron_SDK_for_${platformLabel}_${version}_${electronDepLabel}.zip`
+  
+  // log download info
+  shell.echo(chalk.blue(`Package Version: ${versionLabel}`));
+  shell.echo(chalk.blue(`Platform: ${platformLabel}`));
+  shell.echo(chalk.blue(`Dependent Electron Version: ${electronDep}`));
+  shell.echo(chalk.blue(`Download Url: ${url}`))
+  shell.echo('\n');
+
+  return url;
 };
 
-const platform = getPlatform();
-const url = getUrl(platform, 'v2_0_8');
+const url = getUrl();
 const outputDir = './build/Release/';
 
 rimraf(path.join(__dirname, '../build'), (err) => {
@@ -32,7 +49,6 @@ rimraf(path.join(__dirname, '../build'), (err) => {
     throw new Error(err)
   } else {
     let spinner = ora(`Downloading built C++ addon for Agora Electron SDK...`);
-    shell.echo('\n');
     spinner.start();
     download(url, outputDir, {
       strip: 1,
@@ -47,24 +63,3 @@ rimraf(path.join(__dirname, '../build'), (err) => {
       });
   }
 });
-
-// checkVersion(url, function(rst) {
-//   if (!rst) {
-//     let spinner = ora(`Downloading built C++ addon for Agora Electron SDK...`);
-//     shell.echo('\n');
-//     spinner.start();
-//     download(url, outputDir, {
-//       strip: 1,
-//       extract: true
-//     })
-//       .then(_ => {
-//         spinner.succeed(chalk.green('Download finished.\n'));
-//       })
-//       .catch(err => {
-//         spinner.fail(chalk.red('Download failed.\n'));
-//         shell.echo(chalk.red(err));
-//       });
-//   } else {
-//     shell.echo(chalk.green('Already download.\n'));
-//   }
-// });
