@@ -86,7 +86,7 @@ class Renderer {
       return;
     }
 
-    this.cacheCanvasOpts = {...options};
+    this.cacheCanvasOpts = Object.assign({}, options);
 
     // check for rotation
     if (options.rotation === 0 || options.rotation === 180) {
