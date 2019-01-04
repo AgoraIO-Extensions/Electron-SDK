@@ -18,7 +18,7 @@
     "debug": "node ./scripts/debug.js",
     "doc:js": "node ./scripts/jsapi.js",
     "download": "node ./scripts/download.js",
-    "example": "npm run build:electron && cd example && npm install && npm run dev",
+    "example": "npm run build:electron3 && cd example && npm install && npm run dev",
     "lint": "eslint .",
     "format": "eslint . --fix ",
     "test": "npm run build:node && jest --detectOpenHandles --forceExit",

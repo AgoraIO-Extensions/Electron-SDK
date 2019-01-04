@@ -39,6 +39,7 @@ export default class App extends Component {
 
   componentDidMount() {
     this.subscribeEvents()
+    window.rtcEngine = this.rtcEngine;
   }   
 
   subscribeEvents = () => {
@@ -51,6 +52,7 @@ export default class App extends Component {
       if (uid === SHARE_ID && this.state.localVideoSource) {
         return
       }
+      this.rtcEngine.setRemoteVideoStreamType(uid, 1)
       this.setState({
         users: this.state.users.push(uid)
       })
@@ -98,9 +100,11 @@ export default class App extends Component {
     rtcEngine.setClientRole(this.state.role)
     rtcEngine.setAudioProfile(0, 1)
     rtcEngine.enableVideo()
+    rtcEngine.setLogFile('~/agoraabc.log')
     rtcEngine.enableLocalVideo(true)
     rtcEngine.enableWebSdkInteroperability(true)
     rtcEngine.setVideoProfile(this.state.videoProfile, false)
+    rtcEngine.enableDualStreamMode(true)
     rtcEngine.enableAudioVolumeIndication(1000, 3)
     rtcEngine.joinChannel(null, this.state.channel, '',  Number(`${new Date().getTime()}`.slice(7)))
   }
@@ -139,6 +143,7 @@ export default class App extends Component {
       }, timeout)
       this.rtcEngine.once('videosourcejoinedsuccess', uid => {
         clearTimeout(timer)
+        rtcEngine.videoSourceSetLogFile('~/videosourceabc.log')
         this.sharingPrepared = true
         resolve(uid)
       });
@@ -146,9 +151,9 @@ export default class App extends Component {
         this.rtcEngine.videoSourceInitialize(APP_ID);
         this.rtcEngine.videoSourceSetChannelProfile(1);
         this.rtcEngine.videoSourceEnableWebSdkInteroperability(true)
-        this.rtcEngine.videoSourceSetVideoProfile(50, false);
+        // this.rtcEngine.videoSourceSetVideoProfile(50, false);
         // to adjust render dimension to optimize performance
-        this.rtcEngine.setVideoRenderDimension(3, SHARE_ID, 1600, 900);
+        this.rtcEngine.setVideoRenderDimension(3, SHARE_ID, 1200, 680);
         this.rtcEngine.videoSourceJoin(token, this.state.channel, info, SHARE_ID);
       } catch(err) {
         clearTimeout(timer)
@@ -175,6 +180,7 @@ export default class App extends Component {
     };
     return new Promise((resolve, reject) => {
       this.rtcEngine.startScreenCapture2(windowId, captureFreq, rect, bitrate);
+      this.rtcEngine.videoSourceSetVideoProfile(43, false);
       this.rtcEngine.startScreenCapturePreview();
     });
   }
