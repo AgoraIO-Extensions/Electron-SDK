@@ -50,6 +50,7 @@
     * [.pauseAudio()](#AgoraRtcEngine+pauseAudio) ⇒ <code>int</code>
     * [.resumeAudio()](#AgoraRtcEngine+resumeAudio) ⇒ <code>int</code>
     * [.setLogFile(filepath)](#AgoraRtcEngine+setLogFile) ⇒ <code>int</code>
+    * [.videoSourceSetLogFile(filepath)](#AgoraRtcEngine+videoSourceSetLogFile) ⇒ <code>int</code>
     * [.setLogFilter(filter)](#AgoraRtcEngine+setLogFilter) ⇒ <code>int</code>
     * [.enableDualStreamMode(enable)](#AgoraRtcEngine+enableDualStreamMode) ⇒ <code>int</code>
     * [.setRemoteVideoStreamType(uid, streamType)](#AgoraRtcEngine+setRemoteVideoStreamType) ⇒ <code>int</code>
@@ -656,6 +657,18 @@ set filepath of log
 | --- | --- | --- |
 | filepath | <code>string</code> | filepath of log |
 
+<a name="AgoraRtcEngine+videoSourceSetLogFile"></a>
+
+### agoraRtcEngine.videoSourceSetLogFile(filepath) ⇒ <code>int</code>
+set filepath of videosource log, must be called after videosource initialized
+
+**Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
+**Returns**: <code>int</code> - 0 for success, <0 for failure  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| filepath | <code>string</code> | filepath of log |
+
 <a name="AgoraRtcEngine+setLogFilter"></a>
 
 ### agoraRtcEngine.setLogFilter(filter) ⇒ <code>int</code>
@@ -1060,7 +1073,7 @@ This method updates the Token for video source
 <a name="AgoraRtcEngine+videoSourceSetVideoProfile"></a>
 
 ### agoraRtcEngine.videoSourceSetVideoProfile(profile, [swapWidthAndHeight]) ⇒ <code>int</code>
-set video profile for video source
+set video profile for video source (must be called after startScreenCapture2)
 
 **Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
 **Returns**: <code>int</code> - 0 for success, <0 for failure  
