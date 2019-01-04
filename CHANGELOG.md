@@ -1,3 +1,10 @@
+## Latest
+#### :house: Internal
+* Add `videoSourceSetLogFile` api (similiar to setLogFile)
+
+#### :bug: Bug Fix
+* Fixed overflow of uint32 uid.
+
 ## 2.0.8-rc.5-alpha (Nov 19th, 2018)
 #### :house: Internal
 * support multi version of prebuilt addon
