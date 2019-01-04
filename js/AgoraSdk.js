@@ -935,7 +935,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description set filepath of videosource log
+   * @description set filepath of videosource log, must be called after videosource initialized
    * @param {string} filepath filepath of log
    * @returns {int} 0 for success, <0 for failure
    */
@@ -1315,7 +1315,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description set video profile for video source
+   * @description set video profile for video source (must be called after startScreenCapture2)
    * @param {int} profile - enumeration values represent video profile
    * @param {boolean} [swapWidthAndHeight = false] - Whether to swap width and height
    * @returns {int} 0 for success, <0 for failure
