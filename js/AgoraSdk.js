@@ -935,6 +935,15 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @description set filepath of videosource log
+   * @param {string} filepath filepath of log
+   * @returns {int} 0 for success, <0 for failure
+   */
+  videoSourceSetLogFile(filepath) {
+    return this.rtcengine.videoSourceSetLogFile(filepath)
+  }
+
+  /**
    * @description set log level
    * @param {int} filter filter level
    * LOG_FILTER_OFF = 0: Output no log.
