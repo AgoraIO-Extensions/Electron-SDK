@@ -1,8 +1,6 @@
-//
 //  Agora SDK
 //
-//  Created by Sting Feng in 2017-11.
-//  Copyright (c) 2017 Agora.io. All rights reserved.
+//  Copyright (c) 2018 Agora.io. All rights reserved.
 //
 
 #ifndef AGORA_SERVICE_H
@@ -25,22 +23,24 @@ struct AgoraServiceContext
 
 class IAgoraService
 {
+protected:
+    virtual ~IAgoraService(){}
 public:
     virtual void release() = 0;
-	
+
 	/**
-    * initialize the engine
-    * @param [in] context
-    *        the RTC engine context
-    * @return return 0 if success or an error code
+    * Initializes the engine.
+    * @param context RtcEngine context.
+    @return
+
+     - 0: Success.
+     - < 0: Failure.
     */
     virtual int initialize(const AgoraServiceContext& context) = 0;
 
-    /**
-    * get the version information of the SDK
-    * @param [in, out] build
-    *        the build number
-    * @return return the version number string in char format
+    /** Retrieves the SDK version number.
+    * @param build Build number.
+    * @return The current SDK version in the string format. For example, 2.3.0
     */
     virtual const char* getVersion(int* build) = 0;
 
@@ -52,24 +52,25 @@ public:
 } // namespace agora
 
 /**
-* to get the version number of the SDK
-* @param [in, out] build
-*        the build number of Agora SDK
-* @return returns the string of the version of the SDK
+* Gets the SDK version number.
+* @param build Build number of the Agora SDK.
+ @return
+
+ - 0: Success.
+ - < 0: Failure.
 */
 AGORA_API const char* AGORA_CALL getAgoraSdkVersion(int* build);
 
 /**
-* create the RTC engine object and return the pointer
-* @param [in] err
-*        the error code
-* @return returns the description of the error code
+* Creates the RtcEngine object and returns the pointer.
+* @param err Error code
+* @return returns Description of the error code
 */
 AGORA_API const char* AGORA_CALL getAgoraSdkErrorDescription(int err);
 
 /**
-* create the Agora Service object and return the pointer
-* @return returns pointer of the Agora Service object
+* Creates the Agora Service object and returns the pointer.
+* @return returns Pointer of the Agora Service object
 */
 AGORA_API agora::base::IAgoraService* AGORA_CALL createAgoraService();
 
