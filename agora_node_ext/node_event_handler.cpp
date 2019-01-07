@@ -685,20 +685,6 @@ namespace agora {
             });
         }
 
-        void NodeEventHandler::onRefreshRecordingServiceStatus_node(int status)
-        {
-            FUNC_TRACE;
-            MAKE_JS_CALL_1(RTC_EVENT_REFRESH_RECORDING_SERVICE_STATUS, int32, status);
-        }
-
-        void NodeEventHandler::onRefreshRecordingServiceStatus(int status)
-        {
-            FUNC_TRACE;
-            node_async_call::async_call([this, status] {
-                this->onRefreshRecordingServiceStatus_node(status);
-            });
-        }
-
         void NodeEventHandler::onStreamMessage_node(uid_t uid, int streamId, const char* data, size_t length)
         {
             FUNC_TRACE;
