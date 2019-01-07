@@ -104,9 +104,6 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setLogFile)
                 PROPERTY_METHOD_DEFINE(setLogFilter)
                 PROPERTY_METHOD_DEFINE(setLocalVideoMirrorMode)
-                PROPERTY_METHOD_DEFINE(startRecordingService)
-                PROPERTY_METHOD_DEFINE(stopRecordingService)
-                PROPERTY_METHOD_DEFINE(refreshRecordingServiceStatus)
                 PROPERTY_METHOD_DEFINE(enableDualStreamMode)
                 PROPERTY_METHOD_DEFINE(setRecordingAudioFrameParameters)
                 PROPERTY_METHOD_DEFINE(setPlaybackAudioFrameParameters)
@@ -292,8 +289,6 @@ namespace agora {
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(resumeAudio);
 
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(refreshRecordingServiceStatus);
-
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(getEffectsVolume);	
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setEffectsVolume, int32);
@@ -339,10 +334,6 @@ namespace agora {
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setLogFile, nodestring);
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setLogFilter, uint32);
-
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(startRecordingService, nodestring);
-
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(stopRecordingService, nodestring);
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(enableDualStreamMode, bool);
 

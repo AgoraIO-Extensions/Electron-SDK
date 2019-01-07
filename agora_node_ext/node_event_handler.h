@@ -122,7 +122,6 @@ namespace agora {
             virtual void onConnectionLost() override;
             virtual void onConnectionInterrupted() override;
             virtual void onConnectionBanned() override;
-            virtual void onRefreshRecordingServiceStatus(int status) override;
             virtual void onStreamMessage(uid_t uid, int streamId, const char* data, size_t length) override;
             virtual void onStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached) override;
             virtual void onMediaEngineLoadSuccess() override;
