@@ -1,4 +1,4 @@
-# Agora-RTC-SDK-for-Electron [![NPM version][npm-image]][npm-url]
+# Agora-RTC-SDK-for-Electron [![npm package][npm-badge]][npm]
 
 The Agora-RTC-SDK-for-Electron is an open-source wrapper for **[Electron](https://electronjs.org/)** developers. This SDK takes advantage of Node.js C++ Addons and Agora RTC SDKs on Windows/macOS.
 
@@ -90,5 +90,5 @@ We are still opmizing our project, welcome to help improve our Javascript Api Do
 
 The MIT License (MIT).
 
-[npm-image]: https://badge.fury.io/js/agora-electron-sdk.svg
-[npm-url]: https://npmjs.org/package/agora-electron-sdk
+[npm-badge]: https://img.shields.io/npm/v/agora-stream-player.png?style=flat-square
+[npm]: https://www.npmjs.org/package/agora-stream-player
