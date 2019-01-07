@@ -1,6 +1,7 @@
-## Latest
+## Latest (Nov 19th, 2018)
 #### :house: Internal
 * Add `videoSourceSetLogFile` api (similiar to setLogFile)
+* Support electron 4.0.0
 
 #### :bug: Bug Fix
 * Fixed overflow of uint32 uid.
