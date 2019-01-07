@@ -120,11 +120,6 @@ void AgoraVideoSourceEventHandler::onConnectionBanned()
     LOG_INFO("%s", __FUNCTION__);
 }
 
-void AgoraVideoSourceEventHandler::onRefreshRecordingServiceStatus(int status)
-{
-    LOG_INFO("%s, status :%d", __FUNCTION__, status);
-}
-
 #if defined(_WIN32)
 void AgoraVideoSourceEventHandler::onRequestChannelKey()
 {

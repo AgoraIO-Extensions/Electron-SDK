@@ -160,9 +160,6 @@ namespace agora {
 
             NAPI_API(setLocalVideoMirrorMode);
             
-            NAPI_API(startRecordingService);
-            NAPI_API(stopRecordingService);
-            NAPI_API(refreshRecordingServiceStatus);
             NAPI_API(enableDualStreamMode);
             NAPI_API(setRecordingAudioFrameParameters);
             NAPI_API(setPlaybackAudioFrameParameters);
