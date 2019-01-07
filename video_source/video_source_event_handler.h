@@ -50,7 +50,6 @@ public:
     virtual void onConnectionLost() override;
     virtual void onConnectionInterrupted() override;
     virtual void onConnectionBanned() override;
-    virtual void onRefreshRecordingServiceStatus(int status) override;
 #if defined(_WIN32)
     virtual void onRequestChannelKey() override;
 #elif defined(__APPLE__)
