@@ -90,5 +90,5 @@ We are still opmizing our project, welcome to help improve our Javascript Api Do
 
 The MIT License (MIT).
 
-[npm-badge]: https://img.shields.io/npm/v/agora-stream-player.png?style=flat-square
-[npm]: https://www.npmjs.org/package/agora-stream-player
+[npm-badge]: https://img.shields.io/npm/v/agora-electron-sdk.png?style=flat-square
+[npm]: https://www.npmjs.org/package/agora-electron-sdk
