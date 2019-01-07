@@ -23,12 +23,25 @@ const getUrl = () => {
     shell.exit(1);
     return false;
   }
+
   // get version label
   let version = semver.coerce(pkg.version);
   let versionLabel = `v${version.major}_${version.minor}_${version.patch}`
+
   // get electron dep
   let electronDep = getElectronVersion()
-  let electronDepLabel = electronDep === '1.8.3' ? 'e2' : 'e3';
+  let electronDepLabel = (function() {
+    switch(electronDep) {
+      default:
+      case '1.8.3':
+        return 'e2';
+      case '3.0.6':
+        return 'e3';
+      case '4.0.0':
+        return 'e4';  
+    }
+  })();
+
   let url = `http://download.agora.io/sdk/release/Agora_RTC_Electron_SDK_for_${platformLabel}_${versionLabel}_${electronDepLabel}.zip`
   
   // log download info
