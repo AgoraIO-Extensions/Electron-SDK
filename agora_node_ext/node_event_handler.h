@@ -39,6 +39,7 @@ namespace agora {
 #define RTC_EVENT_FIRST_LOCAL_VIDEO_FRAME "firstlocalvideoframe"
 #define RTC_EVENT_FIRST_REMOTE_VIDEO_DECODED "firstremotevideodecoded"
 #define RTC_EVENT_VIDEO_SIZE_CHANGED "videosizechanged"
+#define RTC_EVENT_REMOTE_VIDEO_STATE_CHANGED "remoteVideoStateChanged"
 #define RTC_EVENT_FIRST_REMOTE_VIDEO_FRAME "firstremotevideoframe"
 #define RTC_EVENT_USER_JOINED "userjoined"
 #define RTC_EVENT_USER_OFFLINE "useroffline"
@@ -50,6 +51,8 @@ namespace agora {
 #define RTC_EVENT_LOCAL_VIDEO_STATS "localvideostats"
 #define RTC_EVENT_REMOTE_VIDEO_STATS "remotevideostats"
 #define RTC_EVENT_CAMERA_READY "cameraready"
+#define RTC_EVENT_CAMERA_FOCUS_AREA_CHANGED "cameraFocusAreaChanged"
+#define RTC_EVENT_CAMERA_EXPOSURE_AREA_CHANGED "cameraExposureAreaChanged"
 #define RTC_EVENT_VIDEO_STOPPED "videostopped"
 #define RTC_EVENT_CONNECTION_LOST "connectionlost"
 #define RTC_EVENT_CONNECTION_INTERRUPTED "connectioninterrupted"
@@ -60,13 +63,23 @@ namespace agora {
 #define RTC_EVENT_MEDIA_ENGINE_LOAD_SUCCESS "mediaengineloadsuccess"
 #define RTC_EVENT_MEDIA_ENGINE_STARTCALL_SUCCESS "mediaenginestartcallsuccess"
 #define RTC_EVENT_REQUEST_TOKEN "requesttoken"
+#define RTC_EVENT_TOKEN_PRIVILEGE_WILL_EXPIRE "tokenPrivilegeWillExpire"
 #define RTC_EVENT_FIRST_LOCAL_AUDIO_FRAME "firstlocalaudioframe"
 #define RTC_EVENT_FIRST_REMOTE_AUDIO_FRAME "firstremoteaudioframe"
 #define RTC_EVENT_ACTIVE_SPEAKER "activespeaker"
+#define RTC_EVENT_STREAM_PUBLISHED "streamPublished"
+#define RTC_EVENT_STREAM_UNPUBLISHED "streamUnpublished"
+#define RTC_EVENT_TRANSCODING_UPDATED "trascodingUpdated"
+#define RTC_EVENT_STREAM_INJECT_STATUS "streamInjectStatus"
+#define RTC_EVENT_LOCAL_PUBLISH_FALLBACK_TO_AUDIO_ONLY "localPublishFallbackToAudioOnly"
+#define RTC_EVENT_REMOTE_SUBSCRIBE_FALLBACK_TO_AUDIO_ONLY "remoteSubscribeFallbackToAudioOnly"
 #define RTC_EVENT_CLIENT_ROLE_CHANGED "clientrolechanged"
 #define RTC_EVENT_AUDIO_DEVICE_VOLUME_CHANGED "audiodevicevolumechanged"
 #define RTC_EVENT_REMOTE_AUDIO_TRANSPORT_STATS "remoteAudioTransportStats"
 #define RTC_EVENT_REMOTE_VIDEO_TRANSPORT_STATS "remoteVideoTransportStats"
+#define RTC_EVENT_MICROPHONE_ENABLED "microphoneEnabled"
+#define RTC_EVENT_CONNECTION_STATE_CHANED "connectionStateChanged"
+
 #define RTC_EVENT_VIDEO_SOURCE_JOIN_SUCCESS "videosourcejoinsuccess"
 #define RTC_EVENT_VIDEO_SOURCE_REQUEST_NEW_TOKEN "videosourcerequestnewtoken"
 #define RTC_EVENT_VIDEO_SOURCE_LEAVE_CHANNEL "videosourceleavechannel"
@@ -103,6 +116,7 @@ namespace agora {
             virtual void onFirstLocalVideoFrame(int width, int height, int elapsed) override;
             virtual void onFirstRemoteVideoDecoded(uid_t uid, int width, int height, int elapsed) override;
             virtual void onVideoSizeChanged(uid_t uid, int width, int height, int rotation) override;
+            virtual void onRemoteVideoStateChanged(uid_t uid, REMOTE_VIDEO_STATE state) override;
             virtual void onFirstRemoteVideoFrame(uid_t uid, int width, int height, int elapsed) override;
             virtual void onUserJoined(uid_t uid, int elapsed) override;
             virtual void onUserOffline(uid_t uid, USER_OFFLINE_REASON_TYPE reason) override;
@@ -110,14 +124,12 @@ namespace agora {
             virtual void onUserMuteVideo(uid_t uid, bool muted) override;
             virtual void onUserEnableVideo(uid_t uid, bool enabled) override;
             virtual void onUserEnableLocalVideo(uid_t uid, bool enabled) override;
-#if defined(_WIN32)
-            virtual void onApiCallExecuted(const char* api, int error) override;
-#elif defined(__APPLE__)
             virtual void onApiCallExecuted(int err, const char* api, const char* result) override;
-#endif
             virtual void onLocalVideoStats(const LocalVideoStats& stats) override;
             virtual void onRemoteVideoStats(const RemoteVideoStats& stats) override;
             virtual void onCameraReady() override;
+            virtual void onCameraFocusAreaChanged(int x, int y, int width, int height) override;
+            virtual void onCameraExposureAreaChanged(int x, int y, int width, int height) override;
             virtual void onVideoStopped() override;
             virtual void onConnectionLost() override;
             virtual void onConnectionInterrupted() override;
@@ -126,13 +138,16 @@ namespace agora {
             virtual void onStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached) override;
             virtual void onMediaEngineLoadSuccess() override;
             virtual void onMediaEngineStartCallSuccess() override;
-#if defined(_WIN32)
-			virtual void onRequestChannelKey() override;
-#elif defined(__APPLE__)
             virtual void onRequestToken() override;
-#endif
+            virtual void onTokenPrivilegeWillExpire(const char* token) override;
             virtual void onFirstLocalAudioFrame(int elapsed) override;
             virtual void onFirstRemoteAudioFrame(uid_t uid, int elapsed) override;
+            virtual void onStreamPublished(const char *url, int error) override;
+            virtual void onStreamUnpublished(const char *url) override;
+            virtual void onTranscodingUpdated() override;
+            virtual void onStreamInjectedStatus(const char* url, uid_t uid, int status) override;
+            virtual void onLocalPublishFallbackToAudioOnly(bool isFallbackOrRecover) override;
+            virtual void onRemoteSubscribeFallbackToAudioOnly(uid_t uid, bool isFallbackOrRecover) override;
             virtual void onActiveSpeaker(uid_t uid) override;
             virtual void onClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole) override;
             virtual void onAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted) override;
@@ -140,6 +155,8 @@ namespace agora {
             virtual void onRemoteAudioTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)override;
             virtual void onRemoteVideoTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)override;
 #endif
+            virtual void onMicrophoneEnabled(bool enabled) override;
+            virtual void onConnectionStateChanged(CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason) override;
             virtual void onVideoSourceJoinedChannel(agora::rtc::uid_t uid) override;
             virtual void onVideoSourceRequestNewToken() override;
             virtual void onVideoSourceLeaveChannel() override;
@@ -167,6 +184,7 @@ namespace agora {
             void onFirstLocalVideoFrame_node(int width, int height, int elapsed) ;
             void onFirstRemoteVideoDecoded_node(uid_t uid, int width, int height, int elapsed) ;
             void onVideoSizeChanged_node(uid_t uid, int width, int height, int rotation) ;
+            void onRemoteVideoStateChanged_node(uid_t uid, REMOTE_VIDEO_STATE state);
             void onFirstRemoteVideoFrame_node(uid_t uid, int width, int height, int elapsed) ;
             void onUserJoined_node(uid_t uid, int elapsed) ;
             void onUserOffline_node(uid_t uid, USER_OFFLINE_REASON_TYPE reason) ;
@@ -178,23 +196,36 @@ namespace agora {
             void onLocalVideoStats_node(const LocalVideoStats& stats) ;
             void onRemoteVideoStats_node(const RemoteVideoStats& stats);
             void onCameraReady_node();
+            void onCameraFocusAreaChanged_node(int x, int y, int width, int height);
+            void onCameraExposureAreaChanged_node(int x, int y, int width, int height);
             void onVideoStopped_node();
             void onConnectionLost_node();
             void onConnectionInterrupted_node();
             void onConnectionBanned_node();
-            void onRefreshRecordingServiceStatus_node(int status);
+           void onRefreshRecordingServiceStatus_node(int status);
             void onStreamMessage_node(uid_t uid, int streamId, const char* data, size_t length);
             void onStreamMessageError_node(uid_t uid, int streamId, int code, int missed, int cached);
             void onMediaEngineLoadSuccess_node();
             void onMediaEngineStartCallSuccess_node();
             void onRequestToken_node();
+            void onTokenPrivilegeWillExpire_node(const char* token);
             void onFirstLocalAudioFrame_node(int elapsed);
             void onFirstRemoteAudioFrame_node(uid_t uid, int elapsed);
+            void onStreamPublished_node(const char *url, int error);
+            void onStreamUnpublished_node(const char *url);
+            void onTranscodingUpdated_node();   
+            void onStreamInjectedStatus_node(const char* url, uid_t uid, int status);
+
+            void onLocalPublishFallbackToAudioOnly_node(bool isFallbackOrRecover);
+            void onRemoteSubscribeFallbackToAudioOnly_node(uid_t uid, bool isFallbackOrRecover);
             void onActiveSpeaker_node(uid_t uid);
             void onClientRoleChanged_node(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole);
             void onAudioDeviceVolumeChanged_node(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted);
 			void onRemoteAudioTransportStats_node(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
 			void onRemoteVideoTransportStats_node(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
+            void onMicrophoneEnabled_node(bool enabled);
+            void onConnectionStateChanged_node(CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason);
+
             void onVideoSourceJoinedChannel_node(agora::rtc::uid_t uid);
             void onVideoSourceRequestToken_node();
             void onVideoSourceLeaveChannel_node();

@@ -97,11 +97,7 @@ bool AgoraVideoSource::initialize()
     }
 
     agora::util::AutoPtr<agora::media::IMediaEngine> pMediaEngine;
-#if defined(_WIN32)
-    pMediaEngine.queryInterface(m_rtcEngine.get(), agora::rtc::AGORA_IID_MEDIA_ENGINE);
-#elif defined(__APPLE__)
     pMediaEngine.queryInterface(m_rtcEngine.get(), agora::AGORA_IID_MEDIA_ENGINE);
-#endif
 
     if (pMediaEngine.get()){
         pMediaEngine->registerVideoRenderFactory(m_renderFactory.get());
@@ -209,28 +205,16 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
         rep.enableLocalVideo(true);
         CaptureScreenCmd *cmd = (CaptureScreenCmd*)payload;
         LOG_INFO("Start screen share, top : %d, left : %d, bottom :%d, right :%d\n", cmd->rect.top, cmd->rect.left, cmd->rect.bottom, cmd->rect.right);
-#if defined(_WIN32)
-		if(rep.startScreenCapture(cmd->windowid, cmd->captureFreq, &cmd->rect) != 0){
-            LOG_ERROR("start screen capture failed.");
-            rep.enableLocalVideo(false);
-        }
-#elif defined(__APPLE__)
         if (m_rtcEngine->startScreenCapture(cmd->windowid, cmd->captureFreq, &cmd->rect, cmd->bitrate) != 0) {
             LOG_ERROR("start screen capture failed.");
             rep.enableLocalVideo(false);
         }
-#endif
     }
     else if (msg == AGORA_IPC_STOP_CAPTURE_SCREEN){
-#if defined(_WIN32)
-        agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
-        rep.stopScreenCapture();
-        rep.enableLocalVideo(false);
-#elif defined(__APPLE__)
+
         m_rtcEngine->stopScreenCapture();
         agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
         rep.enableLocalVideo(false);
-#endif
     }
     else if (msg == AGORA_IPC_START_VS_PREVIEW) {
         this->startPreview();
@@ -239,22 +223,14 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
         this->stopPreview();
     }
     else if (msg == AGORA_IPC_RENEW_TOKEN){
-#if defined(_WIN32)
-        m_rtcEngine->renewChannelKey(payload);
-#elif defined(__APPLE__)
         m_rtcEngine->renewToken(payload);
-#endif
     }
     else if (msg == AGORA_IPC_SET_CHANNEL_PROFILE){
         if (payload) {
             ChannelProfileCmd *cmd = (ChannelProfileCmd*)payload;
             m_rtcEngine->setChannelProfile(cmd->profile);
             if (cmd->profile == agora::rtc::CHANNEL_PROFILE_LIVE_BROADCASTING){
-#if defined(_WIN32)
-                m_rtcEngine->setClientRole(agora::rtc::CLIENT_ROLE_BROADCASTER, cmd->permissionKey);
-#elif defined(__APPLE__)
                 m_rtcEngine->setClientRole(agora::rtc::CLIENT_ROLE_BROADCASTER);
-#endif
             }
         }
     }
@@ -265,11 +241,7 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
             return;
         }
         VideoProfileCmd *cmd = (VideoProfileCmd*)payload;
-#if defined(_WIN32)
-        if (cmd->profile > agora::rtc::VIDEO_PROFILE_4K_3) {
-#elif defined(__APPLE__)
 		if (cmd->profile > agora::rtc::VIDEO_PROFILE_LANDSCAPE_4K_3) {
-#endif
 			LOG_ERROR("%s, set video profile with invalid value : %d", __FUNCTION__, cmd->profile);
 		}
 		else {

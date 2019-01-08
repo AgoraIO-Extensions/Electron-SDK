@@ -239,11 +239,7 @@ namespace agora {
 
         void NodeEventHandler::onRtcStats_node(const RtcStats& stats)
         {
-#if defined(_WIN32)
-            unsigned int usercount = stats.users;
-#elif defined(__APPLE__)
             unsigned int usercount = stats.userCount;
-#endif
             LOG_INFO("duration : %d, tx :%d, rx :%d, txbr :%d, rxbr :%d, txAudioBr :%d, rxAudioBr :%d, users :%d\n",
                 stats.duration, stats.txBytes, stats.rxBytes, stats.txKBitRate, stats.rxKBitRate, stats.txAudioKBitRate,
                 stats.rxAudioKBitRate, usercount);
@@ -434,6 +430,20 @@ namespace agora {
             });
         }
 
+        void NodeEventHandler::onRemoteVideoStateChanged_node(uid_t uid, REMOTE_VIDEO_STATE state)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_2(RTC_EVENT_REMOTE_VIDEO_STATE_CHANGED, int32, uid, int32, state);
+        }
+
+        void NodeEventHandler::onRemoteVideoStateChanged(uid_t uid, REMOTE_VIDEO_STATE state)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, uid, state] {
+                this->onRemoteVideoStateChanged_node(uid, state);
+            });
+        }
+
         void NodeEventHandler::onFirstRemoteVideoFrame_node(uid_t uid, int width, int height, int elapsed)
         {
             FUNC_TRACE;
@@ -537,16 +547,7 @@ namespace agora {
             FUNC_TRACE;
             MAKE_JS_CALL_2(RTC_EVENT_APICALL_EXECUTED, string, api, int32, error);
         }
-#if defined(_WIN32)
-        void NodeEventHandler::onApiCallExecuted(const char* api, int error)
-        {
-            FUNC_TRACE;
-            std::string apiName(api);
-            node_async_call::async_call([this, apiName, error] {
-                this->onApiCallExecuted_node(apiName.c_str(), error);
-            });
-        }
-#elif defined(__APPLE__)
+
         void NodeEventHandler::onApiCallExecuted(int err, const char* api, const char* result)
         {
             FUNC_TRACE;
@@ -555,7 +556,6 @@ namespace agora {
                 this->onApiCallExecuted_node(apiName.c_str(), err);
             });
         }
-#endif
 
         void NodeEventHandler::onLocalVideoStats_node(const LocalVideoStats& stats)
         {
@@ -626,6 +626,34 @@ namespace agora {
             FUNC_TRACE;
             node_async_call::async_call([this] {
                 this->onCameraReady_node();
+            });
+        }
+
+        void NodeEventHandler::onCameraFocusAreaChanged_node(int x, int y, int width, int height)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_4(RTC_EVENT_CAMERA_FOCUS_AREA_CHANGED, int32, x, int32, y, int32, width, int32, height);
+        }
+
+        void NodeEventHandler::onCameraFocusAreaChanged(int x, int y, int width, int height)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, x, y, width, height] {
+                this->onCameraFocusAreaChanged_node(x, y, width, height);
+            });
+        }
+
+        void NodeEventHandler::onCameraExposureAreaChanged_node(int x, int y, int width, int height)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_4(RTC_EVENT_CAMERA_FOCUS_AREA_CHANGED, int32, x, int32, y, int32, width, int32, height);
+        }
+
+        void NodeEventHandler::onCameraExposureAreaChanged(int x, int y, int width, int height)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, x, y, width, height] {
+                this->onCameraExposureAreaChanged_node(x, y, width, height);
             });
         }
 
@@ -747,25 +775,29 @@ namespace agora {
             FUNC_TRACE;
             MAKE_JS_CALL_0(RTC_EVENT_REQUEST_TOKEN);
         }
-#if defined(_WIN32)
-		void NodeEventHandler::onRequestChannelKey()
-		{
-			FUNC_TRACE;
-            node_async_call::async_call([this] {
-				this->onRequestToken_node();
-            });
-		}
-#elif defined(__APPLE__)
+
         void NodeEventHandler::onRequestToken()
         {
-            {
-                FUNC_TRACE;
-                node_async_call::async_call([this] {
-                    this->onRequestToken_node();
-                });
-            }
+            FUNC_TRACE;
+            node_async_call::async_call([this] {
+                this->onRequestToken_node();
+            });
         }
-#endif
+
+        void NodeEventHandler::onTokenPrivilegeWillExpire_node(const char* token)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_1(RTC_EVENT_TOKEN_PRIVILEGE_WILL_EXPIRE, string, token);
+        }
+
+        void NodeEventHandler::onTokenPrivilegeWillExpire(const char* token)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, token] {
+                this->onTokenPrivilegeWillExpire_node(token);
+            });
+        }
+
         void NodeEventHandler::onFirstLocalAudioFrame_node(int elapsed)
         {
             FUNC_TRACE;
@@ -791,6 +823,92 @@ namespace agora {
             FUNC_TRACE;
             node_async_call::async_call([this, uid, elapsed] {
                 this->onFirstRemoteAudioFrame_node(uid, elapsed);
+            });
+        }
+
+        void NodeEventHandler::onStreamPublished_node(const char *url, int error)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_2(RTC_EVENT_STREAM_PUBLISHED, string, url, int32, error);
+        }
+
+        void NodeEventHandler::onStreamPublished(const char *url, int error)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, url, error] {
+                this->onStreamPublished(url, error);
+            });
+        }
+
+        void NodeEventHandler::onStreamUnpublished_node(const char *url)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_1(RTC_EVENT_STREAM_UNPUBLISHED, string, url);
+        }
+
+        void NodeEventHandler::onStreamUnpublished(const char *url)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, url] {
+                this->onStreamUnpublished(url);
+            });
+        }
+
+        void NodeEventHandler::onTranscodingUpdated_node()
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_0(RTC_EVENT_TRANSCODING_UPDATED);
+        }
+
+        void NodeEventHandler::onTranscodingUpdated()
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this] {
+                this->onTranscodingUpdated_node();
+            });
+        }
+
+        void NodeEventHandler::onStreamInjectedStatus_node(const char* url, uid_t uid, int status)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_3(RTC_EVENT_STREAM_INJECT_STATUS, string, url, uid, uid, int32, status);
+        }
+
+        void NodeEventHandler::onStreamInjectedStatus(const char* url, uid_t uid, int status)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, url, uid, status] {
+                this->onStreamInjectedStatus_node(url, uid, status);
+            });
+        }
+        
+        void NodeEventHandler::onLocalPublishFallbackToAudioOnly_node(bool isFallbackOrRecover)
+        {
+
+            FUNC_TRACE;
+            MAKE_JS_CALL_1(RTC_EVENT_LOCAL_PUBLISH_FALLBACK_TO_AUDIO_ONLY, bool, isFallbackOrRecover);
+        }
+
+        void NodeEventHandler::onLocalPublishFallbackToAudioOnly(bool isFallbackOrRecover)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, isFallbackOrRecover] {
+                this->onLocalPublishFallbackToAudioOnly_node(isFallbackOrRecover);
+            });
+        }
+
+        void NodeEventHandler::onRemoteSubscribeFallbackToAudioOnly_node(uid_t uid, bool isFallbackOrRecover)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_2(RTC_EVENT_REMOTE_SUBSCRIBE_FALLBACK_TO_AUDIO_ONLY, uid, uid, bool, isFallbackOrRecover);
+            
+        }
+
+        void NodeEventHandler::onRemoteSubscribeFallbackToAudioOnly(uid_t uid, bool isFallbackOrRecover)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, uid, isFallbackOrRecover] {
+                this->onRemoteSubscribeFallbackToAudioOnly_node( uid, isFallbackOrRecover);
             });
         }
 
@@ -868,6 +986,34 @@ namespace agora {
             });
         }
 #endif
+        void NodeEventHandler::onMicrophoneEnabled_node(bool enabled)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_1(RTC_EVENT_MICROPHONE_ENABLED, bool, enabled);
+        }
+       
+        void NodeEventHandler::onMicrophoneEnabled(bool enabled)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, enabled] {
+                this->onMicrophoneEnabled_node(enabled);
+            });
+        }
+
+        void NodeEventHandler::onConnectionStateChanged_node(CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_2(RTC_EVENT_CONNECTION_STATE_CHANED, int32, state, int32, reason);
+        }
+
+        void NodeEventHandler::onConnectionStateChanged(CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, state, reason] {
+                this->onConnectionStateChanged_node(state, reason);
+            });
+        }
+
         void NodeEventHandler::onVideoSourceJoinedChannel(agora::rtc::uid_t uid)
         {
             FUNC_TRACE;
