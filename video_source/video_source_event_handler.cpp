@@ -78,17 +78,10 @@ void AgoraVideoSourceEventHandler::onVideoSizeChanged(uid_t uid, int width, int 
     LOG_INFO("%s, uid :%d, width :%d, height:%d, rotation :%d", __FUNCTION__, uid, width, height, rotation);
 }
 
-#if defined(_WIN32)
-void AgoraVideoSourceEventHandler::onApiCallExecuted(const char* api, int error)
-{
-    LOG_INFO("%s, err :%d, api :%s", __FUNCTION__, error, api);
-}
-#elif defined(__APPLE__)
 void AgoraVideoSourceEventHandler::onApiCallExecuted(int err, const char* api, const char* result)
 {
     LOG_INFO("%s, err :%d, api :%s", __FUNCTION__, err, api);
 }
-#endif
 
 void AgoraVideoSourceEventHandler::onLocalVideoStats(const LocalVideoStats& stats)
 {
@@ -98,6 +91,11 @@ void AgoraVideoSourceEventHandler::onLocalVideoStats(const LocalVideoStats& stat
 void AgoraVideoSourceEventHandler::onCameraReady()
 {
     LOG_INFO("%s", __FUNCTION__);
+}
+
+void AgoraVideoSourceEventHandler::onCameraFocusAreaChanged(int x, int y, int width, int height)
+{
+    LOG_INFO("%s, x :%d, y:%d, width:%d, heigh:%d", __FUNCTION__, x, y, width, height);
 }
 
 void AgoraVideoSourceEventHandler::onVideoStopped()
@@ -120,16 +118,8 @@ void AgoraVideoSourceEventHandler::onConnectionBanned()
     LOG_INFO("%s", __FUNCTION__);
 }
 
-#if defined(_WIN32)
-void AgoraVideoSourceEventHandler::onRequestChannelKey()
-{
-	LOG_INFO("%s", __FUNCTION__);
-	m_videoSource.notifyRequestNewToken();
-}
-#elif defined(__APPLE__)
 void AgoraVideoSourceEventHandler::onRequestToken()
 {
     LOG_INFO("%s", __FUNCTION__);
     m_videoSource.notifyRequestNewToken();
 }
-#endif
