@@ -39,22 +39,16 @@ public:
     virtual void onLastmileQuality(int quality) override;
     virtual void onFirstLocalVideoFrame(int width, int height, int elapsed) override;
     virtual void onVideoSizeChanged(uid_t uid, int width, int height, int rotation) override;
-#if defined(_WIN32)
-    virtual void onApiCallExecuted(const char* api, int error) override;
-#elif defined(__APPLE__)
     virtual void onApiCallExecuted(int err, const char* api, const char* result) override;
-#endif
     virtual void onLocalVideoStats(const LocalVideoStats& stats) override;
     virtual void onCameraReady() override;
+    virtual void onCameraFocusAreaChanged(int x, int y, int width, int height) override;
     virtual void onVideoStopped() override;
     virtual void onConnectionLost() override;
     virtual void onConnectionInterrupted() override;
     virtual void onConnectionBanned() override;
-#if defined(_WIN32)
-    virtual void onRequestChannelKey() override;
-#elif defined(__APPLE__)
     virtual void onRequestToken() override;
-#endif
+
 private:
     AgoraVideoSource& m_videoSource;
 };

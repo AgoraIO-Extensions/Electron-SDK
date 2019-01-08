@@ -77,6 +77,7 @@ namespace agora {
             NAPI_API(startPreview);
             NAPI_API(stopPreview);
             NAPI_API(setVideoProfile);
+            NAPI_API(setVideoEncoderConfiguration);
             NAPI_API(enableAudio);
             NAPI_API(disableAudio);
             NAPI_API(setAudioProfile);
@@ -87,11 +88,19 @@ namespace agora {
             NAPI_API(createDataStream);
             NAPI_API(sendStreamMessage);       
             NAPI_API(setEncryptionMode);
-#if 0
+
             NAPI_API(setVideoCompositingLayout);
             NAPI_API(clearVideoCompositingLayout);
             NAPI_API(configPublisher);
-#endif
+
+            NAPI_API(addPublishStreamUrl);
+            NAPI_API(removePublishStreamUrl);
+            NAPI_API(addVideoWatermark);
+            NAPI_API(clearVideoWatermarks);
+            NAPI_API(setLiveTranscoding);
+            NAPI_API(addInjectStreamUrl);
+            NAPI_API(removeInjectStreamUrl);
+            
             /*
             * Wrapper for RtcEngineParameter API
             */
@@ -114,10 +123,12 @@ namespace agora {
 
             NAPI_API(muteLocalAudioStream);
             NAPI_API(muteAllRemoteAudioStreams);
+            NAPI_API(setDefaultMuteAllRemoteAudioStreams);
             NAPI_API(muteRemoteAudioStream);
             NAPI_API(muteLocalVideoStream);
             NAPI_API(enableLocalVideo);
             NAPI_API(muteAllRemoteVideoStreams);
+            NAPI_API(setDefaultMuteAllRemoteVideoStreams);
             NAPI_API(muteRemoteVideoStream);
             NAPI_API(setRemoteVideoStreamType);
             NAPI_API(setRemoteDefaultVideoStreamType);
@@ -129,6 +140,8 @@ namespace agora {
             NAPI_API(pauseAudioMixing);
             NAPI_API(resumeAudioMixing);
             NAPI_API(adjustAudioMixingVolume);
+            NAPI_API(adjustAudioMixingPlayoutVolume);
+            NAPI_API(adjustAudioMixingPublishVolume);
             NAPI_API(getAudioMixingDuration);
             NAPI_API(getAudioMixingCurrentPosition);
             NAPI_API(setAudioMixingPosition);
@@ -145,6 +158,11 @@ namespace agora {
 			NAPI_API(resumeEffect);	
 			NAPI_API(resumeAllEffects);
             NAPI_API(setLocalVoicePitch);
+            NAPI_API(setLocalVoiceEqualization);
+            NAPI_API(setLocalVoiceReverb);
+            NAPI_API(setExternalAudioSink);
+            NAPI_API(setLocalPublishFallbackOption);
+            NAPI_API(setRemoteSubscribeFallbackOption);
             NAPI_API(setInEarMonitoringVolume);
             NAPI_API(pauseAudio);
             NAPI_API(resumeAudio);
@@ -184,11 +202,13 @@ namespace agora {
             NAPI_API(stopVideoDeviceTest);
             NAPI_API(getAudioPlaybackDevices);
             NAPI_API(setAudioPlaybackDevice);
+            NAPI_API(getPlaybackDeviceInfo);
             NAPI_API(getCurrentAudioPlaybackDevice);
             NAPI_API(setAudioPlaybackVolume);
             NAPI_API(getAudioPlaybackVolume);
             NAPI_API(getAudioRecordingDevices);
             NAPI_API(setAudioRecordingDevice);
+            NAPI_API(getRecordingDeviceInfo);
             NAPI_API(getCurrentAudioRecordingDevice);
             NAPI_API(getAudioRecordingVolume);
             NAPI_API(setAudioRecordingVolume);
@@ -424,6 +444,7 @@ typedef unsigned int uint32;
 #define CALL_MEM_FUNC_WITH_PARAM(cls, func, param) cls.##func(param)
 
 #define CALL_MEM_FUNC_WITH_PARAM2(cls, func, param1, param2) cls.##func(param1, param2)
+#define CALL_MEM_FUNC_WITH_PARAM3(cls, func, param1, param2, param3) cls.##func(param1, param2, param3)
 #define CALL_MEM_FUNC_WITH_PARAM7(cls, func, param1, param2, param3, param4, param5, param6, param7) cls.##func(param1, param2, param3, param4, param5, param6, param7)
 #else
 #define CALL_MEM_FUNC_FROM_POINTER(pointer, func) pointer->func()
@@ -502,6 +523,27 @@ typedef unsigned int uint32;
             CHECK_NAPI_STATUS(pEngine, status);\
             RtcEngineParameters rep(pEngine->m_engine);\
             int result = CALL_MEM_FUNC_WITH_PARAM2(rep, method, param, param2);\
+            napi_set_int_result(args, result); \
+        } while (false);\
+        LOG_LEAVE;\
+    }
+
+#define NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_3(method, type, type2, type3) \
+    NAPI_API_DEFINE(NodeRtcEngine, method) \
+    {\
+        LOG_ENTER;\
+        do {\
+            NodeRtcEngine *pEngine = nullptr;\
+            napi_get_native_this(args, pEngine);\
+            CHECK_NATIVE_THIS(pEngine);\
+            napi_status status = napi_ok;\
+            type param;\
+            type2 param2;\
+            type3 param3;\
+            napi_get_param_3(args, type, param, type2, param2, type3, param3);\
+            CHECK_NAPI_STATUS(pEngine, status);\
+            RtcEngineParameters rep(pEngine->m_engine);\
+            int result = CALL_MEM_FUNC_WITH_PARAM3(rep, method, param, param2, param3);\
             napi_set_int_result(args, result); \
         } while (false);\
         LOG_LEAVE;\
