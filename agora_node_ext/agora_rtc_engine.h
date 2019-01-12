@@ -452,6 +452,7 @@ typedef unsigned int uint32;
 #define CALL_MEM_FUNC_WITH_PARAM(cls, func, param) cls.func(param)
 
 #define CALL_MEM_FUNC_WITH_PARAM2(cls, func, param1, param2) cls.func(param1, param2)
+#define CALL_MEM_FUNC_WITH_PARAM3(cls, func, param1, param2, param3) cls.func(param1, param2, param3)
 #define CALL_MEM_FUNC_WITH_PARAM7(cls, func, param1, param2, param3, param4, param5, param6, param7) cls.func(param1, param2, param3, param4, param5, param6, param7)
 
 #endif

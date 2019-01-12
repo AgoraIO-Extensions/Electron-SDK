@@ -1,4 +1,4 @@
-require('./mock')
+require('./mockPeerEnv');
 const AgoraRtcEngine = require('../../js/AgoraSdk');
 
 if (process.argv.length < 4) {
