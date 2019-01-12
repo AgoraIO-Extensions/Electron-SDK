@@ -1,11 +1,9 @@
 require('./utils/mock')
 const AgoraRtcEngine = require('../js/AgoraSdk');
-const generateRandomString = require('./utils/index.js').generateRandomString;
 const generateRandomNumber = require('./utils/index.js').generateRandomNumber;
 const doJoin = require('./utils/doJoin');
 const doLeave = require('./utils/doLeave');
 const MultiStream = require('./utils/multistream');
-const path = require('path');
 
 let localRtcEngine = null;
 let multistream = null;
@@ -46,7 +44,7 @@ describe('Basic API Coverage', () => {
     expect(
       localRtcEngine.setAudioProfile(generateRandomNumber(5.9), generateRandomNumber(5.9))
     ).toBe(0);
-    expect(localRtcEngine.setAudioProfile(6, 6) < 0).toBeTruthy();
+    expect(localRtcEngine.setAudioProfile(20, 20) < 0).toBeTruthy();
   });
 
   it('Enable/Disable Video', () => {
@@ -141,8 +139,8 @@ const MultiStreamTests = () => {
     localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
     multistream = new MultiStream(localRtcEngine, 'basic-coverage');
   });
-  afterAll(() => {
-    multistream.stopRemote();
+  afterAll(done => {
+    multistream.stopRemote(done);
   });
   afterEach(() => {
     // Restore mocks after each test

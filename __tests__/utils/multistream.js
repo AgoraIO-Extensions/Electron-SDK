@@ -42,6 +42,10 @@ class MultiStream {
         }
       });
 
+      rtcEngine.on('joinchannel', () => {
+        console.log('channel joined');
+      });
+
       rtcEngine.on('userjoined', remoteUid => {
         console.log(`subscribe ${remoteUid}`);
         rtcEngine.subscribe(remoteUid);
@@ -138,13 +142,9 @@ class MultiStream {
     });
   }
 
-  stopRemote() {
-    return new Promise(resolve => {
-      exec(`bash stoppeer.sh`, () => {
-        setTimeout(() => {
-          resolve();
-        }, 2000);
-      });
+  stopRemote(done) {
+    exec(`bash stoppeer.sh`, () => {
+      done();
     });
   }
 }

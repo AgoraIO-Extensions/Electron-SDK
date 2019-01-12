@@ -4,6 +4,9 @@
     "testEnvironment": "jsdom",
     "testPathIgnorePatterns": [
       "/__tests__/utils/"
+    ],
+    "setupFiles": [
+      "<rootDir>/__tests__/utils/mock.js"
     ]
   },
   "version": "2.0.8-rc.5-alpha.3",
@@ -18,7 +21,7 @@
     "debug": "node ./scripts/debug.js",
     "doc:js": "node ./scripts/jsapi.js",
     "download": "node ./scripts/download.js",
-    "example": "npm run build:electron3 && cd example && npm install && npm run dev",
+    "example": "cd example && npm install && npm run dev",
     "lint": "eslint .",
     "format": "eslint . --fix ",
     "test": "npm run build:node && jest --detectOpenHandles --forceExit",
@@ -39,12 +42,14 @@
     "yuv-canvas": "^1.2.1"
   },
   "devDependencies": {
+    "canvas": "^2.3.0",
     "eslint": "^4.19.1",
     "eslint-config-prettier": "^2.9.0",
     "eslint-config-xo": "^0.22.2",
     "eslint-plugin-prettier": "^2.6.0",
     "jest": "^23.1.0",
     "jsdoc-to-markdown": "^4.0.1",
+    "jsdom": "^13.1.0",
     "prettier": "^1.13.4"
   },
   "peerDependencies": {},
