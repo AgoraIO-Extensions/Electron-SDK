@@ -1,7 +1,8 @@
 ﻿const EventEmitter = require('events').EventEmitter;
 const Renderer = require('./Renderer');
-const OldRenderer = require('./OldRenderer')
+const OldRenderer = require('./OldRenderer');
 const agora = require('../build/Release/agora_node_ext');
+const VideoEncoderConfiguration = require('./VideoEncoderConfiguration')
 
 /**
  * @class AgoraRtcEngine
@@ -772,6 +773,35 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @param {Object} config - encoder config of video
+   * @param {int} config.width - width of video
+   * @param {int} config.height - height of video
+   * @param {int} config.fps - valid values, 1, 7, 10, 15, 24, 30, 60
+   * @param {int} config.bitrate - 0 - standard(recommended), 1 - compatible
+   * @param {int} config.minbitrate - by default -1, changing this value is NOT recommended
+   * @param {int} config.orientation - 0 - auto adapt to capture source, 1 - Landscape(Horizontal), 2 - Portrait(Vertical)
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setVideoEncoderConfiguration(config) {
+    const {
+      width = 640,
+      height = 480,
+      fps = 15,
+      bitrate = 0,
+      orientation = 0,
+      minbitrate = -1
+    } = config;
+    return this.rtcengine.setVideoEncoderConfiguration(
+      width,
+      height,
+      fps,
+      bitrate,
+      minbitrate,
+      orientation
+    );
+  }
+
+  /**
    * @description This method enables the audio mode, which is enabled by default.
    * @returns {int} 0 for success, <0 for failure
    */
@@ -838,6 +868,15 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @description Stops receiving all remote users' audio streams by default.
+   * @param {boolean} mute mute/unmute audio
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setDefaultMuteAllRemoteAudioStreams(mute) {
+    return this.rtcengine.setDefaultMuteAllRemoteAudioStreams(mute);
+  }
+
+  /**
    * @description This method mutes/unmutes a specified user’s audio stream.
    * @param {int} uid user to mute/unmute
    * @param {boolean} mute mute/unmute audio
@@ -874,6 +913,15 @@ class AgoraRtcEngine extends EventEmitter {
    */
   muteAllRemoteVideoStreams(mute) {
     return this.rtcengine.muteAllRemoteVideoStreams(mute);
+  }
+
+  /**
+   * @description Stops receiving all remote users’ video streams.
+   * @param {boolean} mute mute/unmute audio
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setDefaultMuteAllRemoteVideoStreams(mute) {
+    return this.rtcengine.setDefaultMuteAllRemoteVideoStreams(mute);
   }
 
   /**
@@ -1018,6 +1066,82 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcengine.setLocalVideoMirrorMode(mirrortype);
   }
 
+  /**
+   * @description Changes the voice pitch of the local speaker.
+   * @param {int} pitch - The value ranges between 0.5 and 2.0.
+   * The lower the value, the lower the voice pitch.
+   * The default value is 1.0 (no change to the local voice pitch).
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setLocalVoicePitch(pitch) {
+    return this.rtcengine.setLocalVoicePitch(pitch);
+  }
+
+  /**
+   * @description Sets the local voice equalization effect.
+   * @param {int} bandFrequency - Sets the band frequency.
+   * The value ranges between 0 and 9, representing the respective 10-band center frequencies of the voice effects
+   * including 31, 62, 125, 500, 1k, 2k, 4k, 8k, and 16k Hz.
+   * @param {int} bandGain - Sets the gain of each band in dB. The value ranges between -15 and 15.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setLocalVoiceEqualization(bandFrequency, bandGain) {
+    return this.rtcengine.setLocalVoiceEqualization(bandFrequency, bandGain);
+  }
+
+  /**
+   * @description Sets the local voice reverberation.
+   * @param {int} reverbKey - Audio reverberation type.
+   * AUDIO_REVERB_DRY_LEVEL = 0, // (dB, [-20,10]), the level of the dry signal
+   * AUDIO_REVERB_WET_LEVEL = 1, // (dB, [-20,10]), the level of the early reflection signal (wet signal)
+   * AUDIO_REVERB_ROOM_SIZE = 2, // ([0,100]), the room size of the reflection
+   * AUDIO_REVERB_WET_DELAY = 3, // (ms, [0,200]), the length of the initial delay of the wet signal in ms
+   * AUDIO_REVERB_STRENGTH = 4, // ([0,100]), the strength of the reverberation
+   * @param {int} value - value Sets the value of the reverberation key.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setLocalVoiceReverb(reverbKey, value) {
+    return this.rtcengine.setLocalVoiceReverb(reverbKey, value);
+  }
+
+  /**
+   * @description Sets the fallback option for the locally published video stream based on the network conditions.
+   * The default setting for @p option is #STREAM_FALLBACK_OPTION_DISABLED, where there is no fallback for the locally published video stream when the uplink network conditions are poor.
+   * If *option* is set to #STREAM_FALLBACK_OPTION_AUDIO_ONLY, the SDK will:
+   * - Disable the upstream video but enable audio only when the network conditions worsen and cannot support both video and audio.
+   * - Re-enable the video when the network conditions improve.
+   * When the locally published stream falls back to audio only or when the audio stream switches back to the video,
+   * the \ref agora::rtc::IRtcEngineEventHandler::onLocalPublishFallbackToAudioOnly "onLocalPublishFallbackToAudioOnly" callback is triggered.
+   * @note Agora does not recommend using this method for CDN live streaming, because the remote CDN live user will have a noticeable lag when the locally publish stream falls back to audio-only.
+   * @param {int} option - Sets the fallback option for the locally published video stream.
+   * STREAM_FALLBACK_OPTION_DISABLED = 0
+   * STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW = 1
+   * STREAM_FALLBACK_OPTION_AUDIO_ONLY = 2
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setLocalPublishFallbackOption(option) {
+    return this.rtcengine.setLocalPublishFallbackOption(option);
+  }
+
+  /**
+   * @description Sets the fallback option for the remotely subscribed stream based on the network conditions.
+   * The default setting for @p option is #STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW, where the remotely subscribed stream falls back to
+   * the low-stream video (low resolution and low bitrate) under poor downlink network conditions.
+   * If *option* is set to #STREAM_FALLBACK_OPTION_AUDIO_ONLY, the SDK automatically switches the video from a high-stream to a low-stream,
+   * or disable the video when the downlink network conditions cannot support both audio and video to guarantee the quality of the audio.
+   * The SDK monitors the network quality and restores the video stream when the network conditions improve.
+   * Once the locally published stream falls back to audio only or the audio stream switches back to the video stream,
+   * the \ref agora::rtc::IRtcEngineEventHandler::onRemoteSubscribeFallbackToAudioOnly "onRemoteSubscribeFallbackToAudioOnly" callback is triggered.
+   * @param {int} option - Sets the fallback option for the remotely subscribed stream.
+   * STREAM_FALLBACK_OPTION_DISABLED = 0
+   * STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW = 1
+   * STREAM_FALLBACK_OPTION_AUDIO_ONLY = 2
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setRemoteSubscribeFallbackOption(option) {
+    return this.rtcengine.setRemoteSubscribeFallbackOption(option);
+  }
+
   // ===========================================================================
   // DEVICE MANAGEMENT
   // ===========================================================================
@@ -1093,6 +1217,16 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @description Retrieves the audio playback device information associated with the device ID and device name
+   * @param {string} deviceId device id
+   * @param {string} deviceName device name
+   * @returns {int} 0 for success, <0 for failure
+   */
+  getPlaybackDeviceInfo(deviceId, deviceName) {
+    return this.rtcengine.getPlaybackDeviceInfo(deviceId, deviceName);
+  }
+
+  /**
    * @description get current using audio playback device
    * @return {object} audio playback device object
    */
@@ -1132,6 +1266,16 @@ class AgoraRtcEngine extends EventEmitter {
    */
   setAudioRecordingDevice(deviceid) {
     return this.rtcengine.setAudioRecordingDevice(deviceid);
+  }
+
+  /**
+   * @description Retrieves the audio recording device information associated with the device ID and device name.
+   * @param {string} deviceId device id
+   * @param {string} deviceName device name
+   * @returns {int} 0 for success, <0 for failure
+   */
+  getRecordingDeviceInfo(deviceId, deviceName) {
+    return this.rtcengine.getRecordingDeviceInfo(deviceId, deviceName);
   }
 
   /**
@@ -1479,6 +1623,24 @@ class AgoraRtcEngine extends EventEmitter {
    */
   adjustAudioMixingVolume(volume) {
     return this.rtcengine.adjustAudioMixingVolume(volume);
+  }
+
+  /**
+   * @description Adjusts the audio mixing volume for local playback.
+   * @param {int} volume Volume ranging from 0 to 100. By default, 100 is the original volume.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  adjustAudioMixingPlayoutVolume(volume) {
+    return this.rtcengine.adjustAudioMixingPlayoutVolume(volume);
+  }
+
+  /**
+   * @description Adjusts the audio mixing volume for publishing (for remote users).
+   * @param {int} volume Volume ranging from 0 to 100. By default, 100 is the original volume.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  adjustAudioMixingPublishVolume(volume) {
+    return this.rtcengine.adjustAudioMixingPublishVolume(volume);
   }
 
   /**
