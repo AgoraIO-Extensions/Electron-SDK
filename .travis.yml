@@ -5,4 +5,3 @@ os:
 - osx
 script:
 - npm install
-- npm run test
