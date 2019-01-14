@@ -1,6 +1,5 @@
 ﻿import EventEmitter from 'events';
-import Renderer from './Renderer';
-import OldRenderer from './OldRenderer';
+import { SoftwareRenderer, GlRenderer, IRenderer } from './Renderer';
 import {
   NodeRtcEngine,
   IAgoraRtcEngine,
@@ -19,7 +18,7 @@ const agora = require('../build/Release/agora_node_ext');
  */
 export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEngine {
   rtcEngine: NodeRtcEngine;
-  streams: Map<string, Renderer>;
+  streams: Map<string, IRenderer>;
   renderMode: 1 | 2;
   constructor() {
     super();
@@ -352,7 +351,7 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
    * @param {number} type 0-local 1-remote 2-device_test 3-video_source
    * @param {number} uid uid get from native engine, differ from electron engine's uid
    */
-  _getRenderer(type: number, uid: number): Renderer | false {
+  _getRenderer(type: number, uid: number): IRenderer | false {
     if (type < 2) {
       if (uid === 0) {
         return this.streams.get('local');
@@ -421,22 +420,19 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
    * @param {number} infos
    */
   onRegisterDeliverFrame(infos) {
-    let len = infos.length;
+    const len = infos.length;
     for (let i = 0; i < len; i++) {
-      let info = infos[i];
-      let type = info.type;
-      let uid = info.uid;
-      let header = info.header;
-      let ydata = info.ydata;
-      let udata = info.udata;
-      let vdata = info.vdata;
+      const info = infos[i];
+      const {
+        type, uid, header, ydata, udata, vdata
+      } = info.type;
       if (!header || !ydata || !udata || !vdata) {
         console.log(
           'Invalid data param ： ' + header + ' ' + ydata + ' ' + udata + ' ' + vdata
         );
         continue;
       }
-      let renderer = this._getRenderer(type, uid);
+      const renderer = this._getRenderer(type, uid);
       if (!renderer) {
         console.warn("Can't find renderer for uid : " + uid);
         continue;
@@ -464,12 +460,12 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
     }
     let renderer;
     if (this.renderMode === 1) {
-      renderer = new OldRenderer();
+      renderer = new GlRenderer();
     } else if (this.renderMode === 2) {
-      renderer = new Renderer();
+      renderer = new SoftwareRenderer();
     } else {
       console.warn('Unknown render mode, fallback to 1');
-      renderer = new OldRenderer();
+      renderer = new GlRenderer();
     }
     renderer.bind(view);
     this.streams.set(String(key), renderer);
@@ -481,7 +477,7 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
    * @param {function} onFailure err callback for destroyRenderer
    */
   destroyRender(key: 'local' | 'videosource' | number, onFailure?: (err: Error) => void) {
-    let renderer = this.streams[String(key)];
+    const renderer = this.streams[String(key)];
     try {
       renderer.unbind();
       this.streams.delete(String(key));
