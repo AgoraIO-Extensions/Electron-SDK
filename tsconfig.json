@@ -1,15 +1,15 @@
 {
   "compilerOptions": {
-      "outDir": "./dist",
-      "allowJs": true,
-      "baseUrl": ".",
-      "target": "es6",
-      "module": "commonjs",
-      "esModuleInterop": true,
-      "moduleResolution": "node",
-      "types": ["node"]
+    "outDir": "./js",
+    "allowJs": true,
+    "baseUrl": ".",
+    "target": "es6",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "types": ["node"]
   },
   "include": [
-      "./js/**/*"
+    "./ts/**/*"
   ]
 }
