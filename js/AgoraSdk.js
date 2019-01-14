@@ -2,7 +2,6 @@
 const Renderer = require('./Renderer');
 const OldRenderer = require('./OldRenderer');
 const agora = require('../build/Release/agora_node_ext');
-const VideoEncoderConfiguration = require('./VideoEncoderConfiguration')
 
 /**
  * @class AgoraRtcEngine
