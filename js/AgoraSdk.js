@@ -1672,6 +1672,141 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   // ===========================================================================
+  // CDN STREAMING
+  // ===========================================================================
+  /**
+   * @description Adds a stream RTMP URL address, to which the host publishes the stream. (CDN live only.)
+   * Invoke onStreamPublished when successful
+   * @note
+   * - Ensure that the user joins the channel before calling this method.
+   * - This method adds only one stream RTMP URL address each time it is called.
+   * - The RTMP URL address must not contain special characters, such as Chinese language characters.
+   * @param {string} url Pointer to the RTMP URL address, to which the host publishes the stream
+   * @param {bool} transcodingEnabled Sets whether transcoding is enabled/disabled
+   * @returns {int} 0 for success, <0 for failure
+   */
+  addPublishStreamUrl(url, transcodingEnabled) {
+    return this.rtcengine.addPublishStreamUrl(url, transcodingEnabled);
+  }
+
+  /**
+   * @description Removes a stream RTMP URL address. (CDN live only.)
+   * @note
+   * - This method removes only one RTMP URL address each time it is called.
+   * - The RTMP URL address must not contain special characters, such as Chinese language characters.
+   * @param {string} url Pointer to the RTMP URL address to be removed.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  removePublishStreamUrl(url) {
+    return this.rtcengine.removePublishStreamUrl(url);
+  }
+
+  /**
+   * @description Sets the video layout and audio settings for CDN live. (CDN live only.)
+   * @param {Object} transcoding transcoding Sets the CDN live audio/video transcoding settings. See LiveTranscoding.
+   * @param {int} transcoding.width - width of canvas
+   * @param {int} transcoding.height - height of canvas
+   * @param {int} transcoding.videoBitrate - kbps value, for 1-1 mapping pls look at https://docs.agora.io/cn/Interactive%20Broadcast/API%20Reference/cpp/structagora_1_1rtc_1_1_video_encoder_configuration.html
+   * @param {int} transcoidng.videoFrameRate - fps, default 15
+   * @param {bool} trasncoding.lowLatency - true - low latency, no video quality garanteed; false - high latency, video quality garanteed
+   * @param {int} trasncoding.videoGop - Video GOP in frames, default 30
+   * @param {int} trasncoding.videoCodecProfile
+   * - VIDEO_CODEC_PROFILE_BASELINE = 66
+   * Baseline video codec profile. Generally used in video calls on mobile phones
+   * - VIDEO_CODEC_PROFILE_MAIN = 77
+   * Main video codec profile. Generally used in mainstream electronics such as MP4 players, portable video players, PSP, and iPads.
+   * - VIDEO_CODEC_PROFILE_HIGH = 100
+   * (Default) High video codec profile. Generally used in high-resolution broadcasts or television
+   * @param {int} transcoding.backgroundColor - RGB hex value. Value only, do not include a #. For example, C0C0C0.
+   *  int color = (A & 0xff) << 24 | (R & 0xff) << 16 | (G & 0xff) << 8 | (B & 0xff)
+   * @param {int} transcoding.userCount - The number of users in the live broadcast.
+   * @param {int} transcoding.audioSampleRate
+   * - AUDIO_SAMPLE_RATE_32000 = 32000
+   * - AUDIO_SAMPLE_RATE_44100 = 44100
+   * - AUDIO_SAMPLE_RATE_48000 = 48000
+   * @param {int} transcoding.audioChannels
+   * 1: (Default) Mono
+   * 2: Two-channel stereo
+   * 3: Three-channel stereo
+   * 4: Four-channel stereo
+   * 5: Five-channel stereo
+   * A special player is required if you choose option 3, 4, or 5
+   * @param {Object} transcoding.watermark - watermark image
+   * @param {string} transcoding.watermark.url - url of the image
+   * @param {int} transcoding.watermark.x - x start position of image
+   * @param {int} transcoding.watermark.y - y start position of image
+   * @param {int} transcoding.watermark.width - width of image
+   * @param {int} transcoding.watermark.height - height of image
+   * @param {Object[]} transcoding.transcodingUsers - transcodingusers array
+   * @param {int} transcoding.transcodingusers[].uid - stream uid
+   * @param {int} transcoding.transcodingusers[].x - x start positon of stream
+   * @param {int} transcoding.transcodingusers[].y - x start positon of stream
+   * @param {int} transcoding.transcodingusers[].width - x start positon of stream
+   * @param {int} transcoding.transcodingusers[].height - x start positon of stream
+   * @param {int} transcoding.transcodingusers[].zOrder - zorder of the stream, [1,100]
+   * @param {double} transcoding.transcodingusers[].alpha - transparency alpha of the stream, [0,1]
+   * @param {double} transcoding.transcodingusers[].audioChannel - transparency alpha of the stream, [0,1]
+   * - 0: (Default) Supports dual channels at most, depending on the upstream of the broadcaster.
+   * - 1: The audio stream of the broadcaster uses the FL audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
+   * - 2: The audio stream of the broadcaster uses the FC audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
+   * - 3: The audio stream of the broadcaster uses the FR audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
+   * - 4: The audio stream of the broadcaster uses the BL audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
+   * - 5: The audio stream of the broadcaster uses the BR audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  setLiveTranscoding(transcoding) {
+    return this.rtcengine.setLiveTranscoding(transcoding);
+  }
+
+  // ===========================================================================
+  // STREAM INJECTION
+  // ===========================================================================
+  /**
+   * @description Adds a voice or video stream HTTP/HTTPS URL address to a live broadcast.
+   * - The \ref IRtcEngineEventHandler::onStreamInjectedStatus "onStreamInjectedStatus" callback returns
+   * the inject stream status.
+   * - The added stream HTTP/HTTPS URL address can be found in the channel with a @p uid of 666, and the
+   * \ref IRtcEngineEventHandler::onUserJoined "onUserJoined" and \ref IRtcEngineEventHandler::onFirstRemoteVideoFrame "onFirstRemoteVideoFrame"
+   * callbacks are triggered.
+   * @param {string} url Pointer to the HTTP/HTTPS URL address to be added to the ongoing live broadcast. Valid protocols are RTMP, HLS, and FLV.
+   * - Supported FLV audio codec type: AAC.
+   * - Supported FLV video codec type: H264 (AVC).
+   * @param {Object} config Pointer to the InjectStreamConfig object that contains the configuration of the added voice or video stream
+   * @param {int} config.width Width of the added stream in the live broadcast. The default value is 0 (same width as the original stream)
+   * @param {int} config.height Height of the added stream in the live broadcast. The default value is 0 (same height as the original stream)
+   * @param {int} config.videoGop Video GOP of the added stream in the live broadcast in frames. The default value is 30 fps
+   * @param {int} config.videoFrameRate Video frame rate of the added stream in the live broadcast. The default value is 15 fps
+   * @param {int} config.videoBitrate Video bitrate of the added stream in the live broadcast. The default value is 400 Kbps.
+   * @note The setting of the video bitrate is closely linked to the resolution. If the video bitrate you set is beyond a reasonable range, the SDK will set it within a reasonable range
+   * @param {int} config.audioSampleRate Audio-sampling rate of the added stream in the live broadcast: #AUDIO_SAMPLE_RATE_TYPE. The default value is 48000 Hz
+   * - AUDIO_SAMPLE_RATE_32000 = 32000
+   * - AUDIO_SAMPLE_RATE_44100 = 44100
+   * - AUDIO_SAMPLE_RATE_48000 = 48000
+   * @note Agora recommends setting the default value
+   * @param {int} config.audioBitrate Audio bitrate of the added stream in the live broadcast. The default value is 48
+   * @note Agora recommends setting the default value
+   * @param {int} config.audioChannels Audio channels in the live broadcast.
+   * - 1: (Default) Mono
+   * - 2: Two-channel stereo
+   * @note Agora recommends setting the default value.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  addInjectStreamUrl(url, config) {
+    return this.rtcengine.addInjectStreamUrl(url, config);
+  }
+
+  /**
+   * @description Removes the voice or video stream HTTP/HTTPS URL address from a live broadcast.
+   * @note If this method is called successfully, the \ref IRtcEngineEventHandler::onUserOffline "onUserOffline" callback is triggered
+   * and a stream uid of 666 is returned.
+   * @param {string} url Pointer to the HTTP/HTTPS URL address of the added stream to be removed.
+   * @returns {int} 0 for success, <0 for failure
+   */
+  removeInjectStreamUrl(url) {
+    return this.rtcengine.removeInjectStreamUrl(url);
+  }
+
+  // ===========================================================================
   // RAW DATA
   // ===========================================================================
   /**

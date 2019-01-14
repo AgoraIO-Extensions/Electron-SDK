@@ -154,48 +154,6 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(getAudioRecordingDeviceMute)
                 PROPERTY_METHOD_DEFINE(setAudioRecordingDeviceMute)
                 PROPERTY_METHOD_DEFINE(setEncryptionMode)
-#if 0
-                PROPERTY_METHOD_DEFINE(setVideoCompositingLayout)
-                PROPERTY_METHOD_DEFINE(clearVideoCompositingLayout)
-                PROPERTY_METHOD_DEFINE(NAPI_API_DEFINE(NodeRtcEngine, addPublishStreamUrl)
-                {
-                 LOG_ENTER;
-                 do {
-                  NodeRtcEngine *pEngine = nullptr;
-                  napi_get_native_this(args, pEngine);
-                  CHECK_NATIVE_THIS(pEngine);
-                  nodestring url;
-                  bool transcodingEnabled;
-                  napi_status status = napi_get_value_nodestring_(args[0], url);
-                  CHECK_NAPI_STATUS(status);
-                  status = napi_get_value_bool_(args[1], transcodingEnabled);
-                  CHECK_NAPI_STATUS(status);
-
-                  int result = pEngine->m_engine->addPublishStreamUrl(url, transcodingEnabled);
-                  napi_set_int_result(args, result);
-                 } while (false);
-                 LOG_LEAVE;
-                }
-
-                NAPI_API_DEFINE(NodeRtcEngine, removePublishStreamUrl)
-                {
-                 LOG_ENTER;
-                 do {
-                  NodeRtcEngine *pEngine = nullptr;
-                  napi_get_native_this(args, pEngine);
-                  CHECK_NATIVE_THIS(pEngine);
-                  nodestring url;
-                  napi_status status = napi_get_value_nodestring_(args[0], url);
-                  CHECK_NAPI_STATUS(status);
-                  int result = pEngine->m_engine->removePublishStreamUrl(url);
-                  napi_set_int_result(args, result);
-                 } while (false);
-                 LOG_LEAVE;
-                }
-                NAPI_API(setLiveTranscoding);
-                NAPI_API(addInjectStreamUrl);
-                NAPI_API(removeInjectStreamUrl);)
-#endif
                 PROPERTY_METHOD_DEFINE(addPublishStreamUrl)
                 PROPERTY_METHOD_DEFINE(removePublishStreamUrl)
                 PROPERTY_METHOD_DEFINE(addVideoWatermark)
@@ -619,20 +577,20 @@ namespace agora {
                 nodestring transcodingExtraInfo;
                 napi_get_object_property_int32_(args.GetIsolate(), obj, "width", transcoding.width);
                 napi_get_object_property_int32_(args.GetIsolate(), obj, "height", transcoding.height);
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "videobitrate", transcoding.videoBitrate);
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "videoframerate", transcoding.videoFramerate);
-                napi_get_object_property_bool_(args.GetIsolate(), obj, "lowlatency", transcoding.lowLatency);
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "videogop", transcoding.videoGop);
-                if (napi_get_object_property_int32_(args.GetIsolate(), obj, "videocodecprofile", videoCodecProfile) == napi_ok) {
+                napi_get_object_property_int32_(args.GetIsolate(), obj, "videoBitrate", transcoding.videoBitrate);
+                napi_get_object_property_int32_(args.GetIsolate(), obj, "videoFramerate", transcoding.videoFramerate);
+                napi_get_object_property_bool_(args.GetIsolate(), obj, "lowLatency", transcoding.lowLatency);
+                napi_get_object_property_int32_(args.GetIsolate(), obj, "videoGop", transcoding.videoGop);
+                if (napi_get_object_property_int32_(args.GetIsolate(), obj, "videoCodecProfile", videoCodecProfile) == napi_ok) {
                     transcoding.videoCodecProfile = (VIDEO_CODEC_PROFILE_TYPE)videoCodecProfile;
                 }
-                napi_get_object_property_uint32_(args.GetIsolate(), obj, "backgroundcolor", transcoding.backgroundColor);
-                napi_get_object_property_uint32_(args.GetIsolate(), obj, "usercount", transcoding.userCount);
-                if (napi_get_object_property_int32_(args.GetIsolate(), obj, "audiosamplerate", audioSampleRateType) == napi_ok) {
+                napi_get_object_property_uint32_(args.GetIsolate(), obj, "backgroundColor", transcoding.backgroundColor);
+                napi_get_object_property_uint32_(args.GetIsolate(), obj, "userCount", transcoding.userCount);
+                if (napi_get_object_property_int32_(args.GetIsolate(), obj, "audioSampleRateType", audioSampleRateType) == napi_ok) {
                     transcoding.audioSampleRate = (AUDIO_SAMPLE_RATE_TYPE)audioSampleRateType;
                 }
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "audiobitrate", transcoding.audioBitrate);
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "audiochannels", transcoding.audioChannels);
+                napi_get_object_property_int32_(args.GetIsolate(), obj, "audioBitrate", transcoding.audioBitrate);
+                napi_get_object_property_int32_(args.GetIsolate(), obj, "audioChannels", transcoding.audioChannels);
 
                 if (napi_get_object_property_nodestring_(args.GetIsolate(), obj, "transcodingExtraInfo", transcodingExtraInfo) == napi_ok) {
                     transcoding.transcodingExtraInfo = transcodingExtraInfo;
@@ -659,7 +617,7 @@ namespace agora {
                 transcoding.watermark = wm;
                 if (transcoding.userCount > 0) {
                     users = new TranscodingUser[transcoding.userCount];
-                    Local<Name> keyName = String::NewFromUtf8(args.GetIsolate(), "transcodingusers", NewStringType::kInternalized).ToLocalChecked();
+                    Local<Name> keyName = String::NewFromUtf8(args.GetIsolate(), "transcodingUsers", NewStringType::kInternalized).ToLocalChecked();
                     Local<Value> objUsers = obj->Get(args.GetIsolate()->GetCurrentContext(), keyName).ToLocalChecked();
                     if (objUsers.IsEmpty() || !objUsers->IsArray()) {
                         status = napi_invalid_arg;
@@ -681,9 +639,9 @@ namespace agora {
                         napi_get_object_property_int32_(args.GetIsolate(), userObj, "y", users[i].y);
                         napi_get_object_property_int32_(args.GetIsolate(), userObj, "width", users[i].width);
                         napi_get_object_property_int32_(args.GetIsolate(), userObj, "height", users[i].height);
-                        napi_get_object_property_int32_(args.GetIsolate(), userObj, "zorder", users[i].zOrder);
+                        napi_get_object_property_int32_(args.GetIsolate(), userObj, "zOrder", users[i].zOrder);
                         napi_get_object_property_double_(args.GetIsolate(), userObj, "alpha", users[i].alpha);
-                        napi_get_object_property_int32_(args.GetIsolate(), userObj, "audiochannel", users[i].audioChannel);
+                        napi_get_object_property_int32_(args.GetIsolate(), userObj, "audioChannel", users[i].audioChannel);
                     }
                     transcoding.transcodingUsers = users;
                 }
@@ -713,13 +671,13 @@ namespace agora {
                 napi_get_object_property_int32_(args.GetIsolate(), configObj, "width", config.width);
                 napi_get_object_property_int32_(args.GetIsolate(), configObj, "height", config.height);
                 napi_get_object_property_int32_(args.GetIsolate(), configObj, "videoGop", config.videoGop);
-                napi_get_object_property_int32_(args.GetIsolate(), configObj, "videoframerate", config.videoFramerate);
-                napi_get_object_property_int32_(args.GetIsolate(), configObj, "videobitrate", config.videoBitrate);
-                if (napi_get_object_property_int32_(args.GetIsolate(), configObj, "audiosamplerate", audioSampleRate) == napi_ok) {
+                napi_get_object_property_int32_(args.GetIsolate(), configObj, "videoFramerate", config.videoFramerate);
+                napi_get_object_property_int32_(args.GetIsolate(), configObj, "videoBitrate", config.videoBitrate);
+                if (napi_get_object_property_int32_(args.GetIsolate(), configObj, "audioSampleRate", audioSampleRate) == napi_ok) {
                     config.audioSampleRate = (AUDIO_SAMPLE_RATE_TYPE)audioSampleRate;
                 }
-                napi_get_object_property_int32_(args.GetIsolate(), configObj, "audiobitrate", config.audioBitrate);
-                napi_get_object_property_int32_(args.GetIsolate(), configObj, "audiochannels", config.audioChannels);
+                napi_get_object_property_int32_(args.GetIsolate(), configObj, "audioBitrate", config.audioBitrate);
+                napi_get_object_property_int32_(args.GetIsolate(), configObj, "audioChannels", config.audioChannels);
                 pEngine->m_engine->addInjectStreamUrl(url, config);
             } while (false);
             napi_set_int_result(args, status);
