@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "2.0.8-rc.5-alpha.3",
+  "version": "2.0.8-rc.5",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "author": "agora.io",
@@ -10,6 +10,7 @@
     "build:node": "node ./scripts/build.js --runtime=node",
     "build:electron2": "node ./scripts/build.js --runtime=electron --electronDep=1.8.3",
     "build:electron3": "node ./scripts/build.js --runtime=electron --electronDep=3.0.6",
+    "build:electron4": "node ./scripts/build.js --runtime=electron --electronDep=4.0.0",
     "debug": "node ./scripts/debug.js",
     "doc:js": "node ./scripts/jsapi.js",
     "download": "node ./scripts/download.js",
