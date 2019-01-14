@@ -1,20 +1,12 @@
 {
   "name": "agora-electron-sdk",
-  "jest": {
-    "testEnvironment": "jsdom",
-    "testPathIgnorePatterns": [
-      "/__tests__/utils/"
-    ],
-    "setupFiles": [
-      "<rootDir>/__tests__/utils/mock.js"
-    ]
-  },
   "version": "2.0.8-rc.5-alpha.3",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "author": "agora.io",
   "scripts": {
     "install": "npm run download",
+    "build:ts": "tsc",
     "build:node": "node ./scripts/build.js --runtime=node",
     "build:electron2": "node ./scripts/build.js --runtime=electron --electronDep=1.8.3",
     "build:electron3": "node ./scripts/build.js --runtime=electron --electronDep=3.0.6",
@@ -23,7 +15,7 @@
     "download": "node ./scripts/download.js",
     "example": "cd example && npm install && npm run dev",
     "lint": "eslint .",
-    "format": "eslint . --fix ",
+    "tslint": "tslint -c tslint.json -p tsconfig.json",
     "test": "npm run build:node && jest --detectOpenHandles --forceExit",
     "quicktest": "jest --detectOpenHandles --forceExit"
   },
@@ -42,6 +34,7 @@
     "yuv-canvas": "^1.2.1"
   },
   "devDependencies": {
+    "@types/node": "^10.12.18",
     "canvas": "^2.3.0",
     "eslint": "^4.19.1",
     "eslint-config-prettier": "^2.9.0",
@@ -50,7 +43,11 @@
     "jest": "^23.1.0",
     "jsdoc-to-markdown": "^4.0.1",
     "jsdom": "^13.1.0",
-    "prettier": "^1.13.4"
+    "prettier": "^1.13.4",
+    "ts-jest": "^23.10.5",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.12.1",
+    "typescript": "^3.2.2"
   },
   "peerDependencies": {},
   "directories": {

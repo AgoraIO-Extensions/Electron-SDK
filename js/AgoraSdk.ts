@@ -1,27 +1,36 @@
-﻿const EventEmitter = require('events').EventEmitter;
-const Renderer = require('./Renderer');
-const OldRenderer = require('./OldRenderer');
+﻿import EventEmitter from 'events';
+import Renderer from './Renderer';
+import OldRenderer from './OldRenderer';
+import {
+  RtcStats,
+  LocalVideoStats,
+  RemoteVideoStats,
+  NodeRtcEngine,
+  AgoraNetworkQuality,
+} from './types/AgoraSdk';
 const agora = require('../build/Release/agora_node_ext');
-const VideoEncoderConfiguration = require('./VideoEncoderConfiguration')
 
 /**
  * @class AgoraRtcEngine
  */
-class AgoraRtcEngine extends EventEmitter {
+export default class AgoraRtcEngine extends EventEmitter {
+  rtcEngine: NodeRtcEngine;
+  streams: Map<number, Renderer>;
+  renderMode: 1 | 2;
   constructor() {
     super();
-    this.rtcengine = new agora.NodeRtcEngine();
+    this.rtcEngine = new agora.NodeRtcEngine();
     this.initEventHandler();
-    this.streams = {};
+    this.streams = new Map();
     this.renderMode = this._checkWebGL() ? 1 : 2;
   }
 
   /**
-   * Decide whether to use webgl or software rending 
-   * @param {number} mode - 1 for old webgl rendering, 2 for software rendering
+   * Decide whether to use webgl or software rending
+   * @param {1|2} mode - 1 for old webgl rendering, 2 for software rendering
    */
-  setRenderMode (mode = 1) {
-    this.renderMode = mode
+  setRenderMode (mode: 1|2 = 1): void {
+    this.renderMode = mode;
   }
 
   /**
@@ -29,12 +38,14 @@ class AgoraRtcEngine extends EventEmitter {
    * check if WebGL will be available with appropriate features
    * @returns {boolean}
    */
-  _checkWebGL() {
-    var canvas = document.createElement('canvas'),
-      gl;
+  _checkWebGL(): boolean {
+    let canvas = document.createElement('canvas');
+    let gl;
+
     canvas.width = 1;
     canvas.height = 1;
-    var options = {
+
+    let options = {
       // Turn off things we don't need
       alpha: false,
       depth: false,
@@ -44,8 +55,9 @@ class AgoraRtcEngine extends EventEmitter {
 
       // Still dithering on whether to use this.
       // Recommend avoiding it, as it's overly conservative
-      //failIfMajorPerformanceCaveat: true
+      // failIfMajorPerformanceCaveat: true
     };
+
     try {
       gl = canvas.getContext('webgl', options) || canvas.getContext('experimental-webgl', options);
     } catch (e) {
@@ -62,57 +74,48 @@ class AgoraRtcEngine extends EventEmitter {
    * init event handler
    * @private
    */
-  initEventHandler() {
+  initEventHandler(): void {
     let self = this;
 
-    let fire = (...args) => {
+    let fire = (event, ...args) => {
       setImmediate(() => {
-        this.emit(...args)
-      })
-    }
+        this.emit(event, ...args);
+      });
+    };
 
-    // this.emit = ((old) => {
-    //   let extendEmit = (...args) => {
-    //     setImmediate(() => {
-    //       old(...args)
-    //     })
-    //   }
-    //   return extendEmit;
-    // })(this.emit);
-
-    this.rtcengine.onEvent('apierror', funcName => {
-      console.error(`api ${funcName} failed. this is an error 
-              thrown by c++ addon layer. it often means sth is 
-              going wrong with this function call and it refused 
-              to do what is asked. kindly check your parameter types 
+    this.rtcEngine.onEvent('apierror', (funcName: string) => {
+      console.error(`api ${funcName} failed. this is an error
+              thrown by c++ addon layer. it often means sth is
+              going wrong with this function call and it refused
+              to do what is asked. kindly check your parameter types
               to see if it matches properly.`);
     });
 
-    this.rtcengine.onEvent('joinchannel', function(channel, uid, elapsed) {
+    this.rtcEngine.onEvent('joinchannel', function(channel: string, uid: number, elapsed: number) {
       fire('joinedchannel', channel, uid, elapsed);
     });
 
-    this.rtcengine.onEvent('rejoinchannel', function(channel, uid, elapsed) {
+    this.rtcEngine.onEvent('rejoinchannel', function(channel: string, uid: number, elapsed: number) {
       fire('rejoinedchannel', channel, uid, elapsed);
     });
 
-    this.rtcengine.onEvent('warning', function(warn, msg) {
+    this.rtcEngine.onEvent('warning', function(warn: number, msg: string) {
       fire('warning', warn, msg);
     });
 
-    this.rtcengine.onEvent('error', function(err, msg) {
+    this.rtcEngine.onEvent('error', function(err: number, msg: string) {
       fire('error', err, msg);
     });
 
-    this.rtcengine.onEvent('audioquality', function(uid, quality, delay, lost) {
+    this.rtcEngine.onEvent('audioquality', function(uid: number, quality: AgoraNetworkQuality, delay: number, lost: number) {
       fire('audioquality', uid, quality, delay, lost);
     });
 
-    this.rtcengine.onEvent('audiovolumeindication', function(
-      uid,
-      volume,
-      speakerNumber,
-      totalVolume
+    this.rtcEngine.onEvent('audiovolumeindication', function(
+      uid: number,
+      volume: number,
+      speakerNumber: number,
+      totalVolume: number
     ) {
       fire(
         'audiovolumeindication',
@@ -123,218 +126,200 @@ class AgoraRtcEngine extends EventEmitter {
       );
     });
 
-    this.rtcengine.onEvent('leavechannel', function() {
+    this.rtcEngine.onEvent('leavechannel', function() {
       fire('leavechannel');
     });
 
-    /**
-     * Stats Properties:
-     *      unsigned int duration;
-     *        unsigned int txBytes;
-     *       unsigned int rxBytes;
-     *        unsigned short txKBitRate;
-     *        unsigned short rxKBitRate;
-     *        unsigned short rxAudioKBitRate;
-     *        unsigned short txAudioKBitRate;
-     *        unsigned short rxVideoKBitRate;
-     *        unsigned short txVideoKBitRate;
-     *       unsigned int userCount;
-     *        double cpuAppUsage;
-     *        double cpuTotalUsage;
-     */
-    this.rtcengine.onEvent('rtcstats', function(stats) {
+    this.rtcEngine.onEvent('rtcstats', function(stats: RtcStats) {
       fire('rtcstats', stats);
     });
 
-    /**
-     *
-     *        Int sentBitrate;
-     *        int sentFrameRate;
-     */
-    this.rtcengine.onEvent('localvideostats', function(stats) {
+    this.rtcEngine.onEvent('localvideostats', function(stats: LocalVideoStats) {
       fire('localvideostats', stats);
     });
 
-    /**
-     *
-     *        Uid_t uid;
-     *        int delay;  // obsolete
-     *        int width;
-     *        int height;
-     *        int receivedBitrate;
-     *        int receivedFrameRate;
-     *         REMOTE_VIDEO_STREAM_TYPE rxStreamType;
-     *
-     */
-    this.rtcengine.onEvent('remotevideostats', function(stats) {
+    this.rtcEngine.onEvent('remotevideostats', function(stats: RemoteVideoStats) {
       fire('remotevideostats', stats);
     });
 
-    this.rtcengine.onEvent('audiodevicestatechanged', function(
-      deviceId,
-      deviceType,
-      deviceState
+    this.rtcEngine.onEvent('audiodevicestatechanged', function(
+      deviceId: string,
+      deviceType: number,
+      deviceState: number,
     ) {
       fire('audiodevicestatechanged', deviceId, deviceType, deviceState);
     });
 
-    this.rtcengine.onEvent('audiomixingfinished', function() {
+    this.rtcEngine.onEvent('audiomixingfinished', function() {
       fire('audiomixingfinished');
     });
 
-    this.rtcengine.onEvent('apicallexecuted', function(api, err) {
+    this.rtcEngine.onEvent('apicallexecuted', function(api: string, err: number) {
       fire('apicallexecuted', api, err);
     });
 
-    this.rtcengine.onEvent('remoteaudiomixingbegin', function() {
+    this.rtcEngine.onEvent('remoteaudiomixingbegin', function() {
       fire('remoteaudiomixingbegin');
     });
 
-    this.rtcengine.onEvent('remoteaudiomixingend', function() {
+    this.rtcEngine.onEvent('remoteaudiomixingend', function() {
       fire('remoteaudiomixingend');
     });
 
-    this.rtcengine.onEvent('audioeffectfinished', function(soundId) {
+    this.rtcEngine.onEvent('audioeffectfinished', function(soundId: number) {
       fire('audioeffectfinished', soundId);
     });
 
-    this.rtcengine.onEvent('videodevicestatechanged', function(
-      deviceId,
-      deviceType,
-      deviceState
+    this.rtcEngine.onEvent('videodevicestatechanged', function(
+      deviceId: string,
+      deviceType: number,
+      deviceState: number,
     ) {
       fire('videodevicestatechanged', deviceId, deviceType, deviceState);
     });
 
-    this.rtcengine.onEvent('networkquality', function(uid, txquality, rxquality) {
+    this.rtcEngine.onEvent('networkquality', function(
+      uid: number,
+      txquality: AgoraNetworkQuality,
+      rxquality: AgoraNetworkQuality
+    ) {
       fire('networkquality', uid, txquality, rxquality);
     });
 
-    this.rtcengine.onEvent('lastmilequality', function(quality) {
+    this.rtcEngine.onEvent('lastmilequality', function(quality: AgoraNetworkQuality) {
       fire('lastmilequality', quality);
     });
 
-    this.rtcengine.onEvent('firstlocalvideoframe', function(width, height, elapsed) {
+    this.rtcEngine.onEvent('firstlocalvideoframe', function(
+      width: number, height: number, elapsed: number
+    ) {
       fire('firstlocalvideoframe', width, height, elapsed);
     });
 
-    this.rtcengine.onEvent('firstremotevideodecoded', function(
-      uid,
-      width,
-      height,
-      elapsed
+    this.rtcEngine.onEvent('firstremotevideodecoded', function(
+      uid: number,
+      width: number,
+      height: number,
+      elapsed: number
     ) {
       fire('addstream', uid, elapsed);
     });
 
-    this.rtcengine.onEvent('videosizechanged', function(uid, width, height, rotation) {
+    this.rtcEngine.onEvent('videosizechanged', function(
+      uid: number, width: number, height: number, rotation: number
+    ) {
       fire('videosizechanged', uid, width, height, rotation);
     });
 
-    this.rtcengine.onEvent('firstremotevideoframe', function(
-      uid,
-      width,
-      height,
-      elapsed
+    this.rtcEngine.onEvent('firstremotevideoframe', function(
+      uid: number,
+      width: number,
+      height: number,
+      elapsed: number
     ) {
       fire('firstremotevideoframe', uid, width, height, elapsed);
     });
 
-    this.rtcengine.onEvent('userjoined', function(uid, elapsed) {
+    this.rtcEngine.onEvent('userjoined', function(uid: number, elapsed: number) {
       console.log('user : ' + uid + ' joined.');
       fire('userjoined', uid, elapsed);
     });
 
-    this.rtcengine.onEvent('useroffline', function(uid, reason) {
+    this.rtcEngine.onEvent('useroffline', function(uid: number, reason: number) {
       if (!self.streams) {
-        self.streams = {};
+        self.streams = new Map();
         console.log('Warning!!!!!!, streams is undefined.');
         return;
       }
       self.streams[uid] = undefined;
-      self.rtcengine.unsubscribe(uid);
+      self.rtcEngine.unsubscribe(uid);
       fire('removestream', uid, reason);
     });
 
-    this.rtcengine.onEvent('usermuteaudio', function(uid, muted) {
+    this.rtcEngine.onEvent('usermuteaudio', function(uid: number, muted: boolean) {
       fire('usermuteaudio', uid, muted);
     });
 
-    this.rtcengine.onEvent('usermutevideo', function(uid, muted) {
+    this.rtcEngine.onEvent('usermutevideo', function(uid: number, muted: boolean) {
       fire('usermutevideo', uid, muted);
     });
 
-    this.rtcengine.onEvent('userenablevideo', function(uid, enabled) {
+    this.rtcEngine.onEvent('userenablevideo', function(uid: number, enabled: boolean) {
       fire('userenablevideo', uid, enabled);
     });
 
-    this.rtcengine.onEvent('userenablelocalvideo', function(uid, enabled) {
+    this.rtcEngine.onEvent('userenablelocalvideo', function(uid: number, enabled: boolean) {
       fire('userenablelocalvideo', uid, enabled);
     });
 
-    this.rtcengine.onEvent('cameraready', function() {
+    this.rtcEngine.onEvent('cameraready', function() {
       fire('cameraready');
     });
 
-    this.rtcengine.onEvent('videostopped', function() {
+    this.rtcEngine.onEvent('videostopped', function() {
       fire('videostopped');
     });
 
-    this.rtcengine.onEvent('connectionlost', function() {
+    this.rtcEngine.onEvent('connectionlost', function() {
       fire('connectionlost');
     });
 
-    this.rtcengine.onEvent('connectioninterrupted', function() {
+    this.rtcEngine.onEvent('connectioninterrupted', function() {
       fire('connectioninterrupted');
     });
 
-    this.rtcengine.onEvent('connectionbanned', function() {
+    this.rtcEngine.onEvent('connectionbanned', function() {
       fire('connectionbanned');
     });
 
-    this.rtcengine.onEvent('refreshrecordingservicestatus', function(status) {
+    this.rtcEngine.onEvent('refreshrecordingservicestatus', function(status) {
       fire('refreshrecordingservicestatus', status);
     });
 
-    this.rtcengine.onEvent('streammessage', function(uid, streamId, msg, len) {
+    this.rtcEngine.onEvent('streammessage', function(
+      uid: number,
+      streamId: number,
+      msg: string,
+      len: number
+    ) {
       fire('streammessage', uid, streamId, msg, len);
     });
 
-    this.rtcengine.onEvent('streammessageerror', function(
-      uid,
-      streamId,
-      code,
-      missed,
-      cached
+    this.rtcEngine.onEvent('streammessageerror', function(
+      uid: number,
+      streamId: number,
+      code: number,
+      missed: number,
+      cached: number
     ) {
       fire('streammessageerror', uid, streamId, code, missed, cached);
     });
 
-    this.rtcengine.onEvent('mediaenginestartcallsuccess', function() {
+    this.rtcEngine.onEvent('mediaenginestartcallsuccess', function() {
       fire('mediaenginestartcallsuccess');
     });
 
-    this.rtcengine.onEvent('requestchannelkey', function() {
+    this.rtcEngine.onEvent('requestchannelkey', function() {
       fire('requestchannelkey');
     });
 
-    this.rtcengine.onEvent('fristlocalaudioframe', function(elapsed) {
+    this.rtcEngine.onEvent('fristlocalaudioframe', function(elapsed: number) {
       fire('firstlocalaudioframe', elapsed);
     });
 
-    this.rtcengine.onEvent('firstremoteaudioframe', function(uid, elapsed) {
+    this.rtcEngine.onEvent('firstremoteaudioframe', function(uid: number, elapsed: number) {
       fire('firstremoteaudioframe', uid, elapsed);
     });
 
-    this.rtcengine.onEvent('activespeaker', function(uid) {
+    this.rtcEngine.onEvent('activespeaker', function(uid: number) {
       fire('activespeaker', uid);
     });
 
-    this.rtcengine.onEvent('clientrolechanged', function(oldRole, newRole) {
+    this.rtcEngine.onEvent('clientrolechanged', function(oldRole, newRole) {
       fire('clientrolechanged', oldRole, newRole);
     });
 
-    this.rtcengine.onEvent('audiodevicevolumechanged', function(
+    this.rtcEngine.onEvent('audiodevicevolumechanged', function(
       deviceType,
       volume,
       muted
@@ -342,18 +327,18 @@ class AgoraRtcEngine extends EventEmitter {
       fire('audiodevicevolumechanged', deviceType, volume, muted);
     });
 
-    this.rtcengine.onEvent('videosourcejoinsuccess', function(uid) {
+    this.rtcEngine.onEvent('videosourcejoinsuccess', function(uid) {
       fire('videosourcejoinedsuccess', uid);
     });
 
-    this.rtcengine.onEvent('videosourcerequestnewtoken', function() {
+    this.rtcEngine.onEvent('videosourcerequestnewtoken', function() {
       fire('videosourcerequestnewtoken');
     });
 
-    this.rtcengine.onEvent('videosourceleavechannel', function() {
+    this.rtcEngine.onEvent('videosourceleavechannel', function() {
       fire('videosourceleavechannel');
     });
-    this.rtcengine.registerDeliverFrame(function(infos) {
+    this.rtcEngine.registerDeliverFrame(function(infos) {
       self.onRegisterDeliverFrame(infos);
     });
   }
@@ -507,7 +492,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   initialize(appid) {
-    return this.rtcengine.initialize(appid);
+    return this.rtcEngine.initialize(appid);
   }
 
   /**
@@ -515,7 +500,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {string} version
    */
   getVersion() {
-    return this.rtcengine.getVersion();
+    return this.rtcEngine.getVersion();
   }
 
   /**
@@ -524,7 +509,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {string} error description
    */
   getErrorDescription(errorCode) {
-    return this.rtcengine.getErrorDescription(errorCode);
+    return this.rtcEngine.getErrorDescription(errorCode);
   }
 
   /**
@@ -538,7 +523,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   joinChannel(token, channel, info, uid) {
-    return this.rtcengine.joinChannel(token, channel, info, uid);
+    return this.rtcEngine.joinChannel(token, channel, info, uid);
   }
 
   /**
@@ -546,7 +531,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   leaveChannel() {
-    return this.rtcengine.leaveChannel();
+    return this.rtcEngine.leaveChannel();
   }
 
   /**
@@ -558,7 +543,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setHighQualityAudioParameters(fullband, stereo, fullBitrate) {
-    return this.rtcengine.setHighQualityAudioParameters(fullband, stereo, fullBitrate);
+    return this.rtcEngine.setHighQualityAudioParameters(fullband, stereo, fullBitrate);
   }
 
   /**
@@ -569,7 +554,7 @@ class AgoraRtcEngine extends EventEmitter {
    */
   subscribe(uid, view) {
     this.initRender(uid, view);
-    return this.rtcengine.subscribe(uid);
+    return this.rtcEngine.subscribe(uid);
   }
 
   /**
@@ -579,7 +564,7 @@ class AgoraRtcEngine extends EventEmitter {
    */
   setupLocalVideo(view) {
     this.initRender('local', view);
-    return this.rtcengine.setupLocalVideo();
+    return this.rtcEngine.setupLocalVideo();
   }
 
   /**
@@ -591,7 +576,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {*} height target height
    */
   setVideoRenderDimension(rendertype, uid, width, height) {
-    this.rtcengine.setVideoRenderDimension(rendertype, uid, width, height);
+    this.rtcEngine.setVideoRenderDimension(rendertype, uid, width, height);
   }
 
   /**
@@ -601,7 +586,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {int} fps frame/s
    */
   setVideoRenderFPS(fps) {
-    this.rtcengine.setFPS(fps);
+    this.rtcEngine.setFPS(fps);
   }
 
   /**
@@ -612,7 +597,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {int} fps frame/s
    */
   setVideoRenderHighFPS(fps) {
-    this.rtcengine.setHighFPS(fps);
+    this.rtcEngine.setHighFPS(fps);
   }
 
   /**
@@ -621,7 +606,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {*} uid stream uid
    */
   addVideoRenderToHighFPS(uid) {
-    this.rtcengine.addToHighVideo(uid);
+    this.rtcEngine.addToHighVideo(uid);
   }
 
   /**
@@ -630,7 +615,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {*} uid stream uid
    */
   remoteVideoRenderFromHighFPS(uid) {
-    this.rtcengine.removeFromHighVideo(uid);
+    this.rtcEngine.removeFromHighVideo(uid);
   }
 
   /**
@@ -660,7 +645,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   renewToken(newtoken) {
-    return this.rtcengine.renewToken(newtoken);
+    return this.rtcEngine.renewToken(newtoken);
   }
 
   /**
@@ -670,7 +655,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setChannelProfile(profile) {
-    return this.rtcengine.setChannelProfile(profile);
+    return this.rtcEngine.setChannelProfile(profile);
   }
 
   /**
@@ -681,7 +666,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setClientRole(role, permissionKey) {
-    return this.rtcengine.setClientRole(role, permissionKey);
+    return this.rtcEngine.setClientRole(role, permissionKey);
   }
 
   /**
@@ -693,7 +678,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   startEchoTest() {
-    return this.rtcengine.startEchoTest();
+    return this.rtcEngine.startEchoTest();
   }
 
   /**
@@ -701,7 +686,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   stopEchoTest() {
-    return this.rtcengine.stopEchoTest();
+    return this.rtcEngine.stopEchoTest();
   }
 
   /**
@@ -714,7 +699,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   enableLastmileTest() {
-    return this.rtcengine.enableLastmileTest();
+    return this.rtcEngine.enableLastmileTest();
   }
 
   /**
@@ -722,7 +707,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   disableLastmileTest() {
-    return this.rtcengine.disableLastmileTest();
+    return this.rtcEngine.disableLastmileTest();
   }
 
   /**
@@ -730,7 +715,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   enableVideo() {
-    return this.rtcengine.enableVideo();
+    return this.rtcEngine.enableVideo();
   }
 
   /**
@@ -738,7 +723,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   disableVideo() {
-    return this.rtcengine.disableVideo();
+    return this.rtcEngine.disableVideo();
   }
 
   /**
@@ -751,7 +736,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   startPreview() {
-    return this.rtcengine.startPreview();
+    return this.rtcEngine.startPreview();
   }
 
   /**
@@ -759,7 +744,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   stopPreview() {
-    return this.rtcengine.stopPreview();
+    return this.rtcEngine.stopPreview();
   }
 
   /**
@@ -769,7 +754,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setVideoProfile(profile, swapWidthAndHeight = false) {
-    return this.rtcengine.setVideoProfile(profile, swapWidthAndHeight);
+    return this.rtcEngine.setVideoProfile(profile, swapWidthAndHeight);
   }
 
   /**
@@ -791,7 +776,7 @@ class AgoraRtcEngine extends EventEmitter {
       orientation = 0,
       minbitrate = -1
     } = config;
-    return this.rtcengine.setVideoEncoderConfiguration(
+    return this.rtcEngine.setVideoEncoderConfiguration(
       width,
       height,
       fps,
@@ -806,7 +791,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   enableAudio() {
-    return this.rtcengine.enableAudio();
+    return this.rtcEngine.enableAudio();
   }
 
   /**
@@ -814,7 +799,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   disableAudio() {
-    return this.rtcengine.disableAudio();
+    return this.rtcEngine.disableAudio();
   }
 
   /**
@@ -824,7 +809,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setAudioProfile(profile, scenario) {
-    return this.rtcengine.setAudioProfile(profile, scenario);
+    return this.rtcEngine.setAudioProfile(profile, scenario);
   }
 
   /**
@@ -833,7 +818,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setVideoQualityParameters(preferFrameRateOverImageQuality) {
-    return this.rtcengine.setVideoQualityParameters(preferFrameRateOverImageQuality);
+    return this.rtcEngine.setVideoQualityParameters(preferFrameRateOverImageQuality);
   }
 
   /**
@@ -845,7 +830,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setEncryptionSecret(secret) {
-    return this.rtcengine.setEncryptionSecret(secret);
+    return this.rtcEngine.setEncryptionSecret(secret);
   }
 
   /**
@@ -855,7 +840,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   muteLocalAudioStream(mute) {
-    return this.rtcengine.muteLocalAudioStream(mute);
+    return this.rtcEngine.muteLocalAudioStream(mute);
   }
 
   /**
@@ -864,7 +849,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   muteAllRemoteAudioStreams(mute) {
-    return this.rtcengine.muteAllRemoteAudioStreams(mute);
+    return this.rtcEngine.muteAllRemoteAudioStreams(mute);
   }
 
   /**
@@ -873,7 +858,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setDefaultMuteAllRemoteAudioStreams(mute) {
-    return this.rtcengine.setDefaultMuteAllRemoteAudioStreams(mute);
+    return this.rtcEngine.setDefaultMuteAllRemoteAudioStreams(mute);
   }
 
   /**
@@ -883,7 +868,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   muteRemoteAudioStream(uid, mute) {
-    return this.rtcengine.muteRemoteAudioStream(uid, mute);
+    return this.rtcEngine.muteRemoteAudioStream(uid, mute);
   }
 
   /**
@@ -892,7 +877,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   muteLocalVideoStream(mute) {
-    return this.rtcengine.muteLocalVideoStream(mute);
+    return this.rtcEngine.muteLocalVideoStream(mute);
   }
 
   /**
@@ -903,7 +888,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   enableLocalVideo(enable) {
-    return this.rtcengine.enableLocalVideo(enable);
+    return this.rtcEngine.enableLocalVideo(enable);
   }
 
   /**
@@ -912,7 +897,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   muteAllRemoteVideoStreams(mute) {
-    return this.rtcengine.muteAllRemoteVideoStreams(mute);
+    return this.rtcEngine.muteAllRemoteVideoStreams(mute);
   }
 
   /**
@@ -921,7 +906,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setDefaultMuteAllRemoteVideoStreams(mute) {
-    return this.rtcengine.setDefaultMuteAllRemoteVideoStreams(mute);
+    return this.rtcEngine.setDefaultMuteAllRemoteVideoStreams(mute);
   }
 
   /**
@@ -935,7 +920,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   enableAudioVolumeIndication(interval, smooth) {
-    return this.rtcengine.enableAudioVolumeIndication(interval, smooth);
+    return this.rtcEngine.enableAudioVolumeIndication(interval, smooth);
   }
 
   /**
@@ -945,7 +930,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   muteRemoteVideoStream(uid, mute) {
-    return this.rtcengine.muteRemoteVideoStream(uid, mute);
+    return this.rtcEngine.muteRemoteVideoStream(uid, mute);
   }
 
   /**
@@ -954,7 +939,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setInEarMonitoringVolume(volume) {
-    return this.rtcengine.setInEarMonitoringVolume(volume);
+    return this.rtcEngine.setInEarMonitoringVolume(volume);
   }
 
   /**
@@ -962,7 +947,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   pauseAudio() {
-    return this.rtcengine.pauseAudio();
+    return this.rtcEngine.pauseAudio();
   }
 
   /**
@@ -970,7 +955,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   resumeAudio() {
-    return this.rtcengine.resumeAudio();
+    return this.rtcEngine.resumeAudio();
   }
 
   /**
@@ -979,7 +964,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setLogFile(filepath) {
-    return this.rtcengine.setLogFile(filepath);
+    return this.rtcEngine.setLogFile(filepath);
   }
 
   /**
@@ -988,7 +973,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   videoSourceSetLogFile(filepath) {
-    return this.rtcengine.videoSourceSetLogFile(filepath)
+    return this.rtcEngine.videoSourceSetLogFile(filepath)
   }
 
   /**
@@ -1003,7 +988,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setLogFilter(filter) {
-    return this.rtcengine.setLogFilter(filter);
+    return this.rtcEngine.setLogFilter(filter);
   }
 
   /**
@@ -1013,7 +998,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   enableDualStreamMode(enable) {
-    return this.rtcengine.enableDualStreamMode(enable);
+    return this.rtcEngine.enableDualStreamMode(enable);
   }
 
   /**
@@ -1032,7 +1017,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setRemoteVideoStreamType(uid, streamType) {
-    return this.rtcengine.setRemoteVideoStreamType(uid, streamType);
+    return this.rtcEngine.setRemoteVideoStreamType(uid, streamType);
   }
 
   /**
@@ -1041,7 +1026,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setRemoteDefaultVideoStreamType(streamType) {
-    return this.rtcengine.setRemoteDefaultVideoStreamType(streamType);
+    return this.rtcEngine.setRemoteDefaultVideoStreamType(streamType);
   }
 
   /**
@@ -1050,7 +1035,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   enableWebSdkInteroperability(enable) {
-    return this.rtcengine.enableWebSdkInteroperability(enable);
+    return this.rtcEngine.enableWebSdkInteroperability(enable);
   }
 
   /**
@@ -1063,7 +1048,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setLocalVideoMirrorMode(mirrortype) {
-    return this.rtcengine.setLocalVideoMirrorMode(mirrortype);
+    return this.rtcEngine.setLocalVideoMirrorMode(mirrortype);
   }
 
   /**
@@ -1074,7 +1059,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setLocalVoicePitch(pitch) {
-    return this.rtcengine.setLocalVoicePitch(pitch);
+    return this.rtcEngine.setLocalVoicePitch(pitch);
   }
 
   /**
@@ -1086,7 +1071,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setLocalVoiceEqualization(bandFrequency, bandGain) {
-    return this.rtcengine.setLocalVoiceEqualization(bandFrequency, bandGain);
+    return this.rtcEngine.setLocalVoiceEqualization(bandFrequency, bandGain);
   }
 
   /**
@@ -1101,7 +1086,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setLocalVoiceReverb(reverbKey, value) {
-    return this.rtcengine.setLocalVoiceReverb(reverbKey, value);
+    return this.rtcEngine.setLocalVoiceReverb(reverbKey, value);
   }
 
   /**
@@ -1120,7 +1105,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setLocalPublishFallbackOption(option) {
-    return this.rtcengine.setLocalPublishFallbackOption(option);
+    return this.rtcEngine.setLocalPublishFallbackOption(option);
   }
 
   /**
@@ -1139,7 +1124,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setRemoteSubscribeFallbackOption(option) {
-    return this.rtcengine.setRemoteSubscribeFallbackOption(option);
+    return this.rtcEngine.setRemoteSubscribeFallbackOption(option);
   }
 
   // ===========================================================================
@@ -1153,7 +1138,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setExternalAudioSource(enabled, samplerate, channels) {
-    return this.rtcengine.setExternalAudioSource(enabled, samplerate, channels);
+    return this.rtcEngine.setExternalAudioSource(enabled, samplerate, channels);
   }
 
   /**
@@ -1161,7 +1146,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {array} array of device object
    */
   getVideoDevices() {
-    return this.rtcengine.getVideoDevices();
+    return this.rtcEngine.getVideoDevices();
   }
 
   /**
@@ -1170,7 +1155,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setVideoDevice(deviceid) {
-    return this.rtcengine.setVideoDevice(deviceid);
+    return this.rtcEngine.setVideoDevice(deviceid);
   }
 
   /**
@@ -1178,7 +1163,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @return {object} video device object
    */
   getCurrentVideoDevice() {
-    return this.rtcengine.getCurrentVideoDevice();
+    return this.rtcEngine.getCurrentVideoDevice();
   }
 
   /**
@@ -1188,7 +1173,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   startVideoDeviceTest() {
-    return this.rtcengine.startVideoDeviceTest();
+    return this.rtcEngine.startVideoDeviceTest();
   }
 
   /**
@@ -1196,7 +1181,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   stopVideoDeviceTest() {
-    return this.rtcengine.stopVideoDeviceTest();
+    return this.rtcEngine.stopVideoDeviceTest();
   }
 
   /**
@@ -1204,7 +1189,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {array} array of device object
    */
   getAudioPlaybackDevices() {
-    return this.rtcengine.getAudioPlaybackDevices();
+    return this.rtcEngine.getAudioPlaybackDevices();
   }
 
   /**
@@ -1213,7 +1198,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setAudioPlaybackDevice(deviceid) {
-    return this.rtcengine.setAudioPlaybackDevice(deviceid);
+    return this.rtcEngine.setAudioPlaybackDevice(deviceid);
   }
 
   /**
@@ -1223,7 +1208,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   getPlaybackDeviceInfo(deviceId, deviceName) {
-    return this.rtcengine.getPlaybackDeviceInfo(deviceId, deviceName);
+    return this.rtcEngine.getPlaybackDeviceInfo(deviceId, deviceName);
   }
 
   /**
@@ -1231,7 +1216,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @return {object} audio playback device object
    */
   getCurrentAudioPlaybackDevice() {
-    return this.rtcengine.getCurrentAudioPlaybackDevice();
+    return this.rtcEngine.getCurrentAudioPlaybackDevice();
   }
 
   /**
@@ -1240,7 +1225,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setAudioPlaybackVolume(volume) {
-    return this.rtcengine.setAudioPlaybackVolume(volume);
+    return this.rtcEngine.setAudioPlaybackVolume(volume);
   }
 
   /**
@@ -1248,7 +1233,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} volume
    */
   getAudioPlaybackVolume() {
-    return this.rtcengine.getAudioPlaybackVolume();
+    return this.rtcEngine.getAudioPlaybackVolume();
   }
 
   /**
@@ -1256,7 +1241,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {array} array of recording devices
    */
   getAudioRecordingDevices() {
-    return this.rtcengine.getAudioRecordingDevices();
+    return this.rtcEngine.getAudioRecordingDevices();
   }
 
   /**
@@ -1265,7 +1250,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setAudioRecordingDevice(deviceid) {
-    return this.rtcengine.setAudioRecordingDevice(deviceid);
+    return this.rtcEngine.setAudioRecordingDevice(deviceid);
   }
 
   /**
@@ -1275,7 +1260,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   getRecordingDeviceInfo(deviceId, deviceName) {
-    return this.rtcengine.getRecordingDeviceInfo(deviceId, deviceName);
+    return this.rtcEngine.getRecordingDeviceInfo(deviceId, deviceName);
   }
 
   /**
@@ -1283,7 +1268,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {object} audio recording device object
    */
   getCurrentAudioRecordingDevice() {
-    return this.rtcengine.getCurrentAudioRecordingDevice();
+    return this.rtcEngine.getCurrentAudioRecordingDevice();
   }
 
   /**
@@ -1291,7 +1276,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @return {int} volume
    */
   getAudioRecordingVolume() {
-    return this.rtcengine.getAudioRecordingVolume();
+    return this.rtcEngine.getAudioRecordingVolume();
   }
 
   /**
@@ -1300,7 +1285,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setAudioRecordingVolume(volume) {
-    return this.rtcengine.setAudioRecordingVolume(volume);
+    return this.rtcEngine.setAudioRecordingVolume(volume);
   }
 
   /**
@@ -1310,7 +1295,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   startAudioPlaybackDeviceTest(filepath) {
-    return this.rtcengine.startAudioPlaybackDeviceTest(filepath);
+    return this.rtcEngine.startAudioPlaybackDeviceTest(filepath);
   }
 
   /**
@@ -1318,7 +1303,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   stopAudioPlaybackDeviceTest() {
-    return this.rtcengine.stopAudioPlaybackDeviceTest();
+    return this.rtcEngine.stopAudioPlaybackDeviceTest();
   }
 
   /**
@@ -1326,7 +1311,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {boolean} [enable = false] whether to enable loop back recording
    */
   enableLoopbackRecording(enable = false) {
-    return this.rtcengine.enableLoopbackRecording(enable)
+    return this.rtcEngine.enableLoopbackRecording(enable)
   }
 
   /**
@@ -1336,7 +1321,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   startAudioRecordingDeviceTest(indicateInterval) {
-    return this.rtcengine.startAudioRecordingDeviceTest(indicateInterval);
+    return this.rtcEngine.startAudioRecordingDeviceTest(indicateInterval);
   }
 
   /**
@@ -1344,7 +1329,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   stopAudioRecordingDeviceTest() {
-    return this.rtcengine.stopAudioRecordingDeviceTest();
+    return this.rtcEngine.stopAudioRecordingDeviceTest();
   }
 
   /**
@@ -1352,7 +1337,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {boolean} muted/unmuted
    */
   getAudioPlaybackDeviceMute() {
-    return this.rtcengine.getAudioPlaybackDeviceMute();
+    return this.rtcEngine.getAudioPlaybackDeviceMute();
   }
 
   /**
@@ -1361,7 +1346,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setAudioPlaybackDeviceMute(mute) {
-    return this.rtcengine.setAudioPlaybackDeviceMute(mute);
+    return this.rtcEngine.setAudioPlaybackDeviceMute(mute);
   }
 
   /**
@@ -1369,7 +1354,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {boolean} muted/unmuted
    */
   getAudioRecordingDeviceMute() {
-    return this.rtcengine.getAudioRecordingDeviceMute();
+    return this.rtcEngine.getAudioRecordingDeviceMute();
   }
 
   /**
@@ -1378,7 +1363,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setAudioRecordingDeviceMute(mute) {
-    return this.rtcengine.setAudioRecordingDeviceMute(mute);
+    return this.rtcEngine.setAudioRecordingDeviceMute(mute);
   }
 
   // ===========================================================================
@@ -1397,7 +1382,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   videoSourceInitialize(appid) {
-    return this.rtcengine.videoSourceInitialize(appid);
+    return this.rtcEngine.videoSourceInitialize(appid);
   }
 
   /**
@@ -1414,7 +1399,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   videoSourceEnableWebSdkInteroperability(enabled) {
-    return this.rtcengine.videoSourceEnableWebSdkInteroperability(enabled);
+    return this.rtcEngine.videoSourceEnableWebSdkInteroperability(enabled);
   }
 
   /**
@@ -1428,7 +1413,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   videoSourceJoin(token, cname, info, uid) {
-    return this.rtcengine.videoSourceJoin(token, cname, info, uid);
+    return this.rtcEngine.videoSourceJoin(token, cname, info, uid);
   }
 
   /**
@@ -1436,7 +1421,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   videoSourceLeave() {
-    return this.rtcengine.videoSourceLeave();
+    return this.rtcEngine.videoSourceLeave();
   }
 
   /**
@@ -1445,7 +1430,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   videoSourceRenewToken(token) {
-    return this.rtcengine.videoSourceRenewToken(token);
+    return this.rtcEngine.videoSourceRenewToken(token);
   }
 
   /**
@@ -1455,7 +1440,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   videoSourceSetChannelProfile(profile) {
-    return this.rtcengine.videoSourceSetChannelProfile(profile);
+    return this.rtcEngine.videoSourceSetChannelProfile(profile);
   }
 
   /**
@@ -1465,7 +1450,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   videoSourceSetVideoProfile(profile, swapWidthAndHeight) {
-    return this.rtcengine.videoSourceSetVideoProfile(profile, swapWidthAndHeight);
+    return this.rtcEngine.videoSourceSetVideoProfile(profile, swapWidthAndHeight);
   }
 
   /**
@@ -1473,7 +1458,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {array} list of window infos
    */
   getScreenWindowsInfo() {
-    return this.rtcengine.getScreenWindowsInfo();
+    return this.rtcEngine.getScreenWindowsInfo();
   }
 
   /**
@@ -1485,7 +1470,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   startScreenCapture2(wndid, captureFreq, rect, bitrate) {
-    return this.rtcengine.startScreenCapture2(wndid, captureFreq, rect, bitrate);
+    return this.rtcEngine.startScreenCapture2(wndid, captureFreq, rect, bitrate);
   }
 
   /**
@@ -1493,7 +1478,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   stopScreenCapture2() {
-    return this.rtcengine.stopScreenCatpure2();
+    return this.rtcEngine.stopScreenCatpure2();
   }
 
   /**
@@ -1501,7 +1486,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   startScreenCapturePreview() {
-    return this.rtcengine.videoSourceStartPreview();
+    return this.rtcEngine.videoSourceStartPreview();
   }
 
   /**
@@ -1509,7 +1494,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   stopScreenCapturePreview() {
-    return this.rtcengine.videoSourceStopPreview();
+    return this.rtcEngine.videoSourceStopPreview();
   }
 
   /**
@@ -1518,7 +1503,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @return {int} 0 for success, <0 for failure
    */
   videoSourceEnableDualStreamMode(enable) {
-    return this.rtcengine.videoSourceEnableDualStreamMode(enable);
+    return this.rtcEngine.videoSourceEnableDualStreamMode(enable);
   }
 
   /**
@@ -1527,7 +1512,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   videoSourceSetParameters(parameter) {
-    return this.rtcengine.videoSourceSetParameter(parameter);
+    return this.rtcEngine.videoSourceSetParameter(parameter);
   }
 
   /**
@@ -1535,7 +1520,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   videoSourceRelease() {
-    return this.rtcengine.videoSourceRelease();
+    return this.rtcEngine.videoSourceRelease();
   }
 
   // ===========================================================================
@@ -1553,7 +1538,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   startScreenCapture(windowId, captureFreq, rect, bitrate) {
-    return this.rtcengine.startScreenCapture(windowId, captureFreq, rect, bitrate);
+    return this.rtcEngine.startScreenCapture(windowId, captureFreq, rect, bitrate);
   }
 
   /**
@@ -1561,7 +1546,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   stopScreenCapture() {
-    return this.rtcengine.stopScreenCapture();
+    return this.rtcEngine.stopScreenCapture();
   }
 
   /**
@@ -1570,7 +1555,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   updateScreenCaptureRegion(rect) {
-    return this.rtcengine.updateScreenCaptureRegion(rect);
+    return this.rtcEngine.updateScreenCaptureRegion(rect);
   }
 
   // ===========================================================================
@@ -1589,7 +1574,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   startAudioMixing(filepath, loopback, replace, cycle) {
-    return this.rtcengine.startAudioMixing(filepath, loopback, replace, cycle);
+    return this.rtcEngine.startAudioMixing(filepath, loopback, replace, cycle);
   }
 
   /**
@@ -1597,7 +1582,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   stopAudioMixing() {
-    return this.rtcengine.stopAudioMixing();
+    return this.rtcEngine.stopAudioMixing();
   }
 
   /**
@@ -1605,7 +1590,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   pauseAudioMixing() {
-    return this.rtcengine.pauseAudioMixing();
+    return this.rtcEngine.pauseAudioMixing();
   }
 
   /**
@@ -1613,7 +1598,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   resumeAudioMixing() {
-    return this.rtcengine.resumeAudioMixing();
+    return this.rtcEngine.resumeAudioMixing();
   }
 
   /**
@@ -1622,7 +1607,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   adjustAudioMixingVolume(volume) {
-    return this.rtcengine.adjustAudioMixingVolume(volume);
+    return this.rtcEngine.adjustAudioMixingVolume(volume);
   }
 
   /**
@@ -1631,7 +1616,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   adjustAudioMixingPlayoutVolume(volume) {
-    return this.rtcengine.adjustAudioMixingPlayoutVolume(volume);
+    return this.rtcEngine.adjustAudioMixingPlayoutVolume(volume);
   }
 
   /**
@@ -1640,7 +1625,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   adjustAudioMixingPublishVolume(volume) {
-    return this.rtcengine.adjustAudioMixingPublishVolume(volume);
+    return this.rtcEngine.adjustAudioMixingPublishVolume(volume);
   }
 
   /**
@@ -1649,7 +1634,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} duration of audio mixing
    */
   getAudioMixingDuration() {
-    return this.rtcengine.getAudioMixingDuration();
+    return this.rtcEngine.getAudioMixingDuration();
   }
 
   /**
@@ -1658,7 +1643,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} current playback position
    */
   getAudioMixingCurrentPosition() {
-    return this.rtcengine.getAudioMixingCurrentPosition();
+    return this.rtcEngine.getAudioMixingCurrentPosition();
   }
 
   /**
@@ -1668,7 +1653,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setAudioMixingPosition(position) {
-    return this.rtcengine.setAudioMixingPosition(position);
+    return this.rtcEngine.setAudioMixingPosition(position);
   }
 
   // ===========================================================================
@@ -1685,7 +1670,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setRecordingAudioFrameParameters(sampleRate, channel, mode, samplesPerCall) {
-    return this.rtcengine.setRecordingAudioFrameParameters(
+    return this.rtcEngine.setRecordingAudioFrameParameters(
       sampleRate,
       channel,
       mode,
@@ -1704,7 +1689,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setPlaybackAudioFrameParameters(sampleRate, channel, mode, samplesPerCall) {
-    return this.rtcengine.setPlaybackAudioFrameParameters(
+    return this.rtcEngine.setPlaybackAudioFrameParameters(
       sampleRate,
       channel,
       mode,
@@ -1721,7 +1706,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   setMixedAudioFrameParameters(sampleRate, samplesPerCall) {
-    return this.rtcengine.setMixedAudioFrameParameters(sampleRate, samplesPerCall);
+    return this.rtcEngine.setMixedAudioFrameParameters(sampleRate, samplesPerCall);
   }
 
   // ===========================================================================
@@ -1736,7 +1721,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} <0 for failure, > 0 for stream id of data
    */
   createDataStream(reliable, ordered) {
-    return this.rtcengine.createDataStream(reliable, ordered);
+    return this.rtcEngine.createDataStream(reliable, ordered);
   }
 
   /**
@@ -1749,7 +1734,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   sendStreamMessage(streamId, msg) {
-    return this.rtcengine.sendStreamMessage(streamId, msg);
+    return this.rtcEngine.sendStreamMessage(streamId, msg);
   }
 
   // ===========================================================================	
@@ -1760,7 +1745,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {number} volume	
    */	
   getEffectsVolume() {	
-    return this.rtcengine.getEffectsVolume();	
+    return this.rtcEngine.getEffectsVolume();	
   }	
    /**	
    * @description set effects volume	
@@ -1768,7 +1753,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure	
    */	
   setEffectsVolume(volume) {	
-    return this.rtcengine.setEffectsVolume(volume);	
+    return this.rtcEngine.setEffectsVolume(volume);	
   }	
    /**	
    * @description set effect volume of a sound id	
@@ -1791,7 +1776,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure	
    */	
   playEffect(soundId, filePath, loopcount, pitch, pan, gain, publish) {	
-    return this.rtcengine.playEffect(	
+    return this.rtcEngine.playEffect(	
       soundId,	
       filePath,	
       loopcount,	
@@ -1807,7 +1792,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure	
    */	
   stopEffect(soundId) {	
-    return this.rtcengine.stopEffect(soundId);	
+    return this.rtcEngine.stopEffect(soundId);	
   }	
    /**	
    * @description preload effect	
@@ -1816,7 +1801,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure	
    */	
   preloadEffect(soundId, filePath) {	
-    return this.rtcengine.preloadEffect(soundId, filePath);	
+    return this.rtcEngine.preloadEffect(soundId, filePath);	
   }	
    /**	
    * This method releases a specific preloaded audio effect from the memory.	
@@ -1824,7 +1809,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure	
    */	
   unloadEffect(soundId) {	
-    return this.rtcengine.unloadEffect(soundId);	
+    return this.rtcEngine.unloadEffect(soundId);	
   }	
    /**	
    * @description This method pauses a specific audio effect.	
@@ -1832,14 +1817,14 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure	
    */	
   pauseEffect(soundId) {	
-    return this.rtcengine.pauseEffect(soundId);	
+    return this.rtcEngine.pauseEffect(soundId);	
   }	
    /**	
    * @description This method pauses all the audio effects.	
    * @returns {int} 0 for success, <0 for failure	
    */	
   pauseAllEffects() {	
-    return this.rtcengine.pauseAllEffects();	
+    return this.rtcEngine.pauseAllEffects();	
   }	
    /**	
    * @description This method resumes playing a specific audio effect.	
@@ -1847,14 +1832,14 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure	
    */	
   resumeEffect(soundId) {	
-    return this.rtcengine.resumeEffect(soundId);	
+    return this.rtcEngine.resumeEffect(soundId);	
   }	
    /**	
    * @description This method resumes playing all the audio effects.	
    * @returns {int} 0 for success, <0 for failure	
    */	
   resumeAllEffects() {	
-    return this.rtcengine.resumeAllEffects();	
+    return this.rtcEngine.resumeAllEffects();	
   }
 
   // ===========================================================================
@@ -1871,7 +1856,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {string} Current call ID.
    */
   getCallId() {
-    return this.rtcengine.getCallId();
+    return this.rtcEngine.getCallId();
   }
 
   /**
@@ -1882,7 +1867,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   rate(callid, rating, desc) {
-    return this.rtcengine.rate(callid, rating, desc);
+    return this.rtcEngine.rate(callid, rating, desc);
   }
 
   /**
@@ -1893,75 +1878,74 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {int} 0 for success, <0 for failure
    */
   complain(callid, desc) {
-    return this.rtcengine.complain(callid, desc);
+    return this.rtcEngine.complain(callid, desc);
   }
 
   // ===========================================================================
   // replacement for setParameters call
   // ===========================================================================
   setBool(key, value) {
-    return this.rtcengine.setBool(key, value);
+    return this.rtcEngine.setBool(key, value);
   }
 
   setInt(key, value) {
-    return this.rtcengine.setInt(key, value);
+    return this.rtcEngine.setInt(key, value);
   }
 
   setUInt(key, value) {
-    return this.rtcengine.setUInt(key, value);
+    return this.rtcEngine.setUInt(key, value);
   }
 
   setNumber(key, value) {
-    return this.rtcengine.setNumber(key, value);
+    return this.rtcEngine.setNumber(key, value);
   }
 
   setString(key, value) {
-    return this.rtcengine.setString(key, value);
+    return this.rtcEngine.setString(key, value);
   }
 
   setObject(key, value) {
-    return this.rtcengine.setObject(key, value);
+    return this.rtcEngine.setObject(key, value);
   }
 
   getBool(key) {
-    return this.rtcengine.getBool(key);
+    return this.rtcEngine.getBool(key);
   }
 
   getInt(key) {
-    return this.rtcengine.getInt(key);
+    return this.rtcEngine.getInt(key);
   }
 
   getUInt(key) {
-    return this.rtcengine.getUInt(key);
+    return this.rtcEngine.getUInt(key);
   }
 
   getNumber(key) {
-    return this.rtcengine.getNumber(key);
+    return this.rtcEngine.getNumber(key);
   }
 
   getString(key) {
-    return this.rtcengine.getString(key);
+    return this.rtcEngine.getString(key);
   }
 
   getObject(key) {
-    return this.rtcengine.getObject(key);
+    return this.rtcEngine.getObject(key);
   }
 
   getArray(key) {
-    return this.rtcengine.getArray(key);
+    return this.rtcEngine.getArray(key);
   }
 
   setParameters(param) {
-    return this.rtcengine.setParameters(param);
+    return this.rtcEngine.setParameters(param);
   }
 
   convertPath(path) {
-    return this.rtcengine.convertPath(path);
+    return this.rtcEngine.convertPath(path);
   }
 
   setProfile(profile, merge) {
-    return this.rtcengine.setProfile(profile, merge);
+    return this.rtcEngine.setProfile(profile, merge);
   }
 }
 
-module.exports = AgoraRtcEngine;
