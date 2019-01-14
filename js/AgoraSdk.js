@@ -325,6 +325,59 @@ class AgoraRtcEngine extends EventEmitter {
       fire('firstremoteaudioframe', uid, elapsed);
     });
 
+    this.rtcengine.onEvent('remoteVideoStateChanged', function(uid, state) {
+      fire('remoteVideoStateChanged', uid, state);
+    });
+
+    this.rtcengine.onEvent('cameraFocusAreaChanged', function(x, y, width, height) {
+      fire('cameraFocusAreaChanged', x, y, width, height);
+    });
+
+    this.rtcengine.onEvent('cameraExposureAreaChanged', function(x, y, width, height) {
+      fire('cameraExposureAreaChanged', x, y, width, height);
+    });
+
+    this.rtcengine.onEvent('tokenPrivilegeWillExpire', function(token) {
+      fire('tokenPrivilegeWillExpire', token);
+    });
+
+    this.rtcengine.onEvent('streamPublished', function(url, error) {
+      fire('streamPublished', url, error);
+    });
+
+    this.rtcengine.onEvent('streamUnpublished', function(url) {
+      fire('streamUnpublished', url);
+    });
+
+    this.rtcengine.onEvent('transcodingUpdated', function() {
+      fire('transcodingUpdated');
+    });
+
+    this.rtcengine.onEvent('streamInjectStatus', function(url, uid, status) {
+      fire('streamInjectStatus', url, uid, status);
+    });
+
+    this.rtcengine.onEvent('localPublishFallbackToAudioOnly', function(
+      isFallbackOrRecover
+    ) {
+      fire('localPublishFallbackToAudioOnly', isFallbackOrRecover);
+    });
+
+    this.rtcengine.onEvent('remoteSubscribeFallbackToAudioOnly', function(
+      uid,
+      isFallbackOrRecover
+    ) {
+      fire('remoteSubscribeFallbackToAudioOnly', uid, isFallbackOrRecover);
+    });
+
+    this.rtcengine.onEvent('microphoneEnabled', function(enabled) {
+      fire('microphoneEnabled', enabled);
+    });
+
+    this.rtcengine.onEvent('connectionStateChanged', function(state, reason) {
+      fire('connectionStateChanged', state, reason);
+    });
+
     this.rtcengine.onEvent('activespeaker', function(uid) {
       fire('activespeaker', uid);
     });
@@ -352,9 +405,11 @@ class AgoraRtcEngine extends EventEmitter {
     this.rtcengine.onEvent('videosourceleavechannel', function() {
       fire('videosourceleavechannel');
     });
+
     this.rtcengine.registerDeliverFrame(function(infos) {
       self.onRegisterDeliverFrame(infos);
     });
+
   }
 
   /**
