@@ -6,10 +6,15 @@ import {
   RtcStats,
   LocalVideoStats,
   RemoteVideoStats,
+  RemoteVideoState,
   AgoraNetworkQuality,
   ClientRoleType,
   StreamType,
+  ConnectionState,
+  ConnectionChangeReason,
   MediaDeviceType,
+  TranscodingConfig,
+  InjectStreamConfig,
 } from './types/AgoraSdk';
 const agora = require('../build/Release/agora_node_ext');
 
@@ -96,10 +101,12 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
 
     this.rtcEngine.onEvent('joinchannel', function(channel: string, uid: number, elapsed: number) {
       fire('joinedchannel', channel, uid, elapsed);
+      fire('joinedChannel', channel, uid, elapsed);
     });
 
     this.rtcEngine.onEvent('rejoinchannel', function(channel: string, uid: number, elapsed: number) {
       fire('rejoinedchannel', channel, uid, elapsed);
+      fire('rejoinedChannel', channel, uid, elapsed);
     });
 
     this.rtcEngine.onEvent('warning', function(warn: number, msg: string) {
@@ -112,6 +119,7 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
 
     this.rtcEngine.onEvent('audioquality', function(uid: number, quality: AgoraNetworkQuality, delay: number, lost: number) {
       fire('audioquality', uid, quality, delay, lost);
+      fire('audioQuality', uid, quality, delay, lost);
     });
 
     this.rtcEngine.onEvent('audiovolumeindication', function(
@@ -127,22 +135,33 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
         speakerNumber,
         totalVolume
       );
+      fire(
+        'audioVolumeIndication',
+        uid,
+        volume,
+        speakerNumber,
+        totalVolume
+      );
     });
 
     this.rtcEngine.onEvent('leavechannel', function() {
       fire('leavechannel');
+      fire('leaveChannel');
     });
 
     this.rtcEngine.onEvent('rtcstats', function(stats: RtcStats) {
       fire('rtcstats', stats);
+      fire('rtcStats', stats);
     });
 
     this.rtcEngine.onEvent('localvideostats', function(stats: LocalVideoStats) {
       fire('localvideostats', stats);
+      fire('localVideoStats', stats);
     });
 
     this.rtcEngine.onEvent('remotevideostats', function(stats: RemoteVideoStats) {
       fire('remotevideostats', stats);
+      fire('remoteVideoStats', stats);
     });
 
     this.rtcEngine.onEvent('audiodevicestatechanged', function(
@@ -151,26 +170,32 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
       deviceState: number,
     ) {
       fire('audiodevicestatechanged', deviceId, deviceType, deviceState);
+      fire('audioDeviceStateChanged', deviceId, deviceType, deviceState);
     });
 
     this.rtcEngine.onEvent('audiomixingfinished', function() {
       fire('audiomixingfinished');
+      fire('audioMixingFinished');
     });
 
     this.rtcEngine.onEvent('apicallexecuted', function(api: string, err: number) {
       fire('apicallexecuted', api, err);
+      fire('apiCallExecuted', api, err);
     });
 
     this.rtcEngine.onEvent('remoteaudiomixingbegin', function() {
       fire('remoteaudiomixingbegin');
+      fire('remoteAudioMixingBegin');
     });
 
     this.rtcEngine.onEvent('remoteaudiomixingend', function() {
       fire('remoteaudiomixingend');
+      fire('remoteAudioMixingEnd');
     });
 
     this.rtcEngine.onEvent('audioeffectfinished', function(soundId: number) {
       fire('audioeffectfinished', soundId);
+      fire('audioEffectFinished', soundId);
     });
 
     this.rtcEngine.onEvent('videodevicestatechanged', function(
@@ -179,6 +204,7 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
       deviceState: number,
     ) {
       fire('videodevicestatechanged', deviceId, deviceType, deviceState);
+      fire('videoDeviceStateChanged', deviceId, deviceType, deviceState);
     });
 
     this.rtcEngine.onEvent('networkquality', function(
@@ -187,16 +213,19 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
       rxquality: AgoraNetworkQuality
     ) {
       fire('networkquality', uid, txquality, rxquality);
+      fire('networkQuality', uid, txquality, rxquality);
     });
 
     this.rtcEngine.onEvent('lastmilequality', function(quality: AgoraNetworkQuality) {
       fire('lastmilequality', quality);
+      fire('lastMileQuality', quality);
     });
 
     this.rtcEngine.onEvent('firstlocalvideoframe', function(
       width: number, height: number, elapsed: number
     ) {
       fire('firstlocalvideoframe', width, height, elapsed);
+      fire('firstLocalVideoFrame', width, height, elapsed);
     });
 
     this.rtcEngine.onEvent('firstremotevideodecoded', function(
@@ -206,12 +235,14 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
       elapsed: number
     ) {
       fire('addstream', uid, elapsed);
+      fire('addStream', uid, elapsed);
     });
 
     this.rtcEngine.onEvent('videosizechanged', function(
       uid: number, width: number, height: number, rotation: number
     ) {
       fire('videosizechanged', uid, width, height, rotation);
+      fire('videoSizeChanged', uid, width, height, rotation);
     });
 
     this.rtcEngine.onEvent('firstremotevideoframe', function(
@@ -221,11 +252,13 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
       elapsed: number
     ) {
       fire('firstremotevideoframe', uid, width, height, elapsed);
+      fire('firstRemoteVideoFrame', uid, width, height, elapsed);
     });
 
     this.rtcEngine.onEvent('userjoined', function(uid: number, elapsed: number) {
       console.log('user : ' + uid + ' joined.');
       fire('userjoined', uid, elapsed);
+      fire('userJoined', uid, elapsed);
     });
 
     this.rtcEngine.onEvent('useroffline', function(uid: number, reason: number) {
@@ -237,46 +270,57 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
       self.streams[uid] = undefined;
       self.rtcEngine.unsubscribe(uid);
       fire('removestream', uid, reason);
+      fire('removeStream', uid, reason);
     });
 
     this.rtcEngine.onEvent('usermuteaudio', function(uid: number, muted: boolean) {
       fire('usermuteaudio', uid, muted);
+      fire('userMuteAudio', uid, muted);
     });
 
     this.rtcEngine.onEvent('usermutevideo', function(uid: number, muted: boolean) {
       fire('usermutevideo', uid, muted);
+      fire('userMuteVideo', uid, muted);
     });
 
     this.rtcEngine.onEvent('userenablevideo', function(uid: number, enabled: boolean) {
       fire('userenablevideo', uid, enabled);
+      fire('userEnableVideo', uid, enabled);
     });
 
     this.rtcEngine.onEvent('userenablelocalvideo', function(uid: number, enabled: boolean) {
       fire('userenablelocalvideo', uid, enabled);
+      fire('userEnableLocalVideo', uid, enabled);
     });
 
     this.rtcEngine.onEvent('cameraready', function() {
       fire('cameraready');
+      fire('cameraReady');
     });
 
     this.rtcEngine.onEvent('videostopped', function() {
       fire('videostopped');
+      fire('videoStopped');
     });
 
     this.rtcEngine.onEvent('connectionlost', function() {
       fire('connectionlost');
+      fire('connectionLost');
     });
 
     this.rtcEngine.onEvent('connectioninterrupted', function() {
       fire('connectioninterrupted');
+      fire('connectionInterrupted');
     });
 
     this.rtcEngine.onEvent('connectionbanned', function() {
       fire('connectionbanned');
+      fire('connectionBanned');
     });
 
     this.rtcEngine.onEvent('refreshrecordingservicestatus', function(status) {
       fire('refreshrecordingservicestatus', status);
+      fire('refreshRecordingServiceStatus', status);
     });
 
     this.rtcEngine.onEvent('streammessage', function(
@@ -286,6 +330,7 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
       len: number
     ) {
       fire('streammessage', uid, streamId, msg, len);
+      fire('streamMessage', uid, streamId, msg, len);
     });
 
     this.rtcEngine.onEvent('streammessageerror', function(
@@ -296,30 +341,97 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
       cached: number
     ) {
       fire('streammessageerror', uid, streamId, code, missed, cached);
+      fire('streamMessageError', uid, streamId, code, missed, cached);
     });
 
     this.rtcEngine.onEvent('mediaenginestartcallsuccess', function() {
       fire('mediaenginestartcallsuccess');
+      fire('mediaEngineStartCallSuccess');
     });
 
     this.rtcEngine.onEvent('requestchannelkey', function() {
       fire('requestchannelkey');
+      fire('requestChannelKey');
     });
 
     this.rtcEngine.onEvent('fristlocalaudioframe', function(elapsed: number) {
       fire('firstlocalaudioframe', elapsed);
+      fire('firstLocalAudioFrame', elapsed);
     });
 
     this.rtcEngine.onEvent('firstremoteaudioframe', function(uid: number, elapsed: number) {
       fire('firstremoteaudioframe', uid, elapsed);
+      fire('firstRemoteAudioFrame', uid, elapsed);
+    });
+
+    this.rtcEngine.onEvent('remoteVideoStateChanged', function(uid: number, state: RemoteVideoState) {
+      fire('remoteVideoStateChanged', uid, state);
+    });
+
+    this.rtcEngine.onEvent('cameraFocusAreaChanged', function(
+      x: number, y: number, width: number, height: number
+    ) {
+      fire('cameraFocusAreaChanged', x, y, width, height);
+    });
+
+    this.rtcEngine.onEvent('cameraExposureAreaChanged', function(x, y, width, height) {
+      fire('cameraExposureAreaChanged', x, y, width, height);
+    });
+
+    this.rtcEngine.onEvent('tokenPrivilegeWillExpire', function(token: string) {
+      fire('tokenPrivilegeWillExpire', token);
+    });
+
+    this.rtcEngine.onEvent('streamPublished', function(url: string, error: number) {
+      fire('streamPublished', url, error);
+    });
+
+    this.rtcEngine.onEvent('streamUnpublished', function(url: string) {
+      fire('streamUnpublished', url);
+    });
+
+    this.rtcEngine.onEvent('transcodingUpdated', function() {
+      fire('transcodingUpdated');
+    });
+
+    this.rtcEngine.onEvent('streamInjectStatus', function(
+      url: string, uid: number, status: number
+    ) {
+      fire('streamInjectStatus', url, uid, status);
+    });
+
+    this.rtcEngine.onEvent('localPublishFallbackToAudioOnly', function(
+      isFallbackOrRecover: boolean
+    ) {
+      fire('localPublishFallbackToAudioOnly', isFallbackOrRecover);
+    });
+
+    this.rtcEngine.onEvent('remoteSubscribeFallbackToAudioOnly', function(
+      uid: number,
+      isFallbackOrRecover: boolean
+    ) {
+      fire('remoteSubscribeFallbackToAudioOnly', uid, isFallbackOrRecover);
+    });
+
+    this.rtcEngine.onEvent('microphoneEnabled', function(enabled: boolean) {
+      fire('microphoneEnabled', enabled);
+    });
+
+    this.rtcEngine.onEvent('connectionStateChanged', function(
+      state: ConnectionState,
+      reason: ConnectionChangeReason
+    ) {
+      fire('connectionStateChanged', state, reason);
     });
 
     this.rtcEngine.onEvent('activespeaker', function(uid: number) {
       fire('activespeaker', uid);
+      fire('activeSpeaker', uid);
     });
 
     this.rtcEngine.onEvent('clientrolechanged', function(oldRole: ClientRoleType, newRole: ClientRoleType) {
       fire('clientrolechanged', oldRole, newRole);
+      fire('clientRoleChanged', oldRole, newRole);
     });
 
     this.rtcEngine.onEvent('audiodevicevolumechanged', function(
@@ -328,18 +440,22 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
       muted: boolean
     ) {
       fire('audiodevicevolumechanged', deviceType, volume, muted);
+      fire('audioDeviceVolumeChanged', deviceType, volume, muted);
     });
 
     this.rtcEngine.onEvent('videosourcejoinsuccess', function(uid: number) {
       fire('videosourcejoinedsuccess', uid);
+      fire('videoSourceJoinedSuccess', uid);
     });
 
     this.rtcEngine.onEvent('videosourcerequestnewtoken', function() {
       fire('videosourcerequestnewtoken');
+      fire('videoSourceRequestNewToken');
     });
 
     this.rtcEngine.onEvent('videosourceleavechannel', function() {
       fire('videosourceleavechannel');
+      fire('videoSourceLeaveChannel');
     });
     this.rtcEngine.registerDeliverFrame(function(infos) {
       self.onRegisterDeliverFrame(infos);
@@ -532,7 +648,7 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
 
   /**
    * @description Leave channel
-   * @returns {int} 0 for success, <0 for failure
+   * @returns {number} 0 for success, <0 for failure
    */
   leaveChannel(): number {
     return this.rtcEngine.leaveChannel();
@@ -544,7 +660,7 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
    * @param {boolean} fullband enable/disable fullband codec
    * @param {boolean} stereo enable/disable stereo codec
    * @param {boolean} fullBitrate enable/disable high bitrate mode
-   * @returns {int} 0 for success, <0 for failure
+   * @returns {number} 0 for success, <0 for failure
    */
   setHighQualityAudioParameters(fullband: boolean, stereo: boolean, fullBitrate: boolean): number {
     return this.rtcEngine.setHighQualityAudioParameters(fullband, stereo, fullBitrate);
@@ -853,7 +969,7 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
    * @description This method mutes/unmutes local audio. It enables/disables
    * sending local audio streams to the network.
    * @param {boolean} mute mute/unmute audio
-   * @returns {int} 0 for success, <0 for failure
+   * @returns {number} 0 for success, <0 for failure
    */
   muteLocalAudioStream(mute: boolean): number {
     return this.rtcEngine.muteLocalAudioStream(mute);
@@ -862,7 +978,7 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
   /**
    * @description This method mutes/unmutes all remote users’ audio streams.
    * @param {boolean} mute mute/unmute audio
-   * @returns {int} 0 for success, <0 for failure
+   * @returns {number} 0 for success, <0 for failure
    */
   muteAllRemoteAudioStreams(mute: boolean): number {
     return this.rtcEngine.muteAllRemoteAudioStreams(mute);
@@ -871,7 +987,7 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
   /**
    * @description Stops receiving all remote users' audio streams by default.
    * @param {boolean} mute mute/unmute audio
-   * @returns {int} 0 for success, <0 for failure
+   * @returns {number} 0 for success, <0 for failure
    */
   setDefaultMuteAllRemoteAudioStreams(mute: boolean): number {
     return this.rtcEngine.setDefaultMuteAllRemoteAudioStreams(mute);
@@ -1583,7 +1699,7 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
   /**
    * @description This method updates the screen capture region.
    * @param {*} rect {left: 0, right: 100, top: 0, bottom: 100} (relative distance from the left-top corner of the screen)
-   * @returns {int} 0 for success, <0 for failure
+   * @returns {number} 0 for success, <0 for failure
    */
   updateScreenCaptureRegion(
     rect: {
@@ -1698,6 +1814,77 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
   setAudioMixingPosition(position: number): number {
     return this.rtcEngine.setAudioMixingPosition(position);
   }
+
+  // ===========================================================================
+  // CDN STREAMING
+  // ===========================================================================
+   /**
+    * @description Adds a stream RTMP URL address, to which the host publishes the stream. (CDN live only.)
+    * Invoke onStreamPublished when successful
+    * @note
+    * - Ensure that the user joins the channel before calling this method.
+    * - This method adds only one stream RTMP URL address each time it is called.
+    * - The RTMP URL address must not contain special characters, such as Chinese language characters.
+    * @param {string} url Pointer to the RTMP URL address, to which the host publishes the stream
+    * @param {bool} transcodingEnabled Sets whether transcoding is enabled/disabled
+    * @returns {number} 0 for success, <0 for failure
+    */
+  addPublishStreamUrl(url: string, transcodingEnabled: boolean): number {
+    return this.rtcEngine.addPublishStreamUrl(url, transcodingEnabled);
+  }
+
+  /**
+   * @description Removes a stream RTMP URL address. (CDN live only.)
+   * @note
+   * - This method removes only one RTMP URL address each time it is called.
+   * - The RTMP URL address must not contain special characters, such as Chinese language characters.
+   * @param {string} url Pointer to the RTMP URL address to be removed.
+   * @returns {number} 0 for success, <0 for failure
+   */
+  removePublishStreamUrl(url: string): number {
+    return this.rtcEngine.removePublishStreamUrl(url);
+  }
+
+  /**
+   * @description Sets the video layout and audio settings for CDN live. (CDN live only.)
+   * @param {TranscodingConfig} transcoding transcoding Sets the CDN live audio/video transcoding settings. See LiveTranscoding.
+   * @returns {number} 0 for success, <0 for failure
+   */
+  setLiveTranscoding(transcoding: TranscodingConfig): number {
+    return this.rtcEngine.setLiveTranscoding(transcoding);
+  }
+
+  // ===========================================================================
+  // STREAM INJECTION
+  // ===========================================================================
+  /**
+   * @description Adds a voice or video stream HTTP/HTTPS URL address to a live broadcast.
+   * - The \ref IRtcEngineEventHandler::onStreamInjectedStatus "onStreamInjectedStatus" callback returns
+   * the inject stream status.
+   * - The added stream HTTP/HTTPS URL address can be found in the channel with a @p uid of 666, and the
+   * \ref IRtcEngineEventHandler::onUserJoined "onUserJoined" and \ref IRtcEngineEventHandler::onFirstRemoteVideoFrame "onFirstRemoteVideoFrame"
+   * callbacks are triggered.
+   * @param {string} url Pointer to the HTTP/HTTPS URL address to be added to the ongoing live broadcast. Valid protocols are RTMP, HLS, and FLV.
+   * - Supported FLV audio codec type: AAC.
+   * - Supported FLV video codec type: H264 (AVC).
+   * @param {InjectStreamConfig} config Pointer to the InjectStreamConfig object that contains the configuration of the added voice or video stream
+   * @returns {number} 0 for success, <0 for failure
+   */
+  addInjectStreamUrl(url: string, config: InjectStreamConfig): number {
+    return this.rtcEngine.addInjectStreamUrl(url, config);
+  }
+
+  /**
+   * @description Removes the voice or video stream HTTP/HTTPS URL address from a live broadcast.
+   * @note If this method is called successfully, the \ref IRtcEngineEventHandler::onUserOffline "onUserOffline" callback is triggered
+   * and a stream uid of 666 is returned.
+   * @param {string} url Pointer to the HTTP/HTTPS URL address of the added stream to be removed.
+   * @returns {number} 0 for success, <0 for failure
+   */
+  removeInjectStreamUrl(url: string): number {
+    return this.rtcEngine.removeInjectStreamUrl(url);
+  }
+
 
   // ===========================================================================
   // RAW DATA
