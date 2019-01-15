@@ -73,11 +73,13 @@ describe('Basic API Coverage', () => {
   });
 
   it('Enable/Disable Video', () => {
-    expect(localRtcEngine.enableVideo() <= 0).toBeTruthy();
     expect(localRtcEngine.disableVideo() <= 0).toBeTruthy();
+    expect(localRtcEngine.enableVideo() <= 0).toBeTruthy();
   });
 
   it('Join channel', async () => {
+    localRtcEngine.setChannelProfile(1);
+    localRtcEngine.setClientRole(1);
     testChannel = generateRandomString(10);
     testUid = generateRandomNumber(100000);
     await doJoin(localRtcEngine, testChannel, testUid);
@@ -85,6 +87,32 @@ describe('Basic API Coverage', () => {
 
   it('leave channel', async () => {
     await doLeave(localRtcEngine);
+  });
+});
+
+describe('cdn coverage', () => {
+  beforeAll(() => {
+    localRtcEngine = new AgoraRtcEngine();
+    localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
+  });
+  beforeEach(() => {
+    // Restore mocks after each test
+    jest.restoreAllMocks();
+  });
+
+  it('Join channel', async () => {
+    streaming = new LiveStreaming(localRtcEngine);
+    testChannel = generateRandomString(10);
+    testUid = generateRandomNumber(100000);
+    await streaming.join(testChannel, testUid);
+  });
+
+  it('publish cdn', async () => {
+    await streaming.publish();
+  });
+
+  it('unpublish cdn', async () => {
+    await streaming.unpublish();
   });
 });
 

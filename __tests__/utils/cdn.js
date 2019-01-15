@@ -1,10 +1,8 @@
-const generateRandomString = require('./index.js').generateRandomString;
-
 const host = 'rtmp://vid-218.push.chinanetcenter.broadcastapp.agora.io/live';
 
 class LiveStreaming {
   constructor(localRtcEngine) {
-    this.ns = generateRandomString(4);
+    this.ns = 'agoratest';
     this.localRtcEngine = localRtcEngine;
   }
 
@@ -37,12 +35,28 @@ class LiveStreaming {
       //   audioBitrate: 48,
       //   audioChannels: 1
       // });
-      this.localRtcEngine.addPublishStreamUrl(`${host}/${this.ns}`, false);
+      let url = `${host}/${this.ns}`;
+      console.log(`publish to ${url}`);
+      this.localRtcEngine.addPublishStreamUrl(url, false);
     });
   }
 
   unpublish() {
     this.localRtcEngine.removePublishStreamUrl(`${host}/${this.ns}`);
+  }
+
+  join(channel, uid) {
+    return new Promise(resolve => {
+      let rtcEngine = this.localRtcEngine;
+      rtcEngine.on('joinedchannel', () => {
+        resolve();
+      });
+      rtcEngine.setChannelProfile(1);
+      rtcEngine.setClientRole(1);
+      rtcEngine.setAudioProfile(0, 1);
+      rtcEngine.enableVideo();
+      rtcEngine.joinChannel(null, channel, '', uid);
+    });
   }
 }
 
