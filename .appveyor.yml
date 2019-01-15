@@ -10,5 +10,6 @@ cache:
 install:
   - ps: Install-Product node 8 x86
   - npm install
+  - npm install -g canvas
 
 build_script:
