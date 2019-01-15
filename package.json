@@ -15,7 +15,6 @@
     "doc:js": "node ./scripts/jsapi.js",
     "download": "node ./scripts/download.js",
     "example": "cd example && npm install && npm run dev",
-    "lint": "eslint .",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "test": "npm run build:node && jest --detectOpenHandles --forceExit",
     "quicktest": "jest --detectOpenHandles --forceExit"
@@ -37,10 +36,6 @@
   "devDependencies": {
     "@types/node": "^10.12.18",
     "canvas": "^2.3.0",
-    "eslint": "^4.19.1",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-config-xo": "^0.22.2",
-    "eslint-plugin-prettier": "^2.6.0",
     "jest": "^23.1.0",
     "jsdoc-to-markdown": "^4.0.1",
     "jsdom": "^13.1.0",

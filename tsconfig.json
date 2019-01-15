@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "outDir": "./js",
-    "allowJs": true,
     "baseUrl": ".",
     "target": "es6",
     "module": "commonjs",
