@@ -379,7 +379,7 @@ class AgoraRtcEngine extends events_1.default {
         const len = infos.length;
         for (let i = 0; i < len; i++) {
             const info = infos[i];
-            const { type, uid, header, ydata, udata, vdata } = info.type;
+            const { type, uid, header, ydata, udata, vdata } = info;
             if (!header || !ydata || !udata || !vdata) {
                 console.log('Invalid data param ： ' + header + ' ' + ydata + ' ' + udata + ' ' + vdata);
                 continue;
