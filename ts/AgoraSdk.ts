@@ -541,7 +541,7 @@ export default class AgoraRtcEngine extends EventEmitter implements IAgoraRtcEng
       const info = infos[i];
       const {
         type, uid, header, ydata, udata, vdata
-      } = info.type;
+      } = info;
       if (!header || !ydata || !udata || !vdata) {
         console.log(
           'Invalid data param ： ' + header + ' ' + ydata + ' ' + udata + ' ' + vdata
