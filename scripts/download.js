@@ -42,7 +42,7 @@ const getUrl = () => {
     }
   })();
 
-  let url = `http://download.agora.io/sdk/release/Agora_RTC_Electron_SDK_for_${platformLabel}_${versionLabel}_${electronDepLabel}.zip`
+  let url = `http://download.agora.io/sdk/release/Agora_RTC_Electron_SDK_for_${platformLabel}_${versionLabel}_${'e3'}.zip`
   
   // log download info
   shell.echo(chalk.blue(`Package Version: ${version.version}`));
