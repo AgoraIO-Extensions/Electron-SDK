@@ -78,9 +78,11 @@ class AgoraRtcEngine extends events_1.default {
         });
         this.rtcEngine.onEvent('joinchannel', function (channel, uid, elapsed) {
             fire('joinedchannel', channel, uid, elapsed);
+            fire('joinedChannel', channel, uid, elapsed);
         });
         this.rtcEngine.onEvent('rejoinchannel', function (channel, uid, elapsed) {
             fire('rejoinedchannel', channel, uid, elapsed);
+            fire('rejoinedChannel', channel, uid, elapsed);
         });
         this.rtcEngine.onEvent('warning', function (warn, msg) {
             fire('warning', warn, msg);
@@ -90,64 +92,84 @@ class AgoraRtcEngine extends events_1.default {
         });
         this.rtcEngine.onEvent('audioquality', function (uid, quality, delay, lost) {
             fire('audioquality', uid, quality, delay, lost);
+            fire('audioQuality', uid, quality, delay, lost);
         });
         this.rtcEngine.onEvent('audiovolumeindication', function (uid, volume, speakerNumber, totalVolume) {
             fire('audiovolumeindication', uid, volume, speakerNumber, totalVolume);
+            fire('audioVolumeIndication', uid, volume, speakerNumber, totalVolume);
         });
         this.rtcEngine.onEvent('leavechannel', function () {
             fire('leavechannel');
+            fire('leaveChannel');
         });
         this.rtcEngine.onEvent('rtcstats', function (stats) {
             fire('rtcstats', stats);
+            fire('rtcStats', stats);
         });
         this.rtcEngine.onEvent('localvideostats', function (stats) {
             fire('localvideostats', stats);
+            fire('localVideoStats', stats);
         });
         this.rtcEngine.onEvent('remotevideostats', function (stats) {
             fire('remotevideostats', stats);
+            fire('remoteVideoStats', stats);
         });
         this.rtcEngine.onEvent('audiodevicestatechanged', function (deviceId, deviceType, deviceState) {
             fire('audiodevicestatechanged', deviceId, deviceType, deviceState);
+            fire('audioDeviceStateChanged', deviceId, deviceType, deviceState);
         });
         this.rtcEngine.onEvent('audiomixingfinished', function () {
             fire('audiomixingfinished');
+            fire('audioMixingFinished');
         });
         this.rtcEngine.onEvent('apicallexecuted', function (api, err) {
             fire('apicallexecuted', api, err);
+            fire('apiCallExecuted', api, err);
         });
         this.rtcEngine.onEvent('remoteaudiomixingbegin', function () {
             fire('remoteaudiomixingbegin');
+            fire('remoteAudioMixingBegin');
         });
         this.rtcEngine.onEvent('remoteaudiomixingend', function () {
             fire('remoteaudiomixingend');
+            fire('remoteAudioMixingEnd');
         });
         this.rtcEngine.onEvent('audioeffectfinished', function (soundId) {
             fire('audioeffectfinished', soundId);
+            fire('audioEffectFinished', soundId);
         });
         this.rtcEngine.onEvent('videodevicestatechanged', function (deviceId, deviceType, deviceState) {
             fire('videodevicestatechanged', deviceId, deviceType, deviceState);
+            fire('videoDeviceStateChanged', deviceId, deviceType, deviceState);
         });
         this.rtcEngine.onEvent('networkquality', function (uid, txquality, rxquality) {
             fire('networkquality', uid, txquality, rxquality);
+            fire('networkQuality', uid, txquality, rxquality);
         });
         this.rtcEngine.onEvent('lastmilequality', function (quality) {
             fire('lastmilequality', quality);
+            fire('lastMileQuality', quality);
         });
         this.rtcEngine.onEvent('firstlocalvideoframe', function (width, height, elapsed) {
             fire('firstlocalvideoframe', width, height, elapsed);
+            fire('firstLocalVideoFrame', width, height, elapsed);
         });
         this.rtcEngine.onEvent('firstremotevideodecoded', function (uid, width, height, elapsed) {
             fire('addstream', uid, elapsed);
+            fire('addStream', uid, elapsed);
         });
         this.rtcEngine.onEvent('videosizechanged', function (uid, width, height, rotation) {
             fire('videosizechanged', uid, width, height, rotation);
+            fire('videoSizeChanged', uid, width, height, rotation);
         });
         this.rtcEngine.onEvent('firstremotevideoframe', function (uid, width, height, elapsed) {
             fire('firstremotevideoframe', uid, width, height, elapsed);
+            fire('firstRemoteVideoFrame', uid, width, height, elapsed);
         });
         this.rtcEngine.onEvent('userjoined', function (uid, elapsed) {
             console.log('user : ' + uid + ' joined.');
             fire('userjoined', uid, elapsed);
+            fire('userJoined', uid, elapsed);
         });
         this.rtcEngine.onEvent('useroffline', function (uid, reason) {
             if (!self.streams) {
@@ -158,72 +180,131 @@ class AgoraRtcEngine extends events_1.default {
             self.streams[uid] = undefined;
             self.rtcEngine.unsubscribe(uid);
             fire('removestream', uid, reason);
+            fire('removeStream', uid, reason);
         });
         this.rtcEngine.onEvent('usermuteaudio', function (uid, muted) {
             fire('usermuteaudio', uid, muted);
+            fire('userMuteAudio', uid, muted);
         });
         this.rtcEngine.onEvent('usermutevideo', function (uid, muted) {
             fire('usermutevideo', uid, muted);
+            fire('userMuteVideo', uid, muted);
         });
         this.rtcEngine.onEvent('userenablevideo', function (uid, enabled) {
             fire('userenablevideo', uid, enabled);
+            fire('userEnableVideo', uid, enabled);
         });
         this.rtcEngine.onEvent('userenablelocalvideo', function (uid, enabled) {
             fire('userenablelocalvideo', uid, enabled);
+            fire('userEnableLocalVideo', uid, enabled);
         });
         this.rtcEngine.onEvent('cameraready', function () {
             fire('cameraready');
+            fire('cameraReady');
         });
         this.rtcEngine.onEvent('videostopped', function () {
             fire('videostopped');
+            fire('videoStopped');
         });
         this.rtcEngine.onEvent('connectionlost', function () {
             fire('connectionlost');
+            fire('connectionLost');
         });
         this.rtcEngine.onEvent('connectioninterrupted', function () {
             fire('connectioninterrupted');
+            fire('connectionInterrupted');
         });
         this.rtcEngine.onEvent('connectionbanned', function () {
             fire('connectionbanned');
+            fire('connectionBanned');
         });
         this.rtcEngine.onEvent('refreshrecordingservicestatus', function (status) {
             fire('refreshrecordingservicestatus', status);
+            fire('refreshRecordingServiceStatus', status);
         });
         this.rtcEngine.onEvent('streammessage', function (uid, streamId, msg, len) {
             fire('streammessage', uid, streamId, msg, len);
+            fire('streamMessage', uid, streamId, msg, len);
         });
         this.rtcEngine.onEvent('streammessageerror', function (uid, streamId, code, missed, cached) {
             fire('streammessageerror', uid, streamId, code, missed, cached);
+            fire('streamMessageError', uid, streamId, code, missed, cached);
         });
         this.rtcEngine.onEvent('mediaenginestartcallsuccess', function () {
             fire('mediaenginestartcallsuccess');
+            fire('mediaEngineStartCallSuccess');
         });
         this.rtcEngine.onEvent('requestchannelkey', function () {
             fire('requestchannelkey');
+            fire('requestChannelKey');
         });
         this.rtcEngine.onEvent('fristlocalaudioframe', function (elapsed) {
             fire('firstlocalaudioframe', elapsed);
+            fire('firstLocalAudioFrame', elapsed);
         });
         this.rtcEngine.onEvent('firstremoteaudioframe', function (uid, elapsed) {
             fire('firstremoteaudioframe', uid, elapsed);
+            fire('firstRemoteAudioFrame', uid, elapsed);
+        });
+        this.rtcEngine.onEvent('remoteVideoStateChanged', function (uid, state) {
+            fire('remoteVideoStateChanged', uid, state);
+        });
+        this.rtcEngine.onEvent('cameraFocusAreaChanged', function (x, y, width, height) {
+            fire('cameraFocusAreaChanged', x, y, width, height);
+        });
+        this.rtcEngine.onEvent('cameraExposureAreaChanged', function (x, y, width, height) {
+            fire('cameraExposureAreaChanged', x, y, width, height);
+        });
+        this.rtcEngine.onEvent('tokenPrivilegeWillExpire', function (token) {
+            fire('tokenPrivilegeWillExpire', token);
+        });
+        this.rtcEngine.onEvent('streamPublished', function (url, error) {
+            fire('streamPublished', url, error);
+        });
+        this.rtcEngine.onEvent('streamUnpublished', function (url) {
+            fire('streamUnpublished', url);
+        });
+        this.rtcEngine.onEvent('transcodingUpdated', function () {
+            fire('transcodingUpdated');
+        });
+        this.rtcEngine.onEvent('streamInjectStatus', function (url, uid, status) {
+            fire('streamInjectStatus', url, uid, status);
+        });
+        this.rtcEngine.onEvent('localPublishFallbackToAudioOnly', function (isFallbackOrRecover) {
+            fire('localPublishFallbackToAudioOnly', isFallbackOrRecover);
+        });
+        this.rtcEngine.onEvent('remoteSubscribeFallbackToAudioOnly', function (uid, isFallbackOrRecover) {
+            fire('remoteSubscribeFallbackToAudioOnly', uid, isFallbackOrRecover);
+        });
+        this.rtcEngine.onEvent('microphoneEnabled', function (enabled) {
+            fire('microphoneEnabled', enabled);
+        });
+        this.rtcEngine.onEvent('connectionStateChanged', function (state, reason) {
+            fire('connectionStateChanged', state, reason);
         });
         this.rtcEngine.onEvent('activespeaker', function (uid) {
             fire('activespeaker', uid);
+            fire('activeSpeaker', uid);
         });
         this.rtcEngine.onEvent('clientrolechanged', function (oldRole, newRole) {
             fire('clientrolechanged', oldRole, newRole);
+            fire('clientRoleChanged', oldRole, newRole);
         });
         this.rtcEngine.onEvent('audiodevicevolumechanged', function (deviceType, volume, muted) {
             fire('audiodevicevolumechanged', deviceType, volume, muted);
+            fire('audioDeviceVolumeChanged', deviceType, volume, muted);
         });
         this.rtcEngine.onEvent('videosourcejoinsuccess', function (uid) {
             fire('videosourcejoinedsuccess', uid);
+            fire('videoSourceJoinedSuccess', uid);
         });
         this.rtcEngine.onEvent('videosourcerequestnewtoken', function () {
             fire('videosourcerequestnewtoken');
+            fire('videoSourceRequestNewToken');
         });
         this.rtcEngine.onEvent('videosourceleavechannel', function () {
             fire('videosourceleavechannel');
+            fire('videoSourceLeaveChannel');
         });
         this.rtcEngine.registerDeliverFrame(function (infos) {
             self.onRegisterDeliverFrame(infos);
@@ -397,7 +478,7 @@ class AgoraRtcEngine extends events_1.default {
     }
     /**
      * @description Leave channel
-     * @returns {int} 0 for success, <0 for failure
+     * @returns {number} 0 for success, <0 for failure
      */
     leaveChannel() {
         return this.rtcEngine.leaveChannel();
@@ -408,7 +489,7 @@ class AgoraRtcEngine extends events_1.default {
      * @param {boolean} fullband enable/disable fullband codec
      * @param {boolean} stereo enable/disable stereo codec
      * @param {boolean} fullBitrate enable/disable high bitrate mode
-     * @returns {int} 0 for success, <0 for failure
+     * @returns {number} 0 for success, <0 for failure
      */
     setHighQualityAudioParameters(fullband, stereo, fullBitrate) {
         return this.rtcEngine.setHighQualityAudioParameters(fullband, stereo, fullBitrate);
@@ -665,7 +746,7 @@ class AgoraRtcEngine extends events_1.default {
      * @description This method mutes/unmutes local audio. It enables/disables
      * sending local audio streams to the network.
      * @param {boolean} mute mute/unmute audio
-     * @returns {int} 0 for success, <0 for failure
+     * @returns {number} 0 for success, <0 for failure
      */
     muteLocalAudioStream(mute) {
         return this.rtcEngine.muteLocalAudioStream(mute);
@@ -673,7 +754,7 @@ class AgoraRtcEngine extends events_1.default {
     /**
      * @description This method mutes/unmutes all remote users’ audio streams.
      * @param {boolean} mute mute/unmute audio
-     * @returns {int} 0 for success, <0 for failure
+     * @returns {number} 0 for success, <0 for failure
      */
     muteAllRemoteAudioStreams(mute) {
         return this.rtcEngine.muteAllRemoteAudioStreams(mute);
@@ -681,7 +762,7 @@ class AgoraRtcEngine extends events_1.default {
     /**
      * @description Stops receiving all remote users' audio streams by default.
      * @param {boolean} mute mute/unmute audio
-     * @returns {int} 0 for success, <0 for failure
+     * @returns {number} 0 for success, <0 for failure
      */
     setDefaultMuteAllRemoteAudioStreams(mute) {
         return this.rtcEngine.setDefaultMuteAllRemoteAudioStreams(mute);
@@ -1309,7 +1390,7 @@ class AgoraRtcEngine extends events_1.default {
     /**
      * @description This method updates the screen capture region.
      * @param {*} rect {left: 0, right: 100, top: 0, bottom: 100} (relative distance from the left-top corner of the screen)
-     * @returns {int} 0 for success, <0 for failure
+     * @returns {number} 0 for success, <0 for failure
      */
     updateScreenCaptureRegion(rect) {
         return this.rtcEngine.updateScreenCaptureRegion(rect);
@@ -1401,6 +1482,71 @@ class AgoraRtcEngine extends events_1.default {
      */
     setAudioMixingPosition(position) {
         return this.rtcEngine.setAudioMixingPosition(position);
+    }
+    // ===========================================================================
+    // CDN STREAMING
+    // ===========================================================================
+    /**
+     * @description Adds a stream RTMP URL address, to which the host publishes the stream. (CDN live only.)
+     * Invoke onStreamPublished when successful
+     * @note
+     * - Ensure that the user joins the channel before calling this method.
+     * - This method adds only one stream RTMP URL address each time it is called.
+     * - The RTMP URL address must not contain special characters, such as Chinese language characters.
+     * @param {string} url Pointer to the RTMP URL address, to which the host publishes the stream
+     * @param {bool} transcodingEnabled Sets whether transcoding is enabled/disabled
+     * @returns {number} 0 for success, <0 for failure
+     */
+    addPublishStreamUrl(url, transcodingEnabled) {
+        return this.rtcEngine.addPublishStreamUrl(url, transcodingEnabled);
+    }
+    /**
+     * @description Removes a stream RTMP URL address. (CDN live only.)
+     * @note
+     * - This method removes only one RTMP URL address each time it is called.
+     * - The RTMP URL address must not contain special characters, such as Chinese language characters.
+     * @param {string} url Pointer to the RTMP URL address to be removed.
+     * @returns {number} 0 for success, <0 for failure
+     */
+    removePublishStreamUrl(url) {
+        return this.rtcEngine.removePublishStreamUrl(url);
+    }
+    /**
+     * @description Sets the video layout and audio settings for CDN live. (CDN live only.)
+     * @param {TranscodingConfig} transcoding transcoding Sets the CDN live audio/video transcoding settings. See LiveTranscoding.
+     * @returns {number} 0 for success, <0 for failure
+     */
+    setLiveTranscoding(transcoding) {
+        return this.rtcEngine.setLiveTranscoding(transcoding);
+    }
+    // ===========================================================================
+    // STREAM INJECTION
+    // ===========================================================================
+    /**
+     * @description Adds a voice or video stream HTTP/HTTPS URL address to a live broadcast.
+     * - The \ref IRtcEngineEventHandler::onStreamInjectedStatus "onStreamInjectedStatus" callback returns
+     * the inject stream status.
+     * - The added stream HTTP/HTTPS URL address can be found in the channel with a @p uid of 666, and the
+     * \ref IRtcEngineEventHandler::onUserJoined "onUserJoined" and \ref IRtcEngineEventHandler::onFirstRemoteVideoFrame "onFirstRemoteVideoFrame"
+     * callbacks are triggered.
+     * @param {string} url Pointer to the HTTP/HTTPS URL address to be added to the ongoing live broadcast. Valid protocols are RTMP, HLS, and FLV.
+     * - Supported FLV audio codec type: AAC.
+     * - Supported FLV video codec type: H264 (AVC).
+     * @param {InjectStreamConfig} config Pointer to the InjectStreamConfig object that contains the configuration of the added voice or video stream
+     * @returns {number} 0 for success, <0 for failure
+     */
+    addInjectStreamUrl(url, config) {
+        return this.rtcEngine.addInjectStreamUrl(url, config);
+    }
+    /**
+     * @description Removes the voice or video stream HTTP/HTTPS URL address from a live broadcast.
+     * @note If this method is called successfully, the \ref IRtcEngineEventHandler::onUserOffline "onUserOffline" callback is triggered
+     * and a stream uid of 666 is returned.
+     * @param {string} url Pointer to the HTTP/HTTPS URL address of the added stream to be removed.
+     * @returns {number} 0 for success, <0 for failure
+     */
+    removeInjectStreamUrl(url) {
+        return this.rtcEngine.removeInjectStreamUrl(url);
     }
     // ===========================================================================
     // RAW DATA

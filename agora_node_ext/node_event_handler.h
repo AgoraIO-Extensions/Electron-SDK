@@ -69,7 +69,7 @@ namespace agora {
 #define RTC_EVENT_ACTIVE_SPEAKER "activespeaker"
 #define RTC_EVENT_STREAM_PUBLISHED "streamPublished"
 #define RTC_EVENT_STREAM_UNPUBLISHED "streamUnpublished"
-#define RTC_EVENT_TRANSCODING_UPDATED "trascodingUpdated"
+#define RTC_EVENT_TRANSCODING_UPDATED "transcodingUpdated"
 #define RTC_EVENT_STREAM_INJECT_STATUS "streamInjectStatus"
 #define RTC_EVENT_LOCAL_PUBLISH_FALLBACK_TO_AUDIO_ONLY "localPublishFallbackToAudioOnly"
 #define RTC_EVENT_REMOTE_SUBSCRIBE_FALLBACK_TO_AUDIO_ONLY "remoteSubscribeFallbackToAudioOnly"
