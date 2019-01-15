@@ -21,6 +21,125 @@ export type MediaDeviceType =
   3 |  // Video capturer
   4 // Application audio playback device
 
+
+export interface TranscodingUser {
+  /** stream uid */
+  uid: number,
+  /** x start positon of stream */
+  x: number,
+  /** y start positon of stream */
+  y: number,
+  /** selected width of stream */
+  width: number,
+  /** selected height of stream */
+  height: number,
+  /** zorder of the stream, [1,100] */
+  zOrder: number,
+  /** (double) transparency alpha of the stream, [0,1] */
+  alpha: number,
+  /**
+   * - 0: (Default) Supports dual channels at most, depending on the upstream of the broadcaster.
+   * - 1: The audio stream of the broadcaster uses the FL audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
+   * - 2: The audio stream of the broadcaster uses the FC audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
+   * - 3: The audio stream of the broadcaster uses the FR audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
+   * - 4: The audio stream of the broadcaster uses the BL audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
+   * - 5: The audio stream of the broadcaster uses the BR audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
+   */
+  audioChannel: number,
+}
+
+/** Transcoding Sets the CDN live audio/video transcoding settings. See LiveTranscoding. */
+export interface TranscodingConfig {
+  /** width of canvas */
+  width: number,
+  /** height of canvas */
+  height: number,
+  /** kbps value, for 1-1 mapping pls look at https://docs.agora.io/cn/Interactive%20Broadcast/API%20Reference/cpp/structagora_1_1rtc_1_1_video_encoder_configuration.html */
+  videoBitrate: number,
+  /** fps, default 15 */
+  videoFrameRate: number,
+  /** true for low latency, no video quality garanteed; false - high latency, video quality garanteed */
+  lowLatency: boolean,
+  /** Video GOP in frames, default 30 */
+  videoGop: number,
+  /**
+   * - VIDEO_CODEC_PROFILE_BASELINE = 66
+   * Baseline video codec profile. Generally used in video calls on mobile phones
+   * - VIDEO_CODEC_PROFILE_MAIN = 77
+   * Main video codec profile. Generally used in mainstream electronics such as MP4 players, portable video players, PSP, and iPads.
+   * - VIDEO_CODEC_PROFILE_HIGH = 100
+   * (Default) High video codec profile. Generally used in high-resolution broadcasts or television
+   */
+  videoCodecProfile: number,
+  /**
+   * RGB hex value. Value only, do not include a #. For example, 0xC0C0C0.
+   * number color = (A & 0xff) << 24 | (R & 0xff) << 16 | (G & 0xff) << 8 | (B & 0xff)
+   */
+  backgroundColor: number,
+  /** The number of users in the live broadcast */
+  userCount: number,
+  /** 
+   * - AUDIO_SAMPLE_RATE_32000 = 32000
+   * - AUDIO_SAMPLE_RATE_44100 = 44100
+   * - AUDIO_SAMPLE_RATE_48000 = 48000
+   */
+  audioSampleRate: number,
+  /** 
+   * - 1: (Default) Mono
+   * - 2: Two-channel stereo
+   * - 3: Three-channel stereo
+   * - 4: Four-channel stereo
+   * - 5: Five-channel stereo
+   * > A special player is required if you choose option 3, 4, or 5 */
+  audioChannels: number,
+  watermark: {
+    /**  url of the image */
+    url: string,
+    /** x start position of image */
+    x: number,
+    /** y start position of image */
+    y: number,
+    /** width of image */
+    width: number,
+    /** height of image */
+    height: number,
+  },
+  /** transcodingusers array */
+  transcodingUsers: Array<TranscodingUser>,
+}
+
+export interface InjectStreamConfig {
+    /** Width of the added stream in the live broadcast. The default value is 0 (same width as the original stream) */
+    width: number,
+    /** Height of the added stream in the live broadcast. The default value is 0 (same height as the original stream) */
+    height: number,
+    /** Video bitrate of the added stream in the live broadcast. The default value is 400 Kbps. */
+    videoBitrate: number,
+    /** Video frame rate of the added stream in the live broadcast. The default value is 15 fps */
+    videoFrameRate: number,
+    /** Video GOP of the added stream in the live broadcast in frames. The default value is 30 fps */
+    videoGop: number,
+    /** 
+     * Audio-sampling rate of the added stream in the live broadcast: #AUDIO_SAMPLE_RATE_TYPE. The default value is 48000 Hz
+     * @note Agora recommends setting the default value
+     * - AUDIO_SAMPLE_RATE_32000 = 32000
+     * - AUDIO_SAMPLE_RATE_44100 = 44100
+     * - AUDIO_SAMPLE_RATE_48000 = 48000
+     */
+    audioSampleRate: number,
+    /** 
+     * @note Agora recommends setting the default value
+     * Audio bitrate of the added stream in the live broadcast. The default value is 48 
+     */
+    audioBitrate: number,
+    /** 
+     * @note Agora recommends setting the default value
+     * - 1: (Default) Mono
+     * - 2: Two-channel stereo
+     */
+    audioChannels: number,
+}
+
 export interface RtcStats {
   duration: number,
   txBytes: number,
@@ -53,6 +172,26 @@ export interface RemoteVideoStats {
    */
   rxStreamType: StreamType,
 }
+
+export type RemoteVideoState = 
+  1 | // running 
+  2 // frozen, usually caused by network reason
+
+export type ConnectionState = 
+  1 | // 1: The SDK is disconnected from Agora's edge server
+  2 | // 2: The SDK is connecting to Agora's edge server.
+  3 | // 3: The SDK is connected to Agora's edge server and has joined a channel. You can now publish or subscribe to a media stream in the channel.
+  4 | // 4: The SDK keeps rejoining the channel after being disconnected from a joined channel because of network issues.
+  5 // 5: The SDK fails to connect to Agora's edge server or join the channel.
+
+export type ConnectionChangeReason = 
+  0 | // 0: The SDK is connecting to Agora's edge server.
+  1 | // 1: The SDK has joined the channel successfully.
+  2 | // 2: The connection between the SDK and Agora's edge server is interrupted.
+  3 | // 3: The connection between the SDK and Agora's edge server is banned by Agora's edge server.
+  4 | // 4: The SDK fails to join the channel for more than 20 minutes and stops reconnecting to the channel.
+  5 // 5: The SDK has left the channel.
+
 /**
  * interface for c++ addon (.node)
  */
@@ -217,6 +356,13 @@ export interface NodeRtcEngine {
   getAudioMixingDuration(): number,
   getAudioMixingCurrentPosition(): number,
   setAudioMixingPosition(position: number): number,
+  addPublishStreamUrl(url: string, transcodingEnabled: boolean): number,
+  removePublishStreamUrl(url: string): number,
+  setLiveTranscoding(transcoding: TranscodingConfig): number,
+  addInjectStreamUrl(url: string, config: InjectStreamConfig): number,
+  removeInjectStreamUrl(url: string): number,
+
+
   setRecordingAudioFrameParameters(
     sampleRate: number,
     channel: 1|2,
@@ -282,7 +428,8 @@ export interface NodeRtcEngine {
  * interface for js api
  */
 export interface IAgoraRtcEngine {
-  on(evt: 'apierror', cb: (api: string) => void): void,
+  /** Deprecated: In future lowercase event name will be deprecated
+   *  and will use camelcase intead */
   on(evt: 'apicallexecuted', cb: (api: string, err: number) => void): void,
   on(evt: 'warning', cb: (warn: number, msg: string) => void): void,
   on(evt: 'error', cb: (err: number, msg: string) => void): void,
@@ -330,7 +477,7 @@ export interface IAgoraRtcEngine {
     height: number, 
     elapsed: number
   ) => void): void,
-  on(evt: 'firstremotevideodecoded', cb: (
+  on(evt: 'addstream', cb: (
     uid: number,
     elapsed: number,
   ) => void): void,
@@ -357,7 +504,6 @@ export interface IAgoraRtcEngine {
   on(evt: 'connectionlost', cb: () => void): void,
   on(evt: 'connectioninterrupted', cb: () => void): void,
   on(evt: 'connectionbanned', cb: () => void): void,
-  // tbd
   on(evt: 'refreshrecordingservicestatus', cb: () => void): void,
   on(evt: 'streammessage', cb: (
     uid: number,
@@ -386,9 +532,135 @@ export interface IAgoraRtcEngine {
     volume: number,
     muted: boolean
   ) => void): void,
-  on(evt: 'videosourcejoinsuccess', cb: (uid: number) => void): void,
+  on(evt: 'videosourcejoinedsuccess', cb: (uid: number) => void): void,
   on(evt: 'videosourcerequestnewtoken', cb: () => void): void,
   on(evt: 'videosourceleavechannel', cb: () => void): void,
-  on(evt: 'cameraready', cb: () => void): void,
+
+
+  /** CAMELCASE */
+  on(evt: 'apiCallExecuted', cb: (api: string, err: number) => void): void,
+  on(evt: 'warning', cb: (warn: number, msg: string) => void): void,
+  on(evt: 'error', cb: (err: number, msg: string) => void): void,
+  on(evt: 'joinedChannel', cb: (
+    channel: string, uid: number, elapsed: number
+  ) => void): void,
+  on(evt: 'rejoinedChannel', cb: (
+    channel: string, uid: number, elapsed: number
+  ) => void): void,
+  on(evt: 'audioQuality', cb: (
+    uid: number, quality: AgoraNetworkQuality, delay: number, lost: number
+  ) => void): void,
+  on(evt: 'audioVolumeIndication', cb: (
+    uid: number,
+    volume: number,
+    speakerNumber: number,
+    totalVolume: number
+  ) => void): void,
+  on(evt: 'leaveChannel', cb: () => void): void,
+  on(evt: 'rtcStats', cb: (stats: RtcStats) => void): void,
+  on(evt: 'localVideoStats', cb: (stats: LocalVideoStats) => void): void,
+  on(evt: 'remoteVideoStats', cb: (stats: RemoteVideoStats) => void): void,
+  on(evt: 'audioDeviceStateChanged', cb: (
+    deviceId: string,
+    deviceType: number,
+    deviceState: number,
+  ) => void): void,
+  on(evt: 'audioMixingFinished', cb: () => void): void,
+  on(evt: 'remoteAudioMixingBegin', cb: () => void): void,
+  on(evt: 'remoteAudioMixingEnd', cb: () => void): void,
+  on(evt: 'audioEffectFinished', cb: (soundId: number) => void): void,
+  on(evt: 'videoDeviceStateChanged', cb: (
+    deviceId: string,
+    deviceType: number,
+    deviceState: number,
+  ) => void): void,
+  on(evt: 'networkQuality', cb: (
+    uid: number, 
+    txquality: AgoraNetworkQuality, 
+    rxquality: AgoraNetworkQuality
+  ) => void): void,
+  on(evt: 'lastMileQuality', cb: (quality: AgoraNetworkQuality) => void): void,
+  on(evt: 'firstLocalVideoFrame', cb: (
+    width: number, 
+    height: number, 
+    elapsed: number
+  ) => void): void,
+  on(evt: 'addStream', cb: (
+    uid: number,
+    elapsed: number,
+  ) => void): void,
+  on(evt: 'videoSizeChanged', cb: (
+    uid: number, 
+    width: number, 
+    height: number, 
+    rotation: number
+  ) => void): void,
+  on(evt: 'firstRemoteVideoFrame', cb: (
+    uid: number,
+    width: number,
+    height: number,
+    elapsed: number
+  ) => void): void,
+  on(evt: 'userJoined', cb: (uid: number, elapsed: number) => void): void,
+  on(evt: 'removeStream', cb: (uid: number, reason: number) => void): void,
+  on(evt: 'userMuteAudio', cb: (uid: number, muted: boolean) => void): void,
+  on(evt: 'userMuteVideo', cb: (uid: number, muted: boolean) => void): void,
+  on(evt: 'userEnableVideo', cb: (uid: number, enabled: boolean) => void): void,
+  on(evt: 'userEnableLocalVideo', cb: (uid: number, enabled: boolean) => void): void,
+  on(evt: 'cameraReady', cb: () => void): void,
+  on(evt: 'videoStopped', cb: () => void): void,
+  on(evt: 'connectionLost', cb: () => void): void,
+  on(evt: 'connectionInterrupted', cb: () => void): void,
+  on(evt: 'connectionBanned', cb: () => void): void,
+  on(evt: 'refreshRecordingServiceStatus', cb: () => void): void,
+  on(evt: 'streamMessage', cb: (
+    uid: number,
+    streamId: number,
+    msg: string,
+    len: number
+  ) => void): void,
+  on(evt: 'streamMessageError', cb: (
+    uid: number,
+    streamId: number,
+    code: number,
+    missed: number,
+    cached: number
+  ) => void): void,
+  on(evt: 'mediaEngineStartCallSuccess', cb: () => void): void,
+  on(evt: 'requestChannelKey', cb: () => void): void,
+  on(evt: 'fristLocalAudioFrame', cb: (elapsed: number) => void): void,
+  on(evt: 'firstRemoteAudioFrame', cb: (uid: number, elapsed: number) => void): void,
+  on(evt: 'activeSpeaker', cb: (uid: number) => void): void,
+  on(evt: 'clientRoleChanged', cb: (
+    oldRole: ClientRoleType,
+    newRole: ClientRoleType
+  ) => void): void,
+  on(evt: 'audioDeviceVolumeChanged', cb: (
+    deviceType: MediaDeviceType,
+    volume: number,
+    muted: boolean
+  ) => void): void,
+  on(evt: 'videoSourceJoinedSuccess', cb: (uid: number) => void): void,
+  on(evt: 'videoSourceRequestNewToken', cb: () => void): void,
+  on(evt: 'videoSourceLeaveChannel', cb: () => void): void,
+
+  on(evt: 'remoteVideoStateChanged', cb: (uid: number, state: RemoteVideoState) => void): void,
+  on(evt: 'cameraFocusAreaChanged', cb: (x: number, y: number, width: number, height: number) => void): void,
+  on(evt: 'cameraExposureAreaChanged', cb: (x: number, y: number, width: number, height: number) => void): void,
+  on(evt: 'tokenPrivilegeWillExpire', cb: (token: string) => void): void,
+  on(evt: 'streamPublished', cb: (url: string, error: number) => void): void,
+  on(evt: 'streamUnpublished', cb: (url: string) => void): void,
+  on(evt: 'transcodingUpdated', cb: () => void): void,
+  on(evt: 'streamInjectStatus', cb: (url: string, uid: number, status: number) => void): void,
+  on(evt: 'localPublishFallbackToAudioOnly', cb: (isFallbackOrRecover: boolean) => void): void,
+  on(evt: 'remoteSubscribeFallbackToAudioOnly', cb: (
+    uid: number,
+    isFallbackOrRecover: boolean
+  ) => void): void,
+  on(evt: 'microphoneEnabled', cb: (enabled: boolean) => void): void,
+  on(evt: 'connectionStateChanged', cb: (
+    state: ConnectionState,
+    reason: ConnectionChangeReason
+  ) => void): void,
 }
 
