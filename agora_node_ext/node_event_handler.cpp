@@ -836,7 +836,7 @@ namespace agora {
         {
             FUNC_TRACE;
             node_async_call::async_call([this, url, error] {
-                this->onStreamPublished(url, error);
+                this->onStreamPublished_node(url, error);
             });
         }
 
@@ -850,7 +850,7 @@ namespace agora {
         {
             FUNC_TRACE;
             node_async_call::async_call([this, url] {
-                this->onStreamUnpublished(url);
+                this->onStreamUnpublished_node(url);
             });
         }
 
