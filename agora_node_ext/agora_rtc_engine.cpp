@@ -600,21 +600,19 @@ namespace agora {
 
                 Local<Name> keyName = String::NewFromUtf8(args.GetIsolate(), "watermark", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> wmValue = obj->Get(args.GetIsolate()->GetCurrentContext(), keyName).ToLocalChecked();
-                if (wmValue.IsEmpty()) {
-                    status = napi_invalid_arg;
-                    break;
+                if (!wmValue.IsEmpty()) {
+                    Local<Object> objWm = wmValue->ToObject(args.GetIsolate());
+                    nodestring wmurl;
+                    if (napi_get_object_property_nodestring_(args.GetIsolate(), objWm, "url", wmurl) == napi_ok) {
+                        wm->url = wmurl;
+                    }
+                    napi_get_object_property_int32_(args.GetIsolate(), objWm, "x", wm->x);
+                    napi_get_object_property_int32_(args.GetIsolate(), objWm, "y", wm->y);
+                    napi_get_object_property_int32_(args.GetIsolate(), objWm, "width", wm->width);
+                    napi_get_object_property_int32_(args.GetIsolate(), objWm, "height", wm->height);
+                    transcoding.watermark = wm;
                 }
-                Local<Object> objWm = wmValue->ToObject(args.GetIsolate());
-                nodestring wmurl;
-                if (napi_get_object_property_nodestring_(args.GetIsolate(), objWm, "url", wmurl) == napi_ok) {
-                    wm->url = wmurl;
-                }
-                napi_get_object_property_int32_(args.GetIsolate(), objWm, "x", wm->x);
-                napi_get_object_property_int32_(args.GetIsolate(), objWm, "y", wm->y);
-                napi_get_object_property_int32_(args.GetIsolate(), objWm, "width", wm->width);
-                napi_get_object_property_int32_(args.GetIsolate(), objWm, "height", wm->height);
-
-                transcoding.watermark = wm;
+                
                 if (transcoding.userCount > 0) {
                     users = new TranscodingUser[transcoding.userCount];
                     Local<Name> keyName = String::NewFromUtf8(args.GetIsolate(), "transcodingUsers", NewStringType::kInternalized).ToLocalChecked();

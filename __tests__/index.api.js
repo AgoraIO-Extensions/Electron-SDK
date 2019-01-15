@@ -1,16 +1,22 @@
 require('./utils/mock')
 const AgoraRtcEngine = require('../js/AgoraSdk');
 const generateRandomNumber = require('./utils/index.js').generateRandomNumber;
+const generateRandomString = require('./utils/index.js').generateRandomString;
 const doJoin = require('./utils/doJoin');
 const doLeave = require('./utils/doLeave');
+const LiveStreaming = require('./utils/cdn');
 const MultiStream = require('./utils/multistream');
 
 let localRtcEngine = null;
 let multistream = null;
+let streaming = null;
+let testChannel = null;
+let testUid = null;
 
 describe('Basic API Coverage', () => {
   beforeAll(() => {
     localRtcEngine = new AgoraRtcEngine();
+    localRtcEngine.setLogFile('/')
     localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
   });
   afterEach(() => {
@@ -47,27 +53,38 @@ describe('Basic API Coverage', () => {
     expect(localRtcEngine.setAudioProfile(20, 20) < 0).toBeTruthy();
   });
 
+  it('Set Video Encoding Configs', () => {
+    expect(
+      localRtcEngine.setVideoEncoderConfiguration({
+        width: 640,
+        height: 360
+      })
+    ).toBe(0);
+  });
+
+  it('Set Default Mute All Remote Audio Streams', () => {
+    expect(localRtcEngine.setDefaultMuteAllRemoteAudioStreams(true)).toBe(0);
+    expect(localRtcEngine.setDefaultMuteAllRemoteAudioStreams(false)).toBe(0);
+  });
+
+  it('Set Default Mute All Remote Video Streams', () => {
+    expect(localRtcEngine.setDefaultMuteAllRemoteVideoStreams(true)).toBe(0);
+    expect(localRtcEngine.setDefaultMuteAllRemoteVideoStreams(false)).toBe(0);
+  });
+
   it('Enable/Disable Video', () => {
     expect(localRtcEngine.enableVideo() <= 0).toBeTruthy();
     expect(localRtcEngine.disableVideo() <= 0).toBeTruthy();
   });
 
-  it('Join/Leave channel and event:joinedchannel/leavechannel', async () => {
-    await doJoin(localRtcEngine)
-      .then(() => {
-        doLeave(localRtcEngine)
-          .then(() => {
-            // Expect(1).toBe(1);
-          })
-          .catch(err => {
-            console.error(err);
-            expect(2).toBe(1);
-          });
-      })
-      .catch(err => {
-        console.error(err);
-        expect(2).toBe(1);
-      });
+  it('Join channel', async () => {
+    testChannel = generateRandomString(10);
+    testUid = generateRandomNumber(100000);
+    await doJoin(localRtcEngine, testChannel, testUid);
+  });
+
+  it('leave channel', async () => {
+    await doLeave(localRtcEngine);
   });
 });
 
