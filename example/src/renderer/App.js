@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import AgoraRtcEngine from '../../../js/AgoraSdk';
+import AgoraRtcEngine from '../../../';
 import { List } from 'immutable';
 import path from 'path';
 
