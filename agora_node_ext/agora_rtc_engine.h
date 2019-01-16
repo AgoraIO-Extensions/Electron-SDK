@@ -231,7 +231,7 @@ namespace agora {
             NAPI_API(videoSourceSetChannelProfile);
             NAPI_API(videoSourceSetVideoProfile);
             NAPI_API(startScreenCapture2);
-            NAPI_API(stopScreenCatpure2);
+            NAPI_API(stopScreenCapture2);
             NAPI_API(videoSourceRelease);
             NAPI_API(videoSourceStartPreview);
             NAPI_API(videoSourceStopPreview);

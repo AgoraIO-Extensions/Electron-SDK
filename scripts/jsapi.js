@@ -7,7 +7,7 @@ let jsdoc = fs.createWriteStream(
 );
 
 jsdoc2md.render({ 
-  files: path.resolve(__dirname, '../js/AgoraSdk.js') 
+  files: path.resolve(__dirname, '../js/Api/index.js') 
 }).then(res => {
   jsdoc.write(res)
 })
