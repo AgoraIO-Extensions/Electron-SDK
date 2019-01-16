@@ -162,7 +162,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(addInjectStreamUrl)
                 PROPERTY_METHOD_DEFINE(removeInjectStreamUrl)
                 PROPERTY_METHOD_DEFINE(startScreenCapture2)
-                PROPERTY_METHOD_DEFINE(stopScreenCatpure2)
+                PROPERTY_METHOD_DEFINE(stopScreenCapture2)
                 PROPERTY_METHOD_DEFINE(videoSourceInitialize)
                 PROPERTY_METHOD_DEFINE(videoSourceJoin)
                 PROPERTY_METHOD_DEFINE(videoSourceLeave)
@@ -1353,7 +1353,7 @@ namespace agora {
             LOG_LEAVE;
         }
 
-        NAPI_API_DEFINE(NodeRtcEngine, stopScreenCatpure2)
+        NAPI_API_DEFINE(NodeRtcEngine, stopScreenCapture2)
         {
             LOG_ENTER;
             do{
