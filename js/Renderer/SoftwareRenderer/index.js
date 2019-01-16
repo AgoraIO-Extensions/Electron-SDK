@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const EventEmitter = require('events').EventEmitter;
 const isEqual = require('lodash.isequal');
 const YUVBuffer = require('yuv-buffer');
@@ -140,4 +142,4 @@ class Renderer {
         this.contentMode = mode;
     }
 }
-module.exports = Renderer;
+exports.default = Renderer;
