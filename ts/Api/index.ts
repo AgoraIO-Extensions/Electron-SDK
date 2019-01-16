@@ -15,7 +15,7 @@ import {
   InjectStreamConfig,
 } from './native_type';
 import { EventEmitter } from 'events';
-const agora = require('../build/Release/agora_node_ext');
+const agora = require('../../build/Release/agora_node_ext');
 
 
 /**
