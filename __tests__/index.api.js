@@ -1,5 +1,5 @@
 require('./utils/mock')
-const AgoraRtcEngine = require('../js/AgoraSdk');
+const AgoraRtcEngine = require('../js/AgoraSdk').default;
 const generateRandomNumber = require('./utils/index.js').generateRandomNumber;
 const generateRandomString = require('./utils/index.js').generateRandomString;
 const doJoin = require('./utils/doJoin');
