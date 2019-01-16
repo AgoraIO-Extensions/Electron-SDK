@@ -1,3 +1,8 @@
+## latest
+#### :house: Internal
+* Upgrade Agora Native SDK to 2.3.2 (both OSX and Windows), visit Agora Official Website for API CHANGELOG.
+* Support typescript (Use typescript to do refactor and generate d.ts for better develop experience).
+
 ## 2.0.8-rc.5 (Jan 7th, 2019)
 #### :house: Internal
 * Add `videoSourceSetLogFile` api (similiar to setLogFile)
