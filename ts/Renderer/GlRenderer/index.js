@@ -522,4 +522,4 @@ AgoraRender.prototype.constructor = function() {
   return new AgoraRender()
 }
 
-module.exports = AgoraRender;
+export default AgoraRender;

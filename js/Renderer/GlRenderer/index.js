@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const createProgramFromSources = require('./webgl-utils').createProgramFromSources;
 const EventEmitter = require('events').EventEmitter;
 const AgoraRender = function () {
@@ -430,4 +432,4 @@ const AgoraRender = function () {
 AgoraRender.prototype.constructor = function () {
     return new AgoraRender();
 };
-module.exports = AgoraRender;
+exports.default = AgoraRender;

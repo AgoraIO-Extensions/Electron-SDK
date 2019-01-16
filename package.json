@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "2.0.8-rc.5",
+  "version": "2.3.2-alpha",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -16,7 +16,7 @@
     "debug": "node ./scripts/debug.js",
     "doc:js": "node ./scripts/jsapi.js",
     "download": "node ./scripts/download.js",
-    "preexample": "npm run build:ts && npm run build:electron3",
+    "preexample": "npm run build:electron3",
     "example": "cd example && npm install && npm run dev",
     "tslint": "tslint -c tslint.json -p tsconfig.json --fix",
     "test": "npm run build:node && jest --detectOpenHandles --forceExit",
