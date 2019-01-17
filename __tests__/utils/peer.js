@@ -1,5 +1,5 @@
 require('./mockPeerEnv');
-const AgoraRtcEngine = require('../../js/AgoraSdk');
+const AgoraRtcEngine = require('../../js/AgoraSdk').default;
 
 if (process.argv.length < 4) {
   console.error(`missing params`);
