@@ -71,16 +71,6 @@ class IAudioFrameObserver {
    - false: Invalid buffer in AudioFrame, and the audio playback frame is discarded.
    */
   virtual bool onPlaybackAudioFrame(AudioFrame& audioFrame) = 0;
-  /** Callback occuring once every 10 ms. Retrieves the audio frame of a specified user before mixing.
-   
-   @param uid The user ID
-   @param audioFrame Pointer to AudioFrame.
-   @return
-   - true: Valid buffer in AudioFrame, and the mixed recorded and playback audio frame is sent out.
-   - false: Invalid buffer in AudioFrame, and the mixed recorded and playback audio frame is discarded.
-   */
-  virtual bool onPlaybackAudioFrameBeforeMixing(unsigned int uid,
-                                                    AudioFrame& audioFrame) = 0;
   /** Callback occuring every 10 ms. Retrieves the mixed recorded and playback audio frame.
 
    @note This method only returns the single-channel data.
@@ -91,6 +81,16 @@ class IAudioFrameObserver {
    - false: Invalid buffer in AudioFrame and the mixed recorded and playback audio frame is discarded.
    */
   virtual bool onMixedAudioFrame(AudioFrame& audioFrame) = 0;
+  /** Callback occuring once every 10 ms. Retrieves the audio frame of a specified user before mixing.
+
+  @param uid The user ID
+  @param audioFrame Pointer to AudioFrame.
+  @return
+  - true: Valid buffer in AudioFrame, and the mixed recorded and playback audio frame is sent out.
+  - false: Invalid buffer in AudioFrame, and the mixed recorded and playback audio frame is discarded.
+  */
+  virtual bool onPlaybackAudioFrameBeforeMixing(unsigned int uid,
+      AudioFrame& audioFrame) = 0;
 };
 
 class IVideoFrameObserver {
