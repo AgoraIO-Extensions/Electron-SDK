@@ -204,7 +204,7 @@ const MultiStreamTests = () => {
     // Wait remote stream to join channel first
     multistream.initLocalEngine();
     await multistream.localJoinChannel(uid);
-  });
+  }, 10000);
 
   it('Prepare videosource share', async () => {
     await multistream.prepareScreenShare();
