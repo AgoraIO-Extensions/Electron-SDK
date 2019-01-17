@@ -8,6 +8,7 @@
   "scripts": {
     "install": "npm run download",
     "build:dts": "rimraf ./types && tsc -p dtsconfig.json",
+    "prebuild:ts": "npm run build:dts",
     "build:ts": "rimraf ./js && tsc -p tsconfig.json",
     "build:node": "node ./scripts/build.js --runtime=node",
     "build:electron2": "node ./scripts/build.js --runtime=electron --electronDep=1.8.3",
@@ -38,10 +39,8 @@
   },
   "devDependencies": {
     "@types/node": "^10.12.18",
-    "canvas": "^2.3.0",
     "jest": "^23.1.0",
     "jsdoc-to-markdown": "^4.0.1",
-    "jsdom": "^13.1.0",
     "prettier": "^1.13.4",
     "ts-jest": "^23.10.5",
     "ts-node": "^7.0.1",
