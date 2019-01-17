@@ -224,7 +224,8 @@
                 'copies': [{
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
-                        './sdk/dll/agora_rtc_sdk.dll'
+                        './sdk/dll/agora_rtc_sdk.dll',
+                        './sdk/dll/agora_sig_sdk.dll'
                     ]
                 }],
                 'library_dirs': [
