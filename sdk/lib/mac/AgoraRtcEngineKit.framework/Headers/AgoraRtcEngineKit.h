@@ -173,13 +173,6 @@ For both callbacks, the SDK tries to reconnect to the server until the app calls
  */
 - (void)rtcEngineConnectionDidLost:(AgoraRtcEngineKit * _Nonnull)engine;
 
-
-/** Occurs when your connection is banned by the Agora Server.
-
- @param engine AgoraRtcEngineKit object
- */
-- (void)rtcEngineConnectionDidBanned:(AgoraRtcEngineKit * _Nonnull)engine;
-
 /** Occurs when the token expires in 30 seconds.
 
  The user becomes offline if the `token` used in [joinChannelByToken]([AgoraRtcEngineKit joinChannelByToken:channelId:info:uid:joinSuccess:]) expires. This callback is triggered 30 seconds before the `token` expires to remind the app to get a new `token`.
@@ -502,18 +495,6 @@ This callback returns that the local audio route switches to an earpiece, speake
  * @name Statistics Delegate Methods
  * -----------------------------------------------------------------------------
  */
-
-/** Reports the audio quality of the current call once every two seconds.
-
-Same as [audioQualityBlock]([AgoraRtcEngineKit audioQualityBlock:]).
-
- @param engine  AgoraRtcEngineKit object.
- @param uid     User ID of the speaker.
- @param quality Audio quality of the user: AgoraNetworkQuality
- @param delay   Time delay (ms).
- @param lost    Audio packet loss rate (%).
- */
-- (void)rtcEngine:(AgoraRtcEngineKit * _Nonnull)engine audioQualityOfUid:(NSUInteger)uid quality:(AgoraNetworkQuality)quality delay:(NSUInteger)delay lost:(NSUInteger)lost;
 
 /** Reports the statistics of the current call session once every two seconds.
 
