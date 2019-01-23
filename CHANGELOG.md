@@ -1,3 +1,7 @@
+## 2.0.8-rc.6 (Jan 23th, 2019)
+#### :bug: Bug Fix
+* Fixed wrong strategy of stride and width in C++.
+
 ## 2.0.8-rc.5 (Jan 7th, 2019)
 #### :house: Internal
 * Add `videoSourceSetLogFile` api (similiar to setLogFile)
