@@ -196,7 +196,7 @@ int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type, agora::rtc
 
 void NodeVideoFrameTransporter::setupFrameHeader(image_header_type*header, int stride, int width, int height)
 {
-    int left = 0;
+    int left = (stride - width) / 2;
     int top = 0;
     header->format = 0;
     header->width = htons(width);
