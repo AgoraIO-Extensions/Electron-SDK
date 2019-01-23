@@ -176,6 +176,7 @@ int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type, agora::rtc
     std::lock_guard<std::mutex> lck(m_lock);
     VideoFrameInfo& info = getVideoFrameInfo(type, uid);
     int destWidth = info.m_destWidth ? info.m_destWidth : stride;// videoFrame.width();
+    int destVideoWidth = info.m_destWidth ? info.m_destWidth : videoFrame.width();
     int destHeight = info.m_destHeight ? info.m_destHeight : videoFrame.height();
     size_t imageSize = sizeof(image_header_type) + destWidth * destHeight * 3 / 2;
     auto s = info.m_buffer.size();
@@ -184,7 +185,7 @@ int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type, agora::rtc
     image_header_type* hdr = reinterpret_cast<image_header_type*>(&info.m_buffer[0]);
     hdr->mirrored = mirrored ? 1 : 0;
     hdr->rotation = htons(rotation);
-    setupFrameHeader(hdr, destWidth, destWidth, destHeight);
+    setupFrameHeader(hdr, destWidth, destVideoWidth, destHeight);
     
     copyFrame(videoFrame, info, destWidth, stride0, destWidth, destHeight);
     info.m_count = 0;
