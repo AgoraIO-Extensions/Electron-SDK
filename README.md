@@ -34,10 +34,6 @@ Other resources:
 
 [API Reference](./docs/apis.md)
 
-[CDN for Built Binary File(Windows)](http://download.agora.io/sdk/release/Agora_RTC_Electron_SDK_for_Windows_v2_0_7.zip)
-
-[CDN for Built Binary File(Mac)](http://download.agora.io/sdk/release/Agora_RTC_Electron_SDK_for_Mac_v2_0_7.zip)
-
 [A complete solution for e-Edu](https://github.com/AgoraIO/ARD-eEducation-with-Electron)
 
 [A quickstart demo](https://github.com/AgoraIO-Community/Agora-Electron-Quickstart)
