@@ -1,3 +1,7 @@
+## 2.3.2-alpha.1 (Jan 23th, 2019)
+#### :bug: Bug Fix
+* Fixed wrong strategy of stride and width in C++.
+
 ## 2.3.2-alpha (Jan 17th, 2019)
 #### :house: Internal
 * Upgrade Agora Native SDK to 2.3.2 (both OSX and Windows), visit Agora Official Website for API CHANGELOG.
