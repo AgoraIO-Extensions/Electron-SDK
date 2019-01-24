@@ -267,7 +267,7 @@ class AgoraRtcEngine extends EventEmitter {
         console.log('Warning!!!!!!, streams is undefined.');
         return;
       }
-      self.streams[uid] = undefined;
+      self.destroyRender(uid);
       self.rtcEngine.unsubscribe(uid);
       fire('removestream', uid, reason);
       fire('removeStream', uid, reason);
