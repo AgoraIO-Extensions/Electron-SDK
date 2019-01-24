@@ -1,6 +1,7 @@
-## 2.3.2-alpha.1 (Jan 23th, 2019)
+## Latest
 #### :bug: Bug Fix
 * Fixed wrong strategy of stride and width in C++.
+* Destroy renderer properly when useroffline emitted.
 
 ## 2.3.2-alpha (Jan 17th, 2019)
 #### :house: Internal
