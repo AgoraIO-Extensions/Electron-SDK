@@ -425,7 +425,7 @@ class AgoraRtcEngine extends events_1.EventEmitter {
      * @param {function} onFailure err callback for destroyRenderer
      */
     destroyRender(key, onFailure) {
-        const renderer = this.streams[String(key)];
+        const renderer = this.streams.get(String(key));
         try {
             renderer.unbind();
             this.streams.delete(String(key));
