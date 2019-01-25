@@ -326,6 +326,12 @@ export interface NodeRtcEngine {
   videoSourceStopPreview(): number;
   videoSourceEnableDualStreamMode(enable: boolean): number;
   videoSourceSetParameter(parameter: string): number;
+  videoSourceUpdateScreenCaptureRegion(rect: {
+    left: number,
+    right: number,
+    top: number,
+    bottom: number
+  }): number;
   videoSourceRelease(): number;
   startScreenCapture(
     windowId: number,
