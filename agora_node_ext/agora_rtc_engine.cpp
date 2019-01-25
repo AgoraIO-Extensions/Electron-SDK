@@ -1078,10 +1078,19 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 bool enable;
+                NodeString deviceName;
                 status = napi_get_value_bool_(args[0], enable);
                 CHECK_NAPI_STATUS(pEngine, status);
-                RtcEngineParameters param(pEngine->m_engine);
-                result = param.enableLoopbackRecording(enable);
+                if (!args[1]->IsNull()) {
+                    status = napi_get_value_nodestring_(args[1], deviceName);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    RtcEngineParameters param(pEngine->m_engine);
+                    result = param.enableLoopbackRecording(enable, deviceName);
+                } else {
+                    RtcEngineParameters param(pEngine->m_engine);
+                    result = param.enableLoopbackRecording(enable);
+                }
+
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
