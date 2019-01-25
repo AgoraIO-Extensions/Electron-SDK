@@ -593,7 +593,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {function} onFailure err callback for destroyRenderer
    */
   destroyRender(key: 'local' | 'videosource' | number, onFailure?: (err: Error) => void) {
-    const renderer = this.streams[String(key)];
+    const renderer = this.streams.get(String(key));
     try {
       renderer.unbind();
       this.streams.delete(String(key));
