@@ -274,6 +274,10 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
         agora::rtc::AParameter rep(m_rtcEngine.get());
         rep->setParameters(cmd->parameters);
     }
+    else if(msg == AGORA_IPC_UPDATE_CAPTURE_SCREEN) {
+        m_rtcEngine->updateScreenCaptureRegion((const agora::rtc::Rect *)payload);
+    }
+
     LOG_LEAVE;
 }
 
