@@ -1441,10 +1441,11 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description This method enables loopback recording. Once enabled, the SDK collects all local sounds.
    * @param {boolean} [enable = false] whether to enable loop back recording
+   * @param {string|null} [deviceName = null] target audio device
    * @returns {number} 0 for success, <0 for failure
    */
-  enableLoopbackRecording(enable = false): number {
-    return this.rtcEngine.enableLoopbackRecording(enable);
+  enableLoopbackRecording(enable = false, deviceName: string | null = null): number {
+    return this.rtcEngine.enableLoopbackRecording(enable, deviceName);
   }
 
   /**
