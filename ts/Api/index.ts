@@ -1658,6 +1658,20 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @description This method updates the screen capture region for video source
+   * @param {*} rect {left: 0, right: 100, top: 0, bottom: 100} (relative distance from the left-top corner of the screen)
+   * @returns {number} 0 for success, <0 for failure
+   */
+  videoSourceUpdateScreenCaptureRegion(rect: {
+    left: number,
+    right: number,
+    top: number,
+    bottom: number
+  }) {
+    return this.rtcEngine.videoSourceUpdateScreenCaptureRegion(rect);
+  }
+
+  /**
    * @description release video source object
    * @returns {number} 0 for success, <0 for failure
    */
