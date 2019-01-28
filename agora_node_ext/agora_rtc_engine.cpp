@@ -176,6 +176,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(videoSourceEnableDualStreamMode)
                 PROPERTY_METHOD_DEFINE(videoSourceSetLogFile)
                 PROPERTY_METHOD_DEFINE(videoSourceSetParameter)
+                PROPERTY_METHOD_DEFINE(videoSourceUpdateScreenCaptureRegion)
                 PROPERTY_METHOD_DEFINE(setBool);
                 PROPERTY_METHOD_DEFINE(setInt);
                 PROPERTY_METHOD_DEFINE(setUInt);
@@ -1077,10 +1078,19 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 bool enable;
+                NodeString deviceName;
                 status = napi_get_value_bool_(args[0], enable);
                 CHECK_NAPI_STATUS(pEngine, status);
-                RtcEngineParameters param(pEngine->m_engine);
-                result = param.enableLoopbackRecording(enable);
+                if (!args[1]->IsNull()) {
+                    status = napi_get_value_nodestring_(args[1], deviceName);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    RtcEngineParameters param(pEngine->m_engine);
+                    result = param.enableLoopbackRecording(enable, deviceName);
+                } else {
+                    RtcEngineParameters param(pEngine->m_engine);
+                    result = param.enableLoopbackRecording(enable);
+                }
+
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -1487,6 +1497,39 @@ namespace agora {
             } while (false);
             LOG_LEAVE;
         }
+
+        NAPI_API_DEFINE(NodeRtcEngine, videoSourceUpdateScreenCaptureRegion)
+        {
+            LOG_ENTER;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                int top, left, bottom, right;
+                Local<Object> rect = args[0]->ToObject(args.GetIsolate());
+                Local<Name> topKey = String::NewFromUtf8(args.GetIsolate(), "top", NewStringType::kInternalized).ToLocalChecked();
+                Local<Value> topValue = rect->Get(args.GetIsolate()->GetCurrentContext(), topKey).ToLocalChecked();
+                top = topValue->Int32Value();
+
+                Local<Name> leftKey = String::NewFromUtf8(args.GetIsolate(), "left", NewStringType::kInternalized).ToLocalChecked();
+                Local<Value> leftValue = rect->Get(args.GetIsolate()->GetCurrentContext(), leftKey).ToLocalChecked();
+                left = leftValue->Int32Value();
+
+                Local<Name> bottomKey = String::NewFromUtf8(args.GetIsolate(), "bottom", NewStringType::kInternalized).ToLocalChecked();
+                Local<Value> bottomValue = rect->Get(args.GetIsolate()->GetCurrentContext(), bottomKey).ToLocalChecked();
+                bottom = bottomValue->Int32Value();
+
+                Local<Name> rightKey = String::NewFromUtf8(args.GetIsolate(), "right", NewStringType::kInternalized).ToLocalChecked();
+                Local<Value> rightValue = rect->Get(args.GetIsolate()->GetCurrentContext(), rightKey).ToLocalChecked();
+                right = rightValue->Int32Value();
+                Rect region(top, left, bottom, right);
+                if(pEngine->m_videoSourceSink.get())
+                    pEngine->m_videoSourceSink->updateScreenCapture(&region);
+            } while (false);
+            LOG_LEAVE;
+        }
+
 
         NAPI_API_DEFINE(NodeRtcEngine, leaveChannel)
         {
