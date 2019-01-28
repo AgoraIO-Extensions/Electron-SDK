@@ -9,7 +9,6 @@ const GlRenderer_1 = __importDefault(require("./GlRenderer"));
 class GlRenderer {
     constructor() {
         this.self = GlRenderer_1.default.apply(this);
-        this.contentMode = 0;
     }
     bind(element) {
         return this.self.bind(element);
@@ -19,6 +18,9 @@ class GlRenderer {
     }
     drawFrame(imageData) {
         return this.self.drawFrame(imageData);
+    }
+    setContentMode(mode) {
+        return this.self.setContentMode(mode);
     }
 }
 exports.GlRenderer = GlRenderer;
