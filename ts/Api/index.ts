@@ -752,7 +752,7 @@ class AgoraRtcEngine extends EventEmitter {
   setupViewContentMode(uid: number, mode: 0|1): number {
     if (this.streams.has(String(uid))) {
       const renderer = this.streams.get(String(uid));
-      renderer.contentMode = mode;
+      renderer.setContentMode(mode);
       return 0;
     } else {
       return -1;
