@@ -2,18 +2,16 @@ import SoftwareRenderer from './SoftwareRenderer';
 import createGlRenderer from './GlRenderer';
 
 interface IRenderer {
-  contentMode: 0|1; // 0 for fill, 1 for fit
   bind(element: Element): void;
   unbind(): void;
   drawFrame(imageData: Object): void;
+  setContentMode(mode: number): void;
 }
 
 class GlRenderer implements IRenderer {
   self;
-  contentMode: 0|1;
   constructor() {
     this.self = createGlRenderer.apply(this);
-    this.contentMode = 0;
   }
   bind(element: Element): void {
     return this.self.bind(element);
@@ -23,6 +21,9 @@ class GlRenderer implements IRenderer {
   }
   drawFrame(imageData: Object): void {
     return this.self.drawFrame(imageData);
+  }
+  setContentMode(mode: number): void {
+    return this.self.setContentMode(mode);
   }
 }
 
