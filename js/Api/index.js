@@ -1169,10 +1169,11 @@ class AgoraRtcEngine extends events_1.EventEmitter {
     /**
      * @description This method enables loopback recording. Once enabled, the SDK collects all local sounds.
      * @param {boolean} [enable = false] whether to enable loop back recording
+     * @param {string|null} [deviceName = null] target audio device
      * @returns {number} 0 for success, <0 for failure
      */
-    enableLoopbackRecording(enable = false) {
-        return this.rtcEngine.enableLoopbackRecording(enable);
+    enableLoopbackRecording(enable = false, deviceName = null) {
+        return this.rtcEngine.enableLoopbackRecording(enable, deviceName);
     }
     /**
      * @description This method checks whether the microphone works properly. Once the test starts, the SDK uses
@@ -1352,6 +1353,15 @@ class AgoraRtcEngine extends events_1.EventEmitter {
      */
     videoSourceSetParameters(parameter) {
         return this.rtcEngine.videoSourceSetParameter(parameter);
+    }
+
+    /**
+     * @description This method updates the screen capture region for video source
+     * @param {*} rect {left: 0, right: 100, top: 0, bottom: 100} (relative distance from the left-top corner of the screen)
+     * @returns {number} 0 for success, <0 for failure
+     */
+    videoSourceUpdateScreenCaptureRegion(rect) {
+        return this.rtcEngine.videoSourceUpdateScreenCaptureRegion(rect);
     }
     /**
      * @description release video source object
