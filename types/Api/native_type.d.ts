@@ -257,7 +257,7 @@ export interface NodeRtcEngine {
     setAudioRecordingVolume(volume: number): number;
     startAudioPlaybackDeviceTest(filepath: string): number;
     stopAudioPlaybackDeviceTest(): number;
-    enableLoopbackRecording(enable: boolean): number;
+    enableLoopbackRecording(enable: boolean, deviceName: string | null): number;
     startAudioRecordingDeviceTest(indicateInterval: number): number;
     stopAudioRecordingDeviceTest(): number;
     getAudioPlaybackDeviceMute(): boolean;
