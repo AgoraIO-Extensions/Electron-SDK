@@ -29,6 +29,10 @@ const AgoraRender = function() {
     firstFrameRender: false
   };
 
+  that.setContentMode = function(mode) {
+    that.contentMode = mode;
+  }
+
   that.bind = function(view) {
     initCanvas(
       view,
