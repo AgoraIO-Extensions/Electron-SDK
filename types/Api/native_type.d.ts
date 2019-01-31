@@ -1,20 +1,9 @@
-export declare type AgoraNetworkQuality = 0 | // unknown
-1 | // excellent
-2 | // good
-3 | // poor
-4 | // bad
-5 | // very bad
-6;
+export declare type AgoraNetworkQuality = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 /** 1 for broadcaster, 2 for audience */
 export declare type ClientRoleType = 1 | 2;
 /** 0 for high, 1 for low */
 export declare type StreamType = 0 | 1;
-export declare type MediaDeviceType = -1 | // Unknown device type
-0 | // Audio playback device
-1 | // Audio recording device
-2 | // Video renderer
-3 | // Video capturer
-4;
+export declare type MediaDeviceType = -1 | 0 | 1 | 2 | 3 | 4;
 export interface TranscodingUser {
     /** stream uid */
     uid: number;
@@ -161,19 +150,166 @@ export interface RemoteVideoStats {
      */
     rxStreamType: StreamType;
 }
-export declare type RemoteVideoState = 1 | // running
-2;
-export declare type ConnectionState = 1 | // 1: The SDK is disconnected from Agora's edge server
-2 | // 2: The SDK is connecting to Agora's edge server.
-3 | // 3: The SDK is connected to Agora's edge server and has joined a channel. You can now publish or subscribe to a media stream in the channel.
-4 | // 4: The SDK keeps rejoining the channel after being disconnected from a joined channel because of network issues.
-5;
-export declare type ConnectionChangeReason = 0 | // 0: The SDK is connecting to Agora's edge server.
-1 | // 1: The SDK has joined the channel successfully.
-2 | // 2: The connection between the SDK and Agora's edge server is interrupted.
-3 | // 3: The connection between the SDK and Agora's edge server is banned by Agora's edge server.
-4 | // 4: The SDK fails to join the channel for more than 20 minutes and stops reconnecting to the channel.
-5;
+export declare type RemoteVideoState = 1 | 2;
+export declare type ConnectionState = 1 | 2 | 3 | 4 | 5;
+export declare type ConnectionChangeReason = 0 | 1 | 2 | 3 | 4 | 5;
+/** @deprecated Video profile. */
+export declare enum VIDEO_PROFILE_TYPE {
+    /** 0: 160 &times; 120, frame rate 15 fps, bitrate 65 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_120P = 0,
+    /** 2: 120 &times; 120, frame rate 15 fps, bitrate 50 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_120P_3 = 2,
+    /** 10: 320&times;180, frame rate 15 fps, bitrate 140 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_180P = 10,
+    /** 12: 180 &times; 180, frame rate 15 fps, bitrate 100 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_180P_3 = 12,
+    /** 13: 240 &times; 180, frame rate 15 fps, bitrate 120 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_180P_4 = 13,
+    /** 20: 320 &times; 240, frame rate 15 fps, bitrate 200 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_240P = 20,
+    /** 22: 240 &times; 240, frame rate 15 fps, bitrate 140 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_240P_3 = 22,
+    /** 23: 424 &times; 240, frame rate 15 fps, bitrate 220 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_240P_4 = 23,
+    /** 30: 640 &times; 360, frame rate 15 fps, bitrate 400 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_360P = 30,
+    /** 32: 360 &times; 360, frame rate 15 fps, bitrate 260 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_360P_3 = 32,
+    /** 33: 640 &times; 360, frame rate 30 fps, bitrate 600 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_360P_4 = 33,
+    /** 35: 360 &times; 360, frame rate 30 fps, bitrate 400 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_360P_6 = 35,
+    /** 36: 480 &times; 360, frame rate 15 fps, bitrate 320 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_360P_7 = 36,
+    /** 37: 480 &times; 360, frame rate 30 fps, bitrate 490 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_360P_8 = 37,
+    /** 38: 640 &times; 360, frame rate 15 fps, bitrate 800 Kbps.
+     * @note Live broadcast profile only.
+     */
+    VIDEO_PROFILE_LANDSCAPE_360P_9 = 38,
+    /** 39: 640 &times; 360, frame rate 24 fps, bitrate 800 Kbps.
+     * @note Live broadcast profile only.
+     */
+    VIDEO_PROFILE_LANDSCAPE_360P_10 = 39,
+    /** 100: 640 &times; 360, frame rate 24 fps, bitrate 1000 Kbps.
+     * @note Live broadcast profile only.
+     */
+    VIDEO_PROFILE_LANDSCAPE_360P_11 = 100,
+    /** 40: 640 &times; 480, frame rate 15 fps, bitrate 500 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_480P = 40,
+    /** 42: 480 &times; 480, frame rate 15 fps, bitrate 400 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_480P_3 = 42,
+    /** 43: 640 &times; 480, frame rate 30 fps, bitrate 750 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_480P_4 = 43,
+    /** 45: 480 &times; 480, frame rate 30 fps, bitrate 600 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_480P_6 = 45,
+    /** 47: 848 &times; 480, frame rate 15 fps, bitrate 610 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_480P_8 = 47,
+    /** 48: 848 &times; 480, frame rate 30 fps, bitrate 930 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_480P_9 = 48,
+    /** 49: 640 &times; 480, frame rate 10 fps, bitrate 400 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_480P_10 = 49,
+    /** 50: 1280 &times; 720, frame rate 15 fps, bitrate 1130 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_720P = 50,
+    /** 52: 1280 &times; 720, frame rate 30 fps, bitrate 1710 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_720P_3 = 52,
+    /** 54: 960 &times; 720, frame rate 15 fps, bitrate 910 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_720P_5 = 54,
+    /** 55: 960 &times; 720, frame rate 30 fps, bitrate 1380 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_720P_6 = 55,
+    /** 60: 1920 &times; 1080, frame rate 15 fps, bitrate 2080 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_1080P = 60,
+    /** 62: 1920 &times; 1080, frame rate 30 fps, bitrate 3150 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_1080P_3 = 62,
+    /** 64: 1920 &times; 1080, frame rate 60 fps, bitrate 4780 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_1080P_5 = 64,
+    /** 66: 2560 &times; 1440, frame rate 30 fps, bitrate 4850 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_1440P = 66,
+    /** 67: 2560 &times; 1440, frame rate 60 fps, bitrate 6500 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_1440P_2 = 67,
+    /** 70: 3840 &times; 2160, frame rate 30 fps, bitrate 6500 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_4K = 70,
+    /** 72: 3840 &times; 2160, frame rate 60 fps, bitrate 6500 Kbps. */
+    VIDEO_PROFILE_LANDSCAPE_4K_3 = 72,
+    /** 1000: 120 &times; 160, frame rate 15 fps, bitrate 65 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_120P = 1000,
+    /** 1002: 120 &times; 120, frame rate 15 fps, bitrate 50 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_120P_3 = 1002,
+    /** 1010: 180 &times; 320, frame rate 15 fps, bitrate 140 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_180P = 1010,
+    /** 1012: 180 &times; 180, frame rate 15 fps, bitrate 100 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_180P_3 = 1012,
+    /** 1013: 180 &times; 240, frame rate 15 fps, bitrate 120 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_180P_4 = 1013,
+    /** 1020: 240 &times; 320, frame rate 15 fps, bitrate 200 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_240P = 1020,
+    /** 1022: 240 &times; 240, frame rate 15 fps, bitrate 140 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_240P_3 = 1022,
+    /** 1023: 240 &times; 424, frame rate 15 fps, bitrate 220 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_240P_4 = 1023,
+    /** 1030: 360 &times; 640, frame rate 15 fps, bitrate 400 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_360P = 1030,
+    /** 1032: 360 &times; 360, frame rate 15 fps, bitrate 260 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_360P_3 = 1032,
+    /** 1033: 360 &times; 640, frame rate 30 fps, bitrate 600 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_360P_4 = 1033,
+    /** 1035: 360 &times; 360, frame rate 30 fps, bitrate 400 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_360P_6 = 1035,
+    /** 1036: 360 &times; 480, frame rate 15 fps, bitrate 320 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_360P_7 = 1036,
+    /** 1037: 360 &times; 480, frame rate 30 fps, bitrate 490 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_360P_8 = 1037,
+    /** 1038: 360 &times; 640, frame rate 15 fps, bitrate 800 Kbps.
+     * @note Live broadcast profile only.
+     */
+    VIDEO_PROFILE_PORTRAIT_360P_9 = 1038,
+    /** 1039: 360 &times; 640, frame rate 24 fps, bitrate 800 Kbps.
+     * @note Live broadcast profile only.
+     */
+    VIDEO_PROFILE_PORTRAIT_360P_10 = 1039,
+    /** 1100: 360 &times; 640, frame rate 24 fps, bitrate 1000 Kbps.
+     * @note Live broadcast profile only.
+     */
+    VIDEO_PROFILE_PORTRAIT_360P_11 = 1100,
+    /** 1040: 480 &times; 640, frame rate 15 fps, bitrate 500 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_480P = 1040,
+    /** 1042: 480 &times; 480, frame rate 15 fps, bitrate 400 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_480P_3 = 1042,
+    /** 1043: 480 &times; 640, frame rate 30 fps, bitrate 750 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_480P_4 = 1043,
+    /** 1045: 480 &times; 480, frame rate 30 fps, bitrate 600 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_480P_6 = 1045,
+    /** 1047: 480 &times; 848, frame rate 15 fps, bitrate 610 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_480P_8 = 1047,
+    /** 1048: 480 &times; 848, frame rate 30 fps, bitrate 930 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_480P_9 = 1048,
+    /** 1049: 480 &times; 640, frame rate 10 fps, bitrate 400 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_480P_10 = 1049,
+    /** 1050: 720 &times; 1280, frame rate 15 fps, bitrate 1130 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_720P = 1050,
+    /** 1052: 720 &times; 1280, frame rate 30 fps, bitrate 1710 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_720P_3 = 1052,
+    /** 1054: 720 &times; 960, frame rate 15 fps, bitrate 910 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_720P_5 = 1054,
+    /** 1055: 720 &times; 960, frame rate 30 fps, bitrate 1380 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_720P_6 = 1055,
+    /** 1060: 1080 &times; 1920, frame rate 15 fps, bitrate 2080 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_1080P = 1060,
+    /** 1062: 1080 &times; 1920, frame rate 30 fps, bitrate 3150 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_1080P_3 = 1062,
+    /** 1064: 1080 &times; 1920, frame rate 60 fps, bitrate 4780 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_1080P_5 = 1064,
+    /** 1066: 1440 &times; 2560, frame rate 30 fps, bitrate 4850 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_1440P = 1066,
+    /** 1067: 1440 &times; 2560, frame rate 60 fps, bitrate 6500 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_1440P_2 = 1067,
+    /** 1070: 2160 &times; 3840, frame rate 30 fps, bitrate 6500 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_4K = 1070,
+    /** 1072: 2160 &times; 3840, frame rate 60 fps, bitrate 6500 Kbps. */
+    VIDEO_PROFILE_PORTRAIT_4K_3 = 1072,
+    /** Default 640 &times; 360, frame rate 15 fps, bitrate 400 Kbps. */
+    VIDEO_PROFILE_DEFAULT = 30
+}
 /**
  * interface for c++ addon (.node)
  */
@@ -202,7 +338,7 @@ export interface NodeRtcEngine {
     disableVideo(): number;
     startPreview(): number;
     stopPreview(): number;
-    setVideoProfile(profile: number, swapWidthAndHeight: boolean): number;
+    setVideoProfile(profile: VIDEO_PROFILE_TYPE, swapWidthAndHeight: boolean): number;
     setVideoEncoderConfiguration(width: number, height: number, fps: number, bitrate: 0 | 1, // 0 for standard and 1 for compatible
     minbitrate: -1, // changing this value is NOT recommended
     orientation: 0 | 1 | 2): number;
@@ -270,7 +406,7 @@ export interface NodeRtcEngine {
     videoSourceLeave(): number;
     videoSourceRenewToken(token: string): number;
     videoSourceSetChannelProfile(profile: number): number;
-    videoSourceSetVideoProfile(profile: number, swapWidthAndHeight: boolean): number;
+    videoSourceSetVideoProfile(profile: VIDEO_PROFILE_TYPE, swapWidthAndHeight: boolean): number;
     getScreenWindowsInfo(): Array<Object>;
     startScreenCapture2(windowId: number, captureFreq: number, rect: {
         left: number;
@@ -283,6 +419,12 @@ export interface NodeRtcEngine {
     videoSourceStopPreview(): number;
     videoSourceEnableDualStreamMode(enable: boolean): number;
     videoSourceSetParameter(parameter: string): number;
+    videoSourceUpdateScreenCaptureRegion(rect: {
+        left: number;
+        right: number;
+        top: number;
+        bottom: number;
+    }): number;
     videoSourceRelease(): number;
     startScreenCapture(windowId: number, captureFreq: number, rect: {
         left: number;

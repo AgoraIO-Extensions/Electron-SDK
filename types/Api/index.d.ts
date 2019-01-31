@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { IRenderer } from '../Renderer';
-import { NodeRtcEngine, RtcStats, LocalVideoStats, RemoteVideoStats, RemoteVideoState, AgoraNetworkQuality, ClientRoleType, StreamType, ConnectionState, ConnectionChangeReason, MediaDeviceType, TranscodingConfig, InjectStreamConfig } from './native_type';
+import { NodeRtcEngine, RtcStats, LocalVideoStats, RemoteVideoStats, RemoteVideoState, AgoraNetworkQuality, ClientRoleType, StreamType, ConnectionState, ConnectionChangeReason, MediaDeviceType, VIDEO_PROFILE_TYPE, TranscodingConfig, InjectStreamConfig } from './native_type';
 import { EventEmitter } from 'events';
 /**
  * @class AgoraRtcEngine
@@ -239,11 +239,11 @@ declare class AgoraRtcEngine extends EventEmitter {
     stopPreview(): number;
     /**
      *
-     * @param {number} profile - enumeration values represent video profile
+     * @param {VIDEO_PROFILE_TYPE} profile - enumeration values represent video profile
      * @param {boolean} [swapWidthAndHeight = false] - Whether to swap width and height
      * @returns {number} 0 for success, <0 for failure
      */
-    setVideoProfile(profile: number, swapWidthAndHeight?: boolean): number;
+    setVideoProfile(profile: VIDEO_PROFILE_TYPE, swapWidthAndHeight?: boolean): number;
     /**
      * @param {Object} config - encoder config of video
      * @param {number} config.width - width of video
@@ -714,11 +714,11 @@ declare class AgoraRtcEngine extends EventEmitter {
     videoSourceSetChannelProfile(profile: number): number;
     /**
      * @description set video profile for video source (must be called after startScreenCapture2)
-     * @param {number} profile - enumeration values represent video profile
+     * @param {VIDEO_PROFILE_TYPE} profile - enumeration values represent video profile
      * @param {boolean} [swapWidthAndHeight = false] - Whether to swap width and height
      * @returns {number} 0 for success, <0 for failure
      */
-    videoSourceSetVideoProfile(profile: number, swapWidthAndHeight?: boolean): number;
+    videoSourceSetVideoProfile(profile: VIDEO_PROFILE_TYPE, swapWidthAndHeight?: boolean): number;
     /**
      * @description get list of all system window ids and relevant infos, the window id can be used for screen share
      * @returns {Array} list of window infos
@@ -765,6 +765,17 @@ declare class AgoraRtcEngine extends EventEmitter {
      * @returns {number} 0 for success, <0 for failure
      */
     videoSourceSetParameters(parameter: string): number;
+    /**
+     * @description This method updates the screen capture region for video source
+     * @param {*} rect {left: 0, right: 100, top: 0, bottom: 100} (relative distance from the left-top corner of the screen)
+     * @returns {number} 0 for success, <0 for failure
+     */
+    videoSourceUpdateScreenCaptureRegion(rect: {
+        left: number;
+        right: number;
+        top: number;
+        bottom: number;
+    }): number;
     /**
      * @description release video source object
      * @returns {number} 0 for success, <0 for failure
