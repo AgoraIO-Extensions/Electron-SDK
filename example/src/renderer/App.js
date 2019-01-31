@@ -52,7 +52,6 @@ export default class App extends Component {
       if (uid === SHARE_ID && this.state.localVideoSource) {
         return
       }
-      this.rtcEngine.setRemoteVideoStreamType(uid, 1)
       this.setState({
         users: this.state.users.push(uid)
       })
@@ -410,6 +409,7 @@ class Window extends Component {
       this.props.rtcEngine.setupViewContentMode(String(SHARE_ID), 1);
     } else if (this.props.role === 'remote') {
       dom && this.props.rtcEngine.subscribe(this.props.uid, dom)
+      this.props.rtcEngine.setupViewContentMode(this.props.uid, 1);
     } else if (this.props.role === 'remoteVideoSource') {
       dom && this.props.rtcEngine.subscribe(this.props.uid, dom)
       this.props.rtcEngine.setupViewContentMode('videosource', 1);
