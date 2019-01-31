@@ -68,13 +68,14 @@ const AgoraRender = function() {
     
     gl = undefined;
 
-    if (that.container) {
-      that.container.removeChild(that.canvas);
+    try {
+      that.container && that.container.removeChild(that.canvas);
+      that.view && that.view.removeChild(that.container);
+    } catch (e) {
+      console.warn(e)
     }
 
-    if (that.view) {
-      that.view.removeChild(that.container);
-    }
+
 
     that.canvas = undefined;
     that.container = undefined;

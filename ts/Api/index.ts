@@ -11,6 +11,7 @@ import {
   ConnectionState,
   ConnectionChangeReason,
   MediaDeviceType,
+  VIDEO_PROFILE_TYPE,
   TranscodingConfig,
   InjectStreamConfig,
 } from './native_type';
@@ -874,11 +875,11 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    *
-   * @param {number} profile - enumeration values represent video profile
+   * @param {VIDEO_PROFILE_TYPE} profile - enumeration values represent video profile
    * @param {boolean} [swapWidthAndHeight = false] - Whether to swap width and height
    * @returns {number} 0 for success, <0 for failure
    */
-  setVideoProfile(profile: number, swapWidthAndHeight: boolean = false): number {
+  setVideoProfile(profile: VIDEO_PROFILE_TYPE, swapWidthAndHeight: boolean = false): number {
     return this.rtcEngine.setVideoProfile(profile, swapWidthAndHeight);
   }
 
@@ -1583,11 +1584,11 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description set video profile for video source (must be called after startScreenCapture2)
-   * @param {number} profile - enumeration values represent video profile
+   * @param {VIDEO_PROFILE_TYPE} profile - enumeration values represent video profile
    * @param {boolean} [swapWidthAndHeight = false] - Whether to swap width and height
    * @returns {number} 0 for success, <0 for failure
    */
-  videoSourceSetVideoProfile(profile: number, swapWidthAndHeight = false): number {
+  videoSourceSetVideoProfile(profile: VIDEO_PROFILE_TYPE, swapWidthAndHeight = false): number {
     return this.rtcEngine.videoSourceSetVideoProfile(profile, swapWidthAndHeight);
   }
 
