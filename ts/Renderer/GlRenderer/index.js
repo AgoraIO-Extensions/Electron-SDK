@@ -184,12 +184,12 @@ const AgoraRender = function() {
     var vEnd = vBegin + vLength;
     that.renderImage({
       mirror: mirror,
-      width: xWidth,
-      height: xHeight,
-      left: 0,
-      top: 0,
-      right: 0,
-      bottom: 0,
+      width,
+      height,
+      left,
+      top,
+      right,
+      bottom,
       rotation: rotation,
       yplane: new Uint8Array(yUint8Array),
       uplane: new Uint8Array(uUint8Array),
