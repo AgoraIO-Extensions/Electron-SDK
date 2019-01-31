@@ -56,11 +56,12 @@ const AgoraRender = function () {
         texCoordBuffer = undefined;
         surfaceBuffer = undefined;
         gl = undefined;
-        if (that.container) {
-            that.container.removeChild(that.canvas);
+        try {
+            that.container && that.container.removeChild(that.canvas);
+            that.view && that.view.removeChild(that.container);
         }
-        if (that.view) {
-            that.view.removeChild(that.container);
+        catch (e) {
+            console.warn(e);
         }
         that.canvas = undefined;
         that.container = undefined;
