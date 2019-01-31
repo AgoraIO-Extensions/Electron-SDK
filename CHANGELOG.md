@@ -1,4 +1,8 @@
 ## Latest
+#### :house: Internal
+* Optimize robust for renderer operation
+* Use enum as param for `setVideoProfile` & `videoSourceSetVideoProfile`
+
 #### :bug: Bug Fix
 * Fixed wrong strategy of stride and width in C++.
 * Destroy renderer properly when useroffline emitted.
