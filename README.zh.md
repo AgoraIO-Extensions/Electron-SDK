@@ -50,7 +50,7 @@ AGORA_ELECTRON_DEPENDENT = 4.0.0
 
 ## 集成方式
 
-以下步骤默认您已经安装了[NodeJS](https://nodejs.org/en/download/)，并且可以在命令行中正常执行`npm`。
+以下步骤默认您已经安装了[NodeJS](https://nodejs.org/en/download/)，并且可以在命令行中正常执行`npm`。
 
  - 执行`npm install`来安装依赖项
 
@@ -66,7 +66,7 @@ AGORA_ELECTRON_DEPENDENT = 4.0.0
 
  - 在开发macOS应用时，请尽量安装最新版本的xcode。
 
- - 在开发windows版本时，若Visual Studio或Electron版本与脚本中的不同，请更改脚本中的相应参数。 Electron 1.8.3+需要Visual Studio 2015或更高版本。请注意windows下**您必须通过`npm install -D --arch = ia32 electron` **安装32位的Electron，不然打包的程序在32位的windows上将无法运行。
+ - 在开发windows版本时，若Visual Studio或Electron版本与脚本中的不同，请更改脚本中的相应参数。 Electron 1.8.3+需要Visual Studio 2015或更高版本。请注意windows下 **您必须通过`npm install -D --arch = ia32 electron`** 安装32位的Electron，不然打包的程序在32位的windows上将无法运行。
 
  - 有关开发环境的更多信息，请访问[node-gyp](https://github.com/nodejs/node-gyp/blob/master/README.md)获取帮助。
 
