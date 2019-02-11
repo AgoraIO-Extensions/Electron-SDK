@@ -1,5 +1,7 @@
 # Agora-RTC-SDK-for-Electron [![npm package][npm-badge]][npm][![Mac Build Status](https://img.shields.io/travis/AgoraIO/Electron-SDK/dev/2.3.2.svg?style=flat-square)](https://travis-ci.org/AgoraIO/Electron-SDK)[![Windows Build status](https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?branch=dev/2.3.2&svg=true)](https://ci.appveyor.com/project/menthays/electron-sdk/branch/dev/2.3.2)
 
+*其他语言版本： [简体中文](README.zh.md)*
+
 The Agora-RTC-SDK-for-Electron is an open-source wrapper for **[Electron](https://electronjs.org/)** developers. This SDK takes advantage of Node.js C++ Addons and Agora RTC SDKs on Windows/macOS.
 
 ## Quick Overview
