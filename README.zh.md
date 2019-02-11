@@ -1,8 +1,8 @@
-# Agora-RTC-SDK-for-Electron[![npm package][npm-badge]][npm][![Mac Build Status](https://img.shields.io/travis/AgoraIO/Electron-SDK/dev/2.3.2.svg?style=flat-square)](https://travis-ci.org/AgoraIO/Electron-SDK)[![Windows Build status](https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?branch=dev/2.3.2&svg=true)](https://ci.appveyor.com/project/menthays/electron-sdk/branch/dev/2.3.2)
+# Agora-RTC-SDK-for-Electron [![npm package][npm-badge]][npm][![Mac Build Status](https://img.shields.io/travis/AgoraIO/Electron-SDK/dev/2.3.2.svg?style=flat-square)](https://travis-ci.org/AgoraIO/Electron-SDK)[![Windows Build status](https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?branch=dev/2.3.2&svg=true)](https://ci.appveyor.com/project/menthays/electron-sdk/branch/dev/2.3.2)
 
 *Read this in other language: [English](README.md)*
 
-Agora-RTC-SDK-for-Electron是基于**[Electron](https://electronjs.org/)**平台开发的开源声网SDK封装。
+Agora-RTC-SDK-for-Electron是基于 **[Electron](https://electronjs.org/)** 平台开发的开源声网SDK封装。
 
 ## 快速开始
 
@@ -15,7 +15,7 @@ SDK安装支持直接通过npm：
 npm install agora-electron-sdk
 ```
 
-````javascript
+```javascript
 import AgoraRtcEngine from 'agora-electron-sdk'
 ```
 
