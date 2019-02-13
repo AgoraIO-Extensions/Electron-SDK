@@ -85,7 +85,7 @@
     * [.setAudioRecordingVolume(volume)](#AgoraRtcEngine+setAudioRecordingVolume) ⇒ <code>number</code>
     * [.startAudioPlaybackDeviceTest(filepath)](#AgoraRtcEngine+startAudioPlaybackDeviceTest) ⇒ <code>number</code>
     * [.stopAudioPlaybackDeviceTest()](#AgoraRtcEngine+stopAudioPlaybackDeviceTest) ⇒ <code>number</code>
-    * [.enableLoopbackRecording([enable])](#AgoraRtcEngine+enableLoopbackRecording) ⇒ <code>number</code>
+    * [.enableLoopbackRecording([enable], [deviceName])](#AgoraRtcEngine+enableLoopbackRecording) ⇒ <code>number</code>
     * [.startAudioRecordingDeviceTest(indicateInterval)](#AgoraRtcEngine+startAudioRecordingDeviceTest) ⇒ <code>number</code>
     * [.stopAudioRecordingDeviceTest()](#AgoraRtcEngine+stopAudioRecordingDeviceTest) ⇒ <code>number</code>
     * [.getAudioPlaybackDeviceMute()](#AgoraRtcEngine+getAudioPlaybackDeviceMute) ⇒ <code>boolean</code>
@@ -107,6 +107,7 @@
     * [.stopScreenCapturePreview()](#AgoraRtcEngine+stopScreenCapturePreview) ⇒ <code>number</code>
     * [.videoSourceEnableDualStreamMode(enable)](#AgoraRtcEngine+videoSourceEnableDualStreamMode) ⇒ <code>number</code>
     * [.videoSourceSetParameters(parameter)](#AgoraRtcEngine+videoSourceSetParameters) ⇒ <code>number</code>
+    * [.videoSourceUpdateScreenCaptureRegion(rect)](#AgoraRtcEngine+videoSourceUpdateScreenCaptureRegion) ⇒ <code>number</code>
     * [.videoSourceRelease()](#AgoraRtcEngine+videoSourceRelease) ⇒ <code>number</code>
     * [.startScreenCapture(windowId, captureFreq, rect, bitrate)](#AgoraRtcEngine+startScreenCapture) ⇒ <code>number</code>
     * [.stopScreenCapture()](#AgoraRtcEngine+stopScreenCapture) ⇒ <code>number</code>
@@ -473,7 +474,7 @@ This method stops the local video preview and closes the video.
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| profile | <code>number</code> |  | enumeration values represent video profile |
+| profile | <code>VIDEO_PROFILE_TYPE</code> |  | enumeration values represent video profile |
 | [swapWidthAndHeight] | <code>boolean</code> | <code>false</code> | Whether to swap width and height |
 
 <a name="AgoraRtcEngine+setVideoEncoderConfiguration"></a>
@@ -1080,7 +1081,7 @@ stop playback device test
 **Returns**: <code>number</code> - 0 for success, <0 for failure  
 <a name="AgoraRtcEngine+enableLoopbackRecording"></a>
 
-### agoraRtcEngine.enableLoopbackRecording([enable]) ⇒ <code>number</code>
+### agoraRtcEngine.enableLoopbackRecording([enable], [deviceName]) ⇒ <code>number</code>
 This method enables loopback recording. Once enabled, the SDK collects all local sounds.
 
 **Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
@@ -1089,6 +1090,7 @@ This method enables loopback recording. Once enabled, the SDK collects all local
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
 | [enable] | <code>boolean</code> | <code>false</code> | whether to enable loop back recording |
+| [deviceName] | <code>string</code> \| <code>null</code> | <code>null</code> | target audio device |
 
 <a name="AgoraRtcEngine+startAudioRecordingDeviceTest"></a>
 
@@ -1239,7 +1241,7 @@ set video profile for video source (must be called after startScreenCapture2)
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| profile | <code>number</code> |  | enumeration values represent video profile |
+| profile | <code>VIDEO_PROFILE_TYPE</code> |  | enumeration values represent video profile |
 | [swapWidthAndHeight] | <code>boolean</code> | <code>false</code> | Whether to swap width and height |
 
 <a name="AgoraRtcEngine+getScreenWindowsInfo"></a>
@@ -1308,6 +1310,18 @@ setParameters for video source
 | Param | Type | Description |
 | --- | --- | --- |
 | parameter | <code>string</code> | parameter to set |
+
+<a name="AgoraRtcEngine+videoSourceUpdateScreenCaptureRegion"></a>
+
+### agoraRtcEngine.videoSourceUpdateScreenCaptureRegion(rect) ⇒ <code>number</code>
+This method updates the screen capture region for video source
+
+**Kind**: instance method of [<code>AgoraRtcEngine</code>](#AgoraRtcEngine)  
+**Returns**: <code>number</code> - 0 for success, <0 for failure  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| rect | <code>\*</code> | {left: 0, right: 100, top: 0, bottom: 100} (relative distance from the left-top corner of the screen) |
 
 <a name="AgoraRtcEngine+videoSourceRelease"></a>
 
