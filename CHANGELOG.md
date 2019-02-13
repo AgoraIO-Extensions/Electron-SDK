@@ -2,6 +2,7 @@
 #### :house: Internal
 * Optimize robust for renderer operation
 * Use enum as param for `setVideoProfile` & `videoSourceSetVideoProfile`
+* Refactor and optimize command line tools
 
 #### :bug: Bug Fix
 * Fixed wrong strategy of stride and width in C++.
