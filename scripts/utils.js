@@ -1,11 +1,11 @@
 /**
  * Utils for command line tools
  */
-import semver from 'semver';
+const semver = require('semver')
 
-import { Platform, DependentElectronVersion } from './constant';
+const { Platform, DependentElectronVersion } = require('./constant')
 
-export const detectOS = (): Platform => {
+module.exports.detectOS = () => {
   const platform = process.platform;
   switch (platform) {
     case 'darwin':
@@ -17,7 +17,7 @@ export const detectOS = (): Platform => {
   }
 };
 
-export const detectElectronVersion = (specifiedElectronVersion?: string): DependentElectronVersion => {
+module.exports.detectElectronVersion = (specifiedElectronVersion) => {
   const electronVersion = specifiedElectronVersion || process.env.npm_config_agora_electron_dependent;
 
   if (!electronVersion) {
@@ -33,32 +33,32 @@ export const detectElectronVersion = (specifiedElectronVersion?: string): Depend
   }
 };
 
-export const buildCommand = (config: {
-  platform: Platform,
-  msvs_version?: string,
-  debug: boolean,
-  runtime: 'node' | 'electron',
-  electronVersion: DependentElectronVersion,
-}): string => {
+module.exports.buildCommand = ({
+  platform,
+  msvs_version,
+  debug,
+  runtime,
+  electronVersion,
+}) => {
   const args = ['node-gyp rebuild'];
 
   // platform
-  if (config.platform === Platform.WINDOWS) {
-    args.push(`--arch=ia32 --msvs_version=${config.msvs_version || '2015'}`);
+  if (platform === Platform.WINDOWS) {
+    args.push(`--arch=ia32 --msvs_version=${msvs_version || '2015'}`);
   }
 
-  if (config.debug) {
+  if (debug) {
     args.push('--debug');
   }
 
-  if (config.runtime === 'electron') {
-    args.push(`--target=${config.electronVersion} --dist-url=https://atom.io/download/electron`);
+  if (runtime === 'electron') {
+    args.push(`--target=${electronVersion} --dist-url=https://atom.io/download/electron`);
   }
 
   return args.join(' ');
 };
 
-export const detectOwnVersion = () => {
+module.exports.detectOwnVersion = () => {
   const pkg = require('../package.json');
   const { major, minor, patch } = semver.coerce(pkg.version);
   return {

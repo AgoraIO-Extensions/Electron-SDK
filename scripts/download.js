@@ -1,14 +1,14 @@
-import download from 'download';
-import path from 'path';
-import rimraf from 'rimraf';
-import signale from 'signale';
+const download = require('download')
+const path = require('path')
+const rimraf = require('rimraf')
+const signale = require('signale')
 
-import {
+const {
   detectElectronVersion,
   detectOS,
   detectOwnVersion,
-} from './utils';
-import { DependentElectronVersion } from './constant';
+} = require('./utils');
+const { DependentElectronVersion } = require('./constant')
 
 const buildDownloadInfo = () => {
   // build os label
