@@ -1,5 +1,6 @@
-## Latest
+## 2.3.3-rc.1 (Feb 13th, 2019)
 #### :house: Internal
+* Update native sdk (macos/windows) to 2.3.3 for optimization of screen sharing.
 * Optimize robust for renderer operation
 * Use enum as param for `setVideoProfile` & `videoSourceSetVideoProfile`
 * Refactor and optimize command line tools
