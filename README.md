@@ -1,4 +1,4 @@
-# Agora-RTC-SDK-for-Electron [![npm package][npm-badge]][npm][![Mac Build Status](https://img.shields.io/travis/AgoraIO/Electron-SDK/dev/2.3.2.svg?style=flat-square)](https://travis-ci.org/AgoraIO/Electron-SDK)[![Windows Build status](https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?branch=dev/2.3.2&svg=true)](https://ci.appveyor.com/project/menthays/electron-sdk/branch/dev/2.3.2)
+# Agora-RTC-SDK-for-Electron [![npm package][npm-badge]][npm][![Mac Build Status](https://img.shields.io/travis/AgoraIO/Electron-SDK/release/2.3.2.svg?style=flat-square)](https://travis-ci.org/AgoraIO/Electron-SDK)[![Windows Build status](https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?branch=release/2.3.2&svg=true)](https://ci.appveyor.com/project/menthays/electron-sdk/branch/release/2.3.2)
 
 *其他语言版本： [简体中文](README.zh.md)*
 

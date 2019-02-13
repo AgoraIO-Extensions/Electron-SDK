@@ -1,4 +1,4 @@
-## Latest
+## 2.3.2 (Feb 13th, 2019)
 #### :house: Internal
 * Optimize robust for renderer operation
 * Use enum as param for `setVideoProfile` & `videoSourceSetVideoProfile`
