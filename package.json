@@ -1,12 +1,12 @@
 {
   "name": "agora-electron-sdk",
-  "version": "2.3.3-rc.1",
+  "version": "2.3.3-rc",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
   "author": "agora.io",
   "scripts": {
-    "install": "npm run download",
+    "postinstall": "npm run download",
     "build:dts": "rimraf ./types && tsc -p dtsconfig.json",
     "prebuild:ts": "npm run build:dts",
     "build:ts": "rimraf ./js && tsc -p tsconfig.json",
@@ -23,7 +23,7 @@
     "test": "npm run build:node && jest --detectOpenHandles --forceExit",
     "quicktest": "jest --detectOpenHandles --forceExit"
   },
-  "gypfile": true,
+  "gypfile": false,
   "dependencies": {
     "lodash.isequal": "^4.5.0",
     "node-gyp": "^3.6.2",
