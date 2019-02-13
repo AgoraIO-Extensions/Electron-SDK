@@ -1,6 +1,6 @@
-import fs from 'fs';
-import jsdoc2md from 'jsdoc-to-markdown';
-import path from 'path';
+const fs = require('fs')
+const jsdoc2md = require('jsdoc-to-markdown')
+const path = require('path')
 
 const jsDocWriteStream = fs.createWriteStream(
   path.resolve(__dirname, '../docs/apis.md')
