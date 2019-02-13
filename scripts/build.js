@@ -1,15 +1,13 @@
-import download from 'download';
-import fs from 'fs';
-import rimraf from 'rimraf';
-import signale from 'signale';
-import shell from 'shelljs';
+const fs = require('fs');
+const signale = require('signale');
+const shell = require('shelljs');
 
-import {
+const {
   buildCommand,
   detectElectronVersion,
   detectOS,
   detectOwnVersion,
-} from './utils';
+} = require('./utils');
 
 const detectEnv = () => {
   // get argv from command line
@@ -60,20 +58,16 @@ const main = () => {
   signale.info('Build Runtime =', runtime, '\n');
 
   // create two stream and start
-  const buildStream = shell.exec(script, {
-    silent: silent,
-    async: true,
-  });
+  signale.pending('Build C++ addon for Agora Electron SDK...\n');
   const errLogWriteStream = fs.createWriteStream('error-log.txt', {
     flags: 'a'
   });
-  signale.pending('Build C++ addon for Agora Electron SDK...\n');
-  buildStream.stderr.on('data', err => {
-    errLogWriteStream.write(err, 'utf8');
-  });
-  buildStream.on('close', code => {
+  const buildStream = shell.exec(script, {
+    silent: silent,
+  }, (code, stdout, stderr) => {
     if (code !== 0) {
-      // if failed
+      // failed
+      errLogWriteStream.write(stderr, 'utf8');
       signale.fatal(
         'Failed to build, check complete error log in',
         shell.pwd() + '/error-log.txt\n'
