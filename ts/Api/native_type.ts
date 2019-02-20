@@ -379,8 +379,8 @@ export interface NodeRtcEngine {
   ): void;
   setFPS(fps: number): void;
   setHighFPS(fps: number): void;
-  addToHighVideo(uid: number);
-  removeFromHighVideo(uid: number);
+  addToHighVideo(uid: number): void;
+  removeFromHighVideo(uid: number): void;
   renewToken(newToken: string): number;
   setChannelProfile(profile: number): number;
   setClientRole(role: ClientRoleType, permissionKey: string): number;

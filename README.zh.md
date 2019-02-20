@@ -1,17 +1,17 @@
-# Agora-RTC-SDK-for-Electron [![npm package][npm-badge]][npm][![Mac Build Status](https://img.shields.io/travis/AgoraIO/Electron-SDK/dev/2.3.3.svg?style=flat-square)](https://travis-ci.org/AgoraIO/Electron-SDK)[![Windows Build status](https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?branch=dev/2.3.3&svg=true)](https://ci.appveyor.com/project/menthays/electron-sdk/branch/dev/2.3.3)
+# Agora-RTC-SDK-for-Electron [![npm package][npm-badge]][npm][![Mac Build Status](mac-build-badge)](mac-build)[![Windows Build status](windows-build-badge)](windows-build)
+
+> Agora-RTC-SDK-for-Electron是基于 **[Electron](https://electronjs.org/)** 平台开发的开源声网SDK封装。
 
 *Read this in other language: [English](README.md)*
 
-Agora-RTC-SDK-for-Electron是基于 **[Electron](https://electronjs.org/)** 平台开发的开源声网SDK封装。
-
-## 快速开始
+## 使用指南
 
 **您可以从[Changelog](./CHANGELOG.md)获取最新发版信息**
 
 SDK安装支持直接通过npm：
 
 ```bash
-#安装最新版本的sdk，执行时为自动下载内置的二进制文件
+#安装最新版本的sdk，执行时为自动下载预编译的二进制文件
 npm install agora-electron-sdk
 ```
 
@@ -34,11 +34,14 @@ AGORA_ELECTRON_DEPENDENT = 4.0.0
 
 其他资源：
 
-[API参考](./docs/apis.md)
+[API参考](./docs/apis.md) - JavaScript API 说明
 
-[使用electron-sdk实现的的教育解决方案](https://github.com/AgoraIO/ARD-eEducation-with-Electron)
+[在线教育解决方案](https://github.com/AgoraIO/ARD-eEducation-with-Electron) - 如何用本项目实现一个完整的在线教育应用
 
-[快速入门演示](https://github.com/AgoraIO-Community/Agora-Electron-Quickstart)
+[基本Demo](https://github.com/AgoraIO-Community/Agora-Electron-Quickstart) - 演示如何使用Vue/React和本项目简单地实现的音视频通话
+
+[原生API参考](https://docs.agora.io/cn/Video/API%20Reference/cpp/index.html) - 原生API参考
+
 
 ## 开发环境
 
@@ -48,7 +51,7 @@ AGORA_ELECTRON_DEPENDENT = 4.0.0
 
  - Agora RTC SDK Windows/macOS 2.2.1+
 
-## 集成方式
+## 如何开发
 
 以下步骤默认您已经安装了[NodeJS](https://nodejs.org/en/download/)，并且可以在命令行中正常执行`npm`。
 
@@ -70,21 +73,15 @@ AGORA_ELECTRON_DEPENDENT = 4.0.0
 
  - 有关开发环境的更多信息，请访问[node-gyp](https://github.com/nodejs/node-gyp/blob/master/README.md)获取帮助。
 
-## 联系我们
+## 如何贡献
 
- - 您可以在[文档中心](https://docs.agora.io/en/)找到Agora SDK的API文档。
-
-## 参与共建
-
-我们在积极地维护我们的项目，如果您对这个项目有兴趣并想让它变得更好，欢迎一起参与共建。
-
- - [Electron JavaScript API](./docs/apis.md)
-
- - [提出问题](https://github.com/AgoraIO/Agora-RTC-SDK-for-Electron/issues)
-
- - [贡献指南](./docs/contribuitions.md)
+我们在积极地维护我们的项目，如果您对这个项目有兴趣并想让它变得更好，欢迎一起参与共建或提出意见。
 
 ## Lisence(MIT)
 
-[npm-badge]:https://img.shields.io/npm/v/agora-electron-sdk.png？style=flat-square
-[npm]:https://www.npmjs.org/package/agora-electron-sdk
+[npm-badge]: https://img.shields.io/npm/v/agora-electron-sdk.png?style=flat-square
+[npm]: https://www.npmjs.org/package/agora-electron-sdk
+[mac-build-badge]: https://img.shields.io/travis/AgoraIO/Electron-SDK.svg?style=flat-square
+[mac-build]: https://travis-ci.org/AgoraIO/Electron-SDK
+[windows-build-badge]: https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?svg=true
+[windows-build]:https://ci.appveyor.com/project/menthays/electron-sdk

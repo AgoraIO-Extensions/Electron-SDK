@@ -1,22 +1,21 @@
-# Agora-RTC-SDK-for-Electron [![npm package][npm-badge]][npm][![Mac Build Status](https://img.shields.io/travis/AgoraIO/Electron-SDK/dev/2.3.3.svg?style=flat-square)](https://travis-ci.org/AgoraIO/Electron-SDK)[![Windows Build status](https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?branch=dev/2.3.3&svg=true)](https://ci.appveyor.com/project/menthays/electron-sdk/branch/dev/2.3.3)
+# Agora-RTC-SDK-for-Electron [![npm package][npm-badge]][npm][![Mac Build Status](mac-build-badge)](mac-build)[![Windows Build status](windows-build-badge)](windows-build)
+
+> The Agora-RTC-SDK-for-Electron is an open-source wrapper for **[Electron](https://electronjs.org/)** developers. This SDK takes advantage of Node.js C++ Addons and Agora RTC SDKs on Windows/macOS.
 
 *其他语言版本： [简体中文](README.zh.md)*
 
-The Agora-RTC-SDK-for-Electron is an open-source wrapper for **[Electron](https://electronjs.org/)** developers. This SDK takes advantage of Node.js C++ Addons and Agora RTC SDKs on Windows/macOS.
-
-## Quick Overview
+## Quick Start
 
 **Attention to [Changelog](./CHANGELOG.md) for newest information**
 
 You can directly install the sdk through npm:
 
 ``` bash
-# install newest sdk and we will download built binary file for you
+# install newest sdk and we will download prebuilt binary file for you
 npm install agora-electron-sdk
 ```
 
 ``` javascript
-// you can use require either
 import AgoraRtcEngine from 'agora-electron-sdk'
 ```
 Switch prebuilt addon version in .npmrc (default to use 1.8.3)
@@ -32,21 +31,21 @@ AGORA_ELECTRON_DEPENDENT=3.0.6
 AGORA_ELECTRON_DEPENDENT=4.0.0
 ```
 
-Other resources:
+## Resources
 
-[API Reference](./docs/apis.md)
+- [API Reference](./docs/apis.md) - API Reference for JavaScript
 
-[A complete solution for e-Edu](https://github.com/AgoraIO/ARD-eEducation-with-Electron)
+- [e-Education Application](https://github.com/AgoraIO/ARD-eEducation-with-Electron) - A complete e-education Application based on this repo
 
-[A quickstart demo](https://github.com/AgoraIO-Community/Agora-Electron-Quickstart)
+- [Demo](https://github.com/AgoraIO-Community/Agora-Electron-Quickstart) - A quick start demo based on Vue/React and this repo
 
-## Developer Environment Requirements
+- [Doc Center](https://docs.agora.io/en/Video/API%20Reference/cpp/index.html) - Original API Reference for Agora Native SDK
+
+## Prerequisites
 
 - Node.js 6.9.1+
 
 - Electron 1.8.3+
-
-- Agora RTC SDK Windows/macOS 2.2.1+
 
 ## How to develop
 
@@ -70,19 +69,9 @@ Assuming that you have [Node](https://nodejs.org/en/download/) installed and can
 
 - For more information about develop environment, visit [node-gyp](https://github.com/nodejs/node-gyp/blob/master/README.md) for help.
 
-## Contact Us
-
-- You can find full APIs for Agora RTC SDK at [Document Center](https://docs.agora.io/en/)
-
 ## Contributions Welcome
 
-We are still opmizing our project, welcome to help improve our Javascript Api Doc and test coverage, have a look at contribute code for detail.
-
-- [JavaScript APIs for Electron](./docs/apis.md)
-
-- [File an issue](https://github.com/AgoraIO/Agora-RTC-SDK-for-Electron/issues)
-
-- [Contribute code](./docs/contribuitions.md)
+We are still opmizing our project, welcome for pr and issules.
 
 ## License
 
@@ -90,3 +79,7 @@ The MIT License (MIT).
 
 [npm-badge]: https://img.shields.io/npm/v/agora-electron-sdk.png?style=flat-square
 [npm]: https://www.npmjs.org/package/agora-electron-sdk
+[mac-build-badge]: https://img.shields.io/travis/AgoraIO/Electron-SDK.svg?style=flat-square
+[mac-build]: https://travis-ci.org/AgoraIO/Electron-SDK
+[windows-build-badge]: https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?svg=true
+[windows-build]:https://ci.appveyor.com/project/menthays/electron-sdk
