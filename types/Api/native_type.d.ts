@@ -325,8 +325,8 @@ export interface NodeRtcEngine {
     setVideoRenderDimension(rendertype: number, uid: number, width: number, height: number): void;
     setFPS(fps: number): void;
     setHighFPS(fps: number): void;
-    addToHighVideo(uid: number): any;
-    removeFromHighVideo(uid: number): any;
+    addToHighVideo(uid: number): void;
+    removeFromHighVideo(uid: number): void;
     renewToken(newToken: string): number;
     setChannelProfile(profile: number): number;
     setClientRole(role: ClientRoleType, permissionKey: string): number;

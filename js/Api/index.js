@@ -324,14 +324,14 @@ class AgoraRtcEngine extends events_1.EventEmitter {
         else if (type === 2) {
             // return this.streams.devtest;
             console.warn('Type 2 not support in production mode.');
-            return false;
+            return;
         }
         else if (type === 3) {
             return this.streams.get('videosource');
         }
         else {
             console.warn('Invalid type for getRenderer, only accept 0~3.');
-            return false;
+            return;
         }
     }
     /**
@@ -425,6 +425,9 @@ class AgoraRtcEngine extends events_1.EventEmitter {
      * @param {function} onFailure err callback for destroyRenderer
      */
     destroyRender(key, onFailure) {
+        if (!this.streams.has(String(key))) {
+            return;
+        }
         const renderer = this.streams.get(String(key));
         try {
             renderer.unbind();

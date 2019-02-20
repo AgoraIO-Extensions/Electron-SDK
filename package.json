@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "2.3.3-alpha.10",
+  "version": "2.3.3-rc",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -10,6 +10,7 @@
     "build:dts": "rimraf ./types && tsc -p dtsconfig.json",
     "prebuild:ts": "npm run build:dts",
     "build:ts": "rimraf ./js && tsc -p tsconfig.json",
+    "postbuild:ts": "npm run doc:js",
     "build:node": "node ./scripts/build.js --runtime=node",
     "build:electron2": "node ./scripts/build.js --runtime=electron --electron_version=1.8.3",
     "build:electron3": "node ./scripts/build.js --runtime=electron --electron_version=3.0.6",

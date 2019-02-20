@@ -1,4 +1,8 @@
-## 2.3.3-rc.1 (Feb 13th, 2019)
+## Latest
+#### :house: Internal
+* Optimize type declaration in ts file.
+
+## 2.3.3-alpha.10 (Feb 13th, 2019)
 #### :house: Internal
 * Update native sdk (macos/windows) to 2.3.3 for optimization of screen sharing.
 * Optimize robust for renderer operation
