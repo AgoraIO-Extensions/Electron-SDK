@@ -1,4 +1,9 @@
 {
+  "linterOptions": {
+    "exclude": [
+      "./types/**/*"
+    ]
+  },
   "rules": {
     "class-name": true,
     "comment-format": [
