@@ -31,7 +31,7 @@ declare class AgoraRtcEngine extends EventEmitter {
      * @param {number} type 0-local 1-remote 2-device_test 3-video_source
      * @param {number} uid uid get from native engine, differ from electron engine's uid
      */
-    _getRenderer(type: number, uid: number): IRenderer | false;
+    _getRenderer(type: number, uid: number): IRenderer | undefined;
     /**
      * check if data is valid
      * @private
@@ -52,7 +52,7 @@ declare class AgoraRtcEngine extends EventEmitter {
      * @param {string|number} key key for the map that store the renderers, e.g, uid or `videosource` or `local`
      * @param {*} view dom elements to render video
      */
-    initRender(key: 'local' | 'videosource' | number, view: any): void;
+    initRender(key: 'local' | 'videosource' | number, view: HTMLElement): void;
     /**
      * destroy renderer
      * @param {string|number} key key for the map that store the renders, e.g, uid or `videosource` or `local`
@@ -107,13 +107,13 @@ declare class AgoraRtcEngine extends EventEmitter {
      * @param {Element} view dom where to initialize renderer
      * @returns {number} 0 for success, <0 for failure
      */
-    subscribe(uid: number, view: Element): number;
+    subscribe(uid: number, view: HTMLElement): number;
     /**
      * @description setup local video and corresponding renderer
      * @param {Element} view dom element where we will initialize our view
      * @returns {number} 0 for success, <0 for failure
      */
-    setupLocalVideo(view: Element): number;
+    setupLocalVideo(view: HTMLElement): number;
     /**
      *
      * @description force set renderer dimension of video, this ONLY affects size of data sent to js layer, native video size is determined by setVideoProfile
@@ -410,7 +410,7 @@ declare class AgoraRtcEngine extends EventEmitter {
      * @param {boolean} enable enable/disable dual stream
      * @returns {number} 0 for success, <0 for failure
      */
-    enableDualStreamMode(enable: any): number;
+    enableDualStreamMode(enable: boolean): number;
     /**
      * @description This method specifies the video-stream type of the remote user to be
      * received by the local user when the remote user sends dual streams.
@@ -677,7 +677,7 @@ declare class AgoraRtcEngine extends EventEmitter {
      * @description setup renderer for video source
      * @param {Element} view dom element where video source should be displayed
      */
-    setupLocalVideoSource(view: Element): void;
+    setupLocalVideoSource(view: HTMLElement): void;
     /**
      * @description Set it to true to enable videosource web interoperability (After videosource initialized)
      * @param {boolean} enabled enalbe/disable web interoperability

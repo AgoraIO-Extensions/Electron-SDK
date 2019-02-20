@@ -523,8 +523,4 @@ const AgoraRender = function() {
   return that;
 };
 
-AgoraRender.prototype.constructor = function() {
-  return new AgoraRender()
-}
-
 export default AgoraRender;
