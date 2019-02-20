@@ -3,6 +3,7 @@
     "outDir": "./js",
     "baseUrl": ".",
     "target": "es2015",
+    "strict": true,
     "module": "commonjs",
     "esModuleInterop": true,
     "allowJs": true,
