@@ -204,21 +204,44 @@ namespace agora {
             });
         }
 
-        void NodeEventHandler::onAudioVolumeIndication_node(const AudioVolumeInfo& speaker, unsigned int speakerNumber, int totalVolume)
+        void NodeEventHandler::onAudioVolumeIndication_node(AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume)
         {
             FUNC_TRACE;
-            MAKE_JS_CALL_4(RTC_EVENT_AUDIO_VOLUME_INDICATION, uid, speaker.uid, uint32, speaker.volume, uint32, speakerNumber, int32, totalVolume);
+            auto it = m_callbacks.find(RTC_EVENT_AUDIO_VOLUME_INDICATION);
+            if (it != m_callbacks.end()) {
+                Isolate *isolate = Isolate::GetCurrent();
+                HandleScope scope(isolate);
+                Local<v8::Array> arrSpeakers = v8::Array::New(isolate, speakerNumber);
+                for(int i = 0; i < speakerNumber; i++) {
+                    Local<Object> obj = Object::New(isolate);
+                    obj->Set(napi_create_string_(isolate, "uid"), napi_create_uid_(isolate, speakers[i].uid));
+                    obj->Set(napi_create_string_(isolate, "volume"), napi_create_uint32_(isolate, speakers[i].volume));
+                    arrSpeakers->Set(i, obj);
+                }
+
+                Local<Value> argv[3]{ arrSpeakers,
+                                    napi_create_uint32_(isolate, speakerNumber),
+                                    napi_create_uint32_(isolate, totalVolume)
+                                    };
+                NodeEventCallback& cb = *it->second;
+                cb.callback.Get(isolate)->Call(cb.js_this.Get(isolate), 3, argv);
+            }
+            // MAKE_JS_CALL_4(RTC_EVENT_AUDIO_VOLUME_INDICATION, uid, speaker.uid, uint32, speaker.volume, uint32, speakerNumber, int32, totalVolume);
         }
 
         void NodeEventHandler::onAudioVolumeIndication(const AudioVolumeInfo* speaker, unsigned int speakerNumber, int totalVolume)
         {
             FUNC_TRACE;
             if (speaker) {
-                AudioVolumeInfo localSpeaker = { 0 };
-                localSpeaker.uid = speaker->uid;
-                localSpeaker.volume = speaker->volume;
-                node_async_call::async_call([this, localSpeaker, speakerNumber, totalVolume] {
-                    this->onAudioVolumeIndication_node(localSpeaker, speakerNumber, totalVolume);
+                AudioVolumeInfo* localSpeakers = new AudioVolumeInfo[speakerNumber];
+                for(int i = 0; i < speakerNumber; i++) {
+                    AudioVolumeInfo tmp = speaker[i];
+                    localSpeakers[i].uid = tmp.uid;
+                    localSpeakers[i].volume = tmp.volume;
+                }
+                node_async_call::async_call([this, localSpeakers, speakerNumber, totalVolume] {
+                    this->onAudioVolumeIndication_node(localSpeakers, speakerNumber, totalVolume);
+                    delete []localSpeakers;
                 });
             }
         }
