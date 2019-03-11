@@ -91,9 +91,12 @@ class AgoraRtcEngine extends events_1.EventEmitter {
             fire('audioquality', uid, quality, delay, lost);
             fire('audioQuality', uid, quality, delay, lost);
         });
-        this.rtcEngine.onEvent('audiovolumeindication', function (uid, volume, speakerNumber, totalVolume) {
-            fire('audiovolumeindication', uid, volume, speakerNumber, totalVolume);
-            fire('audioVolumeIndication', uid, volume, speakerNumber, totalVolume);
+        this.rtcEngine.onEvent('audiovolumeindication', function (speakers, speakerNumber, totalVolume) {
+            if (speakers[0]) {
+                fire('audiovolumeindication', speakers[0]['uid'], speakers[0]['volume'], speakerNumber, totalVolume);
+                fire('audioVolumeIndication', speakers[0]['uid'], speakers[0]['volume'], speakerNumber, totalVolume);
+            }
+            fire('groupAudioVolumeIndication', speakers, speakerNumber, totalVolume);
         });
         this.rtcEngine.onEvent('leavechannel', function () {
             fire('leavechannel');
