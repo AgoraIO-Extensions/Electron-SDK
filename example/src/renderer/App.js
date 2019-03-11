@@ -31,7 +31,9 @@ export default class App extends Component {
         showWindowPicker: false,
         recordingTestOn: false,
         playbackTestOn: false,
-        windowList: []
+        windowList: [],
+        encoderWidth: 0,
+        encoderHeight: 0
       }
     }
     this.enableAudioMixing = false;
@@ -94,6 +96,8 @@ export default class App extends Component {
   }
 
   handleJoin = () => {
+    let encoderWidth = parseInt(this.state.encoderWidth)
+    let encoderHeight = parseInt(this.state.encoderHeight)
     let rtcEngine = this.rtcEngine
     rtcEngine.setChannelProfile(1)
     rtcEngine.setClientRole(this.state.role)
@@ -102,7 +106,12 @@ export default class App extends Component {
     rtcEngine.setLogFile('~/agora.log')
     rtcEngine.enableLocalVideo(true)
     rtcEngine.enableWebSdkInteroperability(true)
-    rtcEngine.setVideoProfile(this.state.videoProfile, false)
+    if(encoderWidth === 0 && encoderHeight === 0) {
+      //use video profile
+      rtcEngine.setVideoProfile(this.state.videoProfile, false)
+    } else {
+      rtcEngine.setVideoEncoderConfiguration({width: encoderWidth, height: encoderHeight})
+    }
     console.log('loop', rtcEngine.enableLoopbackRecording(true, null))
     rtcEngine.enableDualStreamMode(true)
     rtcEngine.enableAudioVolumeIndication(1000, 3)
@@ -286,6 +295,13 @@ export default class App extends Component {
                   <option value={2}>Audience</option>
                 </select>
               </div>
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">Video Encoder Configuration</label>
+            <div className="control">
+              <input onChange={e => this.setState({encoderWidth: e.currentTarget.value})} value={this.state.encoderWidth} className="input" type="number" placeholder="Encoder Width" />
+              <input onChange={e => this.setState({encoderHeight: e.currentTarget.value})} value={this.state.encoderHeight} className="input" type="number" placeholder="Encoder Height" />
             </div>
           </div>
           <div className="field">
