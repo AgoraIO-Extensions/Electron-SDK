@@ -191,7 +191,7 @@ int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type, agora::rtc
 	hdr->rotation = htons(rotation);
 	setupFrameHeader(hdr, destWidth, destWidth, destHeight);
 
-    copyFrame(videoFrame, info, destWidth, stride0, destWidth, destHeight);
+    copyFrame(videoFrame, info, destWidth, srcWidth, destWidth, destHeight);
     info.m_count = 0;
     info.m_needUpdate = true;
     return 0;
@@ -213,7 +213,7 @@ void NodeVideoFrameTransporter::setupFrameHeader(image_header_type *header, int 
 
 void NodeVideoFrameTransporter::copyFrame(const agora::media::IVideoFrame &videoFrame, VideoFrameInfo &info, int dest_stride, int src_stride, int width, int height)
 {
-	int width2 = width / 2, heigh2 = height / 2;
+	int width2 = src_stride / 2, heigh2 = height / 2;
 
 	int strideY = videoFrame.stride(IVideoFrame::Y_PLANE);
 	int strideU = videoFrame.stride(IVideoFrame::U_PLANE);
@@ -228,21 +228,22 @@ void NodeVideoFrameTransporter::copyFrame(const agora::media::IVideoFrame &video
 
 	unsigned char *y = &info.m_buffer[0] + sizeof(image_header_type);
 	unsigned char *u = y + dest_stride * height;
-	unsigned char *v = u + width2 * heigh2;
+	unsigned char *v = u + dest_stride / 2 * heigh2;
 
 	if (dest_stride != src_stride && src_stride > 0 && dest_stride > 0)
 	{
-		I420Scale(planeY, strideY, planeU, strideU, planeV, strideV, videoFrame.width(), videoFrame.height(), (uint8 *)ySrc, width, (uint8 *)uSrc, width2, (uint8 *)vSrc, width2, width, height, kFilterNone);
+		I420Scale(planeY, strideY, planeU, strideU, planeV, strideV, videoFrame.width(), videoFrame.height(), (uint8 *)ySrc, src_stride, (uint8 *)uSrc, width2, (uint8 *)vSrc, width2, src_stride, height, kFilterNone);
+		FILE* pFile1 = fopen("src1.yuv", "ab+");
 
-		float src_ratio = (width + 0.0f) / height;
+		float src_ratio = (src_stride + 0.0f) / height;
 		float dst_ratio = (strideY + 0.0f) / height;
 		if (src_ratio < dst_ratio)
 		{
-			int cropY = ((height - (int)(width / dst_ratio)) / 2) & ~1;
-			libyuv::I420Scale(ySrc + cropY * width, width,
-							  uSrc + cropY * width2, width2,
-							  vSrc + cropY * width2, width2,
-							  width, height - 2 * cropY,
+			int cropY = ((height - (int)(src_stride / dst_ratio)) / 2) & ~1;
+			libyuv::I420Scale(ySrc + cropY * src_stride, src_stride,
+							  uSrc + cropY /2  * width2, width2,
+							  vSrc + cropY /2 * width2, width2,
+							  src_stride, height - 2 * cropY,
 							  (uint8 *)y, strideY,
 							  (uint8 *)u, strideU,
 							  (uint8 *)v, strideV,
