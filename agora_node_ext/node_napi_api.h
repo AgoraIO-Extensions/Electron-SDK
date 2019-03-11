@@ -88,6 +88,7 @@ public:
     agora::rtc::uid_t m_uid;
     buffer_list m_bufferList;
     stream_buffer_type m_buffer;
+	stream_buffer_type m_bufferSrc;
     uint32_t m_destWidth;
     uint32_t m_destHeight;
     bool m_needUpdate;
