@@ -1,4 +1,4 @@
-## Latest
+## 2.3.3-alpha.11 (March 11st, 2019)
 #### :house: Internal
 * Add Api
   * Add Event `groupAudioVolumeIndication` to provide all the speakers' volume as an array periodically
