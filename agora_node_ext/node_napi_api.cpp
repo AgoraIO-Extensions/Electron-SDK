@@ -233,7 +233,6 @@ void NodeVideoFrameTransporter::copyFrame(const agora::media::IVideoFrame &video
 	if (dest_stride != src_stride && src_stride > 0 && dest_stride > 0)
 	{
 		I420Scale(planeY, strideY, planeU, strideU, planeV, strideV, videoFrame.width(), videoFrame.height(), (uint8 *)ySrc, src_stride, (uint8 *)uSrc, width2, (uint8 *)vSrc, width2, src_stride, height, kFilterNone);
-		FILE* pFile1 = fopen("src1.yuv", "ab+");
 
 		float src_ratio = (src_stride + 0.0f) / height;
 		float dst_ratio = (strideY + 0.0f) / height;
