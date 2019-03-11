@@ -1,6 +1,11 @@
 ## Latest
 #### :house: Internal
+* Add Api
+  * Add Event `groupAudioVolumeIndication` to provide all the speakers' volume as an array periodically
+
 * Optimize type declaration in ts file.
+* Optimize yuv data handler to have display frame better.
+
 
 ## 2.3.3-alpha.10 (Feb 13th, 2019)
 #### :house: Internal
