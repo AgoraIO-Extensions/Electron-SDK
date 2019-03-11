@@ -239,7 +239,7 @@ void NodeVideoFrameTransporter::copyFrame(const agora::media::IVideoFrame &video
 		float dst_ratio = (strideY + 0.0f) / height;
 		if (src_ratio < dst_ratio)
 		{
-			int cropY = ((height - (int)(width / dst_ratio)) / 2) & ~1;
+			int cropY = ((height - (int)(src_stride / dst_ratio)) / 2) & ~1;
 			libyuv::I420Scale(ySrc + cropY * src_stride, src_stride,
 							  uSrc + cropY /2  * width2, width2,
 							  vSrc + cropY /2 * width2, width2,
