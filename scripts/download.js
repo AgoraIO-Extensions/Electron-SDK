@@ -20,11 +20,23 @@ const buildDownloadInfo = () => {
   const dependentElectronVersion = detectElectronVersion();
   const electronLabel = ((version) => {
     if (version === DependentElectronVersion.ORIGIN) {
-      return 'e2';
+      if (osLabel === 'Windows') {
+        return 'e2_playEffect_fix';
+      } else {
+        return 'e2';
+      }
     } else if (version === DependentElectronVersion.STABLE) {
-      return 'e3';
+      if (osLabel === 'Windows') {
+        return 'e3_playEffect_fix';
+      } else {
+        return 'e3';
+      }
     } else if (version === DependentElectronVersion.LATEST) {
-      return 'e4';
+      if (osLabel === 'Windows') {
+        return 'e4_playEffect_fix';
+      } else {
+        return 'e4';
+      }
     }
   })(dependentElectronVersion);
 
