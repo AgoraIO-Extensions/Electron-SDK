@@ -16,7 +16,7 @@
     "build:electron3": "node ./scripts/build.js --runtime=electron --electron_version=3.0.6",
     "build:electron4": "node ./scripts/build.js --runtime=electron --electron_version=4.0.0",
     "debug": "node ./scripts/build.js --runtime=electron --electron_version=3.0.6 --debug=true",
-    "doc:js": "node ./scripts/jsapi.js",
+    "doc": "typedoc --out ./docs ./ts --hideGenerator --mode file --target es6 --name Agora-Electron-SDK --readme none",
     "download": "node ./scripts/download.js",
     "preexample": "npm run build:electron3",
     "example": "cd example && npm install && npm run dev",
@@ -39,13 +39,14 @@
   },
   "devDependencies": {
     "@types/node": "^10.12.18",
-    "ts-node": "^8.0.2",
-    "typescript": "^3.3.3",
     "jest": "^23.1.0",
     "jsdoc-to-markdown": "^4.0.1",
     "prettier": "^1.13.4",
     "ts-jest": "^23.10.5",
-    "tslint": "^5.12.1"
+    "ts-node": "^8.0.2",
+    "tslint": "^5.12.1",
+    "typedoc": "^0.14.2",
+    "typescript": "^3.3.3"
   },
   "peerDependencies": {},
   "directories": {
