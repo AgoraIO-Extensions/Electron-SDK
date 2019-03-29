@@ -34,7 +34,7 @@ AGORA_ELECTRON_DEPENDENT = 4.0.0
 
 其他资源：
 
-[API参考](./docs/index.html) - JavaScript API 说明
+[API参考](https://agoraio.github.io/Electron-SDK/2_3_3/) - API 说明
 
 [在线教育解决方案](https://github.com/AgoraIO/ARD-eEducation-with-Electron) - 如何用本项目实现一个完整的在线教育应用
 
