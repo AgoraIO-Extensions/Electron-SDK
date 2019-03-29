@@ -33,7 +33,7 @@ AGORA_ELECTRON_DEPENDENT=4.0.0
 
 ## Resources
 
-- [API Reference](./docs/apis.md) - API Reference for JavaScript
+- [API Reference](./docs/index.html) - API Reference for JavaScript
 
 - [e-Education Application](https://github.com/AgoraIO/ARD-eEducation-with-Electron) - A complete e-education Application based on this repo
 
