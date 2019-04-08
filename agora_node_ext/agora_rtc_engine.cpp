@@ -199,6 +199,10 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(addToHighVideo);
                 PROPERTY_METHOD_DEFINE(removeFromHighVideo);
 
+                //2.3.3 apis
+                PROPERTY_METHOD_DEFINE(getConnectionState);
+
+                //2.4.0 apis
                 PROPERTY_METHOD_DEFINE(setBeautyEffectOptions);
                 PROPERTY_METHOD_DEFINE(setLocalVoiceChanger);
                 PROPERTY_METHOD_DEFINE(setLocalVoiceReverbPreset);
@@ -212,6 +216,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(stopAudioDeviceLoopbackTest);
                 PROPERTY_METHOD_DEFINE(setCameraCapturerConfiguration);
                 PROPERTY_METHOD_DEFINE(setLogFileSize);
+                
             EN_PROPERTY_DEFINE()
             module->Set(String::NewFromUtf8(isolate, "NodeRtcEngine"), tpl->GetFunction());
         }
@@ -2562,6 +2567,21 @@ namespace agora {
                 auto pTransporter = getNodeVideoFrameTransporter();
                 if(pTransporter)
                     pTransporter->removeFromeHighVideo(uid);
+            }while (false);
+            napi_set_int_result(args, status);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, getConnectionState)
+        {
+            LOG_ENTER;
+            napi_status status = napi_invalid_arg;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                CONNECTION_STATE_TYPE type = pEngine->m_engine->getConnectionState();
+                napi_set_int_result(args, status);
             }while (false);
             napi_set_int_result(args, status);
             LOG_LEAVE;
