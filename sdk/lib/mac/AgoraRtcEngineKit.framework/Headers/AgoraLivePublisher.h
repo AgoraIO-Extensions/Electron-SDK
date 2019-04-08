@@ -90,7 +90,7 @@ __attribute__((visibility("default"))) @interface AgoraLivePublisher: NSObject
 * If the frame rate is 30 fps, multiply the recommended bitrate by 1.5.
 * Calculate your bitrate with the ratio if you choose other frame rates.
 
- If the bitrate you set is beyond the proper range, the SDK will automatically adjust it to a value within the range.
+ If you set a bitrate beyond the proper range, the SDK will automatically adjust it to a value within the range.
  */
 - (void)setVideoResolution:(CGSize)resolution andFrameRate:(NSInteger)frameRate bitrate:(NSInteger)bitrate;
 
