@@ -79,6 +79,8 @@ namespace agora {
 #define RTC_EVENT_REMOTE_VIDEO_TRANSPORT_STATS "remoteVideoTransportStats"
 #define RTC_EVENT_MICROPHONE_ENABLED "microphoneEnabled"
 #define RTC_EVENT_CONNECTION_STATE_CHANED "connectionStateChanged"
+#define RTC_EVENT_AUDIO_MIXING_STATE_CHANGED "audioMixingStateChanged"
+#define RTC_EVENT_LASTMILE_PROBE_RESULT "lastmileProbeResult"
 
 #define RTC_EVENT_VIDEO_SOURCE_JOIN_SUCCESS "videosourcejoinsuccess"
 #define RTC_EVENT_VIDEO_SOURCE_REQUEST_NEW_TOKEN "videosourcerequestnewtoken"
@@ -164,6 +166,10 @@ namespace agora {
             void fireApiError(const char* funcName);
             void addEventHandler(const std::string& eventName, Persistent<Object>& obj, Persistent<Function>& callback);
 
+            //2.4.0
+            virtual void onAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE errorCode) override;
+            virtual void onLastmileProbeResult(const LastmileProbeResult &result) override;
+
         private:
             void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
             void onRejoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
@@ -229,6 +235,10 @@ namespace agora {
             void onVideoSourceJoinedChannel_node(agora::rtc::uid_t uid);
             void onVideoSourceRequestToken_node();
             void onVideoSourceLeaveChannel_node();
+
+            //2.4.0
+            void onAudioMixingStateChanged_node(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE errorCode);
+            void onLastmileProbeResult_node(const LastmileProbeResult &result);
         private:
             std::unordered_map<std::string, NodeEventCallback*> m_callbacks;
             NodeRtcEngine* m_engine;
