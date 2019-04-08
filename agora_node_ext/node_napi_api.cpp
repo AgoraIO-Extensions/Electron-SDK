@@ -98,6 +98,13 @@ VideoFrameInfo& NodeVideoFrameTransporter::getVideoFrameInfo(NodeRenderType type
         return *m_localVideoFrame.get();
     }
     else if (type == NODE_RENDER_TYPE_REMOTE) {
+        auto hit = m_remoteHighVideoFrames.find(uid);
+
+        //try looking in high streams first
+        if (hit != m_remoteHighVideoFrames.end()) 
+            return m_remoteHighVideoFrames[uid];
+
+        //if not exists, try looking in low streams
         auto it = m_remoteVideoFrames.find(uid);
         if (it == m_remoteVideoFrames.end()) {
             m_remoteVideoFrames[uid] = VideoFrameInfo(NODE_RENDER_TYPE_REMOTE, uid);
