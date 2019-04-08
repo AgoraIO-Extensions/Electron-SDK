@@ -52,7 +52,7 @@ typedef NS_ENUM(NSInteger, AgoraVideoBufferType) {
 
 /** An object supporting video data in two formats; pixel buffer and raw data.
 
- When the video source is initialized, the media engine passes this object to the developer and the developer needs to reserve it, and then pass the video frame to the media engine through this object once the video source is initialized.
+ When the video source is initialized, the media engine passes this object to you and you need to reserve it, and then pass the video frame to the media engine through this object once the video source is initialized.
  Call [bufferType]([AgoraVideoSinkProtocol bufferType]) to specify a buffer type. The video data can only be transmitted in the corresponding type.
  */
 @protocol AgoraVideoFrameConsumer <NSObject>
@@ -60,7 +60,7 @@ typedef NS_ENUM(NSInteger, AgoraVideoBufferType) {
 /** Uses the video information in the pixel buffer.
 
  @param pixelBuffer Buffer type
- @param timestamp   Time stamp (ms) of the video frame. For each video frame, developers need to set a timestamp.
+ @param timestamp   Timestamp (ms) of the video frame. For each video frame, you need to set a timestamp.
  @param rotation    AgoraVideoRotation
  */
 - (void)consumePixelBuffer:(CVPixelBufferRef _Nonnull)pixelBuffer
@@ -70,7 +70,7 @@ typedef NS_ENUM(NSInteger, AgoraVideoBufferType) {
 /** Uses the video information in the raw data.
 
  @param rawData   Raw data of the video frame.
- @param timestamp Time stamp (ms) of the video frame.
+ @param timestamp Timestamp (ms) of the video frame.
  @param format    AgoraVideoPixelFormat
  @param size      Size of the raw video data.
  @param rotation  AgoraVideoRotation
@@ -86,7 +86,7 @@ typedef NS_ENUM(NSInteger, AgoraVideoBufferType) {
 
  AgoraVideoSourceProtocol allows you to take the ownership of the video source and manipulate it.
  By default, when enabling real-time communications, the Agora SDK enables the default video input device (built-in camera) to start video streaming.
- By calling [setVideoSource]([AgoraRtcEngineKit setVideoSource:]), you can change the default video input device, control it, and send the video source from the specified input device to the Agora Media Engine to handle the remaining video process; such as video filtering and publishing the video to the RTC connection.
+ By calling [setVideoSource]([AgoraRtcEngineKit setVideoSource:]), you can change the default video input device, control it, and send the video source from the specified input device to the Agora Media Engine to handle the remaining video processes; such as video filtering and publishing the video to the RTC connection.
  Once you have implemented this interface, the Agora Media Engine automatically releases the ownership of the current video input device and passes the ownership to you, so that you can use the same video input device to capture the video stream.
  AgoraVideoSourceProtocol consists of the following methods:
 
@@ -98,10 +98,10 @@ typedef NS_ENUM(NSInteger, AgoraVideoBufferType) {
 
  Note:
 
- * All methods in the [AgoraVideoSourceProtocol]([AgoraVideoSourceProtocol]) are callbacks. The media engine maintains a finite state machine and uses these functions at the right time. Do not use these functions directly in the app.
- * These functions are synchronized.
- * If the media engine restarts during the process, these functions can be repeated for a couple of times.
- * These functions are not in the primary thread.
+ * All methods in [AgoraVideoSourceProtocol]([AgoraVideoSourceProtocol]) are callbacks. The media engine maintains a finite state machine and uses these methods at the right time. Do not use these methods directly in the app.
+ * These methods are synchronized.
+ * If the media engine restarts during the process, these methods can be repeated for a couple of times.
+ * These methods are not in the primary thread.
 
  When using the AgoraVideoSourceProtocol, call AgoraVideoBufferType, AgoraVideoPixelFormat, and AgoraVideoRotation to set the buffer type, pixel format, and rotation angle of the transmitted video.
  */
@@ -121,7 +121,7 @@ typedef NS_ENUM(NSInteger, AgoraVideoBufferType) {
 
 /** Enables the video source.
 
- Call this method when the media engine is ready to start video streaming. You should start the video source to capture the video frame. Once the frame is ready, use the AgoraVideoFrameConsumer to consume the video frame.
+ Call this method when the media engine is ready to start video streaming. You should start the video source to capture the video frame. Once the frame is ready, use AgoraVideoFrameConsumer to consume the video frame.
  Pass one of the following return values to the media engine:
 
  * YES: If the external video source is enabled and AgoraVideoFrameConsumer is called to receive video frames.
@@ -156,10 +156,10 @@ Call this method when AgoraVideoFrameConsumer is released by the media engine. Y
 
  AgoraVideoSinkProtocol allows you to implement the custom video source.
  By default, when you try to enable real-time communications, the Agora SDK enables the default video sink to start video rendering. By calling [setLocalVideoRenderer]([AgoraRtcEngineKit setLocalVideoRenderer:]) and [setRemoteVideoRenderer]([AgoraRtcEngineKit setRemoteVideoRenderer:forUserId:]), you can change the default video sink.
- Once you have implemented this interface, you will receive callbacks from the media engine to indicate the state of the custom video sink, the underlying media engine, and enable their synchronization. Follow each callback to handle the resource allocation, and to release and receive the video frame from the media engine.
- The AgoraVideoSinkProtocol defines a set of protocols to create a customized video sink. The AgoraVideoFrameConsumer interface passes the video frames to the media engine, which then passes them to the renderer.
+ Once you implement this interface, you receive callbacks from the media engine to indicate the state of the custom video sink, the underlying media engine, and enable their synchronization. Follow each callback to handle the resource allocation, and to release and receive the video frame from the media engine.
+ AgoraVideoSinkProtocol defines a set of protocols to create a customized video sink. The AgoraVideoFrameConsumer interface passes the video frames to the media engine, which then passes them to the renderer.
  After a customized video sink is created, the app passes it to the media engine, see [setLocalVideoRenderer]([AgoraRtcEngineKit setLocalVideoRenderer:]) and [setRemoteVideoRenderer]([AgoraRtcEngineKit setRemoteVideoRenderer:forUserId:]).
- AgoraVideoSinkProtocol consists of the following callbacks:
+ AgoraVideoSinkProtocol consists of the following methods:
 
  * Initializes the Video Sink ([shouldInitialize](shouldInitialize))
  * Enables the Video Sink ([shouldStart](shouldStart))
@@ -170,7 +170,7 @@ Call this method when AgoraVideoFrameConsumer is released by the media engine. Y
  * (Optional) Outputs the Video in the Pixel Buffer ([renderPixelBuffer](renderPixelBuffer:rotation:))
  * (Optional) Outputs the Video in the Raw Data ([renderRawData](renderRawData:size:rotation:))
 
- Note: All methods defined in AgoraVideoSinkProtocol are callbacks. The media engine uses these functions to inform the customized renderer of its internal changes.
+ Note: All methods defined in AgoraVideoSinkProtocol are callbacks. The media engine uses these methods to inform the customized renderer of its internal changes.
  An example is shown in the following steps to customize the video sink:
 
  1. Call bufferType and AgoraVideoPixelFormat to set the buffer type and pixel format of the video frame.
@@ -263,13 +263,24 @@ __attribute__((visibility("default"))) @interface AgoraRtcDefaultCamera: NSObjec
 
 #if (!(TARGET_OS_IPHONE) && (TARGET_OS_MAC))
 __attribute__((visibility("default"))) @interface AgoraRtcScreenCapture: NSObject<AgoraVideoSourceProtocol>
-@property (nonatomic, readonly) NSUInteger windowId;
-+ (instancetype _Nonnull)fullScreenCaptureWithFrequency:(NSInteger)captureFrequency
-                                                bitRate:(NSInteger)bitRate;
-+ (instancetype _Nonnull)windowCaptureWithId:(CGWindowID)windowId
-                            captureFrequency:(NSInteger)captureFrequency
-                                     bitRate:(NSInteger)bitRate
-                                        rect:(CGRect)rect;
+@property (nonatomic, assign, readonly) BOOL ifWindowShare;
+@property (nonatomic, assign, readonly) NSUInteger displayId;
+@property (nonatomic, assign, readonly) NSUInteger windowId;
+@property (nonatomic, assign, readonly) CGRect rect;
+@property (nonatomic, assign, readonly) CGSize dimensions;
+@property (nonatomic, assign, readonly) NSInteger frameRate;
+@property (nonatomic, assign, readonly) NSInteger bitrate;
+
++ (instancetype _Nonnull)screenCaptureWithId:(NSUInteger)displayId
+                                        rect:(CGRect)rect
+                                  dimensions:(CGSize)dimensions
+                                   frameRate:(NSInteger)frameRate
+                                     bitrate:(NSInteger)bitrate;
++ (instancetype _Nonnull)windowCaptureWithId:(NSUInteger)windowId
+                                        rect:(CGRect)rect
+                                  dimensions:(CGSize)dimensions
+                                   frameRate:(NSInteger)frameRate
+                                     bitrate:(NSInteger)bitrate;
 @end
 #endif
 

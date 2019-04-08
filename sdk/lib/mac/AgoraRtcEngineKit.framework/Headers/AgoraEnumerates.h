@@ -9,7 +9,7 @@
 
 /** Warning code.
 
-Warning codes occur when the SDK encounters an error that may be recovered automatically. These are only notifications, and can generally be ignored. For example, when the SDK loses connection to the server, the SDK reports the AgoraWarningCodeOpenChannelTimeout(106) code and tries to reconnect automatically.
+Warning codes occur when the SDK encounters an error that may be recovered automatically. These are only notifications, and can generally be ignored. For example, when the SDK loses connection to the server, the SDK reports the AgoraWarningCodeOpenChannelTimeout(106) warning and tries to reconnect automatically.
 */
 typedef NS_ENUM(NSInteger, AgoraWarningCode) {
     /** 8: The specified view is invalid. Specify a view when using the video call function. */
@@ -20,7 +20,7 @@ typedef NS_ENUM(NSInteger, AgoraWarningCode) {
     AgoraWarningCodePending = 20,
     /** 103: No channel resources are available. Maybe because the server cannot allocate any channel resource. */
     AgoraWarningCodeNoAvailableChannel = 103,
-    /** 104: A timeout occurs when looking up the channel. When joining a channel, the SDK looks up the specified channel. The warning usually occurs when the network condition is too poor to connect to the server. */
+    /** 104: A timeout occurs when looking up the channel. When joining a channel, the SDK looks up the specified channel. The warning usually occurs when the network condition is too poor for the SDK to connect to the server. */
     AgoraWarningCodeLookupChannelTimeout = 104,
     /** 105: The server rejects the request to look up the channel. The server cannot process this request or the request is illegal. */
     AgoraWarningCodeLookupChannelRejected = 105,
@@ -40,27 +40,27 @@ typedef NS_ENUM(NSInteger, AgoraWarningCode) {
     AgoraWarningCodeOpenChannelTryNextVos = 122,
     /** 701: An error occurs in opening the audio mixing file. */
     AgoraWarningCodeAudioMixingOpenError = 701,
-    /** 1014: Audio Device Module: A warning occurs in the playback device. */
+    /** 1014: Audio Device Module: a warning occurs in the playback device. */
     AgoraWarningCodeAdmRuntimePlayoutWarning = 1014,
-    /** 1016: Audio Device Module: A warning occurs in the recording device. */
+    /** 1016: Audio Device Module: a warning occurs in the recording device. */
     AgoraWarningCodeAdmRuntimeRecordingWarning = 1016,
-    /** 1019: Audio Device Module: No valid audio data is collected. */
+    /** 1019: Audio Device Module: no valid audio data is collected. */
     AgoraWarningCodeAdmRecordAudioSilence = 1019,
-    /** 1020: Audio Device Module: A playback device fails. */
+    /** 1020: Audio Device Module: a playback device fails. */
     AgoraWarningCodeAdmPlaybackMalfunction = 1020,
-    /** 1021: Audio Device Module: A recording device fails. */
+    /** 1021: Audio Device Module: a recording device fails. */
     AgoraWarningCodeAdmRecordMalfunction = 1021,
     /** 1025: The system interrupts the audio session, and the session is no longer active. */
     AgoraWarningCodeAdmInterruption = 1025,
-    /** 1031: Audio Device Module: The recorded audio voice is too low. */
+    /** 1031: Audio Device Module: the recorded audio is too low. */
     AgoraWarningCodeAdmRecordAudioLowlevel = 1031,
-    /** 1032: Audio Device Module: The playback audio voice is too low. */
+    /** 1032: Audio Device Module: the playback audio is too low. */
     AgoraWarningCodeAdmPlayoutAudioLowlevel = 1032,
-    /** 1051: Audio Device Module: Howling is detected. */
+    /** 1051: Audio Device Module: howling is detected. */
     AgoraWarningCodeApmHowling = 1051,
-    /** 1052: Audio Device Module: The device is in the glitch state. */
+    /** 1052: Audio Device Module: the device is in the glitch state. */
     AgoraWarningCodeAdmGlitchState = 1052,
-    /** 1053: Audio Device Module: The underlying audio settings have changed. */
+    /** 1053: Audio Device Module: the underlying audio settings have changed. */
     AgoraWarningCodeAdmImproperSettings = 1053,
 };
 
@@ -105,13 +105,13 @@ typedef NS_ENUM(NSInteger, AgoraErrorCode) {
     /** 15: No network buffers are available. This is for internal SDK use only, and is not returned to the app through any method or callback. */
     AgoraErrorCodeNoBufs = 15,
     /** 17: The request to join the channel is rejected.
-     <p>The possible reasons are:
+     <p>Possible reasons are:
      <ul><li>The user is already in the channel, and still calls the API method to join the channel, for example, [joinChannelByToken]([AgoraRtcEngineKit joinChannelByToken:channelId:info:uid:joinSuccess:]).</li>
-     <li>The user tries joining the channel during the echo test. Please join the channel after the echo test.</li></ul></p>
+     <li>The user tries joining the channel during the echo test. Please join the channel after the echo test ends.</li></ul></p>
     */
     AgoraErrorCodeJoinChannelRejected = 17,
     /** 18: The request to leave the channel is rejected.
-     <p>The possible reasons are:
+     <p>Possible reasons are:
      <ul><li>The user left the channel and still calls the API method to leave the channel, for example, [leaveChannel]([AgoraRtcEngineKit leaveChannel:]).</li>
      <li>The user has not joined the channel and calls the API method to leave the channel.</li></ul></p>
     */
@@ -120,7 +120,7 @@ typedef NS_ENUM(NSInteger, AgoraErrorCode) {
     AgoraErrorCodeAlreadyInUse = 19,
     /** 20: The SDK gave up the request due to too many requests.  */
     AgoraErrorCodeAbort = 20,
-    /** 21: In Windows, specific firewall settings can cause the SDK to fail to initialize and crash. */
+    /** 21: In Windows, specific firewall settings cause the SDK to fail to initialize and crash. */
     AgoraErrorCodeInitNetEngine = 21,
     /** 22: The app uses too much of the system resources and the SDK fails to allocate the resources. */
     AgoraErrorCodeResourceLimited = 22,
@@ -129,14 +129,14 @@ typedef NS_ENUM(NSInteger, AgoraErrorCode) {
     /** 102: The specified channel name is invalid. Please try to rejoin the channel with a valid channel name. */
     AgoraErrorCodeInvalidChannelId = 102,
     /** 109: The token expired.
-     <p>The possible reasons are:
+     <p>Possible reasons are:
      <ul><li>Authorized Timestamp expired: The timestamp is represented by the number of seconds elapsed since 1/1/1970. The user can use the token to access the Agora service within five minutes after the token is generated. If the user does not access the Agora service after five minutes, this token is no longer valid.</li>
      <li>Call Expiration Timestamp expired: The timestamp is the exact time when a user can no longer use the Agora service (for example, when a user is forced to leave an ongoing call). When a value is set for the Call Expiration Timestamp, it does not mean that the token will expire, but that the user will be banned from the channel.</li></ul></p>
      */
     AgoraErrorCodeTokenExpired = 109,
     /** 110: The token is invalid.
-     <p>The possible reasons are:
-     <ul><li>The App Certificate for the project is enabled in Dashboard, but the user is  using the App ID. Once the App Certificate is enabled, the user must use a token.</li>
+     <p>Possible reasons are:
+     <ul><li>The App Certificate for the project is enabled in Dashboard, but the user is using the App ID. Once the App Certificate is enabled, the user must use a token.</li>
      <li>The uid is mandatory, and users must set the same uid as the one set in the [joinChannelByToken]([AgoraRtcEngineKit joinChannelByToken:channelId:info:uid:joinSuccess:]) method.</li></ul></p>
      */
     AgoraErrorCodeInvalidToken = 110,
@@ -154,15 +154,15 @@ typedef NS_ENUM(NSInteger, AgoraErrorCode) {
     AgoraErrorCodeTooManyDataStreams = 116,
     /** 120: Decryption fails. The user may have used a different encryption password to join the channel. Check your settings or try rejoining the channel. */
     AgoraErrorCodeDecryptionFailed = 120,
-    /** 124: An error occurs in the watermark file parameter. */
+    /** 124: Incorrect watermark file parameter. */
     AgoraErrorCodeWatermarkParam = 124,
-    /** 125: An error occurs in the watermark file path. */
+    /** 125: Incorrect watermark file path. */
     AgoraErrorCodeWatermarkPath = 125,
-    /** 126: An error occurs in the watermark file format. */
+    /** 126: Incorrect watermark file format. */
     AgoraErrorCodeWatermarkPng = 126,
-    /** 127: An error occurs in the watermark file information. */
+    /** 127: Incorrect watermark file information. */
     AgoraErrorCodeWatermarkInfo = 127,
-    /** 128: An error occurs in the watermark file data format. */
+    /** 128: Incorrect watermark file data format. */
     AgoraErrorCodeWatermarkAGRB = 128,
     /** 129: An error occurs in reading the watermark file. */
     AgoraErrorCodeWatermarkRead = 129,
@@ -228,37 +228,61 @@ typedef NS_ENUM(NSInteger, AgoraErrorCode) {
     AgoraErrorCodeVcmEncoderSetError = 1603,
 };
 
+/** The state of the audio mixing file. */
+typedef NS_ENUM(NSInteger, AgoraAudioMixingStateCode){
+    /** The audio mixing file is playing. */
+    AgoraAudioMixingStatePlaying = 710,
+    /** The audio mixing file pauses playing. */
+    AgoraAudioMixingStatePaused = 711,
+    /** The audio mixing file stops playing. */
+    AgoraAudioMixingStateStopped = 713,
+    /** An exception occurs when playing the audio mixing file. */
+    AgoraAudioMixingStateFailed = 714,
+};
+
+/**  The error code of the audio mixing file. */
+typedef NS_ENUM(NSInteger, AgoraAudioMixingErrorCode){
+    /** The SDK cannot open the audio mixing file. */
+   AgoraAudioMixingErrorCanNotOpen = 701,
+   /** The SDK opens the audio mixing file too frequently. */
+   AgoraAudioMixingErrorTooFrequentCall = 702,
+   /** The opening of the audio mixing file is interrupted. */
+   AgoraAudioMixingErrorInterruptedEOF = 703,
+   /** No error. */
+   AgoraAudioMixingErrorOK = 0,
+};
+
 /** Video profile.
 
 **DEPRECATED**
 
 Please use AgoraVideoEncoderConfiguration.
 
-iPhone does not support resolutions above 720p.
+iPhones do not support resolutions above 720p.
 */
 typedef NS_ENUM(NSInteger, AgoraVideoProfile) {
     /** Invalid profile. */
     AgoraVideoProfileInvalid = -1,
     /** Resolution 160 &times; 120, frame rate 15 fps, bitrate 65 Kbps. */
     AgoraVideoProfileLandscape120P = 0,
-    /** Resolution 120 &times; 120, frame rate 15 fps, bitrate 50 Kbps. */
-    AgoraVideoProfileLandscape120P_3 = 2, // iOS
-    /** Resolution 320 &times; 180, frame rate 15 fps, bitrate 140 Kbps. */
-    AgoraVideoProfileLandscape180P = 10, // iOS
-    /** Resolution 180 &times; 180, frame rate 15 fps, bitrate 100 Kbps. */
-    AgoraVideoProfileLandscape180P_3 = 12, // iOS
+    /** (iOS only) Resolution 120 &times; 120, frame rate 15 fps, bitrate 50 Kbps. */
+    AgoraVideoProfileLandscape120P_3 = 2,
+    /** (iOS only) Resolution 320 &times; 180, frame rate 15 fps, bitrate 140 Kbps. */
+    AgoraVideoProfileLandscape180P = 10,
+    /** (iOS only) Resolution 180 &times; 180, frame rate 15 fps, bitrate 100 Kbps. */
+    AgoraVideoProfileLandscape180P_3 = 12,
     /** Resolution 240 &times; 180, frame rate 15 fps, bitrate 120 Kbps. */
-    AgoraVideoProfileLandscape180P_4 = 13, // iOS
+    AgoraVideoProfileLandscape180P_4 = 13,
     /** Resolution 320 &times; 240, frame rate 15 fps, bitrate 200 Kbps. */
     AgoraVideoProfileLandscape240P = 20,
-    /** Resolution 240 &times; 240, frame rate 15 fps, bitrate 140 Kbps. */
-    AgoraVideoProfileLandscape240P_3 = 22, //iOS
+    /** (iOS only) Resolution 240 &times; 240, frame rate 15 fps, bitrate 140 Kbps. */
+    AgoraVideoProfileLandscape240P_3 = 22,
     /** Resolution 424 &times; 240, frame rate 15 fps, bitrate 220 Kbps. */
-    AgoraVideoProfileLandscape240P_4 = 23, // iOS
+    AgoraVideoProfileLandscape240P_4 = 23,
     /** Resolution 640 &times; 360, frame rate 15 fps, bitrate 400 Kbps. */
     AgoraVideoProfileLandscape360P = 30,
-    /** Resolution 360 &times; 360, frame rate 15 fps, bitrate 260 Kbps. */
-    AgoraVideoProfileLandscape360P_3 = 32, // iOS
+    /** (iOS only) Resolution 360 &times; 360, frame rate 15 fps, bitrate 260 Kbps. */
+    AgoraVideoProfileLandscape360P_3 = 32,
     /** Resolution 640 &times; 360, frame rate 30 fps, bitrate 600 Kbps. */
     AgoraVideoProfileLandscape360P_4 = 33,
     /** Resolution 360 &times; 360, frame rate 30 fps, bitrate 400 Kbps. */
@@ -268,24 +292,24 @@ typedef NS_ENUM(NSInteger, AgoraVideoProfile) {
     /** Resolution 480 &times; 360, frame rate 30 fps, bitrate 490 Kbps. */
     AgoraVideoProfileLandscape360P_8 = 37,
     /** Resolution 640 &times; 360, frame rate 15 fps, bitrate 800 Kbps.
-
-     Note: This profile applies to the live broadcast channel profile only.
+    <br>
+     <b>Note:</b> This profile applies to the live broadcast channel profile only.
      */
     AgoraVideoProfileLandscape360P_9 = 38,
     /** Resolution 640 &times; 360, frame rate 24 fps, bitrate 800 Kbps.
-
-     Note: This profile applies to the live broadcast channel profile only.
+    <br>
+     <b>Note:</b> This profile applies to the live broadcast channel profile only.
      */
     AgoraVideoProfileLandscape360P_10 = 39,
     /** Resolution 640 &times; 360, frame rate 24 fps, bitrate 1000 Kbps.
-
-     Note: This profile applies to the live broadcast channel profile only.
+    <br>
+     <b>Note:</b> This profile applies to the live broadcast channel profile only.
      */
     AgoraVideoProfileLandscape360P_11 = 100,
     /** Resolution 640 &times; 480, frame rate 15 fps, bitrate 500 Kbps. */
     AgoraVideoProfileLandscape480P = 40,
-    /** Resolution 480 &times; 480, frame rate 15 fps, bitrate 400 Kbps. */
-    AgoraVideoProfileLandscape480P_3 = 42, // iOS
+    /** (iOS only) Resolution 480 &times; 480, frame rate 15 fps, bitrate 400 Kbps. */
+    AgoraVideoProfileLandscape480P_3 = 42,
     /** Resolution 640 &times; 480, frame rate 30 fps, bitrate 750 Kbps. */
     AgoraVideoProfileLandscape480P_4 = 43,
     /** Resolution 480 &times; 480, frame rate 30 fps, bitrate 600 Kbps. */
@@ -304,41 +328,41 @@ typedef NS_ENUM(NSInteger, AgoraVideoProfile) {
     AgoraVideoProfileLandscape720P_5 = 54,
     /** Resolution 960 &times; 720, frame rate 30 fps, bitrate 1380 Kbps. */
     AgoraVideoProfileLandscape720P_6 = 55,
-    /** Resolution 1920 &times; 1080, frame rate 15 fps, bitrate 2080 Kbps. */
+    /** (macOS only) Resolution 1920 &times; 1080, frame rate 15 fps, bitrate 2080 Kbps. */
     AgoraVideoProfileLandscape1080P = 60,
-    /** Resolution 1920 &times; 1080, frame rate 30 fps, bitrate 3150 Kbps. */
+    /** (macOS only) Resolution 1920 &times; 1080, frame rate 30 fps, bitrate 3150 Kbps. */
     AgoraVideoProfileLandscape1080P_3 = 62,
-    /** Resolution 1920 &times; 1080, frame rate 60 fps, bitrate 4780 Kbps. */
+    /** (macOS only) Resolution 1920 &times; 1080, frame rate 60 fps, bitrate 4780 Kbps. */
     AgoraVideoProfileLandscape1080P_5 = 64,
-    /** Resolution 2560 &times; 1440, frame rate 30 fps, bitrate 4850 Kbps. */
+    /** (macOS only) Resolution 2560 &times; 1440, frame rate 30 fps, bitrate 4850 Kbps. */
     AgoraVideoProfileLandscape1440P = 66,
-    /** Resolution 2560 &times; 1440, frame rate 60 fps, bitrate 6500 Kbps. */
+    /** (macOS only) Resolution 2560 &times; 1440, frame rate 60 fps, bitrate 6500 Kbps. */
     AgoraVideoProfileLandscape1440P_2 = 67,
-    /** Resolution 3840 &times; 2160, frame rate 30 fps, bitrate 6500 Kbps. */
+    /** (macOS only) Resolution 3840 &times; 2160, frame rate 30 fps, bitrate 6500 Kbps. */
     AgoraVideoProfileLandscape4K = 70,
-    /** Resolution 3840 &times; 2160, frame rate 60 fps, bitrate 6500 Kbps. */
+    /** (macOS only) Resolution 3840 &times; 2160, frame rate 60 fps, bitrate 6500 Kbps. */
     AgoraVideoProfileLandscape4K_3 = 72,
 
     /** Resolution 120 &times; 160, frame rate 15 fps, bitrate 65 Kbps. */
     AgoraVideoProfilePortrait120P = 1000,
-    /** Resolution 120 &times; 120, frame rate 15 fps, bitrate 50 Kbps. */
-    AgoraVideoProfilePortrait120P_3 = 1002, //iOS
-    /** Resolution 180 &times; 320, frame rate 15 fps, bitrate 140 Kbps. */
-    AgoraVideoProfilePortrait180P = 1010, // iOS
-    /** Resolution 180 &times; 180, frame rate 15 fps, bitrate 100 Kbps. */
-    AgoraVideoProfilePortrait180P_3 = 1012, // iOS
+    /** (iOS only) Resolution 120 &times; 120, frame rate 15 fps, bitrate 50 Kbps. */
+    AgoraVideoProfilePortrait120P_3 = 1002,
+    /** (iOS only) Resolution 180 &times; 320, frame rate 15 fps, bitrate 140 Kbps. */
+    AgoraVideoProfilePortrait180P = 1010,
+    /** (iOS only) Resolution 180 &times; 180, frame rate 15 fps, bitrate 100 Kbps. */
+    AgoraVideoProfilePortrait180P_3 = 1012,
     /** Resolution 180 &times; 240, frame rate 15 fps, bitrate 120 Kbps. */
-    AgoraVideoProfilePortrait180P_4 = 1013, // iOS
+    AgoraVideoProfilePortrait180P_4 = 1013,
     /** Resolution 240 &times; 320, frame rate 15 fps, bitrate 200 Kbps. */
     AgoraVideoProfilePortrait240P = 1020,
-    /** Resolution 240 &times; 240, frame rate 15 fps, bitrate 140 Kbps. */
-    AgoraVideoProfilePortrait240P_3 = 1022, // iOS
+    /** (iOS only) Resolution 240 &times; 240, frame rate 15 fps, bitrate 140 Kbps. */
+    AgoraVideoProfilePortrait240P_3 = 1022,
     /** Resolution 240 &times; 424, frame rate 15 fps, bitrate 220 Kbps. */
     AgoraVideoProfilePortrait240P_4 = 1023,
     /** Resolution 360 &times; 640, frame rate 15 fps, bitrate 400 Kbps. */
-    AgoraVideoProfilePortrait360P = 1030, // iOS
-    /** Resolution 360 &times; 360, frame rate 15 fps, bitrate 260 Kbps. */
-    AgoraVideoProfilePortrait360P_3 = 1032, // iOS
+    AgoraVideoProfilePortrait360P = 1030,
+    /** (iOS only) Resolution 360 &times; 360, frame rate 15 fps, bitrate 260 Kbps. */
+    AgoraVideoProfilePortrait360P_3 = 1032,
     /** Resolution 360 &times; 640, frame rate 30 fps, bitrate 600 Kbps. */
     AgoraVideoProfilePortrait360P_4 = 1033,
     /** Resolution 360 &times; 360, frame rate 30 fps, bitrate 400 Kbps. */
@@ -355,8 +379,8 @@ typedef NS_ENUM(NSInteger, AgoraVideoProfile) {
     AgoraVideoProfilePortrait360P_11 = 1100,
     /** Resolution 480 &times; 640, frame rate 15 fps, bitrate 500 Kbps. */
     AgoraVideoProfilePortrait480P = 1040,
-    /** Resolution 480 &times; 480, frame rate 15 fps, bitrate 400 Kbps. */
-    AgoraVideoProfilePortrait480P_3 = 1042,    // iOS
+    /** (iOS only) Resolution 480 &times; 480, frame rate 15 fps, bitrate 400 Kbps. */
+    AgoraVideoProfilePortrait480P_3 = 1042,
     /** Resolution 480 &times; 640, frame rate 30 fps, bitrate 750 Kbps. */
     AgoraVideoProfilePortrait480P_4 = 1043,
     /** Resolution 480 &times; 480, frame rate 30 fps, bitrate 600 Kbps. */
@@ -375,25 +399,38 @@ typedef NS_ENUM(NSInteger, AgoraVideoProfile) {
     AgoraVideoProfilePortrait720P_5 = 1054,
     /** Resolution 720 &times; 960, frame rate 30 fps, bitrate 1380 Kbps. */
     AgoraVideoProfilePortrait720P_6 = 1055,
-    /** Resolution 1080 &times; 1920, frame rate 15 fps, bitrate 2080 Kbps. */
+    /** (macOS only) Resolution 1080 &times; 1920, frame rate 15 fps, bitrate 2080 Kbps. */
     AgoraVideoProfilePortrait1080P = 1060, // macOS
-    /** Resolution 1080 &times; 1920, frame rate 30 fps, bitrate 3150 Kbps. */
+    /** (macOS only) Resolution 1080 &times; 1920, frame rate 30 fps, bitrate 3150 Kbps. */
     AgoraVideoProfilePortrait1080P_3 = 1062, // macOS
-    /** Resolution 1080 &times; 1920, frame rate 60 fps, bitrate 4780 Kbps. */
+    /** (macOS only) Resolution 1080 &times; 1920, frame rate 60 fps, bitrate 4780 Kbps. */
     AgoraVideoProfilePortrait1080P_5 = 1064, // macOS
-    /** Resolution 1440 &times; 2560, frame rate 30 fps, bitrate 4850 Kbps. */
+    /** (macOS only) Resolution 1440 &times; 2560, frame rate 30 fps, bitrate 4850 Kbps. */
     AgoraVideoProfilePortrait1440P = 1066, // macOS
-    /** Resolution 1440 &times; 2560, frame rate 60 fps, bitrate 6500 Kbps. */
+    /** (macOS only) Resolution 1440 &times; 2560, frame rate 60 fps, bitrate 6500 Kbps. */
     AgoraVideoProfilePortrait1440P_2 = 1067, // macOS
-    /** Resolution 2160 &times; 3840, frame rate 30 fps, bitrate 6500 Kbps. */
+    /** (macOS only) Resolution 2160 &times; 3840, frame rate 30 fps, bitrate 6500 Kbps. */
     AgoraVideoProfilePortrait4K = 1070, // macOS
-    /** Resolution 2160 &times; 3840, frame rate 60 fps, bitrate 6500 Kbps. */
+    /** (macOS only) Resolution 2160 &times; 3840, frame rate 60 fps, bitrate 6500 Kbps. */
     AgoraVideoProfilePortrait4K_3 = 1072, // macOS
     /** (Default) Resolution 640 &times; 360, frame rate 15 fps, bitrate 400 Kbps. */
     AgoraVideoProfileDEFAULT = AgoraVideoProfileLandscape360P,
 };
 
-/** Frame rate of the video. */
+/** The camera capture preference. */
+typedef NS_ENUM(NSInteger, AgoraCameraCaptureOutputPreference) {
+    /** (default) Self-adapts the camera output parameters to the system performance and network conditions to balance CPU consumption and video preview quality. */
+    AgoraCameraCaptureOutputPreferenceAuto = 0,
+    /** Prioritizes the system performance. The SDK chooses the dimension and frame rate of the local camera capture closest to those set by [setVideoEncoderConfiguration]([AgoraRtcEngineKit setVideoEncoderConfiguration:]). */
+    AgoraCameraCaptureOutputPreferencePerformance = 1,
+    /** Prioritizes the local preview quality. The SDK chooses higher camera output parameters to improve the local video preview quality. This option requires extra CPU and RAM usage for video pre-processing. */
+    AgoraCameraCaptureOutputPreferencePreview = 2,
+    /** Internal use only */
+    AgoraCameraCaptureOutputPreferenceUnkown = 3
+};
+
+
+/** Video frame rate */
 typedef NS_ENUM(NSInteger, AgoraVideoFrameRate) {
     /** 1 fps. */
     AgoraVideoFrameRateFps1 = 1,
@@ -407,7 +444,7 @@ typedef NS_ENUM(NSInteger, AgoraVideoFrameRate) {
     AgoraVideoFrameRateFps24 = 24,
     /** 30 fps. */
     AgoraVideoFrameRateFps30 = 30,
-    /** 60 fps. */
+    /** 60 fps (macOS only). */
     AgoraVideoFrameRateFps60 = 60,
 };
 
@@ -584,6 +621,24 @@ typedef NS_ENUM(NSInteger, AgoraVideoStreamType) {
     AgoraVideoStreamTypeLow = 1,
 };
 
+/** The priority of the remote user. */
+typedef NS_ENUM(NSInteger, AgoraUserPriority) {
+  /** The user's priority is high. */
+  AgoraUserPriorityHigh = 50,
+  /** (Default) The user's priority is normal. */
+  AgoraUserPriorityNormal = 100,
+};
+
+/**  Quality change of the local video in terms of target frame rate and target bit rate since last count. */
+typedef NS_ENUM(NSInteger, AgoraVideoQualityAdaptIndication) {
+  /** The quality of the local video stays the same. */
+  AgoraVideoQualityAdaptNone = 0,
+  /** The quality improves because the network bandwidth increases. */
+  AgoraVideoQualityAdaptUpBandwidth = 1,
+  /** The quality worsens because the network bandwidth decreases. */
+  AgoraVideoQualityAdaptDownBandwidth = 2,
+};
+
 /** Video display mode. */
 typedef NS_ENUM(NSUInteger, AgoraVideoRenderMode) {
     /** Hidden(1): Uniformly scale the video until it fills the visible boundaries (cropped). One dimension of the video may have clipped contents. */
@@ -618,9 +673,19 @@ typedef NS_ENUM(NSUInteger, AgoraVideoMirrorMode) {
     AgoraVideoMirrorModeDisabled = 2,
 };
 
+/** The content hint for screen sharing. */
+typedef NS_ENUM(NSUInteger, AgoraVideoContentHint) {
+    /** (Default) No content hint. */
+    AgoraVideoContentHintNone = 0,
+    /** Motion-intensive content. Choose this option if you prefer smoothness or when you are sharing a video clip, movie, or video game. */
+    AgoraVideoContentHintMotion = 1,
+    /** Motionless content. Choose this option if you prefer sharpness or when you are sharing a picture, PowerPoint slide, or text. */
+    AgoraVideoContentHintDetails = 2,
+};
+
 /** Remote video state. */
 typedef NS_ENUM(NSUInteger, AgoraVideoRemoteState) {
-    /** The remote video stopped playing. */
+    /** The remote video stops playing. */
     AgoraVideoRemoteStateStopped = 0,
     /** The remote video is playing. */
     AgoraVideoRemoteStateRunning = 1,
@@ -630,17 +695,17 @@ typedef NS_ENUM(NSUInteger, AgoraVideoRemoteState) {
 
 /** Stream fallback option. */
 typedef NS_ENUM(NSInteger, AgoraStreamFallbackOptions) {
-    /** No fallback behavior for the local/remote stream when the uplink/downlink network condition is unreliable. The quality of the stream is not guaranteed. */
+    /** No fallback behavior for the local/remote video stream when the uplink/downlink network condition is unreliable. The quality of the stream is not guaranteed. */
     AgoraStreamFallbackOptionDisabled = 0,
-    /** Under unreliable downlink network conditions, the remote stream falls back to the low-video stream (low resolution and low bitrate). You can only set this option in [setRemoteSubscribeFallbackOption]([AgoraRtcEngineKit setRemoteSubscribeFallbackOption:]). Nothing happens when you set this in [setLocalPublishFallbackOption]([AgoraRtcEngineKit setLocalPublishFallbackOption:]). */
+    /** Under unreliable downlink network conditions, the remote video stream falls back to the low-stream (low resolution and low bitrate) video. You can only set this option in the [setRemoteSubscribeFallbackOption]([AgoraRtcEngineKit setRemoteSubscribeFallbackOption:]) method. Nothing happens when you set this in the [setLocalPublishFallbackOption]([AgoraRtcEngineKit setLocalPublishFallbackOption:]) method. */
     AgoraStreamFallbackOptionVideoStreamLow = 1,
     /**
-     <li> Under unreliable uplink network conditions, the published stream falls back audio only.
-     <li>> Under unreliable downlink network conditions, the remote stream first falls back to the low-video stream (low resolution and low bitrate); and then to an audio-only stream if the network condition deteriorates. */
+     <li> Under unreliable uplink network conditions, the published video stream falls back to audio only.
+     <li> Under unreliable downlink network conditions, the remote video stream first falls back to the low-stream (low resolution and low bitrate) video; and then to an audio-only stream if the network condition deteriorates. */
     AgoraStreamFallbackOptionAudioOnly = 2,
 };
 
-/** Audio sampling rate. */
+/** Audio sample rate. */
 typedef NS_ENUM(NSInteger, AgoraAudioSampleRateType) {
     /** 32 kHz. */
     AgoraAudioSampleRateType32000 = 32000,
@@ -654,15 +719,15 @@ typedef NS_ENUM(NSInteger, AgoraAudioSampleRateType) {
 typedef NS_ENUM(NSInteger, AgoraAudioProfile) {
     /** Default audio profile. In the communication profile, the default value is 1; in the live-broadcast profile, the default value is 2. */
     AgoraAudioProfileDefault = 0,
-    /** Sampling rate of 32 kHz, audio encoding, mono, and a bitrate of up to 18 Kbps. */
+    /** Sample rate of 32 kHz, audio encoding, mono, and a bitrate of up to 18 Kbps. */
     AgoraAudioProfileSpeechStandard = 1,
-    /** Sampling rate of 48 kHz, music encoding, mono, and a bitrate of up to 48 Kbps. */
+    /** Sample rate of 48 kHz, music encoding, mono, and a bitrate of up to 48 Kbps. */
     AgoraAudioProfileMusicStandard = 2,
-    /** Sampling rate of 48 kHz, music encoding, stereo, and a bitrate of up to 56 Kbps. */
+    /** Sample rate of 48 kHz, music encoding, stereo, and a bitrate of up to 56 Kbps. */
     AgoraAudioProfileMusicStandardStereo = 3,
-    /** Sampling rate of 48 kHz, music encoding, mono, and a bitrate of up to 128 Kbps. */
+    /** Sample rate of 48 kHz, music encoding, mono, and a bitrate of up to 128 Kbps. */
     AgoraAudioProfileMusicHighQuality = 4,
-    /** Sampling rate of 48 kHz, music encoding, stereo, and a bitrate of up to 192 Kbps. */
+    /** Sample rate of 48 kHz, music encoding, stereo, and a bitrate of up to 192 Kbps. */
     AgoraAudioProfileMusicHighQualityStereo = 5,
 };
 
@@ -748,6 +813,44 @@ typedef NS_ENUM(NSInteger, AgoraAudioReverbType) {
     AgoraAudioReverbStrength = 4,
 };
 
+/** The preset audio voice configuration used to change the voice effect. */
+typedef NS_ENUM(NSInteger, AgoraAudioVoiceChanger) {
+    /** The original voice (no local voice change). */
+    AgoraAudioVoiceChangerOff = 0,
+    /** An old man's voice. */
+    AgoraAudioVoiceChangerOldMan = 1,
+    /** A little boy's voice. */
+    AgoraAudioVoiceChangerBabyBoy = 2,
+    /** A little girl's voice. */
+    AgoraAudioVoiceChangerBabyGirl = 3,
+    /** TBD */
+    AgoraAudioVoiceChangerZhuBaJie = 4,
+    /** Ethereal vocal effects. */
+    AgoraAudioVoiceChangerEthereal = 5,
+    /** Hulk's voice. */
+    AgoraAudioVoiceChangerHulk = 6
+};
+
+/** The preset local voice reverberation option. */
+typedef NS_ENUM(NSInteger, AgoraAudioReverbPreset) {
+    /** The original voice (no local voice reverberation). */
+    AgoraAudioReverbPresetOff = 0,
+    /** Pop music */
+    AgoraAudioReverbPresetPopular = 1,
+    /** R&B */
+    AgoraAudioReverbPresetRnB = 2,
+    /** Rock music */
+    AgoraAudioReverbPresetRock = 3,
+    /** Hip-hop music */
+    AgoraAudioReverbPresetHipHop = 4,
+    /** Pop concert */
+    AgoraAudioReverbPresetVocalConcert = 5,
+    /** Karaoke */
+    AgoraAudioReverbPresetKTV = 6,
+    /** Recording studio */
+    AgoraAudioReverbPresetStudio = 7
+};
+
 /** Audio session restriction. */
 typedef NS_OPTIONS(NSUInteger, AgoraAudioSessionOperationRestriction) {
     /** No restriction, the SDK has full control of the audio session operations. */
@@ -778,45 +881,39 @@ typedef NS_ENUM(NSInteger, AgoraMediaDeviceType) {
 
 /** Connection states. */
 typedef NS_ENUM(NSInteger, AgoraConnectionStateType) {
-    /** <p>1: The SDK is disconnected from Agora's edge server.</p>
-    <ul>
-        <li>This is the initial state before calling the [joinChannelByToken]([AgoraRtcEngineKit joinChannelByToken:channelId:info:uid:joinSuccess:]) method.</li>
-        <li>The SDK also enters this state when the app calls the [leaveChannel]([AgoraRtcEngineKit leaveChannel:]) method.</li>
-    </ul>  
+    /** <p>1: The SDK is disconnected from Agora's edge server.</p>  
+This is the initial state before [joinChannelByToken]([AgoraRtcEngineKit joinChannelByToken:channelId:info:uid:joinSuccess:]).<br>
+The SDK also enters this state when the app calls [leaveChannel]([AgoraRtcEngineKit leaveChannel:]).
     */
     AgoraConnectionStateDisconnected = 1,
     /** <p>2: The SDK is connecting to Agora's edge server.</p>
-    <ul>
-        <li>When the app calls the [joinChannelByToken]([AgoraRtcEngineKit joinChannelByToken:channelId:info:uid:joinSuccess:]) method, the SDK starts to establish a connection to the specified channel, triggers the [connectionChangedToState]([AgoraRtcEngineDelegate rtcEngine:connectionChangedToState:reason:]) callback, and switches to the `AgoraConnectionStateConnecting` state.</li>
-        <li>When the SDK successfully joins the channel, the SDK triggers the [connectionChangedToState]([AgoraRtcEngineDelegate rtcEngine:connectionChangedToState:reason:]) callback and switches to the `AgoraConnectionStateConnected` state.</li>
-        <li>After the SDK joins the channel and when it finishes initializing the media engine, the SDK triggers the [didJoinChannel]([AgoraRtcEngineDelegate rtcEngine:didJoinChannel:withUid:elapsed:]) callback.</li>
-    </ul>
+When the app calls [joinChannelByToken]([AgoraRtcEngineKit joinChannelByToken:channelId:info:uid:joinSuccess:]), the SDK starts to establish a connection to the specified channel, triggers the [connectionChangedToState]([AgoraRtcEngineDelegate rtcEngine:connectionChangedToState:reason:]) callback, and switches to the `AgoraConnectionStateConnecting` state.<br>
+<br>
+When the SDK successfully joins the channel, the SDK triggers the [connectionChangedToState]([AgoraRtcEngineDelegate rtcEngine:connectionChangedToState:reason:]) callback and switches to the `AgoraConnectionStateConnected` state.<br>
+<br>
+After the SDK joins the channel and when it finishes initializing the media engine, the SDK triggers the [didJoinChannel]([AgoraRtcEngineDelegate rtcEngine:didJoinChannel:withUid:elapsed:]) callback.
 */
     AgoraConnectionStateConnecting = 2,
     /** <p>3: The SDK is connected to Agora's edge server and joins a channel. You can now publish or subscribe to a media stream in the channel.</p>   
-    <p>If the connection to the channel is lost because, for example, the network is down or switched, the SDK automatically tries to reconnect and triggers:</p>
-    <ul>
-        <li>The [rtcEngineConnectionDidInterrupted]([AgoraRtcEngineDelegate rtcEngineConnectionDidInterrupted:])(deprecated) callback.</li>
-        <li>The [connectionChangedToState]([AgoraRtcEngineDelegate rtcEngine:connectionChangedToState:reason:]) callback, and switches to the `AgoraConnectionStateReconnecting` state.</li>
-    </ul>
+If the connection to the channel is lost because, for example, the network is down or switched, the SDK automatically tries to reconnect and triggers:
+<li> The [rtcEngineConnectionDidInterrupted]([AgoraRtcEngineDelegate rtcEngineConnectionDidInterrupted:])(deprecated) callback 
+<li> The [connectionChangedToState]([AgoraRtcEngineDelegate rtcEngine:connectionChangedToState:reason:]) callback, and switches to the `AgoraConnectionStateReconnecting` state.
     */
     AgoraConnectionStateConnected = 3,
     /** <p>4: The SDK keeps rejoining the channel after being disconnected from a joined channel because of network issues.</p>
-    <ul>
-        <li>If the SDK cannot rejoin the channel within 10 seconds after being disconnected from Agora's edge server, the SDK triggers the [rtcEngineConnectionDidLost]([AgoraRtcEngineDelegate rtcEngineConnectionDidLost:]) callback, stays in the `AgoraConnectionStateReconnecting` state, and keeps rejoining the channel.</li>
-        <li>If the SDK fails to rejoin the channel 20 minutes after being disconnected from Agora's edge server, the SDK triggers the [connectionChangedToState]([AgoraRtcEngineDelegate rtcEngine:connectionChangedToState:reason:]) callback, switches to the `AgoraConnectionStateFailed` state, and stops rejoining the channel.</li>
-    </ul>
-
+<li>If the SDK cannot rejoin the channel within 10 seconds after being disconnected from Agora's edge server, the SDK triggers the [rtcEngineConnectionDidLost]([AgoraRtcEngineDelegate rtcEngineConnectionDidLost:]) callback, stays in the `AgoraConnectionStateReconnecting` state, and keeps rejoining the channel.
+<li>If the SDK fails to rejoin the channel 20 minutes after being disconnected from Agora's edge server, the SDK triggers the [connectionChangedToState]([AgoraRtcEngineDelegate rtcEngine:connectionChangedToState:reason:]) callback, switches to the `AgoraConnectionStateFailed` state, and stops rejoining the channel.
     */
     AgoraConnectionStateReconnecting = 4,
     /** <p>5: The SDK fails to connect to Agora's edge server or join the channel.</p>
-    <p>You must call the [leaveChannel]([AgoraRtcEngineKit leaveChannel:])method to leave this state, and call the [joinChannelByToken]([AgoraRtcEngineKit joinChannelByToken:channelId:info:uid:joinSuccess:]) method again to rejoin the channel.</p>
-    <p>If the SDK is banned from joining the channel by Agora's edge server (through the RESTful API), the SDK triggers the [rtcEngineConnectionDidBanned]([AgoraRtcEngineDelegate rtcEngineConnectionDidBanned:])(deprecated) and [connectionChangedToState]([AgoraRtcEngineDelegate rtcEngine:connectionChangedToState:reason:]) callbacks.</p>
+You must call [leaveChannel]([AgoraRtcEngineKit leaveChannel:]) to leave this state, and call [joinChannelByToken]([AgoraRtcEngineKit joinChannelByToken:channelId:info:uid:joinSuccess:]) again to rejoin the channel.<br>
+<br>
+If the SDK is banned from joining the channel by Agora's edge server (through the RESTful API), the SDK triggers the [rtcEngineConnectionDidBanned]([AgoraRtcEngineDelegate rtcEngineConnectionDidBanned:])(deprecated) and [connectionChangedToState]([AgoraRtcEngineDelegate rtcEngine:connectionChangedToState:reason:]) callbacks.
     */
     AgoraConnectionStateFailed = 5,
 };
 
-/** Reason for the connection state change. */
+/** Reasons for the connection state change. */
 typedef NS_ENUM(NSUInteger, AgoraConnectionChangedReason) {
     /** 0: The SDK is connecting to Agora's edge server. */
     AgoraConnectionChangedConnecting = 0,
@@ -830,4 +927,33 @@ typedef NS_ENUM(NSUInteger, AgoraConnectionChangedReason) {
     AgoraConnectionChangedJoinFailed = 4,
     /** 5: The SDK has left the channel. */
     AgoraConnectionChangedLeaveChannel = 5,
+};
+
+/** The video encoding degradation preference under limited bandwidth. */
+typedef NS_ENUM(NSInteger, AgoraDegradationPreference) {
+    /** (Default) Degrades the frame rate to guarantee the video quality. */
+    AgoraDegradationMaintainQuality = 0,
+    /** Degrades the video quality to guarantee the frame rate. */
+    AgoraDegradationMaintainFramerate = 1,
+    /** Reserved for future use. */
+    AgoraDegradationBalanced = 2,
+};
+/** The lightening contrast level. */
+typedef NS_ENUM(NSUInteger, AgoraLighteningContrastLevel) {
+    /** Low contrast level. */
+    AgoraLighteningContrastLow = 0,
+    /** (Default) Normal contrast level. */
+    AgoraLighteningContrastNormal = 1,
+    /** High contrast level. */
+    AgoraLighteningContrastHigh = 2,
+};
+
+/** The state of the probe test result. */
+typedef NS_ENUM(NSUInteger, AgoraLastmileProbeResultState) {
+  /** 1: the last-mile network probe test is complete. */
+  AgoraLastmileProbeResultComplete = 1,
+  /** 2: the last-mile network probe test is incomplete and the bandwidth estimation is not available, probably due to limited test resources. */
+  AgoraLastmileProbeResultIncompleteNoBwe = 2,
+  /** 3: the last-mile network probe test is not carried out, probably due to poor network conditions. */
+  AgoraLastmileProbeResultUnavailable = 3,
 };

@@ -160,7 +160,7 @@ __attribute__((visibility("default"))) @interface AgoraLiveKit : NSObject
 
 /** Initializes the AgoraLiveKit object.
 
- @param appId The appId is issued to the application developers by Agora.
+ @param appId The appId is issued to you by Agora.
 
  @return an object of AgoraLiveKit class
  */
