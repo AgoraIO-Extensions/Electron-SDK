@@ -1104,5 +1104,61 @@ namespace agora {
             FUNC_TRACE;
             MAKE_JS_CALL_1(RTC_EVENT_API_ERROR, string, funcName);
         }
+
+        void NodeEventHandler::onAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE errorCode)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, state, errorCode] {
+                this->onAudioMixingStateChanged_node(state, errorCode);
+            });
+        }
+
+        void NodeEventHandler::onAudioMixingStateChanged_node(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE errorCode)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_2(RTC_EVENT_AUDIO_MIXING_STATE_CHANGED, int32, state, int32, errorCode);
+        }
+
+        void NodeEventHandler::onLastmileProbeResult(const LastmileProbeResult &result)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, result] {
+                this->onLastmileProbeResult_node(result);
+            });
+        }
+
+        void NodeEventHandler::onLastmileProbeResult_node(const LastmileProbeResult &result)
+        {
+            FUNC_TRACE;
+            do {
+                Isolate *isolate = Isolate::GetCurrent();
+                HandleScope scope(isolate);
+                Local<Object> obj = Object::New(isolate);
+                CHECK_NAPI_OBJ(obj);
+                NODE_SET_OBJ_PROP_UINT32(obj, "state", result.state);
+                NODE_SET_OBJ_PROP_UINT32(obj, "rtt", result.rtt);
+
+                Local<Object> uplink = Object::New(isolate);
+                CHECK_NAPI_OBJ(uplink);
+                NODE_SET_OBJ_PROP_UINT32(uplink, "packetLossRate", result.uplinkReport.packetLossRate);
+                NODE_SET_OBJ_PROP_UINT32(uplink, "jitter", result.uplinkReport.jitter);
+                NODE_SET_OBJ_PROP_UINT32(uplink, "availableBandwidth", result.uplinkReport.availableBandwidth);
+
+                Local<Object> downlink = Object::New(isolate);
+                CHECK_NAPI_OBJ(downlink);
+                NODE_SET_OBJ_PROP_UINT32(downlink, "packetLossRate", result.downlinkReport.packetLossRate);
+                NODE_SET_OBJ_PROP_UINT32(downlink, "jitter", result.downlinkReport.jitter);
+                NODE_SET_OBJ_PROP_UINT32(downlink, "availableBandwidth", result.downlinkReport.availableBandwidth);
+
+                obj->Set(isolate->GetCurrentContext(), napi_create_string_(isolate, "uplinkReport"), uplink);
+                obj->Set(isolate->GetCurrentContext(), napi_create_string_(isolate, "downlinkReport"), downlink);
+
+                Local<Value> arg[1] = { obj };
+                auto it = m_callbacks.find(RTC_EVENT_LASTMILE_PROBE_RESULT);
+                if (it != m_callbacks.end()) {
+                    it->second->callback.Get(isolate)->Call(it->second->js_this.Get(isolate), 1, arg); \
+                }
+            } while (false);
+        }
     }
 }
