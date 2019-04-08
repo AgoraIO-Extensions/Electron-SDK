@@ -50,6 +50,7 @@ namespace agora {
 #define RTC_EVENT_APICALL_EXECUTED "apicallexecuted"
 #define RTC_EVENT_LOCAL_VIDEO_STATS "localvideostats"
 #define RTC_EVENT_REMOTE_VIDEO_STATS "remotevideostats"
+#define RTC_EVENT_REMOTE_AUDIO_STATS "remoteAudioStats"
 #define RTC_EVENT_CAMERA_READY "cameraready"
 #define RTC_EVENT_CAMERA_FOCUS_AREA_CHANGED "cameraFocusAreaChanged"
 #define RTC_EVENT_CAMERA_EXPOSURE_AREA_CHANGED "cameraExposureAreaChanged"
@@ -153,10 +154,9 @@ namespace agora {
             virtual void onActiveSpeaker(uid_t uid) override;
             virtual void onClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole) override;
             virtual void onAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted) override;
-#if defined(_WIN32)
             virtual void onRemoteAudioTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)override;
             virtual void onRemoteVideoTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)override;
-#endif
+            virtual void onRemoteAudioStats(const RemoteAudioStats & stats);
             virtual void onMicrophoneEnabled(bool enabled) override;
             virtual void onConnectionStateChanged(CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason) override;
             virtual void onVideoSourceJoinedChannel(agora::rtc::uid_t uid) override;
@@ -229,6 +229,7 @@ namespace agora {
             void onAudioDeviceVolumeChanged_node(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted);
 			void onRemoteAudioTransportStats_node(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
 			void onRemoteVideoTransportStats_node(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
+            void onRemoteAudioStats_node(const RemoteAudioStats & stats);
             void onMicrophoneEnabled_node(bool enabled);
             void onConnectionStateChanged_node(CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason);
 
