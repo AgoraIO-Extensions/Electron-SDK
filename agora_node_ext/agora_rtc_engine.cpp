@@ -198,6 +198,20 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setFPS);
                 PROPERTY_METHOD_DEFINE(addToHighVideo);
                 PROPERTY_METHOD_DEFINE(removeFromHighVideo);
+
+                PROPERTY_METHOD_DEFINE(setBeautyEffectOptions);
+                PROPERTY_METHOD_DEFINE(setLocalVoiceChanger);
+                PROPERTY_METHOD_DEFINE(setLocalVoiceReverbPreset);
+                PROPERTY_METHOD_DEFINE(enableSoundPositionIndication);
+                PROPERTY_METHOD_DEFINE(setRemoteVoicePosition);
+                PROPERTY_METHOD_DEFINE(startLastmileProbeTest);
+                PROPERTY_METHOD_DEFINE(stopLastmileProbeTest);
+                PROPERTY_METHOD_DEFINE(setRemoteUserPriority);
+                PROPERTY_METHOD_DEFINE(startEchoTestWithInterval);
+                PROPERTY_METHOD_DEFINE(startAudioDeviceLoopbackTest);
+                PROPERTY_METHOD_DEFINE(stopAudioDeviceLoopbackTest);
+                PROPERTY_METHOD_DEFINE(setCameraCapturerConfiguration);
+                PROPERTY_METHOD_DEFINE(setLogFileSize);
             EN_PROPERTY_DEFINE()
             module->Set(String::NewFromUtf8(isolate, "NodeRtcEngine"), tpl->GetFunction());
         }
@@ -695,6 +709,431 @@ namespace agora {
                 status = napi_get_value_nodestring_(args[0], url);
                 CHECK_NAPI_STATUS(pEngine, status);
                 pEngine->m_engine->removeInjectStreamUrl(url);
+            } while (false);
+            napi_set_int_result(args, status);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setBeautyEffectOptions)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                Isolate *isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                bool enabled;
+                status = napi_get_value_bool_(args[0], enabled);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                if(!args[1]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+                Local<Object> obj = args[1]->ToObject();
+
+                BeautyOptions opts;
+                int contrast_value = 1;
+                status = napi_get_object_property_int32_(isolate, obj, "lighteningContrastLevel", contrast_value);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                switch(contrast_value) {
+                    case 0: 
+                        opts.lighteningContrastLevel = BeautyOptions::LIGHTENING_CONTRAST_LOW;
+                        break;
+                    case 1:
+                        opts.lighteningContrastLevel = BeautyOptions::LIGHTENING_CONTRAST_NORMAL;
+                        break;
+                    case 2:
+                        opts.lighteningContrastLevel = BeautyOptions::LIGHTENING_CONTRAST_HIGH;
+                        break;
+                    default:
+                        status = napi_invalid_arg;
+                        break;
+                }
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                double lightening, smoothness, redness;
+                status = napi_get_object_property_double_(isolate, obj, "lighteningLevel", lightening);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_double_(isolate, obj, "smoothnessLevel", smoothness);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_double_(isolate, obj, "rednessLevel", redness);
+                CHECK_NAPI_STATUS(pEngine, status);
+                opts.lighteningLevel = lightening;
+                opts.smoothnessLevel = smoothness;
+                opts.rednessLevel = redness;
+
+                result = pEngine->m_engine->setBeautyEffectOptions(enabled, opts);
+            } while (false);
+            napi_set_int_result(args, status);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceChanger)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                RtcEngineParameters param(pEngine->m_engine);
+
+                VOICE_CHANGER_PRESET preset = VOICE_CHANGER_OFF;
+                int preset_value = 0;
+                status = napi_get_value_int32_(args[0], preset_value);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                switch(preset_value) {
+                    case 0:
+                        preset = VOICE_CHANGER_OFF;
+                        break;
+                    case 1:
+                        preset = VOICE_CHANGER_OLDMAN;
+                        break;
+                    case 2:
+                        preset = VOICE_CHANGER_BABYBOY;
+                        break;
+                    case 3:
+                        preset = VOICE_CHANGER_BABYGIRL;
+                        break;
+                    case 4:
+                        preset = VOICE_CHANGER_ZHUBAJIE;
+                        break;
+                    case 5:
+                        preset = VOICE_CHANGER_ETHEREAL;
+                        break;
+                    case 6:
+                        preset = VOICE_CHANGER_HULK;
+                        break;
+                    default:
+                        status = napi_invalid_arg;
+                        break;
+                }
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                result = param.setLocalVoiceChanger(preset);
+            } while (false);
+            napi_set_int_result(args, status);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceReverbPreset)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                RtcEngineParameters param(pEngine->m_engine);
+
+                AUDIO_REVERB_PRESET preset = AUDIO_REVERB_OFF;
+                int preset_value = 0;
+                status = napi_get_value_int32_(args[0], preset_value);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                switch(preset_value) {
+                    case 0:
+                        preset = AUDIO_REVERB_OFF;
+                        break;
+                    case 1:
+                        preset = AUDIO_REVERB_POPULAR;
+                        break;
+                    case 2:
+                        preset = AUDIO_REVERB_RNB;
+                        break;
+                    case 3:
+                        preset = AUDIO_REVERB_ROCK;
+                        break;
+                    case 4:
+                        preset = AUDIO_REVERB_HIPHOP;
+                        break;
+                    case 5:
+                        preset = AUDIO_REVERB_VOCAL_CONCERT;
+                        break;
+                    case 6:
+                        preset = AUDIO_REVERB_KTV;
+                        break;
+                    case 7:
+                        preset = AUDIO_REVERB_STUDIO;
+                        break;
+                    default:
+                        status = napi_invalid_arg;
+                        break;
+                }
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                result = param.setLocalVoiceReverbPreset(preset);
+            } while (false);
+            napi_set_int_result(args, status);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, enableSoundPositionIndication)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                RtcEngineParameters param(pEngine->m_engine);
+
+                bool enabled;
+                status = napi_get_value_bool_(args[0], enabled);
+
+                result = param.enableSoundPositionIndication(enabled);
+            } while (false);
+            napi_set_int_result(args, status);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setRemoteVoicePosition)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                RtcEngineParameters param(pEngine->m_engine);
+
+                uid_t uid;
+                double pan = 0, gain = 0;
+
+                status = NodeUid::getUidFromNodeValue(args[0], uid);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                status = napi_get_value_double_(args[1], pan);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                status = napi_get_value_double_(args[2], gain);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                result = param.setRemoteVoicePosition(uid, pan, gain);
+            } while (false);
+            napi_set_int_result(args, status);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, startLastmileProbeTest)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                Isolate *isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                if(!args[0]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+
+                Local<Object> obj = args[0]->ToObject();
+
+                LastmileProbeConfig config;
+                status = napi_get_object_property_bool_(isolate, obj, "probeUplink", config.probeUplink);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_bool_(isolate, obj, "probeDownlink", config.probeDownlink);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_uint32_(isolate, obj, "expectedUplinkBitrate", config.expectedUplinkBitrate);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_uint32_(isolate, obj, "expectedDownlinkBitrate", config.expectedDownlinkBitrate);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                result = pEngine->m_engine->startLastmileProbeTest(config);
+            } while (false);
+            napi_set_int_result(args, status);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, stopLastmileProbeTest)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                result = pEngine->m_engine->stopLastmileProbeTest();
+            } while (false);
+            napi_set_int_result(args, status);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setRemoteUserPriority)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                uid_t uid;
+                status = NodeUid::getUidFromNodeValue(args[0], uid);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                int priority = 100;
+                PRIORITY_TYPE type;
+                status = napi_get_value_int32_(args[1], priority);
+                if(priority == 100) {
+                    type = PRIORITY_NORMAL;
+                } else if(priority == 50) {
+                    type = PRIORITY_HIGH;
+                } else {
+                    status = napi_invalid_arg;
+                }
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                result = pEngine->m_engine->setRemoteUserPriority(uid, type);
+            } while (false);
+            napi_set_int_result(args, status);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, startEchoTestWithInterval)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                int interval;
+                status = napi_get_value_int32_(args[0], interval);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                result = pEngine->m_engine->startEchoTest(interval);
+            } while (false);
+            napi_set_int_result(args, status);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, startAudioDeviceLoopbackTest)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                int interval;
+                status = napi_get_value_int32_(args[0], interval);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                if (!pEngine->m_audioVdm) {
+                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
+                }
+                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+                result = adm->startAudioDeviceLoopbackTest(interval);
+            } while (false);
+            napi_set_int_result(args, status);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, stopAudioDeviceLoopbackTest)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+
+                if (!pEngine->m_audioVdm) {
+                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
+                }
+                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+                result = adm->stopAudioDeviceLoopbackTest();
+            } while (false);
+            napi_set_int_result(args, status);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setCameraCapturerConfiguration)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                Isolate *isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                RtcEngineParameters param(pEngine->m_engine);
+
+                if(!args[0]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+
+                Local<Object> obj = args[0]->ToObject();
+                CameraCapturerConfiguration config;
+                int preference = 0;
+                
+                status = napi_get_object_property_int32_(isolate, obj, "preference", preference);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                switch(preference) {
+                    case 0: 
+                        config.preference = CAPTURER_OUTPUT_PREFERENCE_AUTO;
+                        break;
+                    case 1: 
+                        config.preference = CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE;
+                        break;
+                    case 2: 
+                        config.preference = CAPTURER_OUTPUT_PREFERENCE_PREVIEW;
+                        break;
+                    default:
+                        status = napi_invalid_arg;
+                        break;
+                }
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                result = param.setCameraCapturerConfiguration(config);
+            } while (false);
+            napi_set_int_result(args, status);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setLogFileSize)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                Isolate *isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                RtcEngineParameters param(pEngine->m_engine);
+                
+                unsigned int size;
+                status = napi_get_value_uint32_(args[0], size);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                result = param.setLogFileSize(size);
             } while (false);
             napi_set_int_result(args, status);
             LOG_LEAVE;
