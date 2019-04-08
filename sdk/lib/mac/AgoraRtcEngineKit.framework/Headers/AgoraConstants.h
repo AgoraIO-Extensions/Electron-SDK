@@ -26,7 +26,7 @@ The compatible bitrate mode. In this mode, the bitrate stays the same regardless
  */
 extern NSInteger const AgoraVideoBitrateCompatible;
 
-/** Use default minimum bitrate.
+/** Use the default minimum bitrate.
  */
 extern NSInteger const AgoraVideoBitrateDefaultMin;
 
@@ -72,20 +72,20 @@ extern CGSize const AgoraVideoDimension640x480;
 /** 840 &times; 480
  */
 extern CGSize const AgoraVideoDimension840x480;
-/** 960 &times; 720 (Depends on the hardware)
+/** 960 &times; 720 (Hardware dependent)
  */
 extern CGSize const AgoraVideoDimension960x720;
-/** 1280 &times; 720 (Depends on the hardware)
+/** 1280 &times; 720 (Hardware dependent)
  */
 extern CGSize const AgoraVideoDimension1280x720;
 #if TARGET_OS_MAC
-/** 1920 &times; 1080 (Depends on the hardware, macOS only)
+/** 1920 &times; 1080 (Hardware dependent, macOS only)
  */
 extern CGSize const AgoraVideoDimension1920x1080;
-/** 25400 &times; 1440 (Depends on the hardware, macOS only)
+/** 25400 &times; 1440 (Hardware dependent, macOS only)
  */
 extern CGSize const AgoraVideoDimension2540x1440;
-/** 3840 &times; 2160 (Depends on the hardware, macOS only)
+/** 3840 &times; 2160 (Hardware dependent, macOS only)
  */
 extern CGSize const AgoraVideoDimension3840x2160;
 #endif
