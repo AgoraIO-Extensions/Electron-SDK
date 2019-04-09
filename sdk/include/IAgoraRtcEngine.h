@@ -1,7 +1,7 @@
 //
 //  Agora Rtc Engine SDK
 //
-//  Copyright (c) 2018 Agora.io. All rights reserved.
+//  Copyright (c) 2019 Agora.io. All rights reserved.
 //
 
 /**
@@ -25,7 +25,7 @@ enum MAX_DEVICE_ID_LENGTH_TYPE
   */
     MAX_DEVICE_ID_LENGTH = 512
 };
-/** Format of the quality report.
+/** Formats of the quality report.
 */
 enum QUALITY_REPORT_FORMAT_TYPE
 {
@@ -57,9 +57,55 @@ enum MEDIA_ENGINE_EVENT_CODE_TYPE
     // iOS adm sample rate changed
     MEDIA_ENGINE_AUDIO_ADM_REQUIRE_RESTART = 110,
     MEDIA_ENGINE_AUDIO_ADM_SPECIAL_RESTART = 111,
+    // audio mix state
+    MEDIA_ENGINE_AUDIO_EVENT_MIXING_PLAY = 710,
+    MEDIA_ENGINE_AUDIO_EVENT_MIXING_PAUSED = 711,
+    MEDIA_ENGINE_AUDIO_EVENT_MIXING_RESTART         = 712,
+    MEDIA_ENGINE_AUDIO_EVENT_MIXING_STOPPED = 713,
+    MEDIA_ENGINE_AUDIO_EVENT_MIXING_ERROR = 714,
+    //Mixing error codes
+    MEDIA_ENGINE_AUDIO_ERROR_MIXING_OPEN = 701,
+    MEDIA_ENGINE_AUDIO_ERROR_MIXING_TOO_FREQUENT = 702,
+    MEDIA_ENGINE_AUDIO_ERROR_MIXING_INTERRUPTED_EOF = 703,
+    MEDIA_ENGINE_AUDIO_ERROR_MIXING_NO_ERROR = 0,
 };
-/** Media device state.
+
+/** The states of the local user's audio mixing file.
 */
+enum AUDIO_MIXING_STATE_TYPE{
+    /** 710: The audio mixing file is playing.
+    */
+    AUDIO_MIXING_STATE_PLAYING = 710,
+    /** 711: The audio mixing file pauses playing.
+    */
+    AUDIO_MIXING_STATE_PAUSED = 711,
+    /** 713: The audio mixing file stops playing.
+    */
+    AUDIO_MIXING_STATE_STOPPED = 713,
+    /** 714: An exception occurs when playing the audio mixing file. See #AUDIO_MIXING_ERROR_TYPE.
+    */
+    AUDIO_MIXING_STATE_FAILED = 714,
+};
+
+/** The error codes of the local user's audio mixing file.
+*/
+enum AUDIO_MIXING_ERROR_TYPE{
+    /** 701: The SDK cannot open the audio mixing file.
+    */
+    AUDIO_MIXING_ERROR_CAN_NOT_OPEN = 701,
+    /** 702: The SDK opens the audio mixing file too frequently.
+    */
+    AUDIO_MIXING_ERROR_TOO_FREQUENT_CALL = 702,
+    /** 703: The opening of the audio mixing file is interrupted.
+    */
+    AUDIO_MIXING_ERROR_INTERRUPTED_EOF = 703,
+    /** 0: The SDK can open the audio mixing file.
+    */
+    AUDIO_MIXING_ERROR_OK = 0,
+};
+
+/** Media device states.
+ */
 enum MEDIA_DEVICE_STATE_TYPE
 {
   /** 1: The device is active.
@@ -76,8 +122,8 @@ enum MEDIA_DEVICE_STATE_TYPE
     MEDIA_DEVICE_STATE_UNPLUGGED = 8
 };
 
-/** Media device type.
-*/
+/** Media device types.
+ */
 enum MEDIA_DEVICE_TYPE
 {
   /** -1: Unknown device type.
@@ -100,22 +146,22 @@ enum MEDIA_DEVICE_TYPE
     AUDIO_APPLICATION_PLAYOUT_DEVICE = 4,
 };
 
-/** Audio recording quality.
+/** Audio recording qualities.
 */
 enum AUDIO_RECORDING_QUALITY_TYPE
 {
-  /** 0: Low audio recording quality.
+  /** 0: Low audio-recording quality.
   */
     AUDIO_RECORDING_QUALITY_LOW = 0,
-    /** 1: Medium audio recording quality.
+    /** 1: Medium audio-recording quality.
     */
     AUDIO_RECORDING_QUALITY_MEDIUM = 1,
-    /** 2: High audio recording quality.
+    /** 2: High audio-recording quality.
     */
     AUDIO_RECORDING_QUALITY_HIGH = 2,
 };
 
-/** Network quality. */
+/** Network quality types. */
 enum QUALITY_TYPE
 {
     /** 0: The network quality is unknown. */
@@ -138,7 +184,7 @@ enum QUALITY_TYPE
     QUALITY_DETECTING = 8,
 };
 
-/** Video display mode. */
+/** Video display modes. */
 enum RENDER_MODE_TYPE
 {
   /**
@@ -146,28 +192,26 @@ enum RENDER_MODE_TYPE
  */
     RENDER_MODE_HIDDEN = 1,
     /**
-2: Uniformly scale the video until one of its dimension fits the boundary (zoomed to fit). Areas that are not filled due to the disparity in the aspect ratio will be filled with black.
+2: Uniformly scale the video until one of its dimension fits the boundary (zoomed to fit). Areas that are not filled due to the disparity in the aspect ratio are filled with black.
  */
     RENDER_MODE_FIT = 2,
-    /** @deprecated
-     3：This mode is deprecated.
+    /** **DEPRECATED** 3: This mode is deprecated.
      */
     RENDER_MODE_ADAPTIVE = 3,
 };
 
-/** Video mirror mode. */
+/** Video mirror modes. */
 enum VIDEO_MIRROR_MODE_TYPE
 {
-      /** 0: Default mirror mode determined by the SDK. */
+      /** 0: The default mirror mode is determined by the SDK. */
     VIDEO_MIRROR_MODE_AUTO = 0,//determined by SDK
-        /** 1: Enabled mirror mode. */
+        /** 1: Enable mirror mode. */
     VIDEO_MIRROR_MODE_ENABLED = 1,//enabled mirror
-        /** 2: Disabled mirror mode. */
+        /** 2: Disable mirror mode. */
     VIDEO_MIRROR_MODE_DISABLED = 2,//disable mirror
 };
 
-/** @deprecated
- Video profile. */
+/** **DEPRECATED** Video profiles. */
 enum VIDEO_PROFILE_TYPE
 {
     /** 0: 160 &times; 120, frame rate 15 fps, bitrate 65 Kbps. */
@@ -326,43 +370,43 @@ enum VIDEO_PROFILE_TYPE
     VIDEO_PROFILE_DEFAULT = VIDEO_PROFILE_LANDSCAPE_360P,
 };
 
-/** Audio profile.
+/** Audio profiles.
 
-Sets the sampling rate, bitrate, encoding mode, and the number of channels:*/
+Sets the sample rate, bitrate, encoding mode, and the number of channels:*/
 enum AUDIO_PROFILE_TYPE // sample rate, bit rate, mono/stereo, speech/music codec
 {
   /**
-   0: Default audio profile. In the communication profile, the default value is 1; in the live-broadcast profile, the default value is 2.
+   0: Default audio profile. In the Communication profile, the default value is 1; in the Live-broadcast profile, the default value is 2.
    */
     AUDIO_PROFILE_DEFAULT = 0, // use default settings
     /**
-     1: Sampling rate of 32 kHz, audio encoding, mono, and a bitrate of up to 18 Kbps.
+     1: Sample rate of 32 kHz, audio encoding, mono, and a bitrate of up to 18 Kbps.
      */
     AUDIO_PROFILE_SPEECH_STANDARD = 1, // 32Khz, 18Kbps, mono, speech
     /**
-     2: Sampling rate of 48 kHz, music encoding, mono, and a bitrate of up to 48 Kbps.
+     2: Sample rate of 48 kHz, music encoding, mono, and a bitrate of up to 48 Kbps.
      */
     AUDIO_PROFILE_MUSIC_STANDARD = 2, // 48Khz, 48Kbps, mono, music
     /**
-     3: Sampling rate of 48 kHz, music encoding, stereo, and a bitrate of up to 56 Kbps.
+     3: Sample rate of 48 kHz, music encoding, stereo, and a bitrate of up to 56 Kbps.
      */
     AUDIO_PROFILE_MUSIC_STANDARD_STEREO = 3, // 48Khz, 56Kbps, stereo, music
     /**
-     4: Sampling rate of 48 kHz, music encoding, mono, and a bitrate of up to 128 Kbps.
+     4: Sample rate of 48 kHz, music encoding, mono, and a bitrate of up to 128 Kbps.
      */
     AUDIO_PROFILE_MUSIC_HIGH_QUALITY = 4, // 48Khz, 128Kbps, mono, music
     /**
-     5: Sampling rate of 48 kHz, music encoding, stereo, and a bitrate of up to 192 Kbps.
+     5: Sample rate of 48 kHz, music encoding, stereo, and a bitrate of up to 192 Kbps.
      */
     AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO = 5, // 48Khz, 192Kbps, stereo, music
     /**
-     6: Sampling rate of 16 kHz, audio encoding, mono, and Acoustic Echo Cancellation (AES) enabled.
+     6: Sample rate of 16 kHz, audio encoding, mono, and Acoustic Echo Cancellation (AES) enabled.
      */
     AUDIO_PROFILE_IOT                       = 6,
     AUDIO_PROFILE_NUM = 7,
 };
 
-/** Audio application scenario.
+/** Audio application scenarios.
 */
 enum AUDIO_SCENARIO_TYPE // set a suitable scenario for your app type
 {
@@ -383,7 +427,7 @@ enum AUDIO_SCENARIO_TYPE // set a suitable scenario for your app type
     AUDIO_SCENARIO_NUM = 7,
 };
 
- /** Channel profile.
+ /** Channel profiles.
  */
 enum CHANNEL_PROFILE_TYPE
 {
@@ -394,7 +438,7 @@ enum CHANNEL_PROFILE_TYPE
 	CHANNEL_PROFILE_COMMUNICATION = 0,
   /** 1: Live Broadcast.
 
-   Host and audience roles that can be set by calling \ref IRtcEngine::setClientRole "setClientRole". The host sends and receives voice, while the audience receives voice only with the sending function disabled.
+   Host and audience roles that can be set by calling the \ref IRtcEngine::setClientRole "setClientRole" method. The host sends and receives voice, while the audience receives voice only with the sending function disabled.
    */
 	CHANNEL_PROFILE_LIVE_BROADCASTING = 1,
   /** 2: Gaming.
@@ -406,7 +450,7 @@ enum CHANNEL_PROFILE_TYPE
     CHANNEL_PROFILE_GAME = 2,
 };
 
-/** Client role in a live broadcast. */
+/** Client roles in a live broadcast. */
 enum CLIENT_ROLE_TYPE
 {
     /** 1: Host */
@@ -415,18 +459,18 @@ enum CLIENT_ROLE_TYPE
     CLIENT_ROLE_AUDIENCE = 2,
 };
 
-/** Reason for the user being offline. */
+/** Reasons for a user being offline. */
 enum USER_OFFLINE_REASON_TYPE
 {
-    /** 0: A user quit the call. */
+    /** 0: The user quits the call. */
     USER_OFFLINE_QUIT = 0,
-    /** 1: The SDK times out and the user drops offline because no data packet is received within a certain period of time. If a user quits the call and the message is not passed to the SDK (due to an unreliable channel), the SDK assumes the user dropped offline. */
+    /** 1: The SDK times out and the user drops offline because no data packet is received within a certain period of time. If the user quits the call and the message is not passed to the SDK (due to an unreliable channel), the SDK assumes the user dropped offline. */
     USER_OFFLINE_DROPPED = 1,
       /** 2: (Live broadcast only.) The client role switched from the host to the audience. */
     USER_OFFLINE_BECOME_AUDIENCE = 2,
 };
 
-/** State of importing an external video stream in a live broadcast. */
+/** States of importing an external video stream in a live broadcast. */
 enum INJECT_STREAM_STATUS
 {
     /** 0: The external video stream imported successfully. */
@@ -452,7 +496,7 @@ enum INJECT_STREAM_STATUS
     /** 10: The external video stream is corrupted. */
     INJECT_STREAM_STATUS_BROKEN = 10,
 };
-/** Remote video stream type. */
+/** Remote video stream types. */
 enum REMOTE_VIDEO_STREAM_TYPE
 {
       /** 0: High-stream video. */
@@ -461,10 +505,10 @@ enum REMOTE_VIDEO_STREAM_TYPE
     REMOTE_VIDEO_STREAM_LOW = 1,
 };
 
-/** Use mode of the \ref media::IAudioFrameObserver::onRecordAudioFrame "onRecordAudioFrame" callback. */
+/** Use modes of the \ref media::IAudioFrameObserver::onRecordAudioFrame "onRecordAudioFrame" callback. */
 enum RAW_AUDIO_FRAME_OP_MODE_TYPE
 {
-    /** 0: Read-only mode: Users only read the \ref agora::media::IAudioFrameObserver::AudioFrame "AudioFrame" data without modifying anything. For example, when users acquire the data with the Agora SDK then push the RTMP streams. */
+    /** 0: Read-only mode: Users only read the \ref agora::media::IAudioFrameObserver::AudioFrame "AudioFrame" data without modifying anything. For example, when users acquire the data with the Agora SDK, then push the RTMP streams. */
     RAW_AUDIO_FRAME_OP_MODE_READ_ONLY = 0,
     /** 1: Write-only mode: Users replace the \ref agora::media::IAudioFrameObserver::AudioFrame "AudioFrame" data with their own data and pass the data to the SDK for encoding. For example, when users acquire the data. */
     RAW_AUDIO_FRAME_OP_MODE_WRITE_ONLY = 1,
@@ -472,7 +516,7 @@ enum RAW_AUDIO_FRAME_OP_MODE_TYPE
     RAW_AUDIO_FRAME_OP_MODE_READ_WRITE = 2,
 };
 
-/** Audio-sampling rate. */
+/** Audio-sample rates. */
 enum AUDIO_SAMPLE_RATE_TYPE
 {
     /** 32000: 32 kHz */
@@ -483,17 +527,17 @@ enum AUDIO_SAMPLE_RATE_TYPE
     AUDIO_SAMPLE_RATE_48000 = 48000,
 };
 
-/** Video codec profile type. */
+/** Video codec profile types. */
 enum VIDEO_CODEC_PROFILE_TYPE
 {  /** 66: Baseline video codec profile. Generally used in video calls on mobile phones. */
     VIDEO_CODEC_PROFILE_BASELINE = 66,
     /** 77: Main video codec profile. Generally used in mainstream electronics such as MP4 players, portable video players, PSP, and iPads. */
     VIDEO_CODEC_PROFILE_MAIN = 77,
-      /**  100: (Default) High video codec profile. Generally used in high-resolution broadcasts or television. */
+      /** 100: (Default) High video codec profile. Generally used in high-resolution broadcasts or television. */
     VIDEO_CODEC_PROFILE_HIGH = 100,
 };
 
-/** Audio equalization band frequency. */
+/** Audio equalization band frequencies. */
 enum AUDIO_EQUALIZATION_BAND_FREQUENCY
 {
     /** 0: 31 Hz */
@@ -518,7 +562,7 @@ enum AUDIO_EQUALIZATION_BAND_FREQUENCY
     AUDIO_EQUALIZATION_BAND_16K = 9,
 };
 
-/** Audio reverberation type. */
+/** Audio reverberation types. */
 enum AUDIO_REVERB_TYPE
 {
     /** 0: The level of the dry signal (db). The value is between -20 and 10. */
@@ -533,7 +577,60 @@ enum AUDIO_REVERB_TYPE
     AUDIO_REVERB_STRENGTH = 4, // ([0,100]), the strength of the reverberation
 };
 
-/** Remote video state. */
+/** Local voice changer options. */
+enum VOICE_CHANGER_PRESET {
+    /** 0: The original voice (no local voice change).
+    */
+    VOICE_CHANGER_OFF = 0, //Turn off the voice changer
+    /** 1: An old man's voice.
+    */
+    VOICE_CHANGER_OLDMAN = 1,
+    /** 2: A little boy's voice.
+    */
+    VOICE_CHANGER_BABYBOY = 2,
+    /** 3: A little girl's voice.
+    */
+    VOICE_CHANGER_BABYGIRL = 3,
+    /** 4: The voice of a growling bear.
+    */
+    VOICE_CHANGER_ZHUBAJIE = 4,
+    /** 5: Ethereal vocal effects.
+    */
+    VOICE_CHANGER_ETHEREAL = 5,
+    /** 6: Hulk's voice.
+    */
+    VOICE_CHANGER_HULK = 6
+};
+
+/** Local voice reverberation presets. */
+enum AUDIO_REVERB_PRESET {
+    /** 0: The original voice (no local voice reverberation).
+    */
+    AUDIO_REVERB_OFF = 0, // Turn off audio reverb
+    /** 1: Pop music.
+    */
+    AUDIO_REVERB_POPULAR = 1,
+    /** 2: R&B.
+    */
+    AUDIO_REVERB_RNB = 2,
+    /** 3: Rock music.
+    */
+    AUDIO_REVERB_ROCK = 3,
+    /** 4: Hip-hop.
+    */
+    AUDIO_REVERB_HIPHOP = 4,
+    /** 5: Pop concert.
+    */
+    AUDIO_REVERB_VOCAL_CONCERT = 5,
+    /** 6: Karaoke.
+    */
+    AUDIO_REVERB_KTV = 6,
+    /** 7: Recording studio.
+    */
+    AUDIO_REVERB_STUDIO = 7
+};
+
+/** Remote video states. */
 enum REMOTE_VIDEO_STATE
 {
     // REMOTE_VIDEO_STATE_STOPPED is not used at this version. Ignore this value.
@@ -544,7 +641,7 @@ enum REMOTE_VIDEO_STATE
       REMOTE_VIDEO_STATE_FROZEN = 2,    // Remote video is frozen, probably due to network issue.
 };
 
-/** Video frame rate. */
+/** Video frame rates. */
 enum FRAME_RATE
 {
       /** 1: 1 fps */
@@ -563,7 +660,7 @@ enum FRAME_RATE
     FRAME_RATE_FPS_60 = 60,
 };
 
-/** Video output orientation mode.
+/** Video output orientation modes.
  */
 enum ORIENTATION_MODE {
   /** 0: (Default) Adaptive mode.
@@ -586,19 +683,55 @@ enum ORIENTATION_MODE {
     ORIENTATION_MODE_FIXED_PORTRAIT = 2,
 };
 
+/** Video degradation preferences when the bandwidth is a constraint. */
+enum DEGRADATION_PREFERENCE {
+    /** 0: (Default) Degrade the frame rate in order to maintain the video quality. */
+    MAINTAIN_QUALITY = 0,
+    /** 1: Degrade the video quality in order to maintain the frame rate. */
+    MAINTAIN_FRAMERATE = 1,
+    /** 2: (For future use) Maintain a balance between the frame rate and video quality. */
+    MAINTAIN_BALANCED = 2,
+};
+
 /** Stream fallback options. */
 enum STREAM_FALLBACK_OPTIONS
 {
-    /** 0: No fallback behavior for the local/remote stream when the uplink/downlink network conditions are poor. The quality of the stream is not guaranteed. */
+    /** 0: No fallback behavior for the local/remote video stream when the uplink/downlink network conditions are poor. The quality of the stream is not guaranteed. */
     STREAM_FALLBACK_OPTION_DISABLED = 0,
-    /** 1: Under poor downlink network conditions, the remote stream, to which you subscribe, falls back to the low-stream video (low resolution and low bitrate). You can set this option only in \ref RtcEngineParameters::setRemoteSubscribeFallbackOption "setRemoteSubscribeFallbackOption". Nothing happens when you set this in \ref RtcEngineParameters::setLocalPublishFallbackOption "setLocalPublishFallbackOption". */
+    /** 1: Under poor downlink network conditions, the remote video stream, to which you subscribe, falls back to the low-stream (low resolution and low bitrate) video. You can set this option only in the \ref RtcEngineParameters::setRemoteSubscribeFallbackOption "setRemoteSubscribeFallbackOption" method. Nothing happens when you set this in the \ref RtcEngineParameters::setLocalPublishFallbackOption "setLocalPublishFallbackOption" method. */
     STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW = 1,
-    /** 2: Under poor uplink network conditions, the locally published stream falls back to audio-only.
+    /** 2: Under poor uplink network conditions, the locally published video stream falls back to audio only.
 
-    Under poor downlink network conditions, the remote stream, to which you subscribe, first falls back to the low-stream video (low resolution and low bitrate); and then to an audio-only stream if the network conditions worsen.*/
+    Under poor downlink network conditions, the remote video stream, to which you subscribe, first falls back to the low-stream (low resolution and low bitrate) video; and then to an audio-only stream if the network conditions worsen.*/
     STREAM_FALLBACK_OPTION_AUDIO_ONLY = 2,
 };
+    
+ /** Camera capture preferences.
+ */ 
+ enum CAPTURER_OUTPUT_PREFERENCE
+ {
+     /** 0: (Default) self-adapts the camera output parameters to the system performance and network conditions to balance CPU consumption and video preview quality.
+     */
+     CAPTURER_OUTPUT_PREFERENCE_AUTO = 0,
+     /** 2: Prioritizes the system performance. The SDK chooses the dimension and frame rate of the local camera capture closest to those set by \ref IRtcEngine::setVideoEncoderConfiguration "setVideoEncoderConfiguration".
+     */
+     CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE = 1,
+     /** 2: Prioritizes the local preview quality. The SDK chooses higher camera output parameters to improve the local video preview quality. This option requires extra CPU and RAM usage for video pre-processing.
+     */
+     CAPTURER_OUTPUT_PREFERENCE_PREVIEW = 2,
+ };
 
+/** The priority of the remote user.
+ */
+enum PRIORITY_TYPE
+{
+  /** 50: The user's priority is high.
+   */
+  PRIORITY_HIGH = 50,
+  /** 100: (Default) The user's priority is normal.
+  */
+  PRIORITY_NORMAL = 100,
+};
 
 /** Connection states. */
 enum CONNECTION_STATE_TYPE
@@ -618,7 +751,7 @@ enum CONNECTION_STATE_TYPE
   CONNECTION_STATE_CONNECTING = 2,
   /** 3: The SDK is connected to Agora's edge server and has joined a channel. You can now publish or subscribe to a media stream in the channel.
 
-   If the connection to the channel is lost because, for example, the network is down or switched, the SDK automatically tries to reconnect and triggers:
+   If the connection to the channel is lost because, for example, if the network is down or switched, the SDK automatically tries to reconnect and triggers:
    - The \ref agora::rtc::IRtcEngineEventHandler::onConnectionInterrupted "onConnectionInterrupted" callback (deprecated).
    - The \ref agora::rtc::IRtcEngineEventHandler::onConnectionStateChanged "onConnectionStateChanged" callback and switches to the #CONNECTION_STATE_RECONNECTING state.
    */
@@ -638,7 +771,7 @@ enum CONNECTION_STATE_TYPE
   CONNECTION_STATE_FAILED = 5,
 };
 
-/** Reasons for the connection state change. */
+/** Reasons for a connection state change. */
 enum CONNECTION_CHANGED_REASON_TYPE
 {
   /** 0: The SDK is connecting to Agora's edge server. */
@@ -653,6 +786,54 @@ enum CONNECTION_CHANGED_REASON_TYPE
   CONNECTION_CHANGED_JOIN_FAILED = 4,
   /** 5: The SDK has left the channel. */
   CONNECTION_CHANGED_LEAVE_CHANNEL = 5,
+};
+
+/** States of the last-mile network probe test. */
+enum LASTMILE_PROBE_RESULT_STATE {
+  /** 1: The last-mile network probe test is complete. */ 
+  LASTMILE_PROBE_RESULT_COMPLETE = 1,   
+  /** 2: The last-mile network probe test is incomplete and the bandwidth estimation is not available, probably due to limited test resources. */
+  LASTMILE_PROBE_RESULT_INCOMPLETE_NO_BWE = 2,
+  /** 3: The last-mile network probe test is not carried out, probably due to poor network conditions. */
+  LASTMILE_PROBE_RESULT_UNAVAILABLE = 3  
+}; 
+
+/** The uplink or downlink last-mile network probe test result. */
+struct LastmileProbeOneWayResult {
+  /** The packet loss rate (%). */  
+  unsigned int packetLossRate;
+  /** The network jitter (ms). */
+  unsigned int jitter;
+  /* The estimated available bandwidth (Kbps). */
+  unsigned int availableBandwidth;
+};
+
+/** The uplink and downlink last-mile network probe test result. */
+struct LastmileProbeResult{ 
+  /** The state of the probe test. */  
+  LASTMILE_PROBE_RESULT_STATE state; 
+  /** The uplink last-mile network probe test result. */
+  LastmileProbeOneWayResult uplinkReport; 
+  /** The downlink last-mile network probe test result. */   
+  LastmileProbeOneWayResult downlinkReport;    
+  /** The round-trip delay time (ms). */
+  unsigned int rtt;
+}; 
+
+/** Configurations of the last-mile network probe test. */
+struct LastmileProbeConfig {
+  /** Sets whether or not to test the uplink network. Some users, for example, the audience in a Live-broadcast channel, do not need such a test:
+  - true: test.
+  - false: do not test. */
+  bool probeUplink;
+  /** Sets whether or not to test the downlink network:
+  - true: test.
+  - false: do not test. */
+  bool probeDownlink;
+  /** The expected maximum sending bitrate (Kbps) of the local user. The value ranges between 100 and 5000. We recommend setting this parameter according to the bitrate value set by \ref IRtcEngine::setVideoEncoderConfiguration "setVideoEncoderConfiguration". */
+  unsigned int expectedUplinkBitrate;
+  /** The expected maximum receiving bitrate (Kbps) of the local user. The value ranges between 100 and 5000. */
+  unsigned int expectedDownlinkBitrate;
 };
 
 /** Properties of the audio volume information.
@@ -718,8 +899,8 @@ struct RtcStats
      - Communication profile: The number of users in the channel.
      - Live broadcast profile:
 
-         -  If the local user is an audience: The number of hosts in the channel + 1.
-         -  If the user is a host: The number of hosts in the channel.
+         -  If the local user is an audience: The number of users in the channel = The number of hosts in the channel + 1.
+         -  If the user is a host: The number of users in the channel = The number of hosts in the channel.
      */
     unsigned int userCount;
     /**
@@ -746,17 +927,38 @@ struct RtcStats
       , cpuTotalUsage(0) {}
 };
 
+/** Quality change of the local video in terms of target frame rate and target bit rate since last count.
+  */
+enum QUALITY_ADAPT_INDICATION {
+  /** The quality of the local video stays the same. */
+  ADAPT_NONE = 0,
+  /** The quality improves because the network bandwidth increases. */
+  ADAPT_UP_BANDWIDTH = 1,
+  /** The quality worsens because the network bandwidth decreases. */
+  ADAPT_DOWN_BANDWIDTH = 2,
+};
+
 /** Statistics of the local video stream.
  */
 struct LocalVideoStats
 {
-  /** Data transmission bitrate (Kbps) sent since last count.
+  /** The average sending bitrate (Kbps) since the last count.
    */
-    int sentBitrate;
-    /** Data transmission frame rate (fps) sent since last count.
-     */
-    int sentFrameRate;
+  int sentBitrate;
+  /** The average sending frame rate (fps).
+    */
+  int sentFrameRate;
+  /** The target bitrate (Kbps) of the current encoder. This value is estimated by the SDK based on the current network conditions.
+    */
+  int targetBitrate;
+  /** The target frame rate (fps) of the current encoder.
+    */
+  int targetFrameRate;
+  /** Quality change of the local video in terms of target frame rate and target bit rate since last count. See #QUALITY_ADAPT_INDICATION.
+    */
+  QUALITY_ADAPT_INDICATION qualityAdaptIndication;
 };
+
 /** Statistics of the remote video stream.
  */
 struct RemoteVideoStats
@@ -765,7 +967,7 @@ struct RemoteVideoStats
  User ID of the remote user sending the video streams.
  */
     uid_t uid;
-    /** @deprecated Time delay (ms).
+    /** **DEPRECATED** Time delay (ms).
  */
     int delay;
 /**
@@ -794,7 +996,7 @@ struct RemoteAudioStats
 {
     /** User ID of the remote user sending the audio streams. */
     uid_t uid;
-    /** Audio quality received by the user: #QUALITY_TYPE. */
+    /** Audio quality received by the receiver: #QUALITY_TYPE. */
     int quality;
     /** Network delay from the sender to the receiver. */
     int networkTransportDelay;
@@ -804,16 +1006,14 @@ struct RemoteAudioStats
     int audioLossRate;
 };
 
-/** @deprecated
- RTC video compositing layout.
+/** **DEPRECATED** RTC video compositing layout.
  */
 struct VideoCompositingLayout
 {
-  /** @deprecated
-   The display region of a specified user on the screen.
+  /** **DEPRECATED** The display region of a specified user on the screen.
    */
     struct Region {
-      /** User ID of the user whose video will be displayed on the screen.
+      /** User ID of the user whose video is displayed on the screen.
       */
         uid_t uid;
         /** Horizontal position of the region on the screen. The value ranges between 0.0 and 1.0.
@@ -822,10 +1022,10 @@ struct VideoCompositingLayout
         /** Vertical position of the region on the screen. The value ranges between 0.0 and 1.0.
          */
         double y;//[0,1]
-        /** Actual width of the region. The value ranges between 0.0 and 1.0. For example, if the width of the screen is 360, and the width of the region is 120, set the width value as 0.33.
+        /** Actual width of the region. The value ranges between 0.0 and 1.0. For example, if the width of the screen is 360 and the width of the region is 120, set the width value as 0.33.
         */
         double width;//[0,1]
-        /** Actual height of the region. The value ranges between 0.0 and 1.0. For example, if the height of the screen is 240, and the height of the region is 120, set the height value as 0.5.
+        /** Actual height of the region. The value ranges between 0.0 and 1.0. For example, if the height of the screen is 240 and the height of the region is 120, set the height value as 0.5.
         */
         double height;//[0,1]
         /** Layer position of the region:
@@ -845,7 +1045,7 @@ struct VideoCompositingLayout
     - 1: (Default) The region is opaque.
     */
         double alpha;
-        /** @deprecated This parameter will not take effect. Ignore it.
+        /** **DEPRECATED** This parameter does not take effect. You can ignore it.
          */
         RENDER_MODE_TYPE renderMode;
         Region()
@@ -860,10 +1060,10 @@ struct VideoCompositingLayout
         {}
 
     };
-    /** Ignore this parameter. The width of the canvas is set by \ref IRtcEngine::configPublisher "configPublisher", not by \ref VideoCompositingLayout::canvasWidth "canvasWidth".
+    /** Ignore this parameter. The width of the canvas is set by the \ref IRtcEngine::configPublisher "configPublisher" method instead.
     */
     int canvasWidth;
-    /** Ignore this parameter. The height of the canvas is set by \ref IRtcEngine::configPublisher "configPublisher", not by \ref VideoCompositingLayout::canvasHeight "canvasWidth".
+    /** Ignore this parameter. The height of the canvas is set by the \ref IRtcEngine::configPublisher "configPublisher" method instead.
     */
     int canvasHeight;
     /** RGB hex color value.
@@ -900,9 +1100,9 @@ struct VideoCompositingLayout
  * Video dimensions.
  */
 struct VideoDimensions {
-    /** The width of the video in number of pixels.*/
+    /** Width (pixels) of the video. */
     int width;
-      /** The height of the video in number of pixels.*/
+      /** Height (pixels) of the video. */
     int height;
     VideoDimensions()
         : width(640), height(480)
@@ -912,7 +1112,7 @@ struct VideoDimensions {
     {}
 };
 
-/** (Recommended) The standard bitrate set in \ref IRtcEngine::setVideoEncoderConfiguration "setVideoEncoderConfiguration".
+/** (Recommended) The standard bitrate set in the \ref IRtcEngine::setVideoEncoderConfiguration "setVideoEncoderConfiguration" method.
 
  In this mode, the bitrates differ between the live broadcast and communication profiles:
 
@@ -922,37 +1122,42 @@ struct VideoDimensions {
  */
 const int STANDARD_BITRATE = 0;
 
-/** The compatible bitrate set in \ref IRtcEngine::setVideoEncoderConfiguration "setVideoEncoderConfiguration".
+/** The compatible bitrate set in the \ref IRtcEngine::setVideoEncoderConfiguration "setVideoEncoderConfiguration" method.
 
- The bitrate remains the same regardless of the channel profile. If you choose this mode in the live broadcast profile, the video frame rate may be lower than the set value.
+ The bitrate remains the same regardless of the channel profile. If you choose this mode in the Live-broadcast profile, the video frame rate may be lower than the set value.
  */
 const int COMPATIBLE_BITRATE = -1;
 
-/** Use default minimum bitrate.
+/** Use the default minimum bitrate.
  */
 const int DEFAULT_MIN_BITRATE = -1;
 
-/** Properties of the video encoder configuration.
+/** Video encoder configurations.
  */
 struct VideoEncoderConfiguration {
   /** The video frame dimension used to specify the video quality and measured by the total number of pixels along a frame's width and height: VideoDimensions.
   */
     VideoDimensions dimensions;
-    /** Frame rate of the video: #FRAME_RATE.
+    /** The frame rate of the video: #FRAME_RATE.
+     
+     Note that we do not recommend setting this to a value greater than 30.
     */
     FRAME_RATE frameRate;
-    /** Video encoding Bitrate (Kbps).
+    /** The minimum frame rate of the video. The default value is -1.
+     */
+    int minFrameRate;
+    /** The video encoding bitrate (Kbps).
      
      Choose one of the following options:
 
-     - #STANDARD_BITRATE: (Recommended) Standard bitrate.
-        - Communication profile: The encoding bitrate equals the base bitrate.
-        - Live broadcast profile: The encoding bitrate is twice the base bitrate.
-     - #COMPATIBLE_BITRATE: Compatible bitrate: The bitrate stays the same regardless of the profile.
+     - #STANDARD_BITRATE: (Recommended) The standard bitrate.
+        - The Communication profile: the encoding bitrate equals the base bitrate.
+        - The Live-broadcast profile: the encoding bitrate is twice the base bitrate.
+     - #COMPATIBLE_BITRATE: The compatible bitrate: the bitrate stays the same regardless of the profile.
 
-     The communication profile prioritizes smoothness, whilst the live broadcast profile prioritizes video quality (requiring a higher bitrate). Agora recommends setting the bitrate mode as #STANDARD_BITRATE or simply to address this difference.
+     The Communication profile prioritizes smoothness, while the Live-broadcast profile prioritizes video quality (requiring a higher bitrate). We recommend setting the bitrate mode as #STANDARD_BITRATE to address this difference.
      
-     The following table lists the recommended video encoder configurations, where the base bitrate applies to the communication profile. Set your bitrate based on this table. If the bitrate you set is beyond the proper range, the SDK automatically sets it to within the range.
+     The following table lists the recommended video encoder configurations, where the base bitrate applies to the Communication profile. Set your bitrate based on this table. If you set a bitrate beyond the proper range, the SDK automatically sets it to within the range.
 
      | Resolution             | Frame Rate (fps) | Base Bitrate (Kbps, for Communication) | Live Bitrate (Kbps, for Live Broadcast)|
      |------------------------|------------------|----------------------------------------|----------------------------------------|
@@ -991,55 +1196,45 @@ struct VideoEncoderConfiguration {
 
      */
     int bitrate;
-    /** Minimum encoding bitrate (Kbps).
+    /** The minimum encoding bitrate (Kbps).
      
      The Agora SDK automatically adjusts the encoding bitrate to adapt to the network conditions. Using a value greater than the default value forces the video encoder to output high-quality images but may cause more packet loss and hence sacrifice the smoothness of the video transmission. That said, unless you have special requirements for image quality, Agora does not recommend changing this value.
      
-     @note This parameter applies only to the Live Broadcast profile.
+     @note This parameter applies only to the Live-broadcast profile.
      */
     int minBitrate;
-    /** Video orientation mode of the video: #ORIENTATION_MODE.
+    /** The video orientation mode of the video: #ORIENTATION_MODE.
     */
     ORIENTATION_MODE orientationMode;
-    
+    /** the video encoding degradation preference under limited bandwidth: #DEGRADATION_PREFERENCE.
+     */
+    DEGRADATION_PREFERENCE degradationPreference;
+
     VideoEncoderConfiguration(
         const VideoDimensions& d, FRAME_RATE f,
         int b, ORIENTATION_MODE m)
-        : dimensions(d), frameRate(f), bitrate(b),
-          minBitrate(DEFAULT_MIN_BITRATE), orientationMode(m)
+        : dimensions(d), frameRate(f), minFrameRate(-1), bitrate(b),
+          minBitrate(DEFAULT_MIN_BITRATE), orientationMode(m),
+          degradationPreference(MAINTAIN_QUALITY)
     {}
     VideoEncoderConfiguration(
         int width, int height, FRAME_RATE f,
         int b, ORIENTATION_MODE m)
-        : dimensions(width, height), frameRate(f), bitrate(b),
-          minBitrate(DEFAULT_MIN_BITRATE), orientationMode(m)
+        : dimensions(width, height), frameRate(f),
+          minFrameRate(-1), bitrate(b),
+          minBitrate(DEFAULT_MIN_BITRATE), orientationMode(m),
+          degradationPreference(MAINTAIN_QUALITY)
     {}
     VideoEncoderConfiguration()
         : dimensions(640, 480)
         , frameRate(FRAME_RATE_FPS_15)
+        , minFrameRate(-1)
         , bitrate(STANDARD_BITRATE)
         , minBitrate(DEFAULT_MIN_BITRATE)
         , orientationMode(ORIENTATION_MODE_ADAPTIVE)
+        , degradationPreference(MAINTAIN_QUALITY)
     {}
 };
-/** Definition of the rectangular region. */
-typedef struct Rect {
-    /** Y-axis of the top line.
-     */
-    int top;
-    /** X-axis of the left line.
-     */
-    int left;
-    /** Y-axis of the bottom line.
-     */
-    int bottom;
-    /** X-axis of the right line.
-     */
-    int right;
-
-    Rect(): top(0), left(0), bottom(0), right(0) {}
-    Rect(int t, int l, int b, int r): top(t), left(l), bottom(b), right(r) {}
-} Rect;
 
 /** The video properties of the user displaying the video in the CDN live. Agora supports a maximum of 17 transcoding users in a CDN streaming channel.
 */
@@ -1080,11 +1275,11 @@ typedef struct TranscodingUser {
     /** The audio channel of the sound. The default value is 0:
 
      - 0: (Default) Supports dual channels at most, depending on the upstream of the broadcaster.
-     - 1: The audio stream of the broadcaster uses the FL audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
-     - 2: The audio stream of the broadcaster uses the FC audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
-     - 3: The audio stream of the broadcaster uses the FR audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
-     - 4: The audio stream of the broadcaster uses the BL audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
-     - 5: The audio stream of the broadcaster uses the BR audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
+     - 1: The audio stream of the broadcaster uses the FL audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels are mixed into mono first.
+     - 2: The audio stream of the broadcaster uses the FC audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels are mixed into mono first.
+     - 3: The audio stream of the broadcaster uses the FR audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels are mixed into mono first.
+     - 4: The audio stream of the broadcaster uses the BL audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels are mixed into mono first.
+     - 5: The audio stream of the broadcaster uses the BR audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels are mixed into mono first.
 
      @note If your setting is not 0, you may need a specialized player.
      */
@@ -1126,7 +1321,7 @@ typedef struct RtcImage {
     int height;
 } RtcImage;
 
-/**  A structure for managing CDN live audio/video transcoding settings.
+/** A struct for managing CDN live audio/video transcoding settings.
 */
 typedef struct LiveTranscoding {
   /** Width of the video. The default value is 360.
@@ -1152,12 +1347,12 @@ typedef struct LiveTranscoding {
     /** Video GOP in frames. The default value is 30 fps.
     */
     int videoGop;
-    /** Self-defined video codec profile: #VIDEO_CODEC_PROFILE_TYPE
+    /** Self-defined video codec profile: #VIDEO_CODEC_PROFILE_TYPE.
     */
     VIDEO_CODEC_PROFILE_TYPE videoCodecProfile;
     /** RGB hex value.
 
-     Background color of the output video stream for the CDN live broadcast defined as int color = (A & 0xff) << 24 | (R & 0xff) << 16 | (G & 0xff) << 8 | (B & 0xff). Users can set the *backgroundColor* with ARGB ColorInt.
+     Background color of the output video stream for the CDN live broadcast defined as int color = (A & 0xff) << 24 | (R & 0xff) << 16 | (G & 0xff) << 8 | (B & 0xff). Users can set *backgroundColor* with ARGB ColorInt.
 
      @note Value only, do not include a #. For example, C0C0C0.
      */
@@ -1185,13 +1380,13 @@ typedef struct LiveTranscoding {
     The audience of the CDN live publishing stream can see the background image. See RtcImage.
     */
     RtcImage* backgroundImage;
-    /** Self-defined audio-sampling rate: #AUDIO_SAMPLE_RATE_TYPE.
+    /** Self-defined audio-sample rate: #AUDIO_SAMPLE_RATE_TYPE.
     */
     AUDIO_SAMPLE_RATE_TYPE audioSampleRate;
     /** Bitrate of the CDN live audio output stream. The default value is 48 Kbps, and the highest value is 128.
      */
     int audioBitrate;
-    /** Agora's self-defined audio-channel types. Agora recommends choosing option 1 or 2. A special player is required if you choose option 3, 4, or 5:
+    /** Agora's self-defined audio-channel types. We recommend choosing option 1 or 2. A special player is required if you choose option 3, 4, or 5:
 
      - 1: (Default) Mono
      - 2: Two-channel stereo
@@ -1221,8 +1416,13 @@ typedef struct LiveTranscoding {
         , audioChannels(1)
     {}
 } LiveTranscoding;
+    
+ /** Camera capture preferences.
+  */
+ struct CameraCapturerConfiguration{
 
-
+     CAPTURER_OUTPUT_PREFERENCE preference;
+ };
 
 /** Configuration of the imported live broadcast voice or video stream.
  */
@@ -1241,17 +1441,17 @@ struct InjectStreamConfig {
     int videoFramerate;
     /** Video bitrate of the added stream in the live broadcast. The default value is 400 Kbps.
 
-     @note The setting of the video bitrate is closely linked to the resolution. If the video bitrate you set is beyond a reasonable range, the SDK will set it within a reasonable range.
+     @note The setting of the video bitrate is closely linked to the resolution. If the video bitrate you set is beyond a reasonable range, the SDK sets it within a reasonable range.
      */
     int videoBitrate;
-    /** Audio-sampling rate of the added stream in the live broadcast: #AUDIO_SAMPLE_RATE_TYPE. The default value is 48000 Hz.
+    /** Audio-sample rate of the added stream in the live broadcast: #AUDIO_SAMPLE_RATE_TYPE. The default value is 48000 Hz.
 
-     @note Agora recommends setting the default value.
+     @note We recommend setting the default value.
      */
     AUDIO_SAMPLE_RATE_TYPE audioSampleRate;
     /** Audio bitrate of the added stream in the live broadcast. The default value is 48.
 
-     @note Agora recommends setting the default value.
+     @note We recommend setting the default value.
      */
     int audioBitrate;
     /** Audio channels in the live broadcast.
@@ -1259,7 +1459,7 @@ struct InjectStreamConfig {
      - 1: (Default) Mono
      - 2: Two-channel stereo
 
-     @note Agora recommends setting the default value.
+     @note We recommend setting the default value.
      */
     int audioChannels;
 
@@ -1276,19 +1476,19 @@ struct InjectStreamConfig {
     {}
 };
 
-/**  @deprecated Lifecycle of the CDN live video stream.
+/**  **DEPRECATED** Lifecycle of the CDN live video stream.
 */
 enum RTMP_STREAM_LIFE_CYCLE_TYPE
 {
-  /** Bound to the channel lifecycle. If all hosts leave the channel, the CDN live streaming stops after 30 seconds.
+  /** Bind to the channel lifecycle. If all hosts leave the channel, the CDN live streaming stops after 30 seconds.
   */
 	RTMP_STREAM_LIFE_CYCLE_BIND2CHANNEL = 1,
-  /** Bound to the owner of the RTMP stream. If the owner leaves the channel, the CDN live streaming stops immediately.
+  /** Bind to the owner of the RTMP stream. If the owner leaves the channel, the CDN live streaming stops immediately.
   */
 	RTMP_STREAM_LIFE_CYCLE_BIND2OWNER = 2,
 };
 
-/** @deprecated
+/** **DEPRECATED**
 */
 struct PublisherConfiguration {
   /** Width of the CDN live output video stream. The default value is 360.
@@ -1316,7 +1516,7 @@ struct PublisherConfiguration {
   /** Whether or not the current user is the owner of the RTMP stream:
 
    - true: (Default) Yes. The push-stream configuration takes effect.
-   - false: No. The push-stream configuration will not work.
+   - false: No. The push-stream configuration does not work.
    */
 	bool owner;
   /** Width of the injected stream. N/A. Set it as 0.
@@ -1331,7 +1531,7 @@ struct PublisherConfiguration {
   /** Push-stream URL address for the picture-in-picture layout. The default value is NULL.
   */
 	const char* publishUrl;
-  /** The push-stream URL address of the original stream not requiring picture-blending. The default value is NULL.
+  /** The push-stream URL address of the original stream that does not require picture-blending. The default value is NULL.
   */
 	const char* rawStreamUrl;
   /** Reserved field. The default value is NULL.
@@ -1355,6 +1555,80 @@ struct PublisherConfiguration {
 		, extraInfo(NULL)
 	{}
 
+};
+
+/** Content hints for screen sharing.
+*/
+enum VideoContentHint
+{
+    /** (Default) No content hint.
+     */
+    CONTENT_HINT_NONE,
+    /** Motion-intensive content. Choose this option if you prefer smoothness or when you are sharing a video clip, movie, or video game.
+     */
+    CONTENT_HINT_MOTION,
+    /** Motionless content. Choose this option if you prefer sharpness or when you are sharing a picture, PowerPoint slide, or text.
+     */
+    CONTENT_HINT_DETAILS
+};
+
+    /** The relative location of the region to the screen or window. 
+    */
+struct Rectangle
+{
+    /** The horizontal offset from the top-left corner.
+    */
+    int x;
+    /** The vertical offset from the top-left corner.
+    */
+    int y;
+    /** The width of the region.
+    */
+    int width;
+    /** The height of the region.
+    */
+    int height;
+
+    Rectangle(): x(0), y(0), width(0), height(0) {}
+    Rectangle(int xx, int yy, int ww, int hh): x(xx), y(yy), width(ww), height(hh) {}
+};
+
+/**  **DEPRECATED** Definition of the rectangular region. */
+typedef struct Rect {
+    /** Y-axis of the top line.
+     */
+    int top;
+    /** X-axis of the left line.
+     */
+    int left;
+    /** Y-axis of the bottom line.
+     */
+    int bottom;
+    /** X-axis of the right line.
+     */
+    int right;
+
+    Rect(): top(0), left(0), bottom(0), right(0) {}
+    Rect(int t, int l, int b, int r): top(t), left(l), bottom(b), right(r) {}
+} Rect;
+
+/** Screen sharing encoding parameters.
+*/
+struct ScreenCaptureParameters
+{
+    /** The dimensions of the shared region in terms of width &times; height. The default value is 0 (the original dimensions of the shared screen).
+     */
+    VideoDimensions dimensions;
+    /** The frame rate (fps) of the shared region. The default value is 5. We do not recommend setting this to a value greater than 15.
+     */
+    int frameRate;
+    /** The bitrate (Kbps) of the shared region. The default value is 0 (the SDK works out a bitrate according to the dimensions of the current screen).
+     */
+    int bitrate;
+
+    ScreenCaptureParameters() : dimensions(0, 0), frameRate(5), bitrate(STANDARD_BITRATE) {}
+    ScreenCaptureParameters(const VideoDimensions& d, int f, int b) : dimensions(d), frameRate(f), bitrate(b) {}
+    ScreenCaptureParameters(int width, int height, int f, int b) : dimensions(width, height), frameRate(f), bitrate(b) {}
 };
 
 #if !defined(__ANDROID__)
@@ -1387,9 +1661,51 @@ struct VideoCanvas
 #else
 struct VideoCanvas;
 #endif
+/** Image enhancement options.
+*/
+struct BeautyOptions {
+    /** The contrast level, used with the @p lightening parameter.
+    */
+    enum LIGHTENING_CONTRAST_LEVEL
+    {
+        /** Low contrast level. */
+        LIGHTENING_CONTRAST_LOW = 0,
+        /** (Default) Normal contrast level. */
+        LIGHTENING_CONTRAST_NORMAL,
+        /** High contrast level. */
+        LIGHTENING_CONTRAST_HIGH
+    };
+    
+/** The contrast level, used with the @p lightening parameter.
+*/
+LIGHTENING_CONTRAST_LEVEL lighteningContrastLevel;
+    
+/** The brightness level. The value ranges from 0.0 (original) to 1.0. */
+float lighteningLevel;
+    
+/** The sharpness level. The value ranges between 0 (original) and 1. This parameter is usually used to remove blemishes.
+ */
+float smoothnessLevel;
+    
+/** The redness level. The value ranges between 0 (original) and 1. This parameter adjusts the red saturation level. 
+*/
+float rednessLevel;
+    
+BeautyOptions(LIGHTENING_CONTRAST_LEVEL contrastLevel, float lightening, float smoothness, float redness)
+    : lighteningLevel(lightening),
+    smoothnessLevel(smoothness),
+    rednessLevel(redness),
+    lighteningContrastLevel(contrastLevel) {}
+    
+BeautyOptions()
+    : lighteningLevel(0),
+    smoothnessLevel(0),
+    rednessLevel(0),
+    lighteningContrastLevel(LIGHTENING_CONTRAST_NORMAL) {}
+};
 
-    /** Definition of IPacketObserver.
-     */
+/** Definition of IPacketObserver.
+*/
 class IPacketObserver
 {
 public:
@@ -1404,36 +1720,36 @@ public:
          */
 		unsigned int size;
 	};
-	/** Occurs when an audio packet is sent to other users.
+	/** Occurs when the local user sends an audio packet.
 
-     @param packet See Packet.
+     @param packet The sent audio packet. See Packet.
      @return
-     - true: The packet is sent successfully.
-     - false: The packet is discarded.
+     - true: The audio packet is sent successfully.
+     - false: The audio packet is discarded.
      */
 	virtual bool onSendAudioPacket(Packet& packet) = 0;
-	/** Occurs when a video packet is sent to other users.
+	/** Occurs when the local user sends a video packet.
 
-     @param packet See Packet.
+     @param packet The sent video packet. See Packet.
      @return
-     - true: The packet is sent successfully.
-     - false: The packet is discarded.
+     - true: The video packet is sent successfully.
+     - false: The video packet is discarded.
      */
 	virtual bool onSendVideoPacket(Packet& packet) = 0;
-	/** Occurs when an audio packet is sent by other users.
+	/** Occurs when the local user receives an audio packet.
 
-     @param packet See Packet.
+     @param packet The received audio packet. See Packet.
      @return
-     - true: The packet is received successfully.
-     - false: The packet is discarded.
+     - true: The audio packet is received successfully.
+     - false: The audio packet is discarded.
 	 */
 	virtual bool onReceiveAudioPacket(Packet& packet) = 0;
-	/** Occurs when a video packet is sent by other users.
+	/** Occurs when the local user receives a video packet.
 
-     @param packet See Packet.
+     @param packet The received video packet. See Packet.
      @return
-     - true: The packet is received successfully.
-     - false: The packet is discarded.
+     - true: The video packet is received successfully.
+     - false: The video packet is discarded.
 	 */
 	virtual bool onReceiveVideoPacket(Packet& packet) = 0;
 };
@@ -1441,7 +1757,7 @@ public:
 
 /** The SDK uses the IRtcEngineEventHandler interface class to send callbacks to the application. The application inherits the methods of this interface class to retrieve these callbacks.
 
- All methods in this interface class have default (empty) implementations. Therefore, the application can only inherit some required events. In the callbacks, avoid time-consuming tasks or calling blocking APIs, such as the SendMessage method, otherwise, the SDK may not work properly.
+ All methods in this interface class have default (empty) implementations. Therefore, the application can only inherit some required events. In the callbacks, avoid time-consuming tasks or calling blocking APIs, such as the SendMessage method. Otherwise, the SDK may not work properly.
  */
 class IRtcEngineEventHandler
 {
@@ -1476,13 +1792,15 @@ public:
 
     /** Occurs when a user joins a specified channel.
 
-     The channel name assignment is based on *channelName* specified in the \ref IRtcEngine::joinChannel "joinChannel" method.
+     This callback notifies the application that a user joins a specified channel when the application calls the \ref IRtcEngine::joinChannel "joinChannel" method.
+     
+     The channel name assignment is based on @p channelName specified in the \ref IRtcEngine::joinChannel "joinChannel" method.
 
-     If the @p uid is not specified when *joinChannel* is called, the server automatically assigns a @p uid.
+     If the @p uid is not specified in the *joinChannel* method, the server automatically assigns a @p uid.
 
      @param channel  Pointer to the channel name.
-     @param  uid User ID.
-     @param  elapsed Time elapsed (ms) from the user calling \ref IRtcEngine::joinChannel "joinChannel" until the SDK triggers this callback.
+     @param  uid User ID of the user joining the channel.
+     @param  elapsed Time elapsed (ms) from the user calling the \ref IRtcEngine::joinChannel "joinChannel" method until the SDK triggers this callback.
      */
     virtual void onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed) {
         (void)channel;
@@ -1495,7 +1813,7 @@ public:
     When a user loses connection with the server because of network problems, the SDK automatically tries to reconnect and triggers this callback upon reconnection.
 
      @param channel Pointer to the channel name.
-     @param uid User ID.
+     @param uid User ID of the user rejoining the channel.
      @param elapsed Time elapsed (ms) from starting to reconnect until the SDK triggers this callback.
      */
     virtual void onRejoinChannelSuccess(const char* channel, uid_t uid, int elapsed) {
@@ -1506,9 +1824,9 @@ public:
 
     /** Occurs when a user leaves the channel.
 
-     When the application calls the \ref IRtcEngine::leaveChannel "leaveChannel" method, this callback notifies the application that the user leaves the channel.
+    This callback notifies the application that a user leaves the channel when the application calls the \ref IRtcEngine::leaveChannel "leaveChannel" method.
 
-     With this callback, the application retrieves information, such as the call duration and statistics.
+    The application retrieves information, such as the call duration and statistics.
 
      @param stats Pointer to the statistics of the call: RtcStats.
      */
@@ -1517,6 +1835,8 @@ public:
     }
 
     /** Occurs when the user role switches in a live broadcast. For example, from a host to an audience or vice versa.
+
+    This callback notifies the application of a user role switch when the application calls the \ref IRtcEngine::setClientRole "setClientRole" method.
 
      @param oldRole Role that the user switches from: #CLIENT_ROLE_TYPE.
      @param newRole Role that the user switches to: #CLIENT_ROLE_TYPE.
@@ -1527,15 +1847,15 @@ public:
     /** Occurs when a user or host joins the channel.
 
      - Communication profile: This callback notifies the application that another user joins the channel. If other users are already in the channel, the SDK also reports to the application on the existing users.
-     - Live-broadcast profile: This callback notifies the application that the host joins the channel. If other hosts are already in the channel, the SDK also reports to the application on the existing hosts. Agora recommends limiting the number of hosts to 17.
+     - Live-broadcast profile: This callback notifies the application that the host joins the channel. If other hosts are already in the channel, the SDK also reports to the application on the existing hosts. We recommend limiting the number of hosts to 17.
 
-     @note In the live broadcast profile:
+     @note In the Live-broadcast profile:
      - The host receives this callback when another host joins the channel.
      - The audience in the channel receives this callback when a new host joins the channel.
      - When a web application joins the channel, the SDK triggers this callback as long as the web application publishes streams.
 
-     @param uid ID of the user or host who joins the channel.
-     @param elapsed Time delay (ms) from the user calling \ref IRtcEngine::joinChannel "joinChannel" or \ref IRtcEngine::setClientRole "setClientRole" (host) until the SDK triggers this callback.
+     @param uid User ID of the user or host joining the channel.
+     @param elapsed Time delay (ms) from the user calling the \ref IRtcEngine::joinChannel "joinChannel" or \ref IRtcEngine::setClientRole "setClientRole" (host) method until the SDK triggers this callback.
      */
     virtual void onUserJoined(uid_t uid, int elapsed) {
         (void)uid;
@@ -1544,13 +1864,13 @@ public:
 
     /** Occurs when a remote user (Communication)/host (Live Broadcast) leaves the channel.
 
-    There are two reasons for users to be offline:
+    Reasons why the user is offline:
 
     - Leave the channel: When the user/host leaves the channel, the user/host sends a goodbye message. When the message is received, the SDK assumes that the user/host leaves the channel.
-    - Drop offline: When no data packet of the user or host is received for a certain period of time (20 seconds for the communication profile, and more for the live broadcast profile), the SDK assumes that the user/host drops offline. Unreliable network connections may lead to false detections, so Agora recommends using a signaling system for more reliable offline detection.
+    - Drop offline: When no data packet of the user or host is received for a certain period of time (20 seconds for the Communication profile, and more for the Live-broadcast profile), the SDK assumes that the user/host drops offline. Unreliable network connections may lead to false detections, so we recommend using a signaling system for more reliable offline detection.
 
-     @param uid ID of the user who leaves the channel or goes offline.
-     @param reason Reason why the user goes offline: #USER_OFFLINE_REASON_TYPE.
+     @param uid User ID of the user leaving the channel or going offline.
+     @param reason Reason why the user is offline: #USER_OFFLINE_REASON_TYPE.
      */
     virtual void onUserOffline(uid_t uid, USER_OFFLINE_REASON_TYPE reason) {
         (void)uid;
@@ -1561,44 +1881,54 @@ public:
 
      Last mile refers to the connection between the local device and Agora's edge server. After the application calls the \ref IRtcEngine::enableLastmileTest "enableLastmileTest" method, this callback reports once every two seconds the uplink and downlink last mile network conditions of the local user before the user joins the channel.
 
-     @param quality Network quality: #QUALITY_TYPE.
+     @param quality The last mile network quality: #QUALITY_TYPE.
      */
     virtual void onLastmileQuality(int quality) {
         (void)quality;
     }
 
-    /** @deprecated Occurs when the connection between the SDK and the server is interrupted.
+    /** Reports the last-mile network probe result.
+    
+    The SDK triggers this callback within 30 seconds after the app calls the \ref agora::rtc::IRtcEngine::startLastmileProbeTest "startLastmileProbeTest" method. 
 
-     Deprecated as of v2.3.2. Replaced by \ref agora::rtc::IRtcEngineEventHandler::onConnectionStateChanged "onConnectionStateChanged(CONNECTION_STATE_RECONNECTING, CONNECTION_CHANGED_INTERRUPTED)".
+    @param result The uplink and downlink last-mile network probe test result. See LastmileProbeResult.
+    */
+    virtual void onLastmileProbeResult(const LastmileProbeResult& result) {
+        (void)result;
+    }
 
-     This callback is triggered when the SDK loses connection with the server for more than four seconds after the connection is established.
+    /** **DEPRECATED** Occurs when the connection between the SDK and the server is interrupted.
+
+     Deprecated as of v2.3.2. Replaced by the \ref agora::rtc::IRtcEngineEventHandler::onConnectionStateChanged "onConnectionStateChanged(CONNECTION_STATE_RECONNECTING, CONNECTION_CHANGED_INTERRUPTED)" callback.
+
+     The SDK triggers this callback when it loses connection with the server for more than four seconds after the connection is established.
 
      After triggering this callback, the SDK tries reconnecting to the server. You can use this callback to implement pop-up reminders.
 
      This callback is different from \ref agora::rtc::IRtcEngineEventHandler::onConnectionLost "onConnectionLost":
-     - The \ref agora::rtc::IRtcEngineEventHandler::onConnectionInterrupted "onConnectionInterrupted" callback is triggered when the SDK loses connection with the server for more than four seconds after the SDK successfully joins the channel.
-     - The \ref agora::rtc::IRtcEngineEventHandler::onConnectionLost "onConnectionLost" callback is triggered when the SDK loses connection with the server for more than 10 seconds, regardless of whether the SDK joins the channel or not.
+     - The SDK triggers the \ref agora::rtc::IRtcEngineEventHandler::onConnectionInterrupted "onConnectionInterrupted" callback when it loses connection with the server for more than four seconds after it successfully joins the channel.
+     - The SDK triggers the \ref agora::rtc::IRtcEngineEventHandler::onConnectionLost "onConnectionLost" callback when it loses connection with the server for more than 10 seconds, whether or not it joins the channel.
 
-    For both callbacks, the SDK tries to reconnect to the server until the application calls \ref IRtcEngine::leaveChannel "leaveChannel".
+    For both callbacks, the SDK tries to reconnect to the server until the application calls the \ref IRtcEngine::leaveChannel "leaveChannel" method.
 
     */
     virtual void onConnectionInterrupted() {}
 
     /** Occurs when the SDK cannot reconnect to Agora's edge server 10 seconds after its connection to the server is interrupted.
 
-    This callback is triggered when the SDK cannot connect to the server 10 seconds after calling \ref IRtcEngine::joinChannel "joinChannel", regardless of whether the SDK is in the channel or not.
+    The SDK triggers this callback when it cannot connect to the server 10 seconds after calling the \ref IRtcEngine::joinChannel "joinChannel" method, whether or not it is in the channel.
 
     This callback is different from \ref agora::rtc::IRtcEngineEventHandler::onConnectionInterrupted "onConnectionInterrupted":
 
-    - The \ref agora::rtc::IRtcEngineEventHandler::onConnectionInterrupted "onConnectionInterrupted" callback is triggered when the SDK loses connection with the server for more than four seconds after the SDK successfully joins the channel.
-    - The \ref agora::rtc::IRtcEngineEventHandler::onConnectionLost "onConnectionLost" callback is triggered when the SDK loses connection with the server for more than 10 seconds, regardless of whether the SDK joins the channel or not.
+    - The SDK triggers the \ref agora::rtc::IRtcEngineEventHandler::onConnectionInterrupted "onConnectionInterrupted" callback when it loses connection with the server for more than four seconds after it successfully joins the channel.
+    - The SDK triggers the \ref agora::rtc::IRtcEngineEventHandler::onConnectionLost "onConnectionLost" callback when it loses connection with the server for more than 10 seconds, whether or not it joins the channel.
 
-    For both callbacks, the SDK tries to reconnect to the server until the application calls \ref IRtcEngine::leaveChannel "leaveChannel".
+    For both callbacks, the SDK tries to reconnect to the server until the application calls the \ref IRtcEngine::leaveChannel "leaveChannel" method.
 
      */
     virtual void onConnectionLost() {}
 
-    /** @deprecated Deprecated as of v2.3.2. Replaced by \ref agora::rtc::IRtcEngineEventHandler::onConnectionStateChanged "onConnectionStateChanged(CONNECTION_STATE_FAILED, CONNECTION_CHANGED_BANNED_BY_SERVER)".
+    /** **DEPRECATED** Deprecated as of v2.3.2. Replaced by the \ref agora::rtc::IRtcEngineEventHandler::onConnectionStateChanged "onConnectionStateChanged(CONNECTION_STATE_FAILED, CONNECTION_CHANGED_BANNED_BY_SERVER)" callback.
 
     Occurs when your connection is banned by the Agora Server.
      */
@@ -1606,7 +1936,7 @@ public:
 
     /** Occurs when a method is executed by the SDK.
 
-     @param err The error code (#ERROR_CODE_TYPE) returned by the SDK when the method fails. If the SDK returns 0, then the SDK is called successfully.
+     @param err The error code (#ERROR_CODE_TYPE) returned by the SDK when a method call fails. If the SDK returns 0, then the method call is successful.
      @param api Pointer to the method executed by the SDK.
      @param result Pointer to the result of the method call.
      */
@@ -1620,7 +1950,7 @@ public:
 
      After a token is specified by calling the \ref IRtcEngine::joinChannel "joinChannel" method, if the SDK losses connection with the Agora server due to network issues, the token may expire after a certain period of time and a new token may be required to reconnect to the server.
 
-     This callback notifies the application to generate a new token. Call \ref IRtcEngine::renewToken "renewToken" to renew the token.
+     This callback notifies the application to generate a new token. Call the \ref IRtcEngine::renewToken "renewToken" method to renew the token.
 
      In previous SDKs, this notification was provided in the \ref IRtcEngineEventHandler::onError "onError" callback as the #ERR_TOKEN_EXPIRED and #ERR_INVALID_TOKEN errors. Starting from the Agora SDK v1.7.3, the old method is still valid, but it is recommended to use the *onRequestToken* callback.
      */
@@ -1629,7 +1959,7 @@ public:
 
     /** Occurs when the token expires in 30 seconds.
 
-     The user becomes offline if the token used in \ref IRtcEngine::joinChannel "joinChannel" expires. This callback is triggered 30 seconds before the token expires to remind the application to get a new token. Upon receiving this callback, generate a new token on the server and call \ref IRtcEngine::renewToken "renewToken" to pass the new token to the SDK.
+     The user becomes offline if the token used in the \ref IRtcEngine::joinChannel "joinChannel" method expires. The SDK triggers this callback 30 seconds before the token expires to remind the application to get a new token. Upon receiving this callback, generate a new token on the server and call the \ref IRtcEngine::renewToken "renewToken" method to pass the new token to the SDK.
 
      @param token Pointer to the token that expires in 30 seconds.
      */
@@ -1637,15 +1967,15 @@ public:
         (void)token;
     }
 
-    /** @deprecated Reports the audio quality of the remote user.
+    /** **DEPRECATED** Reports the statistics of the audio stream from each remote user/host.
 
-    Deprecated as of v2.3.2. Use \ref agora::rtc::IRtcEngineEventHandler::onRemoteAudioStats "onRemoteAudioStats" instead.
+    Deprecated as of v2.3.2. Use the \ref agora::rtc::IRtcEngineEventHandler::onRemoteAudioStats "onRemoteAudioStats" callback instead.
 
-     Triggered once every two seconds, this callback reports the audio quality of each remote user/host sending the audio stream. If a channel has multiple users/hosts sending audio streams, then this callback will be triggered as many times.
+     The SDK triggers this callback once every two seconds to report the audio quality of each remote user/host sending an audio stream. If a channel has multiple users/hosts sending audio streams, the SDK triggers this callback as many times.
 
      @param uid User ID of the speaker.
-     @param quality Audio quality of the user: #QUALITY_TYPE
-     @param delay Time delay (ms) of the audio packet from the sender to the receiver, including the time delay from audio sampling pre-processing, transmission, and the jitter buffer.
+     @param quality Audio quality of the user: #QUALITY_TYPE.
+     @param delay Time delay (ms) of sending the audio packet from the sender to the receiver, including the time delay of audio sampling pre-processing, transmission, and the jitter buffer.
      @param lost Packet loss rate (%) of the audio packet sent from the sender to the receiver.
      */
     virtual void onAudioQuality(uid_t uid, int quality, unsigned short delay, unsigned short lost) {
@@ -1665,10 +1995,10 @@ public:
 
     /** Reports the last mile network quality of each user in the channel once every two seconds.
 
-     Last mile refers to the connection between the local device and Agora's edge server. This callback reports once every two seconds the uplink last mile network conditions of each user in the channel. If a channel includes multiple users, then this callback will be triggered as many times.
+     Last mile refers to the connection between the local device and Agora's edge server. This callback reports once every two seconds the uplink last mile network conditions of each user in the channel. If a channel includes multiple users, the SDK triggers this callback as many times.
 
      @param uid User ID. The network quality of the user with this @p uid is reported. If @p uid is 0, the local network quality is reported.
-     @param txQuality Uplink transmission quality rating of the user in terms of the transmission bitrate, packet loss rate, average RTT (Round-Trip Time), and jitter of the uplink network. @p txQuality is a quality rating helping you understand how well the current uplink network conditions can support the selected VideoEncoderConfiguration. For example, a 1000 Kbps uplink network may be adequate for video frames with a resolution of 640 &times; 480 and a frame rate of 15 fps in the Live Broadcast profile, but may be inadequate for resolutions higher than 1280 &times; 720. See #QUALITY_TYPE.
+     @param txQuality Uplink transmission quality rating of the user in terms of the transmission bitrate, packet loss rate, average RTT (Round-Trip Time), and jitter of the uplink network. @p txQuality is a quality rating helping you understand how well the current uplink network conditions can support the selected VideoEncoderConfiguration. For example, a 1000 Kbps uplink network may be adequate for video frames with a resolution of 640 &times; 480 and a frame rate of 15 fps in the Live-broadcast profile, but may be inadequate for resolutions higher than 1280 &times; 720. See #QUALITY_TYPE.
      @param rxQuality Downlink network quality rating of the user in terms of the packet loss rate, average RTT, and jitter of the downlink network. See #QUALITY_TYPE.
      */
     virtual void onNetworkQuality(uid_t uid, int txQuality, int rxQuality) {
@@ -1677,39 +2007,41 @@ public:
     (void)rxQuality;
     }
 
-    /** Reports the statistics of the uploading local video streams once every two seconds.
+    /** Reports the statistics of the local video streams.
 
-     @param stats Pointer to the statistics of the uploading local video streams: LocalVideoStats
+    The SDK triggers this callback once every two seconds for each user/host. If there are multiple users/hosts in the channel, the SDK triggers this callback as many times.
+
+     @param stats The statistics of the local video stream. See LocalVideoStats.
      */
   virtual void onLocalVideoStats(const LocalVideoStats& stats) {
     (void)stats;
     }
 
-    /** Reports the statistics of the remote video streams from each user/host.
+    /** Reports the statistics of the video stream from each remote user/host.
 
-     This callback is triggered once every two seconds for each user/host. If a channel includes multiple users, then this callback will be triggered as many times.
+     The SDK triggers this callback once every two seconds for each remote user/host. If a channel includes multiple remote users, the SDK triggers this callback as many times.
 
-     The statistics that this callback reports are more closely linked to the real user experience of the video transmission quality than the statistics that the \ref agora::rtc::IRtcEngineEventHandler::onRemoteVideoTransportStats "onRemoteVideoTransportStats" callback reports.
+     This callback reports statistics more closely linked to the real-user experience of the video transmission quality than the statistics that the \ref agora::rtc::IRtcEngineEventHandler::onRemoteVideoTransportStats "onRemoteVideoTransportStats" callback reports.
 
-     Schemes such as FEC (Forward Error Correction) or retransmission can keep the frame loss rate at the lowest level even when the packet loss rate is high.
+    Schemes such as FEC (Forward Error Correction) or retransmission counter the frame loss rate. Hence, users may find the overall video quality acceptable even when the packet loss rate is high.
 
-     @param stats Pointer to the statistics of the received remote video streams. See: RemoteVideoStats.
+     @param stats Pointer to the statistics of the received remote video streams. See RemoteVideoStats.
      */
     virtual void onRemoteVideoStats(const RemoteVideoStats& stats) {
       (void)stats;
       }
 
-    /** Reports the statistics of the remote audio streams from each user/host.
+    /** Reports the statistics of the audio stream from each remote user/host.
 
      This callback replaces the \ref agora::rtc::IRtcEngineEventHandler::onAudioQuality "onAudioQuality" callback.
 
-     This callback is triggered once every two seconds for each user/host. If a channel includes multiple users, then this callback will be triggered as many times.
+     The SDK triggers this callback once every two seconds for each remote user/host. If a channel includes multiple remote users, the SDK triggers this callback as many times.
 
-     The statistics that this callback reports are more closely linked to the real user experience of the audio transmission quality than the statistics that the \ref agora::rtc::IRtcEngineEventHandler::onRemoteAudioTransportStats "onRemoteAudioTransportStats" callback reports. This callback reports more about media layer statistics such as the frame loss rate, while the \ref agora::rtc::IRtcEngineEventHandler::onRemoteAudioTransportStats "onRemoteAudioTransportStats" callback reports more about the transport layer statistics such as the packet loss rate.
+     This callback reports statistics more closely linked to the real-user experience of the audio transmission quality than the statistics that the \ref agora::rtc::IRtcEngineEventHandler::onRemoteAudioTransportStats "onRemoteAudioTransportStats" callback reports. This callback reports more about media layer statistics such as the frame loss rate, while the \ref agora::rtc::IRtcEngineEventHandler::onRemoteAudioTransportStats "onRemoteAudioTransportStats" callback reports more about the transport layer statistics such as the packet loss rate.
 
-     Schemes such as FEC (Forward Error Correction) or retransmission can keep the frame loss rate at the lowest level even when the packet loss rate is high.
+     Schemes such as FEC (Forward Error Correction) or retransmission counter the frame loss rate. Hence, users may find the overall audio quality acceptable even when the packet loss rate is high.
 
-     @param stats Pointer to the statistics of the received remote audio streams. See: RemoteAudioStats.
+     @param stats Pointer to the statistics of the received remote audio streams. See RemoteAudioStats.
      */
     virtual void onRemoteAudioStats(const RemoteAudioStats& stats) {
         (void)stats;
@@ -1722,7 +2054,7 @@ public:
      This callback is disabled by default and can be enabled by the \ref RtcEngineParameters::enableAudioVolumeIndication "enableAudioVolumeIndication" method.
      
      The local user has a dedicated *onAudioVolumeIndication* callback; all remote speakers share a separate *onAudioVolumeIndication* callback.
-     - For the local user's callback, the @p speakers array has @p uid = 0 and @p volume = @p totalVolume, and @p speakerNumber = 1 regardless of whether the local user speaks or not.
+     - For the local user's callback, the @p speakers array has @p uid = 0 and @p volume = @p totalVolume. @p speakerNumber = 1 whether or not the local user speaks.
      - For the remote speakers' callback, the @p speakers array includes the user ID and volume of the loudest speakers in the channel.
 
      @note
@@ -1731,7 +2063,7 @@ public:
         - 15 seconds after a remote speaker calls the *muteLocalAudioStream* method, the remote speakers' callback excludes this remote user's information; 15 seconds after all remote users call the *muteLocalAudioStream* method, the SDK stops triggering the remote speakers' callback.
      - An empty @p speakers array in the *onAudioVolumeIndication* callback suggests that no remote user is speaking at the moment.
 
-     @param speakers A pointer to the array that contains the user ID and volume information for each speaker: AudioVolumeInfo.
+     @param speakers A pointer to AudioVolumeInfo, a struct containing each speaker's user ID and volume information.
      @param speakerNumber Total number of speakers.
      @param totalVolume Total volume after audio mixing. The value ranges between 0 (lowest volume) and 255 (highest volume).
      */
@@ -1743,10 +2075,10 @@ public:
 
     /** Reports which user is the loudest speaker.
 
-    If the user enables the audio volume indication by calling \ref RtcEngineParameters::enableAudioVolumeIndication "enableAudioVolumeIndication", this callback returns the uid of the active speaker detected by the audio volume detection module of the SDK.
+    If the user enables the audio volume indication by calling the \ref RtcEngineParameters::enableAudioVolumeIndication "enableAudioVolumeIndication" method, this callback returns the @p uid of the active speaker detected by the audio volume detection module of the SDK.
 
     @note
-    - To receive this callback, you need to call \ref RtcEngineParameters::enableAudioVolumeIndication "enableAudioVolumeIndication".
+    - To receive this callback, you need to call the \ref RtcEngineParameters::enableAudioVolumeIndication "enableAudioVolumeIndication" method.
     - This callback returns the user ID of the user with the highest voice volume during a period of time, instead of at the moment.
 
     @param uid User ID of the active speaker. A @p uid of 0 represents the local user.
@@ -1765,8 +2097,8 @@ public:
 
     @param width Width (pixels) of the first local video frame.
     @param height Height (pixels) of the first local video frame.
-    @param elapsed Time elapsed (ms) from the local user calling \ref IRtcEngine::joinChannel "joinChannel" until the SDK triggers this callback.
-    If \ref IRtcEngine::startPreview "startPreview" is called before *joinChannel*, then @p elapsed is the time elapsed from *startPreview* until the SDK triggers this callback.
+    @param elapsed Time elapsed (ms) from the local user calling the \ref IRtcEngine::joinChannel "joinChannel" method until the SDK triggers this callback.
+    If you call the \ref IRtcEngine::startPreview "startPreview" method  before calling the *joinChannel* method, then @p elapsed is the time elapsed from calling the *startPreview* method until the SDK triggers this callback.
     */
     virtual void onFirstLocalVideoFrame(int width, int height, int elapsed) {
         (void)width;
@@ -1781,7 +2113,7 @@ public:
     @param uid User ID of the remote user sending the video stream.
     @param width Width (pixels) of the video stream.
     @param height Height (pixels) of the video stream.
-    @param elapsed Time elapsed (ms) from the remote user calling \ref IRtcEngine::joinChannel "joinChannel" until the SDK triggers this callback.
+    @param elapsed Time elapsed (ms) from the remote user calling the \ref IRtcEngine::joinChannel "joinChannel" method until the SDK triggers this callback.
     */
     virtual void onFirstRemoteVideoDecoded(uid_t uid, int width, int height, int elapsed) {
         (void)uid;
@@ -1792,12 +2124,12 @@ public:
 
     /** Occurs when the first remote video frame is rendered.
 
-    This callback is triggered when the first frame of the remote video is displayed in the user’s video window. The application can retrieve the time elapsed from a user joining the channel until the first video frame is displayed.
+    The SDK triggers this callback when the first frame of the remote video is displayed in the user’s video window. The application can retrieve the time elapsed from a user joining the channel until the first video frame is displayed.
 
     @param uid User ID of the remote user sending the video stream.
     @param width Width (pixels) of the video frame.
     @param height Height (pixels) of the video stream.
-    @param elapsed Time elapsed (ms) from the remote user calling \ref IRtcEngine::joinChannel "joinChannel" until the SDK triggers this callback.
+    @param elapsed Time elapsed (ms) from the remote user calling the \ref IRtcEngine::joinChannel "joinChannel" method until the SDK triggers this callback.
     */
     virtual void onFirstRemoteVideoFrame(uid_t uid, int width, int height, int elapsed) {
         (void)uid;
@@ -1810,7 +2142,7 @@ public:
 
      @note This callback returns invalid when the number of users in a channel exceeds 20.
 
-     @param uid ID of the remote user.
+     @param uid User ID of the remote user.
      @param muted Whether the remote user's audio stream is muted/unmuted:
      - true: Muted.
      - false: Unmuted.
@@ -1915,7 +2247,7 @@ public:
 
     /** Occurs when the audio mixing file playback finishes.
 
-     You can start an audio mixing file playback by calling the \ref RtcEngineParameters::startAudioMixing "startAudioMixing" method. This callback is triggered when the audio mixing file playback finishes.
+     You can start an audio mixing file playback by calling the \ref RtcEngineParameters::startAudioMixing "startAudioMixing" method. The SDK triggers this callback when the audio mixing file playback finishes.
 
      If the *startAudioMixing* method call fails, an error code returns in the \ref IRtcEngineEventHandler::onError "onError" callback.
 
@@ -1923,6 +2255,17 @@ public:
     virtual void onAudioMixingFinished() {
     }
 
+    /** Occurs when the state of the local user's audio mixing file changes.
+
+    - When the audio mixing file plays, pauses playing, or stops playing, this callback returns 710, 711, or 713 in @p state, and 0 in @p errorCode.
+    - When exceptions occur during playback, this callback returns 714 in @p state and an error in @p errorCode.
+    - If the local audio mixing file does not exist, or if the SDK does not support the file format or cannot access the music file URL, the SDK returns WARN_AUDIO_MIXING_OPEN_ERROR = 701.
+
+    @param state The state code. See #AUDIO_MIXING_STATE_TYPE.
+    @param errorCode The error code. See #AUDIO_MIXING_ERROR_TYPE.
+    */
+    virtual void onAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE errorCode){
+    }
     /** Occurs when a remote user starts audio mixing.
 
      When a remote user calls \ref RtcEngineParameters::startAudioMixing "startAudioMixing" to play the background music, the SDK reports this callback.
@@ -1936,7 +2279,7 @@ public:
 
     /** Occurs when the local audio effect playback finishes.
 
-    You can start a local audio effect file playback by calling the \ref RtcEngineParameters::playEffect "playEffect" method. This callback is triggered when the local audio effect file playback finishes.
+    You can start a local audio effect file playback by calling the \ref RtcEngineParameters::playEffect "playEffect" method. The SDK triggers this callback when the local audio effect file playback finishes.
 
      @param soundId ID of the local audio effect. Each local audio effect has a unique ID.
      */
@@ -1972,7 +2315,7 @@ public:
     }
     /** Occurs when the remote video state changes.
 
-     @note This callback is triggered when the time interval between two video frames &ge; 600 ms.
+     @note The SDK triggers this callback when the time interval between two video frames &ge; 600 ms.
 
      @param uid ID of the user whose video state changes.
      @param state State of the remote video: Playing normally or frozen. See #REMOTE_VIDEO_STATE.
@@ -2054,13 +2397,13 @@ public:
 
     /** Occurs when a stream is published. (CDN live only.)
 
-     @param url Pointer to the HTTP/HTTPS URL address, to which the publisher publishes the stream.
+     @param url Pointer to the URL address, to which the publisher publishes the stream.
      @param error Error code: #ERROR_CODE_TYPE. Main errors include:
      - #ERR_OK (0): The publishing succeeds.
      - #ERR_FAILED (1): The publishing fails.
      - #ERR_INVALID_ARGUMENT (2): Invalid argument used. If, for example, you did not call \ref agora::rtc::IRtcEngine::setLiveTranscoding "setLiveTranscoding" to configure LiveTranscoding before calling \ref agora::rtc::IRtcEngine::addPublishStreamUrl "addPublishStreamUrl", the SDK reports #ERR_INVALID_ARGUMENT.
      - #ERR_TIMEDOUT (10): The publishing timed out.
-     - #ERR_ALREADY_IN_USE (19): The chosen HTTP/HTTPS URL address is already in use for CDN live streaming.
+     - #ERR_ALREADY_IN_USE (19): The chosen URL address is already in use for CDN live streaming.
      - #ERR_ABORTED (20): The SDK is disconnected from the CDN streaming server, and the CDN live streaming stopped.
      - #ERR_RESOURCE_LIMITED (22): The backend system does not have enough resources for the CDN live streaming.
      - #ERR_ENCRYPTED_STREAM_NOT_ALLOWED_PUBLISH (130): You cannot publish an encrypted stream.
@@ -2073,7 +2416,7 @@ public:
 
      This callback notifies the host that the CDN live stream is unpublished.
 
-     @param url Pointer to the HTTP/HTTPS URL address, from which the publisher unpublishes the stream.
+     @param url Pointer to the URL address, from which the publisher unpublishes the stream.
      */
     virtual void onStreamUnpublished(const char *url) {
         (void)url;
@@ -2081,7 +2424,7 @@ public:
 /** Occurs when the publisher's transcoding is updated. */
     virtual void onTranscodingUpdated() {
     }
-   /** Occurs when a voice or video stream HTTP/HTTPS URL address is added to a live broadcast.
+   /** Occurs when a voice or video stream URL address is added to a live broadcast.
 
     @param url Pointer to the URL address of the externally injected stream.
     @param uid User ID.
@@ -2121,9 +2464,9 @@ public:
         (void)isFallbackOrRecover;
     }
 
-    /** Reports the statistics of the remote audio transmission.
+    /** Reports the transport-layer statistics of each remote audio stream.
 
-     This callback reports the transport layer statistics such as the packet loss rate and network time delay once every two seconds after the local user receives the audio packet from a remote user.
+     This callback reports the transport-layer statistics, such as the packet loss rate and network time delay, once every two seconds after the local user receives an audio packet from a remote user.
 
      @param uid  User ID of the remote user sending the audio packet.
      @param delay Network time delay (ms) from the remote user sending the audio packet to the local user.
@@ -2139,9 +2482,9 @@ public:
         (void)rxKBitRate;
     }
 
-    /** Reports the statistics of the remote video transmission.
+    /** Reports the transport-layer statistics of each remote video stream.
 
-     This callback reports the transport layer statistics such as the packet loss rate and network time delay once every two seconds after the local user receives the video packet from a remote user.
+     This callback reports the transport-layer statistics, such as the packet loss rate and network time delay, once every two seconds after the local user receives a video packet from a remote user.
 
      @param uid User ID of the remote user sending the video packet.
      @param delay Network time delay (ms) from the remote user sending the video packet to the local user.
@@ -2364,8 +2707,8 @@ public:
      - < 0: Failure.
      */
     virtual int isApplicationMute(bool& mute) = 0;
-    /**
-    * Releases all IAudioDeviceCollection resources.
+    
+    /** Releases all IAudioDeviceCollection resources.
     */
     virtual void release() = 0;
 };
@@ -2433,7 +2776,7 @@ public:
 
      @param testAudioFilePath Pointer to the path of the audio file for the audio playback device test in UTF-8:
      - Supported file formats: wav, mp3, m4a, and aac.
-     - Supported file sampling rates: 8000, 16000, 32000, 44100, and 48000.
+     - Supported file sample rates: 8000, 16000, 32000, 44100, and 48000 Hz.
 
      @return
      - 0: Success, and you can hear the sound of the specified audio file.
@@ -2593,7 +2936,34 @@ public:
      */
    virtual int getRecordingDeviceInfo(char deviceId[MAX_DEVICE_ID_LENGTH], char deviceName[MAX_DEVICE_ID_LENGTH]) = 0;
 
-    /** Releases all IAudioDeviceManager resources.
+   /** Starts the audio device loopback test.
+
+   This method tests whether the local audio devices are working properly. After calling this method, the microphone captures the local audio and plays it through the speaker. The \ref IRtcEngineEventHandler::onAudioVolumeIndication "onAudioVolumeIndication" callback returns the local audio volume information at the set interval.
+   
+   @note This method tests the local audio devices and does not report the network conditions.
+
+   @param indicationInterval The time interval (ms) at which the \ref IRtcEngineEventHandler::onAudioVolumeIndication "onAudioVolumeIndication" callback returns.
+
+   @return
+   - 0: Success.
+   - < 0: Failure.
+   */
+   virtual int startAudioDeviceLoopbackTest(int indicationInterval) = 0;
+
+   /** Stops the audio device loopback test.
+
+   @note Ensure that you call this method to stop the loopback test after calling the \ref IAudioDeviceManager::startAudioDeviceLoopbackTest "startAudioDeviceLoopbackTest" method.
+
+   @return
+   - 0: Success.
+   - < 0: Failure.
+   */
+   virtual int stopAudioDeviceLoopbackTest() = 0;
+
+   /** Releases all IAudioDeviceManager resources.
+   */
+
+    /** Releases the resource.
     */
     virtual void release() = 0;
 };
@@ -2603,7 +2973,7 @@ public:
 struct RtcEngineContext
 {
     IRtcEngineEventHandler* eventHandler;
-    /** App ID issued to developers by Agora. Apply for a new App ID from Agora if it is missing from your kit.
+    /** App ID issued to you by Agora. Apply for a new App ID from Agora if it is missing from your kit.
     */
     const char* appId;
     RtcEngineContext()
@@ -2640,7 +3010,6 @@ public:
     /** Releases all IRtcEngine resources.
 
      @param sync
-
      - true: (Synchronous call) The result returns after the IRtcEngine resources are released. The application should not call this method in the SDK generated callbacks. Otherwise, the SDK must wait for the callbacks to return to recover the associated IRtcEngine resources, resulting in a deadlock. The SDK automatically detects the deadlock and converts this method into an asynchronous call, causing the test to take additional time.
      - false: (Asynchronous call) The result returns immediately, even when the IRtcEngine resources have not been released. The SDK releases all resources.
 
@@ -2656,7 +3025,7 @@ public:
      - Users in the same channel must use the same channel profile.
      - Before calling this method to set a new channel profile, \ref IRtcEngine::release "release" the current engine and create a new engine using createAgoraRtcEngine() and \ref IRtcEngine::initialize "initialize".
      - Call this method before a user \ref IRtcEngine::joinChannel "joins a channel" because you cannot configure the channel profile when the channel is in use.
-     - In the communication profile, the Agora SDK supports encoding only in raw data, not in texture.
+     - In the Communication profile, the Agora SDK supports encoding only in raw data, not in texture.
 
      @param profile Sets the channel profile. See #CHANNEL_PROFILE_TYPE.
      @return
@@ -2687,12 +3056,12 @@ public:
 
      @param token Pointer to the token generated by the application server. In most circumstances, a static App ID suffices. For added security, use a Channel Key.
      - If the user uses a static App ID, *token* is optional and can be set as NULL.
-     - If the user uses a Channel Key, Agora issues an additional App Certificate for developers to generate a user key based on the algorithm and App Certificate for user authentication on the server.
+     - If the user uses a Channel Key, Agora issues an additional App Certificate for you to generate a user key based on the algorithm and App Certificate for user authentication on the server.
      @param channelId Pointer to the unique channel name for the Agora RTC session in the string format smaller than 64 bytes. Supported characters:
-     - 26 lowercase English letters from a to z
-     - 26 uppercase English letters from A to Z
-     - 10 numbers from 0 to 9
-     - Space
+     - The 26 lowercase English letters: a to z
+     - The 26 uppercase English letters: A to Z
+     - The 10 numbers: 0 to 9
+     - The space
      - "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ","
      @param info (Optional) Pointer to additional information about the channel. This parameter can be set to NULL or contain channel related information. Other users in the channel will not receive this message.
      @param uid (Optional) User ID. A 32-bit unsigned integer with a value ranging from 1 to 2<sup>32</sup>-1. The @p uid must be unique. If a @p uid is not assigned (or set to 0), the SDK assigns and returns a @p uid in the \ref IRtcEngineEventHandler::onJoinChannelSuccess "onJoinChannelSuccess" callback. Your application must record and maintain the returned *uid* since the SDK does not do so.
@@ -2716,7 +3085,7 @@ public:
 
      @note
      - If you call the \ref IRtcEngine::release "release" method immediately after the *leaveChannel* method, the *leaveChannel* process interrupts, and the \ref IRtcEngineEventHandler::onLeaveChannel "onLeaveChannel" callback is not triggered.
-     - If you call the *leaveChannel* method during a CDN live streaming, the \ref IRtcEngine::removePublishStreamUrl "removePublishStreamUrl" method is triggered.
+     - If you call the *leaveChannel* method during a CDN live streaming, the SDK triggers the \ref IRtcEngine::removePublishStreamUrl "removePublishStreamUrl" method.
 
      @return
      - 0: Success.
@@ -2728,7 +3097,7 @@ public:
 
      The *token* expires after a period of time once the token schema is enabled when:
 
-     - The \ref IRtcEngineEventHandler::onTokenPrivilegeWillExpire "onTokenPrivilegeWillExpire" callback is triggered, or
+     - The SDK triggers the \ref IRtcEngineEventHandler::onTokenPrivilegeWillExpire "onTokenPrivilegeWillExpire" callback, or
      - The \ref IRtcEngineEventHandler::onError "onError" callback reports the #ERR_TOKEN_EXPIRED error, or
      - The \ref IRtcEngineEventHandler::onRequestToken "onRequestToken" callback reports the #ERR_TOKEN_EXPIRED error.
 
@@ -2751,7 +3120,9 @@ public:
      */
     virtual int queryInterface(INTERFACE_ID_TYPE iid, void** inter) = 0;
 
-    /** Starts an audio call test.
+    /** **DEPRECATED** Starts an audio call test.
+     
+     This method is deprecated as of v2.4.0.
 
      This method starts an audio call test to check whether the audio devices (for example, headset and speaker) and the network connection are working properly.
 
@@ -2762,13 +3133,31 @@ public:
 
      @note
      - After calling this method, always call the \ref IRtcEngine::stopEchoTest "stopEchoTest" method to end the test. Otherwise, the application cannot run the next echo test.
-     - In the live broadcast profile, only the hosts can call this method. If the user switches from a communication to live broadcast channel, the user must call the \ref IRtcEngine::setClientRole "setClientRole" method to change the user role from the audience (default) to the host before calling this method.
+     - In the Live-broadcast profile, only the hosts can call this method. If the user switches from the Communication to Live-broadcast profile, the user must call the \ref IRtcEngine::setClientRole "setClientRole" method to change the user role from the audience (default) to the host before calling this method.
 
      @return
      - 0: Success.
      - < 0: Failure.
      */
     virtual int startEchoTest() = 0;
+
+    /** Starts an audio call test.
+    
+    This method starts an audio call test to determine whether the audio devices (for example, headset and speaker) and the network connection are working properly.
+    
+    In the audio call test, you record your voice. If the recording plays back within the set time interval, the audio devices and the network connection are working properly.
+    
+    @note 
+    - Call this method before joining a channel.
+    - After calling this method, call the \ref IRtcEngine::stopEchoTest "stopEchoTest" method to end the test. Otherwise, the app cannot run the next echo test, or call the \ref IRtcEngine::joinChannel "joinChannel" method.
+    - In the Live-broadcast profile, only a host can call this method.    
+    @param intervalInSeconds The time interval (s) between when you speak and when the recording plays back.
+
+     @return
+     - 0: Success.
+     - < 0: Failure.
+     */
+  virtual int startEchoTest(int intervalInSeconds) = 0;
 
     /** Stops the audio call test.
 
@@ -2784,7 +3173,7 @@ public:
 
      @note
      - This method affects the internal engine and can be called after the \ref agora::rtc::IRtcEngine::leaveChannel "leaveChannel" method.
-     - This method resets the internal engine and takes some time to take effect. Agora recommends using the following API methods to control the video engine modules separately:
+     - This method resets the internal engine and takes some time to take effect. We recommend using the following API methods to control the video engine modules separately:
          - \ref RtcEngineParameters::enableLocalVideo "enableLocalVideo": Whether to enable the camera to create the local video stream.
          - \ref RtcEngineParameters::muteLocalVideoStream "muteLocalVideoStream": Whether to publish the local video stream.
          - \ref RtcEngineParameters::muteRemoteVideoStream "muteRemoteVideoStream": Whether to subscribe to and play the remote video stream.
@@ -2802,7 +3191,7 @@ public:
 
      @note
      - This method affects the internal engine and can be called after the \ref agora::rtc::IRtcEngine::leaveChannel "leaveChannel" method.
-     - This method resets the internal engine and takes some time to take effect. Agora recommends using the following API methods to control the video engine modules separately:
+     - This method resets the internal engine and takes some time to take effect. We recommend using the following API methods to control the video engine modules separately:
          - \ref RtcEngineParameters::enableLocalVideo "enableLocalVideo": Whether to enable the camera to create the local video stream.
          - \ref RtcEngineParameters::muteLocalVideoStream "muteLocalVideoStream": Whether to publish the local video stream.
          - \ref RtcEngineParameters::muteRemoteVideoStream "muteRemoteVideoStream": Whether to subscribe to and play the remote video stream.
@@ -2814,8 +3203,7 @@ public:
      */
     virtual int disableVideo() = 0;
 
-    /** @deprecated
-     Sets the video profile.
+    /** **DEPRECATED** Sets the video profile.
 
      This method is deprecated as of v2.3. Use the \ref IRtcEngine::setVideoEncoderConfiguration "setVideoEncoderConfiguration" method instead.
 
@@ -2830,7 +3218,7 @@ public:
      - true: Swap the width and height.
      - false: (Default) Do not swap the width and height.
      The width and height of the output video are consistent with the set video profile.
-     @note Since the landscape or portrait mode of the output video can be decided directly by the video profile, Agora recommends setting *swapWidthAndHeight* to *false* (default).
+     @note Since the landscape or portrait mode of the output video can be decided directly by the video profile, We recommend setting *swapWidthAndHeight* to *false* (default).
 
      @return
      - 0: Success.
@@ -2846,7 +3234,7 @@ public:
 
      @note If you do not need to set the video encoder configuration after joining the channel, you can call this method before the \ref IRtcEngine::enableVideo "enableVideo" method to reduce the render time of the first video frame.
 
-     @param config Sets the video encoder configuration. See VideoEncoderConfiguration.
+     @param config Sets the local video encoder configuration. See VideoEncoderConfiguration.
      @return
      - 0: Success.
      - < 0: Failure.
@@ -2872,7 +3260,7 @@ public:
 
      If the remote uid is unknown to the application, set it after the application receives the \ref IRtcEngineEventHandler::onUserJoined "onUserJoined" callback.
 
-     If the Video Recording function is enabled, the Video Recording Service joins the channel as a dummy client, causing other clients to also receive the \ref IRtcEngineEventHandler::onUserJoined "onUserJoined" callback. Do not bind the dummy client to the application view because the dummy client does not send any video streams. If your application does not recognize the dummy client, bind the remote user to the view when the \ref IRtcEngineEventHandler::onFirstRemoteVideoDecoded "onFirstRemoteVideoDecoded" callback is triggered.
+     If the Video Recording function is enabled, the Video Recording Service joins the channel as a dummy client, causing other clients to also receive the \ref IRtcEngineEventHandler::onUserJoined "onUserJoined" callback. Do not bind the dummy client to the application view because the dummy client does not send any video streams. If your application does not recognize the dummy client, bind the remote user to the view when the SDK triggers the \ref IRtcEngineEventHandler::onFirstRemoteVideoDecoded "onFirstRemoteVideoDecoded" callback.
 
      To unbind the remote user from the view, set the view in VideoCanvas to NULL. Once the remote user leaves the channel, the SDK unbinds the remote user.
 
@@ -2898,6 +3286,21 @@ public:
      */
     virtual int startPreview() = 0;
 
+    /** Sets the priority of a remote user. 
+
+    Use this method with the \ref RtcEngineParameters::setRemoteSubscribeFallbackOption "setRemoteSubscribeFallbackOption" method. If the fallback function is enabled for a subscribed stream, the SDK ensures the high-priority user gets the best possible stream quality.
+
+    @note The Agora SDK supports setting @p userPriority as high for one user only.
+
+    @param  uid  The ID of the remote user.
+    @param  userPriority Sets the priority of the remote user. See #PRIORITY_TYPE.
+
+     @return
+     - 0: Success.
+     - < 0: Failure.
+     */
+    virtual int setRemoteUserPriority(uid_t uid, PRIORITY_TYPE userPriority) = 0;
+
     /** Stops the local video preview and disables video.
 
      @return
@@ -2912,7 +3315,7 @@ public:
 
      @note
      - This method affects the internal engine and can be called after the \ref agora::rtc::IRtcEngine::leaveChannel "leaveChannel" method. You can call this method either before or after joining a channel.
-     - This method resets the internal engine and takes some time to take effect. Agora recommends using the following API methods to control the audio engine modules separately:
+     - This method resets the internal engine and takes some time to take effect. We recommend using the following API methods to control the audio engine modules separately:
          - \ref IRtcEngine::enableLocalAudio "enableLocalAudio": Whether to enable the microphone to create the local audio stream.
          - \ref RtcEngineParameters::muteLocalAudioStream "muteLocalAudioStream": Whether to publish the local audio stream.
          - \ref RtcEngineParameters::muteRemoteAudioStream "muteRemoteAudioStream": Whether to subscribe to and play the remote audio stream.
@@ -2930,7 +3333,7 @@ public:
 
      This method does not affect receiving or playing the remote audio streams.
 
-    The \ref IRtcEngineEventHandler::onMicrophoneEnabled "onMicrophoneEnabled" callback is triggered once the local audio function is disabled or enabled.
+    The SDK triggers the \ref IRtcEngineEventHandler::onMicrophoneEnabled "onMicrophoneEnabled" callback once the local audio function is disabled or enabled.
 
      @note
      - Call this method after the \ref IRtcEngine::joinChannel "joinChannel" method.
@@ -2953,7 +3356,7 @@ public:
 
      @note
      - This method affects the internal engine and can be called after the \ref agora::rtc::IRtcEngine::leaveChannel "leaveChannel" method. You can call this method either before or after joining a channel.
-     - This method resets the internal engine and takes some time to take effect. Agora recommends using the \ref agora::rtc::IRtcEngine::enableLocalAudio "enableLocalAudio" and \ref agora::rtc::RtcEngineParameters::muteLocalAudioStream "muteLocalAudioStream" methods to capture, process, and send the local audio streams.
+     - This method resets the internal engine and takes some time to take effect. We recommend using the \ref agora::rtc::IRtcEngine::enableLocalAudio "enableLocalAudio" and \ref agora::rtc::RtcEngineParameters::muteLocalAudioStream "muteLocalAudioStream" methods to capture, process, and send the local audio streams.
 
      @return
      - 0: Success.
@@ -2965,11 +3368,11 @@ public:
 
      @note
      - The *setAudioProfile* method must be called before the \ref IRtcEngine::joinChannel "joinChannel" method.
-     - In the communication profile, you can set the profile but not the scenario.
-     - In the communication and live-broadcast profiles, the bitrate may be different from your settings due to network self-adaptation.
-     - In scenarios involving music education, Agora recommends setting profile as #AUDIO_PROFILE_MUSIC_HIGH_QUALITY (4) and scenario as #AUDIO_PROFILE_MUSIC_STANDARD_STEREO (3) in #AUDIO_SCENARIO_TYPE.
+     - In the Communication profile, you can set the profile but not the scenario.
+     - In the Communication and Live-broadcast profiles, the bitrate may be different from your settings due to network self-adaptation.
+     - In scenarios involving music education, We recommend setting profile as #AUDIO_PROFILE_MUSIC_HIGH_QUALITY (4) and scenario as #AUDIO_SCENARIO_GAME_STREAMING (3).
 
-     @param  profile Sets the sampling rate, bitrate, encoding mode, and the number of channels. See #AUDIO_PROFILE_TYPE.
+     @param  profile Sets the sample rate, bitrate, encoding mode, and the number of channels. See #AUDIO_PROFILE_TYPE.
      @param  scenario Sets the audio application scenario. See #AUDIO_SCENARIO_TYPE.
 
      @return
@@ -2978,52 +3381,138 @@ public:
      */
     virtual int setAudioProfile(AUDIO_PROFILE_TYPE profile, AUDIO_SCENARIO_TYPE scenario) = 0;
 
-#if defined(__APPLE__) || defined(_WIN32)
-#if defined(__APPLE__)
-  typedef unsigned int WindowIDType;
-#elif defined(_WIN32)
-  typedef HWND WindowIDType;
+#if (defined(__APPLE__) && defined(__MACH__)) || defined(_WIN32)
+#if (defined(__APPLE__) && defined(__MACH__))
+    /** Shares the whole or part of a screen by specifying the display ID. 
+
+     @param  displayId The display ID of the screen to be shared. This parameter specifies which screen you want to share. For information on how to get the displayId, see [Share the Screen].
+     @param  regionRect (Optional) Sets the relative location of the region to the screen. NIL means sharing the whole screen. See Rectangle.
+     If the specified region overruns the screen, the SDK shares only the region within it; if you set width or height as 0, the SDK shares the whole screen.
+     @param  captureParams Sets the screen sharing encoding parameters. See ScreenCaptureParameters. 
+
+     @return
+     - 0: Success.
+     - < 0: Failure:
+        - ERR_INVALID_STATE: the screen sharing state is invalid, probably because another screen or window is being shared. Call stopScreenCapture to stop the current screen sharing.
+        - ERR_INVALID_ARGUMENT: the argument is invalid.
+     */
+    virtual int startScreenCaptureByDisplayId(unsigned int displayId, const Rectangle& regionRect, const ScreenCaptureParameters& captureParams) = 0;
 #endif
 
-  /** Starts screen sharing.
+#if defined(_WIN32)
+    /** Shares the whole or part of a screen by specifying the screen rect. 
 
-   This method shares the whole screen, specified window, or specified region:
+     @param  screenRect Sets the relative location of the screen to the virtual screen. For information on how to get screenRect, see [Share the Screen].
+     @param  regionRect (Optional) Sets the relative location of the region to the screen. NULL means sharing the whole screen. See Rectangle. If the specified region overruns the screen, the SDK shares only the region within it; if you set width or height as 0, the SDK shares the whole screen.
+     @param  captureParams Sets the screen sharing encoding parameters. See ScreenCaptureParameters.
 
-   - Whole screen: Set @p windowId as 0 and @p rect as NULL.
-   - Specified window: Set @p windowId as a value other than 0. Each window has a @p windowId that is not 0.
-   - Specified region: Set @p windowId as 0 and @p rect not as NULL. In this case, you can share the specified region, for example by dragging the mouse or implementing your own logic.
+     @return
+     - 0: Success.
+     - < 0: Failure:
+        - ERR_INVALID_STATE: the screen sharing state is invalid, probably because another screen or window is being shared. Call stopScreenCapture to stop the current screen sharing.
+        - ERR_INVALID_ARGUMENT: the argument is invalid.
+     */
+    virtual int startScreenCaptureByScreenRect(const Rectangle& screenRect, const Rectangle& regionRect, const ScreenCaptureParameters& captureParams) = 0;
+#endif
 
-   @note The specified region is a region on the whole screen. Currently, sharing a specified region in a specific window is not supported.
-         *captureFreq* is the captured frame rate once the screen-sharing function is enabled. The mandatory value ranges between 1 fps and 15 fps.
+    /** Shares the whole or part of a window by specifying the window ID. 
 
-   @param windowId Sets the screen sharing area. See WindowIDType.
-   @param captureFreq (Mandatory) The captured frame rate. The value ranges between 1 fps and 15 fps.
-   @param rect Specifies the screen-sharing region. @p rect is valid when @p windowsId is set as 0. When @p rect is set as NULL, the whole screen is shared.
-   @param bitrate The captured bitrate.
+     @param  windowId The ID of the window to be shared. For information on how to get the windowId, see [Share the Window].
+     @param  regionRect (Optional) The relative location of the region to the window. NULL/NIL means sharing the whole window. See Rectangle. If the specified region overruns the window, the SDK shares only the region within it; if you set width or height as 0, the SDK shares the whole window.
+     @param  captureParams Window sharing encoding parameters. See ScreenCaptureParameters.
 
-   @return
-   - 0: Success.
-   - < 0: Failure.
-   */
-  virtual int startScreenCapture(WindowIDType windowId, int captureFreq, const Rect *rect, int bitrate) = 0;
+     @return
+     - 0: Success.
+     - < 0: Failure:
+        - ERR_INVALID_STATE: the window sharing state is invalid, probably because another screen or window is being shared. Call stopScreenCapture to stop sharing the current window.
+        - ERR_INVALID_ARGUMENT: the argument is invalid.
+     */
+    virtual int startScreenCaptureByWindowId(view_t windowId, const Rectangle& regionRect, const ScreenCaptureParameters& captureParams) = 0;
 
-  /** Stops screen sharing.
+    /** Sets the content hint for screen sharing. 
+    
+    A content hint suggests the type of the content being shared, so that the SDK applies different optimization algorithm to different types of content.
 
-   @return
-   - 0: Success.
-   - < 0: Failure.
-   */
-  virtual int stopScreenCapture() = 0;
+     @param  contentHint Sets the content hint for screen sharing. See VideoContentHint. 
 
-  /** Updates the screen capture region.
+     @return
+     - 0: Success.
+     - < 0: Failure.
+     */
+    virtual int setScreenCaptureContentHint(VideoContentHint contentHint) = 0;
 
-   @param rect Specifies the screen capture region. @p rect is valid when @p windowsId is set as 0. When @p rect is set as NULL, the whole screen is captured.
+    /** Updates the screen sharing parameters.
 
-   @return
-   - 0: Success.
-   - < 0: Failure.
-   */
-  virtual int updateScreenCaptureRegion(const Rect *rect) = 0;
+     @param  captureParams Sets the screen sharing encoding parameters. See ScreenCaptureParameters.
+
+     @return
+     - 0: Success.
+     - < 0: Failure:
+        - ERR_NOT_READY: no screen or windows is being shared.
+     */
+    virtual int updateScreenCaptureParameters(const ScreenCaptureParameters& captureParams) = 0;
+
+    /** Updates the screen sharing region.
+
+     @param  regionRect Sets the relative location of the region to the screen or window. NULL means sharing the whole screen or window. See Rectangle. If the specified region overruns the screen or window, the SDK shares only the region within it; if you set width or height as 0, the SDK shares the whole screen or window.
+
+     @return
+     - 0: Success.
+     - < 0: Failure:
+        - ERR_NOT_READY: no screen or window is being shared.
+     */
+    virtual int updateScreenCaptureRegion(const Rectangle& regionRect) = 0;
+
+    /** Stop screen sharing.
+
+     @return
+     - 0: Success.
+     - < 0: Failure.
+    */
+    virtual int stopScreenCapture() = 0;
+
+#if defined(__APPLE__)
+    typedef unsigned int WindowIDType;
+#elif defined(_WIN32)
+    typedef HWND WindowIDType;
+#endif
+
+    /** Starts screen sharing. **DEPRECATED**
+     
+     This method is deprecated as of v2.4.0. See the following methods instead:
+     
+     - agora::rtc::IRtcEngine::startScreenCaptureByDisplayId "startScreenCaptureByDisplayId"
+     - agora::rtc::IRtcEngine::startScreenCaptureByScreenRect "startScreenCaptureByScreenRect"
+     - agora::rtc::IRtcEngine::startScreenCaptureByWindowId "startScreenCaptureByWindowId"
+
+     This method shares the whole screen, specified window, or specified region:
+
+     - Whole screen: Set @p windowId as 0 and @p rect as NULL.
+     - Specified window: Set @p windowId as a value other than 0. Each window has a @p windowId that is not 0.
+     - Specified region: Set @p windowId as 0 and @p rect not as NULL. In this case, you can share the specified region, for example by dragging the mouse or implementing your own logic.
+
+     @note The specified region is a region on the whole screen. Currently, sharing a specified region in a specific window is not supported.
+     *captureFreq* is the captured frame rate once the screen-sharing function is enabled. The mandatory value ranges between 1 fps and 15 fps.
+
+     @param windowId Sets the screen sharing area. See WindowIDType.
+     @param captureFreq (Mandatory) The captured frame rate. The value ranges between 1 fps and 15 fps.
+     @param rect Specifies the screen-sharing region. @p rect is valid when @p windowsId is set as 0. When @p rect is set as NULL, the whole screen is shared.
+     @param bitrate The captured bitrate.
+
+     @return
+     - 0: Success.
+     - < 0: Failure.
+     */
+    virtual int startScreenCapture(WindowIDType windowId, int captureFreq, const Rect *rect, int bitrate) = 0;
+
+    /** **DEPRECATED** Updates the screen capture region.
+
+     @param rect Specifies the required region inside the screen or window.
+     @return
+     - 0: Success.
+     - < 0: Failure.
+     */
+    virtual int updateScreenCaptureRegion(const Rect *rect) = 0;
 #endif
 
     /** Retrieves the current call ID.
@@ -3044,7 +3533,7 @@ public:
 
      @param callId Pointer to the ID of the call, retrieved from the \ref IRtcEngine::getCallId "getCallId" method.
      @param rating  Rating of the call. The value is between 1 (lowest score) and 5 (highest score). If you set a value out of this range, the #ERR_INVALID_ARGUMENT (2) error returns.
-     @param description (Optional) Pointer to the description of the rating, with a string length smaller than 800 bytes.
+     @param description (Optional) Pointer to the description of the rating, with a string length of less than 800 bytes.
 
      @return
      - 0: Success.
@@ -3055,7 +3544,7 @@ public:
     /** Allows a user to complain about the call quality after a call ends.
 
     @param callId Pointer to the ID of the call, retrieved from the \ref IRtcEngine::getCallId "getCallId" method.
-    @param description (Optional) Pointer to the description of the complaint, with a character length smaller than 800 bytes.
+    @param description (Optional) Pointer to the description of the complaint, with a string length of less than 800 bytes.
 
     @return
     - 0: Success.
@@ -3075,15 +3564,15 @@ public:
 
      This method tests the quality of the users’ network connections and is disabled by default.
 
-     Before users join a channel or before an audience switches to a host, call this method to check the uplink network quality.
+     Before a user joins a channel or before an audience switches to a host, call this method to check the uplink network quality.
 
      This method consumes additional network traffic, and hence may affect communication quality.
 
-     Call the \ref IRtcEngine::disableLastmileTest "disableLastmileTest" method to disable this test immediately after receiving the \ref IRtcEngineEventHandler::onLastmileQuality "onLastmileQuality" callback, and before joining a channel.
+     Call the \ref IRtcEngine::disableLastmileTest "disableLastmileTest" method to disable this test after receiving the \ref IRtcEngineEventHandler::onLastmileQuality "onLastmileQuality" callback, and before joining a channel.
 
      @note
      - Do not call any other methods before receiving the \ref IRtcEngineEventHandler::onLastmileQuality "onLastmileQuality" callback. Otherwise, the callback may be interrupted by other methods, and hence may not be triggered.
-     - In the Live Broadcast profile, a host should not call this method.
+     - A host should not call this method after joining a channel (when in a call).
 
      @return
      - 0: Success.
@@ -3098,6 +3587,31 @@ public:
      - < 0: Failure.
      */
     virtual int disableLastmileTest() = 0;
+
+    /** Starts the last-mile network probe test.
+    
+    This method starts the last-mile network probe test before joining a channel to get the uplink and downlink last-mile network statistics, including the bandwidth, packet loss, jitter, and round-trip time (RTT).
+
+    Call this method to check the uplink network quality before users join a channel or before an audience switches to a host.
+    Once this method is enabled, the SDK returns the following callbacks:
+    - \ref IRtcEngineEventHandler::onLastmileQuality "onLastmileQuality": the SDK triggers this callback within two seconds depending on the network conditions. This callback rates the network conditions and is more closely linked to the user experience.
+    - \ref IRtcEngineEventHandler::onLastmileProbeResult "onLastmileProbeResult": the SDK triggers this callback within 30 seconds depending on the network conditions. This callback returns the real-time statistics of the network conditions and is more objective.
+
+    @note 
+    - This method consumes extra network traffic and may affect communication quality. We do not recommend calling this method together with enableLastmileTest. 
+    - Do not call other methods before receiving the \ref IRtcEngineEventHandler::onLastmileQuality "onLastmileQuality" and \ref IRtcEngineEventHandler::onLastmileProbeResult "onLastmileProbeResult" callbacks. Otherwise, the callbacks may be interrupted.
+    - In the Live-broadcast profile, a host should not call this method after joining a channel.
+
+    @param config Sets the configurations of the last-mile network probe test. See LastmileProbeConfig.
+
+     @return
+     - 0: Success.
+     - < 0: Failure.
+     */
+    virtual int startLastmileProbeTest(const LastmileProbeConfig& config) = 0;
+
+    /** Stops the last-mile network probe test. */
+    virtual int stopLastmileProbeTest() = 0;
 
     /** Retrieves the warning or error description.
 
@@ -3182,7 +3696,7 @@ public:
      - Each client can send up to 6 kB of data per second.
      - Each user can have up to five data streams simultaneously.
 
-     @note This method applies only to the communication profile or to the hosts in the live broadcast profile. If an audience in the live broadcast profile calls this method, the audience may be switched to a host.
+     @note This method applies only to the Communication profile or to the hosts in the Live-broadcast profile. If an audience in the Live-broadcast profile calls this method, the audience may be switched to a host.
 
      @param  streamId  ID of the sent data stream, returned in the \ref IRtcEngine::createDataStream "createDataStream" method.
      @param data Pointer to the sent data.
@@ -3242,11 +3756,9 @@ public:
      */
     virtual int setLiveTranscoding(const LiveTranscoding &transcoding) = 0;
 
-    /** @deprecated
+    /** **DEPRECATED** Configures the CDN live stream before the user joins a channel.
 
-     Configures the CDN live stream before the user joins a channel.
-
-     This method is deprecated. Agora recommends using the following methods instead:
+     This method is deprecated. We recommend using the following methods instead:
 
      - \ref IRtcEngine::addPublishStreamUrl "addPublishStreamUrl"
      - \ref IRtcEngine::removePublishStreamUrl "removePublishStreamUrl"
@@ -3260,11 +3772,9 @@ public:
      */
     virtual int configPublisher(const PublisherConfiguration& config) = 0;
 
-    /** @deprecated
+    /** **DEPRECATED** Sets the picture-in-picture layouts for CDN live broadcasts. (CDN live only.)
 
-     Sets the picture-in-picture layouts for CDN live broadcasts. (CDN live only.)
-
-     @note This method is deprecated and Agora recommends using the \ref IRtcEngine::setLiveTranscoding "setLiveTranscoding" method instead. This method is only applicable when you want to push streams to the Agora server. When you push the stream to the server, you need to:
+     @note This method is deprecated and we recommend using the \ref IRtcEngine::setLiveTranscoding "setLiveTranscoding" method instead. This method is only applicable when you want to push streams to the Agora server. When you push the stream to the server, you need to:
 
      1. Define a canvas, the width and height (video resolution), background color, and the total number of video streams you want to display.
      2. Define the position and size for each video stream on the canvas, and indicate whether the view is cropped or zoomed to fit.
@@ -3281,9 +3791,7 @@ public:
      */
     virtual int setVideoCompositingLayout(const VideoCompositingLayout& sei) = 0;
 
-    /** @deprecated
-
-     Removes the picture-in-picture layout settings created by the \ref IRtcEngine::setVideoCompositingLayout "setVideoCompositingLayout" method. (CDN live only.)
+    /** **DEPRECATED** Removes the picture-in-picture layout settings created by the \ref IRtcEngine::setVideoCompositingLayout "setVideoCompositingLayout" method. (CDN live only.)
 
      @return
      - 0: Success.
@@ -3302,7 +3810,7 @@ public:
      @note
      - The URL descriptions are different for the local video and CDN live streams:
         - In a local video stream, @p url in RtcImage refers to the absolute path of the added watermark image file in the local video stream.
-        - In a CDN live stream, @p url in RtcImage refers to the HTTP/HTTPS URL address of the added watermark image in the CDN live broadcast.
+        - In a CDN live stream, @p url in RtcImage refers to the URL address of the added watermark image in the CDN live broadcast.
      - The source file of the watermark image must be in the PNG file format. If the width and height of the PNG file differ from your settings in this method, the PNG file will be cropped to conform to your settings.
      - The Agora SDK supports adding only one watermark image onto a local video or CDN live stream. The newly added watermark image replaces the previous one.
 
@@ -3319,13 +3827,22 @@ public:
      - < 0: Failure.
      */
     virtual int clearVideoWatermarks() = 0;
+    
+    /** Enables/Disables image enhancement and sets the options.
 
-    /** Adds a voice or video stream HTTP/HTTPS URL address to a live broadcast.
+    @param enabled Sets whether or not to enable image enhancement:
+    - true: enables image enhancement.
+    - false: disables image enhancement.
+    @param options Sets the image enhancement option. See BeautyOptions.
+    */
+    virtual int setBeautyEffectOptions(bool enabled, BeautyOptions options) = 0;
+
+    /** Adds a voice or video stream URL address to a live broadcast.
 
      - The \ref IRtcEngineEventHandler::onStreamInjectedStatus "onStreamInjectedStatus" callback returns the inject stream status.
-     - The added stream HTTP/HTTPS URL address can be found in the channel with a @p uid of 666, and the \ref IRtcEngineEventHandler::onUserJoined "onUserJoined" and \ref IRtcEngineEventHandler::onFirstRemoteVideoFrame "onFirstRemoteVideoFrame" callbacks are triggered.
+     - The added stream URL address can be found in the channel with a @p uid of 666, and the \ref IRtcEngineEventHandler::onUserJoined "onUserJoined" and \ref IRtcEngineEventHandler::onFirstRemoteVideoFrame "onFirstRemoteVideoFrame" callbacks are triggered.
 
-     @param url Pointer to the HTTP/HTTPS URL address to be added to the ongoing live broadcast. Valid protocols are RTMP, HLS, and FLV.
+     @param url Pointer to the URL address to be added to the ongoing live broadcast. Valid protocols are RTMP, HLS, and FLV.
      - Supported FLV audio codec type: AAC.
      - Supported FLV video codec type: H264 (AVC).
      @param config Pointer to the InjectStreamConfig object that contains the configuration of the added voice or video stream.
@@ -3340,13 +3857,13 @@ public:
      */
     virtual int addInjectStreamUrl(const char* url, const InjectStreamConfig& config) = 0;
 
-    /** Removes the voice or video stream HTTP/HTTPS URL address from a live broadcast.
+    /** Removes the voice or video stream URL address from a live broadcast.
 
-     This method removes the HTTP/HTTPS URL address (added by the \ref IRtcEngine::addInjectStreamUrl "addInjectStreamUrl" method) from the live broadcast.
+     This method removes the URL address (added by the \ref IRtcEngine::addInjectStreamUrl "addInjectStreamUrl" method) from the live broadcast.
 
-     @note If this method is called successfully, the \ref IRtcEngineEventHandler::onUserOffline "onUserOffline" callback is triggered and a stream uid of 666 is returned.
+     @note If this method is called successfully, the SDK triggers the \ref IRtcEngineEventHandler::onUserOffline "onUserOffline" callback and returns a stream uid of 666.
 
-     @param url Pointer to the HTTP/HTTPS URL address of the added stream to be removed.
+     @param url Pointer to the URL address of the added stream to be removed.
 
      @return
      - 0: Success.
@@ -3505,7 +4022,6 @@ public:
      @param key Pointer to the name of the key.
      @param value Pointer to the retrieved value.
      @return
-
      - 0: Success.
      - < 0: Failure.
      */
@@ -3666,7 +4182,7 @@ public:
         return setObject("rtc.video.mute_peer", "{\"uid\":%u,\"mute\":%s}", uid, mute ? "true" : "false");
     }
 
-    /** @deprecated Use \ref agora::rtc::IAudioDeviceManager::setPlaybackDeviceVolume "setPlaybackDeviceVolume" instead. Sets the playback device volume.
+    /** **DEPRECATED** Use \ref agora::rtc::IAudioDeviceManager::setPlaybackDeviceVolume "setPlaybackDeviceVolume" instead. Sets the playback device volume.
 
      @param volume Sets the volume of the playback device. The value ranges between 0 and 255.
 
@@ -3724,7 +4240,7 @@ public:
 
      This method mixes the specified local audio file with the audio stream from the microphone, or replaces the microphone's audio stream with the specified local audio file. You can choose whether the other user can hear the local audio playback and specify the number of playback loops. This method also supports online music playback.
 
-     When the audio mixing file playback finishes after calling this method, the \ref agora::rtc::IRtcEngineEventHandler::onAudioMixingFinished "onAudioMixingFinished" callback is triggered.
+     When the audio mixing file playback finishes after calling this method, the SDK triggers the \ref agora::rtc::IRtcEngineEventHandler::onAudioMixingFinished "onAudioMixingFinished" callback.
 
      @note Call this method when you are in a channel.
 
@@ -3875,9 +4391,9 @@ public:
             r = pos;
         return r;
     }
-    /** Sets the playback position of the music file to a different start position (the default plays from the beginning).
+    /** Sets the playback position of the music file to a different starting position (the default plays from the beginning).
 
-     @param pos The playback start position (ms) of the music file.
+     @param pos The playback starting position (ms) of the music file.
 
      @return
      - 0: Success.
@@ -4000,7 +4516,7 @@ public:
 
     /** Preloads a specified audio effect file into the memory.
 
-     To ensure smooth communication, limit the size of the audio effect file. Agora recommends using this method to preload the audio effect before calling the \ref IRtcEngine::joinChannel "joinChannel" method.
+     To ensure smooth communication, limit the size of the audio effect file. We recommend using this method to preload the audio effect before calling the \ref IRtcEngine::joinChannel "joinChannel" method.
 
      Supported audio formats: mp3, aac, m4a, 3gp, and wav.
 
@@ -4066,6 +4582,7 @@ public:
     }
 
     /** Resumes playing all audio effects.
+
      @return
      - 0: Success.
      - < 0: Failure.
@@ -4073,6 +4590,47 @@ public:
     int resumeAllEffects() {
         return m_parameter ? m_parameter->setBool(
                                                   "che.audio.game_resume_all_effects", true) : -ERR_NOT_INITIALIZED;
+    }
+
+    /** Enables/Disables stereo panning for remote users.
+     
+     Ensure that you call this method before joinChannel to enable stereo panning for remote users so that the local user can track the position of a remote user by calling \ref agora::rtc::RtcEngineParameters::setRemoteVoicePosition "setRemoteVoicePosition".
+     
+     @param enabled Sets whether or not to enable stereo panning for remote users:
+     - true: enables stereo panning.
+     - false: disables stereo panning.
+     
+     @return
+     - 0: Success.
+     - < 0: Failure.
+     */
+    int enableSoundPositionIndication(bool enabled) {
+        return m_parameter ? m_parameter->setBool(
+                                                  "che.audio.enable_sound_position", enabled) : -ERR_NOT_INITIALIZED;
+    }
+    
+    /** Sets the sound position and gain of a remote user. 
+
+    When the local user calls this method to set the sound position of a remote user, the sound difference between the left and right channels allows the local user to track the real-time position of the remote user, creating a real sense of space. This method applies to massively multiplayer online games, such as Battle Royale games.
+
+    @note
+
+    - For this method to work, enable stereo panning for remote users by calling enableSoundPositionIndication before joining a channel.
+    - This method requires hardware support. For the best sound positioning, we recommend using a stereo speaker.
+
+     @param uid The ID of the remote user.
+     @param pan The sound position of the remote user. The value ranges from -1.0 to 1.0:
+     - 0.0: the remote sound comes from the front.
+     - -1.0: the remote sound comes from the left.
+     - 1.0: the remote sound comes from the right.
+     @param gain Gain of the remote user. The value ranges from 0.0 to 100.0. The default value is 100.0 (the original gain of the remote user). The smaller the value, the less the gain.
+     
+     @return
+     - 0: Success.
+     - < 0: Failure.
+     */
+    int setRemoteVoicePosition(int uid, double pan, double gain) {
+        return setObject("che.audio.game_place_sound_position", "{\"uid\":%d,\"pan\":%lf,\"gain\":%lf}", uid, pan, gain);
     }
 
     /** Changes the voice pitch of the local speaker.
@@ -4104,6 +4662,8 @@ public:
     }
     /**  Sets the local voice reverberation.
 
+    v2.4.0 adds the \ref agora::rtc::RtcEngineParameters::setLocalVoiceReverbPreset "setLocalVoiceReverbPreset" method, a more user-friendly method for setting the local voice reverberation. You can use this method to set the local reverberation effect, such as pop music, R&B, rock music, and hip-hop. 
+
      @param reverbKey Sets the reverberation key. See #AUDIO_REVERB_TYPE.
      @param value Sets the value of the reverberation key.
 
@@ -4118,7 +4678,34 @@ public:
                          static_cast<int>(reverbKey), value);
     }
 
-    /** @deprecated Use the \ref IRtcEngine::disableAudio "disableAudio" method instead. Disables the audio function in the channel.
+    /** Sets the local voice changer option.
+
+     @param voiceChanger Sets the local voice changer option. See #VOICE_CHANGER_PRESET.
+
+     @return
+     - 0: Success.
+     - < 0: Failure.
+     */
+    int setLocalVoiceChanger(VOICE_CHANGER_PRESET voiceChanger) {
+        return m_parameter ? m_parameter->setInt("che.audio.morph.voice_changer", static_cast<int>(voiceChanger)) : -ERR_NOT_INITIALIZED;
+    }
+
+    /** Sets the preset local voice reverberation effect.
+
+     @note Do not use this method together with \ref agora::rtc::RtcEngineParameters::setLocalVoiceReverb "setLocalVoiceReverb".
+
+     @param reverbPreset Sets the preset audio reverberation configuration. See #AUDIO_REVERB_PRESET.
+
+     @return
+     - 0: Success.
+     - < 0: Failure.
+     */
+    int setLocalVoiceReverbPreset(AUDIO_REVERB_PRESET reverbPreset) {
+        return m_parameter ? m_parameter->setInt("che.audio.morph.reverb_preset", static_cast<int>(reverbPreset)) : -ERR_NOT_INITIALIZED;
+    }
+
+
+    /** **DEPRECATED** Use \ref IRtcEngine::disableAudio "disableAudio" instead. Disables the audio function in the channel.
 
      @return
      - 0: Success.
@@ -4128,7 +4715,7 @@ public:
         return m_parameter ? m_parameter->setBool("che.pause.audio", true) : -ERR_NOT_INITIALIZED;
     }
 
-    /** @deprecated Use the \ref IRtcEngine::enableAudio "enableAudio" method instead.
+    /** **DEPRECATED** Use the \ref IRtcEngine::enableAudio "enableAudio" method instead.
 
      Resumes playing the audio in the channel.
      @return
@@ -4139,13 +4726,13 @@ public:
         return m_parameter ? m_parameter->setBool("che.pause.audio", false) : -ERR_NOT_INITIALIZED;
     }
 
-    /** @deprecated Agora does not recommend using this method.
+    /** **DEPRECATED** Agora does not recommend using this method.
 
      Sets the high-quality audio preferences. Call this method and set all parameters before joining a channel.
 
      Do not call this method again after joining a channel.
 
-     @param fullband Sets whether to enable/disable full-band codec (48-kHz sampling rate). Not compatible with SDK versions before v1.7.4:
+     @param fullband Sets whether to enable/disable full-band codec (48-kHz sample rate). Not compatible with SDK versions before v1.7.4:
      - true: Enable full-band codec.
      - false: Disable full-band codec.
      @param  stereo Sets whether to enable/disable stereo codec. Not compatible with SDK versions before v1.7.4:
@@ -4201,13 +4788,13 @@ public:
         return m_parameter ? m_parameter->setInt("che.audio.playout.signal.volume", volume) : -ERR_NOT_INITIALIZED;
     }
 
-    /** Enables the \ref agora::rtc::IRtcEngineEventHandler::onAudioVolumeIndication "onAudioVolumeIndication" callback at a set time interval to report on which user is speaking and the speaker's volume.
+    /** Enables the \ref agora::rtc::IRtcEngineEventHandler::onAudioVolumeIndication "onAudioVolumeIndication" callback at a set time interval to report on which users are speaking and the speakers' volume.
 
-     Once this method is enabled, the SDK returns the volume indication in the \ref agora::rtc::IRtcEngineEventHandler::onAudioVolumeIndication "onAudioVolumeIndication" callback at the set time interval, regardless of whether any user is speaking in the channel.
+     Once this method is enabled, the SDK returns the volume indication in the \ref agora::rtc::IRtcEngineEventHandler::onAudioVolumeIndication "onAudioVolumeIndication" callback at the set time interval, whether or not any user is speaking in the channel.
 
      @param interval Sets the time interval between two consecutive volume indications:
      - &le; 0: Disables the volume indication.
-     - > 0: Time interval (ms) between two consecutive volume indications. Agora recommends setting @p interval &gt; 200 ms. Do not set @p interval &lt; 10 ms, or the *onAudioVolumeIndication* callback will not be triggered.
+     - > 0: Time interval (ms) between two consecutive volume indications. We recommend setting @p interval &gt; 200 ms. Do not set @p interval &lt; 10 ms, or the *onAudioVolumeIndication* callback will not be triggered.
      @param smooth  Smoothing factor sets the sensitivity of the audio volume indicator. The value ranges between 0 and 10. The greater the value, the more sensitive the indicator. The recommended value is 3.
 
      @return
@@ -4288,7 +4875,7 @@ public:
      @param enabled Sets whether to enable/disable the external audio source:
      - true: Enables the external audio source.
      - false: (Default) Disables the external audio source.
-     @param sampleRate Sets the sampling rate of the external audio source, which can set be as 8000, 16000, 32000, 44100, or 48000.
+     @param sampleRate Sets the sample rate of the external audio source, which can be set as 8000, 16000, 32000, 44100, or 48000 Hz.
      @param channels Sets the audio channels of the external audio source (two channels maximum).
      @return
      - 0: Success.
@@ -4308,7 +4895,7 @@ public:
      @param enabled
      - true: Enables the external audio sink.
      - false: Disables the external audio sink.
-     @param sampleRate Sets the sampling rate for the external audio sink, which can be set as 8000, 16000, 32000, 44100, or 48000.
+     @param sampleRate Sets the sample rate of the external audio sink, which can be set as 8000, 16000, 32000, 44100, or 48000 Hz.
      @param channels Sets the audio channels of the external audio sink (two channels maximum).
 
      @note Enabling the external audio sink disables the "Raw Audio Data" method, and the application will not retrieve the audio frame from the \ref agora::media::IAudioFrameObserver::onPlaybackAudioFrame "onPlaybackAudioFrame" callback.
@@ -4325,14 +4912,13 @@ public:
 
     /** Specifies an SDK output log file.
 
-     The log file records all log data for the SDK’s operation. Ensure that the directory for the log file exists and is writable.
+     The log file records all SDK operations during runtime. If it does not exist, the SDK creates one.
 
      @note The default log file is located at: C:\Users\<user_name>\AppData\Local\Agora\<process_name>.
 
-     @param filePath File path of the log file. The string of the log file is in the UTF-8 code.
+     @param filePath File path of the log file. The string of the log file is in UTF-8.
 
      @return
-
      - 0: Success.
      - < 0: Failure.
      */
@@ -4364,6 +4950,19 @@ public:
         return m_parameter ? m_parameter->setUInt("rtc.log_filter", filter&LOG_FILTER_MASK) : -ERR_NOT_INITIALIZED;
     }
 
+    /** Sets the log file size (KB).
+
+    The SDK has two log files, each with a default size of 512 KB. If you set @p fileSizeInBytes as 1024 KB, the SDK outputs log files with a total maximum size of 2 MB. If the total size of the log files exceed the set value, the new output log files overwrite the old output log files.
+
+    @param fileSizeInKBytes The SDK log file size (KB).
+    @return
+    - 0: Success.
+    - <0: Failure.
+    */
+    int setLogFileSize(unsigned int fileSizeInKBytes) {
+        return m_parameter ? m_parameter->setUInt("rtc.log_size", fileSizeInKBytes) : -ERR_NOT_INITIALIZED;
+    }
+
     /** Sets the local video display mode.
 
      This method can be called multiple times during a call to change the display mode.
@@ -4391,6 +4990,26 @@ public:
         return setObject("che.video.render_mode", "{\"uid\":%u,\"mode\":%d}", uid, renderMode);
     }
 
+    /** Sets the camera capture preference.
+    
+    For a video call or live broadcast, generally the SDK controls the camera output parameters. When the default camera capture settings do not meet special requirements or cause performance problems, we recommend using this method to set the camera capture preference:
+    
+    - If the resolution or frame rate of the captured raw video data are higher than those set by \ref IRtcEngine::setVideoEncoderConfiguration "setVideoEncoderConfiguration", processing video frames requires extra CPU and RAM usage and degrades performance. We recommend setting config as CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE = 1 to avoid such problems.
+    - If you do not need local video preview or are willing to sacrifice preview quality, we recommend setting config as CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE = 1 to optimize CPU and RAM usage.
+    - If you want better quality for the local video preview, we recommend setting config as CAPTURER_OUTPUT_PREFERENCE_PREVIEW = 2.
+    
+    @note Call this method before enabling the local camera. That said, you can call this method before calling \ref agora::rtc::IRtcEngine::joinChannel "joinChannel", \ref agora::rtc::IRtcEngine::enableVideo "enableVideo", or \ref RtcEngineParameters::enableLocalVideo "enableLocalVideo", depending on which method you use to turn on your local camera.
+
+    @param config Sets the camera capture preference. See CameraCapturerConfiguration.
+    
+    @return
+    - 0: Success.
+    - < 0: Failure.
+    */
+    int setCameraCapturerConfiguration(const CameraCapturerConfiguration& config) {
+        if (!m_parameter) return -ERR_NOT_INITIALIZED;
+        return m_parameter->setInt("che.video.camera_capture_mode", (int)config.preference);
+    }
 
     /** Sets the stream mode to the single-stream (default) or dual-stream mode. (Live broadcast only.)
 
@@ -4444,7 +5063,7 @@ public:
 
     /** Sets the audio recording format for the \ref agora::media::IAudioFrameObserver::onRecordAudioFrame "onRecordAudioFrame" callback.
 
-     @param sampleRate Sets the sampling rate (@p samplesPerSec) returned in the *onRecordAudioFrame* callback, which can set be as 8000, 16000, 32000, 44100, or 48000.
+     @param sampleRate Sets the sample rate (@p samplesPerSec) returned in the *onRecordAudioFrame* callback, which can be set as 8000, 16000, 32000, 44100, or 48000 Hz.
      @param channel Sets the number of audio channels (@p channels) returned in the *onRecordAudioFrame* callback:
      - 1: Mono
      - 2: Stereo
@@ -4462,7 +5081,7 @@ public:
     }
     /** Sets the audio playback format for the \ref agora::media::IAudioFrameObserver::onPlaybackAudioFrame "onPlaybackAudioFrame" callback.
 
-     @param sampleRate Sets the sampling rate (@p samplesPerSec) returned in the *onPlaybackAudioFrame* callback, which can set be as 8000, 16000, 32000, 44100, or 48000.
+     @param sampleRate Sets the sample rate (@p samplesPerSec) returned in the *onPlaybackAudioFrame* callback, which can be set as 8000, 16000, 32000, 44100, or 48000 Hz.
      @param channel Sets the number of channels (@p channels) returned in the *onPlaybackAudioFrame* callback:
      - 1: Mono
      - 2: Stereo
@@ -4480,7 +5099,7 @@ public:
     }
     /** Sets the mixed audio format for the \ref agora::media::IAudioFrameObserver::onMixedAudioFrame "onMixedAudioFrame" callback.
 
-     @param sampleRate Sets the sampling rate (@p samplesPerSec) returned in the *onMixedAudioFrame* callback, which can set be as 8000, 16000, 32000, 44100, or 48000.
+     @param sampleRate Sets the sample rate (@p samplesPerSec) returned in the *onMixedAudioFrame* callback, which can be set as 8000, 16000, 32000, 44100, or 48000 Hz.
      @param samplesPerCall Sets the sample points (@p samples) returned in the *onMixedAudioFrame* callback. @p samplesPerCall is usually set as 1024 for stream pushing.
 
      samplesPerCall = (int)(sampleRate &times; sampleInterval), where sampleInterval &ge; 0.01 in seconds.
@@ -4495,7 +5114,7 @@ public:
 
     /** Enables interoperability with the Agora Web SDK.
 
-     @note This method applies only to the live broadcast profile. In the communication profile, interoperability with the Agora Web SDK is enabled by default.
+     @note This method applies only to the Live-broadcast profile. In the Communication profile, interoperability with the Agora Web SDK is enabled by default.
 
      @param enabled Sets whether to enable/disable interoperability with the Agora Web SDK:
      - true: Enable.
@@ -4510,7 +5129,9 @@ public:
     }
 
     //only for live broadcast
-    /** Sets the preferences for the high-quality video. (Live broadcast only).
+    /** **DEPRECATED** Sets the preferences for the high-quality video. (Live broadcast only).
+     
+     This method is deprecated as of v2.4.0.
 
      @param preferFrameRateOverImageQuality Sets the video quality preference:
      - true: Frame rate over image quality.
@@ -4554,14 +5175,14 @@ public:
 
     /** Sets the fallback option for the locally published video stream based on the network conditions.
 
-     The default setting for @p option is #STREAM_FALLBACK_OPTION_DISABLED, where there is no fallback for the locally published video stream when the uplink network conditions are poor.
+     The default setting for @p option is #STREAM_FALLBACK_OPTION_DISABLED, where there is no fallback behavior for the locally published video stream when the uplink network conditions are poor.
 
-     If *option* is set to #STREAM_FALLBACK_OPTION_AUDIO_ONLY, the SDK will:
+     If *option* is set as #STREAM_FALLBACK_OPTION_AUDIO_ONLY, the SDK will:
 
      - Disable the upstream video but enable audio only when the network conditions worsen and cannot support both video and audio.
      - Re-enable the video when the network conditions improve.
 
-     When the locally published stream falls back to audio only or when the audio stream switches back to the video, the \ref agora::rtc::IRtcEngineEventHandler::onLocalPublishFallbackToAudioOnly "onLocalPublishFallbackToAudioOnly" callback is triggered.
+     When the locally published video stream falls back to audio only or when the audio-only stream switches back to the video, the SDK triggers the \ref agora::rtc::IRtcEngineEventHandler::onLocalPublishFallbackToAudioOnly "onLocalPublishFallbackToAudioOnly" callback.
 
      @note Agora does not recommend using this method for CDN live streaming, because the remote CDN live user will have a noticeable lag when the locally publish stream falls back to audio-only.
 
@@ -4574,15 +5195,15 @@ public:
         return m_parameter ? m_parameter->setInt("rtc.local_publish_fallback_option", option) : -ERR_NOT_INITIALIZED;
     }
 
-    /** Sets the fallback option for the remotely subscribed stream based on the network conditions.
+    /** Sets the fallback option for the remotely subscribed video stream based on the network conditions.
 
-     The default setting for @p option is #STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW, where the remotely subscribed stream falls back to the low-stream video (low resolution and low bitrate) under poor downlink network conditions.
+     The default setting for @p option is #STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW, where the remotely subscribed video stream falls back to the low-stream video (low resolution and low bitrate) under poor downlink network conditions.
 
-     If *option* is set to #STREAM_FALLBACK_OPTION_AUDIO_ONLY, the SDK automatically switches the video from a high-stream to a low-stream, or disable the video when the downlink network conditions cannot support both audio and video to guarantee the quality of the audio. The SDK monitors the network quality and restores the video stream when the network conditions improve.
+     If *option* is set as #STREAM_FALLBACK_OPTION_AUDIO_ONLY, the SDK automatically switches the video from a high-stream to a low-stream, or disables the video when the downlink network conditions cannot support both audio and video to guarantee the quality of the audio. The SDK monitors the network quality and restores the video stream when the network conditions improve.
 
-     Once the locally published stream falls back to audio only or the audio stream switches back to the video stream, the \ref agora::rtc::IRtcEngineEventHandler::onRemoteSubscribeFallbackToAudioOnly "onRemoteSubscribeFallbackToAudioOnly" callback is triggered.
+    When the remotely subscribed video stream falls back to audio only or when the audio-only stream switches back to the video stream, the SDK triggers the \ref agora::rtc::IRtcEngineEventHandler::onRemoteSubscribeFallbackToAudioOnly "onRemoteSubscribeFallbackToAudioOnly" callback.
 
-     @param  option  Sets the fallback option for the remotely subscribed stream. See #STREAM_FALLBACK_OPTIONS.
+     @param  option  Sets the fallback option for the remotely subscribed video stream. See #STREAM_FALLBACK_OPTIONS.
      @return
      - 0: Success.
      - < 0: Failure.
@@ -4596,8 +5217,8 @@ public:
      @param enabled Sets whether to enable/disable loopback recording:
      - true: Enables loopback recording.
      - false: (Default) Disables loopback recording.
-     @param deviceName Pointer to the device name of the sound card. The default value is NULL, meaning the default sound card is used.
-     If you are using a virtual sound card like "Soundflower", set this parameter as the name of the sound card, like "Soundflower", and the SDK will find the corresponding sound card and start capturing.
+     @param deviceName Pointer to the device name of the sound card. The default value is NULL (the default sound card).
+     If you use a virtual sound card like "Soundflower", set this parameter as the name of the sound card, "Soundflower", and the SDK will find the corresponding sound card and start capturing.
      @return
      - 0: Success.
      - < 0: Failure.

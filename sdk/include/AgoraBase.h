@@ -1,6 +1,6 @@
 //  Agora Engine SDK
 //
-//  Copyright (c) 2018 Agora.io. All rights reserved.
+//  Copyright (c) 2019 Agora.io. All rights reserved.
 //
 
 #ifndef AGORA_BASE_H
@@ -123,13 +123,13 @@ enum WARN_CODE_TYPE
     /** 103: No channel resources are available. Maybe because the server cannot allocate any channel resource.
     */
     WARN_NO_AVAILABLE_CHANNEL = 103,
-    /** 104: A timeout occurs when looking up the channel. When joining a channel, the SDK looks up the specified channel. This warning usually occurs when the network condition is too poor to connect to the server.
+    /** 104: A timeout occurs when looking up the channel. When joining a channel, the SDK looks up the specified channel. This warning usually occurs when the network condition is too poor for the SDK to connect to the server.
     */
     WARN_LOOKUP_CHANNEL_TIMEOUT = 104,
     /** 105: The server rejects the request to look up the channel. The server cannot process this request or the request is illegal.
     */
     WARN_LOOKUP_CHANNEL_REJECTED = 105,
-    /** 106: A timeout occurs when opening the channel. Once the specific channel is found, the SDK opens the channel. This warning usually occurs when the network condition is too poor to connect to the server.
+    /** 106: A timeout occurs when opening the channel. Once the specific channel is found, the SDK opens the channel. This warning usually occurs when the network condition is too poor for the SDK to connect to the server.
     */
     WARN_OPEN_CHANNEL_TIMEOUT = 106,
     /** 107: The server rejects the request to open the channel. The server cannot process this request or the request is illegal.
@@ -152,19 +152,19 @@ enum WARN_CODE_TYPE
     /** 701: An error occurs in opening the audio mixing file.
     */
     WARN_AUDIO_MIXING_OPEN_ERROR = 701,
-    /** 1014: Audio Device Module: A warning occurs in the playback device.
+    /** 1014: Audio Device Module: a warning occurs in the playback device.
     */
     WARN_ADM_RUNTIME_PLAYOUT_WARNING = 1014,
-    /** 1016: Audio Device Module: A warning occurs in the recording device.
+    /** 1016: Audio Device Module: a warning occurs in the recording device.
     */
     WARN_ADM_RUNTIME_RECORDING_WARNING = 1016,
-    /** 1019: Audio Device Module: No valid audio data is collected. This warning does not affect the ongoing call.
+    /** 1019: Audio Device Module: no valid audio data is collected. This warning does not affect the ongoing call.
     */
     WARN_ADM_RECORD_AUDIO_SILENCE = 1019,
-    /** 1020: Audio Device Module: The playback device fails.
+    /** 1020: Audio Device Module: the playback device fails.
     */
     WARN_ADM_PLAYOUT_MALFUNCTION = 1020,
-    /** 1021: Audio Device Module: The recording device fails.
+    /** 1021: Audio Device Module: the recording device fails.
     */
     WARN_ADM_RECORD_MALFUNCTION = 1021,
     /**
@@ -173,22 +173,22 @@ enum WARN_CODE_TYPE
     /**
     */
     WARN_ADM_IOS_SAMPLERATE_CHANGE = 1030,
-    /** 1031: Audio Device Module: The recorded audio voice is too low.
+    /** 1031: Audio Device Module: the recorded audio voice is too low.
     */
     WARN_ADM_RECORD_AUDIO_LOWLEVEL = 1031,
-    /** 1032: Audio Device Module: The playback audio voice is too low.
+    /** 1032: Audio Device Module: the playback audio voice is too low.
     */
     WARN_ADM_PLAYOUT_AUDIO_LOWLEVEL = 1032,
     /**
     */
     WARN_ADM_WINDOWS_NO_DATA_READY_EVENT = 1040,
-    /** 1051: Audio Device Module: Howling is detected.
+    /** 1051: Audio Device Module: howling is detected.
     */
     WARN_APM_HOWLING = 1051,
-    /** 1052: Audio Device Module: The device is in the glitch state.
+    /** 1052: Audio Device Module: the device is in the glitch state.
     */
     WARN_ADM_GLITCH_STATE = 1052,
-    /** 1053: Audio Device Module: The underlying audio settings changed.
+    /** 1053: Audio Device Module: the underlying audio settings have changed.
     */
     WARN_ADM_IMPROPER_SETTINGS = 1053,
     /**
@@ -200,6 +200,15 @@ enum WARN_CODE_TYPE
     /**
     */
     WARN_ADM_WIN_CORE_IMPROPER_CAPTURE_RELEASE = 1324,
+    /** 1610: Super-resolution warning: the original video dimensions of the remote user exceed 640 &times; 480.
+    */
+    WARN_SUPER_RESOLUTION_STREAM_OVER_LIMITATION = 1610,
+    /** 1611: Super-resolution warning: another user is using super resolution.
+    */
+    WARN_SUPER_RESOLUTION_USER_COUNT_OVER_LIMITATION = 1611,
+    /** 1612: The device is not supported.
+    */
+    WARN_SUPER_RESOLUTION_DEVICE_NOT_SUPPORTED = 1612,
 };
 
 /** Error code.
@@ -327,19 +336,19 @@ enum ERROR_CODE_TYPE
     /** 123: The client is banned by the server.
      */
     ERR_CLIENT_IS_BANNED_BY_SERVER = 123,
-    /** 124: An error occurs in the watermark file parameter.
+    /** 124: Incorrect watermark file parameter.
      */
     ERR_WATERMARK_PARAM = 124,
-    /** 125: An error occurs in the watermark file path.
+    /** 125: Incorrect watermark file path.
      */
     ERR_WATERMARK_PATH = 125,
-    /** 126: An error occurs in the watermark file format.
+    /** 126: Incorrect watermark file format.
      */
     ERR_WATERMARK_PNG = 126,
-    /** 127: An error occurs in the watermark file information.
+    /** 127: Incorrect watermark file information.
      */
     ERR_WATERMARKR_INFO = 127,
-    /** 128: An error occurs in the watermark file data format.
+    /** 128: Incorrect watermark file data format.
      */
     ERR_WATERMARK_ARGB = 128,
     /** 129: An error occurs in reading the watermark file.
@@ -559,6 +568,11 @@ enum ERROR_CODE_TYPE
     /** 1501: Video Device Module: The camera is unauthorized.
      */
     ERR_VDM_CAMERA_NOT_AUTHORIZED = 1501,
+
+	// VDM error code starts from 1500
+	/** 1502: Video Device Module: The camera in use.
+	 */
+	ERR_VDM_WIN_DEVICE_IN_USE = 1502,
 
     // VCM error code starts from 1600
     /** 1600: Video Device Module: An unknown error occurs.
