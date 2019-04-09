@@ -445,6 +445,7 @@ export interface NodeRtcEngine {
     uid: number
   ): number;
   leaveChannel(): number;
+  release(): number;
   setHighQualityAudioParameters(
     fullband: boolean,
     stereo: boolean,
