@@ -1,5 +1,61 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/** Local voice changer options. */
+var VoiceChangerPreset;
+(function (VoiceChangerPreset) {
+    /** 0: The original voice (no local voice change). */
+    VoiceChangerPreset[VoiceChangerPreset["VOICE_CHANGER_OFF"] = 0] = "VOICE_CHANGER_OFF";
+    /** 1: An old man's voice. */
+    VoiceChangerPreset[VoiceChangerPreset["VOICE_CHANGER_OLDMAN"] = 1] = "VOICE_CHANGER_OLDMAN";
+    /** 2: A little boy's voice. */
+    VoiceChangerPreset[VoiceChangerPreset["VOICE_CHANGER_BABYBOY"] = 2] = "VOICE_CHANGER_BABYBOY";
+    /** 3: A little girl's voice. */
+    VoiceChangerPreset[VoiceChangerPreset["VOICE_CHANGER_BABYGIRL"] = 3] = "VOICE_CHANGER_BABYGIRL";
+    /** 4: The voice of a growling bear. */
+    VoiceChangerPreset[VoiceChangerPreset["VOICE_CHANGER_ZHUBAJIE"] = 4] = "VOICE_CHANGER_ZHUBAJIE";
+    /** 5: Ethereal vocal effects. */
+    VoiceChangerPreset[VoiceChangerPreset["VOICE_CHANGER_ETHEREAL"] = 5] = "VOICE_CHANGER_ETHEREAL";
+    /** 6: Hulk's voice. */
+    VoiceChangerPreset[VoiceChangerPreset["VOICE_CHANGER_HULK"] = 6] = "VOICE_CHANGER_HULK";
+})(VoiceChangerPreset = exports.VoiceChangerPreset || (exports.VoiceChangerPreset = {}));
+var AudioReverbPreset;
+(function (AudioReverbPreset) {
+    /** 0: The original voice (no local voice reverberation). */
+    AudioReverbPreset[AudioReverbPreset["AUDIO_REVERB_OFF"] = 0] = "AUDIO_REVERB_OFF";
+    /** 1: Pop music. */
+    AudioReverbPreset[AudioReverbPreset["AUDIO_REVERB_POPULAR"] = 1] = "AUDIO_REVERB_POPULAR";
+    /** 2: R&B. */
+    AudioReverbPreset[AudioReverbPreset["AUDIO_REVERB_RNB"] = 2] = "AUDIO_REVERB_RNB";
+    /** 3: Rock music. */
+    AudioReverbPreset[AudioReverbPreset["AUDIO_REVERB_ROCK"] = 3] = "AUDIO_REVERB_ROCK";
+    /** 4: Hip-hop. */
+    AudioReverbPreset[AudioReverbPreset["AUDIO_REVERB_HIPHOP"] = 4] = "AUDIO_REVERB_HIPHOP";
+    /** 5: Pop concert. */
+    AudioReverbPreset[AudioReverbPreset["AUDIO_REVERB_VOCAL_CONCERT"] = 5] = "AUDIO_REVERB_VOCAL_CONCERT";
+    /** 6: Karaoke. */
+    AudioReverbPreset[AudioReverbPreset["AUDIO_REVERB_KTV"] = 6] = "AUDIO_REVERB_KTV";
+    /** 7: Recording studio. */
+    AudioReverbPreset[AudioReverbPreset["AUDIO_REVERB_STUDIO"] = 7] = "AUDIO_REVERB_STUDIO";
+})(AudioReverbPreset = exports.AudioReverbPreset || (exports.AudioReverbPreset = {}));
+var Priority;
+(function (Priority) {
+    /** 50: The user's priority is high. */
+    Priority[Priority["PRIORITY_HIGH"] = 50] = "PRIORITY_HIGH";
+    /** 100: (Default) The user's priority is normal. */
+    Priority[Priority["PRIORITY_NORMAL"] = 100] = "PRIORITY_NORMAL";
+})(Priority = exports.Priority || (exports.Priority = {}));
+var CaptureOutPreference;
+(function (CaptureOutPreference) {
+    /** 0: (Default) self-adapts the camera output parameters to the system performance and network conditions to balance CPU consumption and video preview quality.
+     */
+    CaptureOutPreference[CaptureOutPreference["CAPTURER_OUTPUT_PREFERENCE_AUTO"] = 0] = "CAPTURER_OUTPUT_PREFERENCE_AUTO";
+    /** 2: Prioritizes the system performance. The SDK chooses the dimension and frame rate of the local camera capture closest to those set by \ref IRtcEngine::setVideoEncoderConfiguration "setVideoEncoderConfiguration".
+     */
+    CaptureOutPreference[CaptureOutPreference["CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE"] = 1] = "CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE";
+    /** 2: Prioritizes the local preview quality. The SDK chooses higher camera output parameters to improve the local video preview quality. This option requires extra CPU and RAM usage for video pre-processing.
+     */
+    CaptureOutPreference[CaptureOutPreference["CAPTURER_OUTPUT_PREFERENCE_PREVIEW"] = 2] = "CAPTURER_OUTPUT_PREFERENCE_PREVIEW";
+})(CaptureOutPreference = exports.CaptureOutPreference || (exports.CaptureOutPreference = {}));
 /** @deprecated Video profile. */
 var VIDEO_PROFILE_TYPE;
 (function (VIDEO_PROFILE_TYPE) {
