@@ -1,6 +1,6 @@
 ## Latest
 #### :house: Internal
-* Add Missing Api
+* Add Missing Api for 2.3.*
   * Add `getConnectionState` api
   * Add Event `remoteAudioStats`
 * Add 2.4 Api
@@ -17,6 +17,7 @@
   * Add `startAudioDeviceLoopbackTest`
   * Add `stopAudioDeviceLoopbackTest`
   * Add `setCameraCapturerConfiguration`
+* Add `release` Api
 
 #### :memo: Documentation
 * Add doc and type for the missing api above.
