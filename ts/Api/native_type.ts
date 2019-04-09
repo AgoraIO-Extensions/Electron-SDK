@@ -369,7 +369,6 @@ export enum VIDEO_PROFILE_TYPE {
 export interface NodeRtcEngine {
   initialize(appId: string): number;
   getVersion(): string;
-  getConnectionState(): number;
   getErrorDescription(errorCode: number): string;
   getConnectionState(): ConnectionState;
   joinChannel(
