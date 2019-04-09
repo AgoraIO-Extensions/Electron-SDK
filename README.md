@@ -27,13 +27,13 @@ AGORA_ELECTRON_DEPENDENT=2.0.0
 # range(>=3.0.0) will download a prebuilt addon built with electron 3.0.6
 AGORA_ELECTRON_DEPENDENT=3.0.6
 # or
-# range(>= 4.0.0) will download a prebuilt addon built with electron 4.0.0
+# range(= 4.0.0) will download a prebuilt addon built with electron 4.0.0
 AGORA_ELECTRON_DEPENDENT=4.0.0
 ```
 
 ## Resources
 
-- [API Reference](https://agoraio.github.io/Electron-SDK/2_3_3/) - API Reference
+- [API Reference](https://agoraio.github.io/Electron-SDK/2_4_0/) - API Reference
 
 - [e-Education Application](https://github.com/AgoraIO/ARD-eEducation-with-Electron) - A complete e-education Application based on this repo
 
@@ -79,7 +79,7 @@ The MIT License (MIT).
 
 [npm-badge]: https://img.shields.io/npm/v/agora-electron-sdk.png?style=flat-square
 [npm]: https://www.npmjs.org/package/agora-electron-sdk
-[mac-build-badge]: https://img.shields.io/travis/AgoraIO/Electron-SDK/dev/2.3.3.svg?style=flat-square
+[mac-build-badge]: https://img.shields.io/travis/AgoraIO/Electron-SDK/dev/2.4.0.svg?style=flat-square
 [mac-build]: https://travis-ci.org/AgoraIO/Electron-SDK
-[windows-build-badge]: https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?branch=dev/2.3.3&svg=true
-[windows-build]:https://ci.appveyor.com/project/menthays/electron-sdk/branch/dev/2.3.3
+[windows-build-badge]: https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?branch=dev/2.4.0&svg=true
+[windows-build]:https://ci.appveyor.com/project/menthays/electron-sdk/branch/dev/2.4.0
