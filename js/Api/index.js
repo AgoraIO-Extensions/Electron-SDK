@@ -494,6 +494,13 @@ class AgoraRtcEngine extends events_1.EventEmitter {
         return this.rtcEngine.leaveChannel();
     }
     /**
+     * @description release sdk instance
+     * @returns {number} 0 for success, <0 for failure
+     */
+    release() {
+        return this.rtcEngine.release();
+    }
+    /**
      * @description This method sets high-quality audio preferences. Call this method and set all the three
      * modes before joining a channel. Do NOT call this method again after joining a channel.
      * @param {boolean} fullband enable/disable fullband codec
@@ -618,6 +625,7 @@ class AgoraRtcEngine extends events_1.EventEmitter {
         return this.rtcEngine.setClientRole(role, permissionKey);
     }
     /**
+     * @deprecated use startEchoTestWithInterval instead
      * @description This method launches an audio call test to determine whether the audio devices
      * (for example, headset and speaker) and the network connection are working properly.
      * In the test, the user first speaks, and the recording is played back in 10 seconds.
@@ -634,6 +642,13 @@ class AgoraRtcEngine extends events_1.EventEmitter {
      */
     stopEchoTest() {
         return this.rtcEngine.stopEchoTest();
+    }
+    /**
+     * @description startEchoTest with interval
+     * @param interval time interval (seconds)
+     */
+    startEchoTestWithInterval(interval) {
+        return this.rtcEngine.startEchoTestWithInterval(interval);
     }
     /**
      * @description This method tests the quality of the user’s network connection
@@ -653,6 +668,21 @@ class AgoraRtcEngine extends events_1.EventEmitter {
      */
     disableLastmileTest() {
         return this.rtcEngine.disableLastmileTest();
+    }
+    /**
+     * @description start the last-mile network probe test before
+     * joining a channel to get the uplink and downlink last-mile network statistics,
+     *  including the bandwidth, packet loss, jitter, and round-trip time (RTT).
+     * @param {LastmileProbeConfig} config
+     */
+    startLastmileProbeTest(config) {
+        return this.rtcEngine.startLastmileProbeTest(config);
+    }
+    /**
+     * @description stop the last-mile network probe test
+     */
+    stopLastmileProbeTest() {
+        return this.rtcEngine.stopLastmileProbeTest();
     }
     /**
      * @description Use before join channel to enable video communication, or you will only join with audio-enabled
@@ -697,6 +727,16 @@ class AgoraRtcEngine extends events_1.EventEmitter {
         return this.rtcEngine.setVideoProfile(profile, swapWidthAndHeight);
     }
     /**
+     * @description For a video call or live broadcast, generally the SDK controls the camera output parameters. When the default camera capture settings do not meet special requirements or cause performance problems, we recommend using this method to set the camera capture preference:
+     * - If the resolution or frame rate of the captured raw video data are higher than those set by \ref IRtcEngine::setVideoEncoderConfiguration "setVideoEncoderConfiguration", processing video frames requires extra CPU and RAM usage and degrades performance. We recommend setting config as CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE = 1 to avoid such problems.
+     * - If you do not need local video preview or are willing to sacrifice preview quality, we recommend setting config as CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE = 1 to optimize CPU and RAM usage.
+     * - If you want better quality for the local video preview, we recommend setting config as CAPTURER_OUTPUT_PREFERENCE_PREVIEW = 2.
+     * @param {CameraCapturerConfiguration} config
+     */
+    setCameraCapturerConfiguration(config) {
+        return this.rtcEngine.setCameraCapturerConfiguration(config);
+    }
+    /**
      * @param {Object} config - encoder config of video
      * @param {number} config.width - width of video
      * @param {number} config.height - height of video
@@ -709,6 +749,23 @@ class AgoraRtcEngine extends events_1.EventEmitter {
     setVideoEncoderConfiguration(config) {
         const { width = 640, height = 480, fps = 15, bitrate = 0, orientation = 0, minbitrate = -1 } = config;
         return this.rtcEngine.setVideoEncoderConfiguration(width, height, fps, bitrate, minbitrate, orientation);
+    }
+    /**
+     * @description Enables/Disables image enhancement and sets the options
+     * @param {boolean} enable If to enable
+     * @param {Object} options beauty options
+     * @param {number} options.lighteningContrastLevel 0 for low, 1 for normal, 2 for high
+     */
+    setBeautyEffectOptions(enable, options) {
+        return this.rtcEngine.setBeautyEffectOptions(enable, options);
+    }
+    /**
+     * @description set the priority of a remote user
+     * @param {number} uid
+     * @param {Priority} priority
+     */
+    setRemoteUserPriority(uid, priority) {
+        return this.rtcEngine.setRemoteUserPriority(uid, priority);
     }
     /**
      * @description This method enables the audio mode, which is enabled by default.
@@ -734,6 +791,7 @@ class AgoraRtcEngine extends events_1.EventEmitter {
         return this.rtcEngine.setAudioProfile(profile, scenario);
     }
     /**
+     * @deprecated use setCameraCapturerConfiguration and setVideoEncoderConfiguration instead
      * @description This method allows users to set video preferences.
      * @param {boolean} preferFrameRateOverImageQuality enable/disable framerate over image quality
      * @returns {number} 0 for success, <0 for failure
@@ -873,6 +931,14 @@ class AgoraRtcEngine extends events_1.EventEmitter {
         return this.rtcEngine.setLogFile(filepath);
     }
     /**
+     * @description set the log file size (KB).
+     * @param {number} size size of the log file. if exceed, old one will be overwrite
+     * @returns {number} 0 for success, <0 for failure
+     */
+    setLogFileSize(size) {
+        return this.rtcEngine.setLogFileSize(size);
+    }
+    /**
      * @description set filepath of videosource log (Called After videosource initialized)
      * @param {string} filepath filepath of log
      * @returns {number} 0 for success, <0 for failure
@@ -983,6 +1049,20 @@ class AgoraRtcEngine extends events_1.EventEmitter {
      */
     setLocalVoiceReverb(reverbKey, value) {
         return this.rtcEngine.setLocalVoiceReverb(reverbKey, value);
+    }
+    /**
+     * @description set the local voice changer option.
+     * @param {VoiceChangerPreset} preset voice change preset
+     */
+    setLocalVoiceChanger(preset) {
+        return this.rtcEngine.setLocalVoiceChanger(preset);
+    }
+    /**
+     * @description set the preset local voice reverberation effect.
+     * @param {AudioReverbPreset} preset local voice reverberation presets
+     */
+    setLocalVoiceReverbPreset(preset) {
+        return this.rtcEngine.setLocalVoiceReverbPreset(preset);
     }
     /**
      * @description Sets the fallback option for the locally published video stream based on the network conditions.
@@ -1178,6 +1258,22 @@ class AgoraRtcEngine extends events_1.EventEmitter {
      */
     stopAudioPlaybackDeviceTest() {
         return this.rtcEngine.stopAudioPlaybackDeviceTest();
+    }
+    /**
+     * @description This method tests whether the local audio devices are working properly.
+     * After calling this method, the microphone captures the local audio
+     * and plays it through the speaker. The \ref IRtcEngineEventHandler::onAudioVolumeIndication "onAudioVolumeIndication" callback
+     * returns the local audio volume information at the set interval.
+     * @param {number} interval indication interval (ms)
+     */
+    startAudioDeviceLoopbackTest(interval) {
+        return this.rtcEngine.startAudioDeviceLoopbackTest(interval);
+    }
+    /**
+     * @description stop AudioDeviceLoopbackTest
+     */
+    stopAudioDeviceLoopbackTest() {
+        return this.rtcEngine.stopAudioDeviceLoopbackTest();
     }
     /**
      * @description This method enables loopback recording. Once enabled, the SDK collects all local sounds.
@@ -1728,6 +1824,34 @@ class AgoraRtcEngine extends events_1.EventEmitter {
      */
     resumeAllEffects() {
         return this.rtcEngine.resumeAllEffects();
+    }
+    /**
+     * @description Enables/Disables stereo panning for remote users.
+     * Ensure that you call this method before joinChannel to enable stereo panning
+     * for remote users so that the local user can track the position of a remote user
+     * by calling \ref agora::rtc::RtcEngineParameters::setRemoteVoicePosition "setRemoteVoicePosition".
+     * @param {boolean} enable
+     */
+    enableSoundPositionIndication(enable) {
+        return this.rtcEngine.enableSoundPositionIndication(enable);
+    }
+    /**
+     * @description For this method to work, enable stereo panning for remote users
+     * by calling enableSoundPositionIndication before joining a channel.
+     * This method requires hardware support. For the best sound positioning,
+     * we recommend using a stereo speaker.
+     * @param {number} uid uid
+     * @param {number} pan The sound position of the remote user. The value ranges from -1.0 to 1.0.
+     * - 0.0: the remote sound comes from the front. -1.0: the remote sound comes from the left.
+     * - -1.0: the remote sound comes from the left.
+     * - 1.0: the remote sound comes from the right.
+     * @param {number} gain Gain of the remote user.
+     * The value ranges from 0.0 to 100.0.
+     * The default value is 100.0 (the original gain of the remote user).
+     * The smaller the value, the less the gain.
+     */
+    setRemoteVoicePosition(uid, pan, gain) {
+        return this.rtcEngine.setRemoteVoicePosition(uid, pan, gain);
     }
     // ===========================================================================
     // EXTRA
