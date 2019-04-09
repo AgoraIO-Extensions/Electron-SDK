@@ -89,6 +89,47 @@ export interface TranscodingConfig {
     /** transcodingusers array */
     transcodingUsers: Array<TranscodingUser>;
 }
+export interface LastmileProbeConfig {
+    probeUplink: boolean;
+    probeDownlink: boolean;
+    expectedUplinkBitrate: number;
+    expectedDownlinkBitrate: number;
+}
+/** Local voice changer options. */
+export declare enum VoiceChangerPreset {
+    /** 0: The original voice (no local voice change). */
+    VOICE_CHANGER_OFF = 0,
+    /** 1: An old man's voice. */
+    VOICE_CHANGER_OLDMAN = 1,
+    /** 2: A little boy's voice. */
+    VOICE_CHANGER_BABYBOY = 2,
+    /** 3: A little girl's voice. */
+    VOICE_CHANGER_BABYGIRL = 3,
+    /** 4: The voice of a growling bear. */
+    VOICE_CHANGER_ZHUBAJIE = 4,
+    /** 5: Ethereal vocal effects. */
+    VOICE_CHANGER_ETHEREAL = 5,
+    /** 6: Hulk's voice. */
+    VOICE_CHANGER_HULK = 6
+}
+export declare enum AudioReverbPreset {
+    /** 0: The original voice (no local voice reverberation). */
+    AUDIO_REVERB_OFF = 0,
+    /** 1: Pop music. */
+    AUDIO_REVERB_POPULAR = 1,
+    /** 2: R&B. */
+    AUDIO_REVERB_RNB = 2,
+    /** 3: Rock music. */
+    AUDIO_REVERB_ROCK = 3,
+    /** 4: Hip-hop. */
+    AUDIO_REVERB_HIPHOP = 4,
+    /** 5: Pop concert. */
+    AUDIO_REVERB_VOCAL_CONCERT = 5,
+    /** 6: Karaoke. */
+    AUDIO_REVERB_KTV = 6,
+    /** 7: Recording studio. */
+    AUDIO_REVERB_STUDIO = 7
+}
 export interface InjectStreamConfig {
     /** Width of the added stream in the live broadcast. The default value is 0 (same width as the original stream) */
     width: number;
@@ -120,6 +161,12 @@ export interface InjectStreamConfig {
      */
     audioChannels: number;
 }
+export declare enum Priority {
+    /** 50: The user's priority is high. */
+    PRIORITY_HIGH = 50,
+    /** 100: (Default) The user's priority is normal. */
+    PRIORITY_NORMAL = 100
+}
 export interface RtcStats {
     duration: number;
     txBytes: number;
@@ -149,6 +196,20 @@ export interface RemoteVideoStats {
      * 0 for high stream and 1 for low stream
      */
     rxStreamType: StreamType;
+}
+export declare enum CaptureOutPreference {
+    /** 0: (Default) self-adapts the camera output parameters to the system performance and network conditions to balance CPU consumption and video preview quality.
+     */
+    CAPTURER_OUTPUT_PREFERENCE_AUTO = 0,
+    /** 2: Prioritizes the system performance. The SDK chooses the dimension and frame rate of the local camera capture closest to those set by \ref IRtcEngine::setVideoEncoderConfiguration "setVideoEncoderConfiguration".
+     */
+    CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE = 1,
+    /** 2: Prioritizes the local preview quality. The SDK chooses higher camera output parameters to improve the local video preview quality. This option requires extra CPU and RAM usage for video pre-processing.
+     */
+    CAPTURER_OUTPUT_PREFERENCE_PREVIEW = 2
+}
+export interface CameraCapturerConfiguration {
+    preference: CaptureOutPreference;
 }
 export interface RemoteAudioStats {
     /** User ID of the remote user sending the audio streams. */
@@ -332,6 +393,7 @@ export interface NodeRtcEngine {
     getConnectionState(): ConnectionState;
     joinChannel(token: string, channel: string, info: string, uid: number): number;
     leaveChannel(): number;
+    release(): number;
     setHighQualityAudioParameters(fullband: boolean, stereo: boolean, fullBitrate: boolean): number;
     setupLocalVideo(): number;
     subscribe(uid: number): number;
@@ -345,16 +407,24 @@ export interface NodeRtcEngine {
     setClientRole(role: ClientRoleType, permissionKey: string): number;
     startEchoTest(): number;
     stopEchoTest(): number;
+    startEchoTestWithInterval(interval: number): number;
     enableLastmileTest(): number;
     disableLastmileTest(): number;
+    startLastmileProbeTest(config: LastmileProbeConfig): number;
+    stopLastmileProbeTest(): number;
     enableVideo(): number;
     disableVideo(): number;
     startPreview(): number;
     stopPreview(): number;
     setVideoProfile(profile: VIDEO_PROFILE_TYPE, swapWidthAndHeight: boolean): number;
+    setCameraCapturerConfiguration(config: CameraCapturerConfiguration): number;
     setVideoEncoderConfiguration(width: number, height: number, fps: number, bitrate: 0 | 1, // 0 for standard and 1 for compatible
     minbitrate: -1, // changing this value is NOT recommended
     orientation: 0 | 1 | 2): number;
+    setBeautyEffectOptions(enable: boolean, options: {
+        lighteningContrastLevel: 0 | 1 | 2;
+    }): number;
+    setRemoteUserPriority(uid: number, priority: Priority): number;
     enableAudio(): number;
     disableAudio(): number;
     setAudioProfile(profile: number, scenario: number): number;
@@ -374,6 +444,7 @@ export interface NodeRtcEngine {
     pauseAudio(): number;
     resumeAudio(): number;
     setLogFile(filepath: string): number;
+    setLogFileSize(size: number): number;
     videoSourceSetLogFile(filepath: string): number;
     setLogFilter(filter: number): number;
     enableDualStreamMode(enable: boolean): number;
@@ -384,6 +455,8 @@ export interface NodeRtcEngine {
     setLocalVoicePitch(pitch: number): number;
     setLocalVoiceEqualization(bandFrequency: number, bandGain: number): number;
     setLocalVoiceReverb(reverbKey: number, value: number): number;
+    setLocalVoiceChanger(preset: VoiceChangerPreset): number;
+    setLocalVoiceReverbPreset(preset: AudioReverbPreset): number;
     setLocalPublishFallbackOption(option: 0 | 1 | 2): number;
     setRemoteSubscribeFallbackOption(option: 0 | 1 | 2): number;
     setExternalAudioSource(enabled: boolean, samplerate: number, channels: number): number;
@@ -409,6 +482,8 @@ export interface NodeRtcEngine {
     enableLoopbackRecording(enable: boolean, deviceName: string | null): number;
     startAudioRecordingDeviceTest(indicateInterval: number): number;
     stopAudioRecordingDeviceTest(): number;
+    startAudioDeviceLoopbackTest(interval: number): number;
+    stopAudioDeviceLoopbackTest(): number;
     getAudioPlaybackDeviceMute(): boolean;
     setAudioPlaybackDeviceMute(mute: boolean): number;
     getAudioRecordingDeviceMute(): boolean;
@@ -483,6 +558,8 @@ export interface NodeRtcEngine {
     pauseAllEffects(): number;
     resumeEffect(soundId: number): number;
     resumeAllEffects(): number;
+    enableSoundPositionIndication(enable: boolean): number;
+    setRemoteVoicePosition(uid: number, pan: number, gain: number): number;
     getCallId(): string;
     rate(callId: string, rating: number, desc: string): number;
     complain(callId: string, desc: string): number;
