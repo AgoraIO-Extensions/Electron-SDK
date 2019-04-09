@@ -1,3 +1,12 @@
+## Latest
+#### :house: Internal
+* Add Missing Api
+  * Add `getConnectionState` api
+  * Add Event `remoteAudioStats`
+
+#### :memo: Documentation
+* Add doc and type for the missing api above.
+
 ## 2.3.3-alpha.12 (March 19th, 2019)
 #### :house: Internal
 * Add Api
