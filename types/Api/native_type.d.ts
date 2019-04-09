@@ -150,6 +150,18 @@ export interface RemoteVideoStats {
      */
     rxStreamType: StreamType;
 }
+export interface RemoteAudioStats {
+    /** User ID of the remote user sending the audio streams. */
+    uid: number;
+    /** Audio quality received by the user: #QUALITY_TYPE. */
+    quality: number;
+    /** Network delay from the sender to the receiver. */
+    networkTransportDelay: number;
+    /** Jitter buffer delay at the receiver. */
+    jitterBufferDelay: number;
+    /** Packet loss rate in the reported interval. */
+    audioLossRate: number;
+}
 export declare type RemoteVideoState = 1 | 2;
 export declare type ConnectionState = 1 | 2 | 3 | 4 | 5;
 export declare type ConnectionChangeReason = 0 | 1 | 2 | 3 | 4 | 5;
@@ -317,6 +329,7 @@ export interface NodeRtcEngine {
     initialize(appId: string): number;
     getVersion(): string;
     getErrorDescription(errorCode: number): string;
+    getConnectionState(): ConnectionState;
     joinChannel(token: string, channel: string, info: string, uid: number): number;
     leaveChannel(): number;
     setHighQualityAudioParameters(fullband: boolean, stereo: boolean, fullBitrate: boolean): number;
