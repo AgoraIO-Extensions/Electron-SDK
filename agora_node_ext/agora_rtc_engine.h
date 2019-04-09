@@ -273,6 +273,7 @@ namespace agora {
              * 2.3.3 apis
              */
             NAPI_API(getConnectionState);
+            NAPI_API(release);
 
         public:
             Isolate* getIsolate() { return m_isolate; }
