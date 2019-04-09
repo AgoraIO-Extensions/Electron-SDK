@@ -3,6 +3,20 @@
 * Add Missing Api
   * Add `getConnectionState` api
   * Add Event `remoteAudioStats`
+* Add 2.4 Api
+  * Add `setLogFileSize`
+  * Add `setBeautyEffectOptions`
+  * Add `setLocalVoiceChanger`
+  * Add `setLocalVoiceReverbPreset`
+  * Add `enableSoundPositionIndication`
+  * Add `setRemoteVoicePosition`
+  * Add `startLastmileProbeTest`
+  * Add `stopLastmileProbeTest`
+  * Add `setRemoteUserPriority`
+  * Add `startEchoTestWithInterval`
+  * Add `startAudioDeviceLoopbackTest`
+  * Add `stopAudioDeviceLoopbackTest`
+  * Add `setCameraCapturerConfiguration`
 
 #### :memo: Documentation
 * Add doc and type for the missing api above.
