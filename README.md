@@ -27,7 +27,7 @@ AGORA_ELECTRON_DEPENDENT=2.0.0
 # range(>=3.0.0) will download a prebuilt addon built with electron 3.0.6
 AGORA_ELECTRON_DEPENDENT=3.0.6
 # or
-# range(>= 4.0.0) will download a prebuilt addon built with electron 4.0.0
+# range(= 4.0.0) will download a prebuilt addon built with electron 4.0.0
 AGORA_ELECTRON_DEPENDENT=4.0.0
 ```
 
