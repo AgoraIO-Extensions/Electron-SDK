@@ -4,6 +4,7 @@ import {
   RtcStats,
   LocalVideoStats,
   RemoteVideoStats,
+  RemoteAudioStats,
   RemoteVideoState,
   AgoraNetworkQuality,
   ClientRoleType,
@@ -641,6 +642,14 @@ class AgoraRtcEngine extends EventEmitter {
    */
   getErrorDescription(errorCode: number): string {
     return this.rtcEngine.getErrorDescription(errorCode);
+  }
+
+  /**
+   * @description Get current connection state
+   * @returns {ConnectionState} connect state enum
+   */
+  getConnectionState(): ConnectionState {
+    return this.rtcEngine.getConnectionState();
   }
 
   /**
@@ -2257,6 +2266,7 @@ declare interface AgoraRtcEngine {
   on(evt: 'rtcStats', cb: (stats: RtcStats) => void): this;
   on(evt: 'localVideoStats', cb: (stats: LocalVideoStats) => void): this;
   on(evt: 'remoteVideoStats', cb: (stats: RemoteVideoStats) => void): this;
+  on(evt: 'remoteAudioStats', cb: (stats: RemoteAudioStats) => void): this;
   on(evt: 'audioDeviceStateChanged', cb: (
     deviceId: string,
     deviceType: number,
