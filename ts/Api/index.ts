@@ -680,6 +680,14 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @description release sdk instance
+   * @returns {number} 0 for success, <0 for failure
+   */
+  release(): number {
+    return this.rtcEngine.release();
+  }
+
+  /**
    * @description This method sets high-quality audio preferences. Call this method and set all the three
    * modes before joining a channel. Do NOT call this method again after joining a channel.
    * @param {boolean} fullband enable/disable fullband codec
