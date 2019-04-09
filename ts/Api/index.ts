@@ -636,6 +636,15 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @description get sdk connection state
+   * @returns {number} state
+   * https://docs.agora.io/en/Interactive%20Broadcast/API%20Reference/cpp/namespaceagora_1_1rtc.html#a430364c3f2cbf4419b898077cf6977f7
+   */
+  getConnectionState(): number {
+    return this.rtcEngine.getConnectionState();
+  }
+
+  /**
    * @description Get error description of the given errorCode
    * @param {number} errorCode error code
    * @returns {string} error description
@@ -672,6 +681,14 @@ class AgoraRtcEngine extends EventEmitter {
    */
   leaveChannel(): number {
     return this.rtcEngine.leaveChannel();
+  }
+  
+  /**
+   * @description release sdk instance
+   * @returns {number} 0 for success, <0 for failure
+   */
+  release(): number {
+    return this.rtcEngine.release();
   }
 
   /**
