@@ -369,6 +369,7 @@ export enum VIDEO_PROFILE_TYPE {
 export interface NodeRtcEngine {
   initialize(appId: string): number;
   getVersion(): string;
+  getConnectionState(): number;
   getErrorDescription(errorCode: number): string;
   getConnectionState(): ConnectionState;
   joinChannel(
@@ -378,6 +379,7 @@ export interface NodeRtcEngine {
     uid: number
   ): number;
   leaveChannel(): number;
+  release(): number;
   setHighQualityAudioParameters(
     fullband: boolean,
     stereo: boolean,
