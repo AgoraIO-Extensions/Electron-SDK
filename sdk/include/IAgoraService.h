@@ -1,6 +1,6 @@
 //  Agora SDK
 //
-//  Copyright (c) 2018 Agora.io. All rights reserved.
+//  Copyright (c) 2019 Agora.io. All rights reserved.
 //
 
 #ifndef AGORA_SERVICE_H
@@ -28,11 +28,10 @@ protected:
 public:
     virtual void release() = 0;
 
-	/**
-    * Initializes the engine.
-    * @param context RtcEngine context.
+	/** Initializes the engine.
+     
+    @param context RtcEngine context.
     @return
-
      - 0: Success.
      - < 0: Failure.
     */
@@ -40,7 +39,7 @@ public:
 
     /** Retrieves the SDK version number.
     * @param build Build number.
-    * @return The current SDK version in the string format. For example, 2.3.0
+    * @return The current SDK version in the string format. For example, 2.4.0
     */
     virtual const char* getVersion(int* build) = 0;
 
@@ -51,11 +50,10 @@ public:
 } //namespace base
 } // namespace agora
 
-/**
-* Gets the SDK version number.
-* @param build Build number of the Agora SDK.
+/** Gets the SDK version number.
+ 
+ @param build Build number of the Agora SDK.
  @return
-
  - 0: Success.
  - < 0: Failure.
 */
