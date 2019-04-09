@@ -316,7 +316,8 @@ bool AgoraVideoSource::joinChannel(const char* key, const char* name, const char
 void AgoraVideoSource::exit(bool notifySink)
 {
     {
-        std::lock_guard<std::mutex> lock(m_ipcSenderMutex);
+        // fix CSD-8509
+        //std::lock_guard<std::mutex> lock(m_ipcSenderMutex);
         m_ipcSender.reset();
     }
     m_ipc->disconnect();
