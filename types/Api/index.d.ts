@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { IRenderer } from '../Renderer';
-import { NodeRtcEngine, RtcStats, LocalVideoStats, RemoteVideoStats, RemoteVideoState, AgoraNetworkQuality, ClientRoleType, StreamType, ConnectionState, ConnectionChangeReason, MediaDeviceType, VIDEO_PROFILE_TYPE, TranscodingConfig, InjectStreamConfig } from './native_type';
+import { NodeRtcEngine, RtcStats, LocalVideoStats, RemoteVideoStats, RemoteAudioStats, RemoteVideoState, AgoraNetworkQuality, ClientRoleType, StreamType, ConnectionState, ConnectionChangeReason, MediaDeviceType, VIDEO_PROFILE_TYPE, TranscodingConfig, InjectStreamConfig } from './native_type';
 import { EventEmitter } from 'events';
 /**
  * @class AgoraRtcEngine
@@ -76,6 +76,11 @@ declare class AgoraRtcEngine extends EventEmitter {
      * @returns {string} error description
      */
     getErrorDescription(errorCode: number): string;
+    /**
+     * @description Get current connection state
+     * @returns {ConnectionState} connect state enum
+     */
+    getConnectionState(): ConnectionState;
     /**
      *
      * @description Join channel with token, channel, channel_info and uid
@@ -1105,6 +1110,7 @@ declare interface AgoraRtcEngine {
     on(evt: 'rtcStats', cb: (stats: RtcStats) => void): this;
     on(evt: 'localVideoStats', cb: (stats: LocalVideoStats) => void): this;
     on(evt: 'remoteVideoStats', cb: (stats: RemoteVideoStats) => void): this;
+    on(evt: 'remoteAudioStats', cb: (stats: RemoteAudioStats) => void): this;
     on(evt: 'audioDeviceStateChanged', cb: (deviceId: string, deviceType: number, deviceState: number) => void): this;
     on(evt: 'audioMixingFinished', cb: () => void): this;
     on(evt: 'remoteAudioMixingBegin', cb: () => void): this;
