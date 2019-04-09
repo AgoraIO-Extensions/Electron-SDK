@@ -467,6 +467,13 @@ class AgoraRtcEngine extends events_1.EventEmitter {
         return this.rtcEngine.getErrorDescription(errorCode);
     }
     /**
+     * @description Get current connection state
+     * @returns {ConnectionState} connect state enum
+     */
+    getConnectionState() {
+        return this.rtcEngine.getConnectionState();
+    }
+    /**
      *
      * @description Join channel with token, channel, channel_info and uid
      * @requires channel
