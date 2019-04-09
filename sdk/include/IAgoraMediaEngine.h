@@ -9,8 +9,7 @@ typedef unsigned __int64 uint64_t;
 
 namespace agora {
 namespace media {
-/** @deprecated
- Type of audio device.
+/** **DEPRECATED** Type of audio device.
  */
 enum MEDIA_SOURCE_TYPE {
   /** Audio playback device.
@@ -40,7 +39,7 @@ class IAudioFrameObserver {
      - 2: Stereo (the data is interleaved)
      */
     int channels;  //number of channels (data are interleaved if stereo)
-    /** Sampling rate per second for the audio frame: 8000, 16000, 32000, 44100, or 48000 bps.
+    /** Audio frame sample rate: 8000, 16000, 32000, 44100, or 48000 Hz.
      */
     int samplesPerSec;  //sampling rate
     /** Audio frame data buffer. The valid data length is: samples &times; channels &times; bytesPerSample
@@ -53,17 +52,19 @@ class IAudioFrameObserver {
   };
 
  public:
-  /** Callback occuring once every 10 ms. Retrieves the recorded audio frame.
+  /** Retrieves the recorded audio frame.
+
+  The SDK triggers this callback once every 10 ms.
 
    @param audioFrame Pointer to AudioFrame.
    @return
    - true: Valid buffer in AudioFrame, and the recorded audio frame is sent out.
-   - false: Invalid buffer in AudioFrame, and the recorded audio frame ise discarded.
+   - false: Invalid buffer in AudioFrame, and the recorded audio frame is discarded.
    */
   virtual bool onRecordAudioFrame(AudioFrame& audioFrame) = 0;
-  /** Callback occuring once every 10 ms. Retrieves the audio playback frame.
+  /** Retrieves the audio playback frame.
 
-   This callback returns after \ref agora::rtc::RtcEngineParameters::playEffect "playEffect" is successfully called.
+   The SDK triggers this callback once every 10 ms after you call the \ref agora::rtc::RtcEngineParameters::playEffect "playEffect" method.
 
    @param audioFrame Pointer to AudioFrame.
    @return
@@ -71,9 +72,11 @@ class IAudioFrameObserver {
    - false: Invalid buffer in AudioFrame, and the audio playback frame is discarded.
    */
   virtual bool onPlaybackAudioFrame(AudioFrame& audioFrame) = 0;
-  /** Callback occuring every 10 ms. Retrieves the mixed recorded and playback audio frame.
+  /** Retrieves the mixed recorded and playback audio frame.
 
-   @note This method only returns the single-channel data.
+  The SDK triggers this callback once every 10 ms.
+
+   @note This callback only returns the single-channel data.
 
    @param audioFrame Pointer to AudioFrame.
    @return
@@ -81,7 +84,9 @@ class IAudioFrameObserver {
    - false: Invalid buffer in AudioFrame and the mixed recorded and playback audio frame is discarded.
    */
   virtual bool onMixedAudioFrame(AudioFrame& audioFrame) = 0;
-  /** Callback occuring once every 10 ms. Retrieves the audio frame of a specified user before mixing.
+  /** Retrieves the audio frame of a specified user before mixing.
+
+  The SDK triggers this callback once every 10 ms.
 
   @param uid The user ID
   @param audioFrame Pointer to AudioFrame.
@@ -229,15 +234,13 @@ class IVideoFrame {
    */
   virtual bool IsZeroSize() const = 0;
 };
-/** @deprecated
- */
+/** **DEPRECATED** */
 class IExternalVideoRenderCallback {
  public:
   virtual void onViewSizeChanged(int width, int height) = 0;
   virtual void onViewDestroyed() = 0;
 };
-/** @deprecated
- */
+/** **DEPRECATED** */
 struct ExternalVideoRenerContext {
   IExternalVideoRenderCallback* renderCallback;
   /** Video display window.
@@ -370,16 +373,15 @@ class IMediaEngine {
    - < 0: Failure.
    */
   virtual int registerVideoFrameObserver(IVideoFrameObserver* observer) = 0;
-  /** @deprecated
-   */
+  /** **DEPRECATED** */
   virtual int registerVideoRenderFactory(IExternalVideoRenderFactory* factory) = 0;
-  /** @deprecated Use \ref agora::media::IMediaEngine::pushAudioFrame(IAudioFrameObserver::AudioFrame* frame) "pushAudioFrame(IAudioFrameObserver::AudioFrame* frame)" instead.
+  /** **DEPRECATED** Use \ref agora::media::IMediaEngine::pushAudioFrame(IAudioFrameObserver::AudioFrame* frame) "pushAudioFrame(IAudioFrameObserver::AudioFrame* frame)" instead.
    
    Pushes the external audio frame.
 
    @param type Type of audio capture device: #MEDIA_SOURCE_TYPE.
    @param frame Audio frame pointer: \ref IAudioFrameObserver::AudioFrame "AudioFrame".
-   @param wrap Whether to use the placeholder. Agora recommends setting the default value.
+   @param wrap Whether to use the placeholder. We recommend setting the default value.
    - true: Use.
    - false: (Default) Not use.
 
@@ -401,13 +403,13 @@ class IMediaEngine {
   virtual int pushAudioFrame(IAudioFrameObserver::AudioFrame* frame) = 0;
   /** Pulls the external audio frame for external audio playback.
 
-   The application pulls the mixed audio frame from the audio engine for external audio playback. Agora recommends using *pullAudioFrame* over \ref agora::media::IAudioFrameObserver::onPlaybackAudioFrame "onPlaybackAudioFrame".
+   The application pulls the mixed audio frame from the audio engine for external audio playback. We recommend using *pullAudioFrame* over \ref agora::media::IAudioFrameObserver::onPlaybackAudioFrame "onPlaybackAudioFrame".
    
    @note This method overrides the \ref agora::media::IMediaEngine::registerAudioFrameObserver "registerAudioFrameObserver" method. After calling *pullAudioFrame*, the application will not retrieve any audio frame from the \ref agora::media::IAudioFrameObserver::onPlaybackAudioFrame "onPlaybackAudioFrame" callback.
 
    Before calling this method:
    1. Call \ref agora::rtc::RtcEngineParameters::setExternalAudioSink "setExternalAudioSink" to inform the audio engine that the application will call *pullAudioFrame* to pull audio frames from the sink.
-   2. Call \ref agora::rtc::RtcEngineParameters::setPlaybackAudioFrameParameters "setPlaybackAudioFrameParameters" to set the parameters of the audio frame to be pulled, including the audio sampling rate and number of the audio channel.
+   2. Call \ref agora::rtc::RtcEngineParameters::setPlaybackAudioFrameParameters "setPlaybackAudioFrameParameters" to set the parameters of the audio frame to be pulled, including the audio sample rate and number of the audio channel.
 
    Differences between \ref agora::media::IAudioFrameObserver::onPlaybackAudioFrame "onPlaybackAudioFrame" and *pullAudioFrame*:
    - \ref agora::media::IAudioFrameObserver::onPlaybackAudioFrame "onPlaybackAudioFrame" sends audio frames to the application once every 10 ms. Any delay in processing the audio frames may result in audio jitter.
@@ -437,14 +439,14 @@ class IMediaEngine {
     virtual int setExternalVideoSource(bool enable, bool useTexture) = 0;
     /** Pushes the video frame using the \ref ExternalVideoFrame "ExternalVideoFrame" and passes the video frame to the Agora SDK.
 
-    @param frame Video frame to be pushed. See \ref ExternalVideoFrame "ExternalVideoFrame".
+     @param frame Video frame to be pushed. See \ref ExternalVideoFrame "ExternalVideoFrame".
 
-    @note This method supports pushing textured video frames only in the live-broadcast profile, not in the communication profile.
+     @note In the Communication profile, this method does not support video frames in the Texture format. 
 
-    @return
-    - 0: Success.
-    - < 0: Failure.
-    */
+     @return
+     - 0: Success.
+     - < 0: Failure.
+     */
     virtual int pushVideoFrame(ExternalVideoFrame *frame) = 0;
 };
 
