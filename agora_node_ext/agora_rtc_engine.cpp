@@ -201,6 +201,7 @@ namespace agora {
                 
                 //2.3.3 apis
                 PROPERTY_METHOD_DEFINE(getConnectionState);
+                PROPERTY_METHOD_DEFINE(release);
             EN_PROPERTY_DEFINE()
             module->Set(String::NewFromUtf8(isolate, "NodeRtcEngine"), tpl->GetFunction());
         }
@@ -251,11 +252,13 @@ namespace agora {
         {
             LOG_ENTER;
             if (m_audioVdm) {
-                delete[] m_audioVdm;
+                m_audioVdm->release();
+                //delete[] m_audioVdm;
                 m_audioVdm = nullptr;
             }
             if (m_videoVdm) {
-                delete[] m_videoVdm;
+                m_videoVdm->release();
+                //delete[] m_videoVdm;
                 m_videoVdm = nullptr;
             }
             if (m_engine) {
@@ -263,6 +266,8 @@ namespace agora {
                 m_engine = nullptr;
             }
             m_videoSourceSink.reset(nullptr);
+            m_externalVideoRenderFactory.reset(nullptr);
+            m_eventHandler.reset(nullptr);
             LOG_LEAVE;
         }
 
@@ -2140,6 +2145,41 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 CONNECTION_STATE_TYPE type = pEngine->m_engine->getConnectionState();
+                napi_set_int_result(args, type);
+            }while (false);
+            napi_set_int_result(args, status);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, release)
+        {
+            LOG_ENTER;
+            napi_status status = napi_invalid_arg;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                
+                if (pEngine->m_audioVdm) {
+                    pEngine->m_audioVdm->release();
+                    //delete[] m_audioVdm;
+                    pEngine->m_audioVdm = nullptr;
+                }
+                if (pEngine->m_videoVdm) {
+                    pEngine->m_videoVdm->release();
+                    //delete[] m_videoVdm;
+                    pEngine->m_videoVdm = nullptr;
+                }
+                if (pEngine->m_engine) {
+                    pEngine->m_engine->release();
+                    pEngine->m_engine = nullptr;
+                }
+                if (pEngine->m_videoSourceSink.get()) {
+                    pEngine->m_videoSourceSink->release();
+                }
+                pEngine->m_videoSourceSink.reset(nullptr);
+                pEngine->m_externalVideoRenderFactory.reset(nullptr);
+                
                 napi_set_int_result(args, status);
             }while (false);
             napi_set_int_result(args, status);
