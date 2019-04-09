@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>TranscodingUser | Agora-Electron-SDK</title>
+	<title>RemoteAudioStats | Agora-Electron-SDK</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../index.html">Globals</a>
 				</li>
 				<li>
-					<a href="transcodinguser.html">TranscodingUser</a>
+					<a href="remoteaudiostats.html">RemoteAudioStats</a>
 				</li>
 			</ul>
-			<h1>Interface TranscodingUser</h1>
+			<h1>Interface RemoteAudioStats</h1>
 		</div>
 	</div>
 </header>
@@ -70,7 +70,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">TranscodingUser</span>
+						<span class="target">RemoteAudioStats</span>
 					</li>
 				</ul>
 			</section>
@@ -81,14 +81,11 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="transcodinguser.html#alpha" class="tsd-kind-icon">alpha</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="transcodinguser.html#audiochannel" class="tsd-kind-icon">audio<wbr>Channel</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="transcodinguser.html#height" class="tsd-kind-icon">height</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="transcodinguser.html#uid" class="tsd-kind-icon">uid</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="transcodinguser.html#width" class="tsd-kind-icon">width</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="transcodinguser.html#x" class="tsd-kind-icon">x</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="transcodinguser.html#y" class="tsd-kind-icon">y</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="transcodinguser.html#zorder" class="tsd-kind-icon">z<wbr>Order</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="remoteaudiostats.html#audiolossrate" class="tsd-kind-icon">audio<wbr>Loss<wbr>Rate</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="remoteaudiostats.html#jitterbufferdelay" class="tsd-kind-icon">jitter<wbr>Buffer<wbr>Delay</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="remoteaudiostats.html#networktransportdelay" class="tsd-kind-icon">network<wbr>Transport<wbr>Delay</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="remoteaudiostats.html#quality" class="tsd-kind-icon">quality</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="remoteaudiostats.html#uid" class="tsd-kind-icon">uid</a></li>
 							</ul>
 						</section>
 					</div>
@@ -97,54 +94,62 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="alpha" class="tsd-anchor"></a>
-					<h3>alpha</h3>
-					<div class="tsd-signature tsd-kind-icon">alpha<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="audiolossrate" class="tsd-anchor"></a>
+					<h3>audio<wbr>Loss<wbr>Rate</h3>
+					<div class="tsd-signature tsd-kind-icon">audio<wbr>Loss<wbr>Rate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron/blob/b8ad8f6/ts/Api/native_type.ts#L38">Api/native_type.ts:38</a></li>
+							<li>Defined in <a href="https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron/blob/b8ad8f6/ts/Api/native_type.ts#L186">Api/native_type.ts:186</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>(double) transparency alpha of the stream, [0,1]</p>
+							<p>Packet loss rate in the reported interval.</p>
 						</div>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="audiochannel" class="tsd-anchor"></a>
-					<h3>audio<wbr>Channel</h3>
-					<div class="tsd-signature tsd-kind-icon">audio<wbr>Channel<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="jitterbufferdelay" class="tsd-anchor"></a>
+					<h3>jitter<wbr>Buffer<wbr>Delay</h3>
+					<div class="tsd-signature tsd-kind-icon">jitter<wbr>Buffer<wbr>Delay<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron/blob/b8ad8f6/ts/Api/native_type.ts#L47">Api/native_type.ts:47</a></li>
+							<li>Defined in <a href="https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron/blob/b8ad8f6/ts/Api/native_type.ts#L184">Api/native_type.ts:184</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<ul>
-								<li>0: (Default) Supports dual channels at most, depending on the upstream of the broadcaster.</li>
-								<li>1: The audio stream of the broadcaster uses the FL audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.</li>
-								<li>2: The audio stream of the broadcaster uses the FC audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.</li>
-								<li>3: The audio stream of the broadcaster uses the FR audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.</li>
-								<li>4: The audio stream of the broadcaster uses the BL audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.</li>
-								<li>5: The audio stream of the broadcaster uses the BR audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.</li>
-							</ul>
+							<p>Jitter buffer delay at the receiver.</p>
 						</div>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="height" class="tsd-anchor"></a>
-					<h3>height</h3>
-					<div class="tsd-signature tsd-kind-icon">height<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="networktransportdelay" class="tsd-anchor"></a>
+					<h3>network<wbr>Transport<wbr>Delay</h3>
+					<div class="tsd-signature tsd-kind-icon">network<wbr>Transport<wbr>Delay<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron/blob/b8ad8f6/ts/Api/native_type.ts#L34">Api/native_type.ts:34</a></li>
+							<li>Defined in <a href="https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron/blob/b8ad8f6/ts/Api/native_type.ts#L182">Api/native_type.ts:182</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>selected height of stream</p>
+							<p>Network delay from the sender to the receiver.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="quality" class="tsd-anchor"></a>
+					<h3>quality</h3>
+					<div class="tsd-signature tsd-kind-icon">quality<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron/blob/b8ad8f6/ts/Api/native_type.ts#L180">Api/native_type.ts:180</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Audio quality received by the user: #QUALITY_TYPE.</p>
 						</div>
 					</div>
 				</section>
@@ -154,72 +159,12 @@
 					<div class="tsd-signature tsd-kind-icon">uid<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron/blob/b8ad8f6/ts/Api/native_type.ts#L26">Api/native_type.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron/blob/b8ad8f6/ts/Api/native_type.ts#L178">Api/native_type.ts:178</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>stream uid</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="width" class="tsd-anchor"></a>
-					<h3>width</h3>
-					<div class="tsd-signature tsd-kind-icon">width<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron/blob/b8ad8f6/ts/Api/native_type.ts#L32">Api/native_type.ts:32</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>selected width of stream</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="x" class="tsd-anchor"></a>
-					<h3>x</h3>
-					<div class="tsd-signature tsd-kind-icon">x<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron/blob/b8ad8f6/ts/Api/native_type.ts#L28">Api/native_type.ts:28</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>x start positon of stream</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="y" class="tsd-anchor"></a>
-					<h3>y</h3>
-					<div class="tsd-signature tsd-kind-icon">y<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron/blob/b8ad8f6/ts/Api/native_type.ts#L30">Api/native_type.ts:30</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>y start positon of stream</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="zorder" class="tsd-anchor"></a>
-					<h3>z<wbr>Order</h3>
-					<div class="tsd-signature tsd-kind-icon">z<wbr>Order<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron/blob/b8ad8f6/ts/Api/native_type.ts#L36">Api/native_type.ts:36</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>zorder of the stream, [1,100]</p>
+							<p>User ID of the remote user sending the audio streams.</p>
 						</div>
 					</div>
 				</section>
@@ -259,9 +204,30 @@
 					<li class=" tsd-kind-interface">
 						<a href="nodertcengine.html" class="tsd-kind-icon">Node<wbr>Rtc<wbr>Engine</a>
 					</li>
-					<li class=" tsd-kind-interface">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-interface">
 						<a href="remoteaudiostats.html" class="tsd-kind-icon">Remote<wbr>Audio<wbr>Stats</a>
+						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="remoteaudiostats.html#audiolossrate" class="tsd-kind-icon">audio<wbr>Loss<wbr>Rate</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="remoteaudiostats.html#jitterbufferdelay" class="tsd-kind-icon">jitter<wbr>Buffer<wbr>Delay</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="remoteaudiostats.html#networktransportdelay" class="tsd-kind-icon">network<wbr>Transport<wbr>Delay</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="remoteaudiostats.html#quality" class="tsd-kind-icon">quality</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface">
+								<a href="remoteaudiostats.html#uid" class="tsd-kind-icon">uid</a>
+							</li>
+						</ul>
 					</li>
+				</ul>
+				<ul class="after-current">
 					<li class=" tsd-kind-interface">
 						<a href="remotevideostats.html" class="tsd-kind-icon">Remote<wbr>Video<wbr>Stats</a>
 					</li>
@@ -271,39 +237,9 @@
 					<li class=" tsd-kind-interface">
 						<a href="transcodingconfig.html" class="tsd-kind-icon">Transcoding<wbr>Config</a>
 					</li>
-				</ul>
-				<ul class="current">
-					<li class="current tsd-kind-interface">
+					<li class=" tsd-kind-interface">
 						<a href="transcodinguser.html" class="tsd-kind-icon">Transcoding<wbr>User</a>
-						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="transcodinguser.html#alpha" class="tsd-kind-icon">alpha</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="transcodinguser.html#audiochannel" class="tsd-kind-icon">audio<wbr>Channel</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="transcodinguser.html#height" class="tsd-kind-icon">height</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="transcodinguser.html#uid" class="tsd-kind-icon">uid</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="transcodinguser.html#width" class="tsd-kind-icon">width</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="transcodinguser.html#x" class="tsd-kind-icon">x</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="transcodinguser.html#y" class="tsd-kind-icon">y</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="transcodinguser.html#zorder" class="tsd-kind-icon">z<wbr>Order</a>
-							</li>
-						</ul>
 					</li>
-				</ul>
-				<ul class="after-current">
 					<li class=" tsd-kind-type-alias">
 						<a href="../index.html#agoranetworkquality" class="tsd-kind-icon">Agora<wbr>Network<wbr>Quality</a>
 					</li>
