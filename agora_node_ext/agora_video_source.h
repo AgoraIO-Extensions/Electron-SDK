@@ -14,15 +14,10 @@
 #include "IAgoraRtcEngine.h"
 #include "node_error.h"
 #include <string>
+#include "video_source_ipc.h"
 
 namespace agora{
     namespace rtc{
-
-#if defined(__APPLE__)
-		typedef unsigned int WindowIDType;
-#elif defined(_WIN32)
-		typedef HWND WindowIDType;
-#endif
         /**
          * Video source need join the same channel, this class used to monitor video source's event.
          * More event maybe needed in future.
@@ -100,7 +95,7 @@ namespace agora{
              * @param rect : the shared area
              * @param bitrate : bitrate of video
              */
-            virtual node_error captureScreen(agora::rtc::WindowIDType id, int captureFreq, agora::rtc::Rect* rect, int bitrate) = 0;
+            virtual node_error captureScreen(agora::rtc::IRtcEngine::WindowIDType id, int captureFreq, agora::rtc::Rect* rect, int bitrate) = 0;
 
             /**
              * To update shared window area
@@ -155,6 +150,26 @@ namespace agora{
             * To set parameters for video source.
             */
             virtual void setParameters(const char* parameters) = 0;
+
+            /**
+             * set screenshare content hint
+             */
+            virtual node_error setScreenCaptureContentHint(VideoContentHint contentHint) = 0;
+            
+            /**
+             * start screen capture by screen rect
+             */
+            virtual node_error startScreenCaptureByScreen(ScreenIDType screenId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams) = 0;
+            
+            /**
+             * start screen capture by windowId
+             */
+            virtual node_error startScreenCaptureByWindow(agora::rtc::IRtcEngine::WindowIDType windowId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams) = 0;
+
+            /**
+             * start screen capture by windowId
+             */
+            virtual node_error updateScreenCaptureParameters(const agora::rtc::ScreenCaptureParameters & captureParams) = 0;
         };
 
         /**
