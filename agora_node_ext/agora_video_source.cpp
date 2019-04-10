@@ -12,7 +12,6 @@
 #include "node_log.h"
 #include "node_async_queue.h"
 #include "node_video_stream_channel.h"
-#include "video_source_ipc.h"
 #include "node_process.h"
 #include "node_event.h"
 #include "node_video_render.h"
@@ -56,7 +55,7 @@ namespace agora{
             virtual node_error setVideoSourceChannelProfile(agora::rtc::CHANNEL_PROFILE_TYPE profile, const char* permissionKey) override;
             virtual node_error setVideoSourceVideoProfile(agora::rtc::VIDEO_PROFILE_TYPE profile, bool swapWidthAndHeight) override;
             virtual void onMessage(unsigned int msg, char* payload, unsigned int len) override;
-            virtual node_error captureScreen(agora::rtc::WindowIDType id, int captureFreq, agora::rtc::Rect* rect, int bitrate) override;
+            virtual node_error captureScreen(agora::rtc::IRtcEngine::WindowIDType id, int captureFreq, agora::rtc::Rect* rect, int bitrate) override;
             virtual node_error updateScreenCapture(agora::rtc::Rect* rect) override;
             virtual node_error stopCaptureScreen() override;
             virtual node_error startPreview() override;
@@ -64,6 +63,10 @@ namespace agora{
             virtual node_error enableWebSdkInteroperability(bool enabled) override;
             virtual node_error enableDualStreamMode(bool enabled) override;
             virtual node_error setLogFile(const char* file) override;
+            virtual node_error setScreenCaptureContentHint(VideoContentHint contentHint) override;
+            virtual node_error startScreenCaptureByScreen(ScreenIDType screenId, const agora::rtc::Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams) override;
+            virtual node_error startScreenCaptureByWindow(agora::rtc::IRtcEngine::WindowIDType windowId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams) override;
+            virtual node_error updateScreenCaptureParameters(const agora::rtc::ScreenCaptureParameters & captureParams) override;
             virtual void setParameters(const char* parameters) override;
         private:
             void msgThread();
@@ -370,7 +373,7 @@ namespace agora{
             }
         }
 
-        node_error AgoraVideoSourceSink::captureScreen(agora::rtc::WindowIDType id, int captureFreq, agora::rtc::Rect* rect, int bitrate)
+        node_error AgoraVideoSourceSink::captureScreen(agora::rtc::IRtcEngine::WindowIDType id, int captureFreq, agora::rtc::Rect* rect, int bitrate)
         {
             if (m_initialized && m_peerJoined){
                 CaptureScreenCmd cmd;
@@ -399,6 +402,46 @@ namespace agora{
         {
             if (m_initialized && m_peerJoined){
                 return m_ipcMsg->sendMessage(AGORA_IPC_STOP_CAPTURE_SCREEN, nullptr, 0) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::setScreenCaptureContentHint(VideoContentHint contentHint)
+        {
+            if (m_initialized && m_peerJoined){
+                return m_ipcMsg->sendMessage(AGORA_IPC_SET_SCREEN_CAPTURE_CONTENT_HINT, (char*)&contentHint, sizeof(contentHint)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::startScreenCaptureByScreen(ScreenIDType screenId, const agora::rtc::Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams)
+        {
+            if (m_initialized && m_peerJoined){
+                CaptureScreenByDisplayCmd cmd;
+
+                cmd.regionRect = regionRect;
+                cmd.captureParams = captureParams;
+                return m_ipcMsg->sendMessage(AGORA_IPC_START_CAPTURE_BY_DISPLAY, (char*)&cmd, sizeof(cmd)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::startScreenCaptureByWindow(agora::rtc::IRtcEngine::WindowIDType windowId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams)
+        {
+            if (m_initialized && m_peerJoined){
+                CaptureScreenByWinCmd cmd;
+                cmd.windowId = windowId;
+                cmd.regionRect = regionRect;
+                cmd.captureParams = captureParams;
+                return m_ipcMsg->sendMessage(AGORA_IPC_START_CAPTURE_BY_WINDOW_ID, (char*)&cmd, sizeof(cmd)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::updateScreenCaptureParameters(const agora::rtc::ScreenCaptureParameters & captureParams)
+        {
+            if (m_initialized && m_peerJoined){
+                return m_ipcMsg->sendMessage(AGORA_IPC_UPDATE_SCREEN_CAPTURE_PARAMS, (char*)&captureParams, sizeof(captureParams)) ? node_ok : node_generic_error;
             }
             return node_status_error;
         }
