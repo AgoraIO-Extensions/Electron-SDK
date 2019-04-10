@@ -100,22 +100,6 @@ namespace agora {
             NAPI_API(setLiveTranscoding);
             NAPI_API(addInjectStreamUrl);
             NAPI_API(removeInjectStreamUrl);
-
-            //2.4.0 apis
-            NAPI_API(setBeautyEffectOptions);
-            NAPI_API(setLocalVoiceChanger);
-            NAPI_API(setLocalVoiceReverbPreset);
-            NAPI_API(enableSoundPositionIndication);
-            NAPI_API(setRemoteVoicePosition);
-            NAPI_API(startLastmileProbeTest);
-            NAPI_API(stopLastmileProbeTest);
-            NAPI_API(setRemoteUserPriority);
-            NAPI_API(startEchoTestWithInterval);
-            NAPI_API(startAudioDeviceLoopbackTest);
-            NAPI_API(stopAudioDeviceLoopbackTest);
-            NAPI_API(setCameraCapturerConfiguration);
-            NAPI_API(setLogFileSize);
-
             
             /*
             * Wrapper for RtcEngineParameter API
@@ -274,6 +258,28 @@ namespace agora {
              */
             NAPI_API(getConnectionState);
             NAPI_API(release);
+
+
+            /**
+             * 2.4.0 apis
+             */
+            NAPI_API(setBeautyEffectOptions);
+            NAPI_API(setLocalVoiceChanger);
+            NAPI_API(setLocalVoiceReverbPreset);
+            NAPI_API(enableSoundPositionIndication);
+            NAPI_API(setRemoteVoicePosition);
+            NAPI_API(startLastmileProbeTest);
+            NAPI_API(stopLastmileProbeTest);
+            NAPI_API(setRemoteUserPriority);
+            NAPI_API(startEchoTestWithInterval);
+            NAPI_API(startAudioDeviceLoopbackTest);
+            NAPI_API(stopAudioDeviceLoopbackTest);
+            NAPI_API(setCameraCapturerConfiguration);
+            NAPI_API(setLogFileSize);
+            NAPI_API(videosourceStartScreenCaptureByScreen);
+            NAPI_API(videosourceStartScreenCaptureByWindow);
+            NAPI_API(videosourceUpdateScreenCaptureParameters);
+            NAPI_API(videosourceSetScreenCaptureContentHint);
 
         public:
             Isolate* getIsolate() { return m_isolate; }

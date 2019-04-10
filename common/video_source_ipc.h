@@ -22,6 +22,13 @@
 #include <thread>
 #include <memory>
 
+
+#if defined(__APPLE__)
+		typedef unsigned int ScreenIDType;
+#elif defined(_WIN32)
+		typedef Rectangle ScreenIDType;
+#endif
+
 /**
  * AgoraIpcMsg define the message type transferred between node ADDON and vidoe source process
  */
@@ -70,6 +77,10 @@ enum AgoraIpcMsg
     /** Node ADDON ==> video source, to enable dual stream with the Agora Web SDK*/
     AGORA_IPC_ENABLE_DUAL_STREAM_MODE,
     AGORA_IPC_SET_LOGFILE,
+    AGORA_IPC_START_CAPTURE_BY_DISPLAY,
+    AGORA_IPC_START_CAPTURE_BY_WINDOW_ID,
+    AGORA_IPC_SET_SCREEN_CAPTURE_CONTENT_HINT,
+    AGORA_IPC_UPDATE_SCREEN_CAPTURE_PARAMS,
     /** Node ADDON ==> video source, to set rtc parameters*/
     AGORA_IPC_SET_PARAMETER
 };
@@ -94,6 +105,20 @@ struct CaptureScreenCmd
         , rect()
         , bitrate()
     {}
+};
+
+struct CaptureScreenByDisplayCmd
+{
+    ScreenIDType screenId;
+    agora::rtc::Rectangle regionRect;
+    agora::rtc::ScreenCaptureParameters captureParams;
+};
+
+struct CaptureScreenByWinCmd
+{
+    agora::rtc::IRtcEngine::WindowIDType windowId;
+    agora::rtc::Rectangle regionRect;
+    agora::rtc::ScreenCaptureParameters captureParams;
 };
 
 #define MAX_TOKEN_LEN 128
