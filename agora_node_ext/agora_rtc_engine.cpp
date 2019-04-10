@@ -217,6 +217,10 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(stopAudioDeviceLoopbackTest);
                 PROPERTY_METHOD_DEFINE(setCameraCapturerConfiguration);
                 PROPERTY_METHOD_DEFINE(setLogFileSize);
+                PROPERTY_METHOD_DEFINE(videosourceStartScreenCaptureByScreen);
+                PROPERTY_METHOD_DEFINE(videosourceStartScreenCaptureByWindow);
+                PROPERTY_METHOD_DEFINE(videosourceUpdateScreenCaptureParameters);
+                PROPERTY_METHOD_DEFINE(videosourceSetScreenCaptureContentHint);
             EN_PROPERTY_DEFINE()
             module->Set(String::NewFromUtf8(isolate, "NodeRtcEngine"), tpl->GetFunction());
         }
@@ -1978,6 +1982,229 @@ namespace agora {
             LOG_LEAVE;
         }
 
+
+        NAPI_API_DEFINE(NodeRtcEngine, videosourceStartScreenCaptureByScreen)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do{
+                Isolate *isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                // screenId
+                ScreenIDType screen;
+#ifdef _WIN32
+                if(!args[0]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+                Local<Object> screenRectObj = args[0]->ToObject();
+
+                Rectangle screenRect;
+                status = napi_get_object_property_int32_(isolate, screenRectObj, "x", screenRect.x);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, screenRectObj, "y", screenRect.y);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, screenRectObj, "width", screenRect.width);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, screenRectObj, "height", screenRect.height);
+                CHECK_NAPI_STATUS(pEngine, status);
+#elif defined(__APPLE__)
+                unsigned int displayId;
+                screen = napi_get_value_uint32_(args[0], displayId);
+                CHECK_NAPI_STATUS(pEngine, status);
+#endif   
+
+                // regionRect
+                if(!args[1]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+                Local<Object> obj = args[1]->ToObject();
+
+                Rectangle regionRect;
+                status = napi_get_object_property_int32_(isolate, obj, "x", regionRect.x);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "y", regionRect.y);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "width", regionRect.width);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "height", regionRect.height);
+                CHECK_NAPI_STATUS(pEngine, status);
+                
+                // capture parameters
+                if(!args[2]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+                obj = args[2]->ToObject();
+                ScreenCaptureParameters captureParams;
+                VideoDimensions dimensions;
+                status = napi_get_object_property_int32_(isolate, obj, "width", dimensions.width);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "height", dimensions.height);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "frameRate", captureParams.frameRate);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "bitrate", captureParams.bitrate);
+                CHECK_NAPI_STATUS(pEngine, status);
+                captureParams.dimensions = dimensions;
+
+                if (pEngine->m_videoSourceSink.get())
+                    pEngine->m_videoSourceSink->startScreenCaptureByScreen(screen, regionRect, captureParams);
+                napi_set_int_result(args, 0);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, videosourceStartScreenCaptureByWindow)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do{
+                Isolate *isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                agora::rtc::IRtcEngine::WindowIDType windowId;
+                // screenId
+#if defined(__APPLE__)
+                status = napi_get_value_uint32_(args[0], windowId);
+                CHECK_NAPI_STATUS(pEngine, status);
+#elif defined(_WIN32)
+#if defined(_WIN64)
+                int64_t wid;
+                status = napi_get_value_int64_(args[0], wid);
+#else
+                uint32_t wid;
+                status = napi_get_value_uint32_(args[0], wid);
+#endif
+
+                CHECK_NAPI_STATUS(pEngine, status);
+                windowId = (HWND)wid;
+#endif
+
+                // regionRect
+                if(!args[1]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+                Local<Object> obj = args[1]->ToObject();
+
+                Rectangle regionRect;
+                status = napi_get_object_property_int32_(isolate, obj, "x", regionRect.x);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "y", regionRect.y);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "width", regionRect.width);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "height", regionRect.height);
+                CHECK_NAPI_STATUS(pEngine, status);
+                
+                // capture parameters
+                if(!args[2]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+                obj = args[2]->ToObject();
+                ScreenCaptureParameters captureParams;
+                VideoDimensions dimensions;
+                status = napi_get_object_property_int32_(isolate, obj, "width", dimensions.width);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "height", dimensions.height);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "frameRate", captureParams.frameRate);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "bitrate", captureParams.bitrate);
+                CHECK_NAPI_STATUS(pEngine, status);
+                captureParams.dimensions = dimensions;
+
+                if (pEngine->m_videoSourceSink.get())
+                    pEngine->m_videoSourceSink->startScreenCaptureByWindow(windowId, regionRect, captureParams);
+                napi_set_int_result(args, 0);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, videosourceUpdateScreenCaptureParameters)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do{
+                Isolate *isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                // capture parameters
+                if(!args[0]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+                Local<Object> obj = args[0]->ToObject();
+                ScreenCaptureParameters captureParams;
+                VideoDimensions dimensions;
+                status = napi_get_object_property_int32_(isolate, obj, "width", dimensions.width);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "height", dimensions.height);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "frameRate", captureParams.frameRate);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "bitrate", captureParams.bitrate);
+                CHECK_NAPI_STATUS(pEngine, status);
+                captureParams.dimensions = dimensions;
+
+                if (pEngine->m_videoSourceSink.get())
+                    pEngine->m_videoSourceSink->updateScreenCaptureParameters(captureParams);
+                napi_set_int_result(args, 0);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, videosourceSetScreenCaptureContentHint)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do{
+                Isolate *isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                VideoContentHint hint;
+                int value = 0;
+                napi_get_value_int32_(args[0], value);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                switch(value) {
+                    case 0:
+                        hint = CONTENT_HINT_NONE;
+                        break;
+                    case 1:
+                        hint = CONTENT_HINT_MOTION;
+                        break;
+                    case 2:
+                        hint = CONTENT_HINT_DETAILS;
+                        break;
+                }
+
+                if (pEngine->m_videoSourceSink.get())
+                    pEngine->m_videoSourceSink->setScreenCaptureContentHint(hint);
+                napi_set_int_result(args, 0);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
 
         NAPI_API_DEFINE(NodeRtcEngine, leaveChannel)
         {

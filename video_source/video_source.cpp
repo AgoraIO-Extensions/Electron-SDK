@@ -275,7 +275,34 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
         rep->setParameters(cmd->parameters);
     }
     else if(msg == AGORA_IPC_UPDATE_CAPTURE_SCREEN) {
-        m_rtcEngine->updateScreenCaptureRegion((const agora::rtc::Rect *)payload);
+        if(payload) {
+            m_rtcEngine->updateScreenCaptureRegion((const agora::rtc::Rect *)payload);
+        }
+    }
+    else if(msg == AGORA_IPC_START_CAPTURE_BY_DISPLAY) {
+        if (payload) {
+            CaptureScreenByDisplayCmd *cmd = (CaptureScreenByDisplayCmd*)payload;
+#if defined(_WIN32)
+            m_rtcEngine->startScreenCaptureByScreenRect(cmd->screenId, cmd->regionRect, cmd->captureParams);
+#elif defined(__APPLE__)
+            m_rtcEngine->startScreenCaptureByDisplayId(cmd->screenId, cmd->regionRect, cmd->captureParams);
+#endif
+        }
+    }
+    else if(msg == AGORA_IPC_START_CAPTURE_BY_WINDOW_ID) {
+        if (payload) {
+            CaptureScreenByWinCmd *cmd = (CaptureScreenByWinCmd*)payload;
+            m_rtcEngine->startScreenCaptureByWindowId(reinterpret_cast<agora::rtc::view_t>(cmd->windowId), cmd->regionRect, cmd->captureParams);
+        }
+    }
+    else if(msg == AGORA_IPC_UPDATE_SCREEN_CAPTURE_PARAMS) {
+        if (payload) {
+            agora::rtc::ScreenCaptureParameters* params = (agora::rtc::ScreenCaptureParameters*)payload;
+            m_rtcEngine->updateScreenCaptureParameters(*params);
+        }
+    }
+    else if(msg == AGORA_IPC_SET_SCREEN_CAPTURE_CONTENT_HINT) {
+        m_rtcEngine->setScreenCaptureContentHint((agora::rtc::VideoContentHint)*payload);
     }
 
     LOG_LEAVE;
