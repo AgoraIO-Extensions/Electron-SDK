@@ -1,8 +1,12 @@
-## Latest
+## 2.3.3
 #### :house: Internal
 * Add Missing Api
   * Add `getConnectionState` api
   * Add Event `remoteAudioStats`
+
+#### :bug: Bug Fix
+* fixed the problem that `setHighFps` not work
+* fixed the problem which will prevent videosource from releasing
 
 #### :memo: Documentation
 * Add doc and type for the missing api above.

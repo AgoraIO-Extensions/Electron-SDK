@@ -71,16 +71,17 @@ declare class AgoraRtcEngine extends EventEmitter {
      */
     getVersion(): string;
     /**
+     * @description get sdk connection state
+     * @returns {number} state
+     * https://docs.agora.io/en/Interactive%20Broadcast/API%20Reference/cpp/namespaceagora_1_1rtc.html#a430364c3f2cbf4419b898077cf6977f7
+     */
+    getConnectionState(): ConnectionState;
+    /**
      * @description Get error description of the given errorCode
      * @param {number} errorCode error code
      * @returns {string} error description
      */
     getErrorDescription(errorCode: number): string;
-    /**
-     * @description Get current connection state
-     * @returns {ConnectionState} connect state enum
-     */
-    getConnectionState(): ConnectionState;
     /**
      *
      * @description Join channel with token, channel, channel_info and uid
@@ -97,6 +98,11 @@ declare class AgoraRtcEngine extends EventEmitter {
      * @returns {number} 0 for success, <0 for failure
      */
     leaveChannel(): number;
+    /**
+     * @description release sdk instance
+     * @returns {number} 0 for success, <0 for failure
+     */
+    release(): number;
     /**
      * @description This method sets high-quality audio preferences. Call this method and set all the three
      * modes before joining a channel. Do NOT call this method again after joining a channel.
