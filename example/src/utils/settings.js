@@ -1,4 +1,4 @@
-export const APP_ID = '***REMOVED***'
+export const APP_ID = ''
 export const SHARE_ID = 2
 
 export const voiceReverbList = [
