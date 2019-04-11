@@ -44,6 +44,30 @@ var Priority;
     /** 100: (Default) The user's priority is normal. */
     Priority[Priority["PRIORITY_NORMAL"] = 100] = "PRIORITY_NORMAL";
 })(Priority = exports.Priority || (exports.Priority = {}));
+var AualityAdaptIndication;
+(function (AualityAdaptIndication) {
+    /** The quality of the local video stays the same. */
+    AualityAdaptIndication[AualityAdaptIndication["ADAPT_NONE"] = 0] = "ADAPT_NONE";
+    /** The quality improves because the network bandwidth increases. */
+    AualityAdaptIndication[AualityAdaptIndication["ADAPT_UP_BANDWIDTH"] = 1] = "ADAPT_UP_BANDWIDTH";
+    /** The quality worsens because the network bandwidth decreases. */
+    AualityAdaptIndication[AualityAdaptIndication["ADAPT_DOWN_BANDWIDTH"] = 2] = "ADAPT_DOWN_BANDWIDTH";
+})(AualityAdaptIndication = exports.AualityAdaptIndication || (exports.AualityAdaptIndication = {}));
+var DegradationPrefer;
+(function (DegradationPrefer) {
+    /** 0: (Default) Degrade the frame rate in order to maintain the video quality. */
+    DegradationPrefer[DegradationPrefer["MAINTAIN_QUALITY"] = 0] = "MAINTAIN_QUALITY";
+    /** 1: Degrade the video quality in order to maintain the frame rate. */
+    DegradationPrefer[DegradationPrefer["MAINTAIN_FRAMERATE"] = 1] = "MAINTAIN_FRAMERATE";
+    /** 2: (For future use) Maintain a balance between the frame rate and video quality. */
+    DegradationPrefer[DegradationPrefer["MAINTAIN_BALANCED"] = 2] = "MAINTAIN_BALANCED";
+})(DegradationPrefer = exports.DegradationPrefer || (exports.DegradationPrefer = {}));
+var OrientationMode;
+(function (OrientationMode) {
+    OrientationMode[OrientationMode["ORIENTATION_MODE_ADAPTIVE"] = 0] = "ORIENTATION_MODE_ADAPTIVE";
+    OrientationMode[OrientationMode["ORIENTATION_MODE_FIXED_LANDSCAPE"] = 1] = "ORIENTATION_MODE_FIXED_LANDSCAPE";
+    OrientationMode[OrientationMode["ORIENTATION_MODE_FIXED_PORTRAIT"] = 2] = "ORIENTATION_MODE_FIXED_PORTRAIT";
+})(OrientationMode = exports.OrientationMode || (exports.OrientationMode = {}));
 var CaptureOutPreference;
 (function (CaptureOutPreference) {
     /** 0: (Default) self-adapts the camera output parameters to the system performance and network conditions to balance CPU consumption and video preview quality.
@@ -56,6 +80,12 @@ var CaptureOutPreference;
      */
     CaptureOutPreference[CaptureOutPreference["CAPTURER_OUTPUT_PREFERENCE_PREVIEW"] = 2] = "CAPTURER_OUTPUT_PREFERENCE_PREVIEW";
 })(CaptureOutPreference = exports.CaptureOutPreference || (exports.CaptureOutPreference = {}));
+var VideoContentHint;
+(function (VideoContentHint) {
+    VideoContentHint[VideoContentHint["CONTENT_HINT_NONE"] = 0] = "CONTENT_HINT_NONE";
+    VideoContentHint[VideoContentHint["CONTENT_HINT_MOTION"] = 1] = "CONTENT_HINT_MOTION";
+    VideoContentHint[VideoContentHint["CONTENT_HINT_DETAILS"] = 2] = "CONTENT_HINT_DETAILS"; // Motionless content. Choose this option if you prefer sharpness or when you are sharing a picture, PowerPoint slide, or text.
+})(VideoContentHint = exports.VideoContentHint || (exports.VideoContentHint = {}));
 /** @deprecated Video profile. */
 var VIDEO_PROFILE_TYPE;
 (function (VIDEO_PROFILE_TYPE) {

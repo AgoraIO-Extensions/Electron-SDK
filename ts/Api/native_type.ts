@@ -206,9 +206,48 @@ export interface RtcStats {
   cpuTotalUsage: number;
 }
 
+export enum AualityAdaptIndication {
+  /** The quality of the local video stays the same. */
+  ADAPT_NONE = 0,
+  /** The quality improves because the network bandwidth increases. */
+  ADAPT_UP_BANDWIDTH = 1,
+  /** The quality worsens because the network bandwidth decreases. */
+  ADAPT_DOWN_BANDWIDTH = 2,
+}
+
 export interface LocalVideoStats {
   sentBitrate: number;
   sentFrameRate: number;
+  targetBitrate: number;
+  targetFrameRate: number;
+  qualityAdaptIndication: AualityAdaptIndication;
+}
+
+export interface VideoEncoderConfiguration {
+  width: number;
+  height: number;
+  frameRate: number; // we do not recommend setting this to a value greater than 30
+  minFrameRate: number; //  The minimum frame rate of the video. The default value is -1.
+  bitrate: number; // 0 - standard(recommended), 1 - compatible
+  minBitrate: number; // by default -1, changing this value is NOT recommended
+  orientationMode: OrientationMode;
+  degradationPrefer: DegradationPrefer;
+}
+
+export enum DegradationPrefer {
+  /** 0: (Default) Degrade the frame rate in order to maintain the video quality. */
+  MAINTAIN_QUALITY = 0,
+  /** 1: Degrade the video quality in order to maintain the frame rate. */
+  MAINTAIN_FRAMERATE = 1,
+  /** 2: (For future use) Maintain a balance between the frame rate and video quality. */
+  MAINTAIN_BALANCED = 2,
+}
+
+
+export enum OrientationMode  {
+  ORIENTATION_MODE_ADAPTIVE = 0, // 0: (Default) Adaptive mode.
+  ORIENTATION_MODE_FIXED_LANDSCAPE = 1, // 1: Landscape mode
+  ORIENTATION_MODE_FIXED_PORTRAIT = 2, // 2: Portrait mode.
 }
 
 export interface RemoteVideoStats {
@@ -238,6 +277,34 @@ export enum CaptureOutPreference {
 
 export interface CameraCapturerConfiguration {
   preference: CaptureOutPreference;
+}
+
+export interface Rectangle {
+  x: number; // The horizontal offset from the top-left corner.
+  y: number; // The vertical offset from the top-left corner.
+  width: number; // The width of the region.
+  height: number; // The height of the region.
+}
+
+export type ScreenSymbol = MacScreenSymbol | WindowsScreenSymbol;
+
+export type MacScreenSymbol = number;
+
+export type WindowsScreenSymbol = Rectangle;
+
+export type CaptureRect = Rectangle;
+
+export interface CaptureParam {
+  width: number; // Width (pixels) of the video
+  height: number; // Height (pixels) of the video
+  frameRate: number; // The frame rate (fps) of the shared region. The default value is 5. We do not recommend setting this to a value greater than 15.
+  bitrate: number; //  The bitrate (Kbps) of the shared region. The default value is 0 (the SDK works out a bitrate according to the dimensions of the current screen).
+}
+
+export enum VideoContentHint {
+  CONTENT_HINT_NONE = 0, // (Default) No content hint
+  CONTENT_HINT_MOTION = 1, // Motion-intensive content. Choose this option if you prefer smoothness or when you are sharing a video clip, movie, or video game.
+  CONTENT_HINT_DETAILS = 2 // Motionless content. Choose this option if you prefer sharpness or when you are sharing a picture, PowerPoint slide, or text.
 }
 
 export interface RemoteAudioStats {
@@ -483,12 +550,7 @@ export interface NodeRtcEngine {
   ): number;
   setCameraCapturerConfiguration(config: CameraCapturerConfiguration): number;
   setVideoEncoderConfiguration(
-    width: number,
-    height: number,
-    fps: number,
-    bitrate: 0 | 1, // 0 for standard and 1 for compatible
-    minbitrate: -1, // changing this value is NOT recommended
-    orientation: 0 | 1 | 2 // 0: auto, 1: horizontal, 2: vertical
+    config: VideoEncoderConfiguration
   ): number;
   setBeautyEffectOptions(
     enable: boolean,
@@ -579,6 +641,10 @@ export interface NodeRtcEngine {
     profile: VIDEO_PROFILE_TYPE,
     swapWidthAndHeight: boolean
   ): number;
+  videosourceStartScreenCaptureByScreen(screenSymbol: ScreenSymbol, rect: CaptureRect, param: CaptureParam): number;
+  videosourceStartScreenCaptureByWindow(windowSymbol: number, rect: CaptureRect, param: CaptureParam): number;
+  videosourceUpdateScreenCaptureParameters(param: CaptureParam): number;
+  videosourceSetScreenCaptureContentHint(hint: VideoContentHint): number;
   getScreenWindowsInfo(): Array<Object>;
   startScreenCapture2(
     windowId: number,
