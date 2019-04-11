@@ -3,9 +3,10 @@ import AgoraRtcEngine from '../../../';
 import { List } from 'immutable';
 import path from 'path';
 
-import {videoProfileList, audioProfileList, audioScenarioList, APP_ID, SHARE_ID } from '../utils/settings'
+import {voiceChangerList, voiceReverbPreset, videoProfileList, audioProfileList, audioScenarioList, APP_ID, SHARE_ID, voiceReverbList } from '../utils/settings'
 import base64Encode from '../utils/base64'
 import WindowPicker from './components/WindowPicker/index.js'
+import { VoiceChangerPreset } from '../../../JS/Api/native_type';
 
 export default class App extends Component {
   constructor(props) {
@@ -21,6 +22,8 @@ export default class App extends Component {
         users: new List(),
         channel: '',
         role: 1,
+        voiceReverbPreset: 0,
+        voiceChangerPreset: 0,
         videoDevices: rtcEngine.getVideoDevices(),
         audioDevices: rtcEngine.getAudioRecordingDevices(),
         audioPlaybackDevices: rtcEngine.getAudioPlaybackDevices(),
@@ -121,9 +124,20 @@ export default class App extends Component {
     } else {
       rtcEngine.setVideoEncoderConfiguration({width: encoderWidth, height: encoderHeight})
     }
+    rtcEngine.setLocalVoiceChanger(this.state.voiceChangerPreset)
+    rtcEngine.setLocalVoiceReverbPreset(this.state.voiceReverbPreset)
     console.log('loop', rtcEngine.enableLoopbackRecording(true, null))
     rtcEngine.enableDualStreamMode(true)
     rtcEngine.enableAudioVolumeIndication(1000, 3)
+
+    //enable beauty options
+    rtcEngine.setBeautyEffectOptions(true, {
+      lighteningContrastLevel: 2,
+      lighteningLevel: 1,
+      smoothnessLevel: 1,
+      rednessLevel: 0
+    })
+
     rtcEngine.joinChannel(null, this.state.channel, '',  Number(`${new Date().getTime()}`.slice(7)))
   }
 
@@ -145,6 +159,18 @@ export default class App extends Component {
   handleVideoProfile = e => {
     this.setState({
       videoProfile: Number(e.currentTarget.value)
+    })
+  }
+
+  handleVoiceChanger = e => {
+    this.setState({
+      voiceChangerPreset: Number(e.currentTarget.value)
+    })
+  }
+
+  handleVoiceReverbPreset = e => {
+    this.setState({
+      voiceReverbPreset: Number(e.currentTarget.value)
     })
   }
 
@@ -328,6 +354,26 @@ export default class App extends Component {
             <div className="control">
               <input onChange={e => this.setState({encoderWidth: e.currentTarget.value})} value={this.state.encoderWidth} className="input" type="number" placeholder="Encoder Width" />
               <input onChange={e => this.setState({encoderHeight: e.currentTarget.value})} value={this.state.encoderHeight} className="input" type="number" placeholder="Encoder Height" />
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">VoiceChanger</label>
+            <div className="control">
+              <div className="select"  style={{width: '100%'}}>
+                <select onChange={this.handleVoiceChanger} value={this.state.voiceChangerPreset} style={{width: '100%'}}>
+                  {voiceChangerList.map(item => (<option key={item.value} value={item.value}>{item.label}</option>))}
+                </select>
+              </div>
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">VoiceReverbPreset</label>
+            <div className="control">
+              <div className="select"  style={{width: '100%'}}>
+                <select onChange={this.handleVoiceReverbPreset} value={this.state.voiceReverbPreset} style={{width: '100%'}}>
+                  {voiceReverbList.map(item => (<option key={item.value} value={item.value}>{item.label}</option>))}
+                </select>
+              </div>
             </div>
           </div>
           <div className="field">
