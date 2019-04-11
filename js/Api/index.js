@@ -459,19 +459,20 @@ class AgoraRtcEngine extends events_1.EventEmitter {
         return this.rtcEngine.getVersion();
     }
     /**
+     * @description get sdk connection state
+     * @returns {number} state
+     * https://docs.agora.io/en/Interactive%20Broadcast/API%20Reference/cpp/namespaceagora_1_1rtc.html#a430364c3f2cbf4419b898077cf6977f7
+     */
+    getConnectionState() {
+        return this.rtcEngine.getConnectionState();
+    }
+    /**
      * @description Get error description of the given errorCode
      * @param {number} errorCode error code
      * @returns {string} error description
      */
     getErrorDescription(errorCode) {
         return this.rtcEngine.getErrorDescription(errorCode);
-    }
-    /**
-     * @description Get current connection state
-     * @returns {ConnectionState} connect state enum
-     */
-    getConnectionState() {
-        return this.rtcEngine.getConnectionState();
     }
     /**
      *
@@ -492,6 +493,13 @@ class AgoraRtcEngine extends events_1.EventEmitter {
      */
     leaveChannel() {
         return this.rtcEngine.leaveChannel();
+    }
+    /**
+     * @description release sdk instance
+     * @returns {number} 0 for success, <0 for failure
+     */
+    release() {
+        return this.rtcEngine.release();
     }
     /**
      * @description This method sets high-quality audio preferences. Call this method and set all the three

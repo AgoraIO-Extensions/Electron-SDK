@@ -332,6 +332,7 @@ export interface NodeRtcEngine {
     getConnectionState(): ConnectionState;
     joinChannel(token: string, channel: string, info: string, uid: number): number;
     leaveChannel(): number;
+    release(): number;
     setHighQualityAudioParameters(fullband: boolean, stereo: boolean, fullBitrate: boolean): number;
     setupLocalVideo(): number;
     subscribe(uid: number): number;
