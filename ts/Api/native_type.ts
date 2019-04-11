@@ -556,6 +556,9 @@ export interface NodeRtcEngine {
     enable: boolean,
     options: {
       lighteningContrastLevel: 0 | 1 | 2; // 0 for low, 1 for normal, 2 for high
+      lighteningLevel: number,
+      smoothnessLevel: number,
+      rednessLevel: number
     }
   ): number;
   setRemoteUserPriority(uid: number, priority: Priority): number;
