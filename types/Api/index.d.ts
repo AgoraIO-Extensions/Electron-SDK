@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { IRenderer } from '../Renderer';
-import { NodeRtcEngine, RtcStats, LocalVideoStats, RemoteVideoStats, RemoteAudioStats, RemoteVideoState, AgoraNetworkQuality, ClientRoleType, StreamType, ConnectionState, ConnectionChangeReason, MediaDeviceType, VIDEO_PROFILE_TYPE, TranscodingConfig, InjectStreamConfig, VoiceChangerPreset, AudioReverbPreset, LastmileProbeConfig, Priority, CameraCapturerConfiguration } from './native_type';
+import { NodeRtcEngine, RtcStats, LocalVideoStats, RemoteVideoStats, RemoteAudioStats, RemoteVideoState, AgoraNetworkQuality, ClientRoleType, StreamType, ConnectionState, ConnectionChangeReason, MediaDeviceType, VIDEO_PROFILE_TYPE, TranscodingConfig, InjectStreamConfig, VoiceChangerPreset, AudioReverbPreset, LastmileProbeConfig, Priority, CameraCapturerConfiguration, ScreenSymbol, CaptureRect, CaptureParam, VideoContentHint, VideoEncoderConfiguration } from './native_type';
 import { EventEmitter } from 'events';
 /**
  * @class AgoraRtcEngine
@@ -265,7 +265,7 @@ declare class AgoraRtcEngine extends EventEmitter {
      */
     stopPreview(): number;
     /**
-     *
+     * @deprecated use setVideoEncoderConfiguration
      * @param {VIDEO_PROFILE_TYPE} profile - enumeration values represent video profile
      * @param {boolean} [swapWidthAndHeight = false] - Whether to swap width and height
      * @returns {number} 0 for success, <0 for failure
@@ -280,23 +280,10 @@ declare class AgoraRtcEngine extends EventEmitter {
      */
     setCameraCapturerConfiguration(config: CameraCapturerConfiguration): number;
     /**
-     * @param {Object} config - encoder config of video
-     * @param {number} config.width - width of video
-     * @param {number} config.height - height of video
-     * @param {number} config.fps - valid values, 1, 7, 10, 15, 24, 30, 60
-     * @param {number} config.bitrate - 0 - standard(recommended), 1 - compatible
-     * @param {number} config.minbitrate - by default -1, changing this value is NOT recommended
-     * @param {number} config.orientation - 0 - auto adapt to capture source, 1 - Landscape(Horizontal), 2 - Portrait(Vertical)
-     * @returns {number} 0 for success, <0 for failure
+     * @description set video encoder configuration
+     * @param {VideoEncoderConfiguration} config - encoder config of video
      */
-    setVideoEncoderConfiguration(config: {
-        width?: number;
-        height?: number;
-        fps?: number;
-        bitrate?: 0 | 1;
-        minbitrate?: -1;
-        orientation?: 0 | 1 | 2;
-    }): number;
+    setVideoEncoderConfiguration(config: VideoEncoderConfiguration): number;
     /**
      * @description Enables/Disables image enhancement and sets the options
      * @param {boolean} enable If to enable
@@ -860,6 +847,30 @@ declare class AgoraRtcEngine extends EventEmitter {
      * @returns {number} 0 for success, <0 for failure
      */
     videoSourceRelease(): number;
+    /**
+     * @description Shares the whole or part of a screen by specifying the screen rect.
+     * @param {ScreenSymbol} screenSymbol screenid on mac / screen position on windows
+     * @param {CaptureRect} rect
+     * @param {CaptureParam} param
+     */
+    videosourceStartScreenCaptureByScreen(screenSymbol: ScreenSymbol, rect: CaptureRect, param: CaptureParam): number;
+    /**
+     * @description Shares the whole or part of a window by specifying the window ID.
+     * @param {number} windowSymbol windowid
+     * @param {CaptureRect} rect
+     * @param {CaptureParam} param
+     */
+    videosourceStartScreenCaptureByWindow(windowSymbol: number, rect: CaptureRect, param: CaptureParam): number;
+    /**
+     * @description Updates the screen sharing parameters.
+     * @param {CaptureParam} param
+     */
+    videosourceUpdateScreenCaptureParameters(param: CaptureParam): number;
+    /**
+     * @description  Updates the screen sharing parameters.
+     * @param {VideoContentHint} hint
+     */
+    videosourceSetScreenCaptureContentHint(hint: VideoContentHint): number;
     /**
      * @description start screen capture
      * @param {number} windowId windows id to capture

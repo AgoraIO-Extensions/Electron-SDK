@@ -181,9 +181,43 @@ export interface RtcStats {
     cpuAppUsage: number;
     cpuTotalUsage: number;
 }
+export declare enum AualityAdaptIndication {
+    /** The quality of the local video stays the same. */
+    ADAPT_NONE = 0,
+    /** The quality improves because the network bandwidth increases. */
+    ADAPT_UP_BANDWIDTH = 1,
+    /** The quality worsens because the network bandwidth decreases. */
+    ADAPT_DOWN_BANDWIDTH = 2
+}
 export interface LocalVideoStats {
     sentBitrate: number;
     sentFrameRate: number;
+    targetBitrate: number;
+    targetFrameRate: number;
+    qualityAdaptIndication: AualityAdaptIndication;
+}
+export interface VideoEncoderConfiguration {
+    width: number;
+    height: number;
+    frameRate: number;
+    minFrameRate: number;
+    bitrate: number;
+    minBitrate: number;
+    orientationMode: OrientationMode;
+    degradationPrefer: DegradationPrefer;
+}
+export declare enum DegradationPrefer {
+    /** 0: (Default) Degrade the frame rate in order to maintain the video quality. */
+    MAINTAIN_QUALITY = 0,
+    /** 1: Degrade the video quality in order to maintain the frame rate. */
+    MAINTAIN_FRAMERATE = 1,
+    /** 2: (For future use) Maintain a balance between the frame rate and video quality. */
+    MAINTAIN_BALANCED = 2
+}
+export declare enum OrientationMode {
+    ORIENTATION_MODE_ADAPTIVE = 0,
+    ORIENTATION_MODE_FIXED_LANDSCAPE = 1,
+    ORIENTATION_MODE_FIXED_PORTRAIT = 2
 }
 export interface RemoteVideoStats {
     uid: number;
@@ -210,6 +244,27 @@ export declare enum CaptureOutPreference {
 }
 export interface CameraCapturerConfiguration {
     preference: CaptureOutPreference;
+}
+export interface Rectangle {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+export declare type ScreenSymbol = MacScreenSymbol | WindowsScreenSymbol;
+export declare type MacScreenSymbol = number;
+export declare type WindowsScreenSymbol = Rectangle;
+export declare type CaptureRect = Rectangle;
+export interface CaptureParam {
+    width: number;
+    height: number;
+    frameRate: number;
+    bitrate: number;
+}
+export declare enum VideoContentHint {
+    CONTENT_HINT_NONE = 0,
+    CONTENT_HINT_MOTION = 1,
+    CONTENT_HINT_DETAILS = 2
 }
 export interface RemoteAudioStats {
     /** User ID of the remote user sending the audio streams. */
@@ -418,9 +473,7 @@ export interface NodeRtcEngine {
     stopPreview(): number;
     setVideoProfile(profile: VIDEO_PROFILE_TYPE, swapWidthAndHeight: boolean): number;
     setCameraCapturerConfiguration(config: CameraCapturerConfiguration): number;
-    setVideoEncoderConfiguration(width: number, height: number, fps: number, bitrate: 0 | 1, // 0 for standard and 1 for compatible
-    minbitrate: -1, // changing this value is NOT recommended
-    orientation: 0 | 1 | 2): number;
+    setVideoEncoderConfiguration(config: VideoEncoderConfiguration): number;
     setBeautyEffectOptions(enable: boolean, options: {
         lighteningContrastLevel: 0 | 1 | 2;
     }): number;
@@ -495,6 +548,10 @@ export interface NodeRtcEngine {
     videoSourceRenewToken(token: string): number;
     videoSourceSetChannelProfile(profile: number): number;
     videoSourceSetVideoProfile(profile: VIDEO_PROFILE_TYPE, swapWidthAndHeight: boolean): number;
+    videosourceStartScreenCaptureByScreen(screenSymbol: ScreenSymbol, rect: CaptureRect, param: CaptureParam): number;
+    videosourceStartScreenCaptureByWindow(windowSymbol: number, rect: CaptureRect, param: CaptureParam): number;
+    videosourceUpdateScreenCaptureParameters(param: CaptureParam): number;
+    videosourceSetScreenCaptureContentHint(hint: VideoContentHint): number;
     getScreenWindowsInfo(): Array<Object>;
     startScreenCapture2(windowId: number, captureFreq: number, rect: {
         left: number;

@@ -20,6 +20,11 @@ import {
   LastmileProbeConfig,
   Priority,
   CameraCapturerConfiguration,
+  ScreenSymbol,
+  CaptureRect,
+  CaptureParam,
+  VideoContentHint,
+  VideoEncoderConfiguration
 } from './native_type';
 import { EventEmitter } from 'events';
 const agora = require('../../build/Release/agora_node_ext');
@@ -932,7 +937,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   *
+   * @deprecated use setVideoEncoderConfiguration
    * @param {VIDEO_PROFILE_TYPE} profile - enumeration values represent video profile
    * @param {boolean} [swapWidthAndHeight = false] - Whether to swap width and height
    * @returns {number} 0 for success, <0 for failure
@@ -953,39 +958,30 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @param {Object} config - encoder config of video
-   * @param {number} config.width - width of video
-   * @param {number} config.height - height of video
-   * @param {number} config.fps - valid values, 1, 7, 10, 15, 24, 30, 60
-   * @param {number} config.bitrate - 0 - standard(recommended), 1 - compatible
-   * @param {number} config.minbitrate - by default -1, changing this value is NOT recommended
-   * @param {number} config.orientation - 0 - auto adapt to capture source, 1 - Landscape(Horizontal), 2 - Portrait(Vertical)
-   * @returns {number} 0 for success, <0 for failure
+   * @description set video encoder configuration
+   * @param {VideoEncoderConfiguration} config - encoder config of video
    */
-  setVideoEncoderConfiguration(config: {
-    width?: number,
-    height?: number,
-    fps?: number,
-    bitrate?: 0 | 1,
-    minbitrate?: -1,
-    orientation?: 0 | 1 | 2,
-  }): number {
+  setVideoEncoderConfiguration(config: VideoEncoderConfiguration): number {
     const {
       width = 640,
       height = 480,
-      fps = 15,
+      frameRate = 15,
+      minFrameRate = -1,
       bitrate = 0,
-      orientation = 0,
-      minbitrate = -1
+      minBitrate = -1,
+      orientationMode = 0,
+      degradationPrefer = 0
     } = config;
-    return this.rtcEngine.setVideoEncoderConfiguration(
+    return this.rtcEngine.setVideoEncoderConfiguration({
       width,
       height,
-      fps,
+      frameRate,
+      minFrameRate,
       bitrate,
-      minbitrate,
-      orientation
-    );
+      minBitrate,
+      orientationMode,
+      degradationPrefer
+    });
   }
 
   /**
@@ -1816,6 +1812,45 @@ class AgoraRtcEngine extends EventEmitter {
   videoSourceRelease(): number {
     return this.rtcEngine.videoSourceRelease();
   }
+
+  // 2.4 new Apis
+  /**
+   * @description Shares the whole or part of a screen by specifying the screen rect.
+   * @param {ScreenSymbol} screenSymbol screenid on mac / screen position on windows
+   * @param {CaptureRect} rect
+   * @param {CaptureParam} param
+   */
+  videosourceStartScreenCaptureByScreen(screenSymbol: ScreenSymbol, rect: CaptureRect, param: CaptureParam): number {
+    return this.rtcEngine.videosourceStartScreenCaptureByScreen(screenSymbol, rect, param);
+  }
+
+  /**
+   * @description Shares the whole or part of a window by specifying the window ID.
+   * @param {number} windowSymbol windowid
+   * @param {CaptureRect} rect
+   * @param {CaptureParam} param
+   */
+  videosourceStartScreenCaptureByWindow(windowSymbol: number, rect: CaptureRect, param: CaptureParam): number {
+    return this.rtcEngine.videosourceStartScreenCaptureByWindow(windowSymbol, rect, param);
+  }
+
+  /**
+   * @description Updates the screen sharing parameters.
+   * @param {CaptureParam} param
+   */
+  videosourceUpdateScreenCaptureParameters(param: CaptureParam): number {
+    return this.rtcEngine.videosourceUpdateScreenCaptureParameters(param);
+  }
+
+  /**
+   * @description  Updates the screen sharing parameters.
+   * @param {VideoContentHint} hint
+   */
+  videosourceSetScreenCaptureContentHint(hint: VideoContentHint): number {
+    return this.rtcEngine.videosourceSetScreenCaptureContentHint(hint);
+  }
+
+
 
   // ===========================================================================
   // SCREEN SHARE
