@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { IRenderer } from '../Renderer';
-import { NodeRtcEngine, RtcStats, LocalVideoStats, RemoteVideoStats, RemoteAudioStats, RemoteVideoState, AgoraNetworkQuality, ClientRoleType, StreamType, ConnectionState, ConnectionChangeReason, MediaDeviceType, VIDEO_PROFILE_TYPE, TranscodingConfig, InjectStreamConfig, VoiceChangerPreset, AudioReverbPreset, LastmileProbeConfig, Priority, CameraCapturerConfiguration, ScreenSymbol, CaptureRect, CaptureParam, VideoContentHint, VideoEncoderConfiguration } from './native_type';
+import { NodeRtcEngine, RtcStats, LocalVideoStats, RemoteVideoStats, RemoteAudioStats, RemoteVideoState, AgoraNetworkQuality, LastmileProbeResult, ClientRoleType, StreamType, ConnectionState, ConnectionChangeReason, MediaDeviceType, VIDEO_PROFILE_TYPE, TranscodingConfig, InjectStreamConfig, VoiceChangerPreset, AudioReverbPreset, LastmileProbeConfig, Priority, CameraCapturerConfiguration, ScreenSymbol, CaptureRect, CaptureParam, VideoContentHint, VideoEncoderConfiguration } from './native_type';
 import { EventEmitter } from 'events';
 /**
  * @class AgoraRtcEngine
@@ -289,9 +289,15 @@ declare class AgoraRtcEngine extends EventEmitter {
      * @param {boolean} enable If to enable
      * @param {Object} options beauty options
      * @param {number} options.lighteningContrastLevel 0 for low, 1 for normal, 2 for high
+     * @param {number} options.lighteningLevel The brightness level. The value ranges from 0.0 (original) to 1.0.
+     * @param {number} options.smoothnessLevel The sharpness level. The value ranges between 0 (original) and 1. This parameter is usually used to remove blemishes.
+     * @param {number} options.rednessLevel The redness level. The value ranges between 0 (original) and 1. This parameter adjusts the red saturation level.
      */
     setBeautyEffectOptions(enable: boolean, options: {
         lighteningContrastLevel: 0 | 1 | 2;
+        lighteningLevel: number;
+        smoothnessLevel: number;
+        rednessLevel: number;
     }): number;
     /**
      * @description set the priority of a remote user
@@ -1222,12 +1228,14 @@ declare interface AgoraRtcEngine {
     on(evt: 'remoteAudioStats', cb: (stats: RemoteAudioStats) => void): this;
     on(evt: 'audioDeviceStateChanged', cb: (deviceId: string, deviceType: number, deviceState: number) => void): this;
     on(evt: 'audioMixingFinished', cb: () => void): this;
+    on(evt: 'audioMixingStateChanged', cb: (state: number, err: number) => void): this;
     on(evt: 'remoteAudioMixingBegin', cb: () => void): this;
     on(evt: 'remoteAudioMixingEnd', cb: () => void): this;
     on(evt: 'audioEffectFinished', cb: (soundId: number) => void): this;
     on(evt: 'videoDeviceStateChanged', cb: (deviceId: string, deviceType: number, deviceState: number) => void): this;
     on(evt: 'networkQuality', cb: (uid: number, txquality: AgoraNetworkQuality, rxquality: AgoraNetworkQuality) => void): this;
     on(evt: 'lastMileQuality', cb: (quality: AgoraNetworkQuality) => void): this;
+    on(evt: 'lastmileProbeResult', cb: (result: LastmileProbeResult) => void): this;
     on(evt: 'firstLocalVideoFrame', cb: (width: number, height: number, elapsed: number) => void): this;
     on(evt: 'addStream', cb: (uid: number, elapsed: number) => void): this;
     on(evt: 'videoSizeChanged', cb: (uid: number, width: number, height: number, rotation: number) => void): this;
