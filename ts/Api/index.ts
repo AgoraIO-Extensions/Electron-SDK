@@ -7,6 +7,7 @@ import {
   RemoteAudioStats,
   RemoteVideoState,
   AgoraNetworkQuality,
+  LastmileProbeResult,
   ClientRoleType,
   StreamType,
   ConnectionState,
@@ -195,6 +196,10 @@ class AgoraRtcEngine extends EventEmitter {
       fire('audioMixingFinished');
     });
 
+    this.rtcEngine.onEvent('audioMixingStateChanged', function(state: number, err: number) {
+      fire('audioMixingStateChanged', state, err);
+    });
+
     this.rtcEngine.onEvent('apicallexecuted', function(api: string, err: number) {
       fire('apicallexecuted', api, err);
       fire('apiCallExecuted', api, err);
@@ -236,6 +241,10 @@ class AgoraRtcEngine extends EventEmitter {
     this.rtcEngine.onEvent('lastmilequality', function(quality: AgoraNetworkQuality) {
       fire('lastmilequality', quality);
       fire('lastMileQuality', quality);
+    });
+
+    this.rtcEngine.onEvent('lastmileProbeResult', function(result: LastmileProbeResult) {
+      fire('lastmileProbeResult', result);
     });
 
     this.rtcEngine.onEvent('firstlocalvideoframe', function(
@@ -2462,6 +2471,7 @@ declare interface AgoraRtcEngine {
     deviceState: number,
   ) => void): this;
   on(evt: 'audioMixingFinished', cb: () => void): this;
+  on(evt: 'audioMixingStateChanged', cb: (state: number, err: number) => void): this;
   on(evt: 'remoteAudioMixingBegin', cb: () => void): this;
   on(evt: 'remoteAudioMixingEnd', cb: () => void): this;
   on(evt: 'audioEffectFinished', cb: (soundId: number) => void): this;
@@ -2476,6 +2486,7 @@ declare interface AgoraRtcEngine {
     rxquality: AgoraNetworkQuality
   ) => void): this;
   on(evt: 'lastMileQuality', cb: (quality: AgoraNetworkQuality) => void): this;
+  on(evt: 'lastmileProbeResult', cb: (result: LastmileProbeResult) => void): this;
   on(evt: 'firstLocalVideoFrame', cb: (
     width: number,
     height: number,
