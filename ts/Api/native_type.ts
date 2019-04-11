@@ -231,10 +231,10 @@ export interface VideoEncoderConfiguration {
   bitrate: number; // 0 - standard(recommended), 1 - compatible
   minBitrate: number; // by default -1, changing this value is NOT recommended
   orientationMode: OrientationMode;
-  degradationPrefer: DegradationPrefer;
+  degradationPreference: DegradationPreference;
 }
 
-export enum DegradationPrefer {
+export enum DegradationPreference {
   /** 0: (Default) Degrade the frame rate in order to maintain the video quality. */
   MAINTAIN_QUALITY = 0,
   /** 1: Degrade the video quality in order to maintain the frame rate. */

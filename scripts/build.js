@@ -93,7 +93,7 @@ const main = () => {
         if (platform === Platform.MACOS && debug) {
           // Generate xcode project file
           shell.exec(
-            "node-gyp configure -- -f xcode",
+            `node-gyp configure --target=${dependentElectronVersion} --dist-url=https://atom.io/download/electron -- -f xcode`,
             { silent: silent },
             (code, stdout, stderr) => {
               if (code !== 0) {
