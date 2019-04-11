@@ -17,10 +17,19 @@
   * Add `startAudioDeviceLoopbackTest`
   * Add `stopAudioDeviceLoopbackTest`
   * Add `setCameraCapturerConfiguration`
+  * Add `videosourceStartScreenCaptureByScreen`
+  * Add `videosourceStartScreenCaptureByWindow`
+  * Add `videosourceUpdateScreenCaptureParameters`
+  * Add `videosourceSetScreenCaptureContentHint`
 * Add `release` Api
+* Modify Api
+  * `setVideoEncoderConfiguration` will recv a param with type `VideoEncoderConfiguration`
+  * `LocalVideoStats` add three properties: `targetBitrate,targetFrameRate,qualityAdaptIndication`
+
+* Notice that `videosourceStartScreenCaptureByScreen` need a param called `ScreenSymbol` which differs on Mac and Windows. And a method will be provided in future to get this param on the two platforms.
 
 #### :memo: Documentation
-* Add doc and type for the missing api above.
+* Add doc and type for the api above.
 
 ## 2.3.3-alpha.12 (March 19th, 2019)
 #### :house: Internal
