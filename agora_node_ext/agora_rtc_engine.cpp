@@ -401,6 +401,7 @@ namespace agora {
         {
             LOG_ENTER;
             napi_status status = napi_ok;
+            int result = -1;
             do {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
@@ -429,9 +430,9 @@ namespace agora {
                 if (napi_get_object_property_nodestring_(args.GetIsolate(), obj, "extrainfo", extraInfo) == napi_ok) {
                     config.extraInfo = extraInfo;
                 }
-                pEngine->m_engine->configPublisher(config);
+                result = pEngine->m_engine->configPublisher(config);
             } while (false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
@@ -439,6 +440,7 @@ namespace agora {
         NAPI_API_DEFINE(NodeRtcEngine, setVideoCompositingLayout)
         {
             LOG_ENTER;
+            int result = -1;
             napi_status status = napi_ok;
             VideoCompositingLayout::Region *regions = nullptr;
             do {
@@ -491,12 +493,12 @@ namespace agora {
                     }
                     layout.regions = regions;
                 }
-                pEngine->m_engine->setVideoCompositingLayout(layout);
+                result = pEngine->m_engine->setVideoCompositingLayout(layout);
             } while (false);
             if (regions) {
                 delete[] regions;
             }
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
@@ -504,13 +506,14 @@ namespace agora {
         {
             LOG_ENTER;
             napi_status status = napi_ok;
+            int result = -1;
             do{
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                pEngine->m_engine->clearVideoCompositingLayout();
+                result = pEngine->m_engine->clearVideoCompositingLayout();
             } while (false);
-             napi_set_int_result(args, status);
+             napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
@@ -592,6 +595,7 @@ namespace agora {
         {
             LOG_ENTER;
             napi_status status = napi_ok;
+            int result = -1;
             TranscodingUser *users = nullptr;
             RtcImage* vwm = nullptr;
             do {
@@ -671,18 +675,19 @@ namespace agora {
                     }
                     transcoding.transcodingUsers = users;
                 }
-                pEngine->m_engine->setLiveTranscoding(transcoding);
+                result = pEngine->m_engine->setLiveTranscoding(transcoding);
             } while (false);
             if (users) {
                 delete[] users;
             }
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
         NAPI_API_DEFINE(NodeRtcEngine, addInjectStreamUrl)
         {
             LOG_ENTER;
+            int result = -1;
             napi_status status = napi_ok;
             do {
                 NodeRtcEngine *pEngine = nullptr;
@@ -704,15 +709,16 @@ namespace agora {
                 }
                 napi_get_object_property_int32_(args.GetIsolate(), configObj, "audioBitrate", config.audioBitrate);
                 napi_get_object_property_int32_(args.GetIsolate(), configObj, "audioChannels", config.audioChannels);
-                pEngine->m_engine->addInjectStreamUrl(url, config);
+                result = pEngine->m_engine->addInjectStreamUrl(url, config);
             } while (false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
         NAPI_API_DEFINE(NodeRtcEngine, removeInjectStreamUrl)
         {
             LOG_ENTER;
+            int result = -1;
             napi_status status = napi_ok;
             do {
                 NodeRtcEngine *pEngine = nullptr;
@@ -721,9 +727,9 @@ namespace agora {
                 nodestring url;
                 status = napi_get_value_nodestring_(args[0], url);
                 CHECK_NAPI_STATUS(pEngine, status);
-                pEngine->m_engine->removeInjectStreamUrl(url);
+                result = pEngine->m_engine->removeInjectStreamUrl(url);
             } while (false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
@@ -781,7 +787,7 @@ namespace agora {
 
                 result = pEngine->m_engine->setBeautyEffectOptions(enabled, opts);
             } while (false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
@@ -831,7 +837,7 @@ namespace agora {
 
                 result = param.setLocalVoiceChanger(preset);
             } while (false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
@@ -884,7 +890,7 @@ namespace agora {
 
                 result = param.setLocalVoiceReverbPreset(preset);
             } while (false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
@@ -904,7 +910,7 @@ namespace agora {
 
                 result = param.enableSoundPositionIndication(enabled);
             } while (false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
@@ -933,7 +939,7 @@ namespace agora {
 
                 result = param.setRemoteVoicePosition(uid, pan, gain);
             } while (false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
@@ -967,7 +973,7 @@ namespace agora {
 
                 result = pEngine->m_engine->startLastmileProbeTest(config);
             } while (false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
@@ -983,7 +989,7 @@ namespace agora {
 
                 result = pEngine->m_engine->stopLastmileProbeTest();
             } while (false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
@@ -1015,7 +1021,7 @@ namespace agora {
 
                 result = pEngine->m_engine->setRemoteUserPriority(uid, type);
             } while (false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
@@ -1035,7 +1041,7 @@ namespace agora {
 
                 result = pEngine->m_engine->startEchoTest(interval);
             } while (false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
@@ -1059,7 +1065,7 @@ namespace agora {
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
                 result = adm->startAudioDeviceLoopbackTest(interval);
             } while (false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
@@ -1080,7 +1086,7 @@ namespace agora {
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
                 result = adm->stopAudioDeviceLoopbackTest();
             } while (false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
@@ -1126,7 +1132,7 @@ namespace agora {
 
                 result = param.setCameraCapturerConfiguration(config);
             } while (false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
@@ -1148,7 +1154,7 @@ namespace agora {
 
                 result = param.setLogFileSize(size);
             } while (false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
@@ -1761,6 +1767,7 @@ namespace agora {
         NAPI_API_DEFINE(NodeRtcEngine, startScreenCapture2)
         {
             LOG_ENTER;
+            int result = -1;
             napi_status status = napi_ok;
             do{
                 NodeRtcEngine *pEngine = nullptr;
@@ -1810,8 +1817,9 @@ namespace agora {
                
                 if (pEngine->m_videoSourceSink.get())
                     pEngine->m_videoSourceSink->captureScreen(windowId, captureFreq, &region, bitrate);
+                result = 0;
             } while (false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
@@ -2801,6 +2809,7 @@ namespace agora {
         NAPI_API_DEFINE(NodeRtcEngine, setHighFPS)
         {
             LOG_ENTER;
+            int result = -1;
             napi_status status = napi_invalid_arg;
             do{
                 NodeRtcEngine *pEngine = nullptr;
@@ -2816,15 +2825,17 @@ namespace agora {
                 auto pTransporter = getNodeVideoFrameTransporter();
                 if(pTransporter) {
                     pTransporter->setHighFPS(fps);
+                    result = 0;
                 }
             }while(false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
         
         NAPI_API_DEFINE(NodeRtcEngine, setFPS)
         {
             LOG_ENTER;
+            int result = -1;
             napi_status status = napi_invalid_arg;
             do {
                 NodeRtcEngine *pEngine = nullptr;
@@ -2838,16 +2849,19 @@ namespace agora {
                     break;
                 }
                 auto pTransporter = getNodeVideoFrameTransporter();
-                if(pTransporter)
+                if(pTransporter) {
                     pTransporter->setFPS(fps);
+                    result = 0;
+                }
             } while(false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
         
         NAPI_API_DEFINE(NodeRtcEngine, addToHighVideo)
         {
             LOG_ENTER;
+            int result = -1;
             napi_status status = napi_invalid_arg;
             do {
                 NodeRtcEngine *pEngine = nullptr;
@@ -2857,16 +2871,19 @@ namespace agora {
                 status = NodeUid::getUidFromNodeValue(args[0], uid);
                 CHECK_NAPI_STATUS(pEngine, status);
                 auto pTransporter = getNodeVideoFrameTransporter();
-                if(pTransporter)
+                if(pTransporter) {
                     pTransporter->addToHighVideo(uid);
+                    result = 0;
+                }
             }while(false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
         
         NAPI_API_DEFINE(NodeRtcEngine, removeFromHighVideo)
         {
             LOG_ENTER;
+            int result = -1;
             napi_status status = napi_invalid_arg;
             do{
                 NodeRtcEngine *pEngine = nullptr;
@@ -2876,31 +2893,35 @@ namespace agora {
                 status = NodeUid::getUidFromNodeValue(args[0], uid);
                 CHECK_NAPI_STATUS(pEngine, status);
                 auto pTransporter = getNodeVideoFrameTransporter();
-                if(pTransporter)
+                if(pTransporter) {
                     pTransporter->removeFromeHighVideo(uid);
+                    result = 0;
+                }
             }while (false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
         NAPI_API_DEFINE(NodeRtcEngine, getConnectionState)
         {
             LOG_ENTER;
+            int result = -1;
             napi_status status = napi_invalid_arg;
             do{
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 CONNECTION_STATE_TYPE type = pEngine->m_engine->getConnectionState();
-                napi_set_int_result(args, type);
+                result = type;
             }while (false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
         NAPI_API_DEFINE(NodeRtcEngine, release)
         {
             LOG_ENTER;
+            int result = -1;
             napi_status status = napi_invalid_arg;
             do{
                 NodeRtcEngine *pEngine = nullptr;
@@ -2926,10 +2947,9 @@ namespace agora {
                 }
                 pEngine->m_videoSourceSink.reset(nullptr);
                 pEngine->m_externalVideoRenderFactory.reset(nullptr);
-                
-                napi_set_int_result(args, status);
+                result = 0;
             }while (false);
-            napi_set_int_result(args, status);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
