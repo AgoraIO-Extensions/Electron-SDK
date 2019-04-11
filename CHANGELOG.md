@@ -1,4 +1,4 @@
-## Latest
+## 2.4.0-alpha (Apr 11st, 2019)
 #### :house: Internal
 * Add Missing Api for 2.3.*
   * Add `getConnectionState` api
@@ -21,6 +21,8 @@
   * Add `videosourceStartScreenCaptureByWindow`
   * Add `videosourceUpdateScreenCaptureParameters`
   * Add `videosourceSetScreenCaptureContentHint`
+  * Add event `audioMixingStateChanged`
+  * Add event `lastmileProbeResult`
 * Add `release` Api
 * Modify Api
   * `setVideoEncoderConfiguration` will recv a param with type `VideoEncoderConfiguration`
