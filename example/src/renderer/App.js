@@ -34,6 +34,7 @@ export default class App extends Component {
         showWindowPicker: false,
         recordingTestOn: false,
         playbackTestOn: false,
+        lastmileTestOn: false,
         windowList: [],
         encoderWidth: 0,
         encoderHeight: 0
@@ -90,6 +91,12 @@ export default class App extends Component {
       this.setState({
         videoDevices: rtcEngine.getVideoDevices()
       })
+    })
+    rtcEngine.on('lastmileProbeResult', result => {
+      console.log(`lastmileproberesult: ${JSON.stringify(result)}`)
+    })
+    rtcEngine.on('lastMileQuality', quality => {
+      console.log(`lastmilequality: ${JSON.stringify(quality)}`)
     })
     rtcEngine.on('audiovolumeindication', (
       uid,
@@ -306,6 +313,24 @@ export default class App extends Component {
     })
   }
 
+  toggleLastmileTest = e => {
+    let rtcEngine = this.getRtcEngine()
+    if (!this.state.lastmileTestOn) {
+      let result = rtcEngine.startLastmileProbeTest({
+        probeUplink: true,
+        probeDownlink: true,
+        expectedDownlinkBitrate: 500,
+        expectedUplinkBitrate: 500,
+      });
+      console.log(result);
+    } else {
+      rtcEngine.stopLastmileProbeTest();
+    }
+    this.setState({
+      lastmileTestOn: !this.state.lastmileTestOn
+    })
+  }
+
   // handleAudioMixing = e => {
   //   const path = require('path')
   //   let filepath = path.join(__dirname, './music.mp3');
@@ -443,19 +468,23 @@ export default class App extends Component {
           </div>
           <hr/>
           <div className="field">
+            <label className="label">Network Test</label>
+            <div className="control">
+              <button onClick={this.toggleLastmileTest} className="button is-link">{this.state.lastmileTestOn ? 'stop' : 'start'}</button>
+            </div>
+          </div>
+          <div className="field">
             <label className="label">Screen Share</label>
             <div className="control">
               <button onClick={this.handleScreenSharing} className="button is-link">Screen Share</button>
             </div>
           </div>
-
           <div className="field">
             <label className="label">Release</label>
             <div className="control">
               <button onClick={this.handleRelease} className="button is-link">Release</button>
             </div>
           </div>
-
           <div className="field">
             <label className="label">Audio Playback Test</label>
             <div className="control">
