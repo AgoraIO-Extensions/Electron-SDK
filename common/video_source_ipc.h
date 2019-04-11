@@ -26,7 +26,7 @@
 #if defined(__APPLE__)
 		typedef unsigned int ScreenIDType;
 #elif defined(_WIN32)
-		typedef Rectangle ScreenIDType;
+		typedef agora::rtc::Rectangle ScreenIDType;
 #endif
 
 /**
