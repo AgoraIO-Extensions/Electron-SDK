@@ -151,29 +151,27 @@ describe('Render coverage', () => {
     jest.restoreAllMocks();
   });
 
-  it('Preview test', () => {
-    return new Promise(resolve => {
-      jest.spyOn(localRtcEngine, 'onRegisterDeliverFrame').mockImplementation(infos => {
-        console.log(`infos: ${JSON.stringify(infos.length)}`);
-        for (let i = 0; i < infos.length; i++) {
-          let info = infos[i];
-          expect(info.uid).toBe(0);
-          // Console.log(`uid: ${info.uid}, ydata: ${info.ydata.length}, udata: ${info.udata.length}, vdata: ${info.vdata.length}`);
-        }
-        expect(localRtcEngine.stopPreview()).toBe(0);
-        resolve();
-      });
-      // Ignore render functions
-      jest.spyOn(localRtcEngine, 'initRender').mockImplementation(() => {});
-      localRtcEngine.setChannelProfile(1);
-      localRtcEngine.setClientRole(1);
-      localRtcEngine.setupLocalVideo();
-      localRtcEngine.setAudioProfile(0, 1);
-      localRtcEngine.setVideoProfile(33, false);
-      localRtcEngine.enableVideo();
-      localRtcEngine.enableLocalVideo(true);
-      expect(localRtcEngine.startPreview()).toBe(0);
+  it('Preview test', done => {
+    jest.spyOn(localRtcEngine, 'onRegisterDeliverFrame').mockImplementation(infos => {
+      console.log(`infos: ${JSON.stringify(infos.length)}`);
+      for (let i = 0; i < infos.length; i++) {
+        let info = infos[i];
+        expect(info.uid).toBe(0);
+        // Console.log(`uid: ${info.uid}, ydata: ${info.ydata.length}, udata: ${info.udata.length}, vdata: ${info.vdata.length}`);
+      }
+      expect(localRtcEngine.stopPreview()).toBe(0);
+      done();
     });
+    // Ignore render functions
+    jest.spyOn(localRtcEngine, 'initRender').mockImplementation(() => {});
+    localRtcEngine.setChannelProfile(1);
+    localRtcEngine.setClientRole(1);
+    localRtcEngine.setupLocalVideo();
+    localRtcEngine.setAudioProfile(0, 1);
+    localRtcEngine.enableVideo();
+    localRtcEngine.enableLocalVideo(true);
+    localRtcEngine.setVideoProfile(33, false);
+    expect(localRtcEngine.startPreview()).toBe(0);
   });
 });
 
