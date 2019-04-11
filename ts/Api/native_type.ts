@@ -116,16 +116,16 @@ export interface LastmileProbeConfig {
 }
 
 export interface LastmileProbeOneWayResult {
-  packetLossRate: number,
-  jitter: number,
-  availableBandwidth: number
+  packetLossRate: number;
+  jitter: number;
+  availableBandwidth: number;
 }
 
 export interface LastmileProbeResult {
-  state: number,
-  uplinkReport:LastmileProbeOneWayResult,
-  downlinkReport:LastmileProbeOneWayResult,
-  rtt: number
+  state: number;
+  uplinkReport: LastmileProbeOneWayResult;
+  downlinkReport: LastmileProbeOneWayResult;
+  rtt: number;
 }
 
 /** Local voice changer options. */
