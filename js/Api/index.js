@@ -718,7 +718,7 @@ class AgoraRtcEngine extends events_1.EventEmitter {
         return this.rtcEngine.stopPreview();
     }
     /**
-     *
+     * @deprecated use setVideoEncoderConfiguration
      * @param {VIDEO_PROFILE_TYPE} profile - enumeration values represent video profile
      * @param {boolean} [swapWidthAndHeight = false] - Whether to swap width and height
      * @returns {number} 0 for success, <0 for failure
@@ -737,18 +737,21 @@ class AgoraRtcEngine extends events_1.EventEmitter {
         return this.rtcEngine.setCameraCapturerConfiguration(config);
     }
     /**
-     * @param {Object} config - encoder config of video
-     * @param {number} config.width - width of video
-     * @param {number} config.height - height of video
-     * @param {number} config.fps - valid values, 1, 7, 10, 15, 24, 30, 60
-     * @param {number} config.bitrate - 0 - standard(recommended), 1 - compatible
-     * @param {number} config.minbitrate - by default -1, changing this value is NOT recommended
-     * @param {number} config.orientation - 0 - auto adapt to capture source, 1 - Landscape(Horizontal), 2 - Portrait(Vertical)
-     * @returns {number} 0 for success, <0 for failure
+     * @description set video encoder configuration
+     * @param {VideoEncoderConfiguration} config - encoder config of video
      */
     setVideoEncoderConfiguration(config) {
-        const { width = 640, height = 480, fps = 15, bitrate = 0, orientation = 0, minbitrate = -1 } = config;
-        return this.rtcEngine.setVideoEncoderConfiguration(width, height, fps, bitrate, minbitrate, orientation);
+        const { width = 640, height = 480, frameRate = 15, minFrameRate = -1, bitrate = 0, minBitrate = -1, orientationMode = 0, degradationPrefer = 0 } = config;
+        return this.rtcEngine.setVideoEncoderConfiguration({
+            width,
+            height,
+            frameRate,
+            minFrameRate,
+            bitrate,
+            minBitrate,
+            orientationMode,
+            degradationPrefer
+        });
     }
     /**
      * @description Enables/Disables image enhancement and sets the options
@@ -1477,6 +1480,39 @@ class AgoraRtcEngine extends events_1.EventEmitter {
      */
     videoSourceRelease() {
         return this.rtcEngine.videoSourceRelease();
+    }
+    // 2.4 new Apis
+    /**
+     * @description Shares the whole or part of a screen by specifying the screen rect.
+     * @param {ScreenSymbol} screenSymbol screenid on mac / screen position on windows
+     * @param {CaptureRect} rect
+     * @param {CaptureParam} param
+     */
+    videosourceStartScreenCaptureByScreen(screenSymbol, rect, param) {
+        return this.rtcEngine.videosourceStartScreenCaptureByScreen(screenSymbol, rect, param);
+    }
+    /**
+     * @description Shares the whole or part of a window by specifying the window ID.
+     * @param {number} windowSymbol windowid
+     * @param {CaptureRect} rect
+     * @param {CaptureParam} param
+     */
+    videosourceStartScreenCaptureByWindow(windowSymbol, rect, param) {
+        return this.rtcEngine.videosourceStartScreenCaptureByWindow(windowSymbol, rect, param);
+    }
+    /**
+     * @description Updates the screen sharing parameters.
+     * @param {CaptureParam} param
+     */
+    videosourceUpdateScreenCaptureParameters(param) {
+        return this.rtcEngine.videosourceUpdateScreenCaptureParameters(param);
+    }
+    /**
+     * @description  Updates the screen sharing parameters.
+     * @param {VideoContentHint} hint
+     */
+    videosourceSetScreenCaptureContentHint(hint) {
+        return this.rtcEngine.videosourceSetScreenCaptureContentHint(hint);
     }
     // ===========================================================================
     // SCREEN SHARE
