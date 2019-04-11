@@ -6,6 +6,7 @@ const doJoin = require('./utils/doJoin');
 const doLeave = require('./utils/doLeave');
 const LiveStreaming = require('./utils/cdn');
 const MultiStream = require('./utils/multistream');
+const path = require('path')
 
 let localRtcEngine = null;
 let multistream = null;
@@ -23,6 +24,9 @@ describe('Basic API Coverage', () => {
     // Restore mocks after each test
     jest.restoreAllMocks();
   });
+  afterAll(() => {
+    localRtcEngine.release();
+  })
 
   it('Get version', () => {
     expect(localRtcEngine.getVersion()).toHaveProperty('version');
@@ -73,8 +77,25 @@ describe('Basic API Coverage', () => {
   });
 
   it('Enable/Disable Video', () => {
-    expect(localRtcEngine.disableVideo() <= 0).toBeTruthy();
-    expect(localRtcEngine.enableVideo() <= 0).toBeTruthy();
+    expect(localRtcEngine.disableVideo() == 0).toBeTruthy();
+    expect(localRtcEngine.enableVideo() == 0).toBeTruthy();
+  });
+
+  it('enable sournd position indication', () => {
+    expect(localRtcEngine.enableSoundPositionIndication() === 0).toBeTruthy();
+  });
+
+  it('set remote voice position', () => {
+    expect(localRtcEngine.setRemoteVoicePosition(1, 0, 0)).toBe(0);
+  });
+
+  it('set remote user priority', () => {
+    expect(localRtcEngine.setRemoteUserPriority(1, 1)).toBeLessThan(0);
+    expect(localRtcEngine.setRemoteUserPriority(1, 50)).toBe(0);
+  });
+
+  it('set capture preference', () => {
+    expect(localRtcEngine.setCameraCapturerConfiguration({preference: 1})).toBe(0);
   });
 
   it('Join channel', async () => {
@@ -99,6 +120,10 @@ describe('cdn coverage', () => {
     // Restore mocks after each test
     jest.restoreAllMocks();
   });
+
+  afterAll(() => {
+    localRtcEngine.release();
+  })
 
   it('Join channel', async () => {
     streaming = new LiveStreaming(localRtcEngine);
@@ -126,6 +151,10 @@ describe('Basic API Coverage 2', () => {
     jest.restoreAllMocks();
   });
 
+  afterAll(() => {
+    localRtcEngine.release();
+  })
+
   it('Enable/Disable videosource dualstream', () => {
     expect(localRtcEngine.videoSourceEnableDualStreamMode(true) <= 0).toBeTruthy();
   });
@@ -141,7 +170,20 @@ describe('Basic API Coverage 2', () => {
   });
 });
 
-describe('Render coverage', () => {
+describe('Basic API Coverage 3', () => {
+  beforeEach(() => {
+    localRtcEngine = new AgoraRtcEngine();
+    localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
+    localRtcEngine.setLogFile(path.resolve(__dirname, "../test.log"))
+  });
+  afterEach(() => {
+    // Restore mocks after each test
+    jest.restoreAllMocks();
+    localRtcEngine.release()
+  });
+});
+
+describe.skip('Render coverage', () => {
   beforeAll(() => {
     localRtcEngine = new AgoraRtcEngine();
     localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
@@ -149,9 +191,11 @@ describe('Render coverage', () => {
   beforeEach(() => {
     // Restore mocks after each test
     jest.restoreAllMocks();
+    localRtcEngine.release();
   });
 
   it('Preview test', done => {
+    console.log("preview")
     jest.spyOn(localRtcEngine, 'onRegisterDeliverFrame').mockImplementation(infos => {
       console.log(`infos: ${JSON.stringify(infos.length)}`);
       for (let i = 0; i < infos.length; i++) {
@@ -219,7 +263,7 @@ const MultiStreamTests = () => {
 };
 
 if (isMac) {
-  describe('Multi-stream coverage', MultiStreamTests);
+  describe.skip('Multi-stream coverage', MultiStreamTests);
 } else {
   describe.skip('Multi-stream coverage', MultiStreamTests);
 }
