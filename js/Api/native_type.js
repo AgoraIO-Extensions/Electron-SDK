@@ -53,15 +53,15 @@ var AualityAdaptIndication;
     /** The quality worsens because the network bandwidth decreases. */
     AualityAdaptIndication[AualityAdaptIndication["ADAPT_DOWN_BANDWIDTH"] = 2] = "ADAPT_DOWN_BANDWIDTH";
 })(AualityAdaptIndication = exports.AualityAdaptIndication || (exports.AualityAdaptIndication = {}));
-var DegradationPrefer;
-(function (DegradationPrefer) {
+var DegradationPreference;
+(function (DegradationPreference) {
     /** 0: (Default) Degrade the frame rate in order to maintain the video quality. */
-    DegradationPrefer[DegradationPrefer["MAINTAIN_QUALITY"] = 0] = "MAINTAIN_QUALITY";
+    DegradationPreference[DegradationPreference["MAINTAIN_QUALITY"] = 0] = "MAINTAIN_QUALITY";
     /** 1: Degrade the video quality in order to maintain the frame rate. */
-    DegradationPrefer[DegradationPrefer["MAINTAIN_FRAMERATE"] = 1] = "MAINTAIN_FRAMERATE";
+    DegradationPreference[DegradationPreference["MAINTAIN_FRAMERATE"] = 1] = "MAINTAIN_FRAMERATE";
     /** 2: (For future use) Maintain a balance between the frame rate and video quality. */
-    DegradationPrefer[DegradationPrefer["MAINTAIN_BALANCED"] = 2] = "MAINTAIN_BALANCED";
-})(DegradationPrefer = exports.DegradationPrefer || (exports.DegradationPrefer = {}));
+    DegradationPreference[DegradationPreference["MAINTAIN_BALANCED"] = 2] = "MAINTAIN_BALANCED";
+})(DegradationPreference = exports.DegradationPreference || (exports.DegradationPreference = {}));
 var OrientationMode;
 (function (OrientationMode) {
     OrientationMode[OrientationMode["ORIENTATION_MODE_ADAPTIVE"] = 0] = "ORIENTATION_MODE_ADAPTIVE";

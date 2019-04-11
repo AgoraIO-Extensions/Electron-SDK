@@ -95,6 +95,17 @@ export interface LastmileProbeConfig {
     expectedUplinkBitrate: number;
     expectedDownlinkBitrate: number;
 }
+export interface LastmileProbeOneWayResult {
+    packetLossRate: number;
+    jitter: number;
+    availableBandwidth: number;
+}
+export interface LastmileProbeResult {
+    state: number;
+    uplinkReport: LastmileProbeOneWayResult;
+    downlinkReport: LastmileProbeOneWayResult;
+    rtt: number;
+}
 /** Local voice changer options. */
 export declare enum VoiceChangerPreset {
     /** 0: The original voice (no local voice change). */
@@ -204,9 +215,9 @@ export interface VideoEncoderConfiguration {
     bitrate: number;
     minBitrate: number;
     orientationMode: OrientationMode;
-    degradationPrefer: DegradationPrefer;
+    degradationPreference: DegradationPreference;
 }
-export declare enum DegradationPrefer {
+export declare enum DegradationPreference {
     /** 0: (Default) Degrade the frame rate in order to maintain the video quality. */
     MAINTAIN_QUALITY = 0,
     /** 1: Degrade the video quality in order to maintain the frame rate. */
@@ -476,6 +487,9 @@ export interface NodeRtcEngine {
     setVideoEncoderConfiguration(config: VideoEncoderConfiguration): number;
     setBeautyEffectOptions(enable: boolean, options: {
         lighteningContrastLevel: 0 | 1 | 2;
+        lighteningLevel: number;
+        smoothnessLevel: number;
+        rednessLevel: number;
     }): number;
     setRemoteUserPriority(uid: number, priority: Priority): number;
     enableAudio(): number;

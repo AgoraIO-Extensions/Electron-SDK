@@ -122,6 +122,9 @@ class AgoraRtcEngine extends events_1.EventEmitter {
             fire('audiomixingfinished');
             fire('audioMixingFinished');
         });
+        this.rtcEngine.onEvent('audioMixingStateChanged', function (state, err) {
+            fire('audioMixingStateChanged', state, err);
+        });
         this.rtcEngine.onEvent('apicallexecuted', function (api, err) {
             fire('apicallexecuted', api, err);
             fire('apiCallExecuted', api, err);
@@ -149,6 +152,9 @@ class AgoraRtcEngine extends events_1.EventEmitter {
         this.rtcEngine.onEvent('lastmilequality', function (quality) {
             fire('lastmilequality', quality);
             fire('lastMileQuality', quality);
+        });
+        this.rtcEngine.onEvent('lastmileProbeResult', function (result) {
+            fire('lastmileProbeResult', result);
         });
         this.rtcEngine.onEvent('firstlocalvideoframe', function (width, height, elapsed) {
             fire('firstlocalvideoframe', width, height, elapsed);
@@ -741,7 +747,7 @@ class AgoraRtcEngine extends events_1.EventEmitter {
      * @param {VideoEncoderConfiguration} config - encoder config of video
      */
     setVideoEncoderConfiguration(config) {
-        const { width = 640, height = 480, frameRate = 15, minFrameRate = -1, bitrate = 0, minBitrate = -1, orientationMode = 0, degradationPrefer = 0 } = config;
+        const { width = 640, height = 480, frameRate = 15, minFrameRate = -1, bitrate = 0, minBitrate = -1, orientationMode = 0, degradationPreference = 0 } = config;
         return this.rtcEngine.setVideoEncoderConfiguration({
             width,
             height,
@@ -750,7 +756,7 @@ class AgoraRtcEngine extends events_1.EventEmitter {
             bitrate,
             minBitrate,
             orientationMode,
-            degradationPrefer
+            degradationPreference
         });
     }
     /**
@@ -758,6 +764,9 @@ class AgoraRtcEngine extends events_1.EventEmitter {
      * @param {boolean} enable If to enable
      * @param {Object} options beauty options
      * @param {number} options.lighteningContrastLevel 0 for low, 1 for normal, 2 for high
+     * @param {number} options.lighteningLevel The brightness level. The value ranges from 0.0 (original) to 1.0.
+     * @param {number} options.smoothnessLevel The sharpness level. The value ranges between 0 (original) and 1. This parameter is usually used to remove blemishes.
+     * @param {number} options.rednessLevel The redness level. The value ranges between 0 (original) and 1. This parameter adjusts the red saturation level.
      */
     setBeautyEffectOptions(enable, options) {
         return this.rtcEngine.setBeautyEffectOptions(enable, options);
