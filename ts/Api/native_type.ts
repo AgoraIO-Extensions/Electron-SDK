@@ -115,6 +115,19 @@ export interface LastmileProbeConfig {
   expectedDownlinkBitrate: number;
 }
 
+export interface LastmileProbeOneWayResult {
+  packetLossRate: number,
+  jitter: number,
+  availableBandwidth: number
+}
+
+export interface LastmileProbeResult {
+  state: number,
+  uplinkReport:LastmileProbeOneWayResult,
+  downlinkReport:LastmileProbeOneWayResult,
+  rtt: number
+}
+
 /** Local voice changer options. */
 export enum VoiceChangerPreset {
   /** 0: The original voice (no local voice change). */
