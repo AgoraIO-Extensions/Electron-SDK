@@ -2436,31 +2436,111 @@ namespace agora {
         {
             LOG_ENTER;
             do {
+                napi_status status = napi_ok;
+                Isolate *isolate = args.GetIsolate();
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                napi_status status = napi_ok;
 
-                int32 width = 640, height = 480, fps = FRAME_RATE_FPS_15, 
-                    bitrate = STANDARD_BITRATE, minbitrate = DEFAULT_MIN_BITRATE, 
-                    orientationMode = ORIENTATION_MODE_ADAPTIVE;
+                if(!args[0]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+                Local<Object> obj = args[0]->ToObject();
+                VideoDimensions dimensions;
+                VideoEncoderConfiguration config;
 
-                status = napi_get_value_int32_(args[0], width);
+                status = napi_get_object_property_int32_(isolate, obj, "width", dimensions.width);
                 CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_value_int32_(args[1], height);
+                status = napi_get_object_property_int32_(isolate, obj, "height", dimensions.height);
                 CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_value_int32_(args[2], fps);
+                config.dimensions = dimensions;
+                status = napi_get_object_property_int32_(isolate, obj, "bitrate", config.bitrate);
                 CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_value_int32_(args[3], bitrate);
+                status = napi_get_object_property_int32_(isolate, obj, "minBitrate", config.minBitrate);
                 CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_value_int32_(args[4], minbitrate);
-                CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_value_int32_(args[5], orientationMode);
+                status = napi_get_object_property_int32_(isolate, obj, "minFrameRate", config.minFrameRate);
                 CHECK_NAPI_STATUS(pEngine, status);
 
-                VideoDimensions dimension(width, height);
-                VideoEncoderConfiguration config(dimension, (FRAME_RATE)fps, bitrate, (ORIENTATION_MODE)orientationMode);
-                config.minBitrate = minbitrate;
+                int frameRateVal;
+                FRAME_RATE frameRate;
+                status = napi_get_object_property_int32_(isolate, obj, "frameRate", frameRateVal);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                switch(frameRateVal) {
+                    case 1:
+                        frameRate = FRAME_RATE_FPS_1;
+                        break;
+                    case 7:
+                        frameRate = FRAME_RATE_FPS_7;
+                        break;
+                    case 10:
+                        frameRate = FRAME_RATE_FPS_10;
+                        break;
+                    case 15:
+                        frameRate = FRAME_RATE_FPS_15;
+                        break;
+                    case 24:
+                        frameRate = FRAME_RATE_FPS_24;
+                        break;
+                    case 30:
+                        frameRate = FRAME_RATE_FPS_30;
+                        break;
+                    case 60:
+                        frameRate = FRAME_RATE_FPS_60;
+                        break;
+                    default:
+                        status = napi_invalid_arg;
+                        break;
+                }
+                CHECK_NAPI_STATUS(pEngine, status);
+                config.frameRate = frameRate;
+
+                int orientationModeVal;
+                ORIENTATION_MODE orientationMode;
+                status = napi_get_object_property_int32_(isolate, obj, "orientationMode", orientationModeVal);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                switch(orientationModeVal) {
+                    case 0:
+                        orientationMode = ORIENTATION_MODE_ADAPTIVE;
+                        break;
+                    case 1:
+                        orientationMode = ORIENTATION_MODE_FIXED_LANDSCAPE;
+                        break;
+                    case 2:
+                        orientationMode = ORIENTATION_MODE_FIXED_PORTRAIT;
+                        break;
+                    default:
+                        status = napi_invalid_arg;
+                        break;
+                }
+                CHECK_NAPI_STATUS(pEngine, status);
+                config.orientationMode = orientationMode;
+
+                
+                int degradationPrefValue;
+                DEGRADATION_PREFERENCE degradationPref;
+                status = napi_get_object_property_int32_(isolate, obj, "degradationPreference", degradationPrefValue);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                switch(degradationPrefValue) {
+                    case 0:
+                        degradationPref = MAINTAIN_QUALITY;
+                        break;
+                    case 1:
+                        degradationPref = MAINTAIN_FRAMERATE;
+                        break;
+                    case 2:
+                        degradationPref = MAINTAIN_BALANCED;
+                        break;
+                    default:
+                        status = napi_invalid_arg;
+                        break;
+                }
+                CHECK_NAPI_STATUS(pEngine, status);
+                config.degradationPreference = degradationPref;
+
                 int result = pEngine->m_engine->setVideoEncoderConfiguration(config);
                 napi_set_int_result(args, result);
             } while (false);
