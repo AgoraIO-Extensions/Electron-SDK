@@ -597,8 +597,13 @@ namespace agora {
                 HandleScope scope(isolate);
                 Local<Object> obj = Object::New(isolate);
                 CHECK_NAPI_OBJ(obj);
+
                 NODE_SET_OBJ_PROP_UINT32(obj, "sentBitrate", stats.sentBitrate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "sentFrameRate", stats.sentFrameRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "targetBitrate", stats.targetBitrate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "targetFrameRate", stats.targetFrameRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "qualityAdaptIndication", stats.qualityAdaptIndication);
+
                 Local<Value> arg[1] = { obj };
                 auto it = m_callbacks.find(RTC_EVENT_LOCAL_VIDEO_STATS);
                 if (it != m_callbacks.end()) {
