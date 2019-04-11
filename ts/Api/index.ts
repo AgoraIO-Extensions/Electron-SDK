@@ -989,9 +989,15 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {boolean} enable If to enable
    * @param {Object} options beauty options
    * @param {number} options.lighteningContrastLevel 0 for low, 1 for normal, 2 for high
+   * @param {number} options.lighteningLevel The brightness level. The value ranges from 0.0 (original) to 1.0.
+   * @param {number} options.smoothnessLevel The sharpness level. The value ranges between 0 (original) and 1. This parameter is usually used to remove blemishes.
+   * @param {number} options.rednessLevel The redness level. The value ranges between 0 (original) and 1. This parameter adjusts the red saturation level.
    */
   setBeautyEffectOptions(enable: boolean, options: {
-    lighteningContrastLevel: 0 | 1 | 2
+    lighteningContrastLevel: 0 | 1 | 2,
+    lighteningLevel: number,
+    smoothnessLevel: number,
+    rednessLevel: number
   }): number {
     return this.rtcEngine.setBeautyEffectOptions(enable, options);
   }
