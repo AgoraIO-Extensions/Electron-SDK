@@ -3,6 +3,7 @@
 * Add Missing Api
   * Add `getConnectionState` api
   * Add Event `remoteAudioStats`
+* Add `release` Api
 
 #### :bug: Bug Fix
 * fixed the problem that `setHighFps` not work
