@@ -18,10 +18,10 @@
   * Add `startAudioDeviceLoopbackTest`
   * Add `stopAudioDeviceLoopbackTest`
   * Add `setCameraCapturerConfiguration`
-  * Add `videosourceStartScreenCaptureByScreen` (WIP)
-  * Add `videosourceStartScreenCaptureByWindow` (WIP)
-  * Add `videosourceUpdateScreenCaptureParameters` (WIP)
-  * Add `videosourceSetScreenCaptureContentHint` (WIP)
+  * Add `videosourceStartScreenCaptureByScreen`
+  * Add `videosourceStartScreenCaptureByWindow`
+  * Add `videosourceUpdateScreenCaptureParameters`
+  * Add `videosourceSetScreenCaptureContentHint`
   * Add event `audioMixingStateChanged`
   * Add event `lastmileProbeResult`
 * Add `release` Api
@@ -30,7 +30,9 @@
   * `setVideoEncoderConfiguration` will recv a param with type `VideoEncoderConfiguration`
   * `LocalVideoStats` add three properties: `targetBitrate,targetFrameRate,qualityAdaptIndication`
 
-* Notice that `videosourceStartScreenCaptureByScreen` need a param called `ScreenSymbol` which differs on Mac and Windows. And a method will be provided in future to get this param on the two platforms.
+#### :warning: Notice
+* You should call `videosourceSetVideoProfile` once before or after `videosourceStartScreenCaptureByWindow` to make it work properly in temp.
+* `videosourceStartScreenCaptureByScreen` need a param called `ScreenSymbol` which differs on Mac and Windows. And a method will be provided in future to get this param on the two platforms.
 
 #### :bug: Bug Fix
 * fixed the problem that `setHighFps` not work
