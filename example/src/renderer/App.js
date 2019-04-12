@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import AgoraRtcEngine from '../../../';
 import { List } from 'immutable';
 import path from 'path';
+import os from 'os'
 
 import {voiceChangerList, voiceReverbPreset, videoProfileList, audioProfileList, audioScenarioList, APP_ID, SHARE_ID, voiceReverbList } from '../utils/settings'
 import base64Encode from '../utils/base64'
@@ -122,6 +123,7 @@ export default class App extends Component {
     rtcEngine.setClientRole(this.state.role)
     rtcEngine.setAudioProfile(0, 1)
     rtcEngine.enableVideo()
+    let logpath = path.resolve(os.homedir(), "./agoramain.sdk")
     rtcEngine.setLogFile('~/agora.log')
     rtcEngine.enableLocalVideo(true)
     rtcEngine.enableWebSdkInteroperability(true)
@@ -195,12 +197,13 @@ export default class App extends Component {
       let rtcEngine = this.getRtcEngine()
       rtcEngine.once('videosourcejoinedsuccess', uid => {
         clearTimeout(timer)
-        rtcEngine.videoSourceSetLogFile('~/videosourceabc.log')
         this.sharingPrepared = true
         resolve(uid)
       });
       try {
         rtcEngine.videoSourceInitialize(APP_ID);
+        let logpath = path.resolve(os.homedir(), "./agorascreenshare.log")
+        rtcEngine.videoSourceSetLogFile(logpath)
         rtcEngine.videoSourceSetChannelProfile(1);
         rtcEngine.videoSourceEnableWebSdkInteroperability(true)
         // rtcEngine.videoSourceSetVideoProfile(50, false);
@@ -232,8 +235,11 @@ export default class App extends Component {
     };
     return new Promise((resolve, reject) => {
       let rtcEngine = this.getRtcEngine()
-      rtcEngine.startScreenCapture2(windowId, captureFreq, rect, bitrate);
+      // rtcEngine.startScreenCapture2(windowId, captureFreq, rect, bitrate);
+      // there's a known limitation that, videosourcesetvideoprofile has to be called at least once
+      // note although it's called, it's not taking any effect, to control the screenshare dimension, use captureParam instead
       rtcEngine.videoSourceSetVideoProfile(43, false);
+      rtcEngine.videosourceStartScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15})
       rtcEngine.startScreenCapturePreview();
     });
   }
