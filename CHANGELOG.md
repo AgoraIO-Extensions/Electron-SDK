@@ -18,10 +18,10 @@
   * Add `startAudioDeviceLoopbackTest`
   * Add `stopAudioDeviceLoopbackTest`
   * Add `setCameraCapturerConfiguration`
-  * Add `videosourceStartScreenCaptureByScreen`
-  * Add `videosourceStartScreenCaptureByWindow`
-  * Add `videosourceUpdateScreenCaptureParameters`
-  * Add `videosourceSetScreenCaptureContentHint`
+  * Add `videosourceStartScreenCaptureByScreen` (WIP)
+  * Add `videosourceStartScreenCaptureByWindow` (WIP)
+  * Add `videosourceUpdateScreenCaptureParameters` (WIP)
+  * Add `videosourceSetScreenCaptureContentHint` (WIP)
   * Add event `audioMixingStateChanged`
   * Add event `lastmileProbeResult`
 * Add `release` Api
