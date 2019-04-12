@@ -3,6 +3,7 @@
 * Add Missing Api for 2.3.*
   * Add `getConnectionState` api
   * Add Event `remoteAudioStats`
+
 * Add 2.4 Api
   * Add `setLogFileSize`
   * Add `setBeautyEffectOptions`
@@ -24,11 +25,16 @@
   * Add event `audioMixingStateChanged`
   * Add event `lastmileProbeResult`
 * Add `release` Api
+
 * Modify Api
   * `setVideoEncoderConfiguration` will recv a param with type `VideoEncoderConfiguration`
   * `LocalVideoStats` add three properties: `targetBitrate,targetFrameRate,qualityAdaptIndication`
 
 * Notice that `videosourceStartScreenCaptureByScreen` need a param called `ScreenSymbol` which differs on Mac and Windows. And a method will be provided in future to get this param on the two platforms.
+
+#### :bug: Bug Fix
+* fixed the problem that `setHighFps` not work
+* fixed the problem which will prevent videosource from releasing
 
 #### :memo: Documentation
 * Add doc and type for the api above.
