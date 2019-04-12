@@ -11,9 +11,9 @@
 #ifndef AGORA_VIDEO_SOURCE_H
 #define AGORA_VIDEO_SOURCE_H
 #include "IAgoraRtcEngine.h"
+#include "video_source_ipc.h"
 #include <memory>
 #include "video_source_param_parser.h"
-#include "video_source_ipc.h"
 #include "node_process.h"
 #include "node_error.h"
 #include <thread>
