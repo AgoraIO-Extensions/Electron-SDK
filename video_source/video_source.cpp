@@ -202,12 +202,13 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
             return;
         }
         agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
-        rep.enableLocalVideo(true);
         CaptureScreenCmd *cmd = (CaptureScreenCmd*)payload;
         LOG_INFO("Start screen share, top : %d, left : %d, bottom :%d, right :%d\n", cmd->rect.top, cmd->rect.left, cmd->rect.bottom, cmd->rect.right);
         if (m_rtcEngine->startScreenCapture(cmd->windowid, cmd->captureFreq, &cmd->rect, cmd->bitrate) != 0) {
             LOG_ERROR("start screen capture failed.");
             rep.enableLocalVideo(false);
+        } else {
+            rep.enableLocalVideo(true);
         }
     }
     else if (msg == AGORA_IPC_STOP_CAPTURE_SCREEN){
@@ -282,17 +283,33 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
     else if(msg == AGORA_IPC_START_CAPTURE_BY_DISPLAY) {
         if (payload) {
             CaptureScreenByDisplayCmd *cmd = (CaptureScreenByDisplayCmd*)payload;
+            agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
+            int result = 0;
 #if defined(_WIN32)
-            m_rtcEngine->startScreenCaptureByScreenRect(cmd->screenId, cmd->regionRect, cmd->captureParams);
+            result = m_rtcEngine->startScreenCaptureByScreenRect(cmd->screenId, cmd->regionRect, cmd->captureParams);
 #elif defined(__APPLE__)
-            m_rtcEngine->startScreenCaptureByDisplayId(cmd->screenId, cmd->regionRect, cmd->captureParams);
+            result = m_rtcEngine->startScreenCaptureByDisplayId(cmd->screenId, cmd->regionRect, cmd->captureParams);
 #endif
+            if(result != 0) {
+                LOG_ERROR("start screen capture by display failed.");
+                rep.enableLocalVideo(false);
+            } else {
+                rep.enableLocalVideo(true);
+            }
         }
     }
     else if(msg == AGORA_IPC_START_CAPTURE_BY_WINDOW_ID) {
         if (payload) {
             CaptureScreenByWinCmd *cmd = (CaptureScreenByWinCmd*)payload;
-            m_rtcEngine->startScreenCaptureByWindowId(reinterpret_cast<agora::rtc::view_t>(cmd->windowId), cmd->regionRect, cmd->captureParams);
+            agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
+            int result = m_rtcEngine->startScreenCaptureByWindowId(reinterpret_cast<agora::rtc::view_t>(cmd->windowId), cmd->regionRect, cmd->captureParams);
+
+            if(result != 0) {
+                LOG_ERROR("start screen capture by display failed.");
+                rep.enableLocalVideo(false);
+            } else {
+                rep.enableLocalVideo(true);
+            }
         }
     }
     else if(msg == AGORA_IPC_UPDATE_SCREEN_CAPTURE_PARAMS) {
