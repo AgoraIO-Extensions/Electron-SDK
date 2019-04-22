@@ -25,18 +25,18 @@ class Renderer {
 
     if (!contentMode) {
       if (vertical) {
-        return localRatio > tempRatio ? 
+        return localRatio > tempRatio ?
           clientHeight / height : clientWidth / width
       } else {
-        return localRatio < tempRatio ? 
+        return localRatio < tempRatio ?
           clientHeight / height : clientWidth / width
       }
     } else {
       if (vertical) {
-        return localRatio < tempRatio ? 
+        return localRatio < tempRatio ?
           clientHeight / height : clientWidth / width
       } else {
-        return localRatio > tempRatio ? 
+        return localRatio > tempRatio ?
           clientHeight / height : clientWidth / width
       }
     }
@@ -71,7 +71,9 @@ class Renderer {
     this.canvas = null;
     this.view = null;
   }
-
+  refreshCanvas() {
+    // Not implemented for software renderer
+  }
   updateCanvas(options = {
     width: 0,
     height: 0,
@@ -134,8 +136,8 @@ class Renderer {
     let height = contentHeight + top + bottom;
 
     this.updateCanvas({
-      width, height, rotation, 
-      mirrorView: mirror, 
+      width, height, rotation,
+      mirrorView: mirror,
       contentMode: this.contentMode,
       clientWidth: this.container.clientWidth,
       clientHeight: this.container.clientHeight,

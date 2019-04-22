@@ -35,6 +35,9 @@ class GlRenderer implements IRenderer {
   setContentMode(mode: number): void {
     return this.self.setContentMode(mode);
   }
+  refreshCanvas() {
+      return this.self.refreshCanvas();
+  }
 }
 
 export {

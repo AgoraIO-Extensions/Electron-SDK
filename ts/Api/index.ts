@@ -573,6 +573,20 @@ class AgoraRtcEngine extends EventEmitter {
     }
   }
 
+/**
+* refreshRender
+* Size of the view has changed. Refresh zoom level so that video is sized
+* appropriately while waiting for the next video frame to arrive.
+* Calling this can prevent a view discontinutity.
+* @param {string|number} key key for the map that store the renderers, e.g, uid or `videosource` or `local`
+*/
+  refreshRender(key: 'local' | 'videosource' | number) {
+    if (this.streams.has(String(key))) {
+        const renderer = this.streams.get(String(key));
+        renderer.refreshCanvas();
+    }
+  }
+
   /**
    * init renderer
    * @param {string|number} key key for the map that store the renderers, e.g, uid or `videosource` or `local`

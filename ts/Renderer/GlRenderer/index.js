@@ -26,7 +26,10 @@ const AgoraRender = function() {
     // 0 - cover, 1 - fit
     contentMode: 0,
     event: new EventEmitter(),
-    firstFrameRender: false
+    firstFrameRender: false,
+    lastImageWidth: 0,
+    lastImageHeight: 0,
+    lastImageRotation: 0
   };
 
   that.setContentMode = function(mode) {
@@ -65,7 +68,7 @@ const AgoraRender = function() {
     deleteBuffer(surfaceBuffer);
     texCoordBuffer = undefined;
     surfaceBuffer = undefined;
-    
+
     gl = undefined;
 
     try {
@@ -82,6 +85,12 @@ const AgoraRender = function() {
     that.view = undefined;
     that.mirrorView = false;
   };
+
+  that.refreshCanvas  = function() {
+    if (that.lastImageWidth) {
+      updateViewZoomLevel(that.lastImageRotation, that.lastImageWidth, that.lastImageHeight);
+    }
+  }
 
   that.renderImage = function(image) {
     // Rotation, width, height, left, top, right, bottom, yplane, uplane, vplane
@@ -152,11 +161,11 @@ const AgoraRender = function() {
       /**
    * draw image with params
    * @private
-   * @param {*} render 
-   * @param {*} header 
-   * @param {*} yplanedata 
-   * @param {*} uplanedata 
-   * @param {*} vplanedata 
+   * @param {*} render
+   * @param {*} header
+   * @param {*} yplanedata
+   * @param {*} uplanedata
+   * @param {*} vplanedata
    */
   that.drawFrame = function({header, yUint8Array, uUint8Array, vUint8Array}) {
     var headerLength = 20;
@@ -409,10 +418,7 @@ const AgoraRender = function() {
     gl.uniform1i(v, 2); /* Bind Vtex to texture unit 2 */
   }
 
-  function updateCanvas(rotation, width, height) {
-    if (that.canvasUpdated) {
-      return;
-    }
+  function updateViewZoomLevel(rotation, width, height) {
     that.clientWidth = that.view.clientWidth;
     that.clientHeight = that.view.clientHeight;
 
@@ -453,7 +459,12 @@ const AgoraRender = function() {
       console.error(e);
       return;
     }
+  }
 
+  function updateCanvas(rotation, width, height) {
+    if (that.canvasUpdated) {
+      return;
+    }
     gl.bindBuffer(gl.ARRAY_BUFFER, surfaceBuffer);
     gl.enableVertexAttribArray(positionLocation);
     gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
