@@ -11,6 +11,7 @@ interface IRenderer {
     vUint8Array: any
   }): void;
   setContentMode(mode: number): void;
+  refreshCanvas(): void;
 }
 
 class GlRenderer implements IRenderer {
