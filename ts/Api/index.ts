@@ -583,7 +583,9 @@ class AgoraRtcEngine extends EventEmitter {
   refreshRender(key: 'local' | 'videosource' | number) {
     if (this.streams.has(String(key))) {
         const renderer = this.streams.get(String(key));
-        renderer.refreshCanvas();
+        if (renderer) {
+          renderer.refreshCanvas();
+      }
     }
   }
 
