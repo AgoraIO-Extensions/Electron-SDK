@@ -545,7 +545,7 @@ export interface NodeRtcEngine {
   removeFromHighVideo(uid: number): void;
   renewToken(newToken: string): number;
   setChannelProfile(profile: number): number;
-  setClientRole(role: ClientRoleType, permissionKey: string): number;
+  setClientRole(role: ClientRoleType): number;
   startEchoTest(): number;
   stopEchoTest(): number;
   startEchoTestWithInterval(interval: number): number;
