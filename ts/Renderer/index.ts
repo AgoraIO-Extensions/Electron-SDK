@@ -1,8 +1,14 @@
 import SoftwareRenderer from './SoftwareRenderer';
 import createGlRenderer from './GlRenderer';
+import { EventEmitter } from 'events';
 
 interface IRenderer {
+<<<<<<< HEAD
   bind(element: HTMLElement): void;
+=======
+  event: EventEmitter;
+  bind(element: Element): void;
+>>>>>>> 690204b... <feat> expose IRenderer.event
   unbind(): void;
   drawFrame(imageData: {
     header: any,
@@ -16,8 +22,10 @@ interface IRenderer {
 
 class GlRenderer implements IRenderer {
   self: any;
+  event: EventEmitter;
   constructor() {
     this.self = createGlRenderer.apply(this);
+    this.event = this.self.event;
   }
   bind(element: HTMLElement): void {
     return this.self.bind(element);
