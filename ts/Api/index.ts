@@ -592,9 +592,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * init renderer
    * @param {string|number} key key for the map that store the renderers, e.g, uid or `videosource` or `local`
-   * @param {*} view dom elements to render video
+   * @param {Element} view dom elements to render video
    */
-  initRender(key: 'local' | 'videosource' | number, view: HTMLElement) {
+  initRender(key: 'local' | 'videosource' | number, view: Element) {
     if (this.streams.has(String(key))) {
       this.destroyRender(key);
     }
@@ -716,7 +716,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {Element} view dom where to initialize renderer
    * @returns {number} 0 for success, <0 for failure
    */
-  subscribe(uid: number, view: HTMLElement): number {
+  subscribe(uid: number, view: Element): number {
     this.initRender(uid, view);
     return this.rtcEngine.subscribe(uid);
   }
@@ -831,11 +831,10 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * @description In live broadcasting mode, set client role, 1 for anchor, 2 for audience
    * @param {ClientRoleType} role client role
-   * @param {string} permissionKey permission key
    * @returns {number} 0 for success, <0 for failure
    */
-  setClientRole(role: ClientRoleType, permissionKey: string): number {
-    return this.rtcEngine.setClientRole(role, permissionKey);
+  setClientRole(role: ClientRoleType): number {
+    return this.rtcEngine.setClientRole(role);
   }
 
   /**
