@@ -2,7 +2,7 @@ import SoftwareRenderer from './SoftwareRenderer';
 import createGlRenderer from './GlRenderer';
 
 interface IRenderer {
-  bind(element: HTMLElement): void;
+  bind(element: Element): void;
   unbind(): void;
   drawFrame(imageData: {
     header: any,
@@ -18,7 +18,7 @@ class GlRenderer implements IRenderer {
   constructor() {
     this.self = createGlRenderer.apply(this);
   }
-  bind(element: HTMLElement): void {
+  bind(element: Element): void {
     return this.self.bind(element);
   }
   unbind(): void {
