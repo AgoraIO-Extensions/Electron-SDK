@@ -17,7 +17,10 @@ const buildDownloadInfo = () => {
   const { major, minor, patch } = detectOwnVersion();
   const versionLabel = `v${major}_${minor}_${patch}`;
   // build electron dependent label
-  const dependentElectronVersion = detectElectronVersion();
+  const {
+    electron_version
+  } = require("optimist").argv;
+  const dependentElectronVersion = detectElectronVersion(electron_version);
   const electronLabel = ((version) => {
     if (version === DependentElectronVersion.ORIGIN) {
       return 'e2';
