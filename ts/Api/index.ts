@@ -182,6 +182,10 @@ class AgoraRtcEngine extends EventEmitter {
       fire('remoteVideoStats', stats);
     });
 
+    this.rtcEngine.onEvent('remoteAudioStats', function(stats: RemoteAudioStats) {
+      fire('remoteAudioStats', stats);
+    });
+
     this.rtcEngine.onEvent('audiodevicestatechanged', function(
       deviceId: string,
       deviceType: number,
