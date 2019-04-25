@@ -7,6 +7,7 @@
   "author": "agora.io",
   "scripts": {
     "install": "npm run download",
+    "tslint": "tslint -c tslint.json -p tsconfig.json --fix",
     "build:dts": "rimraf ./types && tsc -p dtsconfig.json",
     "prebuild:ts": "npm run build:dts",
     "build:ts": "rimraf ./js && tsc -p tsconfig.json",
@@ -17,11 +18,12 @@
     "debug": "node ./scripts/build.js --runtime=electron --electron_version=3.0.6 --debug=true",
     "doc": "typedoc --out ./docs ./ts --hideGenerator --mode file --target es6 --name Agora-Electron-SDK --readme none",
     "download": "node ./scripts/download.js",
-    "preexample": "npm run build:electron3",
+    "preexample": "npm run build:electron3 && npm run build:ts",
     "example": "cd example && npm install && npm run dev",
-    "tslint": "tslint -c tslint.json -p tsconfig.json --fix",
-    "test": "npm run build:node && jest --detectOpenHandles --forceExit",
-    "quicktest": "jest --detectOpenHandles --forceExit"
+    "pretest": "npm run build:node && npm run build:ts",
+    "test": "jest --detectOpenHandles --forceExit",
+    "quicktest": "jest --detectOpenHandles --forceExit",
+    "prepublish": "npm run build:ts"
   },
   "gypfile": false,
   "dependencies": {
