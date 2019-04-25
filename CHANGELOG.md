@@ -1,3 +1,9 @@
+## Latest
+#### :bug: Bug Fix
+* Use type `Element` instead of `HTMLElement`
+* Fixed param for api `setClientRole`
+* Add missing events.
+
 ## 2.4.0-alpha (Apr 11st, 2019)
 #### :house: Internal
 * Add Missing Api for 2.3.*
