@@ -729,7 +729,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {Element} view dom element where we will initialize our view
    * @returns {number} 0 for success, <0 for failure
    */
-  setupLocalVideo(view: HTMLElement): number {
+  setupLocalVideo(view: Element): number {
     this.initRender('local', view);
     return this.rtcEngine.setupLocalVideo();
   }
@@ -792,11 +792,11 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description setup view content mode
-   * @param {number} uid stream uid to operate
+   * @param {number | 'local' | 'videosource'} uid stream uid to operate
    * @param {0|1} mode view content mode, 0 - fill, 1 - fit
    * @returns {number} 0 - success, -1 - fail
    */
-  setupViewContentMode(uid: number, mode: 0|1): number {
+  setupViewContentMode(uid: number | 'local' | 'videosource', mode: 0|1): number {
     if (this.streams.has(String(uid))) {
       const renderer = this.streams.get(String(uid));
       (renderer as IRenderer).setContentMode(mode);
@@ -1670,7 +1670,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @description setup renderer for video source
    * @param {Element} view dom element where video source should be displayed
    */
-  setupLocalVideoSource(view: HTMLElement): void {
+  setupLocalVideoSource(view: Element): void {
     this.initRender('videosource', view);
   }
 
