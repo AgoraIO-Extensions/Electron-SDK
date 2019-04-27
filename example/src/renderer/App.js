@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import AgoraRtcEngine from '../../../';
 import { List } from 'immutable';
 import path from 'path';
+import os from 'os';
 
 import {videoProfileList, audioProfileList, audioScenarioList, APP_ID, SHARE_ID } from '../utils/settings'
 import base64Encode from '../utils/base64'
@@ -162,12 +163,13 @@ export default class App extends Component {
       let rtcEngine = this.getRtcEngine()
       rtcEngine.once('videosourcejoinedsuccess', uid => {
         clearTimeout(timer)
-        rtcEngine.videoSourceSetLogFile('~/videosourceabc.log')
         this.sharingPrepared = true
         resolve(uid)
       });
       try {
         rtcEngine.videoSourceInitialize(APP_ID);
+        let logpath = path.resolve(os.homedir(), './videosourceabc.log')
+        rtcEngine.videoSourceSetLogFile(logpath)
         rtcEngine.videoSourceSetChannelProfile(1);
         rtcEngine.videoSourceEnableWebSdkInteroperability(true)
         // rtcEngine.videoSourceSetVideoProfile(50, false);
