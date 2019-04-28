@@ -16,8 +16,7 @@ class WindowItem extends React.Component {
     return (
       <div className={className}>
         <div className="screen-image">
-          <div className="content" style={{backgroundImage: `url(data:image/png;base64,${this.props.image})`}}>
-          </div>
+          <img className="content" src={this.props.image} alt=""/>
         </div>
         <div className="screen-meta">{name}</div>
       </div>
