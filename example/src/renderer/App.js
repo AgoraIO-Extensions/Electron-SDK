@@ -5,7 +5,7 @@ import path from 'path';
 import os from 'os'
 
 import {voiceChangerList, voiceReverbPreset, videoProfileList, audioProfileList, audioScenarioList, APP_ID, SHARE_ID, voiceReverbList } from '../utils/settings'
-import base64Encode from '../utils/base64'
+import {readImage} from '../utils/base64'
 import WindowPicker from './components/WindowPicker/index.js'
 import { VoiceChangerPreset } from '../../../JS/Api/native_type';
 
@@ -244,24 +244,25 @@ export default class App extends Component {
     });
   }
 
-  handleScreenSharing = e => {
+  handleScreenSharing = (e) => {
     // getWindowInfo and open Modal
     let rtcEngine = this.getRtcEngine()
     let list = rtcEngine.getScreenWindowsInfo();
-    let windowList = list.map(item => {
-      return {
-        ownerName: item.ownerName,
-        name: item.name,
-        windowId: item.windowId,
-        image: base64Encode(item.image)
-      }
+    Promise.all(list.map(item => readImage(item.image))).then(imageList => {
+      let windowList = list.map((item, index) => {
+        return {
+          ownerName: item.ownerName,
+          name: item.name,
+          windowId: item.windowId,
+          image: imageList[index],
+        }
+      })
+      this.setState({
+        showWindowPicker: true,
+        windowList: windowList
+      });
     })
-    console.log(windowList)
 
-    this.setState({
-      showWindowPicker: true,
-      windowList: windowList
-    });
   }
 
   handleRelease = () => {
