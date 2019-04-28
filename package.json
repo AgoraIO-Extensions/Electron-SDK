@@ -16,7 +16,7 @@
     "build:electron3": "node ./scripts/build.js --runtime=electron --electron_version=3.0.6",
     "build:electron4": "node ./scripts/build.js --runtime=electron --electron_version=4.0.0",
     "debug": "node ./scripts/build.js --runtime=electron --electron_version=3.0.6 --debug=true",
-    "doc": "typedoc --out ./docs ./ts --hideGenerator --mode file --target es6 --name Agora-Electron-SDK --readme none",
+    "doc": "typedoc --theme markdown --out ./docs ./ts --hideGenerator --mode file --target es6 --name Agora-Electron-SDK --readme none",
     "download": "node ./scripts/download.js",
     "preexample": "npm run build:electron3 && npm run build:ts",
     "example": "cd example && npm install && npm run dev",
@@ -29,31 +29,25 @@
   "dependencies": {
     "download": "^7.1.0",
     "lodash.isequal": "^4.5.0",
-    "node-gyp": "^3.6.2",
+    "node-gyp": "^4.0.0",
     "optimist": "^0.6.1",
     "rimraf": "^2.6.3",
-    "semver": "^5.6.0",
+    "semver": "^5.7.0",
     "shelljs": "^0.8.3",
-    "signale": "^1.3.0",
+    "signale": "^1.4.0",
     "yuv-buffer": "^1.0.0",
-    "yuv-canvas": "^1.2.1"
+    "yuv-canvas": "^1.2.4"
   },
   "devDependencies": {
-    "@types/node": "^10.12.18",
-    "jest": "^23.1.0",
-    "jsdoc-to-markdown": "^4.0.1",
-    "jsdom": "^14.0.0",
-    "prettier": "^1.13.4",
-    "ts-jest": "^23.10.5",
-    "ts-node": "^8.0.2",
-    "tslint": "^5.12.1",
-    "typedoc": "^0.14.2",
-    "typescript": "^3.3.3"
+    "@types/node": "^10.14.6",
+    "jest": "^24.7.1",
+    "jsdom": "^14.1.0",
+    "prettier": "^1.17.0",
+    "ts-node": "^8.1.0",
+    "tslint": "^5.16.0",
+    "typescript": "^3.4.5"
   },
   "peerDependencies": {},
-  "directories": {
-    "doc": "docs"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron.git"
