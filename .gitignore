@@ -8,3 +8,6 @@ peer.log
 peer.pid
 nohup.out
 .version-cache
+js/
+docs/
+types/
