@@ -399,6 +399,14 @@ class AgoraRtcEngine extends events_1.EventEmitter {
             }
         }
     }
+
+    resfreshStream(key) {
+	if (this.streams.has(String(key))) {
+	    const renderer = this.streams.get(String(key));
+	    renderer.refreshCanvas();
+	}
+    }
+    
     /**
      * init renderer
      * @param {string|number} key key for the map that store the renderers, e.g, uid or `videosource` or `local`
