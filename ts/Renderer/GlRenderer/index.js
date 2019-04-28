@@ -20,7 +20,7 @@ const AgoraRender = function() {
     initWidth: 0,
     initHeight: 0,
     initRotation: 0,
-    canvasUpdated: false,
+    // canvasUpdated: false,
     clientWidth: 0,
     clientHeight: 0,
     // 0 - cover, 1 - fit
@@ -317,7 +317,7 @@ const AgoraRender = function() {
 
     that.view = view;
     that.mirrorView = mirror;
-    that.canvasUpdated = false;
+    // that.canvasUpdated = false;
 
     that.container = document.createElement('div');
     that.container.style.width = '100%';
@@ -457,13 +457,27 @@ const AgoraRender = function() {
       console.log(`updateCanvas 00001 gone ${that.canvas}`);
       console.log(that);
       console.error(e);
-      return;
+      return false;
     }
+    
+    return true
   }
 
   function updateCanvas(rotation, width, height) {
-    if (that.canvasUpdated) {
-      return;
+    // if (that.canvasUpdated) {
+    //   return;
+    // }
+    if (width || height) {
+	    that.lastImageWidth = width;
+	    that.lastImageHeight = height;
+	    that.lastImageRotation = rotation;
+	  } else {
+	    width  = that.lastImageWidth;
+	    height = that.lastImageHeight;
+	    rotation = that.lastImageRotation;
+	  }
+    if (!updateViewZoomLevel(rotation, width, height)) {
+	    return;
     }
     gl.bindBuffer(gl.ARRAY_BUFFER, surfaceBuffer);
     gl.enableVertexAttribArray(positionLocation);
@@ -528,7 +542,7 @@ const AgoraRender = function() {
 
     const resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
     gl.uniform2f(resolutionLocation, width, height);
-    // That.canvasUpdated = true;
+    // that.canvasUpdated = true;
   }
 
   return that;
