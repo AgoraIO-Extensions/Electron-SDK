@@ -1,4 +1,8 @@
 ## Latest
+#### :house: internal
+* Add codes to prevent videosource from getting camera causing problems in windows
+* Add api `refreshRender`. Support instantly refreshing view when view size is changed. Useful for low frame rates
+
 #### :bug: Bug Fix
 * Use type `Element` instead of `HTMLElement`
 * Fixed param for api `setClientRole`
