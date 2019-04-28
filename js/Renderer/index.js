@@ -22,5 +22,8 @@ class GlRenderer {
     setContentMode(mode) {
         return this.self.setContentMode(mode);
     }
+    refreshCanvas() {
+        return this.self.refreshCanvas();
+    }
 }
 exports.GlRenderer = GlRenderer;

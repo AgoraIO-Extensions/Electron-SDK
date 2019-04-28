@@ -69,6 +69,8 @@ class Renderer {
         this.canvas = null;
         this.view = null;
     }
+    refreshCanvas() {
+    }
     updateCanvas(options = {
         width: 0,
         height: 0,

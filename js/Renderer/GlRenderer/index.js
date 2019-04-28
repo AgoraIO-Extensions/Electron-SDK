@@ -27,7 +27,10 @@ const AgoraRender = function () {
         // 0 - cover, 1 - fit
         contentMode: 0,
         event: new EventEmitter(),
-        firstFrameRender: false
+        firstFrameRender: false,
+        lastImageWidth: 0,
+        lastImageHeight: 0,
+        lastImageRotation: 0
     };
     that.setContentMode = function (mode) {
         that.contentMode = mode;
@@ -68,6 +71,11 @@ const AgoraRender = function () {
         that.view = undefined;
         that.mirrorView = false;
     };
+    that.refreshCanvas  = function() {
+	if (that.lastImageWidth) {
+	    updateViewZoomLevel(that.lastImageRotation, that.lastImageWidth, that.lastImageHeight);
+	}
+    }
     that.renderImage = function (image) {
         // Rotation, width, height, left, top, right, bottom, yplane, uplane, vplane
         if (!gl) {
@@ -325,56 +333,73 @@ const AgoraRender = function () {
         const v = gl.getUniformLocation(program, 'Vtex');
         gl.uniform1i(v, 2); /* Bind Vtex to texture unit 2 */
     }
+
+    function updateViewZoomLevel(rotation, width, height) {
+	try {
+	    that.clientWidth = that.view.clientWidth;
+	    that.clientHeight = that.view.clientHeight;
+
+	    if (that.contentMode === 0) {
+		// Cover
+		if (rotation === 0 || rotation === 180) {
+		    if (that.clientWidth / that.clientHeight > width / height) {
+			that.canvas.style.zoom = that.clientWidth / width;
+		    }
+		    else {
+			that.canvas.style.zoom = that.clientHeight / height;
+		    }
+		}
+		else {
+		    // 90, 270
+		    if (that.clientHeight / that.clientWidth > width / height) {
+			that.canvas.style.zoom = that.clientHeight / height;
+		    }
+		    else {
+			that.canvas.style.zoom = that.clientWidth / width;
+		    }
+		}
+	    }
+	    else if (rotation === 0 || rotation === 180) {
+		if (that.clientWidth / that.clientHeight > width / height) {
+		    that.canvas.style.zoom = that.clientHeight / height;
+		}
+		else {
+		    that.canvas.style.zoom = that.clientWidth / width;
+		}
+	    }
+	    else {
+		// 90, 270
+		if (that.clientHeight / that.clientWidth > width / height) {
+		    that.canvas.style.zoom = that.clientWidth / width;
+		}
+		else {
+		    that.canvas.style.zoom = that.clientHeight / height;
+		}
+	    }
+	}
+	catch (e) {
+	    console.log(`updateCanvas 00001 gone ${that.canvas}`);
+	    console.log(that);
+	    console.error(e);
+	    return false;
+	}
+	return true;
+    }
     function updateCanvas(rotation, width, height) {
         if (that.canvasUpdated) {
             return;
         }
-        that.clientWidth = that.view.clientWidth;
-        that.clientHeight = that.view.clientHeight;
-        try {
-            if (that.contentMode === 0) {
-                // Cover
-                if (rotation === 0 || rotation === 180) {
-                    if (that.clientWidth / that.clientHeight > width / height) {
-                        that.canvas.style.zoom = that.clientWidth / width;
-                    }
-                    else {
-                        that.canvas.style.zoom = that.clientHeight / height;
-                    }
-                }
-                else {
-                    // 90, 270
-                    if (that.clientHeight / that.clientWidth > width / height) {
-                        that.canvas.style.zoom = that.clientHeight / height;
-                    }
-                    else {
-                        that.canvas.style.zoom = that.clientWidth / width;
-                    }
-                }
-            }
-            else if (rotation === 0 || rotation === 180) {
-                if (that.clientWidth / that.clientHeight > width / height) {
-                    that.canvas.style.zoom = that.clientHeight / height;
-                }
-                else {
-                    that.canvas.style.zoom = that.clientWidth / width;
-                }
-            }
-            else {
-                // 90, 270
-                if (that.clientHeight / that.clientWidth > width / height) {
-                    that.canvas.style.zoom = that.clientWidth / width;
-                }
-                else {
-                    that.canvas.style.zoom = that.clientHeight / height;
-                }
-            }
-        }
-        catch (e) {
-            console.log(`updateCanvas 00001 gone ${that.canvas}`);
-            console.log(that);
-            console.error(e);
-            return;
+	if (width || height) {
+	    that.lastImageWidth = width;
+	    that.lastImageHeight = height;
+	    that.lastImageRotation = rotation;
+	} else {
+	    width  = that.lastImageWidth;
+	    height = that.lastImageHeight;
+	    rotation = that.lastImageRotation;
+	}
+        if (!updateViewZoomLevel(rotation, width, height)) {
+	    return;
         }
         gl.bindBuffer(gl.ARRAY_BUFFER, surfaceBuffer);
         gl.enableVertexAttribArray(positionLocation);
