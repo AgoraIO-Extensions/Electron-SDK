@@ -1,5 +1,7 @@
 export const APP_ID = ''
 export const SHARE_ID = 2
+export const RTMP_URL = ''
+
 export const videoProfileList = [
   {
     value: 0,
