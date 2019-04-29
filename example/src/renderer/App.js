@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import path from 'path';
 import os from 'os'
 
-import {voiceChangerList, voiceReverbPreset, videoProfileList, audioProfileList, audioScenarioList, APP_ID, SHARE_ID, voiceReverbList } from '../utils/settings'
+import {voiceChangerList, voiceReverbPreset, videoProfileList, audioProfileList, audioScenarioList, APP_ID, SHARE_ID, RTMP_URL, voiceReverbList } from '../utils/settings'
 import {readImage} from '../utils/base64'
 import WindowPicker from './components/WindowPicker/index.js'
 import { VoiceChangerPreset } from '../../../JS/Api/native_type';
@@ -284,7 +284,11 @@ export default class App extends Component {
   }
 
   handleRtmp = () => {
-    const url = "rtmp://vid-218.push.chinanetcenter.broadcastapp.agora.io/live/agoratest"
+    const url = RTMP_URL
+    if(!url) {
+      alert("RTMP URL Empty")
+      return
+    }
     if(!this.state.rtmpTestOn) {
       this.rtcEngine.setLiveTranscoding({
         /** width of canvas */
