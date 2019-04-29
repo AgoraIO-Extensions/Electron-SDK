@@ -23,7 +23,7 @@
     "pretest": "npm run build:node && npm run build:ts",
     "test": "jest --detectOpenHandles --forceExit",
     "quicktest": "jest --detectOpenHandles --forceExit",
-    "prepublish": "npm run build:ts"
+    "prepublishOnly:": "npm run build:ts"
   },
   "gypfile": false,
   "dependencies": {
