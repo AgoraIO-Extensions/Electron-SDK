@@ -872,8 +872,9 @@ namespace agora {
         void NodeEventHandler::onStreamPublished(const char *url, int error)
         {
             FUNC_TRACE;
-            node_async_call::async_call([this, url, error] {
-                this->onStreamPublished_node(url, error);
+            std::string mUrl = std::string(url);
+            node_async_call::async_call([this, mUrl, error] {
+                this->onStreamPublished_node(mUrl.c_str(), error);
             });
         }
 
@@ -886,8 +887,9 @@ namespace agora {
         void NodeEventHandler::onStreamUnpublished(const char *url)
         {
             FUNC_TRACE;
-            node_async_call::async_call([this, url] {
-                this->onStreamUnpublished_node(url);
+            std::string mUrl = std::string(url);
+            node_async_call::async_call([this, mUrl] {
+                this->onStreamUnpublished_node(mUrl.c_str());
             });
         }
 

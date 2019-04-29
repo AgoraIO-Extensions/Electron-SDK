@@ -1,5 +1,6 @@
 ## Latest
 #### :house: Internal
+* Fix TranscodingUser cannot be added issue for rtmp streaming
 * Add codes to prevent videosource from getting camera causing problems in windows
 * Add api `refreshRender`. Support instantly refreshing view when view size is changed. Useful for low frame rates
 
