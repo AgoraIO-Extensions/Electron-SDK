@@ -36,6 +36,7 @@ export default class App extends Component {
         recordingTestOn: false,
         playbackTestOn: false,
         lastmileTestOn: false,
+        rtmpTestOn: false,
         windowList: [],
         encoderWidth: 0,
         encoderHeight: 0
@@ -93,6 +94,12 @@ export default class App extends Component {
         videoDevices: rtcEngine.getVideoDevices()
       })
     })
+    rtcEngine.on('streamPublished', (url, error) => {
+      console.log(`url: ${url}, err: ${error}`)
+    })
+    rtcEngine.on('streamUnpublished', (url) => {
+      console.log(`url: ${url}`)
+    })
     rtcEngine.on('lastmileProbeResult', result => {
       console.log(`lastmileproberesult: ${JSON.stringify(result)}`)
     })
@@ -124,7 +131,7 @@ export default class App extends Component {
     rtcEngine.setAudioProfile(0, 1)
     rtcEngine.enableVideo()
     let logpath = path.resolve(os.homedir(), "./agoramain.sdk")
-    rtcEngine.setLogFile('~/agora.log')
+    rtcEngine.setLogFile(logpath)
     rtcEngine.enableLocalVideo(true)
     rtcEngine.enableWebSdkInteroperability(true)
     if(encoderWidth === 0 && encoderHeight === 0) {
@@ -274,6 +281,66 @@ export default class App extends Component {
       this.rtcEngine.release();
       this.rtcEngine = null;
     }
+  }
+
+  handleRtmp = () => {
+    const url = "rtmp://vid-218.push.chinanetcenter.broadcastapp.agora.io/live/agoratest"
+    if(!this.state.rtmpTestOn) {
+      this.rtcEngine.setLiveTranscoding({
+        /** width of canvas */
+        width: 640,
+        /** height of canvas */
+        height: 480,
+        /** kbps value, for 1-1 mapping pls look at https://docs.agora.io/cn/Interactive%20Broadcast/API%20Reference/cpp/structagora_1_1rtc_1_1_video_encoder_configuration.html */
+        videoBitrate: 500,
+        /** fps, default 15 */
+        videoFrameRate: 15,
+        /** true for low latency, no video quality garanteed; false - high latency, video quality garanteed */
+        lowLatency: true,
+        /** Video GOP in frames, default 30 */
+        videoGop: 30,
+        videoCodecProfile: 77,
+        /**
+         * RGB hex value. Value only, do not include a #. For example, 0xC0C0C0.
+         * number color = (A & 0xff) << 24 | (R & 0xff) << 16 | (G & 0xff) << 8 | (B & 0xff)
+         */
+        backgroundColor: 0xc0c0c0,
+        /** The number of users in the live broadcast */
+        userCount: 1,
+        audioSampleRate: 1,
+        audioChannels: 1,
+        /** transcodingusers array */
+        transcodingUsers: [
+          {
+            uid: this.state.local,
+            x: 0,
+            y: 0,
+            width: 320,
+            height: 240,
+            zOrder: 1,
+            alpha: 1,
+            audioChannel: 1
+          }
+        ],
+        watermark: {
+          url: "",
+          x: 0,
+          y:0,
+          width: 0,
+          height: 0
+        }
+      });
+      this.rtcEngine.addPublishStreamUrl(
+        url,
+        true
+      );
+    } else {
+      this.rtcEngine.removePublishStreamUrl(url)
+    }
+    
+    this.setState({
+      rtmpTestOn: !this.state.rtmpTestOn
+    })
   }
 
   handleWindowPicker = windowId => {
@@ -484,6 +551,12 @@ export default class App extends Component {
             <label className="label">Screen Share</label>
             <div className="control">
               <button onClick={this.handleScreenSharing} className="button is-link">Screen Share</button>
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">RTMP</label>
+            <div className="control">
+              <button onClick={this.handleRtmp} className="button is-link">{this.state.rtmpTestOn ? 'stop' : 'start'}</button>
             </div>
           </div>
           <div className="field">
