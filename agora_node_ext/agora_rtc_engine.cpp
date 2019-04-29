@@ -464,7 +464,7 @@ namespace agora {
                     regions = new VideoCompositingLayout::Region[layout.regionCount];
                     Local<Name> keyName = String::NewFromUtf8(args.GetIsolate(), "regions", NewStringType::kInternalized).ToLocalChecked();
                     Local<Value> objUsers = obj->Get(args.GetIsolate()->GetCurrentContext(), keyName).ToLocalChecked();
-                    if (objUsers.IsEmpty() || !objUsers->IsArray()) {
+                    if (objUsers->IsNull() || !objUsers->IsArray()) {
                         status = napi_invalid_arg;
                         break;
                     }
@@ -476,7 +476,7 @@ namespace agora {
                     for (int32 i = 0; i < layout.regionCount; i++) {
                         Local<Value> value = regionsValue->Get(i);
                         Local<Object> regionObj = value->ToObject(args.GetIsolate());
-                        if (regionObj.IsEmpty())
+                        if (regionObj->IsNull())
                             status = napi_invalid_arg;
                         break;
                         int rendermode;
@@ -632,7 +632,7 @@ namespace agora {
 
                 Local<Name> keyName = String::NewFromUtf8(args.GetIsolate(), "watermark", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> wmValue = obj->Get(args.GetIsolate()->GetCurrentContext(), keyName).ToLocalChecked();
-                if (!wmValue.IsEmpty()) {
+                if (!wmValue->IsNull()) {
                     Local<Object> objWm = wmValue->ToObject(args.GetIsolate());
                     nodestring wmurl;
                     if (napi_get_object_property_nodestring_(args.GetIsolate(), objWm, "url", wmurl) == napi_ok) {
@@ -649,7 +649,7 @@ namespace agora {
                     users = new TranscodingUser[transcoding.userCount];
                     Local<Name> keyName = String::NewFromUtf8(args.GetIsolate(), "transcodingUsers", NewStringType::kInternalized).ToLocalChecked();
                     Local<Value> objUsers = obj->Get(args.GetIsolate()->GetCurrentContext(), keyName).ToLocalChecked();
-                    if (objUsers.IsEmpty() || !objUsers->IsArray()) {
+                    if (objUsers->IsNull() || !objUsers->IsArray()) {
                         status = napi_invalid_arg;
                         break;
                     }
@@ -661,9 +661,10 @@ namespace agora {
                     for (uint32 i = 0; i < transcoding.userCount; i++) {
                         Local<Value> value = usersValue->Get(i);
                         Local<Object> userObj = value->ToObject(args.GetIsolate());
-                        if (userObj.IsEmpty())
+                        if (userObj->IsNull()) {
                             status = napi_invalid_arg;
-                        break;
+                            break;
+                        }
                         napi_get_object_property_uid_(args.GetIsolate(), userObj, "uid", users[i].uid);
                         napi_get_object_property_int32_(args.GetIsolate(), userObj, "x", users[i].x);
                         napi_get_object_property_int32_(args.GetIsolate(), userObj, "y", users[i].y);
