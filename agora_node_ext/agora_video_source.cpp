@@ -419,6 +419,7 @@ namespace agora{
             if (m_initialized && m_peerJoined){
                 CaptureScreenByDisplayCmd cmd;
 
+                cmd.screenId = screenId;
                 cmd.regionRect = regionRect;
                 cmd.captureParams = captureParams;
                 return m_ipcMsg->sendMessage(AGORA_IPC_START_CAPTURE_BY_DISPLAY, (char*)&cmd, sizeof(cmd)) ? node_ok : node_generic_error;

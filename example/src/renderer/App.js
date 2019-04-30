@@ -7,6 +7,7 @@ import os from 'os'
 import {voiceChangerList, voiceReverbPreset, videoProfileList, audioProfileList, audioScenarioList, APP_ID, SHARE_ID, RTMP_URL, voiceReverbList } from '../utils/settings'
 import {readImage} from '../utils/base64'
 import WindowPicker from './components/WindowPicker/index.js'
+import DisplayPicker from './components/DisplayPicker/index.js'
 import { VoiceChangerPreset } from '../../../JS/Api/native_type';
 
 export default class App extends Component {
@@ -33,11 +34,13 @@ export default class App extends Component {
         speaker: 0,
         videoProfile: 43,
         showWindowPicker: false,
+        showDisplayPicker: false,
         recordingTestOn: false,
         playbackTestOn: false,
         lastmileTestOn: false,
         rtmpTestOn: false,
         windowList: [],
+        displayList: [],
         encoderWidth: 0,
         encoderHeight: 0
       }
@@ -251,6 +254,25 @@ export default class App extends Component {
     });
   }
 
+
+  startScreenShareByDisplay(displayId) {
+    if(!this.sharingPrepared) {
+      console.error('Sharing not prepared yet.')
+      return false
+    };
+    return new Promise((resolve, reject) => {
+      let rtcEngine = this.getRtcEngine()
+      // rtcEngine.startScreenCapture2(windowId, captureFreq, rect, bitrate);
+      // there's a known limitation that, videosourcesetvideoprofile has to be called at least once
+      // note although it's called, it's not taking any effect, to control the screenshare dimension, use captureParam instead
+      console.log(`start sharing display ${displayId}`)
+      rtcEngine.videoSourceSetVideoProfile(43, false);
+      // rtcEngine.videosourceStartScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15})
+      rtcEngine.videosourceStartScreenCaptureByScreen(displayId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 5})
+      rtcEngine.startScreenCapturePreview();
+    });
+  }
+
   handleScreenSharing = (e) => {
     // getWindowInfo and open Modal
     let rtcEngine = this.getRtcEngine()
@@ -269,7 +291,27 @@ export default class App extends Component {
         windowList: windowList
       });
     })
+  }
 
+  handleDisplaySharing = (e) => {
+    // getWindowInfo and open Modal
+    let rtcEngine = this.getRtcEngine()
+    let list = rtcEngine.getScreenDisplaysInfo();
+    Promise.all(list.map(item => readImage(item.image))).then(imageList => {
+      let displayList = list.map((item, index) => {
+        let name = `Display ${index + 1}`
+        return {
+          ownerName: "",
+          name: name,
+          displayId: item.displayId,
+          image: imageList[index],
+        }
+      })
+      this.setState({
+        showDisplayPicker: true,
+        displayList: displayList
+      });
+    })
   }
 
   handleRelease = () => {
@@ -364,6 +406,23 @@ export default class App extends Component {
       })
   }
 
+  handleDisplayPicker = displayId => {
+    this.setState({
+      showDisplayPicker: false,
+      localSharing: true
+    })
+    this.prepareScreenShare()
+      .then(uid => {
+        this.startScreenShareByDisplay(displayId)
+        this.setState({
+          localVideoSource: uid
+        })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
   togglePlaybackTest = e => {
     let rtcEngine = this.getRtcEngine()
     if (!this.state.playbackTestOn) {
@@ -421,7 +480,7 @@ export default class App extends Component {
   // }
 
   render() {
-    let windowPicker
+    let windowPicker, displayPicker
     if (this.state.showWindowPicker) {
       windowPicker = <WindowPicker
         onSubmit={this.handleWindowPicker}
@@ -430,10 +489,19 @@ export default class App extends Component {
       />
     }
 
+    if (this.state.showDisplayPicker) {
+      displayPicker = <DisplayPicker
+        onSubmit={this.handleDisplayPicker}
+        onCancel={e => this.setState({showWindowPicker: false})}
+        displayList={this.state.displayList}
+      />
+    }
+
 
     return (
       <div className="columns" style={{padding: "20px", height: '100%', margin: '0'}}>
         { this.state.showWindowPicker ? windowPicker : '' }
+        { this.state.showDisplayPicker ? displayPicker : '' }
         <div className="column is-one-quarter" style={{overflowY: 'auto'}}>
           <div className="field">
             <label className="label">Channel</label>
@@ -555,6 +623,9 @@ export default class App extends Component {
             <label className="label">Screen Share</label>
             <div className="control">
               <button onClick={this.handleScreenSharing} className="button is-link">Screen Share</button>
+            </div>
+            <div className="control">
+              <button onClick={this.handleDisplaySharing} className="button is-link">Display Share</button>
             </div>
           </div>
           <div className="field">
