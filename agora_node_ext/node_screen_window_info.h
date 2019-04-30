@@ -10,11 +10,39 @@
 
 #include <string>
 #include <vector>
+#include "video_source_ipc.h"
 
 #if defined(_WIN32)
 #include <windows.h>
 #endif
 #define    IMAGE_MAX_PIXEL_SIZE   500
+
+struct ScreenDisplayInfo
+{
+    ScreenIDType displayId;
+    
+    std::string name;
+    std::string ownerName;
+    
+    unsigned int width;
+    unsigned int height;
+    bool isActive;
+    bool isMain;
+    bool isBuiltin;
+    
+    unsigned char* imageData;
+    unsigned int imageDataLength;
+    
+    ScreenDisplayInfo()
+    : width(0)
+    , height(0)
+    , isActive(false)
+    , isMain(false)
+    , isBuiltin(false)
+    , imageData(nullptr)
+    , imageDataLength(0)
+    {}
+};
 
 struct ScreenWindowInfo
 {
@@ -42,6 +70,7 @@ struct ScreenWindowInfo
     {}
 };
 
+std::vector<ScreenDisplayInfo> getAllDisplayInfo();
 std::vector<ScreenWindowInfo> getAllWindowInfo();
 
 #if defined(_WIN32)
