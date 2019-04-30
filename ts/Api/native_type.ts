@@ -662,6 +662,7 @@ export interface NodeRtcEngine {
   videosourceUpdateScreenCaptureParameters(param: CaptureParam): number;
   videosourceSetScreenCaptureContentHint(hint: VideoContentHint): number;
   getScreenWindowsInfo(): Array<Object>;
+  getScreenDisplaysInfo(): Array<Object>;
   startScreenCapture2(
     windowId: number,
     captureFreq: number,

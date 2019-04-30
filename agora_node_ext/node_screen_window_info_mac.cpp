@@ -42,6 +42,36 @@ void copyImageDataToWindowInfo(CGImageRef image, ScreenWindowInfo& windowInfo)
     CFRelease(cfImageData);
 }
 
+void copyImageDataToDisplayInfo(CGImageRef image, ScreenDisplayInfo& displayInfo)
+{
+    int maxSize = IMAGE_MAX_PIXEL_SIZE;
+    
+    CFMutableDataRef cfImageData = CFDataCreateMutable(NULL, 0);
+    CGImageDestinationRef destination = CGImageDestinationCreateWithData(cfImageData, kUTTypeJPEG, 1, NULL);
+    CFMutableDictionaryRef properties = CFDictionaryCreateMutable(nil, 0, &kCFTypeDictionaryKeyCallBacks,  &kCFTypeDictionaryValueCallBacks);
+    CFNumberRef imageMaxSize = CFNumberCreate(NULL, kCFNumberIntType, &maxSize);
+    CFDictionarySetValue(properties, kCGImageDestinationImageMaxPixelSize, (CFTypeRef)imageMaxSize);
+    CFRelease(imageMaxSize);
+    CGImageDestinationAddImage(destination, image, properties);
+    CFRelease(properties);
+    CGImageDestinationFinalize(destination);
+    CFRelease(destination);
+    
+    unsigned int imageDataLength = (unsigned int)CFDataGetLength(cfImageData);
+    if (imageDataLength > 0) {
+        unsigned char *imageData = (unsigned char *)calloc(imageDataLength, sizeof(unsigned char));
+        if (imageData == NULL) {
+            LOG_ERROR("Out of memory.");
+        }
+        else {
+            memcpy(imageData, CFDataGetBytePtr(cfImageData), imageDataLength);
+            displayInfo.imageData = imageData;
+            displayInfo.imageDataLength = imageDataLength;
+        }
+    }
+    CFRelease(cfImageData);
+}
+
 std::string convertCFStringToStdString(CFStringRef cfString)
 {
     std::string stdString;
@@ -163,4 +193,33 @@ std::vector<ScreenWindowInfo> getAllWindowInfo()
     CFRelease(windowDicCFArray);
     
     return windows;
+}
+
+std::vector<ScreenDisplayInfo> getAllDisplayInfo()
+{
+    std::vector<ScreenDisplayInfo> displays;
+    const int MAX_DISPLAY_NUM = 10;
+    CGDirectDisplayID displayIDs[MAX_DISPLAY_NUM];
+    u_int32_t displayCount;
+    CGGetOnlineDisplayList(MAX_DISPLAY_NUM, displayIDs, &displayCount);
+    
+    for (uint32_t index = 0; index < displayCount; index++) {
+        CGDirectDisplayID displayID = displayIDs[index];
+        ScreenDisplayInfo screenDisplay;
+        screenDisplay.displayId = displayID;
+        screenDisplay.width = CGDisplayPixelsWide(displayID);
+        screenDisplay.height = CGDisplayPixelsHigh(displayID);
+        screenDisplay.isActive = CGDisplayIsActive(displayID);
+        screenDisplay.isMain = CGDisplayIsMain(displayID);
+        screenDisplay.isBuiltin = CGDisplayIsBuiltin(displayID);
+        
+        CGImageRef screenshot = CGDisplayCreateImage(displayID);
+        if (screenshot) {
+            copyImageDataToDisplayInfo(screenshot, screenDisplay);
+            CGImageRelease(screenshot);
+        }
+        
+        displays.push_back(screenDisplay);
+    }
+    return displays;
 }
