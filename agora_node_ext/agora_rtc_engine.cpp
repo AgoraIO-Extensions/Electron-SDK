@@ -4037,13 +4037,19 @@ namespace agora {
                 for (unsigned int i = 0; i < allDisplays.size(); ++i) {
                     ScreenDisplayInfo displayInfo = allDisplays[i];
                     Local<v8::Object> obj = Object::New(isolate);
+					ScreenIDType displayId = displayInfo.displayId;
 #ifdef _WIN32
-                    UINT32 windowId = (UINT32)windowInfo.windowId;
+					Local<v8::Object> rect = Object::New(isolate);
+					NODE_SET_OBJ_PROP_UINT32(isolate, rect, "x", displayId.x);
+					NODE_SET_OBJ_PROP_UINT32(isolate, rect, "y", displayId.y);
+					NODE_SET_OBJ_PROP_UINT32(isolate, rect, "width", displayId.width);
+					NODE_SET_OBJ_PROP_UINT32(isolate, rect, "height", displayId.height);
+					Local<Value> propName = String::NewFromUtf8(isolate, "displayId", NewStringType::kInternalized).ToLocalChecked();
+					obj->Set(propName, rect);
 #elif defined(__APPLE__)
-                    ScreenIDType displayId = displayInfo.displayId;
+					NODE_SET_OBJ_PROP_UINT32(isolate, obj, "displayId", displayId);
 #endif
                     
-                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "displayId", displayId);
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", displayInfo.width);
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", displayInfo.height);
                     NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isMain", displayInfo.isMain);
