@@ -2023,9 +2023,12 @@ namespace agora {
                 status = napi_get_object_property_int32_(isolate, screenRectObj, "height", screenRect.height);
                 CHECK_NAPI_STATUS(pEngine, status);
 #elif defined(__APPLE__)
-                unsigned int displayId;
-                status = napi_get_value_uint32_(args[0], displayId);
-                screen = displayId;
+                if(!args[0]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+                Local<Object> displayIdObj = args[0]->ToObject();
+                status = napi_get_object_property_uint32_(isolate, displayIdObj, "id", screen.idVal);
                 CHECK_NAPI_STATUS(pEngine, status);
 #endif   
 
@@ -4037,19 +4040,19 @@ namespace agora {
                 for (unsigned int i = 0; i < allDisplays.size(); ++i) {
                     ScreenDisplayInfo displayInfo = allDisplays[i];
                     Local<v8::Object> obj = Object::New(isolate);
-					ScreenIDType displayId = displayInfo.displayId;
+                    ScreenIDType displayId = displayInfo.displayId;
+                    Local<v8::Object> displayIdObj = Object::New(isolate);
 #ifdef _WIN32
-					Local<v8::Object> rect = Object::New(isolate);
-					NODE_SET_OBJ_PROP_UINT32(isolate, rect, "x", displayId.x);
-					NODE_SET_OBJ_PROP_UINT32(isolate, rect, "y", displayId.y);
-					NODE_SET_OBJ_PROP_UINT32(isolate, rect, "width", displayId.width);
-					NODE_SET_OBJ_PROP_UINT32(isolate, rect, "height", displayId.height);
-					Local<Value> propName = String::NewFromUtf8(isolate, "displayId", NewStringType::kInternalized).ToLocalChecked();
-					obj->Set(propName, rect);
+                    NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "x", displayId.x);
+                    NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "y", displayId.y);
+                    NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "width", displayId.width);
+                    NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "height", displayId.height);
 #elif defined(__APPLE__)
-					NODE_SET_OBJ_PROP_UINT32(isolate, obj, "displayId", displayId);
+                    NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "id", displayId.idVal);
 #endif
-                    
+                    Local<Value> propName = String::NewFromUtf8(isolate, "displayId", NewStringType::kInternalized).ToLocalChecked();
+                    obj->Set(propName, displayIdObj);
+
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", displayInfo.width);
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", displayInfo.height);
                     NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isMain", displayInfo.isMain);
