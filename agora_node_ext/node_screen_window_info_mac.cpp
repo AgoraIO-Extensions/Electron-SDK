@@ -150,19 +150,6 @@ bool setWindowInfoWithDictionary(ScreenWindowInfo& windowInfo, CFDictionaryRef w
 std::vector<ScreenWindowInfo> getAllWindowInfo()
 {
     std::vector<ScreenWindowInfo> windows;
-    
-    CGImageRef fullScreenShot = CGWindowListCreateImage(CGRectInfinite,
-                                                        kCGWindowListOptionOnScreenOnly,
-                                                        0,
-                                                        kCGWindowImageDefault);
-    if (fullScreenShot) {
-        ScreenWindowInfo fullScreenWindow;
-        copyImageDataToWindowInfo(fullScreenShot, fullScreenWindow);
-        windows.push_back(fullScreenWindow);
-        
-        CGImageRelease(fullScreenShot);
-    }
-    
     CFArrayRef windowDicCFArray = CGWindowListCopyWindowInfo(kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements,
                                                              kCGNullWindowID);
     CFIndex count = CFArrayGetCount(windowDicCFArray);
@@ -206,7 +193,7 @@ std::vector<ScreenDisplayInfo> getAllDisplayInfo()
     for (uint32_t index = 0; index < displayCount; index++) {
         CGDirectDisplayID displayID = displayIDs[index];
         ScreenDisplayInfo screenDisplay;
-        screenDisplay.displayId = displayID;
+        screenDisplay.displayId.idVal = displayID;
         screenDisplay.width = CGDisplayPixelsWide(displayID);
         screenDisplay.height = CGDisplayPixelsHigh(displayID);
         screenDisplay.isActive = CGDisplayIsActive(displayID);
