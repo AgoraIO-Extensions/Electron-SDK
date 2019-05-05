@@ -111,7 +111,7 @@ int GetEncoderClsid(WCHAR *format, CLSID *pClsid)
 #if 0
 bool captureBmpToJpeg(const HWND& hWnd, char* szName, int i, std::vector<ScreenWindowInfo>& wndsInfo)
 #endif
-bool captureBmpToJpeg(const HWND& hWnd, char* szName, std::vector<ScreenWindowInfo>& wndsInfo)
+bool dumpDisplayInfo(const HWND& hWnd, char* szName, std::vector<ScreenWindowInfo>& wndsInfo)
 {
 #if 0
     WCHAR szFilePath[MAX_PATH] = { 0 };
@@ -314,4 +314,22 @@ std::vector<ScreenWindowInfo> getAllWindowInfo()
     }
 
     return windows;
+}
+
+std::vector<ScreenInfo> getAllDisplayInfo()
+{
+    std::vector<ScreenDisplayInfo> displayInfos;
+
+    EnumDisplayMonitors(NULL, NULL, Monitorenumproc, LPARAM(&displayInfos));
+    RECT rc = {0, 0, 0, 0};
+
+    HWND hDesktop = GetDesktopWindow();
+    HDC hDC = GetDC(hDesktop);
+    RECT rcCapture = {0, 0, 0, 0};
+    for (int i = 0; i < displayInfos.size(); i++)
+    {
+        ScreenDisplayInfo &info = displayInfos[i];
+        dumpDisplayInfo(hDC, info, 20, displayInfos);
+    }
+    return displayInfos;
 }
