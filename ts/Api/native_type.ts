@@ -173,6 +173,20 @@ export interface RemoteVideoStats {
   rxStreamType: StreamType;
 }
 
+export interface RemoteVideoTransportStats {
+  uid: number;
+  delay: number;
+  lost: number;
+  rxKBitRate: number;
+}
+
+export interface RemoteAudioTransportStats {
+  uid: number;
+  delay: number;
+  lost: number;
+  rxKBitRate: number;
+}
+
 export interface RemoteAudioStats {
   /** User ID of the remote user sending the audio streams. */
   uid: number;
