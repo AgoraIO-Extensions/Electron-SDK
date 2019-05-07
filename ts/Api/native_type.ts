@@ -320,6 +320,20 @@ export enum VideoContentHint {
   CONTENT_HINT_DETAILS = 2 // Motionless content. Choose this option if you prefer sharpness or when you are sharing a picture, PowerPoint slide, or text.
 }
 
+export interface RemoteVideoTransportStats {
+  uid: number;
+  delay: number;
+  lost: number;
+  rxKBitRate: number;
+}
+
+export interface RemoteAudioTransportStats {
+  uid: number;
+  delay: number;
+  lost: number;
+  rxKBitRate: number;
+}
+
 export interface RemoteAudioStats {
   /** User ID of the remote user sending the audio streams. */
   uid: number;
