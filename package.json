@@ -17,7 +17,7 @@
     "build:electron4": "node ./scripts/build.js --runtime=electron --electron_version=4.0.0",
     "build:electron1.8.3": "node ./scripts/build.js --runtime=electron --electron_version=1.8.3",
     "build:electron3.0.6": "node ./scripts/build.js --runtime=electron --electron_version=3.0.6",
-    "build:electron4.0.0": "node ./scripts/build.js --runtime=electron --electron_version=4.0.0",
+    "build:electron4.0.0": "node ./scripts/build.js --runtime=electron --electron_version=4.0.0 --msvs_version=2017",
     "debug": "node ./scripts/build.js --runtime=electron --electron_version=3.0.6 --debug=true",
     "doc": "typedoc --theme minimal --out ./docs ./ts --hideGenerator --mode file --target es6 --name Agora-Electron-SDK --readme none",
     "download": "node ./scripts/download.js",
