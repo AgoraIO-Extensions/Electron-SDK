@@ -5,6 +5,8 @@ import {
   LocalVideoStats,
   RemoteVideoStats,
   RemoteAudioStats,
+  RemoteVideoTransportStats,
+  RemoteAudioTransportStats,
   RemoteVideoState,
   AgoraNetworkQuality,
   LastmileProbeResult,
@@ -184,6 +186,18 @@ class AgoraRtcEngine extends EventEmitter {
 
     this.rtcEngine.onEvent('remoteAudioStats', function(stats: RemoteAudioStats) {
       fire('remoteAudioStats', stats);
+    });
+
+    this.rtcEngine.onEvent('remoteAudioTransportStats', function(uid: number, delay: number, lost: number, rxKBitRate: number) {
+      fire('remoteAudioTransportStats', {
+        uid, delay, lost, rxKBitRate
+      });
+    });
+
+    this.rtcEngine.onEvent('remoteVideoTransportStats', function(uid: number, delay: number, lost: number, rxKBitRate: number) {
+      fire('remoteVideoTransportStats', {
+        uid, delay, lost, rxKBitRate
+      });
     });
 
     this.rtcEngine.onEvent('audiodevicestatechanged', function(
@@ -2483,6 +2497,8 @@ declare interface AgoraRtcEngine {
   on(evt: 'localVideoStats', cb: (stats: LocalVideoStats) => void): this;
   on(evt: 'remoteVideoStats', cb: (stats: RemoteVideoStats) => void): this;
   on(evt: 'remoteAudioStats', cb: (stats: RemoteAudioStats) => void): this;
+  on(evt: 'remoteVideoTransportStats', cb: (stats: RemoteVideoTransportStats) => void): this;
+  on(evt: 'remoteAudioTransportStats', cb: (stats: RemoteAudioTransportStats) => void): this;
   on(evt: 'audioDeviceStateChanged', cb: (
     deviceId: string,
     deviceType: number,
