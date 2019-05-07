@@ -1,5 +1,6 @@
 build/
 dist/
+types/
 node_modules/
 .DS_Store
 error-log.txt
