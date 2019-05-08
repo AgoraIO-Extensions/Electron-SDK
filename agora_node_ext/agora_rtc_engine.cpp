@@ -2022,6 +2022,7 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_object_property_int32_(isolate, screenRectObj, "height", screenRect.height);
                 CHECK_NAPI_STATUS(pEngine, status);
+                screen = screenRect;
 #elif defined(__APPLE__)
                 if(!args[0]->IsObject()) {
                     status = napi_invalid_arg;
