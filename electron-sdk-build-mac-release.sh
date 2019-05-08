@@ -1,4 +1,6 @@
 cd ${WORKSPACE}/Electron-SDK
+npm config set registry https://registry.npm.taobao.org/
+npm config set ELECTRON_MIRROR http://npm.taobao.org/mirrors/electron/
 npm install --verbose
-node ./scripts/build.js --runtime=electron --electron_version=${ELECTRON_VERSION}
-zip -r Electron-${PLATFORM}-${SDK_VERSION}-${ELECTRON_VERSION}.zip build
+npm run build:electron%ELECTRON_VERSION%
+zip -r electron.zip build
