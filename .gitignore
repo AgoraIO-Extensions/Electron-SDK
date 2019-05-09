@@ -1,6 +1,5 @@
 build/
 dist/
-types/
 node_modules/
 .DS_Store
 error-log.txt
@@ -9,3 +8,6 @@ peer.log
 peer.pid
 nohup.out
 .version-cache
+types/
+docs/
+js/
