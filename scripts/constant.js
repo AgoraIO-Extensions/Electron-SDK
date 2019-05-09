@@ -1,7 +1,7 @@
 module.exports.Platform = {
-  MACOS: 'Mac',
-  WINDOWS: 'Windows',
-  UNSUPPORTED: 'Unsupported'
+  MACOS: 'mac',
+  WINDOWS: 'win32',
+  UNSUPPORTED: 'unsupported'
 }
 
 module.exports.DependentElectronVersion = {
