@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "2.3.3-hotfix.1",
+  "version": "2.3.3-hotfix.2",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -27,6 +27,12 @@
     "prepublishOnly": "npm run build:ts"
   },
   "gypfile": false,
+  "files": [
+    "js/",
+    "types/",
+    "ts/",
+    "scripts/"
+  ],
   "dependencies": {
     "download": "^7.1.0",
     "lodash.isequal": "^4.5.0",
