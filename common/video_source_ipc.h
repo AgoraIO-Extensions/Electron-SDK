@@ -24,9 +24,17 @@
 
 
 #if defined(__APPLE__)
-		typedef unsigned int ScreenIDType;
+        struct DisplayID
+        {
+            unsigned int idVal;
+            
+            DisplayID()
+            : idVal(0)
+            {}
+        };
+        typedef DisplayID ScreenIDType;
 #elif defined(_WIN32)
-		typedef agora::rtc::Rectangle ScreenIDType;
+        typedef agora::rtc::Rectangle ScreenIDType;
 #endif
 
 /**
