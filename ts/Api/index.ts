@@ -1780,6 +1780,14 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @description get list of all system display ids and relevant infos, the display id can be used for screen share
+   * @returns {Array} list of display infos
+   */
+   getScreenDisplaysInfo(): Array<Object> {
+    return this.rtcEngine.getScreenDisplaysInfo();
+  }
+
+  /**
    * @description start video source screen capture
    * @param {number} wndid windows id to capture
    * @param {number} captureFreq fps of video source screencapture, 1 - 15

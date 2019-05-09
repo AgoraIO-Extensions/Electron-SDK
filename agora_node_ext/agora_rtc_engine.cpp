@@ -108,6 +108,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(resumeAudio)
                 PROPERTY_METHOD_DEFINE(setExternalAudioSource)
                 PROPERTY_METHOD_DEFINE(getScreenWindowsInfo)
+                PROPERTY_METHOD_DEFINE(getScreenDisplaysInfo)
                 PROPERTY_METHOD_DEFINE(startScreenCapture)
                 PROPERTY_METHOD_DEFINE(stopScreenCapture)
                 PROPERTY_METHOD_DEFINE(updateScreenCaptureRegion)
@@ -2021,9 +2022,14 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_object_property_int32_(isolate, screenRectObj, "height", screenRect.height);
                 CHECK_NAPI_STATUS(pEngine, status);
+                screen = screenRect;
 #elif defined(__APPLE__)
-                unsigned int displayId;
-                screen = napi_get_value_uint32_(args[0], displayId);
+                if(!args[0]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+                Local<Object> displayIdObj = args[0]->ToObject();
+                status = napi_get_object_property_uint32_(isolate, displayIdObj, "id", screen.idVal);
                 CHECK_NAPI_STATUS(pEngine, status);
 #endif   
 
@@ -3902,20 +3908,41 @@ namespace agora {
 #define NODE_SET_OBJ_PROP_UINT32(isolate, obj, name, val) \
     { \
         Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
-        CHECK_NAPI_OBJ(propName); \
         Local<Value> propVal = v8::Uint32::New(isolate, val); \
         CHECK_NAPI_OBJ(propVal); \
-        obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+        v8::Maybe<bool> ret = obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+        if(!ret.IsNothing()) { \
+            if(!ret.ToChecked()) { \
+                break; \
+            } \
+        } \
     }
         
-#define NODE_SET_OBJ_PROP_String(isolate, obj, name, val) \
+#define NODE_SET_OBJ_PROP_BOOL(isolate, obj, name, val) \
         { \
             Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
-            CHECK_NAPI_OBJ(propName); \
-            Local<Value> propVal = String::NewFromUtf8(isolate, val, NewStringType::kInternalized).ToLocalChecked(); \
+            Local<Value> propVal = v8::Boolean::New(isolate, val); \
             CHECK_NAPI_OBJ(propVal); \
-            obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+            v8::Maybe<bool> ret = obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+            if(!ret.IsNothing()) { \
+                if(!ret.ToChecked()) { \
+                    break; \
+                } \
+            } \
         }
+        
+#define NODE_SET_OBJ_PROP_String(isolate, obj, name, val) \
+    { \
+        Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
+        Local<Value> propVal = String::NewFromUtf8(isolate, val, NewStringType::kInternalized).ToLocalChecked(); \
+        CHECK_NAPI_OBJ(propVal); \
+        v8::Maybe<bool> ret = obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+        if(!ret.IsNothing()) { \
+            if(!ret.ToChecked()) { \
+                break; \
+            } \
+        } \
+    }
 
 #define NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, name, info) \
     { \
@@ -3923,7 +3950,12 @@ namespace agora {
         Local<v8::ArrayBuffer> buff = v8::ArrayBuffer::New(isolate, info.length); \
         memcpy(buff->GetContents().Data(), info.buffer, info.length); \
         Local<v8::Uint8Array> dataarray = v8::Uint8Array::New(buff, 0, info.length);\
-        obj->Set(isolate->GetCurrentContext(), propName, dataarray); \
+        v8::Maybe<bool> ret = obj->Set(isolate->GetCurrentContext(), propName, dataarray); \
+        if(!ret.IsNothing()) { \
+            if(!ret.ToChecked()) { \
+                break; \
+            } \
+        } \
     }
 
         NAPI_API_DEFINE(NodeRtcEngine, getScreenWindowsInfo)
@@ -3987,6 +4019,58 @@ namespace agora {
                 }
 #endif
 
+                napi_set_array_result(args, infos);
+            } while (false);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, getScreenDisplaysInfo)
+        {
+            LOG_ENTER;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                
+                Isolate* isolate = pEngine->getIsolate();
+                Local<v8::Array> infos = v8::Array::New(isolate);
+
+                std::vector<ScreenDisplayInfo> allDisplays = getAllDisplayInfo();
+
+                
+                for (unsigned int i = 0; i < allDisplays.size(); ++i) {
+                    ScreenDisplayInfo displayInfo = allDisplays[i];
+                    Local<v8::Object> obj = Object::New(isolate);
+                    ScreenIDType displayId = displayInfo.displayId;
+                    Local<v8::Object> displayIdObj = Object::New(isolate);
+#ifdef _WIN32
+                    NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "x", displayId.x);
+                    NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "y", displayId.y);
+                    NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "width", displayId.width);
+                    NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "height", displayId.height);
+#elif defined(__APPLE__)
+                    NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "id", displayId.idVal);
+#endif
+                    Local<Value> propName = String::NewFromUtf8(isolate, "displayId", NewStringType::kInternalized).ToLocalChecked();
+                    obj->Set(propName, displayIdObj);
+
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", displayInfo.width);
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", displayInfo.height);
+                    NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isMain", displayInfo.isMain);
+                    NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isActive", displayInfo.isActive);
+                    NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isBuiltin", displayInfo.isBuiltin);
+
+                    if (displayInfo.imageData) {
+                        buffer_info imageInfo;
+                        imageInfo.buffer = displayInfo.imageData;
+                        imageInfo.length = displayInfo.imageDataLength;
+                        NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "image", imageInfo);
+
+                        free(displayInfo.imageData);
+                    }
+
+                    infos->Set(i, obj);
+                }
                 napi_set_array_result(args, infos);
             } while (false);
             LOG_LEAVE;
