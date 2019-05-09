@@ -14,7 +14,8 @@ const buildDownloadInfo = () => {
   // build os label
   const osLabel = detectOS();
   // build version label
-  const { version } = detectOwnVersion();
+  // const { version } = detectOwnVersion();
+  const version = '2.3.3-hotfix'
   // build electron dependent label
   const {
     electron_version
