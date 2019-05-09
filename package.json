@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "2.4.0-beta",
+  "version": "2.4.0-beta.1",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -24,7 +24,7 @@
     "pretest": "npm run build:node && npm run build:ts",
     "test": "jest --detectOpenHandles --forceExit",
     "quicktest": "jest --detectOpenHandles --forceExit",
-    "prepublishOnly:": "npm run build:ts"
+    "prepublishOnly": "npm run build:ts"
   },
   "gypfile": false,
   "dependencies": {
