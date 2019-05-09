@@ -1,4 +1,4 @@
-## 2.4.0-beta (May 9th, 2019)
+## 2.4.0-beta.1 (May 9th, 2019)
 #### :house: Internal
 * Add codes to prevent videosource from getting camera causing problems in windows
 * Add api `refreshRender`. Support instantly refreshing view when view size is changed. Useful for low frame rates
