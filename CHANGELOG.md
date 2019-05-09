@@ -1,14 +1,14 @@
-## Latest
+## 2.4.0-beta (May 9th, 2019)
 #### :house: Internal
-* Fix missing RemoteVideoTransportStats + RemoteAudioTransportStats event
-* Fix TranscodingUser cannot be added issue for rtmp streaming
 * Add codes to prevent videosource from getting camera causing problems in windows
 * Add api `refreshRender`. Support instantly refreshing view when view size is changed. Useful for low frame rates
+* Update internal scripts according to ci.
 
 #### :bug: Bug Fix
 * Use type `Element` instead of `HTMLElement`
 * Fixed param for api `setClientRole`
-* Add missing events.
+* Fix missing RemoteVideoTransportStats + RemoteAudioTransportStats event
+* Fix TranscodingUser cannot be added issue for rtmp streaming
 
 ## 2.4.0-alpha (Apr 11st, 2019)
 #### :house: Internal
