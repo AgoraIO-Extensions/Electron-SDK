@@ -14,29 +14,19 @@ const buildDownloadInfo = () => {
   // build os label
   const osLabel = detectOS();
   // build version label
-  const { major, minor, patch } = detectOwnVersion();
-  const versionLabel = `v${major}_${minor}_${patch}`;
+  const { version } = detectOwnVersion();
   // build electron dependent label
   const {
     electron_version
   } = require("optimist").argv;
   const dependentElectronVersion = detectElectronVersion(electron_version);
-  const electronLabel = ((version) => {
-    if (version === DependentElectronVersion.ORIGIN) {
-      return 'e2';
-    } else if (version === DependentElectronVersion.STABLE) {
-      return 'e3';
-    } else if (version === DependentElectronVersion.LATEST) {
-      return 'e4';
-    }
-  })(dependentElectronVersion);
 
   // generate download url
   return {
-    packageVersion: `${major}.${minor}.${patch}`,
+    packageVersion: version,
     platform: osLabel,
     dependentElectronVersion: dependentElectronVersion,
-    downloadUrl: `http://download.agora.io/sdk/release/Agora_RTC_Electron_SDK_for_${osLabel}_${versionLabel}_${electronLabel}.zip`
+    downloadUrl: `http://download.agora.io/sdk/release/Electron-${osLabel}-${version}-${dependentElectronVersion}.zip`
   };
 };
 
@@ -47,7 +37,7 @@ const main = () => {
     dependentElectronVersion,
     downloadUrl
   } = buildDownloadInfo();
-  const outputDir = './build/Release/';
+  const outputDir = './build/';
   const removeDir = path.join(__dirname, '../build');
   // rm dir `build`
   rimraf(removeDir, err => {

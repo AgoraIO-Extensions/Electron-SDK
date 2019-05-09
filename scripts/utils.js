@@ -62,7 +62,7 @@ module.exports.detectOwnVersion = () => {
   const pkg = require('../package.json');
   const { major, minor, patch } = semver.coerce(pkg.version);
   return {
-    major, minor, patch
+    major, minor, patch, version: pkg.version
   };
 };
 
