@@ -41,6 +41,8 @@ AGORA_ELECTRON_DEPENDENT=4.0.0
 
 - [Doc Center](https://docs.agora.io/en/Video/API%20Reference/cpp/index.html) - Original API Reference for Agora Native SDK
 
+- [Known Limitation for Screenshare](https://github.com/AgoraIO/Electron-SDK/blob/dev/2.4.0/LIMITATIONS.md)
+
 ## Prerequisites
 
 - Node.js 6.9.1+
