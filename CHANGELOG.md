@@ -3,6 +3,7 @@
 * Add codes to prevent videosource from getting camera causing problems in windows
 * Add api `refreshRender`. Support instantly refreshing view when view size is changed. Useful for low frame rates
 * Update internal scripts according to ci.
+* Added getScreenDisplaysInfo to support videosourceStartScreenCaptureByDisplay, you can use this to share fullscreen from one of your monitors (in case you have multiple)
 
 #### :bug: Bug Fix
 * Use type `Element` instead of `HTMLElement`
