@@ -12,9 +12,12 @@
 #include "Utils.h"
 #include <vector>
 #include <authpack.h>
+
+#if defined(_WIN32)
 #pragma comment(lib, "nama.lib")
 #pragma comment(lib, "opengl32.lib")
 #pragma comment(lib, "glu32.lib")
+#endif
 
 /*
 //找到当前目录
@@ -31,6 +34,7 @@ namespace agora {
         static bool	m_namaInited = false;
         static int mFrameID = 0;
         static int mBeautyHandles = 0;
+        #if defined(_WIN32)
         PIXELFORMATDESCRIPTOR pfd = {
             sizeof(PIXELFORMATDESCRIPTOR),
             1u,
@@ -64,9 +68,9 @@ namespace agora {
             printf("hw=%08x hgldc=%08x spf=%d ret=%d hglrc=%08x\n",
                 hw, hgldc, spf, ret, hglrc);
         }
-
+        #endif
         NodeVideoFrameObserver::NodeVideoFrameObserver() {
-
+            #if defined(_WIN32)
             InitOpenGL();
             //1.初始化fu
             //读取nama数据库，初始化nama
@@ -89,7 +93,7 @@ namespace agora {
             mBeautyHandles = fuCreateItemFromPackage(&propData[0], propData.size());
             mFrameID = 1;
             fuItemSetParamd(mBeautyHandles, "color_level", 0.5);
-                
+            #endif
         }
 
         NodeVideoFrameObserver::~NodeVideoFrameObserver() {
@@ -133,7 +137,9 @@ namespace agora {
         bool NodeVideoFrameObserver::onCaptureVideoFrame(VideoFrame& videoFrame) {
             if (!m_namaInited)
             {
+                #if defined(_WIN32)
                 InitOpenGL();
+                #endif
                 //读取nama数据库，初始化nama
                 std::vector<char> v3data;
                 if (false == Utils::LoadBundle(g_fuDataDir + g_v3Data, v3data))
