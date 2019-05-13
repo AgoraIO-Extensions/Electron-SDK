@@ -24,7 +24,14 @@ const std::string g_fxaa = "fxaa.bundle";
 
 const std::string g_tongue = "tongue.bundle";
 
+#if defined(__APPLE__)
+const std::string g_fuDataDir = "../common/FULive/mac/Resources/";
+#endif
+
+#if defined(_WIN32)
 const std::string g_fuDataDir = "../common/FULive/win/assets/";
+#endif
+
 
 const std::string g_v3Data = "v3.bundle";
 
