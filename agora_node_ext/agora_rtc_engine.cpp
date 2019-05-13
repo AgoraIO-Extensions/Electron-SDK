@@ -10,6 +10,7 @@
 
 #include "agora_rtc_engine.h"
 #include "node_video_render.h"
+#include "node_video_frame.h"
 #include "node_uid.h"
 #include "agora_video_source.h"
 #include "node_napi_api.h"
@@ -263,6 +264,7 @@ namespace agora {
             m_eventHandler.reset(new NodeEventHandler(this));
             /** Node ADDON takes advantage of self render interface */
             m_externalVideoRenderFactory.reset(new NodeVideoRenderFactory(*this));
+            m_externalVideoFrameObserver.reset(new NodeVideoFrameObserver());
             /** m_videoSourceSink provide facilities to multiple video source based on multiple process */
             m_videoSourceSink.reset(createVideoSource());
             LOG_LEAVE;
@@ -287,6 +289,7 @@ namespace agora {
             }
             m_videoSourceSink.reset(nullptr);
             m_externalVideoRenderFactory.reset(nullptr);
+            m_externalVideoFrameObserver.reset(nullptr);
             m_eventHandler.reset(nullptr);
             LOG_LEAVE;
         }
@@ -2289,6 +2292,7 @@ namespace agora {
                 pMediaEngine.queryInterface(pEngine->m_engine, AGORA_IID_MEDIA_ENGINE);
                 if (pMediaEngine) {
                     pMediaEngine->registerVideoRenderFactory(pEngine->m_externalVideoRenderFactory.get());
+                    pMediaEngine->registerVideoFrameObserver(pEngine->m_externalVideoFrameObserver.get());
                 }
                 pEngine->m_engine->enableVideo();
                 RtcEngineParameters rep(pEngine->m_engine);

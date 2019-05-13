@@ -38,6 +38,7 @@
 namespace agora {
     namespace rtc {
         using media::IExternalVideoRenderFactory;
+        using media::IVideoFrameObserver;
         using v8::Isolate;
         const int max_bmp_width = 500;
         const int max_bmp_height = 500;
@@ -297,6 +298,7 @@ namespace agora {
             Isolate *m_isolate;
             std::unique_ptr<IExternalVideoRenderFactory> m_externalVideoRenderFactory;
 
+            std::unique_ptr<IVideoFrameObserver> m_externalVideoFrameObserver;
             /**
              * Currently we only support one video source. This maybe changed if more video source is needed.
              */
