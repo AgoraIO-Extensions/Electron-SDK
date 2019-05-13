@@ -163,7 +163,8 @@
         'target_name': 'agora_node_ext',
         'include_dirs': [
         './common',
-        './common/libyuv/include'
+        './common/libyuv/include',
+        './agora_node_ext/common'
         ],
         'sources': [
         './common/ipc_shm.h',
@@ -190,6 +191,8 @@
         './agora_node_ext/node_uid.h',
         './agora_node_ext/node_video_render.cpp',
         './agora_node_ext/node_video_render.h',
+        './agora_node_ext/node_video_frame.cpp',
+        './agora_node_ext/node_video_frame.h',
         './agora_node_ext/node_video_stream_channel.cpp',
         './agora_node_ext/node_video_stream_channel.h',
         './common/libyuv/source/compare_common.cc',
@@ -215,7 +218,8 @@
         './common/libyuv/source/scale_argb.cc',
         './common/libyuv/source/scale_common.cc',
         './common/libyuv/source/scale.cc',
-        './common/libyuv/source/video_common.cc'
+        './common/libyuv/source/video_common.cc',
+        './agora_node_ext/common/Utils.cpp',
         ],
         'conditions': [
             [
@@ -225,18 +229,22 @@
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
                         './sdk/dll/agora_rtc_sdk.dll',
-                        './sdk/dll/agora_sig_sdk.dll'
+                        './sdk/dll/agora_sig_sdk.dll',
+                        './common/FULive/win/Win32/nama.dll',
+                        './common/FULive/win/Win32/libsgemm.dll'
                     ]
                 }],
                 'library_dirs': [
                     './sdk/lib/win',
+                    './common/FULive/win/Win32',
                 ],
                 'link_settings': {
                     'libraries': [
                         '-lagora_rtc_sdk.lib',
                         '-lws2_32.lib',
                         '-lRpcrt4.lib',
-						'-lgdiplus.lib'
+						'-lgdiplus.lib',
+						'-lnama.lib'
                     ]
                 },
                 'defines!': [
@@ -254,7 +262,8 @@
                     './agora_node_ext/node_screen_window_info.h'
                 ],
                 'include_dirs': [
-                './sdk/include'
+                    './sdk/include',
+                    './common/FULive/win/include'
                 ],
                 'configurations': {
                     'Release': {
