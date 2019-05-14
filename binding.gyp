@@ -64,8 +64,7 @@
                 'link_settings': {
                     'libraries': [
                         '-lagora_rtc_sdk.lib',
-                        '-lws2_32.lib',
-                        '-lShcore.lib'
+                        '-lws2_32.lib'
                     ]
                 },
                 'link_settings!': [
@@ -234,8 +233,7 @@
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
                         './sdk/dll/agora_rtc_sdk.dll',
-                        './sdk/dll/agora_sig_sdk.dll',
-                        './resources/dpi_aware.manifest'
+                        './sdk/dll/agora_sig_sdk.dll'
                     ]
                 }],
                 'library_dirs': [
