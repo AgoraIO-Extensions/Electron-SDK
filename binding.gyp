@@ -64,7 +64,8 @@
                 'link_settings': {
                     'libraries': [
                         '-lagora_rtc_sdk.lib',
-                        '-lws2_32.lib'
+                        '-lws2_32.lib',
+                        '-lShcore.lib'
                     ]
                 },
                 'link_settings!': [
@@ -92,6 +93,10 @@
                                 'AdditionalOptions': [
                                     '/EHsc'
                                 ]
+                            },
+                            'VCManifestTool': {
+                                'EmbedManifest': 'true',
+                                'AdditionalManifestFiles': '../Resources/dpi_aware.manifest'
                             }
                         }
                     },
@@ -102,6 +107,10 @@
                                 'AdditionalOptions': [
                                     '/EHsc'
                                 ]
+                            },
+                            'VCManifestTool': {
+                                'EmbedManifest': 'true',
+                                'AdditionalManifestFiles': '../Resources/dpi_aware.manifest'
                             }
                         }
                     }
@@ -225,7 +234,8 @@
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
                         './sdk/dll/agora_rtc_sdk.dll',
-                        './sdk/dll/agora_sig_sdk.dll'
+                        './sdk/dll/agora_sig_sdk.dll',
+                        './resources/dpi_aware.manifest'
                     ]
                 }],
                 'library_dirs': [
