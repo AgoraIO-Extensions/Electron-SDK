@@ -204,8 +204,10 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(getConnectionState);
                 PROPERTY_METHOD_DEFINE(release);
 
-                //face unity apis
-                PROPERTY_METHOD_DEFINE(initializeFaceUnity);
+				//face unity apis
+				PROPERTY_METHOD_DEFINE(initializeFaceUnity);
+				PROPERTY_METHOD_DEFINE(updateFaceUnityOptions);
+				
             EN_PROPERTY_DEFINE()
             module->Set(String::NewFromUtf8(isolate, "NodeRtcEngine"), tpl->GetFunction());
         }
@@ -3266,6 +3268,66 @@ namespace agora {
 			} while (false);
 
 			napi_set_int_result(args, 0);
+			LOG_LEAVE;
+		}
+
+		NAPI_API_DEFINE(NodeRtcEngine, updateFaceUnityOptions)
+		{
+			LOG_ENTER;
+			napi_status status = napi_ok;
+			int result = -1;
+			do {
+				Isolate *isolate = args.GetIsolate();
+				NodeRtcEngine *pEngine = nullptr;
+				napi_get_native_this(args, pEngine);
+				CHECK_NATIVE_THIS(pEngine);
+
+				if (!pEngine->m_externalVideoFrameObserver) {
+					break;
+				}
+
+				if (!args[0]->IsObject()) {
+					status = napi_invalid_arg;
+					CHECK_NAPI_STATUS(pEngine, status);
+				}
+
+				Local<Object> obj = args[0]->ToObject();
+
+				FaceUnityOptions opts;
+				nodestring filter_name;
+
+				status = napi_get_object_property_nodestring_(isolate, obj, "filter_name", filter_name);
+				opts.filter_name = filter_name;
+				CHECK_NAPI_STATUS(pEngine, status);
+
+				status = napi_get_object_property_double_(isolate, obj, "filter_level", opts.filter_level);
+				CHECK_NAPI_STATUS(pEngine, status);
+
+				status = napi_get_object_property_double_(isolate, obj, "color_level", opts.color_level);
+				CHECK_NAPI_STATUS(pEngine, status);
+
+				status = napi_get_object_property_double_(isolate, obj, "red_level", opts.red_level);
+				CHECK_NAPI_STATUS(pEngine, status);
+
+				status = napi_get_object_property_double_(isolate, obj, "blur_level", opts.blur_level);
+				CHECK_NAPI_STATUS(pEngine, status);
+
+				status = napi_get_object_property_double_(isolate, obj, "skin_detect", opts.skin_detect);
+				CHECK_NAPI_STATUS(pEngine, status);
+
+				status = napi_get_object_property_double_(isolate, obj, "nonshin_blur_scale", opts.nonshin_blur_scale);
+				CHECK_NAPI_STATUS(pEngine, status);
+
+				status = napi_get_object_property_double_(isolate, obj, "heavy_blur", opts.heavy_blur);
+				CHECK_NAPI_STATUS(pEngine, status);
+
+				status = napi_get_object_property_double_(isolate, obj, "blur_blend_ratio", opts.blur_blend_ratio);
+				CHECK_NAPI_STATUS(pEngine, status);
+
+				NodeVideoFrameObserver * fu = reinterpret_cast<NodeVideoFrameObserver*>(pEngine->m_externalVideoFrameObserver);
+				result = fu->setFaceUnityOptions(opts);
+			} while (false);
+			napi_set_int_result(args, result);
 			LOG_LEAVE;
 		}
     }

@@ -104,6 +104,16 @@ namespace agora {
 			delete auth_package;
         }
 
+		int NodeVideoFrameObserver::setFaceUnityOptions(FaceUnityOptions options) {
+			int result = -1;
+			do {
+				mOptions = options;
+				mNeedUpdateFUOptions = true;
+				result = 0;
+			} while (false);
+			return result;
+		}
+
         unsigned char *NodeVideoFrameObserver::yuvData(VideoFrame& videoFrame)
         {
             int ysize = videoFrame.yStride * videoFrame.height;
@@ -140,6 +150,8 @@ namespace agora {
         }
         bool NodeVideoFrameObserver::onCaptureVideoFrame(VideoFrame& videoFrame) {
 			do {
+
+				// 1. initialize if not yet done
 				if (!m_namaInited)
 				{
 #if defined(_WIN32)
@@ -163,10 +175,23 @@ namespace agora {
 					std::cout << "load face beautification data." << std::endl;
 
 					mBeautyHandles = fuCreateItemFromPackage(&propData[0], propData.size());
-					fuItemSetParamd(mBeautyHandles, const_cast<char*>(faceBeautyParamName[1].c_str()), 0.7);
-					fuItemSetParamd(mBeautyHandles, const_cast<char*>(faceBeautyParamName[0].c_str()), 4.0);
 					m_namaInited = true;
 				}
+
+				// check if options needs to be updated
+				if (mNeedUpdateFUOptions) {
+					fuItemSetParams(mBeautyHandles, "filter_name", const_cast<char*>(mOptions.filter_name.c_str()));
+					fuItemSetParamd(mBeautyHandles, "filter_level", mOptions.filter_level);
+					fuItemSetParamd(mBeautyHandles, "color_level", mOptions.color_level);
+					fuItemSetParamd(mBeautyHandles, "red_level", mOptions.red_level);
+					fuItemSetParamd(mBeautyHandles, "blur_level", mOptions.blur_level);
+					fuItemSetParamd(mBeautyHandles, "skin_detect", mOptions.skin_detect);
+					fuItemSetParamd(mBeautyHandles, "nonshin_blur_scale", mOptions.nonshin_blur_scale);
+					fuItemSetParamd(mBeautyHandles, "heavy_blur", mOptions.heavy_blur);
+					fuItemSetParamd(mBeautyHandles, "blur_blend_ratio", mOptions.blur_blend_ratio);
+					mNeedUpdateFUOptions = false;
+				}
+
 				//3.make it beautiful
 				unsigned char *in_ptr = yuvData(videoFrame);
 				int size = yuvSize(videoFrame);

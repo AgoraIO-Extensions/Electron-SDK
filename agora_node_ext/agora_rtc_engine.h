@@ -260,11 +260,11 @@ namespace agora {
             NAPI_API(getConnectionState);
             NAPI_API(release);
 
-
-            /**
-             * faceunity apis
-             */
-            NAPI_API(initializeFaceUnity);
+			/**
+			 * faceunity apis
+			 */
+			NAPI_API(initializeFaceUnity);
+			NAPI_API(updateFaceUnityOptions);
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }
