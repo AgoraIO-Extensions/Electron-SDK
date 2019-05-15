@@ -790,4 +790,5 @@ export interface NodeRtcEngine {
   onEvent(event: string, callback: Function): void;
   unsubscribe(uid: number): number;
   registerDeliverFrame(callback: Function): number;
+  initializeFaceUnity(authdata: Array<Number>): number;
 }

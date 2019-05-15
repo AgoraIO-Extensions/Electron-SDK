@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import path from 'path';
 import os from 'os'
 
-import {voiceChangerList, voiceReverbPreset, videoProfileList, audioProfileList, audioScenarioList, APP_ID, SHARE_ID, RTMP_URL, voiceReverbList } from '../utils/settings'
+import {AUTH_DATA, voiceChangerList, voiceReverbPreset, videoProfileList, audioProfileList, audioScenarioList, APP_ID, SHARE_ID, RTMP_URL, voiceReverbList } from '../utils/settings'
 import {readImage} from '../utils/base64'
 import WindowPicker from './components/WindowPicker/index.js'
 import DisplayPicker from './components/DisplayPicker/index.js'
@@ -38,6 +38,7 @@ export default class App extends Component {
         recordingTestOn: false,
         playbackTestOn: false,
         lastmileTestOn: false,
+        faceUnityOn: false,
         rtmpTestOn: false,
         windowList: [],
         displayList: [],
@@ -423,6 +424,15 @@ export default class App extends Component {
       })
   }
 
+  toggleFaceUnity = e => {
+    let rtcEngine = this.getRtcEngine()
+    if(AUTH_DATA.length !== 0) {
+      rtcEngine.initializeFaceUnity(AUTH_DATA)
+    } else {
+      alert(`AUTH_DATA missing`)
+    }
+  }
+
   togglePlaybackTest = e => {
     let rtcEngine = this.getRtcEngine()
     if (!this.state.playbackTestOn) {
@@ -650,6 +660,12 @@ export default class App extends Component {
             <label className="label">Audio Recording Test</label>
             <div className="control">
               <button onClick={this.toggleRecordingTest} className="button is-link">{this.state.recordingTestOn ? 'stop' : 'start'}</button>
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">FaceUnity</label>
+            <div className="control">
+              <button onClick={this.toggleFaceUnity} className="button is-link">{this.state.faceUnityOn ? 'stop' : 'start'}</button>
             </div>
           </div>
         </div>

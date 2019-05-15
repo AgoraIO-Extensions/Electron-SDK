@@ -30,7 +30,7 @@ import {
   VideoEncoderConfiguration
 } from './native_type';
 import { EventEmitter } from 'events';
-const agora = require('../../build/Release/agora_node_ext');
+const agora = require('../../build/Debug/agora_node_ext');
 
 
 /**
@@ -2470,6 +2470,12 @@ class AgoraRtcEngine extends EventEmitter {
 
   setProfile(profile: string, merge: boolean): number {
     return this.rtcEngine.setProfile(profile, merge);
+  }
+  // ===========================================================================
+  // FaceUnity
+  // ===========================================================================
+  initializeFaceUnity(authdata: Array<Number>): number {
+    return this.rtcEngine.initializeFaceUnity(authdata);
   }
 }
 
