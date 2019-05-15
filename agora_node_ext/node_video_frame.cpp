@@ -18,6 +18,10 @@
 #pragma comment(lib, "glu32.lib")
 #endif
 
+#if defined(__APPLE__)
+#include <OpenGL/OpenGL.h>
+#endif
+
 /*
 //找到当前目录
 FILE *fp = NULL;
@@ -51,7 +55,10 @@ namespace agora {
             PFD_MAIN_PLANE,
             0u,
             0u, 0u };
+        #endif
+
         void InitOpenGL() {
+            #if defined(_WIN32)
             HWND hw = CreateWindowExA(
                 0, "EDIT", "", ES_READONLY,
                 0, 0, 1, 1,
@@ -66,8 +73,31 @@ namespace agora {
             //hglrc就是创建出的OpenGL context
             printf("hw=%08x hgldc=%08x spf=%d ret=%d hglrc=%08x\n",
                 hw, hgldc, spf, ret, hglrc);
+            #endif
+
+            #if defined(__APPLE__)
+            // CGLPixelFormatAttribute attrib[] = {kCGLPFADoubleBuffer, (CGLPixelFormatAttribute)0};
+            // CGLPixelFormatObj pixelFormat = NULL;
+            // GLint numPixelFormats = 0;
+            // CGLContextObj cglContext1 = NULL;
+            // CGLContextObj cglContext2 = NULL;
+            // CGLChoosePixelFormat (attrib, &pixelFormat, &numPixelFormats);
+            // CGLCreateContext(pixelFormat, NULL, &cglContext1);
+            // CGLCreateContext(pixelFormat, cglContext1, &cglContext2);
+
+            CGLPixelFormatAttribute attrib[] = {kCGLPFADoubleBuffer};
+            CGLPixelFormatObj pixelFormat = NULL;
+            GLint numPixelFormats = 0;
+            CGLContextObj cglContext1 = NULL;
+//            CGLContextObj cglContext2 = NULL;
+            CGLChoosePixelFormat (attrib, &pixelFormat, &numPixelFormats);
+            CGLCreateContext(pixelFormat, NULL, &cglContext1);
+//            CGLCreateContext(pixelFormat, cglContext1, &cglContext2);
+            CGLSetCurrentContext(cglContext1);
+            std::cout << "mac InitOpenGL" << std::endl;
+            #endif
         }
-        #endif
+
         NodeVideoFrameObserver::NodeVideoFrameObserver(char* authdata, int authsize) {
 			do {
 				auth_package_size = authsize;
@@ -83,7 +113,6 @@ namespace agora {
 				}
 				// CheckGLContext();
 				fuSetup(reinterpret_cast<float*>(&v3data[0]), v3data.size(), NULL, auth_package, sizeof(auth_package));
-
 				//2.beauty params
 				std::vector<char> paramData;
 				if (false == Utils::LoadBundle(g_fuDataDir + g_faceBeautification, paramData))
@@ -124,13 +153,13 @@ namespace agora {
             memcpy(temp, videoFrame.yBuffer, ysize);
             memcpy(temp + ysize, videoFrame.uBuffer, usize);
             memcpy(temp + ysize + usize, videoFrame.vBuffer, vsize);
-            std::cout << "load face beautification data." << std::endl;
+            std::cout << "yuvData" << std::endl;
             return (unsigned char *)temp;
         }
 
         int NodeVideoFrameObserver::yuvSize(VideoFrame& videoFrame)
         {
-          std::cout << "load face beautification data." << std::endl;
+          std::cout << "yuvSize" << std::endl;
           int ysize = videoFrame.yStride * videoFrame.height;
           int usize = videoFrame.uStride * videoFrame.height / 2;
           int vsize = videoFrame.vStride * videoFrame.height / 2;
@@ -154,9 +183,7 @@ namespace agora {
 				// 1. initialize if not yet done
 				if (!m_namaInited)
 				{
-#if defined(_WIN32)
 					InitOpenGL();
-#endif
 					//load nama and initialize
 					std::vector<char> v3data;
 					if (false == Utils::LoadBundle(g_fuDataDir + g_v3Data, v3data))
