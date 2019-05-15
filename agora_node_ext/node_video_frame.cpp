@@ -11,7 +11,6 @@
 #include "FUConfig.h"
 #include "Utils.h"
 #include <vector>
-#include <authpack.h>
 
 #if defined(_WIN32)
 #pragma comment(lib, "nama.lib")
@@ -69,35 +68,40 @@ namespace agora {
                 hw, hgldc, spf, ret, hglrc);
         }
         #endif
-        NodeVideoFrameObserver::NodeVideoFrameObserver() {
-            #if defined(_WIN32)
-            InitOpenGL();
-            //1.初始化fu
-            //读取nama数据库，初始化nama
-            std::vector<char> v3data;
-            if (false == Utils::LoadBundle(g_fuDataDir + g_v3Data, v3data)) {
-                exit(0);
-            }
-            // CheckGLContext();
-            fuSetup(reinterpret_cast<float*>(&v3data[0]), v3data.size(), NULL, g_auth_package, sizeof(g_auth_package));
-            //2.配置美颜参数
-            //读取美颜道具，设置美颜参数
-            std::vector<char> propData;
-            if (false == Utils::LoadBundle(g_fuDataDir + g_faceBeautification, propData))
-            {
-                std::cout << "load face beautification data failed." << std::endl;
-                exit(0);
-            }
-            std::cout << "load face beautification data." << std::endl;
+        NodeVideoFrameObserver::NodeVideoFrameObserver(char* authdata, int authsize) {
+			do {
+				auth_package_size = authsize;
+				auth_package = new char[authsize];
+				memcpy(auth_package, authdata, authsize);
+#if 0
+				InitOpenGL();
+				//1.initialize fu
+				//initialize nama
+				std::vector<char> v3data;
+				if (false == Utils::LoadBundle(g_fuDataDir + g_v3Data, v3data)) {
+					break;
+				}
+				// CheckGLContext();
+				fuSetup(reinterpret_cast<float*>(&v3data[0]), v3data.size(), NULL, auth_package, sizeof(auth_package));
 
-            mBeautyHandles = fuCreateItemFromPackage(&propData[0], propData.size());
-            mFrameID = 1;
-            fuItemSetParamd(mBeautyHandles, "color_level", 0.5);
-            #endif
+				//2.beauty params
+				std::vector<char> paramData;
+				if (false == Utils::LoadBundle(g_fuDataDir + g_faceBeautification, paramData))
+				{
+					std::cout << "load face beautification data failed." << std::endl;
+					break;
+				}
+				std::cout << "load face beautification data." << std::endl;
+				mBeautyHandles = fuCreateItemFromPackage(&paramData[0], paramData.size());
+				mFrameID = 1;
+				fuItemSetParamd(mBeautyHandles, "color_level", 0.5);
+#endif
+			} while (false);
         }
 
         NodeVideoFrameObserver::~NodeVideoFrameObserver() {
             fuDestroyAllItems();
+			delete auth_package;
         }
 
         unsigned char *NodeVideoFrameObserver::yuvData(VideoFrame& videoFrame)
@@ -135,46 +139,49 @@ namespace agora {
             std::cout << "load face beautification data." << std::endl;
         }
         bool NodeVideoFrameObserver::onCaptureVideoFrame(VideoFrame& videoFrame) {
-            if (!m_namaInited)
-            {
-                #if defined(_WIN32)
-                InitOpenGL();
-                #endif
-                //读取nama数据库，初始化nama
-                std::vector<char> v3data;
-                if (false == Utils::LoadBundle(g_fuDataDir + g_v3Data, v3data))
-                {
-                    return false;
-                }
-                //CheckGLContext();
-                fuSetup(reinterpret_cast<float*>(&v3data[0]), v3data.size(), NULL, g_auth_package, sizeof(g_auth_package));
+			do {
+				if (!m_namaInited)
+				{
+#if defined(_WIN32)
+					InitOpenGL();
+#endif
+					//load nama and initialize
+					std::vector<char> v3data;
+					if (false == Utils::LoadBundle(g_fuDataDir + g_v3Data, v3data))
+					{
+						break;
+					}
+					//CheckGLContext();
+					fuSetup(reinterpret_cast<float*>(&v3data[0]), v3data.size(), NULL, auth_package, auth_package_size);
 
-                std::vector<char> propData;
-                if (false == Utils::LoadBundle(g_fuDataDir + g_faceBeautification, propData))
-                {
-                    std::cout << "load face beautification data failed." << std::endl;
-                    return false;
-                }
-                std::cout << "load face beautification data." << std::endl;
+					std::vector<char> propData;
+					if (false == Utils::LoadBundle(g_fuDataDir + g_faceBeautification, propData))
+					{
+						std::cout << "load face beautification data failed." << std::endl;
+						break;
+					}
+					std::cout << "load face beautification data." << std::endl;
 
-                mBeautyHandles = fuCreateItemFromPackage(&propData[0], propData.size());
-                fuItemSetParamd(mBeautyHandles, const_cast<char*>(faceBeautyParamName[1].c_str()), 0.7);
-                fuItemSetParamd(mBeautyHandles, const_cast<char*>(faceBeautyParamName[0].c_str()), 4.0);
-                m_namaInited = true;
-            }
-            //3.调用美颜接口
-            unsigned char *in_ptr = yuvData(videoFrame);
-            int size = yuvSize(videoFrame);
-            int handle[] = { mBeautyHandles };
-            int handleSize = sizeof(handle) / sizeof(handle[0]);
-            fuRenderItemsEx2(
-                FU_FORMAT_I420_BUFFER, reinterpret_cast<int*>(in_ptr),
-                FU_FORMAT_I420_BUFFER, reinterpret_cast<int*>(in_ptr),
-                videoFrame.width, videoFrame.height,
-                mFrameID, handle, handleSize,
-                NAMA_RENDER_FEATURE_FULL, NULL);
-            videoFrameData(videoFrame, in_ptr);
-            delete in_ptr;
+					mBeautyHandles = fuCreateItemFromPackage(&propData[0], propData.size());
+					fuItemSetParamd(mBeautyHandles, const_cast<char*>(faceBeautyParamName[1].c_str()), 0.7);
+					fuItemSetParamd(mBeautyHandles, const_cast<char*>(faceBeautyParamName[0].c_str()), 4.0);
+					m_namaInited = true;
+				}
+				//3.make it beautiful
+				unsigned char *in_ptr = yuvData(videoFrame);
+				int size = yuvSize(videoFrame);
+				int handle[] = { mBeautyHandles };
+				int handleSize = sizeof(handle) / sizeof(handle[0]);
+				fuRenderItemsEx2(
+					FU_FORMAT_I420_BUFFER, reinterpret_cast<int*>(in_ptr),
+					FU_FORMAT_I420_BUFFER, reinterpret_cast<int*>(in_ptr),
+					videoFrame.width, videoFrame.height,
+					mFrameID, handle, handleSize,
+					NAMA_RENDER_FEATURE_FULL, NULL);
+				videoFrameData(videoFrame, in_ptr);
+				delete in_ptr;
+			} while (false);
+            
             return true;
         }
         

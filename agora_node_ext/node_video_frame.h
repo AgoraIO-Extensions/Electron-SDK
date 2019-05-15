@@ -21,7 +21,7 @@ namespace agora {
         class NodeVideoFrameObserver : public IVideoFrameObserver
         {
         public:
-            NodeVideoFrameObserver();
+            NodeVideoFrameObserver(char* authdata, int authsize);
             ~NodeVideoFrameObserver();
             virtual bool onCaptureVideoFrame(VideoFrame& videoFrame) override;
             virtual bool onRenderVideoFrame(unsigned int uid, VideoFrame& videoFrame) override;
@@ -29,6 +29,8 @@ namespace agora {
             unsigned char *yuvData(VideoFrame& videoFrame);
             int yuvSize(VideoFrame& videoFrame);
             void videoFrameData(VideoFrame& videoFrame, unsigned char *yuvData);
+			char* auth_package;
+			int auth_package_size;
         };
     }
 }

@@ -260,6 +260,11 @@ namespace agora {
             NAPI_API(getConnectionState);
             NAPI_API(release);
 
+
+            /**
+             * faceunity apis
+             */
+            NAPI_API(initializeFaceUnity);
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }
@@ -275,7 +280,6 @@ namespace agora {
             Isolate *m_isolate;
             std::unique_ptr<IExternalVideoRenderFactory> m_externalVideoRenderFactory;
 
-            std::unique_ptr<IVideoFrameObserver> m_externalVideoFrameObserver;
             /**
              * Currently we only support one video source. This maybe changed if more video source is needed.
              */
@@ -283,6 +287,7 @@ namespace agora {
 
 			AVideoDeviceManager* m_videoVdm = nullptr;
 			AAudioDeviceManager* m_audioVdm = nullptr;
+			IVideoFrameObserver* m_externalVideoFrameObserver = nullptr;
         };
 
 /*

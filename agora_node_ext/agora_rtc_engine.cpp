@@ -203,6 +203,9 @@ namespace agora {
                 //2.3.3 apis
                 PROPERTY_METHOD_DEFINE(getConnectionState);
                 PROPERTY_METHOD_DEFINE(release);
+
+                //face unity apis
+                PROPERTY_METHOD_DEFINE(initializeFaceUnity);
             EN_PROPERTY_DEFINE()
             module->Set(String::NewFromUtf8(isolate, "NodeRtcEngine"), tpl->GetFunction());
         }
@@ -244,7 +247,6 @@ namespace agora {
             m_eventHandler.reset(new NodeEventHandler(this));
             /** Node ADDON takes advantage of self render interface */
             m_externalVideoRenderFactory.reset(new NodeVideoRenderFactory(*this));
-            m_externalVideoFrameObserver.reset(new NodeVideoFrameObserver());
             /** m_videoSourceSink provide facilities to multiple video source based on multiple process */
             m_videoSourceSink.reset(createVideoSource());
             LOG_LEAVE;
@@ -267,9 +269,13 @@ namespace agora {
                 m_engine->release();
                 m_engine = nullptr;
             }
+
+			if (m_externalVideoFrameObserver) {
+				delete m_externalVideoFrameObserver;
+				m_externalVideoFrameObserver = nullptr;
+			}
             m_videoSourceSink.reset(nullptr);
             m_externalVideoRenderFactory.reset(nullptr);
-            m_externalVideoFrameObserver.reset(nullptr);
             m_eventHandler.reset(nullptr);
             LOG_LEAVE;
         }
@@ -1611,7 +1617,6 @@ namespace agora {
                 pMediaEngine.queryInterface(pEngine->m_engine, AGORA_IID_MEDIA_ENGINE);
                 if (pMediaEngine) {
                     pMediaEngine->registerVideoRenderFactory(pEngine->m_externalVideoRenderFactory.get());
-                    pMediaEngine->registerVideoFrameObserver(pEngine->m_externalVideoFrameObserver.get());
                 }
                 pEngine->m_engine->enableVideo();
                 RtcEngineParameters rep(pEngine->m_engine);
@@ -3228,5 +3233,40 @@ namespace agora {
             } while (false);
             LOG_LEAVE;
         }
+
+		NAPI_API_DEFINE(NodeRtcEngine, initializeFaceUnity)
+		{
+			LOG_ENTER;
+			do {
+				NodeRtcEngine *pEngine = nullptr;
+				napi_get_native_this(args, pEngine);
+				CHECK_NATIVE_THIS(pEngine);
+
+				Isolate* isolate = pEngine->getIsolate();
+
+				agora::util::AutoPtr<agora::media::IMediaEngine> pMediaEngine;
+				pMediaEngine.queryInterface(pEngine->m_engine, AGORA_IID_MEDIA_ENGINE);
+
+				if (!pEngine->m_externalVideoFrameObserver) {
+					Local<v8::Array> auth;
+					if (args[0]->IsArray()) {
+						auth = Local<v8::Array>::Cast(args[0]);
+						int authLength = auth->Length();
+						char* authdata = new char[authLength];
+						for (int i = 0; i < authLength; i++) {
+							int v = (int)auth->Get(i)->NumberValue();
+							authdata[i] = (char)v;
+						}
+
+						pEngine->m_externalVideoFrameObserver = new NodeVideoFrameObserver(authdata, authLength);
+						pMediaEngine->registerVideoFrameObserver(pEngine->m_externalVideoFrameObserver);
+						delete authdata;
+					}
+				}
+			} while (false);
+
+			napi_set_int_result(args, 0);
+			LOG_LEAVE;
+		}
     }
 }
