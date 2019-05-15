@@ -30,7 +30,7 @@ import {
   VideoEncoderConfiguration
 } from './native_type';
 import { EventEmitter } from 'events';
-const agora = require('../../build/Debug/agora_node_ext');
+const agora = require('../../build/Release/agora_node_ext');
 
 
 /**
@@ -2476,6 +2476,30 @@ class AgoraRtcEngine extends EventEmitter {
   // ===========================================================================
   initializeFaceUnity(authdata: Array<Number>): number {
     return this.rtcEngine.initializeFaceUnity(authdata);
+  }
+
+  updateFaceUnityOptions(options: {
+    filter_name: string,
+    filter_level: number,
+    color_level: number,
+    red_level: number,
+    blur_level: number,
+    skin_detect: number,
+    nonshin_blur_scale: number,
+    heavy_blur: number,
+    blur_blend_ratio: number
+  }): number {
+    return this.rtcEngine.updateFaceUnityOptions({
+      filter_name: options.filter_name || "origin",
+      filter_level: options.filter_level || 0,
+      color_level: options.color_level || 0,
+      red_level: options.red_level || 0,
+      blur_level: options.blur_level || 0,
+      skin_detect: options.skin_detect || 0,
+      nonshin_blur_scale: options.nonshin_blur_scale || 0,
+      heavy_blur: options.heavy_blur || 0,
+      blur_blend_ratio: options.blur_blend_ratio || 0
+    });
   }
 }
 

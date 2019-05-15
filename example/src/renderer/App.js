@@ -428,6 +428,7 @@ export default class App extends Component {
     let rtcEngine = this.getRtcEngine()
     if(AUTH_DATA.length !== 0) {
       rtcEngine.initializeFaceUnity(AUTH_DATA)
+      rtcEngine.updateFaceUnityOptions({color_level: 0.7, blur_level: 4.0})
     } else {
       alert(`AUTH_DATA missing`)
     }

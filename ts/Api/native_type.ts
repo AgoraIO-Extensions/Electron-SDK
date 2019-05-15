@@ -791,4 +791,15 @@ export interface NodeRtcEngine {
   unsubscribe(uid: number): number;
   registerDeliverFrame(callback: Function): number;
   initializeFaceUnity(authdata: Array<Number>): number;
+  updateFaceUnityOptions(options: {
+    filter_name: string,
+    filter_level: number,
+    color_level: number,
+    red_level: number,
+    blur_level: number,
+    skin_detect: number,
+    nonshin_blur_scale: number,
+    heavy_blur: number,
+    blur_blend_ratio: number
+  }): number;
 }

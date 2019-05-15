@@ -288,6 +288,7 @@ namespace agora {
 			 * faceunity apis
 			 */
 			NAPI_API(initializeFaceUnity);
+			NAPI_API(updateFaceUnityOptions);
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }
