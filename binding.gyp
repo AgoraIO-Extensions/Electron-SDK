@@ -133,6 +133,7 @@
                     'CoreAudio.framework',
                     'Foundation.framework',
                     'AVFoundation.framework',
+                    'OpenGL.framework',
                     ]
                 },
                 'include_dirs': [
