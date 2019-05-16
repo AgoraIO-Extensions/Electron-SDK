@@ -33,7 +33,7 @@ fclose(fp);
 */
 namespace agora {
     namespace rtc {
-        static char* buf = NULL;
+//        static char* buf = NULL;
         static bool	m_namaInited = false;
         static int mFrameID = 0;
         static int mBeautyHandles = 0;
@@ -177,25 +177,23 @@ namespace agora {
             memcpy(videoFrame.vBuffer, yuvData + ysize + usize, vsize);
             std::cout << "load face beautification data." << std::endl;
         }
-        bool NodeVideoFrameObserver::onCaptureVideoFrame(VideoFrame& videoFrame) {
+        
+        bool NodeVideoFrameObserver::onCaptureVideoFrame(VideoFrame& videoFrame)
+        {
 			do {
-
 				// 1. initialize if not yet done
-				if (!m_namaInited)
-				{
+				if (!m_namaInited) {
 					InitOpenGL();
 					//load nama and initialize
 					std::vector<char> v3data;
-					if (false == Utils::LoadBundle(g_fuDataDir + g_v3Data, v3data))
-					{
+					if (false == Utils::LoadBundle(g_fuDataDir + g_v3Data, v3data)) {
 						break;
 					}
 					//CheckGLContext();
 					fuSetup(reinterpret_cast<float*>(&v3data[0]), v3data.size(), NULL, auth_package, auth_package_size);
 
 					std::vector<char> propData;
-					if (false == Utils::LoadBundle(g_fuDataDir + g_faceBeautification, propData))
-					{
+					if (false == Utils::LoadBundle(g_fuDataDir + g_faceBeautification, propData)) {
 						std::cout << "load face beautification data failed." << std::endl;
 						break;
 					}
@@ -221,7 +219,7 @@ namespace agora {
 
 				//3.make it beautiful
 				unsigned char *in_ptr = yuvData(videoFrame);
-				int size = yuvSize(videoFrame);
+//                int size = yuvSize(videoFrame);
 				int handle[] = { mBeautyHandles };
 				int handleSize = sizeof(handle) / sizeof(handle[0]);
 				fuRenderItemsEx2(
