@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "bulma": "^0.7.1",
+    "bulma-slider": "^2.0.0",
     "immutable": "^3.8.2",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",

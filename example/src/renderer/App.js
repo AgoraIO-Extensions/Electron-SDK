@@ -43,7 +43,9 @@ export default class App extends Component {
         windowList: [],
         displayList: [],
         encoderWidth: 0,
-        encoderHeight: 0
+        encoderHeight: 0,
+        fuBlur: 0,
+        fuColor: 0
       }
     }
     this.enableAudioMixing = false;
@@ -424,11 +426,24 @@ export default class App extends Component {
       })
   }
 
+  handleFuBlur = e => {
+    rtcEngine.updateFaceUnityOptions({color_level: this.state.fuColor, blur_level: this.state.fuBlur})
+    this.setState({
+      fuBlur: Number(e.currentTarget.value)
+    })
+  }
+
+  handleFuColor = e => {
+    rtcEngine.updateFaceUnityOptions({color_level: this.state.fuColor, blur_level: this.state.fuBlur})
+    this.setState({
+      fuColor: Number(e.currentTarget.value)
+    })
+  }
+
   toggleFaceUnity = e => {
     let rtcEngine = this.getRtcEngine()
     if(AUTH_DATA.length !== 0) {
       rtcEngine.initializeFaceUnity(AUTH_DATA)
-      rtcEngine.updateFaceUnityOptions({color_level: 0.7, blur_level: 4.0})
     } else {
       alert(`AUTH_DATA missing`)
     }
@@ -663,10 +678,18 @@ export default class App extends Component {
               <button onClick={this.toggleRecordingTest} className="button is-link">{this.state.recordingTestOn ? 'stop' : 'start'}</button>
             </div>
           </div>
-          <div className="field">
+          <div className="field group">
             <label className="label">FaceUnity</label>
             <div className="control">
               <button onClick={this.toggleFaceUnity} className="button is-link">{this.state.faceUnityOn ? 'stop' : 'start'}</button>
+            </div>
+            Blur Level ({this.state.fuBlur})
+            <div className="control">
+              <input onChange={this.handleFuBlur} className="slider has-output is-fullwidth" min="0" max="10" value={this.state.fuBlur} step="0.1" type="range"></input>
+            </div>
+            Color Level ({this.state.fuColor})
+            <div className="control">
+              <input onChange={this.handleFuColor} className="slider has-output is-fullwidth" min="0" max="10" value={this.state.fuColor} step="0.1" type="range"></input>
             </div>
           </div>
         </div>
