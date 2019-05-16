@@ -22,18 +22,8 @@
 #include <OpenGL/OpenGL.h>
 #endif
 
-/*
-//找到当前目录
-FILE *fp = NULL;
- 
-fp = fopen("./test.txt", "w+");
-fprintf(fp, "This is testing for fprintf...\n");
-fputs("This is testing for fputs...\n", fp);
-fclose(fp);
-*/
 namespace agora {
     namespace rtc {
-//        static char* buf = NULL;
         static bool	m_namaInited = false;
         static int mFrameID = 0;
         static int mBeautyHandles = 0;
@@ -76,23 +66,12 @@ namespace agora {
             #endif
 
             #if defined(__APPLE__)
-            // CGLPixelFormatAttribute attrib[] = {kCGLPFADoubleBuffer, (CGLPixelFormatAttribute)0};
-            // CGLPixelFormatObj pixelFormat = NULL;
-            // GLint numPixelFormats = 0;
-            // CGLContextObj cglContext1 = NULL;
-            // CGLContextObj cglContext2 = NULL;
-            // CGLChoosePixelFormat (attrib, &pixelFormat, &numPixelFormats);
-            // CGLCreateContext(pixelFormat, NULL, &cglContext1);
-            // CGLCreateContext(pixelFormat, cglContext1, &cglContext2);
-
             CGLPixelFormatAttribute attrib[] = {kCGLPFADoubleBuffer};
             CGLPixelFormatObj pixelFormat = NULL;
             GLint numPixelFormats = 0;
             CGLContextObj cglContext1 = NULL;
-//            CGLContextObj cglContext2 = NULL;
             CGLChoosePixelFormat (attrib, &pixelFormat, &numPixelFormats);
             CGLCreateContext(pixelFormat, NULL, &cglContext1);
-//            CGLCreateContext(pixelFormat, cglContext1, &cglContext2);
             CGLSetCurrentContext(cglContext1);
             std::cout << "mac InitOpenGL" << std::endl;
             #endif
@@ -100,32 +79,10 @@ namespace agora {
 
         NodeVideoFrameObserver::NodeVideoFrameObserver(char* authdata, int authsize) {
 			do {
-				auth_package_size = authsize;
-				auth_package = new char[authsize];
-				memcpy(auth_package, authdata, authsize);
-#if 0
-				InitOpenGL();
-				//1.initialize fu
-				//initialize nama
-				std::vector<char> v3data;
-				if (false == Utils::LoadBundle(g_fuDataDir + g_v3Data, v3data)) {
-					break;
-				}
-				// CheckGLContext();
-				fuSetup(reinterpret_cast<float*>(&v3data[0]), v3data.size(), NULL, auth_package, sizeof(auth_package));
-				//2.beauty params
-				std::vector<char> paramData;
-				if (false == Utils::LoadBundle(g_fuDataDir + g_faceBeautification, paramData))
-				{
-					std::cout << "load face beautification data failed." << std::endl;
-					break;
-				}
-				std::cout << "load face beautification data." << std::endl;
-				mBeautyHandles = fuCreateItemFromPackage(&paramData[0], paramData.size());
-				mFrameID = 1;
-				fuItemSetParamd(mBeautyHandles, "color_level", 0.5);
-#endif
-			} while (false);
+                auth_package_size = authsize;
+                auth_package = new char[authsize];
+                memcpy(auth_package, authdata, authsize);
+            } while (false);
         }
 
         NodeVideoFrameObserver::~NodeVideoFrameObserver() {
@@ -153,13 +110,11 @@ namespace agora {
             memcpy(temp, videoFrame.yBuffer, ysize);
             memcpy(temp + ysize, videoFrame.uBuffer, usize);
             memcpy(temp + ysize + usize, videoFrame.vBuffer, vsize);
-            std::cout << "yuvData" << std::endl;
             return (unsigned char *)temp;
         }
 
         int NodeVideoFrameObserver::yuvSize(VideoFrame& videoFrame)
         {
-          std::cout << "yuvSize" << std::endl;
           int ysize = videoFrame.yStride * videoFrame.height;
           int usize = videoFrame.uStride * videoFrame.height / 2;
           int vsize = videoFrame.vStride * videoFrame.height / 2;
@@ -175,7 +130,6 @@ namespace agora {
             memcpy(videoFrame.yBuffer, yuvData,  ysize);
             memcpy(videoFrame.uBuffer, yuvData + ysize, usize);
             memcpy(videoFrame.vBuffer, yuvData + ysize + usize, vsize);
-            std::cout << "load face beautification data." << std::endl;
         }
         
         bool NodeVideoFrameObserver::onCaptureVideoFrame(VideoFrame& videoFrame)
@@ -191,7 +145,7 @@ namespace agora {
 					}
 					//CheckGLContext();
 					fuSetup(reinterpret_cast<float*>(&v3data[0]), v3data.size(), NULL, auth_package, auth_package_size);
-
+                    
 					std::vector<char> propData;
 					if (false == Utils::LoadBundle(g_fuDataDir + g_faceBeautification, propData)) {
 						std::cout << "load face beautification data failed." << std::endl;
@@ -202,7 +156,7 @@ namespace agora {
 					mBeautyHandles = fuCreateItemFromPackage(&propData[0], propData.size());
 					m_namaInited = true;
 				}
-
+                // 2. beauty params
 				// check if options needs to be updated
 				if (mNeedUpdateFUOptions) {
 					fuItemSetParams(mBeautyHandles, "filter_name", const_cast<char*>(mOptions.filter_name.c_str()));
@@ -217,9 +171,8 @@ namespace agora {
 					mNeedUpdateFUOptions = false;
 				}
 
-				//3.make it beautiful
+				// 3. make it beautiful
 				unsigned char *in_ptr = yuvData(videoFrame);
-//                int size = yuvSize(videoFrame);
 				int handle[] = { mBeautyHandles };
 				int handleSize = sizeof(handle) / sizeof(handle[0]);
 				fuRenderItemsEx2(
