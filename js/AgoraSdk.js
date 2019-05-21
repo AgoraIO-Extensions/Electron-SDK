@@ -441,18 +441,20 @@ class AgoraRtcEngine extends EventEmitter {
         );
         continue;
       }
-      let renderer = this._getRenderer(type, uid);
-      if (!renderer) {
+      let renderers = this._getRenderer(type, uid);
+      if (!renderers) {
         console.warn("Can't find renderer for uid : " + uid);
         continue;
       }
 
-      if(this._checkData(header, ydata, udata, vdata)) {
-        renderer.drawFrame({
-          header, 
-          yUint8Array: ydata, 
-          uUint8Array: udata,
-          vUint8Array: vdata,
+      if (this._checkData(header, ydata, udata, vdata)) {
+        renderers.forEach(r => {
+          r.drawFrame({
+            header,
+            yUint8Array: ydata,
+            uUint8Array: udata,
+            vUint8Array: vdata
+          });
         });
       }
     }
@@ -464,21 +466,41 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {*} view dom elements to render video
    */
   initRender(key, view) {
-    if (this.streams.hasOwnProperty(key)) {
-      this.destroyRender(key);
+    this.setupRenders(key, [view]);
+  }
+
+  setupRenders(key, views) {
+    if (views.length > 0) {
+      let renderers = this.streams[key] || [];
+      if (renderers.length < views.length) {
+        // Need more renderers
+        for (let i = 0; i < views.length - renderers.length; i++) {
+          let renderer;
+          if (this.renderMode === 1) {
+            renderer = new OldRenderer();
+          } else if (this.renderMode === 2) {
+            renderer = new Renderer();
+          } else {
+            console.warn('Unknown render mode, fallback to 1');
+            renderer = new OldRenderer();
+          }
+          renderers.push(renderer);
+        }
+      }
+      if (renderers.length > views.length) {
+        // Need less renderers
+        let removed = renderers.splice(views.length - 1, renderers.length - views.length);
+        removed.forEach(r => {
+          try {
+            r.unbind();
+          } catch (e) {
+            console.log(`failed to destroy renderer`);
+          }
+        });
+      }
+      renderers.forEach((r, index) => r.bind(views[index]));
+      this.streams[key] = renderers;
     }
-    let renderer;
-    if (this.renderMode === 1) {
-      renderer = new OldRenderer();
-    } else if (this.renderMode === 2) {
-      renderer = new Renderer();
-    } else {
-      console.warn('Unknown render mode, fallback to 1')
-      renderer = new OldRenderer();
-    }
-    renderer.bind(view);
-    this.streams[key] = renderer;
-    
   }
 
   /**
@@ -487,13 +509,15 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {function} onFailure err callback for destroyRenderer
    */
   destroyRender(key, onFailure) {
-    let renderer = this.streams[key];
-    try {
-      renderer.unbind();
-      delete this.streams[key];
-    } catch (err) {
-      onFailure && onFailure(err)
-    }
+    let renderers = this.streams[key];
+    renderers.forEach(r => {
+      try {
+        r.unbind();
+      } catch (err) {
+        console.log(`failed to destroy renderer`);
+      }
+    });
+    delete this.streams[key];
   }
 
   // ===========================================================================

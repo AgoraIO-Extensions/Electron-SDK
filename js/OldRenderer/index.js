@@ -298,6 +298,15 @@ const AgoraRender = function() {
     '}';
 
   function initCanvas(view, mirror, width, height, rotation, onFailure) {
+    if (view.childElementCount > 0) {
+      for (var i = 0; i < view.childElementCount; i++) {
+        if (view.children[i].hasAttribute('agora-canvas')) {
+          // Already has bind a dom, no need to reinit
+          return;
+        }
+      }
+    }
+
     that.clientWidth = view.clientWidth;
     that.clientHeight = view.clientHeight;
 
@@ -311,6 +320,7 @@ const AgoraRender = function() {
     that.container.style.display = 'flex';
     that.container.style.justifyContent = 'center';
     that.container.style.alignItems = 'center';
+    that.container.setAttribute('agora-canvas', true);
     that.view.appendChild(that.container);
 
     that.canvas = document.createElement('canvas');

@@ -43,9 +43,19 @@ class Renderer {
   }
 
   bind(element) {
-    // record element
+    // Record element
     this.element = element;
-    // create container
+
+    if (element.childElementCount > 0) {
+      for (let i = 0; i < element.childElementCount; i++) {
+        if (element.children[i].hasAttribute('agora-canvas')) {
+          // Already has bind a dom, no need to reinit
+          return;
+        }
+      }
+    }
+
+    // Create container
     let container = document.createElement('div');
     Object.assign(container.style, {
       width: '100%',
@@ -54,10 +64,11 @@ class Renderer {
       justifyContent: 'center',
       alignItems: 'center'
     });
+    container.setAttribute('agora-canvas', true);
     this.container = container;
     element.appendChild(this.container);
 
-    // create canvas
+    // Create canvas
     this.canvas = document.createElement('canvas')
     this.container.appendChild(this.canvas)
     this.yuv = YUVCanvas.attach(this.canvas, { webGL: false });
