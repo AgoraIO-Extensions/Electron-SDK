@@ -18,6 +18,7 @@ export default class App extends Component {
       this.state = {
         local: '',
         localVideoSource: '',
+        viewduplicates: [],
         users: new List(),
         channel: '',
         role: 1,
@@ -128,6 +129,18 @@ export default class App extends Component {
     this.setState({
       videoProfile: Number(e.currentTarget.value)
     })
+  }
+
+  handleAddLocalRender = e => {
+    let duplicates = this.state.viewduplicates || [];
+    duplicates.push('local');
+    this.setState({viewduplicates: duplicates});
+  }
+
+  handleRemoveLocalRender = e => {
+    let duplicates = this.state.viewduplicates || [];
+    duplicates.pop();
+    this.setState({viewduplicates: duplicates});
   }
 
     /**
@@ -361,6 +374,17 @@ export default class App extends Component {
             </div>
           </div>
 
+
+          <div className="field group">
+            <label className="label">Duplicate Local Render</label>
+            <div className="control">
+              <button onClick={this.handleAddLocalRender} className="button is-link">Add</button>
+            </div>
+            <div className="control">
+              <button onClick={this.handleRemoveLocalRender} className="button is-link">Remove</button>
+            </div>
+          </div>
+
           <div className="field">
             <label className="label">Audio Playback Test</label>
             <div className="control">
@@ -384,6 +408,9 @@ export default class App extends Component {
           {this.state.localVideoSource ? (<Window uid={this.state.localVideoSource} rtcEngine={this.rtcEngine} role="localVideoSource">
 
           </Window>) : ''}
+          {this.state.viewduplicates.map((item, key) => (
+            <Window key={key} idx={key} uid={item} rtcEngine={this.rtcEngine} role="mirror"></Window>
+          ))}
         </div>
       </div>
     )
@@ -413,13 +440,27 @@ class Window extends Component {
       dom && this.props.rtcEngine.subscribe(this.props.uid, dom)
       this.props.rtcEngine.setupViewContentMode('videosource', 1);
       this.props.rtcEngine.setupViewContentMode(String(SHARE_ID), 1);
+    } else if (this.props.role === 'mirror') {
+      dom = document.querySelector(`#video-${this.props.uid}-mirror-${this.props.idx}`)
+      dom && this.props.rtcEngine.addRender(this.props.uid, dom)
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.props.role === 'mirror') {
+      let dom = document.querySelector(`#video-${this.props.uid}-mirror-${this.props.idx}`)
+      dom && this.props.rtcEngine.removeRender(this.props.uid, dom)
     }
   }
 
   render() {
+    let id = 'video-' + this.props.uid;
+    if (this.props.role === 'mirror') {
+      id = 'video-' + this.props.uid + '-mirror-' + this.props.idx;
+    }
     return (
       <div className="window-item">
-        <div className="video-item" id={'video-' + this.props.uid}></div>
+        <div className="video-item" id={id}></div>
 
       </div>
     )

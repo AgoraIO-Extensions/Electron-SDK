@@ -42,6 +42,10 @@ class Renderer {
     }
   }
 
+  getBindingDom() {
+    return this.element;
+  }
+
   bind(element) {
     // Record element
     this.element = element;

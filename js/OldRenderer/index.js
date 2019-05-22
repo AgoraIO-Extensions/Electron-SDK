@@ -29,6 +29,10 @@ const AgoraRender = function() {
     firstFrameRender: false
   };
 
+  that.getBindingDom = function() {
+    return this.view;
+  };
+
   that.bind = function(view) {
     initCanvas(
       view,

@@ -461,12 +461,40 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * init renderer
+   * Init renderer
    * @param {string} key key for the map that store the renderers, e.g, uid or `videosource` or `local`
    * @param {*} view dom elements to render video
    */
   initRender(key, view) {
     this.setupRenders(key, [view]);
+  }
+
+  addRender(key, view) {
+    let renderers = this.streams[key] || key;
+    let views = [];
+    for (let i = 0; i < renderers.length; i++) {
+      let dom = renderers[i].getBindingDom();
+      if (view === dom) {
+        console.log(`view binded already, ignore`);
+        return;
+      }
+      views.push(dom);
+    }
+    views.push(view);
+    this.setupRenders(key, views);
+  }
+
+  removeRender(key, view) {
+    let renderers = this.streams[key] || key;
+    let views = [];
+    for (let i = 0; i < renderers.length; i++) {
+      let dom = renderers[i].getBindingDom();
+      if (view === dom) {
+        continue;
+      }
+      views.push(dom);
+    }
+    this.setupRenders(key, views);
   }
 
   setupRenders(key, views) {
@@ -489,13 +517,14 @@ class AgoraRtcEngine extends EventEmitter {
       }
       if (renderers.length > views.length) {
         // Need less renderers
-        let removed = renderers.splice(views.length - 1, renderers.length - views.length);
+        let removed = renderers.splice(views.length, renderers.length - views.length);
         removed.forEach(r => {
           try {
             r.unbind();
           } catch (e) {
             console.log(`failed to destroy renderer`);
           }
+          console.log(`renderer destroyed`);
         });
       }
       renderers.forEach((r, index) => r.bind(views[index]));
