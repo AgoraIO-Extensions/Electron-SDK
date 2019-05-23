@@ -17,7 +17,7 @@
     "build:electron4": "node ./scripts/build.js --runtime=electron --electron_version=4.0.0",
     "build:electron": "node ./scripts/build.js --runtime=electron",
     "debug": "node ./scripts/build.js --runtime=electron --electron_version=3.0.6 --debug=true",
-    "doc": "typedoc --theme minimal --out ./docs ./ts --hideGenerator --mode file --target es6 --name Agora-Electron-SDK --readme none",
+    "doc": "typedoc --out ./docs ./ts --hideGenerator --mode file --target es6 --name Agora-Electron-SDK --readme none",
     "download": "node ./scripts/download.js",
     "preexample": "npm run build:electron3 && npm run build:ts",
     "example": "cd example && npm install && npm run dev",
