@@ -1,0 +1,13 @@
+build/
+dist/
+node_modules/
+.DS_Store
+error-log.txt
+.vscode
+peer.log
+peer.pid
+nohup.out
+.version-cache
+js/
+docs/
+types/

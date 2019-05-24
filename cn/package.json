@@ -1,0 +1,74 @@
+{
+  "name": "agora-electron-sdk",
+  "version": "2.4.0-beta.2",
+  "description": "agora-electron-sdk",
+  "main": "js/AgoraSdk.js",
+  "types": "types/AgoraSdk.d.ts",
+  "author": "agora.io",
+  "scripts": {
+    "install": "npm run download",
+    "tslint": "tslint -c tslint.json -p tsconfig.json --fix",
+    "build:dts": "rimraf ./types && tsc -p dtsconfig.json",
+    "prebuild:ts": "npm run build:dts",
+    "build:ts": "rimraf ./js && tsc -p tsconfig.json",
+    "build:node": "node ./scripts/build.js --runtime=node",
+    "build:electron2": "node ./scripts/build.js --runtime=electron --electron_version=1.8.3",
+    "build:electron3": "node ./scripts/build.js --runtime=electron --electron_version=3.0.6",
+    "build:electron4": "node ./scripts/build.js --runtime=electron --electron_version=4.0.0",
+    "build:electron": "node ./scripts/build.js --runtime=electron",
+    "debug": "node ./scripts/build.js --runtime=electron --electron_version=3.0.6 --debug=true",
+    "doc": "typedoc --out ./docs ./ts --hideGenerator --mode file --target es6 --name Agora-Electron-SDK --readme none",
+    "download": "node ./scripts/download.js",
+    "preexample": "npm run build:electron3 && npm run build:ts",
+    "example": "cd example && npm install && npm run dev",
+    "pretest": "npm run build:node && npm run build:ts",
+    "test": "jest --detectOpenHandles --forceExit",
+    "quicktest": "jest --detectOpenHandles --forceExit",
+    "prepublishOnly": "npm run build:ts"
+  },
+  "gypfile": false,
+  "files": [
+    "js/",
+    "types/",
+    "ts/",
+    "scripts/"
+  ],
+  "dependencies": {
+    "download": "^7.1.0",
+    "lodash.isequal": "^4.5.0",
+    "node-gyp": "^4.0.0",
+    "optimist": "^0.6.1",
+    "rimraf": "^2.6.3",
+    "semver": "^5.7.0",
+    "shelljs": "^0.8.3",
+    "signale": "^1.4.0",
+    "yuv-buffer": "^1.0.0",
+    "yuv-canvas": "^1.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^10.14.6",
+    "jest": "^24.7.1",
+    "jsdom": "^14.1.0",
+    "prettier": "^1.17.0",
+    "ts-node": "^8.1.0",
+    "tslint": "^5.16.0",
+    "typedoc": "^0.14.2",
+    "typescript": "^3.4.5"
+  },
+  "peerDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron.git"
+  },
+  "keywords": [
+    "electron",
+    "agora",
+    "sdk",
+    "native"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron/issues"
+  },
+  "homepage": "https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron#readme"
+}

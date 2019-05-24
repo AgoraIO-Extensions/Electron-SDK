@@ -1,0 +1,8 @@
+language: node_js
+node_js: '8'
+os:
+- osx
+script:
+- npm install
+- npm run build:electron3
+- npm run build:ts
