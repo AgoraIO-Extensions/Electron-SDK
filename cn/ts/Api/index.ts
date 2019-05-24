@@ -58,6 +58,7 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @private
+   * @ignore
    * check if WebGL will be available with appropriate features
    * @returns {boolean}
    */
@@ -96,6 +97,7 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * init event handler
    * @private
+   * @ignore
    */
   initEventHandler(): void {
     const self = this;
@@ -510,6 +512,7 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @private
+   * @ignore
    * @param {number} type 0-local 1-remote 2-device_test 3-video_source
    * @param {number} uid uid get from native engine, differ from electron engine's uid
    */
@@ -535,6 +538,7 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * check if data is valid
    * @private
+   * @ignore
    * @param {*} header
    * @param {*} ydata
    * @param {*} udata
@@ -579,6 +583,7 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * register renderer for target info
    * @private
+   * @ignore
    * @param {number} infos
    */
   onRegisterDeliverFrame(infos: any) {
