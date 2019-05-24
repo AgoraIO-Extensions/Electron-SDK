@@ -2070,7 +2070,7 @@ namespace agora {
 
                 if (pEngine->m_videoSourceSink.get())
                     pEngine->m_videoSourceSink->startScreenCaptureByScreen(screen, regionRect, captureParams);
-                napi_set_int_result(args, 0);
+                result = 0;
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -2142,7 +2142,7 @@ namespace agora {
 
                 if (pEngine->m_videoSourceSink.get())
                     pEngine->m_videoSourceSink->startScreenCaptureByWindow(windowId, regionRect, captureParams);
-                napi_set_int_result(args, 0);
+                result = 0;
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -2179,7 +2179,7 @@ namespace agora {
 
                 if (pEngine->m_videoSourceSink.get())
                     pEngine->m_videoSourceSink->updateScreenCaptureParameters(captureParams);
-                napi_set_int_result(args, 0);
+                result = 0;
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -2191,7 +2191,6 @@ namespace agora {
             napi_status status = napi_ok;
             int result = -1;
             do{
-                Isolate *isolate = args.GetIsolate();
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
@@ -2215,7 +2214,7 @@ namespace agora {
 
                 if (pEngine->m_videoSourceSink.get())
                     pEngine->m_videoSourceSink->setScreenCaptureContentHint(hint);
-                napi_set_int_result(args, 0);
+                result = 0;
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
