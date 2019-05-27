@@ -1,3 +1,8 @@
+## Latest
+#### :house: Internal
+* setRenderMode can recv 3 as param which refers to use custom Renderer (set with new API `setCustomRenderer`)
+* fixed several videosource methods returning incorrect value issue (returns -1 even it works fine)
+
 ## 2.4.0-beta.2 (May 9th, 2019)
 #### :house: Internal
 * Add codes to prevent videosource from getting camera causing problems in windows
@@ -141,7 +146,7 @@
 * Add new api `getScreenWindowsInfo` to provide window info and id. You can use this to implement sharing windows (You can only share the whole screen before).
 * Refactor renderer module. Now video source can be rendered without webgl.
 * Optimize unit tests.
-* Modify the build script for windows. (Use VS 2015 as msbuilder) 
+* Modify the build script for windows. (Use VS 2015 as msbuilder)
 * Add new api `enableLoopbackRecording` to enable loopback recording. Once enabled, the SDK collects all local sounds.
 
 
@@ -164,7 +169,7 @@
 > Release for e-Education
 
 #### :house: Internal
-* Use 2.0.7 for Windows and 2.2.3 for Mac, which have done special optimization for e-Edu scenario. 
+* Use 2.0.7 for Windows and 2.2.3 for Mac, which have done special optimization for e-Edu scenario.
 
 * Docs and unit-tests are nearly completed.
 
@@ -197,7 +202,7 @@
   * pauseAllEffects
   * resumeEffect
   * resumeAllEffects
-  * setLocalVoicePitch 
+  * setLocalVoicePitch
   * setLocalVoiceEqualization
   * setLocalVoiceReverb
   * enableLoopbackRecording
@@ -209,4 +214,3 @@
 
 * Now we download built C++ addon instead of doing build when installing dependencies
 * From now on we will use 2.2.1-rc.* as version label, and this will be a relatively stable version.
-
