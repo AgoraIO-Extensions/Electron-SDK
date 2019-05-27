@@ -1,3 +1,8 @@
+## Latest
+#### :house: Internal
+* setRenderMode can recv 3 as param which refers to use custom Renderer (set with new API `setCustomRenderer`)
+
+
 ## 2.4.0-beta.2 (May 9th, 2019)
 #### :house: Internal
 * Add codes to prevent videosource from getting camera causing problems in windows
