@@ -1,6 +1,7 @@
 ## Latest
 #### :house: Internal
 * setRenderMode can recv 3 as param which refers to use custom Renderer (set with new API `setCustomRenderer`)
+* fixed several videosource methods returning incorrect value issue (returns -1 even it works fine)
 
 
 ## 2.4.0-beta.2 (May 9th, 2019)
