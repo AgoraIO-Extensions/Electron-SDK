@@ -15,7 +15,7 @@ Agora Electron SDK 基于 Agora SDK for macOS 和 Agora SDK for Windows，使用
 | {@link AgoraRtcEngine.setClientRole setClientRole}           | 设置直播场景下的用户角色             |
 | {@link AgoraRtcEngine.joinChannel joinChannel}               | 加入频道                             |
 | {@link AgoraRtcEngine.leaveChannel leaveChannel}             | 离开频道                             |
-| {@link AgoraRtcEngine.subscribe subscribe}                   | 订阅指定用户的流                     |
+| {@link AgoraRtcEngine.subscribe subscribe}                   | 订阅远端用户并初始化视频渲染         |
 | {@link AgoraRtcEngine.renewToken renewToken}                 | 更新 Token                           |
 | {@link AgoraRtcEngine.enableWebSdkInteroperability enableWebSdkInteroperability} | 打开与 Agora Web SDK 的互通          |
 | {@link AgoraRtcEngine.getConnectionState getConnectionState} | 获取网络连接状态                     |
@@ -29,12 +29,13 @@ Agora Electron SDK 基于 Agora SDK for macOS 和 Agora SDK for Windows，使用
 | {@link AgoraRtcEngine.enableAudio enableAudio}               | 启用音频模块               |
 | {@link AgoraRtcEngine.disableAudio disableAudio}             | 关闭音频模块               |
 | {@link AgoraRtcEngine.setAudioProfile setAudioProfile}       | 设置音频编码配置           |
-| {@link AgoraRtcEngine.setHighQualityAudioParameters setHighQualityAudioParameters} | 设置高音质参数配置         |
-| {@link AgoraRtcEngine.pauseAudio pauseAudio}                 |                            |
+| {@link AgoraRtcEngine.enableLocalAudio enableLocalAudio}     | 开关本地音频采集           |
 | {@link AgoraRtcEngine.muteLocalAudioStream muteLocalAudioStream} | 停止/恢复发送本地音频流    |
 | {@link AgoraRtcEngine.muteRemoteAudioStream muteRemoteAudioStream} | 停止/恢复接收指定音频流    |
 | {@link AgoraRtcEngine.muteAllRemoteAudioStreams muteAllRemoteAudioStreams} | 停止/恢复接收所有音频流    |
 | {@link AgoraRtcEngine.setDefaultMuteAllRemoteAudioStreams setDefaultMuteAllRemoteAudioStreams} | 设置是否默认接收所有音频流 |
+
+
 
 ### 视频管理
 
@@ -44,7 +45,7 @@ Agora Electron SDK 基于 Agora SDK for macOS 和 Agora SDK for Windows，使用
 | {@link AgoraRtcEngine.disableVideo disableVideo}             | 关闭视频模块               |
 | {@link AgoraRtcEngine.setVideoEncoderConfiguration setVideoEncoderConfiguration} | 设置视频编码配置           |
 | {@link AgoraRtcEngine.setupLocalVideo setupLocalVideo}       | 设置本地视图               |
-| {@link AgoraRtcEngine.setupViewContentMode setupViewContentMode} |                            |
+| {@link AgoraRtcEngine.setupViewContentMode setupViewContentMode} | 设置视窗模式               |
 | {@link AgoraRtcEngine.setRenderMode setRenderMode}           | 设置视图显示模式           |
 | {@link AgoraRtcEngine.startPreview startPreview}             | 开启视频预览               |
 | {@link AgoraRtcEngine.stopPreview stopPreview}               | 停止视频预览               |
@@ -56,16 +57,16 @@ Agora Electron SDK 基于 Agora SDK for macOS 和 Agora SDK for Windows，使用
 
 ### 视频渲染
 
-| 方法                                                         | 描述 |
-| ------------------------------------------------------------ | ---- |
-| {@link AgoraRtcEngine.initRender initRender}                 |      |
-| {@link AgoraRtcEngine.destroyRender destroyRender}           |      |
-| {@link AgoraRtcEngine.resizeRender resizeRender}             |      |
-| {@link AgoraRtcEngine.setVideoRenderDimension setVideoRenderDimension} |      |
-| {@link AgoraRtcEngine.setVideoRenderFPS setVideoRenderFPS}   |      |
-| {@link AgoraRtcEngine.setVideoRenderHighFPS setVideoRenderHighFPS} |      |
-| {@link AgoraRtcEngine.addVideoRenderToHighFPS addVideoRenderToHighFPS} |      |
-| {@link AgoraRtcEngine.removeVideoRenderFromHighFPS  removeVideoRenderFromHighFPS} |      |
+| 方法                                                         | 描述                 |
+| ------------------------------------------------------------ | -------------------- |
+| {@link AgoraRtcEngine.initRender initRender}                 | 初始化渲染器         |
+| {@link AgoraRtcEngine.destroyRender destroyRender}           | 销毁渲染器           |
+| {@link AgoraRtcEngine.resizeRender resizeRender}             | 调整视频渲染尺寸     |
+| {@link AgoraRtcEngine.setVideoRenderDimension setVideoRenderDimension} | 设置视频渲染的分辨率 |
+| {@link AgoraRtcEngine.setVideoRenderFPS setVideoRenderFPS}   | 设置视频渲染的帧率   |
+| {@link AgoraRtcEngine.setVideoRenderHighFPS setVideoRenderHighFPS} | 设置高帧率渲染视频流 |
+| {@link AgoraRtcEngine.addVideoRenderToHighFPS addVideoRenderToHighFPS} | 添加高帧率渲染视频流 |
+| {@link AgoraRtcEngine.removeVideoRenderFromHighFPS  removeVideoRenderFromHighFPS} | 移除高帧率渲染视频流 |
 
 ### 视频前处理及后处理
 
@@ -79,9 +80,14 @@ Agora Electron SDK 基于 Agora SDK for macOS 和 Agora SDK for Windows，使用
 | ------------------------------------------------------------ | --------------------- |
 | {@link AgoraRtcEngine.getScreenDisplaysInfo getScreenDisplaysInfo} | 获取屏幕 Display Info |
 | {@link AgoraRtcEngine.getScreenWindowsInfo getScreenWindowsInfo} | 获取屏幕 Window Info  |
-| {@link AgoraRtcEngine.startScreenCapture startScreenCapture} | 开始屏幕共享          |
-| {@link AgoraRtcEngine.stopScreenCapture stopScreenCapture}   | 停止屏幕共享          |
-| {@link AgoraRtcEngine.updateScreenCaptureRegion updateScreenCaptureRegion} | 更新屏幕共享区域      |
+| {@link AgoraRtcEngine.startScreenCapturePreview startScreenCapturePreview} | 开启屏幕共享视频预览 |
+| {@link AgoraRtcEngine.stopScreenCapturePreview stopScreenCapturePreview} | 停止屏幕共享视频预览  |
+| {@link AgoraRtcEngine.videoSourceStartScreenCaptureByScreen videoSourceStartScreenCaptureByScreen} | 根据 Screen 共享屏幕 |
+| {@link videosourceStartScreenCaptureByWindow videosourceStartScreenCaptureByWindow} | 根据 Window 共享窗口 |
+| {@link AgoraRtcEngine.videoSourceUpdateScreenCaptureRegion videoSourceUpdateScreenCaptureRegion} | 更新屏幕共享区域            |
+| {@link AgoraRtcEngine.videoSourceUpdateScreenCaptureParameters videoSourceUpdateScreenCaptureParameters} | 更新屏幕共享编码配置        |
+| {@link AgoraRtcEngine.videoSourceSetScreenCaptureContentHint videoSourceSetScreenCaptureContentHint} | 设置屏幕共享内容类型        |
+| {@link AgoraRtcEngine.stopScreenCapture2 stopScreenCapture2} | 停止屏幕共享 |
 
 ### 音乐文件播放管理
 
@@ -273,27 +279,12 @@ Agora Electron SDK 基于 Agora SDK for macOS 和 Agora SDK for Windows，使用
 | {@link AgoraRtcEngine.setLogFile setLogFilter}               | 设置日志过滤等级       |
 | {@link AgoraRtcEngine.getVersion getVersion}                 | 查询 SDK 版本号    |
 | {@link AgoraRtcEngine.getErrorDescription getErrorDescription} | 获取警告或错误描述 |
-| {@link AgoraRtcEngine.convertPath convertPath}               |                    |
 
 ### 定制方法
 
-| 方法                                               | 描述 |
-| -------------------------------------------------- | ---- |
-| {@link AgoraRtcEngine.setParameters setParameters} |      |
-| {@link AgoraRtcEngine.setBool setBool}             |      |
-| {@link AgoraRtcEngine.setInt setInt}               |      |
-| {@link AgoraRtcEngine.setProfile setProfile}       |      |
-| {@link AgoraRtcEngine.setNumber setNumber}         |      |
-| {@link AgoraRtcEngine.setObject setObject}         |      |
-| {@link AgoraRtcEngine.setString setString}         |      |
-| {@link AgoraRtcEngine.setUInt setUInt}             |      |
-| {@link AgoraRtcEngine.getArray getArray}           |      |
-| {@link AgoraRtcEngine.getBool getBool}             |      |
-| {@link AgoraRtcEngine.getInt getInt}               |      |
-| {@link AgoraRtcEngine.getNumber getNumber}         |      |
-| {@link AgoraRtcEngine.getObject getObject}         |      |
-| {@link AgoraRtcEngine.getString getString}         |      |
-| {@link AgoraRtcEngine.getUInt getUInt}             |      |
+| 方法                                               | 描述                                          |
+| -------------------------------------------------- | --------------------------------------------- |
+| {@link AgoraRtcEngine.setParameters setParameters} | 通过 JSON 配置 SDK 提供技术预览或特别定制功能 |
 
 ### 双实例方法
 
@@ -310,15 +301,6 @@ Agora Electron SDK 提供双实例的实现方法。第二个实例请调用下�
 | {@link AgoraRtcEngine.videoSourceEnableWebSdkInteroperability videoSourceEnableWebSdkInteroperability} | 打开与 Agora Web SDK 的互通 |
 | {@link AgoraRtcEngine.setupLocalVideoSource setupLocalVideoSource} | 设置本地视图                |
 | {@link AgoraRtcEngine.videoSourceSetVideoProfile videoSourceSetVideoProfile} | 设置视频编码配置            |
-| {@link AgoraRtcEngine.startScreenCapturePreview startScreenCapturePreview} | 开启视频预览      |
-| {@link AgoraRtcEngine.stopScreenCapturePreview stopScreenCapturePreview} | 停止视频预览      |
-| {@link AgoraRtcEngine.startScreenCapture2 startScreenCapture2} | 开始屏幕共享                |
-| {@link AgoraRtcEngine.stopScreenCapture2 stopScreenCapture2} | 停止屏幕共享                |
-| {@link AgoraRtcEngine.videoSourceUpdateScreenCaptureRegion videoSourceUpdateScreenCaptureRegion} | 更新屏幕共享区域            |
-| {@link AgoraRtcEngine.videoSourceUpdateScreenCaptureParameters videoSourceUpdateScreenCaptureParameters} | 更新屏幕共享编码配置        |
-| {@link AgoraRtcEngine.videoSourceSetScreenCaptureContentHint videoSourceSetScreenCaptureContentHint} | 设置屏幕共享内容类型        |
-| {@link AgoraRtcEngine.videoSourceStartScreenCaptureByScreen videoSourceStartScreenCaptureByScreen} | 根据 Screen Rect 共享屏幕   |
-| {@link videosourceStartScreenCaptureByWindow}                | 根据 Window 共享窗口        |
 | {@link AgoraRtcEngine.videoSourceEnableDualStreamMode videoSourceEnableDualStreamMode} | 开启视频双流模式            |
 | {@link AgoraRtcEngine.videoSourceSetLogFile videoSourceSetLogFile} | 设置日志文件                |
 | {@link AgoraRtcEngine.videoSourceSetParameters videoSourceSetParameters} | 启用定制功能                |
@@ -338,16 +320,12 @@ Agora Electron SDK 通过 {@link AgoraRtcEngine.on on} 方法监听上述方法�
 | userJoined                       | 远端用户已加入频道                       |
 | connectionStateChanged           | 网络连接状态已改变                       |
 | connectionLost                   | 网络连接已丢失                           |
-| connectionInterrupted            | 网络连接已中断                           |
-| connectionBanned                 | 网络连接被禁止                           |
 | apiCallExecuted                  | API 方法已执行                           |
 | tokenPrivilegeWillExpire         | Token 即将过期                           |
 | requestChannelKey                | Channel Key 已过期                       |
 | microphoneEnabled                | 麦克风状态已改变                         |
-| audioVolumeIndication            | 提示频道内谁正在说话以及说话者音量       |
-| groupAudioVolumeIndication       |                                          |
+| groupAudioVolumeIndication       | 提示频道内谁正在说话以及说话者音量       |
 | activeSpeaker                    | 监测到活跃用户                           |
-| audioQuality                     | 报告通话中远端音频流的统计信息           |
 | rtcStats                         | 报告当前通话统计信息                     |
 | localVideoStats                  | 报告本地视频流统计信息                   |
 | remoteVideoStats                 | 报告远端视频流统计信息                   |
@@ -356,7 +334,6 @@ Agora Electron SDK 通过 {@link AgoraRtcEngine.on on} 方法监听上述方法�
 | remoteAudioTransportStats        | 报告远端音频传输统计信息                 |
 | audioDeviceStateChanged          | 音频设备状态发生改变                     |
 | videoDeviceStateChanged          | 视频文件状态发生改变事件                 |
-| audioMixingFinished              | 本地音乐文件播放已结束                   |
 | audioMixingStateChanged          | 本地音乐文件播放状态已改变               |
 | remoteAudioMixingBegin           | 远端音乐文件播放已开始                   |
 | remoteAudioMixingEnd             | 远端音乐文件播放已结束                   |
@@ -369,18 +346,16 @@ Agora Electron SDK 通过 {@link AgoraRtcEngine.on on} 方法监听上述方法�
 | firstLocalVideoFrame             | 已发送本地视频首帧                       |
 | firstRemoteVideoFrame            | 已显示远端视频首帧                       |
 | videoSizeChanged                 | 本地或远端视频大小或旋转信息发生改变     |
-| addStream                        |                                          |
-| removeStream                     |                                          |
+| addStream                        | 已解码远端视频首帧                       |
+| removeStream                     | 远端用户已离开频道                       |
 | userMuteAudio                    | 远端用户已暂停/重新发送音频流            |
 | userMuteVideo                    | 远端用户已暂停/重新发送视频流            |
 | userEnableVideo                  | 远端用户已启用/关闭视频功能              |
 | userEnableLocalVideo             | 远端用户已暂停/重新采集视频流            |
 | cameraReady                      | 摄像头已启用                             |
 | videoStopped                     | 视频功能已停止                           |
-| refreshRecordingServiceStatus    | 录制状态已更新                           |
 | streamMessage                    | 接收到对方数据流小                       |
 | streamMessageError               | 接收对方数据流消息发生错误               |
-| mediaEngineStartCallSuccess      | 媒体引擎成功启动                         |
 | audioDeviceVolumeChanged         | 音频设备播放音量已改变                   |
 | remoteVideoStateChanged          | 远端视频状态已改变                       |
 | cameraFocusAreaChanged           | 摄像头对焦区域已改变                     |
