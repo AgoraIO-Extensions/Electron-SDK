@@ -689,9 +689,11 @@ class AgoraRtcEngine extends EventEmitter {
   // ===========================================================================
 
   /**
-   * @description initialize agora real-time-communicating engine with appid
-   * @param {string} appid agora appid
-   * @returns {number} 0 for success, <0 for failure
+   * @description 初始化一个 AgoraRtcEngine 实例。
+   * @param {string} appid Agora 为 App 开发者签发的 App ID，每个项目都应该有一个独一无二的 App ID
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   initialize(appid: string): number {
     return this.rtcEngine.initialize(appid);
@@ -723,14 +725,31 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * 加入频道。
    *
-   * @description Join channel with token, channel, channel_info and uid
-   * @requires channel
-   * @param {string} token token
-   * @param {string} channel channel
-   * @param {string} info channel info
-   * @param {number} uid uid
-   * @returns {number} 0 for success, <0 for failure
+   * 该方法让用户加入通话频道，在同一个频道内的用户可以互相通话，多个用户加入同一个频道，可以群聊。使用不同 App ID 的 App 是不能互通的。如果已在通话中，用户必须调用 {@link leaveChannel} 退出当前通话，才能进入下一个频道。
+   *
+   * 成功调用该方加入频道后，本地会触发 joinedChannel 事件；通信模式下的用户和直播模式下的主播加入频道后，远端会触发 userJoined 事件。
+   *
+   * 在网络状况不理想的情况下，客户端可能会与 Agora 的服务器失去连接；SDK 会自动尝试重连，重连成功后，本地会触发 rejoinedChannel 事件。
+   * @requires 必填参数：`channel`
+   *
+   * @param {string} token 动态密钥：
+   * - 安全要求不高：将值设为 null
+   * - 安全要求高：将值设为 Token。如果你已经启用的 App 证书，请务必使用 Token
+   *
+   * **Note:** 请确保用于生成 Token 的 App ID 和 {@link initialize} 方法初始化 AgoraRtcEngine 实例时用的是一个 App ID
+   * @param {string} channel 标识通话频道的字符，长度在 64 个字节以内的字符串。以下为支持的字符集范围（共 89 个字符）：
+   * - 26 个小写英文字母 a-z
+   * - 26 个大写英文字母 A-Z
+   * - 10 个数字 0-9
+   * - 空格
+   * - “!”, “#”, “$”, “%”, “&”, “(”, “)”, “+”, “-”, “:”, “;”, “<”, “=”, “.”, “>”, “?”, “@”, “[”, “]”, “^”, “_”, “{”, “}”, “|”, “~”, “,”
+   * @param {string} info (非必选项) 开发者需加入的任何附加信息。一般可设置为空字符串，或频道相关信息。该信息不会传递给频道内的其他用户
+   * @param {number} uid 用户 ID，32 位无符号整数。建议设置范围：1到 (232-1)，并保证唯一性。如果不指定（即设为 0），SDK 会自动分配一个
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   joinChannel(token: string, channel: string, info: string, uid: number): number {
     return this.rtcEngine.joinChannel(token, channel, info, uid);
@@ -872,20 +891,35 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description Set channel profile(before join channel) since sdk will do optimization according to scenario.
-   * @description 0 (default) for communication, 1 for live broadcasting, 2 for in-game
-   * @param {number} profile profile enum
-   * @returns {number} 0 for success, <0 for failure
+   * 设置频道模式。Agora 会根据 App 的使用场景进行不同的优化。
+   *
+   * **Note:**
+   * - 该方法必须在 {@link joinChannel} 方法之前调用
+   * - 相同频道内的所有用户必须使用相同的频道模式
+   * @param {number} profile 频道模式：
+   * - 0：通信（默认）
+   * - 1：直播
+   * - 2：游戏
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setChannelProfile(profile: number): number {
     return this.rtcEngine.setChannelProfile(profile);
   }
 
   /**
+   * 设置直播模式下的用户角色。
    *
-   * @description In live broadcasting mode, set client role, 1 for anchor, 2 for audience
-   * @param {ClientRoleType} role client role
-   * @returns {number} 0 for success, <0 for failure
+   * 在加入频道前，用户需要通过本方法设置观众（默认）或主播模式。在加入频道后，用户可以通过本方法切换用户模式。
+   *
+   * 直播模式下，如果你在加入频道后调用该方法切换用户角色，调用成功后，本地会触发 clientRoleChanged 事件；远端会触发 userJoined 事件。
+   * @param {ClientRoleType} role 用户角色：
+   * - 1：主播
+   * - 2：观众
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setClientRole(role: ClientRoleType): number {
     return this.rtcEngine.setClientRole(role);

@@ -7,7 +7,11 @@ export type AgoraNetworkQuality =
   | 5 // very bad
   | 6; // down
 
-/** 1 for broadcaster, 2 for audience */
+/**
+ * 用户角色类型：
+ * - 1：主播
+ * - 2：观众
+ */
 export type ClientRoleType = 1 | 2;
 
 /** 0 for high, 1 for low */
