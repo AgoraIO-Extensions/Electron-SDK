@@ -81,8 +81,6 @@ Agora Electron SDK 基于 Agora SDK for macOS 和 Agora SDK for Windows，使用
 | {@link AgoraRtcEngine.getScreenWindowsInfo getScreenWindowsInfo} | 获取屏幕 Window Info  |
 | {@link AgoraRtcEngine.startScreenCapture startScreenCapture} | 开始屏幕共享          |
 | {@link AgoraRtcEngine.stopScreenCapture stopScreenCapture}   | 停止屏幕共享          |
-| {@link AgoraRtcEngine.startScreenCapturePreview startScreenCapturePreview} | 开始屏幕共享预览      |
-| {@link AgoraRtcEngine.stopScreenCapturePreview stopScreenCapturePreview} | 停止屏幕共享预览      |
 | {@link AgoraRtcEngine.updateScreenCaptureRegion updateScreenCaptureRegion} | 更新屏幕共享区域      |
 
 ### 音乐文件播放管理
@@ -271,6 +269,8 @@ Agora Electron SDK 基于 Agora SDK for macOS 和 Agora SDK for Windows，使用
 | {@link AgoraRtcEngine.rate rate}                             | 给通话评分         |
 | {@link AgoraRtcEngine.complain complain}                     | 投诉通话质量       |
 | {@link AgoraRtcEngine.setLogFile setLogFile}                 | 设置日志文件       |
+| {@link AgoraRtcEngine.setLogFileSize setLogFileSize}         | 设置日志文件大小       |
+| {@link AgoraRtcEngine.setLogFile setLogFilter}               | 设置日志过滤等级       |
 | {@link AgoraRtcEngine.getVersion getVersion}                 | 查询 SDK 版本号    |
 | {@link AgoraRtcEngine.getErrorDescription getErrorDescription} | 获取警告或错误描述 |
 | {@link AgoraRtcEngine.convertPath convertPath}               |                    |
@@ -310,6 +310,8 @@ Agora Electron SDK 提供双实例的实现方法。第二个实例请调用下�
 | {@link AgoraRtcEngine.videoSourceEnableWebSdkInteroperability videoSourceEnableWebSdkInteroperability} | 打开与 Agora Web SDK 的互通 |
 | {@link AgoraRtcEngine.setupLocalVideoSource setupLocalVideoSource} | 设置本地视图                |
 | {@link AgoraRtcEngine.videoSourceSetVideoProfile videoSourceSetVideoProfile} | 设置视频编码配置            |
+| {@link AgoraRtcEngine.startScreenCapturePreview startScreenCapturePreview} | 开启视频预览      |
+| {@link AgoraRtcEngine.stopScreenCapturePreview stopScreenCapturePreview} | 停止视频预览      |
 | {@link AgoraRtcEngine.startScreenCapture2 startScreenCapture2} | 开始屏幕共享                |
 | {@link AgoraRtcEngine.stopScreenCapture2 stopScreenCapture2} | 停止屏幕共享                |
 | {@link AgoraRtcEngine.videoSourceUpdateScreenCaptureRegion videoSourceUpdateScreenCaptureRegion} | 更新屏幕共享区域            |
@@ -366,7 +368,7 @@ Agora Electron SDK 通过 {@link AgoraRtcEngine.on on} 方法监听上述方法�
 | firstRemoteAudioFrame            | 已收到远端音频首帧                       |
 | firstLocalVideoFrame             | 已发送本地视频首帧                       |
 | firstRemoteVideoFrame            | 已显示远端视频首帧                       |
-| videoSizeChanged                 | 本地或延段视频大小或旋转信息发生改变     |
+| videoSizeChanged                 | 本地或远端视频大小或旋转信息发生改变     |
 | addStream                        |                                          |
 | removeStream                     |                                          |
 | userMuteAudio                    | 远端用户已暂停/重新发送音频流            |
