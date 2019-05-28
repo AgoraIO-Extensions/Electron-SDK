@@ -63,7 +63,7 @@ class CustomRenderer implements IRenderer {
     header: any,
     yUint8Array: any,
     uUint8Array: any,
-    vUnit8Array: any
+    vUint8Array: any
   }) {
     throw new Error('You have to declare your own custom render');
   }
@@ -76,9 +76,9 @@ class CustomRenderer implements IRenderer {
     throw new Error('You have to declare your own custom render');
   }
 
-  
+
 }
 
 export {
-  SoftwareRenderer, GlRenderer, IRenderer
+  SoftwareRenderer, GlRenderer, IRenderer, CustomRenderer
 };

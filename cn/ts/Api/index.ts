@@ -40,14 +40,14 @@ class AgoraRtcEngine extends EventEmitter {
   rtcEngine: NodeRtcEngine;
   streams: Map<string, IRenderer>;
   renderMode: 1 | 2 | 3;
-  cutomRenderer: any;
+  customRenderer: any;
   constructor() {
     super();
     this.rtcEngine = new agora.NodeRtcEngine();
     this.initEventHandler();
     this.streams = new Map();
     this.renderMode = this._checkWebGL() ? 1 : 2;
-    this.CustomRenderer = CustomRenderer;
+    this.customRenderer = CustomRenderer;
   }
 
   /**
