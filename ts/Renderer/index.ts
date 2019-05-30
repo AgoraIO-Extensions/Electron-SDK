@@ -6,6 +6,7 @@ interface IRenderer {
   event: EventEmitter;
   bind(element: Element): void;
   unbind(): void;
+  getBindingElement(): any;
   drawFrame(imageData: {
     header: any,
     yUint8Array: any,
@@ -28,6 +29,9 @@ class GlRenderer implements IRenderer {
   }
   unbind(): void {
     return this.self.unbind();
+  }
+  getBindingElement(): any {
+    return this.self.getBindingElement()
   }
   drawFrame(imageData: {
     header: any,
