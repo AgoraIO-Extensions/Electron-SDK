@@ -3,6 +3,65 @@ export const SHARE_ID = 2
 export const RTMP_URL = ''
 export const AUTH_DATA = []
 
+
+export const fuFilterList = [
+  {
+    value: 0,
+    name: "origin",
+    desc: "原始"
+  },
+  {
+    value: 1,
+    name: "delta",
+    desc: "差值"
+  },
+  {
+    value: 2,
+    name: "electric",
+    desc: "Electric"
+  },
+  {
+    value: 3,
+    name: "slowlived",
+    desc: "SlowLived"
+  },
+  {
+    value: 4,
+    name: "tokyo",
+    desc: "东京"
+  },
+  {
+    value: 5,
+    name: "warm",
+    desc: "温暖"
+  },
+  {
+    value: 6,
+    name: "ziran",
+    desc: "自然"
+  },
+  {
+    value: 7,
+    name: "danya",
+    desc: "淡雅"
+  },
+  {
+    value: 8,
+    name: "fennen",
+    desc: "粉嫩"
+  },
+  {
+    value: 9,
+    name: "qingxin",
+    desc: "清新"
+  },
+  {
+    value: 10,
+    name: "hongrun",
+    desc: "红润"
+  }
+]
+
 export const videoProfileList = [
   {
     value: 0,

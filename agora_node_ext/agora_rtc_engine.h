@@ -146,18 +146,18 @@ namespace agora {
             NAPI_API(getAudioMixingDuration);
             NAPI_API(getAudioMixingCurrentPosition);
             NAPI_API(setAudioMixingPosition);
-            NAPI_API(getEffectsVolume);	
-			NAPI_API(setEffectsVolume);	
-			NAPI_API(setVolumeOfEffect);
-			NAPI_API(playEffect);	
-			NAPI_API(stopEffect);	
-			NAPI_API(stopAllEffects);	
-			NAPI_API(preloadEffect);	
-			NAPI_API(unloadEffect);	
-			NAPI_API(pauseEffect);	
-			NAPI_API(pauseAllEffects);	
-			NAPI_API(resumeEffect);	
-			NAPI_API(resumeAllEffects);
+            NAPI_API(getEffectsVolume);    
+            NAPI_API(setEffectsVolume);    
+            NAPI_API(setVolumeOfEffect);
+            NAPI_API(playEffect);    
+            NAPI_API(stopEffect);    
+            NAPI_API(stopAllEffects);    
+            NAPI_API(preloadEffect);    
+            NAPI_API(unloadEffect);    
+            NAPI_API(pauseEffect);    
+            NAPI_API(pauseAllEffects);    
+            NAPI_API(resumeEffect);    
+            NAPI_API(resumeAllEffects);
             NAPI_API(setLocalVoicePitch);
             NAPI_API(setLocalVoiceEqualization);
             NAPI_API(setLocalVoiceReverb);
@@ -260,11 +260,12 @@ namespace agora {
             NAPI_API(getConnectionState);
             NAPI_API(release);
 
-			/**
-			 * faceunity apis
-			 */
-			NAPI_API(initializeFaceUnity);
-			NAPI_API(updateFaceUnityOptions);
+            /**
+             * faceunity apis
+             */
+            NAPI_API(initializeFaceUnity);
+            NAPI_API(setBeautyEffectFaceUnityOptions);
+            NAPI_API(releaseFaceUnity);
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }
@@ -285,9 +286,9 @@ namespace agora {
              */
             std::unique_ptr<AgoraVideoSource> m_videoSourceSink;
 
-			AVideoDeviceManager* m_videoVdm = nullptr;
-			AAudioDeviceManager* m_audioVdm = nullptr;
-			IVideoFrameObserver* m_externalVideoFrameObserver = nullptr;
+            AVideoDeviceManager* m_videoVdm = nullptr;
+            AAudioDeviceManager* m_audioVdm = nullptr;
+            IVideoFrameObserver* m_externalVideoFrameObserver = nullptr;
         };
 
 /*
@@ -385,7 +386,7 @@ namespace agora {
             if(status != napi_ok) { \
                 break; \
             } \
-		    status = napi_get_value_##type5##_(argv[4], (param5)); \
+            status = napi_get_value_##type5##_(argv[4], (param5)); \
             if(status != napi_ok) { \
                 break; \
             } \

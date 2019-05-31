@@ -623,7 +623,7 @@ export interface NodeRtcEngine {
   unsubscribe(uid: number): number;
   registerDeliverFrame(callback: Function): number;
   initializeFaceUnity(authdata: Array<Number>): number;
-  updateFaceUnityOptions(options: {
+  setBeautyEffectFaceUnityOptions(enable: boolean, options: {
     filter_name: string,
     filter_level: number,
     color_level: number,
@@ -645,4 +645,5 @@ export interface NodeRtcEngine {
     tooth_whiten: number,
     is_beauty_on: number
   }): number;
+  releaseFaceUnity(): number;
 }

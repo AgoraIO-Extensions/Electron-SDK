@@ -2323,11 +2323,10 @@ class AgoraRtcEngine extends EventEmitter {
   // ===========================================================================
   // FaceUnity
   // ===========================================================================
-  initializeFaceUnity(authdata: Array<Number>): number {
-    return this.rtcEngine.initializeFaceUnity(authdata);
+  initializeFaceUnity(authdata: Array<number>): number {
+    return this.rtcEngine.initializeFaceUnity(authdata)
   }
-
-  updateFaceUnityOptions(options: {
+  setBeautyEffectFaceUnityOptions(enabled: boolean, options: {
     filter_name: string,
     filter_level: number,
     color_level: number,
@@ -2336,7 +2335,6 @@ class AgoraRtcEngine extends EventEmitter {
     skin_detect: number,
     nonshin_blur_scale: number,
     heavy_blur: number,
-    blur_blend_ratio: number,
     face_shape: number,
     face_shape_level: number,
     eye_enlarging: number,
@@ -2350,8 +2348,8 @@ class AgoraRtcEngine extends EventEmitter {
     tooth_whiten: number,
     is_beauty_on: number
   }): number {
-    return this.rtcEngine.updateFaceUnityOptions({
-      filter_name: options.filter_name || 'origin',
+    return this.rtcEngine.setBeautyEffectFaceUnityOptions(enabled, {
+      filter_name: options.filter_name || "origin",
       filter_level: options.filter_level || 1.0,
       color_level: options.color_level || 0.2,
       red_level: options.red_level || 0.5,
@@ -2370,8 +2368,11 @@ class AgoraRtcEngine extends EventEmitter {
       change_frames: options.change_frames || 0.0,
       eye_bright: options.eye_bright || 1.0,
       tooth_whiten: options.tooth_whiten || 1.0,
-      is_beauty_on: options.is_beauty_on || 0.0
+      is_beauty_on: options.is_beauty_on || 1.0
     });
+  }
+  releaseFaceUnity(): number {
+    return this.rtcEngine.releaseFaceUnity()
   }
 }
 
