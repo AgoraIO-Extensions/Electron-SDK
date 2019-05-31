@@ -49,40 +49,6 @@ class GlRenderer implements IRenderer {
   }
 }
 
-class CustomRenderer implements IRenderer {
-  constructor() {
-    throw new Error('You have to declare your own custom render');
-  }
-
-  event: EventEmitter;
-
-  bind(element: Element) {
-    throw new Error('You have to declare your own custom render');
-  }
-
-  unbind() {
-    throw new Error('You have to declare your own custom render');
-  }
-  drawFrame(imageData: {
-    header: any,
-    yUint8Array: any,
-    uUint8Array: any,
-    vUint8Array: any
-  }) {
-    throw new Error('You have to declare your own custom render');
-  }
-
-  setContentMode(mode: number) {
-    throw new Error('You have to declare your own custom render');
-  }
-
-  refreshCanvas() {
-    throw new Error('You have to declare your own custom render');
-  }
-
-
-}
-
 export {
-  SoftwareRenderer, GlRenderer, IRenderer, CustomRenderer
+  SoftwareRenderer, GlRenderer, IRenderer
 };
