@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import path from 'path';
 import os from 'os'
 
-import {AUTH_DATA, voiceChangerList, voiceReverbPreset, videoProfileList, audioProfileList, audioScenarioList, APP_ID, SHARE_ID, RTMP_URL, voiceReverbList } from '../utils/settings'
+import {AUTH_DATA, fuFilterList, voiceChangerList, voiceReverbPreset, videoProfileList, audioProfileList, audioScenarioList, APP_ID, SHARE_ID, RTMP_URL, voiceReverbList } from '../utils/settings'
 import {readImage} from '../utils/base64'
 import WindowPicker from './components/WindowPicker/index.js'
 import DisplayPicker from './components/DisplayPicker/index.js'
@@ -44,8 +44,10 @@ export default class App extends Component {
         displayList: [],
         encoderWidth: 0,
         encoderHeight: 0,
+        fuFilter: "origin",
+        fuFilterLevel: 0,
         fuBlur: 0,
-        fuColor: 0
+        fuColor: 0,
       }
     }
     this.enableAudioMixing = false;
@@ -427,27 +429,55 @@ export default class App extends Component {
   }
 
   handleFuBlur = e => {
-    rtcEngine.updateFaceUnityOptions({color_level: this.state.fuColor, blur_level: this.state.fuBlur, is_beauty_on: 1.0})
+    this.updateFaceUnity({blur_level: Number(e.currentTarget.value)})
     this.setState({
       fuBlur: Number(e.currentTarget.value)
     })
   }
 
   handleFuColor = e => {
-    rtcEngine.updateFaceUnityOptions({color_level: this.state.fuColor, blur_level: this.state.fuBlur, is_beauty_on: 1.0})
+    this.updateFaceUnity({color_level: Number(e.currentTarget.value)})
     this.setState({
       fuColor: Number(e.currentTarget.value)
     })
   }
 
+  handleFuFilterLevel = e => {
+    this.updateFaceUnity({filter_level: Number(e.currentTarget.value)})
+    this.setState({
+      fuFilterLevel: Number(e.currentTarget.value)
+    })
+  }
+
+  handleFuFilterChange = e => {
+    this.updateFaceUnity({filter_name: e.currentTarget.value})
+    this.setState({fuFilter: e.currentTarget.value});
+  }
+
+  updateFaceUnity = opts => {
+    rtcEngine.setBeautyEffectFaceUnityOptions(true, Object.assign({
+      color_level: this.state.fuColor,
+      blur_level: this.state.fuBlur,
+      filter_name: this.state.fuFilter,
+      filter_level: this.state.fuFilterLevel
+    }, opts))
+  }
+
   toggleFaceUnity = e => {
     let rtcEngine = this.getRtcEngine()
-    if(AUTH_DATA.length !== 0) {
-      rtcEngine.initializeFaceUnity(AUTH_DATA)
-      rtcEngine.updateFaceUnityOptions({is_beauty_on: 1.0})
+    if(!this.state.faceUnityOn) {
+      if(AUTH_DATA.length !== 0) {
+        rtcEngine.initializeFaceUnity(AUTH_DATA)
+        rtcEngine.setBeautyEffectFaceUnityOptions(true, {})
+      } else {
+        alert(`AUTH_DATA missing`)
+      }
     } else {
-      alert(`AUTH_DATA missing`)
+      rtcEngine.releaseFaceUnity()
     }
+    this.setState({
+      faceUnityOn: !this.state.faceUnityOn
+    })
   }
 
   togglePlaybackTest = e => {
@@ -679,10 +709,25 @@ export default class App extends Component {
               <button onClick={this.toggleRecordingTest} className="button is-link">{this.state.recordingTestOn ? 'stop' : 'start'}</button>
             </div>
           </div>
-          <div className="field group">
+          <div className="field">
             <label className="label">FaceUnity</label>
             <div className="control">
               <button onClick={this.toggleFaceUnity} className="button is-link">{this.state.faceUnityOn ? 'stop' : 'start'}</button>
+            </div>
+          </div>
+          <div className="field group">
+            <label className="label">FaceUnity Options</label>
+            Filter
+            <div className="control">
+              <div className="select"  style={{width: '100%'}}>
+                <select onChange={this.handleFuFilterChange} value={this.state.fuFilter} style={{width: '100%'}}>
+                  {fuFilterList.map((item, index) => (<option key={index} value={item.name}>{item.desc}</option>))}
+                </select>
+              </div>
+            </div>
+            Filter Level ({this.state.fuFilterLevel})
+            <div className="control">
+              <input onChange={this.handleFuFilterLevel} className="slider has-output is-fullwidth" min="0" max="1" value={this.state.fuFilterLevel} step="0.1" type="range"></input>
             </div>
             Blur Level ({this.state.fuBlur})
             <div className="control">

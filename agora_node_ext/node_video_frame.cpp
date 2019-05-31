@@ -24,7 +24,7 @@
 
 namespace agora {
     namespace rtc {
-        static bool	m_namaInited = false;
+        static bool    m_namaInited = false;
         static int mFrameID = 0;
         static int mBeautyHandles = 0;
         #if defined(_WIN32)
@@ -78,7 +78,7 @@ namespace agora {
         }
 
         NodeVideoFrameObserver::NodeVideoFrameObserver(char* authdata, int authsize) {
-			do {
+            do {
                 auth_package_size = authsize;
                 auth_package = new char[authsize];
                 memcpy(auth_package, authdata, authsize);
@@ -87,18 +87,18 @@ namespace agora {
 
         NodeVideoFrameObserver::~NodeVideoFrameObserver() {
             fuDestroyAllItems();
-			delete auth_package;
+            delete auth_package;
         }
 
-		int NodeVideoFrameObserver::setFaceUnityOptions(FaceUnityOptions options) {
-			int result = -1;
-			do {
-				mOptions = options;
-				mNeedUpdateFUOptions = true;
-				result = 0;
-			} while (false);
-			return result;
-		}
+        int NodeVideoFrameObserver::setFaceUnityOptions(FaceUnityOptions options) {
+            int result = -1;
+            do {
+                mOptions = options;
+                mNeedUpdateFUOptions = true;
+                result = 0;
+            } while (false);
+            return result;
+        }
 
         unsigned char *NodeVideoFrameObserver::yuvData(VideoFrame& videoFrame)
         {
@@ -134,28 +134,28 @@ namespace agora {
         
         bool NodeVideoFrameObserver::onCaptureVideoFrame(VideoFrame& videoFrame)
         {
-			do {
-				// 1. initialize if not yet done
-				if (!m_namaInited) {
-					InitOpenGL();
-					//load nama and initialize
-					std::vector<char> v3data;
-					if (false == Utils::LoadBundle(g_fuDataDir + g_v3Data, v3data)) {
-						break;
-					}
-					//CheckGLContext();
-					fuSetup(reinterpret_cast<float*>(&v3data[0]), v3data.size(), NULL, auth_package, auth_package_size);
+            do {
+                // 1. initialize if not yet done
+                if (!m_namaInited) {
+                    InitOpenGL();
+                    //load nama and initialize
+                    std::vector<char> v3data;
+                    if (false == Utils::LoadBundle(g_fuDataDir + g_v3Data, v3data)) {
+                        break;
+                    }
+                    //CheckGLContext();
+                    fuSetup(reinterpret_cast<float*>(&v3data[0]), v3data.size(), NULL, auth_package, auth_package_size);
                     
-					std::vector<char> propData;
-					if (false == Utils::LoadBundle(g_fuDataDir + g_faceBeautification, propData)) {
-						std::cout << "load face beautification data failed." << std::endl;
-						break;
-					}
-					std::cout << "load face beautification data." << std::endl;
+                    std::vector<char> propData;
+                    if (false == Utils::LoadBundle(g_fuDataDir + g_faceBeautification, propData)) {
+                        std::cout << "load face beautification data failed." << std::endl;
+                        break;
+                    }
+                    std::cout << "load face beautification data." << std::endl;
 
-					mBeautyHandles = fuCreateItemFromPackage(&propData[0], propData.size());
-					m_namaInited = true;
-				}
+                    mBeautyHandles = fuCreateItemFromPackage(&propData[0], propData.size());
+                    m_namaInited = true;
+                }
                 // 2. beauty params
 				// check if options needs to be updated
 				if (mNeedUpdateFUOptions) {
@@ -182,19 +182,19 @@ namespace agora {
 					mNeedUpdateFUOptions = false;
 				}
 
-				// 3. make it beautiful
-				unsigned char *in_ptr = yuvData(videoFrame);
-				int handle[] = { mBeautyHandles };
-				int handleSize = sizeof(handle) / sizeof(handle[0]);
-				fuRenderItemsEx2(
-					FU_FORMAT_I420_BUFFER, reinterpret_cast<int*>(in_ptr),
-					FU_FORMAT_I420_BUFFER, reinterpret_cast<int*>(in_ptr),
-					videoFrame.width, videoFrame.height,
-					mFrameID, handle, handleSize,
-					NAMA_RENDER_FEATURE_FULL, NULL);
-				videoFrameData(videoFrame, in_ptr);
-				delete in_ptr;
-			} while (false);
+                // 3. make it beautiful
+                unsigned char *in_ptr = yuvData(videoFrame);
+                int handle[] = { mBeautyHandles };
+                int handleSize = sizeof(handle) / sizeof(handle[0]);
+                fuRenderItemsEx2(
+                    FU_FORMAT_I420_BUFFER, reinterpret_cast<int*>(in_ptr),
+                    FU_FORMAT_I420_BUFFER, reinterpret_cast<int*>(in_ptr),
+                    videoFrame.width, videoFrame.height,
+                    mFrameID, handle, handleSize,
+                    NAMA_RENDER_FEATURE_FULL, NULL);
+                videoFrameData(videoFrame, in_ptr);
+                delete in_ptr;
+            } while (false);
             
             return true;
         }

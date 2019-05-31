@@ -74,15 +74,15 @@ namespace agora {
             ~NodeVideoFrameObserver();
             virtual bool onCaptureVideoFrame(VideoFrame& videoFrame) override;
             virtual bool onRenderVideoFrame(unsigned int uid, VideoFrame& videoFrame) override;
-			int setFaceUnityOptions(FaceUnityOptions options);
+            int setFaceUnityOptions(FaceUnityOptions options);
         private:
             unsigned char *yuvData(VideoFrame& videoFrame);
             int yuvSize(VideoFrame& videoFrame);
             void videoFrameData(VideoFrame& videoFrame, unsigned char *yuvData);
-			char* auth_package;
-			int auth_package_size;
-			FaceUnityOptions mOptions;
-			bool mNeedUpdateFUOptions = true;
+            char* auth_package;
+            int auth_package_size;
+            FaceUnityOptions mOptions;
+            bool mNeedUpdateFUOptions = true;
         };
     }
 }
