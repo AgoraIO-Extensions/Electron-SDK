@@ -4,6 +4,7 @@
 * Add api `refreshRender`. Support instantly refreshing view when view size is changed. Useful for low frame rates
 * Update internal npm scripts according to ci
 * setRenderMode can recv 3 as param which refers to use custom Renderer (set with new API `setCustomRenderer`)
+* Support display same stream on multiple dom via initRender
 
 #### :bug: Bug Fix
 * Use type `Element` instead of `HTMLElement`
