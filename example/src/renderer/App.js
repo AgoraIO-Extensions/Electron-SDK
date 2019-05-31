@@ -427,14 +427,14 @@ export default class App extends Component {
   }
 
   handleFuBlur = e => {
-    rtcEngine.updateFaceUnityOptions({color_level: this.state.fuColor, blur_level: this.state.fuBlur})
+    rtcEngine.updateFaceUnityOptions({color_level: this.state.fuColor, blur_level: this.state.fuBlur, is_beauty_on: 1.0})
     this.setState({
       fuBlur: Number(e.currentTarget.value)
     })
   }
 
   handleFuColor = e => {
-    rtcEngine.updateFaceUnityOptions({color_level: this.state.fuColor, blur_level: this.state.fuBlur})
+    rtcEngine.updateFaceUnityOptions({color_level: this.state.fuColor, blur_level: this.state.fuBlur, is_beauty_on: 1.0})
     this.setState({
       fuColor: Number(e.currentTarget.value)
     })
@@ -444,6 +444,7 @@ export default class App extends Component {
     let rtcEngine = this.getRtcEngine()
     if(AUTH_DATA.length !== 0) {
       rtcEngine.initializeFaceUnity(AUTH_DATA)
+      rtcEngine.updateFaceUnityOptions({is_beauty_on: 1.0})
     } else {
       alert(`AUTH_DATA missing`)
     }

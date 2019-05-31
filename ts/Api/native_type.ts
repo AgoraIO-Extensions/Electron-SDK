@@ -800,6 +800,17 @@ export interface NodeRtcEngine {
     skin_detect: number,
     nonshin_blur_scale: number,
     heavy_blur: number,
-    blur_blend_ratio: number
+    face_shape: number,
+    face_shape_level: number,
+    eye_enlarging: number,
+    cheek_thinning: number,
+    intensity_nose: number,
+    intensity_forehead: number,
+    intensity_mouth: number,
+    intensity_chin: number,
+    change_frames: number,
+    eye_bright: number,
+    tooth_whiten: number,
+    is_beauty_on: number
   }): number;
 }

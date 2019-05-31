@@ -4172,7 +4172,40 @@ namespace agora {
 				status = napi_get_object_property_double_(isolate, obj, "heavy_blur", opts.heavy_blur);
 				CHECK_NAPI_STATUS(pEngine, status);
 
-				status = napi_get_object_property_double_(isolate, obj, "blur_blend_ratio", opts.blur_blend_ratio);
+				status = napi_get_object_property_double_(isolate, obj, "face_shape", opts.face_shape);
+				CHECK_NAPI_STATUS(pEngine, status);
+
+				status = napi_get_object_property_double_(isolate, obj, "face_shape_level", opts.face_shape_level);
+				CHECK_NAPI_STATUS(pEngine, status);
+
+				status = napi_get_object_property_double_(isolate, obj, "eye_enlarging", opts.eye_enlarging);
+				CHECK_NAPI_STATUS(pEngine, status);
+
+				status = napi_get_object_property_double_(isolate, obj, "cheek_thinning", opts.cheek_thinning);
+				CHECK_NAPI_STATUS(pEngine, status);
+
+				status = napi_get_object_property_double_(isolate, obj, "intensity_nose", opts.intensity_nose);
+				CHECK_NAPI_STATUS(pEngine, status);
+
+				status = napi_get_object_property_double_(isolate, obj, "intensity_forehead", opts.intensity_forehead);
+				CHECK_NAPI_STATUS(pEngine, status);
+
+				status = napi_get_object_property_double_(isolate, obj, "intensity_mouth", opts.intensity_mouth);
+				CHECK_NAPI_STATUS(pEngine, status);
+
+				status = napi_get_object_property_double_(isolate, obj, "intensity_chin", opts.intensity_chin);
+				CHECK_NAPI_STATUS(pEngine, status);
+
+				status = napi_get_object_property_double_(isolate, obj, "change_frames", opts.change_frames);
+				CHECK_NAPI_STATUS(pEngine, status);
+
+				status = napi_get_object_property_double_(isolate, obj, "eye_bright", opts.eye_bright);
+				CHECK_NAPI_STATUS(pEngine, status);
+
+				status = napi_get_object_property_double_(isolate, obj, "tooth_whiten", opts.tooth_whiten);
+				CHECK_NAPI_STATUS(pEngine, status);
+
+				status = napi_get_object_property_double_(isolate, obj, "is_beauty_on", opts.is_beauty_on);
 				CHECK_NAPI_STATUS(pEngine, status);
 
 				NodeVideoFrameObserver * fu = reinterpret_cast<NodeVideoFrameObserver*>(pEngine->m_externalVideoFrameObserver);

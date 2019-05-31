@@ -2487,18 +2487,41 @@ class AgoraRtcEngine extends EventEmitter {
     skin_detect: number,
     nonshin_blur_scale: number,
     heavy_blur: number,
-    blur_blend_ratio: number
+    blur_blend_ratio: number,
+    face_shape: number,
+    face_shape_level: number,
+    eye_enlarging: number,
+    cheek_thinning: number,
+    intensity_nose: number,
+    intensity_forehead: number,
+    intensity_mouth: number,
+    intensity_chin: number,
+    change_frames: number,
+    eye_bright: number,
+    tooth_whiten: number,
+    is_beauty_on: number
   }): number {
     return this.rtcEngine.updateFaceUnityOptions({
-      filter_name: options.filter_name || "origin",
-      filter_level: options.filter_level || 0,
-      color_level: options.color_level || 0,
-      red_level: options.red_level || 0,
-      blur_level: options.blur_level || 0,
-      skin_detect: options.skin_detect || 0,
-      nonshin_blur_scale: options.nonshin_blur_scale || 0,
+      filter_name: options.filter_name || 'origin',
+      filter_level: options.filter_level || 1.0,
+      color_level: options.color_level || 0.2,
+      red_level: options.red_level || 0.5,
+      blur_level: options.blur_level || 6.0,
+      skin_detect: options.skin_detect || 0.0,
+      nonshin_blur_scale: options.nonshin_blur_scale || 0.45,
       heavy_blur: options.heavy_blur || 0,
-      blur_blend_ratio: options.blur_blend_ratio || 0
+      face_shape: options.face_shape || 3,
+      face_shape_level: options.face_shape_level || 1.0,
+      eye_enlarging: options.eye_enlarging || 0.5,
+      cheek_thinning: options.cheek_thinning || 0.0,
+      intensity_nose: options.intensity_nose || 0.0,
+      intensity_forehead: options.intensity_forehead || 0.5,
+      intensity_mouth: options.intensity_mouth || 0.5,
+      intensity_chin: options.intensity_chin || 0.5,
+      change_frames: options.change_frames || 0.0,
+      eye_bright: options.eye_bright || 1.0,
+      tooth_whiten: options.tooth_whiten || 1.0,
+      is_beauty_on: options.is_beauty_on || 0.0
     });
   }
 }

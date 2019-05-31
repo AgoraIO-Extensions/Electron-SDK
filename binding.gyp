@@ -315,7 +315,7 @@
                     'CoreAudio.framework',
                     'Foundation.framework',
                     'AVFoundation.framework',
-                    '../common/FULive/mac/lib/libnama.a'
+                    'libnama.a'
                     ]
                 },
                 'sources': [
@@ -340,6 +340,9 @@
                     'EXECUTABLE_EXTENSION': 'node',
                     'FRAMEWORK_SEARCH_PATHS': [
                         './sdk/lib/mac'
+                    ],
+                    'LIBRARY_SEARCH_PATHS': [
+                        './common/FULive/mac/lib'
                     ]
                 },
             }

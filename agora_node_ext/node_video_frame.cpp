@@ -167,7 +167,18 @@ namespace agora {
 					fuItemSetParamd(mBeautyHandles, "skin_detect", mOptions.skin_detect);
 					fuItemSetParamd(mBeautyHandles, "nonshin_blur_scale", mOptions.nonshin_blur_scale);
 					fuItemSetParamd(mBeautyHandles, "heavy_blur", mOptions.heavy_blur);
-					fuItemSetParamd(mBeautyHandles, "blur_blend_ratio", mOptions.blur_blend_ratio);
+					fuItemSetParamd(mBeautyHandles, "face_shape", mOptions.face_shape);
+					fuItemSetParamd(mBeautyHandles, "face_shape_level", mOptions.face_shape_level);
+					fuItemSetParamd(mBeautyHandles, "eye_enlarging", mOptions.eye_enlarging);
+					fuItemSetParamd(mBeautyHandles, "cheek_thinning", mOptions.cheek_thinning);
+					fuItemSetParamd(mBeautyHandles, "intensity_nose", mOptions.intensity_nose);
+					fuItemSetParamd(mBeautyHandles, "intensity_forehead", mOptions.intensity_forehead);
+					fuItemSetParamd(mBeautyHandles, "intensity_mouth", mOptions.intensity_mouth);
+					fuItemSetParamd(mBeautyHandles, "intensity_chin", mOptions.intensity_chin);
+					fuItemSetParamd(mBeautyHandles, "change_frames", mOptions.change_frames);
+					fuItemSetParamd(mBeautyHandles, "eye_bright", mOptions.eye_bright);
+					fuItemSetParamd(mBeautyHandles, "tooth_whiten", mOptions.tooth_whiten);
+					fuItemSetParamd(mBeautyHandles, "is_beauty_on", mOptions.is_beauty_on);
 					mNeedUpdateFUOptions = false;
 				}
 
