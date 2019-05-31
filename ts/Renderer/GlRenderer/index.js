@@ -158,7 +158,11 @@ const AgoraRender = function() {
     }
   };
 
-      /**
+  that.getBindingElement = function() {
+    return that.view
+  };
+
+  /**
    * draw image with params
    * @private
    * @param {*} render

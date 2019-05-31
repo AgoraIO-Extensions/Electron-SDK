@@ -27,7 +27,7 @@ const agora = require('../../build/Release/agora_node_ext');
  */
 class AgoraRtcEngine extends EventEmitter {
   rtcEngine: NodeRtcEngine;
-  streams: Map<string, IRenderer>;
+  streams: Map<string, IRenderer[]>;
   renderMode: 1 | 2;
   constructor() {
     super();
@@ -494,7 +494,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {number} type 0-local 1-remote 2-device_test 3-video_source
    * @param {number} uid uid get from native engine, differ from electron engine's uid
    */
-  _getRenderer(type: number, uid: number): IRenderer | undefined {
+  _getRenderers(type: number, uid: number): IRenderer[] | undefined {
     if (type < 2) {
       if (uid === 0) {
         return this.streams.get('local');
@@ -575,19 +575,21 @@ class AgoraRtcEngine extends EventEmitter {
         );
         continue;
       }
-      const renderer = this._getRenderer(type, uid);
-      if (!renderer) {
+      const renderers = this._getRenderers(type, uid);
+      if (!renderers) {
         console.warn("Can't find renderer for uid : " + uid);
         continue;
       }
 
       if (this._checkData(header, ydata, udata, vdata)) {
-        renderer.drawFrame({
-          header,
-          yUint8Array: ydata,
-          uUint8Array: udata,
-          vUint8Array: vdata,
-        });
+        for(let i = 0; i < renderers.length; i++) {
+          renderers[i].drawFrame({
+            header,
+            yUint8Array: ydata,
+            uUint8Array: udata,
+            vUint8Array: vdata,
+          });
+        }
       }
     }
   }
@@ -600,10 +602,10 @@ class AgoraRtcEngine extends EventEmitter {
    */
   resizeRender(key: 'local' | 'videosource' | number) {
     if (this.streams.has(String(key))) {
-        const renderer = this.streams.get(String(key));
-        if (renderer) {
-          renderer.refreshCanvas();
-      }
+        const renderers = this.streams.get(String(key)) || [];
+        for(let i = 0; i < renderers.length; i++) {
+          renderers[i].refreshCanvas();
+        }
     }
   }
 
@@ -613,9 +615,15 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {Element} view dom elements to render video
    */
   initRender(key: 'local' | 'videosource' | number, view: Element) {
-    if (this.streams.has(String(key))) {
-      this.destroyRender(key);
+    let renderers: IRenderer[] = this.streams.get(String(key)) || []
+
+    // if dom already binded, reject
+    let filtered = renderers.filter(item => item.getBindingElement() === view)
+    if(filtered.length > 0) {
+      console.warn('dom already binded')
+      return
     }
+
     let renderer: IRenderer;
     if (this.renderMode === 1) {
       renderer = new GlRenderer();
@@ -626,7 +634,8 @@ class AgoraRtcEngine extends EventEmitter {
       renderer = new GlRenderer();
     }
     renderer.bind(view);
-    this.streams.set(String(key), renderer);
+    renderers.push(renderer);
+    this.streams.set(String(key), renderers);
   }
 
   /**
@@ -638,10 +647,44 @@ class AgoraRtcEngine extends EventEmitter {
     if (!this.streams.has(String(key))) {
       return;
     }
-    const renderer = this.streams.get(String(key));
+    const renderers = this.streams.get(String(key)) || [];
+    
+    for(let i = 0; i < renderers.length; i++) {
+      try {
+        (renderers[i] as IRenderer).unbind();
+        this.streams.delete(String(key));
+      } catch (err) {
+        onFailure && onFailure(err);
+      }
+    }
+  }
+
+  /**
+   * destroy renderer
+   * @param {string|number} key key for the map that store the renders, e.g, uid or `videosource` or `local`
+   * @param {function} onFailure err callback for destroyRenderer
+   */
+  destroyRenderView(key: 'local' | 'videosource' | number, view: Element, onFailure?: (err: Error) => void) {
+    if (!this.streams.has(String(key))) {
+      return;
+    }
+    const renderers = this.streams.get(String(key)) || [];
+    let i = -1;
+    renderers.forEach((item, idx) => {
+      if(item.getBindingElement() === view) {
+        i = idx
+      }
+    })
+
+    if(i === -1) {
+      onFailure && onFailure(new Error('view not exists'))
+      return
+    }
+
+    let toDestroy = renderers.splice(i, 1)[0]
     try {
-      (renderer as IRenderer).unbind();
-      this.streams.delete(String(key));
+      (toDestroy as IRenderer).unbind();
+      this.streams.set(String(key), renderers);
     } catch (err) {
       onFailure && onFailure(err);
     }
@@ -813,8 +856,11 @@ class AgoraRtcEngine extends EventEmitter {
    */
   setupViewContentMode(uid: number | 'local' | 'videosource', mode: 0|1): number {
     if (this.streams.has(String(uid))) {
-      const renderer = this.streams.get(String(uid));
-      (renderer as IRenderer).setContentMode(mode);
+      const renderers = this.streams.get(String(uid)) || [];
+
+      for(let i = 0; i < renderers.length; i++) {
+        (renderers[i] as IRenderer).setContentMode(mode);
+      }
       return 0;
     } else {
       return -1;
