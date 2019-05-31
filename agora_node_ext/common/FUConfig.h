@@ -26,6 +26,7 @@ const std::string g_tongue = "tongue.bundle";
 
 #if defined(__APPLE__)
 const std::string g_fuDataDir = "../common/FULive/mac/Resources/";
+// const std::string g_fuDataDir = "./node_modules/agora-electron-sdk/common/FULive/mac/Resources/";
 #endif
 
 #if defined(_WIN32)
@@ -35,6 +36,27 @@ const std::string g_fuDataDir = "../common/FULive/win/assets/";
 
 const std::string g_v3Data = "v3.bundle";
 
-std::string faceBeautyParamName[] = { "blur_level","color_level", "red_level", "eye_bright", "tooth_whiten" };
+// std::string faceBeautyParamName[] = { "blur_level","color_level", "red_level", "eye_bright", "tooth_whiten" };
+
+const std::string default_filter_name = "origin";
+const double default_filter_level = 1.0;
+const double default_color_level = 0.2;
+const double default_red_level = 0.5;
+const double default_blur_level = 6.0;
+const double default_skin_detect = 0.0;
+const double default_nonshin_blur_scale = 0.45;
+const double default_heavy_blur = 0;
+const double default_face_shape = 3;
+const double default_face_shape_level = 1.0;
+const double default_eye_enlarging = 0.5;
+const double default_cheek_thinning = 0.0;
+const double default_intensity_nose = 0.0;
+const double default_intensity_forehead = 0.5;
+const double default_intensity_mouth = 0.5;
+const double default_intensity_chin = 0.5;
+const double default_change_frames = 0.0;
+const double default_eye_bright = 1.0;
+const double default_tooth_whiten = 1.0;
+const double default_is_beauty_on = 0.0;
 
 #endif // !FU_CONFIG_H
