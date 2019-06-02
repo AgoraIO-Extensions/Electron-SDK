@@ -11,6 +11,7 @@
 #include "FUConfig.h"
 #include "Utils.h"
 #include <vector>
+#include "node_process.h"
 
 #if defined(_WIN32)
 #pragma comment(lib, "nama.lib")
@@ -138,6 +139,16 @@ namespace agora {
                 // 1. initialize if not yet done
                 if (!m_namaInited) {
                     //load nama and initialize
+                    std::string currentPath;
+                    std::string sub = "agora_node_ext.node";
+                    INodeProcess::getCurrentModuleFileName(currentPath);
+                    int pos;
+                    pos = currentPath.find(sub);
+                    if (pos != -1){
+                        currentPath.replace(pos, sub.length(), "");
+                    }
+                    std::string assets_dir = currentPath + assets_dir_name + "/";
+                    std::string g_fuDataDir = assets_dir;
                     std::vector<char> v3data;
                     if (false == Utils::LoadBundle(g_fuDataDir + g_v3Data, v3data)) {
                         break;
