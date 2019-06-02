@@ -229,6 +229,7 @@
                 'copies': [{
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
+                        './common/FULive/win/assets/',
                         './sdk/dll/agora_rtc_sdk.dll',
                         './sdk/dll/agora_sig_sdk.dll',
                         './common/FULive/win/Win32/nama.dll',
@@ -293,6 +294,12 @@
             [
             'OS=="mac"',
             {
+                'copies': [{
+                    'destination': '<(PRODUCT_DIR)',
+                    'files': [
+                        './common/FULive/mac/Resources'
+                    ]
+                }],
                 'mac_framework_dirs': [
                     '../sdk/lib/mac',
                 ],
