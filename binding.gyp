@@ -229,11 +229,11 @@
                 'copies': [{
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
+                        './common/FULive/win/assets/',
                         './sdk/dll/agora_rtc_sdk.dll',
                         './sdk/dll/agora_sig_sdk.dll',
                         './common/FULive/win/Win32/nama.dll',
-                        './common/FULive/win/Win32/libsgemm.dll',
-                        './common/FULive/win/assets'
+                        './common/FULive/win/Win32/libsgemm.dll'
                     ]
                 }],
                 'library_dirs': [
