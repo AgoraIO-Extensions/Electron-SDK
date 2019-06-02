@@ -25,12 +25,13 @@ const std::string g_fxaa = "fxaa.bundle";
 const std::string g_tongue = "tongue.bundle";
 
 #if defined(__APPLE__)
-const std::string g_fuDataDir = "../common/FULive/mac/Resources/";
-// const std::string g_fuDataDir = "./node_modules/agora-electron-sdk/common/FULive/mac/Resources/";
+// const std::string g_fuDataDir = "../common/FULive/mac/Resources/";
+const std::string g_fuDataDir = "./node_modules/agora-electron-sdk/build/Release/Resources/";
 #endif
 
 #if defined(_WIN32)
-const std::string g_fuDataDir = "../common/FULive/win/assets/";
+// const std::string g_fuDataDir = "../common/FULive/win/assets/";
+const std::string g_fuDataDir = "./node_modules/agora-electron-sdk/build/Release/assets/";
 #endif
 
 

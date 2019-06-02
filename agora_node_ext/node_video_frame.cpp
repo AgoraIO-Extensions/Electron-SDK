@@ -137,12 +137,12 @@ namespace agora {
             do {
                 // 1. initialize if not yet done
                 if (!m_namaInited) {
-                    InitOpenGL();
                     //load nama and initialize
                     std::vector<char> v3data;
                     if (false == Utils::LoadBundle(g_fuDataDir + g_v3Data, v3data)) {
                         break;
                     }
+                    InitOpenGL();
                     //CheckGLContext();
                     fuSetup(reinterpret_cast<float*>(&v3data[0]), v3data.size(), NULL, auth_package, auth_package_size);
                     
