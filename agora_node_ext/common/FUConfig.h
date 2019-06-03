@@ -26,10 +26,12 @@ const std::string g_tongue = "tongue.bundle";
 
 #if defined(__APPLE__)
 const std::string assets_dir_name = "Resources";
+const std::string file_separator = "/";
 #endif
 
 #if defined(_WIN32)
 const std::string assets_dir_name = "assets";
+const std::string file_separator = "\\";
 #endif
 
 

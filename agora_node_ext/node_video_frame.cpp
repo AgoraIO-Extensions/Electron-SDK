@@ -147,7 +147,7 @@ namespace agora {
                     if (pos != -1){
                         currentPath.replace(pos, sub.length(), "");
                     }
-                    std::string assets_dir = currentPath + assets_dir_name + "/";
+                    std::string assets_dir = currentPath + assets_dir_name + file_separator;
                     std::string g_fuDataDir = assets_dir;
                     std::vector<char> v3data;
                     if (false == Utils::LoadBundle(g_fuDataDir + g_v3Data, v3data)) {
