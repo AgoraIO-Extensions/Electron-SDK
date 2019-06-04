@@ -67,14 +67,22 @@ namespace agora {
             #endif
 
             #if defined(__APPLE__)
-            CGLPixelFormatAttribute attrib[] = {kCGLPFADoubleBuffer};
+            CGLPixelFormatAttribute attrib[13] = {kCGLPFAOpenGLProfile,
+            (CGLPixelFormatAttribute) kCGLOGLPVersion_Legacy,
+            kCGLPFAAccelerated,
+            kCGLPFAColorSize, (CGLPixelFormatAttribute)24,
+            kCGLPFAAlphaSize, (CGLPixelFormatAttribute)8,
+            kCGLPFADoubleBuffer,
+            kCGLPFASampleBuffers, (CGLPixelFormatAttribute)1,
+            kCGLPFASamples, (CGLPixelFormatAttribute)4,
+            (CGLPixelFormatAttribute) 0};
             CGLPixelFormatObj pixelFormat = NULL;
             GLint numPixelFormats = 0;
             CGLContextObj cglContext1 = NULL;
             CGLChoosePixelFormat (attrib, &pixelFormat, &numPixelFormats);
-            CGLCreateContext(pixelFormat, NULL, &cglContext1);
+            CGLError err = CGLCreateContext(pixelFormat, NULL, &cglContext1);
             CGLSetCurrentContext(cglContext1);
-            std::cout << "mac InitOpenGL" << std::endl;
+            std::cout << "mac InitOpenGL:" << err << std::endl;
             #endif
         }
 
@@ -147,7 +155,7 @@ namespace agora {
                     if (pos != -1){
                         currentPath.replace(pos, sub.length(), "");
                     }
-                    std::string assets_dir = currentPath + assets_dir_name + "/";
+                    std::string assets_dir = currentPath + assets_dir_name + file_separator;
                     std::string g_fuDataDir = assets_dir;
                     std::vector<char> v3data;
                     if (false == Utils::LoadBundle(g_fuDataDir + g_v3Data, v3data)) {
