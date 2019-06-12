@@ -1,0 +1,308 @@
+
+import AgoraRtcEngine from '../../../js/AgoraSdk';
+import Logger from './logger';
+
+const executeFunctionByName = (...args) => {
+  let functionName = args[0]
+  let context = args[1]
+  let params = args[2]
+  let namespaces = functionName.split(".");
+  let func = namespaces.pop();
+  for(let i = 0; i < namespaces.length; i++) {
+    context = context[namespaces[i]];
+  }
+  return context[func].apply(context, params);
+}
+
+const isString = (str) => {
+  return typeof str === 'string' || str instanceof String
+}
+
+const func_name_convention = {
+  "iepSetParameters": "setParameters"
+}
+
+const generic_call_table = {
+  //cmd : parameter key array
+  "initialize": ["appId"],
+  "getVersion": [],
+  "getErrorDescription": ["errorCode"],
+  "getConnectionState": [],
+  "joinChannel": ["token", "channelId", "info", "uid"],
+  "leaveChannel": [],
+  "release": [],
+  "setHighQualityAudioParameters": ["fullband", "stereo", "fullBitrate"],
+  "renewToken": ["newToken"],
+  "setChannelProfile": ["profile"],
+  "setClientRole": ["role"],
+  "startEchoTest": [],
+  "stopEchoTest": [],
+  "startEchoTestWithInterval": ["interval"],
+  "enableLastmileTest": [],
+  "disableLastmileTest": [],
+  "startLastmileProbeTest": [{
+    "name": "config"
+  }],
+  "stopLastmileProbeTest": [],
+  "enableVideo": [],
+  "disableVideo": [],
+  "startPreview": [],
+  "stopPreview": [],
+  "setVideoProfile": ["profile", "swapWidthAndHeight"],
+  "setCameraCapturerConfiguration": [{
+    "name": "config"
+  }],
+  "setVideoEncoderConfiguration": [{
+    "name": "config"
+  }],
+  "setBeautyEffectOptions": ["enabled", {
+    "name": "options"
+  }],
+  "setRemoteUserPriority": ["uid", "priority"],
+  "enableAudio": [],
+  "disableAudio": [],
+  "setAudioProfile": ["profile", "scenario"],
+  "setVideoQualityParameters": ["preferFrameRateOverImageQuality"],
+  "setEncryptionSecret": ["secret"],
+  "muteLocalAudioStream": ["muted"],
+  "muteAllRemoteAudioStreams": ["muted"],
+  "setDefaultMuteAllRemoteAudioStreams": ["muted"],
+  "muteRemoteAudioStream": ["uid", "muted"],
+  "muteLocalVideoStream": ["muted"],
+  "enableLocalVideo": ["enabled"],
+  "muteAllRemoteVideoStreams": ["muted"],
+  "setDefaultMuteAllRemoteVideoStreams": ["muted"],
+  "enableAudioVolumeIndication": ["interval", "smooth"],
+  "muteRemoteVideoStream": ["uid", "muted"],
+  "setInEarMonitoringVolume": ["volume"],
+  "pauseAudio": [],
+  "resumeAudio": [],
+  "setLogFile": ["filePath"],
+  "setLogFileSize": ["size"],
+  "setLogFilter": ["filter"],
+  "enableDualStreamMode": ["enabled"],
+  "setRemoteVideoStreamType": ["uid", "streamType"],
+  "setRemoteDefaultVideoStreamType": ["streamType"],
+  "enableWebSdkInteroperability": ["enabled"],
+  "setLocalVideoMirrorMode": ["mirrorType"],
+  "setLocalVoicePitch": ["pitch"],
+  "setLocalVoiceEqualization": ["bandFrequency", "bandGain"],
+  "setLocalVoiceReverb": ["reverbKey", "value"],
+  "setLocalVoiceChanger": ["preset"],
+  "setLocalVoiceReverbPreset": ["preset"],
+  "setLocalPublishFallbackOption": ["option"],
+  "setRemoteSubscribeFallbackOption": ["option"],
+  "setExternalAudioSource": ["enabled", "samplerate", "channels"],
+  "startVideoDeviceTest": [],
+  "stopVideoDeviceTest": [],
+  "setAudioPlaybackVolume": ["volume"],
+  "getAudioPlaybackVolume": [],
+  "getAudioRecordingVolume": [],
+  "setAudioRecordingVolume": ["volume"],
+  "startAudioPlaybackDeviceTest": ["filePath"],
+  "stopAudioPlaybackDeviceTest": [],
+  "startAudioDeviceLoopbackTest": ["interval"],
+  "stopAudioDeviceLoopbackTest": [],
+  "enableLoopbackRecording": ["enabled", "deviceName"],
+  "startAudioRecordingDeviceTest": ["interval"],
+  "stopAudioRecordingDeviceTest": [],
+  "getAudioPlaybackDeviceMute": [],
+  "setAudioPlaybackDeviceMute": ["muted"],
+  "getAudioRecordingDeviceMute": [],
+  "setAudioRecordingDeviceMute": ["muted"],
+  "startAudioMixing": ["filePath", "loopback", "replace", "cycle"],
+  "stopAudioMixing": [],
+  "pauseAudioMixing": [],
+  "resumeAudioMixing": [],
+  "adjustAudioMixingVolume": ["volume"],
+  "adjustAudioMixingPlayoutVolume": ["volume"],
+  "adjustAudioMixingPublishVolume": ["volume"],
+  "getAudioMixingDuration": [],
+  "getAudioMixingCurrentPosition": [],
+  "setAudioMixingPosition": ["position"],
+  "playEffect": ["soundId", "filePath", "loopCount", "pitch", "pan", "gain", "publish"],
+  "preloadEffect": ["soundId", "filePath"],
+  "unloadEffect": ["soundId"],
+  "pauseEffect": ["soundId"],
+  "pauseAllEffects": [],
+  "resumeEffect": ["soundId"],
+  "resumeAllEffects": [],
+  "stopEffect": ["soundId"],
+  "enableSoundPositionIndication": ["enabled"],
+  "setRemoteVoicePosition": ["uid", "pan", "gain"],
+  "getCallId": [],
+  "rate": ["callId", "rating", "desc"],
+  "complain": ["callId", "desc"],
+  "iepSetParameters": ["parameters"]
+}
+
+const custom_call_table = {
+  "setupRemoteVideo": [],
+  "setupLocalVideo": [],
+  // "getVideoDevices": [],
+  // "setVideoDevice": [],
+  // "getCurrentVideoDevice": [],
+  // "getAudioPlaybackDevices": [],
+  // "getPlaybackDeviceInfo": [],
+  // "getCurrentAudioPlaybackDevice": [],
+  // "getAudioRecordingDevices": [],
+  // "setAudioRecordingDevice": [],
+  // "getRecordingDeviceInfo": [],
+  // "getCurrentAudioRecordingDevice": [],
+
+}
+
+const ignore_call_table = {
+  "iepRelease": [],
+  "createView": [],
+  "removeAllViews": [],
+  "setupLocalVideo": [],
+  "removeAllView": [],
+  "removeView": [],
+  "setupRemoteVideo": []
+}
+
+class ApiHandler {
+  constructor(device_id, ws) {
+    this.device_id = device_id
+    this.ws = ws
+    this.rtcEngine = null
+  }
+  handleMessage(msg) {
+    let json = JSON.parse(msg)
+    let {type, device, cmd, sequence, info, extra} = json
+
+    if(type === 1) {
+      this.handleApiCall(device, cmd, sequence, info, extra)
+    } else if(type === 3) {
+      this.handleNonApiCall(device, cmd, sequence, info, extra)
+    }
+  }
+
+  genericApiCall = (cmd, context, parameters) => {
+    executeFunctionByName(cmd, context, parameters)
+    return 0
+  }
+
+  customApiCall = (cmd, info, extra) => {
+    switch(cmd) {
+      case "setupRemoveVideo":
+        break;
+      case "setupLocalVideo":
+        break;
+    }
+  }
+
+  handleNonApiCall(device, cmd, sequence, info, extra) {
+    let result = 0
+    let error = 0
+    if(ignore_call_table[cmd] !== undefined) {
+      //ignore, not applicable
+    } else {
+      error = 1
+    }
+    this.callResult(7, device, cmd, sequence, {
+      error,
+      "return": result
+    }, {})
+  }
+
+  handleApiCall(device, cmd, sequence, info, extra) {
+    let result = 0
+    let error = 0
+    if(cmd === "createAgoraRtcEngine") {
+      this.rtcEngine = new AgoraRtcEngine()
+      this.subscribeEvents(this.rtcEngine)
+      this.rtcEngine.setLogFile()
+    } else if(generic_call_table[cmd]) {
+      let params = []
+      let paramNames = generic_call_table[cmd]
+      paramNames.forEach(n => {
+        if(isString(n)) {
+          params.push(info[n])
+        } else {
+          //for object params
+          let obj = info[n.name]
+          let mapping = n.mapping || {}
+          Object.keys(mapping).forEach(src => {
+            let dest = obj[src]
+            obj[dest] = obj[src]
+            delete obj[src]
+          })
+        }
+      })
+      let converted = func_name_convention[cmd] || cmd;
+      result = this.genericApiCall(converted, this.rtcEngine, params)
+    } else if(ignore_call_table[cmd] !== undefined) {
+      //ignore, not applicable
+    } else if(custom_call_table[cmd] !== undefined) {
+      result = this.customApiCall(cmd, info, extra)
+    } else {
+      error = 1
+    }
+    this.callResult(5, device, cmd, sequence, {
+      error,
+      "return": result
+    }, {})
+  }
+
+  callResult(type, device, cmd, sequence, info, extra) {
+    let res = JSON.stringify({
+      type,
+      device, sequence, cmd, info, extra
+    })
+    if(info.error !== 0) {
+      Logger.info(`${res}`, 'error')
+    } else {
+      Logger.info(`${res}`, 'socket-out')
+    }
+    this.ws.send(res)
+  }
+
+  eventResult(cmd, info, extra) {
+    let data = JSON.stringify({type: 4, cmd, info, extra})
+    Logger.info(`${data}`, 'socket-out')
+    this.ws.send(data)
+  }
+
+  subscribeEvents = (rtcEngine) => {
+    rtcEngine.on('joinedchannel', (channel, uid, elapsed) => {
+      this.eventResult('didJoinChannel', {channel, uid, elapsed}, {})
+    });
+    rtcEngine.on('userjoined', (uid, elapsed) => {
+    })
+    rtcEngine.on('removestream', (uid, reason) => {
+    })
+    rtcEngine.on('leavechannel', () => {
+    })
+    rtcEngine.on('streamPublished', (url, error) => {
+      console.log(`url: ${url}, err: ${error}`)
+    })
+    rtcEngine.on('streamUnpublished', (url) => {
+      console.log(`url: ${url}`)
+    })
+    rtcEngine.on('lastmileProbeResult', result => {
+      console.log(`lastmileproberesult: ${JSON.stringify(result)}`)
+    })
+    rtcEngine.on('lastMileQuality', quality => {
+      console.log(`lastmilequality: ${JSON.stringify(quality)}`)
+    })
+    rtcEngine.on('audiovolumeindication', (
+      uid,
+      volume,
+      speakerNumber,
+      totalVolume
+    ) => {
+      console.log(`uid${uid} volume${volume} speakerNumber${speakerNumber} totalVolume${totalVolume}`)
+    })
+    rtcEngine.on('error', err => {
+      console.error(err)
+    })
+    rtcEngine.on('executefailed', funcName => {
+      console.error(funcName, 'failed to execute')
+    })
+  }
+
+}
+
+export default ApiHandler

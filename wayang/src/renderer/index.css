@@ -10,6 +10,22 @@ html, body {
 }
 
 
+.logitem {
+  color: green
+}
+
+.socket-in {
+
+}
+
+.socket-out {
+  color: darkcyan;
+}
+
+.error {
+  color: red;
+}
+
 .window-container {
   display: grid!important;
   grid: repeat(2, 50%) / repeat(3, 33%);
