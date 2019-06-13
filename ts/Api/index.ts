@@ -1101,6 +1101,18 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @description Use setEncryptionSecret to specify an encryption password to enable built-in
+   * encryption before joining a channel. All users in a channel must set the same encryption password.
+   * The encryption password is automatically cleared once a user has left the channel.
+   * If the encryption password is not specified or set to empty, the encryption function will be disabled.
+   * @param {string} secret Encryption Password
+   * @returns {number} 0 for success, <0 for failure
+   */
+  setEncryptionMode(mode: string): number {
+    return this.rtcEngine.setEncryptionMode(mode);
+  }
+
+  /**
    * @description This method mutes/unmutes local audio. It enables/disables
    * sending local audio streams to the network.
    * @param {boolean} mute mute/unmute audio

@@ -3,7 +3,7 @@ import { EventEmitter } from "events";
 class Logger extends EventEmitter {
   log = (m, type, level) => {
     this.emit('log', {
-      ts: (new Date()).toString(),
+      ts: (new Date()).getTime(),
       m,level, type: type || "general"
     })
   }

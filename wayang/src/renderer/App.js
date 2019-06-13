@@ -11,20 +11,18 @@ import DisplayPicker from './components/DisplayPicker/index.js'
 import { VoiceChangerPreset } from '../../../JS/Api/native_type';
 import ApiHandler from './ApiHandler'
 import Logger from './logger'
+import Utils from '../utils/index'
 
 const device_id = "electron_001"
 
 export default class App extends Component {
   constructor(props) {
     super(props)
-    if (!APP_ID) {
-      alert('APP_ID cannot be empty!')
-    } else {
-      this.initLogger()
-      this.apiHandler = null
-      this.state = {
-        logs: []
-      }
+    
+    this.initLogger()
+    this.apiHandler = null
+    this.state = {
+      logs: []
     }
     this.ws = null
     this.enableAudioMixing = false;
@@ -53,7 +51,7 @@ export default class App extends Component {
     }
 
     ws.onmessage = e => {
-      Logger.info(e.data, 'socket-in')
+      Logger.info(Utils.readableMessage(e.data), Utils.getProperty(e.data, 'type'))
       this.apiHandler.handleMessage(e.data)
     }
     this.ws = ws
@@ -64,9 +62,27 @@ export default class App extends Component {
     return (
       <div style={{padding: "20px", height: '100%', margin: '0'}}>
         {this.state.logs.map((item, idx) => {
-          let className = `${item.type} logitem`
+          let style = {}
+          let className = `logitem`
+          let typeText = Utils.readableType(item.type)
+          switch(item.type) {
+            case 1:
+                style.backgroundColor = "Cyan"
+                break;
+            case 3:
+                style.backgroundColor = "DarkTurquoise"
+                break;
+            case 4:
+                style.backgroundColor = "Gold"
+                break;
+            case 5:
+                style.backgroundColor = "HotPink"
+                break;
+            case 7:
+                style.backgroundColor = "LemonChiffon"
+          }
           return (
-          <div key={idx} className={className} style={{width: "100%"}}>{item.ts} | <span>[{item.type.toUpperCase()}] {item.m}</span></div>
+          <div key={idx} className={className} style={{width: "100%"}}>{item.ts} | <span style={style}>{typeText}</span> <span>{item.m}</span></div>
           );
         })}
       </div>

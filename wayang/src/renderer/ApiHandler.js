@@ -1,6 +1,7 @@
 
 import AgoraRtcEngine from '../../../js/AgoraSdk';
 import Logger from './logger';
+import Utils from '../utils/index'
 
 const executeFunctionByName = (...args) => {
   let functionName = args[0]
@@ -19,7 +20,8 @@ const isString = (str) => {
 }
 
 const func_name_convention = {
-  "iepSetParameters": "setParameters"
+  "iepSetParameters": "setParameters",
+  "admSetPlaybackDeviceVolume": "setAudioPlaybackVolume"
 }
 
 const generic_call_table = {
@@ -63,6 +65,7 @@ const generic_call_table = {
   "disableAudio": [],
   "setAudioProfile": ["profile", "scenario"],
   "setVideoQualityParameters": ["preferFrameRateOverImageQuality"],
+  "setEncryptionMode": ["encryptionMode"],
   "setEncryptionSecret": ["secret"],
   "muteLocalAudioStream": ["muted"],
   "muteAllRemoteAudioStreams": ["muted"],
@@ -136,6 +139,11 @@ const generic_call_table = {
   "iepSetParameters": ["parameters"]
 }
 
+const return_table = {
+  "getAudioMixingDuration": [],
+  "getAudioMixingCurrentPosition": []
+}
+
 const custom_call_table = {
   "setupRemoteVideo": [],
   "setupLocalVideo": [],
@@ -159,7 +167,8 @@ const ignore_call_table = {
   "setupLocalVideo": [],
   "removeAllView": [],
   "removeView": [],
-  "setupRemoteVideo": []
+  "setupRemoteVideo": [],
+  "setLocalRenderMode": []
 }
 
 class ApiHandler {
@@ -180,7 +189,10 @@ class ApiHandler {
   }
 
   genericApiCall = (cmd, context, parameters) => {
-    executeFunctionByName(cmd, context, parameters)
+    let result = executeFunctionByName(cmd, context, parameters)
+    if(return_table[cmd]) {
+      return result
+    }
     return 0
   }
 
@@ -214,6 +226,7 @@ class ApiHandler {
       this.rtcEngine = new AgoraRtcEngine()
       this.subscribeEvents(this.rtcEngine)
       this.rtcEngine.setLogFile()
+      this.device = device
     } else if(generic_call_table[cmd]) {
       let params = []
       let paramNames = generic_call_table[cmd]
@@ -229,6 +242,7 @@ class ApiHandler {
             obj[dest] = obj[src]
             delete obj[src]
           })
+          params.push(obj)
         }
       })
       let converted = func_name_convention[cmd] || cmd;
@@ -254,26 +268,29 @@ class ApiHandler {
     if(info.error !== 0) {
       Logger.info(`${res}`, 'error')
     } else {
-      Logger.info(`${res}`, 'socket-out')
+      Logger.info(Utils.readableMessage(res), type)
     }
     this.ws.send(res)
   }
 
   eventResult(cmd, info, extra) {
-    let data = JSON.stringify({type: 4, cmd, info, extra})
-    Logger.info(`${data}`, 'socket-out')
+    let data = JSON.stringify({device:this.device, type: 4, cmd, info, extra})
+    Logger.info(Utils.readableMessage(data), 4)
     this.ws.send(data)
   }
 
   subscribeEvents = (rtcEngine) => {
     rtcEngine.on('joinedchannel', (channel, uid, elapsed) => {
-      this.eventResult('didJoinChannel', {channel, uid, elapsed}, {})
+      this.eventResult('onJoinChannelSuccess', {channel, uid, elapsed}, {})
     });
     rtcEngine.on('userjoined', (uid, elapsed) => {
+      this.eventResult('onUserJoined', {uid, elapsed})
     })
     rtcEngine.on('removestream', (uid, reason) => {
+      this.eventResult('onUserOffline', {uid, reason})
     })
     rtcEngine.on('leavechannel', () => {
+      this.eventResult('onLeaveChannel', {})
     })
     rtcEngine.on('streamPublished', (url, error) => {
       console.log(`url: ${url}, err: ${error}`)
@@ -283,9 +300,14 @@ class ApiHandler {
     })
     rtcEngine.on('lastmileProbeResult', result => {
       console.log(`lastmileproberesult: ${JSON.stringify(result)}`)
+      this.eventResult('onLastmileProbeResult', result)
     })
     rtcEngine.on('lastMileQuality', quality => {
       console.log(`lastmilequality: ${JSON.stringify(quality)}`)
+      this.eventResult('onLastmileQuality', {quality})
+    })
+    rtcEngine.on('connectionLost', () => {
+      this.eventResult('onConnectionLost', {})
     })
     rtcEngine.on('audiovolumeindication', (
       uid,
@@ -294,6 +316,9 @@ class ApiHandler {
       totalVolume
     ) => {
       console.log(`uid${uid} volume${volume} speakerNumber${speakerNumber} totalVolume${totalVolume}`)
+    })
+    rtcEngine.on('rtcStats', stats => {
+      this.eventResult("onRtcStats", {stat:stats})
     })
     rtcEngine.on('error', err => {
       console.error(err)

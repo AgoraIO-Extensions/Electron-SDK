@@ -594,6 +594,7 @@ export interface NodeRtcEngine {
   setAudioProfile(profile: number, scenario: number): number;
   setVideoQualityParameters(preferFrameRateOverImageQuality: boolean): number;
   setEncryptionSecret(secret: string): number;
+  setEncryptionMode(mode: string): number;
   muteLocalAudioStream(mute: boolean): number;
   muteAllRemoteAudioStreams(mute: boolean): number;
   setDefaultMuteAllRemoteAudioStreams(mute: boolean): number;
