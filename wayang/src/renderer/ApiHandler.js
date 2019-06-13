@@ -2,6 +2,7 @@
 import AgoraRtcEngine from '../../../js/AgoraSdk';
 import Logger from './logger';
 import Utils from '../utils/index'
+import { EventEmitter } from 'events';
 
 const executeFunctionByName = (...args) => {
   let functionName = args[0]
@@ -147,6 +148,9 @@ const return_table = {
 const custom_call_table = {
   "setupRemoteVideo": [],
   "setupLocalVideo": [],
+  "removeAllViews": [],
+  "removeView": [],
+  "setLocalRenderMode": []
   // "getVideoDevices": [],
   // "setVideoDevice": [],
   // "getCurrentVideoDevice": [],
@@ -162,16 +166,10 @@ const custom_call_table = {
 
 const ignore_call_table = {
   "iepRelease": [],
-  "createView": [],
-  "removeAllViews": [],
-  "setupLocalVideo": [],
-  "removeAllView": [],
-  "removeView": [],
-  "setupRemoteVideo": [],
-  "setLocalRenderMode": []
+  "createView": []
 }
 
-class ApiHandler {
+class ApiHandler extends EventEmitter {
   constructor(device_id, ws) {
     this.device_id = device_id
     this.ws = ws
@@ -201,6 +199,13 @@ class ApiHandler {
       case "setupRemoveVideo":
         break;
       case "setupLocalVideo":
+        this.emit('setupLocalVideo')
+        break;
+      case "removeAllViews":
+        break;
+      case "removeView":
+        break;
+      case "setLocalRenderMode":
         break;
     }
   }
@@ -268,14 +273,14 @@ class ApiHandler {
     if(info.error !== 0) {
       Logger.info(`${res}`, 'error')
     } else {
-      Logger.info(Utils.readableMessage(res), type)
+      Logger.info(`--> ${Utils.readableMessage(res)}`, type)
     }
     this.ws.send(res)
   }
 
   eventResult(cmd, info, extra) {
     let data = JSON.stringify({device:this.device, type: 4, cmd, info, extra})
-    Logger.info(Utils.readableMessage(data), 4)
+    Logger.info(`--> ${Utils.readableMessage(data)}`, 4)
     this.ws.send(data)
   }
 

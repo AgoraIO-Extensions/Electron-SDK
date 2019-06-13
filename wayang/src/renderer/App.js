@@ -22,7 +22,8 @@ export default class App extends Component {
     this.initLogger()
     this.apiHandler = null
     this.state = {
-      logs: []
+      logs: [],
+      users: []
     }
     this.ws = null
     this.enableAudioMixing = false;
@@ -47,11 +48,14 @@ export default class App extends Component {
     ws.onopen = () => {
       Logger.info(`connected.`, 'socket')
       this.apiHandler = new ApiHandler(device_id, ws)
-      this.registerDevice(device_id)
+      this.apiHandler.on('setupLocalVideo', () => {
+
+      })
+      // this.registerDevice(device_id)
     }
 
     ws.onmessage = e => {
-      Logger.info(Utils.readableMessage(e.data), Utils.getProperty(e.data, 'type'))
+      Logger.info(`<-- ${Utils.readableMessage(e.data)}`, Utils.getProperty(e.data, 'type'))
       this.apiHandler.handleMessage(e.data)
     }
     this.ws = ws
@@ -60,33 +64,81 @@ export default class App extends Component {
   
   render() {
     return (
-      <div style={{padding: "20px", height: '100%', margin: '0'}}>
-        {this.state.logs.map((item, idx) => {
-          let style = {}
-          let className = `logitem`
-          let typeText = Utils.readableType(item.type)
-          switch(item.type) {
-            case 1:
-                style.backgroundColor = "Cyan"
-                break;
-            case 3:
-                style.backgroundColor = "DarkTurquoise"
-                break;
-            case 4:
-                style.backgroundColor = "Gold"
-                break;
-            case 5:
-                style.backgroundColor = "HotPink"
-                break;
-            case 7:
-                style.backgroundColor = "LemonChiffon"
-          }
-          return (
-          <div key={idx} className={className} style={{width: "100%"}}>{item.ts} | <span style={style}>{typeText}</span> <span>{item.m}</span></div>
-          );
-        })}
+      <div className="columns" style={{padding: "20px", height: '100%', margin: '0'}}>
+        <div className="column is-two-quarters window-container">
+          {this.state.users.map((item, key) => (
+            <Window key={key} uid={item.uid} rtcEngine={this.rtcEngine} role={item.role}></Window>
+          ))}
+          {this.state.local ? (<Window uid={this.state.local} rtcEngine={this.rtcEngine} role="local">
+
+          </Window>) : ''}
+          {this.state.localVideoSource ? (<Window uid={this.state.localVideoSource} rtcEngine={this.rtcEngine} role="localVideoSource">
+
+          </Window>) : ''}
+        </div>
+        <div className="column is-two-quarter" style={{overflowY: 'auto'}}>
+          {this.state.logs.map((item, idx) => {
+            let style = {}
+            let className = `${item.level} logitem`
+            let typeText = Utils.readableType(item.type)
+            switch(item.type) {
+              case 1:
+                  style.backgroundColor = "Cyan"
+                  break;
+              case 3:
+                  style.backgroundColor = "DarkTurquoise"
+                  break;
+              case 4:
+                  style.backgroundColor = "Gold"
+                  break;
+              case 5:
+                  style.backgroundColor = "HotPink"
+                  break;
+              case 7:
+                  style.backgroundColor = "LemonChiffon"
+            }
+            return (
+            <div key={idx} className={className} style={{width: "100%"}}>{item.ts} | <span style={style}>{typeText}</span> <span>{item.m}</span></div>
+            );
+          })}
+        </div>
       </div>
     )
   }
+}
 
+class Window extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      loading: false
+    }
+  }
+
+  componentDidMount() {
+    let dom = document.querySelector(`#video-${this.props.uid}`)
+    if (this.props.role === 'local') {
+      dom && this.props.rtcEngine.setupLocalVideo(dom)
+    } else if (this.props.role === 'localVideoSource') {
+      dom && this.props.rtcEngine.setupLocalVideoSource(dom)
+      this.props.rtcEngine.setupViewContentMode('videosource', 1);
+      this.props.rtcEngine.setupViewContentMode(String(SHARE_ID), 1);
+    } else if (this.props.role === 'remote') {
+      dom && this.props.rtcEngine.subscribe(this.props.uid, dom)
+      this.props.rtcEngine.setupViewContentMode(this.props.uid, 1);
+    } else if (this.props.role === 'remoteVideoSource') {
+      dom && this.props.rtcEngine.subscribe(this.props.uid, dom)
+      this.props.rtcEngine.setupViewContentMode('videosource', 1);
+      this.props.rtcEngine.setupViewContentMode(String(SHARE_ID), 1);
+    }
+  }
+
+  render() {
+    return (
+      <div className="window-item">
+        <div className="video-item" id={'video-' + this.props.uid}></div>
+
+      </div>
+    )
+  }
 }
