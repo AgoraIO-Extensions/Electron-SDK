@@ -92,7 +92,6 @@ export default class App extends Component {
           case "getImageOfView":
             canvas = document.querySelector(`#${info.id} canvas`);
             result = canvas.toDataURL("image/jpeg", 0.2)
-            result = result.replace('data:image/jpeg;base64,', '')
             break;
         }
         apiHandler.callResult(respType, device, cmd, sequence, {
