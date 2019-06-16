@@ -88,7 +88,7 @@ const generic_call_table = {
   "setRemoteVideoStreamType": ["uid", "streamType"],
   "setRemoteDefaultVideoStreamType": ["streamType"],
   "enableWebSdkInteroperability": ["enabled"],
-  "setLocalVideoMirrorMode": ["mirrorType"],
+  "setLocalVideoMirrorMode": ["mirrorMode"],
   "setLocalVoicePitch": ["pitch"],
   "setLocalVoiceEqualization": ["bandFrequency", "bandGain"],
   "setLocalVoiceReverb": ["reverbKey", "value"],
@@ -149,8 +149,11 @@ const custom_call_table = {
   "setupRemoteVideo": [],
   "setupLocalVideo": [],
   "removeAllViews": [],
+  "removeAllView": [],
   "removeView": [],
-  "setLocalRenderMode": []
+  "setLocalRenderMode": [],
+  "createView": [],
+  "getImageOfView": []
   // "getVideoDevices": [],
   // "setVideoDevice": [],
   // "getCurrentVideoDevice": [],
@@ -161,19 +164,20 @@ const custom_call_table = {
   // "setAudioRecordingDevice": [],
   // "getRecordingDeviceInfo": [],
   // "getCurrentAudioRecordingDevice": [],
-
 }
 
 const ignore_call_table = {
-  "iepRelease": [],
-  "createView": []
+  "iepRelease": []
 }
 
-class ApiHandler extends EventEmitter {
+class ApiHandler {
   constructor(device_id, ws) {
     this.device_id = device_id
     this.ws = ws
     this.rtcEngine = null
+    this.asyncApi = new EventEmitter()
+    this.asyncNonApi = new EventEmitter()
+    this.dataRequest = new EventEmitter()
   }
   handleMessage(msg) {
     let json = JSON.parse(msg)
@@ -181,6 +185,8 @@ class ApiHandler extends EventEmitter {
 
     if(type === 1) {
       this.handleApiCall(device, cmd, sequence, info, extra)
+    } else if(type === 2) {
+      this.handleDataRequestCall(device, cmd, sequence, info, extra)
     } else if(type === 3) {
       this.handleNonApiCall(device, cmd, sequence, info, extra)
     }
@@ -194,20 +200,16 @@ class ApiHandler extends EventEmitter {
     return 0
   }
 
-  customApiCall = (cmd, info, extra) => {
-    switch(cmd) {
-      case "setupRemoveVideo":
-        break;
-      case "setupLocalVideo":
-        this.emit('setupLocalVideo')
-        break;
-      case "removeAllViews":
-        break;
-      case "removeView":
-        break;
-      case "setLocalRenderMode":
-        break;
-    }
+  customApiCall = (device, cmd, sequence, info, extra) => {
+    this.asyncApi.emit(cmd, device, cmd, sequence, info, extra)
+  }
+
+  customNonApiCall = (device, cmd, sequence, info, extra) => {
+    this.asyncNonApi.emit(cmd, device, cmd, sequence, info, extra)
+  }
+
+  handleDataRequestCall(device, cmd, sequence, info, extra) {
+    this.dataRequest.emit(cmd, device, cmd, sequence, info, extra)
   }
 
   handleNonApiCall(device, cmd, sequence, info, extra) {
@@ -215,6 +217,8 @@ class ApiHandler extends EventEmitter {
     let error = 0
     if(ignore_call_table[cmd] !== undefined) {
       //ignore, not applicable
+    } else if(custom_call_table[cmd] !== undefined) {
+      return this.customNonApiCall(device, cmd, sequence, info, extra)
     } else {
       error = 1
     }
@@ -255,7 +259,7 @@ class ApiHandler extends EventEmitter {
     } else if(ignore_call_table[cmd] !== undefined) {
       //ignore, not applicable
     } else if(custom_call_table[cmd] !== undefined) {
-      result = this.customApiCall(cmd, info, extra)
+      return this.customApiCall(device, cmd, sequence, info, extra)
     } else {
       error = 1
     }

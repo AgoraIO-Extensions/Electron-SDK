@@ -48,10 +48,10 @@ export default class App extends Component {
     ws.onopen = () => {
       Logger.info(`connected.`, 'socket')
       this.apiHandler = new ApiHandler(device_id, ws)
-      this.apiHandler.on('setupLocalVideo', () => {
-
-      })
       // this.registerDevice(device_id)
+      this.subscribeApiCalls(this.apiHandler)
+      this.subscribeNonApiCalls(this.apiHandler)
+      this.subscribeDataRequestCalls(this.apiHandler)
     }
 
     ws.onmessage = e => {
@@ -61,20 +61,121 @@ export default class App extends Component {
     this.ws = ws
   }
 
+  update(uid, viewId, role) {
+    let {users = []} = this.state
+    let updated = false
+    for(let i = 0; i < users.length; i++) {
+      let user = users[i]
+      if(user.viewId === viewId) {
+        user.role = role
+        user.uid = uid
+        updated = true
+        break;
+      }
+    }
+    if(!updated) {
+      throw `canvas ${viewId} not exist`
+    }
+    this.setState({users})
+  }
+
+  subscribeDataRequestCalls = apiHandler => {
+    let respType = 6
+    let events = ["getImageOfView"]
+
+    events.forEach(e => {
+      apiHandler.dataRequest.on(e, (device, cmd, sequence, info) => {
+        let result = 0
+        let error = 0
+        var canvas
+        switch(e) {
+          case "getImageOfView":
+            canvas = document.querySelector(`#${info.id} canvas`);
+            result = canvas.toDataURL("image/jpeg", 0.2)
+            result = result.replace('data:image/jpeg;base64,', '')
+            break;
+        }
+        apiHandler.callResult(respType, device, cmd, sequence, {
+          error,
+          "return": result
+        }, {})
+      })
+    })
+  }
+
+  subscribeNonApiCalls = apiHandler => {
+    let respType = 7
+    let events = ["createView", "removeView", "removeAllView", "removeAllView"]
+
+    events.forEach(e => {
+      apiHandler.asyncNonApi.on(e, (device, cmd, sequence, info) => {
+        let result = 0
+        let error = 0
+        switch(e) {
+          case "removeAllViews":
+          case "removeAllView":
+            this.setState({users: []})
+            break;
+          case "createView":
+            let viewId = `view-${new Date().getTime()}`
+            this.state.users.push({
+              viewId
+            })
+            this.setState({users: this.state.users})
+            result = viewId
+            break;
+          case "removeView":
+            break;
+        }
+        apiHandler.callResult(respType, device, cmd, sequence, {
+          error,
+          "return": result
+        }, {})
+      })
+    })
+  }
+
+  subscribeApiCalls = apiHandler => {
+    let respType = 5
+    let events = ["setupLocalVideo", "setupRemoteVideo"]
+
+    events.forEach(e => {
+      apiHandler.asyncApi.on(e, (device, cmd, sequence, info) => {
+        let result = 0
+        let error = 0
+        switch(e) {
+          case "setupLocalVideo":
+            this.update(info.canvas.uid, info.canvas.view, 'local')
+            break;
+          case "setupRemoteVideo":
+            this.update(info.canvas.uid, info.canvas.view, 'remote')
+            break;
+        }
+        apiHandler.callResult(respType, device, cmd, sequence, {
+          error,
+          "return": result
+        }, {})
+      })
+    })
+
+    // apiHandler.asyncApi.on('getImageOfView', (device, sequence, viewId) => {
+    //   debugger
+    //   this.asyncApiResponse(device, cmd, sequence, {
+    //     "error": 0,
+    //     "return": 0
+    //   }, {})
+    // })
+  }
   
   render() {
     return (
       <div className="columns" style={{padding: "20px", height: '100%', margin: '0'}}>
         <div className="column is-two-quarters window-container">
-          {this.state.users.map((item, key) => (
-            <Window key={key} uid={item.uid} rtcEngine={this.rtcEngine} role={item.role}></Window>
-          ))}
-          {this.state.local ? (<Window uid={this.state.local} rtcEngine={this.rtcEngine} role="local">
-
-          </Window>) : ''}
-          {this.state.localVideoSource ? (<Window uid={this.state.localVideoSource} rtcEngine={this.rtcEngine} role="localVideoSource">
-
-          </Window>) : ''}
+          {this.state.users.map((item, key) => {
+            if (item.viewId && item.role) {
+              return (<Window key={key} uid={item.uid} viewId={item.viewId} rtcEngine={this.apiHandler ? this.apiHandler.rtcEngine : null} role={item.role}></Window>)
+            }
+          })}
         </div>
         <div className="column is-two-quarter" style={{overflowY: 'auto'}}>
           {this.state.logs.map((item, idx) => {
@@ -116,7 +217,7 @@ class Window extends Component {
   }
 
   componentDidMount() {
-    let dom = document.querySelector(`#video-${this.props.uid}`)
+    let dom = document.querySelector(`#${this.props.viewId}`)
     if (this.props.role === 'local') {
       dom && this.props.rtcEngine.setupLocalVideo(dom)
     } else if (this.props.role === 'localVideoSource') {
@@ -136,7 +237,7 @@ class Window extends Component {
   render() {
     return (
       <div className="window-item">
-        <div className="video-item" id={'video-' + this.props.uid}></div>
+        <div className="video-item" id={this.props.viewId}></div>
 
       </div>
     )
