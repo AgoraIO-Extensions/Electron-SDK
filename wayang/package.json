@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "npm run dev-link && electron-webpack dev",
-    "dev-link": "ln -rs ../js js && ln -rs ../build build",
+    "dev-link": "rm -rf js && rm -rf build && ln -rs ../js js && ln -rs ../build build",
     "compile": "electron-webpack",
     "dist": "yarn compile && electron-builder",
     "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"

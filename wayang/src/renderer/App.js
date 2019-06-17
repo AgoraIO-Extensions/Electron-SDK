@@ -373,6 +373,16 @@ class Window extends Component {
     }
   }
 
+  componentWillMount() {
+    if (this.props.role === "local") {
+      this.props.rtcEngine.destroyRender('local');
+    } else if (this.props.role === "localVideoSource") {
+      this.props.rtcEngine.destroyRender('localVideoSource');
+    } else if (this.props.role === "remote" || this.props.role === "remoteVideoSource") {
+      this.props.rtcEngine.destroyRender(this.props.uid);
+    }
+  }
+
   render() {
     return (
       <div className="window-item">
