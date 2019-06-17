@@ -8,6 +8,11 @@ const configPath = path.resolve(usrFolder, './production.config.json')
 class Config {
   constructor() {
     let config = {}
+
+    if(!fs.existsSync(usrFolder)) {
+      fs.mkdirSync(usrFolder)
+    }
+
     if(fs.existsSync(configPath)) {
       let data = fs.readFileSync(configPath, {encoding: 'utf8'})
       try {

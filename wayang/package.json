@@ -3,10 +3,32 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "electron-webpack dev",
+    "dev": "npm run dev-link && electron-webpack dev",
+    "dev-link": "ln -rs ../js js && ln -rs ../build build",
     "compile": "electron-webpack",
     "dist": "yarn compile && electron-builder",
     "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
+  },
+  "build": {
+    "appId": "io.agora.wayang.electron",
+    "win": {
+      "target": [
+        {
+          "target": "zip",
+          "arch": ["ia32"]
+        }
+      ]
+    },
+    "extraFiles": [
+      {
+        "from": "../build/Release",
+        "to": "build/Release"
+      },
+      {
+        "from": "../js",
+        "to": "js"
+      }
+    ]
   },
   "dependencies": {
     "bulma": "^0.7.1",
