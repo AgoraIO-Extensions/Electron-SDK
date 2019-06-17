@@ -63,18 +63,23 @@ export default class App extends Component {
 
   update(uid, viewId, role) {
     let {users = []} = this.state
-    let updated = false
-    for(let i = 0; i < users.length; i++) {
-      let user = users[i]
-      if(user.viewId === viewId) {
-        user.role = role
-        user.uid = uid
-        updated = true
-        break;
+
+    if(viewId === "None") {
+      users = users.filter(u => u.uid === uid)
+    } else {
+      let updated = false
+      for(let i = 0; i < users.length; i++) {
+        let user = users[i]
+        if(user.viewId === viewId) {
+          user.role = role
+          user.uid = uid
+          updated = true
+          break;
+        }
       }
-    }
-    if(!updated) {
-      throw `canvas ${viewId} not exist`
+      if(!updated) {
+        throw `canvas ${viewId} not exist`
+      }
     }
     this.setState({users})
   }

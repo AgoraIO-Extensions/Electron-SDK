@@ -3,6 +3,8 @@ import AgoraRtcEngine from '../../../js/AgoraSdk';
 import Logger from './logger';
 import Utils from '../utils/index'
 import { EventEmitter } from 'events';
+import os from 'os'
+import path from 'path'
 
 const executeFunctionByName = (...args) => {
   let functionName = args[0]
@@ -99,7 +101,7 @@ const generic_call_table = {
   "setExternalAudioSource": ["enabled", "samplerate", "channels"],
   "startVideoDeviceTest": [],
   "stopVideoDeviceTest": [],
-  "setAudioPlaybackVolume": ["volume"],
+  "admSetPlaybackDeviceVolume": ["volume"],
   "getAudioPlaybackVolume": [],
   "getAudioRecordingVolume": [],
   "setAudioRecordingVolume": ["volume"],
@@ -151,7 +153,6 @@ const custom_call_table = {
   "removeAllViews": [],
   "removeAllView": [],
   "removeView": [],
-  "setLocalRenderMode": [],
   "createView": [],
   "getImageOfView": []
   // "getVideoDevices": [],
@@ -167,7 +168,8 @@ const custom_call_table = {
 }
 
 const ignore_call_table = {
-  "iepRelease": []
+  "iepRelease": [],
+  "setLocalRenderMode": []
 }
 
 class ApiHandler {
@@ -234,7 +236,9 @@ class ApiHandler {
     if(cmd === "createAgoraRtcEngine") {
       this.rtcEngine = new AgoraRtcEngine()
       this.subscribeEvents(this.rtcEngine)
-      this.rtcEngine.setLogFile()
+      // let logfile = path.resolve(os.homedir(), `./wayang-${new Date().getTime()}.log`)
+      // Logger.info(`log file: ${logfile}`, 'info')
+      // this.rtcEngine.setLogFile(logfile)
       this.device = device
     } else if(generic_call_table[cmd]) {
       let params = []
@@ -334,6 +338,9 @@ class ApiHandler {
     })
     rtcEngine.on('executefailed', funcName => {
       console.error(funcName, 'failed to execute')
+    })
+    rtcEngine.on('networkQuality', (uid, txquality, rxquality) => {
+      this.eventResult('onNetworkQuality', {uid, txQuality:txquality, rxQuality:rxquality})
     })
   }
 
