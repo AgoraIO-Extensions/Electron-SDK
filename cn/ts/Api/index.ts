@@ -34,7 +34,7 @@ const agora = require('../../build/Release/agora_node_ext');
 
 
 /**
- * @class AgoraRtcEngine
+ * AgoraRtcEngine 类。
  */
 class AgoraRtcEngine extends EventEmitter {
   rtcEngine: NodeRtcEngine;
@@ -717,29 +717,33 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description Get current connection state
-   * @returns {ConnectionState} connect state enum
+   * @description 获取当前网络连接状态。
+   * @returns {ConnectionState} connect 网络连接状态：
+   * - 1：网络连接断开
+   * - 2：建立网络连接中
+   * - 3：网络已连接
+   * - 4：重新建立网络连接中
+   * - 5：网络连接失败
    */
   getConnectionState(): ConnectionState {
     return this.rtcEngine.getConnectionState();
   }
 
   /**
-   * 加入频道。
+   * @description 加入频道。
    *
    * 该方法让用户加入通话频道，在同一个频道内的用户可以互相通话，多个用户加入同一个频道，可以群聊。使用不同 App ID 的 App 是不能互通的。如果已在通话中，用户必须调用 {@link leaveChannel} 退出当前通话，才能进入下一个频道。
    *
    * 成功调用该方加入频道后，本地会触发 joinedChannel 事件；通信模式下的用户和直播模式下的主播加入频道后，远端会触发 userJoined 事件。
    *
    * 在网络状况不理想的情况下，客户端可能会与 Agora 的服务器失去连接；SDK 会自动尝试重连，重连成功后，本地会触发 rejoinedChannel 事件。
-   * @requires 必填参数：`channel`
    *
    * @param {string} token 动态密钥：
    * - 安全要求不高：将值设为 null
    * - 安全要求高：将值设为 Token。如果你已经启用的 App 证书，请务必使用 Token
    *
-   * **Note:** 请确保用于生成 Token 的 App ID 和 {@link initialize} 方法初始化 AgoraRtcEngine 实例时用的是一个 App ID
-   * @param {string} channel 标识通话频道的字符，长度在 64 个字节以内的字符串。以下为支持的字符集范围（共 89 个字符）：
+   * **Note**：请确保用于生成 Token 的 App ID 和 {@link initialize} 方法初始化 AgoraRtcEngine 实例时用的是一个 App ID
+   * @param {string} channel （必填）标识通话频道的字符，长度在 64 个字节以内的字符串。以下为支持的字符集范围（共 89 个字符）：
    * - 26 个小写英文字母 a-z
    * - 26 个大写英文字母 A-Z
    * - 10 个数字 0-9
@@ -756,16 +760,30 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description Leave channel
-   * @returns {number} 0 for success, <0 for failure
+   * @description 离开频道。
+   *
+   * 离开频道，机挂断或退出通话。当调用 {@link joinChannel} 方法后，必须调用该方法结束通话，否则无法开始下一次通话。
+   * 不管当前是否在通话中，都可以调用该方法，没有副作用。该方法会把回话相关的所有资源都释放掉。该方法是异步操作，调用返回时并没有真正退出频道。
+   *
+   * 在真正退出频道后，本地会触发 leaveChannel 回调；通信模式下的用户和直播模式下的主播离开频道后，远端会触发 removeStream 回调。
+   *
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   leaveChannel(): number {
     return this.rtcEngine.leaveChannel();
   }
 
   /**
-   * @description release sdk instance
-   * @returns {number} 0 for success, <0 for failure
+   * @description 释放 AgoraRtcEngine 实例。
+   *
+   * 调用该方法后，用户将无法再使用和回调该 SDK 内的其它方法。如需再次使用，必须重新初始化 {@link initialize} 一个 AgoraRtcEngine 实例。
+   *
+   * **Note**： 该方法需要在子线程中操作。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   release(): number {
     return this.rtcEngine.release();
@@ -784,10 +802,13 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description subscribe remote uid and initialize corresponding renderer
-   * @param {number} uid remote uid
-   * @param {Element} view dom where to initialize renderer
-   * @returns {number} 0 for success, <0 for failure
+   * @description 订阅远端用户并初始化渲染器。
+   *
+   * @param {number} uid 想要订阅的远端用户的 ID
+   * @param {Element} view 初始化渲染器的 Dom
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   subscribe(uid: number, view: Element): number {
     this.initRender(uid, view);
@@ -877,25 +898,31 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description This method updates the Token.
-   * The key expires after a certain period of time once the Token schema is enabled when:
-   * The onError callback reports the ERR_TOKEN_EXPIRED(109) error, or
-   * The onRequestToken callback reports the ERR_TOKEN_EXPIRED(109) error, or
-   * The user receives the onTokenPrivilegeWillExpire callback.
-   * The application should retrieve a new key and then call this method to renew it. Failure to do so will result in the SDK disconnecting from the server.
-   * @param {string} newtoken new token to update
-   * @returns {number} 0 for success, <0 for failure
+   * @description 更新 Token。
+   *
+   * 如果启用了 Token 机制，过一段时间后使用的 Token 会失效。当：
+   * - warning 回调报告错误码 ERR_TOKEN_EXPIRED(109)，或
+   * - requestChannelKey 回调报告错误码 ERR_TOKEN_EXPIRED(109)，或
+   * - 用户收到 tokenPrivilegeWillExpire 回调时，
+   * App 应重新获取 Token，然后调用该 API 更新 Token，否则 SDK 无法和服务器建立连接。
+   * @param {string} newtoken 需要更新的新 Token
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   renewToken(newtoken: string): number {
     return this.rtcEngine.renewToken(newtoken);
   }
 
   /**
-   * 设置频道模式。Agora 会根据 App 的使用场景进行不同的优化。
+   * @description 设置频道模式。
    *
-   * **Note:**
+   * Agora 会根据 App 的使用场景进行不同的优化。
+   *
+   * **Note**：
    * - 该方法必须在 {@link joinChannel} 方法之前调用
    * - 相同频道内的所有用户必须使用相同的频道模式
+   *
    * @param {number} profile 频道模式：
    * - 0：通信（默认）
    * - 1：直播
@@ -909,7 +936,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * 设置直播模式下的用户角色。
+   * @description 设置直播模式下的用户角色。
    *
    * 在加入频道前，用户需要通过本方法设置观众（默认）或主播模式。在加入频道后，用户可以通过本方法切换用户模式。
    *
@@ -926,59 +953,101 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @deprecated use startEchoTestWithInterval instead
-   * @description This method launches an audio call test to determine whether the audio devices
-   * (for example, headset and speaker) and the network connection are working properly.
-   * In the test, the user first speaks, and the recording is played back in 10 seconds.
-   * If the user can hear the recording in 10 seconds, it indicates that the audio devices
-   * and network connection work properly.
-   * @returns {number} 0 for success, <0 for failure
+   * @deprecated 该方法已废弃。请改用 {@link startEchoTestWithInterval}。
+   * @description 开始语音通话回路测试。
+   * 该方法启动语音通话测试，目的是测试系统的音频设备（耳麦、扬声器等）和网络连接是否正常。
+   * 在测试过程中，用户先说一段话，在 10 秒后，声音会回放出来。如果 10 秒后用户能正常听到自己刚才说的话，
+   * 就表示系统音频设备和网络连接都是正常的。
+   * **Note**：
+   * - 请在加入频道 {@link joinChannel} 前调用该方法
+   * - 调用该方法后必须调用 {@link stopEchoTest} 已结束测试，否则不能进行下一次回声测试，也不能调用 {@link joinChannel} 进行通话。
+   * - 直播模式下，该方法仅能由用户角色为主播的用户调用
+   *
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   startEchoTest(): number {
     return this.rtcEngine.startEchoTest();
   }
 
   /**
-   * @description This method stops an audio call test.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 停止语音通话回路测试。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   stopEchoTest(): number {
     return this.rtcEngine.stopEchoTest();
   }
 
   /**
-   * @description startEchoTest with interval
-   * @param interval time interval (seconds)
+   * @description 开始语音通话回路测试。
+   *
+   * 该方法启动语音通话测试，目的是测试系统的音频设备（耳麦、扬声器等）和网络连接是否正常。
+   * 在测试过程中，用户先说一段话，声音会在设置的时间间隔（单位为秒）后回放出来。如果用户能正常听到自己刚才说的话，
+   * 就表示系统音频设备和网络连接都是正常的。
+   * **Note**：
+   * - 请在加入频道 {@link joinChannel} 前调用该方法
+   * - 调用该方法后必须调用 {@link stopEchoTest} 已结束测试，否则不能进行下一次回声测试，也不能调用 {@link joinChannel} 进行通话。
+   * - 直播模式下，该方法仅能由用户角色为主播的用户调用
+   * @param interval 设置返回语音通话回路测试结果的时间间隔，取值范围为 [2, 10]，单位为秒，默认为 10 秒
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   startEchoTestWithInterval(interval: number): number {
     return this.rtcEngine.startEchoTestWithInterval(interval);
   }
 
   /**
-   * @description This method tests the quality of the user’s network connection
-   * and is disabled by default. Before users join a channel, they can call this
-   * method to check the network quality. Calling this method consumes extra network
-   * traffic, which may affect the communication quality. Call disableLastmileTest
-   * to disable it immediately once users have received the onLastmileQuality
-   * callback before they join the channel.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 启用网络测试。
+   *
+   * 该方法启用网络连接质量测试，用于检测用户网络接入质量。默认该功能为关闭状态。该方法主要用于以下两种场景：
+   * - 用户加入频道前，可以调用该方法判断和预测目前的上行网络质量是否足够好。
+   * - 直播模式下，当用户角色想由观众切换为主播时，可以调用该方法判断和预测目前的上行网络质量是否足够好。
+   *
+   * 启用该方法会消耗一定的网络流量，影响通话质量。在收到 lastmileQuality 回调后，需调用 {@link stopEchoTest}
+   * 方法停止测试，再加入频道或切换用户角色。
+   *
+   * **Note**：
+   * - 该方法请勿与 {@link startLastmileProbeTest} 方法同时使用
+   * - 调用该方法后，在收到 lastmileQuality 回调之前请不要调用其他方法，否则可能会由于 API 操作过于频繁导致此回调无法执行
+   * - 直播模式下，主播在加入频道后，请勿调用该方法
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   enableLastmileTest(): number {
     return this.rtcEngine.enableLastmileTest();
   }
 
   /**
-   * @description This method disables the network connection quality test.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 关闭网络测试。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   disableLastmileTest(): number {
     return this.rtcEngine.disableLastmileTest();
   }
 
   /**
-   * @description start the last-mile network probe test before
-   * joining a channel to get the uplink and downlink last-mile network statistics,
-   *  including the bandwidth, packet loss, jitter, and round-trip time (RTT).
+   * @description 开始通话前网络质量探测。
+   *
+   * 启用该方法后，SDK 会向用户反馈上下行网络的带宽、丢包、网络抖动和往返时延数据。SDK 会一次返回如下两个回调：
+   * - lastmileQuality：视网络情况约 2 秒内返回。该回调通过打分反馈上下行网络质量，更贴近用户的主观感受。
+   * - lastmileProbeResult：视网络情况约 30 秒内返回。该回调通过客观数据反馈上下行网络质量，因此更客观。
+   *
+   * 该方法主要用于以下两种场景：
+   * - 用户加入频道前，可以调用该方法判断和预测目前的上行网络质量是否足够好。
+   * - 直播模式下，当用户角色想由观众切换为主播时，可以调用该方法判断和预测目前的上行网络质量是否足够好。
+   *
+   * **Note**：
+   * - 该方法会消耗一定的网络流量，影响通话质量，因此我们建议不要同时使用该方法和 {@link enableLastmileTest}
+   * - 调用该方法后，在收到 lastmileQuality 和 lastmileProbeResult 回调之前请不用调用其他方法，否则可能会由于 API 操作过于频繁导致此方法无法执行
+   * - 直播模式下，如果本地用户为主播，请勿在加入频道后调用该方法
+   *
    * @param {LastmileProbeConfig} config
    */
   startLastmileProbeTest(config: LastmileProbeConfig): number {
@@ -986,73 +1055,141 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description stop the last-mile network probe test
+   * @description 停止通话前网络质量探测。
+   *
+   * @return
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   stopLastmileProbeTest(): number {
     return this.rtcEngine.stopLastmileProbeTest();
   }
 
   /**
-   * @description Use before join channel to enable video communication, or you will only join with audio-enabled
-   * @returns {number} 0 for success, <0 for failure
+   * @description 启用视频模块。
+   *
+   * 该方法用于打开视频模式。可以在加入频道前或者通话中调用，在加入频道前调用，则自动开启视频模式，在通话中调用则由音频模式切换为视频模式。
+   * 调用 {@link disableVideo} 方法可关闭视频模式。
+   *
+   * 成功调用该方法后，远端会触发 userEnableVideo(true) 回调。
+   *
+   * **Note**：
+   * - 该方法设置的是内部引擎为开启状态，在频道内和频道外均可调用，且在 {@link leaveChannel} 后仍然有效。
+   * - 该方法重置整个引擎，响应速度较慢，因此 Agora 建议使用如下方法来控制视频模块：
+   *
+   *   - {@link enableLocalVideo}：是否启动摄像头采集并创建本地视频流
+   *   - {@link muteLocalVideoStream}：是否发布本地视频流
+   *   - {@link muteRemoteVideoStream}：是否接收并播放远端视频流
+   *   - {@link muteAllRemoteVideoStreams}：是否接收并播放所有远端视频流
+   *
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   enableVideo(): number {
     return this.rtcEngine.enableVideo();
   }
 
   /**
-   * @description Use to disable video and use pure audio communication
-   * @returns {number} 0 for success, <0 for failure
+   * @description 关闭视频模块。
+   *
+   * 该方法用于关闭视频。可以在加入频道前或者通话中调用，在加入频道前调用，则自动开启纯音频模式，在通话中调用则由视频模式切换为纯音频频模式。
+   * 调用 {@link enableVideo} 方法可开启视频模式。
+   *
+   * 成功掉调用该方法后，远端会触发 userEnableVideo(fasle) 回调。
+   *
+   * **Note**：
+   * - 该方法设置的是内部引擎为开启状态，在频道内和频道外均可调用，且在 {@link leaveChannel} 后仍然有效。
+   * - 该方法重置整个引擎，响应速度较慢，因此 Agora 建议使用如下方法来控制视频模块：
+   *
+   *   - {@link enableLocalVideo}：是否启动摄像头采集并创建本地视频流
+   *   - {@link muteLocalVideoStream}：是否发布本地视频流
+   *   - {@link muteRemoteVideoStream}：是否接收并播放远端视频流
+   *   - {@link muteAllRemoteVideoStreams}：是否接收并播放所有远端视频流
+   *
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   disableVideo(): number {
     return this.rtcEngine.disableVideo();
   }
 
   /**
-   * @description This method starts the local video preview. Before starting the preview,
-   * always call setupLocalVideo to set up the preview window and configure the attributes,
-   * and also call the enableVideo method to enable video. If startPreview is called to start
-   * the local video preview before calling joinChannel to join a channel, the local preview
-   * will still be in the started state after leaveChannel is called to leave the channel.
-   * stopPreview can be called to close the local preview.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 开启视频预览。
+   *
+   * 该方法用于在进入频道前启动本地视频预览。调用该 API 前，必须：
+   * - 调用 {@link enableVideo} 方法开启视频功能
+   * - 调用 {@link setupLocalVideo} 方法设置预览敞口及属性
+   *
+   * **Note**：
+   * - 本地预览默认开启镜像功能
+   * - 使用该方法启用了本地视频预览后，如果直接调用 {@link leaveChannel} 退出频道，并不会关闭预览。如需关闭预览，请调用 {@link stopPreview}
+   *
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   startPreview(): number {
     return this.rtcEngine.startPreview();
   }
 
   /**
-   * @description This method stops the local video preview and closes the video.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 停止视频预览。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   stopPreview(): number {
     return this.rtcEngine.stopPreview();
   }
 
   /**
-   * @deprecated use setVideoEncoderConfiguration
-   * @param {VIDEO_PROFILE_TYPE} profile - enumeration values represent video profile
-   * @param {boolean} [swapWidthAndHeight = false] - Whether to swap width and height
-   * @returns {number} 0 for success, <0 for failure
+   * @deprecated 该方法已废弃。请改用 {@link setVideoEncoderConfiguration}。
+   * @description 设置视频属性。
+   *
+   * @param {VIDEO_PROFILE_TYPE} profile
+   * @param {boolean} swapWidthAndHeight 是否交换宽高值：
+   * - true：交换
+   * - false：不交换（默认）
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setVideoProfile(profile: VIDEO_PROFILE_TYPE, swapWidthAndHeight: boolean = false): number {
     return this.rtcEngine.setVideoProfile(profile, swapWidthAndHeight);
   }
 
   /**
-   * @description For a video call or live broadcast, generally the SDK controls the camera output parameters. When the default camera capture settings do not meet special requirements or cause performance problems, we recommend using this method to set the camera capture preference:
-   * - If the resolution or frame rate of the captured raw video data are higher than those set by \ref IRtcEngine::setVideoEncoderConfiguration "setVideoEncoderConfiguration", processing video frames requires extra CPU and RAM usage and degrades performance. We recommend setting config as CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE = 1 to avoid such problems.
-   * - If you do not need local video preview or are willing to sacrifice preview quality, we recommend setting config as CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE = 1 to optimize CPU and RAM usage.
-   * - If you want better quality for the local video preview, we recommend setting config as CAPTURER_OUTPUT_PREFERENCE_PREVIEW = 2.
+   * @description 设置摄像头的采集偏好。
+   *
+   * 一般的视频通话或直播中，默认由 SDK 自动控制摄像头的输出参数。在如下特殊场景中，默认的参数通常无法满足需求，或可能引起设备性能问题，我们推荐调用该接口设置摄像头的采集偏好：
+   * - 使用裸数据自采集接口时，如果 SDK 输出的分辨率和帧率高于 {@link setVideoEncoderConfiguration} 中指定的参数，在后续处理视频帧的时候，比如美颜功能时，
+   会需要更高的 CPU 及内存，容易导致性能问题。在这种情况下，我们推荐将摄像头采集偏好设置为 CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE(1)，避免性能问题。
+   * - 如果没有本地预览功能或者对预览质量没有要求，我们推荐将采集偏好设置为 CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE(1)，以优化 CPU 和内存的资源分配
+   * - 如果用户希望本地预览视频比实际编码发送的视频清晰，可以将采集偏好设置为 CAPTURER_OUTPUT_PREFERENCE_PREVIEW(2)
+   *
+   * **Note**：请在启动摄像头之前调用该方法，如 {@link joinChannel}、{@link enableVideo} 或者 {@link enableLocalVideo}。
    * @param {CameraCapturerConfiguration} config
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setCameraCapturerConfiguration(config: CameraCapturerConfiguration) {
     return this.rtcEngine.setCameraCapturerConfiguration(config);
   }
 
   /**
-   * @description set video encoder configuration
-   * @param {VideoEncoderConfiguration} config - encoder config of video
+   * @description 设置视频编码属性。
+   *
+   * 该方法设置视频编码属性。每个属性对应一套视频参数，如分辨率、帧率、码率、视频方向等。 所有设置的参数均为理想情况下的最大值。当视频引擎因网络环境等原因无法达到设置的分辨率、帧率或码率的最大值时，会取最接近最大值的那个值。
+   *
+   * 如果用户加入频道后不需要重新设置视频编码属性，则 Agora 建议在 {@link enableVideo} 前调用该方法，可以加快首帧出图的时间。
+   *
+   * @param {VideoEncoderConfiguration} config
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setVideoEncoderConfiguration(config: VideoEncoderConfiguration): number {
     const {
@@ -1078,13 +1215,21 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description Enables/Disables image enhancement and sets the options
-   * @param {boolean} enable If to enable
-   * @param {Object} options beauty options
-   * @param {number} options.lighteningContrastLevel 0 for low, 1 for normal, 2 for high
-   * @param {number} options.lighteningLevel The brightness level. The value ranges from 0.0 (original) to 1.0.
-   * @param {number} options.smoothnessLevel The sharpness level. The value ranges between 0 (original) and 1. This parameter is usually used to remove blemishes.
-   * @param {number} options.rednessLevel The redness level. The value ranges between 0 (original) and 1. This parameter adjusts the red saturation level.
+   * @description 开启或关闭本地美颜功能，并设置美颜效果选项。
+   *
+   * @param {boolean} enable 是否开启美颜功能：
+   * - true：开启
+   * - false：（默认）关闭
+   *
+   * @param {Object} options 设置美颜选项，包含如下字段：
+   * @param {number} options.lighteningContrastLevel 亮度明暗对比度：0 为低对比度，1 为正常（默认），2 为高对比度
+   * @param {number} options.lighteningLevel 亮度，取值范围为 [0.0, 1.0]，其中 0.0 表示原始亮度。可用来实现美白等视觉效果。
+   * @param {number} options.smoothnessLevel 平滑度，取值范围为 [0.0, 1.0]，其中 0.0 表示原始平滑等级。可用来实现祛痘、磨皮等视觉效果。
+   * @param {number} options.rednessLevel 红色度，取值范围为 [0.0, 1.0]，其中 0.0 表示原始红色度。可用来实现红润肤色等视觉效果。
+   *
+   * @return {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setBeautyEffectOptions(enable: boolean, options: {
     lighteningContrastLevel: 0 | 1 | 2,
@@ -1096,157 +1241,285 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description set the priority of a remote user
-   * @param {number} uid
+   * @description 设置用户媒体流的优先级。
+   *
+   * 如果将某个用户的优先级设为高，那么发给这个用户的音视频流的优先级就会高于其他用户。
+   * 该方法可以与 {@link setRemoteSubscribeFallbackOption} 搭配使用。如果开启了订阅流回退选项，弱网下 SDK 会优先保证高优先级用户收到的流的质量。
+   *
+   * **Note**：
+   * - 该方法仅适用于直播模式。
+   * - 目前 Agora SDK 仅允许将一名远端用户设为高优先级。
+   *
+   * @param {number} uid 远端用户的 ID
    * @param {Priority} priority
+   *
+   * @return {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setRemoteUserPriority(uid: number, priority: Priority) {
     return this.rtcEngine.setRemoteUserPriority(uid, priority);
   }
 
   /**
-   * @description This method enables the audio mode, which is enabled by default.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 启用音频模块（默认为开启状态）。
+   *
+   * **Note**：
+   * - 该方法设置的是内部引擎为开启状态，在频道内和频道外均可调用，且在 {@link leaveChannel} 后仍然有效。
+   * - 该方法重置整个引擎，响应速度较慢，因此 Agora 建议使用如下方法来控制音频模块：
+   *
+   *   - {@link enableLocalAudio}：是否启动麦克风采集并创建本地音频流
+   *   - {@link muteLocalAudioStream}：是否发布本地音频流
+   *   - {@link muteRemoteAudioStream}：是否接收并播放远端音频流
+   *   - {@link muteAllRemoteAudioStreams}：是否接收并播放所有远端音频流
+   *
+   * @return {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   enableAudio(): number {
     return this.rtcEngine.enableAudio();
   }
 
   /**
-   * @description This method disables the audio mode.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 关闭音频模块。
+   *
+   * **Note**：
+   * - 该方法设置的是内部引擎为开启状态，在频道内和频道外均可调用，且在 {@link leaveChannel} 后仍然有效。
+   * - 该方法重置整个引擎，响应速度较慢，因此 Agora 建议使用如下方法来控制音频模块：
+   *
+   *   - {@link enableLocalAudio}：是否启动麦克风采集并创建本地音频流
+   *   - {@link muteLocalAudioStream}：是否发布本地音频流
+   *   - {@link muteRemoteAudioStream}：是否接收并播放远端音频流
+   *   - {@link muteAllRemoteAudioStreams}：是否接收并播放所有远端音频流
+   *
+   * @return {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   disableAudio(): number {
     return this.rtcEngine.disableAudio();
   }
 
   /**
-   * @description Set audio profile (before join channel) depending on your scenario
-   * @param {number} profile 0: default, 1: speech standard, 2: music standard. 3: music standard stereo, 4: music high quality, 5: music high quality stereo
-   * @param {number} scenario 0: default, 1: chatroom entertainment, 2: education, 3: game streaming, 4: showroom, 5: game chating
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置音频编码配置。
+   *
+   * **Note**：该方法需要在 {@link joinChannel} 之前调用，否则不生效。
+   *
+   * @param {number} profile 设置采样率、码率、编码模式和声道数：
+   * - 0：默认设置。通信模式下，为 1：Speech standard；直播模式下，为 2：Music standard
+   * - 1：Speech standard，指定 32 KHz 采样率，语音编码, 单声道，编码码率最大值为 18 Kbps
+   * - 2：Music standard，指定 48 KHz 采样率，音乐编码, 单声道，编码码率最大值为 48 Kbps
+   * - 3：Music standard stereo，指定 48 KHz采样率，音乐编码, 双声道，编码码率最大值为 56 Kbps
+   * - 4：Music high quality，指定 48 KHz 采样率，音乐编码, 单声道，编码码率最大值为 128 Kbps
+   * - 5：Music high quality stereo，指定 48 KHz 采样率，音乐编码, 双声道，编码码率最大值为 192 Kbps
+   *
+   * @param {number} scenario 设置音频应用场景：
+   * - 0：默认的音频应用场景
+   * - 1：Chatroom entertainment，娱乐应用，需要频繁上下麦的场景
+   * - 2：Education，教育应用，流畅度和稳定性优先
+   * - 3：Game streaming，游戏直播应用，需要外放游戏音效也直播出去的场景
+   * - 4：Showroom，秀场应用，音质优先和更好的专业外设支持
+   * - 5：Chatroom gaming，游戏开黑
+   *
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setAudioProfile(profile: 0|1|2|3|4|5, scenario: 0|1|2|3|4|5): number {
     return this.rtcEngine.setAudioProfile(profile, scenario);
   }
 
   /**
-   * @deprecated use setCameraCapturerConfiguration and setVideoEncoderConfiguration instead
-   * @description This method allows users to set video preferences.
-   * @param {boolean} preferFrameRateOverImageQuality enable/disable framerate over image quality
-   * @returns {number} 0 for success, <0 for failure
+   * @deprecated 该方法已废弃。请改用 {@link setCameraCapturerConfiguration} 和 {@link setVideoEncoderConfiguration}。
+   *
+   * @description 设置视频偏好选项。
+   * **Note**：该方法仅适用于直播模式。
+   * @param {boolean} preferFrameRateOverImageQuality 视频偏好选项：
+   * - true：视频画质和流畅度里，优先保证流畅度
+   * - false：视频画质和流畅度里，优先保证画质（默认）
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setVideoQualityParameters(preferFrameRateOverImageQuality: boolean): number {
     return this.rtcEngine.setVideoQualityParameters(preferFrameRateOverImageQuality);
   }
 
   /**
-   * @description Use setEncryptionSecret to specify an encryption password to enable built-in
-   * encryption before joining a channel. All users in a channel must set the same encryption password.
-   * The encryption password is automatically cleared once a user has left the channel.
-   * If the encryption password is not specified or set to empty, the encryption function will be disabled.
-   * @param {string} secret Encryption Password
-   * @returns {number} 0 for success, <0 for failure
+   * @description 启用内置加密，并设置数据加密密码。
+   *
+   * 如需启用加密，请在 {@link joinChannel} 前调用该方法，并设置加密的密码。
+   * 同一频道内的所有用户应设置相同的密码。当用户离开频道时，该频道的密码会自动清除。如果未指定密码或将密码设置为空，则无法激活加密功能。
+   * **Note**：为保证最佳传输效果，请确保加密后的数据大小不超过原始数据大小 + 16 字节。16 字节是 AES 通用加密模式下最大填充块大小。
+   *
+   * @param {string} secret 加密密码
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setEncryptionSecret(secret: string): number {
     return this.rtcEngine.setEncryptionSecret(secret);
   }
 
   /**
-   * @description This method mutes/unmutes local audio. It enables/disables
-   * sending local audio streams to the network.
-   * @param {boolean} mute mute/unmute audio
-   * @returns {number} 0 for success, <0 for failure
+   * @description 停止/恢复发送本地音频流。
+   *
+   * 该方法用于允许/禁止往网络发送本地音频流。
+   * 成功调用该方法后，远端会触发 userMuteAudio 回调。
+   * @param {boolean} mute
+   * - true：停止发送本地音频流
+   * - false：继续发送本地音频流（默认）
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   muteLocalAudioStream(mute: boolean): number {
     return this.rtcEngine.muteLocalAudioStream(mute);
   }
 
   /**
-   * @description This method mutes/unmutes all remote users’ audio streams.
-   * @param {boolean} mute mute/unmute audio
-   * @returns {number} 0 for success, <0 for failure
+   * @description 停止/恢复接收所有音频流。
+   *
+   * @param {boolean} mute
+   * - true：停止接收所有音频流
+   * - false：继续接收所有音频流（默认）
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   muteAllRemoteAudioStreams(mute: boolean): number {
     return this.rtcEngine.muteAllRemoteAudioStreams(mute);
   }
 
   /**
-   * @description Stops receiving all remote users' audio streams by default.
-   * @param {boolean} mute mute/unmute audio
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置是否默认接收音频流。
+   *
+   * 该方法在加入频道前后都可调用。如果在加入频道后调用 setDefaultMuteAllRemoteAudioStreams(true)，会接收不到后面加入频道的用户的音频流。
+   *
+   * @param {boolean} mute
+   * - true：默认不接收所有音频流
+   * - false：默认接收所有音频流（默认）
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setDefaultMuteAllRemoteAudioStreams(mute: boolean): number {
     return this.rtcEngine.setDefaultMuteAllRemoteAudioStreams(mute);
   }
 
   /**
-   * @description This method mutes/unmutes a specified user’s audio stream.
-   * @param {number} uid user to mute/unmute
-   * @param {boolean} mute mute/unmute audio
-   * @returns {number} 0 for success, <0 for failure
+   * @description 停止/恢复接收指定音频流。
+   *
+   * @param {number} uid 指定的用户 ID
+   * @param {boolean} mute
+   * - true：停止接收指定用户的音频流
+   * - false：继续接收指定用户的音频流
+   *
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   muteRemoteAudioStream(uid: number, mute: boolean): number {
     return this.rtcEngine.muteRemoteAudioStream(uid, mute);
   }
 
   /**
-   * @description This method mutes/unmutes video stream
-   * @param {boolean} mute mute/unmute video
-   * @returns {number} 0 for success, <0 for failure
+   * @description 停止/恢复发送本地视频流。
+   *
+   * 成功调用该方法后，远端会触发 userMuteVideo 回调。
+   * **Note**：调用该方法时，SDK 不再发送本地视频流，但摄像头仍然处于工作状态。
+   * @param {boolean} mute
+   * - true：停止发送本地视频流
+   * - false：发动本地视频流（默认）
+   *
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   muteLocalVideoStream(mute: boolean): number {
     return this.rtcEngine.muteLocalVideoStream(mute);
   }
 
   /**
-   * @description This method disables the local video, which is only applicable to
-   * the scenario when the user only wants to watch the remote video without sending
-   * any video stream to the other user. This method does not require a local camera.
-   * @param {boolean} enable enable/disable video
-   * @returns {number} 0 for success, <0 for failure
+   * @description 开/关本地视频采集。
+   *
+   * 该方法禁用/启用本地视频功能。enableLocalVideo(false) 适用于只看不发的视频场景。
+   * 成功调用该方法后，远端会触发 userEnableLocalVideo 回调。
+   * **Note**：
+   * - 请在 {@link enableVideo} 后调用该方法，否则该方法可能无法正常使用。
+   * - 该方法设置的是内部引擎为启用或禁用状态，在 {@link leaveChannel} 后仍然有效。
+   *
+   * @param {boolean} enable
+   * - true：开启本地视频采集和渲染（默认）
+   * - false：关闭本地视频采集和渲染。关闭后，远端用户会接收不到本地用户的视频流；但本地用户依然可以接收远端用户的视频流
+   *
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   enableLocalVideo(enable: boolean): number {
     return this.rtcEngine.enableLocalVideo(enable);
   }
 
   /**
-   * @description This method mutes/unmutes all remote users’ video streams.
-   * @param {boolean} mute mute/unmute video
-   * @returns {number} 0 for success, <0 for failure
+   * @description 停止/恢复接收所有视频流。
+   *
+   * @param {boolean} mute
+   * - true：停止接收所有视频流
+   * - false：继续接收所有视频流（默认）
+   *
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   muteAllRemoteVideoStreams(mute: boolean): number {
     return this.rtcEngine.muteAllRemoteVideoStreams(mute);
   }
 
   /**
-   * @description Stops receiving all remote users’ video streams.
-   * @param {boolean} mute mute/unmute audio
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置是否默认接收视频流。
+   *
+   * @param {boolean} mute
+   * - true：默认不接收任何视频流
+   * - false：默认继续接收所有视频流（默认）
+   *
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setDefaultMuteAllRemoteVideoStreams(mute: boolean): number {
     return this.rtcEngine.setDefaultMuteAllRemoteVideoStreams(mute);
   }
 
   /**
-   * @description This method enables the SDK to regularly report to the application
-   * on which user is talking and the volume of the speaker. Once the method is enabled,
-   * the SDK returns the volume indications at the set time internal in the Audio Volume
-   * Indication Callback (onAudioVolumeIndication) callback, regardless of whether anyone
-   * is speaking in the channel
-   * @param {number} interval < 0 for disable, recommend to set > 200ms, < 10ms will not receive any callbacks
-   * @param {number} smooth Smoothing factor. The default value is 3
-   * @returns {number} 0 for success, <0 for failure
+   * @description 启用说话者音量提示。
+   *
+   * 该方法允许 SDK 定期向 App 反馈当前谁在说话以及说话者的音量。启用该方法后，无论频道内是否有人说话，都会在说话声音音量提示回调
+   groupAudioVolumeIndication 回调中按设置的间隔时间返回音量提示。
+   *
+   * @param {number} interval 指定音量提示的时间间隔：
+   * - <= 10：禁用音量提示功能
+   * - > 10：返回音量提示的间隔，单位为毫秒。建议设置到大于 200 毫秒
+   * @param {number} smooth 平滑系数，指定音量提示的灵敏度。取值范围为 [0, 10]，建议值为 3，数字越大，波动越灵敏；数字越小，波动越平滑
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   enableAudioVolumeIndication(interval: number, smooth: number): number {
     return this.rtcEngine.enableAudioVolumeIndication(interval, smooth);
   }
 
   /**
-   * @description This method mutes/unmutes a specified user’s video stream.
-   * @param {number} uid user to mute/unmute
-   * @param {boolean} mute mute/unmute video
-   * @returns {number} 0 for success, <0 for failure
+   * @description 停止/恢复接收指定视频流。
+   *
+   * @param {number} uid 指定用户的 ID
+   * @param {boolean} mute
+   * - true：停止接收指定用户的视频流
+   * - false：继续接收指定用户的视频流（默认）
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   muteRemoteVideoStream(uid: number, mute: boolean): number {
     return this.rtcEngine.muteRemoteVideoStream(uid, mute);
@@ -1443,7 +1716,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - Re-enable the video when the network conditions improve.
    * When the locally published stream falls back to audio only or when the audio stream switches back to the video,
    * the \ref agora::rtc::IRtcEngineEventHandler::onLocalPublishFallbackToAudioOnly "onLocalPublishFallbackToAudioOnly" callback is triggered.
-   * @note Agora does not recommend using this method for CDN live streaming, because the remote CDN live user will have a noticeable lag when the locally publish stream falls back to audio-only.
+   * **Note**： Agora does not recommend using this method for CDN live streaming, because the remote CDN live user will have a noticeable lag when the locally publish stream falls back to audio-only.
    * @param {number} option - Sets the fallback option for the locally published video stream.
    * STREAM_FALLBACK_OPTION_DISABLED = 0
    * STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW = 1
@@ -2115,7 +2388,7 @@ class AgoraRtcEngine extends EventEmitter {
    /**
     * @description Adds a stream RTMP URL address, to which the host publishes the stream. (CDN live only.)
     * Invoke onStreamPublished when successful
-    * @note
+    * **Note**：
     * - Ensure that the user joins the channel before calling this method.
     * - This method adds only one stream RTMP URL address each time it is called.
     * - The RTMP URL address must not contain special characters, such as Chinese language characters.
@@ -2129,7 +2402,7 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description Removes a stream RTMP URL address. (CDN live only.)
-   * @note
+   * **Note**：
    * - This method removes only one RTMP URL address each time it is called.
    * - The RTMP URL address must not contain special characters, such as Chinese language characters.
    * @param {string} url Pointer to the RTMP URL address to be removed.
@@ -2170,7 +2443,7 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description Removes the voice or video stream HTTP/HTTPS URL address from a live broadcast.
-   * @note If this method is called successfully, the \ref IRtcEngineEventHandler::onUserOffline "onUserOffline" callback is triggered
+   * **Note**： If this method is called successfully, the \ref IRtcEngineEventHandler::onUserOffline "onUserOffline" callback is triggered
    * and a stream uid of 666 is returned.
    * @param {string} url Pointer to the HTTP/HTTPS URL address of the added stream to be removed.
    * @returns {number} 0 for success, <0 for failure

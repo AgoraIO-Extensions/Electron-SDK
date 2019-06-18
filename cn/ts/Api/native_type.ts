@@ -182,29 +182,32 @@ export interface InjectStreamConfig {
   videoGop: number;
   /**
    * Audio-sampling rate of the added stream in the live broadcast: #AUDIO_SAMPLE_RATE_TYPE. The default value is 48000 Hz
-   * @note Agora recommends setting the default value
+   * **Note**： Agora recommends setting the default value
    * - AUDIO_SAMPLE_RATE_32000 = 32000
    * - AUDIO_SAMPLE_RATE_44100 = 44100
    * - AUDIO_SAMPLE_RATE_48000 = 48000
    */
   audioSampleRate: number;
   /**
-   * @note Agora recommends setting the default value
+   * **Note**： Agora recommends setting the default value
    * Audio bitrate of the added stream in the live broadcast. The default value is 48
    */
   audioBitrate: number;
   /**
-   * @note Agora recommends setting the default value
+   * **Note**： Agora recommends setting the default value
    * - 1: (Default) Mono
    * - 2: Two-channel stereo
    */
   audioChannels: number;
 }
 
+/**
+ * 远端用户媒体流的优先级。
+ */
 export enum Priority {
-  /** 50: The user's priority is high. */
+  /** 50：用户媒体流的优先级为高。 */
   PRIORITY_HIGH = 50,
-  /** 100: (Default) The user's priority is normal. */
+  /** 100：（没骗人）用户媒体流的优先级正常。 */
   PRIORITY_NORMAL = 100
 }
 
@@ -239,12 +242,192 @@ export interface LocalVideoStats {
   targetFrameRate: number;
   qualityAdaptIndication: AualityAdaptIndication;
 }
-
+/**
+ * 视频编码属性定义。
+ */
 export interface VideoEncoderConfiguration {
+  /**
+   * 视频帧在横轴上的像素。
+   */
   width: number;
+  /**
+   * 视频帧在纵轴上的像素。
+   */
   height: number;
+  /**
+   * 视频编码的帧率（fps）。建议不要超过 30 帧。
+   */
   frameRate: number; // we do not recommend setting this to a value greater than 30
+  /**
+   * 最低视频编码帧率，单位为 fps。默认值为 -1。
+   */
   minFrameRate: number; //  The minimum frame rate of the video. The default value is -1.
+  /**
+   * 视频编码的码率，单位为 Kbps。你可以根据场景需要，参考下面的视频基准码率参考表，手动设置你想要的码率。若设置的视频码率超出合理范围，SDK 会自动按照合理区间处理码率。
+   * 你也可以选择如下一种模式：
+   * - 0：（推荐）标准码率模式。该模式下，通信码率与基准码率一致；直播码率对照基准码率翻倍
+   * - 1：适配码率模式。该模式下，视频在通信和直播模式下的码率与基准码率一致。
+   *
+   * **视频码率参考表**
+   * <table>
+   *     <tr>
+   *         <th>分辨率</th>
+   *         <th>帧率（fps）</th>
+   *         <th>基准码率（通信场景）（Kbps）</th>
+   *         <th>直播码率（直播场景）（Kbps）</th>
+   *     </tr>
+   *     <tr>
+   *         <td>160 &times; 120</td>
+   *         <td>15</td>
+   *         <td>65</td>
+   *         <td>130</td>
+   *     </tr>
+   *     <tr>
+   *         <td>120 &times; 120</td>
+   *         <td>15</td>
+   *         <td>50</td>
+   *         <td>100</td>
+   *     </tr>
+   *     <tr>
+   *         <td>320 &times; 180</td>
+   *         <td>15</td>
+   *         <td>140</td>
+   *         <td>280</td>
+   *     </tr>
+   *     <tr>
+   *         <td>180 &times; 180</td>
+   *         <td>15</td>
+   *         <td>100</td>
+   *         <td>200</td>
+   *     </tr>
+   *     <tr>
+   *         <td>240 &times; 180</td>
+   *         <td>15</td>
+   *         <td>120</td>
+   *         <td>240</td>
+   *     </tr>
+   *     <tr>
+   *         <td>320 &times; 240</td>
+   *         <td>15</td>
+   *         <td>200</td>
+   *         <td>400</td>
+   *     </tr>
+   *     <tr>
+   *         <td>240 &times; 240</td>
+   *         <td>15</td>
+   *         <td>140</td>
+   *         <td>280</td>
+   *     </tr>
+   *     <tr>
+   *         <td>424 &times; 240</td>
+   *         <td>15</td>
+   *         <td>220</td>
+   *         <td>440</td>
+   *     </tr>
+   *     <tr>
+   *         <td>640 &times; 360</td>
+   *         <td>15</td>
+   *         <td>400</td>
+   *         <td>800</td>
+   *     </tr>
+   *     <tr>
+   *         <td>360 &times; 360</td>
+   *         <td>15</td>
+   *         <td>260</td>
+   *         <td>520</td>
+   *     </tr>
+   *     <tr>
+   *         <td>640 &times; 360</td>
+   *         <td>30</td>
+   *         <td>600</td>
+   *         <td>1200</td>
+   *     </tr>
+   *     <tr>
+   *         <td>360 &times; 360</td>
+   *         <td>30</td>
+   *         <td>400</td>
+   *         <td>800</td>
+   *     </tr>
+   *     <tr>
+   *         <td>480 &times; 360</td>
+   *         <td>15</td>
+   *         <td>320</td>
+   *         <td>640</td>
+   *     </tr>
+   *     <tr>
+   *         <td>480 &times; 360</td>
+   *         <td>30</td>
+   *         <td>490</td>
+   *         <td>980</td>
+   *     </tr>
+   *     <tr>
+   *         <td>640 &times; 480</td>
+   *         <td>15</td>
+   *         <td>500</td>
+   *         <td>1000</td>
+   *     </tr>
+   *     <tr>
+   *         <td>480 &times; 480</td>
+   *         <td>15</td>
+   *         <td>400</td>
+   *         <td>800</td>
+   *     </tr>
+   *     <tr>
+   *         <td>640 &times; 480</td>
+   *         <td>30</td>
+   *         <td>750</td>
+   *         <td>1500</td>
+   *     </tr>
+   *     <tr>
+   *         <td>480 &times; 480</td>
+   *         <td>30</td>
+   *         <td>600</td>
+   *         <td>1200</td>
+   *     </tr>
+   *     <tr>
+   *         <td>848 &times; 480</td>
+   *         <td>15</td>
+   *         <td>610</td>
+   *         <td>1220</td>
+   *     </tr>
+   *     <tr>
+   *         <td>848 &times; 480</td>
+   *         <td>30</td>
+   *         <td>930</td>
+   *         <td>1860</td>
+   *     </tr>
+   *     <tr>
+   *         <td>640 &times; 480</td>
+   *         <td>10</td>
+   *         <td>400</td>
+   *         <td>800</td>
+   *     </tr>
+   *     <tr>
+   *         <td>1280 &times; 720</td>
+   *         <td>15</td>
+   *         <td>1130</td>
+   *         <td>2260</td>
+   *     </tr>
+   *     <tr>
+   *         <td>1280 &times; 720</td>
+   *         <td>30</td>
+   *         <td>1710</td>
+   *         <td>3420</td>
+   *     </tr>
+   *     <tr>
+   *         <td>960 &times; 720</td>
+   *         <td>15</td>
+   *         <td>910</td>
+   *         <td>1820</td>
+   *     </tr>
+   *     <tr>
+   *         <td>960 &times; 720</td>
+   *         <td>30</td>
+   *         <td>1380</td>
+   *         <td>2760</td>
+   *     </tr>
+   * </table>
+   */
   bitrate: number; // 0 - standard(recommended), 1 - compatible
   minBitrate: number; // by default -1, changing this value is NOT recommended
   orientationMode: OrientationMode;
@@ -280,14 +463,20 @@ export interface RemoteVideoStats {
   rxStreamType: StreamType;
 }
 
+/**
+ * 摄像头采集偏好。
+ */
 export enum CaptureOutPreference {
-  /** 0: (Default) self-adapts the camera output parameters to the system performance and network conditions to balance CPU consumption and video preview quality.
+  /**
+   * 0：（默认）自动调整采集参数。SDK 根据实际的采集设备性能及网络情况，选择合适的摄像头输出参数，在设备性能及视频预览质量之间，维持平衡
    */
   CAPTURER_OUTPUT_PREFERENCE_AUTO = 0,
-  /** 2: Prioritizes the system performance. The SDK chooses the dimension and frame rate of the local camera capture closest to those set by \ref IRtcEngine::setVideoEncoderConfiguration "setVideoEncoderConfiguration".
+  /**
+   * 1：优先保证设备性能。SDK 根据用户在 {@link AgoraRtcEngine.setVideoEncoderConfiguration setVideoEncoderConfiguration} 中设置编码器的分辨率和帧率，选择最接近的摄像头输出参数，从而保证设备性能。在这种情况下，预览质量接近于编码器的输出质量
    */
   CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE = 1,
-  /** 2: Prioritizes the local preview quality. The SDK chooses higher camera output parameters to improve the local video preview quality. This option requires extra CPU and RAM usage for video pre-processing.
+  /**
+   * 2：优先保证视频预览质量。SDK 选择较高的摄像头输出参数，从而提高预览视频的质量。在这种情况下，会消耗更多的 CPU 及内存做视频前处理
    */
   CAPTURER_OUTPUT_PREFERENCE_PREVIEW = 2
 }
@@ -355,7 +544,28 @@ export type RemoteVideoState =
   | 1 // running
   | 2; // frozen, usually caused by network reason
 
-export type ConnectionState =
+/** 网络连接状态。
+ *
+ * 1：网络连接断开。该状态表示 SDK 处于：
+ * - 调用 {@link joinChannel} 加入频道前的初始化阶段
+ * - 或调用 {@link leaveChannel} 后的离开频道阶段
+ *
+ * 2：建立网络连接中。该状态表示 SDK 在调用 {@link AgoraRtcEngine.joinChannel joinChannel} 后正在与指定的频道建立连接。
+ * - 如果成功加入频道，App 会收到 connectionStateChanged 回调，通知当前网络状态变成 3：网络已连接
+ * - 建议连接后，SDK 还会处理媒体初始化，一切就绪后会回调 joinedChannel
+ *
+ * 3：网络已连接。该状态表示用户已经加入频道，可以在频道内发布或订阅媒体流。如果因网络断开或切换而导致 SDK 与频道的连接中断，SDK 会自动重连，此时 App 会收到：
+ * - connectionStateChanged 回调，通知网络状态变成 4：重新建立网络连接中
+ *
+ * 4：重新建立网络连接中。该状态表示 SDK 之前曾加入过频道，但因网络等原因连接中断了，此时 SDK 会自动尝试重新接入频道。
+ * - 如果 SDK 无法在 10 秒内重新接入频道，则 connectionLost 会被触发，SDK 会一致保留该状态，并不断尝试重新加入频道
+ * - 如果 SDK 在断开连接后，20 分钟内还是没能重新加入频道，App 会收到 connectionStateChanged 回调，通知当前网络状态进入 5：网络连接失败，SDK 停止尝试重连
+ *
+ * 5：网络连接失败。该状态表示 SDK 已不再尝试重新加入频道，用户必须要调用 {@link AgoraRtcEngine.leaveChannel leaveChannel} 离开频道。
+ * - 如果用户还想重新加入频道，则需要再次调用 {@link AgoraRtcEngine.joinChannel joinChannel}
+ * - 如果 SDK 因服务器端使用 RESTful API 禁止加入频道，则 App 会收到 connectionStateChanged 回调
+ */
+ export type ConnectionState =
   | 1 // 1: The SDK is disconnected from Agora's edge server
   | 2 // 2: The SDK is connecting to Agora's edge server.
   | 3 // 3: The SDK is connected to Agora's edge server and has joined a channel. You can now publish or subscribe to a media stream in the channel.
@@ -370,161 +580,163 @@ export type ConnectionChangeReason =
   | 4 // 4: The SDK fails to join the channel for more than 20 minutes and stops reconnecting to the channel.
   | 5; // 5: The SDK has left the channel.
 
-/** @deprecated Video profile. */
+/**
+ * @deprecated 该枚举已废弃。
+ * @description 视频属性。 */
 export enum VIDEO_PROFILE_TYPE {
-  /** 0: 160 &times; 120, frame rate 15 fps, bitrate 65 Kbps. */
+  /** 0：分辨率 160 × 120，帧率 15 fps，码率 65 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_120P = 0,
-  /** 2: 120 &times; 120, frame rate 15 fps, bitrate 50 Kbps. */
+  /** 2：分辨率 120 × 120，帧率 15 fps，码率 50 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_120P_3 = 2,
-  /** 10: 320&times;180, frame rate 15 fps, bitrate 140 Kbps. */
+  /** 10：分辨率 320 × 180，帧率 15 fps，码率 140 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_180P = 10,
-  /** 12: 180 &times; 180, frame rate 15 fps, bitrate 100 Kbps. */
+  /** 12：分辨率 180 × 180，帧率 15 fps，码率 100 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_180P_3 = 12,
-  /** 13: 240 &times; 180, frame rate 15 fps, bitrate 120 Kbps. */
+  /** 13：分辨率 240 × 180，帧率 15 fps，码率 120 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_180P_4 = 13,
-  /** 20: 320 &times; 240, frame rate 15 fps, bitrate 200 Kbps. */
+  /** 20：分辨率 320 × 240，帧率 15 fps，码率 200 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_240P = 20,
-  /** 22: 240 &times; 240, frame rate 15 fps, bitrate 140 Kbps. */
+  /** 22：分辨率 240 × 240，帧率 15 fps，码率 140 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_240P_3 = 22,
-  /** 23: 424 &times; 240, frame rate 15 fps, bitrate 220 Kbps. */
+  /** 23：分辨率 424 × 240，帧率 15 fps，码率 220 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_240P_4 = 23,
-  /** 30: 640 &times; 360, frame rate 15 fps, bitrate 400 Kbps. */
+  /** 30：分辨率 640 × 360，帧率 15 fps，码率 400 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_360P = 30,
-  /** 32: 360 &times; 360, frame rate 15 fps, bitrate 260 Kbps. */
+  /** 32：分辨率 360 × 360，帧率 15 fps，码率 260 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_360P_3 = 32,
-  /** 33: 640 &times; 360, frame rate 30 fps, bitrate 600 Kbps. */
+  /** 33：分辨率 640 × 360，帧率 30 fps，码率 600 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_360P_4 = 33,
-  /** 35: 360 &times; 360, frame rate 30 fps, bitrate 400 Kbps. */
+  /** 35：分辨率 360 × 360，帧率 30 fps，码率 400 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_360P_6 = 35,
-  /** 36: 480 &times; 360, frame rate 15 fps, bitrate 320 Kbps. */
+  /** 36：分辨率 480 × 360，帧率 15 fps，码率 320 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_360P_7 = 36,
-  /** 37: 480 &times; 360, frame rate 30 fps, bitrate 490 Kbps. */
+  /** 37：分辨率 480 × 360，帧率 30 fps，码率 490 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_360P_8 = 37,
-  /** 38: 640 &times; 360, frame rate 15 fps, bitrate 800 Kbps.
-   * @note Live broadcast profile only.
+  /** 38：分辨率 640 × 360，帧率 15 fps，码率 800 Kbps。
+   * **Note**：该视频属性仅适用于直播频道模式。
    */
   VIDEO_PROFILE_LANDSCAPE_360P_9 = 38,
-  /** 39: 640 &times; 360, frame rate 24 fps, bitrate 800 Kbps.
-   * @note Live broadcast profile only.
+  /** 39：分辨率 640 × 360，帧率 24 fps，码率 800 Kbps。
+   * **Note**：该视频属性仅适用于直播频道模式。
    */
   VIDEO_PROFILE_LANDSCAPE_360P_10 = 39,
-  /** 100: 640 &times; 360, frame rate 24 fps, bitrate 1000 Kbps.
-   * @note Live broadcast profile only.
+  /** 100：分辨率 640 × 360，帧率 24 fps，码率 1000 Kbps。
+   * **Note**：该视频属性仅适用于直播频道模式。
    */
   VIDEO_PROFILE_LANDSCAPE_360P_11 = 100,
-  /** 40: 640 &times; 480, frame rate 15 fps, bitrate 500 Kbps. */
+  /** 40：分辨率 640 × 480，帧率 15 fps，码率 500 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_480P = 40,
-  /** 42: 480 &times; 480, frame rate 15 fps, bitrate 400 Kbps. */
+  /** 42：分辨率 480 × 480，帧率 15 fps，码率 400 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_480P_3 = 42,
-  /** 43: 640 &times; 480, frame rate 30 fps, bitrate 750 Kbps. */
+  /** 43：分辨率 640 × 480，帧率 30 fps，码率 750 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_480P_4 = 43,
-  /** 45: 480 &times; 480, frame rate 30 fps, bitrate 600 Kbps. */
+  /** 45：分辨率 480 × 480，帧率 30 fps，码率 600 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_480P_6 = 45,
-  /** 47: 848 &times; 480, frame rate 15 fps, bitrate 610 Kbps. */
+  /** 47：分辨率 848 × 480，帧率 15 fps，码率 610 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_480P_8 = 47,
-  /** 48: 848 &times; 480, frame rate 30 fps, bitrate 930 Kbps. */
+  /** 48：分辨率 848 × 480，帧率 30 fps，码率 930 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_480P_9 = 48,
-  /** 49: 640 &times; 480, frame rate 10 fps, bitrate 400 Kbps. */
+  /** 49：分辨率 640 × 480，帧率 10 fps，码率 400 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_480P_10 = 49,
-  /** 50: 1280 &times; 720, frame rate 15 fps, bitrate 1130 Kbps. */
+  /** 50：分辨率 1280 × 720，帧率 15 fps，码率 1130 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_720P = 50,
-  /** 52: 1280 &times; 720, frame rate 30 fps, bitrate 1710 Kbps. */
+  /** 52：分辨率 1280 × 720，帧率 30 fps，码率 1710 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_720P_3 = 52,
-  /** 54: 960 &times; 720, frame rate 15 fps, bitrate 910 Kbps. */
+  /** 54：分辨率 960 × 720，帧率 15 fps，码率 910 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_720P_5 = 54,
-  /** 55: 960 &times; 720, frame rate 30 fps, bitrate 1380 Kbps. */
+  /** 55：分辨率 960 × 720，帧率 30 fps，码率 1380 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_720P_6 = 55,
-  /** 60: 1920 &times; 1080, frame rate 15 fps, bitrate 2080 Kbps. */
+  /** 60：分辨率 1920 × 1080，帧率 15 fps，码率 2080 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_1080P = 60,
-  /** 62: 1920 &times; 1080, frame rate 30 fps, bitrate 3150 Kbps. */
+  /** 62：分辨率 1920 × 1080，帧率 30 fps，码率 3150 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_1080P_3 = 62,
-  /** 64: 1920 &times; 1080, frame rate 60 fps, bitrate 4780 Kbps. */
+  /** 64：分辨率 1920 × 1080，帧率 60 fps，码率 4780 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_1080P_5 = 64,
-  /** 66: 2560 &times; 1440, frame rate 30 fps, bitrate 4850 Kbps. */
+  /** 66：分辨率 2560 × 1440，帧率 30 fps，码率 4850 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_1440P = 66,
-  /** 67: 2560 &times; 1440, frame rate 60 fps, bitrate 6500 Kbps. */
+  /** 67：分辨率 2560 × 1440，帧率 60 fps，码率 7350 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_1440P_2 = 67,
-  /** 70: 3840 &times; 2160, frame rate 30 fps, bitrate 6500 Kbps. */
+  /** 70：分辨率 3840 × 2160，分辨率 30 fps，码率 8910 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_4K = 70,
-  /** 72: 3840 &times; 2160, frame rate 60 fps, bitrate 6500 Kbps. */
+  /** 72：分辨率 3840 × 2160，帧率 60 fps，码率 13500 Kbps。 */
   VIDEO_PROFILE_LANDSCAPE_4K_3 = 72,
-  /** 1000: 120 &times; 160, frame rate 15 fps, bitrate 65 Kbps. */
+  /** 1000：分辨率 120 × 160，帧率 15 fps，码率 65 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_120P = 1000,
-  /** 1002: 120 &times; 120, frame rate 15 fps, bitrate 50 Kbps. */
+  /** 1002：分辨率 120 × 120，帧率 15 fps，码率 50 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_120P_3 = 1002,
-  /** 1010: 180 &times; 320, frame rate 15 fps, bitrate 140 Kbps. */
+  /** 1010：分辨率 180 × 320，帧率 15 fps，码率 140 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_180P = 1010,
-  /** 1012: 180 &times; 180, frame rate 15 fps, bitrate 100 Kbps. */
+  /** 1012：分辨率 180 × 180，帧率 15 fps，码率 100 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_180P_3 = 1012,
-  /** 1013: 180 &times; 240, frame rate 15 fps, bitrate 120 Kbps. */
+  /** 1013：分辨率 180 × 240，帧率 15 fps，码率 120 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_180P_4 = 1013,
-  /** 1020: 240 &times; 320, frame rate 15 fps, bitrate 200 Kbps. */
+  /** 1020：分辨率 240 × 320，帧率 15 fps，码率 200 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_240P = 1020,
-  /** 1022: 240 &times; 240, frame rate 15 fps, bitrate 140 Kbps. */
+  /** 1022：分辨率 240 × 240，帧率 15 fps，码率 140 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_240P_3 = 1022,
-  /** 1023: 240 &times; 424, frame rate 15 fps, bitrate 220 Kbps. */
+  /** 1023：分辨率 240 × 424，帧率 15 fps，码率 220 Kbps */
   VIDEO_PROFILE_PORTRAIT_240P_4 = 1023,
-  /** 1030: 360 &times; 640, frame rate 15 fps, bitrate 400 Kbps. */
+  /** 1030：分辨率 360 × 640，帧率 15 fps，码率 400 Kbps */
   VIDEO_PROFILE_PORTRAIT_360P = 1030,
-  /** 1032: 360 &times; 360, frame rate 15 fps, bitrate 260 Kbps. */
+  /** 1032：分辨率 360 × 360，帧率 15 fps，码率 260 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_360P_3 = 1032,
-  /** 1033: 360 &times; 640, frame rate 30 fps, bitrate 600 Kbps. */
+  /** 1033：分辨率 360 × 640，帧率 30 fps，码率 600 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_360P_4 = 1033,
-  /** 1035: 360 &times; 360, frame rate 30 fps, bitrate 400 Kbps. */
+  /** 1035：分辨率 360 × 360，帧率 30 fps，码率 400 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_360P_6 = 1035,
-  /** 1036: 360 &times; 480, frame rate 15 fps, bitrate 320 Kbps. */
+  /** 1036：分辨率 360 × 480，帧率 15 fps，码率 320 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_360P_7 = 1036,
-  /** 1037: 360 &times; 480, frame rate 30 fps, bitrate 490 Kbps. */
+  /** 1037：分辨率 360 × 480，帧率 30 fps，码率 490 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_360P_8 = 1037,
-  /** 1038: 360 &times; 640, frame rate 15 fps, bitrate 800 Kbps.
-   * @note Live broadcast profile only.
+  /** 1038：分辨率 360 × 640，帧率 15 fps，码率 800 Kbps。
+   * **Note**：该视频属性仅适用于直播频道模式。
    */
   VIDEO_PROFILE_PORTRAIT_360P_9 = 1038,
-  /** 1039: 360 &times; 640, frame rate 24 fps, bitrate 800 Kbps.
-   * @note Live broadcast profile only.
+  /** 1039：分辨率 360 × 640，帧率 24 fps，码率 800 Kbps。
+   * **Note**：该视频属性仅适用于直播频道模式。
    */
   VIDEO_PROFILE_PORTRAIT_360P_10 = 1039,
-  /** 1100: 360 &times; 640, frame rate 24 fps, bitrate 1000 Kbps.
-   * @note Live broadcast profile only.
+  /** 1100：分辨率 360 × 640，帧率 24 fps，码率 1000 Kbps。
+   * **Note**： 该视频属性仅适用于直播频道模式。
    */
   VIDEO_PROFILE_PORTRAIT_360P_11 = 1100,
-  /** 1040: 480 &times; 640, frame rate 15 fps, bitrate 500 Kbps. */
+  /** 1040：分辨率 480 × 640，帧率 15 fps，码率 500 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_480P = 1040,
-  /** 1042: 480 &times; 480, frame rate 15 fps, bitrate 400 Kbps. */
+  /** 1042：分辨率 480 × 480，帧率 15 fps，码率 400 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_480P_3 = 1042,
-  /** 1043: 480 &times; 640, frame rate 30 fps, bitrate 750 Kbps. */
+  /** 1043：分辨率 480 × 640，帧率 30 fps，码率 750 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_480P_4 = 1043,
-  /** 1045: 480 &times; 480, frame rate 30 fps, bitrate 600 Kbps. */
+  /** 1045：分辨率 480 × 480，帧率 30 fps，码率 600 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_480P_6 = 1045,
-  /** 1047: 480 &times; 848, frame rate 15 fps, bitrate 610 Kbps. */
+  /** 1047：分辨率 480 × 848，帧率 15 fps，码率 610 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_480P_8 = 1047,
-  /** 1048: 480 &times; 848, frame rate 30 fps, bitrate 930 Kbps. */
+  /** 1048：分辨率 480 × 848，帧率 30 fps，码率 930 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_480P_9 = 1048,
-  /** 1049: 480 &times; 640, frame rate 10 fps, bitrate 400 Kbps. */
+  /** 1049：分辨率 480 × 640，帧率 10 fps，码率 400 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_480P_10 = 1049,
-  /** 1050: 720 &times; 1280, frame rate 15 fps, bitrate 1130 Kbps. */
+  /** 1050：分辨率 720 × 1280，帧率 15 fps，码率 1130 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_720P = 1050,
-  /** 1052: 720 &times; 1280, frame rate 30 fps, bitrate 1710 Kbps. */
+  /** 1052：分辨率 720 × 1280，帧率 30 fps，码率 1710 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_720P_3 = 1052,
-  /** 1054: 720 &times; 960, frame rate 15 fps, bitrate 910 Kbps. */
+  /** 1054：分辨率 720 × 960，帧率 15 fps，码率 910 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_720P_5 = 1054,
-  /** 1055: 720 &times; 960, frame rate 30 fps, bitrate 1380 Kbps. */
+  /** 1055：分辨率 720 × 960，帧率 30 fps，码率 1380 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_720P_6 = 1055,
-  /** 1060: 1080 &times; 1920, frame rate 15 fps, bitrate 2080 Kbps. */
+  /** 1060：分辨率 1080 × 1920，帧率 15 fps，码率 2080 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_1080P = 1060,
-  /** 1062: 1080 &times; 1920, frame rate 30 fps, bitrate 3150 Kbps. */
+  /** 1062：分辨率 1080 × 1920，帧率 30 fps，码率 3150 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_1080P_3 = 1062,
-  /** 1064: 1080 &times; 1920, frame rate 60 fps, bitrate 4780 Kbps. */
+  /** 1064：分辨率 1080 × 1920，帧率 60 fps，码率 4780 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_1080P_5 = 1064,
-  /** 1066: 1440 &times; 2560, frame rate 30 fps, bitrate 4850 Kbps. */
+  /** 1066：分辨率 1440 × 2560，帧率 30 fps，码率 4850 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_1440P = 1066,
-  /** 1067: 1440 &times; 2560, frame rate 60 fps, bitrate 6500 Kbps. */
+  /** 1067：分辨率 1440 × 2560，帧率 60 fps，码率 6500 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_1440P_2 = 1067,
-  /** 1070: 2160 &times; 3840, frame rate 30 fps, bitrate 6500 Kbps. */
+  /** 1070：分辨率 2160 × 3840，分辨率 30 fps，码率 6500 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_4K = 1070,
-  /** 1072: 2160 &times; 3840, frame rate 60 fps, bitrate 6500 Kbps. */
+  /** 1072：分辨率 2160 × 3840，帧率 60 fps，码率 6500 Kbps。 */
   VIDEO_PROFILE_PORTRAIT_4K_3 = 1072,
-  /** Default 640 &times; 360, frame rate 15 fps, bitrate 400 Kbps. */
+  /** 默认视频属性：分辨率 640 × 360，帧率 15 fps，码率 400 Kbps。 */
   VIDEO_PROFILE_DEFAULT = VIDEO_PROFILE_LANDSCAPE_360P
 }
 
