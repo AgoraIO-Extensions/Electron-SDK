@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "npm run dev-link && electron-webpack dev",
-    "dev-link": "rm -rf js && rm -rf build && ln -rs ../js js && ln -rs ../build build",
+    "dev": "electron-webpack dev",
     "compile": "electron-webpack",
     "dist": "yarn compile && electron-builder",
     "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
@@ -15,7 +14,9 @@
       "target": [
         {
           "target": "zip",
-          "arch": ["ia32"]
+          "arch": [
+            "ia32"
+          ]
         }
       ]
     },
@@ -32,6 +33,7 @@
   },
   "dependencies": {
     "bulma": "^0.7.1",
+    "copy-webpack-plugin": "^5.0.3",
     "immutable": "^3.8.2",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
