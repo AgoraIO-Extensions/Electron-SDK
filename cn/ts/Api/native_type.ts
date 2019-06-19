@@ -132,21 +132,21 @@ export interface LastmileProbeResult {
   rtt: number;
 }
 
-/** Local voice changer options. */
+/** 本地语音的变声效果选项 */
 export enum VoiceChangerPreset {
-  /** 0: The original voice (no local voice change). */
+  /** 0：原声，即关闭本地语音变声。 */
   VOICE_CHANGER_OFF = 0,
-  /** 1: An old man's voice. */
+  /** 1：老男孩。 */
   VOICE_CHANGER_OLDMAN = 1,
-  /** 2: A little boy's voice. */
+  /** 2：小男孩。 */
   VOICE_CHANGER_BABYBOY = 2,
-  /** 3: A little girl's voice. */
+  /** 3：小女孩。 */
   VOICE_CHANGER_BABYGIRL = 3,
-  /** 4: The voice of a growling bear. */
+  /** 4：猪八戒。 */
   VOICE_CHANGER_ZHUBAJIE = 4,
-  /** 5: Ethereal vocal effects. */
+  /** 5：空灵。 */
   VOICE_CHANGER_ETHEREAL = 5,
-  /** 6: Hulk's voice. */
+  /** 6：绿巨人。 */
   VOICE_CHANGER_HULK = 6
 }
 

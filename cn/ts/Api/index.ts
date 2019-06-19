@@ -790,12 +790,22 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description This method sets high-quality audio preferences. Call this method and set all the three
-   * modes before joining a channel. Do NOT call this method again after joining a channel.
-   * @param {boolean} fullband enable/disable fullband codec
-   * @param {boolean} stereo enable/disable stereo codec
-   * @param {boolean} fullBitrate enable/disable high bitrate mode
-   * @returns {number} 0 for success, <0 for failure
+   * @deprecated 该方法已废弃。请改用 {@link setAudioProfile}。
+   * @description 设置音频高音质选项。
+   *
+   * 请在加入频道前调用该方法，对其中的三个模式完成设置。加入频道后调用该方法不生效。
+   * @param {boolean} fullband 是否启用全频带编解码器（48 kHz 采样率）：
+   * - true：启用全频带编解码器
+   * - false：禁用全频带编解码器
+   * @param {boolean} stereo 是否启用立体声编解码器：
+   * - true：启用立体声编解码器
+   * - false：禁用立体声编解码器
+   * @param {boolean} fullBitrate 是否启用高码率模式：
+   * - true：启用高码率模式
+   * - false：禁用高码率模式
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setHighQualityAudioParameters(fullband: boolean, stereo: boolean, fullBitrate: boolean): number {
     return this.rtcEngine.setHighQualityAudioParameters(fullband, stereo, fullBitrate);
@@ -816,9 +826,12 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description setup local video and corresponding renderer
-   * @param {Element} view dom element where we will initialize our view
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置本地视图和渲染器。
+   * **Note**：请在主线程调用该方法。
+   * @param {Element} view 初始化视图的 Dom
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setupLocalVideo(view: Element): number {
     this.initRender('local', view);
@@ -827,11 +840,17 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    *
-   * @description force set renderer dimension of video, this ONLY affects size of data sent to js layer, native video size is determined by setVideoProfile
-   * @param {*} rendertype type of renderer, 0 - local, 1 - remote, 2 - device test, 3 - video source
-   * @param {*} uid target uid
-   * @param {*} width target width
-   * @param {*} height target height
+   * @description 设置视频渲染的分辨率。
+   *
+   * 该方法只对发送给 js 层的视频数据有效。其他端的视频分辨率由 {@link setVideoEncoderConfiguration} 方法决定。
+   * @param {number} rendertype 渲染器的类型：
+   * - 0：本地渲染器
+   * - 1：远端渲染器
+   * - 2：设备测试
+   * - 3：视频源
+   * @param {number} uid 目标用户的 ID
+   * @param {number} width 想要发送的视频宽度
+   * @param {number} height 想要发送的视频高度
    */
   setVideoRenderDimension(
     rendertype: number,
@@ -882,10 +901,15 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description setup view content mode
-   * @param {number | 'local' | 'videosource'} uid stream uid to operate
-   * @param {0|1} mode view content mode, 0 - fill, 1 - fit
-   * @returns {number} 0 - success, -1 - fail
+   * @description 设置视窗内容显示模式。
+   *
+   * @param {number | 'local' | 'videosource'} uid 用户 ID，表示设置的是哪个用户的流
+   * @param {0|1} mode 视窗内容显示模式：
+   * - 0：优先保证视窗被填满。视频尺寸等比缩放，直至整个视窗被视频填满。如果视频长宽与显示窗口不同，多出的视频将被截掉
+   * - 1： 优先保证视频内容全部显示。视频尺寸等比缩放，直至视频窗口的一边与视窗边框对齐。如果视频长宽与显示窗口不同，视窗上未被填满的区域将被涂黑
+   * @returns {number}
+   * - 0：方法调用成功
+   * - -1：方法调用失败
    */
   setupViewContentMode(uid: number | 'local' | 'videosource', mode: 0|1): number {
     if (this.streams.has(String(uid))) {
@@ -1526,43 +1550,60 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description This method sets the in ear monitoring volume.
-   * @param {number} volume Volume of the in-ear monitor, ranging from 0 to 100. The default value is 100.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置耳返音量。
+   *
+   * @param {number} volume 耳返的音量，取值范围为 [0, 100]，默认值为 100
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setInEarMonitoringVolume(volume: number): number {
     return this.rtcEngine.setInEarMonitoringVolume(volume);
   }
 
   /**
-   * @description disable audio function in channel, which will be recovered when leave channel.
-   * @returns {number} 0 for success, <0 for failure
+   * @deprecated 该方法已废弃。请改用 {@link disableAudio}。
+   * @description 禁用频道内的音频功能。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   pauseAudio() {
     return this.rtcEngine.pauseAudio();
   }
 
   /**
-   * @description resume audio function in channel.
-   * @returns {number} 0 for success, <0 for failure
+   * @deprecated 该方法已弃用。请改用 {@link enableAudio}。
+   * @description 启用频道内的音频功能。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   resumeAudio() {
     return this.rtcEngine.resumeAudio();
   }
 
   /**
-   * @description set filepath of log
-   * @param {string} filepath filepath of log
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置日志文件。
+   * 设置 SDK 的输出 log 文件。SDK 运行时产生的所有 log 将写入该文件。App 必须保证指定的目录存在而且可写。
+   * **Note**：如需调用本方法，请在调用 {@link initialize} 方法初始化 AgoraRtcEngine 对象后立即调用，否则可能造成输出日志不完整。
+   * @param {string} filepath 日志文件的完整路径
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setLogFile(filepath: string): number {
     return this.rtcEngine.setLogFile(filepath);
   }
 
   /**
-   * @description set the log file size (KB).
-   * @param {number} size size of the log file. if exceed, old one will be overwrite
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置 SDK 输出的日志文件大小，单位为 KB。
+   *
+   * Agora SDK 设有 2 个日志文件，每个文件默认大小为 512 KB。如果你将 `size` 设置为 1024 KB，SDK 会最多输出 2 M 的日志文件。如果日志文件超出设置值，新的日志会覆盖之前的日志。
+   * @param {number} size 指定 SDK 输出日志文件的内存大小，单位为 KB
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setLogFileSize(size: number): number {
     return this.rtcEngine.setLogFileSize(size);
@@ -1578,121 +1619,156 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description set log level
-   * @param {number} filter filter level
-   * LOG_FILTER_OFF = 0: Output no log.
-   * LOG_FILTER_DEBUG = 0x80f: Output all the API logs.
-   * LOG_FILTER_INFO = 0x0f: Output logs of the CRITICAL, ERROR, WARNING and INFO level.
-   * LOG_FILTER_WARNING = 0x0e: Output logs of the CRITICAL, ERROR and WARNING level.
-   * LOG_FILTER_ERROR = 0x0c: Output logs of the CRITICAL and ERROR level.
-   * LOG_FILTER_CRITICAL = 0x08: Output logs of the CRITICAL level.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置日志文件过滤器。
+   *
+   * 该方法设置 SDK 的输出日志过滤等级。不同的过滤等级可以单独或组合使用。
+   * 日志级别顺序依次为 OFF、CRITICAL、ERROR、WARNING、INFO 和 DEBUG。选择一个级别，你就可以看到在该级别之前所有级别的日志信息。
+   * 例如，你选择 WARNING 级别，就可以看到在 CRITICAL、ERROR 和 WARNING 级别上的所有日志信息。
+   * @param {number} filter 设置过滤器等级：
+   * - LOG_FILTER_OFF = 0：不输出任何日志
+   * - LOG_FILTER_DEBUG = 0x80f：输出所有的 API 日志。如果你想获取最完整的日志，可将日志级别设为该等级
+   * - LOG_FILTER_INFO = 0x0f：输出 CRITICAL、ERROR、WARNING、INFO 级别的日志。我们推荐你将日志级别设为该等级
+   * - LOG_FILTER_WARNING = 0x0e：仅输出 CRITICAL、ERROR、WARNING 级别的日志
+   * - LOG_FILTER_ERROR = 0x0c：仅输出 CRITICAL、ERROR 级别的日志
+   * - LOG_FILTER_CRITICAL = 0x08：仅输出 CRITICAL 级别的日志
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setLogFilter(filter: number): number {
     return this.rtcEngine.setLogFilter(filter);
   }
 
   /**
-   * @description This method sets the stream mode (only applicable to live broadcast) to
-   * single- (default) or dual-stream mode.
-   * @param {boolean} enable enable/disable dual stream
-   * @returns {number} 0 for success, <0 for failure
+   * @description 开/关视频双流模式。
+   * 该方法设置单流（默认）或者双流模式。发送端开启双流模式后，接收端可以选择接收大流还是小流。其中，大流指高分辨率、高码率的视频流，小流指低分辨率、低码率的视频流。
+   * @param {boolean} enable 指定双流或者单流模式：
+   * - true：开启双流
+   * - false：不开启双流（默认）
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   enableDualStreamMode(enable: boolean): number {
     return this.rtcEngine.enableDualStreamMode(enable);
   }
 
   /**
-   * @description This method specifies the video-stream type of the remote user to be
-   * received by the local user when the remote user sends dual streams.
-   * If dual-stream mode is enabled by calling enableDualStreamMode, you will receive the
-   * high-video stream by default. This method allows the application to adjust the
-   * corresponding video-stream type according to the size of the video windows to save the bandwidth
-   * and calculation resources.
-   * If dual-stream mode is not enabled, you will receive the high-video stream by default.
-   * The result after calling this method will be returned in onApiCallExecuted. The Agora SDK receives
-   * the high-video stream by default to save the bandwidth. If needed, users can switch to the low-video
-   * stream using this method.
-   * @param {number} uid User ID
-   * @param {StreamType} streamType 0 - high, 1 - low
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置订阅的视频流类型。
+   *
+   * 如果发送端选择发送视频双流（大流或小流），接收端可以选择接收大流还是小流。其中大流可以理解为高分辨率高码率的视频流，小流则是低分辨率低码率的视频流。
+   * 该方法可以根据视频窗口的大小动态调整对应视频流的大小，以节约带宽和计算资源。
+   * - 如果发送端用户已调用 {@link enableDualStreamMode} 启用了双流模式，SDK 默认接收大流。如需使用小流，可调用本方法进行切换。
+   * - 如果发送端用户未启用双流模式，SDK 默认接收大流。
+   *
+   * 视频小流默认的宽高比和视频大流的宽高比一致。根据当前大流的宽高比，系统会自动分配小流的分辨率、帧率及码率。
+   *
+   * 调用本方法的执行结果将在 onApiCallExecuted 中返回。
+   * @param {number} uid 用户 ID
+   * @param {StreamType} streamType 视频流类型：
+   * - 0：视频大流，即高分辨率、高码率的视频流
+   * - 1：视频小流，即低分辨率、低码率的视频流
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setRemoteVideoStreamType(uid: number, streamType: StreamType): number {
     return this.rtcEngine.setRemoteVideoStreamType(uid, streamType);
   }
 
   /**
-   * @description This method sets the default remote video stream type to high or low.
-   * @param {StreamType} streamType 0 - high, 1 - low
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置默认订阅的视频流类型。
+   *
+   * @param {StreamType} streamType 设置视频流的类型：
+   * - 0：视频大流，即高分辨、高码率的视频流
+   * - 1：视频小流，即低分辨、低码率的视频流
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setRemoteDefaultVideoStreamType(streamType: StreamType): number {
     return this.rtcEngine.setRemoteDefaultVideoStreamType(streamType);
   }
 
   /**
-   * @description This method enables interoperability with the Agora Web SDK.
-   * @param {boolean} enable enable/disable interop
-   * @returns {number} 0 for success, <0 for failure
+   * @description 打开与 Web SDK 的互通（仅在直播下适用）。
+   *
+   * 该方法打开或关闭与 Agora Web SDK 的互通。该方法仅在直播模式下适用，通信模式下默认互通是打开的。
+   * @param {boolean} enable 是否打开与 Agora Web SDK 的互通：
+   * - true：打开互通
+   * - false：关闭互通（默认）
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   enableWebSdkInteroperability(enable: boolean): number {
     return this.rtcEngine.enableWebSdkInteroperability(enable);
   }
 
   /**
-   * @description This method sets the local video mirror mode. Use this method before startPreview,
-   * or it does not take effect until you re-enable startPreview.
-   * @param {number} mirrortype mirror type
-   * 0: The default mirror mode, that is, the mode set by the SDK
-   * 1: Enable the mirror mode
-   * 2: Disable the mirror mode
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置本地视频镜像。
+   *
+   * 该方法设置本地视频镜像，须在开启本地预览前设置。如果在开启预览后设置，需要重新开启预览才能生效。
+   * @param {number} mirrortype 设置本地视频镜像模式：
+   * - 0：默认镜像模式，即由 SDK 决定镜像模式
+   * - 1：启用镜像模式
+   * - 2：关闭镜像模式
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setLocalVideoMirrorMode(mirrortype: 0|1|2): number {
     return this.rtcEngine.setLocalVideoMirrorMode(mirrortype);
   }
 
   /**
-   * @description Changes the voice pitch of the local speaker.
-   * @param {number} pitch - The value ranges between 0.5 and 2.0.
-   * The lower the value, the lower the voice pitch.
-   * The default value is 1.0 (no change to the local voice pitch).
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置本地语音音调。
+   *
+   * @param {number} pitch 语音频率。可以在 [0.5, 2.0] 范围内设置。取值越小，则音调越低。默认值为 1.0，表示不需要修改音调
+   * @returns {number}
+   * - 0：方法调用成功
+   * - -1：方法调用失败
    */
   setLocalVoicePitch(pitch: number): number {
     return this.rtcEngine.setLocalVoicePitch(pitch);
   }
 
   /**
-   * @description Sets the local voice equalization effect.
-   * @param {number} bandFrequency - Sets the band frequency.
-   * The value ranges between 0 and 9, representing the respective 10-band center frequencies of the voice effects
-   * including 31, 62, 125, 500, 1k, 2k, 4k, 8k, and 16k Hz.
-   * @param {number} bandGain - Sets the gain of each band in dB. The value ranges between -15 and 15.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置本地语音音效均衡。
+   * @param {number} bandFrequency 频谱子带索引，取值范围是 [0-9]，分别代表 10 个频带，对应的中心频率是 [31，62，125，250，500，1k，2k，4k，8k，16k] Hz
+   * @param {number} bandGain 每个 band 的增益，单位是 dB，每一个值的范围是 [-15，15]，默认值为 0
+   * @returns {number}
+   * - 0：方法调用成功
+   * - -1：方法调用失败
    */
   setLocalVoiceEqualization(bandFrequency: number, bandGain: number): number {
     return this.rtcEngine.setLocalVoiceEqualization(bandFrequency, bandGain);
   }
 
   /**
-   * @description Sets the local voice reverberation.
-   * @param {number} reverbKey - Audio reverberation type.
-   * AUDIO_REVERB_DRY_LEVEL = 0, // (dB, [-20,10]), the level of the dry signal
-   * AUDIO_REVERB_WET_LEVEL = 1, // (dB, [-20,10]), the level of the early reflection signal (wet signal)
-   * AUDIO_REVERB_ROOM_SIZE = 2, // ([0,100]), the room size of the reflection
-   * AUDIO_REVERB_WET_DELAY = 3, // (ms, [0,200]), the length of the initial delay of the wet signal in ms
-   * AUDIO_REVERB_STRENGTH = 4, // ([0,100]), the strength of the reverberation
-   * @param {number} value - value Sets the value of the reverberation key.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置本地音效混响。
+   *
+   * **Note**： Agora SDK 在 v2.4.0 版本中提供一个使用更为简便的接口 setLocalVoiceReverbPreset，该
+     方法通过一系列内置参数的调整，直接实现流行、R&B、摇滚、嘻哈等预置的混响效果。详见 {@link setLocalVoiceReverbPreset}。
+   * @param {number} reverbKey 混响音效 Key。该方法共有 5 个混响音效 Key：
+   * - AUDIO_REVERB_DRY_LEVEL = 0：原始声音强度，即所谓的 dry signal，取值范围 [-20, 10]，单位为 dB
+   * - AUDIO_REVERB_WET_LEVEL = 1：早期反射信号强度，即所谓的 wet signal，取值范围 [-20, 10]，单位为 dB
+   * - AUDIO_REVERB_ROOM_SIZE = 2：所需混响效果的房间尺寸，一般房间越大，混响越强，取值范围 [0, 100]，单位为 dB
+   * - AUDIO_REVERB_WET_DELAY = 3：Wet signal 的初始延迟长度，取值范围 [0, 200]，单位为毫秒
+   * - AUDIO_REVERB_STRENGTH = 4：混响持续的强度，取值范围为 [0, 100]
+   * @param {number} value 各混响音效 Key 所对应的值
+   * @returns {number}
+   * - 0：方法调用成功
+   * - -1：方法调用失败
    */
   setLocalVoiceReverb(reverbKey: number, value: number): number {
     return this.rtcEngine.setLocalVoiceReverb(reverbKey, value);
   }
 
   /**
-   * @description set the local voice changer option.
-   * @param {VoiceChangerPreset} preset voice change preset
+   * @description 设置本地语音变声。
+   * **Note**：该方法不能与 {@link setLocalVoiceReverbPreset} 方法同时使用，否则先调用的方法会不生效。
+   * @param {VoiceChangerPreset} preset 设置本地语音的变声效果选项
    */
   setLocalVoiceChanger(preset: VoiceChangerPreset): number {
     return this.rtcEngine.setLocalVoiceChanger(preset);
@@ -1700,8 +1776,11 @@ class AgoraRtcEngine extends EventEmitter {
 
 
   /**
-   * @description set the preset local voice reverberation effect.
-   * @param {AudioReverbPreset} preset local voice reverberation presets
+   * @description 设置预设的本地语音混响效果选项。
+   * **Note**：
+   * - 该方法不能与 {@link setLocalVoiceReverbPreset} 方法同时使用。
+   * - 该方法不能与 {@link setLocalVoiceChanger} 方法同时使用，否则先调的方法会不生效。
+   * @param {AudioReverbPreset} preset 预设的本地语音混响效果选项
    */
   setLocalVoiceReverbPreset(preset: AudioReverbPreset) {
     return this.rtcEngine.setLocalVoiceReverbPreset(preset);
@@ -1709,38 +1788,40 @@ class AgoraRtcEngine extends EventEmitter {
 
 
   /**
-   * @description Sets the fallback option for the locally published video stream based on the network conditions.
-   * The default setting for option is #STREAM_FALLBACK_OPTION_DISABLED, where there is no fallback for the locally published video stream when the uplink network conditions are poor.
-   * If *option* is set to #STREAM_FALLBACK_OPTION_AUDIO_ONLY, the SDK will:
-   * - Disable the upstream video but enable audio only when the network conditions worsen and cannot support both video and audio.
-   * - Re-enable the video when the network conditions improve.
-   * When the locally published stream falls back to audio only or when the audio stream switches back to the video,
-   * the \ref agora::rtc::IRtcEngineEventHandler::onLocalPublishFallbackToAudioOnly "onLocalPublishFallbackToAudioOnly" callback is triggered.
-   * **Note**： Agora does not recommend using this method for CDN live streaming, because the remote CDN live user will have a noticeable lag when the locally publish stream falls back to audio-only.
-   * @param {number} option - Sets the fallback option for the locally published video stream.
-   * STREAM_FALLBACK_OPTION_DISABLED = 0
-   * STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW = 1
-   * STREAM_FALLBACK_OPTION_AUDIO_ONLY = 2
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置弱网条件下发布的音视频流回退选项。
+   *
+   * 网络不理想的环境下，直播音视频的质量都会下降。使用该接口并将 option 设置为 STREAM_FALLBACK_OPTION_AUDIO_ONLY后，SDK 会：
+   * - 在上行弱网且音视频质量严重受影响时，自动关断视频流，从而保证或提高音频质量。
+   * - 持续监控网络质量，并在网络质量改善时恢复音视频流。
+   *
+   * 当本地推流回退为音频流时，或由音频流恢复为音视频流时，SDK 会触发 localPublishFallbackToAudioOnly 回调。
+   * **Note**：旁路推流场景下，设置本地推流回退为 Audio-only 可能会导致远端的 CDN 用户听到声音的时间有所延迟。因此在有旁路推流的场景下，Agora 建议不开启该功能。
+   * @param {number} option 本地推流回退处理选项：
+   * - STREAM_FALLBACK_OPTION_DISABLED = 0：（默认）上行网络较弱时，不对音视频流作回退处理，但不能保证音视频流的质量
+   * - STREAM_FALLBACK_OPTION_AUDIO_ONLY = 2：上行网络较弱时只发布音频流
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setLocalPublishFallbackOption(option: 0|1|2): number {
     return this.rtcEngine.setLocalPublishFallbackOption(option);
   }
 
   /**
-   * @description Sets the fallback option for the remotely subscribed stream based on the network conditions.
-   * The default setting for @p option is #STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW, where the remotely subscribed stream falls back to
-   * the low-stream video (low resolution and low bitrate) under poor downlink network conditions.
-   * If *option* is set to #STREAM_FALLBACK_OPTION_AUDIO_ONLY, the SDK automatically switches the video from a high-stream to a low-stream,
-   * or disable the video when the downlink network conditions cannot support both audio and video to guarantee the quality of the audio.
-   * The SDK monitors the network quality and restores the video stream when the network conditions improve.
-   * Once the locally published stream falls back to audio only or the audio stream switches back to the video stream,
-   * the \ref agora::rtc::IRtcEngineEventHandler::onRemoteSubscribeFallbackToAudioOnly "onRemoteSubscribeFallbackToAudioOnly" callback is triggered.
-   * @param {number} option - Sets the fallback option for the remotely subscribed stream.
-   * STREAM_FALLBACK_OPTION_DISABLED = 0
-   * STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW = 1
-   * STREAM_FALLBACK_OPTION_AUDIO_ONLY = 2
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置弱网条件下订阅的音视频流回退选项。
+   *
+   * 网络不理想的环境下，直播音视频的质量都会下降。使用该接口并将 option 设置为 STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW 或者 STREAM_FALLBACK_OPTION_AUDIO_ONLY(2)后，SDK 会：
+   * - 在下行弱网且音视频质量严重受影响时，将视频流切换为小流，或关断视频流，从而保证或提高音频质量。
+   * - 持续监控网络质量，并在网络质量改善时恢复音视频流。
+   *
+   * 当远端订阅流回退为音频流时，或由音频流恢复为音视频流时，SDK 会触发 remoteSubscribeFallbackToAudioOnly 回调。
+   * @param {number} option 远端订阅流回退处理选项：
+   * - STREAM_FALLBACK_OPTION_DISABLED = 0：下行网络较弱时，不对音视频流作回退处理，但不能保证音视频流的质量
+   * - STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW = 1：（默认）下行网络较弱时只接收视频小流。该选项只对该方法有效，对 {@link setLocalPublishFallbackOption} 方法无效
+   * - STREAM_FALLBACK_OPTION_AUDIO_ONLY = 2：下行网络较弱时，先尝试只接收视频小流；如果网络环境无法显示视频，则再回退到只接收远端订阅的音频流
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setRemoteSubscribeFallbackOption(option: 0|1|2): number {
     return this.rtcEngine.setRemoteSubscribeFallbackOption(option);
