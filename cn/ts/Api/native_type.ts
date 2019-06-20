@@ -480,15 +480,34 @@ export enum CaptureOutPreference {
    */
   CAPTURER_OUTPUT_PREFERENCE_PREVIEW = 2
 }
-
+/**
+ * 摄像头采集偏好设置。
+ */
 export interface CameraCapturerConfiguration {
+  /**
+   * 摄像头采集输出偏好设置。
+   */
   preference: CaptureOutPreference;
 }
-
+/**
+ * 待共享区域相对于整个屏幕或窗口的位置，如不填，则表示共享这个屏幕或窗口。
+ */
 export interface Rectangle {
+  /**
+   * 左上角的横向偏移。
+   */
   x: number; // The horizontal offset from the top-left corner.
+  /**
+   * 左上角的纵向偏移。
+   */
   y: number; // The vertical offset from the top-left corner.
+  /**
+   * 待共享区域的宽。
+   */
   width: number; // The width of the region.
+  /**
+   * 待共享区域的高。
+   */
   height: number; // The height of the region.
 }
 
@@ -499,17 +518,42 @@ export type MacScreenSymbol = number;
 export type WindowsScreenSymbol = Rectangle;
 
 export type CaptureRect = Rectangle;
-
+/**
+ * 屏幕共享的编码参数配置。
+ */
 export interface CaptureParam {
+  /**
+   * 屏幕共享区域的宽。
+   */
   width: number; // Width (pixels) of the video
+  /**
+   * 屏幕共享区域的高。
+   */
   height: number; // Height (pixels) of the video
+  /**
+   * 共享视频的帧率，单位为 fps；默认值为 5，建议不要超过 15.
+   */
   frameRate: number; // The frame rate (fps) of the shared region. The default value is 5. We do not recommend setting this to a value greater than 15.
+  /**
+   * 共享视频的码率，单位为 Kbps；默认值为 0，表示 SDK 根据当前共享屏幕的分辨率计算出一个合理的值。
+   */
   bitrate: number; //  The bitrate (Kbps) of the shared region. The default value is 0 (the SDK works out a bitrate according to the dimensions of the current screen).
 }
-
+/**
+ * 屏幕共享的内容类型。
+ */
 export enum VideoContentHint {
+  /**
+   * 0：（默认）无指定的内容类型。
+   */
   CONTENT_HINT_NONE = 0, // (Default) No content hint
+  /**
+   * 1：内容类型为动画。当共享的内容是视频、电影或视频游戏时，推荐选择该内容类型。
+   */
   CONTENT_HINT_MOTION = 1, // Motion-intensive content. Choose this option if you prefer smoothness or when you are sharing a video clip, movie, or video game.
+  /**
+   * 2：内容类型为细节。当共享的内容是图片或文字时，推荐选择该内容类型。
+   */
   CONTENT_HINT_DETAILS = 2 // Motionless content. Choose this option if you prefer sharpness or when you are sharing a picture, PowerPoint slide, or text.
 }
 

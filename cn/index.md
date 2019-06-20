@@ -78,8 +78,10 @@ Agora Electron SDK 基于 Agora SDK for macOS 和 Agora SDK for Windows，使用
 
 | 方法                                                         | 描述                  |
 | ------------------------------------------------------------ | --------------------- |
+| {@link AgoraRtcEngine.videoSourceInitialize videoSourceInitialize} | 初始化屏幕共享对象  |
+| {@link AgoraRtcEngine.videoSourceRelease videoSourceRelease} | 释放屏幕共享对象    |
 | {@link AgoraRtcEngine.getScreenDisplaysInfo getScreenDisplaysInfo} | 获取屏幕 Display Info |
-| {@link AgoraRtcEngine.getScreenWindowsInfo getScreenWindowsInfo} | 获取屏幕 Window Info  |
+| {@link AgoraRtcEngine.getScreenWindowsInfo getScreenWindowsInfo} | 获取系统窗口 ID  |
 | {@link AgoraRtcEngine.startScreenCapturePreview startScreenCapturePreview} | 开启屏幕共享视频预览 |
 | {@link AgoraRtcEngine.stopScreenCapturePreview stopScreenCapturePreview} | 停止屏幕共享视频预览  |
 | {@link AgoraRtcEngine.videoSourceStartScreenCaptureByScreen videoSourceStartScreenCaptureByScreen} | 根据 Screen 共享屏幕 |
@@ -205,13 +207,6 @@ Agora Electron SDK 基于 Agora SDK for macOS 和 Agora SDK for Windows，使用
 | ------------------------------------------------------------ | ---------------------------- |
 | {@link AgoraRtcEngine.setEncryptionSecret setEncryptionSecret} | 启用内置加密，并设置加密密码 |
 
-### 音频录制
-
-| 方法                                                         | 描述         |
-| ------------------------------------------------------------ | ------------ |
-| {@link AgoraRtcEngine.setAudioRecordingVolume setAudioRecordingVolume} | 设置录音音量 |
-| {@link AgoraRtcEngine.getAudioRecordingVolume getAudioRecordingVolume} | 获取录音音量 |
-
 ### 直播导入在线媒体流
 
 | 方法                                                         | 描述                 |
@@ -232,11 +227,11 @@ Agora Electron SDK 基于 Agora SDK for macOS 和 Agora SDK for Windows，使用
 | {@link AgoraRtcEngine.setAudioPlaybackDeviceMute setAudioPlaybackDeviceMute} | 设置音频播放设备静音       |
 | {@link AgoraRtcEngine.getAudioPlaybackDeviceMute getAudioPlaybackDeviceMute} | 获取音频播放设备静音状态   |
 | {@link AgoraRtcEngine.setAudioRecordingDeviceMute setAudioRecordingDeviceMute} | 设置音频录制设备静音       |
-| {@link AgoraRtcEngine.getAudioRecordingDeviceMute getAudioRecordingDeviceMute} | 获取音频录制 设备静音状态  |
-| {@link AgoraRtcEngine.getPlaybackDeviceInfo getPlaybackDeviceInfo} | 获取播放设备 Info          |
-| {@link AgoraRtcEngine.getRecordingDeviceInfo getRecordingDeviceInfo} | 获取录制设备 Info          |
-| {@link AgoraRtcEngine.getCurrentAudioPlaybackDevice getCurrentAudioPlaybackDevice} | 获取当前正在播放的音频设备 |
-| {@link AgoraRtcEngine.getCurrentAudioRecordingDevice getCurrentAudioRecordingDevice} | 获取当前正在录制的音频设备 |
+| {@link AgoraRtcEngine.getAudioRecordingDeviceMute getAudioRecordingDeviceMute} | 获取音频录制设备静音状态  |
+| {@link AgoraRtcEngine.getPlaybackDeviceInfo getPlaybackDeviceInfo} | 获取播放设备信息          |
+| {@link AgoraRtcEngine.getRecordingDeviceInfo getRecordingDeviceInfo} | 获取录制设备信息          |
+| {@link AgoraRtcEngine.getCurrentAudioPlaybackDevice getCurrentAudioPlaybackDevice} | 获取当前的音频播放设备 |
+| {@link AgoraRtcEngine.getCurrentAudioRecordingDevice getCurrentAudioRecordingDevice} | 获取当前的音频录制设备 |
 | {@link AgoraRtcEngine.getCurrentVideoDevice getCurrentVideoDevice} | 获取当前的视频设备         |
 | {@link AgoraRtcEngine.startAudioDeviceLoopbackTest startAudioDeviceLoopbackTest} | 开始音频设备回路测试       |
 | {@link AgoraRtcEngine.stopAudioDeviceLoopbackTest stopAudioDeviceLoopbackTest} | 停止音频设备回路测试       |
@@ -246,6 +241,10 @@ Agora Electron SDK 基于 Agora SDK for macOS 和 Agora SDK for Windows，使用
 | {@link AgoraRtcEngine.stopAudioRecordingDeviceTest stopAudioRecordingDeviceTest} | 停止音频录制设备测试       |
 | {@link AgoraRtcEngine.startVideoDeviceTest startVideoDeviceTest} | 开始视频设备测试           |
 | {@link AgoraRtcEngine.stopVideoDeviceTest stopVideoDeviceTest} | 停止视频设备测试           |
+| {@link AgoraRtcEngine.setAudioPlaybackVolume setAudioPlaybackVolume} | 设置音频播放设备的音量           |
+| {@link AgoraRtcEngine.getAudioPlaybackVolume getAudioPlaybackVolume} | 获取音频播放设备的音量           |
+| {@link AgoraRtcEngine.setAudioRecordingVolume setAudioRecordingVolume} | 设置录音设备的音量 |
+| {@link AgoraRtcEngine.getAudioRecordingVolume getAudioRecordingVolume} | 获取录音设备的音量 |
 
 ### 流消息
 
@@ -292,8 +291,6 @@ Agora Electron SDK 提供双实例的实现方法。第二个实例请调用下�
 
 | 方法                                                         | 描述                        |
 | ------------------------------------------------------------ | --------------------------- |
-| {@link AgoraRtcEngine.videoSourceInitialize videoSourceInitialize} | 初始化 AgoraRtcEngine 实例  |
-| {@link AgoraRtcEngine.videoSourceRelease videoSourceRelease} | 释放 AgoraRtcEngine 实例    |
 | {@link AgoraRtcEngine.videoSourceSetChannelProfile videoSourceSetChannelProfile} | 设置频道模式                |
 | {@link AgoraRtcEngine.videoSourceJoin videoSourceJoin}       | 加入频道                    |
 | {@link AgoraRtcEngine.videoSourceLeave videoSourceLeave}     | 离开频道                    |

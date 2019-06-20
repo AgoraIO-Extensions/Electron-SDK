@@ -738,11 +738,10 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * 在网络状况不理想的情况下，客户端可能会与 Agora 的服务器失去连接；SDK 会自动尝试重连，重连成功后，本地会触发 rejoinedChannel 事件。
    *
-   * @param {string} token 动态密钥：
-   * - 安全要求不高：将值设为 null
-   * - 安全要求高：将值设为 Token。如果你已经启用的 App 证书，请务必使用 Token
+   * @param {string} token 在 App 服务器端生成的用于鉴权的 Token：
+   * - 安全要求不高：你可以填入在 Agora Dashboard 获取到的临时 Token。详见[获取临时 Token](https://docs.agora.io/cn/Video/token?platform=All%20Platforms#获取临时-token)
+   * - 安全要求高：将值设为在 App 服务端生成的正式 Token。详见[获取 Token](https://docs.agora.io/cn/Video/token?platform=All%20Platforms#获取正式-token)
    *
-   * **Note**：请确保用于生成 Token 的 App ID 和 {@link initialize} 方法初始化 AgoraRtcEngine 实例时用的是一个 App ID
    * @param {string} channel （必填）标识通话频道的字符，长度在 64 个字节以内的字符串。以下为支持的字符集范围（共 89 个字符）：
    * - 26 个小写英文字母 a-z
    * - 26 个大写英文字母 A-Z
@@ -1831,256 +1830,313 @@ class AgoraRtcEngine extends EventEmitter {
   // DEVICE MANAGEMENT
   // ===========================================================================
   /**
-   * @description This method sets the external audio source.
-   * @param {boolean} enabled Enable the function of the external audio source: true/false.
-   * @param {number} samplerate Sampling rate of the external audio source.
-   * @param {number} channels Number of the external audio source channels (two channels maximum).
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置外部音频采集参数。
+   * @param {boolean} enabled 是否开启外部音频采集：
+   * - true：开启外部音频采集
+   * - false：关闭外部音频采集（默认）
+   * @param {number} samplerate 外部音频源的采样率，可设置为 8000，16000，32000，44100 或 48000
+   * @param {number} channels 外部音频源的通道数（最多支持两个声道）
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setExternalAudioSource(enabled: boolean, samplerate: number, channels: number): number {
     return this.rtcEngine.setExternalAudioSource(enabled, samplerate, channels);
   }
 
   /**
-   * @description return list of video devices
-   * @returns {Array} array of device object
+   * @description 获取视频设备。
+   * @returns {Array} 视频设备的 Array
    */
   getVideoDevices(): Array<Object> {
     return this.rtcEngine.getVideoDevices();
   }
 
   /**
-   * @description set video device to use via device id
-   * @param {string} deviceId device id
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置视频设备。
+   * @param {string} deviceId 设备 ID
+   * @returns {number}
+   * - true：方法调用成功
+   * - false：方法调用失败
    */
   setVideoDevice(deviceId: string): number {
     return this.rtcEngine.setVideoDevice(deviceId);
   }
 
   /**
-   * @description get current using video device
-   * @return {Object} video device object
+   * @description 获取当前的视频设备。
+   * @return {Object} 视频设备对象
    */
   getCurrentVideoDevice(): Object {
     return this.rtcEngine.getCurrentVideoDevice();
   }
 
   /**
-   * @description This method tests whether the video-capture device works properly.
-   * Before calling this method, ensure that you have already called enableVideo,
-   * and the HWND window handle of the incoming parameter is valid.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 开始视频设备测试。
+   *
+   * 该方法测试视频采集设备是否正常工作。
+   * **Note**：请确保在调用该方法前已调用 {@link enableVideo}，且输入视频的 HWND 手柄是有效的。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   startVideoDeviceTest(): number {
     return this.rtcEngine.startVideoDeviceTest();
   }
 
   /**
-   * @description stop video device test
-   * @returns {number} 0 for success, <0 for failure
+   * @description 停止视频设备测试。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   stopVideoDeviceTest(): number {
     return this.rtcEngine.stopVideoDeviceTest();
   }
 
   /**
-   * @description return list of audio playback devices
-   * @returns {Array} array of device object
+   * @description 获取音频播放设备列表。
+   * @returns {Array} 音频播放设备的 Array
    */
   getAudioPlaybackDevices(): Array<Object> {
     return this.rtcEngine.getAudioPlaybackDevices();
   }
 
   /**
-   * @description set audio playback device to use via device id
-   * @param {string} deviceId device id
-   * @returns {number} 0 for success, <0 for failure
+   * @description 通过设备 ID 指定音频播放设备
+   * @param {string} deviceId 音频播放设备的 ID
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setAudioPlaybackDevice(deviceId: string): number {
     return this.rtcEngine.setAudioPlaybackDevice(deviceId);
   }
 
   /**
-   * @description Retrieves the audio playback device information associated with the device ID and device name
-   * @param {string} deviceId device id
-   * @param {string} deviceName device name
-   * @returns {number} 0 for success, <0 for failure
+   * @description 获取播放设备信息。
+   * @param {string} deviceId 设备 ID
+   * @param {string} deviceName 设备名称
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   getPlaybackDeviceInfo(deviceId: string, deviceName: string): number {
     return this.rtcEngine.getPlaybackDeviceInfo(deviceId, deviceName);
   }
 
   /**
-   * @description get current using audio playback device
-   * @return {Object} audio playback device object
+   * @description 获取当前的音频播放设备。
+   * @return {Object} 音频播放设备对象
    */
   getCurrentAudioPlaybackDevice(): Object {
     return this.rtcEngine.getCurrentAudioPlaybackDevice();
   }
 
   /**
-   * @description set device playback volume
-   * @param {number} volume 0 - 255
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置音频播放设备的音量
+   * @param {number} volume 音量，取值范围为 [0, 255]
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setAudioPlaybackVolume(volume: number): number {
     return this.rtcEngine.setAudioPlaybackVolume(volume);
   }
 
   /**
-   * @description get device playback volume
-   * @returns {number} volume
+   * @description 获取音频播放设备的音量
+   * @returns {number} 音量
    */
   getAudioPlaybackVolume(): number {
     return this.rtcEngine.getAudioPlaybackVolume();
   }
 
   /**
-   * @description get audio recording devices
-   * @returns {Array} array of recording devices
+   * @description 获取音频录制设备
+   * @returns {Array} 音频录制设备的 Array
    */
   getAudioRecordingDevices(): Array<Object> {
     return this.rtcEngine.getAudioRecordingDevices();
   }
 
   /**
-   * @description set audio recording device
-   * @param {string} deviceId device id
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设备音频录制设备
+   * @param {string} deviceId 设备 ID
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setAudioRecordingDevice(deviceId: string): number {
     return this.rtcEngine.setAudioRecordingDevice(deviceId);
   }
 
   /**
-   * @description Retrieves the audio recording device information associated with the device ID and device name.
-   * @param {string} deviceId device id
-   * @param {string} deviceName device name
-   * @returns {number} 0 for success, <0 for failure
+   * @description 获取录制设备信息。
+   * @param {string} deviceId 设备 ID
+   * @param {string} deviceName 设备名
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   getRecordingDeviceInfo(deviceId: string, deviceName: string): number {
     return this.rtcEngine.getRecordingDeviceInfo(deviceId, deviceName);
   }
 
   /**
-   * @description get current selected audio recording device
-   * @returns {Object} audio recording device object
+   * @description 获取当前的音频录制设备。
+   * @returns {Object} 音频录制设备对象
    */
   getCurrentAudioRecordingDevice(): Object {
     return this.rtcEngine.getCurrentAudioRecordingDevice();
   }
 
   /**
-   * @description get audio recording volume
-   * @return {number} volume
+   * @description 获取录制设备的音量。
+   * @return {number} 音量
    */
   getAudioRecordingVolume(): number {
     return this.rtcEngine.getAudioRecordingVolume();
   }
 
   /**
-   * @description set audio recording device volume
-   * @param {number} volume 0 - 255
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置录音设备的音量
+   * @param {number} volume 录音设备的音量，取值范围为 [0, 255]
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setAudioRecordingVolume(volume: number): number {
     return this.rtcEngine.setAudioRecordingVolume(volume);
   }
 
   /**
-   * @description This method checks whether the playback device works properly. The SDK plays an audio file
-   * specified by the user. If the user can hear the sound, then the playback device works properly.
-   * @param {string} filepath filepath of sound file to play test
-   * @returns {number} 0 for success, <0 for failure
+   * @description 开始音频播放设备测试。
+   *
+   * 该方法检测音频播放设备是否正常工作。SDK 会播放用户指定的音乐文件，如果用户可以听到声音，则说明播放设备正常工作。
+   * @param {string} filepath 用来测试的音乐文件的路径
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   startAudioPlaybackDeviceTest(filepath: string): number {
     return this.rtcEngine.startAudioPlaybackDeviceTest(filepath);
   }
 
   /**
-   * @description stop playback device test
-   * @returns {number} 0 for success, <0 for failure
+   * @description 停止播放设备测试。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   stopAudioPlaybackDeviceTest(): number {
     return this.rtcEngine.stopAudioPlaybackDeviceTest();
   }
 
   /**
-   * @description This method tests whether the local audio devices are working properly.
-   * After calling this method, the microphone captures the local audio
-   * and plays it through the speaker. The \ref IRtcEngineEventHandler::onAudioVolumeIndication "onAudioVolumeIndication" callback
-   * returns the local audio volume information at the set interval.
-   * @param {number} interval indication interval (ms)
+   * @description 开始音频设备回路测试。
+   *
+   * 该方法测试本地的音频设备是否正常工作。
+   * 调用该方法后，麦克风会采集本地语音并通过扬声器播放出来，用户需要配合说一段话。SDK 会通过 groupAudioVolumeIndication 回调向 App 上报音量信息。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   startAudioDeviceLoopbackTest(interval: number): number {
     return this.rtcEngine.startAudioDeviceLoopbackTest(interval);
   }
 
   /**
-   * @description stop AudioDeviceLoopbackTest
+   * @description 停止音频设备回路测试。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   stopAudioDeviceLoopbackTest(): number {
     return this.rtcEngine.stopAudioDeviceLoopbackTest();
   }
 
   /**
-   * @description This method enables loopback recording. Once enabled, the SDK collects all local sounds.
-   * @param {boolean} [enable = false] whether to enable loop back recording
-   * @param {string|null} [deviceName = null] target audio device
-   * @returns {number} 0 for success, <0 for failure
+   * @description 开启声卡采集。
+   *
+   * 一旦开启声卡采集，SDK 会采集本地所有的声音。
+   *
+   * @param {boolean} 是否开启声卡采集：
+   * - true：开启声卡采集
+   * - false：关闭声卡采集（默认）
+   * @param {string|null} 声卡的设备名。默认设为 null，即使用当前声卡采集。如果用户使用虚拟声卡，如 “Soundflower”，可以将虚拟声卡名称 “Soundflower” 作为参数，SDK 会找到对应的虚拟声卡设备，并开始采集。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   enableLoopbackRecording(enable = false, deviceName: string | null = null): number {
     return this.rtcEngine.enableLoopbackRecording(enable, deviceName);
   }
 
   /**
-   * @description This method checks whether the microphone works properly. Once the test starts, the SDK uses
-   * the onAudioVolumeIndication callback to notify the application about the volume information.
-   * @param {number} indicateInterval in second
-   * @returns {number} 0 for success, <0 for failure
+   * @description 开始音频录制设备测试。
+   *
+   * 该方法测试麦克风是否正常工作。开始测试后，SDK 会通过 groupAudioVolumeIndication 回调向 App 上报音量信息。
+   * @param {number} indicateInterval 返回音量的间隔时间，单位为秒
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   startAudioRecordingDeviceTest(indicateInterval: number): number {
     return this.rtcEngine.startAudioRecordingDeviceTest(indicateInterval);
   }
 
   /**
-   * @description stop audio recording device test
-   * @returns {number} 0 for success, <0 for failure
+   * @description 停止音频录制设备测试。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   stopAudioRecordingDeviceTest(): number {
     return this.rtcEngine.stopAudioRecordingDeviceTest();
   }
 
   /**
-   * @description check whether selected audio playback device is muted
-   * @returns {boolean} muted/unmuted
+   * @description 获取当前音频播放设备的静音状态。
+   * @returns {boolean}
+   * - true：当前音频播放设备静音
+   * - false：当前音频播放设备不静音
    */
   getAudioPlaybackDeviceMute(): boolean {
     return this.rtcEngine.getAudioPlaybackDeviceMute();
   }
 
   /**
-   * @description set current audio playback device mute/unmute
-   * @param {boolean} mute mute/unmute
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置当前音频播放设备为静音/不静音。
+   * @param {boolean} mute 是否设置当前音频播放设备静音：
+   * - true：设置当前音频播放设备静音
+   * - false：设置当前音频播放设备不静音
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setAudioPlaybackDeviceMute(mute: boolean): number {
     return this.rtcEngine.setAudioPlaybackDeviceMute(mute);
   }
 
   /**
-   * @description check whether selected audio recording device is muted
-   * @returns {boolean} muted/unmuted
+   * @description 获取当前音频录制设备的静音状态。
+   * @returns {boolean}
+   * - true：当前音频录制设备静音
+   * - false：当前音频录制设备不静音
    */
   getAudioRecordingDeviceMute(): boolean {
     return this.rtcEngine.getAudioRecordingDeviceMute();
   }
 
   /**
-   * @description set current audio recording device mute/unmute
-   * @param {boolean} mute mute/unmute
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置当前音频录制设备静音/不静音。
+   * @param {boolean} mute 是否设置当前音频录制设备静音：
+   * - true：设置当前音频录制设备静音
+   * - false：设置当前音频录制设备不静音
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setAudioRecordingDeviceMute(mute: boolean): number {
     return this.rtcEngine.setAudioRecordingDeviceMute(mute);
@@ -2097,26 +2153,34 @@ class AgoraRtcEngine extends EventEmitter {
   // use sdk original screenshare, if you want both, use video source.
   // ===========================================================================
   /**
-   * @description initialize agora real-time-communicating videosource with appid
-   * @param {string} appId agora appid
-   * @returns {number} 0 for success, <0 for failure
+   * @description 初始化屏幕共享对象
+   * @param {string} appId 你在 Agora Dashbaord 创建的项目 ID
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   videoSourceInitialize(appId: string): number {
     return this.rtcEngine.videoSourceInitialize(appId);
   }
 
   /**
-   * @description setup renderer for video source
-   * @param {Element} view dom element where video source should be displayed
+   * @description 设置屏幕共享的渲染器
+   * @param {Element} view 播放屏幕共享的 Dom
    */
   setupLocalVideoSource(view: Element): void {
     this.initRender('videosource', view);
   }
 
   /**
-   * @description Set it to true to enable videosource web interoperability (After videosource initialized)
-   * @param {boolean} enabled enalbe/disable web interoperability
-   * @returns {number} 0 for success, <0 for failure
+   * @description 开启与 Web SDK 的屏幕共享互通。
+   *
+   * **Note**：该方法需要在 {@link videoSourceInitialize} 之后调用。
+   * @param {boolean} enabled 是否开启与 Web SDK 之间的互通：
+   * - true：开启与 Web SDK 的互通
+   * - false：不开启与 Web SDK 的互通
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   videoSourceEnableWebSdkInteroperability(enabled: boolean): number {
     return this.rtcEngine.videoSourceEnableWebSdkInteroperability(enabled);
@@ -2124,12 +2188,21 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    *
-   * @description let video source join channel with token, channel, channel_info and uid
-   * @param {string} token token
-   * @param {string} cname channel
-   * @param {string} info channel info
-   * @param {number} uid uid
-   * @returns {number} 0 for success, <0 for failure
+   * @description 屏幕共享对象加入频道。
+   * @param {string} token 在 App 服务器端生成的用于鉴权的 Token：
+   * - 安全要求不高：你可以填入在 Agora Dashboard 获取到的临时 Token。详见[获取临时 Token](https://docs.agora.io/cn/Video/token?platform=All%20Platforms#获取临时-token)
+   * - 安全要求高：将值设为在 App 服务端生成的正式 Token。详见[获取 Token](https://docs.agora.io/cn/Video/token?platform=All%20Platforms#获取正式-token)
+   * @param {string} cname 标识频道的频道名，最大不超过 64 字节。以下为支持的字符集范围（共 89 个字符）：
+   * - 26 个小写英文字母 a-z
+   * - 26 个大写英文字母 A-Z
+   * - 10 个数字 0-9
+   * - 空格
+   * - "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ","
+   * @param {string} info 频道信息
+   * @param {number} uid 用户 ID
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   videoSourceJoin(
     token: string,
@@ -2141,65 +2214,84 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description let video source Leave channel
-   * @returns {number} 0 for success, <0 for failure
+   * @description 屏幕共享对象离开频道。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   videoSourceLeave(): number {
     return this.rtcEngine.videoSourceLeave();
   }
 
   /**
-   * @description This method updates the Token for video source
-   * @param {string} token new token to update
-   * @returns {number} 0 for success, <0 for failure
+   * @description 更新屏幕共享对象的 Token
+   * @param {string} token 需要更新的新 Token
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   videoSourceRenewToken(token: string): number {
     return this.rtcEngine.videoSourceRenewToken(token);
   }
 
   /**
-   * @description Set channel profile (after ScreenCapture2) for video source
-   * @description 0 (default) for communication, 1 for live broadcasting, 2 for in-game
-   * @param {number} profile profile
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置屏幕共享对象的频道模式。
+   * @param {number} profile 频道模式：
+   * - 0：通信模式（默认）
+   * - 1：直播模式
+   * - 2：游戏模式
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   videoSourceSetChannelProfile(profile: number): number {
     return this.rtcEngine.videoSourceSetChannelProfile(profile);
   }
 
   /**
-   * @description set video profile for video source (must be called after startScreenCapture2)
-   * @param {VIDEO_PROFILE_TYPE} profile - enumeration values represent video profile
-   * @param {boolean} [swapWidthAndHeight = false] - Whether to swap width and height
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置屏幕共享的视频属性。
+   * **Note**：请在 {@link startScreenCapture2} 后调用该方法。
+   * @param {VIDEO_PROFILE_TYPE} profile 视频属性
+   * @param {boolean} swapWidthAndHeight 是否交换视频的宽和高：
+   * - true：交换视频的宽和高
+   * - false：不交换视频的宽和高（默认）
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   videoSourceSetVideoProfile(profile: VIDEO_PROFILE_TYPE, swapWidthAndHeight = false): number {
     return this.rtcEngine.videoSourceSetVideoProfile(profile, swapWidthAndHeight);
   }
 
   /**
-   * @description get list of all system window ids and relevant infos, the window id can be used for screen share
-   * @returns {Array} list of window infos
+   * @description 获取系统窗口 ID。
+   *
+   * 该方法获取所有所有的系统窗口 ID，以及相关信息。你可以使用获取到的窗口 ID 进行屏幕共享。
+   * @returns {Array} 系统窗口 ID 和相关信息列表
    */
   getScreenWindowsInfo(): Array<Object> {
     return this.rtcEngine.getScreenWindowsInfo();
   }
 
   /**
-   * @description get list of all system display ids and relevant infos, the display id can be used for screen share
-   * @returns {Array} list of display infos
+   * @description 获取屏幕 ID。
+   *
+   * 该方法获取所有的系统屏幕 ID，以及相关信息。你可以使用获取到的屏幕 ID 进行屏幕共享。
+   * @returns {Array} 系统屏幕 ID 和相关信息列表
    */
    getScreenDisplaysInfo(): Array<Object> {
     return this.rtcEngine.getScreenDisplaysInfo();
   }
 
   /**
-   * @description start video source screen capture
-   * @param {number} wndid windows id to capture
-   * @param {number} captureFreq fps of video source screencapture, 1 - 15
-   * @param {*} rect null/if specified, e.g, {left: 0, right: 100, top: 0, bottom: 100} (relative distance from the left-top corner of the screen)
-   * @param {number} bitrate bitrate of video source screencapture
-   * @returns {number} 0 for success, <0 for failure
+   * @description 开始屏幕共享。
+   * @param {number} windowId 需要采集的窗口 ID
+   * @param {number} captureFreq 屏幕共享帧率，单位为 fps，取值范围为 [1, 15]
+   * @param {*} rect 共享窗口相对于屏幕左上角的相对位置和大小，可设为 null
+   * @param {number} bitrate 屏幕共享的比特率，单位为 Kbps
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   startScreenCapture2(
     windowId: number,
@@ -2211,51 +2303,65 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description stop video source screen capture
-   * @returns {number} 0 for success, <0 for failure
+   * @description 停止屏幕共享。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   stopScreenCapture2(): number {
     return this.rtcEngine.stopScreenCapture2();
   }
 
   /**
-   * @description start video source preview
-   * @returns {number} 0 for success, <0 for failure
+   * @description 开始屏幕共享预览。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   startScreenCapturePreview(): number {
     return this.rtcEngine.videoSourceStartPreview();
   }
 
   /**
-   * @description stop video source preview
-   * @returns {number} 0 for success, <0 for failure
+   * @description 停止屏幕共享预览。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   stopScreenCapturePreview(): number {
     return this.rtcEngine.videoSourceStopPreview();
   }
 
   /**
-   * @description enable dual stream mode for video source
-   * @param {boolean} enable whether dual stream mode is enabled
-   * @return {number} 0 for success, <0 for failure
+   * @description 开始屏幕共享流的双流模式。
+   * @param {boolean} enable 是否开始双流模式：
+   * - true：开启屏幕共享双流模式
+   * - false：不开启屏幕共享双流模式（默认）
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   videoSourceEnableDualStreamMode(enable: boolean): number {
     return this.rtcEngine.videoSourceEnableDualStreamMode(enable);
   }
 
   /**
-   * @description setParameters for video source
-   * @param {string} parameter parameter to set
-   * @returns {number} 0 for success, <0 for failure
+   * @description 双实例方法：启用定制功能。
+   * @param {string} parameter 要设置的参数。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   videoSourceSetParameters(parameter: string): number {
     return this.rtcEngine.videoSourceSetParameter(parameter);
   }
 
   /**
-   * @description This method updates the screen capture region for video source
-   * @param {*} rect {left: 0, right: 100, top: 0, bottom: 100} (relative distance from the left-top corner of the screen)
-   * @returns {number} 0 for success, <0 for failure
+   * @description 更新屏幕共享区域。
+   * @param {*} rect {left: 0, right: 100, top: 0, bottom: 100} 共享窗口相对于屏幕左上角的相对位置和大小，可设为 null
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   videoSourceUpdateScreenCaptureRegion(rect: {
     left: number,
@@ -2267,8 +2373,10 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description release video source object
-   * @returns {number} 0 for success, <0 for failure
+   * @description 释放屏幕共享对象
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   videoSourceRelease(): number {
     return this.rtcEngine.videoSourceRelease();
@@ -2276,36 +2384,38 @@ class AgoraRtcEngine extends EventEmitter {
 
   // 2.4 new Apis
   /**
-   * @description Shares the whole or part of a screen by specifying the screen rect.
-   * @param {ScreenSymbol} screenSymbol screenid on mac / screen position on windows
-   * @param {CaptureRect} rect
-   * @param {CaptureParam} param
+   * @description 通过指定区域共享屏幕。
+   * @param {ScreenSymbol} screenSymbol 屏幕标识：
+   * - macOS 系统中，指屏幕 ID
+   * - Windows 系统中，值屏幕位置
+   * @param {CaptureRect} rect 待共享区域相对于整个屏幕的位置
+   * @param {CaptureParam} param 屏幕共享的编码参数配置
    */
   videosourceStartScreenCaptureByScreen(screenSymbol: ScreenSymbol, rect: CaptureRect, param: CaptureParam): number {
     return this.rtcEngine.videosourceStartScreenCaptureByScreen(screenSymbol, rect, param);
   }
 
   /**
-   * @description Shares the whole or part of a window by specifying the window ID.
-   * @param {number} windowSymbol windowid
-   * @param {CaptureRect} rect
-   * @param {CaptureParam} param
+   * @description 通过指定窗口 ID 共享窗口。
+   * @param {number} windowSymbol 窗口 ID
+   * @param {CaptureRect} rect 待共享区域相对于整个窗口的位置
+   * @param {CaptureParam} param 屏幕共享的编码参数配置
    */
   videosourceStartScreenCaptureByWindow(windowSymbol: number, rect: CaptureRect, param: CaptureParam): number {
     return this.rtcEngine.videosourceStartScreenCaptureByWindow(windowSymbol, rect, param);
   }
 
   /**
-   * @description Updates the screen sharing parameters.
-   * @param {CaptureParam} param
+   * @description 更新屏幕共享参数配置。
+   * @param {CaptureParam} param 屏幕共享的编码参数配置
    */
   videosourceUpdateScreenCaptureParameters(param: CaptureParam): number {
     return this.rtcEngine.videosourceUpdateScreenCaptureParameters(param);
   }
 
   /**
-   * @description  Updates the screen sharing parameters.
-   * @param {VideoContentHint} hint
+   * @description 设置屏幕共享内容类型。
+   * @param {VideoContentHint} hint 屏幕共享的内容类型
    */
   videosourceSetScreenCaptureContentHint(hint: VideoContentHint): number {
     return this.rtcEngine.videosourceSetScreenCaptureContentHint(hint);
@@ -2320,12 +2430,14 @@ class AgoraRtcEngine extends EventEmitter {
   // one at a time via this section's api
   // ===========================================================================
   /**
-   * @description start screen capture
-   * @param {number} windowId windows id to capture
-   * @param {number} captureFreq fps of screencapture, 1 - 15
-   * @param {*} rect null/if specified, e.g, {left: 0, right: 100, top: 0, bottom: 100} (relative distance from the left-top corner of the screen)
-   * @param {number} bitrate bitrate of screencapture
-   * @returns {number} 0 for success, <0 for failure
+   * @description 开始屏幕共享
+   * @param {number} windowId 待共享的窗口 ID
+   * @param {number} captureFreq 屏幕共享的编码帧率，单位为 fps，取值范围为 [1, 15]
+   * @param {*} rect 共享窗口相对于屏幕左上角的相对位置和大小，可设为 null
+   * @param {number} bitrate 屏幕共享的比特率，单位为 Kbps
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   startScreenCapture(
     windowId: number,
@@ -2337,17 +2449,21 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description stop screen capture
-   * @returns {number} 0 for success, <0 for failure
+   * @description 停止屏幕共享
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   stopScreenCapture(): number {
     return this.rtcEngine.stopScreenCapture();
   }
 
   /**
-   * @description This method updates the screen capture region.
-   * @param {*} rect {left: 0, right: 100, top: 0, bottom: 100} (relative distance from the left-top corner of the screen)
-   * @returns {number} 0 for success, <0 for failure
+   * @description 更新屏幕共享区域。
+   * @param {*} rect {left: 0, right: 100, top: 0, bottom: 100} 共享窗口相对于屏幕左上角的相对位置和大小，可设为 null
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   updateScreenCaptureRegion(
     rect: {
@@ -2364,16 +2480,24 @@ class AgoraRtcEngine extends EventEmitter {
   // AUDIO MIXING
   // ===========================================================================
   /**
-   * @description This method mixes the specified local audio file with the audio stream
-   * from the microphone; or, it replaces the microphone’s audio stream with the specified
-   * local audio file. You can choose whether the other user can hear the local audio playback
-   * and specify the number of loop playbacks. This API also supports online music playback.
-   * @param {string} filepath Name and path of the local audio file to be mixed.
-   *            Supported audio formats: mp3, aac, m4a, 3gp, and wav.
-   * @param {boolean} loopback true - local loopback, false - remote loopback
-   * @param {boolean} replace whether audio file replace microphone audio
-   * @param {number} cycle number of loop playbacks, -1 for infinite
-   * @returns {number} 0 for success, <0 for failure
+   * @description 开始播放音乐文件及混音。
+   *
+   * 该方法指定本地或在线音频文件来和麦克风采集的音频流进行混音或替换。替换是指用音频文件替换麦克风采集的音频流。该方法可以选择是否让对方听到本地播放的音频，并指定循环播放的次数。
+   * 音乐文件播放结束后，会收到 audiomixingfinished 回调。
+   * @param {string} filepath 指定需要混音的本地或在线音频文件的绝对路径。支持的音频格式包括：mp3、mp4、m4a、aac、3gp、mkv 及 wav
+   * @param {boolean} loopback
+   * - true：只有本地可以听到混音或替换后的音频流
+   * - false：本地和对方都可以听到混音或替换后的音频流
+   * @param {boolean} replace
+   * - true：只推动设置的本地音频文件或者线上音频文件，不传输麦克风收录的音频
+   * - false：音频文件内容将会和麦克风采集的音频流进行混音
+   * @param {number} cycle 指定音频文件循环播放的次数：
+   * - 正整数：循环的次数
+   * - -1：无限循环
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
+   *
    */
   startAudioMixing(
     filepath: string,
@@ -2385,8 +2509,12 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description This method stops audio mixing. Call this API when you are in a channel.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 停止播放音乐文件及混音。
+   *
+   * **Note**：请在频道内调用该方法。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   stopAudioMixing(): number {
     return this.rtcEngine.stopAudioMixing();
