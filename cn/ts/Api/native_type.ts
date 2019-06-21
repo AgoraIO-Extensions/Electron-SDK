@@ -1,3 +1,13 @@
+/**
+ * 网络质量：
+ * - 0：质量未知
+ * - 1：质量极好
+ * - 2：主观感觉和极好差不多，但码率可能略低于极好
+ * - 3：主观感受有瑕疵但不影响沟通
+ * - 4：勉强能沟通但不顺畅
+ * - 5：网络质量非常差，基本不能沟通
+ * - 6：网络连接已断开，完全无法沟通
+ */
 export type AgoraNetworkQuality =
   | 0 // unknown
   | 1 // excellent
@@ -14,7 +24,11 @@ export type AgoraNetworkQuality =
  */
 export type ClientRoleType = 1 | 2;
 
-/** 0 for high, 1 for low */
+/**
+ * 视频流类型：
+ * - 0：视频大流，即高分辨率、高码率视频流
+ * - 1：视频小流，即低分辨率、低码率视频流
+ */
 export type StreamType = 0 | 1;
 
 export type MediaDeviceType =
@@ -25,93 +39,107 @@ export type MediaDeviceType =
   | 3 // Video capturer
   | 4; // Application audio playback device
 
+/**
+ * TranscodingUser 类。
+ */
 export interface TranscodingUser {
-  /** stream uid */
+  /** 旁路推流的主播用户 ID。 */
   uid: number;
-  /** x start positon of stream */
+  /** 直播视频上用户视频在布局中的横坐标绝对值。 */
   x: number;
-  /** y start positon of stream */
+  /** 直播视频上用户视频在布局中的纵坐标绝对值。 */
   y: number;
-  /** selected width of stream */
+  /** 直播视频上用户视频的宽度，默认值为 360。 */
   width: number;
-  /** selected height of stream */
+  /** 直播视频上用户视频的高度，默认值为 640。 */
   height: number;
-  /** zorder of the stream, [1,100] */
+  /** 直播视频上用户视频帧的图层编号。取值范围为 [0, 100] 中的整型：
+   * - 最小值为 0（默认值），表示该区域图像位于最下层
+   * - 最大值为 100，表示该区域图像位于最上层
+   */
   zOrder: number;
-  /** (double) transparency alpha of the stream, [0,1] */
+  /** 直播视频上用户视频的透明度。取值范围为 [0.0, 1.0]。0.0 表示该区域图像完全透明，而 1.0 表示该区域图像完全不透明。默认值为 1.0。 */
   alpha: number;
   /**
-   * - 0: (Default) Supports dual channels at most, depending on the upstream of the broadcaster.
-   * - 1: The audio stream of the broadcaster uses the FL audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
-   * - 2: The audio stream of the broadcaster uses the FC audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
-   * - 3: The audio stream of the broadcaster uses the FR audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
-   * - 4: The audio stream of the broadcaster uses the BL audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
-   * - 5: The audio stream of the broadcaster uses the BR audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
+   * 直播音频所在声道。取值范围为 [0, 5]，默认值为 0。选项不为 0 时，需要特殊的播放器支持。
+   * - 0：（推荐）默认混音设置，最多支持双声道，与主播端上行音频相关
+   * - 1：对应主播的音频，推流中位于 FL 声道。如果主播上行为双声道，会先把多声道混音成单声道
+   * - 2：对应主播的音频，推流中位于 FC 声道。如果主播上行为双声道，会先把多声道混音成单声道
+   * - 3：对应主播的音频，推流中位于 FR 声道。如果主播上行为双声道，会先把多声道混音成单声道
+   * - 4：对应主播的音频，推流中位于 BL 声道。如果主播上行为双声道，会先把多声道混音成单声道
+   * - 5：对应主播的音频，推流中位于 BR 声道。如果主播上行为双声道，会先把多声道混音成单声道
    */
   audioChannel: number;
 }
 
-/** Transcoding Sets the CDN live audio/video transcoding settings. See LiveTranscoding. */
+/**
+ * 直播转码的相关配置。
+ */
 export interface TranscodingConfig {
-  /** width of canvas */
+  /** 用于旁路直播的输出视频的总宽度，默认值为 360。width × height 的最小值为 16 × 16。*/
   width: number;
-  /** height of canvas */
+  /** 用于旁路直播的输出视频的总高度，默认值为 640。width × height 的最小值为 16 × 16。*/
   height: number;
-  /** kbps value, for 1-1 mapping pls look at https://docs.agora.io/cn/Interactive%20Broadcast/API%20Reference/cpp/structagora_1_1rtc_1_1_video_encoder_configuration.html */
+  /** 用于旁路直播的输出视频的码率，单位为 Kbps，默认值为 400 Kbps。用户可以根据码率参考表中的码率值进行设置；如果设置的码率超出合理范围，Agora 服务器会在合理区间内自动调整码率值。 */
   videoBitrate: number;
-  /** fps, default 15 */
+  /** 用于旁路直播的输出视频的帧率，单位为帧每秒，取值范围为 [15, 30]，默认值为 15 fps。服务器会将低于 15 的帧率设置改为 15，将高于 30 的帧率设置改为 30。*/
   videoFrameRate: number;
-  /** true for low latency, no video quality garanteed; false - high latency, video quality garanteed */
+  /** 是否启用低延时模式：
+   * - true：低延时，不保证画质
+   * - false：（默认值）高延时，保证画质
+   */
   lowLatency: boolean;
-  /** Video GOP in frames, default 30 */
+  /** 用于旁路直播的输出视频的 GOP，单位为帧。默认值为 30 帧。*/
   videoGop: number;
   /**
-   * - VIDEO_CODEC_PROFILE_BASELINE = 66
-   * Baseline video codec profile. Generally used in video calls on mobile phones
-   * - VIDEO_CODEC_PROFILE_MAIN = 77
-   * Main video codec profile. Generally used in mainstream electronics such as MP4 players, portable video players, PSP, and iPads.
-   * - VIDEO_CODEC_PROFILE_HIGH = 100
-   * (Default) High video codec profile. Generally used in high-resolution broadcasts or television
+   * 用于旁路直播的输出视频的编解码规格。可以设置为 BASELINE、MAIN 或 HIGH；如果设置其他值，服务端会统一设为默认值 HIGH。
+   * - VIDEO_CODEC_PROFILE_BASELINE = 66：Baseline 级别的视频编码规格，一般用于视频通话、手机视频等。
+   * - VIDEO_CODEC_PROFILE_MAIN = 77：Main 级别的视频编码规格，一般用于主流消费类电子产品，如 mp4、便携的视频播放器、PSP 和 iPad 等
+   * - VIDEO_CODEC_PROFILE_HIGH = 100：（默认）High 级别的视频编码规格，一般用于广播及视频碟片存储，高清电视
    */
   videoCodecProfile: number;
   /**
-   * RGB hex value. Value only, do not include a #. For example, 0xC0C0C0.
-   * number color = (A & 0xff) << 24 | (R & 0xff) << 16 | (G & 0xff) << 8 | (B & 0xff)
+   * 设置旁路直播的背景颜色。格式为 RGB 定义下的 Hex 值，不要带 # 号，如 0xC0C0C0。
+   * 颜色对应的 Hex 值 = (A & 0xff) << 24 | (R & 0xff) << 16 | (G & 0xff) << 8 | (B & 0xff)
    */
   backgroundColor: number;
-  /** The number of users in the live broadcast */
+  /** 获取旁路直播中的用户人数。*/
   userCount: number;
   /**
+   * 用于旁路直播的输出音频的采样率：
    * - AUDIO_SAMPLE_RATE_32000 = 32000
-   * - AUDIO_SAMPLE_RATE_44100 = 44100
+   * - AUDIO_SAMPLE_RATE_44100 = 44100（默认）
    * - AUDIO_SAMPLE_RATE_48000 = 48000
    */
   audioSampleRate: number;
   /**
-   * - 1: (Default) Mono
-   * - 2: Two-channel stereo
-   * - 3: Three-channel stereo
-   * - 4: Four-channel stereo
-   * - 5: Five-channel stereo
-   * > A special player is required if you choose option 3, 4, or 5
+   * 用于旁路直播的输出音频的声道数，取值范围为 [1, 5] 中的整型，默认值为 1。建议取 1 或 2，其余三个选项需要特殊播放器支持：
+   * - 1：单声道
+   * - 2：双声道
+   * - 3：三声道
+   * - 4：四声道
+   * - 5：五声道
    */
   audioChannels: number;
   watermark: {
-    /**  url of the image */
+    /** 直播视频上图片的 HTTP/HTTPS 地址，字符长度不得超过 1024 字节。 */
     url: string;
-    /** x start position of image */
+    /** 图片左上角在视频帧上的横轴坐标。*/
     x: number;
-    /** y start position of image */
+    /** 图片左上角在视频帧上的纵轴坐标。*/
     y: number;
-    /** width of image */
+    /** 图片在视频帧上的宽度。*/
     width: number;
-    /** height of image */
+    /** 图片在视频帧上的高度。*/
     height: number;
   };
-  /** transcodingusers array */
+  /** TranscodingUser 类。 */
   transcodingUsers: Array<TranscodingUser>;
 }
 
+/**
+ * Last-mile 网络质量探测配置。
+ */
 export interface LastmileProbeConfig {
   probeUplink: boolean;
   probeDownlink: boolean;
@@ -168,35 +196,37 @@ export enum AudioReverbPreset {
   /** 7: Recording studio. */
   AUDIO_REVERB_STUDIO = 7
 }
-
+/**
+ * 外部导入音视频流定义。
+ */
 export interface InjectStreamConfig {
-  /** Width of the added stream in the live broadcast. The default value is 0 (same width as the original stream) */
+  /** 添加进入直播的外部视频源宽度。默认值为 0，即保留视频源原始宽度。 */
   width: number;
-  /** Height of the added stream in the live broadcast. The default value is 0 (same height as the original stream) */
+  /** 添加进入直播的外部视频源高度。默认值为 0，即保留视频源原始高度。 */
   height: number;
-  /** Video bitrate of the added stream in the live broadcast. The default value is 400 Kbps. */
+  /** 添加进入直播的外部视频源码率。默认设置为 400 Kbps。 */
   videoBitrate: number;
-  /** Video frame rate of the added stream in the live broadcast. The default value is 15 fps */
+  /** 添加进入直播的外部视频源帧率。默认值为 15 fps。 */
   videoFrameRate: number;
-  /** Video GOP of the added stream in the live broadcast in frames. The default value is 30 fps */
+  /** 添加进入直播的外部视频源 GOP。默认值为 30 帧。 */
   videoGop: number;
   /**
-   * Audio-sampling rate of the added stream in the live broadcast: #AUDIO_SAMPLE_RATE_TYPE. The default value is 48000 Hz
-   * **Note**： Agora recommends setting the default value
+   * 添加进入直播的外部音频采样率。默认值为 44100。
+   * **Note**：声网建议目前采用默认值，不要自行设置。
    * - AUDIO_SAMPLE_RATE_32000 = 32000
-   * - AUDIO_SAMPLE_RATE_44100 = 44100
+   * - AUDIO_SAMPLE_RATE_44100 = 44100（默认）
    * - AUDIO_SAMPLE_RATE_48000 = 48000
    */
   audioSampleRate: number;
   /**
-   * **Note**： Agora recommends setting the default value
-   * Audio bitrate of the added stream in the live broadcast. The default value is 48
+   * 添加进入直播的外部音频码率。单位为 Kbps，默认值为 48。
+   * **Note**：声网建议目前采用默认值，不要自行设置。
    */
   audioBitrate: number;
   /**
-   * **Note**： Agora recommends setting the default value
-   * - 1: (Default) Mono
-   * - 2: Two-channel stereo
+   * **Note**：添加进入直播的外部音频频道数。取值范围 [1, 2]，默认值为 1。
+   * - 1：单声道（默认）
+   * - 2：双声道立体声
    */
   audioChannels: number;
 }

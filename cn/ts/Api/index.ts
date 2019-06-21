@@ -2483,7 +2483,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @description 开始播放音乐文件及混音。
    *
    * 该方法指定本地或在线音频文件来和麦克风采集的音频流进行混音或替换。替换是指用音频文件替换麦克风采集的音频流。该方法可以选择是否让对方听到本地播放的音频，并指定循环播放的次数。
-   * 音乐文件播放结束后，会收到 audiomixingfinished 回调。
+   * 音乐文件开始播放后，本地会收到 audioMixingStateChanged 回调，报告音乐文件播放状态发生改变。
    * @param {string} filepath 指定需要混音的本地或在线音频文件的绝对路径。支持的音频格式包括：mp3、mp4、m4a、aac、3gp、mkv 及 wav
    * @param {boolean} loopback
    * - true：只有本地可以听到混音或替换后的音频流
@@ -2509,9 +2509,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description 停止播放音乐文件及混音。
-   *
-   * **Note**：请在频道内调用该方法。
+   * @description 停止播放音乐文件及混音。请在频道内调用该方法。
    * @returns {number}
    * - 0：方法调用成功
    * - < 0：方法调用失败
@@ -2521,71 +2519,87 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description This method pauses audio mixing. Call this API when you are in a channel.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 暂停播放音乐文件及混音。请在频道内调用该方法。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   pauseAudioMixing(): number {
     return this.rtcEngine.pauseAudioMixing();
   }
 
   /**
-   * @description This method resumes audio mixing from pausing. Call this API when you are in a channel.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 恢复播放音乐文件及混音。请在频道内调用该方法。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   resumeAudioMixing(): number {
     return this.rtcEngine.resumeAudioMixing();
   }
 
   /**
-   * @description This method adjusts the volume during audio mixing. Call this API when you are in a channel.
-   * @param {number} volume Volume ranging from 0 to 100. By default, 100 is the original volume.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 调节音乐文件的播放音量。请在频道内调用该方法。
+   * @param {number} 音乐文件播放音量，取值范围为 [0, 100]，默认值为 100，表示原始文件音量
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   adjustAudioMixingVolume(volume: number): number {
     return this.rtcEngine.adjustAudioMixingVolume(volume);
   }
 
   /**
-   * @description Adjusts the audio mixing volume for local playback.
-   * @param {number} volume Volume ranging from 0 to 100. By default, 100 is the original volume.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 调节音乐文件的本地播放音量。请在频道内调用该方法。
+   * @param {number} 音乐文件的本地播放音量，取值范围为 [0, 100]，默认值为 100，表示原始文件音量
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   adjustAudioMixingPlayoutVolume(volume: number): number {
     return this.rtcEngine.adjustAudioMixingPlayoutVolume(volume);
   }
 
   /**
-   * @description Adjusts the audio mixing volume for publishing (for remote users).
-   * @param {number} volume Volume ranging from 0 to 100. By default, 100 is the original volume.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 调节音乐文件的远端播放音量。请在频道内调用该方法。
+   * @param {number} 音乐文件的远端播放音量，取值范围为 [0, 100]，默认值为 100，表示原始文件音量
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   adjustAudioMixingPublishVolume(volume: number): number {
     return this.rtcEngine.adjustAudioMixingPublishVolume(volume);
   }
 
   /**
-   * @description This method gets the duration (ms) of the audio mixing. Call this API when you are in
-   * a channel. A return value of 0 means that this method call has failed.
-   * @returns {number} duration of audio mixing
+   * @description 获取音乐文件的时长。请在频道内调用该方法。如果返回值 < 0，表明调用失败。
+   * @returns {number}
+   * - < 0：方法调用失败
+   * - 其他：方法调用成功，并返回伴奏时长
    */
   getAudioMixingDuration(): number {
     return this.rtcEngine.getAudioMixingDuration();
   }
 
   /**
-   * @description This method gets the playback position (ms) of the audio. Call this API
-   * when you are in a channel.
-   * @returns {number} current playback position
+   * @description 获取音乐文件的播放进度，单位为毫秒。请在频道内调用该方法。
+   * @returns {number}
+   * - < 0：方法调用失败
+   * - 其他值：方法调用成功并返回伴奏播放进度
    */
   getAudioMixingCurrentPosition(): number {
     return this.rtcEngine.getAudioMixingCurrentPosition();
   }
 
   /**
-   * @description This method drags the playback progress bar of the audio mixing file to where
-   * you want to play instead of playing it from the beginning.
-   * @param {number} position Integer. The position of the audio mixing file in ms
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置音乐文件的播放位置。
+   *
+   * 该方法可以设置音频文件的播放位置，这样你可以根据实际情况播放文件，而不是非得从头到尾播放一个文件。
+   *
+   * @param {number} 表示当前播放进度的整数，单位为毫秒
+   * @returns
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setAudioMixingPosition(position: number): number {
     return this.rtcEngine.setAudioMixingPosition(position);
@@ -2595,36 +2609,48 @@ class AgoraRtcEngine extends EventEmitter {
   // CDN STREAMING
   // ===========================================================================
    /**
-    * @description Adds a stream RTMP URL address, to which the host publishes the stream. (CDN live only.)
-    * Invoke onStreamPublished when successful
+    * @description 增加旁路推流地址。
+    *
+    * 调用该方法后，SDK 会在本地触发 streamPublished 回调，报告增加旁路推流地址的状态。
     * **Note**：
-    * - Ensure that the user joins the channel before calling this method.
-    * - This method adds only one stream RTMP URL address each time it is called.
-    * - The RTMP URL address must not contain special characters, such as Chinese language characters.
-    * @param {string} url Pointer to the RTMP URL address, to which the host publishes the stream
-    * @param {bool} transcodingEnabled Sets whether transcoding is enabled/disabled
-    * @returns {number} 0 for success, <0 for failure
+    * - 请在加入频道后调用该方法。
+    * - 该方法每次只能增加一路旁路推流地址。若需推送多路流，则需多次调用该方法。
+    * - 推流地址不支持中文等特殊字符，
+    * - 该方法仅适用于直播模式。
+    * @param {string} CDN 推流地址，格式为 RTMP。该字符长度不能超过 1024 字节
+    * @param {bool} transcodingEnabled 设置是否转码：
+    * - true：转码。[转码](https://docs.agora.io/cn/Agora%20Platform/terms?platform=All%20Platforms#转码)是指在旁路推流时对音视频流进行转码处理后，再推送到其他 RTMP 服务器。多适用于频道内有多个主播，需要进行混流、合图的场景
+    * @returns
+    * - 0：方法调用成功
+    * - < 0：方法调用失败
     */
   addPublishStreamUrl(url: string, transcodingEnabled: boolean): number {
     return this.rtcEngine.addPublishStreamUrl(url, transcodingEnabled);
   }
 
   /**
-   * @description Removes a stream RTMP URL address. (CDN live only.)
+   * @description 删除旁路推流地址。
+   *
+   * 调用该方法后，SDK 会在本地触发 streamUnpublished 回调，报告删除旁路推流地址的状态。
    * **Note**：
-   * - This method removes only one RTMP URL address each time it is called.
-   * - The RTMP URL address must not contain special characters, such as Chinese language characters.
-   * @param {string} url Pointer to the RTMP URL address to be removed.
-   * @returns {number} 0 for success, <0 for failure
+   * - 该方法每次只能删除一路旁路推流地址。若需删除多路流，则需多次调用该方法。
+   * - 推流地址不支持中文等特殊字符。
+   * - 该方法只适用于直播模式。
+   * @param {string} 待删除的推流地址，格式为 RTMP。该字符长度不能超过 1024 字节
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   removePublishStreamUrl(url: string): number {
     return this.rtcEngine.removePublishStreamUrl(url);
   }
 
   /**
-   * @description Sets the video layout and audio settings for CDN live. (CDN live only.)
-   * @param {TranscodingConfig} transcoding transcoding Sets the CDN live audio/video transcoding settings. See LiveTranscoding.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置直播转码。
+   * @param {TranscodingConfig} 旁路推流布局相关设置
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setLiveTranscoding(transcoding: TranscodingConfig): number {
     return this.rtcEngine.setLiveTranscoding(transcoding);
@@ -2634,28 +2660,34 @@ class AgoraRtcEngine extends EventEmitter {
   // STREAM INJECTION
   // ===========================================================================
   /**
-   * @description Adds a voice or video stream HTTP/HTTPS URL address to a live broadcast.
-   * - The \ref IRtcEngineEventHandler::onStreamInjectedStatus "onStreamInjectedStatus" callback returns
-   * the inject stream status.
-   * - The added stream HTTP/HTTPS URL address can be found in the channel with a @p uid of 666, and the
-   * \ref IRtcEngineEventHandler::onUserJoined "onUserJoined" and \ref IRtcEngineEventHandler::onFirstRemoteVideoFrame "onFirstRemoteVideoFrame"
-   * callbacks are triggered.
-   * @param {string} url Pointer to the HTTP/HTTPS URL address to be added to the ongoing live broadcast. Valid protocols are RTMP, HLS, and FLV.
-   * - Supported FLV audio codec type: AAC.
-   * - Supported FLV video codec type: H264 (AVC).
-   * @param {InjectStreamConfig} config Pointer to the InjectStreamConfig object that contains the configuration of the added voice or video stream
-   * @returns {number} 0 for success, <0 for failure
+   * @description 导入在线媒体流。
+   *
+   * 该方法通过在服务端拉取视频流并发送到频道中，将正在播出的视频导入到正在进行的直播中。
+   * 可主要应用于赛事直播、多人看视频互动等直播场景。
+   *
+   * 调用该方法后，SDK 会在本地触发 streamInjectStatus 回调，报告导入在线媒体流的状态。
+   * 成功导入媒体流后，该音视频流会出现在频道中，频道内所有用户都会收到 userJoined 回调，其中 uid 为 666。
+   *
+   * **Note**：请确保已联系 sales@agora.io 开通旁路直播推流功能。
+   * @param {string} 添加到直播中的视频流 URL 地址，支持 RTMP， HLS， FLV 协议传输。
+   * - 支持的 FLV 音频编码格式：AAC
+   * - 支持的 FLV 视频编码格式：H264 (AVC)
+   * @param {InjectStreamConfig} 外部导入的音视频流的配置
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   addInjectStreamUrl(url: string, config: InjectStreamConfig): number {
     return this.rtcEngine.addInjectStreamUrl(url, config);
   }
 
   /**
-   * @description Removes the voice or video stream HTTP/HTTPS URL address from a live broadcast.
-   * **Note**： If this method is called successfully, the \ref IRtcEngineEventHandler::onUserOffline "onUserOffline" callback is triggered
-   * and a stream uid of 666 is returned.
-   * @param {string} url Pointer to the HTTP/HTTPS URL address of the added stream to be removed.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 删除导入的在线媒体流。
+   * **Note**：成功删除后，会触发 removeStream 回调，其中 uid 为 666。
+   * @param {string} url 已导入、待删除的外部视频流 URL 地址，格式为 HTTP 或 HTTPS
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   removeInjectStreamUrl(url: string): number {
     return this.rtcEngine.removeInjectStreamUrl(url);
@@ -2666,14 +2698,19 @@ class AgoraRtcEngine extends EventEmitter {
   // RAW DATA
   // ===========================================================================
   /**
-   * @description This method sets the format of the callback data in onRecordAudioFrame.
-   * @param {number} sampleRate It specifies the sampling rate in the callback data returned by onRecordAudioFrame,
-   * which can set be as 8000, 16000, 32000, 44100 or 48000.
-   * @param {number} channel 1 - mono, 2 - dual
-   * @param {number} mode 0 - read only mode, 1 - write-only mode, 2 - read and white mode
-   * @param {number} samplesPerCall It specifies the sampling points in the called data returned in onRecordAudioFrame,
-   * for example, it is usually set as 1024 for stream pushing.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置录制的声音格式。
+   * @param {number} sampleRate 指定返回数据的采样率，可设置为 8000，16000，32000，44100 或 48000。
+   * @param {number} 指定返回数据的通道数：
+   * - 1：单声道
+   * - 2：双声道
+   * @param {number} mode 指定使用模式：
+   * - 0：只读模式，用户仅从 AudioFrame 获取原始音频数据。例如：若用户通过 Agora SDK 采集数据，自己进行 RTMP 推流，则可以选择该模式。
+   * - 1：只写模式，用户替换 AudioFrame 中的数据以供 Agora SDK 编码传输。例如：若用户自行采集数据，可选择该模式。
+   * - 2：读写模式，用户从 AudioFrame 获取并修改数据，并返回给 Aogra SDK 进行编码传输。例如：若用户自己有音效处理模块，且想要根据实际需要对数据进行前处理 (例如变声)，则可以选择该模式。
+   * @param {number} 指定返回数据的采样点数，如 RTMP 推流应用中通常为 1024。 SamplesPerCall = (int)(SampleRate × sampleInterval)，其中：sample ≥ 0.01，单位为秒
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setRecordingAudioFrameParameters(
     sampleRate: number,
@@ -2690,14 +2727,19 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * This method sets the format of the callback data in onPlaybackAudioFrame.
-   * @param {number} sampleRate Specifies the sampling rate in the callback data returned by onPlaybackAudioFrame,
-   * which can set be as 8000, 16000, 32000, 44100, or 48000.
-   * @param {number} channel 1 - mono, 2 - dual
-   * @param {number} mode 0 - read only mode, 1 - write-only mode, 2 - read and white mode
-   * @param {number} samplesPerCall It specifies the sampling points in the called data returned in onRecordAudioFrame,
-   * for example, it is usually set as 1024 for stream pushing.
-   * @returns {number} 0 for success, <0 for failure
+   * 设置播放的声音格式。
+   * @param {number} 指定返回数据的采样率，可设置为 8000，16000，32000，44100 或 48000
+   * @param {number} 指定返回数据的通道数：
+   * - 1：单声道
+   * - 2：双声道
+   * @param {number} mode 指定使用模式：
+   * - 0：只读模式，用户仅从 AudioFrame 获取原始音频数据。例如：若用户通过 Agora SDK 采集数据，自己进行 RTMP 推流，则可以选择该模式。
+   * - 1：只写模式，用户替换 AudioFrame 中的数据以供 Agora SDK 编码传输。例如：若用户自行采集数据，可选择该模式。
+   * - 2：读写模式，用户从 AudioFrame 获取并修改数据，并返回给 Aogra SDK 进行编码传输。例如：若用户自己有音效处理模块，且想要根据实际需要对数据进行前处理 (例如变声)，则可以选择该模式。
+   * @param {number} 指定返回数据的采样点数，如 RTMP 推流应用中通常为 1024。 SamplesPerCall = (int)(SampleRate × sampleInterval)，其中：sample ≥ 0.01，单位为秒
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setPlaybackAudioFrameParameters(
     sampleRate: number,
@@ -2714,12 +2756,12 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * This method sets the format of the callback data in onMixedAudioFrame.
-   * @param {number} sampleRate Specifies the sampling rate in the callback data returned by onMixedAudioFrame,
-   * which can set be as 8000, 16000, 32000, 44100, or 48000.
-   * @param {number} samplesPerCall Specifies the sampling points in the called data returned in onMixedAudioFrame,
-   * for example, it is usually set as 1024 for stream pushing.
-   * @returns {number} 0 for success, <0 for failure
+   * 设置录制和播放声音混音后的数据格式。
+   * @param {number} sampleRate 指定返回数据的采样率，可设置为 8000，16000，32000，44100 或 48000
+   * @param {number} samplesPerCall 指定 onMixedAudioFrame 中返回数据的采样点数，如 RTMP 推流应用中通常为 1024。 SamplesPerCall = (int)(SampleRate × sampleInterval)，其中：sample ≥ 0.01，单位为秒
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setMixedAudioFrameParameters(
     sampleRate: number,
@@ -2732,25 +2774,36 @@ class AgoraRtcEngine extends EventEmitter {
   // DATA CHANNEL
   // ===========================================================================
   /**
-   * @description This method creates a data stream. Each user can only have up to five data channels at the same time.
-   * @param {boolean} reliable true - The recipients will receive data from the sender within 5 seconds. If the recipient does not receive the sent data within 5 seconds, the data channel will report an error to the application.
-   * false - The recipients may not receive any data, while it will not report any error upon data missing.
-   * @param {boolean} ordered true - The recipients will receive data in the order of the sender.
-   * false - The recipients will not receive data in the order of the sender.
-   * @returns {number} <0 for failure, > 0 for stream id of data
+   * @description 创建数据流。
+   *
+   * 该方法用于创建数据流。频道内每人最多只能创建 5 个数据流。频道内数据通道最多允许数据延迟 5 秒，若超过 5 秒接收方尚未收到数据流，则数据通道会向 App 报错。
+   * **Note**：请将 reliable 和 ordered 同时设置为 true 或 false，暂不支持交叉设置。
+   * @param {boolean} reliable
+   * - true：接收方 5 秒内会收到发送方所发送的数据，否则会收到 streamMessageError 回调并获得相应报错信息
+   * - false：接收方不保证收到，就算数据丢失也不会报错
+   * @param {boolean} ordered
+   * - true：接收方 5 秒内会按照发送方发送的顺序收到数据包
+   * - false：接收方不保证按照发送方发送的顺序收到数据包
+   * @returns {number}
+   * - 创建数据流成功则返回数据流 ID
+   * - < 0：创建数据流失败。如果返回的错误码是负数，对应错误代码和警告代码里的正整数
    */
   createDataStream(reliable: boolean, ordered: boolean): number {
     return this.rtcEngine.createDataStream(reliable, ordered);
   }
 
   /**
-   * @description This method sends data stream messages to all users in a channel.
-   * Up to 30 packets can be sent per second in a channel with each packet having a maximum size of 1 kB.
-   * The API controls the data channel transfer rate. Each client can send up to 6 kB of data per second.
-   * Each user can have up to five data channels simultaneously.
-   * @param {number} streamId Stream ID from createDataStream
-   * @param {string} msg Data to be sent
-   * @returns {number} 0 for success, <0 for failure
+   * @description 发送数据流。
+   *
+   * 该方法发送数据流消息到频道内所有用户。SDK 对该方法的实现进行了如下限制：频道内每秒最多能发送 30 个包，且每个包最大为 1 KB。 每个客户端每秒最多能发送 6 KB 数据。频道内每人最多能同时有 5 个数据通道。
+   *
+   * 成功调用该方法后，远端会触发 streamMessage 回调，远端用户可以在该回调中获取接收到的流消息；
+   * 若调用失败，远端会触发 streamMessageError 回调。
+   * @param {number} 数据流 ID，createDataStream 的返回值
+   * @param {string} 待发送的数据
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   sendStreamMessage(streamId: number, msg: string): number {
     return this.rtcEngine.sendStreamMessage(streamId, msg);
@@ -2760,39 +2813,59 @@ class AgoraRtcEngine extends EventEmitter {
   // MANAGE AUDIO EFFECT
   // ===========================================================================
   /**
-   * @description get effects volume
-   * @returns {number} volume
+   * @description 获取播放音效文件音量。范围为 [0.0, 100.0]。
+   * @returns {number}
+   * - 方法调用成功则返回音量值
+   * - < 0：方法调用失败
    */
   getEffectsVolume(): number {
     return this.rtcEngine.getEffectsVolume();
   }
   /**
-   * @description set effects volume
-   * @param {number} volume - [0.0, 100.0]
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置播放音效文件音量。
+   * @param {number} volume 音效文件的音量。取值范围为 [0.0, 100.0]。100.0 为默认值
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setEffectsVolume(volume: number): number {
     return this.rtcEngine.setEffectsVolume(volume);
   }
   /**
-   * @description set effect volume of a sound id
-   * @param {number} soundId soundId
-   * @param {number} volume - [0.0, 100.0]
-   * @returns {number} 0 for success, <0 for failure
+   * @description 设置单个音效文件的音量。
+   * @param {number} soundId 指定音效的 ID。每个音效均有唯一的 ID
+   * @param {number} volume 音效文件的音量。取值范围为 [0.0, 100.0]。100.0 为默认值
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   setVolumeOfEffect(soundId: number, volume: number): number {
     return this.rtcEngine.setVolumeOfEffect(soundId, volume);
   }
   /**
-   * @description play effect
-   * @param {number} soundId soundId
-   * @param {string} filePath filepath
-   * @param {number} loopcount - 0: once, 1: twice, -1: infinite
-   * @param {number} pitch - [0.5, 2]
-   * @param {number} pan - [-1, 1]
-   * @param {number} gain - [0, 100]
-   * @param {boolean} publish publish
-   * @returns {number} 0 for success, <0 for failure
+   * @description 播放指定音效文件。
+   *
+   * 该方法播放指定的本地或在线音效文件。你可以在该方法中设置音效文件的播放次数、音调、音效的空间位置和增益，以及远端用户是否能听到该音效。
+   *
+   * 你可以多次调用该方法，通过传入不同的音效文件的 soundID 和 filePath，同时播放多个音效文件，实现音效叠加。为获得最佳用户体验，我们建议同时播放的音效文件不要超过 3 个。调用该方法播放音效结束后，SDK 会触发 audioEffectFinished 回调。
+   * @param {number} soundId 指定音效的 ID。每个音效均有唯一的 ID
+   * @param {string} filePath 指定要播放的音效文件的绝对路径或 URL 地址
+   * @param {number} loopcount 设置音效循环播放的次数：
+   * - 0：播放音效一次
+   * - 1：播放音效两次
+   * - -1：无限循环播放音效，直至调用 {@link stopEffect} 或 {@link stopAllEffects} 后停止
+   * @param {number} pitch 设置音效的音调，取值范围为 [0.5, 2]。默认值为 1.0，表示不需要修改音调。取值越小，则音调越低
+   * @param {number} pan 设置是否改变音效的空间位置。取值范围为 [-1.0, 1.0]：
+   * - 0.0：音效出现在正前方
+   * - 1.0：音效出现在右边
+   * - -1.0：音效出现在左边
+   * @param {number} gain 设置是否改变单个音效的音量。取值范围为 [0.0, 100.0]。默认值为 100.0。取值越小，则音效的音量越低
+   * @param {boolean} publish 设置是否将音效传到远端：
+   * - true：音效在本地播放的同时，会发布到 Agora 云上，因此远端用户也能听到该音效
+   * - false：音效不会发布到 Agora 云上，因此只能在本地听到该音效
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   playEffect(
     soundId: number,
@@ -2814,86 +2887,106 @@ class AgoraRtcEngine extends EventEmitter {
     );
   }
   /**
-   * @description stop effect via given sound id
-   * @param {number} soundId soundId
-   * @returns {number} 0 for success, <0 for failure
+   * @description 停止播放指定音效文件。
+   * @param {number} soundId 指定音效的 ID。每个音效均有唯一的 ID
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   stopEffect(soundId: number): number {
     return this.rtcEngine.stopEffect(soundId);
   }
   /**
-   * @description preload effect
-   * @param {number} soundId soundId
-   * @param {string} filePath filepath
-   * @returns {number} 0 for success, <0 for failure
+   * @description 预加载音效文件。
+   *
+   * 为保证通信畅通，请注意控制预加载音效文件的大小，并在 {@link join} 前就使用该方法完成音效预加载。
+   * 音效文件支持以下音频格式：mp3，aac，m4a，3gp，wav。
+   * @param {number} soundId 指定音效的 ID。每个音效均有唯一的 I
+   * @param {string} filePath 音效文件的绝对路径
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   preloadEffect(soundId: number, filePath: string): number {
     return this.rtcEngine.preloadEffect(soundId, filePath);
   }
   /**
-   * This method releases a specific preloaded audio effect from the memory.
-   * @param {number} soundId soundId
-   * @returns {number} 0 for success, <0 for failure
+   * 释放音效文件。
+   * @param {number} soundId 指定音效的 ID。每个音效均有唯一的 ID
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   unloadEffect(soundId: number): number {
     return this.rtcEngine.unloadEffect(soundId);
   }
   /**
-   * @description This method pauses a specific audio effect.
-   * @param {number} soundId soundId
-   * @returns {number} 0 for success, <0 for failure
+   * @description 暂停音效文件播放。
+   * @param {number} soundId 指定音效的 ID。每个音效均有唯一的 ID
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   pauseEffect(soundId: number): number {
     return this.rtcEngine.pauseEffect(soundId);
   }
   /**
-   * @description This method pauses all the audio effects.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 暂停所有音效文件播放。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   pauseAllEffects(): number {
     return this.rtcEngine.pauseAllEffects();
   }
   /**
-   * @description This method resumes playing a specific audio effect.
-   * @param {number} soundId sound id
-   * @returns {number} 0 for success, <0 for failure
+   * @description 恢复播放指定音效文件。
+   * @param {number} soundId 指定音效的 ID。每个音效均有唯一的 ID
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   resumeEffect(soundId: number): number {
     return this.rtcEngine.resumeEffect(soundId);
   }
   /**
-   * @description This method resumes playing all the audio effects.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 恢复播放所有音效文件。
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   resumeAllEffects(): number {
     return this.rtcEngine.resumeAllEffects();
   }
 
   /**
-   * @description Enables/Disables stereo panning for remote users.
-   * Ensure that you call this method before joinChannel to enable stereo panning
-   * for remote users so that the local user can track the position of a remote user
-   * by calling \ref agora::rtc::RtcEngineParameters::setRemoteVoicePosition "setRemoteVoicePosition".
-   * @param {boolean} enable
+   * @description 开启/关闭远端用户的语音立体声。
+   *
+   * 如果想调用 {@link setRemoteVoicePosition} 实现听声辨位的功能，请确保在调用 {@link join} 方法前调用该方法。
+   *
+   * @param {boolean} 是否开启远端用户语音立体声：
+   * - true：开启
+   * - false：（默认）关闭
+   *
    */
   enableSoundPositionIndication(enable: boolean) {
     return this.rtcEngine.enableSoundPositionIndication(enable);
   }
 
   /**
-   * @description For this method to work, enable stereo panning for remote users
-   * by calling enableSoundPositionIndication before joining a channel.
-   * This method requires hardware support. For the best sound positioning,
-   * we recommend using a stereo speaker.
-   * @param {number} uid uid
-   * @param {number} pan The sound position of the remote user. The value ranges from -1.0 to 1.0.
-   * - 0.0: the remote sound comes from the front. -1.0: the remote sound comes from the left.
-   * - -1.0: the remote sound comes from the left.
-   * - 1.0: the remote sound comes from the right.
-   * @param {number} gain Gain of the remote user.
-   * The value ranges from 0.0 to 100.0.
-   * The default value is 100.0 (the original gain of the remote user).
-   * The smaller the value, the less the gain.
+   * @description 设置远端用户声音的空间位置和音量，方便本地用户听声辨位。
+   *
+   * 用户通过调用该接口，设置远端用户声音出现的位置，左右声道的声音差异会让用户产生声音的方位感，从而判断出远端用户的实时位置。
+   * 在多人在线游戏场景，如吃鸡游戏中，该方法能有效增加游戏角色的方位感，模拟真实场景。
+   * **Note**：
+   * - 使用该方法需要在加入频道前调用 {@link enableSoundPositionIndication} 开启远端用户的语音立体声
+   * - 为获得最佳听觉体验，我们建议用户佩戴耳机
+   * @param {number} uid 远端用户的 ID
+   * @param {number} pan 设置远端用户声音出现的位置，取值范围为 [-1.0, 1.0]：
+   * - 0.0：（默认）声音出现在正前方
+   * - -1.0：声音出现在左边
+   * - 1.0：声音出现在右边
+   * @param {number} 设置远端用户声音的音量，取值范围为 [0.0, 100.0]，默认值为 100.0，表示该用户的原始音量。取值越小，则音量越低
    */
   setRemoteVoicePosition(uid: number, pan: number, gain: number): number {
     return this.rtcEngine.setRemoteVoicePosition(uid, pan, gain);
@@ -2905,35 +2998,37 @@ class AgoraRtcEngine extends EventEmitter {
   // ===========================================================================
 
   /**
-   * @description When a user joins a channel on a client using joinChannelByToken,
-   * a CallId is generated to identify the call from the client. Some methods such
-   * as rate and complain need to be called after the call ends in order to submit
-   * feedback to the SDK. These methods require assigned values of the CallId parameters.
-   * To use these feedback methods, call the getCallId method to retrieve the CallId during the call,
-   * and then pass the value as an argument in the feedback methods after the call ends.
-   * @returns {string} Current call ID.
+   * @description 获取通话 ID。
+   *
+   * 获取当前的通话 ID。客户端在每次 {@link join} 后会生成一个对应的 CallId，标识该客户端的此次通话。
+   * 有些方法如 rate, complain 需要在通话结束后调用，向 SDK 提交反馈，这些方法必须指定 CallId 参数。
+   * 使用这些反馈方法，需要在通话过程中调用 getCallId 方法获取 CallId，在通话结束后在反馈方法中作为参数传入。
+   * @returns {string} 通话 ID
    */
   getCallId(): string {
     return this.rtcEngine.getCallId();
   }
 
   /**
-   * @description This method lets the user rate the call. It is usually called after the call ends.
-   * @param {string} callId Call ID retrieved from the getCallId method.
-   * @param {number} rating Rating for the call between 1 (lowest score) to 10 (highest score).
-   * @param {string} desc A given description for the call with a length less than 800 bytes.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 给通话评分。
+   * @param {string} callId 通过 getCallId 函数获取的通话 ID
+   * @param {number} rating 给通话的评分，最低 1 分，最高 5 分
+   * @param {string} desc （非必选项）给通话的描述，可选，长度应小于 800 字节
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   rate(callId: string, rating: number, desc: string): number {
     return this.rtcEngine.rate(callId, rating, desc);
   }
 
   /**
-   * @description This method allows the user to complain about the call quality. It is usually
-   * called after the call ends.
-   * @param {string} callId Call ID retrieved from the getCallId method.
-   * @param {string} desc A given description of the call with a length less than 800 bytes.
-   * @returns {number} 0 for success, <0 for failure
+   * @description 投诉通话质量。
+   * @param {string} callId 通话 getCallId 函数获取的通话 ID
+   * @param {string} desc （非必选项）给通话的描述，可选，长度应小于 800 字节
+   * @returns {number}
+   * - 0：方法调用成功
+   * - < 0：方法调用失败
    */
   complain(callId: string, desc: string): number {
     return this.rtcEngine.complain(callId, desc);
@@ -3008,24 +3103,72 @@ class AgoraRtcEngine extends EventEmitter {
 }
 
 declare interface AgoraRtcEngine {
+  /**
+   * API 方法已执行回调。包含如下参数：
+   * - api：已执行的 API 方法
+   * - err：执行 API 过程中的错误
+   */
   on(evt: 'apiCallExecuted', cb: (api: string, err: number) => void): this;
+  /**
+   * 发生警告回调。包含如下参数：
+   * - warn：警告码
+   * - msg：详细的警告信息
+   */
   on(evt: 'warning', cb: (warn: number, msg: string) => void): this;
+  /**
+   * 发生错误警告。包含如下参数：
+   * - err：错误码
+   * - msg：详细的错误信息
+   */
   on(evt: 'error', cb: (err: number, msg: string) => void): this;
+  /**
+   * 成功加入频道。包含如下参数：
+   * - channel：频道名
+   * - uid：用户 ID
+   * - elapsed：从调用 {@link join} 开始到发生此事件过去的时间（毫秒)
+   */
   on(evt: 'joinedChannel', cb: (
     channel: string, uid: number, elapsed: number
   ) => void): this;
+  /**
+   * 重新加入频道回调。
+   * 有时候由于网络原因，客户端可能会和服务器失去连接，SDK 会进行自动重连，自动重连成功后触发此回调方法。
+   * 包含如下参数：
+   * - channel：频道名
+   * - uid：用户 ID
+   * - elapsed：从调用 {@link join} 开始到发生此事件过去的时间（毫秒)
+   */
   on(evt: 'rejoinedChannel', cb: (
     channel: string, uid: number, elapsed: number
   ) => void): this;
+  /**
+   * 远端音频质量回调。包含如下参数：
+   * - uid：用户 ID，指定是谁发的音频流
+   * - quality：语音质量 {@link AgoraNetworkQuality}
+   * - delay：音频包从发送端到接收端的延迟（毫秒）
+   * - lost：音频包从发送端到接收端的丢包率（%）
+   */
   on(evt: 'audioQuality', cb: (
     uid: number, quality: AgoraNetworkQuality, delay: number, lost: number
   ) => void): this;
+  /**
+   * 提示频道内谁在说话以及说话者音量的回调。
+   */
   on(evt: 'audioVolumeIndication', cb: (
     uid: number,
     volume: number,
     speakerNumber: number,
     totalVolume: number
   ) => void): this;
+  /**
+   * 提示频道内谁在说话以及说话者音量的回调。包含如下参数：
+   * - speakers：说话者信息的数组，包含：
+       - uid：用户 ID
+       - volume：用户的说话音量
+   * - speakerNumber：频道内说话者的人数
+   * - volume：（混音后的）总音量，范围为 [0, 255]
+   *
+   */
   on(evt: 'groupAudioVolumeIndication', cb: (
     speakers: {
       uid: number,
@@ -3034,56 +3177,207 @@ declare interface AgoraRtcEngine {
     speakerNumber: number,
     totalVolume: number
   ) => void): this;
+  /**
+   * 离开频道回调。
+   * App 调用 {@link leaveChannel} 方法成功离开频道后，SDK 会触发该回调。
+   */
   on(evt: 'leaveChannel', cb: () => void): this;
+  /**
+   * 通话相关统计信息。包含如下参数：
+   * - stats：通话信息详情 {@link RtcStats}
+   */
   on(evt: 'rtcStats', cb: (stats: RtcStats) => void): this;
+  /**
+   * 通话中本地视频流的统计信息回调。包含如下参数：
+   * - stats：本地视频流统计信息 {@link LocalVideoStats}
+   */
   on(evt: 'localVideoStats', cb: (stats: LocalVideoStats) => void): this;
+  /**
+   * 通话中远端视频流的统计信息回调。包含如下参数：
+   * - stats：远端视频流统计信息 {@link RemoteVideoState}
+   */
   on(evt: 'remoteVideoStats', cb: (stats: RemoteVideoStats) => void): this;
+  /**
+   * 通话中远端音频流的统计信息回调。包含如下参数：
+   * - stats：远端音频流统计信息 {@link RemoteAudioStats}
+   */
   on(evt: 'remoteAudioStats', cb: (stats: RemoteAudioStats) => void): this;
+  /**
+   * 通话中远端视频流传输的统计信息回调。包含如下参数：
+   * - stats：远端视频流传输的统计信息 {RemoteVideoTransportStats}
+   *
+   * 该回调描述远端用户通话中端到端的网络统计信息，通过视频包计算，用客观的数据，如丢包、网络延迟等 ，展示当前网络状态。
+   *
+   * 通话中，当用户收到远端用户/主播发送的视频数据包后，会每 2 秒触发一次该回调。和 remoteVideoStats 回调相比，该回调以数据展示当前网络状态，因此更客观。
+   */
   on(evt: 'remoteVideoTransportStats', cb: (stats: RemoteVideoTransportStats) => void): this;
+  /**
+   * 通话中远端音频流传输的统计信息回调。包含如下参数：
+   * - stats：远端音频流传输的统计信息 {@link remoteAudioTransportStats}
+   */
   on(evt: 'remoteAudioTransportStats', cb: (stats: RemoteAudioTransportStats) => void): this;
+  /**
+   * 音频设备状态已改变回调。包含如下参数：
+   * - deviceId：设备 ID
+   * - deviceType：设备类型，详见 {@link MediaDeviceType}
+   * - deviceState：设备状态
+   *   - 1：设备正在使用
+   *   - 2：设备被禁用
+   *   - 4：没有此设备
+   *   - 8：设备被拔出
+   */
   on(evt: 'audioDeviceStateChanged', cb: (
     deviceId: string,
     deviceType: number,
     deviceState: number,
   ) => void): this;
+  /**
+   * 本地音乐文件播放已结束回调。
+   */
   on(evt: 'audioMixingFinished', cb: () => void): this;
+  /**
+   * 本地用户的音乐文件播放状态改变。包含如下参数：
+   * - state：状态码
+   *   - 710：音乐文件正常播放
+   *   - 711：音乐文件暂停播放
+   *   - 713：音乐文件停止播放
+   *   - 714：音乐文件报错。SDK 会在 err 参数中返回具体的报错原因
+   *
+   * - err：错误码：
+   *   - 701：音乐文件打开出错
+   *   - 702：音乐文件打开太频繁
+   *   - 703：音乐文件播放异常中断
+   */
   on(evt: 'audioMixingStateChanged', cb: (state: number, err: number) => void): this;
+  /**
+   * 远端音乐文件播放已开始回调。
+   * 当远端有用户调用 {@link startAudioMixing} 播放本地音乐文件，会触发该回调。
+   */
   on(evt: 'remoteAudioMixingBegin', cb: () => void): this;
+  /**
+   * 远端音乐文件播放已结束回调。
+   */
   on(evt: 'remoteAudioMixingEnd', cb: () => void): this;
+  /**
+   * 本地音效文件播放已结束回调。
+   */
   on(evt: 'audioEffectFinished', cb: (soundId: number) => void): this;
+  /**
+   * 视频设备变化回调。包含如下参数：
+   * - deviceId：设备 ID
+   * - deviceType：设备类型，详见 {@link MediaDeviceType}
+   * - deviceState：设备状态
+   *   - 1：设备正在使用
+   *   - 2：设备被禁用
+   *   - 4：没有此设备
+   *   - 8：设备被拔出
+   *
+   * 该回调提示系统视频设备状态发生改变，比如被拔出或移除。如果设备已使用外接摄像头采集，外接摄像头被拔开后，视频会中断。
+   */
   on(evt: 'videoDeviceStateChanged', cb: (
     deviceId: string,
     deviceType: number,
     deviceState: number,
   ) => void): this;
+  /**
+   * 通话中每个用户的网络上下行 last mile 质量报告回调。
+   * 其中 last mile 是指设备到 Agora 边缘服务器的网络状态。包含如下参数：
+   * - uid：用户 ID。表示该回调报告的是持有该 ID 的用户的网络质量。当 uid 为 0 时，返回的是本地用户的网络质量
+   * - txquality：该用户的上行网络质量，基于上行视频的发送码率、上行丢包率、平均往返时延和网络抖动计算。详见 {@link AgoraNetworkQuality}
+   * - rxquality：该用户的下行网络质量，基于下行网络的丢包率、平均往返延时和网络抖动计算。详见 {@link AgoraNetworkQuality}
+   */
   on(evt: 'networkQuality', cb: (
     uid: number,
     txquality: AgoraNetworkQuality,
     rxquality: AgoraNetworkQuality
   ) => void): this;
+  /**
+   * 通话前网络上下行 last mile 质量报告回调。包含如下参数：
+   * - quality：网络上下行质量，基于上下行网络的丢包率和抖动计算，探测结果主要反映上行网络的状态。详见 {@link AgoraNetworkQuality}
+   *
+   * 该回调描述本地用户在加入频道前的 last mile 网络探测的结果，其中 last mile 是指设备到 Agora 边缘服务器的网络状态。
+   *
+   * 在调用 {@link enableLastmileTest} 之后，该回调函数每 2 秒触发一次。如果远端有多个用户/主播，该回调每 2 秒会被触发多次。
+   */
   on(evt: 'lastMileQuality', cb: (quality: AgoraNetworkQuality) => void): this;
+  /**
+   * 通话前网络质量探测报告回调。包含如下参数：
+   * - result：上下行 Last mile 质量探测结果。详见 {@link LastmileProbeResult}
+   *
+   * 话前网络上下行 Last mile 质量探测报告回调。在调用 {@link startLastmileProbeTest} 之后，SDK 会在约 30 秒内返回该回调。
+   */
   on(evt: 'lastmileProbeResult', cb: (result: LastmileProbeResult) => void): this;
+  /**
+   * 已发送本地视频首帧回调。包含如下参数：
+   * - width：视频流宽（像素）
+   * - height：视频流高（像素）
+   * - elapsed：从本地调用 {@link join} 到发生此事件过去的时间（毫秒)
+   */
   on(evt: 'firstLocalVideoFrame', cb: (
     width: number,
     height: number,
     elapsed: number
   ) => void): this;
+  /**
+   * 已接收到远端视频并完成解码回调。包含如下参数：
+   * - uid：用户 ID，指定是哪个用户的视频流
+   * - elapsed：从本地调用 {@link join} 到发生此事件过去的时间（毫秒)
+   *
+   * 引擎收到第一帧远端视频流并解码成功时，触发此调用。有两种情况：
+   * - 远端用户首次上线后发送视频
+   * - 远端用户视频离线再上线后发送视频。出现这种中断的可能原因包括：
+   *   - 远端用户离开频道
+   *   - 远端用户掉线
+   *   - 远端用户调用 {@link muteLocalVideoStream} 方法停止发送本地视频流
+   *   - 远端用户调用 {@link disableVideo} 方法关闭视频模块
+   */
   on(evt: 'addStream', cb: (
     uid: number,
     elapsed: number,
   ) => void): this;
+  /**
+   * 本地或远端视频大小和旋转信息发生改变回调。包含如下参数：
+   * - uid：图像尺寸和旋转信息发生变化的用户的用户 ID（本地用户的 uid 为 0）
+   * - width：视频流的宽度（像素）
+   * - height：视频流的高度（像素）
+   * - rotation：旋转信息 [0, 360]
+   */
   on(evt: 'videoSizeChanged', cb: (
     uid: number,
     width: number,
     height: number,
     rotation: number
   ) => void): this;
+  /**
+   * 已显示首帧远端视频回调。
+   * 第一帧远端视频显示在视图上时，触发此调用。包含如下参数：
+   * - uid：用户 ID，指定是哪个用户的视频流
+   * - width：视频流宽（像素）
+   * - height：视频流高（像素）
+   * - elapsed：从本地调用 {@link join} 到发生此事件过去的时间（毫秒)
+   */
   on(evt: 'firstRemoteVideoFrame', cb: (
     uid: number,
     width: number,
     height: number,
     elapsed: number
   ) => void): this;
+  /**
+   * 远端用户加入当前频道回调。包含如下参数：
+   * - uid：新加入频道的远端用户/主播 ID
+   * - elapsed：从本地调用 {@link join} 到发生此事件过去的时间（毫秒)
+   *
+   * 该回调在如下情况下会被触发：
+   * - 远端用户/主播调用 {@link join} 方法加入频道
+   * - 远端用户加入频道后调用 {@link setClientRole} 将用户角色改变为主播
+   * - 远端用户/主播网络中断后重新加入频道
+   * - 主播通过调用 {@link addInjectStreamUrl} 方法成功导入在线媒体流
+   *
+   * **Note**：直播场景下，
+   * - 主播间能相互收到新主播加入频道的回调，并能获得该主播的 uid
+   * - 观众也能收到新主播加入频道的回调，并能获得该主播的 uid
+   * - 当 Web 端加入直播频道时，只要 Web 端有推流，SDK 会默认该 Web 端为主播，并触发该回调。
+   */
   on(evt: 'userJoined', cb: (uid: number, elapsed: number) => void): this;
   on(evt: 'removeStream', cb: (uid: number, reason: number) => void): this;
   on(evt: 'userMuteAudio', cb: (uid: number, muted: boolean) => void): this;
