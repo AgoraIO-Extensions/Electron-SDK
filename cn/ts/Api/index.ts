@@ -51,17 +51,20 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Decide whether to use webgl/software rendering
-   * @param {1|2|3} mode - 1 for old webgl rendering, 2 for software rendering, 3 for custom rendering
+   * 设置渲染模式。该方法确定是使用 WebGL 渲染还是软件渲染。
+   * @param {1|2|3} mode 渲染模式：
+   * - 1：使用 WebGL 渲染
+   * - 2：使用软件渲染
+   * - 3：使用自定义渲染
    */
   setRenderMode (mode: 1|2|3 = 1): void {
     this.renderMode = mode;
   }
 
   /**
-   * Use this method to set custom Renderer when set renderMode to 3.
-   * customRender should be a class.
-   * @param {IRenderer} customRenderer
+   * 当 {@link setRenderMode} 方法中的渲染模式设置为 3 时，调用该方法可以设备自定义的渲染器。
+   * customRender 是一个类.
+   * @param {IRenderer} customRenderer 自定义渲染器
    */
   setCustomRenderer(customRenderer: IRenderer) {
     this.customRenderer = customRenderer;
@@ -628,10 +631,10 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Size of the view has changed. Refresh zoom level so that video is sized
-   * appropriately while waiting for the next video frame to arrive.
-   * Calling this can prevent a view discontinutity.
-   * @param {string|number} key key for the map that store the renderers, e.g, uid or `videosource` or `local`
+   * 更新渲染尺寸。
+   * 当视图尺寸发生改变时，该方法可以根据视窗尺寸长宽比更新缩放比例，在收到下一个视频帧时，按照新的比例进行渲染。
+   * 该方法可以防止视图不连贯的问题。
+   * @param {string|number} key 存储渲染器 Map 的关键标识，如 `uid`、`videoSource` 或 `local`
    */
   resizeRender(key: 'local' | 'videosource' | number) {
     if (this.streams.has(String(key))) {
@@ -643,9 +646,9 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * init renderer
-   * @param {string|number} key key for the map that store the renderers, e.g, uid or `videosource` or `local`
-   * @param {Element} view dom elements to render video
+   * 初始化渲染器对象。
+   * @param {string|number} key 存储渲染器 Map 的关键标识，如 `uid`、`videosource` 或 `local`
+   * @param {Element} view 渲染视频的 Dom
    */
   initRender(key: 'local' | 'videosource' | number, view: Element) {
     if (this.streams.has(String(key))) {
@@ -667,9 +670,9 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * destroy renderer
-   * @param {string|number} key key for the map that store the renders, e.g, uid or `videosource` or `local`
-   * @param {function} onFailure err callback for destroyRenderer
+   * 销毁渲染器对象。
+   * @param {string|number} key 存储渲染器 Map 的关键标识，如 `uid`、`videoSource` 或 `local`
+   * @param {function} onFailure `destroyRenderer` 方法的错误回调
    */
   destroyRender(key: 'local' | 'videosource' | number, onFailure?: (err: Error) => void) {
     if (!this.streams.has(String(key))) {
@@ -700,17 +703,17 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description return current version and build of sdk
-   * @returns {string} version
+   * @description 获取当前 SDK 的版本和 Build 信息。
+   * @returns {string} 当前 SDK 的版本
    */
   getVersion(): string {
     return this.rtcEngine.getVersion();
   }
 
   /**
-   * @description Get error description of the given errorCode
-   * @param {number} errorCode error code
-   * @returns {string} error description
+   * @description 获取指定错误吗的详细错误信息。
+   * @param {number} errorCode 错误码
+   * @returns {string} 错误描述
    */
   getErrorDescription(errorCode: number): string {
     return this.rtcEngine.getErrorDescription(errorCode);
@@ -761,7 +764,7 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description 离开频道。
    *
-   * 离开频道，机挂断或退出通话。当调用 {@link joinChannel} 方法后，必须调用该方法结束通话，否则无法开始下一次通话。
+   * 离开频道，机挂断或退出通话。当调用 {@link join} 方法后，必须调用该方法结束通话，否则无法开始下一次通话。
    * 不管当前是否在通话中，都可以调用该方法，没有副作用。该方法会把回话相关的所有资源都释放掉。该方法是异步操作，调用返回时并没有真正退出频道。
    *
    * 在真正退出频道后，本地会触发 leaveChannel 回调；通信模式下的用户和直播模式下的主播离开频道后，远端会触发 removeStream 回调。
@@ -861,39 +864,37 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description force set renderer fps globally. This is mainly used to improve the performance for js rendering
-   * once set, data will be forced to be sent with this fps. This can reduce cpu frequency of js rendering.
-   * This applies to ALL views except ones added to High FPS stream.
-   * @param {number} fps frame/s
+   * @description 设置视频的全局渲染帧率，单位为 fps。
+   * 该方法主要用来提升 js 渲染的性能。完成设置后，视频数据会被强制按设置的帧率进行传输，以降低 js 渲染的 CPU 消耗。
+   *
+   * 该方法不适用于添加至高帧率传输流的视频视图。
+   * @param {number} fps 渲染帧率，单位为 fps
    */
   setVideoRenderFPS(fps: number) {
     this.rtcEngine.setFPS(fps);
   }
 
   /**
-   * @description force set renderer fps for high stream. High stream here MEANS uid streams which has been
-   * added to high ones by calling addVideoRenderToHighFPS, note this has nothing to do with dual stream
-   * high stream. This is often used when we want to set low fps for most of views, but high fps for one
-   * or two special views, e.g. screenshare
-   * @param {number} fps frame/s
+   * @description 设置高帧率流的渲染帧率。其中高帧率流指调用 {@link addVideoRenderToHighFPS} 方法添加至高帧率的视频流。
+   * 请注意区分高帧率流和双流模式里的大流。
+   * 该方法适用于将大多数视图设置为低帧率，只将一或两路流设置为高帧率的场景，如屏幕共享。
+   * @param {number} fps 渲染帧率，单位为 fps
    */
   setVideoRenderHighFPS(fps: number) {
     this.rtcEngine.setHighFPS(fps);
   }
 
   /**
-   * @description add stream to high fps stream by uid. fps of streams added to high fps stream will be
-   * controlled by setVideoRenderHighFPS
-   * @param {number} uid stream uid
+   * @description 将指定用户的视频流添加为高帧率流。添加为高帧率流后，你可以调用 {@link setVideoRenderHighFPS} 方法对视频流进行控制。
+   * @param {number} uid 用户 ID
    */
   addVideoRenderToHighFPS(uid: number) {
     this.rtcEngine.addToHighVideo(uid);
   }
 
   /**
-   * @description remove stream from high fps stream by uid. fps of streams removed from high fps stream
-   * will be controlled by setVideoRenderFPS
-   * @param {number} uid stream uid
+   * @description 将指定用户的视频从高帧率流中删除。删除后，你可以调用 {@link setVideoRenderFPS} 方法对视频流进行控制。
+   * @param {number} uid 用户 ID
    */
   remoteVideoRenderFromHighFPS(uid: number) {
     this.rtcEngine.removeFromHighVideo(uid);
@@ -3037,66 +3038,99 @@ class AgoraRtcEngine extends EventEmitter {
   // ===========================================================================
   // replacement for setParameters call
   // ===========================================================================
+  /**
+   * @description 该方法为私有接口。
+   */
   setBool(key: string, value: boolean): number {
     return this.rtcEngine.setBool(key, value);
   }
-
+  /**
+   * @description 该方法为私有接口。
+   */
   setInt(key: string, value: number): number {
     return this.rtcEngine.setInt(key, value);
   }
-
+  /**
+   * @description 该方法为私有接口。
+   */
   setUInt(key: string, value: number): number {
     return this.rtcEngine.setUInt(key, value);
   }
-
+  /**
+   * @description 该方法为私有接口。
+   */
   setNumber(key: string, value: number): number {
     return this.rtcEngine.setNumber(key, value);
   }
-
+  /**
+   * @description 该方法为私有接口。
+   */
   setString(key: string, value: string): number {
     return this.rtcEngine.setString(key, value);
   }
-
+  /**
+   * @description 该方法为私有接口。
+   */
   setObject(key: string, value: string): number {
     return this.rtcEngine.setObject(key, value);
   }
-
+  /**
+   * @description 该方法为私有接口。
+   */
   getBool(key: string): boolean {
     return this.rtcEngine.getBool(key);
   }
-
+  /**
+   * @description 该方法为私有接口。
+   */
   getInt(key: string): number {
     return this.rtcEngine.getInt(key);
   }
-
+  /**
+   * @description 该方法为私有接口。
+   */
   getUInt(key: string): number {
     return this.rtcEngine.getUInt(key);
   }
-
+  /**
+   * @description 该方法为私有接口。
+   */
   getNumber(key: string): number {
     return this.rtcEngine.getNumber(key);
   }
-
+  /**
+   * @description 该方法为私有接口。
+   */
   getString(key: string): string {
     return this.rtcEngine.getString(key);
   }
-
+  /**
+   * @description 该方法为私有接口。
+   */
   getObject(key: string): string {
     return this.rtcEngine.getObject(key);
   }
-
+  /**
+   * @description 该方法为私有接口。
+   */
   getArray(key: string): string {
     return this.rtcEngine.getArray(key);
   }
-
+  /**
+   * @description 该方法为私有接口。
+   */
   setParameters(param: string): number {
     return this.rtcEngine.setParameters(param);
   }
-
+  /**
+   * @description 该方法为私有接口。
+   */
   convertPath(path: string): string {
     return this.rtcEngine.convertPath(path);
   }
-
+  /**
+   * @description 该方法为私有接口。
+   */
   setProfile(profile: string, merge: boolean): number {
     return this.rtcEngine.setProfile(profile, merge);
   }
@@ -3379,23 +3413,113 @@ declare interface AgoraRtcEngine {
    * - 当 Web 端加入直播频道时，只要 Web 端有推流，SDK 会默认该 Web 端为主播，并触发该回调。
    */
   on(evt: 'userJoined', cb: (uid: number, elapsed: number) => void): this;
+  /**
+   * 远端用户离开当前频道回调。包含如下参数：
+   * - uid 离线用户或主播的用户 ID。
+   * - reason 离线原因：
+   *   - 0：用户主动离开。
+   *   - 1：因过长时间收不到对方数据包，超时掉线。注意：由于 SDK 使用的是不可靠通道，也有可能对方主动离开本方没收到对方离开消息而误判为超时掉线。
+   *   - 2：用户身份从主播切换为观众。
+   *
+   * 用户离开频道有两个原因：
+   * - 正常离开的时候，远端用户/主播会发送类似“再见”的消息。接收此消息后，判断用户离开频道。
+   * - 超时掉线的依据是，在一定时间内（通信场景为 20 秒，直播场景稍有延时），用户没有收到对方的任何数据包，则判定为对方掉线。
+   在网络较差的情况下，有可能会误报。声网建议使用信令系统来做可靠的掉线检测。
+   */
   on(evt: 'removeStream', cb: (uid: number, reason: number) => void): this;
+  /**
+   * 远端用户暂停/重新发送音频流回调。该回调是由远端用户调用 {@link muteLocalAudioStream} 方法关闭或开启音频发送触发的。
+   * 包含如下参数：
+   * - uid：用户 ID
+   * - muted：该用户是否关闭发送音频流：
+   *   - true：该用户已关闭发送音频流
+   *   - false：该用户已重新发送音频流
+   *
+   * **Note**：当频道内的用户或主播人数超过 20 时，该回调不生效。
+   */
   on(evt: 'userMuteAudio', cb: (uid: number, muted: boolean) => void): this;
+  /**
+   * 远端用户暂停/重新发送视频流回调。该回调是由远端用户调用 {@link muteLocalVideoStream} 方法关闭或开启音频发送触发的。
+   * 包含如下参数：
+   * - uid：用户 ID
+   * - muted：该用户是否关闭发送视频流：
+   *   - true：该用户已关闭发送视频流
+   *   - false：该用户已重新发送视频流
+   *
+   * **Note**：当频道内的用户或主播人数超过 20 时，该回调不生效。
+   */
   on(evt: 'userMuteVideo', cb: (uid: number, muted: boolean) => void): this;
+  /**
+   * 其他用户开启/关闭视频模块回调。该回调是由远端用户调用 {@link enableVideo} 或 {@link disableVideo} 方法开启或关闭视频模块触发的。
+   * 包含如下参数：
+   * - uid：用户 ID
+   * - muted：该用户是否开启或关闭视频模块：
+   *   - true：该用户已启用视频模块。启用后，该用户可以进行视频通话或直播。
+   *   - false：该用户已关闭视频模块。关闭后，该用户只能进行语音通话或直播，不能显示、发送自己的视频，也不能接收、显示别人的视频。
+   */
   on(evt: 'userEnableVideo', cb: (uid: number, enabled: boolean) => void): this;
+  /**
+   * 远端用户开启/关闭本地视频采集。该回调是由远端用户调用 {@link enableLocalVideo} 方法开启或关闭视频采集触发的。
+   * 包含如下参数：
+   * - uid：用户 ID
+   * - enabled：该用户是否开启或关闭本地视频采集：
+   *   - true：该用户已启用本地视频采集。启用后，其他用户可以接收到该用户的视频流。
+   *   - false：该用户已关闭视频采集。关闭后，该用户仍然可以接收其他用户的视频流，但其他用户接收不到该用户的视频流。
+   */
   on(evt: 'userEnableLocalVideo', cb: (uid: number, enabled: boolean) => void): this;
+  /**
+   * 摄像头就绪回调。
+   */
   on(evt: 'cameraReady', cb: () => void): this;
+  /**
+   * 视频功能停止回调。
+   */
   on(evt: 'videoStopped', cb: () => void): this;
+  /**
+   * 网络连接中断，且 SDK 无法在 10 秒内连接服务器回调。
+   * SDK 在调用 {@link join} 后，无论是否加入成功，只要 10 秒和服务器无法连接就会触发该回调。
+   *
+   */
   on(evt: 'connectionLost', cb: () => void): this;
+  /**
+   * 网络连接中断回调。
+   * @deprecated 该回调已废弃。请改用 connectionStateChanged 回调。
+   * SDK 在和服务器建立连接后，失去了网络连接超过 4 秒，会触发该回调。在触发事件后，SDK 会主动重连服务器，所以该事件可以用于 UI 提示。
+   */
   on(evt: 'connectionInterrupted', cb: () => void): this;
+  /**
+   * 网络连接已被服务器禁止回调。
+   * @deprecated 该回调已废弃。请改用 connectionStateChanged 回调。
+   * 当你被服务端禁掉连接的权限时，会触发该回调。
+   */
   on(evt: 'connectionBanned', cb: () => void): this;
+  /**
+   * 录制服务状态已更新回调。
+   */
   on(evt: 'refreshRecordingServiceStatus', cb: () => void): this;
+  /**
+   * 接收到对方数据流消息的回调。该回调表示本地用户收到了远端用户调用 {@link sendStreamMessage} 方法发送的流消息。
+   * 包含如下参数：
+   * - uid：用户 ID
+   * - streamId：数据流 ID
+   * - msg：接收到的流消息
+   * - len：流消息数据长度
+   */
   on(evt: 'streamMessage', cb: (
     uid: number,
     streamId: number,
     msg: string,
     len: number
   ) => void): this;
+  /**
+   * 接收对方数据流小时发生错误回调。该回调表示本地用户未收到远端用户调用 {@link sendStreamMessage} 方法发送的流消息。
+   * 包含如下参数：
+   * - uid：用户 ID
+   * - streamId：数据流 ID
+   * - err：错误代码
+   * - missed：丢失的消息数量
+   * - cached：数据流中断后，后面缓存的消息数量
+   */
   on(evt: 'streamMessageError', cb: (
     uid: number,
     streamId: number,
@@ -3403,42 +3527,205 @@ declare interface AgoraRtcEngine {
     missed: number,
     cached: number
   ) => void): this;
+  /**
+   * 媒体引擎成功启动的回调。
+   */
   on(evt: 'mediaEngineStartCallSuccess', cb: () => void): this;
+  /**
+   * Token 已过期回调。
+   * 在调用 {@link join} 时如果指定了 Token，由于 Token 具有一定的时效，在通话过程中 SDK 可能由于网络原因和服务器失去连接，
+   重连时可能需要新的 Token。该回调通知 App 需要生成新的 Token，并需调用 {@link renewToken} 为 SDK 指定新的 Token。
+   */
   on(evt: 'requestChannelKey', cb: () => void): this;
+  /**
+   * 已发送本地音频首帧回调。包含如下参数：
+   * - elapsed：从本地用户调用 {@link join} 方法直至该回调被触发的延迟（毫秒）
+   */
   on(evt: 'fristLocalAudioFrame', cb: (elapsed: number) => void): this;
+  /**
+   * 已接收远端音频首帧回调。包含如下参数：
+   * - uid：发送音频帧的远端用户的 ID
+   * - elapsed：从调用 {@link join} 方法直至该回调被触发的延迟（毫秒）
+   */
   on(evt: 'firstRemoteAudioFrame', cb: (uid: number, elapsed: number) => void): this;
+  /**
+   * 检测到活跃用户回调。包含如下参数：
+   * - uid：当前时间段声音最大的用户的 uid。如果返回的 uid 为 0，则默认为本地用户
+   *
+   * 如果用户开启了 {@link enableAudioVolumeIndication} 功能，则当音量检测模块监测到频道内有新的活跃用户说话时，会通过本回调返回该用户的 uid。
+   * **Note**：
+   * - 你需要开启 {@link enableAudioVolumeIndication} 方法才能收到该回调。
+   * - uid 返回的是当前时间段内声音最大的用户 ID，而不是瞬时声音最大的用户 ID。
+   */
   on(evt: 'activeSpeaker', cb: (uid: number) => void): this;
+  /**
+   * 用户角色已切换回调。该回调由本地用户在加入频道后调用 {@link setClientRole} 改变用户角色触发的。
+   * 包含如下参数：
+   * - oldRole：切换前的角色
+   * - newRole：切换后的角色
+   */
   on(evt: 'clientRoleChanged', cb: (
     oldRole: ClientRoleType,
     newRole: ClientRoleType
   ) => void): this;
+  /**
+   * 回放、录音设备、或 App 的音量发生改变。包含如下参数：
+   * - deviceType：设备类型，详见 {@link AgoraRtcEngine#MediaDeviceType MediaDeviceType}
+   * - volume：当前音量，取值范围为 [0, 255]
+   * - muted：音频设备是否为静音状态
+   *   - true：音频设备已静音
+   *   - false：音频设备未被静音
+   */
   on(evt: 'audioDeviceVolumeChanged', cb: (
     deviceType: MediaDeviceType,
     volume: number,
     muted: boolean
   ) => void): this;
+  /**
+   * 屏幕共享对象成功加入频道回调。包含如下参数：
+   * - uid：该对象的用户 ID
+   */
   on(evt: 'videoSourceJoinedSuccess', cb: (uid: number) => void): this;
+  /**
+   * 屏幕共享对象 Token 已过期回调。
+   */
   on(evt: 'videoSourceRequestNewToken', cb: () => void): this;
+  /**
+   * 屏幕共享对象离开频道回调。
+   */
   on(evt: 'videoSourceLeaveChannel', cb: () => void): this;
-
+  /**
+   * 远端用户视频流状态发生改变回调。包含如下参数：
+   * - uid：发生视频流状态改变的远端用户的用户 ID
+   * - state：远端视频流状态。详见 {@link AgoraRtcEngine#RemoteVideoState RemoteVideoState}
+   */
   on(evt: 'remoteVideoStateChanged', cb: (uid: number, state: RemoteVideoState) => void): this;
+  /**
+   * 相机对焦区域已改变回调。包含如下参数：
+   * - x：发生改变的对焦区域的 x 坐标。
+   * - y：发生改变的对焦区域的 y 坐标。
+   * - width：发生改变的对焦区域的宽度。
+   * - height：发生改变的对焦区域的高度。
+   */
   on(evt: 'cameraFocusAreaChanged', cb: (x: number, y: number, width: number, height: number) => void): this;
+  /**
+   * 摄像头曝光区域已改变回调。包含如下参数：
+   * - x：发生改变的曝光区域的 x 坐标。
+   * - y：发生改变的曝光区域的 y 坐标。
+   * - width：发生改变的曝光区域的宽度。
+   * - height：发生改变的曝光区域的高度。
+   */
   on(evt: 'cameraExposureAreaChanged', cb: (x: number, y: number, width: number, height: number) => void): this;
+  /**
+   * Token 服务即将过期回调。
+   * 在调用 {@link join} 时如果指定了 Token，由于 Token 具有一定的时效，在通话过程中如果 Token 即将失效，SDK 会提前 30 秒触发该回调，提醒 App 更新 Token。
+   当收到该回调时，用户需要重新在服务端生成新的 Token，然后调用 {@link renewToken} 将新生成的 Token 传给 SDK。
+   * 包含如下参数：
+   * - token：即将服务失效的 Token
+   */
   on(evt: 'tokenPrivilegeWillExpire', cb: (token: string) => void): this;
+  /**
+   * 开启旁路推流的结果回调。
+   * 该回调返回 {@link addPublishStreamUrl} 方法的调用结果。用于通知主播是否推流成功。
+   如果不成功，你可以在 error 参数中查看详细的错误信息。
+   * 包含如下参数：
+   * - url：新增的推流地址。
+   * - error：详细的错误信息：
+   *   - 0：推流成功
+   *   - 1：推流失败
+   *   - 2：参数错误。如果你在调用 {@link addPublishStreamUrl} 前没有调用 {@link setLiveTranscoding} 配置 LiveTranscoding，SDK 会返回该错误
+   *   - 10：推流超时未成功
+   *   - 19：推流地址已经在推流
+   *   - 130：推流已加密不能推流
+   *   - 151：CDN 相关错误。请调用 {@link removePublishStreamUrl} 方法删除原来的推流地址，然后调用 {@link addPublishStreamUrl} 方法重新推流到新地址
+   *   - 152：单个主播的推流地址数目达到上限 10。请删掉一些不用的推流地址再增加推流地址
+   *   - 153：操作不属于主播自己的流，如更新其他主播的流参数、停止其他主播的流。请检查 App 逻辑
+   *   - 154：推流服务器出现错误。请调用 {@link addPublishStreamUrl} 重新推流
+   *   - 156：推流地址格式有错误。请检查推流地址格式是否正确
+   */
   on(evt: 'streamPublished', cb: (url: string, error: number) => void): this;
+  /**
+   * 停止旁路推流的结果回调。
+   * 该回调返回 {@link removePublishStreamUrl} 方法的调用结果。用于通知主播是否停止推流成功。
+   * 包含如下参数：
+   * - url：主播停止推流的 RTMP 地址。
+   */
   on(evt: 'streamUnpublished', cb: (url: string) => void): this;
+  /**
+   * 旁路推流设置被更新回调。该回调用于通知主播 CDN 转码已成功更新。
+   */
   on(evt: 'transcodingUpdated', cb: () => void): this;
+  /**
+   * 导入在线媒体流状态回调。该回调表明向直播导入的外部视频流的状态。
+   * 包含如下参数：
+   * - url：导入进直播的外部视频源的 URL 地址。
+   * - uid：用户 ID。
+   * - status：导入的外部视频源状态：
+   *   - 0：外部视频流导入成功
+   *   - 1：外部视频流已存在
+   *   - 2：外部视频流导入未经授权
+   *   - 3：导入外部视频流超时
+   *   - 4：外部视频流导入失败
+   *   - 5：外部视频流停止导入失败
+   *   - 6：未找到要停止导入的外部视频流
+   *   - 7：要停止导入的外部视频流未经授权
+   *   - 8：停止导入外部视频流超时
+   *   - 9：停止导入外部视频流失败
+   *   - 10：导入的外部视频流被中断
+   */
   on(evt: 'streamInjectStatus', cb: (url: string, uid: number, status: number) => void): this;
+  /**
+   * 本地发布流已回退为音频流回调。
+   *
+   * 如果你调用了设置本地推流回退选项 {@link setLocalPublishFallbackOption} 接口并将 option 设置为 AUDIO_ONLY(2) 时，
+   当上行网络环境不理想、本地发布的媒体流回退为音频流时，或当上行网络改善、媒体流恢复为音视频流时，会触发该回调。
+   如果本地推流已回退为音频流，远端的 App 上会收到 userMuteVideo 的回调事件。
+   *
+   * 包含如下参数：
+   * isFallbackOrRecover：本地推流已回退或恢复：
+   * - true：由于网络环境不理想，本地发布的媒体流已回退为音频流
+   * - false：由于网络环境改善，发布的音频流已恢复为音视频流
+   */
   on(evt: 'localPublishFallbackToAudioOnly', cb: (isFallbackOrRecover: boolean) => void): this;
+  /**
+   * 远端订阅流已回退为音频流回调。
+   *
+   * 如果你调用了设置远端订阅流回退选项 {@link setRemoteSubscribeFallbackOption} 接口并将 option 设置为 AUDIO_ONLY(2) 时，
+   当下行网络环境不理想、仅接收远端音频流时，或当下行网络改善、恢复订阅音视频流时，会触发该回调。
+   远端订阅流因弱网环境不能同时满足音视频而回退为小流时，你可以使用 remoteVideoStats 回调来监控远端视频大小流的切换。
+   *
+   * 包含如下参数：
+   * - uid：远端用户的 ID
+   * - isFallbackOrRecover：远端订阅流已回退或恢复：
+   *   - true：由于网络环境不理想，远端订阅流已回退为音频流
+   *   - false：由于网络环境改善，订阅的音频流已恢复为音视频流
+   */
   on(evt: 'remoteSubscribeFallbackToAudioOnly', cb: (
     uid: number,
     isFallbackOrRecover: boolean
   ) => void): this;
+  /**
+   * 麦克风状态已改变回调。该回调由本地用户开启或关闭本地音频采集触发的。
+   * 包含如下参数：
+   * - enabled：
+   *   - true：麦克风已启用
+   *   - false：麦克风已禁用
+   */
   on(evt: 'microphoneEnabled', cb: (enabled: boolean) => void): this;
+  /**
+   * 网络连接状态已改变回调。
+   * 该回调在网络连接状态发生改变的时候触发，并告知用户当前的网络连接状态，和引起网络状态改变的原因。
+   * 包含如下参数：
+   * - state：当前的网络连接状态，详见 {@link AgoraRtcEngine#ConnectionState ConnectionState}
+   * - reason：引起当前网络连接状态发生改变的原因，详见 {@link AgoraRtcEngine#ConnectionChangeReason ConnectionChangeReason}
+   */
   on(evt: 'connectionStateChanged', cb: (
     state: ConnectionState,
     reason: ConnectionChangeReason
   ) => void): this;
+  /**
+   * 监听 AgoraRtcEngine 运行时的事件。
+   */
   on(evt: string, listener: Function): this;
 
   /**

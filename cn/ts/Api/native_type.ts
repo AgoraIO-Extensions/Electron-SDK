@@ -255,21 +255,40 @@ export interface RtcStats {
   cpuAppUsage: number;
   cpuTotalUsage: number;
 }
-
+/**
+ * 本地视频自适应情况：
+ */
 export enum AualityAdaptIndication {
-  /** The quality of the local video stays the same. */
+  /** 0：本地视频质量不变。 */
   ADAPT_NONE = 0,
-  /** The quality improves because the network bandwidth increases. */
+  /** 1：因网络带宽增加，本地视频质量改善。 */
   ADAPT_UP_BANDWIDTH = 1,
-  /** The quality worsens because the network bandwidth decreases. */
+  /** 2：因网络带宽减少，本地视频质量变差。 */
   ADAPT_DOWN_BANDWIDTH = 2,
 }
-
+/**
+ * 本地视频相关的统计信息。
+ */
 export interface LocalVideoStats {
+  /**
+   * （上次统计后）发送的码率，单位为 Kbps。
+   */
   sentBitrate: number;
+  /**
+   * 上次统计后）发送的帧率，单位为 fps。
+   */
   sentFrameRate: number;
+  /**
+   * 当前编码器的目标编码码率，单位为 Kbps，该码率为 SDK 根据当前网络状况预估的一个值。
+   */
   targetBitrate: number;
+  /**
+   * 当前编码器的目标编码帧率，单位为 fps。
+   */
   targetFrameRate: number;
+  /**
+   * 自上次统计后本地视频质量的自适应情况（基于目标帧率和目标码率）。详见 {@link AualityAdaptIndication}。
+   */
   qualityAdaptIndication: AualityAdaptIndication;
 }
 /**
@@ -459,36 +478,85 @@ export interface VideoEncoderConfiguration {
    * </table>
    */
   bitrate: number; // 0 - standard(recommended), 1 - compatible
+  /**
+   * 最低视频编码码率。单位为 Kbps，默认值为 -1。
+   * 该参数强制视频编码器输出高质量图片。如果将参数设为高于默认值，在网络状况不佳情况下可能会导致网络丢包，并影响视频播放的流畅度。因此如非对画质有特殊需求，Agora 建议不要修改该参数的值。
+   */
   minBitrate: number; // by default -1, changing this value is NOT recommended
+  /**
+   * 视频编码的旋转模式，详见 {@link OrientationMode}
+   */
   orientationMode: OrientationMode;
+  /**
+   * 带宽受限时。视频编码的降低偏好。详见 {@link DegradationPreference}。
+   */
   degradationPreference: DegradationPreference;
 }
-
+/**
+ * 带宽受限时的视频编码降级偏好。
+ */
 export enum DegradationPreference {
-  /** 0: (Default) Degrade the frame rate in order to maintain the video quality. */
+  /** 0：（默认）降低编码帧率以保证视频质量。 */
   MAINTAIN_QUALITY = 0,
-  /** 1: Degrade the video quality in order to maintain the frame rate. */
+  /** 1：降低视频质量以保证编码帧率。 */
   MAINTAIN_FRAMERATE = 1,
-  /** 2: (For future use) Maintain a balance between the frame rate and video quality. */
+  /** 2：（预留参数，暂不支持）在编码帧率和视频质量之间保持平衡。 */
   MAINTAIN_BALANCED = 2,
 }
 
-
+/**
+ * 视频编码的方向模式。
+ */
 export enum OrientationMode  {
+  /**
+   * 0：（默认）该模式下 SDK 输出的视频方向与采集到的视频方向一致。接收端会根据收到的视频旋转信息对视频进行旋转。该模式适用于接收端可以调整视频方向的场景：
+   * - 如果采集的视频是横屏模式，则输出的视频也是横屏模式
+   * - 如果采集的视频是竖屏模式，则输出的视频也是竖屏模式
+   */
   ORIENTATION_MODE_ADAPTIVE = 0, // 0: (Default) Adaptive mode.
+  /**
+   * 1：该模式下 SDK 固定输出风景（横屏）模式的视频。如果采集到的视频是竖屏模式，则视频编码器会对其进行裁剪。该模式适用于当接收端无法调整视频方向时，如使用 CDN 推流场景下
+   */
   ORIENTATION_MODE_FIXED_LANDSCAPE = 1, // 1: Landscape mode
+  /**
+   * 2：该模式下 SDK 固定输出人像（竖屏）模式的视频，如果采集到的视频是横屏模式，则视频编码器会对其进行裁剪。该模式适用于当接收端无法调整视频方向时，如使用 CDN 推流场景下
+   */
   ORIENTATION_MODE_FIXED_PORTRAIT = 2, // 2: Portrait mode.
 }
-
+/**
+ * 远端视频相关的统计信息。
+ */
 export interface RemoteVideoStats {
+  /**
+   * 用户 ID，指定是哪个用户的视频流。
+   */
   uid: number;
+  /**
+   * @deprecated 该参数已废弃。
+   *
+   * 延迟，单位为毫秒。
+   */
   delay: number;
+  /**
+   * 远端视频流宽度。
+   */
   width: number;
+  /**
+   * 远端视频流高度。
+   */
   height: number;
+  /**
+   * 接收码率，单位为 fps。
+   */
   receivedBitrate: number;
+  /**
+   * 远端视频渲染器的输出帧率，单位为 fps。
+   */
   receivedFrameRate: number;
   /**
-   * 0 for high stream and 1 for low stream
+   * 视频流类型。
+   * - 0：大流
+   * - 1：小流
    */
   rxStreamType: StreamType;
 }
@@ -586,34 +654,68 @@ export enum VideoContentHint {
    */
   CONTENT_HINT_DETAILS = 2 // Motionless content. Choose this option if you prefer sharpness or when you are sharing a picture, PowerPoint slide, or text.
 }
-
+/**
+ * 远端视频流传输的统计信息。
+ */
 export interface RemoteVideoTransportStats {
+  /**
+   * 用户 ID，指定是哪个用户/主播的视频包。
+   */
   uid: number;
+  /**
+   * 视频包从发送端到接收端的延时（毫秒）。
+   */
   delay: number;
+  /**
+   * 视频包从发送端到接收端的丢包率 (%)。
+   */
   lost: number;
+  /**
+   * 远端视频包的接收码率（Kbps）。
+   */
   rxKBitRate: number;
 }
-
+/**
+ * 远端音频流传输的统计信息。
+ */
 export interface RemoteAudioTransportStats {
+  /**
+   * 用户 ID，指定是哪个用户/主播的音频包。
+   */
   uid: number;
+  /**
+   * 音频包从发送端到接收端的延时（毫秒）。
+   */
   delay: number;
+  /**
+   * 音频包从发送端到接收端的丢包率 (%)。
+   */
   lost: number;
+  /**
+   * 远端音频包的接收码率（Kbps）。
+   */
   rxKBitRate: number;
 }
-
+/**
+ * 远端音频统计信息。
+ */
 export interface RemoteAudioStats {
-  /** User ID of the remote user sending the audio streams. */
+  /** 用户 ID，指定是哪个用户/主播的音频流。 */
   uid: number;
-  /** Audio quality received by the user: #QUALITY_TYPE. */
+  /** 远端用户发送的音频流质量，详见 {@link AgoraNetworkQuality}。 */
   quality: number;
-  /** Network delay from the sender to the receiver. */
+  /** 音频发送端到接收端的网络延迟。 */
   networkTransportDelay: number;
-  /** Jitter buffer delay at the receiver. */
+  /** 接收端网络抖动的缓冲延迟。 */
   jitterBufferDelay: number;
-  /** Packet loss rate in the reported interval. */
+  /** 该回调周期内的音频丢帧率。 */
   audioLossRate: number;
 }
-
+/**
+ * 远端视频状态：
+ * - 1：远端视频状态正常
+ * - 2：远端视频卡顿，可能是由于网络条件导致
+ */
 export type RemoteVideoState =
   | 1 // running
   | 2; // frozen, usually caused by network reason
@@ -645,7 +747,23 @@ export type RemoteVideoState =
   | 3 // 3: The SDK is connected to Agora's edge server and has joined a channel. You can now publish or subscribe to a media stream in the channel.
   | 4 // 4: The SDK keeps rejoining the channel after being disconnected from a joined channel because of network issues.
   | 5; // 5: The SDK fails to connect to Agora's edge server or join the channel.
-
+/**
+ * 引起当前网络状态发生改变的原因：
+ * - 0：建立网络连接中
+ * - 1：成功加入频道
+ * - 2：网络连接中断
+ * - 3：网络连接被服务器禁止
+ * - 4：加入频道失败。SDK 在尝试加入频道 20 分钟后还是没能加入频道，会返回该状态，并停止尝试重连
+ * - 5：离开频道
+ * - 6：不是有效的 App ID。请更换有效的 App ID 重新加入频道
+ * - 7：不是有效的频道名。请更换有效的频道名重新加入频道
+ * - 8：生成的 Token 无效
+ * - 9：当前使用的 Token 过期，不再有效，需要重新在你的服务端申请生成 Token
+ * - 10：此用户被服务器禁止
+ * - 11：由于设置了代理服务器，SDK 尝试重连
+ * - 12：更新 Token 引起网络连接状态改变
+ * - 13：客户端 IP 地址变更，可能是由于网络类型，或网络运营商的 IP 或端口发生改变引起
+ */
 export type ConnectionChangeReason =
   | 0 // 0: The SDK is connecting to Agora's edge server.
   | 1 // 1: The SDK has joined the channel successfully.
