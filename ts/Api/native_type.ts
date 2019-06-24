@@ -219,7 +219,7 @@ export interface RtcStats {
   cpuTotalUsage: number;
 }
 
-export enum AualityAdaptIndication {
+export enum QualityAdaptIndication {
   /** The quality of the local video stays the same. */
   ADAPT_NONE = 0,
   /** The quality improves because the network bandwidth increases. */
@@ -233,7 +233,7 @@ export interface LocalVideoStats {
   sentFrameRate: number;
   targetBitrate: number;
   targetFrameRate: number;
-  qualityAdaptIndication: AualityAdaptIndication;
+  qualityAdaptIndication: QualityAdaptIndication;
 }
 
 export interface VideoEncoderConfiguration {
