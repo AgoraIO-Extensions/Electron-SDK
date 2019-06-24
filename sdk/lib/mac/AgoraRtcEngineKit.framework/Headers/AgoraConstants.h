@@ -78,7 +78,7 @@ extern CGSize const AgoraVideoDimension960x720;
 /** 1280 &times; 720 (Hardware dependent)
  */
 extern CGSize const AgoraVideoDimension1280x720;
-#if TARGET_OS_MAC
+#if TARGET_OS_MAC && !TARGET_OS_IPHONE
 /** 1920 &times; 1080 (Hardware dependent, macOS only)
  */
 extern CGSize const AgoraVideoDimension1920x1080;
