@@ -141,22 +141,59 @@ export interface TranscodingConfig {
  * Last-mile 网络质量探测配置。
  */
 export interface LastmileProbeConfig {
+  /**
+   * 是否探测上行网络。有些用户，如直播频道中的普通观众，不需要进行网络探测：
+   * - true：探测
+   * - false：不探测
+   */
   probeUplink: boolean;
+  /** 是否探测下行网络：
+   * - true：探测
+   * - false：不探测
+   */
   probeDownlink: boolean;
+  /**
+   * 用户期望的最高发送码率，单位为 Kbps，范围为 [100, 5000]。
+   */
   expectedUplinkBitrate: number;
+  /**
+   * 用户期望的最高接收码率，单位为 Kbps，范围为 [100, 5000]。
+   */
   expectedDownlinkBitrate: number;
 }
-
+/**
+ * 单向 Last-mile 质量探测结果。
+ */
 export interface LastmileProbeOneWayResult {
+  /** 丢包率。*/
   packetLossRate: number;
+  /** 网络抖动，单位为毫秒。*/
   jitter: number;
+  /** 可用网络带宽预计，单位为 Kbps。*/
   availableBandwidth: number;
 }
-
+/**
+ * 上下行 Last-mile 质量探测结果。
+ */
 export interface LastmileProbeResult {
+  /**
+   * Last-mile 质量探测结果的状态，有如下几种：
+   * - 1：表示本次 Last-mile 质量探测是完整的
+   * - 2：表示本次 Last-mile 质量探测未进行带宽预测，因此结果不完整。一个可能的原因是测试资源暂时受限
+   * - 3：未进行 Last-mile 质量探测。一个可能的原因是网络连接中断
+   */
   state: number;
+  /**
+   * 上行网络质量报告，详见 {@link LastmileProbeOneWayResult}。
+   */
   uplinkReport: LastmileProbeOneWayResult;
+  /**
+   * 下行网络质量报告，详见 {@link LastmileProbeOneWayResult}。
+   */
   downlinkReport: LastmileProbeOneWayResult;
+  /**
+   * 往返时延，单位为毫秒。
+   */
   rtt: number;
 }
 
@@ -177,23 +214,25 @@ export enum VoiceChangerPreset {
   /** 6：绿巨人。 */
   VOICE_CHANGER_HULK = 6
 }
-
+/**
+ * 预设的本地语音混响效果选项：
+ */
 export enum AudioReverbPreset {
-  /** 0: The original voice (no local voice reverberation). */
+  /** 0：原声，即关闭本地语音混响。 */
   AUDIO_REVERB_OFF = 0, // Turn off audio reverb
-  /** 1: Pop music. */
+  /** 1：流行。 */
   AUDIO_REVERB_POPULAR = 1,
-  /** 2: R&B. */
+  /** 2：R&B。 */
   AUDIO_REVERB_RNB = 2,
-  /** 3: Rock music. */
+  /** 3：摇滚。 */
   AUDIO_REVERB_ROCK = 3,
-  /** 4: Hip-hop. */
+  /** 4：嘻哈。 */
   AUDIO_REVERB_HIPHOP = 4,
-  /** 5: Pop concert. */
+  /** 5：演唱会。 */
   AUDIO_REVERB_VOCAL_CONCERT = 5,
-  /** 6: Karaoke. */
+  /** 6：KTV。 */
   AUDIO_REVERB_KTV = 6,
-  /** 7: Recording studio. */
+  /** 7：录音棚。 */
   AUDIO_REVERB_STUDIO = 7
 }
 /**
@@ -240,25 +279,39 @@ export enum Priority {
   /** 100：（没骗人）用户媒体流的优先级正常。 */
   PRIORITY_NORMAL = 100
 }
-
+/**
+ * 通话相关的统计信息。
+ */
 export interface RtcStats {
+  /** 通话时长，单位为秒，累计值。*/
   duration: number;
+  /** 发送字节数（bytes），累计值。*/
   txBytes: number;
+  /** 接收字节数（bytes），累计值。*/
   rxBytes: number;
+  /** 发送码率（Kbps），瞬时值。*/
   txKBitRate: number;
+  /** 接收码率（Kbps），瞬时值。*/
   rxKBitRate: number;
+  /** 音频接收码率（Kbps），瞬时值。*/
   rxAudioKBitRate: number;
+  /** 音频包的发送码率（Kbps），瞬时值。*/
   txAudioKBitRate: number;
+  /** 视频接收码率（Kbps），瞬时值。*/
   rxVideoKBitRate: number;
+  /** 视频发送码率（Kbps），瞬时值。*/
   txVideoKBitRate: number;
+  /** 当前频道内的人数。*/
   userCount: number;
+  /** 当前系统的 CPU 使用率 (%)。*/
   cpuAppUsage: number;
+  /** 当前 App 的 CPU 使用率 (%)。*/
   cpuTotalUsage: number;
 }
 /**
  * 本地视频自适应情况：
  */
-export enum AualityAdaptIndication {
+export enum QualityAdaptIndication {
   /** 0：本地视频质量不变。 */
   ADAPT_NONE = 0,
   /** 1：因网络带宽增加，本地视频质量改善。 */
@@ -287,9 +340,9 @@ export interface LocalVideoStats {
    */
   targetFrameRate: number;
   /**
-   * 自上次统计后本地视频质量的自适应情况（基于目标帧率和目标码率）。详见 {@link AualityAdaptIndication}。
+   * 自上次统计后本地视频质量的自适应情况（基于目标帧率和目标码率）。详见 {@link QualityAdaptIndication}。
    */
-  qualityAdaptIndication: AualityAdaptIndication;
+  qualityAdaptIndication: QualityAdaptIndication;
 }
 /**
  * 视频编码属性定义。
@@ -1008,6 +1061,7 @@ export interface NodeRtcEngine {
   muteRemoteAudioStream(uid: number, mute: boolean): number;
   muteLocalVideoStream(mute: boolean): number;
   enableLocalVideo(enable: boolean): number;
+  enableLocalAudio(enable: boolean): number;
   muteAllRemoteVideoStreams(mute: boolean): number;
   setDefaultMuteAllRemoteVideoStreams(mute: boolean): number;
   enableAudioVolumeIndication(interval: number, smooth: number): number;
