@@ -30,6 +30,8 @@ import {
   VideoEncoderConfiguration
 } from './native_type';
 import { EventEmitter } from 'events';
+import { deprecate } from '../Utils';
+
 const agora = require('../../build/Release/agora_node_ext');
 
 
@@ -143,10 +145,10 @@ class AgoraRtcEngine extends EventEmitter {
       fire('error', err, msg);
     });
 
-    this.rtcEngine.onEvent('audioquality', function(uid: number, quality: AgoraNetworkQuality, delay: number, lost: number) {
-      fire('audioquality', uid, quality, delay, lost);
-      fire('audioQuality', uid, quality, delay, lost);
-    });
+    // this.rtcEngine.onEvent('audioquality', function(uid: number, quality: AgoraNetworkQuality, delay: number, lost: number) {
+    //   fire('audioquality', uid, quality, delay, lost);
+    //   fire('audioQuality', uid, quality, delay, lost);
+    // });
 
     this.rtcEngine.onEvent('audiovolumeindication', function(
       speakers: {
@@ -220,10 +222,10 @@ class AgoraRtcEngine extends EventEmitter {
       fire('audioDeviceStateChanged', deviceId, deviceType, deviceState);
     });
 
-    this.rtcEngine.onEvent('audiomixingfinished', function() {
-      fire('audiomixingfinished');
-      fire('audioMixingFinished');
-    });
+    // this.rtcEngine.onEvent('audiomixingfinished', function() {
+    //   fire('audiomixingfinished');
+    //   fire('audioMixingFinished');
+    // });
 
     this.rtcEngine.onEvent('audioMixingStateChanged', function(state: number, err: number) {
       fire('audioMixingStateChanged', state, err);
@@ -363,20 +365,20 @@ class AgoraRtcEngine extends EventEmitter {
       fire('connectionLost');
     });
 
-    this.rtcEngine.onEvent('connectioninterrupted', function() {
-      fire('connectioninterrupted');
-      fire('connectionInterrupted');
-    });
+    // this.rtcEngine.onEvent('connectioninterrupted', function() {
+    //   fire('connectioninterrupted');
+    //   fire('connectionInterrupted');
+    // });
 
-    this.rtcEngine.onEvent('connectionbanned', function() {
-      fire('connectionbanned');
-      fire('connectionBanned');
-    });
+    // this.rtcEngine.onEvent('connectionbanned', function() {
+    //   fire('connectionbanned');
+    //   fire('connectionBanned');
+    // });
 
-    this.rtcEngine.onEvent('refreshrecordingservicestatus', function(status: any) {
-      fire('refreshrecordingservicestatus', status);
-      fire('refreshRecordingServiceStatus', status);
-    });
+    // this.rtcEngine.onEvent('refreshrecordingservicestatus', function(status: any) {
+    //   fire('refreshrecordingservicestatus', status);
+    //   fire('refreshRecordingServiceStatus', status);
+    // });
 
     this.rtcEngine.onEvent('streammessage', function(
       uid: number,
@@ -748,6 +750,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @deprecated
    * @description This method sets high-quality audio preferences. Call this method and set all the three
    * modes before joining a channel. Do NOT call this method again after joining a channel.
    * @param {boolean} fullband enable/disable fullband codec
@@ -756,6 +759,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {number} 0 for success, <0 for failure
    */
   setHighQualityAudioParameters(fullband: boolean, stereo: boolean, fullBitrate: boolean): number {
+    deprecate('setAudioProfile');
     return this.rtcEngine.setHighQualityAudioParameters(fullband, stereo, fullBitrate);
   }
 
@@ -832,7 +836,7 @@ class AgoraRtcEngine extends EventEmitter {
    * will be controlled by setVideoRenderFPS
    * @param {number} uid stream uid
    */
-  remoteVideoRenderFromHighFPS(uid: number) {
+  removeVideoRenderFromHighFPS(uid: number) {
     this.rtcEngine.removeFromHighVideo(uid);
   }
 
@@ -896,6 +900,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {number} 0 for success, <0 for failure
    */
   startEchoTest(): number {
+    deprecate('startEchoTestWithInterval');
     return this.rtcEngine.startEchoTest();
   }
 
@@ -1172,6 +1177,15 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @description Whether to enable the microphone to create the local audio stream.
+   * @param {boolean} enable enable/disable video
+   * @returns {number} 0 for success, <0 for failure
+   */
+  enableLocalAudio(enable: boolean): number {
+    return this.rtcEngine.enableLocalAudio(enable);
+  }
+
+  /**
    * @description This method mutes/unmutes all remote users’ video streams.
    * @param {boolean} mute mute/unmute video
    * @returns {number} 0 for success, <0 for failure
@@ -1223,18 +1237,22 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @deprecated
    * @description disable audio function in channel, which will be recovered when leave channel.
    * @returns {number} 0 for success, <0 for failure
    */
   pauseAudio() {
+    deprecate('disableAudio');
     return this.rtcEngine.pauseAudio();
   }
 
   /**
+   * @deprecated
    * @description resume audio function in channel.
    * @returns {number} 0 for success, <0 for failure
    */
   resumeAudio() {
+    deprecate('enableAudio');
     return this.rtcEngine.resumeAudio();
   }
 
@@ -1796,11 +1814,12 @@ class AgoraRtcEngine extends EventEmitter {
    * @description get list of all system display ids and relevant infos, the display id can be used for screen share
    * @returns {Array} list of display infos
    */
-   getScreenDisplaysInfo(): Array<Object> {
+  getScreenDisplaysInfo(): Array<Object> {
     return this.rtcEngine.getScreenDisplaysInfo();
   }
 
   /**
+   * @deprecated
    * @description start video source screen capture
    * @param {number} wndid windows id to capture
    * @param {number} captureFreq fps of video source screencapture, 1 - 15
@@ -1814,6 +1833,7 @@ class AgoraRtcEngine extends EventEmitter {
     rect: {left: number, right: number, top: number, bottom: number},
     bitrate: number
   ): number {
+    deprecate('"videoSourceStartScreenCaptureByScreen" or "videoSourceStartScreenCaptureByWindow"');
     return this.rtcEngine.startScreenCapture2(windowId, captureFreq, rect, bitrate);
   }
 
@@ -1888,7 +1908,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {CaptureRect} rect
    * @param {CaptureParam} param
    */
-  videosourceStartScreenCaptureByScreen(screenSymbol: ScreenSymbol, rect: CaptureRect, param: CaptureParam): number {
+  videoSourceStartScreenCaptureByScreen(screenSymbol: ScreenSymbol, rect: CaptureRect, param: CaptureParam): number {
     return this.rtcEngine.videosourceStartScreenCaptureByScreen(screenSymbol, rect, param);
   }
 
@@ -1898,7 +1918,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {CaptureRect} rect
    * @param {CaptureParam} param
    */
-  videosourceStartScreenCaptureByWindow(windowSymbol: number, rect: CaptureRect, param: CaptureParam): number {
+  videoSourceStartScreenCaptureByWindow(windowSymbol: number, rect: CaptureRect, param: CaptureParam): number {
     return this.rtcEngine.videosourceStartScreenCaptureByWindow(windowSymbol, rect, param);
   }
 
@@ -1906,7 +1926,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @description Updates the screen sharing parameters.
    * @param {CaptureParam} param
    */
-  videosourceUpdateScreenCaptureParameters(param: CaptureParam): number {
+  videoSourceUpdateScreenCaptureParameters(param: CaptureParam): number {
     return this.rtcEngine.videosourceUpdateScreenCaptureParameters(param);
   }
 
@@ -1914,7 +1934,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @description  Updates the screen sharing parameters.
    * @param {VideoContentHint} hint
    */
-  videosourceSetScreenCaptureContentHint(hint: VideoContentHint): number {
+  videoSourceSetScreenCaptureContentHint(hint: VideoContentHint): number {
     return this.rtcEngine.videosourceSetScreenCaptureContentHint(hint);
   }
 
@@ -1927,6 +1947,7 @@ class AgoraRtcEngine extends EventEmitter {
   // one at a time via this section's api
   // ===========================================================================
   /**
+   * @deprecated
    * @description start screen capture
    * @param {number} windowId windows id to capture
    * @param {number} captureFreq fps of screencapture, 1 - 15
@@ -1940,6 +1961,7 @@ class AgoraRtcEngine extends EventEmitter {
     rect: {left: number, right: number, top: number, bottom: number},
     bitrate: number
   ): number {
+    deprecate();
     return this.rtcEngine.startScreenCapture(windowId, captureFreq, rect, bitrate);
   }
 
@@ -2496,9 +2518,9 @@ declare interface AgoraRtcEngine {
   on(evt: 'rejoinedChannel', cb: (
     channel: string, uid: number, elapsed: number
   ) => void): this;
-  on(evt: 'audioQuality', cb: (
-    uid: number, quality: AgoraNetworkQuality, delay: number, lost: number
-  ) => void): this;
+  // on(evt: 'audioQuality', cb: (
+  //   uid: number, quality: AgoraNetworkQuality, delay: number, lost: number
+  // ) => void): this;
   on(evt: 'audioVolumeIndication', cb: (
     uid: number,
     volume: number,
@@ -2525,7 +2547,7 @@ declare interface AgoraRtcEngine {
     deviceType: number,
     deviceState: number,
   ) => void): this;
-  on(evt: 'audioMixingFinished', cb: () => void): this;
+  // on(evt: 'audioMixingFinished', cb: () => void): this;
   on(evt: 'audioMixingStateChanged', cb: (state: number, err: number) => void): this;
   on(evt: 'remoteAudioMixingBegin', cb: () => void): this;
   on(evt: 'remoteAudioMixingEnd', cb: () => void): this;
@@ -2572,9 +2594,9 @@ declare interface AgoraRtcEngine {
   on(evt: 'cameraReady', cb: () => void): this;
   on(evt: 'videoStopped', cb: () => void): this;
   on(evt: 'connectionLost', cb: () => void): this;
-  on(evt: 'connectionInterrupted', cb: () => void): this;
+  // on(evt: 'connectionInterrupted', cb: () => void): this;
   on(evt: 'connectionBanned', cb: () => void): this;
-  on(evt: 'refreshRecordingServiceStatus', cb: () => void): this;
+  // on(evt: 'refreshRecordingServiceStatus', cb: () => void): this;
   on(evt: 'streamMessage', cb: (
     uid: number,
     streamId: number,
@@ -2626,114 +2648,111 @@ declare interface AgoraRtcEngine {
   ) => void): this;
   on(evt: string, listener: Function): this;
 
-  /**
-   * In future lowercase event name will be deprecated
-   */
-  on(evt: 'apicallexecuted', cb: (api: string, err: number) => void): this;
-  on(evt: 'warning', cb: (warn: number, msg: string) => void): this;
-  on(evt: 'error', cb: (err: number, msg: string) => void): this;
-  on(evt: 'joinedchannel', cb: (
-    channel: string, uid: number, elapsed: number
-  ) => void): this;
-  on(evt: 'rejoinedchannel', cb: (
-    channel: string, uid: number, elapsed: number
-  ) => void): this;
-  on(evt: 'audioquality', cb: (
-    uid: number, quality: AgoraNetworkQuality, delay: number, lost: number
-  ) => void): this;
-  on(evt: 'audiovolumeindication', cb: (
-    uid: number,
-    volume: number,
-    speakerNumber: number,
-    totalVolume: number
-  ) => void): this;
-  on(evt: 'leavechannel', cb: () => void): this;
-  on(evt: 'rtcstats', cb: (stats: RtcStats) => void): this;
-  on(evt: 'localvideostats', cb: (stats: LocalVideoStats) => void): this;
-  on(evt: 'remotevideostats', cb: (stats: RemoteVideoStats) => void): this;
-  on(evt: 'audiodevicestatechanged', cb: (
-    deviceId: string,
-    deviceType: number,
-    deviceState: number,
-  ) => void): this;
-  on(evt: 'audiomixingfinished', cb: () => void): this;
-  on(evt: 'remoteaudiomixingbegin', cb: () => void): this;
-  on(evt: 'remoteaudiomixingend', cb: () => void): this;
-  on(evt: 'audioeffectfinished', cb: (soundId: number) => void): this;
-  on(evt: 'videodevicestatechanged', cb: (
-    deviceId: string,
-    deviceType: number,
-    deviceState: number,
-  ) => void): this;
-  on(evt: 'networkquality', cb: (
-    uid: number,
-    txquality: AgoraNetworkQuality,
-    rxquality: AgoraNetworkQuality
-  ) => void): this;
-  on(evt: 'lastmilequality', cb: (quality: AgoraNetworkQuality) => void): this;
-  on(evt: 'firstlocalvideoframe', cb: (
-    width: number,
-    height: number,
-    elapsed: number
-  ) => void): this;
-  on(evt: 'addstream', cb: (
-    uid: number,
-    elapsed: number,
-  ) => void): this;
-  on(evt: 'videosizechanged', cb: (
-    uid: number,
-    width: number,
-    height: number,
-    rotation: number
-  ) => void): this;
-  on(evt: 'firstremotevideoframe', cb: (
-    uid: number,
-    width: number,
-    height: number,
-    elapsed: number
-  ) => void): this;
-  on(evt: 'userjoined', cb: (uid: number, elapsed: number) => void): this;
-  on(evt: 'removestream', cb: (uid: number, reason: number) => void): this;
-  on(evt: 'usermuteaudio', cb: (uid: number, muted: boolean) => void): this;
-  on(evt: 'usermutevideo', cb: (uid: number, muted: boolean) => void): this;
-  on(evt: 'userenablevideo', cb: (uid: number, enabled: boolean) => void): this;
-  on(evt: 'userenablelocalvideo', cb: (uid: number, enabled: boolean) => void): this;
-  on(evt: 'cameraready', cb: () => void): this;
-  on(evt: 'videostopped', cb: () => void): this;
-  on(evt: 'connectionlost', cb: () => void): this;
-  on(evt: 'connectioninterrupted', cb: () => void): this;
-  on(evt: 'connectionbanned', cb: () => void): this;
-  on(evt: 'refreshrecordingservicestatus', cb: () => void): this;
-  on(evt: 'streammessage', cb: (
-    uid: number,
-    streamId: number,
-    msg: string,
-    len: number
-  ) => void): this;
-  on(evt: 'streammessageerror', cb: (
-    uid: number,
-    streamId: number,
-    code: number,
-    missed: number,
-    cached: number
-  ) => void): this;
-  on(evt: 'mediaenginestartcallsuccess', cb: () => void): this;
-  on(evt: 'requestchannelkey', cb: () => void): this;
-  on(evt: 'fristlocalaudioframe', cb: (elapsed: number) => void): this;
-  on(evt: 'firstremoteaudioframe', cb: (uid: number, elapsed: number) => void): this;
-  on(evt: 'activespeaker', cb: (uid: number) => void): this;
-  on(evt: 'clientrolechanged', cb: (
-    oldRole: ClientRoleType,
-    newRole: ClientRoleType
-  ) => void): this;
-  on(evt: 'audiodevicevolumechanged', cb: (
-    deviceType: MediaDeviceType,
-    volume: number,
-    muted: boolean
-  ) => void): this;
-  on(evt: 'videosourcejoinedsuccess', cb: (uid: number) => void): this;
-  on(evt: 'videosourcerequestnewtoken', cb: () => void): this;
-  on(evt: 'videosourceleavechannel', cb: () => void): this;
+  // on(evt: 'apicallexecuted', cb: (api: string, err: number) => void): this;
+  // on(evt: 'warning', cb: (warn: number, msg: string) => void): this;
+  // on(evt: 'error', cb: (err: number, msg: string) => void): this;
+  // on(evt: 'joinedchannel', cb: (
+  //   channel: string, uid: number, elapsed: number
+  // ) => void): this;
+  // on(evt: 'rejoinedchannel', cb: (
+  //   channel: string, uid: number, elapsed: number
+  // ) => void): this;
+  // on(evt: 'audioquality', cb: (
+  //   uid: number, quality: AgoraNetworkQuality, delay: number, lost: number
+  // ) => void): this;
+  // on(evt: 'audiovolumeindication', cb: (
+  //   uid: number,
+  //   volume: number,
+  //   speakerNumber: number,
+  //   totalVolume: number
+  // ) => void): this;
+  // on(evt: 'leavechannel', cb: () => void): this;
+  // on(evt: 'rtcstats', cb: (stats: RtcStats) => void): this;
+  // on(evt: 'localvideostats', cb: (stats: LocalVideoStats) => void): this;
+  // on(evt: 'remotevideostats', cb: (stats: RemoteVideoStats) => void): this;
+  // on(evt: 'audiodevicestatechanged', cb: (
+  //   deviceId: string,
+  //   deviceType: number,
+  //   deviceState: number,
+  // ) => void): this;
+  // on(evt: 'audiomixingfinished', cb: () => void): this;
+  // on(evt: 'remoteaudiomixingbegin', cb: () => void): this;
+  // on(evt: 'remoteaudiomixingend', cb: () => void): this;
+  // on(evt: 'audioeffectfinished', cb: (soundId: number) => void): this;
+  // on(evt: 'videodevicestatechanged', cb: (
+  //   deviceId: string,
+  //   deviceType: number,
+  //   deviceState: number,
+  // ) => void): this;
+  // on(evt: 'networkquality', cb: (
+  //   uid: number,
+  //   txquality: AgoraNetworkQuality,
+  //   rxquality: AgoraNetworkQuality
+  // ) => void): this;
+  // on(evt: 'lastmilequality', cb: (quality: AgoraNetworkQuality) => void): this;
+  // on(evt: 'firstlocalvideoframe', cb: (
+  //   width: number,
+  //   height: number,
+  //   elapsed: number
+  // ) => void): this;
+  // on(evt: 'addstream', cb: (
+  //   uid: number,
+  //   elapsed: number,
+  // ) => void): this;
+  // on(evt: 'videosizechanged', cb: (
+  //   uid: number,
+  //   width: number,
+  //   height: number,
+  //   rotation: number
+  // ) => void): this;
+  // on(evt: 'firstremotevideoframe', cb: (
+  //   uid: number,
+  //   width: number,
+  //   height: number,
+  //   elapsed: number
+  // ) => void): this;
+  // on(evt: 'userjoined', cb: (uid: number, elapsed: number) => void): this;
+  // on(evt: 'removestream', cb: (uid: number, reason: number) => void): this;
+  // on(evt: 'usermuteaudio', cb: (uid: number, muted: boolean) => void): this;
+  // on(evt: 'usermutevideo', cb: (uid: number, muted: boolean) => void): this;
+  // on(evt: 'userenablevideo', cb: (uid: number, enabled: boolean) => void): this;
+  // on(evt: 'userenablelocalvideo', cb: (uid: number, enabled: boolean) => void): this;
+  // on(evt: 'cameraready', cb: () => void): this;
+  // on(evt: 'videostopped', cb: () => void): this;
+  // on(evt: 'connectionlost', cb: () => void): this;
+  // on(evt: 'connectioninterrupted', cb: () => void): this;
+  // on(evt: 'connectionbanned', cb: () => void): this;
+  // on(evt: 'refreshrecordingservicestatus', cb: () => void): this;
+  // on(evt: 'streammessage', cb: (
+  //   uid: number,
+  //   streamId: number,
+  //   msg: string,
+  //   len: number
+  // ) => void): this;
+  // on(evt: 'streammessageerror', cb: (
+  //   uid: number,
+  //   streamId: number,
+  //   code: number,
+  //   missed: number,
+  //   cached: number
+  // ) => void): this;
+  // on(evt: 'mediaenginestartcallsuccess', cb: () => void): this;
+  // on(evt: 'requestchannelkey', cb: () => void): this;
+  // on(evt: 'fristlocalaudioframe', cb: (elapsed: number) => void): this;
+  // on(evt: 'firstremoteaudioframe', cb: (uid: number, elapsed: number) => void): this;
+  // on(evt: 'activespeaker', cb: (uid: number) => void): this;
+  // on(evt: 'clientrolechanged', cb: (
+  //   oldRole: ClientRoleType,
+  //   newRole: ClientRoleType
+  // ) => void): this;
+  // on(evt: 'audiodevicevolumechanged', cb: (
+  //   deviceType: MediaDeviceType,
+  //   volume: number,
+  //   muted: boolean
+  // ) => void): this;
+  // on(evt: 'videosourcejoinedsuccess', cb: (uid: number) => void): this;
+  // on(evt: 'videosourcerequestnewtoken', cb: () => void): this;
+  // on(evt: 'videosourceleavechannel', cb: () => void): this;
 }
 
 export default AgoraRtcEngine;

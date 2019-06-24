@@ -22,7 +22,9 @@ typedef NS_ENUM(NSInteger, AgoraWarningCode) {
     AgoraWarningCodeNoAvailableChannel = 103,
     /** 104: A timeout occurs when looking up the channel. When joining a channel, the SDK looks up the specified channel. The warning usually occurs when the network condition is too poor for the SDK to connect to the server. */
     AgoraWarningCodeLookupChannelTimeout = 104,
-    /** 105: The server rejects the request to look up the channel. The server cannot process this request or the request is illegal. */
+    /** 105: The server rejects the request to look up the channel. The server cannot process this request or the request is illegal.
+     <p><b>DEPRECATED</b></p>
+     */
     AgoraWarningCodeLookupChannelRejected = 105,
     /** 106: The server rejects the request to look up the channel. The server cannot process this request or the request is illegal. */
     AgoraWarningCodeOpenChannelTimeout = 106,
@@ -132,12 +134,14 @@ typedef NS_ENUM(NSInteger, AgoraErrorCode) {
      <p>Possible reasons are:
      <ul><li>Authorized Timestamp expired: The timestamp is represented by the number of seconds elapsed since 1/1/1970. The user can use the token to access the Agora service within five minutes after the token is generated. If the user does not access the Agora service after five minutes, this token is no longer valid.</li>
      <li>Call Expiration Timestamp expired: The timestamp is the exact time when a user can no longer use the Agora service (for example, when a user is forced to leave an ongoing call). When a value is set for the Call Expiration Timestamp, it does not mean that the token will expire, but that the user will be banned from the channel.</li></ul></p>
+     <p><b>DEPRECATED</b></p>
      */
     AgoraErrorCodeTokenExpired = 109,
     /** 110: The token is invalid.
      <p>Possible reasons are:
      <ul><li>The App Certificate for the project is enabled in Dashboard, but the user is using the App ID. Once the App Certificate is enabled, the user must use a token.</li>
      <li>The uid is mandatory, and users must set the same uid as the one set in the [joinChannelByToken]([AgoraRtcEngineKit joinChannelByToken:channelId:info:uid:joinSuccess:]) method.</li></ul></p>
+     <p><b>DEPRECATED</b></p>
      */
     AgoraErrorCodeInvalidToken = 110,
     /** 111: The Internet connection is interrupted. This applies to the Agora Web SDK only. */
@@ -168,13 +172,26 @@ typedef NS_ENUM(NSInteger, AgoraErrorCode) {
     AgoraErrorCodeWatermarkRead = 129,
     /** 130: The encrypted stream is not allowed to publish. */
     AgoraErrorCodeEncryptedStreamNotAllowedPublish = 130,
-    /** 150: Stream publishing fails. */
-    AgoraErrorCodePublishFailed = 150,
+    /** 151: CDN related errors. Remove the original URL address and add a new one by calling the [removePublishStreamUrl]([AgoraRtcEngineKit removePublishStreamUrl:]) and [addPublishStreamUrl]([AgoraRtcEngineKit addPublishStreamUrl:transcodingEnabled:]) methods. */
+    AgoraErrorCodePublishStreamCDNError = 151,
+    /** 152: The host publishes more than 10 URLs. Delete the unnecessary URLs before adding new ones. */
+    AgoraErrorCodePublishStreamNumReachLimit = 152,
+    /** 153: The host manipulates other hosts' URLs. Check your app logic. */
+    AgoraErrorCodePublishStreamNotAuthorized = 153,
+    /** 154: An error occurs in Agora's streaming server. Call the [addPublishStreamUrl]([AgoraRtcEngineKit addPublishStreamUrl:transcodingEnabled:]) method to publish the stream again. */
+    AgoraErrorCodePublishStreamInternalServerError = 154,
+    /** 155: The server fails to find the stream. */
+    AgoraErrorCodePublishStreamNotFound = 155,
+    /** 156: The format of the RTMP stream URL is not supported. Check whether the URL format is correct. */
+    AgoraErrorCodePublishStreamFormatNotSuppported = 156,
+
     /** 1001: Fails to load the media engine. */
     AgoraErrorCodeLoadMediaEngine = 1001,
     /** 1002: Fails to start the call after enabling the media engine. */
     AgoraErrorCodeStartCall = 1002,
-    /** 1003: Fails to start the camera. */
+    /** 1003: Fails to start the camera.
+    <p><b>DEPRECATED</b></p>
+     */
     AgoraErrorCodeStartCamera = 1003,
     /** 1004: Fails to start the video rendering module. */
     AgoraErrorCodeStartVideoRender = 1004,
@@ -400,24 +417,24 @@ typedef NS_ENUM(NSInteger, AgoraVideoProfile) {
     /** Resolution 720 &times; 960, frame rate 30 fps, bitrate 1380 Kbps. */
     AgoraVideoProfilePortrait720P_6 = 1055,
     /** (macOS only) Resolution 1080 &times; 1920, frame rate 15 fps, bitrate 2080 Kbps. */
-    AgoraVideoProfilePortrait1080P = 1060, // macOS
+    AgoraVideoProfilePortrait1080P = 1060,
     /** (macOS only) Resolution 1080 &times; 1920, frame rate 30 fps, bitrate 3150 Kbps. */
-    AgoraVideoProfilePortrait1080P_3 = 1062, // macOS
+    AgoraVideoProfilePortrait1080P_3 = 1062,
     /** (macOS only) Resolution 1080 &times; 1920, frame rate 60 fps, bitrate 4780 Kbps. */
-    AgoraVideoProfilePortrait1080P_5 = 1064, // macOS
+    AgoraVideoProfilePortrait1080P_5 = 1064,
     /** (macOS only) Resolution 1440 &times; 2560, frame rate 30 fps, bitrate 4850 Kbps. */
-    AgoraVideoProfilePortrait1440P = 1066, // macOS
+    AgoraVideoProfilePortrait1440P = 1066,
     /** (macOS only) Resolution 1440 &times; 2560, frame rate 60 fps, bitrate 6500 Kbps. */
-    AgoraVideoProfilePortrait1440P_2 = 1067, // macOS
+    AgoraVideoProfilePortrait1440P_2 = 1067,
     /** (macOS only) Resolution 2160 &times; 3840, frame rate 30 fps, bitrate 6500 Kbps. */
-    AgoraVideoProfilePortrait4K = 1070, // macOS
+    AgoraVideoProfilePortrait4K = 1070,
     /** (macOS only) Resolution 2160 &times; 3840, frame rate 60 fps, bitrate 6500 Kbps. */
-    AgoraVideoProfilePortrait4K_3 = 1072, // macOS
+    AgoraVideoProfilePortrait4K_3 = 1072,
     /** (Default) Resolution 640 &times; 360, frame rate 15 fps, bitrate 400 Kbps. */
     AgoraVideoProfileDEFAULT = AgoraVideoProfileLandscape360P,
 };
 
-/** The camera capture preference. */
+/** The camera capturer configuration. */
 typedef NS_ENUM(NSInteger, AgoraCameraCaptureOutputPreference) {
     /** (default) Self-adapts the camera output parameters to the system performance and network conditions to balance CPU consumption and video preview quality. */
     AgoraCameraCaptureOutputPreferenceAuto = 0,
@@ -508,17 +525,10 @@ typedef NS_ENUM(NSInteger, AgoraMediaType) {
 };
 
 
-/** Encryption mode.
-
-When encryptionMode is set as NULL, the encryption mode is set to 128-bit AES encryption, XTS mode by default.
-*/
 typedef NS_ENUM(NSInteger, AgoraEncryptionMode) {
     AgoraEncryptionModeNone = 0,
-    /** 128-bit AES encryption, XTS mode. */
     AgoraEncryptionModeAES128XTS = 1,
-    /** 256-bit AES encryption, XTS mode. */
     AgoraEncryptionModeAES256XTS = 2,
-    /** 128-bit AES encryption, ECB mode. */
     AgoraEncryptionModeAES128ECB = 3,
 };
 
@@ -530,6 +540,64 @@ typedef NS_ENUM(NSUInteger, AgoraUserOfflineReason) {
     AgoraUserOfflineReasonDropped = 1,
     /** (Live broadcast only.) The client role switched from the host to the audience. */
     AgoraUserOfflineReasonBecomeAudience = 2,
+};
+
+/** The RTMP streaming state. */
+typedef NS_ENUM(NSUInteger, AgoraRtmpStreamingState) {
+  /** The RTMP streaming has not started or has ended. */
+  AgoraRtmpStreamingStateIdle = 0,
+  /** The SDK is connecting to Agora's streaming server and the RTMP server. This state is triggered after you call the [addPublishStreamUrl]([AgoraRtcEngineKit addPublishStreamUrl:transcodingEnabled:]) method. */
+  AgoraRtmpStreamingStateConnecting = 1,
+  /** The RTMP streaming is being published. The SDK successfully publishes the RTMP streaming and returns this state. */
+  AgoraRtmpStreamingStateRunning = 2,
+  /** The RTMP streaming is recovering. When exceptions occur to the CDN, or the streaming is interrupted, the SDK attempts to resume RTMP streaming and returns this state. 
+<li> If the SDK successfully resumes the streaming, AgoraRtmpStreamingStateRunning(2) returns.
+<li> If the streaming does not resume within 60 seconds or server errors occur, AgoraRtmpStreamingStateFailure(4) returns. You can also reconnect to the server by calling the [removePublishStreamUrl]([AgoraRtcEngineKit removePublishStreamUrl:]) and [addPublishStreamUrl]([AgoraRtcEngineKit addPublishStreamUrl:transcodingEnabled:]) methods. */
+  AgoraRtmpStreamingStateRecovering = 3,
+  /** The RTMP streaming fails. See the errorCode parameter for the detailed error information. You can also call the [addPublishStreamUrl]([AgoraRtcEngineKit addPublishStreamUrl:transcodingEnabled:]) method to publish the RTMP streaming again. */
+  AgoraRtmpStreamingStateFailure = 4,
+};
+
+
+enum RTMP_STREAM_PUBLISH_ERROR
+{
+  RTMP_STREAM_PUBLISH_ERROR_OK = 0,
+  RTMP_STREAM_PUBLISH_ERROR_INVALID_ARGUMENT = 1,
+  RTMP_STREAM_PUBLISH_ERROR_ENCRYPTED_STREAM_NOT_ALLOWED = 2,
+  RTMP_STREAM_PUBLISH_ERROR_CONNECTION_TIMEOUT = 3,
+  RTMP_STREAM_PUBLISH_ERROR_INTERNAL_SERVER_ERROR = 4,
+  RTMP_STREAM_PUBLISH_ERROR_RTMP_SERVER_ERROR = 5,
+  RTMP_STREAM_PUBLISH_ERROR_TOO_OFTEN = 6,
+  RTMP_STREAM_PUBLISH_ERROR_REACH_LIMIT = 7,
+  RTMP_STREAM_PUBLISH_ERROR_NOT_AUTHORIZED = 8,
+  RTMP_STREAM_PUBLISH_ERROR_STREAM_NOT_FOUND = 9,
+  RTMP_STREAM_PUBLISH_ERROR_FORMAT_NOT_SUPPORTED = 10,
+};
+
+/** The detailed error information for streaming. */
+typedef NS_ENUM(NSUInteger, AgoraRtmpStreamingErrorCode) {
+  /** The RTMP streaming publishes successfully. */
+  AgoraRtmpStreamingErrorCodeOK = 0,
+  /** Invalid argument used. If, for example, you do not call the [setLiveTranscoding]([AgoraRtcEngineKit setLiveTranscoding:]) method to configure the LiveTranscoding parameters before calling the [addPublishStreamUrl]([AgoraRtcEngineKit addPublishStreamUrl:transcodingEnabled:]) method, the SDK returns this error. Check whether you set the parameters in the setLiveTranscoding method properly. */
+  AgoraRtmpStreamingErrorCodeInvalidParameters = 1,
+  /** The RTMP streaming is encrypted and cannot be published. */
+  AgoraRtmpStreamingErrorCodeEncryptedStreamNotAllowed = 2,
+  /** Timeout for the RTMP streaming. Call the [addPublishStreamUrl]([AgoraRtcEngineKit addPublishStreamUrl:transcodingEnabled:]) method to publish the streaming again. */
+  AgoraRtmpStreamingErrorCodeConnectionTimeout = 3,
+  /** An error occurs in Agora's streaming server. Call the [addPublishStreamUrl]([AgoraRtcEngineKit addPublishStreamUrl:transcodingEnabled:]) method to publish the streaming again. */
+  AgoraRtmpStreamingErrorCodeInternalServerError = 4,
+  /** An error occurs in the RTMP server. */
+  AgoraRtmpStreamingErrorCodeRtmpServerError = 5,
+  /** The RTMP streaming publishes too frequently. */
+  AgoraRtmpStreamingErrorCodeTooOften = 6,
+  /** The host publishes more than 10 URLs. Delete the unnecessary URLs before adding new ones. */
+  AgoraRtmpStreamingErrorCodeReachLimit = 7,
+  /** The host manipulates other hosts' URLs. Check your app logic. */
+  AgoraRtmpStreamingErrorCodeNotAuthorized = 8,
+  /** Agora's server fails to find the RTMP streaming. */
+  AgoraRtmpStreamingErrorCodeStreamNotFound = 9,
+  /** The format of the RTMP streaming URL is not supported. Check whether the URL format is correct. */
+  AgoraRtmpStreamingErrorCodeFormatNotSupported = 10,
 };
 
 /** State of importing an external video stream in a live broadcast. */
@@ -865,14 +933,19 @@ typedef NS_OPTIONS(NSUInteger, AgoraAudioSessionOperationRestriction) {
     AgoraAudioSessionOperationRestrictionAll               = 1 << 7
 };
 
+typedef NS_ENUM(NSInteger, AgoraAudioCodecProfileType) {
+  AgoraAudioCodecProfileLCAAC = 0,
+  AgoraAudioCodecProfileHEAAC = 1
+};
+
 /** Media device type. */
 typedef NS_ENUM(NSInteger, AgoraMediaDeviceType) {
     /** Unknown device. */
     AgoraMediaDeviceTypeAudioUnknown = -1,
-    /** Audio recording device. */
-    AgoraMediaDeviceTypeAudioRecording = 0,
     /** Audio playback device. */
-    AgoraMediaDeviceTypeAudioPlayout = 1,
+    AgoraMediaDeviceTypeAudioPlayout = 0,
+    /** Audio recording device. */
+    AgoraMediaDeviceTypeAudioRecording = 1,
     /** Video render device. */
     AgoraMediaDeviceTypeVideoRender = 2,
     /** Video capture device. */
@@ -927,6 +1000,42 @@ typedef NS_ENUM(NSUInteger, AgoraConnectionChangedReason) {
     AgoraConnectionChangedJoinFailed = 4,
     /** 5: The SDK has left the channel. */
     AgoraConnectionChangedLeaveChannel = 5,
+    /** 6: The specified App ID is invalid. Try to rejoin the channel with a valid App ID. */
+    AgoraConnectionChangedInvalidAppId = 6,
+    /** 7: The specified channel name is invalid. Try to rejoin the channel with a valid channel name. */
+    AgoraConnectionChangedInvalidChannelName = 7,
+    /** 8: The generated token is invalid probably due to the following reasons:
+<li>The App Certificate for the project is enabled in Dashboard, but you do not use Token when joining the channel. If you enable the App Certificate, you must use a token to join the channel.
+<li>The uid that you specify in the [joinChannelByToken]([AgoraRtcEngineKit joinChannelByToken:channelId:info:uid:joinSuccess:]) method is different from the uid that you pass for generating the token. */
+    AgoraConnectionChangedInvalidToken = 8,
+    /** 9: The token has expired. Generate a new token from your server. */
+    AgoraConnectionChangedTokenExpired = 9,
+    /** 10: The user is banned by the server. */
+    AgoraConnectionChangedRejectedByServer = 10,
+    /** 11: The SDK tries to reconnect after setting a proxy server. */
+    AgoraConnectionChangedSettingProxyServer = 11,
+    /** 12: The token renews. */
+    AgoraConnectionChangedRenewToken = 12,
+    /** 13: The client IP address has changed, probably due to a change of the network type, IP address, or network port. */
+    AgoraConnectionChangedClientIpAddressChanged = 13,
+};
+
+/** Network type. */
+typedef NS_ENUM(NSInteger, AgoraNetworkType) {
+  /** -1: the network type is unknown. */
+  AgoraNetworkTypeUnknown = -1,
+  /** 0: the SDK disconnects from the network. */
+  AgoraNetworkTypeDisconnected = 0,
+  /** 1: the network type is LAN. */
+  AgoraNetworkTypeLAN = 1,
+  /** 2: the network type is Wi-Fi. */
+  AgoraNetworkTypeWIFI = 2,
+  /** 3: the network type is mobile 2G. */
+  AgoraNetworkTypeMobile2G = 3,
+  /** 4: the network type is mobile 3G. */
+  AgoraNetworkTypeMobile3G = 4,
+  /** 5: the network type is mobile 4G. */
+  AgoraNetworkTypeMobile4G = 5,
 };
 
 /** The video encoding degradation preference under limited bandwidth. */
@@ -956,4 +1065,32 @@ typedef NS_ENUM(NSUInteger, AgoraLastmileProbeResultState) {
   AgoraLastmileProbeResultIncompleteNoBwe = 2,
   /** 3: the last-mile network probe test is not carried out, probably due to poor network conditions. */
   AgoraLastmileProbeResultUnavailable = 3,
+};
+
+/** The state of the local video stream. */
+typedef NS_ENUM(NSInteger, AgoraLocalVideoStreamState) {
+  /** 0: the local video is in the initial state. */
+  AgoraLocalVideoStreamStateStopped = 0,
+  /** 1: the local video capturer starts successfully. */
+  AgoraLocalVideoStreamStateCapturing = 1,
+  /** 2: the first local video frame encodes successfully. */
+  AgoraLocalVideoStreamStateEncoding = 2,
+  /** 3: the local video fails to start. */
+  AgoraLocalVideoStreamStateFailed = 3,
+};
+
+/** The detailed error information of the local video. */
+typedef NS_ENUM(NSInteger, AgoraLocalVideoStreamError) {
+  /** 0: the local video is normal. */
+  AgoraLocalVideoStreamErrorOK = 0,
+  /** 1: no specified reason for the local video failure. */
+  AgoraLocalVideoStreamErrorFailure = 1,
+  /** 2: no permission to use the local video device. */
+  AgoraLocalVideoStreamErrorDeviceNoPermission = 2,
+  /** 3: the local video capturer is in use. */
+  AgoraLocalVideoStreamErrorDeviceBusy = 3,
+  /** 4: the local video capture fails. Check whether the capturer is working properly. */
+  AgoraLocalVideoStreamErrorCaptureFailure = 4,
+  /** 5: the local video encoding fails. */
+  AgoraLocalVideoStreamErrorEncodeFailure = 5,
 };

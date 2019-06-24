@@ -66,6 +66,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(muteRemoteAudioStream)
                 PROPERTY_METHOD_DEFINE(muteLocalVideoStream)
                 PROPERTY_METHOD_DEFINE(enableLocalVideo)
+                PROPERTY_METHOD_DEFINE(enableLocalAudio)
                 PROPERTY_METHOD_DEFINE(muteAllRemoteVideoStreams)
                 PROPERTY_METHOD_DEFINE(setDefaultMuteAllRemoteVideoStreams)         
                 PROPERTY_METHOD_DEFINE(muteRemoteVideoStream)
@@ -365,6 +366,8 @@ namespace agora {
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(muteLocalVideoStream, bool);
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(enableLocalVideo, bool);
+        
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(enableLocalAudio, bool);
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(muteAllRemoteVideoStreams, bool);
 

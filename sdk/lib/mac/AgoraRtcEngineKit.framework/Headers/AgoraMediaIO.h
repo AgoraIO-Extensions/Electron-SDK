@@ -270,17 +270,20 @@ __attribute__((visibility("default"))) @interface AgoraRtcScreenCapture: NSObjec
 @property (nonatomic, assign, readonly) CGSize dimensions;
 @property (nonatomic, assign, readonly) NSInteger frameRate;
 @property (nonatomic, assign, readonly) NSInteger bitrate;
+@property (nonatomic, assign, readonly) BOOL captureMouseCursor;
 
 + (instancetype _Nonnull)screenCaptureWithId:(NSUInteger)displayId
                                         rect:(CGRect)rect
                                   dimensions:(CGSize)dimensions
                                    frameRate:(NSInteger)frameRate
-                                     bitrate:(NSInteger)bitrate;
+                                     bitrate:(NSInteger)bitrate
+                          captureMouseCursor:(BOOL)captureMouseCursor;
 + (instancetype _Nonnull)windowCaptureWithId:(NSUInteger)windowId
                                         rect:(CGRect)rect
                                   dimensions:(CGSize)dimensions
                                    frameRate:(NSInteger)frameRate
-                                     bitrate:(NSInteger)bitrate;
+                                     bitrate:(NSInteger)bitrate
+                          captureMouseCursor:(BOOL)captureMouseCursor;
 @end
 #endif
 

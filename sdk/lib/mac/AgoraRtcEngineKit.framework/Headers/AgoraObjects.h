@@ -101,6 +101,10 @@ __attribute__((visibility("default"))) @interface AgoraRtcLocalVideoStats : NSOb
 @property (assign, nonatomic) NSUInteger sentBitrate;
 /** The average sending frame rate (fps) since last count. */
 @property (assign, nonatomic) NSUInteger sentFrameRate;
+/** The encoder output frame rate (fps) of the local video. */
+@property (assign, nonatomic) NSUInteger encoderOutputFrameRate;
+/** The renderer output frame rate (fps) of the local video. */
+@property (assign, nonatomic) NSUInteger rendererOutputFrameRate;
 /** The target bitrate (Kbps) of the current encoder. This value is estimated by the SDK based on the current network conditions. */
 @property (assign, nonatomic) NSUInteger sentTargetBitrate;
 /** The target frame rate (fps) of the current encoder. */
@@ -115,7 +119,7 @@ __attribute__((visibility("default"))) @interface AgoraRtcRemoteVideoStats : NSO
 /** User ID of the user sending the video streams.
  */
 @property (assign, nonatomic) NSUInteger uid;
-/** Time delay (ms).
+/** Time delay (ms). **DEPRECATED**
  */
 @property (assign, nonatomic) NSUInteger __deprecated delay;
 /** Width (pixels) of the video stream.
@@ -127,9 +131,12 @@ __attribute__((visibility("default"))) @interface AgoraRtcRemoteVideoStats : NSO
 /** Data receive bitrate (Kbps) since last count.
  */
 @property (assign, nonatomic) NSUInteger receivedBitrate;
-/** Data receive frame rate (fps) since last count.
+/** The decoder output frame rate (fps) of the remote video.
  */
-@property (assign, nonatomic) NSUInteger receivedFrameRate;
+@property (assign, nonatomic) NSUInteger decoderOutputFrameRate;
+/** The renderer output frame rate (fps) of the remote video.
+ */
+@property (assign, nonatomic) NSUInteger rendererOutputFrameRate;
 /** Video stream type (high-stream or low-stream).
  */
 @property (assign, nonatomic) AgoraVideoStreamType rxStreamType;
@@ -198,6 +205,12 @@ __attribute__((visibility("default"))) @interface AgoraChannelStats: NSObject
 /** Client-server latency (ms)
  */
 @property (assign, nonatomic) NSInteger lastmileDelay;
+/** The packet loss rate (%) from the local client to Agora's edge server.
+ */
+@property (assign, nonatomic) NSInteger txPacketLossRate;
+/** The packet loss rate (%) from Agora's edge server to the local client.
+ */
+@property (assign, nonatomic) NSInteger rxPacketLossRate;
 /** Number of users in the channel.
 
 - Communication profile: The number of users in the channel.
@@ -250,7 +263,7 @@ You can customize the dimension, or select from the following list:
  */
 @property (assign, nonatomic) CGSize dimensions;
 
-/** The frame rate of the video (fps): AgoraVideoFrameRate.
+/** The frame rate of the video (fps).
 
 You can either set the frame rate manually or choose from the following options. We do not recommend setting this to a value greater than 30.
 
@@ -394,7 +407,16 @@ AgoraDegradationPreference:
 /** Properties of the screen sharing encoding parameters.
  */
 __attribute__((visibility("default"))) @interface AgoraScreenCaptureParameters: NSObject
-/**  The dimensions of the shared region in terms of width &times; height. The default value is 0 (the original dimensions of the shared screen).
+/**  The maximum encoding dimensions for screen sharing. 
+
+The default value is 1920 x 1080 pixels, that is, 2073600 pixels. Agora uses the value of this parameter to calculate the charges.
+
+If the aspect ratio is different between the encoding dimensions and screen dimensions, Agora applies the following algorithms for encoding. Suppose the encoding dimensions are 1920 x 1080:
+
+- If the value of the screen dimensions is lower than that of the encoding dimensions, for example, 1000 x 1000, the SDK uses 1000 x 1000 for encoding.
+- If the value of the screen dimensions is higher than that of the encoding dimensions, for example, 2000 x 1500, the SDK uses the maximum value under 1920 x 1080 with the aspect ratio of the screen dimension (4:3) for encoding, that is, 1200 x 900.
+
+In either case, Agora uses the value of this parameter to calculate the charges.
  */
 @property (assign, nonatomic) CGSize dimensions;
 
@@ -405,6 +427,13 @@ __attribute__((visibility("default"))) @interface AgoraScreenCaptureParameters: 
 /** The bitrate (Kbps) of the shared region. The default value is 0 (the SDK works out a bitrate according to the dimensions of the current screen).
  */
 @property (assign, nonatomic) NSInteger bitrate;
+
+/** Sets whether or not to capture the mouse for screen sharing.
+
+- YES: (Default) Capture the mouse.
+- NO: Do not capture the mouse.
+ */
+@property (assign, nonatomic) BOOL captureMouseCursor;
 
 @end
 
@@ -457,6 +486,8 @@ Note: If your setting is not 0, you may need a specialized player.
  */
 __attribute__((visibility("default"))) @interface AgoraImage: NSObject
 /** URL address of the image on the broadcasting video.
+
+The maximum length of this parameter is 1024 bytes.
  */
 @property (strong, nonatomic) NSURL *_Nonnull url;
 /** Position and size of the image on the broadcasting video in CGRect.
@@ -467,13 +498,19 @@ __attribute__((visibility("default"))) @interface AgoraImage: NSObject
 /** A class for managing user-specific CDN live audio/video transcoding settings.
  */
 __attribute__((visibility("default"))) @interface AgoraLiveTranscoding: NSObject
-/** Size of the video (width and height).
+/** Size of the video (width and height). The minimum value of width x height is 16 x 16.
  */
 @property (assign, nonatomic) CGSize size;
-/** Bitrate of the CDN live output video stream. The default value is 400 Kbps.
+/** Bitrate of the CDN live output video stream. 
+
+The default value is 400 Kbps.
+
+Set this parameter according to the Video Bitrate Table. If you set a bitrate beyond the proper range, the SDK automatically adapts it to a value within the range.
  */
 @property (assign, nonatomic) NSInteger videoBitrate;
-/** Frame rate of the CDN live output video stream. The default value is 15 fps.
+/** Frame rate of the CDN live output video stream. 
+
+The default value is 15 fps. Agora adjusts all values over 30 to 30.
  */
 @property (assign, nonatomic) NSInteger videoFramerate;
 /** Latency mode:
@@ -484,19 +521,25 @@ __attribute__((visibility("default"))) @interface AgoraLiveTranscoding: NSObject
 @property (assign, nonatomic) BOOL lowLatency;
 /** Video GOP in frames. The default value is 30 fps. */
 @property (assign, nonatomic) NSInteger videoGop;
-/** Video codec profile type: AgoraVideoCodecProfileType.
+/** Video codec profile type
+
+Set it as 66, 77, or 100 (default), see AgoraVideoCodecProfileType.
+
+If you set this parameter to other values, Agora adjusts it to the default value of 100.
  */
 @property (assign, nonatomic) AgoraVideoCodecProfileType videoCodecProfile;
 
 /** An AgoraLiveTranscodingUser object managing the user layout configuration in the CDN live stream. Agora supports a maximum of 17 transcoding users in a CDN live stream channel. See AgoraLiveTranscodingUser.
  */
 @property (copy, nonatomic) NSArray<AgoraLiveTranscodingUser *> *_Nullable transcodingUsers;
-/** Reserved property. Extra user-defined information to send SEI for the H.264/H.265 video stream to the CDN live client.
+/** Reserved property. Extra user-defined information to send SEI for the H.264/H.265 video stream to the CDN live client. Maximum length: 4096 bytes.
  */
 @property (copy, nonatomic) NSString *_Nullable transcodingExtraInfo;
 /** The watermark image added to the CDN live publishing stream.
 
-The audience of the CDN live publishing stream can see the watermark. See AgoraImage for the definition of the watermark.
+The audience of the CDN live publishing stream can see the watermark. Ensure that the format of the image is PNG.
+
+See AgoraImage for the definition of the watermark.
  */
 @property (strong, nonatomic) AgoraImage *_Nullable watermark;
 /** The background image added to the CDN live publishing stream.
@@ -528,6 +571,8 @@ COLOR_CLASS is a general name for the type:
  * 5: Five-channel stereo
  */
 @property (assign, nonatomic) NSInteger audioChannels;
+
+@property (assign, nonatomic) AgoraAudioCodecProfileType audioCodecProfile;
 
 /** Creates a default transcoding object.
 
