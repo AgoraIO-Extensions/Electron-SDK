@@ -1,6 +1,24 @@
-## Latest
+## 2.4.1-alpha (June 24th, 2019)
 #### :house: Internal
 * setRenderMode can recv 3 as param which refers to use custom Renderer (set with new API `setCustomRenderer`)
+* add new Api `enableLocalAudio` which is similar to `enableLocalVideo`
+* These Apis will be deprecated in a few versions:
+  * startScreenCapture
+  * startScreenCapture2 => videoSourceStartScreenCaptureBy(Screen|Window)
+  * pauseAudio => disableAudio
+  * resumeAudio => enableAudio
+  * setHighQualityAudioParameters => setAudioProfile
+
+#### :warning: Breaking Changes
+* These event will be removed
+  * connectionInterrupted
+  * connectionBanned
+  * audioQuality
+  * audioMixingFinished
+  * refreshRecordingServiceStatus
+
+#### ::arrow_up:: SDK Upgrade
+* Use 2.4.1 native sdk
 
 
 ## 2.4.0-beta.2 (May 9th, 2019)
