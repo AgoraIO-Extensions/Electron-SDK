@@ -2,6 +2,7 @@
 #### :house: Internal
 * setRenderMode can recv 3 as param which refers to use custom Renderer (set with new API `setCustomRenderer`)
 * add new Api `enableLocalAudio` which is similar to `enableLocalVideo`
+* rename RemoteVideoStats.receivedFrameRate to `rendererOutputFrameRate`
 * These Apis will be deprecated in a few versions:
   * startScreenCapture
   * startScreenCapture2 => videoSourceStartScreenCaptureBy(Screen|Window)
