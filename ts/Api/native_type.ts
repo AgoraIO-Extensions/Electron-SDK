@@ -269,7 +269,7 @@ export interface RemoteVideoStats {
   width: number;
   height: number;
   receivedBitrate: number;
-  receivedFrameRate: number;
+  rendererOutputFrameRate: number;
   /**
    * 0 for high stream and 1 for low stream
    */
