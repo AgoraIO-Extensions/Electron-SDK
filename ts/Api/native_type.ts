@@ -600,6 +600,7 @@ export interface NodeRtcEngine {
   muteRemoteAudioStream(uid: number, mute: boolean): number;
   muteLocalVideoStream(mute: boolean): number;
   enableLocalVideo(enable: boolean): number;
+  enableLocalAudio(enable: boolean): number;
   muteAllRemoteVideoStreams(mute: boolean): number;
   setDefaultMuteAllRemoteVideoStreams(mute: boolean): number;
   enableAudioVolumeIndication(interval: number, smooth: number): number;
