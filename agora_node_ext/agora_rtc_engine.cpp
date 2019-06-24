@@ -66,6 +66,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(muteRemoteAudioStream)
                 PROPERTY_METHOD_DEFINE(muteLocalVideoStream)
                 PROPERTY_METHOD_DEFINE(enableLocalVideo)
+                PROPERTY_METHOD_DEFINE(enableLocalAudio)
                 PROPERTY_METHOD_DEFINE(muteAllRemoteVideoStreams)
                 PROPERTY_METHOD_DEFINE(setDefaultMuteAllRemoteVideoStreams)         
                 PROPERTY_METHOD_DEFINE(muteRemoteVideoStream)
@@ -365,7 +366,7 @@ namespace agora {
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(muteLocalVideoStream, bool);
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(enableLocalVideo, bool);
-
+        
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(muteAllRemoteVideoStreams, bool);
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setDefaultMuteAllRemoteVideoStreams, bool);
@@ -2229,6 +2230,22 @@ namespace agora {
                 CHECK_NATIVE_THIS(pEngine);
                 int result = pEngine->m_engine->leaveChannel();
                 args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result));
+            } while (false);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, enableLocalAudio)
+        {
+            LOG_ENTER;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                bool enable;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                napi_status status = napi_get_value_bool_(args[0], enable);
+                CHECK_NAPI_STATUS(pEngine, status);
+                int result = pEngine->m_engine->enableLocalAudio(enable);
+                napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
         }

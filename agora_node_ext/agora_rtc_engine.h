@@ -127,6 +127,7 @@ namespace agora {
             NAPI_API(muteRemoteAudioStream);
             NAPI_API(muteLocalVideoStream);
             NAPI_API(enableLocalVideo);
+            NAPI_API(enableLocalAudio);
             NAPI_API(muteAllRemoteVideoStreams);
             NAPI_API(setDefaultMuteAllRemoteVideoStreams);
             NAPI_API(muteRemoteVideoStream);

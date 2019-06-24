@@ -219,7 +219,7 @@ export interface RtcStats {
   cpuTotalUsage: number;
 }
 
-export enum AualityAdaptIndication {
+export enum QualityAdaptIndication {
   /** The quality of the local video stays the same. */
   ADAPT_NONE = 0,
   /** The quality improves because the network bandwidth increases. */
@@ -233,7 +233,7 @@ export interface LocalVideoStats {
   sentFrameRate: number;
   targetBitrate: number;
   targetFrameRate: number;
-  qualityAdaptIndication: AualityAdaptIndication;
+  qualityAdaptIndication: QualityAdaptIndication;
 }
 
 export interface VideoEncoderConfiguration {
@@ -269,7 +269,7 @@ export interface RemoteVideoStats {
   width: number;
   height: number;
   receivedBitrate: number;
-  receivedFrameRate: number;
+  rendererOutputFrameRate: number;
   /**
    * 0 for high stream and 1 for low stream
    */
@@ -600,6 +600,7 @@ export interface NodeRtcEngine {
   muteRemoteAudioStream(uid: number, mute: boolean): number;
   muteLocalVideoStream(mute: boolean): number;
   enableLocalVideo(enable: boolean): number;
+  enableLocalAudio(enable: boolean): number;
   muteAllRemoteVideoStreams(mute: boolean): number;
   setDefaultMuteAllRemoteVideoStreams(mute: boolean): number;
   enableAudioVolumeIndication(interval: number, smooth: number): number;

@@ -64,7 +64,7 @@ class IAudioFrameObserver {
   virtual bool onRecordAudioFrame(AudioFrame& audioFrame) = 0;
   /** Retrieves the audio playback frame.
 
-   The SDK triggers this callback once every 10 ms after you call the \ref agora::rtc::RtcEngineParameters::playEffect "playEffect" method.
+   The SDK triggers this callback once every 10 ms after you call the \ref agora::rtc::IRtcEngine::playEffect "playEffect" method.
 
    @param audioFrame Pointer to AudioFrame.
    @return
@@ -408,8 +408,8 @@ class IMediaEngine {
    @note This method overrides the \ref agora::media::IMediaEngine::registerAudioFrameObserver "registerAudioFrameObserver" method. After calling *pullAudioFrame*, the application will not retrieve any audio frame from the \ref agora::media::IAudioFrameObserver::onPlaybackAudioFrame "onPlaybackAudioFrame" callback.
 
    Before calling this method:
-   1. Call \ref agora::rtc::RtcEngineParameters::setExternalAudioSink "setExternalAudioSink" to inform the audio engine that the application will call *pullAudioFrame* to pull audio frames from the sink.
-   2. Call \ref agora::rtc::RtcEngineParameters::setPlaybackAudioFrameParameters "setPlaybackAudioFrameParameters" to set the parameters of the audio frame to be pulled, including the audio sample rate and number of the audio channel.
+   1. Call \ref agora::rtc::IRtcEngine::setExternalAudioSink "setExternalAudioSink" to inform the audio engine that the application will call *pullAudioFrame* to pull audio frames from the sink.
+   2. Call \ref agora::rtc::IRtcEngine::setPlaybackAudioFrameParameters "setPlaybackAudioFrameParameters" to set the parameters of the audio frame to be pulled, including the audio sample rate and number of the audio channel.
 
    Differences between \ref agora::media::IAudioFrameObserver::onPlaybackAudioFrame "onPlaybackAudioFrame" and *pullAudioFrame*:
    - \ref agora::media::IAudioFrameObserver::onPlaybackAudioFrame "onPlaybackAudioFrame" sends audio frames to the application once every 10 ms. Any delay in processing the audio frames may result in audio jitter.

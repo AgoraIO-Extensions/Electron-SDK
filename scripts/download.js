@@ -14,8 +14,8 @@ const buildDownloadInfo = () => {
   // build os label
   const osLabel = detectOS();
   // build version label
-  // const { version } = detectOwnVersion();
-  const version = '2.4.0-beta'
+  const { version } = detectOwnVersion();
+  // const version = '2.4.0-beta'
   // build electron dependent label
   const {
     electron_version
