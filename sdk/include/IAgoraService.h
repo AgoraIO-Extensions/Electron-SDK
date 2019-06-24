@@ -11,8 +11,8 @@ namespace agora {
     namespace rtc {
         class IRtcEngine;
     }
-    namespace signaling {
-        class ISignalingEngine;
+    namespace rtm {
+        class IRtmService;
     }
 namespace base {
 
@@ -43,8 +43,7 @@ public:
     */
     virtual const char* getVersion(int* build) = 0;
 
-    virtual rtc::IRtcEngine* createRtcEngine() = 0;
-    virtual signaling::ISignalingEngine* createSignalingEngine() = 0;
+    virtual rtm::IRtmService* createRtmService() = 0;
 };
 
 } //namespace base

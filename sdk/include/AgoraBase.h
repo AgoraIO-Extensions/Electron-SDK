@@ -20,6 +20,7 @@
 #define AGORA_API extern "C" __declspec(dllimport)
 #endif
 #elif defined(__APPLE__)
+#include <TargetConditionals.h>
 #define AGORA_API __attribute__((visibility("default"))) extern "C"
 #define AGORA_CALL
 #elif defined(__ANDROID__) || defined(__linux__)
@@ -126,7 +127,8 @@ enum WARN_CODE_TYPE
     /** 104: A timeout occurs when looking up the channel. When joining a channel, the SDK looks up the specified channel. This warning usually occurs when the network condition is too poor for the SDK to connect to the server.
     */
     WARN_LOOKUP_CHANNEL_TIMEOUT = 104,
-    /** 105: The server rejects the request to look up the channel. The server cannot process this request or the request is illegal.
+    /** **DEPRECATED** 105: The server rejects the request to look up the channel. The server cannot process this request or the request is illegal.
+     
     */
     WARN_LOOKUP_CHANNEL_REJECTED = 105,
     /** 106: A timeout occurs when opening the channel. Once the specific channel is found, the SDK opens the channel. This warning usually occurs when the network condition is too poor for the SDK to connect to the server.
@@ -149,6 +151,9 @@ enum WARN_CODE_TYPE
     /** 122: Try connecting to another server.
     */
     WARN_OPEN_CHANNEL_TRY_NEXT_VOS = 122,
+    WARN_CHANNEL_CONNECTION_UNRECOVERABLE = 131,
+    WARN_CHANNEL_CONNECTION_IP_CHANGED = 132,
+    WARN_CHANNEL_CONNECTION_PORT_CHANGED = 133,
     /** 701: An error occurs in opening the audio mixing file.
     */
     WARN_AUDIO_MIXING_OPEN_ERROR = 701,
@@ -209,6 +214,9 @@ enum WARN_CODE_TYPE
     /** 1612: The device is not supported.
     */
     WARN_SUPER_RESOLUTION_DEVICE_NOT_SUPPORTED = 1612,
+
+    WARN_RTM_LOGIN_TIMEOUT = 2005,
+    WARN_RTM_KEEP_ALIVE_TIMEOUT = 2009
 };
 
 /** Error code.
@@ -294,14 +302,14 @@ enum ERROR_CODE_TYPE
     /** 102: The specified channel name is invalid. Please try to rejoin the channel with a valid channel name.
      */
     ERR_INVALID_CHANNEL_NAME = 102,
-    /** 109: The token expired due to one of the following reasons:
-
+    /** **DEPRECATED** 109: The token expired due to one of the following reasons:
+     
      - Authorized Timestamp expired: The timestamp is represented by the number of seconds elapsed since 1/1/1970. The user can use the Token to access the Agora service within five minutes after the Token is generated. If the user does not access the Agora service after five minutes, this Token is no longer valid.
      - Call Expiration Timestamp expired: The timestamp is the exact time when a user can no longer use the Agora service (for example, when a user is forced to leave an ongoing call). When a value is set for the Call Expiration Timestamp, it does not mean that the token will expire, but that the user will be banned from the channel.
      */
     ERR_TOKEN_EXPIRED = 109,
-    /** 110: The token is invalid due to one of the following reasons:
-
+    /** **DEPRECATED** 110: The token is invalid due to one of the following reasons:
+     
      - The App Certificate for the project is enabled in Dashboard, but the user is still using the App ID. Once the App Certificate is enabled, the user must use a token.
      - The uid is mandatory, and users must set the same uid as the one set in the \ref agora::rtc::IRtcEngine::joinChannel "joinChannel" method.
      */
@@ -357,6 +365,24 @@ enum ERROR_CODE_TYPE
     /** 130: Encryption is enabled when the user calls the \ref agora::rtc::IRtcEngine::addPublishStreamUrl "addPublishStreamUrl" method (CDN live streaming does not support encrypted streams).
      */
     ERR_ENCRYPTED_STREAM_NOT_ALLOWED_PUBLISH = 130,
+    /** 151: CDN related errors. Remove the original URL address and add a new one by calling the \ref agora::rtc::IRtcEngine::removePublishStreamUrl "removePublishStreamUrl" and \ref agora::rtc::IRtcEngine::addPublishStreamUrl "addPublishStreamUrl" methods.
+     */
+    ERR_PUBLISH_STREAM_CDN_ERROR = 151,
+    /** 152: The host publishes more than 10 URLs. Delete the unnecessary URLs before adding new ones.
+     */
+    ERR_PUBLISH_STREAM_NUM_REACH_LIMIT = 152,
+    /** 153: The host manipulates other hosts' URLs. Check your app logic.
+     */
+    ERR_PUBLISH_STREAM_NOT_AUTHORIZED = 153,
+    /** 154: An error occurs in Agora's streaming server. Call the addPublishStreamUrl method to publish the streaming again.
+     */
+    ERR_PUBLISH_STREAM_INTERNAL_SERVER_ERROR = 154,
+    /** 155: The server fails to find the stream.
+     */
+    ERR_PUBLISH_STREAM_NOT_FOUND = 155,
+    /** 156: The format of the RTMP stream URL is not supported. Check whether the URL format is correct.
+     */
+    ERR_PUBLISH_STREAM_FORMAT_NOT_SUPPORTED = 156,
 
     //signaling: 400~600
     /**
@@ -469,7 +495,7 @@ enum ERROR_CODE_TYPE
     /** 1002: Fails to start the call after enabling the media engine.
      */
     ERR_START_CALL = 1002,
-    /** 1003: Fails to start the camera.
+    /** **DEPRECATED** 1003: Fails to start the camera.
      */
     ERR_START_CAMERA = 1003,
     /** 1004: Fails to start the video rendering module.
@@ -527,10 +553,15 @@ enum ERROR_CODE_TYPE
     ERR_ADM_ANDROID_JNI_JAVA_START_RECORD = 1111,
     ERR_ADM_ANDROID_JNI_JAVA_START_PLAYBACK = 1112,
     ERR_ADM_ANDROID_JNI_JAVA_RECORD_ERROR = 1115,
+    /** **DEPRECATED** */
     ERR_ADM_ANDROID_OPENSL_CREATE_ENGINE = 1151,
+    /** **DEPRECATED** */
     ERR_ADM_ANDROID_OPENSL_CREATE_AUDIO_RECORDER = 1153,
+    /** **DEPRECATED** */
     ERR_ADM_ANDROID_OPENSL_START_RECORDER_THREAD = 1156,
+    /** **DEPRECATED** */
     ERR_ADM_ANDROID_OPENSL_CREATE_AUDIO_PLAYER = 1157,
+    /** **DEPRECATED** */
     ERR_ADM_ANDROID_OPENSL_START_PLAYER_THREAD = 1160,
     ERR_ADM_IOS_INPUT_NOT_AVAILABLE = 1201,
     ERR_ADM_IOS_ACTIVATE_SESSION_FAIL = 1206,
@@ -570,7 +601,7 @@ enum ERROR_CODE_TYPE
     ERR_VDM_CAMERA_NOT_AUTHORIZED = 1501,
 
 	// VDM error code starts from 1500
-	/** 1502: Video Device Module: The camera in use.
+	/** **DEPRECATED** 1502: Video Device Module: The camera in use.
 	 */
 	ERR_VDM_WIN_DEVICE_IN_USE = 1502,
 
