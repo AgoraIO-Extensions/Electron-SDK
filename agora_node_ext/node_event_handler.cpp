@@ -633,7 +633,7 @@ namespace agora {
                 NODE_SET_OBJ_PROP_UINT32(obj, "width", stats.width);
                 NODE_SET_OBJ_PROP_UINT32(obj, "height", stats.height);
                 NODE_SET_OBJ_PROP_UINT32(obj, "receivedBitrate", stats.receivedBitrate);
-                NODE_SET_OBJ_PROP_UINT32(obj, "receivedFrameRate", stats.receivedFrameRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "rendererOutputFrameRate", stats.rendererOutputFrameRate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "rxStreamType", stats.rxStreamType);
                 Local<Value> arg[1] = { obj };
                 auto it = m_callbacks.find(RTC_EVENT_REMOTE_VIDEO_STATS);
@@ -646,7 +646,7 @@ namespace agora {
         void NodeEventHandler::onRemoteVideoStats(const RemoteVideoStats& stats)
         {
             FUNC_TRACE;
-            printf("frame rate : %d, bitrate : %d, width %d, height %d\n", stats.receivedFrameRate, stats.receivedBitrate, stats.width, stats.height);
+            printf("frame rate : %d, bitrate : %d, width %d, height %d\n", stats.rendererOutputFrameRate, stats.receivedBitrate, stats.width, stats.height);
             node_async_call::async_call([this, stats] {
                 this->onRemoteVideoStats_node(stats);
             });
