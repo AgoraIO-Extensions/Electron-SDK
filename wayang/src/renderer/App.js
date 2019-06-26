@@ -49,6 +49,7 @@ export default class App extends Component {
     if (viewId === "None") {
       users.forEach(u => {
         if(u.uid === uid) {
+          this.apiHandler.destroyRender(role === "local" ? "local" : uid)
           delete u.uid
           delete u.role
           updated = true;
@@ -143,7 +144,7 @@ export default class App extends Component {
 
   subscribeApiCalls = apiHandler => {
     let respType = 5;
-    let events = ["setupLocalVideo", "setupRemoteVideo", "getVersion"];
+    let events = ["setupLocalVideo", "setupRemoteVideo", "getVersion", "getUserInfoByUserAccount", "getUserInfoByUid"];
 
     events.forEach(e => {
       apiHandler.asyncApi.on(e, (device, cmd, sequence, info) => {
@@ -160,6 +161,14 @@ export default class App extends Component {
           case "getVersion":
             tmp = apiHandler.rtcEngine.getVersion() || {}
             result = `version:${tmp.version}-build:${tmp.build}`
+            break
+          case "getUserInfoByUserAccount":
+            tmp = apiHandler.rtcEngine.getUserInfoByUserAccount(info.userAccount) || {}
+            result = JSON.stringify(tmp)
+            break
+          case "getUserInfoByUid":
+            tmp = apiHandler.rtcEngine.getUserInfoByUid(info.uid) || {}
+            result = JSON.stringify(tmp)
             break
         }
         apiHandler.callResult(
@@ -384,7 +393,7 @@ class Window extends Component {
     }
   }
 
-  componentWillMount() {
+  componentWillUnmount() {
     if (this.props.role === "local") {
       this.props.rtcEngine.destroyRender('local');
     } else if (this.props.role === "localVideoSource") {
