@@ -1,4 +1,4 @@
-﻿import { SoftwareRenderer, GlRenderer, IRenderer } from '../Renderer';
+﻿import { SoftwareRenderer, GlRenderer, IRenderer, CustomRenderer } from '../Renderer';
 import {
   NodeRtcEngine,
   RtcStats,
@@ -39,21 +39,32 @@ const agora = require('../../build/Release/agora_node_ext');
 class AgoraRtcEngine extends EventEmitter {
   rtcEngine: NodeRtcEngine;
   streams: Map<string, IRenderer[]>;
-  renderMode: 1 | 2;
+  renderMode: 1 | 2 | 3;
+  customRenderer: any;
   constructor() {
     super();
     this.rtcEngine = new agora.NodeRtcEngine();
     this.initEventHandler();
     this.streams = new Map();
     this.renderMode = this._checkWebGL() ? 1 : 2;
+    this.customRenderer = CustomRenderer;
   }
 
   /**
-   * Decide whether to use webgl or software rending
-   * @param {1|2} mode - 1 for old webgl rendering, 2 for software rendering
+   * Decide whether to use webgl/software/custom rendering
+   * @param {1|2|3} mode - 1 for old webgl rendering, 2 for software rendering, 3 for custom rendering
    */
-  setRenderMode (mode: 1|2 = 1): void {
+  setRenderMode (mode: 1|2|3 = 1): void {
     this.renderMode = mode;
+  }
+
+  /**
+   * Use this method to set custom Renderer when set renderMode to 3.
+   * customRender should be a class.
+   * @param {IRenderer} customRenderer
+   */
+  setCustomRenderer(customRenderer: IRenderer) {
+    this.customRenderer = customRenderer;
   }
 
   /**
@@ -648,6 +659,8 @@ class AgoraRtcEngine extends EventEmitter {
       renderer = new GlRenderer();
     } else if (this.renderMode === 2) {
       renderer = new SoftwareRenderer();
+    } else if (this.renderMode === 3) {
+      renderer = new this.customRenderer();
     } else {
       console.warn('Unknown render mode, fallback to 1');
       renderer = new GlRenderer();
