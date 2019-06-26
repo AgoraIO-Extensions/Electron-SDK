@@ -223,6 +223,15 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(videosourceStartScreenCaptureByWindow);
                 PROPERTY_METHOD_DEFINE(videosourceUpdateScreenCaptureParameters);
                 PROPERTY_METHOD_DEFINE(videosourceSetScreenCaptureContentHint);
+
+                /**
+                 * 2.8.0 Apis
+                 */
+                PROPERTY_METHOD_DEFINE(registerLocalUserAccount);
+                PROPERTY_METHOD_DEFINE(joinChannelWithUserAccount);
+                PROPERTY_METHOD_DEFINE(getUserInfoByUserAccount);
+                PROPERTY_METHOD_DEFINE(getUserInfoByUid);
+
             EN_PROPERTY_DEFINE()
             module->Set(String::NewFromUtf8(isolate, "NodeRtcEngine"), tpl->GetFunction());
         }
@@ -4088,6 +4097,105 @@ namespace agora {
                     infos->Set(i, obj);
                 }
                 napi_set_array_result(args, infos);
+            } while (false);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, registerLocalUserAccount)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                NodeString appId, userAccount;
+
+                napi_status status = napi_get_value_nodestring_(args[0], appId);
+                CHECK_NAPI_STATUS(pEngine, status);
+                
+                status = napi_get_value_nodestring_(args[1], userAccount);
+                CHECK_NAPI_STATUS(pEngine, status);
+               
+                result = pEngine->m_engine->registerLocalUserAccount(appId, userAccount);
+            } while (false);
+            napi_set_array_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, joinChannelWithUserAccount)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                NodeString token, channel, userAccount;
+
+                napi_status status = napi_get_value_nodestring_(args[0], token);
+                CHECK_NAPI_STATUS(pEngine, status);
+                
+                status = napi_get_value_nodestring_(args[1], channel);
+                CHECK_NAPI_STATUS(pEngine, status);
+                
+                status = napi_get_value_nodestring_(args[2], userAccount);
+                CHECK_NAPI_STATUS(pEngine, status);
+               
+                result = pEngine->m_engine->joinChannelWithUserAccount(token, channel, userAccount);
+            } while (false);
+            napi_set_array_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, getUserInfoByUserAccount)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                Isolate *isolate = args.GetIsolate();
+
+                NodeString userAccount;
+                UserInfo userInfo;
+                
+                napi_status status = napi_get_value_nodestring_(args[0], userAccount);
+                CHECK_NAPI_STATUS(pEngine, status);
+               
+                result = pEngine->m_engine->getUserInfoByUserAccount(userAccount, &userInfo);
+                Local<v8::Object> obj = Object::New(isolate);
+                NODE_SET_OBJ_PROP_UINT32(isolate, obj, "uid", userInfo.uid);
+                NODE_SET_OBJ_PROP_String(isolate, obj, "userAccount", userInfo.userAccount);
+                args.GetReturnValue().Set(obj);
+            } while (false);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, getUserInfoByUid)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                Isolate *isolate = args.GetIsolate();
+
+                uid_t uid;
+                UserInfo userInfo;
+                
+                napi_status status = napi_get_value_uint32_(args[0], uid);
+                CHECK_NAPI_STATUS(pEngine, status);
+               
+                result = pEngine->m_engine->getUserInfoByUid(uid, &userInfo);
+                Local<v8::Object> obj = Object::New(isolate);
+                NODE_SET_OBJ_PROP_UINT32(isolate, obj, "uid", userInfo.uid);
+                NODE_SET_OBJ_PROP_String(isolate, obj, "userAccount", userInfo.userAccount);
+                args.GetReturnValue().Set(obj);
             } while (false);
             LOG_LEAVE;
         }

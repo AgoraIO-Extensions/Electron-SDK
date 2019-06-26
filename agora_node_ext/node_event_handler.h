@@ -82,6 +82,8 @@ namespace agora {
 #define RTC_EVENT_CONNECTION_STATE_CHANED "connectionStateChanged"
 #define RTC_EVENT_AUDIO_MIXING_STATE_CHANGED "audioMixingStateChanged"
 #define RTC_EVENT_LASTMILE_PROBE_RESULT "lastmileProbeResult"
+#define RTC_EVENT_LOCAL_USER_REGISTERED "localUserRegistered"
+#define RTC_EVENT_USER_INFO_UPDATED "userInfoUpdated"
 
 #define RTC_EVENT_VIDEO_SOURCE_JOIN_SUCCESS "videosourcejoinsuccess"
 #define RTC_EVENT_VIDEO_SOURCE_REQUEST_NEW_TOKEN "videosourcerequestnewtoken"
@@ -170,6 +172,10 @@ namespace agora {
             virtual void onAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE errorCode) override;
             virtual void onLastmileProbeResult(const LastmileProbeResult &result) override;
 
+            //2.8.0
+            virtual void onLocalUserRegistered(uid_t uid, const char* userAccount) override;
+            virtual void onUserInfoUpdated(uid_t uid, const UserInfo& info) override;
+
         private:
             void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
             void onRejoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
@@ -240,6 +246,10 @@ namespace agora {
             //2.4.0
             void onAudioMixingStateChanged_node(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE errorCode);
             void onLastmileProbeResult_node(const LastmileProbeResult &result);
+
+            //2.8.0
+            void onLocalUserRegistered_node(uid_t uid, const char* userAccount);
+            void onUserInfoUpdated_node(uid_t uid, const UserInfo& info);
         private:
             std::unordered_map<std::string, NodeEventCallback*> m_callbacks;
             NodeRtcEngine* m_engine;

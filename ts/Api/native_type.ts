@@ -128,6 +128,11 @@ export interface LastmileProbeResult {
   rtt: number;
 }
 
+export interface UserInfo {
+  uid: number;
+  userAccount: string;
+}
+
 /** Local voice changer options. */
 export enum VoiceChangerPreset {
   /** 0: The original voice (no local voice change). */
@@ -791,4 +796,8 @@ export interface NodeRtcEngine {
   onEvent(event: string, callback: Function): void;
   unsubscribe(uid: number): number;
   registerDeliverFrame(callback: Function): number;
+  registerLocalUserAccount(appId: string, userAccount: string): number;
+  joinChannelWithUserAccount(token: string, channel: string, userAccount: string): number;
+  getUserInfoByUserAccount(userAccount: string) : UserInfo;
+  getUserInfoByUid(uid: number) : UserInfo;
 }
