@@ -1470,11 +1470,11 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.joinChannelWithUserAccount(token, channel, userAccount)
   }
 
-  getUserInfoByUserAccount(userAccount: string): UserInfo {
+  getUserInfoByUserAccount(userAccount: string): {errCode: number, userInfo: UserInfo} {
     return this.rtcEngine.getUserInfoByUserAccount(userAccount)
   }
 
-  getUserInfoByUid(uid: number): UserInfo {
+  getUserInfoByUid(uid: number): {errCode: number, userInfo: UserInfo}  {
     return this.rtcEngine.getUserInfoByUid(uid)
   }
 

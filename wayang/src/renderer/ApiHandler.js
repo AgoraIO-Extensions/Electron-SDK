@@ -145,7 +145,8 @@ const generic_call_table = {
 
 const return_table = {
   "getAudioMixingDuration": [],
-  "getAudioMixingCurrentPosition": []
+  "getAudioMixingCurrentPosition": [],
+  "registerLocalUserAccount": []
 }
 
 const custom_call_table = {
@@ -156,7 +157,9 @@ const custom_call_table = {
   "removeView": [],
   "createView": [],
   "getImageOfView": [],
-  "getVersion": []
+  "getVersion": [],
+  "getUserInfoByUserAccount": ["userAccount"],
+  "getUserInfoByUid": ["uid"]
   // "getVideoDevices": [],
   // "setVideoDevice": [],
   // "getCurrentVideoDevice": [],
