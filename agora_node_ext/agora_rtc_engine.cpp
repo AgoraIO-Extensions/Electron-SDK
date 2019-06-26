@@ -4168,8 +4168,13 @@ namespace agora {
                
                 result = pEngine->m_engine->getUserInfoByUserAccount(userAccount, &userInfo);
                 Local<v8::Object> obj = Object::New(isolate);
-                NODE_SET_OBJ_PROP_UINT32(isolate, obj, "uid", userInfo.uid);
-                NODE_SET_OBJ_PROP_String(isolate, obj, "userAccount", userInfo.userAccount);
+                NODE_SET_OBJ_PROP_UINT32(isolate, obj, "errorCode", result);
+
+                Local<v8::Object> userObj = Object::New(isolate);
+                NODE_SET_OBJ_PROP_UINT32(isolate, userObj, "uid", userInfo.uid);
+                NODE_SET_OBJ_PROP_String(isolate, userObj, "userAccount", userInfo.userAccount);
+                Local<Value> propName = String::NewFromUtf8(isolate, "userInfo", NewStringType::kInternalized).ToLocalChecked();
+                obj->Set(propName, userObj);
                 args.GetReturnValue().Set(obj);
             } while (false);
             LOG_LEAVE;
@@ -4193,8 +4198,13 @@ namespace agora {
                
                 result = pEngine->m_engine->getUserInfoByUid(uid, &userInfo);
                 Local<v8::Object> obj = Object::New(isolate);
-                NODE_SET_OBJ_PROP_UINT32(isolate, obj, "uid", userInfo.uid);
-                NODE_SET_OBJ_PROP_String(isolate, obj, "userAccount", userInfo.userAccount);
+                NODE_SET_OBJ_PROP_UINT32(isolate, obj, "errorCode", result);
+
+                Local<v8::Object> userObj = Object::New(isolate);
+                NODE_SET_OBJ_PROP_UINT32(isolate, userObj, "uid", userInfo.uid);
+                NODE_SET_OBJ_PROP_String(isolate, userObj, "userAccount", userInfo.userAccount);
+                Local<Value> propName = String::NewFromUtf8(isolate, "userInfo", NewStringType::kInternalized).ToLocalChecked();
+                obj->Set(propName, userObj);
                 args.GetReturnValue().Set(obj);
             } while (false);
             LOG_LEAVE;
