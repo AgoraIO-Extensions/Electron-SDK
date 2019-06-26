@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import path from 'path';
 import os from 'os'
 
-import {AUTH_DATA, voiceChangerList, voiceReverbPreset, videoProfileList, audioProfileList, audioScenarioList, APP_ID, SHARE_ID, RTMP_URL, voiceReverbList } from '../utils/settings'
+import {voiceChangerList, voiceReverbPreset, videoProfileList, audioProfileList, audioScenarioList, APP_ID, SHARE_ID, RTMP_URL, voiceReverbList } from '../utils/settings'
 import {readImage} from '../utils/base64'
 import WindowPicker from './components/WindowPicker/index.js'
 import DisplayPicker from './components/DisplayPicker/index.js'
@@ -19,7 +19,6 @@ export default class App extends Component {
       let rtcEngine = this.getRtcEngine()
       this.state = {
         local: '',
-        duplicates: [],
         localVideoSource: '',
         localSharing: false,
         users: new List(),
@@ -39,7 +38,6 @@ export default class App extends Component {
         recordingTestOn: false,
         playbackTestOn: false,
         lastmileTestOn: false,
-        faceUnityOn: false,
         rtmpTestOn: false,
         windowList: [],
         displayList: [],
@@ -275,23 +273,7 @@ export default class App extends Component {
     });
   }
 
-  handleDuplicateVideo = e => {
-    let {duplicates} = this.state
-    duplicates.push({uid: 'local', ts: new Date().getTime()})
-    this.setState({
-      duplicates
-    })
-  }
-
-  handleRemoveDuplicate = e => {
-    let {duplicates} = this.state
-    duplicates.pop()
-    this.setState({
-      duplicates
-    })
-  }
-
-  handleScreenSharing = e => {
+  handleScreenSharing = (e) => {
     // getWindowInfo and open Modal
     let rtcEngine = this.getRtcEngine()
     let list = rtcEngine.getScreenWindowsInfo();
@@ -439,11 +421,6 @@ export default class App extends Component {
       .catch(err => {
         console.log(err)
       })
-  }
-
-  toggleFaceUnity = e => {
-    let rtcEngine = this.getRtcEngine()
-    rtcEngine.initializeFaceUnity(AUTH_DATA)
   }
 
   togglePlaybackTest = e => {
@@ -636,14 +613,6 @@ export default class App extends Component {
             </div>
           </div>
           <hr/>
-          <div className="field is-grouped">
-            <div className="control">
-              <button onClick={this.handleDuplicateVideo} className="button is-link">Duplicate Local</button>
-            </div>
-            <div className="control">
-              <button onClick={this.handleRemoveDuplicate} className="button is-link">Remove Duplicate</button>
-            </div>
-          </div>
           <div className="field">
             <label className="label">Network Test</label>
             <div className="control">
@@ -683,12 +652,6 @@ export default class App extends Component {
               <button onClick={this.toggleRecordingTest} className="button is-link">{this.state.recordingTestOn ? 'stop' : 'start'}</button>
             </div>
           </div>
-          <div className="field">
-            <label className="label">FaceUnity</label>
-            <div className="control">
-              <button onClick={this.toggleFaceUnity} className="button is-link">{this.state.faceUnityOn ? 'stop' : 'start'}</button>
-            </div>
-          </div>
         </div>
         <div className="column is-three-quarters window-container">
           {this.state.users.map((item, key) => (
@@ -700,9 +663,6 @@ export default class App extends Component {
           {this.state.localVideoSource ? (<Window uid={this.state.localVideoSource} rtcEngine={this.rtcEngine} role="localVideoSource">
 
           </Window>) : ''}
-          {this.state.duplicates.map((item, key) => (
-            <Window key={key} uid={item.uid} ts={item.ts} rtcEngine={this.rtcEngine} role="duplicate"></Window>
-          ))}
         </div>
       </div>
     )
@@ -733,28 +693,14 @@ class Window extends Component {
       dom && this.props.rtcEngine.subscribe(this.props.uid, dom)
       this.props.rtcEngine.setupViewContentMode('videosource', 1);
       this.props.rtcEngine.setupViewContentMode(String(SHARE_ID), 1);
-    } else if (this.props.role === 'duplicate') {
-      dom = document.querySelector(`#video-${this.props.uid}-${this.props.ts}`)
-      dom && this.props.rtcEngine.initRender(this.props.uid, dom)
-    }
-  }
-
-  componentWillUnmount() {
-    if (this.props.role === 'duplicate') {
-      let dom = document.querySelector(`#video-${this.props.uid}-${this.props.ts}`)
-      dom && this.props.rtcEngine.destroyRenderView(this.props.uid, dom, err => {console.warn(err.message)})
-      console.log(`view destroyed`)
     }
   }
 
   render() {
-    let view = <div className="video-item" id={'video-' + this.props.uid}></div>
-    if(this.props.role === 'duplicate') {
-      view = <div className="video-item" id={`video-${this.props.uid}-${this.props.ts}`}></div>
-    }
     return (
       <div className="window-item">
-        {view}
+        <div className="video-item" id={'video-' + this.props.uid}></div>
+
       </div>
     )
   }
