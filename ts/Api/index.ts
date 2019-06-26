@@ -27,7 +27,8 @@ import {
   CaptureRect,
   CaptureParam,
   VideoContentHint,
-  VideoEncoderConfiguration
+  VideoEncoderConfiguration,
+  UserInfo
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate } from '../Utils';
@@ -516,6 +517,15 @@ class AgoraRtcEngine extends EventEmitter {
       fire('videosourceleavechannel');
       fire('videoSourceLeaveChannel');
     });
+
+    this.rtcEngine.onEvent('localUserRegistered', function(uid:number, userAccount:string) {
+      fire('localUserRegistered', uid, userAccount);
+    });
+
+    this.rtcEngine.onEvent('userInfoUpdated', function(uid:number, userInfo: UserInfo) {
+      fire('userInfoUpdated', uid, userInfo);
+    });
+
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
       self.onRegisterDeliverFrame(infos);
     });
@@ -1450,6 +1460,22 @@ class AgoraRtcEngine extends EventEmitter {
    */
   setRemoteSubscribeFallbackOption(option: 0|1|2): number {
     return this.rtcEngine.setRemoteSubscribeFallbackOption(option);
+  }
+
+  registerLocalUserAccount(appId: string, userAccount: string): number {
+    return this.rtcEngine.registerLocalUserAccount(appId, userAccount)
+  }
+
+  joinChannelWithUserAccount(token: string, channel: string, userAccount: string): number {
+    return this.rtcEngine.joinChannelWithUserAccount(token, channel, userAccount)
+  }
+
+  getUserInfoByUserAccount(userAccount: string): UserInfo {
+    return this.rtcEngine.getUserInfoByUserAccount(userAccount)
+  }
+
+  getUserInfoByUid(uid: number): UserInfo {
+    return this.rtcEngine.getUserInfoByUid(uid)
   }
 
   // ===========================================================================
@@ -2645,6 +2671,14 @@ declare interface AgoraRtcEngine {
   on(evt: 'connectionStateChanged', cb: (
     state: ConnectionState,
     reason: ConnectionChangeReason
+  ) => void): this;
+  on(evt: 'localUserRegistered', cb: (
+    uid: number,
+    userAccount: string
+  ) => void): this;
+  on(evt: 'userInfoUpdated', cb: (
+    uid: number,
+    userInfo: UserInfo
   ) => void): this;
   on(evt: string, listener: Function): this;
 

@@ -33,6 +33,8 @@ const generic_call_table = {
   "getErrorDescription": ["errorCode"],
   "getConnectionState": [],
   "joinChannel": ["token", "channelId", "info", "uid"],
+  "joinChannelWithUserAccount": ["token", "channelId", "userAccount"],
+  "registerLocalUserAccount": ["appId", "userAccount"],
   "leaveChannel": [],
   "release": [],
   "setHighQualityAudioParameters": ["fullband", "stereo", "fullBitrate"],
@@ -260,6 +262,10 @@ class ApiHandler {
       })
       let converted = func_name_convention[cmd] || cmd;
       result = this.genericApiCall(converted, this.rtcEngine, params)
+      if(cmd === "initialize") {
+        //for useraccount test
+        this.rtcEngine.setParameters("{\"rtc.user_account_server_list\":[\"58.211.82.170\"]}")
+      }
     } else if(ignore_call_table[cmd] !== undefined) {
       //ignore, not applicable
     } else if(custom_call_table[cmd] !== undefined) {
@@ -348,6 +354,12 @@ class ApiHandler {
     })
     rtcEngine.on('remoteVideoStats', stats => {
       this.eventResult('onRemoteVideoStats', {stats})
+    })
+    rtcEngine.on('localUserRegistered', (uid, userAccount) => {
+      this.eventResult('onLocalUserRegistered', {uid, userAccount})
+    })
+    rtcEngine.on('userInfoUpdated', (uid, userInfo) => {
+      this.eventResult('onUserInfoUpdated', {uid, userInfo})
     })
   }
 
