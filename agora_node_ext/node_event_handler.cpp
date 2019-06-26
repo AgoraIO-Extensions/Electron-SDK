@@ -110,6 +110,15 @@ namespace agora {
     if (obj.IsEmpty()) \
         break;
 
+#define NODE_SET_OBJ_PROP_STRING(obj, name, val) \
+    { \
+        Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
+        CHECK_NAPI_OBJ(propName); \
+        Local<Value> propVal = String::NewFromUtf8(isolate, val, NewStringType::kInternalized).ToLocalChecked(); \
+        CHECK_NAPI_OBJ(propVal); \
+        obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+    }
+
 #define NODE_SET_OBJ_PROP_UINT32(obj, name, val) \
     { \
         Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
@@ -1200,6 +1209,53 @@ namespace agora {
                     it->second->callback.Get(isolate)->Call(it->second->js_this.Get(isolate), 1, arg); \
                 }
             } while (false);
+        }
+
+        /**
+         * 2.8.0
+         */
+        void NodeEventHandler::onLocalUserRegistered(uid_t uid, const char* userAccount)
+        {
+            FUNC_TRACE;
+            std::string mUserAccount = std::string(userAccount);
+            node_async_call::async_call([this, uid, mUserAccount] {
+                this->onLocalUserRegistered_node(uid, mUserAccount.c_str());
+            });
+        }
+        void NodeEventHandler::onLocalUserRegistered_node(uid_t uid, const char* userAccount)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_2(RTC_EVENT_LOCAL_USER_REGISTERED, uid, uid, string, userAccount);
+        }
+
+        void NodeEventHandler::onUserInfoUpdated(uid_t uid, const UserInfo& info)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, uid, info] {
+                this->onUserInfoUpdated_node(uid, info);
+            });
+        }
+        void NodeEventHandler::onUserInfoUpdated_node(uid_t uid, const UserInfo& info)
+        {
+            FUNC_TRACE;
+            do{
+                Isolate *isolate = Isolate::GetCurrent();
+                HandleScope scope(isolate);
+                Local<Object> obj = Object::New(isolate);
+                CHECK_NAPI_OBJ(obj);
+                
+                NODE_SET_OBJ_PROP_UID(obj, "uid", info.uid);
+                NODE_SET_OBJ_PROP_STRING(obj, "userAccount", info.userAccount);
+
+                Local<Value> arg[2] = {
+                    napi_create_uid_(isolate, uid),
+                    obj 
+                };
+                auto it = m_callbacks.find(RTC_EVENT_USER_INFO_UPDATED);
+                if (it != m_callbacks.end()) {
+                    it->second->callback.Get(isolate)->Call(it->second->js_this.Get(isolate), 2, arg); \
+                }
+            }while(false);
         }
     }
 }

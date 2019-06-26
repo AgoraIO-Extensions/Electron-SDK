@@ -283,6 +283,14 @@ namespace agora {
             NAPI_API(videosourceUpdateScreenCaptureParameters);
             NAPI_API(videosourceSetScreenCaptureContentHint);
 
+
+            /**
+             * 2.8.0 Apis
+             */
+            NAPI_API(registerLocalUserAccount);
+            NAPI_API(joinChannelWithUserAccount);
+            NAPI_API(getUserInfoByUserAccount);
+            NAPI_API(getUserInfoByUid);
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }
