@@ -123,12 +123,18 @@ export default class App extends Component {
     rtcEngine.on('executefailed', funcName => {
       console.error(funcName, 'failed to execute')
     })
+    rtcEngine.on('localUserRegistered', (uid, userAccount) => {
+      console.log(`local user register: ${uid} ${userAccount}`)
+    })
   }
 
   handleJoin = () => {
     let encoderWidth = parseInt(this.state.encoderWidth)
     let encoderHeight = parseInt(this.state.encoderHeight)
     let rtcEngine = this.getRtcEngine()
+    rtcEngine.setParameters("{\"rtc.user_account_server_list\":[\"58.211.82.170\"]}")
+    let result = rtcEngine.registerLocalUserAccount(APP_ID, "TEST")
+    console.log(result)
     rtcEngine.setChannelProfile(1)
     rtcEngine.setClientRole(this.state.role)
     rtcEngine.setAudioProfile(0, 1)
