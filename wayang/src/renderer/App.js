@@ -44,10 +44,16 @@ export default class App extends Component {
   }
 
   update(uid, viewId, role) {
-    let { users = [] } = this.state;
-
+    let { users } = this.state;
+    users = users || []
     if (viewId === "None") {
-      users = users.filter(u => u.uid === uid);
+      users.forEach(u => {
+        if(u.uid === uid) {
+          delete u.uid
+          delete u.role
+          updated = true;
+        }
+      })
     } else {
       let updated = false;
       for (let i = 0; i < users.length; i++) {
@@ -137,12 +143,13 @@ export default class App extends Component {
 
   subscribeApiCalls = apiHandler => {
     let respType = 5;
-    let events = ["setupLocalVideo", "setupRemoteVideo"];
+    let events = ["setupLocalVideo", "setupRemoteVideo", "getVersion"];
 
     events.forEach(e => {
       apiHandler.asyncApi.on(e, (device, cmd, sequence, info) => {
         let result = 0;
         let error = 0;
+        let tmp
         switch (e) {
           case "setupLocalVideo":
             this.update(info.canvas.uid, info.canvas.view, "local");
@@ -150,6 +157,10 @@ export default class App extends Component {
           case "setupRemoteVideo":
             this.update(info.canvas.uid, info.canvas.view, "remote");
             break;
+          case "getVersion":
+            tmp = apiHandler.rtcEngine.getVersion() || {}
+            result = `version:${tmp.version}-build:${tmp.build}`
+            break
         }
         apiHandler.callResult(
           respType,

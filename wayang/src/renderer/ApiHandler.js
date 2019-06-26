@@ -30,7 +30,6 @@ const func_name_convention = {
 const generic_call_table = {
   //cmd : parameter key array
   "initialize": ["appId"],
-  "getVersion": [],
   "getErrorDescription": ["errorCode"],
   "getConnectionState": [],
   "joinChannel": ["token", "channelId", "info", "uid"],
@@ -70,16 +69,16 @@ const generic_call_table = {
   "setVideoQualityParameters": ["preferFrameRateOverImageQuality"],
   "setEncryptionMode": ["encryptionMode"],
   "setEncryptionSecret": ["secret"],
-  "muteLocalAudioStream": ["muted"],
-  "muteAllRemoteAudioStreams": ["muted"],
-  "setDefaultMuteAllRemoteAudioStreams": ["muted"],
-  "muteRemoteAudioStream": ["uid", "muted"],
-  "muteLocalVideoStream": ["muted"],
+  "muteLocalAudioStream": ["mute"],
+  "muteAllRemoteAudioStreams": ["mute"],
+  "setDefaultMuteAllRemoteAudioStreams": ["mute"],
+  "muteRemoteAudioStream": ["uid", "mute"],
+  "muteLocalVideoStream": ["mute"],
   "enableLocalVideo": ["enabled"],
-  "muteAllRemoteVideoStreams": ["muted"],
-  "setDefaultMuteAllRemoteVideoStreams": ["muted"],
+  "muteAllRemoteVideoStreams": ["mute"],
+  "setDefaultMuteAllRemoteVideoStreams": ["mute"],
   "enableAudioVolumeIndication": ["interval", "smooth"],
-  "muteRemoteVideoStream": ["uid", "muted"],
+  "muteRemoteVideoStream": ["uid", "mute"],
   "setInEarMonitoringVolume": ["volume"],
   "pauseAudio": [],
   "resumeAudio": [],
@@ -113,9 +112,9 @@ const generic_call_table = {
   "startAudioRecordingDeviceTest": ["interval"],
   "stopAudioRecordingDeviceTest": [],
   "getAudioPlaybackDeviceMute": [],
-  "setAudioPlaybackDeviceMute": ["muted"],
+  "setAudioPlaybackDeviceMute": ["mute"],
   "getAudioRecordingDeviceMute": [],
-  "setAudioRecordingDeviceMute": ["muted"],
+  "setAudioRecordingDeviceMute": ["mute"],
   "startAudioMixing": ["filePath", "loopback", "replace", "cycle"],
   "stopAudioMixing": [],
   "pauseAudioMixing": [],
@@ -154,7 +153,8 @@ const custom_call_table = {
   "removeAllView": [],
   "removeView": [],
   "createView": [],
-  "getImageOfView": []
+  "getImageOfView": [],
+  "getVersion": []
   // "getVideoDevices": [],
   // "setVideoDevice": [],
   // "getCurrentVideoDevice": [],
@@ -335,12 +335,19 @@ class ApiHandler {
     })
     rtcEngine.on('error', err => {
       console.error(err)
+      this.eventResult('onError', {err})
     })
     rtcEngine.on('executefailed', funcName => {
       console.error(funcName, 'failed to execute')
     })
     rtcEngine.on('networkQuality', (uid, txquality, rxquality) => {
       this.eventResult('onNetworkQuality', {uid, txQuality:txquality, rxQuality:rxquality})
+    })
+    rtcEngine.on('tokenPrivilegeWillExpire', token => {
+      this.eventResult('onTokenPrivilegeWillExpire', {token})
+    })
+    rtcEngine.on('remoteVideoStats', stats => {
+      this.eventResult('onRemoteVideoStats', {stats})
     })
   }
 
