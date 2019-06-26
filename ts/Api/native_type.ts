@@ -798,6 +798,6 @@ export interface NodeRtcEngine {
   registerDeliverFrame(callback: Function): number;
   registerLocalUserAccount(appId: string, userAccount: string): number;
   joinChannelWithUserAccount(token: string, channel: string, userAccount: string): number;
-  getUserInfoByUserAccount(userAccount: string) : UserInfo;
-  getUserInfoByUid(uid: number) : UserInfo;
+  getUserInfoByUserAccount(userAccount: string) : {errCode:number, userInfo: UserInfo};
+  getUserInfoByUid(uid: number) : {errCode:number, userInfo: UserInfo};
 }
