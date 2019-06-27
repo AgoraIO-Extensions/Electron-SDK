@@ -1,3 +1,14 @@
+/**
+ * Network quality types:
+ * 
+ * - 0: The network quality is unknown
+ * - 1: The network quality is excellent.
+ * - 2: The network quality is quite good, but the bitrate may be slightly lower than excellent.
+ * - 3: Users can feel the communication slightly impaired.
+ * - 4: Users cannot communicate smoothly.
+ * - 5: The network is so bad that users can barely communicate.
+ * - 6: The network is down and users cannot communicate at all.
+ */
 export type AgoraNetworkQuality =
   | 0 // unknown
   | 1 // excellent
@@ -7,10 +18,19 @@ export type AgoraNetworkQuality =
   | 5 // very bad
   | 6; // down
 
-/** 1 for broadcaster, 2 for audience */
+/** 
+ * Client roles in a live broadcast.
+ * 
+ * - 1: Host 
+ * - 2: Audience 
+ * */
 export type ClientRoleType = 1 | 2;
 
-/** 0 for high, 1 for low */
+/** Video stream types.
+ * 
+ * - 0: High-stream video
+ * - 1: Low-stream video 
+ */
 export type StreamType = 0 | 1;
 
 export type MediaDeviceType =
@@ -20,23 +40,33 @@ export type MediaDeviceType =
   | 2 // Video renderer
   | 3 // Video capturer
   | 4; // Application audio playback device
-
+/**
+ * The TranscodingUser class.
+ */
 export interface TranscodingUser {
-  /** stream uid */
+  /** User ID of the user displaying the video in the CDN live. */
   uid: number;
-  /** x start positon of stream */
+  /** Horizontal position from the top left corner of the video frame. */
   x: number;
-  /** y start positon of stream */
+  /** Vertical position from the top left corner of the video frame. */
   y: number;
-  /** selected width of stream */
+  /** Width of the video frame. The default value is 360. */
   width: number;
-  /** selected height of stream */
+  /** Height of the video frame. The default value is 640. */
   height: number;
-  /** zorder of the stream, [1,100] */
+  /** Layer position of the video frame. The value ranges between 0 and 100.
+   *
+   * - 0: (Default) Lowest
+   * - 100: Highest  
+   */
   zOrder: number;
-  /** (double) transparency alpha of the stream, [0,1] */
+  /**  Transparency of the video frame in CDN live. The value ranges between 0 and 1.0:
+   *
+   * - 0: Completely transparent
+   * - 1.0: (Default) Opaque
+   */
   alpha: number;
-  /**
+  /** The audio channel of the sound. The default value is 0:
    * - 0: (Default) Supports dual channels at most, depending on the upstream of the broadcaster.
    * - 1: The audio stream of the broadcaster uses the FL audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
    * - 2: The audio stream of the broadcaster uses the FC audio channel. If the upstream of the broadcaster uses multiple audio channels, these channels will be mixed into mono first.
@@ -47,84 +77,136 @@ export interface TranscodingUser {
   audioChannel: number;
 }
 
-/** Transcoding Sets the CDN live audio/video transcoding settings. See LiveTranscoding. */
+/** Sets the CDN live audio/video transcoding settings. */
 export interface TranscodingConfig {
-  /** width of canvas */
+  /** Width of the video. The default value is 360. The minimum value of width × height is 16 × 16. */
   width: number;
-  /** height of canvas */
+  /** Height of the video. The default value is 640. The minimum value of width × height is 16 × 16. */
   height: number;
-  /** kbps value, for 1-1 mapping pls look at https://docs.agora.io/cn/Interactive%20Broadcast/API%20Reference/cpp/structagora_1_1rtc_1_1_video_encoder_configuration.html */
+  /** Bitrate of the CDN live output video stream. The default value is 400 Kbps. 
+   * Set this parameter according to the Video Bitrate Table. 
+   * If you set a bitrate beyond the proper range, the SDK automatically adapts it to a value within the range. */
   videoBitrate: number;
-  /** fps, default 15 */
+  /** Frame rate of the output video stream set for the CDN live broadcast. The default value is 15 fps.
+   * 
+   * **Note**: Agora adjusts all values over 30 to 30.
+   */
   videoFrameRate: number;
-  /** true for low latency, no video quality garanteed; false - high latency, video quality garanteed */
+  /** Latency mode:
+   * 
+   * - true: Low latency with unassured quality
+   * - false: (Default) High latency with assured quality
+   */
   lowLatency: boolean;
-  /** Video GOP in frames, default 30 */
+  /** Self-defined video codec profile.
+   * 
+   * If you set this parameter to other values, Agora adjusts it to the default value of 100.
+   */
   videoGop: number;
-  /**
-   * - VIDEO_CODEC_PROFILE_BASELINE = 66
-   * Baseline video codec profile. Generally used in video calls on mobile phones
-   * - VIDEO_CODEC_PROFILE_MAIN = 77
-   * Main video codec profile. Generally used in mainstream electronics such as MP4 players, portable video players, PSP, and iPads.
-   * - VIDEO_CODEC_PROFILE_HIGH = 100
-   * (Default) High video codec profile. Generally used in high-resolution broadcasts or television
+  /** Self-defined video codec profile.
+   * 
+   * - VIDEO_CODEC_PROFILE_BASELINE = 66: Baseline video codec profile. Generally used in video calls on mobile phones
+   * - VIDEO_CODEC_PROFILE_MAIN = 77: Main video codec profile. Generally used in mainstream electronics 
+   * such as MP4 players, portable video players, PSP, and iPads.
+   * - VIDEO_CODEC_PROFILE_HIGH = 100: (Default) High video codec profile. Generally used in high-resolution broadcasts or television
    */
   videoCodecProfile: number;
-  /**
-   * RGB hex value. Value only, do not include a #. For example, 0xC0C0C0.
-   * number color = (A & 0xff) << 24 | (R & 0xff) << 16 | (G & 0xff) << 8 | (B & 0xff)
+  /** RGB hex value. 
+   * 
+   * Background color of the output video stream for the CDN live broadcast defined as int color 
+   * = (A & 0xff) << 24 | (R & 0xff) << 16 | (G & 0xff) << 8 | (B & 0xff)
+   * 
+   * **Note**: Value only, do not include a #. For example, 0xC0C0C0.
    */
   backgroundColor: number;
-  /** The number of users in the live broadcast */
+  /** The number of users in the live broadcast. */
   userCount: number;
-  /**
+  /** Self-defined audio-sample rate:
+   * 
    * - AUDIO_SAMPLE_RATE_32000 = 32000
-   * - AUDIO_SAMPLE_RATE_44100 = 44100
+   * - AUDIO_SAMPLE_RATE_44100 = 44100 (default)
    * - AUDIO_SAMPLE_RATE_48000 = 48000
    */
   audioSampleRate: number;
-  /**
+  /** Agora's self-defined audio-channel types. We recommend choosing option 1 or 2. 
+   * A special player is required if you choose option 3, 4, or 5:
+   * 
    * - 1: (Default) Mono
    * - 2: Two-channel stereo
    * - 3: Three-channel stereo
    * - 4: Four-channel stereo
    * - 5: Five-channel stereo
-   * > A special player is required if you choose option 3, 4, or 5
    */
   audioChannels: number;
+  /** The watermark image added to the CDN live publishing stream. */
   watermark: {
-    /**  url of the image */
+    /** HTTP/HTTPS URL address of the image on the broadcasting video. 
+     * The maximum length of this parameter is 1024 bytes. */
     url: string;
-    /** x start position of image */
+    /** Horizontal position of the image from the upper left of the broadcasting video. */
     x: number;
-    /** y start position of image */
+    /** Vertical position of the image from the upper left of the broadcasting video. */
     y: number;
-    /** width of image */
+    /** Width of the image on the broadcasting video. */
     width: number;
-    /** height of image */
+    /** Height of the image on the broadcasting video. */
     height: number;
   };
-  /** transcodingusers array */
+  /** The TranscodingUsers Array. */
   transcodingUsers: Array<TranscodingUser>;
 }
-
+/**
+ * Configurations of the last-mile network probe test.
+ */
 export interface LastmileProbeConfig {
+  /**
+   * Sets whether or not to test the uplink network. Some users, for example, the audience in a Live-broadcast channel, 
+   * do not need such a test:
+   * 
+   * - true: test
+   * - false: do not test
+   */
   probeUplink: boolean;
+  /**
+   * Sets whether or not to test the downlink network:
+   * 
+   * - true: test
+   * - false: do not test
+   */
   probeDownlink: boolean;
+  /**
+   * The expected maximum sending bitrate (Kbps) of the local user. The value ranges between 100 and 5000.
+   */
   expectedUplinkBitrate: number;
+  /**
+   * The expected maximum receiving bitrate (Kbps) of the local user. The value ranges between 100 and 5000.
+   */
   expectedDownlinkBitrate: number;
 }
-
+/** The one-way last-mile probe result. */
 export interface LastmileProbeOneWayResult {
+  /** The packet loss rate (%). */
   packetLossRate: number;
+  /** The network jitter (ms). */
   jitter: number;
+  /** The estimated available bandwidth (Kbps). */
   availableBandwidth: number;
 }
-
+/** The uplink and downlink last-mile network probe test result. */
 export interface LastmileProbeResult {
+  /** States of the last-mile network probe test:
+   * 
+   * - 1: The last-mile network probe test is complete
+   * - 2: The last-mile network probe test is incomplete and the bandwidth estimation is not available, 
+   * probably due to limited test resources
+   * - 3: The last-mile network probe test is not carried out, probably due to poor network conditions
+   */
   state: number;
+  /** The uplink last-mile network probe test result. See {@link LastmileProbeOneWayResult}. */
   uplinkReport: LastmileProbeOneWayResult;
+  /** The downlink last-mile network probe test result. See {@link LastmileProbeOneWayResult}. */
   downlinkReport: LastmileProbeOneWayResult;
+  /** The round-trip delay time (ms). */
   rtt: number;
 }
 
@@ -133,7 +215,7 @@ export interface UserInfo {
   userAccount: string;
 }
 
-/** Local voice changer options. */
+/** Sets the local voice changer option. */
 export enum VoiceChangerPreset {
   /** 0: The original voice (no local voice change). */
   VOICE_CHANGER_OFF = 0,
@@ -150,7 +232,9 @@ export enum VoiceChangerPreset {
   /** 6: Hulk's voice. */
   VOICE_CHANGER_HULK = 6
 }
-
+/**
+ * Sets the local voice changer option.
+ */
 export enum AudioReverbPreset {
   /** 0: The original voice (no local voice reverberation). */
   AUDIO_REVERB_OFF = 0, // Turn off audio reverb
@@ -169,85 +253,292 @@ export enum AudioReverbPreset {
   /** 7: Recording studio. */
   AUDIO_REVERB_STUDIO = 7
 }
-
+/**
+ * Configuration of the imported live broadcast voice or video stream.
+ */
 export interface InjectStreamConfig {
-  /** Width of the added stream in the live broadcast. The default value is 0 (same width as the original stream) */
+  /** Width of the added stream in the live broadcast. The default value is 0 (same width as the original stream). */
   width: number;
-  /** Height of the added stream in the live broadcast. The default value is 0 (same height as the original stream) */
+  /** Height of the added stream in the live broadcast. The default value is 0 (same height as the original stream). */
   height: number;
   /** Video bitrate of the added stream in the live broadcast. The default value is 400 Kbps. */
   videoBitrate: number;
-  /** Video frame rate of the added stream in the live broadcast. The default value is 15 fps */
+  /** Video frame rate of the added stream in the live broadcast. The default value is 15 fps. */
   videoFrameRate: number;
-  /** Video GOP of the added stream in the live broadcast in frames. The default value is 30 fps */
+  /** Video GOP of the added stream in the live broadcast in frames. The default value is 30 fps. */
   videoGop: number;
   /**
-   * Audio-sampling rate of the added stream in the live broadcast: #AUDIO_SAMPLE_RATE_TYPE. The default value is 48000 Hz
-   * @note Agora recommends setting the default value
+   * Audio-sampling rate of the added stream in the live broadcast. The default value is 48000 Hz.
+   * **Note**: Agora recommends setting the default value.
    * - AUDIO_SAMPLE_RATE_32000 = 32000
-   * - AUDIO_SAMPLE_RATE_44100 = 44100
+   * - AUDIO_SAMPLE_RATE_44100 = 44100(default)
    * - AUDIO_SAMPLE_RATE_48000 = 48000
    */
   audioSampleRate: number;
   /**
-   * @note Agora recommends setting the default value
-   * Audio bitrate of the added stream in the live broadcast. The default value is 48
+   * Audio bitrate of the added stream in the live broadcast. The default value is 48.
+   * **Note**: Agora recommends setting the default value.
    */
   audioBitrate: number;
-  /**
-   * @note Agora recommends setting the default value
+  /** Audio channels in the live broadcast.
    * - 1: (Default) Mono
    * - 2: Two-channel stereo
+   * **Note**: Agora recommends setting the default value.
    */
   audioChannels: number;
 }
-
+/**
+ * Prioritizes a remote user's stream.
+ */
 export enum Priority {
   /** 50: The user's priority is high. */
   PRIORITY_HIGH = 50,
   /** 100: (Default) The user's priority is normal. */
   PRIORITY_NORMAL = 100
 }
-
+/**
+ * Statistics of the channel.
+ */
 export interface RtcStats {
+  /** Call duration (s), represented by an aggregate value. */
   duration: number;
+  /** Total number of bytes transmitted, represented by an aggregate value. */
   txBytes: number;
+  /** Total number of bytes received, represented by an aggregate value. */
   rxBytes: number;
+  /** Transmission bitrate (Kbps), represented by an instantaneous value. */
   txKBitRate: number;
+  /** Receive bitrate (Kbps), represented by an instantaneous value. */
   rxKBitRate: number;
+  /** Audio receive bitrate (Kbps), represented by an instantaneous value. */
   rxAudioKBitRate: number;
+  /** Audio transmission bitrate (Kbps), represented by an instantaneous value. */
   txAudioKBitRate: number;
+  /** Video receive bitrate (Kbps), represented by an instantaneous value. */
   rxVideoKBitRate: number;
+  /** Video transmission bitrate (Kbps), represented by an instantaneous value. */
   txVideoKBitRate: number;
+  /** Number of users in the channel. */
   userCount: number;
+  /** Application CPU usage (%). */
   cpuAppUsage: number;
+  /** Application CPU usage (%). */
   cpuTotalUsage: number;
 }
-
+/** Quality change of the local video. */
 export enum QualityAdaptIndication {
-  /** The quality of the local video stays the same. */
+  /** 0: The quality of the local video stays the same. */
   ADAPT_NONE = 0,
-  /** The quality improves because the network bandwidth increases. */
+  /** 1: The quality improves because the network bandwidth increases. */
   ADAPT_UP_BANDWIDTH = 1,
-  /** The quality worsens because the network bandwidth decreases. */
+  /** 2: The quality worsens because the network bandwidth decreases. */
   ADAPT_DOWN_BANDWIDTH = 2,
 }
-
+/** Statistics of the local video. */
 export interface LocalVideoStats {
+  /** Bitrate (Kbps) sent since the last count. */
   sentBitrate: number;
+  /** Frame rate (fps) sent since the last count. */
   sentFrameRate: number;
+  /** The target bitrate (Kbps) of the current encoder. This value is estimated by the SDK 
+   * based on the current network conditions. 
+   */
   targetBitrate: number;
+  /** The target frame rate (fps) of the current encoder. */
   targetFrameRate: number;
+  /** Quality change of the local video in terms of target frame rate and target bit rate 
+   * since last count. See {@link QualityAdaptIndication}.
+   */
   qualityAdaptIndication: QualityAdaptIndication;
 }
-
+/** VideoEncoderConfiguration */
 export interface VideoEncoderConfiguration {
+  /** Width (pixels) of the video. */
   width: number;
+  /** Height (pixels) of the video. */
   height: number;
-  frameRate: number; // we do not recommend setting this to a value greater than 30
-  minFrameRate: number; //  The minimum frame rate of the video. The default value is -1.
-  bitrate: number; // 0 - standard(recommended), 1 - compatible
-  minBitrate: number; // by default -1, changing this value is NOT recommended
+  /**
+   * The frame rate of the video. Note that we do not recommend setting this to a value greater than 30.
+   */
+  frameRate: number; 
+  /**
+   * The minimum frame rate of the video. The default value is -1.
+   */
+  minFrameRate: number; 
+   /** The video encoding bitrate (Kbps).
+    * Choose one of the following options:
+    * 
+    * - 0: (Recommended) The standard bitrate.
+    *  - The Communication profile: the encoding bitrate equals the base bitrate.
+    *  - The Live-broadcast profile: the encoding bitrate is twice the base bitrate.
+    * - 1: The compatible bitrate: the bitrate stays the same regardless of the profile.
+    * 
+    * The Communication profile prioritizes smoothness, while the Live-broadcast profile prioritizes video quality (requiring a higher bitrate). We recommend setting the bitrate mode as #STANDARD_BITRATE to address this difference.
+    *
+    * The following table lists the recommended video encoder configurations, where the base bitrate applies to the Communication profile. 
+    * Set your bitrate based on this table. If you set a bitrate beyond the proper range, the SDK automatically sets it to within the range.
+    * 
+    * <table>
+    *     <tr>
+    *         <th>分辨率</th>
+    *         <th>帧率（fps）</th>
+    *         <th>基准码率（通信场景）（Kbps）</th>
+    *         <th>直播码率（直播场景）（Kbps）</th>
+    *     </tr>
+    *     <tr>
+    *         <td>160 &times; 120</td>
+    *         <td>15</td>
+    *         <td>65</td>
+    *         <td>130</td>
+    *     </tr>
+    *     <tr>
+    *         <td>120 &times; 120</td>
+    *         <td>15</td>
+    *         <td>50</td>
+    *         <td>100</td>
+    *     </tr>
+    *     <tr>
+    *         <td>320 &times; 180</td>
+    *         <td>15</td>
+    *         <td>140</td>
+    *         <td>280</td>
+    *     </tr>
+    *     <tr>
+    *         <td>180 &times; 180</td>
+    *         <td>15</td>
+    *         <td>100</td>
+    *         <td>200</td>
+    *     </tr>
+    *     <tr>
+    *         <td>240 &times; 180</td>
+    *         <td>15</td>
+    *         <td>120</td>
+    *         <td>240</td>
+    *     </tr>
+    *     <tr>
+    *         <td>320 &times; 240</td>
+    *         <td>15</td>
+    *         <td>200</td>
+    *         <td>400</td>
+    *     </tr>
+    *     <tr>
+    *         <td>240 &times; 240</td>
+    *         <td>15</td>
+    *         <td>140</td>
+    *         <td>280</td>
+    *     </tr>
+    *     <tr>
+    *         <td>424 &times; 240</td>
+    *         <td>15</td>
+    *         <td>220</td>
+    *         <td>440</td>
+    *     </tr>
+    *     <tr>
+    *         <td>640 &times; 360</td>
+    *         <td>15</td>
+    *         <td>400</td>
+    *         <td>800</td>
+    *     </tr>
+    *     <tr>
+    *         <td>360 &times; 360</td>
+    *         <td>15</td>
+    *         <td>260</td>
+    *         <td>520</td>
+    *     </tr>
+    *     <tr>
+    *         <td>640 &times; 360</td>
+    *         <td>30</td>
+    *         <td>600</td>
+    *         <td>1200</td>
+    *     </tr>
+    *     <tr>
+    *         <td>360 &times; 360</td>
+    *         <td>30</td>
+    *         <td>400</td>
+    *         <td>800</td>
+    *     </tr>
+    *     <tr>
+    *         <td>480 &times; 360</td>
+    *         <td>15</td>
+    *         <td>320</td>
+    *         <td>640</td>
+    *     </tr>
+    *     <tr>
+    *         <td>480 &times; 360</td>
+    *         <td>30</td>
+    *         <td>490</td>
+    *         <td>980</td>
+    *     </tr>
+    *     <tr>
+    *         <td>640 &times; 480</td>
+    *         <td>15</td>
+    *         <td>500</td>
+    *         <td>1000</td>
+    *     </tr>
+    *     <tr>
+    *         <td>480 &times; 480</td>
+    *         <td>15</td>
+    *         <td>400</td>
+    *         <td>800</td>
+    *     </tr>
+    *     <tr>
+    *         <td>640 &times; 480</td>
+    *         <td>30</td>
+    *         <td>750</td>
+    *         <td>1500</td>
+    *     </tr>
+    *     <tr>
+    *         <td>480 &times; 480</td>
+    *         <td>30</td>
+    *         <td>600</td>
+    *         <td>1200</td>
+    *     </tr>
+    *     <tr>
+    *         <td>848 &times; 480</td>
+    *         <td>15</td>
+    *         <td>610</td>
+    *         <td>1220</td>
+    *     </tr>
+    *     <tr>
+    *         <td>848 &times; 480</td>
+    *         <td>30</td>
+    *         <td>930</td>
+    *         <td>1860</td>
+    *     </tr>
+    *     <tr>
+    *         <td>640 &times; 480</td>
+    *         <td>10</td>
+    *         <td>400</td>
+    *         <td>800</td>
+    *     </tr>
+    *     <tr>
+    *         <td>1280 &times; 720</td>
+    *         <td>15</td>
+    *         <td>1130</td>
+    *         <td>2260</td>
+    *     </tr>
+    *     <tr>
+    *         <td>1280 &times; 720</td>
+    *         <td>30</td>
+    *         <td>1710</td>
+    *         <td>3420</td>
+    *     </tr>
+    *     <tr>
+    *         <td>960 &times; 720</td>
+    *         <td>15</td>
+    *         <td>910</td>
+    *         <td>1820</td>
+    *     </tr>
+    *     <tr>
+    *         <td>960 &times; 720</td>
+    *         <td>30</td>
+    *         <td>1380</td>
+    *         <td>2760</td>
+    *     </tr>
+    * </table>
+    */
+  bitrate: number; 
+  minBitrate: number; 
   orientationMode: OrientationMode;
   degradationPreference: DegradationPreference;
 }
