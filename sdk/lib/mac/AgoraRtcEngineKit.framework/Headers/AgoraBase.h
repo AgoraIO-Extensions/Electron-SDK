@@ -320,7 +320,7 @@ enum ERROR_CODE_TYPE
     /** 112: The internet connection is lost. This applies to the Agora Web SDK only.
      */
     ERR_CONNECTION_LOST = 112, // only used in web sdk
-    /** 113: The user is not in the channel when calling the \ref agora::rtc::IRtcEngine::sendStreamMessage "sendStreamMessage" method.
+    /** 113: The user is not in the channel when calling the \ref agora::rtc::IRtcEngine::sendStreamMessage "sendStreamMessage" or \ref agora::rtc::IRtcEngine::getUserInfoByUserAccount "getUserInfoByUserAccount" method.
      */
     ERR_NOT_IN_CHANNEL = 113,
     /** 114: The size of the sent data is over 1024 bytes when the user calls the \ref agora::rtc::IRtcEngine::sendStreamMessage "sendStreamMessage" method.
@@ -365,6 +365,9 @@ enum ERROR_CODE_TYPE
     /** 130: Encryption is enabled when the user calls the \ref agora::rtc::IRtcEngine::addPublishStreamUrl "addPublishStreamUrl" method (CDN live streaming does not support encrypted streams).
      */
     ERR_ENCRYPTED_STREAM_NOT_ALLOWED_PUBLISH = 130,
+    /** 134: The user account is invalid. */
+    ERR_INVALID_USER_ACCOUNT = 134,
+
     /** 151: CDN related errors. Remove the original URL address and add a new one by calling the \ref agora::rtc::IRtcEngine::removePublishStreamUrl "removePublishStreamUrl" and \ref agora::rtc::IRtcEngine::addPublishStreamUrl "addPublishStreamUrl" methods.
      */
     ERR_PUBLISH_STREAM_CDN_ERROR = 151,

@@ -148,7 +148,7 @@ typedef NS_ENUM(NSInteger, AgoraErrorCode) {
     AgoraErrorCodeConnectionInterrupted = 111,
     /** 112: The Internet connection is lost. This applies to the Agora Web SDK only. */
     AgoraErrorCodeConnectionLost = 112,
-    /** 113: The user is not in the channel when calling the [sendStreamMessage]([AgoraRtcEngineKit sendStreamMessage:data:]) method. */
+    /** 113: The user is not in the channel when calling the [sendStreamMessage]([AgoraRtcEngineKit sendStreamMessage:data:]) or [getUserInfoByUserAccount]([AgoraRtcEngineKit getUserInfoByUserAccount:withError:]) method. */
     AgoraErrorCodeNotInChannel = 113,
     /** 114: The size of the sent data is over 1024 bytes when the user calls the [sendStreamMessage]([AgoraRtcEngineKit sendStreamMessage:data:]) method. */
     AgoraErrorCodeSizeTooLarge = 114,
@@ -172,6 +172,9 @@ typedef NS_ENUM(NSInteger, AgoraErrorCode) {
     AgoraErrorCodeWatermarkRead = 129,
     /** 130: The encrypted stream is not allowed to publish. */
     AgoraErrorCodeEncryptedStreamNotAllowedPublish = 130,
+    /** 131: The user account is invalid. */
+    AgoraErrorCodeInvalidUserAccount = 134,
+
     /** 151: CDN related errors. Remove the original URL address and add a new one by calling the [removePublishStreamUrl]([AgoraRtcEngineKit removePublishStreamUrl:]) and [addPublishStreamUrl]([AgoraRtcEngineKit addPublishStreamUrl:transcodingEnabled:]) methods. */
     AgoraErrorCodePublishStreamCDNError = 151,
     /** 152: The host publishes more than 10 URLs. Delete the unnecessary URLs before adding new ones. */
@@ -679,6 +682,10 @@ typedef NS_ENUM(NSUInteger, AgoraNetworkQuality) {
     AgoraNetworkQualityVBad = 5,
      /** The network is disconnected and users cannot communicate at all. */
     AgoraNetworkQualityDown = 6,
+     /** Users cannot detect the network quality. (Not in use.) */
+    AgoraNetworkQualityUnsupported = 7,
+     /** Detecting the network quality. */
+    AgoraNetworkQualityDetecting = 8,
 };
 
 /** Video stream type. */
