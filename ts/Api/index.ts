@@ -54,17 +54,20 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Decide whether to use webgl/software/custom rendering
-   * @param {1|2|3} mode - 1 for old webgl rendering, 2 for software rendering, 3 for custom rendering
+   * Decide whether to use webgl/software/custom rendering.
+   * @param {1|2|3} mode:
+   * - 1 for old webgl rendering
+   * - 2 for software rendering
+   * - 3 for custom rendering
    */
   setRenderMode (mode: 1|2|3 = 1): void {
     this.renderMode = mode;
   }
 
   /**
-   * Use this method to set custom Renderer when set renderMode to 3.
-   * customRender should be a class.
-   * @param {IRenderer} customRenderer
+   * Use this method to set custom Renderer when set renderMode in the {@link setRenderMode} method to 3.
+   * CustomRender should be a class.
+   * @param {IRenderer} customRenderer Customizes the video renderer.
    */
   setCustomRenderer(customRenderer: IRenderer) {
     this.customRenderer = customRenderer;
@@ -72,6 +75,7 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @private
+   * @ignore
    * check if WebGL will be available with appropriate features
    * @returns {boolean}
    */
@@ -110,6 +114,7 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * init event handler
    * @private
+   * @ignore
    */
   initEventHandler(): void {
     const self = this;
@@ -517,7 +522,7 @@ class AgoraRtcEngine extends EventEmitter {
       fire('videosourceleavechannel');
       fire('videoSourceLeaveChannel');
     });
-
+ 
     this.rtcEngine.onEvent('localUserRegistered', function(uid:number, userAccount:string) {
       fire('localUserRegistered', uid, userAccount);
     });
@@ -533,6 +538,7 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @private
+   * @ignore
    * @param {number} type 0-local 1-remote 2-device_test 3-video_source
    * @param {number} uid uid get from native engine, differ from electron engine's uid
    */
@@ -558,6 +564,7 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * check if data is valid
    * @private
+   * @ignore
    * @param {*} header
    * @param {*} ydata
    * @param {*} udata
@@ -602,6 +609,7 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * register renderer for target info
    * @private
+   * @ignore
    * @param {number} infos
    */
   onRegisterDeliverFrame(infos: any) {
@@ -635,10 +643,10 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Size of the view has changed. Refresh zoom level so that video is sized
-   * appropriately while waiting for the next video frame to arrive.
+   * Size of the view has changed. Refresh zoom level so that video is sized.
+   * Appropriately while waiting for the next video frame to arrive.
    * Calling this can prevent a view discontinutity.
-   * @param {string|number} key key for the map that store the renderers, e.g, uid or `videosource` or `local`
+   * @param {string|number} key Key for the map that store the renderers, e.g, `uid` or `videosource` or `local`.
    */
   resizeRender(key: 'local' | 'videosource' | number) {
     if (this.streams.has(String(key))) {
@@ -650,9 +658,9 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * init renderer
-   * @param {string|number} key key for the map that store the renderers, e.g, uid or `videosource` or `local`
-   * @param {Element} view dom elements to render video
+   * Initializes the renderer.
+   * @param {string|number} key Key for the map that store the renderers, e.g, uid or `videosource` or `local`.
+   * @param {Element} view Dom elements to render video.
    */
   initRender(key: 'local' | 'videosource' | number, view: Element) {
     if (this.streams.has(String(key))) {
@@ -674,9 +682,9 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * destroy renderer
-   * @param {string|number} key key for the map that store the renders, e.g, uid or `videosource` or `local`
-   * @param {function} onFailure err callback for destroyRenderer
+   * Destroys the renderer.
+   * @param {string|number} key key for the map that store the renders, e.g, `uid` or `videosource` or `local`.
+   * @param {function} onFailure The error callback for the `destroyRenderer` method.
    */
   destroyRender(key: 'local' | 'videosource' | number, onFailure?: (err: Error) => void) {
     if (!this.streams.has(String(key))) {
@@ -696,77 +704,133 @@ class AgoraRtcEngine extends EventEmitter {
   // ===========================================================================
 
   /**
-   * @description initialize agora real-time-communicating engine with appid
-   * @param {string} appid agora appid
-   * @returns {number} 0 for success, <0 for failure
+   * @description Initializes agora real-time-communicating engine with your App ID.
+   * @param {string} appid App ID issued to you by Agora.
+   * @returns {number} 
+   * - 0: Success.
+   * - < 0: Failure.
    */
   initialize(appid: string): number {
     return this.rtcEngine.initialize(appid);
   }
 
   /**
-   * @description return current version and build of sdk
-   * @returns {string} version
+   * @description Returns the version and the build information of the current SDK.
+   * @returns {string} The version of the current SDK.
    */
   getVersion(): string {
     return this.rtcEngine.getVersion();
   }
 
   /**
-   * @description Get error description of the given errorCode
-   * @param {number} errorCode error code
-   * @returns {string} error description
+   * @description Retrieves the error description.
+   * @param {number} errorCode The error code.
+   * @returns {string} The error description.
    */
   getErrorDescription(errorCode: number): string {
     return this.rtcEngine.getErrorDescription(errorCode);
   }
 
   /**
-   * @description Get current connection state
-   * @returns {ConnectionState} connect state enum
+   * @description Gets the connection state of the SDK.
+   * @returns {ConnectionState} Connect states. See {@link AgoraRtcEngine.ConnectionState ConnectionState}
    */
   getConnectionState(): ConnectionState {
     return this.rtcEngine.getConnectionState();
   }
 
   /**
+   * @description Allows a user to join a channel.
+   * 
+   * Users in the same channel can talk to each other, and multiple users in the same channel can start a group chat. 
+   * Users with different App IDs cannot call each other.You must call the {@link leaveChannel} method to exit the current call 
+   * before entering another channel.
+   * 
+   * This method call triggers the following callbacks:
    *
-   * @description Join channel with token, channel, channel_info and uid
-   * @requires channel
-   * @param {string} token token
-   * @param {string} channel channel
-   * @param {string} info channel info
-   * @param {number} uid uid
-   * @returns {number} 0 for success, <0 for failure
+   * - The local client: joinedChannel
+   * - The remote client: userJoined, if the user joining the channel is in the Communication profile, 
+   * or is a BROADCASTER in the Live Broadcast profile.
+   *
+   * When the connection between the client and Agora's server is interrupted due to poor network conditions, 
+   * the SDK tries reconnecting to the server. When the local client successfully rejoins the channel, the SDK 
+   * triggers the rejoinedChannel callback on the local client.
+   * 
+   * @param {string} token token The token generated at your server:
+   * - For low-security requirements: You can use the temporary token generated at Dashboard. For details, see [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-temporary-token)
+   * - For high-security requirements: Set it as the token generated at your server. For details, see [Get a token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-token)
+   * @param {string} channel (Required) Pointer to the unique channel name for the Agora RTC session in the string format smaller than 64 bytes. Supported characters:
+   * - The 26 lowercase English letters: a to z
+   * - The 26 uppercase English letters: A to Z
+   * - The 10 numbers: 0 to 9
+   * - The space
+   * - "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ","
+   * @param {string} info (Optional) Pointer to additional information about the channel. This parameter can be set to NULL or contain channel related information. 
+   * Other users in the channel will not receive this message.
+   * @param {number} uid User ID. A 32-bit unsigned integer with a value ranging from 1 to 2<sup>32</sup>-1. The `uid` must be unique. If a `uid` is not assigned (or set to 0), 
+   * the SDK assigns a `uid`.
+   * @returns {number} 
+   * - 0: Success.
+   * - < 0: Failure.
    */
   joinChannel(token: string, channel: string, info: string, uid: number): number {
     return this.rtcEngine.joinChannel(token, channel, info, uid);
   }
 
   /**
-   * @description Leave channel
-   * @returns {number} 0 for success, <0 for failure
+   * @description Allows a user to leave a channel.
+   * 
+   * Allows a user to leave a channel, such as hanging up or exiting a call. The user must call the method to end the call before 
+   * joining another channel after call the {@link joinChannel} method.
+   * This method returns 0 if the user leaves the channel and releases all resources related to the call. 
+   * This method call is asynchronous, and the user has not left the channel when the method call returns.
+   * 
+   * Once the user leaves the channel, the SDK triggers the leavechannel callback.
+   * 
+   * A successful leavechannel method call triggers the removeStream callback for the remote client when the user leaving the channel 
+   * is in the Communication channel, or is a BROADCASTER in the Live Broadcast profile.
+   *
+   * @returns {number} 
+   * - 0: Success.
+   * - < 0: Failure.
    */
   leaveChannel(): number {
     return this.rtcEngine.leaveChannel();
   }
 
   /**
-   * @description release sdk instance
-   * @returns {number} 0 for success, <0 for failure
+   * @description Releases the AgoraRtcEngine instance.
+   * 
+   * Once the App calls this method to release the created AgoraRtcEngine instance, no other methods in the SDK
+   * can be used and no callbacks can occur. To start it again, initialize {@link initialize} to establish a new 
+   * AgoraRtcEngine instance.
+   * 
+   * **Note**: Call this method in the subthread.
+   * @returns {number} 
+   * - 0: Success.
+   * - < 0: Failure.
    */
   release(): number {
     return this.rtcEngine.release();
   }
 
   /**
-   * @deprecated
-   * @description This method sets high-quality audio preferences. Call this method and set all the three
-   * modes before joining a channel. Do NOT call this method again after joining a channel.
-   * @param {boolean} fullband enable/disable fullband codec
-   * @param {boolean} stereo enable/disable stereo codec
-   * @param {boolean} fullBitrate enable/disable high bitrate mode
-   * @returns {number} 0 for success, <0 for failure
+   * @deprecated Agora does not recommend using this method. Use {@link setAudioProfile} instead.
+   * @description Sets the high-quality audio preferences.
+   * 
+   * Call this method and set all parameters before joining a channel.
+   * @param {boolean} fullband Sets whether to enable/disable full-band codec (48-kHz sample rate).
+   * - true: Enable full-band codec.
+   * - false: Disable full-band codec.
+   * @param {boolean} stereo Sets whether to enable/disable stereo codec.
+   * - true: Enable stereo codec.
+   * - false: Disable stereo codec.
+   * @param {boolean} fullBitrate Sets whether to enable/disable high-bitrate mode.
+   * - true: Enable high-bitrate mode.
+   * - false: Disable high-bitrate mode.
+   * @returns {number} 
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setHighQualityAudioParameters(fullband: boolean, stereo: boolean, fullBitrate: boolean): number {
     deprecate('setAudioProfile');
@@ -774,10 +838,12 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description subscribe remote uid and initialize corresponding renderer
-   * @param {number} uid remote uid
-   * @param {Element} view dom where to initialize renderer
-   * @returns {number} 0 for success, <0 for failure
+   * @description Subscribes the remote user and initializes the corresponding renderer.
+   * @param {number} uid The user ID of the remote user.
+   * @param {Element} view Dom where to initialize the renderer.
+   * @returns {number} 
+   * - 0: Success.
+   * - < 0: Failure.
    */
   subscribe(uid: number, view: Element): number {
     this.initRender(uid, view);
@@ -785,9 +851,11 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description setup local video and corresponding renderer
-   * @param {Element} view dom element where we will initialize our view
-   * @returns {number} 0 for success, <0 for failure
+   * @description Setup the local video and corresponding renderer.
+   * @param {Element} view Dom element where we will initialize our view.
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setupLocalVideo(view: Element): number {
     this.initRender('local', view);
@@ -796,9 +864,15 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    *
-   * @description force set renderer dimension of video, this ONLY affects size of data sent to js layer, native video size is determined by setVideoProfile
-   * @param {*} rendertype type of renderer, 0 - local, 1 - remote, 2 - device test, 3 - video source
-   * @param {*} uid target uid
+   * @description Sets the renderer dimension of video.
+   * 
+   * This method ONLY affects size of data sent to js layer, while native video size is determined by {@link setVideoEncoderConfiguration}.
+   * @param {*} rendertype The renderer type:
+   * - 0: local
+   * - 1: remote
+   * - 2: device test
+   * - 3: video source
+   * @param {*} uid The user ID of the targeted user.
    * @param {*} width target width
    * @param {*} height target height
    */
