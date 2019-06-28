@@ -140,6 +140,12 @@ __attribute__((visibility("default"))) @interface AgoraRtcRemoteVideoStats : NSO
 /** Video stream type (high-stream or low-stream).
  */
 @property (assign, nonatomic) AgoraVideoStreamType rxStreamType;
+/** Total time that video is frozen
+ */
+@property (assign, nonatomic) NSUInteger totalFrozenTime;
+/** Total frozen time to the total time when video is available
+ */
+@property (assign, nonatomic) NSUInteger frozenRate;
 @end
 
 /** Statistics of the remote audio stream.
@@ -160,6 +166,21 @@ __attribute__((visibility("default"))) @interface AgoraRtcRemoteAudioStats : NSO
 /** Packet loss rate in the reported interval.
  */
 @property (assign, nonatomic) NSUInteger audioLossRate;
+/** Number of channels.
+ */
+@property (assign, nonatomic) NSUInteger numChannels;
+/** Data receive sample rate (Hz) since last count.
+ */
+@property (assign, nonatomic) NSUInteger receivedSampleRate;
+/** Data receive bitrate (Kbps) since last count.
+ */
+@property (assign, nonatomic) NSUInteger receivedBitrate;
+/** Total frozen time(ms) during call.
+ */
+@property (assign, nonatomic) NSUInteger totalFrozenTime;
+/** Average frozen rate during call.
+ */
+@property (assign, nonatomic) NSUInteger frozenRate;
 @end
 
 /** Properties of the audio volume information.
@@ -945,4 +966,13 @@ The value ranges from 0.0 (original) to 1.0. This parameter adjusts the red satu
 */
 @property (nonatomic, assign) float rednessLevel;
 
+@end
+
+__attribute__((visibility("default"))) @interface AgoraUserInfo : NSObject
+/** User's uid
+ */
+@property (nonatomic, assign) NSUInteger uid;
+/** User's account
+ */
+@property (copy, nonatomic) NSString * _Nullable userAccount;
 @end
