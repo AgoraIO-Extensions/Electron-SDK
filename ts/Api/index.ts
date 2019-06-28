@@ -925,10 +925,15 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description setup view content mode
-   * @param {number | 'local' | 'videosource'} uid stream uid to operate
-   * @param {0|1} mode view content mode, 0 - fill, 1 - fit
-   * @returns {number} 0 - success, -1 - fail
+   * @description Setup view content mode.
+   * @param {number | 'local' | 'videosource'} uid The user ID for operating streams.
+   * @param {0|1} mode View content mode:
+   * - 0: Cropped mode. Uniformly scale the video until it fills the visible boundaries (cropped). One dimension of the video may have clipped contents.
+   * - 1: Fit mode. Uniformly scale the video until one of its dimension fits the boundary (zoomed to fit). Areas that are not filled due to the disparity 
+   * in the aspect ratio will be filled with black.
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setupViewContentMode(uid: number | 'local' | 'videosource', mode: 0|1): number {
     if (this.streams.has(String(uid))) {
@@ -943,12 +948,15 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description This method updates the Token.
    * The key expires after a certain period of time once the Token schema is enabled when:
-   * The onError callback reports the ERR_TOKEN_EXPIRED(109) error, or
-   * The onRequestToken callback reports the ERR_TOKEN_EXPIRED(109) error, or
-   * The user receives the onTokenPrivilegeWillExpire callback.
+   * - The onError callback reports the ERR_TOKEN_EXPIRED(109) error, or
+   * - The requestChannelKey callback reports the ERR_TOKEN_EXPIRED(109) error, or
+   * - The user receives the tokenPrivilegeWillExpire callback.
+   * 
    * The application should retrieve a new key and then call this method to renew it. Failure to do so will result in the SDK disconnecting from the server.
    * @param {string} newtoken new token to update
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   renewToken(newtoken: string): number {
     return this.rtcEngine.renewToken(newtoken);
@@ -956,9 +964,14 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description Set channel profile(before join channel) since sdk will do optimization according to scenario.
-   * @description 0 (default) for communication, 1 for live broadcasting, 2 for in-game
-   * @param {number} profile profile enum
-   * @returns {number} 0 for success, <0 for failure
+   * 
+   * @param {number} profile The channel profile:
+   * - 0: for communication
+   * - 1: for live broadcasting
+   * - 2: for in-game
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setChannelProfile(profile: number): number {
     return this.rtcEngine.setChannelProfile(profile);
@@ -966,52 +979,75 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    *
-   * @description In live broadcasting mode, set client role, 1 for anchor, 2 for audience
-   * @param {ClientRoleType} role client role
-   * @returns {number} 0 for success, <0 for failure
+   * @description In live broadcasting mode.
+   * @param {ClientRoleType} role client role:
+   * 
+   * - 1: for anchor
+   * - 2: for audience
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setClientRole(role: ClientRoleType): number {
     return this.rtcEngine.setClientRole(role);
   }
 
   /**
-   * @deprecated use startEchoTestWithInterval instead
+   * @deprecated Use {@link startEchoTestWithInterval} instead
    * @description This method launches an audio call test to determine whether the audio devices
    * (for example, headset and speaker) and the network connection are working properly.
    * In the test, the user first speaks, and the recording is played back in 10 seconds.
    * If the user can hear the recording in 10 seconds, it indicates that the audio devices
    * and network connection work properly.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   startEchoTest(): number {
     deprecate('startEchoTestWithInterval');
     return this.rtcEngine.startEchoTest();
   }
 
-  /**
-   * @description This method stops an audio call test.
-   * @returns {number} 0 for success, <0 for failure
+  /** 
+   * @deprecated Use {@link startEchoTestWithInterval} instead
+   * @description {@link startEchoTestWithInterval}
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   stopEchoTest(): number {
     return this.rtcEngine.stopEchoTest();
   }
 
   /**
-   * @description startEchoTest with interval
-   * @param interval time interval (seconds)
+   * @description Starts an audio call test.
+   * 
+   * This method starts an audio call test to determine whether the audio devices 
+   * (for example, headset and speaker) and the network connection are working properly.
+   * 
+   * In the audio call test, you record your voice. If the recording plays back within the set time interval, 
+   * the audio devices and the network connection are working properly.
+   * @param interval The time interval (s) between when you speak and when the recording plays back.
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   startEchoTestWithInterval(interval: number): number {
     return this.rtcEngine.startEchoTestWithInterval(interval);
   }
 
   /**
-   * @description This method tests the quality of the user’s network connection
-   * and is disabled by default. Before users join a channel, they can call this
-   * method to check the network quality. Calling this method consumes extra network
-   * traffic, which may affect the communication quality. Call disableLastmileTest
-   * to disable it immediately once users have received the onLastmileQuality
-   * callback before they join the channel.
-   * @returns {number} 0 for success, <0 for failure
+   * @description Enables the network connection quality test.
+   * 
+   * This method tests the quality of the users' network connections and is disabled by default.
+   * 
+   * **Note**: 
+   * - Do not call any other methods before receiving the lastmileQuality callback. Otherwise, 
+   * the callback may be interrupted by other methods, and hence may not be triggered.
+   * - A host should not call this method after joining a channel (when in a call).
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   enableLastmileTest(): number {
     return this.rtcEngine.enableLastmileTest();
@@ -1019,17 +1055,19 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description This method disables the network connection quality test.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   disableLastmileTest(): number {
     return this.rtcEngine.disableLastmileTest();
   }
 
   /**
-   * @description start the last-mile network probe test before
+   * @description Starts the last-mile network probe test before
    * joining a channel to get the uplink and downlink last-mile network statistics,
    *  including the bandwidth, packet loss, jitter, and round-trip time (RTT).
-   * @param {LastmileProbeConfig} config
+   * @param {LastmileProbeConfig} config The configurations of the last-mile network probe test. See  {@link AgoraRtcEngine.LastmileProbeConfig LastmileProbeConfig}.
    */
   startLastmileProbeTest(config: LastmileProbeConfig): number {
     return this.rtcEngine.startLastmileProbeTest(config);
@@ -1044,7 +1082,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description Use before join channel to enable video communication, or you will only join with audio-enabled
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   enableVideo(): number {
     return this.rtcEngine.enableVideo();
@@ -1052,7 +1092,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description Use to disable video and use pure audio communication
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   disableVideo(): number {
     return this.rtcEngine.disableVideo();
@@ -1065,7 +1107,9 @@ class AgoraRtcEngine extends EventEmitter {
    * the local video preview before calling joinChannel to join a channel, the local preview
    * will still be in the started state after leaveChannel is called to leave the channel.
    * stopPreview can be called to close the local preview.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   startPreview(): number {
     return this.rtcEngine.startPreview();
@@ -1073,7 +1117,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description This method stops the local video preview and closes the video.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   stopPreview(): number {
     return this.rtcEngine.stopPreview();
@@ -1083,7 +1129,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @deprecated use setVideoEncoderConfiguration
    * @param {VIDEO_PROFILE_TYPE} profile - enumeration values represent video profile
    * @param {boolean} [swapWidthAndHeight = false] - Whether to swap width and height
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setVideoProfile(profile: VIDEO_PROFILE_TYPE, swapWidthAndHeight: boolean = false): number {
     return this.rtcEngine.setVideoProfile(profile, swapWidthAndHeight);
@@ -1091,7 +1139,7 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description For a video call or live broadcast, generally the SDK controls the camera output parameters. When the default camera capture settings do not meet special requirements or cause performance problems, we recommend using this method to set the camera capture preference:
-   * - If the resolution or frame rate of the captured raw video data are higher than those set by \ref IRtcEngine::setVideoEncoderConfiguration "setVideoEncoderConfiguration", processing video frames requires extra CPU and RAM usage and degrades performance. We recommend setting config as CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE = 1 to avoid such problems.
+   * - If the resolution or frame rate of the captured raw video data are higher than those set by {@link setVideoEncoderConfiguration}, processing video frames requires extra CPU and RAM usage and degrades performance. We recommend setting config as CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE = 1 to avoid such problems.
    * - If you do not need local video preview or are willing to sacrifice preview quality, we recommend setting config as CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE = 1 to optimize CPU and RAM usage.
    * - If you want better quality for the local video preview, we recommend setting config as CAPTURER_OUTPUT_PREFERENCE_PREVIEW = 2.
    * @param {CameraCapturerConfiguration} config
@@ -1156,7 +1204,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description This method enables the audio mode, which is enabled by default.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   enableAudio(): number {
     return this.rtcEngine.enableAudio();
@@ -1164,7 +1214,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description This method disables the audio mode.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   disableAudio(): number {
     return this.rtcEngine.disableAudio();
@@ -1174,7 +1226,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @description Set audio profile (before join channel) depending on your scenario
    * @param {number} profile 0: default, 1: speech standard, 2: music standard. 3: music standard stereo, 4: music high quality, 5: music high quality stereo
    * @param {number} scenario 0: default, 1: chatroom entertainment, 2: education, 3: game streaming, 4: showroom, 5: game chating
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setAudioProfile(profile: 0|1|2|3|4|5, scenario: 0|1|2|3|4|5): number {
     return this.rtcEngine.setAudioProfile(profile, scenario);
@@ -1184,7 +1238,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @deprecated use setCameraCapturerConfiguration and setVideoEncoderConfiguration instead
    * @description This method allows users to set video preferences.
    * @param {boolean} preferFrameRateOverImageQuality enable/disable framerate over image quality
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setVideoQualityParameters(preferFrameRateOverImageQuality: boolean): number {
     return this.rtcEngine.setVideoQualityParameters(preferFrameRateOverImageQuality);
@@ -1196,7 +1252,9 @@ class AgoraRtcEngine extends EventEmitter {
    * The encryption password is automatically cleared once a user has left the channel.
    * If the encryption password is not specified or set to empty, the encryption function will be disabled.
    * @param {string} secret Encryption Password
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setEncryptionSecret(secret: string): number {
     return this.rtcEngine.setEncryptionSecret(secret);
@@ -1206,7 +1264,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @description This method mutes/unmutes local audio. It enables/disables
    * sending local audio streams to the network.
    * @param {boolean} mute mute/unmute audio
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   muteLocalAudioStream(mute: boolean): number {
     return this.rtcEngine.muteLocalAudioStream(mute);
@@ -1215,7 +1275,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description This method mutes/unmutes all remote users’ audio streams.
    * @param {boolean} mute mute/unmute audio
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   muteAllRemoteAudioStreams(mute: boolean): number {
     return this.rtcEngine.muteAllRemoteAudioStreams(mute);
@@ -1224,7 +1286,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description Stops receiving all remote users' audio streams by default.
    * @param {boolean} mute mute/unmute audio
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setDefaultMuteAllRemoteAudioStreams(mute: boolean): number {
     return this.rtcEngine.setDefaultMuteAllRemoteAudioStreams(mute);
@@ -1234,7 +1298,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @description This method mutes/unmutes a specified user’s audio stream.
    * @param {number} uid user to mute/unmute
    * @param {boolean} mute mute/unmute audio
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   muteRemoteAudioStream(uid: number, mute: boolean): number {
     return this.rtcEngine.muteRemoteAudioStream(uid, mute);
@@ -1243,7 +1309,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description This method mutes/unmutes video stream
    * @param {boolean} mute mute/unmute video
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   muteLocalVideoStream(mute: boolean): number {
     return this.rtcEngine.muteLocalVideoStream(mute);
@@ -1254,7 +1322,9 @@ class AgoraRtcEngine extends EventEmitter {
    * the scenario when the user only wants to watch the remote video without sending
    * any video stream to the other user. This method does not require a local camera.
    * @param {boolean} enable enable/disable video
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   enableLocalVideo(enable: boolean): number {
     return this.rtcEngine.enableLocalVideo(enable);
@@ -1263,7 +1333,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description Whether to enable the microphone to create the local audio stream.
    * @param {boolean} enable enable/disable video
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   enableLocalAudio(enable: boolean): number {
     return this.rtcEngine.enableLocalAudio(enable);
@@ -1272,7 +1344,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description This method mutes/unmutes all remote users’ video streams.
    * @param {boolean} mute mute/unmute video
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   muteAllRemoteVideoStreams(mute: boolean): number {
     return this.rtcEngine.muteAllRemoteVideoStreams(mute);
@@ -1281,7 +1355,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description Stops receiving all remote users’ video streams.
    * @param {boolean} mute mute/unmute audio
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setDefaultMuteAllRemoteVideoStreams(mute: boolean): number {
     return this.rtcEngine.setDefaultMuteAllRemoteVideoStreams(mute);
@@ -1295,7 +1371,9 @@ class AgoraRtcEngine extends EventEmitter {
    * is speaking in the channel
    * @param {number} interval < 0 for disable, recommend to set > 200ms, < 10ms will not receive any callbacks
    * @param {number} smooth Smoothing factor. The default value is 3
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   enableAudioVolumeIndication(interval: number, smooth: number): number {
     return this.rtcEngine.enableAudioVolumeIndication(interval, smooth);
@@ -1305,7 +1383,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @description This method mutes/unmutes a specified user’s video stream.
    * @param {number} uid user to mute/unmute
    * @param {boolean} mute mute/unmute video
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   muteRemoteVideoStream(uid: number, mute: boolean): number {
     return this.rtcEngine.muteRemoteVideoStream(uid, mute);
@@ -1314,7 +1394,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description This method sets the in ear monitoring volume.
    * @param {number} volume Volume of the in-ear monitor, ranging from 0 to 100. The default value is 100.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setInEarMonitoringVolume(volume: number): number {
     return this.rtcEngine.setInEarMonitoringVolume(volume);
@@ -1323,7 +1405,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @deprecated
    * @description disable audio function in channel, which will be recovered when leave channel.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   pauseAudio() {
     deprecate('disableAudio');
@@ -1333,7 +1417,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @deprecated
    * @description resume audio function in channel.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   resumeAudio() {
     deprecate('enableAudio');
@@ -1343,7 +1429,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description set filepath of log
    * @param {string} filepath filepath of log
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setLogFile(filepath: string): number {
     return this.rtcEngine.setLogFile(filepath);
@@ -1352,7 +1440,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description set the log file size (KB).
    * @param {number} size size of the log file. if exceed, old one will be overwrite
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setLogFileSize(size: number): number {
     return this.rtcEngine.setLogFileSize(size);
@@ -1361,7 +1451,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description set filepath of videosource log (Called After videosource initialized)
    * @param {string} filepath filepath of log
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   videoSourceSetLogFile(filepath: string) {
     return this.rtcEngine.videoSourceSetLogFile(filepath);
@@ -1376,7 +1468,9 @@ class AgoraRtcEngine extends EventEmitter {
    * LOG_FILTER_WARNING = 0x0e: Output logs of the CRITICAL, ERROR and WARNING level.
    * LOG_FILTER_ERROR = 0x0c: Output logs of the CRITICAL and ERROR level.
    * LOG_FILTER_CRITICAL = 0x08: Output logs of the CRITICAL level.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setLogFilter(filter: number): number {
     return this.rtcEngine.setLogFilter(filter);
@@ -1386,7 +1480,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @description This method sets the stream mode (only applicable to live broadcast) to
    * single- (default) or dual-stream mode.
    * @param {boolean} enable enable/disable dual stream
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   enableDualStreamMode(enable: boolean): number {
     return this.rtcEngine.enableDualStreamMode(enable);
@@ -1405,7 +1501,9 @@ class AgoraRtcEngine extends EventEmitter {
    * stream using this method.
    * @param {number} uid User ID
    * @param {StreamType} streamType 0 - high, 1 - low
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setRemoteVideoStreamType(uid: number, streamType: StreamType): number {
     return this.rtcEngine.setRemoteVideoStreamType(uid, streamType);
@@ -1414,7 +1512,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description This method sets the default remote video stream type to high or low.
    * @param {StreamType} streamType 0 - high, 1 - low
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setRemoteDefaultVideoStreamType(streamType: StreamType): number {
     return this.rtcEngine.setRemoteDefaultVideoStreamType(streamType);
@@ -1423,7 +1523,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description This method enables interoperability with the Agora Web SDK.
    * @param {boolean} enable enable/disable interop
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   enableWebSdkInteroperability(enable: boolean): number {
     return this.rtcEngine.enableWebSdkInteroperability(enable);
@@ -1436,7 +1538,9 @@ class AgoraRtcEngine extends EventEmitter {
    * 0: The default mirror mode, that is, the mode set by the SDK
    * 1: Enable the mirror mode
    * 2: Disable the mirror mode
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setLocalVideoMirrorMode(mirrortype: 0|1|2): number {
     return this.rtcEngine.setLocalVideoMirrorMode(mirrortype);
@@ -1447,7 +1551,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {number} pitch - The value ranges between 0.5 and 2.0.
    * The lower the value, the lower the voice pitch.
    * The default value is 1.0 (no change to the local voice pitch).
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setLocalVoicePitch(pitch: number): number {
     return this.rtcEngine.setLocalVoicePitch(pitch);
@@ -1459,7 +1565,9 @@ class AgoraRtcEngine extends EventEmitter {
    * The value ranges between 0 and 9, representing the respective 10-band center frequencies of the voice effects
    * including 31, 62, 125, 500, 1k, 2k, 4k, 8k, and 16k Hz.
    * @param {number} bandGain - Sets the gain of each band in dB. The value ranges between -15 and 15.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setLocalVoiceEqualization(bandFrequency: number, bandGain: number): number {
     return this.rtcEngine.setLocalVoiceEqualization(bandFrequency, bandGain);
@@ -1474,7 +1582,9 @@ class AgoraRtcEngine extends EventEmitter {
    * AUDIO_REVERB_WET_DELAY = 3, // (ms, [0,200]), the length of the initial delay of the wet signal in ms
    * AUDIO_REVERB_STRENGTH = 4, // ([0,100]), the strength of the reverberation
    * @param {number} value - value Sets the value of the reverberation key.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setLocalVoiceReverb(reverbKey: number, value: number): number {
     return this.rtcEngine.setLocalVoiceReverb(reverbKey, value);
@@ -1500,54 +1610,94 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description Sets the fallback option for the locally published video stream based on the network conditions.
-   * The default setting for option is #STREAM_FALLBACK_OPTION_DISABLED, where there is no fallback for the locally published video stream when the uplink network conditions are poor.
-   * If *option* is set to #STREAM_FALLBACK_OPTION_AUDIO_ONLY, the SDK will:
+   * The default setting for option is STREAM_FALLBACK_OPTION_AUDIO_ONLY, where there is no fallback for the locally published video stream when the uplink network conditions are poor.
+   * If *option* is set toSTREAM_FALLBACK_OPTION_AUDIO_ONLY, the SDK will:
    * - Disable the upstream video but enable audio only when the network conditions worsen and cannot support both video and audio.
    * - Re-enable the video when the network conditions improve.
    * When the locally published stream falls back to audio only or when the audio stream switches back to the video,
-   * the \ref agora::rtc::IRtcEngineEventHandler::onLocalPublishFallbackToAudioOnly "onLocalPublishFallbackToAudioOnly" callback is triggered.
-   * @note Agora does not recommend using this method for CDN live streaming, because the remote CDN live user will have a noticeable lag when the locally publish stream falls back to audio-only.
+   * the localPublishFallbackToAudioOnly callback is triggered.
+   * **Note**:
+   * Agora does not recommend using this method for CDN live streaming, because the remote CDN live user will have a noticeable lag when the locally publish stream falls back to audio-only.
    * @param {number} option - Sets the fallback option for the locally published video stream.
-   * STREAM_FALLBACK_OPTION_DISABLED = 0
-   * STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW = 1
-   * STREAM_FALLBACK_OPTION_AUDIO_ONLY = 2
-   * @returns {number} 0 for success, <0 for failure
+   * - STREAM_FALLBACK_OPTION_DISABLED = 0: No fallback behavior for the local/remote video stream when the uplink/downlink network conditions are poor. The quality of the stream is not guaranteed.
+   * - STREAM_FALLBACK_OPTION_AUDIO_ONLY = 2: Under poor uplink network conditions, the locally published video stream falls back to audio only.
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setLocalPublishFallbackOption(option: 0|1|2): number {
     return this.rtcEngine.setLocalPublishFallbackOption(option);
   }
 
   /**
-   * @description Sets the fallback option for the remotely subscribed stream based on the network conditions.
-   * The default setting for @p option is #STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW, where the remotely subscribed stream falls back to
-   * the low-stream video (low resolution and low bitrate) under poor downlink network conditions.
-   * If *option* is set to #STREAM_FALLBACK_OPTION_AUDIO_ONLY, the SDK automatically switches the video from a high-stream to a low-stream,
-   * or disable the video when the downlink network conditions cannot support both audio and video to guarantee the quality of the audio.
-   * The SDK monitors the network quality and restores the video stream when the network conditions improve.
-   * Once the locally published stream falls back to audio only or the audio stream switches back to the video stream,
-   * the \ref agora::rtc::IRtcEngineEventHandler::onRemoteSubscribeFallbackToAudioOnly "onRemoteSubscribeFallbackToAudioOnly" callback is triggered.
+   * @description Sets the fallback option for the remotely subscribed video stream based on the network conditions.
+   * 
+   * When the remotely subscribed video stream falls back to audio only or when the audio-only stream switches back to the video stream, 
+   * the SDK triggers the remoteSubscribeFallbackToAudioOnly callback.
    * @param {number} option - Sets the fallback option for the remotely subscribed stream.
-   * STREAM_FALLBACK_OPTION_DISABLED = 0
-   * STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW = 1
-   * STREAM_FALLBACK_OPTION_AUDIO_ONLY = 2
-   * @returns {number} 0 for success, <0 for failure
+   * - STREAM_FALLBACK_OPTION_DISABLED = 0: No fallback behavior for the local/remote video stream when the uplink/downlink network conditions are poor. The quality of the stream is not guaranteed.
+   * - STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW = 1: Under poor downlink network conditions, the remote video stream, to which you subscribe, falls back to the low-stream (low resolution and low bitrate) video.
+   * - STREAM_FALLBACK_OPTION_AUDIO_ONLY = 2: Under poor uplink network conditions, the locally published video stream falls back to audio only.
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setRemoteSubscribeFallbackOption(option: 0|1|2): number {
     return this.rtcEngine.setRemoteSubscribeFallbackOption(option);
   }
-
+  /**
+   * @description Registers a user account.
+   * Once registered, the user account can be used to identify the local user when the user joins the channel. After the user successfully registers a user account,  the SDK triggers the onLocalUserRegistered callback on the local client, 
+   * reporting the user ID and user account of the local user.
+   * @param appId The App ID of your project.
+   * @param userAccount The user account. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as null.
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   registerLocalUserAccount(appId: string, userAccount: string): number {
     return this.rtcEngine.registerLocalUserAccount(appId, userAccount)
   }
-
+  /** 
+   * @description Joins the channel with a user account. 
+   * 
+   * **Note**: To ensure smooth communication, use the same parameter type to identify the user. For example, if a user joins the channel with a user ID, then ensure all the other users use the user ID too. The same applies to the user account. If a user joins the channel with the Agora Web SDK, 
+   * ensure that the uid of the user is set to the same parameter type. 
+   * @param token The token generated at your server.
+   * @param channel The channel name. The maximum length of this parameter is 64 bytes.
+   * @param userAccount The user account. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as null. 
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   joinChannelWithUserAccount(token: string, channel: string, userAccount: string): number {
     return this.rtcEngine.joinChannelWithUserAccount(token, channel, userAccount)
   }
-
+  /** 
+   * @description Gets the user information by passing in the user account. 
+   * @param  userAccount The user account. Ensure that you set this parameter.
+   * @param errCode Error code.
+   * @param userInfo [in/out] A UserInfo object that identifies the remote user:
+   * - Input: A UserInfo object.
+   * - Output: A UserInfo object that contains the user account and user ID of the user.
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   getUserInfoByUserAccount(userAccount: string): {errCode: number, userInfo: UserInfo} {
     return this.rtcEngine.getUserInfoByUserAccount(userAccount)
   }
-
+  /** 
+   * @description Gets the user information by passing in the user ID.
+   * @param uid The user ID.
+   * @param errCode Error code.
+   * @param userInfo [in/out] A UserInfo object that identifies the remote user:
+   * - Input: A UserInfo object.
+   * - Output: A UserInfo object that contains the user account and user ID of the user.
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.*
+   */
   getUserInfoByUid(uid: number): {errCode: number, userInfo: UserInfo}  {
     return this.rtcEngine.getUserInfoByUid(uid)
   }
@@ -1560,7 +1710,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {boolean} enabled Enable the function of the external audio source: true/false.
    * @param {number} samplerate Sampling rate of the external audio source.
    * @param {number} channels Number of the external audio source channels (two channels maximum).
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setExternalAudioSource(enabled: boolean, samplerate: number, channels: number): number {
     return this.rtcEngine.setExternalAudioSource(enabled, samplerate, channels);
@@ -1577,7 +1729,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description set video device to use via device id
    * @param {string} deviceId device id
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setVideoDevice(deviceId: string): number {
     return this.rtcEngine.setVideoDevice(deviceId);
@@ -1593,9 +1747,11 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description This method tests whether the video-capture device works properly.
-   * Before calling this method, ensure that you have already called enableVideo,
+   * **Note**: Before calling this method, ensure that you have already called {@link enableVideo},
    * and the HWND window handle of the incoming parameter is valid.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   startVideoDeviceTest(): number {
     return this.rtcEngine.startVideoDeviceTest();
@@ -1603,7 +1759,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description stop video device test
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   stopVideoDeviceTest(): number {
     return this.rtcEngine.stopVideoDeviceTest();
@@ -1620,7 +1778,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description set audio playback device to use via device id
    * @param {string} deviceId device id
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setAudioPlaybackDevice(deviceId: string): number {
     return this.rtcEngine.setAudioPlaybackDevice(deviceId);
@@ -1630,7 +1790,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @description Retrieves the audio playback device information associated with the device ID and device name
    * @param {string} deviceId device id
    * @param {string} deviceName device name
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   getPlaybackDeviceInfo(deviceId: string, deviceName: string): number {
     return this.rtcEngine.getPlaybackDeviceInfo(deviceId, deviceName);
@@ -1646,8 +1808,10 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description set device playback volume
-   * @param {number} volume 0 - 255
-   * @returns {number} 0 for success, <0 for failure
+   * @param {number} volume Volume. Set [0, 255].
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setAudioPlaybackVolume(volume: number): number {
     return this.rtcEngine.setAudioPlaybackVolume(volume);
@@ -1672,7 +1836,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description set audio recording device
    * @param {string} deviceId device id
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setAudioRecordingDevice(deviceId: string): number {
     return this.rtcEngine.setAudioRecordingDevice(deviceId);
@@ -1682,7 +1848,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @description Retrieves the audio recording device information associated with the device ID and device name.
    * @param {string} deviceId device id
    * @param {string} deviceName device name
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   getRecordingDeviceInfo(deviceId: string, deviceName: string): number {
     return this.rtcEngine.getRecordingDeviceInfo(deviceId, deviceName);
@@ -1707,7 +1875,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description set audio recording device volume
    * @param {number} volume 0 - 255
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setAudioRecordingVolume(volume: number): number {
     return this.rtcEngine.setAudioRecordingVolume(volume);
@@ -1717,7 +1887,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @description This method checks whether the playback device works properly. The SDK plays an audio file
    * specified by the user. If the user can hear the sound, then the playback device works properly.
    * @param {string} filepath filepath of sound file to play test
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   startAudioPlaybackDeviceTest(filepath: string): number {
     return this.rtcEngine.startAudioPlaybackDeviceTest(filepath);
@@ -1725,7 +1897,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description stop playback device test
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   stopAudioPlaybackDeviceTest(): number {
     return this.rtcEngine.stopAudioPlaybackDeviceTest();
@@ -1734,7 +1908,7 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description This method tests whether the local audio devices are working properly.
    * After calling this method, the microphone captures the local audio
-   * and plays it through the speaker. The \ref IRtcEngineEventHandler::onAudioVolumeIndication "onAudioVolumeIndication" callback
+   * and plays it through the speaker. The groupAudioVolumeIndication callback
    * returns the local audio volume information at the set interval.
    * @param {number} interval indication interval (ms)
    */
@@ -1744,6 +1918,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description stop AudioDeviceLoopbackTest
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   stopAudioDeviceLoopbackTest(): number {
     return this.rtcEngine.stopAudioDeviceLoopbackTest();
@@ -1753,7 +1930,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @description This method enables loopback recording. Once enabled, the SDK collects all local sounds.
    * @param {boolean} [enable = false] whether to enable loop back recording
    * @param {string|null} [deviceName = null] target audio device
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   enableLoopbackRecording(enable = false, deviceName: string | null = null): number {
     return this.rtcEngine.enableLoopbackRecording(enable, deviceName);
@@ -1763,7 +1942,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @description This method checks whether the microphone works properly. Once the test starts, the SDK uses
    * the onAudioVolumeIndication callback to notify the application about the volume information.
    * @param {number} indicateInterval in second
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   startAudioRecordingDeviceTest(indicateInterval: number): number {
     return this.rtcEngine.startAudioRecordingDeviceTest(indicateInterval);
@@ -1771,7 +1952,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description stop audio recording device test
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   stopAudioRecordingDeviceTest(): number {
     return this.rtcEngine.stopAudioRecordingDeviceTest();
@@ -1787,8 +1970,10 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description set current audio playback device mute/unmute
-   * @param {boolean} mute mute/unmute
-   * @returns {number} 0 for success, <0 for failure
+   * @param {boolean} mute mute/unmuted
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setAudioPlaybackDeviceMute(mute: boolean): number {
     return this.rtcEngine.setAudioPlaybackDeviceMute(mute);
@@ -1805,7 +1990,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description set current audio recording device mute/unmute
    * @param {boolean} mute mute/unmute
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setAudioRecordingDeviceMute(mute: boolean): number {
     return this.rtcEngine.setAudioRecordingDeviceMute(mute);
@@ -1824,7 +2011,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description initialize agora real-time-communicating videosource with appid
    * @param {string} appId agora appid
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   videoSourceInitialize(appId: string): number {
     return this.rtcEngine.videoSourceInitialize(appId);
@@ -1841,7 +2030,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description Set it to true to enable videosource web interoperability (After videosource initialized)
    * @param {boolean} enabled enalbe/disable web interoperability
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   videoSourceEnableWebSdkInteroperability(enabled: boolean): number {
     return this.rtcEngine.videoSourceEnableWebSdkInteroperability(enabled);
@@ -1850,11 +2041,13 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    *
    * @description let video source join channel with token, channel, channel_info and uid
-   * @param {string} token token
-   * @param {string} cname channel
-   * @param {string} info channel info
-   * @param {number} uid uid
-   * @returns {number} 0 for success, <0 for failure
+   * @param {string} token The token generated at your server
+   * @param {string} cname Channel name
+   * @param {string} info Channel information
+   * @param {number} uid The User ID
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   videoSourceJoin(
     token: string,
@@ -1867,7 +2060,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description let video source Leave channel
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   videoSourceLeave(): number {
     return this.rtcEngine.videoSourceLeave();
@@ -1876,7 +2071,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description This method updates the Token for video source
    * @param {string} token new token to update
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   videoSourceRenewToken(token: string): number {
     return this.rtcEngine.videoSourceRenewToken(token);
@@ -1886,7 +2083,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @description Set channel profile (after ScreenCapture2) for video source
    * @description 0 (default) for communication, 1 for live broadcasting, 2 for in-game
    * @param {number} profile profile
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   videoSourceSetChannelProfile(profile: number): number {
     return this.rtcEngine.videoSourceSetChannelProfile(profile);
@@ -1895,8 +2094,10 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description set video profile for video source (must be called after startScreenCapture2)
    * @param {VIDEO_PROFILE_TYPE} profile - enumeration values represent video profile
-   * @param {boolean} [swapWidthAndHeight = false] - Whether to swap width and height
-   * @returns {number} 0 for success, <0 for failure
+   * @param {boolean} swapWidthAndHeight Whether to swap width and height
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   videoSourceSetVideoProfile(profile: VIDEO_PROFILE_TYPE, swapWidthAndHeight = false): number {
     return this.rtcEngine.videoSourceSetVideoProfile(profile, swapWidthAndHeight);
@@ -1919,13 +2120,15 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @deprecated
+   * @deprecated Use {@link videoSourceStartScreenCaptureByScreen} or {@link videoSourceStartScreenCaptureByWindow} instead.
    * @description start video source screen capture
    * @param {number} wndid windows id to capture
    * @param {number} captureFreq fps of video source screencapture, 1 - 15
    * @param {*} rect null/if specified, e.g, {left: 0, right: 100, top: 0, bottom: 100} (relative distance from the left-top corner of the screen)
    * @param {number} bitrate bitrate of video source screencapture
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   startScreenCapture2(
     windowId: number,
@@ -1939,7 +2142,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description stop video source screen capture
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   stopScreenCapture2(): number {
     return this.rtcEngine.stopScreenCapture2();
@@ -1947,7 +2152,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description start video source preview
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   startScreenCapturePreview(): number {
     return this.rtcEngine.videoSourceStartPreview();
@@ -1955,7 +2162,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description stop video source preview
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   stopScreenCapturePreview(): number {
     return this.rtcEngine.videoSourceStopPreview();
@@ -1973,7 +2182,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description setParameters for video source
    * @param {string} parameter parameter to set
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   videoSourceSetParameters(parameter: string): number {
     return this.rtcEngine.videoSourceSetParameter(parameter);
@@ -1982,7 +2193,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description This method updates the screen capture region for video source
    * @param {*} rect {left: 0, right: 100, top: 0, bottom: 100} (relative distance from the left-top corner of the screen)
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   videoSourceUpdateScreenCaptureRegion(rect: {
     left: number,
@@ -1995,7 +2208,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description release video source object
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   videoSourceRelease(): number {
     return this.rtcEngine.videoSourceRelease();
@@ -2005,8 +2220,11 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description Shares the whole or part of a screen by specifying the screen rect.
    * @param {ScreenSymbol} screenSymbol screenid on mac / screen position on windows
-   * @param {CaptureRect} rect
+   * @param {CaptureRect} rect Definition of the rectangular region.
    * @param {CaptureParam} param
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   videoSourceStartScreenCaptureByScreen(screenSymbol: ScreenSymbol, rect: CaptureRect, param: CaptureParam): number {
     return this.rtcEngine.videosourceStartScreenCaptureByScreen(screenSymbol, rect, param);
@@ -2015,8 +2233,11 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description Shares the whole or part of a window by specifying the window ID.
    * @param {number} windowSymbol windowid
-   * @param {CaptureRect} rect
+   * @param {CaptureRect} rect Definition of the rectangular region.
    * @param {CaptureParam} param
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   videoSourceStartScreenCaptureByWindow(windowSymbol: number, rect: CaptureRect, param: CaptureParam): number {
     return this.rtcEngine.videosourceStartScreenCaptureByWindow(windowSymbol, rect, param);
@@ -2025,6 +2246,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description Updates the screen sharing parameters.
    * @param {CaptureParam} param
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   videoSourceUpdateScreenCaptureParameters(param: CaptureParam): number {
     return this.rtcEngine.videosourceUpdateScreenCaptureParameters(param);
@@ -2033,6 +2257,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description  Updates the screen sharing parameters.
    * @param {VideoContentHint} hint
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   videoSourceSetScreenCaptureContentHint(hint: VideoContentHint): number {
     return this.rtcEngine.videosourceSetScreenCaptureContentHint(hint);
@@ -2047,13 +2274,15 @@ class AgoraRtcEngine extends EventEmitter {
   // one at a time via this section's api
   // ===========================================================================
   /**
-   * @deprecated
+   * @deprecated Use  {@link videoSourceStartScreenCaptureByScreen} or {@link videoSourceStartScreenCaptureByWindow} instead.
    * @description start screen capture
    * @param {number} windowId windows id to capture
    * @param {number} captureFreq fps of screencapture, 1 - 15
    * @param {*} rect null/if specified, e.g, {left: 0, right: 100, top: 0, bottom: 100} (relative distance from the left-top corner of the screen)
    * @param {number} bitrate bitrate of screencapture
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   startScreenCapture(
     windowId: number,
@@ -2067,7 +2296,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description stop screen capture
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   stopScreenCapture(): number {
     return this.rtcEngine.stopScreenCapture();
@@ -2076,7 +2307,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description This method updates the screen capture region.
    * @param {*} rect {left: 0, right: 100, top: 0, bottom: 100} (relative distance from the left-top corner of the screen)
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   updateScreenCaptureRegion(
     rect: {
@@ -2102,7 +2335,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {boolean} loopback true - local loopback, false - remote loopback
    * @param {boolean} replace whether audio file replace microphone audio
    * @param {number} cycle number of loop playbacks, -1 for infinite
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   startAudioMixing(
     filepath: string,
@@ -2115,7 +2350,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description This method stops audio mixing. Call this API when you are in a channel.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   stopAudioMixing(): number {
     return this.rtcEngine.stopAudioMixing();
@@ -2123,7 +2360,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description This method pauses audio mixing. Call this API when you are in a channel.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   pauseAudioMixing(): number {
     return this.rtcEngine.pauseAudioMixing();
@@ -2131,7 +2370,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description This method resumes audio mixing from pausing. Call this API when you are in a channel.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   resumeAudioMixing(): number {
     return this.rtcEngine.resumeAudioMixing();
@@ -2140,7 +2381,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description This method adjusts the volume during audio mixing. Call this API when you are in a channel.
    * @param {number} volume Volume ranging from 0 to 100. By default, 100 is the original volume.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   adjustAudioMixingVolume(volume: number): number {
     return this.rtcEngine.adjustAudioMixingVolume(volume);
@@ -2149,7 +2392,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description Adjusts the audio mixing volume for local playback.
    * @param {number} volume Volume ranging from 0 to 100. By default, 100 is the original volume.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   adjustAudioMixingPlayoutVolume(volume: number): number {
     return this.rtcEngine.adjustAudioMixingPlayoutVolume(volume);
@@ -2158,7 +2403,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description Adjusts the audio mixing volume for publishing (for remote users).
    * @param {number} volume Volume ranging from 0 to 100. By default, 100 is the original volume.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   adjustAudioMixingPublishVolume(volume: number): number {
     return this.rtcEngine.adjustAudioMixingPublishVolume(volume);
@@ -2186,7 +2433,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @description This method drags the playback progress bar of the audio mixing file to where
    * you want to play instead of playing it from the beginning.
    * @param {number} position Integer. The position of the audio mixing file in ms
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setAudioMixingPosition(position: number): number {
     return this.rtcEngine.setAudioMixingPosition(position);
@@ -2204,8 +2453,9 @@ class AgoraRtcEngine extends EventEmitter {
     * - The RTMP URL address must not contain special characters, such as Chinese language characters.
     * @param {string} url Pointer to the RTMP URL address, to which the host publishes the stream
     * @param {bool} transcodingEnabled Sets whether transcoding is enabled/disabled
-    * @returns {number} 0 for success, <0 for failure
-    */
+    * @returns {number}
+    * - 0: Success.
+    * - < 0: Failure.
   addPublishStreamUrl(url: string, transcodingEnabled: boolean): number {
     return this.rtcEngine.addPublishStreamUrl(url, transcodingEnabled);
   }
@@ -2216,7 +2466,9 @@ class AgoraRtcEngine extends EventEmitter {
    * - This method removes only one RTMP URL address each time it is called.
    * - The RTMP URL address must not contain special characters, such as Chinese language characters.
    * @param {string} url Pointer to the RTMP URL address to be removed.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   removePublishStreamUrl(url: string): number {
     return this.rtcEngine.removePublishStreamUrl(url);
@@ -2225,7 +2477,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description Sets the video layout and audio settings for CDN live. (CDN live only.)
    * @param {TranscodingConfig} transcoding transcoding Sets the CDN live audio/video transcoding settings. See LiveTranscoding.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setLiveTranscoding(transcoding: TranscodingConfig): number {
     return this.rtcEngine.setLiveTranscoding(transcoding);
@@ -2236,16 +2490,13 @@ class AgoraRtcEngine extends EventEmitter {
   // ===========================================================================
   /**
    * @description Adds a voice or video stream HTTP/HTTPS URL address to a live broadcast.
-   * - The \ref IRtcEngineEventHandler::onStreamInjectedStatus "onStreamInjectedStatus" callback returns
-   * the inject stream status.
-   * - The added stream HTTP/HTTPS URL address can be found in the channel with a @p uid of 666, and the
-   * \ref IRtcEngineEventHandler::onUserJoined "onUserJoined" and \ref IRtcEngineEventHandler::onFirstRemoteVideoFrame "onFirstRemoteVideoFrame"
-   * callbacks are triggered.
    * @param {string} url Pointer to the HTTP/HTTPS URL address to be added to the ongoing live broadcast. Valid protocols are RTMP, HLS, and FLV.
    * - Supported FLV audio codec type: AAC.
    * - Supported FLV video codec type: H264 (AVC).
    * @param {InjectStreamConfig} config Pointer to the InjectStreamConfig object that contains the configuration of the added voice or video stream
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   addInjectStreamUrl(url: string, config: InjectStreamConfig): number {
     return this.rtcEngine.addInjectStreamUrl(url, config);
@@ -2253,10 +2504,11 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description Removes the voice or video stream HTTP/HTTPS URL address from a live broadcast.
-   * @note If this method is called successfully, the \ref IRtcEngineEventHandler::onUserOffline "onUserOffline" callback is triggered
-   * and a stream uid of 666 is returned.
+   * 
    * @param {string} url Pointer to the HTTP/HTTPS URL address of the added stream to be removed.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   removeInjectStreamUrl(url: string): number {
     return this.rtcEngine.removeInjectStreamUrl(url);
@@ -2274,7 +2526,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {number} mode 0 - read only mode, 1 - write-only mode, 2 - read and white mode
    * @param {number} samplesPerCall It specifies the sampling points in the called data returned in onRecordAudioFrame,
    * for example, it is usually set as 1024 for stream pushing.
-   * @returns {number} 0 for success, <0 for failure
+  * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setRecordingAudioFrameParameters(
     sampleRate: number,
@@ -2298,7 +2552,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {number} mode 0 - read only mode, 1 - write-only mode, 2 - read and white mode
    * @param {number} samplesPerCall It specifies the sampling points in the called data returned in onRecordAudioFrame,
    * for example, it is usually set as 1024 for stream pushing.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setPlaybackAudioFrameParameters(
     sampleRate: number,
@@ -2320,7 +2576,9 @@ class AgoraRtcEngine extends EventEmitter {
    * which can set be as 8000, 16000, 32000, 44100, or 48000.
    * @param {number} samplesPerCall Specifies the sampling points in the called data returned in onMixedAudioFrame,
    * for example, it is usually set as 1024 for stream pushing.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setMixedAudioFrameParameters(
     sampleRate: number,
@@ -2334,11 +2592,15 @@ class AgoraRtcEngine extends EventEmitter {
   // ===========================================================================
   /**
    * @description This method creates a data stream. Each user can only have up to five data channels at the same time.
-   * @param {boolean} reliable true - The recipients will receive data from the sender within 5 seconds. If the recipient does not receive the sent data within 5 seconds, the data channel will report an error to the application.
-   * false - The recipients may not receive any data, while it will not report any error upon data missing.
-   * @param {boolean} ordered true - The recipients will receive data in the order of the sender.
-   * false - The recipients will not receive data in the order of the sender.
-   * @returns {number} <0 for failure, > 0 for stream id of data
+   * @param {boolean} reliable 
+   * - true: The recipients will receive data from the sender within 5 seconds. If the recipient does not receive the sent data within 5 seconds, the data channel will report an error to the application.
+   * - false: The recipients may not receive any data, while it will not report any error upon data missing.
+   * @param {boolean} ordered 
+   * - true: The recipients will receive data in the order of the sender.
+   * - false: The recipients will not receive data in the order of the sender.
+   * @returns {number} 
+   * - for stream id of data
+   * - < 0: for failure
    */
   createDataStream(reliable: boolean, ordered: boolean): number {
     return this.rtcEngine.createDataStream(reliable, ordered);
@@ -2351,7 +2613,9 @@ class AgoraRtcEngine extends EventEmitter {
    * Each user can have up to five data channels simultaneously.
    * @param {number} streamId Stream ID from createDataStream
    * @param {string} msg Data to be sent
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   sendStreamMessage(streamId: number, msg: string): number {
     return this.rtcEngine.sendStreamMessage(streamId, msg);
@@ -2370,7 +2634,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description set effects volume
    * @param {number} volume - [0.0, 100.0]
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setEffectsVolume(volume: number): number {
     return this.rtcEngine.setEffectsVolume(volume);
@@ -2379,7 +2645,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @description set effect volume of a sound id
    * @param {number} soundId soundId
    * @param {number} volume - [0.0, 100.0]
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setVolumeOfEffect(soundId: number, volume: number): number {
     return this.rtcEngine.setVolumeOfEffect(soundId, volume);
@@ -2393,7 +2661,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {number} pan - [-1, 1]
    * @param {number} gain - [0, 100]
    * @param {boolean} publish publish
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   playEffect(
     soundId: number,
@@ -2417,7 +2687,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description stop effect via given sound id
    * @param {number} soundId soundId
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   stopEffect(soundId: number): number {
     return this.rtcEngine.stopEffect(soundId);
@@ -2426,7 +2698,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @description preload effect
    * @param {number} soundId soundId
    * @param {string} filePath filepath
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   preloadEffect(soundId: number, filePath: string): number {
     return this.rtcEngine.preloadEffect(soundId, filePath);
@@ -2434,7 +2708,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * This method releases a specific preloaded audio effect from the memory.
    * @param {number} soundId soundId
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   unloadEffect(soundId: number): number {
     return this.rtcEngine.unloadEffect(soundId);
@@ -2442,14 +2718,18 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description This method pauses a specific audio effect.
    * @param {number} soundId soundId
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   pauseEffect(soundId: number): number {
     return this.rtcEngine.pauseEffect(soundId);
   }
   /**
    * @description This method pauses all the audio effects.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   pauseAllEffects(): number {
     return this.rtcEngine.pauseAllEffects();
@@ -2457,14 +2737,18 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description This method resumes playing a specific audio effect.
    * @param {number} soundId sound id
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   resumeEffect(soundId: number): number {
     return this.rtcEngine.resumeEffect(soundId);
   }
   /**
    * @description This method resumes playing all the audio effects.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   resumeAllEffects(): number {
     return this.rtcEngine.resumeAllEffects();
@@ -2472,9 +2756,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description Enables/Disables stereo panning for remote users.
-   * Ensure that you call this method before joinChannel to enable stereo panning
+   * Ensure that you call this method before {@link join} to enable stereo panning
    * for remote users so that the local user can track the position of a remote user
-   * by calling \ref agora::rtc::RtcEngineParameters::setRemoteVoicePosition "setRemoteVoicePosition".
+   * by calling {@link setRemoteVoicePosition}.
    * @param {boolean} enable
    */
   enableSoundPositionIndication(enable: boolean) {
@@ -2483,7 +2767,7 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description For this method to work, enable stereo panning for remote users
-   * by calling enableSoundPositionIndication before joining a channel.
+   * by calling {@link enableSoundPositionIndication} before joining a channel.
    * This method requires hardware support. For the best sound positioning,
    * we recommend using a stereo speaker.
    * @param {number} uid uid
@@ -2491,10 +2775,11 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0.0: the remote sound comes from the front. -1.0: the remote sound comes from the left.
    * - -1.0: the remote sound comes from the left.
    * - 1.0: the remote sound comes from the right.
-   * @param {number} gain Gain of the remote user.
-   * The value ranges from 0.0 to 100.0.
-   * The default value is 100.0 (the original gain of the remote user).
-   * The smaller the value, the less the gain.
+   * @param {number} gain Gain of the remote user:
+   * 
+   * - The value ranges from 0.0 to 100.0.
+   * - The default value is 100.0 (the original gain of the remote user).
+   * - The smaller the value, the less the gain.
    */
   setRemoteVoicePosition(uid: number, pan: number, gain: number): number {
     return this.rtcEngine.setRemoteVoicePosition(uid, pan, gain);
@@ -2506,7 +2791,7 @@ class AgoraRtcEngine extends EventEmitter {
   // ===========================================================================
 
   /**
-   * @description When a user joins a channel on a client using joinChannelByToken,
+   * @description When a user joins a channel,
    * a CallId is generated to identify the call from the client. Some methods such
    * as rate and complain need to be called after the call ends in order to submit
    * feedback to the SDK. These methods require assigned values of the CallId parameters.
@@ -2523,7 +2808,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {string} callId Call ID retrieved from the getCallId method.
    * @param {number} rating Rating for the call between 1 (lowest score) to 10 (highest score).
    * @param {string} desc A given description for the call with a length less than 800 bytes.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   rate(callId: string, rating: number, desc: string): number {
     return this.rtcEngine.rate(callId, rating, desc);
@@ -2534,7 +2821,9 @@ class AgoraRtcEngine extends EventEmitter {
    * called after the call ends.
    * @param {string} callId Call ID retrieved from the getCallId method.
    * @param {string} desc A given description of the call with a length less than 800 bytes.
-   * @returns {number} 0 for success, <0 for failure
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
    */
   complain(callId: string, desc: string): number {
     return this.rtcEngine.complain(callId, desc);
@@ -2543,71 +2832,72 @@ class AgoraRtcEngine extends EventEmitter {
   // ===========================================================================
   // replacement for setParameters call
   // ===========================================================================
+  /** @description Private Interfaces. */
   setBool(key: string, value: boolean): number {
     return this.rtcEngine.setBool(key, value);
   }
-
+  /** @description Private Interfaces. */
   setInt(key: string, value: number): number {
     return this.rtcEngine.setInt(key, value);
   }
-
+  /** @description Private Interfaces. */
   setUInt(key: string, value: number): number {
     return this.rtcEngine.setUInt(key, value);
   }
-
+  /** @description Private Interfaces. */
   setNumber(key: string, value: number): number {
     return this.rtcEngine.setNumber(key, value);
   }
-
+  /** @description Private Interfaces. */
   setString(key: string, value: string): number {
     return this.rtcEngine.setString(key, value);
   }
-
+  /** @description Private Interfaces. */
   setObject(key: string, value: string): number {
     return this.rtcEngine.setObject(key, value);
   }
-
+  /** @description Private Interfaces. */
   getBool(key: string): boolean {
     return this.rtcEngine.getBool(key);
   }
-
+  /** @description Private Interfaces. */
   getInt(key: string): number {
     return this.rtcEngine.getInt(key);
   }
-
+  /** @description Private Interfaces. */
   getUInt(key: string): number {
     return this.rtcEngine.getUInt(key);
   }
-
+  /** @description Private Interfaces. */
   getNumber(key: string): number {
     return this.rtcEngine.getNumber(key);
   }
-
+  /** @description Private Interfaces. */
   getString(key: string): string {
     return this.rtcEngine.getString(key);
   }
-
+  /** @description Private Interfaces. */
   getObject(key: string): string {
     return this.rtcEngine.getObject(key);
   }
-
+  /** @description Private Interfaces. */
   getArray(key: string): string {
     return this.rtcEngine.getArray(key);
   }
-
+  /** @description Private Interfaces. */
   setParameters(param: string): number {
     return this.rtcEngine.setParameters(param);
   }
-
+  /** @description Private Interfaces. */
   convertPath(path: string): string {
     return this.rtcEngine.convertPath(path);
   }
-
+  /** @description Private Interfaces. */
   setProfile(profile: string, merge: boolean): number {
     return this.rtcEngine.setProfile(profile, merge);
   }
 }
-
+/** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
   /**
    * Occurs when an API method is executed.
@@ -2666,7 +2956,7 @@ declare interface AgoraRtcEngine {
     speakerNumber: number,
     totalVolume: number
   ) => void): this;
-  /** Occurs when the recording application leaves the channel.
+  /** Occurs when the user leaves the channel.
    */
   on(evt: 'leaveChannel', cb: () => void): this;
   /** Reports the statistics of the AgoraRtcEngine once every two seconds.
