@@ -110,6 +110,10 @@ See [AgoraErrorCode](AgoraErrorCode).
  */
 - (void)rtcEngine:(AgoraRtcEngineKit * _Nonnull)engine didLeaveChannelWithStats:(AgoraChannelStats * _Nonnull)stats;
 
+- (void)rtcEngine:(AgoraRtcEngineKit * _Nonnull)engine didRegisteredLocalUser:(NSString * _Nonnull)userAccount withUid:(NSUInteger)uid;
+
+- (void)rtcEngine:(AgoraRtcEngineKit * _Nonnull)engine didUpdatedUserInfo:(AgoraUserInfo * _Nonnull)userInfo withUid:(NSUInteger)uid;
+
 /** Occurs when a user role switches in a live broadcast. For example, from a host to an audience or vice versa.
 
  @param engine  AgoraRtcEngineKit object.
@@ -996,6 +1000,20 @@ You must call the [leaveChannel](leaveChannel:) method to exit the current call 
                      info:(NSString * _Nullable)info
                       uid:(NSUInteger)uid
               joinSuccess:(void(^ _Nullable)(NSString * _Nonnull channel, NSUInteger uid, NSInteger elapsed))joinSuccessBlock;
+
+- (int)joinChannelByUserAccount:(NSString * _Nonnull)userAccount
+                          token:(NSString * _Nullable)token
+                      channelId:(NSString * _Nonnull)channelId
+                    joinSuccess:(void(^ _Nullable)(NSString * _Nonnull channel, NSUInteger uid, NSInteger elapsed))joinSuccessBlock;
+
+- (int)registerLocalUserAccount:(NSString * _Nonnull)userAccount
+                          appId:(NSString * _Nonnull)appId;
+
+- (AgoraUserInfo* _Nullable)getUserInfoByUserAccount:(NSString * _Nonnull)userAccount
+                                           withError:(AgoraErrorCode * _Nullable)error;
+
+- (AgoraUserInfo* _Nullable)getUserInfoByUid:(NSUInteger)uid
+                                   withError:(AgoraErrorCode * _Nullable)error;
 
 /** Allows a user to leave a channel, such as hanging up or exiting a call.
 

@@ -19,11 +19,19 @@ namespace rtc {
     typedef void* view_t;
 /** Maximum length of the device ID.
 */
-enum MAX_DEVICE_ID_LENGTH_TYPE
+enum MAX_DEVICE_ID_LENGTH_TYEP
 {
   /** The maximum length of the device ID is 512 bytes.
   */
     MAX_DEVICE_ID_LENGTH = 512
+};
+/** Maximum length of user account.
+ */
+enum MAX_USER_ACCOUNT_LENGTH_TYPE
+{
+  /** The maximum length of user account is 255 bytes.
+   */
+  MAX_USER_ACCOUNT_LENGTH = 256
 };
 /** Formats of the quality report.
 */
@@ -1177,6 +1185,14 @@ struct RemoteVideoStats
    Remote video stream type (high-stream or low-stream): #REMOTE_VIDEO_STREAM_TYPE
    */
     REMOTE_VIDEO_STREAM_TYPE rxStreamType;
+  /**
+   Total time that video is frozen
+   */
+    int totalFrozenTime;
+  /**
+   Total frozen time to the total time when video is available.
+   */
+    int frozenRate;
 };
 /** Audio statistics of a remote user */
 struct RemoteAudioStats
@@ -1191,6 +1207,16 @@ struct RemoteAudioStats
     int jitterBufferDelay;
     /** Packet loss rate in the reported interval. */
     int audioLossRate;
+    /** The number of channels. */
+    int numChannels;
+    /** The sample rate (Hz) since the last count. */
+    int receivedSampleRate;
+    /** Bitrate (Kbps) received since the last count. */
+    int receivedBitrate;
+    /** Total frozen time(ms) during call. */
+    int totalFrozenTime;
+    /** Average frozen rate during call. */
+    int frozenRate;
 };
 
 /** **DEPRECATED** RTC video compositing layout.
@@ -1917,6 +1943,15 @@ BeautyOptions()
     smoothnessLevel(0),
     rednessLevel(0),
     lighteningContrastLevel(LIGHTENING_CONTRAST_NORMAL) {}
+};
+
+struct UserInfo {
+  uid_t uid;
+  char userAccount[MAX_USER_ACCOUNT_LENGTH];
+  UserInfo()
+      : uid(0) {
+    userAccount[0] = '\0';
+  }
 };
 
 /** Definition of IPacketObserver.
@@ -2819,6 +2854,16 @@ public:
     virtual void onNetworkTypeChanged(NETWORK_TYPE type) {
       (void)type;
     }
+
+    virtual void onLocalUserRegistered(uid_t uid, const char* userAccount) {
+      (void)uid;
+      (void)userAccount;
+    }
+
+    virtual void onUserInfoUpdated(uid_t uid, const UserInfo& info) {
+      (void)uid;
+      (void)info;
+    }
 };
 
 /**
@@ -3485,6 +3530,16 @@ public:
      - < 0: Failure.
      */
     virtual int queryInterface(INTERFACE_ID_TYPE iid, void** inter) = 0;
+
+    virtual int registerLocalUserAccount(
+        const char* appId, const char* userAccount) = 0;
+
+    virtual int joinChannelWithUserAccount(
+        const char* token, const char* channelId, const char* userAccount) = 0;
+
+    virtual int getUserInfoByUserAccount(const char* userAccount, UserInfo* userInfo) = 0;
+
+    virtual int getUserInfoByUid(uid_t uid, UserInfo* userInfo) = 0;
 
     /** **DEPRECATED** Starts an audio call test.
      
