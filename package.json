@@ -17,7 +17,7 @@
     "build:electron4": "node ./scripts/build.js --runtime=electron --electron_version=4.0.0",
     "build:electron": "node ./scripts/build.js --runtime=electron",
     "debug": "node ./scripts/build.js --runtime=electron --electron_version=3.0.6 --debug=true",
-    "doc": "typedoc --out ./docs ./ts --hideGenerator --mode file --target es6 --name Agora-Electron-SDK --readme none",
+    "doc": "typedoc ts/API --out ./docs --hideGenerator --mode file --target es6 --name Agora\\ Electron\\ SDK\\ API\\ Reference --excludeExternals --excludePrivate --readme index.md",
     "download": "node ./scripts/download.js",
     "preexample": "npm run build:electron3 && npm run build:ts",
     "example": "cd example && npm install && npm run dev",
@@ -46,14 +46,14 @@
     "yuv-canvas": "^1.2.4"
   },
   "devDependencies": {
-    "@types/node": "^10.14.6",
-    "jest": "^24.7.1",
+    "@types/node": "^10.14.10",
+    "jest": "^24.8.0",
     "jsdom": "^14.1.0",
-    "prettier": "^1.17.0",
-    "ts-node": "^8.1.0",
-    "tslint": "^5.16.0",
+    "prettier": "^1.18.2",
+    "ts-node": "^8.3.0",
+    "tslint": "^5.18.0",
     "typedoc": "^0.14.2",
-    "typescript": "^3.4.5"
+    "typescript": "^3.5.2"
   },
   "peerDependencies": {},
   "repository": {
