@@ -236,6 +236,8 @@ export enum QualityAdaptIndication {
 export interface LocalVideoStats {
   sentBitrate: number;
   sentFrameRate: number;
+  encoderOutputFrameRate: number;
+  rendererOutputFrameRate: number;
   targetBitrate: number;
   targetFrameRate: number;
   qualityAdaptIndication: QualityAdaptIndication;
@@ -274,11 +276,14 @@ export interface RemoteVideoStats {
   width: number;
   height: number;
   receivedBitrate: number;
+  decoderOutputFrameRate: number;
   rendererOutputFrameRate: number;
   /**
    * 0 for high stream and 1 for low stream
    */
   rxStreamType: StreamType;
+  totalFrozenTime: number;
+  frozenRate: number;
 }
 
 export enum CaptureOutPreference {
@@ -350,6 +355,11 @@ export interface RemoteAudioStats {
   jitterBufferDelay: number;
   /** Packet loss rate in the reported interval. */
   audioLossRate: number;
+  numChannels: number;
+  receivedSampleRate: number;
+  receivedBitrate: number;
+  totalFrozenTime: number;
+  frozenRate: number;
 }
 
 export type RemoteVideoState =
