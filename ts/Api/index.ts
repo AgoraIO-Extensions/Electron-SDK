@@ -2609,24 +2609,55 @@ class AgoraRtcEngine extends EventEmitter {
 }
 
 declare interface AgoraRtcEngine {
+  /**
+   * Occurs when an API method is executed.
+   * - api: The method executed by the SDK.
+   * - err: Error code that the SDK returns when the method call fails.
+   */
   on(evt: 'apiCallExecuted', cb: (api: string, err: number) => void): this;
+  /**
+   * Reports a warning during SDK runtime.
+   * - warn: Warning code.
+   * - msg: Pointer to the warning message.
+   */
   on(evt: 'warning', cb: (warn: number, msg: string) => void): this;
+  /** Reports an error during SDK runtime.
+   * - err: Error code.
+   * - msg: Pointer to the error message.
+   */
   on(evt: 'error', cb: (err: number, msg: string) => void): this;
+  /** Occurs when a user joins a specified channel.
+   * - channel: Pointer to the channel name.
+   * - uid: User ID of the user joining the channel.
+   * - elapsed: Time elapsed (ms) from the user calling the {@link joinChannel} method until the SDK triggers this callback.
+   */
   on(evt: 'joinedChannel', cb: (
     channel: string, uid: number, elapsed: number
   ) => void): this;
+  /** Occurs when a user rejoins the channel after disconnection due to network problems.
+   * When a user loses connection with the server because of network problems, the SDK automatically tries to reconnect and triggers this callback upon reconnection.
+   * - channel: Pointer to the channel name.
+   * - uid: User ID of the user joining the channel.
+   * - elapsed: Time elapsed (ms) from the user calling the {@link joinChannel} method until the SDK triggers this callback.
+   */
   on(evt: 'rejoinedChannel', cb: (
     channel: string, uid: number, elapsed: number
   ) => void): this;
   // on(evt: 'audioQuality', cb: (
   //   uid: number, quality: AgoraNetworkQuality, delay: number, lost: number
   // ) => void): this;
+  /** Reports which users are speaking and the speakers' volume. */
   on(evt: 'audioVolumeIndication', cb: (
     uid: number,
     volume: number,
     speakerNumber: number,
     totalVolume: number
   ) => void): this;
+  /** Reports which users are speaking and the speakers' volume.
+   * - speakers: A struct containing each speaker's user ID and volume information.
+   * - speakerNumber: Total number of speakers.
+   * - volume: Total volume after audio mixing. The value ranges between 0 (lowest volume) and 255 (highest volume).
+   */
   on(evt: 'groupAudioVolumeIndication', cb: (
     speakers: {
       uid: number,
@@ -2635,74 +2666,272 @@ declare interface AgoraRtcEngine {
     speakerNumber: number,
     totalVolume: number
   ) => void): this;
+  /** Occurs when the recording application leaves the channel.
+   */
   on(evt: 'leaveChannel', cb: () => void): this;
+  /** Reports the statistics of the AgoraRtcEngine once every two seconds.
+   * - stats: Agora RTC engine statistics, see {@link RtcStats}.
+   */
   on(evt: 'rtcStats', cb: (stats: RtcStats) => void): this;
+  /** Reports the statistics of the local video streams.
+   * - stats: The statistics of the local video stream. See {@link LocalVideoStats}.
+   */
   on(evt: 'localVideoStats', cb: (stats: LocalVideoStats) => void): this;
+  /** Reports the statistics of the video stream from each remote user/host. 
+   * - stats: Statistics of the received remote video streams. See {@link RemoteVideoState}. 
+   */
   on(evt: 'remoteVideoStats', cb: (stats: RemoteVideoStats) => void): this;
+  /** Reports the statistics of the audio stream from each remote user/host.
+   * - stats: Statistics of the received remote audio streams. See {@link RemoteAudioStats}.
+   */
   on(evt: 'remoteAudioStats', cb: (stats: RemoteAudioStats) => void): this;
+  /** Reports the transport-layer statistics of each remote video stream.
+   * This callback reports the transport-layer statistics, such as the packet loss rate and time delay, once every two seconds 
+   * after the local user receives the video packet from a remote user.
+   * - stats: The transport-layer statistics. See {@link RemoteVideoTransportStats}.
+   */
   on(evt: 'remoteVideoTransportStats', cb: (stats: RemoteVideoTransportStats) => void): this;
+  /** Reports the transport-layer statistics of each remote audio stream. 
+   * - stats: The transport-layer statistics. See {@link remoteAudioTransportStats}.
+  */
   on(evt: 'remoteAudioTransportStats', cb: (stats: RemoteAudioTransportStats) => void): this;
+  /** Occurs when the audio device state changes.
+   * - deviceId: Pointer to the device ID.
+   * - deviceType: Device type. See {@link MediaDeviceType}.
+   * - deviceState: Device state：
+   * 
+   *  - 1: The device is active
+   *  - 2: The device is disabled.
+   *  - 4: The device is not present.
+   *  - 8: The device is unplugged.
+   */
   on(evt: 'audioDeviceStateChanged', cb: (
     deviceId: string,
     deviceType: number,
     deviceState: number,
   ) => void): this;
   // on(evt: 'audioMixingFinished', cb: () => void): this;
+  /** Occurs when the state of the local user's audio mixing file changes.
+   * - state: The state code.
+   *  - 710: The audio mixing file is playing.
+   *  - 711: The audio mixing file pauses playing.
+   *  - 713: The audio mixing file stops playing.
+   *  - 714: An exception occurs when playing the audio mixing file.
+   * 
+   * - err: The error code.
+   *  - 701: The SDK cannot open the audio mixing file.
+   *  - 702: The SDK opens the audio mixing file too frequently.
+   *  - 703: The audio mixing file playback is interrupted.
+   * 
+   */
   on(evt: 'audioMixingStateChanged', cb: (state: number, err: number) => void): this;
+  /** Occurs when a remote user starts audio mixing.
+   * When a remote user calls {@link startAudioMixing} to play the background music, the SDK reports this callback.
+   */
   on(evt: 'remoteAudioMixingBegin', cb: () => void): this;
+  /** Occurs when a remote user finishes audio mixing. */
   on(evt: 'remoteAudioMixingEnd', cb: () => void): this;
+  /** Occurs when the local audio effect playback finishes. */
   on(evt: 'audioEffectFinished', cb: (soundId: number) => void): this;
+  /** Occurs when the video device state changes.
+   * - deviceId: Pointer to the device ID.
+   * - deviceType: Device type. See {@link MediaDeviceType}.
+   * - deviceState: Device state：
+   * 
+   *  - 1: The device is active
+   *  - 2: The device is disabled.
+   *  - 4: The device is not present.
+   *  - 8: The device is unplugged.
+   */
   on(evt: 'videoDeviceStateChanged', cb: (
     deviceId: string,
     deviceType: number,
     deviceState: number,
   ) => void): this;
+  /**
+   * Reports the last mile network quality of each user in the channel once every two seconds.
+   * Last mile refers to the connection between the local device and Agora's edge server.
+   * 
+   * - uid: User ID. The network quality of the user with this uid is reported. If uid is 0, 
+   * the local network quality is reported.
+   * - txquality: Uplink transmission quality rating of the user in terms of the transmission bitrate, packet loss rate, 
+   * average RTT (Round-Trip Time), and jitter of the uplink network. See {@link AgoraNetworkQuality}.
+   * - rxquality: Downlink network quality rating of the user in terms of the packet loss rate, average RTT, and jitter 
+   * of the downlink network. See {@link AgoraNetworkQuality}.
+   */
   on(evt: 'networkQuality', cb: (
     uid: number,
     txquality: AgoraNetworkQuality,
     rxquality: AgoraNetworkQuality
   ) => void): this;
+  /** Reports the last mile network quality of the local user once every two seconds before the user joins the channel.
+   * - quality: The last mile network quality. See {@link AgoraNetworkQuality}.
+   * 
+   * Last mile refers to the connection between the local device and Agora's edge server. After the application calls the {@link enableLastmileTest} method, 
+   * this callback reports once every two seconds the uplink and downlink last mile network conditions of the local user before the user joins the channel.
+   */
   on(evt: 'lastMileQuality', cb: (quality: AgoraNetworkQuality) => void): this;
+  /** Reports the last-mile network probe result.
+   * - result: The uplink and downlink last-mile network probe test result. See {@link LastmileProbeResult}.
+   * 
+   * The SDK triggers this callback within 30 seconds after the app calls the {@link startLastmileProbeTest} method.
+   */
   on(evt: 'lastmileProbeResult', cb: (result: LastmileProbeResult) => void): this;
+  /** Occurs when the engine receives and renders the first local video frame on the video window.
+   * - width: Width (pixels) of the first local video frame.
+   * - height: Height (pixels) of the first local video frame.
+   * - elapsed: Time elapsed (ms) from the local user calling the {@link joinChannel} method until the SDK triggers this callback.
+   */
   on(evt: 'firstLocalVideoFrame', cb: (
     width: number,
     height: number,
     elapsed: number
   ) => void): this;
+  /** Occurs when the first remote video frame is received and decoded.
+   * - uid: User ID of the remote user sending the video stream.
+   * - elapsed: Time elapsed (ms) from the local user calling the {@link joinChannel} method until the SDK triggers this callback.
+   * This callback is triggered in either of the following scenarios:
+   * - The remote user joins the channel and sends the video stream.
+   * - The remote user stops sending the video stream and re-sends it after 15 seconds. Reasons for such an interruption include:
+   *  - The remote user leaves the channel.
+   *  - The remote user drops offline.
+   *  - The remote user calls the {@link muteLocalVideoStream} method to stop sending the video stream.
+   *  - The remote user calls the {@link disableVideo} method to disable video.
+   */
   on(evt: 'addStream', cb: (
     uid: number,
     elapsed: number,
   ) => void): this;
+  /** Occurs when the video size or rotation of a specified user changes.
+   * - uid: User ID of the remote user or local user (0) whose video size or rotation changes.
+   * - width: New width (pixels) of the video.
+   * - height: New height (pixels) of the video.
+   * - roation: New height (pixels) of the video.
+   */
   on(evt: 'videoSizeChanged', cb: (
     uid: number,
     width: number,
     height: number,
     rotation: number
   ) => void): this;
+  /** Occurs when the first remote video frame is rendered.
+   * The SDK triggers this callback when the first frame of the remote video is displayed in the user's video window. 
+   * - uid: User ID of the remote user sending the video stream.
+   * - width: Width (pixels) of the video frame.
+   * - height: Height (pixels) of the video stream.
+   * - elapsed: Time elapsed (ms) from the local user calling the {@link joinChannel} method until the SDK triggers this callback.
+   */
   on(evt: 'firstRemoteVideoFrame', cb: (
     uid: number,
     width: number,
     height: number,
     elapsed: number
   ) => void): this;
+  /** Occurs when a user or host joins the channel.
+   * - uid: User ID of the user or host joining the channel.
+   * - elapsed: Time delay (ms) from the local user calling the {@link joinChannel} method until the SDK triggers this callback.
+   * 
+   * The SDK triggers this callback under one of the following circumstances:
+   * - A remote user/host joins the channel by calling the {@link joinChannel} method.
+   * - A remote user switches the user role to the host by calling the {@link setClientRole} method after joining the channel.
+   * - A remote user/host rejoins the channel after a network interruption.
+   * - The host injects an online media stream into the channel by calling the {@link addInjectStreamUrl} method.
+   * 
+   * **Note**: In the Live-broadcast profile:
+   * - The host receives this callback when another host joins the channel.
+   * - The audience in the channel receives this callback when a new host joins the channel.
+   * - When a web application joins the channel, the SDK triggers this callback as long as the web application publishes streams.
+   */
   on(evt: 'userJoined', cb: (uid: number, elapsed: number) => void): this;
+  /** Occurs when a remote user leaves the channel. 
+   * - uid: User ID of the user leaving the channel or going offline.
+   * - reason: Reason why the user is offline:
+   *  - 0: The user quits the call.
+   *  - 1: The SDK times out and the user drops offline because no data packet is received within a certain period of time. 
+   *  If the user quits the call and the message is not passed to the SDK (due to an unreliable channel), the SDK assumes the user dropped offline.
+   *  - 2: The client role switched from the host to the audience.
+   * Reasons why the user is offline:
+   * - Leave the channel: When the user leaves the channel, the user sends a goodbye message. When the message is received, the SDK assumes that the user leaves the channel.
+   * - Drop offline: When no data packet of the user or host is received for a certain period of time (20 seconds for the Communication profile, 
+   * and more for the Live-broadcast profile), the SDK assumes that the user drops offline. Unreliable network connections may lead to false detections, so we recommend using a signaling system for more reliable offline detection.
+  */
   on(evt: 'removeStream', cb: (uid: number, reason: number) => void): this;
+  /** Occurs when a remote user's audio stream is muted/unmuted.
+   * 
+   * The SDK triggers this callback when the remote user stops or resumes sending the audio stream by calling the {@link muteLocalAudioStream} method.
+   * - uid: User ID of the remote user.
+   * - muted: Whether the remote user's audio stream is muted/unmuted:
+   *  - true: Muted.
+   *  - false: Unmuted.
+   */
   on(evt: 'userMuteAudio', cb: (uid: number, muted: boolean) => void): this;
+  /** Occurs when a remote user's video stream playback pauses/resumes.
+   * 
+   *
+   * The SDK triggers this callback when the remote user stops or resumes sending the video stream by calling the {@link muteLocalVideoStream} method.
+   * 
+   * - uid: User ID of the remote user.
+   * - muted: Whether the remote user's video stream playback is paused/resumed:
+   *  - true: Paused.
+   *  - false: Resumed.
+   * 
+   * **Note**: This callback returns invalid when the number of users in a channel exceeds 20.
+   */
   on(evt: 'userMuteVideo', cb: (uid: number, muted: boolean) => void): this;
+  /** Occurs when a specific remote user enables/disables the video module.
+   * 
+   * The SDK triggers this callback when the remote user enables or disables the video module by calling the {@link enableVideo} or {@link disableVideo} method.
+   * - uid: User ID of the remote user.
+   * - enabled: Whether the remote user enables/disables the video module:
+   *  - true: Enable. The remote user can enter a video session.
+   *  - false: Disable. The remote user can only enter a voice session, and cannot send or receive any video stream.
+   */
   on(evt: 'userEnableVideo', cb: (uid: number, enabled: boolean) => void): this;
+  /** Occurs when a specified remote user enables/disables the local video capturing function.
+   * 
+   * The SDK triggers this callback when the remote user resumes or stops capturing the video stream by calling the {@link enableLocalVideo} method.
+   * - uid: User ID of the remote user.
+   * - enabled: Whether the remote user enables/disables the local video capturing function:
+   *  - true: Enable. Other users in the channel can see the video of this remote user.
+   *  - false: Disable. Other users in the channel can no longer receive the video stream from this remote user, while this remote user can still receive the video streams from other users.
+   */
   on(evt: 'userEnableLocalVideo', cb: (uid: number, enabled: boolean) => void): this;
+  /** Occurs when the camera turns on and is ready to capture the video. */
   on(evt: 'cameraReady', cb: () => void): this;
+  /** Occurs when the video stops playing. */
   on(evt: 'videoStopped', cb: () => void): this;
+  /** Occurs when the SDK cannot reconnect to Agora's edge server 10 seconds after its connection to the server is interrupted.
+   * The SDK triggers this callback when it cannot connect to the server 10 seconds after calling the {@link joinChannel} method, whether or not it is in the channel.
+   */
   on(evt: 'connectionLost', cb: () => void): this;
   // on(evt: 'connectionInterrupted', cb: () => void): this;
+  /** ccurs when your connection is banned by the Agora Server.
+   * @deprecated Replaced by the connectionStateChanged callback.
+   */
   on(evt: 'connectionBanned', cb: () => void): this;
   // on(evt: 'refreshRecordingServiceStatus', cb: () => void): this;
+  /** Occurs when the local user receives the data stream from the remote user within five seconds.
+   * 
+   * The SDK triggers this callback when the local user receives the stream message that the remote user sends by calling the {@link sendStreamMessage} method.
+   * - uid: User ID of the remote user sending the message.
+   * - streamId: Stream ID.
+   * - msg: Pointer to the data received bt the local user.
+   * - len: Length of the data in bytes.
+   */
   on(evt: 'streamMessage', cb: (
     uid: number,
     streamId: number,
     msg: string,
     len: number
   ) => void): this;
+  /** Occurs when the local user does not receive the data stream from the remote user within five seconds.
+   * The SDK triggers this callback when the local user fails to receive the stream message that the remote user sends by calling the {@link sendStreamMessage} method.
+   * - uid: User ID of the remote user sending the message.
+   * - streamId: Stream ID.
+   * - err: Error code.
+   * - missed: Number of the lost messages.
+   * - cached: Number of incoming cached messages when the data stream is interrupted.
+   */
   on(evt: 'streamMessageError', cb: (
     uid: number,
     streamId: number,
@@ -2710,46 +2939,193 @@ declare interface AgoraRtcEngine {
     missed: number,
     cached: number
   ) => void): this;
+  /** Occurs when the media engine call starts. */
   on(evt: 'mediaEngineStartCallSuccess', cb: () => void): this;
+  /** Occurs when the token expires.
+   * After a token is specified by calling the {@link joinChannel} method, if the SDK losses connection with the Agora server due to network issues, the token may expire after a certain period 
+   * of time and a new token may be required to reconnect to the server.
+   * 
+   * This callback notifies the application to generate a new token. Call the {@link renewToken} method to renew the token
+   */
   on(evt: 'requestChannelKey', cb: () => void): this;
+  /** Occurs when the engine sends the first local audio frame.
+   * -elapsed: Time elapsed (ms) from the local user calling {@link joinChannel} until the 
+   * SDK triggers this callback.
+   */
   on(evt: 'fristLocalAudioFrame', cb: (elapsed: number) => void): this;
+  /** Occurs when the engine receives the first audio frame from a specific remote user.
+   * - uid: User ID of the remote user.
+   * - elapsed: Time elapsed (ms) from the local user calling {@link joinChannel} until the 
+   * SDK triggers this callback.
+   */
   on(evt: 'firstRemoteAudioFrame', cb: (uid: number, elapsed: number) => void): this;
+  /**
+   * Reports which user is the loudest speaker.
+   * - uid: User ID of the active speaker. A uid of 0 represents the local user.
+   * If the user enables the audio volume indication by calling the {@link enableAudioVolumeIndication} method, this callback returns the uid of the 
+   * active speaker detected by the audio volume detection module of the SDK.
+   * 
+   * **Note**: 
+   * - To receive this callback, you need to call the {@link enableAudioVolumeIndication} method.
+   * - This callback returns the user ID of the user with the highest voice volume during a period of time, instead of at the moment.
+   */
   on(evt: 'activeSpeaker', cb: (uid: number) => void): this;
+  /** Occurs when the user role switches in a live broadcast. For example, from a host to an audience or vice versa.
+   * 
+   * This callback notifies the application of a user role switch when the application calls the {@link setClientRole} method.
+   * 
+   * - oldRole: Role that the user switches from ClientRoleType.
+   * - newRole: Role that the user switches to ClientRoleType.
+   */
   on(evt: 'clientRoleChanged', cb: (
     oldRole: ClientRoleType,
     newRole: ClientRoleType
   ) => void): this;
+  /** Occurs when the volume of the playback device, microphone, or application changes.
+   * - deviceType: Device type. See {@link AgoraRtcEngine.MediaDeviceType MediaDeviceType}.
+   * - volume: Volume of the device. The value ranges between 0 and 255.
+   * - muted: 
+   *  - true: Volume of the device. The value ranges between 0 and 255.
+   *  - false: The audio device is not muted.
+   */
   on(evt: 'audioDeviceVolumeChanged', cb: (
     deviceType: MediaDeviceType,
     volume: number,
     muted: boolean
   ) => void): this;
+  /** Occurs when the user for sharing screen joined the channel.
+   * - uid: The User ID.
+    */
   on(evt: 'videoSourceJoinedSuccess', cb: (uid: number) => void): this;
+  /** Occurs when the token expires. */
   on(evt: 'videoSourceRequestNewToken', cb: () => void): this;
+  /** Occurs when the user for sharing screen leaved the channel.
+   * - uid: The User ID.
+    */
   on(evt: 'videoSourceLeaveChannel', cb: () => void): this;
-
+  /** Occurs when the remote video state changes.
+   *  - uid: ID of the user whose video state changes.
+   *  - state: State of the remote video: Playing normally or frozen. See {@link AgoraRtcEngine.RemoteVideoState RemoteVideoState}.
+   */
   on(evt: 'remoteVideoStateChanged', cb: (uid: number, state: RemoteVideoState) => void): this;
+  /** Occurs when the camera focus area changes.
+   * - x: x coordinate of the changed camera focus area.
+   * - y: y coordinate of the changed camera focus area.
+   * - width: Width of the changed camera focus area.
+   * - height: Height of the changed camera focus area.
+   */
   on(evt: 'cameraFocusAreaChanged', cb: (x: number, y: number, width: number, height: number) => void): this;
+  /** Occurs when the camera exposure area changes.
+   * - x: x coordinate of the changed camera exposure area.
+   * - y: y coordinate of the changed camera exposure area.
+   * - width: Width of the changed camera exposure area.
+   * - height: Height of the changed camera exposure area.
+   */
   on(evt: 'cameraExposureAreaChanged', cb: (x: number, y: number, width: number, height: number) => void): this;
+  /** Occurs when the token expires in 30 seconds.
+   * 
+   * The user becomes offline if the token used in the {@link joinChannel} method expires. The SDK triggers this callback 30 seconds 
+   * before the token expires to remind the application to get a new token. Upon receiving this callback, generate a new token 
+   * on the server and call the {@link renewToken} method to pass the new token to the SDK.
+   * 
+   * - token: Pointer to the token that expires in 30 seconds.
+   */
   on(evt: 'tokenPrivilegeWillExpire', cb: (token: string) => void): this;
+  /** Reports the result of CDN live streaming. 
+   * 
+   * - url: The RTMP URL address.
+   * - error: Error code:
+   *  - 0: The publishing succeeds.
+   *  - 1: The publishing fails.
+   *  - 2: Invalid argument used. For example, you did not call {@link setLiveTranscoding} to configure LiveTranscoding before calling {@link addPublishStreamUrl}.
+   *  - 10: The publishing timed out.
+   *  - 19: The publishing timed out.
+   *  - 130: You cannot publish an encrypted stream.
+   */
   on(evt: 'streamPublished', cb: (url: string, error: number) => void): this;
+  /** This callback indicates whether you have successfully removed an RTMP stream from the CDN.
+   * 
+   * Reports the result of calling the {@link removePublishStreamUrl} method.
+   * - url: The RTMP URL address.
+   */
   on(evt: 'streamUnpublished', cb: (url: string) => void): this;
+  /** Occurs when the publisher's transcoding is updated. */
   on(evt: 'transcodingUpdated', cb: () => void): this;
+  /** Occurs when a voice or video stream URL address is added to a live broadcast.
+   * - url: Pointer to the URL address of the externally injected stream.
+   * - uid: User ID.
+   * - status: State of the externally injected stream:
+   *  - 0: The external video stream imported successfully.
+   *  - 1: The external video stream already exists.
+   *  - 2: The external video stream to be imported is unauthorized.
+   *  - 3: Import external video stream timeout.
+   *  - 4: Import external video stream failed.
+   *  - 5: The external video stream stopped importing successfully.
+   *  - 6: No external video stream is found.
+   *  - 7: No external video stream is found.
+   *  - 8: Stop importing external video stream timeout.
+   *  - 9: Stop importing external video stream failed.
+   *  - 10: The external video stream is corrupted.
+   *  
+   */
   on(evt: 'streamInjectStatus', cb: (url: string, uid: number, status: number) => void): this;
+  /** Occurs when the locally published media stream falls back to an audio-only stream due to poor network conditions or switches back 
+   * to the video after the network conditions improve.
+   * 
+   * If you call {@link setLocalPublishFallbackOption} and set option as AUDIO_ONLY(2), the SDK triggers this callback when 
+   * the locally published stream falls back to audio-only mode due to poor uplink conditions, or when the audio stream switches back to 
+   * the video after the uplink network condition improves.
+   * 
+   * - isFallbackOrRecover: Whether the locally published stream falls back to audio-only or switches back to the video:
+   *  - true: The locally published stream falls back to audio-only due to poor network conditions.
+   *  - false: The locally published stream switches back to the video after the network conditions improve.
+   */
   on(evt: 'localPublishFallbackToAudioOnly', cb: (isFallbackOrRecover: boolean) => void): this;
+  /** Occurs when the remotely subscribed media stream falls back to audio-only due to poor network conditions or switches back to the video 
+   * after the network conditions improve.
+   * 
+   * If you call {@link setRemoteSubscribeFallbackOption} and set option as AUDIO_ONLY(2), the SDK triggers this callback when 
+   * the remotely subscribed media stream falls back to audio-only mode due to poor uplink conditions, or when the remotely subscribed media stream switches back to the video
+   *  after the uplink network condition improves.
+   * - uid: ID of the remote user sending the stream.
+   * - isFallbackOrRecover: Whether the remotely subscribed media stream falls back to audio-only or switches back to the video:
+   *  - true: The remotely subscribed media stream falls back to audio-only due to poor network conditions.
+   *  - false: The remotely subscribed media stream switches back to the video stream after the network conditions improved.
+   */
   on(evt: 'remoteSubscribeFallbackToAudioOnly', cb: (
     uid: number,
     isFallbackOrRecover: boolean
   ) => void): this;
+  /** Occurs when the microphone is enabled/disabled.
+   * - enabled: Whether the microphone is enabled/disabled:
+   *  - true: Enabled.
+   *  - false: Disabled.
+   */
   on(evt: 'microphoneEnabled', cb: (enabled: boolean) => void): this;
+  /** Occurs when the connection state between the SDK and the server changes.
+   * - state: See {@link AgoraRtcEngine.ConnectionState ConnectionState}.
+   * - reason: See {@link AgoraRtcEngine.ConnectionState ConnectionState}.
+   */
   on(evt: 'connectionStateChanged', cb: (
     state: ConnectionState,
     reason: ConnectionChangeReason
   ) => void): this;
+  /** Occurs when the local user successfully registers a user account by calling the `registerLocalUserAccount` method. 
+   * This callback reports the user ID and user account of the local user.
+   * - uid: The ID of the local user.
+   * - userAccount: The user account of the local user.
+   */
   on(evt: 'localUserRegistered', cb: (
     uid: number,
     userAccount: string
   ) => void): this;
+  /** Occurs when the SDK gets the user ID and user account of the remote user.
+   * 
+   * After a remote user joins the channel, the SDK gets the UID and user account of the remote user, caches them in a mapping table 
+   * object (UserInfo), and triggers this callback on the local client.
+   * - uid: The ID of the remote user.
+   * - userInfo: The UserInfo Object  that contains the user ID and user account of the remote user.
+   */
   on(evt: 'userInfoUpdated', cb: (
     uid: number,
     userInfo: UserInfo
