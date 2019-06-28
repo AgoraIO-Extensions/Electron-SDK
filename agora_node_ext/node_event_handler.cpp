@@ -611,6 +611,8 @@ namespace agora {
                 NODE_SET_OBJ_PROP_UINT32(obj, "sentFrameRate", stats.sentFrameRate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "targetBitrate", stats.targetBitrate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "targetFrameRate", stats.targetFrameRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "encoderOutputFrameRate", stats.encoderOutputFrameRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "rendererOutputFrameRate", stats.rendererOutputFrameRate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "qualityAdaptIndication", stats.qualityAdaptIndication);
 
                 Local<Value> arg[1] = { obj };
@@ -642,8 +644,11 @@ namespace agora {
                 NODE_SET_OBJ_PROP_UINT32(obj, "width", stats.width);
                 NODE_SET_OBJ_PROP_UINT32(obj, "height", stats.height);
                 NODE_SET_OBJ_PROP_UINT32(obj, "receivedBitrate", stats.receivedBitrate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "decoderOutputFrameRate", stats.decoderOutputFrameRate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "rendererOutputFrameRate", stats.rendererOutputFrameRate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "rxStreamType", stats.rxStreamType);
+                NODE_SET_OBJ_PROP_UINT32(obj, "totalFrozenTime", stats.totalFrozenTime);
+                NODE_SET_OBJ_PROP_UINT32(obj, "frozenRate", stats.frozenRate);
                 Local<Value> arg[1] = { obj };
                 auto it = m_callbacks.find(RTC_EVENT_REMOTE_VIDEO_STATS);
                 if (it != m_callbacks.end()) {
@@ -1027,6 +1032,11 @@ namespace agora {
                 NODE_SET_OBJ_PROP_UINT32(obj, "networkTransportDelay", stats.networkTransportDelay);
                 NODE_SET_OBJ_PROP_UINT32(obj, "jitterBufferDelay", stats.jitterBufferDelay);
                 NODE_SET_OBJ_PROP_UINT32(obj, "audioLossRate", stats.audioLossRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "numChannels", stats.numChannels);
+                NODE_SET_OBJ_PROP_UINT32(obj, "receivedSampleRate", stats.receivedSampleRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "receivedBitrate", stats.receivedBitrate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "totalFrozenTime", stats.totalFrozenTime);
+                NODE_SET_OBJ_PROP_UINT32(obj, "frozenRate", stats.frozenRate);
                 Local<Value> arg[1] = { obj };
                 auto it = m_callbacks.find(RTC_EVENT_REMOTE_AUDIO_STATS);
                 if (it != m_callbacks.end()) {
