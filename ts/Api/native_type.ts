@@ -218,7 +218,10 @@ export interface LastmileProbeResult {
 }
 /** The user information. */
 export interface UserInfo {
+  /** The user ID. */
   uid: number;
+  /** The user account. The maximum length of this parameter is 255 bytes. 
+   * Ensure that you set this parameter and do not set it as null. */
   userAccount: string;
 }
 
@@ -592,12 +595,19 @@ export enum OrientationMode  {
  * Video statistics of the remote stream.
  */
 export interface RemoteVideoStats {
+  /** User ID of the user sending the video streams. */
   uid: number;
+  /** Time delay (ms). */
   delay: number;
+  /** Width (pixels) of the remote video. */
   width: number;
+  /** Height (pixels) of the remote video. */
   height: number;
+  /** Bitrate (Kbps) received since the last count. */
   receivedBitrate: number;
+  /** The decoder output frame rate (fps) of the remote video. */
   decoderOutputFrameRate: number;
+  /** The renderer output frame rate (fps) of the remote video. */
   rendererOutputFrameRate: number;
   /**
    * 0 for high stream and 1 for low stream
@@ -622,11 +632,15 @@ export enum CaptureOutPreference {
 export interface CameraCapturerConfiguration {
   preference: CaptureOutPreference;
 }
-
+/** The relative location of the region to the screen or window. */
 export interface Rectangle {
+  /** The horizontal offset from the top-left corner. */
   x: number; // The horizontal offset from the top-left corner.
+  /** The vertical offset from the top-left corner. */
   y: number; // The vertical offset from the top-left corner.
+  /** The width of the region. */
   width: number; // The width of the region.
+  /** The height of the region. */
   height: number; // The height of the region.
 }
 
@@ -640,7 +654,9 @@ export type CaptureRect = Rectangle;
 
 /** Screen sharing encoding parameters. */
 export interface CaptureParam {
+  /** Width (pixels) of the video. */
   width: number; // Width (pixels) of the video
+  /** Height (pixels) of the video. */
   height: number; // Height (pixels) of the video
   /** The frame rate (fps) of the shared region. The default value is 5. We do not recommend setting this to a value greater than 15. */
   frameRate: number; // The frame rate (fps) of the shared region. The default value is 5. We do not recommend setting this to a value greater than 15.
@@ -673,9 +689,13 @@ export enum VideoContentHint {
  * Reports the transport-layer statistics of each remote video stream.
  */
 export interface RemoteVideoTransportStats {
+  /** User ID of the remote user sending the video packet. */
   uid: number;
+  /** Network time delay (ms) from the remote user sending the video packet to the local user. */
   delay: number;
+  /** Packet loss rate (%) of the video packet sent from the remote user. */
   lost: number;
+  /** Received bitrate (Kbps) of the video packet sent from the remote user. */
   rxKBitRate: number;
 }
 
@@ -683,9 +703,13 @@ export interface RemoteVideoTransportStats {
  * Reports the transport-layer statistics of each remote audio stream.
  */
 export interface RemoteAudioTransportStats {
+  /** User ID of the remote user sending the audio packet. */
   uid: number;
+  /** Network time delay (ms) from the remote user sending the audio packet to the local user. */
   delay: number;
+  /** Packet loss rate (%) of the audio packet sent from the remote user. */
   lost: number;
+  /** Received bitrate (Kbps) of the audio packet sent from the remote user. */
   rxKBitRate: number;
 }
 
@@ -703,10 +727,19 @@ export interface RemoteAudioStats {
   jitterBufferDelay: number;
   /** Packet loss rate in the reported interval. */
   audioLossRate: number;
+  /** The number of the channels. */
   numChannels: number;
+  /** The received sample rate. */
   receivedSampleRate: number;
+  /** The received bitrate. */
   receivedBitrate: number;
+  /** The total freeze time (ms) of the remote video stream after the remote user joins the channel. 
+   * In a video session where the frame rate is set to no less than 5 fps, video freeze occurs when the time interval between two adjacent renderable 
+   * video frames is more than 500 ms.
+   */
   totalFrozenTime: number;
+  /**  In a video session where the frame rate is set to no less than 5 fps, video freeze occurs when the time interval between two adjacent renderable video 
+   * frames is more than 500 ms. */
   frozenRate: number;
 }
 
