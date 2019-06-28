@@ -380,10 +380,10 @@ export interface VideoEncoderConfiguration {
     * 
     * <table>
     *     <tr>
-    *         <th>分辨率</th>
-    *         <th>帧率（fps）</th>
-    *         <th>基准码率（通信场景）（Kbps）</th>
-    *         <th>直播码率（直播场景）（Kbps）</th>
+    *         <th>Resolution</th>
+    *         <th>Frame Rate (fps)</th>
+    *         <th>Base Bitrate (Kbps, for Communication)</th>
+    *         <th>Live Bitrate (Kbps, for Live Broadcast)</th>
     *     </tr>
     *     <tr>
     *         <td>160 &times; 120</td>
@@ -538,11 +538,21 @@ export interface VideoEncoderConfiguration {
     * </table>
     */
   bitrate: number; 
+  /**
+   * The minimum encoding bitrate (Kbps). The default value is 1. Using a value greater than the default value forces the video encoder to 
+   * output high-quality images but may cause more packet loss and hence sacrifice the smoothness of the video transmission. That said, unless 
+   * you have special requirements for image quality, Agora does not recommend changing this value.
+   * 
+   */
   minBitrate: number; 
+  /** The orientation mode. See {@link OrientationMode}.*/
   orientationMode: OrientationMode;
+  /**
+   * The video encoding degradation preference under limited bandwidth. See {@link DegradationPreference}.
+   */
   degradationPreference: DegradationPreference;
 }
-
+/** The video encoding degradation preference under limited bandwidth. */
 export enum DegradationPreference {
   /** 0: (Default) Degrade the frame rate in order to maintain the video quality. */
   MAINTAIN_QUALITY = 0,
@@ -551,14 +561,27 @@ export enum DegradationPreference {
   /** 2: (For future use) Maintain a balance between the frame rate and video quality. */
   MAINTAIN_BALANCED = 2,
 }
-
-
+/** The orientation mode. */
 export enum OrientationMode  {
-  ORIENTATION_MODE_ADAPTIVE = 0, // 0: (Default) Adaptive mode.
-  ORIENTATION_MODE_FIXED_LANDSCAPE = 1, // 1: Landscape mode
-  ORIENTATION_MODE_FIXED_PORTRAIT = 2, // 2: Portrait mode.
+/**
+ * (Default) The output video always follows the orientation of the captured video, because the receiver takes the rotational information passed on from the video encoder. 
+ * Mainly used between Agora’s SDKs.
+ * - If the captured video is in landscape mode, the output video is in landscape mode.
+ * - If the captured video is in portrait mode, the output video is in portrait mode.
+ */
+  ORIENTATION_MODE_ADAPTIVE = 0, 
+/** The output video is always in landscape mode. If the captured video is in portrait mode, the video encoder crops it to fit the output. Applies to situations where 
+ * the receiving end cannot process the rotational information. For example, CDN live streaming. */  
+  ORIENTATION_MODE_FIXED_LANDSCAPE = 1, 
+/**
+ * The output video is always in portrait mode. If the captured video is in landscape mode, the video encoder crops it to fit the output. Applies to situations where 
+ * the receiving end cannot process the rotational information. For example, CDN live streaming.
+ */
+  ORIENTATION_MODE_FIXED_PORTRAIT = 2, 
 }
-
+/**
+ * Video statistics of the remote stream.
+ */
 export interface RemoteVideoStats {
   uid: number;
   delay: number;
@@ -571,19 +594,19 @@ export interface RemoteVideoStats {
    */
   rxStreamType: StreamType;
 }
-
+/** Sets the camera capturer configuration. */
 export enum CaptureOutPreference {
   /** 0: (Default) self-adapts the camera output parameters to the system performance and network conditions to balance CPU consumption and video preview quality.
    */
   CAPTURER_OUTPUT_PREFERENCE_AUTO = 0,
-  /** 2: Prioritizes the system performance. The SDK chooses the dimension and frame rate of the local camera capture closest to those set by \ref IRtcEngine::setVideoEncoderConfiguration "setVideoEncoderConfiguration".
+  /** 1: Prioritizes the system performance. The SDK chooses the dimension and frame rate of the local camera capture closest to those set by \ref IRtcEngine::setVideoEncoderConfiguration "setVideoEncoderConfiguration".
    */
   CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE = 1,
   /** 2: Prioritizes the local preview quality. The SDK chooses higher camera output parameters to improve the local video preview quality. This option requires extra CPU and RAM usage for video pre-processing.
    */
   CAPTURER_OUTPUT_PREFERENCE_PREVIEW = 2
 }
-
+/** Camera capturer configuration. */
 export interface CameraCapturerConfiguration {
   preference: CaptureOutPreference;
 }
@@ -603,19 +626,40 @@ export type WindowsScreenSymbol = Rectangle;
 
 export type CaptureRect = Rectangle;
 
+/** Screen sharing encoding parameters. */
 export interface CaptureParam {
   width: number; // Width (pixels) of the video
   height: number; // Height (pixels) of the video
+  /** The frame rate (fps) of the shared region. The default value is 5. We do not recommend setting this to a value greater than 15. */
   frameRate: number; // The frame rate (fps) of the shared region. The default value is 5. We do not recommend setting this to a value greater than 15.
+  /**
+   * The bitrate (Kbps) of the shared region.
+   * The default value is 0 (the SDK works out a bitrate according to the dimensions of the current screen).
+   */
   bitrate: number; //  The bitrate (Kbps) of the shared region. The default value is 0 (the SDK works out a bitrate according to the dimensions of the current screen).
 }
 
+/**
+ * Content hints for screen sharing.
+ */
 export enum VideoContentHint {
-  CONTENT_HINT_NONE = 0, // (Default) No content hint
-  CONTENT_HINT_MOTION = 1, // Motion-intensive content. Choose this option if you prefer smoothness or when you are sharing a video clip, movie, or video game.
-  CONTENT_HINT_DETAILS = 2 // Motionless content. Choose this option if you prefer sharpness or when you are sharing a picture, PowerPoint slide, or text.
+  /**
+   * (Default) No content hint.
+   */
+  CONTENT_HINT_NONE = 0, 
+  /**
+   * Motion-intensive content. Choose this option if you prefer smoothness or when you are sharing a video clip, movie, or video game.
+   */
+  CONTENT_HINT_MOTION = 1, 
+  /**
+   * Motionless content. Choose this option if you prefer sharpness or when you are sharing a picture, PowerPoint slide, or text.
+   */
+  CONTENT_HINT_DETAILS = 2 
 }
 
+/**
+ * Reports the transport-layer statistics of each remote video stream.
+ */
 export interface RemoteVideoTransportStats {
   uid: number;
   delay: number;
@@ -623,6 +667,9 @@ export interface RemoteVideoTransportStats {
   rxKBitRate: number;
 }
 
+/**
+ * Reports the transport-layer statistics of each remote audio stream.
+ */
 export interface RemoteAudioTransportStats {
   uid: number;
   delay: number;
@@ -630,10 +677,13 @@ export interface RemoteAudioTransportStats {
   rxKBitRate: number;
 }
 
+/**
+ * RemoteAudioStats
+ */
 export interface RemoteAudioStats {
   /** User ID of the remote user sending the audio streams. */
   uid: number;
-  /** Audio quality received by the user: #QUALITY_TYPE. */
+  /** Audio quality received by the user. See {@link AgoraNetworkQuality}. */
   quality: number;
   /** Network delay from the sender to the receiver. */
   networkTransportDelay: number;
@@ -643,17 +693,38 @@ export interface RemoteAudioStats {
   audioLossRate: number;
 }
 
+/**
+ * Statistics of the remote video stream.
+ * - 1: running
+ * - 2: frozen, usually caused by network reason
+ */
 export type RemoteVideoState =
-  | 1 // running
-  | 2; // frozen, usually caused by network reason
-
+  | 1 
+  | 2; 
+/**
+ * Connection states.
+ * - 1: The SDK is disconnected from Agora's edge server.
+ * - 2: The SDK is connecting to Agora's edge server.
+ * - 3: The SDK is connected to Agora's edge server and has joined a channel. You can now publish or subscribe to a media stream in the channel.
+ * - 4: The SDK keeps rejoining the channel after being disconnected from a joined channel because of network issues.
+ * - 5: The SDK fails to connect to Agora's edge server or join the channel.
+ */
 export type ConnectionState =
   | 1 // 1: The SDK is disconnected from Agora's edge server
   | 2 // 2: The SDK is connecting to Agora's edge server.
-  | 3 // 3: The SDK is connected to Agora's edge server and has joined a channel. You can now publish or subscribe to a media stream in the channel.
-  | 4 // 4: The SDK keeps rejoining the channel after being disconnected from a joined channel because of network issues.
+  | 3 
+  | 4 
   | 5; // 5: The SDK fails to connect to Agora's edge server or join the channel.
 
+  /**
+   * Reasons for a connection state change:
+   * - 0: The SDK is connecting to Agora's edge server.
+   * - 1: The SDK has joined the channel successfully.
+   * - 2: The connection between the SDK and Agora's edge server is interrupted.
+   * - 3: The connection between the SDK and Agora's edge server is banned by Agora's edge server.
+   * - 4: The SDK fails to join the channel for more than 20 minutes and stops reconnecting to the channel.
+   * - 5: The SDK has left the channel.
+   */
 export type ConnectionChangeReason =
   | 0 // 0: The SDK is connecting to Agora's edge server.
   | 1 // 1: The SDK has joined the channel successfully.
@@ -693,15 +764,15 @@ export enum VIDEO_PROFILE_TYPE {
   /** 37: 480 &times; 360, frame rate 30 fps, bitrate 490 Kbps. */
   VIDEO_PROFILE_LANDSCAPE_360P_8 = 37,
   /** 38: 640 &times; 360, frame rate 15 fps, bitrate 800 Kbps.
-   * @note Live broadcast profile only.
+   * **Note**: Live broadcast profile only.
    */
   VIDEO_PROFILE_LANDSCAPE_360P_9 = 38,
   /** 39: 640 &times; 360, frame rate 24 fps, bitrate 800 Kbps.
-   * @note Live broadcast profile only.
+   * **Note**: Live broadcast profile only.
    */
   VIDEO_PROFILE_LANDSCAPE_360P_10 = 39,
   /** 100: 640 &times; 360, frame rate 24 fps, bitrate 1000 Kbps.
-   * @note Live broadcast profile only.
+   * **Note**: Live broadcast profile only.
    */
   VIDEO_PROFILE_LANDSCAPE_360P_11 = 100,
   /** 40: 640 &times; 480, frame rate 15 fps, bitrate 500 Kbps. */
@@ -769,15 +840,15 @@ export enum VIDEO_PROFILE_TYPE {
   /** 1037: 360 &times; 480, frame rate 30 fps, bitrate 490 Kbps. */
   VIDEO_PROFILE_PORTRAIT_360P_8 = 1037,
   /** 1038: 360 &times; 640, frame rate 15 fps, bitrate 800 Kbps.
-   * @note Live broadcast profile only.
+   * **Note**: Live broadcast profile only.
    */
   VIDEO_PROFILE_PORTRAIT_360P_9 = 1038,
   /** 1039: 360 &times; 640, frame rate 24 fps, bitrate 800 Kbps.
-   * @note Live broadcast profile only.
+   * **Note**: Live broadcast profile only.
    */
   VIDEO_PROFILE_PORTRAIT_360P_10 = 1039,
   /** 1100: 360 &times; 640, frame rate 24 fps, bitrate 1000 Kbps.
-   * @note Live broadcast profile only.
+   * **Note**: Live broadcast profile only.
    */
   VIDEO_PROFILE_PORTRAIT_360P_11 = 1100,
   /** 1040: 480 &times; 640, frame rate 15 fps, bitrate 500 Kbps. */
