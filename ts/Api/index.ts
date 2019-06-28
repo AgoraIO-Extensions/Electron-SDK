@@ -733,7 +733,7 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description Gets the connection state of the SDK.
-   * @returns {ConnectionState} Connect states. See {@link AgoraRtcEngine.ConnectionState ConnectionState}
+   * @returns {ConnectionState} Connect states. See {@link ConnectionState}.
    */
   getConnectionState(): ConnectionState {
     return this.rtcEngine.getConnectionState();
@@ -1008,9 +1008,8 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.startEchoTest();
   }
 
-  /** 
-   * @deprecated Use {@link startEchoTestWithInterval} instead
-   * @description {@link startEchoTestWithInterval}
+  /**
+   * @description Stops the audio call test.
    * @returns {number}
    * - 0: Success.
    * - < 0: Failure.
@@ -1067,7 +1066,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @description Starts the last-mile network probe test before
    * joining a channel to get the uplink and downlink last-mile network statistics,
    *  including the bandwidth, packet loss, jitter, and round-trip time (RTT).
-   * @param {LastmileProbeConfig} config The configurations of the last-mile network probe test. See  {@link AgoraRtcEngine.LastmileProbeConfig LastmileProbeConfig}.
+   * @param {LastmileProbeConfig} config The configurations of the last-mile network probe test. See  {@link LastmileProbeConfig}.
    */
   startLastmileProbeTest(config: LastmileProbeConfig): number {
     return this.rtcEngine.startLastmileProbeTest(config);
@@ -1126,7 +1125,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @deprecated use setVideoEncoderConfiguration
+   * @deprecated Use setVideoEncoderConfiguration instead.
    * @param {VIDEO_PROFILE_TYPE} profile - enumeration values represent video profile
    * @param {boolean} [swapWidthAndHeight = false] - Whether to swap width and height
    * @returns {number}
@@ -2756,7 +2755,7 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description Enables/Disables stereo panning for remote users.
-   * Ensure that you call this method before {@link join} to enable stereo panning
+   * Ensure that you call this method before {@link joinChannel} to enable stereo panning
    * for remote users so that the local user can track the position of a remote user
    * by calling {@link setRemoteVoicePosition}.
    * @param {boolean} enable
@@ -3393,8 +3392,8 @@ declare interface AgoraRtcEngine {
    */
   on(evt: 'microphoneEnabled', cb: (enabled: boolean) => void): this;
   /** Occurs when the connection state between the SDK and the server changes.
-   * - state: See {@link AgoraRtcEngine.ConnectionState ConnectionState}.
-   * - reason: See {@link AgoraRtcEngine.ConnectionState ConnectionState}.
+   * - state: See {@link ConnectionState}.
+   * - reason: See {@link ConnectionState}.
    */
   on(evt: 'connectionStateChanged', cb: (
     state: ConnectionState,
