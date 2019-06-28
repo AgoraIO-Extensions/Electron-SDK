@@ -1,6 +1,6 @@
 /**
  * Network quality types:
- * 
+ *
  * - 0: The network quality is unknown
  * - 1: The network quality is excellent.
  * - 2: The network quality is quite good, but the bitrate may be slightly lower than excellent.
@@ -18,21 +18,21 @@ export type AgoraNetworkQuality =
   | 5 // very bad
   | 6; // down
 
-/** 
+/**
  * Client roles in a live broadcast.
- * 
- * - 1: Host 
- * - 2: Audience 
+ *
+ * - 1: Host
+ * - 2: Audience
  * */
 export type ClientRoleType = 1 | 2;
 
 /** Video stream types.
- * 
+ *
  * - 0: High-stream video
- * - 1: Low-stream video 
+ * - 1: Low-stream video
  */
 export type StreamType = 0 | 1;
-/** Media Device Type. 
+/** Media Device Type.
  * - -1: Unknown device type
  * - 0: Audio playback device
  * - 1: Audio recording device
@@ -64,7 +64,7 @@ export interface TranscodingUser {
   /** Layer position of the video frame. The value ranges between 0 and 100.
    *
    * - 0: (Default) Lowest
-   * - 100: Highest  
+   * - 100: Highest
    */
   zOrder: number;
   /**  Transparency of the video frame in CDN live. The value ranges between 0 and 1.0:
@@ -90,54 +90,54 @@ export interface TranscodingConfig {
   width: number;
   /** Height of the video. The default value is 640. The minimum value of width × height is 16 × 16. */
   height: number;
-  /** Bitrate of the CDN live output video stream. The default value is 400 Kbps. 
-   * Set this parameter according to the Video Bitrate Table. 
+  /** Bitrate of the CDN live output video stream. The default value is 400 Kbps.
+   * Set this parameter according to the Video Bitrate Table.
    * If you set a bitrate beyond the proper range, the SDK automatically adapts it to a value within the range. */
   videoBitrate: number;
   /** Frame rate of the output video stream set for the CDN live broadcast. The default value is 15 fps.
-   * 
+   *
    * **Note**: Agora adjusts all values over 30 to 30.
    */
   videoFrameRate: number;
   /** Latency mode:
-   * 
+   *
    * - true: Low latency with unassured quality
    * - false: (Default) High latency with assured quality
    */
   lowLatency: boolean;
   /** Self-defined video codec profile.
-   * 
+   *
    * If you set this parameter to other values, Agora adjusts it to the default value of 100.
    */
   videoGop: number;
   /** Self-defined video codec profile.
-   * 
+   *
    * - VIDEO_CODEC_PROFILE_BASELINE = 66: Baseline video codec profile. Generally used in video calls on mobile phones
-   * - VIDEO_CODEC_PROFILE_MAIN = 77: Main video codec profile. Generally used in mainstream electronics 
+   * - VIDEO_CODEC_PROFILE_MAIN = 77: Main video codec profile. Generally used in mainstream electronics
    * such as MP4 players, portable video players, PSP, and iPads.
    * - VIDEO_CODEC_PROFILE_HIGH = 100: (Default) High video codec profile. Generally used in high-resolution broadcasts or television
    */
   videoCodecProfile: number;
-  /** RGB hex value. 
-   * 
-   * Background color of the output video stream for the CDN live broadcast defined as int color 
+  /** RGB hex value.
+   *
+   * Background color of the output video stream for the CDN live broadcast defined as int color
    * = (A & 0xff) << 24 | (R & 0xff) << 16 | (G & 0xff) << 8 | (B & 0xff)
-   * 
+   *
    * **Note**: Value only, do not include a #. For example, 0xC0C0C0.
    */
   backgroundColor: number;
   /** The number of users in the live broadcast. */
   userCount: number;
   /** Self-defined audio-sample rate:
-   * 
+   *
    * - AUDIO_SAMPLE_RATE_32000 = 32000
    * - AUDIO_SAMPLE_RATE_44100 = 44100 (default)
    * - AUDIO_SAMPLE_RATE_48000 = 48000
    */
   audioSampleRate: number;
-  /** Agora's self-defined audio-channel types. We recommend choosing option 1 or 2. 
+  /** Agora's self-defined audio-channel types. We recommend choosing option 1 or 2.
    * A special player is required if you choose option 3, 4, or 5:
-   * 
+   *
    * - 1: (Default) Mono
    * - 2: Two-channel stereo
    * - 3: Three-channel stereo
@@ -147,7 +147,7 @@ export interface TranscodingConfig {
   audioChannels: number;
   /** The watermark image added to the CDN live publishing stream. */
   watermark: {
-    /** HTTP/HTTPS URL address of the image on the broadcasting video. 
+    /** HTTP/HTTPS URL address of the image on the broadcasting video.
      * The maximum length of this parameter is 1024 bytes. */
     url: string;
     /** Horizontal position of the image from the upper left of the broadcasting video. */
@@ -167,16 +167,16 @@ export interface TranscodingConfig {
  */
 export interface LastmileProbeConfig {
   /**
-   * Sets whether or not to test the uplink network. Some users, for example, the audience in a Live-broadcast channel, 
+   * Sets whether or not to test the uplink network. Some users, for example, the audience in a Live-broadcast channel,
    * do not need such a test:
-   * 
+   *
    * - true: test
    * - false: do not test
    */
   probeUplink: boolean;
   /**
    * Sets whether or not to test the downlink network:
-   * 
+   *
    * - true: test
    * - false: do not test
    */
@@ -202,9 +202,9 @@ export interface LastmileProbeOneWayResult {
 /** The uplink and downlink last-mile network probe test result. */
 export interface LastmileProbeResult {
   /** States of the last-mile network probe test:
-   * 
+   *
    * - 1: The last-mile network probe test is complete
-   * - 2: The last-mile network probe test is incomplete and the bandwidth estimation is not available, 
+   * - 2: The last-mile network probe test is incomplete and the bandwidth estimation is not available,
    * probably due to limited test resources
    * - 3: The last-mile network probe test is not carried out, probably due to poor network conditions
    */
@@ -347,13 +347,15 @@ export interface LocalVideoStats {
   sentBitrate: number;
   /** Frame rate (fps) sent since the last count. */
   sentFrameRate: number;
-  /** The target bitrate (Kbps) of the current encoder. This value is estimated by the SDK 
-   * based on the current network conditions. 
+  encoderOutputFrameRate: number;
+  rendererOutputFrameRate: number;
+  /** The target bitrate (Kbps) of the current encoder. This value is estimated by the SDK
+   * based on the current network conditions.
    */
   targetBitrate: number;
   /** The target frame rate (fps) of the current encoder. */
   targetFrameRate: number;
-  /** Quality change of the local video in terms of target frame rate and target bit rate 
+  /** Quality change of the local video in terms of target frame rate and target bit rate
    * since last count. See {@link QualityAdaptIndication}.
    */
   qualityAdaptIndication: QualityAdaptIndication;
@@ -367,24 +369,24 @@ export interface VideoEncoderConfiguration {
   /**
    * The frame rate of the video. Note that we do not recommend setting this to a value greater than 30.
    */
-  frameRate: number; 
+  frameRate: number;
   /**
    * The minimum frame rate of the video. The default value is -1.
    */
-  minFrameRate: number; 
+  minFrameRate: number;
    /** The video encoding bitrate (Kbps).
     * Choose one of the following options:
-    * 
+    *
     * - 0: (Recommended) The standard bitrate.
     *  - The Communication profile: the encoding bitrate equals the base bitrate.
     *  - The Live-broadcast profile: the encoding bitrate is twice the base bitrate.
     * - 1: The compatible bitrate: the bitrate stays the same regardless of the profile.
-    * 
+    *
     * The Communication profile prioritizes smoothness, while the Live-broadcast profile prioritizes video quality (requiring a higher bitrate). We recommend setting the bitrate mode as #STANDARD_BITRATE to address this difference.
     *
-    * The following table lists the recommended video encoder configurations, where the base bitrate applies to the Communication profile. 
+    * The following table lists the recommended video encoder configurations, where the base bitrate applies to the Communication profile.
     * Set your bitrate based on this table. If you set a bitrate beyond the proper range, the SDK automatically sets it to within the range.
-    * 
+    *
     * <table>
     *     <tr>
     *         <th>Resolution</th>
@@ -544,14 +546,14 @@ export interface VideoEncoderConfiguration {
     *     </tr>
     * </table>
     */
-  bitrate: number; 
+  bitrate: number;
   /**
-   * The minimum encoding bitrate (Kbps). The default value is 1. Using a value greater than the default value forces the video encoder to 
-   * output high-quality images but may cause more packet loss and hence sacrifice the smoothness of the video transmission. That said, unless 
+   * The minimum encoding bitrate (Kbps). The default value is 1. Using a value greater than the default value forces the video encoder to
+   * output high-quality images but may cause more packet loss and hence sacrifice the smoothness of the video transmission. That said, unless
    * you have special requirements for image quality, Agora does not recommend changing this value.
-   * 
+   *
    */
-  minBitrate: number; 
+  minBitrate: number;
   /** The orientation mode. See {@link OrientationMode}.*/
   orientationMode: OrientationMode;
   /**
@@ -571,20 +573,20 @@ export enum DegradationPreference {
 /** The orientation mode. */
 export enum OrientationMode  {
 /**
- * (Default) The output video always follows the orientation of the captured video, because the receiver takes the rotational information passed on from the video encoder. 
+ * (Default) The output video always follows the orientation of the captured video, because the receiver takes the rotational information passed on from the video encoder.
  * Mainly used between Agora’s SDKs.
  * - If the captured video is in landscape mode, the output video is in landscape mode.
  * - If the captured video is in portrait mode, the output video is in portrait mode.
  */
-  ORIENTATION_MODE_ADAPTIVE = 0, 
-/** The output video is always in landscape mode. If the captured video is in portrait mode, the video encoder crops it to fit the output. Applies to situations where 
- * the receiving end cannot process the rotational information. For example, CDN live streaming. */  
-  ORIENTATION_MODE_FIXED_LANDSCAPE = 1, 
+  ORIENTATION_MODE_ADAPTIVE = 0,
+/** The output video is always in landscape mode. If the captured video is in portrait mode, the video encoder crops it to fit the output. Applies to situations where
+ * the receiving end cannot process the rotational information. For example, CDN live streaming. */
+  ORIENTATION_MODE_FIXED_LANDSCAPE = 1,
 /**
- * The output video is always in portrait mode. If the captured video is in landscape mode, the video encoder crops it to fit the output. Applies to situations where 
+ * The output video is always in portrait mode. If the captured video is in landscape mode, the video encoder crops it to fit the output. Applies to situations where
  * the receiving end cannot process the rotational information. For example, CDN live streaming.
  */
-  ORIENTATION_MODE_FIXED_PORTRAIT = 2, 
+  ORIENTATION_MODE_FIXED_PORTRAIT = 2,
 }
 /**
  * Video statistics of the remote stream.
@@ -595,11 +597,14 @@ export interface RemoteVideoStats {
   width: number;
   height: number;
   receivedBitrate: number;
+  decoderOutputFrameRate: number;
   rendererOutputFrameRate: number;
   /**
    * 0 for high stream and 1 for low stream
    */
   rxStreamType: StreamType;
+  totalFrozenTime: number;
+  frozenRate: number;
 }
 /** Sets the camera capturer configuration. */
 export enum CaptureOutPreference {
@@ -653,15 +658,15 @@ export enum VideoContentHint {
   /**
    * (Default) No content hint.
    */
-  CONTENT_HINT_NONE = 0, 
+  CONTENT_HINT_NONE = 0,
   /**
    * Motion-intensive content. Choose this option if you prefer smoothness or when you are sharing a video clip, movie, or video game.
    */
-  CONTENT_HINT_MOTION = 1, 
+  CONTENT_HINT_MOTION = 1,
   /**
    * Motionless content. Choose this option if you prefer sharpness or when you are sharing a picture, PowerPoint slide, or text.
    */
-  CONTENT_HINT_DETAILS = 2 
+  CONTENT_HINT_DETAILS = 2
 }
 
 /**
@@ -698,6 +703,11 @@ export interface RemoteAudioStats {
   jitterBufferDelay: number;
   /** Packet loss rate in the reported interval. */
   audioLossRate: number;
+  numChannels: number;
+  receivedSampleRate: number;
+  receivedBitrate: number;
+  totalFrozenTime: number;
+  frozenRate: number;
 }
 
 /**
@@ -706,8 +716,8 @@ export interface RemoteAudioStats {
  * - 2: frozen, usually caused by network reason
  */
 export type RemoteVideoState =
-  | 1 
-  | 2; 
+  | 1
+  | 2;
 /**
  * Connection states.
  * - 1: The SDK is disconnected from Agora's edge server.
@@ -719,8 +729,8 @@ export type RemoteVideoState =
 export type ConnectionState =
   | 1 // 1: The SDK is disconnected from Agora's edge server
   | 2 // 2: The SDK is connecting to Agora's edge server.
-  | 3 
-  | 4 
+  | 3
+  | 4
   | 5; // 5: The SDK fails to connect to Agora's edge server or join the channel.
 
   /**
