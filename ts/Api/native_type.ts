@@ -32,7 +32,14 @@ export type ClientRoleType = 1 | 2;
  * - 1: Low-stream video 
  */
 export type StreamType = 0 | 1;
-
+/** Media Device Type. 
+ * - -1: Unknown device type
+ * - 0: Audio playback device
+ * - 1: Audio recording device
+ * - 2: Video renderer
+ * - 3: Video capturer
+ * - 4: Application audio playback device
+*/
 export type MediaDeviceType =
   | -1 // Unknown device type
   | 0 // Audio playback device
@@ -209,7 +216,7 @@ export interface LastmileProbeResult {
   /** The round-trip delay time (ms). */
   rtt: number;
 }
-
+/** The user information. */
 export interface UserInfo {
   uid: number;
   userAccount: string;
