@@ -1132,6 +1132,10 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.setEncryptionSecret(secret);
   }
 
+  setEncryptionMode(mode: string): number {
+    return this.rtcEngine.setEncryptionMode(mode);
+  }
+
   /**
    * @description This method mutes/unmutes local audio. It enables/disables
    * sending local audio streams to the network.
