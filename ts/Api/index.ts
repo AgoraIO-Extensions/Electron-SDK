@@ -1258,11 +1258,13 @@ class AgoraRtcEngine extends EventEmitter {
    * @returns {number}
    * - 0: Success.
    * - < 0: Failure.
-   */
+   */  
   setEncryptionSecret(secret: string): number {
     return this.rtcEngine.setEncryptionSecret(secret);
   }
+  
   /**
+   * TODO:
    * @description
    * @param mode 
    * @returns 
@@ -2467,6 +2469,7 @@ class AgoraRtcEngine extends EventEmitter {
     * @returns {number}
     * - 0: Success.
     * - < 0: Failure.
+    */
   addPublishStreamUrl(url: string, transcodingEnabled: boolean): number {
     return this.rtcEngine.addPublishStreamUrl(url, transcodingEnabled);
   }
@@ -3431,7 +3434,9 @@ declare interface AgoraRtcEngine {
     uid: number,
     userInfo: UserInfo
   ) => void): this;
-  /** Occurs when 
+  /** 
+   * TODO:
+   * Occurs when 
    * - localVideoState: 
    * - error: 
    */
