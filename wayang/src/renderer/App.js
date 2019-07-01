@@ -19,7 +19,8 @@ export default class App extends Component {
       serverUrl: "",
       deviceId: "",
       logs: [],
-      users: []
+      users: [],
+      connected: false
     };
     this.ws = null;
     this.enableAudioMixing = false;
@@ -29,7 +30,7 @@ export default class App extends Component {
     Logger.on("log", ({ ts, level, m, type }) => {
       let { logs } = this.state;
       logs.push({ ts, level, m, type });
-      this.setState(logs);
+      // this.setState(logs);
       console.log(`${ts} [${type}][${level}] ${m}`);
     });
   }
@@ -49,7 +50,7 @@ export default class App extends Component {
     if (viewId === "None") {
       users.forEach(u => {
         if(u.uid === uid) {
-          this.apiHandler.destroyRender(role === "local" ? "local" : uid)
+          this.apiHandler.rtcEngine.destroyRender(role === "local" ? "local" : uid)
           delete u.uid
           delete u.role
           updated = true;
@@ -194,6 +195,7 @@ export default class App extends Component {
       try {
         this.ws.onclose = () => {
           Logger.info(`socket closed`, "socket")
+          this.setState({connected: false})
           this.ws = null
           resolve()
         }
@@ -228,6 +230,7 @@ export default class App extends Component {
     );
     ws.onopen = () => {
       Logger.info(`connected.`, "socket");
+      this.setState({connected: true})
       this.apiHandler = new ApiHandler(deviceId, ws);
       this.subscribeApiCalls(this.apiHandler);
       this.subscribeNonApiCalls(this.apiHandler);
@@ -241,6 +244,13 @@ export default class App extends Component {
       );
       this.apiHandler.handleMessage(e.data);
     };
+
+    ws.onclose = e => {
+      Logger.info(`socket closed`)
+      this.setState({connected: false})
+      this.ws = null
+      this.onConnect()
+    }
     
     ws.onerror = e => {
       Logger.error(`socket connect failed: ${e.type}`, "socket")
@@ -292,12 +302,15 @@ export default class App extends Component {
             </div>
             <div className="column is-one-quarters">
               <div className="field is-grouped">
-                <div className="control">
-                  <a className="button is-info" onClick={this.onConnect}>Connect</a>
-                </div>
-                <div className="control">
-                  <a className="button is-danger" onClick={this.onDisconnect}>Disconnect</a>
-                </div>
+                {!this.state.connected ? (
+                  <div className="control">
+                    <a className="button is-info" onClick={this.onConnect}>Connect</a>
+                  </div>
+                ) : (
+                  <div className="control">
+                    <a className="button is-danger" onClick={this.onDisconnect}>Disconnect</a>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -328,7 +341,7 @@ export default class App extends Component {
               className="column is-two-quarter"
               style={{ overflowY: "auto" }}
             >
-              {this.state.logs.map((item, idx) => {
+              {/* {this.state.logs.map((item, idx) => {
                 let style = {};
                 let className = `${item.level} logitem`;
                 let typeText = Utils.readableType(item.type);
@@ -358,7 +371,7 @@ export default class App extends Component {
                     <span>{item.m}</span>
                   </div>
                 );
-              })}
+              })} */}
             </div>
           </div>
         </div>
