@@ -819,4 +819,7 @@ export interface NodeRtcEngine {
   joinChannelWithUserAccount(token: string, channel: string, userAccount: string): number;
   getUserInfoByUserAccount(userAccount: string) : {errCode:number, userInfo: UserInfo};
   getUserInfoByUid(uid: number) : {errCode:number, userInfo: UserInfo};
+  adjustRecordingSignalVolume(volume:number): number;
+  adjustPlaybackSignalVolume(volume:number): number;
+  stopAllEffects(): number;
 }

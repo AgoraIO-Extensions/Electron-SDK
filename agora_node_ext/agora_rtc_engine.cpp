@@ -82,6 +82,8 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(adjustAudioMixingVolume)
                 PROPERTY_METHOD_DEFINE(adjustAudioMixingPlayoutVolume)
                 PROPERTY_METHOD_DEFINE(adjustAudioMixingPublishVolume)
+                PROPERTY_METHOD_DEFINE(getAudioMixingPlayoutVolume)
+                PROPERTY_METHOD_DEFINE(getAudioMixingPublishVolume)
                 PROPERTY_METHOD_DEFINE(getAudioMixingDuration)
                 PROPERTY_METHOD_DEFINE(getAudioMixingCurrentPosition)
                 PROPERTY_METHOD_DEFINE(setAudioMixingPosition)
@@ -3136,6 +3138,36 @@ namespace agora {
                 RtcEngineParameters rep(pEngine->m_engine);
                 int position = rep.getAudioMixingCurrentPosition();
                 napi_set_int_result(args, position);
+            } while (false);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, getAudioMixingPlayoutVolume)
+        {
+            LOG_ENTER;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                RtcEngineParameters rep(pEngine->m_engine);
+                int volume = rep.getAudioMixingPlayoutVolume();
+                napi_set_int_result(args, volume);
+            } while (false);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, getAudioMixingPublishVolume)
+        {
+            LOG_ENTER;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                RtcEngineParameters rep(pEngine->m_engine);
+                int volume = rep.getAudioMixingPublishVolume();
+                napi_set_int_result(args, volume);
             } while (false);
             LOG_LEAVE;
         }
