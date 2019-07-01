@@ -1267,5 +1267,19 @@ namespace agora {
                 }
             }while(false);
         }
+
+        void NodeEventHandler::onLocalVideoStateChanged(int localVideoState, int error)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, localVideoState, error] {
+                this->onLocalVideoStateChanged_node(localVideoState, error);
+            });
+        }
+
+        void NodeEventHandler::onLocalVideoStateChanged_node(int localVideoState, int error)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_2(RTC_EVENT_AUDIO_MIXING_STATE_CHANGED, int32, localVideoState, int32, error);
+        }
     }
 }
