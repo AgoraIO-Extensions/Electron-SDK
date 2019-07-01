@@ -143,6 +143,8 @@ namespace agora {
             NAPI_API(adjustAudioMixingVolume);
             NAPI_API(adjustAudioMixingPlayoutVolume);
             NAPI_API(adjustAudioMixingPublishVolume);
+            NAPI_API(getAudioMixingPlayoutVolume);
+            NAPI_API(getAudioMixingPublishVolume);
             NAPI_API(getAudioMixingDuration);
             NAPI_API(getAudioMixingCurrentPosition);
             NAPI_API(setAudioMixingPosition);
