@@ -24,6 +24,8 @@ const isString = (str) => {
 
 const func_name_convention = {
   "iepSetParameters": "setParameters",
+  "iepGetInt": "getInt",
+  "iepGetBool": "getBool",
   "admSetPlaybackDeviceVolume": "setAudioPlaybackVolume"
 }
 
@@ -140,13 +142,17 @@ const generic_call_table = {
   "getCallId": [],
   "rate": ["callId", "rating", "desc"],
   "complain": ["callId", "desc"],
-  "iepSetParameters": ["parameters"]
+  "iepSetParameters": ["parameters"],
+  "iepGetInt": ["key"],
+  "iepGetBool": ["key"]
 }
 
 const return_table = {
   "getAudioMixingDuration": [],
   "getAudioMixingCurrentPosition": [],
-  "registerLocalUserAccount": []
+  "registerLocalUserAccount": [],
+  "getBool": [],
+  "getInt": []
 }
 
 const custom_call_table = {
@@ -239,6 +245,7 @@ class ApiHandler {
     let result = 0
     let error = 0
     if(cmd === "createAgoraRtcEngine") {
+      this.rtcEngine && this.rtcEngine.release()
       this.rtcEngine = new AgoraRtcEngine()
       this.subscribeEvents(this.rtcEngine)
       // let logfile = path.resolve(os.homedir(), `./wayang-${new Date().getTime()}.log`)

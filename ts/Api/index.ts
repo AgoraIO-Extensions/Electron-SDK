@@ -531,6 +531,10 @@ class AgoraRtcEngine extends EventEmitter {
       fire('userInfoUpdated', uid, userInfo);
     });
 
+    this.rtcEngine.onEvent('localVideoStateChanged', function(localVideoState:number, err: number) {
+      fire('localVideoStateChanged', localVideoState, err);
+    });
+
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
       self.onRegisterDeliverFrame(infos);
     });
@@ -1257,6 +1261,10 @@ class AgoraRtcEngine extends EventEmitter {
    */
   setEncryptionSecret(secret: string): number {
     return this.rtcEngine.setEncryptionSecret(secret);
+  }
+
+  setEncryptionMode(mode: string): number {
+    return this.rtcEngine.setEncryptionMode(mode);
   }
 
   /**
@@ -3418,6 +3426,10 @@ declare interface AgoraRtcEngine {
   on(evt: 'userInfoUpdated', cb: (
     uid: number,
     userInfo: UserInfo
+  ) => void): this;
+  on(evt: 'localVideoStateChanged', cb: (
+    localVideoState: number,
+    error: number
   ) => void): this;
   on(evt: string, listener: Function): this;
 

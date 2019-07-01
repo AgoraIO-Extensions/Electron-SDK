@@ -781,7 +781,15 @@ export type ConnectionChangeReason =
   | 2 // 2: The connection between the SDK and Agora's edge server is interrupted.
   | 3 // 3: The connection between the SDK and Agora's edge server is banned by Agora's edge server.
   | 4 // 4: The SDK fails to join the channel for more than 20 minutes and stops reconnecting to the channel.
-  | 5; // 5: The SDK has left the channel.
+  | 5 // 5: The SDK has left the channel.
+  | 6 // 6: Invalid App ID
+  | 7 // 7: Invalid Channel Name
+  | 8 // 8: Invalid Token
+  | 9 // 9: Token Expired
+  | 10 // 10: This user has been banned by server
+  | 11 // 11: SDK reconnects for setting proxy server
+  | 12 // 12: Network status change for renew token
+  | 13; // 13: Client IP Address changed
 
 /** @deprecated Video profile. */
 export enum VIDEO_PROFILE_TYPE {
@@ -1010,6 +1018,7 @@ export interface NodeRtcEngine {
   disableAudio(): number;
   setAudioProfile(profile: number, scenario: number): number;
   setVideoQualityParameters(preferFrameRateOverImageQuality: boolean): number;
+  setEncryptionMode(mode: string): number;
   setEncryptionSecret(secret: string): number;
   muteLocalAudioStream(mute: boolean): number;
   muteAllRemoteAudioStreams(mute: boolean): number;
