@@ -422,6 +422,10 @@ class AgoraRtcEngine extends EventEmitter {
       fire('firstRemoteAudioFrame', uid, elapsed);
     });
 
+    this.rtcEngine.onEvent('firstRemoteAudioDecoded', function(uid: number, elapsed: number) {
+      fire('firstRemoteAudioDecoded', uid, elapsed);
+    });
+
     this.rtcEngine.onEvent('remoteVideoStateChanged', function(uid: number, state: RemoteVideoState) {
       fire('remoteVideoStateChanged', uid, state);
     });
@@ -1486,6 +1490,14 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.getUserInfoByUid(uid)
   }
 
+  adjustRecordingSignalVolume(volume: number): number {
+    return this.rtcEngine.adjustRecordingSignalVolume(volume)
+  }
+
+  adjustPlaybackSignalVolume(volume: number): number {
+    return this.rtcEngine.adjustPlaybackSignalVolume(volume)
+  }
+
   // ===========================================================================
   // DEVICE MANAGEMENT
   // ===========================================================================
@@ -2356,6 +2368,9 @@ class AgoraRtcEngine extends EventEmitter {
   stopEffect(soundId: number): number {
     return this.rtcEngine.stopEffect(soundId);
   }
+  stopAllEffects(): number {
+    return this.rtcEngine.stopAllEffects()
+  }
   /**
    * @description preload effect
    * @param {number} soundId soundId
@@ -2648,6 +2663,7 @@ declare interface AgoraRtcEngine {
   on(evt: 'requestChannelKey', cb: () => void): this;
   on(evt: 'fristLocalAudioFrame', cb: (elapsed: number) => void): this;
   on(evt: 'firstRemoteAudioFrame', cb: (uid: number, elapsed: number) => void): this;
+  on(evt: 'firstRemoteAudioDecoded', cb: (uid: number, elapsed: number) => void): this;
   on(evt: 'activeSpeaker', cb: (uid: number) => void): this;
   on(evt: 'clientRoleChanged', cb: (
     oldRole: ClientRoleType,
