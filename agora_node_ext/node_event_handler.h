@@ -84,6 +84,7 @@ namespace agora {
 #define RTC_EVENT_LASTMILE_PROBE_RESULT "lastmileProbeResult"
 #define RTC_EVENT_LOCAL_USER_REGISTERED "localUserRegistered"
 #define RTC_EVENT_USER_INFO_UPDATED "userInfoUpdated"
+#define RTC_EVENT_LOCAL_VIDEO_STATE_CHANGED "localVideoStateChanged"
 
 #define RTC_EVENT_VIDEO_SOURCE_JOIN_SUCCESS "videosourcejoinsuccess"
 #define RTC_EVENT_VIDEO_SOURCE_REQUEST_NEW_TOKEN "videosourcerequestnewtoken"
@@ -161,6 +162,7 @@ namespace agora {
             virtual void onRemoteAudioStats(const RemoteAudioStats & stats);
             virtual void onMicrophoneEnabled(bool enabled) override;
             virtual void onConnectionStateChanged(CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason) override;
+
             virtual void onVideoSourceJoinedChannel(agora::rtc::uid_t uid) override;
             virtual void onVideoSourceRequestNewToken() override;
             virtual void onVideoSourceLeaveChannel() override;
@@ -175,6 +177,7 @@ namespace agora {
             //2.8.0
             virtual void onLocalUserRegistered(uid_t uid, const char* userAccount) override;
             virtual void onUserInfoUpdated(uid_t uid, const UserInfo& info) override;
+            virtual void onLocalVideoStateChanged(int localVideoState, int error) override;
 
         private:
             void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
@@ -250,6 +253,7 @@ namespace agora {
             //2.8.0
             void onLocalUserRegistered_node(uid_t uid, const char* userAccount);
             void onUserInfoUpdated_node(uid_t uid, const UserInfo& info);
+            void onLocalVideoStateChanged_node(int localVideoState, int error);
         private:
             std::unordered_map<std::string, NodeEventCallback*> m_callbacks;
             NodeRtcEngine* m_engine;
