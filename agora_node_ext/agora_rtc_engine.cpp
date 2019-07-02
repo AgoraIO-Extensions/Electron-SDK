@@ -3401,7 +3401,7 @@ namespace agora {
                 agora::util::AutoPtr<agora::media::IMediaEngine> pMediaEngine;
                 pMediaEngine.queryInterface(pEngine->m_engine, AGORA_IID_MEDIA_ENGINE);
 
-                if (!pEngine->m_externalVideoFrameObserver) {
+                if (pEngine->m_externalVideoFrameObserver) {
                     pMediaEngine->registerVideoFrameObserver(NULL);
                     delete pEngine->m_externalVideoFrameObserver;
                     pEngine->m_externalVideoFrameObserver = nullptr;
