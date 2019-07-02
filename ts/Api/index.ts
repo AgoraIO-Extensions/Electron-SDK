@@ -2128,6 +2128,14 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.getAudioMixingCurrentPosition();
   }
 
+  getAudioMixingPlayoutVolume(): number {
+    return this.rtcEngine.getAudioMixingPlayoutVolume();
+  }
+
+  getAudioMixingPublishVolume(): number {
+    return this.rtcEngine.getAudioMixingPublishVolume();
+  }
+
   /**
    * @description This method drags the playback progress bar of the audio mixing file to where
    * you want to play instead of playing it from the beginning.
