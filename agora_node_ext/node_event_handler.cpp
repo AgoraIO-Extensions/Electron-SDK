@@ -300,7 +300,7 @@ namespace agora {
                 NODE_SET_OBJ_PROP_UINT32(obj, "txVideoKBitRate", stats.txVideoKBitRate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "lastmileDelay", stats.lastmileDelay);
                 NODE_SET_OBJ_PROP_UINT32(obj, "users", usercount);
-                NODE_SET_OBJ_PROP_UINT32(obj, "usercount", stats.usercount);
+                NODE_SET_OBJ_PROP_UINT32(obj, "userCount", stats.userCount);
                 NODE_SET_OBJ_PROP_UINT32(obj, "txPacketLossRate", stats.txPacketLossRate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "rxPacketLossRate", stats.rxPacketLossRate);
                 NODE_SET_OBJ_PROP_NUMBER(obj, "cpuAppUsage", stats.cpuAppUsage);
