@@ -747,6 +747,8 @@ export interface NodeRtcEngine {
   adjustAudioMixingPublishVolume(volume: number): number;
   getAudioMixingDuration(): number;
   getAudioMixingCurrentPosition(): number;
+  getAudioMixingPublishVolume(): number;
+  getAudioMixingPlaybackVolume(): number;
   setAudioMixingPosition(position: number): number;
   addPublishStreamUrl(url: string, transcodingEnabled: boolean): number;
   removePublishStreamUrl(url: string): number;
