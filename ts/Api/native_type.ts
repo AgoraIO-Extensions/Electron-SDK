@@ -219,6 +219,9 @@ export interface RtcStats {
   txAudioKBitRate: number;
   rxVideoKBitRate: number;
   txVideoKBitRate: number;
+  lastmileDelay: number;
+  txPacketLossRate: number;
+  rxPacketLossRate: number;
   userCount: number;
   cpuAppUsage: number;
   cpuTotalUsage: number;
