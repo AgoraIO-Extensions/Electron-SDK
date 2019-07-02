@@ -1297,7 +1297,7 @@ namespace agora {
         void NodeEventHandler::onLocalVideoStateChanged_node(int localVideoState, int error)
         {
             FUNC_TRACE;
-            MAKE_JS_CALL_2(RTC_EVENT_AUDIO_MIXING_STATE_CHANGED, int32, localVideoState, int32, error);
+            MAKE_JS_CALL_2(RTC_EVENT_LOCAL_VIDEO_STATE_CHANGED, int32, localVideoState, int32, error);
         }
     }
 }
