@@ -534,6 +534,10 @@ class AgoraRtcEngine extends EventEmitter {
       fire('localVideoStateChanged', localVideoState, err);
     });
 
+    this.rtcEngine.onEvent('audioMixingStateChanged', function(state:number, errorCode: number) {
+      fire('audioMixingStateChanged', state, errorCode);
+    });
+
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
       self.onRegisterDeliverFrame(infos);
     });
