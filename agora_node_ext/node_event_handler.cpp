@@ -877,6 +877,20 @@ namespace agora {
             });
         }
 
+        void NodeEventHandler::onFirstRemoteAudioDecoded_node(uid_t uid, int elapsed)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_2(RTC_EVENT_FIRST_REMOTE_AUDIO_DECODED, uid, uid, int32, elapsed);
+        }
+
+        void NodeEventHandler::onFirstRemoteAudioDecoded(uid_t uid, int elapsed)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, uid, elapsed] {
+                this->onFirstRemoteAudioFrame_node(uid, elapsed);
+            });
+        }
+
         void NodeEventHandler::onStreamPublished_node(const char *url, int error)
         {
             FUNC_TRACE;
