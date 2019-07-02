@@ -2339,6 +2339,10 @@ class AgoraRtcEngine extends EventEmitter {
     face_shape_level: number,
     eye_enlarging: number,
     cheek_thinning: number,
+    cheek_v: number,
+    cheek_narrow: number,
+    cheek_small: number,
+    cheek_oval: number,
     intensity_nose: number,
     intensity_forehead: number,
     intensity_mouth: number,
@@ -2348,8 +2352,8 @@ class AgoraRtcEngine extends EventEmitter {
     tooth_whiten: number,
     is_beauty_on: number
   }): number {
-    let merged = Object.assign({}, {
-      filter_name: "origin",
+    const merged = Object.assign({}, {
+      filter_name: 'origin',
       filter_level: 1.0,
       color_level: 0.2,
       red_level: 0.5,
@@ -2361,6 +2365,10 @@ class AgoraRtcEngine extends EventEmitter {
       face_shape_level: 1.0,
       eye_enlarging: 0.5,
       cheek_thinning: 0.0,
+      cheek_v: 0.0,
+      cheek_narrow: 0.0,
+      cheek_small: 0.0,
+      cheek_oval: 0.0,
       intensity_nose: 0.0,
       intensity_forehead: 0.5,
       intensity_mouth: 0.5,
@@ -2369,11 +2377,11 @@ class AgoraRtcEngine extends EventEmitter {
       eye_bright: 1.0,
       tooth_whiten: 1.0,
       is_beauty_on: 1.0
-    }, options)
+    }, options);
     return this.rtcEngine.setBeautyEffectFaceUnityOptions(enabled, merged);
   }
   releaseFaceUnity(): number {
-    return this.rtcEngine.releaseFaceUnity()
+    return this.rtcEngine.releaseFaceUnity();
   }
 }
 

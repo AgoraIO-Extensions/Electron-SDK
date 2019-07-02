@@ -26,6 +26,10 @@ struct FaceUnityOptions
 	double face_shape_level;
 	double eye_enlarging;
 	double cheek_thinning;
+	double cheek_v;
+	double cheek_narrow;
+	double cheek_small;
+	double cheek_oval;
 	double intensity_nose;
 	double intensity_forehead;
 	double intensity_mouth;
@@ -48,6 +52,10 @@ struct FaceUnityOptions
 	    , face_shape_level(default_face_shape_level)
 		, eye_enlarging(default_eye_enlarging)
 		, cheek_thinning(default_cheek_thinning)
+		, cheek_v(default_cheek_v)
+		, cheek_narrow(default_cheek_narrow)
+		, cheek_small(default_cheek_small)
+		, cheek_oval(default_cheek_oval)
 		, intensity_nose(default_intensity_nose)
 		, intensity_forehead(default_intensity_forehead)
 		, intensity_mouth(default_intensity_mouth)

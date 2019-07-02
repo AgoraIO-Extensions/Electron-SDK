@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
-#import "include/funama.h"
+#import "funama.h"
 
 typedef struct{
     CVPixelBufferRef pixelBuffer;
@@ -507,4 +507,10 @@ typedef enum {
 + (void)setTongueTrackingEnable:(int)enable;
  
 + (int)loadTongueModel:(void*)model size:(int)size;
+
+
+/**
+ 释放nama资源
+ */
++(void)namaLibDestroy;
 @end

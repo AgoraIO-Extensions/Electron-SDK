@@ -190,6 +190,10 @@ namespace agora {
 					fuItemSetParamd(mBeautyHandles, "face_shape_level", mOptions.face_shape_level);
 					fuItemSetParamd(mBeautyHandles, "eye_enlarging", mOptions.eye_enlarging);
 					fuItemSetParamd(mBeautyHandles, "cheek_thinning", mOptions.cheek_thinning);
+					fuItemSetParamd(mBeautyHandles, "cheek_v", mOptions.cheek_v);
+					fuItemSetParamd(mBeautyHandles, "cheek_narrow", mOptions.cheek_narrow);
+					fuItemSetParamd(mBeautyHandles, "cheek_small", mOptions.cheek_small);
+					fuItemSetParamd(mBeautyHandles, "cheek_oval", mOptions.cheek_oval);
 					fuItemSetParamd(mBeautyHandles, "intensity_nose", mOptions.intensity_nose);
 					fuItemSetParamd(mBeautyHandles, "intensity_forehead", mOptions.intensity_forehead);
 					fuItemSetParamd(mBeautyHandles, "intensity_mouth", mOptions.intensity_mouth);

@@ -3354,6 +3354,18 @@ namespace agora {
                     status = napi_get_object_property_double_(isolate, obj, "cheek_thinning", opts.cheek_thinning);
                     CHECK_NAPI_STATUS(pEngine, status);
 
+                    status = napi_get_object_property_double_(isolate, obj, "cheek_v", opts.cheek_v);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
+                    status = napi_get_object_property_double_(isolate, obj, "cheek_narrow", opts.cheek_narrow);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
+                    status = napi_get_object_property_double_(isolate, obj, "cheek_small", opts.cheek_small);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
+                    status = napi_get_object_property_double_(isolate, obj, "cheek_oval", opts.cheek_oval);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    
                     status = napi_get_object_property_double_(isolate, obj, "intensity_nose", opts.intensity_nose);
                     CHECK_NAPI_STATUS(pEngine, status);
 
