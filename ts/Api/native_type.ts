@@ -600,7 +600,7 @@ export interface RemoteVideoStats {
   /** User ID of the user sending the video streams. */
   uid: number;
   /** 
-   * @deprecated
+   * @deprecated This parameter is deprecated.
    * Time delay (ms). */
   delay: number;
   /** Width (pixels) of the remote video. */
@@ -825,7 +825,7 @@ export type ConnectionChangeReason =
   | 13; // 13: Client IP Address changed
 
 /** 
- * @deprecated 
+ * @deprecated Deprecated.
  * Video profile. */
 export enum VIDEO_PROFILE_TYPE {
   /** 0: 160 &times; 120, frame rate 15 fps, bitrate 65 Kbps. */
