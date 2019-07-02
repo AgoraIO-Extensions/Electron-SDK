@@ -1,7 +1,7 @@
 /**
  * Network quality types:
  *
- * - 0: The network quality is unknown
+ * - 0: The network quality is unknown.
  * - 1: The network quality is excellent.
  * - 2: The network quality is quite good, but the bitrate may be slightly lower than excellent.
  * - 3: Users can feel the communication slightly impaired.
@@ -67,9 +67,9 @@ export interface TranscodingUser {
    * - 100: Highest
    */
   zOrder: number;
-  /**  Transparency of the video frame in CDN live. The value ranges between 0 and 1.0:
+  /**  Transparency of the video frame in CDN live. The value ranges between 0.0 and 1.0:
    *
-   * - 0: Completely transparent
+   * - 0.0: Completely transparent
    * - 1.0: (Default) Opaque
    */
   alpha: number;
@@ -99,23 +99,23 @@ export interface TranscodingConfig {
    * **Note**: Agora adjusts all values over 30 to 30.
    */
   videoFrameRate: number;
-  /** Latency mode:
+  /** 
+   * Latency mode:
    *
    * - true: Low latency with unassured quality
    * - false: (Default) High latency with assured quality
    */
   lowLatency: boolean;
-  /** Self-defined video codec profile.
-   *
-   * If you set this parameter to other values, Agora adjusts it to the default value of 100.
+  /** 
+   * Video GOP in frames. The default value is 30 fps.
    */
   videoGop: number;
   /** Self-defined video codec profile.
    *
-   * - VIDEO_CODEC_PROFILE_BASELINE = 66: Baseline video codec profile. Generally used in video calls on mobile phones
-   * - VIDEO_CODEC_PROFILE_MAIN = 77: Main video codec profile. Generally used in mainstream electronics
+   * - VIDEO_CODEC_PROFILE_BASELINE = 66: Baseline video codec profile. Generally used in video calls on mobile phones.
+   * - VIDEO_CODEC_PROFILE_MAIN = 77: Main video codec profile. Generally used in mainstream electronics.
    * such as MP4 players, portable video players, PSP, and iPads.
-   * - VIDEO_CODEC_PROFILE_HIGH = 100: (Default) High video codec profile. Generally used in high-resolution broadcasts or television
+   * - VIDEO_CODEC_PROFILE_HIGH = 100: (Default) High video codec profile. Generally used in high-resolution broadcasts or television.
    */
   videoCodecProfile: number;
   /** RGB hex value.
@@ -278,7 +278,7 @@ export interface InjectStreamConfig {
   /** Video GOP of the added stream in the live broadcast in frames. The default value is 30 fps. */
   videoGop: number;
   /**
-   * Audio-sampling rate of the added stream in the live broadcast. The default value is 48000 Hz.
+   * Audio-sampling rate of the added stream in the live broadcast. The default value is 44100 Hz.
    * **Note**: Agora recommends setting the default value.
    * - AUDIO_SAMPLE_RATE_32000 = 32000
    * - AUDIO_SAMPLE_RATE_44100 = 44100(default)
@@ -350,7 +350,9 @@ export interface LocalVideoStats {
   sentBitrate: number;
   /** Frame rate (fps) sent since the last count. */
   sentFrameRate: number;
+  /** The encoder output frame rate (fps) of the local video. */
   encoderOutputFrameRate: number;
+  /** The renderer output frame rate (fps) of the local video. */
   rendererOutputFrameRate: number;
   /** The target bitrate (Kbps) of the current encoder. This value is estimated by the SDK
    * based on the current network conditions.
@@ -576,17 +578,17 @@ export enum DegradationPreference {
 /** The orientation mode. */
 export enum OrientationMode  {
 /**
- * (Default) The output video always follows the orientation of the captured video, because the receiver takes the rotational information passed on from the video encoder.
+ * 0: (Default) The output video always follows the orientation of the captured video, because the receiver takes the rotational information passed on from the video encoder.
  * Mainly used between Agora’s SDKs.
  * - If the captured video is in landscape mode, the output video is in landscape mode.
  * - If the captured video is in portrait mode, the output video is in portrait mode.
  */
   ORIENTATION_MODE_ADAPTIVE = 0,
-/** The output video is always in landscape mode. If the captured video is in portrait mode, the video encoder crops it to fit the output. Applies to situations where
+/** 1: The output video is always in landscape mode. If the captured video is in portrait mode, the video encoder crops it to fit the output. Applies to situations where
  * the receiving end cannot process the rotational information. For example, CDN live streaming. */
   ORIENTATION_MODE_FIXED_LANDSCAPE = 1,
 /**
- * The output video is always in portrait mode. If the captured video is in landscape mode, the video encoder crops it to fit the output. Applies to situations where
+ * 2: The output video is always in portrait mode. If the captured video is in landscape mode, the video encoder crops it to fit the output. Applies to situations where
  * the receiving end cannot process the rotational information. For example, CDN live streaming.
  */
   ORIENTATION_MODE_FIXED_PORTRAIT = 2,
@@ -597,7 +599,9 @@ export enum OrientationMode  {
 export interface RemoteVideoStats {
   /** User ID of the user sending the video streams. */
   uid: number;
-  /** Time delay (ms). */
+  /** 
+   * @deprecated
+   * Time delay (ms). */
   delay: number;
   /** Width (pixels) of the remote video. */
   width: number;
@@ -610,10 +614,20 @@ export interface RemoteVideoStats {
   /** The renderer output frame rate (fps) of the remote video. */
   rendererOutputFrameRate: number;
   /**
-   * 0 for high stream and 1 for low stream
+   * Video stream type:
+   * - 0: High-stream
+   * - 1: Low-stream
+   * 
    */
   rxStreamType: StreamType;
+  /**
+   * The total freeze time (ms) of the remote video stream after the remote user joins the channel. 
+   * In a video session where the frame rate is set to no less than 5 fps, video freeze occurs when the time interval between two adjacent renderable video frames is more than 500 ms.
+   */
   totalFrozenTime: number;
+  /**
+   * The total video freeze time as a percentage (%) of the total time when the video is available.
+   */
   frozenRate: number;
 }
 /** Sets the camera capturer configuration. */
@@ -630,6 +644,7 @@ export enum CaptureOutPreference {
 }
 /** Camera capturer configuration. */
 export interface CameraCapturerConfiguration {
+  /** The output configuration of camera capturer. */
   preference: CaptureOutPreference;
 }
 /** The relative location of the region to the screen or window. */
@@ -672,15 +687,15 @@ export interface CaptureParam {
  */
 export enum VideoContentHint {
   /**
-   * (Default) No content hint.
+   * 0: (Default) No content hint.
    */
   CONTENT_HINT_NONE = 0,
   /**
-   * Motion-intensive content. Choose this option if you prefer smoothness or when you are sharing a video clip, movie, or video game.
+   * 1: Motion-intensive content. Choose this option if you prefer smoothness or when you are sharing a video clip, movie, or video game.
    */
   CONTENT_HINT_MOTION = 1,
   /**
-   * Motionless content. Choose this option if you prefer sharpness or when you are sharing a picture, PowerPoint slide, or text.
+   * 2: Motionless content. Choose this option if you prefer sharpness or when you are sharing a picture, PowerPoint slide, or text.
    */
   CONTENT_HINT_DETAILS = 2
 }
@@ -714,7 +729,7 @@ export interface RemoteAudioTransportStats {
 }
 
 /**
- * RemoteAudioStats
+ * Reports the statistics of the remote audio.
  */
 export interface RemoteAudioStats {
   /** User ID of the remote user sending the audio streams. */
@@ -733,13 +748,13 @@ export interface RemoteAudioStats {
   receivedSampleRate: number;
   /** The received bitrate. */
   receivedBitrate: number;
-  /** The total freeze time (ms) of the remote video stream after the remote user joins the channel. 
-   * In a video session where the frame rate is set to no less than 5 fps, video freeze occurs when the time interval between two adjacent renderable 
-   * video frames is more than 500 ms.
+  /** 
+   * The total freeze time (ms) of the remote audio stream after the remote user joins the channel. 
+   * In a session, audio freeze occurs when the audio frame loss rate reaches 4%.
    */
   totalFrozenTime: number;
-  /**  In a video session where the frame rate is set to no less than 5 fps, video freeze occurs when the time interval between two adjacent renderable video 
-   * frames is more than 500 ms. */
+  /** The total audio freeze time as a percentage (%) of the total time when the audio is available.
+   */
   frozenRate: number;
 }
 
@@ -754,10 +769,20 @@ export type RemoteVideoState =
 /**
  * Connection states.
  * - 1: The SDK is disconnected from Agora's edge server.
- * - 2: The SDK is connecting to Agora's edge server.
- * - 3: The SDK is connected to Agora's edge server and has joined a channel. You can now publish or subscribe to a media stream in the channel.
+ *  - This is the initial state before calling the {@link AgoraRtcEngine.joinChannel} method.
+ *  - The SDK also enters this state when the application calls the {@link AgoraRtcEngine.leaveChannel} method.
+ * - 2: The SDK is connecting to Agora's edge server. When the application calls the {@link AgoraRtcEngine.joinChannel} method, the SDK starts to establish a connection to the specified channel.
+ *  - When the SDK successfully joins the channel, it triggers the connectionStateChanged callback and switches to the 3 state.
+ *  - After the SDK joins the channel and when it finishes initializing the media engine, the SDK triggers the joinedChannel callback.
+ * - 3: The SDK is connected to Agora's edge server and has joined a channel. You can now publish or subscribe to a media stream in the channel.If the connection to the channel is lost because, for example, 
+ * if the network is down or switched, the SDK automatically tries to reconnect and triggers:
+ *  - The connectionStateChanged callback and switches to the 4 state.
  * - 4: The SDK keeps rejoining the channel after being disconnected from a joined channel because of network issues.
- * - 5: The SDK fails to connect to Agora's edge server or join the channel.
+ *  - If the SDK cannot rejoin the channel within 10 seconds after being disconnected from Agora's edge server, the SDK triggers the connectionLost callback, stays in this state, and keeps rejoining the channel.
+ *  - If the SDK fails to rejoin the channel 20 minutes after being disconnected from Agora's edge server, the SDK triggers the connectionStateChanged callback, switches to the 5 state, and stops rejoining the channel.
+ * - 5: The SDK fails to connect to Agora's edge server or join the channel. You must call the {@link AgoraRtcEngine.leaveChannel leaveChannel} method to leave this state.
+ *  - Calls the {@link AgoraRtcEngine.joinChannel joinChannel} method again to rejoin the channel.
+ *  - If the SDK is banned from joining the channel by Agora's edge server (through the RESTful API), the SDK triggers connectionStateChanged callbacks.
  */
 export type ConnectionState =
   | 1 // 1: The SDK is disconnected from Agora's edge server
@@ -799,7 +824,9 @@ export type ConnectionChangeReason =
   | 12 // 12: Network status change for renew token
   | 13; // 13: Client IP Address changed
 
-/** @deprecated Video profile. */
+/** 
+ * @deprecated 
+ * Video profile. */
 export enum VIDEO_PROFILE_TYPE {
   /** 0: 160 &times; 120, frame rate 15 fps, bitrate 65 Kbps. */
   VIDEO_PROFILE_LANDSCAPE_120P = 0,
