@@ -67,6 +67,7 @@ namespace agora {
 #define RTC_EVENT_TOKEN_PRIVILEGE_WILL_EXPIRE "tokenPrivilegeWillExpire"
 #define RTC_EVENT_FIRST_LOCAL_AUDIO_FRAME "firstlocalaudioframe"
 #define RTC_EVENT_FIRST_REMOTE_AUDIO_FRAME "firstremoteaudioframe"
+#define RTC_EVENT_FIRST_REMOTE_AUDIO_DECODED "firstRemoteAudioDecoded"
 #define RTC_EVENT_ACTIVE_SPEAKER "activespeaker"
 #define RTC_EVENT_STREAM_PUBLISHED "streamPublished"
 #define RTC_EVENT_STREAM_UNPUBLISHED "streamUnpublished"
@@ -148,6 +149,7 @@ namespace agora {
             virtual void onTokenPrivilegeWillExpire(const char* token) override;
             virtual void onFirstLocalAudioFrame(int elapsed) override;
             virtual void onFirstRemoteAudioFrame(uid_t uid, int elapsed) override;
+            virtual void onFirstRemoteAudioDecoded(uid_t uid, int elapsed) override;
             virtual void onStreamPublished(const char *url, int error) override;
             virtual void onStreamUnpublished(const char *url) override;
             virtual void onTranscodingUpdated() override;
@@ -226,6 +228,7 @@ namespace agora {
             void onTokenPrivilegeWillExpire_node(const char* token);
             void onFirstLocalAudioFrame_node(int elapsed);
             void onFirstRemoteAudioFrame_node(uid_t uid, int elapsed);
+            void onFirstRemoteAudioDecoded_node(uid_t uid, int elapsed);
             void onStreamPublished_node(const char *url, int error);
             void onStreamUnpublished_node(const char *url);
             void onTranscodingUpdated_node();   
