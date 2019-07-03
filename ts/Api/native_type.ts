@@ -328,14 +328,17 @@ export interface RtcStats {
   rxVideoKBitRate: number;
   /** Video transmission bitrate (Kbps), represented by an instantaneous value. */
   txVideoKBitRate: number;
+  /** Client-server latency. */
   lastmileDelay: number;
+  /** The packet loss rate (%) from the local client to Agora's edge server. */
   txPacketLossRate: number;
+  /** The packet loss rate (%) from Agora's edge server to the local client. */
   rxPacketLossRate: number;
   /** Number of users in the channel. */
   userCount: number;
   /** Application CPU usage (%). */
   cpuAppUsage: number;
-  /** Application CPU usage (%). */
+  /** System CPU usage (%). */
   cpuTotalUsage: number;
 }
 /** Quality change of the local video. */
