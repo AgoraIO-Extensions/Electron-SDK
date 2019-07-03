@@ -891,7 +891,7 @@ namespace agora {
         {
             FUNC_TRACE;
             node_async_call::async_call([this, uid, elapsed] {
-                this->onFirstRemoteAudioFrame_node(uid, elapsed);
+                this->onFirstRemoteAudioDecoded_node(uid, elapsed);
             });
         }
 
