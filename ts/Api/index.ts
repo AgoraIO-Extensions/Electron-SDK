@@ -1243,7 +1243,7 @@ class AgoraRtcEngine extends EventEmitter {
    * When the default camera capture settings do not meet special requirements or cause performance problems, we recommend using this method to set the camera capture preference:
    * - If the resolution or frame rate of the captured raw video data are higher than those set by {@link setVideoEncoderConfiguration},
    * processing video frames requires extra CPU and RAM usage and degrades performance. We recommend setting config as CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE = 1 to avoid such problems.
-   * - If you do not need local video preview or are willing to sacrifice preview quality, 
+   * - If you do not need local video preview or are willing to sacrifice preview quality,
    * we recommend setting config as CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE = 1 to optimize CPU and RAM usage.
    * - If you want better quality for the local video preview, we recommend setting config as CAPTURER_OUTPUT_PREFERENCE_PREVIEW = 2.
    * **Note**: Call this method before enabling the local camera. That said, you can call this method before calling {@link joinChannel}, {@link enableVideo}, or {@link enableLocalVideo},
@@ -2606,15 +2606,31 @@ class AgoraRtcEngine extends EventEmitter {
   // AUDIO MIXING
   // ===========================================================================
   /**
-   * @description This method mixes the specified local audio file with the audio stream
-   * from the microphone; or, it replaces the microphone’s audio stream with the specified
+   * @description Starts playing and mixing the music file.
+   *
+   * This method mixes the specified local audio file with the audio stream
+   * from the microphone, or replaces the microphone’s audio stream with the specified
    * local audio file. You can choose whether the other user can hear the local audio playback
    * and specify the number of loop playbacks. This API also supports online music playback.
-   * @param {string} filepath Name and path of the local audio file to be mixed.
+   *
+   * The SDK returns the state of the audio mixing file playback in the audioMixingStateChanged callback.
+   *
+   * **Note**:
+   * - Call this method when you are in the channel, otherwise it may cause issues.
+   * - If the local audio mixing file does not exist, or if the SDK does not support the file format
+   * or cannot access the music file URL, the SDK returns the warning code 701.
+   *
+   * @param {string} filepath Specifies the absolute path of the local or online audio file to be mixed.
    *            Supported audio formats: mp3, aac, m4a, 3gp, and wav.
-   * @param {boolean} loopback true - local loopback, false - remote loopback
-   * @param {boolean} replace whether audio file replace microphone audio
-   * @param {number} cycle number of loop playbacks, -1 for infinite
+   * @param {boolean} loopback Sets which user can hear the audio mixing:
+   * - true: Only the local user can hear the audio mixing.
+   * - false: Both users can hear the audio mixing.
+   * @param {boolean} replace Sets the audio mixing content:
+   * - true: Only publish the specified audio file; the audio stream from the microphone is not published.
+   * - false: The local audio file is mixed with the audio stream from the microphone.
+   * @param {number} cycle Sets the number of playback loops:
+   * - Positive integer: Number of playback loops.
+   * - -1: Infinite playback loops.
    * @returns {number}
    * - 0: Success.
    * - < 0: Failure.
@@ -2629,7 +2645,9 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description This method stops audio mixing. Call this API when you are in a channel.
+   * @description Stops playing or mixing the music file.
+   *
+   * Call this API when you are in a channel.
    * @returns {number}
    * - 0: Success.
    * - < 0: Failure.
@@ -2639,7 +2657,9 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description This method pauses audio mixing. Call this API when you are in a channel.
+   * @description Pauses playing and mixing the music file.
+   *
+   *  Call this API when you are in a channel.
    * @returns {number}
    * - 0: Success.
    * - < 0: Failure.
@@ -2649,7 +2669,9 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description This method resumes audio mixing from pausing. Call this API when you are in a channel.
+   * @description Resumes playing and mixing the music file.
+   *
+   *  Call this API when you are in a channel.
    * @returns {number}
    * - 0: Success.
    * - < 0: Failure.
@@ -2659,8 +2681,11 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description This method adjusts the volume during audio mixing. Call this API when you are in a channel.
-   * @param {number} volume Volume ranging from 0 to 100. By default, 100 is the original volume.
+   * @description Adjusts the volume of audio mixing.
+   *
+   *  Call this API when you are in a channel.
+   * @param {number} volume Audio mixing volume. The value ranges between 0 and 100 (default).
+   * 100 is the original volume.
    * @returns {number}
    * - 0: Success.
    * - < 0: Failure.
@@ -2671,7 +2696,7 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description Adjusts the audio mixing volume for local playback.
-   * @param {number} volume Volume ranging from 0 to 100. By default, 100 is the original volume.
+   * @param {number} volume Audio mixing volume for local playback. The value ranges between 0 and 100 (default). 100 is the original volume.
    * @returns {number}
    * - 0: Success.
    * - < 0: Failure.
@@ -2681,8 +2706,8 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description Adjusts the audio mixing volume for publishing (for remote users).
-   * @param {number} volume Volume ranging from 0 to 100. By default, 100 is the original volume.
+   * @description Adjusts the audio mixing volume for publishing (sending to other users).
+   * @param {number} volume Audio mixing volume for publishing. The value ranges between 0 and 100 (default). 100 is the original volume.
    * @returns {number}
    * - 0: Success.
    * - < 0: Failure.
@@ -2692,35 +2717,61 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description This method gets the duration (ms) of the audio mixing. Call this API when you are in
-   * a channel. A return value of 0 means that this method call has failed.
-   * @returns {number} duration of audio mixing
+   * @description Gets the duration (ms) of the music file.
+   *
+   * Call this API when you are in a channel.
+   * @returns {number}
+   * - ≥ 0: The audio mixing duration, if this method call succeeds.
+   * - < 0: Failure.
    */
   getAudioMixingDuration(): number {
     return this.rtcEngine.getAudioMixingDuration();
   }
 
   /**
-   * @description This method gets the playback position (ms) of the audio. Call this API
-   * when you are in a channel.
-   * @returns {number} current playback position
+   * @description Gets the playback position (ms) of the music file.
+   *
+   * Call this API when you are in a channel.
+   * @returns {number}
+   * - ≥ 0: The current playback position of the audio mixing, if this method call succeeds.
+   * - < 0: Failure.
    */
   getAudioMixingCurrentPosition(): number {
     return this.rtcEngine.getAudioMixingCurrentPosition();
   }
 
+  /**
+   * @description Adjusts the audio mixing volume for publishing (for remote users).
+   *
+   * Call this API when you are in a channel.
+   *
+   * @returns {number}
+   * - ≥ 0: The audio mixing volume for local playout, if this method call succeeds. The value range is [0,100].
+   * - < 0: Failure.
+   */
   getAudioMixingPlayoutVolume(): number {
     return this.rtcEngine.getAudioMixingPlayoutVolume();
   }
 
+  /**
+   * @description Retrieves the audio mixing volume for publishing.
+   *
+   * Call this API when you are in a channel.
+   *
+   * @returns {number}
+   * - ≥ 0: The audio mixing volume for publishing, if this method call succeeds. The value range is [0,100].
+   * - < 0: Failure.
+   */
   getAudioMixingPublishVolume(): number {
     return this.rtcEngine.getAudioMixingPublishVolume();
   }
 
   /**
-   * @description This method drags the playback progress bar of the audio mixing file to where
+   * @description Sets the playback position of the music file to a different starting position.
+   *
+   * This method drags the playback progress bar of the audio mixing file to where
    * you want to play instead of playing it from the beginning.
-   * @param {number} position Integer. The position of the audio mixing file in ms
+   * @param {number} position The playback starting position (ms) of the music file.
    * @returns {number}
    * - 0: Success.
    * - < 0: Failure.
@@ -3248,7 +3299,7 @@ declare interface AgoraRtcEngine {
     speakerNumber: number,
     totalVolume: number
   ) => void): this;
-  /** Occurs when the user leaves the channel. When the app calls the {@link leaveChannel} method, the SDK uses 
+  /** Occurs when the user leaves the channel. When the app calls the {@link leaveChannel} method, the SDK uses
    * this callback to notify the app when the user leaves the channel.
    */
   on(evt: 'leaveChannel', cb: () => void): this;
@@ -3479,14 +3530,14 @@ declare interface AgoraRtcEngine {
    *  - false: Disable. Other users in the channel can no longer receive the video stream from this remote user, while this remote user can still receive the video streams from other users.
    */
   on(evt: 'userEnableLocalVideo', cb: (uid: number, enabled: boolean) => void): this;
-  /** 
+  /**
    * @deprecated Replaced by the localVideoStateChanged callback.
-   * Occurs when the camera turns on and is ready to capture the video. 
+   * Occurs when the camera turns on and is ready to capture the video.
    */
   on(evt: 'cameraReady', cb: () => void): this;
-  /** 
+  /**
    * @deprecated Replaced by the localVideoStateChanged callback.
-   * Occurs when the video stops playing. 
+   * Occurs when the video stops playing.
    */
   on(evt: 'videoStopped', cb: () => void): this;
   /** Occurs when the SDK cannot reconnect to Agora's edge server 10 seconds after its connection to the server is interrupted.
@@ -3494,7 +3545,7 @@ declare interface AgoraRtcEngine {
    */
   on(evt: 'connectionLost', cb: () => void): this;
   // on(evt: 'connectionInterrupted', cb: () => void): this;
-  /** 
+  /**
    * @deprecated Replaced by the connectionStateChanged callback.
    * Occurs when your connection is banned by the Agora Server.
    */
