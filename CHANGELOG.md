@@ -9,6 +9,11 @@
   * pauseAudio => disableAudio
   * resumeAudio => enableAudio
   * setHighQualityAudioParameters => setAudioProfile
+* Following Apis have been renamed:
+  * videosourceStartScreenCaptureByScreen -> videoSourceStartScreenCaptureByScreen
+  * videosourceStartScreenCaptureByWindow -> videoSourceStartScreenCaptureByWindow
+  * videosourceUpdateScreenCaptureParameters -> videoSourceUpdateScreenCaptureParameters
+  * videosourceSetScreenCaptureContentHint -> videoSourceSetScreenCaptureContentHint
 
 #### :warning: Breaking Changes
 * These event will be removed
