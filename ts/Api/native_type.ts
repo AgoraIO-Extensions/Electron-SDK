@@ -99,14 +99,14 @@ export interface TranscodingConfig {
    * **Note**: Agora adjusts all values over 30 to 30.
    */
   videoFrameRate: number;
-  /** 
+  /**
    * Latency mode:
    *
    * - true: Low latency with unassured quality
    * - false: (Default) High latency with assured quality
    */
   lowLatency: boolean;
-  /** 
+  /**
    * Video GOP in frames. The default value is 30 fps.
    */
   videoGop: number;
@@ -220,7 +220,7 @@ export interface LastmileProbeResult {
 export interface UserInfo {
   /** The user ID. */
   uid: number;
-  /** The user account. The maximum length of this parameter is 255 bytes. 
+  /** The user account. The maximum length of this parameter is 255 bytes.
    * Ensure that you set this parameter and do not set it as null. */
   userAccount: string;
 }
@@ -328,6 +328,9 @@ export interface RtcStats {
   rxVideoKBitRate: number;
   /** Video transmission bitrate (Kbps), represented by an instantaneous value. */
   txVideoKBitRate: number;
+  lastmileDelay: number;
+  txPacketLossRate: number;
+  rxPacketLossRate: number;
   /** Number of users in the channel. */
   userCount: number;
   /** Application CPU usage (%). */
@@ -599,7 +602,7 @@ export enum OrientationMode  {
 export interface RemoteVideoStats {
   /** User ID of the user sending the video streams. */
   uid: number;
-  /** 
+  /**
    * @deprecated This parameter is deprecated.
    * Time delay (ms). */
   delay: number;
@@ -617,11 +620,11 @@ export interface RemoteVideoStats {
    * Video stream type:
    * - 0: High-stream
    * - 1: Low-stream
-   * 
+   *
    */
   rxStreamType: StreamType;
   /**
-   * The total freeze time (ms) of the remote video stream after the remote user joins the channel. 
+   * The total freeze time (ms) of the remote video stream after the remote user joins the channel.
    * In a video session where the frame rate is set to no less than 5 fps, video freeze occurs when the time interval between two adjacent renderable video frames is more than 500 ms.
    */
   totalFrozenTime: number;
@@ -748,8 +751,8 @@ export interface RemoteAudioStats {
   receivedSampleRate: number;
   /** The received bitrate. */
   receivedBitrate: number;
-  /** 
-   * The total freeze time (ms) of the remote audio stream after the remote user joins the channel. 
+  /**
+   * The total freeze time (ms) of the remote audio stream after the remote user joins the channel.
    * In a session, audio freeze occurs when the audio frame loss rate reaches 4%.
    */
   totalFrozenTime: number;
@@ -774,7 +777,7 @@ export type RemoteVideoState =
  * - 2: The SDK is connecting to Agora's edge server. When the application calls the {@link AgoraRtcEngine.joinChannel} method, the SDK starts to establish a connection to the specified channel.
  *  - When the SDK successfully joins the channel, it triggers the connectionStateChanged callback and switches to the 3 state.
  *  - After the SDK joins the channel and when it finishes initializing the media engine, the SDK triggers the joinedChannel callback.
- * - 3: The SDK is connected to Agora's edge server and has joined a channel. You can now publish or subscribe to a media stream in the channel.If the connection to the channel is lost because, for example, 
+ * - 3: The SDK is connected to Agora's edge server and has joined a channel. You can now publish or subscribe to a media stream in the channel.If the connection to the channel is lost because, for example,
  * if the network is down or switched, the SDK automatically tries to reconnect and triggers:
  *  - The connectionStateChanged callback and switches to the 4 state.
  * - 4: The SDK keeps rejoining the channel after being disconnected from a joined channel because of network issues.
@@ -824,7 +827,7 @@ export type ConnectionChangeReason =
   | 12 // 12: Network status change for renew token
   | 13; // 13: Client IP Address changed
 
-/** 
+/**
  * @deprecated Deprecated.
  * Video profile. */
 export enum VIDEO_PROFILE_TYPE {
@@ -1184,6 +1187,8 @@ export interface NodeRtcEngine {
   adjustAudioMixingPublishVolume(volume: number): number;
   getAudioMixingDuration(): number;
   getAudioMixingCurrentPosition(): number;
+  getAudioMixingPublishVolume(): number;
+  getAudioMixingPlayoutVolume(): number;
   setAudioMixingPosition(position: number): number;
   addPublishStreamUrl(url: string, transcodingEnabled: boolean): number;
   removePublishStreamUrl(url: string): number;
