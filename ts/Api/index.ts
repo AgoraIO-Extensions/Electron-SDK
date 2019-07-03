@@ -539,6 +539,10 @@ class AgoraRtcEngine extends EventEmitter {
       fire('localVideoStateChanged', localVideoState, err);
     });
 
+    this.rtcEngine.onEvent('audioMixingStateChanged', function(state:number, errorCode: number) {
+      fire('audioMixingStateChanged', state, errorCode);
+    });
+
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
       self.onRegisterDeliverFrame(infos);
     });
@@ -2703,6 +2707,14 @@ class AgoraRtcEngine extends EventEmitter {
    */
   getAudioMixingCurrentPosition(): number {
     return this.rtcEngine.getAudioMixingCurrentPosition();
+  }
+
+  getAudioMixingPlayoutVolume(): number {
+    return this.rtcEngine.getAudioMixingPlayoutVolume();
+  }
+
+  getAudioMixingPublishVolume(): number {
+    return this.rtcEngine.getAudioMixingPublishVolume();
   }
 
   /**
