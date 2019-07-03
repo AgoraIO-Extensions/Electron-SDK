@@ -1936,8 +1936,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - Ensure that you set the `userAccount` parameter. Otherwise, this method does not take effect.
    * - Ensure that the value of the `userAccount` parameter is unique in the channel.
    * 
-   * @param appId The App ID of your project.
-   * @param userAccount The user account. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as null. Ensure that you set this parameter and do not set it as null. 
+   * @param {string} appId The App ID of your project.
+   * @param {string} userAccount The user account. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as null. Ensure that you set this parameter and do not set it as null. 
    * Supported character scopes are:
    * - The 26 lowercase English letters: a to z.
    * - The 26 uppercase English letters: A to Z.
@@ -1960,16 +1960,16 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * **Note**: To ensure smooth communication, use the same parameter type to identify the user. For example, if a user joins the channel with a user ID, then ensure all the other users use the user ID too. 
    * The same applies to the user account. If a user joins the channel with the Agora Web SDK, ensure that the `uid` of the user is set to the same parameter type.
-   * @param token The token generated at your server.
+   * @param {string} token The token generated at your server.
    * - For low-security requirements: You can use the temporary token generated at Dashboard. For details, see [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-temporary-token).
    * - For high-security requirements: Set it as the token generated at your server. For details, see [Get a token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-token).
-   * @param channel The channel name. The maximum length of this parameter is 64 bytes. Supported character scopes are:
+   * @param {string} channel The channel name. The maximum length of this parameter is 64 bytes. Supported character scopes are:
    * - The 26 lowercase English letters: a to z.
    * - The 26 uppercase English letters: A to Z.
    * - The 10 numbers: 0 to 9.
    * - The space.
    * - "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
-   * @param userAccount The user account. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as null.
+   * @param {string} userAccount The user account. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as null.
    * Supported character scopes are:
    * - The 26 lowercase English letters: a to z.
    * - The 26 uppercase English letters: A to Z.
@@ -2020,7 +2020,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
   /**
    * @description Adjusts the recording volume.
-   * @param volume Recording volume. The value ranges between 0 and 400:
+   * @param {number} volume Recording volume. The value ranges between 0 and 400:
    * - 0: Mute.
    * - 100: Original volume.
    * - 400: (Maximum) Four times the original volume with signal-clipping protection.
@@ -2146,6 +2146,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
+  
   getPlaybackDeviceInfo(deviceId: string, deviceName: string): number {
     return this.rtcEngine.getPlaybackDeviceInfo(deviceId, deviceName);
   }
@@ -2598,9 +2599,9 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.videoSourceEnableDualStreamMode(enable);
   }
 
-  /**
-   * @description setParameters for video source
-   * @param {string} parameter parameter to set
+  /**TODO:
+   * @description Sets the video source parameters.
+   * @param {string} parameter Sets the video source encoding parameters.
    * @returns {number}
    * - 0: Success.
    * - < 0: Failure.
@@ -2610,7 +2611,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description This method updates the screen capture region for video source
+   * @description Updates the screen capture region for the video source.
    * @param {*} rect {left: 0, right: 100, top: 0, bottom: 100} (relative distance from the left-top corner of the screen)
    * @returns {number}
    * - 0: Success.
@@ -2626,7 +2627,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description release video source object
+   * @description Releases the video source object.
    * @returns {number}
    * - 0: Success.
    * - < 0: Failure.
@@ -2638,9 +2639,11 @@ class AgoraRtcEngine extends EventEmitter {
   // 2.4 new Apis
   /**
    * @description Shares the whole or part of a screen by specifying the screen rect.
-   * @param {ScreenSymbol} screenSymbol screenid on mac / screen position on windows
-   * @param {CaptureRect} rect Definition of the rectangular region.
-   * @param {CaptureParam} param
+   * @param {ScreenSymbol} screenSymbol The display ID：
+   * - macOS: The display ID.
+   * - Windows: The screen rect.
+   * @param {CaptureRect} rect Sets the relative location of the region to the screen.
+   * @param {CaptureParam} param Sets the video source encoding parameters.
    * @returns {number}
    * - 0: Success.
    * - < 0: Failure.
@@ -2651,9 +2654,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * @description Shares the whole or part of a window by specifying the window ID.
-   * @param {number} windowSymbol windowid
-   * @param {CaptureRect} rect Definition of the rectangular region.
-   * @param {CaptureParam} param
+   * @param {number} windowSymbol The ID of the window to be shared. 
+   * @param {CaptureRect} rect The ID of the window to be shared. 
+   * @param {CaptureParam} param Sets the video source encoding parameters.
    * @returns {number}
    * - 0: Success.
    * - < 0: Failure.
@@ -2663,8 +2666,8 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description Updates the screen sharing parameters.
-   * @param {CaptureParam} param
+   * @description Updates the video source parameters.
+   * @param {CaptureParam} param Sets the video source encoding parameters.
    * @returns {number}
    * - 0: Success.
    * - < 0: Failure.
@@ -2674,8 +2677,8 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description  Updates the screen sharing parameters.
-   * @param {VideoContentHint} hint
+   * @description  Updates the video source parameters.
+   * @param {VideoContentHint} hint Sets the content hint for the video source.
    * @returns {number}
    * - 0: Success.
    * - < 0: Failure.
@@ -2693,11 +2696,11 @@ class AgoraRtcEngine extends EventEmitter {
   // one at a time via this section's api
   // ===========================================================================
   /**
-   * @deprecated Use  {@link videoSourceStartScreenCaptureByScreen} or {@link videoSourceStartScreenCaptureByWindow} instead.
-   * @description Starts the screen-sharing.
-   * @param {number} wndid Sets the screen-sharing area.
+   * @deprecated This method is deprecated. Use  {@link videoSourceStartScreenCaptureByScreen} or {@link videoSourceStartScreenCaptureByWindow} instead.
+   * @description Starts the screen sharing.
+   * @param {number} wndid Sets the screen sharing area.
    * @param {number} captureFreq (Mandatory) The captured frame rate. The value ranges between 1 fps and 15 fps.
-   * @param {*} rect Specifies the screen-sharing region. `rect` is valid when `wndid` is set as 0. When `rect` is set as NULL, the whole screen is shared.
+   * @param {*} rect Specifies the screen sharing region. `rect` is valid when `wndid` is set as 0. When `rect` is set as NULL, the whole screen is shared.
    * @param {number} bitrate The captured bitrate.
    * @returns {number}
    * - 0: Success.
@@ -2714,7 +2717,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description Stops screen capture
+   * @description Stops screen sharing.
    * @returns {number}
    * - 0: Success.
    * - < 0: Failure.
@@ -2724,7 +2727,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @description This method updates the screen capture region.
+   * @description Updates the screen capture region.
    * @param {*} rect {left: 0, right: 100, top: 0, bottom: 100} (relative distance from the left-top corner of the screen)
    * @returns {number}
    * - 0: Success.
@@ -2922,9 +2925,10 @@ class AgoraRtcEngine extends EventEmitter {
   // ===========================================================================
   // CDN STREAMING
   // ===========================================================================
-   /**
-    * @description Adds a stream RTMP URL address, to which the host publishes the stream. (CDN live only.)
-    * Invoke onStreamPublished when successful
+   /**TODO:
+    * @description Publishes the local stream to a specified CDN live RTMP address. 
+    * 
+    * The SDK returns the result of this method call in the streamPublished callback.
     * @note
     * - Ensure that the user joins the channel before calling this method.
     * - This method adds only one stream RTMP URL address each time it is called.
