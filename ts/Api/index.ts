@@ -3507,7 +3507,6 @@ declare interface AgoraRtcEngine {
   // on(evt: 'audioQuality', cb: (
   //   uid: number, quality: AgoraNetworkQuality, delay: number, lost: number
   // ) => void): this;
-  /** Reports which users are speaking and the speakers' volume. */
   on(evt: 'audioVolumeIndication', cb: (
     uid: number,
     volume: number,
