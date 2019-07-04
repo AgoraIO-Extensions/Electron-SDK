@@ -1258,11 +1258,11 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description Sets the video encoder configuration.
    *
-   * Each video encoder configuration corresponds to a set of video parameters, including the resolution, frame rate, bitrate, and video orientation.
+   * @description Each video encoder configuration corresponds to a set of video parameters, including the resolution, frame rate, bitrate, and video orientation.
    * The parameters specified in this method are the maximum values under ideal network conditions. If the video engine cannot render the video using
    * the specified parameters due to poor network conditions, the parameters further down the list are considered until a successful configuration is found.
    *
-   * If you do not set the video encoder configuration after joining the channel, you can call this method before calling the {@link enableVideo}
+   * @description If you do not set the video encoder configuration after joining the channel, you can call this method before calling the {@link enableVideo}
    * method to reduce the render time of the first video frame.
    * @param {VideoEncoderConfiguration} config - The local video encoder configuration. See {@link VideoEncoderConfiguration}.
    * @returns {number}
