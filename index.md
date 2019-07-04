@@ -38,6 +38,8 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.enableAudio enableAudio}               | Enables the audio module.                                    |
 | {@link AgoraRtcEngine.disableAudio disableAudio}             | Disables the audio module.                                   |
 | {@link AgoraRtcEngine.setAudioProfile setAudioProfile}       | Sets the audio parameters and application scenarios.         |
+|{@link AgoraRtcEngine.adjustRecordingSignalVolume adjustRecordingSignalVolume}| Adjusts the recording volume.|
+|{@link AgoraRtcEngine.adjustPlaybackSignalVolume adjustPlaybackSignalVolume}| Adjusts the playback volume.|
 | {@link AgoraRtcEngine.enableLocalAudio enableLocalAudio}     | Enables/disables the local audio capture.                    |
 | {@link AgoraRtcEngine.muteLocalAudioStream muteLocalAudioStream} | Stops/Resumes sending the local audio stream.                |
 | {@link AgoraRtcEngine.muteRemoteAudioStream muteRemoteAudioStream} | Stops/Resumes receving a specified remote audio stream.      |
@@ -111,8 +113,10 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.adjustAudioMixingVolume adjustAudioMixingVolume} | Adjusts the volume during audio mixing.                 |
 | {@link AgoraRtcEngine.adjustAudioMixingPlayoutVolume adjustAudioMixingPlayoutVolume} | Adjusts the volume of audio mixing for local playback.  |
 | {@link AgoraRtcEngine.adjustAudioMixingPublishVolume adjustAudioMixingPublishVolume} | Adjusts the volume of audio mixing for remote playback. |
+|{@link AgoraRtcEngine.getAudioMixingPlayoutVolume getAudioMixingPlayoutVolume}|Adjusts the audio mixing volume for publishing (for remote users).|
+|{@link AgoraRtcEngine.getAudioMixingPublishVolume getAudioMixingPublishVolume}|Retrieves the audio mixing volume for publishing.|
 | {@link AgoraRtcEngine.getAudioMixingDuration getAudioMixingDuration} | Gets the duration (ms) of the music file.               |
-| {@link AgoraRtcEngine.getAudioMixingCurrentPosition getAudioMixingCurrentPosition} | Gsts the playback position (ms) of the music file.      |
+| {@link AgoraRtcEngine.getAudioMixingCurrentPosition getAudioMixingCurrentPosition} | Gets the playback position (ms) of the music file.      |
 | {@link AgoraRtcEngine.setAudioMixingPosition setAudioMixingPosition} | Sets the playback position of the music file.           |
 
 ### Audio effect playback
@@ -214,6 +218,7 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | Method                                                       | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | {@link AgoraRtcEngine.setEncryptionSecret setEncryptionSecret} | Enables built-in encryption with an encryption password before joining a channel. |
+| {@link AgoraRtcEngine.setEncryptionMode setEncryptionMode}|Sets the built-in encryption mode.|
 
 ### Inject an online media stream
 
@@ -350,6 +355,7 @@ Agora Electron SDK use the  {@link AgoraRtcEngine.on on} method to add listeners
 | lastmileProbeResult              | Reports the last-mile network probe result.                  |
 | firstLocalAudioFrame             | Occurs when the first local audio frame is sent.             |
 | firstRemoteAudioFrame            | Occurs when the first remote audio frame is received.        |
+| firstRemoteAudioDecoded          | Occurs when the engine receives the first audio frame from a specified remote user.|
 | firstLocalVideoFrame             | Occurs when the first local video frame is sent.             |
 | firstRemoteVideoFrame            | Occurs when the first remote video frame is rendered.        |
 | videoSizeChanged                 | Occurs when the video size or rotation information of a specified remote user changes. |
@@ -364,6 +370,7 @@ Agora Electron SDK use the  {@link AgoraRtcEngine.on on} method to add listeners
 | streamMessage                    | Occurs when the local user receives a remote data stream within five seconds. |
 | streamMessageError               | Occurs when the local user fails to receive the remote data stream. |
 | audioDeviceVolumeChanged         | Occurs when the volume of the playback, microphone, or application changes. |
+|localVideoStateChanged| Occurs when the local video state changes.|
 | remoteVideoStateChanged          | Occurs when the remote video stream state changes.           |
 | cameraFocusAreaChanged           | Occurs when the camera focus area changes.                   |
 | cameraExposureAreaChanged        | Occurs when the camera exposure area changes.                |
@@ -372,21 +379,21 @@ Agora Electron SDK use the  {@link AgoraRtcEngine.on on} method to add listeners
 | transcodingUpdated               | Occurs when the publisher's transcoding settings are updated. |
 | streamInjectStatus               | Reports the status of the injected online media stream.      |
 | localPublishFallbackToAudioOnly  | Occurs:<br><li>When the published media stream falls back to an audio-only stream due to poor network conditions.</li><br><li>When the published media stream switches back to the video after the network conditions improve.</li> |
-| remotePublishFallbackToAudioOnly | Occurs:<br/><li>When the remote media stream falls back to audio-only due to poor network conditions.</li><br><li>When the remote media stream switches back to the video after the network conditions improve.</li> |
+| remoteSubscribeFallbackToAudioOnly | Occurs:<br/><li>When the remote media stream falls back to audio-only due to poor network conditions.</li><br><li>When the remote media stream switches back to the video after the network conditions improve.</li> |
 | videoSourceJoinedSuccess         | Occurs when a user joins a channel. (The second instance)    |
 | videoSourceRequestNewToken       | Occurs when the token expires. (The second instance)         |
 | videoSourceLeaveChannel          | Occurs when a user leaves a channel. (The second instance)   |
 
 <a name = "error"></a>
 
-## Error code and warning code
+## Error codes and warning codes
 
 Reports an error code or a warning code during SDK runtime:
 
 * **Error Code**: In most cases, the SDK cannot fix the issue and resume running. The SDK requires the application to take action or informs the user about the issue.
 * **Warning Code**: In most cases, the application can ignore the warning reported by the SDK because the SDK can usually fix the issue and resume running.
 
-### Error code
+### Error codes
 
 <table>
 <colgroup>
@@ -575,7 +582,7 @@ Reports an error code or a warning code during SDK runtime:
 </table>
 
 
-### Warning code
+### Warning codes
 
 <table>
 <colgroup>

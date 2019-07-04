@@ -43,10 +43,10 @@
     "shelljs": "^0.8.3",
     "signale": "^1.4.0",
     "yuv-buffer": "^1.0.0",
-    "yuv-canvas": "^1.2.4"
+    "yuv-canvas": "^1.2.6"
   },
   "devDependencies": {
-    "@types/node": "^10.14.10",
+    "@types/node": "^10.14.12",
     "jest": "^24.8.0",
     "jsdom": "^14.1.0",
     "prettier": "^1.18.2",
