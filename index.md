@@ -355,6 +355,7 @@ Agora Electron SDK use the  {@link AgoraRtcEngine.on on} method to add listeners
 | lastmileProbeResult              | Reports the last-mile network probe result.                  |
 | firstLocalAudioFrame             | Occurs when the first local audio frame is sent.             |
 | firstRemoteAudioFrame            | Occurs when the first remote audio frame is received.        |
+| firstRemoteAudioDecoded          | Occurs when the engine receives the first audio frame from a specified remote user.|
 | firstLocalVideoFrame             | Occurs when the first local video frame is sent.             |
 | firstRemoteVideoFrame            | Occurs when the first remote video frame is rendered.        |
 | videoSizeChanged                 | Occurs when the video size or rotation information of a specified remote user changes. |
@@ -378,7 +379,7 @@ Agora Electron SDK use the  {@link AgoraRtcEngine.on on} method to add listeners
 | transcodingUpdated               | Occurs when the publisher's transcoding settings are updated. |
 | streamInjectStatus               | Reports the status of the injected online media stream.      |
 | localPublishFallbackToAudioOnly  | Occurs:<br><li>When the published media stream falls back to an audio-only stream due to poor network conditions.</li><br><li>When the published media stream switches back to the video after the network conditions improve.</li> |
-| remotePublishFallbackToAudioOnly | Occurs:<br/><li>When the remote media stream falls back to audio-only due to poor network conditions.</li><br><li>When the remote media stream switches back to the video after the network conditions improve.</li> |
+| remoteSubscribeFallbackToAudioOnly | Occurs:<br/><li>When the remote media stream falls back to audio-only due to poor network conditions.</li><br><li>When the remote media stream switches back to the video after the network conditions improve.</li> |
 | videoSourceJoinedSuccess         | Occurs when a user joins a channel. (The second instance)    |
 | videoSourceRequestNewToken       | Occurs when the token expires. (The second instance)         |
 | videoSourceLeaveChannel          | Occurs when a user leaves a channel. (The second instance)   |
