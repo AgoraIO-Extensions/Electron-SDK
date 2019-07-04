@@ -3516,6 +3516,8 @@ declare interface AgoraRtcEngine {
   ) => void): this;
   /** Reports which users are speaking and the speakers' volume.
    * - speakers: A struct containing each speaker's user ID and volume information.
+   *  - uid: User ID of the speaker. The uid of the local user is 0.
+   *  - volume: The volume of the speaker. 
    * - speakerNumber: Total number of speakers.
    * - volume: Total volume after audio mixing. The value ranges between 0 (lowest volume) and 255 (highest volume).
    */
