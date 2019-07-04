@@ -2509,34 +2509,7 @@ namespace agora {
                 status = napi_get_object_property_int32_(isolate, obj, "frameRate", frameRateVal);
                 CHECK_NAPI_STATUS(pEngine, status);
 
-                switch(frameRateVal) {
-                    case 1:
-                        frameRate = FRAME_RATE_FPS_1;
-                        break;
-                    case 7:
-                        frameRate = FRAME_RATE_FPS_7;
-                        break;
-                    case 10:
-                        frameRate = FRAME_RATE_FPS_10;
-                        break;
-                    case 15:
-                        frameRate = FRAME_RATE_FPS_15;
-                        break;
-                    case 24:
-                        frameRate = FRAME_RATE_FPS_24;
-                        break;
-                    case 30:
-                        frameRate = FRAME_RATE_FPS_30;
-                        break;
-                    case 60:
-                        frameRate = FRAME_RATE_FPS_60;
-                        break;
-                    default:
-                        status = napi_invalid_arg;
-                        break;
-                }
-                CHECK_NAPI_STATUS(pEngine, status);
-                config.frameRate = frameRate;
+                config.frameRate = (FRAME_RATE)frameRateVal;
 
                 int orientationModeVal;
                 ORIENTATION_MODE orientationMode;
