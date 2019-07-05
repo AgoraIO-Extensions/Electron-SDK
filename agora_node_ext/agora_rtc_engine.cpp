@@ -2670,8 +2670,12 @@ namespace agora {
                 napi_get_param_2(args, bool, reliable, bool, ordered);
                 CHECK_NAPI_STATUS(pEngine, status);
 
-                pEngine->m_engine->createDataStream(&streamId, reliable, ordered);
-                napi_set_int_result(args, streamId);
+                int result = pEngine->m_engine->createDataStream(&streamId, reliable, ordered);
+                if(result < 0) {
+                    napi_set_int_result(args, result);
+                } else {
+                    napi_set_int_result(args, streamId);
+                }
             } while (false);
             LOG_LEAVE;
         }
