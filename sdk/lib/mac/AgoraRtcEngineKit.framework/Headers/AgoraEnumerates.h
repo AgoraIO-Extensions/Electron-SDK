@@ -23,7 +23,7 @@ typedef NS_ENUM(NSInteger, AgoraWarningCode) {
     /** 104: A timeout occurs when looking up the channel. When joining a channel, the SDK looks up the specified channel. The warning usually occurs when the network condition is too poor for the SDK to connect to the server. */
     AgoraWarningCodeLookupChannelTimeout = 104,
     /** 105: The server rejects the request to look up the channel. The server cannot process this request or the request is illegal.
-     <p><b>DEPRECATED</b></p>
+     <br></br><b>DEPRECATED</b> as of v2.4.1. Use AgoraConnectionChangedRejectedByServer(10) in the `reason` parameter of [connectionChangedToState]([AgoraRtcEngineDelegate rtcEngine:connectionChangedToState:reason:]).
      */
     AgoraWarningCodeLookupChannelRejected = 105,
     /** 106: The server rejects the request to look up the channel. The server cannot process this request or the request is illegal. */
@@ -131,17 +131,17 @@ typedef NS_ENUM(NSInteger, AgoraErrorCode) {
     /** 102: The specified channel name is invalid. Please try to rejoin the channel with a valid channel name. */
     AgoraErrorCodeInvalidChannelId = 102,
     /** 109: The token expired.
+     <br></br><b>DEPRECATED</b> as of v2.4.1. Use AgoraConnectionChangedTokenExpired(9) in the `reason` parameter of [connectionChangedToState]([AgoraRtcEngineDelegate rtcEngine:connectionChangedToState:reason:]).
      <p>Possible reasons are:
      <ul><li>Authorized Timestamp expired: The timestamp is represented by the number of seconds elapsed since 1/1/1970. The user can use the token to access the Agora service within five minutes after the token is generated. If the user does not access the Agora service after five minutes, this token is no longer valid.</li>
      <li>Call Expiration Timestamp expired: The timestamp is the exact time when a user can no longer use the Agora service (for example, when a user is forced to leave an ongoing call). When a value is set for the Call Expiration Timestamp, it does not mean that the token will expire, but that the user will be banned from the channel.</li></ul></p>
-     <p><b>DEPRECATED</b></p>
      */
     AgoraErrorCodeTokenExpired = 109,
     /** 110: The token is invalid.
+<br></br><b>DEPRECATED</b> as of v2.4.1. Use AgoraConnectionChangedInvalidToken(8) in the `reason` parameter of [connectionChangedToState]([AgoraRtcEngineDelegate rtcEngine:connectionChangedToState:reason:]).
      <p>Possible reasons are:
      <ul><li>The App Certificate for the project is enabled in Dashboard, but the user is using the App ID. Once the App Certificate is enabled, the user must use a token.</li>
      <li>The uid is mandatory, and users must set the same uid as the one set in the [joinChannelByToken]([AgoraRtcEngineKit joinChannelByToken:channelId:info:uid:joinSuccess:]) method.</li></ul></p>
-     <p><b>DEPRECATED</b></p>
      */
     AgoraErrorCodeInvalidToken = 110,
     /** 111: The Internet connection is interrupted. This applies to the Agora Web SDK only. */
@@ -193,7 +193,7 @@ typedef NS_ENUM(NSInteger, AgoraErrorCode) {
     /** 1002: Fails to start the call after enabling the media engine. */
     AgoraErrorCodeStartCall = 1002,
     /** 1003: Fails to start the camera.
-    <p><b>DEPRECATED</b></p>
+     <br></br><b>DEPRECATED</b> as of v2.4.1. Use AgoraLocalVideoStreamErrorCaptureFailure(4) in the `error` parameter of [connectionChangedToState]([AgoraRtcEngineDelegate rtcEngine:connectionChangedToState:reason:]).
      */
     AgoraErrorCodeStartCamera = 1003,
     /** 1004: Fails to start the video rendering module. */
@@ -633,9 +633,9 @@ typedef NS_ENUM(NSUInteger, AgoraInjectStreamStatus) {
 typedef NS_ENUM(NSUInteger, AgoraLogFilter) {
     /** Do not output any log information. */
     AgoraLogFilterOff = 0,
-    /** Output all log information. */
+    /** Output all log information. Set your log filter as debug if you want to get the most complete log file. */
     AgoraLogFilterDebug = 0x080f,
-    /** Output CRITICAL, ERROR, WARNING, and INFO level log information. */
+    /** Output CRITICAL, ERROR, WARNING, and INFO level log information. We recommend setting your log filter as this level. */
     AgoraLogFilterInfo = 0x000f,
     /** Outputs CRITICAL, ERROR, and WARNING level log information. */
     AgoraLogFilterWarning = 0x000e,
@@ -792,17 +792,17 @@ typedef NS_ENUM(NSInteger, AgoraAudioSampleRateType) {
 
 /** Audio profile. */
 typedef NS_ENUM(NSInteger, AgoraAudioProfile) {
-    /** Default audio profile. In the communication profile, the default value is 1; in the live-broadcast profile, the default value is 2. */
+    /** Default audio profile. In the communication profile, the default value is AgoraAudioProfileSpeechStandard; in the live-broadcast profile, the default value is AgoraAudioProfileMusicStandard. */
     AgoraAudioProfileDefault = 0,
-    /** Sample rate of 32 kHz, audio encoding, mono, and a bitrate of up to 18 Kbps. */
+    /** A sample rate of 32 kHz, audio encoding, mono, and a bitrate of up to 18 Kbps. */
     AgoraAudioProfileSpeechStandard = 1,
-    /** Sample rate of 48 kHz, music encoding, mono, and a bitrate of up to 48 Kbps. */
+    /** A sample rate of 48 kHz, music encoding, mono, and a bitrate of up to 48 Kbps. */
     AgoraAudioProfileMusicStandard = 2,
-    /** Sample rate of 48 kHz, music encoding, stereo, and a bitrate of up to 56 Kbps. */
+    /** A sample rate of 48 kHz, music encoding, stereo, and a bitrate of up to 56 Kbps. */
     AgoraAudioProfileMusicStandardStereo = 3,
-    /** Sample rate of 48 kHz, music encoding, mono, and a bitrate of up to 128 Kbps. */
+    /** A sample rate of 48 kHz, music encoding, mono, and a bitrate of up to 128 Kbps. */
     AgoraAudioProfileMusicHighQuality = 4,
-    /** Sample rate of 48 kHz, music encoding, stereo, and a bitrate of up to 192 Kbps. */
+    /** A sample rate of 48 kHz, music encoding, stereo, and a bitrate of up to 192 Kbps. */
     AgoraAudioProfileMusicHighQualityStereo = 5,
 };
 
@@ -940,8 +940,11 @@ typedef NS_OPTIONS(NSUInteger, AgoraAudioSessionOperationRestriction) {
     AgoraAudioSessionOperationRestrictionAll               = 1 << 7
 };
 
+/** Audio codec profile. */
 typedef NS_ENUM(NSInteger, AgoraAudioCodecProfileType) {
+    /** (Default) LC-AAC, the low-complexity audio codec profile. */
   AgoraAudioCodecProfileLCAAC = 0,
+  /** HE-AAC, the high-efficiency audio codec profile. */
   AgoraAudioCodecProfileHEAAC = 1
 };
 
@@ -1025,23 +1028,25 @@ typedef NS_ENUM(NSUInteger, AgoraConnectionChangedReason) {
     AgoraConnectionChangedRenewToken = 12,
     /** 13: The client IP address has changed, probably due to a change of the network type, IP address, or network port. */
     AgoraConnectionChangedClientIpAddressChanged = 13,
+    /** 14: The connection changed to reconnecting since timeout for the keep-alive of the connection between SDK and server. */
+    AgoraConnectionChangedKeepAliveTimeout = 14,
 };
 
 /** Network type. */
 typedef NS_ENUM(NSInteger, AgoraNetworkType) {
-  /** -1: the network type is unknown. */
+  /** -1: The network type is unknown. */
   AgoraNetworkTypeUnknown = -1,
-  /** 0: the SDK disconnects from the network. */
+  /** 0: The SDK disconnects from the network. */
   AgoraNetworkTypeDisconnected = 0,
-  /** 1: the network type is LAN. */
+  /** 1: The network type is LAN. */
   AgoraNetworkTypeLAN = 1,
-  /** 2: the network type is Wi-Fi. */
+  /** 2: The network type is Wi-Fi (including hotspots). */
   AgoraNetworkTypeWIFI = 2,
-  /** 3: the network type is mobile 2G. */
+  /** 3: The network type is mobile 2G. */
   AgoraNetworkTypeMobile2G = 3,
-  /** 4: the network type is mobile 3G. */
+  /** 4: The network type is mobile 3G. */
   AgoraNetworkTypeMobile3G = 4,
-  /** 5: the network type is mobile 4G. */
+  /** 5: The network type is mobile 4G. */
   AgoraNetworkTypeMobile4G = 5,
 };
 
