@@ -45,8 +45,10 @@ class IAudioFrameObserver {
     /** Audio frame data buffer. The valid data length is: samples &times; channels &times; bytesPerSample
      */
     void* buffer;  //data buffer
-    /** Timestamp to render the audio stream.
-     */
+      /** The timestamp of the external audio frame. It is mandatory. You can use this parameter for the following purposes:
+       - Restore the order of the captured audio frame.
+       - Synchronize audio and video frames in video-related scenarios, including scenarios where external video sources are used.
+       */
     int64_t renderTimeMs;
     int avsync_type;
   };
@@ -134,8 +136,9 @@ class IVideoFrameObserver {
     /** Set the rotation of this frame before rendering the video. Supports 0, 90, 180, 270 degrees clockwise.
      */
     int rotation; // rotation of this frame (0, 90, 180, 270)
-    /** Timestamp (ms) for the video stream render. Use this timestamp to synchronize the video stream render while rendering the video streams.
-
+      /** The timestamp of the external audio frame. It is mandatory. You can use this parameter for the following purposes:
+       - Restore the order of the captured audio frame.
+       - Synchronize audio and video frames in video-related scenarios, including scenarios where external video sources are used.
      @note This timestamp is for rendering the video stream, and not for capturing the video stream.
      */
     int64_t renderTimeMs;

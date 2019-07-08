@@ -129,6 +129,7 @@ enum WARN_CODE_TYPE
     WARN_LOOKUP_CHANNEL_TIMEOUT = 104,
     /** **DEPRECATED** 105: The server rejects the request to look up the channel. The server cannot process this request or the request is illegal.
      
+     Deprecated as of v2.4.1. Use CONNECTION_CHANGED_REJECTED_BY_SERVER(10) in the agora::rtc::IRtcEngineEventHandler::onConnectionStateChanged "onConnectionStateChanged" callback instead.
     */
     WARN_LOOKUP_CHANNEL_REJECTED = 105,
     /** 106: A timeout occurs when opening the channel. Once the specific channel is found, the SDK opens the channel. This warning usually occurs when the network condition is too poor for the SDK to connect to the server.
@@ -163,7 +164,7 @@ enum WARN_CODE_TYPE
     /** 1016: Audio Device Module: a warning occurs in the recording device.
     */
     WARN_ADM_RUNTIME_RECORDING_WARNING = 1016,
-    /** 1019: Audio Device Module: no valid audio data is collected. This warning does not affect the ongoing call.
+    /** 1019: Audio Device Module: no valid audio data is collected.
     */
     WARN_ADM_RECORD_AUDIO_SILENCE = 1019,
     /** 1020: Audio Device Module: the playback device fails.
@@ -302,13 +303,17 @@ enum ERROR_CODE_TYPE
     /** 102: The specified channel name is invalid. Please try to rejoin the channel with a valid channel name.
      */
     ERR_INVALID_CHANNEL_NAME = 102,
-    /** **DEPRECATED** 109: The token expired due to one of the following reasons:
+    /** **DEPRECATED** 109: Deprecated as of v2.4.1. Use CONNECTION_CHANGED_TOKEN_EXPIRED(9) in the agora::rtc::IRtcEngineEventHandler::onConnectionStateChanged "onConnectionStateChanged" callback instead.
+     
+     The token expired due to one of the following reasons:
      
      - Authorized Timestamp expired: The timestamp is represented by the number of seconds elapsed since 1/1/1970. The user can use the Token to access the Agora service within five minutes after the Token is generated. If the user does not access the Agora service after five minutes, this Token is no longer valid.
      - Call Expiration Timestamp expired: The timestamp is the exact time when a user can no longer use the Agora service (for example, when a user is forced to leave an ongoing call). When a value is set for the Call Expiration Timestamp, it does not mean that the token will expire, but that the user will be banned from the channel.
      */
     ERR_TOKEN_EXPIRED = 109,
-    /** **DEPRECATED** 110: The token is invalid due to one of the following reasons:
+    /** **DEPRECATED** 110: Deprecated as of v2.4.1. Use CONNECTION_CHANGED_INVALID_TOKEN(8) in the agora::rtc::IRtcEngineEventHandler::onConnectionStateChanged "onConnectionStateChanged" callback instead.
+     
+     The token is invalid due to one of the following reasons:
      
      - The App Certificate for the project is enabled in Dashboard, but the user is still using the App ID. Once the App Certificate is enabled, the user must use a token.
      - The uid is mandatory, and users must set the same uid as the one set in the \ref agora::rtc::IRtcEngine::joinChannel "joinChannel" method.
@@ -499,6 +504,8 @@ enum ERROR_CODE_TYPE
      */
     ERR_START_CALL = 1002,
     /** **DEPRECATED** 1003: Fails to start the camera.
+     
+    Deprecated as of v2.4.1. Use LOCAL_VIDEO_STREAM_ERROR_CAPTURE_FAILURE(4) in the agora::rtc::IRtcEngineEventHandler::onConnectionStateChanged "onConnectionStateChanged" callback instead.
      */
     ERR_START_CAMERA = 1003,
     /** 1004: Fails to start the video rendering module.
@@ -605,6 +612,8 @@ enum ERROR_CODE_TYPE
 
 	// VDM error code starts from 1500
 	/** **DEPRECATED** 1502: Video Device Module: The camera in use.
+     
+     Deprecated as of v2.4.1. Use LOCAL_VIDEO_STREAM_ERROR_DEVICE_BUSY(3) in the agora::rtc::IRtcEngineEventHandler::onConnectionStateChanged "onConnectionStateChanged" callback instead.
 	 */
 	ERR_VDM_WIN_DEVICE_IN_USE = 1502,
 
@@ -628,11 +637,15 @@ enum LOG_FILTER_TYPE
 {
 /** 0: Do not output any log information. */
     LOG_FILTER_OFF = 0,
-     /** 0x080f: Output all log information. */
+     /** 0x080f: Output all log information.
+      Set your log filter as debug if you want to get the most complete log file.      */
     LOG_FILTER_DEBUG = 0x080f,
-     /** 0x000f: Output CRITICAL, ERROR, WARNING, and INFO level log information. */
+     /** 0x000f: Output CRITICAL, ERROR, WARNING, and INFO level log information.
+      We recommend setting your log filter as this level.
+      */
     LOG_FILTER_INFO = 0x000f,
-     /** 0x000e: Outputs CRITICAL, ERROR, and WARNING level log information. */
+     /** 0x000e: Outputs CRITICAL, ERROR, and WARNING level log information.
+      */
     LOG_FILTER_WARN = 0x000e,
      /** 0x000c: Outputs CRITICAL and ERROR level log information. */
     LOG_FILTER_ERROR = 0x000c,

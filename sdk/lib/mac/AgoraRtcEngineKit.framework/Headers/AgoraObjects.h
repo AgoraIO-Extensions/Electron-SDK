@@ -40,7 +40,7 @@ __attribute__((visibility("default"))) @interface AgoraRtcVideoCanvas : NSObject
 
 /** The configurations of the last-mile network probe test. */
 __attribute__((visibility("default"))) @interface AgoraLastmileProbeConfig : NSObject
-/** Sets whether or not to test the uplink network. Some users, for example, the audience in a Live-broadcast channel, do not need such a test. 
+/** Sets whether or not to test the uplink network. Some users, for example, the audience in a Live-broadcast channel, do not need such a test.
 
 - NO: disables the test.
 - YES: enables the test.
@@ -52,11 +52,11 @@ __attribute__((visibility("default"))) @interface AgoraLastmileProbeConfig : NSO
 - YES: enables the test.
 */
 @property (assign, nonatomic) BOOL probeDownlink;
-/** The expected maximum sending bitrate (Kbps) of the local user. 
+/** The expected maximum sending bitrate (Kbps) of the local user.
 
 The value ranges between 100 and 5000. We recommend setting this parameter according to the bitrate value set by [setVideoEncoderConfiguration]([AgoraRtcEngineKit setVideoEncoderConfiguration:]). */
 @property (assign, nonatomic) NSUInteger expectedUplinkBitrate;
-/** The expected maximum receiving bitrate (Kbps) of the local user. 
+/** The expected maximum receiving bitrate (Kbps) of the local user.
 
 The value ranges between 100 and 5000.
 */
@@ -140,10 +140,10 @@ __attribute__((visibility("default"))) @interface AgoraRtcRemoteVideoStats : NSO
 /** Video stream type (high-stream or low-stream).
  */
 @property (assign, nonatomic) AgoraVideoStreamType rxStreamType;
-/** Total time that video is frozen
+/** The total freeze time (ms) of the remote video stream after the remote user joins the channel. In a video session where the frame rate is set to no less than 5 fps, video freeze occurs when the time interval between two adjacent renderable video frames is more than 500 ms.
  */
 @property (assign, nonatomic) NSUInteger totalFrozenTime;
-/** Total frozen time to the total time when video is available
+/** The total video freeze time as a percentage (%) of the total time when the video is available.
  */
 @property (assign, nonatomic) NSUInteger frozenRate;
 @end
@@ -166,19 +166,19 @@ __attribute__((visibility("default"))) @interface AgoraRtcRemoteAudioStats : NSO
 /** Packet loss rate in the reported interval.
  */
 @property (assign, nonatomic) NSUInteger audioLossRate;
-/** Number of channels.
+/** The number of channels.
  */
 @property (assign, nonatomic) NSUInteger numChannels;
-/** Data receive sample rate (Hz) since last count.
+/** The sample rate (Hz) of the received audio stream, represented by an instantaneous value.
  */
 @property (assign, nonatomic) NSUInteger receivedSampleRate;
-/** Data receive bitrate (Kbps) since last count.
+/** The bitrate (Kbps) of the received audio stream, represented by an instantaneous value.
  */
 @property (assign, nonatomic) NSUInteger receivedBitrate;
-/** Total frozen time(ms) during call.
+/** The total freeze time (ms) of the remote audio stream after the remote user joins the channel. In a session, audio freeze occurs when the audio frame loss rate reaches 4% within two seconds.
  */
 @property (assign, nonatomic) NSUInteger totalFrozenTime;
-/** Average frozen rate during call.
+/** The total audio freeze time as a percentage (%) of the total time when the audio is available.
  */
 @property (assign, nonatomic) NSUInteger frozenRate;
 @end
@@ -298,7 +298,7 @@ You can either set the frame rate manually or choose from the following options.
  */
 @property (assign, nonatomic) NSInteger frameRate;
 
-/** The minimum video encoder frame rate (fps). 
+/** The minimum video encoder frame rate (fps).
 
 The default value is DEFAULT_MIN_BITRATE(-1) (the SDK uses the lowest encoder frame rate). For information on scenarios and considerations, see [Set the Video Profile (iOS)](../../../videoProfile_ios) or [Set the Video Profile (macOS)](../../../videoProfile_mac).
 */
@@ -428,14 +428,14 @@ AgoraDegradationPreference:
 /** Properties of the screen sharing encoding parameters.
  */
 __attribute__((visibility("default"))) @interface AgoraScreenCaptureParameters: NSObject
-/**  The maximum encoding dimensions for screen sharing. 
+/**  The maximum encoding dimensions for screen sharing.
 
 The default value is 1920 x 1080 pixels, that is, 2073600 pixels. Agora uses the value of this parameter to calculate the charges.
 
 If the aspect ratio is different between the encoding dimensions and screen dimensions, Agora applies the following algorithms for encoding. Suppose the encoding dimensions are 1920 x 1080:
 
 - If the value of the screen dimensions is lower than that of the encoding dimensions, for example, 1000 x 1000, the SDK uses 1000 x 1000 for encoding.
-- If the value of the screen dimensions is higher than that of the encoding dimensions, for example, 2000 x 1500, the SDK uses the maximum value under 1920 x 1080 with the aspect ratio of the screen dimension (4:3) for encoding, that is, 1200 x 900.
+- If the value of the screen dimensions is higher than that of the encoding dimensions, for example, 2000 x 1500, the SDK uses the maximum value under 1920 x 1080 with the aspect ratio of the screen dimension (4:3) for encoding, that is, 1440 x 1080.
 
 In either case, Agora uses the value of this parameter to calculate the charges.
  */
@@ -522,19 +522,19 @@ __attribute__((visibility("default"))) @interface AgoraLiveTranscoding: NSObject
 /** Size of the video (width and height). The minimum value of width x height is 16 x 16.
  */
 @property (assign, nonatomic) CGSize size;
-/** Bitrate of the CDN live output video stream. 
+/** Bitrate of the CDN live output video stream.
 
 The default value is 400 Kbps.
 
 Set this parameter according to the Video Bitrate Table. If you set a bitrate beyond the proper range, the SDK automatically adapts it to a value within the range.
  */
 @property (assign, nonatomic) NSInteger videoBitrate;
-/** Frame rate of the CDN live output video stream. 
+/** Frame rate of the CDN live output video stream.
 
 The default value is 15 fps. Agora adjusts all values over 30 to 30.
  */
 @property (assign, nonatomic) NSInteger videoFramerate;
-/** Latency mode:
+/** Latency mode. **DEPRECATED** from v2.8.0
 
  * YES: Low latency with unassured quality.
  * NO:（Default）High latency with assured quality.
@@ -553,7 +553,7 @@ If you set this parameter to other values, Agora adjusts it to the default value
 /** An AgoraLiveTranscodingUser object managing the user layout configuration in the CDN live stream. Agora supports a maximum of 17 transcoding users in a CDN live stream channel. See AgoraLiveTranscodingUser.
  */
 @property (copy, nonatomic) NSArray<AgoraLiveTranscodingUser *> *_Nullable transcodingUsers;
-/** Reserved property. Extra user-defined information to send SEI for the H.264/H.265 video stream to the CDN live client. Maximum length: 4096 bytes.
+/** Reserved property. Extra user-defined information to send SEI for the H.264/H.265 video stream to the CDN live client. Maximum length: 4096 bytes. For more information on SEI, see [SEI-related questions](https://docs.agora.io/cn/Agora%20Platform/live_related_faq?platform=%E7%9B%B4%E6%92%AD%E7%9B%B8%E5%85%B3#sei).
  */
 @property (copy, nonatomic) NSString *_Nullable transcodingExtraInfo;
 /** The watermark image added to the CDN live publishing stream.
@@ -592,7 +592,11 @@ COLOR_CLASS is a general name for the type:
  * 5: Five-channel stereo
  */
 @property (assign, nonatomic) NSInteger audioChannels;
+/**
+ Audio codec profile. See AgoraAudioCodecProfileType.
 
+ The default value is AgoraAudioCodecProfileLCAAC(0).
+ */
 @property (assign, nonatomic) AgoraAudioCodecProfileType audioCodecProfile;
 
 /** Creates a default transcoding object.
@@ -942,37 +946,38 @@ __attribute__((visibility("default"))) @interface AgoraBeautyOptions : NSObject
 
 [AgoraLighteningContrastLevel](AgoraLighteningContrastLevel), used with the lighteningLevel property:
 
-- 0: low contrast level.
-- 1: (default) normal contrast level.
-- 2: high contrast level.
+- 0: Low contrast level.
+- 1: (Default) Normal contrast level.
+- 2: High contrast level.
 */
 @property (nonatomic, assign) AgoraLighteningContrastLevel lighteningContrastLevel;
 
-/** The brightness level. 
+/** The brightness level.
 
-The value ranges from 0.0 (original) to 1.0.
+The default value is 0.7. The value ranges from 0.0 (original) to 1.0.
  */
 @property (nonatomic, assign) float lighteningLevel;
 
-/** The sharpness level. 
+/** The sharpness level.
 
-The value ranges from 0.0 (original) to 1.0. This parameter is usually used to remove blemishes.
+The default value is 0.5. The value ranges from 0.0 (original) to 1.0. This parameter is usually used to remove blemishes.
  */
 @property (nonatomic, assign) float smoothnessLevel;
 
-/** The redness level. 
+/** The redness level.
 
-The value ranges from 0.0 (original) to 1.0. This parameter adjusts the red saturation level.
+The default value is 0.1. The value ranges from 0.0 (original) to 1.0. This parameter adjusts the red saturation level.
 */
 @property (nonatomic, assign) float rednessLevel;
 
 @end
 
+/** The user information, including the user ID and user account. */
 __attribute__((visibility("default"))) @interface AgoraUserInfo : NSObject
-/** User's uid
+/** The user ID of a user.
  */
 @property (nonatomic, assign) NSUInteger uid;
-/** User's account
+/** The user account of a user.
  */
 @property (copy, nonatomic) NSString * _Nullable userAccount;
 @end
