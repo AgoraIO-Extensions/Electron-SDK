@@ -1,3 +1,11 @@
+## 2.8.0 (July 10th, 2019)
+#### :house: Internal
+* Update Native SDK to v2.8.0 with lots of new features and optimization. You can go to [office doc](https://docs.agora.io/en/Video/release_windows_video?platform=Windows) for detail.
+
+#### :memo: Documentation
+* Document revision by [kelzr](https://github.com/kelzr)
+
+
 ## 2.4.1-alpha (June 24th, 2019)
 #### :house: Internal
 * setRenderMode can recv 3 as param which refers to use custom Renderer (set with new API `setCustomRenderer`)
