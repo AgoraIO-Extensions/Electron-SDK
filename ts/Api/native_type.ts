@@ -23,7 +23,7 @@ export type AgoraNetworkQuality =
  *
  * - 1: Host
  * - 2: Audience
- * */
+ */
 export type ClientRoleType = 1 | 2;
 
 /** Video stream types.
@@ -39,7 +39,7 @@ export type StreamType = 0 | 1;
  * - 2: Video renderer
  * - 3: Video capturer
  * - 4: Application audio playback device
-*/
+ */
 export type MediaDeviceType =
   | -1 // Unknown device type
   | 0 // Audio playback device
@@ -92,7 +92,8 @@ export interface TranscodingConfig {
   height: number;
   /** Bitrate of the CDN live output video stream. The default value is 400 Kbps.
    * Set this parameter according to the Video Bitrate Table.
-   * If you set a bitrate beyond the proper range, the SDK automatically adapts it to a value within the range. */
+   * If you set a bitrate beyond the proper range, the SDK automatically adapts it to a value within the range.
+   */
   videoBitrate: number;
   /** Frame rate of the output video stream set for the CDN live broadcast. The default value is 15 fps.
    *
@@ -148,7 +149,8 @@ export interface TranscodingConfig {
   /** The watermark image added to the CDN live publishing stream. */
   watermark: {
     /** HTTP/HTTPS URL address of the image on the broadcasting video.
-     * The maximum length of this parameter is 1024 bytes. */
+     * The maximum length of this parameter is 1024 bytes.
+     */
     url: string;
     /** Horizontal position of the image from the upper left of the broadcasting video. */
     x: number;
@@ -221,7 +223,8 @@ export interface UserInfo {
   /** The user ID. */
   uid: number;
   /** The user account. The maximum length of this parameter is 255 bytes.
-   * Ensure that you set this parameter and do not set it as null. */
+   * Ensure that you set this parameter and do not set it as null.
+   */
   userAccount: string;
 }
 
@@ -565,7 +568,9 @@ export interface VideoEncoderConfiguration {
    *
    */
   minBitrate: number;
-  /** The orientation mode. See {@link OrientationMode}.*/
+  /**
+   * The orientation mode. See {@link OrientationMode}.
+   */
   orientationMode: OrientationMode;
   /**
    * The video encoding degradation preference under limited bandwidth. See {@link DegradationPreference}.
@@ -590,8 +595,10 @@ export enum OrientationMode  {
  * - If the captured video is in portrait mode, the output video is in portrait mode.
  */
   ORIENTATION_MODE_ADAPTIVE = 0,
-/** 1: The output video is always in landscape mode. If the captured video is in portrait mode, the video encoder crops it to fit the output. Applies to situations where
- * the receiving end cannot process the rotational information. For example, CDN live streaming. */
+/**
+ * 1: The output video is always in landscape mode. If the captured video is in portrait mode, the video encoder crops it to fit the output. Applies to situations where
+ * the receiving end cannot process the rotational information. For example, CDN live streaming.
+ */
   ORIENTATION_MODE_FIXED_LANDSCAPE = 1,
 /**
  * 2: The output video is always in portrait mode. If the captured video is in landscape mode, the video encoder crops it to fit the output. Applies to situations where
@@ -607,7 +614,8 @@ export interface RemoteVideoStats {
   uid: number;
   /**
    * @deprecated This parameter is deprecated.
-   * Time delay (ms). */
+   * Time delay (ms).
+   */
   delay: number;
   /** Width (pixels) of the remote video. */
   width: number;
@@ -832,7 +840,8 @@ export type ConnectionChangeReason =
 
 /**
  * @deprecated Deprecated.
- * Video profile. */
+ * Video profile.
+ */
 export enum VIDEO_PROFILE_TYPE {
   /** 0: 160 &times; 120, frame rate 15 fps, bitrate 65 Kbps. */
   VIDEO_PROFILE_LANDSCAPE_120P = 0,
@@ -1262,9 +1271,9 @@ export interface NodeRtcEngine {
   registerDeliverFrame(callback: Function): number;
   registerLocalUserAccount(appId: string, userAccount: string): number;
   joinChannelWithUserAccount(token: string, channel: string, userAccount: string): number;
-  getUserInfoByUserAccount(userAccount: string) : {errCode:number, userInfo: UserInfo};
-  getUserInfoByUid(uid: number) : {errCode:number, userInfo: UserInfo};
-  adjustRecordingSignalVolume(volume:number): number;
-  adjustPlaybackSignalVolume(volume:number): number;
+  getUserInfoByUserAccount(userAccount: string): {errCode: number, userInfo: UserInfo};
+  getUserInfoByUid(uid: number): {errCode: number, userInfo: UserInfo};
+  adjustRecordingSignalVolume(volume: number): number;
+  adjustPlaybackSignalVolume(volume: number): number;
   stopAllEffects(): number;
 }
