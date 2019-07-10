@@ -81,7 +81,7 @@ AGORA_ELECTRON_DEPENDENT = 4.0.0
 
 [npm-badge]: https://img.shields.io/npm/v/agora-electron-sdk.png?style=flat-square
 [npm]: https://www.npmjs.org/package/agora-electron-sdk
-[mac-build-badge]: https://img.shields.io/travis/AgoraIO/Electron-SDK/dev/2.4.1.svg?style=flat-square
+[mac-build-badge]: https://img.shields.io/travis/AgoraIO/Electron-SDK/dev/2.8.0.svg?style=flat-square
 [mac-build]: https://travis-ci.org/AgoraIO/Electron-SDK
-[windows-build-badge]: https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?branch=dev/2.4.1&svg=true
-[windows-build]:https://ci.appveyor.com/project/menthays/electron-sdk/branch/dev/2.4.1
+[windows-build-badge]: https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?branch=dev/2.8.0&svg=true
+[windows-build]:https://ci.appveyor.com/project/menthays/electron-sdk/branch/dev/2.8.0
