@@ -1,3 +1,8 @@
+## 2.3.4
+#### :house: Internal
+* Windows SDK update to 2.3.4
+* Remove redundant log print in remoteVideoStats
+
 ## 2.3.3-hotfix.2 (May 9th, 2019)
 #### :house: Internal
 * Add codes to prevent videosource from getting camera causing problems in windows
