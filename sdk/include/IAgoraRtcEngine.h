@@ -730,6 +730,11 @@ struct RtcStats
      System CPU usage (%).
      */
     double cpuTotalUsage;
+
+    /**
+     Network gateway Rtt (ms)
+     */
+    int gatewayRtt;
   RtcStats()
       : duration(0)
       , txBytes(0)
@@ -743,7 +748,8 @@ struct RtcStats
       , lastmileDelay(0)
       , userCount(0)
       , cpuAppUsage(0)
-      , cpuTotalUsage(0) {}
+      , cpuTotalUsage(0)
+      , gatewayRtt(0) {}
 };
 
 /** Statistics of the local video stream.
