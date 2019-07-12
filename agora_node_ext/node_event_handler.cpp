@@ -641,7 +641,6 @@ namespace agora {
         void NodeEventHandler::onRemoteVideoStats(const RemoteVideoStats& stats)
         {
             FUNC_TRACE;
-            printf("frame rate : %d, bitrate : %d, width %d, height %d\n", stats.receivedFrameRate, stats.receivedBitrate, stats.width, stats.height);
             node_async_call::async_call([this, stats] {
                 this->onRemoteVideoStats_node(stats);
             });
