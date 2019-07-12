@@ -79,7 +79,7 @@ The MIT License (MIT).
 
 [npm-badge]: https://img.shields.io/npm/v/agora-electron-sdk.png?style=flat-square
 [npm]: https://www.npmjs.org/package/agora-electron-sdk
-[mac-build-badge]: https://img.shields.io/travis/AgoraIO/Electron-SDK/dev/2.3.3.svg?style=flat-square
+[mac-build-badge]: https://img.shields.io/travis/AgoraIO/Electron-SDK/dev/2.3.4.svg?style=flat-square
 [mac-build]: https://travis-ci.org/AgoraIO/Electron-SDK
-[windows-build-badge]: https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?branch=dev/2.3.3&svg=true
-[windows-build]:https://ci.appveyor.com/project/menthays/electron-sdk/branch/dev/2.3.3
+[windows-build-badge]: https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?branch=dev/2.3.4&svg=true
+[windows-build]:https://ci.appveyor.com/project/menthays/electron-sdk/branch/dev/2.3.4
