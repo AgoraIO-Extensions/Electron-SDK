@@ -35,7 +35,7 @@
   "dependencies": {
     "download": "^7.1.0",
     "lodash.isequal": "^4.5.0",
-    "node-gyp": "^4.0.0",
+    "node-gyp": "^5.0.0",
     "optimist": "^0.6.1",
     "rimraf": "^2.6.3",
     "semver": "^6.0.0",
