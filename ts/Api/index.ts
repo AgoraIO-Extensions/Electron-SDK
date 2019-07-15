@@ -1923,8 +1923,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
   /**
    * @description Registers a user account.
-   * Once registered, the user account can be used to identify the local user when the user joins the channel. After the user successfully registers a user account,  the SDK triggers the onLocalUserRegistered callback on the local client,
-   * reporting the user ID and user account of the local user.
+   * Once registered, the user account can be used to identify the local user when the user joins the channel. After the user successfully registers a   user account,  the SDK triggers the onLocalUserRegistered callback on the local client, reporting the user ID and user account of the local user.
    * 
    * To join a channel with a user account, you can choose either of the following:
    * - Call the {@link registerLocalUserAccount} method to create a user account, and then the {@link joinChannelWithUserAccount} method to join the channel.
@@ -1932,8 +1931,10 @@ class AgoraRtcEngine extends EventEmitter {
    * 
    * The difference between the two is that for the former, the time elapsed between calling the {@link joinChannelWithUserAccount} method and joining the channel is shorter than the latter.
    * 
+   * To ensure smooth communication, use the same parameter type to identify the user. For example, if a user joins the channel with a user ID, then ensure all the other users use the user ID too. The same applies to the user account. If a user joins the channel with the Agora Web SDK, ensure that the `uid` of the user is set to the same parameter type.
+   * 
    * **Note**:
-   * - Ensure that you set the `userAccount parameter. Otherwise, this method does not take effect.
+   * - Ensure that you set the `userAccount` parameter. Otherwise, this method does not take effect.
    * - Ensure that the value of the `userAccount` parameter is unique in the channel.
    * 
    * @param {string} appId The App ID of your project.
@@ -2979,6 +2980,8 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @description Adds a voice or video stream HTTP/HTTPS URL address to a live broadcast.
    * 
+   * This method applies to the Native SDK v2.4.1 and later.
+   * 
    * If this method call is successful, the server pulls the voice or video stream and injects it into a live channel. 
    * This is applicable to scenarios where all audience members in the channel can watch a live show and interact with each other.
    * 
@@ -3986,7 +3989,7 @@ declare interface AgoraRtcEngine {
     state: ConnectionState,
     reason: ConnectionChangeReason
   ) => void): this;
-  /** Occurs when the local user successfully registers a user account by calling the `registerLocalUserAccount` method.
+  /** Occurs when the local user successfully registers a user account by calling the {@link registerLocalUserAccount} method.
    * This callback reports the user ID and user account of the local user.
    * - uid: The ID of the local user.
    * - userAccount: The user account of the local user.
