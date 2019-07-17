@@ -3406,67 +3406,115 @@ class AgoraRtcEngine extends EventEmitter {
   // ===========================================================================
   // replacement for setParameters call
   // ===========================================================================
-  /** @description Private Interfaces. */
+  /** 
+   * @description Private Interfaces. 
+   * @ignore
+  */
   setBool(key: string, value: boolean): number {
     return this.rtcEngine.setBool(key, value);
   }
-  /** @description Private Interfaces. */
+  /** 
+   * @description Private Interfaces. 
+   * @ignore
+   */
   setInt(key: string, value: number): number {
     return this.rtcEngine.setInt(key, value);
   }
-  /** @description Private Interfaces. */
+  /** 
+   * @description Private Interfaces. 
+   * @ignore
+   */
   setUInt(key: string, value: number): number {
     return this.rtcEngine.setUInt(key, value);
   }
-  /** @description Private Interfaces. */
+  /** 
+   * @description Private Interfaces. 
+   * @ignore
+   */
   setNumber(key: string, value: number): number {
     return this.rtcEngine.setNumber(key, value);
   }
-  /** @description Private Interfaces. */
+  /** 
+   * @description Private Interfaces. 
+   * @ignore
+   */
   setString(key: string, value: string): number {
     return this.rtcEngine.setString(key, value);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   setObject(key: string, value: string): number {
     return this.rtcEngine.setObject(key, value);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   getBool(key: string): boolean {
     return this.rtcEngine.getBool(key);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   getInt(key: string): number {
     return this.rtcEngine.getInt(key);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   getUInt(key: string): number {
     return this.rtcEngine.getUInt(key);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   getNumber(key: string): number {
     return this.rtcEngine.getNumber(key);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   getString(key: string): string {
     return this.rtcEngine.getString(key);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   getObject(key: string): string {
     return this.rtcEngine.getObject(key);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   getArray(key: string): string {
     return this.rtcEngine.getArray(key);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   setParameters(param: string): number {
     return this.rtcEngine.setParameters(param);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   convertPath(path: string): string {
     return this.rtcEngine.convertPath(path);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   setProfile(profile: string, merge: boolean): number {
     return this.rtcEngine.setProfile(profile, merge);
   }
