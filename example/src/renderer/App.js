@@ -7,6 +7,7 @@ import os from 'os';
 import {videoProfileList, audioProfileList, audioScenarioList, APP_ID, SHARE_ID, RTMP_URL } from '../utils/settings'
 import base64Encode from '../utils/base64'
 import WindowPicker from './components/WindowPicker/index.js'
+import ExampleRenderer from './ExampleRenderer'
 
 export default class App extends Component {
   constructor(props) {
@@ -378,6 +379,12 @@ export default class App extends Component {
     })
   }
 
+  handleCustomRenderer = () => {
+    let rtcEngine = this.getRtcEngine()
+    rtcEngine.setCustomRenderer(ExampleRenderer)
+    rtcEngine.setRenderMode(3)
+  }
+
   // handleAudioMixing = e => {
   //   const path = require('path')
   //   let filepath = path.join(__dirname, './music.mp3');
@@ -506,6 +513,12 @@ export default class App extends Component {
             <label className="label">Screen Share</label>
             <div className="control">
               <button onClick={this.handleScreenSharing} className="button is-link">Screen Share</button>
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">Custom Renderer</label>
+            <div className="control">
+              <button onClick={this.handleCustomRenderer} className="button is-link">Switch</button>
             </div>
           </div>
 
