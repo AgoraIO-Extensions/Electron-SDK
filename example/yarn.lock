@@ -716,6 +716,13 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
+"@develar/schema-utils@~2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@develar/schema-utils/-/schema-utils-2.1.0.tgz#eceb1695bfbed6f6bb84666d5d3abe5e1fd54e17"
+  dependencies:
+    ajv "^6.1.0"
+    ajv-keywords "^3.1.0"
+
 "@posthtml/esm@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@posthtml/esm/-/esm-1.0.0.tgz#09bcb28a02438dcee22ad1970ca1d85a000ae0cf"
@@ -1013,23 +1020,24 @@ anymatch@^2.0.0:
     micromatch "^3.1.4"
     normalize-path "^2.1.1"
 
-app-builder-bin@3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/app-builder-bin/-/app-builder-bin-3.4.0.tgz#620d7f941dad157206c267bb0b437fee43889b33"
+app-builder-bin@3.4.2:
+  version "3.4.2"
+  resolved "https://registry.yarnpkg.com/app-builder-bin/-/app-builder-bin-3.4.2.tgz#4684003fb319d8bc154b1b6e9ce006bba1602fa9"
 
-app-builder-lib@21.1.1, app-builder-lib@~21.1.1:
-  version "21.1.1"
-  resolved "https://registry.yarnpkg.com/app-builder-lib/-/app-builder-lib-21.1.1.tgz#ab30bcbcf61541e46d68912cc48c65a89169c2aa"
+app-builder-lib@21.1.5, app-builder-lib@~21.1.5:
+  version "21.1.5"
+  resolved "https://registry.yarnpkg.com/app-builder-lib/-/app-builder-lib-21.1.5.tgz#355eefcee415b61e224dfdfbc8eb4e74bd1e88c4"
   dependencies:
     "7zip-bin" "~5.0.3"
+    "@develar/schema-utils" "~2.1.0"
     async-exit-hook "^2.0.1"
     bluebird-lst "^1.0.9"
-    builder-util "21.1.1"
+    builder-util "21.1.5"
     builder-util-runtime "8.3.0"
     chromium-pickle-js "^0.2.0"
     debug "^4.1.1"
     ejs "^2.6.2"
-    electron-publish "21.1.1"
+    electron-publish "21.1.5"
     fs-extra "^8.1.0"
     hosted-git-info "^2.7.1"
     is-ci "^2.0.0"
@@ -1038,9 +1046,9 @@ app-builder-lib@21.1.1, app-builder-lib@~21.1.1:
     lazy-val "^1.0.4"
     minimatch "^3.0.4"
     normalize-package-data "^2.5.0"
-    read-config-file "4.0.1"
+    read-config-file "5.0.0"
     sanitize-filename "^1.6.1"
-    semver "^6.2.0"
+    semver "^6.3.0"
     temp-file "^3.3.4"
 
 aproba@^1.0.3, aproba@^1.1.1:
@@ -1460,13 +1468,13 @@ builder-util-runtime@8.3.0:
     debug "^4.1.1"
     sax "^1.2.4"
 
-builder-util@21.1.1, builder-util@~21.1.1:
-  version "21.1.1"
-  resolved "https://registry.yarnpkg.com/builder-util/-/builder-util-21.1.1.tgz#45c0d0e1b51d1f85b835a1645f435722cbd9a1d6"
+builder-util@21.1.5, builder-util@~21.1.5:
+  version "21.1.5"
+  resolved "https://registry.yarnpkg.com/builder-util/-/builder-util-21.1.5.tgz#2fb37118c5d6c6f7932a4b489536782a1529af43"
   dependencies:
     "7zip-bin" "~5.0.3"
     "@types/debug" "^4.1.4"
-    app-builder-bin "3.4.0"
+    app-builder-bin "3.4.2"
     bluebird-lst "^1.0.9"
     builder-util-runtime "8.3.0"
     chalk "^2.4.2"
@@ -1760,10 +1768,6 @@ color-convert@^1.3.0, color-convert@^1.9.0:
   resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-1.9.1.tgz#c1261107aeb2f294ebffec9ed9ecad529a6097ed"
   dependencies:
     color-name "^1.1.1"
-
-color-convert@~0.5.0:
-  version "0.5.3"
-  resolved "https://registry.yarnpkg.com/color-convert/-/color-convert-0.5.3.tgz#bdb6c69ce660fadffe0b0007cc447e1b9f7282bd"
 
 color-name@^1.0.0, color-name@^1.1.1:
   version "1.1.3"
@@ -2318,17 +2322,16 @@ diffie-hellman@^5.0.0:
     miller-rabin "^4.0.0"
     randombytes "^2.0.0"
 
-dmg-builder@21.1.1:
-  version "21.1.1"
-  resolved "https://registry.yarnpkg.com/dmg-builder/-/dmg-builder-21.1.1.tgz#a30b2c6fe305f38bbbd06ac2cc0682e5423f7e50"
+dmg-builder@21.1.5:
+  version "21.1.5"
+  resolved "https://registry.yarnpkg.com/dmg-builder/-/dmg-builder-21.1.5.tgz#c84f46562189e1b7e887f68d8e40e9c3dd394c96"
   dependencies:
-    app-builder-lib "~21.1.1"
+    app-builder-lib "~21.1.5"
     bluebird-lst "^1.0.9"
-    builder-util "~21.1.1"
+    builder-util "~21.1.5"
     fs-extra "^8.1.0"
     iconv-lite "^0.5.0"
     js-yaml "^3.13.1"
-    parse-color "^1.0.0"
     sanitize-filename "^1.6.1"
 
 dns-equal@^1.0.0:
@@ -2446,20 +2449,20 @@ ejs@^2.6.2:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/ejs/-/ejs-2.6.2.tgz#3a32c63d1cd16d11266cd4703b14fec4e74ab4f6"
 
-electron-builder@21.1.1:
-  version "21.1.1"
-  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-21.1.1.tgz#eecfd9473ee9ab58fd445a0eb512aef759d509e6"
+electron-builder@21.1.5:
+  version "21.1.5"
+  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-21.1.5.tgz#a0129c6dd857b896d837f40aff8f9fb925f9f683"
   dependencies:
-    app-builder-lib "21.1.1"
+    app-builder-lib "21.1.5"
     bluebird-lst "^1.0.9"
-    builder-util "21.1.1"
+    builder-util "21.1.5"
     builder-util-runtime "8.3.0"
     chalk "^2.4.2"
-    dmg-builder "21.1.1"
+    dmg-builder "21.1.5"
     fs-extra "^8.1.0"
     is-ci "^2.0.0"
     lazy-val "^1.0.4"
-    read-config-file "4.0.1"
+    read-config-file "5.0.0"
     sanitize-filename "^1.6.1"
     update-notifier "^3.0.1"
     yargs "^13.3.0"
@@ -2487,12 +2490,12 @@ electron-download@^4.1.0:
     semver "^5.4.1"
     sumchecker "^2.0.2"
 
-electron-publish@21.1.1:
-  version "21.1.1"
-  resolved "https://registry.yarnpkg.com/electron-publish/-/electron-publish-21.1.1.tgz#00acce2c60b45c2696e05852717a2fa7e9110a00"
+electron-publish@21.1.5:
+  version "21.1.5"
+  resolved "https://registry.yarnpkg.com/electron-publish/-/electron-publish-21.1.5.tgz#f1d9c45835442ccf767124f020f03db06ed629f9"
   dependencies:
     bluebird-lst "^1.0.9"
-    builder-util "~21.1.1"
+    builder-util "~21.1.5"
     builder-util-runtime "8.3.0"
     chalk "^2.4.2"
     fs-extra "^8.1.0"
@@ -4890,12 +4893,6 @@ parse-asn1@^5.0.0:
     evp_bytestokey "^1.0.0"
     pbkdf2 "^3.0.3"
 
-parse-color@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/parse-color/-/parse-color-1.0.0.tgz#7b748b95a83f03f16a94f535e52d7f3d94658619"
-  dependencies:
-    color-convert "~0.5.0"
-
 parse-json@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/parse-json/-/parse-json-2.2.0.tgz#f480f40434ef80741f8469099f8dea18f55a4dc9"
@@ -5523,7 +5520,18 @@ react@16.8.6:
     prop-types "^15.6.2"
     scheduler "^0.13.6"
 
-read-config-file@4.0.1, read-config-file@^4.0.1:
+read-config-file@5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/read-config-file/-/read-config-file-5.0.0.tgz#1487c983fae9c1b672d3acda5cac899a2d451f02"
+  dependencies:
+    dotenv "^8.0.0"
+    dotenv-expand "^5.1.0"
+    fs-extra "^8.1.0"
+    js-yaml "^3.13.1"
+    json5 "^2.1.0"
+    lazy-val "^1.0.4"
+
+read-config-file@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/read-config-file/-/read-config-file-4.0.1.tgz#ece5f6b1a5e6a46d0d93fdd0339f2f60ab892776"
   dependencies:
@@ -5939,6 +5947,10 @@ semver@^5.6.0:
 semver@^6.1.1, semver@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.2.0.tgz#4d813d9590aaf8a9192693d6c85b9344de5901db"
+
+semver@^6.3.0:
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
 
 send@0.17.1:
   version "0.17.1"
