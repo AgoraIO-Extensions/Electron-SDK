@@ -761,9 +761,9 @@
   version "10.5.2"
   resolved "http://registry.npm.taobao.org/@types/node/download/@types/node-10.5.2.tgz#f19f05314d5421fe37e74153254201a7bf00a707"
 
-"@types/node@^10.1.4":
-  version "10.14.12"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.12.tgz#0eec3155a46e6c4db1f27c3e588a205f767d622f"
+"@types/node@^10.12.18":
+  version "10.14.13"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.13.tgz#ac786d623860adf39a3f51d629480aacd6a6eec7"
 
 "@types/webpack-env@^1.13.9":
   version "1.14.0"
@@ -2554,11 +2554,11 @@ electron-webpack@2.7.4:
     webpack-merge "^4.2.1"
     yargs "^13.2.4"
 
-electron@3.1.12:
-  version "3.1.12"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-3.1.12.tgz#3d53909423d538d16bb05df20925d86ffd9e436b"
+electron@5.0.8:
+  version "5.0.8"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-5.0.8.tgz#b240726ce9e3510d3af30a981486c9850462c718"
   dependencies:
-    "@types/node" "^10.1.4"
+    "@types/node" "^10.12.18"
     electron-download "^4.1.0"
     extract-zip "^1.0.3"
 
