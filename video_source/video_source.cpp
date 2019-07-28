@@ -281,6 +281,13 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
     else if(msg == AGORA_IPC_UPDATE_CAPTURE_SCREEN) {
         m_rtcEngine->updateScreenCaptureRegion((const agora::rtc::Rect *)payload);
     }
+    else if(msg == AGORA_IPC_ENABLE_LOOPBACK_RECORDING) {
+        if (len != sizeof(LoopbackRecordingCmd))
+            return;
+        LoopbackRecordingCmd *cmd = (LoopbackRecordingCmd*)payload;
+        agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
+        rep.enableLoopbackRecording(cmd->enabled, cmd->deviceName);
+    }
 
     LOG_LEAVE;
 }
