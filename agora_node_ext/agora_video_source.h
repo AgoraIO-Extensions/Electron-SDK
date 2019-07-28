@@ -155,6 +155,12 @@ namespace agora{
             * To set parameters for video source.
             */
             virtual void setParameters(const char* parameters) = 0;
+
+            /**
+             * Enable loopbackRecording
+             * @param enabled : whether enable loopbackRecording
+             */
+            virtual node_error enableLoopbackRecording(bool enabled, const char* deviceName) = 0;
         };
 
         /**

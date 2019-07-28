@@ -528,6 +528,7 @@ export interface NodeRtcEngine {
     top: number;
     bottom: number;
   }): number;
+  videoSourceEnableLoopbackRecording(enable: boolean): number;
   videoSourceRelease(): number;
   startScreenCapture(
     windowId: number,

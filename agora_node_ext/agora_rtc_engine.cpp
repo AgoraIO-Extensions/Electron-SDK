@@ -177,6 +177,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(videoSourceSetLogFile)
                 PROPERTY_METHOD_DEFINE(videoSourceSetParameter)
                 PROPERTY_METHOD_DEFINE(videoSourceUpdateScreenCaptureRegion)
+                PROPERTY_METHOD_DEFINE(videoSourceEnableLoopbackRecording)
                 PROPERTY_METHOD_DEFINE(setBool);
                 PROPERTY_METHOD_DEFINE(setInt);
                 PROPERTY_METHOD_DEFINE(setUInt);
@@ -1539,6 +1540,36 @@ namespace agora {
             LOG_LEAVE;
         }
 
+        NAPI_API_DEFINE(NodeRtcEngine, videoSourceEnableLoopbackRecording)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                if (pEngine->m_videoSourceSink.get()) {
+                    bool enable;
+                    napi_status status = napi_get_value_bool_(args[0], enable);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    
+                    nodestring deviceName;
+                    status = napi_get_value_nodestring_(args[1], deviceName);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    
+                    if(deviceName == NULL) {
+                        pEngine->m_videoSourceSink->enableLoopbackRecording(enable, NULL);
+                        result = 0;
+                    } else {
+                        string mDeviceName(deviceName);
+                        pEngine->m_videoSourceSink->enableLoopbackRecording(enable, mDeviceName.c_str());
+                        result = 0;
+                    }
+                    
+                }
+            } while (false);
+            LOG_LEAVE;
+        }
 
         NAPI_API_DEFINE(NodeRtcEngine, leaveChannel)
         {
