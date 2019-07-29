@@ -244,7 +244,7 @@
                         '-lagora_rtc_sdk.lib',
                         '-lws2_32.lib',
                         '-lRpcrt4.lib',
-						'-lgdiplus.lib'
+                        '-lgdiplus.lib'
                     ]
                 },
                 'defines!': [
@@ -258,8 +258,11 @@
                     './common/libyuv/source/rotate_win.cc',
                     './common/libyuv/source/row_win.cc',
                     './common/libyuv/source/scale_win.cc',
-					'./agora_node_ext/node_screen_window_info_win.cpp',
-                    './agora_node_ext/node_screen_window_info.h'
+                    './agora_node_ext/node_screen_window_info_win.cpp',
+                    './agora_node_ext/node_screen_window_info.h',
+                    './agora_node_ext/AudioPlugin/IAudioFramePlugin.h',
+                    './agora_node_ext/AudioPlugin/IAudioFramePluginManager.h',
+                    './agora_node_ext/AudioPlugin/IAudioFramePluginManager.cpp'
                 ],
                 'include_dirs': [
                 './sdk/include'

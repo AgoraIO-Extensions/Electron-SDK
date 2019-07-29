@@ -42,7 +42,9 @@ export default class App extends Component {
         windowList: [],
         displayList: [],
         encoderWidth: 0,
-        encoderHeight: 0
+        encoderHeight: 0,
+        hookplayerpath: "",
+        audioHookEnabled: false
       }
     }
     this.enableAudioMixing = false;
@@ -151,7 +153,7 @@ export default class App extends Component {
     }
     rtcEngine.setLocalVoiceChanger(this.state.voiceChangerPreset)
     rtcEngine.setLocalVoiceReverbPreset(this.state.voiceReverbPreset)
-    console.log('loop', rtcEngine.enableLoopbackRecording(true, null))
+    // console.log('loop', rtcEngine.enableLoopbackRecording(true, null))
     rtcEngine.enableDualStreamMode(true)
     rtcEngine.enableAudioVolumeIndication(1000, 3)
 
@@ -474,6 +476,27 @@ export default class App extends Component {
     })
   }
 
+  handleAudioHook = e => {
+    let rtcEngine = this.getRtcEngine()
+    if(!this.state.audioHookEnabled){
+      rtcEngine.registerAudioFramePluginManager()
+      rtcEngine.registerAudioFramePlugin("agora_electron_plugin_audio_hook")
+      let dllpath = path.resolve(__dirname, "./plugins/AgoraPlayerHookPlugin.dll")
+      rtcEngine.loadPlugin("agora_electron_plugin_audio_hook", dllpath)
+      let playerpath = path.resolve(this.state.hookplayerpath)
+      rtcEngine.setPluginStringParameter("agora_electron_plugin_audio_hook","plugin.hookAudio.playerPath", playerpath)
+      rtcEngine.setPluginBoolParameter("agora_electron_plugin_audio_hook", "plugin.hookAudio.forceRestart", true)
+      // important for hook audio quality
+      rtcEngine.setRecordingAudioFrameParameters(44100, 2, 2, 882)
+      rtcEngine.enablePlugin("agora_electron_plugin_audio_hook")
+    } else {
+      rtcEngine.disablePlugin("agora_electron_plugin_audio_hook")
+      console.log(rtcEngine.unRegisterAudioFramePlugin("agora_electron_plugin_audio_hook"))
+      console.log(rtcEngine.unRegisterAudioFramePluginManager())
+    }
+    this.setState({audioHookEnabled: !this.state.audioHookEnabled})
+  }
+
   // handleAudioMixing = e => {
   //   const path = require('path')
   //   let filepath = path.join(__dirname, './music.mp3');
@@ -644,6 +667,18 @@ export default class App extends Component {
             <label className="label">Release</label>
             <div className="control">
               <button onClick={this.handleRelease} className="button is-link">Release</button>
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">Audio Hook Player Path</label>
+            <div className="control">
+              <input onChange={e => this.setState({hookplayerpath: e.currentTarget.value})} value={this.state.hookplayerpath} className="input" type="text" placeholder="Absolute player path" />
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">Audio Hook</label>
+            <div className="control">
+              <button onClick={this.handleAudioHook} className="button is-link">Start</button>
             </div>
           </div>
           <div className="field">
