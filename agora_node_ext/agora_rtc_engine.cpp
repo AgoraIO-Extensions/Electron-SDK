@@ -203,6 +203,20 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(addToHighVideo);
                 PROPERTY_METHOD_DEFINE(removeFromHighVideo);
 
+                //plugin apis
+#ifdef _WIN32
+                PROPERTY_METHOD_DEFINE(registerAudioFramePluginManager);
+                PROPERTY_METHOD_DEFINE(unRegisterAudioFramePluginManager);
+                PROPERTY_METHOD_DEFINE(registerAudioFramePlugin);
+                PROPERTY_METHOD_DEFINE(unRegisterAudioFramePlugin);
+                PROPERTY_METHOD_DEFINE(loadPlugin);
+                PROPERTY_METHOD_DEFINE(unLoadPlugin);
+                PROPERTY_METHOD_DEFINE(enablePlugin);
+                PROPERTY_METHOD_DEFINE(disablePlugin);
+                PROPERTY_METHOD_DEFINE(setPluginBoolParameter);
+                PROPERTY_METHOD_DEFINE(setPluginStringParameter);
+#endif
+
                 //2.3.3 apis
                 PROPERTY_METHOD_DEFINE(getConnectionState);
                 PROPERTY_METHOD_DEFINE(release);
@@ -275,6 +289,8 @@ namespace agora {
             m_eventHandler.reset(new NodeEventHandler(this));
             /** Node ADDON takes advantage of self render interface */
             m_externalVideoRenderFactory.reset(new NodeVideoRenderFactory(*this));
+            /** Video/Audio Plugins */
+            m_audioFramePluginManager.reset(new IAudioFramePluginManager());
             /** m_videoSourceSink provide facilities to multiple video source based on multiple process */
             m_videoSourceSink.reset(createVideoSource());
             LOG_LEAVE;
@@ -300,6 +316,7 @@ namespace agora {
             m_videoSourceSink.reset(nullptr);
             m_externalVideoRenderFactory.reset(nullptr);
             m_eventHandler.reset(nullptr);
+            m_audioFramePluginManager.reset(nullptr);
             LOG_LEAVE;
         }
 
@@ -4218,5 +4235,302 @@ namespace agora {
             } while (false);
             LOG_LEAVE;
         }
+
+        #ifdef _WIN32
+
+        NAPI_API_DEFINE(NodeRtcEngine, registerAudioFramePluginManager)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                agora::media::IMediaEngine* pMediaEngine = nullptr;
+                pEngine->getRtcEngine()->queryInterface(agora::AGORA_IID_MEDIA_ENGINE, (void**)&pMediaEngine);
+                if (pEngine->m_audioFramePluginManager.get())
+                {
+                    pMediaEngine->registerAudioFrameObserver(pEngine->m_audioFramePluginManager.get());
+                    result = 0;
+                }
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, unRegisterAudioFramePluginManager)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                agora::media::IMediaEngine* pMediaEngine = nullptr;
+                pEngine->getRtcEngine()->queryInterface(agora::AGORA_IID_MEDIA_ENGINE, (void**)&pMediaEngine);
+                if (pEngine->m_audioFramePluginManager.get())
+                {
+                    pMediaEngine->registerAudioFrameObserver(NULL);
+                    result = 0;
+                }
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, registerAudioFramePlugin)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                napi_status status = napi_ok;
+                std::string pluginId;
+                READ_PLUGIN_ID(pEngine, status, args[0], pluginId);
+                CHECK_PLUGIN_INFO_EXIST(pEngine, pluginId);//has exist => break
+                
+                agora_audio_plugin_info hookInfo;
+                if (pluginId.compare("agora_electron_plugin_audio_hook") == 0) {
+                    hookInfo.id = "agora_electron_plugin_audio_hook";
+                    result = 0;
+                }
+                pEngine->m_mapAudioPlugins.emplace(pluginId, hookInfo);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, unRegisterAudioFramePlugin)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                if(pEngine->m_audioFramePluginManager.get()) {
+                    std::string pluginId;
+                    napi_status status = napi_ok;
+                    READ_PLUGIN_ID(pEngine, status, args[0], pluginId);
+                    CHECK_PLUGIN_INFO_STATUS(pEngine, pluginId); //not exist
+
+                    agora_audio_plugin_info& pluginInfo = pEngine->m_mapAudioPlugins[pluginId];
+                    CHECK_PLUGIN_EXIST(pluginInfo);
+                    CHECK_PLUGIN_MODULE_EXIST(pluginInfo);
+                    pEngine->m_audioFramePluginManager->unRegisterAudioFramePlugin(pluginInfo.audioFramePlugin);
+                    pEngine->m_mapAudioPlugins.erase(pluginId);
+                    result = 0;
+                }
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, loadPlugin)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                napi_status status = napi_ok;
+                std::string pluginId;
+                READ_PLUGIN_ID(pEngine, status, args[0], pluginId);
+                CHECK_PLUGIN_INFO_STATUS(pEngine, pluginId);
+
+                nodestring pluginPath;
+                status = napi_get_value_nodestring_(args[1], pluginPath);
+                CHECK_NAPI_STATUS(pEngine, status);
+        
+                char* path = (char*)pluginPath;
+                agora_audio_plugin_info& pluginInfo = pEngine->m_mapAudioPlugins[pluginId];
+                pluginInfo.pluginModule = LoadLibrary(path);
+                CHECK_PLUGIN_MODULE_STATUS(pluginInfo);
+
+                for (int i = 0; i < strlen(path); i++){
+                    if (*(path + i) == '\\') {
+                        *(path + i) = '/';
+                    }
+                }
+
+                char* fileName = strrchr(path, '/');
+                char szPath[MAX_PATH] = { 0 };
+                if (fileName) {
+                    int pos = fileName - path;
+                    strncpy_s(szPath, MAX_PATH, path, pos + 1);
+                }
+
+                createAgoraAudioFramePlugin createPlugin = (createAgoraAudioFramePlugin)GetProcAddress((HMODULE)pluginInfo.pluginModule, "createAudioFramePlugin");
+                if (!createPlugin) {
+                    FreeLibrary((HMODULE)pluginInfo.pluginModule);
+                    pluginInfo.pluginModule = NULL;
+                    LOG_ERROR("Error :%s, :%d,  GetProcAddress \"createAudioFramePlugin\" Failed\n", __FUNCTION__, __LINE__, pluginId.c_str()); 
+                    break;
+                }
+
+                pluginInfo.audioFramePlugin = createPlugin();
+                CHECK_PLUGIN_STATUS(pluginInfo);
+
+                if (!pluginInfo.audioFramePlugin->load(szPath)) {
+                    LOG_ERROR("Error :%s, :%d, plugin: \"%s\"  IAudioFramePlugin::load Failed\n", __FUNCTION__, __LINE__, pluginId.c_str());
+                    break;
+                }
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, unLoadPlugin)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                napi_status status = napi_ok;
+                std::string pluginId;
+                READ_PLUGIN_ID(pEngine, status, args[0], pluginId);
+                CHECK_PLUGIN_INFO_STATUS(pEngine, pluginId);
+
+                agora_audio_plugin_info& pluginInfo = pEngine->m_mapAudioPlugins[pluginId];
+                CHECK_PLUGIN_EXIST(pluginInfo);
+
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, enablePlugin)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                napi_status status = napi_ok;
+                std::string pluginId;
+                READ_PLUGIN_ID(pEngine, status, args[0], pluginId);
+
+                CHECK_PLUGIN_INFO_STATUS(pEngine, pluginId);
+                CHECK_AUDIO_PLUGIN_MANAGER_STATUS(pEngine);
+
+                agora_audio_plugin_info& pluginInfo = pEngine->m_mapAudioPlugins[pluginId];
+                CHECK_PLUGIN_STATUS(pluginInfo);
+
+                if (!pluginInfo.audioFramePlugin->enable()) {
+                    LOG_ERROR("Error :%s, :%d, plugin: \"%s\"  IAudioFramePlugin::enable Failed\n", __FUNCTION__, __LINE__, pluginId.c_str());
+                    break;
+                }
+
+                pEngine->m_audioFramePluginManager->registerAudioFramePlugin(pluginInfo.audioFramePlugin);
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, disablePlugin)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                napi_status status = napi_ok;
+                std::string pluginId;
+                READ_PLUGIN_ID(pEngine, status, args[0], pluginId);
+
+                CHECK_PLUGIN_INFO_STATUS(pEngine, pluginId);
+                CHECK_AUDIO_PLUGIN_MANAGER_STATUS(pEngine);
+                agora_audio_plugin_info& pluginInfo = pEngine->m_mapAudioPlugins[pluginId];
+                CHECK_PLUGIN_STATUS(pluginInfo);
+
+                if (!pluginInfo.audioFramePlugin->disable()) {
+                                LOG_ERROR("Error :%s, :%d, plugin: \"%s\"  IAudioFramePlugin::disable Failed\n", __FUNCTION__, __LINE__, pluginId.c_str());
+                                break;
+                }
+
+                pEngine->m_audioFramePluginManager->unRegisterAudioFramePlugin(pluginInfo.audioFramePlugin);
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setPluginStringParameter)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                napi_status status = napi_ok;
+                std::string pluginId;
+                READ_PLUGIN_ID(pEngine, status, args[0], pluginId);
+                CHECK_PLUGIN_INFO_STATUS(pEngine, pluginId);
+
+                nodestring key, value;
+                status = napi_get_value_nodestring_(args[1], key);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_value_nodestring_(args[2], value);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                agora_audio_plugin_info& pluginInfo = pEngine->m_mapAudioPlugins[pluginId];
+                CHECK_PLUGIN_STATUS(pluginInfo);
+                pluginInfo.audioFramePlugin->setStringParameter(key, value);
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }    
+
+        NAPI_API_DEFINE(NodeRtcEngine, setPluginBoolParameter)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                napi_status status = napi_ok;
+                std::string pluginId;
+                READ_PLUGIN_ID(pEngine, status, args[0], pluginId);
+                CHECK_PLUGIN_INFO_STATUS(pEngine, pluginId);
+
+                nodestring key;
+                bool value;
+                status = napi_get_value_nodestring_(args[1], key);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_value_bool_(args[2], value);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                agora_audio_plugin_info& pluginInfo = pEngine->m_mapAudioPlugins[pluginId];
+                CHECK_PLUGIN_STATUS(pluginInfo);
+                pluginInfo.audioFramePlugin->setBoolParameter(key, value);
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+#endif
     }
 }
