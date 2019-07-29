@@ -3467,6 +3467,48 @@ class AgoraRtcEngine extends EventEmitter {
   setProfile(profile: string, merge: boolean): number {
     return this.rtcEngine.setProfile(profile, merge);
   }
+
+  // ===========================================================================
+  // plugin apis
+  // ===========================================================================
+  registerAudioFramePluginManager(): number {
+    return this.rtcEngine.registerAudioFramePluginManager();
+  }
+
+  unRegisterAudioFramePluginManager(): number {
+    return this.rtcEngine.unRegisterAudioFramePluginManager();
+  }
+
+  registerAudioFramePlugin(pluginId: string): number {
+    return this.rtcEngine.registerAudioFramePlugin(pluginId);
+  }
+
+  unRegisterAudioFramePlugin(pluginId: string): number {
+    return this.rtcEngine.unRegisterAudioFramePlugin(pluginId);
+  }
+
+  loadPlugin(pluginId: string, pluginPath: string): number {
+    return this.rtcEngine.loadPlugin(pluginId, pluginPath);
+  }
+
+  unloadPlugin(pluginId: string): number {
+    return this.rtcEngine.unLoadPlugin(pluginId);
+  }
+
+  enablePlugin(pluginId: string): number {
+    return this.rtcEngine.enablePlugin(pluginId);
+  }
+  
+  disablePlugin(pluginId: string): number {
+    return this.rtcEngine.disablePlugin(pluginId);
+  }
+
+  setPluginStringParameter(pluginId: string, key: string, value: string): number {
+    return this.rtcEngine.setPluginStringParameter(pluginId, key, value);
+  }
+  setPluginBoolParameter(pluginId: string, key: string, value: boolean): number {
+    return this.rtcEngine.setPluginBoolParameter(pluginId, key, value);
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
