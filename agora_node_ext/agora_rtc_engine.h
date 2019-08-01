@@ -92,8 +92,6 @@ namespace agora {
             NAPI_API(sendStreamMessage);       
             NAPI_API(setEncryptionMode);
 
-            NAPI_API(setVideoCompositingLayout);
-            NAPI_API(clearVideoCompositingLayout);
             NAPI_API(configPublisher);
 
             NAPI_API(addPublishStreamUrl);
