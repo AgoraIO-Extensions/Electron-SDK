@@ -346,9 +346,6 @@ namespace agora {
 
         NAPI_API_DEFINE_WRAPPER_PARAM_0(disableAudio);
 
-#if 0
-        NAPI_API_DEFINE_WRAPPER_PARAM_0(clearVideoCompositingLayout)
-#endif
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(stopAudioRecording);
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(stopAudioMixing);
@@ -463,87 +460,6 @@ namespace agora {
                 result = pEngine->m_engine->configPublisher(config);
             } while (false);
             napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
-
-        
-        NAPI_API_DEFINE(NodeRtcEngine, setVideoCompositingLayout)
-        {
-            LOG_ENTER;
-            int result = -1;
-            napi_status status = napi_ok;
-            VideoCompositingLayout::Region *regions = nullptr;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                VideoCompositingLayout layout;
-                nodestring bg, appdata;
-                Local<Object> obj = args[0]->ToObject(args.GetIsolate());
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "canvaswidth", layout.canvasWidth);
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "canvasheight", layout.canvasHeight);
-                if (napi_get_object_property_nodestring_(args.GetIsolate(), obj, "backgroundcolor", bg) == napi_ok) {
-                    layout.backgroundColor = bg;
-                }
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "regioncount", layout.regionCount);
-                if (napi_get_object_property_nodestring_(args.GetIsolate(), obj, "appdata", appdata) == napi_ok) {
-                    layout.appData = appdata;
-                }
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "appdatalength", layout.appDataLength);
-                if (layout.regionCount > 0) {
-                    regions = new VideoCompositingLayout::Region[layout.regionCount];
-                    Local<Name> keyName = String::NewFromUtf8(args.GetIsolate(), "regions", NewStringType::kInternalized).ToLocalChecked();
-                    Local<Value> objUsers = obj->Get(args.GetIsolate()->GetCurrentContext(), keyName).ToLocalChecked();
-                    if (objUsers->IsNull() || !objUsers->IsArray()) {
-                        status = napi_invalid_arg;
-                        break;
-                    }
-                    auto regionsValue = v8::Array::Cast(*objUsers);
-                    if (regionsValue->Length() != layout.regionCount) {
-                        status = napi_invalid_arg;
-                        break;
-                    }
-                    for (int32 i = 0; i < layout.regionCount; i++) {
-                        Local<Value> value = regionsValue->Get(i);
-                        Local<Object> regionObj = value->ToObject(args.GetIsolate());
-                        if (regionObj->IsNull())
-                            status = napi_invalid_arg;
-                        break;
-                        int rendermode;
-                        napi_get_object_property_uid_(args.GetIsolate(), regionObj, "uid", regions[i].uid);
-                        napi_get_object_property_double_(args.GetIsolate(), regionObj, "x", regions[i].x);
-                        napi_get_object_property_double_(args.GetIsolate(), regionObj, "y", regions[i].y);
-                        napi_get_object_property_double_(args.GetIsolate(), regionObj, "width", regions[i].width);
-                        napi_get_object_property_double_(args.GetIsolate(), regionObj, "height", regions[i].height);
-                        napi_get_object_property_int32_(args.GetIsolate(), regionObj, "zorder", regions[i].zOrder);
-                        napi_get_object_property_double_(args.GetIsolate(), regionObj, "alpha", regions[i].alpha);
-                        if (napi_get_object_property_int32_(args.GetIsolate(), regionObj, "rendermode", rendermode) == napi_ok) {
-                            regions[i].renderMode = (RENDER_MODE_TYPE)rendermode;
-                        }
-                    }
-                    layout.regions = regions;
-                }
-                result = pEngine->m_engine->setVideoCompositingLayout(layout);
-            } while (false);
-            if (regions) {
-                delete[] regions;
-            }
-            napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
-
-        NAPI_API_DEFINE(NodeRtcEngine, clearVideoCompositingLayout)
-        {
-            LOG_ENTER;
-            napi_status status = napi_ok;
-            int result = -1;
-            do{
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                result = pEngine->m_engine->clearVideoCompositingLayout();
-            } while (false);
-             napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
