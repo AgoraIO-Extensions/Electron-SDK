@@ -1,7 +1,9 @@
 #pragma once
 #include <IAgoraMediaEngine.h>
-#include <Windows.h>
 #include <unordered_set>
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 class IAudioFramePlugin;
 
 class IAudioFramePluginManager :
