@@ -1,0 +1,12 @@
+build/
+dist/
+.vscode/
+docs/
+example/
+.DS_Store
+error-log.txt
+peer.log
+peer.pid
+nohup.out
+.version-cache
+

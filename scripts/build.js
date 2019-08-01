@@ -1,115 +1,59 @@
-const fs = require("fs");
-const signale = require("signale");
+const {logger} = require('just-task');
 const shell = require("shelljs");
 
-const {
-  buildCommand,
-  detectElectronVersion,
-  detectOS,
-  detectOwnVersion
-} = require("./utils");
-const { Platform } = require("./constant");
+module.exports = ({
+  electronVersion='5.0.8',
+  runtime='electron',
+  platform=process.platform,
+  packageVersion,
+  debug = false,
+  silent = false,
+  msvsVersion = '2015',
+}) => {
+  /** get command string */
+  const command = ['node-gyp rebuild'];
+  
+  // check platform
+  if (platform === 'win32') {
+    command.push(`--arch=ia32 --msvs_version=${msvsVersion}`)
+  }
 
-const detectEnv = () => {
-  // get argv from command line
-  const {
-    electron_version,
-    runtime,
-    debug,
-    msvs_version,
-    silent
-  } = require("optimist").argv;
-  // get os
-  const platform = detectOS();
-  // get pkg version
-  const { major, minor, patch } = detectOwnVersion();
+  // check runtime
+  if (runtime === 'electron') {
+    command.push(`--target=${electronVersion} --dist-url=https://atom.io/download/electron`)
+  }
 
-  // calculate dependent electron version
-  const dependentElectronVersion = detectElectronVersion(electron_version);
-
-  // generate build info
-  return {
-    packageVersion: `${major}.${minor}.${patch}`,
-    platform,
-    dependentElectronVersion: dependentElectronVersion,
-    runtime: runtime || "electron",
-    debug,
-    msvs_version,
-    silent
-  };
-};
-
-const main = () => {
-  const {
-    packageVersion,
-    platform,
-    dependentElectronVersion,
-    runtime,
-    debug,
-    msvs_version,
-    silent
-  } = detectEnv();
-
-  // build script
-  const script = buildCommand({
-    platform,
-    msvs_version,
-    debug,
-    runtime,
-    electronVersion: dependentElectronVersion
-  });
-
-  console.log(script);
-
-  // print build info
-  signale.info("Package Version =", packageVersion);
-  signale.info("Platform =", platform);
-  signale.info("Dependent Electron Version =", dependentElectronVersion);
-  signale.info("Build Runtime =", runtime, "\n");
-
-  // create two stream and start
-  signale.pending("Build C++ addon for Agora Electron SDK...\n");
-  const errLogWriteStream = fs.createWriteStream("error-log.txt", {
-    flags: "a"
-  });
-  const buildStream = shell.exec(
-    script,
-    {
-      silent: silent
-    },
-    (code, stdout, stderr) => {
-      if (code !== 0) {
-        // failed
-        errLogWriteStream.write(stderr, "utf8");
-        signale.fatal(
-          "Failed to build, check complete error log in",
-          shell.pwd() + "/error-log.txt\n"
-        );
-        process.exit(1);
-      } else {
-        signale.success("Build Complete");
-
-        // if macos in debug env
-        if (platform === Platform.MACOS && debug) {
-          // Generate xcode project file
-          shell.exec(
-            "node-gyp configure -- -f xcode",
-            { silent: silent },
-            (code, stdout, stderr) => {
-              if (code !== 0) {
-                signale.fatal("Failed to generate xcode project file");
-                process.exit(1);
-              } else {
-                signale.success("Succeed to generate xcode project file");
-                process.exit(0);
-              }
-            }
-          );
-        }
-        
-      }
+  // check debug
+  if (debug) {
+    command.push('--debug')
+    if (platform === 'darwin') {
+      // MUST AT THE END OF THE COMMAND ARR
+      command.push('-- -f xcode')
     }
-  );
-};
+  }
 
-main();
+  const commandStr = command.join(' ')
+
+  /** start build */
+  logger.info(commandStr, '\n');
+
+  logger.info("Package Version:", packageVersion);
+  logger.info("Platform:", platform);
+  logger.info("Electron Version:", electronVersion);
+  logger.info("Runtime:", runtime, "\n");
+
+  logger.info("Build C++ addon for Agora Electron SDK...\n")
+
+  shell.exec(commandStr, {silent}, (code, stdout, stderr) => {
+    // handle error
+    if (code !== 0) {
+      logger.error(stderr);
+      process.exit(1)
+    }
+
+    // handle success
+    logger.info('Build complete')
+    process.exit(0)
+  })
+
+}
