@@ -189,6 +189,8 @@ export default class App extends Component {
         
         rtcEngine.videoSourceSetLogFile(logpath)
         rtcEngine.videoSourceSetChannelProfile(1);
+        // rtcEngine.videoSourceEnableAudio(true);
+        // rtcEngine.videoSourceEnableLoopbackRecording(true);
         rtcEngine.videoSourceEnableWebSdkInteroperability(true)
         // rtcEngine.videoSourceSetVideoProfile(50, false);
         // to adjust render dimension to optimize performance
