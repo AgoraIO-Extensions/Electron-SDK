@@ -1791,9 +1791,22 @@ class AgoraRtcEngine extends EventEmitter {
   }) {
     return this.rtcEngine.videoSourceUpdateScreenCaptureRegion(rect);
   }
-
+  /**
+   * @description enable loopback recording for video source process
+   * @param {boolean} enable whether loopback recording is enabled
+   * @return {number} 0 for success, <0 for failure
+   */
   videoSourceEnableLoopbackRecording(enabled: boolean) : number {
     return this.rtcEngine.videoSourceEnableLoopbackRecording(enabled)
+  }
+
+  /**
+   * @description enable audio module for video source process
+   * @param {boolean} enable whether audio module is enabled
+   * @return {number} 0 for success, <0 for failure
+   */
+  videoSourceEnableAudio(enabled: boolean): number {
+    return this.rtcEngine.videoSourceEnableAudio(enabled);
   }
 
   /**

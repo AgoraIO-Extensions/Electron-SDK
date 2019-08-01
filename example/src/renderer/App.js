@@ -139,7 +139,7 @@ export default class App extends Component {
     } else {
       rtcEngine.setVideoEncoderConfiguration({width: encoderWidth, height: encoderHeight})
     }
-    console.log('loop', rtcEngine.enableLoopbackRecording(true, null))
+    // console.log('loop', rtcEngine.enableLoopbackRecording(true, null))
     rtcEngine.enableDualStreamMode(true)
     rtcEngine.enableAudioVolumeIndication(1000, 3)
     rtcEngine.joinChannel(null, this.state.channel, '',  Number(`${new Date().getTime()}`.slice(7)))
@@ -186,6 +186,7 @@ export default class App extends Component {
       try {
         rtcEngine.videoSourceInitialize(APP_ID);
         let logpath = path.resolve(os.homedir(), './videosourceabc.log')
+        
         rtcEngine.videoSourceSetLogFile(logpath)
         rtcEngine.videoSourceSetChannelProfile(1);
         rtcEngine.videoSourceEnableWebSdkInteroperability(true)

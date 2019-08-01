@@ -288,6 +288,14 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
         agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
         rep.enableLoopbackRecording(cmd->enabled, cmd->deviceName);
     }
+    else if(msg == AGORA_IPC_ENABLE_AUDIO) {
+        bool enabled = (bool)*payload;
+        if(enabled) {
+            m_rtcEngine->enableAudio();
+        } else {
+            m_rtcEngine->disableAudio();
+        }
+    }
 
     LOG_LEAVE;
 }

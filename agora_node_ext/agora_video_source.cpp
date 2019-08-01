@@ -66,6 +66,7 @@ namespace agora{
             virtual node_error setLogFile(const char* file) override;
             virtual void setParameters(const char* parameters) override;
             virtual node_error enableLoopbackRecording(bool enabled, const char* deviceName) override;
+            virtual node_error enableAudio(bool enabled) override;
         private:
             void msgThread();
             void deliverFrame(const char* payload, int len);
@@ -251,6 +252,14 @@ namespace agora{
         {
             if (m_initialized){
                 return m_ipcMsg->sendMessage(AGORA_IPC_ENABLE_DUAL_STREAM_MODE, (char*)&enabled, sizeof(enabled)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::enableAudio(bool enabled)
+        {
+            if (m_initialized){
+                return m_ipcMsg->sendMessage(AGORA_IPC_ENABLE_AUDIO, (char*)&enabled, sizeof(enabled)) ? node_ok : node_generic_error;
             }
             return node_status_error;
         }
