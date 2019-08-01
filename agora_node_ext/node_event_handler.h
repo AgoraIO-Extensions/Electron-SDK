@@ -49,6 +49,7 @@ namespace agora {
 #define RTC_EVENT_USER_ENABLE_LOCAL_VIDEO "userenablelocalvideo"
 #define RTC_EVENT_APICALL_EXECUTED "apicallexecuted"
 #define RTC_EVENT_LOCAL_VIDEO_STATS "localvideostats"
+#define RTC_EVENT_LOCAL_AUDIO_STATS "localAudioStats"
 #define RTC_EVENT_REMOTE_VIDEO_STATS "remotevideostats"
 #define RTC_EVENT_REMOTE_AUDIO_STATS "remoteAudioStats"
 #define RTC_EVENT_CAMERA_READY "cameraready"
@@ -86,6 +87,8 @@ namespace agora {
 #define RTC_EVENT_LOCAL_USER_REGISTERED "localUserRegistered"
 #define RTC_EVENT_USER_INFO_UPDATED "userInfoUpdated"
 #define RTC_EVENT_LOCAL_VIDEO_STATE_CHANGED "localVideoStateChanged"
+#define RTC_EVENT_LOCAL_AUDIO_STATE_CHANGED "localAudioStateChanged"
+#define RTC_EVENT_REMOTE_AUDIO_STATE_CHANGED "remoteAudioStateChanged"
 
 #define RTC_EVENT_VIDEO_SOURCE_JOIN_SUCCESS "videosourcejoinsuccess"
 #define RTC_EVENT_VIDEO_SOURCE_REQUEST_NEW_TOKEN "videosourcerequestnewtoken"
@@ -181,6 +184,11 @@ namespace agora {
             virtual void onUserInfoUpdated(uid_t uid, const UserInfo& info) override;
             virtual void onLocalVideoStateChanged(int localVideoState, int error) override;
 
+            //2.9.0
+            virtual void onLocalAudioStats(const LocalAudioStats& stats) override;
+            virtual void onLocalAudioStateChanged(int state, int error) override;
+            virtual void onRemoteAudioStateChanged(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) override;
+
         private:
             void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
             void onRejoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
@@ -239,8 +247,8 @@ namespace agora {
             void onActiveSpeaker_node(uid_t uid);
             void onClientRoleChanged_node(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole);
             void onAudioDeviceVolumeChanged_node(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted);
-			void onRemoteAudioTransportStats_node(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
-			void onRemoteVideoTransportStats_node(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
+            void onRemoteAudioTransportStats_node(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
+            void onRemoteVideoTransportStats_node(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
             void onRemoteAudioStats_node(const RemoteAudioStats & stats);
             void onMicrophoneEnabled_node(bool enabled);
             void onConnectionStateChanged_node(CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason);
@@ -257,6 +265,11 @@ namespace agora {
             void onLocalUserRegistered_node(uid_t uid, const char* userAccount);
             void onUserInfoUpdated_node(uid_t uid, const UserInfo& info);
             void onLocalVideoStateChanged_node(int localVideoState, int error);
+
+            //2.9.0
+            void onLocalAudioStats_node(const LocalAudioStats& stats) ;
+            void onLocalAudioStateChanged_node(int state, int error) ;
+            void onRemoteAudioStateChanged_node(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) ;
         private:
             std::unordered_map<std::string, NodeEventCallback*> m_callbacks;
             NodeRtcEngine* m_engine;
