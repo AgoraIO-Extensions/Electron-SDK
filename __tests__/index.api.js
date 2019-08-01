@@ -141,87 +141,100 @@ describe('Basic API Coverage 2', () => {
   });
 });
 
-describe('Render coverage', () => {
-  beforeAll(() => {
-    localRtcEngine = new AgoraRtcEngine();
-    localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
-  });
-  beforeEach(() => {
-    // Restore mocks after each test
-    jest.restoreAllMocks();
-  });
+// describe('Basic API Coverage 3', () => {
+//   beforeEach(() => {
+//     localRtcEngine = new AgoraRtcEngine();
+//     localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
+//     localRtcEngine.setLogFile(path.resolve(__dirname, "../test.log"))
+//   });
+//   afterEach(() => {
+//     // Restore mocks after each test
+//     jest.restoreAllMocks();
+//     localRtcEngine.release()
+//   });
+// });
 
-  it('Preview test', () => {
-    return new Promise(resolve => {
-      jest.spyOn(localRtcEngine, 'onRegisterDeliverFrame').mockImplementation(infos => {
-        console.log(`infos: ${JSON.stringify(infos.length)}`);
-        for (let i = 0; i < infos.length; i++) {
-          let info = infos[i];
-          expect(info.uid).toBe(0);
-          // Console.log(`uid: ${info.uid}, ydata: ${info.ydata.length}, udata: ${info.udata.length}, vdata: ${info.vdata.length}`);
-        }
-        expect(localRtcEngine.stopPreview()).toBe(0);
-        resolve();
-      });
-      // Ignore render functions
-      jest.spyOn(localRtcEngine, 'initRender').mockImplementation(() => {});
-      localRtcEngine.setChannelProfile(1);
-      localRtcEngine.setClientRole(1);
-      localRtcEngine.setupLocalVideo();
-      localRtcEngine.setAudioProfile(0, 1);
-      localRtcEngine.setVideoProfile(33, false);
-      localRtcEngine.enableVideo();
-      localRtcEngine.enableLocalVideo(true);
-      expect(localRtcEngine.startPreview()).toBe(0);
-    });
-  });
-});
+// describe.skip('Render coverage', () => {
+//   beforeAll(() => {
+//     localRtcEngine = new AgoraRtcEngine();
+//     localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
+//   });
+//   beforeEach(() => {
+//     // Restore mocks after each test
+//     jest.restoreAllMocks();
+//     localRtcEngine.release();
+//   });
 
-const isMac = process.platform === 'darwin';
-const MultiStreamTests = () => {
-  beforeAll(() => {
-    localRtcEngine = new AgoraRtcEngine();
-    localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
-    multistream = new MultiStream(localRtcEngine, 'basic-coverage');
-  });
-  afterAll(done => {
-    multistream.stopRemote(done);
-  });
-  afterEach(() => {
-    // Restore mocks after each test
-  });
+//   it('Preview test', done => {
+//     console.log("preview")
+//     jest.spyOn(localRtcEngine, 'onRegisterDeliverFrame').mockImplementation(infos => {
+//       console.log(`infos: ${JSON.stringify(infos.length)}`);
+//       for (let i = 0; i < infos.length; i++) {
+//         let info = infos[i];
+//         expect(info.uid).toBe(0);
+//         // Console.log(`uid: ${info.uid}, ydata: ${info.ydata.length}, udata: ${info.udata.length}, vdata: ${info.vdata.length}`);
+//       }
+//       expect(localRtcEngine.stopPreview()).toBe(0);
+//       done();
+//     });
+//     // Ignore render functions
+//     jest.spyOn(localRtcEngine, 'initRender').mockImplementation(() => {});
+//     localRtcEngine.setChannelProfile(1);
+//     localRtcEngine.setClientRole(1);
+//     localRtcEngine.setupLocalVideo();
+//     localRtcEngine.setAudioProfile(0, 1);
+//     localRtcEngine.enableVideo();
+//     localRtcEngine.enableLocalVideo(true);
+//     localRtcEngine.setVideoProfile(33, false);
+//     expect(localRtcEngine.startPreview()).toBe(0);
+//   });
+// });
 
-  it('Prepare remote', async () => {
-    console.log(`preparing remote...`);
-    let uid = generateRandomNumber(100000);
-    await multistream.initRemoteStream(uid);
-  });
+// const isMac = process.platform === 'darwin';
+// const MultiStreamTests = () => {
+//   beforeAll(() => {
+//     localRtcEngine = new AgoraRtcEngine();
+//     localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
+//     multistream = new MultiStream(localRtcEngine, 'basic-coverage');
+//   });
+//   afterAll(done => {
+//     multistream.stopRemote(done);
+//   });
+//   afterEach(() => {
+//     // Restore mocks after each test
+//   });
 
-  it('Local join', async () => {
-    let uid = generateRandomNumber(100000);
-    console.log(`local uid ${uid}`);
+//   it('Prepare remote', async () => {
+//     console.log(`preparing remote...`);
+//     let uid = generateRandomNumber(100000);
+//     await multistream.initRemoteStream(uid);
+//   });
 
-    // Wait remote stream to join channel first
-    multistream.initLocalEngine();
-    await multistream.localJoinChannel(uid);
-  }, 10000);
+//   it('Local join', async () => {
+//     let uid = generateRandomNumber(100000);
+//     console.log(`local uid ${uid}`);
 
-  it('Prepare videosource share', async () => {
-    await multistream.prepareScreenShare();
-  });
+//     // Wait remote stream to join channel first
+//     multistream.initLocalEngine();
+//     await multistream.localJoinChannel(uid);
+//   }, 10000);
 
-  it('start videosource share', async () => {
-    await multistream.startShare();
-  });
+//   it('Prepare videosource share', async () => {
+//     await multistream.prepareScreenShare();
+//   });
 
-  it('Local leave', async () => {
-    multistream.stopShare();
-    await multistream.leaveLocal();
-  });
-};
+//   it('start videosource share', async () => {
+//     await multistream.startShare();
+//   });
 
-if (isMac) {
-  describe('Multi-stream coverage', MultiStreamTests);
-} else {
-  describe.skip('Multi-stream coverage', MultiStreamTests);
-}
+//   it('Local leave', async () => {
+//     multistream.stopShare();
+//     await multistream.leaveLocal();
+//   });
+// };
+
+// if (isMac) {
+//   describe.skip('Multi-stream coverage', MultiStreamTests);
+// } else {
+//   describe.skip('Multi-stream coverage', MultiStreamTests);
+// }
