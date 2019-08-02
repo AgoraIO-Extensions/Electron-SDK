@@ -1,3 +1,7 @@
+## 2.3.4-hotfix.1
+#### :house: Internal
+* Internal optimization
+
 ## 2.3.4
 #### :house: Internal
 * Windows SDK update to 2.3.4
