@@ -2612,9 +2612,14 @@ struct RtcEngineContext
     /** App ID issued to developers by Agora. Apply for a new App ID from Agora if it is missing from your kit.
     */
     const char* appId;
+
+	// for windows,Video hot plug device
+	void* context;
+
     RtcEngineContext()
     :eventHandler(NULL)
     ,appId(NULL)
+	,context(NULL)
     {}
 };
 
