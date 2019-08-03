@@ -45,7 +45,7 @@
     "yuv-canvas": "^1.2.6"
   },
   "devDependencies": {
-    "@types/node": "10.14.13",
+    "@types/node": "10.14.14",
     "husky": "3.0.1",
     "jest": "24.8.0",
     "jsdom": "15.1.1",
