@@ -331,6 +331,14 @@ export interface RtcStats {
   rxVideoKBitRate: number;
   /** Video transmission bitrate (Kbps), represented by an instantaneous value. */
   txVideoKBitRate: number;
+  /** Audio receive bytes, represented by an instantaneous value. */
+  rxAudioKBytes: number;
+  /** Audio transmission bytes, represented by an instantaneous value. */
+  txAudioKBytes: number;
+  /** Video receive bytes, represented by an instantaneous value. */
+  rxVideoKBytes: number;
+  /** Video transmission bytes, represented by an instantaneous value. */
+  txVideoKBytes: number;
   /** Client-server latency. */
   lastmileDelay: number;
   /** The packet loss rate (%) from the local client to Agora's edge server. */
@@ -373,6 +381,17 @@ export interface LocalVideoStats {
    * since last count. See {@link QualityAdaptIndication}.
    */
   qualityAdaptIndication: QualityAdaptIndication;
+  encodedBitrate: number,
+  encodedFrameWidth: number,
+  encodedFrameHeight: number,
+  encodedFrameCount: number,
+  codecType: number
+}
+/** Statistics of the local audio. */
+export interface LocalAudioStats {
+  numChannels: number;
+  sentSampleRate: number;
+  sentBitrate: number;
 }
 /** VideoEncoderConfiguration */
 export interface VideoEncoderConfiguration {
@@ -643,6 +662,7 @@ export interface RemoteVideoStats {
    * The total video freeze time as a percentage (%) of the total time when the video is available.
    */
   frozenRate: number;
+  packetLossRate: number;
 }
 /** Sets the camera capturer configuration. */
 export enum CaptureOutPreference {
@@ -780,6 +800,62 @@ export interface RemoteAudioStats {
 export type RemoteVideoState =
   | 1
   | 2;
+/**
+ * - 0: REMOTE_VIDEO_STATE_REASON_INTERNAL
+ * - 1: REMOTE_VIDEO_STATE_REASON_NETWORK_CONGESTION
+ * - 2: REMOTE_VIDEO_STATE_REASON_NETWORK_RECOVERY
+ * - 3: REMOTE_VIDEO_STATE_REASON_LOCAL_MUTED
+ * - 4: REMOTE_VIDEO_STATE_REASON_LOCAL_UNMUTED
+ * - 5: REMOTE_VIDEO_STATE_REASON_REMOTE_MUTED
+ * - 6: REMOTE_VIDEO_STATE_REASON_REMOTE_UNMUTED
+ * - 7: REMOTE_VIDEO_STATE_REASON_REMOTE_OFFLINE
+ * - 8: REMOTE_VIDEO_STATE_REASON_AUDIO_FALLBACK
+ * - 9: REMOTE_VIDEO_STATE_REASON_AUDIO_FALLBACK_RECOVERY
+ */
+export type RemoteVideoStateReason =
+  | 0
+  | 1
+  | 2
+  | 3
+  | 4
+  | 5
+  | 6
+  | 7
+  | 8
+  | 9;
+/**
+ * Statistics of the remote audio stream.
+ * - 0: REMOTE_AUDIO_STATE_STOPPED
+ * - 1: REMOTE_AUDIO_STATE_STARTING
+ * - 2: REMOTE_AUDIO_STATE_DECODING
+ * - 3: REMOTE_AUDIO_STATE_FROZEN
+ * - 4: REMOTE_AUDIO_STATE_FAILED
+ */
+ export type RemoteAudioState =
+ | 0
+ | 1
+ | 2
+ | 3
+ | 4;
+/**
+* - 0: REMOTE_AUDIO_REASON_INTERNAL
+* - 1: REMOTE_AUDIO_REASON_NETWORK_CONGESTION
+* - 2: REMOTE_AUDIO_REASON_NETWORK_RECOVERY
+* - 3: REMOTE_AUDIO_REASON_LOCAL_MUTED
+* - 4: REMOTE_AUDIO_REASON_LOCAL_UNMUTED
+* - 5: REMOTE_AUDIO_REASON_REMOTE_MUTED
+* - 6: REMOTE_AUDIO_REASON_REMOTE_UNMUTED
+* - 7: REMOTE_AUDIO_REASON_REMOTE_OFFLINE
+*/
+export type RemoteAudioStateReason =
+ | 0
+ | 1
+ | 2
+ | 3
+ | 4
+ | 5
+ | 6
+ | 7;
 /**
  * Connection states.
  * - 1: The SDK is disconnected from Agora's edge server.

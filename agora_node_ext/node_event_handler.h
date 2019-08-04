@@ -126,7 +126,7 @@ namespace agora {
             virtual void onFirstLocalVideoFrame(int width, int height, int elapsed) override;
             virtual void onFirstRemoteVideoDecoded(uid_t uid, int width, int height, int elapsed) override;
             virtual void onVideoSizeChanged(uid_t uid, int width, int height, int rotation) override;
-            virtual void onRemoteVideoStateChanged(uid_t uid, REMOTE_VIDEO_STATE state) override;
+            virtual void onRemoteVideoStateChanged(uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed) override;
             virtual void onFirstRemoteVideoFrame(uid_t uid, int width, int height, int elapsed) override;
             virtual void onUserJoined(uid_t uid, int elapsed) override;
             virtual void onUserOffline(uid_t uid, USER_OFFLINE_REASON_TYPE reason) override;
@@ -209,7 +209,7 @@ namespace agora {
             void onFirstLocalVideoFrame_node(int width, int height, int elapsed) ;
             void onFirstRemoteVideoDecoded_node(uid_t uid, int width, int height, int elapsed) ;
             void onVideoSizeChanged_node(uid_t uid, int width, int height, int rotation) ;
-            void onRemoteVideoStateChanged_node(uid_t uid, REMOTE_VIDEO_STATE state);
+            void onRemoteVideoStateChanged_node(uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed);
             void onFirstRemoteVideoFrame_node(uid_t uid, int width, int height, int elapsed) ;
             void onUserJoined_node(uid_t uid, int elapsed) ;
             void onUserOffline_node(uid_t uid, USER_OFFLINE_REASON_TYPE reason) ;
