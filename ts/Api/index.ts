@@ -36,6 +36,7 @@ import {
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate } from '../Utils';
+import { ChannelMediaRelayEvent, ChannelMediaRelayState, ChannelMediaRelayError, ChannelMediaRelayConfiguration } from './native_type';
 
 const agora = require('../../build/Release/agora_node_ext');
 
@@ -557,6 +558,14 @@ class AgoraRtcEngine extends EventEmitter {
 
     this.rtcEngine.onEvent('audioMixingStateChanged', function(state: number, errorCode: number) {
       fire('audioMixingStateChanged', state, errorCode);
+    });
+
+    this.rtcEngine.onEvent('channelMediaRelayState', function(state: ChannelMediaRelayState, code: ChannelMediaRelayError) {
+      fire('channelMediaRelayState', state, code);
+    });
+
+    this.rtcEngine.onEvent('channelMediaRelayEvent', function(event: ChannelMediaRelayEvent) {
+      fire('channelMediaRelayEvent', event);
     });
 
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
@@ -2034,6 +2043,11 @@ class AgoraRtcEngine extends EventEmitter {
   getUserInfoByUid(uid: number): {errCode: number, userInfo: UserInfo}  {
     return this.rtcEngine.getUserInfoByUid(uid);
   }
+
+  switchChannel(token: string, channelName: string) : number {
+    return this.rtcEngine.switchChannel(token, channelName);
+  }
+
   /**
    * @description Adjusts the recording volume.
    * @param {number} volume Recording volume. The value ranges between 0 and 400:
@@ -3159,6 +3173,19 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   // ===========================================================================
+  // CHANNEL MEDIA RELAY
+  // ===========================================================================
+  startChannelMediaRelay(config: ChannelMediaRelayConfiguration): number {
+    return this.rtcEngine.startChannelMediaRelay(config);
+  }
+  updateChannelMediaRelay(config: ChannelMediaRelayConfiguration): number {
+    return this.rtcEngine.updateChannelMediaRelay(config);
+  }
+  stopChannelMediaRelay(): number {
+    return this.rtcEngine.stopChannelMediaRelay();
+  }
+
+  // ===========================================================================
   // MANAGE AUDIO EFFECT
   // ===========================================================================
   /**
@@ -4096,6 +4123,13 @@ declare interface AgoraRtcEngine {
     state: RemoteAudioState,
     reason: RemoteAudioStateReason,
     elapsed: number
+  ) => void): this;
+  on(evt: 'channelMediaRelayState', cb: (
+    state: ChannelMediaRelayState,
+    code: ChannelMediaRelayError
+  ) => void): this;
+  on(evt: 'channelMediaRelayEvent', cb: (
+    event: ChannelMediaRelayEvent
   ) => void): this;
   on(evt: string, listener: Function): this;
 
