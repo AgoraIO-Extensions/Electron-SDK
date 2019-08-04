@@ -89,6 +89,8 @@ namespace agora {
 #define RTC_EVENT_LOCAL_VIDEO_STATE_CHANGED "localVideoStateChanged"
 #define RTC_EVENT_LOCAL_AUDIO_STATE_CHANGED "localAudioStateChanged"
 #define RTC_EVENT_REMOTE_AUDIO_STATE_CHANGED "remoteAudioStateChanged"
+#define RTC_EVENT_CHANNEL_MEDIA_RELAY_STATE  "channelMediaRelayState"
+#define RTC_EVENT_CHANNEL_MEDIA_RELAY_EVENT "channelMediaRelayEvent"
 
 #define RTC_EVENT_VIDEO_SOURCE_JOIN_SUCCESS "videosourcejoinsuccess"
 #define RTC_EVENT_VIDEO_SOURCE_REQUEST_NEW_TOKEN "videosourcerequestnewtoken"
@@ -188,6 +190,8 @@ namespace agora {
             virtual void onLocalAudioStats(const LocalAudioStats& stats) override;
             virtual void onLocalAudioStateChanged(int state, int error) override;
             virtual void onRemoteAudioStateChanged(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) override;
+            virtual void onChannelMediaRelayStateChanged(CHANNEL_MEDIA_RELAY_STATE state,CHANNEL_MEDIA_RELAY_ERROR code) override;
+            virtual void onChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT code) override;
 
         private:
             void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
@@ -270,6 +274,8 @@ namespace agora {
             void onLocalAudioStats_node(const LocalAudioStats& stats) ;
             void onLocalAudioStateChanged_node(int state, int error) ;
             void onRemoteAudioStateChanged_node(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) ;
+            void onChannelMediaRelayStateChanged_node(CHANNEL_MEDIA_RELAY_STATE state,CHANNEL_MEDIA_RELAY_ERROR code);
+            void onChannelMediaRelayEvent_node(CHANNEL_MEDIA_RELAY_EVENT code);
         private:
             std::unordered_map<std::string, NodeEventCallback*> m_callbacks;
             NodeRtcEngine* m_engine;
