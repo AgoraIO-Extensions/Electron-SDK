@@ -581,6 +581,15 @@ export interface NodeRtcEngine {
   ): number;
   createDataStream(reliable: boolean, ordered: boolean): number;
   sendStreamMessage(streamId: number, msg: string): number;
+
+  getEffectCurrentPosition(soundId: number): number;
+  setEffectPosition(soundId: number, pos: number): number;
+  getEffectDuration(filepath: string): number;
+  adjustEffectPlayoutVolume(soundId: number, volume: number): number;
+  adjustEffectPublishVolume(soundId: number, volume: number): number;
+  getEffectPlayoutVolume(soundId: number): number;
+  getEffectPublishVolume(soundId: number): number;
+
   getEffectsVolume(): number;
   setEffectsVolume(volume: number): number;
   setVolumeOfEffect(soundId: number, volume: number): number;
@@ -591,9 +600,11 @@ export interface NodeRtcEngine {
     pitch: number,
     pan: number,
     gain: number,
-    publish: number
+    publish: number,
+    startPos: number
   ): number;
   stopEffect(soundId: number): number;
+  stopAllEffects(): number;
   preloadEffect(soundId: number, filePath: string): number;
   unloadEffect(soundId: number): number;
   pauseEffect(soundId: number): number;

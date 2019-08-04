@@ -145,18 +145,27 @@ namespace agora {
             NAPI_API(getAudioMixingDuration);
             NAPI_API(getAudioMixingCurrentPosition);
             NAPI_API(setAudioMixingPosition);
+
+            NAPI_API(getEffectCurrentPosition);
+            NAPI_API(setEffectPosition);
+            NAPI_API(getEffectDuration);
+            NAPI_API(adjustEffectPlayoutVolume);
+            NAPI_API(adjustEffectPublishVolume);
+            NAPI_API(getEffectPlayoutVolume);
+            NAPI_API(getEffectPublishVolume);
+            
             NAPI_API(getEffectsVolume);	
-			NAPI_API(setEffectsVolume);	
-			NAPI_API(setVolumeOfEffect);
-			NAPI_API(playEffect);	
-			NAPI_API(stopEffect);	
-			NAPI_API(stopAllEffects);	
-			NAPI_API(preloadEffect);	
-			NAPI_API(unloadEffect);	
-			NAPI_API(pauseEffect);	
-			NAPI_API(pauseAllEffects);	
-			NAPI_API(resumeEffect);	
-			NAPI_API(resumeAllEffects);
+            NAPI_API(setEffectsVolume);	
+            NAPI_API(setVolumeOfEffect);
+            NAPI_API(playEffect);	
+            NAPI_API(stopEffect);	
+            NAPI_API(stopAllEffects);	
+            NAPI_API(preloadEffect);	
+            NAPI_API(unloadEffect);	
+            NAPI_API(pauseEffect);	
+            NAPI_API(pauseAllEffects);	
+            NAPI_API(resumeEffect);	
+            NAPI_API(resumeAllEffects);
             NAPI_API(setLocalVoicePitch);
             NAPI_API(setLocalVoiceEqualization);
             NAPI_API(setLocalVoiceReverb);
@@ -258,6 +267,11 @@ namespace agora {
              */
             NAPI_API(getConnectionState);
             NAPI_API(release);
+
+            /**
+             * 2.3.3.165 apis
+             */
+
 
         public:
             Isolate* getIsolate() { return m_isolate; }
@@ -378,7 +392,7 @@ namespace agora {
             if(status != napi_ok) { \
                 break; \
             } \
-		    status = napi_get_value_##type5##_(argv[4], (param5)); \
+            status = napi_get_value_##type5##_(argv[4], (param5)); \
             if(status != napi_ok) { \
                 break; \
             } \
@@ -387,6 +401,45 @@ namespace agora {
                 break; \
             } \
             status = napi_get_value_##type7##_(argv[6], (param7)); \
+            if(status != napi_ok) { \
+                break; \
+            } \
+        } while (false);
+
+/*
+* to extract seven parameters from JS call parameters.
+*/
+#define napi_get_param_8(argv, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, type7, param7, type8, param8) \
+        do { \
+            status = napi_get_value_##type1##_(argv[0], (param1)); \
+            if(status != napi_ok) { \
+                break; \
+            } \
+            status = napi_get_value_##type2##_(argv[1], (param2)); \
+            if(status != napi_ok) { \
+                break; \
+            } \
+            status = napi_get_value_##type3##_(argv[2], (param3)); \
+            if(status != napi_ok) { \
+                break; \
+            } \
+            status = napi_get_value_##type4##_(argv[3], (param4)); \
+            if(status != napi_ok) { \
+                break; \
+            } \
+            status = napi_get_value_##type5##_(argv[4], (param5)); \
+            if(status != napi_ok) { \
+                break; \
+            } \
+            status = napi_get_value_##type6##_(argv[5], (param6)); \
+            if(status != napi_ok) { \
+                break; \
+            } \
+            status = napi_get_value_##type7##_(argv[6], (param7)); \
+            if(status != napi_ok) { \
+                break; \
+            } \
+            status = napi_get_value_##type8##_(argv[7], (param8)); \
             if(status != napi_ok) { \
                 break; \
             } \
@@ -461,6 +514,7 @@ typedef unsigned int uint32;
 #define CALL_MEM_FUNC_WITH_PARAM2(cls, func, param1, param2) cls.func(param1, param2)
 #define CALL_MEM_FUNC_WITH_PARAM3(cls, func, param1, param2, param3) cls.func(param1, param2, param3)
 #define CALL_MEM_FUNC_WITH_PARAM7(cls, func, param1, param2, param3, param4, param5, param6, param7) cls.func(param1, param2, param3, param4, param5, param6, param7)
+#define CALL_MEM_FUNC_WITH_PARAM8(cls, func, param1, param2, param3, param4, param5, param6, param7, param8) cls.func(param1, param2, param3, param4, param5, param6, param7, param8)
 
 #endif
 /*
@@ -577,6 +631,57 @@ typedef unsigned int uint32;
             CHECK_NAPI_STATUS(pEngine, status);\
             RtcEngineParameters rep(pEngine->m_engine);\
             int result = CALL_MEM_FUNC_WITH_PARAM7(rep, method, param, param2, param3, param4, param5, param6, param7);\
+            napi_set_int_result(args, result); \
+        } while (false);\
+        LOG_LEAVE;\
+    }
+
+#define NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_7(method, type, type2, type3, type4, type5, type6, type7) \
+ NAPI_API_DEFINE(NodeRtcEngine, method) \
+    {\
+        LOG_ENTER;\
+        do {\
+            NodeRtcEngine *pEngine = nullptr;\
+            napi_get_native_this(args, pEngine);\
+            CHECK_NATIVE_THIS(pEngine);\
+            napi_status status = napi_ok;\
+            type param;\
+            type2 param2;\
+            type3 param3;\
+            type4 param4;\
+            type5 param5;\
+            type6 param6;\
+            type7 param7;\
+            napi_get_param_7(args, type, param, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, type7, param7);\
+            CHECK_NAPI_STATUS(pEngine, status);\
+            RtcEngineParameters rep(pEngine->m_engine);\
+            int result = CALL_MEM_FUNC_WITH_PARAM7(rep, method, param, param2, param3, param4, param5, param6, param7);\
+            napi_set_int_result(args, result); \
+        } while (false);\
+        LOG_LEAVE;\
+    }
+
+#define NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_8(method, type, type2, type3, type4, type5, type6, type7, type8) \
+ NAPI_API_DEFINE(NodeRtcEngine, method) \
+    {\
+        LOG_ENTER;\
+        do {\
+            NodeRtcEngine *pEngine = nullptr;\
+            napi_get_native_this(args, pEngine);\
+            CHECK_NATIVE_THIS(pEngine);\
+            napi_status status = napi_ok;\
+            type param;\
+            type2 param2;\
+            type3 param3;\
+            type4 param4;\
+            type5 param5;\
+            type6 param6;\
+            type7 param7;\
+            type8 param8;\
+            napi_get_param_8(args, type, param, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, type7, param7, type8, param8);\
+            CHECK_NAPI_STATUS(pEngine, status);\
+            RtcEngineParameters rep(pEngine->m_engine);\
+            int result = CALL_MEM_FUNC_WITH_PARAM8(rep, method, param, param2, param3, param4, param5, param6, param7, param8);\
             napi_set_int_result(args, result); \
         } while (false);\
         LOG_LEAVE;\

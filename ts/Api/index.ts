@@ -2105,6 +2105,34 @@ class AgoraRtcEngine extends EventEmitter {
   // ===========================================================================
   // MANAGE AUDIO EFFECT
   // ===========================================================================
+  getEffectCurrentPosition(soundId: number): number
+  {
+    return this.rtcEngine.getEffectCurrentPosition(soundId)
+  }
+  setEffectPosition(soundId: number, pos: number): number
+  {
+    return this.rtcEngine.setEffectPosition(soundId, pos)
+  }
+  getEffectDuration(filepath: string): number
+  {
+    return this.rtcEngine.getEffectDuration(filepath)
+  }
+  adjustEffectPlayoutVolume(soundId: number, volume: number): number
+  {
+    return this.rtcEngine.adjustEffectPlayoutVolume(soundId, volume)
+  }
+  adjustEffectPublishVolume(soundId: number, volume: number): number
+  {
+    return this.rtcEngine.adjustEffectPublishVolume(soundId, volume)
+  }
+  getEffectPlayoutVolume(soundId: number): number
+  {
+    return this.rtcEngine.getEffectPlayoutVolume(soundId)
+  }
+  getEffectPublishVolume(soundId: number): number
+  {
+    return this.rtcEngine.getEffectPublishVolume(soundId)
+  }
   /**
    * @description get effects volume
    * @returns {number} volume
@@ -2147,7 +2175,8 @@ class AgoraRtcEngine extends EventEmitter {
     pitch: number,
     pan: number,
     gain: number,
-    publish: number
+    publish: number,
+    startPos: number
   ): number {
     return this.rtcEngine.playEffect(
       soundId,
@@ -2156,7 +2185,8 @@ class AgoraRtcEngine extends EventEmitter {
       pitch,
       pan,
       gain,
-      publish
+      publish,
+      startPos
     );
   }
   /**
@@ -2167,6 +2197,11 @@ class AgoraRtcEngine extends EventEmitter {
   stopEffect(soundId: number): number {
     return this.rtcEngine.stopEffect(soundId);
   }
+
+  stopAllEffects(): number {
+    return this.rtcEngine.stopAllEffects()
+  }
+
   /**
    * @description preload effect
    * @param {number} soundId soundId

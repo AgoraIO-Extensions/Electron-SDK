@@ -84,7 +84,16 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(getAudioMixingDuration)
                 PROPERTY_METHOD_DEFINE(getAudioMixingCurrentPosition)
                 PROPERTY_METHOD_DEFINE(setAudioMixingPosition)
-                PROPERTY_METHOD_DEFINE(getEffectsVolume)	
+
+                PROPERTY_METHOD_DEFINE(getEffectCurrentPosition)
+                PROPERTY_METHOD_DEFINE(setEffectPosition)
+                PROPERTY_METHOD_DEFINE(getEffectDuration)
+                PROPERTY_METHOD_DEFINE(adjustEffectPlayoutVolume)
+                PROPERTY_METHOD_DEFINE(adjustEffectPublishVolume)
+                PROPERTY_METHOD_DEFINE(getEffectPlayoutVolume)
+                PROPERTY_METHOD_DEFINE(getEffectPublishVolume)
+
+                PROPERTY_METHOD_DEFINE(getEffectsVolume)
                 PROPERTY_METHOD_DEFINE(setEffectsVolume)	
                 PROPERTY_METHOD_DEFINE(setVolumeOfEffect)	
                 PROPERTY_METHOD_DEFINE(playEffect)	
@@ -312,13 +321,27 @@ namespace agora {
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(resumeAudio);
 
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(getEffectsVolume);	
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(getEffectCurrentPosition, int32);
+        
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(setEffectPosition, int32, int32);
+        
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(getEffectDuration, nodestring);
+        
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(adjustEffectPlayoutVolume, int32, int32);
+        
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(adjustEffectPublishVolume, int32, int32);
+        
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(getEffectPlayoutVolume, int32);
+
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(getEffectPublishVolume, int32);
+
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(getEffectsVolume);
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setEffectsVolume, int32);
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(setVolumeOfEffect, int32, int32);	
         
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_7(playEffect, int32, nodestring, int32, double, double, int32, bool);	
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_8(playEffect, int32, nodestring, int32, double, double, int32, bool, int32);	
         
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(stopEffect, int32);	
         
