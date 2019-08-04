@@ -1076,6 +1076,57 @@ export enum VIDEO_PROFILE_TYPE {
 }
 
 /**
+ * Media info of the channel.
+ */
+export interface ChannelMediaInfo {
+  channel: string;
+  token: string;
+  uid: number;
+}
+
+/**
+ * Media info of the channel.
+ */
+export interface ChannelMediaRelayConfiguration {
+  srcInfo: ChannelMediaInfo;
+  destInfos: [ChannelMediaInfo];
+}
+
+export type ChannelMediaRelayEvent =
+  | 0 // 0: RELAY_EVENT_NETWORK_DISCONNECTED
+  | 1 // 1: RELAY_EVENT_NETWORK_CONNECTED
+  | 2 // 2: RELAY_EVENT_PACKET_JOINED_SRC_CHANNEL
+  | 3 // 3: RELAY_EVENT_PACKET_JOINED_DEST_CHANNEL
+  | 4 // 4: RELAY_EVENT_PACKET_SENT_TO_DEST_CHANNEL
+  | 5 // 5: RELAY_EVENT_PACKET_RECEIVED_VIDEO_FROM_SRC
+  | 6 // 6: RELAY_EVENT_PACKET_RECEIVED_AUDIO_FROM_SRC
+  | 7 // 7: RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL
+  | 8 // 8: RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_REFUSED
+  | 9 // 9: RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_NOT_CHANGE
+  | 10 // 10: RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_IS_NULL
+  | 11; // 11: RELAY_EVENT_VIDEO_PROFILE_UPDATE
+
+export type ChannelMediaRelayState =
+  | 0 // 0: RELAY_STATE_IDLE
+  | 1 // 1: RELAY_STATE_CONNECTING
+  | 2 // 2: RELAY_STATE_RUNNING
+  | 3; // 3: RELAY_STATE_FAILURE
+
+export type ChannelMediaRelayError =
+  | 0 // 0: RELAY_OK
+  | 1 // 1: RELAY_ERROR_SERVER_ERROR_RESPONSE
+  | 2 // 2: RELAY_ERROR_SERVER_NO_RESPONSE
+  | 3 // 3: RELAY_ERROR_NO_RESOURCE_AVAILABLE
+  | 4 // 4: RELAY_ERROR_FAILED_JOIN_SRC
+  | 5 // 5: RELAY_ERROR_FAILED_JOIN_DEST
+  | 6 // 6: RELAY_ERROR_FAILED_PACKET_RECEIVED_FROM_SRC
+  | 7 // 7: RELAY_ERROR_FAILED_PACKET_SENT_TO_DEST
+  | 8 // 8: RELAY_ERROR_SERVER_CONNECTION_LOST
+  | 9 // 9: RELAY_ERROR_INTERNAL_ERROR
+  | 10 // 10: RELAY_ERROR_SRC_TOKEN_EXPIRED
+  | 11; // 11: RELAY_ERROR_DEST_TOKEN_EXPIRED
+
+/**
  * interface for c++ addon (.node)
  */
 export interface NodeRtcEngine {
@@ -1088,6 +1139,10 @@ export interface NodeRtcEngine {
     channel: string,
     info: string,
     uid: number
+  ): number;
+  switchChannel(
+    token: string,
+    channel: string
   ): number;
   leaveChannel(): number;
   release(): number;
@@ -1352,6 +1407,10 @@ export interface NodeRtcEngine {
   adjustRecordingSignalVolume(volume: number): number;
   adjustPlaybackSignalVolume(volume: number): number;
   stopAllEffects(): number;
+
+  startChannelMediaRelay(config: ChannelMediaRelayConfiguration): number;
+  updateChannelMediaRelay(config: ChannelMediaRelayConfiguration): number;
+  stopChannelMediaRelay(): number;
 
   registerAudioFramePluginManager(): number;
   unRegisterAudioFramePluginManager(): number;
