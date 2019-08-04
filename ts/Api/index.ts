@@ -3,11 +3,15 @@ import {
   NodeRtcEngine,
   RtcStats,
   LocalVideoStats,
+  LocalAudioStats,
   RemoteVideoStats,
   RemoteAudioStats,
   RemoteVideoTransportStats,
   RemoteAudioTransportStats,
   RemoteVideoState,
+  RemoteVideoStateReason,
+  RemoteAudioState,
+  RemoteAudioStateReason,
   AgoraNetworkQuality,
   LastmileProbeResult,
   ClientRoleType,
@@ -196,6 +200,10 @@ class AgoraRtcEngine extends EventEmitter {
     this.rtcEngine.onEvent('localvideostats', function(stats: LocalVideoStats) {
       fire('localvideostats', stats);
       fire('localVideoStats', stats);
+    });
+
+    this.rtcEngine.onEvent('localAudioStats', function(stats: LocalAudioStats) {
+      fire('localAudioStateChanged', stats);
     });
 
     this.rtcEngine.onEvent('remotevideostats', function(stats: RemoteVideoStats) {
@@ -431,8 +439,8 @@ class AgoraRtcEngine extends EventEmitter {
       fire('firstRemoteAudioDecoded', uid, elapsed);
     });
 
-    this.rtcEngine.onEvent('remoteVideoStateChanged', function(uid: number, state: RemoteVideoState) {
-      fire('remoteVideoStateChanged', uid, state);
+    this.rtcEngine.onEvent('remoteVideoStateChanged', function(uid: number, state: RemoteVideoState, reason: RemoteVideoStateReason, elapsed: number) {
+      fire('remoteVideoStateChanged', uid, state, reason, elapsed);
     });
 
     this.rtcEngine.onEvent('cameraFocusAreaChanged', function(
@@ -537,6 +545,14 @@ class AgoraRtcEngine extends EventEmitter {
 
     this.rtcEngine.onEvent('localVideoStateChanged', function(localVideoState: number, err: number) {
       fire('localVideoStateChanged', localVideoState, err);
+    });
+
+    this.rtcEngine.onEvent('localAudioStateChanged', function(state: number, err: number) {
+      fire('localAudioStateChanged', state, err);
+    });
+
+    this.rtcEngine.onEvent('remoteAudioStateChanged', function(uid: number, state: RemoteAudioState, reason: RemoteAudioStateReason, elapsed: number) {
+      fire('remoteAudioStateChanged', uid, state, reason, elapsed);
     });
 
     this.rtcEngine.onEvent('audioMixingStateChanged', function(state: number, errorCode: number) {
@@ -3582,6 +3598,10 @@ declare interface AgoraRtcEngine {
    * - stats: The statistics of the local video stream. See {@link LocalVideoStats}.
    */
   on(evt: 'localVideoStats', cb: (stats: LocalVideoStats) => void): this;
+  /** Reports the statistics of the local audio streams.
+   * - stats: The statistics of the local audio stream. See {@link LocalAudioStats}.
+   */
+  on(evt: 'localAudioStats', cb: (stats: LocalAudioStats) => void): this;
   /** Reports the statistics of the video stream from each remote user/host.
    * - stats: Statistics of the received remote video streams. See {@link RemoteVideoState}.
    */
@@ -4066,6 +4086,16 @@ declare interface AgoraRtcEngine {
   on(evt: 'localVideoStateChanged', cb: (
     localVideoState: number,
     error: number
+  ) => void): this;
+  on(evt: 'localAudioStateChanged', cb: (
+    state: number,
+    error: number
+  ) => void): this;
+  on(evt: 'remoteAudioStateChanged', cb: (
+    uid: number,
+    state: RemoteAudioState,
+    reason: RemoteAudioStateReason,
+    elapsed: number
   ) => void): this;
   on(evt: string, listener: Function): this;
 
