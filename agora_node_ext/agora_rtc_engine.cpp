@@ -248,6 +248,14 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(getUserInfoByUserAccount);
                 PROPERTY_METHOD_DEFINE(getUserInfoByUid);
 
+                /**
+                 * 2.9.0 Apis
+                 */
+                PROPERTY_METHOD_DEFINE(switchChannel);
+                PROPERTY_METHOD_DEFINE(startChannelMediaRelay);
+                PROPERTY_METHOD_DEFINE(updateChannelMediaRelay);
+                PROPERTY_METHOD_DEFINE(stopChannelMediaRelay);
+
             EN_PROPERTY_DEFINE()
             module->Set(String::NewFromUtf8(isolate, "NodeRtcEngine"), tpl->GetFunction());
         }
@@ -2339,19 +2347,40 @@ namespace agora {
                 status = NodeUid::getUidFromNodeValue(args[3], uid);
                 CHECK_NAPI_STATUS(pEngine, status);
 
-				std::string extra_info = "";
+                std::string extra_info = "";
 
-				if (chan_info && strlen(chan_info) > 0){
-					extra_info = "Electron_";
-					extra_info += chan_info;
-				}
-				else{
-					extra_info = "Electron";
-				}
+                if (chan_info && strlen(chan_info) > 0){
+                    extra_info = "Electron_";
+                    extra_info += chan_info;
+                }
+                else{
+                    extra_info = "Electron";
+                }
                
                 int result = pEngine->m_engine->joinChannel(key, name, extra_info.c_str(), uid);
                 args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result));
             } while (false);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, switchChannel)
+        {
+            LOG_ENTER;
+            int result = -1;
+            NodeString key, name;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                napi_status status = napi_get_value_nodestring_(args[0], key);
+                CHECK_NAPI_STATUS(pEngine, status);
+                
+                status = napi_get_value_nodestring_(args[1], name);
+                CHECK_NAPI_STATUS(pEngine, status);
+               
+                result = pEngine->m_engine->switchChannel(key, name);
+            } while (false);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
@@ -4149,6 +4178,162 @@ namespace agora {
                 obj->Set(propName, userObj);
                 args.GetReturnValue().Set(obj);
             } while (false);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, startChannelMediaRelay)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                ChannelMediaRelayConfiguration config;
+                Local<Object> obj = args[0]->ToObject(args.GetIsolate());
+
+                if (obj->IsNull()) {
+                    status = napi_invalid_arg;
+                    break;
+                }
+
+                //srcInfo
+                Local<Name> keyName = String::NewFromUtf8(args.GetIsolate(), "srcInfo", NewStringType::kInternalized).ToLocalChecked();
+                Local<Value> srcInfoValue = obj->Get(args.GetIsolate()->GetCurrentContext(), keyName).ToLocalChecked();
+                ChannelMediaInfo srcInfo;
+                if (!srcInfoValue->IsNull()) {
+                    NodeString channelName, token;
+                    Local<Object> objSrcInfo = srcInfoValue->ToObject(args.GetIsolate());
+                    napi_get_object_property_nodestring_(args.GetIsolate(), objSrcInfo, "channelName", channelName);
+                    napi_get_object_property_nodestring_(args.GetIsolate(), objSrcInfo, "token", token);
+                    napi_get_object_property_uid_(args.GetIsolate(), objSrcInfo, "uid", srcInfo.uid);
+                    string mChannelName(channelName);
+                    string mToken(token);
+                    srcInfo.channelName = mChannelName.c_str();
+                    srcInfo.token = mToken.c_str();
+                }
+                
+
+                //destInfos
+                keyName = String::NewFromUtf8(args.GetIsolate(), "destInfos", NewStringType::kInternalized).ToLocalChecked();
+                Local<Value> objDestInfos = obj->Get(args.GetIsolate()->GetCurrentContext(), keyName).ToLocalChecked();
+                if (objDestInfos->IsNull() || !objDestInfos->IsArray()) {
+                    status = napi_invalid_arg;
+                    break;
+                }
+                auto destInfosValue = v8::Array::Cast(*objDestInfos);
+                int destInfoCount = destInfosValue->Length();
+                ChannelMediaInfo destInfos[destInfoCount];
+                for (uint32 i = 0; i < destInfoCount; i++) {
+                    Local<Value> value = destInfosValue->Get(i);
+                    Local<Object> destInfoObj = value->ToObject(args.GetIsolate());
+                    if (destInfoObj->IsNull()) {
+                        status = napi_invalid_arg;
+                        break;
+                    }
+                    NodeString channelName, token;
+                    napi_get_object_property_nodestring_(args.GetIsolate(), destInfoObj, "channelName", channelName);
+                    napi_get_object_property_nodestring_(args.GetIsolate(), destInfoObj, "token", token);
+                    napi_get_object_property_uid_(args.GetIsolate(), destInfoObj, "uid", destInfos[i].uid);
+                    string mChannelName(channelName);
+                    string mToken(token);
+                    srcInfo.channelName = mChannelName.c_str();
+                    srcInfo.token = mToken.c_str();
+                }
+                config.srcInfo = &srcInfo;
+                config.destInfos = &destInfos[0];
+                config.destCount = destInfoCount;
+
+                result = pEngine->m_engine->startChannelMediaRelay(config);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, updateChannelMediaRelay)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                ChannelMediaRelayConfiguration config;
+                Local<Object> obj = args[0]->ToObject(args.GetIsolate());
+
+                if (obj->IsNull()) {
+                    status = napi_invalid_arg;
+                    break;
+                }
+
+                //srcInfo
+                Local<Name> keyName = String::NewFromUtf8(args.GetIsolate(), "srcInfo", NewStringType::kInternalized).ToLocalChecked();
+                Local<Value> srcInfoValue = obj->Get(args.GetIsolate()->GetCurrentContext(), keyName).ToLocalChecked();
+                ChannelMediaInfo srcInfo;
+                if (!srcInfoValue->IsNull()) {
+                    NodeString channelName, token;
+                    Local<Object> objSrcInfo = srcInfoValue->ToObject(args.GetIsolate());
+                    napi_get_object_property_nodestring_(args.GetIsolate(), objSrcInfo, "channelName", channelName);
+                    napi_get_object_property_nodestring_(args.GetIsolate(), objSrcInfo, "token", token);
+                    napi_get_object_property_uid_(args.GetIsolate(), objSrcInfo, "uid", srcInfo.uid);
+                    string mChannelName(channelName);
+                    string mToken(token);
+                    srcInfo.channelName = mChannelName.c_str();
+                    srcInfo.token = mToken.c_str();
+                }
+                
+
+                //destInfos
+                keyName = String::NewFromUtf8(args.GetIsolate(), "destInfos", NewStringType::kInternalized).ToLocalChecked();
+                Local<Value> objDestInfos = obj->Get(args.GetIsolate()->GetCurrentContext(), keyName).ToLocalChecked();
+                if (objDestInfos->IsNull() || !objDestInfos->IsArray()) {
+                    status = napi_invalid_arg;
+                    break;
+                }
+                auto destInfosValue = v8::Array::Cast(*objDestInfos);
+                int destInfoCount = destInfosValue->Length();
+                ChannelMediaInfo destInfos[destInfoCount];
+                for (uint32 i = 0; i < destInfoCount; i++) {
+                    Local<Value> value = destInfosValue->Get(i);
+                    Local<Object> destInfoObj = value->ToObject(args.GetIsolate());
+                    if (destInfoObj->IsNull()) {
+                        status = napi_invalid_arg;
+                        break;
+                    }
+                    NodeString channelName, token;
+                    napi_get_object_property_nodestring_(args.GetIsolate(), destInfoObj, "channelName", channelName);
+                    napi_get_object_property_nodestring_(args.GetIsolate(), destInfoObj, "token", token);
+                    napi_get_object_property_uid_(args.GetIsolate(), destInfoObj, "uid", destInfos[i].uid);
+                    string mChannelName(channelName);
+                    string mToken(token);
+                    srcInfo.channelName = mChannelName.c_str();
+                    srcInfo.token = mToken.c_str();
+                }
+                config.srcInfo = &srcInfo;
+                config.destInfos = &destInfos[0];
+                config.destCount = destInfoCount;
+
+                result = pEngine->m_engine->updateChannelMediaRelay(config);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, stopChannelMediaRelay)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                result = pEngine->m_engine->stopChannelMediaRelay();
+            } while (false);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
