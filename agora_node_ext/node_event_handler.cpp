@@ -1366,5 +1366,33 @@ namespace agora {
             FUNC_TRACE;
             MAKE_JS_CALL_4(RTC_EVENT_REMOTE_AUDIO_STATE_CHANGED, uid, uid, int32, state, int32, reason, int32, elapsed);
         }
+
+        void NodeEventHandler::onChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT code)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, code] {
+                this->onChannelMediaRelayEvent_node(code);
+            });
+        }
+
+        void NodeEventHandler::onChannelMediaRelayEvent_node(CHANNEL_MEDIA_RELAY_EVENT code)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_1(RTC_EVENT_CHANNEL_MEDIA_RELAY_EVENT, int32, code);
+        }
+
+        void NodeEventHandler::onChannelMediaRelayStateChanged(CHANNEL_MEDIA_RELAY_STATE state,CHANNEL_MEDIA_RELAY_ERROR code)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, state, code] {
+                this->onChannelMediaRelayStateChanged_node(state, code);
+            });
+        }
+
+        void NodeEventHandler::onChannelMediaRelayStateChanged_node(CHANNEL_MEDIA_RELAY_STATE state,CHANNEL_MEDIA_RELAY_ERROR code)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_2(RTC_EVENT_CHANNEL_MEDIA_RELAY_STATE, int32, state, int32, code);
+        }
     }
 }

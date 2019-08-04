@@ -310,6 +310,14 @@ namespace agora {
             NAPI_API(joinChannelWithUserAccount);
             NAPI_API(getUserInfoByUserAccount);
             NAPI_API(getUserInfoByUid);
+
+            /**
+             * 2.9.0 Apis
+             */
+            NAPI_API(switchChannel);
+            NAPI_API(startChannelMediaRelay);
+            NAPI_API(updateChannelMediaRelay);
+            NAPI_API(stopChannelMediaRelay);
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }
