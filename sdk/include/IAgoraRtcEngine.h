@@ -3863,9 +3863,8 @@ public:
      Call this method when you are in a channel.
 
      @return
-     - &ge; 0: The current playback position of the audio mixing, if this method call succeeds.
-
-     - < 0: Failure.
+     0: The current playback position of the audio mixing, if this method call succeeds.
+     < 0: Failure.
      */
     int getAudioMixingCurrentPosition() {
         if (!m_parameter) return -ERR_NOT_INITIALIZED;
@@ -3960,7 +3959,7 @@ public:
      - 0: Success.
      - < 0: Failure.
      */
-    int playEffect(int soundId, const char* filePath, int loopCount, double pitch, double pan, int gain, bool publish = false) {
+    int playEffect(int soundId, const char* filePath, int loopCount, double pitch, double pan, int gain, bool publish = false, int startPos = 0) {
 #if defined(_WIN32)
         util::AString path;
         if (!m_parameter->convertPath(filePath, path))
@@ -3970,8 +3969,8 @@ public:
 #endif
         return setObject(
                          "che.audio.game_play_effect",
-                         "{\"soundId\":%d,\"filePath\":\"%s\",\"loopCount\":%d, \"pitch\":%lf,\"pan\":%lf,\"gain\":%d, \"send2far\":%d}",
-                         soundId, filePath, loopCount, pitch, pan, gain, publish);
+                         "{\"soundId\":%d,\"filePath\":\"%s\",\"loopCount\":%d, \"pitch\":%lf,\"pan\":%lf,\"gain\":%d, \"send2far\":%d, \"startPos\":%d}",
+                         soundId, filePath, loopCount, pitch, pan, gain, publish, startPos);
     }
 
     /** Stops playing a specified audio effect.
@@ -4073,6 +4072,131 @@ public:
     int resumeAllEffects() {
         return m_parameter ? m_parameter->setBool(
                                                   "che.audio.game_resume_all_effects", true) : -ERR_NOT_INITIALIZED;
+    }
+
+    /** Retrieves the playback position (ms) of specified audio effect.
+
+     Call this method when you are in a channel.
+
+     @param soundId ID of the audio effect. Each audio effect has a unique ID.
+
+     @return >= 0: The current playback position of the audio effect, if this method call is successful.
+     < 0: Failure.
+     */
+    int getEffectCurrentPosition(int soundId) {
+        int position = 0;
+        char key[512];
+        sprintf(key, "che.audio.get_effect_file_position:%d", soundId);
+        int r = m_parameter ? m_parameter->getInt(key, position) : -ERR_NOT_INITIALIZED;
+        if (r == 0)
+            r = position;
+        return r;
+    }
+
+    /** Sets the instantaneous playback position of specified audio effect file.
+
+     @param soundId ID of the audio effect. Each audio effect has a unique ID.
+     @param pos The instantaneous playback position (ms) of the audio effect file.
+
+     @return * 0: Success.
+     * < 0: Failure.
+     */
+    int setEffectPosition(int soundId, int pos) {
+        return setObject(
+                         "che.audio.set_effect_file_position",
+                         "{\"soundId\":%d, \"effectPos\":%d}",
+                         soundId, pos);
+    }
+
+    /** Adjusts the volume of specified audio effect for local playback..
+
+     Call this method when you are in a channel.
+
+     @param soundId ID of the audio effect. Each audio effect has a unique ID.
+     @param volume Volume of specified audio effect for local playback. The value ranges between 0 and 100 (default).
+
+     @return * 0: Success.
+     * < 0: Failure.
+     */
+    int adjustEffectPlayoutVolume(int soundId, int volume) {
+        return setObject(
+                         "che.audio.set_effect_file_playout_volume",
+                         "{\"soundId\":%d, \"effectPlayoutVolume\":%d}",
+                         soundId, volume);
+    }
+
+    /** Adjusts the volume of specified audio effect for publishing (sending to other users).
+
+     Call this method when you are in a channel.
+
+     @param soundId ID of the audio effect. Each audio effect has a unique ID.
+     @param volume Volume of specified audio effect for publishing. The value ranges between 0 and 100 (default).
+
+     @return * 0: Success.
+     * < 0: Failure.
+     */
+    int adjustEffectPublishVolume(int soundId, int volume) {
+        return setObject(
+                         "che.audio.set_effect_file_publish_volume",
+                         "{\"soundId\":%d, \"effectPublishVolume\":%d}",
+                         soundId, volume);
+    }
+
+    /** Retrieves the volume of specified audio effect for local playback.
+
+     Call this method when you are in a channel.
+
+     @param soundId ID of the audio effect. Each audio effect has a unique ID.
+
+     @return >= 0: The current local playback volume of specified audio effect, if this method call is successful.
+     * < 0: Failure.
+     */
+    int getEffectPlayoutVolume(int soundId) {
+        int volume = 0;
+        char key[512];
+        sprintf(key, "che.audio.get_effect_file_playout_volume:%d", soundId);
+        int r = m_parameter ? m_parameter->getInt(key, volume) : -ERR_NOT_INITIALIZED;
+        if (r == 0)
+            r = volume;
+        return r;
+    }
+
+    /** Retrieves the volume of specified audio effect for publishing (sending to other users).
+
+     Call this method when you are in a channel.
+
+     @param soundId ID of the audio effect. Each audio effect has a unique ID.
+
+     @return >= 0: The current publish volume of specified audio effect, if this method call is successful.
+     * < 0: Failure.
+     */
+    int getEffectPublishVolume(int soundId) {
+        int volume = 0;
+        char key[512];
+        sprintf(key, "che.audio.get_effect_file_publish_volume:%d", soundId);
+        int r = m_parameter ? m_parameter->getInt(key, volume) : -ERR_NOT_INITIALIZED;
+        if (r == 0)
+            r = volume;
+        return r;
+    }
+
+    /** Retrieves the duration (ms) of specified audio effect.
+
+     Call this method when you are in a channel.
+
+     @param soundId ID of the audio effect. Each audio effect has a unique ID.
+
+     @return >= 0: The duration (ms) of specified audio effect, if this method call is successful.
+     * < 0: Failure.
+     */
+    int getEffectDuration(const char* filePath) {
+        int duration = 0;
+        char key[512];
+        sprintf(key, "che.audio.get_effect_file_duration:%s", filePath);
+        int r = m_parameter ? m_parameter->getInt(key, duration) : -ERR_NOT_INITIALIZED;
+        if (r == 0)
+            r = duration;
+        return r;
     }
 
     /** Changes the voice pitch of the local speaker.

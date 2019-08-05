@@ -1590,8 +1590,8 @@ Call this method after [enableVideo](enableVideo), otherwise, this method may no
 
  Call this method when you are in a channel.
 
- @return * &ge; 0: The current playback position of the audio mixing, if this method call is successful.
- * < 0: Failure.
+ @return >= 0: The current playback position of the audio mixing, if this method call is successful.
+ * < 0: Failure.
  */
 - (int)getAudioMixingCurrentPosition;
 
@@ -1665,6 +1665,8 @@ You can use this method to add specific audio effects for specific scenarios, fo
  * YES: The played audio effect is published to the Agora Cloud and the remote users can hear it.
  * NO: The played audio effect is not published to the Agora Cloud and the remote users cannot hear it.
 
+ @param startPos Sets the initial playing position in milliseconds of the audio effect.
+
  @return * 0: Success. * < 0: Failure.
  */
 - (int)playEffect:(int)soundId
@@ -1673,7 +1675,8 @@ You can use this method to add specific audio effects for specific scenarios, fo
             pitch:(double)pitch
               pan:(double)pan
              gain:(double)gain
-          publish:(BOOL)publish;
+          publish:(BOOL)publish
+         startPos:(int)startPos;
 
 /** Stops playing a specified audio effect.
 
@@ -1736,6 +1739,81 @@ Supported audio formats: mp3, aac, m4a, 3gp, and wav.
  @return * 0: Success. * < 0: Failure.
  */
 - (int)resumeAllEffects;
+
+/** Retrieves the playback position (ms) of specified audio effect.
+
+ Call this method when you are in a channel.
+
+ @param soundId ID of the audio effect. Each audio effect has a unique ID.
+ @return >= 0: The current playback position of the audio effect, if this method call is successful.
+ * < 0: Failure.
+ */
+- (int)getEffectCurrentPosition:(int)soundId;
+
+/** Sets the instantaneous playback position of specified audio effect file.
+
+ @param soundId ID of the audio effect. Each audio effect has a unique ID.
+ @param pos The instantaneous playback position (ms) of the audio effect file.
+
+ @return * 0: Success.
+ * < 0: Failure.
+ */
+- (int)setEffectPosition:(int)soundId
+                     pos:(NSInteger)pos;
+
+/** Adjusts the volume of specified audio effect for local playback..
+
+ Call this method when you are in a channel.
+
+ @param soundId ID of the audio effect. Each audio effect has a unique ID.
+ @param volume Volume of specified audio effect for local playback. The value ranges between 0 and 100 (default).
+ @return * 0: Success.
+ * < 0: Failure.
+ */
+- (int)adjustEffectPlayoutVolume:(int)soundId
+                          volume:(NSInteger)volume;
+
+/** Adjusts the volume of specified audio effect for publishing (sending to other users).
+
+ Call this method when you are in a channel.
+
+ @param soundId ID of the audio effect. Each audio effect has a unique ID.
+ @param volume Volume of specified audio effect for publishing. The value ranges between 0 and 100 (default).
+ @return * 0: Success.
+ * < 0: Failure.
+ */
+- (int)adjustEffectPublishVolume:(int)soundId
+                          volume:(NSInteger)volume;
+
+/** Retrieves the volume of specified audio effect for local playback.
+
+ Call this method when you are in a channel.
+
+ @param soundId ID of the audio effect. Each audio effect has a unique ID.
+ @return >= 0: The current local playback volume of specified audio effect, if this method call is successful.
+ * < 0: Failure.
+ */
+- (int)getEffectPlayoutVolume:(int)soundId;
+
+/** Retrieves the volume of specified audio effect for publishing (sending to other users).
+
+ Call this method when you are in a channel.
+
+ @param soundId ID of the audio effect. Each audio effect has a unique ID.
+ @return >= 0: The current publish volume of specified audio effect, if this method call is successful.
+ * < 0: Failure.
+ */
+- (int)getEffectPublishVolume:(int)soundId;
+
+/** Retrieves the duration (ms) of specified audio effect.
+
+ Call this method when you are in a channel.
+
+ @param filePath Absolute path of the audio effect file.
+ @return >= 0: The duration (ms) of specified audio effect, if this method call is successful.
+ * < 0: Failure.
+ */
+- (int)getEffectDuration:(NSString *) filePath;
 
 
 #pragma mark Audio Recorder
