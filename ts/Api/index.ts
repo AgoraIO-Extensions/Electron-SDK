@@ -70,7 +70,8 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Use this method to set custom Renderer when set renderMode in the {@link setRenderMode} method to 3.
+   * Use this method to set custom Renderer when set renderMode in the 
+   * {@link setRenderMode} method to 3.
    * CustomRender should be a class.
    * @param {IRenderer} customRenderer Customizes the video renderer.
    */
@@ -1956,9 +1957,11 @@ class AgoraRtcEngine extends EventEmitter {
    * - Call the {@link joinChannelWithUserAccount} method to join the channel.
    *
    * The difference between the two is that for the former, the time elapsed between calling the {@link joinChannelWithUserAccount} method and joining the channel is shorter than the latter.
-   *
+   * 
+   * To ensure smooth communication, use the same parameter type to identify the user. For example, if a user joins the channel with a user ID, then ensure all the other users use the user ID too. The same applies to the user account. If a user joins the channel with the Agora Web SDK, ensure that the `uid` of the user is set to the same parameter type.
+   * 
    * **Note**:
-   * - Ensure that you set the `userAccount parameter. Otherwise, this method does not take effect.
+   * - Ensure that you set the `userAccount` parameter. Otherwise, this method does not take effect.
    * - Ensure that the value of the `userAccount` parameter is unique in the channel.
    *
    * @param {string} appId The App ID of your project.
@@ -3008,8 +3011,10 @@ class AgoraRtcEngine extends EventEmitter {
   // ===========================================================================
   /**
    * @description Adds a voice or video stream HTTP/HTTPS URL address to a live broadcast.
-   *
-   * If this method call is successful, the server pulls the voice or video stream and injects it into a live channel.
+   * 
+   * This method applies to the Native SDK v2.4.1 and later.
+   * 
+   * If this method call is successful, the server pulls the voice or video stream and injects it into a live channel. 
    * This is applicable to scenarios where all audience members in the channel can watch a live show and interact with each other.
    *
    * The {@link addInjectStreamUrl} method call triggers the following callbacks:
@@ -3446,67 +3451,115 @@ class AgoraRtcEngine extends EventEmitter {
   // ===========================================================================
   // replacement for setParameters call
   // ===========================================================================
-  /** @description Private Interfaces. */
+  /** 
+   * @description Private Interfaces. 
+   * @ignore
+  */
   setBool(key: string, value: boolean): number {
     return this.rtcEngine.setBool(key, value);
   }
-  /** @description Private Interfaces. */
+  /** 
+   * @description Private Interfaces. 
+   * @ignore
+   */
   setInt(key: string, value: number): number {
     return this.rtcEngine.setInt(key, value);
   }
-  /** @description Private Interfaces. */
+  /** 
+   * @description Private Interfaces. 
+   * @ignore
+   */
   setUInt(key: string, value: number): number {
     return this.rtcEngine.setUInt(key, value);
   }
-  /** @description Private Interfaces. */
+  /** 
+   * @description Private Interfaces. 
+   * @ignore
+   */
   setNumber(key: string, value: number): number {
     return this.rtcEngine.setNumber(key, value);
   }
-  /** @description Private Interfaces. */
+  /** 
+   * @description Private Interfaces. 
+   * @ignore
+   */
   setString(key: string, value: string): number {
     return this.rtcEngine.setString(key, value);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   setObject(key: string, value: string): number {
     return this.rtcEngine.setObject(key, value);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   getBool(key: string): boolean {
     return this.rtcEngine.getBool(key);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   getInt(key: string): number {
     return this.rtcEngine.getInt(key);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   getUInt(key: string): number {
     return this.rtcEngine.getUInt(key);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   getNumber(key: string): number {
     return this.rtcEngine.getNumber(key);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   getString(key: string): string {
     return this.rtcEngine.getString(key);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   getObject(key: string): string {
     return this.rtcEngine.getObject(key);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   getArray(key: string): string {
     return this.rtcEngine.getArray(key);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   setParameters(param: string): number {
     return this.rtcEngine.setParameters(param);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   convertPath(path: string): string {
     return this.rtcEngine.convertPath(path);
   }
-  /** @description Private Interfaces. */
+  /**     
+   * @description Private Interfaces.     
+   * @ignore    
+   */
   setProfile(profile: string, merge: boolean): number {
     return this.rtcEngine.setProfile(profile, merge);
   }
@@ -4075,7 +4128,7 @@ declare interface AgoraRtcEngine {
     state: ConnectionState,
     reason: ConnectionChangeReason
   ) => void): this;
-  /** Occurs when the local user successfully registers a user account by calling the `registerLocalUserAccount` method.
+  /** Occurs when the local user successfully registers a user account by calling the {@link registerLocalUserAccount} method.
    * This callback reports the user ID and user account of the local user.
    * - uid: The ID of the local user.
    * - userAccount: The user account of the local user.
