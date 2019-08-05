@@ -506,6 +506,7 @@ typedef unsigned int uint32;
 #define CALL_MEM_FUNC_WITH_PARAM2(cls, func, param1, param2) cls.##func(param1, param2)
 #define CALL_MEM_FUNC_WITH_PARAM3(cls, func, param1, param2, param3) cls.##func(param1, param2, param3)
 #define CALL_MEM_FUNC_WITH_PARAM7(cls, func, param1, param2, param3, param4, param5, param6, param7) cls.##func(param1, param2, param3, param4, param5, param6, param7)
+#define CALL_MEM_FUNC_WITH_PARAM8(cls, func, param1, param2, param3, param4, param5, param6, param7, param8) cls.##func(param1, param2, param3, param4, param5, param6, param7, param8)
 #else
 #define CALL_MEM_FUNC_FROM_POINTER(pointer, func) pointer->func()
 #define CALL_MEM_FUNC(cls, func) cls.func()
