@@ -434,11 +434,12 @@ const AgoraRender = function() {
         } else {
           // 90, 270
           if (that.clientHeight / that.clientWidth > width / height) {
-            that.canvas.style.zoom = that.clientHeight / height;
+            that.canvas.style.zoom = that.clientHeight / width;
           } else {
-            that.canvas.style.zoom = that.clientWidth / width;
+            that.canvas.style.zoom = that.clientWidth / height;
           }
         }
+        // Contain
       } else if (rotation === 0 || rotation === 180) {
         if (that.clientWidth / that.clientHeight > width / height) {
           that.canvas.style.zoom = that.clientHeight / height;
@@ -448,9 +449,9 @@ const AgoraRender = function() {
       } else {
         // 90, 270
         if (that.clientHeight / that.clientWidth > width / height) {
-          that.canvas.style.zoom = that.clientWidth / width;
+          that.canvas.style.zoom = that.clientWidth / height;
         } else {
-          that.canvas.style.zoom = that.clientHeight / height;
+          that.canvas.style.zoom = that.clientHeight / width;
         }
       }
     } catch (e) {
