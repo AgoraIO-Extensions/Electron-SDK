@@ -73,7 +73,7 @@ Assuming that you have [Node](https://nodejs.org/en/download/) installed and can
 
 ## Contributions Welcome
 
-We are still opmizing our project, welcome for pr and issules.
+We are still opmizing our project, welcome for pr and issues.
 
 ## License
 
