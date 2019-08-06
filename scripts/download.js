@@ -27,7 +27,7 @@ const buildDownloadInfo = () => {
     packageVersion: version,
     platform: osLabel,
     dependentElectronVersion: dependentElectronVersion,
-    downloadUrl: `http://download.agora.io/sdk/release/Electron-${osLabel}-${version}-${dependentElectronVersion}.zip`
+    downloadUrl: `http://download.agora.io/sdk/release/Electron-${osLabel}-2.8.0-${dependentElectronVersion}.zip`
   };
 };
 
