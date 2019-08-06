@@ -66,6 +66,7 @@ export default class App extends Component {
     });
     rtcEngine.on('userjoined', (uid, elapsed) => {
       if (uid === SHARE_ID && this.state.localSharing) {
+        rtcEngine.muteRemoteAudioStream(uid, true)
         return
       }
       this.setState({
@@ -189,9 +190,8 @@ export default class App extends Component {
         
         rtcEngine.videoSourceSetLogFile(logpath)
         rtcEngine.videoSourceSetChannelProfile(1);
-        // rtcEngine.videoSourceEnableAudio(true);
-        // rtcEngine.videoSourceEnableLoopbackRecording(true);
         rtcEngine.videoSourceEnableWebSdkInteroperability(true)
+
         // rtcEngine.videoSourceSetVideoProfile(50, false);
         // to adjust render dimension to optimize performance
         rtcEngine.setVideoRenderDimension(3, SHARE_ID, 1200, 680);
@@ -221,6 +221,10 @@ export default class App extends Component {
     };
     return new Promise((resolve, reject) => {
       let rtcEngine = this.getRtcEngine()
+
+      // rtcEngine.videoSourceEnableAudio(true);
+      // console.log(rtcEngine.videoSourceEnableLoopbackRecording(true));
+
       rtcEngine.startScreenCapture2(windowId, captureFreq, rect, bitrate);
       rtcEngine.videoSourceSetVideoProfile(43, false);
       rtcEngine.startScreenCapturePreview();
