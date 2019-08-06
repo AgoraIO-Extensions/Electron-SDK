@@ -2044,8 +2044,8 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.getUserInfoByUid(uid);
   }
 
-  switchChannel(token: string, channelName: string) : number {
-    return this.rtcEngine.switchChannel(token, channelName);
+  switchChannel(token: string, channel: string) : number {
+    return this.rtcEngine.switchChannel(token, channel);
   }
 
   /**
