@@ -26,7 +26,7 @@ class Renderer {
     if (!contentMode) {
       if (vertical) {
         return localRatio > tempRatio ?
-          clientHeight / height : clientWidth / width
+          clientHeight / width : clientWidth / height
       } else {
         return localRatio < tempRatio ?
           clientHeight / height : clientWidth / width
@@ -34,7 +34,7 @@ class Renderer {
     } else {
       if (vertical) {
         return localRatio < tempRatio ?
-          clientHeight / height : clientWidth / width
+          clientHeight / width : clientWidth / height
       } else {
         return localRatio > tempRatio ?
           clientHeight / height : clientWidth / width
