@@ -8,7 +8,7 @@ call del /F /S /Q sdk\dll
 call del /F /S /Q sdk\include
 call del /F /S /Q sdk\lib\win\*
 
-for /f %a in ('dir /s /b /ad "Agora_Native_SDK_for_Windows*"') do move /y "%~a" "Agora_Native_SDK_for_Win_Full"
+call /scripts/rename_sdk.bat
 
 call move /y Agora_Native_SDK_for_Win_Full\sdk\dll\*.dll sdk\dll\.
 call move /y Agora_Native_SDK_for_Win_Full\sdk\include\*.h sdk\include\.
