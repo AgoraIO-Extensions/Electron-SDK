@@ -1,5 +1,8 @@
 cd %WORKSPACE%\Electron-SDK
 call curl %RTC_SDK_URL% -o NATIVE_SDK.zip
+
+
+call del /F /S /Q Agora_Native_SDK_for_Win_FULL
 call 7z e NATIVE_SDK.zip -oAgora_Native_SDK_for_Win_FULL
 
 call del /F /S /Q sdk/dll
