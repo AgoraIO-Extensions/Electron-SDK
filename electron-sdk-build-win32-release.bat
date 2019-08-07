@@ -1,10 +1,10 @@
 cd %WORKSPACE%\Electron-SDK
 call curl %RTC_SDK_URL% -o NATIVE_SDK.zip
-call unzip NATIVE_SDK.zip
+call 7z e NATIVE_SDK.zip -oAgora_Native_SDK_for_Win_FULL
 
-call mv -f ./Agora_Native_SDK_for_Windows_v2.9.0_FULL/sdk/dll/* ./sdk/dll/.
-call mv -f ./Agora_Native_SDK_for_Windows_v2.9.0_FULL/sdk/include/* ./sdk/include/.
-call mv -f ./Agora_Native_SDK_for_Windows_v2.9.0_FULL/sdk/lib/* ./sdk/lib/win/.
+call move /y ./Agora_Native_SDK_for_Win_FULL/sdk/dll/* ./sdk/dll/.
+call move /y ./Agora_Native_SDK_for_Win_FULL/sdk/include/* ./sdk/include/.
+call move /y ./Agora_Native_SDK_for_Win_FULL/sdk/lib/* ./sdk/lib/win/.
 
 call npm config set registry https://registry.npm.taobao.org/
 call npm config set ELECTRON_MIRROR http://npm.taobao.org/mirrors/electron/
