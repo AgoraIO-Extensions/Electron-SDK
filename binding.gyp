@@ -200,6 +200,8 @@
         './agora_node_ext/node_video_render.h',
         './agora_node_ext/node_video_stream_channel.cpp',
         './agora_node_ext/node_video_stream_channel.h',
+        './agora_node_ext/VideoPlugin/IVideoFramePluginManager.h',
+        './agora_node_ext/VideoPlugin/IVideoFramePluginManager.cpp',
         './common/libyuv/source/compare_common.cc',
         './common/libyuv/source/compare.cc',
         './common/libyuv/source/convert_argb.cc',
