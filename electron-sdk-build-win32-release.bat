@@ -8,7 +8,7 @@ call del /F /S /Q sdk\dll
 call del /F /S /Q sdk\include
 call del /F /S /Q sdk\lib\win\*
 
-call for /f %a in ('dir /s /b /ad "Agora_Native_SDK_for_Windows*"') do move /y "%~a" "Agora_Native_SDK_for_Win_Full"
+call (for /f %a in ('dir /s /b /ad "Agora_Native_SDK_for_Windows*"') do move /y "%~a" "Agora_Native_SDK_for_Win_Full")
 
 call move /y Agora_Native_SDK_for_Win_Full\sdk\dll\*.dll sdk\dll\.
 call move /y Agora_Native_SDK_for_Win_Full\sdk\include\*.h sdk\include\.
