@@ -16,8 +16,8 @@ export type AgoraNetworkQuality =
   | 3 // poor
   | 4 // bad
   | 5 // very bad
-  | 6; // down
-  | 7; // Unsupported
+  | 6 // down
+  | 7 // Unsupported
   | 8; // Detecting
 
 /**
