@@ -2,8 +2,12 @@ cd %WORKSPACE%\Electron-SDK
 call curl %RTC_SDK_URL% -o NATIVE_SDK.zip
 call 7z e NATIVE_SDK.zip -oAgora_Native_SDK_for_Win_FULL
 
-call move /y ./Agora_Native_SDK_for_Win_FULL/sdk/dll/* ./sdk/dll/.
-call move /y ./Agora_Native_SDK_for_Win_FULL/sdk/include/* ./sdk/include/.
+call del ./sdk/dll
+call del ./sdk/include
+call del ./sdk/lib/win/*
+
+call move /y ./Agora_Native_SDK_for_Win_FULL/sdk/dll ./sdk/.
+call move /y ./Agora_Native_SDK_for_Win_FULL/sdk/include ./sdk/.
 call move /y ./Agora_Native_SDK_for_Win_FULL/sdk/lib/* ./sdk/lib/win/.
 
 call npm config set registry https://registry.npm.taobao.org/
