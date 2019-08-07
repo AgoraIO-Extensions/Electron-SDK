@@ -1,4 +1,6 @@
 cd ${WORKSPACE}/Electron-SDK
+curl ${RTC_SDK_URL} -o NATIVE_SDK.zip
+unzip NATIVE_SDK.zip NATIVE_SDK
 npm config set registry https://registry.npm.taobao.org/
 npm config set ELECTRON_MIRROR http://npm.taobao.org/mirrors/electron/
 rm -rf node_modules
