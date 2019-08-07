@@ -1,6 +1,9 @@
 cd ${WORKSPACE}/Electron-SDK
 curl ${RTC_SDK_URL} -o NATIVE_SDK.zip
-unzip NATIVE_SDK.zip NATIVE_SDK
+unzip NATIVE_SDK.zip -d NATIVE_SDK
+
+mv NATIVE_SDK/libs/AgoraRtcEngineKit.framework ./sdk/lib/mac/.
+
 npm config set registry https://registry.npm.taobao.org/
 npm config set ELECTRON_MIRROR http://npm.taobao.org/mirrors/electron/
 rm -rf node_modules
