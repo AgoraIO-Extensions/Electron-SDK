@@ -19,10 +19,6 @@
 #include "node_screen_window_info.h"
 #endif
 
-#if defined(__APPLE__)
-#include <dlfcn.h>
-#endif
-
 using std::string;
 namespace agora {
     namespace rtc {
@@ -220,16 +216,6 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setPluginBoolParameter);
                 PROPERTY_METHOD_DEFINE(setPluginStringParameter);
 #endif
-                PROPERTY_METHOD_DEFINE(registerVideoFramePluginManager);
-                PROPERTY_METHOD_DEFINE(unRegisterVideoFramePluginManager);
-                PROPERTY_METHOD_DEFINE(registerVideoFramePlugin);
-                PROPERTY_METHOD_DEFINE(unRegisterVideoFramePlugin);
-                PROPERTY_METHOD_DEFINE(loadVideoPlugin);
-                PROPERTY_METHOD_DEFINE(unLoadVideoPlugin);
-                PROPERTY_METHOD_DEFINE(enableVideoPlugin);
-                PROPERTY_METHOD_DEFINE(disableVideoPlugin);
-                PROPERTY_METHOD_DEFINE(setVideoPluginBoolParameter);
-                PROPERTY_METHOD_DEFINE(setVideoPluginStringParameter);
 
                 //2.3.3 apis
                 PROPERTY_METHOD_DEFINE(getConnectionState);
@@ -313,7 +299,6 @@ namespace agora {
             m_externalVideoRenderFactory.reset(new NodeVideoRenderFactory(*this));
             /** Video/Audio Plugins */
             m_audioFramePluginManager.reset(new IAudioFramePluginManager());
-            m_videoFramePluginManager.reset(new IVideoFramePluginManager());
             /** m_videoSourceSink provide facilities to multiple video source based on multiple process */
             m_videoSourceSink.reset(createVideoSource());
             LOG_LEAVE;
@@ -4352,177 +4337,6 @@ namespace agora {
             LOG_LEAVE;
         }
 
-        NAPI_API_DEFINE(NodeRtcEngine, registerVideoFramePluginManager)
-        {
-            LOG_ENTER;
-            int result = -1;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-
-                agora::media::IMediaEngine* pMediaEngine = nullptr;
-                pEngine->getRtcEngine()->queryInterface(agora::AGORA_IID_MEDIA_ENGINE, (void**)&pMediaEngine);
-                if (pEngine->m_videoFramePluginManager.get())
-                {
-                    pMediaEngine->registerVideoFrameObserver(pEngine->m_videoFramePluginManager.get());
-                    result = 0;
-                }
-            } while (false);
-            napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
-
-        NAPI_API_DEFINE(NodeRtcEngine, unRegisterVideoFramePluginManager)
-        {
-            LOG_ENTER;
-            int result = -1;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-
-                agora::media::IMediaEngine* pMediaEngine = nullptr;
-                pEngine->getRtcEngine()->queryInterface(agora::AGORA_IID_MEDIA_ENGINE, (void**)&pMediaEngine);
-                pMediaEngine->registerVideoFrameObserver(NULL);
-                result = 0;
-            } while (false);
-            napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
-
-        NAPI_API_DEFINE(NodeRtcEngine, registerVideoFramePlugin)
-        {
-            LOG_ENTER;
-            int result = -1;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-
-                napi_status status = napi_ok;
-                std::string pluginId;
-                READ_PLUGIN_ID(pEngine, status, args[0], pluginId);
-                CHECK_PLUGIN_INFO_EXIST(pEngine, pluginId);//has exist => break
-                
-                agora_video_plugin_info pluginInfo;
-                if (pluginId.compare("agora_electron_plugin_face_unity") == 0) {
-                    pluginInfo.id = "agora_electron_plugin_face_unity";
-                    result = 0;
-                }
-                pEngine->m_mapVideoPlugins.emplace(pluginId, pluginInfo);
-            } while (false);
-            napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
-
-        NAPI_API_DEFINE(NodeRtcEngine, unRegisterVideoFramePlugin)
-        {
-            LOG_ENTER;
-            int result = -1;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-
-                if(pEngine->m_videoFramePluginManager.get()) {
-                    std::string pluginId;
-                    napi_status status = napi_ok;
-                    READ_PLUGIN_ID(pEngine, status, args[0], pluginId);
-                    CHECK_PLUGIN_INFO_STATUS(pEngine, pluginId); //not exist
-
-                    agora_video_plugin_info& pluginInfo = pEngine->m_mapVideoPlugins[pluginId];
-                    CHECK_VIDEO_PLUGIN_EXIST(pluginInfo);
-                    CHECK_PLUGIN_MODULE_EXIST(pluginInfo);
-                    pEngine->m_videoFramePluginManager->unRegisterVideoFramePlugin(pluginInfo.videoFramePlugin);
-                    pEngine->m_mapVideoPlugins.erase(pluginId);
-                    result = 0;
-                }
-            } while (false);
-            napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
-
-        NAPI_API_DEFINE(NodeRtcEngine, loadVideoPlugin)
-        {
-            LOG_ENTER;
-            int result = -1;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-
-                napi_status status = napi_ok;
-                std::string pluginId;
-                READ_PLUGIN_ID(pEngine, status, args[0], pluginId);
-                CHECK_PLUGIN_INFO_STATUS(pEngine, pluginId);
-
-                nodestring pluginPath;
-                status = napi_get_value_nodestring_(args[1], pluginPath);
-                CHECK_NAPI_STATUS(pEngine, status);
-        
-                char* path = (char*)pluginPath;
-                agora_video_plugin_info& pluginInfo = pEngine->m_mapVideoPlugins[pluginId];
-                pluginInfo.pluginModule = dlopen(path, RTLD_LAZY);
-                CHECK_PLUGIN_MODULE_STATUS(pluginInfo);
-
-                // for (int i = 0; i < strlen(path); i++){
-                //     if (*(path + i) == '\\') {
-                //         *(path + i) = '/';
-                //     }
-                // }
-
-                // char* fileName = strrchr(path, '/');
-                // char szPath[MAX_PATH] = { 0 };
-                // if (fileName) {
-                //     int pos = fileName - path;
-                //     strncpy_s(szPath, MAX_PATH, path, pos + 1);
-                // }
-
-                createAgoraVideoFramePlugin createPlugin = (createAgoraVideoFramePlugin)dlsym(pluginInfo.pluginModule, "createVideoFramePlugin");
-                if (!createPlugin) {
-                    dlclose(pluginInfo.pluginModule);
-                    pluginInfo.pluginModule = NULL;
-                    LOG_ERROR("Error :%s, :%d,  GetProcAddress \"createVideoFramePlugin\" Failed\n", __FUNCTION__, __LINE__, pluginId.c_str()); 
-                    break;
-                }
-
-                pluginInfo.videoFramePlugin = createPlugin();
-                CHECK_VIDEO_PLUGIN_STATUS(pluginInfo);
-
-                if (!pluginInfo.videoFramePlugin->load("")) {
-                    LOG_ERROR("Error :%s, :%d, plugin: \"%s\"  IVideoFramePlugin::load Failed\n", __FUNCTION__, __LINE__, pluginId.c_str());
-                    break;
-                }
-                result = 0;
-            } while (false);
-            napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
-
-        // NAPI_API_DEFINE(NodeRtcEngine, unLoadVideoPlugin)
-        // {
-        //     LOG_ENTER;
-        //     int result = -1;
-        //     do {
-        //         NodeRtcEngine *pEngine = nullptr;
-        //         napi_get_native_this(args, pEngine);
-        //         CHECK_NATIVE_THIS(pEngine);
-
-        //         napi_status status = napi_ok;
-        //         std::string pluginId;
-        //         READ_PLUGIN_ID(pEngine, status, args[0], pluginId);
-        //         CHECK_PLUGIN_INFO_STATUS(pEngine, pluginId);
-
-        //         agora_audio_plugin_info& pluginInfo = pEngine->m_mapAudioPlugins[pluginId];
-        //         CHECK_AUDIO_PLUGIN_EXIST(pluginInfo);
-
-        //         result = 0;
-        //     } while (false);
-        //     napi_set_int_result(args, result);
-        //     LOG_LEAVE;
-        // }
-
         #ifdef _WIN32
 
         NAPI_API_DEFINE(NodeRtcEngine, registerAudioFramePluginManager)
@@ -4608,7 +4422,7 @@ namespace agora {
                     CHECK_PLUGIN_INFO_STATUS(pEngine, pluginId); //not exist
 
                     agora_audio_plugin_info& pluginInfo = pEngine->m_mapAudioPlugins[pluginId];
-                    CHECK_AUDIO_PLUGIN_EXIST(pluginInfo);
+                    CHECK_PLUGIN_EXIST(pluginInfo);
                     CHECK_PLUGIN_MODULE_EXIST(pluginInfo);
                     pEngine->m_audioFramePluginManager->unRegisterAudioFramePlugin(pluginInfo.audioFramePlugin);
                     pEngine->m_mapAudioPlugins.erase(pluginId);
@@ -4691,7 +4505,7 @@ namespace agora {
                 CHECK_PLUGIN_INFO_STATUS(pEngine, pluginId);
 
                 agora_audio_plugin_info& pluginInfo = pEngine->m_mapAudioPlugins[pluginId];
-                CHECK_AUDIO_PLUGIN_EXIST(pluginInfo);
+                CHECK_PLUGIN_EXIST(pluginInfo);
 
                 result = 0;
             } while (false);
