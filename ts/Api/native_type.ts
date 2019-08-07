@@ -1131,61 +1131,163 @@ export type ChannelMediaRelayError =
  * @ignore
  */
 export interface NodeRtcEngine {
+  /**
+   * @ignore
+   */
   initialize(appId: string): number;
+  /**
+   * @ignore
+   */
   getVersion(): string;
+  /**
+   * @ignore
+   */
   getErrorDescription(errorCode: number): string;
+  /**
+   * @ignore
+   */
   getConnectionState(): ConnectionState;
+  /**
+   * @ignore
+   */
   joinChannel(
     token: string,
     channel: string,
     info: string,
     uid: number
   ): number;
+  /**
+   * @ignore
+   */
   switchChannel(
     token: string,
     channel: string
   ): number;
+  /**
+   * @ignore
+   */
   leaveChannel(): number;
+  /**
+   * @ignore
+   */
   release(): number;
+  /**
+   * @ignore
+   */
   setHighQualityAudioParameters(
     fullband: boolean,
     stereo: boolean,
     fullBitrate: boolean
   ): number;
+  /**
+   * @ignore
+   */
   setupLocalVideo(): number;
+  /**
+   * @ignore
+   */
   subscribe(uid: number): number;
+  /**
+   * @ignore
+   */
   setVideoRenderDimension(
     rendertype: number,
     uid: number,
     width: number,
     height: number
   ): void;
+  /**
+   * @ignore
+   */
   setFPS(fps: number): void;
+  /**
+   * @ignore
+   */
   setHighFPS(fps: number): void;
+  /**
+   * @ignore
+   */
   addToHighVideo(uid: number): void;
+  /**
+   * @ignore
+   */
   removeFromHighVideo(uid: number): void;
+  /**
+   * @ignore
+   */
   renewToken(newToken: string): number;
+  /**
+   * @ignore
+   */
   setChannelProfile(profile: number): number;
+  /**
+   * @ignore
+   */
   setClientRole(role: ClientRoleType): number;
+  /**
+   * @ignore
+   */
   startEchoTest(): number;
+  /**
+   * @ignore
+   */
   stopEchoTest(): number;
+  /**
+   * @ignore
+   */
   startEchoTestWithInterval(interval: number): number;
+  /**
+   * @ignore
+   */
   enableLastmileTest(): number;
+  /**
+   * @ignore
+   */
   disableLastmileTest(): number;
+  /**
+   * @ignore
+   */
   startLastmileProbeTest(config: LastmileProbeConfig): number;
+  /**
+   * @ignore
+   */
   stopLastmileProbeTest(): number;
+  /**
+   * @ignore
+   */
   enableVideo(): number;
+  /**
+   * @ignore
+   */
   disableVideo(): number;
+  /**
+   * @ignore
+   */
   startPreview(): number;
+  /**
+   * @ignore
+   */
   stopPreview(): number;
+  /**
+   * @ignore
+   */
   setVideoProfile(
     profile: VIDEO_PROFILE_TYPE,
     swapWidthAndHeight: boolean
   ): number;
+  /**
+   * @ignore
+   */
   setCameraCapturerConfiguration(config: CameraCapturerConfiguration): number;
+  /**
+   * @ignore
+   */
   setVideoEncoderConfiguration(
     config: VideoEncoderConfiguration
   ): number;
+  /**
+   * @ignore
+   */
   setBeautyEffectOptions(
     enable: boolean,
     options: {
@@ -1195,172 +1297,519 @@ export interface NodeRtcEngine {
       rednessLevel: number
     }
   ): number;
+  /**
+   * @ignore
+   */
   setRemoteUserPriority(uid: number, priority: Priority): number;
+  /**
+   * @ignore
+   */
   enableAudio(): number;
+  /**
+   * @ignore
+   */
   disableAudio(): number;
+  /**
+   * @ignore
+   */
   setAudioProfile(profile: number, scenario: number): number;
+  /**
+   * @ignore
+   */
   setVideoQualityParameters(preferFrameRateOverImageQuality: boolean): number;
+  /**
+   * @ignore
+   */
   setEncryptionMode(mode: string): number;
+  /**
+   * @ignore
+   */
   setEncryptionSecret(secret: string): number;
+  /**
+   * @ignore
+   */
   muteLocalAudioStream(mute: boolean): number;
+  /**
+   * @ignore
+   */
   muteAllRemoteAudioStreams(mute: boolean): number;
+  /**
+   * @ignore
+   */
   setDefaultMuteAllRemoteAudioStreams(mute: boolean): number;
+  /**
+   * @ignore
+   */
   muteRemoteAudioStream(uid: number, mute: boolean): number;
+  /**
+   * @ignore
+   */
   muteLocalVideoStream(mute: boolean): number;
+  /**
+   * @ignore
+   */
   enableLocalVideo(enable: boolean): number;
+  /**
+   * @ignore
+   */
   enableLocalAudio(enable: boolean): number;
+  /**
+   * @ignore
+   */
   muteAllRemoteVideoStreams(mute: boolean): number;
+  /**
+   * @ignore
+   */
   setDefaultMuteAllRemoteVideoStreams(mute: boolean): number;
+  /**
+   * @ignore
+   */
   enableAudioVolumeIndication(interval: number, smooth: number): number;
+  /**
+   * @ignore
+   */
   muteRemoteVideoStream(uid: number, mute: boolean): number;
+  /**
+   * @ignore
+   */
   setInEarMonitoringVolume(volume: number): number;
+  /**
+   * @ignore
+   */
   pauseAudio(): number;
+  /**
+   * @ignore
+   */
   resumeAudio(): number;
+  /**
+   * @ignore
+   */
   setLogFile(filepath: string): number;
+  /**
+   * @ignore
+   */
   setLogFileSize(size: number): number;
+  /**
+   * @ignore
+   */
   videoSourceSetLogFile(filepath: string): number;
+  /**
+   * @ignore
+   */
   setLogFilter(filter: number): number;
+  /**
+   * @ignore
+   */
   enableDualStreamMode(enable: boolean): number;
+  /**
+   * @ignore
+   */
   setRemoteVideoStreamType(uid: number, streamType: StreamType): number;
+  /**
+   * @ignore
+   */
   setRemoteDefaultVideoStreamType(streamType: StreamType): number;
+  /**
+   * @ignore
+   */
   enableWebSdkInteroperability(enable: boolean): number;
+  /**
+   * @ignore
+   */
   setLocalVideoMirrorMode(mirrorType: 0 | 1 | 2): number;
+  /**
+   * @ignore
+   */
   setLocalVoicePitch(pitch: number): number;
+  /**
+   * @ignore
+   */
   setLocalVoiceEqualization(bandFrequency: number, bandGain: number): number;
+  /**
+   * @ignore
+   */
   setLocalVoiceReverb(reverbKey: number, value: number): number;
+  /**
+   * @ignore
+   */
   setLocalVoiceChanger(preset: VoiceChangerPreset): number;
+  /**
+   * @ignore
+   */
   setLocalVoiceReverbPreset(preset: AudioReverbPreset): number;
+  /**
+   * @ignore
+   */
   setLocalPublishFallbackOption(option: 0 | 1 | 2): number;
+  /**
+   * @ignore
+   */
   setRemoteSubscribeFallbackOption(option: 0 | 1 | 2): number;
+  /**
+   * @ignore
+   */
   setExternalAudioSource(
     enabled: boolean,
     samplerate: number,
     channels: number
   ): number;
+  /**
+   * @ignore
+   */
   getVideoDevices(): Array<Object>;
+  /**
+   * @ignore
+   */
   setVideoDevice(deviceId: string): number;
+  /**
+   * @ignore
+   */
   getCurrentVideoDevice(): Object;
+  /**
+   * @ignore
+   */
   startVideoDeviceTest(): number;
+  /**
+   * @ignore
+   */
   stopVideoDeviceTest(): number;
+  /**
+   * @ignore
+   */
   getAudioPlaybackDevices(): Array<Object>;
+  /**
+   * @ignore
+   */
   setAudioPlaybackDevice(deviceId: string): number;
+  /**
+   * @ignore
+   */
   getPlaybackDeviceInfo(deviceId: string, deviceName: string): number;
+  /**
+   * @ignore
+   */
   getCurrentAudioPlaybackDevice(): Object;
+  /**
+   * @ignore
+   */
   setAudioPlaybackVolume(volume: number): number;
+  /**
+   * @ignore
+   */
   getAudioPlaybackVolume(): number;
+  /**
+   * @ignore
+   */
   getAudioRecordingDevices(): Array<Object>;
+  /**
+   * @ignore
+   */
   setAudioRecordingDevice(deviceId: string): number;
+  /**
+   * @ignore
+   */
   getRecordingDeviceInfo(deviceId: string, deviceName: string): number;
+  /**
+   * @ignore
+   */
   getCurrentAudioRecordingDevice(): Object;
+  /**
+   * @ignore
+   */
   getAudioRecordingVolume(): number;
+  /**
+   * @ignore
+   */
   setAudioRecordingVolume(volume: number): number;
+  /**
+   * @ignore
+   */
   startAudioPlaybackDeviceTest(filepath: string): number;
+  /**
+   * @ignore
+   */
   stopAudioPlaybackDeviceTest(): number;
+  /**
+   * @ignore
+   */
   enableLoopbackRecording(enable: boolean, deviceName: string | null): number;
+  /**
+   * @ignore
+   */
   startAudioRecordingDeviceTest(indicateInterval: number): number;
+  /**
+   * @ignore
+   */
   stopAudioRecordingDeviceTest(): number;
+  /**
+   * @ignore
+   */
   startAudioDeviceLoopbackTest(interval: number): number;
+  /**
+   * @ignore
+   */
   stopAudioDeviceLoopbackTest(): number;
+  /**
+   * @ignore
+   */
   getAudioPlaybackDeviceMute(): boolean;
+  /**
+   * @ignore
+   */
   setAudioPlaybackDeviceMute(mute: boolean): number;
+  /**
+   * @ignore
+   */
   getAudioRecordingDeviceMute(): boolean;
+  /**
+   * @ignore
+   */
   setAudioRecordingDeviceMute(mute: boolean): number;
+  /**
+   * @ignore
+   */
   videoSourceInitialize(appId: string): number;
+  /**
+   * @ignore
+   */
   videoSourceEnableWebSdkInteroperability(enabled: boolean): number;
+  /**
+   * @ignore
+   */
   videoSourceJoin(
     token: string,
     cname: string,
     info: string,
     uid: number
   ): number;
+  /**
+   * @ignore
+   */
   videoSourceLeave(): number;
+  /**
+   * @ignore
+   */
   videoSourceRenewToken(token: string): number;
+  /**
+   * @ignore
+   */
   videoSourceSetChannelProfile(profile: number): number;
+  /**
+   * @ignore
+   */
   videoSourceSetVideoProfile(
     profile: VIDEO_PROFILE_TYPE,
     swapWidthAndHeight: boolean
   ): number;
+  /**
+   * @ignore
+   */
   videosourceStartScreenCaptureByScreen(screenSymbol: ScreenSymbol, rect: CaptureRect, param: CaptureParam): number;
+  /**
+   * @ignore
+   */
   videosourceStartScreenCaptureByWindow(windowSymbol: number, rect: CaptureRect, param: CaptureParam): number;
+  /**
+   * @ignore
+   */
   videosourceUpdateScreenCaptureParameters(param: CaptureParam): number;
+  /**
+   * @ignore
+   */
   videosourceSetScreenCaptureContentHint(hint: VideoContentHint): number;
+  /**
+   * @ignore
+   */
   getScreenWindowsInfo(): Array<Object>;
+  /**
+   * @ignore
+   */
   getScreenDisplaysInfo(): Array<Object>;
+  /**
+   * @ignore
+   */
   startScreenCapture2(
     windowId: number,
     captureFreq: number,
     rect: { left: number; right: number; top: number; bottom: number },
     bitrate: number
   ): number;
+  /**
+   * @ignore
+   */
   stopScreenCapture2(): number;
+  /**
+   * @ignore
+   */
   videoSourceStartPreview(): number;
+  /**
+   * @ignore
+   */
   videoSourceStopPreview(): number;
+  /**
+   * @ignore
+   */
   videoSourceEnableDualStreamMode(enable: boolean): number;
+  /**
+   * @ignore
+   */
   videoSourceSetParameter(parameter: string): number;
+  /**
+   * @ignore
+   */
   videoSourceUpdateScreenCaptureRegion(rect: {
     left: number;
     right: number;
     top: number;
     bottom: number;
   }): number;
+  /**
+   * @ignore
+   */
   videoSourceRelease(): number;
+  /**
+   * @ignore
+   */
   startScreenCapture(
     windowId: number,
     captureFreq: number,
     rect: { left: number; right: number; top: number; bottom: number },
     bitrate: number
   ): number;
+  /**
+   * @ignore
+   */
   stopScreenCapture(): number;
+  /**
+   * @ignore
+   */
   updateScreenCaptureRegion(rect: {
     left: number;
     right: number;
     top: number;
     bottom: number;
   }): number;
+  /**
+   * @ignore
+   */
   startAudioMixing(
     filepath: string,
     loopback: boolean,
     replace: boolean,
     cycle: number
   ): number;
+  /**
+   * @ignore
+   */
   stopAudioMixing(): number;
+  /**
+   * @ignore
+   */
   pauseAudioMixing(): number;
+  /**
+   * @ignore
+   */
   resumeAudioMixing(): number;
+  /**
+   * @ignore
+   */
   adjustAudioMixingVolume(volume: number): number;
+  /**
+   * @ignore
+   */
   adjustAudioMixingPlayoutVolume(volume: number): number;
+  /**
+   * @ignore
+   */
   adjustAudioMixingPublishVolume(volume: number): number;
+  /**
+   * @ignore
+   */
   getAudioMixingDuration(): number;
+  /**
+   * @ignore
+   */
   getAudioMixingCurrentPosition(): number;
+  /**
+   * @ignore
+   */
   getAudioMixingPublishVolume(): number;
+  /**
+   * @ignore
+   */
   getAudioMixingPlayoutVolume(): number;
+  /**
+   * @ignore
+   */
   setAudioMixingPosition(position: number): number;
+  /**
+   * @ignore
+   */
   addPublishStreamUrl(url: string, transcodingEnabled: boolean): number;
+  /**
+   * @ignore
+   */
   removePublishStreamUrl(url: string): number;
+  /**
+   * @ignore
+   */
   setLiveTranscoding(transcoding: TranscodingConfig): number;
+  /**
+   * @ignore
+   */
   addInjectStreamUrl(url: string, config: InjectStreamConfig): number;
+  /**
+   * @ignore
+   */
   removeInjectStreamUrl(url: string): number;
-
+  /**
+   * @ignore
+   */
   setRecordingAudioFrameParameters(
     sampleRate: number,
     channel: 1 | 2,
     mode: 0 | 1 | 2,
     samplesPerCall: number
   ): number;
+  /**
+   * @ignore
+   */
   setPlaybackAudioFrameParameters(
     sampleRate: number,
     channel: 1 | 2,
     mode: 0 | 1 | 2,
     samplesPerCall: number
   ): number;
+  /**
+   * @ignore
+   */
   setMixedAudioFrameParameters(
     sampleRate: number,
     samplesPerCall: number
   ): number;
+  /**
+   * @ignore
+   */
   createDataStream(reliable: boolean, ordered: boolean): number;
+  /**
+   * @ignore
+   */
   sendStreamMessage(streamId: number, msg: string): number;
+  /**
+   * @ignore
+   */
   getEffectsVolume(): number;
+  /**
+   * @ignore
+   */
   setEffectsVolume(volume: number): number;
+  /**
+   * @ignore
+   */
   setVolumeOfEffect(soundId: number, volume: number): number;
+  /**
+   * @ignore
+   */
   playEffect(
     soundId: number,
     filePath: string,
@@ -1370,57 +1819,206 @@ export interface NodeRtcEngine {
     gain: number,
     publish: number
   ): number;
+  /**
+   * @ignore
+   */
   stopEffect(soundId: number): number;
+  /**
+   * @ignore
+   */
   preloadEffect(soundId: number, filePath: string): number;
+  /**
+   * @ignore
+   */
   unloadEffect(soundId: number): number;
+  /**
+   * @ignore
+   */
   pauseEffect(soundId: number): number;
+  /**
+   * @ignore
+   */
   pauseAllEffects(): number;
+  /**
+   * @ignore
+   */
   resumeEffect(soundId: number): number;
+  /**
+   * @ignore
+   */
   resumeAllEffects(): number;
+  /**
+   * @ignore
+   */
   enableSoundPositionIndication(enable: boolean): number;
+  /**
+   * @ignore
+   */
   setRemoteVoicePosition(uid: number, pan: number, gain: number): number;
+  /**
+   * @ignore
+   */
   getCallId(): string;
+  /**
+   * @ignore
+   */
   rate(callId: string, rating: number, desc: string): number;
+  /**
+   * @ignore
+   */
   complain(callId: string, desc: string): number;
+  /**
+   * @ignore
+   */
   setBool(key: string, value: boolean): number;
+  /**
+   * @ignore
+   */
   setInt(key: string, value: number): number;
+  /**
+   * @ignore
+   */
   setUInt(key: string, value: number): number;
+  /**
+   * @ignore
+   */
   setNumber(key: string, value: number): number;
+  /**
+   * @ignore
+   */
   setString(key: string, value: string): number;
+  /**
+   * @ignore
+   */
   setObject(key: string, value: string): number;
+  /**
+   * @ignore
+   */
   getBool(key: string): boolean;
+  /**
+   * @ignore
+   */
   getInt(key: string): number;
+  /**
+   * @ignore
+   */
   getUInt(key: string): number;
+  /**
+   * @ignore
+   */
   getNumber(key: string): number;
+  /**
+   * @ignore
+   */
   getString(key: string): string;
+  /**
+   * @ignore
+   */
   getObject(key: string): string;
+  /**
+   * @ignore
+   */
   getArray(key: string): string;
+  /**
+   * @ignore
+   */
   setParameters(param: string): number;
+  /**
+   * @ignore
+   */
   convertPath(path: string): string;
+  /**
+   * @ignore
+   */
   setProfile(profile: string, merge: boolean): number;
+  /**
+   * @ignore
+   */
   onEvent(event: string, callback: Function): void;
+  /**
+   * @ignore
+   */
   unsubscribe(uid: number): number;
+  /**
+   * @ignore
+   */
   registerDeliverFrame(callback: Function): number;
+  /**
+   * @ignore
+   */
   registerLocalUserAccount(appId: string, userAccount: string): number;
+  /**
+   * @ignore
+   */
   joinChannelWithUserAccount(token: string, channel: string, userAccount: string): number;
+  /**
+   * @ignore
+   */
   getUserInfoByUserAccount(userAccount: string): {errCode: number, userInfo: UserInfo};
+  /**
+   * @ignore
+   */
   getUserInfoByUid(uid: number): {errCode: number, userInfo: UserInfo};
+  /**
+   * @ignore
+   */
   adjustRecordingSignalVolume(volume: number): number;
+  /**
+   * @ignore
+   */
   adjustPlaybackSignalVolume(volume: number): number;
+  /**
+   * @ignore
+   */
   stopAllEffects(): number;
-
+  /**
+   * @ignore
+   */
   startChannelMediaRelay(config: ChannelMediaRelayConfiguration): number;
+  /**
+   * @ignore
+   */
   updateChannelMediaRelay(config: ChannelMediaRelayConfiguration): number;
+  /**
+   * @ignore
+   */
   stopChannelMediaRelay(): number;
-
+  /**
+   * @ignore
+   */
   registerAudioFramePluginManager(): number;
+  /**
+   * @ignore
+   */
   unRegisterAudioFramePluginManager(): number;
+  /**
+   * @ignore
+   */
   registerAudioFramePlugin(pluginId: string): number;
+  /**
+   * @ignore
+   */
   unRegisterAudioFramePlugin(pluginId: string): number;
+  /**
+   * @ignore
+   */
   loadPlugin(pluginId: string, pluginPath: string): number;
+  /**
+   * @ignore
+   */
   unLoadPlugin(pluginId: string): number;
+  /**
+   * @ignore
+   */
   enablePlugin(pluginId: string): number;
+  /**
+   * @ignore
+   */
   disablePlugin(pluginId: string): number;
+  /**
+   * @ignore
+   */
   setPluginStringParameter(pluginId: string, key: string, value: string): number;
+  
   setPluginBoolParameter(pluginId: string, key: string, value: boolean): number;
 }
