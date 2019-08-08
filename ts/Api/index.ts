@@ -3175,7 +3175,8 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Creates a data stream.
    *
-   * Each user can have up to five simultaneous data streams in a channel.
+   * Each user can create up to five data streams during the lifecycle of the 
+   * AgoraRtcEngine.
    *
    * **Note**:
    * Set both the `reliable` and `ordered` parameters to true or false. Do not set one as true and the other as false.
