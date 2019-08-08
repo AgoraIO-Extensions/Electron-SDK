@@ -3679,41 +3679,73 @@ class AgoraRtcEngine extends EventEmitter {
   // ===========================================================================
   // plugin apis
   // ===========================================================================
+  /**     
+   * Private Interfaces.     
+   * @ignore    
+   */
   registerAudioFramePluginManager(): number {
     return this.rtcEngine.registerAudioFramePluginManager();
   }
-
+  /**     
+   * Private Interfaces.     
+   * @ignore    
+   */
   unRegisterAudioFramePluginManager(): number {
     return this.rtcEngine.unRegisterAudioFramePluginManager();
   }
-
+  /**     
+   * Private Interfaces.     
+   * @ignore    
+   */
   registerAudioFramePlugin(pluginId: string): number {
     return this.rtcEngine.registerAudioFramePlugin(pluginId);
   }
-
+  /**     
+   * Private Interfaces.     
+   * @ignore    
+   */
   unRegisterAudioFramePlugin(pluginId: string): number {
     return this.rtcEngine.unRegisterAudioFramePlugin(pluginId);
   }
-
+  /**     
+   * Private Interfaces.     
+   * @ignore    
+   */
   loadPlugin(pluginId: string, pluginPath: string): number {
     return this.rtcEngine.loadPlugin(pluginId, pluginPath);
   }
-
+  /**     
+   * Private Interfaces.     
+   * @ignore    
+   */
   unloadPlugin(pluginId: string): number {
     return this.rtcEngine.unLoadPlugin(pluginId);
   }
-
+  /**     
+   * Private Interfaces.     
+   * @ignore    
+   */
   enablePlugin(pluginId: string): number {
     return this.rtcEngine.enablePlugin(pluginId);
   }
-  
+  /**     
+   * Private Interfaces.     
+   * @ignore    
+   */
   disablePlugin(pluginId: string): number {
     return this.rtcEngine.disablePlugin(pluginId);
   }
-
+  /**     
+   * Private Interfaces.     
+   * @ignore    
+   */
   setPluginStringParameter(pluginId: string, key: string, value: string): number {
     return this.rtcEngine.setPluginStringParameter(pluginId, key, value);
   }
+  /**     
+   * Private Interfaces.     
+   * @ignore    
+   */
   setPluginBoolParameter(pluginId: string, key: string, value: boolean): number {
     return this.rtcEngine.setPluginBoolParameter(pluginId, key, value);
   }
