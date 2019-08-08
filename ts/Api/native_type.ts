@@ -510,15 +510,23 @@ export interface LocalAudioStats {
 }
 /** VideoEncoderConfiguration */
 export interface VideoEncoderConfiguration {
-  /** Width (pixels) of the video. */
+  /** Width (pixels) of the video. 
+   * 
+   * The default value is 640(width) x 360(hight).
+   */
   width: number;
-  /** Height (pixels) of the video. */
+  /** Height (pixels) of the video. 
+   *
+   * The default value is 640(width) x 360(hight).
+   */
   height: number;
   /**
-   * The frame rate of the video. 
+   * The frame rate (fps) of the video. 
+   * 
+   * The default value is 15 fps.
    * 
    * **Noete**:
-   * We do not recommend setting this to a value greater than 30.
+   * We do not recommend setting this to a value greater than 30 fps.
    */
   frameRate: number;
   /**
