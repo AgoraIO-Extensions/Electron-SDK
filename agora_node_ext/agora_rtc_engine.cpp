@@ -4224,7 +4224,7 @@ namespace agora {
                 }
                 auto destInfosValue = v8::Array::Cast(*objDestInfos);
                 int destInfoCount = destInfosValue->Length();
-                ChannelMediaInfo destInfos[destInfoCount];
+                ChannelMediaInfo* destInfos = new ChannelMediaInfo[destInfoCount];
                 for (uint32 i = 0; i < destInfoCount; i++) {
                     Local<Value> value = destInfosValue->Get(i);
                     Local<Object> destInfoObj = value->ToObject(args.GetIsolate());
@@ -4246,6 +4246,10 @@ namespace agora {
                 config.destCount = destInfoCount;
 
                 result = pEngine->m_engine->startChannelMediaRelay(config);
+                
+                if(destInfos){
+                    delete[] destInfos;
+                }
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -4294,7 +4298,7 @@ namespace agora {
                 }
                 auto destInfosValue = v8::Array::Cast(*objDestInfos);
                 int destInfoCount = destInfosValue->Length();
-                ChannelMediaInfo destInfos[destInfoCount];
+                ChannelMediaInfo* destInfos = new ChannelMediaInfo[destInfoCount];
                 for (uint32 i = 0; i < destInfoCount; i++) {
                     Local<Value> value = destInfosValue->Get(i);
                     Local<Object> destInfoObj = value->ToObject(args.GetIsolate());
@@ -4316,6 +4320,9 @@ namespace agora {
                 config.destCount = destInfoCount;
 
                 result = pEngine->m_engine->updateChannelMediaRelay(config);
+                if(destInfos){
+                    delete[] destInfos;
+                }
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
