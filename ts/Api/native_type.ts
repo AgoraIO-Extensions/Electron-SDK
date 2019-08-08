@@ -492,9 +492,7 @@ export interface LocalVideoStats {
   codecType: number
 }
 /** 
- * Reports the statistics of the local audio stream.
- * 
- * The SDK triggers this callback once every two seconds.
+ * The statistics of the local audio stream.
  */
 export interface LocalAudioStats {
   /**
