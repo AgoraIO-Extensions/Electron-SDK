@@ -2106,8 +2106,8 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.adjustRecordingSignalVolume(volume);
   }
   /**
-   * Adjusts the playback volume.
-   * @param volume Playback volume. The value ranges between 0 and 400:
+   * Adjusts the playback volume of the voice.
+   * @param volume Playback volume of the voice. The value ranges between 0 and 400:
    * - 0: Mute.
    * - 100: Original volume.
    * - 400: (Maximum) Four times the original volume with signal-clipping protection.
