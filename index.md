@@ -38,8 +38,8 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.enableAudio enableAudio}               | Enables the audio module.                                    |
 | {@link AgoraRtcEngine.disableAudio disableAudio}             | Disables the audio module.                                   |
 | {@link AgoraRtcEngine.setAudioProfile setAudioProfile}       | Sets the audio parameters and application scenarios.         |
-|{@link AgoraRtcEngine.adjustRecordingSignalVolume adjustRecordingSignalVolume}| Adjusts the recording volume.|
-|{@link AgoraRtcEngine.adjustPlaybackSignalVolume adjustPlaybackSignalVolume}| Adjusts the playback volume.|
+| {@link AgoraRtcEngine.adjustRecordingSignalVolume adjustRecordingSignalVolume} | Adjusts the recording volume.                                |
+| {@link AgoraRtcEngine.adjustPlaybackSignalVolume adjustPlaybackSignalVolume} | Adjusts the playback volume of the voice.                    |
 | {@link AgoraRtcEngine.enableLocalAudio enableLocalAudio}     | Enables/disables the local audio capture.                    |
 | {@link AgoraRtcEngine.muteLocalAudioStream muteLocalAudioStream} | Stops/Resumes sending the local audio stream.                |
 | {@link AgoraRtcEngine.muteRemoteAudioStream muteRemoteAudioStream} | Stops/Resumes receving a specified remote audio stream.      |
