@@ -1,85 +1,113 @@
-# Agora-RTC-SDK-for-Electron [![npm package][npm-badge]][npm][![Mac Build Status][mac-build-badge]][mac-build][![Windows Build status][windows-build-badge]][windows-build]
-
-> The Agora-RTC-SDK-for-Electron is an open-source wrapper for **[Electron](https://electronjs.org/)** developers. This SDK takes advantage of Node.js C++ Addons and Agora RTC SDKs on Windows/macOS.
+<!-- PROJECT SHIELDS -->
+[![Mac Build Status][build-shield]][build-url]
+[![Windows Build Status][windows-build-shield]][windows-build-url]
+[![Npm Package][npm-shield]][npm]
+[![MIT License][license-shield]][license-url]
 
 *其他语言版本： [简体中文](README.zh.md)*
 
-## Quick Start
+<!-- PROJECT LOGO -->
+<br />
+<p align="center">
+  <h1 align="center">Agora RTC Electron SDK</h1>
 
-**Attention to [Changelog](./CHANGELOG.md) for newest information**
+  <p align="center">
+    Agora RTC Electron SDK uses Agora RTC SDK (windows & macos) as NodeJS C++ addon for rapid RTC application development
+    <br />
+    <a href="https://docs.agora.io/en/Video/API%20Reference/electron/index.html"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/AgoraIO-Community/Agora-Electron-Quickstart">View Demo</a>
+    ·
+    <a href="https://github.com/AgoraIO/Electron-SDK/issues">Report Bug</a>
+    ·
+    <a href="#plugins">Plugins :new:</a>
+  </p>
+</p>
 
-You can directly install the sdk through npm:
 
+
+<!-- TABLE OF CONTENTS -->
+## Table of Contents
+* [Getting Started](#getting-started)
+  * [Installation](#installation)
+  * [Usage](#usage)
+* [Resources](#resources)
+* [Plugins](#plugins)
+* [Contributing](#contributing)
+
+
+<!-- GETTING STARTED -->
+## Getting Started
+
+### Installation
+Recommend to install through npm:
 ``` bash
-# install newest sdk and we will download prebuilt binary file for you
+# install newest sdk and download prebuilt binary file automatically
 npm install agora-electron-sdk
 ```
 
+Usually you have to specify electron version of your application and whether to download prebuilt c++ addon or do node-gyp building locally by configuration in package.json:
+```
+// package.json
+{
+...
+  "agora_electron": {
+    "electron_version": "5.0.8",
+    "prebuilt": true
+  }
+...
+}
+```
+
+**For more detail of configuration, visit [wiki]().**
+
+### Usage
 ``` javascript
 import AgoraRtcEngine from 'agora-electron-sdk'
-```
-Switch prebuilt addon version in .npmrc (default to use 1.8.3)
 
-``` bash
-# range(1.8.3, <3.0.0) will download a prebuilt addon built with electron 1.8.3
-AGORA_ELECTRON_DEPENDENT=2.0.0
-# or
-# range(>=3.0.0) will download a prebuilt addon built with electron 3.0.6
-AGORA_ELECTRON_DEPENDENT=3.0.6
-# or
-# range(= 4.0.0) will download a prebuilt addon built with electron 4.0.0
-AGORA_ELECTRON_DEPENDENT=4.0.0
+const rtcEngine = new AgoraRtcEngine();
+rtcEngine.initialize('<your agora app id>');
 ```
 
+<!-- RESOURCES -->
 ## Resources
 
-- [API Reference](https://agoraio.github.io/Electron-SDK/2_3_3/) - API Reference
+- [Document](https://docs.agora.io/en/Video/API%20Reference/electron/index.html) - Official document  
 
 - [e-Education Application](https://github.com/AgoraIO/ARD-eEducation-with-Electron) - A complete e-education Application based on this repo
 
 - [Demo](https://github.com/AgoraIO-Community/Agora-Electron-Quickstart) - A quick start demo based on Vue/React and this repo
 
-- [Doc Center](https://docs.agora.io/en/Video/API%20Reference/cpp/index.html) - Original API Reference for Agora Native SDK
+- [Changelog](./CHANGELOG.md) - Attention to newest information
 
-## Prerequisites
+<!-- Plugins -->
+## Plugins
+In newest version we have supported plugins for customize videoFrame and audioFrame data. In other words, you can integrate cool features like video filter, face recognition with your own plugins in C++.
 
-- Node.js 6.9.1+
+We have already implement an official plugin for video filter based on FaceUnity:
 
-- Electron 1.8.3+
+- [Agora-Electron-FaceUnity-Plugin](https://github.com/AgoraIO-Community/Agora-Electron-FaceUnity-Plugin)
 
-## How to develop
+For more detail about how plugins work and how to write your own plugins, visit [wiki]().
 
-Assuming that you have [Node](https://nodejs.org/en/download/) installed and can use `npm` in command line.
+<!-- CONTRIBUTING -->
+## Contributing
 
-- Run `npm install` to install dependency
+Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-- Usually it will trigger `npm run download`, or you can run it manually.
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-- If you want to debug with xcode/visual studio, run `npm run debug` to generate the project file and sdk for debug env.
-
-**Find more scripts in [package.json](./package.json)**
-
-**Notice:**
-
-- Must create a developer account at [Agora.io](https://dashboard.agora.io/signin), when you want to use Agora APIs.
-
-- For macOS, please always use the latest Xcode.
-
-- For Windows, if Visual Studio or Electron version are not the same as in script, change the corresponding parameters in the script. Electron 1.8.3+ needs Visual Studio 2015 or above. And **you have to install a 32-bit electron by `npm install -D --arch=ia32 electron`**
-
-- For more information about develop environment, visit [node-gyp](https://github.com/nodejs/node-gyp/blob/master/README.md) for help.
-
-## Contributions Welcome
-
-We are still opmizing our project, welcome for pr and issules.
-
-## License
-
-The MIT License (MIT).
-
-[npm-badge]: https://img.shields.io/npm/v/agora-electron-sdk.png?style=flat-square
-[npm]: https://www.npmjs.org/package/agora-electron-sdk
-[mac-build-badge]: https://img.shields.io/travis/AgoraIO/Electron-SDK/dev/2.3.4.svg?style=flat-square
-[mac-build]: https://travis-ci.org/AgoraIO/Electron-SDK
-[windows-build-badge]: https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?branch=dev/2.3.4&svg=true
-[windows-build]:https://ci.appveyor.com/project/menthays/electron-sdk/branch/dev/2.3.4
+<!-- MARKDOWN LINKS & IMAGES -->
+[build-shield]: https://img.shields.io/travis/AgoraIO-Usecase/eEducation/master.svg?style=flat-square
+[build-url]: https://travis-ci.org/AgoraIO-Usecase/eEducation
+[windows-build-shield]: https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?branch=dev/2.3.4.100&svg=true
+[windows-build-url]:https://ci.appveyor.com/project/menthays/electron-sdk/branch/dev/2.3.4.100
+[npm-shield]: https://img.shields.io/npm/v/agora-electron-sdk/education
+[npm]: https://npmjs.com/package/agora-electron-sdk/v/2.3.4-hotfix.1
+[license-shield]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
+[license-url]: https://choosealicense.com/licenses/mit
