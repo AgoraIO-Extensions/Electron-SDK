@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import path from 'path';
 import os from 'os'
 
-import {voiceChangerList, voiceReverbPreset, videoProfileList, audioProfileList, audioScenarioList, APP_ID, SHARE_ID, RTMP_URL, voiceReverbList } from '../utils/settings'
+import {voiceChangerList, voiceReverbPreset, videoProfileList, audioProfileList, audioScenarioList, APP_ID, SHARE_ID, RTMP_URL, voiceReverbList, FU_AUTH } from '../utils/settings'
 import {readImage} from '../utils/base64'
 import WindowPicker from './components/WindowPicker/index.js'
 import DisplayPicker from './components/DisplayPicker/index.js'
@@ -42,7 +42,8 @@ export default class App extends Component {
         windowList: [],
         displayList: [],
         encoderWidth: 0,
-        encoderHeight: 0
+        encoderHeight: 0,
+        fuEnabled: false,
       }
     }
     this.enableAudioMixing = false;
@@ -52,6 +53,11 @@ export default class App extends Component {
     if(!this.rtcEngine) {
       this.rtcEngine = new AgoraRtcEngine()
       this.rtcEngine.initialize(APP_ID)
+      this.rtcEngine.initializePluginManager();
+      this.rtcEngine.registerPlugin({
+        id: 'fu-mac',
+        path: path.resolve(__static, 'fu-mac/libFaceUnityPlugin.dylib')
+      })
       this.subscribeEvents(this.rtcEngine)
       window.rtcEngine = this.rtcEngine;
     }
@@ -318,6 +324,24 @@ export default class App extends Component {
         displayList: displayList
       });
     })
+  }
+
+  toggleFuPlugin = () => {
+    const plugin = this.rtcEngine.getPlugins().find(plugin => plugin.id === 'fu-mac' )
+    if (plugin) {
+      if(this.state.fuEnabled) {
+        plugin.disable();
+        this.setState({
+          fuEnabled: false
+        })
+      } else {
+        plugin.setParameter(JSON.stringify({"plugin.fu.authdata": FU_AUTH}))
+        plugin.enable();
+        this.setState({
+          fuEnabled: true
+        })
+      }
+    }
   }
 
   handleRelease = () => {
@@ -656,6 +680,12 @@ export default class App extends Component {
             <label className="label">Audio Recording Test</label>
             <div className="control">
               <button onClick={this.toggleRecordingTest} className="button is-link">{this.state.recordingTestOn ? 'stop' : 'start'}</button>
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">Toggle FU Plugin</label>
+            <div className="control">
+              <button onClick={this.toggleFuPlugin} className="button is-link">{this.state.fuEnabled ? 'disable' : 'enable'}</button>
             </div>
           </div>
         </div>
