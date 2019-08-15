@@ -60,7 +60,7 @@ npm install agora-electron-sdk
 }
 ```
 
-**想要了解更多配置详情, 请访问 [wiki]().**
+**想要了解更多配置详情, 请访问 [wiki](https://github.com/AgoraIO/Electron-SDK/wiki/Installation-Configuration-in-package.json).**
 
 ### 使用
 ``` javascript
@@ -89,7 +89,8 @@ rtcEngine.initialize('<your agora app id>');
 
 - [Agora-Electron-FaceUnity-Plugin](https://github.com/AgoraIO-Community/Agora-Electron-FaceUnity-Plugin)
 
-想要进一步了解插件是如何运作的，或是如何编写您自己的插件, 请访问 [wiki]().
+想要进一步了解插件是如何运作的，或是如何编写您自己的插件, 请访问 [wiki](https://github.com/AgoraIO/Electron-SDK/wiki/How-plugins-work
+).
 
 <!-- CONTRIBUTING -->
 ## 贡献指南
