@@ -19,6 +19,8 @@
 #include "node_event_handler.h"
 #include "node_napi_api.h"
 #include "agora_video_source.h"
+#include "VideoPlugin/IVideoFramePluginManager.h"
+#include "VideoPlugin/IVideoFramePlugin.h"
 #include <functional>
 #include <list>
 #include <mutex>
@@ -254,6 +256,14 @@ namespace agora {
             NAPI_API(addToHighVideo);
             NAPI_API(removeFromHighVideo);
 
+            NAPI_API(initializePluginManager);
+            NAPI_API(releasePluginManager);
+            NAPI_API(registerPlugin);
+            NAPI_API(unregisterPlugin);
+            NAPI_API(enablePlugin);
+            NAPI_API(getPlugins);
+            NAPI_API(setPluginParameter);
+
             /**
              * 2.3.3 apis
              */
@@ -282,6 +292,8 @@ namespace agora {
 
 			AVideoDeviceManager* m_videoVdm = nullptr;
 			AAudioDeviceManager* m_audioVdm = nullptr;
+
+            std::unique_ptr<IVideoFramePluginManager> m_avPluginManager;
         };
 
 /*
@@ -441,6 +453,43 @@ namespace agora {
             LOG_ERROR("m_engine is null.\n");\
             break;\
         }
+
+
+#define CHECK_PLUGIN_INFO_EXIST(engine, pluginId) \
+      if (!engine->m_avPluginManager->hasPlugin(pluginId)){ \
+            LOG_ERROR("Error : plugin %s, not exist\n", pluginId.c_str()); \
+            break; \
+      }
+
+#define CHECK_PLUGIN_INFO_NOT_EXIST(engine, pluginId) \
+      if (engine->m_avPluginManager->hasPlugin(pluginId)){ \
+            LOG_ERROR("Error : plugin %s, has exist\n", pluginId.c_str()); \
+            break; \
+      }
+
+#define CHECK_PLUGIN_MANAGER_EXIST(engine) \
+      if (!engine->m_avPluginManager.get()){ \
+            LOG_ERROR("Error : plugin manager not exist\n"); \
+            break; \
+      }
+
+#define CHECK_PLUGIN_MODULE_EXIST(pluginInfo) \
+        if (pluginInfo.pluginModule == NULL) { \
+            LOG_ERROR("Error :%s, :%d, not unload plugin \"%s\"\n", __FUNCTION__, __LINE__, pluginInfo.id); \
+            break;\
+        }
+
+#define CHECK_PLUGIN_INSTANCE_EXIST(pluginInfo) \
+        if (pluginInfo.instance == NULL) { \
+            LOG_ERROR("Error :%s, :%d, not release plugin \"%s\"\n", __FUNCTION__, __LINE__, pluginInfo.id);\
+            break;\
+        }
+
+#define READ_PLUGIN_ID(pEngine, status, arg, str) \
+        nodestring nodeStr; \
+        status = napi_get_value_nodestring_(arg, nodeStr); \
+        CHECK_NAPI_STATUS(pEngine, status) \
+        str = nodeStr;
 
 typedef int int32;
 typedef NodeString nodestring;

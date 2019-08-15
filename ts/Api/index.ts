@@ -19,6 +19,11 @@ import {
   InjectStreamConfig,
 } from './native_type';
 import { EventEmitter } from 'events';
+
+import {
+  PluginInfo,
+  Plugin
+} from './plugin';
 const agora = require('../../build/Release/agora_node_ext');
 
 
@@ -2336,6 +2341,69 @@ class AgoraRtcEngine extends EventEmitter {
 
   setProfile(profile: string, merge: boolean): number {
     return this.rtcEngine.setProfile(profile, merge);
+  }
+
+  // ===========================================================================
+  // plugin apis
+  // ==========================================================================
+
+  initializePluginManager(): number {
+    return this.rtcEngine.initializePluginManager();
+  }
+
+  releasePluginManager(): number {
+    return this.rtcEngine.releasePluginManager();
+  }
+
+  registerPlugin(info: PluginInfo): number {
+    return this.rtcEngine.registerPlugin(info);
+  }
+
+  unregisterPlugin(info: PluginInfo): number {
+    return this.rtcEngine.unregisterPlugin(info);
+  }
+
+  getPlugins() {
+    return this.rtcEngine.getPlugins().map(item => {
+      return this.createPlugin(item.id)
+    })
+  }
+
+  /**
+   * @ignore
+   * @param pluginId 
+   */
+  createPlugin(pluginId: string): Plugin {
+    return {
+      id: pluginId,
+      enable:() => {
+        return this.enablePlugin(pluginId, true)
+      },
+      disable:() => {
+        return this.enablePlugin(pluginId, false)
+      },
+      setParameter: (param: string) => {
+        return this.setPluginParameter(pluginId, param)
+      }
+    }
+  }
+
+  /**
+   * @ignore
+   * @param pluginId 
+   * @param enabled 
+   */
+  enablePlugin(pluginId: string, enabled: boolean): number {
+    return this.rtcEngine.enablePlugin(pluginId, enabled);
+  }
+
+  /**
+   * @ ignore
+   * @param pluginId 
+   * @param param 
+   */
+  setPluginParameter(pluginId: string, param: string): number {
+    return this.rtcEngine.setPluginParameter(pluginId, param);
   }
 }
 

@@ -19,6 +19,10 @@
 #include "node_screen_window_info.h"
 #endif
 
+#if defined(__APPLE__)
+#include <dlfcn.h>
+#endif
+
 using std::string;
 namespace agora {
     namespace rtc {
@@ -200,6 +204,14 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(addToHighVideo);
                 PROPERTY_METHOD_DEFINE(removeFromHighVideo);
                 
+                PROPERTY_METHOD_DEFINE(initializePluginManager);
+                PROPERTY_METHOD_DEFINE(releasePluginManager);
+                PROPERTY_METHOD_DEFINE(registerPlugin);
+                PROPERTY_METHOD_DEFINE(unregisterPlugin);
+                PROPERTY_METHOD_DEFINE(enablePlugin);
+                PROPERTY_METHOD_DEFINE(getPlugins);
+                PROPERTY_METHOD_DEFINE(setPluginParameter);
+
                 //2.3.3 apis
                 PROPERTY_METHOD_DEFINE(getConnectionState);
                 PROPERTY_METHOD_DEFINE(release);
@@ -244,6 +256,8 @@ namespace agora {
             m_eventHandler.reset(new NodeEventHandler(this));
             /** Node ADDON takes advantage of self render interface */
             m_externalVideoRenderFactory.reset(new NodeVideoRenderFactory(*this));
+            /** Video/Audio Plugins */
+            m_avPluginManager.reset(new IVideoFramePluginManager());
             /** m_videoSourceSink provide facilities to multiple video source based on multiple process */
             m_videoSourceSink.reset(createVideoSource());
             LOG_LEAVE;
@@ -3192,6 +3206,257 @@ namespace agora {
             } while (false);
             LOG_LEAVE;
         }
+
+
+        NAPI_API_DEFINE(NodeRtcEngine, initializePluginManager)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                agora::media::IMediaEngine* pMediaEngine = nullptr;
+                pEngine->getRtcEngine()->queryInterface(agora::AGORA_IID_MEDIA_ENGINE, (void**)&pMediaEngine);
+                if (pEngine->m_avPluginManager.get())
+                {
+                    pMediaEngine->registerVideoFrameObserver(pEngine->m_avPluginManager.get());
+                    result = 0;
+                }
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, releasePluginManager)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                agora::media::IMediaEngine* pMediaEngine = nullptr;
+                pEngine->getRtcEngine()->queryInterface(agora::AGORA_IID_MEDIA_ENGINE, (void**)&pMediaEngine);
+                pMediaEngine->registerVideoFrameObserver(NULL);
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, registerPlugin)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                Isolate *isolate = args.GetIsolate();
+
+                CHECK_PLUGIN_MANAGER_EXIST(pEngine);
+
+                napi_status status = napi_ok;
+                if(!args[0]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+
+                Local<Object> obj = args[0]->ToObject();
+                nodestring pluginId, pluginFilePath;
+                string mPluginId, mPluginFilePath, mPluginFolderPath;
+                status = napi_get_object_property_nodestring_(isolate, obj, "id", pluginId);
+                CHECK_NAPI_STATUS(pEngine, status);
+                mPluginId = pluginId;
+                CHECK_PLUGIN_INFO_NOT_EXIST(pEngine, mPluginId);//has exist => break
+
+                status = napi_get_object_property_nodestring_(isolate, obj, "path", pluginFilePath);
+                mPluginFilePath = pluginFilePath;
+                
+                agora_plugin_info pluginInfo;
+
+                pluginInfo.id = mPluginId.c_str();
+
+                const size_t last_slash_idx = mPluginFilePath.find_last_of("\\/");
+                if (std::string::npos != last_slash_idx)
+                {
+                    mPluginFolderPath = mPluginFilePath.substr(0, last_slash_idx + 1);
+                }
+
+                #ifdef WIN32
+                //AddDllDirectory(mPluginFolderPath.c_str());
+                pluginInfo.pluginModule = LoadLibraryEx(mPluginFilePath.c_str(), NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+                DWORD error = GetLastError();
+                CHECK_PLUGIN_MODULE_EXIST(pluginInfo);
+
+
+                createAgoraVideoFramePlugin createPlugin = (createAgoraVideoFramePlugin)GetProcAddress((HMODULE)pluginInfo.pluginModule, "createVideoFramePlugin");
+                if (!createPlugin) {
+                    FreeLibrary((HMODULE)pluginInfo.pluginModule);
+                    pluginInfo.pluginModule = NULL;
+                    LOG_ERROR("Error :%s, :%d,  GetProcAddress \"createVideoFramePlugin\" Failed\n", __FUNCTION__, __LINE__, pluginInfo.id); 
+                    break;
+                }
+                #else
+                pluginInfo.pluginModule = dlopen(mPluginFilePath.c_str(), RTLD_LAZY);
+                CHECK_PLUGIN_MODULE_EXIST(pluginInfo);
+
+
+                createAgoraVideoFramePlugin createPlugin = (createAgoraVideoFramePlugin)dlsym(pluginInfo.pluginModule, "createVideoFramePlugin");
+                if (!createPlugin) {
+                    dlclose(pluginInfo.pluginModule);
+                    pluginInfo.pluginModule = NULL;
+                    LOG_ERROR("Error :%s, :%d,  GetProcAddress \"createVideoFramePlugin\" Failed\n", __FUNCTION__, __LINE__, pluginInfo.id); 
+                    break;
+                }
+                #endif
+
+                pluginInfo.instance = createPlugin();
+                CHECK_PLUGIN_INSTANCE_EXIST(pluginInfo);
+
+                if (!pluginInfo.instance->load(mPluginFolderPath.c_str())) {
+                    LOG_ERROR("Error :%s, :%d, plugin: \"%s\"  IAudioFramePlugin::load Failed\n", __FUNCTION__, __LINE__, pluginInfo.id);
+                    break;
+                }
+                
+                pEngine->m_avPluginManager->registerPlugin(pluginInfo);
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, unregisterPlugin)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                CHECK_PLUGIN_MANAGER_EXIST(pEngine);
+
+                std::string pluginId;
+                napi_status status = napi_ok;
+                READ_PLUGIN_ID(pEngine, status, args[0], pluginId);
+                CHECK_PLUGIN_INFO_EXIST(pEngine, pluginId); //not exist
+
+                pEngine->m_avPluginManager->unregisterPlugin(pluginId);
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, enablePlugin)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                CHECK_PLUGIN_MANAGER_EXIST(pEngine);
+
+                napi_status status = napi_ok;
+                std::string pluginId;
+                READ_PLUGIN_ID(pEngine, status, args[0], pluginId);
+                CHECK_PLUGIN_INFO_EXIST(pEngine, pluginId);
+
+                bool enabled = false;
+                status = napi_get_value_bool_(args[1], enabled);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                agora_plugin_info pluginInfo;
+                pEngine->m_avPluginManager->getPlugin(pluginId, pluginInfo);
+                CHECK_PLUGIN_INSTANCE_EXIST(pluginInfo);
+
+
+                if (enabled) {
+                    if (!pluginInfo.instance->enable()) {
+                        LOG_ERROR("Error :%s, :%d, plugin: \"%s\"  IVideoFramePlugin::enable Failed\n", __FUNCTION__, __LINE__, pluginId.c_str());
+                        break;
+                    }
+                } else {
+                    if (!pluginInfo.instance->disable()) {
+                        LOG_ERROR("Error :%s, :%d, plugin: \"%s\"  IVideoFramePlugin::disable Failed\n", __FUNCTION__, __LINE__, pluginId.c_str());
+                        break;
+                    }
+                }
+
+
+                pEngine->m_avPluginManager->enablePlugin(pluginId, enabled);
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, getPlugins)
+        {
+            LOG_ENTER;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                Isolate* isolate = Isolate::GetCurrent();
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                CHECK_PLUGIN_MANAGER_EXIST(pEngine);
+
+                napi_status status = napi_ok;
+
+                std::vector<std::string> plugins = pEngine->m_avPluginManager->getPlugins();
+                Local<v8::Array> result = v8::Array::New(isolate, plugins.size());
+                int idx = 0;
+                for(auto it = plugins.begin(); it != plugins.end(); it++, idx++ )    {
+                    // found nth element..print and break.
+                    std::string name = *it;
+                    agora_plugin_info pluginInfo;
+                    pEngine->m_avPluginManager->getPlugin(name, pluginInfo);
+                    Local<Object> obj = Object::New(isolate);
+                    obj->Set(napi_create_string_(isolate, "id"), napi_create_string_(isolate, pluginInfo.id));
+                    result->Set(idx, obj);
+                }
+                args.GetReturnValue().Set(result);
+            } while (false);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setPluginParameter)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                CHECK_PLUGIN_MANAGER_EXIST(pEngine);
+
+                napi_status status = napi_ok;
+                std::string pluginId;
+                READ_PLUGIN_ID(pEngine, status, args[0], pluginId);
+                CHECK_PLUGIN_INFO_EXIST(pEngine, pluginId);
+
+                nodestring param;
+                status = napi_get_value_nodestring_(args[1], param);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                agora_plugin_info pluginInfo;
+                pEngine->m_avPluginManager->getPlugin(pluginId, pluginInfo);
+                CHECK_PLUGIN_INSTANCE_EXIST(pluginInfo);
+                pluginInfo.instance->setParameter(param);
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
 #define CHECK_NAPI_OBJ(obj) \
     if (obj.IsEmpty()) \
         break;

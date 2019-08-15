@@ -1,3 +1,8 @@
+import {
+  PluginInfo,
+  Plugin
+} from './plugin';
+
 export type AgoraNetworkQuality =
   | 0 // unknown
   | 1 // excellent
@@ -623,4 +628,12 @@ export interface NodeRtcEngine {
   onEvent(event: string, callback: Function): void;
   unsubscribe(uid: number): number;
   registerDeliverFrame(callback: Function): number;
+
+  initializePluginManager(): number;
+  releasePluginManager(): number;
+  getPlugins(): Array<{id: string}>;
+  registerPlugin(pluginInfo: PluginInfo): number;
+  unregisterPlugin(pluginInfo: PluginInfo): number;
+  enablePlugin(pluginId: string, enabled: boolean): number;
+  setPluginParameter(pluginId: string, param: string): number;
 }
