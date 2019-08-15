@@ -60,7 +60,7 @@ Usually you have to specify electron version of your application and whether to 
 }
 ```
 
-**For more detail of configuration, visit [wiki]().**
+**For more detail of configuration, visit [wiki](https://github.com/AgoraIO/Electron-SDK/wiki/Installation-Configuration-in-package.json).**
 
 ### Usage
 ``` javascript
@@ -89,7 +89,8 @@ We have already implement an official plugin for video filter based on FaceUnity
 
 - [Agora-Electron-FaceUnity-Plugin](https://github.com/AgoraIO-Community/Agora-Electron-FaceUnity-Plugin)
 
-For more detail about how plugins work and how to write your own plugins, visit [wiki]().
+For more detail about how plugins work and how to write your own plugins, visit [wiki](https://github.com/AgoraIO/Electron-SDK/wiki/How-plugins-work
+).
 
 <!-- CONTRIBUTING -->
 ## Contributing
