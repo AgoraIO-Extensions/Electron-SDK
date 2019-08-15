@@ -8,8 +8,10 @@
 #endif
 class IVideoFramePlugin;
 
+#define MAX_PLUGIN_ID   512
+
 typedef struct tag_agora_plugin_info {
-    const char* id;
+    char id[MAX_PLUGIN_ID];
     void * pluginModule;
     IVideoFramePlugin* instance;
     bool enabled;
