@@ -4021,7 +4021,8 @@ namespace agora {
                 
                 agora_plugin_info pluginInfo;
 
-                pluginInfo.id = mPluginId.c_str();
+                strncpy(pluginInfo.id, mPluginId.c_str(), MAX_PLUGIN_ID);
+//                pluginInfo.id = mPluginId.c_str();
 
                 const size_t last_slash_idx = mPluginFilePath.find_last_of("\\/");
                 if (std::string::npos != last_slash_idx)
