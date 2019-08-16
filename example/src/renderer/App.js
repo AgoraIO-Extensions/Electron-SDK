@@ -54,9 +54,10 @@ export default class App extends Component {
       this.rtcEngine = new AgoraRtcEngine()
       this.rtcEngine.initialize(APP_ID)
       this.rtcEngine.initializePluginManager();
+      const libPath = path.resolve(__static, 'fu-mac/libFaceUnityPlugin.dylib')
       this.rtcEngine.registerPlugin({
         id: 'fu-mac',
-        path: path.resolve(__static, 'fu-mac/libFaceUnityPlugin.dylib')
+        path: libPath
       })
       this.subscribeEvents(this.rtcEngine)
       window.rtcEngine = this.rtcEngine;
@@ -350,6 +351,8 @@ export default class App extends Component {
       localSharing: false
     })
     if(this.rtcEngine) {
+      // this.rtcEngine.unregisterPlugin('fu-mac')
+      this.rtcEngine.releasePluginManager()
       this.rtcEngine.release();
       this.rtcEngine = null;
     }

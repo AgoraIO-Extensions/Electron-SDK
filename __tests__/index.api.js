@@ -1,4 +1,5 @@
 require('./utils/mock')
+const path = require('path');
 const AgoraRtcEngine = require('../js/AgoraSdk').default;
 const generateRandomNumber = require('./utils/index.js').generateRandomNumber;
 const generateRandomString = require('./utils/index.js').generateRandomString;
@@ -18,7 +19,7 @@ describe('Basic API Coverage', () => {
   beforeAll(() => {
     localRtcEngine = new AgoraRtcEngine();
     localRtcEngine.setLogFile('/')
-    localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
+    localRtcEngine.initialize(process.env.AGORA_APP_ID);
   });
   afterEach(() => {
     // Restore mocks after each test
@@ -114,7 +115,7 @@ describe('Basic API Coverage', () => {
 describe('cdn coverage', () => {
   beforeAll(() => {
     localRtcEngine = new AgoraRtcEngine();
-    localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
+    localRtcEngine.initialize(process.env.AGORA_APP_ID);
   });
   beforeEach(() => {
     // Restore mocks after each test
@@ -144,7 +145,7 @@ describe('cdn coverage', () => {
 describe('Basic API Coverage 2', () => {
   beforeAll(() => {
     localRtcEngine = new AgoraRtcEngine();
-    localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
+    localRtcEngine.initialize(process.env.AGORA_APP_ID);
   });
   afterEach(() => {
     // Restore mocks after each test
@@ -170,6 +171,7 @@ describe('Basic API Coverage 2', () => {
   });
 });
 
+<<<<<<< HEAD
 describe('Basic API Coverage 3', () => {
   beforeEach(() => {
     localRtcEngine = new AgoraRtcEngine();
@@ -267,3 +269,162 @@ if (isMac) {
 } else {
   describe.skip('Multi-stream coverage', MultiStreamTests);
 }
+=======
+// describe('Basic API Coverage 3', () => {
+//   beforeEach(() => {
+//     localRtcEngine = new AgoraRtcEngine();
+//     localRtcEngine.initialize(process.env.AGORA_APP_ID);
+//     localRtcEngine.setLogFile(path.resolve(__dirname, "../test.log"))
+//   });
+//   afterEach(() => {
+//     // Restore mocks after each test
+//     jest.restoreAllMocks();
+//     localRtcEngine.release()
+//   });
+// });
+
+// describe.skip('Render coverage', () => {
+//   beforeAll(() => {
+//     localRtcEngine = new AgoraRtcEngine();
+//     localRtcEngine.initialize(process.env.AGORA_APP_ID);
+//   });
+//   beforeEach(() => {
+//     // Restore mocks after each test
+//     jest.restoreAllMocks();
+//     localRtcEngine.release();
+//   });
+
+//   it('Preview test', done => {
+//     console.log("preview")
+//     jest.spyOn(localRtcEngine, 'onRegisterDeliverFrame').mockImplementation(infos => {
+//       console.log(`infos: ${JSON.stringify(infos.length)}`);
+//       for (let i = 0; i < infos.length; i++) {
+//         let info = infos[i];
+//         expect(info.uid).toBe(0);
+//         // Console.log(`uid: ${info.uid}, ydata: ${info.ydata.length}, udata: ${info.udata.length}, vdata: ${info.vdata.length}`);
+//       }
+//       expect(localRtcEngine.stopPreview()).toBe(0);
+//       done();
+//     });
+//     // Ignore render functions
+//     jest.spyOn(localRtcEngine, 'initRender').mockImplementation(() => {});
+//     localRtcEngine.setChannelProfile(1);
+//     localRtcEngine.setClientRole(1);
+//     localRtcEngine.setupLocalVideo();
+//     localRtcEngine.setAudioProfile(0, 1);
+//     localRtcEngine.enableVideo();
+//     localRtcEngine.enableLocalVideo(true);
+//     localRtcEngine.setVideoProfile(33, false);
+//     expect(localRtcEngine.startPreview()).toBe(0);
+//   });
+// });
+
+// const isMac = process.platform === 'darwin';
+// const MultiStreamTests = () => {
+//   beforeAll(() => {
+//     localRtcEngine = new AgoraRtcEngine();
+//     localRtcEngine.initialize(process.env.AGORA_APP_ID);
+//     multistream = new MultiStream(localRtcEngine, 'basic-coverage');
+//   });
+//   afterAll(done => {
+//     multistream.stopRemote(done);
+//   });
+//   afterEach(() => {
+//     // Restore mocks after each test
+//   });
+
+//   it('Prepare remote', async () => {
+//     console.log(`preparing remote...`);
+//     let uid = generateRandomNumber(100000);
+//     await multistream.initRemoteStream(uid);
+//   });
+
+//   it('Local join', async () => {
+//     let uid = generateRandomNumber(100000);
+//     console.log(`local uid ${uid}`);
+
+//     // Wait remote stream to join channel first
+//     multistream.initLocalEngine();
+//     await multistream.localJoinChannel(uid);
+//   }, 10000);
+
+//   it('Prepare videosource share', async () => {
+//     await multistream.prepareScreenShare();
+//   });
+
+//   it('start videosource share', async () => {
+//     await multistream.startShare();
+//   });
+
+//   it('Local leave', async () => {
+//     multistream.stopShare();
+//     await multistream.leaveLocal();
+//   });
+// };
+
+// if (isMac) {
+//   describe.skip('Multi-stream coverage', MultiStreamTests);
+// } else {
+//   describe.skip('Multi-stream coverage', MultiStreamTests);
+// }
+
+describe('Plugin Manager UT', () => {
+  it('Normal step', () => {
+    localRtcEngine = new AgoraRtcEngine();
+    localRtcEngine.initialize(process.env.AGORA_APP_ID);
+    localRtcEngine.initializePluginManager();
+    localRtcEngine.releasePluginManager();
+    localRtcEngine.release()
+  })
+
+  it('Normal step with plugin', () => {
+    localRtcEngine = new AgoraRtcEngine();
+    localRtcEngine.initialize(process.env.AGORA_APP_ID);
+    localRtcEngine.initializePluginManager();
+    const dyPath = path.resolve(__dirname, '../example/static/fu-mac/libFaceUnityPlugin.dylib')
+    localRtcEngine.registerPlugin({
+      id: 'fu-mac',
+      path: dyPath
+    });
+    const plugin = localRtcEngine.getPlugins().find(plugin => plugin.id === 'fu-mac')
+    expect(plugin).toBeDefined();
+    expect(plugin.enable()).toBe(0)
+    expect(plugin.disable()).toBe(0)
+    expect(plugin.id).toBe('fu-mac')
+    expect(localRtcEngine.unregisterPlugin('fu-mac')).toBe(0)
+    localRtcEngine.releasePluginManager();
+    localRtcEngine.release()
+  })
+
+  it('Tough Release #1', () => {
+    localRtcEngine = new AgoraRtcEngine();
+    localRtcEngine.initialize(process.env.AGORA_APP_ID);
+    expect(localRtcEngine.releasePluginManager()).toBe(0);
+    localRtcEngine.release()
+  })
+
+  it('Tough Release #2', () => {
+    localRtcEngine = new AgoraRtcEngine();
+    localRtcEngine.initialize(process.env.AGORA_APP_ID);
+    localRtcEngine.initializePluginManager();
+    const dyPath = path.resolve(__dirname, '../example/static/fu-mac/libFaceUnityPlugin.dylib')
+    localRtcEngine.registerPlugin({
+      id: 'fu-mac',
+      path: dyPath
+    });
+    const plugin = localRtcEngine.getPlugins().find(plugin => plugin.id === 'fu-mac')
+    expect(plugin).toBeDefined();
+    expect(plugin.enable()).toBe(0)
+    expect(localRtcEngine.releasePluginManager()).toBe(0);
+    localRtcEngine.release()
+  })
+
+  it('Unregister non-exist plugin', () => {
+    localRtcEngine = new AgoraRtcEngine();
+    localRtcEngine.initialize(process.env.AGORA_APP_ID);
+    expect(localRtcEngine.unregisterPlugin('nobody') < 0).toBe(true);
+    localRtcEngine.releasePluginManager()
+    localRtcEngine.release()
+  })
+})
+>>>>>>> b252ecf... <test> update plugin-related testcase
