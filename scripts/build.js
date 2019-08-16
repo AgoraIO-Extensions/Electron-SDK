@@ -58,17 +58,23 @@ module.exports = ({
         process.exit(1)
       }
   
-      shell.exec('node-gyp build', {silent}, (code, stdout, stderr) => {
-        // handle error
-        if (code !== 0) {
-          logger.error(stderr);
-          process.exit(1)
-        }
-        
+      if (debug) {
         // handle success
-        logger.info('Build complete')
+        logger.info('Complete, please go to `/build` and build manually')
         process.exit(0)  
-      })
+      } else {
+        shell.exec('node-gyp build', {silent}, (code, stdout, stderr) => {
+          // handle error
+          if (code !== 0) {
+            logger.error(stderr);
+            process.exit(1)
+          }
+          
+          // handle success
+          logger.info('Build complete')
+          process.exit(0)  
+        })
+      }
     })
   })
 }
