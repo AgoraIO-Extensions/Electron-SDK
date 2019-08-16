@@ -40,6 +40,18 @@ void IVideoFramePluginManager::unregisterPlugin(std::string& pluginId)
     auto iter = m_mapPlugins.find(pluginId);
     if(iter!=m_mapPlugins.end())
     {
+        //free plugin instance
+        if(iter->second.instance) {
+            iter->second.instance->release();
+        }
+        //unload libs
+        if(iter->second.pluginModule) {
+            #ifdef WIN32
+                FreeLibrary((HMODULE)(iter->second.pluginModule));
+            #else
+                dlclose(iter->second.pluginModule);
+            #endif
+        }
         m_mapPlugins.erase(iter);
     }
 }
@@ -78,4 +90,22 @@ std::vector<std::string> IVideoFramePluginManager::getPlugins()
         result.push_back(element.first);
     }
     return result;
+}
+
+void IVideoFramePluginManager::release()
+{
+    for (auto const& element : m_mapPlugins) {
+        //free plugin instance
+        if(element.second.instance) {
+            element.second.instance->release();
+        }
+        //unload libs
+        if(element.second.pluginModule) {
+            #ifdef WIN32
+                FreeLibrary((HMODULE)(element.second.pluginModule));
+            #else
+                dlclose(element.second.pluginModule);
+            #endif
+        }
+    }
 }

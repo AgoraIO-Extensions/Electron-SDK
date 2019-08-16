@@ -5,6 +5,8 @@
 #include <node.h>
 #ifdef _WIN32
 #include <Windows.h>
+#elif defined(__APPLE__)
+#include <dlfcn.h>
 #endif
 class IVideoFramePlugin;
 
@@ -33,6 +35,7 @@ public:
     bool enablePlugin(std::string& pluginId, bool enabled);
     bool getPlugin(std::string& pluginId, agora_plugin_info& pluginInfo);
     std::vector<std::string> getPlugins();
+    void release();
 private:
     std::map<std::string, agora_plugin_info> m_mapPlugins;
 };
