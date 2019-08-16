@@ -2251,6 +2251,9 @@ namespace agora {
                 if (pEngine->m_videoSourceSink.get()) {
                     pEngine->m_videoSourceSink->release();
                 }
+                if (pEngine->m_avPluginManager.get()) {
+                    pEngine->m_avPluginManager->release();
+                }
                 pEngine->m_videoSourceSink.reset(nullptr);
                 pEngine->m_externalVideoRenderFactory.reset(nullptr);
                 result = 0;
