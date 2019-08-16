@@ -11,7 +11,7 @@ module.exports = ({
   msvsVersion = '2015',
 }) => {
   /** get command string */
-  const command = ['node-gyp rebuild'];
+  const command = ['node-gyp configure'];
   
   // check platform
   if (platform === 'win32') {
@@ -25,7 +25,7 @@ module.exports = ({
 
   // check debug
   if (debug) {
-    command.push('--debug')
+    command.push('--debug');
     if (platform === 'darwin') {
       // MUST AT THE END OF THE COMMAND ARR
       command.push('-- -f xcode')
@@ -43,17 +43,32 @@ module.exports = ({
   logger.info("Runtime:", runtime, "\n");
 
   logger.info("Build C++ addon for Agora Electron SDK...\n")
-
-  shell.exec(commandStr, {silent}, (code, stdout, stderr) => {
+  
+  shell.exec('node-gyp clean', {silent}, (code, stdout, stderr) => {
     // handle error
     if (code !== 0) {
       logger.error(stderr);
       process.exit(1)
     }
 
-    // handle success
-    logger.info('Build complete')
-    process.exit(0)
+    shell.exec(commandStr, {silent}, (code, stdout, stderr) => {
+      // handle error
+      if (code !== 0) {
+        logger.error(stderr);
+        process.exit(1)
+      }
+  
+      shell.exec('node-gyp build', {silent}, (code, stdout, stderr) => {
+        // handle error
+        if (code !== 0) {
+          logger.error(stderr);
+          process.exit(1)
+        }
+        
+        // handle success
+        logger.info('Build complete')
+        process.exit(0)  
+      })
+    })
   })
-
 }
