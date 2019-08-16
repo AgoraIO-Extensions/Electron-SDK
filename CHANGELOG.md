@@ -1,3 +1,7 @@
+## 2.3.4-hotfix.2
+#### :house: Internal
+* Support plugin to transform video/audio frame data. Go to section:Plugins in README.md
+
 ## 2.3.4-hotfix.1
 #### :house: Internal
 * Internal optimization
