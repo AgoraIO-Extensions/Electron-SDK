@@ -3668,8 +3668,8 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.registerPlugin(info);
   }
 
-  unregisterPlugin(info: PluginInfo): number {
-    return this.rtcEngine.unregisterPlugin(info);
+  unregisterPlugin(pluginId: string): number {
+    return this.rtcEngine.unregisterPlugin(pluginId);
   }
 
   getPlugins() {
