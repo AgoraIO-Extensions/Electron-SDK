@@ -633,7 +633,7 @@ export interface NodeRtcEngine {
   releasePluginManager(): number;
   getPlugins(): Array<{id: string}>;
   registerPlugin(pluginInfo: PluginInfo): number;
-  unregisterPlugin(pluginInfo: PluginInfo): number;
+  unregisterPlugin(pluginId: string): number;
   enablePlugin(pluginId: string, enabled: boolean): number;
   setPluginParameter(pluginId: string, param: string): number;
 }

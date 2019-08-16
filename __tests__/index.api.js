@@ -1,4 +1,5 @@
 require('./utils/mock')
+const path = require('path');
 const AgoraRtcEngine = require('../js/AgoraSdk').default;
 const generateRandomNumber = require('./utils/index.js').generateRandomNumber;
 const generateRandomString = require('./utils/index.js').generateRandomString;
@@ -17,7 +18,7 @@ describe('Basic API Coverage', () => {
   beforeAll(() => {
     localRtcEngine = new AgoraRtcEngine();
     localRtcEngine.setLogFile('/')
-    localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
+    localRtcEngine.initialize(process.env.AGORA_APP_ID);
   });
   afterEach(() => {
     // Restore mocks after each test
@@ -93,7 +94,7 @@ describe('Basic API Coverage', () => {
 describe('cdn coverage', () => {
   beforeAll(() => {
     localRtcEngine = new AgoraRtcEngine();
-    localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
+    localRtcEngine.initialize(process.env.AGORA_APP_ID);
   });
   beforeEach(() => {
     // Restore mocks after each test
@@ -119,7 +120,7 @@ describe('cdn coverage', () => {
 describe('Basic API Coverage 2', () => {
   beforeAll(() => {
     localRtcEngine = new AgoraRtcEngine();
-    localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
+    localRtcEngine.initialize(process.env.AGORA_APP_ID);
   });
   afterEach(() => {
     // Restore mocks after each test
@@ -144,7 +145,7 @@ describe('Basic API Coverage 2', () => {
 // describe('Basic API Coverage 3', () => {
 //   beforeEach(() => {
 //     localRtcEngine = new AgoraRtcEngine();
-//     localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
+//     localRtcEngine.initialize(process.env.AGORA_APP_ID);
 //     localRtcEngine.setLogFile(path.resolve(__dirname, "../test.log"))
 //   });
 //   afterEach(() => {
@@ -157,7 +158,7 @@ describe('Basic API Coverage 2', () => {
 // describe.skip('Render coverage', () => {
 //   beforeAll(() => {
 //     localRtcEngine = new AgoraRtcEngine();
-//     localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
+//     localRtcEngine.initialize(process.env.AGORA_APP_ID);
 //   });
 //   beforeEach(() => {
 //     // Restore mocks after each test
@@ -194,7 +195,7 @@ describe('Basic API Coverage 2', () => {
 // const MultiStreamTests = () => {
 //   beforeAll(() => {
 //     localRtcEngine = new AgoraRtcEngine();
-//     localRtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
+//     localRtcEngine.initialize(process.env.AGORA_APP_ID);
 //     multistream = new MultiStream(localRtcEngine, 'basic-coverage');
 //   });
 //   afterAll(done => {
@@ -238,3 +239,63 @@ describe('Basic API Coverage 2', () => {
 // } else {
 //   describe.skip('Multi-stream coverage', MultiStreamTests);
 // }
+
+describe('Plugin Manager UT', () => {
+  it('Normal step', () => {
+    localRtcEngine = new AgoraRtcEngine();
+    localRtcEngine.initialize(process.env.AGORA_APP_ID);
+    localRtcEngine.initializePluginManager();
+    localRtcEngine.releasePluginManager();
+    localRtcEngine.release()
+  })
+
+  it('Normal step with plugin', () => {
+    localRtcEngine = new AgoraRtcEngine();
+    localRtcEngine.initialize(process.env.AGORA_APP_ID);
+    localRtcEngine.initializePluginManager();
+    const dyPath = path.resolve(__dirname, '../example/static/fu-mac/libFaceUnityPlugin.dylib')
+    localRtcEngine.registerPlugin({
+      id: 'fu-mac',
+      path: dyPath
+    });
+    const plugin = localRtcEngine.getPlugins().find(plugin => plugin.id === 'fu-mac')
+    expect(plugin).toBeDefined();
+    expect(plugin.enable()).toBe(0)
+    expect(plugin.disable()).toBe(0)
+    expect(plugin.id).toBe('fu-mac')
+    expect(localRtcEngine.unregisterPlugin('fu-mac')).toBe(0)
+    localRtcEngine.releasePluginManager();
+    localRtcEngine.release()
+  })
+
+  it('Tough Release #1', () => {
+    localRtcEngine = new AgoraRtcEngine();
+    localRtcEngine.initialize(process.env.AGORA_APP_ID);
+    expect(localRtcEngine.releasePluginManager()).toBe(0);
+    localRtcEngine.release()
+  })
+
+  it('Tough Release #2', () => {
+    localRtcEngine = new AgoraRtcEngine();
+    localRtcEngine.initialize(process.env.AGORA_APP_ID);
+    localRtcEngine.initializePluginManager();
+    const dyPath = path.resolve(__dirname, '../example/static/fu-mac/libFaceUnityPlugin.dylib')
+    localRtcEngine.registerPlugin({
+      id: 'fu-mac',
+      path: dyPath
+    });
+    const plugin = localRtcEngine.getPlugins().find(plugin => plugin.id === 'fu-mac')
+    expect(plugin).toBeDefined();
+    expect(plugin.enable()).toBe(0)
+    expect(localRtcEngine.releasePluginManager()).toBe(0);
+    localRtcEngine.release()
+  })
+
+  it('Unregister non-exist plugin', () => {
+    localRtcEngine = new AgoraRtcEngine();
+    localRtcEngine.initialize(process.env.AGORA_APP_ID);
+    expect(localRtcEngine.unregisterPlugin('nobody') < 0).toBe(true);
+    localRtcEngine.releasePluginManager()
+    localRtcEngine.release()
+  })
+})
