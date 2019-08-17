@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@types/node": "10.14.15",
-    "husky": "3.0.3",
+    "husky": "3.0.4",
     "jest": "24.9.0",
     "jsdom": "15.1.1",
     "lint-staged": "9.2.1",
