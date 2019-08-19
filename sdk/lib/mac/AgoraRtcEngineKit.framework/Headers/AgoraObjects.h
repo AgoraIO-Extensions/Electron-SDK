@@ -97,9 +97,9 @@ See [AgoraLastmileProbeOneWayResult](AgoraLastmileProbeOneWayResult).
 /** Statistics of the local video stream.
  */
 __attribute__((visibility("default"))) @interface AgoraRtcLocalVideoStats : NSObject
-/** The average sending bitrate (Kbps) since the last count. */
+/** Bitrate (Kbps) sent in the reported interval, which does not include the bitrate of the re-transmission video after packet loss. */
 @property (assign, nonatomic) NSUInteger sentBitrate;
-/** The average sending frame rate (fps) since last count. */
+/** Frame rate (fps) sent in the reported interval, which does not include the frame rate of the re-transmission video after packet loss. */
 @property (assign, nonatomic) NSUInteger sentFrameRate;
 /** The encoder output frame rate (fps) of the local video. */
 @property (assign, nonatomic) NSUInteger encoderOutputFrameRate;
@@ -109,8 +109,26 @@ __attribute__((visibility("default"))) @interface AgoraRtcLocalVideoStats : NSOb
 @property (assign, nonatomic) NSUInteger sentTargetBitrate;
 /** The target frame rate (fps) of the current encoder. */
 @property (assign, nonatomic) NSUInteger sentTargetFrameRate;
-/** Quality change of the local video in terms of target frame rate and target bit rate since last count, see [AgoraVideoQualityAdaptIndication](AgoraVideoQualityAdaptIndication). */
+/** Quality change of the local video in terms of target frame rate and target bit rate in this reported interval, see [AgoraVideoQualityAdaptIndication](AgoraVideoQualityAdaptIndication). */
 @property (assign, nonatomic) AgoraVideoQualityAdaptIndication qualityAdaptIndication;
+/** The encoding bitrate (Kbps), which does not include the bitrate of the re-transmission video after packet loss.
+ */
+@property (assign, nonatomic) NSUInteger encodedBitrate;
+/** The width of the encoding frame (px).
+ */
+@property (assign, nonatomic) NSUInteger encodedFrameWidth;
+/** The height of the encoding frame (px).
+ */
+@property (assign, nonatomic) NSUInteger encodedFrameHeight;
+/** The value of the sent frame rate, represented by an aggregate value.
+ */
+@property (assign, nonatomic) NSUInteger encodedFrameCount;
+/** The codec type of the local video：
+
+ - AgoraVideoCodecTypeVP8 = 1: VP8.
+ - AgoraVideoCodecTypeH264 = 2: (Default) H.264.
+ */
+@property (assign, nonatomic) AgoraVideoCodecType codecType;
 @end
 
 /** Statistics of the remote video stream.
@@ -128,7 +146,7 @@ __attribute__((visibility("default"))) @interface AgoraRtcRemoteVideoStats : NSO
 /** Height (pixels) of the video stream.
  */
 @property (assign, nonatomic) NSUInteger height;
-/** Data receive bitrate (Kbps) since last count.
+/** The average bitrate (Kbps) of the received video stream.
  */
 @property (assign, nonatomic) NSUInteger receivedBitrate;
 /** The decoder output frame rate (fps) of the remote video.
@@ -137,6 +155,9 @@ __attribute__((visibility("default"))) @interface AgoraRtcRemoteVideoStats : NSO
 /** The renderer output frame rate (fps) of the remote video.
  */
 @property (assign, nonatomic) NSUInteger rendererOutputFrameRate;
+/** Packet loss rate (%) of the remote video stream after network countermeasures.
+ */
+@property (assign, nonatomic) NSUInteger packetLossRate;
 /** Video stream type (high-stream or low-stream).
  */
 @property (assign, nonatomic) AgoraVideoStreamType rxStreamType;
@@ -148,7 +169,21 @@ __attribute__((visibility("default"))) @interface AgoraRtcRemoteVideoStats : NSO
 @property (assign, nonatomic) NSUInteger frozenRate;
 @end
 
-/** Statistics of the remote audio stream.
+/** The statistics of the local audio stream.
+ */
+__attribute__((visibility("default"))) @interface AgoraRtcLocalAudioStats : NSObject
+/** The number of channels.
+ */
+@property (assign, nonatomic) NSUInteger numChannels;
+/** The sample rate (Hz).
+ */
+@property (assign, nonatomic) NSUInteger sentSampleRate;
+/** The average sending bitrate (Kbps).
+ */
+@property (assign, nonatomic) NSUInteger sentBitrate;
+@end
+
+/** The statistics of the remote audio stream.
  */
 __attribute__((visibility("default"))) @interface AgoraRtcRemoteAudioStats : NSObject
 /** User ID of the user sending the audio stream.
@@ -157,10 +192,10 @@ __attribute__((visibility("default"))) @interface AgoraRtcRemoteAudioStats : NSO
 /** Audio quality received by the user.
  */
 @property (assign, nonatomic) NSUInteger quality;
-/** Network delay from the sender to the receiver.
+/** Network delay (ms) from the sender to the receiver.
  */
 @property (assign, nonatomic) NSUInteger networkTransportDelay;
-/** Jitter buffer delay at the receiver.
+/** Network delay (ms) from the receiver to the jitter buffer.
  */
 @property (assign, nonatomic) NSUInteger jitterBufferDelay;
 /** Packet loss rate in the reported interval.
@@ -169,13 +204,15 @@ __attribute__((visibility("default"))) @interface AgoraRtcRemoteAudioStats : NSO
 /** The number of channels.
  */
 @property (assign, nonatomic) NSUInteger numChannels;
-/** The sample rate (Hz) of the received audio stream, represented by an instantaneous value.
+/** The sample rate (Hz) of the received audio stream in the reported interval.
  */
 @property (assign, nonatomic) NSUInteger receivedSampleRate;
-/** The bitrate (Kbps) of the received audio stream, represented by an instantaneous value.
+/** The average bitrate (Kbps) of the received audio stream in the reported interval.
  */
 @property (assign, nonatomic) NSUInteger receivedBitrate;
-/** The total freeze time (ms) of the remote audio stream after the remote user joins the channel. In a session, audio freeze occurs when the audio frame loss rate reaches 4% within two seconds.
+/** The total freeze time (ms) of the remote audio stream after the remote user joins the channel. 
+ *
+ * In every two seconds, the audio frame loss rate reaching 4% is counted as one audio freeze. The total audio freeze time = The audio freeze number &times; 2000 ms.
  */
 @property (assign, nonatomic) NSUInteger totalFrozenTime;
 /** The total audio freeze time as a percentage (%) of the total time when the audio is available.
@@ -211,6 +248,24 @@ __attribute__((visibility("default"))) @interface AgoraChannelStats: NSObject
 /** Total number of bytes received, represented by an aggregate value.
  */
 @property (assign, nonatomic) NSInteger rxBytes;
+/** Total number of audio bytes sent (bytes), represented by an aggregate value.
+ */
+@property (assign, nonatomic) NSInteger txAudioBytes;
+/** Total number of video bytes sent (bytes), represented by an aggregate value.
+ */
+@property (assign, nonatomic) NSInteger txVideoBytes;
+/** Total number of audio bytes received (bytes), represented by an aggregate value.
+ */
+@property (assign, nonatomic) NSInteger rxAudioBytes;
+/** Total number of video bytes received (bytes), represented by an aggregate value.
+ */
+@property (assign, nonatomic) NSInteger rxVideoBytes;
+/** Total packet transmission bitrate (Kbps), represented by an instantaneous value.
+ */
+@property (assign, nonatomic) NSInteger txKBitrate;
+/** Total receive bitrate (Kbps), represented by an instantaneous value.
+ */
+@property (assign, nonatomic) NSInteger rxKBitrate;
 /** Audio packet transmission bitrate (Kbps), represented by an instantaneous value.
  */
 @property (assign, nonatomic) NSInteger txAudioKBitrate;
@@ -226,10 +281,10 @@ __attribute__((visibility("default"))) @interface AgoraChannelStats: NSObject
 /** Client-server latency (ms)
  */
 @property (assign, nonatomic) NSInteger lastmileDelay;
-/** The packet loss rate (%) from the local client to Agora's edge server.
+/** The packet loss rate (%) from the local client to Agora's edge server, before network countermeasures.
  */
 @property (assign, nonatomic) NSInteger txPacketLossRate;
-/** The packet loss rate (%) from Agora's edge server to the local client.
+/** The packet loss rate (%) from Agora's edge server to the local client, before network countermeasures.
  */
 @property (assign, nonatomic) NSInteger rxPacketLossRate;
 /** Number of users in the channel.
@@ -252,7 +307,7 @@ __attribute__((visibility("default"))) @interface AgoraChannelStats: NSObject
 /** Properties of the video encoder configuration.
  */
 __attribute__((visibility("default"))) @interface AgoraVideoEncoderConfiguration: NSObject
-/** The video frame dimension used to specify the video quality in the total number of pixels along a frame's width and height.
+/** The video frame dimension (px) used to specify the video quality in the total number of pixels along a frame's width and height. The default value is 640 x 360.
 
 You can customize the dimension, or select from the following list:
 
@@ -284,9 +339,9 @@ You can customize the dimension, or select from the following list:
  */
 @property (assign, nonatomic) CGSize dimensions;
 
-/** The frame rate of the video (fps).
+/** The frame rate of the video (fps). 
 
-You can either set the frame rate manually or choose from the following options. We do not recommend setting this to a value greater than 30.
+ You can either set the frame rate manually or choose from the following options. The default value is 15. We do not recommend setting this to a value greater than 30.
 
   *  AgoraVideoFrameRateFps1(1): 1 fps
   *  AgoraVideoFrameRateFps7(7): 7 fps
@@ -544,7 +599,7 @@ The default value is 15 fps. Agora adjusts all values over 30 to 30.
 @property (assign, nonatomic) NSInteger videoGop;
 /** Video codec profile type
 
-Set it as 66, 77, or 100 (default), see AgoraVideoCodecProfileType.
+Set it as 66, 77, or 100 (default), see [AgoraVideoCodecProfileType](AgoraVideoCodecProfileType).
 
 If you set this parameter to other values, Agora adjusts it to the default value of 100.
  */
@@ -568,12 +623,14 @@ See AgoraImage for the definition of the watermark.
 The audience of the CDN live publishing stream can see the background image. See AgoraImage for the definition of the background image.
  */
 @property (strong, nonatomic) AgoraImage *_Nullable backgroundImage;
-/** The background color in RGB hex value. Value only, do not include a #.
+/** The background color in RGB hex value.
+
+Value only, do not include a #. For example, 0xFFB6C1 (light pink). The default value is 0x000000 (black).
 
 COLOR_CLASS is a general name for the type:
 
 * iOS: UIColor
-* MacOS: NSColor
+* macOS: NSColor
  */
 @property (strong, nonatomic) COLOR_CLASS *_Nullable backgroundColor;
 
@@ -677,146 +734,6 @@ __attribute__((visibility("default"))) @interface AgoraCameraCapturerConfigurati
 /** This preference will balance the performance and preview quality by adjusting camera output frame size.
  */
 @property (assign, nonatomic) AgoraCameraCaptureOutputPreference preference;
-@end
-
-__deprecated
-
-/** Defines the region to show the video on the screen for each host in the channel.
-
-**DEPRECATED**
-
- */
-__attribute__((visibility("default"))) @interface AgoraRtcVideoCompositingRegion : NSObject
-/** ID of the user whose video is displayed on the screen. */
-@property (assign, nonatomic) NSUInteger uid;
-/** Horizontal position of the region on the screen. The value ranges between 0.0 and 1.0. */
-@property (assign, nonatomic) CGFloat x;
-/** Vertical position of the region on the screen. The value ranges between 0.0 and 1.0. */
-@property (assign, nonatomic) CGFloat y;
-/** Actual width of the region. The value ranges between 0.0 and 1.0. For example, if the width of the screen is 360, and the width of the region is 120, set the value as 0.33. */
-@property (assign, nonatomic) CGFloat width;
-/** Actual height of the region. The value ranges between 0.0 and 1.0. For example, if the height of the screen is 240, and the height of the region is 120, set the value as 0.5. */
-@property (assign, nonatomic) CGFloat height;
-/** Layer position of the region. The value ranges between 0 and 100:
-
-- 0: The region is at the bottom layer.
-- 100: The region is at the top layer.
-
-From v2.3.0, the Agora SDK supports setting zOrder as 0.
- */
-@property (assign, nonatomic) NSInteger zOrder;
-/** The transparency of the region. The value ranges between 0.0 and 1.0:
-
-- 0: The region is transparent.
-- 1: (Default) The region is opaque.
-*/
-@property (assign, nonatomic) CGFloat alpha;
-/** Please ignore this property. Setting this property will not take effect. */
-@property (assign, nonatomic) AgoraVideoRenderMode renderMode;
-@end
-
-__deprecated
-/** Rtc video compositing layout.
-
-**DEPRECATED**
- */
-__attribute__((visibility("default"))) @interface AgoraRtcVideoCompositingLayout : NSObject
-/** Please ignore this property.
-
-Width of the entire canvas (display window or screen).
- */
-@property (assign, nonatomic) NSInteger canvasWidth;
-/** Please ignore this property.
-
-Height of the entire canvas (display window or screen).
- */
-@property (assign, nonatomic) NSInteger canvasHeight;
-/** The background color in RGB hex value. Value only, do not include a #.
- */
-@property (copy, nonatomic) NSString * _Nullable backgroundColor;
-/** Screen display region information.
-
-Sets the screen display region of a host or a delegated host in a CDN live stream. See AgoraRtcVideoCompositingRegion.
- */
-@property (copy, nonatomic) NSArray<AgoraRtcVideoCompositingRegion *> * _Nullable regions;
-/** App defined data. Maximum size of 2048 bytes. */
-@property (copy, nonatomic) NSString * _Nullable appData;
-@end
-
-/** CDN live stream settings.
-
- **DEPRECATED**
-
- Agora recommends using [setLiveTranscoding]([AgoraRtcEngineKit setLiveTranscoding:]) to set the CDN live stream settings.
- */
-__deprecated
-__attribute__((visibility("default"))) @interface AgoraPublisherConfiguration : NSObject
-/** Sets whether or not the current host is the RTMP stream owner.
-
- - YES: (Default) The current host is the RTMP stream owner and the push-stream configuration is enabled.
- - NO: The current host is not the RTMP stream owner and the push-stream configuration is disabled.
- */
-@property (assign, nonatomic) BOOL owner;
-
-/** Width of the CDN live output data stream. The default value is 360.
- */
-@property (assign, nonatomic) NSInteger width;
-/** Height of the CDN live output data stream. The default value is 640.
- */
-@property (assign, nonatomic) NSInteger height;
-/** Frame rate of the CDN live output data stream. The default value is 15 fps.
- */
-@property (assign, nonatomic) NSInteger framerate;
-/** Bitrate of the CDN live output data stream. The default value is 500 Kbps.
- */
-@property (assign, nonatomic) NSInteger bitrate;
-/** Audio sample rate of the CDN live output data stream. The default value is 48000 Hz.
- */
-@property (assign, nonatomic) NSInteger audiosamplerate;
-/** Audio bitrate of the CDN live output data stream.  The default value is 48 Kbps.
- */
-@property (assign, nonatomic) NSInteger audiobitrate;
-/** Number of audio channels of the CDN live output data stream. The default value is 1.
- */
-@property (assign, nonatomic) NSInteger audiochannels;
-/**
-
-* 0: Tile horizontally.
-* 1: Layered windows.
-* 2: Tile vertically.
- */
-@property (assign, nonatomic) NSInteger defaultLayout;
-/** CDN live video stream lifecycle: AgoraRtmpStreamLifeCycle.
- */
-@property (assign, nonatomic) AgoraRtmpStreamLifeCycle lifeCycle;
-
-/** Width of the injected stream. Set it as 0.
- */
-@property (assign, nonatomic) NSInteger injectStreamWidth;
-
-/** Height of the injected stream. Set it as 0.
- */
-@property (assign, nonatomic) NSInteger injectStreamHeight;
-
-/** Address of the injected stream into the channel.
- */
-@property (copy, nonatomic) NSString * _Nullable injectStreamUrl;
-
-/** The push-stream address for the picture-in-picture layouts. The default value is nil.
- */
-@property (copy, nonatomic) NSString * _Nullable publishUrl;
-
-/** The push-stream RTMP URL address of the original stream before transcoding. The default value is nil.
- */
-@property (copy, nonatomic) NSString * _Nullable rawStreamUrl;
-
-/** Reserved field. The default value is nil.
- */
-@property (copy, nonatomic) NSString * _Nullable extraInfo;
-
-/** Whether or not the configuration is validated.
- */
--(BOOL) validate;
 @end
 
 #if (!(TARGET_OS_IPHONE) && (TARGET_OS_MAC))
@@ -938,6 +855,61 @@ Optional values: 0, 90, 180, or 270. The default value is 0.
  *    // cropLeft, cropTop, cropBottom are set to a default of 0
  */
 @end
+
+/** The definition of AgoraChannelMediaRelayInfo.
+ */
+__attribute__((visibility("default"))) @interface AgoraChannelMediaRelayInfo: NSObject
+/** The token that enables the user to join the channel. The default value is NULL, which means that the SDK applies the current token.
+ */
+@property (copy, nonatomic) NSString * _Nullable token;
+/** The channel name. The default value is NULL, which means that the SDK applies the current channel name.
+ */
+@property (copy, nonatomic) NSString * _Nullable channelName;
+/** The user ID.
+ 
+ @note String user accounts are not supported in media stream relay.
+ */
+@property (assign, nonatomic) NSUInteger uid;
+- (instancetype _Nonnull)initWithToken:(NSString *_Nullable)token;
+@end
+
+/** The definition of AgoraChannelMediaRelayConfiguration.
+
+ */
+__attribute__((visibility("default"))) @interface AgoraChannelMediaRelayConfiguration: NSObject
+/** The information of the destination channel: AgoraChannelMediaRelayInfo.
+
+ @note uid: The user ID in the destination channel.
+ */
+@property (strong, nonatomic, readonly) NSDictionary<NSString *, AgoraChannelMediaRelayInfo *> *_Nullable destinationInfos;
+/** The information of the source channel: AgoraChannelMediaRelayInfo.
+
+ **Note**
+
+ - `uid`: ID of the user whose media stream you want to relay. We recommend setting it as 0, which means that the SDK relays the media stream of the current broadcaster.
+ - If you do not use a token, we recommend using the default values of the parameters in AgoraChannelMediaRelayInfo.
+ - If you use a token, set uid as 0, and ensure that the token is generated with the uid set as 0.
+ */
+@property (strong, nonatomic) AgoraChannelMediaRelayInfo *_Nonnull sourceInfo;
+/** Sets the information of the destination channel. If you want to relay the media stream to multiple channels, call this method as many times (at most four).
+
+ @param destinationInfo The information of the destination channel: [AgoraChannelMediaRelayInfo](AgoraChannelMediaRelayInfo).
+ @param channelName The name of the destination channel. Ensure that the value of this parameter is the same as that of the `channelName` member in `destinationInfo`.
+
+ @return - YES: Success.
+ - NO: Failure.
+ */
+- (BOOL)setDestinationInfo:(AgoraChannelMediaRelayInfo *_Nonnull)destinationInfo forChannelName:(NSString *_Nonnull)channelName;
+/** Removes the destination channel.
+
+ @param channelName The name of the destination channel.
+
+ @return - YES: Success.
+ - NO: Failure.
+ */
+- (BOOL)removeDestinationInfoForChannelName:(NSString *_Nonnull)channelName;
+@end
+
 
 /** The image enhancement options in [setBeautyEffectOptions]([AgoraRtcEngineKit setBeautyEffectOptions:options:]). */
 __attribute__((visibility("default"))) @interface AgoraBeautyOptions : NSObject
