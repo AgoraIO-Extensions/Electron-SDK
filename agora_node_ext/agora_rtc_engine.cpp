@@ -432,45 +432,6 @@ namespace agora {
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setVideoQualityParameters, bool);
 
-        NAPI_API_DEFINE(NodeRtcEngine, configPublisher)
-        {
-            LOG_ENTER;
-            napi_status status = napi_ok;
-            int result = -1;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                PublisherConfiguration config;
-                nodestring injectStreamUrl, publishUrl, rawStreamUrl, extraInfo;
-                Local<Object> obj = args[0]->ToObject(args.GetIsolate());
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "width", config.width);
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "height", config.height);
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "framerate", config.framerate);
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "bitrate", config.bitrate);
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "defaultlayout", config.defaultLayout);
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "lifecycle", config.lifecycle);
-                napi_get_object_property_bool_(args.GetIsolate(), obj, "owner", config.owner);
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "injectstreamwidth", config.injectStreamWidth);
-                napi_get_object_property_int32_(args.GetIsolate(), obj, "injectstreamheight", config.injectStreamHeight);
-                if (napi_get_object_property_nodestring_(args.GetIsolate(), obj, "injectstreamurl", injectStreamUrl) == napi_ok) {
-                    config.injectStreamUrl = injectStreamUrl;
-                }
-                if (napi_get_object_property_nodestring_(args.GetIsolate(), obj, "publishurl", publishUrl) == napi_ok) {
-                    config.publishUrl = publishUrl;
-                }
-                if (napi_get_object_property_nodestring_(args.GetIsolate(), obj, "rawstreamurl", rawStreamUrl) == napi_ok) {
-                    config.rawStreamUrl = rawStreamUrl;
-                }
-                if (napi_get_object_property_nodestring_(args.GetIsolate(), obj, "extrainfo", extraInfo) == napi_ok) {
-                    config.extraInfo = extraInfo;
-                }
-                result = pEngine->m_engine->configPublisher(config);
-            } while (false);
-            napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
-
         NAPI_API_DEFINE(NodeRtcEngine, addPublishStreamUrl)
         {
             LOG_ENTER;

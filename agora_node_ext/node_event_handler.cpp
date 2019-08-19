@@ -1296,7 +1296,7 @@ namespace agora {
             }while(false);
         }
 
-        void NodeEventHandler::onLocalVideoStateChanged(int localVideoState, int error)
+        void NodeEventHandler::onLocalVideoStateChanged(LOCAL_VIDEO_STREAM_STATE localVideoState, LOCAL_VIDEO_STREAM_ERROR error)
         {
             FUNC_TRACE;
             node_async_call::async_call([this, localVideoState, error] {
@@ -1304,7 +1304,7 @@ namespace agora {
             });
         }
 
-        void NodeEventHandler::onLocalVideoStateChanged_node(int localVideoState, int error)
+        void NodeEventHandler::onLocalVideoStateChanged_node(LOCAL_VIDEO_STREAM_STATE localVideoState, LOCAL_VIDEO_STREAM_ERROR error)
         {
             FUNC_TRACE;
             MAKE_JS_CALL_2(RTC_EVENT_LOCAL_VIDEO_STATE_CHANGED, int32, localVideoState, int32, error);
@@ -1339,7 +1339,7 @@ namespace agora {
             });
         }
 
-        void NodeEventHandler::onLocalAudioStateChanged(int state, int error)
+        void NodeEventHandler::onLocalAudioStateChanged(LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error)
         {
             FUNC_TRACE;
             node_async_call::async_call([this, state, error] {
@@ -1347,7 +1347,7 @@ namespace agora {
             });
         }
 
-        void NodeEventHandler::onLocalAudioStateChanged_node(int state, int error)
+        void NodeEventHandler::onLocalAudioStateChanged_node(LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error)
         {
             FUNC_TRACE;
             MAKE_JS_CALL_2(RTC_EVENT_LOCAL_AUDIO_STATE_CHANGED, int32, state, int32, error);
