@@ -172,7 +172,7 @@ typedef NS_ENUM(NSInteger, AgoraErrorCode) {
     AgoraErrorCodeWatermarkRead = 129,
     /** 130: The encrypted stream is not allowed to publish. */
     AgoraErrorCodeEncryptedStreamNotAllowedPublish = 130,
-    /** 131: The user account is invalid. */
+    /** 134: The user account is invalid. */
     AgoraErrorCodeInvalidUserAccount = 134,
 
     /** 151: CDN related errors. Remove the original URL address and add a new one by calling the [removePublishStreamUrl]([AgoraRtcEngineKit removePublishStreamUrl:]) and [addPublishStreamUrl]([AgoraRtcEngineKit addPublishStreamUrl:transcodingEnabled:]) methods. */
@@ -230,6 +230,8 @@ typedef NS_ENUM(NSInteger, AgoraErrorCode) {
     AgoraErrorCodeAdmInitLoopback  = 1022,
     /** 1023: Audio Device Module: An error occurs in starting the loopback device. */
     AgoraErrorCodeAdmStartLoopback = 1023,
+    /** 1027: Audio Device Module: An error occurs in no recording Permission. */
+    AgoraErrorCodeAdmNoPermission = 1027,
     /** 1359: No recording device exists. */
     AgoraErrorCodeAdmNoRecordingDevice = 1359,
     /** 1360: No playback device exists. */
@@ -527,11 +529,15 @@ typedef NS_ENUM(NSInteger, AgoraMediaType) {
     AgoraMediaTypeAudioAndVideo = 3,
 };
 
-
+/** Encryption mode */
 typedef NS_ENUM(NSInteger, AgoraEncryptionMode) {
+    /** When encryptionMode is set as NULL, the encryption mode is set as "aes-128-xts" by default. */
     AgoraEncryptionModeNone = 0,
+    /** (Default) 128-bit AES encryption, XTS mode. */
     AgoraEncryptionModeAES128XTS = 1,
+    /** 256-bit AES encryption, XTS mode. */
     AgoraEncryptionModeAES256XTS = 2,
+    /** 128-bit AES encryption, ECB mode. */
     AgoraEncryptionModeAES128ECB = 3,
 };
 
@@ -547,13 +553,13 @@ typedef NS_ENUM(NSUInteger, AgoraUserOfflineReason) {
 
 /** The RTMP streaming state. */
 typedef NS_ENUM(NSUInteger, AgoraRtmpStreamingState) {
-  /** The RTMP streaming has not started or has ended. */
+  /** The RTMP streaming has not started or has ended. This state is also triggered after you remove an RTMP address from the CDN by calling removePublishStreamUrl.*/
   AgoraRtmpStreamingStateIdle = 0,
   /** The SDK is connecting to Agora's streaming server and the RTMP server. This state is triggered after you call the [addPublishStreamUrl]([AgoraRtcEngineKit addPublishStreamUrl:transcodingEnabled:]) method. */
   AgoraRtmpStreamingStateConnecting = 1,
   /** The RTMP streaming is being published. The SDK successfully publishes the RTMP streaming and returns this state. */
   AgoraRtmpStreamingStateRunning = 2,
-  /** The RTMP streaming is recovering. When exceptions occur to the CDN, or the streaming is interrupted, the SDK attempts to resume RTMP streaming and returns this state. 
+  /** The RTMP streaming is recovering. When exceptions occur to the CDN, or the streaming is interrupted, the SDK attempts to resume RTMP streaming and returns this state.
 <li> If the SDK successfully resumes the streaming, AgoraRtmpStreamingStateRunning(2) returns.
 <li> If the streaming does not resume within 60 seconds or server errors occur, AgoraRtmpStreamingStateFailure(4) returns. You can also reconnect to the server by calling the [removePublishStreamUrl]([AgoraRtcEngineKit removePublishStreamUrl:]) and [addPublishStreamUrl]([AgoraRtcEngineKit addPublishStreamUrl:transcodingEnabled:]) methods. */
   AgoraRtmpStreamingStateRecovering = 3,
@@ -647,11 +653,11 @@ typedef NS_ENUM(NSUInteger, AgoraLogFilter) {
 
 /** Audio recording quality. */
 typedef NS_ENUM(NSInteger, AgoraAudioRecordingQuality) {
-   /** Low quality: The file size is around 1.2 MB after 10 minutes of recording. */
+   /** Low quality: The sample rate is 32 KHz, and the file size is around 1.2 MB after 10 minutes of recording. */
     AgoraAudioRecordingQualityLow = 0,
-    /** Medium quality: The file size is around 2 MB after 10 minutes of recording. */
+    /** Medium quality: The sample rate is 32 KHz, and the file size is around 2 MB after 10 minutes of recording. */
     AgoraAudioRecordingQualityMedium = 1,
-    /** High quality: The file size is around 3.75 MB after 10 minutes of recording. */
+    /** High quality: The sample rate is 32 KHz, and the file size is around 3.75 MB after 10 minutes of recording. */
     AgoraAudioRecordingQualityHigh = 2
 };
 
@@ -738,6 +744,18 @@ typedef NS_ENUM(NSInteger, AgoraVideoCodecProfileType) {
     AgoraVideoCodecProfileTypeHigh = 100
 };
 
+/** Video codec types. */
+typedef NS_ENUM(NSInteger, AgoraVideoCodecType) {
+    /** Standard VP8. */
+    AgoraVideoCodecTypeVP8 = 1,
+    /** Standard H264. */
+    AgoraVideoCodecTypeH264 = 2,
+    /** Enhanced VP8. */
+    AgoraVideoCodecTypeEVP = 3,
+    /** Enhanced H264. */
+    AgoraVideoCodecTypeE264 = 4,
+};
+
 /** Video mirror mode. */
 typedef NS_ENUM(NSUInteger, AgoraVideoMirrorMode) {
     /** The SDK determines the default mirror mode. */
@@ -758,14 +776,47 @@ typedef NS_ENUM(NSUInteger, AgoraVideoContentHint) {
     AgoraVideoContentHintDetails = 2,
 };
 
-/** Remote video state. */
+/** The state of the remote video. */
 typedef NS_ENUM(NSUInteger, AgoraVideoRemoteState) {
-    /** The remote video stops playing. */
+    /** 0: The remote video is in the default state, probably due to AgoraVideoRemoteStateReasonLocalMuted(3), AgoraVideoRemoteStateReasonRemoteMuted(5), or AgoraVideoRemoteStateReasonRemoteOffline(7).
+     */
     AgoraVideoRemoteStateStopped = 0,
-    /** The remote video is playing. */
-    AgoraVideoRemoteStateRunning = 1,
-    /** The remote video is frozen. */
-    AgoraVideoRemoteStateFrozen = 2,
+    /** 1: The first remote video packet is received.
+     */
+    AgoraVideoRemoteStateStarting = 1,
+    /** 2: The remote video stream is decoded and plays normally, probably due to AgoraVideoRemoteStateReasonNetworkRecovery(2), AgoraVideoRemoteStateReasonLocalUnmuted(4), AgoraVideoRemoteStateReasonRemoteUnmuted(6), or AgoraVideoRemoteStateReasonAudioFallbackRecovery(9).
+     */
+    AgoraVideoRemoteStateDecoding = 2,
+    /** 3: The remote video is frozen, probably due to AgoraVideoRemoteStateReasonNetworkCongestion(1) or AgoraVideoRemoteStateReasonAudioFallback(8).
+     */
+    AgoraVideoRemoteStateFrozen = 3,
+    /** 4: The remote video fails to start, probably due to AgoraVideoRemoteStateReasonInternal(0).
+     */
+    AgoraVideoRemoteStateFailed = 4,
+};
+
+/** The reason of the remote video state change. */
+typedef NS_ENUM(NSUInteger, AgoraVideoRemoteStateReason) {
+    /** 0: Internal reasons. */
+    AgoraVideoRemoteStateReasonInternal = 0,
+    /** 1: Network congestion. */
+    AgoraVideoRemoteStateReasonNetworkCongestion = 1,
+    /** 2: Network recovery. */
+    AgoraVideoRemoteStateReasonNetworkRecovery = 2,
+    /** 3: The local user stops receiving the remote video stream or disables the video module. */
+    AgoraVideoRemoteStateReasonLocalMuted = 3,
+    /** 4: The local user resumes receiving the remote video stream or enables the video module. */
+    AgoraVideoRemoteStateReasonLocalUnmuted = 4,
+    /** 5: The remote user stops sending the video stream or disables the video module. */
+    AgoraVideoRemoteStateReasonRemoteMuted = 5,
+    /** 6: The remote user resumes sending the video stream or enables the video module. */
+    AgoraVideoRemoteStateReasonRemoteUnmuted = 6,
+    /** 7: The remote user leaves the channel. */
+    AgoraVideoRemoteStateReasonRemoteOffline = 7,
+    /** 8: The remote media stream falls back to the audio-only stream due to poor network conditions. */
+    AgoraVideoRemoteStateReasonAudioFallback = 8,
+    /** 9: The remote media stream switches back to the video stream after the network conditions improve. */
+    AgoraVideoRemoteStateReasonAudioFallbackRecovery = 9,
 };
 
 /** Stream fallback option. */
@@ -948,6 +999,68 @@ typedef NS_ENUM(NSInteger, AgoraAudioCodecProfileType) {
   AgoraAudioCodecProfileHEAAC = 1
 };
 
+/** The state of the remote audio. */
+typedef NS_ENUM(NSUInteger, AgoraAudioRemoteState) {
+    /** 0: The remote audio is in the default state, probably due to AgoraAudioRemoteReasonLocalMuted(3), AgoraAudioRemoteReasonRemoteMuted(5), or AgoraAudioRemoteReasonRemoteOffline(7). */
+    AgoraAudioRemoteStateStopped = 0,
+    /** 1: The first remote audio packet is received. */
+    AgoraAudioRemoteStateStarting = 1,
+    /** 2: The remote audio stream is decoded and plays normally, probably due to AgoraAudioRemoteReasonNetworkRecovery(2), AgoraAudioRemoteReasonLocalUnmuted(4), or AgoraAudioRemoteReasonRemoteUnmuted(6). */
+    AgoraAudioRemoteStateDecoding = 2,
+    /** 3: The remote audio is frozen, probably due to AgoraAudioRemoteReasonNetworkCongestion(1). */
+    AgoraAudioRemoteStateFrozen = 3,
+    /** 4: The remote audio fails to start, probably due to AgoraAudioRemoteReasonInternal(0). */
+    AgoraAudioRemoteStateFailed = 4,
+};
+
+/** The reason of the remote audio state change. */
+typedef NS_ENUM(NSUInteger, AgoraAudioRemoteStateReason) {
+    /** 0: Internal reasons. */
+    AgoraAudioRemoteReasonInternal = 0,
+    /** 1: Network congestion. */
+    AgoraAudioRemoteReasonNetworkCongestion = 1,
+    /** 2: Network recovery. */
+    AgoraAudioRemoteReasonNetworkRecovery = 2,
+    /** 3: The local user stops receiving the remote audio stream or disables the audio module. */
+    AgoraAudioRemoteReasonLocalMuted = 3,
+    /** 4: The local user resumes receiving the remote audio stream or enables the audio module. */
+    AgoraAudioRemoteReasonLocalUnmuted = 4,
+    /** 5: The remote user stops sending the audio stream or disables the audio module. */
+    AgoraAudioRemoteReasonRemoteMuted = 5,
+    /** 6: The remote user resumes sending the audio stream or enables the audio module. */
+    AgoraAudioRemoteReasonRemoteUnmuted = 6,
+    /** 7: The remote user leaves the channel. */
+    AgoraAudioRemoteReasonRemoteOffline = 7,
+};
+
+/** The state of the local audio. */
+typedef NS_ENUM(NSUInteger, AgoraAudioLocalState) {
+    /** 0: The local audio is in the initial state. */
+    AgoraAudioLocalStateStopped = 0,
+    /** 1: The recording device starts successfully.  */
+    AgoraAudioLocalStateRecording = 1,
+    /** 2: The first audio frame encodes successfully. */
+    AgoraAudioLocalStateEncoding = 2,
+    /** 3: The local audio fails to start. */
+    AgoraAudioLocalStateFailed = 3,
+};
+
+/** The error information of the local audio. */
+typedef NS_ENUM(NSUInteger, AgoraAudioLocalError) {
+    /** 0: The local audio is normal. */
+    AgoraAudioLocalErrorOk = 0,
+    /** 1: No specified reason for the local audio failure. */
+    AgoraAudioLocalErrorFailure = 1,
+    /** 2: No permission to use the local audio device. */
+    AgoraAudioLocalErrorDeviceNoPermission = 2,
+    /** 3: The microphone is in use. */
+    AgoraAudioLocalErrorDeviceBusy = 3,
+    /** 4: The local audio recording fails. Check whether the recording device is working properly. */
+    AgoraAudioLocalErrorRecordFailure = 4,
+    /** 5: The local audio encoding fails. */
+    AgoraAudioLocalErrorEncodeFailure = 5,
+};
+
 /** Media device type. */
 typedef NS_ENUM(NSInteger, AgoraMediaDeviceType) {
     /** Unknown device. */
@@ -964,7 +1077,7 @@ typedef NS_ENUM(NSInteger, AgoraMediaDeviceType) {
 
 /** Connection states. */
 typedef NS_ENUM(NSInteger, AgoraConnectionStateType) {
-    /** <p>1: The SDK is disconnected from Agora's edge server.</p>  
+    /** <p>1: The SDK is disconnected from Agora's edge server.</p>
 This is the initial state before [joinChannelByToken]([AgoraRtcEngineKit joinChannelByToken:channelId:info:uid:joinSuccess:]).<br>
 The SDK also enters this state when the app calls [leaveChannel]([AgoraRtcEngineKit leaveChannel:]).
     */
@@ -977,9 +1090,9 @@ When the SDK successfully joins the channel, the SDK triggers the [connectionCha
 After the SDK joins the channel and when it finishes initializing the media engine, the SDK triggers the [didJoinChannel]([AgoraRtcEngineDelegate rtcEngine:didJoinChannel:withUid:elapsed:]) callback.
 */
     AgoraConnectionStateConnecting = 2,
-    /** <p>3: The SDK is connected to Agora's edge server and joins a channel. You can now publish or subscribe to a media stream in the channel.</p>   
+    /** <p>3: The SDK is connected to Agora's edge server and joins a channel. You can now publish or subscribe to a media stream in the channel.</p>
 If the connection to the channel is lost because, for example, the network is down or switched, the SDK automatically tries to reconnect and triggers:
-<li> The [rtcEngineConnectionDidInterrupted]([AgoraRtcEngineDelegate rtcEngineConnectionDidInterrupted:])(deprecated) callback 
+<li> The [rtcEngineConnectionDidInterrupted]([AgoraRtcEngineDelegate rtcEngineConnectionDidInterrupted:])(deprecated) callback
 <li> The [connectionChangedToState]([AgoraRtcEngineDelegate rtcEngine:connectionChangedToState:reason:]) callback, and switches to the `AgoraConnectionStateReconnecting` state.
     */
     AgoraConnectionStateConnected = 3,
@@ -1028,8 +1141,107 @@ typedef NS_ENUM(NSUInteger, AgoraConnectionChangedReason) {
     AgoraConnectionChangedRenewToken = 12,
     /** 13: The client IP address has changed, probably due to a change of the network type, IP address, or network port. */
     AgoraConnectionChangedClientIpAddressChanged = 13,
-    /** 14: The connection changed to reconnecting since timeout for the keep-alive of the connection between SDK and server. */
+    /** 14: Timeout for the keep-alive of the connection between the SDK and Agora's edge server. The connection state changes to AgoraConnectionStateReconnecting(4). */
     AgoraConnectionChangedKeepAliveTimeout = 14,
+};
+
+/** The state code in AgoraChannelMediaRelayState.
+ */
+typedef NS_ENUM(NSInteger, AgoraChannelMediaRelayState) {
+    /** 0: The SDK is initializing.
+     */
+    AgoraChannelMediaRelayStateIdle = 0,
+    /** 1: The SDK tries to relay the media stream to the destination channel.
+     */
+    AgoraChannelMediaRelayStateConnecting = 1,
+    /** 2: The SDK successfully relays the media stream to the destination channel.
+     */
+    AgoraChannelMediaRelayStateRunning = 2,
+    /** 3: A failure occurs. See the details in `error`.
+     */
+    AgoraChannelMediaRelayStateFailure = 3,
+};
+
+/** The event code in AgoraChannelMediaRelayEvent.
+ */
+typedef NS_ENUM(NSInteger, AgoraChannelMediaRelayEvent) {
+    /** 0: The user disconnects from the server due to poor network connections.
+     */
+    AgoraChannelMediaRelayEventDisconnect = 0,
+    /** 1: The network reconnects.
+     */
+    AgoraChannelMediaRelayEventConnected = 1,
+    /** 2: The user joins the source channel.
+     */
+    AgoraChannelMediaRelayEventJoinedSourceChannel = 2,
+    /** 3: The user joins the destination channel.
+     */
+    AgoraChannelMediaRelayEventJoinedDestinationChannel = 3,
+    /** 4: The SDK starts relaying the media stream to the destination channel.
+     */
+    AgoraChannelMediaRelayEventSentToDestinationChannel = 4,
+    /** 5: The server receives the video stream from the source channel.
+     */
+    AgoraChannelMediaRelayEventReceivedVideoPacketFromSource = 5,
+    /** 6: The server receives the audio stream from the source channel.
+     */
+    AgoraChannelMediaRelayEventReceivedAudioPacketFromSource = 6,
+    /** 7: The destination channel is updated.
+     */
+    AgoraChannelMediaRelayEventUpdateDestinationChannel = 7,
+    /** 8: The destination channel update fails due to internal reasons.
+     */
+    AgoraChannelMediaRelayEventUpdateDestinationChannelRefused = 8,
+    /** 9: The destination channel does not change, which means that the destination channel fails to be updated.
+     */
+    AgoraChannelMediaRelayEventUpdateDestinationChannelNotChange = 9,
+    /** 10: The destination channel name is NULL.
+     */
+    AgoraChannelMediaRelayEventUpdateDestinationChannelIsNil = 10,
+    /** 11: The video profile is sent to the server.
+     */
+    AgoraChannelMediaRelayEventVideoProfileUpdate = 11,
+};
+
+/** The error code in AgoraChannelMediaRelayError.
+ */
+typedef NS_ENUM(NSInteger, AgoraChannelMediaRelayError) {
+    /** 0: The state is normal.
+     */
+    AgoraChannelMediaRelayErrorNone = 0,
+    /** 1: An error occurs in the server response.
+     */
+    AgoraChannelMediaRelayErrorServerErrorResponse = 1,
+    /** 2: No server response. You can call the [leaveChannel]([AgoraRtcEngineKit leaveChannel:]) method to leave the channel.
+     */
+    AgoraChannelMediaRelayErrorServerNoResponse = 2,
+    /** 3: The SDK fails to access the service, probably due to limited resources of the server.
+     */
+    AgoraChannelMediaRelayErrorNoResourceAvailable = 3,
+    /** 4: The server fails to join the source channel.
+     */
+    AgoraChannelMediaRelayErrorFailedJoinSourceChannel = 4,
+    /** 5: The server fails to join the destination channel.
+     */
+    AgoraChannelMediaRelayErrorFailedJoinDestinationChannel = 5,
+    /** 6: The server fails to receive the data from the source channel.
+     */
+    AgoraChannelMediaRelayErrorFailedPacketReceivedFromSource = 6,
+    /** 7: The source channel fails to transmit data.
+     */
+    AgoraChannelMediaRelayErrorFailedPacketSentToDestination = 7,
+    /** 8: The SDK disconnects from the server due to poor network connections. You can call the [leaveChannel]([AgoraRtcEngineKit leaveChannel:]) method to leave the channel.
+     */
+    AgoraChannelMediaRelayErrorServerConnectionLost = 8,
+    /** 9: An internal error occurs in the server.
+     */
+    AgoraChannelMediaRelayErrorInternalError = 9,
+    /** 10: The token of the source channel has expired.    
+     */
+    AgoraChannelMediaRelayErrorSourceTokenExpired = 10,
+    /** 11: The token of the destination channel has expired.
+     */
+    AgoraChannelMediaRelayErrorDestinationTokenExpired = 11,
 };
 
 /** Network type. */
