@@ -1,3 +1,8 @@
+## 2.9.0
+#### :house: Internal
+* Update Native SDK to v2.9.0 with lots of new features and optimization. You can go to [office doc](https://docs.agora.io/en/Video/release_windows_video?platform=Windows) for detail.
+* Fixed firstRemoteVideoDecoded event, before as an replacement addStream will be fired
+
 ## 2.8.0 (July 10th, 2019)
 #### :house: Internal
 * Update Native SDK to v2.8.0 with lots of new features and optimization. You can go to [office doc](https://docs.agora.io/en/Video/release_windows_video?platform=Windows) for detail.
