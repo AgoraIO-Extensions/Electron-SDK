@@ -18,6 +18,10 @@ export type AgoraNetworkQuality =
   | 5 // very bad
   | 6; // down
 
+export type VIDEO_CODEC_TYPE =
+  | 0 // VP8
+  | 1; // H264
+
 /**
  * Client roles in a live broadcast.
  *
@@ -359,7 +363,7 @@ export enum QualityAdaptIndication {
   /** 1: The quality improves because the network bandwidth increases. */
   ADAPT_UP_BANDWIDTH = 1,
   /** 2: The quality worsens because the network bandwidth decreases. */
-  ADAPT_DOWN_BANDWIDTH = 2,
+  ADAPT_DOWN_BANDWIDTH = 2
 }
 /** Statistics of the local video. */
 export interface LocalVideoStats {
@@ -381,11 +385,11 @@ export interface LocalVideoStats {
    * since last count. See {@link QualityAdaptIndication}.
    */
   qualityAdaptIndication: QualityAdaptIndication;
-  encodedBitrate: number,
-  encodedFrameWidth: number,
-  encodedFrameHeight: number,
-  encodedFrameCount: number,
-  codecType: number
+  encodedBitrate: number;
+  encodedFrameWidth: number;
+  encodedFrameHeight: number;
+  encodedFrameCount: number;
+  codecType: number;
 }
 /** Statistics of the local audio. */
 export interface LocalAudioStats {
@@ -407,178 +411,178 @@ export interface VideoEncoderConfiguration {
    * The minimum frame rate of the video. The default value is -1.
    */
   minFrameRate: number;
-   /** The video encoding bitrate (Kbps).
-    * Choose one of the following options:
-    *
-    * - 0: (Recommended) The standard bitrate.
-    *  - The Communication profile: the encoding bitrate equals the base bitrate.
-    *  - The Live-broadcast profile: the encoding bitrate is twice the base bitrate.
-    * - 1: The compatible bitrate: the bitrate stays the same regardless of the profile.
-    *
-    * The Communication profile prioritizes smoothness, while the Live-broadcast profile prioritizes video quality (requiring a higher bitrate). We recommend setting the bitrate mode as #STANDARD_BITRATE to address this difference.
-    *
-    * The following table lists the recommended video encoder configurations, where the base bitrate applies to the Communication profile.
-    * Set your bitrate based on this table. If you set a bitrate beyond the proper range, the SDK automatically sets it to within the range.
-    *
-    * <table>
-    *     <tr>
-    *         <th>Resolution</th>
-    *         <th>Frame Rate (fps)</th>
-    *         <th>Base Bitrate (Kbps, for Communication)</th>
-    *         <th>Live Bitrate (Kbps, for Live Broadcast)</th>
-    *     </tr>
-    *     <tr>
-    *         <td>160 &times; 120</td>
-    *         <td>15</td>
-    *         <td>65</td>
-    *         <td>130</td>
-    *     </tr>
-    *     <tr>
-    *         <td>120 &times; 120</td>
-    *         <td>15</td>
-    *         <td>50</td>
-    *         <td>100</td>
-    *     </tr>
-    *     <tr>
-    *         <td>320 &times; 180</td>
-    *         <td>15</td>
-    *         <td>140</td>
-    *         <td>280</td>
-    *     </tr>
-    *     <tr>
-    *         <td>180 &times; 180</td>
-    *         <td>15</td>
-    *         <td>100</td>
-    *         <td>200</td>
-    *     </tr>
-    *     <tr>
-    *         <td>240 &times; 180</td>
-    *         <td>15</td>
-    *         <td>120</td>
-    *         <td>240</td>
-    *     </tr>
-    *     <tr>
-    *         <td>320 &times; 240</td>
-    *         <td>15</td>
-    *         <td>200</td>
-    *         <td>400</td>
-    *     </tr>
-    *     <tr>
-    *         <td>240 &times; 240</td>
-    *         <td>15</td>
-    *         <td>140</td>
-    *         <td>280</td>
-    *     </tr>
-    *     <tr>
-    *         <td>424 &times; 240</td>
-    *         <td>15</td>
-    *         <td>220</td>
-    *         <td>440</td>
-    *     </tr>
-    *     <tr>
-    *         <td>640 &times; 360</td>
-    *         <td>15</td>
-    *         <td>400</td>
-    *         <td>800</td>
-    *     </tr>
-    *     <tr>
-    *         <td>360 &times; 360</td>
-    *         <td>15</td>
-    *         <td>260</td>
-    *         <td>520</td>
-    *     </tr>
-    *     <tr>
-    *         <td>640 &times; 360</td>
-    *         <td>30</td>
-    *         <td>600</td>
-    *         <td>1200</td>
-    *     </tr>
-    *     <tr>
-    *         <td>360 &times; 360</td>
-    *         <td>30</td>
-    *         <td>400</td>
-    *         <td>800</td>
-    *     </tr>
-    *     <tr>
-    *         <td>480 &times; 360</td>
-    *         <td>15</td>
-    *         <td>320</td>
-    *         <td>640</td>
-    *     </tr>
-    *     <tr>
-    *         <td>480 &times; 360</td>
-    *         <td>30</td>
-    *         <td>490</td>
-    *         <td>980</td>
-    *     </tr>
-    *     <tr>
-    *         <td>640 &times; 480</td>
-    *         <td>15</td>
-    *         <td>500</td>
-    *         <td>1000</td>
-    *     </tr>
-    *     <tr>
-    *         <td>480 &times; 480</td>
-    *         <td>15</td>
-    *         <td>400</td>
-    *         <td>800</td>
-    *     </tr>
-    *     <tr>
-    *         <td>640 &times; 480</td>
-    *         <td>30</td>
-    *         <td>750</td>
-    *         <td>1500</td>
-    *     </tr>
-    *     <tr>
-    *         <td>480 &times; 480</td>
-    *         <td>30</td>
-    *         <td>600</td>
-    *         <td>1200</td>
-    *     </tr>
-    *     <tr>
-    *         <td>848 &times; 480</td>
-    *         <td>15</td>
-    *         <td>610</td>
-    *         <td>1220</td>
-    *     </tr>
-    *     <tr>
-    *         <td>848 &times; 480</td>
-    *         <td>30</td>
-    *         <td>930</td>
-    *         <td>1860</td>
-    *     </tr>
-    *     <tr>
-    *         <td>640 &times; 480</td>
-    *         <td>10</td>
-    *         <td>400</td>
-    *         <td>800</td>
-    *     </tr>
-    *     <tr>
-    *         <td>1280 &times; 720</td>
-    *         <td>15</td>
-    *         <td>1130</td>
-    *         <td>2260</td>
-    *     </tr>
-    *     <tr>
-    *         <td>1280 &times; 720</td>
-    *         <td>30</td>
-    *         <td>1710</td>
-    *         <td>3420</td>
-    *     </tr>
-    *     <tr>
-    *         <td>960 &times; 720</td>
-    *         <td>15</td>
-    *         <td>910</td>
-    *         <td>1820</td>
-    *     </tr>
-    *     <tr>
-    *         <td>960 &times; 720</td>
-    *         <td>30</td>
-    *         <td>1380</td>
-    *         <td>2760</td>
-    *     </tr>
-    * </table>
-    */
+  /** The video encoding bitrate (Kbps).
+   * Choose one of the following options:
+   *
+   * - 0: (Recommended) The standard bitrate.
+   *  - The Communication profile: the encoding bitrate equals the base bitrate.
+   *  - The Live-broadcast profile: the encoding bitrate is twice the base bitrate.
+   * - 1: The compatible bitrate: the bitrate stays the same regardless of the profile.
+   *
+   * The Communication profile prioritizes smoothness, while the Live-broadcast profile prioritizes video quality (requiring a higher bitrate). We recommend setting the bitrate mode as #STANDARD_BITRATE to address this difference.
+   *
+   * The following table lists the recommended video encoder configurations, where the base bitrate applies to the Communication profile.
+   * Set your bitrate based on this table. If you set a bitrate beyond the proper range, the SDK automatically sets it to within the range.
+   *
+   * <table>
+   *     <tr>
+   *         <th>Resolution</th>
+   *         <th>Frame Rate (fps)</th>
+   *         <th>Base Bitrate (Kbps, for Communication)</th>
+   *         <th>Live Bitrate (Kbps, for Live Broadcast)</th>
+   *     </tr>
+   *     <tr>
+   *         <td>160 &times; 120</td>
+   *         <td>15</td>
+   *         <td>65</td>
+   *         <td>130</td>
+   *     </tr>
+   *     <tr>
+   *         <td>120 &times; 120</td>
+   *         <td>15</td>
+   *         <td>50</td>
+   *         <td>100</td>
+   *     </tr>
+   *     <tr>
+   *         <td>320 &times; 180</td>
+   *         <td>15</td>
+   *         <td>140</td>
+   *         <td>280</td>
+   *     </tr>
+   *     <tr>
+   *         <td>180 &times; 180</td>
+   *         <td>15</td>
+   *         <td>100</td>
+   *         <td>200</td>
+   *     </tr>
+   *     <tr>
+   *         <td>240 &times; 180</td>
+   *         <td>15</td>
+   *         <td>120</td>
+   *         <td>240</td>
+   *     </tr>
+   *     <tr>
+   *         <td>320 &times; 240</td>
+   *         <td>15</td>
+   *         <td>200</td>
+   *         <td>400</td>
+   *     </tr>
+   *     <tr>
+   *         <td>240 &times; 240</td>
+   *         <td>15</td>
+   *         <td>140</td>
+   *         <td>280</td>
+   *     </tr>
+   *     <tr>
+   *         <td>424 &times; 240</td>
+   *         <td>15</td>
+   *         <td>220</td>
+   *         <td>440</td>
+   *     </tr>
+   *     <tr>
+   *         <td>640 &times; 360</td>
+   *         <td>15</td>
+   *         <td>400</td>
+   *         <td>800</td>
+   *     </tr>
+   *     <tr>
+   *         <td>360 &times; 360</td>
+   *         <td>15</td>
+   *         <td>260</td>
+   *         <td>520</td>
+   *     </tr>
+   *     <tr>
+   *         <td>640 &times; 360</td>
+   *         <td>30</td>
+   *         <td>600</td>
+   *         <td>1200</td>
+   *     </tr>
+   *     <tr>
+   *         <td>360 &times; 360</td>
+   *         <td>30</td>
+   *         <td>400</td>
+   *         <td>800</td>
+   *     </tr>
+   *     <tr>
+   *         <td>480 &times; 360</td>
+   *         <td>15</td>
+   *         <td>320</td>
+   *         <td>640</td>
+   *     </tr>
+   *     <tr>
+   *         <td>480 &times; 360</td>
+   *         <td>30</td>
+   *         <td>490</td>
+   *         <td>980</td>
+   *     </tr>
+   *     <tr>
+   *         <td>640 &times; 480</td>
+   *         <td>15</td>
+   *         <td>500</td>
+   *         <td>1000</td>
+   *     </tr>
+   *     <tr>
+   *         <td>480 &times; 480</td>
+   *         <td>15</td>
+   *         <td>400</td>
+   *         <td>800</td>
+   *     </tr>
+   *     <tr>
+   *         <td>640 &times; 480</td>
+   *         <td>30</td>
+   *         <td>750</td>
+   *         <td>1500</td>
+   *     </tr>
+   *     <tr>
+   *         <td>480 &times; 480</td>
+   *         <td>30</td>
+   *         <td>600</td>
+   *         <td>1200</td>
+   *     </tr>
+   *     <tr>
+   *         <td>848 &times; 480</td>
+   *         <td>15</td>
+   *         <td>610</td>
+   *         <td>1220</td>
+   *     </tr>
+   *     <tr>
+   *         <td>848 &times; 480</td>
+   *         <td>30</td>
+   *         <td>930</td>
+   *         <td>1860</td>
+   *     </tr>
+   *     <tr>
+   *         <td>640 &times; 480</td>
+   *         <td>10</td>
+   *         <td>400</td>
+   *         <td>800</td>
+   *     </tr>
+   *     <tr>
+   *         <td>1280 &times; 720</td>
+   *         <td>15</td>
+   *         <td>1130</td>
+   *         <td>2260</td>
+   *     </tr>
+   *     <tr>
+   *         <td>1280 &times; 720</td>
+   *         <td>30</td>
+   *         <td>1710</td>
+   *         <td>3420</td>
+   *     </tr>
+   *     <tr>
+   *         <td>960 &times; 720</td>
+   *         <td>15</td>
+   *         <td>910</td>
+   *         <td>1820</td>
+   *     </tr>
+   *     <tr>
+   *         <td>960 &times; 720</td>
+   *         <td>30</td>
+   *         <td>1380</td>
+   *         <td>2760</td>
+   *     </tr>
+   * </table>
+   */
   bitrate: number;
   /**
    * The minimum encoding bitrate (Kbps). The default value is 1. Using a value greater than the default value forces the video encoder to
@@ -603,27 +607,27 @@ export enum DegradationPreference {
   /** 1: Degrade the video quality in order to maintain the frame rate. */
   MAINTAIN_FRAMERATE = 1,
   /** 2: (For future use) Maintain a balance between the frame rate and video quality. */
-  MAINTAIN_BALANCED = 2,
+  MAINTAIN_BALANCED = 2
 }
 /** The orientation mode. */
-export enum OrientationMode  {
-/**
- * 0: (Default) The output video always follows the orientation of the captured video, because the receiver takes the rotational information passed on from the video encoder.
- * Mainly used between Agora’s SDKs.
- * - If the captured video is in landscape mode, the output video is in landscape mode.
- * - If the captured video is in portrait mode, the output video is in portrait mode.
- */
+export enum OrientationMode {
+  /**
+   * 0: (Default) The output video always follows the orientation of the captured video, because the receiver takes the rotational information passed on from the video encoder.
+   * Mainly used between Agora’s SDKs.
+   * - If the captured video is in landscape mode, the output video is in landscape mode.
+   * - If the captured video is in portrait mode, the output video is in portrait mode.
+   */
   ORIENTATION_MODE_ADAPTIVE = 0,
-/**
- * 1: The output video is always in landscape mode. If the captured video is in portrait mode, the video encoder crops it to fit the output. Applies to situations where
- * the receiving end cannot process the rotational information. For example, CDN live streaming.
- */
+  /**
+   * 1: The output video is always in landscape mode. If the captured video is in portrait mode, the video encoder crops it to fit the output. Applies to situations where
+   * the receiving end cannot process the rotational information. For example, CDN live streaming.
+   */
   ORIENTATION_MODE_FIXED_LANDSCAPE = 1,
-/**
- * 2: The output video is always in portrait mode. If the captured video is in landscape mode, the video encoder crops it to fit the output. Applies to situations where
- * the receiving end cannot process the rotational information. For example, CDN live streaming.
- */
-  ORIENTATION_MODE_FIXED_PORTRAIT = 2,
+  /**
+   * 2: The output video is always in portrait mode. If the captured video is in landscape mode, the video encoder crops it to fit the output. Applies to situations where
+   * the receiving end cannot process the rotational information. For example, CDN live streaming.
+   */
+  ORIENTATION_MODE_FIXED_PORTRAIT = 2
 }
 /**
  * Video statistics of the remote stream.
@@ -797,9 +801,7 @@ export interface RemoteAudioStats {
  * - 1: running
  * - 2: frozen, usually caused by network reason
  */
-export type RemoteVideoState =
-  | 1
-  | 2;
+export type RemoteVideoState = 1 | 2;
 /**
  * - 0: REMOTE_VIDEO_STATE_REASON_INTERNAL
  * - 1: REMOTE_VIDEO_STATE_REASON_NETWORK_CONGESTION
@@ -812,17 +814,7 @@ export type RemoteVideoState =
  * - 8: REMOTE_VIDEO_STATE_REASON_AUDIO_FALLBACK
  * - 9: REMOTE_VIDEO_STATE_REASON_AUDIO_FALLBACK_RECOVERY
  */
-export type RemoteVideoStateReason =
-  | 0
-  | 1
-  | 2
-  | 3
-  | 4
-  | 5
-  | 6
-  | 7
-  | 8
-  | 9;
+export type RemoteVideoStateReason = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 /**
  * Statistics of the remote audio stream.
  * - 0: REMOTE_AUDIO_STATE_STOPPED
@@ -831,31 +823,18 @@ export type RemoteVideoStateReason =
  * - 3: REMOTE_AUDIO_STATE_FROZEN
  * - 4: REMOTE_AUDIO_STATE_FAILED
  */
- export type RemoteAudioState =
- | 0
- | 1
- | 2
- | 3
- | 4;
+export type RemoteAudioState = 0 | 1 | 2 | 3 | 4;
 /**
-* - 0: REMOTE_AUDIO_REASON_INTERNAL
-* - 1: REMOTE_AUDIO_REASON_NETWORK_CONGESTION
-* - 2: REMOTE_AUDIO_REASON_NETWORK_RECOVERY
-* - 3: REMOTE_AUDIO_REASON_LOCAL_MUTED
-* - 4: REMOTE_AUDIO_REASON_LOCAL_UNMUTED
-* - 5: REMOTE_AUDIO_REASON_REMOTE_MUTED
-* - 6: REMOTE_AUDIO_REASON_REMOTE_UNMUTED
-* - 7: REMOTE_AUDIO_REASON_REMOTE_OFFLINE
-*/
-export type RemoteAudioStateReason =
- | 0
- | 1
- | 2
- | 3
- | 4
- | 5
- | 6
- | 7;
+ * - 0: REMOTE_AUDIO_REASON_INTERNAL
+ * - 1: REMOTE_AUDIO_REASON_NETWORK_CONGESTION
+ * - 2: REMOTE_AUDIO_REASON_NETWORK_RECOVERY
+ * - 3: REMOTE_AUDIO_REASON_LOCAL_MUTED
+ * - 4: REMOTE_AUDIO_REASON_LOCAL_UNMUTED
+ * - 5: REMOTE_AUDIO_REASON_REMOTE_MUTED
+ * - 6: REMOTE_AUDIO_REASON_REMOTE_UNMUTED
+ * - 7: REMOTE_AUDIO_REASON_REMOTE_OFFLINE
+ */
+export type RemoteAudioStateReason = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 /**
  * Connection states.
  * - 1: The SDK is disconnected from Agora's edge server.
@@ -881,23 +860,23 @@ export type ConnectionState =
   | 4
   | 5; // 5: The SDK fails to connect to Agora's edge server or join the channel.
 
-  /**
-   * Reasons for a connection state change:
-   * - 0: The SDK is connecting to Agora's edge server.
-   * - 1: The SDK has joined the channel successfully.
-   * - 2: The connection between the SDK and Agora's edge server is interrupted.
-   * - 3: The connection between the SDK and Agora's edge server is banned by Agora's edge server.
-   * - 4: The SDK fails to join the channel for more than 20 minutes and stops reconnecting to the channel.
-   * - 5: The SDK has left the channel.
-   * - 6: Invalid App ID.
-   * - 7: Invalid Channel Name.
-   * - 8: Invalid Token.
-   * - 9: Token Expired.
-   * - 10: This user has been banned by server.
-   * - 11: SDK reconnects for setting proxy server.
-   * - 12: Network status change for renew token.
-   * - 13: Client IP Address changed.
-   */
+/**
+ * Reasons for a connection state change:
+ * - 0: The SDK is connecting to Agora's edge server.
+ * - 1: The SDK has joined the channel successfully.
+ * - 2: The connection between the SDK and Agora's edge server is interrupted.
+ * - 3: The connection between the SDK and Agora's edge server is banned by Agora's edge server.
+ * - 4: The SDK fails to join the channel for more than 20 minutes and stops reconnecting to the channel.
+ * - 5: The SDK has left the channel.
+ * - 6: Invalid App ID.
+ * - 7: Invalid Channel Name.
+ * - 8: Invalid Token.
+ * - 9: Token Expired.
+ * - 10: This user has been banned by server.
+ * - 11: SDK reconnects for setting proxy server.
+ * - 12: Network status change for renew token.
+ * - 13: Client IP Address changed.
+ */
 export type ConnectionChangeReason =
   | 0 // 0: The SDK is connecting to Agora's edge server.
   | 1 // 1: The SDK has joined the channel successfully.
@@ -1140,10 +1119,7 @@ export interface NodeRtcEngine {
     info: string,
     uid: number
   ): number;
-  switchChannel(
-    token: string,
-    channel: string
-  ): number;
+  switchChannel(token: string, channel: string): number;
   leaveChannel(): number;
   release(): number;
   setHighQualityAudioParameters(
@@ -1182,16 +1158,14 @@ export interface NodeRtcEngine {
     swapWidthAndHeight: boolean
   ): number;
   setCameraCapturerConfiguration(config: CameraCapturerConfiguration): number;
-  setVideoEncoderConfiguration(
-    config: VideoEncoderConfiguration
-  ): number;
+  setVideoEncoderConfiguration(config: VideoEncoderConfiguration): number;
   setBeautyEffectOptions(
     enable: boolean,
     options: {
       lighteningContrastLevel: 0 | 1 | 2; // 0 for low, 1 for normal, 2 for high
-      lighteningLevel: number,
-      smoothnessLevel: number,
-      rednessLevel: number
+      lighteningLevel: number;
+      smoothnessLevel: number;
+      rednessLevel: number;
     }
   ): number;
   setRemoteUserPriority(uid: number, priority: Priority): number;
@@ -1279,8 +1253,16 @@ export interface NodeRtcEngine {
     profile: VIDEO_PROFILE_TYPE,
     swapWidthAndHeight: boolean
   ): number;
-  videosourceStartScreenCaptureByScreen(screenSymbol: ScreenSymbol, rect: CaptureRect, param: CaptureParam): number;
-  videosourceStartScreenCaptureByWindow(windowSymbol: number, rect: CaptureRect, param: CaptureParam): number;
+  videosourceStartScreenCaptureByScreen(
+    screenSymbol: ScreenSymbol,
+    rect: CaptureRect,
+    param: CaptureParam
+  ): number;
+  videosourceStartScreenCaptureByWindow(
+    windowSymbol: number,
+    rect: CaptureRect,
+    param: CaptureParam
+  ): number;
   videosourceUpdateScreenCaptureParameters(param: CaptureParam): number;
   videosourceSetScreenCaptureContentHint(hint: VideoContentHint): number;
   getScreenWindowsInfo(): Array<Object>;
@@ -1401,9 +1383,15 @@ export interface NodeRtcEngine {
   unsubscribe(uid: number): number;
   registerDeliverFrame(callback: Function): number;
   registerLocalUserAccount(appId: string, userAccount: string): number;
-  joinChannelWithUserAccount(token: string, channel: string, userAccount: string): number;
-  getUserInfoByUserAccount(userAccount: string): {errCode: number, userInfo: UserInfo};
-  getUserInfoByUid(uid: number): {errCode: number, userInfo: UserInfo};
+  joinChannelWithUserAccount(
+    token: string,
+    channel: string,
+    userAccount: string
+  ): number;
+  getUserInfoByUserAccount(
+    userAccount: string
+  ): { errCode: number; userInfo: UserInfo };
+  getUserInfoByUid(uid: number): { errCode: number; userInfo: UserInfo };
   adjustRecordingSignalVolume(volume: number): number;
   adjustPlaybackSignalVolume(volume: number): number;
   stopAllEffects(): number;
@@ -1420,6 +1408,10 @@ export interface NodeRtcEngine {
   unLoadPlugin(pluginId: string): number;
   enablePlugin(pluginId: string): number;
   disablePlugin(pluginId: string): number;
-  setPluginStringParameter(pluginId: string, key: string, value: string): number;
+  setPluginStringParameter(
+    pluginId: string,
+    key: string,
+    value: string
+  ): number;
   setPluginBoolParameter(pluginId: string, key: string, value: boolean): number;
 }
