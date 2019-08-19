@@ -1,75 +1,49 @@
 {
   "name": "agora-electron-sdk",
-  "version": "2.8.0-hotfix.1",
+  "version": "2.8.0",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
   "author": "agora.io",
   "scripts": {
-    "install": "npm run download",
-    "build:dts": "rimraf ./types && tsc -p dtsconfig.json",
-    "prebuild:ts": "npm run build:dts",
+    "install": "just install",
+    "download": "just download",
+    "build:node": "just build:node",
+    "build:electron": "just build:electron",
+    "build:types": "rimraf ./types && tsc -p dtsconfig.json",
+    "prebuild:ts": "npm run build:types",
     "build:ts": "rimraf ./js && tsc -p tsconfig.json",
-    "build:node": "node ./scripts/build.js --runtime=node",
-    "build:electron2": "node ./scripts/build.js --runtime=electron --electron_version=1.8.3",
-    "build:electron3": "node ./scripts/build.js --runtime=electron --electron_version=3.0.6",
-    "build:electron4": "node ./scripts/build.js --runtime=electron --electron_version=4.0.0",
-    "build:electron": "node ./scripts/build.js --runtime=electron",
-    "debug": "node ./scripts/build.js --runtime=electron --electron_version=3.0.6 --debug=true",
-    "doc": "typedoc ts/API --out ./docs --hideGenerator --mode file --target es6 --name Agora\\ Electron\\ SDK\\ API\\ Reference --excludeExternals --excludePrivate --readme index.md",
-    "download": "node ./scripts/download.js",
-    "preexample": "npm run build:electron3 && npm run build:ts",
-    "example": "cd example && npm install && npm run dev",
-    "pretest": "npm run build:node && npm run build:ts",
+    "pretest": "npm run build:node",
     "test": "jest --detectOpenHandles --forceExit",
     "quicktest": "jest --detectOpenHandles --forceExit",
+    "doc": "typedoc ts/API --out ./docs --hideGenerator --mode file --target es6 --name Agora\\ Electron\\ SDK\\ API\\ Reference --excludeExternals --excludePrivate --readme index.md",
     "prepublishOnly": "npm run build:ts"
   },
   "gypfile": false,
-  "files": [
-    "js/",
-    "types/",
-    "ts/",
-    "scripts/"
-  ],
   "dependencies": {
     "download": "^7.1.0",
+    "just-task": "^0.13.1",
     "lodash.isequal": "^4.5.0",
     "node-gyp": "^5.0.0",
-    "optimist": "^0.6.1",
     "rimraf": "^2.6.3",
-    "semver": "^6.0.0",
     "shelljs": "^0.8.3",
-    "signale": "^1.4.0",
     "yuv-buffer": "^1.0.0",
-    "yuv-canvas": "^1.2.6"
+    "yuv-canvas": "^1.2.1"
   },
   "devDependencies": {
-    "@types/node": "10.14.15",
-    "husky": "3.0.4",
-    "jest": "24.9.0",
-    "jsdom": "15.1.1",
-    "lint-staged": "9.2.3",
-    "prettier": "1.18.2",
-    "ts-node": "8.3.0",
-    "tslint": "5.18.0",
-    "tslint-config-prettier": "1.18.0",
-    "typedoc": "0.15.0",
-    "typescript": "3.5.3"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "ts/**/*.ts": [
-      "prettier --single-quote --write",
-      "tslint -c tslint.json -p tsconfig.json --fix",
-      "git add"
-    ]
+    "@types/node": "^10.12.18",
+    "jest": "^23.1.0",
+    "prettier": "^1.13.4",
+    "ts-jest": "^23.10.5",
+    "ts-node": "^8.0.2",
+    "tslint": "^5.12.1",
+    "typedoc": "^0.14.2",
+    "typescript": "^3.3.3"
   },
   "peerDependencies": {},
+  "directories": {
+    "doc": "docs"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron.git"

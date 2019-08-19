@@ -1,71 +1,51 @@
-const download = require('download')
-const path = require('path')
-const rimraf = require('rimraf')
-const signale = require('signale')
+const { logger } = require("just-task");
+const download = require("download");
+const path = require("path");
 
-const {
-  detectElectronVersion,
-  detectOS,
-  detectOwnVersion,
-} = require('./utils');
-const { DependentElectronVersion } = require('./constant')
-
-const buildDownloadInfo = () => {
-  // build os label
-  const osLabel = detectOS();
-  // build version label
-  const { version } = detectOwnVersion();
-  // const version = '2.4.0-beta'
-  // build electron dependent label
-  const {
-    electron_version
-  } = require("optimist").argv;
-  const dependentElectronVersion = detectElectronVersion(electron_version);
-
-  // generate download url
-  return {
-    packageVersion: version,
-    platform: osLabel,
-    dependentElectronVersion: dependentElectronVersion,
-    downloadUrl: `http://download.agora.io/sdk/release/Electron-${osLabel}-2.8.0-${dependentElectronVersion}.zip`
-  };
-};
-
-const main = () => {
-  const {
-    packageVersion,
-    platform,
-    dependentElectronVersion,
-    downloadUrl
-  } = buildDownloadInfo();
-  const outputDir = './build/';
-  const removeDir = path.join(__dirname, '../build');
-  // rm dir `build`
-  rimraf(removeDir, err => {
-    if (err) {
-      signale.fatal(err);
-      process.exit(1);
+module.exports = ({
+  electronVersion = "5.0.8",
+  platform = process.platform,
+  packageVersion
+}) => {
+  /** get download url */
+  const genOS = () => {
+    if (platform === "darwin") {
+      return "mac";
+    } else if (platform === "win32") {
+      return "win32";
+    } else {
+      // not supported in temp
+      logger.error("Unsupported platform!");
+      throw new Error("Unsupported platform!");
     }
+  };
+  // check electron version
 
-    // print download info
-    signale.info('Package Version =', packageVersion);
-    signale.info('Platform =', platform);
-    signale.info('Dependent Electron Version =', dependentElectronVersion);
-    signale.info('Download Url =', downloadUrl, '\n');
+  if (['5.0.8', '4.2.8', '3.0.6', '1.8.3'].indexOf(electronVersion) === -1) {
+    throw new Error('Prebuilt addon only supported electron version 5.0.8, 4.2.8, 3.0.6, 1.8.3')
+  }
 
-    // start
-    signale.pending('Downloading prebuilt C++ addon for Agora Electron SDK...\n');
-    download(downloadUrl, outputDir, {
-      strip: 1,
-      extract: true
-    }).then(() => {
-      signale.success('Success', 'Download finished');
-    }).catch(err => {
-      signale.fatal('Failed', err);
+  const downloadUrl = `http://download.agora.io/sdk/release/Electron-${genOS()}-${packageVersion}-${electronVersion}.zip`;
+
+  /** start download */
+  const outputDir = "./build/";
+
+  logger.info("Package Version:", packageVersion);
+  logger.info("Platform:", platform);
+  logger.info("Electron Version:", electronVersion);
+  logger.info("  Download URL  : ", downloadUrl, "\n");
+
+  logger.info("Downloading prebuilt C++ addon for Agora Electron SDK...\n");
+
+  download(downloadUrl, outputDir, {
+    strip: 1,
+    extract: true
+  })
+    .then(() => {
+      logger.info("Success", "Download finished");
+    })
+    .catch(err => {
+      logger.error("Failed: ", err);
+      throw new Error(err);
     });
-  });
 };
-
-main();
-
-
