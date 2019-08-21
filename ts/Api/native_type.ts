@@ -4,7 +4,6 @@
  * - 0: The network quality is unknown.
  * - 1: The network quality is excellent.
  * - 2: The network quality is quite good, but the bitrate may be slightly 
- * l
  * lower than excellent.
  * - 3: Users can feel the communication slightly impaired.
  * - 4: Users cannot communicate smoothly.
@@ -19,7 +18,11 @@ export type AgoraNetworkQuality =
   | 4 // bad
   | 5 // very bad
   | 6; // down
-
+/**
+ * The codec type of the local video：
+ * - 0: VP8
+ * - 1: (Default) H.264
+ */
 export type VIDEO_CODEC_TYPE =
   | 0 // VP8
   | 1; // H264
@@ -413,13 +416,29 @@ export interface RtcStats {
    * value. 
    */
   txVideoKBitRate: number;
-  /** //TODO:Audio receive bytes, represented by an instantaneous value. */
+  /** 
+   * @since 2.9.0
+   * 
+   * Total number of audio bytes received (bytes), represented by an aggregate value. 
+   */
   rxAudioKBytes: number;
-  /** //TODO:Audio transmission bytes, represented by an instantaneous value. */
+  /** 
+   * @since 2.9.0
+   * 
+   * Total number of audio bytes sent (bytes), represented by an aggregate value. 
+   */
   txAudioKBytes: number;
-  /** //TODO:Video receive bytes, represented by an instantaneous value. */
+  /** 
+   * @since 2.9.0
+   * 
+   * Total number of video bytes received (bytes), represented by an aggregate value. 
+   */
   rxVideoKBytes: number;
-  /** //TODO:Video transmission bytes, represented by an instantaneous value. */
+  /** 
+   * @since 2.9.0
+   * 
+   * Total number of video bytes sent (bytes), represented by an aggregate value. 
+   */
   txVideoKBytes: number;
   /** Client-server latency. */
   lastmileDelay: number;
@@ -492,7 +511,7 @@ export interface LocalVideoStats {
    */
   encodedFrameCount: number;
   /**
-   * The codec type of the local video. See {@link codecType}.//TODO:
+   * The codec type of the local video. See {@link codecType}.
    */
   codecType: number;
 }
@@ -553,8 +572,7 @@ export interface VideoEncoderConfiguration {
     *
     * The Communication profile prioritizes smoothness, while the 
     * Live-broadcast profile prioritizes video quality 
-    * (requiring a higher bitrate). We recommend setting the bitrate mode 
-    * as FIXME: {@link STANDARD_BITRATE} to address this difference.
+    * (requiring a higher bitrate). We recommend setting the bitrate mode to address this difference.
     *
     * The following table lists the recommended video encoder configurations, where the base bitrate applies to the Communication profile.
     * Set your bitrate based on this table. If you set a bitrate beyond the proper range, the SDK automatically sets it to within the range.
@@ -1144,8 +1162,7 @@ export type ConnectionChangeReason =
   | 13; // 13: Client IP Address changed
 
 /**
- * @deprecated Deprecated.FIXME:
- * Video profile.
+ * @deprecated Video profile.
  */
 export enum VIDEO_PROFILE_TYPE {
   /** 0: 160 &times; 120, frame rate 15 fps, bitrate 65 Kbps. */

@@ -738,11 +738,11 @@ enum VIDEO_CODEC_PROFILE_TYPE
 enum VIDEO_CODEC_TYPE {
     /** Standard VP8 */
     VIDEO_CODEC_VP8 = 1,
-    /** Standard H264 */
+    /** Standard H.264 */
     VIDEO_CODEC_H264 = 2,
     /** Enhanced VP8 */
     VIDEO_CODEC_EVP = 3,
-    /** Enhanced H264 */
+    /** Enhanced H.264 */
     VIDEO_CODEC_E264 = 4,
 };
 
