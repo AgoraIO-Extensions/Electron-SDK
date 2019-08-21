@@ -184,11 +184,11 @@ namespace agora {
             //2.8.0
             virtual void onLocalUserRegistered(uid_t uid, const char* userAccount) override;
             virtual void onUserInfoUpdated(uid_t uid, const UserInfo& info) override;
-            virtual void onLocalVideoStateChanged(int localVideoState, int error) override;
+            virtual void onLocalVideoStateChanged(LOCAL_VIDEO_STREAM_STATE localVideoState, LOCAL_VIDEO_STREAM_ERROR error) override;
 
             //2.9.0
             virtual void onLocalAudioStats(const LocalAudioStats& stats) override;
-            virtual void onLocalAudioStateChanged(int state, int error) override;
+            virtual void onLocalAudioStateChanged(LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error) override;
             virtual void onRemoteAudioStateChanged(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) override;
             virtual void onChannelMediaRelayStateChanged(CHANNEL_MEDIA_RELAY_STATE state,CHANNEL_MEDIA_RELAY_ERROR code) override;
             virtual void onChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT code) override;
@@ -268,11 +268,11 @@ namespace agora {
             //2.8.0
             void onLocalUserRegistered_node(uid_t uid, const char* userAccount);
             void onUserInfoUpdated_node(uid_t uid, const UserInfo& info);
-            void onLocalVideoStateChanged_node(int localVideoState, int error);
+            void onLocalVideoStateChanged_node(LOCAL_VIDEO_STREAM_STATE localVideoState, LOCAL_VIDEO_STREAM_ERROR error);
 
             //2.9.0
             void onLocalAudioStats_node(const LocalAudioStats& stats) ;
-            void onLocalAudioStateChanged_node(int state, int error) ;
+            void onLocalAudioStateChanged_node(LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error) ;
             void onRemoteAudioStateChanged_node(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) ;
             void onChannelMediaRelayStateChanged_node(CHANNEL_MEDIA_RELAY_STATE state,CHANNEL_MEDIA_RELAY_ERROR code);
             void onChannelMediaRelayEvent_node(CHANNEL_MEDIA_RELAY_EVENT code);
