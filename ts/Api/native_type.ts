@@ -1,3 +1,8 @@
+import {
+  PluginInfo,
+  Plugin
+} from './plugin';
+
 /**
  * Network quality types:
  *
@@ -1400,18 +1405,11 @@ export interface NodeRtcEngine {
   updateChannelMediaRelay(config: ChannelMediaRelayConfiguration): number;
   stopChannelMediaRelay(): number;
 
-  registerAudioFramePluginManager(): number;
-  unRegisterAudioFramePluginManager(): number;
-  registerAudioFramePlugin(pluginId: string): number;
-  unRegisterAudioFramePlugin(pluginId: string): number;
-  loadPlugin(pluginId: string, pluginPath: string): number;
-  unLoadPlugin(pluginId: string): number;
-  enablePlugin(pluginId: string): number;
-  disablePlugin(pluginId: string): number;
-  setPluginStringParameter(
-    pluginId: string,
-    key: string,
-    value: string
-  ): number;
-  setPluginBoolParameter(pluginId: string, key: string, value: boolean): number;
+  initializePluginManager(): number;
+  releasePluginManager(): number;
+  getPlugins(): Array<{id: string}>;
+  registerPlugin(pluginInfo: PluginInfo): number;
+  unregisterPlugin(pluginId: string): number;
+  enablePlugin(pluginId: string, enabled: boolean): number;
+  setPluginParameter(pluginId: string, param: string): number;
 }
