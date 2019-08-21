@@ -4451,9 +4451,11 @@ declare interface AgoraRtcEngine {
    * - uid: The User ID.
    */
   on(evt: 'videoSourceLeaveChannel', cb: () => void): this;
-  /** Occurs when the remote video state changes.//TODO:
+  /** Occurs when the remote video state changes.
    *  - uid: ID of the user whose video state changes.
-   *  - state: State of the remote video: Playing normally or frozen. See {@link AgoraRtcEngine.RemoteVideoState RemoteVideoState}.
+   *  - state: State of the remote video. See {@link RemoteVideoState}.
+   *  - reason: The reason of the remote video state change. See {@link RemoteVideoStateReason}
+   *  - elapsed: Time elapsed (ms) from the local user calling the joinChannel method until the SDK triggers this callback.
    */
   on(
     evt: 'remoteVideoStateChanged',
@@ -4628,7 +4630,6 @@ declare interface AgoraRtcEngine {
    * 
    * **Note**:
    * When the state is 3 in the `state` code, see the `error` code.
-   * 
    * 
    * - state State of the local audio:
    *  - 0: The local audio is in the initial state. 
