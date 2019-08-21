@@ -40,6 +40,7 @@ class IAudioFrameObserver {
      */
     int channels;  //number of channels (data are interleaved if stereo)
     /** Audio frame sample rate: 8000, 16000, 32000, 44100, or 48000 Hz.
+     * samplesPerCall = (int)(samplesPerSec &times; sampleInterval &times; numChannels), where sampleInterval &ge; 0.01 in seconds.
      */
     int samplesPerSec;  //sampling rate
     /** Audio frame data buffer. The valid data length is: samples &times; channels &times; bytesPerSample
@@ -64,9 +65,7 @@ class IAudioFrameObserver {
    - false: Invalid buffer in AudioFrame, and the recorded audio frame is discarded.
    */
   virtual bool onRecordAudioFrame(AudioFrame& audioFrame) = 0;
-  /** Retrieves the audio playback frame.
-
-   The SDK triggers this callback once every 10 ms after you call the \ref agora::rtc::IRtcEngine::playEffect "playEffect" method.
+  /** Retrieves the audio playback frame every 10 ms for getting the audio.
 
    @param audioFrame Pointer to AudioFrame.
    @return
@@ -240,7 +239,11 @@ class IVideoFrame {
 /** **DEPRECATED** */
 class IExternalVideoRenderCallback {
  public:
+  /** Occurs when the video view size has changed.
+  */
   virtual void onViewSizeChanged(int width, int height) = 0;
+  /** Occurs when the video view is destroyed.
+  */
   virtual void onViewDestroyed() = 0;
 };
 /** **DEPRECATED** */
@@ -379,7 +382,7 @@ class IMediaEngine {
   /** **DEPRECATED** */
   virtual int registerVideoRenderFactory(IExternalVideoRenderFactory* factory) = 0;
   /** **DEPRECATED** Use \ref agora::media::IMediaEngine::pushAudioFrame(IAudioFrameObserver::AudioFrame* frame) "pushAudioFrame(IAudioFrameObserver::AudioFrame* frame)" instead.
-   
+
    Pushes the external audio frame.
 
    @param type Type of audio capture device: #MEDIA_SOURCE_TYPE.
@@ -396,33 +399,48 @@ class IMediaEngine {
                              IAudioFrameObserver::AudioFrame* frame,
                              bool wrap) = 0;
   /** Pushes the external audio frame.
-   
+
    @param frame Pointer to the audio frame: \ref IAudioFrameObserver::AudioFrame "AudioFrame".
-    
+
    @return
    - 0: Success.
    - < 0: Failure.
    */
   virtual int pushAudioFrame(IAudioFrameObserver::AudioFrame* frame) = 0;
-  /** Pulls the external audio frame for external audio playback.
-
-   The application pulls the mixed audio frame from the audio engine for external audio playback. We recommend using *pullAudioFrame* over \ref agora::media::IAudioFrameObserver::onPlaybackAudioFrame "onPlaybackAudioFrame".
-   
-   @note This method overrides the \ref agora::media::IMediaEngine::registerAudioFrameObserver "registerAudioFrameObserver" method. After calling *pullAudioFrame*, the application will not retrieve any audio frame from the \ref agora::media::IAudioFrameObserver::onPlaybackAudioFrame "onPlaybackAudioFrame" callback.
-
-   Before calling this method:
-   1. Call \ref agora::rtc::IRtcEngine::setExternalAudioSink "setExternalAudioSink" to inform the audio engine that the application will call *pullAudioFrame* to pull audio frames from the sink.
-   2. Call \ref agora::rtc::IRtcEngine::setPlaybackAudioFrameParameters "setPlaybackAudioFrameParameters" to set the parameters of the audio frame to be pulled, including the audio sample rate and number of the audio channel.
-
-   Differences between \ref agora::media::IAudioFrameObserver::onPlaybackAudioFrame "onPlaybackAudioFrame" and *pullAudioFrame*:
-   - \ref agora::media::IAudioFrameObserver::onPlaybackAudioFrame "onPlaybackAudioFrame" sends audio frames to the application once every 10 ms. Any delay in processing the audio frames may result in audio jitter.
-   - With *pullAudioFrame*, the application pulls the audio frame. The SDK specifies the number of audio samples for playback by the @p sample parameter in \ref agora::media::IAudioFrameObserver::AudioFrame "AudioFrame", adjusts the frame buffer, and allows for a delay in processing the audio frames by the application. This method avoids problems caused by jitter in the external audio playback, such as an unsynchronized audio playback.
-
-   @param frame Pointer to the audio frame. See: \ref IAudioFrameObserver::AudioFrame "AudioFrame".
-
-   @return
-   - 0: Success.
-   - < 0: Failure.
+  /** Pulls the remote audio data.
+   * 
+   * Before calling this method, call the 
+   * \ref agora::rtc::IRtcEngine::setExternalAudioSink 
+   * "setExternalAudioSink(enabled: true)" method to enable and set the 
+   * external audio sink.
+   * 
+   * After a successful method call, the app pulls the decoded and mixed 
+   * audio data for playback.
+   * 
+   * @note
+   * - Once you call the \ref agora::rtc::IRtcEngine::pullAudioFrame 
+   * "pullAudioFrame" method successfully, the app will not retrieve any audio 
+   * data from the 
+   * \ref agora::rtc::IRtcEngineEventHandler::onPlaybackAudioFrame 
+   * "onPlaybackAudioFrame" callback.
+   * - The difference between the 
+   * \ref agora::rtc::IRtcEngineEventHandler::onPlaybackAudioFrame 
+   * "onPlaybackAudioFrame" callback and the 
+   * \ref agora::rtc::IRtcEngine::pullAudioFrame "pullAudioFrame" method is as 
+   * follows:
+   *  - onPlaybackAudioFrame: The SDK sends the audio data to the app once 
+   * every 10 ms. Any delay in processing the audio frames may result in audio 
+   * jitter.
+   *  - pullAudioFrame: The app pulls the remote audio data. After setting the 
+   * audio data parameters, the SDK adjusts the frame buffer and avoids 
+   * problems caused by jitter in the external audio playback.
+   * 
+   * @param frame Pointers to the audio frame. 
+   * See: \ref IAudioFrameObserver::AudioFrame "AudioFrame".
+   * 
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
    */
   virtual int pullAudioFrame(IAudioFrameObserver::AudioFrame* frame) = 0;
     /** Configures the external video source.
@@ -444,7 +462,7 @@ class IMediaEngine {
 
      @param frame Video frame to be pushed. See \ref ExternalVideoFrame "ExternalVideoFrame".
 
-     @note In the Communication profile, this method does not support video frames in the Texture format. 
+     @note In the Communication profile, this method does not support video frames in the Texture format.
 
      @return
      - 0: Success.
