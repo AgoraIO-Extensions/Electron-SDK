@@ -7,7 +7,7 @@ const doJoin = require('./utils/doJoin');
 const doLeave = require('./utils/doLeave');
 const LiveStreaming = require('./utils/cdn');
 const MultiStream = require('./utils/multistream');
-const path = require('path')
+// const path = require('path')
 
 let localRtcEngine = null;
 let multistream = null;

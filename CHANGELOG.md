@@ -1,3 +1,7 @@
+## 2.8.2 (Aug 21st, 2019)
+#### :house: Internal
+* Fixed some internal bugs and do optimization.
+
 ## 2.8.0 (July 10th, 2019)
 #### :house: Internal
 * Update Native SDK to v2.8.0 with lots of new features and optimization. You can go to [office doc](https://docs.agora.io/en/Video/release_windows_video?platform=Windows) for detail.
