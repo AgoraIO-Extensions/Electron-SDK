@@ -165,7 +165,7 @@
                 },
 
             }
-            ]		]
+            ]]
     },
     {
         'target_name': 'agora_node_ext',
@@ -200,6 +200,9 @@
         './agora_node_ext/node_video_render.h',
         './agora_node_ext/node_video_stream_channel.cpp',
         './agora_node_ext/node_video_stream_channel.h',
+        './agora_node_ext/AVPlugin/IAVFramePlugin.h',
+        './agora_node_ext/AVPlugin/IAVFramePluginManager.h',
+        './agora_node_ext/AVPlugin/IAVFramePluginManager.cpp',
         './common/libyuv/source/compare_common.cc',
         './common/libyuv/source/compare.cc',
         './common/libyuv/source/convert_argb.cc',
@@ -260,9 +263,6 @@
                     './common/libyuv/source/scale_win.cc',
                     './agora_node_ext/node_screen_window_info_win.cpp',
                     './agora_node_ext/node_screen_window_info.h',
-                    './agora_node_ext/AudioPlugin/IAudioFramePlugin.h',
-                    './agora_node_ext/AudioPlugin/IAudioFramePluginManager.h',
-                    './agora_node_ext/AudioPlugin/IAudioFramePluginManager.cpp'
                 ],
                 'include_dirs': [
                 './sdk/include'

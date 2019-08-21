@@ -47,7 +47,10 @@ import {
   ChannelMediaRelayError,
   ChannelMediaRelayConfiguration
 } from './native_type';
-
+import {
+  PluginInfo,
+  Plugin
+} from './plugin';
 const agora = require('../../build/Release/agora_node_ext');
 
 /**
@@ -3717,52 +3720,65 @@ class AgoraRtcEngine extends EventEmitter {
 
   // ===========================================================================
   // plugin apis
-  // ===========================================================================
-  registerAudioFramePluginManager(): number {
-    return this.rtcEngine.registerAudioFramePluginManager();
+  // ==========================================================================
+
+  initializePluginManager(): number {
+    return this.rtcEngine.initializePluginManager();
   }
 
-  unRegisterAudioFramePluginManager(): number {
-    return this.rtcEngine.unRegisterAudioFramePluginManager();
+  releasePluginManager(): number {
+    return this.rtcEngine.releasePluginManager();
   }
 
-  registerAudioFramePlugin(pluginId: string): number {
-    return this.rtcEngine.registerAudioFramePlugin(pluginId);
+  registerPlugin(info: PluginInfo): number {
+    return this.rtcEngine.registerPlugin(info);
   }
 
-  unRegisterAudioFramePlugin(pluginId: string): number {
-    return this.rtcEngine.unRegisterAudioFramePlugin(pluginId);
+  unregisterPlugin(pluginId: string): number {
+    return this.rtcEngine.unregisterPlugin(pluginId);
   }
 
-  loadPlugin(pluginId: string, pluginPath: string): number {
-    return this.rtcEngine.loadPlugin(pluginId, pluginPath);
+  getPlugins() {
+    return this.rtcEngine.getPlugins().map(item => {
+      return this.createPlugin(item.id)
+    })
   }
 
-  unloadPlugin(pluginId: string): number {
-    return this.rtcEngine.unLoadPlugin(pluginId);
+  /**
+   * @ignore
+   * @param pluginId 
+   */
+  createPlugin(pluginId: string): Plugin {
+    return {
+      id: pluginId,
+      enable:() => {
+        return this.enablePlugin(pluginId, true)
+      },
+      disable:() => {
+        return this.enablePlugin(pluginId, false)
+      },
+      setParameter: (param: string) => {
+        return this.setPluginParameter(pluginId, param)
+      }
+    }
   }
 
-  enablePlugin(pluginId: string): number {
-    return this.rtcEngine.enablePlugin(pluginId);
+  /**
+   * @ignore
+   * @param pluginId 
+   * @param enabled 
+   */
+  enablePlugin(pluginId: string, enabled: boolean): number {
+    return this.rtcEngine.enablePlugin(pluginId, enabled);
   }
 
-  disablePlugin(pluginId: string): number {
-    return this.rtcEngine.disablePlugin(pluginId);
-  }
-
-  setPluginStringParameter(
-    pluginId: string,
-    key: string,
-    value: string
-  ): number {
-    return this.rtcEngine.setPluginStringParameter(pluginId, key, value);
-  }
-  setPluginBoolParameter(
-    pluginId: string,
-    key: string,
-    value: boolean
-  ): number {
-    return this.rtcEngine.setPluginBoolParameter(pluginId, key, value);
+  /**
+   * @ ignore
+   * @param pluginId 
+   * @param param 
+   */
+  setPluginParameter(pluginId: string, param: string): number {
+    return this.rtcEngine.setPluginParameter(pluginId, param);
   }
 }
 /** The AgoraRtcEngine interface. */
