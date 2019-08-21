@@ -3,8 +3,9 @@
  *
  * - 0: The network quality is unknown.
  * - 1: The network quality is excellent.
- * - 2: The network quality is quite good, but the bitrate may be slightly l
- * ower than excellent.
+ * - 2: The network quality is quite good, but the bitrate may be slightly 
+ * l
+ * lower than excellent.
  * - 3: Users can feel the communication slightly impaired.
  * - 4: Users cannot communicate smoothly.
  * - 5: The network is so bad that users can barely communicate.
@@ -18,6 +19,10 @@ export type AgoraNetworkQuality =
   | 4 // bad
   | 5 // very bad
   | 6; // down
+
+export type VIDEO_CODEC_TYPE =
+  | 0 // VP8
+  | 1; // H264
 
 /**
  * Client roles in a live broadcast.
@@ -440,7 +445,7 @@ export enum QualityAdaptIndication {
   /** 1: The quality improves because the network bandwidth increases. */
   ADAPT_UP_BANDWIDTH = 1,
   /** 2: The quality worsens because the network bandwidth decreases. */
-  ADAPT_DOWN_BANDWIDTH = 2,
+  ADAPT_DOWN_BANDWIDTH = 2
 }
 /** Statistics of the local video. */
 export interface LocalVideoStats {
@@ -473,23 +478,23 @@ export interface LocalVideoStats {
    * The encoding bitrate (Kbps), which does not include the bitrate of the 
    * re-transmission video after packet loss.
    */
-  encodedBitrate: number,
+  encodedBitrate: number;
   /**
    * The width of the encoding frame (px).
    */
-  encodedFrameWidth: number,
+  encodedFrameWidth: number;
   /**
    * The height of the encoding frame (px).
    */
-  encodedFrameHeight: number,
+  encodedFrameHeight: number;
   /**
    * The value of the sent frame rate, represented by an aggregate value.
    */
-  encodedFrameCount: number,
+  encodedFrameCount: number;
   /**
    * The codec type of the local video. See {@link codecType}.//TODO:
    */
-  codecType: number
+  codecType: number;
 }
 /** 
  * The statistics of the local audio stream.
@@ -1011,12 +1016,7 @@ export interface RemoteAudioStats {
  * - 3: The remote video is frozen.
  * - 4: The remote video fails to start.
  */
-export type RemoteVideoState =
-  | 0
-  | 1
-  | 2
-  | 3
-  | 4;
+export type RemoteVideoState = 0 | 1 | 2 | 3 | 4;
 /**
  * - 0: Internal reasons.
  * - 1: Network congestion.
@@ -1035,17 +1035,7 @@ export type RemoteVideoState =
  * - 9: The remote media stream switches back to the video stream after the 
  * network conditions improve.
  */
-export type RemoteVideoStateReason =
-  | 0
-  | 1
-  | 2
-  | 3
-  | 4
-  | 5
-  | 6
-  | 7
-  | 8
-  | 9;
+export type RemoteVideoStateReason = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 /**
  * State of the remote audio stream.
  * - 0: The remote audio is in the default state.
@@ -1054,36 +1044,23 @@ export type RemoteVideoStateReason =
  * - 3: The remote audio is frozen.
  * - 4: The remote audio fails to start.
  */
- export type RemoteAudioState =
- | 0
- | 1
- | 2
- | 3
- | 4;
+export type RemoteAudioState = 0 | 1 | 2 | 3 | 4;
 /**
  * The reason of the remote audio state change.
-* - 0: Internal reasons. 
-* - 1: Network congestion. 
-* - 2: Network recovery. 
-* - 3: The local user stops receiving the remote audio stream or disables the 
-* audio module. 
-* - 4: The local user resumes receiving the remote audio stream or enables the 
-* audio module. 
-* - 5: The remote user stops sending the audio stream or disables the audio 
-* module. 
-* - 6: The remote user resumes sending the audio stream or enables the audio 
-* module. 
-* - 7: The remote user leaves the channel.
-*/
-export type RemoteAudioStateReason =
- | 0
- | 1
- | 2
- | 3
- | 4
- | 5
- | 6
- | 7;
+ * - 0: Internal reasons. 
+ * - 1: Network congestion. 
+ * - 2: Network recovery. 
+ * - 3: The local user stops receiving the remote audio stream or disables the 
+ * audio module. 
+ * - 4: The local user resumes receiving the remote audio stream or enables the 
+ * audio module. 
+ * - 5: The remote user stops sending the audio stream or disables the audio 
+ * module. 
+ * - 6: The remote user resumes sending the audio stream or enables the audio 
+ * module. 
+ * - 7: The remote user leaves the channel.
+ */
+export type RemoteAudioStateReason = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 /**
  * Connection states.
  * - 1: The SDK is disconnected from Agora's edge server.
@@ -1620,9 +1597,9 @@ export interface NodeRtcEngine {
     enable: boolean,
     options: {
       lighteningContrastLevel: 0 | 1 | 2; // 0 for low, 1 for normal, 2 for high
-      lighteningLevel: number,
-      smoothnessLevel: number,
-      rednessLevel: number
+      lighteningLevel: number;
+      smoothnessLevel: number;
+      rednessLevel: number;
     }
   ): number;
   /**
@@ -1932,11 +1909,19 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  videosourceStartScreenCaptureByScreen(screenSymbol: ScreenSymbol, rect: CaptureRect, param: CaptureParam): number;
+  videosourceStartScreenCaptureByScreen(
+    screenSymbol: ScreenSymbol,
+    rect: CaptureRect,
+    param: CaptureParam
+  ): number;
   /**
    * @ignore
    */
-  videosourceStartScreenCaptureByWindow(windowSymbol: number, rect: CaptureRect, param: CaptureParam): number;
+  videosourceStartScreenCaptureByWindow(
+    windowSymbol: number,
+    rect: CaptureRect,
+    param: CaptureParam
+  ): number;
   /**
    * @ignore
    */
@@ -2278,15 +2263,21 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  joinChannelWithUserAccount(token: string, channel: string, userAccount: string): number;
+  joinChannelWithUserAccount(
+    token: string,
+    channel: string,
+    userAccount: string
+  ): number;
   /**
    * @ignore
    */
-  getUserInfoByUserAccount(userAccount: string): {errCode: number, userInfo: UserInfo};
+  getUserInfoByUserAccount(
+    userAccount: string
+  ): { errCode: number; userInfo: UserInfo };
   /**
    * @ignore
    */
-  getUserInfoByUid(uid: number): {errCode: number, userInfo: UserInfo};
+  getUserInfoByUid(uid: number): { errCode: number; userInfo: UserInfo };
   /**
    * @ignore
    */
@@ -2346,7 +2337,10 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  setPluginStringParameter(pluginId: string, key: string, value: string): number;
-  
+  setPluginStringParameter(
+    pluginId: string,
+    key: string,
+    value: string
+  ): number;
   setPluginBoolParameter(pluginId: string, key: string, value: boolean): number;
 }
