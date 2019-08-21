@@ -290,13 +290,23 @@ void NodeVideoFrameTransporter::setFPS(uint32_t fps)
     { \
         Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
         Local<Value> propVal = napi_create_uint32_(isolate, val); \
-        obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+        v8::Maybe<bool> ret = obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+        if(!ret.IsNothing()) { \
+            if(!ret.ToChecked()) { \
+                break; \
+            } \
+        } \
     }
 #define NODE_SET_OBJ_PROP_HEADER(obj, it) \
     { \
         Local<Value> propName = String::NewFromUtf8(isolate, "header", NewStringType::kInternalized).ToLocalChecked(); \
         Local<v8::ArrayBuffer> buff = v8::ArrayBuffer::New(isolate, (it)->buffer, (it)->length); \
-        obj->Set(isolate->GetCurrentContext(), propName, buff); \
+        v8::Maybe<bool> ret = obj->Set(isolate->GetCurrentContext(), propName, buff); \
+        if(!ret.IsNothing()) { \
+            if(!ret.ToChecked()) { \
+                break; \
+            } \
+        } \
     }
 
 #define NODE_SET_OBJ_PROP_DATA(obj, name, it) \
@@ -304,7 +314,12 @@ void NodeVideoFrameTransporter::setFPS(uint32_t fps)
         Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
         Local<v8::ArrayBuffer> buff = v8::ArrayBuffer::New(isolate, (it)->buffer, (it)->length); \
         Local<v8::Uint8Array> dataarray = v8::Uint8Array::New(buff, 0, it->length);\
-        obj->Set(isolate->GetCurrentContext(), propName, dataarray); \
+        v8::Maybe<bool> ret = obj->Set(isolate->GetCurrentContext(), propName, dataarray); \
+        if(!ret.IsNothing()) { \
+            if(!ret.ToChecked()) { \
+                break; \
+            } \
+        } \
     }
 
 bool AddObj(Isolate* isolate, Local<v8::Array>& infos, int index, VideoFrameInfo& info)
@@ -312,20 +327,24 @@ bool AddObj(Isolate* isolate, Local<v8::Array>& infos, int index, VideoFrameInfo
     if (!info.m_needUpdate)
         return false;
     info.m_needUpdate = false;
-    Local<v8::Object> obj = Object::New(isolate);
-    NODE_SET_OBJ_PROP_UINT32(obj, "type", info.m_renderType);
-    NODE_SET_OBJ_PROP_UINT32(obj, "uid", info.m_uid);
-    auto it = info.m_bufferList.begin();
-    NODE_SET_OBJ_PROP_HEADER(obj, it);
-    ++it;
-    NODE_SET_OBJ_PROP_DATA(obj, "ydata", it);
-    ++it;
-    NODE_SET_OBJ_PROP_DATA(obj, "udata", it);
-    ++it;
-    NODE_SET_OBJ_PROP_DATA(obj, "vdata", it);
-    infos->Set(index, obj);
-    return true;
+    bool result = false;
+    do {
+        Local<v8::Object> obj = Object::New(isolate);
+        NODE_SET_OBJ_PROP_UINT32(obj, "type", info.m_renderType);
+        NODE_SET_OBJ_PROP_UINT32(obj, "uid", info.m_uid);
+        auto it = info.m_bufferList.begin();
+        NODE_SET_OBJ_PROP_HEADER(obj, it);
+        ++it;
+        NODE_SET_OBJ_PROP_DATA(obj, "ydata", it);
+        ++it;
+        NODE_SET_OBJ_PROP_DATA(obj, "udata", it);
+        ++it;
+        NODE_SET_OBJ_PROP_DATA(obj, "vdata", it);
+        result = infos->Set(index, obj);
+    }while(false);
+    return result;
 }
+
 void NodeVideoFrameTransporter::FlushVideo()
 {
     while (!m_stopFlag) {
