@@ -3944,11 +3944,11 @@ namespace agora {
                 CHECK_PLUGIN_MODULE_EXIST(pluginInfo);
 
 
-                createAgoraVideoFramePlugin createPlugin = (createAgoraVideoFramePlugin)GetProcAddress((HMODULE)pluginInfo.pluginModule, "createVideoFramePlugin");
+                createAgoraAVFramePlugin createPlugin = (createAgoraAVFramePlugin)GetProcAddress((HMODULE)pluginInfo.pluginModule, "createAVFramePlugin");
                 if (!createPlugin) {
                     FreeLibrary((HMODULE)pluginInfo.pluginModule);
                     pluginInfo.pluginModule = NULL;
-                    LOG_ERROR("Error :%s, :%d,  GetProcAddress \"createVideoFramePlugin\" Failed\n", __FUNCTION__, __LINE__, pluginInfo.id); 
+                    LOG_ERROR("Error :%s, :%d,  GetProcAddress \"createAVFramePlugin\" Failed\n", __FUNCTION__, __LINE__, pluginInfo.id); 
                     break;
                 }
                 #else
@@ -3956,11 +3956,11 @@ namespace agora {
                 CHECK_PLUGIN_MODULE_EXIST(pluginInfo);
 
 
-                createAgoraVideoFramePlugin createPlugin = (createAgoraVideoFramePlugin)dlsym(pluginInfo.pluginModule, "createVideoFramePlugin");
+                createAgoraAVFramePlugin createPlugin = (createAgoraAVFramePlugin)dlsym(pluginInfo.pluginModule, "createAVFramePlugin");
                 if (!createPlugin) {
                     dlclose(pluginInfo.pluginModule);
                     pluginInfo.pluginModule = NULL;
-                    LOG_ERROR("Error :%s, :%d,  GetProcAddress \"createVideoFramePlugin\" Failed\n", __FUNCTION__, __LINE__, pluginInfo.id); 
+                    LOG_ERROR("Error :%s, :%d,  GetProcAddress \"createAVFramePlugin\" Failed\n", __FUNCTION__, __LINE__, pluginInfo.id); 
                     break;
                 }
                 #endif
@@ -3969,7 +3969,7 @@ namespace agora {
                 CHECK_PLUGIN_INSTANCE_EXIST(pluginInfo);
 
                 if (!pluginInfo.instance->load(mPluginFolderPath.c_str())) {
-                    LOG_ERROR("Error :%s, :%d, plugin: \"%s\"  IAudioFramePlugin::load Failed\n", __FUNCTION__, __LINE__, pluginInfo.id);
+                    LOG_ERROR("Error :%s, :%d, plugin: \"%s\"  IAVFramePlugin::load Failed\n", __FUNCTION__, __LINE__, pluginInfo.id);
                     break;
                 }
                 
@@ -4030,12 +4030,12 @@ namespace agora {
 
                 if (enabled) {
                     if (!pluginInfo.instance->enable()) {
-                        LOG_ERROR("Error :%s, :%d, plugin: \"%s\"  IVideoFramePlugin::enable Failed\n", __FUNCTION__, __LINE__, pluginId.c_str());
+                        LOG_ERROR("Error :%s, :%d, plugin: \"%s\"  IAVFramePlugin::enable Failed\n", __FUNCTION__, __LINE__, pluginId.c_str());
                         break;
                     }
                 } else {
                     if (!pluginInfo.instance->disable()) {
-                        LOG_ERROR("Error :%s, :%d, plugin: \"%s\"  IVideoFramePlugin::disable Failed\n", __FUNCTION__, __LINE__, pluginId.c_str());
+                        LOG_ERROR("Error :%s, :%d, plugin: \"%s\"  IAVFramePlugin::disable Failed\n", __FUNCTION__, __LINE__, pluginId.c_str());
                         break;
                     }
                 }
