@@ -511,7 +511,7 @@ export interface LocalVideoStats {
    */
   encodedFrameCount: number;
   /**
-   * The codec type of the local video. See {@link codecType}.
+   * The codec type of the local video. See {@link VIDEO_CODEC_TYP}.
    */
   codecType: number;
 }
