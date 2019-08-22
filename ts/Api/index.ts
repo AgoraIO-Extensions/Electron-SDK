@@ -4061,6 +4061,7 @@ declare interface AgoraRtcEngine {
    * and more for the Live-broadcast profile), the SDK assumes that the user drops offline. Unreliable network connections may lead to false detections, so we recommend using a signaling system for more reliable offline detection.
    */
   on(evt: 'removeStream', cb: (uid: number, reason: number) => void): this;
+  on(evt: 'userOffline', cb: (uid: number, reason: number) => void): this;
   /** Occurs when a remote user's audio stream is muted/unmuted.
    *
    * The SDK triggers this callback when the remote user stops or resumes sending the audio stream by calling the {@link muteLocalAudioStream} method.
