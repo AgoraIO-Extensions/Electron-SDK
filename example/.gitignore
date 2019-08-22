@@ -1,8 +1,9 @@
+static
 .DS_Store
 dist/
 node_modules/
 thumbs.db
-
+plugins
 local_settings.js
 
 ./*.jpeg

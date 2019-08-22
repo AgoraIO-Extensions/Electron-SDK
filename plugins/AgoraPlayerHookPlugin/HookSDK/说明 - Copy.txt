@@ -1,0 +1,42 @@
+1. 新的sdk在调用startHook时增加了一个参数：bForceRestartPlayer
+
+（1）如果设置为true会强制重启一个音乐播放器。
+（2）如果设置为false则不会强制重启。会hook当前正在播放的音乐。音乐播放器需要切歌才会hook到声音
+
+startHook之后，停止使用的时候记得stopHook
+
+2. 目前只有网易云音乐和酷狗是支持hook正在播放音乐的播放器。
+
+3. 无法hook 正在播放的酷我和qq music 
+(1.) 无法hook正在播放的酷我音乐
+
+酷我hook的进程不是kwmusic.exe而是kwservice.exe。因为设置的钩子类型是WH_CBT。而service程序没有界面无法最大化、最小化，或者显示界面等操作。所以只能在创建的时候被hook到。
+
+(2.) 无法hook正在播放的qq音乐
+
+qq音乐的qqmusic.exe可以被hook到，但是qq音乐只在创建的时候会调用DirectSoundCreate8。
+一旦播放之后不会在调用，所以没法再hook DirectSoundCreate8。通过hook该接口获取到IDirectSound8，再获取到IDirectSound8的播放、暂停等接口。
+（3） 酷狗和网易云都在切换下一首歌时，会create一次。所以正在播放音乐的第一次被hook，只要切歌就可以hook的这两个播放器。
+ 
+   酷狗和网易云切歌就可以hook。
+
+
+4. agora_playhook_sdk.dll
+
+目前除了主进程外，可以hook到的有  kugou.exe  kwmusic.exe   qqmusic.exe  cloudmusic.exe  不区分大小写（酷狗、酷我、qq音乐、网易云音乐）。
+
+
+在原有基础上做的一些修改，解决的问题，去年11月底-12月初做的修改：
+
+1. startHook返回错误值：
+-1：传空参数
+-2：传入的路径不存在
+-3：不是酷我、酷狗、qq、网易云音乐中的一种。
+
+2. hook之后，播放器不关闭。关闭hook，再次启动的时候，无法hook刚才的播放器。修改之后支持。
+    调用时，需要注意startHook要对应一个stopHook。
+
+3. 无法hook正在播放的播放器。修改后，qq和酷我还是不能。上面已经说明原因。
+
+4. crash问题升级到了2.0.8(原来2.0.2)
+
