@@ -226,7 +226,7 @@ class AgoraRtcEngine extends EventEmitter {
     });
 
     this.rtcEngine.onEvent('localAudioStats', function(stats: LocalAudioStats) {
-      fire('localAudioStateChanged', stats);
+      fire('localAudioStats', stats);
     });
 
     this.rtcEngine.onEvent('remotevideostats', function(
