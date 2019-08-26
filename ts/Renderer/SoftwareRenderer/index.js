@@ -105,9 +105,10 @@ class Renderer {
       throw new Error('Invalid value for rotation. Only support 0, 90, 180, 270')
     }
     let transformItems = []
-    if(options.rotation === 180 || options.rotation === 270){
+    if(options.rotation === 0 || options.rotation === 90 ||
+      options.rotation === 180 || options.rotation === 270){
       //rotate 180 on X Axis for 180/270 angle
-      transformItems.push(`rotateX(180deg)`)
+      transformItems.push(`rotateZ(${options.rotation}deg)`)
     }
 
     // this.canvas.style.zoom = this._calcZoom(
