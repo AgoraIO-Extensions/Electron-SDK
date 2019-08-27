@@ -945,12 +945,10 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {string} token token The token generated at your server:
    * - For low-security requirements: You can use the temporary token 
    * generated at Dashboard. For details, see 
-   * [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All
-   * %20Platforms#get-a-temporary-token).
+   * [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-temporary-token).
    * - For high-security requirements: Set it as the token generated at your 
    * server. For details, see 
-   * [Get a token](https://docs.agora.io/en/Voice/token?platform=All%
-   * 20Platforms#get-a-token).
+   * [Get a token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-token).
    * @param {string} channel (Required) Pointer to the unique channel name for 
    * the Agora RTC session in the string format smaller than 64 bytes. 
    * Supported characters:
@@ -2452,12 +2450,10 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {string} token The token generated at your server.
    * - For low-security requirements: You can use the temporary token generated 
    * at Dashboard. For details, see 
-   * [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All
-   * %20Platforms#get-a-temporary-token).
+   * [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-temporary-token).
    * - For high-security requirements: Set it as the token generated at your 
    * server. For details, see 
-   * [Get a token](https://docs.agora.io/en/Voice/token?platform=All
-   * %20Platforms#get-a-token).
+   * [Get a token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-token).
    * @param {string} channel The channel name. The maximum length of this 
    * parameter is 64 bytes. Supported character scopes are:
    * - The 26 lowercase English letters: a to z.
@@ -2555,12 +2551,10 @@ class AgoraRtcEngine extends EventEmitter {
    * @param token The token generated at your server:
    * - For low-security requirements: You can use the temporary token generated 
    * at Dashboard. For details, 
-   * see [Get a temporary token](https://docs.agora.io/en/Voice/token?
-   * platform=All%20Platforms#get-a-temporary-token).
+   * see [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-temporary-token).
    * - For high-security requirements: Set it as the token generated at your 
    * server. For details, 
-   * see [Get a token](https://docs.agora.io/en/Voice/token
-   * ?platform=All%20Platforms#get-a-token).
+   * see [Get a token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-token).
    * @param channel (Required) Pointer to the unique channel name for the 
    * Agora RTC session in the string format smaller than 64 bytes. 
    * Supported characters:
@@ -3027,12 +3021,10 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {string} token The token generated at your server:
    * - For low-security requirements: You can use the temporary token 
    * generated at Dashboard. For details, see 
-   * [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All
-   * %20Platforms#get-a-temporary-token).
+   * [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-temporary-token).
    * - For high-security requirements: Set it as the token generated at your 
    * server. For details, see 
-   * [Get a token](https://docs.agora.io/en/Voice/token?platform=All%
-   * 20Platforms#get-a-token).
+   * [Get a token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-token).
    * @param {string} cname (Required) Pointer to the unique channel name for 
    * the Agora RTC session in the string format smaller than 64 bytes. 
    * Supported characters:
@@ -4362,8 +4354,7 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.getArray(key);
   }
   /**     
-   * Private Interfaces.     
-   * @ignore    
+   * Private Interfaces.   
    */
   setParameters(param: string): number {
     return this.rtcEngine.setParameters(param);
@@ -4386,29 +4377,38 @@ class AgoraRtcEngine extends EventEmitter {
   // ===========================================================================
   // plugin apis
   // ===========================================================================
-  
+  /**
+   * @ignore
+   */
   initializePluginManager(): number {
     return this.rtcEngine.initializePluginManager();
   }
-
+  /**
+   * @ignore
+   */
   releasePluginManager(): number {
     return this.rtcEngine.releasePluginManager();
   }
-
+  /**
+   * @ignore
+   */
   registerPlugin(info: PluginInfo): number {
     return this.rtcEngine.registerPlugin(info);
   }
-
+  /**
+   * @ignore
+   */
   unregisterPlugin(pluginId: string): number {
     return this.rtcEngine.unregisterPlugin(pluginId);
   }
-
+  /**
+   * @ignore
+   */
   getPlugins() {
     return this.rtcEngine.getPlugins().map(item => {
       return this.createPlugin(item.id)
     })
   }
-
   /**
    * @ignore
    * @param pluginId 

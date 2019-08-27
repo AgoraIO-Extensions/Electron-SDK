@@ -97,7 +97,7 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.startScreenCapturePreview startScreenCapturePreview} | Starts the sharing video preview. |
 | {@link AgoraRtcEngine.stopScreenCapturePreview stopScreenCapturePreview} | Stops the sharing video preview. |
 | {@link AgoraRtcEngine.videoSourceStartScreenCaptureByScreen videoSourceStartScreenCaptureByScreen} | Shares the whole or part of a screen by specifying the screen rect. |
-| {@link videosourceStartScreenCaptureByWindow videosourceStartScreenCaptureByWindow} | Shares the whole or part of a window by specifying the window ID. |
+| {@link AgoraRtcEngine.videoSourceStartScreenCaptureByWindow videoSourceStartScreenCaptureByWindow} | Shares the whole or part of a window by specifying the window ID. |
 | {@link AgoraRtcEngine.videoSourceUpdateScreenCaptureRegion videoSourceUpdateScreenCaptureRegion} | Updates the screen sharing region. |
 | {@link AgoraRtcEngine.videoSourceUpdateScreenCaptureParameters videoSourceUpdateScreenCaptureParameters} | Updates the screen sharing parameters. |
 | {@link AgoraRtcEngine.videoSourceSetScreenCaptureContentHint videoSourceSetScreenCaptureContentHint} | Sets the content hint for screen sharing. |
@@ -163,11 +163,11 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 
 ### Channel Media Relay
 
-| Method                                                       | Description                                        |
-| ------------------------------------------------------------ | -------------------------------------------------- |
-| {@link AgoraRtcEngine.startChannelMediaRelay startChannelMediaRelay} | EStarts to relay media streams across channels. |
-| {@link AgoraRtcEngine.updateChannelMediaRelay updateChannelMediaRelay} | Updates the channels for media stream relay.|
-| {@link AgoraRtcEngine.stopChannelMediaRelay stopChannelMediaRelay} | Stops the media stream relay.|
+| Method                                                       | Description                                    |
+| ------------------------------------------------------------ | ---------------------------------------------- |
+| {@link AgoraRtcEngine.startChannelMediaRelay startChannelMediaRelay} | Starts to relay media streams across channels. |
+| {@link AgoraRtcEngine.updateChannelMediaRelay updateChannelMediaRelay} | Updates the channels for media stream relay.   |
+| {@link AgoraRtcEngine.stopChannelMediaRelay stopChannelMediaRelay} | Stops the media stream relay.                  |
 
 
 ### Audio volume indication
