@@ -41,22 +41,26 @@ task('build:node', () => {
 })
 // npm run download --
 task('download', () => {
+  // work-around
+  const addonVersion = '2.3.4-hotfix.2'
   cleanup(path.join(__dirname, "./build")).then(_ => {
     download({
       electronVersion: argv().electron_version, 
       platform: argv().platform, 
-      packageVersion
+      packageVersion: addonVersion
     })
   })
 })
 // trigger when run npm install
 task('install', () => {
   const config = Object.assign({}, getArgvFromNpmEnv(), getArgvFromPkgJson())
+  // work-around
+  const addonVersion = '2.3.4-hotfix.2'
   if (config.prebuilt) {
     download({
       electronVersion: config.electronVersion, 
       platform: config.platform, 
-      packageVersion
+      packageVersion: addonVersion
     })
   } else {
     build(Object.assign({}, config, {
