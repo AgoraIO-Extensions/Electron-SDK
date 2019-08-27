@@ -116,7 +116,12 @@ namespace agora {
         CHECK_NAPI_OBJ(propName); \
         Local<Value> propVal = String::NewFromUtf8(isolate, val, NewStringType::kInternalized).ToLocalChecked(); \
         CHECK_NAPI_OBJ(propVal); \
-        obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+        v8::Maybe<bool> ret = obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+        if(!ret.IsNothing()) { \
+            if(!ret.ToChecked()) { \
+                break; \
+            } \
+        } \
     }
 
 #define NODE_SET_OBJ_PROP_UINT32(obj, name, val) \
@@ -125,7 +130,12 @@ namespace agora {
         CHECK_NAPI_OBJ(propName); \
         Local<Value> propVal = v8::Uint32::New(isolate, val); \
         CHECK_NAPI_OBJ(propVal); \
-        obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+        v8::Maybe<bool> ret = obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+        if(!ret.IsNothing()) { \
+            if(!ret.ToChecked()) { \
+                break; \
+            } \
+        } \
     }
 
 #define NODE_SET_OBJ_PROP_UID(obj, name, val) \
@@ -134,7 +144,12 @@ namespace agora {
         CHECK_NAPI_OBJ(propName); \
         Local<Value> propVal = NodeUid::getNodeValue(isolate, val); \
         CHECK_NAPI_OBJ(propVal); \
-        obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+        v8::Maybe<bool> ret = obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+        if(!ret.IsNothing()) { \
+            if(!ret.ToChecked()) { \
+                break; \
+            } \
+        } \
     }
 
 #define NODE_SET_OBJ_PROP_NUMBER(obj, name, val) \
@@ -143,7 +158,12 @@ namespace agora {
         CHECK_NAPI_OBJ(propName); \
         Local<Value> propVal = v8::Number::New(isolate, val); \
         CHECK_NAPI_OBJ(propVal); \
-        obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+        v8::Maybe<bool> ret = obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+        if(!ret.IsNothing()) { \
+            if(!ret.ToChecked()) { \
+                break; \
+            } \
+        } \
     }
 
         void NodeEventHandler::onJoinChannelSuccess_node(const char* channel, uid_t id, int elapsed)
