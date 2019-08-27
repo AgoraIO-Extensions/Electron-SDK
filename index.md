@@ -13,7 +13,8 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.release release}                       | Releases an AgoraRtcEngine instance.                         |
 | {@link AgoraRtcEngine.setChannelProfile setChannelProfile}   | Sets the channel profile.                                    |
 | {@link AgoraRtcEngine.setClientRole setClientRole}           | Sets the user role (Live Broadcast only).                    |
-| {@link AgoraRtcEngine.joinChannel joinChannel}               | Allows a user to join a channel.                             |
+| {@link AgoraRtcEngine.joinChannel joinChannel}               | Allows a user to join a channel. |
+| {@link AgoraRtcEngine.switchChannel switchChannel}|Switches to a different channel (Live Broadcast only).|
 | {@link AgoraRtcEngine.leaveChannel leaveChannel}             | Allows a user to leave a channel.                            |
 | {@link AgoraRtcEngine.subscribe subscribe}                   | Subscribes to the remote user and initializes the video sink |
 | {@link AgoraRtcEngine.renewToken renewToken}                 | Renews the token.                                            |
@@ -22,7 +23,7 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.on on}                                 | Monitors the events during AgoraRtcEngine runtime            |
 | {@link AgoraRtcEngine.off off}                               | Stops monitoring the events during AgoraRtcEngine runtime    |
 
-### The user information
+### User information management
 
 | Method                                                       | Description                                               |
 | ------------------------------------------------------------ | --------------------------------------------------------- |
@@ -38,8 +39,8 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.enableAudio enableAudio}               | Enables the audio module.                                    |
 | {@link AgoraRtcEngine.disableAudio disableAudio}             | Disables the audio module.                                   |
 | {@link AgoraRtcEngine.setAudioProfile setAudioProfile}       | Sets the audio parameters and application scenarios.         |
-|{@link AgoraRtcEngine.adjustRecordingSignalVolume adjustRecordingSignalVolume}| Adjusts the recording volume.|
-|{@link AgoraRtcEngine.adjustPlaybackSignalVolume adjustPlaybackSignalVolume}| Adjusts the playback volume.|
+| {@link AgoraRtcEngine.adjustRecordingSignalVolume adjustRecordingSignalVolume} | Adjusts the recording volume.                                |
+| {@link AgoraRtcEngine.adjustPlaybackSignalVolume adjustPlaybackSignalVolume} | Adjusts the playback volume of the voice.                    |
 | {@link AgoraRtcEngine.enableLocalAudio enableLocalAudio}     | Enables/disables the local audio capture.                    |
 | {@link AgoraRtcEngine.muteLocalAudioStream muteLocalAudioStream} | Stops/Resumes sending the local audio stream.                |
 | {@link AgoraRtcEngine.muteRemoteAudioStream muteRemoteAudioStream} | Stops/Resumes receving a specified remote audio stream.      |
@@ -102,7 +103,7 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.videoSourceSetScreenCaptureContentHint videoSourceSetScreenCaptureContentHint} | Sets the content hint for screen sharing. |
 | {@link AgoraRtcEngine.stopScreenCapture2 stopScreenCapture2} | Stops screen sharing. |
 
-### Audio file playback
+### Audio file playback and mixing
 
 | Method                                                       | Description                                             |
 | ------------------------------------------------------------ | ------------------------------------------------------- |
@@ -152,13 +153,22 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.enableSoundPositionIndication enableSoundPositionIndication} | Enables/Disables stereo panning for remote users.  |
 | {@link AgoraRtcEngine.setRemoteVoicePosition setRemoteVoicePosition} | Sets the sound position and gain of a remote user. |
 
-### CDN publisher
+### CDN publisher (live Broadcast only)
 
 | Method                                                       | Description                                   |
 | ------------------------------------------------------------ | --------------------------------------------- |
 | {@link AgoraRtcEngine.setLiveTranscoding setLiveTranscoding} | Sets the video layout and audio for CDN live. |
 | {@link AgoraRtcEngine.addPublishStreamUrl addPublishStreamUrl} | Adds a CDN stream address.                    |
 | {@link AgoraRtcEngine.removePublishStreamUrl removePublishStreamUrl} | Removes a CDN stream address.                 |
+
+### Channel Media Relay
+
+| Method                                                       | Description                                        |
+| ------------------------------------------------------------ | -------------------------------------------------- |
+| {@link AgoraRtcEngine.startChannelMediaRelay startChannelMediaRelay} | EStarts to relay media streams across channels. |
+| {@link AgoraRtcEngine.updateChannelMediaRelay updateChannelMediaRelay} | Updates the channels for media stream relay.|
+| {@link AgoraRtcEngine.stopChannelMediaRelay stopChannelMediaRelay} | Stops the media stream relay.|
+
 
 ### Audio volume indication
 
@@ -227,7 +237,7 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.addInjectStreamUrl addInjectStreamUrl} | Adds an online media stream to a live broadcast.       |
 | {@link AgoraRtcEngine.removeInjectStreamUrl removeInjectStreamUrl} | Removes the online media stream from a live broadcast. |
 
-### Device manager
+### Device management
 
 | Method                                                   | Description              |
 | ------------------------------------------------------------ | -------------------------- |
@@ -341,6 +351,7 @@ Agora Electron SDK use the  {@link AgoraRtcEngine.on on} method to add listeners
 | rtcStats                         | Reports the statistics of AgoraRtcEngine.                    |
 | localVideoStats                  | Reports the statistics of the uploading local video stream.  |
 | remoteVideoStats                 | Reports the statistics of the video stream from each remote user/host. |
+| localAudioStats| Reports the statistics of the local audio stream.|
 | remoteAudioStats                 | Reports the statistics of the audio stream from each remote user/host. |
 | remoteVideoTransportStats        | Reports the transport-layer statistics of each remote video stream. |
 | remoteAudioTransportStats        | Reports the transport-layer statistics of each remote audio stream. |
@@ -370,6 +381,8 @@ Agora Electron SDK use the  {@link AgoraRtcEngine.on on} method to add listeners
 | streamMessage                    | Occurs when the local user receives a remote data stream within five seconds. |
 | streamMessageError               | Occurs when the local user fails to receive the remote data stream. |
 | audioDeviceVolumeChanged         | Occurs when the volume of the playback, microphone, or application changes. |
+|localAudioStateChanged|Occurs when the local audio state changes.|
+|remoteAudioStateChanged|Occurs when the remote audio state changes.|
 |localVideoStateChanged| Occurs when the local video state changes.|
 | remoteVideoStateChanged          | Occurs when the remote video stream state changes.           |
 | cameraFocusAreaChanged           | Occurs when the camera focus area changes.                   |
@@ -378,6 +391,8 @@ Agora Electron SDK use the  {@link AgoraRtcEngine.on on} method to add listeners
 | streamUnpublished                | Removes a CDN stream address.                                |
 | transcodingUpdated               | Occurs when the publisher's transcoding settings are updated. |
 | streamInjectStatus               | Reports the status of the injected online media stream.      |
+|channelMediaRelayState|Occurs when the state of the media stream relay changes.|
+|channelMediaRelayEvent| Reports events during the media stream relay.|
 | localPublishFallbackToAudioOnly  | Occurs:<br><li>When the published media stream falls back to an audio-only stream due to poor network conditions.</li><br><li>When the published media stream switches back to the video after the network conditions improve.</li> |
 | remoteSubscribeFallbackToAudioOnly | Occurs:<br/><li>When the remote media stream falls back to audio-only due to poor network conditions.</li><br><li>When the remote media stream switches back to the video after the network conditions improve.</li> |
 | videoSourceJoinedSuccess         | Occurs when a user joins a channel. (The second instance)    |
