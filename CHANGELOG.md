@@ -1,3 +1,7 @@
+## 2.3.4-hotfix.3 (Aug 27th, 2019)
+#### :bug: Bug Fix
+* Fixed rotation when using software-rendering.
+
 ## 2.3.4-hotfix.2
 #### :house: Internal
 * Support plugin to transform video/audio frame data. Go to section:Plugins in README.md
