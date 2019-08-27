@@ -1148,8 +1148,7 @@ export type ConnectionState =
   | 2 // 2: The SDK is connecting to Agora's edge server.
   | 3
   | 4
-  | 5; // 5: The SDK fails to connect to Agora's edge server or join the 
-  channel.
+  | 5; // 5: The SDK fails to connect to Agora's edge server or join the channel.
 
   /**
    * Reasons for a connection state change.
