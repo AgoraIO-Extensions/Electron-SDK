@@ -3932,7 +3932,7 @@ class AgoraRtcEngine extends EventEmitter {
    * update the destination channel.
    * 
    * @param config The media stream relay configuration: 
-   * {@link channelMediaRelayConfiguration}.
+   * {@link ChannelMediaRelayConfiguration}.
    * 
    * @return
    * - 0: Success.
