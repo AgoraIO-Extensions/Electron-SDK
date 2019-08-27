@@ -105,20 +105,9 @@ class Renderer {
       throw new Error('Invalid value for rotation. Only support 0, 90, 180, 270')
     }
     let transformItems = []
-    if(options.rotation === 0 || options.rotation === 90 ||
-      options.rotation === 180 || options.rotation === 270){
-      //rotate 180 on X Axis for 180/270 angle
-      transformItems.push(`rotateZ(${options.rotation}deg)`)
-    }
-
-    // this.canvas.style.zoom = this._calcZoom(
-    //   options.rotation === 90 || options.rotation === 270,
-    //   options.contentMode,
-    //   options.width,
-    //   options.height,
-    //   options.clientWidth,
-    //   options.clientHeight
-    // );
+    
+    transformItems.push(`rotateZ(${options.rotation}deg)`)
+    
     let scale = this._calcZoom(
       options.rotation === 90 || options.rotation === 270,
       options.contentMode,
@@ -127,6 +116,7 @@ class Renderer {
       options.clientWidth,
       options.clientHeight
     );
+    
     transformItems.push(`scale(${scale})`)
 
     // check for mirror
@@ -134,6 +124,7 @@ class Renderer {
       // this.canvas.style.transform = 'rotateY(180deg)';
       transformItems.push('rotateY(180deg)')
     }
+    
     if(transformItems.length > 0) {
       let transform = `${transformItems.join(' ')}`
       this.canvas.style.transform = transform
