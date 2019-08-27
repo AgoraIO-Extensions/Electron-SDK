@@ -4275,6 +4275,29 @@ declare interface AgoraRtcEngine {
    * and more for the Live-broadcast profile), the SDK assumes that the user drops offline. Unreliable network connections may lead to false detections, so we recommend using a signaling system for more reliable offline detection.
    */
   on(evt: 'removeStream', cb: (uid: number, reason: number) => void): this;
+  /** Occurs when a remote user (Communication)/host (Live Broadcast) leaves 
+   * the channel.
+   * 
+   * There are two reasons for users to become offline:
+   * - Leave the channel: When the user/host leaves the channel, the user/host 
+   * sends a goodbye message. When this message is received, the SDK determines 
+   * that the user/host leaves the channel.
+   * - Drop offline: When no data packet of the user or host is received for a 
+   * certain period of time (20 seconds for the communication profile, and more 
+   * for the live broadcast profile), the SDK assumes that the user/host drops 
+   * offline. A poor network connection may lead to false detections, so we 
+   * recommend using the signaling system for reliable offline detection.
+   * 
+   * - uid: ID of the user or host who leaves the channel or goes offline.
+   * - reason: Reason why the user goes offline:
+   *  - The user left the current channel.
+   *  - The SDK timed out and the user dropped offline because no data packet 
+   * was received within a certain period of time. If a user quits the call 
+   * and the message is not passed to the SDK (due to an unreliable channel), 
+   * the SDK assumes the user dropped offline.
+   *  - (Live broadcast only.) The client role switched from the host to the 
+   * audience.
+   */
   on(evt: 'userOffline', cb: (uid: number, reason: number) => void): this;
   /** Occurs when a remote user's audio stream is muted/unmuted.
    *
