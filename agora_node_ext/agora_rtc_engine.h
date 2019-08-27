@@ -24,8 +24,8 @@
 #include <mutex>
 #include <unordered_set>
 #include <map>
-#include "AudioPlugin/IAudioFramePluginManager.h"
-#include "AudioPlugin/IAudioFramePlugin.h"
+#include "AVPlugin/IAVFramePluginManager.h"
+#include "AVPlugin/IAVFramePlugin.h"
 /*
 * Used to declare native interface to nodejs
 */
@@ -261,18 +261,13 @@ namespace agora {
             /**
              * Plugins
              */
-#ifdef _WIN32
-            NAPI_API(registerAudioFramePluginManager);
-            NAPI_API(unRegisterAudioFramePluginManager);
-            NAPI_API(registerAudioFramePlugin);
-            NAPI_API(unRegisterAudioFramePlugin);
-            NAPI_API(loadPlugin);
-            NAPI_API(unLoadPlugin);
+            NAPI_API(initializePluginManager);
+            NAPI_API(releasePluginManager);
+            NAPI_API(registerPlugin);
+            NAPI_API(unregisterPlugin);
             NAPI_API(enablePlugin);
-            NAPI_API(disablePlugin);
-            NAPI_API(setPluginBoolParameter);
-            NAPI_API(setPluginStringParameter);
-#endif
+            NAPI_API(getPlugins);
+            NAPI_API(setPluginParameter);
 
             /**
              * 2.3.3 apis
@@ -341,8 +336,7 @@ namespace agora {
             AVideoDeviceManager* m_videoVdm = nullptr;
             AAudioDeviceManager* m_audioVdm = nullptr;
 
-            std::unique_ptr<IAudioFramePluginManager> m_audioFramePluginManager;
-            std::map<std::string, agora_audio_plugin_info> m_mapAudioPlugins;
+            std::unique_ptr<IAVFramePluginManager> m_avPluginManager;
         };
 
 /*
@@ -503,46 +497,33 @@ namespace agora {
             break;\
         }
 
-#ifdef _WIN32
-#define CHECK_PLUGIN_INFO_STATUS(engine, pluginId) \
-      if (engine->m_mapAudioPlugins.end() == engine->m_mapAudioPlugins.find(pluginId)){ \
-            LOG_ERROR("Error : plugin %d, not exist\n", pluginId); \
-            break; \
-        }
-
 #define CHECK_PLUGIN_INFO_EXIST(engine, pluginId) \
-      if (engine->m_mapAudioPlugins.end() != engine->m_mapAudioPlugins.find(pluginId)){ \
-            LOG_ERROR("Error : plugin %d, has exist\n", pluginId); \
+      if (!engine->m_avPluginManager->hasPlugin(pluginId)){ \
+            LOG_ERROR("Error : plugin %s, not exist\n", pluginId.c_str()); \
             break; \
-        }
+      }
+
+#define CHECK_PLUGIN_INFO_NOT_EXIST(engine, pluginId) \
+      if (engine->m_avPluginManager->hasPlugin(pluginId)){ \
+            LOG_ERROR("Error : plugin %s, has exist\n", pluginId.c_str()); \
+            break; \
+      }
+
+#define CHECK_PLUGIN_MANAGER_EXIST(engine) \
+      if (!engine->m_avPluginManager.get()){ \
+            LOG_ERROR("Error : plugin manager not exist\n"); \
+            break; \
+      }
 
 #define CHECK_PLUGIN_MODULE_EXIST(pluginInfo) \
         if (pluginInfo.pluginModule == NULL) { \
-            LOG_ERROR("Error :%s, :%d, not unload plugin \"%s\", windows error:%d\n", __FUNCTION__, __LINE__, pluginId.c_str(),WSAGetLastError()); \
+            LOG_ERROR("Error :%s, :%d, not unload plugin \"%s\"\n", __FUNCTION__, __LINE__, pluginInfo.id); \
             break;\
         }
 
-#define CHECK_PLUGIN_EXIST(pluginInfo) \
-        if (pluginInfo.audioFramePlugin == NULL) { \
-            LOG_ERROR("Error :%s, :%d, not release plugin \"%s\", windows error:%d\n", __FUNCTION__, __LINE__, pluginId.c_str(), WSAGetLastError());\
-            break;\
-        }
-
-#define CHECK_PLUGIN_MODULE_STATUS(pluginInfo) \
-        if (pluginInfo.pluginModule == NULL) { \
-            LOG_ERROR("Error :%s, :%d,  not load plugin \"%s\"\n", __FUNCTION__, __LINE__, pluginId.c_str()); \
-            break;\
-        }
-
-#define CHECK_PLUGIN_STATUS(pluginInfo) \
-        if (pluginInfo.audioFramePlugin == NULL) { \
-            LOG_ERROR("Error :%s, :%d, not createAudioFramePlugin, plugin \"%s\"\n", __FUNCTION__, __LINE__, pluginId.c_str());\
-            break;\
-        }
-
-#define CHECK_AUDIO_PLUGIN_MANAGER_STATUS(pEngine) \
-        if (!pEngine->m_audioFramePluginManager.get()) { \
-            LOG_ERROR("Error :%s, :%d, audioPluginManager not registered \n", __FUNCTION__, __LINE__); \
+#define CHECK_PLUGIN_INSTANCE_EXIST(pluginInfo) \
+        if (pluginInfo.instance == NULL) { \
+            LOG_ERROR("Error :%s, :%d, not release plugin \"%s\"\n", __FUNCTION__, __LINE__, pluginInfo.id);\
             break;\
         }
 
@@ -551,7 +532,7 @@ namespace agora {
         status = napi_get_value_nodestring_(arg, nodeStr); \
         CHECK_NAPI_STATUS(pEngine, status) \
         str = nodeStr;
-#endif
+
 
 typedef int int32;
 typedef NodeString nodestring;

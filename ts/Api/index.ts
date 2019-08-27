@@ -47,7 +47,10 @@ import {
   ChannelMediaRelayError,
   ChannelMediaRelayConfiguration
 } from './native_type';
-
+import {
+  PluginInfo,
+  Plugin
+} from './plugin';
 const agora = require('../../build/Release/agora_node_ext');
 
 /**
@@ -224,7 +227,7 @@ class AgoraRtcEngine extends EventEmitter {
     });
 
     this.rtcEngine.onEvent('localAudioStats', function(stats: LocalAudioStats) {
-      fire('localAudioStateChanged', stats);
+      fire('localAudioStats', stats);
     });
 
     this.rtcEngine.onEvent('remotevideostats', function(
@@ -396,6 +399,7 @@ class AgoraRtcEngine extends EventEmitter {
       uid: number,
       reason: number
     ) {
+      fire('userOffline', uid, reason);
       if (!self.streams) {
         self.streams = new Map();
         console.log('Warning!!!!!!, streams is undefined.');
@@ -4271,6 +4275,7 @@ declare interface AgoraRtcEngine {
    * and more for the Live-broadcast profile), the SDK assumes that the user drops offline. Unreliable network connections may lead to false detections, so we recommend using a signaling system for more reliable offline detection.
    */
   on(evt: 'removeStream', cb: (uid: number, reason: number) => void): this;
+  on(evt: 'userOffline', cb: (uid: number, reason: number) => void): this;
   /** Occurs when a remote user's audio stream is muted/unmuted.
    *
    * The SDK triggers this callback when the remote user stops or resumes sending the audio stream by calling the {@link muteLocalAudioStream} method.

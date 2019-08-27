@@ -1,3 +1,8 @@
+import {
+  PluginInfo,
+  Plugin
+} from './plugin';
+
 /**
  * Network quality types:
  *
@@ -2322,42 +2327,29 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  registerAudioFramePluginManager(): number;
+  initializePluginManager(): number;
   /**
    * @ignore
    */
-  unRegisterAudioFramePluginManager(): number;
+  releasePluginManager(): number;
   /**
    * @ignore
    */
-  registerAudioFramePlugin(pluginId: string): number;
+  getPlugins(): Array<{id: string}>;
   /**
    * @ignore
    */
-  unRegisterAudioFramePlugin(pluginId: string): number;
+  registerPlugin(pluginInfo: PluginInfo): number;
   /**
    * @ignore
    */
-  loadPlugin(pluginId: string, pluginPath: string): number;
+  unregisterPlugin(pluginId: string): number;
   /**
    * @ignore
    */
-  unLoadPlugin(pluginId: string): number;
+  enablePlugin(pluginId: string, enabled: boolean): number;
   /**
    * @ignore
    */
-  enablePlugin(pluginId: string): number;
-  /**
-   * @ignore
-   */
-  disablePlugin(pluginId: string): number;
-  /**
-   * @ignore
-   */
-  setPluginStringParameter(
-    pluginId: string,
-    key: string,
-    value: string
-  ): number;
-  setPluginBoolParameter(pluginId: string, key: string, value: boolean): number;
+  setPluginParameter(pluginId: string, param: string): number;
 }
