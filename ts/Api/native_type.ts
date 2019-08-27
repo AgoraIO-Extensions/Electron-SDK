@@ -424,25 +424,29 @@ export interface RtcStats {
   /** 
    * @since 2.9.0
    * 
-   * Total number of audio bytes received (bytes), represented by an aggregate value. 
+   * Total number of audio bytes received (bytes), represented by an aggregate 
+   * value. 
    */
   rxAudioKBytes: number;
   /** 
    * @since 2.9.0
    * 
-   * Total number of audio bytes sent (bytes), represented by an aggregate value. 
+   * Total number of audio bytes sent (bytes), represented by an aggregate 
+   * value. 
    */
   txAudioKBytes: number;
   /** 
    * @since 2.9.0
    * 
-   * Total number of video bytes received (bytes), represented by an aggregate value. 
+   * Total number of video bytes received (bytes), represented by an aggregate 
+   * value. 
    */
   rxVideoKBytes: number;
   /** 
    * @since 2.9.0
    * 
-   * Total number of video bytes sent (bytes), represented by an aggregate value. 
+   * Total number of video bytes sent (bytes), represented by an aggregate 
+   * value. 
    */
   txVideoKBytes: number;
   /** Client-server latency. */
@@ -587,10 +591,13 @@ export interface VideoEncoderConfiguration {
     *
     * The Communication profile prioritizes smoothness, while the 
     * Live-broadcast profile prioritizes video quality 
-    * (requiring a higher bitrate). We recommend setting the bitrate mode to address this difference.
+    * (requiring a higher bitrate). We recommend setting the bitrate mode to 
+    * address this difference.
     *
-    * The following table lists the recommended video encoder configurations, where the base bitrate applies to the Communication profile.
-    * Set your bitrate based on this table. If you set a bitrate beyond the proper range, the SDK automatically sets it to within the range.
+    * The following table lists the recommended video encoder configurations, 
+    * where the base bitrate applies to the Communication profile.
+    * Set your bitrate based on this table. If you set a bitrate beyond the 
+    * proper range, the SDK automatically sets it to within the range.
     *
     * <table>
     *     <tr>
@@ -796,8 +803,10 @@ export enum OrientationMode  {
  * passed on from the video encoder. 
  * 
  * Mainly used between Agora’s SDKs.
- * - If the captured video is in landscape mode, the output video is in landscape mode.
- * - If the captured video is in portrait mode, the output video is in portrait mode.
+ * - If the captured video is in landscape mode, the output video is in 
+ * landscape mode.
+ * - If the captured video is in portrait mode, the output video is in 
+ * portrait mode.
  */
   ORIENTATION_MODE_ADAPTIVE = 0,
 /**
@@ -1139,7 +1148,8 @@ export type ConnectionState =
   | 2 // 2: The SDK is connecting to Agora's edge server.
   | 3
   | 4
-  | 5; // 5: The SDK fails to connect to Agora's edge server or join the channel.
+  | 5; // 5: The SDK fails to connect to Agora's edge server or join the 
+  channel.
 
   /**
    * Reasons for a connection state change.
