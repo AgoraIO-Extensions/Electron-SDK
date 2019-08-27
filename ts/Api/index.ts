@@ -1727,7 +1727,7 @@ class AgoraRtcEngine extends EventEmitter {
    * This method disables or re-enables the local video capturer, and does not 
    * affect receiving the remote video stream.
    * 
-   * After you call the enableVideo method, the local video capturer is enabled 
+   * After you call the {@link enableVideo} method, the local video capturer is enabled 
    * by default. You can call enableLocalVideo(false) to disable the local 
    * video capturer. If you want to re-enable it, call enableLocalVideo(true).
    * 
@@ -3445,6 +3445,7 @@ class AgoraRtcEngine extends EventEmitter {
    * channelMediaRelayState and channelMediaRelayEvent callbacks, 
    * and these callbacks report the states and events of the media stream 
    * relay.
+   * 
    * - If the channelMediaRelayState callback reports the state code `1` and 
    * `0` in {@link ChannelMediaRelayState}, and the and the 
    * channelMediaRelayEvent 
@@ -3464,7 +3465,8 @@ class AgoraRtcEngine extends EventEmitter {
    * the current relay.
    * 
    * @param config The configuration of the media stream relay: 
-   * {@link channelMediaRelayConfiguration}.
+   * {@link ChannelMediaRelayConfiguration}.
+   * 
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -4063,7 +4065,7 @@ declare interface AgoraRtcEngine {
    * **Note**:
    * 
    * If you have called the {@link enableDualStream} method, the 
-   * onLocalVideoStats callback reports the statistics of the high-video 
+   * localVideoStats callback reports the statistics of the high-video 
    * stream (high bitrate, and high-resolution video stream).
    * 
    * - stats: The statistics of the local video stream. See {@link LocalVideoStats}.
@@ -4209,7 +4211,11 @@ declare interface AgoraRtcEngine {
     evt: 'firstLocalVideoFrame',
     cb: (width: number, height: number, elapsed: number) => void
   ): this;
-  /** Occurs when the first remote video frame is received and decoded.
+  /** 
+   * @deprecated This callback is deprecated. Use the remoteVideoStateChanged
+   * callback instead.
+   * 
+   * Occurs when the first remote video frame is received and decoded.
    * - uid: User ID of the remote user sending the video stream.
    * - elapsed: Time elapsed (ms) from the local user calling the {@link joinChannel} method until the SDK triggers this callback.
    * This callback is triggered in either of the following scenarios:
@@ -4315,10 +4321,8 @@ declare interface AgoraRtcEngine {
    *  - false: Unmuted.
    */
   on(evt: 'userMuteAudio', cb: (uid: number, muted: boolean) => void): this;
+  
   /** 
-   * @deprecated This callback is deprecated. User the remoteVideoStateChanged 
-   * callback instead.
-   * 
    * Occurs when a remote user's video stream playback pauses/resumes.
    *
    * The SDK triggers this callback when the remote user stops or resumes sending the video stream by calling the {@link muteLocalVideoStream} method.
@@ -4488,9 +4492,12 @@ declare interface AgoraRtcEngine {
   on(evt: 'videoSourceLeaveChannel', cb: () => void): this;
   /** Occurs when the remote video state changes.
    *  - uid: ID of the user whose video state changes.
-   *  - state: State of the remote video. See {@link RemoteVideoState}.
-   *  - reason: The reason of the remote video state change. See {@link RemoteVideoStateReason}
-   *  - elapsed: Time elapsed (ms) from the local user calling the joinChannel method until the SDK triggers this callback.
+   *  - state: State of the remote video. 
+   * See {@link RemoteVideoState}.
+   *  - reason: The reason of the remote video state change. 
+   * See {@link RemoteVideoStateReason}
+   *  - elapsed: Time elapsed (ms) from the local user calling the 
+   * {@link joinChannel} method until the SDK triggers this callback.
    */
   on(
     evt: 'remoteVideoStateChanged',
@@ -4692,7 +4699,8 @@ declare interface AgoraRtcEngine {
    * 
    * - uid ID of the remote user whose audio state changes.
    * 
-   * - state State of the remote audio: {@link RemoteAudioState}.
+   * - state State of the remote audio: 
+   * {@link RemoteAudioState}.
    * 
    * - reason The reason of the remote audio state change: 
    * {@link RemoteAudioStateReason}.
