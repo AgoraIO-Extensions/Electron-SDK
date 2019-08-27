@@ -4386,85 +4386,64 @@ class AgoraRtcEngine extends EventEmitter {
   // ===========================================================================
   // plugin apis
   // ===========================================================================
-  /**     
-   * Private Interfaces.     
-   * @ignore    
-   */
-  registerAudioFramePluginManager(): number {
-    return this.rtcEngine.registerAudioFramePluginManager();
-  }
-  /**     
-   * Private Interfaces.     
-   * @ignore    
-   */
-  unRegisterAudioFramePluginManager(): number {
-    return this.rtcEngine.unRegisterAudioFramePluginManager();
-  }
-  /**     
-   * Private Interfaces.     
-   * @ignore    
-   */
-  registerAudioFramePlugin(pluginId: string): number {
-    return this.rtcEngine.registerAudioFramePlugin(pluginId);
-  }
-  /**     
-   * Private Interfaces.     
-   * @ignore    
-   */
-  unRegisterAudioFramePlugin(pluginId: string): number {
-    return this.rtcEngine.unRegisterAudioFramePlugin(pluginId);
-  }
-  /**     
-   * Private Interfaces.     
-   * @ignore    
-   */
-  loadPlugin(pluginId: string, pluginPath: string): number {
-    return this.rtcEngine.loadPlugin(pluginId, pluginPath);
-  }
-  /**     
-   * Private Interfaces.     
-   * @ignore    
-   */
-  unloadPlugin(pluginId: string): number {
-    return this.rtcEngine.unLoadPlugin(pluginId);
-  }
-  /**     
-   * Private Interfaces.     
-   * @ignore    
-   */
-  enablePlugin(pluginId: string): number {
-    return this.rtcEngine.enablePlugin(pluginId);
+  
+  initializePluginManager(): number {
+    return this.rtcEngine.initializePluginManager();
   }
 
-  /**     
-   * Private Interfaces.     
-   * @ignore    
-   */
-  disablePlugin(pluginId: string): number {
-    return this.rtcEngine.disablePlugin(pluginId);
+  releasePluginManager(): number {
+    return this.rtcEngine.releasePluginManager();
   }
-  /**     
-   * Private Interfaces.     
-   * @ignore    
-   */
-  setPluginStringParameter(
-    pluginId: string,
-    key: string,
-    value: string
-  ): number {
-    return this.rtcEngine.setPluginStringParameter(pluginId, key, value);
-  }
-  /**     
-   * Private Interfaces.     
-   * @ignore    
-   */
-  setPluginBoolParameter(
-    pluginId: string,
-    key: string,
-    value: boolean
-  ): number {
 
-    return this.rtcEngine.setPluginBoolParameter(pluginId, key, value);
+  registerPlugin(info: PluginInfo): number {
+    return this.rtcEngine.registerPlugin(info);
+  }
+
+  unregisterPlugin(pluginId: string): number {
+    return this.rtcEngine.unregisterPlugin(pluginId);
+  }
+
+  getPlugins() {
+    return this.rtcEngine.getPlugins().map(item => {
+      return this.createPlugin(item.id)
+    })
+  }
+
+  /**
+   * @ignore
+   * @param pluginId 
+   */
+  createPlugin(pluginId: string): Plugin {
+    return {
+      id: pluginId,
+      enable:() => {
+        return this.enablePlugin(pluginId, true)
+      },
+      disable:() => {
+        return this.enablePlugin(pluginId, false)
+      },
+      setParameter: (param: string) => {
+        return this.setPluginParameter(pluginId, param)
+      }
+    }
+  }
+
+  /**
+   * @ignore
+   * @param pluginId 
+   * @param enabled 
+   */
+  enablePlugin(pluginId: string, enabled: boolean): number {
+    return this.rtcEngine.enablePlugin(pluginId, enabled);
+  }
+
+  /**
+   * @ ignore
+   * @param pluginId 
+   * @param param 
+   */
+  setPluginParameter(pluginId: string, param: string): number {
+    return this.rtcEngine.setPluginParameter(pluginId, param);
   }
 }
 /** The AgoraRtcEngine interface. */
