@@ -1724,18 +1724,25 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Disables/Re-enables the local video capture.
    *
-   * The local video is enabled by default. This method enables/disables the local video, which is only applicable to
-   * the scenario when the user only wants to watch the remote video without sending
-   * any video stream to the other user.
-   *
-   * A successful enableLocalVideo method call triggers the userEnableLocalVideo callback on the remote client.
-   *
-   * **Note**: This method affects the internal engine and can be called after calling the {@link leaveChannel} method.
-   *
-   * @param {boolean} enable Sets whether to disable/re-enable the local video, including the capturer, renderer, and sender:
+   * This method disables or re-enables the local video capturer, and does not 
+   * affect receiving the remote video stream.
+   * 
+   * After you call the enableVideo method, the local video capturer is enabled 
+   * by default. You can call enableLocalVideo(false) to disable the local 
+   * video capturer. If you want to re-enable it, call enableLocalVideo(true).
+   * 
+   * After the local video capturer is successfully disabled or re-enabled, 
+   * the SDK triggers the userEnableVideo callback on the remote client.
+   * 
+   * @param {boolean} enable Sets whether to disable/re-enable the local video, 
+   * including the capturer, renderer, and sender:
    * - true: (Default) Re-enable the local video.
-   * - false: Disable the local video. Once the local video is disabled, the remote users can no longer receive the video stream of this user,
-   * while this user can still receive the video streams of other remote users. When you set enabled as false, this method does not require a local camera.
+   * - false: Disable the local video. Once the local video is disabled, the 
+   * remote users can no longer receive the video stream of this user,
+   * while this user can still receive the video streams of other remote users. 
+   * When you set enabled as false, this method does not require a local 
+   * camera.
+   * 
    * @return
    * - 0: Success.
    * - < 0: Failure.
