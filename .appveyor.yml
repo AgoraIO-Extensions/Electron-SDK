@@ -18,5 +18,5 @@ install:
   - npm install
 
 build_script:
-  - npm run build:electron3
+  - npm run build:electron
   - npm run build:ts
