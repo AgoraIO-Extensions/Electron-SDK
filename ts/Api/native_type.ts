@@ -448,11 +448,11 @@ export interface RtcStats {
   /** Client-server latency. */
   lastmileDelay: number;
   /** The packet loss rate (%) from the local client to Agora's edge server, 
-   * before network countermeasures.
+   * before using the anti-packet-loss method.
    */
   txPacketLossRate: number;
   /** The packet loss rate (%) from Agora's edge server to the local client,
-   * before network countermeasures.
+   * before using the anti-packet-loss method.
    */
   rxPacketLossRate: number;
   /** Number of users in the channel. */
@@ -499,24 +499,34 @@ export interface LocalVideoStats {
    */
   qualityAdaptIndication: QualityAdaptIndication;
   /**
+   * @since 2.9.0
+   * 
    * The encoding bitrate (Kbps), which does not include the bitrate of the 
-   * re-transmission video after packet loss.
+   * retransmission video after packet loss.
    */
   encodedBitrate: number;
   /**
+   * @since 2.9.0
+   * 
    * The width of the encoding frame (px).
    */
   encodedFrameWidth: number;
   /**
+   * @since 2.9.0
+   * 
    * The height of the encoding frame (px).
    */
   encodedFrameHeight: number;
   /**
-   * The value of the sent frame rate, represented by an aggregate value.
+   * @since 2.9.0
+   * 
+   * The value of the sent frames, represented by an aggregate value.
    */
   encodedFrameCount: number;
   /**
-   * The codec type of the local video. See {@link VIDEO_CODEC_TYP}.
+   * @since 2.9.0
+   * 
+   * The codec type of the local video. See {@link VIDEO_CODEC_TYPE}.
    */
   codecType: number;
 }
@@ -854,8 +864,10 @@ export interface RemoteVideoStats {
    */
   frozenRate: number;
   /**
-   * Packet loss rate (%) of the remote video stream after network 
-   * countermeasures.
+   * @since 2.9.0
+   * 
+   * Packet loss rate (%) of the remote video stream after using the 
+   * anti-packet-loss method.
    */
   packetLossRate: number;
 }
