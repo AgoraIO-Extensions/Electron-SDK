@@ -4438,7 +4438,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @ ignore
+   * @ignore
    * @param pluginId 
    * @param param 
    */
