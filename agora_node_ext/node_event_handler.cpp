@@ -878,8 +878,9 @@ namespace agora {
         void NodeEventHandler::onTokenPrivilegeWillExpire(const char* token)
         {
             FUNC_TRACE;
-            node_async_call::async_call([this, token] {
-                this->onTokenPrivilegeWillExpire_node(token);
+            std::string sToken(token);
+            node_async_call::async_call([this, sToken] {
+                this->onTokenPrivilegeWillExpire_node(sToken.c_str());
             });
         }
 
