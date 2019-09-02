@@ -108,7 +108,7 @@ Contributions are what make the open source community such an amazing place to b
 [build-url]: https://travis-ci.org/AgoraIO-Usecase/eEducation
 [windows-build-shield]: https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?branch=dev/2.9.0&svg=true
 [windows-build-url]:https://ci.appveyor.com/project/menthays/electron-sdk/branch/dev/2.9.0
-[npm-shield]: https://img.shields.io/npm/v/agora-electron-sdk/education
+[npm-shield]: https://img.shields.io/npm/v/agora-electron-sdk/latest
 [npm]: https://npmjs.com/package/agora-electron-sdk/v/2.9.0
 [license-shield]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: https://choosealicense.com/licenses/mit
