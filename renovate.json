@@ -8,7 +8,7 @@
   },
   "schedule": "every weekend",
   "baseBranches": [
-    "dev/2.9.0, dev/2.3.4.100"
+    "dev/2.9.0", "dev/2.3.4.100"
   ],
   "ignoreDeps": ["electron"]
 }
