@@ -163,8 +163,7 @@ export interface TranscodingConfig {
    * Generally used in high-resolution broadcasts or television.
    */
   videoCodecProfile: number;
-  /** RGB hex value.
-   *
+  /** 
    * The background color in RGB hex value. Value only, do not include a #. 
    * For example, 0xFFB6C1 (light pink). The default value is 0x000000 (black).
    */
