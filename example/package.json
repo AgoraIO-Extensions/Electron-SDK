@@ -19,7 +19,7 @@
     "@babel/plugin-proposal-class-properties": "7.5.5",
     "@babel/preset-react": "7.0.0",
     "electron": "5.0.8",
-    "electron-builder": "21.1.5",
+    "electron-builder": "21.2.0",
     "electron-webpack": "2.7.4",
     "webpack": "4.38.0"
   },
