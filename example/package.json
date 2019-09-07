@@ -9,19 +9,19 @@
     "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
   },
   "dependencies": {
-    "bulma": "^0.7.1",
-    "immutable": "^3.8.2",
-    "react": "^16.4.2",
-    "react-dom": "^16.4.2",
-    "source-map-support": "^0.5.9"
+    "bulma": "0.7.1",
+    "immutable": "3.8.2",
+    "react": "16.9.0",
+    "react-dom": "16.9.0",
+    "source-map-support": "0.5.13"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.0.0",
-    "@babel/preset-react": "^7.0.0",
+    "@babel/plugin-proposal-class-properties": "7.5.5",
+    "@babel/preset-react": "7.0.0",
     "electron": "5.0.8",
-    "electron-builder": "^20.28.3",
-    "electron-webpack": "^2.3.1",
-    "webpack": "^4.17.1"
+    "electron-builder": "20.44.4",
+    "electron-webpack": "2.7.4",
+    "webpack": "4.39.3"
   },
   "resolutions": {
     "webpack-sources": "1.0.1"
