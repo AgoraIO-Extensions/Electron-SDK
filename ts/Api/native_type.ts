@@ -616,6 +616,7 @@ export enum OrientationMode {
 export interface RemoteVideoStats {
   /** User ID of the user sending the video streams. */
   uid: number;
+  userAccount: string;
   /**
    * @deprecated This parameter is deprecated.
    * Time delay (ms).
@@ -752,6 +753,7 @@ export interface RemoteAudioTransportStats {
 export interface RemoteAudioStats {
   /** User ID of the remote user sending the audio streams. */
   uid: number;
+  userAccount: string;
   /** Audio quality received by the user. See {@link AgoraNetworkQuality}. */
   quality: number;
   /** Network delay from the sender to the receiver. */
