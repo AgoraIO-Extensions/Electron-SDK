@@ -18,6 +18,7 @@ export default class App extends Component {
     } else {
       let rtcEngine = this.getRtcEngine()
       this.state = {
+        userAccount: '',
         local: '',
         localVideoSource: '',
         localSharing: false,
@@ -136,15 +137,15 @@ export default class App extends Component {
     rtcEngine.on('localUserRegistered', (uid, userAccount) => {
       console.log(`local user register: ${uid} ${userAccount}`)
     })
+    rtcEngine.on('userInfoUpdated', (uid, userInfo) => {
+      console.log(`userInfoUpdated: ${uid} ${userInfo.userAccount}`)
+    })
   }
 
   handleJoin = () => {
     let encoderWidth = parseInt(this.state.encoderWidth)
     let encoderHeight = parseInt(this.state.encoderHeight)
     let rtcEngine = this.getRtcEngine()
-    rtcEngine.setParameters("{\"rtc.user_account_server_list\":[\"58.211.82.170\"]}")
-    let result = rtcEngine.registerLocalUserAccount(APP_ID, "TEST")
-    console.log(result)
     rtcEngine.setChannelProfile(1)
     rtcEngine.setClientRole(this.state.role)
     rtcEngine.setAudioProfile(0, 1)
@@ -173,7 +174,8 @@ export default class App extends Component {
       rednessLevel: 0
     })
 
-    rtcEngine.joinChannel(null, this.state.channel, '',  Number(`${new Date().getTime()}`.slice(7)))
+    // rtcEngine.joinChannel(null, this.state.channel, '',  Number(`${new Date().getTime()}`.slice(7)))
+    rtcEngine.joinChannelWithUserAccount(null, this.state.channel, this.state.userAccount)
   }
 
   handleCameraChange = e => {
@@ -563,6 +565,12 @@ export default class App extends Component {
             <label className="label">Channel</label>
             <div className="control">
               <input onChange={e => this.setState({channel: e.currentTarget.value})} value={this.state.channel} className="input" type="text" placeholder="Input a channel name" />
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">User Account</label>
+            <div className="control">
+              <input onChange={e => this.setState({userAccount: e.currentTarget.value})} value={this.state.userAccount} className="input" type="text" placeholder="Input your user account" />
             </div>
           </div>
           <div className="field">
