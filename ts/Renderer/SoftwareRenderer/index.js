@@ -113,7 +113,8 @@ class Renderer {
       options.clientHeight
     );
     
-    transformItems.push(`scale(${scale})`)
+    // transformItems.push(`scale(${scale})`)
+    this.canvas.style.zoom = scale;
 
     // check for mirror
     if (options.mirrorView) {
