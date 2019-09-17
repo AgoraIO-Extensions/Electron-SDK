@@ -41,11 +41,13 @@ task('build:node', () => {
 })
 // npm run download --
 task('download', () => {
+   // work-around
+  const addonVersion = '2.9.0'
   cleanup(path.join(__dirname, "./build")).then(_ => {
     download({
       electronVersion: argv().electron_version, 
       platform: argv().platform, 
-      packageVersion
+      packageVersion: addonVersion
     })
   })
 })
