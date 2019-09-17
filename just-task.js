@@ -41,7 +41,7 @@ task('build:node', () => {
 })
 // npm run download --
 task('download', () => {
-   // work-around
+  // work-around
   const addonVersion = '2.9.0'
   cleanup(path.join(__dirname, "./build")).then(_ => {
     download({
@@ -54,15 +54,17 @@ task('download', () => {
 // trigger when run npm install
 task('install', () => {
   const config = Object.assign({}, getArgvFromNpmEnv(), getArgvFromPkgJson())
+  // work-around
+  const addonVersion = '2.9.0'
   if (config.prebuilt) {
     download({
       electronVersion: config.electronVersion, 
       platform: config.platform, 
-      packageVersion
+      packageVersion: addonVersion
     })
   } else {
     build(Object.assign({}, config, {
-      packageVersion: packageVersion
+      packageVersion: addonVersion
     }))
   }
 })
