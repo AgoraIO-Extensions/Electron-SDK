@@ -1,4 +1,4 @@
-## 2.9.0-hotfix.1 (Sep 17th, 2019)
+## 2.9.0-hotfix.2 (Sep 17th, 2019)
 #### :bug: Bug Fix
 * Have to use `zoom` instead of `transform:scale` in temp.
 
