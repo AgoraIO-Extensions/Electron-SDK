@@ -108,6 +108,6 @@ rtcEngine.initialize('<your agora app id>');
 [windows-build-shield]: https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?branch=dev/2.9.0&svg=true
 [windows-build-url]:https://ci.appveyor.com/project/menthays/electron-sdk/branch/dev/2.9.0
 [npm-shield]: https://img.shields.io/npm/v/agora-electron-sdk/education
-[npm]: https://npmjs.com/package/agora-electron-sdk/v/2.9.0-hotfix.1
+[npm]: https://npmjs.com/package/agora-electron-sdk/v/2.9.0-hotfix.2
 [license-shield]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: https://choosealicense.com/licenses/mit
