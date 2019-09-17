@@ -1,3 +1,7 @@
+## 2.3.4-hotfix.4 (Sep 17th, 2019)
+#### :bug: Bug Fix
+* Have to use `zoom` instead of `transform:scale` in temp.
+
 ## 2.3.4-hotfix.3 (Aug 27th, 2019)
 #### :bug: Bug Fix
 * Fixed rotation when using software-rendering.
