@@ -60,7 +60,7 @@ task('install', () => {
     download({
       electronVersion: config.electronVersion, 
       platform: config.platform, 
-      packageVersion
+      packageVersion: addonVersion
     })
   } else {
     build(Object.assign({}, config, {
