@@ -1343,6 +1343,12 @@ class AgoraRtcEngine extends EventEmitter {
    * triggered.
    * - A host should not call this method after joining a channel 
    * (when in a call).
+   * - If you call this method to test the last-mile quality, the SDK consumes 
+   * the bandwidth of a video stream, whose bitrate corresponds to the bitrate 
+   * you set in the setVideoEncoderConfiguration method. After you join the 
+   * channel, whether you have called the {@link disableLastmileTest} method 
+   * or not, 
+   * the SDK automatically stops consuming the bandwidth.
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -1949,15 +1955,31 @@ class AgoraRtcEngine extends EventEmitter {
    * wants to receive remote
    * audio streams without sending any audio stream to other users in the 
    * channel.
-   *
+   * 
    * The SDK triggers the microphoneEnabled callback once the local audio 
    * function is disabled or re-enabled.
+   *
    * @param {boolean} enable Sets whether to disable/re-enable the local audio 
    * function:
    * - true: (Default) Re-enable the local audio function, that is, to start 
    * local audio capture and processing.
    * - false: Disable the local audio function, that is, to stop local audio 
    * capture and processing.
+   * 
+   * **Note**:
+   * - Call this method after calling the {@link joinChannel} method.
+   * - After you disable local audio recording using the 
+   * `enableLocalAudio(false)` method, the system volume switches to the media 
+   * volume. Re-enabling local audio recording using the 
+   * `enableLocalAudio(true)` method switches the system volume back to the 
+   * in-call volume.
+   * - This method is different from the {@link muteLocalAudioStream} method:
+   *  - enableLocalAudio: If you disable or re-enable local audio recording 
+   * using the enableLocalAudio method, the local user may hear a pause in the 
+   * remote audio playback.
+   *  - {@link }muteLocalAudioStream: Stops/Continues sending the local audio 
+   * streams and the local user will not hear a pause in the remote audio 
+   * playback.
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -3477,10 +3499,13 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Adjusts the volume of audio mixing.
    *
-   *  Call this API when you are in a channel.
+   * Call this API when you are in a channel.
+   * 
+   * **Note**: Calling this method does not affect the volume of audio effect 
+   * file playback invoked by the playEffect method.
    * @param {number} volume Audio mixing volume. The value ranges between 0 
-   * and 100 (default).
-   * 100 is the original volume.
+   * and 100 (default). 100 is the original volume.
+   *
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -3634,9 +3659,14 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * ets the video layout and audio settings for CDN live. (CDN live only)
+   * Sets the video layout and audio settings for CDN live. (CDN live only)
    * @param {TranscodingConfig} transcoding Sets the CDN live audio/video 
    * transcoding settings.
+   * 
+   * **Note**: Ensure that you enable the RTMP Converter service before using 
+   * this function. See 
+   * [Prerequisites](https://docs.agora.io/en/Interactive%20Broadcast/cdn_streaming_android?platform=Android#prerequisites).
+   * 
    * @return {number}
    * - 0: Success.
    * - < 0: Failure.
@@ -4901,9 +4931,14 @@ declare interface AgoraRtcEngine {
   on(evt: 'videoStopped', cb: () => void): this;
   /** Occurs when the SDK cannot reconnect to Agora's edge server 10 seconds 
    * after its connection to the server is interrupted.
-   * The SDK triggers this callback when it cannot connect to the server 10 
+   * 
+   * **Note**:
+   * - The SDK triggers this callback when it cannot connect to the server 10 
    * seconds after calling the {@link joinChannel} method, whether or not it 
    * is in the channel.
+   * - If the SDK fails to rejoin the channel 20 minutes after being 
+   * disconnected from Agora's edge server, the SDK stops rejoining the 
+   * channel.
    */
   on(evt: 'connectionLost', cb: () => void): this;
   // on(evt: 'connectionInterrupted', cb: () => void): this;
