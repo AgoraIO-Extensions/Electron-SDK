@@ -118,12 +118,22 @@ export interface TranscodingUser {
 export interface TranscodingConfig {
   /** 
    * Width of the video. The default value is 360. 
-   * The minimum value of width × height is 16 × 16. 
+   * 
+   * If you push video streams to the CDN, set the value of width x height to 
+   * at least 64 x 64 (px), or the SDK will adjust it to 64 x 64 (px).
+   * 
+   * If you push audio streams to the CDN, set the value of width x height to 
+   * 0 x 0 (px).
    */
   width: number;
   /** 
    * Height of the video. The default value is 640. 
-   * The minimum value of width × height is 16 × 16. 
+   * 
+   * If you push video streams to the CDN, set the value of width x height to 
+   * at least 64 x 64 (px), or the SDK will adjust it to 64 x 64 (px).
+   * 
+   * If you push audio streams to the CDN, set the value of width x height to 
+   * 0 x 0 (px).
    */
   height: number;
   /** 
@@ -137,9 +147,9 @@ export interface TranscodingConfig {
    */
   videoBitrate: number;
   /** 
-   * Frame rate of the output video stream set for the CDN live broadcast. 
-   * The default value is 15 fps.
-   *
+   * Frame rate (fps) of the CDN live output video stream. 
+   * The value range is (0, 30]. The default value is 15. 
+   * 
    * **Note**: Agora adjusts all values over 30 to 30.
    */
   videoFrameRate: number;
