@@ -11,8 +11,8 @@
   "dependencies": {
     "bulma": "0.7.5",
     "immutable": "3.8.2",
-    "react": "16.10.1",
-    "react-dom": "16.10.1",
+    "react": "16.10.2",
+    "react-dom": "16.10.2",
     "source-map-support": "0.5.13"
   },
   "devDependencies": {
