@@ -1,3 +1,8 @@
+## 2.3.4-hotfix.5 (Oct 9th, 2019)
+#### :bug: Bug Fix
+* Add missing enableLocalAudio API
+* Update sdk to 2.3.4.104
+
 ## 2.3.4-hotfix.4 (Sep 17th, 2019)
 #### :bug: Bug Fix
 * Have to use `zoom` instead of `transform:scale` in temp.
