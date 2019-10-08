@@ -100,6 +100,37 @@ enum MEDIA_DEVICE_TYPE
     AUDIO_APPLICATION_PLAYOUT_DEVICE = 4,
 };
 
+/** Local video state types
+ */
+enum LOCAL_VIDEO_STREAM_STATE
+{
+    /** Initial state */
+    LOCAL_VIDEO_STREAM_STATE_STOPPED = 0,
+    /** The capturer starts successfully. */
+    LOCAL_VIDEO_STREAM_STATE_CAPTURING = 1,
+    /** The first video frame is successfully encoded. */
+    LOCAL_VIDEO_STREAM_STATE_ENCODING = 2,
+    /** The local video fails to start. */
+    LOCAL_VIDEO_STREAM_STATE_FAILED = 3
+};
+
+/** Local video state error codes
+ */
+enum LOCAL_VIDEO_STREAM_ERROR {
+    /** The local video is normal. */
+    LOCAL_VIDEO_STREAM_ERROR_OK = 0,
+    /** No specified reason for the local video failure. */
+    LOCAL_VIDEO_STREAM_ERROR_FAILURE = 1,
+    /** No permission to use the local video device. */
+    LOCAL_VIDEO_STREAM_ERROR_DEVICE_NO_PERMISSION = 2,
+    /** The local video capturer is in use. */
+    LOCAL_VIDEO_STREAM_ERROR_DEVICE_BUSY = 3,
+    /** The local video capture fails. Check whether the capturer is working properly. */
+    LOCAL_VIDEO_STREAM_ERROR_CAPTURE_FAILURE = 4,
+    /** The local video encoding fails. */
+    LOCAL_VIDEO_STREAM_ERROR_ENCODE_FAILURE = 5
+};
+
 /** Audio recording quality.
 */
 enum AUDIO_RECORDING_QUALITY_TYPE
@@ -544,6 +575,112 @@ enum REMOTE_VIDEO_STATE
       REMOTE_VIDEO_STATE_FROZEN = 2,    // Remote video is frozen, probably due to network issue.
 };
 
+/** Local audio state types.
+ */
+enum LOCAL_AUDIO_STREAM_STATE
+{
+    /** 0: The local audio is in the initial state.
+     */
+    LOCAL_AUDIO_STREAM_STATE_STOPPED = 0,
+    /** 1: The recording device starts successfully.
+     */
+    LOCAL_AUDIO_STREAM_STATE_RECORDING = 1,
+    /** 2: The first audio frame encodes successfully.
+     */
+    LOCAL_AUDIO_STREAM_STATE_ENCODING = 2,
+    /** 3: The local audio fails to start.
+     */
+    LOCAL_AUDIO_STREAM_STATE_FAILED = 3
+};
+
+/** Local audio state error codes.
+ */
+enum LOCAL_AUDIO_STREAM_ERROR
+{
+    /** 0: The local audio is normal.
+     */
+    LOCAL_AUDIO_STREAM_ERROR_OK = 0,
+    /** 1: No specified reason for the local audio failure.
+     */
+    LOCAL_AUDIO_STREAM_ERROR_FAILURE = 1,
+    /** 2: No permission to use the local audio device.
+     */
+    LOCAL_AUDIO_STREAM_ERROR_DEVICE_NO_PERMISSION = 2,
+    /** 3: The microphone is in use.
+     */
+    LOCAL_AUDIO_STREAM_ERROR_DEVICE_BUSY = 3,
+    /** 4: The local audio recording fails. Check whether the recording device
+     * is working properly.
+     */
+    LOCAL_AUDIO_STREAM_ERROR_RECORD_FAILURE = 4,
+    /** 5: The local audio encoding fails.
+     */
+    LOCAL_AUDIO_STREAM_ERROR_ENCODE_FAILURE = 5
+};
+
+/** Remote audio states.
+ */
+enum REMOTE_AUDIO_STATE
+{
+      /** 0: The remote audio is in the default state, probably due to
+       * #REMOTE_AUDIO_REASON_LOCAL_MUTED (3),
+       * #REMOTE_AUDIO_REASON_REMOTE_MUTED (5), or
+       * #REMOTE_AUDIO_REASON_REMOTE_OFFLINE (7).
+       */
+      REMOTE_AUDIO_STATE_STOPPED = 0,  // Default state, audio is started or remote user disabled/muted audio stream
+      /** 1: The first remote audio packet is received.
+       */
+      REMOTE_AUDIO_STATE_STARTING = 1,  // The first audio frame packet has been received
+      /** 2: The remote audio stream is decoded and plays normally, probably
+       * due to #REMOTE_AUDIO_REASON_NETWORK_RECOVERY (2),
+       * #REMOTE_AUDIO_REASON_LOCAL_UNMUTED (4), or
+       * #REMOTE_AUDIO_REASON_REMOTE_UNMUTED (6).
+       */
+      REMOTE_AUDIO_STATE_DECODING = 2,  // The first remote audio frame has been decoded or fronzen state ends
+      /** 3: The remote audio is frozen, probably due to
+       * #REMOTE_AUDIO_REASON_NETWORK_CONGESTION (1).
+       */
+      REMOTE_AUDIO_STATE_FROZEN = 3,    // Remote audio is frozen, probably due to network issue
+      /** 4: The remote audio fails to start, probably due to
+       * #REMOTE_AUDIO_REASON_INTERNAL (0).
+       */
+      REMOTE_AUDIO_STATE_FAILED = 4,    // Remote audio play failed
+};
+
+/** Remote audio state reasons.
+ */
+enum REMOTE_AUDIO_STATE_REASON
+{
+      /** 0: Internal reasons.
+       */
+      REMOTE_AUDIO_REASON_INTERNAL = 0,
+      /** 1: Network congestion.
+       */
+      REMOTE_AUDIO_REASON_NETWORK_CONGESTION = 1,
+      /** 2: Network recovery.
+       */
+      REMOTE_AUDIO_REASON_NETWORK_RECOVERY = 2,
+      /** 3: The local user stops receiving the remote audio stream or
+       * disables the audio module.
+       */
+      REMOTE_AUDIO_REASON_LOCAL_MUTED = 3,
+      /** 4: The local user resumes receiving the remote audio stream or
+       * enables the audio module.
+       */
+      REMOTE_AUDIO_REASON_LOCAL_UNMUTED = 4,
+      /** 5: The remote user stops sending the audio stream or disables the
+       * audio module.
+       */
+      REMOTE_AUDIO_REASON_REMOTE_MUTED = 5,
+      /** 6: The remote user resumes sending the audio stream or enables the
+       * audio module.
+       */
+      REMOTE_AUDIO_REASON_REMOTE_UNMUTED = 6,
+      /** 7: The remote user leaves the channel.
+       */
+      REMOTE_AUDIO_REASON_REMOTE_OFFLINE = 7,
+};
+
 /** Video frame rate. */
 enum FRAME_RATE
 {
@@ -655,6 +792,50 @@ enum CONNECTION_CHANGED_REASON_TYPE
   CONNECTION_CHANGED_LEAVE_CHANNEL = 5,
 };
 
+/** State of lastmile probe result. */
+enum LASTMILE_PROBE_RESULT_STATE {
+  /* Lastmile probe result is complete. */ 
+  LASTMILE_PROBE_RESULT_COMPLETE = 1,   
+  /* Indicates the probe result is incomplete and bandwidth estimation is not available, probably caused by temporary limited test resources. */
+  LASTMILE_PROBE_RESULT_INCOMPLETE_NO_BWE = 2,
+  /* Bwe probe result is not available, probably due to network down. */
+  LASTMILE_PROBE_RESULT_UNAVAILABLE = 3  
+}; 
+
+/** Lastmile probe result in one direction. */
+struct LastmileProbeOneWayResult {
+  /* Packet Loss Rate in range of [0, 100] */  
+  unsigned int packetLossRate;
+  /* Network jitter in milliseconds.*/
+  unsigned int jitter;
+  /* Bandwidth estimation in Kbps. */
+  unsigned int availableBandwidth;
+};
+
+/** Result of lastmile probe. */
+struct LastmileProbeResult{ 
+  /* State of lastmile probe report. */  
+  LASTMILE_PROBE_RESULT_STATE state; 
+  /* Uplink probe result */
+  LastmileProbeOneWayResult uplinkReport; 
+  /* Downlink probe result */   
+  LastmileProbeOneWayResult downlinkReport;    
+  /* Round-Trip Time in milliseconds. */
+  unsigned int rtt;
+}; 
+
+/** Lastmile probe configuration. */
+struct LastmileProbeConfig {
+  /** Whether to probe uplink of lastmile. i.e., audience don't need probe uplink bandwidth. */
+  bool probeUplink;
+  /** Whether to probe downlink of lastmile. */
+  bool probeDownlink;
+  /** The expected maximum sending bitrate in Kbps in range of [100, 5000], It is recommended to set this value according to the required bitrate of selected video profile. */
+  unsigned int expectedUplinkBitrate;
+  /** The expected maximum receive bitrate in Kbps in range of [100, 5000]. */
+  unsigned int expectedDownlinkBitrate;
+};
+
 /** Properties of the audio volume information.
 
  An array containing the user ID and volume information for each speaker.
@@ -713,6 +894,12 @@ struct RtcStats
     /** Client-server latency (ms)
      */
     unsigned short lastmileDelay;
+    /** Client-server loss rate (%)
+     */
+    unsigned short txPacketLossRate;
+    /** Server-Client loss rate (%)
+     */
+    unsigned short rxPacketLossRate;
     /** Number of users in the channel.
 
      - Communication profile: The number of users in the channel.
@@ -730,11 +917,22 @@ struct RtcStats
      System CPU usage (%).
      */
     double cpuTotalUsage;
-
     /**
      Network gateway Rtt (ms)
      */
     int gatewayRtt;
+    /**
+     Application memory usage (%).
+     */
+    double memoryAppUsageRatio;
+    /**
+     System memory usage (%).
+     */
+    double memoryTotalUsageRatio;
+    /**
+     Application memory size (KB).
+     */
+    int memoryAppUsageInKbytes;
   RtcStats()
       : duration(0)
       , txBytes(0)
@@ -746,10 +944,29 @@ struct RtcStats
       , rxVideoKBitRate(0)
       , txVideoKBitRate(0)
       , lastmileDelay(0)
+      , txPacketLossRate(0)
+      , rxPacketLossRate(0)
       , userCount(0)
       , cpuAppUsage(0)
       , cpuTotalUsage(0)
-      , gatewayRtt(0) {}
+      , gatewayRtt(0)
+      , memoryAppUsageRatio(0)
+      , memoryTotalUsageRatio(0)
+      , memoryAppUsageInKbytes(0) {}
+};
+
+/** Audio statistics of the local user */
+struct LocalAudioStats
+{
+    /** The number of channels.
+     */
+    int numChannels;
+    /** The sample rate (Hz).
+     */
+    int sentSampleRate;
+    /** The average sending bitrate (Kbps).
+     */
+    int sentBitrate;
 };
 
 /** Statistics of the local video stream.
@@ -1573,6 +1790,11 @@ public:
         (void)quality;
     }
 
+    /** Called when lastmile bandwidth estimator is completed. */
+    virtual void onLastmileProbeResult(const LastmileProbeResult& result) {
+        (void)result;
+    }
+
     /** @deprecated Occurs when the connection between the SDK and the server is interrupted.
 
      Deprecated as of v2.3.2. Replaced by \ref agora::rtc::IRtcEngineEventHandler::onConnectionStateChanged "onConnectionStateChanged(CONNECTION_STATE_RECONNECTING, CONNECTION_CHANGED_INTERRUPTED)".
@@ -1705,6 +1927,17 @@ public:
       (void)stats;
       }
 
+    /** Reports the statistics of the local audio stream.
+     *
+     * The SDK triggers this callback once every two seconds.
+     *
+     * @param stats The statistics of the local audio stream.
+     * See LocalAudioStats.
+     */
+    virtual void onLocalAudioStats(const LocalAudioStats& stats) {
+        (void)stats;
+    }
+
     /** Reports the statistics of the remote audio streams from each user/host.
 
      This callback replaces the \ref agora::rtc::IRtcEngineEventHandler::onAudioQuality "onAudioQuality" callback.
@@ -1719,6 +1952,44 @@ public:
      */
     virtual void onRemoteAudioStats(const RemoteAudioStats& stats) {
         (void)stats;
+    }
+
+    /** Occurs when the local audio state changes.
+     *
+     * This callback indicates the state change of the local audio stream,
+     * including the state of the audio recording and encoding, and allows
+     * you to troubleshoot issues when exceptions occur.
+     *
+     * @note
+     * When the state is #LOCAL_AUDIO_STREAM_STATE_FAILED (3), see the `error`
+     * parameter for details.
+     *
+     * @param state State of the local audio. See #LOCAL_AUDIO_STREAM_STATE.
+     * @param error The error information of the local audio.
+     * See #LOCAL_AUDIO_STREAM_ERROR.
+     */
+    virtual void onLocalAudioStateChanged(LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error) {
+        (void)state;
+        (void)error;
+    }
+
+    /** Occurs when the remote audio state changes.
+     *
+     * This callback indicates the state change of the remote audio stream.
+     *
+     * @param uid ID of the remote user whose audio state changes.
+     * @param state State of the remote audio. See #REMOTE_AUDIO_STATE.
+     * @param reason The reason of the remote audio state change.
+     * See #REMOTE_AUDIO_STATE_REASON.
+     * @param elapsed Time elapsed (ms) from the local user calling the
+     * \ref IRtcEngine::joinChannel "joinChannel" method until the SDK
+     * triggers this callback.
+     */
+    virtual void onRemoteAudioStateChanged(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) {
+        (void)uid;
+        (void)state;
+        (void)reason;
+        (void)elapsed;
     }
 
     /** Reports which users are speaking and the speakers' volume.
@@ -1949,6 +2220,11 @@ public:
     virtual void onAudioEffectFinished(int soundId) {
     }
 
+    virtual void onFirstRemoteAudioDecoded(uid_t uid, int elapsed) {
+        (void)uid;
+        (void)elapsed;
+    }
+
     /** Occurs when the video device state changes.
 
      @note On a Windows device with an external camera for video capturing, the video disables once the external camera is unplugged.
@@ -1961,6 +2237,18 @@ public:
         (void)deviceId;
         (void)deviceType;
         (void)deviceState;
+    }
+
+    /** Occurs when the local video stream state changes.
+
+     @note This callback indicates the state of the local video stream, including camera capturing and video encoding, and allows you to troubleshoot issues when exceptions occur.
+
+     @param localVideoState State type #LOCAL_VIDEO_STREAM_STATE. When the state is LOCAL_VIDEO_STREAM_STATE_FAILED (3), see the *error* parameter for details.
+     @param error The detailed error information. code #LOCAL_VIDEO_STREAM_ERROR.
+     */
+    virtual void onLocalVideoStateChanged(LOCAL_VIDEO_STREAM_STATE localVideoState, LOCAL_VIDEO_STREAM_ERROR error) {
+        (void)localVideoState;
+        (void)error;
     }
 
     /** Occurs when the video size or rotation of a specified user changes.
@@ -2599,7 +2887,33 @@ public:
      */
    virtual int getRecordingDeviceInfo(char deviceId[MAX_DEVICE_ID_LENGTH], char deviceName[MAX_DEVICE_ID_LENGTH]) = 0;
 
-    /** Releases all IAudioDeviceManager resources.
+   /** Starts the microphone to playback device test.
+
+   This method tests whether the microphone and playback device works properly. Once the test starts, your speech is captured by the microphone and then played through the speaker，
+   and the SDK uses the \ref IRtcEngineEventHandler::onAudioVolumeIndication "onAudioVolumeIndication" callback to notify the application with the volume information.
+
+   @param indicationInterval Interval period (ms) of the \ref IRtcEngineEventHandler::onAudioVolumeIndication "onAudioVolumeIndication" callback cycle.
+
+   @return
+   - 0: Success.
+   - < 0: Failure.
+   */
+   virtual int startAudioDeviceLoopbackTest(int indicationInterval) = 0;
+
+   /** Stops the microphone to playback device test.
+
+   This method stops the microphone to playback device test. You must call this method to stop the test after calling the \ref IAudioDeviceManager::startAudioDeviceLoopbackTest "startAudioDeviceLoopbackTest" method.
+
+   @return
+   - 0: Success.
+   - < 0: Failure.
+   */
+   virtual int stopAudioDeviceLoopbackTest() = 0;
+
+   /** Releases all IAudioDeviceManager resources.
+   */
+
+    /** Releases the resource.
     */
     virtual void release() = 0;
 };
@@ -3109,6 +3423,19 @@ public:
      - < 0: Failure.
      */
     virtual int disableLastmileTest() = 0;
+
+    /** Starts lastmile bandwidth probe. This test will automatically stop if probe complete and onLastmileProbeResult() will be notified with lastmile bandwidth estimation and detail information.  
+     At the beginning of probe test, onLastmileQuality() will also be notified with network quality using |expectedUplinkBitrate| . If network quality is not good, SDK will use lower bitrate to estimate correct usable bandwidth, thus network quality will be set to QUALITY_DETECTING in onLastmileQuality() event. 
+    joinChannel() will stop probe test automatically.
+
+    @config lastmile probe configuration. 
+
+    @return -INVALID_ARGUMENT if expected bitrate is out of range. 
+    */
+    virtual int startLastmileProbeTest(const LastmileProbeConfig& config) = 0;
+
+    /** Stop current lastmile probe test, no report will be notified. */
+    virtual int stopLastmileProbeTest() = 0;
 
     /** Retrieves the warning or error description.
 
