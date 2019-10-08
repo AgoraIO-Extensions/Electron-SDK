@@ -3299,7 +3299,7 @@ namespace agora {
                     pEngine->m_videoVdm = new AVideoDeviceManager(pEngine->m_engine);
                 }
                 IVideoDeviceManager* vdm = pEngine->m_videoVdm->get();
-                auto vdc =vdm->enumerateVideoDevices();
+                auto vdc = vdm ? vdm->enumerateVideoDevices() : nullptr;
                 int count = vdc ? vdc->getCount() : 0;
                 Local<v8::Array> devices = v8::Array::New(args.GetIsolate(), count);
                 char deviceName[MAX_DEVICE_ID_LENGTH] = { 0 };
@@ -3336,7 +3336,7 @@ namespace agora {
                     pEngine->m_videoVdm = new AVideoDeviceManager(pEngine->m_engine);
                 }
                 IVideoDeviceManager* vdm = pEngine->m_videoVdm->get();
-                int result = vdm->setDevice(deviceId);
+                int result = vdm ? vdm->setDevice(deviceId) : -1;
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
@@ -3355,7 +3355,9 @@ namespace agora {
                     pEngine->m_videoVdm = new AVideoDeviceManager(pEngine->m_engine);
                 }
                 IVideoDeviceManager* vdm = pEngine->m_videoVdm->get();
-                vdm->getDevice(deviceId);
+                if(vdm) {
+                    vdm->getDevice(deviceId);
+                }
                 napi_set_string_result(args, deviceId);
             } while (false);
             LOG_LEAVE;
@@ -3374,7 +3376,8 @@ namespace agora {
                     pEngine->m_videoVdm = new AVideoDeviceManager(pEngine->m_engine);
                 }
                 IVideoDeviceManager* vdm = pEngine->m_videoVdm->get();
-                vdm->startDeviceTest(context);
+                int result = vdm ? vdm->startDeviceTest(context) : -1;
+                napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
         }
@@ -3391,7 +3394,8 @@ namespace agora {
                     pEngine->m_videoVdm = new AVideoDeviceManager(pEngine->m_engine);
                 }
                 IVideoDeviceManager* vdm = pEngine->m_videoVdm->get();
-                vdm->stopDeviceTest();
+                int result = vdm ? vdm->stopDeviceTest() : -1;
+                napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
         }
@@ -3408,7 +3412,7 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                auto pdc = adm->enumeratePlaybackDevices();
+                auto pdc = adm ? adm->enumeratePlaybackDevices() : nullptr;
                 int count = pdc ? pdc->getCount() : 0;
                 Local<v8::Array> devices = v8::Array::New(args.GetIsolate(), count);
                 char deviceName[MAX_DEVICE_ID_LENGTH] = { 0 };
@@ -3445,7 +3449,7 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                int result = adm->setPlaybackDevice(deviceId);
+                int result = adm ? adm->setPlaybackDevice(deviceId) : -1;
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
@@ -3463,13 +3467,13 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                auto pdc = adm->enumeratePlaybackDevices();
+                auto pdc = adm ? adm->enumeratePlaybackDevices() : nullptr;
                 int count = pdc ? pdc->getCount() : 0;
                
                 char deviceName[MAX_DEVICE_ID_LENGTH] = { 0 };
                 char deviceId[MAX_DEVICE_ID_LENGTH] = { 0 };
+                Local<v8::Array> devices = v8::Array::New(args.GetIsolate(), 1);
                 if (count > 0) {
-                    Local<v8::Array> devices = v8::Array::New(args.GetIsolate(), 1);
                     Local<v8::Object> dev = v8::Object::New(args.GetIsolate());
                     adm->getPlaybackDeviceInfo(deviceId, deviceName);
 
@@ -3480,8 +3484,8 @@ namespace agora {
                     devices->Set(0, dev);
                     deviceName[0] = '\0';
                     deviceId[0] = '\0';
-                    args.GetReturnValue().Set(devices);
-                }   
+                }
+                args.GetReturnValue().Set(devices);
             } while (false);
             LOG_LEAVE;
         }
@@ -3499,7 +3503,9 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                adm->getPlaybackDevice(deviceId);
+                if(adm) {
+                    adm->getPlaybackDevice(deviceId);
+                }
                 napi_set_string_result(args, deviceId);
             } while (false);
             LOG_LEAVE;
@@ -3521,7 +3527,7 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                int result = adm->setPlaybackDeviceVolume(volume);
+                int result = adm ? adm->setPlaybackDeviceVolume(volume) : -1;
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
@@ -3540,7 +3546,9 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                adm->getPlaybackDeviceVolume(&volume);
+                if(adm) {
+                    adm->getPlaybackDeviceVolume(&volume);
+                }
                 napi_set_int_result(args, volume);
             } while (false);
             LOG_LEAVE;
@@ -3558,7 +3566,7 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                auto pdc = adm->enumerateRecordingDevices();
+                auto pdc = adm ? adm->enumerateRecordingDevices() : nullptr;
                 int count = pdc ? pdc->getCount() : 0;
                 Local<v8::Array> devices = v8::Array::New(args.GetIsolate(), count);
                 char deviceName[MAX_DEVICE_ID_LENGTH] = { 0 };
@@ -3595,7 +3603,7 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                int result = adm->setRecordingDevice(deviceId);
+                int result = adm ? adm->setRecordingDevice(deviceId) : -1;
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
@@ -3613,13 +3621,13 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                auto pdc = adm->enumerateRecordingDevices();
+                auto pdc = adm ? adm->enumerateRecordingDevices() : nullptr;
                 int count = pdc ? pdc->getCount() : 0;
 
                 char deviceName[MAX_DEVICE_ID_LENGTH] = { 0 };
                 char deviceId[MAX_DEVICE_ID_LENGTH] = { 0 };
+                Local<v8::Array> devices = v8::Array::New(args.GetIsolate(), 1);
                 if (count > 0) {
-                    Local<v8::Array> devices = v8::Array::New(args.GetIsolate(), 1);
                     Local<v8::Object> dev = v8::Object::New(args.GetIsolate());
                     adm->getRecordingDeviceInfo(deviceId, deviceName);
 
@@ -3630,8 +3638,8 @@ namespace agora {
                     devices->Set(0, dev);
                     deviceName[0] = '\0';
                     deviceId[0] = '\0';
-                    args.GetReturnValue().Set(devices);
                 }
+                args.GetReturnValue().Set(devices);
             } while (false);
             LOG_LEAVE;
         }
@@ -3649,7 +3657,9 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                adm->getRecordingDevice(deviceId);
+                if(adm) {
+                    adm->getRecordingDevice(deviceId);
+                }
                 napi_set_string_result(args, deviceId);
             } while (false);
             LOG_LEAVE;
@@ -3668,7 +3678,9 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                adm->getRecordingDeviceVolume(&volume);
+                if(adm) {
+                    adm->getRecordingDeviceVolume(&volume);
+                }
                 napi_set_int_result(args, volume);
             } while (false);
             LOG_LEAVE;
@@ -3690,7 +3702,7 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                int result = adm->setRecordingDeviceVolume(volume);
+                int result = adm ? adm->setRecordingDeviceVolume(volume) : -1;
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
@@ -3712,7 +3724,7 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                int result = adm->startPlaybackDeviceTest(filePath);
+                int result = adm ? adm->startPlaybackDeviceTest(filePath) : -1;
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
@@ -3730,7 +3742,7 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                int result = adm->stopPlaybackDeviceTest();
+                int result = adm ? adm->stopPlaybackDeviceTest() : -1;
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
@@ -3752,7 +3764,7 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                int result = adm->startRecordingDeviceTest(indicateInterval);
+                int result = adm ? adm->startRecordingDeviceTest(indicateInterval) : -1;
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
@@ -3770,7 +3782,7 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                int result = adm->stopRecordingDeviceTest();
+                int result = adm ? adm->stopRecordingDeviceTest() : -1;
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
@@ -3789,7 +3801,9 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                adm->getPlaybackDeviceMute(&mute);
+                if(adm) {
+                    adm->getPlaybackDeviceMute(&mute);
+                }
                 napi_set_bool_result(args, mute);
             } while (false);
             LOG_LEAVE;
@@ -3811,7 +3825,7 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                int result = adm->setPlaybackDeviceMute(mute);
+                int result = adm ? adm->setPlaybackDeviceMute(mute) : -1;
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
@@ -3830,7 +3844,9 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                adm->getRecordingDeviceMute(&mute);
+                if(adm) {
+                    adm->getRecordingDeviceMute(&mute);
+                }
                 napi_set_bool_result(args, mute);
             } while (false);
             LOG_LEAVE;
@@ -3852,7 +3868,7 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                int result = adm->setRecordingDeviceMute(mute);
+                int result = adm ? adm->setRecordingDeviceMute(mute) : -1;
                 napi_set_int_result(args, result);
             } while (false);
             LOG_LEAVE;
