@@ -1149,6 +1149,17 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @description This method disables the local audio, which is only applicable to
+   * the scenario when the user only wants to watch the remote audio without sending
+   * any audio stream to the other user.
+   * @param {boolean} enable enable/disable audio
+   * @returns {number} 0 for success, <0 for failure
+   */
+  enableLocalAudio(enable: boolean): number {
+    return this.rtcEngine.enableLocalAudio(enable);
+  }
+
+  /**
    * @description This method mutes/unmutes all remote users’ video streams.
    * @param {boolean} mute mute/unmute video
    * @returns {number} 0 for success, <0 for failure

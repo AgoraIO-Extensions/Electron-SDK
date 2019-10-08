@@ -57,6 +57,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setVideoEncoderConfiguration)
                 PROPERTY_METHOD_DEFINE(enableAudio)
                 PROPERTY_METHOD_DEFINE(disableAudio)
+                PROPERTY_METHOD_DEFINE(enableLocalAudio)
                 PROPERTY_METHOD_DEFINE(setAudioProfile)
                 PROPERTY_METHOD_DEFINE(getCallId)
                 PROPERTY_METHOD_DEFINE(rate)
@@ -2077,6 +2078,25 @@ namespace agora {
                 canvas.renderMode = RENDER_MODE_HIDDEN;
                 canvas.view = (view_t)context;
                 result = pEngine->m_engine->setupLocalVideo(canvas);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, enableLocalAudio)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                bool enabled = false;
+                napi_status status = napi_get_value_bool_(args[0], enabled);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                result = pEngine->m_engine->enableLocalAudio(enabled);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;

@@ -82,6 +82,7 @@ namespace agora {
             NAPI_API(setVideoEncoderConfiguration);
             NAPI_API(enableAudio);
             NAPI_API(disableAudio);
+            NAPI_API(enableLocalAudio);
             NAPI_API(setAudioProfile);
             NAPI_API(getCallId);
             NAPI_API(rate);
