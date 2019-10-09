@@ -636,3 +636,19 @@ napi_status napi_get_object_property_uid_(Isolate* isolate, const Local<Object>&
     Local<Value> value = napi_get_object_property_value(isolate, obj, propName);
     return agora::rtc::NodeUid::getUidFromNodeValue(value, uid);
 }
+
+#ifdef _WIN32
+char* U2G(const char* srcstr)
+{
+    int len = MultiByteToWideChar(CP_UTF8, 0, srcstr, -1, NULL, 0);
+    wchar_t* wstr = new wchar_t[len + 1];
+    memset(wstr, 0, len + 1);
+    MultiByteToWideChar(CP_UTF8, 0, srcstr, -1, wstr, len);
+    len = WideCharToMultiByte(CP_ACP, 0, wstr, -1, NULL, 0, NULL, NULL);
+    char* deststr = new char[len + 1];
+    memset(deststr, 0, len+1);
+    WideCharToMultiByte(CP_ACP, 0, wstr, -1, deststr, len, NULL, NULL);
+    if(wstr) delete[] wstr;
+    return deststr;
+}
+#endif
