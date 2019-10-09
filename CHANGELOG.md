@@ -1,3 +1,7 @@
+## 2.3.4-hotfix.6 (Oct 10th, 2019)
+#### :bug: Bug Fix
+* Fixed the issue that plugin won't load when there's chinese character in the plugin path
+
 ## 2.3.4-hotfix.5 (Oct 9th, 2019)
 #### :bug: Bug Fix
 * Add missing enableLocalAudio API
