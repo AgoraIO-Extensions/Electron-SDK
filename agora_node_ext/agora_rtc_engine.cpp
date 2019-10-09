@@ -3955,7 +3955,9 @@ namespace agora {
 
                 #ifdef WIN32
                 //AddDllDirectory(mPluginFolderPath.c_str());
-                pluginInfo.pluginModule = LoadLibraryEx(mPluginFilePath.c_str(), NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+                char* wPluginFilePath = U2G(mPluginFilePath.c_str());
+                pluginInfo.pluginModule = LoadLibraryEx(wPluginFilePath, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+                delete[] wPluginFilePath;
                 DWORD error = GetLastError();
                 LOG_ERROR("LoadLibrary Error :%ld", error); 
                 CHECK_PLUGIN_MODULE_EXIST(pluginInfo);
@@ -3985,12 +3987,23 @@ namespace agora {
                 pluginInfo.instance = createPlugin();
                 CHECK_PLUGIN_INSTANCE_EXIST(pluginInfo);
 
+                #ifdef WIN32
+                
+                char* wPluginFolderPath = U2G(mPluginFolderPath.c_str());
+                if (!pluginInfo.instance->load(wPluginFolderPath)) {
+                    LOG_ERROR("Error :%s, :%d, plugin: \"%s\"  IAudioFramePlugin::load Failed\n", __FUNCTION__, __LINE__, pluginInfo.id);
+                    break;
+                }
+                delete[] wPluginFolderPath;
+                #else
                 if (!pluginInfo.instance->load(mPluginFolderPath.c_str())) {
                     LOG_ERROR("Error :%s, :%d, plugin: \"%s\"  IAVFramePlugin::load Failed\n", __FUNCTION__, __LINE__, pluginInfo.id);
                     break;
                 }
+                #endif
                 
                 pluginInfo.enabled = false;
+
                 pEngine->m_avPluginManager->registerPlugin(pluginInfo);
                 result = 0;
             } while (false);
