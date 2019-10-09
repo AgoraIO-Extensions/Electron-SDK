@@ -276,7 +276,38 @@ export default class App extends Component {
           fuEnabled: false
         })
       } else {
-        plugin.setParameter(JSON.stringify({"plugin.fu.authdata": FU_AUTH}))
+        plugin.setParameter(JSON.stringify({
+          "plugin.fu.authdata": FU_AUTH
+        }))
+        plugin.setParameter(JSON.stringify({"plugin.fu.bundles.load": [{
+          bundleName: "face_beautification.bundle",
+          bundleOptions: {
+            "filter_name": "tokyo",
+            "filter_level": 1.0,
+            "color_level": 0.2,
+            "red_level": 0.5,
+            "blur_level": 6.0,
+            "skin_detect": 0.0,
+            "nonshin_blur_scale": 0.45,
+            "heavy_blur": 0,
+            "face_shape": 3,
+            "face_shape_level": 1.0,
+            "eye_enlarging": 0.5,
+            "cheek_thinning": 0.0,
+            "cheek_v": 0.0,
+            "cheek_narrow": 0.0,
+            "cheek_small": 0.0,
+            "cheek_oval": 0.0,
+            "intensity_nose": 0.0,
+            "intensity_forehead": 0.5,
+            "intensity_mouth": 0.5,
+            "intensity_chin": 0.0,
+            "change_frames": 0.0,
+            "eye_bright": 1.0,
+            "tooth_whiten": 1.0,
+            "is_beauty_on": 1.0
+          }
+        }]}))
         plugin.enable();
         this.setState({
           fuEnabled: true
