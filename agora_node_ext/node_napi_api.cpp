@@ -182,7 +182,7 @@ int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type, agora::rtc
     rotation = rotation < 0 ? rotation + 360 : rotation;
     std::lock_guard<std::mutex> lck(m_lock);
     VideoFrameInfo& info = getVideoFrameInfo(type, uid);
-    int destWidth = info.m_destWidth ? info.m_destWidth : stride;
+    int destWidth = info.m_destWidth ? info.m_destWidth : videoFrame.width();
     int destHeight = info.m_destHeight ? info.m_destHeight : videoFrame.height();
     size_t imageSize = sizeof(image_header_type) + destWidth * destHeight * 3 / 2;
     auto s = info.m_buffer.size();
@@ -216,7 +216,7 @@ void NodeVideoFrameTransporter::setupFrameHeader(image_header_type*header, int s
 
 void NodeVideoFrameTransporter::copyFrame(const agora::media::IVideoFrame& videoFrame, VideoFrameInfo& info, int dest_stride, int src_stride, int width, int height)
 {
-    int width2 = width / 2, heigh2 = height / 2;
+    int width2 = dest_stride / 2, heigh2 = height / 2;
     int strideY = videoFrame.stride(IVideoFrame::Y_PLANE);
     int strideU = videoFrame.stride(IVideoFrame::U_PLANE);
     int strideV = videoFrame.stride(IVideoFrame::V_PLANE);
@@ -228,7 +228,7 @@ void NodeVideoFrameTransporter::copyFrame(const agora::media::IVideoFrame& video
     const unsigned char* planeU = videoFrame.buffer(IVideoFrame::U_PLANE);
     const unsigned char* planeV = videoFrame.buffer(IVideoFrame::V_PLANE);
 
-    I420Scale(planeY, strideY, planeU, strideU, planeV, strideV, videoFrame.width(), videoFrame.height(), (uint8*)y, width, (uint8*)u, width2, (uint8*)v, width2, width, height, kFilterNone);
+    I420Scale(planeY, strideY, planeU, strideU, planeV, strideV, videoFrame.width(), videoFrame.height(), (uint8*)y, dest_stride, (uint8*)u, width2, (uint8*)v, width2, width, height, kFilterNone);
 
     info.m_bufferList[0].buffer = &info.m_buffer[0];
     info.m_bufferList[0].length = sizeof(image_header_type);
