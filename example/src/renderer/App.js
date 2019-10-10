@@ -211,9 +211,9 @@ export default class App extends Component {
 
     /**
    * prepare screen share: initialize and join
-   * @param {string} token 
-   * @param {string} info 
-   * @param {number} timeout 
+   * @param {string} token
+   * @param {string} info
+   * @param {number} timeout
    */
   prepareScreenShare(token = null, info = '', timeout = 30000) {
     return new Promise((resolve, reject) => {
@@ -250,7 +250,7 @@ export default class App extends Component {
    * @param {*} rect null/if specified, {x: 0, y: 0, width: 0, height: 0}
    * @param {*} bitrate bitrate of video source screencapture
    */
-  startScreenShare(windowId=0, captureFreq=15, 
+  startScreenShare(windowId=0, captureFreq=15,
     rect={
       top: 0, left: 0, right: 0, bottom: 0
     }, bitrate=0
@@ -418,7 +418,7 @@ export default class App extends Component {
     } else {
       this.rtcEngine.removePublishStreamUrl(url)
     }
-    
+
     this.setState({
       rtmpTestOn: !this.state.rtmpTestOn
     })
@@ -771,11 +771,14 @@ class Window extends Component {
   }
 
   render() {
-    return (
-      <div className="window-item">
-        <div className="video-item" id={'video-' + this.props.uid}></div>
 
-      </div>
-    )
+
+    const isSS = this.props.role === 'localVideoSource' || this.props.role === 'remoteVideoSource' ? "screen": "";
+    return (
+      <div className={`window-item-${isSS}`}>
+        <div className="video-item" id={'video-' + this.props.uid}/>
+    </div>
+
+  )
   }
 }
