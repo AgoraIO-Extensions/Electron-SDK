@@ -13,7 +13,8 @@ if [[ $(python --version 2>&1) =~ 2\.7 ]]
         exit 1;
 fi
 
-npm run build:type
+npm run build:types
+npm run build:node
 npm run build:ts
 npm run build:electron
 cd example
