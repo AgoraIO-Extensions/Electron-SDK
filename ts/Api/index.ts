@@ -536,12 +536,13 @@ class AgoraRtcEngine extends EventEmitter {
       fire('firstLocalAudioFrame', elapsed);
     });
 
-    this.rtcEngine.onEvent('firstremoteaudioframe', function(
+    this.rtcEngine.onEvent('firstremoteaudioframe', (
       uid: number,
       elapsed: number
-    ) {
-      fire('firstremoteaudioframe', uid, elapsed);
-      fire('firstRemoteAudioFrame', uid, elapsed);
+    ) => {
+      let userAccount = this.getUserAccount(uid)
+      fire('firstremoteaudioframe', userAccount, elapsed);
+      fire('firstRemoteAudioFrame', userAccount, elapsed);
     });
 
     this.rtcEngine.onEvent('firstRemoteAudioDecoded', (
