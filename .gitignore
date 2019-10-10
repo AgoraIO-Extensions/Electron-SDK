@@ -4,6 +4,7 @@ node_modules/
 .DS_Store
 error-log.txt
 .vscode
+*.log
 peer.log
 peer.pid
 nohup.out
