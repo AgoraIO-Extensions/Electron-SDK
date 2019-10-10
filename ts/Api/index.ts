@@ -244,16 +244,38 @@ class AgoraRtcEngine extends EventEmitter {
     this.rtcEngine.onEvent('remotevideostats', (
       stats: RemoteVideoStats
     ) => {
-      stats.userAccount = this.getUserAccount(stats.uid)
-      fire('remotevideostats', stats);
-      fire('remoteVideoStats', stats);
+      let statsCopy = Object.assign({}, {
+        uid: this.getUserAccount(stats.uid),
+        delay: stats.delay,
+        width: stats.width,
+        height: stats.height,
+        receivedBitrate: stats.receivedBitrate,
+        decoderOutputFrameRate: stats.decoderOutputFrameRate,
+        rendererOutputFrameRate: stats.rendererOutputFrameRate,
+        rxStreamType: stats.rxStreamType,
+        totalFrozenTime: stats.totalFrozenTime,
+        frozenRate: stats.frozenRate
+      })
+      fire('remotevideostats', statsCopy);
+      fire('remoteVideoStats', statsCopy);
     });
 
     this.rtcEngine.onEvent('remoteAudioStats', (
       stats: RemoteAudioStats
     ) => {
-      stats.userAccount = this.getUserAccount(stats.uid)
-      fire('remoteAudioStats', stats);
+      let statsCopy = Object.assign({}, {
+        uid: this.getUserAccount(stats.uid),
+        quality: stats.quality,
+        networkTransportDelay: stats.networkTransportDelay,
+        jitterBufferDelay: stats.jitterBufferDelay,
+        audioLossRate: stats.audioLossRate,
+        numChannels: stats.numChannels,
+        receivedSampleRate: stats.receivedSampleRate,
+        receivedBitrate: stats.receivedBitrate,
+        totalFrozenTime: stats.totalFrozenTime,
+        frozenRate: stats.frozenRate
+      })
+      fire('remoteAudioStats', statsCopy);
     });
 
     this.rtcEngine.onEvent('remoteAudioTransportStats', (
