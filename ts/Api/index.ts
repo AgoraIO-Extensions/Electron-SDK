@@ -223,7 +223,7 @@ class AgoraRtcEngine extends EventEmitter {
         );
       }
 
-      fire('groupAudioVolumeIndication', speakers.map(s => {return {uid: s.uid, userAccount: this.getUserAccount(s.uid), volume: s.volume}}), speakerNumber, totalVolume);
+      fire('groupAudioVolumeIndication', speakers.map(s => {return {uid: this.getUserAccount(s.uid), volume: s.volume}}), speakerNumber, totalVolume);
     });
 
     this.rtcEngine.onEvent('leavechannel', function() {
