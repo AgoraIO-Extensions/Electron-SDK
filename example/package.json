@@ -21,7 +21,7 @@
     "electron": "5.0.8",
     "electron-builder": "21.2.0",
     "electron-webpack": "2.7.4",
-    "webpack": "4.41.0"
+    "webpack": "4.41.1"
   },
   "resolutions": {
     "webpack-sources": "1.0.1"
