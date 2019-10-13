@@ -1812,6 +1812,10 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.videoSourceEnableLoopbackRecording(enabled)
   }
 
+  videoSourceEnableAudio() : number {
+    return this.rtcEngine.videoSourceEnableAudio()
+  }
+
   /**
    * @description release video source object
    * @returns {number} 0 for success, <0 for failure

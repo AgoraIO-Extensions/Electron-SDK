@@ -1,3 +1,8 @@
+## 2.3.4-hotfix.7
+#### :bug: Bug Fix
+* Fixed video display issue when communiting with web
+* Added videoSourceEnableAudio
+
 ## 2.3.4-hotfix.6 (Oct 10th, 2019)
 #### :bug: Bug Fix
 * Fixed the issue that plugin won't load when there's chinese character in the plugin path
