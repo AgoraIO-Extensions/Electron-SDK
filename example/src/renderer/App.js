@@ -148,10 +148,9 @@ export default class App extends Component {
     rtcEngine.setChannelProfile(1)
     rtcEngine.setClientRole(this.state.role)
     rtcEngine.setAudioProfile(0, 1)
-    rtcEngine.enableVideo()
+    // rtcEngine.enableVideo()
     let logpath = path.resolve(os.homedir(), "./agoramain.sdk")
     rtcEngine.setLogFile(logpath)
-    rtcEngine.enableLocalVideo(true)
     rtcEngine.enableWebSdkInteroperability(true)
     if(encoderWidth === 0 && encoderHeight === 0) {
       //use video profile
@@ -340,9 +339,6 @@ export default class App extends Component {
         })
       } else {
         plugin.setParameter(JSON.stringify({"plugin.fu.authdata": FU_AUTH}))
-        plugin.setParameter(JSON.stringify({
-          "plugin.fu.authdata": FU_AUTH
-        }))
         plugin.setParameter(JSON.stringify({"plugin.fu.bundles.load": [{
           bundleName: "face_beautification.bundle",
           bundleOptions: {
