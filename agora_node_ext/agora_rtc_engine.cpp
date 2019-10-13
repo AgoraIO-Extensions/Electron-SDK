@@ -3973,6 +3973,7 @@ namespace agora {
                     break;
                 }
                 
+                pluginInfo.enabled = false;
                 pEngine->m_avPluginManager->registerPlugin(pluginInfo);
                 result = 0;
             } while (false);
