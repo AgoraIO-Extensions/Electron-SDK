@@ -3317,6 +3317,7 @@ namespace agora {
 
                 strncpy(pluginInfo.id, mPluginId.c_str(), MAX_PLUGIN_ID);
 //                pluginInfo.id = mPluginId.c_str();
+                pluginInfo.enabled = false;
 
                 const size_t last_slash_idx = mPluginFilePath.find_last_of("\\/");
                 if (std::string::npos != last_slash_idx)
