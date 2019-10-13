@@ -161,6 +161,12 @@ namespace agora{
              * @param enabled : whether enable loopbackRecording
              */
             virtual node_error enableLoopbackRecording(bool enabled, const char* deviceName) = 0;
+
+            
+            /**
+             * Enable audio
+             */
+            virtual node_error enableAudio() = 0;
         };
 
         /**
