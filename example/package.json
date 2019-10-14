@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "electron-webpack dev",
+    "dev:errors": "USEERROR=1 electron-webpack dev",
     "postinstall": "electron-builder install-app-deps",
     "compile": "electron-webpack",
     "dist": "yarn compile && electron-builder",

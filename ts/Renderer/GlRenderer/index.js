@@ -12,7 +12,7 @@ const AgoraRender = function () {
     let texCoordBuffer;
     let surfaceBuffer;
     let getErrorCount = 0;
-    const allowAllErrors = false;
+    const allowAllErrors = Boolean(process.env.USEERROR);
     const that = {
         view: undefined,
         mirrorView: false,
