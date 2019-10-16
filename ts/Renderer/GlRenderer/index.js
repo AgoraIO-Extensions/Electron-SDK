@@ -39,14 +39,13 @@ const AgoraRender = function () {
     }
 
     that.bind = function (view) {
-        initCanvas(
-            view,
-            that.mirrorView,
-            view.clientWidth,
-            view.clientHeight,
-            that.initRotation,
-            console.warn
-        );
+        let cb = function failure(err) {
+            console.warn(err);
+            // @PATCH
+            // If there is a WebGL error, we want to throw, not just keep going 
+            throw err;
+        }
+        initCanvas(view, that.mirrorView, view.clientWidth, view.clientHeight, that.initRotation, cb);
     };
 
     that.unbind = function () {
