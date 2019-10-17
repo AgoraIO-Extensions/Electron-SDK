@@ -42,7 +42,7 @@ const AgoraRender = function () {
         let cb = function failure(err) {
             console.warn(err);
             // @PATCH
-            // If there is a WebGL error, we want to throw, not just keep going 
+            // If there is a WebGL error, we want to throw, not just keep going
             throw err;
         }
         initCanvas(view, that.mirrorView, view.clientWidth, view.clientHeight, that.initRotation, cb);
@@ -214,7 +214,7 @@ const AgoraRender = function () {
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, yTexture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, width, height, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, yplane);
-        if (getErrorCount === 5 || allowAllErrors) {
+        if (((getErrorCount % 30) === 0) || allowAllErrors) {
             var e = gl.getError();
             if (e != gl.NO_ERROR) {
                 console.log('upload y plane ', width, height, yplane.byteLength, ' error', e);
@@ -223,7 +223,7 @@ const AgoraRender = function () {
         gl.activeTexture(gl.TEXTURE1);
         gl.bindTexture(gl.TEXTURE_2D, uTexture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, width / 2, height / 2, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, uplane);
-        if (getErrorCount === 10 || allowAllErrors) {
+        if (((getErrorCount % 30) === 10) || allowAllErrors) {
             var e = gl.getError();
             if (e != gl.NO_ERROR) {
                 console.log('upload u plane ', width, height, uplane.byteLength, '  error', e);
@@ -232,7 +232,7 @@ const AgoraRender = function () {
         gl.activeTexture(gl.TEXTURE2);
         gl.bindTexture(gl.TEXTURE_2D, vTexture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, width / 2, height / 2, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, vplane);
-        if (getErrorCount === 15 || allowAllErrors) {
+        if (((getErrorCount % 30) === 20) || allowAllErrors) {
             var e = gl.getError();
             if (e != gl.NO_ERROR) {
                 console.log('upload v plane ', width, height, vplane.byteLength, '  error', e);
