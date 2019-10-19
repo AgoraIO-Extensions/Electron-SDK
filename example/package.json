@@ -9,7 +9,7 @@
     "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
   },
   "dependencies": {
-    "bulma": "0.7.5",
+    "bulma": "0.8.0",
     "immutable": "3.8.2",
     "react": "16.10.2",
     "react-dom": "16.10.2",
