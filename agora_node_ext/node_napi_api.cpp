@@ -364,7 +364,6 @@ void NodeVideoFrameTransporter::FlushVideo()
 
             agora::rtc::node_async_call::async_call([this]() {
                 Isolate *isolate = env;
-                Local<Context> context = isolate->GetCurrentContext();
                 HandleScope scope(isolate);
                 std::lock_guard<std::mutex> lock(m_lock);
                 Local<v8::Array> infos = v8::Array::New(isolate);
@@ -394,7 +393,7 @@ void NodeVideoFrameTransporter::FlushVideo()
                 }
                 if (i > 0) {
                     Local<v8::Value> args[1] = { infos };
-                    callback.Get(isolate)->Call(context, js_this.Get(isolate), 1, args);
+                    callback.Get(isolate)->Call(js_this.Get(isolate), 1, args);
                 }
             });
             std::this_thread::sleep_for(std::chrono::milliseconds(1000 / m_FPS));
@@ -421,7 +420,6 @@ void NodeVideoFrameTransporter::highFlushVideo()
 
             agora::rtc::node_async_call::async_call([this]() {
                 Isolate *isolate = env;
-                Local<Context> context = isolate->GetCurrentContext();
                 HandleScope scope(isolate);
                 std::lock_guard<std::mutex> lock(m_lock);
                 Local<v8::Array> infos = v8::Array::New(isolate);
@@ -445,7 +443,7 @@ void NodeVideoFrameTransporter::highFlushVideo()
 
                 if (i > 0) {
                     Local<v8::Value> args[1] = { infos };
-                    callback.Get(isolate)->Call(context, js_this.Get(isolate), 1, args);
+                    callback.Get(isolate)->Call(js_this.Get(isolate), 1, args);
                 }
             });
             std::this_thread::sleep_for(std::chrono::milliseconds(1000 / m_highFPS));
@@ -542,7 +540,7 @@ Local<Value> napi_create_bool_(Isolate *isolate, const bool& value)
 
 Local<Value> napi_create_string_(Isolate *isolate, const char* value)
 {
-    return String::NewFromUtf8(isolate, value ? value : "").ToLocalChecked();
+    return String::NewFromUtf8(isolate, value ? value : "");
 }
 
 Local<Value> napi_create_double_(Isolate *isolate, const double &value)
