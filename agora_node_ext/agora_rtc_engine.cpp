@@ -256,7 +256,11 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(stopChannelMediaRelay);
 
             EN_PROPERTY_DEFINE()
+#if ELECTRON6
+            module->Set(String::NewFromUtf8(isolate, "NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(isolate->GetCurrentContext()).ToLocalChecked());
+#else
             module->Set(String::NewFromUtf8(isolate, "NodeRtcEngine"), tpl->GetFunction());
+#endif
         }
 
         /**
@@ -471,6 +475,7 @@ namespace agora {
             LOG_ENTER;
 
             do {
+                Isolate* isolate = args.GetIsolate();
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
@@ -478,7 +483,7 @@ namespace agora {
                 napi_status status = napi_get_value_nodestring_(args[0], url);
                 CHECK_NAPI_STATUS(pEngine, status);
                 RtcImage vwm;
-                Local<Object> vmwObj = args[0]->ToObject(args.GetIsolate());
+                Local<Object> vmwObj = napi_to_object(isolate, args[0]);
                 if (napi_get_object_property_nodestring_(args.GetIsolate(), vmwObj, "url", url) == napi_ok) {
                     vwm.url = url;
                 }
@@ -513,13 +518,14 @@ namespace agora {
             TranscodingUser *users = nullptr;
             RtcImage* vwm = nullptr;
             do {
+                Isolate* isolate = args.GetIsolate();
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 LiveTranscoding transcoding;
                 nodestring extrainfo;
                 int videoCodecProfile, audioSampleRateType;
-                Local<Object> obj = args[0]->ToObject(args.GetIsolate());
+                Local<Object> obj = napi_to_object(isolate, args[0]);
                 nodestring transcodingExtraInfo;
                 napi_get_object_property_int32_(args.GetIsolate(), obj, "width", transcoding.width);
                 napi_get_object_property_int32_(args.GetIsolate(), obj, "height", transcoding.height);
@@ -547,7 +553,7 @@ namespace agora {
                 Local<Name> keyName = String::NewFromUtf8(args.GetIsolate(), "watermark", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> wmValue = obj->Get(args.GetIsolate()->GetCurrentContext(), keyName).ToLocalChecked();
                 if (!wmValue->IsNull()) {
-                    Local<Object> objWm = wmValue->ToObject(args.GetIsolate());
+                    Local<Object> objWm = napi_to_object(args.GetIsolate(), wmValue);
                     nodestring wmurl;
                     if (napi_get_object_property_nodestring_(args.GetIsolate(), objWm, "url", wmurl) == napi_ok) {
                         wm->url = wmurl;
@@ -574,7 +580,7 @@ namespace agora {
                     }
                     for (uint32 i = 0; i < transcoding.userCount; i++) {
                         Local<Value> value = usersValue->Get(i);
-                        Local<Object> userObj = value->ToObject(args.GetIsolate());
+                        Local<Object> userObj = napi_to_object(args.GetIsolate(), value);
                         if (userObj->IsNull()) {
                             status = napi_invalid_arg;
                             break;
@@ -612,7 +618,7 @@ namespace agora {
                 InjectStreamConfig config;
                 status = napi_get_value_nodestring_(args[0], url);
                 CHECK_NAPI_STATUS(pEngine, status);
-                Local<Object> configObj = args[1]->ToObject(args.GetIsolate());
+                Local<Object> configObj = napi_to_object(args.GetIsolate(), args[1]);
                 int audioSampleRate;
                 napi_get_object_property_int32_(args.GetIsolate(), configObj, "width", config.width);
                 napi_get_object_property_int32_(args.GetIsolate(), configObj, "height", config.height);
@@ -666,7 +672,7 @@ namespace agora {
                     status = napi_invalid_arg;
                     CHECK_NAPI_STATUS(pEngine, status);
                 }
-                Local<Object> obj = args[1]->ToObject();
+                Local<Object> obj = napi_to_object(args.GetIsolate(), args[1]);
 
                 BeautyOptions opts;
                 int contrast_value = 1;
@@ -874,7 +880,7 @@ namespace agora {
                     CHECK_NAPI_STATUS(pEngine, status);
                 }
 
-                Local<Object> obj = args[0]->ToObject();
+                Local<Object> obj = napi_to_object(args.GetIsolate(), args[0]);
 
                 LastmileProbeConfig config;
                 status = napi_get_object_property_bool_(isolate, obj, "probeUplink", config.probeUplink);
@@ -1022,7 +1028,7 @@ namespace agora {
                     CHECK_NAPI_STATUS(pEngine, status);
                 }
 
-                Local<Object> obj = args[0]->ToObject();
+                Local<Object> obj = napi_to_object(args.GetIsolate(), args[0]);
                 CameraCapturerConfiguration config;
                 int preference = 0;
                 
@@ -1710,7 +1716,7 @@ namespace agora {
                 status = napi_get_value_uint32_(args[1], captureFreq);
                 CHECK_NAPI_STATUS(pEngine, status);
 
-                Local<Object> rect = args[2]->ToObject(args.GetIsolate());
+                Local<Object> rect = napi_to_object(args.GetIsolate(), args[2]);
                 Local<Name> topKey = String::NewFromUtf8(args.GetIsolate(), "top", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> topValue = rect->Get(args.GetIsolate()->GetCurrentContext(), topKey).ToLocalChecked();
                 top = topValue->Int32Value(args.GetIsolate()->GetCurrentContext()).ToChecked();
@@ -1882,7 +1888,7 @@ namespace agora {
                 CHECK_NATIVE_THIS(pEngine);
 
                 int top, left, bottom, right;
-                Local<Object> rect = args[0]->ToObject(args.GetIsolate());
+                Local<Object> rect = napi_to_object(args.GetIsolate(), args[0]);
                 Local<Name> topKey = String::NewFromUtf8(args.GetIsolate(), "top", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> topValue = rect->Get(args.GetIsolate()->GetCurrentContext(), topKey).ToLocalChecked();
                 top = topValue->Int32Value();
@@ -1924,7 +1930,7 @@ namespace agora {
                     status = napi_invalid_arg;
                     CHECK_NAPI_STATUS(pEngine, status);
                 }
-                Local<Object> screenRectObj = args[0]->ToObject();
+                Local<Object> screenRectObj = napi_to_object(args.GetIsolate(), args[0]);
 
                 Rectangle screenRect;
                 status = napi_get_object_property_int32_(isolate, screenRectObj, "x", screenRect.x);
@@ -1941,7 +1947,7 @@ namespace agora {
                     status = napi_invalid_arg;
                     CHECK_NAPI_STATUS(pEngine, status);
                 }
-                Local<Object> displayIdObj = args[0]->ToObject();
+                Local<Object> displayIdObj = napi_to_object(args.GetIsolate(), args[0]);
                 status = napi_get_object_property_uint32_(isolate, displayIdObj, "id", screen.idVal);
                 CHECK_NAPI_STATUS(pEngine, status);
 #endif   
@@ -1951,7 +1957,7 @@ namespace agora {
                     status = napi_invalid_arg;
                     CHECK_NAPI_STATUS(pEngine, status);
                 }
-                Local<Object> obj = args[1]->ToObject();
+                Local<Object> obj = napi_to_object(args.GetIsolate(), args[1]);
 
                 Rectangle regionRect;
                 status = napi_get_object_property_int32_(isolate, obj, "x", regionRect.x);
@@ -1968,7 +1974,7 @@ namespace agora {
                     status = napi_invalid_arg;
                     CHECK_NAPI_STATUS(pEngine, status);
                 }
-                obj = args[2]->ToObject();
+                obj = napi_to_object(args.GetIsolate(), args[2]);
                 ScreenCaptureParameters captureParams;
                 VideoDimensions dimensions;
                 status = napi_get_object_property_int32_(isolate, obj, "width", dimensions.width);
@@ -2023,7 +2029,7 @@ namespace agora {
                     status = napi_invalid_arg;
                     CHECK_NAPI_STATUS(pEngine, status);
                 }
-                Local<Object> obj = args[1]->ToObject();
+                Local<Object> obj = napi_to_object(args.GetIsolate(), args[1]);
 
                 Rectangle regionRect;
                 status = napi_get_object_property_int32_(isolate, obj, "x", regionRect.x);
@@ -2040,7 +2046,7 @@ namespace agora {
                     status = napi_invalid_arg;
                     CHECK_NAPI_STATUS(pEngine, status);
                 }
-                obj = args[2]->ToObject();
+                obj = napi_to_object(args.GetIsolate(), args[2]);
                 ScreenCaptureParameters captureParams;
                 VideoDimensions dimensions;
                 status = napi_get_object_property_int32_(isolate, obj, "width", dimensions.width);
@@ -2077,7 +2083,7 @@ namespace agora {
                     status = napi_invalid_arg;
                     CHECK_NAPI_STATUS(pEngine, status);
                 }
-                Local<Object> obj = args[0]->ToObject();
+                Local<Object> obj = napi_to_object(args.GetIsolate(), args[0]);
                 ScreenCaptureParameters captureParams;
                 VideoDimensions dimensions;
                 status = napi_get_object_property_int32_(isolate, obj, "width", dimensions.width);
@@ -2410,7 +2416,7 @@ namespace agora {
                     status = napi_invalid_arg;
                     CHECK_NAPI_STATUS(pEngine, status);
                 }
-                Local<Object> obj = args[0]->ToObject();
+                Local<Object> obj = napi_to_object(args.GetIsolate(), args[0]);
                 VideoDimensions dimensions;
                 VideoEncoderConfiguration config;
 
@@ -3178,7 +3184,7 @@ namespace agora {
                 status = napi_get_value_int32_(args[1], captureFreq);
                 CHECK_NAPI_STATUS(pEngine, status);
                 
-                Local<Object> rect = args[2]->ToObject(args.GetIsolate());
+                Local<Object> rect = napi_to_object(args.GetIsolate(), args[2]);
                 Local<Name> topKey = String::NewFromUtf8(args.GetIsolate(), "top", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> topValue = rect->Get(args.GetIsolate()->GetCurrentContext(), topKey).ToLocalChecked();
                 top = topValue->Int32Value();
@@ -3229,7 +3235,7 @@ namespace agora {
                 CHECK_NATIVE_THIS(pEngine);
 
                 int top, left, bottom, right; 
-                Local<Object> rect = args[0]->ToObject(args.GetIsolate());
+                Local<Object> rect = napi_to_object(args.GetIsolate(), args[0]);
                 Local<Name> topKey = String::NewFromUtf8(args.GetIsolate(), "top", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> topValue = rect->Get(args.GetIsolate()->GetCurrentContext(), topKey).ToLocalChecked();
                 top = topValue->Int32Value();
@@ -3915,7 +3921,7 @@ namespace agora {
                     CHECK_NAPI_STATUS(pEngine, status);
                 }
 
-                Local<Object> obj = args[0]->ToObject();
+                Local<Object> obj = napi_to_object(args.GetIsolate(), args[0]);
                 nodestring pluginId, pluginFilePath;
                 string mPluginId, mPluginFilePath, mPluginFolderPath;
                 status = napi_get_object_property_nodestring_(isolate, obj, "id", pluginId);
@@ -4403,7 +4409,7 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 ChannelMediaRelayConfiguration config;
-                Local<Object> obj = args[0]->ToObject(args.GetIsolate());
+                Local<Object> obj = napi_to_object(args.GetIsolate(), args[0]);
 
                 if (obj->IsNull()) {
                     status = napi_invalid_arg;
@@ -4416,7 +4422,7 @@ namespace agora {
                 ChannelMediaInfo srcInfo;
                 if (!srcInfoValue->IsNull()) {
                     NodeString channelName, token;
-                    Local<Object> objSrcInfo = srcInfoValue->ToObject(args.GetIsolate());
+                    Local<Object> objSrcInfo = napi_to_object(args.GetIsolate(), srcInfoValue);
                     napi_get_object_property_nodestring_(args.GetIsolate(), objSrcInfo, "channelName", channelName);
                     napi_get_object_property_nodestring_(args.GetIsolate(), objSrcInfo, "token", token);
                     napi_get_object_property_uid_(args.GetIsolate(), objSrcInfo, "uid", srcInfo.uid);
@@ -4439,7 +4445,7 @@ namespace agora {
                 ChannelMediaInfo* destInfos = new ChannelMediaInfo[destInfoCount];
                 for (uint32 i = 0; i < destInfoCount; i++) {
                     Local<Value> value = destInfosValue->Get(i);
-                    Local<Object> destInfoObj = value->ToObject(args.GetIsolate());
+                    Local<Object> destInfoObj = napi_to_object(args.GetIsolate(), value);
                     if (destInfoObj->IsNull()) {
                         status = napi_invalid_arg;
                         break;
@@ -4477,7 +4483,7 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 ChannelMediaRelayConfiguration config;
-                Local<Object> obj = args[0]->ToObject(args.GetIsolate());
+                Local<Object> obj = napi_to_object(args.GetIsolate(), args[0]);
 
                 if (obj->IsNull()) {
                     status = napi_invalid_arg;
@@ -4490,7 +4496,7 @@ namespace agora {
                 ChannelMediaInfo srcInfo;
                 if (!srcInfoValue->IsNull()) {
                     NodeString channelName, token;
-                    Local<Object> objSrcInfo = srcInfoValue->ToObject(args.GetIsolate());
+                    Local<Object> objSrcInfo = napi_to_object(args.GetIsolate(), srcInfoValue);
                     napi_get_object_property_nodestring_(args.GetIsolate(), objSrcInfo, "channelName", channelName);
                     napi_get_object_property_nodestring_(args.GetIsolate(), objSrcInfo, "token", token);
                     napi_get_object_property_uid_(args.GetIsolate(), objSrcInfo, "uid", srcInfo.uid);
@@ -4513,7 +4519,7 @@ namespace agora {
                 ChannelMediaInfo* destInfos = new ChannelMediaInfo[destInfoCount];
                 for (uint32 i = 0; i < destInfoCount; i++) {
                     Local<Value> value = destInfosValue->Get(i);
-                    Local<Object> destInfoObj = value->ToObject(args.GetIsolate());
+                    Local<Object> destInfoObj = napi_to_object(args.GetIsolate(), value);
                     if (destInfoObj->IsNull()) {
                         status = napi_invalid_arg;
                         break;

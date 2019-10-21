@@ -42,6 +42,8 @@ using v8::HandleScope;
 using v8::Name;
 #define NAPI_MODULE(name, fn) NODE_MODULE(name, fn)
 
+#define ELECTRON6 ((NODE_MODULE_VERSION <= 73) && (NODE_MODULE_VERSION > 70))
+
 /**
  * Node status
  */
@@ -238,18 +240,29 @@ private:
 /**
  * used to define class that could be used directly in JS layer.
  */
+#if ELECTRON6
+#define BEGIN_PROPERTY_DEFINE(className, constructor, fieldCount) \
+    Local<FunctionTemplate> tpl = FunctionTemplate::New(isolate, constructor); \
+    tpl->SetClassName(String::NewFromUtf8(isolate, #className).ToLocalChecked()); \
+    tpl->InstanceTemplate()->SetInternalFieldCount(fieldCount);
+#else
 #define BEGIN_PROPERTY_DEFINE(className, constructor, fieldCount) \
     Local<FunctionTemplate> tpl = FunctionTemplate::New(isolate, constructor); \
     tpl->SetClassName(String::NewFromUtf8(isolate, #className)); \
     tpl->InstanceTemplate()->SetInternalFieldCount(fieldCount);
-
+#endif
 /**
  * Add member functions that could be called in JS layer directly.
  */
 #define PROPERTY_METHOD_DEFINE(name) NODE_SET_PROTOTYPE_METHOD(tpl, #name, name);
 
+#if ELECTRON6
+#define EN_PROPERTY_DEFINE() \
+    constructor.Reset(isolate, tpl->GetFunction(isolate->GetCurrentContext()).ToLocalChecked());
+#else
 #define EN_PROPERTY_DEFINE() \
     constructor.Reset(isolate, tpl->GetFunction());
+#endif
 
 #define NAPI_AUTO_LENGTH SIZE_MAX
 
@@ -365,5 +378,6 @@ napi_status napi_get_object_property_nodestring_(Isolate* isolate, const Local<O
 */
 napi_status napi_get_object_property_uid_(Isolate* isolate, const Local<Object>& obj, const std::string& propName, agora::rtc::uid_t& uid);
 
+Local<Object> napi_to_object(Isolate* isolate, const Local<Value>& value);
 
 #endif

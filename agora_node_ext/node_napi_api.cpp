@@ -393,7 +393,11 @@ void NodeVideoFrameTransporter::FlushVideo()
                 }
                 if (i > 0) {
                     Local<v8::Value> args[1] = { infos };
+#if ELECTRON6
+                    callback.Get(isolate)->Call(isolate->GetCurrentContext(), js_this.Get(isolate), 1, args);
+#else
                     callback.Get(isolate)->Call(js_this.Get(isolate), 1, args);
+#endif
                 }
             });
             std::this_thread::sleep_for(std::chrono::milliseconds(1000 / m_FPS));
@@ -443,7 +447,11 @@ void NodeVideoFrameTransporter::highFlushVideo()
 
                 if (i > 0) {
                     Local<v8::Value> args[1] = { infos };
+#if ELECTRON6
+                    callback.Get(isolate)->Call(isolate->GetCurrentContext(), js_this.Get(isolate), 1, args);
+#else
                     callback.Get(isolate)->Call(js_this.Get(isolate), 1, args);
+#endif
                 }
             });
             std::this_thread::sleep_for(std::chrono::milliseconds(1000 / m_highFPS));
@@ -540,7 +548,11 @@ Local<Value> napi_create_bool_(Isolate *isolate, const bool& value)
 
 Local<Value> napi_create_string_(Isolate *isolate, const char* value)
 {
+#if ELECTRON6
+    return String::NewFromUtf8(isolate, value ? value : "").ToLocalChecked();
+#else
     return String::NewFromUtf8(isolate, value ? value : "");
+#endif
 }
 
 Local<Value> napi_create_double_(Isolate *isolate, const double &value)
@@ -635,4 +647,15 @@ napi_status napi_get_object_property_uid_(Isolate* isolate, const Local<Object>&
 {
     Local<Value> value = napi_get_object_property_value(isolate, obj, propName);
     return agora::rtc::NodeUid::getUidFromNodeValue(value, uid);
+}
+
+Local<Object> napi_to_object(Isolate* isolate, const Local<Value>& value)
+{
+#if ELECTRON6
+    Local<Context> context = isolate->GetCurrentContext();
+    Local<Object> obj = value->ToObject(context).ToLocalChecked();
+#else
+    Local<Object> obj = value->ToObject(isolate);
+#endif
+    return obj;
 }
