@@ -1830,6 +1830,11 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * A successful muteLocalAudioStream method call triggers the userMuteAudio 
    * callback on the remote client.
+   * 
+   * If you call {@link setChannelProfile} after this method, the SDK resets 
+   * whether or not to mute the local audio according to the channel profile 
+   * and user role. Therefore, we recommend calling this method after the 
+   * {@link setChannelProfile} method.
    *
    * **Note**: muteLocalAudioStream(true) does not disable the microphone and 
    * thus does not affect any ongoing recording.
@@ -1897,6 +1902,11 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * A successful muteLocalVideoStream method call triggers the userMuteVideo 
    * callback on the remote client.
+   * 
+   * If you call {@link setChannelProfile} after this method, the SDK resets 
+   * whether or not to mute the local video according to the channel profile 
+   * and user role. Therefore, we recommend calling this method after the 
+   * {@link setChannelProfile} method.
    *
    * **Note**: muteLocalVideoStream(true) does not disable the camera and thus 
    * does not affect the retrieval of the local video streams.
@@ -2250,8 +2260,11 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * Use this method before startPreview, or it does not take effect until you 
    * re-enable startPreview.
+   * 
+   * Note: The SDK enables the mirror mode by default.
+   * 
    * @param {number} mirrortype Sets the local video mirror mode:
-   * - 0: The default mirror mode, that is, the mode set by the SDK
+   * - 0: (Default) The SDK enables the mirror mode.
    * - 1: Enable the mirror mode
    * - 2: Disable the mirror mode
    * @return
@@ -3618,20 +3631,22 @@ class AgoraRtcEngine extends EventEmitter {
     * The SDK returns the result of this method call in the streamPublished 
     * callback.
     * **Note**:
-    * - Ensure that the user joins the channel before calling this method.
+    * - This method applies to Live Broadcast only.
+    * - Ensure that you enable the RTMP Converter service before using this 
+    * function. See [Prerequisites](https://docs.agora.io/en/Interactive%20Broadcast/cdn_streaming_windows?platform=Windows#implementation).
     * - This method adds only one stream RTMP URL address each time it is 
     * called.
-    * - The RTMP URL address must not contain special characters, such as 
-    * Chinese language characters.
-    * - This method applies to Live Broadcast only.
+    * 
     * @param {string} url The CDN streaming URL in the RTMP format. The 
-    * maximum length of this parameter is 1024 bytes.
+    * maximum length of this parameter is 1024 bytes. The RTMP URL address must 
+    * not contain special characters, such as Chinese language characters.
     * @param {bool} transcodingEnabled Sets whether transcoding is 
     * enabled/disabled:
     * - true: Enable transcoding. To transcode the audio or video streams when 
     * publishing them to CDN live,
     * often used for combining the audio and video streams of multiple hosts 
-    * in CDN live.
+    * in CDN live. If set the parameter as `true`, you must call the 
+    * {@link setLiveTranscoding} method before this method.
     * - false: Disable transcoding.
     * @return
     * - 0: Success.
@@ -3660,13 +3675,22 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * Sets the video layout and audio settings for CDN live. (CDN live only)
-   * @param {TranscodingConfig} transcoding Sets the CDN live audio/video 
-   * transcoding settings.
    * 
-   * **Note**: Ensure that you enable the RTMP Converter service before using 
+   * The SDK triggers the otranscodingUpdated callback when you call the 
+   * {@link setLiveTranscoding} method to update the LiveTranscoding class.
+   * 
+   * **Note**: 
+   * - Ensure that you enable the RTMP Converter service before using 
    * this function. See 
    * [Prerequisites](https://docs.agora.io/en/Interactive%20Broadcast/cdn_streaming_android?platform=Android#prerequisites).
+   * - If you call the {@link setLiveTranscoding} method to set the 
+   * LiveTranscoding class for the first time, the SDK does not trigger the 
+   * transcodingUpdated callback.
    * 
+   * @param {TranscodingConfig} transcoding Sets the CDN live audio/video 
+   * transcoding settings. See {@link TranscodingConfig}.
+   * 
+   *
    * @return {number}
    * - 0: Success.
    * - < 0: Failure.
@@ -4719,10 +4743,11 @@ declare interface AgoraRtcEngine {
     evt: 'lastmileProbeResult',
     cb: (result: LastmileProbeResult) => void
   ): this;
-  /** Occurs when the engine receives and renders the first local video 
-   * frame on the video window.
-   * - width: Width (pixels) of the first local video frame.
-   * - height: Height (pixels) of the first local video frame.
+  /** Occurs when the first local video frame is displayed/rendered on the 
+   * local video view.
+   * 
+   * - width: Width (px) of the first local video frame.
+   * - height: Height (px) of the first local video frame.
    * - elapsed: Time elapsed (ms) from the local user calling the 
    * {@link joinChannel} method until the SDK triggers this callback.
    */
@@ -5147,7 +5172,16 @@ declare interface AgoraRtcEngine {
    * - url: The RTMP URL address.
    */
   on(evt: 'streamUnpublished', cb: (url: string) => void): this;
-  /** Occurs when the publisher's transcoding is updated. */
+  /** Occurs when the publisher's transcoding is updated.
+   * 
+   * When the LiveTranscoding class in the setLiveTranscoding method updates, 
+   * the SDK triggers the transcodingUpdated callback to report the update 
+   * information to the local host.
+   * 
+   * **Note**: If you call the {@link setLiveTranscoding} method to set the 
+   * LiveTranscoding class for the first time, the SDK does not trigger the 
+   * transcodingUpdated callback.
+   */
   on(evt: 'transcodingUpdated', cb: () => void): this;
   /** Occurs when a voice or video stream URL address is added to a live 
    * broadcast.
