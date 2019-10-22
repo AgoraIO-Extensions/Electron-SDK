@@ -367,7 +367,7 @@ Agora Electron SDK use the  {@link AgoraRtcEngine.on on} method to add listeners
 | firstLocalAudioFrame             | Occurs when the first local audio frame is sent.             |
 | firstRemoteAudioFrame            | Occurs when the first remote audio frame is received.        |
 | firstRemoteAudioDecoded          | Occurs when the engine receives the first audio frame from a specified remote user.|
-| firstLocalVideoFrame             | Occurs when the first local video frame is sent.             |
+| firstLocalVideoFrame             | Occurs when the first local video frame is rendered.             |
 | firstRemoteVideoFrame            | Occurs when the first remote video frame is rendered.        |
 | videoSizeChanged                 | Occurs when the video size or rotation information of a specified remote user changes. |
 | addStream                        | Occurs when the SDK decodes the first remote audio frame for playback. |
