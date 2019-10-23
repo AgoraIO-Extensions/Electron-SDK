@@ -504,7 +504,7 @@ class AgoraRtcEngine extends EventEmitter {
       fire('requestChannelKey');
     });
 
-    this.rtcEngine.onEvent('fristlocalaudioframe', function(elapsed: number) {
+    this.rtcEngine.onEvent('firstlocalaudioframe', function(elapsed: number) {
       fire('firstlocalaudioframe', elapsed);
       fire('firstLocalAudioFrame', elapsed);
     });
@@ -4967,7 +4967,7 @@ declare interface AgoraRtcEngine {
    * {@link joinChannel} until the
    * SDK triggers this callback.
    */
-  on(evt: 'fristLocalAudioFrame', cb: (elapsed: number) => void): this;
+  on(evt: 'firstLocalAudioFrame', cb: (elapsed: number) => void): this;
   /** Occurs when the engine receives the first audio frame from a specific 
    * remote user.
    * - uid: User ID of the remote user.
