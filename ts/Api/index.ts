@@ -395,7 +395,7 @@ class AgoraRtcEngine extends EventEmitter {
       fire('requestChannelKey');
     });
 
-    this.rtcEngine.onEvent('fristlocalaudioframe', function(elapsed: number) {
+    this.rtcEngine.onEvent('firstlocalaudioframe', function(elapsed: number) {
       fire('firstlocalaudioframe', elapsed);
       fire('firstLocalAudioFrame', elapsed);
     });

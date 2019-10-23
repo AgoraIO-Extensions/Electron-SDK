@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "2.3.4-hotfix.7",
+  "version": "2.3.4-hotfix.8",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",

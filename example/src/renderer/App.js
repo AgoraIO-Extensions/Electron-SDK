@@ -105,6 +105,9 @@ export default class App extends Component {
         videoDevices: rtcEngine.getVideoDevices()
       })
     })
+    rtcEngine.on('firstLocalAudioFrame', elapsed => {
+      console.log(`first local audio frame: ${elapsed}ms`)
+    })
     rtcEngine.on('streamPublished', (url, error) => {
       console.log(`url: ${url}, err: ${error}`)
     })
