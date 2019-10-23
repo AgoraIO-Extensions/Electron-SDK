@@ -1,3 +1,11 @@
+## 2.3.4-hotfix.8 (Oct 23rd, 2019)
+#### :bug: Bug Fix
+* Fixed spell issue for firstLocalAudioFrame issue
+
+## 2.3.4-hotfix.7 (Oct 20th, 2019)
+#### :bug: Bug Fix
+* Reduce publish file size
+
 ## 2.3.4-hotfix.6 (Oct 14th, 2019)
 #### :bug: Bug Fix
 * Fixed the issue that plugin won't load when there's chinese character in the plugin path
