@@ -23,14 +23,6 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.on on}                                 | Monitors the events during AgoraRtcEngine runtime            |
 | {@link AgoraRtcEngine.off off}                               | Stops monitoring the events during AgoraRtcEngine runtime    |
 
-### User information management
-
-| Method                                                       | Description                                               |
-| ------------------------------------------------------------ | --------------------------------------------------------- |
-| {@link AgoraRtcEngine.registerLocalUserAccount registerLocalUserAccount} | Registers the local user account.                         |
-| {@link AgoraRtcEngine.joinChannelWithUserAccount joinChannelWithUserAccount} | Joins the channel with a user account.                    |
-| {@link AgoraRtcEngine.getUserInfoByUid getUserInfoByUid}     | Gets the user information by passing in the user ID.      |
-| {@link AgoraRtcEngine.getUserInfoByUserAccount getUserInfoByUserAccount} | Gets the user information by passing in the user account. |
 
 ### Audio management
 
