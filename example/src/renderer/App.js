@@ -51,10 +51,11 @@ export default class App extends Component {
       this.rtcEngine.initialize(APP_ID)
       this.rtcEngine.initializePluginManager();
       const libPath = path.resolve(__static, 'fu-mac/libFaceUnityPlugin.dylib')
-      this.rtcEngine.registerPlugin({
+      let res = this.rtcEngine.registerPlugin({
         id: 'fu-mac',
         path: libPath
       })
+      console.log(`load plugin: ${res}`)
       this.subscribeEvents(this.rtcEngine)
       window.rtcEngine = this.rtcEngine;
     }
@@ -90,9 +91,6 @@ export default class App extends Component {
       })
     })
     rtcEngine.on('firstLocalVideoFrame', () => {
-      const plugin = this.rtcEngine.getPlugins().find(plugin => plugin.id === 'fu-mac' )
-      if(plugin && this.state.fuEnabled)
-        plugin.setParameter(JSON.stringify({"plugin.fu.switch_camera": false}))
     })
     rtcEngine.on('audiodevicestatechanged', () => {
       this.setState({
@@ -162,12 +160,8 @@ export default class App extends Component {
 
   handleCameraChange = e => {
     this.setState({camera: e.currentTarget.value});
-    const plugin = this.rtcEngine.getPlugins().find(plugin => plugin.id === 'fu-mac' )
-    plugin.setParameter(JSON.stringify({"plugin.fu.switch_camera": true}))
     let deviceIdx = e.currentTarget.value
-    setTimeout(() => {
-      this.getRtcEngine().setVideoDevice(this.state.videoDevices[deviceIdx].deviceid);
-    }, 1000)
+    this.getRtcEngine().setVideoDevice(this.state.videoDevices[deviceIdx].deviceid);
   }
 
   handleMicChange = e => {
