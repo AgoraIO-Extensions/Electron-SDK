@@ -1,3 +1,7 @@
+## 2.3.4-hotfix.9 (Oct 26rd, 2019)
+#### :bug: Bug Fix
+* update sdk to 2.3.4.104 build 2532
+
 ## 2.3.4-hotfix.8 (Oct 23rd, 2019)
 #### :bug: Bug Fix
 * Fixed spell issue for firstLocalAudioFrame issue
