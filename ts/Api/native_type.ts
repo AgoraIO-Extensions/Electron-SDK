@@ -928,15 +928,25 @@ export interface Rectangle {
   height: number; // The height of the region.
 }
 
+/**
+ * The display ID:
+ * - macOS: The display ID.
+ * - Windows: The screen rect.
+ */
 export type ScreenSymbol = MacScreenSymbol | WindowsScreenSymbol;
-
+/**
+ * macOS: The display ID.
+ */
 export type MacScreenSymbol = number;
-
+/**
+ * Windows: The screen rect.
+ */
 export type WindowsScreenSymbol = Rectangle;
-
+/**
+ * The relative location of the region to the screen.
+ */
 export type CaptureRect = Rectangle;
-
-/** Screen sharing encoding parameters. */
+/** The video source encoding parameters. */
 export interface CaptureParam {
   /** Width (pixels) of the video. */
   width: number; // Width (pixels) of the video
@@ -1358,23 +1368,25 @@ export enum VIDEO_PROFILE_TYPE {
 
 /**
  * The definition of {@link ChannelMediaInfo}.
- * 
- * - channel: The channel name. The default value is NULL, which means that 
- * the SDK applies the current channel name.
- * 
- * - token: The token that enables the user to join the channel. 
- * The default value is NULL, which means that the SDK applies the current 
- * token.
- * 
- * - uid: The user ID.
- * 
- * **Note**: 
- * 
- * String user accounts are not supported in media stream relay.
  */
 export interface ChannelMediaInfo {
+  /**
+   * The channel name. The default value is NULL, which means that 
+   * the SDK applies the current channel name.
+   */
   channel: string;
+  /**
+   * The token that enables the user to join the channel. 
+   * The default value is NULL, which means that the SDK applies the current 
+   * token.
+   */
   token: string;
+  /**
+   * The user ID.
+   * 
+   * **Note**:
+   * String user accounts are not supported in media stream relay.
+   */
   uid: number;
 }
 
