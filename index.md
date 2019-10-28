@@ -20,8 +20,8 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.renewToken renewToken}                 | Renews the token.                                            |
 | {@link AgoraRtcEngine.enableWebSdkInteroperability enableWebSdkInteroperability} | Enables interoperability with the Agora Web SDK.             |
 | {@link AgoraRtcEngine.getConnectionState getConnectionState} | Gets the connection state of the app.                        |
-| {@link AgoraRtcEngine.on on}                                 | Monitors the events during AgoraRtcEngine runtime            |
-| {@link AgoraRtcEngine.off off}                               | Stops monitoring the events during AgoraRtcEngine runtime    |
+| {@link AgoraRtcEngine.on on}                                 | Monitors the events during AgoraRtcEngine runtime.           |
+| {@link AgoraRtcEngine.off off}                               | Stops monitoring the events during AgoraRtcEngine runtime.    |
 
 
 ### Audio management
@@ -178,7 +178,7 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 
 | Method                                                       | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| {@link AgoraRtcEngine.enableDualStreamMode enableDualStreamMode} | Sets the stream mode to single- (default) or dual-stream mode. |
+| {@link AgoraRtcEngine.enableDualStreamMode enableDualStreamMode} | Sets the stream mode to single-stream (default) or dual-stream mode. |
 | {@link AgoraRtcEngine.setRemoteVideoStreamType setRemoteVideoStreamType} | Sets the remote user’s video stream type received by the local user when the remote user sends dual streams. |
 | {@link AgoraRtcEngine.setRemoteDefaultVideoStreamType setRemoteDefaultVideoStreamType} | Sets the default video-stream type for the video received by the local user when the remote user sends dual streams. |
 
