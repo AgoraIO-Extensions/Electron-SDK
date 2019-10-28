@@ -1,6 +1,6 @@
 This Agora Electron SDK is developed upon the Native SDK for macOS and the Native SDK for Windows, with the Node.js C++ plug-in units. The Electron SDK supports all the functions of the Agora Native SDK. Agora provides ensured quality of experience (QoE) for worldwide Internet-based voice and video communications through a virtual global network optimized on all platforms.
 
-* The AgoraRtcEngine calss provides the main methods that can be invoked by your application.
+* The AgoraRtcEngine class provides the main methods that can be invoked by your application.
 * The Events class enables callbacks to your application.
 
 ## Methods
@@ -35,7 +35,7 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.adjustPlaybackSignalVolume adjustPlaybackSignalVolume} | Adjusts the playback volume of the voice.                    |
 | {@link AgoraRtcEngine.enableLocalAudio enableLocalAudio}     | Enables/disables the local audio capture.                    |
 | {@link AgoraRtcEngine.muteLocalAudioStream muteLocalAudioStream} | Stops/Resumes sending the local audio stream.                |
-| {@link AgoraRtcEngine.muteRemoteAudioStream muteRemoteAudioStream} | Stops/Resumes receving a specified remote audio stream.      |
+| {@link AgoraRtcEngine.muteRemoteAudioStream muteRemoteAudioStream} | Stops/Resumes receiving a specified remote audio stream.      |
 | {@link AgoraRtcEngine.muteAllRemoteAudioStreams muteAllRemoteAudioStreams} | Stops/Resumes receiving all remote audio streams.            |
 | {@link AgoraRtcEngine.setDefaultMuteAllRemoteAudioStreams setDefaultMuteAllRemoteAudioStreams} | Sets whether to receive all remote audio streams by default. |
 
@@ -201,19 +201,6 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.startLastmileProbeTest startLastmileProbeTest} | Starts the last-mile network probe test.      |
 | {@link AgoraRtcEngine.stopLastmileProbeTest stopLastmileProbeTest} | Stops the last-mile network probe test.       |
 
-### External audio data (push-mode only)
-
-| Method                                                       | Description                           |
-| ------------------------------------------------------------ | ------------------------------------- |
-| {@link AgoraRtcEngine.setExternalAudioSource setExternalAudioSource} | Configures the external audio source. |
-
-### Raw audio data
-
-| Method                                                       | Description                      |
-| ------------------------------------------------------------ | -------------------------------- |
-| {@link AgoraRtcEngine.setRecordingAudioFrameParameters setRecordingAudioFrameParameters} | Sets the audio recording format. |
-| {@link AgoraRtcEngine.setPlaybackAudioFrameParameters setPlaybackAudioFrameParameters} | Sets the audio playback format.  |
-| {@link AgoraRtcEngine.setMixedAudioFrameParameters setMixeAudioFrameParameters} | Sets the mixed audio format.     |
 
 ### Encryption
 
