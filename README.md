@@ -70,6 +70,9 @@ const rtcEngine = new AgoraRtcEngine();
 rtcEngine.initialize('<your agora app id>');
 ```
 
+### When using without electron-webpack
+When using directly within a web electron project with custom webpack configuration, you may see errors when compiling. It's because you have not properly configured loader for node addon. A convenient way to skip the compile process is to set `externals` property of your webpack config to `{"agora-electron-sdk": "commonjs2 agora-electron-sdk"}`
+
 <!-- RESOURCES -->
 ## Resources
 
