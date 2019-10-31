@@ -643,7 +643,7 @@ namespace agora {
                 HandleScope scope(isolate);
                 Local<Object> obj = Object::New(isolate);
                 CHECK_NAPI_OBJ(obj);
-                NODE_SET_OBJ_PROP_UINT32(obj, "uid", stats.uid);
+                NODE_SET_OBJ_PROP_UID(obj, "uid", stats.uid);
                 NODE_SET_OBJ_PROP_UINT32(obj, "delay", stats.delay);
                 NODE_SET_OBJ_PROP_UINT32(obj, "width", stats.width);
                 NODE_SET_OBJ_PROP_UINT32(obj, "height", stats.height);
