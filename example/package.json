@@ -13,7 +13,7 @@
     "immutable": "3.8.2",
     "react": "16.11.0",
     "react-dom": "16.11.0",
-    "source-map-support": "0.5.13"
+    "source-map-support": "0.5.16"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "7.5.5",
