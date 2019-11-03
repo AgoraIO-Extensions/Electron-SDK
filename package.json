@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "2.8.2-hotfix.4",
+  "version": "2.8.2-hotfix.5",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -30,6 +30,7 @@
     "yuv-buffer": "^1.0.0",
     "yuv-canvas": "^1.2.1"
   },
+  "files": ["scripts", "js", "jest.config.js", "just-task.js"],
   "devDependencies": {
     "@types/node": "^10.12.18",
     "jest": "^23.1.0",
