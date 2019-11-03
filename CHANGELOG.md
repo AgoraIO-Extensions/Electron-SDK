@@ -1,3 +1,8 @@
+## 2.8.2 (Nov 2nd, 2019)
+#### :house: Internal
+* Fixed remoteVideoStats uid overflow bug
+* Added setupRemoteVideo api
+
 ## 2.8.2 (Aug 21st, 2019)
 #### :house: Internal
 * Fixed some internal bugs and do optimization.
