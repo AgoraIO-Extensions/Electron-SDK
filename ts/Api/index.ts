@@ -1080,6 +1080,29 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @description Sets the remote video view and the corresponding renderer.
+   * @param {string} userAccount user account string.
+   * @param {Element} view The Dom element where you initialize your view.
+   * @returns {number}
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  setupRemoteVideo(userAccount: string, view: Element): number {
+    let result = -1
+    let uid = this.getUid(userAccount);
+    if(!view){
+      //unbind
+      this.destroyRender(uid);
+      result = this.rtcEngine.unsubscribe(uid);
+    } else {
+      //bind
+      this.initRender(uid, view);
+      result = this.rtcEngine.subscribe(uid);
+    }
+    return result
+  }
+
+  /**
    * @description Sets the renderer dimension of video.
    *
    * This method ONLY affects size of data sent to js layer, while native video size is determined by {@link setVideoEncoderConfiguration}.

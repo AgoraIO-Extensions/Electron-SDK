@@ -735,10 +735,10 @@ class Window extends Component {
       this.props.rtcEngine.setupViewContentMode('videosource', 1);
       this.props.rtcEngine.setupViewContentMode(String(SHARE_ID), 1);
     } else if (this.props.role === 'remote') {
-      dom && this.props.rtcEngine.subscribe(this.props.uid, dom)
+      dom && this.props.rtcEngine.setupRemoteVideo(this.props.uid, dom)
       this.props.rtcEngine.setupViewContentMode(this.props.uid, 1);
     } else if (this.props.role === 'remoteVideoSource') {
-      dom && this.props.rtcEngine.subscribe(this.props.uid, dom)
+      dom && this.props.rtcEngine.setupRemoteVideo(this.props.uid, dom)
       this.props.rtcEngine.setupViewContentMode('videosource', 1);
       this.props.rtcEngine.setupViewContentMode(String(SHARE_ID), 1);
     }
