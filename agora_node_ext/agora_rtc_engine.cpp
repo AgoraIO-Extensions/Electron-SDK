@@ -3349,6 +3349,7 @@ namespace agora {
                 pluginInfo.pluginModule = LoadLibraryEx(wPluginFilePath, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
                 delete[] wPluginFilePath;
                 DWORD error = GetLastError();
+                LOG_ERROR("LoadLibrary Error :%ld", error); 
                 CHECK_PLUGIN_MODULE_EXIST(pluginInfo);
 
 
