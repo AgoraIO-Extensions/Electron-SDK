@@ -3941,6 +3941,7 @@ namespace agora {
                 //AddDllDirectory(mPluginFolderPath.c_str());
                 pluginInfo.pluginModule = LoadLibraryEx(mPluginFilePath.c_str(), NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
                 DWORD error = GetLastError();
+                LOG_ERROR("LoadLibrary Error :%ld", error); 
                 CHECK_PLUGIN_MODULE_EXIST(pluginInfo);
 
 
