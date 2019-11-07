@@ -221,9 +221,9 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
     }
     else if (msg == AGORA_IPC_STOP_CAPTURE_SCREEN){
 
+        agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
         rep.enableLocalVideo(false);
         m_rtcEngine->stopScreenCapture();
-        agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
     }
     else if (msg == AGORA_IPC_START_VS_PREVIEW) {
         this->startPreview();
