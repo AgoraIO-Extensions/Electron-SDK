@@ -16,8 +16,8 @@
     "source-map-support": "0.5.16"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "7.5.5",
-    "@babel/preset-react": "7.6.3",
+    "@babel/plugin-proposal-class-properties": "7.7.0",
+    "@babel/preset-react": "7.7.0",
     "electron": "5.0.8",
     "electron-builder": "22.1.0",
     "electron-webpack": "2.7.4",
