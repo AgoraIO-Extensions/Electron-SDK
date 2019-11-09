@@ -38,7 +38,7 @@
     "ts-node": "8.4.1",
     "tslint": "5.20.1",
     "typedoc": "0.15.0",
-    "typescript": "3.6.4"
+    "typescript": "3.7.2"
   },
   "peerDependencies": {},
   "directories": {
