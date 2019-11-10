@@ -1,6 +1,11 @@
 framework module AgoraRtcEngineKit {
-    umbrella header "AgoraRtcEngineKit.h"
+    header "AgoraRtcEngineKit.h"
+    header "AgoraConstants.h"
+    header "AgoraEnumerates.h"
+    header "AgoraMediaIO.h"
+    header "AgoraMediaMetadata.h"
+    header "AgoraObjects.h"
+    header "AgoraRtcChannel.h"
     
     export *
-    module * { export * }
 }

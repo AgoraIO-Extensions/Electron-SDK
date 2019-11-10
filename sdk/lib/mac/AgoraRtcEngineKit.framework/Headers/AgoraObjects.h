@@ -33,6 +33,9 @@ __attribute__((visibility("default"))) @interface AgoraRtcVideoCanvas : NSObject
 /** Render mode of the view: AgoraVideoRenderMode
  */
 @property (assign, nonatomic) AgoraVideoRenderMode renderMode;
+/** Name of the channel.
+ */
+@property (assign, nonatomic) NSString* _Nullable channel;
 /** User ID of the view.
  */
 @property (assign, nonatomic) NSUInteger uid;
@@ -302,6 +305,16 @@ __attribute__((visibility("default"))) @interface AgoraChannelStats: NSObject
 /** System CPU usage (%).
  */
 @property (assign, nonatomic) double cpuTotalUsage;
+/** GatewayRtt
+ */
+@property (assign, nonatomic) NSInteger gatewayRtt;
+
+
+@property (assign, nonatomic) double memoryAppUsageRatio;
+
+@property (assign, nonatomic) double memoryTotalUsageRatio;
+
+@property (assign, nonatomic) NSInteger memoryAppUsageInKbytes;
 @end
 
 /** Properties of the video encoder configuration.
@@ -953,3 +966,17 @@ __attribute__((visibility("default"))) @interface AgoraUserInfo : NSObject
  */
 @property (copy, nonatomic) NSString * _Nullable userAccount;
 @end
+
+__attribute__((visibility("default"))) @interface AgoraRtcChannelMediaOptions : NSObject
+
+@property (nonatomic, assign) BOOL autoSubscribeAudio;
+
+@property (nonatomic, assign) BOOL autoSubscribeVideo;
+
+@end
+
+//__attribute__((visibility("default"))) @interface AgoraRtcChannelInfo : NSObject
+//
+//@property (nonatomic, copy) NSString * _Nonnull channelId;
+//
+//@end
