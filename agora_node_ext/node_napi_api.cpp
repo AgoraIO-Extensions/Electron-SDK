@@ -465,6 +465,11 @@ int napi_get_value_string_utf8_(const Local<Value>& str, char *buffer, uint32_t 
     }
 }
 
+napi_status napi_get_value_uid_t_(const Local<Value>& value, uid_t& result)
+{
+    return agora::rtc::NodeUid::getUidFromNodeValue(value, result);
+}
+
 napi_status napi_get_value_uint32_(const Local<Value>& value, uint32_t& result)
 {
     if (!value->IsUint32())
