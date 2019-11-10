@@ -28,6 +28,7 @@ namespace agora {
     namespace rtc {
 
         DEFINE_CLASS(NodeRtcEngine);
+        DEFINE_CLASS(NodeRtcChannel);
 
         /**
          * To declared class and member functions that could be used in JS layer directly.
@@ -254,6 +255,12 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(startChannelMediaRelay);
                 PROPERTY_METHOD_DEFINE(updateChannelMediaRelay);
                 PROPERTY_METHOD_DEFINE(stopChannelMediaRelay);
+
+
+                /**
+                 * 2.9.0.100 Apis
+                 */
+                PROPERTY_METHOD_DEFINE(createChannel);
 
             EN_PROPERTY_DEFINE()
             module->Set(String::NewFromUtf8(isolate, "NodeRtcEngine"), tpl->GetFunction());
@@ -4556,5 +4563,206 @@ namespace agora {
             LOG_LEAVE;
         }
 
+
+        NAPI_API_DEFINE(NodeRtcEngine, createChannel)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                Isolate* isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                nodestring channelName;
+                napi_status status = napi_get_value_nodestring_(args[0], channelName);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                IRtcEngine2* engine = (IRtcEngine2*)(pEngine->m_engine);
+                IChannel* pChannel = engine->createChannel(channelName);
+
+                if(!pChannel) {
+                    break;
+                }
+
+                // Prepare constructor template
+                Local<Object> jschannel = NodeRtcChannel::Init(isolate, pChannel);
+                args.GetReturnValue().Set(jschannel);
+            } while (false);
+            LOG_LEAVE;
+        }
+
+
+        /**
+         * NodeRtcChannel
+         */
+
+
+        /**
+         * To declared class and member functions that could be used in JS layer directly.
+         */
+        Local<Object> NodeRtcChannel::Init(Isolate* isolate, IChannel* pChannel)
+        {
+            Local<Context> context = isolate->GetCurrentContext();
+            BEGIN_PROPERTY_DEFINE(NodeRtcChannel, createInstance, 5)
+                PROPERTY_METHOD_DEFINE(onEvent)
+                PROPERTY_METHOD_DEFINE(joinChannel)
+                PROPERTY_METHOD_DEFINE(release)
+
+            EN_PROPERTY_DEFINE()
+            
+            Local<Function> cons = tpl->GetFunction();
+            Local<v8::External> argChannel = Local<v8::External>::New(isolate, v8::External::New(isolate, pChannel));
+            Local<v8::Value> argv[1] = {argChannel};
+            Local<Object> jschannel = cons->NewInstance(context, 1, argv).ToLocalChecked();
+            return jschannel;
+        }
+
+        /**
+         * The function is used as class constructor in JS layer
+         */
+        void NodeRtcChannel::createInstance(const FunctionCallbackInfo<Value>& args)
+        {
+            LOG_ENTER;
+            Isolate *isolate = args.GetIsolate();
+
+            Local<v8::External> argChannel = Local<v8::External>::Cast(args[0]);
+            IChannel* pChannel = static_cast<IChannel*>(argChannel->Value());
+            NodeRtcChannel *channel = new NodeRtcChannel(isolate, pChannel);
+            channel->Wrap(args.This());
+            args.GetReturnValue().Set(args.This());
+
+            LOG_LEAVE;
+        }
+
+        /**
+         * Constructor
+         */
+        NodeRtcChannel::NodeRtcChannel(Isolate* isolate, IChannel* pChannel)
+            : m_isolate(isolate), m_channel(pChannel)
+        {
+            LOG_ENTER;
+            /** m_eventHandler provide SDK event handler. */
+            m_eventHandler.reset(new NodeChannelEventHandler(this));
+
+            m_channel->setChannelEventHandler(m_eventHandler.get());
+            LOG_LEAVE;
+        }
+
+        NodeRtcChannel::~NodeRtcChannel()
+        {
+            LOG_ENTER;
+            if (m_channel) {
+                m_channel->release();
+                m_channel = nullptr;
+            }
+            m_eventHandler.reset(nullptr);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcChannel, onEvent)
+        {
+            //LOG_ENTER;
+            do {
+                NodeRtcChannel *pChannel = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+
+                NodeString eventName;
+                status = napi_get_value_nodestring_(args[0], eventName);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                if (!args[1]->IsFunction()) {
+                    LOG_ERROR("Function expected");
+                    break;
+                }
+
+                Local<Function> callback = args[1].As<Function>();
+                if (callback.IsEmpty()) {
+                    LOG_ERROR("Function expected.");
+                    break;
+                }
+                Persistent<Function> persist;
+                persist.Reset(args.GetIsolate(), callback);
+                Local<Object> obj = args.This();
+                Persistent<Object> persistObj;
+                persistObj.Reset(args.GetIsolate(), obj);
+                pChannel->m_eventHandler->addEventHandler((char*)eventName, persistObj, persist);
+            } while (false);
+            //LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcChannel, joinChannel)
+        {
+            LOG_ENTER;
+            int result = -1;
+            NodeString key, name, chan_info;
+            do {
+                Isolate* isolate = args.GetIsolate();
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+                uid_t uid;
+                napi_status status = napi_get_value_nodestring_(args[0], key);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                status = napi_get_value_nodestring_(args[1], chan_info);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                status = NodeUid::getUidFromNodeValue(args[2], uid);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                Local<Value> vChannelMediaOptions = args[3];
+                if(!vChannelMediaOptions->IsObject()) {
+                    pChannel->m_eventHandler->fireApiError(__FUNCTION__);
+                    break;
+                }
+                Local<Object> oChannelMediaOptions = Local<Object>::Cast(vChannelMediaOptions);
+
+                ChannelMediaOptions options;
+                status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "autoSubscribeAudio", options.autoSubscribeAudio);
+                CHECK_NAPI_STATUS(pChannel, status);
+                status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "autoSubscribeVideo", options.autoSubscribeVideo);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                std::string extra_info = "";
+
+                if (chan_info && strlen(chan_info) > 0){
+                    extra_info = "Electron_";
+                    extra_info += chan_info;
+                }
+                else{
+                    extra_info = "Electron";
+                }
+               
+                result = pChannel->m_channel->joinChannel(key, extra_info.c_str(), uid, options);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcChannel, release)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                Isolate* isolate = args.GetIsolate();
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+
+                if (pChannel->m_channel) {
+                    pChannel->m_channel->release();
+                    pChannel->m_channel = nullptr;
+                }
+
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
     }
 }

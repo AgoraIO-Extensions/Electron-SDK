@@ -193,6 +193,8 @@
         './agora_node_ext/node_async_queue.h',
         './agora_node_ext/node_event_handler.cpp',
         './agora_node_ext/node_event_handler.h',
+        './agora_node_ext/node_channel_event_handler.cpp',
+        './agora_node_ext/node_channel_event_handler.h',
         './agora_node_ext/node_napi_api.cpp',
         './agora_node_ext/node_napi_api.h',
         './agora_node_ext/node_uid.h',

@@ -138,6 +138,12 @@ export default class App extends Component {
     })
   }
 
+  subscribeChannelEvents = rtcChannel => {
+    rtcChannel.on('joinChannelSuccess', (uid, elapsed) => {
+      console.log(`join channel success: ${uid} ${elapsed}`)
+    })
+  }
+
   handleJoin = () => {
     let encoderWidth = parseInt(this.state.encoderWidth)
     let encoderHeight = parseInt(this.state.encoderHeight)
@@ -172,7 +178,10 @@ export default class App extends Component {
       rednessLevel: 0
     })
 
-    rtcEngine.joinChannel(null, this.state.channel, '',  Number(`${new Date().getTime()}`.slice(7)))
+    // rtcEngine.joinChannel(null, this.state.channel, '',  Number(`${new Date().getTime()}`.slice(7)))
+    let channel = rtcEngine.createChannel(this.state.channel)
+    this.subscribeChannelEvents(channel)
+    channel.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
   }
 
   handleCameraChange = e => {
