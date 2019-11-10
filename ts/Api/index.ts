@@ -6,6 +6,7 @@
 } from '../Renderer';
 import {
   NodeRtcEngine,
+  NodeRtcChannel,
   RtcStats,
   LocalVideoStats,
   LocalAudioStats,
@@ -41,6 +42,7 @@ import {
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate } from '../Utils';
+import { ChannelMediaOptions } from './native_type';
 import {
   ChannelMediaRelayEvent,
   ChannelMediaRelayState,
@@ -893,6 +895,18 @@ class AgoraRtcEngine extends EventEmitter {
    */
   initialize(appid: string): number {
     return this.rtcEngine.initialize(appid);
+  }
+
+  /**
+   * Create a channel object, use this only if you want to join multiple channel at one time
+   * @param channelName name of the channel to create
+   */
+  createChannel(channelName: string): (AgoraRtcChannel | null) {
+    let rtcChannel = this.rtcEngine.createChannel(channelName)
+    if(!rtcChannel) {
+      return null
+    }
+    return new AgoraRtcChannel(rtcChannel)
   }
 
   /**
@@ -5309,112 +5323,49 @@ declare interface AgoraRtcEngine {
     event: ChannelMediaRelayEvent
   ) => void): this;
   on(evt: string, listener: Function): this;
+}
 
-  // on(evt: 'apicallexecuted', cb: (api: string, err: number) => void): this;
-  // on(evt: 'warning', cb: (warn: number, msg: string) => void): this;
-  // on(evt: 'error', cb: (err: number, msg: string) => void): this;
-  // on(evt: 'joinedchannel', cb: (
-  //   channel: string, uid: number, elapsed: number
-  // ) => void): this;
-  // on(evt: 'rejoinedchannel', cb: (
-  //   channel: string, uid: number, elapsed: number
-  // ) => void): this;
-  // on(evt: 'audioquality', cb: (
-  //   uid: number, quality: AgoraNetworkQuality, delay: number, lost: number
-  // ) => void): this;
-  // on(evt: 'audiovolumeindication', cb: (
-  //   uid: number,
-  //   volume: number,
-  //   speakerNumber: number,
-  //   totalVolume: number
-  // ) => void): this;
-  // on(evt: 'leavechannel', cb: () => void): this;
-  // on(evt: 'rtcstats', cb: (stats: RtcStats) => void): this;
-  // on(evt: 'localvideostats', cb: (stats: LocalVideoStats) => void): this;
-  // on(evt: 'remotevideostats', cb: (stats: RemoteVideoStats) => void): this;
-  // on(evt: 'audiodevicestatechanged', cb: (
-  //   deviceId: string,
-  //   deviceType: number,
-  //   deviceState: number,
-  // ) => void): this;
-  // on(evt: 'audiomixingfinished', cb: () => void): this;
-  // on(evt: 'remoteaudiomixingbegin', cb: () => void): this;
-  // on(evt: 'remoteaudiomixingend', cb: () => void): this;
-  // on(evt: 'audioeffectfinished', cb: (soundId: number) => void): this;
-  // on(evt: 'videodevicestatechanged', cb: (
-  //   deviceId: string,
-  //   deviceType: number,
-  //   deviceState: number,
-  // ) => void): this;
-  // on(evt: 'networkquality', cb: (
-  //   uid: number,
-  //   txquality: AgoraNetworkQuality,
-  //   rxquality: AgoraNetworkQuality
-  // ) => void): this;
-  // on(evt: 'lastmilequality', cb: (quality: AgoraNetworkQuality) => void): this;
-  // on(evt: 'firstlocalvideoframe', cb: (
-  //   width: number,
-  //   height: number,
-  //   elapsed: number
-  // ) => void): this;
-  // on(evt: 'addstream', cb: (
-  //   uid: number,
-  //   elapsed: number,
-  // ) => void): this;
-  // on(evt: 'videosizechanged', cb: (
-  //   uid: number,
-  //   width: number,
-  //   height: number,
-  //   rotation: number
-  // ) => void): this;
-  // on(evt: 'firstremotevideoframe', cb: (
-  //   uid: number,
-  //   width: number,
-  //   height: number,
-  //   elapsed: number
-  // ) => void): this;
-  // on(evt: 'userjoined', cb: (uid: number, elapsed: number) => void): this;
-  // on(evt: 'removestream', cb: (uid: number, reason: number) => void): this;
-  // on(evt: 'usermuteaudio', cb: (uid: number, muted: boolean) => void): this;
-  // on(evt: 'usermutevideo', cb: (uid: number, muted: boolean) => void): this;
-  // on(evt: 'userenablevideo', cb: (uid: number, enabled: boolean) => void): this;
-  // on(evt: 'userenablelocalvideo', cb: (uid: number, enabled: boolean) => void): this;
-  // on(evt: 'cameraready', cb: () => void): this;
-  // on(evt: 'videostopped', cb: () => void): this;
-  // on(evt: 'connectionlost', cb: () => void): this;
-  // on(evt: 'connectioninterrupted', cb: () => void): this;
-  // on(evt: 'connectionbanned', cb: () => void): this;
-  // on(evt: 'refreshrecordingservicestatus', cb: () => void): this;
-  // on(evt: 'streammessage', cb: (
-  //   uid: number,
-  //   streamId: number,
-  //   msg: string,
-  //   len: number
-  // ) => void): this;
-  // on(evt: 'streammessageerror', cb: (
-  //   uid: number,
-  //   streamId: number,
-  //   code: number,
-  //   missed: number,
-  //   cached: number
-  // ) => void): this;
-  // on(evt: 'mediaenginestartcallsuccess', cb: () => void): this;
-  // on(evt: 'requestchannelkey', cb: () => void): this;
-  // on(evt: 'fristlocalaudioframe', cb: (elapsed: number) => void): this;
-  // on(evt: 'firstremoteaudioframe', cb: (uid: number, elapsed: number) => void): this;
-  // on(evt: 'activespeaker', cb: (uid: number) => void): this;
-  // on(evt: 'clientrolechanged', cb: (
-  //   oldRole: ClientRoleType,
-  //   newRole: ClientRoleType
-  // ) => void): this;
-  // on(evt: 'audiodevicevolumechanged', cb: (
-  //   deviceType: MediaDeviceType,
-  //   volume: number,
-  //   muted: boolean
-  // ) => void): this;
-  // on(evt: 'videosourcejoinedsuccess', cb: (uid: number) => void): this;
-  // on(evt: 'videosourcerequestnewtoken', cb: () => void): this;
-  // on(evt: 'videosourceleavechannel', cb: () => void): this;
+
+class AgoraRtcChannel extends EventEmitter
+{
+  rtcChannel: NodeRtcChannel;
+  constructor(rtcChannel:NodeRtcChannel) {
+    super();
+    this.rtcChannel = rtcChannel;
+    this.initEventHandler();
+  }
+
+  /**
+   * init event handler
+   * @private
+   * @ignore
+   */
+  initEventHandler(): void {
+    const fire = (event: string, ...args: Array<any>) => {
+      setImmediate(() => {
+        this.emit(event, ...args);
+      });
+    };
+
+    this.rtcChannel.onEvent('joinChannelSuccess', (
+      uid: number,
+      elapsed: number
+    ) => {
+      fire('joinChannelSuccess', uid, elapsed);
+    });
+  }
+
+  joinChannel(
+    token: string,
+    info: string,
+    uid: number,
+    options: ChannelMediaOptions
+  ): number {
+    return this.rtcChannel.joinChannel(token, info, uid, options || {
+      autoSubscribeAudio: true,
+      autoSubscribeVideo: true
+    });
+  }
 }
 
 export default AgoraRtcEngine;
