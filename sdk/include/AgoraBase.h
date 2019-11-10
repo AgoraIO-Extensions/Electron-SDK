@@ -9,6 +9,8 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
+#include <stdlib.h>
 
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
