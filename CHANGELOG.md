@@ -1,6 +1,6 @@
 ## 2.9.0-hotfix.2 (Sep 17th, 2019)
 #### :bug: Bug Fix
-* Have to use `zoom` instead of `transform:scale` in temp.
+* Fixed the issue that plugin won't load when there's chinese character in the plugin path
 
 ## 2.9.0
 #### :house: Internal
