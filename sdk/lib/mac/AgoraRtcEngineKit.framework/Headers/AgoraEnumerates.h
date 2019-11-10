@@ -748,11 +748,11 @@ typedef NS_ENUM(NSInteger, AgoraVideoCodecProfileType) {
 typedef NS_ENUM(NSInteger, AgoraVideoCodecType) {
     /** Standard VP8. */
     AgoraVideoCodecTypeVP8 = 1,
-    /** Standard H.264. */
+    /** Standard H264. */
     AgoraVideoCodecTypeH264 = 2,
     /** Enhanced VP8. */
     AgoraVideoCodecTypeEVP = 3,
-    /** Enhanced H.264. */
+    /** Enhanced H264. */
     AgoraVideoCodecTypeE264 = 4,
 };
 
