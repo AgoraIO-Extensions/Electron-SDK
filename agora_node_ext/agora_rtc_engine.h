@@ -13,10 +13,12 @@
 
 #include "IAgoraMediaEngine.h"
 #include "IAgoraRtcEngine.h"
+#include "IAgoraRtcChannel.h"
 #include <node.h>
 #include <node_object_wrap.h>
 #include "node_log.h"
 #include "node_event_handler.h"
+#include "node_channel_event_handler.h"
 #include "node_napi_api.h"
 #include "agora_video_source.h"
 #include <functional>
@@ -313,6 +315,11 @@ namespace agora {
             NAPI_API(startChannelMediaRelay);
             NAPI_API(updateChannelMediaRelay);
             NAPI_API(stopChannelMediaRelay);
+
+            /**
+             * 2.9.0.100 Apis
+             */
+            NAPI_API(createChannel);
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }
@@ -339,11 +346,47 @@ namespace agora {
             std::unique_ptr<IAVFramePluginManager> m_avPluginManager;
         };
 
+
+        class NodeRtcChannel : public node::ObjectWrap
+        {
+        public:
+            /*
+            * Constructor
+            */
+            static void createInstance(const FunctionCallbackInfo<Value>& args);
+
+            /*
+            * Helper function, used to declare all supported native interface that are exposed to nodejs.
+            */
+            static Local<Object> Init(Isolate* isolate, IChannel* pChannel);
+
+            NAPI_API(onEvent);
+            NAPI_API(joinChannel);
+            NAPI_API(release);
+        public:
+            Isolate* getIsolate() { return m_isolate; }
+
+        protected:
+            NodeRtcChannel(Isolate *isolate, IChannel* pChannel);
+            ~NodeRtcChannel();
+        private:
+            DECLARE_CLASS;
+            IChannel* m_channel;
+            Isolate *m_isolate;
+            std::unique_ptr<NodeChannelEventHandler> m_eventHandler;
+        };
+
 /*
 * Use to extract native this pointer from JS object
 */
 #define napi_get_native_this(args, native) \
             native = ObjectWrap::Unwrap<NodeRtcEngine>(args.Holder());
+
+/*
+* Use to extract native this pointer from JS object
+*/
+#define napi_get_native_channel(args, native) \
+            native = ObjectWrap::Unwrap<NodeRtcChannel>(args.Holder());
 
 /*
 * to extract one parameter from JS call parameters.
@@ -494,6 +537,12 @@ namespace agora {
 #define CHECK_NATIVE_THIS(engine) \
         if(!engine || !engine->m_engine) { \
             LOG_ERROR("m_engine is null.\n");\
+            break;\
+        }
+
+#define CHECK_NATIVE_CHANNEL(channel) \
+        if(!channel || !channel->m_channel) { \
+            LOG_ERROR("m_channel is null.\n");\
             break;\
         }
 

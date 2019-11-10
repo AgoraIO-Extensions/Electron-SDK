@@ -1369,6 +1369,11 @@ export interface ChannelMediaInfo {
   uid: number;
 }
 
+export interface ChannelMediaOptions {
+  autoSubscribeAudio: boolean;
+  autoSubscribeVideo: boolean;
+}
+
 /**
  * The configuration of the media stream relay.
  * 
@@ -1483,6 +1488,10 @@ export interface NodeRtcEngine {
    * @ignore
    */
   initialize(appId: string): number;
+  /**
+   * @ignore
+   */
+  createChannel(channel: string): any;
   /**
    * @ignore
    */
@@ -2373,4 +2382,20 @@ export interface NodeRtcEngine {
    * @ignore
    */
   setPluginParameter(pluginId: string, param: string): number;
+}
+
+export interface NodeRtcChannel {
+  /**
+   * @ignore
+   */
+  onEvent(event: string, callback: Function): void;
+  /**
+   * @ignore
+   */
+  joinChannel(
+    token: string,
+    info: string,
+    uid: number,
+    options: ChannelMediaOptions
+  ): number;
 }
