@@ -5347,6 +5347,14 @@ class AgoraRtcChannel extends EventEmitter
       });
     };
 
+    this.rtcChannel.onEvent('apierror', (funcName: string) => {
+      console.error(`api ${funcName} failed. this is an error
+              thrown by c++ addon layer. it often means sth is
+              going wrong with this function call and it refused
+              to do what is asked. kindly check your parameter types
+              to see if it matches properly.`);
+    });
+
     this.rtcChannel.onEvent('joinChannelSuccess', (
       uid: number,
       elapsed: number

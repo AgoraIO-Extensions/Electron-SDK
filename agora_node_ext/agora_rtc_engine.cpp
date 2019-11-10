@@ -4733,6 +4733,38 @@ namespace agora {
             BEGIN_PROPERTY_DEFINE(NodeRtcChannel, createInstance, 5)
                 PROPERTY_METHOD_DEFINE(onEvent)
                 PROPERTY_METHOD_DEFINE(joinChannel)
+                PROPERTY_METHOD_DEFINE(joinChannelWithUserAccount)
+                PROPERTY_METHOD_DEFINE(publish)
+                PROPERTY_METHOD_DEFINE(unpublish)
+                PROPERTY_METHOD_DEFINE(channelId)
+                PROPERTY_METHOD_DEFINE(getCallId)
+                PROPERTY_METHOD_DEFINE(renewToken)
+                PROPERTY_METHOD_DEFINE(setEncryptionMode)
+                PROPERTY_METHOD_DEFINE(setEncryptionSecret)
+                PROPERTY_METHOD_DEFINE(setClientRole)
+                PROPERTY_METHOD_DEFINE(setRemoteUserPriority)
+                PROPERTY_METHOD_DEFINE(setRemoteVoicePosition)
+                PROPERTY_METHOD_DEFINE(setRemoteRenderMode)
+                PROPERTY_METHOD_DEFINE(setDefaultMuteAllRemoteAudioStreams)
+                PROPERTY_METHOD_DEFINE(setDefaultMuteAllRemoteVideoStreams)
+                PROPERTY_METHOD_DEFINE(muteAllRemoteAudioStreams)
+                PROPERTY_METHOD_DEFINE(muteRemoteAudioStream)
+                PROPERTY_METHOD_DEFINE(muteAllRemoteVideoStreams)
+                PROPERTY_METHOD_DEFINE(muteRemoteVideoStream)
+                PROPERTY_METHOD_DEFINE(setRemoteVideoStreamType)
+                PROPERTY_METHOD_DEFINE(setRemoteDefaultVideoStreamType)
+                PROPERTY_METHOD_DEFINE(createDataStream)
+                PROPERTY_METHOD_DEFINE(sendStreamMessage)
+                PROPERTY_METHOD_DEFINE(addPublishStreamUrl)
+                PROPERTY_METHOD_DEFINE(removePublishStreamUrl)
+                PROPERTY_METHOD_DEFINE(setLiveTranscoding)
+                PROPERTY_METHOD_DEFINE(addInjectStreamUrl)
+                PROPERTY_METHOD_DEFINE(removeInjectStreamUrl)
+                PROPERTY_METHOD_DEFINE(startChannelMediaRelay)
+                PROPERTY_METHOD_DEFINE(updateChannelMediaRelay)
+                PROPERTY_METHOD_DEFINE(stopChannelMediaRelay)
+                PROPERTY_METHOD_DEFINE(getConnectionState)
+                PROPERTY_METHOD_DEFINE(leaveChannel)
                 PROPERTY_METHOD_DEFINE(release)
 
             EN_PROPERTY_DEFINE()
@@ -4844,7 +4876,7 @@ namespace agora {
                     pChannel->m_eventHandler->fireApiError(__FUNCTION__);
                     break;
                 }
-                Local<Object> oChannelMediaOptions = Local<Object>::Cast(vChannelMediaOptions);
+                Local<Object> oChannelMediaOptions = vChannelMediaOptions->ToObject(isolate);
 
                 ChannelMediaOptions options;
                 status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "autoSubscribeAudio", options.autoSubscribeAudio);
@@ -4867,6 +4899,653 @@ namespace agora {
             napi_set_int_result(args, result);
             LOG_LEAVE;
         }
+
+        NAPI_API_DEFINE(NodeRtcChannel, joinChannelWithUserAccount)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                Isolate* isolate = args.GetIsolate();
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+
+                NodeString token, channel, userAccount;
+
+                napi_status status = napi_get_value_nodestring_(args[0], token);
+                CHECK_NAPI_STATUS(pChannel, status);
+                
+                status = napi_get_value_nodestring_(args[1], userAccount);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                Local<Value> vChannelMediaOptions = args[2];
+                if(!vChannelMediaOptions->IsObject()) {
+                    pChannel->m_eventHandler->fireApiError(__FUNCTION__);
+                    break;
+                }
+                Local<Object> oChannelMediaOptions = vChannelMediaOptions->ToObject(isolate);
+
+                ChannelMediaOptions options;
+                status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "autoSubscribeAudio", options.autoSubscribeAudio);
+                CHECK_NAPI_STATUS(pChannel, status);
+                status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "autoSubscribeVideo", options.autoSubscribeVideo);
+                CHECK_NAPI_STATUS(pChannel, status);
+               
+                result = pChannel->m_channel->joinChannelWithUserAccount(token, userAccount, options);
+            } while (false);
+            napi_set_array_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcChannel, channelId)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            do {
+                Isolate* isolate = args.GetIsolate();
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+
+                const char* channelId = pChannel->m_channel->channelId();
+                napi_set_string_result(args, channelId);
+            } while (false);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcChannel, getCallId)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            do {
+                Isolate* isolate = args.GetIsolate();
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+
+                util::AString callId;
+                if (-ERR_FAILED != pChannel->m_channel->getCallId(callId)) {
+                    napi_set_string_result(args, callId->c_str());
+                }
+            } while (false);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcChannel, setClientRole)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+                unsigned int role;
+                napi_status status = napi_get_value_uint32_(args[0], role);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                result = pChannel->m_channel->setClientRole(CLIENT_ROLE_TYPE(role));
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcChannel, setRemoteUserPriority)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+
+                uid_t uid;
+                napi_status status = napi_get_value_uid_t_(args[0], uid);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                unsigned int priority = 100;
+                status = napi_get_value_uint32_(args[1], priority);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                result = pChannel->m_channel->setRemoteUserPriority(uid, PRIORITY_TYPE(priority));
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcChannel, setRemoteRenderMode)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+                napi_status status;
+
+                uid_t uid;
+                status = napi_get_value_uid_t_(args[0], uid);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                unsigned int renderMode;
+                status = napi_get_value_uint32_(args[1], renderMode);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                result = pChannel->m_channel->setRemoteRenderMode(uid, RENDER_MODE_TYPE(renderMode));
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+        
+        NAPI_API_CHANNEL_DEFINE_WRAPPER_1(renewToken, nodestring);
+        NAPI_API_CHANNEL_DEFINE_WRAPPER_1(setEncryptionSecret, nodestring);
+        NAPI_API_CHANNEL_DEFINE_WRAPPER_1(setEncryptionMode, nodestring);
+        NAPI_API_CHANNEL_DEFINE_WRAPPER_3(setRemoteVoicePosition, int32, double, double);
+        NAPI_API_CHANNEL_DEFINE_WRAPPER_1(setDefaultMuteAllRemoteAudioStreams, bool);
+        NAPI_API_CHANNEL_DEFINE_WRAPPER_1(setDefaultMuteAllRemoteVideoStreams, bool);
+        NAPI_API_CHANNEL_DEFINE_WRAPPER_1(muteAllRemoteAudioStreams, bool);
+        NAPI_API_CHANNEL_DEFINE_WRAPPER_2(muteRemoteAudioStream, uid_t, bool);
+        NAPI_API_CHANNEL_DEFINE_WRAPPER_1(muteAllRemoteVideoStreams, bool);
+        NAPI_API_CHANNEL_DEFINE_WRAPPER_2(muteRemoteVideoStream, uid_t, bool);
+
+        NAPI_API_DEFINE(NodeRtcChannel, setRemoteVideoStreamType)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+                napi_status status;
+
+                uid_t uid;
+                status = napi_get_value_uid_t_(args[0], uid);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                unsigned int streamType;
+                status = napi_get_value_uint32_(args[1], streamType);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                result = pChannel->m_channel->setRemoteVideoStreamType(uid, REMOTE_VIDEO_STREAM_TYPE(streamType));
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcChannel, setRemoteDefaultVideoStreamType)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+                napi_status status;
+
+                unsigned int streamType;
+                status = napi_get_value_uint32_(args[0], streamType);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                result = pChannel->m_channel->setRemoteDefaultVideoStreamType(REMOTE_VIDEO_STREAM_TYPE(streamType));
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcChannel, createDataStream)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+                napi_status status;
+
+                int streamId;
+                bool reliable, ordered;
+                napi_get_param_2(args, bool, reliable, bool, ordered);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                int result = pChannel->m_channel->createDataStream(&streamId, reliable, ordered);
+                if(result < 0) {
+                    napi_set_int_result(args, result);
+                } else {
+                    napi_set_int_result(args, streamId);
+                }
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcChannel, sendStreamMessage)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+                napi_status status;
+
+                NodeString msg;
+                int streamId;
+                status = napi_get_value_int32_(args[0], streamId);
+                CHECK_NAPI_STATUS(pChannel, status);
+                napi_get_value_nodestring_(args[1], msg);
+                CHECK_NAPI_STATUS(pChannel, status);
+                result = pChannel->m_channel->sendStreamMessage(streamId, msg, strlen(msg));
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_CHANNEL_DEFINE_WRAPPER_2(addPublishStreamUrl, nodestring, bool);
+        NAPI_API_CHANNEL_DEFINE_WRAPPER_1(removePublishStreamUrl, nodestring);
+        NAPI_API_DEFINE(NodeRtcChannel, setLiveTranscoding)
+        {
+            LOG_ENTER;
+            int result = -1;
+            TranscodingUser *users = nullptr;
+            do {
+                Isolate* isolate = args.GetIsolate();
+                Local<Context> context = isolate->GetCurrentContext();
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+                napi_status status;
+
+                LiveTranscoding transcoding;
+                int videoCodecProfile, audioSampleRateType;
+
+                if(args[0]->IsNull() || !args[0]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pChannel, status);
+                }
+
+                Local<Object> obj = args[0]->ToObject(isolate);
+                nodestring transcodingExtraInfo;
+                status = napi_get_object_property_int32_(isolate, obj, "width", transcoding.width);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                status = napi_get_object_property_int32_(isolate, obj, "height", transcoding.height);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                status = napi_get_object_property_int32_(isolate, obj, "videoBitrate", transcoding.videoBitrate);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                status = napi_get_object_property_int32_(isolate, obj, "videoFramerate", transcoding.videoFramerate);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                status = napi_get_object_property_bool_(isolate, obj, "lowLatency", transcoding.lowLatency);
+                CHECK_NAPI_STATUS(pChannel, status);
+                
+                status = napi_get_object_property_int32_(isolate, obj, "videoGop", transcoding.videoGop);
+                CHECK_NAPI_STATUS(pChannel, status);
+                
+                status = napi_get_object_property_int32_(isolate, obj, "videoCodecProfile", videoCodecProfile);
+                CHECK_NAPI_STATUS(pChannel, status);
+                transcoding.videoCodecProfile = VIDEO_CODEC_PROFILE_TYPE(videoCodecProfile);
+
+                status = napi_get_object_property_uint32_(isolate, obj, "backgroundColor", transcoding.backgroundColor);
+                CHECK_NAPI_STATUS(pChannel, status);
+                
+                status = napi_get_object_property_uint32_(isolate, obj, "userCount", transcoding.userCount);
+                CHECK_NAPI_STATUS(pChannel, status);
+                
+                status = napi_get_object_property_int32_(isolate, obj, "audioSampleRateType", audioSampleRateType);
+                CHECK_NAPI_STATUS(pChannel, status);
+                transcoding.audioSampleRate = AUDIO_SAMPLE_RATE_TYPE(audioSampleRateType);
+
+                status = napi_get_object_property_int32_(isolate, obj, "audioBitrate", transcoding.audioBitrate);
+                CHECK_NAPI_STATUS(pChannel, status);
+                
+                status = napi_get_object_property_int32_(isolate, obj, "audioChannels", transcoding.audioChannels);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                status = napi_get_object_property_nodestring_(isolate, obj, "transcodingExtraInfo", transcodingExtraInfo);
+                CHECK_NAPI_STATUS(pChannel, status);
+                transcoding.transcodingExtraInfo = transcodingExtraInfo;
+
+                RtcImage* wm = new RtcImage;
+
+                Local<Name> keyName = String::NewFromUtf8(isolate, "watermark", NewStringType::kInternalized).ToLocalChecked();
+                Local<Value> wmValue = obj->Get(context, keyName).ToLocalChecked();
+                if (wmValue->IsNull() || !wmValue->IsObject()) {
+                    Local<Object> objWm = wmValue->ToObject(isolate);
+                    nodestring wmurl;
+                    status = napi_get_object_property_nodestring_(isolate, objWm, "url", wmurl);
+                    CHECK_NAPI_STATUS(pChannel, status);
+                    wm->url = wmurl;
+
+                    status = napi_get_object_property_int32_(isolate, objWm, "x", wm->x);
+                    CHECK_NAPI_STATUS(pChannel, status);
+                    
+                    status = napi_get_object_property_int32_(isolate, objWm, "y", wm->y);
+                    CHECK_NAPI_STATUS(pChannel, status);
+                    
+                    status = napi_get_object_property_int32_(isolate, objWm, "width", wm->width);
+                    CHECK_NAPI_STATUS(pChannel, status);
+                    
+                    status = napi_get_object_property_int32_(isolate, objWm, "height", wm->height);
+                    CHECK_NAPI_STATUS(pChannel, status);
+                    
+                    transcoding.watermark = wm;
+                }
+                
+                if (transcoding.userCount > 0) {
+                    users = new TranscodingUser[transcoding.userCount];
+                    Local<Name> keyName = String::NewFromUtf8(isolate, "transcodingUsers", NewStringType::kInternalized).ToLocalChecked();
+                    Local<Value> objUsers = obj->Get(context, keyName).ToLocalChecked();
+                    if (objUsers->IsNull() || !objUsers->IsArray()) {
+                        status = napi_invalid_arg;
+                        break;
+                    }
+                    auto usersValue = v8::Array::Cast(*objUsers);
+                    if (usersValue->Length() != transcoding.userCount) {
+                        status = napi_invalid_arg;
+                        break;
+                    }
+                    for (uint32 i = 0; i < transcoding.userCount; i++) {
+                        Local<Value> value = usersValue->Get(i);
+                        Local<Object> userObj = value->ToObject(isolate);
+                        if (userObj->IsNull() || !objUsers->IsObject()) {
+                            status = napi_invalid_arg;
+                            break;
+                        }
+                        status = napi_get_object_property_uid_(isolate, userObj, "uid", users[i].uid);
+                        CHECK_NAPI_STATUS(pChannel, status);
+                        
+                        status = napi_get_object_property_int32_(isolate, userObj, "x", users[i].x);
+                        CHECK_NAPI_STATUS(pChannel, status);
+                        
+                        status = napi_get_object_property_int32_(isolate, userObj, "y", users[i].y);
+                        CHECK_NAPI_STATUS(pChannel, status);
+                        
+                        status = napi_get_object_property_int32_(isolate, userObj, "width", users[i].width);
+                        CHECK_NAPI_STATUS(pChannel, status);
+
+                        status = napi_get_object_property_int32_(isolate, userObj, "height", users[i].height);
+                        CHECK_NAPI_STATUS(pChannel, status);
+
+                        status = napi_get_object_property_int32_(isolate, userObj, "zOrder", users[i].zOrder);
+                        CHECK_NAPI_STATUS(pChannel, status);
+                        
+                        status = napi_get_object_property_double_(isolate, userObj, "alpha", users[i].alpha);
+                        CHECK_NAPI_STATUS(pChannel, status);
+                        
+                        status = napi_get_object_property_int32_(isolate, userObj, "audioChannel", users[i].audioChannel);
+                        CHECK_NAPI_STATUS(pChannel, status);
+                    }
+                    transcoding.transcodingUsers = users;
+                }
+                result = pChannel->m_channel->setLiveTranscoding(transcoding);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcChannel, addInjectStreamUrl)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                Isolate* isolate = args.GetIsolate();
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+                napi_status status;
+
+                nodestring url;
+                InjectStreamConfig config;
+                status = napi_get_value_nodestring_(args[0], url);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                if(!args[1]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pChannel, status);
+                }
+                Local<Object> configObj = args[1]->ToObject(isolate);
+                int audioSampleRate;
+                status = napi_get_object_property_int32_(isolate, configObj, "width", config.width);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                status = napi_get_object_property_int32_(isolate, configObj, "height", config.height);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                status = napi_get_object_property_int32_(isolate, configObj, "videoGop", config.videoGop);
+                CHECK_NAPI_STATUS(pChannel, status);
+                
+                status = napi_get_object_property_int32_(isolate, configObj, "videoFramerate", config.videoFramerate);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                status = napi_get_object_property_int32_(isolate, configObj, "videoBitrate", config.videoBitrate);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                status = napi_get_object_property_int32_(isolate, configObj, "audioSampleRate", audioSampleRate);
+                CHECK_NAPI_STATUS(pChannel, status);
+                config.audioSampleRate = AUDIO_SAMPLE_RATE_TYPE(audioSampleRate);
+
+                status = napi_get_object_property_int32_(isolate, configObj, "audioBitrate", config.audioBitrate);
+                CHECK_NAPI_STATUS(pChannel, status);
+                
+                status = napi_get_object_property_int32_(isolate, configObj, "audioChannels", config.audioChannels);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                result = pChannel->m_channel->addInjectStreamUrl(url, config);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+        NAPI_API_CHANNEL_DEFINE_WRAPPER_1(removeInjectStreamUrl, nodestring);
+
+        NAPI_API_DEFINE(NodeRtcChannel, startChannelMediaRelay)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                Isolate* isolate = args.GetIsolate();
+                Local<Context> context = isolate->GetCurrentContext();
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+                napi_status status;
+
+                ChannelMediaRelayConfiguration config;
+                Local<Object> obj = args[0]->ToObject(isolate);
+
+                if (args[0]->IsNull() || !args[0]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pChannel, status);
+                }
+
+                //srcInfo
+                Local<Name> keyName = String::NewFromUtf8(isolate, "srcInfo", NewStringType::kInternalized).ToLocalChecked();
+                Local<Value> srcInfoValue = obj->Get(context, keyName).ToLocalChecked();
+                ChannelMediaInfo srcInfo;
+
+                if (srcInfoValue->IsNull() || !srcInfoValue->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pChannel, status);
+                }
+                NodeString channelName, token;
+                Local<Object> objSrcInfo = srcInfoValue->ToObject(isolate);
+                status = napi_get_object_property_nodestring_(isolate, objSrcInfo, "channelName", channelName);
+                CHECK_NAPI_STATUS(pChannel, status);
+                
+                status = napi_get_object_property_nodestring_(isolate, objSrcInfo, "token", token);
+                CHECK_NAPI_STATUS(pChannel, status);
+                
+                status = napi_get_object_property_uid_(isolate, objSrcInfo, "uid", srcInfo.uid);
+                CHECK_NAPI_STATUS(pChannel, status);
+                
+                string mChannelName(channelName);
+                string mToken(token);
+                srcInfo.channelName = mChannelName.c_str();
+                srcInfo.token = mToken.c_str();
+                
+
+                //destInfos
+                keyName = String::NewFromUtf8(isolate, "destInfos", NewStringType::kInternalized).ToLocalChecked();
+                Local<Value> objDestInfos = obj->Get(context, keyName).ToLocalChecked();
+                if (objDestInfos->IsNull() || !objDestInfos->IsArray()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pChannel, status);
+                }
+                auto destInfosValue = v8::Array::Cast(*objDestInfos);
+                int destInfoCount = destInfosValue->Length();
+                ChannelMediaInfo* destInfos = new ChannelMediaInfo[destInfoCount];
+                for (uint32 i = 0; i < destInfoCount; i++) {
+                    Local<Value> value = destInfosValue->Get(i);
+                    Local<Object> destInfoObj = value->ToObject(isolate);
+                    if (destInfoObj->IsNull() || !destInfoObj->IsObject()) {
+                        status = napi_invalid_arg;
+                        break;
+                    }
+                    NodeString channelName, token;
+                    status = napi_get_object_property_nodestring_(isolate, destInfoObj, "channelName", channelName);
+                    CHECK_NAPI_STATUS(pChannel, status);
+                    
+                    status = napi_get_object_property_nodestring_(isolate, destInfoObj, "token", token);
+                    CHECK_NAPI_STATUS(pChannel, status);
+                    
+                    status = napi_get_object_property_uid_(isolate, destInfoObj, "uid", destInfos[i].uid);
+                    CHECK_NAPI_STATUS(pChannel, status);
+                    
+                    string mChannelName(channelName);
+                    string mToken(token);
+                    srcInfo.channelName = mChannelName.c_str();
+                    srcInfo.token = mToken.c_str();
+                }
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                config.srcInfo = &srcInfo;
+                config.destInfos = &destInfos[0];
+                config.destCount = destInfoCount;
+
+                result = pChannel->m_channel->startChannelMediaRelay(config);
+                
+                if(destInfos){
+                    delete[] destInfos;
+                }
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcChannel, updateChannelMediaRelay)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                Isolate* isolate = args.GetIsolate();
+                Local<Context> context = isolate->GetCurrentContext();
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+                napi_status status;
+
+                ChannelMediaRelayConfiguration config;
+                Local<Object> obj = args[0]->ToObject(isolate);
+
+                if (args[0]->IsNull() || !args[0]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pChannel, status);
+                }
+
+                //srcInfo
+                Local<Name> keyName = String::NewFromUtf8(isolate, "srcInfo", NewStringType::kInternalized).ToLocalChecked();
+                Local<Value> srcInfoValue = obj->Get(context, keyName).ToLocalChecked();
+                ChannelMediaInfo srcInfo;
+
+                if (srcInfoValue->IsNull() || !srcInfoValue->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pChannel, status);
+                }
+                NodeString channelName, token;
+                Local<Object> objSrcInfo = srcInfoValue->ToObject(isolate);
+                status = napi_get_object_property_nodestring_(isolate, objSrcInfo, "channelName", channelName);
+                CHECK_NAPI_STATUS(pChannel, status);
+                
+                status = napi_get_object_property_nodestring_(isolate, objSrcInfo, "token", token);
+                CHECK_NAPI_STATUS(pChannel, status);
+                
+                status = napi_get_object_property_uid_(isolate, objSrcInfo, "uid", srcInfo.uid);
+                CHECK_NAPI_STATUS(pChannel, status);
+                
+                string mChannelName(channelName);
+                string mToken(token);
+                srcInfo.channelName = mChannelName.c_str();
+                srcInfo.token = mToken.c_str();
+                
+
+                //destInfos
+                keyName = String::NewFromUtf8(isolate, "destInfos", NewStringType::kInternalized).ToLocalChecked();
+                Local<Value> objDestInfos = obj->Get(context, keyName).ToLocalChecked();
+                if (objDestInfos->IsNull() || !objDestInfos->IsArray()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pChannel, status);
+                }
+                auto destInfosValue = v8::Array::Cast(*objDestInfos);
+                int destInfoCount = destInfosValue->Length();
+                ChannelMediaInfo* destInfos = new ChannelMediaInfo[destInfoCount];
+                for (uint32 i = 0; i < destInfoCount; i++) {
+                    Local<Value> value = destInfosValue->Get(i);
+                    Local<Object> destInfoObj = value->ToObject(isolate);
+                    if (destInfoObj->IsNull() || !destInfoObj->IsObject()) {
+                        status = napi_invalid_arg;
+                        break;
+                    }
+                    NodeString channelName, token;
+                    status = napi_get_object_property_nodestring_(isolate, destInfoObj, "channelName", channelName);
+                    CHECK_NAPI_STATUS(pChannel, status);
+                    
+                    status = napi_get_object_property_nodestring_(isolate, destInfoObj, "token", token);
+                    CHECK_NAPI_STATUS(pChannel, status);
+                    
+                    status = napi_get_object_property_uid_(isolate, destInfoObj, "uid", destInfos[i].uid);
+                    CHECK_NAPI_STATUS(pChannel, status);
+                    
+                    string mChannelName(channelName);
+                    string mToken(token);
+                    srcInfo.channelName = mChannelName.c_str();
+                    srcInfo.token = mToken.c_str();
+                }
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                config.srcInfo = &srcInfo;
+                config.destInfos = &destInfos[0];
+                config.destCount = destInfoCount;
+
+                result = pChannel->m_channel->updateChannelMediaRelay(config);
+                
+                if(destInfos){
+                    delete[] destInfos;
+                }
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+        NAPI_API_CHANNEL_DEFINE_WRAPPER(stopChannelMediaRelay);
+
+        NAPI_API_DEFINE(NodeRtcChannel, getConnectionState)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+                napi_status status;
+
+                result = pChannel->m_channel->getConnectionState();
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_CHANNEL_DEFINE_WRAPPER(publish);
+        NAPI_API_CHANNEL_DEFINE_WRAPPER(unpublish);
+        NAPI_API_CHANNEL_DEFINE_WRAPPER(leaveChannel);
 
         NAPI_API_DEFINE(NodeRtcChannel, release)
         {
