@@ -16,6 +16,7 @@
  The AgoraRtcEngineKit class is the entry point of the SDK providing API methods for apps to easily start voice and video communication.
  */
 @class AgoraRtcEngineKit;
+@class AgoraRtcChannel;
 
 /** The AgoraRtcEngineDelegate protocol enables callbacks to your app.
 
@@ -1010,7 +1011,6 @@ The SDK triggers this callback once every two seconds. This callback reports the
 
 
 @end
-
 
 #pragma mark - AgoraRtcEngineKit
 

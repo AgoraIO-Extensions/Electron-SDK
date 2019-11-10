@@ -19,7 +19,7 @@ namespace rtc {
     typedef void* view_t;
 /** Maximum length of the device ID.
 */
-enum MAX_DEVICE_ID_LENGTH_TYEP
+enum MAX_DEVICE_ID_LENGTH_TYPE
 {
   /** The maximum length of the device ID is 512 bytes.
   */
@@ -32,6 +32,14 @@ enum MAX_USER_ACCOUNT_LENGTH_TYPE
   /** The maximum length of user account is 255 bytes.
    */
   MAX_USER_ACCOUNT_LENGTH = 256
+};
+/** Maximum length of channel id.
+ */
+enum MAX_CHANNEL_ID_LENGTH_TYPE
+{
+    /** The maximum length of channel id is 255 bytes.
+     */
+    MAX_CHANNEL_ID_LENGTH = 256
 };
 /** Formats of the quality report.
 */
@@ -1271,7 +1279,7 @@ struct LastmileProbeConfig {
 struct AudioVolumeInfo
 {
   /**
- User ID of the speaker. The uid of the local user is 0.
+ User ID of the speaker. The uid of the local user is 0. The user ID may come from different RtcConnection.
  */
     uid_t uid;
     /** The volume of the speaker. The volume ranges between 0 (lowest volume) and 255 (highest volume).
@@ -1364,6 +1372,21 @@ struct RtcStats
      System CPU usage (%).
      */
     double cpuTotalUsage;
+    /** gateway Rtt
+     */
+    int gatewayRtt;
+    /**
+     Application memory usage (%).
+     */
+    double memoryAppUsageRatio;
+    /**
+     System memory usage (%).
+     */
+    double memoryTotalUsageRatio;
+    /**
+     Application memory size (KB).
+     */
+    int memoryAppUsageInKbytes;
   RtcStats()
       : duration(0)
       , txBytes(0)
@@ -1383,7 +1406,11 @@ struct RtcStats
       , rxPacketLossRate(0)
       , userCount(0)
       , cpuAppUsage(0)
-      , cpuTotalUsage(0) {}
+      , cpuTotalUsage(0)
+      , gatewayRtt(0)
+      , memoryAppUsageRatio(0)
+      , memoryTotalUsageRatio(0)
+      , memoryAppUsageInKbytes(0) {}
 };
 
 /** Quality change of the local video in terms of target frame rate and target bit rate since last count.
@@ -2202,6 +2229,9 @@ struct VideoCanvas
     /** Video display mode: #RENDER_MODE_TYPE.
     */
     int renderMode;
+    /** Channel ID of the User ID. If NULL, it means the default channelId joined.
+     */
+    char channelId[MAX_CHANNEL_ID_LENGTH];
     uid_t uid;
     void *priv; // private data (underlying video engine denotes it)
 
@@ -2210,13 +2240,28 @@ struct VideoCanvas
         , renderMode(RENDER_MODE_HIDDEN)
         , uid(0)
         , priv(NULL)
-    {}
+    {
+        channelId[0] = '\0';
+    }
     VideoCanvas(view_t v, int m, uid_t u)
         : view(v)
         , renderMode(m)
         , uid(u)
         , priv(NULL)
-    {}
+    {
+        channelId[0] = '\0';
+    }
+    VideoCanvas(view_t v, int m, const char *ch, uid_t u)
+    : view(v)
+    , renderMode(m)
+    , uid(u)
+    , priv(NULL)
+    {
+        if (strlen(ch) >= MAX_CHANNEL_ID_LENGTH)
+            return;
+        memcpy(channelId, ch, strlen(ch));
+        channelId[strlen(ch)] = '\0';
+    }
 };
 
 /** Image enhancement options.
@@ -2321,7 +2366,6 @@ public:
 	virtual bool onReceiveVideoPacket(Packet& packet) = 0;
 };
 
-
 /** The SDK uses the IRtcEngineEventHandler interface class to send callbacks to the application. The application inherits the methods of this interface class to retrieve these callbacks.
 
  All methods in this interface class have default (empty) implementations. Therefore, the application can only inherit some required events. In the callbacks, avoid time-consuming tasks or calling blocking APIs, such as the SendMessage method. Otherwise, the SDK may not work properly.
@@ -2330,7 +2374,7 @@ class IRtcEngineEventHandler
 {
 public:
     virtual ~IRtcEngineEventHandler() {}
-
+    
     /** Reports a warning during SDK runtime.
 
      In most cases, the application can ignore the warning reported by the SDK because the SDK can usually fix the issue and resume running. For example, when losing connection with the server, the SDK may report #WARN_LOOKUP_CHANNEL_TIMEOUT and automatically try to reconnect.
@@ -3939,7 +3983,6 @@ public:
     virtual void onMetadataReceived(const Metadata &metadata) = 0;
 };
 
-
 /** IRtcEngine is the base interface class of the Agora SDK that provides the main Agora SDK methods invoked by your application.
 
 Enable the Agora SDK's communication functionality through the creation of an IRtcEngine object, then call the methods of this object.
@@ -4006,7 +4049,7 @@ public:
      - < 0: Failure.
      */
     virtual int setClientRole(CLIENT_ROLE_TYPE role) = 0;
-
+    
     /** Allows a user to join a channel.
 
      Users in the same channel can talk to each other, and multiple users in the same channel can start a group chat. Users with different App IDs cannot call each other.
@@ -4080,7 +4123,7 @@ public:
      * - <0: Failure.
      */
     virtual int switchChannel(const char* token, const char* channelId) = 0;
-
+    
     /** Allows a user to leave a channel, such as hanging up or exiting a call.
 
      After joining a channel, the user must call the *leaveChannel* method to end the call before joining another channel.
@@ -4102,7 +4145,7 @@ public:
      - < 0: Failure.
      */
     virtual int leaveChannel() = 0;
-
+    
     /** Gets a new token when the current token expires after a period of time.
 
      The *token* expires after a period of time once the token schema is enabled when:
@@ -4192,8 +4235,10 @@ public:
      - 0: Success.
      - < 0: Failure.
      */
-    virtual int joinChannelWithUserAccount(
-        const char* token, const char* channelId, const char* userAccount) = 0;
+    virtual int joinChannelWithUserAccount(const char* token,
+                                           const char* channelId,
+                                           const char* userAccount) = 0;
+    
     /** Gets the user information by passing in the user account.
 
      After a remote user joins the channel, the SDK gets the user ID and user account of the remote user, caches them
@@ -5971,6 +6016,7 @@ public:
 
     virtual bool registerEventHandler(IRtcEngineEventHandler *eventHandler) = 0;
     virtual bool unregisterEventHandler(IRtcEngineEventHandler *eventHandler) = 0;
+
     /** Gets the connection state of the SDK.
 
      @return #CONNECTION_STATE_TYPE.
