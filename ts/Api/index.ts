@@ -5361,6 +5361,241 @@ class AgoraRtcChannel extends EventEmitter
     ) => {
       fire('joinChannelSuccess', uid, elapsed);
     });
+
+    this.rtcChannel.onEvent('channelWarning', (
+      warn: number,
+      message: string
+    ) => {
+      fire('channelWarning', warn, message);
+    });
+
+    this.rtcChannel.onEvent('channelError', (
+      error: number,
+      message: string
+    ) => {
+      fire('channelError', error, message);
+    });
+
+
+    this.rtcChannel.onEvent('rejoinChannelSuccess', (
+      uid: number,
+      elapsed: number
+    ) => {
+      fire('rejoinChannelSuccess', uid, elapsed);
+    });
+
+
+    this.rtcChannel.onEvent('leaveChannel', (
+      stats: RtcStats
+    ) => {
+      fire('leaveChannel', stats);
+    });
+
+    this.rtcChannel.onEvent('clientRoleChanged', (
+      oldRole: number,
+      newRole: number
+    ) => {
+      fire('clientRoleChanged', oldRole, newRole);
+    });
+
+    this.rtcChannel.onEvent('userJoined', (
+      uid: number,
+      elapsed: number
+    ) => {
+      fire('userJoined', uid, elapsed);
+    });
+
+    this.rtcChannel.onEvent('userOffline', (
+      uid: number,
+      reason: number
+    ) => {
+      fire('userOffline', uid, reason);
+    });
+
+    this.rtcChannel.onEvent('connectionLost', (
+    ) => {
+      fire('connectionLost');
+    });
+
+    this.rtcChannel.onEvent('requestToken', (
+    ) => {
+      fire('requestToken');
+    });
+
+    this.rtcChannel.onEvent('tokenPrivilegeWillExpire', (
+      token: string
+    ) => {
+      fire('tokenPrivilegeWillExpire', token);
+    });
+
+    this.rtcChannel.onEvent('rtcStats', (
+      stats: RtcStats
+    ) => {
+      fire('rtcStats', stats);
+    });
+
+    this.rtcChannel.onEvent('networkQuality', (
+      uid: number,
+      txQuality: number,
+      rxQuality: number
+    ) => {
+      fire('networkQuality', uid, txQuality, rxQuality);
+    });
+
+    this.rtcChannel.onEvent('remoteVideoStats', (
+      stats: RemoteVideoStats
+    ) => {
+      fire('remoteVideoStats', stats);
+    });
+
+    this.rtcChannel.onEvent('remoteAudioStats', (
+      stats: RemoteAudioStats
+    ) => {
+      fire('remoteAudioStats', stats);
+    });
+
+    this.rtcChannel.onEvent('remoteAudioStateChanged', (
+      uid: number,
+      state: number,
+      reason: number,
+      elapsed: number
+    ) => {
+      fire('remoteAudioStateChanged', uid, state, reason, elapsed);
+    });
+
+    this.rtcChannel.onEvent('activeSpeaker', (
+      uid: number
+    ) => {
+      fire('activeSpeaker', uid);
+    });
+
+    this.rtcChannel.onEvent('firstRemoteVideoFrame', (
+      uid: number,
+      width: number,
+      height: number,
+      elapsed: number
+    ) => {
+      fire('firstRemoteVideoFrame', uid, width, height, elapsed);
+    });
+
+    this.rtcChannel.onEvent('userMuteAudio', (
+      uid: number,
+      muted: boolean
+    ) => {
+      fire('userMuteAudio', uid, muted);
+    });
+
+    this.rtcChannel.onEvent('firstRemoteAudioDecoded', (
+      uid: number,
+      elapsed: number
+    ) => {
+      fire('firstRemoteAudioDecoded', uid, elapsed);
+    });
+
+    this.rtcChannel.onEvent('videoSizeChanged', (
+      uid: number,
+      width: number,
+      height: number,
+      rotation: number
+    ) => {
+      fire('videoSizeChanged', uid, width, height, rotation);
+    });
+
+    this.rtcChannel.onEvent('remoteVideoStateChanged', (
+      uid: number,
+      state: number,
+      reason: number,
+      elapsed: number
+    ) => {
+      fire('videoSizeChanged', uid, state, reason, elapsed);
+    });
+
+    this.rtcChannel.onEvent('streamMessage', (
+      uid: number,
+      streamId: number,
+      data: string
+    ) => {
+      fire('streamMessage', uid, streamId, data);
+    });
+
+    this.rtcChannel.onEvent('streamMessageError', (
+      uid: number,
+      streamId: number,
+      code: number,
+      missed: number,
+      cached: number
+    ) => {
+      fire('streamMessage', uid, streamId, code, missed, cached);
+    });
+
+    this.rtcChannel.onEvent('channelMediaRelayStateChanged', (
+      state: number,
+      code: number
+    ) => {
+      fire('channelMediaRelayStateChanged', state, code);
+    });
+
+    this.rtcChannel.onEvent('channelMediaRelayEvent', (
+      code: number
+    ) => {
+      fire('channelMediaRelayEvent', code);
+    });
+
+    this.rtcChannel.onEvent('firstRemoteAudioFrame', (
+      uid: number,
+      elapsed: number
+    ) => {
+      fire('firstRemoteAudioFrame', uid, elapsed);
+    });
+
+    this.rtcChannel.onEvent('rtmpStreamingStateChanged', (
+      url: string,
+      state: number,
+      errCode: number
+    ) => {
+      fire('rtmpStreamingStateChanged', url, state, errCode);
+    });
+
+    this.rtcChannel.onEvent('streamPublished', (
+      url: string,
+      error: number
+    ) => {
+      fire('streamPublished', url, error);
+    });
+
+    this.rtcChannel.onEvent('streamUnpublished', (
+      url: string
+    ) => {
+      fire('rtmpStreamingStateChanged', url);
+    });
+
+    this.rtcChannel.onEvent('transcodingUpdated', (
+    ) => {
+      fire('transcodingUpdated');
+    });
+
+    this.rtcChannel.onEvent('streamInjectedStatus', (
+      url: string,
+      uid: number,
+      status: number
+    ) => {
+        fire('streamInjectedStatus', url, uid, status);
+    });
+
+    this.rtcChannel.onEvent('remoteSubscribeFallbackToAudioOnly', (
+      uid: number,
+      isFallbackOrRecover: boolean
+    ) => {
+        fire('remoteSubscribeFallbackToAudioOnly', uid, isFallbackOrRecover);
+    });
+
+    this.rtcChannel.onEvent('connectionStateChanged', (
+      state: number,
+      reason: number
+    ) => {
+        fire('connectionStateChanged', state, reason);
+    });
+    
   }
 
   joinChannel(
