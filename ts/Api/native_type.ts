@@ -1543,7 +1543,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  subscribe(uid: number): number;
+  subscribe(uid: number, channel?: string): number;
   /**
    * @ignore
    */
@@ -2303,7 +2303,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  unsubscribe(uid: number): number;
+  unsubscribe(uid: number, channel?: string): number;
   /**
    * @ignore
    */

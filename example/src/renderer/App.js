@@ -141,6 +141,9 @@ export default class App extends Component {
   subscribeChannelEvents = rtcChannel => {
     rtcChannel.on('joinChannelSuccess', (uid, elapsed) => {
       console.log(`join channel success: ${uid} ${elapsed}`)
+      this.setState({
+        local: uid
+      });
     })
   }
 
