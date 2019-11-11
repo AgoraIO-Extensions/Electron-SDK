@@ -642,6 +642,11 @@ napi_status napi_get_object_property_uid_(Isolate* isolate, const Local<Object>&
     return agora::rtc::NodeUid::getUidFromNodeValue(value, uid);
 }
 
+const char* nullable( char const* s)
+{
+    return (s ? s : "");
+}
+
 #ifdef _WIN32
 char* U2G(const char* srcstr)
 {
