@@ -191,7 +191,7 @@ namespace agora {
 
         void NodeChannelEventHandler::onChannelWarning(IChannel *rtcChannel, int warn, const char* msg){
             FUNC_TRACE;
-            std::string m_msg(msg);
+            std::string m_msg(nullable(msg));
             node_async_call::async_call([this, warn, m_msg] {
                 MAKE_JS_CALL_2(RTC_CHANNEL_EVENT_CHANNEL_WARNING, int32, warn, string, m_msg.c_str());
             });
@@ -199,7 +199,7 @@ namespace agora {
             
         void NodeChannelEventHandler::onChannelError(IChannel *rtcChannel, int err, const char* msg) {
             FUNC_TRACE;
-            std::string m_msg(msg);
+            std::string m_msg(nullable(msg));
             node_async_call::async_call([this, err, m_msg] {
                 MAKE_JS_CALL_2(RTC_CHANNEL_EVENT_CHANNEL_ERROR, int32, err, string, m_msg.c_str());
             });
@@ -287,7 +287,7 @@ namespace agora {
         
         void NodeChannelEventHandler::onTokenPrivilegeWillExpire(IChannel *rtcChannel, const char* token) {
             FUNC_TRACE;
-            std::string m_token(token);
+            std::string m_token(nullable(token));
             node_async_call::async_call([this, m_token] {
                 MAKE_JS_CALL_1(RTC_CHANNEL_EVENT_TOKEN_PRIVILEGE_EXPIRE, string, m_token.c_str());
             });
@@ -445,7 +445,7 @@ namespace agora {
         
         void NodeChannelEventHandler::onStreamMessage(IChannel *rtcChannel, uid_t uid, int streamId, const char* data, size_t length) {
             FUNC_TRACE;
-            std::string m_data(data);
+            std::string m_data(nullable(data));
             node_async_call::async_call([this, uid, streamId, m_data] {
                 MAKE_JS_CALL_3(RTC_CHANNEL_EVENT_STREAM_MESSAGE, uid, uid, int32, streamId, string, m_data.c_str());
             });
@@ -481,7 +481,7 @@ namespace agora {
         
         void NodeChannelEventHandler::onRtmpStreamingStateChanged(IChannel *rtcChannel, const char *url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR errCode) {
             FUNC_TRACE;
-            std::string m_url(url);
+            std::string m_url(nullable(url));
             node_async_call::async_call([this, m_url, state, errCode] {
                 MAKE_JS_CALL_3(RTC_CHANNEL_EVENT_RTMP_STREAMING_STATE_CHANGED, string, m_url.c_str(), int32, state, int32, errCode);
             });
@@ -489,7 +489,7 @@ namespace agora {
         
         void NodeChannelEventHandler::onStreamPublished(IChannel *rtcChannel, const char *url, int error) {
             FUNC_TRACE;
-            std::string m_url(url);
+            std::string m_url(nullable(url));
             node_async_call::async_call([this, m_url, error] {
                 MAKE_JS_CALL_2(RTC_CHANNEL_EVENT_STREAM_PUBLISHED, string, m_url.c_str(), int32, error);
             });
@@ -497,7 +497,7 @@ namespace agora {
         
         void NodeChannelEventHandler::onStreamUnpublished(IChannel *rtcChannel, const char *url) {
             FUNC_TRACE;
-            std::string m_url(url);
+            std::string m_url(nullable(url));
             node_async_call::async_call([this, m_url] {
                 MAKE_JS_CALL_1(RTC_CHANNEL_EVENT_STREAM_UNPUBLISHED, string, m_url.c_str());
             });
@@ -512,7 +512,7 @@ namespace agora {
         
         void NodeChannelEventHandler::onStreamInjectedStatus(IChannel *rtcChannel, const char* url, uid_t uid, int status) {
             FUNC_TRACE;
-            std::string m_url(url);
+            std::string m_url(nullable(url));
             node_async_call::async_call([this, m_url, uid, status] {
                 MAKE_JS_CALL_3(RTC_CHANNEL_EVENT_STREAM_INJECED_STATUS, string, m_url.c_str(), uid, uid, int32, status);
             });

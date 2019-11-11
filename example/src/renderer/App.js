@@ -138,12 +138,30 @@ export default class App extends Component {
     })
   }
 
-  subscribeChannelEvents = rtcChannel => {
+  subscribeChannelEvents = (rtcChannel, publish) => {
+    let channelId = rtcChannel.channelId()
     rtcChannel.on('joinChannelSuccess', (uid, elapsed) => {
       console.log(`join channel success: ${uid} ${elapsed}`)
+      if(publish) {
+        this.setState({
+          local: uid
+        });
+      }
+    })
+
+    rtcChannel.on('userJoined', (uid, elapsed) => {
+      if (uid === SHARE_ID && this.state.localSharing) {
+        return
+      }
       this.setState({
-        local: uid
-      });
+        users: this.state.users.push({channelId, uid})
+      })
+    })
+
+    rtcChannel.on('userOffline', (uid, reason) => {
+      this.setState({
+        users: this.state.users.delete(this.state.users.indexOf({cannelId, uid}))
+      })
     })
   }
 
@@ -181,10 +199,16 @@ export default class App extends Component {
       rednessLevel: 0
     })
 
-    // rtcEngine.joinChannel(null, this.state.channel, '',  Number(`${new Date().getTime()}`.slice(7)))
+    // joinning two channels together
     let channel = rtcEngine.createChannel(this.state.channel)
-    this.subscribeChannelEvents(channel)
+    this.subscribeChannelEvents(channel, true)
     channel.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
+    channel.publish();
+
+    let channel2 = rtcEngine.createChannel(`${this.state.channel}-2`)
+    this.subscribeChannelEvents(channel2, false)
+    channel2.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
+
   }
 
   handleCameraChange = e => {
@@ -769,7 +793,7 @@ export default class App extends Component {
         </div>
         <div className="column is-three-quarters window-container">
           {this.state.users.map((item, key) => (
-            <Window key={key} uid={item} rtcEngine={this.rtcEngine} role={item===SHARE_ID?'remoteVideoSource':'remote'}></Window>
+            <Window key={key} uid={item.uid} channel={item.channelId} rtcEngine={this.rtcEngine} role={item===SHARE_ID?'remoteVideoSource':'remote'}></Window>
           ))}
           {this.state.local ? (<Window uid={this.state.local} rtcEngine={this.rtcEngine} role="local">
 
@@ -801,10 +825,10 @@ class Window extends Component {
       this.props.rtcEngine.setupViewContentMode('videosource', 1);
       this.props.rtcEngine.setupViewContentMode(String(SHARE_ID), 1);
     } else if (this.props.role === 'remote') {
-      dom && this.props.rtcEngine.subscribe(this.props.uid, dom)
+      dom && this.props.rtcEngine.setupRemoteVideo(this.props.uid, dom, this.props.channel)
       this.props.rtcEngine.setupViewContentMode(this.props.uid, 1);
     } else if (this.props.role === 'remoteVideoSource') {
-      dom && this.props.rtcEngine.subscribe(this.props.uid, dom)
+      dom && this.props.rtcEngine.subscribe(this.props.uid, dom, this.props.channel)
       this.props.rtcEngine.setupViewContentMode('videosource', 1);
       this.props.rtcEngine.setupViewContentMode(String(SHARE_ID), 1);
     }
