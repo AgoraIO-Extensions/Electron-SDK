@@ -1087,6 +1087,18 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.subscribe(uid);
   }
 
+  setupRemoteVideo(uid: number, view?: Element, channel?: string) {
+    if(view) {
+      //bind
+      this.initRender(uid, view);
+      return this.rtcEngine.subscribe(uid, channel);
+    } else {
+      //unbind
+      this.destroyRender(uid);
+      return this.rtcEngine.unsubscribe(uid, channel);
+    }
+  }
+
   /**
    * Sets the local video view and the corresponding renderer.
    * @param {Element} view The Dom element where you initialize your view.

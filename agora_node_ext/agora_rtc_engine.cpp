@@ -2718,7 +2718,11 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 uid_t uid;
-                status = NodeUid::getUidFromNodeValue(args[0], uid);
+                nodestring channel;
+                status = napi_get_value_uid_t_(args[0], uid);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                status = napi_get_value_nodestring_(args[1], channel);
                 CHECK_NAPI_STATUS(pEngine, status);
                 
                 auto context = new NodeRenderContext(NODE_RENDER_TYPE_REMOTE, uid);
@@ -2730,6 +2734,9 @@ namespace agora {
                 canvas.uid = uid;
                 canvas.renderMode = RENDER_MODE_HIDDEN;
                 canvas.view = (view_t)context;
+                if(channel) {
+                    strlcpy(canvas.channelId, channel, agora::rtc::MAX_CHANNEL_ID_LENGTH);
+                }
                 pEngine->m_engine->setupRemoteVideo(canvas);
                 result = 0;
             } while (false);
@@ -2747,10 +2754,17 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 uid_t uid;
-                status = NodeUid::getUidFromNodeValue(args[0], uid);
+                nodestring channel;
+                status = napi_get_value_uid_t_(args[0], uid);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                status = napi_get_value_nodestring_(args[1], channel);
                 CHECK_NAPI_STATUS(pEngine, status);
                 VideoCanvas canvas;
                 canvas.uid = uid;
+                if(channel) {
+                    strlcpy(canvas.channelId, channel, agora::rtc::MAX_CHANNEL_ID_LENGTH);
+                }
                 pEngine->m_engine->setupRemoteVideo(canvas);
                 result = 0;
             } while (false);
