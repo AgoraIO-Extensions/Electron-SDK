@@ -2398,4 +2398,205 @@ export interface NodeRtcChannel {
     uid: number,
     options: ChannelMediaOptions
   ): number;
+
+  /**
+   * @ignore
+   */
+  joinChannelWithUserAccount(
+    token: string,
+    userAccount: string,
+    options: ChannelMediaOptions
+  ): number;
+
+  /**
+   * @ignore
+   */
+  channelId(): string;
+
+  /**
+   * @ignore
+   */
+  getCallId(): string;
+
+  /**
+   * @ignore
+   */
+  setClientRole(
+    clientRole: ClientRoleType
+  ): number;
+
+  /**
+   * @ignore
+   */
+  setRemoteUserPriority(
+    uid: number,
+    priority: Priority
+  ): number;
+
+  /**
+   * @ignore
+   */
+  renewToken(
+    token: string
+  ): number;
+
+  /**
+   * @ignore
+   */
+  setEncryptionSecret(
+    secret: string
+  ): number;
+
+  /**
+   * @ignore
+   */
+  setEncryptionMode(
+    mode: string
+  ): number;
+
+  /**
+   * @ignore
+   */
+  setRemoteVoicePosition(
+    uid: number,
+    pan: number,
+    gain: number
+  ): number;
+
+  /**
+   * @ignore
+   */
+  setDefaultMuteAllRemoteAudioStreams(
+    muted: boolean
+  ): number;
+
+  /**
+   * @ignore
+   */
+  setDefaultMuteAllRemoteVideoStreams(
+    muted: boolean
+  ): number;
+
+  /**
+   * @ignore
+   */
+  muteAllRemoteAudioStreams(
+    muted: boolean
+  ): number;
+
+  /**
+   * @ignore
+   */
+  muteRemoteAudioStream(
+    uid: number,
+    muted: boolean
+  ): number;
+
+  /**
+   * @ignore
+   */
+  muteAllRemoteVideoStreams(
+    muted: boolean
+  ): number;
+
+  /**
+   * @ignore
+   */
+  muteRemoteVideoStream(
+    uid: number,
+    muted: boolean
+  ): number;
+  /**
+   * @ignore
+   */
+  setRemoteVideoStreamType(
+    uid: number,
+    type: StreamType
+  ): number;
+
+  /**
+   * @ignore
+   */
+  setRemoteDefaultVideoStreamType(
+    type: StreamType
+  ): number;
+
+  /**
+   * @ignore
+   */
+  createDataStream(
+    reliable: boolean,
+    ordered: boolean
+  ): number;
+
+  /**
+   * @ignore
+   */
+  sendStreamMessage(
+    streamId: number,
+    msg: string
+  ): number;
+
+  /**
+   * @ignore
+   */
+  addPublishStreamUrl(
+    url: string,
+    transcodingEnabled: boolean
+  ): number;
+
+  /**
+   * @ignore
+   */
+  removePublishStreamUrl(
+    url: string
+  ): number;
+
+  /**
+   * @ignore
+   */
+  setLiveTranscoding(transcoding: TranscodingConfig): number;
+
+  /**
+   * @ignore
+   */
+  addInjectStreamUrl(url: string, config: InjectStreamConfig): number;
+  
+  /**
+   * @ignore
+   */
+  removeInjectStreamUrl(url: string): number;
+
+  /**
+   * @ignore
+   */
+  startChannelMediaRelay(config: ChannelMediaRelayConfiguration): number;
+  /**
+   * @ignore
+   */
+  updateChannelMediaRelay(config: ChannelMediaRelayConfiguration): number;
+  /**
+   * @ignore
+   */
+  stopChannelMediaRelay(): number;
+  /**
+   * @ignore
+   */
+  getConnectionState(): ConnectionState;
+  /**
+   * @ignore
+   */
+  publish(): number;
+  /**
+   * @ignore
+   */
+  unpublish(): number;
+  /**
+   * @ignore
+   */
+  leaveChannel(): number;
+  /**
+   * @ignore
+   */
+  release(): number;
 }

@@ -5374,6 +5374,141 @@ class AgoraRtcChannel extends EventEmitter
       autoSubscribeVideo: true
     });
   }
+
+  joinChannelWithUserAccount(
+    token: string,
+    userAccount: string,
+    options: ChannelMediaOptions
+  ): number {
+    return this.rtcChannel.joinChannelWithUserAccount(token, userAccount, options || {
+      autoSubscribeAudio: true,
+      autoSubscribeVideo: true
+    }); 
+  }
+
+  channelId(): string {
+    return this.rtcChannel.channelId()
+  }
+
+  getCallId(): string {
+    return this.rtcChannel.getCallId()
+  }
+
+  setClientRole(role: ClientRoleType): number {
+    return this.rtcChannel.setClientRole(role);
+  }
+
+  setRemoteUserPriority(uid: number, priority: Priority) {
+    return this.rtcChannel.setRemoteUserPriority(uid, priority);
+  }
+
+  renewToken(newtoken: string): number {
+    return this.rtcChannel.renewToken(newtoken);
+  }
+
+  setEncryptionSecret(secret: string): number {
+    return this.rtcChannel.setEncryptionSecret(secret);
+  }
+
+  setEncryptionMode(mode: string): number {
+    return this.rtcChannel.setEncryptionMode(mode);
+  }
+
+  setRemoteVoicePosition(uid: number, pan: number, gain: number): number {
+    return this.rtcChannel.setRemoteVoicePosition(uid, pan, gain);
+  }
+
+  setDefaultMuteAllRemoteAudioStreams(mute: boolean): number {
+    return this.rtcChannel.setDefaultMuteAllRemoteAudioStreams(mute);
+  }
+
+  setDefaultMuteAllRemoteVideoStreams(mute: boolean): number {
+    return this.rtcChannel.setDefaultMuteAllRemoteVideoStreams(mute);
+  }
+
+  muteAllRemoteAudioStreams(mute: boolean): number {
+    return this.rtcChannel.muteAllRemoteAudioStreams(mute);
+  }
+
+  muteRemoteAudioStream(uid: number, mute: boolean): number {
+    return this.rtcChannel.muteRemoteAudioStream(uid, mute);
+  }
+
+  muteAllRemoteVideoStreams(mute: boolean): number {
+    return this.rtcChannel.muteAllRemoteVideoStreams(mute);
+  }
+
+  muteRemoteVideoStream(uid: number, mute: boolean): number {
+    return this.rtcChannel.muteRemoteVideoStream(uid, mute);
+  }
+
+  setRemoteVideoStreamType(uid: number, streamType: StreamType): number {
+    return this.rtcChannel.setRemoteVideoStreamType(uid, streamType);
+  }
+
+  setRemoteDefaultVideoStreamType(streamType: StreamType): number {
+    return this.rtcChannel.setRemoteDefaultVideoStreamType(streamType);
+  }
+
+  createDataStream(reliable: boolean, ordered: boolean): number {
+    return this.rtcChannel.createDataStream(reliable, ordered);
+  }
+
+  sendStreamMessage(streamId: number, msg: string): number {
+    return this.rtcChannel.sendStreamMessage(streamId, msg);
+  }
+
+  addPublishStreamUrl(url: string, transcodingEnabled: boolean): number {
+    return this.rtcChannel.addPublishStreamUrl(url, transcodingEnabled);
+  }
+
+  removePublishStreamUrl(url: string): number {
+    return this.rtcChannel.removePublishStreamUrl(url);
+  }
+
+  setLiveTranscoding(transcoding: TranscodingConfig): number {
+    return this.rtcChannel.setLiveTranscoding(transcoding);
+  }
+
+  addInjectStreamUrl(url: string, config: InjectStreamConfig): number {
+    return this.rtcChannel.addInjectStreamUrl(url, config);
+  }
+
+  removeInjectStreamUrl(url: string): number {
+    return this.rtcChannel.removeInjectStreamUrl(url);
+  }
+
+  startChannelMediaRelay(config: ChannelMediaRelayConfiguration): number {
+    return this.rtcChannel.startChannelMediaRelay(config);
+  }
+
+  updateChannelMediaRelay(config: ChannelMediaRelayConfiguration): number {
+    return this.rtcChannel.updateChannelMediaRelay(config);
+  }
+
+  stopChannelMediaRelay(): number {
+    return this.rtcChannel.stopChannelMediaRelay();
+  }
+
+  getConnectionState(): ConnectionState {
+    return this.rtcChannel.getConnectionState();
+  }
+
+  puiblish(): number {
+    return this.rtcChannel.publish()
+  }
+
+  unpuiblish(): number {
+    return this.rtcChannel.unpublish()
+  }
+
+  leaveChannel(): number {
+    return this.rtcChannel.leaveChannel()
+  }
+
+  release(): number {
+    return this.rtcChannel.release()
+  }
 }
 
 export default AgoraRtcEngine;
