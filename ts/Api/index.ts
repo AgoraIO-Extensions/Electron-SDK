@@ -1087,7 +1087,7 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.subscribe(uid);
   }
 
-  setupRemoteVideo(uid: number, view?: Element, channel?: string) {
+  setupRemoteVideo(uid: number, view?: Element, channel?: string): number {
     if(view) {
       //bind
       this.initRender(uid, view);
@@ -5741,11 +5741,11 @@ class AgoraRtcChannel extends EventEmitter
     return this.rtcChannel.getConnectionState();
   }
 
-  puiblish(): number {
+  publish(): number {
     return this.rtcChannel.publish()
   }
 
-  unpuiblish(): number {
+  unpublish(): number {
     return this.rtcChannel.unpublish()
   }
 
