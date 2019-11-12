@@ -162,7 +162,7 @@ export default class App extends Component {
     rtcEngine.setLocalVoiceReverbPreset(this.state.voiceReverbPreset)
     // console.log('loop', rtcEngine.enableLoopbackRecording(true, null))
     rtcEngine.enableDualStreamMode(true)
-    rtcEngine.enableAudioVolumeIndication(1000, 3)
+    rtcEngine.enableAudioVolumeIndication(1000, 3, false)
 
     //enable beauty options
     rtcEngine.setBeautyEffectOptions(true, {
