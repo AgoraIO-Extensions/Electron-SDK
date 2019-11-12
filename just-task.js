@@ -19,8 +19,8 @@ const packageVersion = require('./package.json').version;
 task('sync:lib', () => {
   const config = Object.assign({}, getArgvFromNpmEnv(), getArgvFromPkgJson())
   return synclib({
-    // platform: argv().platform,
-    platform: 'win32',
+    platform: argv().platform,
+    // platform: 'win32',
     libUrl: config.libUrl
   })
 })

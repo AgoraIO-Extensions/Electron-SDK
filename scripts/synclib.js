@@ -24,7 +24,11 @@ const mkdirPromise = promisify(mkdirp)
 
 const macPrepare = () => {
   return new Promise((resolve, reject) => {
-    rmdirPromise(path.join(__dirname, '../sdk/lib/mac/AgoraRtcEngineKit.framework')).then(() => {
+    Promise.all([
+      rmdirPromise(path.join(__dirname, '../sdk'))
+    ]).then(() => {
+      return mkdirPromise(path.join(__dirname, '../sdk/lib/mac'))
+    }).then(() => {
       return mvPromise(
         path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcEngineKit.framework/'),
         path.join(__dirname, '../sdk/lib/mac/AgoraRtcEngineKit.framework/')
