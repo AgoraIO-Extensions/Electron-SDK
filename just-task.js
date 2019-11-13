@@ -2,6 +2,7 @@ const { task, option, logger, argv, series, condition } = require('just-task');
 const path = require('path')
 const build = require('./scripts/build')
 const download = require('./scripts/download')
+const synclib = require('./scripts/synclib')
 const cleanup = require('./scripts/cleanup')
 const {getArgvFromNpmEnv, getArgvFromPkgJson} = require('./scripts/npm_argv')
 
@@ -12,8 +13,22 @@ option('platform', {default: process.platform, choices: ['darwin', 'win32']});
 option('debug', {default: false, boolean: true});
 option('silent', {default: false, boolean: true});
 option('msvs_version', {default: '2015'});
+option('liburl_win', {default: ''});
+option('liburl_mac', {default: ''});
 
 const packageVersion = require('./package.json').version;
+
+task('sync:lib', () => {
+  const config = Object.assign({}, getArgvFromPkgJson(), getArgvFromNpmEnv() )
+  return synclib({
+    platform: argv().platform,
+    // platform: 'win32',
+    libUrl: {
+      win: argv().liburl_win || config.libUrl.win,
+      mac: argv().liburl_mac || config.libUrl.mac
+    }
+  })
+})
 
 // npm run build:electron -- 
 task('build:electron', () => {
