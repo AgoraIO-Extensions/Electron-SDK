@@ -258,7 +258,7 @@ private:
  */
 int napi_get_value_string_utf8_(const Local<Value>& str, char *buffer, uint32_t len);
 
-napi_status napi_get_value_uid_t_(const Local<Value>& value, uid_t& result);
+napi_status napi_get_value_uid_t_(const Local<Value>& value, agora::rtc::uid_t& result);
 
 /**
  * get uint32 from V8 value.
