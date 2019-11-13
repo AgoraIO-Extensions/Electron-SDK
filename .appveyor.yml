@@ -18,5 +18,6 @@ install:
   - npm install
 
 build_script:
+  - npm run sync:lib
   - npm run build:electron
   - npm run build:ts
