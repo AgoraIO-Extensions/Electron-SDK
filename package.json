@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "2.8.2-hotfix.6",
+  "version": "2.8.2-hotfix.7",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -28,7 +28,12 @@
     "node-gyp": "^6.0.0",
     "shelljs": "^0.8.3",
     "yuv-buffer": "^1.0.0",
-    "yuv-canvas": "^1.2.1"
+    "yuv-canvas": "^1.2.1",
+    "rimraf": "^3.0.0",
+    "bluebird": "^3.7.1",
+    "extract-zip": "^1.6.7",
+    "fs-extra": "^8.1.0",
+    "glob": "^7.1.6"
   },
   "files": [
     "scripts",
@@ -38,13 +43,8 @@
   ],
   "devDependencies": {
     "@types/node": "10.17.5",
-    "bluebird": "^3.7.1",
-    "extract-zip": "^1.6.7",
-    "fs-extra": "^8.1.0",
-    "glob": "^7.1.6",
     "jest": "24.9.0",
     "prettier": "1.19.1",
-    "rimraf": "^3.0.0",
     "ts-jest": "24.1.0",
     "ts-node": "8.4.1",
     "tslint": "5.20.1",
