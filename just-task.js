@@ -2,6 +2,7 @@ const { task, option, logger, argv, series, condition } = require('just-task');
 const path = require('path')
 const build = require('./scripts/build')
 const download = require('./scripts/download')
+const switcharch = require('./scripts/switch_arch')
 const synclib = require('./scripts/synclib')
 const cleanup = require('./scripts/cleanup')
 const {getArgvFromNpmEnv, getArgvFromPkgJson} = require('./scripts/npm_argv')
@@ -17,6 +18,13 @@ option('liburl_win', {default: ''});
 option('liburl_mac', {default: ''});
 
 const packageVersion = require('./package.json').version;
+
+task('switch:arch', () => {
+  return switcharch({
+    arch: argv().arch,
+    // platform: 'win32',
+  })
+})
 
 task('sync:lib', () => {
   const config = Object.assign({}, getArgvFromPkgJson(), getArgvFromNpmEnv() )
@@ -39,7 +47,8 @@ task('build:electron', () => {
     packageVersion, 
     debug: argv().debug, 
     silent: argv().silent,
-    msvsVersion: argv().msvs_version
+    msvsVersion: argv().msvs_version,
+    arch: argv().arch
   })
 })
 // npm run build:node --

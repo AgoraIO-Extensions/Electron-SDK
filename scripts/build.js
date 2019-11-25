@@ -9,13 +9,14 @@ module.exports = ({
   debug = false,
   silent = false,
   msvsVersion = '2015',
+  arch = 'ia32'
 }) => {
   /** get command string */
   const command = ['node-gyp configure'];
   
   // check platform
   if (platform === 'win32') {
-    command.push(`--arch=ia32 --msvs_version=${msvsVersion}`)
+      command.push(`--arch=${arch} --msvs_version=${msvsVersion}`)
   }
 
   // check runtime
@@ -39,6 +40,7 @@ module.exports = ({
 
   logger.info("Package Version:", packageVersion);
   logger.info("Platform:", platform);
+  logger.info("Arch:", arch);
   logger.info("Electron Version:", electronVersion);
   logger.info("Runtime:", runtime, "\n");
 

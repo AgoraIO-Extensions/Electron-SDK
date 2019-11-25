@@ -1,3 +1,4 @@
+binding.gyp
 sdk
 tmp
 build/
