@@ -1,4 +1,5 @@
 cd %WORKSPACE%\Electron-SDK
+del /f/q/s node_modules
 call npm config set registry https://registry.npm.taobao.org/
 call npm config set ELECTRON_MIRROR http://npm.taobao.org/mirrors/electron/
 call npm install --verbose
