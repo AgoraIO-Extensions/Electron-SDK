@@ -23,6 +23,7 @@ install:
   - npm install
 
 build_script:
+  - npm run switch:arch -- --arch=%arch%
   - npm run sync:lib -- --arch=%arch%
   - npm run build:electron -- --arch=%arch%
   - npm run build:ts
