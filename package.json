@@ -63,6 +63,7 @@
   "agora_electron": {
     "libUrl": {
       "win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows(x86)_v2.8.2.121_20191111_FULL_2624.zip",
+      "win64": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows(x64)_v2.8.2.121_20191125_FULL_706.zip",
       "mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v2_8_2_121_FULL_20191113_789.zip"
     }
   },

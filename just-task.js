@@ -31,9 +31,11 @@ task('sync:lib', () => {
   return synclib({
     platform: argv().platform,
     // platform: 'win32',
+    arch: argv().arch,
     libUrl: {
       win: argv().liburl_win || config.libUrl.win,
-      mac: argv().liburl_mac || config.libUrl.mac
+      mac: argv().liburl_mac || config.libUrl.mac,
+      win64: argv().liburl_win64 || config.libUrl.win64
     }
   })
 })

@@ -49,9 +49,29 @@ const winPrepare = (folder) => {
   })
 }
 
+
+const win64Prepare = (folder) => {
+  return new Promise((resolve, reject) => {
+    Promise.all([
+      fs.remove(path.join(__dirname, '../sdk'))
+    ]).then(() => {
+      return fs.mkdirp(path.join(__dirname, '../sdk'))
+    }).then(() => {
+      return Promise.all([
+        fs.move(path.join(folder, './sdk'), path.join(__dirname, '../sdk/win64')),
+      ])
+    }).then(() => {
+      resolve()
+    }).catch(e => {
+      reject(e)
+    })
+  })
+}
+
 module.exports = ({
   platform,
-  libUrl
+  libUrl,
+  arch = "ia32"
 }) => {
   const genOS = () => {
     if (platform === "darwin") {
@@ -76,17 +96,16 @@ module.exports = ({
         downloadUrl = libUrl.mac
       }
     } else {
-      if(!libUrl.win){
+      downloadUrl = (arch === 'ia32') ? libUrl.win : libUrl.win64
+      if(!downloadUrl){
         logger.error(`no windows lib specified`)
         return reject(new Error(`no windows lib specified`))
-      } else {
-        downloadUrl = libUrl.win
       }
     }
 
     /** start download */
     const outputDir = "./tmp/";
-    logger.info(`Downloading ${os} Libs...\n${downloadUrl}\n`);
+    logger.info(`Downloading ${os} ${arch} Libs...\n${downloadUrl}\n`);
 
     fs.remove(path.join(__dirname, '../tmp')).then(() => {
       return download(downloadUrl, outputDir, {filename: "sdk.zip"})
@@ -104,8 +123,11 @@ module.exports = ({
       if(os === "mac") {
         return macPrepare()
       } else {
-        console.log(folder)
-        return winPrepare(folder[0])
+        if(arch === 'ia32') {
+          return winPrepare(folder[0])
+        } else {
+          return win64Prepare(folder[0])
+        }
       }
     }).then(() => {
       logger.info("Success", "Prepare finished");
