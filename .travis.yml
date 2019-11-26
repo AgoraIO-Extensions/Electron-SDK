@@ -4,6 +4,7 @@ os:
 - osx
 script:
 - npm install
+- npm run switch:arch
 - npm run sync:lib
 - npm run build:electron
 - npm run build:ts

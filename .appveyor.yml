@@ -1,7 +1,7 @@
 environment:
   matrix:
-    - arch: ia32
-    - arch: x64
+    - ARCH: ia32
+    - ARCH: x64
 
 os: Visual Studio 2015
 
@@ -23,7 +23,7 @@ install:
   - npm install
 
 build_script:
-  - npm run switch:arch -- --arch=%arch%
-  - npm run sync:lib -- --arch=%arch%
-  - npm run build:electron -- --arch=%arch%
+  - npm run switch:arch -- --arch=%ARCH%
+  - npm run sync:lib -- --arch=%ARCH%
+  - npm run build:electron -- --arch=%ARCH%
   - npm run build:ts
