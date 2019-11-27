@@ -9,7 +9,8 @@ module.exports = ({
   debug = false,
   silent = false,
   msvsVersion = '2015',
-  arch = 'ia32'
+  arch = 'ia32',
+  distUrl = 'https://atom.io/download/electron'
 }) => {
   /** get command string */
   const command = ['node-gyp configure'];
@@ -21,7 +22,7 @@ module.exports = ({
 
   // check runtime
   if (runtime === 'electron') {
-    command.push(`--target=${electronVersion} --dist-url=https://atom.io/download/electron`)
+    command.push(`--target=${electronVersion} --dist-url=${distUrl}`)
   }
 
   // check debug
