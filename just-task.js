@@ -68,13 +68,15 @@ task('build:node', () => {
 })
 // npm run download --
 task('download', () => {
+  const config = Object.assign({}, getArgvFromNpmEnv(), getArgvFromPkgJson())
   // work-around
-  const addonVersion = '2.8.2-hotfix.6'
+  const addonVersion = '2.8.2-hotfix.8'
   cleanup(path.join(__dirname, "./build")).then(_ => {
     download({
       electronVersion: argv().electron_version, 
       platform: argv().platform, 
-      packageVersion: addonVersion
+      packageVersion: addonVersion,
+      arch: argv().arch
     })
   })
 })
@@ -82,12 +84,13 @@ task('download', () => {
 task('install', () => {
   const config = Object.assign({}, getArgvFromNpmEnv(), getArgvFromPkgJson())
   // work-around
-  const addonVersion = '2.8.2-hotfix.6'
+  const addonVersion = '2.8.2-hotfix.8'
   if (config.prebuilt) {
     download({
       electronVersion: config.electronVersion, 
       platform: config.platform, 
-      packageVersion: addonVersion
+      packageVersion: addonVersion,
+      arch: config.arch
     })
   } else {
     build(Object.assign({}, config, {

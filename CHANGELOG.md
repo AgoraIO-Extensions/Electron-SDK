@@ -1,3 +1,7 @@
+## 2.8.2-hotfix.8
+#### :house: Internal
+* Support x64 for windows
+
 ## 2.8.2 (Nov 2nd, 2019)
 #### :house: Internal
 * Fixed remoteVideoStats uid overflow bug
