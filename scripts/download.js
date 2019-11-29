@@ -1,6 +1,10 @@
 const { logger } = require("just-task");
 const download = require("download");
-const path = require("path");
+const extract = require('extract-zip')
+const promisify = require("bluebird").promisify
+const extractPromise = promisify(extract)
+const path = require('path')
+const fs = require("fs-extra")
 
 module.exports = ({
   electronVersion = "5.0.8",
@@ -32,26 +36,33 @@ module.exports = ({
   }
 
   /** start download */
-  const outputDir = "./build/";
+  const outputDir = "./";
 
   logger.info("Package Version:", packageVersion);
   logger.info("Platform:", platform);
   if(arch)
     logger.info("Arch:", arch)
   logger.info("Electron Version:", electronVersion);
-  logger.info("  Download URL  : ", downloadUrl, "\n");
+  logger.info("Download URL  : ", downloadUrl, "\n");
 
   logger.info("Downloading prebuilt C++ addon for Agora Electron SDK...\n");
 
-  download(downloadUrl, outputDir, {
-    strip: 1,
-    extract: true
-  })
+  return new Promise((resolve, reject) => {
+    download(downloadUrl, outputDir, {filename: "sdk.zip"})
     .then(() => {
       logger.info("Success", "Download finished");
+      logger.info("Extracting binaries...\n");
+      return extractPromise(path.join(__dirname, '../sdk.zip'), {dir: path.join(__dirname, '../')})
+    }).then(() => {
+      logger.info("Success", "Extract finished")
+      return fs.remove(path.join(__dirname, '../sdk.zip'))
+    }).then(() => {
+      logger.info("Success", "Downloaded files cleanup")
+      resolve()
     })
     .catch(err => {
       logger.error("Failed: ", err);
-      throw new Error(err);
+      reject(new Error(err));
     });
+  })
 };

@@ -72,11 +72,13 @@ task('download', () => {
   // work-around
   const addonVersion = '2.8.2-hotfix.8'
   cleanup(path.join(__dirname, "./build")).then(_ => {
-    download({
-      electronVersion: argv().electron_version, 
-      platform: argv().platform, 
-      packageVersion: addonVersion,
-      arch: argv().arch
+    cleanup(path.join(__dirname, './js')).then(_ => {
+      download({
+        electronVersion: argv().electron_version, 
+        platform: argv().platform, 
+        packageVersion: addonVersion,
+        arch: argv().arch
+      })
     })
   })
 })
