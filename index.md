@@ -332,7 +332,6 @@ Agora Electron SDK use the  {@link AgoraRtcEngine.on on} method to add listeners
 | `requestChannelKey`                | Occurs when the Channel Key expires.                         |
 | `localUserRegistered`              | Occurs when the local user successfully registers a user account. |
 | `userInfoUpdated`                  | Occurs when the SDK gets the user ID and user account of the remote user. |
-| `microphoneEnabled`                | Occurs when the state of the microphone changes.             |
 | `groupAudioVolumeIndication`       | Occurs when the state of the microphone changes.             |
 | `activeSpeaker`                    | Reports which user is the loudest speaker.                   |
 | `rtcStats`                         | Reports the statistics of AgoraRtcEngine.                    |
@@ -340,8 +339,6 @@ Agora Electron SDK use the  {@link AgoraRtcEngine.on on} method to add listeners
 | `remoteVideoStats`                 | Reports the statistics of the video stream from each remote user/host. |
 | `localAudioStats`| Reports the statistics of the local audio stream.|
 | `remoteAudioStats`                 | Reports the statistics of the audio stream from each remote user/host. |
-| `remoteVideoTransportStats`        | Reports the transport-layer statistics of each remote video stream. |
-| `remoteAudioTransportStats`        | Reports the transport-layer statistics of each remote audio stream. |
 | `audioDeviceStateChanged`          | Occurs when the audio device state changes.                  |
 | `videoDeviceStateChanged`          | Occurs when the video device state changes.                  |
 | `audioMixingStateChanged`          | Occurs when the state of the local user's audio mixing file changes. |
@@ -357,12 +354,9 @@ Agora Electron SDK use the  {@link AgoraRtcEngine.on on} method to add listeners
 | `firstLocalVideoFrame`             | Occurs when the first local video frame is rendered.             |
 | `firstRemoteVideoFrame`            | Occurs when the first remote video frame is rendered.        |
 | `videoSizeChanged`                 | Occurs when the video size or rotation information of a specified remote user changes. |
-| `addStream`                        | Occurs when the SDK decodes the first remote audio frame for playback. |
 | `removeStream`                     | Occurs when the remote user leaves the channel.              |
 | `userMuteAudio`                    | Occurs when a remote user stops/resumes sending the audio stream. |
 | `userMuteVideo`                    | Occurs when a remote user stops/resumes sending the video stream. |
-| `userEnableVideo`                  | Occurs when a remote user enables/disables the video module. |
-| `userEnableLocalVideo`             | Occurs when a remote user enables/disables the local video capture. |
 | `cameraReady`                      | Occurs when the camera turns on and is ready to capture the video. |
 | `videoStopped`                     | Occurs when the video stops playing.                         |
 | `streamMessage`                    | Occurs when the local user receives a remote data stream within five seconds. |
