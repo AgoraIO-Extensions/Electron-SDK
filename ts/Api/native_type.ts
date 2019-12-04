@@ -1371,21 +1371,21 @@ export enum VIDEO_PROFILE_TYPE {
  */
 export interface ChannelMediaInfo {
   /**
-   * The channel name. The default value is NULL, which means that 
+   * The channel name. 
+   * 
+   * The default value is NULL, which means that 
    * the SDK applies the current channel name.
    */
   channel: string;
   /**
    * The token that enables the user to join the channel. 
+   * 
    * The default value is NULL, which means that the SDK applies the current 
    * token.
    */
   token: string;
   /**
    * The user ID.
-   * 
-   * **Note**:
-   * String user accounts are not supported in media stream relay.
    */
   uid: number;
 }
@@ -1393,31 +1393,54 @@ export interface ChannelMediaInfo {
 /**
  * The configuration of the media stream relay.
  * 
- * - srcInfo: The information of the destination channel:
- * {@link ChannelMediaInfo}.
- * 
- * **Note**:
- * - `uid`: ID of the user whose media stream you want to relay. 
- * We recommend setting it as 0, which means that the SDK relays the media 
- * stream of the current broadcaster.
- * - If you do not use a token, we recommend using the default values of the 
- * parameters in {@link ChannelMediaInfo}.
- * - If you use a token, set uid as 0, and ensure that the token is generated 
- * with the `uid` set as 0.
- * 
- * - destInfos: The information of the destination channel: 
- * {@link ChannelMediaInfo}.
- * 
  * **Warning**:
  * - If you want to relay the media stream to multiple channels, define as 
  * many {@link ChannelMediaInfo} interface (at most four).
  * 
- * **Note**:
- * - `uid`: The user ID in the destination channel.
  */
 
 export interface ChannelMediaRelayConfiguration {
+  /**
+   * The information of the source channel. See {@link ChannelMediaInfo}
+   * 
+   * It contains the following properties:
+   * 
+   * - **Note**:
+   *  - If you have not enabled the App Certificate, Token is unnecessary here 
+   * and set the following properties as the default value.
+   *  - If you have enabled the App Certificate, you must use Token. 
+   * 
+   * - `channel`: The name of the source channel. The default value is NULL, 
+   * which means that the SDK passes in the name of the current channel.
+   * - `token`: Token for joining the source channel. It is generated with 
+   * `channel` and `uid` you set in `srcInfo`. The default value is NULL, 
+   * which means that the SDK passes in the APP ID.
+   * - `uid`: 
+   *  - ID of the broadcaster whose media stream you want to relay. The 
+   * default value is 0, which means that the SDK randomly generates a UID. 
+   *  - You must set it as 0.
+   * 
+   */
   srcInfo: ChannelMediaInfo;
+  /**
+   * The information of the destination channel. See {@link ChannelMediaInfo}
+   * 
+   * It contains the following properties:
+   * 
+   * - `channel`: The name of the destination channel. 
+   * - `token`:Token for joining the destination channel. 
+   * It is generated with `channel` and `uid` you set in `destInfos`. 
+   *  - If you have not enabled the App Certificate, Token is unnecessary here 
+   * and set it as the default value NULL, which means that the SDK passes in 
+   * the APP ID.
+   *  - If you have enabled the App Certificate, you must use Token. 
+   * - `uid`: ID of the broadcaster in the destination channel. 
+   * The value ranges from 0 to 2<sup>32</sup>-1. To avoid UID conflicts, 
+   * this `uid` must be different from any other UIDs in the destination 
+   * channel. The default value is 0, which means the SDK randomly generates 
+   * a UID.
+   * 
+   */
   destInfos: [ChannelMediaInfo];
 }
 /**
@@ -1471,10 +1494,10 @@ export type ChannelMediaRelayState =
  * leave the channel.
  * - 3: The SDK fails to access the service, probably due to limited resources 
  * of the server.
- * - 4: The server fails to join the source channel.
- * - 5: The server fails to join the destination channel.
- * - 6: The server fails to receive the data from the source channel.
- * - 7: The source channel fails to transmit data.
+ * - 4: Fails to send the relay request.
+ * - 5: Fails to accept the relay request.
+ * - 6: The server fails to receive the media stream.
+ * - 7: The server fails to send the media stream.
  * - 8: The SDK disconnects from the server due to poor network connections. 
  * You can call the {@link leaveChannel} method to leave the channel.
  * - 9: An internal error occurs in the server.
