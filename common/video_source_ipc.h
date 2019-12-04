@@ -129,7 +129,7 @@ struct CaptureScreenByWinCmd
     agora::rtc::ScreenCaptureParameters captureParams;
 };
 
-#define MAX_TOKEN_LEN 128
+#define MAX_TOKEN_LEN 512
 #define MAX_CNAME_LEN 256
 #define MAX_CHAN_INFO 512
 #define MAX_PERMISSION_KEY 128
