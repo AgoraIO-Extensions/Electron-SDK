@@ -3981,9 +3981,11 @@ class AgoraRtcEngine extends EventEmitter {
    * stream relay.
    * 
    * **Note**: 
+   * - Contact sales-us@agora.io before implementing this function.
    * - Call this method after the {@link joinChannel} method.
    * - This method takes effect only when you are a broadcaster in a 
    * Live-broadcast channel.
+   * - We do not support using string user accounts in this function.
    * - After a successful method call, if you want to call this method again, 
    * ensure that you call the {@link stopChannelMediaRelay} method to quit 
    * the current relay.
