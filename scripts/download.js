@@ -10,7 +10,7 @@ module.exports = ({
   electronVersion = "5.0.8",
   platform = process.platform,
   packageVersion,
-  arch
+  arch = process.arch
 }) => {
   /** get download url */
   const genOS = () => {
