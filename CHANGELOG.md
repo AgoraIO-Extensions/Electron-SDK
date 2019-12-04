@@ -1,3 +1,7 @@
+## 2.9.1 (Dec 4th, 2019)
+#### :bug: Bug Fix
+* Fixed the issue that videosourcejoin has issues for token length when doing process data transfer leading to problems joinning channel for video source process.
+
 ## 2.9.0-hotfix.2 (Sep 17th, 2019)
 #### :bug: Bug Fix
 * Fixed the issue that plugin won't load when there's chinese character in the plugin path
