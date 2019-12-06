@@ -1170,7 +1170,7 @@ class AgoraRtcEngine extends EventEmitter {
    * in the aspect ratio will be filled with black.
    * @return
    * - 0: Success.
-   * - < 0: Failure.
+   * - -1: Failure.
    */
   setupViewContentMode(
     uid: number | 'local' | 'videosource',
@@ -3383,9 +3383,6 @@ class AgoraRtcEngine extends EventEmitter {
   // one at a time via this section's api
   // ===========================================================================
   /**
-   * @deprecated This method is deprecated. Use 
-   * {@link videoSourceStartScreenCaptureByScreen} or 
-   * {@link videoSourceStartScreenCaptureByWindow} instead.
    * Starts the screen sharing.
    * @param {number} wndid Sets the screen sharing area.
    * @param {number} captureFreq (Mandatory) The captured frame rate. The 
@@ -4543,13 +4540,15 @@ class AgoraRtcEngine extends EventEmitter {
 declare interface AgoraRtcEngine {
   /**
    * Occurs when an API method is executed.
-   * - api: The method executed by the SDK.
-   * - err: Error code that the SDK returns when the method call fails.
+   * 
+   * `api`: The method executed by the SDK.
+   * 
+   * `err`: Error code that the SDK returns when the method call fails.
    */
   on(evt: 'apiCallExecuted', cb: (api: string, err: number) => void): this;
   /**
    * Reports a warning during SDK runtime.
-   * - warn: Warning code.
+   * warn: Warning code.
    * - msg: Pointer to the warning message.
    */
   on(evt: 'warning', cb: (warn: number, msg: string) => void): this;
@@ -5411,11 +5410,12 @@ declare interface AgoraRtcEngine {
   /**
    * Reports events during the media stream relay.
    * 
-   * - event: The event code. See {@link ChannelMediaRelayEvent}.
+   * `event`: The event code. See {@link ChannelMediaRelayEvent}.
    */
   on(evt: 'channelMediaRelayEvent', cb: (
     event: ChannelMediaRelayEvent
   ) => void): this;
+ 
   on(evt: string, listener: Function): this;
 
   // on(evt: 'apicallexecuted', cb: (api: string, err: number) => void): this;
