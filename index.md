@@ -1,7 +1,7 @@
 This Agora Electron SDK is developed upon the Native SDK for macOS and the Native SDK for Windows, with the Node.js C++ plug-in units. The Electron SDK supports all the functions of the Agora Native SDK. Agora provides ensured quality of experience (QoE) for worldwide Internet-based voice and video communications through a virtual global network optimized on all platforms.
 
 * The `AgoraRtcEngine` class provides the main methods that can be invoked by your application.
-* The `Events` class enables callbacks to your application.
+* The `Events`(#on) class enables callbacks to your application.
 
 ## Methods
 
@@ -312,6 +312,7 @@ Agora Electron SDK provides the methods for the second instance:
 | {@link AgoraRtcEngine.videoSourceSetLogFile videoSourceSetLogFile} | Specifies an SDK output log file.                            |
 | {@link AgoraRtcEngine.videoSourceSetParameters videoSourceSetParameters} | Provides the technical preview functionalities or special customizations by configuring the SDK with JSON options. |
 
+<a name = "on"></a>
 ## Events
 
 Agora Electron SDK use the  {@link AgoraRtcEngine.on on} method to add listeners for the events above: 
@@ -382,6 +383,7 @@ Agora Electron SDK use the  {@link AgoraRtcEngine.on on} method to add listeners
 
 
 <a name = "warn"></a>
+
 ## Warning Codes
 
 Warning codes occur when the SDK encounters an error that might be recovered automatically. These are only notifications, and can generally be ignored.
