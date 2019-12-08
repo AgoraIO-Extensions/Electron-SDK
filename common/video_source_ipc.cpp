@@ -13,7 +13,7 @@
 #include "node_log.h"
 
 #define VIDEO_SOURCE_BLOCK_NUM 10
-#define VIDEO_SOURCE_BLOCK_SIZE 1024
+#define VIDEO_SOURCE_BLOCK_SIZE 1536
 
 struct VideoSourceIpcMsgHeader
 {
