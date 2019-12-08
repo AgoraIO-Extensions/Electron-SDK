@@ -8,7 +8,8 @@
         ],
         'include_dirs': [
         './common',
-        './common/libyuv/include'
+        './common/libyuv/include',
+        "<!(node -e \"require('nan')\")"
         ],
         'sources': [
         './common/ipc_shm.h',
@@ -172,7 +173,8 @@
         'target_name': 'agora_node_ext',
         'include_dirs': [
         './common',
-        './common/libyuv/include'
+        './common/libyuv/include',
+        "<!(node -e \"require('nan')\")"
         ],
         'sources': [
         './common/ipc_shm.h',

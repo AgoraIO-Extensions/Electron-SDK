@@ -24,7 +24,8 @@
 #include <IAgoraRtcEngine.h>
 #include <IAgoraMediaEngine.h>
 #include <memory>
-using v8::Persistent;
+#include <nan.h>
+using Nan::Persistent;
 using v8::Function;
 using v8::Local;
 using v8::FunctionTemplate;
@@ -124,7 +125,7 @@ class NodeVideoFrameTransporter {
     NodeVideoFrameTransporter();
     ~NodeVideoFrameTransporter();
     
-    bool initialize(Isolate *isolate, const FunctionCallbackInfo<Value>& callbackinfo);
+    bool initialize(Isolate *isolate, const Nan::FunctionCallbackInfo<Value>& callbackinfo);
     int deliverFrame_I420(NodeRenderType type, agora::rtc::uid_t uid, const IVideoFrame& videoFrame, int rotation, bool mirrored);
     int deliverVideoSourceFrame(const char* payload, int len);
     int setVideoDimension(NodeRenderType, agora::rtc::uid_t uid, uint32_t width, uint32_t height);
@@ -242,16 +243,17 @@ private:
  */
 #define BEGIN_PROPERTY_DEFINE(className, constructor, fieldCount) \
     Local<FunctionTemplate> tpl = FunctionTemplate::New(isolate, constructor); \
-    tpl->SetClassName(String::NewFromUtf8(isolate, #className)); \
+    tpl->SetClassName(Nan::New<v8::String>(#className).ToLocalChecked()); \
     tpl->InstanceTemplate()->SetInternalFieldCount(fieldCount);
 
 /**
  * Add member functions that could be called in JS layer directly.
  */
-#define PROPERTY_METHOD_DEFINE(name) NODE_SET_PROTOTYPE_METHOD(tpl, #name, name);
+// #define PROPERTY_METHOD_DEFINE(name) NODE_SET_PROTOTYPE_METHOD(tpl, #name, name);
+#define PROPERTY_METHOD_DEFINE(name) Nan::SetPrototypeMethod(tpl, #name, name);
 
 #define EN_PROPERTY_DEFINE() \
-    constructor.Reset(isolate, tpl->GetFunction());
+    constructor.Reset(tpl->GetFunction(context).ToLocalChecked());
 
 #define NAPI_AUTO_LENGTH SIZE_MAX
 
@@ -292,6 +294,11 @@ napi_status napi_get_value_int64_(const Local<Value>& value, int64_t& result);
  * get nodestring from V8 value.
  */
 napi_status napi_get_value_nodestring_(const Local<Value>& str, NodeString& nodechar);
+
+/**
+ * get object from V8 value.
+ */
+napi_status napi_get_value_object_(Isolate* isolate, const Local<Value>& value, Local<Object>& object);
 
 /**
  * Create V8 value from uint32
