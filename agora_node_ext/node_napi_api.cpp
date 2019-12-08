@@ -38,15 +38,15 @@ NodeVideoFrameTransporter::~NodeVideoFrameTransporter()
     deinitialize();
 }
 
-bool NodeVideoFrameTransporter::initialize(v8::Isolate *isolate, const FunctionCallbackInfo<v8::Value> &callbackinfo)
+bool NodeVideoFrameTransporter::initialize(v8::Isolate *isolate, const Nan::FunctionCallbackInfo<v8::Value> &callbackinfo)
 {
     if (init) {
         deinitialize();
     }
     m_stopFlag = false;
     env = isolate;
-    callback.Reset(isolate, callbackinfo[0].As<Function>());
-    js_this.Reset(isolate, callbackinfo.This());
+    callback.Reset(callbackinfo[0].As<Function>());
+    js_this.Reset(callbackinfo.This());
     m_thread.reset(new std::thread(&NodeVideoFrameTransporter::FlushVideo, this));
     m_highThread.reset(new std::thread(&NodeVideoFrameTransporter::highFlushVideo, this));
     init = true;
@@ -312,19 +312,22 @@ bool AddObj(Isolate* isolate, Local<v8::Array>& infos, int index, VideoFrameInfo
     if (!info.m_needUpdate)
         return false;
     info.m_needUpdate = false;
-    Local<v8::Object> obj = Object::New(isolate);
-    NODE_SET_OBJ_PROP_UINT32(obj, "type", info.m_renderType);
-    NODE_SET_OBJ_PROP_UINT32(obj, "uid", info.m_uid);
-    auto it = info.m_bufferList.begin();
-    NODE_SET_OBJ_PROP_HEADER(obj, it);
-    ++it;
-    NODE_SET_OBJ_PROP_DATA(obj, "ydata", it);
-    ++it;
-    NODE_SET_OBJ_PROP_DATA(obj, "udata", it);
-    ++it;
-    NODE_SET_OBJ_PROP_DATA(obj, "vdata", it);
-    infos->Set(index, obj);
-    return true;
+    bool result = false;
+    do {
+        Local<v8::Object> obj = Object::New(isolate);
+        NODE_SET_OBJ_PROP_UINT32(obj, "type", info.m_renderType);
+        NODE_SET_OBJ_PROP_UINT32(obj, "uid", info.m_uid);
+        auto it = info.m_bufferList.begin();
+        NODE_SET_OBJ_PROP_HEADER(obj, it);
+        ++it;
+        NODE_SET_OBJ_PROP_DATA(obj, "ydata", it);
+        ++it;
+        NODE_SET_OBJ_PROP_DATA(obj, "udata", it);
+        ++it;
+        NODE_SET_OBJ_PROP_DATA(obj, "vdata", it);
+        result = infos->Set(isolate->GetCurrentContext(), index, obj).FromJust();
+    }while(false);
+    return result;
 }
 void NodeVideoFrameTransporter::FlushVideo()
 {
@@ -374,7 +377,7 @@ void NodeVideoFrameTransporter::FlushVideo()
                 }
                 if (i > 0) {
                     Local<v8::Value> args[1] = { infos };
-                    callback.Get(isolate)->Call(js_this.Get(isolate), 1, args);
+                    callback.Get(isolate)->Call(isolate->GetCurrentContext(), js_this.Get(isolate), 1, args);
                 }
             });
             std::this_thread::sleep_for(std::chrono::milliseconds(1000 / m_FPS));
@@ -424,7 +427,7 @@ void NodeVideoFrameTransporter::highFlushVideo()
 
                 if (i > 0) {
                     Local<v8::Value> args[1] = { infos };
-                    callback.Get(isolate)->Call(js_this.Get(isolate), 1, args);
+                    callback.Get(isolate)->Call(isolate->GetCurrentContext(), js_this.Get(isolate), 1, args);
                 }
             });
             std::this_thread::sleep_for(std::chrono::milliseconds(1000 / m_highFPS));
@@ -486,6 +489,7 @@ napi_status napi_get_value_int64_(const Local<Value>& value, int64_t& result)
     result = tmp;
     return status;
 }
+
 napi_status napi_get_value_nodestring_(const Local<Value>& str, NodeString& nodechar)
 {
     napi_status status = napi_ok;
@@ -509,6 +513,16 @@ napi_status napi_get_value_nodestring_(const Local<Value>& str, NodeString& node
     return status;
 }
 
+napi_status napi_get_value_object_(Isolate* isolate, const Local<Value>& value, Local<Object>& object)
+{
+    if(!value->IsObject()) {
+        return napi_invalid_arg;
+    }
+
+    object = value->ToObject(isolate->GetCurrentContext()).ToLocalChecked();
+    return napi_ok;
+}
+
 Local<Value> napi_create_uint32_(Isolate *isolate, const uint32_t& value)
 {
     return v8::Number::New(isolate, value);
@@ -521,7 +535,7 @@ Local<Value> napi_create_bool_(Isolate *isolate, const bool& value)
 
 Local<Value> napi_create_string_(Isolate *isolate, const char* value)
 {
-    return String::NewFromUtf8(isolate, value ? value : "");
+    return String::NewFromUtf8(isolate, value ? value : "", NewStringType::kInternalized).ToLocalChecked();
 }
 
 Local<Value> napi_create_double_(Isolate *isolate, const double &value)
@@ -551,7 +565,7 @@ Local<Value> napi_create_uid_(Isolate *isolate, const agora::rtc::uid_t& uid)
 
 static Local<Value> napi_get_object_property_value(Isolate* isolate, const Local<Object>& obj, const std::string& propName)
 {
-    Local<Name> keyName = String::NewFromUtf8(isolate, propName.c_str(), NewStringType::kInternalized).ToLocalChecked();
+    Local<Name> keyName = Nan::New<String>(propName).ToLocalChecked();
     return obj->Get(isolate->GetCurrentContext(), keyName).ToLocalChecked();
 }
 
