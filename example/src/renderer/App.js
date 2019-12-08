@@ -136,6 +136,9 @@ export default class App extends Component {
     rtcEngine.on('localUserRegistered', (uid, userAccount) => {
       console.log(`local user register: ${uid} ${userAccount}`)
     })
+    rtcEngine.on('rtmpStreamingStateChanged', (url, state, code) => {
+      console.log(`rtmpStreamingStateChanged ${url} ${state} ${code}`)
+    })
   }
 
   handleJoin = () => {
@@ -418,6 +421,7 @@ export default class App extends Component {
         userCount: 1,
         audioSampleRate: 1,
         audioChannels: 1,
+        audioBitrate: 48,
         /** transcodingusers array */
         transcodingUsers: [
           {

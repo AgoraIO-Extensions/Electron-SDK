@@ -1429,5 +1429,20 @@ namespace agora {
             FUNC_TRACE;
             MAKE_JS_CALL_2(RTC_EVENT_CHANNEL_MEDIA_RELAY_STATE, int32, state, int32, code);
         }
+
+        void NodeEventHandler::onRtmpStreamingStateChanged(const char *url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR errCode)
+        {
+            FUNC_TRACE;
+            std::string mUrl(url);
+            node_async_call::async_call([this, mUrl, state, errCode] {
+                this->onRtmpStreamingStateChanged_node(mUrl.c_str(), state, errCode);
+            });
+        }
+
+        void NodeEventHandler::onRtmpStreamingStateChanged_node(const char *url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR errCode)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_3(RTC_EVENT_RTMP_STREAMING_STATE_CHANGED, string, url, int32, state, int32, errCode);
+        }
     }
 }
