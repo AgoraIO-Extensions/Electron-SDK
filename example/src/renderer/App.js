@@ -395,6 +395,7 @@ export default class App extends Component {
         userCount: 1,
         audioSampleRate: 1,
         audioChannels: 1,
+        audioBitrate: 48,
         /** transcodingusers array */
         transcodingUsers: [
           {

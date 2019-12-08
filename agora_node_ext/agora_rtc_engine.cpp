@@ -645,12 +645,10 @@ namespace agora {
             napi_status status = napi_ok;
             int result = -1;
             TranscodingUser *users = nullptr;
-            RtcImage* vwm = nullptr;
             do {
                 NodeRtcEngine *pEngine = nullptr;
                 Isolate* isolate = args.GetIsolate();
                 Local<Context> context = isolate->GetCurrentContext();
-                napi_status status;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
 
@@ -670,7 +668,7 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_object_property_int32_(isolate, obj, "videoBitrate", transcoding.videoBitrate);
                 CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_object_property_int32_(isolate, obj, "videoFramerate", transcoding.videoFramerate);
+                status = napi_get_object_property_int32_(isolate, obj, "videoFrameRate", transcoding.videoFramerate);
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_object_property_bool_(isolate, obj, "lowLatency", transcoding.lowLatency);
                 CHECK_NAPI_STATUS(pEngine, status);
@@ -687,7 +685,7 @@ namespace agora {
                 status = napi_get_object_property_uint32_(isolate, obj, "userCount", transcoding.userCount);
                 CHECK_NAPI_STATUS(pEngine, status);
                 
-                status = napi_get_object_property_int32_(isolate, obj, "audioSampleRateType", audioSampleRateType);
+                status = napi_get_object_property_int32_(isolate, obj, "audioSampleRate", audioSampleRateType);
                 transcoding.audioSampleRate = (AUDIO_SAMPLE_RATE_TYPE)audioSampleRateType;
                 CHECK_NAPI_STATUS(pEngine, status);
                 
