@@ -109,6 +109,10 @@ bool AgoraVideoSource::initialize()
         LOG_LEAVE;
         return false;
     }
+
+    //prevent videosource from getting camera causing problems in windows	
+    agora::rtc::AParameter ap(m_rtcEngine.get());	
+    ap->setParameters("{\"che.video.local.camera_index\":1024}");
     
     m_rtcEngine->disableAudio();
     m_rtcEngine->enableVideo();
@@ -206,19 +210,20 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
             return;
         }
         agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
-        rep.enableLocalVideo(true);
         CaptureScreenCmd *cmd = (CaptureScreenCmd*)payload;
         LOG_INFO("Start screen share, top : %d, left : %d, bottom :%d, right :%d\n", cmd->rect.top, cmd->rect.left, cmd->rect.bottom, cmd->rect.right);
         if (m_rtcEngine->startScreenCapture(cmd->windowid, cmd->captureFreq, &cmd->rect, cmd->bitrate) != 0) {
             LOG_ERROR("start screen capture failed.");
             rep.enableLocalVideo(false);
+        } else {
+            rep.enableLocalVideo(true);
         }
     }
     else if (msg == AGORA_IPC_STOP_CAPTURE_SCREEN){
 
-        m_rtcEngine->stopScreenCapture();
         agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
         rep.enableLocalVideo(false);
+        m_rtcEngine->stopScreenCapture();
     }
     else if (msg == AGORA_IPC_START_VS_PREVIEW) {
         this->startPreview();
