@@ -1,3 +1,7 @@
+## 2.3.4-hotfix.10 (Dec 10th, 2019)
+#### :bug: Bug Fix
+* update sdk to 2.3.4.104 build 2795
+
 ## 2.3.4-hotfix.9 (Oct 26rd, 2019)
 #### :bug: Bug Fix
 * update sdk to 2.3.4.104 build 2532
