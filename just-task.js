@@ -17,11 +17,14 @@ option('msvs_version', {default: '2015'});
 const packageVersion = require('./package.json').version;
 
 task('sync:lib', () => {
-  const config = Object.assign({}, getArgvFromNpmEnv(), getArgvFromPkgJson())
+  const config = Object.assign({}, getArgvFromPkgJson(), getArgvFromNpmEnv() )
   return synclib({
-    // platform: argv().platform,
-    platform: 'win32',
-    libUrl: config.libUrl
+    platform: argv().platform,
+    // platform: 'win32',
+    libUrl: {
+      win: argv().liburl_win || config.libUrl.win,
+      mac: argv().liburl_mac || config.libUrl.mac
+    }
   })
 })
 
