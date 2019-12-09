@@ -20,10 +20,17 @@
     "doc": "typedoc ts/API --out ./docs --hideGenerator --mode file --target es6 --name Agora\\ Electron\\ SDK\\ API\\ Reference --excludeExternals --excludePrivate --readme index.md",
     "prepublishOnly": "npm run build:ts"
   },
-  "files": ["scripts", "js", "jest.config.js", "just-task.js"],
+  "files": [
+    "scripts",
+    "js",
+    "jest.config.js",
+    "just-task.js"
+  ],
   "gypfile": false,
   "dependencies": {
+    "bluebird": "^3.7.2",
     "download": "^7.1.0",
+    "extract-zip": "^1.6.7",
     "just-task": "^0.13.1",
     "lodash.isequal": "^4.5.0",
     "node-gyp": "^5.0.0",
