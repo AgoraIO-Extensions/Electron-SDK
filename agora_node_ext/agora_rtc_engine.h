@@ -30,13 +30,13 @@
 * Used to declare native interface to nodejs
 */
 #define NAPI_API(m) \
-    static void (m)(const FunctionCallbackInfo<Value>& args)
+    static void (m)(const Nan::FunctionCallbackInfo<Value>& args)
 
 /*
 * Used to define native interface which is exposed to nodejs
 */
 #define NAPI_API_DEFINE(cls, method) \
-    void cls::method(const FunctionCallbackInfo<Value>& args)
+    void cls::method(const Nan::FunctionCallbackInfo<Value>& args)
 
 namespace agora {
     namespace rtc {
@@ -477,6 +477,11 @@ namespace agora {
             LOG_ERROR("Error :%s, :%d\n", __FUNCTION__, __LINE__); \
             engine->m_eventHandler->fireApiError(__FUNCTION__); \
             break; \
+        }
+
+#define CHECK_ARG_NUM(engine, args, num) \
+        if(args.Length() < num) { \
+            CHECK_NAPI_STATUS(engine, napi_invalid_arg); \
         }
 
 /**

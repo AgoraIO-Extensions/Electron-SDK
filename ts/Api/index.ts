@@ -696,6 +696,10 @@ class AgoraRtcEngine extends EventEmitter {
       fire('channelMediaRelayEvent', event);
     });
 
+    this.rtcEngine.onEvent('rtmpStreamingStateChanged', (url:string, state:number, code:number) => {
+      fire('rtmpStreamingStateChanged', url, state, code)
+    })
+
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
       self.onRegisterDeliverFrame(infos);
     });
@@ -5112,6 +5116,7 @@ declare interface AgoraRtcEngine {
    * - url: The RTMP URL address.
    */
   on(evt: 'streamUnpublished', cb: (url: string) => void): this;
+  on(evt: 'rtmpStreamingStateChanged', cb: (url: string, state: number, code: number) => void): this;
   /** Occurs when the publisher's transcoding is updated. */
   on(evt: 'transcodingUpdated', cb: () => void): this;
   /** Occurs when a voice or video stream URL address is added to a live 

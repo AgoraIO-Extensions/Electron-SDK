@@ -136,6 +136,9 @@ export default class App extends Component {
     rtcEngine.on('localUserRegistered', (uid, userAccount) => {
       console.log(`local user register: ${uid} ${userAccount}`)
     })
+    rtcEngine.on('rtmpStreamingStateChanged', (url, state, code) => {
+      console.log(`rtmpStreamingStateChanged ${url} ${state} ${code}`)
+    })
   }
 
   handleJoin = () => {
@@ -264,7 +267,7 @@ export default class App extends Component {
       // there's a known limitation that, videosourcesetvideoprofile has to be called at least once
       // note although it's called, it's not taking any effect, to control the screenshare dimension, use captureParam instead
       rtcEngine.videoSourceSetVideoProfile(43, false);
-      rtcEngine.videosourceStartScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15})
+      rtcEngine.videoSourceStartScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15})
       rtcEngine.startScreenCapturePreview();
     });
   }
@@ -283,7 +286,7 @@ export default class App extends Component {
       console.log(`start sharing display ${displayId}`)
       rtcEngine.videoSourceSetVideoProfile(43, false);
       // rtcEngine.videosourceStartScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15})
-      rtcEngine.videosourceStartScreenCaptureByScreen(displayId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 5})
+      rtcEngine.videoSourceStartScreenCaptureByScreen(displayId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 5})
       rtcEngine.startScreenCapturePreview();
     });
   }
@@ -418,6 +421,7 @@ export default class App extends Component {
         userCount: 1,
         audioSampleRate: 1,
         audioChannels: 1,
+        audioBitrate: 48,
         /** transcodingusers array */
         transcodingUsers: [
           {
