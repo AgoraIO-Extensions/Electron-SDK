@@ -20,9 +20,9 @@ module.exports = ({
     }
   };
   // check electron version
-
-  if (['5.0.8', '4.2.8', '3.0.6', '1.8.3'].indexOf(electronVersion) === -1) {
-    throw new Error('Prebuilt addon only supported electron version 5.0.8, 4.2.8, 3.0.6, 1.8.3')
+  const supportedVersions = ['7.1.2', '6.1.5', '5.0.8', '4.2.8', '3.0.6', '1.8.3']
+  if (supportedVersions.indexOf(electronVersion) === -1) {
+    throw new Error(`Prebuilt addon only supported electron version ${supportedVersions.join(' ')}`)
   }
 
   const downloadUrl = `http://download.agora.io/sdk/release/Electron-${genOS()}-${packageVersion}-${electronVersion}.zip`;
