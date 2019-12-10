@@ -1,3 +1,7 @@
+## 2.3.4-hotfix.11 (Dec 10th, 2019)
+#### :bug: Bug Fix
+* amend ts definition
+
 ## 2.3.4-hotfix.10 (Dec 10th, 2019)
 #### :bug: Bug Fix
 * update sdk to 2.3.4.104 build 2795

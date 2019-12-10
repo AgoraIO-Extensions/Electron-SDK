@@ -172,6 +172,8 @@ export interface RemoteVideoStats {
   height: number;
   receivedBitrate: number;
   receivedFrameRate: number;
+  totalFrozenTime: number;
+  frozenRate: number;
   /**
    * 0 for high stream and 1 for low stream
    */
@@ -203,6 +205,8 @@ export interface RemoteAudioStats {
   jitterBufferDelay: number;
   /** Packet loss rate in the reported interval. */
   audioLossRate: number;
+  totalFrozenTime: number;
+  frozenRate: number;
 }
 
 export type RemoteVideoState =
