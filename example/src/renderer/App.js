@@ -49,6 +49,7 @@ export default class App extends Component {
     if(!this.rtcEngine) {
       this.rtcEngine = new AgoraRtcEngine()
       this.rtcEngine.initialize(APP_ID)
+      console.log(this.rtcEngine.getVersion())
       this.rtcEngine.initializePluginManager();
       const libPath = path.resolve(__static, 'fu-mac/libFaceUnityPlugin.dylib')
       let res = this.rtcEngine.registerPlugin({

@@ -1,3 +1,7 @@
+## 2.3.4-hotfix.12 (Dec 10th, 2019)
+#### :bug: Bug Fix
+* update example app - print sdk version when initialized
+
 ## 2.3.4-hotfix.11 (Dec 10th, 2019)
 #### :bug: Bug Fix
 * amend ts definition
