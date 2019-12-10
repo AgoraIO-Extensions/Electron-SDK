@@ -46,7 +46,7 @@ namespace agora{
             ~AgoraVideoSourceSink();
 
 
-            virtual bool initialize(IAgoraVideoSourceEventHandler *eventHandler, const char* appid) override;
+            virtual bool initialize(IAgoraVideoSourceEventHandler *eventHandler, const char* appid, const char* groupId, const char* bundleId) override;
             virtual node_error join(const char* token, const char* cname,
                 const char* chan_info, uid_t uid) override;
             virtual node_error leave() override;
@@ -135,7 +135,7 @@ namespace agora{
             return node_ok;
         }
 
-        bool AgoraVideoSourceSink::initialize(IAgoraVideoSourceEventHandler *eventHandler, const char* appid)
+        bool AgoraVideoSourceSink::initialize(IAgoraVideoSourceEventHandler *eventHandler, const char* appid, const char* groupId, const char* bundleId)
         {
             if (m_initialized)
                 return true;
@@ -158,9 +158,25 @@ namespace agora{
             uuid_generate(uuid);
             uuid_string_t uid = {0};
             uuid_unparse(uuid, uid);
-            m_peerId = "/";
-            m_peerId += uid;
-            m_peerId = m_peerId.substr(0, 20);
+
+            std::ostringstream stringStream;
+
+            if(groupId) {
+                stringStream << groupId << "/";
+            } else {
+                stringStream << "/";
+            }
+            if(bundleId) {
+                stringStream << bundleId;
+            } else {
+                stringStream << uid;
+            }
+            m_peerId = stringStream.str();
+
+            if(!bundleId) {
+                // sub string if using uuid
+                m_peerId = m_peerId.substr(0, 20);
+            }
 #endif
             do {
                 m_ipcMsg.reset(createAgoraIpc(this));

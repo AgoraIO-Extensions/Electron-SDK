@@ -1639,10 +1639,14 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                NodeString appid;
+                NodeString appid, groupId, bundleId;
                 napi_status status = napi_get_value_nodestring_(args[0], appid);
                 CHECK_NAPI_STATUS(pEngine, status);
-                if (!pEngine->m_videoSourceSink.get() || !pEngine->m_videoSourceSink->initialize(pEngine->m_eventHandler.get(), appid)) {
+                status = napi_get_value_nodestring_(args[1], groupId);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_value_nodestring_(args[2], bundleId);
+                CHECK_NAPI_STATUS(pEngine, status);
+                if (!pEngine->m_videoSourceSink.get() || !pEngine->m_videoSourceSink->initialize(pEngine->m_eventHandler.get(), appid, groupId, bundleId)) {
                     break;
                 }
                 result = 0;

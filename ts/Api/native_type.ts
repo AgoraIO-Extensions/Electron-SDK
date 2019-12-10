@@ -1916,7 +1916,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  videoSourceInitialize(appId: string): number;
+  videoSourceInitialize(appId: string, groupId?: string, bundleId?: string): number;
   /**
    * @ignore
    */
