@@ -57,7 +57,7 @@ namespace agora{
              * To initialize Video source.
              * @param eventHandler : video source event handler.
              */
-            virtual bool initialize(IAgoraVideoSourceEventHandler *eventHandler, const char* appid) = 0;
+            virtual bool initialize(IAgoraVideoSourceEventHandler *eventHandler, const char* appid, const char* groupId, const char* bundleId) = 0;
 
             /**
              * To ask video source to join channel with specified parameters.
