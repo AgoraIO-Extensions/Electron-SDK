@@ -1704,7 +1704,14 @@ namespace agora {
 
                 unsigned int areaCode = AREA_CODE::AREA_CODE_GLOB;
                 napi_get_value_uint32_(args[1], areaCode);
-                if (!pEngine->m_videoSourceSink.get() || !pEngine->m_videoSourceSink->initialize(pEngine->m_eventHandler.get(), appid, areaCode)) {
+
+                NodeString groupId;
+                napi_get_value_nodestring_(args[2], groupId);
+
+                NodeString bundleId;
+                napi_get_value_nodestring_(args[3], bundleId);
+
+                if (!pEngine->m_videoSourceSink.get() || !pEngine->m_videoSourceSink->initialize(pEngine->m_eventHandler.get(), appid, areaCode, groupId, bundleId)) {
                     if (!pEngine->m_videoSourceSink.get())
                     {
                         LOG_ERROR("VideSource: %s not get m_videoSourceSink\n", __FUNCTION__);
