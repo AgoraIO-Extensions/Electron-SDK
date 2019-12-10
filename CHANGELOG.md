@@ -1,4 +1,9 @@
-## 2.9.1 (Dec 5th, 2019)
+## 2.9.1-beta.2 (Dec 9th, 2019)
+#### :bug: Bug Fix
+* Added rtmpStreamingStateChanged event callback
+* Fixed videoSourceJoin ipc message memory overflow issue
+
+## 2.9.1-beta.1 (Dec 5th, 2019)
 #### :bug: Bug Fix
 * Fixed the issue that videosourcejoin has issues for token length when doing process data transfer leading to problems joinning channel for video source process.
 
