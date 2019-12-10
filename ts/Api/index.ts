@@ -3831,14 +3831,16 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Initializes agora real-time-communicating video source with the app Id.
    * @param {string} appId The app ID issued to you by Agora.
+   * @param {string} groupId optional groupId of your application, you will need to specify this field in order to start a process in MacOS Sandbox.
+   * @param {string} bundleId optional bundleId of your application, you will need to specify this field in order to start a process in MacOS Sandbox
    * @return
    * - 0: Success.
    * - < 0: Failure.
    *  - `ERR_INVALID_APP_ID (101)`: The app ID is invalid. Check if it is in
    * the correct format.
    */
-  videoSourceInitialize(appId: string, areaCode: AREA_CODE = (0xFFFFFFFF)): number {
-    return this.rtcEngine.videoSourceInitialize(appId, areaCode);
+  videoSourceInitialize(appId: string, areaCode: AREA_CODE = (0xFFFFFFFF), groupId?: string, bundleId?: string): number {
+    return this.rtcEngine.videoSourceInitialize(appId, areaCode, groupId, bundleId);
   }
 
   /**
