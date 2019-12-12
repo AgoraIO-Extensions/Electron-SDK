@@ -1,3 +1,8 @@
+## 2.3.4-hotfix.13 (Dec 12th, 2019)
+#### :bug: Bug Fix
+* win sdk upgrade to 2.3.4.129
+* mac sdk upgrade to 2.3.3.123
+
 ## 2.3.4-hotfix.12 (Dec 10th, 2019)
 #### :bug: Bug Fix
 * update example app - print sdk version when initialized
