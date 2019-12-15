@@ -56,8 +56,8 @@
   },
   "agora_electron": {
     "libUrl": {
-      "win": "https://github.com/AgoraIO/Electron-SDK/releases/download/2.9.1/Agora_Native_SDK_for_Windows.x86._v2_9_1_FULL.zip",
-      "mac": "https://github.com/AgoraIO/Electron-SDK/releases/download/2.9.1/Agora_Native_SDK_for_Mac_v2_9_1_FULL.zip"
+      "win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows(x86)_v2_9_1_FULL.zip?_ga=2.91584090.1356079426.1576379076-2140392182.1568170006",
+      "mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v2_9_1_FULL.zip?_ga=2.91584090.1356079426.1576379076-2140392182.1568170006"
     }
   },
   "keywords": [
