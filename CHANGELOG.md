@@ -1,3 +1,7 @@
+## 2.9.1-beta.5 (Dec 18th, 2019)
+#### :bug: Bug Fix
+* Fixed Just script bug
+
 ## 2.9.1-beta.2 (Dec 9th, 2019)
 #### :bug: Bug Fix
 * Added rtmpStreamingStateChanged event callback
