@@ -100,6 +100,10 @@ export default class App extends Component {
         audioPlaybackDevices: rtcEngine.getAudioPlaybackDevices()
       })
     })
+
+    rtcEngine.on('firstLocalAudioFrame', () => {
+      console.log(`firstLocalAudioFrame fired`)
+    })
     rtcEngine.on('videodevicestatechanged', () => {
       this.setState({
         videoDevices: rtcEngine.getVideoDevices()
