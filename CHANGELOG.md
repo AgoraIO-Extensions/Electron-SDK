@@ -1,3 +1,7 @@
+## 2.8.2-rc.9 (Dec 25th, 2019)
+#### :bug: Bug Fix
+* Fixed firstLocalAudioFrame event name typo
+
 ## 2.8.2-hotfix.8
 #### :house: Internal
 * Support x64 for windows
