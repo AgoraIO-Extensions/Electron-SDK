@@ -437,7 +437,13 @@ namespace agora {
                 CHECK_NATIVE_THIS(pEngine);
                 PublisherConfiguration config;
                 nodestring injectStreamUrl, publishUrl, rawStreamUrl, extraInfo;
-                Local<Object> obj = args[0]->ToObject(args.GetIsolate());
+
+                if(!args[0]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+
+                Local<Object> obj = args[0]->ToObject();
                 napi_get_object_property_int32_(args.GetIsolate(), obj, "width", config.width);
                 napi_get_object_property_int32_(args.GetIsolate(), obj, "height", config.height);
                 napi_get_object_property_int32_(args.GetIsolate(), obj, "framerate", config.framerate);
@@ -474,11 +480,18 @@ namespace agora {
             VideoCompositingLayout::Region *regions = nullptr;
             do {
                 NodeRtcEngine *pEngine = nullptr;
+                Isolate* isolate = args.GetIsolate();
+                Local<Context> context = isolate->GetCurrentContext();
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 VideoCompositingLayout layout;
                 nodestring bg, appdata;
-                Local<Object> obj = args[0]->ToObject(args.GetIsolate());
+                if(!args[0]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+                
+                Local<Object> obj = args[0]->ToObject();
                 napi_get_object_property_int32_(args.GetIsolate(), obj, "canvaswidth", layout.canvasWidth);
                 napi_get_object_property_int32_(args.GetIsolate(), obj, "canvasheight", layout.canvasHeight);
                 if (napi_get_object_property_nodestring_(args.GetIsolate(), obj, "backgroundcolor", bg) == napi_ok) {
@@ -503,8 +516,8 @@ namespace agora {
                         break;
                     }
                     for (int32 i = 0; i < layout.regionCount; i++) {
-                        Local<Value> value = regionsValue->Get(i);
-                        Local<Object> regionObj = value->ToObject(args.GetIsolate());
+                        Local<Value> value = regionsValue->Get(context, i).ToLocalChecked();
+                        Local<Object> regionObj = value->ToObject();
                         if (regionObj->IsNull())
                             status = napi_invalid_arg;
                         break;
@@ -585,6 +598,7 @@ namespace agora {
         {
             LOG_ENTER;
 
+            int result = -1;
             do {
                 NodeRtcEngine *pEngine = nullptr;
                 Isolate* isolate = args.GetIsolate();
@@ -622,20 +636,21 @@ namespace agora {
 
                 result = pEngine->m_engine->addVideoWatermark(vwm);
             } while (false);
-
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
         NAPI_API_DEFINE(NodeRtcEngine, clearVideoWatermarks)
         {
             LOG_ENTER;
+            int result = -1;
             do {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                int result = pEngine->m_engine->clearVideoWatermarks();
-                napi_set_int_result(args, result);
+                result = pEngine->m_engine->clearVideoWatermarks();
             } while (false);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
