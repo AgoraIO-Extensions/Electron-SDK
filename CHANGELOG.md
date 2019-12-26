@@ -1,3 +1,8 @@
+## 2.3.4-hotfix.14 (Dec 26th, 2019)
+#### :bug: Bug Fix
+* win sdk upgrade to 2.3.4.130
+  * fixed startPlaybackDeviceTest bug
+
 ## 2.3.4-hotfix.13 (Dec 12th, 2019)
 #### :bug: Bug Fix
 * win sdk upgrade to 2.3.4.129

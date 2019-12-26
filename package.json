@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "2.3.4-hotfix.13",
+  "version": "2.3.4-hotfix.14",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -59,7 +59,7 @@
   },
   "agora_electron": {
     "libUrl": {
-      "win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows(x86)_v2_3_4_129_FULL_20191211_2826.zip",
+      "win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows(x86)_v2.3.4.130_FULL_20191224_2876.zip",
       "mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v2_3_3_123_FULL_20191210_923.zip"
     }
   },
