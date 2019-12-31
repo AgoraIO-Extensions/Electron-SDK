@@ -1,3 +1,7 @@
+## 2.8.2-rc.121-hotfix.1 (Dec 31th, 2019)
+#### :house: Internal
+* Support Electron 6.1.5/7.1.2
+
 ## 2.8.2-rc.121 (Dec 25th, 2019)
 #### :bug: Bug Fix
 * Fixed firstLocalAudioFrame event name typo
