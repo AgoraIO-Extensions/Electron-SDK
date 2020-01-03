@@ -182,18 +182,20 @@ int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type, agora::rtc
     rotation = rotation < 0 ? rotation + 360 : rotation;
     std::lock_guard<std::mutex> lck(m_lock);
     VideoFrameInfo& info = getVideoFrameInfo(type, uid);
-    int destWidth = info.m_destWidth ? info.m_destWidth : stride;
+	int destStride = info.m_destWidth ? info.m_destWidth : stride;
+    int destWidth = info.m_destWidth ? info.m_destWidth : videoFrame.width();
     int destHeight = info.m_destHeight ? info.m_destHeight : videoFrame.height();
-    size_t imageSize = sizeof(image_header_type) + destWidth * destHeight * 3 / 2;
+
+    size_t imageSize = sizeof(image_header_type) + destStride * destHeight * 3 / 2;
     auto s = info.m_buffer.size();
     if (s < imageSize || s >= imageSize * 2)
         info.m_buffer.resize(imageSize);
     image_header_type* hdr = reinterpret_cast<image_header_type*>(&info.m_buffer[0]);
     hdr->mirrored = mirrored ? 1 : 0;
     hdr->rotation = htons(rotation);
-    setupFrameHeader(hdr, destWidth, destWidth, destHeight);
+    setupFrameHeader(hdr, destStride, destWidth, destHeight);
     
-    copyFrame(videoFrame, info, destWidth, stride0, destWidth, destHeight);
+    copyFrame(videoFrame, info, destStride, stride0, destWidth, destHeight);
     info.m_count = 0;
     info.m_needUpdate = true;
     return 0;
@@ -202,7 +204,7 @@ int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type, agora::rtc
 
 void NodeVideoFrameTransporter::setupFrameHeader(image_header_type*header, int stride, int width, int height)
 {
-    int left = 0;
+    int left = (stride - width) / 2;
     int top = 0;
     header->format = 0;
     header->width = htons(width);
@@ -216,7 +218,7 @@ void NodeVideoFrameTransporter::setupFrameHeader(image_header_type*header, int s
 
 void NodeVideoFrameTransporter::copyFrame(const agora::media::IVideoFrame& videoFrame, VideoFrameInfo& info, int dest_stride, int src_stride, int width, int height)
 {
-    int width2 = width / 2, heigh2 = height / 2;
+    int width2 = dest_stride / 2, heigh2 = height / 2;
     int strideY = videoFrame.stride(IVideoFrame::Y_PLANE);
     int strideU = videoFrame.stride(IVideoFrame::U_PLANE);
     int strideV = videoFrame.stride(IVideoFrame::V_PLANE);
@@ -228,7 +230,14 @@ void NodeVideoFrameTransporter::copyFrame(const agora::media::IVideoFrame& video
     const unsigned char* planeU = videoFrame.buffer(IVideoFrame::U_PLANE);
     const unsigned char* planeV = videoFrame.buffer(IVideoFrame::V_PLANE);
 
-    I420Scale(planeY, strideY, planeU, strideU, planeV, strideV, videoFrame.width(), videoFrame.height(), (uint8*)y, width, (uint8*)u, width2, (uint8*)v, width2, width, height, kFilterNone);
+	if (videoFrame.width() == width && videoFrame.height() == height)
+	{
+		copyAndCentreYuv(planeY, planeU, planeV, videoFrame.width(), videoFrame.height(), src_stride, y, u, v, dest_stride);
+	}
+	else
+	{
+		I420Scale(planeY, strideY, planeU, strideU, planeV, strideV, videoFrame.width(), videoFrame.height(), (uint8*)y, dest_stride, (uint8*)u, width2, (uint8*)v, width2, width, height, kFilterNone);
+	}
 
     info.m_bufferList[0].buffer = &info.m_buffer[0];
     info.m_bufferList[0].length = sizeof(image_header_type);
@@ -241,6 +250,42 @@ void NodeVideoFrameTransporter::copyFrame(const agora::media::IVideoFrame& video
 
     info.m_bufferList[3].buffer = v;
     info.m_bufferList[3].length = width2 * heigh2;
+}
+
+void NodeVideoFrameTransporter::copyAndCentreYuv(const unsigned char* srcYPlane, const unsigned char* srcUPlane, const unsigned char* srcVPlane, int width, int height, int srcStride,
+	unsigned char* dstYPlane, unsigned char* dstUPlane, unsigned char* dstVPlane, int dstStride)
+{
+	if (srcStride == width && dstStride == width)
+	{
+		memcpy(dstYPlane, srcYPlane, width * height);
+		memcpy(dstUPlane, srcUPlane, width * height / 4);
+		memcpy(dstVPlane, srcVPlane, width * height / 4);
+		return;
+	}
+
+	int dstDiff = dstStride - width;
+	//RGB(0,0,0) to YUV(0,128,128)
+	memset(dstYPlane, 0, dstStride * height);
+	memset(dstUPlane, 128, dstStride * height / 4);
+	memset(dstVPlane, 128, dstStride * height / 4);
+
+	for (int i = 0; i < height; ++i)
+	{
+		memcpy(dstYPlane + (dstDiff >> 1), srcYPlane, width);
+		srcYPlane += srcStride;
+		dstYPlane += dstStride;
+
+		if (i % 2 == 0)
+		{
+			memcpy(dstUPlane + (dstDiff >> 2), srcUPlane, width >> 1);
+			srcUPlane += srcStride >> 1;
+			dstUPlane += dstStride >> 1;
+
+			memcpy(dstVPlane + (dstDiff >> 2), srcVPlane, width >> 1);
+			srcVPlane += srcStride >> 1;
+			dstVPlane += dstStride >> 1;
+		}
+	}
 }
 
 VideoFrameInfo& NodeVideoFrameTransporter::getHighVideoFrameInfo(agora::rtc::uid_t uid)
