@@ -1,3 +1,8 @@
+## 2.8.2-rc.121-hotfix.2 (Jan 7th, 2020)
+#### :house: Internal
+* Update Win64 SDK to v2.8.2.121_20200107_29
+* Update Mac SDK to v2.8.2.121_20200107_1049
+
 ## 2.8.2-rc.121-hotfix.1 (Dec 31th, 2019)
 #### :house: Internal
 * Support Electron 6.1.5/7.1.2
