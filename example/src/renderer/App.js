@@ -55,9 +55,9 @@ export default class App extends Component {
       this.rtcEngine = new AgoraRtcEngine()
       this.rtcEngine.initialize(APP_ID)
       this.rtcEngine.initializePluginManager();
-      const libPath = path.resolve(__static, 'fu-mac/libFaceUnityPlugin.dylib')
+      const libPath = path.resolve(__static, 'hook/AgoraPlayerHookPlugin.dll')
       if(this.rtcEngine.registerPlugin({
-        id: 'fu-mac',
+        id: 'hook',
         path: libPath
       }) < 0){
         console.error(`load plugin failed`)
@@ -333,7 +333,7 @@ export default class App extends Component {
   }
 
   toggleFuPlugin = () => {
-    const plugin = this.rtcEngine.getPlugins().find(plugin => plugin.id === 'fu-mac' )
+    const plugin = this.rtcEngine.getPlugins().find(plugin => plugin.id === 'hook' )
     if (plugin) {
       if(this.state.fuEnabled) {
         plugin.disable();
@@ -342,35 +342,6 @@ export default class App extends Component {
         })
       } else {
         plugin.setParameter(JSON.stringify({"plugin.fu.authdata": FU_AUTH}))
-        plugin.setParameter(JSON.stringify({"plugin.fu.bundles.load": [{
-          bundleName: "face_beautification.bundle",
-          bundleOptions: {
-            "filter_name": "tokyo",
-            "filter_level": 1.0,
-            "color_level": 0.2,
-            "red_level": 0.5,
-            "blur_level": 6.0,
-            "skin_detect": 0.0,
-            "nonshin_blur_scale": 0.45,
-            "heavy_blur": 0,
-            "face_shape": 3,
-            "face_shape_level": 1.0,
-            "eye_enlarging": 0.5,
-            "cheek_thinning": 0.0,
-            "cheek_v": 0.0,
-            "cheek_narrow": 0.0,
-            "cheek_small": 0.0,
-            "cheek_oval": 0.0,
-            "intensity_nose": 0.0,
-            "intensity_forehead": 0.5,
-            "intensity_mouth": 0.5,
-            "intensity_chin": 0.0,
-            "change_frames": 0.0,
-            "eye_bright": 1.0,
-            "tooth_whiten": 1.0,
-            "is_beauty_on": 1.0
-          }
-        }]}))
         plugin.enable();
         this.setState({
           fuEnabled: true
@@ -537,23 +508,19 @@ export default class App extends Component {
 
   handleAudioHook = e => {
     let rtcEngine = this.getRtcEngine()
-    if(!this.state.audioHookEnabled){
-      rtcEngine.registerAudioFramePluginManager()
-      rtcEngine.registerAudioFramePlugin("agora_electron_plugin_audio_hook")
-      let dllpath = path.resolve(__dirname, "./plugins/AgoraPlayerHookPlugin.dll")
-      rtcEngine.loadPlugin("agora_electron_plugin_audio_hook", dllpath)
-      let playerpath = path.resolve(this.state.hookplayerpath)
-      rtcEngine.setPluginStringParameter("agora_electron_plugin_audio_hook","plugin.hookAudio.playerPath", playerpath)
-      rtcEngine.setPluginBoolParameter("agora_electron_plugin_audio_hook", "plugin.hookAudio.forceRestart", true)
-      // important for hook audio quality
-      rtcEngine.setRecordingAudioFrameParameters(44100, 2, 2, 882)
-      rtcEngine.enablePlugin("agora_electron_plugin_audio_hook")
-    } else {
-      rtcEngine.disablePlugin("agora_electron_plugin_audio_hook")
-      console.log(rtcEngine.unRegisterAudioFramePlugin("agora_electron_plugin_audio_hook"))
-      console.log(rtcEngine.unRegisterAudioFramePluginManager())
+    const plugin = this.rtcEngine.getPlugins().find(plugin => plugin.id === 'hook' )
+    if(plugin) {
+      if(!this.state.audioHookEnabled){
+        let playerpath = path.resolve(this.state.hookplayerpath)
+        plugin.setParameter(JSON.stringify({"plugin.hookAudio.playerPath":playerpath}))
+        plugin.setParameter(JSON.stringify({"plugin.hookAudio.forceRestart":true}))
+        rtcEngine.setRecordingAudioFrameParameters(44100, 2, 2, 882)
+        plugin.enable()
+      } else {
+        plugin.disable()
+      }
+      this.setState({audioHookEnabled: !this.state.audioHookEnabled})
     }
-    this.setState({audioHookEnabled: !this.state.audioHookEnabled})
   }
 
   // handleAudioMixing = e => {
