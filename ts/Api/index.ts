@@ -5519,7 +5519,7 @@ class AgoraRtcChannel extends EventEmitter
       reason: number,
       elapsed: number
     ) => {
-      fire('videoSizeChanged', uid, state, reason, elapsed);
+      fire('remoteVideoStateChanged', uid, state, reason, elapsed);
     });
 
     this.rtcChannel.onEvent('streamMessage', (
@@ -5578,7 +5578,7 @@ class AgoraRtcChannel extends EventEmitter
     this.rtcChannel.onEvent('streamUnpublished', (
       url: string
     ) => {
-      fire('rtmpStreamingStateChanged', url);
+      fire('streamUnpublished', url);
     });
 
     this.rtcChannel.onEvent('transcodingUpdated', (
