@@ -161,6 +161,8 @@ private:
     VideoFrameInfo& getHighVideoFrameInfo(agora::rtc::uid_t uid);
     void setupFrameHeader(image_header_type*header, int stride, int width, int height);
     void copyFrame(const agora::media::IVideoFrame& videoFrame, VideoFrameInfo& info, int dest_stride, int src_stride, int width, int height);
+    void copyAndCentreYuv(const unsigned char* srcYPlane, const unsigned char* srcUPlane, const unsigned char* srcVPlane, int width, int height, int srcStride,
+    unsigned char* dstYPlane, unsigned char* dstUPlane, unsigned char* dstVPlane, int dstStride);
     void FlushVideo();
     void highFlushVideo();
 private:
