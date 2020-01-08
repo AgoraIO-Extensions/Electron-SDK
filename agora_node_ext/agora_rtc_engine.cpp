@@ -5120,11 +5120,9 @@ namespace agora {
                 napi_get_param_2(args, bool, reliable, bool, ordered);
                 CHECK_NAPI_STATUS(pChannel, status);
 
-                int result = pChannel->m_channel->createDataStream(&streamId, reliable, ordered);
-                if(result < 0) {
-                    napi_set_int_result(args, result);
-                } else {
-                    napi_set_int_result(args, streamId);
+                result = pChannel->m_channel->createDataStream(&streamId, reliable, ordered);
+                if(result == 0) {
+                    result = streamId;
                 }
             } while (false);
             napi_set_int_result(args, result);
@@ -5145,7 +5143,7 @@ namespace agora {
                 int streamId;
                 status = napi_get_value_int32_(args[0], streamId);
                 CHECK_NAPI_STATUS(pChannel, status);
-                napi_get_value_nodestring_(args[1], msg);
+                status = napi_get_value_nodestring_(args[1], msg);
                 CHECK_NAPI_STATUS(pChannel, status);
                 result = pChannel->m_channel->sendStreamMessage(streamId, msg, strlen(msg));
             } while (false);
