@@ -3228,6 +3228,22 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.videoSourceStartPreview();
   }
 
+  startScreenCaptureByWindow(windowSymbol: number, rect: CaptureRect, param: CaptureParam): number {
+    return this.rtcEngine.startScreenCaptureByWindow(windowSymbol, rect, param)
+  }
+
+  startScreenCaptureByScreen(screenSymbol: ScreenSymbol, rect: CaptureRect, param: CaptureParam): number {
+    return this.rtcEngine.startScreenCaptureByScreen(screenSymbol, rect, param)
+  }
+
+  updateScreenCaptureParameters(param: CaptureParam): number {
+    return this.rtcEngine.updateScreenCaptureParameters(param)
+  }
+
+  setScreenCaptureContentHint(hint: VideoContentHint): number {
+    return this.rtcEngine.setScreenCaptureContentHint(hint)
+  }
+
   /**
    * Stops the video source preview.
    * @return
