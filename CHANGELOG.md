@@ -1,3 +1,7 @@
+## 2.8.2-rc.121-hotfix.3 (Jan 9th, 2020)
+#### :house: Internal
+* Support Electron 6.1.7
+
 ## 2.8.2-rc.121-hotfix.2 (Jan 7th, 2020)
 #### :house: Internal
 * Update Win64 SDK to v2.8.2.121_20200107_29
