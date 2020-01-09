@@ -320,6 +320,10 @@ namespace agora {
              * 2.9.0.100 Apis
              */
             NAPI_API(createChannel);
+            NAPI_API(startScreenCaptureByScreen);
+            NAPI_API(startScreenCaptureByWindow);
+            NAPI_API(updateScreenCaptureParameters);
+            NAPI_API(setScreenCaptureContentHint);
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }
