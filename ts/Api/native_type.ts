@@ -2006,6 +2006,30 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
+  startScreenCaptureByWindow(
+    windowSymbol: number,
+    rect: CaptureRect,
+    param: CaptureParam
+  ): number;
+  /**
+   * @ignore
+   */
+  startScreenCaptureByScreen(
+    screenSymbol: ScreenSymbol,
+    rect: CaptureRect,
+    param: CaptureParam
+  ): number;
+  /**
+   * @ignore
+   */
+  updateScreenCaptureParameters(param: CaptureParam): number;
+  /**
+   * @ignore
+   */
+  setScreenCaptureContentHint(hint: VideoContentHint): number;
+  /**
+   * @ignore
+   */
   videoSourceStartPreview(): number;
   /**
    * @ignore

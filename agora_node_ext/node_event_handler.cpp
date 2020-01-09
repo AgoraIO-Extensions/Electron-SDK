@@ -1058,13 +1058,13 @@ namespace agora {
 
         void NodeEventHandler::onRemoteAudioTransportStats_node(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)
         {
-			FUNC_TRACE;
+            FUNC_TRACE;
             MAKE_JS_CALL_4(RTC_EVENT_REMOTE_AUDIO_TRANSPORT_STATS, uid, uid, uint16, delay, uint16, lost, uint16, rxKBitRate);
         }
 
         void NodeEventHandler::onRemoteVideoTransportStats_node(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)
         {
-			FUNC_TRACE;
+            FUNC_TRACE;
             MAKE_JS_CALL_4(RTC_EVENT_REMOTE_VIDEO_TRANSPORT_STATS, uid, uid, uint16, delay, uint16, lost, uint16, rxKBitRate);
         }
 
