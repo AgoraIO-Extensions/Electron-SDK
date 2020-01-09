@@ -4883,7 +4883,7 @@ namespace agora {
                 captureParams.dimensions = dimensions;
 
                 #if defined(_WIN32)
-                    result = pEngine->m_engine->startScreenCaptureByDisplayId(screen, regionRect, captureParams);
+                    result = pEngine->m_engine->startScreenCaptureByScreenRect(screen, regionRect, captureParams);
                 #elif defined(__APPLE__)
                     result = pEngine->m_engine->startScreenCaptureByDisplayId(screen.idVal, regionRect, captureParams);
                 #endif
