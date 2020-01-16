@@ -416,7 +416,7 @@ export default class App extends Component {
         backgroundColor: 0xc0c0c0,
         /** The number of users in the live broadcast */
         userCount: 1,
-        audioSampleRate: 1,
+        audioSampleRate: 48000,
         audioChannels: 1,
         /** transcodingusers array */
         transcodingUsers: [
