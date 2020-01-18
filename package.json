@@ -26,7 +26,7 @@
     "just-task": "^0.14.0",
     "lodash.isequal": "^4.5.0",
     "nan": "^2.14.0",
-    "node-gyp": "^6.0.0",
+    "node-gyp": "6.0.1",
     "shelljs": "^0.8.3",
     "yuv-buffer": "^1.0.0",
     "yuv-canvas": "^1.2.1"
