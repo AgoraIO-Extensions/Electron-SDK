@@ -2064,7 +2064,7 @@ namespace agora {
                     CHECK_NAPI_STATUS(pEngine, status);
                 }
                 Local<Object> screenRectObj;
-                status = napi_get_value_object_(isolate, args[0], obj);
+                status = napi_get_value_object_(isolate, args[0], screenRectObj);
                 CHECK_NAPI_STATUS(pEngine, status);
 
                 Rectangle screenRect;
