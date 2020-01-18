@@ -1,6 +1,8 @@
 ## 2.9.0-rc.101-beta.1 (Jan 18th, 2020)
 * Update Windows SDK to v2.9.0.101 build 86
 * Update Mac SDK to v2.9.0.101 build 1001
+* Fixed videosource token issue
+* Support 6.1.7 & 7.1.2
 
 ## 2.9.0-hotfix.2 (Sep 17th, 2019)
 #### :bug: Bug Fix
