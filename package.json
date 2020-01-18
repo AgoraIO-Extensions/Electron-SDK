@@ -20,6 +20,12 @@
     "doc": "typedoc ts/API --out ./docs --hideGenerator --mode file --target es6 --name Agora\\ Electron\\ SDK\\ API\\ Reference --excludeExternals --excludePrivate --readme index.md",
     "prepublishOnly": "npm run build:ts"
   },
+  "files": [
+    "scripts",
+    "js",
+    "jest.config.js",
+    "just-task.js"
+  ],
   "gypfile": false,
   "dependencies": {
     "download": "^7.1.0",
