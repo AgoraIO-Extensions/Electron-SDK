@@ -1,7 +1,7 @@
 os: Visual Studio 2015
 
 platform:
-  - x64
+  - x86
 
 cache:
   - node_modules
@@ -15,7 +15,7 @@ install:
   # - mv GTK/ C:/
   # - curl -fLsS -o "libjpeg.exe" "https://downloads.sourceforge.net/project/libjpeg-turbo/1.5.2/libjpeg-turbo-1.5.2-vc64.exe"
   # - .\libjpeg.exe /S
-  - npm install
+  - npm install --verbose
 
 build_script:
   - npm run sync:lib
