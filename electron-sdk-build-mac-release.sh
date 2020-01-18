@@ -5,7 +5,6 @@ unzip NATIVE_SDK.zip
 rm -rf ./sdk/lib/mac/*
 mv ./Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcEngineKit.framework ./sdk/lib/mac/.
 
-npm config set registry https://registry.npm.taobao.org/
 npm config set ELECTRON_MIRROR http://npm.taobao.org/mirrors/electron/
 rm -rf node_modules
 npm install --verbose

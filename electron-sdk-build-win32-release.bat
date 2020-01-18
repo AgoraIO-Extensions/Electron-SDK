@@ -14,7 +14,6 @@ call move /y Agora_Native_SDK_for_Win_Full\sdk\dll\*.dll sdk\dll\.
 call move /y Agora_Native_SDK_for_Win_Full\sdk\include\*.h sdk\include\.
 call move /y Agora_Native_SDK_for_Win_Full\sdk\lib\*.lib sdk\lib\win\.
 
-call npm config set registry https://registry.npm.taobao.org/
 call npm config set ELECTRON_MIRROR http://npm.taobao.org/mirrors/electron/
 call npm install --verbose
 call npm run sync:lib
