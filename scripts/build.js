@@ -20,7 +20,7 @@ module.exports = ({
 
   // check runtime
   if (runtime === 'electron') {
-    command.push(`--target=${electronVersion} --dist-url=https://atom.io/download/electron`)
+    command.push(`--target=${electronVersion} --dist-url=https://electronjs.org/headers`)
   }
 
   // check debug
