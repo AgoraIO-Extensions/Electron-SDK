@@ -435,7 +435,7 @@ Error codes occur when the SDK encounters an error that cannot be recovered auto
 | `2`      | An invalid parameter is used. For example, the specific channel name includes illegal characters.        |
 | `3`      | The SDK module is not ready. <br/>Possible solutions:<li>Check the audio device.</li><li>Check the completeness of the application.</li><li>Re-initialize the RTC engine. </li> |
 | `4`      | The SDK does not support this function.       |
-| `5`      | The request is rejected.<br/>This is for internal SDK use only, and it does not return to the application through any method or callback.|
+| `5`      | The request is rejected. |
 | `6`      | The buffer size is not big enough to store the returned data.        |
 | `7`      | The SDK is not initialized before calling this method. |
 | `9`      | No permission exists. <br/>Check if the user has granted access to the audio or video device. |
