@@ -1,7 +1,7 @@
 This Agora Electron SDK is developed upon the Native SDK for macOS and the Native SDK for Windows, with the Node.js C++ plug-in units. The Electron SDK supports all the functions of the Agora Native SDK. Agora provides ensured quality of experience (QoE) for worldwide Internet-based voice and video communications through a virtual global network optimized on all platforms.
 
 * The `AgoraRtcEngine` class provides the main methods that can be invoked by your application.
-* The `Events`(#on) class enables callbacks to your application.
+* The `Events` class enables callbacks to your application.
 
 ## Methods
 
