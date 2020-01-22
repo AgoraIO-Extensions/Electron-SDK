@@ -1870,8 +1870,15 @@ class AgoraRtcEngine extends EventEmitter {
    * Sets whether to receive all remote audio streams by default.
    *
    * You can call this method either before or after joining a channel. If you 
-   * call this method after joining a channel,
+   * call `setDefaultMuteAllRemoteAudioStreams(true)` after joining a channel,
    * the remote audio streams of all subsequent users are not received.
+   * 
+   * @note If you want to resume receiving the audio stream, call 
+   * {@link muteRemoteAudioStream}(false), and specify the ID of the remote 
+   * user whose audio stream you want to receive. To receive the audio streams 
+   * of multiple remote users, call {@link muteRemoteAudioStream}(false) as 
+   * many times. Calling `setDefaultMuteAllRemoteAudioStreams(false)` resumes 
+   * receiving the audio streams of subsequent users only.
    * @param {boolean} mute Sets whether or not to receive/stop receiving all 
    * remote audio streams by default:
    * - true: Stop receiving all remote audio streams by default.
@@ -1979,7 +1986,6 @@ class AgoraRtcEngine extends EventEmitter {
    * capture and processing.
    * 
    * **Note**:
-   * - Call this method after calling the {@link joinChannel} method.
    * - After you disable local audio recording using the 
    * `enableLocalAudio(false)` method, the system volume switches to the media 
    * volume. Re-enabling local audio recording using the 
@@ -2017,6 +2023,19 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * Sets whether to receive all remote video streams by default.
+   * 
+   * You can call this method either before or after joining a channel. If you 
+   * call `setDefaultMuteAllRemoteVideoStreams(true)` after joining a channel,
+   * the remote audio streams of all subsequent users are not received.
+   * 
+   * @note If you want to resume receiving the video stream, call 
+   * {@link muteRemoteVideoStream}(false), and specify the ID of the remote 
+   * user whose audio stream you want to receive. To receive the audio streams 
+   * of multiple remote users, call {@link muteRemoteVideoStream}(false) as 
+   * many times. Calling `setDefaultMuteAllRemoteVideoStreams(false)` resumes 
+   * receiving the audio streams of subsequent users only.
+   * Sets whether to receive all remote video streams by default.
+   * 
    * @param {boolean} mute Sets whether to receive/stop receiving all remote 
    * video streams by default:
    * - true: Stop receiving all remote video streams by default.
@@ -2245,7 +2264,10 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * Use this method when the channel profile is Live Broadcast.
    * Interoperability with the Agora Web SDK is enabled by default when the 
-   * channel profile is Communication.
+   * channel profile is Communication. 
+   * 
+   * If the channel has Web SDK users, ensure that you call this method, or 
+   * the video of the Native user will be a black screen for the Web user.
    * @param {boolean} enable Sets whether to enable/disable interoperability 
    * with the Agora Web SDK:
    * - true: Enable.
@@ -2470,11 +2492,12 @@ class AgoraRtcEngine extends EventEmitter {
    * set it as null. Ensure that you set this parameter and do not set it as 
    * null.
    * Supported character scopes are:
-   * - The 26 lowercase English letters: a to z.
-   * - The 26 uppercase English letters: A to Z.
-   * - The 10 numbers: 0 to 9.
-   * - The space.
-   * - "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", 
+   * - All lowercase English letters: a to z.
+   * - All uppercase English letters: A to Z.
+   * - All numeric characters: 0 to 9.
+   * - The space character.
+   * - Punctuation characters and other symbols, including: "!", "#", "$", 
+   * "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", 
    * ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
    * @return
    * - 0: Success.
@@ -3461,9 +3484,9 @@ class AgoraRtcEngine extends EventEmitter {
    * support the file format
    * or cannot access the music file URL, the SDK returns the warning code 701.
    *
-   * @param {string} filepath Specifies the absolute path of the local or 
-   * online audio file to be mixed.
-   *            Supported audio formats: mp3, aac, m4a, 3gp, and wav.
+   * @param {string} filepath Specifies the absolute path (including the 
+   * suffixes of the filename) of the local or online audio file to be mixed. 
+   * Supported audio formats: mp3, mp4, m4a, aac, 3gp, mkv and wav.
    * @param {boolean} loopback Sets which user can hear the audio mixing:
    * - true: Only the local user can hear the audio mixing.
    * - false: Both users can hear the audio mixing.
@@ -4102,8 +4125,10 @@ class AgoraRtcEngine extends EventEmitter {
    * audioEffectFinished callback.
    * @param {number} soundId ID of the specified audio effect. Each audio 
    * effect has a unique ID.
-   * @param {string} filePath The absolute path to the local audio effect 
-   * file or the URL of the online audio effect file.
+   * @param {string} filePath TSpecifies the absolute path (including the 
+   * suffixes of the filename) to the local audio effect file or the URL of 
+   * the online audio effect file. Supported audio formats: mp3, mp4, m4a, 
+   * aac, 3gp, mkv and wav.
    * @param {number} loopcount Sets the number of times the audio effect 
    * loops:
    * - 0: Play the audio effect once.

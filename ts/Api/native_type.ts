@@ -1059,8 +1059,9 @@ export interface RemoteAudioStats {
    * user joins the channel.
    * 
    * In the reported interval, audio freeze occurs when the audio frame loss 
-   * rate reaches 4%. `totalFrozenTime` = the number of audio freeze x 2 x 
-   * 1000(ms).
+   * rate reaches 4%. Agora uses 2 seconds as an audio piece unit to calculate 
+   * the audio freeze time. The total audio freeze time = The audio freeze 
+   * number × 2000 ms.
    */
   totalFrozenTime: number;
   /** 
