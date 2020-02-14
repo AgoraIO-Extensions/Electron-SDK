@@ -68,6 +68,8 @@ namespace agora{
             virtual node_error startScreenCaptureByWindow(agora::rtc::IRtcEngine::WindowIDType windowId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams) override;
             virtual node_error updateScreenCaptureParameters(const agora::rtc::ScreenCaptureParameters & captureParams) override;
             virtual void setParameters(const char* parameters) override;
+            virtual node_error enableLoopbackRecording(bool enabled, const char* deviceName) override;
+            virtual node_error enableAudio() override;
         private:
             void msgThread();
             void deliverFrame(const char* payload, int len);
@@ -443,6 +445,27 @@ namespace agora{
         {
             if (m_initialized && m_peerJoined){
                 return m_ipcMsg->sendMessage(AGORA_IPC_UPDATE_SCREEN_CAPTURE_PARAMS, (char*)&captureParams, sizeof(captureParams)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::enableLoopbackRecording(bool enabled, const char* deviceName)
+        {
+            if (m_initialized && m_peerJoined){
+                LoopbackRecordingCmd cmd;
+                cmd.enabled = enabled;
+                if(deviceName != NULL) {
+                    strncpy(cmd.deviceName, deviceName, MAX_DEVICE_ID_LENGTH);
+                }
+                return m_ipcMsg->sendMessage(AGORA_IPC_ENABLE_LOOPBACK_RECORDING, (char*)&cmd, sizeof(cmd)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::enableAudio()
+        {
+            if (m_initialized && m_peerJoined){
+                return m_ipcMsg->sendMessage(AGORA_IPC_ENABLE_AUDIO, nullptr, 0) ? node_ok : node_generic_error;
             }
             return node_status_error;
         }

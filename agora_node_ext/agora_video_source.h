@@ -170,6 +170,18 @@ namespace agora{
              * start screen capture by windowId
              */
             virtual node_error updateScreenCaptureParameters(const agora::rtc::ScreenCaptureParameters & captureParams) = 0;
+            
+            /**
+             * Enable loopbackRecording
+             * @param enabled : whether enable loopbackRecording
+             */
+            virtual node_error enableLoopbackRecording(bool enabled, const char* deviceName) = 0;
+
+            
+            /**
+             * Enable audio
+             */
+            virtual node_error enableAudio() = 0;
         };
 
         /**
