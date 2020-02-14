@@ -3295,6 +3295,14 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.videoSourceUpdateScreenCaptureRegion(rect);
   }
 
+  videoSourceEnableLoopbackRecording(enabled: boolean) : number {
+    return this.rtcEngine.videoSourceEnableLoopbackRecording(enabled)
+  }
+
+  videoSourceEnableAudio() : number {
+    return this.rtcEngine.videoSourceEnableAudio()
+  }
+
   /**
    * Releases the video source object.
    * @return
