@@ -2450,6 +2450,10 @@ export interface NodeRtcEngine {
    * @ignore
    */
   setPluginParameter(pluginId: string, param: string): number;
+  /**
+   * @ignore
+   */
+  getPluginParameter(pluginId: string, paramKey: string): string;
 }
 
 export interface NodeRtcChannel {

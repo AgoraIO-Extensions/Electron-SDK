@@ -272,6 +272,7 @@ namespace agora {
             NAPI_API(enablePlugin);
             NAPI_API(getPlugins);
             NAPI_API(setPluginParameter);
+            NAPI_API(getPluginParameter);
 
             /**
              * 2.3.3 apis
