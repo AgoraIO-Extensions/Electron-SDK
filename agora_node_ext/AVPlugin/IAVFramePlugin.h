@@ -59,12 +59,13 @@ public:
 class IAVFramePlugin : public IAVFramePluginCallback
 {
 public:
-    virtual bool load(const char* path) = 0;
-    virtual bool unLoad() = 0;
-    virtual bool enable() = 0;
-    virtual bool disable() = 0;
-    virtual bool setParameter(const char* param) = 0;
-    virtual void release() = 0;
+    virtual int load(const char* path) = 0;
+    virtual int unLoad() = 0;
+    virtual int enable() = 0;
+    virtual int disable() = 0;
+    virtual int setParameter(const char* param) = 0;
+    virtual std::string getParameter(const char* key) = 0;
+    virtual int release() = 0;
 };
 
  IAVFramePlugin* createAVFramePlugin();
