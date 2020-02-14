@@ -4370,20 +4370,15 @@ namespace agora {
 
 
                 if (enabled) {
-                    if (!pluginInfo.instance->enable()) {
-                        LOG_ERROR("Error :%s, :%d, plugin: \"%s\"  IAVFramePlugin::enable Failed\n", __FUNCTION__, __LINE__, pluginId.c_str());
-                        break;
-                    }
+                    result = pluginInfo.instance->enable();
                 } else {
-                    if (!pluginInfo.instance->disable()) {
-                        LOG_ERROR("Error :%s, :%d, plugin: \"%s\"  IAVFramePlugin::disable Failed\n", __FUNCTION__, __LINE__, pluginId.c_str());
-                        break;
-                    }
+                    result = pluginInfo.instance->disable();
                 }
 
-
+                if(result != 0) {
+                    break;
+                }
                 pEngine->m_avPluginManager->enablePlugin(pluginId, enabled);
-                result = 0;
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -4443,10 +4438,38 @@ namespace agora {
                 agora_plugin_info pluginInfo;
                 pEngine->m_avPluginManager->getPlugin(pluginId, pluginInfo);
                 CHECK_PLUGIN_INSTANCE_EXIST(pluginInfo);
-                pluginInfo.instance->setParameter(param);
-                result = 0;
+                result = pluginInfo.instance->setParameter(param);
             } while (false);
             napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, getPluginParameter)
+        {
+            LOG_ENTER;
+            std::string result = "";
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                CHECK_PLUGIN_MANAGER_EXIST(pEngine);
+
+                napi_status status = napi_ok;
+                std::string pluginId;
+                READ_PLUGIN_ID(pEngine, status, args[0], pluginId);
+                CHECK_PLUGIN_INFO_EXIST(pEngine, pluginId);
+
+                nodestring paramKey;
+                status = napi_get_value_nodestring_(args[1], paramKey);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                agora_plugin_info pluginInfo;
+                pEngine->m_avPluginManager->getPlugin(pluginId, pluginInfo);
+                CHECK_PLUGIN_INSTANCE_EXIST(pluginInfo);
+                result = std::string(pluginInfo.instance->getParameter(paramKey));
+            } while (false);
+            napi_set_string_result(args, result.c_str());
             LOG_LEAVE;
         }
 

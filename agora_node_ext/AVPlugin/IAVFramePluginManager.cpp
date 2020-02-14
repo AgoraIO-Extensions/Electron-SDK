@@ -109,7 +109,7 @@ std::vector<std::string> IAVFramePluginManager::getPlugins()
     return result;
 }
 
-void IAVFramePluginManager::release()
+int IAVFramePluginManager::release()
 {
     for (auto const& element : m_mapPlugins) {
         //free plugin instance
