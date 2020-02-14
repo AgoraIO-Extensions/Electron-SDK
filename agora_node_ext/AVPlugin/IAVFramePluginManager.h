@@ -41,7 +41,7 @@ public:
     bool enablePlugin(std::string& pluginId, bool enabled);
     bool getPlugin(std::string& pluginId, agora_plugin_info& pluginInfo);
     std::vector<std::string> getPlugins();
-    void release();
+    int release();
 private:
     std::map<std::string, agora_plugin_info> m_mapPlugins;
 };

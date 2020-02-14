@@ -4568,6 +4568,9 @@ class AgoraRtcEngine extends EventEmitter {
       },
       setParameter: (param: string) => {
         return this.setPluginParameter(pluginId, param)
+      },
+      getParameter: (paramKey: string) => {
+        return this.getPluginParameter(pluginId, paramKey)
       }
     }
   }
@@ -4588,6 +4591,15 @@ class AgoraRtcEngine extends EventEmitter {
    */
   setPluginParameter(pluginId: string, param: string): number {
     return this.rtcEngine.setPluginParameter(pluginId, param);
+  }
+
+  /**
+   * @ignore
+   * @param pluginId 
+   * @param paramKey
+   */
+  getPluginParameter(pluginId: string, paramKey: string): string {
+    return this.rtcEngine.getPluginParameter(pluginId, paramKey);
   }
 }
 /** The AgoraRtcEngine interface. */

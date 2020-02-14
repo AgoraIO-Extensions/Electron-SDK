@@ -1,6 +1,7 @@
-export const APP_ID = ''
+export const APP_ID = '***REMOVED***'
 export const SHARE_ID = 2
 export const RTMP_URL = ''
+export const FU_AUTH = []
 
 export const voiceReverbList = [
   {

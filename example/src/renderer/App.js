@@ -412,6 +412,48 @@ export default class App extends Component {
     }
   }
 
+  toggleByteDancePlugin = () => {
+    const plugin = this.rtcEngine.getPlugins().find(plugin => plugin.id === 'bd-mac' )
+    if (plugin) {
+      if(this.state.bdEnabled) {
+        plugin.disable();
+        this.setState({
+          bdEnabled: false
+        })
+      } else {
+        plugin.setParameter(JSON.stringify({
+          "plugin.bytedance.licensePath": path.join(__static, "bd-mac/resource/LicenseBag.bundle/labcv_test_20200112_20200229_com.bytedance.labcv.demo_labcv_test_v2.0.0_mac.licbag")
+        }))
+        plugin.setParameter(JSON.stringify({
+          "plugin.bytedance.stickerPath": path.join(__static, "bd-mac/resource/StickerResource.bundle")
+        }))
+        plugin.setParameter(JSON.stringify({
+          "plugin.bytedance.beauty.resourcepath": path.join(__static, "bd-mac/resource/BeautyResource.bundle/IESBeauty")
+        }))
+        plugin.setParameter(JSON.stringify({
+          "plugin.bytedance.beauty.intensity": {
+            1: 1.0,
+            2: 1.0,
+            9: 1.0
+          }
+        }))
+        plugin.setParameter(JSON.stringify({
+          "plugin.bytedance.faceDetectModelPath": path.join(__static, "bd-mac/resource/StickerResource.bundle/ttfacemodel/tt_face_v6.0.model")
+        }))
+        plugin.setParameter(JSON.stringify({
+          "plugin.bytedance.faceDetectExtraModelPath": path.join(__static, "bd-mac/resource/StickerResource.bundle/ttfacemodel/tt_face_extra_v9.0.model")
+        }))
+        plugin.setParameter(JSON.stringify({
+          "plugin.bytedance.faceAttributeModelPath": path.join(__static, "bd-mac/resource/StickerResource.bundle/ttfaceattri/tt_face_attribute_v4.1.model")
+        }))
+        plugin.enable();
+        this.setState({
+          bdEnabled: true
+        })
+      }
+    }
+  }
+
   handleRelease = () => {
     this.setState({
       localVideoSource: "",
@@ -789,6 +831,12 @@ export default class App extends Component {
             <label className="label">Toggle FU Plugin</label>
             <div className="control">
               <button onClick={this.toggleFuPlugin} className="button is-link">{this.state.fuEnabled ? 'disable' : 'enable'}</button>
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">Toggle ByteDance Plugin</label>
+            <div className="control">
+              <button onClick={this.toggleByteDancePlugin} className="button is-link">{this.state.bdEnabled ? 'disable' : 'enable'}</button>
             </div>
           </div>
         </div>
