@@ -36,8 +36,8 @@ namespace agora {
         auto it = m_callbacks.find(ev); \
         if (it != m_callbacks.end()) {\
             Isolate *isolate = Isolate::GetCurrent();\
-            Local<Context> context = isolate->GetCurrentContext();\
             HandleScope scope(isolate);\
+            Local<Context> context = isolate->GetCurrentContext();\
             NodeEventCallback& cb = *it->second;\
             cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 0, nullptr);\
         }
@@ -46,8 +46,8 @@ namespace agora {
         auto it = m_callbacks.find(ev); \
         if (it != m_callbacks.end()) {\
             Isolate *isolate = Isolate::GetCurrent();\
-            Local<Context> context = isolate->GetCurrentContext();\
             HandleScope scope(isolate);\
+            Local<Context> context = isolate->GetCurrentContext();\
             Local<Value> argv[1]{ napi_create_##type##_(isolate, param)\
                                 };\
             NodeEventCallback& cb = *it->second;\
@@ -58,8 +58,8 @@ namespace agora {
         auto it = m_callbacks.find(ev); \
         if (it != m_callbacks.end()) {\
             Isolate *isolate = Isolate::GetCurrent();\
-            Local<Context> context = isolate->GetCurrentContext();\
             HandleScope scope(isolate);\
+            Local<Context> context = isolate->GetCurrentContext();\
             Local<Value> argv[2]{ napi_create_##type1##_(isolate, param1),\
                                   napi_create_##type2##_(isolate, param2)\
                                 };\
@@ -71,8 +71,8 @@ namespace agora {
         auto it = m_callbacks.find(ev); \
         if (it != m_callbacks.end()) {\
             Isolate *isolate = Isolate::GetCurrent();\
-            Local<Context> context = isolate->GetCurrentContext();\
             HandleScope scope(isolate);\
+            Local<Context> context = isolate->GetCurrentContext();\
             Local<Value> argv[3]{ napi_create_##type1##_(isolate, param1),\
                                   napi_create_##type2##_(isolate, param2),\
                                   napi_create_##type3##_(isolate, param3) \
@@ -85,8 +85,8 @@ namespace agora {
         auto it = m_callbacks.find(ev); \
         if (it != m_callbacks.end()) {\
             Isolate *isolate = Isolate::GetCurrent();\
-            Local<Context> context = isolate->GetCurrentContext();\
             HandleScope scope(isolate);\
+            Local<Context> context = isolate->GetCurrentContext();\
             Local<Value> argv[4]{ napi_create_##type1##_(isolate, param1),\
                                   napi_create_##type2##_(isolate, param2),\
                                   napi_create_##type3##_(isolate, param3), \
@@ -100,8 +100,8 @@ namespace agora {
         auto it = m_callbacks.find(ev); \
         if (it != m_callbacks.end()) {\
             Isolate *isolate = Isolate::GetCurrent();\
-            Local<Context> context = isolate->GetCurrentContext();\
             HandleScope scope(isolate);\
+            Local<Context> context = isolate->GetCurrentContext();\
             Local<Value> argv[5]{ napi_create_##type1##_(isolate, param1),\
                                   napi_create_##type2##_(isolate, param2),\
                                   napi_create_##type3##_(isolate, param3), \
@@ -254,8 +254,8 @@ namespace agora {
             auto it = m_callbacks.find(RTC_EVENT_AUDIO_VOLUME_INDICATION);
             if (it != m_callbacks.end()) {
                 Isolate *isolate = Isolate::GetCurrent();
-                Local<Context> context = isolate->GetCurrentContext();
                 HandleScope scope(isolate);
+                Local<Context> context = isolate->GetCurrentContext();
                 Local<v8::Array> arrSpeakers = v8::Array::New(isolate, speakerNumber);
                 for(int i = 0; i < speakerNumber; i++) {
                     Local<Object> obj = Object::New(isolate);
@@ -313,8 +313,8 @@ namespace agora {
                 stats.rxAudioKBitRate, usercount);
             do {
                 Isolate *isolate = Isolate::GetCurrent();
-                Local<Context> context = isolate->GetCurrentContext();
                 HandleScope scope(isolate);
+                Local<Context> context = isolate->GetCurrentContext();
                 Local<Object> obj = Object::New(isolate);
                 CHECK_NAPI_OBJ(obj);
                 NODE_SET_OBJ_PROP_UINT32(obj, "duration", stats.duration);
@@ -639,8 +639,8 @@ namespace agora {
             FUNC_TRACE;
             do {
                 Isolate *isolate = Isolate::GetCurrent();
-                Local<Context> context = isolate->GetCurrentContext();
                 HandleScope scope(isolate);
+                Local<Context> context = isolate->GetCurrentContext();
                 Local<Object> obj = Object::New(isolate);
                 CHECK_NAPI_OBJ(obj);
 
@@ -678,8 +678,8 @@ namespace agora {
             FUNC_TRACE;
             do {
                 Isolate *isolate = Isolate::GetCurrent();
-                Local<Context> context = isolate->GetCurrentContext();
                 HandleScope scope(isolate);
+                Local<Context> context = isolate->GetCurrentContext();
                 Local<Object> obj = Object::New(isolate);
                 CHECK_NAPI_OBJ(obj);
                 NODE_SET_OBJ_PROP_UINT32(obj, "uid", stats.uid);
@@ -1083,8 +1083,8 @@ namespace agora {
             FUNC_TRACE;
             do {
                 Isolate *isolate = Isolate::GetCurrent();
-                Local<Context> context = isolate->GetCurrentContext();
                 HandleScope scope(isolate);
+                Local<Context> context = isolate->GetCurrentContext();
                 Local<Object> obj = Object::New(isolate);
                 CHECK_NAPI_OBJ(obj);
                 NODE_SET_OBJ_PROP_UID(obj, "uid", stats.uid);
@@ -1252,8 +1252,8 @@ namespace agora {
             FUNC_TRACE;
             do {
                 Isolate *isolate = Isolate::GetCurrent();
-                Local<Context> context = isolate->GetCurrentContext();
                 HandleScope scope(isolate);
+                Local<Context> context = isolate->GetCurrentContext();
                 Local<Object> obj = Object::New(isolate);
                 CHECK_NAPI_OBJ(obj);
                 NODE_SET_OBJ_PROP_UINT32(obj, "state", result.state);
@@ -1311,8 +1311,8 @@ namespace agora {
             FUNC_TRACE;
             do{
                 Isolate *isolate = Isolate::GetCurrent();
-                Local<Context> context = isolate->GetCurrentContext();
                 HandleScope scope(isolate);
+                Local<Context> context = isolate->GetCurrentContext();
                 Local<Object> obj = Object::New(isolate);
                 CHECK_NAPI_OBJ(obj);
                 
@@ -1349,8 +1349,8 @@ namespace agora {
             FUNC_TRACE;
             do {
                 Isolate *isolate = Isolate::GetCurrent();
-                Local<Context> context = isolate->GetCurrentContext();
                 HandleScope scope(isolate);
+                Local<Context> context = isolate->GetCurrentContext();
                 Local<Object> obj = Object::New(isolate);
                 CHECK_NAPI_OBJ(obj);
 
