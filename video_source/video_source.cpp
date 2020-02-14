@@ -220,10 +220,9 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
         }
     }
     else if (msg == AGORA_IPC_STOP_CAPTURE_SCREEN){
-
-        m_rtcEngine->stopScreenCapture();
         agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
         rep.enableLocalVideo(false);
+        m_rtcEngine->stopScreenCapture();
     }
     else if (msg == AGORA_IPC_START_VS_PREVIEW) {
         this->startPreview();
@@ -328,6 +327,16 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
     }
     else if(msg == AGORA_IPC_SET_SCREEN_CAPTURE_CONTENT_HINT) {
         m_rtcEngine->setScreenCaptureContentHint((agora::rtc::VideoContentHint)*payload);
+    }
+    else if(msg == AGORA_IPC_ENABLE_LOOPBACK_RECORDING) {
+        if (len != sizeof(LoopbackRecordingCmd))
+            return;
+        LoopbackRecordingCmd *cmd = (LoopbackRecordingCmd*)payload;
+        agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
+        rep.enableLoopbackRecording(cmd->enabled, cmd->deviceName);
+    }
+    else if(msg == AGORA_IPC_ENABLE_AUDIO) {
+        m_rtcEngine->enableAudio();
     }
 
     LOG_LEAVE;
