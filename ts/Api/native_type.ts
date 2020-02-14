@@ -2055,6 +2055,14 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
+  videoSourceEnableLoopbackRecording(enable: boolean): number;
+  /**
+   * @ignore
+   */
+  videoSourceEnableAudio(): number;
+  /**
+   * @ignore
+   */
   videoSourceRelease(): number;
   /**
    * @ignore

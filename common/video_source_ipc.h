@@ -90,7 +90,10 @@ enum AgoraIpcMsg
     AGORA_IPC_SET_SCREEN_CAPTURE_CONTENT_HINT,
     AGORA_IPC_UPDATE_SCREEN_CAPTURE_PARAMS,
     /** Node ADDON ==> video source, to set rtc parameters*/
-    AGORA_IPC_SET_PARAMETER
+    AGORA_IPC_SET_PARAMETER,
+    AGORA_IPC_ENABLE_LOOPBACK_RECORDING,
+    /** Node ADDON ==> video source, to enable audio*/
+    AGORA_IPC_ENABLE_AUDIO
 };
 
 /**
@@ -177,6 +180,19 @@ struct ChannelProfileCmd
 	ChannelProfileCmd()
 		: profile(agora::rtc::CHANNEL_PROFILE_LIVE_BROADCASTING)
         , permissionKey{ 0 }
+    {}
+};
+
+/**
+ * loopback recording cmd
+ */
+struct LoopbackRecordingCmd
+{
+    bool enabled;
+    char deviceName[agora::rtc::MAX_DEVICE_ID_LENGTH];
+    LoopbackRecordingCmd()
+        : enabled(false)
+        , deviceName{ NULL }
     {}
 };
 
