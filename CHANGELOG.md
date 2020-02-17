@@ -1,3 +1,7 @@
+## 2.9.0-rc.101 (Feb 14th, 2020)
+* Added videoSourceEnableAudio & videoSourceEnableLoopbackRecording
+* Release
+
 ## 2.9.0-rc.101-beta.1 (Jan 18th, 2020)
 * Update Windows SDK to v2.9.0.101 build 86
 * Update Mac SDK to v2.9.0.101 build 1001
