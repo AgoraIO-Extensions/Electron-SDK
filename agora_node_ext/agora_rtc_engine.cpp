@@ -270,6 +270,17 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(updateScreenCaptureParameters);
                 PROPERTY_METHOD_DEFINE(setScreenCaptureContentHint);
 
+                /**
+                 * 2.9.0.102 Apis
+                 */
+                PROPERTY_METHOD_DEFINE(getEffectCurrentPosition);
+                PROPERTY_METHOD_DEFINE(setEffectPosition);
+                PROPERTY_METHOD_DEFINE(getEffectDuration);
+                PROPERTY_METHOD_DEFINE(adjustEffectPlayoutVolume);
+                PROPERTY_METHOD_DEFINE(adjustEffectPublishVolume);
+                PROPERTY_METHOD_DEFINE(getEffectPlayoutVolume);
+                PROPERTY_METHOD_DEFINE(getEffectPublishVolume);
+
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -5151,7 +5162,7 @@ namespace agora {
 
                 VideoContentHint hint;
                 int value = 0;
-                napi_get_value_int32_(args[0], value);
+                status = napi_get_value_int32_(args[0], value);
                 CHECK_NAPI_STATUS(pEngine, status);
 
                 switch(value) {
@@ -5171,6 +5182,17 @@ namespace agora {
             napi_set_int_result(args, result);
             LOG_LEAVE;
         }
+
+        
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(getEffectCurrentPosition, int32);
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(setEffectPosition, int32, int32);
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(getEffectDuration, nodestring);
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(adjustEffectPlayoutVolume, int32, int32);
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(adjustEffectPublishVolume, int32, int32);
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(getEffectPlayoutVolume, int32);
+        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(getEffectPublishVolume, int32);
+
+        
 
         /**
          * NodeRtcChannel
