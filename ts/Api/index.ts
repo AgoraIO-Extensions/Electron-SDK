@@ -4213,6 +4213,92 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * Retrieves the playback position (ms) of specified audio effect.
+   * Call this method when you are in a channel.
+   * @param {number} soundId ID of the audio effect. Each audio effect has a unique ID.
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  getEffectCurrentPosition(soundId: number): number {
+    return this.rtcEngine.getEffectCurrentPosition(soundId);
+  }
+
+  /**
+   * Sets the instantaneous playback position of specified audio effect file.
+   * @param {number} soundId ID of the audio effect. Each audio effect has a unique ID.
+   * @param {number} pos The instantaneous playback position (ms) of the audio effect file.
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  setEffectPosition(soundId: number, position: number): number {
+    return this.rtcEngine.setEffectPosition(soundId, position);
+  }
+
+  /**
+   * Retrieves the duration (ms) of specified audio effect.
+   * Call this method when you are in a channel.
+   * @param {number} soundId ID of the audio effect. Each audio effect has a unique ID.
+   * @return
+   * - >= 0: The duration (ms) of specified audio effect, if this method call is successful.
+   * - < 0: Failure.
+   */
+  getEffectDuration(filePath: string): number {
+    return this.rtcEngine.getEffectDuration(filePath);
+  }
+
+  /**
+   * Adjusts the volume of specified audio effect for local playback.
+   * Call this method when you are in a channel.
+   * @param {number} soundId ID of the audio effect. Each audio effect has a unique ID.
+   * @param {number} volume Volume of specified audio effect for local playback. The value ranges between 0 and 100 (default).
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  adjustEffectPlayoutVolume(soundId: number, volume: number): number {
+    return this.rtcEngine.adjustEffectPlayoutVolume(soundId, volume);
+  }
+
+  /**
+   * Adjusts the volume of specified audio effect for publishing (sending to other users).
+   * Call this method when you are in a channel.
+   * @param {number} soundId ID of the audio effect. Each audio effect has a unique ID.
+   * @param {number} volume Volume of specified audio effect for publishing. The value ranges between 0 and 100 (default).
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  adjustEffectPublishVolume(soundId: number, volume: number): number {
+    return this.rtcEngine.adjustEffectPublishVolume(soundId, volume);
+  }
+
+  /**
+   * Retrieves the volume of specified audio effect for local playback.
+   * Call this method when you are in a channel.
+   * @param {number} soundId ID of the audio effect. Each audio effect has a unique ID.
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  getEffectPlayoutVolume(soundId: number): number {
+    return this.rtcEngine.getEffectPlayoutVolume(soundId);
+  }
+
+  /**
+   * Retrieves the volume of specified audio effect for publishing (sending to other users).
+   * Call this method when you are in a channel.
+   * @param {number} soundId ID of the audio effect. Each audio effect has a unique ID.
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  getEffectPublishVolume(soundId: number): number {
+    return this.rtcEngine.getEffectPublishVolume(soundId);
+  }
+
+  /**
    * Enables/Disables stereo panning for remote users.
    *
    * Ensure that you call this method before {@link joinChannel} to enable 
