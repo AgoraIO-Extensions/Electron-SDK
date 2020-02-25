@@ -2922,6 +2922,14 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.enableLoopbackRecording(enable, deviceName);
   }
 
+  startAudioRecording(filePath: string, quality: number):number {
+    return this.rtcEngine.startAudioRecording(filePath, quality)
+  }
+
+  stopAudioRecording():number {
+    return this.rtcEngine.stopAudioRecording()
+  }
+
   /**
    * Starts the microphone test.
    *

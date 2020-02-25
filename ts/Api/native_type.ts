@@ -1893,6 +1893,14 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
+  startAudioRecording(filePath: string, quality: number): number;
+  /**
+   * @ignore
+   */
+  stopAudioRecording(): number;
+  /**
+   * @ignore
+   */
   startAudioRecordingDeviceTest(indicateInterval: number): number;
   /**
    * @ignore
