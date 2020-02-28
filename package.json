@@ -31,7 +31,7 @@
     "yuv-canvas": "^1.2.1"
   },
   "devDependencies": {
-    "@types/node": "10.17.13",
+    "@types/node": "10.17.17",
     "jest": "24.9.0",
     "prettier": "1.19.1",
     "ts-jest": "24.3.0",
