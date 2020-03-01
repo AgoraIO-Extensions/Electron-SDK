@@ -220,6 +220,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(enablePlugin);
                 PROPERTY_METHOD_DEFINE(getPlugins);
                 PROPERTY_METHOD_DEFINE(setPluginParameter);
+                PROPERTY_METHOD_DEFINE(getPluginParameter);
 
                 //2.3.3 apis
                 PROPERTY_METHOD_DEFINE(getConnectionState);
@@ -4300,13 +4301,13 @@ namespace agora {
                 #ifdef WIN32
                 
                 char* wPluginFolderPath = U2G(mPluginFolderPath.c_str());
-                if (!pluginInfo.instance->load(wPluginFolderPath)) {
+                if (pluginInfo.instance->load(wPluginFolderPath) != 0) {
                     LOG_ERROR("Error :%s, :%d, plugin: \"%s\"  IAudioFramePlugin::load Failed\n", __FUNCTION__, __LINE__, pluginInfo.id);
                     break;
                 }
                 delete[] wPluginFolderPath;
                 #else
-                if (!pluginInfo.instance->load(mPluginFolderPath.c_str())) {
+                if (pluginInfo.instance->load(mPluginFolderPath.c_str()) != 0) {
                     LOG_ERROR("Error :%s, :%d, plugin: \"%s\"  IAVFramePlugin::load Failed\n", __FUNCTION__, __LINE__, pluginInfo.id);
                     break;
                 }
@@ -4376,6 +4377,7 @@ namespace agora {
                 }
 
                 if(result != 0) {
+                    LOG_ERROR("Error :%s, :%d, plugin: \"%s\"  IAVFramePlugin::enablePlugin return non-zero %d\n", __FUNCTION__, __LINE__, pluginInfo.id, result);
                     break;
                 }
                 pEngine->m_avPluginManager->enablePlugin(pluginId, enabled);
@@ -4396,7 +4398,6 @@ namespace agora {
 
                 CHECK_PLUGIN_MANAGER_EXIST(pEngine);
 
-                napi_status status = napi_ok;
 
                 std::vector<std::string> plugins = pEngine->m_avPluginManager->getPlugins();
                 Local<v8::Array> result = v8::Array::New(isolate, plugins.size());
