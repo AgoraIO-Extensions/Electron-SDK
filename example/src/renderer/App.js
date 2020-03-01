@@ -55,9 +55,9 @@ export default class App extends Component {
       this.rtcEngine = new AgoraRtcEngine()
       this.rtcEngine.initialize(APP_ID)
       this.rtcEngine.initializePluginManager();
-      const libPath = path.resolve(__static, 'fu-mac/libFaceUnityPlugin.dylib')
+      const libPath = path.resolve(__static, 'bd-mac/libByteDancePlugin.dylib')
       if(this.rtcEngine.registerPlugin({
-        id: 'fu-mac',
+        id: 'bd-mac',
         path: libPath
       }) < 0){
         console.error(`load plugin failed`)
@@ -366,7 +366,7 @@ export default class App extends Component {
   }
 
   toggleFuPlugin = () => {
-    const plugin = this.rtcEngine.getPlugins().find(plugin => plugin.id === 'fu-mac' )
+    const plugin = this.rtcEngine.getPlugins().find(plugin => plugin.id === 'bd-mac' )
     if (plugin) {
       if(this.state.fuEnabled) {
         plugin.disable();

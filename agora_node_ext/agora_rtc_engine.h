@@ -621,7 +621,7 @@ namespace agora {
 
 #define CHECK_PLUGIN_MODULE_EXIST(pluginInfo) \
         if (pluginInfo.pluginModule == NULL) { \
-            LOG_ERROR("Error :%s, :%d, not unload plugin \"%s\"\n", __FUNCTION__, __LINE__, pluginInfo.id); \
+            LOG_ERROR("Error :%s, :%d, %sn, not unload plugin \"%s\"\n", __FUNCTION__, __LINE__, dlerror(), pluginInfo.id); \
             break;\
         }
 
