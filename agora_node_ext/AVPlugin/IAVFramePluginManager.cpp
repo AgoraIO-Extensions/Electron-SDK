@@ -125,4 +125,5 @@ int IAVFramePluginManager::release()
             #endif
         }
     }
+    return 0;
 }
