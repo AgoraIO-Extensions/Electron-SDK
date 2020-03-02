@@ -1,3 +1,18 @@
+## 2.9.0-rc.101 (Mar 2nd, 2020)
+* Win SDK upgrade to 2.9.0.102 build 3151
+* Mac SDK upgrade to 2.9.0.102 build 1279
+* Add new APIs:
+  getEffectCurrentPosition
+  setEffectPosition
+  getEffectDuration
+  adjustEffectPlayoutVolume
+  adjustEffectPublishVolume
+  getEffectPlayoutVolume
+  getEffectPublishVolume
+* Support new Plugin APIs:
+  getParameter
+* Plugin now supports int return value for potential error handling
+
 ## 2.9.0-rc.101 (Feb 14th, 2020)
 * Added videoSourceEnableAudio & videoSourceEnableLoopbackRecording
 * Release
