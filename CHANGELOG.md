@@ -2,15 +2,15 @@
 * Win SDK upgrade to 2.9.0.102 build 3151
 * Mac SDK upgrade to 2.9.0.102 build 1279
 * Add new APIs:
-  getEffectCurrentPosition
-  setEffectPosition
-  getEffectDuration
-  adjustEffectPlayoutVolume
-  adjustEffectPublishVolume
-  getEffectPlayoutVolume
-  getEffectPublishVolume
+  - getEffectCurrentPosition
+  - setEffectPosition
+  - getEffectDuration
+  - adjustEffectPlayoutVolume
+  - adjustEffectPublishVolume
+  - getEffectPlayoutVolume
+  - getEffectPublishVolume
 * Support new Plugin APIs:
-  getParameter
+  - getParameter
 * Plugin now supports int return value for potential error handling
 
 ## 2.9.0-rc.101 (Feb 14th, 2020)
