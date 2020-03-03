@@ -64,7 +64,7 @@ public:
     virtual int enable() = 0;
     virtual int disable() = 0;
     virtual int setParameter(const char* param) = 0;
-    virtual std::string getParameter(const char* key) = 0;
+    virtual const char* getParameter(const char* key) = 0;
     virtual int release() = 0;
 };
 
