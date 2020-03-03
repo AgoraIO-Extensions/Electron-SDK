@@ -1,3 +1,4 @@
+*.log
 sdk
 tmp
 build/
