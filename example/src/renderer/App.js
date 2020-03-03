@@ -10,6 +10,8 @@ import WindowPicker from './components/WindowPicker/index.js'
 import DisplayPicker from './components/DisplayPicker/index.js'
 import { VoiceChangerPreset } from '../../../JS/Api/native_type';
 
+const isMac = process.platform === 'darwin'
+
 export default class App extends Component {
   constructor(props) {
     super(props)
@@ -55,9 +57,11 @@ export default class App extends Component {
       this.rtcEngine = new AgoraRtcEngine()
       this.rtcEngine.initialize(APP_ID)
       this.rtcEngine.initializePluginManager();
-      const libPath = path.resolve(__static, 'bd-mac/libByteDancePlugin.dylib')
+      const libPath = isMac ? 
+            path.resolve(__static, 'bytedance/libByteDancePlugin.dylib')
+          : path.resolve(__static, 'bytedance/ByteDancePlugin.dll')
       if(this.rtcEngine.registerPlugin({
-        id: 'bd-mac',
+        id: 'bytedance',
         path: libPath
       }) < 0){
         console.error(`load plugin failed`)
@@ -366,7 +370,7 @@ export default class App extends Component {
   }
 
   toggleFuPlugin = () => {
-    const plugin = this.rtcEngine.getPlugins().find(plugin => plugin.id === 'bd-mac' )
+    const plugin = this.rtcEngine.getPlugins().find(plugin => plugin.id === 'bytedance' )
     if (plugin) {
       if(this.state.fuEnabled) {
         plugin.disable();
@@ -413,7 +417,7 @@ export default class App extends Component {
   }
 
   toggleByteDancePlugin = () => {
-    const plugin = this.rtcEngine.getPlugins().find(plugin => plugin.id === 'bd-mac' )
+    const plugin = this.rtcEngine.getPlugins().find(plugin => plugin.id === 'bytedance' )
     if (plugin) {
       if(this.state.bdEnabled) {
         plugin.disable();
@@ -421,31 +425,57 @@ export default class App extends Component {
           bdEnabled: false
         })
       } else {
-        plugin.setParameter(JSON.stringify({
-          "plugin.bytedance.licensePath": path.join(__static, "bd-mac/resource/LicenseBag.bundle/labcv_test_20200112_20200229_com.bytedance.labcv.demo_labcv_test_v2.0.0_mac.licbag")
-        }))
-        plugin.setParameter(JSON.stringify({
-          "plugin.bytedance.stickerPath": path.join(__static, "bd-mac/resource/StickerResource.bundle")
-        }))
-        plugin.setParameter(JSON.stringify({
-          "plugin.bytedance.beauty.resourcepath": path.join(__static, "bd-mac/resource/BeautyResource.bundle/IESBeauty")
-        }))
-        plugin.setParameter(JSON.stringify({
-          "plugin.bytedance.beauty.intensity": {
-            1: 1.0,
-            2: 1.0,
-            9: 1.0
-          }
-        }))
-        plugin.setParameter(JSON.stringify({
-          "plugin.bytedance.faceDetectModelPath": path.join(__static, "bd-mac/resource/StickerResource.bundle/ttfacemodel/tt_face_v6.0.model")
-        }))
-        plugin.setParameter(JSON.stringify({
-          "plugin.bytedance.faceDetectExtraModelPath": path.join(__static, "bd-mac/resource/StickerResource.bundle/ttfacemodel/tt_face_extra_v9.0.model")
-        }))
-        plugin.setParameter(JSON.stringify({
-          "plugin.bytedance.faceAttributeModelPath": path.join(__static, "bd-mac/resource/StickerResource.bundle/ttfaceattri/tt_face_attribute_v4.1.model")
-        }))
+        if(isMac) {
+          plugin.setParameter(JSON.stringify({
+            "plugin.bytedance.licensePath": path.join(__static, "bytedance/resource/LicenseBag.bundle/labcv_test_20200112_20200229_com.bytedance.labcv.demo_labcv_test_v2.0.0_mac.licbag")
+          }))
+          plugin.setParameter(JSON.stringify({
+            "plugin.bytedance.stickerPath": path.join(__static, "bytedance/resource/StickerResource.bundle")
+          }))
+          plugin.setParameter(JSON.stringify({
+            "plugin.bytedance.beauty.resourcepath": path.join(__static, "bytedance/resource/BeautyResource.bundle/IESBeauty")
+          }))
+          plugin.setParameter(JSON.stringify({
+            "plugin.bytedance.beauty.intensity": {
+              1: 1.0,
+              2: 1.0,
+              9: 1.0
+            }
+          }))
+          plugin.setParameter(JSON.stringify({
+            "plugin.bytedance.faceDetectModelPath": path.join(__static, "bytedance/resource/StickerResource.bundle/ttfacemodel/tt_face_v6.0.model")
+          }))
+          plugin.setParameter(JSON.stringify({
+            "plugin.bytedance.faceDetectExtraModelPath": path.join(__static, "bytedance/resource/StickerResource.bundle/ttfacemodel/tt_face_extra_v9.0.model")
+          }))
+          plugin.setParameter(JSON.stringify({
+            "plugin.bytedance.faceAttributeModelPath": path.join(__static, "bytedance/resource/StickerResource.bundle/ttfaceattri/tt_face_attribute_v4.1.model")
+          }))
+        } else {
+          plugin.setParameter(JSON.stringify({
+            "plugin.bytedance.licensePath": path.join(__static, "bytedance/resource/license.bag")
+          }))
+          // plugin.setParameter(JSON.stringify({
+          //   "plugin.bytedance.stickerPath": path.join(__static, "bytedance/resource/StickerResource.bundle")
+          // }))
+          // plugin.setParameter(JSON.stringify({
+          //   "plugin.bytedance.beauty.resourcepath": path.join(__static, "bytedance/resource/BeautyResource.bundle/IESBeauty")
+          // }))
+          // plugin.setParameter(JSON.stringify({
+          //   "plugin.bytedance.beauty.intensity": {
+          //     1: 1.0,
+          //     2: 1.0,
+          //     9: 1.0
+          //   }
+          // }))
+          plugin.setParameter(JSON.stringify({
+            "plugin.bytedance.faceDetectModelPath": path.join(__static, "bytedance/resource/model/ttfacemodel/tt_face_v6.0.model")
+          }))
+          plugin.setParameter(JSON.stringify({
+            "plugin.bytedance.faceAttributeModelPath": path.join(__static, "bytedance/resource/model/ttfaceattrmodel/tt_face_attribute_v4.1.model")
+          }))
+        }
+        
         plugin.enable();
         this.setState({
           bdEnabled: true
