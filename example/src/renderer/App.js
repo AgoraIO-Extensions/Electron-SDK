@@ -427,7 +427,7 @@ export default class App extends Component {
       } else {
         if(isMac) {
           plugin.setParameter(JSON.stringify({
-            "plugin.bytedance.licensePath": path.join(__static, "bytedance/resource/LicenseBag.bundle/labcv_test_20200112_20200229_com.bytedance.labcv.demo_labcv_test_v2.0.0_mac.licbag")
+            "plugin.bytedance.licensePath": path.join(__static, "bytedance/resource/license.licbag")
           }))
           plugin.setParameter(JSON.stringify({
             "plugin.bytedance.stickerPath": path.join(__static, "bytedance/resource/StickerResource.bundle")
