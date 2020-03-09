@@ -3,7 +3,7 @@ curl ${RTC_SDK_URL} -o NATIVE_SDK.zip
 unzip NATIVE_SDK.zip
 
 rm -rf ./sdk/lib/mac/*
-mv ./Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcEngineKit.framework ./sdk/lib/mac/.
+mv ./Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcKit.framework ./sdk/lib/mac/.
 
 npm config set ELECTRON_MIRROR http://npm.taobao.org/mirrors/electron/
 rm -rf node_modules

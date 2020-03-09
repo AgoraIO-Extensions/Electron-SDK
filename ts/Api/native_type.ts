@@ -2255,34 +2255,6 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  getEffectCurrentPosition(soundId: number): number;
-  /**
-   * @ignore
-   */
-  setEffectPosition(soundId: number, position: number): number;
-  /**
-   * @ignore
-   */
-  getEffectDuration(filePath: string): number;
-  /**
-   * @ignore
-   */
-  adjustEffectPlayoutVolume(soundId:number, volume: number): number;
-  /**
-   * @ignore
-   */
-  adjustEffectPublishVolume(soundId:number, volume: number): number;
-  /**
-   * @ignore
-   */
-  getEffectPlayoutVolume(soundId:number): number;
-  /**
-   * @ignore
-   */
-  getEffectPublishVolume(soundId:number): number;
-  /**
-   * @ignore
-   */
   enableSoundPositionIndication(enable: boolean): number;
   /**
    * @ignore

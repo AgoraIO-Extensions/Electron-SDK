@@ -328,16 +328,6 @@ namespace agora {
             NAPI_API(updateScreenCaptureParameters);
             NAPI_API(setScreenCaptureContentHint);
 
-            /**
-             * 2.9.0.102 Apis
-             */
-            NAPI_API(getEffectCurrentPosition);
-            NAPI_API(setEffectPosition);
-            NAPI_API(getEffectDuration);
-            NAPI_API(adjustEffectPlayoutVolume);
-            NAPI_API(adjustEffectPublishVolume);
-            NAPI_API(getEffectPlayoutVolume);
-            NAPI_API(getEffectPublishVolume);
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }
