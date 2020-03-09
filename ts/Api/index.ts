@@ -698,6 +698,10 @@ class AgoraRtcEngine extends EventEmitter {
       fire('channelMediaRelayEvent', event);
     });
 
+    this.rtcEngine.onEvent('rtmpStreamingStateChanged', function(url:string, state: number, errCode: number) {
+      fire('rtmpStreamingStateChanged', url, state, errCode);
+    })
+
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
       self.onRegisterDeliverFrame(infos);
     });
