@@ -91,6 +91,7 @@ namespace agora {
 #define RTC_EVENT_REMOTE_AUDIO_STATE_CHANGED "remoteAudioStateChanged"
 #define RTC_EVENT_CHANNEL_MEDIA_RELAY_STATE  "channelMediaRelayState"
 #define RTC_EVENT_CHANNEL_MEDIA_RELAY_EVENT "channelMediaRelayEvent"
+#define RTC_EVENT_RTMP_STREAMING_STATE_CHANGED "rtmpStreamingStateChanged"
 
 #define RTC_EVENT_VIDEO_SOURCE_JOIN_SUCCESS "videosourcejoinsuccess"
 #define RTC_EVENT_VIDEO_SOURCE_REQUEST_NEW_TOKEN "videosourcerequestnewtoken"
@@ -189,6 +190,8 @@ namespace agora {
             virtual void onChannelMediaRelayStateChanged(CHANNEL_MEDIA_RELAY_STATE state,CHANNEL_MEDIA_RELAY_ERROR code) override;
             virtual void onChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT code) override;
 
+            //3.0.0
+            virtual void onRtmpStreamingStateChanged(const char *url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR errCode) override;
         private:
             void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
             void onRejoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
