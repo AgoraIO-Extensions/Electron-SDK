@@ -102,13 +102,7 @@ namespace agora {
             virtual void onRemoteAudioStateChanged(IChannel *rtcChannel, uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) override;
             
             virtual void onActiveSpeaker(IChannel *rtcChannel, uid_t uid) override;
-            
-            virtual void onFirstRemoteVideoFrame(IChannel *rtcChannel, uid_t uid, int width, int height, int elapsed) override;
-            
-            virtual void onUserMuteAudio(IChannel *rtcChannel, uid_t uid, bool muted) override;
-            
-            virtual void onFirstRemoteAudioDecoded(IChannel *rtcChannel, uid_t uid, int elapsed) override;
-            
+                       
             virtual void onVideoSizeChanged(IChannel *rtcChannel, uid_t uid, int width, int height, int rotation) override;
             
             virtual void onRemoteVideoStateChanged(IChannel *rtcChannel, uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed) override;
@@ -120,15 +114,9 @@ namespace agora {
             virtual void onChannelMediaRelayStateChanged(IChannel *rtcChannel, CHANNEL_MEDIA_RELAY_STATE state,CHANNEL_MEDIA_RELAY_ERROR code) override;
             
             virtual void onChannelMediaRelayEvent(IChannel *rtcChannel, CHANNEL_MEDIA_RELAY_EVENT code) override;
-            
-            virtual void onFirstRemoteAudioFrame(IChannel *rtcChannel, uid_t uid, int elapsed) override;
-            
+                        
             virtual void onRtmpStreamingStateChanged(IChannel *rtcChannel, const char *url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR errCode) override;
-            
-            virtual void onStreamPublished(IChannel *rtcChannel, const char *url, int error) override;
-            
-            virtual void onStreamUnpublished(IChannel *rtcChannel, const char *url) override;
-            
+                                    
             virtual void onTranscodingUpdated(IChannel *rtcChannel) override;
             
             virtual void onStreamInjectedStatus(IChannel *rtcChannel, const char* url, uid_t uid, int status) override;

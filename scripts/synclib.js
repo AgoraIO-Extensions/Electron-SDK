@@ -7,6 +7,20 @@ const promisify = require("bluebird").promisify
 const fs = require("fs-extra")
 
 const extractPromise = promisify(extract)
+const macExtractPromise = () => {
+  return new Promise((resolve, reject) => {
+    extractPromise('./tmp/sdk.zip', {dir: path.join(__dirname, '../tmp/')}).then(() => {
+      return globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/*_FULL.zip'))
+    }).then(folders => {
+      console.log(JSON.stringify(folders))
+      return extractPromise(folders[0], {dir: path.join(__dirname, '../tmp/')})
+    }).then(() => {
+      resolve()
+    }).catch((e) => {
+      reject(e)
+    })
+  })
+}
 const globPromise = promisify(glob)
 
 
@@ -18,8 +32,8 @@ const macPrepare = () => {
       return fs.mkdirp(path.join(__dirname, '../sdk/lib/mac'))
     }).then(() => {
       return fs.move(
-        path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcEngineKit.framework'),
-        path.join(__dirname, '../sdk/lib/mac/AgoraRtcEngineKit.framework')
+        path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcKit.framework'),
+        path.join(__dirname, '../sdk/lib/mac/AgoraRtcKit.framework')
       )
     }).then(() => {
       resolve()
@@ -92,11 +106,15 @@ module.exports = ({
       return download(downloadUrl, outputDir, {filename: "sdk.zip"})
     }).then(() => {
       logger.info("Success", "Download finished");
-      return extractPromise('./tmp/sdk.zip', {dir: path.join(__dirname, '../tmp/')})
+      if(os === "mac") {
+        return macExtractPromise()
+      } else {
+        return extractPromise('./tmp/sdk.zip', {dir: path.join(__dirname, '../tmp/')})
+      }
     }).then(() => {
       logger.info("Success", "Unzip finished");
       if(os === "mac") {
-        return globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcEngineKit.framework/'))
+        return globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcKit.framework/'))
       } else {
         return globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Windows*/'))
       }

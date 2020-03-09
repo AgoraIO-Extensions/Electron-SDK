@@ -271,17 +271,6 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(updateScreenCaptureParameters);
                 PROPERTY_METHOD_DEFINE(setScreenCaptureContentHint);
 
-                /**
-                 * 2.9.0.102 Apis
-                 */
-                PROPERTY_METHOD_DEFINE(getEffectCurrentPosition);
-                PROPERTY_METHOD_DEFINE(setEffectPosition);
-                PROPERTY_METHOD_DEFINE(getEffectDuration);
-                PROPERTY_METHOD_DEFINE(adjustEffectPlayoutVolume);
-                PROPERTY_METHOD_DEFINE(adjustEffectPublishVolume);
-                PROPERTY_METHOD_DEFINE(getEffectPlayoutVolume);
-                PROPERTY_METHOD_DEFINE(getEffectPublishVolume);
-
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -3225,13 +3214,14 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_status status = napi_ok;
                 int interval, smooth;
+                bool report_vad;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                napi_get_param_2(args, int32, interval, int32, smooth);
+                napi_get_param_3(args, int32, interval, int32, smooth, bool, report_vad);
                 CHECK_NAPI_STATUS(pEngine, status);
 
                 RtcEngineParameters rep(pEngine->m_engine);
-                result = rep.enableAudioVolumeIndication(interval, smooth);
+                result = rep.enableAudioVolumeIndication(interval, smooth, report_vad);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -5208,15 +5198,6 @@ namespace agora {
         }
 
         
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(getEffectCurrentPosition, int32);
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(setEffectPosition, int32, int32);
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(getEffectDuration, nodestring);
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(adjustEffectPlayoutVolume, int32, int32);
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(adjustEffectPublishVolume, int32, int32);
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(getEffectPlayoutVolume, int32);
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(getEffectPublishVolume, int32);
-
-        
 
         /**
          * NodeRtcChannel
@@ -5533,7 +5514,11 @@ namespace agora {
                 status = napi_get_value_uint32_(args[1], renderMode);
                 CHECK_NAPI_STATUS(pChannel, status);
 
-                result = pChannel->m_channel->setRemoteRenderMode(uid, RENDER_MODE_TYPE(renderMode));
+                unsigned int mirrorMode;
+                status = napi_get_value_uint32_(args[2], mirrorMode);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                result = pChannel->m_channel->setRemoteRenderMode(uid, RENDER_MODE_TYPE(renderMode), VIDEO_MIRROR_MODE_TYPE(mirrorMode));
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
