@@ -8,8 +8,10 @@ class LiveStreaming {
 
   publish(uid) {
     return new Promise(resolve => {
-      this.localRtcEngine.on('streamPublished', () => {
-        console.log('stream published');
+      this.localRtcEngine.on('rtmpStreamingStateChanged', (url,
+        state,
+        errCode) => {
+        console.log(`rtmpStreamingStateChanged ${url} ${state} ${errCode}`);
         resolve();
       });
       // this.localRtcEngine.setLiveTranscoding({

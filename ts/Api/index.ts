@@ -5513,8 +5513,8 @@ class AgoraRtcChannel extends EventEmitter
 
     this.rtcChannel.onEvent('remoteAudioStateChanged', (
       uid: number,
-      state: number,
-      reason: number,
+      state: RemoteAudioState,
+      reason: RemoteAudioStateReason,
       elapsed: number
     ) => {
       fire('remoteAudioStateChanged', uid, state, reason, elapsed);
@@ -5533,13 +5533,6 @@ class AgoraRtcChannel extends EventEmitter
       elapsed: number
     ) => {
       fire('firstRemoteVideoFrame', uid, width, height, elapsed);
-    });
-
-    this.rtcChannel.onEvent('userMuteAudio', (
-      uid: number,
-      muted: boolean
-    ) => {
-      fire('userMuteAudio', uid, muted);
     });
 
     this.rtcChannel.onEvent('firstRemoteAudioDecoded', (
@@ -5611,19 +5604,6 @@ class AgoraRtcChannel extends EventEmitter
       errCode: number
     ) => {
       fire('rtmpStreamingStateChanged', url, state, errCode);
-    });
-
-    this.rtcChannel.onEvent('streamPublished', (
-      url: string,
-      error: number
-    ) => {
-      fire('streamPublished', url, error);
-    });
-
-    this.rtcChannel.onEvent('streamUnpublished', (
-      url: string
-    ) => {
-      fire('streamUnpublished', url);
     });
 
     this.rtcChannel.onEvent('transcodingUpdated', (
@@ -5801,6 +5781,375 @@ class AgoraRtcChannel extends EventEmitter
   release(): number {
     return this.rtcChannel.release()
   }
+}
+
+
+/** The AgoraRtcChannel interface. */
+declare interface AgoraRtcChannel {
+  on(evt: 'joinChannelSuccess', cb: (uid: number, elapsed: number) => void): this;
+  on(evt: 'channelWarning', cb: (warn: number, msg: string) => void): this;
+  on(evt: 'channelError', cb: (err: number, msg: string) => void): this;
+  on(
+    evt: 'rejoinChannelSuccess',
+    cb: (uid: number, elapsed: number) => void
+  ): this;
+  /** Occurs when the user leaves the channel. When the app calls the 
+   * {@link leaveChannel} method, the SDK uses
+   * this callback to notify the app when the user leaves the channel.
+   */
+  on(evt: 'leaveChannel', cb: (stats:RtcStats) => void): this;
+  /** Occurs when the user role switches in a live broadcast. For example, 
+   * from a host to an audience or vice versa.
+   *
+   * This callback notifies the application of a user role switch when the 
+   * application calls the {@link setClientRole} method.
+   *
+   * - oldRole: Role that the user switches from ClientRoleType.
+   * - newRole: Role that the user switches to ClientRoleType.
+   */
+   on(
+    evt: 'clientRoleChanged',
+    cb: (oldRole: ClientRoleType, newRole: ClientRoleType) => void
+  ): this;
+  /** Occurs when a user or host joins the channel.
+   * - uid: User ID of the user or host joining the channel.
+   * - elapsed: Time delay (ms) from the local user calling the 
+   * {@link joinChannel} method until the SDK triggers this callback.
+   *
+   * The SDK triggers this callback under one of the following circumstances:
+   * - A remote user/host joins the channel by calling the {@link joinChannel} 
+   * method.
+   * - A remote user switches the user role to the host by calling the 
+   * {@link setClientRole} method after joining the channel.
+   * - A remote user/host rejoins the channel after a network interruption.
+   * - The host injects an online media stream into the channel by calling 
+   * the {@link addInjectStreamUrl} method.
+   *
+   * **Note**: In the Live-broadcast profile:
+   * - The host receives this callback when another host joins the channel.
+   * - The audience in the channel receives this callback when a new host 
+   * joins the channel.
+   * - When a web application joins the channel, the SDK triggers this 
+   * callback as long as the web application publishes streams.
+   */
+   on(evt: 'userJoined', cb: (uid: number, elapsed: number) => void): this;
+   /** Occurs when a remote user (Communication)/host (Live Broadcast) leaves 
+    * the channel.
+    * 
+    * There are two reasons for users to become offline:
+    * - Leave the channel: When the user/host leaves the channel, the user/host 
+    * sends a goodbye message. When this message is received, the SDK determines 
+    * that the user/host leaves the channel.
+    * - Drop offline: When no data packet of the user or host is received for a 
+    * certain period of time (20 seconds for the communication profile, and more 
+    * for the live broadcast profile), the SDK assumes that the user/host drops 
+    * offline. A poor network connection may lead to false detections, so we 
+    * recommend using the signaling system for reliable offline detection.
+    * 
+    * - uid: ID of the user or host who leaves the channel or goes offline.
+    * - reason: Reason why the user goes offline:
+    *  - The user left the current channel.
+    *  - The SDK timed out and the user dropped offline because no data packet 
+    * was received within a certain period of time. If a user quits the call 
+    * and the message is not passed to the SDK (due to an unreliable channel), 
+    * the SDK assumes the user dropped offline.
+    *  - (Live broadcast only.) The client role switched from the host to the 
+    * audience.
+    */
+   on(evt: 'userOffline', cb: (uid: number, reason: number) => void): this;
+  /** Occurs when the SDK cannot reconnect to Agora's edge server 10 seconds 
+   * after its connection to the server is interrupted.
+   * The SDK triggers this callback when it cannot connect to the server 10 
+   * seconds after calling the {@link joinChannel} method, whether or not it 
+   * is in the channel.
+   */
+   on(evt: 'connectionLost', cb: () => void): this;
+   /** Occurs when a remote user's audio stream is muted/unmuted.
+    *
+    * The SDK triggers this callback when the remote user stops or resumes 
+    * sending the audio stream by calling the {@link muteLocalAudioStream} 
+    * method.
+    * - uid: User ID of the remote user.
+    * - muted: Whether the remote user's audio stream is muted/unmuted:
+    *  - true: Muted.
+    *  - false: Unmuted.
+    */
+  /** Reports the statistics of the AgoraRtcEngine once every two seconds.
+   * 
+   * - stats: Agora RTC engine statistics, see {@link RtcStats}.
+   */
+
+  /** Occurs when the token expires.
+   * After a token is specified by calling the {@link joinChannel} method, 
+   * if the SDK losses connection with the Agora server due to network issues, 
+   * the token may expire after a certain period
+   * of time and a new token may be required to reconnect to the server.
+   *
+   * This callback notifies the application to generate a new token. Call 
+   * the {@link renewToken} method to renew the token
+   */
+   on(evt: 'requestToken', cb: () => void): this;
+  /** Occurs when the token expires in 30 seconds.
+   *
+   * The user becomes offline if the token used in the {@link joinChannel} 
+   * method expires. The SDK triggers this callback 30 seconds
+   * before the token expires to remind the application to get a new token. 
+   * Upon receiving this callback, generate a new token
+   * on the server and call the {@link renewToken} method to pass the new 
+   * token to the SDK.
+   *
+   * - token: Pointer to the token that expires in 30 seconds.
+   */
+   on(evt: 'tokenPrivilegeWillExpire', cb: (token: string) => void): this;
+   on(evt: 'rtcStats', cb: (stats: RtcStats) => void): this;
+  /**
+   * Reports the last mile network quality of each user in the channel 
+   * once every two seconds.
+   * 
+   * Last mile refers to the connection between the local device and Agora's 
+   * edge server.
+   *
+   * - uid: User ID. The network quality of the user with this uid is reported. 
+   * If uid is 0, the local network quality is reported.
+   * - txquality: Uplink transmission quality rating of the user in terms of 
+   * the transmission bitrate, packet loss rate, average RTT (Round-Trip Time), 
+   * and jitter of the uplink network. See {@link AgoraNetworkQuality}.
+   * - rxquality: Downlink network quality rating of the user in terms of the 
+   * packet loss rate, average RTT, and jitter of the downlink network. 
+   * See {@link AgoraNetworkQuality}.
+   */
+   on(
+    evt: 'networkQuality',
+    cb: (
+      uid: number,
+      txquality: AgoraNetworkQuality,
+      rxquality: AgoraNetworkQuality
+    ) => void
+  ): this;
+  /** Reports the statistics of the video stream from each remote user/host.
+   * - stats: Statistics of the received remote video streams. See 
+   * {@link RemoteVideoState}.
+   */
+  on(evt: 'remoteVideoStats', cb: (stats: RemoteVideoStats) => void): this;
+  /** Reports the statistics of the audio stream from each remote user/host.
+   * - stats: Statistics of the received remote audio streams. See 
+   * {@link RemoteAudioStats}.
+   */
+  on(evt: 'remoteAudioStats', cb: (stats: RemoteAudioStats) => void): this;
+  /**
+   * Occurs when the remote audio state changes.
+   * 
+   * This callback indicates the state change of the remote audio stream.
+   * 
+   * - uid ID of the remote user whose audio state changes.
+   * 
+   * - state State of the remote audio: 
+   * {@link RemoteAudioState}.
+   * 
+   * - reason The reason of the remote audio state change: 
+   * {@link RemoteAudioStateReason}.
+   * 
+   * - elapsed Time elapsed (ms) from the local user calling the 
+   * {@link joinChannel} method until the SDK triggers this callback.
+   */
+   on(evt: 'remoteAudioStateChanged', cb: (
+    uid: number,
+    state: RemoteAudioState,
+    reason: RemoteAudioStateReason,
+    elapsed: number
+  ) => void): this;
+  /**
+   * Reports which user is the loudest speaker.
+   * - uid: User ID of the active speaker. A uid of 0 represents the local user.
+   * If the user enables the audio volume indication by calling the 
+   * {@link enableAudioVolumeIndication} method, this callback returns the uid 
+   * of the
+   * active speaker detected by the audio volume detection module of the SDK.
+   *
+   * **Note**:
+   * - To receive this callback, you need to call the 
+   * {@link enableAudioVolumeIndication} method.
+   * - This callback returns the user ID of the user with the highest voice 
+   * volume during a period of time, instead of at the moment.
+   */
+   on(evt: 'activeSpeaker', cb: (uid: number) => void): this;
+  /** Occurs when the first remote video frame is rendered.
+   * The SDK triggers this callback when the first frame of the remote video 
+   * is displayed in the user's video window.
+   * - uid: User ID of the remote user sending the video stream.
+   * - width: Width (pixels) of the video frame.
+   * - height: Height (pixels) of the video stream.
+   * - elapsed: Time elapsed (ms) from the local user calling the 
+   * {@link joinChannel} method until the SDK triggers this callback.
+   */
+   on(
+    evt: 'firstRemoteVideoFrame',
+    cb: (uid: number, width: number, height: number, elapsed: number) => void
+  ): this;
+  /**
+   * Occurs when the engine receives the first audio frame from a specified 
+   * remote user.
+   * - uid: User ID of the remote user sending the audio stream.
+   * - elapsed: The time elapsed (ms) from the local user calling the 
+   * {@link joinChannel} method until the SDK triggers this callback.
+   */
+   on(
+    evt: 'firstRemoteAudioDecoded',
+    cb: (uid: number, elapsed: number) => void
+  ): this;
+  /** Occurs when the video size or rotation of a specified user changes.
+   * - uid: User ID of the remote user or local user (0) whose video size or 
+   * rotation changes.
+   * - width: New width (pixels) of the video.
+   * - height: New height (pixels) of the video.
+   * - roation: New height (pixels) of the video.
+   */
+  on(
+    evt: 'videoSizeChanged',
+    cb: (uid: number, width: number, height: number, rotation: number) => void
+  ): this;
+  /** Occurs when the remote video state changes.
+   *  - uid: ID of the user whose video state changes.
+   *  - state: State of the remote video. 
+   * See {@link RemoteVideoState}.
+   *  - reason: The reason of the remote video state change. 
+   * See {@link RemoteVideoStateReason}
+   *  - elapsed: Time elapsed (ms) from the local user calling the 
+   * {@link joinChannel} method until the SDK triggers this callback.
+   */
+   on(
+    evt: 'remoteVideoStateChanged',
+    cb: (
+      uid: number,
+      state: RemoteVideoState,
+      reason: RemoteVideoStateReason,
+      elapsed: number
+    ) => void
+  ): this;
+  /** Occurs when the local user receives the data stream from the remote 
+   * user within five seconds.
+   *
+   * The SDK triggers this callback when the local user receives the stream 
+   * message that the remote user sends by calling the 
+   * {@link sendStreamMessage} method.
+   * - uid: User ID of the remote user sending the message.
+   * - streamId: Stream ID.
+   * - msg: Pointer to the data received bt the local user.
+   */
+   on(
+    evt: 'streamMessage',
+    cb: (uid: number, streamId: number, data: string) => void
+  ): this;
+  /** Occurs when the local user does not receive the data stream from the 
+   * remote user within five seconds.
+   * The SDK triggers this callback when the local user fails to receive the 
+   * stream message that the remote user sends by calling the 
+   * {@link sendStreamMessage} method.
+   * - uid: User ID of the remote user sending the message.
+   * - streamId: Stream ID.
+   * - err: Error code.
+   * - missed: Number of the lost messages.
+   * - cached: Number of incoming cached messages when the data stream is 
+   * interrupted.
+   */
+  on(
+    evt: 'streamMessageError',
+    cb: (
+      uid: number,
+      streamId: number,
+      code: number,
+      missed: number,
+      cached: number
+    ) => void
+  ): this;
+  /**
+   * Occurs when the state of the media stream relay changes.
+   * 
+   * The SDK reports the state of the current media relay and possible error 
+   * messages in this callback.
+   * - state: The state code. See {@link ChannelMediaRelayState}.
+   * - code: The error code. See {@link ChannelMediaRelayError}.
+   */
+   on(evt: 'channelMediaRelayState', cb: (
+    state: ChannelMediaRelayState,
+    code: ChannelMediaRelayError
+  ) => void): this;
+  /**
+   * Reports events during the media stream relay.
+   * 
+   * - event: The event code. See {@link ChannelMediaRelayEvent}.
+   */
+  on(evt: 'channelMediaRelayEvent', cb: (
+    event: ChannelMediaRelayEvent
+  ) => void): this;
+  /** Occurs when the engine receives the first audio frame from a specific 
+   * remote user.
+   * - uid: User ID of the remote user.
+   * - elapsed: Time elapsed (ms) from the local user calling 
+   * {@link joinChannel} until the
+   * SDK triggers this callback.
+   */
+   on(
+    evt: 'firstRemoteAudioFrame',
+    cb: (uid: number, elapsed: number) => void
+  ): this;
+  on(evt: string, listener: Function): this;
+  on(evt: 'rtmpStreamingStateChanged', cb: (url: string, state: number, code: number) => void): this;
+  /** Occurs when the publisher's transcoding is updated. */
+  on(evt: 'transcodingUpdated', cb: () => void): this;
+  /** Occurs when a voice or video stream URL address is added to a live 
+   * broadcast.
+   * - url: Pointer to the URL address of the externally injected stream.
+   * - uid: User ID.
+   * - status: State of the externally injected stream:
+   *  - 0: The external video stream imported successfully.
+   *  - 1: The external video stream already exists.
+   *  - 2: The external video stream to be imported is unauthorized.
+   *  - 3: Import external video stream timeout.
+   *  - 4: Import external video stream failed.
+   *  - 5: The external video stream stopped importing successfully.
+   *  - 6: No external video stream is found.
+   *  - 7: No external video stream is found.
+   *  - 8: Stop importing external video stream timeout.
+   *  - 9: Stop importing external video stream failed.
+   *  - 10: The external video stream is corrupted.
+   *
+   */
+   on(
+    evt: 'streamInjectedStatus',
+    cb: (url: string, uid: number, status: number) => void
+  ): this;
+  /** Occurs when the remote media stream falls back to audio-only stream due 
+   * to poor network conditions or switches back to the video stream after the 
+   * network conditions improve.
+   *
+   * If you call {@link setRemoteSubscribeFallbackOption} and set option as 
+   * AUDIO_ONLY(2), the SDK triggers this callback when
+   * the remotely subscribed media stream falls back to audio-only mode due to 
+   * poor uplink conditions, or when the remotely subscribed media stream 
+   * switches back to the video
+   *  after the uplink network condition improves.
+   * - uid: ID of the remote user sending the stream.
+   * - isFallbackOrRecover: Whether the remote media stream falls back to 
+   * audio-only or switches back to the video:
+   *  - true: The remote media stream falls back to audio-only due to poor 
+   * network conditions.
+   *  - false: The remote media stream switches back to the video stream after 
+   * the network conditions improved.
+   */
+  on(evt: 'remoteSubscribeFallbackToAudioOnly', cb: (
+    uid: number,
+    isFallbackOrRecover: boolean
+  ) => void): this;
+  // on(evt: 'refreshRecordingServiceStatus', cb: () => void): this;
+  /** Occurs when the connection state between the SDK and the server changes.
+   * - state: See {@link ConnectionState}.
+   * - reason: See {@link ConnectionState}.
+   */
+  on(evt: 'connectionStateChanged', cb: (
+    state: ConnectionState,
+    reason: ConnectionChangeReason
+  ) => void): this;
 }
 
 export default AgoraRtcEngine;
