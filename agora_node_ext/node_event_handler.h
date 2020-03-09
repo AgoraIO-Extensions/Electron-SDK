@@ -166,7 +166,7 @@ namespace agora {
             virtual void onAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted) override;
             virtual void onRemoteAudioTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)override;
             virtual void onRemoteVideoTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)override;
-            virtual void onRemoteAudioStats(const RemoteAudioStats & stats);
+            virtual void onRemoteAudioStats(const RemoteAudioStats & stats) override;
             virtual void onMicrophoneEnabled(bool enabled) override;
             virtual void onConnectionStateChanged(CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason) override;
 
