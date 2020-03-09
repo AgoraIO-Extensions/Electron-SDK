@@ -7,18 +7,25 @@ const doLeave = require('./utils/doLeave');
 const LiveStreaming = require('./utils/cdn');
 const MultiStream = require('./utils/multistream');
 const path = require('path')
-
+// const APPID = process.env.APPID
+const APPID = "***REMOVED***"
 let localRtcEngine = null;
+let localRtcChannel = null;
 let multistream = null;
 let streaming = null;
 let testChannel = null;
 let testUid = null;
 
+
+if(!APPID){
+  throw new Error('NO APPID FOUND')
+}
+
 describe('Basic API Coverage', () => {
   beforeAll(() => {
     localRtcEngine = new AgoraRtcEngine();
     localRtcEngine.setLogFile('/')
-    localRtcEngine.initialize('***REMOVED***');
+    localRtcEngine.initialize(APPID);
   });
   afterEach(() => {
     // Restore mocks after each test
@@ -114,7 +121,7 @@ describe('Basic API Coverage', () => {
 describe('cdn coverage', () => {
   beforeAll(() => {
     localRtcEngine = new AgoraRtcEngine();
-    localRtcEngine.initialize('***REMOVED***');
+    localRtcEngine.initialize(APPID);
   });
   beforeEach(() => {
     // Restore mocks after each test
@@ -144,7 +151,7 @@ describe('cdn coverage', () => {
 describe('Basic API Coverage 2', () => {
   beforeAll(() => {
     localRtcEngine = new AgoraRtcEngine();
-    localRtcEngine.initialize('***REMOVED***');
+    localRtcEngine.initialize(APPID);
   });
   afterEach(() => {
     // Restore mocks after each test
@@ -173,7 +180,7 @@ describe('Basic API Coverage 2', () => {
 describe('Basic API Coverage 3', () => {
   beforeEach(() => {
     localRtcEngine = new AgoraRtcEngine();
-    localRtcEngine.initialize('***REMOVED***');
+    localRtcEngine.initialize(APPID);
     localRtcEngine.setLogFile(path.resolve(__dirname, "../test.log"))
   });
   afterEach(() => {
@@ -183,10 +190,93 @@ describe('Basic API Coverage 3', () => {
   });
 });
 
+
+describe('Channel Coverage', () => {
+  beforeEach(() => {
+    localRtcEngine = new AgoraRtcEngine();
+    localRtcEngine.initialize(APPID);
+    localRtcEngine.setLogFile(path.resolve(__dirname, "../test.log"))
+
+    localRtcChannel = localRtcEngine.createChannel("test")
+  });
+  afterEach(() => {
+    // Restore mocks after each test
+    localRtcChannel.release()
+    jest.restoreAllMocks();
+    localRtcEngine.release()
+  });
+
+  it('get channel id', () => {
+    expect(localRtcChannel.channelId()).toBe("test");
+  });
+
+  it('get call id', () => {
+    expect(localRtcChannel.getCallId() !== null).toBeTruthy();
+  });
+
+  it('setClientRole', () => {
+    expect(localRtcChannel.setClientRole(1)).toBe(0);
+    expect(localRtcChannel.setClientRole(2)).toBe(0);
+  });
+
+
+  it('setRemoteUserPriority', () => {
+    expect(localRtcEngine.setRemoteUserPriority(1, 1)).toBeLessThan(0);
+    expect(localRtcEngine.setRemoteUserPriority(1, 50)).toBe(0);
+  });
+
+  it('renewToken', () => {
+    expect(localRtcEngine.renewToken("testtoken")).toBe(0);
+  });
+
+  it('setEncryptionSecret', () => {
+    expect(localRtcEngine.setEncryptionSecret("testtoken")).toBe(0);
+  });
+
+  it('setEncryptionMode', () => {
+    expect(localRtcEngine.setEncryptionMode("aes-256-xts")).toBe(0);
+  });
+
+  it('setRemoteVoicePosition', () => {
+    expect(localRtcEngine.setRemoteVoicePosition(12345, 1.0, 50)).toBe(0);
+    expect(localRtcEngine.setRemoteVoicePosition(12345, -1.0, 50)).toBe(0);
+  });
+
+  it('setDefaultMuteAllRemoteAudioStreams', () => {
+    expect(localRtcEngine.setDefaultMuteAllRemoteAudioStreams(true)).toBe(0);
+  });
+
+  it('muteAllRemoteAudioStreams', () => {
+    expect(localRtcEngine.muteAllRemoteAudioStreams(true)).toBe(0);
+  });
+
+  it('muteRemoteAudioStream', () => {
+    expect(localRtcEngine.muteRemoteAudioStream(12345, true)).toBe(0);
+  });
+
+  it('muteAllRemoteVideoStreams', () => {
+    expect(localRtcEngine.muteAllRemoteVideoStreams(true)).toBe(0);
+  });
+
+  it('muteRemoteVideoStream', () => {
+    expect(localRtcEngine.muteRemoteVideoStream(12345, true)).toBe(0);
+  });
+
+  it('setRemoteVideoStreamType', () => {
+    expect(localRtcEngine.setRemoteVideoStreamType(12345, 0)).toBe(0);
+    expect(localRtcEngine.setRemoteVideoStreamType(12345, 1)).toBe(0);
+  });
+
+  it('setRemoteDefaultVideoStreamType', () => {
+    expect(localRtcEngine.setRemoteDefaultVideoStreamType(0)).toBe(0);
+    expect(localRtcEngine.setRemoteDefaultVideoStreamType(1)).toBe(0);
+  });
+});
+
 describe.skip('Render coverage', () => {
   beforeAll(() => {
     localRtcEngine = new AgoraRtcEngine();
-    localRtcEngine.initialize('***REMOVED***');
+    localRtcEngine.initialize(APPID);
   });
   beforeEach(() => {
     // Restore mocks after each test
@@ -223,7 +313,7 @@ const isMac = process.platform === 'darwin';
 const MultiStreamTests = () => {
   beforeAll(() => {
     localRtcEngine = new AgoraRtcEngine();
-    localRtcEngine.initialize('***REMOVED***');
+    localRtcEngine.initialize(APPID);
     multistream = new MultiStream(localRtcEngine, 'basic-coverage');
   });
   afterAll(done => {
