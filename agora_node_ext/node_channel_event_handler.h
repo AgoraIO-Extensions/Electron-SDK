@@ -37,7 +37,6 @@ namespace agora {
 #define RTC_CHANNEL_EVENT_REMOTE_AUDIO_STATE_CHANGED "remoteAudioStateChanged"
 #define RTC_CHANNEL_EVENT_ACTIVE_SPEAKER "activeSpeaker"
 #define RTC_CHANNEL_EVENT_FIRST_REMOTE_VIDEO_FRAME "firstRemoteVideoFrame"
-#define RTC_CHANNEL_EVENT_USER_MUTE_AUDIO "userMuteAudio"
 #define RTC_CHANNEL_EVENT_FIRST_REMOTE_AUDIO_DECODED "firstRemoteAudioDecoded"
 #define RTC_CHANNEL_EVENT_VIDEO_SIZE_CHANGED "videoSizeChanged"
 #define RTC_CHANNEL_EVENT_REMOTE_VIDEO_STATE_CHANGED "remoteVideoStateChanged"
