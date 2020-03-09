@@ -527,14 +527,6 @@ namespace agora {
             MAKE_JS_CALL_4(RTC_EVENT_FIRST_REMOTE_VIDEO_FRAME, uid, uid, int32, width, int32, height, int32, elapsed);
         }
 
-        void NodeEventHandler::onFirstRemoteVideoFrame(uid_t uid, int width, int height, int elapsed)
-        {
-            FUNC_TRACE;
-            node_async_call::async_call([this, uid, width, height, elapsed] {
-                this->onFirstRemoteVideoFrame_node(uid, width, height, elapsed);
-            });
-        }
-
         void NodeEventHandler::onUserJoined_node(uid_t uid, int elapsed)
         {
             FUNC_TRACE;
@@ -914,14 +906,6 @@ namespace agora {
             MAKE_JS_CALL_2(RTC_EVENT_FIRST_REMOTE_AUDIO_FRAME, uid, uid, int32, elapsed);
         }
 
-        void NodeEventHandler::onFirstRemoteAudioFrame(uid_t uid, int elapsed)
-        {
-            FUNC_TRACE;
-            node_async_call::async_call([this, uid, elapsed] {
-                this->onFirstRemoteAudioFrame_node(uid, elapsed);
-            });
-        }
-
         void NodeEventHandler::onFirstRemoteAudioDecoded_node(uid_t uid, int elapsed)
         {
             FUNC_TRACE;
@@ -942,28 +926,10 @@ namespace agora {
             MAKE_JS_CALL_2(RTC_EVENT_STREAM_PUBLISHED, string, url, int32, error);
         }
 
-        void NodeEventHandler::onStreamPublished(const char *url, int error)
-        {
-            FUNC_TRACE;
-            std::string mUrl = std::string(url);
-            node_async_call::async_call([this, mUrl, error] {
-                this->onStreamPublished_node(mUrl.c_str(), error);
-            });
-        }
-
         void NodeEventHandler::onStreamUnpublished_node(const char *url)
         {
             FUNC_TRACE;
             MAKE_JS_CALL_1(RTC_EVENT_STREAM_UNPUBLISHED, string, url);
-        }
-
-        void NodeEventHandler::onStreamUnpublished(const char *url)
-        {
-            FUNC_TRACE;
-            std::string mUrl = std::string(url);
-            node_async_call::async_call([this, mUrl] {
-                this->onStreamUnpublished_node(mUrl.c_str());
-            });
         }
 
         void NodeEventHandler::onTranscodingUpdated_node()
