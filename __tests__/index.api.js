@@ -221,55 +221,61 @@ describe('Channel Coverage', () => {
 
 
   it('setRemoteUserPriority', () => {
-    expect(localRtcEngine.setRemoteUserPriority(1, 1)).toBeLessThan(0);
-    expect(localRtcEngine.setRemoteUserPriority(1, 50)).toBe(0);
+    expect(localRtcChannel.setRemoteUserPriority(1, 1)).toBe(0);
+    expect(localRtcChannel.setRemoteUserPriority(1, 50)).toBe(0);
   });
 
   it('renewToken', () => {
-    expect(localRtcEngine.renewToken("testtoken")).toBe(0);
+    expect(localRtcChannel.renewToken("testtoken")).toBe(0);
   });
 
   it('setEncryptionSecret', () => {
-    expect(localRtcEngine.setEncryptionSecret("testtoken")).toBe(0);
+    expect(localRtcChannel.setEncryptionSecret("testtoken")).toBe(0);
   });
 
   it('setEncryptionMode', () => {
-    expect(localRtcEngine.setEncryptionMode("aes-256-xts")).toBe(0);
+    expect(localRtcChannel.setEncryptionMode("aes-256-xts")).toBe(0);
   });
 
   it('setRemoteVoicePosition', () => {
-    expect(localRtcEngine.setRemoteVoicePosition(12345, 1.0, 50)).toBe(0);
-    expect(localRtcEngine.setRemoteVoicePosition(12345, -1.0, 50)).toBe(0);
+    expect(localRtcChannel.setRemoteVoicePosition(12345, 1.0, 50)).toBe(0);
+    expect(localRtcChannel.setRemoteVoicePosition(12345, -1.0, 50)).toBe(0);
   });
 
   it('setDefaultMuteAllRemoteAudioStreams', () => {
-    expect(localRtcEngine.setDefaultMuteAllRemoteAudioStreams(true)).toBe(0);
+    expect(localRtcChannel.setDefaultMuteAllRemoteAudioStreams(true)).toBe(0);
   });
 
   it('muteAllRemoteAudioStreams', () => {
-    expect(localRtcEngine.muteAllRemoteAudioStreams(true)).toBe(0);
+    expect(localRtcChannel.muteAllRemoteAudioStreams(true)).toBe(0);
   });
 
   it('muteRemoteAudioStream', () => {
-    expect(localRtcEngine.muteRemoteAudioStream(12345, true)).toBe(0);
+    expect(localRtcChannel.muteRemoteAudioStream(12345, true)).toBe(0);
   });
 
   it('muteAllRemoteVideoStreams', () => {
-    expect(localRtcEngine.muteAllRemoteVideoStreams(true)).toBe(0);
+    expect(localRtcChannel.muteAllRemoteVideoStreams(true)).toBe(0);
   });
 
   it('muteRemoteVideoStream', () => {
-    expect(localRtcEngine.muteRemoteVideoStream(12345, true)).toBe(0);
+    expect(localRtcChannel.muteRemoteVideoStream(12345, true)).toBe(0);
   });
 
   it('setRemoteVideoStreamType', () => {
-    expect(localRtcEngine.setRemoteVideoStreamType(12345, 0)).toBe(0);
-    expect(localRtcEngine.setRemoteVideoStreamType(12345, 1)).toBe(0);
+    expect(localRtcChannel.setRemoteVideoStreamType(12345, 0)).toBe(0);
+    expect(localRtcChannel.setRemoteVideoStreamType(12345, 1)).toBe(0);
   });
 
   it('setRemoteDefaultVideoStreamType', () => {
-    expect(localRtcEngine.setRemoteDefaultVideoStreamType(0)).toBe(0);
-    expect(localRtcEngine.setRemoteDefaultVideoStreamType(1)).toBe(0);
+    expect(localRtcChannel.setRemoteDefaultVideoStreamType(0)).toBe(0);
+    expect(localRtcChannel.setRemoteDefaultVideoStreamType(1)).toBe(0);
+  });
+
+  it('dataStream', () => {
+    let streamId = localRtcChannel.createDataStream(false, false)
+    expect(streamId).toBeGreaterThan(0);
+    expect(localRtcChannel.sendStreamMessage(streamId, "test")).toBe(0);
   });
 });
 
