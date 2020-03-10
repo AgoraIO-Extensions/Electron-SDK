@@ -759,47 +759,46 @@ namespace agora {
                 bool enabled;
                 status = napi_get_value_bool_(args[0], enabled);
                 CHECK_NAPI_STATUS(pEngine, status);
-
-                if(!args[1]->IsObject()) {
-                    status = napi_invalid_arg;
-                    CHECK_NAPI_STATUS(pEngine, status);
-                }
-                Local<Object> obj;
-                status = napi_get_value_object_(isolate, args[1], obj);
-                CHECK_NAPI_STATUS(pEngine, status);
-
                 BeautyOptions opts;
-                int contrast_value = 1;
-                status = napi_get_object_property_int32_(isolate, obj, "lighteningContrastLevel", contrast_value);
-                CHECK_NAPI_STATUS(pEngine, status);
 
-                switch(contrast_value) {
-                    case 0: 
-                        opts.lighteningContrastLevel = BeautyOptions::LIGHTENING_CONTRAST_LOW;
-                        break;
-                    case 1:
-                        opts.lighteningContrastLevel = BeautyOptions::LIGHTENING_CONTRAST_NORMAL;
-                        break;
-                    case 2:
-                        opts.lighteningContrastLevel = BeautyOptions::LIGHTENING_CONTRAST_HIGH;
-                        break;
-                    default:
-                        status = napi_invalid_arg;
-                        break;
+                if(args[1]->IsObject()) {
+                    Local<Object> obj;
+                    status = napi_get_value_object_(isolate, args[1], obj);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
+                    int contrast_value = 1;
+                    status = napi_get_object_property_int32_(isolate, obj, "lighteningContrastLevel", contrast_value);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
+                    switch(contrast_value) {
+                        case 0: 
+                            opts.lighteningContrastLevel = BeautyOptions::LIGHTENING_CONTRAST_LOW;
+                            break;
+                        case 1:
+                            opts.lighteningContrastLevel = BeautyOptions::LIGHTENING_CONTRAST_NORMAL;
+                            break;
+                        case 2:
+                            opts.lighteningContrastLevel = BeautyOptions::LIGHTENING_CONTRAST_HIGH;
+                            break;
+                        default:
+                            status = napi_invalid_arg;
+                            break;
+                    }
+                    CHECK_NAPI_STATUS(pEngine, status);
+
+                    double lightening, smoothness, redness;
+                    status = napi_get_object_property_double_(isolate, obj, "lighteningLevel", lightening);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    status = napi_get_object_property_double_(isolate, obj, "smoothnessLevel", smoothness);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    status = napi_get_object_property_double_(isolate, obj, "rednessLevel", redness);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    opts.lighteningLevel = lightening;
+                    opts.smoothnessLevel = smoothness;
+                    opts.rednessLevel = redness;
+
                 }
-                CHECK_NAPI_STATUS(pEngine, status);
-
-                double lightening, smoothness, redness;
-                status = napi_get_object_property_double_(isolate, obj, "lighteningLevel", lightening);
-                CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_object_property_double_(isolate, obj, "smoothnessLevel", smoothness);
-                CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_object_property_double_(isolate, obj, "rednessLevel", redness);
-                CHECK_NAPI_STATUS(pEngine, status);
-                opts.lighteningLevel = lightening;
-                opts.smoothnessLevel = smoothness;
-                opts.rednessLevel = redness;
-
+                
                 result = pEngine->m_engine->setBeautyEffectOptions(enabled, opts);
             } while (false);
             napi_set_int_result(args, result);
