@@ -4,6 +4,8 @@ const generateRandomNumber = require('./utils/index.js').generateRandomNumber;
 const generateRandomString = require('./utils/index.js').generateRandomString;
 const doJoin = require('./utils/doJoin');
 const doLeave = require('./utils/doLeave');
+const channelJoin = require('./utils/channelJoin')
+const channelLeave = require('./utils/channelLeave')
 const LiveStreaming = require('./utils/cdn');
 const MultiStream = require('./utils/multistream');
 const path = require('path')
@@ -83,6 +85,11 @@ describe('Basic API Coverage', () => {
     expect(localRtcEngine.setDefaultMuteAllRemoteVideoStreams(false)).toBe(0);
   });
 
+  it('Enable/Disable Audio', () => {
+    expect(localRtcEngine.disableAudio() == 0).toBeTruthy();
+    expect(localRtcEngine.enableAudio() == 0).toBeTruthy();
+  });
+
   it('Enable/Disable Video', () => {
     expect(localRtcEngine.disableVideo() == 0).toBeTruthy();
     expect(localRtcEngine.enableVideo() == 0).toBeTruthy();
@@ -105,12 +112,60 @@ describe('Basic API Coverage', () => {
     expect(localRtcEngine.setCameraCapturerConfiguration({preference: 1})).toBe(0);
   });
 
+  it('setEncryptionSecret', () => {
+    expect(localRtcEngine.setEncryptionSecret("testtoken")).toBe(0);
+  });
+
+  it('setEncryptionMode', () => {
+    expect(localRtcEngine.setEncryptionMode("aes-256-xts")).toBe(0);
+  });
+
+  it('muteLocalAudioStream', () => {
+    expect(localRtcEngine.muteLocalAudioStream(true)).toBe(0);
+    expect(localRtcEngine.muteLocalAudioStream(false)).toBe(0);
+  });
+
+  it('muteAllRemoteAudioStreams', () => {
+    expect(localRtcEngine.muteAllRemoteAudioStreams(true)).toBe(0);
+    expect(localRtcEngine.muteAllRemoteAudioStreams(false)).toBe(0);
+  });
+
+  it('setDefaultMuteAllRemoteAudioStreams', () => {
+    expect(localRtcEngine.setDefaultMuteAllRemoteAudioStreams(true)).toBe(0);
+    expect(localRtcEngine.setDefaultMuteAllRemoteAudioStreams(false)).toBe(0);
+  });
+
+  it('muteRemoteAudioStream', () => {
+    expect(localRtcEngine.muteRemoteAudioStream(12345, true)).toBe(0);
+    expect(localRtcEngine.muteRemoteAudioStream(12345, false)).toBe(0);
+  });
+
+  it('muteLocalVideoStream', () => {
+    expect(localRtcEngine.muteLocalVideoStream(true)).toBe(0);
+    expect(localRtcEngine.muteLocalVideoStream(false)).toBe(0);
+  });
+
   it('Join channel', async () => {
     localRtcEngine.setChannelProfile(1);
     localRtcEngine.setClientRole(1);
     testChannel = generateRandomString(10);
     testUid = generateRandomNumber(100000);
     await doJoin(localRtcEngine, testChannel, testUid);
+  });
+
+  it('setBeautyEffectOptions', () => {
+    let returnvalue = isMac ? -4 : 0
+    expect(
+      localRtcEngine.setBeautyEffectOptions(true, {
+        lighteningContrastLevel: 1,
+        lighteningLevel: 0.5,
+        smoothnessLevel: 0.5,
+        rednessLevel: 0.5
+      })
+    ).toBe(returnvalue);
+    expect(
+      localRtcEngine.setBeautyEffectOptions(false)
+    ).toBe(returnvalue);
   });
 
   it('leave channel', async () => {
@@ -276,6 +331,32 @@ describe('Channel Coverage', () => {
     let streamId = localRtcChannel.createDataStream(false, false)
     expect(streamId).toBeGreaterThan(0);
     expect(localRtcChannel.sendStreamMessage(streamId, "test")).toBe(0);
+  });
+});
+
+
+describe('Channel Coverage', () => {
+  beforeAll(() => {
+    localRtcEngine = new AgoraRtcEngine();
+    localRtcEngine.initialize(APPID);
+    localRtcEngine.setLogFile(path.resolve(__dirname, "../test.log"))
+
+    localRtcChannel = localRtcEngine.createChannel("test")
+  });
+  afterAll(() => {
+    // Restore mocks after each test
+    localRtcChannel.release()
+    jest.restoreAllMocks();
+    localRtcEngine.release()
+  });
+
+  it('Join channel', async () => {
+    localRtcChannel.setClientRole(1)
+    await channelJoin(localRtcChannel)
+  });
+
+  it('Leave channel', async () => {
+    await channelLeave(localRtcChannel)
   });
 });
 
