@@ -1,7 +1,7 @@
 This Agora Electron SDK is developed upon the Native SDK for macOS and the Native SDK for Windows, with the Node.js C++ plug-in units. The Electron SDK supports all the functions of the Agora Native SDK. Agora provides ensured quality of experience (QoE) for worldwide Internet-based voice and video communications through a virtual global network optimized on all platforms.
 
-* The AgoraRtcEngine calss provides the main methods that can be invoked by your application.
-* The Events class enables callbacks to your application.
+* The `AgoraRtcEngine` class provides the main methods that can be invoked by your application.
+* The `Events` class enables callbacks to your application.
 
 ## Methods
 
@@ -9,8 +9,8 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 
 | Method                                                       | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| {@link AgoraRtcEngine.initialize initialize}                 | Initializes an AgoraRtcEngine instance.                      |
-| {@link AgoraRtcEngine.release release}                       | Releases an AgoraRtcEngine instance.                         |
+| {@link AgoraRtcEngine.initialize initialize}                 | Initializes an `AgoraRtcEngine` instance.                      |
+| {@link AgoraRtcEngine.release release}                       | Releases an `AgoraRtcEngine` instance.                         |
 | {@link AgoraRtcEngine.setChannelProfile setChannelProfile}   | Sets the channel profile.                                    |
 | {@link AgoraRtcEngine.setClientRole setClientRole}           | Sets the user role (Live Broadcast only).                    |
 | {@link AgoraRtcEngine.joinChannel joinChannel}               | Allows a user to join a channel. |
@@ -20,17 +20,9 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.renewToken renewToken}                 | Renews the token.                                            |
 | {@link AgoraRtcEngine.enableWebSdkInteroperability enableWebSdkInteroperability} | Enables interoperability with the Agora Web SDK.             |
 | {@link AgoraRtcEngine.getConnectionState getConnectionState} | Gets the connection state of the app.                        |
-| {@link AgoraRtcEngine.on on}                                 | Monitors the events during AgoraRtcEngine runtime            |
-| {@link AgoraRtcEngine.off off}                               | Stops monitoring the events during AgoraRtcEngine runtime    |
+| {@link AgoraRtcEngine.on on}                                 | Monitors the events during `AgoraRtcEngine` runtime.           |
+| {@link AgoraRtcEngine.off off}                               | Stops monitoring the events during `AgoraRtcEngine` runtime.    |
 
-### User information management
-
-| Method                                                       | Description                                               |
-| ------------------------------------------------------------ | --------------------------------------------------------- |
-| {@link AgoraRtcEngine.registerLocalUserAccount registerLocalUserAccount} | Registers the local user account.                         |
-| {@link AgoraRtcEngine.joinChannelWithUserAccount joinChannelWithUserAccount} | Joins the channel with a user account.                    |
-| {@link AgoraRtcEngine.getUserInfoByUid getUserInfoByUid}     | Gets the user information by passing in the user ID.      |
-| {@link AgoraRtcEngine.getUserInfoByUserAccount getUserInfoByUserAccount} | Gets the user information by passing in the user account. |
 
 ### Audio management
 
@@ -43,7 +35,7 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.adjustPlaybackSignalVolume adjustPlaybackSignalVolume} | Adjusts the playback volume of the voice.                    |
 | {@link AgoraRtcEngine.enableLocalAudio enableLocalAudio}     | Enables/disables the local audio capture.                    |
 | {@link AgoraRtcEngine.muteLocalAudioStream muteLocalAudioStream} | Stops/Resumes sending the local audio stream.                |
-| {@link AgoraRtcEngine.muteRemoteAudioStream muteRemoteAudioStream} | Stops/Resumes receving a specified remote audio stream.      |
+| {@link AgoraRtcEngine.muteRemoteAudioStream muteRemoteAudioStream} | Stops/Resumes receiving a specified remote audio stream.      |
 | {@link AgoraRtcEngine.muteAllRemoteAudioStreams muteAllRemoteAudioStreams} | Stops/Resumes receiving all remote audio streams.            |
 | {@link AgoraRtcEngine.setDefaultMuteAllRemoteAudioStreams setDefaultMuteAllRemoteAudioStreams} | Sets whether to receive all remote audio streams by default. |
 
@@ -97,7 +89,7 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.startScreenCapturePreview startScreenCapturePreview} | Starts the sharing video preview. |
 | {@link AgoraRtcEngine.stopScreenCapturePreview stopScreenCapturePreview} | Stops the sharing video preview. |
 | {@link AgoraRtcEngine.videoSourceStartScreenCaptureByScreen videoSourceStartScreenCaptureByScreen} | Shares the whole or part of a screen by specifying the screen rect. |
-| {@link videosourceStartScreenCaptureByWindow videosourceStartScreenCaptureByWindow} | Shares the whole or part of a window by specifying the window ID. |
+| {@link AgoraRtcEngine.videoSourceStartScreenCaptureByWindow videoSourceStartScreenCaptureByWindow} | Shares the whole or part of a window by specifying the window ID. |
 | {@link AgoraRtcEngine.videoSourceUpdateScreenCaptureRegion videoSourceUpdateScreenCaptureRegion} | Updates the screen sharing region. |
 | {@link AgoraRtcEngine.videoSourceUpdateScreenCaptureParameters videoSourceUpdateScreenCaptureParameters} | Updates the screen sharing parameters. |
 | {@link AgoraRtcEngine.videoSourceSetScreenCaptureContentHint videoSourceSetScreenCaptureContentHint} | Sets the content hint for screen sharing. |
@@ -153,7 +145,9 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.enableSoundPositionIndication enableSoundPositionIndication} | Enables/Disables stereo panning for remote users.  |
 | {@link AgoraRtcEngine.setRemoteVoicePosition setRemoteVoicePosition} | Sets the sound position and gain of a remote user. |
 
-### CDN publisher (live Broadcast only)
+### CDN publisher 
+
+> This group of methods apply to Live Broadcast only.
 
 | Method                                                       | Description                                   |
 | ------------------------------------------------------------ | --------------------------------------------- |
@@ -163,11 +157,13 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 
 ### Channel Media Relay
 
-| Method                                                       | Description                                        |
-| ------------------------------------------------------------ | -------------------------------------------------- |
-| {@link AgoraRtcEngine.startChannelMediaRelay startChannelMediaRelay} | EStarts to relay media streams across channels. |
-| {@link AgoraRtcEngine.updateChannelMediaRelay updateChannelMediaRelay} | Updates the channels for media stream relay.|
-| {@link AgoraRtcEngine.stopChannelMediaRelay stopChannelMediaRelay} | Stops the media stream relay.|
+> This group of methods apply to Live Broadcast only.
+
+| Method                                                       | Description                                    |
+| ------------------------------------------------------------ | ---------------------------------------------- |
+| {@link AgoraRtcEngine.startChannelMediaRelay startChannelMediaRelay} | Starts to relay media streams across channels. |
+| {@link AgoraRtcEngine.updateChannelMediaRelay updateChannelMediaRelay} | Updates the channels for media stream relay.   |
+| {@link AgoraRtcEngine.stopChannelMediaRelay stopChannelMediaRelay} | Stops the media stream relay.                  |
 
 
 ### Audio volume indication
@@ -186,11 +182,13 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 
 | Method                                                       | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| {@link AgoraRtcEngine.enableDualStreamMode enableDualStreamMode} | Sets the stream mode to single- (default) or dual-stream mode. |
+| {@link AgoraRtcEngine.enableDualStreamMode enableDualStreamMode} | Sets the stream mode to single-stream (default) or dual-stream mode. |
 | {@link AgoraRtcEngine.setRemoteVideoStreamType setRemoteVideoStreamType} | Sets the remote user’s video stream type received by the local user when the remote user sends dual streams. |
 | {@link AgoraRtcEngine.setRemoteDefaultVideoStreamType setRemoteDefaultVideoStreamType} | Sets the default video-stream type for the video received by the local user when the remote user sends dual streams. |
 
 ### Stream fallback
+
+> This group of methods apply to Live Broadcast only.
 
 | Method                                                       | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -209,19 +207,6 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.startLastmileProbeTest startLastmileProbeTest} | Starts the last-mile network probe test.      |
 | {@link AgoraRtcEngine.stopLastmileProbeTest stopLastmileProbeTest} | Stops the last-mile network probe test.       |
 
-### External audio data (push-mode only)
-
-| Method                                                       | Description                           |
-| ------------------------------------------------------------ | ------------------------------------- |
-| {@link AgoraRtcEngine.setExternalAudioSource setExternalAudioSource} | Configures the external audio source. |
-
-### Raw audio data
-
-| Method                                                       | Description                      |
-| ------------------------------------------------------------ | -------------------------------- |
-| {@link AgoraRtcEngine.setRecordingAudioFrameParameters setRecordingAudioFrameParameters} | Sets the audio recording format. |
-| {@link AgoraRtcEngine.setPlaybackAudioFrameParameters setPlaybackAudioFrameParameters} | Sets the audio playback format.  |
-| {@link AgoraRtcEngine.setMixedAudioFrameParameters setMixeAudioFrameParameters} | Sets the mixed audio format.     |
 
 ### Encryption
 
@@ -231,6 +216,8 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.setEncryptionMode setEncryptionMode}|Sets the built-in encryption mode.|
 
 ### Inject an online media stream
+
+> This group of methods apply to Live Broadcast only.
 
 | Method                                                       | Description                                            |
 | ------------------------------------------------------------ | ------------------------------------------------------ |
@@ -325,351 +312,216 @@ Agora Electron SDK provides the methods for the second instance:
 | {@link AgoraRtcEngine.videoSourceSetLogFile videoSourceSetLogFile} | Specifies an SDK output log file.                            |
 | {@link AgoraRtcEngine.videoSourceSetParameters videoSourceSetParameters} | Provides the technical preview functionalities or special customizations by configuring the SDK with JSON options. |
 
+<a name = "on"></a>
 ## Events
 
 Agora Electron SDK use the  {@link AgoraRtcEngine.on on} method to add listeners for the events above: 
 
 | Event                            | Description                                                  |
 | -------------------------------- | ------------------------------------------------------------ |
-| warning                          | Occurs when a warning occurs.                                |
-| error                            | Occurs when an error occurs.                                 |
-| joinedChannel                    | Occurs when a user joins a channel.                          |
-| rejoinedChannel                  | Occurs when a user rejoins a channel.                        |
-| leaveChannel                     | Occurs when a user leaves a channel.                         |
-| clientRoleChanged                | Occurs when the user role in a Live Broadcast changes.       |
-| userJoined                       | Occurs when a remote user joins a channel.                   |
-| connectionStateChanged           | Occurs when the network connection state changes.            |
-| connectionLost                   | Occurs when the network connection state changes.            |
-| apiCallExecuted                  | Occurs when an API method is executed.                       |
-| tokenPrivilegeWillExpire         | Occurs when the token expires in 30 seconds.                 |
-| requestChannelKey                | Occurs when the Channel Key expires.                         |
-| localUserRegistered              | Occurs when the local user successfully registers a user account. |
-| userInfoUpdated                  | Occurs when the SDK gets the user ID and user account of the remote user. |
-| microphoneEnabled                | Occurs when the state of the microphone changes.             |
-| groupAudioVolumeIndication       | Occurs when the state of the microphone changes.             |
-| activeSpeaker                    | Reports which user is the loudest speaker.                   |
-| rtcStats                         | Reports the statistics of AgoraRtcEngine.                    |
-| localVideoStats                  | Reports the statistics of the uploading local video stream.  |
-| remoteVideoStats                 | Reports the statistics of the video stream from each remote user/host. |
-| localAudioStats| Reports the statistics of the local audio stream.|
-| remoteAudioStats                 | Reports the statistics of the audio stream from each remote user/host. |
-| remoteVideoTransportStats        | Reports the transport-layer statistics of each remote video stream. |
-| remoteAudioTransportStats        | Reports the transport-layer statistics of each remote audio stream. |
-| audioDeviceStateChanged          | Occurs when the audio device state changes.                  |
-| videoDeviceStateChanged          | Occurs when the video device state changes.                  |
-| audioMixingStateChanged          | Occurs when the state of the local user's audio mixing file changes. |
-| remoteAudioMixingBegin           | Occurs when a remote user starts audio mixing.               |
-| remoteAudioMixingEnd             | Occurs when a remote user finishes audio mixing.             |
-| audioEffectFinished              | Occurs when the audio effect file playback finishes.         |
-| networkQuality                   | Reports the network quality of each user.                    |
-| lastmileQuality                  | Reports the last-mile network quality of the local user before the user joins a channel. |
-| lastmileProbeResult              | Reports the last-mile network probe result.                  |
-| firstLocalAudioFrame             | Occurs when the first local audio frame is sent.             |
-| firstRemoteAudioFrame            | Occurs when the first remote audio frame is received.        |
-| firstRemoteAudioDecoded          | Occurs when the engine receives the first audio frame from a specified remote user.|
-| firstLocalVideoFrame             | Occurs when the first local video frame is sent.             |
-| firstRemoteVideoFrame            | Occurs when the first remote video frame is rendered.        |
-| videoSizeChanged                 | Occurs when the video size or rotation information of a specified remote user changes. |
-| addStream                        | Occurs when the SDK decodes the first remote audio frame for playback. |
-| removeStream                     | Occurs when the remote user leaves the channel.              |
-| userMuteAudio                    | Occurs when a remote user stops/resumes sending the audio stream. |
-| userMuteVideo                    | Occurs when a remote user stops/resumes sending the video stream. |
-| userEnableVideo                  | Occurs when a remote user enables/disables the video module. |
-| userEnableLocalVideo             | Occurs when a remote user enables/disables the local video capture. |
-| cameraReady                      | Occurs when the camera turns on and is ready to capture the video. |
-| videoStopped                     | Occurs when the video stops playing.                         |
-| streamMessage                    | Occurs when the local user receives a remote data stream within five seconds. |
-| streamMessageError               | Occurs when the local user fails to receive the remote data stream. |
-| audioDeviceVolumeChanged         | Occurs when the volume of the playback, microphone, or application changes. |
-|localAudioStateChanged|Occurs when the local audio state changes.|
-|remoteAudioStateChanged|Occurs when the remote audio state changes.|
-|localVideoStateChanged| Occurs when the local video state changes.|
-| remoteVideoStateChanged          | Occurs when the remote video stream state changes.           |
-| cameraFocusAreaChanged           | Occurs when the camera focus area changes.                   |
-| cameraExposureAreaChanged        | Occurs when the camera exposure area changes.                |
-| streamPublished                  | Adds a CDN stream address.                                   |
-| streamUnpublished                | Removes a CDN stream address.                                |
-| transcodingUpdated               | Occurs when the publisher's transcoding settings are updated. |
-| streamInjectStatus               | Reports the status of the injected online media stream.      |
-|channelMediaRelayState|Occurs when the state of the media stream relay changes.|
-|channelMediaRelayEvent| Reports events during the media stream relay.|
-| localPublishFallbackToAudioOnly  | Occurs:<br><li>When the published media stream falls back to an audio-only stream due to poor network conditions.</li><br><li>When the published media stream switches back to the video after the network conditions improve.</li> |
-| remoteSubscribeFallbackToAudioOnly | Occurs:<br/><li>When the remote media stream falls back to audio-only due to poor network conditions.</li><br><li>When the remote media stream switches back to the video after the network conditions improve.</li> |
-| videoSourceJoinedSuccess         | Occurs when a user joins a channel. (The second instance)    |
-| videoSourceRequestNewToken       | Occurs when the token expires. (The second instance)         |
-| videoSourceLeaveChannel          | Occurs when a user leaves a channel. (The second instance)   |
+| `warning`                          | Occurs when a warning occurs.                                |
+| `error`                            | Occurs when an error occurs.                                 |
+| `joinedChannel`                    | Occurs when a user joins a channel.                          |
+| `rejoinedChannel`                  | Occurs when a user rejoins a channel.                        |
+| `leaveChannel`                     | Occurs when a user leaves a channel.                         |
+| `clientRoleChanged`                | Occurs when the user role in a Live Broadcast changes.       |
+| `userJoined`                       | Occurs when a remote user joins a channel.                   |
+| `connectionStateChanged`           | Occurs when the network connection state changes.            |
+| `connectionLost`                   | Occurs when the network connection state changes.            |
+| `apiCallExecuted`                  | Occurs when an API method is executed.                       |
+| `tokenPrivilegeWillExpire`         | Occurs when the token expires in 30 seconds.                 |
+| `requestChannelKey`                | Occurs when the Channel Key expires.                         |
+| `localUserRegistered`              | Occurs when the local user successfully registers a user account. |
+| `userInfoUpdated`                  | Occurs when the SDK gets the user ID and user account of the remote user. |
+| `groupAudioVolumeIndication`       | Occurs when the state of the microphone changes.             |
+| `activeSpeaker`                    | Reports which user is the loudest speaker.                   |
+| `rtcStats`                         | Reports the statistics of AgoraRtcEngine.                    |
+| `localVideoStats`                  | Reports the statistics of the uploading local video stream.  |
+| `remoteVideoStats`                 | Reports the statistics of the video stream from each remote user/host. |
+| `localAudioStats`| Reports the statistics of the local audio stream.|
+| `remoteAudioStats`                 | Reports the statistics of the audio stream from each remote user/host. |
+| `audioDeviceStateChanged`          | Occurs when the audio device state changes.                  |
+| `videoDeviceStateChanged`          | Occurs when the video device state changes.                  |
+| `audioMixingStateChanged`          | Occurs when the state of the local user's audio mixing file changes. |
+| `remoteAudioMixingBegin`           | Occurs when a remote user starts audio mixing.               |
+| `remoteAudioMixingEnd`             | Occurs when a remote user finishes audio mixing.             |
+| `audioEffectFinished`              | Occurs when the audio effect file playback finishes.         |
+| `networkQuality`                   | Reports the network quality of each user.                    |
+| `lastmileQuality`                  | Reports the last-mile network quality of the local user before the user joins a channel. |
+| `lastmileProbeResult`              | Reports the last-mile network probe result.                  |
+| `firstLocalAudioFrame`             | Occurs when the first local audio frame is sent.             |
+| `firstRemoteAudioFrame`            | Occurs when the first remote audio frame is received.        |
+| `firstRemoteAudioDecoded`          | Occurs when the engine receives the first audio frame from a specified remote user.|
+| `firstLocalVideoFrame`             | Occurs when the first local video frame is rendered.             |
+| `firstRemoteVideoFrame`            | Occurs when the first remote video frame is rendered.        |
+| `videoSizeChanged`                 | Occurs when the video size or rotation information of a specified remote user changes. |
+| `removeStream`                     | Occurs when the remote user leaves the channel.              |
+| `userMuteAudio`                    | Occurs when a remote user stops/resumes sending the audio stream. |
+| `userMuteVideo`                    | Occurs when a remote user stops/resumes sending the video stream. |
+| `cameraReady`                      | Occurs when the camera turns on and is ready to capture the video. |
+| `videoStopped`                     | Occurs when the video stops playing.                         |
+| `streamMessage`                    | Occurs when the local user receives a remote data stream within five seconds. |
+| `streamMessageError`               | Occurs when the local user fails to receive the remote data stream. |
+| `audioDeviceVolumeChanged`         | Occurs when the volume of the playback, microphone, or application changes. |
+|`localAudioStateChanged`|Occurs when the local audio state changes.|
+|`remoteAudioStateChanged`|Occurs when the remote audio state changes.|
+|`localVideoStateChanged`| Occurs when the local video state changes.|
+| `remoteVideoStateChanged`          | Occurs when the remote video stream state changes.           |
+| `cameraFocusAreaChanged`           | Occurs when the camera focus area changes.                   |
+| `cameraExposureAreaChanged`        | Occurs when the camera exposure area changes.                |
+| `streamPublished`                  | Adds a CDN stream address.                                   |
+| `streamUnpublished`                | Removes a CDN stream address.                                |
+| `transcodingUpdated`               | Occurs when the publisher's transcoding settings are updated. |
+| `streamInjectStatus`               | Reports the status of the injected online media stream.      |
+|`channelMediaRelayState`|Occurs when the state of the media stream relay changes.|
+|`channelMediaRelayEvent`| Reports events during the media stream relay.|
+| `localPublishFallbackToAudioOnly`  | Occurs:<br><li>When the published media stream falls back to an audio-only stream due to poor network conditions.</li><br><li>When the published media stream switches back to the video after the network conditions improve.</li> |
+| `remoteSubscribeFallbackToAudioOnly` | Occurs:<br/><li>When the remote media stream falls back to audio-only due to poor network conditions.</li><br><li>When the remote media stream switches back to the video after the network conditions improve.</li> |
+| `videoSourceJoinedSuccess`         | Occurs when a user joins a channel. (The second instance)    |
+| `videoSourceRequestNewToken`       | Occurs when the token expires. (The second instance)         |
+| `videoSourceLeaveChannel`          | Occurs when a user leaves a channel. (The second instance)   |
+
+
+<a name = "warn"></a>
+
+## Warning Codes
+
+Warning codes occur when the SDK encounters an error that might be recovered automatically. These are only notifications, and can generally be ignored.
+
+| Warn Code | Description                       |
+| ------ | ------------------------------------------------------------ |
+| `8`      | The specified view is invalid.<br>Specify a view when using the video call function. |
+| `16`     | Failed to initialize the video function, possibly caused by a lack of resources.<br/>The users cannot see the video while the voice communication is not affected. |
+| `20`     | The request is pending, usually due to some module not being ready, and the SDK postponed processing the request. |
+| `103`    | No channel resources are available.<br>Maybe because the server cannot allocate any channel resource.  |
+| `104`    | A timeout occurs when looking up the channel.<br>When joining a channel, the SDK looks up the specified channel. This warning usually occurs when the network condition is too poor for the SDK to connect to the server.|
+| `105`    | **DEPRECATED** Please use `10` in `ConnectionChangeReason` instead. <br/>The server rejects the request to look up the channel. <br/>The server cannot process this request or the request is illegal. |
+| `106`    | A timeout occurs when opening the channel. <br/>Once the specific channel is found, the SDK opens the channel. This warning usually occurs when the network condition is too poor for the SDK to connect to the server. |
+| `107`    | The server rejects the request to open the channel. <br/>The server cannot process this request or the request is illegal. |
+| `111`    | A timeout occurs when switching to the live video.   |
+| `118`    | A timeout occurs when setting the client role in the live broadcast profile.     |
+| `119`    | The client role a the live broadcast profile is unauthorized.   |
+| `121`    | The ticket to open the channel is invalid.           |
+| `122`    | Try connecting to another server.                   |
+| `701`    | An error occurs in opening the audio mixing file.                    |
+| `1014`   | Audio Device Module: A warning occurs in the playback device.                   |
+| `1016`   | Audio Device Module: A warning occurs in the recording device.     |
+| `1019`   | Audio Device Module: No valid audio data is collected.                |
+| `1020`   | Audio Device Module: The playback device fails.                         |
+| `1021`   | Audio Device Module: The recording device fails.              |
+| `1025`   | The audio recording or playback is interrupted by system events. |
+| `1031`   | Audio Device Module: The recorded audio voice is too low.               |
+| `1032`   | Audio Device Module: The playback audio voice is too low.           |
+| `1040`   | Audio device module: An exception occurs with the audio drive. <br/>Solutions:<li>Disable or re-enable the audio device.</li><li>Re-enable your device.</li><li>Update the sound card drive.</li> |
+| `1051`   | Audio Device Module: Howling is detected.            |
+| `1052`   | Audio Device Module: The device is in the glitch state.                 |
+| `1053`   | Audio Device Module: The underlying audio settings have changed.      |
+| `1323`   | Audio device module: No available playback device. Solution: Plug in the audio device. |
+| `1324`   | Audio device module: The capture device is released improperly. <br>Solutions:<li>Disable or re-enable the audio device.</li><li>Re-enable your device.</li><li>Update the sound card drive.</li> |
+| `1610`   | Super-resolution warning: The original video dimensions of the remote user exceed 640 × 480. |
+| `1611`   | Super-resolution warning: Another user is using super resolution.               |
+| `1612`   | The device is not supported.                        |
 
 <a name = "error"></a>
 
-## Error codes and warning codes
+## Error Codes
 
-Reports an error code or a warning code during SDK runtime:
+Error codes occur when the SDK encounters an error that cannot be recovered automatically without any application intervention. For example, the SDK returns an error if it fails to turn on the camera, and reminds the user not to use the camera.
 
-* **Error Code**: In most cases, the SDK cannot fix the issue and resume running. The SDK requires the application to take action or informs the user about the issue.
-* **Warning Code**: In most cases, the application can ignore the warning reported by the SDK because the SDK can usually fix the issue and resume running.
-
-### Error codes
-
-<table>
-<colgroup>
-<col/>
-<col/>
-<col/>
-</colgroup>
-<tbody>
-<tr><td><strong>Error code</strong></td>
-<td><strong>Enumerator</strong></td>
-<td><strong>Description</strong></td>
-</tr>
-<tr><td>ERR_OK</td>
-<td>0</td>
-<td>No error occurs.</td>
-</tr>
-<tr><td>ERR_FAILED</td>
-<td>1</td>
-<td> A general error occurs (no specified reason).</td>
-</tr>
-<tr><td>ERR_INVALID_ARGUMENT</td>
-<td>2</td>
-<td>An invalid parameter is used. For example, the specific channel name includes illegal characters.</td>
-</tr>
-<tr><td>ERR_NOT_READY</td>
-<td>3</td>
-<td>The SDK module is not ready. </td>
-</tr>
-<tr><td>ERR_NOT_SUPPORTED</td>
-<td>4</td>
-<td> The SDK does not support this function.</td>
-</tr>
-<tr><td>ERR_REFUSED</td>
-<td>5</td>
-<td> The request is rejected. This is for internal SDK use only, and it does not return to the application through any method or callback.</td>
-</tr>
-<tr><td>ERR_BUFFER_TOO_SMALL</td>
-<td>6</td>
-<td>The buffer size is not big enough to store the returned data.</td>
-</tr>
-<tr><td>ERR_NOT_INITIALIZED</td>
-<td>7</td>
-<td>The SDK is not initialized before calling this method.</td>
-</tr>
-<tr><td>ERR_NO_PERMISSION</td>
-<td>9</td>
-<td>No permission exists. This is for internal SDK use only, and it does not return to the application through any method or callback.</td>
-</tr>
-<tr><td>ERR_TIMEDOUT</td>
-<td>10</td>
-<td>An API method timeout occurs. Some API methods require the SDK to return the execution result, and this error occurs if the request takes too long (more than 10 seconds) for the SDK to process.</td>
-</tr>
-<tr><td>ERR_CANCELED</td>
-<td>11</td>
-<td>The request is canceled. This is for internal SDK use only, and it does not return to the application through any method or callback.</td>
-</tr>
-<tr><td>ERR_TOO_OFTEN</td>
-<td>12</td>
-<td>The method is called too often. This is for internal SDK use only, and it does not return to the application through any method or callback.</td>
-</tr>
-<tr><td>ERR_BIND_SOCKET</td>
-<td>13</td>
-<td>The SDK fails to bind to the network socket. This is for internal SDK use only, and it does not return to the application through any method or callback.</td>
-</tr>
-<tr><td>ERR_NET_DOWN</td>
-<td>14</td>
-<td>The network is unavailable. This is for internal SDK use only, and it does not return to the application through any method or callback.</td>
-</tr>
-<tr><td>ERR_NET_NOBUFS</td>
-<td>15</td>
-<td>No network buffers are available. This is for internal SDK internal use only, and it does not return to the application through any method or callback.</td>
-</tr>
-<tr><td>ERR_JOIN_CHANNEL_REJECTED</td>
-<td>17</td>
-<td> The request to join the channel is rejected. This error usually occurs when the user is already in the channel, and still calls the method to join the channel.</td>
-</tr>
-<tr><td>ERR_LEAVE_CHANNEL_REJECTED</td>
-<td>18</td>
-<td>The request to leave the channel is rejected. This error usually occurs when the user has left the channel and still calls the method to leave the channel.</td>
-</tr>
-<tr><td>ERR_ALREADY_IN_USE</td>
-<td>19</td>
-<td>Resources are occupied and cannot be reused.</td>
-</tr>
-<tr><td>ERR_ABORTED</td>
-<td>20</td>
-<td>The SDK gives up the request due to too many requests.</td>
-</tr>
-<tr><td>ERR_INIT_NET_ENGINE</td>
-<td>21</td>
-<td>In Windows, specific firewall settings can cause the SDK to fail to initialize and crash.</td>
-</tr>
-<tr><td>ERR_INVALID_VENDOR_KEY</td>
-<td>101</td>
-<td>The specified App ID is invalid. </td>
-</tr>
-<tr><td>ERR_INVALID_CHANNEL_NAME</td>
-<td>102</td>
-<td>The specified channel name is invalid.</td>
-</tr>
-<tr><td>ERR_NOT_IN_CHANNEL</td>
-<td>113</td>
-<td>The user is not in the channel.</td>
-</tr>
-<tr><td>ERR_SIZE_TOO_LARGE</td>
-<td>114</td>
-<td>The size of the sent data is over 1024 bytes.</td>
-</tr>
-<tr><td>ERR_BITRATE_LIMIT</td>
-<td>115</td>
-<td>The bitrate of the sent data exceeds the limit of 6 Kbps.</td>
-</tr>
-<tr><td>ERR_SET_CLIENT_ROLE_NOT_AUTHORIZED</td>
-<td>119</td>
-<td>Switching roles fail.</td>
-</tr>
-<tr><td>ERR_LOAD_MEDIA_ENGINE</td>
-<td>1001</td>
-<td>Fails to load the media engine.</td>
-</tr>
-<tr><td>ERR_START_CALL</td>
-<td>1002</td>
-<td>Fails to start the call after enabling the media engine.</td>
-</tr>
-<tr><td>ERR_ADM_GENERAL_ERROR</td>
-<td>1005</td>
-<td>A general error occurs in the Audio Device Module (no specified reason).</td>
-</tr>
-<tr><td>ERR_ADM_JAVA_RESOURCE</td>
-<td>1006</td>
-<td> Audio Device Module: An error occurs in using the Java resources.</td>
-</tr>
-<tr><td>ERR_ADM_SAMPLE_RATE</td>
-<td>1007</td>
-<td>Audio Device Module: An error occurs in setting the sampling frequency.</td>
-</tr>
-<tr><td>ERR_ADM_INIT_PLAYOUT</td>
-<td>1008</td>
-<td>Audio Device Module: An error occurs in initializing the playback device.</td>
-</tr>
-<tr><td>ERR_ADM_START_PLAYOUT</td>
-<td>1009</td>
-<td>Audio Device Module: An error occurs in starting the playback device.</td>
-</tr>
-<tr><td>ERR_ADM_STOP_PLAYOUT</td>
-<td>1010</td>
-<td>Audio Device Module: An error occurs in stopping the playback device.</td>
-</tr>
-<tr><td>ERR_ADM_INIT_RECORDING</td>
-<td>1011</td>
-<td>Audio Device Module: An error occurs in initializing the recording device.</td>
-</tr>
-<tr><td>ERR_ADM_START_RECORDING</td>
-<td>1012</td>
-<td>Audio Device Module: An error occurs in starting the recording device.</td>
-</tr>
-<tr><td>ERR_ADM_STOP_RECORDING</td>
-<td>1013</td>
-<td>Audio Device Module: An error occurs in stopping the recording device.</td>
-</tr>
-<tr><td>ERR_ADM_RUNTIME_PLAYOUT_ERROR</td>
-<td>1015</td>
-<td>Audio Device Module: A playback error occurs.</td>
-</tr>
-<tr><td>ERR_ADM_RUNTIME_RECORDING_ERROR</td>
-<td>1017</td>
-<td>Audio Device Module: A recording error occurs.</td>
-</tr>
-<tr><td>ERR_ADM_RECORD_AUDIO_FAILED</td>
-<td>1018</td>
-<td>Audio Device Module: Fails to record.</td>
-</tr>
-<tr><td>ERR_ADM_INIT_LOOPBACK</td>
-<td>1022</td>
-<td>Audio Device Module: An error occurs in initializing the loopback device.</td>
-</tr>
-<tr><td>ERR_ADM_START_LOOPBACK</td>
-<td>1023</td>
-<td>Audio Device Module: An error occurs in starting the loopback device.</td>
-</tr>
-<tr><td>ERR_ADM_NO_PERMISSION</td>
-<td>1027</td>
-<td>Audio Device Module: No recording permission exists. </td>
-</tr>
-</tbody>
-</table>
-
-
-### Warning codes
-
-<table>
-<colgroup>
-<col/>
-<col/>
-<col/>
-</colgroup>
-<tbody>
-<tr><td><strong>Warning code</strong></td>
-<td><strong>Enumerator</strong></td>
-<td><strong>Description</strong></td>
-</tr>
-<tr><td>WARN_PENDING</td>
-<td>20</td>
-<td>The request is pending, usually due to some module not being ready, and the SDK postponed processing the request.</td>
-</tr>
-<tr><td>WARN_NO_AVAILABLE_CHANNEL</td>
-<td>103</td>
-<td>No channel resources are available. Maybe because the server cannot allocate any channel resource.</td>
-</tr>
-<tr><td>WARN_LOOKUP_CHANNEL_TIMEOUT</td>
-<td>104</td>
-<td>A timeout occurs when looking up the channel. When joining a channel, the SDK looks up the specified channel. This warning usually occurs when the network condition is too poor for the SDK to connect to the server.</td>
-</tr>
-<tr><td>WARN_LOOKUP_CHANNEL_REJECTED</td>
-<td>105</td>
-<td>The server rejects the request to look up the channel. The server cannot process this request or the request is illegal.</td>
-</tr>
-<tr><td>WARN_OPEN_CHANNEL_TIMEOUT</td>
-<td>106</td>
-<td> A timeout occurs when opening the channel. Once the specific channel is found, the SDK opens the channel. This warning usually occurs when the network condition is too poor for the SDK to connect to the server.</td>
-</tr>
-<tr><td>WARN_OPEN_CHANNEL_REJECTED</td>
-<td>107</td>
-<td>The server rejects the request to open the channel. The server cannot process this request or the request is illegal.</td>
-</tr>
-<tr><td>WARN_SET_CLIENT_ROLE_TIMEOUT</td>
-<td>118</td>
-<td>A timeout occurs when setting the client role in the live broadcast profile.</td>
-</tr>
-<tr><td>WARN_AUDIO_MIXING_OPEN_ERROR</td>
-<td>701</td>
-<td>An error occurs in opening the audio mixing file.</td>
-</tr>
-<tr><td>WARN_ADM_RUNTIME_PLAYOUT_WARNING</td>
-<td>1014</td>
-<td>Audio Device Module: a warning occurs in the playback device.</td>
-</tr>
-<tr><td>WARN_ADM_RUNTIME_RECORDING_WARNING</td>
-<td>1016</td>
-<td>Audio Device Module: a warning occurs in the recording device.</td>
-</tr>
-<tr><td>WARN_ADM_RECORD_AUDIO_SILENCE</td>
-<td>1019</td>
-<td>Audio Device Module: no valid audio data is collected.</td>
-</tr>
-<tr><td>WARN_ADM_PLAYOUT_MALFUNCTION</td>
-<td>1020</td>
-<td>Audio Device Module: the playback device fails.</td>
-</tr>
-<tr><td>WARN_ADM_RECORD_MALFUNCTION</td>
-<td>1021</td>
-<td>Audio Device Module: the recording device fails.</td>
-</tr>
-<tr><td>WARN_ADM_RECORD_MALFUNCTION</td>
-<td>1031</td>
-<td>Audio Device Module: the recorded audio voice is too low.</td>
-</tr>
-<tr><td>WARN_ADM_HOWLING</td>
-<td>1051</td>
-<td>Audio Device Module: howling is detected.</td>
-</tr>
-</tbody>
-</table>
-
+| Error Code | Description                          |
+| ------ | ------------------------------------------------------------ |
+| `0`      | No error occurs.                                                 |
+| `1`      | A general error occurs (no specified reason).                   |
+| `2`      | An invalid parameter is used. For example, the specific channel name includes illegal characters.        |
+| `3`      | The SDK module is not ready. <br/>Possible solutions:<li>Check the audio device.</li><li>Check the completeness of the application.</li><li>Re-initialize the RTC engine. </li> |
+| `4`      | The SDK does not support this function.       |
+| `5`      | The request is rejected. |
+| `6`      | The buffer size is not big enough to store the returned data.        |
+| `7`      | The SDK is not initialized before calling this method. |
+| `9`      | No permission exists. <br/>Check if the user has granted access to the audio or video device. |
+| `10`     |  An API method timeout occurs.<br/>Some API methods require the SDK to return the execution result, and this error occurs if the request takes too long (more than 10 seconds) for the SDK to process. |
+| `11`     | The request is canceled.<br/>This is for internal SDK use only, and it does not return to the application through any method or callback.|
+| `12`     | The method is called too often. <br/>This is for internal SDK use only, and it does not return to the application through any method or callback.|
+| `13`     | The SDK fails to bind to the network socket.<br/>This is for internal SDK use only, and it does not return to the application through any method or callback. |
+| `14`     | The network is unavailable.<br/>This is for internal SDK use only, and it does not return to the application through any method or callback. |
+| `15`     | No network buffers are available. <br/>This is for internal SDK internal use only, and it does not return to the application through any method or callback. |
+| `17`     |  The request to join the channel is rejected.This error usually occurs when the user is already in the channel, and still calls the `joinChannel` method to join the channel.|
+| `18`     | The request to leave the channel is rejected.This error usually occurs:<li>When the user has left the channel and still calls `leaveChannel` to leave the channel. In this case, stop calling `leaveChannel`.</li><li>When the user has not joined the channel and still calls `leaveChannel` to leave the channel. In this case, no extra operation is needed.</li> |
+| `19`     | Resources are occupied and cannot be reused.                           |
+| `20`     | The SDK gives up the request due to too many requests.          |
+| `21`     | In Windows, specific firewall settings can cause the SDK to fail to initialize and crash.     |
+| `22`     | The application uses too much of the system resources and the SDK fails to allocate the resources. |
+| `101`    | The specified App ID is invalid.<br/>Please try to rejoin the channel with a valid App ID. |
+| `102`    | The specified channel name is invalid. <br/>Please try to rejoin the channel with a valid channel name.  |
+| `109`    | **DEPRECATED** Please use `9` in `ConnectionChangeReason` instead.<br/>The token expired due to one of the following reasons:<br/><li>Authorized Timestamp expired: The timestamp is represented by the number of seconds elapsed since 1/1/1970. The user can use the Token to access the Agora service within five minutes after the Token is generated. If the user does not access the Agora service after five minutes, this Token is no longer valid.</li><li>Call Expiration Timestamp expired: The timestamp is the exact time when a user can no longer use the Agora service (for example, when a user is forced to leave an ongoing call). When a value is set for the Call Expiration Timestamp, it does not mean that the token will expire, but that the user will be banned from the channel.</li> |
+| `110`    | **DEPRECATED** Please use `8` in `ConnectionChangeReason` instead.<br/>The token is invalid due to one of the following reasons:<br/><li>The App Certificate for the project is enabled in Console, but the user is still using the App ID. Once the App Certificate is enabled, the user must use a token.</li><li>The uid is mandatory, and users must set the same uid as the one set in the `joinChannel` method. </li> |
+| `113`    | The user is not in the channel when calling the `sendStreamMessage` method. |
+| `114`    | The size of the sent data is over 1024 bytes when the user calls the `sendStreamMessage` method. |
+| `115`    | The bitrate of the sent data exceeds the limit of 6 Kbps when the user calls the `sendStreamMessage` method.|
+| `116`    | Too many data streams (over 5 streams) are created when the user calls the `createDataStream` method.|
+| `117`    | The data stream transmission timed out.                    |
+| `119`    | Switching roles fail.<br/>Please try to rejoin the channel.                  |
+| `120`    | Decryption fails. The user may have used a different encryption password to join the channel. <br/>Check your settings or try rejoining the channel. |
+| `123`    | The client is banned by the server.                       |
+| `124`    | Incorrect watermark file parameter.                      |
+| `125`    | Incorrect watermark file path.      |
+| `126`    | Incorrect watermark file format.         |
+| `127`    | Incorrect watermark file information.          |
+| `128`    | Incorrect watermark file data format.             |
+| `129`    | An error occurs in reading the watermark file.                    |
+| `130`    | Encryption is enabled when the user calls the `addPublishStreamUrl` method (CDN live streaming does not support encrypted streams). |
+| `134`    | The User Account is invalid.                       |
+| `151`    | CDN related errors.<br/>Remove the original URL address and add a new one by calling the `removePublishStreamUrl` and `addPublishStreamUrl` methods. |
+| `152`    | The host publishes more than 10 URLs. <br/>Delete the unnecessary URLs before adding new ones. |
+| `153`    | The host manipulates other hosts' URLs. <br/>Check your app logic.|
+| `154`    | An error occurs in Agora's streaming server. <br/> Call the `addPublishStreamUrl` method to publish the streaming again.|
+| `155`    | The server fails to find the stream.          |
+| `156`    | The format of the RTMP stream URL is not supported. <br/>Check whether the URL format is correct.  |
+| `1001`   | Fails to load the media engine.                                  |
+| `1002`   | Fails to start the call after enabling the media engine.  |
+| `1003`   | **DEPRECATED** Please use `error (4)` in `localVideoStateChanged` instead.<br/>Fails to start the camera. |
+| `1004`   | Fails to start the video rendering module.                        |
+| `1005`   | Audio Device Module: A general error occurs (no specified reason). <br/>Check if the audio device is used by another application, or try rejoining the channel.|
+| `1006`   | Audio Device Module: An error occurs in using the Java resources.                   |
+| `1007`   | Audio Device Module: An error occurs in setting the sampling frequency.       |
+| `1008`   | Audio Device Module: An error occurs in initializing the playback device. |
+| `1009`   | Audio Device Module: An error occurs in starting the playback device. |
+| `1010`   | Audio Device Module: An error occurs in stopping the playback device.       |
+| `1011`   | Audio Device Module: An error occurs in initializing the recording device.|
+| `1012`   |  Audio Device Module: An error occurs in starting the recording device. |
+| `1013`   | Audio Device Module: An error occurs in stopping the recording device. |
+| `1015`   |  Audio Device Module: A playback error occurs. <br>Check your playback device and try rejoining the channel.|
+| `1017`   | Audio Device Module: A recording error occurs. |
+| `1018`   |  Audio Device Module: The recording fails.    |
+| `1020`   | Audio Device Module: Abnormal audio playback frequency.      |
+| `1021`   | Audio Device Module: Abnormal audio recording frequency.  |
+| `1022`   | Audio Device Module: An error occurs in initializing the loopback device.    |
+| `1023`   | Audio Device Module: An error occurs in starting the loopback device. |
+| `1027`   | Audio Device Module: No recording permission exists. <br/>Check if the recording permission is granted. |
+| `1033`   | Audio device module: The device is occupied.   |
+| `1301`   | Audio device module: An audio driver abnomality or a compatibility issue occurs. <br/>Solutions: Disable and restart the audio device, or reboot the device. |
+| `1303`   | Audio device module: A recording driver abnomality or a compatibility issue occurs. <br/>Solutions: Disable and restart the audio device, or reboot the device.|
+| `1306`   | Audio device module: A playout driver abnomality or a compatibility issue occurs. <br/>Solutions: Disable and restart the audio device, or reboot the device.|
+| `1307`   | Audio device module: No audio device is available. <br/>Solutions: Plug in a proper audio device.  |
+| `1309`   | Audio device module: An audio driver abnomality or a compatibility issue occurs.<br/>Solutions: Disable and restart the audio device, or reboot the device.|
+| `1311`   | Audio device module: Insufficient system memory or poor device performance.<br/>Solutions: reboot the device or replace the device. |
+| `1314`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver.</li> |
+| `1319`   | Audio device module: Insufficient system memory or poor device performance. <br/>Solutions: reboot the device or replace the device. |
+| `1320`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Replace the device.</li>|
+| `1322`   |  Audio device module: No audio sampling device is available. <br/>Solutions: Plug in a proper recording device. |
+| `1323`   | Audio device module: No audio playout device is available. <br/>Solutions: Plug in a proper playback device.|
+| `1351`   | Audio device module: An audio driver abnormality or a compatibility issue occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver.</li> |
+| `1353`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver.</li>  |
+| `1354`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver. |
+| `1355`   |Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver. |
+| `1356`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver. |
+| `1357`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver. |
+| `1358`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver. |
+| `1359`   | Audio Device Module: No recording device exists. |
+| `1360`   | Audio Device Module: No playback device exists.    |
+| `1501`   | Video Device Module: The camera is unauthorized. |
+| `1502`   | **DEPRECATED** Please use `error (3)` in  `localVideoStateChanged` instead.<br/> Video Device Module: The camera is in use. |
+| `1600`   | Video Device Module: An unknown error occurs.              |
+| `1601`   | Video Device Module: An error occurs in initializing the video encoder. <br/>The error is a serious error, please try to rejoin the channel.|
+| `1602`   | Video Device Module: An error occurs in encoding.<br/>The error is a serious error, please try to rejoin the channel. |
+| `1603`   | Video Device Module: An error occurs in setting the video encoder.     |
