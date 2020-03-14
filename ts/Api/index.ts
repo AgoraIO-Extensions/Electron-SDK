@@ -2043,12 +2043,22 @@ class AgoraRtcEngine extends EventEmitter {
    * audio volume indicator. The value ranges between 0 and 10.
    * The greater the value, the more sensitive the indicator. The recommended 
    * value is 3.
+   * @param {boolean} report_vad 
+   * true: Enable the voice activity detection of the local user. Once it is 
+   * enabled, the vad parameter of the onAudioVolumeIndication callback reports 
+   * the voice activity status of the local user.
+   * false: (Default) Disable the voice activity detection of the local user. 
+   * Once it is enabled, the vad parameter of the onAudioVolumeIndication 
+   * callback does not report the voice activity status of the local 
+   * user, except for scenarios where the engine automatically detects 
+   * the voice activity of the local user.
+   * value is 3.
    * @return
    * - 0: Success.
    * - < 0: Failure.
    */
-  enableAudioVolumeIndication(interval: number, smooth: number): number {
-    return this.rtcEngine.enableAudioVolumeIndication(interval, smooth);
+  enableAudioVolumeIndication(interval: number, smooth: number, report_vad: boolean): number {
+    return this.rtcEngine.enableAudioVolumeIndication(interval, smooth, report_vad);
   }
 
   /**
