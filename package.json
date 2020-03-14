@@ -6,6 +6,7 @@
   "types": "types/AgoraSdk.d.ts",
   "author": "agora.io",
   "scripts": {
+    "switch:arch": "just switch:arch",
     "sync:lib": "just sync:lib",
     "install": "just install",
     "download": "just download",
