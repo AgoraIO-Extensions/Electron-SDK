@@ -42,16 +42,19 @@ task('sync:lib', () => {
 
 // npm run build:electron -- 
 task('build:electron', () => {
-  build({
-    electronVersion: argv().electron_version, 
-    runtime: argv().runtime, 
-    platform: argv().platform, 
-    packageVersion, 
-    debug: argv().debug, 
-    silent: argv().silent,
-    arch: argv().arch,
-    msvsVersion: argv().msvs_version,
-    distUrl: argv().dist_url
+
+  cleanup(path.join(__dirname, "./build")).then(_ => {
+    build({
+      electronVersion: argv().electron_version, 
+      runtime: argv().runtime, 
+      platform: argv().platform, 
+      packageVersion, 
+      debug: argv().debug, 
+      silent: argv().silent,
+      arch: argv().arch,
+      msvsVersion: argv().msvs_version,
+      distUrl: argv().dist_url
+    })
   })
 })
 // npm run build:node --
