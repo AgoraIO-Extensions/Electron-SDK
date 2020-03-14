@@ -2,7 +2,7 @@ const {logger} = require('just-task');
 const shell = require("shelljs");
 const path = require('path')
 
-const gyp_exec = path.resolve(__dirname, '../node_modules/node-gyp/bin/node-gyp.js')
+const gyp_exec = `node ${path.resolve(__dirname, '../node_modules/node-gyp/bin/node-gyp.js')}`
 
 module.exports = ({
   electronVersion='5.0.8',
