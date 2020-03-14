@@ -24,7 +24,7 @@
     "webpack": "4.41.5"
   },
   "resolutions": {
-    "webpack-sources": "1.0.1"
+    "webpack-sources": "1.4.3"
   },
   "electronWebpack": {
     "renderer": {
