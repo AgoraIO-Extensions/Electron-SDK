@@ -51,19 +51,19 @@ module.exports = ({
   
   shell.exec(`${gyp_exec} clean`, {silent}, (code, stdout, stderr) => {
     // handle error
+    logger.info(`clean done ${stdout}`)
     if (code !== 0) {
       logger.error(stderr);
       process.exit(1)
     }
-    logger.info(`clean done`)
 
     shell.exec(commandStr, {silent}, (code, stdout, stderr) => {
       // handle error
+      logger.info(`configure done ${stdout}`)
       if (code !== 0) {
         logger.error(stderr);
         process.exit(1)
       }
-      logger.info(`configure done`)
   
       if (debug) {
         // handle success
