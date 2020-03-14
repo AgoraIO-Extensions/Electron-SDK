@@ -9,18 +9,20 @@ module.exports = ({
   debug = false,
   silent = false,
   msvsVersion = '2015',
+  arch = 'ia32',
+  distUrl = 'https://electronjs.org/headers'
 }) => {
   /** get command string */
   const command = ['node-gyp configure'];
   
   // check platform
   if (platform === 'win32') {
-    command.push(`--arch=ia32 --msvs_version=${msvsVersion}`)
+    command.push(`--arch=${arch} --msvs_version=${msvsVersion}`)
   }
 
   // check runtime
   if (runtime === 'electron') {
-    command.push(`--target=${electronVersion} --dist-url=https://electronjs.org/headers`)
+    command.push(`--target=${electronVersion} --dist-url=${distUrl}`)
   }
 
   // check debug
