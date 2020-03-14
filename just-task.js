@@ -2,6 +2,7 @@ const { task, option, logger, argv, series, condition } = require('just-task');
 const path = require('path')
 const build = require('./scripts/build')
 const download = require('./scripts/download')
+const switcharch = require('./scripts/switch_arch')
 const synclib = require('./scripts/synclib')
 const cleanup = require('./scripts/cleanup')
 const {getArgvFromNpmEnv, getArgvFromPkgJson} = require('./scripts/npm_argv')
@@ -18,14 +19,23 @@ option('liburl_mac', {default: ''});
 
 const packageVersion = require('./package.json').version;
 
+task('switch:arch', () => {
+  return switcharch({
+    arch: argv().arch,
+    // platform: 'win32',
+  })
+})
+
 task('sync:lib', () => {
   const config = Object.assign({}, getArgvFromPkgJson(), getArgvFromNpmEnv() )
   return synclib({
     platform: argv().platform,
     // platform: 'win32',
+    arch: argv().arch,
     libUrl: {
       win: argv().liburl_win || config.libUrl.win,
-      mac: argv().liburl_mac || config.libUrl.mac
+      mac: argv().liburl_mac || config.libUrl.mac,
+      win64: argv().liburl_win64 || config.libUrl.win64
     }
   })
 })
@@ -39,6 +49,7 @@ task('build:electron', () => {
     packageVersion, 
     debug: argv().debug, 
     silent: argv().silent,
+    arch: argv().arch,
     msvsVersion: argv().msvs_version
   })
 })
@@ -59,10 +70,13 @@ task('download', () => {
   // work-around
   const addonVersion = '2.9.0-rc.102'
   cleanup(path.join(__dirname, "./build")).then(_ => {
-    download({
-      electronVersion: argv().electron_version, 
-      platform: argv().platform, 
-      packageVersion: addonVersion
+    cleanup(path.join(__dirname, './js')).then(_ => {
+      download({
+        electronVersion: argv().electron_version, 
+        platform: argv().platform, 
+        packageVersion: addonVersion,
+        arch: argv().arch
+      })
     })
   })
 })
@@ -75,7 +89,8 @@ task('install', () => {
     download({
       electronVersion: config.electronVersion, 
       platform: config.platform, 
-      packageVersion: addonVersion
+      packageVersion: addonVersion,
+      arch: config.arch
     })
   } else {
     build(Object.assign({}, config, {
