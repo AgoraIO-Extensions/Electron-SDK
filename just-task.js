@@ -50,7 +50,8 @@ task('build:electron', () => {
     debug: argv().debug, 
     silent: argv().silent,
     arch: argv().arch,
-    msvsVersion: argv().msvs_version
+    msvsVersion: argv().msvs_version,
+    distUrl: argv().dist_url
   })
 })
 // npm run build:node --
