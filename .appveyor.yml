@@ -21,6 +21,7 @@ install:
   # - curl -fLsS -o "libjpeg.exe" "https://downloads.sourceforge.net/project/libjpeg-turbo/1.5.2/libjpeg-turbo-1.5.2-vc64.exe"
   # - .\libjpeg.exe /S
   - npm install
+  - npm install node-gyp@6.0.1
 
 build_script:
   - npm run switch:arch -- --arch=%ARCH%
