@@ -55,6 +55,7 @@ module.exports = ({
       logger.error(stderr);
       process.exit(1)
     }
+    logger.info(`clean done`)
 
     shell.exec(commandStr, {silent}, (code, stdout, stderr) => {
       // handle error
@@ -62,6 +63,7 @@ module.exports = ({
         logger.error(stderr);
         process.exit(1)
       }
+      logger.info(`configure done`)
   
       if (debug) {
         // handle success
