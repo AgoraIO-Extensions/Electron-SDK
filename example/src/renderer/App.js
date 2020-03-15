@@ -421,6 +421,8 @@ export default class App extends Component {
     if (plugin) {
       if(this.state.bdEnabled) {
         plugin.disable();
+        clearInterval(this.byteTimer)
+        this.byteTimer = null
         this.setState({
           bdEnabled: false
         })
@@ -443,14 +445,23 @@ export default class App extends Component {
             }
           }))
           plugin.setParameter(JSON.stringify({
-            "plugin.bytedance.faceDetectModelPath": path.join(__static, "bytedance/resource/StickerResource.bundle/ttfacemodel/tt_face_v6.0.model")
+            "plugin.bytedance.faceDetectModelPath": path.join(__static, "bytedance/resource/StickerResource.bundle/ttfacemodel/tt_face_v6.0.model"),
+            "plugin.bytedance.faceDetectExtraModelPath": path.join(__static, "bytedance/resource/StickerResource.bundle/ttfacemodel/tt_face_extra_v9.0.model"),
+            "plugin.bytedance.faceAttributeModelPath": path.join(__static, "bytedance/resource/StickerResource.bundle/ttfaceattri/tt_face_attribute_v4.1.model"),
+            "plugin.bytedance.faceAttributeEnabled": true
           }))
           plugin.setParameter(JSON.stringify({
-            "plugin.bytedance.faceDetectExtraModelPath": path.join(__static, "bytedance/resource/StickerResource.bundle/ttfacemodel/tt_face_extra_v9.0.model")
+            "plugin.bytedance.handDetectEnabled": true,
+            "plugin.bytedance.handDetectModelPath": path.join(__static, "bytedance/resource/StickerResource.bundle/handmodel/tt_hand_det_v9.0.model"),
+            "plugin.bytedance.handBoxModelPath": path.join(__static, "bytedance/resource/StickerResource.bundle/handmodel/tt_hand_box_reg_v10.0.model"),
+            "plugin.bytedance.handGestureModelPath": path.join(__static, "bytedance/resource/StickerResource.bundle/handmodel/tt_hand_gesture_v8.1.model"),
+            "plugin.bytedance.handKPModelPath": path.join(__static, "bytedance/resource/StickerResource.bundle/handmodel/tt_hand_kp_v5.0.model"),
           }))
-          plugin.setParameter(JSON.stringify({
-            "plugin.bytedance.faceAttributeModelPath": path.join(__static, "bytedance/resource/StickerResource.bundle/ttfaceattri/tt_face_attribute_v4.1.model")
-          }))
+
+          this.byteTimer = setInterval(() => {
+            console.log(plugin.getParameter("plugin.bytedance.face.attribute"))
+            console.log(plugin.getParameter("plugin.bytedance.hand.info"))
+          }, 1000)
         } else {
           plugin.setParameter(JSON.stringify({
             "plugin.bytedance.licensePath": path.join(__static, "bytedance/resource/license.bag")
