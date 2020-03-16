@@ -1159,7 +1159,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Sets the view content mode.
    * @param {number | 'local' | 'videosource'} uid The user ID for operating 
-   * streams.
+   * streams. When setting up the view content of the remote user's stream, 
+   * make sure you have subscribed to that stream by calling the 
+   * {@link subscribe} method.
    * @param {0|1} mode The view content mode:
    * - 0: Cropped mode. Uniformly scale the video until it fills the visible 
    * boundaries (cropped). One dimension of the video may have clipped 
@@ -3112,7 +3114,10 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {string} info Pointer to additional information about the channel. 
    * This parameter can be set to NULL or contain channel related information.
    * Other users in the channel will not receive this message.
-   * @param {number} uid The User ID.
+   * @param {number} uid The User ID. The same user ID cannot appear in a 
+   * channel. Ensure that the user ID of the `videoSource` here is different 
+   * from the `uid` used by the user when calling the {@link joinChannel} 
+   * method.
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -3211,6 +3216,9 @@ class AgoraRtcEngine extends EventEmitter {
    * This method gets the ID of the whole display and relevant inforamtion.
    * You can share the whole or part of a display by specifying the window ID.
    * @return {Array} The array list of the display ID and relevant information.
+   * The display ID returned is different on Windows and macOS systems. 
+   * You don't need to pay attention to the specific content of the returned 
+   * object, just use it for screen sharing.
    */
   getScreenDisplaysInfo(): Array<Object> {
     return this.rtcEngine.getScreenDisplaysInfo();
@@ -3250,7 +3258,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Stop the video source.
+   * Stops the screen sharing when using the video source.
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -3260,7 +3268,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Starts the video source preview.
+   * Starts the local video preview when using the video source.
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -3270,7 +3278,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Stops the video source preview.
+   * Stops the local video preview when using the video source.
    * @return
    * - 0: Success.
    * - < 0: Failure.
