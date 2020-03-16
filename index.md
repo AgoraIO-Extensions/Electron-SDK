@@ -82,18 +82,13 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 
 | Method                                                   | Description         |
 | ------------------------------------------------------------ | --------------------- |
-| {@link AgoraRtcEngine.videoSourceInitialize videoSourceInitialize} | Initializes the video source object. |
-| {@link AgoraRtcEngine.videoSourceRelease videoSourceRelease} | Releases the video source object. |
 | {@link AgoraRtcEngine.getScreenDisplaysInfo getScreenDisplaysInfo} | Gets the display ID. |
 | {@link AgoraRtcEngine.getScreenWindowsInfo getScreenWindowsInfo} | Gets the window ID. |
-| {@link AgoraRtcEngine.startScreenCapturePreview startScreenCapturePreview} | Starts the sharing video preview. |
-| {@link AgoraRtcEngine.stopScreenCapturePreview stopScreenCapturePreview} | Stops the sharing video preview. |
-| {@link AgoraRtcEngine.videoSourceStartScreenCaptureByScreen videoSourceStartScreenCaptureByScreen} | Shares the whole or part of a screen by specifying the screen rect. |
-| {@link AgoraRtcEngine.videoSourceStartScreenCaptureByWindow videoSourceStartScreenCaptureByWindow} | Shares the whole or part of a window by specifying the window ID. |
-| {@link AgoraRtcEngine.videoSourceUpdateScreenCaptureRegion videoSourceUpdateScreenCaptureRegion} | Updates the screen sharing region. |
-| {@link AgoraRtcEngine.videoSourceUpdateScreenCaptureParameters videoSourceUpdateScreenCaptureParameters} | Updates the screen sharing parameters. |
-| {@link AgoraRtcEngine.videoSourceSetScreenCaptureContentHint videoSourceSetScreenCaptureContentHint} | Sets the content hint for screen sharing. |
-| {@link AgoraRtcEngine.stopScreenCapture2 stopScreenCapture2} | Stops screen sharing. |
+| {@link AgoraRtcEngine.startScreenCapture startScreenCapture} | Shares the whole or part of a window by specifying the window ID. |
+| {@link AgoraRtcEngine.stopScreenCapture stopScreenCapture} | Stops screen sharing. |
+| {@link AgoraRtcEngine.updateScreenCaptureRegion updateScreenCaptureRegion} | Updates the screen sharing region. |
+
+
 
 ### Audio file playback and mixing
 
@@ -297,20 +292,31 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 
 ### Methods for the second instance
 
-Agora Electron SDK provides the methods for the second instance: 
+Agora Electron SDK provides the methods for the second instance `videoSource` to screen sharing.
 
-| Method                                                       | Description                                                  |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| {@link AgoraRtcEngine.videoSourceSetChannelProfile videoSourceSetChannelProfile} | Sets the channel profile.                                    |
-| {@link AgoraRtcEngine.videoSourceJoin videoSourceJoin}       | Allows a user to join a channel.                             |
-| {@link AgoraRtcEngine.videoSourceLeave videoSourceLeave}     | Allows a user to leave a channel.                            |
-| {@link AgoraRtcEngine.videoSourceRenewToken videoSourceRenewToken} | Renews the Token.                                            |
-| {@link AgoraRtcEngine.videoSourceEnableWebSdkInteroperability videoSourceEnableWebSdkInteroperability} | Enables interoperability with the Agora Web SDK.             |
-| {@link AgoraRtcEngine.setupLocalVideoSource setupLocalVideoSource} | Sets the local video view.                                   |
-| {@link AgoraRtcEngine.videoSourceSetVideoProfile videoSourceSetVideoProfile} | Sets the video encoder configuration.                        |
-| {@link AgoraRtcEngine.videoSourceEnableDualStreamMode videoSourceEnableDualStreamMode} | Sets the stream mode to single- (default) or dual-stream mode (for live broadcast only). |
-| {@link AgoraRtcEngine.videoSourceSetLogFile videoSourceSetLogFile} | Specifies an SDK output log file.                            |
-| {@link AgoraRtcEngine.videoSourceSetParameters videoSourceSetParameters} | Provides the technical preview functionalities or special customizations by configuring the SDK with JSON options. |
+| Method                                                       | Description                          |
+| ------------------------------------------------------------ | ------------------------------------ |
+| {@link AgoraRtcEngine.videoSourceInitialize videoSourceInitialize} | Initializes the `videoSource` object. |
+| {@link AgoraRtcEngine.videoSourceRelease videoSourceRelease} | Releases the `videoSource` object.   |
+| {@link AgoraRtcEngine.videoSourceSetLogFile videoSourceSetLogFile} | Specifies an SDK output log file when using the video source. |
+| {@link AgoraRtcEngine.setupLocalVideoSource setupLocalVideoSource} | Sets the local video view of `videoSource`         |
+| {@link AgoraRtcEngine.videoSourceJoin videoSourceJoin}       | Allows `videoSource` to join a channel.     |
+| {@link AgoraRtcEngine.videoSourceLeave videoSourceLeave}     | Allows `videoSource` to leave a channel.    |
+| {@link AgoraRtcEngine.videoSourceRenewToken videoSourceRenewToken} | Renews the Token when using the video source.                 |
+| {@link AgoraRtcEngine.videoSourceEnableWebSdkInteroperability videoSourceEnableWebSdkInteroperability} | Enables interoperability with the Agora Web SDK when using the video source.  |
+| {@link AgoraRtcEngine.getScreenDisplaysInfo getScreenDisplaysInfo} |   Gets the display ID.      |
+| {@link AgoraRtcEngine.getScreenWindowsInfo getScreenWindowsInfo}       |     Gets the window ID.      |
+| {@link AgoraRtcEngine.videoSourceStartScreenCaptureByScreen videoSourceStartScreenCaptureByScreen}     |  Shares the whole or part of a screen by specifying the screen rect when using the video source.   |
+| {@link AgoraRtcEngine.videoSourceStartScreenCaptureByWindow videoSourceStartScreenCaptureByWindow} |   Shares the whole or part of a window by specifying the window ID when using the video source.   |
+| {@link AgoraRtcEngine.videoSourceSetVideoProfile videoSourceSetVideoProfile} | Sets the video profile when using the video source.  |
+| {@link AgoraRtcEngine.stopScreenCapture2 stopScreenCapture2} | Stops the screen sharing when using the video source.|
+| {@link AgoraRtcEngine.startScreenCapturePreview startScreenCapturePreview} |    Starts the local video preview when using the video source.   |
+| {@link AgoraRtcEngine.stopScreenCapturePreview stopScreenCapturePreview} |  Stops the local video preview when using the video source.   |
+| {@link AgoraRtcEngine.videoSourceUpdateScreenCaptureRegion videoSourceUpdateScreenCaptureRegion} | Updates the screen sharing region when using the video source.|
+| {@link AgoraRtcEngine.videoSourceUpdateScreenCaptureParameters videoSourceUpdateScreenCaptureParameters} |  Updates the screen sharing parameters when using the video source.     |
+| {@link AgoraRtcEngine.videoSourceSetScreenCaptureContentHint videoSourceSetScreenCaptureContentHint} | Sets the content hint when using the video source.        |
+| {@link AgoraRtcEngine.videoSourceEnableDualStreamMode videoSourceEnableDualStreamMode}     |  Enables the dual stream mode when using the video source.    |
+| {@link AgoraRtcEngine.videoSourceSetParameters videoSourceSetParameters} |     Provides the technical preview functionalities or special customizations by configuring the SDK with JSON options when using the video source.      |
 
 <a name = "on"></a>
 ## Events
