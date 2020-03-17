@@ -145,6 +145,17 @@ describe('Basic API Coverage', () => {
     expect(localRtcEngine.muteLocalVideoStream(false)).toBe(0);
   });
 
+  it('enableLocalAudio', () => {
+    expect(localRtcEngine.enableLocalAudio(false)).toBe(0);
+    expect(localRtcEngine.enableLocalAudio(true)).toBe(0);
+  });
+
+  it('muteAllRemoteVideoStreams', () => {
+    expect(localRtcEngine.muteAllRemoteVideoStreams(false)).toBe(0);
+    expect(localRtcEngine.muteAllRemoteVideoStreams(true)).toBe(0);
+  });
+
+
   it('Join channel', async () => {
     localRtcEngine.setChannelProfile(1);
     localRtcEngine.setClientRole(1);
@@ -166,6 +177,12 @@ describe('Basic API Coverage', () => {
     expect(
       localRtcEngine.setBeautyEffectOptions(false)
     ).toBe(returnvalue);
+  });
+
+  it('enableAudioVolumeIndication', () => {
+    expect(
+      localRtcEngine.enableAudioVolumeIndication(1000, 3, false)
+    )
   });
 
   it('leave channel', async () => {
