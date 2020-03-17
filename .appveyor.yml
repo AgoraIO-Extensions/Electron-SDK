@@ -1,23 +1,28 @@
+environment:
+  matrix:
+    - ARCH: ia32
+    - ARCH: x64
+
 os: Visual Studio 2015
 
 platform:
-  - x86
+  - x64
 
 cache:
-  - node_modules
   - '%APPDATA%\npm-cache'
 
 install:
-  - ps: Install-Product node 10.17.0 x86
+  - ps: Install-Product node 8 x64
   # Put GTK in C:/
   # - curl -fLsS -o "gtk.zip" "http://ftp.gnome.org/pub/GNOME/binaries/win64/gtk+/2.22/gtk+-bundle_2.22.1-20101229_win64.zip"
   # - 7z x gtk.zip -oGTK > nul
   # - mv GTK/ C:/
   # - curl -fLsS -o "libjpeg.exe" "https://downloads.sourceforge.net/project/libjpeg-turbo/1.5.2/libjpeg-turbo-1.5.2-vc64.exe"
   # - .\libjpeg.exe /S
-  - npm install --verbose
+  - npm install
 
 build_script:
-  - npm run sync:lib
-  - npm run build:electron
+  - npm run switch:arch -- --arch=%ARCH%
+  - npm run sync:lib -- --arch=%ARCH%
+  - npm run build:electron -- --arch=%ARCH%
   - npm run build:ts
