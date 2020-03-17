@@ -112,7 +112,6 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setExternalAudioSink)
                 PROPERTY_METHOD_DEFINE(setLocalPublishFallbackOption)
                 PROPERTY_METHOD_DEFINE(setRemoteSubscribeFallbackOption)
-                PROPERTY_METHOD_DEFINE(setInEarMonitoringVolume)
                 PROPERTY_METHOD_DEFINE(setAudioProfile)
                 PROPERTY_METHOD_DEFINE(pauseAudio)
                 PROPERTY_METHOD_DEFINE(resumeAudio)
@@ -271,6 +270,11 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(updateScreenCaptureParameters);
                 PROPERTY_METHOD_DEFINE(setScreenCaptureContentHint);
 
+
+                /**
+                 * 3.0.0 Apis
+                 */
+                PROPERTY_METHOD_DEFINE(adjustUserPlaybackSignalVolume);
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -369,6 +373,8 @@ namespace agora {
 
         NAPI_API_DEFINE_WRAPPER_PARAM_0(disableAudio);
 
+        NAPI_API_DEFINE_WRAPPER_PARAM_2(adjustUserPlaybackSignalVolume, uid_t, int32);
+
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(stopAudioRecording);
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(stopAudioMixing);
@@ -431,8 +437,6 @@ namespace agora {
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_3(setExternalAudioSink, bool, int32, int32);
 
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setInEarMonitoringVolume, int32);
-
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setLogFile, nodestring);
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setLogFilter, uint32);
@@ -468,22 +472,7 @@ namespace agora {
             LOG_LEAVE;
         }
 
-        NAPI_API_DEFINE(NodeRtcEngine, removePublishStreamUrl)
-        {
-            LOG_ENTER;
-            int result = -1;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                nodestring url;
-                napi_status status = napi_get_value_nodestring_(args[0], url);
-                CHECK_NAPI_STATUS(pEngine, status);
-                result = pEngine->m_engine->removePublishStreamUrl(url);
-            } while (false);
-            napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
+        NAPI_API_DEFINE_WRAPPER_PARAM_1(removePublishStreamUrl, nodestring);
         NAPI_API_DEFINE(NodeRtcEngine, addVideoWatermark)
         {
             LOG_ENTER;
@@ -501,47 +490,37 @@ namespace agora {
                 nodestring url;
                 status = napi_get_value_nodestring_(args[0], url);
                 CHECK_NAPI_STATUS(pEngine, status);
-                RtcImage vwm;
 
-                Local<Object> vmwObj;
-                status = napi_get_value_object_(isolate, args[1], vmwObj);
-                CHECK_NAPI_STATUS(pEngine, status);
+                agora::rtc::WatermarkOptions watermarkOptions;
+                Local<Object> options;
+                BEGIN_OBJECT_DEFINE(options, args[1]);
                 
-                status = napi_get_object_property_nodestring_(isolate, vmwObj, "url", url);
-                CHECK_NAPI_STATUS(pEngine, status);
-                vwm.url = url;
+                GET_OBJECT_PROPERTY(options, bool, "visibleInPreview", watermarkOptions.visibleInPreview);
 
-                status = napi_get_object_property_int32_(isolate, vmwObj, "x", vwm.x);
-                CHECK_NAPI_STATUS(pEngine, status);
+                Local<Object> landscapemode;
+                agora::rtc::Rectangle positionInLandscapeMode;
+                BEGIN_SUB_OBJECT_DEFINE(landscapemode, options, "positionInLandscapeMode");
+                GET_OBJECT_PROPERTY(landscapemode, int32, "x", positionInLandscapeMode.x);
+                GET_OBJECT_PROPERTY(landscapemode, int32, "y", positionInLandscapeMode.y);
+                GET_OBJECT_PROPERTY(landscapemode, int32, "width", positionInLandscapeMode.width);
+                GET_OBJECT_PROPERTY(landscapemode, int32, "height", positionInLandscapeMode.height);
+                watermarkOptions.positionInLandscapeMode = positionInLandscapeMode;
 
-                status = napi_get_object_property_int32_(isolate, vmwObj, "y", vwm.y);
-                CHECK_NAPI_STATUS(pEngine, status);
+                Local<Object> portraitmode;
+                agora::rtc::Rectangle positionInPortraitMode;
+                BEGIN_SUB_OBJECT_DEFINE(portraitmode, options, "positionInPortraitMode");
+                GET_OBJECT_PROPERTY(portraitmode, int32, "x", positionInLandscapeMode.x);
+                GET_OBJECT_PROPERTY(portraitmode, int32, "y", positionInLandscapeMode.y);
+                GET_OBJECT_PROPERTY(portraitmode, int32, "width", positionInLandscapeMode.width);
+                GET_OBJECT_PROPERTY(portraitmode, int32, "height", positionInLandscapeMode.height);
+                watermarkOptions.positionInPortraitMode = positionInPortraitMode;
 
-                status = napi_get_object_property_int32_(isolate, vmwObj, "width", vwm.width);
-                CHECK_NAPI_STATUS(pEngine, status);
-
-                status = napi_get_object_property_int32_(isolate, vmwObj, "height", vwm.height);
-                CHECK_NAPI_STATUS(pEngine, status);
-
-                result = pEngine->m_engine->addVideoWatermark(vwm);
+                result = pEngine->m_engine->addVideoWatermark(url, watermarkOptions);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
         }
-
-        NAPI_API_DEFINE(NodeRtcEngine, clearVideoWatermarks)
-        {
-            LOG_ENTER;
-            int result = -1;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                result = pEngine->m_engine->clearVideoWatermarks();
-            } while (false);
-            napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
+        NAPI_API_DEFINE_WRAPPER_PARAM_0(clearVideoWatermarks);
 
         NAPI_API_DEFINE(NodeRtcEngine, setLiveTranscoding)
         {
@@ -728,23 +707,7 @@ namespace agora {
             LOG_LEAVE;
         }
 
-        NAPI_API_DEFINE(NodeRtcEngine, removeInjectStreamUrl)
-        {
-            LOG_ENTER;
-            int result = -1;
-            napi_status status = napi_ok;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                nodestring url;
-                status = napi_get_value_nodestring_(args[0], url);
-                CHECK_NAPI_STATUS(pEngine, status);
-                result = pEngine->m_engine->removeInjectStreamUrl(url);
-            } while (false);
-            napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
+        NAPI_API_DEFINE_WRAPPER_PARAM_1(removeInjectStreamUrl, nodestring);
 
         NAPI_API_DEFINE(NodeRtcEngine, setBeautyEffectOptions)
         {
@@ -2652,6 +2615,8 @@ namespace agora {
                 status = napi_get_object_property_int32_(isolate, obj, "frameRate", frameRateVal);
                 CHECK_NAPI_STATUS(pEngine, status);
 
+
+
                 config.frameRate = (FRAME_RATE)frameRateVal;
 
                 int orientationModeVal;
@@ -2698,6 +2663,10 @@ namespace agora {
                 }
                 CHECK_NAPI_STATUS(pEngine, status);
                 config.degradationPreference = degradationPref;
+
+                int mirrorMode;
+                status = napi_get_object_property_int32_(isolate, obj, "mirrorMode", mirrorMode);
+                config.mirrorMode = VIDEO_MIRROR_MODE_TYPE(mirrorMode);
 
                 result = pEngine->m_engine->setVideoEncoderConfiguration(config);
             } while (false);
@@ -3221,26 +3190,7 @@ namespace agora {
             LOG_LEAVE;
         }
 
-        NAPI_API_DEFINE(NodeRtcEngine, enableAudioVolumeIndication)
-        {
-            LOG_ENTER;
-            int result = -1;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_status status = napi_ok;
-                int interval, smooth;
-                bool report_vad;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                napi_get_param_3(args, int32, interval, int32, smooth, bool, report_vad);
-                CHECK_NAPI_STATUS(pEngine, status);
-
-                RtcEngineParameters rep(pEngine->m_engine);
-                result = rep.enableAudioVolumeIndication(interval, smooth, report_vad);
-            } while (false);
-            napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
+        NAPI_API_DEFINE_WRAPPER_PARAM_3(enableAudioVolumeIndication, int32, int32, bool);
 
         NAPI_API_DEFINE(NodeRtcEngine, startAudioRecording)
         {
