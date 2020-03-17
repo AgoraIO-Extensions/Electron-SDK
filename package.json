@@ -29,19 +29,19 @@
   ],
   "gypfile": false,
   "dependencies": {
+    "bluebird": "^3.7.1",
     "download": "^7.1.0",
-    "just-task": "^0.14.0",
-    "lodash.isequal": "^4.5.0",
-    "nan": "^2.14.0",
-    "node-gyp": "6.0.1",
-    "shelljs": "^0.8.3",
-    "yuv-buffer": "^1.0.0",
-    "yuv-canvas": "^1.2.1",
     "extract-zip": "^1.6.7",
     "fs-extra": "^8.1.0",
     "glob": "^7.1.6",
+    "just-task": "^0.14.0",
+    "lodash.isequal": "^4.5.0",
+    "nan": "^2.14.0",
+    "node-gyp": "^5.1.0",
     "rimraf": "^3.0.0",
-    "bluebird": "^3.7.1"
+    "shelljs": "^0.8.3",
+    "yuv-buffer": "^1.0.0",
+    "yuv-canvas": "^1.2.1"
   },
   "devDependencies": {
     "@types/node": "10.17.5",
