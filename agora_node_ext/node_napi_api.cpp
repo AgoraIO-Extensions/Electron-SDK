@@ -71,26 +71,29 @@ bool NodeVideoFrameTransporter::deinitialize()
     return true;
 }
 
-int NodeVideoFrameTransporter::setVideoDimension(NodeRenderType type, agora::rtc::uid_t uid, uint32_t width, uint32_t height)
+int NodeVideoFrameTransporter::setVideoDimension(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, uint32_t width, uint32_t height)
 {
     if (!init)
         return -1;
     std::lock_guard<std::mutex> lck(m_lock);
     if (type == NODE_RENDER_TYPE_REMOTE) {
-        auto it = m_remoteHighVideoFrames.find(uid);
-        if (it != m_remoteHighVideoFrames.end()) {
-            it->second.m_destWidth = width;
-            it->second.m_destHeight = height;
-            return 0;
+        auto cit = m_remoteHighVideoFrames.find(channelId);
+        if (cit != m_remoteHighVideoFrames.end()) {
+            auto it = cit->second.find(uid);
+            if (it != cit->second.end()) {
+                it->second.m_destWidth = width;
+                it->second.m_destHeight = height;
+                return 0;
+            }
         }
     }
-    VideoFrameInfo& info = getVideoFrameInfo(type, uid);
+    VideoFrameInfo& info = getVideoFrameInfo(type, uid, channelId);
     info.m_destWidth = width;
     info.m_destHeight = height;
     return 0;
 }
 
-VideoFrameInfo& NodeVideoFrameTransporter::getVideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid)
+VideoFrameInfo& NodeVideoFrameTransporter::getVideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId)
 {
     if (type == NodeRenderType::NODE_RENDER_TYPE_LOCAL) {
         if (!m_localVideoFrame.get())
@@ -98,18 +101,24 @@ VideoFrameInfo& NodeVideoFrameTransporter::getVideoFrameInfo(NodeRenderType type
         return *m_localVideoFrame.get();
     }
     else if (type == NODE_RENDER_TYPE_REMOTE) {
-        auto hit = m_remoteHighVideoFrames.find(uid);
-
         //try looking in high streams first
-        if (hit != m_remoteHighVideoFrames.end()) 
-            return m_remoteHighVideoFrames[uid];
+        auto hcit = m_remoteHighVideoFrames.find(channelId);
+        if(hcit != m_remoteHighVideoFrames.end()){
+            auto hit = m_remoteHighVideoFrames[channelId].find(uid);
+            if (hit != m_remoteHighVideoFrames[channelId].end()) 
+                return m_remoteHighVideoFrames[channelId][uid];
+        }
 
         //if not exists, try looking in low streams
-        auto it = m_remoteVideoFrames.find(uid);
-        if (it == m_remoteVideoFrames.end()) {
-            m_remoteVideoFrames[uid] = VideoFrameInfo(NODE_RENDER_TYPE_REMOTE, uid);
+        auto cit = m_remoteVideoFrames.find(channelId);
+        if(cit == m_remoteVideoFrames.end()){
+            m_remoteVideoFrames[channelId] = std::unordered_map<agora::rtc::uid_t, VideoFrameInfo>();
         }
-        return m_remoteVideoFrames[uid];
+        auto it = m_remoteVideoFrames[channelId].find(uid);
+        if (it == m_remoteVideoFrames[channelId].end()) 
+            m_remoteVideoFrames[channelId][uid] = VideoFrameInfo(NODE_RENDER_TYPE_REMOTE, uid, channelId);
+
+        return m_remoteVideoFrames[channelId][uid];
     }
     else if (type == NODE_RENDER_TYPE_DEVICE_TEST) {
         if (!m_devTestVideoFrame.get())
@@ -134,7 +143,7 @@ int NodeVideoFrameTransporter::deliverVideoSourceFrame(const char* payload, int 
     char* u = y + uv_len * 4;
     char* v = u + uv_len;
     std::lock_guard<std::mutex> lck(m_lock);
-    VideoFrameInfo& videoInfo = getVideoFrameInfo(NODE_RENDER_TYPE_VIDEO_SOURCE, 0);
+    VideoFrameInfo& videoInfo = getVideoFrameInfo(NODE_RENDER_TYPE_VIDEO_SOURCE, 0, "");
     int destWidth = videoInfo.m_destWidth ? videoInfo.m_destWidth : info->width;
     int destHeight = videoInfo.m_destHeight ? videoInfo.m_destHeight : info->height;
     size_t imageSize = sizeof(image_header_type) + destWidth * destHeight * 3 / 2;
@@ -170,7 +179,7 @@ int NodeVideoFrameTransporter::deliverVideoSourceFrame(const char* payload, int 
     return 0;
 }
 
-int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type, agora::rtc::uid_t uid, const agora::media::IVideoFrame& videoFrame, int rotation, bool mirrored)
+int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, const agora::media::IVideoFrame& videoFrame, int rotation, bool mirrored)
 {
     if (!init)
         return -1;
@@ -181,7 +190,7 @@ int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type, agora::rtc
     }
     rotation = rotation < 0 ? rotation + 360 : rotation;
     std::lock_guard<std::mutex> lck(m_lock);
-    VideoFrameInfo& info = getVideoFrameInfo(type, uid);
+    VideoFrameInfo& info = getVideoFrameInfo(type, uid, channelId);
     int destStride = info.m_destWidth ? info.m_destWidth : stride;
     int destWidth = info.m_destWidth ? info.m_destWidth : videoFrame.width();
     int destHeight = info.m_destHeight ? info.m_destHeight : videoFrame.height();
@@ -287,31 +296,42 @@ unsigned char* dstYPlane, unsigned char* dstUPlane, unsigned char* dstVPlane, in
     }
 }
 
-VideoFrameInfo& NodeVideoFrameTransporter::getHighVideoFrameInfo(agora::rtc::uid_t uid)
+VideoFrameInfo& NodeVideoFrameTransporter::getHighVideoFrameInfo(agora::rtc::uid_t uid, std::string channelId)
 {
-    auto it = m_remoteHighVideoFrames.find(uid);
-    if (it == m_remoteHighVideoFrames.end()) {
-        m_remoteHighVideoFrames[uid] = VideoFrameInfo(NODE_RENDER_TYPE_REMOTE, uid);
+    auto cit = m_remoteHighVideoFrames.find(channelId);
+    if (cit == m_remoteHighVideoFrames.end()) {
+        m_remoteHighVideoFrames[channelId] = std::unordered_map<agora::rtc::uid_t, VideoFrameInfo>();
     }
-    return m_remoteHighVideoFrames[uid];
+
+    auto it = m_remoteHighVideoFrames[channelId].find(uid);
+    if (it == m_remoteHighVideoFrames[channelId].end()) {
+        m_remoteHighVideoFrames[channelId][uid] = VideoFrameInfo(NODE_RENDER_TYPE_REMOTE, uid, channelId);
+    }
+    return m_remoteHighVideoFrames[channelId][uid];
 }
 
-void NodeVideoFrameTransporter::addToHighVideo(agora::rtc::uid_t uid)
+void NodeVideoFrameTransporter::addToHighVideo(agora::rtc::uid_t uid, std::string channelId)
 {
     std::lock_guard<std::mutex> lck(m_lock);
-    auto it = m_remoteVideoFrames.find(uid);
-    if(it != m_remoteVideoFrames.end())
-        m_remoteVideoFrames.erase(it);
-    getHighVideoFrameInfo(uid);
+    auto cit = m_remoteVideoFrames.find(channelId);
+    if(cit != m_remoteVideoFrames.end()){
+        auto it = m_remoteVideoFrames[channelId].find(uid);
+        if(it != m_remoteVideoFrames[channelId].end())
+            m_remoteVideoFrames[channelId].erase(it);
+    }
+    getHighVideoFrameInfo(uid, channelId);
 }
 
-void NodeVideoFrameTransporter::removeFromeHighVideo(agora::rtc::uid_t uid)
+void NodeVideoFrameTransporter::removeFromeHighVideo(agora::rtc::uid_t uid, std::string channelId)
 {
     std::lock_guard<std::mutex> lck(m_lock);
-    auto it = m_remoteHighVideoFrames.find(uid);
-    if(it != m_remoteHighVideoFrames.end())
-        m_remoteHighVideoFrames.erase(it);
-    getVideoFrameInfo(NODE_RENDER_TYPE_REMOTE, uid);
+    auto cit = m_remoteHighVideoFrames.find(channelId);
+    if(cit != m_remoteHighVideoFrames.end()){
+        auto it = m_remoteHighVideoFrames[channelId].find(uid);
+        if(it != m_remoteHighVideoFrames[channelId].end())
+            m_remoteHighVideoFrames[channelId].erase(it);
+    }
+    getVideoFrameInfo(NODE_RENDER_TYPE_REMOTE, uid, channelId);
 }
 
 void NodeVideoFrameTransporter::setHighFPS(uint32_t fps)
@@ -334,6 +354,17 @@ void NodeVideoFrameTransporter::setFPS(uint32_t fps)
     { \
         Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
         Local<Value> propVal = napi_create_uint32_(isolate, val); \
+        v8::Maybe<bool> ret = obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+        if(!ret.IsNothing()) { \
+            if(!ret.ToChecked()) { \
+                break; \
+            } \
+        } \
+    }
+#define NODE_SET_OBJ_PROP_STRING(obj, name, val) \
+    { \
+        Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
+        Local<Value> propVal = napi_create_string_(isolate, val); \
         v8::Maybe<bool> ret = obj->Set(isolate->GetCurrentContext(), propName, propVal); \
         if(!ret.IsNothing()) { \
             if(!ret.ToChecked()) { \
@@ -376,6 +407,7 @@ bool AddObj(Isolate* isolate, Local<v8::Array>& infos, int index, VideoFrameInfo
         Local<v8::Object> obj = Object::New(isolate);
         NODE_SET_OBJ_PROP_UINT32(obj, "type", info.m_renderType);
         NODE_SET_OBJ_PROP_UINT32(obj, "uid", info.m_uid);
+        NODE_SET_OBJ_PROP_STRING(obj, "channelId", info.m_channelId.c_str());
         auto it = info.m_bufferList.begin();
         NODE_SET_OBJ_PROP_HEADER(obj, it);
         ++it;
@@ -394,11 +426,14 @@ void NodeVideoFrameTransporter::FlushVideo()
     while (!m_stopFlag) {
         {
             std::unique_lock<std::mutex> lck(m_lock);
-            for (auto it = m_remoteVideoFrames.begin(); it != m_remoteVideoFrames.end();) {
-                if (it->second.m_count > MAX_MISS_COUNT)
-                    it = m_remoteVideoFrames.erase(it);
-                else
-                    ++it;
+            for (auto cit = m_remoteVideoFrames.begin(); cit != m_remoteVideoFrames.end();) {
+                for (auto it = cit->second.begin(); it != cit->second.end();) {
+                    if (it->second.m_count > MAX_MISS_COUNT)
+                        it = cit->second.erase(it);
+                    else
+                        ++it;
+                }
+                ++cit;
             }
 
             if (m_devTestVideoFrame.get()  && m_localVideoFrame->m_count > MAX_MISS_COUNT) {
@@ -413,11 +448,13 @@ void NodeVideoFrameTransporter::FlushVideo()
                 Local<v8::Array> infos = v8::Array::New(isolate);
 
                 uint32_t i = 0;
-                for (auto& it : m_remoteVideoFrames) {
-                    if (AddObj(isolate, infos, i, it.second))
-                        ++i;
-                    else {
-                        ++it.second.m_count;
+                for (auto& cit : m_remoteVideoFrames) {
+                    for (auto& it : cit.second) {
+                        if (AddObj(isolate, infos, i, it.second))
+                            ++i;
+                        else {
+                            ++it.second.m_count;
+                        }
                     }
                 }
                 if (m_localVideoFrame.get()) {
@@ -450,11 +487,14 @@ void NodeVideoFrameTransporter::highFlushVideo()
     while (!m_stopFlag) {
         {
             std::unique_lock<std::mutex> lck(m_lock);
-            for (auto it = m_remoteHighVideoFrames.begin(); it != m_remoteHighVideoFrames.end();) {
-                if (it->second.m_count > MAX_MISS_COUNT)
-                    it = m_remoteHighVideoFrames.erase(it);
-                else
-                    ++it;
+            for (auto cit = m_remoteHighVideoFrames.begin(); cit != m_remoteHighVideoFrames.end();) {
+                for (auto it = cit->second.begin(); it != cit->second.end();) {
+                    if (it->second.m_count > MAX_MISS_COUNT)
+                        it = cit->second.erase(it);
+                    else
+                        ++it;
+                }
+                ++cit;
             }
 
             if (m_videoSourceVideoFrame.get() && m_videoSourceVideoFrame->m_count > MAX_MISS_COUNT)
@@ -469,11 +509,13 @@ void NodeVideoFrameTransporter::highFlushVideo()
                 Local<v8::Array> infos = v8::Array::New(isolate);
                 
                 uint32_t i = 0;
-                for (auto& it : m_remoteHighVideoFrames) {
-                    if (AddObj(isolate, infos, i, it.second))
-                        ++i;
-                    else {
-                        ++it.second.m_count;
+                for (auto& cit : m_remoteHighVideoFrames) {
+                    for (auto& it : cit.second) {
+                        if (AddObj(isolate, infos, i, it.second))
+                            ++i;
+                        else {
+                            ++it.second.m_count;
+                        }
                     }
                 }
 

@@ -60,7 +60,7 @@ const agora = require('../../build/Release/agora_node_ext');
  */
 class AgoraRtcEngine extends EventEmitter {
   rtcEngine: NodeRtcEngine;
-  streams: Map<string, IRenderer>;
+  streams: Map<string, Map<string, IRenderer>>;
   renderMode: 1 | 2 | 3;
   customRenderer: any;
   constructor() {
@@ -407,7 +407,7 @@ class AgoraRtcEngine extends EventEmitter {
         console.log('Warning!!!!!!, streams is undefined.');
         return;
       }
-      self.destroyRender(uid);
+      self.destroyRender(uid, "");
       self.rtcEngine.unsubscribe(uid);
       fire('removestream', uid, reason);
       fire('removeStream', uid, reason);
@@ -709,23 +709,35 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {number} type 0-local 1-remote 2-device_test 3-video_source
    * @param {number} uid uid get from native engine, differ from electron engine's uid
    */
-  _getRenderer(type: number, uid: number): IRenderer | undefined {
+  _getRenderer(type: number, uid: number, channelId: string | undefined): IRenderer | undefined {
+    let channelStreams = this._getChannelRenderers(channelId || "")
     if (type < 2) {
       if (uid === 0) {
-        return this.streams.get('local');
+        return channelStreams.get('local');
       } else {
-        return this.streams.get(String(uid));
+        return channelStreams.get(String(uid));
       }
     } else if (type === 2) {
       // return this.streams.devtest;
       console.warn('Type 2 not support in production mode.');
       return;
     } else if (type === 3) {
-      return this.streams.get('videosource');
+      return channelStreams.get('videosource');
     } else {
       console.warn('Invalid type for getRenderer, only accept 0~3.');
       return;
     }
+  }
+
+  _getChannelRenderers(channelId: string): Map<string, IRenderer> {
+    let channel: Map<string, IRenderer>;
+    if(!this.streams.has(channelId)) {
+      channel = new Map()
+      this.streams.set(channelId, channel)
+    } else {
+      channel = this.streams.get(channelId) as Map<string, IRenderer>
+    }
+    return channel
   }
 
   /**
@@ -783,7 +795,7 @@ class AgoraRtcEngine extends EventEmitter {
     const len = infos.length;
     for (let i = 0; i < len; i++) {
       const info = infos[i];
-      const { type, uid, header, ydata, udata, vdata } = info;
+      const { type, uid, channelId, header, ydata, udata, vdata } = info;
       if (!header || !ydata || !udata || !vdata) {
         console.log(
           'Invalid data param ： ' +
@@ -797,9 +809,9 @@ class AgoraRtcEngine extends EventEmitter {
         );
         continue;
       }
-      const renderer = this._getRenderer(type, uid);
+      const renderer = this._getRenderer(type, uid, channelId);
       if (!renderer) {
-        console.warn("Can't find renderer for uid : " + uid);
+        console.warn(`Can't find renderer for uid : ${uid} ${channelId}`);
         continue;
       }
 
@@ -825,9 +837,10 @@ class AgoraRtcEngine extends EventEmitter {
    * @param key Key for the map that store the renderers, 
    * e.g, `uid` or `videosource` or `local`.
    */
-  resizeRender(key: 'local' | 'videosource' | number) {
-    if (this.streams.has(String(key))) {
-      const renderer = this.streams.get(String(key));
+  resizeRender(key: 'local' | 'videosource' | number, channelId:string | undefined) {
+    let channelStreams = this._getChannelRenderers(channelId || "")
+    if (channelStreams.has(String(key))) {
+      const renderer = channelStreams.get(String(key));
       if (renderer) {
         renderer.refreshCanvas();
       }
@@ -840,9 +853,10 @@ class AgoraRtcEngine extends EventEmitter {
    * e.g, uid or `videosource` or `local`.
    * @param view The Dom elements to render the video.
    */
-  initRender(key: 'local' | 'videosource' | number, view: Element) {
-    if (this.streams.has(String(key))) {
-      this.destroyRender(key);
+  initRender(key: 'local' | 'videosource' | number, view: Element, channelId: string | undefined) {
+    let channelStreams = this._getChannelRenderers(channelId || "")
+    if (channelStreams.has(String(key))) {
+      this.destroyRender(key, channelId || "");
     }
     let renderer: IRenderer;
     if (this.renderMode === 1) {
@@ -856,7 +870,7 @@ class AgoraRtcEngine extends EventEmitter {
       renderer = new GlRenderer();
     }
     renderer.bind(view);
-    this.streams.set(String(key), renderer);
+    channelStreams.set(String(key), renderer);
   }
 
   /**
@@ -867,16 +881,20 @@ class AgoraRtcEngine extends EventEmitter {
    * method.
    */
   destroyRender(
-    key: 'local' | 'videosource' | number,
+    key: 'local' | 'videosource' | number, channelId: string | undefined,
     onFailure?: (err: Error) => void
   ) {
-    if (!this.streams.has(String(key))) {
+    let channelStreams = this._getChannelRenderers(channelId || "")
+    if (!channelStreams.has(String(key))) {
       return;
     }
-    const renderer = this.streams.get(String(key));
+    const renderer = channelStreams.get(String(key));
     try {
       (renderer as IRenderer).unbind();
-      this.streams.delete(String(key));
+      channelStreams.delete(String(key));
+      if(channelStreams.keys.length === 0) {
+        this.streams.delete(channelId || "")
+      }
     } catch (err) {
       onFailure && onFailure(err);
     }
@@ -1083,18 +1101,18 @@ class AgoraRtcEngine extends EventEmitter {
    * - < 0: Failure.
    */
   subscribe(uid: number, view: Element): number {
-    this.initRender(uid, view);
+    this.initRender(uid, view, "");
     return this.rtcEngine.subscribe(uid);
   }
 
   setupRemoteVideo(uid: number, view?: Element, channel?: string): number {
     if(view) {
       //bind
-      this.initRender(uid, view);
+      this.initRender(uid, view, channel);
       return this.rtcEngine.subscribe(uid, channel);
     } else {
       //unbind
-      this.destroyRender(uid);
+      this.destroyRender(uid, channel);
       return this.rtcEngine.unsubscribe(uid, channel);
     }
   }
@@ -1107,7 +1125,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - < 0: Failure.
    */
   setupLocalVideo(view: Element): number {
-    this.initRender('local', view);
+    this.initRender('local', view, "");
     return this.rtcEngine.setupLocalVideo();
   }
 
@@ -1202,10 +1220,12 @@ class AgoraRtcEngine extends EventEmitter {
    */
   setupViewContentMode(
     uid: number | 'local' | 'videosource',
-    mode: 0 | 1
+    mode: 0 | 1,
+    channelId: string | undefined
   ): number {
-    if (this.streams.has(String(uid))) {
-      const renderer = this.streams.get(String(uid));
+    let channelStreams = this._getChannelRenderers(channelId || "")
+    if (channelStreams.has(String(uid))) {
+      const renderer = channelStreams.get(String(uid));
       (renderer as IRenderer).setContentMode(mode);
       return 0;
     } else {
@@ -3031,7 +3051,7 @@ class AgoraRtcEngine extends EventEmitter {
    * displayed.
    */
   setupLocalVideoSource(view: Element): void {
-    this.initRender('videosource', view);
+    this.initRender('videosource', view, "");
   }
 
   /**

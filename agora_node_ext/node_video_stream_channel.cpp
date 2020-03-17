@@ -36,7 +36,7 @@ namespace agora {
             LOG_ENTER;
             auto *pTransporter = getNodeVideoFrameTransporter();
             if (pTransporter) {
-                pTransporter->deliverFrame_I420(m_context->m_type, m_context->m_uid, videoFrame, rotation, mirrored);
+                pTransporter->deliverFrame_I420(m_context->m_type, m_context->m_uid, m_context->m_channelId, videoFrame, rotation, mirrored);
             }
             LOG_LEAVE;
             return 0;

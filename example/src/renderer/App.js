@@ -164,7 +164,7 @@ export default class App extends Component {
 
     rtcChannel.on('userOffline', (uid, reason) => {
       this.setState({
-        users: this.state.users.delete(this.state.users.indexOf({cannelId, uid}))
+        users: this.state.users.delete(this.state.users.indexOf({channelId, uid}))
       })
     })
   }
@@ -907,7 +907,7 @@ class Window extends Component {
   }
 
   componentDidMount() {
-    let dom = document.querySelector(`#video-${this.props.uid}`)
+    let dom = document.querySelector(`#video-${this.props.channel || ""}-${this.props.uid}`)
     if (this.props.role === 'local') {
       dom && this.props.rtcEngine.setupLocalVideo(dom)
     } else if (this.props.role === 'localVideoSource') {
@@ -927,7 +927,7 @@ class Window extends Component {
   render() {
     return (
       <div className="window-item">
-        <div className="video-item" id={'video-' + this.props.uid}></div>
+        <div className="video-item" id={`video-${this.props.channel || ""}-${this.props.uid}`}></div>
 
       </div>
     )
