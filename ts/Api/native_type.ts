@@ -465,6 +465,10 @@ export interface RtcStats {
   cpuAppUsage: number;
   /** System CPU usage (%). */
   cpuTotalUsage: number;
+  gatewayRtt: number;
+  memoryAppUsageRatio: number;
+  memoryTotalUsageRatio: number;
+  memoryAppUsageInKbytes: number;
 }
 /** Quality change of the local video. */
 export enum QualityAdaptIndication {
@@ -781,7 +785,15 @@ export interface VideoEncoderConfiguration {
    * See {@link DegradationPreference}.
    */
   degradationPreference: DegradationPreference;
+  mirrorMode: VideoMirrorModeType;
 }
+
+export enum VideoMirrorModeType {
+  AUTO = 0,
+  ENABLED = 1,
+  DISABLED = 2
+}
+
 /** The video encoding degradation preference under limited bandwidth. */
 export enum DegradationPreference {
   /** 0: (Default) Degrade the frame rate in order to maintain the video 
@@ -1374,6 +1386,12 @@ export interface ChannelMediaOptions {
   autoSubscribeVideo: boolean;
 }
 
+export interface WatermarkOptions {
+  visibleInPreview: boolean,
+  portraitMode: Rectangle,
+  landscapeMode: Rectangle
+}
+
 /**
  * The configuration of the media stream relay.
  * 
@@ -1726,10 +1744,6 @@ export interface NodeRtcEngine {
    * @ignore
    */
   muteRemoteVideoStream(uid: number, mute: boolean): number;
-  /**
-   * @ignore
-   */
-  setInEarMonitoringVolume(volume: number): number;
   /**
    * @ignore
    */
@@ -2426,6 +2440,14 @@ export interface NodeRtcEngine {
    * @ignore
    */
   getPluginParameter(pluginId: string, paramKey: string): string;
+  /**
+   * @ignore
+   */
+  addVideoWatermark(path: string, options: WatermarkOptions): number;
+  /**
+   * @ignore
+   */
+  clearVideoWatermark(): number;
 }
 
 export interface NodeRtcChannel {
