@@ -2,6 +2,7 @@ const { task, option, logger, argv, series, condition } = require('just-task');
 const path = require('path')
 const build = require('./scripts/build')
 const download = require('./scripts/download')
+const switcharch = require('./scripts/switch_arch')
 const synclib = require('./scripts/synclib')
 const cleanup = require('./scripts/cleanup')
 const {getArgvFromNpmEnv, getArgvFromPkgJson} = require('./scripts/npm_argv')
@@ -18,28 +19,42 @@ option('liburl_mac', {default: ''});
 
 const packageVersion = require('./package.json').version;
 
+task('switch:arch', () => {
+  return switcharch({
+    arch: argv().arch,
+    // platform: 'win32',
+  })
+})
+
 task('sync:lib', () => {
   const config = Object.assign({}, getArgvFromPkgJson(), getArgvFromNpmEnv() )
   return synclib({
     platform: argv().platform,
     // platform: 'win32',
+    arch: argv().arch,
     libUrl: {
       win: argv().liburl_win || config.libUrl.win,
-      mac: argv().liburl_mac || config.libUrl.mac
+      mac: argv().liburl_mac || config.libUrl.mac,
+      win64: argv().liburl_win64 || config.libUrl.win64
     }
   })
 })
 
 // npm run build:electron -- 
 task('build:electron', () => {
-  build({
-    electronVersion: argv().electron_version, 
-    runtime: argv().runtime, 
-    platform: argv().platform, 
-    packageVersion, 
-    debug: argv().debug, 
-    silent: argv().silent,
-    msvsVersion: argv().msvs_version
+
+  cleanup(path.join(__dirname, "./build")).then(_ => {
+    build({
+      electronVersion: argv().electron_version, 
+      runtime: argv().runtime, 
+      platform: argv().platform, 
+      packageVersion, 
+      debug: argv().debug, 
+      silent: argv().silent,
+      arch: argv().arch,
+      msvsVersion: argv().msvs_version,
+      distUrl: argv().dist_url
+    })
   })
 })
 // npm run build:node --
@@ -57,12 +72,15 @@ task('build:node', () => {
 // npm run download --
 task('download', () => {
   // work-around
-  const addonVersion = '2.9.0-rc.102'
+  const addonVersion = '2.9.0-rc.102-build.315'
   cleanup(path.join(__dirname, "./build")).then(_ => {
-    download({
-      electronVersion: argv().electron_version, 
-      platform: argv().platform, 
-      packageVersion: addonVersion
+    cleanup(path.join(__dirname, './js')).then(_ => {
+      download({
+        electronVersion: argv().electron_version, 
+        platform: argv().platform, 
+        packageVersion: addonVersion,
+        arch: argv().arch
+      })
     })
   })
 })
@@ -70,12 +88,13 @@ task('download', () => {
 task('install', () => {
   const config = Object.assign({}, getArgvFromNpmEnv(), getArgvFromPkgJson())
   // work-around
-  const addonVersion = '2.9.0-rc.102'
+  const addonVersion = '2.9.0-rc.102-build.315'
   if (config.prebuilt) {
     download({
       electronVersion: config.electronVersion, 
       platform: config.platform, 
-      packageVersion: addonVersion
+      packageVersion: addonVersion,
+      arch: config.arch
     })
   } else {
     build(Object.assign({}, config, {

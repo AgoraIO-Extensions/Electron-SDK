@@ -1,5 +1,8 @@
 const {logger} = require('just-task');
 const shell = require("shelljs");
+const path = require('path')
+
+const gyp_exec = `node ${path.resolve(__dirname, '../node_modules/node-gyp/bin/node-gyp.js')}`
 
 module.exports = ({
   electronVersion='5.0.8',
@@ -9,18 +12,20 @@ module.exports = ({
   debug = false,
   silent = false,
   msvsVersion = '2015',
+  arch = 'ia32',
+  distUrl = 'https://electronjs.org/headers'
 }) => {
   /** get command string */
-  const command = ['node-gyp configure'];
+  const command = [`${gyp_exec} configure`];
   
   // check platform
   if (platform === 'win32') {
-    command.push(`--arch=ia32 --msvs_version=${msvsVersion}`)
+    command.push(`--arch=${arch} --msvs_version=${msvsVersion}`)
   }
 
   // check runtime
   if (runtime === 'electron') {
-    command.push(`--target=${electronVersion} --dist-url=https://electronjs.org/headers`)
+    command.push(`--target=${electronVersion} --dist-url=${distUrl}`)
   }
 
   // check debug
@@ -44,8 +49,9 @@ module.exports = ({
 
   logger.info("Build C++ addon for Agora Electron SDK...\n")
   
-  shell.exec('node-gyp clean', {silent}, (code, stdout, stderr) => {
+  shell.exec(`${gyp_exec} clean`, {silent}, (code, stdout, stderr) => {
     // handle error
+    logger.info(`clean done ${stdout}`)
     if (code !== 0) {
       logger.error(stderr);
       process.exit(1)
@@ -53,6 +59,7 @@ module.exports = ({
 
     shell.exec(commandStr, {silent}, (code, stdout, stderr) => {
       // handle error
+      logger.info(`configure done ${stdout}`)
       if (code !== 0) {
         logger.error(stderr);
         process.exit(1)
@@ -63,7 +70,7 @@ module.exports = ({
         logger.info('Complete, please go to `/build` and build manually')
         process.exit(0)  
       } else {
-        shell.exec('node-gyp build', {silent}, (code, stdout, stderr) => {
+        shell.exec(`${gyp_exec} build`, {silent}, (code, stdout, stderr) => {
           // handle error
           if (code !== 0) {
             logger.error(stderr);
