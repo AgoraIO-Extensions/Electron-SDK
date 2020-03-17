@@ -920,8 +920,35 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Create a channel object, use this only if you want to join multiple channel at one time
-   * @param channelName name of the channel to create
+   * Creates and gets an `AgoraRtcChannle` object.
+   * 
+   * To join more than one channel, call this method multiple times to create 
+   * as many `AgoraRtcChannel` objects as needed, and call the 
+   * {@link AgoraRtcChannel.joinChannel joinChannel} method of each created 
+   * `AgoraRtcChannel` object.
+   * 
+   * After joining multiple channels, you can simultaneously subscribe to 
+   * streams of all the channels, but publish a stream in only one channel 
+   * at one time.
+   * @param channelName The unique channel name for an Agora RTC session. 
+   * It must be in the string format and not exceed 64 bytes in length. 
+   * Supported character scopes are:
+   * - All lowercase English letters: a to z. 
+   * - All uppercase English letters: A to Z. 
+   * - All numeric characters: 0 to 9. 
+   * - The space character. 
+   * - Punctuation characters and other symbols, including: "!", "#", "$", 
+   * "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", 
+   * "[", "]", "^", "_", " {", "}", "|", "~", ",".
+   * 
+   * @note
+   * - This parameter does not have a default value. You must set it.
+   * - Do not set it as the empty string "". Otherwise, the SDK returns 
+   * `ERR_REFUSED (5)`.
+   * 
+   * @return 
+   * - If the method call succeeds, returns the `AgoraRtcChannel` object.
+   * - If the method call fails, returns empty or `ERR_REFUSED (5)`.
    */
   createChannel(channelName: string): (AgoraRtcChannel | null) {
     let rtcChannel = this.rtcEngine.createChannel(channelName)
@@ -2048,7 +2075,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Enables the groupAudioVolumeIndication callback at a set time interval to 
+   * Enables the `groupAudioVolumeIndication` callback at a set time interval to 
    * report on which users are speaking and the speakers' volume.
    *
    * Once this method is enabled, the SDK returns the volume indication in the 
@@ -2057,22 +2084,21 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {number} interval Sets the time interval between two consecutive 
    * volume indications:
    * - ≤ 0: Disables the volume indication.
-   * - > 0: Time interval (ms) between two consecutive volume indications. We 
-   * recommend setting interval ≥ 200 ms.
+   * - &gt; 0: Time interval (ms) between two consecutive volume indications. 
+   * We recommend setting interval &ge; 200 ms.
    * @param {number} smooth The smoothing factor sets the sensitivity of the 
    * audio volume indicator. The value ranges between 0 and 10.
    * The greater the value, the more sensitive the indicator. The recommended 
    * value is 3.
    * @param {boolean} report_vad 
-   * true: Enable the voice activity detection of the local user. Once it is 
-   * enabled, the vad parameter of the onAudioVolumeIndication callback reports 
+   * - `true`: Enable the voice activity detection of the local user. Once it is 
+   * enabled, `vad` in the `groupAudioVolumeIndication` callback reports 
    * the voice activity status of the local user.
-   * false: (Default) Disable the voice activity detection of the local user. 
-   * Once it is enabled, the vad parameter of the onAudioVolumeIndication 
-   * callback does not report the voice activity status of the local 
+   * - `false`: (Default) Disables the voice activity detection of the local user. 
+   * Once it is disabled, `vad` in the `groupAudioVolumeIndication` callback 
+   * does not report the voice activity status of the local 
    * user, except for scenarios where the engine automatically detects 
    * the voice activity of the local user.
-   * value is 3.
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -2267,7 +2293,11 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.setRemoteDefaultVideoStreamType(streamType);
   }
 
-  /**
+  /** 
+   * @deprecated This method is deprecated. As of v3.0.0, the Electron SDK 
+   * automatically enables interoperability with the Web SDK, so you no longer 
+   * need to call this method.
+   * 
    * Enables interoperability with the Agora Web SDK (Live Broadcast only).
    *
    * Use this method when the channel profile is Live Broadcast.
@@ -5416,7 +5446,9 @@ declare interface AgoraRtcEngine {
   on(evt: string, listener: Function): this;
 }
 
-
+/**
+ * The AgoraRtcChannel class.
+ */
 class AgoraRtcChannel extends EventEmitter
 {
   rtcChannel: NodeRtcChannel;
@@ -5668,7 +5700,46 @@ class AgoraRtcChannel extends EventEmitter
     });
     
   }
-
+  /**
+   * Joins the channel with a user ID.
+   * 
+   * This method differs from the `joinChannel` method in the `AgoraRtcEngine` class in the following aspects:
+   * | AgoraRtcChannel joinChannel                                            | AgoraRtcEngine joinChannel                   |
+   * |--------------------------------|------------------------------------------------------------------------------------------------------|
+   * | Does not contain the `channel` parameter, because `channel` is specified when creating the `AgoraRtcChannel` object.  | Contains the `channel` parameter, which specifies the channel to join.      |
+   * | Contains the `options` parameter, which decides whether to subscribe to all streams before joining the channel.   | Does not contain the `options` parameter. By default, users subscribe to all streams when joining the channel. |
+   * | Users can join multiple channels simultaneously by creating multiple `AgoraRtcChannel` objects and calling the `joinChannel` method of each object. | Users can join only one channel.   |                                                                       
+   * | By default, the SDK does not publish any stream after the user joins the channel. You need to call the publish method to do that.  | By default, the SDK publishes streams once the user joins the channel.  |
+   * @note
+   * - If you are already in a channel, you cannot rejoin it with the same `uid`.
+   * - We recommend using different UIDs for different channels.
+   * - If you want to join the same channel from different devices, ensure 
+   * that the UIDs in all devices are different.
+   * - Ensure that the app ID you use to generate the token is the same with 
+   * the app ID used when creating the `AgoraRtcChannel` object.
+   * @param token The token for authentication:
+   * - In situations not requiring high security: You can use the temporary 
+   * token generated at Console. For details, see 
+   * [Get a temporary token](https://docs.agora.io/en/Agora%20Platform/token?platfor%20*%20m=All%20Platforms#get-a-temporary-token).
+   * - In situations requiring high security: Set it as the token generated at 
+   * your server. For details, see 
+   * [Generate a token](https://docs.agora.io/en/Agora%20Platform/token?platfor%20*%20m=All%20Platforms#get-a-token).
+   * @param info (Optional) Additional information about the channel. This parameter can be set as null. Other users in the channel do not receive this information.
+   * @param uid The user ID. A 32-bit unsigned integer with a value ranging 
+   * from 1 to (232-1). This parameter must be unique. If `uid` is not 
+   * assigned (or set as `0`), the SDK assigns a `uid` and reports it in 
+   * the `onJoinChannelSuccess` callback of the `AgoraRtcChannel` interface. 
+   * The app must maintain this user ID.
+   * @param options The channel media options, see 
+   * {@link AgoraRtcChannel.ChannelMediaOptions ChannelMediaOptions}
+   * 
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   *  - `ERR_INVALID_ARGUMENT (2)`
+   *  - `ERR_NOT_READY (3)`
+   *  - `ERR_REFUSED (5)`
+   */
   joinChannel(
     token: string,
     info: string,
@@ -5680,7 +5751,49 @@ class AgoraRtcChannel extends EventEmitter
       autoSubscribeVideo: true
     });
   }
-
+  /**
+   * Joins the channel with a user account.
+   * 
+   * After the user successfully joins the channel, the SDK triggers the 
+   * following callbacks:
+   * - The local client: `localUserRegistered` and `joinChannelSuccess` in the 
+   * `AgoraRtcChannel` interface.
+   * - The remote client: `userJoined` and `userInfoUpdated` in the 
+   * `AgoraRtcChannel` interface, if the user joining the channel is in the 
+   * Communication profile, or is a BROADCASTER in the Live Broadcast profile.
+   * 
+   * @note To ensure smooth communication, use the same parameter type to 
+   * identify the user. For example, if a user joins the channel with a user 
+   * ID, then ensure all the other users use the user ID too. The same applies 
+   * to the user account. If a user joins the channel with the Agora Web SDK, 
+   * ensure that the uid of the user is set to the same parameter type.
+   * @param token The token generated at your server:
+   * - In situations not requiring high security: You can use the temporary 
+   * token generated at Console. For details, see 
+   * [Get a temporary token](https://docs.agora.io/en/Agora%20Platform/token?platfor%20*%20m=All%20Platforms#get-a-temporary-token).
+   * - In situations requiring high security: Set it as the token generated at 
+   * your server. For details, see 
+   * [Generate a token](https://docs.agora.io/en/Agora%20Platform/token?platfor%20*%20m=All%20Platforms#get-a-token).
+   * @param userAccount The user account. The maximum length of this parameter 
+   * is 255 bytes. Ensure that you set this parameter and do not set it as 
+   * null. Supported character scopes are:
+   * - All lowercase English letters: a to z.
+   * - All uppercase English letters: A to Z.
+   * - All numeric characters: 0 to 9.
+   * - The space character.
+   * - Punctuation characters and other symbols, including: "!", "#", "$", 
+   * "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", 
+   * "[", "]", "^", "_", " {", "}", "|", "~", ",".
+   * @param options The channel media options, see 
+   * {@link AgoraRtcChannel.ChannelMediaOptions ChannelMediaOptions}
+   * 
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   *  - `ERR_INVALID_ARGUMENT (2)`
+   *  - `ERR_NOT_READY (3)`
+   *  - `ERR_REFUSED (5)`
+   */
   joinChannelWithUserAccount(
     token: string,
     userAccount: string,
@@ -5691,35 +5804,160 @@ class AgoraRtcChannel extends EventEmitter
       autoSubscribeVideo: true
     }); 
   }
-
+  /**
+   * Gets the channel ID of the current `AgoraRtcChannel` object.
+   * 
+   * @return 
+   * - The channel ID of the current `AgoraRtcChannel` object, if the method 
+   * call succeeds.
+   * - The empty string "", if the method call fails.
+   */
   channelId(): string {
     return this.rtcChannel.channelId()
   }
-
+  /**
+   * Retrieves the current call ID.
+   * 
+   * When a user joins a channel on a client, a `callId` is generated to 
+   * identify the call from the client. Feedback methods, such as 
+   * {@link AgoraRtcChannel.rate rate} and 
+   * {@link AgoraRtcChannel.complain complain}, must be called after the call 
+   * ends to submit feedback to the SDK.
+   * 
+   * The `rate` and `complain` methods require the `callId` parameter retrieved 
+   * from the `getCallId` method during a call. 
+   * 
+   * @return
+   * - The call ID, if the method call succeeds.
+   * - The empty string "", if the method call fails.
+   */
   getCallId(): string {
     return this.rtcChannel.getCallId()
   }
-
+  /**
+   * Sets the role of the user.
+   * 
+   * - This method can be used to set the user's role before the user joins a 
+   * channel in a live broadcast.
+   * - This method can be used to switch the user role in a live broadcast after 
+   * the user joins a channel.
+   * 
+   * In the Live Broadcast profile, when a user calls this method to switch
+   * user roles after joining a channel, SDK triggers the follwoing callbacks:
+   * - The local client: `clientRoleChanged` in the `AgoraRtcChannel` 
+   * interface.
+   * - The remote clinet: `userjoined` or `userOffline` in the 
+   * `AgoraRtcChannel` interface.
+   * 
+   * @note This method applies only to the Live-broadcast profile.
+   * @param role Sets the role of the user. See 
+   * {@link AgoraRtcChannel.role role}
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   setClientRole(role: ClientRoleType): number {
     return this.rtcChannel.setClientRole(role);
   }
-
+  /**
+   * Prioritizes a remote user's stream.
+   * 
+   * Use this method with the 
+   * {@link AgoraRtcChannel.setRemoteSubscribeFallbackOption} method.
+   * 
+   * If the fallback function is enabled for a subscribed stream, the SDK 
+   * ensures the high-priority user gets the best possible stream quality.
+   * 
+   * @note The Agora SDK supports setting `serPriority` as high for one user 
+   * only.
+   * @param uid The ID of the remote user.
+   * @param priority The priority of the remote user. See
+   * {@link AgoraRtcChannel.Priority Priority}.
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   setRemoteUserPriority(uid: number, priority: Priority) {
     return this.rtcChannel.setRemoteUserPriority(uid, priority);
   }
-
+  /**
+   * Gets a new token when the current token expires after a period of time.
+   * 
+   * The `token` expires after a period of time once the token schema is 
+   * enabled when the SDK triggers the `onTokenPrivilegeWillExpire` callback or
+   * `CONNECTION_CHANGED_TOKEN_EXPIRED(9)` of `onConnectionStateChanged` 
+   * callback in the `AgoraRtcChannel` interface.
+   * 
+   * You should call this method to renew `token`, or the SDK disconnects from
+   * Agora' server.
+   * 
+   * @param newtoken The new Token.
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   renewToken(newtoken: string): number {
     return this.rtcChannel.renewToken(newtoken);
   }
-
+  /**
+   * Enables built-in encryption with an encryption password before users 
+   * join a channel.
+   * 
+   * All users in a channel must use the same encryption password. The 
+   * encryption password is automatically cleared once a user leaves the 
+   * channel. If an encryption password is not specified, the encryption 
+   * functionality will be disabled.
+   * 
+   * @note
+   * - Do not use this method for the CDN live streaming function.
+   * - For optimal transmission, ensure that the encrypted data size does not 
+   * exceed the original data size + 16 bytes. 16 bytes is the maximum padding 
+   * size for AES encryption.
+   * 
+   * @param secret The encryption password.
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   setEncryptionSecret(secret: string): number {
     return this.rtcChannel.setEncryptionSecret(secret);
   }
-
+  /**
+   * Sets the built-in encryption mode.
+   * 
+   * The Agora SDK supports built-in encryption, which is set to the 
+   * `aes-128-xts` mode by default. To use other encryption modes, call this 
+   * method.
+   * 
+   * All users in the same channel must use the same encryption mode and 
+   * password.
+   * 
+   * Refer to the information related to the AES encryption algorithm on the 
+   * differences between the encryption modes.
+   * 
+   * @note Call the 
+   * {@link AgoraRtcChannel.setEncryptionSecret setEncryptionSecret}
+   * method before calling this method.
+   * 
+   * @param mode The set encryption mode:
+   * - "aes-128-xts": (Default) 128-bit AES encryption, XTS mode.
+   * - "aes-128-ecb": 128-bit AES encryption, ECB mode.
+   * - "aes-256-xts": 256-bit AES encryption, XTS mode.
+   * - "": When encryptionMode is set as NULL, the encryption mode is set as 
+   * "aes-128-xts" by default.
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   setEncryptionMode(mode: string): number {
     return this.rtcChannel.setEncryptionMode(mode);
   }
-
+  
   setRemoteVoicePosition(uid: number, pan: number, gain: number): number {
     return this.rtcChannel.setRemoteVoicePosition(uid, pan, gain);
   }
@@ -5818,7 +6056,9 @@ class AgoraRtcChannel extends EventEmitter
 }
 
 
-/** The AgoraRtcChannel interface. */
+/** 
+ * The AgoraRtcChannel interface. 
+ */
 declare interface AgoraRtcChannel {
   on(evt: 'joinChannelSuccess', cb: (uid: number, elapsed: number) => void): this;
   on(evt: 'channelWarning', cb: (warn: number, msg: string) => void): this;
