@@ -42,7 +42,7 @@ import {
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate } from '../Utils';
-import { ChannelMediaOptions } from './native_type';
+import { ChannelMediaOptions, WatermarkOptions } from './native_type';
 import {
   ChannelMediaRelayEvent,
   ChannelMediaRelayState,
@@ -190,32 +190,18 @@ class AgoraRtcEngine extends EventEmitter {
       speakers: {
         uid: number;
         volume: number;
+        vad: boolean;
       }[],
       speakerNumber: number,
       totalVolume: number
     ) {
-      if (speakers[0]) {
-        fire(
-          'audiovolumeindication',
-          speakers[0]['uid'],
-          speakers[0]['volume'],
-          speakerNumber,
-          totalVolume
-        );
-        fire(
-          'audioVolumeIndication',
-          speakers[0]['uid'],
-          speakers[0]['volume'],
-          speakerNumber,
-          totalVolume
-        );
-      }
+      fire('audioVolumeIndication', speakers, speakerNumber, totalVolume);
       fire('groupAudioVolumeIndication', speakers, speakerNumber, totalVolume);
     });
 
-    this.rtcEngine.onEvent('leavechannel', function() {
-      fire('leavechannel');
-      fire('leaveChannel');
+    this.rtcEngine.onEvent('leavechannel', function(rtcStats: RtcStats) {
+      fire('leavechannel', rtcStats);
+      fire('leaveChannel', rtcStats);
     });
 
     this.rtcEngine.onEvent('rtcstats', function(stats: RtcStats) {
@@ -1374,6 +1360,14 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.startEchoTestWithInterval(interval);
   }
 
+  addVideoWatermark(path:string, options: WatermarkOptions){
+    return this.rtcEngine.addVideoWatermark(path, options)
+  }
+
+  clearVideoWatermark(){
+    return this.rtcEngine.clearVideoWatermark();
+  }
+
   /**
    * Enables the network connection quality test.
    *
@@ -1639,7 +1633,8 @@ class AgoraRtcEngine extends EventEmitter {
       bitrate = 0,
       minBitrate = -1,
       orientationMode = 0,
-      degradationPreference = 0
+      degradationPreference = 0,
+      mirrorMode = 0
     } = config;
     return this.rtcEngine.setVideoEncoderConfiguration({
       width,
@@ -1649,7 +1644,8 @@ class AgoraRtcEngine extends EventEmitter {
       bitrate,
       minBitrate,
       orientationMode,
-      degradationPreference
+      degradationPreference,
+      mirrorMode
     });
   }
 
@@ -2094,18 +2090,6 @@ class AgoraRtcEngine extends EventEmitter {
    */
   muteRemoteVideoStream(uid: number, mute: boolean): number {
     return this.rtcEngine.muteRemoteVideoStream(uid, mute);
-  }
-
-  /**
-   * Sets the volume of the in-ear monitor.
-   * @param {number} volume Sets the volume of the in-ear monitor. The value 
-   * ranges between 0 and 100 (default).
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  setInEarMonitoringVolume(volume: number): number {
-    return this.rtcEngine.setInEarMonitoringVolume(volume);
   }
 
   /**
@@ -4620,6 +4604,7 @@ declare interface AgoraRtcEngine {
       speakers: {
         uid: number;
         volume: number;
+        vad: boolean;
       }[],
       speakerNumber: number,
       totalVolume: number
