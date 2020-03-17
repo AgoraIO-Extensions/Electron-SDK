@@ -261,6 +261,19 @@ private:
 
 #define NAPI_AUTO_LENGTH SIZE_MAX
 
+#define BEGIN_OBJECT_DEFINE(object, value) \
+    status = napi_get_value_object_(isolate, value, object); \
+    CHECK_NAPI_STATUS(pEngine, status); \
+
+#define BEGIN_SUB_OBJECT_DEFINE(value, object, key) \
+    status = napi_get_object_property_object_(isolate, object, key, value); \
+    CHECK_NAPI_STATUS(pEngine, status); \
+
+#define GET_OBJECT_PROPERTY(owner, type, key, value) \
+    status = napi_get_object_property_##type##_(isolate, owner, key, value); \
+    CHECK_NAPI_STATUS(pEngine, status); \
+
+
 /**
  * get the utf8 string from V8 value.
  */
@@ -380,6 +393,10 @@ napi_status napi_get_object_property_nodestring_(Isolate* isolate, const Local<O
 */
 napi_status napi_get_object_property_uid_(Isolate* isolate, const Local<Object>& obj, const std::string& propName, agora::rtc::uid_t& uid);
 
+/**
+* get object property from V8 object.
+*/
+napi_status napi_get_object_property_object_(Isolate* isolate, const Local<Object>& obj, const std::string& propName, Local<Object>& childobj);
 
 const char* nullable( char const* s);
 
