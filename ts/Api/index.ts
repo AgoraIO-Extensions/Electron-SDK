@@ -908,7 +908,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Creates and gets an `AgoraRtcChannle` object.
+   * Creates and gets an `AgoraRtcChannel` object.
    * 
    * To join more than one channel, call this method multiple times to create 
    * as many `AgoraRtcChannel` objects as needed, and call the 
@@ -1392,6 +1392,8 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.startEchoTestWithInterval(interval);
   }
   /**
+   * @since v3.0.0
+   * 
    * Adds a watermark image to the local video.
    * 
    * This method adds a PNG watermark image to the local video in a live 
@@ -1424,7 +1426,7 @@ class AgoraRtcEngine extends EventEmitter {
    * {@link startPreview}, you can use the `visibleInPreview` member in the 
    * WatermarkOptions class to set whether or not the watermark is visible in 
    * preview.
-   * - - If you have enabled the mirror mode for the local video, the watermark 
+   * - If you have enabled the mirror mode for the local video, the watermark 
    * on the local video is also mirrored. To avoid mirroring the watermark, 
    * Agora recommends that you do not use the mirror and watermark functions 
    * for the local video at the same time. You can implement the watermark 
@@ -1432,7 +1434,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @param path The local file path of the watermark image to be added. This 
    * method supports adding a watermark image from the local absolute or 
    * relative file path.
-   * @param options The watermark's options. See WatermarkOptions
+   * @param options The watermark's options. See {@link WatermarkOptions}
    * 
    * @return
    * - 0: Success
@@ -2618,7 +2620,6 @@ class AgoraRtcEngine extends EventEmitter {
    *  - `ERR_NOT_READY (3)`
    *  - `ERR_REFUSED (5)`
    */
-   */
   joinChannelWithUserAccount(
     token: string,
     channel: string,
@@ -3015,11 +3016,59 @@ class AgoraRtcEngine extends EventEmitter {
   ): number {
     return this.rtcEngine.enableLoopbackRecording(enable, deviceName);
   }
-
+  /**
+   * @since v3.0.0
+   * 
+   * Starts an audio recording on the client.
+   * 
+   * The SDK allows recording during a call. After successfully calling this 
+   * method, you can record the audio of all the users in the channel and get 
+   * an audio recording file. 
+   * Supported formats of the recording file are as follows:
+   * - .wav: Large file size with high fidelity.
+   * - .aac: Small file size with low fidelity.
+   * 
+   * @note
+   * - Ensure that the directory you use to save the recording file exists and 
+   * is writable.
+   * - This method is usually called after {@link joinChannel}. The 
+   * recording automatically stops when you call {@link leaveChannel}.
+   * - For better recording effects, set quality as MEDIUM or HIGH when 
+   * `sampleRate` is 44.1 kHz or 48 kHz.
+   * 
+   * @param filePath The absolute file path of the recording file. The string 
+   * of the file name is in UTF-8, such as c:/music/audio.aac.
+   * @param sampleRate Sample rate (kHz) of the recording file. Supported 
+   * values are as follows:
+   * - 16
+   * - (Default) 32
+   * - 44.1
+   * - 48
+   * @param quality The audio recording quality:
+   * - `0`: Low quality. The sample rate is 32 kHz, and the file size is around
+   * 1.2 MB after 10 minutes of recording.
+   * - `1`: Medium quality. The sample rate is 32 kHz, and the file size is
+   * around 2 MB after 10 minutes of recording.
+   * - `2`: High quality. The sample rate is 32 kHz, and the file size is
+   * around 3.75 MB after 10 minutes of recording.
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   startAudioRecording(filePath: string, sampleRate:number, quality: number):number {
     return this.rtcEngine.startAudioRecording(filePath, sampleRate, quality)
   }
-
+  /**
+   * Stops an audio recording on the client.
+   * 
+   * You can call this method before calling the {@link leaveChannel} method
+   * else to stop the recording automatically.
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   stopAudioRecording():number {
     return this.rtcEngine.stopAudioRecording()
   }
@@ -3329,25 +3378,74 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Starts the video source preview.
    * @return
-   * - 0: Success.
-   * - < 0: Failure.
+   * - 0: Success
+   * - < 0: Failure
    */
   startScreenCapturePreview(): number {
     return this.rtcEngine.videoSourceStartPreview();
   }
-  
+  /**
+   * Shares the whole or part of a window by specifying the window symbol.
+   * 
+   * @param windowSymbol The symbol of the windows to be shared.
+   * @param rect (Optional) The relative location of the region to the window. 
+   * NULL/NIL means sharing the whole window. See {@link CaptureRect}. If the 
+   * specified region overruns the window, the SDK shares only the region 
+   * within it; if you set width or height as 0, the SDK shares the whole 
+   * window.
+   * @param param Window sharing encoding parameters. See {@link CaptureParam}
+   * 
+   * @return 
+   * - 0: Success
+   * - < 0: Failure
+   */
   startScreenCaptureByWindow(windowSymbol: number, rect: CaptureRect, param: CaptureParam): number {
     return this.rtcEngine.startScreenCaptureByWindow(windowSymbol, rect, param)
   }
-
+  /**
+   * Shares the whole or part of a screen by specifying the screen symbol.
+   * @param screenSymbol The screen symbol. See {@link screenSymbol}
+   * @param rect (Optional) The relative location of the region to the screen. 
+   * NULL means sharing the whole screen. See {@link CaptureRect}. If the 
+   * specified region overruns the screen, the SDK shares only the region 
+   * within it; if you set width or height as 0, the SDK shares the whole 
+   * screen.
+   * @param param The screen sharing encoding parameters. See 
+   * {@link CaptureParam}
+   * 
+   * @return 
+   * - 0: Success
+   * - < 0: Failure
+   */
   startScreenCaptureByScreen(screenSymbol: ScreenSymbol, rect: CaptureRect, param: CaptureParam): number {
     return this.rtcEngine.startScreenCaptureByScreen(screenSymbol, rect, param)
   }
-
+  /**
+   * Updates the screen sharing parameters.
+   * 
+   * @param param The screen sharing encoding parameters. 
+   * See {@link CaptureParam}
+   * 
+   * @return 
+   * - 0: Success
+   * - < 0: Failure
+   */
   updateScreenCaptureParameters(param: CaptureParam): number {
     return this.rtcEngine.updateScreenCaptureParameters(param)
   }
-
+  /**
+   * Sets the content hint for screen sharing.
+   * 
+   * A content hint suggests the type of the content being shared, so that the 
+   * SDK applies different optimization algorithm to different types of 
+   * content.
+   * @param hint The content hint for screen sharing. 
+   * See {@link VideoContentHint}
+   * 
+   * @return 
+   * - 0: Success
+   * - < 0: Failure
+   */
   setScreenCaptureContentHint(hint: VideoContentHint): number {
     return this.rtcEngine.setScreenCaptureContentHint(hint)
   }
@@ -5487,6 +5585,8 @@ declare interface AgoraRtcEngine {
 }
 
 /**
+ * @since v3.0.0
+ * 
  * The AgoraRtcChannel class.
  */
 class AgoraRtcChannel extends EventEmitter
@@ -6531,7 +6631,7 @@ class AgoraRtcChannel extends EventEmitter
    * Publishes the local stream to the channel.
    * 
    * You must keep the following restrictions in mind when calling this method. 
-   * Otherwise, the SDK returns the #ERR_REFUSED (5):
+   * Otherwise, the SDK returns the `ERR_REFUSED (5)`:
    * - This method publishes one stream only to the channel corresponding to 
    * the current `AgoraRtcChannel` object.
    * - In a Live Broadcast channel, only a broadcaster can call this method. 
@@ -6603,9 +6703,7 @@ class AgoraRtcChannel extends EventEmitter
 }
 
 
-/** 
- * The AgoraRtcChannel interface. 
- */
+
 declare interface AgoraRtcChannel {
   /** Occurs when a user joins a specified channel.
    * @param cb.uid The User ID.
