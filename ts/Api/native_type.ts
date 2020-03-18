@@ -862,7 +862,7 @@ export enum OrientationMode  {
  * captured video, because the receiver takes the rotational information 
  * passed on from the video encoder. 
  * 
- * Mainly used between Agora’s SDKs.
+ * Mainly used between Agora SDK.
  * - If the captured video is in landscape mode, the output video is in 
  * landscape mode.
  * - If the captured video is in portrait mode, the output video is in 
@@ -978,7 +978,11 @@ export interface Rectangle {
   /** The height of the region. */
   height: number; // The height of the region.
 }
-
+/**
+ * The screen symbol: 
+ * - The screen symbol on the macOS platform, see {@link MacScreenSymbol}
+ * - The screen symbol on the Windows platform, see {@link WindowsScreenSymbol}
+ */
 export type ScreenSymbol = MacScreenSymbol | WindowsScreenSymbol;
 
 export type MacScreenSymbol = number;
@@ -2502,7 +2506,9 @@ export interface NodeRtcEngine {
    */
   clearVideoWatermark(): number;
 }
-
+/**
+ * @ignore
+ */
 export interface NodeRtcChannel {
   /**
    * @ignore
