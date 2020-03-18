@@ -465,9 +465,38 @@ export interface RtcStats {
   cpuAppUsage: number;
   /** System CPU usage (%). */
   cpuTotalUsage: number;
+  /**
+   * @since v3.0.0
+   * 
+   * The round-trip time delay from the client to the local router.
+   */
   gatewayRtt: number;
+  /**
+   * @since v3.0.0
+   * 
+   * The memory usage ratio of the app (%).
+   * 
+   * This value is for reference only. Due to system limitations, you may not 
+   * get the value of this member.
+   */
   memoryAppUsageRatio: number;
+  /**
+   * @since v3.0.0
+   * 
+   * The memory usage ratio of the system (%).
+   * 
+   * This value is for reference only. Due to system limitations, you may not 
+   * get the value of this member.
+   */
   memoryTotalUsageRatio: number;
+  /**
+   * @since v3.0.0
+   * 
+   * The memory usage of the app (KB).
+   * 
+   * This value is for reference only. Due to system limitations, you may not 
+   * get the value of this member.
+   */
   memoryAppUsageInKbytes: number;
 }
 /** Quality change of the local video. */
@@ -785,12 +814,31 @@ export interface VideoEncoderConfiguration {
    * See {@link DegradationPreference}.
    */
   degradationPreference: DegradationPreference;
+  /**
+   * @since v3.0.0
+   * 
+   * Sets the mirror mode of the published local video stream. It only affects 
+   * the video that the remote user sees. See VideoMirrorModeType
+   * 
+   * @note The SDK disables the mirror mode by default.
+   */
   mirrorMode: VideoMirrorModeType;
 }
-
+/**
+ * The type of video mirror mode.
+ */
 export enum VideoMirrorModeType {
+  /**
+   * `0`: (Default) The SDK determines whether enable the mirror mode.
+   */
   AUTO = 0,
+  /**
+   * `1`: Enable mirror mode.
+   */
   ENABLED = 1,
+  /**
+   * `2`: Disable mirror mode. 
+   */
   DISABLED = 2
 }
 
@@ -1380,15 +1428,53 @@ export interface ChannelMediaInfo {
   token: string;
   uid: number;
 }
-
+/**
+ * The channel media options.
+ */
 export interface ChannelMediaOptions {
+  /**
+   * Determines whether to subscribe to audio streams when the user joins the 
+   * channel:
+   * - true: (Default) Subscribe.
+   * - false: Do not subscribe.
+   * 
+   * This member serves a similar function to the 
+   * {@link AgoraRtcChannel.muteAllRemoteAudioStreams} method. After joining 
+   * the channel, you can call the `muteAllRemoteAudioStreams` method to set 
+   * whether to subscribe to audio streams in the channel.
+   */
   autoSubscribeAudio: boolean;
+  /**
+   * Determines whether to subscribe to video streams when the user joins the 
+   * channel:
+   * - true: (Default) Subscribe.
+   * - false: Do not subscribe.
+   * 
+   * This member serves a similar function to the 
+   * {@link AgoraRtcChannel.muteAllRemoteVideoStreams} method. After joining 
+   * the channel, you can call the `muteAllRemoteVideoStreams` method to set 
+   * whether to subscribe to video streams in the channel.
+   */
   autoSubscribeVideo: boolean;
 }
-
+/**
+ * The watermark's options.
+ */
 export interface WatermarkOptions {
+  /**
+   * Sets whether or not the watermark image is visible in the local video 
+   * preview:
+   * - true: (Default) The watermark image is visible in preview.
+   * - false: The watermark image is not visible in preview. 
+   */
   visibleInPreview: boolean,
+  /**
+   * The watermark position in the landscape mode. See Rectangle
+   */
   portraitMode: Rectangle,
+  /**
+   * The watermark position in the portrait mode. See Rectangle
+   */
   landscapeMode: Rectangle
 }
 
