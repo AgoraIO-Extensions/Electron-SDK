@@ -152,24 +152,23 @@ namespace agora {
             NAPI_API(getAudioMixingCurrentPosition);
             NAPI_API(setAudioMixingPosition);
             NAPI_API(getEffectsVolume);	
-			NAPI_API(setEffectsVolume);	
-			NAPI_API(setVolumeOfEffect);
-			NAPI_API(playEffect);	
-			NAPI_API(stopEffect);	
-			NAPI_API(stopAllEffects);	
-			NAPI_API(preloadEffect);	
-			NAPI_API(unloadEffect);	
-			NAPI_API(pauseEffect);	
-			NAPI_API(pauseAllEffects);	
-			NAPI_API(resumeEffect);	
-			NAPI_API(resumeAllEffects);
+            NAPI_API(setEffectsVolume);	
+            NAPI_API(setVolumeOfEffect);
+            NAPI_API(playEffect);	
+            NAPI_API(stopEffect);	
+            NAPI_API(stopAllEffects);	
+            NAPI_API(preloadEffect);	
+            NAPI_API(unloadEffect);	
+            NAPI_API(pauseEffect);	
+            NAPI_API(pauseAllEffects);	
+            NAPI_API(resumeEffect);	
+            NAPI_API(resumeAllEffects);
             NAPI_API(setLocalVoicePitch);
             NAPI_API(setLocalVoiceEqualization);
             NAPI_API(setLocalVoiceReverb);
             NAPI_API(setExternalAudioSink);
             NAPI_API(setLocalPublishFallbackOption);
             NAPI_API(setRemoteSubscribeFallbackOption);
-            NAPI_API(setInEarMonitoringVolume);
             NAPI_API(pauseAudio);
             NAPI_API(resumeAudio);
             NAPI_API(setExternalAudioSource);
@@ -328,6 +327,10 @@ namespace agora {
             NAPI_API(updateScreenCaptureParameters);
             NAPI_API(setScreenCaptureContentHint);
 
+            /**
+             * 3.0.0 Apis
+             */
+            NAPI_API(adjustUserPlaybackSignalVolume);
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }
@@ -677,6 +680,62 @@ typedef unsigned int uint32;
             napi_get_native_this(args, pEngine);\
             CHECK_NATIVE_THIS(pEngine);\
             int result = CALL_MEM_FUNC_FROM_POINTER(pEngine->m_engine, method);\
+            args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result));\
+        } while (false);\
+        LOG_LEAVE;\
+    }
+#define NAPI_API_DEFINE_WRAPPER_PARAM_1(method, type) \
+    NAPI_API_DEFINE(NodeRtcEngine, method) \
+    { \
+        LOG_ENTER; \
+        do {\
+            NodeRtcEngine *pEngine = nullptr;\
+            napi_get_native_this(args, pEngine);\
+            CHECK_NATIVE_THIS(pEngine);\
+            napi_status status = napi_ok;\
+            type param;\
+            napi_get_param_1(args, type, param);\
+            CHECK_NAPI_STATUS(pEngine, status);\
+            int result = CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM(pEngine->m_engine, method, param);\
+            args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result));\
+        } while (false);\
+        LOG_LEAVE;\
+    }
+
+#define NAPI_API_DEFINE_WRAPPER_PARAM_2(method, type, type2) \
+    NAPI_API_DEFINE(NodeRtcEngine, method) \
+    { \
+        LOG_ENTER; \
+        do {\
+            NodeRtcEngine *pEngine = nullptr;\
+            napi_get_native_this(args, pEngine);\
+            CHECK_NATIVE_THIS(pEngine);\
+            napi_status status = napi_ok;\
+            type param;\
+            type2 param2;\
+            napi_get_param_2(args, type, param, type2, param2);\
+            CHECK_NAPI_STATUS(pEngine, status);\
+            int result = CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM2(pEngine->m_engine, method, param, param2);\
+            args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result));\
+        } while (false);\
+        LOG_LEAVE;\
+    }
+
+#define NAPI_API_DEFINE_WRAPPER_PARAM_3(method, type, type2, type3) \
+    NAPI_API_DEFINE(NodeRtcEngine, method) \
+    { \
+        LOG_ENTER; \
+        do {\
+            NodeRtcEngine *pEngine = nullptr;\
+            napi_get_native_this(args, pEngine);\
+            CHECK_NATIVE_THIS(pEngine);\
+            napi_status status = napi_ok;\
+            type param;\
+            type2 param2;\
+            type3 param3;\
+            napi_get_param_3(args, type, param, type2, param2, type3, param3);\
+            CHECK_NAPI_STATUS(pEngine, status);\
+            int result = CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM3(pEngine->m_engine, method, param, param2, param3);\
             args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result));\
         } while (false);\
         LOG_LEAVE;\

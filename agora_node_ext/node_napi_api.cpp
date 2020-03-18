@@ -739,6 +739,15 @@ napi_status napi_get_object_property_uid_(Isolate* isolate, const Local<Object>&
     return agora::rtc::NodeUid::getUidFromNodeValue(value, uid);
 }
 
+/**
+* get object property from V8 object.
+*/
+napi_status napi_get_object_property_object_(Isolate* isolate, const Local<Object>& obj, const std::string& propName, Local<Object>& childobj)
+{
+    Local<Value> value = napi_get_object_property_value(isolate, obj, propName);
+    return napi_get_value_object_(isolate, value, childobj);
+}
+
 const char* nullable( char const* s)
 {
     return (s ? s : "");
