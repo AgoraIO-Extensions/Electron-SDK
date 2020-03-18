@@ -3203,12 +3203,12 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
 
-                status = napi_get_value_nodestring_(args[0], filePath);
-                CHECK_NAPI_STATUS(pEngine, status);
-                int quality;
-                status = napi_get_value_int32_(args[1], quality);
-                RtcEngineParameters rep(pEngine->m_engine);
-                result = rep.startAudioRecording(filePath, AUDIO_RECORDING_QUALITY_TYPE(quality));
+                nodestring filePath;
+                int quality, sampleRate;
+
+                napi_get_param_3(args, nodestring, filePath, int32, sampleRate, int32, quality);
+
+                result = pEngine->m_engine->startAudioRecording(filePath, sampleRate, AUDIO_RECORDING_QUALITY_TYPE(quality));
             } while (false);
             napi_set_int_result(args, result);
 
