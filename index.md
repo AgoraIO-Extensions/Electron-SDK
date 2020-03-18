@@ -1,7 +1,10 @@
 This Agora Electron SDK is developed upon the Native SDK for macOS and the Native SDK for Windows, with the Node.js C++ plug-in units. The Electron SDK supports all the functions of the Agora Native SDK. Agora provides ensured quality of experience (QoE) for worldwide Internet-based voice and video communications through a virtual global network optimized on all platforms.
 
-* The AgoraRtcEngine calss provides the main methods that can be invoked by your application.
-* The Events class enables callbacks to your application.
+* The {@link AgoraRtcEngine} class provides the main methods that can be invoked by your application.
+* The {@link AgoraRtcEngine.on} listens to events during runtime.
+
+* The {@link AgoraRtcChannel} class provides methods that enable real-time communications in a specified channel. By creating multiple `AgoraRtcChannel` objects, the user can join multiple channels.
+* The {@link AgoraRtcChannel.on} listens to events and statistics of a specified channel.
 
 ## Methods
 
@@ -9,8 +12,8 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 
 | Method                                                       | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| {@link AgoraRtcEngine.initialize initialize}                 | Initializes an AgoraRtcEngine instance.                      |
-| {@link AgoraRtcEngine.release release}                       | Releases an AgoraRtcEngine instance.                         |
+| {@link AgoraRtcEngine.initialize initialize}                 | Initializes an `AgoraRtcEngine` instance.                      |
+| {@link AgoraRtcEngine.release release}                       | Releases an `AgoraRtcEngine` instance.                         |
 | {@link AgoraRtcEngine.setChannelProfile setChannelProfile}   | Sets the channel profile.                                    |
 | {@link AgoraRtcEngine.setClientRole setClientRole}           | Sets the user role (Live Broadcast only).                    |
 | {@link AgoraRtcEngine.joinChannel joinChannel}               | Allows a user to join a channel. |
@@ -18,7 +21,6 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.leaveChannel leaveChannel}             | Allows a user to leave a channel.                            |
 | {@link AgoraRtcEngine.subscribe subscribe}                   | Subscribes to the remote user and initializes the video sink |
 | {@link AgoraRtcEngine.renewToken renewToken}                 | Renews the token.                                            |
-| {@link AgoraRtcEngine.enableWebSdkInteroperability enableWebSdkInteroperability} | Enables interoperability with the Agora Web SDK.             |
 | {@link AgoraRtcEngine.getConnectionState getConnectionState} | Gets the connection state of the app.                        |
 | {@link AgoraRtcEngine.on on}                                 | Monitors the events during AgoraRtcEngine runtime            |
 | {@link AgoraRtcEngine.off off}                               | Stops monitoring the events during AgoraRtcEngine runtime    |
@@ -85,6 +87,14 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | Method                                                       | Description                         |
 | ------------------------------------------------------------ | ----------------------------------- |
 | {@link AgoraRtcEngine.setBeautyEffectOptions setBeautyEffectOptions} | Sets the image enhancement options. |
+
+### Multiple channels management
+
+| API                                                      | Description                         |
+| ------------------------------------------------------------ | ----------------------------------- |
+| {@link AgoraRtcEngine.createChannel createChannel} | Creates and gets an `AgoraRtcChannel` object. |
+| {@link AgoraRtcChannel} | Provides methods that enable real-time communications in a specified channel. |
+| {@link AgoraRtcChannel.on} | Provides callbacks that report events and statistics in a specified channel. |
 
 ### Screen sharing
 
@@ -176,11 +186,6 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | {@link AgoraRtcEngine.enableAudioVolumeIndication enableAudioVolumeIndication} | Reports on which users are speaking and the speakers' volume. |
 
-### In-ear monitoring
-
-| Method                                                       | Description                            |
-| ------------------------------------------------------------ | -------------------------------------- |
-| {@link AgoraRtcEngine.setInEarMonitoringVolume setInEarMonitoringVolume} | Sets the volume of the in-ear monitor. |
 
 ### Dual video stream mode
 
@@ -209,19 +214,12 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.startLastmileProbeTest startLastmileProbeTest} | Starts the last-mile network probe test.      |
 | {@link AgoraRtcEngine.stopLastmileProbeTest stopLastmileProbeTest} | Stops the last-mile network probe test.       |
 
-### External audio data (push-mode only)
+### Watermark
 
-| Method                                                       | Description                           |
-| ------------------------------------------------------------ | ------------------------------------- |
-| {@link AgoraRtcEngine.setExternalAudioSource setExternalAudioSource} | Configures the external audio source. |
-
-### Raw audio data
-
-| Method                                                       | Description                      |
-| ------------------------------------------------------------ | -------------------------------- |
-| {@link AgoraRtcEngine.setRecordingAudioFrameParameters setRecordingAudioFrameParameters} | Sets the audio recording format. |
-| {@link AgoraRtcEngine.setPlaybackAudioFrameParameters setPlaybackAudioFrameParameters} | Sets the audio playback format.  |
-| {@link AgoraRtcEngine.setMixedAudioFrameParameters setMixeAudioFrameParameters} | Sets the mixed audio format.     |
+| Method                                                       | Description                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| {@link AgoraRtcEngine.addVideoWatermark addVideoWatermark} | Adds a watermark image to the local video. |
+| {@link AgoraRtcEngine.clearVideoWatermark clearVideoWatermark}|Removes the watermark image.|
 
 ### Encryption
 
@@ -262,6 +260,8 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.stopAudioPlaybackDeviceTest stopAudioPlaybackDeviceTest} | Stops the audio playback device test. |
 | {@link AgoraRtcEngine.startAudioRecordingDeviceTest startAudioRecordingDeviceTest} | Starts the recording device test. |
 | {@link AgoraRtcEngine.stopAudioRecordingDeviceTest stopAudioRecordingDeviceTest} | Stops the recording device test. |
+| {@link AgoraRtcEngine.startAudioRecording startAudioRecording} | Starts the audio recording. |
+| {@link AgoraRtcEngine.stopAudioRecording stopAudioRecording} | Stops the audio recording. |
 | {@link AgoraRtcEngine.startVideoDeviceTest startVideoDeviceTest} | Starts the video playback device test. |
 | {@link AgoraRtcEngine.stopVideoDeviceTest stopVideoDeviceTest} | Stops the video playback device test. |
 | {@link AgoraRtcEngine.setAudioPlaybackVolume setAudioPlaybackVolume} | Sets the volume of the audio playback device. |
@@ -318,16 +318,15 @@ Agora Electron SDK provides the methods for the second instance:
 | {@link AgoraRtcEngine.videoSourceJoin videoSourceJoin}       | Allows a user to join a channel.                             |
 | {@link AgoraRtcEngine.videoSourceLeave videoSourceLeave}     | Allows a user to leave a channel.                            |
 | {@link AgoraRtcEngine.videoSourceRenewToken videoSourceRenewToken} | Renews the Token.                                            |
-| {@link AgoraRtcEngine.videoSourceEnableWebSdkInteroperability videoSourceEnableWebSdkInteroperability} | Enables interoperability with the Agora Web SDK.             |
 | {@link AgoraRtcEngine.setupLocalVideoSource setupLocalVideoSource} | Sets the local video view.                                   |
 | {@link AgoraRtcEngine.videoSourceSetVideoProfile videoSourceSetVideoProfile} | Sets the video encoder configuration.                        |
 | {@link AgoraRtcEngine.videoSourceEnableDualStreamMode videoSourceEnableDualStreamMode} | Sets the stream mode to single- (default) or dual-stream mode (for live broadcast only). |
 | {@link AgoraRtcEngine.videoSourceSetLogFile videoSourceSetLogFile} | Specifies an SDK output log file.                            |
 | {@link AgoraRtcEngine.videoSourceSetParameters videoSourceSetParameters} | Provides the technical preview functionalities or special customizations by configuring the SDK with JSON options. |
 
-## Events
+## AgoraRtcEngine.on
 
-Agora Electron SDK use the  {@link AgoraRtcEngine.on on} method to add listeners for the events above: 
+Agora Electron SDK use the {@link AgoraRtcEngine.on} listens to the events above: 
 
 | Event                            | Description                                                  |
 | -------------------------------- | ------------------------------------------------------------ |
