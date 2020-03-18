@@ -1,3 +1,6 @@
+## 2.9.0-rc.36
+* Win SDK upgrade to 2.9.0.36 fixing echo issue
+
 ## 2.9.0-rc.102-build.0314
 * Support Win64
 
