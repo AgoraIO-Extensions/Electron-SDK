@@ -406,6 +406,12 @@ namespace agora {
             NAPI_API(getConnectionState);
             NAPI_API(leaveChannel);
             NAPI_API(release);
+
+
+            /**
+             * 3.0.0 Apis
+             */
+            NAPI_API(adjustUserPlaybackSignalVolume);
         public:
             Isolate* getIsolate() { return m_isolate; }
 
