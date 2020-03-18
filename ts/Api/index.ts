@@ -900,6 +900,8 @@ class AgoraRtcEngine extends EventEmitter {
    * @return 
    * - 0: Success.
    * - < 0: Failure.
+   *  - `ERR_INVALID_APP_ID (101)`: The app ID is invalid. Check if it is in 
+   * the correct format.
    */
   initialize(appid: string): number {
     return this.rtcEngine.initialize(appid);
@@ -1020,6 +1022,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @return
    * - 0: Success.
    * - < 0: Failure.
+   *  - `ERR_INVALID_ARGUMENT (2)`
+   *  - `ERR_NOT_READY (3)`
+   *  - `ERR_REFUSED (5) `
    */
   joinChannel(
     token: string,
@@ -1386,11 +1391,64 @@ class AgoraRtcEngine extends EventEmitter {
   startEchoTestWithInterval(interval: number): number {
     return this.rtcEngine.startEchoTestWithInterval(interval);
   }
-
+  /**
+   * Adds a watermark image to the local video.
+   * 
+   * This method adds a PNG watermark image to the local video in a live 
+   * broadcast. Once the watermark image is added, all the audience in the 
+   * channel (CDN audience included), and the recording device can see and 
+   * capture it. Agora supports adding only one watermark image onto the local 
+   * video, and the newly watermark image replaces the previous one.
+   * 
+   * The watermark position depends on the settings in the 
+   * {@link setVideoEncoderConfiguration} method:
+   * - If the orientation mode of the encoding video is LANDSCAPE, the 
+   * landscape mode in ADAPTIVE, the watermark uses the landscape orientation.
+   * - If the orientation mode of the encoding video is PORTRAIT, or the 
+   * portrait mode in ADAPTIVE, the watermark uses the portrait orientation.
+   * - hen setting the watermark position, the region must be less than the 
+   * dimensions set in the {@link setVideoEncoderConfiguration} method. 
+   * Otherwise, the watermark image will be cropped.
+   * 
+   * @note
+   * - Ensure that you have called {@link enableVideo} before this method.
+   * - If you only want to add a watermark image to the local video for the 
+   * audience in the CDN live broadcast channel to see and capture, you can 
+   * call this method or {@link setLiveTranscoding}.
+   * - This method supports adding a watermark image in the PNG file format 
+   * only. Supported pixel formats of the PNG image are RGBA, RGB, Palette, 
+   * Gray, and Alpha_gray.
+   * - If the dimensions of the PNG image differ from your settings in this 
+   * method, the image will be cropped or zoomed to conform to your settings.
+   * - If you have enabled the local video preview by calling 
+   * {@link startPreview}, you can use the `visibleInPreview` member in the 
+   * WatermarkOptions class to set whether or not the watermark is visible in 
+   * preview.
+   * - - If you have enabled the mirror mode for the local video, the watermark 
+   * on the local video is also mirrored. To avoid mirroring the watermark, 
+   * Agora recommends that you do not use the mirror and watermark functions 
+   * for the local video at the same time. You can implement the watermark 
+   * function in your application layer.
+   * @param path The local file path of the watermark image to be added. This 
+   * method supports adding a watermark image from the local absolute or 
+   * relative file path.
+   * @param options The watermark's options. See WatermarkOptions
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   addVideoWatermark(path:string, options: WatermarkOptions){
     return this.rtcEngine.addVideoWatermark(path, options)
   }
-
+  /**
+   * Removes the watermark image from the video stream added by the
+   * {@link addVideoWatermark} method.
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   clearVideoWatermark(){
     return this.rtcEngine.clearVideoWatermark();
   }
@@ -2302,10 +2360,13 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Sets the local video mirror mode.
    *
-   * Use this method before startPreview, or it does not take effect until you 
-   * re-enable startPreview.
+   * Use this method before {@link startPreview}, or it does not take effect 
+   * until you re-enable startPreview.
+   * 
    * @param {number} mirrortype Sets the local video mirror mode:
-   * - 0: The default mirror mode, that is, the mode set by the SDK
+   * - 0: (Default) The SDK determines whether enable the mirror mode. If you 
+   * use a front camera, the SDK enables the mirror mode; if you use a rear 
+   * camera, the SDK disables the mirror mode.
    * - 1: Enable the mirror mode
    * - 2: Disable the mirror mode
    * @return
@@ -2553,6 +2614,10 @@ class AgoraRtcEngine extends EventEmitter {
    * @return
    * - 0: Success.
    * - < 0: Failure.
+   *  - `ERR_INVALID_ARGUMENT (2)`
+   *  - `ERR_NOT_READY (3)`
+   *  - `ERR_REFUSED (5)`
+   */
    */
   joinChannelWithUserAccount(
     token: string,
@@ -2647,6 +2712,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @return
    * - 0: Success.
    * - < 0: Failure.
+   *  - `ERR_INVALID_ARGUMENT (2)`
+   *  - `ERR_NOT_READY (3)`
+   *  - `ERR_REFUSED (5)`
    */
   switchChannel(token: string, channel: string) : number {
     return this.rtcEngine.switchChannel(token, channel);
@@ -3068,6 +3136,8 @@ class AgoraRtcEngine extends EventEmitter {
    * @return
    * - 0: Success.
    * - < 0: Failure.
+   *  - `ERR_INVALID_APP_ID (101)`: The app ID is invalid. Check if it is in 
+   * the correct format.
    */
   videoSourceInitialize(appId: string): number {
     return this.rtcEngine.videoSourceInitialize(appId);
@@ -3083,6 +3153,10 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @deprecated This method is deprecated. As of v3.0.0, the Electron SDK 
+   * automatically enables interoperability with the Web SDK, so you no longer 
+   * need to call this method.
+   * 
    * Enables the web interoperability of the video source, if you set it to 
    * true.
    *
@@ -3283,7 +3357,7 @@ class AgoraRtcEngine extends EventEmitter {
   startScreenCapturePreview(): number {
     return this.rtcEngine.videoSourceStartPreview();
   }
-
+  
   startScreenCaptureByWindow(windowSymbol: number, rect: CaptureRect, param: CaptureParam): number {
     return this.rtcEngine.startScreenCaptureByWindow(windowSymbol, rect, param)
   }
@@ -3994,8 +4068,8 @@ class AgoraRtcEngine extends EventEmitter {
    * relay.
    * 
    * - If the channelMediaRelayState callback reports the state code `1` and 
-   * `0` in {@link ChannelMediaRelayState}, and the and the 
-   * channelMediaRelayEvent 
+   * the error code `0`, and the and the 
+   * `channelMediaRelayEvent`
    * callback reports the event code `4` in {@link ChannelMediaRelayEvent}, the
    * SDK starts relaying media streams between the original and the 
    * destination channel.
@@ -4054,7 +4128,7 @@ class AgoraRtcEngine extends EventEmitter {
    * 
    * After a successful method call, the SDK triggers the 
    * channelMediaRelayState callback. If the callback reports the state 
-   * code `0` and `1` in {@link ChannelMediaRelayState} the broadcaster 
+   * code `0` and the error code `1`, the broadcaster 
    * successfully stops the relay.
    * 
    * **Note**:
@@ -4065,8 +4139,8 @@ class AgoraRtcEngine extends EventEmitter {
    * the media stream relay automatically stops.
    * 
    * @return
-   * - 0: Success.
-   * - < 0: Failure.
+   * - 0: Success
+   * - < 0: Failure
    */
   stopChannelMediaRelay(): number {
     return this.rtcEngine.stopChannelMediaRelay();
@@ -4574,19 +4648,20 @@ declare interface AgoraRtcEngine {
   on(evt: 'apiCallExecuted', cb: (api: string, err: number) => void): this;
   /**
    * Reports a warning during SDK runtime.
-   * - warn: Warning code.
-   * - msg: Pointer to the warning message.
+   * @param cb.warn Warning code.
+   * @param cb.msg The warning message.
    */
   on(evt: 'warning', cb: (warn: number, msg: string) => void): this;
   /** Reports an error during SDK runtime.
-   * - err: Error code.
-   * - msg: Pointer to the error message.
+   * @param cb.err Error code.
+   * @param cb.msg The error message.
    */
   on(evt: 'error', cb: (err: number, msg: string) => void): this;
   /** Occurs when a user joins a specified channel.
-   * - channel: Pointer to the channel name.
-   * - uid: User ID of the user joining the channel.
-   * - elapsed: Time elapsed (ms) from the user calling the {@link joinChannel} 
+   * @param cb.channel The channel name.
+   * @param cb.uid User ID of the user joining the channel.
+   * @param cb.elapsed Time elapsed (ms) from the user calling the 
+   * {@link joinChannel} 
    * method until the SDK triggers this callback.
    */
   on(
@@ -4598,9 +4673,10 @@ declare interface AgoraRtcEngine {
    * When a user loses connection with the server because of network problems, 
    * the SDK automatically tries to reconnect and triggers this callback upon 
    * reconnection.
-   * - channel: Pointer to the channel name.
-   * - uid: User ID of the user joining the channel.
-   * - elapsed: Time elapsed (ms) from the user calling the {@link joinChannel} 
+   * @param cb.channel The channel name.
+   * @param cb.uid User ID of the user joining the channel.
+   * @param cb.elapsed Time elapsed (ms) from the user calling the 
+   * {@link joinChannel} 
    * method until the SDK triggers this callback.
    */
   on(
@@ -4619,14 +4695,54 @@ declare interface AgoraRtcEngine {
       totalVolume: number
     ) => void
   ): this;
-  /** Reports which users are speaking and the speakers' volume.
-   * - speakers: A struct containing each speaker's user ID and volume 
-   * information.
-   *  - uid: User ID of the speaker. The uid of the local user is 0.
-   *  - volume: The volume of the speaker.
-   * - speakerNumber: Total number of speakers.
-   * - volume: Total volume after audio mixing. The value ranges between 0 
-   * (lowest volume) and 255 (highest volume).
+  /** Reports which users are speaking, the speakers' volume and whether the 
+   * local user is speaking.
+   *  
+   * This callback reports the IDs and volumes of the loudest speakers 
+   * (at most 3 users) at the moment in the channel, and whether the local user 
+   * is speaking.
+   * 
+   * By default, this callback is disabled. You can enable it by calling the
+   * {@link enableAudioVolumeIndication} method.
+   * 
+   * The SDK triggers two independent `groupudioVolumeIndication` callbacks at 
+   * one time, which separately report the volume information of the local user 
+   * and all the remote speakers. For more information, see the detailed 
+   * parameter descriptions.
+   *
+   * @note
+   * - To enable the voice activity detection of the local user, ensure that 
+   * you set `report_vad(true)` in the `enableAudioVolumeIndication` method.
+   * - Calling the {@link muteLocalAudioStream} method affects the SDK's 
+   * behavior:
+   *  - If the local user calls `muteLocalAudioStream`, the SDK stops 
+   * triggering the local user's callback.
+   *  - 20 seconds after a remote speaker calls `muteLocalAudioStream`, the 
+   * remote speakers' callback excludes this remote user's information; 20 
+   * seconds after all remote users call `muteLocalAudioStream`, the SDK stops 
+   * triggering the remote speakers' callback.
+   * 
+   * @param cb.speakers The speakers' information:
+   * - In the local client:
+   *  - `uid`: 0.
+   *  - `volume`: The volume of the local speaker.
+   *  - `vad`: The voice activity status of the local user.
+   * - In each remote client:
+   *  - `uid`: The ID of the remote user.
+   *  - `volume`: The sum of the voice volume and audio-mixing volume of 
+   * each remote speaker.
+   *  - `vad`: 0.
+   *  
+   * @param cb.speakerNumber Total number of speakers. The value range is 
+   * [0, 3].
+   * - In the local client: 1.
+   * - In each remote client: 3, the three loudest speakers.
+   * @param cb.totalVolume Total volume after audio mixing. The value ranges 
+   * between 0 (lowest volume) and 255 (highest volume).
+   * - In the local client: The sum of the voice volume and audio-mixing volume 
+   * of the local user.
+   * - In each remote client: The sum of the voice volume and audio-mixing 
+   * volume of all the remote speakers.
    */
   on(
     evt: 'groupAudioVolumeIndication',
@@ -4634,7 +4750,7 @@ declare interface AgoraRtcEngine {
       speakers: {
         uid: number;
         volume: number;
-        vad: boolean;
+        vad: number; 
       }[],
       speakerNumber: number,
       totalVolume: number
@@ -4647,7 +4763,7 @@ declare interface AgoraRtcEngine {
   on(evt: 'leaveChannel', cb: () => void): this;
   /** Reports the statistics of the AgoraRtcEngine once every two seconds.
    * 
-   * - stats: Agora RTC engine statistics, see {@link RtcStats}.
+   * @param cb.stats AgoraRtcEngine's statistics, see {@link RtcStats}
    */
   on(evt: 'rtcStats', cb: (stats: RtcStats) => void): this;
   /** 
@@ -4673,12 +4789,14 @@ declare interface AgoraRtcEngine {
    */
   on(evt: 'localAudioStats', cb: (stats: LocalAudioStats) => void): this;
   /** Reports the statistics of the video stream from each remote user/host.
-   * - stats: Statistics of the received remote video streams. See 
+   * 
+   * @param cb.stats Statistics of the received remote video streams. See 
    * {@link RemoteVideoState}.
    */
   on(evt: 'remoteVideoStats', cb: (stats: RemoteVideoStats) => void): this;
   /** Reports the statistics of the audio stream from each remote user/host.
-   * - stats: Statistics of the received remote audio streams. See 
+   * 
+   * @param cb.stats Statistics of the received remote audio streams. See 
    * {@link RemoteAudioStats}.
    */
   on(evt: 'remoteAudioStats', cb: (stats: RemoteAudioStats) => void): this;
@@ -4768,12 +4886,15 @@ declare interface AgoraRtcEngine {
    * Last mile refers to the connection between the local device and Agora's 
    * edge server.
    *
-   * - uid: User ID. The network quality of the user with this uid is reported. 
+   * @param cb.uid User ID. The network quality of the user with this uid is 
+   * reported. 
    * If uid is 0, the local network quality is reported.
-   * - txquality: Uplink transmission quality rating of the user in terms of 
+   * @param cb.txquality Uplink transmission quality rating of the user in 
+   * terms of 
    * the transmission bitrate, packet loss rate, average RTT (Round-Trip Time), 
    * and jitter of the uplink network. See {@link AgoraNetworkQuality}.
-   * - rxquality: Downlink network quality rating of the user in terms of the 
+   * @param cb.rxquality Downlink network quality rating of the user in terms 
+   * of the 
    * packet loss rate, average RTT, and jitter of the downlink network. 
    * See {@link AgoraNetworkQuality}.
    */
@@ -4839,23 +4960,26 @@ declare interface AgoraRtcEngine {
    */
   on(evt: 'addStream', cb: (uid: number, elapsed: number) => void): this;
   /** Occurs when the video size or rotation of a specified user changes.
-   * - uid: User ID of the remote user or local user (0) whose video size or 
+   * @param cb.uid User ID of the remote user or local user (0) whose video 
+   * size or 
    * rotation changes.
-   * - width: New width (pixels) of the video.
-   * - height: New height (pixels) of the video.
-   * - roation: New height (pixels) of the video.
+   * @param cb.width New width (pixels) of the video.
+   * @param cb.height New height (pixels) of the video.
+   * @param cb.roation New height (pixels) of the video.
    */
   on(
     evt: 'videoSizeChanged',
     cb: (uid: number, width: number, height: number, rotation: number) => void
   ): this;
   /** Occurs when the first remote video frame is rendered.
+   * 
    * The SDK triggers this callback when the first frame of the remote video 
    * is displayed in the user's video window.
-   * - uid: User ID of the remote user sending the video stream.
-   * - width: Width (pixels) of the video frame.
-   * - height: Height (pixels) of the video stream.
-   * - elapsed: Time elapsed (ms) from the local user calling the 
+   * 
+   * @param cb.uid User ID of the remote user sending the video stream.
+   * @param cb.width Width (pixels) of the video frame.
+   * @param cb.height Height (pixels) of the video stream.
+   * @param cb.elapsed Time elapsed (ms) from the local user calling the 
    * {@link joinChannel} method until the SDK triggers this callback.
    */
   on(
@@ -4876,9 +5000,6 @@ declare interface AgoraRtcEngine {
     cb: (uid: number, width: number, height: number, elapsed: number) => void
   ): this;
   /** Occurs when a user or host joins the channel.
-   * - uid: User ID of the user or host joining the channel.
-   * - elapsed: Time delay (ms) from the local user calling the 
-   * {@link joinChannel} method until the SDK triggers this callback.
    *
    * The SDK triggers this callback under one of the following circumstances:
    * - A remote user/host joins the channel by calling the {@link joinChannel} 
@@ -4889,12 +5010,16 @@ declare interface AgoraRtcEngine {
    * - The host injects an online media stream into the channel by calling 
    * the {@link addInjectStreamUrl} method.
    *
-   * **Note**: In the Live-broadcast profile:
+   * @note In the Live-broadcast profile:
    * - The host receives this callback when another host joins the channel.
    * - The audience in the channel receives this callback when a new host 
    * joins the channel.
    * - When a web application joins the channel, the SDK triggers this 
    * callback as long as the web application publishes streams.
+   * 
+   * @param cb.uid User ID of the user or host joining the channel.
+   * @param cb.elapsed Time delay (ms) from the local user calling the 
+   * {@link joinChannel} method until the SDK triggers this callback.
    */
   on(evt: 'userJoined', cb: (uid: number, elapsed: number) => void): this;
   /** Occurs when a remote user leaves the channel.
@@ -4931,8 +5056,9 @@ declare interface AgoraRtcEngine {
    * offline. A poor network connection may lead to false detections, so we 
    * recommend using the signaling system for reliable offline detection.
    * 
-   * - uid: ID of the user or host who leaves the channel or goes offline.
-   * - reason: Reason why the user goes offline:
+   * @param cb.uid ID of the user or host who leaves the channel or goes 
+   * offline.
+   * @param cb.reason Reason why the user goes offline:
    *  - The user left the current channel.
    *  - The SDK timed out and the user dropped offline because no data packet 
    * was received within a certain period of time. If a user quits the call 
@@ -5020,6 +5146,7 @@ declare interface AgoraRtcEngine {
   on(evt: 'videoStopped', cb: () => void): this;
   /** Occurs when the SDK cannot reconnect to Agora's edge server 10 seconds 
    * after its connection to the server is interrupted.
+   * 
    * The SDK triggers this callback when it cannot connect to the server 10 
    * seconds after calling the {@link joinChannel} method, whether or not it 
    * is in the channel.
@@ -5038,10 +5165,10 @@ declare interface AgoraRtcEngine {
    * The SDK triggers this callback when the local user receives the stream 
    * message that the remote user sends by calling the 
    * {@link sendStreamMessage} method.
-   * - uid: User ID of the remote user sending the message.
-   * - streamId: Stream ID.
-   * - msg: Pointer to the data received bt the local user.
-   * - len: Length of the data in bytes.
+   * @param cb.uid User ID of the remote user sending the message.
+   * @param cb.streamId Stream ID.
+   * @param cb.msg The data received bt the local user.
+   * @param cb.len Length of the data in bytes.
    */
   on(
     evt: 'streamMessage',
@@ -5049,15 +5176,17 @@ declare interface AgoraRtcEngine {
   ): this;
   /** Occurs when the local user does not receive the data stream from the 
    * remote user within five seconds.
+   * 
    * The SDK triggers this callback when the local user fails to receive the 
    * stream message that the remote user sends by calling the 
    * {@link sendStreamMessage} method.
-   * - uid: User ID of the remote user sending the message.
-   * - streamId: Stream ID.
-   * - err: Error code.
-   * - missed: Number of the lost messages.
-   * - cached: Number of incoming cached messages when the data stream is 
-   * interrupted.
+   * 
+   * @param cb.uid User ID of the remote user sending the message.
+   * @param cb.streamId Stream ID.
+   * @param cb.err Error code.
+   * @param cb.missed Number of the lost messages.
+   * @param cb.cached Number of incoming cached messages when the data stream 
+   * is interrupted.
    */
   on(
     evt: 'streamMessageError',
@@ -5072,7 +5201,9 @@ declare interface AgoraRtcEngine {
   /** Occurs when the media engine call starts. */
   on(evt: 'mediaEngineStartCallSuccess', cb: () => void): this;
   /** Occurs when the token expires.
-   * After a token is specified by calling the {@link joinChannel} method, 
+   * 
+   * After a token(channel key) is specified by calling the {@link joinChannel} 
+   * method, 
    * if the SDK losses connection with the Agora server due to network issues, 
    * the token may expire after a certain period
    * of time and a new token may be required to reconnect to the server.
@@ -5101,8 +5232,8 @@ declare interface AgoraRtcEngine {
   /**
    * Occurs when the engine receives the first audio frame from a specified 
    * remote user.
-   * - uid: User ID of the remote user sending the audio stream.
-   * - elapsed: The time elapsed (ms) from the local user calling the 
+   * @param cb.uid User ID of the remote user sending the audio stream.
+   * @param cb.elapsed The time elapsed (ms) from the local user calling the 
    * {@link joinChannel} method until the SDK triggers this callback.
    */
   on(
@@ -5111,27 +5242,32 @@ declare interface AgoraRtcEngine {
   ): this;
   /**
    * Reports which user is the loudest speaker.
-   * - uid: User ID of the active speaker. A uid of 0 represents the local user.
+   * 
+   * This callback returns the user ID of the user with the highest voice 
+   * volume during a period of time, instead of at the moment.
+   * 
+   * @note To receive this callback, you need to call the 
+   * {@link enableAudioVolumeIndication} method.
+   * 
+   * @param cb.uid User ID of the active speaker. A uid of 0 represents the 
+   * local user.
    * If the user enables the audio volume indication by calling the 
    * {@link enableAudioVolumeIndication} method, this callback returns the uid 
    * of the
    * active speaker detected by the audio volume detection module of the SDK.
    *
-   * **Note**:
-   * - To receive this callback, you need to call the 
-   * {@link enableAudioVolumeIndication} method.
-   * - This callback returns the user ID of the user with the highest voice 
-   * volume during a period of time, instead of at the moment.
    */
   on(evt: 'activeSpeaker', cb: (uid: number) => void): this;
-  /** Occurs when the user role switches in a live broadcast. For example, 
+  /** Occurs when the user role switches in a live broadcast.
+   * 
+   * For example, 
    * from a host to an audience or vice versa.
    *
    * This callback notifies the application of a user role switch when the 
    * application calls the {@link setClientRole} method.
    *
-   * - oldRole: Role that the user switches from ClientRoleType.
-   * - newRole: Role that the user switches to ClientRoleType.
+   * @param cb.oldRole The old role, see {@link ClientRoleType}
+   * @param cb.newRole The new role, see {@link ClientRoleType}
    */
   on(
     evt: 'clientRoleChanged',
@@ -5161,12 +5297,13 @@ declare interface AgoraRtcEngine {
    */
   on(evt: 'videoSourceLeaveChannel', cb: () => void): this;
   /** Occurs when the remote video state changes.
-   *  - uid: ID of the user whose video state changes.
-   *  - state: State of the remote video. 
+   * 
+   * @param cb.uid ID of the user whose video state changes.
+   * @param cb.state State of the remote video. 
    * See {@link RemoteVideoState}.
-   *  - reason: The reason of the remote video state change. 
+   * @param cb.reason The reason of the remote video state change. 
    * See {@link RemoteVideoStateReason}
-   *  - elapsed: Time elapsed (ms) from the local user calling the 
+   * @param cb.elapsed Time elapsed (ms) from the local user calling the 
    * {@link joinChannel} method until the SDK triggers this callback.
    */
   on(
@@ -5207,7 +5344,7 @@ declare interface AgoraRtcEngine {
    * on the server and call the {@link renewToken} method to pass the new 
    * token to the SDK.
    *
-   * - token: Pointer to the token that expires in 30 seconds.
+   * @param cb.token The token that expires in 30 seconds.
    */
   on(evt: 'tokenPrivilegeWillExpire', cb: (token: string) => void): this;
   /** Reports the result of CDN live streaming.
@@ -5231,6 +5368,55 @@ declare interface AgoraRtcEngine {
    * - url: The RTMP URL address.
    */
   on(evt: 'streamUnpublished', cb: (url: string) => void): this;
+  /**
+   * Occurs when the state of the RTMP streaming changes.
+   * 
+   * The SDK triggers this callback to report the result of the local user 
+   * calling the {@link addPublishStreamUrl} and {@link removePublishStreamUrl}
+   * method.
+   * 
+   * This callback indicates the state of the RTMP streaming. When exceptions 
+   * occur, you can troubleshoot issues by referring to the detailed error 
+   * descriptions in the `code` parameter.
+   * @param cb.url The RTMP URL address.
+   * @param cb.state The RTMP streaming state:
+   * - `0`: The RTMP streaming has not started or has ended. This state is also 
+   * triggered after you remove an RTMP address from the CDN by calling 
+   * {@link removePublishStreamUrl}.
+   * - `1`: The SDK is connecting to Agora's streaming server and the RTMP 
+   * server. This state is triggered after you call the 
+   * {@link addPublishStreamUrl} method.
+   * - `2`: The RTMP streaming publishes. The SDK successfully publishes the 
+   * RTMP streaming and returns this state.
+   * - `3`: The RTMP streaming is recovering. When exceptions occur to the CDN, 
+   * or the streaming is interrupted, the SDK tries to resume RTMP streaming 
+   * and returns this state. 
+   *  - If the SDK successfully resumes the streaming, `2` returns.
+   *  - If the streaming does not resume within 60 seconds or server errors 
+   * occur, `4` returns. You can also reconnect to the server by calling the
+   * {@link removePublishStreamUrl} and then {@link addPublishStreamUrl} 
+   * method.
+   * - `4`: The RTMP streaming fails. See the `code` parameter for the 
+   * detailed error information. You can also call the 
+   * {@link addPublishStreamUrl} method to publish the RTMP streaming again.
+   * @param cb.code The detailed error information:
+   * - `0`: The RTMP streaming publishes successfully.
+   * - `1`: Invalid argument used. 
+   * - `2`: The RTMP streams is encrypted and cannot be published.
+   * - `3`: Timeout for the RTMP streaming. Call the 
+   * {@link addPublishStreamUrl} to publish the stream again.
+   * - `4`: An error occurs in Agora's streaming server. Call the 
+   * {@link addPublishStreamUrl} to publish the stream again.
+   * - `5`: An error occurs in the RTMP server.
+   * - `6`: The RTMP streaming publishes too frequently.
+   * - `7`: The host publishes more than 10 URLs. Delete the unnecessary URLs 
+   * before adding new ones.
+   * - `8`: The broadcaster manipulates other hosts' URLs. Check your app 
+   * logic.
+   * - `9`: Agora's server fails to find the RTMP stream.
+   * - `10`: The format of the stream's URL address is not supported. Check 
+   * whether the URL format is correct.
+   */
   on(evt: 'rtmpStreamingStateChanged', cb: (url: string, state: number, code: number) => void): this;
   /** Occurs when the publisher's transcoding is updated. */
   on(evt: 'transcodingUpdated', cb: () => void): this;
@@ -5280,17 +5466,16 @@ declare interface AgoraRtcEngine {
    *
    * If you call {@link setRemoteSubscribeFallbackOption} and set option as 
    * AUDIO_ONLY(2), the SDK triggers this callback when
-   * the remotely subscribed media stream falls back to audio-only mode due to 
+   * the remotely subscribed media stream falls back to audio-only mode due to
    * poor uplink conditions, or when the remotely subscribed media stream 
-   * switches back to the video
-   *  after the uplink network condition improves.
-   * - uid: ID of the remote user sending the stream.
-   * - isFallbackOrRecover: Whether the remote media stream falls back to 
-   * audio-only or switches back to the video:
-   *  - true: The remote media stream falls back to audio-only due to poor 
+   * switches back to the video after the uplink network condition improves.
+   * @param cb.uid ID of the remote user sending the stream.
+   * @param cb.isFallbackOrRecover Whether the remote media stream falls back 
+   * to audio-only or switches back to the video:
+   *  - `true`: The remote media stream falls back to audio-only due to poor 
    * network conditions.
-   *  - false: The remote media stream switches back to the video stream after 
-   * the network conditions improved.
+   *  - `false`: The remote media stream switches back to the video stream 
+   * after the network conditions improved.
    */
   on(evt: 'remoteSubscribeFallbackToAudioOnly', cb: (
     uid: number,
@@ -5307,8 +5492,8 @@ declare interface AgoraRtcEngine {
    */
   on(evt: 'microphoneEnabled', cb: (enabled: boolean) => void): this;
   /** Occurs when the connection state between the SDK and the server changes.
-   * - state: See {@link ConnectionState}.
-   * - reason: See {@link ConnectionState}.
+   * @param cb.state The connection state, see {@link ConnectionState}.
+   * @param cb.reason The connection reason, see {@link ConnectionState}.
    */
   on(evt: 'connectionStateChanged', cb: (
     state: ConnectionState,
@@ -5391,15 +5576,15 @@ declare interface AgoraRtcEngine {
    * 
    * This callback indicates the state change of the remote audio stream.
    * 
-   * - uid ID of the remote user whose audio state changes.
+   * @param cb.uid ID of the remote user whose audio state changes.
    * 
-   * - state State of the remote audio: 
+   * @param cb.state State of the remote audio: 
    * {@link RemoteAudioState}.
    * 
-   * - reason The reason of the remote audio state change: 
+   * @param cb.reason The reason of the remote audio state change: 
    * {@link RemoteAudioStateReason}.
    * 
-   * - elapsed Time elapsed (ms) from the local user calling the 
+   * @param cb.elapsed Time elapsed (ms) from the local user calling the 
    * {@link joinChannel} method until the SDK triggers this callback.
    */
   on(evt: 'remoteAudioStateChanged', cb: (
@@ -5413,8 +5598,9 @@ declare interface AgoraRtcEngine {
    * 
    * The SDK reports the state of the current media relay and possible error 
    * messages in this callback.
-   * - state: The state code. See {@link ChannelMediaRelayState}.
-   * - code: The error code. See {@link ChannelMediaRelayError}.
+   * 
+   * @param cb.state The state code. See {@link ChannelMediaRelayState}.
+   * @param cb.code The error code. See {@link ChannelMediaRelayError}.
    */
   on(evt: 'channelMediaRelayState', cb: (
     state: ChannelMediaRelayState,
@@ -5423,7 +5609,7 @@ declare interface AgoraRtcEngine {
   /**
    * Reports events during the media stream relay.
    * 
-   * - event: The event code. See {@link ChannelMediaRelayEvent}.
+   * @param cb.event The event code. See {@link ChannelMediaRelayEvent}.
    */
   on(evt: 'channelMediaRelayEvent', cb: (
     event: ChannelMediaRelayEvent
@@ -5688,13 +5874,24 @@ class AgoraRtcChannel extends EventEmitter
   /**
    * Joins the channel with a user ID.
    * 
-   * This method differs from the `joinChannel` method in the `AgoraRtcEngine` class in the following aspects:
-   * | AgoraRtcChannel joinChannel                                            | AgoraRtcEngine joinChannel                   |
-   * |--------------------------------|------------------------------------------------------------------------------------------------------|
-   * | Does not contain the `channel` parameter, because `channel` is specified when creating the `AgoraRtcChannel` object.  | Contains the `channel` parameter, which specifies the channel to join.      |
-   * | Contains the `options` parameter, which decides whether to subscribe to all streams before joining the channel.   | Does not contain the `options` parameter. By default, users subscribe to all streams when joining the channel. |
-   * | Users can join multiple channels simultaneously by creating multiple `AgoraRtcChannel` objects and calling the `joinChannel` method of each object. | Users can join only one channel.   |                                                                       
-   * | By default, the SDK does not publish any stream after the user joins the channel. You need to call the publish method to do that.  | By default, the SDK publishes streams once the user joins the channel.  |
+   * This method differs from the `joinChannel` method in the `AgoraRtcEngine` 
+   * class in the following aspects:
+   * - For the `joinChannel` method in the `AgoraRtcChannel` class:
+   *  - Does not contain the `channel` parameter, because `channel` is 
+   * specified when creating the `AgoraRtcChannel` object.
+   *  - Contains the `options` parameter, which decides whether to subscribe 
+   * to all streams before joining the channel. 
+   *  - Users can join multiple channels simultaneously by creating multiple 
+   * `AgoraRtcChannel` objects and calling the `joinChannel` method of each 
+   * object. 
+   *  - By default, the SDK does not publish any stream after the user joins 
+   * the channel. You need to call the {@link publish} method to do that.
+   * - For the `joinChannel` method in the `AgoraRtcEngine` class:
+   *  - Contains the `channel` parameter, which specifies the channel to join.
+   *  - Does not contain the `options` parameter. By default, users subscribe 
+   * to all streams when joining the channel.
+   *  - Users can join only one channel. 
+   *  - By default, the SDK publishes streams once the user joins the channel.
    * @note
    * - If you are already in a channel, you cannot rejoin it with the same `uid`.
    * - We recommend using different UIDs for different channels.
@@ -5713,10 +5910,10 @@ class AgoraRtcChannel extends EventEmitter
    * @param uid The user ID. A 32-bit unsigned integer with a value ranging 
    * from 1 to (232-1). This parameter must be unique. If `uid` is not 
    * assigned (or set as `0`), the SDK assigns a `uid` and reports it in 
-   * the `onJoinChannelSuccess` callback of the `AgoraRtcChannel` interface. 
+   * the `onJoinChannelSuccess` callback. 
    * The app must maintain this user ID.
    * @param options The channel media options, see 
-   * {@link AgoraRtcChannel.ChannelMediaOptions ChannelMediaOptions}
+   * {@link ChannelMediaOptions}
    * 
    * @return
    * - 0: Success.
@@ -5741,11 +5938,10 @@ class AgoraRtcChannel extends EventEmitter
    * 
    * After the user successfully joins the channel, the SDK triggers the 
    * following callbacks:
-   * - The local client: `localUserRegistered` and `joinChannelSuccess` in the 
-   * `AgoraRtcChannel` interface.
-   * - The remote client: `userJoined` and `userInfoUpdated` in the 
-   * `AgoraRtcChannel` interface, if the user joining the channel is in the 
-   * Communication profile, or is a BROADCASTER in the Live Broadcast profile.
+   * - The local client: `localUserRegistered` and `joinChannelSuccess`.
+   * - The remote client: `userJoined` and `userInfoUpdated`, if the user 
+   * joining the channel is in the Communication profile, or is a BROADCASTER 
+   * in the Live Broadcast profile.
    * 
    * @note To ensure smooth communication, use the same parameter type to 
    * identify the user. For example, if a user joins the channel with a user 
@@ -5770,7 +5966,7 @@ class AgoraRtcChannel extends EventEmitter
    * "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", 
    * "[", "]", "^", "_", " {", "}", "|", "~", ",".
    * @param options The channel media options, see 
-   * {@link AgoraRtcChannel.ChannelMediaOptions ChannelMediaOptions}
+   * {@link ChannelMediaOptions}
    * 
    * @return
    * - 0: Success.
@@ -5831,8 +6027,7 @@ class AgoraRtcChannel extends EventEmitter
    * user roles after joining a channel, SDK triggers the follwoing callbacks:
    * - The local client: `clientRoleChanged` in the `AgoraRtcChannel` 
    * interface.
-   * - The remote clinet: `userjoined` or `userOffline` in the 
-   * `AgoraRtcChannel` interface.
+   * - The remote clinet: `userjoined` or `userOffline`.
    * 
    * @note This method applies only to the Live-broadcast profile.
    * @param role Sets the role of the user. See 
@@ -5849,7 +6044,7 @@ class AgoraRtcChannel extends EventEmitter
    * Prioritizes a remote user's stream.
    * 
    * Use this method with the 
-   * {@link AgoraRtcChannel.setRemoteSubscribeFallbackOption} method.
+   * {@link setRemoteSubscribeFallbackOption} method.
    * 
    * If the fallback function is enabled for a subscribed stream, the SDK 
    * ensures the high-priority user gets the best possible stream quality.
@@ -5858,7 +6053,7 @@ class AgoraRtcChannel extends EventEmitter
    * only.
    * @param uid The ID of the remote user.
    * @param priority The priority of the remote user. See
-   * {@link AgoraRtcChannel.Priority Priority}.
+   * {@link Priority}.
    * 
    * @return
    * - 0: Success
@@ -5873,7 +6068,7 @@ class AgoraRtcChannel extends EventEmitter
    * The `token` expires after a period of time once the token schema is 
    * enabled when the SDK triggers the `onTokenPrivilegeWillExpire` callback or
    * `CONNECTION_CHANGED_TOKEN_EXPIRED(9)` of `onConnectionStateChanged` 
-   * callback in the `AgoraRtcChannel` interface.
+   * callback.
    * 
    * You should call this method to renew `token`, or the SDK disconnects from
    * Agora' server.
@@ -5924,9 +6119,8 @@ class AgoraRtcChannel extends EventEmitter
    * Refer to the information related to the AES encryption algorithm on the 
    * differences between the encryption modes.
    * 
-   * @note Call the 
-   * {@link AgoraRtcChannel.setEncryptionSecret setEncryptionSecret}
-   * method before calling this method.
+   * @note Call the {@link setEncryptionSecret} method before calling this 
+   * method.
    * 
    * @param mode The set encryption mode:
    * - "aes-128-xts": (Default) 128-bit AES encryption, XTS mode.
@@ -5942,99 +6136,598 @@ class AgoraRtcChannel extends EventEmitter
   setEncryptionMode(mode: string): number {
     return this.rtcChannel.setEncryptionMode(mode);
   }
-  
+  /**
+   * Sets the sound position and gain of a remote user.
+   * 
+   * When the local user calls this method to set the sound position of a 
+   * remote user, the sound difference between the left and right channels 
+   * allows the local user to track the real-time position of the remote user, 
+   * creating a real sense of space. This method applies to massively 
+   * multiplayer online games, such as Battle Royale games.
+   * 
+   * @note
+   * - For this method to work, enable stereo panning for remote users by 
+   * calling the {@link enableSoundPositionIndication} method before joining a 
+   * channel.
+   * - This method requires hardware support. For the best sound positioning, 
+   * we recommend using a stereo speaker.
+   * @param uid The ID of the remote user.
+   * @param pan The sound position of the remote user. The value ranges from 
+   * -1.0 to 1.0:
+   * - 0.0: The remote sound comes from the front.
+   * - -1.0: The remote sound comes from the left.
+   * - 1.0: The remote sound comes from the right.
+   * @param gain Gain of the remote user. The value ranges from 0.0 to 100.0. 
+   * The default value is 100.0 (the original gain of the remote user). The 
+   * smaller the value, the less the gain.
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   setRemoteVoicePosition(uid: number, pan: number, gain: number): number {
     return this.rtcChannel.setRemoteVoicePosition(uid, pan, gain);
   }
-
+  /**
+   * Sets whether to receive all remote audio streams by default. 
+   * 
+   * You can call this method either before or after joining a channel. If you 
+   * call `setDefaultMuteAllRemoteAudioStreams (true)` after joining a channel, 
+   * the remote audio streams of all subsequent users are not received.
+   *
+   * If you want to resume receiving the audio stream, call 
+   * {@link muteRemoteAudioStream}(false), and specify the ID of the remote 
+   * user whose audio stream you want to receive. 
+   * 
+   * To receive the audio streams of multiple remote users, call 
+   * `muteRemoteAudioStream (false)` as many times. 
+   * 
+   * Calling `setDefaultMuteAllRemoteAudioStreams (false)` resumes receiving 
+   * the audio streams of subsequent users only.
+   * 
+   * @param mute Sets whether to receive/stop receiving all remote users' 
+   * audio streams by default:
+   * - true:  Stop receiving all remote users' audio streams by default.
+   * - false: (Default) Receive all remote users' audio streams by default.
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   setDefaultMuteAllRemoteAudioStreams(mute: boolean): number {
     return this.rtcChannel.setDefaultMuteAllRemoteAudioStreams(mute);
   }
-
+  /**
+   * Sets whether to receive all remote video streams by default. 
+   * 
+   * You can call this method either before or after joining a channel. If you 
+   * call `setDefaultMuteAllRemoteVideoStreams (true)` after joining a channel, 
+   * the remote video streams of all subsequent users are not received.
+   * 
+   * If you want to resume receiving the video stream, call 
+   * {@link muteRemoteVideoStream}(false), and specify the ID of the remote 
+   * user whose video stream you want to receive. 
+   * 
+   * To receive the video streams of multiple remote users, call 
+   * `muteRemoteVideoStream (false)` as many times. 
+   * 
+   * Calling `setDefaultMuteAllRemoteVideoStreams (false)` resumes receiving 
+   * the video streams of subsequent users only.
+   * @param mute Sets whether to receive/stop receiving all remote users' video 
+   * streams by default:
+   * - true: Stop receiving all remote users' video streams by default.
+   * - false: (Default) Receive all remote users' video streams by default.
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   setDefaultMuteAllRemoteVideoStreams(mute: boolean): number {
     return this.rtcChannel.setDefaultMuteAllRemoteVideoStreams(mute);
   }
-
+  /**
+   * Stops/Resumes receiving all remote users' audio streams.
+   * 
+   * @param mute Sets whether to receive/stop receiving all remote users' 
+   * audio streams.
+   * - true: Stop receiving all remote users' audio streams.
+   * - false: (Default) Receive all remote users' audio streams.
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   muteAllRemoteAudioStreams(mute: boolean): number {
     return this.rtcChannel.muteAllRemoteAudioStreams(mute);
   }
-
+  /**
+   * Stops/Resumes receiving a specified remote user's audio stream.
+   * 
+   * If you called the {@link muteAllRemoteAudioStreams}(true) method to stop
+   * receiving all remote users' audio streams, please call 
+   * the `muteAllRemoteAudioStreams`c(false) method before calling the 
+   * `muteRemoteAudioStream` method.
+   * 
+   * The `muteAllRemoteAudioStreams` method sets all remote audio streams,
+   * while the `muteRemoteAudioStream` method sets a specified remote audio 
+   * stream.
+   * @param uid The user ID of the specified remote user sending the audio.
+   * @param mute Sets whether to receive/stop receiving a specified remote 
+   * user's audio stream:
+   * - true: Stop receiving the specified remote user's audio stream.
+   * - false: (Default) Receive the specified remote user's audio stream.
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   muteRemoteAudioStream(uid: number, mute: boolean): number {
     return this.rtcChannel.muteRemoteAudioStream(uid, mute);
   }
-
+  /**
+   * Stops/Resumes receiving all video stream from a specified remote user.
+   * 
+   * @param mute Sets whether to receive/stop receiving all remote users' 
+   * video streams:
+   * - true: Stop receiving all remote users' video streams.
+   * - false: (Default) Receive all remote users' video streams.
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   muteAllRemoteVideoStreams(mute: boolean): number {
     return this.rtcChannel.muteAllRemoteVideoStreams(mute);
   }
-
+  /**
+   * Stops/Resumes receiving the video stream from a specified remote user.
+   * 
+   * It you called the {@link muteAllRemoteVideoStreams}(true) to stop 
+   * receiving all remote video streams, please call the 
+   * `muteAllRemoteVideoStreams`(false) before calling `muteRemoteVideoStream`
+   * method.
+   * @param uid The user ID of the specified remote user.
+   * @param mute Sets whether to stop/resume receiving the video stream from a 
+   * specified remote user:
+   * - true: Stop receiving the specified remote user's video stream.
+   * - false: (Default) Receive the specified remote user's video stream.
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   muteRemoteVideoStream(uid: number, mute: boolean): number {
     return this.rtcChannel.muteRemoteVideoStream(uid, mute);
   }
-
+  /**
+   * Sets the type of receiving video stream.
+   * 
+   * Under limited network conditions, if the publisher has not disabled the 
+   * dual-stream mode using {@link enableDualStreamMode}(false), the receiver 
+   * can choose to receive either the high-video stream (the high resolution, 
+   * and high bitrate video stream) or the low-video stream (the low 
+   * resolution, and low bitrate video stream).
+   * 
+   * By default, users receive the high-video stream. Call this method if you 
+   * want to switch to the low-video stream. This method allows the app to 
+   * adjust the corresponding video stream type based on the size of the video 
+   * window to reduce the bandwidth and resources. 
+   * 
+   * The aspect ratio of the low-video stream is the same as the high-video 
+   * stream. Once the resolution of the high-video stream is set, the system 
+   * automatically sets the resolution, frame rate, and bitrate of the 
+   * low-video stream.
+   * 
+   * @param uid The ID of the remote user sending the video stream.
+   * @param streamType The video-stream type. See {@link StreamType}
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   setRemoteVideoStreamType(uid: number, streamType: StreamType): number {
     return this.rtcChannel.setRemoteVideoStreamType(uid, streamType);
   }
-
+  /**
+   * Sets the default type of receiving video stream.
+   * 
+   * Under limited network conditions, if the publisher has not disabled the 
+   * dual-stream mode using {@link enableDualStreamMode}(false), the receiver 
+   * can choose to receive either the high-video stream (the high resolution, 
+   * and high bitrate video stream) or the low-video stream (the low 
+   * resolution, and low bitrate video stream) by default.
+   * 
+   * By default, users receive the high-video stream. Call this method if you 
+   * want to switch to the low-video stream. This method allows the app to 
+   * adjust the corresponding video stream type based on the size of the video 
+   * window to reduce the bandwidth and resources.
+   * 
+   * The aspect ratio of the low-video stream is the same as the high-video 
+   * stream. Once the resolution of the high-video stream is set, the system 
+   * automatically sets the resolution, frame rate, and bitrate of the 
+   * low-video stream.
+   * 
+   * @param streamType The video-stream type. See {@link StreamType}
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   setRemoteDefaultVideoStreamType(streamType: StreamType): number {
     return this.rtcChannel.setRemoteDefaultVideoStreamType(streamType);
   }
-
+  /**
+   * Creates a data stream.
+   * 
+   * Each user can create up to five data streams during the lifecycle of the 
+   * AgoraRtcEngine.
+   * 
+   * @note Set both the `reliable` and `ordered` parameters to `true` or 
+   * `false`. Do not set one as `true` and the other as `false`.
+   * 
+   * @param reliable Sets whether or not the recipients are guaranteed to 
+   * receive the data stream from the sender within five seconds:
+   * - true: The recipients receive the data stream from the sender within five 
+   * seconds. If the recipient does not receive the data stream within five 
+   * seconds, an error is reported to the application.
+   * - false: There is no guarantee that the recipients receive the data stream 
+   * within five seconds and no error message is reported for any delay or 
+   * missing data stream.
+   * @param ordered Sets whether or not the recipients receive the data stream 
+   * in the sent order:
+   * - true: The recipients receive the data stream in the sent order.
+   * - false: The recipients do not receive the data stream in the sent order.
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   createDataStream(reliable: boolean, ordered: boolean): number {
     return this.rtcChannel.createDataStream(reliable, ordered);
   }
-
+  /**
+   * Sends data stream messages to all users in the channel.
+   * 
+   * The SDK has the following restrictions on this method:
+   * - Up to 30 packets can be sent per second in a channel with each packet 
+   * having a maximum size of 1 kB.
+   * - Each client can send up to 6 kB of data per second.
+   * - Each user can have up to five data streams simultaneously.
+   * 
+   * Ensure that you have created the data stream using 
+   * {@link createDataStream} before calling this method.
+   * 
+   * If the method call succeeds, the remote user receives the `streamMessage` 
+   * callback; If the method call fails, the remote user receives the 
+   * `streamMessageError` callback. 
+   * 
+   * @note This method applies to the users in the communication profile or the 
+   * broadcasters in the live-broadcast profile. If an audience in the 
+   * live-broadcast profile calls this method, the role of the audience may be 
+   * switched to the broadcaster.
+   * 
+   * @param streamId he ID of the sent data stream, returned in the 
+   * {@link createDataStream} method.
+   * @param msg The data stream messages.
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   sendStreamMessage(streamId: number, msg: string): number {
     return this.rtcChannel.sendStreamMessage(streamId, msg);
   }
-
+  /**
+   * Publishes the local stream to a specified CDN URL address. 
+   * 
+   * In the live-broadcast profile, the broadcaster can call this method to 
+   * publish the local stream to a specified CDN URL address, which is called 
+   * "Push Streams to CDN" or "CDN live streaming."
+   * 
+   * After calling this method, the SDK triggers the `streamPublished` 
+   * callback.
+   * 
+   * During the CDN live streaming, the SDK triggers the
+   * `rtmpStreamingStateChanged` callback is any streaming state changes.
+   * 
+   * @note 
+   * - Call this method after the user joins the channel.
+   * - This method applies to the Live-Broadcast profile only.
+   * - Ensure that you enable the RTMP Converter service before using this 
+   * function. See 
+   * [Prerequisites](https://docs.agora.io/en/Interactive%20Broadcast/cdn_streaming_windows?platform=Windows#prerequisites).
+   * - This method adds only one stream RTMP URL address each time it is 
+   * called. 
+   * 
+   * @param url The CDN streaming URL in the RTMP format. The maximum length 
+   * of this parameter is 1024 bytes. The RTMP URL address must not contain 
+   * special characters, such as Chinese language characters.
+   * @param transcodingEnabled Sets whether transcoding is enabled/disabled:
+   * - true: Enable transcoding. To 
+   * [transcode](https://docs.agora.io/en/Agora%20Platform/terms?platform=All%20Platforms#transcoding) 
+   * the audio or video streams when publishing them to CDN live, often used 
+   * for combining the audio and video streams of multiple hosts in CDN live. 
+   * When you set this parameter as `true`, ensure that you call the 
+   * {@link setLiveTranscoding} method before this method.
+   * - false: Disable transcoding.
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   *  - `ERR_INVALID_ARGUMENT (2)`: The RTMP URL address is NULL or has a 
+   * string length of 0.
+   *  - `ERR_NOT_INITIALIZED (7)`: You have not initialized `AgoraRtcChannel` 
+   * when publishing the stream.
+   */
   addPublishStreamUrl(url: string, transcodingEnabled: boolean): number {
     return this.rtcChannel.addPublishStreamUrl(url, transcodingEnabled);
   }
-
+  /**
+   * Removes the RTMP stream from the CDN. 
+   * 
+   * This method removes the RTMP URL address (added by 
+   * {@link addPublishStreamUrl}) and stops the CDN live streaming.
+   * 
+   * This method call triggers the `rtmpStreamingStateChanged` callback to 
+   * report the state of removing the URL address.
+   * 
+   * @note 
+   * - This method removes only one RTMP URL address each time it is 
+   * called.
+   * - This method applies to the Live-Broadcast profile only.
+   * - Call this method after {@link addPublishStreamUrl}.
+   * @param url The RTMP URL address to be removed. The maximum length of this 
+   * parameter is 1024 bytes. The RTMP URL address must not contain special 
+   * characters, such as Chinese language characters.
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   removePublishStreamUrl(url: string): number {
     return this.rtcChannel.removePublishStreamUrl(url);
   }
-
+  /**
+   * Sets the video layout and audio settings for CDN live. 
+   * 
+   * The SDK triggers the `transcodingUpdated` callback when you call this 
+   * method to **update** the transcoding setting. If you call this method for
+   * the first time to **set** the transcoding setting, the SDK does not 
+   * trigger the `transcodingUpdated` callback.
+   * 
+   * @note 
+   * - Ensure that you enable the RTMP Converter service before using this 
+   * function. See 
+   * [Prerequisites](https://docs.agora.io/en/Interactive%20Broadcast/cdn_streaming_windows?platform=Windows#prerequisites).
+   * - This method applies to the Live-Broadcast profile only.
+   * 
+   * @param transcoding The transcoding setting for the audio and video streams
+   * during the CDN live streaming. See {@link LiveTranscoding} 
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   setLiveTranscoding(transcoding: TranscodingConfig): number {
     return this.rtcChannel.setLiveTranscoding(transcoding);
   }
-
+  /**
+   * Injects the online media stream to a live broadcast.
+   * 
+   * If this method call is successful, the server pulls the voice or video 
+   * stream and injects it into a live channel. And all audience members in the 
+   * channel can watch a live show and interact with each other.
+   * 
+   * This method call triggers the following callbacks:
+   * - The local client:
+   *  - `streamInjectedStatus`, reports the injecting status.
+   *  - `userJoined`(uid:666), reports the stream is injected successfully and 
+   * the UID of this stream is 666.
+   * - The remote client:
+   *  - `userJoined`(uid:666), reports the stream is injected successfully and 
+   * the UID of this stream is 666.
+   * 
+   * @note
+   * - Ensure that you enable the RTMP Converter service before using this 
+   * function. See 
+   * [Prerequisites](https://docs.agora.io/en/Interactive%20Broadcast/cdn_streaming_windows?platform=Windows#prerequisites).
+   * - This method applies to the Live-Broadcast profile only.
+   * - You can inject only one media stream into the channel at the same time.
+   * 
+   * @param url The URL address to be added to the ongoing live broadcast. 
+   * Valid protocols are RTMP, HLS, and HTTP-FLV.
+   * - Supported audio codec type: AAC.
+   * - Supported video codec type: H264 (AVC).
+   * @param config The configuration of the injected stream. 
+   * See InjectStreamConfig
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   *  - ERR_INVALID_ARGUMENT (2): The injected URL does not exist. Call this 
+   * method again to inject the stream and ensure that the URL is valid.
+   *  - ERR_NOT_READY (3): The user is not in the channel.
+   *  - ERR_NOT_SUPPORTED (4): The channel profile is not live broadcast. 
+   * Call the {@link setChannelProfile} method and set the channel profile to 
+   * live broadcast before calling this method.
+   *  - ERR_NOT_INITIALIZED (7): The SDK is not initialized. Ensure that the 
+   * `AgoraRtcChannel` object is initialized before calling this method.
+   */
   addInjectStreamUrl(url: string, config: InjectStreamConfig): number {
     return this.rtcChannel.addInjectStreamUrl(url, config);
   }
-
+  /**
+   * Removes the injected the online media stream in a live broadcast.
+   * 
+   * This method removes the URL address (added by the 
+   * {@link addInjectStreamUrl} method) in a live broadcast.
+   * 
+   * If this method call is successful, the SDK triggers the `userOffline`
+   * (uid:666) callback and report the UID of the removed stream is 666.
+   * 
+   * @param url The URL address of the injected stream to be removed.
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   removeInjectStreamUrl(url: string): number {
     return this.rtcChannel.removeInjectStreamUrl(url);
   }
-
+  /**
+   * Starts to relay media streams across channels.
+   * 
+   * After a successful method call, the SDK triggers the 
+   * `channelMediaRelayState` and `channelMediaRelayEvent` callbacks, which
+   * returns the state and event of the media stream relay.
+   * 
+   * - If `channelMediaRelayState` returns the state code `2` and the error 
+   * code` 0`, and `channelMediaRelayEvent` returns the event code `4`, the 
+   * broadcaster starts sending data to the destination channel.
+   * - If the `channelMediaRelayState` returns the state code `3`, an exception 
+   * occurs during the media stream relay.
+   * 
+   * @note
+   * - Contact sales-us@agora.io before implementing this function.
+   * - Call this method after joining the channel.
+   * - This method takes effect only when you are a broadcaster in a 
+   * live-broadcast channel.
+   * - After a successful method call, if you want to call this method again,
+   * ensure that you call the {@link stopChannelMediaRelay} method to quit the
+   * current relay.
+   * - We do not support string user accounts in this API.
+   * 
+   * @param config The configuration of the media stream relay. See
+   * ChannelMediaRelayConfiguration
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   startChannelMediaRelay(config: ChannelMediaRelayConfiguration): number {
     return this.rtcChannel.startChannelMediaRelay(config);
   }
-
+  /**
+   * Updates the channels for media stream relay. 
+   * 
+   * After a successful {@link startChannelMediaRelay} method call, if you want
+   * to relay the media stream to more channels, or leave the current relay
+   * channel, you can call the `updateChannelMediaRelay` method.
+   * 
+   * After a successful method call, the SDK triggers the 
+   * `channelMediaRelayEvent` callback with the event code `7`.
+   * 
+   * @note Call this method after the {@link startChannelMediaRelay} method to
+   * update the destination channel.
+   * @param config The configuration of the media stream relay. See
+   * ChannelMediaRelayConfiguration
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   updateChannelMediaRelay(config: ChannelMediaRelayConfiguration): number {
     return this.rtcChannel.updateChannelMediaRelay(config);
   }
-
+  /**
+   * Stops the media stream relay.
+   * 
+   * Once the relay stops, the broadcaster quits all the destination channels.
+   *
+   * After a successful method call, the SDK triggers the 
+   * `channelMediaRelayState` callback. If the callback returns the state code
+   * `0` and the error code `1`, the broadcaster successfully stops the relay.
+   * 
+   * @note If the method call fails, the SDK triggers the 
+   * channelMediaRelayState callback with the error code `2` and `8` in 
+   * {@link ChannelMediaRelayError}. You can leave the channel by calling 
+   * the {@link leaveChannel} method, and 
+   * the media stream relay automatically stops.
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   stopChannelMediaRelay(): number {
     return this.rtcChannel.stopChannelMediaRelay();
   }
-
+  /**
+   * Gets the connection state of the SDK.
+   * @return {ConnectionState} Connect states. See {@link ConnectionState}.
+   */
   getConnectionState(): ConnectionState {
     return this.rtcChannel.getConnectionState();
   }
-
+  /**
+   * Publishes the local stream to the channel.
+   * 
+   * You must keep the following restrictions in mind when calling this method. 
+   * Otherwise, the SDK returns the #ERR_REFUSED (5):
+   * - This method publishes one stream only to the channel corresponding to 
+   * the current `AgoraRtcChannel` object.
+   * - In a Live Broadcast channel, only a broadcaster can call this method. 
+   * To switch the client role, call {@link setClientRole} of the current 
+   * `AgoraRtcChannel` object.
+   * - You can publish a stream to only one channel at a time. For details on 
+   * joining multiple channels, see the advanced guide *Join Multiple Channels*
+   * 
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   *  - ERR_REFUSED (5): The method call is refused.
+   */
   publish(): number {
     return this.rtcChannel.publish()
   }
-
+  /**
+   * Stops publishing a stream to the channel.
+   * 
+   * If you call this method in a channel where you are not publishing streams, 
+   * the SDK returns #ERR_REFUSED (5).
+   *
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   *  - ERR_REFUSED (5): The method call is refused.
+   */
   unpublish(): number {
     return this.rtcChannel.unpublish()
   }
-
+  /**
+   * Allows a user to leave a channel.
+   *
+   * Allows a user to leave a channel, such as hanging up or exiting a call. 
+   * The user must call the method to end the call before
+   * joining another channel after call the {@link joinChannel} method.
+   * This method returns 0 if the user leaves the channel and releases all 
+   * resources related to the call.
+   * This method call is asynchronous, and the user has not left the channel 
+   * when the method call returns.
+   *
+   * Once the user leaves the channel, the SDK triggers the leavechannel 
+   * callback.
+   *
+   * A successful leavechannel method call triggers the removeStream callback 
+   * for the remote client when the user leaving the channel
+   * is in the Communication channel, or is a BROADCASTER in the Live Broadcast 
+   * profile.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   leaveChannel(): number {
     return this.rtcChannel.leaveChannel()
   }
-
+  /**
+   * Releases all AgoraRtcChannel resource
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   *  - `ERR_NOT_INITIALIZED (7)`: The SDK is not initialized before calling 
+   * this method.
+   */
   release(): number {
     return this.rtcChannel.release()
   }
@@ -6045,35 +6738,62 @@ class AgoraRtcChannel extends EventEmitter
  * The AgoraRtcChannel interface. 
  */
 declare interface AgoraRtcChannel {
+  /** Occurs when a user joins a specified channel.
+   * @param cb.uid The User ID.
+   * @param cb.elapsed Time elapsed (ms) from the user calling the 
+   * {@link joinChannel} method until the SDK triggers this callback.
+   */
   on(evt: 'joinChannelSuccess', cb: (uid: number, elapsed: number) => void): this;
+  /**
+   * Reports a warning during SDK runtime.
+   * @param cb.warn Warning code.
+   * @param cb.msg The warning message.
+   */
   on(evt: 'channelWarning', cb: (warn: number, msg: string) => void): this;
+  /** Reports an error during SDK runtime.
+   * @param cb.err Error code.
+   * @param cb.msg The error message.
+   */
   on(evt: 'channelError', cb: (err: number, msg: string) => void): this;
+  /** Occurs when a user rejoins the channel after disconnection due to network 
+   * problems.
+   * When a user loses connection with the server because of network problems, 
+   * the SDK automatically tries to reconnect and triggers this callback upon 
+   * reconnection.
+   * @param cb.uid User ID of the user joining the channel.
+   * @param cb.elapsed Time elapsed (ms) from the user calling the 
+   * {@link joinChannel} 
+   * method until the SDK triggers this callback.
+   */
   on(
     evt: 'rejoinChannelSuccess',
     cb: (uid: number, elapsed: number) => void
   ): this;
-  /** Occurs when the user leaves the channel. When the app calls the 
+  /** Occurs when the user leaves the channel. 
+   * 
+   * When the app calls the 
    * {@link leaveChannel} method, the SDK uses
    * this callback to notify the app when the user leaves the channel.
+   * 
+   * @param cb.stats The call statistics, see {@link RtcStats}
    */
   on(evt: 'leaveChannel', cb: (stats:RtcStats) => void): this;
-  /** Occurs when the user role switches in a live broadcast. For example, 
+  /** Occurs when the user role switches in a live broadcast.
+   * 
+   * For example, 
    * from a host to an audience or vice versa.
    *
    * This callback notifies the application of a user role switch when the 
    * application calls the {@link setClientRole} method.
    *
-   * - oldRole: Role that the user switches from ClientRoleType.
-   * - newRole: Role that the user switches to ClientRoleType.
+   * @param cb.oldRole The old role, see {@link ClientRoleType}
+   * @param cb.newRole The new role, see {@link ClientRoleType}
    */
    on(
     evt: 'clientRoleChanged',
     cb: (oldRole: ClientRoleType, newRole: ClientRoleType) => void
   ): this;
   /** Occurs when a user or host joins the channel.
-   * - uid: User ID of the user or host joining the channel.
-   * - elapsed: Time delay (ms) from the local user calling the 
-   * {@link joinChannel} method until the SDK triggers this callback.
    *
    * The SDK triggers this callback under one of the following circumstances:
    * - A remote user/host joins the channel by calling the {@link joinChannel} 
@@ -6084,62 +6804,55 @@ declare interface AgoraRtcChannel {
    * - The host injects an online media stream into the channel by calling 
    * the {@link addInjectStreamUrl} method.
    *
-   * **Note**: In the Live-broadcast profile:
+   * @note In the Live-broadcast profile:
    * - The host receives this callback when another host joins the channel.
    * - The audience in the channel receives this callback when a new host 
    * joins the channel.
    * - When a web application joins the channel, the SDK triggers this 
    * callback as long as the web application publishes streams.
+   * 
+   * @param cb.uid User ID of the user or host joining the channel.
+   * @param cb.elapsed Time delay (ms) from the local user calling the 
+   * {@link joinChannel} method until the SDK triggers this callback.
    */
    on(evt: 'userJoined', cb: (uid: number, elapsed: number) => void): this;
    /** Occurs when a remote user (Communication)/host (Live Broadcast) leaves 
-    * the channel.
-    * 
-    * There are two reasons for users to become offline:
-    * - Leave the channel: When the user/host leaves the channel, the user/host 
-    * sends a goodbye message. When this message is received, the SDK determines 
-    * that the user/host leaves the channel.
-    * - Drop offline: When no data packet of the user or host is received for a 
-    * certain period of time (20 seconds for the communication profile, and more 
-    * for the live broadcast profile), the SDK assumes that the user/host drops 
-    * offline. A poor network connection may lead to false detections, so we 
-    * recommend using the signaling system for reliable offline detection.
-    * 
-    * - uid: ID of the user or host who leaves the channel or goes offline.
-    * - reason: Reason why the user goes offline:
-    *  - The user left the current channel.
-    *  - The SDK timed out and the user dropped offline because no data packet 
-    * was received within a certain period of time. If a user quits the call 
-    * and the message is not passed to the SDK (due to an unreliable channel), 
-    * the SDK assumes the user dropped offline.
-    *  - (Live broadcast only.) The client role switched from the host to the 
-    * audience.
-    */
+   * the channel.
+   * 
+   * There are two reasons for users to become offline:
+   * - Leave the channel: When the user/host leaves the channel, the user/host 
+   * sends a goodbye message. When this message is received, the SDK determines 
+   * that the user/host leaves the channel.
+   * - Drop offline: When no data packet of the user or host is received for a 
+   * certain period of time (20 seconds for the communication profile, and more 
+   * for the live broadcast profile), the SDK assumes that the user/host drops 
+   * offline. A poor network connection may lead to false detections, so we 
+   * recommend using the signaling system for reliable offline detection.
+   * 
+   * @param cb.uid ID of the user or host who leaves the channel or goes 
+   * offline.
+   * @param cb.reason Reason why the user goes offline:
+   *  - The user left the current channel.
+   *  - The SDK timed out and the user dropped offline because no data packet 
+   * was received within a certain period of time. If a user quits the call 
+   * and the message is not passed to the SDK (due to an unreliable channel), 
+   * the SDK assumes the user dropped offline.
+   *  - (Live broadcast only.) The client role switched from the host to the 
+   * audience.
+   */
    on(evt: 'userOffline', cb: (uid: number, reason: number) => void): this;
   /** Occurs when the SDK cannot reconnect to Agora's edge server 10 seconds 
    * after its connection to the server is interrupted.
+   * 
    * The SDK triggers this callback when it cannot connect to the server 10 
    * seconds after calling the {@link joinChannel} method, whether or not it 
    * is in the channel.
    */
    on(evt: 'connectionLost', cb: () => void): this;
-   /** Occurs when a remote user's audio stream is muted/unmuted.
-    *
-    * The SDK triggers this callback when the remote user stops or resumes 
-    * sending the audio stream by calling the {@link muteLocalAudioStream} 
-    * method.
-    * - uid: User ID of the remote user.
-    * - muted: Whether the remote user's audio stream is muted/unmuted:
-    *  - true: Muted.
-    *  - false: Unmuted.
-    */
-  /** Reports the statistics of the AgoraRtcEngine once every two seconds.
-   * 
-   * - stats: Agora RTC engine statistics, see {@link RtcStats}.
-   */
-
   /** Occurs when the token expires.
-   * After a token is specified by calling the {@link joinChannel} method, 
+   * 
+   * After a token(channel key) is specified by calling the {@link joinChannel} 
+   * method,
    * if the SDK losses connection with the Agora server due to network issues, 
    * the token may expire after a certain period
    * of time and a new token may be required to reconnect to the server.
@@ -6157,23 +6870,30 @@ declare interface AgoraRtcChannel {
    * on the server and call the {@link renewToken} method to pass the new 
    * token to the SDK.
    *
-   * - token: Pointer to the token that expires in 30 seconds.
+   * @param cb.token The token that expires in 30 seconds.
    */
    on(evt: 'tokenPrivilegeWillExpire', cb: (token: string) => void): this;
+   /** Reports the statistics of the AgoraRtcChannel once every two seconds.
+   * 
+   * @param cb.stats AgoraRtcChannel's statistics, see {@link RtcStats}
+   */
    on(evt: 'rtcStats', cb: (stats: RtcStats) => void): this;
-  /**
+   /**
    * Reports the last mile network quality of each user in the channel 
    * once every two seconds.
    * 
    * Last mile refers to the connection between the local device and Agora's 
    * edge server.
    *
-   * - uid: User ID. The network quality of the user with this uid is reported. 
+   * @param cb.uid User ID. The network quality of the user with this uid is 
+   * reported. 
    * If uid is 0, the local network quality is reported.
-   * - txquality: Uplink transmission quality rating of the user in terms of 
+   * @param cb.txquality Uplink transmission quality rating of the user in 
+   * terms of 
    * the transmission bitrate, packet loss rate, average RTT (Round-Trip Time), 
    * and jitter of the uplink network. See {@link AgoraNetworkQuality}.
-   * - rxquality: Downlink network quality rating of the user in terms of the 
+   * @param cb.rxquality Downlink network quality rating of the user in terms 
+   * of the 
    * packet loss rate, average RTT, and jitter of the downlink network. 
    * See {@link AgoraNetworkQuality}.
    */
@@ -6186,12 +6906,14 @@ declare interface AgoraRtcChannel {
     ) => void
   ): this;
   /** Reports the statistics of the video stream from each remote user/host.
-   * - stats: Statistics of the received remote video streams. See 
+   * 
+   * @param cb.stats Statistics of the received remote video streams. See 
    * {@link RemoteVideoState}.
    */
   on(evt: 'remoteVideoStats', cb: (stats: RemoteVideoStats) => void): this;
   /** Reports the statistics of the audio stream from each remote user/host.
-   * - stats: Statistics of the received remote audio streams. See 
+   * 
+   * @param cb.stats Statistics of the received remote audio streams. See 
    * {@link RemoteAudioStats}.
    */
   on(evt: 'remoteAudioStats', cb: (stats: RemoteAudioStats) => void): this;
@@ -6200,15 +6922,15 @@ declare interface AgoraRtcChannel {
    * 
    * This callback indicates the state change of the remote audio stream.
    * 
-   * - uid ID of the remote user whose audio state changes.
+   * @param cb.uid ID of the remote user whose audio state changes.
    * 
-   * - state State of the remote audio: 
+   * @param cb.state State of the remote audio: 
    * {@link RemoteAudioState}.
    * 
-   * - reason The reason of the remote audio state change: 
+   * @param cb.reason The reason of the remote audio state change: 
    * {@link RemoteAudioStateReason}.
    * 
-   * - elapsed Time elapsed (ms) from the local user calling the 
+   * @param cb.elapsed Time elapsed (ms) from the local user calling the 
    * {@link joinChannel} method until the SDK triggers this callback.
    */
    on(evt: 'remoteAudioStateChanged', cb: (
@@ -6219,26 +6941,31 @@ declare interface AgoraRtcChannel {
   ) => void): this;
   /**
    * Reports which user is the loudest speaker.
-   * - uid: User ID of the active speaker. A uid of 0 represents the local user.
+   * 
+   * This callback returns the user ID of the user with the highest voice 
+   * volume during a period of time, instead of at the moment.
+   * 
+   * @note To receive this callback, you need to call the 
+   * {@link enableAudioVolumeIndication} method.
+   * 
+   * @param cb.uid User ID of the active speaker. A uid of 0 represents the 
+   * local user.
    * If the user enables the audio volume indication by calling the 
    * {@link enableAudioVolumeIndication} method, this callback returns the uid 
    * of the
    * active speaker detected by the audio volume detection module of the SDK.
    *
-   * **Note**:
-   * - To receive this callback, you need to call the 
-   * {@link enableAudioVolumeIndication} method.
-   * - This callback returns the user ID of the user with the highest voice 
-   * volume during a period of time, instead of at the moment.
    */
    on(evt: 'activeSpeaker', cb: (uid: number) => void): this;
   /** Occurs when the first remote video frame is rendered.
+   * 
    * The SDK triggers this callback when the first frame of the remote video 
    * is displayed in the user's video window.
-   * - uid: User ID of the remote user sending the video stream.
-   * - width: Width (pixels) of the video frame.
-   * - height: Height (pixels) of the video stream.
-   * - elapsed: Time elapsed (ms) from the local user calling the 
+   * 
+   * @param cb.uid User ID of the remote user sending the video stream.
+   * @param cb.width Width (pixels) of the video frame.
+   * @param cb.height Height (pixels) of the video stream.
+   * @param cb.elapsed Time elapsed (ms) from the local user calling the 
    * {@link joinChannel} method until the SDK triggers this callback.
    */
    on(
@@ -6248,8 +6975,8 @@ declare interface AgoraRtcChannel {
   /**
    * Occurs when the engine receives the first audio frame from a specified 
    * remote user.
-   * - uid: User ID of the remote user sending the audio stream.
-   * - elapsed: The time elapsed (ms) from the local user calling the 
+   * @param cb.uid User ID of the remote user sending the audio stream.
+   * @param cb.elapsed The time elapsed (ms) from the local user calling the 
    * {@link joinChannel} method until the SDK triggers this callback.
    */
    on(
@@ -6257,23 +6984,25 @@ declare interface AgoraRtcChannel {
     cb: (uid: number, elapsed: number) => void
   ): this;
   /** Occurs when the video size or rotation of a specified user changes.
-   * - uid: User ID of the remote user or local user (0) whose video size or 
+   * @param cb.uid User ID of the remote user or local user (0) whose video 
+   * size or 
    * rotation changes.
-   * - width: New width (pixels) of the video.
-   * - height: New height (pixels) of the video.
-   * - roation: New height (pixels) of the video.
+   * @param cb.width New width (pixels) of the video.
+   * @param cb.height New height (pixels) of the video.
+   * @param cb.roation New height (pixels) of the video.
    */
   on(
     evt: 'videoSizeChanged',
     cb: (uid: number, width: number, height: number, rotation: number) => void
   ): this;
   /** Occurs when the remote video state changes.
-   *  - uid: ID of the user whose video state changes.
-   *  - state: State of the remote video. 
+   * 
+   * @param cb.uid ID of the user whose video state changes.
+   * @param cb.state State of the remote video. 
    * See {@link RemoteVideoState}.
-   *  - reason: The reason of the remote video state change. 
+   * @param cb.reason The reason of the remote video state change. 
    * See {@link RemoteVideoStateReason}
-   *  - elapsed: Time elapsed (ms) from the local user calling the 
+   * @param cb.elapsed Time elapsed (ms) from the local user calling the 
    * {@link joinChannel} method until the SDK triggers this callback.
    */
    on(
@@ -6291,9 +7020,9 @@ declare interface AgoraRtcChannel {
    * The SDK triggers this callback when the local user receives the stream 
    * message that the remote user sends by calling the 
    * {@link sendStreamMessage} method.
-   * - uid: User ID of the remote user sending the message.
-   * - streamId: Stream ID.
-   * - msg: Pointer to the data received bt the local user.
+   * @param cb.uid User ID of the remote user sending the message.
+   * @param cb.streamId Stream ID.
+   * @param cb.data The data received bt the local user.
    */
    on(
     evt: 'streamMessage',
@@ -6301,15 +7030,17 @@ declare interface AgoraRtcChannel {
   ): this;
   /** Occurs when the local user does not receive the data stream from the 
    * remote user within five seconds.
+   * 
    * The SDK triggers this callback when the local user fails to receive the 
    * stream message that the remote user sends by calling the 
    * {@link sendStreamMessage} method.
-   * - uid: User ID of the remote user sending the message.
-   * - streamId: Stream ID.
-   * - err: Error code.
-   * - missed: Number of the lost messages.
-   * - cached: Number of incoming cached messages when the data stream is 
-   * interrupted.
+   * 
+   * @param cb.uid User ID of the remote user sending the message.
+   * @param cb.streamId Stream ID.
+   * @param cb.err Error code.
+   * @param cb.missed Number of the lost messages.
+   * @param cb.cached Number of incoming cached messages when the data stream 
+   * is interrupted.
    */
   on(
     evt: 'streamMessageError',
@@ -6326,8 +7057,9 @@ declare interface AgoraRtcChannel {
    * 
    * The SDK reports the state of the current media relay and possible error 
    * messages in this callback.
-   * - state: The state code. See {@link ChannelMediaRelayState}.
-   * - code: The error code. See {@link ChannelMediaRelayError}.
+   * 
+   * @param cb.state The state code. See {@link ChannelMediaRelayState}.
+   * @param cb.code The error code. See {@link ChannelMediaRelayError}.
    */
    on(evt: 'channelMediaRelayState', cb: (
     state: ChannelMediaRelayState,
@@ -6336,15 +7068,16 @@ declare interface AgoraRtcChannel {
   /**
    * Reports events during the media stream relay.
    * 
-   * - event: The event code. See {@link ChannelMediaRelayEvent}.
+   * @param cb.event The event code. See {@link ChannelMediaRelayEvent}.
    */
   on(evt: 'channelMediaRelayEvent', cb: (
     event: ChannelMediaRelayEvent
   ) => void): this;
   /** Occurs when the engine receives the first audio frame from a specific 
    * remote user.
-   * - uid: User ID of the remote user.
-   * - elapsed: Time elapsed (ms) from the local user calling 
+   * 
+   * @param cb.uid User ID of the remote user.
+   * @param cb.elapsed Time elapsed (ms) from the local user calling 
    * {@link joinChannel} until the
    * SDK triggers this callback.
    */
@@ -6352,15 +7085,66 @@ declare interface AgoraRtcChannel {
     evt: 'firstRemoteAudioFrame',
     cb: (uid: number, elapsed: number) => void
   ): this;
+
   on(evt: string, listener: Function): this;
+  /**
+   * Occurs when the state of the RTMP streaming changes.
+   * 
+   * The SDK triggers this callback to report the result of the local user 
+   * calling the {@link addPublishStreamUrl} and {@link removePublishStreamUrl}
+   * method.
+   * 
+   * This callback indicates the state of the RTMP streaming. When exceptions 
+   * occur, you can troubleshoot issues by referring to the detailed error 
+   * descriptions in the `code` parameter.
+   * @param cb.url The RTMP URL address.
+   * @param cb.state The RTMP streaming state:
+   * - `0`: The RTMP streaming has not started or has ended. This state is also 
+   * triggered after you remove an RTMP address from the CDN by calling 
+   * {@link removePublishStreamUrl}.
+   * - `1`: The SDK is connecting to Agora's streaming server and the RTMP 
+   * server. This state is triggered after you call the 
+   * {@link addPublishStreamUrl} method.
+   * - `2`: The RTMP streaming publishes. The SDK successfully publishes the 
+   * RTMP streaming and returns this state.
+   * - `3`: The RTMP streaming is recovering. When exceptions occur to the CDN, 
+   * or the streaming is interrupted, the SDK tries to resume RTMP streaming 
+   * and returns this state. 
+   *  - If the SDK successfully resumes the streaming, `2` returns.
+   *  - If the streaming does not resume within 60 seconds or server errors 
+   * occur, `4` returns. You can also reconnect to the server by calling the
+   * {@link removePublishStreamUrl} and then {@link addPublishStreamUrl} 
+   * method.
+   * - `4`: The RTMP streaming fails. See the `code` parameter for the 
+   * detailed error information. You can also call the 
+   * {@link addPublishStreamUrl} method to publish the RTMP streaming again.
+   * @param cb.code The detailed error information:
+   * - `0`: The RTMP streaming publishes successfully.
+   * - `1`: Invalid argument used. 
+   * - `2`: The RTMP streams is encrypted and cannot be published.
+   * - `3`: Timeout for the RTMP streaming. Call the 
+   * {@link addPublishStreamUrl} to publish the stream again.
+   * - `4`: An error occurs in Agora's streaming server. Call the 
+   * {@link addPublishStreamUrl} to publish the stream again.
+   * - `5`: An error occurs in the RTMP server.
+   * - `6`: The RTMP streaming publishes too frequently.
+   * - `7`: The host publishes more than 10 URLs. Delete the unnecessary URLs 
+   * before adding new ones.
+   * - `8`: The broadcaster manipulates other hosts' URLs. Check your app 
+   * logic.
+   * - `9`: Agora's server fails to find the RTMP stream.
+   * - `10`: The format of the stream's URL address is not supported. Check 
+   * whether the URL format is correct.
+   */
   on(evt: 'rtmpStreamingStateChanged', cb: (url: string, state: number, code: number) => void): this;
   /** Occurs when the publisher's transcoding is updated. */
   on(evt: 'transcodingUpdated', cb: () => void): this;
   /** Occurs when a voice or video stream URL address is added to a live 
    * broadcast.
-   * - url: Pointer to the URL address of the externally injected stream.
-   * - uid: User ID.
-   * - status: State of the externally injected stream:
+   * 
+   * @param cb.url The URL address of the externally injected stream.
+   * @param cb.uid User ID.
+   * @param cb.status State of the externally injected stream:
    *  - 0: The external video stream imported successfully.
    *  - 1: The external video stream already exists.
    *  - 2: The external video stream to be imported is unauthorized.
@@ -6384,17 +7168,16 @@ declare interface AgoraRtcChannel {
    *
    * If you call {@link setRemoteSubscribeFallbackOption} and set option as 
    * AUDIO_ONLY(2), the SDK triggers this callback when
-   * the remotely subscribed media stream falls back to audio-only mode due to 
+   * the remotely subscribed media stream falls back to audio-only mode due to
    * poor uplink conditions, or when the remotely subscribed media stream 
-   * switches back to the video
-   *  after the uplink network condition improves.
-   * - uid: ID of the remote user sending the stream.
-   * - isFallbackOrRecover: Whether the remote media stream falls back to 
-   * audio-only or switches back to the video:
-   *  - true: The remote media stream falls back to audio-only due to poor 
+   * switches back to the video after the uplink network condition improves.
+   * @param cb.uid ID of the remote user sending the stream.
+   * @param cb.isFallbackOrRecover Whether the remote media stream falls back 
+   * to audio-only or switches back to the video:
+   *  - `true`: The remote media stream falls back to audio-only due to poor 
    * network conditions.
-   *  - false: The remote media stream switches back to the video stream after 
-   * the network conditions improved.
+   *  - `false`: The remote media stream switches back to the video stream 
+   * after the network conditions improved.
    */
   on(evt: 'remoteSubscribeFallbackToAudioOnly', cb: (
     uid: number,
@@ -6402,8 +7185,8 @@ declare interface AgoraRtcChannel {
   ) => void): this;
   // on(evt: 'refreshRecordingServiceStatus', cb: () => void): this;
   /** Occurs when the connection state between the SDK and the server changes.
-   * - state: See {@link ConnectionState}.
-   * - reason: See {@link ConnectionState}.
+   * @param cb.state The connection state, see {@link ConnectionState}.
+   * @param cb.reason The connection reason, see {@link ConnectionState}.
    */
   on(evt: 'connectionStateChanged', cb: (
     state: ConnectionState,
