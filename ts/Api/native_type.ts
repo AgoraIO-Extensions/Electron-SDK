@@ -1819,14 +1819,6 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  setExternalAudioSource(
-    enabled: boolean,
-    samplerate: number,
-    channels: number
-  ): number;
-  /**
-   * @ignore
-   */
   getVideoDevices(): Array<Object>;
   /**
    * @ignore
@@ -1907,7 +1899,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  startAudioRecording(filePath: string, quality: number): number;
+  startAudioRecording(filePath: string, sampleRate: number, quality: number): number;
   /**
    * @ignore
    */
@@ -2181,31 +2173,6 @@ export interface NodeRtcEngine {
    * @ignore
    */
   removeInjectStreamUrl(url: string): number;
-  /**
-   * @ignore
-   */
-  setRecordingAudioFrameParameters(
-    sampleRate: number,
-    channel: 1 | 2,
-    mode: 0 | 1 | 2,
-    samplesPerCall: number
-  ): number;
-  /**
-   * @ignore
-   */
-  setPlaybackAudioFrameParameters(
-    sampleRate: number,
-    channel: 1 | 2,
-    mode: 0 | 1 | 2,
-    samplesPerCall: number
-  ): number;
-  /**
-   * @ignore
-   */
-  setMixedAudioFrameParameters(
-    sampleRate: number,
-    samplesPerCall: number
-  ): number;
   /**
    * @ignore
    */
