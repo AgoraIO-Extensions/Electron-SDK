@@ -283,6 +283,7 @@ namespace agora {
                     AudioVolumeInfo tmp = speaker[i];
                     localSpeakers[i].uid = tmp.uid;
                     localSpeakers[i].volume = tmp.volume;
+                    localSpeakers[i].vad = tmp.vad;
                 }
                 node_async_call::async_call([this, localSpeakers, speakerNumber, totalVolume] {
                     this->onAudioVolumeIndication_node(localSpeakers, speakerNumber, totalVolume);
@@ -294,7 +295,47 @@ namespace agora {
         void NodeEventHandler::onLeaveChannel_node(const RtcStats& stats)
         {
             FUNC_TRACE;
-            MAKE_JS_CALL_0(RTC_EVENT_LEAVE_CHANNEL);
+            unsigned int usercount = stats.userCount;
+            LOG_INFO("duration : %d, tx :%d, rx :%d, txbr :%d, rxbr :%d, txAudioBr :%d, rxAudioBr :%d, users :%d\n",
+                stats.duration, stats.txBytes, stats.rxBytes, stats.txKBitRate, stats.rxKBitRate, stats.txAudioKBitRate,
+                stats.rxAudioKBitRate, usercount);
+            do {
+                Isolate *isolate = Isolate::GetCurrent();
+                HandleScope scope(isolate);
+                Local<Context> context = isolate->GetCurrentContext();
+                Local<Object> obj = Object::New(isolate);
+                CHECK_NAPI_OBJ(obj);
+                NODE_SET_OBJ_PROP_UINT32(obj, "duration", stats.duration);
+                NODE_SET_OBJ_PROP_UINT32(obj, "txBytes", stats.txBytes);
+                NODE_SET_OBJ_PROP_UINT32(obj, "rxBytes", stats.rxBytes);
+                NODE_SET_OBJ_PROP_UINT32(obj, "txKBitRate", stats.txKBitRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "rxKBitRate", stats.rxKBitRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "rxAudioBytes", stats.rxAudioBytes);
+                NODE_SET_OBJ_PROP_UINT32(obj, "txAudioBytes", stats.txAudioBytes);
+                NODE_SET_OBJ_PROP_UINT32(obj, "rxVideoBytes", stats.rxVideoBytes);
+                NODE_SET_OBJ_PROP_UINT32(obj, "txVideoBytes", stats.txVideoBytes);
+                NODE_SET_OBJ_PROP_UINT32(obj, "rxAudioKBitRate", stats.rxAudioKBitRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "txAudioKBitRate", stats.txAudioKBitRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "rxVideoKBitRate", stats.rxVideoKBitRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "txVideoKBitRate", stats.txVideoKBitRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "lastmileDelay", stats.lastmileDelay);
+                NODE_SET_OBJ_PROP_UINT32(obj, "users", usercount);
+                NODE_SET_OBJ_PROP_UINT32(obj, "userCount", stats.userCount);
+                NODE_SET_OBJ_PROP_UINT32(obj, "txPacketLossRate", stats.txPacketLossRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "rxPacketLossRate", stats.rxPacketLossRate);
+                NODE_SET_OBJ_PROP_NUMBER(obj, "cpuAppUsage", stats.cpuAppUsage);
+                NODE_SET_OBJ_PROP_NUMBER(obj, "cpuTotalUsage", stats.cpuTotalUsage);
+                NODE_SET_OBJ_PROP_NUMBER(obj, "gatewayRtt", stats.gatewayRtt);
+                NODE_SET_OBJ_PROP_NUMBER(obj, "memoryAppUsageRatio", stats.memoryAppUsageRatio);
+                NODE_SET_OBJ_PROP_NUMBER(obj, "memoryTotalUsageRatio", stats.memoryTotalUsageRatio);
+                NODE_SET_OBJ_PROP_NUMBER(obj, "memoryAppUsageInKbytes", stats.memoryAppUsageInKbytes);
+
+                Local<Value> arg[1] = { obj };
+                auto it = m_callbacks.find(RTC_EVENT_LEAVE_CHANNEL);
+                if (it != m_callbacks.end()) {
+                    it->second->callback.Get(isolate)->Call(context, it->second->js_this.Get(isolate), 1, arg); \
+                }
+            } while (false);
         }
 
         void NodeEventHandler::onLeaveChannel(const RtcStats& stats)
@@ -337,6 +378,11 @@ namespace agora {
                 NODE_SET_OBJ_PROP_UINT32(obj, "rxPacketLossRate", stats.rxPacketLossRate);
                 NODE_SET_OBJ_PROP_NUMBER(obj, "cpuAppUsage", stats.cpuAppUsage);
                 NODE_SET_OBJ_PROP_NUMBER(obj, "cpuTotalUsage", stats.cpuTotalUsage);
+                NODE_SET_OBJ_PROP_NUMBER(obj, "gatewayRtt", stats.gatewayRtt);
+                NODE_SET_OBJ_PROP_NUMBER(obj, "memoryAppUsageRatio", stats.memoryAppUsageRatio);
+                NODE_SET_OBJ_PROP_NUMBER(obj, "memoryTotalUsageRatio", stats.memoryTotalUsageRatio);
+                NODE_SET_OBJ_PROP_NUMBER(obj, "memoryAppUsageInKbytes", stats.memoryAppUsageInKbytes);
+
                 Local<Value> arg[1] = { obj };
                 auto it = m_callbacks.find(RTC_EVENT_RTC_STATS);
                 if (it != m_callbacks.end()) {
