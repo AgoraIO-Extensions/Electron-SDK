@@ -2755,28 +2755,6 @@ class AgoraRtcEngine extends EventEmitter {
   // DEVICE MANAGEMENT
   // ===========================================================================
   /**
-   * Sets the external audio source.
-   * @param {boolean} enabled Sets whether to enable/disable the external 
-   * audio sink:
-   * - true: Enable the external audio source.
-   * - false: (Default) Disable the external audio source.
-   * @param {number} samplerate Sets the sample rate of the external audio 
-   * source, which can be set as 8000, 16000, 32000, 44100, or 48000 Hz.
-   * @param {number} channels Sets the number of external audio source 
-   * channels (two channels maximum).
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  setExternalAudioSource(
-    enabled: boolean,
-    samplerate: number,
-    channels: number
-  ): number {
-    return this.rtcEngine.setExternalAudioSource(enabled, samplerate, channels);
-  }
-
-  /**
    * Gets the list of the video devices.
    * @return {Array} The array of the video devices.
    */
@@ -3038,8 +3016,8 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.enableLoopbackRecording(enable, deviceName);
   }
 
-  startAudioRecording(filePath: string, quality: number):number {
-    return this.rtcEngine.startAudioRecording(filePath, quality)
+  startAudioRecording(filePath: string, sampleRate:number, quality: number):number {
+    return this.rtcEngine.startAudioRecording(filePath, sampleRate, quality)
   }
 
   stopAudioRecording():number {
@@ -3881,115 +3859,6 @@ class AgoraRtcEngine extends EventEmitter {
    */
   removeInjectStreamUrl(url: string): number {
     return this.rtcEngine.removeInjectStreamUrl(url);
-  }
-
-  // ===========================================================================
-  // RAW DATA
-  // ===========================================================================
-  /**
-   * Sets the audio recording format.
-   * @param {number} sampleRate Sets the sample rate (`samplesPerSec`) 
-   * returned, 
-   * which can set be as 8000, 16000, 32000, 44100 or 48000 Hz.
-   * @param {number} channel Sets the number of audio channels (`channels`) 
-   * returned:
-   * - 1: Mono
-   * - 2: Stereo
-   * @param {number} mode Sets the use mode:
-   * - 0: Read-only mode: Users only read the AudioFrame data without modifying 
-   * anything. For example, when users acquire the data with the Agora SDK 
-   * then push the RTMP streams.
-   * - 1: Write-only mode: Users replace the AudioFrame data with their own 
-   * data and pass the data to the SDK for encoding. For example, when users 
-   * acquire the data.
-   * - 2: Read and write mode: Users read the data from AudioFrame, modify it, 
-   * and then play it. For example, when users have their own sound-effect 
-   * processing module and perform some voice pre-processing, such as a voice 
-   * change.
-   * 
-   * @param {number} samplesPerCall Sets the sample points (`samples`) 
-   * returned. `samplesPerCall` is usually set as 1024 for stream pushing.
-   * samplesPerCall = (int)(samplesPerSec × sampleInterval × numChannels), 
-   * where sampleInterval ≥ 0.01 in seconds.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  setRecordingAudioFrameParameters(
-    sampleRate: number,
-    channel: 1 | 2,
-    mode: 0 | 1 | 2,
-    samplesPerCall: number
-  ): number {
-    return this.rtcEngine.setRecordingAudioFrameParameters(
-      sampleRate,
-      channel,
-      mode,
-      samplesPerCall
-    );
-  }
-
-  /**
-   * Sets the audio playback format.
-   * @param {number} sampleRate Sets the sample rate (`samplesPerSec`) 
-   * returned, which can be set as 8000, 16000, 32000, 44100, or 48000 Hz.
-   * @param {number} channel Sets the number of audio channels (`channels`) 
-   * returned:
-   * - 1: Mono
-   * - 2: Stereo
-   * @param {number} mode Sets the use mode:
-   * - 0: Read-only mode: Users only read the AudioFrame data without modifying 
-   * anything. For example, when users acquire the data with the Agora SDK then 
-   * push the RTMP streams.
-   * - 1: Write-only mode: Users replace the AudioFrame data with their own 
-   * data and pass the data to the SDK for encoding. For example, when users 
-   * acquire the data.
-   * - 2: Read and write mode: Users read the data from AudioFrame, modify it, 
-   * and then play it. For example, when users have their own sound-effect 
-   * processing module and perform some voice pre-processing, such as a voice 
-   * change.
-   * @param {number} samplesPerCall Sets the sample points (`samples`) 
-   * returned. `samplesPerCall` is usually set as 1024 for stream pushing.
-   * samplesPerCall = (int)(samplesPerSec × sampleInterval × numChannels), 
-   * where sampleInterval ≥ 0.01 in seconds.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  setPlaybackAudioFrameParameters(
-    sampleRate: number,
-    channel: 1 | 2,
-    mode: 0 | 1 | 2,
-    samplesPerCall: number
-  ): number {
-    return this.rtcEngine.setPlaybackAudioFrameParameters(
-      sampleRate,
-      channel,
-      mode,
-      samplesPerCall
-    );
-  }
-
-  /**
-   * Sets the mixed audio format.
-   * @param {number} sampleRate Sets the sample rate (`samplesPerSec`) 
-   * returned, which can be set as 8000, 16000, 32000, 44100, or 48000 Hz.
-   * @param {number} samplesPerCall Sets the sample points (`samples`) 
-   * returned. `samplesPerCall` is usually set as 1024 for stream pushing.
-   * samplesPerCall = (int)(samplesPerSec × sampleInterval × numChannels), 
-   * where sampleInterval ≥ 0.01 in seconds.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  setMixedAudioFrameParameters(
-    sampleRate: number,
-    samplesPerCall: number
-  ): number {
-    return this.rtcEngine.setMixedAudioFrameParameters(
-      sampleRate,
-      samplesPerCall
-    );
   }
 
   // ===========================================================================
