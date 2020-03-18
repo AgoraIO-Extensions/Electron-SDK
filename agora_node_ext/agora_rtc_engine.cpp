@@ -2388,6 +2388,9 @@ namespace agora {
                     break;
                 }
                 agora::util::AutoPtr<agora::media::IMediaEngine> pMediaEngine;
+
+                pMediaEngine->registerVideoRenderFactory(pEngine->m_externalVideoRenderFactory.get());
+
                 pMediaEngine.queryInterface(pEngine->m_engine, AGORA_IID_MEDIA_ENGINE);
                 if (pMediaEngine) {
                     pMediaEngine->registerVideoRenderFactory(pEngine->m_externalVideoRenderFactory.get());
@@ -5211,7 +5214,10 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(getConnectionState)
                 PROPERTY_METHOD_DEFINE(leaveChannel)
                 PROPERTY_METHOD_DEFINE(release)
-
+                /**
+                 * 3.0.0 Apis
+                 */
+                PROPERTY_METHOD_DEFINE(adjustUserPlaybackSignalVolume)
             EN_PROPERTY_DEFINE()
             
             Local<Function> cons = tpl->GetFunction(context).ToLocalChecked();
@@ -6040,6 +6046,12 @@ namespace agora {
             napi_set_int_result(args, result);
             LOG_LEAVE;
         }
+
+
+        /**
+         * 3.0.0 Apis
+         */
+        NAPI_API_CHANNEL_DEFINE_WRAPPER_2(adjustUserPlaybackSignalVolume, uid_t, int32);
     }
 }
 
