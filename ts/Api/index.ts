@@ -995,7 +995,7 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * @param {string} token token The token generated at your server:
    * - For low-security requirements: You can use the temporary token 
-   * generated at Dashboard. For details, see 
+   * generated at Console. For details, see 
    * [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-temporary-token).
    * - For high-security requirements: Set it as the token generated at your 
    * server. For details, see 
@@ -2763,7 +2763,7 @@ class AgoraRtcEngine extends EventEmitter {
    * 
    * @param token The token generated at your server:
    * - For low-security requirements: You can use the temporary token generated 
-   * at Dashboard. For details, 
+   * at Console. For details, 
    * see [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-temporary-token).
    * - For high-security requirements: Set it as the token generated at your 
    * server. For details, 
@@ -3304,7 +3304,7 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * @param {string} token The token generated at your server:
    * - For low-security requirements: You can use the temporary token 
-   * generated at Dashboard. For details, see 
+   * generated at Console. For details, see 
    * [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-temporary-token).
    * - For high-security requirements: Set it as the token generated at your 
    * server. For details, see 
