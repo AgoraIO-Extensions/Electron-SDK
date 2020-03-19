@@ -37,6 +37,12 @@ describe('Basic API Coverage', () => {
   //   expect(localRtcEngine.getErrorDescription(2)).toBeDefined()
   // })
 
+  it('set Addon Log File', () => {
+    expect(localRtcEngine.setAddonLogFile(path.resolve(__dirname, "../test.log"))).toBe(0);
+    expect(localRtcEngine.setAddonLogFile()).toBe(0);
+    // Expect(localRtcEngine.setChannelProfile('0')).toBeDefined()
+  });
+
   it('Set Channel Profile', () => {
     expect(localRtcEngine.setChannelProfile(0)).toBe(0);
     expect(localRtcEngine.setChannelProfile(4) < 0).toBeTruthy();

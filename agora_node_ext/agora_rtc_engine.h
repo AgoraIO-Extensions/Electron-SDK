@@ -338,6 +338,8 @@ namespace agora {
             NAPI_API(adjustEffectPublishVolume);
             NAPI_API(getEffectPlayoutVolume);
             NAPI_API(getEffectPublishVolume);
+            NAPI_API(setAddonLogFile);
+            NAPI_API(videoSourceSetAddonLogFile);
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }

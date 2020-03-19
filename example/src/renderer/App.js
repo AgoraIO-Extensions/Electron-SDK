@@ -180,8 +180,10 @@ export default class App extends Component {
     rtcEngine.setClientRole(this.state.role)
     rtcEngine.setAudioProfile(0, 1)
     // rtcEngine.enableVideo()
-    let logpath = path.resolve(os.homedir(), "./agoramain.sdk")
+    let logpath = path.resolve(os.homedir(), "./agoramainsdk.log")
+    let addonlogpath = path.resolve(os.homedir(), "./agoraaddon.log")
     rtcEngine.setLogFile(logpath)
+    rtcEngine.setAddonLogFile(addonlogpath)
     rtcEngine.enableWebSdkInteroperability(true)
     if(encoderWidth === 0 && encoderHeight === 0) {
       //use video profile
@@ -269,6 +271,8 @@ export default class App extends Component {
         rtcEngine.videoSourceInitialize(APP_ID);
         let logpath = path.resolve(os.homedir(), "./agorascreenshare.log")
         rtcEngine.videoSourceSetLogFile(logpath)
+        let addonlogpath = path.resolve(os.homedir(), "./agorascreenshareaddon.log")
+        rtcEngine.videoSourceSetAddonLogFile(addonlogpath)
         rtcEngine.videoSourceSetChannelProfile(1);
         rtcEngine.videoSourceEnableWebSdkInteroperability(true)
         // rtcEngine.videoSourceSetVideoProfile(50, false);

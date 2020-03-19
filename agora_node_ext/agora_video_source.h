@@ -182,6 +182,11 @@ namespace agora{
              * Enable audio
              */
             virtual node_error enableAudio() = 0;
+
+            /**
+             * Set addon logfile path
+             */
+            virtual node_error setAddonLogFile(const char* filePath) = 0;
         };
 
         /**
