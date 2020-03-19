@@ -2818,7 +2818,31 @@ class AgoraRtcEngine extends EventEmitter {
   adjustPlaybackSignalVolume(volume: number): number {
     return this.rtcEngine.adjustPlaybackSignalVolume(volume);
   }
-
+  /**
+   * Adjusts the playback volume of a specified remote user.
+   * 
+   * You can call this method as many times as necessary to adjust the playback 
+   * volume of different remote users, or to repeatedly adjust the playback 
+   * volume of the same remote user.
+   * 
+   * @note 
+   * - Call this method after joining a channel.
+   * - The playback volume here refers to the mixed volume of a specified 
+   * remote user.
+   * - This method can only adjust the playback volume of one specified remote 
+   * user at a time. To adjust the playback volume of different remote users, 
+   * call the method as many times, once for each remote user.
+   * 
+   * @param uid The ID of the remote user.
+   * @param volume The playback volume of the specified remote user. The value 
+   * ranges from 0 to 100:
+   * - 0: Mute.
+   * - 100: Original volume.
+   * 
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   adjustUserPlaybackSignalVolume(uid: number, volume: number): number {
     return this.rtcEngine.adjustUserPlaybackSignalVolume(uid, volume);
   }
@@ -3109,12 +3133,12 @@ class AgoraRtcEngine extends EventEmitter {
    * 
    * @param filePath The absolute file path of the recording file. The string 
    * of the file name is in UTF-8, such as c:/music/audio.aac.
-   * @param sampleRate Sample rate (kHz) of the recording file. Supported 
+   * @param sampleRate Sample rate (Hz) of the recording file. Supported 
    * values are as follows:
-   * - 16
-   * - (Default) 32
-   * - 44.1
-   * - 48
+   * - 16000
+   * - (Default) 32000
+   * - 44100
+   * - 48000
    * @param quality The audio recording quality:
    * - `0`: Low quality. The sample rate is 32 kHz, and the file size is around
    * 1.2 MB after 10 minutes of recording.
@@ -4621,7 +4645,17 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.getArray(key);
   }
   /**     
-   * Private Interfaces.   
+   * Provides technical preview functionalities or special customizations by 
+   * configuring the SDK with JSON options.   
+   * 
+   * The JSON options are not public by default. Agora is working on making 
+   * commonly used JSON options public in a standard way.
+   * 
+   * @param param The parameter as a JSON string in the specified format.
+   * 
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setParameters(param: string): number {
     return this.rtcEngine.setParameters(param);
@@ -5061,7 +5095,10 @@ declare interface AgoraRtcEngine {
     evt: 'videoSizeChanged',
     cb: (uid: number, width: number, height: number, rotation: number) => void
   ): this;
-  /** Occurs when the first remote video frame is rendered.
+  /** @deprecated This callback is deprecated, please use 
+   * `remoteVideoStateChanged` instead.
+   * 
+   * Occurs when the first remote video frame is rendered.
    * 
    * The SDK triggers this callback when the first frame of the remote video 
    * is displayed in the user's video window.
@@ -5158,7 +5195,10 @@ declare interface AgoraRtcEngine {
    * audience.
    */
   on(evt: 'userOffline', cb: (uid: number, reason: number) => void): this;
-  /** Occurs when a remote user's audio stream is muted/unmuted.
+  /** @deprecated This callback is deprecated, please use
+   * `remoteAudioStateChanged` instead.
+   * 
+   * Occurs when a remote user's audio stream is muted/unmuted.
    *
    * The SDK triggers this callback when the remote user stops or resumes 
    * sending the audio stream by calling the {@link muteLocalAudioStream} 
@@ -5311,7 +5351,10 @@ declare interface AgoraRtcEngine {
    * SDK triggers this callback.
    */
   on(evt: 'fristLocalAudioFrame', cb: (elapsed: number) => void): this;
-  /** Occurs when the engine receives the first audio frame from a specific 
+  /** @deprecated This callback is deprecated. Please use
+   * `remoteAudioStateChanged` instead.
+   * 
+   * Occurs when the engine receives the first audio frame from a specific 
    * remote user.
    * - uid: User ID of the remote user.
    * - elapsed: Time elapsed (ms) from the local user calling 
@@ -5322,7 +5365,9 @@ declare interface AgoraRtcEngine {
     evt: 'firstRemoteAudioFrame',
     cb: (uid: number, elapsed: number) => void
   ): this;
-  /**
+  /** @deprecated This callback is deprecated, please use
+   * `remoteAudioStateChanged` instead.
+   * 
    * Occurs when the engine receives the first audio frame from a specified 
    * remote user.
    * @param cb.uid User ID of the remote user sending the audio stream.
@@ -5440,7 +5485,10 @@ declare interface AgoraRtcEngine {
    * @param cb.token The token that expires in 30 seconds.
    */
   on(evt: 'tokenPrivilegeWillExpire', cb: (token: string) => void): this;
-  /** Reports the result of CDN live streaming.
+  /** @deprecated This callback is deprecated. Please use
+   * `rtmpStreamingStateChanged` instead.
+   * 
+   * Reports the result of CDN live streaming.
    *
    * - url: The RTMP URL address.
    * - error: Error code:
@@ -5454,7 +5502,10 @@ declare interface AgoraRtcEngine {
    *  - 130: You cannot publish an encrypted stream.
    */
   on(evt: 'streamPublished', cb: (url: string, error: number) => void): this;
-  /** This callback indicates whether you have successfully removed an RTMP 
+  /** @deprecated This callback is deprecated. Please use
+   * `rtmpStreamingStateChanged` instead.
+   * 
+   * This callback indicates whether you have successfully removed an RTMP 
    * stream from the CDN.
    *
    * Reports the result of calling the {@link removePublishStreamUrl} method.
@@ -6529,9 +6580,6 @@ class AgoraRtcChannel extends EventEmitter
    * publish the local stream to a specified CDN URL address, which is called 
    * "Push Streams to CDN" or "CDN live streaming."
    * 
-   * After calling this method, the SDK triggers the `streamPublished` 
-   * callback.
-   * 
    * During the CDN live streaming, the SDK triggers the
    * `rtmpStreamingStateChanged` callback is any streaming state changes.
    * 
@@ -6836,7 +6884,31 @@ class AgoraRtcChannel extends EventEmitter
   release(): number {
     return this.rtcChannel.release()
   }
-
+  /**
+   * Adjusts the playback volume of a specified remote user.
+   * 
+   * You can call this method as many times as necessary to adjust the playback 
+   * volume of different remote users, or to repeatedly adjust the playback 
+   * volume of the same remote user.
+   * 
+   * @note 
+   * - Call this method after joining a channel.
+   * - The playback volume here refers to the mixed volume of a specified 
+   * remote user.
+   * - This method can only adjust the playback volume of one specified remote 
+   * user at a time. To adjust the playback volume of different remote users, 
+   * call the method as many times, once for each remote user.
+   * 
+   * @param uid The ID of the remote user.
+   * @param volume The playback volume of the specified remote user. The value 
+   * ranges from 0 to 100:
+   * - 0: Mute.
+   * - 100: Original volume.
+   * 
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   adjustUserPlaybackSignalVolume(uid: number, volume: number): number {
     return this.rtcChannel.adjustUserPlaybackSignalVolume(uid, volume);
   }
@@ -7064,7 +7136,10 @@ declare interface AgoraRtcChannel {
    *
    */
    on(evt: 'activeSpeaker', cb: (uid: number) => void): this;
-  /** Occurs when the first remote video frame is rendered.
+  /** @deprecated This callback is deprecated, please use 
+   * `remoteVideoStateChanged` instead.
+   * 
+   * Occurs when the first remote video frame is rendered.
    * 
    * The SDK triggers this callback when the first frame of the remote video 
    * is displayed in the user's video window.
@@ -7079,7 +7154,9 @@ declare interface AgoraRtcChannel {
     evt: 'firstRemoteVideoFrame',
     cb: (uid: number, width: number, height: number, elapsed: number) => void
   ): this;
-  /**
+  /** @deprecated This callback is deprecated, please use
+   * `remoteAudioStateChanged` instead.
+   * 
    * Occurs when the engine receives the first audio frame from a specified 
    * remote user.
    * @param cb.uid User ID of the remote user sending the audio stream.
@@ -7180,7 +7257,10 @@ declare interface AgoraRtcChannel {
   on(evt: 'channelMediaRelayEvent', cb: (
     event: ChannelMediaRelayEvent
   ) => void): this;
-  /** Occurs when the engine receives the first audio frame from a specific 
+  /** @deprecated This callback is deprecated. Please use
+   * `remoteAudioStateChanged` instead.
+   * 
+   * Occurs when the engine receives the first audio frame from a specific 
    * remote user.
    * 
    * @param cb.uid User ID of the remote user.
