@@ -42,8 +42,6 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.muteAllRemoteAudioStreams muteAllRemoteAudioStreams} | Stops/Resumes receiving all remote audio streams.            |
 | {@link AgoraRtcEngine.setDefaultMuteAllRemoteAudioStreams setDefaultMuteAllRemoteAudioStreams} | Sets whether to receive all remote audio streams by default. |
 
-
-
 ### Video management
 
 | Method                                                       | Description                                                  |
@@ -97,6 +95,10 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.getScreenWindowsInfo getScreenWindowsInfo} | Gets the window ID. |
 | {@link AgoraRtcEngine.startScreenCapture startScreenCapture} | Shares the whole or part of a window by specifying the window ID. |
 | {@link AgoraRtcEngine.stopScreenCapture stopScreenCapture} | Stops screen sharing. |
+| {@link AgoraRtcEngine.startScreenCaptureByScreen startScreenCaptureByScreen} |Shares the whole or part of a screen by specifying the screen symbol.|
+| {@link AgoraRtcEngine.startScreenCaptureByWindow startScreenCaptureByWindow} |Shares the whole or part of a window by specifying the window symbol.|
+| {@link AgoraRtcEngine.updateScreenCaptureParameters updateScreenCaptureParameters} |Updates the screen sharing parameters.|
+| {@link AgoraRtcEngine.setScreenCaptureContentHint setScreenCaptureContentHint} |Sets the content hint for screen sharing.|
 | {@link AgoraRtcEngine.updateScreenCaptureRegion updateScreenCaptureRegion} | Updates the screen sharing region. |
 
 
@@ -222,6 +224,13 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.setEncryptionSecret setEncryptionSecret} | Enables built-in encryption with an encryption password before joining a channel. |
 | {@link AgoraRtcEngine.setEncryptionMode setEncryptionMode}|Sets the built-in encryption mode.|
 
+### Audio recorder
+
+| Method                                                       | Description                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| {@link AgoraRtcEngine.startAudioRecording startAudioRecording} | Starts an audio recording on the client. |
+| {@link AgoraRtcEngine.stopAudioRecording stopAudioRecording}|Stops an audio recording on the client.|
+
 ### Inject an online media stream
 
 > This group of methods apply to Live Broadcast only.
@@ -256,8 +265,6 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.stopAudioPlaybackDeviceTest stopAudioPlaybackDeviceTest} | Stops the audio playback device test. |
 | {@link AgoraRtcEngine.startAudioRecordingDeviceTest startAudioRecordingDeviceTest} | Starts the recording device test. |
 | {@link AgoraRtcEngine.stopAudioRecordingDeviceTest stopAudioRecordingDeviceTest} | Stops the recording device test. |
-| {@link AgoraRtcEngine.startAudioRecording startAudioRecording} | Starts the audio recording. |
-| {@link AgoraRtcEngine.stopAudioRecording stopAudioRecording} | Stops the audio recording. |
 | {@link AgoraRtcEngine.startVideoDeviceTest startVideoDeviceTest} | Starts the video playback device test. |
 | {@link AgoraRtcEngine.stopVideoDeviceTest stopVideoDeviceTest} | Stops the video playback device test. |
 | {@link AgoraRtcEngine.setAudioPlaybackVolume setAudioPlaybackVolume} | Sets the volume of the audio playback device. |
