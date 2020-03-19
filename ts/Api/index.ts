@@ -2752,6 +2752,10 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.adjustPlaybackSignalVolume(volume);
   }
 
+  adjustUserPlaybackSignalVolume(uid: number, volume: number): number {
+    return this.rtcEngine.adjustUserPlaybackSignalVolume(uid, volume);
+  }
+
   // ===========================================================================
   // DEVICE MANAGEMENT
   // ===========================================================================
@@ -4717,7 +4721,7 @@ declare interface AgoraRtcEngine {
       speakers: {
         uid: number;
         volume: number;
-        vad: number; 
+        vad: number;
       }[],
       speakerNumber: number,
       totalVolume: number
@@ -6699,6 +6703,10 @@ class AgoraRtcChannel extends EventEmitter
    */
   release(): number {
     return this.rtcChannel.release()
+  }
+
+  adjustUserPlaybackSignalVolume(uid: number, volume: number): number {
+    return this.rtcChannel.adjustUserPlaybackSignalVolume(uid, volume);
   }
 }
 
