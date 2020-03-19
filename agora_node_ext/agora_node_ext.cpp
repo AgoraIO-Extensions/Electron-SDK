@@ -14,8 +14,6 @@
 using v8::Object;
 using agora::rtc::NodeRtcEngine;
 
-LogHelper g_logHelper;
-
 /**
  * Initialize NODEJS ADDON
  */
