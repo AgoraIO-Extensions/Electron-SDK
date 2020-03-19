@@ -1,3 +1,7 @@
+## 2.9.0-rc.132
+* upgrade native sdk to 2.9.0.132
+* add setAddonLogFile & videoSourceSetAddonLogFile to customize addon log path
+
 ## 2.9.0-rc.102-build.0314
 * Support Win64
 
