@@ -2505,6 +2505,10 @@ export interface NodeRtcEngine {
    * @ignore
    */
   clearVideoWatermark(): number;
+  /**
+   * @ignore
+   */
+  adjustUserPlaybackSignalVolume(uid: number, volume: number): number;
 }
 /**
  * @ignore
@@ -2724,4 +2728,8 @@ export interface NodeRtcChannel {
    * @ignore
    */
   release(): number;
+  /**
+   * @ignore
+   */
+  adjustUserPlaybackSignalVolume(uid: number, volume: number): number;
 }
