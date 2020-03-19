@@ -14,7 +14,7 @@
   <p align="center">
     Agora RTC Electron SDK 将 Agora RTC SDK (windows & macos) 封装为 NodeJS C++ Addon，提供了更快捷的音视频通信应用的开发方式。
     <br />
-    <a href="https://docs.agora.io/en/Video/API%20Reference/electron/index.html"><strong>前往文档 »</strong></a>
+    <a href="https://docs.agora.io/cn/Video/API%20Reference/electron/index.html"><strong>前往文档 »</strong></a>
     <br />
     <br />
     <a href="https://github.com/AgoraIO-Community/Agora-Electron-Quickstart">示例应用</a>
@@ -73,7 +73,7 @@ rtcEngine.initialize('<your agora app id>');
 <!-- RESOURCES -->
 ## 相关资源
 
-- [文档](https://docs.agora.io/en/Video/API%20Reference/electron/index.html) - 官方文档
+- [文档](https://docs.agora.io/cn/Video/API%20Reference/electron/index.html) - 官方文档
 
 - [在线小班课应用](https://github.com/AgoraIO/ARD-eEducation-with-Electron) - 基于此SDK的完整在线小班课解决方案
 
