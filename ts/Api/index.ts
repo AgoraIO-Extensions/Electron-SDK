@@ -996,12 +996,10 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {string} token token The token generated at your server:
    * - For low-security requirements: You can use the temporary token 
    * generated at Dashboard. For details, see 
-   * [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All
-   * %20Platforms#get-a-temporary-token).
+   * [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-temporary-token).
    * - For high-security requirements: Set it as the token generated at your 
    * server. For details, see 
-   * [Get a token](https://docs.agora.io/en/Voice/token?platform=All%
-   * 20Platforms#get-a-token).
+   * [Get a token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-token).
    * @param {string} channel (Required) Pointer to the unique channel name for 
    * the Agora RTC session in the string format smaller than 64 bytes. 
    * Supported characters:
@@ -1227,7 +1225,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Sets the view content mode.
    * @param {number | 'local' | 'videosource'} uid The user ID for operating 
-   * streams.
+   * streams. When setting up the view content of the remote user's stream, 
+   * make sure you have subscribed to that stream by calling the 
+   * {@link subscribe} method.
    * @param {0|1} mode The view content mode:
    * - 0: Cropped mode. Uniformly scale the video until it fills the visible 
    * boundaries (cropped). One dimension of the video may have clipped 
@@ -1238,7 +1238,7 @@ class AgoraRtcEngine extends EventEmitter {
    * in the aspect ratio will be filled with black.
    * @return
    * - 0: Success.
-   * - < 0: Failure.
+   * - -1: Failure.
    */
   setupViewContentMode(
     uid: number | 'local' | 'videosource',
@@ -1476,6 +1476,12 @@ class AgoraRtcEngine extends EventEmitter {
    * triggered.
    * - A host should not call this method after joining a channel 
    * (when in a call).
+   * - If you call this method to test the last-mile quality, the SDK consumes 
+   * the bandwidth of a video stream, whose bitrate corresponds to the bitrate 
+   * you set in the setVideoEncoderConfiguration method. After you join the 
+   * channel, whether you have called the {@link disableLastmileTest} method 
+   * or not, 
+   * the SDK automatically stops consuming the bandwidth.
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -1640,7 +1646,9 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @deprecated This method is deprecated. Use 
    * {@link setVideoEncoderConfiguration} instead.
+   * 
    * Sets the video profile.
+   * 
    * @param {VIDEO_PROFILE_TYPE} profile The video profile. See 
    * {@link VIDEO_PROFILE_TYPE}.
    * @param {boolean} [swapWidthAndHeight = false] Whether to swap width and 
@@ -1959,6 +1967,11 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * A successful muteLocalAudioStream method call triggers the userMuteAudio 
    * callback on the remote client.
+   * 
+   * If you call {@link setChannelProfile} after this method, the SDK resets 
+   * whether or not to mute the local audio according to the channel profile 
+   * and user role. Therefore, we recommend calling this method after the 
+   * {@link setChannelProfile} method.
    *
    * **Note**: muteLocalAudioStream(true) does not disable the microphone and 
    * thus does not affect any ongoing recording.
@@ -1992,8 +2005,15 @@ class AgoraRtcEngine extends EventEmitter {
    * Sets whether to receive all remote audio streams by default.
    *
    * You can call this method either before or after joining a channel. If you 
-   * call this method after joining a channel,
+   * call `setDefaultMuteAllRemoteAudioStreams(true)` after joining a channel,
    * the remote audio streams of all subsequent users are not received.
+   * 
+   * @note If you want to resume receiving the audio stream, call 
+   * {@link muteRemoteAudioStream}(false), and specify the ID of the remote 
+   * user whose audio stream you want to receive. To receive the audio streams 
+   * of multiple remote users, call {@link muteRemoteAudioStream}(false) as 
+   * many times. Calling `setDefaultMuteAllRemoteAudioStreams(false)` resumes 
+   * receiving the audio streams of subsequent users only.
    * @param {boolean} mute Sets whether or not to receive/stop receiving all 
    * remote audio streams by default:
    * - true: Stop receiving all remote audio streams by default.
@@ -2026,6 +2046,11 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * A successful muteLocalVideoStream method call triggers the userMuteVideo 
    * callback on the remote client.
+   * 
+   * If you call {@link setChannelProfile} after this method, the SDK resets 
+   * whether or not to mute the local video according to the channel profile 
+   * and user role. Therefore, we recommend calling this method after the 
+   * {@link setChannelProfile} method.
    *
    * **Note**: muteLocalVideoStream(true) does not disable the camera and thus 
    * does not affect the retrieval of the local video streams.
@@ -2084,15 +2109,30 @@ class AgoraRtcEngine extends EventEmitter {
    * wants to receive remote
    * audio streams without sending any audio stream to other users in the 
    * channel.
-   *
+   * 
    * The SDK triggers the microphoneEnabled callback once the local audio 
    * function is disabled or re-enabled.
+   *
    * @param {boolean} enable Sets whether to disable/re-enable the local audio 
    * function:
    * - true: (Default) Re-enable the local audio function, that is, to start 
    * local audio capture and processing.
    * - false: Disable the local audio function, that is, to stop local audio 
    * capture and processing.
+   * 
+   * **Note**:
+   * - After you disable local audio recording using the 
+   * `enableLocalAudio(false)` method, the system volume switches to the media 
+   * volume. Re-enabling local audio recording using the 
+   * `enableLocalAudio(true)` method switches the system volume back to the 
+   * in-call volume.
+   * - This method is different from the {@link muteLocalAudioStream} method:
+   *  - enableLocalAudio: If you disable or re-enable local audio recording 
+   * using the enableLocalAudio method, the local user may hear a pause in the 
+   * remote audio playback.
+   *  - {@link }muteLocalAudioStream: Stops/Continues sending the local audio 
+   * streams and the local user will not hear a pause in the remote audio 
+   * playback.
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -2118,6 +2158,19 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * Sets whether to receive all remote video streams by default.
+   * 
+   * You can call this method either before or after joining a channel. If you 
+   * call `setDefaultMuteAllRemoteVideoStreams(true)` after joining a channel,
+   * the remote audio streams of all subsequent users are not received.
+   * 
+   * @note If you want to resume receiving the video stream, call 
+   * {@link muteRemoteVideoStream}(false), and specify the ID of the remote 
+   * user whose audio stream you want to receive. To receive the audio streams 
+   * of multiple remote users, call {@link muteRemoteVideoStream}(false) as 
+   * many times. Calling `setDefaultMuteAllRemoteVideoStreams(false)` resumes 
+   * receiving the audio streams of subsequent users only.
+   * Sets whether to receive all remote video streams by default.
+   * 
    * @param {boolean} mute Sets whether to receive/stop receiving all remote 
    * video streams by default:
    * - true: Stop receiving all remote video streams by default.
@@ -2137,6 +2190,7 @@ class AgoraRtcEngine extends EventEmitter {
    * Once this method is enabled, the SDK returns the volume indication in the 
    * groupAudioVolumeIndication callback at the set time interval,
    * regardless of whether any user is speaking in the channel.
+   * 
    * @param {number} interval Sets the time interval between two consecutive 
    * volume indications:
    * - ≤ 0: Disables the volume indication.
@@ -2258,15 +2312,15 @@ class AgoraRtcEngine extends EventEmitter {
    * set the log level to WARNING, you see the logs within levels CRITICAL,
    * ERROR, and WARNING.
    * @param {number} filter Sets the filter level:
-   * - LOG_FILTER_OFF = 0: Do not output any log.
-   * - LOG_FILTER_DEBUG = 0x80f: Output all the API logs. Set your log filter 
+   * - `0`: Do not output any log.
+   * - `0x080f`: Output all the API logs. Set your log filter 
    * as DEBUG if you want to get the most complete log file.
-   * - LOG_FILTER_INFO = 0x0f: Output logs of the CRITICAL, ERROR, WARNING and 
+   * - `0x000f`: Output logs of the CRITICAL, ERROR, WARNING and 
    * INFO level. We recommend setting your log filter as this level.
-   * - LOG_FILTER_WARNING = 0x0e: Output logs of the CRITICAL, ERROR and 
+   * - `0x000e`: Output logs of the CRITICAL, ERROR and 
    * WARNING level.
-   * - LOG_FILTER_ERROR = 0x0c: Output logs of the CRITICAL and ERROR level.
-   * - LOG_FILTER_CRITICAL = 0x08: Output logs of the CRITICAL level.
+   * - `0x000c`: Output logs of the CRITICAL and ERROR level.
+   * - `0x0008`: Output logs of the CRITICAL level.
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -2346,7 +2400,10 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * Use this method when the channel profile is Live Broadcast.
    * Interoperability with the Agora Web SDK is enabled by default when the 
-   * channel profile is Communication.
+   * channel profile is Communication. 
+   * 
+   * If the channel has Web SDK users, ensure that you call this method, or 
+   * the video of the Native user will be a black screen for the Web user.
    * @param {boolean} enable Sets whether to enable/disable interoperability 
    * with the Agora Web SDK:
    * - true: Enable.
@@ -2394,12 +2451,13 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * Sets the local voice equalization effect.
-   * @param {number} bandFrequency - Sets the band frequency.
-   * The value ranges between 0 and 9, representing the respective 10-band 
+   * 
+   * @param {number} bandFrequency Sets the index of the band center frequency.
+   * The value ranges between 0 and 9, representing the respective band 
    * center frequencies of the voice effects
-   * including 31, 62, 125, 500, 1k, 2k, 4k, 8k, and 16k Hz.
-   * @param {number} bandGain - Sets the gain of each band in dB. The value 
-   * ranges between -15 and 15.
+   * including 31, 62, 125, 500, 1k, 2k, 4k, 8k, and 16kHz.
+   * @param {number} bandGain Sets the gain (dB) of each band. The value 
+   * ranges between -15 and 15. The default value is 0. 
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -2410,16 +2468,20 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * Sets the local voice reverberation.
+   * 
    * @param {number} reverbKey Sets the audio reverberation key.
-   * - AUDIO_REVERB_DRY_LEVEL = 0: Level of the dry signal (-20 to 10 dB).
-   * - AUDIO_REVERB_WET_LEVEL = 1: Level of the early reflection signal 
-   * (wet signal) (-20 to 10 dB).
-   * - AUDIO_REVERB_ROOM_SIZE = 2: Room size of the reflection (0 to 100 dB).
-   * - AUDIO_REVERB_WET_DELAY = 3: Length of the initial delay of the wet 
-   * signal (0 to 200 ms).
-   * - AUDIO_REVERB_STRENGTH = 4: Strength of the late reverberation 
-   * (0 to 100).
-   * @param {number} value Sets the value of the reverberation key.
+   * - `0`: Level (dB) of the dry signal. The value ranges between -20 and 10.
+   * - `1`: Level (dB) of the early reflection signal 
+   * (wet signal). The value ranges between -20 and 10.
+   * - `2`: Room size of the reflection. A larger
+   * room size means a stronger reverbration. The value ranges between 0 and 
+   * 100.
+   * - `3`: Length (ms) of the initial delay of the wet 
+   * signal. The value ranges between 0 and 200.
+   * - `4`: The reverberation strength. The value ranges between 0 and 100.
+   * 
+   * @param {number} value Sets the effect of the reverberation key. See 
+   * `reverbKey` for the value range.
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -2454,26 +2516,34 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Sets the fallback option for the locally published video stream based on 
    * the network conditions.
-   * The default setting for option is STREAM_FALLBACK_OPTION_AUDIO_ONLY, where 
+   * The default setting for option is `STREAM_FALLBACK_OPTION_AUDIO_ONLY (2)`, 
+   * where 
    * there is no fallback for the locally published video stream when the 
    * uplink network conditions are poor.
-   * If `option` is set toSTREAM_FALLBACK_OPTION_AUDIO_ONLY, the SDK will:
+   * If `option` is set to `STREAM_FALLBACK_OPTION_AUDIO_ONLY (2)`, the SDK 
+   * will:
    * - Disable the upstream video but enable audio only when the network 
    * conditions worsen and cannot support both video and audio.
    * - Re-enable the video when the network conditions improve.
    * When the locally published stream falls back to audio only or when the 
    * audio stream switches back to the video,
-   * the localPublishFallbackToAudioOnly callback is triggered.
+   * the `localPublishFallbackToAudioOnly` callback is triggered.
+   * 
    * **Note**:
    * Agora does not recommend using this method for CDN live streaming, because 
    * the remote CDN live user will have a noticeable lag when the locally 
    * publish stream falls back to audio-only.
+   * 
    * @param {number} option Sets the fallback option for the locally published 
    * video stream.
-   * - STREAM_FALLBACK_OPTION_DISABLED = 0: (Default) No fallback behavior for 
-   * the local/remote video stream when the uplink/downlink network conditions 
-   * are poor. The quality of the stream is not guaranteed.
-   * - STREAM_FALLBACK_OPTION_AUDIO_ONLY = 2: Under poor uplink network 
+   * - `STREAM_FALLBACK_OPTION_DISABLED (0)`: (Default) No fallback behavior 
+   * for the local/remote video stream when the uplink/downlink network 
+   * conditions are poor. The quality of the stream is not guaranteed.
+   * - `STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW (1)`: (Default) The remote 
+   * video stream falls back to the low-stream video when the downlink network 
+   * condition worsens. This option works not for the 
+   * {@link setLocalPublishFallbackOption} method.
+   * - `STREAM_FALLBACK_OPTION_AUDIO_ONLY (2)`: Under poor uplink network 
    * conditions, the locally published video stream falls back to audio only.
    * @return
    * - 0: Success.
@@ -2487,8 +2557,8 @@ class AgoraRtcEngine extends EventEmitter {
    * Sets the fallback option for the remote video stream based 
    * on the network conditions.
    *
-   * If `option` is set as STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW or 
-   * STREAM_FALLBACK_OPTION_AUDIO_ONLY(2):
+   * If `option` is set as `STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW (1)` or 
+   * `STREAM_FALLBACK_OPTION_AUDIO_ONLY (2)`:
    * - the SDK automatically switches the video from a high-stream to a 
    * low-stream, or disables the video when the downlink network condition 
    * cannot support both audio and video
@@ -2498,17 +2568,18 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * When the remote video stream falls back to audio only or when 
    * the audio-only stream switches back to the video stream,
-   * the SDK triggers the remoteSubscribeFallbackToAudioOnly callback.
+   * the SDK triggers the `remoteSubscribeFallbackToAudioOnly` callback.
+   * 
    * @param {number} option Sets the fallback option for the remote stream.
-   * - STREAM_FALLBACK_OPTION_DISABLED = 0: No fallback behavior for the 
+   * - `STREAM_FALLBACK_OPTION_DISABLED (0)`: No fallback behavior for the 
    * local/remote video stream when the uplink/downlink network conditions 
    * are poor. The quality of the stream is not guaranteed.
-   * - STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW = 1: (Default) The remote video 
-   * stream falls back to the low-stream video when the downlink network 
+   * - `STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW (1)`: (Default) The remote 
+   * video stream falls back to the low-stream video when the downlink network 
    * condition worsens. This option works only
    * for this method and not for the {@link setLocalPublishFallbackOption} 
    * method.
-   * - STREAM_FALLBACK_OPTION_AUDIO_ONLY = 2: Under poor downlink network 
+   * - `STREAM_FALLBACK_OPTION_AUDIO_ONLY (2)`: Under poor downlink network 
    * conditions, the remotely subscribed video stream first falls back to the 
    * low-stream video; and then to an audio-only stream if the network 
    * condition worsens.
@@ -2557,11 +2628,12 @@ class AgoraRtcEngine extends EventEmitter {
    * set it as null. Ensure that you set this parameter and do not set it as 
    * null.
    * Supported character scopes are:
-   * - The 26 lowercase English letters: a to z.
-   * - The 26 uppercase English letters: A to Z.
-   * - The 10 numbers: 0 to 9.
-   * - The space.
-   * - "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", 
+   * - All lowercase English letters: a to z.
+   * - All uppercase English letters: A to Z.
+   * - All numeric characters: 0 to 9.
+   * - The space character.
+   * - Punctuation characters and other symbols, including: "!", "#", "$", 
+   * "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", 
    * ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
    * @return
    * - 0: Success.
@@ -2589,12 +2661,10 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {string} token The token generated at your server.
    * - For low-security requirements: You can use the temporary token generated 
    * at Dashboard. For details, see 
-   * [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All
-   * %20Platforms#get-a-temporary-token).
+   * [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-temporary-token).
    * - For high-security requirements: Set it as the token generated at your 
    * server. For details, see 
-   * [Get a token](https://docs.agora.io/en/Voice/token?platform=All
-   * %20Platforms#get-a-token).
+   * [Get a token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-token).
    * @param {string} channel The channel name. The maximum length of this 
    * parameter is 64 bytes. Supported character scopes are:
    * - The 26 lowercase English letters: a to z.
@@ -2637,19 +2707,18 @@ class AgoraRtcEngine extends EventEmitter {
    * After a remote user joins the channel, the SDK gets the user ID and user 
    * account of the remote user, caches them in a mapping table object 
    * (UserInfo),
-   * and triggers the userInfoUpdated callback on the local client.
+   * and triggers the `userInfoUpdated` callback on the local client.
    * After receiving the callback, you can call this method to get the user ID 
-   * of the remote user from the UserInfo object by passing in the user 
+   * of the remote user from the `UserInfo` object by passing in the user 
    * account.
-   * @param  userAccount The user account. Ensure that you set this parameter.
-   * @param errCode Error code.
-   * @param userInfo [in/out] A UserInfo object that identifies the user:
-   * - Input: A UserInfo object.
-   * - Output: A UserInfo object that contains the user account and user ID 
-   * of the user.
+   * @param userAccount The user account. Ensure that you set this parameter.
    * @return
    * - 0: Success.
    * - < 0: Failure.
+   */
+  /**
+   * 
+   * @param userAccount 
    */
   getUserInfoByUserAccount(
     userAccount: string
@@ -2695,12 +2764,10 @@ class AgoraRtcEngine extends EventEmitter {
    * @param token The token generated at your server:
    * - For low-security requirements: You can use the temporary token generated 
    * at Dashboard. For details, 
-   * see [Get a temporary token](https://docs.agora.io/en/Voice/token?
-   * platform=All%20Platforms#get-a-temporary-token).
+   * see [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-temporary-token).
    * - For high-security requirements: Set it as the token generated at your 
    * server. For details, 
-   * see [Get a token](https://docs.agora.io/en/Voice/token
-   * ?platform=All%20Platforms#get-a-token).
+   * see [Get a token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-token).
    * @param channel (Required) Pointer to the unique channel name for the 
    * Agora RTC session in the string format smaller than 64 bytes. 
    * Supported characters:
@@ -3214,12 +3281,10 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {string} token The token generated at your server:
    * - For low-security requirements: You can use the temporary token 
    * generated at Dashboard. For details, see 
-   * [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All
-   * %20Platforms#get-a-temporary-token).
+   * [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-temporary-token).
    * - For high-security requirements: Set it as the token generated at your 
    * server. For details, see 
-   * [Get a token](https://docs.agora.io/en/Voice/token?platform=All%
-   * 20Platforms#get-a-token).
+   * [Get a token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-token).
    * @param {string} cname (Required) Pointer to the unique channel name for 
    * the Agora RTC session in the string format smaller than 64 bytes. 
    * Supported characters:
@@ -3232,7 +3297,10 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {string} info Pointer to additional information about the channel. 
    * This parameter can be set to NULL or contain channel related information.
    * Other users in the channel will not receive this message.
-   * @param {number} uid The User ID.
+   * @param {number} uid The User ID. The same user ID cannot appear in a 
+   * channel. Ensure that the user ID of the `videoSource` here is different 
+   * from the `uid` used by the user when calling the {@link joinChannel} 
+   * method.
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -3331,6 +3399,9 @@ class AgoraRtcEngine extends EventEmitter {
    * This method gets the ID of the whole display and relevant inforamtion.
    * You can share the whole or part of a display by specifying the window ID.
    * @return {Array} The array list of the display ID and relevant information.
+   * The display ID returned is different on Windows and macOS systems. 
+   * You don't need to pay attention to the specific content of the returned 
+   * object, just use it for screen sharing.
    */
   getScreenDisplaysInfo(): Array<Object> {
     return this.rtcEngine.getScreenDisplaysInfo();
@@ -3370,7 +3441,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Stop the video source.
+   * Stops the screen sharing when using the video source.
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -3380,7 +3451,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Starts the video source preview.
+   * Starts the local video preview when using the video source.
    * @return
    * - 0: Success
    * - < 0: Failure
@@ -3455,7 +3526,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Stops the video source preview.
+   * Stops the local video preview when using the video source.
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -3536,6 +3607,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
+  
   videoSourceStartScreenCaptureByScreen(
     screenSymbol: ScreenSymbol,
     rect: CaptureRect,
@@ -3598,9 +3670,6 @@ class AgoraRtcEngine extends EventEmitter {
   // one at a time via this section's api
   // ===========================================================================
   /**
-   * @deprecated This method is deprecated. Use 
-   * {@link videoSourceStartScreenCaptureByScreen} or 
-   * {@link videoSourceStartScreenCaptureByWindow} instead.
    * Starts the screen sharing.
    * @param {number} wndid Sets the screen sharing area.
    * @param {number} captureFreq (Mandatory) The captured frame rate. The 
@@ -3679,9 +3748,9 @@ class AgoraRtcEngine extends EventEmitter {
    * support the file format
    * or cannot access the music file URL, the SDK returns the warning code 701.
    *
-   * @param {string} filepath Specifies the absolute path of the local or 
-   * online audio file to be mixed.
-   *            Supported audio formats: mp3, aac, m4a, 3gp, and wav.
+   * @param {string} filepath Specifies the absolute path (including the 
+   * suffixes of the filename) of the local or online audio file to be mixed. 
+   * Supported audio formats: mp3, mp4, m4a, aac, 3gp, mkv and wav.
    * @param {boolean} loopback Sets which user can hear the audio mixing:
    * - true: Only the local user can hear the audio mixing.
    * - false: Both users can hear the audio mixing.
@@ -3745,10 +3814,13 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Adjusts the volume of audio mixing.
    *
-   *  Call this API when you are in a channel.
+   * Call this API when you are in a channel.
+   * 
+   * **Note**: Calling this method does not affect the volume of audio effect 
+   * file playback invoked by the playEffect method.
    * @param {number} volume Audio mixing volume. The value ranges between 0 
-   * and 100 (default).
-   * 100 is the original volume.
+   * and 100 (default). 100 is the original volume.
+   *
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -3860,21 +3932,24 @@ class AgoraRtcEngine extends EventEmitter {
     *
     * The SDK returns the result of this method call in the streamPublished 
     * callback.
+    * 
     * **Note**:
-    * - Ensure that the user joins the channel before calling this method.
-    * - This method adds only one stream RTMP URL address each time it is 
-    * called.
-    * - The RTMP URL address must not contain special characters, such as 
-    * Chinese language characters.
     * - This method applies to Live Broadcast only.
+    * - Ensure that you enable the RTMP Converter service before using this 
+    * function. See [Prerequisites](https://docs.agora.io/en/Interactive%20Broadcast/cdn_streaming_windows?platform=Windows#implementation).
+    * - This method adds only one stream URL address each time it is 
+    * called.
+    * 
     * @param {string} url The CDN streaming URL in the RTMP format. The 
-    * maximum length of this parameter is 1024 bytes.
+    * maximum length of this parameter is 1024 bytes. The RTMP URL address must 
+    * not contain special characters, such as Chinese language characters.
     * @param {bool} transcodingEnabled Sets whether transcoding is 
     * enabled/disabled:
     * - true: Enable transcoding. To transcode the audio or video streams when 
     * publishing them to CDN live,
     * often used for combining the audio and video streams of multiple hosts 
-    * in CDN live.
+    * in CDN live. If set the parameter as `true`, you should call the 
+    * {@link setLiveTranscoding} method before this method.
     * - false: Disable transcoding.
     * @return
     * - 0: Success.
@@ -3902,9 +3977,23 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * ets the video layout and audio settings for CDN live. (CDN live only)
+   * Sets the video layout and audio settings for CDN live. (CDN live only)
+   * 
+   * The SDK triggers the otranscodingUpdated callback when you call the 
+   * {@link setLiveTranscoding} method to update the LiveTranscoding class.
+   * 
+   * **Note**: 
+   * - Ensure that you enable the RTMP Converter service before using 
+   * this function. See 
+   * [Prerequisites](https://docs.agora.io/en/Interactive%20Broadcast/cdn_streaming_windows?platform=Windows#prerequisites).
+   * - If you call the {@link setLiveTranscoding} method to set the 
+   * LiveTranscoding class for the first time, the SDK does not trigger the 
+   * transcodingUpdated callback.
+   * 
    * @param {TranscodingConfig} transcoding Sets the CDN live audio/video 
-   * transcoding settings.
+   * transcoding settings. See {@link TranscodingConfig}.
+   * 
+   *
    * @return {number}
    * - 0: Success.
    * - < 0: Failure.
@@ -3926,16 +4015,23 @@ class AgoraRtcEngine extends EventEmitter {
    * This is applicable to scenarios where all audience members in the channel 
    * can watch a live show and interact with each other.
    *
-   * The {@link addInjectStreamUrl} method call triggers the following 
+   * The `addInjectStreamUrl` method call triggers the following 
    * callbacks:
    * - The local client:
    *  - streamInjectStatus, with the state of the injecting the online stream.
-   *  - userJoined (uid: 666), if the method call is successful and the online 
+   *  - `userJoined (uid: 666)`, if the method call is successful and the online 
    * media stream is injected into the channel.
    * - The remote client:
-   *  - userJoined (uid: 666), if the method call is successful and the online 
+   *  - `userJoined (uid: 666)`, if the method call is successful and the online 
    * media stream is injected into the channel.
    *
+   * **Note**:
+   * - This method applies to Live Broadcast only.
+   * - Ensure that you enable the RTMP Converter service before using this 
+   * function. See [Prerequisites](https://docs.agora.io/en/Interactive%20Broadcast/cdn_streaming_windows?platform=Windows#prerequisites).
+   * - Ensure that the user joins a channel before calling this method.
+   * - This method adds only one stream URL address each time it is called.
+   * 
    * @param {string} url The HTTP/HTTPS URL address to be added to the ongoing 
    * live broadcast. Valid protocols are RTMP, HLS, and FLV.
    * - Supported FLV audio codec type: AAC.
@@ -3945,6 +4041,14 @@ class AgoraRtcEngine extends EventEmitter {
    * @return
    * - 0: Success.
    * - < 0: Failure.
+   *  - `ERR_INVALID_ARGUMENT (2)`: The injected URL does not exist. Call this 
+   * method again to inject the stream and ensure that the URL is valid.
+   *  - `ERR_NOT_READY (3)`: The user is not in the channel.
+   *  - `ERR_NOT_SUPPORTED (4)`: The channel profile is not Live Broadcast. 
+   * Call the {@link setChannelProfile} method and set the channel profile to 
+   * Live Broadcast before calling this method.
+   *  - `ERR_NOT_INITIALIZED (7)`: The SDK is not initialized. Ensure that 
+   * the `AgoraRtcEngine` object is initialized before using this method.
    */
   addInjectStreamUrl(url: string, config: InjectStreamConfig): number {
     return this.rtcEngine.addInjectStreamUrl(url, config);
@@ -4049,9 +4153,11 @@ class AgoraRtcEngine extends EventEmitter {
    * stream relay.
    * 
    * **Note**: 
+   * - Contact sales-us@agora.io before implementing this function.
    * - Call this method after the {@link joinChannel} method.
    * - This method takes effect only when you are a broadcaster in a 
    * Live-broadcast channel.
+   * - We do not support using string user accounts in this function.
    * - After a successful method call, if you want to call this method again, 
    * ensure that you call the {@link stopChannelMediaRelay} method to quit 
    * the current relay.
@@ -4083,7 +4189,7 @@ class AgoraRtcEngine extends EventEmitter {
    * update the destination channel.
    * 
    * @param config The media stream relay configuration: 
-   * {@link channelMediaRelayConfiguration}.
+   * {@link ChannelMediaRelayConfiguration}.
    * 
    * @return
    * - 0: Success.
@@ -4171,8 +4277,10 @@ class AgoraRtcEngine extends EventEmitter {
    * audioEffectFinished callback.
    * @param {number} soundId ID of the specified audio effect. Each audio 
    * effect has a unique ID.
-   * @param {string} filePath The absolute path to the local audio effect 
-   * file or the URL of the online audio effect file.
+   * @param {string} filePath TSpecifies the absolute path (including the 
+   * suffixes of the filename) to the local audio effect file or the URL of 
+   * the online audio effect file. Supported audio formats: mp3, mp4, m4a, 
+   * aac, 3gp, mkv and wav.
    * @param {number} loopcount Sets the number of times the audio effect 
    * loops:
    * - 0: Play the audio effect once.
@@ -4408,7 +4516,7 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Allows a user to complain about the call quality after a call ends.
    * @param {string} callId Call ID retrieved from the {@link getCallId} method.
-   * @param {string} desc (Optional) Pointer to the description of the 
+   * @param {string} desc (Optional) The description of the 
    * complaint, with a string length of less than 800 bytes.
    * @return
    * - 0: Success.
@@ -4513,8 +4621,7 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.getArray(key);
   }
   /**     
-   * Private Interfaces.     
-   * @ignore    
+   * Private Interfaces.   
    */
   setParameters(param: string): number {
     return this.rtcEngine.setParameters(param);
@@ -4537,29 +4644,38 @@ class AgoraRtcEngine extends EventEmitter {
   // ===========================================================================
   // plugin apis
   // ===========================================================================
-  
+  /**
+   * @ignore
+   */
   initializePluginManager(): number {
     return this.rtcEngine.initializePluginManager();
   }
-
+  /**
+   * @ignore
+   */
   releasePluginManager(): number {
     return this.rtcEngine.releasePluginManager();
   }
-
+  /**
+   * @ignore
+   */
   registerPlugin(info: PluginInfo): number {
     return this.rtcEngine.registerPlugin(info);
   }
-
+  /**
+   * @ignore
+   */
   unregisterPlugin(pluginId: string): number {
     return this.rtcEngine.unregisterPlugin(pluginId);
   }
-
+  /**
+   * @ignore
+   */
   getPlugins() {
     return this.rtcEngine.getPlugins().map(item => {
       return this.createPlugin(item.id)
     })
   }
-
   /**
    * @ignore
    * @param pluginId 
@@ -4613,8 +4729,10 @@ class AgoraRtcEngine extends EventEmitter {
 declare interface AgoraRtcEngine {
   /**
    * Occurs when an API method is executed.
-   * - api: The method executed by the SDK.
-   * - err: Error code that the SDK returns when the method call fails.
+   * 
+   * `api`: The method executed by the SDK.
+   * 
+   * `err`: Error code that the SDK returns when the method call fails.
    */
   on(evt: 'apiCallExecuted', cb: (api: string, err: number) => void): this;
   /**
@@ -4900,10 +5018,11 @@ declare interface AgoraRtcEngine {
     evt: 'lastmileProbeResult',
     cb: (result: LastmileProbeResult) => void
   ): this;
-  /** Occurs when the engine receives and renders the first local video 
-   * frame on the video window.
-   * - width: Width (pixels) of the first local video frame.
-   * - height: Height (pixels) of the first local video frame.
+  /** Occurs when the first local video frame is displayed/rendered on the 
+   * local video view.
+   * 
+   * - width: Width (px) of the first local video frame.
+   * - height: Height (px) of the first local video frame.
    * - elapsed: Time elapsed (ms) from the local user calling the 
    * {@link joinChannel} method until the SDK triggers this callback.
    */
@@ -5121,6 +5240,9 @@ declare interface AgoraRtcEngine {
    * The SDK triggers this callback when it cannot connect to the server 10 
    * seconds after calling the {@link joinChannel} method, whether or not it 
    * is in the channel.
+   * - If the SDK fails to rejoin the channel 20 minutes after being 
+   * disconnected from Agora's edge server, the SDK stops rejoining the 
+   * channel.
    */
   on(evt: 'connectionLost', cb: () => void): this;
   // on(evt: 'connectionInterrupted', cb: () => void): this;
@@ -5188,7 +5310,7 @@ declare interface AgoraRtcEngine {
    * {@link joinChannel} until the
    * SDK triggers this callback.
    */
-  on(evt: 'firstLocalAudioFrame', cb: (elapsed: number) => void): this;
+  on(evt: 'fristLocalAudioFrame', cb: (elapsed: number) => void): this;
   /** Occurs when the engine receives the first audio frame from a specific 
    * remote user.
    * - uid: User ID of the remote user.
@@ -5389,7 +5511,16 @@ declare interface AgoraRtcEngine {
    * whether the URL format is correct.
    */
   on(evt: 'rtmpStreamingStateChanged', cb: (url: string, state: number, code: number) => void): this;
-  /** Occurs when the publisher's transcoding is updated. */
+  /** Occurs when the publisher's transcoding is updated.
+   * 
+   * When the LiveTranscoding class in the setLiveTranscoding method updates, 
+   * the SDK triggers the transcodingUpdated callback to report the update 
+   * information to the local host.
+   * 
+   * **Note**: If you call the {@link setLiveTranscoding} method to set the 
+   * LiveTranscoding class for the first time, the SDK does not trigger the 
+   * transcodingUpdated callback.
+   */
   on(evt: 'transcodingUpdated', cb: () => void): this;
   /** Occurs when a voice or video stream URL address is added to a live 
    * broadcast.
@@ -5585,6 +5716,7 @@ declare interface AgoraRtcEngine {
   on(evt: 'channelMediaRelayEvent', cb: (
     event: ChannelMediaRelayEvent
   ) => void): this;
+ 
   on(evt: string, listener: Function): this;
 }
 
