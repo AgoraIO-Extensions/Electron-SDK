@@ -827,7 +827,7 @@ export interface VideoEncoderConfiguration {
    * @since v3.0.0
    * 
    * Sets the mirror mode of the published local video stream. It only affects 
-   * the video that the remote user sees. See VideoMirrorModeType
+   * the video that the remote user sees. See {@link VideoMirrorModeType}
    * 
    * @note The SDK disables the mirror mode by default.
    */
@@ -1484,11 +1484,11 @@ export interface WatermarkOptions {
    */
   visibleInPreview: boolean,
   /**
-   * The watermark position in the landscape mode. See Rectangle
+   * The watermark position in the landscape mode. See {@link Rectangle}
    */
   portraitMode: Rectangle,
   /**
-   * The watermark position in the portrait mode. See Rectangle
+   * The watermark position in the portrait mode. See {@link Rectangle}
    */
   landscapeMode: Rectangle
 }

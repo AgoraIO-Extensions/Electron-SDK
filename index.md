@@ -35,6 +35,7 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.setAudioProfile setAudioProfile}       | Sets the audio parameters and application scenarios.         |
 | {@link AgoraRtcEngine.adjustRecordingSignalVolume adjustRecordingSignalVolume} | Adjusts the recording volume.                                |
 | {@link AgoraRtcEngine.adjustPlaybackSignalVolume adjustPlaybackSignalVolume} | Adjusts the playback volume of the voice.                    |
+| {@link AgoraRtcEngine.adjustUserPlaybackSignalVolume adjustUserPlaybackSignalVolume} | Adjusts the playback volume of a specified remote user.                |
 | {@link AgoraRtcEngine.enableLocalAudio enableLocalAudio}     | Enables/disables the local audio capture.                    |
 | {@link AgoraRtcEngine.muteLocalAudioStream muteLocalAudioStream} | Stops/Resumes sending the local audio stream.                |
 | {@link AgoraRtcEngine.muteRemoteAudioStream muteRemoteAudioStream} | Stops/Resumes receiving a specified remote audio stream.      |
@@ -316,7 +317,6 @@ Agora Electron SDK provides the methods for the second instance `videoSource` to
 | {@link AgoraRtcEngine.videoSourceJoin videoSourceJoin}       | Allows `videoSource` to join a channel.     |
 | {@link AgoraRtcEngine.videoSourceLeave videoSourceLeave}     | Allows `videoSource` to leave a channel.    |
 | {@link AgoraRtcEngine.videoSourceRenewToken videoSourceRenewToken} | Renews the Token when using the video source.                 |
-| {@link AgoraRtcEngine.videoSourceEnableWebSdkInteroperability videoSourceEnableWebSdkInteroperability} | Enables interoperability with the Agora Web SDK when using the video source.  |
 | {@link AgoraRtcEngine.getScreenDisplaysInfo getScreenDisplaysInfo} |   Gets the display ID.      |
 | {@link AgoraRtcEngine.getScreenWindowsInfo getScreenWindowsInfo}       |     Gets the window ID.      |
 | {@link AgoraRtcEngine.videoSourceStartScreenCaptureByScreen videoSourceStartScreenCaptureByScreen}     |  Shares the whole or part of a screen by specifying the screen rect when using the video source.   |
@@ -369,13 +369,9 @@ Agora Electron SDK use the {@link AgoraRtcEngine.on} listens to the events above
 | `lastmileQuality`                  | Reports the last-mile network quality of the local user before the user joins a channel. |
 | `lastmileProbeResult`              | Reports the last-mile network probe result.                  |
 | `firstLocalAudioFrame`             | Occurs when the first local audio frame is sent.             |
-| `firstRemoteAudioFrame`            | Occurs when the first remote audio frame is received.        |
-| `firstRemoteAudioDecoded`          | Occurs when the engine receives the first audio frame from a specified remote user.|
 | `firstLocalVideoFrame`             | Occurs when the first local video frame is rendered.             |
-| `firstRemoteVideoFrame`            | Occurs when the first remote video frame is rendered.        |
 | `videoSizeChanged`                 | Occurs when the video size or rotation information of a specified remote user changes. |
 | `removeStream`                     | Occurs when the remote user leaves the channel.              |
-| `userMuteAudio`                    | Occurs when a remote user stops/resumes sending the audio stream. |
 | `userMuteVideo`                    | Occurs when a remote user stops/resumes sending the video stream. |
 | `cameraReady`                      | Occurs when the camera turns on and is ready to capture the video. |
 | `videoStopped`                     | Occurs when the video stops playing.                         |
@@ -388,8 +384,6 @@ Agora Electron SDK use the {@link AgoraRtcEngine.on} listens to the events above
 | `remoteVideoStateChanged`          | Occurs when the remote video stream state changes.           |
 | `cameraFocusAreaChanged`           | Occurs when the camera focus area changes.                   |
 | `cameraExposureAreaChanged`        | Occurs when the camera exposure area changes.                |
-| `streamPublished`                  | Adds a CDN stream address.                                   |
-| `streamUnpublished`                | Removes a CDN stream address.                                |
 | `transcodingUpdated`               | Occurs when the publisher's transcoding settings are updated. |
 | `streamInjectStatus`               | Reports the status of the injected online media stream.      |
 |`channelMediaRelayState`|Occurs when the state of the media stream relay changes.|
