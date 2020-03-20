@@ -1,3 +1,7 @@
+## 3.0.0 (March 20th, 2020)
+#### :house: Internal
+* Update Native SDK to v3.0.0 with lots of new features and optimization. You can go to [office doc](https://docs.agora.io/en/Interactive%20Broadcast/release_electron_video?platform=Electron) for detail.
+
 ## 2.9.0-rc.102-build.0314
 * Support Win64
 
@@ -32,12 +36,12 @@
 
 ## 2.9.0
 #### :house: Internal
-* Update Native SDK to v2.9.0 with lots of new features and optimization. You can go to [office doc](https://docs.agora.io/en/Video/release_windows_video?platform=Windows) for detail.
+* Update Native SDK to v2.9.0 with lots of new features and optimization. You can go to [office doc](https://docs.agora.io/en/Interactive%20Broadcast/release_electron_video?platform=Electron) for detail.
 * Fixed firstRemoteVideoDecoded event, before as an replacement addStream will be fired
 
 ## 2.8.0 (July 10th, 2019)
 #### :house: Internal
-* Update Native SDK to v2.8.0 with lots of new features and optimization. You can go to [office doc](https://docs.agora.io/en/Video/release_windows_video?platform=Windows) for detail.
+* Update Native SDK to v2.8.0 with lots of new features and optimization. You can go to [office doc](https://docs.agora.io/en/Interactive%20Broadcast/release_electron_video?platform=Electron) for detail.
 * Fixed aspect ratio issue when stream rotation is 90
 
 #### :memo: Documentation
