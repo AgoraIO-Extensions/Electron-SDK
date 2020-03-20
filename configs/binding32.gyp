@@ -342,9 +342,9 @@
                     'MACOSX_DEPLOYMENT_TARGET': '10.11',
                     'EXECUTABLE_EXTENSION': 'node',
                     'FRAMEWORK_SEARCH_PATHS': [
-                    './sdk/lib/mac',
+                    './sdk/lib/mac'
+                    ],
                     "DEBUG_INFORMATION_FORMAT": "dwarf-with-dsym"
-                    ]
                 },
             }
             ]
