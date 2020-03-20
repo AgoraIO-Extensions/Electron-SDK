@@ -118,12 +118,22 @@ export interface TranscodingUser {
 export interface TranscodingConfig {
   /** 
    * Width of the video. The default value is 360. 
-   * The minimum value of width × height is 16 × 16. 
+   * 
+   * If you push video streams to the CDN, set the value of width x height to 
+   * at least 64 x 64 (px), or the SDK will adjust it to 64 x 64 (px).
+   * 
+   * If you push audio streams to the CDN, set the value of width x height to 
+   * 0 x 0 (px).
    */
   width: number;
   /** 
    * Height of the video. The default value is 640. 
-   * The minimum value of width × height is 16 × 16. 
+   * 
+   * If you push video streams to the CDN, set the value of width x height to 
+   * at least 64 x 64 (px), or the SDK will adjust it to 64 x 64 (px).
+   * 
+   * If you push audio streams to the CDN, set the value of width x height to 
+   * 0 x 0 (px).
    */
   height: number;
   /** 
@@ -137,9 +147,9 @@ export interface TranscodingConfig {
    */
   videoBitrate: number;
   /** 
-   * Frame rate of the output video stream set for the CDN live broadcast. 
-   * The default value is 15 fps.
-   *
+   * Frame rate (fps) of the CDN live output video stream. 
+   * The value range is (0, 30]. The default value is 15. 
+   * 
    * **Note**: Agora adjusts all values over 30 to 30.
    */
   videoFrameRate: number;
@@ -163,8 +173,7 @@ export interface TranscodingConfig {
    * Generally used in high-resolution broadcasts or television.
    */
   videoCodecProfile: number;
-  /** RGB hex value.
-   *
+  /** 
    * The background color in RGB hex value. Value only, do not include a #. 
    * For example, 0xFFB6C1 (light pink). The default value is 0x000000 (black).
    */
@@ -465,9 +474,38 @@ export interface RtcStats {
   cpuAppUsage: number;
   /** System CPU usage (%). */
   cpuTotalUsage: number;
+  /**
+   * @since v3.0.0
+   * 
+   * The round-trip time delay from the client to the local router.
+   */
   gatewayRtt: number;
+  /**
+   * @since v3.0.0
+   * 
+   * The memory usage ratio of the app (%).
+   * 
+   * This value is for reference only. Due to system limitations, you may not 
+   * get the value of this member.
+   */
   memoryAppUsageRatio: number;
+  /**
+   * @since v3.0.0
+   * 
+   * The memory usage ratio of the system (%).
+   * 
+   * This value is for reference only. Due to system limitations, you may not 
+   * get the value of this member.
+   */
   memoryTotalUsageRatio: number;
+  /**
+   * @since v3.0.0
+   * 
+   * The memory usage of the app (KB).
+   * 
+   * This value is for reference only. Due to system limitations, you may not 
+   * get the value of this member.
+   */
   memoryAppUsageInKbytes: number;
 }
 /** Quality change of the local video. */
@@ -785,12 +823,31 @@ export interface VideoEncoderConfiguration {
    * See {@link DegradationPreference}.
    */
   degradationPreference: DegradationPreference;
+  /**
+   * @since v3.0.0
+   * 
+   * Sets the mirror mode of the published local video stream. It only affects 
+   * the video that the remote user sees. See {@link VideoMirrorModeType}
+   * 
+   * @note The SDK disables the mirror mode by default.
+   */
   mirrorMode: VideoMirrorModeType;
 }
-
+/**
+ * The type of video mirror mode.
+ */
 export enum VideoMirrorModeType {
+  /**
+   * `0`: (Default) The SDK determines whether enable the mirror mode.
+   */
   AUTO = 0,
+  /**
+   * `1`: Enable mirror mode.
+   */
   ENABLED = 1,
+  /**
+   * `2`: Disable mirror mode. 
+   */
   DISABLED = 2
 }
 
@@ -814,7 +871,7 @@ export enum OrientationMode  {
  * captured video, because the receiver takes the rotational information 
  * passed on from the video encoder. 
  * 
- * Mainly used between Agora’s SDKs.
+ * Mainly used between Agora SDK.
  * - If the captured video is in landscape mode, the output video is in 
  * landscape mode.
  * - If the captured video is in portrait mode, the output video is in 
@@ -930,7 +987,11 @@ export interface Rectangle {
   /** The height of the region. */
   height: number; // The height of the region.
 }
-
+/**
+ * The screen symbol: 
+ * - The screen symbol on the macOS platform, see {@link MacScreenSymbol}
+ * - The screen symbol on the Windows platform, see {@link WindowsScreenSymbol}
+ */
 export type ScreenSymbol = MacScreenSymbol | WindowsScreenSymbol;
 
 export type MacScreenSymbol = number;
@@ -938,8 +999,7 @@ export type MacScreenSymbol = number;
 export type WindowsScreenSymbol = Rectangle;
 
 export type CaptureRect = Rectangle;
-
-/** Screen sharing encoding parameters. */
+/** The video source encoding parameters. */
 export interface CaptureParam {
   /** Width (pixels) of the video. */
   width: number; // Width (pixels) of the video
@@ -1052,8 +1112,9 @@ export interface RemoteAudioStats {
    * user joins the channel.
    * 
    * In the reported interval, audio freeze occurs when the audio frame loss 
-   * rate reaches 4%. `totalFrozenTime` = the number of audio freeze x 2 x 
-   * 1000(ms).
+   * rate reaches 4%. Agora uses 2 seconds as an audio piece unit to calculate 
+   * the audio freeze time. The total audio freeze time = The audio freeze 
+   * number × 2000 ms.
    */
   totalFrozenTime: number;
   /** 
@@ -1361,65 +1422,128 @@ export enum VIDEO_PROFILE_TYPE {
 
 /**
  * The definition of {@link ChannelMediaInfo}.
- * 
- * - channel: The channel name. The default value is NULL, which means that 
- * the SDK applies the current channel name.
- * 
- * - token: The token that enables the user to join the channel. 
- * The default value is NULL, which means that the SDK applies the current 
- * token.
- * 
- * - uid: The user ID.
- * 
- * **Note**: 
- * 
- * String user accounts are not supported in media stream relay.
  */
 export interface ChannelMediaInfo {
+  /**
+   * The channel name. 
+   * 
+   * The default value is NULL, which means that 
+   * the SDK applies the current channel name.
+   */
   channel: string;
+  /**
+   * The token that enables the user to join the channel. 
+   * 
+   * The default value is NULL, which means that the SDK applies the current 
+   * token.
+   */
   token: string;
+  /**
+   * The user ID.
+   */
   uid: number;
 }
-
+/**
+ * The channel media options.
+ */
 export interface ChannelMediaOptions {
+  /**
+   * Determines whether to subscribe to audio streams when the user joins the 
+   * channel:
+   * - true: (Default) Subscribe.
+   * - false: Do not subscribe.
+   * 
+   * This member serves a similar function to the 
+   * {@link AgoraRtcChannel.muteAllRemoteAudioStreams} method. After joining 
+   * the channel, you can call the `muteAllRemoteAudioStreams` method to set 
+   * whether to subscribe to audio streams in the channel.
+   */
   autoSubscribeAudio: boolean;
+  /**
+   * Determines whether to subscribe to video streams when the user joins the 
+   * channel:
+   * - true: (Default) Subscribe.
+   * - false: Do not subscribe.
+   * 
+   * This member serves a similar function to the 
+   * {@link AgoraRtcChannel.muteAllRemoteVideoStreams} method. After joining 
+   * the channel, you can call the `muteAllRemoteVideoStreams` method to set 
+   * whether to subscribe to video streams in the channel.
+   */
   autoSubscribeVideo: boolean;
 }
-
+/**
+ * The watermark's options.
+ */
 export interface WatermarkOptions {
+  /**
+   * Sets whether or not the watermark image is visible in the local video 
+   * preview:
+   * - true: (Default) The watermark image is visible in preview.
+   * - false: The watermark image is not visible in preview. 
+   */
   visibleInPreview: boolean,
+  /**
+   * The watermark position in the landscape mode. See {@link Rectangle}
+   */
   portraitMode: Rectangle,
+  /**
+   * The watermark position in the portrait mode. See {@link Rectangle}
+   */
   landscapeMode: Rectangle
 }
 
 /**
  * The configuration of the media stream relay.
  * 
- * - srcInfo: The information of the destination channel:
- * {@link ChannelMediaInfo}.
- * 
- * **Note**:
- * - `uid`: ID of the user whose media stream you want to relay. 
- * We recommend setting it as 0, which means that the SDK relays the media 
- * stream of the current broadcaster.
- * - If you do not use a token, we recommend using the default values of the 
- * parameters in {@link ChannelMediaInfo}.
- * - If you use a token, set uid as 0, and ensure that the token is generated 
- * with the `uid` set as 0.
- * 
- * - destInfos: The information of the destination channel: 
- * {@link ChannelMediaInfo}.
- * 
  * **Warning**:
  * - If you want to relay the media stream to multiple channels, define as 
  * many {@link ChannelMediaInfo} interface (at most four).
  * 
- * **Note**:
- * - `uid`: The user ID in the destination channel.
  */
 
 export interface ChannelMediaRelayConfiguration {
+  /**
+   * The information of the source channel. See {@link ChannelMediaInfo}
+   * 
+   * It contains the following properties:
+   * 
+   * - **Note**:
+   *  - If you have not enabled the App Certificate, Token is unnecessary here 
+   * and set the following properties as the default value.
+   *  - If you have enabled the App Certificate, you must use Token. 
+   * 
+   * - `channel`: The name of the source channel. The default value is NULL, 
+   * which means that the SDK passes in the name of the current channel.
+   * - `token`: Token for joining the source channel. It is generated with 
+   * `channel` and `uid` you set in `srcInfo`. The default value is NULL, 
+   * which means that the SDK passes in the APP ID.
+   * - `uid`: 
+   *  - ID of the broadcaster whose media stream you want to relay. The 
+   * default value is 0, which means that the SDK randomly generates a UID. 
+   *  - You must set it as 0.
+   * 
+   */
   srcInfo: ChannelMediaInfo;
+  /**
+   * The information of the destination channel. See {@link ChannelMediaInfo}
+   * 
+   * It contains the following properties:
+   * 
+   * - `channel`: The name of the destination channel. 
+   * - `token`:Token for joining the destination channel. 
+   * It is generated with `channel` and `uid` you set in `destInfos`. 
+   *  - If you have not enabled the App Certificate, Token is unnecessary here 
+   * and set it as the default value NULL, which means that the SDK passes in 
+   * the APP ID.
+   *  - If you have enabled the App Certificate, you must use Token. 
+   * - `uid`: ID of the broadcaster in the destination channel. 
+   * The value ranges from 0 to 2<sup>32</sup>-1. To avoid UID conflicts, 
+   * this `uid` must be different from any other UIDs in the destination 
+   * channel. The default value is 0, which means the SDK randomly generates 
+   * a UID.
+   * 
+   */
   destInfos: [ChannelMediaInfo];
 }
 /**
@@ -1473,10 +1597,10 @@ export type ChannelMediaRelayState =
  * leave the channel.
  * - 3: The SDK fails to access the service, probably due to limited resources 
  * of the server.
- * - 4: The server fails to join the source channel.
- * - 5: The server fails to join the destination channel.
- * - 6: The server fails to receive the data from the source channel.
- * - 7: The source channel fails to transmit data.
+ * - 4: Fails to send the relay request.
+ * - 5: Fails to accept the relay request.
+ * - 6: The server fails to receive the media stream.
+ * - 7: The server fails to send the media stream.
  * - 8: The SDK disconnects from the server due to poor network connections. 
  * You can call the {@link leaveChannel} method to leave the channel.
  * - 9: An internal error occurs in the server.
@@ -2420,7 +2544,9 @@ export interface NodeRtcEngine {
    */
   adjustUserPlaybackSignalVolume(uid: number, volume: number): number;
 }
-
+/**
+ * @ignore
+ */
 export interface NodeRtcChannel {
   /**
    * @ignore
