@@ -12,7 +12,7 @@
   <h1 align="center">Agora RTC Electron SDK</h1>
 
   <p align="center">
-    Agora RTC Electron SDK uses Agora RTC SDK (windows & macos) as NodeJS C++ addon for rapid RTC application development
+    Agora RTC Electron SDK uses Agora RTC SDK (Windows & macOS) as NodeJS C++ addon for rapid RTC application development
     <br />
     <a href="https://docs.agora.io/en/Video/API%20Reference/electron/index.html"><strong>Explore the docs »</strong></a>
     <br />
