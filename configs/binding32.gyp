@@ -127,7 +127,7 @@
                     'libraries': [
                     'libresolv.9.dylib',
                     'Accelerate.framework',
-                    'AgoraRtcEngineKit.framework',
+                    'AgoraRtcKit.framework',
                     'CoreWLAN.framework',
                     'Cocoa.framework',
                     'VideoToolbox.framework',
@@ -145,7 +145,7 @@
                     ]
                 },
                 'include_dirs': [
-                './sdk/lib/mac/AgoraRtcEngineKit.framework/Headers'
+                './sdk/lib/mac/AgoraRtcKit.framework/Headers'
                 ],
                 'sources': [
                     './common/node_process_unix.cpp',
@@ -162,7 +162,8 @@
                     'MACOSX_DEPLOYMENT_TARGET': '10.13',
                     'FRAMEWORK_SEARCH_PATHS': [
                     './sdk/lib/mac'
-                    ]
+                    ],
+                    "DEBUG_INFORMATION_FORMAT": "dwarf-with-dsym"
                 },
 
             }
