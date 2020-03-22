@@ -215,7 +215,7 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | Method                                                       | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | {@link AgoraRtcEngine.addVideoWatermark addVideoWatermark} | Adds a watermark image to the local video. |
-| {@link AgoraRtcEngine.clearVideoWatermark clearVideoWatermark}|Removes the watermark image.|
+| {@link AgoraRtcEngine.clearVideoWatermarks clearVideoWatermarks}|Removes the watermark image.|
 
 ### Encryption
 
