@@ -155,6 +155,10 @@ describe('Basic API Coverage', () => {
     expect(localRtcEngine.muteAllRemoteVideoStreams(true)).toBe(0);
   });
 
+  it('adjustUserPlaybackSignalVolume', () => {
+    expect(localRtcEngine.adjustUserPlaybackSignalVolume(12345, 50)).toBe(0);
+    expect(localRtcEngine.adjustUserPlaybackSignalVolume(12345, 200)).toBe(0);
+  })
 
   it('Join channel', async () => {
     localRtcEngine.setChannelProfile(1);
