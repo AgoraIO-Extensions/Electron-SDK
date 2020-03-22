@@ -2389,8 +2389,6 @@ namespace agora {
                 }
                 agora::util::AutoPtr<agora::media::IMediaEngine> pMediaEngine;
 
-                pMediaEngine->registerVideoRenderFactory(pEngine->m_externalVideoRenderFactory.get());
-
                 pMediaEngine.queryInterface(pEngine->m_engine, AGORA_IID_MEDIA_ENGINE);
                 if (pMediaEngine) {
                     pMediaEngine->registerVideoRenderFactory(pEngine->m_externalVideoRenderFactory.get());
