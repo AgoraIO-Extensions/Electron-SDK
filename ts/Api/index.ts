@@ -1451,8 +1451,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success
    * - < 0: Failure
    */
-  clearVideoWatermark(){
-    return this.rtcEngine.clearVideoWatermark();
+  clearVideoWatermarks(){
+    return this.rtcEngine.clearVideoWatermarks();
   }
 
   /**
