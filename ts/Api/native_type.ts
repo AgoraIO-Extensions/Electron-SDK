@@ -1484,11 +1484,11 @@ export interface WatermarkOptions {
    */
   visibleInPreview: boolean,
   /**
-   * The watermark position in the landscape mode. See {@link Rectangle}
+   * The watermark position in the portrait mode. See {@link Rectangle}
    */
   positionInPortraitMode: Rectangle,
   /**
-   * The watermark position in the portrait mode. See {@link Rectangle}
+   * The watermark position in the landscape mode. See {@link Rectangle}
    */
   positionInLandscapeMode: Rectangle
 }
