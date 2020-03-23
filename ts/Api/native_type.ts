@@ -1486,11 +1486,11 @@ export interface WatermarkOptions {
   /**
    * The watermark position in the landscape mode. See {@link Rectangle}
    */
-  portraitMode: Rectangle,
+  positionInPortraitMode: Rectangle,
   /**
    * The watermark position in the portrait mode. See {@link Rectangle}
    */
-  landscapeMode: Rectangle
+  positionInLandscapeMode: Rectangle
 }
 
 /**
@@ -2538,7 +2538,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  clearVideoWatermark(): number;
+  clearVideoWatermarks(): number;
   /**
    * @ignore
    */
