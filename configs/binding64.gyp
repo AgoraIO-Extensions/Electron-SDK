@@ -270,7 +270,8 @@
                     './agora_node_ext/node_screen_window_info.h'
                 ],
                 'include_dirs': [
-                './sdk/win64/include'
+                './sdk/win64/include',
+                './extra/internal'
                 ],
                 'configurations': {
                     'Release': {
@@ -333,7 +334,8 @@
                     './agora_node_ext/node_screen_window_info.h'
                 ],
                 'include_dirs': [
-                './sdk/lib/mac/AgoraRtcKit.framework/Headers'
+                './sdk/lib/mac/AgoraRtcKit.framework/Headers',
+                './extra/internal'
                 ],
                 'defines!': [
                     '_NOEXCEPT',
