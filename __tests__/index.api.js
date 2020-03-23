@@ -155,6 +155,9 @@ describe('Basic API Coverage', () => {
     expect(localRtcEngine.muteAllRemoteVideoStreams(true)).toBe(0);
   });
 
+  it('adjustUserPlaybackSignalVolume', () => {
+    expect(localRtcEngine.adjustUserPlaybackSignalVolume(12345, 50)).toBe(0);
+  })
 
   it('Join channel', async () => {
     localRtcEngine.setChannelProfile(1);
@@ -171,7 +174,8 @@ describe('Basic API Coverage', () => {
         lighteningContrastLevel: 1,
         lighteningLevel: 0.5,
         smoothnessLevel: 0.5,
-        rednessLevel: 0.5
+        rednessLevel: 0.5,
+        mirrorMode: 0
       })
     ).toBe(returnvalue);
     expect(
@@ -189,6 +193,8 @@ describe('Basic API Coverage', () => {
     await doLeave(localRtcEngine);
   });
 });
+
+
 
 describe('cdn coverage', () => {
   beforeAll(() => {
@@ -260,6 +266,24 @@ describe('Basic API Coverage 3', () => {
     jest.restoreAllMocks();
     localRtcEngine.release()
   });
+
+  it('local recording', () => {
+    expect(localRtcEngine.startAudioRecording(path.resolve(__dirname, '../recording.pcm'), 32000, 1)).toBe(0);
+    expect(localRtcEngine.stopAudioRecording()).toBe(0);
+  });
+
+  it('watermark', () => {
+    expect(localRtcEngine.addVideoWatermark("path", {
+      visibleInPreview: true,
+      positionInPortraitMode: {
+        x: 0, y: 0, width: 0, height: 0
+      },
+      positionInLandscapeMode: {
+        x: 0, y: 0, width: 0, height: 0
+      }
+    })).toBe(0);
+    expect(localRtcEngine.clearVideoWatermarks()).toBe(0);
+  })
 });
 
 
