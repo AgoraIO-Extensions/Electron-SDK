@@ -13,6 +13,7 @@
 #include "node_uid.h"
 #include "agora_video_source.h"
 #include "node_napi_api.h"
+#include "IAgoraRtcEngine2.h"
 #include <string>
 #include <nan.h>
 
@@ -2441,6 +2442,8 @@ namespace agora {
                 if (pMediaEngine) {
                     pMediaEngine->registerVideoRenderFactory(pEngine->m_externalVideoRenderFactory.get());
                 }
+                IRtcEngine3 *m_engine2 = (IRtcEngine3 *)pEngine->m_engine;
+                m_engine2->setAppType(AppType(3));
                 pEngine->m_engine->enableVideo();
                 RtcEngineParameters rep(pEngine->m_engine);
                 rep.enableLocalVideo(true);
