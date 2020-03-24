@@ -28,12 +28,10 @@ namespace agora {
         {
             enum NodeRenderType m_type;
             uid_t m_uid;
-            std::string m_channelId;
             
-            NodeRenderContext(enum NodeRenderType type, uid_t uid = 0, std::string channelId = "")
+            NodeRenderContext(enum NodeRenderType type, uid_t uid = 0)
             : m_type(type)
             , m_uid(uid)
-            , m_channelId(channelId)
             {
             }
         };
