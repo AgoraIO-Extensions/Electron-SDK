@@ -7,6 +7,7 @@ const doLeave = require('./utils/doLeave');
 const channelJoin = require('./utils/channelJoin')
 const channelLeave = require('./utils/channelLeave')
 const LiveStreaming = require('./utils/cdn');
+const VideoSource = require('./utils/videosource');
 const MultiStream = require('./utils/multistream');
 const path = require('path')
 // const APPID = process.env.APPID
@@ -15,6 +16,7 @@ let localRtcEngine = null;
 let localRtcChannel = null;
 let multistream = null;
 let streaming = null;
+let videosource = null;
 let testChannel = null;
 let testUid = null;
 
@@ -183,12 +185,6 @@ describe('Basic API Coverage', () => {
     ).toBe(returnvalue);
   });
 
-  it('enableAudioVolumeIndication', () => {
-    expect(
-      localRtcEngine.enableAudioVolumeIndication(1000, 3, false)
-    )
-  });
-
   it('leave channel', async () => {
     await doLeave(localRtcEngine);
   });
@@ -226,6 +222,28 @@ describe('cdn coverage', () => {
   });
 });
 
+describe('videosource coverage', () => {
+  beforeAll(() => {
+    localRtcEngine = new AgoraRtcEngine();
+    localRtcEngine.initialize(APPID);
+  });
+  beforeEach(() => {
+    // Restore mocks after each test
+    jest.restoreAllMocks();
+  });
+
+  afterAll(() => {
+    localRtcEngine.release();
+  })
+
+  it('share', async () => {
+    videosource = new VideoSource(localRtcEngine, APPID);
+    testChannel = generateRandomString(10);
+    testUid = generateRandomNumber(100000);
+    await videosource.join(testChannel, testUid);
+  });
+});
+
 describe('Basic API Coverage 2', () => {
   beforeAll(() => {
     localRtcEngine = new AgoraRtcEngine();
@@ -256,15 +274,34 @@ describe('Basic API Coverage 2', () => {
 });
 
 describe('Basic API Coverage 3', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     localRtcEngine = new AgoraRtcEngine();
     localRtcEngine.initialize(APPID);
     localRtcEngine.setLogFile(path.resolve(__dirname, "../test.log"))
+
+    localRtcEngine.setChannelProfile(1);
+    localRtcEngine.setClientRole(1);
+    testChannel = generateRandomString(10);
+    testUid = generateRandomNumber(100000);
+    await doJoin(localRtcEngine, testChannel, testUid);
   });
   afterEach(() => {
     // Restore mocks after each test
     jest.restoreAllMocks();
     localRtcEngine.release()
+  });
+
+  it('enableAudioVolumeIndication', () => {
+    return new Promise((resolve) => {
+      localRtcEngine.on('audioVolumeIndication', () => {
+        resolve()
+      })
+      localRtcEngine.enableAudio()
+      expect(
+        localRtcEngine.enableAudioVolumeIndication(1000, 3, false)
+      ).toBe(0)
+    })
+
   });
 
   it('local recording', () => {
