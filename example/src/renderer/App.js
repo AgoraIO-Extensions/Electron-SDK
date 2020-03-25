@@ -123,13 +123,12 @@ export default class App extends Component {
     rtcEngine.on('lastMileQuality', quality => {
       console.log(`lastmilequality: ${JSON.stringify(quality)}`)
     })
-    rtcEngine.on('audiovolumeindication', (
-      uid,
-      volume,
+    rtcEngine.on('audioVolumeIndication', (
+      speakers,
       speakerNumber,
       totalVolume
     ) => {
-      console.log(`uid${uid} volume${volume} speakerNumber${speakerNumber} totalVolume${totalVolume}`)
+      console.log(`${JSON.stringify(speakers)} speakerNumber${speakerNumber} totalVolume${totalVolume}`)
     })
     rtcEngine.on('error', err => {
       console.error(err)
@@ -193,7 +192,7 @@ export default class App extends Component {
     rtcEngine.setLocalVoiceReverbPreset(this.state.voiceReverbPreset)
     // console.log('loop', rtcEngine.enableLoopbackRecording(true, null))
     rtcEngine.enableDualStreamMode(true)
-    rtcEngine.enableAudioVolumeIndication(1000, 3)
+    rtcEngine.enableAudioVolumeIndication(1000, 3, false)
 
     //enable beauty options
     rtcEngine.setBeautyEffectOptions(true, {
