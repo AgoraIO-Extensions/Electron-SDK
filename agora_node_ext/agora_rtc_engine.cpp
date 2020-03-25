@@ -2861,7 +2861,9 @@ namespace agora {
                 status = napi_get_value_nodestring_(args[1], channel);
                 CHECK_NAPI_STATUS(pEngine, status);
                 
-                auto context = new NodeRenderContext(NODE_RENDER_TYPE_REMOTE, uid, std::string(channel));
+                std::string sChannel = channel ? std::string(channel) : "";
+                
+                auto context = new NodeRenderContext(NODE_RENDER_TYPE_REMOTE, uid, sChannel);
                 if(!context) {
                     LOG_ERROR("Failed to allocate NodeRenderContext\n");
                     break;
@@ -2957,7 +2959,7 @@ namespace agora {
                 status = napi_get_value_nodestring_(args[4], channelId);
                 CHECK_NAPI_STATUS(pEngine, status);
                 
-                std::string sChannelId(channelId);
+                std::string sChannelId = channelId ? std::string(channelId) : "";
 
                 auto *pTransporter = getNodeVideoFrameTransporter();
                 if (pTransporter) {
@@ -3036,8 +3038,8 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_value_nodestring_(args[1], channelId);
                 CHECK_NAPI_STATUS(pEngine, status);
-
-                std::string sChannelId(channelId);
+                
+                std::string sChannelId = channelId ? std::string(channelId) : "";
 
                 auto pTransporter = getNodeVideoFrameTransporter();
                 if(pTransporter) {
@@ -3064,8 +3066,8 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_value_nodestring_(args[1], channelId);
                 CHECK_NAPI_STATUS(pEngine, status);
-
-                std::string sChannelId(channelId);
+                
+                std::string sChannelId = channelId ? std::string(channelId) : "";
                 auto pTransporter = getNodeVideoFrameTransporter();
                 if(pTransporter) {
                     pTransporter->removeFromeHighVideo(uid, sChannelId);
