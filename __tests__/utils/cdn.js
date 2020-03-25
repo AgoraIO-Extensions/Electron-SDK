@@ -14,29 +14,31 @@ class LiveStreaming {
         console.log(`rtmpStreamingStateChanged ${url} ${state} ${errCode}`);
         resolve();
       });
-      // this.localRtcEngine.setLiveTranscoding({
-      //   width: 640,
-      //   height: 480,
-      //   videoBitrate: 800,
-      //   videoFramerate: 15,
-      //   lowLatency: true,
-      //   videoGop: 30,
-      //   videoCodecProfile: 66,
-      //   transcodingUsers: [
-      //     {
-      //       uid: uid,
-      //       width: 360,
-      //       height: 240,
-      //       zOrder: 1,
-      //       alpha: 1,
-      //       audioChannel: 0
-      //     }
-      //   ],
-      //   backgroundColor: 0x0,
-      //   audioSampleRate: 32000,
-      //   audioBitrate: 48,
-      //   audioChannels: 1
-      // });
+      expect(this.localRtcEngine.setLiveTranscoding({
+        width: 640,
+        height: 480,
+        videoBitrate: 800,
+        videoFrameRate: 15,
+        lowLatency: true,
+        videoGop: 30,
+        videoCodecProfile: 66,
+        userCount: 1,
+        transcodingUsers: [
+          {
+            uid: uid,
+            width: 360,
+            height: 240,
+            zOrder: 1,
+            alpha: 1,
+            audioChannel: 0
+          }
+        ],
+        backgroundColor: 0x0,
+        audioSampleRate: 32000,
+        audioBitrate: 48,
+        audioChannels: 1,
+        transcodingExtraInfo: ""
+      })).toBe(0);
       let url = `${host}/${this.ns}`;
       console.log(`publish to ${url}`);
       this.localRtcEngine.addPublishStreamUrl(url, false);

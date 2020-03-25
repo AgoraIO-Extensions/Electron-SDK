@@ -199,6 +199,7 @@ export interface TranscodingConfig {
    * - 5: Five-channel stereo.
    */
   audioChannels: number;
+  transcodingExtraInfo: string;
   /** The watermark image added to the CDN live publishing stream. */
   watermark: {
     /** 

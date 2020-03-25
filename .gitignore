@@ -1,3 +1,4 @@
+*.pcm
 coverage
 *.log
 sdk
