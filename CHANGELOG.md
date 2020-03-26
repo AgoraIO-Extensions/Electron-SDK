@@ -1,3 +1,10 @@
+## 2.9.0-rc.103
+* Win SDK upgrade to 2.9.0.103 build 308
+* Mac SDK upgrade to 2.9.0.103 build 1547
+* Update API:
+  - new param report_vad for enableAudioVolumeIndication
+  - added report_vad in onAudioVolumeIndication callback
+
 ## 2.9.0-rc.102-build.0314
 * Support Win64
 
