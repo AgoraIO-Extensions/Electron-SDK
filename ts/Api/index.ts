@@ -190,6 +190,8 @@ class AgoraRtcEngine extends EventEmitter {
       speakers: {
         uid: number;
         volume: number;
+        vad: number;
+        channelId: string;
       }[],
       speakerNumber: number,
       totalVolume: number
@@ -199,6 +201,8 @@ class AgoraRtcEngine extends EventEmitter {
           'audiovolumeindication',
           speakers[0]['uid'],
           speakers[0]['volume'],
+          speakers[0]['vad'],
+          speakers[0]['channelId'],
           speakerNumber,
           totalVolume
         );
@@ -206,6 +210,8 @@ class AgoraRtcEngine extends EventEmitter {
           'audioVolumeIndication',
           speakers[0]['uid'],
           speakers[0]['volume'],
+          speakers[0]['vad'],
+          speakers[0]['channelId'],
           speakerNumber,
           totalVolume
         );
@@ -2064,8 +2070,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  enableAudioVolumeIndication(interval: number, smooth: number): number {
-    return this.rtcEngine.enableAudioVolumeIndication(interval, smooth);
+  enableAudioVolumeIndication(interval: number, smooth: number, report_vad: boolean): number {
+    return this.rtcEngine.enableAudioVolumeIndication(interval, smooth, report_vad);
   }
 
   /**
@@ -4678,6 +4684,8 @@ declare interface AgoraRtcEngine {
     cb: (
       uid: number,
       volume: number,
+      vad: number,
+      channelId: string,
       speakerNumber: number,
       totalVolume: number
     ) => void
@@ -4697,6 +4705,8 @@ declare interface AgoraRtcEngine {
       speakers: {
         uid: number;
         volume: number;
+        vad: number,
+        channelId: string,
       }[],
       speakerNumber: number,
       totalVolume: number
