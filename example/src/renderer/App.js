@@ -126,10 +126,19 @@ export default class App extends Component {
     rtcEngine.on('audiovolumeindication', (
       uid,
       volume,
+      vad,
+      channelId,
       speakerNumber,
       totalVolume
     ) => {
-      console.log(`uid${uid} volume${volume} speakerNumber${speakerNumber} totalVolume${totalVolume}`)
+      console.log(`audiovolumeindication   uid${uid} volume${volume} vad${vad} channelId${channelId} speakerNumber${speakerNumber} totalVolume${totalVolume}`)
+    })
+    rtcEngine.on('groupAudioVolumeIndication', (
+      speakers,
+      speakerNumber,
+      totalVolume
+    ) => {
+    console.log(`groupAudioVolumeIndication  uid: ${speakers[0].uid} volume: ${speakers[0].volume}  vad: ${speakers[0].vad}  channelId: ${speakers[0].channelId}`)
     })
     rtcEngine.on('error', err => {
       console.error(err)
@@ -193,7 +202,7 @@ export default class App extends Component {
     rtcEngine.setLocalVoiceReverbPreset(this.state.voiceReverbPreset)
     // console.log('loop', rtcEngine.enableLoopbackRecording(true, null))
     rtcEngine.enableDualStreamMode(true)
-    rtcEngine.enableAudioVolumeIndication(1000, 3)
+    rtcEngine.enableAudioVolumeIndication(1000, 3, true)
 
     //enable beauty options
     rtcEngine.setBeautyEffectOptions(true, {
