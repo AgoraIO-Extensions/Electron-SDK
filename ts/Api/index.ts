@@ -63,13 +63,38 @@ class AgoraRtcEngine extends EventEmitter {
   streams: Map<string, Map<string, IRenderer>>;
   renderMode: 1 | 2 | 3;
   customRenderer: any;
+  uid2String: Map<number, string>;
+  string2Uid: Map<string, number>;
+  userAccount: string;
   constructor() {
     super();
     this.rtcEngine = new agora.NodeRtcEngine();
     this.initEventHandler();
     this.streams = new Map();
+    this.uid2String = new Map();
+    this.string2Uid = new Map();
     this.renderMode = this._checkWebGL() ? 1 : 2;
     this.customRenderer = CustomRenderer;
+    this.userAccount = "";
+  }
+
+  getUserAccount(uid: number): string {
+    if(uid === 0) {
+      return this.userAccount
+    }
+    let account = this.uid2String.get(uid)
+    if(!account) {
+      throw new Error(`uid ${uid} not exists in mapping`)
+    }
+    return account
+  }
+
+  getUid(userAccount: string): number {
+    let uid = this.string2Uid.get(userAccount)
+    if(!uid) {
+      throw new Error(`userAccount ${userAccount} not exists in mapping`)
+    }
+    return uid
   }
 
   /**
@@ -155,22 +180,24 @@ class AgoraRtcEngine extends EventEmitter {
               to see if it matches properly.`);
     });
 
-    this.rtcEngine.onEvent('joinchannel', function(
+    this.rtcEngine.onEvent('joinchannel', (
       channel: string,
       uid: number,
       elapsed: number
-    ) {
-      fire('joinedchannel', channel, uid, elapsed);
-      fire('joinedChannel', channel, uid, elapsed);
+    ) => {
+      let userAccount = this.getUserAccount(uid)
+      fire('joinedchannel', channel, userAccount, elapsed);
+      fire('joinedChannel', channel, userAccount, elapsed);
     });
 
-    this.rtcEngine.onEvent('rejoinchannel', function(
+    this.rtcEngine.onEvent('rejoinchannel', (
       channel: string,
       uid: number,
       elapsed: number
-    ) {
-      fire('rejoinedchannel', channel, uid, elapsed);
-      fire('rejoinedChannel', channel, uid, elapsed);
+    ) => {
+      let userAccount = this.getUserAccount(uid)
+      fire('rejoinedchannel', channel, userAccount, elapsed);
+      fire('rejoinedChannel', channel, userAccount, elapsed);
     });
 
     this.rtcEngine.onEvent('warning', function(warn: number, msg: string) {
@@ -186,31 +213,15 @@ class AgoraRtcEngine extends EventEmitter {
     //   fire('audioQuality', uid, quality, delay, lost);
     // });
 
-    this.rtcEngine.onEvent('audiovolumeindication', function(
+    this.rtcEngine.onEvent('audiovolumeindication', (
       speakers: {
         uid: number;
         volume: number;
       }[],
       speakerNumber: number,
       totalVolume: number
-    ) {
-      if (speakers[0]) {
-        fire(
-          'audiovolumeindication',
-          speakers[0]['uid'],
-          speakers[0]['volume'],
-          speakerNumber,
-          totalVolume
-        );
-        fire(
-          'audioVolumeIndication',
-          speakers[0]['uid'],
-          speakers[0]['volume'],
-          speakerNumber,
-          totalVolume
-        );
-      }
-      fire('groupAudioVolumeIndication', speakers, speakerNumber, totalVolume);
+    ) => {
+      fire('groupAudioVolumeIndication', speakers.map(s => {return {uid: s.uid, userAccount: this.getUserAccount(s.uid), volume: s.volume}}), speakerNumber, totalVolume);
     });
 
     this.rtcEngine.onEvent('leavechannel', function() {
@@ -232,41 +243,45 @@ class AgoraRtcEngine extends EventEmitter {
       fire('localAudioStats', stats);
     });
 
-    this.rtcEngine.onEvent('remotevideostats', function(
+    this.rtcEngine.onEvent('remotevideostats', (
       stats: RemoteVideoStats
-    ) {
+    ) => {
+      stats.userAccount = this.getUserAccount(stats.uid)
       fire('remotevideostats', stats);
       fire('remoteVideoStats', stats);
     });
 
-    this.rtcEngine.onEvent('remoteAudioStats', function(
+    this.rtcEngine.onEvent('remoteAudioStats', (
       stats: RemoteAudioStats
-    ) {
+    ) => {
+      stats.userAccount = this.getUserAccount(stats.uid)
       fire('remoteAudioStats', stats);
     });
 
-    this.rtcEngine.onEvent('remoteAudioTransportStats', function(
+    this.rtcEngine.onEvent('remoteAudioTransportStats', (
       uid: number,
       delay: number,
       lost: number,
       rxKBitRate: number
-    ) {
+    ) => {
       fire('remoteAudioTransportStats', {
         uid,
+        userAccount: this.getUserAccount(uid),
         delay,
         lost,
         rxKBitRate
       });
     });
 
-    this.rtcEngine.onEvent('remoteVideoTransportStats', function(
+    this.rtcEngine.onEvent('remoteVideoTransportStats', (
       uid: number,
       delay: number,
       lost: number,
       rxKBitRate: number
-    ) {
+    ) => {
       fire('remoteVideoTransportStats', {
         uid,
+        userAccount: this.getUserAccount(uid),
         delay,
         lost,
         rxKBitRate
@@ -326,13 +341,14 @@ class AgoraRtcEngine extends EventEmitter {
       fire('videoDeviceStateChanged', deviceId, deviceType, deviceState);
     });
 
-    this.rtcEngine.onEvent('networkquality', function(
+    this.rtcEngine.onEvent('networkquality', (
       uid: number,
       txquality: AgoraNetworkQuality,
       rxquality: AgoraNetworkQuality
-    ) {
-      fire('networkquality', uid, txquality, rxquality);
-      fire('networkQuality', uid, txquality, rxquality);
+    ) => {
+      let userAccount = this.getUserAccount(uid)
+      fire('networkquality', userAccount, txquality, rxquality);
+      fire('networkQuality', userAccount, txquality, rxquality);
     });
 
     this.rtcEngine.onEvent('lastmilequality', function(
@@ -357,51 +373,56 @@ class AgoraRtcEngine extends EventEmitter {
       fire('firstLocalVideoFrame', width, height, elapsed);
     });
 
-    this.rtcEngine.onEvent('firstremotevideodecoded', function(
+    this.rtcEngine.onEvent('firstremotevideodecoded', (
       uid: number,
       width: number,
       height: number,
       elapsed: number
-    ) {
-      fire('addstream', uid, elapsed);
-      fire('addStream', uid, elapsed);
-      fire('firstRemoteVideoDecoded', uid, width, height, elapsed);
+    ) => {
+      let userAccount = this.getUserAccount(uid)
+      fire('addstream', userAccount, elapsed);
+      fire('addStream', userAccount, elapsed);
+      fire('firstRemoteVideoDecoded', userAccount, width, height, elapsed);
     });
 
-    this.rtcEngine.onEvent('videosizechanged', function(
+    this.rtcEngine.onEvent('videosizechanged', (
       uid: number,
       width: number,
       height: number,
       rotation: number
-    ) {
-      fire('videosizechanged', uid, width, height, rotation);
-      fire('videoSizeChanged', uid, width, height, rotation);
+    ) => {
+      let userAccount = this.getUserAccount(uid)
+      fire('videosizechanged', userAccount, width, height, rotation);
+      fire('videoSizeChanged', userAccount, width, height, rotation);
     });
 
-    this.rtcEngine.onEvent('firstremotevideoframe', function(
+    this.rtcEngine.onEvent('firstremotevideoframe', (
       uid: number,
       width: number,
       height: number,
       elapsed: number
-    ) {
-      fire('firstremotevideoframe', uid, width, height, elapsed);
-      fire('firstRemoteVideoFrame', uid, width, height, elapsed);
+    ) => {
+      let userAccount = this.getUserAccount(uid)
+      fire('firstremotevideoframe', userAccount, width, height, elapsed);
+      fire('firstRemoteVideoFrame', userAccount, width, height, elapsed);
     });
 
-    this.rtcEngine.onEvent('userjoined', function(
+    this.rtcEngine.onEvent('userjoined', (
       uid: number,
       elapsed: number
-    ) {
+    ) => {
       console.log('user : ' + uid + ' joined.');
-      fire('userjoined', uid, elapsed);
-      fire('userJoined', uid, elapsed);
+      let userAccount = this.getUserAccount(uid)
+      fire('userjoined', userAccount, elapsed);
+      fire('userJoined', userAccount, elapsed);
     });
 
-    this.rtcEngine.onEvent('useroffline', function(
+    this.rtcEngine.onEvent('useroffline', (
       uid: number,
       reason: number
-    ) {
-      fire('userOffline', uid, reason);
+    ) => {
+      let userAccount = this.getUserAccount(uid)
+      fire('userOffline', userAccount, reason);
       if (!self.streams) {
         self.streams = new Map();
         console.log('Warning!!!!!!, streams is undefined.');
@@ -409,40 +430,44 @@ class AgoraRtcEngine extends EventEmitter {
       }
       self.destroyRender(uid, "");
       self.rtcEngine.unsubscribe(uid);
-      fire('removestream', uid, reason);
-      fire('removeStream', uid, reason);
+      fire('removestream', userAccount, reason);
+      fire('removeStream', userAccount, reason);
     });
 
-    this.rtcEngine.onEvent('usermuteaudio', function(
+    this.rtcEngine.onEvent('usermuteaudio', (
       uid: number,
       muted: boolean
-    ) {
-      fire('usermuteaudio', uid, muted);
-      fire('userMuteAudio', uid, muted);
+    ) => {
+      let userAccount = this.getUserAccount(uid)
+      fire('usermuteaudio', userAccount, muted);
+      fire('userMuteAudio', userAccount, muted);
     });
 
-    this.rtcEngine.onEvent('usermutevideo', function(
+    this.rtcEngine.onEvent('usermutevideo', (
       uid: number,
       muted: boolean
-    ) {
-      fire('usermutevideo', uid, muted);
-      fire('userMuteVideo', uid, muted);
+    ) => {
+      let userAccount = this.getUserAccount(uid)
+      fire('usermutevideo', userAccount, muted);
+      fire('userMuteVideo', userAccount, muted);
     });
 
-    this.rtcEngine.onEvent('userenablevideo', function(
+    this.rtcEngine.onEvent('userenablevideo', (
       uid: number,
       enabled: boolean
-    ) {
-      fire('userenablevideo', uid, enabled);
-      fire('userEnableVideo', uid, enabled);
+    ) => {
+      let userAccount = this.getUserAccount(uid)
+      fire('userenablevideo', userAccount, enabled);
+      fire('userEnableVideo', userAccount, enabled);
     });
 
-    this.rtcEngine.onEvent('userenablelocalvideo', function(
+    this.rtcEngine.onEvent('userenablelocalvideo', (
       uid: number,
       enabled: boolean
-    ) {
-      fire('userenablelocalvideo', uid, enabled);
-      fire('userEnableLocalVideo', uid, enabled);
+    ) => {
+      let userAccount = this.getUserAccount(uid)
+      fire('userenablelocalvideo', userAccount, enabled);
+      fire('userEnableLocalVideo', userAccount, enabled);
     });
 
     this.rtcEngine.onEvent('cameraready', function() {
@@ -475,25 +500,27 @@ class AgoraRtcEngine extends EventEmitter {
     //   fire('refreshRecordingServiceStatus', status);
     // });
 
-    this.rtcEngine.onEvent('streammessage', function(
+    this.rtcEngine.onEvent('streammessage', (
       uid: number,
       streamId: number,
       msg: string,
       len: number
-    ) {
-      fire('streammessage', uid, streamId, msg, len);
-      fire('streamMessage', uid, streamId, msg, len);
+    ) => {
+      let userAccount = this.getUserAccount(uid)
+      fire('streammessage', userAccount, streamId, msg, len);
+      fire('streamMessage', userAccount, streamId, msg, len);
     });
 
-    this.rtcEngine.onEvent('streammessageerror', function(
+    this.rtcEngine.onEvent('streammessageerror', (
       uid: number,
       streamId: number,
       code: number,
       missed: number,
       cached: number
-    ) {
-      fire('streammessageerror', uid, streamId, code, missed, cached);
-      fire('streamMessageError', uid, streamId, code, missed, cached);
+    ) => {
+      let userAccount = this.getUserAccount(uid)
+      fire('streammessageerror', userAccount, streamId, code, missed, cached);
+      fire('streamMessageError', userAccount, streamId, code, missed, cached);
     });
 
     this.rtcEngine.onEvent('mediaenginestartcallsuccess', function() {
@@ -519,20 +546,22 @@ class AgoraRtcEngine extends EventEmitter {
       fire('firstRemoteAudioFrame', uid, elapsed);
     });
 
-    this.rtcEngine.onEvent('firstRemoteAudioDecoded', function(
+    this.rtcEngine.onEvent('firstRemoteAudioDecoded', (
       uid: number,
       elapsed: number
-    ) {
-      fire('firstRemoteAudioDecoded', uid, elapsed);
+    ) => {
+      let userAccount = this.getUserAccount(uid)
+      fire('firstRemoteAudioDecoded', userAccount, elapsed);
     });
 
-    this.rtcEngine.onEvent('remoteVideoStateChanged', function(
+    this.rtcEngine.onEvent('remoteVideoStateChanged', (
       uid: number,
       state: RemoteVideoState,
       reason: RemoteVideoStateReason,
       elapsed: number
-    ) {
-      fire('remoteVideoStateChanged', uid, state, reason, elapsed);
+    ) => {
+      let userAccount = this.getUserAccount(uid)
+      fire('remoteVideoStateChanged', userAccount, state, reason, elapsed);
     });
 
     this.rtcEngine.onEvent('cameraFocusAreaChanged', function(
@@ -572,12 +601,13 @@ class AgoraRtcEngine extends EventEmitter {
       fire('transcodingUpdated');
     });
 
-    this.rtcEngine.onEvent('streamInjectStatus', function(
+    this.rtcEngine.onEvent('streamInjectStatus', (
       url: string,
       uid: number,
       status: number
-    ) {
-      fire('streamInjectStatus', url, uid, status);
+    ) => {
+      let userAccount = this.getUserAccount(uid)
+      fire('streamInjectStatus', url, userAccount, status);
     });
 
     this.rtcEngine.onEvent('localPublishFallbackToAudioOnly', function(
@@ -586,11 +616,12 @@ class AgoraRtcEngine extends EventEmitter {
       fire('localPublishFallbackToAudioOnly', isFallbackOrRecover);
     });
 
-    this.rtcEngine.onEvent('remoteSubscribeFallbackToAudioOnly', function(
+    this.rtcEngine.onEvent('remoteSubscribeFallbackToAudioOnly', (
       uid: number,
       isFallbackOrRecover: boolean
-    ) {
-      fire('remoteSubscribeFallbackToAudioOnly', uid, isFallbackOrRecover);
+    ) => {
+      let userAccount = this.getUserAccount(uid)
+      fire('remoteSubscribeFallbackToAudioOnly', userAccount, isFallbackOrRecover);
     });
 
     this.rtcEngine.onEvent('microphoneEnabled', function(enabled: boolean) {
@@ -604,9 +635,10 @@ class AgoraRtcEngine extends EventEmitter {
       fire('connectionStateChanged', state, reason);
     });
 
-    this.rtcEngine.onEvent('activespeaker', function(uid: number) {
-      fire('activespeaker', uid);
-      fire('activeSpeaker', uid);
+    this.rtcEngine.onEvent('activespeaker', (uid: number) => {
+      let userAccount = this.getUserAccount(uid)
+      fire('activespeaker', userAccount);
+      fire('activeSpeaker', userAccount);
     });
 
     this.rtcEngine.onEvent('clientrolechanged', function(
@@ -641,17 +673,22 @@ class AgoraRtcEngine extends EventEmitter {
       fire('videoSourceLeaveChannel');
     });
 
-    this.rtcEngine.onEvent('localUserRegistered', function(
+    this.rtcEngine.onEvent('localUserRegistered', (
       uid: number,
       userAccount: string
-    ) {
-      fire('localUserRegistered', uid, userAccount);
+    ) => {
+      this.uid2String.set(uid, userAccount)
+      this.string2Uid.set(userAccount, uid)
+      this.userAccount = userAccount;
+      fire('localUserRegistered', userAccount, userAccount);
     });
 
-    this.rtcEngine.onEvent('userInfoUpdated', function(
+    this.rtcEngine.onEvent('userInfoUpdated', (
       uid: number,
       userInfo: UserInfo
-    ) {
+    ) => {
+      this.uid2String.set(uid, userInfo.userAccount)
+      this.string2Uid.set(userInfo.userAccount, uid)
       fire('userInfoUpdated', uid, userInfo);
     });
 
@@ -1100,12 +1137,14 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  subscribe(uid: number, view: Element): number {
+  subscribe(userAccount: string, view: Element): number {
+    let uid = this.getUid(userAccount);
     this.initRender(uid, view, "");
     return this.rtcEngine.subscribe(uid);
   }
 
-  setupRemoteVideo(uid: number, view?: Element, channel?: string): number {
+  setupRemoteVideo(userAccount: string, view?: Element, channel?: string): number {
+    let uid = this.getUid(userAccount);
     if(view) {
       //bind
       this.initRender(uid, view, channel);
@@ -1145,10 +1184,11 @@ class AgoraRtcEngine extends EventEmitter {
    */
   setVideoRenderDimension(
     rendertype: number,
-    uid: number,
+    userAccount: string,
     width: number,
     height: number
   ) {
+    let uid = this.getUid(userAccount);
     this.rtcEngine.setVideoRenderDimension(rendertype, uid, width, height);
   }
 
@@ -1188,7 +1228,8 @@ class AgoraRtcEngine extends EventEmitter {
    * {@link setVideoRenderHighFPS} method.
    * @param {number} uid The User ID.
    */
-  addVideoRenderToHighFPS(uid: number) {
+  addVideoRenderToHighFPS(userAccount: string) {
+    let uid = this.getUid(userAccount);
     this.rtcEngine.addToHighVideo(uid);
   }
 
@@ -1198,7 +1239,8 @@ class AgoraRtcEngine extends EventEmitter {
    * {@link setVideoRenderFPS} method.
    * @param {number} uid The User ID.
    */
-  removeVideoRenderFromHighFPS(uid: number) {
+  removeVideoRenderFromHighFPS(userAccount: string) {
+    let uid = this.getUid(userAccount);
     this.rtcEngine.removeFromHighVideo(uid);
   }
 
@@ -1698,7 +1740,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setRemoteUserPriority(uid: number, priority: Priority) {
+  setRemoteUserPriority(userAccount: string, priority: Priority) {
+    let uid = this.getUid(userAccount);
     return this.rtcEngine.setRemoteUserPriority(uid, priority);
   }
 
@@ -1930,7 +1973,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  muteRemoteAudioStream(uid: number, mute: boolean): number {
+  muteRemoteAudioStream(userAccount: string, mute: boolean): number {
+    let uid = this.getUid(userAccount);
     return this.rtcEngine.muteRemoteAudioStream(uid, mute);
   }
 
@@ -2078,7 +2122,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  muteRemoteVideoStream(uid: number, mute: boolean): number {
+  muteRemoteVideoStream(userAccount: string, mute: boolean): number {
+    let uid = this.getUid(userAccount);
     return this.rtcEngine.muteRemoteVideoStream(uid, mute);
   }
 
@@ -2235,7 +2280,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setRemoteVideoStreamType(uid: number, streamType: StreamType): number {
+  setRemoteVideoStreamType(userAccount: string, streamType: StreamType): number {
+    let uid = this.getUid(userAccount);
     return this.rtcEngine.setRemoteVideoStreamType(uid, streamType);
   }
 
@@ -4376,7 +4422,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setRemoteVoicePosition(uid: number, pan: number, gain: number): number {
+  setRemoteVoicePosition(userAccount: string, pan: number, gain: number): number {
+    let uid = this.getUid(userAccount);
     return this.rtcEngine.setRemoteVoicePosition(uid, pan, gain);
   }
 
@@ -4649,7 +4696,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: 'joinedChannel',
-    cb: (channel: string, uid: number, elapsed: number) => void
+    cb: (channel: string, userAccount: string, elapsed: number) => void
   ): this;
   /** Occurs when a user rejoins the channel after disconnection due to network 
    * problems.
@@ -4663,20 +4710,11 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: 'rejoinedChannel',
-    cb: (channel: string, uid: number, elapsed: number) => void
+    cb: (channel: string, userAccount: string, elapsed: number) => void
   ): this;
   // on(evt: 'audioQuality', cb: (
   //   uid: number, quality: AgoraNetworkQuality, delay: number, lost: number
   // ) => void): this;
-  on(
-    evt: 'audioVolumeIndication',
-    cb: (
-      uid: number,
-      volume: number,
-      speakerNumber: number,
-      totalVolume: number
-    ) => void
-  ): this;
   /** Reports which users are speaking and the speakers' volume.
    * - speakers: A struct containing each speaker's user ID and volume 
    * information.
@@ -4690,7 +4728,7 @@ declare interface AgoraRtcEngine {
     evt: 'groupAudioVolumeIndication',
     cb: (
       speakers: {
-        uid: number;
+        userAccount: string;
         volume: number;
       }[],
       speakerNumber: number,
@@ -4894,7 +4932,7 @@ declare interface AgoraRtcEngine {
    * sending the video stream.
    *  - The remote user calls the {@link disableVideo} method to disable video.
    */
-  on(evt: 'addStream', cb: (uid: number, elapsed: number) => void): this;
+  on(evt: 'addStream', cb: (userAccount: string, elapsed: number) => void): this;
   /** Occurs when the video size or rotation of a specified user changes.
    * - uid: User ID of the remote user or local user (0) whose video size or 
    * rotation changes.
@@ -4904,7 +4942,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: 'videoSizeChanged',
-    cb: (uid: number, width: number, height: number, rotation: number) => void
+    cb: (userAccount: string, width: number, height: number, rotation: number) => void
   ): this;
   /** Occurs when the first remote video frame is rendered.
    * The SDK triggers this callback when the first frame of the remote video 
@@ -4917,7 +4955,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: 'firstRemoteVideoFrame',
-    cb: (uid: number, width: number, height: number, elapsed: number) => void
+    cb: (userAccount: string, width: number, height: number, elapsed: number) => void
   ): this;
   /** Occurs when the first remote video frame is decoded.
    * The SDK triggers this callback when the first frame of the remote video 
@@ -4930,7 +4968,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: 'firstRemoteVideoDecoded',
-    cb: (uid: number, width: number, height: number, elapsed: number) => void
+    cb: (userAccount: string, width: number, height: number, elapsed: number) => void
   ): this;
   /** Occurs when a user or host joins the channel.
    * - uid: User ID of the user or host joining the channel.
@@ -4953,7 +4991,7 @@ declare interface AgoraRtcEngine {
    * - When a web application joins the channel, the SDK triggers this 
    * callback as long as the web application publishes streams.
    */
-  on(evt: 'userJoined', cb: (uid: number, elapsed: number) => void): this;
+  on(evt: 'userJoined', cb: (userAccount: string, elapsed: number) => void): this;
   /** Occurs when a remote user leaves the channel.
    * - uid: User ID of the user leaving the channel or going offline.
    * - reason: Reason why the user is offline:
@@ -4974,7 +5012,7 @@ declare interface AgoraRtcEngine {
    * detections, so we recommend using a signaling system for more reliable 
    * offline detection.
    */
-  on(evt: 'removeStream', cb: (uid: number, reason: number) => void): this;
+  on(evt: 'removeStream', cb: (userAccount: string, reason: number) => void): this;
   /** Occurs when a remote user (Communication)/host (Live Broadcast) leaves 
    * the channel.
    * 
@@ -4998,7 +5036,7 @@ declare interface AgoraRtcEngine {
    *  - (Live broadcast only.) The client role switched from the host to the 
    * audience.
    */
-  on(evt: 'userOffline', cb: (uid: number, reason: number) => void): this;
+  on(evt: 'userOffline', cb: (userAccount: string, reason: number) => void): this;
   /** Occurs when a remote user's audio stream is muted/unmuted.
    *
    * The SDK triggers this callback when the remote user stops or resumes 
@@ -5009,7 +5047,7 @@ declare interface AgoraRtcEngine {
    *  - true: Muted.
    *  - false: Unmuted.
    */
-  on(evt: 'userMuteAudio', cb: (uid: number, muted: boolean) => void): this;
+  on(evt: 'userMuteAudio', cb: (userAccount: string, muted: boolean) => void): this;
   
   /** 
    * Occurs when a remote user's video stream playback pauses/resumes.
@@ -5026,7 +5064,7 @@ declare interface AgoraRtcEngine {
    * **Note**: This callback returns invalid when the number of users in a 
    * channel exceeds 20.
    */
-  on(evt: 'userMuteVideo', cb: (uid: number, muted: boolean) => void): this;
+  on(evt: 'userMuteVideo', cb: (userAccount: string, muted: boolean) => void): this;
   /** 
    * @deprecated This callback is deprecated. Use the remoteVideoStateChanged
    * callback instead.
@@ -5042,7 +5080,7 @@ declare interface AgoraRtcEngine {
    *  - false: Disable. The remote user can only enter a voice session, and 
    * cannot send or receive any video stream.
    */
-  on(evt: 'userEnableVideo', cb: (uid: number, enabled: boolean) => void): this;
+  on(evt: 'userEnableVideo', cb: (userAccount: string, enabled: boolean) => void): this;
   /** 
    * @deprecated This callback is deprecated. Use the remoteVideoStateChanged 
    * callback instead.
@@ -5063,7 +5101,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: 'userEnableLocalVideo',
-    cb: (uid: number, enabled: boolean) => void
+    cb: (userAccount: string, enabled: boolean) => void
   ): this;
   /**
    * @deprecated Replaced by the localVideoStateChanged callback.
@@ -5102,7 +5140,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: 'streamMessage',
-    cb: (uid: number, streamId: number, msg: string, len: number) => void
+    cb: (userAccount: string, streamId: number, msg: string, len: number) => void
   ): this;
   /** Occurs when the local user does not receive the data stream from the 
    * remote user within five seconds.
@@ -5119,7 +5157,7 @@ declare interface AgoraRtcEngine {
   on(
     evt: 'streamMessageError',
     cb: (
-      uid: number,
+      userAccount: string,
       streamId: number,
       code: number,
       missed: number,
@@ -5153,7 +5191,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: 'firstRemoteAudioFrame',
-    cb: (uid: number, elapsed: number) => void
+    cb: (userAccount: string, elapsed: number) => void
   ): this;
   /**
    * Occurs when the engine receives the first audio frame from a specified 
@@ -5164,7 +5202,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: 'firstRemoteAudioDecoded',
-    cb: (uid: number, elapsed: number) => void
+    cb: (userAccount: string, elapsed: number) => void
   ): this;
   /**
    * Reports which user is the loudest speaker.
@@ -5180,7 +5218,7 @@ declare interface AgoraRtcEngine {
    * - This callback returns the user ID of the user with the highest voice 
    * volume during a period of time, instead of at the moment.
    */
-  on(evt: 'activeSpeaker', cb: (uid: number) => void): this;
+  on(evt: 'activeSpeaker', cb: (userAccount: string) => void): this;
   /** Occurs when the user role switches in a live broadcast. For example, 
    * from a host to an audience or vice versa.
    *
@@ -5210,7 +5248,7 @@ declare interface AgoraRtcEngine {
   /** Occurs when the user for sharing screen joined the channel.
    * - uid: The User ID.
    */
-  on(evt: 'videoSourceJoinedSuccess', cb: (uid: number) => void): this;
+  on(evt: 'videoSourceJoinedSuccess', cb: (userAccount: string) => void): this;
   /** Occurs when the token expires. */
   on(evt: 'videoSourceRequestNewToken', cb: () => void): this;
   /** Occurs when the user for sharing screen leaved the channel.
@@ -5229,7 +5267,7 @@ declare interface AgoraRtcEngine {
   on(
     evt: 'remoteVideoStateChanged',
     cb: (
-      uid: number,
+      userAccount: string,
       state: RemoteVideoState,
       reason: RemoteVideoStateReason,
       elapsed: number
@@ -5311,7 +5349,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: 'streamInjectStatus',
-    cb: (url: string, uid: number, status: number) => void
+    cb: (url: string, userAccount: string, status: number) => void
   ): this;
   /** Occurs when the locally published media stream falls back to an 
    * audio-only stream due to poor network conditions or switches back
@@ -5350,7 +5388,7 @@ declare interface AgoraRtcEngine {
    * the network conditions improved.
    */
   on(evt: 'remoteSubscribeFallbackToAudioOnly', cb: (
-    uid: number,
+    userAccount: string,
     isFallbackOrRecover: boolean
   ) => void): this;
   /** 
@@ -5460,7 +5498,7 @@ declare interface AgoraRtcEngine {
    * {@link joinChannel} method until the SDK triggers this callback.
    */
   on(evt: 'remoteAudioStateChanged', cb: (
-    uid: number,
+    userAccount: string,
     state: RemoteAudioState,
     reason: RemoteAudioStateReason,
     elapsed: number
