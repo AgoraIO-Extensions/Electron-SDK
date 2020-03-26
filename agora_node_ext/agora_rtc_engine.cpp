@@ -2903,7 +2903,7 @@ namespace agora {
                 status = napi_get_value_nodestring_(args[1], channel);
                 CHECK_NAPI_STATUS(pEngine, status);
                 
-                auto context = new NodeRenderContext(NODE_RENDER_TYPE_REMOTE, uid, std::string(channel));
+                auto context = new NodeRenderContext(NODE_RENDER_TYPE_REMOTE, uid);
                 if(!context) {
                     LOG_ERROR("Failed to allocate NodeRenderContext\n");
                     break;
@@ -2980,7 +2980,6 @@ namespace agora {
                 CHECK_NATIVE_THIS(pEngine);
                 NodeRenderType type;
                 int renderType, width, height;
-                nodestring channelId;
                 agora::rtc::uid_t uid;
                 napi_status status = napi_ok;
                 status = napi_get_value_int32_(args[0], renderType);
@@ -2996,14 +2995,10 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_value_int32_(args[3], height);
                 CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_value_nodestring_(args[4], channelId);
-                CHECK_NAPI_STATUS(pEngine, status);
                 
-                std::string sChannelId(channelId);
-
                 auto *pTransporter = getNodeVideoFrameTransporter();
                 if (pTransporter) {
-                    pTransporter->setVideoDimension(type, uid, sChannelId, width, height);
+                    pTransporter->setVideoDimension(type, uid, width, height);
                     result = 0;
                 }
             }while(false);
@@ -3073,17 +3068,11 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 agora::rtc::uid_t uid;
-                nodestring channelId;
                 status = NodeUid::getUidFromNodeValue(args[0], uid);
                 CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_value_nodestring_(args[1], channelId);
-                CHECK_NAPI_STATUS(pEngine, status);
-
-                std::string sChannelId(channelId);
-
                 auto pTransporter = getNodeVideoFrameTransporter();
                 if(pTransporter) {
-                    pTransporter->addToHighVideo(uid, sChannelId);
+                    pTransporter->addToHighVideo(uid);
                     result = 0;
                 }
             }while(false);
@@ -3101,16 +3090,11 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 agora::rtc::uid_t uid;
-                nodestring channelId;
                 status = NodeUid::getUidFromNodeValue(args[0], uid);
                 CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_value_nodestring_(args[1], channelId);
-                CHECK_NAPI_STATUS(pEngine, status);
-
-                std::string sChannelId(channelId);
                 auto pTransporter = getNodeVideoFrameTransporter();
                 if(pTransporter) {
-                    pTransporter->removeFromeHighVideo(uid, sChannelId);
+                    pTransporter->removeFromeHighVideo(uid);
                     result = 0;
                 }
             }while (false);

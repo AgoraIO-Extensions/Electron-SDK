@@ -93,7 +93,6 @@ public:
     uint32_t m_destHeight;
     bool m_needUpdate;
     uint32_t m_count;
-    std::string m_channelId;
     VideoFrameInfo()
         : m_renderType(NODE_RENDER_TYPE_REMOTE)
         , m_uid(0)
@@ -101,7 +100,6 @@ public:
         , m_destHeight(0)
         , m_needUpdate(false)
         , m_count(0)
-        , m_channelId("")
     {}
     VideoFrameInfo(NodeRenderType type)
         : m_renderType(type)
@@ -110,17 +108,15 @@ public:
         , m_destHeight(0)
         , m_needUpdate(false)
         , m_count(0)
-        , m_channelId("")
     {
     }
-    VideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId)
+    VideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid)
         : m_renderType(type)
         , m_uid(uid)
         , m_destWidth(0)
         , m_destHeight(0)
         , m_needUpdate(false)
         , m_count(0)
-        , m_channelId(channelId)
     {}
 };
 
@@ -130,11 +126,11 @@ class NodeVideoFrameTransporter {
     ~NodeVideoFrameTransporter();
     
     bool initialize(Isolate *isolate, const Nan::FunctionCallbackInfo<Value>& callbackinfo);
-    int deliverFrame_I420(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, const IVideoFrame& videoFrame, int rotation, bool mirrored);
+    int deliverFrame_I420(NodeRenderType type, agora::rtc::uid_t uid, const IVideoFrame& videoFrame, int rotation, bool mirrored);
     int deliverVideoSourceFrame(const char* payload, int len);
-    int setVideoDimension(NodeRenderType, agora::rtc::uid_t uid, std::string channelId, uint32_t width, uint32_t height);
-    void addToHighVideo(agora::rtc::uid_t uid, std::string channelId);
-    void removeFromeHighVideo(agora::rtc::uid_t uid, std::string channelId);
+    int setVideoDimension(NodeRenderType, agora::rtc::uid_t uid, uint32_t width, uint32_t height);
+    void addToHighVideo(agora::rtc::uid_t uid);
+    void removeFromeHighVideo(agora::rtc::uid_t uid);
     void setHighFPS(uint32_t fps);
     void setFPS(uint32_t fps);
     //bool deliveryFrame1(enum NodeRenderType type, agora::rtc::uid_t uid, const buffer_list& buffers);
@@ -161,9 +157,9 @@ private:
         uint16_t rotation;
         uint32_t timestamp;
     };
-    VideoFrameInfo& getVideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId);
+    VideoFrameInfo& getVideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid);
     bool deinitialize();
-    VideoFrameInfo& getHighVideoFrameInfo(agora::rtc::uid_t uid, std::string channelId);
+    VideoFrameInfo& getHighVideoFrameInfo(agora::rtc::uid_t uid);
     void setupFrameHeader(image_header_type*header, int stride, int width, int height);
     void copyFrame(const agora::media::IVideoFrame& videoFrame, VideoFrameInfo& info, int dest_stride, int src_stride, int width, int height);
     void copyAndCentreYuv(const unsigned char* srcYPlane, const unsigned char* srcUPlane, const unsigned char* srcVPlane, int width, int height, int srcStride,
@@ -175,8 +171,8 @@ private:
     Isolate* env;
     Persistent<Function> callback;
     Persistent<Object> js_this;
-    std::unordered_map<std::string, std::unordered_map<agora::rtc::uid_t, VideoFrameInfo>> m_remoteVideoFrames;
-    std::unordered_map<std::string, std::unordered_map<agora::rtc::uid_t, VideoFrameInfo>> m_remoteHighVideoFrames;
+    std::unordered_map<agora::rtc::uid_t, VideoFrameInfo> m_remoteVideoFrames;
+    std::unordered_map<agora::rtc::uid_t, VideoFrameInfo> m_remoteHighVideoFrames;
     std::unique_ptr<VideoFrameInfo> m_localVideoFrame;
     std::unique_ptr<VideoFrameInfo> m_devTestVideoFrame;
     std::unique_ptr<VideoFrameInfo> m_videoSourceVideoFrame;
