@@ -703,7 +703,7 @@ class AgoraRtcEngine extends EventEmitter {
       this.uid2String.set(uid, userAccount)
       this.string2Uid.set(userAccount, uid)
       this.userAccount = userAccount;
-      fire('localUserRegistered', userAccount, userAccount);
+      fire('localUserRegistered', uid, userAccount);
     });
 
     this.rtcEngine.onEvent('userInfoUpdated', (

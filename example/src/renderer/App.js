@@ -173,9 +173,8 @@ export default class App extends Component {
     let encoderWidth = parseInt(this.state.encoderWidth)
     let encoderHeight = parseInt(this.state.encoderHeight)
     let rtcEngine = this.getRtcEngine()
-    rtcEngine.setParameters("{\"rtc.user_account_server_list\":[\"58.211.82.170\"]}")
-    let result = rtcEngine.registerLocalUserAccount(APP_ID, "TEST")
-    console.log(result)
+    // let result = rtcEngine.registerLocalUserAccount(APP_ID, "TEST")
+    // console.log(result)
     rtcEngine.setChannelProfile(1)
     rtcEngine.setClientRole(this.state.role)
     rtcEngine.setAudioProfile(0, 1)
@@ -204,15 +203,17 @@ export default class App extends Component {
     })
 
     // joinning two channels together
-    let channel = rtcEngine.createChannel(this.state.channel)
-    this.subscribeChannelEvents(channel, true)
-    channel.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
-    channel.publish();
+    // let channel = rtcEngine.createChannel(this.state.channel)
+    // this.subscribeChannelEvents(channel, true)
+    // channel.joinChannelWithUserAccount(null, `${new Date().getTime()}-test1`);
+    // channel.publish();
 
-    let channel2 = rtcEngine.createChannel(`${this.state.channel}-2`)
-    this.subscribeChannelEvents(channel2, false)
-    channel2.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
+    // let channel2 = rtcEngine.createChannel(`${this.state.channel}-2`)
+    // this.subscribeChannelEvents(channel2, false)
+    // channel2.joinChannelWithUserAccount(null, `${new Date().getTime()}-test2`);
 
+    let userAccount = `${new Date().getTime()}`
+    rtcEngine.joinChannelWithUserAccount(null, "test", userAccount)
   }
 
   handleCameraChange = e => {
