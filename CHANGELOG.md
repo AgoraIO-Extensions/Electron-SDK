@@ -1,3 +1,7 @@
+## 2.9.0-rc.125
+* Support String UID
+* Upgrade sdk to 2.9.0.125
+
 ## 2.9.0-rc.102-build.0314
 * Support Win64
 
