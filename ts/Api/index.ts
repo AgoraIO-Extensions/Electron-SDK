@@ -848,6 +848,7 @@ class AgoraRtcEngine extends EventEmitter {
     if (channelStreams.has(String(key))) {
       this.destroyRender(key, channelId || "");
     }
+    channelStreams = this._getChannelRenderers(channelId || "")
     let renderer: IRenderer;
     if (this.renderMode === 1) {
       renderer = new GlRenderer();
