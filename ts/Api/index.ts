@@ -883,7 +883,7 @@ class AgoraRtcEngine extends EventEmitter {
     try {
       (renderer as IRenderer).unbind();
       channelStreams.delete(String(key));
-      if(channelStreams.keys.length === 0) {
+      if(channelStreams.size === 0) {
         this.streams.delete(channelId || "")
       }
     } catch (err) {
