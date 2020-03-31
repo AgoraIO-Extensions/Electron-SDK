@@ -87,12 +87,12 @@ export default class App extends Component {
         return
       }
       this.setState({
-        users: this.state.users.push(uid)
+        users: this.state.users.push({uid})
       })
     })
     rtcEngine.on('removestream', (uid, reason) => {
       this.setState({
-        users: this.state.users.delete(this.state.users.indexOf(uid))
+        users: this.state.users.filter(user => user.uid !== uid)
       })
     })
     rtcEngine.on('leavechannel', () => {
@@ -203,15 +203,15 @@ export default class App extends Component {
     })
 
     // joinning two channels together
-    let channel = rtcEngine.createChannel(this.state.channel)
-    this.subscribeChannelEvents(channel, true)
-    channel.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
-    channel.publish();
+    // let channel = rtcEngine.createChannel(this.state.channel)
+    // this.subscribeChannelEvents(channel, true)
+    // channel.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
+    // channel.publish();
 
-    let channel2 = rtcEngine.createChannel(`${this.state.channel}-2`)
-    this.subscribeChannelEvents(channel2, false)
-    channel2.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
-
+    // let channel2 = rtcEngine.createChannel(`${this.state.channel}-2`)
+    // this.subscribeChannelEvents(channel2, false)
+    // channel2.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
+    rtcEngine.joinChannel(null, this.state.channel, '', Number(`${new Date().getTime()}`.slice(7)))
   }
 
   handleCameraChange = e => {
@@ -914,10 +914,10 @@ class Window extends Component {
       this.props.rtcEngine.setupViewContentMode('videosource', 1);
       this.props.rtcEngine.setupViewContentMode(String(SHARE_ID), 1);
     } else if (this.props.role === 'remote') {
-      dom && this.props.rtcEngine.setupRemoteVideo(this.props.uid, dom, this.props.channel)
+      dom && this.props.rtcEngine.subscribe(this.props.uid, dom)
       this.props.rtcEngine.setupViewContentMode(this.props.uid, 1);
     } else if (this.props.role === 'remoteVideoSource') {
-      dom && this.props.rtcEngine.subscribe(this.props.uid, dom, this.props.channel)
+      dom && this.props.rtcEngine.subscribe(this.props.uid, dom)
       this.props.rtcEngine.setupViewContentMode('videosource', 1);
       this.props.rtcEngine.setupViewContentMode(String(SHARE_ID), 1);
     }
