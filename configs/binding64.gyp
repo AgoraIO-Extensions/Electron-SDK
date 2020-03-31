@@ -1,4 +1,7 @@
 {
+    'target_defaults': {
+        'default_configuration': 'Release'
+    },
     'targets': [
     {
         'target_name': 'VideoSource',
@@ -157,6 +160,11 @@
                 'defines!': [
                 '_HAS_EXCEPTIONS=0',
                 '-std=gnu++14'
+                ],
+                'OTHER_CFLAGS' : [
+                    '-std=c++11',
+                    '-stdlib=libc++',
+                    '-fexceptions'
                 ],
                 'xcode_settings': {
                     'MACOSX_DEPLOYMENT_TARGET': '10.13',
@@ -339,7 +347,12 @@
                 'defines!': [
                     '_NOEXCEPT',
                     '-std=c++11'
-                ],	
+                ],
+                'OTHER_CFLAGS' : [
+                    '-std=c++11',
+                    '-stdlib=libc++',
+                    '-fexceptions'
+                ],
                 'xcode_settings': {
                     'MACOSX_DEPLOYMENT_TARGET': '10.11',
                     'EXECUTABLE_EXTENSION': 'node',
