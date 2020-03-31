@@ -1,3 +1,6 @@
+## 2.9.0-rc.125-build.246
+* Fix MS-12595
+
 ## 2.9.0-rc.125
 * Support String UID
 * Upgrade sdk to 2.9.0.125
