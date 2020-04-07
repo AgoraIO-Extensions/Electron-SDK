@@ -1,3 +1,7 @@
+## 2.8.2-rc.121-hotfix.4 (Apr 7th, 2020)
+#### :house: Internal
+* Support string uid for render relevant apis, DO NOT USE preserved key word 'local' 'videosource' for user account name
+
 ## 2.8.2-rc.121-hotfix.3 (Jan 9th, 2020)
 #### :house: Internal
 * Support Electron 6.1.7
