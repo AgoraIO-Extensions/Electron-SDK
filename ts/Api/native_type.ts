@@ -199,6 +199,14 @@ export interface TranscodingConfig {
    * - 5: Five-channel stereo.
    */
   audioChannels: number;
+  /**
+   * The reserved property.
+   * 
+   * Extra user-defined information to send SEI for the H.264 or H.265 stream
+   * to the CDN streaming client. The maximum length is 4096 bytes.
+   * 
+   * See [SEI-related FAQ](https://docs.agora.io/en/faq/sei) for more details.
+   */
   transcodingExtraInfo: string;
   /** The watermark image added to the CDN live publishing stream. */
   watermark: {
