@@ -2733,14 +2733,13 @@ class AgoraRtcEngine extends EventEmitter {
    * account of the remote user from the UserInfo object by passing in the 
    * user ID.
    * @param uid The user ID. Ensure that you set this parameter.
-   * @param errCode Error code.
-   * @param userInfo [in/out] A UserInfo object that identifies the user:
-   * - Input: A UserInfo object.
-   * - Output: A UserInfo object that contains the user account and user ID 
+   * 
+   * @return 
+   * - errCode Error code.
+   * - userInfo [in/out] A UserInfo object that identifies the user:
+   *  - Input: A UserInfo object.
+   *  - Output: A UserInfo object that contains the user account and user ID 
    * of the user.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
    */
   getUserInfoByUid(uid: number): { errCode: number; userInfo: UserInfo } {
     return this.rtcEngine.getUserInfoByUid(uid);
@@ -4938,14 +4937,14 @@ declare interface AgoraRtcEngine {
    * 
    * Reports the transport-layer statistics of each remote audio stream.
    * 
-   * - stats: The transport-layer statistics. See 
-   * {@link remoteAudioTransportStats}.
+   * @param cb.stats The transport-layer statistics. See 
+   * {@link RemoteAudioTransportStats}.
    */
   on(
     evt: 'remoteAudioTransportStats',
     cb: (stats: RemoteAudioTransportStats) => void
   ): this;
-  /** @ignore 
+  /** 
    * This callback is not work.
    * 
    * Occurs when the audio device state changes.
@@ -4989,7 +4988,7 @@ declare interface AgoraRtcEngine {
   on(evt: 'remoteAudioMixingEnd', cb: () => void): this;
   /** Occurs when the local audio effect playback finishes. */
   on(evt: 'audioEffectFinished', cb: (soundId: number) => void): this;
-  /** @ignore
+  /** 
    * This callback is not work.
    * 
    * Occurs when the video device state changes.
