@@ -2122,13 +2122,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - false: Disable the local audio function, that is, to stop local audio 
    * capture and processing.
    * 
-   * **Note**:
-   * - After you disable local audio recording using the 
-   * `enableLocalAudio(false)` method, the system volume switches to the media 
-   * volume. Re-enabling local audio recording using the 
-   * `enableLocalAudio(true)` method switches the system volume back to the 
-   * in-call volume.
-   * - This method is different from the {@link muteLocalAudioStream} method:
+   * @note This method is different from the {@link muteLocalAudioStream} 
+   * method:
    *  - enableLocalAudio: If you disable or re-enable local audio recording 
    * using the enableLocalAudio method, the local user may hear a pause in the 
    * remote audio playback.
@@ -4949,7 +4944,10 @@ declare interface AgoraRtcEngine {
     evt: 'remoteAudioTransportStats',
     cb: (stats: RemoteAudioTransportStats) => void
   ): this;
-  /** Occurs when the audio device state changes.
+  /** @ignore 
+   * This callback is not work.
+   * 
+   * Occurs when the audio device state changes.
    * - deviceId: Pointer to the device ID.
    * - deviceType: Device type. See {@link MediaDeviceType}.
    * - deviceState: Device state：
@@ -4990,7 +4988,10 @@ declare interface AgoraRtcEngine {
   on(evt: 'remoteAudioMixingEnd', cb: () => void): this;
   /** Occurs when the local audio effect playback finishes. */
   on(evt: 'audioEffectFinished', cb: (soundId: number) => void): this;
-  /** Occurs when the video device state changes.
+  /** @ignore
+   * This callback is not work.
+   * 
+   * Occurs when the video device state changes.
    * - deviceId: Pointer to the device ID.
    * - deviceType: Device type. See {@link MediaDeviceType}.
    * - deviceState: Device state：
