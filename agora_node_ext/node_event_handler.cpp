@@ -257,7 +257,7 @@ namespace agora {
                 HandleScope scope(isolate);
                 Local<Context> context = isolate->GetCurrentContext();
                 Local<v8::Array> arrSpeakers = v8::Array::New(isolate, speakerNumber);
-                for(int i = 0; i < speakerNumber; i++) {
+                for(unsigned int i = 0; i < speakerNumber; i++) {
                     Local<Object> obj = Object::New(isolate);
                     obj->Set(context, napi_create_string_(isolate, "uid"), napi_create_uid_(isolate, speakers[i].uid));
                     obj->Set(context, napi_create_string_(isolate, "volume"), napi_create_uint32_(isolate, speakers[i].volume));
@@ -279,7 +279,7 @@ namespace agora {
             FUNC_TRACE;
             if (speaker) {
                 AudioVolumeInfo* localSpeakers = new AudioVolumeInfo[speakerNumber];
-                for(int i = 0; i < speakerNumber; i++) {
+                for(unsigned int i = 0; i < speakerNumber; i++) {
                     AudioVolumeInfo tmp = speaker[i];
                     localSpeakers[i].uid = tmp.uid;
                     localSpeakers[i].volume = tmp.volume;
@@ -288,6 +288,10 @@ namespace agora {
                 node_async_call::async_call([this, localSpeakers, speakerNumber, totalVolume] {
                     this->onAudioVolumeIndication_node(localSpeakers, speakerNumber, totalVolume);
                     delete []localSpeakers;
+                });
+            } else {
+                node_async_call::async_call([this, speakerNumber, totalVolume] {
+                    this->onAudioVolumeIndication_node(NULL, speakerNumber, totalVolume);
                 });
             }
         }

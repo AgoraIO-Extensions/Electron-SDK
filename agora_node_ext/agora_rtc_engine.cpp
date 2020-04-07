@@ -554,7 +554,7 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_object_property_int32_(isolate, obj, "videoBitrate", transcoding.videoBitrate);
                 CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_object_property_int32_(isolate, obj, "videoFramerate", transcoding.videoFramerate);
+                status = napi_get_object_property_int32_(isolate, obj, "videoFrameRate", transcoding.videoFramerate);
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_object_property_bool_(isolate, obj, "lowLatency", transcoding.lowLatency);
                 CHECK_NAPI_STATUS(pEngine, status);
@@ -571,7 +571,7 @@ namespace agora {
                 status = napi_get_object_property_uint32_(isolate, obj, "userCount", transcoding.userCount);
                 CHECK_NAPI_STATUS(pEngine, status);
                 
-                status = napi_get_object_property_int32_(isolate, obj, "audioSampleRateType", audioSampleRateType);
+                status = napi_get_object_property_int32_(isolate, obj, "audioSampleRate", audioSampleRateType);
                 transcoding.audioSampleRate = (AUDIO_SAMPLE_RATE_TYPE)audioSampleRateType;
                 CHECK_NAPI_STATUS(pEngine, status);
                 
@@ -2861,7 +2861,9 @@ namespace agora {
                 status = napi_get_value_nodestring_(args[1], channel);
                 CHECK_NAPI_STATUS(pEngine, status);
                 
-                auto context = new NodeRenderContext(NODE_RENDER_TYPE_REMOTE, uid, std::string(channel));
+                std::string sChannel = channel ? std::string(channel) : "";
+                
+                auto context = new NodeRenderContext(NODE_RENDER_TYPE_REMOTE, uid, sChannel);
                 if(!context) {
                     LOG_ERROR("Failed to allocate NodeRenderContext\n");
                     break;
@@ -2957,7 +2959,7 @@ namespace agora {
                 status = napi_get_value_nodestring_(args[4], channelId);
                 CHECK_NAPI_STATUS(pEngine, status);
                 
-                std::string sChannelId(channelId);
+                std::string sChannelId = channelId ? std::string(channelId) : "";
 
                 auto *pTransporter = getNodeVideoFrameTransporter();
                 if (pTransporter) {
@@ -3036,8 +3038,8 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_value_nodestring_(args[1], channelId);
                 CHECK_NAPI_STATUS(pEngine, status);
-
-                std::string sChannelId(channelId);
+                
+                std::string sChannelId = channelId ? std::string(channelId) : "";
 
                 auto pTransporter = getNodeVideoFrameTransporter();
                 if(pTransporter) {
@@ -3064,8 +3066,8 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_value_nodestring_(args[1], channelId);
                 CHECK_NAPI_STATUS(pEngine, status);
-
-                std::string sChannelId(channelId);
+                
+                std::string sChannelId = channelId ? std::string(channelId) : "";
                 auto pTransporter = getNodeVideoFrameTransporter();
                 if(pTransporter) {
                     pTransporter->removeFromeHighVideo(uid, sChannelId);

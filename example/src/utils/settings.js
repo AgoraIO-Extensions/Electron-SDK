@@ -1,4 +1,4 @@
-export const APP_ID = ''
+export const APP_ID = process.env["AGORA_APPID"]
 export const SHARE_ID = 2
 export const RTMP_URL = ''
 export const FU_AUTH = []

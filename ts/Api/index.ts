@@ -848,6 +848,7 @@ class AgoraRtcEngine extends EventEmitter {
     if (channelStreams.has(String(key))) {
       this.destroyRender(key, channelId || "");
     }
+    channelStreams = this._getChannelRenderers(channelId || "")
     let renderer: IRenderer;
     if (this.renderMode === 1) {
       renderer = new GlRenderer();
@@ -882,7 +883,7 @@ class AgoraRtcEngine extends EventEmitter {
     try {
       (renderer as IRenderer).unbind();
       channelStreams.delete(String(key));
-      if(channelStreams.keys.length === 0) {
+      if(channelStreams.size === 0) {
         this.streams.delete(channelId || "")
       }
     } catch (err) {
