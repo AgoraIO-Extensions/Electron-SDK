@@ -83,6 +83,14 @@ class AgoraRtcEngine extends EventEmitter {
     return uid
   }
 
+  getKeyByAccount(account: string | 'local' | 'videosource') {
+    //'local' 'videosource' are preserved key, DO NOT use them for user account name
+    if( account === 'local' || account === 'videosource') {
+      return account
+    }
+    return this.getUid(account)
+  }
+
   /**
    * Decide whether to use webgl/software/custom rendering.
    * @param {1|2|3} mode:
@@ -448,7 +456,7 @@ class AgoraRtcEngine extends EventEmitter {
         console.log('Warning!!!!!!, streams is undefined.');
         return;
       }
-      self.destroyRender(uid);
+      self.destroyRender(userAccount);
       self.rtcEngine.unsubscribe(uid);
       fire('removestream', userAccount, reason);
       fire('removeStream', userAccount, reason);
@@ -848,7 +856,8 @@ class AgoraRtcEngine extends EventEmitter {
    * Calling this method prevents a view discontinutity.
    * @param {string|number} key Key for the map that store the renderers, e.g, `uid` or `videosource` or `local`.
    */
-  resizeRender(key: 'local' | 'videosource' | number) {
+  resizeRender(stringkey: 'local' | 'videosource' | string) {
+    let key = this.getKeyByAccount(stringkey)
     if (this.streams.has(String(key))) {
       const renderer = this.streams.get(String(key));
       if (renderer) {
@@ -862,9 +871,10 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {string|number} key Key for the map that store the renderers, e.g, uid or `videosource` or `local`.
    * @param {Element} view The Dom elements to render the video.
    */
-  initRender(key: 'local' | 'videosource' | number, view: Element) {
+  initRender(stringkey: 'local' | 'videosource' | string, view: Element) {
+    let key = this.getKeyByAccount(stringkey) as 'local' | 'videosource' | number
     if (this.streams.has(String(key))) {
-      this.destroyRender(key);
+      this.destroyRender(stringkey);
     }
     let renderer: IRenderer;
     if (this.renderMode === 1) {
@@ -887,9 +897,10 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {function} onFailure The error callback for the `destroyRenderer` method.
    */
   destroyRender(
-    key: 'local' | 'videosource' | number,
+    stringkey: 'local' | 'videosource' | string,
     onFailure?: (err: Error) => void
   ) {
+    let key = this.getKeyByAccount(stringkey) as 'local' | 'videosource' | number
     if (!this.streams.has(String(key))) {
       return;
     }
@@ -1063,7 +1074,7 @@ class AgoraRtcEngine extends EventEmitter {
    */
   subscribe(userAccount: string, view: Element): number {
     let uid = this.getUid(userAccount);
-    this.initRender(uid, view);
+    this.initRender(userAccount, view);
     return this.rtcEngine.subscribe(uid);
   }
 
@@ -1092,11 +1103,11 @@ class AgoraRtcEngine extends EventEmitter {
     let uid = this.getUid(userAccount);
     if(!view){
       //unbind
-      this.destroyRender(uid);
+      this.destroyRender(userAccount);
       result = this.rtcEngine.unsubscribe(uid);
     } else {
       //bind
-      this.initRender(uid, view);
+      this.initRender(userAccount, view);
       result = this.rtcEngine.subscribe(uid);
     }
     return result
@@ -1183,11 +1194,12 @@ class AgoraRtcEngine extends EventEmitter {
    * - < 0: Failure.
    */
   setupViewContentMode(
-    uid: number | 'local' | 'videosource',
+    stringkey: string | 'local' | 'videosource',
     mode: 0 | 1
   ): number {
-    if (this.streams.has(String(uid))) {
-      const renderer = this.streams.get(String(uid));
+    let key = this.getKeyByAccount(stringkey) as 'local' | 'videosource' | number
+    if (this.streams.has(String(key))) {
+      const renderer = this.streams.get(String(key));
       (renderer as IRenderer).setContentMode(mode);
       return 0;
     } else {
