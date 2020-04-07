@@ -3,7 +3,7 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 * The {@link AgoraRtcEngine} class provides the main methods that can be invoked by your application.
 * The {@link AgoraRtcEngine.on} listens to events during runtime.
 
-* The {@link AgoraRtcChannel} class provides methods that enable real-time communications in a specified channel. By creating multiple `AgoraRtcChannel` objects, the user can join multiple channels.
+* The {@link AgoraRtcChannel} class provides methods that enable real-time communications in a specified channel. By creating multiple AgoraRtcChannel objects, the user can join multiple channels.
 * The {@link AgoraRtcChannel.on} listens to events and statistics of a specified channel.
 
 ## Methods
@@ -366,8 +366,6 @@ Agora Electron SDK use the {@link AgoraRtcEngine.on} listens to the events above
 | `remoteVideoStats`                 | Reports the statistics of the video stream from each remote user/host. |
 | `localAudioStats`| Reports the statistics of the local audio stream.|
 | `remoteAudioStats`                 | Reports the statistics of the audio stream from each remote user/host. |
-| `audioDeviceStateChanged`          | Occurs when the audio device state changes.                  |
-| `videoDeviceStateChanged`          | Occurs when the video device state changes.                  |
 | `audioMixingStateChanged`          | Occurs when the state of the local user's audio mixing file changes. |
 | `remoteAudioMixingBegin`           | Occurs when a remote user starts audio mixing.               |
 | `remoteAudioMixingEnd`             | Occurs when a remote user finishes audio mixing.             |
