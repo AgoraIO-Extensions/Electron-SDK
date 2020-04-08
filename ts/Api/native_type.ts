@@ -61,6 +61,19 @@ export type MediaDeviceType =
   | 2 // Video renderer
   | 3 // Video capturer
   | 4; // Application audio playback device
+
+export type STREAM_SUBSCRIBE_STATE =
+  | 0
+  | 1
+  | 2
+  | 3;
+
+export type STREAM_PUBLISH_STATE =
+  | 0
+  | 1
+  | 2
+  | 3;
+
 /**
  * The TranscodingUser class.
  */
@@ -533,6 +546,10 @@ export interface LocalVideoStats {
    * The codec type of the local video. See {@link VIDEO_CODEC_TYPE}.
    */
   codecType: number;
+  /** The packet loss rate (%) from the local client to Agora's edge server,
+   * before network countermeasures.
+   */
+  txPacketLossRate: number;
 }
 /** 
  * The statistics of the local audio stream.
@@ -550,6 +567,10 @@ export interface LocalAudioStats {
    * The average sending bitrate (Kbps).
    */
   sentBitrate: number;
+  /** The packet loss rate (%) from the local client to Agora's edge server,
+   * before network countermeasures.
+   */
+  txPacketLossRate: number;
 }
 /** VideoEncoderConfiguration */
 export interface VideoEncoderConfiguration {

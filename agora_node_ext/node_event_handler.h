@@ -96,6 +96,11 @@ namespace agora {
 #define RTC_EVENT_VIDEO_SOURCE_REQUEST_NEW_TOKEN "videosourcerequestnewtoken"
 #define RTC_EVENT_VIDEO_SOURCE_LEAVE_CHANNEL "videosourceleavechannel"
 #define RTC_EVENT_API_ERROR "apierror"
+
+#define RTC_EVENT_AUDIO_SUBSCRIBE_STATE_CHANGE "audioSubscribeStateChange"
+#define RTC_EVENT_VIDEO_SUBSCRIBE_STATE_CHANGE "videoSubscribeStateChange"
+#define RTC_EVENT_AUDIO_PUBLISH_STATE_CHANGE "audioPublishStateChange"
+#define RTC_EVENT_VIDEO_PUBLISH_STATE_CHANGE "videoPublishStateChange"
         class NodeRtcEngine;
         class NodeUid;
         class NodeEventHandler : public IRtcEngineEventHandler, public IAgoraVideoSourceEventHandler
@@ -192,6 +197,11 @@ namespace agora {
             virtual void onRemoteAudioStateChanged(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) override;
             virtual void onChannelMediaRelayStateChanged(CHANNEL_MEDIA_RELAY_STATE state,CHANNEL_MEDIA_RELAY_ERROR code) override;
             virtual void onChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT code) override;
+            
+            virtual void onAudioSubscribeStateChange(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed) override;
+            virtual void onVideoSubscribeStateChange(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed) override;
+            virtual void onAudioPublishStateChange(const char* channel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed) override;
+            virtual void onVideoPublishStateChange(const char* channel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed) override;
 
         private:
             void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
@@ -276,6 +286,12 @@ namespace agora {
             void onRemoteAudioStateChanged_node(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) ;
             void onChannelMediaRelayStateChanged_node(CHANNEL_MEDIA_RELAY_STATE state,CHANNEL_MEDIA_RELAY_ERROR code);
             void onChannelMediaRelayEvent_node(CHANNEL_MEDIA_RELAY_EVENT code);
+
+            void onAudioSubscribeStateChange_node(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed);
+            void onVideoSubscribeStateChange_node(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed);
+            void onAudioPublishStateChange_node(const char* channel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed);
+            void onVideoPublishStateChange_node(const char* channel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed);
+
         private:
             std::unordered_map<std::string, NodeEventCallback*> m_callbacks;
             NodeRtcEngine* m_engine;

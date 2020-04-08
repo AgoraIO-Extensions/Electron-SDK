@@ -53,6 +53,10 @@ namespace agora {
 #define RTC_CHANNEL_EVENT_STREAM_INJECED_STATUS "streamInjectedStatus"
 #define RTC_CHANNEL_EVENT_REMOTE_SUBSCRIBE_FALLBACK_TO_AUDIO_ONLY "remoteSubscribeFallbackToAudioOnly"
 #define RTC_CHANNEL_EVENT_CONN_STATE_CHANGED "connectionStateChanged"
+#define RTC_CHANNEL_EVENT_AUDIO_SUBSCRIBE_STATE_CHANGE "audioSubscribeStateChange"
+#define RTC_CHANNEL_EVENT_VIDEO_SUBSCRIBE_STATE_CHANGE "videoSubscribeStateChange"
+#define RTC_CHANNEL_EVENT_AUDIO_PUBLISH_STATE_CHANGE "audioPublishStateChange"
+#define RTC_CHANNEL_EVENT_VIDEO_PUBLISH_STATE_CHANGE "videoPublishStateChange"
         class NodeRtcChannel;
         class NodeUid;
         class NodeChannelEventHandler : public IChannelEventHandler
@@ -138,6 +142,14 @@ namespace agora {
             virtual void onConnectionStateChanged(IChannel *rtcChannel,
                                                 CONNECTION_STATE_TYPE state,
                                                 CONNECTION_CHANGED_REASON_TYPE reason) override;
+
+            virtual void onAudioSubscribeStateChange(IChannel *rtcChannel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed) override;
+
+            virtual void onVideoSubscribeStateChange(IChannel *rtcChannel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed) override;
+
+            virtual void onAudioPublishStateChange(IChannel *rtcChannel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed) override;
+
+            virtual void onVideoPublishStateChange(IChannel *rtcChannel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed) override;
 
         private:
             std::unordered_map<std::string, NodeEventCallback*> m_callbacks;

@@ -38,7 +38,9 @@ import {
   CaptureParam,
   VideoContentHint,
   VideoEncoderConfiguration,
-  UserInfo
+  UserInfo,
+  STREAM_SUBSCRIBE_STATE,
+  STREAM_PUBLISH_STATE
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate } from '../Utils';
@@ -757,6 +759,46 @@ class AgoraRtcEngine extends EventEmitter {
       event: ChannelMediaRelayEvent
     ) {
       fire('channelMediaRelayEvent', event);
+    });
+
+    this.rtcEngine.onEvent('audioSubscribeStateChange', (
+      channel: string,
+      uid: number,
+      oldstate: STREAM_SUBSCRIBE_STATE,
+      newstate: STREAM_SUBSCRIBE_STATE,
+      elapsed: number
+    )=>{
+      let userAccount = this.getUserAccount(uid);
+      fire('audioSubscribeStateChange', channel, userAccount, oldstate, newstate, elapsed);
+    });
+
+    this.rtcEngine.onEvent('videoSubscribeStateChange', (
+      channel: string,
+      uid: number,
+      oldstate: STREAM_SUBSCRIBE_STATE,
+      newstate: STREAM_SUBSCRIBE_STATE,
+      elapsed: number
+    )=>{
+      let userAccount = this.getUserAccount(uid);
+      fire('videoSubscribeStateChange', channel, userAccount, oldstate, newstate, elapsed);
+    });
+
+    this.rtcEngine.onEvent('audioPublishStateChange', (
+      channel: string,
+      oldstate: STREAM_PUBLISH_STATE,
+      newstate: STREAM_PUBLISH_STATE,
+      elapsed: number
+    )=>{
+      fire('audioPublishStateChange', channel, oldstate, newstate, elapsed);
+    });
+  
+    this.rtcEngine.onEvent('videoPublishStateChange', (
+      channel: string,
+      oldstate: STREAM_PUBLISH_STATE,
+      newstate: STREAM_PUBLISH_STATE,
+      elapsed: number
+    )=>{
+      fire('videoPublishStateChange', channel, oldstate, newstate, elapsed);
     });
 
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
@@ -5548,6 +5590,36 @@ declare interface AgoraRtcEngine {
   on(evt: 'channelMediaRelayEvent', cb: (
     event: ChannelMediaRelayEvent
   ) => void): this;
+
+  on(evt: 'audioSubscribeStateChange', cb: (
+    channel: string,
+    userAccount: string,
+    oldstate: STREAM_SUBSCRIBE_STATE,
+    newstate: STREAM_SUBSCRIBE_STATE,
+    elapsed: number
+  ) => void): this;
+
+  on(evt: 'videoSubscribeStateChange', cb: (
+    channel: string,
+    userAccount: string,
+    oldstate: STREAM_SUBSCRIBE_STATE,
+    newstate: STREAM_SUBSCRIBE_STATE,
+    elapsed: number
+  ) => void): this;
+
+  on(evt: 'audioPublishStateChange', cb: (
+    channel: string,
+    oldstate: STREAM_PUBLISH_STATE,
+    newstate: STREAM_PUBLISH_STATE,
+    elapsed: number
+  ) => void): this;
+
+  on(evt: 'videoPublishStateChange', cb: (
+    channel: string,
+    oldstate: STREAM_PUBLISH_STATE,
+    newstate: STREAM_PUBLISH_STATE,
+    elapsed: number
+  ) => void): this;
   on(evt: string, listener: Function): this;
 }
 
@@ -5839,6 +5911,41 @@ class AgoraRtcChannel extends EventEmitter
       fire('connectionStateChanged', state, reason);
     });
     
+    this.rtcChannel.onEvent('audioSubscribeStateChange', (
+      uid: number,
+      oldstate: STREAM_SUBSCRIBE_STATE,
+      newstate: STREAM_SUBSCRIBE_STATE,
+      elapsed: number
+    )=>{
+      let userAccount = this.rtcEngine.getUserAccount(uid);
+      fire('audioSubscribeStateChange', userAccount, oldstate, newstate, elapsed);
+    });
+
+    this.rtcChannel.onEvent('videoSubscribeStateChange', (
+      uid: number,
+      oldstate: STREAM_SUBSCRIBE_STATE,
+      newstate: STREAM_SUBSCRIBE_STATE,
+      elapsed: number
+    )=>{
+      let userAccount = this.rtcEngine.getUserAccount(uid);
+      fire('videoSubscribeStateChange', userAccount, oldstate, newstate, elapsed);
+    });
+
+    this.rtcChannel.onEvent('audioPublishStateChange', (
+      oldstate: STREAM_PUBLISH_STATE,
+      newstate: STREAM_PUBLISH_STATE,
+      elapsed: number
+    )=>{
+      fire('audioPublishStateChange', oldstate, newstate, elapsed);
+    });
+  
+    this.rtcChannel.onEvent('videoPublishStateChange', (
+      oldstate: STREAM_PUBLISH_STATE,
+      newstate: STREAM_PUBLISH_STATE,
+      elapsed: number
+    )=>{
+      fire('videoPublishStateChange', oldstate, newstate, elapsed);
+    });
   }
 
   joinChannel(
