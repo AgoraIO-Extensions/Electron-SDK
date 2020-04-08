@@ -1993,7 +1993,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  getScreenWindowsInfo(): Array<Object>;
+  getScreenWindowsInfo(options:number): Array<Object>;
   /**
    * @ignore
    */

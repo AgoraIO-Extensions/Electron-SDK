@@ -3189,8 +3189,10 @@ class AgoraRtcEngine extends EventEmitter {
    * You can share the whole or part of a window by specifying the window ID.
    * @return {Array} The array list of the window ID and relevant information.
    */
-  getScreenWindowsInfo(): Array<Object> {
-    return this.rtcEngine.getScreenWindowsInfo();
+  getScreenWindowsInfo(options: number): Array<Object> {
+    let defaultValue = (1 << 0) | (1 << 4)
+    let value = (options === null || options === undefined) ? defaultValue : options;
+    return this.rtcEngine.getScreenWindowsInfo(value);
   }
 
   /**

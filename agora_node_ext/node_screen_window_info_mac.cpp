@@ -139,6 +139,11 @@ bool setWindowInfoWithDictionary(ScreenWindowInfo& windowInfo, CFDictionaryRef w
         windowInfo.name = convertCFStringToStdString(name);
     }
     
+    CFBooleanRef isOnScreen = static_cast<CFBooleanRef>(CFDictionaryGetValue(windowDic, kCGWindowIsOnscreen));
+    if (isOnScreen) {
+        windowInfo.isOnScreen = CFBooleanGetValue(isOnScreen);
+    }
+
     CFStringRef ownerName = static_cast<CFStringRef>(CFDictionaryGetValue(windowDic, kCGWindowOwnerName));
     if (ownerName) {
         windowInfo.ownerName = convertCFStringToStdString(ownerName);
@@ -147,10 +152,10 @@ bool setWindowInfoWithDictionary(ScreenWindowInfo& windowInfo, CFDictionaryRef w
     return true;
 }
 
-std::vector<ScreenWindowInfo> getAllWindowInfo()
+std::vector<ScreenWindowInfo> getAllWindowInfo(uint32_t options)
 {
     std::vector<ScreenWindowInfo> windows;
-    CFArrayRef windowDicCFArray = CGWindowListCopyWindowInfo(kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements,
+    CFArrayRef windowDicCFArray = CGWindowListCopyWindowInfo(options,
                                                              kCGNullWindowID);
     CFIndex count = CFArrayGetCount(windowDicCFArray);
     for (CFIndex index = 0; index < count; index++) {
