@@ -440,7 +440,7 @@ BOOL CALLBACK Monitorenumproc(
 	return TRUE;
 }
 
-std::vector<ScreenWindowInfo> getAllWindowInfo()
+std::vector<ScreenWindowInfo> getAllWindowInfo(uint32_t options)
 {
     std::vector<ScreenWindowInfo> windows;
 

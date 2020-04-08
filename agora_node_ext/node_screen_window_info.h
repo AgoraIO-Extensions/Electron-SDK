@@ -54,6 +54,7 @@ struct ScreenWindowInfo
     
     std::string name;
     std::string ownerName;
+    bool isOnScreen;
     
     unsigned int width;
     unsigned int height;
@@ -63,6 +64,7 @@ struct ScreenWindowInfo
     
     ScreenWindowInfo()
     : windowId(0)
+    , isOnScreen(false)
     , width(0)
     , height(0)
     , imageData(nullptr)
@@ -71,7 +73,7 @@ struct ScreenWindowInfo
 };
 
 std::vector<ScreenDisplayInfo> getAllDisplayInfo();
-std::vector<ScreenWindowInfo> getAllWindowInfo();
+std::vector<ScreenWindowInfo> getAllWindowInfo(uint32_t options);
 
 #if defined(_WIN32)
 void DestroyGdiplus();
