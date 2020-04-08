@@ -4562,9 +4562,13 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
 
+                uint32_t options;
+                napi_status status = napi_get_value_uint32_(args[0], options);
+                CHECK_NAPI_STATUS(pEngine, status);
+
                 Local<v8::Array> infos = v8::Array::New(isolate);
 
-                std::vector<ScreenWindowInfo> allWindows = getAllWindowInfo();
+                std::vector<ScreenWindowInfo> allWindows = getAllWindowInfo(options);
                 for (unsigned int i = 0; i < allWindows.size(); ++i) {
                     ScreenWindowInfo windowInfo = allWindows[i];
                     Local<v8::Object> obj = Object::New(isolate);
@@ -4576,6 +4580,7 @@ namespace agora {
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowId", windowId);
                     NODE_SET_OBJ_PROP_String(isolate, obj, "name", windowInfo.name.c_str());
                     NODE_SET_OBJ_PROP_String(isolate, obj, "ownerName", windowInfo.ownerName.c_str());
+                    NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isOnScreen", windowInfo.isOnScreen);
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", windowInfo.width);
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", windowInfo.height);
 
@@ -4591,7 +4596,7 @@ namespace agora {
                     infos->Set(context, i, obj);
                 }
 #if 0 // APPLE
-                std::vector<ScreenWindowInfo> allWindows = getAllWindowInfo();
+                std::vector<ScreenWindowInfo> allWindows = getAllWindowInfo(0);
                 for (unsigned int i = 0; i < allWindows.size(); ++i) {
                     ScreenWindowInfo windowInfo = allWindows[i];
                     Local<v8::Object> obj = Object::New(isolate);
