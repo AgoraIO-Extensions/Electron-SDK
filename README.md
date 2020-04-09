@@ -107,8 +107,8 @@ Contributions are what make the open source community such an amazing place to b
 5. Open a Pull Request
 
 <!-- MARKDOWN LINKS & IMAGES -->
-[build-shield]: https://img.shields.io/travis/AgoraIO/Electron-SDK/2.9.0.102.svg?style=flat-square
-[build-url]: https://travis-ci.org/AgoraIO-Usecase/eEducation
+[build-shield]: https://travis-ci.org/AgoraIO/Electron-SDK.svg?branch=dev%2F2.9.0.102
+[build-url]: https://travis-ci.org/AgoraIO/Electron-SDK
 [windows-build-shield]: https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?branch=dev/2.9.0.102&svg=true
 [windows-build-url]:https://ci.appveyor.com/project/menthays/electron-sdk/branch/dev/2.9.0
 [npm-shield]: https://img.shields.io/npm/v/agora-electron-sdk/latest
