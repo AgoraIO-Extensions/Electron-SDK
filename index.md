@@ -212,6 +212,8 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 
 ### Watermark
 
+> This group of methods apply to Live Broadcast only.
+
 | Method                                                       | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | {@link AgoraRtcEngine.addVideoWatermark addVideoWatermark} | Adds a watermark image to the local video. |
@@ -240,37 +242,50 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.addInjectStreamUrl addInjectStreamUrl} | Adds an online media stream to a live broadcast.       |
 | {@link AgoraRtcEngine.removeInjectStreamUrl removeInjectStreamUrl} | Removes the online media stream from a live broadcast. |
 
-### Device management
+### Audio playback device management
 
 | Method                                                   | Description              |
 | ------------------------------------------------------------ | -------------------------- |
 | {@link AgoraRtcEngine.setAudioPlaybackDevice setAudioPlaybackDevice} | Sets the audio playback device using the device ID. |
 | {@link AgoraRtcEngine.getAudioPlaybackDevices getAudioPlaybackDevices} | Gets the audio playback device using the device ID. |
-| {@link AgoraRtcEngine.setAudioRecordingDevice setAudioRecordingDevice} | Sets the audio recording device using the device ID. |
-| {@link AgoraRtcEngine.getAudioRecordingDevices getAudioRecordingDevices} | Gets the audio recording device using the device ID. |
-| {@link AgoraRtcEngine.setVideoDevice setVideoDevice}         | Sets the device with the device ID. |
-| {@link AgoraRtcEngine.getVideoDevices getVideoDevices}       | Gets the video-capture device that is in use. |
+| {@link AgoraRtcEngine.getPlaybackDeviceInfo getPlaybackDeviceInfo} | Gets the information of the audio playback device. |
+| {@link AgoraRtcEngine.getCurrentAudioPlaybackDevice getCurrentAudioPlaybackDevice} | Gets the current audio playback device. |
 | {@link AgoraRtcEngine.setAudioPlaybackDeviceMute setAudioPlaybackDeviceMute} | Mutes/Unmutes the audio playback device. |
 | {@link AgoraRtcEngine.getAudioPlaybackDeviceMute getAudioPlaybackDeviceMute} | Gets the mute state of the audio playback device. |
-| {@link AgoraRtcEngine.setAudioRecordingDeviceMute setAudioRecordingDeviceMute} | Mutes/Unmutes the audio recording device. |
-| {@link AgoraRtcEngine.getAudioRecordingDeviceMute getAudioRecordingDeviceMute} | Gets the mute state of the audio recording device. |
-| {@link AgoraRtcEngine.getPlaybackDeviceInfo getPlaybackDeviceInfo} | Gets the information of the audio playback device. |
-| {@link AgoraRtcEngine.getRecordingDeviceInfo getRecordingDeviceInfo} | Gets the information of the recording device. |
-| {@link AgoraRtcEngine.getCurrentAudioPlaybackDevice getCurrentAudioPlaybackDevice} | Gets the current audio playback device. |
-| {@link AgoraRtcEngine.getCurrentAudioRecordingDevice getCurrentAudioRecordingDevice} | Gets the current audio recording device. |
-| {@link AgoraRtcEngine.getCurrentVideoDevice getCurrentVideoDevice} | Gets the current video device. |
-| {@link AgoraRtcEngine.startAudioDeviceLoopbackTest startAudioDeviceLoopbackTest} | Starts the audio device loopback test. |
-| {@link AgoraRtcEngine.stopAudioDeviceLoopbackTest stopAudioDeviceLoopbackTest} | Stops the audio device loopback test. |
-| {@link AgoraRtcEngine.startAudioPlaybackDeviceTest startAudioPlaybackDeviceTest} | Starts the audio playback device test. |
-| {@link AgoraRtcEngine.stopAudioPlaybackDeviceTest stopAudioPlaybackDeviceTest} | Stops the audio playback device test. |
-| {@link AgoraRtcEngine.startAudioRecordingDeviceTest startAudioRecordingDeviceTest} | Starts the recording device test. |
-| {@link AgoraRtcEngine.stopAudioRecordingDeviceTest stopAudioRecordingDeviceTest} | Stops the recording device test. |
-| {@link AgoraRtcEngine.startVideoDeviceTest startVideoDeviceTest} | Starts the video playback device test. |
-| {@link AgoraRtcEngine.stopVideoDeviceTest stopVideoDeviceTest} | Stops the video playback device test. |
 | {@link AgoraRtcEngine.setAudioPlaybackVolume setAudioPlaybackVolume} | Sets the volume of the audio playback device. |
 | {@link AgoraRtcEngine.getAudioPlaybackVolume getAudioPlaybackVolume} | Gets the volume of the audio playback device. |
+| {@link AgoraRtcEngine.startAudioPlaybackDeviceTest startAudioPlaybackDeviceTest} | Starts the audio playback device test. |
+| {@link AgoraRtcEngine.stopAudioPlaybackDeviceTest stopAudioPlaybackDeviceTest} | Stops the audio playback device test. |
+| {@link AgoraRtcEngine.startAudioDeviceLoopbackTest startAudioDeviceLoopbackTest} | Starts the audio device loopback test. |
+| {@link AgoraRtcEngine.stopAudioDeviceLoopbackTest stopAudioDeviceLoopbackTest} | Stops the audio device loopback test. |
+
+### Audio recording device management
+
+| Method                                                   | Description              |
+| ------------------------------------------------------------ | -------------------------- |
+| {@link AgoraRtcEngine.setAudioRecordingDevice setAudioRecordingDevice} | Sets the audio recording device using the device ID. |
+| {@link AgoraRtcEngine.getAudioRecordingDevices getAudioRecordingDevices} | Gets the audio recording device using the device ID. |
+| {@link AgoraRtcEngine.getRecordingDeviceInfo getRecordingDeviceInfo} | Gets the information of the audio recording device. |
+| {@link AgoraRtcEngine.getCurrentAudioRecordingDevice getCurrentAudioRecordingDevice} | Gets the current audio recording device. |
+| {@link AgoraRtcEngine.setAudioRecordingDeviceMute setAudioRecordingDeviceMute} | Mutes/Unmutes the audio recording device. |
+| {@link AgoraRtcEngine.getAudioRecordingDeviceMute getAudioRecordingDeviceMute} | Gets the mute state of the audio recording device. |
 | {@link AgoraRtcEngine.setAudioRecordingVolume setAudioRecordingVolume} | Sets the volume of the recording device. |
 | {@link AgoraRtcEngine.getAudioRecordingVolume getAudioRecordingVolume} | Gets the volume of the recording device. |
+| {@link AgoraRtcEngine.startAudioRecordingDeviceTest startAudioRecordingDeviceTest} | Starts the recording device test. |
+| {@link AgoraRtcEngine.stopAudioRecordingDeviceTest stopAudioRecordingDeviceTest} | Stops the recording device test. |
+| {@link AgoraRtcEngine.startAudioDeviceLoopbackTest startAudioDeviceLoopbackTest} | Starts the audio device loopback test. |
+| {@link AgoraRtcEngine.stopAudioDeviceLoopbackTest stopAudioDeviceLoopbackTest} | Stops the audio device loopback test. |
+
+
+### Video device management
+
+| Method                                                   | Description              |
+| ------------------------------------------------------------ | -------------------------- |
+| {@link AgoraRtcEngine.setVideoDevice setVideoDevice}         | Sets the device with the device ID. |
+| {@link AgoraRtcEngine.getVideoDevices getVideoDevices}       | Gets the video-capture device that is in use. |
+| {@link AgoraRtcEngine.getCurrentVideoDevice getCurrentVideoDevice} | Gets the current video device. |
+| {@link AgoraRtcEngine.startVideoDeviceTest startVideoDeviceTest} | Starts the video playback device test. |
+| {@link AgoraRtcEngine.stopVideoDeviceTest stopVideoDeviceTest} | Stops the video playback device test. |
 
 ### Stream message
 

@@ -1464,25 +1464,25 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * Before users join a channel or before an audience switches to a host, 
    * call this method to check the uplink network quality.
+   * 
    * This method consumes additional network traffic, which may affect the 
    * communication quality.
    *
    * Call the {@link disableLastmileTest} method to disable this test after 
-   * receiving the lastmileQuality callback, and before the user joins a 
-   * channel or switches the user role.
-   * **Note**:
-   * - Do not call any other methods before receiving the lastmileQuality 
-   * callback. Otherwise,
+   * receiving the lastMileQuality callback, and before the user joins
+   * a channel or switches the user role.
+   * @note
+   * - Do not call any other methods before receiving the 
+   * lastMileQuality callback. Otherwise,
    * the callback may be interrupted by other methods, and hence may not be 
    * triggered.
    * - A host should not call this method after joining a channel 
    * (when in a call).
    * - If you call this method to test the last-mile quality, the SDK consumes 
    * the bandwidth of a video stream, whose bitrate corresponds to the bitrate 
-   * you set in the setVideoEncoderConfiguration method. After you join the 
-   * channel, whether you have called the {@link disableLastmileTest} method 
-   * or not, 
-   * the SDK automatically stops consuming the bandwidth.
+   * you set in the {@link setVideoEncoderConfiguration} method. After you 
+   * join the channel, whether you have called the {@link disableLastmileTest} 
+   * method or not, the SDK automatically stops consuming the bandwidth.
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -1509,30 +1509,30 @@ class AgoraRtcEngine extends EventEmitter {
    * time (RTT).
    *
    * Once this method is enabled, the SDK returns the following callbacks:
-   * - lastmileQuality: the SDK triggers this callback within two seconds 
-   * depending on the network conditions.
+   * - `lastMileQuality`: the SDK triggers this callback within two 
+   * seconds depending on the network conditions.
    * This callback rates the network conditions with a score and is more 
    * closely linked to the user experience.
-   * - lastmileProbeResult: the SDK triggers this callback within 30 seconds 
-   * depending on the network conditions.
+   * - `lastmileProbeResult`: the SDK triggers this callback within 
+   * 30 seconds depending on the network conditions.
    * This callback returns the real-time statistics of the network conditions 
    * and is more objective.
    *
    * Call this method to check the uplink network quality before users join 
    * a channel or before an audience switches to a host.
    *
-   * **Note**:
+   * @note
    * - This method consumes extra network traffic and may affect communication 
    * quality. We do not recommend calling this method together with 
    * {@link enableLastmileTest}.
-   * - Do not call other methods before receiving the lastmileQuality and 
+   * - Do not call other methods before receiving the lastMileQuality and 
    * lastmileProbeResult callbacks. Otherwise, the callbacks may be interrupted 
    * by other methods.
    * - In the Live Broadcast profile, a host should not call this method after 
    * joining a channel.
    *
    * @param {LastmileProbeConfig} config The configurations of the last-mile 
-   * network probe test. See  {@link LastmileProbeConfig}.
+   * network probe test. See {@link LastmileProbeConfig}.
    */
   startLastmileProbeTest(config: LastmileProbeConfig): number {
     return this.rtcEngine.startLastmileProbeTest(config);
@@ -2361,7 +2361,7 @@ class AgoraRtcEngine extends EventEmitter {
    * automatically sets the resolution, frame rate, and bitrate of the 
    * low-video stream.
    * The SDK reports the result of calling this method in the 
-   * {@link apiCallExecuted} callback.
+   * `apiCallExecuted` callback.
    * @param {number} uid ID of the remote user sending the video stream.
    * @param {StreamType} streamType Sets the video stream type:
    * - 0: High-stream video, the high-resolution, high-bitrate video.
@@ -2511,6 +2511,7 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Sets the fallback option for the locally published video stream based on 
    * the network conditions.
+   * 
    * The default setting for option is `STREAM_FALLBACK_OPTION_AUDIO_ONLY (2)`, 
    * where 
    * there is no fallback for the locally published video stream when the 
@@ -2524,9 +2525,9 @@ class AgoraRtcEngine extends EventEmitter {
    * audio stream switches back to the video,
    * the `localPublishFallbackToAudioOnly` callback is triggered.
    * 
-   * **Note**:
+   * @note 
    * Agora does not recommend using this method for CDN live streaming, because 
-   * the remote CDN live user will have a noticeable lag when the locally 
+   * the CDN audience will have a noticeable lag when the locally 
    * publish stream falls back to audio-only.
    * 
    * @param {number} option Sets the fallback option for the locally published 
@@ -2575,7 +2576,7 @@ class AgoraRtcEngine extends EventEmitter {
    * for this method and not for the {@link setLocalPublishFallbackOption} 
    * method.
    * - `STREAM_FALLBACK_OPTION_AUDIO_ONLY (2)`: Under poor downlink network 
-   * conditions, the remotely subscribed video stream first falls back to the 
+   * conditions, the remote video stream first falls back to the 
    * low-stream video; and then to an audio-only stream if the network 
    * condition worsens.
    * @return
@@ -2751,9 +2752,8 @@ class AgoraRtcEngine extends EventEmitter {
    * and joinedChannel callbacks are triggered to indicate that the user has 
    * left the original channel and joined a new one.
    * 
-   * **Note**: 
-   * 
-   * This method applies to the audience role in a Live-broadcast channel only.
+   * @note
+   * This method applies to the audience in a Live-broadcast profile only.
    * 
    * @param token The token generated at your server:
    * - For low-security requirements: You can use the temporary token generated 
@@ -3948,16 +3948,17 @@ class AgoraRtcEngine extends EventEmitter {
   // CDN STREAMING
   // ===========================================================================
    /**
-    * Publishes the local stream to a specified CDN live RTMP address. (CDN 
-    * live only)
+    * Publishes the local stream to a specified CDN live RTMP address.
     *
     * The SDK returns the result of this method call in the streamPublished 
     * callback.
     * 
-    * **Note**:
-    * - This method applies to Live Broadcast only.
+    * @note 
+    * - Only the broadcaster in the Live-broadcast profile can call this 
+    * method.
+    * - Call this method after the broadcaster joins the channel.
     * - Ensure that you enable the RTMP Converter service before using this 
-    * function. See [Prerequisites](https://docs.agora.io/en/Interactive%20Broadcast/cdn_streaming_windows?platform=Windows#implementation).
+    * function. See *Prerequisites* in the *Push Streams to CDN* guide.
     * - This method adds only one stream URL address each time it is 
     * called.
     * 
@@ -3981,12 +3982,13 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Removes an RTMP stream from the CDN. (CDN live only)
-   * **Note**:
+   * Removes an RTMP stream from the CDN. 
+   * @note
+   * - Only the broadcaster in the Live-broadcast profile can call this 
+   * method.
    * - This method removes only one RTMP URL address each time it is called.
    * - The RTMP URL address must not contain special characters, such as 
    * Chinese language characters.
-   * - This method applies to Live Broadcast only.
    * @param {string} url The RTMP URL address to be removed. The maximum 
    * length of this parameter is 1024 bytes.
    * @return
@@ -4003,10 +4005,10 @@ class AgoraRtcEngine extends EventEmitter {
    * The SDK triggers the otranscodingUpdated callback when you call the 
    * {@link setLiveTranscoding} method to update the LiveTranscoding class.
    * 
-   * **Note**: 
+   * @note
+   * - Only the broadcaster in the Live-broadcast porfile can call this method.
    * - Ensure that you enable the RTMP Converter service before using 
-   * this function. See 
-   * [Prerequisites](https://docs.agora.io/en/Interactive%20Broadcast/cdn_streaming_windows?platform=Windows#prerequisites).
+   * this function. See *Prerequisites* in the *Push Streams to CDN* guide.
    * - If you call the {@link setLiveTranscoding} method to set the 
    * LiveTranscoding class for the first time, the SDK does not trigger the 
    * transcodingUpdated callback.
@@ -4046,10 +4048,10 @@ class AgoraRtcEngine extends EventEmitter {
    *  - `userJoined (uid: 666)`, if the method call is successful and the online 
    * media stream is injected into the channel.
    *
-   * **Note**:
-   * - This method applies to Live Broadcast only.
+   * @note 
+   * - Only the broadcaster in the Live-braodcast profile can call this method.
    * - Ensure that you enable the RTMP Converter service before using this 
-   * function. See [Prerequisites](https://docs.agora.io/en/Interactive%20Broadcast/cdn_streaming_windows?platform=Windows#prerequisites).
+   * function. See *Prerequisites* in the *Push Streams to CDN* guide.
    * - Ensure that the user joins a channel before calling this method.
    * - This method adds only one stream URL address each time it is called.
    * 
@@ -4136,9 +4138,9 @@ class AgoraRtcEngine extends EventEmitter {
    * A failed {@link sendStreamMessage} method call triggers the 
    * streamMessageError callback on the remote client.
    *
-   * **Note**:
+   * @note
    * This method applies only to the Communication profile or to the hosts in 
-   * the Live-broadcast profile.
+   * the Live-broadcast profile. 
    * If an audience in the Live-broadcast profile calls this method, the 
    * audience may be switched to a host.
    * @param {number} streamId ID of the sent data stream, returned in the 
@@ -4173,7 +4175,7 @@ class AgoraRtcEngine extends EventEmitter {
    * {@link ChannelMediaRelayState}, an exception occurs during the media 
    * stream relay.
    * 
-   * **Note**: 
+   * @note
    * - Contact sales-us@agora.io before implementing this function.
    * - Call this method after the {@link joinChannel} method.
    * - This method takes effect only when you are a broadcaster in a 
@@ -5181,8 +5183,7 @@ declare interface AgoraRtcEngine {
    * sends a goodbye message. When this message is received, the SDK determines 
    * that the user/host leaves the channel.
    * - Drop offline: When no data packet of the user or host is received for a 
-   * certain period of time (20 seconds for the communication profile, and more 
-   * for the live broadcast profile), the SDK assumes that the user/host drops 
+   * certain period of time, the SDK assumes that the user/host drops 
    * offline. A poor network connection may lead to false detections, so we 
    * recommend using the signaling system for reliable offline detection.
    * 
@@ -6473,7 +6474,7 @@ class AgoraRtcChannel extends EventEmitter
    * automatically sets the resolution, frame rate, and bitrate of the 
    * low-video stream.
    * The SDK reports the result of calling this method in the 
-   * {@link apiCallExecuted} callback.
+   * `apiCallExecuted` callback.
    * 
    * @param uid The ID of the remote user sending the video stream.
    * @param streamType The video-stream type. See {@link StreamType}
@@ -6585,11 +6586,10 @@ class AgoraRtcChannel extends EventEmitter
    * `rtmpStreamingStateChanged` callback is any streaming state changes.
    * 
    * @note 
-   * - Call this method after the user joins the channel.
-   * - This method applies to the Live-Broadcast profile only.
+   * - Only the broadcaster in the Live-broadcast profile can call this method.
+   * - Call this method after the broadcaster joins the channel.
    * - Ensure that you enable the RTMP Converter service before using this 
-   * function. See 
-   * [Prerequisites](https://docs.agora.io/en/Interactive%20Broadcast/cdn_streaming_windows?platform=Windows#prerequisites).
+   * function. See *Prerequisites* in the *Push Streams to CDN* guide.
    * - This method adds only one stream RTMP URL address each time it is 
    * called. 
    * 
@@ -6626,6 +6626,8 @@ class AgoraRtcChannel extends EventEmitter
    * report the state of removing the URL address.
    * 
    * @note 
+   * - Only the broadcaster in the Live-broadcast profile can call this 
+   * method.
    * - This method removes only one RTMP URL address each time it is 
    * called.
    * - This method applies to the Live-Broadcast profile only.
@@ -6649,12 +6651,13 @@ class AgoraRtcChannel extends EventEmitter
    * the first time to **set** the transcoding setting, the SDK does not 
    * trigger the `transcodingUpdated` callback.
    * 
-   * @note 
-   * - Ensure that you enable the RTMP Converter service before using this 
-   * function. See 
-   * [Prerequisites](https://docs.agora.io/en/Interactive%20Broadcast/cdn_streaming_windows?platform=Windows#prerequisites).
-   * - This method applies to the Live-Broadcast profile only.
-   * 
+   * @note
+   * - Only the broadcaster in the Live-broadcast porfile can call this method.
+   * - Ensure that you enable the RTMP Converter service before using 
+   * this function. See *Prerequisites* in the *Push Streams to CDN* guide.
+   * - If you call the {@link setLiveTranscoding} method to set the 
+   * LiveTranscoding class for the first time, the SDK does not trigger the 
+   * transcodingUpdated callback.
    * @param transcoding The transcoding setting for the audio and video streams
    * during the CDN live streaming. See {@link LiveTranscoding} 
    * 
@@ -6682,9 +6685,9 @@ class AgoraRtcChannel extends EventEmitter
    * the UID of this stream is 666.
    * 
    * @note
+   * - Only the broadcaster in the Live-broadcast profile can call this method.
    * - Ensure that you enable the RTMP Converter service before using this 
-   * function. See 
-   * [Prerequisites](https://docs.agora.io/en/Interactive%20Broadcast/cdn_streaming_windows?platform=Windows#prerequisites).
+   * function. See *Prerequisites* in the *Push Streams to CDN* guide.
    * - This method applies to the Live-Broadcast profile only.
    * - You can inject only one media stream into the channel at the same time.
    * 
@@ -7004,8 +7007,7 @@ declare interface AgoraRtcChannel {
    * sends a goodbye message. When this message is received, the SDK determines 
    * that the user/host leaves the channel.
    * - Drop offline: When no data packet of the user or host is received for a 
-   * certain period of time (20 seconds for the communication profile, and more 
-   * for the live broadcast profile), the SDK assumes that the user/host drops 
+   * certain period of time, the SDK assumes that the user/host drops 
    * offline. A poor network connection may lead to false detections, so we 
    * recommend using the signaling system for reliable offline detection.
    * 
