@@ -2006,11 +2006,12 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * You can call this method either before or after joining a channel. If you 
    * call `setDefaultMuteAllRemoteAudioStreams(true)` after joining a channel,
-   * the remote audio streams of all subsequent users are not received.
+   * you will not receive the audio streams of any subsequent user.
    * 
    * @note If you want to resume receiving the audio stream, call 
    * {@link muteRemoteAudioStream}(false), and specify the ID of the remote 
-   * user whose audio stream you want to receive. To receive the audio streams 
+   * user whose audio stream you want to receive. To resume receiving 
+   * the audio streams 
    * of multiple remote users, call {@link muteRemoteAudioStream}(false) as 
    * many times. Calling `setDefaultMuteAllRemoteAudioStreams(false)` resumes 
    * receiving the audio streams of subsequent users only.
@@ -2156,15 +2157,15 @@ class AgoraRtcEngine extends EventEmitter {
    * 
    * You can call this method either before or after joining a channel. If you 
    * call `setDefaultMuteAllRemoteVideoStreams(true)` after joining a channel,
-   * the remote audio streams of all subsequent users are not received.
+   * you will not receive the video stream of any subsequent user.
    * 
    * @note If you want to resume receiving the video stream, call 
    * {@link muteRemoteVideoStream}(false), and specify the ID of the remote 
-   * user whose audio stream you want to receive. To receive the audio streams 
+   * user whose audio stream you want to receive. To resume receiving 
+   * the audio streams 
    * of multiple remote users, call {@link muteRemoteVideoStream}(false) as 
    * many times. Calling `setDefaultMuteAllRemoteVideoStreams(false)` resumes 
    * receiving the audio streams of subsequent users only.
-   * Sets whether to receive all remote video streams by default.
    * 
    * @param {boolean} mute Sets whether to receive/stop receiving all remote 
    * video streams by default:
@@ -2342,24 +2343,25 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Sets the video stream type of the remotely subscribed video stream when 
-   * the remote user sends dual streams.
+   * Sets the stream type of the remote video.
    *
-   * If the dual-stream mode is enabled by calling enableDualStreamMode, you 
-   * will receive the
-   * high-video stream by default. This method allows the application to adjust 
-   * the
-   * corresponding video-stream type according to the size of the video windows 
-   * to save the bandwidth
-   * and calculation resources.
-   *
-   * If the dual-stream mode is not enabled, you will receive the high-video 
-   * stream by default.
-   * The result after calling this method will be returned in 
-   * apiCallExecuted. The Agora SDK receives
-   * the high-video stream by default to save the bandwidth. If needed, users 
-   * can switch to the low-video
-   * stream using this method.
+   * Under limited network conditions, if the publisher has not disabled the 
+   * dual-stream mode using {@link enableDualStreamMode}(`false`), the receiver
+   * can choose to receive either the high-video stream (the high resolution, 
+   * and high bitrate video stream) or the low-video stream (the low 
+   * resolution, and low bitrate video stream).
+   * 
+   * By default, users receive the high-video stream. Call this method if you 
+   * want to switch to the low-video stream. This method allows the app to 
+   * adjust the corresponding video stream type based on the size of the video 
+   * window to reduce the bandwidth and resources.
+   * 
+   * The aspect ratio of the low-video stream is the same as the high-video 
+   * stream. Once the resolution of the high-video stream is set, the system 
+   * automatically sets the resolution, frame rate, and bitrate of the 
+   * low-video stream.
+   * The SDK reports the result of calling this method in the 
+   * {@link apiCallExecuted} callback.
    * @param {number} uid ID of the remote user sending the video stream.
    * @param {StreamType} streamType Sets the video stream type:
    * - 0: High-stream video, the high-resolution, high-bitrate video.
@@ -2418,9 +2420,7 @@ class AgoraRtcEngine extends EventEmitter {
    * until you re-enable startPreview.
    * 
    * @param {number} mirrortype Sets the local video mirror mode:
-   * - 0: (Default) The SDK determines whether enable the mirror mode. If you 
-   * use a front camera, the SDK enables the mirror mode; if you use a rear 
-   * camera, the SDK disables the mirror mode.
+   * - 0: (Default) The SDK enables the mirror mode.
    * - 1: Enable the mirror mode
    * - 2: Disable the mirror mode
    * @return
@@ -2784,11 +2784,12 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * Adjusts the recording volume.
-   * @param {number} volume Recording volume. The value ranges between 0 and 
-   * 400:
+   * @param {number} volume Recording volume. To avoid echoes and improve call 
+   * quality, Agora recommends setting the value of volume between 0 and 100. 
+   * If you need to set the value higher than 100, contact support@agora.io 
+   * first.
    * - 0: Mute.
    * - 100: Original volume.
-   * - 400: (Maximum) Four times the original volume with signal-clipping 
    * protection.
    * @return
    * - 0: Success.
@@ -2799,11 +2800,12 @@ class AgoraRtcEngine extends EventEmitter {
   }
   /**
    * Adjusts the playback volume of the voice.
-   * @param volume Playback volume of the voice. The value ranges between 0 
-   * and 400:
+   * @param volume Playback volume of the voice. To avoid echoes and improve 
+   * call quality, Agora recommends setting the value of volume between 0 and 
+   * 100. If you need to set the value higher than 100, contact 
+   * support@agora.io first.
    * - 0: Mute.
-   * - 100: Original volume.
-   * - 400: (Maximum) Four times the original volume with signal-clipping 
+   * - 100: Original volume. 
    * protection.
    * @return
    * - 0: Success.
@@ -3126,7 +3128,8 @@ class AgoraRtcEngine extends EventEmitter {
    * `sampleRate` is 44.1 kHz or 48 kHz.
    * 
    * @param filePath The absolute file path of the recording file. The string 
-   * of the file name is in UTF-8, such as c:/music/audio.aac.
+   * of the file name is in UTF-8, such as `c:/music/audio.aac` for Windows and
+   * `file:///Users/Agora/Music/audio.aac` for macOS.
    * @param sampleRate Sample rate (Hz) of the recording file. Supported 
    * values are as follows:
    * - 16000
@@ -6325,21 +6328,19 @@ class AgoraRtcChannel extends EventEmitter
     return this.rtcChannel.setRemoteVoicePosition(uid, pan, gain);
   }
   /**
-   * Sets whether to receive all remote audio streams by default. 
-   * 
-   * You can call this method either before or after joining a channel. If you 
-   * call `setDefaultMuteAllRemoteAudioStreams (true)` after joining a channel, 
-   * the remote audio streams of all subsequent users are not received.
+   * Sets whether to receive all remote audio streams by default.
    *
-   * If you want to resume receiving the audio stream, call 
+   * You can call this method either before or after joining a channel. If you 
+   * call `setDefaultMuteAllRemoteAudioStreams(true)` after joining a channel,
+   * you will not receive the audio streams of any subsequent user.
+   * 
+   * @note If you want to resume receiving the audio stream, call 
    * {@link muteRemoteAudioStream}(false), and specify the ID of the remote 
-   * user whose audio stream you want to receive. 
-   * 
-   * To receive the audio streams of multiple remote users, call 
-   * `muteRemoteAudioStream (false)` as many times. 
-   * 
-   * Calling `setDefaultMuteAllRemoteAudioStreams (false)` resumes receiving 
-   * the audio streams of subsequent users only.
+   * user whose audio stream you want to receive. To resume receiving 
+   * the audio streams 
+   * of multiple remote users, call {@link muteRemoteAudioStream}(false) as 
+   * many times. Calling `setDefaultMuteAllRemoteAudioStreams(false)` resumes 
+   * receiving the audio streams of subsequent users only.
    * 
    * @param mute Sets whether to receive/stop receiving all remote users' 
    * audio streams by default:
@@ -6354,21 +6355,19 @@ class AgoraRtcChannel extends EventEmitter
     return this.rtcChannel.setDefaultMuteAllRemoteAudioStreams(mute);
   }
   /**
-   * Sets whether to receive all remote video streams by default. 
+   * Sets whether to receive all remote video streams by default.
    * 
    * You can call this method either before or after joining a channel. If you 
-   * call `setDefaultMuteAllRemoteVideoStreams (true)` after joining a channel, 
-   * the remote video streams of all subsequent users are not received.
+   * call `setDefaultMuteAllRemoteVideoStreams(true)` after joining a channel,
+   * you will not receive the video stream of any subsequent user.
    * 
-   * If you want to resume receiving the video stream, call 
+   * @note If you want to resume receiving the video stream, call 
    * {@link muteRemoteVideoStream}(false), and specify the ID of the remote 
-   * user whose video stream you want to receive. 
-   * 
-   * To receive the video streams of multiple remote users, call 
-   * `muteRemoteVideoStream (false)` as many times. 
-   * 
-   * Calling `setDefaultMuteAllRemoteVideoStreams (false)` resumes receiving 
-   * the video streams of subsequent users only.
+   * user whose audio stream you want to receive. To resume receiving 
+   * the audio streams 
+   * of multiple remote users, call {@link muteRemoteVideoStream}(false) as 
+   * many times. Calling `setDefaultMuteAllRemoteVideoStreams(false)` resumes 
+   * receiving the audio streams of subsequent users only.
    * @param mute Sets whether to receive/stop receiving all remote users' video 
    * streams by default:
    * - true: Stop receiving all remote users' video streams by default.
@@ -6456,10 +6455,10 @@ class AgoraRtcChannel extends EventEmitter
     return this.rtcChannel.muteRemoteVideoStream(uid, mute);
   }
   /**
-   * Sets the type of receiving video stream.
-   * 
+   * Sets the stream type of the remote video.
+   *
    * Under limited network conditions, if the publisher has not disabled the 
-   * dual-stream mode using {@link enableDualStreamMode}(false), the receiver 
+   * dual-stream mode using {@link enableDualStreamMode}(`false`), the receiver
    * can choose to receive either the high-video stream (the high resolution, 
    * and high bitrate video stream) or the low-video stream (the low 
    * resolution, and low bitrate video stream).
@@ -6467,12 +6466,14 @@ class AgoraRtcChannel extends EventEmitter
    * By default, users receive the high-video stream. Call this method if you 
    * want to switch to the low-video stream. This method allows the app to 
    * adjust the corresponding video stream type based on the size of the video 
-   * window to reduce the bandwidth and resources. 
+   * window to reduce the bandwidth and resources.
    * 
    * The aspect ratio of the low-video stream is the same as the high-video 
    * stream. Once the resolution of the high-video stream is set, the system 
    * automatically sets the resolution, frame rate, and bitrate of the 
    * low-video stream.
+   * The SDK reports the result of calling this method in the 
+   * {@link apiCallExecuted} callback.
    * 
    * @param uid The ID of the remote user sending the video stream.
    * @param streamType The video-stream type. See {@link StreamType}
@@ -7036,8 +7037,8 @@ declare interface AgoraRtcChannel {
    * the token may expire after a certain period
    * of time and a new token may be required to reconnect to the server.
    *
-   * This callback notifies the application to generate a new token. Call 
-   * the {@link renewToken} method to renew the token
+   * This callback notifies the application to generate a new token and call
+   * {@link joinChannel} to rejoin the channel with the new token.
    */
    on(evt: 'requestToken', cb: () => void): this;
   /** Occurs when the token expires in 30 seconds.
