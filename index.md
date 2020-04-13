@@ -191,7 +191,6 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 
 ### Stream fallback
 
-> This group of methods apply to Live Broadcast only.
 
 | Method                                                       | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -486,7 +485,7 @@ Error codes occur when the SDK encounters an error that cannot be recovered auto
 | `22`     | The application uses too much of the system resources and the SDK fails to allocate the resources. |
 | `101`    | The specified App ID is invalid.<br/>Please try to rejoin the channel with a valid App ID. |
 | `102`    | The specified channel name is invalid. <br/>Please try to rejoin the channel with a valid channel name.  |
-| `109`    | **DEPRECATED** Please use `9` in `ConnectionChangeReason` instead.<br/>The token expired due to one of the following reasons:<br/><li>Authorized Timestamp expired: The timestamp is represented by the number of seconds elapsed since 1/1/1970. The user can use the Token to access the Agora service within five minutes after the Token is generated. If the user does not access the Agora service after five minutes, this Token is no longer valid.</li><li>Call Expiration Timestamp expired: The timestamp is the exact time when a user can no longer use the Agora service (for example, when a user is forced to leave an ongoing call). When a value is set for the Call Expiration Timestamp, it does not mean that the token will expire, but that the user will be banned from the channel.</li> |
+| `109`    | **DEPRECATED** Please use `9` in `ConnectionChangeReason` instead.<br/>The token expired due to one of the following reasons:<br/><li>Authorized Timestamp expired: The timestamp is represented by the number of seconds elapsed since 1/1/1970. The user can use the Token to access the Agora service within 24 hours after the Token is generated. If the user does not access the Agora service after 24 hours, this Token is no longer valid.</li><li>Call Expiration Timestamp expired: The timestamp is the exact time when a user can no longer use the Agora service (for example, when a user is forced to leave an ongoing call). When a value is set for the Call Expiration Timestamp, it does not mean that the token will expire, but that the user will be banned from the channel.</li> |
 | `110`    | **DEPRECATED** Please use `8` in `ConnectionChangeReason` instead.<br/>The token is invalid due to one of the following reasons:<br/><li>The App Certificate for the project is enabled in Console, but the user is still using the App ID. Once the App Certificate is enabled, the user must use a token.</li><li>The uid is mandatory, and users must set the same uid as the one set in the `joinChannel` method. </li> |
 | `113`    | The user is not in the channel when calling the `sendStreamMessage` method. |
 | `114`    | The size of the sent data is over 1024 bytes when the user calls the `sendStreamMessage` method. |
