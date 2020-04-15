@@ -2222,7 +2222,8 @@ export interface NodeRtcEngine {
     pitch: number,
     pan: number,
     gain: number,
-    publish: number
+    publish: number,
+    startPos: number
   ): number;
   /**
    * @ignore
