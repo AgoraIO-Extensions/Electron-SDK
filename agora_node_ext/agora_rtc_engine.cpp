@@ -399,7 +399,7 @@ namespace agora {
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(setVolumeOfEffect, int32, int32);	
         
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_7(playEffect, int32, nodestring, int32, double, double, int32, bool);	
+        NAPI_API_DEFINE_WRAPPER_PARAM_8(playEffect, int32, nodestring, int32, double, double, int32, bool, int32);	
         
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(stopEffect, int32);	
         

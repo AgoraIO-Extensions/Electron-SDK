@@ -4138,7 +4138,8 @@ class AgoraRtcEngine extends EventEmitter {
     pitch: number,
     pan: number,
     gain: number,
-    publish: number
+    publish: number,
+    startPos: number
   ): number {
     return this.rtcEngine.playEffect(
       soundId,
@@ -4147,7 +4148,8 @@ class AgoraRtcEngine extends EventEmitter {
       pitch,
       pan,
       gain,
-      publish
+      publish,
+      startPos || 0
     );
   }
   /**
