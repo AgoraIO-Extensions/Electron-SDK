@@ -182,6 +182,11 @@ describe('Basic API Coverage 3', () => {
     jest.restoreAllMocks();
     localRtcEngine.release()
   });
+
+  it('play effect', () => {
+    expect(localRtcEngine.playEffect(0, "", 0, 0, 0, 0, false)).toBe(-2)
+    expect(localRtcEngine.playEffect(0, "", 0, 0, 0, 0, false, 0)).toBe(-2)
+  });
 });
 
 describe.skip('Render coverage', () => {
