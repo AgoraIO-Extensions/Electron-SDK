@@ -9,12 +9,12 @@ const fs = require("fs-extra")
 const extractPromise = promisify(extract)
 const macExtractPromise = () => {
   return new Promise((resolve, reject) => {
-    extractPromise('./tmp/sdk.zip', {dir: path.join(__dirname, '../tmp/')}).then(() => {
-      return globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/*_FULL.zip'))
-    }).then(folders => {
-      console.log(JSON.stringify(folders))
-      return extractPromise(folders[0], {dir: path.join(__dirname, '../tmp/')})
-    }).then(() => {
+    extractPromise('./tmp/sdk.zip', {dir: path.join(__dirname, '../tmp/')})/*.then(() => {
+    //   return globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/*_FULL.zip'))
+    // }).then(folders => {
+    //   console.log(JSON.stringify(folders))
+    //   return extractPromise(folders[0], {dir: path.join(__dirname, '../tmp/')})
+    })*/.then(() => {
       resolve()
     }).catch((e) => {
       reject(e)
