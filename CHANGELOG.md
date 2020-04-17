@@ -1,3 +1,6 @@
+## 2.9.0-rc.102-build.438
+* add startPos for playEffect
+
 ## 2.9.0-rc.102-build.0314
 * Support Win64
 
