@@ -145,6 +145,7 @@
                     'CoreAudio.framework',
                     'Foundation.framework',
                     'AVFoundation.framework',
+                    'CoreML.framework',
                     ]
                 },
                 'include_dirs': [
@@ -329,7 +330,8 @@
                     'AudioToolbox.framework',
                     'CoreAudio.framework',
                     'Foundation.framework',
-                    'AVFoundation.framework'
+                    'AVFoundation.framework',
+                    'CoreML.framework'
                     ]
                 },
                 'sources': [
