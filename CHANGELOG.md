@@ -1,3 +1,10 @@
+
+## 2.9.0-rc.104
+*modify enableAudioVolumeIndication and onAudioVolumeIndication
+*Add new APIs:
+  - setAddonLogFile
+  - videoSourceSetAddonLogFile
+
 ## 2.9.0-rc.102-build.438
 * add startPos for playEffect
 
