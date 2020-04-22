@@ -1,5 +1,6 @@
 const createProgramFromSources = require('./webgl-utils').createProgramFromSources;
 const EventEmitter = require('events').EventEmitter;
+const {config} = require('../../Utils/index')
 
 const AgoraRender = function() {
   let gl;
@@ -209,6 +210,7 @@ const AgoraRender = function() {
   }
 
   function uploadYuv(width, height, yplane, uplane, vplane) {
+    var e
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, yTexture);
 
@@ -223,9 +225,12 @@ const AgoraRender = function() {
       gl.UNSIGNED_BYTE,
       yplane
     );
-    var e = gl.getError();
-    if (e != gl.NO_ERROR) {
-      console.log('upload y plane ', width, height, yplane.byteLength, ' error', e);
+
+    if(config.getGlDebug()){
+      e = gl.getError();
+      if (e != gl.NO_ERROR) {
+        console.log('upload y plane ', width, height, yplane.byteLength, ' error', e);
+      }
     }
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, uTexture);
@@ -240,9 +245,11 @@ const AgoraRender = function() {
       gl.UNSIGNED_BYTE,
       uplane
     );
-    var e = gl.getError();
-    if (e != gl.NO_ERROR) {
-      console.log('upload u plane ', width, height, uplane.byteLength, '  error', e);
+    if(config.getGlDebug()){
+      e = gl.getError();
+      if (e != gl.NO_ERROR) {
+        console.log('upload y plane ', width, height, yplane.byteLength, ' error', e);
+      }
     }
 
     gl.activeTexture(gl.TEXTURE2);
@@ -259,9 +266,11 @@ const AgoraRender = function() {
       gl.UNSIGNED_BYTE,
       vplane
     );
-    var e = gl.getError();
-    if (e != gl.NO_ERROR) {
-      console.log('upload v plane ', width, height, vplane.byteLength, '  error', e);
+    if(config.getGlDebug()){
+      e = gl.getError();
+      if (e != gl.NO_ERROR) {
+        console.log('upload y plane ', width, height, yplane.byteLength, ' error', e);
+      }
     }
   }
 
