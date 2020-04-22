@@ -43,7 +43,7 @@ import {
   STREAM_PUBLISH_STATE
 } from './native_type';
 import { EventEmitter } from 'events';
-import { deprecate } from '../Utils';
+import { deprecate, config, Config } from '../Utils';
 import { ChannelMediaOptions } from './native_type';
 import {
   ChannelMediaRelayEvent,
@@ -97,6 +97,13 @@ class AgoraRtcEngine extends EventEmitter {
       throw new Error(`userAccount ${userAccount} not exists in mapping`)
     }
     return uid
+  }
+
+  /**
+   * return sdk config object
+   */
+  getConfigObject(): Config {
+    return config
   }
 
   /**
