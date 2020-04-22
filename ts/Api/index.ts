@@ -41,7 +41,7 @@ import {
   UserInfo
 } from './native_type';
 import { EventEmitter } from 'events';
-import { deprecate } from '../Utils';
+import { deprecate, config, Config } from '../Utils';
 import { ChannelMediaOptions, WatermarkOptions } from './native_type';
 import {
   ChannelMediaRelayEvent,
@@ -70,6 +70,13 @@ class AgoraRtcEngine extends EventEmitter {
     this.streams = new Map();
     this.renderMode = this._checkWebGL() ? 1 : 2;
     this.customRenderer = CustomRenderer;
+  }
+
+  /**
+   * return sdk config object
+   */
+  getConfigObject(): Config {
+    return config
   }
 
   /**
