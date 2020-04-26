@@ -510,7 +510,7 @@ namespace agora {
         void NodeEventHandler::onRemoteVideoStateChanged_node(uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed)
         {
             FUNC_TRACE;
-            MAKE_JS_CALL_4(RTC_EVENT_REMOTE_VIDEO_STATE_CHANGED, int32, uid, int32, state, int32, reason, int32, elapsed);
+            MAKE_JS_CALL_4(RTC_EVENT_REMOTE_VIDEO_STATE_CHANGED, uid, uid, int32, state, int32, reason, int32, elapsed);
         }
 
         void NodeEventHandler::onRemoteVideoStateChanged(uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed)
