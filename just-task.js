@@ -97,9 +97,31 @@ task('install', () => {
       arch: config.arch
     })
   } else {
-    build(Object.assign({}, config, {
-      packageVersion: addonVersion
-    }))
+    return new Promise((resolve, reject) => {
+      switcharch({
+        arch: argv().arch,
+        // platform: 'win32',
+      }).then(() => {
+        return synclib({
+          platform: argv().platform,
+          // platform: 'win32',
+          arch: argv().arch,
+          libUrl: {
+            win: argv().liburl_win || config.libUrl.win,
+            mac: argv().liburl_mac || config.libUrl.mac,
+            win64: argv().liburl_win64 || config.libUrl.win64
+          }
+        })
+      }).then(() => {
+        return build(Object.assign({}, config, {
+          packageVersion: addonVersion
+        }))
+      }).then(() => {
+        resolve()
+      }).catch(e => {
+        reject(e)
+      })
+    })
   }
 })
 
