@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "2.9.0-rc.102-build.438",
+  "version": "2.9.0-rc.102-build.4383",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -26,7 +26,12 @@
     "scripts",
     "js",
     "jest.config.js",
-    "just-task.js"
+    "just-task.js",
+    "configs",
+    "agora_node_ext",
+    "common",
+    "video_source",
+    "extra"
   ],
   "gypfile": false,
   "dependencies": {
@@ -62,12 +67,10 @@
     "type": "git",
     "url": "git+https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron.git"
   },
-  "agora_electron": {
-    "libUrl": {
-      "win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows(x86)_v2.9.0.102_20200216_FULL_3151.zip",
-      "win64": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows(x64)_v2.9.0.102_20200217_FULL_92.zip",
-      "mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v2_9_0_102_FULL_20200216_1279.zip"
-    }
+  "config" : {
+    "lib_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows(x86)_v2.9.0.102_20200216_FULL_3151.zip",
+    "lib_sdk_win64": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows(x64)_v2.9.0.102_20200217_FULL_92.zip",
+    "lib_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v2_9_0_102_FULL_20200216_1279.zip"
   },
   "keywords": [
     "electron",
