@@ -26,7 +26,12 @@
     "scripts",
     "js",
     "jest.config.js",
-    "just-task.js"
+    "just-task.js",
+    "configs",
+    "agora_node_ext",
+    "common",
+    "video_source",
+    "extra"
   ],
   "gypfile": false,
   "dependencies": {
