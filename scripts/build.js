@@ -1,8 +1,17 @@
 const {logger} = require('just-task');
 const shell = require("shelljs");
 const path = require('path')
+const fs = require('fs')
 
-const gyp_exec = `node ${path.resolve(__dirname, '../node_modules/node-gyp/bin/node-gyp.js')}`
+// workaround to find executable when install as dependency
+let gyp_path = `${path.resolve(__dirname, '../../node-gyp/bin/node-gyp.js')}`
+
+if(!fs.existsSync(gyp_path)) {
+  logger.info(`gyp_exec not found at ${gyp_path}, switch`)
+  gyp_path = `${path.resolve(__dirname, '../node_modules/node-gyp/bin/node-gyp.js')}`
+}
+const gyp_exec = `node ${gyp_path}`
+
 
 module.exports = ({
   electronVersion='5.0.8',
