@@ -261,8 +261,6 @@ namespace agora {
                     Local<Object> obj = Object::New(isolate);
                     obj->Set(context, napi_create_string_(isolate, "uid"), napi_create_uid_(isolate, speakers[i].uid));
                     obj->Set(context, napi_create_string_(isolate, "volume"), napi_create_uint32_(isolate, speakers[i].volume));
-                    obj->Set(context, napi_create_string_(isolate, "vad"), napi_create_uint32_(isolate, speakers[i].vad));
-                    obj->Set(context, napi_create_string_(isolate, "channelId"), napi_create_string_(isolate, speakers[i].channelId));
                     arrSpeakers->Set(context, i, obj);
                 }
 
@@ -282,24 +280,12 @@ namespace agora {
             if (speaker) {
                 AudioVolumeInfo* localSpeakers = new AudioVolumeInfo[speakerNumber];
                 for(int i = 0; i < speakerNumber; i++) {
-                    char *channel_id = new char[strlen(speaker[i].channelId) + 1];
-                    strncpy(channel_id, speaker[i].channelId, strlen(speaker[i].channelId) + 1);
                     AudioVolumeInfo tmp = speaker[i];
                     localSpeakers[i].uid = tmp.uid;
                     localSpeakers[i].volume = tmp.volume;
-                    localSpeakers[i].vad = tmp.vad;
-                    localSpeakers[i].channelId = channel_id;
                 }
                 node_async_call::async_call([this, localSpeakers, speakerNumber, totalVolume] {
                     this->onAudioVolumeIndication_node(localSpeakers, speakerNumber, totalVolume);
-                    for(int i = 0; i < speakerNumber; i++)
-                    {
-                        if (localSpeakers[i].channelId)
-                        {
-                            delete localSpeakers[i].channelId;
-                            localSpeakers[i].channelId = NULL;
-                        }
-                    }
                     delete []localSpeakers;
                 });
             }

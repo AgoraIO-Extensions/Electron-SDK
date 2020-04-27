@@ -3251,11 +3251,11 @@ namespace agora {
                 bool report_vad;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                napi_get_param_3(args, int32, interval, int32, smooth, bool, report_vad);
+                napi_get_param_2(args, int32, interval, int32, smooth);
                 CHECK_NAPI_STATUS(pEngine, status);
 
                 RtcEngineParameters rep(pEngine->m_engine);
-                result = rep.enableAudioVolumeIndication(interval, smooth, report_vad);
+                result = rep.enableAudioVolumeIndication(interval, smooth);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
