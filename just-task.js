@@ -33,9 +33,9 @@ task('sync:lib', () => {
     // platform: 'win32',
     arch: argv().arch,
     libUrl: {
-      win: argv().liburl_win || config.libUrl.win,
-      mac: argv().liburl_mac || config.libUrl.mac,
-      win64: argv().liburl_win64 || config.libUrl.win64
+      win: argv().liburl_win || config.lib_sdk_win,
+      mac: argv().liburl_mac || config.lib_sdk_mac,
+      win64: argv().liburl_win64 || config.lib_sdk_win64
     }
   })
 })
@@ -107,9 +107,9 @@ task('install', () => {
           // platform: 'win32',
           arch: argv().arch,
           libUrl: {
-            win: argv().liburl_win || config.libUrl.win,
-            mac: argv().liburl_mac || config.libUrl.mac,
-            win64: argv().liburl_win64 || config.libUrl.win64
+            win: argv().liburl_win || config.lib_sdk_win,
+            mac: argv().liburl_mac || config.lib_sdk_mac,
+            win64: argv().liburl_win64 || config.lib_sdk_win64
           }
         })
       }).then(() => {
