@@ -72,7 +72,8 @@ class AgoraRtcEngine extends EventEmitter {
     this.customRenderer = CustomRenderer;
   }
 
-  /**
+  /** Sets the view render mode.
+   * 
    * Decide whether to use webgl/software/custom rendering.
    * @param {1|2|3} mode:
    * - 1 for old webgl rendering.
@@ -1746,7 +1747,13 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Enables/Disables image enhancement and sets the options
+   * Enables/Disables image enhancement and sets the options. (Windows only)
+   * 
+   * @since v3.0.0
+   * 
+   * @note Do not call this method on the macOS platform, otherwise the SDK 
+   * returns the `-4` error code.
+   * 
    * @param {boolean} enable Sets whether or not to enable image enhancement:
    * - true: Enables image enhancement.
    * - false: Disables image enhancement.
@@ -1854,10 +1861,22 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * Sets audio parameters and application scenarios.
+   * 
+   * @note
+   * - You must call this method before calling the {@link joinChannel} method.
+   * - In the Communicaiton and Live-broadcast profiles, the bitrate may be 
+   * different from your settings due to network self-adaption.
+   * - In scenarios requiring high-quality audio, for example, a music teaching 
+   * scenario, we recommend setting `profile` as `4` and `scenario` as `3`.
+   *  
    * @param {number} profile Sets the sample rate, bitrate, encoding mode, and 
    * the number of channels:
-   * - 0: Default. A sample rate of 48 kHz, music encoding, mono, and a bitrate of 
-   * up to 52 Kbps.
+   * - 0: Default. 
+   *   - For the Live-broadcast profile: A sample rate of 48 kHz, music 
+   * encoding, mono, and a bitrate of up to 52 Kbps.
+   *   - For the Communication profile: A sample rate of 32 kHz, music 
+   * encoding, mono, and a bitrate of up to 18 Kbps for macOS; a sample rate of 
+   * 16 kHz, music encoding, mono, and a bitrate of up to 16 Kbps for Windows.
    * - 1: speech standard. A sample rate of 32 kHz, audio encoding, mono, and 
    * a bitrate of up to 18 Kbps.
    * - 2: Music standard. A sample rate of 48 kHz, music encoding, mono, and 
