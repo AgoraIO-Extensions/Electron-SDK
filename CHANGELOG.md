@@ -1,7 +1,10 @@
 
+## 2.9.0-rc.104-build.509
+* Fix token issue for videoSource join
+
 ## 2.9.0-rc.104
-*modify enableAudioVolumeIndication and onAudioVolumeIndication
-*Add new APIs:
+* modify enableAudioVolumeIndication and onAudioVolumeIndication
+* Add new APIs:
   - setAddonLogFile
   - videoSourceSetAddonLogFile
 
