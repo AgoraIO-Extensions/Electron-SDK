@@ -93,10 +93,9 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | ------------------------------------------------------------ | --------------------- |
 | {@link AgoraRtcEngine.getScreenDisplaysInfo getScreenDisplaysInfo} | Gets the display ID. |
 | {@link AgoraRtcEngine.getScreenWindowsInfo getScreenWindowsInfo} | Gets the window ID. |
-| {@link AgoraRtcEngine.startScreenCapture startScreenCapture} | Shares the whole or part of a window by specifying the window ID. |
+| {@link AgoraRtcEngine.startScreenCaptureByWindow startScreenCaptureByWindow} |Shares the whole or part of a window by specifying the window symbol.|
 | {@link AgoraRtcEngine.stopScreenCapture stopScreenCapture} | Stops screen sharing. |
 | {@link AgoraRtcEngine.startScreenCaptureByScreen startScreenCaptureByScreen} |Shares the whole or part of a screen by specifying the screen symbol.|
-| {@link AgoraRtcEngine.startScreenCaptureByWindow startScreenCaptureByWindow} |Shares the whole or part of a window by specifying the window symbol.|
 | {@link AgoraRtcEngine.updateScreenCaptureParameters updateScreenCaptureParameters} |Updates the screen sharing parameters.|
 | {@link AgoraRtcEngine.setScreenCaptureContentHint setScreenCaptureContentHint} |Sets the content hint for screen sharing.|
 | {@link AgoraRtcEngine.updateScreenCaptureRegion updateScreenCaptureRegion} | Updates the screen sharing region. |
@@ -463,7 +462,7 @@ Error codes occur when the SDK encounters an error that cannot be recovered auto
 
 | Error Code | Description                          |
 | ------ | ------------------------------------------------------------ |
-| `-0`      | No error occurs.                                                 |
+| `0`      | No error occurs.                                                 |
 | `-1`      | A general error occurs (no specified reason).                   |
 | `-2`      | An invalid parameter is used. For example, the specific channel name includes illegal characters.        |
 | `-3`      | The SDK module is not ready. <br/>Possible solutions:<li>Check the audio device.</li><li>Check the completeness of the application.</li><li>Re-initialize the RTC engine. </li> |
