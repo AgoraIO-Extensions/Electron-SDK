@@ -1742,7 +1742,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  enableAudioVolumeIndication(interval: number, smooth: number): number;
+  enableAudioVolumeIndication(interval: number, smooth: number, report_vad: boolean): number;
   /**
    * @ignore
    */
@@ -1775,6 +1775,14 @@ export interface NodeRtcEngine {
    * @ignore
    */
   setLogFilter(filter: number): number;
+  /**
+   * @ignore
+   */
+  setLogWriter(): number;
+  /**
+   * @ignore
+   */
+  releaseLogWriter(): number;
   /**
    * @ignore
    */

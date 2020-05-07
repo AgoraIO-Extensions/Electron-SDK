@@ -261,6 +261,8 @@ namespace agora {
                     Local<Object> obj = Object::New(isolate);
                     obj->Set(context, napi_create_string_(isolate, "uid"), napi_create_uid_(isolate, speakers[i].uid));
                     obj->Set(context, napi_create_string_(isolate, "volume"), napi_create_uint32_(isolate, speakers[i].volume));
+                    obj->Set(context, napi_create_string_(isolate, "vad"), napi_create_uint32_(isolate, speakers[i].vad));
+                    obj->Set(context, napi_create_string_(isolate, "channelId"), napi_create_string_(isolate, speakers[i].channelId));
                     arrSpeakers->Set(context, i, obj);
                 }
 
@@ -271,21 +273,32 @@ namespace agora {
                 NodeEventCallback& cb = *it->second;
                 cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 3, argv);
             }
-            // MAKE_JS_CALL_4(RTC_EVENT_AUDIO_VOLUME_INDICATION, uid, speaker.uid, uint32, speaker.volume, uint32, speakerNumber, int32, totalVolume);
         }
 
         void NodeEventHandler::onAudioVolumeIndication(const AudioVolumeInfo* speaker, unsigned int speakerNumber, int totalVolume)
-        {
+        {   
             FUNC_TRACE;
             if (speaker) {
                 AudioVolumeInfo* localSpeakers = new AudioVolumeInfo[speakerNumber];
                 for(int i = 0; i < speakerNumber; i++) {
+                    char *channel_id = new char[strlen(speaker[i].channelId) + 1];
+                    strncpy(channel_id, speaker[i].channelId, strlen(speaker[i].channelId) + 1);
                     AudioVolumeInfo tmp = speaker[i];
                     localSpeakers[i].uid = tmp.uid;
                     localSpeakers[i].volume = tmp.volume;
+                    localSpeakers[i].vad = tmp.vad;
+                    localSpeakers[i].channelId = channel_id;
                 }
                 node_async_call::async_call([this, localSpeakers, speakerNumber, totalVolume] {
                     this->onAudioVolumeIndication_node(localSpeakers, speakerNumber, totalVolume);
+                    for(int i = 0; i < speakerNumber; i++)
+                    {
+                        if (localSpeakers[i].channelId)
+                        {
+                            delete localSpeakers[i].channelId;
+                            localSpeakers[i].channelId = NULL;
+                        }
+                    }
                     delete []localSpeakers;
                 });
             }
@@ -1488,6 +1501,31 @@ namespace agora {
         {
             FUNC_TRACE;
             MAKE_JS_CALL_4(RTC_EVENT_VIDEO_PUBLISH_STATE_CHANGE, string, channel, int32, oldstate, int32, newstate, int32, elapsed);
+        }
+
+        int32_t NodeEventHandler::writeLog(const char* message, uint16_t length) {
+            void* messageBuffer = malloc(length);
+            memcpy(messageBuffer, message, length);
+            node_async_call::async_call([this, messageBuffer, length] {
+                this->writeLog_node(messageBuffer, length);
+                if (messageBuffer) {
+                    free(messageBuffer);
+                }
+            });
+            return 0;
+        }
+
+        void NodeEventHandler::writeLog_node(void* messageBuffer, int length) {
+            Isolate *isolate = Isolate::GetCurrent();
+            Local<v8::ArrayBuffer> buff = v8::ArrayBuffer::New(isolate, messageBuffer, length);
+            Local<v8::Uint8Array> dataArray = v8::Uint8Array::New(buff, 0, length);
+
+            HandleScope scope(isolate);
+            Local<Context> context = isolate->GetCurrentContext();
+            Local<Value> argv[2]{dataArray, napi_create_uint32_(isolate, length)};
+            auto it = m_callbacks.find(RTC_EVENT_ON_WRITELOG);
+            NodeEventCallback& cb = *it->second;
+            cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 2, argv);
         }
     }
 }

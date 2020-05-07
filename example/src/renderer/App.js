@@ -3,6 +3,7 @@ import AgoraRtcEngine from '../../../';
 import { List } from 'immutable';
 import path from 'path';
 import os from 'os'
+var fs = require('fs')
 
 import {voiceChangerList, voiceReverbPreset, videoProfileList, audioProfileList, audioScenarioList, APP_ID, SHARE_ID, RTMP_URL, voiceReverbList, FU_AUTH } from '../utils/settings'
 import {readImage} from '../utils/base64'
@@ -82,6 +83,12 @@ export default class App extends Component {
         local: uid
       });
     });
+
+    rtcEngine.on('writeLog', (message, length) => {
+        fs.writeFileSync('./try4.txt', message, { 'flag': 'a' }, (err)=>{
+      })
+    })
+
     rtcEngine.on('userjoined', (uid, elapsed) => {
       if (uid === SHARE_ID && this.state.localSharing) {
         return
@@ -126,10 +133,21 @@ export default class App extends Component {
     rtcEngine.on('audiovolumeindication', (
       uid,
       volume,
+      vad,
+      channelId,
       speakerNumber,
       totalVolume
     ) => {
       console.log(`uid${uid} volume${volume} speakerNumber${speakerNumber} totalVolume${totalVolume}`)
+    })
+    rtcEngine.on('groupAudioVolumeIndication', (
+      speakers,
+      speakerNumber,
+      totalVolume
+    ) => {
+      speakers.forEach(element => {
+      });
+      console.log(`speakers${JSON.stringify(speakers)} speakerNumber${speakerNumber} totalVolume${totalVolume}`)
     })
     rtcEngine.on('error', err => {
       console.error(err)
@@ -192,8 +210,12 @@ export default class App extends Component {
     rtcEngine.setLocalVoiceReverbPreset(this.state.voiceReverbPreset)
     // console.log('loop', rtcEngine.enableLoopbackRecording(true, null))
     rtcEngine.enableDualStreamMode(true)
-    rtcEngine.enableAudioVolumeIndication(1000, 3)
-
+    let ret = rtcEngine.setLogWriter();
+    console.log(`setLogWriter  ${ret}`)
+    let ret2 = rtcEngine.enableAudioVolumeIndication(200, 3, true)
+    console.log(`enableAudioVolumeIndication  ${ret2}`)
+    // let ret12 = rtcEngine.releaseLogWriter()
+    // console.log(`releaseLogWriter ${ret12}`)
     //enable beauty options
     rtcEngine.setBeautyEffectOptions(true, {
       lighteningContrastLevel: 2,
@@ -202,7 +224,7 @@ export default class App extends Component {
       rednessLevel: 0
     })
 
-    // joinning two channels together
+   // joinning two channels together
     // let channel = rtcEngine.createChannel(this.state.channel)
     // this.subscribeChannelEvents(channel, true)
     // channel.joinChannelWithUserAccount(null, `${new Date().getTime()}-test1`);

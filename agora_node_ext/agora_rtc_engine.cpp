@@ -212,6 +212,8 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setFPS);
                 PROPERTY_METHOD_DEFINE(addToHighVideo);
                 PROPERTY_METHOD_DEFINE(removeFromHighVideo);
+                PROPERTY_METHOD_DEFINE(setLogWriter);
+                PROPERTY_METHOD_DEFINE(releaseLogWriter);
 
                 //plugin apis
                 PROPERTY_METHOD_DEFINE(initializePluginManager);
@@ -753,6 +755,36 @@ namespace agora {
                 status = napi_get_value_nodestring_(args[0], url);
                 CHECK_NAPI_STATUS(pEngine, status);
                 result = pEngine->m_engine->removeInjectStreamUrl(url);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setLogWriter)
+        {
+            LOG_ENTER;
+            int result = -1;
+            napi_status status = napi_ok;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                result = pEngine->m_engine->setLogWriter(pEngine->m_eventHandler.get());
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, releaseLogWriter)
+        {
+            LOG_ENTER;
+            int result = -1;
+            napi_status status = napi_ok;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                result = pEngine->m_engine->releaseLogWriter();
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -3246,13 +3278,14 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_status status = napi_ok;
                 int interval, smooth;
+                bool report_vad;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                napi_get_param_2(args, int32, interval, int32, smooth);
+                napi_get_param_3(args, int32, interval, int32, smooth, bool, report_vad);
                 CHECK_NAPI_STATUS(pEngine, status);
 
                 RtcEngineParameters rep(pEngine->m_engine);
-                result = rep.enableAudioVolumeIndication(interval, smooth);
+                result = rep.enableAudioVolumeIndication(interval, smooth, report_vad);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;

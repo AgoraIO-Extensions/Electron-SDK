@@ -104,6 +104,9 @@ namespace agora {
             NAPI_API(addInjectStreamUrl);
             NAPI_API(removeInjectStreamUrl);
             
+            NAPI_API(setLogWriter);
+            NAPI_API(releaseLogWriter);
+
             /*
             * Wrapper for RtcEngineParameter API
             */

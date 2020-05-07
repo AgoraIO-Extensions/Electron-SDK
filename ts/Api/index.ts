@@ -226,11 +226,13 @@ class AgoraRtcEngine extends EventEmitter {
       speakers: {
         uid: number;
         volume: number;
+        vad: number;
+        channelId: string;
       }[],
       speakerNumber: number,
       totalVolume: number
     ) => {
-      fire('groupAudioVolumeIndication', speakers.map(s => {return {uid: this.getUserAccount(s.uid), speakerNumber, totalVolume}}))
+      fire('groupAudioVolumeIndication', speakers.map(s => {return {uid: this.getUserAccount(s.uid), volume: s.volume, vad: s.vad, channelId: s.channelId}}), speakerNumber, totalVolume);
     });
 
     this.rtcEngine.onEvent('leavechannel', function() {
@@ -807,6 +809,12 @@ class AgoraRtcEngine extends EventEmitter {
     )=>{
       fire('videoPublishStateChange', channel, oldstate, newstate, elapsed);
     });
+
+    this.rtcEngine.onEvent('writeLog', (message: Uint8Array, length: number)=>{
+     // Note: copy uint8Array from native C++
+      var buffer = Buffer.from(message)
+      fire('writeLog', buffer, length);
+    })
 
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
       self.onRegisterDeliverFrame(infos);
@@ -2181,8 +2189,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  enableAudioVolumeIndication(interval: number, smooth: number): number {
-    return this.rtcEngine.enableAudioVolumeIndication(interval, smooth);
+  enableAudioVolumeIndication(interval: number, smooth: number, report_vad: boolean): number {
+    return this.rtcEngine.enableAudioVolumeIndication(interval, smooth, report_vad);
   }
 
   /**
@@ -2308,6 +2316,14 @@ class AgoraRtcEngine extends EventEmitter {
    */
   setLogFilter(filter: number): number {
     return this.rtcEngine.setLogFilter(filter);
+  }
+
+  setLogWriter(): number {
+    return this.rtcEngine.setLogWriter();
+  }
+
+  releaseLogWriter(): number {
+    return this.rtcEngine.releaseLogWriter();
   }
 
   /**
@@ -4804,6 +4820,8 @@ declare interface AgoraRtcEngine {
       speakers: {
         userAccount: string;
         volume: number;
+        vad: number,
+        channelId: string,
       }[],
       speakerNumber: number,
       totalVolume: number

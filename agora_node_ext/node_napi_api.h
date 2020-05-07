@@ -23,6 +23,7 @@
 #include <thread>
 #include <IAgoraRtcEngine.h>
 #include <IAgoraMediaEngine.h>
+#include <IAgoraLog.h>
 #include <memory>
 #include <nan.h>
 using Nan::Persistent;

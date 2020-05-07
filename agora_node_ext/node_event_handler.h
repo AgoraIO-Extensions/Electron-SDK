@@ -101,9 +101,10 @@ namespace agora {
 #define RTC_EVENT_VIDEO_SUBSCRIBE_STATE_CHANGE "videoSubscribeStateChange"
 #define RTC_EVENT_AUDIO_PUBLISH_STATE_CHANGE "audioPublishStateChange"
 #define RTC_EVENT_VIDEO_PUBLISH_STATE_CHANGE "videoPublishStateChange"
+#define RTC_EVENT_ON_WRITELOG "writeLog"
         class NodeRtcEngine;
         class NodeUid;
-        class NodeEventHandler : public IRtcEngineEventHandler, public IAgoraVideoSourceEventHandler
+        class NodeEventHandler : public IRtcEngineEventHandler, public IAgoraVideoSourceEventHandler, public agora::commons::ILogWriter
         {
         public:
             struct NodeEventCallback
@@ -202,6 +203,7 @@ namespace agora {
             virtual void onVideoSubscribeStateChange(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed) override;
             virtual void onAudioPublishStateChange(const char* channel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed) override;
             virtual void onVideoPublishStateChange(const char* channel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed) override;
+            virtual int32_t writeLog(const char* message, uint16_t length) override;
 
         private:
             void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
@@ -291,6 +293,7 @@ namespace agora {
             void onVideoSubscribeStateChange_node(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed);
             void onAudioPublishStateChange_node(const char* channel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed);
             void onVideoPublishStateChange_node(const char* channel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed);
+            void writeLog_node(void* messageBuffer, int length);
 
         private:
             std::unordered_map<std::string, NodeEventCallback*> m_callbacks;
