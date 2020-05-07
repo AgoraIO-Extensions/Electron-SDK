@@ -3711,6 +3711,10 @@ class AgoraRtcEngine extends EventEmitter {
   // ===========================================================================
   /**
    * Starts the screen sharing.
+   * 
+   * @deprecated This method is deprecated. Use 
+   * {@link startScreenCaptureByWindow} instead.
+   * 
    * @param {number} wndid Sets the screen sharing area.
    * @param {number} captureFreq (Mandatory) The captured frame rate. The 
    * value ranges between 1 fps and 15 fps.
