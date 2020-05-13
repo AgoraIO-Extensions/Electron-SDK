@@ -5360,7 +5360,7 @@ declare interface AgoraRtcEngine {
    * {@link joinChannel} until the
    * SDK triggers this callback.
    */
-  on(evt: 'fristLocalAudioFrame', cb: (elapsed: number) => void): this;
+  on(evt: 'firstLocalAudioFrame', cb: (elapsed: number) => void): this;
   /** @deprecated This callback is deprecated. Please use
    * `remoteAudioStateChanged` instead.
    * 
