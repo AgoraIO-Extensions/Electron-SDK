@@ -24,7 +24,7 @@ module.exports.getArgvFromPkgJson = () => {
       msvsVersion: pkgMeta.agora_electron.msvs_version,
       debug: pkgMeta.agora_electron.debug === true,
       silent: pkgMeta.agora_electron.silent === true,
-      arch: process.env.npm_config_agora_electron_arch,
+      arch: pkgMeta.agora_electron.arch,
       libUrl
     }
   } else {
