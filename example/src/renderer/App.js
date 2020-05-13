@@ -272,7 +272,7 @@ export default class App extends Component {
         rtcEngine.videoSourceEnableWebSdkInteroperability(true)
         // rtcEngine.videoSourceSetVideoProfile(50, false);
         // to adjust render dimension to optimize performance
-        rtcEngine.setVideoRenderDimension(3, SHARE_ID, 1200, 680);
+        // rtcEngine.setVideoRenderDimension(3, SHARE_ID, 1200, 680);
         rtcEngine.videoSourceJoin(token, this.state.channel, info, SHARE_ID);
       } catch(err) {
         clearTimeout(timer)
@@ -302,7 +302,8 @@ export default class App extends Component {
       // rtcEngine.startScreenCapture2(windowId, captureFreq, rect, bitrate);
       // there's a known limitation that, videosourcesetvideoprofile has to be called at least once
       // note although it's called, it's not taking any effect, to control the screenshare dimension, use captureParam instead
-      rtcEngine.videoSourceSetVideoProfile(43, false);
+      // rtcEngine.videoSourceSetVideoProfile(43, false);
+      rtcEngine.startScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15})
       rtcEngine.videoSourceStartScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15})
       rtcEngine.startScreenCapturePreview();
     });
@@ -320,7 +321,7 @@ export default class App extends Component {
       // there's a known limitation that, videosourcesetvideoprofile has to be called at least once
       // note although it's called, it's not taking any effect, to control the screenshare dimension, use captureParam instead
       console.log(`start sharing display ${displayId}`)
-      rtcEngine.videoSourceSetVideoProfile(43, false);
+      // rtcEngine.videoSourceSetVideoProfile(43, false);
       // rtcEngine.videosourceStartScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15})
       rtcEngine.videoSourceStartScreenCaptureByScreen(displayId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 5})
       rtcEngine.startScreenCapturePreview();
