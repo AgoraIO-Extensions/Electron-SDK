@@ -539,13 +539,18 @@ void NodeVideoFrameTransporter::highFlushVideo()
 
 int napi_get_value_string_utf8_(const Local<Value>& str, char *buffer, uint32_t len)
 {
+    Isolate* isolate = Isolate::GetCurrent();
+    if(!isolate) {
+        return 0;
+    }
+    Local<Context> context = isolate->GetCurrentContext();
     if (!str->IsString())
         return 0;
     if (!buffer) {
-        return str.As<String>()->Utf8Length();
+        return str.As<String>()->Utf8Length(isolate);
     }
     else {
-        int copied = str.As<String>()->WriteUtf8(buffer, len - 1, nullptr, String::REPLACE_INVALID_UTF8 | String::NO_NULL_TERMINATION);
+        int copied = str.As<String>()->WriteUtf8(isolate, buffer, len - 1, nullptr, String::REPLACE_INVALID_UTF8 | String::NO_NULL_TERMINATION);
         buffer[copied] = '\0';
         return copied;
     }
@@ -558,34 +563,53 @@ napi_status napi_get_value_uid_t_(const Local<Value>& value, agora::rtc::uid_t& 
 
 napi_status napi_get_value_uint32_(const Local<Value>& value, uint32_t& result)
 {
+    Isolate* isolate = Isolate::GetCurrent();
+    if(!isolate) {
+        return napi_invalid_arg;
+    }
+    Local<Context> context = isolate->GetCurrentContext();
     if (!value->IsUint32())
         return napi_invalid_arg;
-    result = value->Uint32Value();
+    result = value->Uint32Value(context).ToChecked();
     return napi_ok;
 }
 
 napi_status napi_get_value_bool_(const Local<Value>& value, bool& result)
 {
+    Isolate* isolate = Isolate::GetCurrent();
+    if(!isolate) {
+        return napi_invalid_arg;
+    }
     if(!value->IsBoolean())
         return napi_invalid_arg;
-    result = value->BooleanValue();
+    result = value->BooleanValue(isolate);
     return napi_ok;
 }
 	
 napi_status napi_get_value_int32_(const Local<Value>& value, int32_t& result)
 {
+    Isolate* isolate = Isolate::GetCurrent();
+    if(!isolate) {
+        return napi_invalid_arg;
+    }
+    Local<Context> context = isolate->GetCurrentContext();
     if (!value->IsInt32())
         return napi_invalid_arg;
-    result = value->Int32Value();
+    result = value->Int32Value(context).ToChecked();
     return napi_ok;
 }
 
 napi_status napi_get_value_double_(const Local<Value>& value, double &result)
 {
+    Isolate* isolate = Isolate::GetCurrent();
+    if(!isolate) {
+        return napi_invalid_arg;
+    }
+    Local<Context> context = isolate->GetCurrentContext();
     if (!value->IsNumber())
         return napi_invalid_arg;
 
-    result = value->NumberValue();
+    result = value->NumberValue(context).ToChecked();
     return napi_ok;
 }
 
