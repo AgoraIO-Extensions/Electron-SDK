@@ -1,3 +1,8 @@
+## 2.8.2-rc.121-hotfix.5 (May 22nd, 2020)
+#### :bug: Bug Fix
+* Fix green screen issue in certain resolution
+* Fix crash when sdk is not yet initialized while adm/vdm is used
+
 ## 2.8.2-rc.121-hotfix.4 (Apr 7th, 2020)
 #### :house: Internal
 * Support string uid for render relevant apis, DO NOT USE preserved key word 'local' 'videosource' for user account name
