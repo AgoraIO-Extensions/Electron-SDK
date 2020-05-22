@@ -9,8 +9,9 @@ const {getArgvFromNpmEnv, getArgvFromPkgJson} = require('./scripts/npm_argv')
 
 option('electron_version', {default: '5.0.8'});
 option('runtime', {default: 'electron', choices: ['electron', 'node']});
-option('platform', {default: process.platform, choices: ['darwin', 'win32']});
+//option('platform', {default: process.platform, choices: ['darwin', 'win32']});
 // option('packageVersion');
+option('platform', {default: process.platform});
 option('debug', {default: false, boolean: true});
 option('silent', {default: false, boolean: true});
 option('msvs_version', {default: '2015'});
