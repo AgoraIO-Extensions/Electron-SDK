@@ -1,3 +1,6 @@
+## 2.9.0-rc.132-build.547
+* fixed video source crash when exit abnormal
+
 ## 2.9.0-rc.132
 * upgrade native sdk to 2.9.0.132
 * add setAddonLogFile & videoSourceSetAddonLogFile to customize addon log path
