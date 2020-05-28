@@ -3451,6 +3451,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @deprecated This method is deprecated. Use 
    * {@link videoSourceStartScreenCaptureByScreen} or 
    * {@link videoSourceStartScreenCaptureByWindow} instead.
+   * 
    * Starts the video source.
    * @param {number} wndid Sets the video source area.
    * @param {number} captureFreq (Mandatory) The captured frame rate. The value 
