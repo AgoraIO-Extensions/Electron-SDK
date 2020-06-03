@@ -1,3 +1,8 @@
+## 3.0.0-build.473 (April 22nd, 2020)
+#### :house: Internal
+* make glError configurable to improve performance when it's off
+
+
 ## 3.0.0 (March 20th, 2020)
 #### :house: Internal
 * Update Native SDK to v3.0.0 with lots of new features and optimization. You can go to [office doc](https://docs.agora.io/en/Interactive%20Broadcast/release_electron_video?platform=Electron) for detail.

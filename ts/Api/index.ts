@@ -41,7 +41,7 @@ import {
   UserInfo
 } from './native_type';
 import { EventEmitter } from 'events';
-import { deprecate } from '../Utils';
+import { deprecate, config, Config } from '../Utils';
 import { ChannelMediaOptions, WatermarkOptions } from './native_type';
 import {
   ChannelMediaRelayEvent,
@@ -72,8 +72,14 @@ class AgoraRtcEngine extends EventEmitter {
     this.customRenderer = CustomRenderer;
   }
 
-  /** Sets the view render mode.
-   * 
+  /**
+   * return sdk config object
+   */
+  getConfigObject(): Config {
+    return config
+  }
+
+  /**
    * Decide whether to use webgl/software/custom rendering.
    * @param {1|2|3} mode:
    * - 1 for old webgl rendering.
