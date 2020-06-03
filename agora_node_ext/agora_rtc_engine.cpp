@@ -1877,15 +1877,15 @@ namespace agora {
                 top = topValue->Int32Value(args.GetIsolate()->GetCurrentContext()).ToChecked();
                 Local<Name> leftKey = String::NewFromUtf8(args.GetIsolate(), "left", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> leftValue = rect->Get(args.GetIsolate()->GetCurrentContext(), leftKey).ToLocalChecked();
-                left = leftValue->Int32Value();
+                left = leftValue->Int32Value(context).FromJust();
 
                 Local<Name> bottomKey = String::NewFromUtf8(args.GetIsolate(), "bottom", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> bottomValue = rect->Get(args.GetIsolate()->GetCurrentContext(), bottomKey).ToLocalChecked();
-                bottom = bottomValue->Int32Value();
+                bottom = bottomValue->Int32Value(context).FromJust();
 
                 Local<Name> rightKey = String::NewFromUtf8(args.GetIsolate(), "right", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> rightValue = rect->Get(args.GetIsolate()->GetCurrentContext(), rightKey).ToLocalChecked();
-                right = rightValue->Int32Value();
+                right = rightValue->Int32Value(context).FromJust();
 
                 status = napi_get_value_uint32_(args[3], bitrate);
                 CHECK_NAPI_STATUS(pEngine, status);
@@ -2072,19 +2072,19 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 Local<Name> topKey = String::NewFromUtf8(args.GetIsolate(), "top", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> topValue = rect->Get(args.GetIsolate()->GetCurrentContext(), topKey).ToLocalChecked();
-                top = topValue->Int32Value();
+                top = topValue->Int32Value(context).FromJust();
 
                 Local<Name> leftKey = String::NewFromUtf8(args.GetIsolate(), "left", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> leftValue = rect->Get(args.GetIsolate()->GetCurrentContext(), leftKey).ToLocalChecked();
-                left = leftValue->Int32Value();
+                left = leftValue->Int32Value(context).FromJust();
 
                 Local<Name> bottomKey = String::NewFromUtf8(args.GetIsolate(), "bottom", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> bottomValue = rect->Get(args.GetIsolate()->GetCurrentContext(), bottomKey).ToLocalChecked();
-                bottom = bottomValue->Int32Value();
+                bottom = bottomValue->Int32Value(context).FromJust();
 
                 Local<Name> rightKey = String::NewFromUtf8(args.GetIsolate(), "right", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> rightValue = rect->Get(args.GetIsolate()->GetCurrentContext(), rightKey).ToLocalChecked();
-                right = rightValue->Int32Value();
+                right = rightValue->Int32Value(context).FromJust();
                 Rect region(top, left, bottom, right);
                 if(pEngine->m_videoSourceSink.get()) {
                     pEngine->m_videoSourceSink->updateScreenCapture(&region);
@@ -3523,19 +3523,19 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 Local<Name> topKey = String::NewFromUtf8(args.GetIsolate(), "top", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> topValue = rect->Get(args.GetIsolate()->GetCurrentContext(), topKey).ToLocalChecked();
-                top = topValue->Int32Value();
+                top = topValue->Int32Value(context).FromJust();
 
                 Local<Name> leftKey = String::NewFromUtf8(args.GetIsolate(), "left", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> leftValue = rect->Get(args.GetIsolate()->GetCurrentContext(), leftKey).ToLocalChecked();
-                left = leftValue->Int32Value();
+                left = leftValue->Int32Value(context).FromJust();
 
                 Local<Name> bottomKey = String::NewFromUtf8(args.GetIsolate(), "bottom", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> bottomValue = rect->Get(args.GetIsolate()->GetCurrentContext(), bottomKey).ToLocalChecked();
-                bottom = bottomValue->Int32Value();
+                bottom = bottomValue->Int32Value(context).FromJust();
 
                 Local<Name> rightKey = String::NewFromUtf8(args.GetIsolate(), "right", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> rightValue = rect->Get(args.GetIsolate()->GetCurrentContext(), rightKey).ToLocalChecked();
-                right = rightValue->Int32Value();
+                right = rightValue->Int32Value(context).FromJust();
 
                 status = napi_get_value_int32_(args[3], bitrate);
                 CHECK_NAPI_STATUS(pEngine, status);
@@ -3580,19 +3580,19 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 Local<Name> topKey = String::NewFromUtf8(args.GetIsolate(), "top", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> topValue = rect->Get(args.GetIsolate()->GetCurrentContext(), topKey).ToLocalChecked();
-                top = topValue->Int32Value();
+                top = topValue->Int32Value(context).FromJust();
 
                 Local<Name> leftKey = String::NewFromUtf8(args.GetIsolate(), "left", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> leftValue = rect->Get(args.GetIsolate()->GetCurrentContext(), leftKey).ToLocalChecked();
-                left = leftValue->Int32Value();
+                left = leftValue->Int32Value(context).FromJust();
 
                 Local<Name> bottomKey = String::NewFromUtf8(args.GetIsolate(), "bottom", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> bottomValue = rect->Get(args.GetIsolate()->GetCurrentContext(), bottomKey).ToLocalChecked();
-                bottom = bottomValue->Int32Value();
+                bottom = bottomValue->Int32Value(context).FromJust();
 
                 Local<Name> rightKey = String::NewFromUtf8(args.GetIsolate(), "right", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> rightValue = rect->Get(args.GetIsolate()->GetCurrentContext(), rightKey).ToLocalChecked();
-                right = rightValue->Int32Value();
+                right = rightValue->Int32Value(context).FromJust();
                 Rect region(top, left, bottom, right);
 
                 result = pEngine->m_engine->updateScreenCaptureRegion(&region);
@@ -5372,6 +5372,7 @@ namespace agora {
             int result = -1;
             do {
                 Isolate *isolate = args.GetIsolate();
+                Local<Context> context = isolate->GetCurrentContext();
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
@@ -5392,7 +5393,7 @@ namespace agora {
                 nodestring buffer;
                 char *_buffer;
 
-                Local<Object> obj = args[0]->ToObject();
+                Local<Object> obj = args[0]->ToObject(context).FromMaybe(Object::New(isolate));
                 // status = napi_get_object_property_uid_(isolate, obj, "uid", uid);
                 // CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_object_property_uid_(isolate, obj, "size", size);
@@ -6422,6 +6423,7 @@ namespace agora {
             int result = -1;
             do {
                 Isolate *isolate = args.GetIsolate();
+                Local<Context> context = isolate->GetCurrentContext();
                 NodeRtcChannel *pChannel = nullptr;
                 napi_get_native_channel(args, pChannel);
                 CHECK_NATIVE_CHANNEL(pChannel);
@@ -6442,7 +6444,7 @@ namespace agora {
                 double timeStampMs = 0;
                 char *_buffer;
 
-                Local<Object> obj = args[0]->ToObject();
+                Local<Object> obj = args[0]->ToObject(context).FromMaybe(Object::New(isolate));
                 // status = napi_get_object_property_uid_(isolate, obj, "uid", uid);
                 // CHECK_NAPI_STATUS(pChannel, status);
                 status = napi_get_object_property_uid_(isolate, obj, "size", size);
