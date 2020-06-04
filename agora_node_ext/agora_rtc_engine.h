@@ -331,6 +331,11 @@ namespace agora {
              * 3.0.0 Apis
              */
             NAPI_API(adjustUserPlaybackSignalVolume);
+
+            /**
+             * 3.0.1 Apis
+             */
+            NAPI_API(setAudioMixingPitch);
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }

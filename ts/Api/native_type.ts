@@ -301,41 +301,159 @@ export interface UserInfo {
 
 /** Sets the local voice changer option. */
 export enum VoiceChangerPreset {
-  /** 0: The original voice (no local voice change). */
-  VOICE_CHANGER_OFF = 0,
-  /** 1: An old man's voice. */
-  VOICE_CHANGER_OLDMAN = 1,
-  /** 2: A little boy's voice. */
-  VOICE_CHANGER_BABYBOY = 2,
-  /** 3: A little girl's voice. */
-  VOICE_CHANGER_BABYGIRL = 3,
-  /** 4: The voice of a growling bear. */
-  VOICE_CHANGER_ZHUBAJIE = 4,
-  /** 5: Ethereal vocal effects. */
-  VOICE_CHANGER_ETHEREAL = 5,
-  /** 6: Hulk's voice. */
-  VOICE_CHANGER_HULK = 6
+  /**
+   * The original voice (no local voice change).
+   */
+  VOICE_CHANGER_OFF = 0x00000000, //Turn off the voice changer
+  /**
+   * The voice of an old man.
+   */
+  VOICE_CHANGER_OLDMAN = 0x00000001,
+  /**
+   * The voice of a little boy.
+   */
+  VOICE_CHANGER_BABYBOY = 0x00000002,
+  /**
+   * The voice of a little girl.
+   */
+  VOICE_CHANGER_BABYGIRL = 0x00000003,
+  /**
+   * The voice of Zhu Bajie, a character in Journey to the West who has a voice like that of a growling bear.
+   */
+  VOICE_CHANGER_ZHUBAJIE = 0x00000004,
+  /**
+   * The ethereal voice.
+   */
+  VOICE_CHANGER_ETHEREAL = 0x00000005,
+  /**
+   * The voice of Hulk.
+   */
+  VOICE_CHANGER_HULK = 0x00000006,
+  /**
+   * A more vigorous voice.
+   */
+  VOICE_BEAUTY_VIGOROUS = 0x00100001,//7,
+  /**
+   * A deeper voice.
+   */
+  VOICE_BEAUTY_DEEP = 0x00100002,
+  /**
+   * A mellower voice.
+   */
+  VOICE_BEAUTY_MELLOW = 0x00100003,
+  /**
+   * Falsetto.
+   */
+  VOICE_BEAUTY_FALSETTO = 0x00100004,
+  /**
+   * A fuller voice.
+   */
+  VOICE_BEAUTY_FULL = 0x00100005,
+  /**
+   * A clearer voice.
+   */
+  VOICE_BEAUTY_CLEAR = 0x00100006,
+  /**
+   * A more resounding voice.
+   */
+  VOICE_BEAUTY_RESOUNDING = 0x00100007,
+  /**
+   * A more ringing voice.
+   */
+  VOICE_BEAUTY_RINGING = 0x00100008,
+  /**
+   * A more spatially resonant voice.
+   */
+  VOICE_BEAUTY_SPACIAL = 0x00100009,
+  /**
+   * (For male only) A more magnetic voice. Do not use it when the speaker is a female; otherwise, voice distortion occurs.
+   */
+  GENERAL_BEAUTY_VOICE_MALE_MAGNETIC = 0x00200001,
+  /**
+   * (For female only) A fresher voice. Do not use it when the speaker is a male; otherwise, voice distortion occurs.
+   */
+  GENERAL_BEAUTY_VOICE_FEMALE_FRESH = 0x00200002,
+  /**
+   * 	(For female only) A more vital voice. Do not use it when the speaker is a male; otherwise, voice distortion occurs.
+   */
+  GENERAL_BEAUTY_VOICE_FEMALE_VITALITY = 0x00200003
+
 }
 /**
  * Sets the local voice changer option.
  */
 export enum AudioReverbPreset {
-  /** 0: The original voice (no local voice reverberation). */
-  AUDIO_REVERB_OFF = 0, // Turn off audio reverb
-  /** 1: Pop music. */
-  AUDIO_REVERB_POPULAR = 1,
-  /** 2: R&B. */
-  AUDIO_REVERB_RNB = 2,
-  /** 3: Rock music. */
-  AUDIO_REVERB_ROCK = 3,
-  /** 4: Hip-hop. */
-  AUDIO_REVERB_HIPHOP = 4,
-  /** 5: Pop concert. */
-  AUDIO_REVERB_VOCAL_CONCERT = 5,
-  /** 6: Karaoke. */
-  AUDIO_REVERB_KTV = 6,
-  /** 7: Recording studio. */
-  AUDIO_REVERB_STUDIO = 7
+  /**
+   * Turn off local voice reverberation, that is, to use the original voice.
+   */
+  AUDIO_REVERB_OFF = 0x00000000, // Turn off audio reverb
+  /**
+   * The reverberation style typical of a KTV venue (enhanced).
+   */
+  AUDIO_REVERB_FX_KTV = 0x00100001,
+  /**
+   * The reverberation style typical of a concert hall (enhanced).
+   */
+  AUDIO_REVERB_FX_VOCAL_CONCERT = 0x00100002,
+  /**
+   * The reverberation style typical of an uncle's voice.
+   */
+  AUDIO_REVERB_FX_UNCLE = 0x00100003,
+  /**
+   * The reverberation style typical of a little sister's voice.
+   */
+  AUDIO_REVERB_FX_SISTER = 0x00100004,
+  /**
+   * The reverberation style typical of a recording studio (enhanced).
+   */
+  AUDIO_REVERB_FX_STUDIO = 0x00100005,
+  /**
+   * The reverberation style typical of popular music (enhanced).
+   */
+  AUDIO_REVERB_FX_POPULAR = 0x00100006,
+  /**
+   * The reverberation style typical of R&B music (enhanced).
+   */
+  AUDIO_REVERB_FX_RNB = 0x00100007,
+  /**
+   * The reverberation style typical of the vintage phonograph.
+   */
+  AUDIO_REVERB_FX_PHONOGRAPH = 0x00100008,
+  /**
+   * The reverberation style typical of popular music.
+   */
+  AUDIO_REVERB_POPULAR = 0x00000001,
+  /**
+   * The reverberation style typical of R&B music.
+   */
+  AUDIO_REVERB_RNB = 0x00000002,
+  /**
+   * The reverberation style typical of rock music.
+   */
+  AUDIO_REVERB_ROCK = 0x00000003,
+  /**
+   * The reverberation style typical of hip-hop music.
+   */
+   AUDIO_REVERB_HIPHOP = 0x00000004,
+  /**
+   * The reverberation style typical of a concert hall.
+   */
+  AUDIO_REVERB_VOCAL_CONCERT = 0x00000005,
+  /**
+   * The reverberation style typical of a KTV venue.
+   */
+  AUDIO_REVERB_KTV = 0x00000006,
+  /**
+   * The reverberation style typical of a recording studio.
+   */
+  AUDIO_REVERB_STUDIO = 0x00000007,
+  /**
+   * The reverberation of the virtual stereo. The virtual stereo is an effect that renders the monophonic
+   * audio as the stereo audio, so that all users in the channel can hear the stereo voice effect.
+   * To achieve better virtual stereo reverberation, Agora recommends setting `profile` in `setAudioProfile`
+   * as `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)`.
+   */
+  AUDIO_VIRTUAL_STEREO = 0x00200001
 }
 /**
  * Configuration of the imported live broadcast voice or video stream.
