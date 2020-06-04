@@ -735,6 +735,7 @@ namespace agora {
                 NODE_SET_OBJ_PROP_UINT32(obj, "totalFrozenTime", stats.totalFrozenTime);
                 NODE_SET_OBJ_PROP_UINT32(obj, "frozenRate", stats.frozenRate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "packetLossRate", stats.packetLossRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "totalActiveTime", stats.totalActiveTime);
                 Local<Value> arg[1] = { obj };
                 auto it = m_callbacks.find(RTC_EVENT_REMOTE_VIDEO_STATS);
                 if (it != m_callbacks.end()) {
@@ -1113,6 +1114,7 @@ namespace agora {
                 NODE_SET_OBJ_PROP_UINT32(obj, "receivedBitrate", stats.receivedBitrate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "totalFrozenTime", stats.totalFrozenTime);
                 NODE_SET_OBJ_PROP_UINT32(obj, "frozenRate", stats.frozenRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "totalActiveTime", stats.totalActiveTime);
                 Local<Value> arg[1] = { obj };
                 auto it = m_callbacks.find(RTC_EVENT_REMOTE_AUDIO_STATS);
                 if (it != m_callbacks.end()) {

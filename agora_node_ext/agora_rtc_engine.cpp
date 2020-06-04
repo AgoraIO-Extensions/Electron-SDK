@@ -276,6 +276,11 @@ namespace agora {
                  * 3.0.0 Apis
                  */
                 PROPERTY_METHOD_DEFINE(adjustUserPlaybackSignalVolume);
+
+                /**
+                 * 3.0.1 Apis
+                 */
+                PROPERTY_METHOD_DEFINE(setAudioMixingPitch);
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -785,35 +790,8 @@ namespace agora {
                 status = napi_get_value_int32_(args[0], preset_value);
                 CHECK_NAPI_STATUS(pEngine, status);
 
-                switch(preset_value) {
-                    case 0:
-                        preset = VOICE_CHANGER_OFF;
-                        break;
-                    case 1:
-                        preset = VOICE_CHANGER_OLDMAN;
-                        break;
-                    case 2:
-                        preset = VOICE_CHANGER_BABYBOY;
-                        break;
-                    case 3:
-                        preset = VOICE_CHANGER_BABYGIRL;
-                        break;
-                    case 4:
-                        preset = VOICE_CHANGER_ZHUBAJIE;
-                        break;
-                    case 5:
-                        preset = VOICE_CHANGER_ETHEREAL;
-                        break;
-                    case 6:
-                        preset = VOICE_CHANGER_HULK;
-                        break;
-                    default:
-                        status = napi_invalid_arg;
-                        break;
-                }
-                CHECK_NAPI_STATUS(pEngine, status);
 
-                result = param.setLocalVoiceChanger(preset);
+                result = param.setLocalVoiceChanger(VOICE_CHANGER_PRESET(preset));
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -830,43 +808,11 @@ namespace agora {
                 CHECK_NATIVE_THIS(pEngine);
                 RtcEngineParameters param(pEngine->m_engine);
 
-                AUDIO_REVERB_PRESET preset = AUDIO_REVERB_OFF;
                 int preset_value = 0;
                 status = napi_get_value_int32_(args[0], preset_value);
                 CHECK_NAPI_STATUS(pEngine, status);
 
-                switch(preset_value) {
-                    case 0:
-                        preset = AUDIO_REVERB_OFF;
-                        break;
-                    case 1:
-                        preset = AUDIO_REVERB_POPULAR;
-                        break;
-                    case 2:
-                        preset = AUDIO_REVERB_RNB;
-                        break;
-                    case 3:
-                        preset = AUDIO_REVERB_ROCK;
-                        break;
-                    case 4:
-                        preset = AUDIO_REVERB_HIPHOP;
-                        break;
-                    case 5:
-                        preset = AUDIO_REVERB_VOCAL_CONCERT;
-                        break;
-                    case 6:
-                        preset = AUDIO_REVERB_KTV;
-                        break;
-                    case 7:
-                        preset = AUDIO_REVERB_STUDIO;
-                        break;
-                    default:
-                        status = napi_invalid_arg;
-                        break;
-                }
-                CHECK_NAPI_STATUS(pEngine, status);
-
-                result = param.setLocalVoiceReverbPreset(preset);
+                result = param.setLocalVoiceReverbPreset(AUDIO_REVERB_PRESET(preset_value));
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -5147,6 +5093,11 @@ namespace agora {
             LOG_LEAVE;
         }
 
+
+        /**
+         * 3.0.1 Apis
+         */
+        NAPI_API_DEFINE_WRAPPER_PARAM_1(setAudioMixingPitch, int32);
         
 
         /**
