@@ -100,6 +100,9 @@ export default class App extends Component {
         local: ''
       })
     })
+    rtcEngine.on('rtcStats', (stats) => {
+      console.log(stats)
+    })
     rtcEngine.on('audiodevicestatechanged', () => {
       this.setState({
         audioDevices: rtcEngine.getAudioRecordingDevices(),
@@ -175,6 +178,10 @@ export default class App extends Component {
       this.setState({
         users: this.state.users.delete(this.state.users.indexOf({channelId, uid}))
       })
+    })
+
+    rtcChannel.on('rtcStats', (stats) => {
+      console.log(stats)
     })
   }
 
