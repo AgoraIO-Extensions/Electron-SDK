@@ -351,6 +351,7 @@ namespace agora {
                 NODE_SET_OBJ_PROP_UINT32(obj, "rxPacketLossRate", stats.rxPacketLossRate);
                 NODE_SET_OBJ_PROP_NUMBER(obj, "cpuAppUsage", stats.cpuAppUsage);
                 NODE_SET_OBJ_PROP_NUMBER(obj, "cpuTotalUsage", stats.cpuTotalUsage);
+                NODE_SET_OBJ_PROP_NUMBER(obj, "gatewayRtt", stats.gatewayRtt);
                 Local<Value> arg[1] = { obj };
                 auto it = m_callbacks.find(RTC_EVENT_RTC_STATS);
                 if (it != m_callbacks.end()) {

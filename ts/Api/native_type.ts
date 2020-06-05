@@ -465,6 +465,7 @@ export interface RtcStats {
   cpuAppUsage: number;
   /** System CPU usage (%). */
   cpuTotalUsage: number;
+  gatewayRtt: number;
 }
 /** Quality change of the local video. */
 export enum QualityAdaptIndication {
