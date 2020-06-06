@@ -1,4 +1,7 @@
 
+## 2.9.0-rc.104-build.553
+* add gatewayRtt into rtcStats
+
 ## 2.9.0-rc.104-build.509
 * Fix token issue for videoSource join
 
