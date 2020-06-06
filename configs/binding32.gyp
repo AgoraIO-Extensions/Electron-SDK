@@ -311,6 +311,12 @@
                 'mac_framework_dirs': [
                 '../sdk/lib/mac'
                 ],
+                'copies': [{
+                    'destination': '<(PRODUCT_DIR)',
+                    'files': [
+                        './sdk/lib/mac/AgoraRtcKit.framework'
+                    ]
+                }],
                 'link_settings': {
                     'libraries': [
                     'libresolv.9.dylib',
