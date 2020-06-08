@@ -6,7 +6,6 @@ rm -rf ./sdk/lib/mac/*
 mv ./Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcEngineKit.framework ./sdk/lib/mac/.
 
 rm -rf node_modules
-npm cache clean --force
 npm install --verbose
 npm run sync:lib
 npm run build:electron -- --electron_version=${ELECTRON_VERSION} --msvs_version=2017
