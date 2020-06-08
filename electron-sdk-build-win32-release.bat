@@ -4,6 +4,7 @@ call npm -v
 call node -v
 call npm config list
 del /f/q/s node_modules
+call npm cache clean --force
 call npm install --verbose
 call npm run switch:arch
 call npm run sync:lib -- --liburl_win=%RTC_SDK_URL%
