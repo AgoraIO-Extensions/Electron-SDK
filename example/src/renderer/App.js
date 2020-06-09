@@ -152,6 +152,18 @@ export default class App extends Component {
     rtcEngine.on('localUserRegistered', (uid, userAccount) => {
       console.log(`local user register: ${uid} ${userAccount}`)
     })
+    rtcEngine.on('audioPublishStateChange', (channel, oldstate, newstate, elapsed) => {
+      console.log(`rtcEngine audioPublishStateChange   channel: ${channel},  oldstate:${oldstate},  newstate:${newstate},  elapsed:${elapsed}`)
+    })
+    rtcEngine.on('videoPublishStateChange', (channel, oldstate, newstate, elapsed) => {
+      console.log(`rtcEngine videoPublishStateChange   channel: ${channel},  oldstate:${oldstate},  newstate:${newstate}, elapsed:${elapsed}`)
+    })
+    rtcEngine.on('audioSubscribeStateChange', (channel, uid, oldstate, newstate, elapsed) => {
+      console.log(`rtcEngine audioSubscribeStateChange   channel: ${channel}, uid:${uid}, oldstate:${oldstate},  newstate:${newstate}, elapsed:${elapsed}`)
+    })
+    rtcEngine.on('videoSubscribeStateChange', (channel, uid, oldstate, newstate, elapsed) => {
+      console.log(`rtcEngine videoSubscribeStateChange   channel: ${channel}, uid:${uid}, oldstate:${oldstate}, newstate:${newstate}, elapsed:${elapsed}`)
+    })
   }
 
   subscribeChannelEvents = (rtcChannel, publish) => {
@@ -182,6 +194,18 @@ export default class App extends Component {
 
     rtcChannel.on('rtcStats', (stats) => {
       console.log(stats)
+    })
+    rtcChannel.on('audioPublishStateChange', (oldstate, newstate, elapsed) => {
+      console.log(`audioPublishStateChange  oldstate:${oldstate},  newstate:${newstate},  elapsed:${elapsed}`)
+    })
+    rtcChannel.on('videoPublishStateChange', (oldstate, newstate, elapsed) => {
+      console.log(`videoPublishStateChange  oldstate:${oldstate},  newstate:${newstate}, elapsed:${elapsed}`)
+    })
+    rtcChannel.on('audioSubscribeStateChange', (uid, oldstate, newstate, elapsed) => {
+      console.log(`audioSubscribeStateChange  uid:${uid}, oldstate:${oldstate},  newstate:${newstate}, elapsed:${elapsed}`)
+    })
+    rtcChannel.on('videoSubscribeStateChange', (uid, oldstate, newstate, elapsed) => {
+      console.log(`videoSubscribeStateChange uid:${uid}, oldstate:${oldstate}, newstate:${newstate}, elapsed:${elapsed}`)
     })
   }
 
@@ -221,7 +245,9 @@ export default class App extends Component {
       rednessLevel: 0
     })
 
-    // joinning two channels together
+    //rtcEngine.joinChannel("", "123", "", 0);
+
+    //joinning two channels together
     let channel = rtcEngine.createChannel(this.state.channel)
     this.subscribeChannelEvents(channel, true)
     channel.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
