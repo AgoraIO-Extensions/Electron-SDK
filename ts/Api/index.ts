@@ -711,6 +711,44 @@ class AgoraRtcEngine extends EventEmitter {
       fire('channelMediaRelayEvent', event);
     });
 
+    this.rtcEngine.onEvent('audioPublishStateChange', function(
+      channel: string,
+      oldstate: number,
+      newstate: number,
+      elapsed: number
+    ) {
+      fire('audioPublishStateChange', channel, oldstate, newstate, elapsed);
+    });
+
+    this.rtcEngine.onEvent('videoPublishStateChange', function(
+      channel: string,
+      oldstate: number,
+      newstate: number,
+      elapsed: number
+    ) {
+      fire('videoPublishStateChange', channel, oldstate, newstate, elapsed);
+    });
+
+    this.rtcEngine.onEvent('audioSubscribeStateChange', function(
+      channel: string,
+      uid: number,
+      oldstate: number,
+      newstate: number,
+      elapsed: number
+    ) {
+      fire('audioSubscribeStateChange', channel, uid, oldstate, newstate, elapsed);
+    });
+
+    this.rtcEngine.onEvent('videoSubscribeStateChange', function(
+      channel: string,
+      uid: number,
+      oldstate: number,
+      newstate: number,
+      elapsed: number
+    ) {
+      fire('videoSubscribeStateChange', channel, uid, oldstate, newstate, elapsed);
+    });
+
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
       self.onRegisterDeliverFrame(infos);
     });
@@ -5537,6 +5575,37 @@ declare interface AgoraRtcEngine {
   on(evt: 'channelMediaRelayEvent', cb: (
     event: ChannelMediaRelayEvent
   ) => void): this;
+
+  on(evt: 'audioPublishStateChange', cb: (
+    channel: string,
+    oldstate: number,
+    newstate: number,
+    elapsed: number
+  ) => void): this;
+
+  on(evt: 'videoPublishStateChange', cb: (
+    channel: string,
+    oldstate: number,
+    newstate: number,
+    elapsed: number
+  ) => void): this;
+
+  on(evt: 'audioSubscribeStateChange', cb: (
+    channel: string,
+    uid: number,
+    oldstate: number,
+    newstate: number,
+    elapsed: number
+  ) => void): this;
+
+  on(evt: 'videoSubscribeStateChange', cb: (
+    channel: string,
+    uid: number,
+    oldstate: number,
+    newstate: number,
+    elapsed: number
+  ) => void): this;
+
   on(evt: string, listener: Function): this;
 }
 
@@ -5810,7 +5879,40 @@ class AgoraRtcChannel extends EventEmitter
     ) => {
         fire('connectionStateChanged', state, reason);
     });
-    
+
+    this.rtcChannel.onEvent('audioPublishStateChange', (
+      oldstate: number,
+      newstate: number,
+      elapsed: number
+    ) => {
+        fire('audioPublishStateChange', oldstate, newstate, elapsed);
+    });
+
+    this.rtcChannel.onEvent('videoPublishStateChange', (
+      oldstate: number,
+      newstate: number,
+      elapsed: number
+    ) => {
+        fire('videoPublishStateChange', oldstate, newstate, elapsed);
+    });
+
+    this.rtcChannel.onEvent('audioSubscribeStateChange', (
+      uid: number,
+      oldstate: number,
+      newstate: number,
+      elapsed: number
+    ) => {
+        fire('audioSubscribeStateChange', uid, oldstate, newstate, elapsed);
+    });
+
+    this.rtcChannel.onEvent('videoSubscribeStateChange', (
+      uid: number,
+      oldstate: number,
+      newstate: number,
+      elapsed: number
+    ) => {
+        fire('videoSubscribeStateChange', uid, oldstate, newstate, elapsed);
+    });
   }
 
   joinChannel(

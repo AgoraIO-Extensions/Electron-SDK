@@ -534,6 +534,13 @@ export interface LocalVideoStats {
    * The codec type of the local video. See {@link VIDEO_CODEC_TYPE}.
    */
   codecType: number;
+  /** The packet loss rate (%) from the local client to Agora's edge server,
+   * before network countermeasures.
+  */
+  txPacketLossRate: number;
+  /** The capture frame rate (fps) of the local video.
+  */
+  captureFrameRate: number;
 }
 /** 
  * The statistics of the local audio stream.
@@ -880,6 +887,14 @@ export interface RemoteVideoStats {
    * anti-packet-loss method.
    */
   packetLossRate: number;
+  /**
+   * The total active time (ms) of the remote video stream after the remote user joins the channel.
+   */
+  totalActiveTime: number;
+  /**
+   * The total active time (ms) of the remote video stream after the remote user publish the video stream.
+   */
+  publishDuration: number;
 }
 /** Sets the camera capturer configuration. */
 export enum CaptureOutPreference {
@@ -1050,6 +1065,14 @@ export interface RemoteAudioStats {
    * when the audio is available.
    */
   frozenRate: number;
+  /**
+   * The total active time (ms) of the remote audio stream after the remote user joins the channel.
+   */
+  totalActiveTime: number;
+  /**
+   * The total active time (ms) of the remote audio stream after the remote user publish the audio stream.
+   */
+  publishDuration: number;
 }
 
 /**
