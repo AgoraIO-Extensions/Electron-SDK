@@ -38,7 +38,11 @@ import {
   CaptureParam,
   VideoContentHint,
   VideoEncoderConfiguration,
-  UserInfo
+  UserInfo,
+  NodeMediaPlayer,
+  MEDIA_PLAYER_STATE,
+  MEDIA_PLAYER_ERROR,
+  MEDIA_PLAYER_EVENT
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -53,6 +57,7 @@ import {
   PluginInfo,
   Plugin
 } from './plugin';
+import { fileURLToPath } from 'url';
 const agora = require('../../build/Release/agora_node_ext');
 
 /**
@@ -977,6 +982,10 @@ class AgoraRtcEngine extends EventEmitter {
       return null
     }
     return new AgoraRtcChannel(rtcChannel)
+  }
+
+  createMediaPlayer(): (AgoraMediaPlayer | null) {
+    return new AgoraMediaPlayer();
   }
 
   /**
@@ -5607,6 +5616,181 @@ declare interface AgoraRtcEngine {
   ) => void): this;
 
   on(evt: string, listener: Function): this;
+}
+
+class AgoraMediaPlayer extends EventEmitter
+{
+  mediaPlayer: NodeMediaPlayer;
+  constructor() {
+    super();
+    this.mediaPlayer = new agora.NodeMediaPlayer;
+    this.initEventHandler();
+  }
+
+  test(): void {
+    this.mediaPlayer.test();
+  }
+   /**
+   * @ignore
+   */
+  initEventHandler(): void {
+    const fire = (event: string, ...args: Array<any>) => {
+      setImmediate(() => {
+        this.emit(event, ...args);
+      });
+    };
+
+    this.mediaPlayer.onEvent('onApiError', (funcName: string) => {
+      console.error(`api ${funcName} failed. this is an error
+              thrown by c++ addon layer. it often means sth is
+              going wrong with this function call and it refused
+              to do what is asked. kindly check your parameter types
+              to see if it matches properly.`);
+    });
+
+    this.mediaPlayer.onEvent('onPlayerStateChanged', (
+      state: MEDIA_PLAYER_STATE,
+      ec: MEDIA_PLAYER_ERROR
+    ) => {
+      fire('onPlayerStateChanged', state, ec);
+    });
+
+    this.mediaPlayer.onEvent('onPlayEvent', (
+      event: MEDIA_PLAYER_EVENT
+    ) => {
+      fire('onPlayEvent', event);
+    });
+
+    // this.mediaPlayer.onEvent('onMetaData', (
+    //   error: number,
+    //   message: string
+    // ) => {
+    //   fire('onMetaData', error, message);
+    // });
+
+
+    this.mediaPlayer.onEvent('onPositionChanged', (
+      position: number
+    ) => {
+      fire('onPositionChanged', position);
+    });
+  }
+
+  /**
+   * @ignore
+   */
+  registerVideoFrameObserver(callback: Function): number {
+    return this.mediaPlayer.registerVideoFrameObserver(callback);
+  }
+
+  initialize(): number {
+    return this.mediaPlayer.initialize();
+  }
+
+  open(url: string, position: number): number {
+    return this.mediaPlayer.open(url, position);
+  }
+
+  play(): number {
+    return this.mediaPlayer.play();
+  }
+
+  pause(): number {
+    return this.mediaPlayer.pause();
+  }
+
+  stop(): number {
+    return this.mediaPlayer.stop();
+  }
+
+  seek(position: number): number {
+    return this.mediaPlayer.seek(position);
+  }
+
+  mute(mute: boolean): number {
+    return this.mediaPlayer.mute(mute);
+  }
+
+  getMute(): boolean {
+    return this.mediaPlayer.getMute();
+  }
+
+  adjustPlayoutVolume(volume: number): number {
+    return this.mediaPlayer.adjustPlayoutVolume(volume);
+  }
+
+  getPlayoutVolume(): number {
+    return this.mediaPlayer.getPlayoutVolume();
+  }
+
+  getPlayPosition(): number {
+    return this.mediaPlayer.getPlayPosition();
+  }
+
+  getDuration(): number {
+    return this.mediaPlayer.getDuration();
+  }
+
+  getState(): number {
+    return this.mediaPlayer.getState();
+  }
+
+  getStreamCount(): number {
+    return this.mediaPlayer.getStreamCount();
+  }
+
+  //getStreamInfo;
+  connect(token:string, channelId:string, userId:string): number {
+    return this.mediaPlayer.connect(token, channelId, userId);
+  }
+
+  disconnect(): number {
+    return this.mediaPlayer.disconnect();
+  }
+
+  publishVideo(): number {
+    return this.mediaPlayer.publishVideo();
+  }
+
+  unpublishVideo(): number {
+    return this.mediaPlayer.unpublishVideo();
+  }
+
+  publishAudio(): number {
+    return this.mediaPlayer.publishAudio();
+  }
+
+  unpublishAudio(): number {
+    return this.mediaPlayer.unpublishAudio();
+  }
+
+  adjustPublishSignalVolume(volume: number): number {
+    return this.mediaPlayer.adjustPublishSignalVolume(volume);
+  }
+
+  setLogFile(filePath: string): number {
+    return this.mediaPlayer.setLogFile(filePath);
+  }
+
+  setLogFilter(filter: number): number {
+    return this.mediaPlayer.setLogFilter(filter);
+  }
+
+  setPlayerOption(key: string, value: number): number {
+    return this.mediaPlayer.setPlayerOption(key, value);
+  }
+
+  changePlaybackSpeed(speed: number): number {
+    return this.mediaPlayer.changePlaybackSpeed(speed);
+  }
+
+  selectAudioTrack(index: number): number {
+    return this.mediaPlayer.selectAudioTrack(index);
+  }
+
+  release(): number {
+    return this.mediaPlayer.release();
+  }
 }
 
 

@@ -3,6 +3,8 @@ const shell = require("shelljs");
 const path = require('path')
 
 const gyp_exec = `node ${path.resolve(__dirname, '../node_modules/node-gyp/bin/node-gyp.js')}`
+const agora_node_ext_path = `${path.resolve(__dirname, '../build/Release/agora_node_ext.node')}`
+const video_source_path = `${path.resolve(__dirname, '../build/Release/VideoSource')}`
 
 module.exports = ({
   electronVersion='5.0.8',
@@ -77,9 +79,23 @@ module.exports = ({
             process.exit(1)
           }
           
-          // handle success
-          logger.info('Build complete')
-          process.exit(0)  
+          shell.exec(`install_name_tool -change "@rpath/AgoraMediaPlayer.framework/Versions/A/AgoraMediaPlayer" "@loader_path/AgoraMediaPlayer.framework/Versions/A/AgoraMediaPlayer" ${agora_node_ext_path}`, {silent}, (code, stdout, stderr) => {
+            if (code !== 0) {
+              logger.error(stderr);
+              process.exit(1)
+            }
+
+            // shell.exec(`install_name_tool -change "@rpath/AgoraMediaPlayer.framework/Versions/A/AgoraMediaPlayer" "@loader_path/AgoraMediaPlayer.framework/AgoraMediaPlayer" ${video_source_path}`, {silent}, (code, stdout, stderr) => {
+            //   if (code !== 0) {
+            //     logger.error(stderr);
+            //     process.exit(1)
+            //   }
+
+              // handle success
+              logger.info('Build complete')
+              process.exit(0)
+            //})
+          })
         })
       }
     })

@@ -4291,6 +4291,7 @@ namespace agora {
                 #ifdef WIN32
                 //AddDllDirectory(mPluginFolderPath.c_str());
                 char* wPluginFilePath = U2G(mPluginFilePath.c_str());
+                
                 pluginInfo.pluginModule = LoadLibraryEx(wPluginFilePath, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
                 delete[] wPluginFilePath;
                 DWORD error = GetLastError();
