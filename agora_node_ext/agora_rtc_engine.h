@@ -28,6 +28,7 @@
 #include <map>
 #include "AVPlugin/IAVFramePluginManager.h"
 #include "AVPlugin/IAVFramePlugin.h"
+
 /*
 * Used to declare native interface to nodejs
 */
