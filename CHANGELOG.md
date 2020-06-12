@@ -1,4 +1,7 @@
 
+## 2.9.0-rc.104-build.554
+* support install from linux
+
 ## 2.9.0-rc.104-build.553
 * add gatewayRtt into rtcStats
 

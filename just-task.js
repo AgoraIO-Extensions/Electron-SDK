@@ -72,32 +72,33 @@ task('build:node', () => {
 // npm run download --
 task('download', () => {
   // work-around
+  const config = getArgvFromPkgJson()
   const addonVersion = '2.9.0-rc.104-build.553'
   cleanup(path.join(__dirname, "./build")).then(_ => {
     cleanup(path.join(__dirname, './js')).then(_ => {
       download({
         electronVersion: argv().electron_version, 
-        platform: argv().platform, 
+        platform: argv().platform || config.platform, 
         packageVersion: addonVersion,
-        arch: argv().arch
+        arch: argv().arch || config.arch
       })
     })
   })
 })
 // trigger when run npm install
 task('install', () => {
-  const config = Object.assign({}, getArgvFromNpmEnv(), getArgvFromPkgJson())
+  const pkgconfig = getArgvFromPkgJson()
   // work-around
   const addonVersion = '2.9.0-rc.104-build.553'
-  if (config.prebuilt) {
+  if (pkgconfig.prebuilt) {
     download({
-      electronVersion: config.electronVersion, 
-      platform: config.platform, 
+      electronVersion: pkgconfig.electronVersion, 
+      platform: pkgconfig.platform, 
       packageVersion: addonVersion,
-      arch: config.arch
+      arch: pkgconfig.arch
     })
   } else {
-    build(Object.assign({}, config, {
+    build(Object.assign({}, pkgconfig, {
       packageVersion: addonVersion
     }))
   }
