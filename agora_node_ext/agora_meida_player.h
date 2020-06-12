@@ -13,6 +13,7 @@
 #include "IAgoraMediaPlayer.h"
 #include "node_media_player_observer.h"
 #include "node_media_player_video_frame_observer.h"
+#include "../common/loguru.hpp"
 
 namespace agora {
     namespace rtc {
@@ -164,6 +165,7 @@ namespace agora {
                 NAPI_API_MEDIA_PLAYER(release);
                 NAPI_API_MEDIA_PLAYER(onEvent);
                 NAPI_API_MEDIA_PLAYER(registerVideoFrameObserver);
+                NAPI_API_MEDIA_PLAYER(unregisterVideoFrameObserver);
 
 //   virtual int registerPlayerObserver(IMediaPlayerObserver* observer) = 0;
 //   virtual int unregisterPlayerObserver(IMediaPlayerObserver* observer) = 0;
