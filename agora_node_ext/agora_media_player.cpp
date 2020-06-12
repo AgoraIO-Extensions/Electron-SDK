@@ -64,6 +64,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(selectAudioTrack);
                 PROPERTY_METHOD_DEFINE(release);
                 PROPERTY_METHOD_DEFINE(registerVideoFrameObserver);
+                PROPERTY_METHOD_DEFINE(unregisterVideoFrameObserver);
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeMediaPlayer").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -71,6 +72,8 @@ namespace agora {
         void NodeMediaPlayer::createInstance(const FunctionCallbackInfo<Value>& args) {
             LOG_INFO("NodeMediaPlayer createInstance %s", "w32");
                         Isolate *isolate = args.GetIsolate();
+
+            LOG_F(INFO, "NodeMediaPlayer createInstance  111");
             /*
             *  Called from new
             */
@@ -100,6 +103,7 @@ namespace agora {
                 const MediaPlayerContext mediaPlayerContext;
                 result = mediaPlayer->mMediaPlayer->initialize(mediaPlayerContext);
                 mediaPlayer->mMediaPlayer->registerPlayerObserver(mediaPlayer->nodeMediaPlayerObserver);
+
             } while(false);
             media_player_napi_set_int_result(args, result);
         }
@@ -217,9 +221,9 @@ namespace agora {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
                 CHECK_NATIVE_THIS(mediaPlayer);
-                LOG_ERROR("MediaPlayer: getPlayoutVolume voluem before: %d", result);   
+                LOG_ERROR("MediaPlayer: getPlayoutVolume voluem before: %d\r\n", result);   
                 mediaPlayer->mMediaPlayer->getPlayoutVolume(result); 
-                LOG_ERROR("MediaPlayer: getPlayoutVolume voluem: %d", result);          
+                LOG_ERROR("MediaPlayer: getPlayoutVolume voluem: %d\r\n", result);          
             } while(false);
             media_player_napi_set_int_result(args, result);
         }
@@ -495,7 +499,6 @@ namespace agora {
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, onEvent)
         {
-            //LOG_ENTER;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_status status = napi_ok;
@@ -506,13 +509,13 @@ namespace agora {
                 CHECK_NAPI_STATUS(mediaPlayer, status);
 
                 if (!args[1]->IsFunction()) {
-                    LOG_ERROR("Function expected");
+                    LOG_ERROR("Function expected\r\n");
                     break;
                 }
 
                 Local<Function> callback = args[1].As<Function>();
                 if (callback.IsEmpty()) {
-                    LOG_ERROR("Function expected.");
+                    LOG_ERROR("Function expected.\r\n");
                     break;
                 }
 
@@ -528,6 +531,8 @@ namespace agora {
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, registerVideoFrameObserver)
         {
+            int result = -1;
+            LOG_F(INFO, "registerVideoFrameObserver");
             do {
                 Isolate *isolate = args.GetIsolate();
                 NodeMediaPlayer *mediaPlayer = nullptr;
@@ -546,14 +551,28 @@ namespace agora {
                     break;
                 }
 
-                Persistent<Function> persist;
-                persist.Reset(callback);
-                Local<Object> obj = args.This();
-                Persistent<Object> persistObj;
-                persistObj.Reset(obj);
-                //mediaPlayer->nodeMediaPlayerVideoFrameObserver->initialize(isolate, persist, persistObj);
-                mediaPlayer->mMediaPlayer->registerVideoFrameObserver(mediaPlayer->nodeMediaPlayerVideoFrameObserver);
+                mediaPlayer->nodeMediaPlayerVideoFrameObserver->initialize(isolate, args);
+                result = mediaPlayer->mMediaPlayer->registerVideoFrameObserver(mediaPlayer->nodeMediaPlayerVideoFrameObserver);
+                LOG_F(INFO, "registerVideoFrameObserver  ret: %d", result);
             } while (false);
+            media_player_napi_set_int_result(args, result);
         }
+
+        NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, unregisterVideoFrameObserver)
+        {
+            int result = -1;
+            LOG_F(INFO, "unregisterVideoFrameObserver");
+            do {
+                Isolate *isolate = args.GetIsolate();
+                NodeMediaPlayer *mediaPlayer = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, mediaPlayer);
+                CHECK_NATIVE_THIS(mediaPlayer);
+                result = mediaPlayer->mMediaPlayer->unregisterVideoFrameObserver(NULL);
+                LOG_F(INFO, "registerVideoFrameObserver  ret: %d", result);
+                LOG_ERROR("mediaPlayer registerVideoFrameObserver %d\r\n", result);
+            } while (false);
+            media_player_napi_set_int_result(args, result);
+        }   
     }
 }

@@ -5668,12 +5668,21 @@ class AgoraMediaPlayer extends EventEmitter
     //   fire('onMetaData', error, message);
     // });
 
-
     this.mediaPlayer.onEvent('onPositionChanged', (
       position: number
     ) => {
       fire('onPositionChanged', position);
     });
+  }
+
+  /**
+   * register renderer for target info
+   * @private
+   * @ignore
+   * @param {number} infos
+   */
+  onReceiveVideoFrame(infos: any): void {
+    console.log(`onReceiveVideoFrame `);
   }
 
   /**
@@ -5684,7 +5693,12 @@ class AgoraMediaPlayer extends EventEmitter
   }
 
   initialize(): number {
-    return this.mediaPlayer.initialize();
+    const self = this;
+    let a = this.mediaPlayer.initialize();
+    this.mediaPlayer.registerVideoFrameObserver(function(infos: any) {
+      self.onReceiveVideoFrame(infos);
+    });
+    return a;
   }
 
   open(url: string, position: number): number {

@@ -7,7 +7,10 @@ namespace agora {
         }
 
         NodeMediaPlayerObserver::~NodeMediaPlayerObserver() {
-
+            for (auto& handler : m_callbacks) {
+                delete handler.second;
+                handler.second = NULL;
+            }
         }
 
         void NodeMediaPlayerObserver::onPlayerStateChanged(agora::media::MEDIA_PLAYER_STATE state,
