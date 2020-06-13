@@ -3,7 +3,7 @@
 namespace agora {
     namespace rtc {
         NodeMediaPlayerObserver::NodeMediaPlayerObserver() {
-
+            LOG_F(INFO, "NodeMediaPlayerObserver::NodeMediaPlayerObserver");
         }
 
         NodeMediaPlayerObserver::~NodeMediaPlayerObserver() {

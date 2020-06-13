@@ -44,6 +44,12 @@ namespace agora {
                     break;\
                 }
 
+        #define CHECK_NATIVE_THIS_MEDIA_PlAYER(mediaPlayer) \
+        if(!mediaPlayer) { \
+            LOG_ERROR("mediaPlayer is null.\n");\
+            break;\
+        }
+
         /*
         * to return int value for JS call.
         */
@@ -129,9 +135,7 @@ namespace agora {
                 NodeMediaPlayer(Isolate *isolate);
                 ~NodeMediaPlayer();
                 static void createInstance(const FunctionCallbackInfo<Value>& args);
-
                 static void Init(Local<Object>& module);
-
                 NAPI_API_MEDIA_PLAYER(initialize);
                 NAPI_API_MEDIA_PLAYER(open);
                 NAPI_API_MEDIA_PLAYER(play);
