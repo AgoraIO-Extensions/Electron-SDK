@@ -32,7 +32,6 @@ namespace agora {
             v8::Local<v8::Context> context = isolate->GetCurrentContext();
             BEGIN_PROPERTY_DEFINE(NodeMediaPlayer, createInstance, 4)
                 PROPERTY_METHOD_DEFINE(onEvent);
-                PROPERTY_METHOD_DEFINE(test)
                 PROPERTY_METHOD_DEFINE(initialize);
                 PROPERTY_METHOD_DEFINE(open);
                 PROPERTY_METHOD_DEFINE(play);
@@ -90,12 +89,8 @@ namespace agora {
             }
         }
 
-        NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, test) {
-            LOG_INFO("NodeMediaPlayer test %s", "111");
-        }
-
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, initialize) {
-            int result = -1;
+            int result = 1;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
@@ -109,7 +104,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, open) {
-            int result = -1;
+            int result = 1;
             napi_status status = napi_ok;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
@@ -127,7 +122,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, play) {
-            int result = -1;
+            int result = 1;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
@@ -138,7 +133,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, pause) {
-            int result = -1;
+            int result = 1;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
@@ -149,7 +144,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, stop) {
-            int result = -1;
+            int result = 1;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
@@ -160,7 +155,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, seek) {
-            int result = -1;
+            int result = 1;
             napi_status status = napi_ok;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
@@ -175,7 +170,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, mute) {
-            int result = -1;
+            int result = 1;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
@@ -201,7 +196,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, adjustPlayoutVolume) {
-            int result = -1;
+            int result = 1;
             do {    
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
@@ -216,7 +211,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, getPlayoutVolume) {
-            int result = -1;
+            int result = 1;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
@@ -229,7 +224,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, getPlayPosition) {
-            int result = -1;
+            int result = 1;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
@@ -242,7 +237,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, getDuration) {
-            int64_t result = -1;
+            int64_t result = 1;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
@@ -253,7 +248,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, getState) {
-            int result = -1;
+            int result = 1;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
@@ -264,7 +259,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, getStreamCount) {
-            int result = -1;
+            int result = 1;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
@@ -275,7 +270,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, getStreamInfo) {
-            // int result = -1;
+            // int result = 1;
             // do {
             //     NodeMediaPlayer *mediaPlayer = nullptr;
             //     napi_get_native_this(args, mediaPlayer);
@@ -304,17 +299,17 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, setView) {
-            //int result = -1;
+            //int result = 1;
             
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, setRenderMode) {
-            // int result = -1;
+            // int result = 1;
             // mediaPlayer->setRenderMode
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, connect) {
-            int result = -1;
+            int result = 1;
             napi_status status = napi_ok;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
@@ -346,7 +341,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, publishVideo) {
-            int result = -1;
+            int result = 1;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
@@ -357,7 +352,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, unpublishVideo) {
-            int result = -1;
+            int result = 1;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
@@ -368,7 +363,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, publishAudio) {
-            int result = -1;
+            int result = 1;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
@@ -379,7 +374,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, unpublishAudio) {
-            int result = -1;
+            int result = 1;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
@@ -390,7 +385,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, adjustPublishSignalVolume) {
-            int result = -1;
+            int result = 1;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
@@ -405,7 +400,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, setLogFile) {
-            int result = -1;
+            int result = 1;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
@@ -420,12 +415,12 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, setLogFilter) {
-            int result = -1;
+            int result = 1;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
                 CHECK_NATIVE_THIS(mediaPlayer);
-                uint32_t filter;
+                unsigned int filter;
                 napi_status status = napi_ok;
                 status = napi_get_value_uint32_(args[0], filter);
                 CHECK_NAPI_STATUS(mediaPlayer, status);
@@ -435,7 +430,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, setPlayerOption) {
-            int result = -1;
+            int result = 1;
             napi_status status = napi_ok;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
@@ -453,7 +448,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, changePlaybackSpeed) {
-            int result = -1;
+            int result = 1;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
@@ -468,7 +463,7 @@ namespace agora {
         }   
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, selectAudioTrack) {
-            int result = -1;
+            int result = 1;
             do {    
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
@@ -483,7 +478,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, release) {
-            int result = -1;
+            int result = 1;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
@@ -531,7 +526,7 @@ namespace agora {
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, registerVideoFrameObserver)
         {
-            int result = -1;
+            int result = 1;
             LOG_F(INFO, "registerVideoFrameObserver");
             do {
                 Isolate *isolate = args.GetIsolate();
@@ -560,7 +555,7 @@ namespace agora {
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, unregisterVideoFrameObserver)
         {
-            int result = -1;
+            int result = 1;
             LOG_F(INFO, "unregisterVideoFrameObserver");
             do {
                 Isolate *isolate = args.GetIsolate();
