@@ -42,7 +42,8 @@ import {
   NodeMediaPlayer,
   MEDIA_PLAYER_STATE,
   MEDIA_PLAYER_ERROR,
-  MEDIA_PLAYER_EVENT
+  MEDIA_PLAYER_EVENT,
+  MEDIA_PLAYER_PLAY_SPEED
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -58,6 +59,7 @@ import {
   Plugin
 } from './plugin';
 import { fileURLToPath } from 'url';
+import Renderer from 'ts/Renderer/SoftwareRenderer';
 const agora = require('../../build/Release/agora_node_ext');
 
 /**
@@ -881,6 +883,8 @@ class AgoraRtcEngine extends EventEmitter {
       }
     }
   }
+
+  
 
   /**
    * Resizes the renderer.
@@ -5621,15 +5625,62 @@ declare interface AgoraRtcEngine {
 class AgoraMediaPlayer extends EventEmitter
 {
   mediaPlayer: NodeMediaPlayer;
+  renderMode: number;
+  customerRenderer: any;
+  renderer: IRenderer;
   constructor() {
     super();
     this.mediaPlayer = new agora.NodeMediaPlayer;
     this.initEventHandler();
+    this.renderMode = this._checkWebGL() ? 1 : 2;
+    if (this.renderMode == 1) {
+      this.renderer = new GlRenderer();
+    }
+    else
+    {
+      this.renderer = new SoftwareRenderer();
+    }
   }
 
-  test(): void {
-    this.mediaPlayer.test();
+    /**
+   * check if data is valid
+   * @private
+   * @ignore
+   */
+  _checkWebGL(): boolean {
+    const canvas = document.createElement('canvas');
+    let gl;
+
+    canvas.width = 1;
+    canvas.height = 1;
+
+    const options = {
+      // Turn off things we don't need
+      alpha: false,
+      depth: false,
+      stencil: false,
+      antialias: false,
+      preferLowPowerToHighPerformance: true
+
+      // Still dithering on whether to use this.
+      // Recommend avoiding it, as it's overly conservative
+      // failIfMajorPerformanceCaveat: true
+    };
+
+    try {
+      gl =
+        canvas.getContext('webgl', options) ||
+        canvas.getContext('experimental-webgl', options);
+    } catch (e) {
+      return false;
+    }
+    if (gl) {
+      return true;
+    } else {
+      return false;
+    }
   }
+
    /**
    * @ignore
    */
@@ -5682,7 +5733,128 @@ class AgoraMediaPlayer extends EventEmitter
    * @param {number} infos
    */
   onReceiveVideoFrame(infos: any): void {
-    console.log(`onReceiveVideoFrame `);
+    const { header, ydata, udata, vdata } = infos;
+    const renderer = this._getRenderer();
+
+    if (!renderer)
+    {
+      console.error("Did not init mediaPlayer render view, please call setView()");
+      return;
+    }
+
+    if (this._checkData(header, ydata, udata, vdata)) {
+      renderer.drawFrame({
+        header,
+        yUint8Array: ydata,
+        uUint8Array: udata,
+        vUint8Array: vdata
+      });
+    }
+  }
+
+   /**
+   * check if data is valid
+   * @private
+   * @ignore
+   * @param {*} header
+   * @param {*} ydata
+   * @param {*} udata
+   * @param {*} vdata
+   */
+  _checkData(
+    header: ArrayBuffer,
+    ydata: ArrayBuffer,
+    udata: ArrayBuffer,
+    vdata: ArrayBuffer
+  ) {
+    if (header.byteLength != 20) {
+      console.error('invalid image header ' + header.byteLength);
+      return false;
+    }
+    if (ydata.byteLength === 20) {
+      console.error('invalid image yplane ' + ydata.byteLength);
+      return false;
+    }
+    if (udata.byteLength === 20) {
+      console.error('invalid image uplanedata ' + udata.byteLength);
+      return false;
+    }
+    if (
+      ydata.byteLength != udata.byteLength * 4 ||
+      udata.byteLength != vdata.byteLength
+    ) {
+      console.error(
+        'invalid image header ' +
+          ydata.byteLength +
+          ' ' +
+          udata.byteLength +
+          ' ' +
+          vdata.byteLength
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  setRenderMode(mode: 1 | 2 | 3 = 1): void {
+    this.renderMode = mode;
+  }
+
+  /**
+   * check if data is valid
+   * @param {*} view
+   */
+  setView(view?: Element): number {
+    this.initRender(this.renderMode);
+    if (view)
+    {
+      this.renderer.bind(view);
+    }
+    else
+    {
+      this.renderer.unbind();
+    }
+    return 0;
+  }
+
+  /**
+   * check if data is valid
+   * @private
+   * @ignore
+   * @param {*} renderMode
+   * @param {*} view
+   */
+  initRender(renderMode: | number) {
+    console.log(`Agora MediaPlayer initRender ${JSON.stringify(renderMode)}`)
+    //let renderer: IRenderer;
+    if (renderMode === 1) {
+      this.renderer = new GlRenderer();
+    } else if (renderMode === 2) {
+      this.renderer = new SoftwareRenderer();
+    } else if (renderMode === 3) {
+      this.renderer = new this.customerRenderer();
+    } else {
+      console.warn('Unknown render mode, fallback to 1');
+      this.renderer = new GlRenderer();
+    }
+  }
+
+  /**
+   * @ignore
+   */
+  _getRenderer(): any {
+    return this.renderer;
+  }
+
+  /**
+   * Use this method to set custom Renderer when set renderMode in the 
+   * {@link setRenderMode} method to 3.
+   * CustomRender should be a class.
+   * @param {IRenderer} customRenderer Customizes the video renderer.
+   */
+  setCustomRenderer(customRenderer: IRenderer) {
+    this.customerRenderer = customRenderer;
   }
 
   /**
@@ -5745,7 +5917,7 @@ class AgoraMediaPlayer extends EventEmitter
     return this.mediaPlayer.getDuration();
   }
 
-  getState(): number {
+  getState(): MEDIA_PLAYER_STATE {
     return this.mediaPlayer.getState();
   }
 
@@ -5794,7 +5966,7 @@ class AgoraMediaPlayer extends EventEmitter
     return this.mediaPlayer.setPlayerOption(key, value);
   }
 
-  changePlaybackSpeed(speed: number): number {
+  changePlaybackSpeed(speed: MEDIA_PLAYER_PLAY_SPEED): number {
     return this.mediaPlayer.changePlaybackSpeed(speed);
   }
 
@@ -5803,7 +5975,9 @@ class AgoraMediaPlayer extends EventEmitter
   }
 
   release(): number {
-    return this.mediaPlayer.release();
+    this.setView(undefined);
+    let ret = this.mediaPlayer.release();
+    return ret;
   }
 }
 

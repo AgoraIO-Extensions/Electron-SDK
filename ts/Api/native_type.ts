@@ -1540,6 +1540,20 @@ export type MEDIA_PLAYER_ERROR =
   | -11 //PLAYER_ERROR_INVALID_CONNECTION_STATE
   | -12 //PLAY_ERROR_SRC_BUFFER_UNDERFLOW
 
+export declare type MEDIA_PLAYER_PLAY_SPEED = 
+  | 100 //origin playback speed
+  | 75 //playback speed slow down to 0.75
+  | 50 //playback speed slow down to 0.5
+  | 125 //playback speed speed up to 1.25
+  | 150 //playback speed speed up to 1.5
+  | 200 //playback speed speed up to 2.0
+
+export declare type MEDIA_STREAM_TYPE = 
+  | 0 //Unknown stream type
+  | 1 //Video stream
+  | 2 //Audio stream
+  | 3 //Subtitle stream
+
 export interface NodeRtcEngine {
   /**
    * @ignore
@@ -2740,7 +2754,6 @@ export interface NodeRtcChannel {
 }
 
 export interface NodeMediaPlayer {
-  test(): void;
    /**
    * @ignore
    */
@@ -2761,7 +2774,7 @@ export interface NodeMediaPlayer {
   getPlayoutVolume(): number;
   getPlayPosition(): number;
   getDuration(): number;
-  getState(): number;
+  getState(): MEDIA_PLAYER_STATE;
   getStreamCount(): number;
   //getStreamInfo;
   connect(token:string, channelId:string, userId:string): number;
@@ -2774,7 +2787,7 @@ export interface NodeMediaPlayer {
   setLogFile(filePath: string): number;
   setLogFilter(filter: number): number;
   setPlayerOption(key: string, value: number): number;
-  changePlaybackSpeed(speed: number): number;
+  changePlaybackSpeed(speed: MEDIA_PLAYER_PLAY_SPEED): number;
   selectAudioTrack(index: number): number;
   release(): number;
 }
