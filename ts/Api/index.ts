@@ -5627,19 +5627,19 @@ class AgoraMediaPlayer extends EventEmitter
   mediaPlayer: NodeMediaPlayer;
   renderMode: number;
   customerRenderer: any;
-  renderer: IRenderer;
+  renderer: IRenderer | undefined;
   constructor() {
     super();
     this.mediaPlayer = new agora.NodeMediaPlayer;
     this.initEventHandler();
     this.renderMode = this._checkWebGL() ? 1 : 2;
-    if (this.renderMode == 1) {
-      this.renderer = new GlRenderer();
-    }
-    else
-    {
-      this.renderer = new SoftwareRenderer();
-    }
+    // if (this.renderMode == 1) {
+    //   this.renderer = new GlRenderer();
+    // }
+    // else
+    // {
+    //   this.renderer = new SoftwareRenderer();
+    // }
   }
 
     /**
@@ -5738,7 +5738,6 @@ class AgoraMediaPlayer extends EventEmitter
 
     if (!renderer)
     {
-      console.error("Did not init mediaPlayer render view, please call setView()");
       return;
     }
 
@@ -5809,11 +5808,17 @@ class AgoraMediaPlayer extends EventEmitter
     this.initRender(this.renderMode);
     if (view)
     {
-      this.renderer.bind(view);
+      if (this.renderer)
+      {
+        this.renderer.bind(view);
+      }
     }
     else
     {
-      this.renderer.unbind();
+      if (this.renderer)
+      {
+        this.renderer.unbind();
+      }
     }
     return 0;
   }
@@ -5826,7 +5831,6 @@ class AgoraMediaPlayer extends EventEmitter
    * @param {*} view
    */
   initRender(renderMode: | number) {
-    console.log(`Agora MediaPlayer initRender ${JSON.stringify(renderMode)}`)
     //let renderer: IRenderer;
     if (renderMode === 1) {
       this.renderer = new GlRenderer();
