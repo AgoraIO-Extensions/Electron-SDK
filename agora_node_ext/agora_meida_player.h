@@ -132,7 +132,6 @@ namespace agora {
 
                 static void Init(Local<Object>& module);
 
-                NAPI_API_MEDIA_PLAYER(test);
                 NAPI_API_MEDIA_PLAYER(initialize);
                 NAPI_API_MEDIA_PLAYER(open);
                 NAPI_API_MEDIA_PLAYER(play);
