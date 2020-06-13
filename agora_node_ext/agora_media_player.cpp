@@ -13,21 +13,22 @@ namespace agora {
             if (mMediaPlayer) {
                 mMediaPlayer->release();
                 mMediaPlayer = NULL;
-
-                if (nodeMediaPlayerObserver) {
-                    delete nodeMediaPlayerObserver;
-                    nodeMediaPlayerObserver = NULL;
-                }
-
-                if (nodeMediaPlayerVideoFrameObserver) {
-                    delete nodeMediaPlayerVideoFrameObserver;
-                    nodeMediaPlayerVideoFrameObserver = NULL;
-                }
             }
+
+            if (nodeMediaPlayerObserver) {
+                delete nodeMediaPlayerObserver;
+                nodeMediaPlayerObserver = NULL;
+            }
+
+            if (nodeMediaPlayerVideoFrameObserver) {
+                delete nodeMediaPlayerVideoFrameObserver;
+                nodeMediaPlayerVideoFrameObserver = NULL;
+            }
+            LOG_F(INFO, "NodeMediaPlayer::~NodeMediaPlayer");
         }
 
         void NodeMediaPlayer::Init(Local<Object>& module) {
-            LOG_F("NodeMediaPlayer init");
+            LOG_F(INFO, "NodeMediaPlayer init");
             Isolate *isolate = module->GetIsolate();
             v8::Local<v8::Context> context = isolate->GetCurrentContext();
             BEGIN_PROPERTY_DEFINE(NodeMediaPlayer, createInstance, 4)

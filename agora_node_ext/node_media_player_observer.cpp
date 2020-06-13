@@ -7,10 +7,16 @@ namespace agora {
         }
 
         NodeMediaPlayerObserver::~NodeMediaPlayerObserver() {
-            for (auto& handler : m_callbacks) {
-                delete handler.second;
-                handler.second = NULL;
+            std::unordered_map<std::string, MediaPlayerEventCallback*>::iterator _iterator;
+            for (_iterator = m_callbacks.begin(); _iterator != m_callbacks.end();) {
+                MediaPlayerEventCallback *callback = _iterator->second;
+                if (callback) {
+                    delete callback;
+                    callback = NULL;
+                }
+                m_callbacks.erase(_iterator++);
             }
+            LOG_F(INFO, " NodeMediaPlayerObserver::~NodeMediaPlayerObserver");
         }
 
         void NodeMediaPlayerObserver::onPlayerStateChanged(agora::media::MEDIA_PLAYER_STATE state,
