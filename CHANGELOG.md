@@ -1,3 +1,7 @@
+## 3.0.0-rc.123 (June 13th, 2020)
+#### :house: Internal
+* windows native sdk x86/x64 upgrade to 3.0.0.123
+
 ## 3.0.0-build.473 (April 22nd, 2020)
 #### :house: Internal
 * make glError configurable to improve performance when it's off
