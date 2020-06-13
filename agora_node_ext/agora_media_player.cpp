@@ -4,9 +4,7 @@ namespace agora {
     namespace rtc {
         DEFINE_CLASS(NodeMediaPlayer);
         NodeMediaPlayer::NodeMediaPlayer(Isolate *_isolate) : isolate(_isolate) {
-            mMediaPlayer = createAgoraMediaPlayer();
-            nodeMediaPlayerObserver = new NodeMediaPlayerObserver();
-            nodeMediaPlayerVideoFrameObserver = new NodeMediaPlayerVideoFrameObserver();
+            LOG_F(INFO, "NodeMediaPlayer::NodeMediaPlayer");
         }
 
         NodeMediaPlayer::~NodeMediaPlayer() {
@@ -70,8 +68,8 @@ namespace agora {
         }
 
         void NodeMediaPlayer::createInstance(const FunctionCallbackInfo<Value>& args) {
-            LOG_INFO("NodeMediaPlayer createInstance %s", "w32");
-                        Isolate *isolate = args.GetIsolate();
+            LOG_F(INFO, "NodeMediaPlayer createInstance");
+            Isolate *isolate = args.GetIsolate();
 
             /*
             *  Called from new
@@ -94,11 +92,23 @@ namespace agora {
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
-                CHECK_NATIVE_THIS(mediaPlayer);
+                CHECK_NATIVE_THIS_MEDIA_PlAYER(mediaPlayer);
+
+                mediaPlayer->mMediaPlayer = createAgoraMediaPlayer();
+                if (mediaPlayer->nodeMediaPlayerObserver) {
+                    delete mediaPlayer->nodeMediaPlayerObserver;
+                    mediaPlayer->nodeMediaPlayerObserver = NULL;
+                }
+
+                if (mediaPlayer->nodeMediaPlayerVideoFrameObserver) {
+                    delete mediaPlayer->nodeMediaPlayerVideoFrameObserver;
+                    mediaPlayer->nodeMediaPlayerVideoFrameObserver = NULL;
+                }
+                mediaPlayer->nodeMediaPlayerObserver = new NodeMediaPlayerObserver();
+                mediaPlayer->nodeMediaPlayerVideoFrameObserver = new NodeMediaPlayerVideoFrameObserver();
                 const MediaPlayerContext mediaPlayerContext;
                 result = mediaPlayer->mMediaPlayer->initialize(mediaPlayerContext);
                 mediaPlayer->mMediaPlayer->registerPlayerObserver(mediaPlayer->nodeMediaPlayerObserver);
-
             } while(false);
             media_player_napi_set_int_result(args, result);
         }
@@ -268,32 +278,35 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, getStreamInfo) {
-            // int result = 1;
-            // do {
-            //     NodeMediaPlayer *mediaPlayer = nullptr;
-            //     napi_get_native_this(args, mediaPlayer);
-            //     CHECK_NATIVE_THIS(mediaPlayer);
-            //     int index;
-            //     napi_status status = napi_ok;
-            //     status = napi_get_value_int32_(args[0], index);
-            //     agora::media::MediaStreamInfo *streamInfo = new agora::media::MediaStreamInfo();
-            //     result = mediaPlayer->mMediaPlayer->getStreamInfo(index, streamInfo);
-            //     Local<Object> obj = Object::New(isolate);
-            //     obj->Set(context, napi_create_string_(isolate, "streamIndex"), napi_create_int32_(isolate, streamInfo->streamIndex));
-            //     obj->Set(context, napi_create_string_(isolate, "streamType"), napi_create_int32_(isolate, (int)(streamInfo->streamType)));
-            //     obj->Set(context, napi_create_string_(isolate, "codecName"), napi_create_string_(isolate, streamInfo->codecName));
-            //     obj->Set(context, napi_create_string_(isolate, "language"), napi_create_string_(isolate, streamInfo->language));
-            //     obj->Set(context, napi_create_string_(isolate, "videoFrameRate"), napi_create_int32_(isolate, streamInfo->videoFrameRate));
-            //     obj->Set(context, napi_create_string_(isolate, "videoBitRate"), napi_create_int32_(isolate, (int)(streamInfo->videoBitRate)));         
-            //     obj->Set(context, napi_create_string_(isolate, "videoWidth"), napi_create_int32_(isolate, streamInfo->videoWidth));
-            //     obj->Set(context, napi_create_string_(isolate, "videoHeight"), napi_create_int32_(isolate, (int)(streamInfo->videoHeight)));
-            //     obj->Set(context, napi_create_string_(isolate, "videoRotation"), napi_create_int32_(isolate, streamInfo->videoRotation));
-            //     obj->Set(context, napi_create_string_(isolate, "audioSampleRate"), napi_create_int32_(isolate, (int)(streamInfo->audioSampleRate)));
-            //     obj->Set(context, napi_create_string_(isolate, "audioChannels"), napi_create_int32_(isolate, streamInfo->audioChannels));
-            //     obj->Set(context, napi_create_string_(isolate, "duration"), napi_create_int32_(isolate, (int)(streamInfo->duration)));
-            //     args.GetReturnValue().Set(obj);
-            // } while(false);
-            // media_player_napi_set_int_result();
+            int result = 1;
+            do {
+                Isolate *isolate = args.GetIsolate();
+                v8::Local<v8::Context> context = isolate->GetCurrentContext();
+                NodeMediaPlayer *mediaPlayer = nullptr;
+                napi_get_native_this(args, mediaPlayer);
+                CHECK_NATIVE_THIS(mediaPlayer);
+                int index;
+                napi_status status = napi_ok;
+                status = napi_get_value_int32_(args[0], index);
+                agora::media::MediaStreamInfo *streamInfo = new agora::media::MediaStreamInfo();
+                result = mediaPlayer->mMediaPlayer->getStreamInfo(index, streamInfo);
+                Local<Object> obj = Object::New(isolate);
+                obj->Set(context, napi_create_string_(isolate, "streamIndex"), napi_create_int32_(isolate, streamInfo->streamIndex));
+                obj->Set(context, napi_create_string_(isolate, "streamType"), napi_create_int32_(isolate, (int)(streamInfo->streamType)));
+                obj->Set(context, napi_create_string_(isolate, "codecName"), napi_create_string_(isolate, std::string(streamInfo->codecName).c_str()));
+                obj->Set(context, napi_create_string_(isolate, "language"), napi_create_string_(isolate, std::string(streamInfo->language).c_str()));
+                obj->Set(context, napi_create_string_(isolate, "videoFrameRate"), napi_create_int32_(isolate, streamInfo->videoFrameRate));
+                obj->Set(context, napi_create_string_(isolate, "videoBitRate"), napi_create_int32_(isolate, (int)(streamInfo->videoBitRate)));         
+                obj->Set(context, napi_create_string_(isolate, "videoWidth"), napi_create_int32_(isolate, streamInfo->videoWidth));
+                obj->Set(context, napi_create_string_(isolate, "videoHeight"), napi_create_int32_(isolate, (int)(streamInfo->videoHeight)));
+                obj->Set(context, napi_create_string_(isolate, "videoRotation"), napi_create_int32_(isolate, streamInfo->videoRotation));
+                obj->Set(context, napi_create_string_(isolate, "audioSampleRate"), napi_create_int32_(isolate, (int)(streamInfo->audioSampleRate)));
+                obj->Set(context, napi_create_string_(isolate, "audioChannels"), napi_create_int32_(isolate, streamInfo->audioChannels));
+                obj->Set(context, napi_create_string_(isolate, "duration"), napi_create_int32_(isolate, (int)(streamInfo->duration)));
+                args.GetReturnValue().Set(obj);
+                delete streamInfo;
+                streamInfo = NULL;
+            } while(false);
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, setView) {
@@ -485,6 +498,15 @@ namespace agora {
                 mediaPlayer->mMediaPlayer->unregisterVideoFrameObserver(NULL);
                 mediaPlayer->mMediaPlayer->release();
                 mediaPlayer->mMediaPlayer = NULL;
+                if (mediaPlayer->nodeMediaPlayerObserver) {
+                    delete mediaPlayer->nodeMediaPlayerObserver;
+                    mediaPlayer->nodeMediaPlayerObserver = NULL;
+                }
+
+                if (mediaPlayer->nodeMediaPlayerVideoFrameObserver) {
+                    delete mediaPlayer->nodeMediaPlayerVideoFrameObserver;
+                    mediaPlayer->nodeMediaPlayerVideoFrameObserver = NULL;
+                }
                 result = 0;
             } while(false);
             media_player_napi_set_int_result(args, result);

@@ -4,7 +4,7 @@ namespace agora {
     namespace rtc {
 
         NodeMediaPlayerVideoFrameObserver::NodeMediaPlayerVideoFrameObserver() {
-            
+            LOG_F(INFO, "NodeMediaPlayerVideoFrameObserver::NodeMediaPlayerVideoFrameObserver");
         }
 
         NodeMediaPlayerVideoFrameObserver::~NodeMediaPlayerVideoFrameObserver() {
@@ -13,6 +13,7 @@ namespace agora {
             mJsThis.Reset();
             dataList.clear();
             dataList.resize(0);
+            LOG_F(INFO, "NodeMediaPlayerVideoFrameObserver::~NodeMediaPlayerVideoFrameObserver");
         }
 
         void NodeMediaPlayerVideoFrameObserver::onFrame(const agora::media::base::VideoFrame* frame) {

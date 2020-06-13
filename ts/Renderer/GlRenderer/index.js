@@ -49,6 +49,9 @@ const AgoraRender = function() {
   };
 
   that.unbind = function() {
+    if (!gl) {
+      return
+    }
     try {
       gl.getExtension('WEBGL_lose_context').loseContext();
     } catch (err) {

@@ -43,7 +43,8 @@ import {
   MEDIA_PLAYER_STATE,
   MEDIA_PLAYER_ERROR,
   MEDIA_PLAYER_EVENT,
-  MEDIA_PLAYER_PLAY_SPEED
+  MEDIA_PLAYER_PLAY_SPEED,
+  MediaStreamInfo
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -5631,15 +5632,7 @@ class AgoraMediaPlayer extends EventEmitter
   constructor() {
     super();
     this.mediaPlayer = new agora.NodeMediaPlayer;
-    this.initEventHandler();
     this.renderMode = this._checkWebGL() ? 1 : 2;
-    // if (this.renderMode == 1) {
-    //   this.renderer = new GlRenderer();
-    // }
-    // else
-    // {
-    //   this.renderer = new SoftwareRenderer();
-    // }
   }
 
     /**
@@ -5818,6 +5811,7 @@ class AgoraMediaPlayer extends EventEmitter
       if (this.renderer)
       {
         this.renderer.unbind();
+        this.renderer = undefined;
       }
     }
     return 0;
@@ -5871,6 +5865,7 @@ class AgoraMediaPlayer extends EventEmitter
   initialize(): number {
     const self = this;
     let a = this.mediaPlayer.initialize();
+    this.initEventHandler();
     this.mediaPlayer.registerVideoFrameObserver(function(infos: any) {
       self.onReceiveVideoFrame(infos);
     });
@@ -5929,7 +5924,10 @@ class AgoraMediaPlayer extends EventEmitter
     return this.mediaPlayer.getStreamCount();
   }
 
-  //getStreamInfo;
+  getStreamInfo(index: number) : MediaStreamInfo {
+    return this.mediaPlayer.getStreamInfo(index);
+  }
+
   connect(token:string, channelId:string, userId:string): number {
     return this.mediaPlayer.connect(token, channelId, userId);
   }

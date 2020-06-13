@@ -6,7 +6,7 @@
 #include "node_async_queue.h"
 #include <string>
 #include <uv.h>
-#include "loguru.hpp"
+#include "../common/loguru.hpp"
 
 namespace agora {
     namespace rtc {

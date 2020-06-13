@@ -289,6 +289,43 @@ export interface UserInfo {
   userAccount: string;
 }
 
+export interface MediaStreamInfo { /* the index of the stream in the media file */
+  streamIndex : number;
+
+  /* stream type */
+  streamType : MEDIA_STREAM_TYPE;
+
+  /* stream encoding name */
+  codecName : string;
+
+  /* streaming language */
+  language : string;
+
+  /* If it is a video stream, video frames rate */
+  videoFrameRate : number;
+
+  /* If it is a video stream, video bit rate */
+  videoBitRate : number;
+
+  /* If it is a video stream, video width */
+  videoWidth : number;
+
+  /* If it is a video stream, video height */
+  videoHeight : number;
+
+  /* If it is a video stream, video rotation */
+  videoRotation : number;
+
+  /* If it is an audio stream, audio bit rate */
+  audioSampleRate : number;
+
+  /* If it is an audio stream, the number of audio channels */
+  audioChannels : number;
+
+  /* stream duration in second */
+  duration : number;
+};
+
 /** Sets the local voice changer option. */
 export enum VoiceChangerPreset {
   /** 0: The original voice (no local voice change). */
@@ -2776,7 +2813,7 @@ export interface NodeMediaPlayer {
   getDuration(): number;
   getState(): MEDIA_PLAYER_STATE;
   getStreamCount(): number;
-  //getStreamInfo;
+  getStreamInfo(index: number): MediaStreamInfo;
   connect(token:string, channelId:string, userId:string): number;
   disconnect(): number;
   publishVideo(): number;
