@@ -39,7 +39,7 @@ namespace agora {
          * Helper MACRO to check whether the extracted native this is valid.
          */
         #define CHECK_NATIVE_THIS(mediaPlayer) \
-                if(!mediaPlayer || !mediaPlayer->mMediaPlayer) { \
+                if(!mediaPlayer || !(mediaPlayer->mMediaPlayer)) { \
                     LOG_ERROR("mediaPlayer is null.\n");\
                     break;\
                 }
