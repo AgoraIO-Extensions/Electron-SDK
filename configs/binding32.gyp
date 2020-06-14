@@ -248,18 +248,21 @@
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
                         './sdk/dll/agora_rtc_sdk.dll',
-                        './sdk/dll/agora_sig_sdk.dll'
+                        './sdk/dll/agora_sig_sdk.dll',
+                        './sdk/lib/media_player/win/dll/AgoraMediaPlayer.dll'
                     ]
                 }],
                 'library_dirs': [
                     './sdk/lib/win',
+                    './sdk/lib/media_player/win/lib'
                 ],
                 'link_settings': {
                     'libraries': [
                         '-lagora_rtc_sdk.lib',
                         '-lws2_32.lib',
                         '-lRpcrt4.lib',
-						'-lgdiplus.lib'
+						'-lgdiplus.lib',
+                        '-lAgoraMediaPlayer.lib'
                     ]
                 },
                 'defines!': [
@@ -278,7 +281,8 @@
                 ],
                 'include_dirs': [
                 './sdk/include',
-                './extra/internal'
+                './extra/internal',
+                './sdk/lib/media_player/win/include'
                 ],
                 'configurations': {
                     'Release': {
