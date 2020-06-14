@@ -1051,15 +1051,11 @@ namespace loguru
 		do_replacements(s_user_stack_cleanups, output);
 		do_replacements(REPLACE_LIST, output);
 
-		try {
-			std::regex std_allocator_re(R"(,\s*std::allocator<[^<>]+>)");
-			output = std::regex_replace(output, std_allocator_re, std::string(""));
+		std::regex std_allocator_re(R"(,\s*std::allocator<[^<>]+>)");
+		output = std::regex_replace(output, std_allocator_re, std::string(""));
 
-			std::regex template_spaces_re(R"(<\s*([^<> ]+)\s*>)");
-			output = std::regex_replace(output, template_spaces_re, std::string("<$1>"));
-		} catch (std::regex_error&) {
-			// Probably old GCC.
-		}
+		std::regex template_spaces_re(R"(<\s*([^<> ]+)\s*>)");
+		output = std::regex_replace(output, template_spaces_re, std::string("<$1>"));
 
 		return output;
 	}
@@ -1808,14 +1804,9 @@ namespace loguru
 			char preamble_buff[LOGURU_PREAMBLE_WIDTH];
 			print_preamble(preamble_buff, sizeof(preamble_buff), Verbosity_FATAL, "", 0);
 			auto message = Message{Verbosity_FATAL, "", 0, preamble_buff, "", "Signal: ", signal_name};
-			try {
-				log_message(1, message, false, false);
-			} catch (...) {
-				// This can happed due to s_fatal_handler.
-				write_to_stderr("Exception caught and ignored by Loguru signal handler.\n");
-			}
-			flush();
 
+			log_message(1, message, false, false);
+			flush();
 			// --------------------------------------------------------------------
 		}
 
