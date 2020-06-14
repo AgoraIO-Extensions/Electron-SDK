@@ -7,7 +7,7 @@
 #include <string>
 #include <uv.h>
 #include <node.h>
-#include "../common/loguru.hpp"
+#include "loguru.hpp"
 #include <mutex>
 
 namespace agora {
