@@ -71,7 +71,7 @@ const win64Prepare = (folder) => {
 const macPrepare_mediaPlayer = (folder) => {
   return new Promise((resolve, reject) => {
     Promise.all([
-      //fs.remove(path.join(__dirname, '../sdk'))
+      fs.remove(path.join(__dirname, '../sdk/lib/media_player'))
     ]).then(() => {
       return fs.mkdirp(path.join(__dirname, '../sdk/lib/media_player'))
     }).then(() => {
@@ -89,7 +89,7 @@ const winPrepare_mediaPlayer = (folder) => {
   console.log("winPrepare_mediaPlayer")
   return new Promise((resolve, reject) => {
     Promise.all([
-      //fs.remove(path.join(__dirname, '../sdk'))
+      fs.remove(path.join(__dirname, '../sdk/lib/media_player'))
     ]).then(() => {
       return fs.mkdirp(path.join(__dirname, '../sdk/lib/media_player'))
     }).then(() => {
@@ -108,7 +108,7 @@ const win64Prepare_mediaPlayer = (folder) => {
   console.log("win64Prepare_mediaPlayer")
   return new Promise((resolve, reject) => {
     Promise.all([
-      //fs.remove(path.join(__dirname, '../sdk'))
+      fs.remove(path.join(__dirname, '../sdk/lib/media_player'))
     ]).then(() => {
       return fs.mkdirp(path.join(__dirname, '../sdk/lib/media_player'))
     }).then(() => {
