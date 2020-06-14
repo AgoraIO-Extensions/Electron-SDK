@@ -13,7 +13,7 @@ const globPromise = promisify(glob)
 const macPrepare = () => {
   return new Promise((resolve, reject) => {
     Promise.all([
-      fs.remove(path.join(__dirname, '../sdk'))
+      //fs.remove(path.join(__dirname, '../sdk'))
     ]).then(() => {
       return fs.mkdirp(path.join(__dirname, '../sdk/lib/mac'))
     }).then(() => {
@@ -32,7 +32,7 @@ const macPrepare = () => {
 const winPrepare = (folder) => {
   return new Promise((resolve, reject) => {
     Promise.all([
-      fs.remove(path.join(__dirname, '../sdk'))
+      //fs.remove(path.join(__dirname, '../sdk'))
     ]).then(() => {
       return fs.mkdirp(path.join(__dirname, '../sdk/lib'))
     }).then(() => {
@@ -52,7 +52,7 @@ const winPrepare = (folder) => {
 const win64Prepare = (folder) => {
   return new Promise((resolve, reject) => {
     Promise.all([
-      fs.remove(path.join(__dirname, '../sdk'))
+      //fs.remove(path.join(__dirname, '../sdk'))
     ]).then(() => {
       return fs.mkdirp(path.join(__dirname, '../sdk'))
     }).then(() => {
@@ -71,7 +71,7 @@ const win64Prepare = (folder) => {
 const macPrepare_mediaPlayer = (folder) => {
   return new Promise((resolve, reject) => {
     Promise.all([
-      fs.remove(path.join(__dirname, '../sdk/lib/media_player'))
+      //fs.remove(path.join(__dirname, '../sdk/lib/media_player'))
     ]).then(() => {
       return fs.mkdirp(path.join(__dirname, '../sdk/lib/media_player'))
     }).then(() => {
@@ -165,7 +165,9 @@ module.exports = ({
     const outputDir = "./tmp/";
     logger.info(`Downloading ${os} Libs...\n${downloadUrl}\n`);
 
-    fs.remove(path.join(__dirname, '../tmp')).then(() => {
+    fs.remove(path.join(__dirname, '../tmp')).then(()=>{
+      fs.remove(path.join(__dirname, '../sdk'))
+    }).then(() => {
       return download(downloadUrl, outputDir, {filename: "sdk.zip"})
     }).then(() => {
       logger.info("Success", "Download finished");
