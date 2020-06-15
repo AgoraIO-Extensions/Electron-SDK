@@ -42,7 +42,8 @@
     "rimraf": "^3.0.0",
     "shelljs": "^0.8.3",
     "yuv-buffer": "^1.0.0",
-    "yuv-canvas": "^1.2.1"
+    "yuv-canvas": "^1.2.1",
+    "electron": "^5.0.8"
   },
   "devDependencies": {
     "@types/node": "10.17.5",
