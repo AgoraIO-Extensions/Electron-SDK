@@ -198,7 +198,7 @@ module.exports = ({
     });
 
 
-
+    logger.info(`Downloading ${os} Libs...\n${downloadMediaPlayerUrl}\n`);
     fs.remove(path.join(__dirname, '../tmp')).then(() => {
       return download(downloadMediaPlayerUrl, outputDir, {filename: "sdk_mediaPlayer.zip"})
     }).then(() => {
