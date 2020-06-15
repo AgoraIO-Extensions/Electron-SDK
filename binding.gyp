@@ -263,7 +263,7 @@
                 }],
                 'library_dirs': [
                     './sdk/lib/win',
-                    './sdk/media_player/win'
+                    './sdk/media_player/win/lib'
                 ],
                 'link_settings': {
                     'libraries': [
