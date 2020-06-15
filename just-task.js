@@ -40,7 +40,7 @@ task('sync:lib', () => {
       win64: argv().liburl_win64 || config.libUrl.win64,
       mediaPlayer_mac: argv().liburl_mediaPlayer_mac || config.libUrl.mediaPlayer_mac,
       mediaPlayer_win: argv().liburl_mediaPlayer_win || config.libUrl.mediaPlayer_win,
-      mediaPlayer_win: argv().liburl_mediaPlayer_win64 || config.libUrl.mediaPlayer_win64
+      mediaPlayer_win64: argv().liburl_mediaPlayer_win64 || config.libUrl.mediaPlayer_win64
     }
   })
 })
