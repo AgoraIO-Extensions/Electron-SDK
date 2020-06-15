@@ -5626,6 +5626,7 @@ namespace agora {
                 status = napi_get_value_object_(isolate, args[0], obj);
                 CHECK_NAPI_STATUS(pChannel, status);
                 nodestring transcodingExtraInfo;
+                nodestring wmurl;
                 status = napi_get_object_property_int32_(isolate, obj, "width", transcoding.width);
                 CHECK_NAPI_STATUS(pChannel, status);
 
@@ -5676,7 +5677,6 @@ namespace agora {
                     Local<Object> objWm;
                     status = napi_get_value_object_(isolate, wmValue, objWm);
                     CHECK_NAPI_STATUS(pChannel, status);
-                    nodestring wmurl;
                     status = napi_get_object_property_nodestring_(isolate, objWm, "url", wmurl);
                     CHECK_NAPI_STATUS(pChannel, status);
                     wm->url = wmurl;
