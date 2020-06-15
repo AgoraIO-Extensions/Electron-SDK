@@ -257,12 +257,12 @@
                     'files': [
                         './sdk/dll/agora_rtc_sdk.dll',
                         './sdk/dll/agora_sig_sdk.dll',
-                        './sdk/lib/media_player/win/dll/AgoraMediaPlayer.dll'
+                        './sdk/media_player/win/dll/AgoraMediaPlayer.dll'
                     ]
                 }],
                 'library_dirs': [
                     './sdk/lib/win',
-                    './sdk/lib/media_player/win/lib'
+                    './sdk/media_player/win/lib'
                 ],
                 'link_settings': {
                     'libraries': [
@@ -290,7 +290,7 @@
                 'include_dirs': [
                 './sdk/include',
                 './extra/internal',
-                './sdk/lib/media_player/win/include'
+                './sdk/media_player/win/include'
                 ],
                 'configurations': {
                     'Release': {
