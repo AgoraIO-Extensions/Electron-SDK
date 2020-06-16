@@ -542,6 +542,7 @@ namespace agora {
 
                 LiveTranscoding transcoding;
                 nodestring extrainfo;
+                nodestring wmurl;
                 int videoCodecProfile, audioSampleRateType;
                 Local<Object> obj;
                 status = napi_get_value_object_(isolate, args[0], obj);
@@ -592,8 +593,6 @@ namespace agora {
                 if (!wmValue->IsNullOrUndefined()) {
                     Local<Object> objWm;
                     napi_get_value_object_(isolate, wmValue, objWm);
-                    
-                    nodestring wmurl;
                     status = napi_get_object_property_nodestring_(isolate, objWm, "url", wmurl);
                     CHECK_NAPI_STATUS(pEngine, status);
                     wm->url = wmurl;
