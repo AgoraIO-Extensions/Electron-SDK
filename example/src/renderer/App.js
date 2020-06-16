@@ -140,8 +140,6 @@ export default class App extends Component {
         }
       })
 
-      let a24 = this.mediaPlayer.release()
-      let rekf = this.mediaPlayer.initialize();
       this.mediaPlayer.open("http://114.236.93.153:8080/download/video/15songs.mp4", 0);
     
       
