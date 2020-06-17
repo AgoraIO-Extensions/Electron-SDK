@@ -1,3 +1,7 @@
+## 3.0.0-build.475 (June 17th, 2020)
+#### :house: Internal
+* fix live transcoding watermark bug
+
 ## 3.0.0-build.473 (April 22nd, 2020)
 #### :house: Internal
 * make glError configurable to improve performance when it's off
