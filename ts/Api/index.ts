@@ -5785,11 +5785,10 @@ class AgoraMediaPlayer extends EventEmitter
       );
       return false;
     }
-
     return true;
   }
 
-  setRenderMode(mode: 1 | 2 | 3 = 1): void {
+  setRenderMode(mode: 0 | 1): void {
     this.renderMode = mode;
   }
 
@@ -5797,13 +5796,14 @@ class AgoraMediaPlayer extends EventEmitter
    * check if data is valid
    * @param {*} view
    */
-  setView(view?: Element): number {
+  setView(viewContentMode: 0 | 1, view?: Element): number {
     this.initRender(this.renderMode);
     if (view)
     {
       if (this.renderer)
       {
         this.renderer.bind(view);
+        this.renderer.setContentMode(viewContentMode);
       }
     }
     else
@@ -5977,7 +5977,7 @@ class AgoraMediaPlayer extends EventEmitter
   }
 
   release(): number {
-    this.setView(undefined);
+    this.setView(0, undefined);
     let ret = this.mediaPlayer.release();
     return ret;
   }
