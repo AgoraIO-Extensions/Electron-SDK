@@ -133,8 +133,9 @@ class Renderer {
       this.ready = true;
       this.event.emit('ready');
     }
+
     let dv = new DataView(imageData.header);
-    // let format = dv.getUint8(0);
+    //let format1 = dv.getUint8(0);
     let mirror = dv.getUint8(1);
     let contentWidth = dv.getUint16(2);
     let contentHeight = dv.getUint16(4);
@@ -146,7 +147,6 @@ class Renderer {
     // let ts = dv.getUint32(16);
     let width = contentWidth + left + right;
     let height = contentHeight + top + bottom;
-
     this.updateCanvas({
       width, height, rotation,
       mirrorView: mirror,

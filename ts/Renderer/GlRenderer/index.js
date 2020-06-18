@@ -111,7 +111,7 @@ const AgoraRender = function() {
     ) {
       const view = that.view;
       that.unbind();
-      // Console.log('init canvas ' + image.width + "*" + image.height + " rotation " + image.rotation);
+      //console.log('init canvas ' + image.width + "*" + image.height + " rotation " + image.rotation);
       initCanvas(view, image.mirror, image.width, image.height, image.rotation, e => {
         console.error(
           `init canvas ${image.width}*${image.height} rotation ${
@@ -213,6 +213,7 @@ const AgoraRender = function() {
   }
 
   function uploadYuv(width, height, yplane, uplane, vplane) {
+    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
     var e
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, yTexture);
