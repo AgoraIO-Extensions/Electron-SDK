@@ -67,8 +67,8 @@
       "win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows(x86)_v2_9_0_105_20200601_FULL_50.zip",
       "win64": "http://192.168.99.149:8086/v2.9.0.105/AgoraSDK/Windows/testing(x64_release)/Agora_Native_SDK_for_Windows(x64)_v2.9.0.105_20200612_FULL_67.zip",
       "mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v2_9_0_105_FULL_20200601_1928_1.zip",
-      "mediaPlayer_mac": "http://10.80.1.174:8090/agora_sdk/mac/2020-06-08/Agora_Media_Player_for_Mac_x64_rel.v1.1.0_15302_20200608_0629.zip",
-      "mediaPlayer_win": "https://download.agora.io/sdk/release/Agora_Media_Player_for_Windows_x86_rel.v1.1.0.16486_20200507_1537.zip",
+      "mediaPlayer_mac": "http://10.80.1.174:8090/agora_sdk/mac/2020-06-19/Agora_Media_Player_for_Mac_x64_tongjiangyong_16232_20200619_1931.zip",
+      "mediaPlayer_win": "http://10.80.1.174:8090/agora_sdk/windows/2020-06-19/x86/Agora_Media_Player_for_Windows_x86_tongjiangyong.21166_20200619_2018.zip",
       "mediaPlayer_win64": "https://download.agora.io/sdk/release/Agora_Media_Player_for_Windows_x64_rel.v1.1.0.16487_20200507_1546.zip"
     }
   },
