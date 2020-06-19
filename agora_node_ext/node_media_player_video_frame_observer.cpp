@@ -19,34 +19,40 @@ namespace agora {
         void NodeMediaPlayerVideoFrameObserver::onFrame(const agora::media::base::VideoFrame* frame) {
             std::unique_lock<std::mutex> lck(m_lock);
             imageHeader.format = htons(0);
+            imageHeader.mirrored = htons(0);
             imageHeader.width = htons(frame->width);
             imageHeader.height = htons(frame->height);
             imageHeader.left = htons(0);
             imageHeader.top = htons(0);
             imageHeader.right = htons(0);
             imageHeader.bottom = htons(0);
-            size_t videoFrameSize = sizeof(image_header_type) + frame->width * frame->height * 3 / 2;
+            imageHeader.rotation = htons(frame->rotation);
+            imageHeader.timestamp = htons(frame->renderTimeMs);
+            size_t videoFrameSize = frame->yStride * frame->height + frame->uStride * frame->height / 2 + frame->vStride * frame->height / 2;
             if (dataList.size() < videoFrameSize || dataList.size() > (videoFrameSize * 2))
             {
                 dataList.resize(videoFrameSize);
             }
+
             uint32_t frameWidth = frame->width;
             uint32_t frameHeight = frame->height;
             unsigned char *yData = &dataList[0];
-            unsigned char *uData = yData + frameWidth * frameHeight;
-            unsigned char *vData = uData + frameWidth * frameHeight / 4;
-            memcpy(yData, frame->yBuffer, frameWidth * frameHeight);
-            memcpy(uData, frame->uBuffer, frameWidth * frameHeight / 4);
-            memcpy(vData, frame->vBuffer, frameWidth * frameHeight / 4);
+            unsigned char *uData = yData + frame->yStride * frame->height;
+            unsigned char *vData = uData + frame->uStride * frame->height / 2;
+            memcpy(yData, frame->yBuffer, frame->yStride * frame->height);
+            memcpy(uData, frame->uBuffer, frame->uStride * frame->height / 2);
+            memcpy(vData, frame->vBuffer, frame->vStride * frame->height / 2);
+
             bufferList[0].buffer = (unsigned char *)&imageHeader;
             bufferList[0].length = sizeof(image_header_type);
             bufferList[1].buffer = &dataList[0];
-            bufferList[1].length = frameWidth * frameHeight;
-            bufferList[2].buffer = &dataList[0] + bufferList[1].length;
-            bufferList[2].length = frameWidth * frameHeight / 4;
-            bufferList[3].buffer = bufferList[2].buffer + frameWidth * frameHeight / 4;
-            bufferList[3].length = frameWidth * frameHeight / 4;
+            bufferList[1].length = frame->yStride * frame->height;
+            bufferList[2].buffer = bufferList[1].buffer + bufferList[1].length;
+            bufferList[2].length = frame->uStride * frame->height / 2;
+            bufferList[3].buffer = bufferList[2].buffer + bufferList[2].length;
+            bufferList[3].length = frame->vStride * frame->height / 2;
             lck.unlock();
+
             agora::rtc::node_async_call::async_call([this]() {
                 v8::Isolate* isolate = mIsolate;
                 std::unique_lock<std::mutex> lock(m_lock);
