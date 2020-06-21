@@ -76,6 +76,9 @@ export default class App extends Component {
         
         let mediaInfo = this.mediaPlayer.getStreamInfo(1);
         console.log(`getStreamInfo ${JSON.stringify(mediaInfo)}`)
+
+        let mediaInfo1 = this.mediaPlayer.getStreamInfo(0);
+        console.log(`getStreamInfo ${JSON.stringify(mediaInfo1)}`)
           // let a21 = this.mediaPlayer.setPlayerOption("", 1)
           // console.log(`mediaPlayer.setPlayerOption ${a21}`);
 
@@ -132,15 +135,12 @@ export default class App extends Component {
 
       this.mediaPlayer.on('onPositionChanged', (position)=>{
         console.log(`onPositionChanged  position: ${position}`);
-        if (position == 10)
-        {
           this.setState({
             mediaPlayerView: "mediaPlayerView"
           })
-        }
       })
 
-      this.mediaPlayer.open("http://114.236.93.153:8080/download/video/15songs.mp4", 0);
+      this.mediaPlayer.open("http://vfx.mtime.cn/Video/2019/02/04/mp4/190204084208765161.mp4", 0);
     
       
       this.rtcEngine.initialize(APP_ID)
@@ -1045,7 +1045,7 @@ class MediaPlayerWindow extends Component {
   componentDidMount() {
     let dom = document.querySelector("#mediaPlayerView")
     console.log(`MediaPlayerWindow  dom: ${dom}`)
-    this.props.mediaPlayer.setView(dom);
+    this.props.mediaPlayer.setView(1, dom);
   }
 
   render() {
