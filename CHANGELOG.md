@@ -1,4 +1,7 @@
 
+## 2.9.0-rc.105-build.674
+* support electron 9
+
 ## 2.9.0-rc.104-build.553
 * add gatewayRtt into rtcStats
 
