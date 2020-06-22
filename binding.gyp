@@ -63,7 +63,7 @@
             'OS=="win"',
             {
                 'library_dirs': [
-                './sdk/lib/win',
+                './sdk/lib',
                 ],
                 'link_settings': {
                     'libraries': [
@@ -248,12 +248,11 @@
                 'copies': [{
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
-                        './sdk/dll/agora_rtc_sdk.dll',
-                        './sdk/dll/agora_sig_sdk.dll'
+                        './sdk/dll/agora_rtc_sdk.dll'
                     ]
                 }],
                 'library_dirs': [
-                    './sdk/lib/win',
+                    './sdk/lib',
                 ],
                 'link_settings': {
                     'libraries': [
@@ -311,12 +310,6 @@
                 'mac_framework_dirs': [
                 '../sdk/lib/mac'
                 ],
-                'copies': [{
-                    'destination': '<(PRODUCT_DIR)',
-                    'files': [
-                        './sdk/lib/mac/AgoraRtcKit.framework'
-                    ]
-                }],
                 'link_settings': {
                     'libraries': [
                     'libresolv.9.dylib',
