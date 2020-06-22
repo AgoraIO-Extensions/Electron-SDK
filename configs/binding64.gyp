@@ -63,7 +63,7 @@
             'OS=="win"',
             {
                 'library_dirs': [
-                './sdk/win64/lib',
+                './sdk/lib',
                 ],
                 'link_settings': {
                     'libraries': [
@@ -82,7 +82,7 @@
                     './common/libyuv/source/scale_win.cc'
                 ],
                 'include_dirs': [
-                './sdk/win64/include'
+                './sdk/include'
                 ],
                 'defines!': [
                 '_USING_V110_SDK71_',
@@ -248,12 +248,11 @@
                 'copies': [{
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
-                        './sdk/win64/dll/agora_rtc_sdk.dll',
-                        './sdk/win64/dll/agora_sig_sdk.dll'
+                        './sdk/dll/agora_rtc_sdk.dll'
                     ]
                 }],
                 'library_dirs': [
-                    './sdk/win64/lib',
+                    './sdk/lib',
                 ],
                 'link_settings': {
                     'libraries': [
@@ -278,7 +277,7 @@
                     './agora_node_ext/node_screen_window_info.h'
                 ],
                 'include_dirs': [
-                './sdk/win64/include',
+                './sdk/include',
                 './extra/internal'
                 ],
                 'configurations': {
