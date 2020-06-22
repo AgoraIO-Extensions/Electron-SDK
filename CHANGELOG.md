@@ -1,3 +1,9 @@
+## 3.0.1-beta.1 (June 23rd, 2020)
+#### :house: Internal
+* 3.0.1 SDK upgrade
+* support multi render
+* support electron 9.0.0
+
 ## 3.0.0-build.473 (April 22nd, 2020)
 #### :house: Internal
 * make glError configurable to improve performance when it's off
