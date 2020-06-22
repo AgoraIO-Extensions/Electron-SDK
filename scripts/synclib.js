@@ -50,7 +50,7 @@ const winPrepare = (folder) => {
       return Promise.all([
         fs.move(path.join(folder, './libs/include'), path.join(__dirname, '../sdk/include')),
         fs.move(path.join(folder, './libs/x86/agora_rtc_sdk.dll'), path.join(__dirname, '../sdk/dll/agora_rtc_sdk.dll')),
-        fs.move(path.join(folder, './libs/x86/agora_rtc_sdk.lib'), path.join(__dirname, '../sdk/lib/win/agora_rtc_sdk.lib')),
+        fs.move(path.join(folder, './libs/x86/agora_rtc_sdk.lib'), path.join(__dirname, '../sdk/lib/agora_rtc_sdk.lib')),
       ])
     }).then(() => {
       resolve()
@@ -72,7 +72,7 @@ const win64Prepare = (folder) => {
       return Promise.all([
         fs.move(path.join(folder, './libs/include'), path.join(__dirname, '../sdk/include')),
         fs.move(path.join(folder, './libs/x86_64/agora_rtc_sdk.dll'), path.join(__dirname, '../sdk/dll/agora_rtc_sdk.dll')),
-        fs.move(path.join(folder, './libs/x86_64/agora_rtc_sdk.lib'), path.join(__dirname, '../sdk/lib/win/agora_rtc_sdk.lib')),
+        fs.move(path.join(folder, './libs/x86_64/agora_rtc_sdk.lib'), path.join(__dirname, '../sdk/lib/agora_rtc_sdk.lib')),
       ])
     }).then(() => {
       resolve()
