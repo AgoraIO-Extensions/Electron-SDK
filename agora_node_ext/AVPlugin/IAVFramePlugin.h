@@ -1,4 +1,5 @@
 #pragma once
+#include <stdint.h>
 
 #ifdef AGORA_VIDEO_PLUGIN_EXPORT
 #define AGORA_VIDEO_PLUGIN_API extern "C" __declspec(dllexport)
@@ -67,5 +68,6 @@ public:
     virtual int release() = 0;
 };
 
-typedef IAVFramePlugin* (*createAgoraAVFramePlugin)();
+
+typedef IAVFramePlugin*(*createAgoraAVFramePlugin)();
 IAVFramePlugin* createAVFramePlugin();
