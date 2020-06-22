@@ -3,6 +3,11 @@ import {
   Plugin
 } from './plugin';
 
+export interface RendererOptions
+{
+  append: boolean
+}
+
 /**
  * Network quality types:
  *
