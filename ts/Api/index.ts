@@ -38,7 +38,8 @@ import {
   CaptureParam,
   VideoContentHint,
   VideoEncoderConfiguration,
-  UserInfo
+  UserInfo,
+  RendererOptions
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -60,7 +61,7 @@ const agora = require('../../build/Release/agora_node_ext');
  */
 class AgoraRtcEngine extends EventEmitter {
   rtcEngine: NodeRtcEngine;
-  streams: Map<string, Map<string, IRenderer>>;
+  streams: Map<string, Map<string, IRenderer[]>>;
   renderMode: 1 | 2 | 3;
   customRenderer: any;
   constructor() {
@@ -706,7 +707,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {number} type 0-local 1-remote 2-device_test 3-video_source
    * @param {number} uid uid get from native engine, differ from electron engine's uid
    */
-  _getRenderer(type: number, uid: number, channelId: string | undefined): IRenderer | undefined {
+  _getRenderers(type: number, uid: number, channelId: string | undefined): IRenderer[] | undefined {
     let channelStreams = this._getChannelRenderers(channelId || "")
     if (type < 2) {
       if (uid === 0) {
@@ -726,13 +727,13 @@ class AgoraRtcEngine extends EventEmitter {
     }
   }
 
-  _getChannelRenderers(channelId: string): Map<string, IRenderer> {
-    let channel: Map<string, IRenderer>;
+  _getChannelRenderers(channelId: string): Map<string, IRenderer[]> {
+    let channel: Map<string, IRenderer[]>;
     if(!this.streams.has(channelId)) {
       channel = new Map()
       this.streams.set(channelId, channel)
     } else {
-      channel = this.streams.get(channelId) as Map<string, IRenderer>
+      channel = this.streams.get(channelId) as Map<string, IRenderer[]>
     }
     return channel
   }
@@ -806,19 +807,21 @@ class AgoraRtcEngine extends EventEmitter {
         );
         continue;
       }
-      const renderer = this._getRenderer(type, uid, channelId);
-      if (!renderer) {
+      const renderers = this._getRenderers(type, uid, channelId);
+      if (!renderers || renderers.length === 0) {
         console.warn(`Can't find renderer for uid : ${uid} ${channelId}`);
         continue;
       }
 
       if (this._checkData(header, ydata, udata, vdata)) {
-        renderer.drawFrame({
-          header,
-          yUint8Array: ydata,
-          uUint8Array: udata,
-          vUint8Array: vdata
-        });
+        renderers.forEach(renderer => {
+          renderer.drawFrame({
+            header,
+            yUint8Array: ydata,
+            uUint8Array: udata,
+            vUint8Array: vdata
+          });
+        })
       }
     }
   }
@@ -837,10 +840,8 @@ class AgoraRtcEngine extends EventEmitter {
   resizeRender(key: 'local' | 'videosource' | number, channelId:string | undefined) {
     let channelStreams = this._getChannelRenderers(channelId || "")
     if (channelStreams.has(String(key))) {
-      const renderer = channelStreams.get(String(key));
-      if (renderer) {
-        renderer.refreshCanvas();
-      }
+      const renderers = channelStreams.get(String(key)) || [];
+      renderers.forEach(renderer => renderer.refreshCanvas())
     }
   }
 
@@ -850,10 +851,24 @@ class AgoraRtcEngine extends EventEmitter {
    * e.g, uid or `videosource` or `local`.
    * @param view The Dom elements to render the video.
    */
-  initRender(key: 'local' | 'videosource' | number, view: Element, channelId: string | undefined) {
+  initRender(key: 'local' | 'videosource' | number, view: Element, channelId: string | undefined, options?: RendererOptions) {
+    let rendererOptions = {
+      append: options ? options.append : false
+    }
     let channelStreams = this._getChannelRenderers(channelId || "")
+
     if (channelStreams.has(String(key))) {
-      this.destroyRender(key, channelId || "");
+      if(!rendererOptions.append) {
+        this.destroyRender(key, channelId || "");
+      } else {
+        let renderers = channelStreams.get(String(key)) || []
+        for(let i = 0; i < renderers.length; i++) {
+          if(renderers[i].equalsElement(view)){
+            console.log(`view exists in renderer list, ignore`)
+            return
+          }
+        }
+      }
     }
     channelStreams = this._getChannelRenderers(channelId || "")
     let renderer: IRenderer;
@@ -868,8 +883,49 @@ class AgoraRtcEngine extends EventEmitter {
       renderer = new GlRenderer();
     }
     renderer.bind(view);
-    channelStreams.set(String(key), renderer);
+
+    if(!rendererOptions.append) {
+      channelStreams.set(String(key), [renderer]);
+    } else {
+      let renderers = channelStreams.get(String(key)) || []
+      renderers.push(renderer)
+      channelStreams.set(String(key), renderers)
+    }
   }
+
+  destroyRenderView(
+    key: 'local' | 'videosource' | number, channelId: string | undefined, view: Element,
+    onFailure?: (err: Error) => void
+  ) {
+    let channelStreams = this._getChannelRenderers(channelId || "")
+    if (!channelStreams.has(String(key))) {
+      return;
+    }
+    const renderers = channelStreams.get(String(key)) || [];
+    const matchRenderers = renderers.filter(renderer => renderer.equalsElement(view))
+    const otherRenderers = renderers.filter(renderer => !renderer.equalsElement(view))
+
+    if(matchRenderers.length > 0) {
+      let renderer = matchRenderers[0]
+      try {
+        (renderer as IRenderer).unbind();
+        if(otherRenderers.length > 0) {
+          // has other renderers left, update
+          channelStreams.set(String(key), otherRenderers)
+        } else {
+          // removed renderer is the only one, remove
+          channelStreams.delete(String(key));
+        }
+        if(channelStreams.size === 0) {
+          this.streams.delete(channelId || "")
+        }
+      } catch (err) {
+        onFailure && onFailure(err)
+      }
+    }
+
+  }
+
 
   /**
    * Destroys the renderer.
@@ -886,15 +942,24 @@ class AgoraRtcEngine extends EventEmitter {
     if (!channelStreams.has(String(key))) {
       return;
     }
-    const renderer = channelStreams.get(String(key));
-    try {
-      (renderer as IRenderer).unbind();
-      channelStreams.delete(String(key));
-      if(channelStreams.size === 0) {
-        this.streams.delete(channelId || "")
+    const renderers = channelStreams.get(String(key)) || [];
+
+    let exception = null
+    for(let i = 0; i < renderers.length; i++) {
+      let renderer = renderers[i]
+      try {
+        (renderer as IRenderer).unbind();
+        channelStreams.delete(String(key));
+        if(channelStreams.size === 0) {
+          this.streams.delete(channelId || "")
+        }
+      } catch (err) {
+        exception = err
+        console.error(`${err.stack}`)
       }
-    } catch (err) {
-      onFailure && onFailure(err);
+    }
+    if(exception) {
+      onFailure && onFailure(exception)
     }
   }
 
@@ -1128,15 +1193,15 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  subscribe(uid: number, view: Element): number {
-    this.initRender(uid, view, "");
+  subscribe(uid: number, view: Element, options?: RendererOptions): number {
+    this.initRender(uid, view, "", options);
     return this.rtcEngine.subscribe(uid);
   }
 
-  setupRemoteVideo(uid: number, view?: Element, channel?: string): number {
+  setupRemoteVideo(uid: number, view?: Element, channel?: string, options?: RendererOptions): number {
     if(view) {
       //bind
-      this.initRender(uid, view, channel);
+      this.initRender(uid, view, channel, options);
       return this.rtcEngine.subscribe(uid, channel);
     } else {
       //unbind
@@ -1152,8 +1217,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setupLocalVideo(view: Element): number {
-    this.initRender('local', view, "");
+  setupLocalVideo(view: Element, options?: RendererOptions): number {
+    this.initRender('local', view, "", options);
     return this.rtcEngine.setupLocalVideo();
   }
 
@@ -1255,8 +1320,11 @@ class AgoraRtcEngine extends EventEmitter {
   ): number {
     let channelStreams = this._getChannelRenderers(channelId || "")
     if (channelStreams.has(String(uid))) {
-      const renderer = channelStreams.get(String(uid));
-      (renderer as IRenderer).setContentMode(mode);
+      const renderers = channelStreams.get(String(uid)) || [];
+      for(let i = 0; i < renderers.length; i++) {
+        let renderer = renderers[i];
+        (renderer as IRenderer).setContentMode(mode);
+      }
       return 0;
     } else {
       return -1;
