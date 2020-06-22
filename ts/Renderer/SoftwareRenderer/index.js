@@ -71,6 +71,11 @@ class Renderer {
     this.canvas = null;
     this.view = null;
   }
+
+  equalsElement(element) {
+    return this.element === element
+  }
+
   refreshCanvas() {
     // Not implemented for software renderer
   }
