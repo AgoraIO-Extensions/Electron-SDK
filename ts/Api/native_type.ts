@@ -2194,7 +2194,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  videoSourceEnableLoopbackRecording(enable: boolean): number;
+  videoSourceEnableLoopbackRecording(enabled: boolean, deviceName: string | null): number;
   /**
    * @ignore
    */

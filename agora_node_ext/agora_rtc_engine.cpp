@@ -2278,9 +2278,9 @@ namespace agora {
                         pEngine->m_videoSourceSink->enableLoopbackRecording(enable, mDeviceName.c_str());
                         result = 0;
                     }
-                    
                 }
             } while (false);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
