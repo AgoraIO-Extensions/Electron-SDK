@@ -1,10 +1,9 @@
 #pragma once
 #include <stdint.h>
-
-#ifdef AGORA_VIDEO_PLUGIN_EXPORT
-#define AGORA_VIDEO_PLUGIN_API extern "C" __declspec(dllexport)
+#if defined(_WIN32)
+#define EXPORTS __declspec(dllexport)
 #else
-#define AGORA_VIDEO_PLUGIN_API __declspec(dllimport)
+#define EXPORTS
 #endif
 
 struct AudioPluginFrame {
@@ -68,6 +67,6 @@ public:
     virtual int release() = 0;
 };
 
+typedef IAVFramePlugin* (*createAgoraAVFramePlugin)();
 
-typedef IAVFramePlugin*(*createAgoraAVFramePlugin)();
-IAVFramePlugin* createAVFramePlugin();
+extern "C" EXPORTS IAVFramePlugin* createAVFramePlugin();
