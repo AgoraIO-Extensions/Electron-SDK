@@ -66,6 +66,8 @@ export default class App extends Component {
       }) < 0){
         console.error(`load plugin failed`)
       }
+      let hookDll = path.resolve(__dirname, "./plugins/AgoraPlayerHookPlugin.dll")
+      let regist = this.rtcEngine.registerPlugin({id: "hookPlugin", path: hookDll})
       this.subscribeEvents(this.rtcEngine)
       window.rtcEngine = this.rtcEngine;
     }
@@ -652,21 +654,24 @@ export default class App extends Component {
 
   handleAudioHook = e => {
     let rtcEngine = this.getRtcEngine()
-    if(!this.state.audioHookEnabled){
-      rtcEngine.registerAudioFramePluginManager()
-      rtcEngine.registerAudioFramePlugin("agora_electron_plugin_audio_hook")
-      let dllpath = path.resolve(__dirname, "./plugins/AgoraPlayerHookPlugin.dll")
-      rtcEngine.loadPlugin("agora_electron_plugin_audio_hook", dllpath)
-      let playerpath = path.resolve(this.state.hookplayerpath)
-      rtcEngine.setPluginStringParameter("agora_electron_plugin_audio_hook","plugin.hookAudio.playerPath", playerpath)
-      rtcEngine.setPluginBoolParameter("agora_electron_plugin_audio_hook", "plugin.hookAudio.forceRestart", true)
-      // important for hook audio quality
-      rtcEngine.setRecordingAudioFrameParameters(44100, 2, 2, 882)
-      rtcEngine.enablePlugin("agora_electron_plugin_audio_hook")
-    } else {
-      rtcEngine.disablePlugin("agora_electron_plugin_audio_hook")
-      console.log(rtcEngine.unRegisterAudioFramePlugin("agora_electron_plugin_audio_hook"))
-      console.log(rtcEngine.unRegisterAudioFramePluginManager())
+    const plugin = this.rtcEngine.getPlugins().find(plugin=> plugin.id === 'hookPlugin')
+    if (plugin) {
+      if (this.state.audioHookEnabled) {
+        plugin.disable()
+        this.setState({
+          audioHookEnabled: false
+        })
+      } else {
+        let playerPath = path.resolve(this.state.hookplayerpath)
+        plugin.setParameter(JSON.stringify({
+          "plugin.hookAudio.playerPath": playerPath
+        }))
+
+        plugin.setParameter(JSON.stringify({
+          "plugin.hookAudio.foceRestart": true
+        }))
+        plugin.enable()
+      }
     }
     this.setState({audioHookEnabled: !this.state.audioHookEnabled})
   }
