@@ -248,7 +248,8 @@
                 'copies': [{
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
-                        './sdk/dll/agora_rtc_sdk.dll'
+                        './sdk/dll/agora_rtc_sdk.dll',
+                        './sdk/dll/agora_sig_sdk.dll'
                     ]
                 }],
                 'library_dirs': [
@@ -310,6 +311,12 @@
                 'mac_framework_dirs': [
                 '../sdk/lib/mac'
                 ],
+                'copies': [{
+                    'destination': '<(PRODUCT_DIR)',
+                    'files': [
+                        './sdk/lib/mac/AgoraRtcKit.framework'
+                    ]
+                }],
                 'link_settings': {
                     'libraries': [
                     'libresolv.9.dylib',
