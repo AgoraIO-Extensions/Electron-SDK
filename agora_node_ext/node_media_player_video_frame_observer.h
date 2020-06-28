@@ -45,6 +45,7 @@ namespace agora {
 
                 virtual void onFrame(const agora::media::base::VideoFrame* frame) override;
                 virtual void initialize(v8::Isolate *isolate, const Nan::FunctionCallbackInfo<v8::Value> &callbackinfo);
+                virtual int setVideoRotation(int rotation);
 
                 struct image_frame_info {
                     int stride;
@@ -72,10 +73,8 @@ namespace agora {
                     unsigned char* buffer;
                     uint32_t length;
                 };
-
                 
             private:
-
                 v8::Isolate* mIsolate;
                 Nan::Persistent<Function> mCallback;
                 Nan::Persistent<Object> mJsThis;
@@ -83,6 +82,7 @@ namespace agora {
                 image_header_type imageHeader;
                 std::mutex m_lock;
                 std::array<buffer_info, 4> bufferList;
+                int realRotation = 0;
          };
     }
 }

@@ -2826,5 +2826,6 @@ export interface NodeMediaPlayer {
   setPlayerOption(key: string, value: number): number;
   changePlaybackSpeed(speed: MEDIA_PLAYER_PLAY_SPEED): number;
   selectAudioTrack(index: number): number;
+  setVideoRotation(rotation: 0 | 90 | 180 | 270): number;
   release(): number;
 }

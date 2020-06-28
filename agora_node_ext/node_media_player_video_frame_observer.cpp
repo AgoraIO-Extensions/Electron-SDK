@@ -1,5 +1,6 @@
 #include "node_media_player_video_frame_observer.h"
 
+
 namespace agora {
     namespace rtc {
 
@@ -26,14 +27,14 @@ namespace agora {
             imageHeader.top = htons(0);
             imageHeader.right = htons(0);
             imageHeader.bottom = htons(0);
-            imageHeader.rotation = htons(frame->rotation);
+            imageHeader.rotation = htons(realRotation);
             imageHeader.timestamp = htons(frame->renderTimeMs);
             size_t videoFrameSize = frame->yStride * frame->height + frame->uStride * frame->height / 2 + frame->vStride * frame->height / 2;
             if (dataList.size() < videoFrameSize || dataList.size() > (videoFrameSize * 2))
             {
                 dataList.resize(videoFrameSize);
             }
-
+ 
             uint32_t frameWidth = frame->width;
             uint32_t frameHeight = frame->height;
             unsigned char *yData = &dataList[0];
@@ -51,8 +52,14 @@ namespace agora {
             bufferList[2].length = frame->uStride * frame->height / 2;
             bufferList[3].buffer = bufferList[2].buffer + bufferList[2].length;
             bufferList[3].length = frame->vStride * frame->height / 2;
+            
+            FILE* file = fopen("test.yuv", "ab+");
+            fwrite(yData, 1, frame->yStride * frameHeight, file);
+            fwrite(uData, 1, frame->uStride * frameHeight / 2, file);
+            fwrite(vData, 1, frame->vStride * frameHeight / 2, file);
+            fclose(file);
             lck.unlock();
-
+ 
             agora::rtc::node_async_call::async_call([this]() {
                 v8::Isolate* isolate = mIsolate;
                 std::unique_lock<std::mutex> lock(m_lock);
@@ -70,6 +77,11 @@ namespace agora {
                 mCallback.Get(isolate)->Call(isolate->GetCurrentContext(), mJsThis.Get(isolate), 1, args);
                 lock.unlock();
             });
+        }
+
+        int NodeMediaPlayerVideoFrameObserver::setVideoRotation(int rotation) {
+            realRotation = rotation;
+            return 0;
         }
 
         void NodeMediaPlayerVideoFrameObserver::initialize(v8::Isolate *isolate, const Nan::FunctionCallbackInfo<v8::Value> &callbackinfo) {
