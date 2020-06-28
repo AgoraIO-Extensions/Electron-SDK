@@ -52,12 +52,6 @@ namespace agora {
             bufferList[2].length = frame->uStride * frame->height / 2;
             bufferList[3].buffer = bufferList[2].buffer + bufferList[2].length;
             bufferList[3].length = frame->vStride * frame->height / 2;
-            
-            FILE* file = fopen("test.yuv", "ab+");
-            fwrite(yData, 1, frame->yStride * frameHeight, file);
-            fwrite(uData, 1, frame->uStride * frameHeight / 2, file);
-            fwrite(vData, 1, frame->vStride * frameHeight / 2, file);
-            fclose(file);
             lck.unlock();
  
             agora::rtc::node_async_call::async_call([this]() {
