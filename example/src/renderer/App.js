@@ -72,15 +72,17 @@ export default class App extends Component {
         let a19 = this.mediaPlayer.setLogFile("log.txt")
         console.log(`mediaPlayer.setLogFile ${a19}`);
         
-        let mediaInfo = this.mediaPlayer.getStreamInfo(1);
-        console.log(`getStreamInfo ${JSON.stringify(mediaInfo)}`)
-        
-        let rotation = mediaInfo.videoRotation;
-        this.mediaPlayer.setVideoRotation(rotation);
-        console.log(`rotation ${rotation}`)
-
-        let mediaInfo1 = this.mediaPlayer.getStreamInfo(0);
-        console.log(`getStreamInfo ${JSON.stringify(mediaInfo1)}`)
+        let mediaInfo = this.mediaPlayer.getStreamInfo(0);
+        if (mediaInfo.streamType == 1) {
+          let rotation = mediaInfo.videoRotation;
+          this.mediaPlayer.setVideoRotation(rotation)
+        } else {
+          let mediaInfo1 = this.mediaPlayer.getStreamInfo(1);
+          if (mediaInfo1.streamType == 1) {
+            let rotation = mediaInfo1.videoRotation;
+            this.mediaPlayer.setVideoRotation(rotation)
+          }
+        }
 
         let a = this.mediaPlayer.play();
         console.log(`mediaPlayer.play ${a}`);
@@ -146,7 +148,7 @@ export default class App extends Component {
           })
       })
 
-      this.mediaPlayer.open("http://114.236.93.153:8080/download/video/zhuangjiyuan.mkv", 0);
+      this.mediaPlayer.open("https://big-class-test.oss-cn-hangzhou.aliyuncs.com/61102.1592987815092.mp4", 0);
     
       
       this.rtcEngine.initialize(APP_ID)
