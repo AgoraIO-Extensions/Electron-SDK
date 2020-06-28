@@ -5976,6 +5976,10 @@ class AgoraMediaPlayer extends EventEmitter
     return this.mediaPlayer.selectAudioTrack(index);
   }
 
+  setVideoRotation(rotation: 0 | 90 | 180 | 270) {
+    return this.mediaPlayer.setVideoRotation(rotation);
+  }
+
   release(): number {
     this.setView(0, undefined);
     let ret = this.mediaPlayer.release();

@@ -63,6 +63,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(release);
                 PROPERTY_METHOD_DEFINE(registerVideoFrameObserver);
                 PROPERTY_METHOD_DEFINE(unregisterVideoFrameObserver);
+                PROPERTY_METHOD_DEFINE(setVideoRotation);
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeMediaPlayer").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -584,6 +585,28 @@ namespace agora {
                 result = mediaPlayer->mMediaPlayer->unregisterVideoFrameObserver(NULL);
             } while (false);
             media_player_napi_set_int_result(args, result);
-        }   
+        }
+
+        NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, setVideoRotation)
+        {
+            int result = 1;
+            LOG_F(INFO, "setVideoRotation");
+            do {
+                Isolate *isolate = args.GetIsolate();
+                NodeMediaPlayer *mediaPlayer = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, mediaPlayer);
+                CHECK_NATIVE_THIS(mediaPlayer);
+                int rotation;
+                status = napi_get_value_int32_(args[0], rotation);
+                CHECK_NAPI_STATUS(mediaPlayer, status);
+                if (mediaPlayer->nodeMediaPlayerVideoFrameObserver) {
+                    result = mediaPlayer->nodeMediaPlayerVideoFrameObserver->setVideoRotation(rotation);
+                } else {
+                    result = -7;
+                } 
+            } while (false);
+            media_player_napi_set_int_result(args, result);
+        }  
     }
 }

@@ -71,14 +71,20 @@ export default class App extends Component {
         // })
         let a19 = this.mediaPlayer.setLogFile("log.txt")
         console.log(`mediaPlayer.setLogFile ${a19}`);
-        let a = this.mediaPlayer.play();
-        console.log(`mediaPlayer.play ${a}`);
         
         let mediaInfo = this.mediaPlayer.getStreamInfo(1);
         console.log(`getStreamInfo ${JSON.stringify(mediaInfo)}`)
+        
+        let rotation = mediaInfo.videoRotation;
+        this.mediaPlayer.setVideoRotation(rotation);
+        console.log(`rotation ${rotation}`)
 
         let mediaInfo1 = this.mediaPlayer.getStreamInfo(0);
         console.log(`getStreamInfo ${JSON.stringify(mediaInfo1)}`)
+
+        let a = this.mediaPlayer.play();
+        console.log(`mediaPlayer.play ${a}`);
+
           // let a21 = this.mediaPlayer.setPlayerOption("", 1)
           // console.log(`mediaPlayer.setPlayerOption ${a21}`);
 
@@ -140,7 +146,7 @@ export default class App extends Component {
           })
       })
 
-      this.mediaPlayer.open("http://vfx.mtime.cn/Video/2019/02/04/mp4/190204084208765161.mp4", 0);
+      this.mediaPlayer.open("http://114.236.93.153:8080/download/video/zhuangjiyuan.mkv", 0);
     
       
       this.rtcEngine.initialize(APP_ID)
