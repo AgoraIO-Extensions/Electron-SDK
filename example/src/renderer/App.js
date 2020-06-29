@@ -174,6 +174,8 @@ export default class App extends Component {
     let encoderWidth = parseInt(this.state.encoderWidth)
     let encoderHeight = parseInt(this.state.encoderHeight)
     let rtcEngine = this.getRtcEngine()
+    let ret = rtcEngine.setRecordingAudioFrameParameters(44100, 2, 2, 882)
+    console.log(`setRecordingAudioFrameParameters ${ret}`)
     rtcEngine.setParameters("{\"rtc.user_account_server_list\":[\"58.211.82.170\"]}")
     let result = rtcEngine.registerLocalUserAccount(APP_ID, "TEST")
     console.log(result)
