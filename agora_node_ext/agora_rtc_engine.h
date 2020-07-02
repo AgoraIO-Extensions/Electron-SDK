@@ -25,6 +25,7 @@
 #include <list>
 #include <mutex>
 #include <unordered_set>
+#include "node_metadata_observer.h"
 /*
 * Used to declare native interface to nodejs
 */
@@ -303,6 +304,11 @@ namespace agora {
             NAPI_API(joinChannelWithUserAccount);
             NAPI_API(getUserInfoByUserAccount);
             NAPI_API(getUserInfoByUid);
+
+            NAPI_API(sendMetadata);
+            NAPI_API(addMetadataEventHandler);
+            NAPI_API(setMaxMetadataSize);
+            NAPI_API(registerMediaMetadataObserver);
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }
@@ -317,7 +323,7 @@ namespace agora {
             std::unique_ptr<NodeEventHandler> m_eventHandler;
             Isolate *m_isolate;
             std::unique_ptr<IExternalVideoRenderFactory> m_externalVideoRenderFactory;
-
+            
             /**
              * Currently we only support one video source. This maybe changed if more video source is needed.
              */
@@ -327,6 +333,8 @@ namespace agora {
 			AAudioDeviceManager* m_audioVdm = nullptr;
 
             std::unique_ptr<IVideoFramePluginManager> m_avPluginManager;
+
+            std::unique_ptr<NodeMetadataObserver> metadataObserver;
         };
 
 /*

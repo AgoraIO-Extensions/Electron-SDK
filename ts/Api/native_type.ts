@@ -776,6 +776,24 @@ export interface RemoteAudioStats {
   frozenRate: number;
 }
 
+export interface Metadata {
+  /** The User ID.
+
+  - For the receiver: the ID of the user who sent the metadata.
+  - For the sender: ignore it.
+  */
+  uid: number;
+  /** Buffer size of the sent or received Metadata.
+    */
+  size: number;
+  /** Buffer address of the sent or received Metadata.
+   */
+  buffer: string;
+  /** Time statmp of the frame following the metadata.
+   */
+  timeStampMs: number;
+}
+
 /**
  * Statistics of the remote video stream.
  * - 1: running
@@ -1290,7 +1308,10 @@ export interface NodeRtcEngine {
   adjustRecordingSignalVolume(volume: number): number;
   adjustPlaybackSignalVolume(volume: number): number;
   stopAllEffects(): number;
-
+  registerMediaMetadataObserver(): number;
+  sendMetadata(metadata: Metadata): number;
+  addMetadataEventHandler(callback: Function, callback2: Function): number;
+  setMaxMetadataSize(size: number): number;
   initializePluginManager(): number;
   releasePluginManager(): number;
   getPlugins(): Array<{ id: string }>;

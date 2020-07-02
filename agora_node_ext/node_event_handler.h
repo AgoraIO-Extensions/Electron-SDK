@@ -18,6 +18,7 @@
 #include <uv.h>
 #include "node_napi_api.h"
 #include "agora_video_source.h"
+#include "loguru.hpp"
 namespace agora {
     namespace rtc {
 #define RTC_EVENT_JOIN_CHANNEL "joinchannel"

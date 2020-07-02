@@ -33,7 +33,8 @@ import {
   CaptureParam,
   VideoContentHint,
   VideoEncoderConfiguration,
-  UserInfo
+  UserInfo,
+  Metadata
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate } from '../Utils';
@@ -3706,6 +3707,30 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.complain(callId, desc);
   }
 
+  registerMediaMetadataObserver(): number {
+    const fire = (event: string, ...args: Array<any>) => {
+      setImmediate(() => {
+        this.emit(event, ...args);
+      });
+    };
+
+    this.rtcEngine.addMetadataEventHandler((metadata: Metadata) => {
+      fire('receiveMetadata', metadata);
+    }, (metadata: Metadata) => {
+      fire('sendMetadataSuccess', metadata);
+    });
+    return this.rtcEngine.registerMediaMetadataObserver();
+  }
+
+  sendMetadata(metadata: Metadata): number {
+    return this.rtcEngine.sendMetadata(metadata);
+  }
+
+  setMaxMetadataSize(size: number): number {
+    return this.rtcEngine.setMaxMetadataSize(size);
+  }
+  
+
   // ===========================================================================
   // replacement for setParameters call
   // ===========================================================================
@@ -3773,6 +3798,7 @@ class AgoraRtcEngine extends EventEmitter {
   setProfile(profile: string, merge: boolean): number {
     return this.rtcEngine.setProfile(profile, merge);
   }
+
 
   // ===========================================================================
   // plugin apis
@@ -4494,6 +4520,10 @@ declare interface AgoraRtcEngine {
     cb: (localVideoState: number, error: number) => void
   ): this;
   on(evt: string, listener: Function): this;
+
+  on(evt: 'receiveMetadata', cb: (metadata: Metadata) => void): this;
+
+  on(evt: 'sendMetadataSuccess', cb: (metadata: Metadata) => void): this;
 
   // on(evt: 'apicallexecuted', cb: (api: string, err: number) => void): this;
   // on(evt: 'warning', cb: (warn: number, msg: string) => void): this;

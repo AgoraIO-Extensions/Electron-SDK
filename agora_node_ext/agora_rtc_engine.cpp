@@ -248,6 +248,11 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(getUserInfoByUserAccount);
                 PROPERTY_METHOD_DEFINE(getUserInfoByUid);
 
+                PROPERTY_METHOD_DEFINE(sendMetadata);
+                PROPERTY_METHOD_DEFINE(addMetadataEventHandler);
+                PROPERTY_METHOD_DEFINE(setMaxMetadataSize);
+                PROPERTY_METHOD_DEFINE(registerMediaMetadataObserver);
+
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -293,6 +298,7 @@ namespace agora {
             m_avPluginManager.reset(new IVideoFramePluginManager());
             /** m_videoSourceSink provide facilities to multiple video source based on multiple process */
             m_videoSourceSink.reset(createVideoSource());
+            metadataObserver.reset(new NodeMetadataObserver());
             LOG_LEAVE;
         }
 
@@ -312,6 +318,10 @@ namespace agora {
             if (m_engine) {
                 m_engine->release();
                 m_engine = nullptr;
+            }
+
+            if (metadataObserver.get()) {
+                metadataObserver.reset(nullptr);
             }
             m_videoSourceSink.reset(nullptr);
             m_externalVideoRenderFactory.reset(nullptr);
@@ -4630,6 +4640,127 @@ namespace agora {
                 obj->Set(context, propName, userObj);
                 args.GetReturnValue().Set(obj);
             } while (false);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, registerMediaMetadataObserver)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                LOG_F(INFO, "registerMediaMetadataObserver");
+                if (!(pEngine->metadataObserver.get())) {
+                    pEngine->metadataObserver.reset(new NodeMetadataObserver());
+                }
+                result = pEngine->m_engine->registerMediaMetadataObserver(pEngine->metadataObserver.get(), IMetadataObserver::METADATA_TYPE::VIDEO_METADATA);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, sendMetadata)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                Isolate *isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                if(!args[0]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+
+                if (!pEngine->metadataObserver.get()) {
+                    result = -100;
+                    break; 
+                }
+
+                unsigned int uid;
+                unsigned int size;
+                nodestring buffer;
+                long long timeStampMs;
+                char *_buffer;
+
+                Local<Object> obj = args[0]->ToObject();
+                status = napi_get_object_property_uid_(isolate, obj, "uid", uid);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_uid_(isolate, obj, "size", size);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_nodestring_(isolate, obj, "buffer", buffer);
+                _buffer = buffer;
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int64_(isolate, obj, "timeStampMs", timeStampMs);
+                CHECK_NAPI_STATUS(pEngine, status);
+                result = pEngine->metadataObserver.get()->sendMetadata(uid, size, reinterpret_cast<unsigned char *>(_buffer), timeStampMs);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, addMetadataEventHandler)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                if (!args[0]->IsFunction()) {
+                    LOG_ERROR("Function expected");
+                    break;
+                }
+
+                Local<Function> callback = args[0].As<Function>();
+                if (callback.IsEmpty()) {
+                    LOG_ERROR("Function expected.");
+                    break;
+                }
+
+                Local<Function> callback2 = args[1].As<Function>();
+                if (callback2.IsEmpty()) {
+                    LOG_ERROR("Function expected.");
+                    break;
+                }
+
+                Persistent<Function> persist;
+                persist.Reset(callback);
+
+                Persistent<Function> persist2;
+                persist2.Reset(callback2);
+
+                Local<Object> obj = args.This();
+                Persistent<Object> persistObj;
+                persistObj.Reset(obj);
+                result = pEngine->metadataObserver->addEventHandler(persistObj, persist, persist2);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setMaxMetadataSize)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                int maxSize;
+                status = napi_get_value_int32_(args[0], maxSize);
+                CHECK_NAPI_STATUS(pEngine, status);
+                result = pEngine->metadataObserver.get()->setMaxMetadataSize(maxSize);
+            } while (false);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
     }
