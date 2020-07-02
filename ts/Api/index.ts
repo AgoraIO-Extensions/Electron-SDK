@@ -3715,10 +3715,23 @@ class AgoraRtcEngine extends EventEmitter {
     };
 
     this.rtcEngine.addMetadataEventHandler((metadata: Metadata) => {
-      fire('receiveMetadata', metadata);
-    }, (metadata: Metadata) => {
-      fire('sendMetadataSuccess', metadata);
-    });
+      let metadata_ = Object.assign({}, {
+        uid: this.getUserAccount(metadata.uid),
+        size: metadata.size,
+        buffer: metadata.buffer,
+        timeStampMs: metadata.timeStampMs
+      });
+      fire('receiveMetadata', metadata_);
+      }, (metadata: Metadata) => {
+        let metadata_ = Object.assign({}, {
+            uid: this.getUserAccount(0),
+            size: metadata.size,
+            buffer: metadata.buffer,
+            timeStampMs: metadata.timeStampMs
+        });
+      fire('sendMetadataSuccess', metadata_);
+  });
+
     return this.rtcEngine.registerMediaMetadataObserver();
   }
 

@@ -9,6 +9,7 @@ import {readImage} from '../utils/base64'
 import WindowPicker from './components/WindowPicker/index.js'
 import DisplayPicker from './components/DisplayPicker/index.js'
 import { VoiceChangerPreset } from '../../../JS/Api/native_type';
+import { setInterval } from 'timers';
 
 export default class App extends Component {
   constructor(props) {
@@ -45,6 +46,7 @@ export default class App extends Component {
         encoderWidth: 0,
         encoderHeight: 0,
         fuEnabled: false,
+        metadataCount: 0,
       }
     }
     this.enableAudioMixing = false;
@@ -61,7 +63,8 @@ export default class App extends Component {
         path: libPath
       })
       this.subscribeEvents(this.rtcEngine)
-      window.rtcEngine = this.rtcEngine;
+      let ret3 = this.rtcEngine.registerMediaMetadataObserver();
+      console.log(`registerMediaMetadataObserver2  ret: ${ret3}`)
     }
 
     return this.rtcEngine
@@ -141,6 +144,32 @@ export default class App extends Component {
     rtcEngine.on('userInfoUpdated', (uid, userInfo) => {
       console.log(`userInfoUpdated: ${uid} ${userInfo.userAccount}`)
     })
+
+    rtcEngine.on("receiveMetadata", (metadata) => {
+      let bufferdata = JSON.parse(metadata.buffer)
+      console.log("receiveMetadata : " + bufferdata.width)
+    })
+
+    rtcEngine.on("sendMetadataSuccess", (metadata) => {
+      console.log(`sendMetadataSuccess : ${JSON.stringify(metadata)}`)
+    })
+
+    setInterval(()=>{
+      let ptr = {
+        width: 100,
+        height: 210,
+        top: 32323
+      }
+      let data = JSON.stringify(ptr);
+      let metadata = {
+        uid: 123,
+        size: data.length,
+        buffer: data,
+        timeStampMs: 122323
+      }
+      let ret = this.rtcEngine.sendMetadata(metadata);
+      console.log(`sendMetadata  data: ${data}  ret: ${ret}`)
+    }, 1000);
   }
 
   handleJoin = () => {
@@ -151,6 +180,7 @@ export default class App extends Component {
     rtcEngine.setClientRole(this.state.role)
     rtcEngine.setAudioProfile(0, 1)
     rtcEngine.enableVideo()
+    rtcEngine.setMaxMetadataSize(199);
     let logpath = path.resolve(os.homedir(), "./agoramain.sdk")
     rtcEngine.setLogFile(logpath)
     rtcEngine.enableLocalVideo(true)
@@ -176,7 +206,7 @@ export default class App extends Component {
     })
 
     rtcEngine.setParameters("{\"rtc.sync_user_account_callback\": true}")
-    // rtcEngine.joinChannel(null, this.state.channel, '',  Number(`${new Date().getTime()}`.slice(7)))
+    //rtcEngine.joinChannel(null, this.state.channel, '',  Number(`${new Date().getTime()}`.slice(7)))
     rtcEngine.joinChannelWithUserAccount(null, this.state.channel, this.state.userAccount)
   }
 
