@@ -78,11 +78,9 @@ namespace agora {
                 metadata.uid = cachedMetadata->uid;
                 metadata.size = cachedMetadata->size;
                 metadata.timeStampMs = cachedMetadata->timeStampMs;
-                #ifdef _WIN32
-                strcpy((char *)(metadata.buffer), (const char *)(cachedMetadata->buffer));
-                #else
-                strlcpy((char *)(metadata.buffer), (const char *)(cachedMetadata->buffer), metadata.size + 1);
-                #endif
+                memcpy(metadata.buffer, cachedMetadata->buffer, metadata.size);
+                cachedMetadata->buffer[cachedMetadata->size] = 0;
+                metadata.buffer[metadata.size] = 0;
                 unsigned int _uid = cachedMetadata->uid;
                 unsigned int _size = cachedMetadata->size;
                 std::string _buffer((char *)cachedMetadata->buffer);
@@ -116,14 +114,12 @@ namespace agora {
             unsigned int _uid = metadata.uid;
             unsigned int _size = metadata.size;
             long long _timeStampMs = metadata.timeStampMs;
-            void *cacheBuffer = malloc(_size);
-            memset(cacheBuffer, 0, _size);
-            #ifdef _WIN32
-            strcpy((char *)cacheBuffer, (const char *)metadata.buffer);
-            #else
-            strlcpy((char *)cacheBuffer, (const char *)metadata.buffer, metadata.size + 1);
-            #endif
-            std::string metaBuffer((char *)cacheBuffer);
+            void *cachePtr = malloc(_size);
+            memset(cachePtr, 0, _size);
+            memcpy(cachePtr, metadata.buffer, _size);
+            char *cacheBuffer = (char *)cachePtr;
+            cacheBuffer[_size] = 0;
+            std::string metaBuffer(cacheBuffer);
             free(cacheBuffer);
             cacheBuffer = NULL;
             node_async_call::async_call([this, _uid, _size, metaBuffer, _timeStampMs] {
@@ -170,13 +166,8 @@ namespace agora {
             metadata->size = size;
             void *cachePtr = malloc(size);
             memset(cachePtr, 0, size);
+            memcpy(metadata->buffer, buffer, size);
             metadata->buffer = (unsigned char *) cachePtr;
-        
-            #ifdef _WIN32
-            strcpy((char *)(metadata->buffer), (const char *)buffer);
-            #else
-            strlcpy((char *)(metadata->buffer), (const char *)buffer, metadata->size + 1);
-            #endif
             metadata->timeStampMs = timeStampMs;
             messageQueue.push(metadata);
             queueMutex.unlock();

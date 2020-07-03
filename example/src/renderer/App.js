@@ -146,30 +146,52 @@ export default class App extends Component {
     })
 
     rtcEngine.on("receiveMetadata", (metadata) => {
-      let bufferdata = JSON.parse(metadata.buffer)
+      //let bufferdata = JSON.parse(metadata.buffer)
       console.log(`receiveMetadata : ${JSON.stringify(metadata)}`)
+      console.log(`receiveMetadata : ${JSON.stringify(metadata.buffer)}`)
     })
 
     rtcEngine.on("sendMetadataSuccess", (metadata) => {
       console.log(`sendMetadataSuccess   buffer : ${JSON.stringify(metadata)}`)
     })
 
+    // setInterval(()=>{
+    //   let ptr = {
+    //     width: 100,
+    //     height: 210,
+    //     top: 32323,
+    //   }
+    //   let data = JSON.stringify(ptr);
+    //   let metadata = {
+    //     uid: 123,
+    //     size: data.length,
+    //     buffer: data,
+    //     timeStampMs: 122323
+    //   }
+    //   let ret = this.rtcEngine.sendMetadata(metadata);
+    //   console.log(`sendMetadata  data: ${data}  ret: ${ret}`)
+    // }, 100);
     setInterval(()=>{
+      let test = "rkewkrlew" + this.state.metadataCount
       let ptr = {
-        width: 100,
-        height: 210,
-        top: 32323
-      }
-      let data = JSON.stringify(ptr);
+        width:100,
+        height:210,
+        top:32323,
+        data:test,
+        mirror:false,
+        hehhe:"wkewlekwewefwereq"}
+
+      let data = JSON.stringify(ptr)
       let metadata = {
         uid: 123,
         size: data.length,
         buffer: data,
         timeStampMs: 122323
       }
+      this.state.metadataCount++
       let ret = this.rtcEngine.sendMetadata(metadata);
-      console.log(`sendMetadata  data: ${data}  ret: ${ret}`)
-    }, 1000);
+      //console.log(`sendMetadata  data: ${data}  ret: ${ret}`)
+    }, 100);
   }
 
   handleJoin = () => {
