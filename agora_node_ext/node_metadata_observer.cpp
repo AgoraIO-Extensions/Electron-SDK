@@ -165,9 +165,9 @@ namespace agora {
             metadata->uid = uid;
             metadata->size = size;
             void *cachePtr = malloc(size);
+            metadata->buffer = (unsigned char *) cachePtr;
             memset(cachePtr, 0, size);
             memcpy(metadata->buffer, buffer, size);
-            metadata->buffer = (unsigned char *) cachePtr;
             metadata->timeStampMs = timeStampMs;
             messageQueue.push(metadata);
             queueMutex.unlock();
