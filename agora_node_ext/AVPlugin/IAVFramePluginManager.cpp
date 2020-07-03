@@ -26,26 +26,61 @@ bool IAVFramePluginManager::onCaptureVideoFrame(VideoFrame& videoFrame)
 
 bool IAVFramePluginManager::onRenderVideoFrame(unsigned int uid, VideoFrame& videoFrame)
 {
+    pluginMutex.lock();
+    for (auto const& element : m_mapPlugins) {
+        if(element.second.enabled) {
+            element.second.instance->onPluginRenderVideoFrame(uid, (VideoPluginFrame*)&videoFrame);
+        }
+    }
+    pluginMutex.unlock();
     return true;
 }
 
 bool IAVFramePluginManager::onRecordAudioFrame(AudioFrame& audioFrame)
 {
+    pluginMutex.lock();
+    for (auto const& element : m_mapPlugins) {
+        if(element.second.enabled) {
+            element.second.instance->onPluginRecordAudioFrame((AudioPluginFrame*)&audioFrame);
+        }
+    }
+    pluginMutex.unlock();
     return true;
 }
 
 bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame)
 {
+    pluginMutex.lock();
+    for (auto const& element : m_mapPlugins) {
+        if(element.second.enabled) {
+            element.second.instance->onPluginPlaybackAudioFrame((AudioPluginFrame*)&audioFrame);
+        }
+    }
+    pluginMutex.unlock();
     return true;
 }
 
 bool IAVFramePluginManager::onMixedAudioFrame(AudioFrame& audioFrame)
 {
+    pluginMutex.lock();
+    for (auto const& element : m_mapPlugins) {
+        if(element.second.enabled) {
+            element.second.instance->onPluginMixedAudioFrame((AudioPluginFrame*)&audioFrame);
+        }
+    }
+    pluginMutex.unlock();
     return true;
 }
 
 bool IAVFramePluginManager::onPlaybackAudioFrameBeforeMixing(unsigned int uid, AudioFrame& audioFrame)
 {
+    pluginMutex.lock();
+    for (auto const& element : m_mapPlugins) {
+        if(element.second.enabled) {
+            element.second.instance->onPluginPlaybackAudioFrameBeforeMixing(uid, (AudioPluginFrame*)&audioFrame);
+        }
+    }
+    pluginMutex.unlock();
     return true;
 }
 
