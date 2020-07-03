@@ -114,6 +114,12 @@ namespace agora {
             unsigned int _uid = metadata.uid;
             unsigned int _size = metadata.size;
             long long _timeStampMs = metadata.timeStampMs;
+            #if defined(_WIN32)
+            char cacheBuffer[1024] = {0};
+            memcpy(cacheBuffer, metadata.buffer, _size);
+            cacheBuffer[_size] = 0;
+            std::string metaBuffer(cacheBuffer);
+            #else
             void *cachePtr = malloc(_size);
             memset(cachePtr, 0, _size);
             memcpy(cachePtr, metadata.buffer, _size);
@@ -122,6 +128,7 @@ namespace agora {
             std::string metaBuffer(cacheBuffer);
             free(cacheBuffer);
             cacheBuffer = NULL;
+            #endif
             node_async_call::async_call([this, _uid, _size, metaBuffer, _timeStampMs] {
                 queueMutex.lock();
                 Isolate *isolate = Isolate::GetCurrent();
