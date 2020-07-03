@@ -56,7 +56,7 @@ namespace agora {
                 Metadata *metadata = messageQueue.front();
                 if (metadata) {
                     if (metadata->buffer) {
-                        delete [] metadata->buffer;
+                        free(metadata->buffer);
                         metadata->buffer = NULL;
                     }
                     delete metadata;
@@ -78,7 +78,11 @@ namespace agora {
                 metadata.uid = cachedMetadata->uid;
                 metadata.size = cachedMetadata->size;
                 metadata.timeStampMs = cachedMetadata->timeStampMs;
+                #ifdef _WIN32
+                strcpy((char *)(metadata.buffer), (const char *)(cachedMetadata->buffer));
+                #else
                 strlcpy((char *)(metadata.buffer), (const char *)(cachedMetadata->buffer), metadata.size + 1);
+                #endif
                 unsigned int _uid = cachedMetadata->uid;
                 unsigned int _size = cachedMetadata->size;
                 std::string _buffer((char *)cachedMetadata->buffer);
@@ -95,7 +99,7 @@ namespace agora {
                     Local<Value> arg[1] = { obj };
                     messageSendCallback.Get(isolate)->Call(context, js_this.Get(isolate), 1, arg);
                 });
-                delete [] cachedMetadata->buffer;
+                free(cachedMetadata->buffer);
                 cachedMetadata->buffer = NULL;
                 delete cachedMetadata;
                 cachedMetadata = NULL;
@@ -109,28 +113,33 @@ namespace agora {
         }
 
         void NodeMetadataObserver::onMetadataReceived(const Metadata &metadata) {
-                unsigned int _uid = metadata.uid;
-                unsigned int _size = metadata.size;
-                long long _timeStampMs = metadata.timeStampMs;
-                char *cBuffer = new char[metadata.size];
-                strlcpy(cBuffer, (const char *)metadata.buffer, metadata.size + 1);
-                std::string metaBuffer(cBuffer);
-                delete [] cBuffer;
-                cBuffer = NULL;
-                node_async_call::async_call([this, _uid, _size, metaBuffer, _timeStampMs] {
-                    queueMutex.lock();
-                    Isolate *isolate = Isolate::GetCurrent();
-                    Local<Context> context = isolate->GetCurrentContext();
-                    HandleScope scope(isolate);
-                    Local<Object> obj = Object::New(isolate);
-                    NODE_SET_OBJ_PROP_UINT32(obj, "uid", _uid);
-                    NODE_SET_OBJ_PROP_UINT32(obj, "size", _size);
-                    NODE_SET_OBJ_PROP_STRING(obj, "buffer", metaBuffer.c_str());
-                    NODE_SET_OBJ_PROP_NUMBER(obj, "timeStampMs", _timeStampMs);
-                    Local<Value> arg[1] = { obj };
-                    callback.Get(isolate)->Call(context, js_this.Get(isolate), 1, arg);
-                    queueMutex.unlock();
-                });
+            unsigned int _uid = metadata.uid;
+            unsigned int _size = metadata.size;
+            long long _timeStampMs = metadata.timeStampMs;
+            void *cacheBuffer = malloc(_size);
+            memset(cacheBuffer, 0, _size);
+            #ifdef _WIN32
+            strcpy((char *)cacheBuffer, (const char *)metadata.buffer);
+            #else
+            strlcpy((char *)cacheBuffer, (const char *)metadata.buffer, metadata.size + 1);
+            #endif
+            std::string metaBuffer((char *)cacheBuffer);
+            free(cacheBuffer);
+            cacheBuffer = NULL;
+            node_async_call::async_call([this, _uid, _size, metaBuffer, _timeStampMs] {
+                queueMutex.lock();
+                Isolate *isolate = Isolate::GetCurrent();
+                Local<Context> context = isolate->GetCurrentContext();
+                HandleScope scope(isolate);
+                Local<Object> obj = Object::New(isolate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "uid", _uid);
+                NODE_SET_OBJ_PROP_UINT32(obj, "size", _size);
+                NODE_SET_OBJ_PROP_STRING(obj, "buffer", metaBuffer.c_str());
+                NODE_SET_OBJ_PROP_NUMBER(obj, "timeStampMs", _timeStampMs);
+                Local<Value> arg[1] = { obj };
+                callback.Get(isolate)->Call(context, js_this.Get(isolate), 1, arg);
+                queueMutex.unlock();
+            });
         }
 
         int NodeMetadataObserver::addEventHandler(Persistent<Object>& obj, Persistent<Function>& _callback, Persistent<Function>& _callback2) {
@@ -148,7 +157,7 @@ namespace agora {
                 Metadata *metadata = messageQueue.front();
                 if (metadata) {
                     if (metadata->buffer) {
-                        delete metadata->buffer;
+                        free(metadata->buffer);
                         metadata->buffer = NULL;
                     }
                     delete metadata;
@@ -159,8 +168,15 @@ namespace agora {
             Metadata *metadata = new Metadata();
             metadata->uid = uid;
             metadata->size = size;
-            metadata->buffer = new unsigned char[size];
+            void *cachePtr = malloc(size);
+            memset(cachePtr, 0, size);
+            metadata->buffer = (unsigned char *) cachePtr;
+        
+            #ifdef _WIN32
+            strcpy((char *)(metadata->buffer), (const char *)buffer);
+            #else
             strlcpy((char *)(metadata->buffer), (const char *)buffer, metadata->size + 1);
+            #endif
             metadata->timeStampMs = timeStampMs;
             messageQueue.push(metadata);
             queueMutex.unlock();
