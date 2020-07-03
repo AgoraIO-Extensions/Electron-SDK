@@ -147,11 +147,11 @@ export default class App extends Component {
 
     rtcEngine.on("receiveMetadata", (metadata) => {
       let bufferdata = JSON.parse(metadata.buffer)
-      console.log("receiveMetadata : " + bufferdata.width)
+      console.log(`receiveMetadata : ${JSON.stringify(metadata)}`)
     })
 
     rtcEngine.on("sendMetadataSuccess", (metadata) => {
-      console.log(`sendMetadataSuccess : ${JSON.stringify(metadata)}`)
+      console.log(`sendMetadataSuccess   buffer : ${JSON.stringify(metadata)}`)
     })
 
     setInterval(()=>{
