@@ -48,10 +48,10 @@ namespace agora {
         }
 
         NodeMetadataObserver::~NodeMetadataObserver() {
+            std::lock_guard<std::mutex> lock(queueMutex);
             js_this.Reset();
             callback.Reset();
             messageSendCallback.Reset();
-            queueMutex.lock();
             while(!messageQueue.empty()){
                 Metadata *metadata = messageQueue.front();
                 if (metadata) {
@@ -64,7 +64,6 @@ namespace agora {
                 }
                 messageQueue.pop();
             }
-            queueMutex.unlock();
         }
 
         int NodeMetadataObserver::getMaxMetadataSize() {
@@ -72,65 +71,69 @@ namespace agora {
         }
 
         bool NodeMetadataObserver::onReadyToSendMetadata(Metadata &metadata) {
-            queueMutex.lock();
-            if (messageQueue.size() > 0) {
+            std::lock_guard<std::mutex> lock(queueMutex);
+            if (!messageQueue.empty() && messageQueue.size() > 0) {
                 Metadata *cachedMetadata = messageQueue.front();
-                metadata.uid = cachedMetadata->uid;
-                metadata.size = cachedMetadata->size;
-                metadata.timeStampMs = cachedMetadata->timeStampMs;
-                memcpy(metadata.buffer, cachedMetadata->buffer, metadata.size);
-                cachedMetadata->buffer[cachedMetadata->size] = 0;
-                metadata.buffer[metadata.size] = 0;
-                unsigned int _uid = cachedMetadata->uid;
-                unsigned int _size = cachedMetadata->size;
-                std::string _buffer((char *)cachedMetadata->buffer);
-                long long _timeStampMs = cachedMetadata->timeStampMs;
-                node_async_call::async_call([this, _uid, _size, _buffer, _timeStampMs] {
-                    Isolate *isolate = Isolate::GetCurrent();
-                    Local<Context> context = isolate->GetCurrentContext();
-                    HandleScope scope(isolate);
-                    Local<Object> obj = Object::New(isolate);
-                    NODE_SET_OBJ_PROP_UINT32(obj, "uid", _uid);
-                    NODE_SET_OBJ_PROP_UINT32(obj, "size", _size);
-                    NODE_SET_OBJ_PROP_STRING(obj, "buffer", _buffer.c_str());
-                    NODE_SET_OBJ_PROP_NUMBER(obj, "timeStampMs", _timeStampMs);
-                    Local<Value> arg[1] = { obj };
-                    messageSendCallback.Get(isolate)->Call(context, js_this.Get(isolate), 1, arg);
-                });
-                free(cachedMetadata->buffer);
-                cachedMetadata->buffer = NULL;
-                delete cachedMetadata;
-                cachedMetadata = NULL;
+                if (cachedMetadata) {
+                    metadata.uid = cachedMetadata->uid;
+                    metadata.size = cachedMetadata->size;
+                    metadata.timeStampMs = cachedMetadata->timeStampMs;
+                    if (cachedMetadata->buffer) {
+                        memcpy(metadata.buffer, cachedMetadata->buffer, metadata.size);
+                        cachedMetadata->buffer[cachedMetadata->size] = 0;
+                        metadata.buffer[metadata.size] = 0;
+                        unsigned int _uid = cachedMetadata->uid;
+                        unsigned int _size = cachedMetadata->size;
+                        std::string _buffer((char *)cachedMetadata->buffer);
+                        long long _timeStampMs = cachedMetadata->timeStampMs;
+                        node_async_call::async_call([this, _uid, _size, _buffer, _timeStampMs] {
+                            Isolate *isolate = Isolate::GetCurrent();
+                            Local<Context> context = isolate->GetCurrentContext();
+                            HandleScope scope(isolate);
+                            Local<Object> obj = Object::New(isolate);
+                            NODE_SET_OBJ_PROP_UINT32(obj, "uid", _uid);
+                            NODE_SET_OBJ_PROP_UINT32(obj, "size", _size);
+                            NODE_SET_OBJ_PROP_STRING(obj, "buffer", _buffer.c_str());
+                            NODE_SET_OBJ_PROP_NUMBER(obj, "timeStampMs", _timeStampMs);
+                            Local<Value> arg[1] = { obj };
+                            messageSendCallback.Get(isolate)->Call(context, js_this.Get(isolate), 1, arg);
+                        });
+                        free(cachedMetadata->buffer);
+                        cachedMetadata->buffer = NULL;
+                    }
+                    delete cachedMetadata;
+                    cachedMetadata = NULL;
+                }
                 messageQueue.pop();
-                queueMutex.unlock();
                 return true;
-            } else {
-                queueMutex.unlock();
-                return false;
             }
+            return false;
         }
 
         void NodeMetadataObserver::onMetadataReceived(const Metadata &metadata) {
             unsigned int _uid = metadata.uid;
             unsigned int _size = metadata.size;
             long long _timeStampMs = metadata.timeStampMs;
-            #if defined(_WIN32)
+            //#if defined(_WIN32)
             char cacheBuffer[1024] = {0};
             memcpy(cacheBuffer, metadata.buffer, _size);
             cacheBuffer[_size] = 0;
             std::string metaBuffer(cacheBuffer);
-            #else
-            void *cachePtr = malloc(_size);
-            memset(cachePtr, 0, _size);
-            memcpy(cachePtr, metadata.buffer, _size);
-            char *cacheBuffer = (char *)cachePtr;
-            cacheBuffer[_size] = 0;
-            std::string metaBuffer(cacheBuffer);
-            free(cacheBuffer);
-            cacheBuffer = NULL;
-            #endif
-            node_async_call::async_call([this, _uid, _size, metaBuffer, _timeStampMs] {
-                queueMutex.lock();
+            // #else
+            // void *cachePtr = malloc(_size + 1);
+            // if (cachePtr) {
+            //     memset(cachePtr, 0, _size);
+            //     memcpy(cachePtr, metadata.buffer, _size);
+            //     char *cacheBuffer = (char *)cachePtr;
+            //     cacheBuffer[_size] = 0;
+            //     std::string metaBuffer(cacheBuffer);
+            //     free(cacheBuffer);
+            //     cacheBuffer = NULL;
+            // } else {
+            //     return;
+            // }
+            // #endif
+            node_async_call::async_call([this, _uid, _size, metaBuffer, _timeStampMs] {             
                 Isolate *isolate = Isolate::GetCurrent();
                 Local<Context> context = isolate->GetCurrentContext();
                 HandleScope scope(isolate);
@@ -141,21 +144,19 @@ namespace agora {
                 NODE_SET_OBJ_PROP_NUMBER(obj, "timeStampMs", _timeStampMs);
                 Local<Value> arg[1] = { obj };
                 callback.Get(isolate)->Call(context, js_this.Get(isolate), 1, arg);
-                queueMutex.unlock();
             });
         }
 
         int NodeMetadataObserver::addEventHandler(Persistent<Object>& obj, Persistent<Function>& _callback, Persistent<Function>& _callback2) {
-            queueMutex.lock();
+            std::lock_guard<std::mutex> lock(queueMutex);
             js_this.Reset(obj);
             callback.Reset(_callback);
             messageSendCallback.Reset(_callback2);
-            queueMutex.unlock();
             return 0;
         }
 
         int NodeMetadataObserver::sendMetadata(unsigned int uid, unsigned int size, unsigned char *buffer, long long timeStampMs) {
-            queueMutex.lock();
+            std::lock_guard<std::mutex> lock(queueMutex);
             if (messageQueue.size() > 50) {
                 Metadata *metadata = messageQueue.front();
                 if (metadata) {
@@ -171,13 +172,14 @@ namespace agora {
             Metadata *metadata = new Metadata();
             metadata->uid = uid;
             metadata->size = size;
-            void *cachePtr = malloc(size);
-            metadata->buffer = (unsigned char *) cachePtr;
-            memset(cachePtr, 0, size);
-            memcpy(metadata->buffer, buffer, size);
-            metadata->timeStampMs = timeStampMs;
-            messageQueue.push(metadata);
-            queueMutex.unlock();
+            void *cachePtr = malloc(size + 1);
+            if (cachePtr) {
+                metadata->buffer = (unsigned char *) cachePtr;
+                memset(cachePtr, 0, size + 1);
+                memcpy(metadata->buffer, buffer, size);
+                metadata->timeStampMs = timeStampMs;
+                messageQueue.push(metadata);
+            }
             return 0;
         }
 
