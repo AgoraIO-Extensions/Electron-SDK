@@ -2420,7 +2420,6 @@ namespace agora {
         {
             LOG_ENTER;            
             do {
-                startLogService("metadata_log.txt");
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
