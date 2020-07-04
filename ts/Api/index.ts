@@ -3707,6 +3707,10 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.complain(callId, desc);
   }
 
+  unRegisterMediaMetadataObserver(): number {
+    return this.rtcEngine.unRegisterMediaMetadataObserver();
+  }
+
   registerMediaMetadataObserver(): number {
     const fire = (event: string, ...args: Array<any>) => {
       setImmediate(() => {

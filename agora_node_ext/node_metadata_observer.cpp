@@ -48,6 +48,10 @@ namespace agora {
         }
 
         NodeMetadataObserver::~NodeMetadataObserver() {
+            clearData();
+        }
+
+        void NodeMetadataObserver::clearData() {
             std::lock_guard<std::mutex> lock(queueMutex);
             js_this.Reset();
             callback.Reset();
@@ -63,7 +67,7 @@ namespace agora {
                     metadata = NULL;
                 }
                 messageQueue.pop();
-            }
+            }  
         }
 
         int NodeMetadataObserver::getMaxMetadataSize() {

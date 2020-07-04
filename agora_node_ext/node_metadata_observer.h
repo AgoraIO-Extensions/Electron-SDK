@@ -31,6 +31,8 @@ namespace agora {
 
                 virtual int setMaxMetadataSize(int size);
 
+                virtual void clearData();
+
             private:
                 std::queue<Metadata *> messageQueue;
                 std::mutex queueMutex;

@@ -1309,6 +1309,7 @@ export interface NodeRtcEngine {
   adjustPlaybackSignalVolume(volume: number): number;
   stopAllEffects(): number;
   registerMediaMetadataObserver(): number;
+  unRegisterMediaMetadataObserver(): number;
   sendMetadata(metadata: Metadata): number;
   addMetadataEventHandler(callback: Function, callback2: Function): number;
   setMaxMetadataSize(size: number): number;

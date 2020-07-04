@@ -252,6 +252,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(addMetadataEventHandler);
                 PROPERTY_METHOD_DEFINE(setMaxMetadataSize);
                 PROPERTY_METHOD_DEFINE(registerMediaMetadataObserver);
+                PROPERTY_METHOD_DEFINE(unRegisterMediaMetadataObserver);
 
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
@@ -4656,6 +4657,24 @@ namespace agora {
                     pEngine->metadataObserver.reset(new NodeMetadataObserver());
                 }
                 result = pEngine->m_engine->registerMediaMetadataObserver(pEngine->metadataObserver.get(), IMetadataObserver::METADATA_TYPE::VIDEO_METADATA);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, unRegisterMediaMetadataObserver)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                LOG_F(INFO, "unRegisterMediaMetadataObserver");
+                result = pEngine->m_engine->registerMediaMetadataObserver(nullptr, IMetadataObserver::METADATA_TYPE::VIDEO_METADATA);
+                if (pEngine->metadataObserver.get()) {
+                    pEngine->metadataObserver.get()->clearData();
+                }
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
