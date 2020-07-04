@@ -79,9 +79,9 @@ namespace agora {
                     metadata.size = cachedMetadata->size;
                     metadata.timeStampMs = cachedMetadata->timeStampMs;
                     if (cachedMetadata->buffer) {
-                        memcpy(metadata.buffer, cachedMetadata->buffer, metadata.size);
-                        cachedMetadata->buffer[cachedMetadata->size] = 0;
-                        metadata.buffer[metadata.size] = 0;
+                        memcpy(metadata.buffer, cachedMetadata->buffer, metadata.size * sizeof(char));
+                        cachedMetadata->buffer[cachedMetadata->size * sizeof(char)] = '\0';
+                        metadata.buffer[(metadata.size) * sizeof(char)] = '\0';
                         unsigned int _uid = cachedMetadata->uid;
                         unsigned int _size = cachedMetadata->size;
                         std::string _buffer((char *)cachedMetadata->buffer);
@@ -116,8 +116,8 @@ namespace agora {
             long long _timeStampMs = metadata.timeStampMs;
             //#if defined(_WIN32)
             char cacheBuffer[1024] = {0};
-            memcpy(cacheBuffer, metadata.buffer, _size);
-            cacheBuffer[_size] = 0;
+            memcpy(cacheBuffer, metadata.buffer, _size * sizeof(char));
+            cacheBuffer[_size * sizeof(char)] = '\0';
             std::string metaBuffer(cacheBuffer);
             // #else
             // void *cachePtr = malloc(_size + 1);
@@ -172,11 +172,12 @@ namespace agora {
             Metadata *metadata = new Metadata();
             metadata->uid = uid;
             metadata->size = size;
-            void *cachePtr = malloc(size + 1);
+            unsigned int memorySize = (size + 1) * sizeof(char);
+            void *cachePtr = malloc(memorySize);
             if (cachePtr) {
                 metadata->buffer = (unsigned char *) cachePtr;
-                memset(cachePtr, 0, size + 1);
-                memcpy(metadata->buffer, buffer, size);
+                memset(cachePtr, 0, memorySize);
+                memcpy(metadata->buffer, buffer, size * sizeof(char));
                 metadata->timeStampMs = timeStampMs;
                 messageQueue.push(metadata);
             }
