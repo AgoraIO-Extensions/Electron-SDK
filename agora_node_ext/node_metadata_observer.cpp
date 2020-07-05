@@ -100,7 +100,9 @@ namespace agora {
                             NODE_SET_OBJ_PROP_STRING(obj, "buffer", _buffer.c_str());
                             NODE_SET_OBJ_PROP_NUMBER(obj, "timeStampMs", _timeStampMs);
                             Local<Value> arg[1] = { obj };
-                            messageSendCallback.Get(isolate)->Call(context, js_this.Get(isolate), 1, arg);
+                            if (!messageSendCallback.IsEmpty() && !js_this.IsEmpty()) {
+                                messageSendCallback.Get(isolate)->Call(context, js_this.Get(isolate), 1, arg);
+                            }
                         });
                         free(cachedMetadata->buffer);
                         cachedMetadata->buffer = NULL;
@@ -147,7 +149,9 @@ namespace agora {
                 NODE_SET_OBJ_PROP_STRING(obj, "buffer", metaBuffer.c_str());
                 NODE_SET_OBJ_PROP_NUMBER(obj, "timeStampMs", _timeStampMs);
                 Local<Value> arg[1] = { obj };
-                callback.Get(isolate)->Call(context, js_this.Get(isolate), 1, arg);
+                if (!callback.IsEmpty() && !js_this.IsEmpty()) {
+                    callback.Get(isolate)->Call(context, js_this.Get(isolate), 1, arg);
+                }
             });
         }
 
