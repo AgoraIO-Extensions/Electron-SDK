@@ -20,6 +20,8 @@ export default class App extends Component {
       alert('APP_ID cannot be empty!')
     } else {
       let rtcEngine = this.getRtcEngine()
+      let channel1
+      let channel2
       this.state = {
         local: '',
         localVideoSource: '',
@@ -93,6 +95,7 @@ export default class App extends Component {
       if (uid === SHARE_ID && this.state.localSharing) {
         return
       }
+      console.log(`userJoined  ${uid}`);
       this.setState({
         users: this.state.users.push(uid)
       })
@@ -158,6 +161,42 @@ export default class App extends Component {
     rtcEngine.on('localUserRegistered', (uid, userAccount) => {
       console.log(`local user register: ${uid} ${userAccount}`)
     })
+    rtcEngine.on('audioPublishStateChange', (channel, oldstate, newstate, elapsed) => {
+      console.log(`rtcEngine audioPublishStateChange   channel: ${channel},  oldstate:${oldstate},  newstate:${newstate},  elapsed:${elapsed}`)
+    })
+    rtcEngine.on('videoPublishStateChange', (channel, oldstate, newstate, elapsed) => {
+      console.log(`rtcEngine videoPublishStateChange   channel: ${channel},  oldstate:${oldstate},  newstate:${newstate}, elapsed:${elapsed}`)
+    })
+    rtcEngine.on('audioSubscribeStateChange', (channel, uid, oldstate, newstate, elapsed) => {
+      console.log(`rtcEngine audioSubscribeStateChange   channel: ${channel}, uid:${uid}, oldstate:${oldstate},  newstate:${newstate}, elapsed:${elapsed}`)
+    })
+    rtcEngine.on('videoSubscribeStateChange', (channel, uid, oldstate, newstate, elapsed) => {
+      console.log(`rtcEngine videoSubscribeStateChange   channel: ${channel}, uid:${uid}, oldstate:${oldstate}, newstate:${newstate}, elapsed:${elapsed}`)
+    })
+    rtcEngine.on("receiveMetadata", (metadata) => {
+      let bufferdata = JSON.parse(metadata.buffer)
+      console.log(`receiveMetadata  ${JSON.stringify(metadata)}`);
+    })
+    rtcEngine.on("sendMetadataSuccess", (metadata) => {
+      console.log(`sendMetadataSuccess : ${JSON.stringify(metadata)}`)
+    })
+
+    setInterval(()=>{
+      let ptr = {
+        width: 100,
+        height: 210,
+        top: 32323
+      }
+      let data = JSON.stringify(ptr);
+      let metadata = {
+        uid: 123,
+        size: data.length,
+        buffer: data,
+        timeStampMs: 122323
+      }
+      let ret = this.rtcEngine.sendMetadata(metadata);
+      console.log(`sendMetadata  data: ${data}  ret: ${ret}`)
+      }, 1000);
   }
 
   subscribeChannelEvents = (rtcChannel, publish) => {
@@ -185,16 +224,41 @@ export default class App extends Component {
         users: this.state.users.delete(this.state.users.indexOf({channelId, uid}))
       })
     })
+
+    rtcChannel.on('rtcStats', (stats) => {
+      console.log(stats)
+    })
+    rtcChannel.on('audioPublishStateChange', (oldstate, newstate, elapsed) => {
+      console.log(`audioPublishStateChange  oldstate:${oldstate},  newstate:${newstate},  elapsed:${elapsed}`)
+    })
+    rtcChannel.on('videoPublishStateChange', (oldstate, newstate, elapsed) => {
+      console.log(`videoPublishStateChange  oldstate:${oldstate},  newstate:${newstate}, elapsed:${elapsed}`)
+    })
+    rtcChannel.on('audioSubscribeStateChange', (uid, oldstate, newstate, elapsed) => {
+      console.log(`audioSubscribeStateChange  uid:${uid}, oldstate:${oldstate},  newstate:${newstate}, elapsed:${elapsed}`)
+    })
+    rtcChannel.on('videoSubscribeStateChange', (uid, oldstate, newstate, elapsed) => {
+      console.log(`videoSubscribeStateChange uid:${uid}, oldstate:${oldstate}, newstate:${newstate}, elapsed:${elapsed}`)
+    })
+    rtcChannel.on("receiveMetadata", (metadata) => {
+      console.log(`channel receiveMetadata  ${metadata.uid}  size: ${metadata.size}  buffer: ${metadata.buffer}  timeStampMs: ${metadata.timeStampMs}`)
+    })
+
+    rtcChannel.on("sendMetadataSuccess", (metadata) => {
+      console.log(`channel sendMetadataSuccess  ${metadata.uid}  size: ${metadata.size}  buffer: ${metadata.buffer}  timeStampMs: ${metadata.timeStampMs}`)
+    })
   }
 
   handleJoin = () => {
     let encoderWidth = parseInt(this.state.encoderWidth)
     let encoderHeight = parseInt(this.state.encoderHeight)
     let rtcEngine = this.getRtcEngine()
+    rtcEngine.setParameters("{\"rtc.sync_user_account_callback\": true}")
     // let result = rtcEngine.registerLocalUserAccount(APP_ID, "TEST")
     // console.log(result)
     rtcEngine.setChannelProfile(1)
     rtcEngine.setClientRole(this.state.role)
+    rtcEngine.registerMediaMetadataObserver();
     rtcEngine.setAudioProfile(0, 1)
     // rtcEngine.enableVideo()
     let logpath = path.resolve(os.homedir(), "./agoramain.sdk")
@@ -229,6 +293,37 @@ export default class App extends Component {
     // this.subscribeChannelEvents(channel, true)
     // channel.joinChannelWithUserAccount(null, `${new Date().getTime()}-test1`);
     // channel.publish();
+    //rtcEngine.joinChannel("", "123", "", 0);
+
+    //joinning two channels together
+    //   this.channel1 = rtcEngine.createChannel(this.state.channel)
+    //   this.channel1.registerMediaMetadataObserver();
+    //   setInterval(()=>{
+    //     let ptr = {
+    //       width: 100,
+    //       height: 210,
+    //       top: 32323
+    //     }
+    //     let data = JSON.stringify(ptr);
+    //     let metadata = {
+    //       uid: 123,
+    //       size: data.length,
+    //       buffer: data,
+    //       timeStampMs: 122323
+    //     }
+    //     let ret = this.channel1.sendMetadata(metadata);
+    //     console.log(`channel: ${this.channel1.channelId()}  sendMetadata  data: ${data}  ret: ${ret}`)
+    //  }, 1000);
+    //   this.channel1.setClientRole(1);
+    //   this.subscribeChannelEvents(this.channel1, true)
+    //   this.channel1.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
+    //   this.channel1.publish();
+
+    //   this.channel1.setClientRole(1);
+    //   this.channel2 = rtcEngine.createChannel(`${this.state.channel}-2`)
+    //   this.channel2.registerMediaMetadataObserver()
+    //   this.subscribeChannelEvents(this.channel2, false)
+    //   this.channel2.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
 
     // let channel2 = rtcEngine.createChannel(`${this.state.channel}-2`)
     // this.subscribeChannelEvents(channel2, false)
@@ -906,7 +1001,7 @@ export default class App extends Component {
         </div>
         <div className="column is-three-quarters window-container">
           {this.state.users.map((item, key) => (
-            <Window key={key} uid={item.uid} channel={item.channelId} rtcEngine={this.rtcEngine} role={item===SHARE_ID?'remoteVideoSource':'remote'}></Window>
+            <Window key={key} uid={item} channel={item.channelId} rtcEngine={this.rtcEngine} role={item===SHARE_ID?'remoteVideoSource':'remote'}></Window>
           ))}
           {this.state.local ? (<Window uid={this.state.local} rtcEngine={this.rtcEngine} role="local">
 
@@ -938,6 +1033,7 @@ class Window extends Component {
       this.props.rtcEngine.setupViewContentMode('videosource', 1);
       this.props.rtcEngine.setupViewContentMode(String(SHARE_ID), 1);
     } else if (this.props.role === 'remote') {
+      console.log(`setupRemoteVideo uid: ${this.props.uid}  dom: ${dom}  channel:${this.props.channel}`)
       dom && this.props.rtcEngine.setupRemoteVideo(this.props.uid, dom, this.props.channel)
       this.props.rtcEngine.setupViewContentMode(this.props.uid, 1);
     } else if (this.props.role === 'remoteVideoSource') {

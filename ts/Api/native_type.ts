@@ -1500,6 +1500,23 @@ export type ChannelMediaRelayError =
   | 10 // 10: RELAY_ERROR_SRC_TOKEN_EXPIRED
   | 11; // 11: RELAY_ERROR_DEST_TOKEN_EXPIRED
 
+export interface Metadata {
+    /** The User ID.
+    - For the receiver: the ID of the user who sent the metadata.
+    - For the sender: ignore it.
+    */
+    uid: number;
+    /** Buffer size of the sent or received Metadata.
+      */
+    size: number;
+    /** Buffer address of the sent or received Metadata.
+     */
+    buffer: string;
+    /** Time statmp of the frame following the metadata.
+     */
+    timeStampMs: number;
+  }
+
 /**
  * interface for c++ addon (.node)
  * @ignore
@@ -2454,6 +2471,26 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
+  registerMediaMetadataObserver(): number;
+  /**
+   * @ignore
+   */
+  unRegisterMediaMetadataObserver(): number;
+  /**
+   * @ignore
+   */
+  sendMetadata(metadata: Metadata): number;
+  /**
+   * @ignore
+   */
+  addMetadataEventHandler(callback: Function, callback2: Function): number;
+  /**
+   * @ignore
+   */
+  setMaxMetadataSize(size: number): number;
+  /**
+   * @ignore
+   */
   initializePluginManager(): number;
   /**
    * @ignore
@@ -2499,6 +2536,27 @@ export interface NodeRtcChannel {
     uid: number,
     options: ChannelMediaOptions
   ): number;
+
+  /**
+   * @ignore
+   */
+  registerMediaMetadataObserver(): number;
+  /**
+   * @ignore
+   */
+  unRegisterMediaMetadataObserver(): number;
+  /**
+   * @ignore
+   */
+  sendMetadata(metadata: Metadata): number;
+  /**
+   * @ignore
+   */
+  addMetadataEventHandler(callback: Function, callback2: Function): number;
+  /**
+   * @ignore
+   */
+  setMaxMetadataSize(size: number): number;
 
   /**
    * @ignore
