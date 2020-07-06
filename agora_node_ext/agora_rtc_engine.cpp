@@ -277,10 +277,13 @@ namespace agora {
                  */
                 PROPERTY_METHOD_DEFINE(adjustUserPlaybackSignalVolume);
 
-                /**
-                 * 3.0.1 Apis
-                 */
                 PROPERTY_METHOD_DEFINE(setAudioMixingPitch);
+                PROPERTY_METHOD_DEFINE(sendMetadata);
+                PROPERTY_METHOD_DEFINE(addMetadataEventHandler);
+                PROPERTY_METHOD_DEFINE(setMaxMetadataSize);
+                PROPERTY_METHOD_DEFINE(registerMediaMetadataObserver);
+                PROPERTY_METHOD_DEFINE(unRegisterMediaMetadataObserver);
+
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -326,6 +329,7 @@ namespace agora {
             m_avPluginManager.reset(new IAVFramePluginManager());
             /** m_videoSourceSink provide facilities to multiple video source based on multiple process */
             m_videoSourceSink.reset(createVideoSource());
+            metadataObserver.reset(new NodeMetadataObserver());
             LOG_LEAVE;
         }
 
@@ -345,6 +349,9 @@ namespace agora {
             if (m_engine) {
                 m_engine->release();
                 m_engine = nullptr;
+            }
+            if (metadataObserver.get()) {
+                metadataObserver.reset(nullptr);
             }
             m_videoSourceSink.reset(nullptr);
             m_externalVideoRenderFactory.reset(nullptr);
@@ -5092,13 +5099,150 @@ namespace agora {
             napi_set_int_result(args, result);
             LOG_LEAVE;
         }
-
-
         /**
          * 3.0.1 Apis
          */
         NAPI_API_DEFINE_WRAPPER_PARAM_1(setAudioMixingPitch, int32);
         
+
+        NAPI_API_DEFINE(NodeRtcEngine, registerMediaMetadataObserver)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                LOG_F(INFO, "registerMediaMetadataObserver");
+                if (!(pEngine->metadataObserver.get())) {
+                    pEngine->metadataObserver.reset(new NodeMetadataObserver());
+                }
+                result = pEngine->m_engine->registerMediaMetadataObserver(pEngine->metadataObserver.get(), IMetadataObserver::METADATA_TYPE::VIDEO_METADATA);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, unRegisterMediaMetadataObserver)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                LOG_F(INFO, "unRegisterMediaMetadataObserver");
+                result = pEngine->m_engine->registerMediaMetadataObserver(nullptr, IMetadataObserver::METADATA_TYPE::VIDEO_METADATA);
+                if (pEngine->metadataObserver.get()) {
+                    pEngine->metadataObserver.get()->clearData();
+                }
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, sendMetadata)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                Isolate *isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                if(!args[0]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+
+                if (!pEngine->metadataObserver.get()) {
+                    result = -100;
+                    break; 
+                }
+
+                unsigned int uid;
+                unsigned int size;
+                nodestring buffer;
+                long long timeStampMs;
+                char *_buffer;
+
+                Local<Object> obj = args[0]->ToObject();
+                status = napi_get_object_property_uid_(isolate, obj, "uid", uid);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_uid_(isolate, obj, "size", size);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_nodestring_(isolate, obj, "buffer", buffer);
+                _buffer = buffer;
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int64_(isolate, obj, "timeStampMs", timeStampMs);
+                CHECK_NAPI_STATUS(pEngine, status);
+                result = pEngine->metadataObserver.get()->sendMetadata(uid, size, reinterpret_cast<unsigned char *>(_buffer), timeStampMs);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, addMetadataEventHandler)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                if (!args[0]->IsFunction()) {
+                    LOG_ERROR("Function expected");
+                    break;
+                }
+
+                Local<Function> callback = args[0].As<Function>();
+                if (callback.IsEmpty()) {
+                    LOG_ERROR("Function expected.");
+                    break;
+                }
+
+                Local<Function> callback2 = args[1].As<Function>();
+                if (callback2.IsEmpty()) {
+                    LOG_ERROR("Function expected.");
+                    break;
+                }
+
+                Persistent<Function> persist;
+                persist.Reset(callback);
+
+                Persistent<Function> persist2;
+                persist2.Reset(callback2);
+
+                Local<Object> obj = args.This();
+                Persistent<Object> persistObj;
+                persistObj.Reset(obj);
+                result = pEngine->metadataObserver->addEventHandler(persistObj, persist, persist2);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setMaxMetadataSize)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                int maxSize;
+                status = napi_get_value_int32_(args[0], maxSize);
+                CHECK_NAPI_STATUS(pEngine, status);
+                result = pEngine->metadataObserver.get()->setMaxMetadataSize(maxSize);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
 
         /**
          * NodeRtcChannel
@@ -5147,10 +5291,14 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(getConnectionState)
                 PROPERTY_METHOD_DEFINE(leaveChannel)
                 PROPERTY_METHOD_DEFINE(release)
-                /**
-                 * 3.0.0 Apis
-                 */
                 PROPERTY_METHOD_DEFINE(adjustUserPlaybackSignalVolume)
+
+                PROPERTY_METHOD_DEFINE(sendMetadata);
+                PROPERTY_METHOD_DEFINE(addMetadataEventHandler);
+                PROPERTY_METHOD_DEFINE(setMaxMetadataSize);
+                PROPERTY_METHOD_DEFINE(registerMediaMetadataObserver);
+                PROPERTY_METHOD_DEFINE(unRegisterMediaMetadataObserver);
+
             EN_PROPERTY_DEFINE()
             
             Local<Function> cons = tpl->GetFunction(context).ToLocalChecked();
@@ -5184,6 +5332,7 @@ namespace agora {
             : m_isolate(isolate), m_channel(pChannel)
         {
             LOG_ENTER;
+            metadataObserver.reset(new NodeMetadataObserver());
             /** m_eventHandler provide SDK event handler. */
             m_eventHandler.reset(new NodeChannelEventHandler(this));
 
@@ -5199,6 +5348,10 @@ namespace agora {
                 m_channel = nullptr;
             }
             m_eventHandler.reset(nullptr);
+
+            if (metadataObserver.get()) {
+                metadataObserver.reset(nullptr);
+            }
             LOG_LEAVE;
         }
 
@@ -5980,11 +6133,149 @@ namespace agora {
             LOG_LEAVE;
         }
 
-
         /**
          * 3.0.0 Apis
          */
         NAPI_API_CHANNEL_DEFINE_WRAPPER_2(adjustUserPlaybackSignalVolume, uid_t, int32);
+
+        NAPI_API_DEFINE(NodeRtcChannel, registerMediaMetadataObserver)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do{
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+                LOG_F(INFO, "NodeRtcChannel  registerMediaMetadataObserver");
+                if (!(pChannel->metadataObserver.get())) {
+                    pChannel->metadataObserver.reset(new NodeMetadataObserver());
+                }
+                result = pChannel->m_channel->registerMediaMetadataObserver(pChannel->metadataObserver.get(), IMetadataObserver::METADATA_TYPE::VIDEO_METADATA);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcChannel, unRegisterMediaMetadataObserver)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do{
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+                LOG_F(INFO, "NodeRtcChannel unRegisterMediaMetadataObserver");
+                result = pChannel->m_channel->registerMediaMetadataObserver(nullptr, IMetadataObserver::METADATA_TYPE::VIDEO_METADATA);
+                if (pChannel->metadataObserver.get()) {
+                    pChannel->metadataObserver.get()->clearData();
+                }
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcChannel, sendMetadata)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                Isolate *isolate = args.GetIsolate();
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+
+                if(!args[0]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pChannel, status);
+                }
+
+                if (!pChannel->metadataObserver.get()) {
+                    result = -100;
+                    break; 
+                }
+
+                unsigned int uid;
+                unsigned int size;
+                nodestring buffer;
+                long long timeStampMs;
+                char *_buffer;
+
+                Local<Object> obj = args[0]->ToObject();
+                status = napi_get_object_property_uid_(isolate, obj, "uid", uid);
+                CHECK_NAPI_STATUS(pChannel, status);
+                status = napi_get_object_property_uid_(isolate, obj, "size", size);
+                CHECK_NAPI_STATUS(pChannel, status);
+                status = napi_get_object_property_nodestring_(isolate, obj, "buffer", buffer);
+                _buffer = buffer;
+                CHECK_NAPI_STATUS(pChannel, status);
+                status = napi_get_object_property_int64_(isolate, obj, "timeStampMs", timeStampMs);
+                CHECK_NAPI_STATUS(pChannel, status);
+                result = pChannel->metadataObserver.get()->sendMetadata(uid, size, reinterpret_cast<unsigned char *>(_buffer), timeStampMs);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcChannel, addMetadataEventHandler)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcChannel *pChannel = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+
+                if (!args[0]->IsFunction()) {
+                    LOG_ERROR("Function expected");
+                    break;
+                }
+
+                Local<Function> callback = args[0].As<Function>();
+                if (callback.IsEmpty()) {
+                    LOG_ERROR("Function expected.");
+                    break;
+                }
+
+                Local<Function> callback2 = args[1].As<Function>();
+                if (callback2.IsEmpty()) {
+                    LOG_ERROR("Function expected.");
+                    break;
+                }
+
+                Persistent<Function> persist;
+                persist.Reset(callback);
+
+                Persistent<Function> persist2;
+                persist2.Reset(callback2);
+
+                Local<Object> obj = args.This();
+                Persistent<Object> persistObj;
+                persistObj.Reset(obj);
+                result = pChannel->metadataObserver->addEventHandler(persistObj, persist, persist2);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcChannel, setMaxMetadataSize)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcChannel *pChannel = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+                int maxSize;
+                status = napi_get_value_int32_(args[0], maxSize);
+                CHECK_NAPI_STATUS(pChannel, status);
+                result = pChannel->metadataObserver.get()->setMaxMetadataSize(maxSize);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
     }
 }
 
