@@ -39,7 +39,8 @@ import {
   VideoContentHint,
   VideoEncoderConfiguration,
   UserInfo,
-  RendererOptions
+  RendererOptions,
+  Metadata
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -4836,6 +4837,33 @@ class AgoraRtcEngine extends EventEmitter {
   getPluginParameter(pluginId: string, paramKey: string): string {
     return this.rtcEngine.getPluginParameter(pluginId, paramKey);
   }
+ 
+  unRegisterMediaMetadataObserver(): number {
+    return this.rtcEngine.unRegisterMediaMetadataObserver();
+  }
+
+  registerMediaMetadataObserver(): number {
+    const fire = (event: string, ...args: Array<any>) => {
+      setImmediate(() => {
+        this.emit(event, ...args);
+      });
+    };
+
+    this.rtcEngine.addMetadataEventHandler((metadata: Metadata) => {
+      fire('receiveMetadata', metadata);
+    }, (metadata: Metadata) => {
+      fire('sendMetadataSuccess', metadata);
+    });
+    return this.rtcEngine.registerMediaMetadataObserver();
+  }
+
+  sendMetadata(metadata: Metadata): number {
+    return this.rtcEngine.sendMetadata(metadata);
+  }
+
+  setMaxMetadataSize(size: number): number {
+    return this.rtcEngine.setMaxMetadataSize(size);
+  }  
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
@@ -5845,7 +5873,14 @@ declare interface AgoraRtcEngine {
   on(evt: 'channelMediaRelayEvent', cb: (
     event: ChannelMediaRelayEvent
   ) => void): this;
- 
+  on(evt: 'receiveMetadata', cb: (
+    metadata: Metadata
+    ) => void): this;
+
+  on(evt: 'sendMetadataSuccess', cb: (
+    metadata: Metadata
+    ) => void): this;
+
   on(evt: string, listener: Function): this;
 }
 
@@ -6962,6 +6997,7 @@ class AgoraRtcChannel extends EventEmitter
   release(): number {
     return this.rtcChannel.release()
   }
+
   /**
    * Adjusts the playback volume of a specified remote user.
    * 
@@ -6989,6 +7025,33 @@ class AgoraRtcChannel extends EventEmitter
    */
   adjustUserPlaybackSignalVolume(uid: number, volume: number): number {
     return this.rtcChannel.adjustUserPlaybackSignalVolume(uid, volume);
+  }
+
+  unRegisterMediaMetadataObserver(): number {
+    return this.rtcChannel.unRegisterMediaMetadataObserver();
+  }
+
+  registerMediaMetadataObserver(): number {
+    const fire = (event: string, ...args: Array<any>) => {
+      setImmediate(() => {
+        this.emit(event, ...args);
+      });
+    };
+
+    this.rtcChannel.addMetadataEventHandler((metadata: Metadata) => {
+      fire('receiveMetadata', metadata);
+    }, (metadata: Metadata) => {
+      fire('sendMetadataSuccess', metadata);
+    });
+    return this.rtcChannel.registerMediaMetadataObserver();
+  }
+
+  sendMetadata(metadata: Metadata): number {
+    return this.rtcChannel.sendMetadata(metadata);
+  }
+
+  setMaxMetadataSize(size: number): number {
+    return this.rtcChannel.setMaxMetadataSize(size);
   }
 }
 
