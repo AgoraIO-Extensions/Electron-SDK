@@ -2716,6 +2716,11 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 config.degradationPreference = degradationPref;
 
+                int videMirrorModeVal;
+                status = napi_get_object_property_int32_(isolate, obj, "mirrorMode", videMirrorModeVal);
+                CHECK_NAPI_STATUS(pEngine, status);
+                config.mirrorMode = (VIDEO_MIRROR_MODE_TYPE)videMirrorModeVal;
+
                 result = pEngine->m_engine->setVideoEncoderConfiguration(config);
             } while (false);
             napi_set_int_result(args, result);

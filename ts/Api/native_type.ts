@@ -789,6 +789,8 @@ export interface VideoEncoderConfiguration {
    * See {@link DegradationPreference}.
    */
   degradationPreference: DegradationPreference;
+
+  mirrorMode: VIDEO_MIRROR_MODE_TYPE;
 }
 /** The video encoding degradation preference under limited bandwidth. */
 export enum DegradationPreference {
@@ -839,6 +841,17 @@ export enum OrientationMode  {
  */
   ORIENTATION_MODE_FIXED_PORTRAIT = 2,
 }
+/** Video mirror modes. */
+export enum VIDEO_MIRROR_MODE_TYPE
+{
+      /** 0: The default mirror mode is determined by the SDK. */
+    VIDEO_MIRROR_MODE_AUTO = 0,//determined by SDK
+        /** 1: Enable mirror mode. */
+    VIDEO_MIRROR_MODE_ENABLED = 1,//enabled mirror
+        /** 2: Disable mirror mode. */
+    VIDEO_MIRROR_MODE_DISABLED = 2,//disable mirror
+}
+
 /**
  * Video statistics of the remote stream.
  */
