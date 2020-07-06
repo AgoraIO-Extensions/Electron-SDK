@@ -1687,7 +1687,8 @@ class AgoraRtcEngine extends EventEmitter {
       bitrate = 0,
       minBitrate = -1,
       orientationMode = 0,
-      degradationPreference = 0
+      degradationPreference = 0,
+      mirrorMode = 0
     } = config;
     return this.rtcEngine.setVideoEncoderConfiguration({
       width,
@@ -1697,7 +1698,8 @@ class AgoraRtcEngine extends EventEmitter {
       bitrate,
       minBitrate,
       orientationMode,
-      degradationPreference
+      degradationPreference,
+      mirrorMode
     });
   }
 
