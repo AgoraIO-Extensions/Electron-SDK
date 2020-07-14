@@ -673,6 +673,7 @@ namespace agora {
                 NODE_SET_OBJ_PROP_UINT32(obj, "codecType", stats.codecType);
                 NODE_SET_OBJ_PROP_UINT32(obj, "txPacketLossRate", stats.txPacketLossRate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "captureFrameRate", stats.captureFrameRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "videoQualityPoint", stats.videoQualityPoint);
                 Local<Value> arg[1] = { obj };
                 auto it = m_callbacks.find(RTC_EVENT_LOCAL_VIDEO_STATS);
                 if (it != m_callbacks.end()) {
