@@ -182,11 +182,12 @@ export default class App extends Component {
         hehhe:"wkewlekwewefwereq"}
 
       let data = JSON.stringify(ptr)
+      console.log(`Date.now: --- ${Date.now()}`)
       let metadata = {
         uid: 123,
         size: data.length,
         buffer: data,
-        timeStampMs: 122323
+        timeStampMs: 15947079798683232
       }
       this.state.metadataCount++
       let ret = this.rtcEngine.sendMetadata(metadata);
