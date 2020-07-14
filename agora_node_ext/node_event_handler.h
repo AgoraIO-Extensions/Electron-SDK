@@ -97,6 +97,16 @@ namespace agora {
 #define RTC_EVENT_VIDEO_SOURCE_REQUEST_NEW_TOKEN "videosourcerequestnewtoken"
 #define RTC_EVENT_VIDEO_SOURCE_LEAVE_CHANNEL "videosourceleavechannel"
 #define RTC_EVENT_API_ERROR "apierror"
+
+#define RTC_EVENT_FIRST_LOCAL_AUDIO_FRAME_PUBLISHED "firstLocalAudioFramePublished"
+#define RTC_EVENT_FIRST_LOCAL_VIDEO_FRAME_PUBLISHED "firstLocalVideoFramePublished"
+#define RTC_EVENT_AUDIO_PUBLISH_STATE_CHANGED "audioPublishStateChanged"
+#define RTC_EVENT_VIDEO_PUBLISH_STATE_CHANGED "videoPublishStateChanged"
+#define RTC_EVENT_AUDIO_SUBSCRIBE_STATE_CHANGED "audioSubscribeStateChanged"
+#define RTC_EVENT_VIDEO_SUBSCRIBE_STATE_CHANGED "videoSubscribeStateChanged"
+#define RTC_EVENT_RTMP_STREAMING_EVENT "rtmpStreamingEvent"
+
+
         class NodeRtcEngine;
         class NodeUid;
         class NodeEventHandler : public IRtcEngineEventHandler, public IAgoraVideoSourceEventHandler
@@ -192,6 +202,17 @@ namespace agora {
 
             //3.0.0
             virtual void onRtmpStreamingStateChanged(const char *url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR errCode) override;
+
+            //3.1.0 
+            virtual void onFirstLocalAudioFramePublished(int elapsed) override;
+            virtual void onFirstLocalVideoFramePublished(int elapsed) override;
+            virtual void onAudioPublishStateChange(const char* channel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newState, int elapseSinceLastState) override;
+            virtual void onVideoPublishStateChange(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState) override;
+            virtual void onAudioSubscribeStateChange(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) override;
+            virtual void onVideoSubscribeStateChange(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) override;
+            virtual void onRtmpStreamingEvent(const char* url, RTMP_STREAMING_EVENT eventCode) override;
+
+
         private:
             void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
             void onRejoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
@@ -230,7 +251,7 @@ namespace agora {
             void onConnectionLost_node();
             void onConnectionInterrupted_node();
             void onConnectionBanned_node();
-           void onRefreshRecordingServiceStatus_node(int status);
+            void onRefreshRecordingServiceStatus_node(int status);
             void onStreamMessage_node(uid_t uid, int streamId, const char* data, size_t length);
             void onStreamMessageError_node(uid_t uid, int streamId, int code, int missed, int cached);
             void onMediaEngineLoadSuccess_node();
@@ -275,6 +296,16 @@ namespace agora {
             void onRemoteAudioStateChanged_node(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) ;
             void onChannelMediaRelayStateChanged_node(CHANNEL_MEDIA_RELAY_STATE state,CHANNEL_MEDIA_RELAY_ERROR code);
             void onChannelMediaRelayEvent_node(CHANNEL_MEDIA_RELAY_EVENT code);
+
+            //3.1.0
+            void onFirstLocalAudioFramePublished_node(int elapsed);
+            void onFirstLocalVideoFramePublished_node(int elapsed);
+            void onVideoPublishStateChange_node(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState);
+            void onAudioSubscribeStateChange_node(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState);
+            void onVideoSubscribeStateChange_node(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState);
+            void onAudioPublishStateChange_node(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState);
+            void onRtmpStreamingEvent_node(const char* url, RTMP_STREAMING_EVENT eventCode);
+
         private:
             std::unordered_map<std::string, NodeEventCallback*> m_callbacks;
             NodeRtcEngine* m_engine;

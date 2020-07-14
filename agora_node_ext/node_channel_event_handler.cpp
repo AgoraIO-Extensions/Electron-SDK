@@ -508,5 +508,46 @@ namespace agora {
                 MAKE_JS_CALL_2(RTC_CHANNEL_EVENT_CONN_STATE_CHANGED, int32, state, int32, reason);
             });
         }
+
+        void NodeChannelEventHandler::onAudioPublishStateChange(IChannel *rtcChannel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, oldState, newState, elapseSinceLastState] {
+                MAKE_JS_CALL_3(RTC_CHANNEL_EVENT_AUDIO_PUBLISH_STATE_CHANGED, int32, oldState, int32, newState, int32, elapseSinceLastState);
+            });
+        }
+
+        void NodeChannelEventHandler::onVideoPublishStateChange(IChannel *rtcChannel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, oldState, newState, elapseSinceLastState] {
+                MAKE_JS_CALL_3(RTC_CHANNEL_EVENT_VIDEO_PUBLISH_STATE_CHANGED, int32, oldState, int32, newState, int32, elapseSinceLastState);
+            });
+        }
+
+        void NodeChannelEventHandler::onAudioSubscribeStateChange(IChannel *rtcChannel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, uid, oldState, newState, elapseSinceLastState] {
+                MAKE_JS_CALL_4(RTC_CHANNEL_EVENT_AUDIO_SUBSCRIBE_STATE_CHANGED, uid, uid, int32, oldState, int32, newState, int32, elapseSinceLastState);
+            });
+        }
+
+        void NodeChannelEventHandler::onVideoSubscribeStateChange(IChannel *rtcChannel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, uid, oldState, newState, elapseSinceLastState] {
+                MAKE_JS_CALL_4(RTC_CHANNEL_EVENT_VIDEO_SUBSCRIBE_STATE_CHANGED, uid, uid, int32, oldState, int32, newState, int32, elapseSinceLastState);
+            });
+        }
+
+        void NodeChannelEventHandler::onRtmpStreamingEvent(IChannel *rtcChannel, const char* url, RTMP_STREAMING_EVENT eventCode)
+        {
+            std::string mUrl(url);
+            FUNC_TRACE;
+            node_async_call::async_call([this, mUrl, eventCode] {
+                MAKE_JS_CALL_2(RTC_CHANNEL_EVENT_RTMP_STREAMING_EVENT, string, mUrl.c_str(), int32, (int)eventCode);
+            }); 
+        }
     }
 }

@@ -268,38 +268,37 @@ export default class App extends Component {
     // this.subscribeChannelEvents(channel, true)
     // channel.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
     // channel.publish();
-    //rtcEngine.joinChannel("", "123", "", 0);
+    rtcEngine.joinChannel("", "123", "", 0);
 
     //joinning two channels together
-    this.channel1 = rtcEngine.createChannel(this.state.channel)
-    this.channel1.registerMediaMetadataObserver();
-    setInterval(()=>{
-      let ptr = {
-        width: 100,
-        height: 210,
-        top: 32323
-      }
-      let data = JSON.stringify(ptr);
-      let metadata = {
-        uid: 123,
-        size: data.length,
-        buffer: data,
-        timeStampMs: 122323
-      }
-      let ret = this.channel1.sendMetadata(metadata);
-      console.log(`channel: ${this.channel1.channelId()}  sendMetadata  data: ${data}  ret: ${ret}`)
-   }, 1000);
-    this.channel1.setClientRole(1);
-    this.subscribeChannelEvents(this.channel1, true)
-    this.channel1.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
-    this.channel1.publish();
+  //   this.channel1 = rtcEngine.createChannel(this.state.channel)
+  //   this.channel1.registerMediaMetadataObserver();
+  //   setInterval(()=>{
+  //     let ptr = {
+  //       width: 100,
+  //       height: 210,
+  //       top: 32323
+  //     }
+  //     let data = JSON.stringify(ptr);
+  //     let metadata = {
+  //       uid: 123,
+  //       size: data.length,
+  //       buffer: data,
+  //       timeStampMs: 122323
+  //     }
+  //     let ret = this.channel1.sendMetadata(metadata);
+  //     console.log(`channel: ${this.channel1.channelId()}  sendMetadata  data: ${data}  ret: ${ret}`)
+  //  }, 1000);
+  //   this.channel1.setClientRole(1);
+  //   this.subscribeChannelEvents(this.channel1, true)
+  //   this.channel1.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
+  //   this.channel1.publish();
 
-    this.channel1.setClientRole(1);
-    this.channel2 = rtcEngine.createChannel(`${this.state.channel}-2`)
-    this.channel2.registerMediaMetadataObserver()
-    this.subscribeChannelEvents(this.channel2, false)
-    this.channel2.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
-
+  //   this.channel1.setClientRole(1);
+  //   this.channel2 = rtcEngine.createChannel(`${this.state.channel}-2`)
+  //   this.channel2.registerMediaMetadataObserver()
+  //   this.subscribeChannelEvents(this.channel2, false)
+  //   this.channel2.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
   }
 
   handleCameraChange = e => {
@@ -360,7 +359,7 @@ export default class App extends Component {
         rtcEngine.videoSourceEnableWebSdkInteroperability(true)
         // rtcEngine.videoSourceSetVideoProfile(50, false);
         // to adjust render dimension to optimize performance
-        // rtcEngine.setVideoRenderDimension(3, SHARE_ID, 1200, 680);
+        rtcEngine.setVideoRenderDimension(3, SHARE_ID, 1200, 680);
         rtcEngine.videoSourceJoin(token, this.state.channel, info, SHARE_ID);
       } catch(err) {
         clearTimeout(timer)
@@ -391,8 +390,8 @@ export default class App extends Component {
       // there's a known limitation that, videosourcesetvideoprofile has to be called at least once
       // note although it's called, it's not taking any effect, to control the screenshare dimension, use captureParam instead
       // rtcEngine.videoSourceSetVideoProfile(43, false);
-      rtcEngine.startScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15})
-      rtcEngine.videoSourceStartScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15})
+      rtcEngine.startScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15, captureMouseCursor: true, windowFocus: true})
+      rtcEngine.videoSourceStartScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15, captureMouseCursor: true, windowFocus: true})
       rtcEngine.startScreenCapturePreview();
     });
   }
@@ -411,7 +410,7 @@ export default class App extends Component {
       console.log(`start sharing display ${displayId}`)
       // rtcEngine.videoSourceSetVideoProfile(43, false);
       // rtcEngine.videosourceStartScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15})
-      rtcEngine.videoSourceStartScreenCaptureByScreen(displayId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 5})
+      rtcEngine.videoSourceStartScreenCaptureByScreen(displayId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 5, captureMouseCursor: false, windowFocus: false})
       rtcEngine.startScreenCapturePreview();
     });
   }
@@ -983,7 +982,6 @@ export default class App extends Component {
       </div>
     )
   }
-
 }
 
 class Window extends Component {

@@ -8,6 +8,22 @@
 #### :house: Internal
 * make glError configurable to improve performance when it's off
 
+## 3.0.1 (July 14th, 2020)
+* Add new APIs:
+  - sendCustomReportMessage
+  - enableEncryption
+
+* Update parameter ScreenCaptureParameter
+  - add "captureMouseCursor"
+  - add "windowFocus"
+
+* Add callback engine channel:
+  - onAudioPublishStateChange
+  - onVideoPublishStateChange
+  - onAudioSubscribeStateChange
+  - onVideoSubscribeStateChange
+  - onRtmpStreamingEvent
+
 
 ## 3.0.0 (March 20th, 2020)
 #### :house: Internal
