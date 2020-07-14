@@ -541,6 +541,8 @@ export interface LocalVideoStats {
   /** The capture frame rate (fps) of the local video.
   */
   captureFrameRate: number;
+
+  videoQualityPoint: number;
 }
 /** 
  * The statistics of the local audio stream.
