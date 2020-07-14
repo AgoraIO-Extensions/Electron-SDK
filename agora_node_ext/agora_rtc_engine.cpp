@@ -5188,22 +5188,22 @@ namespace agora {
                     break; 
                 }
 
-                unsigned int uid;
+                unsigned int uid = 0;
+                double timeStampMs = 0;
                 unsigned int size;
                 nodestring buffer;
-                double timeStampMs;
                 char *_buffer;
 
                 Local<Object> obj = args[0]->ToObject();
-                status = napi_get_object_property_uid_(isolate, obj, "uid", uid);
-                CHECK_NAPI_STATUS(pEngine, status);
+                // status = napi_get_object_property_uid_(isolate, obj, "uid", uid);
+                // CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_object_property_uid_(isolate, obj, "size", size);
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_object_property_nodestring_(isolate, obj, "buffer", buffer);
                 _buffer = buffer;
                 CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_object_property_double_(isolate, obj, "timeStampMs", timeStampMs);
-                CHECK_NAPI_STATUS(pEngine, status);
+                // status = napi_get_object_property_double_(isolate, obj, "timeStampMs", timeStampMs);
+                // CHECK_NAPI_STATUS(pEngine, status);
                 result = pEngine->metadataObserver.get()->sendMetadata(uid, size, reinterpret_cast<unsigned char *>(_buffer), timeStampMs);
             } while (false);
             napi_set_int_result(args, result);
@@ -6287,22 +6287,22 @@ namespace agora {
                     break; 
                 }
 
-                unsigned int uid;
+                unsigned int uid = 0;
                 unsigned int size;
                 nodestring buffer;
-                double timeStampMs;
+                double timeStampMs = 0;
                 char *_buffer;
 
                 Local<Object> obj = args[0]->ToObject();
-                status = napi_get_object_property_uid_(isolate, obj, "uid", uid);
-                CHECK_NAPI_STATUS(pChannel, status);
+                // status = napi_get_object_property_uid_(isolate, obj, "uid", uid);
+                // CHECK_NAPI_STATUS(pChannel, status);
                 status = napi_get_object_property_uid_(isolate, obj, "size", size);
                 CHECK_NAPI_STATUS(pChannel, status);
                 status = napi_get_object_property_nodestring_(isolate, obj, "buffer", buffer);
                 _buffer = buffer;
                 CHECK_NAPI_STATUS(pChannel, status);
-                status = napi_get_object_property_double_(isolate, obj, "timeStampMs", timeStampMs);
-                CHECK_NAPI_STATUS(pChannel, status);
+                // status = napi_get_object_property_double_(isolate, obj, "timeStampMs", timeStampMs);
+                // CHECK_NAPI_STATUS(pChannel, status);
                 result = pChannel->metadataObserver.get()->sendMetadata(uid, size, reinterpret_cast<unsigned char *>(_buffer), timeStampMs);
             } while (false);
             napi_set_int_result(args, result);
