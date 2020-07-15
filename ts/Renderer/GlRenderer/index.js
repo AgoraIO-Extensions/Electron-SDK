@@ -49,6 +49,9 @@ const AgoraRender = function() {
   };
 
   that.unbind = function() {
+    if (!gl) {
+      return
+    }
     try {
       gl.getExtension('WEBGL_lose_context').loseContext();
     } catch (err) {
@@ -210,6 +213,7 @@ const AgoraRender = function() {
   }
 
   function uploadYuv(width, height, yplane, uplane, vplane) {
+    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
     var e
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, yTexture);

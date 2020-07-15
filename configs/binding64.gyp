@@ -193,7 +193,7 @@
         './common/node_event.cpp',
         './common/node_process.h',
         './common/node_error.h',
-        './common/loguru.h',
+        './common/loguru.hpp',
         './common/loguru.cpp',
         './agora_node_ext/agora_node_ext.cpp',
         './agora_node_ext/agora_node_ext.h',
@@ -217,6 +217,12 @@
         './agora_node_ext/AVPlugin/IAVFramePlugin.h',
         './agora_node_ext/AVPlugin/IAVFramePluginManager.h',
         './agora_node_ext/AVPlugin/IAVFramePluginManager.cpp',
+        './agora_node_ext/agora_media_player.h',
+        './agora_node_ext/agora_media_player.cpp',
+        './agora_node_ext/node_media_player_observer.h',
+        './agora_node_ext/node_media_player_observer.cpp',
+        './agora_node_ext/node_media_player_video_frame_observer.h',
+        './agora_node_ext/node_media_player_video_frame_observer.cpp',
         './agora_node_ext/node_metadata_observer.h',
         './agora_node_ext/node_metadata_observer.cpp',
         './common/libyuv/source/compare_common.cc',
@@ -252,18 +258,21 @@
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
                         './sdk/win64/dll/agora_rtc_sdk.dll',
-                        './sdk/win64/dll/agora_sig_sdk.dll'
+                        './sdk/win64/dll/agora_sig_sdk.dll',
+                        './sdk/media_player/win64/dll/AgoraMediaPlayer.dll'
                     ]
                 }],
                 'library_dirs': [
                     './sdk/win64/lib',
+                    './sdk/media_player/win64/lib'
                 ],
                 'link_settings': {
                     'libraries': [
                         '-lagora_rtc_sdk.lib',
                         '-lws2_32.lib',
                         '-lRpcrt4.lib',
-						'-lgdiplus.lib'
+						'-lgdiplus.lib',
+                        '-lAgoraMediaPlayer.lib'
                     ]
                 },
                 'defines!': [
@@ -282,7 +291,8 @@
                 ],
                 'include_dirs': [
                 './sdk/win64/include',
-                './extra/internal'
+                './extra/internal',
+                './sdk/media_player/win64/include'
                 ],
                 'configurations': {
                     'Release': {
