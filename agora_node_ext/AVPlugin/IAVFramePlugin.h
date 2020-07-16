@@ -1,6 +1,6 @@
 #pragma once
-typedef IAVFramePlugin* (*createAgoraAVFramePlugin)();
 
+#include <stdint.h>
 #ifdef AGORA_VIDEO_PLUGIN_EXPORT
 #define AGORA_VIDEO_PLUGIN_API extern "C" __declspec(dllexport)
 #else
@@ -42,6 +42,7 @@ struct VideoPluginFrame {
     void* yBuffer;  //Y data buffer
     void* uBuffer;  //U data buffer
     void* vBuffer;  //V data buffer
+	void* buffer;
     int rotation; // rotation of this frame (0, 90, 180, 270)
     int64_t renderTimeMs;
     int avsync_type;
@@ -68,4 +69,5 @@ public:
     virtual int release() = 0;
 };
 
- IAVFramePlugin* createAVFramePlugin();
+typedef IAVFramePlugin* (*createAgoraAVFramePlugin)();
+extern "C" AGORA_VIDEO_PLUGIN_API IAVFramePlugin* createAVFramePlugin();
