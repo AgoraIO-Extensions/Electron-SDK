@@ -284,6 +284,9 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(registerMediaMetadataObserver);
                 PROPERTY_METHOD_DEFINE(unRegisterMediaMetadataObserver);
 
+                PROPERTY_METHOD_DEFINE(sendCustomReportMessage);
+                PROPERTY_METHOD_DEFINE(enableEncryption);
+
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -2034,6 +2037,10 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_object_property_int32_(isolate, obj, "bitrate", captureParams.bitrate);
                 CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_bool_(isolate, obj, "captureMouseCursor", captureParams.captureMouseCursor);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_bool_(isolate, obj, "windowFocus", captureParams.windowFocus);
+                CHECK_NAPI_STATUS(pEngine, status);
                 captureParams.dimensions = dimensions;
 
                 if (pEngine->m_videoSourceSink.get()) {
@@ -2110,6 +2117,10 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_object_property_int32_(isolate, obj, "bitrate", captureParams.bitrate);
                 CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_bool_(isolate, obj, "captureMouseCursor", captureParams.captureMouseCursor);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_bool_(isolate, obj, "windowFocus", captureParams.windowFocus);
+                CHECK_NAPI_STATUS(pEngine, status);
                 captureParams.dimensions = dimensions;
 
                 if (pEngine->m_videoSourceSink.get()) {
@@ -2149,6 +2160,10 @@ namespace agora {
                 status = napi_get_object_property_int32_(isolate, obj, "frameRate", captureParams.frameRate);
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_object_property_int32_(isolate, obj, "bitrate", captureParams.bitrate);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_bool_(isolate, obj, "captureMouseCursor", captureParams.captureMouseCursor);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_bool_(isolate, obj, "windowFocus", captureParams.windowFocus);
                 CHECK_NAPI_STATUS(pEngine, status);
                 captureParams.dimensions = dimensions;
 
@@ -2323,9 +2338,13 @@ namespace agora {
                 NodeString appid;
                 napi_status status = napi_get_value_nodestring_(args[0], appid);
                 CHECK_NAPI_STATUS(pEngine, status);
+                unsigned int areaCode;
+                status = napi_get_value_uint32_(args[1], areaCode);
+                CHECK_NAPI_STATUS(pEngine, status);
                 RtcEngineContext context;
                 context.eventHandler = pEngine->m_eventHandler.get();
                 context.appId = appid;
+                context.areaCode = areaCode;
                 int suc = pEngine->m_engine->initialize(context);
                 if (0 != suc) {
                     LOG_ERROR("Rtc engine initialize failed with error :%d\n", suc);
@@ -4367,6 +4386,37 @@ namespace agora {
             LOG_LEAVE;
         }
 
+        NAPI_API_DEFINE(NodeRtcEngine, sendCustomReportMessage)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                nodestring id;
+                status = napi_get_value_nodestring_(args[0], id);
+                CHECK_NAPI_STATUS(pEngine, status);
+                nodestring category;
+                status = napi_get_value_nodestring_(args[1], category);
+                CHECK_NAPI_STATUS(pEngine, status);
+                nodestring event;
+                status = napi_get_value_nodestring_(args[2], event);
+                CHECK_NAPI_STATUS(pEngine, status);
+                nodestring label;
+                status = napi_get_value_nodestring_(args[3], label);
+                CHECK_NAPI_STATUS(pEngine, status);
+                int value;
+                status = napi_get_value_int32_(args[4], value);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                result = pEngine->m_engine->sendCustomReportMessage(id, category, event, label, value);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
 #define CHECK_NAPI_OBJ(obj) \
     if (obj.IsEmpty()) \
         break;
@@ -4930,6 +4980,10 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_object_property_int32_(isolate, obj, "bitrate", captureParams.bitrate);
                 CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_bool_(isolate, obj, "captureMouseCursor", captureParams.captureMouseCursor);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_bool_(isolate, obj, "windowFocus", captureParams.windowFocus);
+                CHECK_NAPI_STATUS(pEngine, status);
                 captureParams.dimensions = dimensions;
 
                 result = pEngine->m_engine->startScreenCaptureByWindowId(reinterpret_cast<agora::rtc::view_t>(windowId), regionRect, captureParams);
@@ -5018,6 +5072,10 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_object_property_int32_(isolate, obj, "bitrate", captureParams.bitrate);
                 CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_bool_(isolate, obj, "captureMouseCursor", captureParams.captureMouseCursor);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_bool_(isolate, obj, "windowFocus", captureParams.windowFocus);
+                CHECK_NAPI_STATUS(pEngine, status);
                 captureParams.dimensions = dimensions;
 
                 #if defined(_WIN32)
@@ -5058,6 +5116,10 @@ namespace agora {
                 status = napi_get_object_property_int32_(isolate, obj, "frameRate", captureParams.frameRate);
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_object_property_int32_(isolate, obj, "bitrate", captureParams.bitrate);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_bool_(isolate, obj, "captureMouseCursor", captureParams.captureMouseCursor);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_bool_(isolate, obj, "windowFocus", captureParams.windowFocus);
                 CHECK_NAPI_STATUS(pEngine, status);
                 captureParams.dimensions = dimensions;
 
@@ -5239,6 +5301,40 @@ namespace agora {
                 status = napi_get_value_int32_(args[0], maxSize);
                 CHECK_NAPI_STATUS(pEngine, status);
                 result = pEngine->metadataObserver.get()->setMaxMetadataSize(maxSize);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, enableEncryption)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                Isolate *isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                bool enabled;
+                status = napi_get_value_bool_(args[0], enabled);
+                CHECK_NAPI_STATUS(pEngine, status);
+                
+                int encryptionMode;
+                Local<Object> obj;
+                status = napi_get_value_object_(isolate, args[1], obj);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "encryptionMode", encryptionMode);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                nodestring encryptionKey;
+                status = napi_get_object_property_nodestring_(isolate, obj, "encryptionKey", encryptionKey);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                EncryptionConfig config;
+                config.encryptionMode = (ENCRYPTION_MODE)encryptionMode;
+                config.encryptionKey = encryptionKey;
+                result = pEngine->m_engine->enableEncryption(enabled, config);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;

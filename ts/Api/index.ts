@@ -40,7 +40,12 @@ import {
   VideoEncoderConfiguration,
   UserInfo,
   RendererOptions,
-  Metadata
+  Metadata,
+  RTMP_STREAMING_EVENT,
+  AREA_CODE,
+  STREAM_PUBLISH_STATE,
+  STREAM_SUBSCRIBE_STATE,
+  EncryptionConfig
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -697,6 +702,33 @@ class AgoraRtcEngine extends EventEmitter {
       fire('rtmpStreamingStateChanged', url, state, errCode);
     })
 
+    this.rtcEngine.onEvent('firstLocalAudioFramePublished', function(elapsed: number) {
+      fire('firstLocalAudioFramePublished', elapsed);
+    })
+
+    this.rtcEngine.onEvent('firstLocalVideoFramePublished', function(elapsed: number) {
+      fire('firstLocalVideoFramePublished', elapsed);
+    })
+
+    this.rtcEngine.onEvent('rtmpStreamingEvent', function(url: string, eventCode: RTMP_STREAMING_EVENT) {
+      fire('rtmpStreamingEvent', url, eventCode);
+    })
+
+    this.rtcEngine.onEvent('audioPublishStateChanged', function(channel: string, oldState: STREAM_PUBLISH_STATE, newState: STREAM_PUBLISH_STATE, elapseSinceLastState: number) {
+      fire('audioPublishStateChanged', channel, oldState, newState, elapseSinceLastState);
+    })
+
+    this.rtcEngine.onEvent('videoPublishStateChanged', function(channel: string, oldState: STREAM_PUBLISH_STATE, newState: STREAM_PUBLISH_STATE, elapseSinceLastState: number) {
+      fire('videoPublishStateChanged', channel, oldState, newState, elapseSinceLastState);
+    })
+
+    this.rtcEngine.onEvent('audioSubscribeStateChanged', function(channel: string, uid: number, oldState: STREAM_SUBSCRIBE_STATE, newState: STREAM_SUBSCRIBE_STATE, elapseSinceLastState: number) {
+      fire('audioSubscribeStateChanged', channel, uid, oldState, newState, elapseSinceLastState);
+    })
+  
+    this.rtcEngine.onEvent('videoSubscribeStateChanged', function(channel: string, uid: number, oldState: STREAM_SUBSCRIBE_STATE, newState: STREAM_SUBSCRIBE_STATE, elapseSinceLastState: number) {
+      fire('videoSubscribeStateChanged', channel, uid, oldState, newState, elapseSinceLastState);
+    })
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
       self.onRegisterDeliverFrame(infos);
     });
@@ -977,8 +1009,8 @@ class AgoraRtcEngine extends EventEmitter {
    *  - `ERR_INVALID_APP_ID (101)`: The app ID is invalid. Check if it is in 
    * the correct format.
    */
-  initialize(appid: string): number {
-    return this.rtcEngine.initialize(appid);
+  initialize(appid: string, areaCode: AREA_CODE = (0xFFFFFFFF)): number {
+    return this.rtcEngine.initialize(appid, areaCode);
   }
 
   /**
@@ -4863,7 +4895,15 @@ class AgoraRtcEngine extends EventEmitter {
 
   setMaxMetadataSize(size: number): number {
     return this.rtcEngine.setMaxMetadataSize(size);
-  }  
+  }
+  
+  sendCustomReportMessage(id: string, category: string, event: string, label: string, value: number): number {
+    return this.rtcEngine.sendCustomReportMessage(id, category, event, label, value);
+  }
+
+  enableEncryption(enabled: boolean, config: EncryptionConfig) {
+    return this.rtcEngine.enableEncryption(enabled, config);
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
@@ -5881,6 +5921,49 @@ declare interface AgoraRtcEngine {
     metadata: Metadata
     ) => void): this;
 
+  on(evt: 'firstLocalAudioFramePublished', cb: (
+    elapsed: number
+  )=>void): this;
+
+  on(evt: 'firstLocalVideoFramePublished', cb: (
+    elapsed: number
+  )=>void): this;
+
+  on(evt: 'rtmpStreamingEvent', cb: (
+    url: string,
+    eventCode: RTMP_STREAMING_EVENT
+  )=>void): this;
+
+  on(evt: 'audioPublishStateChanged', cb: (
+    channel: string, 
+    oldState: STREAM_PUBLISH_STATE, 
+    newState: STREAM_PUBLISH_STATE,
+    elapseSinceLastState: number
+  )=> void): this;
+
+  on(evt: 'videoPublishStateChanged', cb: (
+    channel: string, 
+    oldState: STREAM_PUBLISH_STATE, 
+    newState: STREAM_PUBLISH_STATE,
+    elapseSinceLastState: number
+  )=> void): this;
+
+  on(evt: 'audioSubscribeStateChanged', cb: (
+    channel: string,
+    uid: number, 
+    oldState: STREAM_SUBSCRIBE_STATE, 
+    newState: STREAM_SUBSCRIBE_STATE, 
+    elapseSinceLastState: number
+  )=> void): this;
+
+  on(evt: 'videoSubscribeStateChanged', cb: (
+    channel: string,
+    uid: number, 
+    oldState: STREAM_SUBSCRIBE_STATE, 
+    newState: STREAM_SUBSCRIBE_STATE, 
+    elapseSinceLastState: number
+  )=> void): this;
+
   on(evt: string, listener: Function): this;
 }
 
@@ -6138,7 +6221,22 @@ class AgoraRtcChannel extends EventEmitter
     ) => {
         fire('connectionStateChanged', state, reason);
     });
-    
+
+    this.rtcChannel.onEvent('audioPublishStateChanged', function(oldState: STREAM_PUBLISH_STATE, newState: STREAM_PUBLISH_STATE, elapseSinceLastState: number) {
+      fire('audioPublishStateChanged', oldState, newState, elapseSinceLastState);
+    })
+
+    this.rtcChannel.onEvent('videoPublishStateChanged', function(oldState: STREAM_PUBLISH_STATE, newState: STREAM_PUBLISH_STATE, elapseSinceLastState: number) {
+      fire('videoPublishStateChanged', oldState, newState, elapseSinceLastState);
+    })
+
+    this.rtcChannel.onEvent('audioSubscribeStateChanged', function(uid: number, oldState: STREAM_SUBSCRIBE_STATE, newState: STREAM_SUBSCRIBE_STATE, elapseSinceLastState: number) {
+      fire('audioSubscribeStateChanged', uid, oldState, newState, elapseSinceLastState);
+    })
+  
+    this.rtcChannel.onEvent('videoSubscribeStateChanged', function(uid: number, oldState: STREAM_SUBSCRIBE_STATE, newState: STREAM_SUBSCRIBE_STATE, elapseSinceLastState: number) {
+      fire('videoSubscribeStateChanged', uid, oldState, newState, elapseSinceLastState);
+    })
   }
   /**
    * Joins the channel with a user ID.
@@ -7520,6 +7618,32 @@ declare interface AgoraRtcChannel {
     state: ConnectionState,
     reason: ConnectionChangeReason
   ) => void): this;
+
+  on(evt: 'audioPublishStateChanged', cb: (
+    oldState: STREAM_PUBLISH_STATE, 
+    newState: STREAM_PUBLISH_STATE,
+    elapseSinceLastState: number
+  )=> void): this;
+
+  on(evt: 'videoPublishStateChanged', cb: (
+    oldState: STREAM_PUBLISH_STATE, 
+    newState: STREAM_PUBLISH_STATE,
+    elapseSinceLastState: number
+  )=> void): this;
+
+  on(evt: 'audioSubscribeStateChanged', cb: (
+    uid: number, 
+    oldState: STREAM_SUBSCRIBE_STATE, 
+    newState: STREAM_SUBSCRIBE_STATE, 
+    elapseSinceLastState: number
+  )=> void): this;
+
+  on(evt: 'videoSubscribeStateChanged', cb: (
+    uid: number, 
+    oldState: STREAM_SUBSCRIBE_STATE, 
+    newState: STREAM_SUBSCRIBE_STATE, 
+    elapseSinceLastState: number
+  )=> void): this;
 }
 
 export default AgoraRtcEngine;
