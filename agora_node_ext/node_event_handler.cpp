@@ -1456,5 +1456,66 @@ namespace agora {
                 MAKE_JS_CALL_3(RTC_EVENT_RTMP_STREAMING_STATE_CHANGED, string, sUrl.c_str(), int32, state, int32, errCode)
             });
         }
+
+        void NodeEventHandler::onFirstLocalAudioFramePublished(int elapsed)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, elapsed] {
+                MAKE_JS_CALL_1(RTC_EVENT_FIRST_LOCAL_AUDIO_FRAME_PUBLISH, int32, elapsed);
+            });
+        }
+
+        void NodeEventHandler::onFirstLocalVideoFramePublished(int elapsed)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, elapsed] {
+                MAKE_JS_CALL_1(RTC_EVENT_FIRST_LOCAL_VIDEO_FRAME_PUBLISH, int32, elapsed);
+            });
+        }
+
+        void NodeEventHandler::onRtmpStreamingEvent(const char* url, RTMP_STREAMING_EVENT eventCode)
+        {
+            FUNC_TRACE;
+            std::string mUrl(url);
+            node_async_call::async_call([this, mUrl, eventCode] {
+                MAKE_JS_CALL_2(RTC_EVENT_RTMP_STREAMING_EVENT, string, mUrl.c_str(), int32, (int)eventCode);
+            });
+        }
+
+        void NodeEventHandler::onAudioPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState)
+        {
+            FUNC_TRACE;
+            std::string mChannel(channel);
+            node_async_call::async_call([this, mChannel, oldState, newState, elapseSinceLastState] {
+                MAKE_JS_CALL_4(RTC_EVENT_AUDIO_PUBLISH_STATE_CHANGED, string, mChannel.c_str(), int32, (int)oldState, int32, (int)newState, int32, elapseSinceLastState);
+            });
+        }
+
+        void NodeEventHandler::onVideoPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState)
+        {
+            FUNC_TRACE;
+            std::string mChannel(channel);
+            node_async_call::async_call([this, mChannel, oldState, newState, elapseSinceLastState] {
+                MAKE_JS_CALL_4(RTC_EVENT_VIDEO_PUBLISH_STATE_CHANGED, string, mChannel.c_str(), int32, oldState, int32, newState, int32, elapseSinceLastState);
+            });
+        }
+
+        void NodeEventHandler::onAudioSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState)
+        {
+            FUNC_TRACE;
+            std::string mChannel(channel);
+            node_async_call::async_call([this, mChannel, uid, oldState, newState, elapseSinceLastState] {
+                MAKE_JS_CALL_5(RTC_EVENT_AUDIO_SUBSCRIBE_STATE_CHANGED, string, mChannel.c_str(), uid, uid, int32, oldState, int32, newState, int32, elapseSinceLastState);
+            });
+        }
+
+        void NodeEventHandler::onVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState)
+        {
+            FUNC_TRACE;
+            std::string mChannel(channel);
+            node_async_call::async_call([this, mChannel, uid, oldState, newState, elapseSinceLastState]{
+                MAKE_JS_CALL_5(RTC_EVENT_VIDEO_SUBSCRIBE_STATE_CHANGED, string, mChannel.c_str(), uid, uid, int32, oldState, int32, newState, int32, elapseSinceLastState);
+            });
+        }
     }
 }
