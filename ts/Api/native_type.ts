@@ -2,6 +2,7 @@ import {
   PluginInfo,
   Plugin
 } from './plugin';
+import { type } from 'os';
 
 export interface RendererOptions
 {
@@ -1143,6 +1144,10 @@ export interface CaptureParam {
    * dimensions of the current screen).
    */
   bitrate: number; //  The bitrate (Kbps) of the shared region. The default value is 0 (the SDK works out a bitrate according to the dimensions of the current screen).
+
+  captureMouseCursor: boolean;
+
+  windowFocus: boolean;
 }
 
 /**
@@ -1384,6 +1389,36 @@ export type ConnectionChangeReason =
   | 12 // 12: Network status change for renew token
   | 13; // 13: Client IP Address changed
 
+export enum ENCRYPTION_MODE {
+      /* OpenSSL Encryption Mode Start */
+      /** 1:"aes-128-xts": (Default) 128-bit AES encryption, XTS mode.
+       */
+      AES_128_XTS = 1,
+      /** 2:"aes-128-ecb": 128-bit AES encryption, ECB mode.
+       */
+      AES_128_ECB = 2,
+      /** 3:"aes-256-xts": 256-bit AES encryption, XTS mode.
+       */
+      AES_256_XTS = 3,
+      /* OpenSSL Encryption Mode End */
+  
+      /** 4:"sm4-128-ecb": 128-bit SM4 encryption, ECB mode.
+       */
+      SM4_128_ECB = 4,
+};
+
+export interface EncryptionConfig{
+    /**
+     * Encryption mode.  The Agora SDK supports built-in encryption, which is set to the "aes-128-xts" mode by default. See ENCRYPTION_MODE.
+     */
+    encryptionMode: ENCRYPTION_MODE;
+    /**
+     * Pointer to the encryption password.
+     */
+    encryptionKey: string;
+    
+};
+
 /**
  * @deprecated Video profile.
  */
@@ -1543,6 +1578,18 @@ export enum VIDEO_PROFILE_TYPE {
   /** Default 640 &times; 360, frame rate 15 fps, bitrate 400 Kbps. */
   VIDEO_PROFILE_DEFAULT = VIDEO_PROFILE_LANDSCAPE_360P
 }
+
+export enum RTMP_STREAMING_EVENT
+{
+  RTMP_STREAMING_EVENT_FAILED_LOAD_IMAGE = 1,
+};
+
+export type STREAM_SUBSCRIBE_STATE =
+  | 0 //SUB_STATE_IDLE
+  | 1 //SUB_STATE_NO_SUBSCRIBED
+  | 2 //SUB_STATE_SUBSCRIBING
+  | 3 //SUB_STATE_SUBSCRIBED
+
 
 /**
  * The definition of {@link ChannelMediaInfo}.
@@ -1745,6 +1792,21 @@ export type ChannelMediaRelayError =
   | 10 // 10: RELAY_ERROR_SRC_TOKEN_EXPIRED
   | 11; // 11: RELAY_ERROR_DEST_TOKEN_EXPIRED
 
+export type AREA_CODE =
+  | 1 //AREA_CODE_CN = ,
+  | 2 //AREA_CODE_NA = ,
+  | 4 //AREA_CODE_EUR = ,
+  | 8 //AREA_CODE_AS = ,
+  | 16//AREA_CODE_JAPAN = ,
+  | 32 //AREA_CODE_INDIA = ,
+  | (0xFFFFFFFF); //AREA_CODE_GLOBAL = 
+
+export type STREAM_PUBLISH_STATE =
+    | 0 //PUB_STATE_IDLE
+    | 1 //PUB_STATE_NO_PUBLISHED
+    | 2 //PUB_STATE_PUBLISHING
+    | 3 //PUB_STATE_PUBLISHED
+
 export interface Metadata {
     /** The User ID.
     - For the receiver: the ID of the user who sent the metadata.
@@ -1770,7 +1832,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  initialize(appId: string): number;
+  initialize(appId: string, areaCode?: AREA_CODE): number;
   /**
    * @ignore
    */
@@ -2704,6 +2766,14 @@ export interface NodeRtcEngine {
    * @ignore
    */
   adjustUserPlaybackSignalVolume(uid: number, volume: number): number;
+  /**
+   * @ignore
+   */
+  sendCustomReportMessage(id: string, category: string, event: string, label: string, value: number): number;
+  /**
+   * @ignore
+   */
+  enableEncryption(enabled: boolean, config: EncryptionConfig): number;
 }
 /**
  * @ignore

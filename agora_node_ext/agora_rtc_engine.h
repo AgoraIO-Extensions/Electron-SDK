@@ -344,6 +344,9 @@ namespace agora {
             NAPI_API(registerMediaMetadataObserver);
             NAPI_API(unRegisterMediaMetadataObserver);
 
+            NAPI_API(sendCustomReportMessage);
+            NAPI_API(enableEncryption);
+
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }
