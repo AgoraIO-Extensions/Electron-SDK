@@ -801,7 +801,7 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
 
 
-                result = param.setLocalVoiceChanger(VOICE_CHANGER_PRESET(preset));
+                result = param.setLocalVoiceChanger(VOICE_CHANGER_PRESET(preset_value));
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
