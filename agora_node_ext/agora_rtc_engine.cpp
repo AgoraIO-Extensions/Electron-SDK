@@ -284,6 +284,8 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(adjustEffectPublishVolume);
                 PROPERTY_METHOD_DEFINE(getEffectPlayoutVolume);
                 PROPERTY_METHOD_DEFINE(getEffectPublishVolume);
+                PROPERTY_METHOD_DEFINE(setAddonLogFile);
+                PROPERTY_METHOD_DEFINE(videoSourceSetAddonLogFile);
 
                 PROPERTY_METHOD_DEFINE(sendMetadata);
                 PROPERTY_METHOD_DEFINE(addMetadataEventHandler);
@@ -410,7 +412,7 @@ namespace agora {
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(setVolumeOfEffect, int32, int32);	
         
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_7(playEffect, int32, nodestring, int32, double, double, int32, bool);	
+        NAPI_API_DEFINE_WRAPPER_PARAM_8(playEffect, int32, nodestring, int32, double, double, int32, bool, int32);	
         
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(stopEffect, int32);	
         
@@ -2754,6 +2756,11 @@ namespace agora {
                 }
                 CHECK_NAPI_STATUS(pEngine, status);
                 config.degradationPreference = degradationPref;
+
+                int videMirrorModeVal;
+                status = napi_get_object_property_int32_(isolate, obj, "mirrorMode", videMirrorModeVal);
+                CHECK_NAPI_STATUS(pEngine, status);
+                config.mirrorMode = (VIDEO_MIRROR_MODE_TYPE)videMirrorModeVal;
 
                 result = pEngine->m_engine->setVideoEncoderConfiguration(config);
             } while (false);
@@ -5277,6 +5284,50 @@ namespace agora {
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(adjustEffectPublishVolume, int32, int32);
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(getEffectPlayoutVolume, int32);
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(getEffectPublishVolume, int32);
+
+        NAPI_API_DEFINE(NodeRtcEngine, setAddonLogFile)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                nodestring path;
+                napi_get_param_1(args, nodestring, path);
+                string sPath;
+                sPath = path ? string(path) : "";
+                stopLogService();
+                if(startLogService(sPath.c_str()) == true){
+                    result = 0;
+                }
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetAddonLogFile)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                nodestring path;
+                napi_get_param_1(args, nodestring, path);
+                CHECK_NAPI_STATUS(pEngine, status);
+                if (!pEngine->m_videoSourceSink.get() || pEngine->m_videoSourceSink->setAddonLogFile(path) != node_ok) {
+                    break;
+                }
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
         NAPI_API_DEFINE(NodeRtcEngine, registerMediaMetadataObserver)
         {
             LOG_ENTER;

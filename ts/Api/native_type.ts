@@ -478,6 +478,7 @@ export interface RtcStats {
   cpuAppUsage: number;
   /** System CPU usage (%). */
   cpuTotalUsage: number;
+  gatewayRtt: number;
 }
 /** Quality change of the local video. */
 export enum QualityAdaptIndication {
@@ -550,6 +551,11 @@ export interface LocalVideoStats {
    * before network countermeasures.
    */
   txPacketLossRate: number;
+  /** The capture frame rate (fps) of the local video.
+  */
+  captureFrameRate: number;
+
+  videoQualityPoint: number;
 }
 /** 
  * The statistics of the local audio stream.
@@ -802,6 +808,8 @@ export interface VideoEncoderConfiguration {
    * See {@link DegradationPreference}.
    */
   degradationPreference: DegradationPreference;
+
+  mirrorMode: VIDEO_MIRROR_MODE_TYPE;
 }
 /** The video encoding degradation preference under limited bandwidth. */
 export enum DegradationPreference {
@@ -852,6 +860,17 @@ export enum OrientationMode  {
  */
   ORIENTATION_MODE_FIXED_PORTRAIT = 2,
 }
+/** Video mirror modes. */
+export enum VIDEO_MIRROR_MODE_TYPE
+{
+      /** 0: The default mirror mode is determined by the SDK. */
+    VIDEO_MIRROR_MODE_AUTO = 0,//determined by SDK
+        /** 1: Enable mirror mode. */
+    VIDEO_MIRROR_MODE_ENABLED = 1,//enabled mirror
+        /** 2: Disable mirror mode. */
+    VIDEO_MIRROR_MODE_DISABLED = 2,//disable mirror
+}
+
 /**
  * Video statistics of the remote stream.
  */
@@ -900,6 +919,14 @@ export interface RemoteVideoStats {
    * anti-packet-loss method.
    */
   packetLossRate: number;
+  /**
+   * The total active time (ms) of the remote video stream after the remote user joins the channel.
+   */
+  totalActiveTime: number;
+  /**
+   * The total active time (ms) of the remote video stream after the remote user publish the video stream.
+   */
+  publishDuration: number;
 }
 /** Sets the camera capturer configuration. */
 export enum CaptureOutPreference {
@@ -1070,6 +1097,14 @@ export interface RemoteAudioStats {
    * when the audio is available.
    */
   frozenRate: number;
+  /**
+   * The total active time (ms) of the remote audio stream after the remote user joins the channel.
+   */
+  totalActiveTime: number;
+  /**
+   * The total active time (ms) of the remote audio stream after the remote user publish the audio stream.
+   */
+  publishDuration: number;
 }
 
 /**
@@ -1783,6 +1818,10 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
+  setAddonLogFile(filepath: string): number;
+  /**
+   * @ignore
+   */
   setLogFileSize(size: number): number;
   /**
    * @ignore
@@ -1791,7 +1830,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  setLogFilter(filter: number): number;
+  videoSourceSetAddonLogFile(filepath: string): number;
   /**
    * @ignore
    */
@@ -2039,7 +2078,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  getScreenWindowsInfo(): Array<Object>;
+  getScreenWindowsInfo(options:number): Array<Object>;
   /**
    * @ignore
    */
@@ -2268,7 +2307,8 @@ export interface NodeRtcEngine {
     pitch: number,
     pan: number,
     gain: number,
-    publish: number
+    publish: number,
+    startPos: number
   ): number;
   /**
    * @ignore

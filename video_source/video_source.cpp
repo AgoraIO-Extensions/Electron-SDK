@@ -338,7 +338,11 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
     else if(msg == AGORA_IPC_ENABLE_AUDIO) {
         m_rtcEngine->enableAudio();
     }
-
+    else if (msg == AGORA_IPC_SET_ADDON_LOGFILE) {
+        stopLogService();
+        startLogService((char*)payload);
+        LOG_INFO("set addon log file\n");
+    }
     LOG_LEAVE;
 }
 

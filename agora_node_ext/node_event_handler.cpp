@@ -350,6 +350,7 @@ namespace agora {
                 NODE_SET_OBJ_PROP_UINT32(obj, "rxPacketLossRate", stats.rxPacketLossRate);
                 NODE_SET_OBJ_PROP_NUMBER(obj, "cpuAppUsage", stats.cpuAppUsage);
                 NODE_SET_OBJ_PROP_NUMBER(obj, "cpuTotalUsage", stats.cpuTotalUsage);
+                NODE_SET_OBJ_PROP_NUMBER(obj, "gatewayRtt", stats.gatewayRtt);
                 Local<Value> arg[1] = { obj };
                 auto it = m_callbacks.find(RTC_EVENT_RTC_STATS);
                 if (it != m_callbacks.end()) {
@@ -670,7 +671,8 @@ namespace agora {
                 NODE_SET_OBJ_PROP_UINT32(obj, "encodedFrameCount", stats.encodedFrameCount);
                 NODE_SET_OBJ_PROP_UINT32(obj, "codecType", stats.codecType);
                 NODE_SET_OBJ_PROP_UINT32(obj, "txPacketLossRate", stats.txPacketLossRate);
-
+                NODE_SET_OBJ_PROP_UINT32(obj, "captureFrameRate", stats.captureFrameRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "videoQualityPoint", stats.videoQualityPoint);
                 Local<Value> arg[1] = { obj };
                 auto it = m_callbacks.find(RTC_EVENT_LOCAL_VIDEO_STATS);
                 if (it != m_callbacks.end()) {
@@ -707,6 +709,8 @@ namespace agora {
                 NODE_SET_OBJ_PROP_UINT32(obj, "totalFrozenTime", stats.totalFrozenTime);
                 NODE_SET_OBJ_PROP_UINT32(obj, "frozenRate", stats.frozenRate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "packetLossRate", stats.packetLossRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "totalActiveTime", stats.totalActiveTime);
+                NODE_SET_OBJ_PROP_UINT32(obj, "publishDuration", stats.publishDuration);
                 Local<Value> arg[1] = { obj };
                 auto it = m_callbacks.find(RTC_EVENT_REMOTE_VIDEO_STATS);
                 if (it != m_callbacks.end()) {
@@ -1110,6 +1114,8 @@ namespace agora {
                 NODE_SET_OBJ_PROP_UINT32(obj, "receivedBitrate", stats.receivedBitrate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "totalFrozenTime", stats.totalFrozenTime);
                 NODE_SET_OBJ_PROP_UINT32(obj, "frozenRate", stats.frozenRate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "totalActiveTime", stats.totalActiveTime);
+                NODE_SET_OBJ_PROP_UINT32(obj, "publishDuration", stats.publishDuration);
                 Local<Value> arg[1] = { obj };
                 auto it = m_callbacks.find(RTC_EVENT_REMOTE_AUDIO_STATS);
                 if (it != m_callbacks.end()) {

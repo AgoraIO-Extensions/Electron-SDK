@@ -1762,7 +1762,8 @@ class AgoraRtcEngine extends EventEmitter {
       bitrate = 0,
       minBitrate = -1,
       orientationMode = 0,
-      degradationPreference = 0
+      degradationPreference = 0,
+      mirrorMode = 0
     } = config;
     return this.rtcEngine.setVideoEncoderConfiguration({
       width,
@@ -1772,7 +1773,8 @@ class AgoraRtcEngine extends EventEmitter {
       bitrate,
       minBitrate,
       orientationMode,
-      degradationPreference
+      degradationPreference,
+      mirrorMode
     });
   }
 
@@ -2265,6 +2267,22 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * Specifies an SDK output log file.
+   *
+   * The log file records all log data for the SDK’s operation. Ensure that 
+   * the directory for the log file exists and is writable.
+   *
+   * @param {string} filepath File path of the log file. The string of the 
+   * log file is in UTF-8.
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+   setAddonLogFile(filepath: string): number {
+    return this.rtcEngine.setAddonLogFile(filepath);
+  }
+
+  /**
    * Sets the log file size (KB).
    *
    * The Agora SDK has two log files, each with a default size of 512 KB.
@@ -2293,6 +2311,20 @@ class AgoraRtcEngine extends EventEmitter {
    */
   videoSourceSetLogFile(filepath: string) {
     return this.rtcEngine.videoSourceSetLogFile(filepath);
+  }
+
+  /**
+   * Specifies an SDK output log file for the video source object.
+   *
+   * **Note**: Call this method after the {@link videoSourceInitialize} method.
+   * @param {string} filepath filepath of log. The string of the log file is 
+   * in UTF-8.
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+   videoSourceSetAddonLogFile(filepath: string) {
+    return this.rtcEngine.videoSourceSetAddonLogFile(filepath);
   }
 
   /**
@@ -4274,7 +4306,8 @@ class AgoraRtcEngine extends EventEmitter {
     pitch: number,
     pan: number,
     gain: number,
-    publish: number
+    publish: number,
+    startPos: number
   ): number {
     return this.rtcEngine.playEffect(
       soundId,
@@ -4283,7 +4316,8 @@ class AgoraRtcEngine extends EventEmitter {
       pitch,
       pan,
       gain,
-      publish
+      publish,
+      startPos || 0
     );
   }
   /**
