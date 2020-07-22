@@ -1827,6 +1827,10 @@ export interface NodeRtcEngine {
    * @ignore
    */
   videoSourceSetLogFile(filepath: string): number;
+   /**
+    * @ignore
+    */
+  setLogFilter(filter: number): number;
   /**
    * @ignore
    */
@@ -2078,7 +2082,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  getScreenWindowsInfo(options:number): Array<Object>;
+  getScreenWindowsInfo(): Array<Object>;
   /**
    * @ignore
    */
