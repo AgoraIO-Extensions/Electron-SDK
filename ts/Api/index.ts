@@ -5029,7 +5029,7 @@ declare interface AgoraRtcEngine {
    * {@link leaveChannel} method, the SDK uses
    * this callback to notify the app when the user leaves the channel.
    */
-  on(evt: 'leaveChannel', cb: () => void): this;
+  on(evt: 'leaveChannel', cb: (stats: RtcStats) => void): this;
   /** Reports the statistics of the AgoraRtcEngine once every two seconds.
    * 
    * @param cb.stats AgoraRtcEngine's statistics, see {@link RtcStats}
