@@ -2083,7 +2083,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  videoSourceEnableLoopbackRecording(enable: boolean): number;
+  videoSourceEnableLoopbackRecording(enabled: boolean, deviceName: string | null): number;
   /**
    * @ignore
    */
@@ -2433,6 +2433,8 @@ export interface NodeRtcEngine {
    * @ignore
    */
   adjustUserPlaybackSignalVolume(uid: number, volume: number): number;
+
+  setRecordingAudioFrameParameters(sampleRate: number, channel: 1 | 2, mode: 0 | 1 | 2, samplesPerCall: number): number;
 }
 /**
  * @ignore

@@ -542,6 +542,7 @@ namespace agora {
 
                 LiveTranscoding transcoding;
                 nodestring extrainfo;
+                nodestring wmurl;
                 int videoCodecProfile, audioSampleRateType;
                 Local<Object> obj;
                 status = napi_get_value_object_(isolate, args[0], obj);
@@ -592,8 +593,6 @@ namespace agora {
                 if (!wmValue->IsNullOrUndefined()) {
                     Local<Object> objWm;
                     napi_get_value_object_(isolate, wmValue, objWm);
-                    
-                    nodestring wmurl;
                     status = napi_get_object_property_nodestring_(isolate, objWm, "url", wmurl);
                     CHECK_NAPI_STATUS(pEngine, status);
                     wm->url = wmurl;
@@ -2279,9 +2278,9 @@ namespace agora {
                         pEngine->m_videoSourceSink->enableLoopbackRecording(enable, mDeviceName.c_str());
                         result = 0;
                     }
-                    
                 }
             } while (false);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
@@ -4158,6 +4157,7 @@ namespace agora {
                 if (pEngine->m_avPluginManager.get())
                 {
                     pMediaEngine->registerVideoFrameObserver(pEngine->m_avPluginManager.get());
+                    pMediaEngine->registerAudioFrameObserver(pEngine->m_avPluginManager.get());
                     result = 0;
                 }
             } while (false);
@@ -4177,6 +4177,7 @@ namespace agora {
                 agora::media::IMediaEngine* pMediaEngine = nullptr;
                 pEngine->getRtcEngine()->queryInterface(agora::AGORA_IID_MEDIA_ENGINE, (void**)&pMediaEngine);
                 pMediaEngine->registerVideoFrameObserver(NULL);
+                pMediaEngine->registerAudioFrameObserver(NULL);
                 result = 0;
             } while (false);
             napi_set_int_result(args, result);
@@ -5626,6 +5627,7 @@ namespace agora {
                 status = napi_get_value_object_(isolate, args[0], obj);
                 CHECK_NAPI_STATUS(pChannel, status);
                 nodestring transcodingExtraInfo;
+                nodestring wmurl;
                 status = napi_get_object_property_int32_(isolate, obj, "width", transcoding.width);
                 CHECK_NAPI_STATUS(pChannel, status);
 
@@ -5676,7 +5678,6 @@ namespace agora {
                     Local<Object> objWm;
                     status = napi_get_value_object_(isolate, wmValue, objWm);
                     CHECK_NAPI_STATUS(pChannel, status);
-                    nodestring wmurl;
                     status = napi_get_object_property_nodestring_(isolate, objWm, "url", wmurl);
                     CHECK_NAPI_STATUS(pChannel, status);
                     wm->url = wmurl;
