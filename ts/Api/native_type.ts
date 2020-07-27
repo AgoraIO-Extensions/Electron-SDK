@@ -205,6 +205,13 @@ export interface TranscodingConfig {
    * - 5: Five-channel stereo.
    */
   audioChannels: number;
+  /** Bitrate of the CDN live audio output stream. The default value is 48 Kbps, and the highest value is 128.
+   */
+  audioBitrate: number;
+  /** Reserved property. Extra user-defined information to send SEI for the H.264/H.265 video stream to the CDN live client. Maximum length: 4096 Bytes.
+
+    For more information on SEI frame, see [SEI-related questions](https://docs.agora.io/cn/Agora%20Platform/live_related_faq?platform=%E7%9B%B4%E6%92%AD%E7%9B%B8%E5%85%B3#sei).
+    */
   transcodingExtraInfo: string;
   /** The watermark image added to the CDN live publishing stream. */
   watermark: {
