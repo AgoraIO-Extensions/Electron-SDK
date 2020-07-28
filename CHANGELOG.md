@@ -1,3 +1,5 @@
+## 2.9.0-rc.106-build.804
+* fix bug of playEffect()
 
 ## 2.9.0-rc.104-build.553
 * add gatewayRtt into rtcStats
