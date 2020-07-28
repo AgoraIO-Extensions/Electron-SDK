@@ -764,6 +764,7 @@ typedef unsigned int uint32;
             NodeRtcEngine *pEngine = nullptr;\
             napi_get_native_this(args, pEngine);\
             CHECK_NATIVE_THIS(pEngine);\
+            napi_status status = napi_ok;\
             type param;\
             type2 param2;\
             type3 param3;\
@@ -772,6 +773,7 @@ typedef unsigned int uint32;
             type6 param6;\
             type7 param7;\
             type8 param8;\
+            napi_get_param_8(args, type, param, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, type7, param7, type8, param8);\
             int result = CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM8(pEngine->m_engine, method, param, param2, param3, param4, param5, param6, param7, param8);\
             args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result));\
         } while (false);\
