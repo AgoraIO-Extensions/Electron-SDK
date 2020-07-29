@@ -79,7 +79,6 @@ namespace agora {
                     NODE_SET_OBJ_PROP_INT32(frameInfoObj, "rotation", rotation);
                     NODE_SET_OBJ_PROP_NUMBER(frameInfoObj, "renderTimeMs", renderTimeMs);
 
-
                     Local<Value> propName = String::NewFromUtf8(isolate, "videoEncodedFrameInfo", NewStringType::kInternalized).ToLocalChecked(); 
                     CHECK_NAPI_OBJ(propName)
                     obj->Set(isolate->GetCurrentContext(), propName, frameInfoObj); 

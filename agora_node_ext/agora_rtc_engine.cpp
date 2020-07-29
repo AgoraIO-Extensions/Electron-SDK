@@ -5340,7 +5340,6 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                LOG_F(INFO, "registerMediaMetadataObserver");
                 if (!(pEngine->metadataObserver.get())) {
                     pEngine->metadataObserver.reset(new NodeMetadataObserver());
                 }
@@ -5358,7 +5357,6 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                LOG_F(INFO, "unRegisterMediaMetadataObserver");
                 result = pEngine->m_engine->registerMediaMetadataObserver(nullptr, IMetadataObserver::METADATA_TYPE::VIDEO_METADATA);
                 if (pEngine->metadataObserver.get()) {
                     pEngine->metadataObserver.get()->clearData();
@@ -5525,7 +5523,6 @@ namespace agora {
                 }
                 agora::media::IMediaEngine* pMediaEngine = nullptr;
                 pEngine->getRtcEngine()->queryInterface(agora::AGORA_IID_MEDIA_ENGINE, (void**)&pMediaEngine);
-                LOG_F(INFO, "unRegisterVideoEncodedImageReceiver");
                 result = pMediaEngine->registerVideoEncodedImageReceiver(nullptr);
 
             } while (false);

@@ -259,6 +259,9 @@ export default class App extends Component {
     rtcEngine.setChannelProfile(1)
     rtcEngine.setClientRole(this.state.role)
     rtcEngine.registerMediaMetadataObserver();
+    rtcEngine.registerVideoEncodedImageReceiver((data) => {
+      // console.log(data)
+    });
     rtcEngine.setAudioProfile(0, 1)
     // rtcEngine.enableVideo()
     let logpath = path.resolve(os.homedir(), "./agoramain.sdk")
