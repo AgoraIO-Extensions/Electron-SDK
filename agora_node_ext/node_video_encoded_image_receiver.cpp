@@ -89,6 +89,7 @@ namespace agora {
                 } while (false);
                 free(imageBufferCache);
             });
+            return true;
         }
 
         void NodeVideoEncodedImageReceiver::AddEventHandler(Persistent<Object>& js_this, Persistent<Function>& callback) {
