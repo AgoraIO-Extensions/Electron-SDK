@@ -29,6 +29,7 @@
 #include "AVPlugin/IAVFramePluginManager.h"
 #include "AVPlugin/IAVFramePlugin.h"
 #include "node_metadata_observer.h"
+#include "node_video_encoded_image_receiver.h"
 /*
 * Used to declare native interface to nodejs
 */
@@ -352,6 +353,9 @@ namespace agora {
             NAPI_API(registerMediaMetadataObserver);
             NAPI_API(unRegisterMediaMetadataObserver);
 
+            NAPI_API(registerVideoEncodedImageReceiver);
+            NAPI_API(unRegisterVideoEncodedImageReceiver);
+
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }
@@ -377,6 +381,7 @@ namespace agora {
 
             std::unique_ptr<IAVFramePluginManager> m_avPluginManager;
             std::unique_ptr<NodeMetadataObserver> metadataObserver;
+            std::unique_ptr<NodeVideoEncodedImageReceiver> m_videoEncodedImageReceiver;
         };
 
 

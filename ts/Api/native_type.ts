@@ -2572,6 +2572,14 @@ export interface NodeRtcEngine {
    * @ignore
    */
   getPluginParameter(pluginId: string, paramKey: string): string;
+  /**
+   * @ignore
+   */
+  registerVideoEncodedImageReceiver(callback: Function): number;
+  /**
+   * @ignore
+   */
+  unRegisterVideoEncodedImageReceiver(): number;
 }
 
 export interface NodeRtcChannel {

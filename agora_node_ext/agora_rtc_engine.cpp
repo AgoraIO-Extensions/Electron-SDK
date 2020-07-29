@@ -292,6 +292,9 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setMaxMetadataSize);
                 PROPERTY_METHOD_DEFINE(registerMediaMetadataObserver);
                 PROPERTY_METHOD_DEFINE(unRegisterMediaMetadataObserver);
+
+                PROPERTY_METHOD_DEFINE(registerVideoEncodedImageReceiver);
+                PROPERTY_METHOD_DEFINE(unRegisterVideoEncodedImageReceiver);
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -365,6 +368,7 @@ namespace agora {
             m_externalVideoRenderFactory.reset(nullptr);
             m_eventHandler.reset(nullptr);
             m_avPluginManager.reset(nullptr);
+            m_videoEncodedImageReceiver.reset(nullptr);
             LOG_LEAVE;
         }
 
@@ -5462,6 +5466,68 @@ namespace agora {
                 status = napi_get_value_int32_(args[0], maxSize);
                 CHECK_NAPI_STATUS(pEngine, status);
                 result = pEngine->metadataObserver.get()->setMaxMetadataSize(maxSize);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, registerVideoEncodedImageReceiver)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                if (!args[0]->IsFunction()) {
+                    LOG_ERROR("registerVideoEncodedImageReceiver: Function expected");
+                    break;
+                }
+
+                Local<Function> callback = args[0].As<Function>();
+                if (callback.IsEmpty()) {
+                    LOG_ERROR("registerVideoEncodedImageReceiver: Function is empty.");
+                    break;
+                }
+
+                Persistent<Function> persist;
+                persist.Reset(callback);
+
+                Local<Object> obj = args.This();
+                Persistent<Object> persistObj;
+                persistObj.Reset(obj);
+                // result = pEngine->metadataObserver->addEventHandler(persistObj, persist, persist2);
+                if (!(pEngine->m_videoEncodedImageReceiver.get())) {
+                    pEngine->m_videoEncodedImageReceiver.reset(new NodeVideoEncodedImageReceiver());
+                }
+                agora::media::IMediaEngine* pMediaEngine = nullptr;
+                pEngine->getRtcEngine()->queryInterface(agora::AGORA_IID_MEDIA_ENGINE, (void**)&pMediaEngine);
+                result = pMediaEngine->registerVideoEncodedImageReceiver(pEngine->m_videoEncodedImageReceiver.get());
+                pEngine->m_videoEncodedImageReceiver->AddEventHandler(persistObj, persist);
+
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, unRegisterVideoEncodedImageReceiver)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                if (!(pEngine->m_videoEncodedImageReceiver.get())) {
+                    pEngine->m_videoEncodedImageReceiver->ClearEventHandler();
+                }
+                agora::media::IMediaEngine* pMediaEngine = nullptr;
+                pEngine->getRtcEngine()->queryInterface(agora::AGORA_IID_MEDIA_ENGINE, (void**)&pMediaEngine);
+                LOG_F(INFO, "unRegisterVideoEncodedImageReceiver");
+                result = pMediaEngine->registerVideoEncodedImageReceiver(nullptr);
+
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;

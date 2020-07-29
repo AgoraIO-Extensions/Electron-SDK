@@ -212,6 +212,8 @@
         './agora_node_ext/AVPlugin/IAVFramePluginManager.cpp',
         './agora_node_ext/node_metadata_observer.h',
         './agora_node_ext/node_metadata_observer.cpp',
+        './agora_node_ext/node_video_encoded_image_receiver.h',
+        './agora_node_ext/node_video_encoded_image_receiver.cpp',
         './common/libyuv/source/compare_common.cc',
         './common/libyuv/source/compare.cc',
         './common/libyuv/source/convert_argb.cc',
