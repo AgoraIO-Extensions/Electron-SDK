@@ -1,6 +1,18 @@
+## 2.9.0-rc.177
+* CSD-17772
+* CSD-18290
+* Add new APIs:
+  - registerMediaMetadataObserver
+  - unRegisterMediaMetadataObserver
+  - sendMetadata
+  - addMetadataEventHandler
+  - setMaxMetadataSize
+  - registerVideoEncodedImageReceiver
+  - unRegisterVideoEncodedImageReceiver
+
 ## 2.9.0-rc.173
-*CSD-16358
-*CSD-16357
+* CSD-16358
+* CSD-16357
 
 ## 2.9.0-rc.125-build.401
 * MS-12595
