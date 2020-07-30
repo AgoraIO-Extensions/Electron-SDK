@@ -420,6 +420,7 @@ namespace agora{
         {
             if (m_initialized && m_peerJoined){
                 CaptureScreenByDisplayCmd cmd;
+
                 cmd.screenId = screenId;
                 cmd.regionRect = regionRect;
                 cmd.captureParams = captureParams;

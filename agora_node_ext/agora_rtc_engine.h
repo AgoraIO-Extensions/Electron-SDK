@@ -343,11 +343,6 @@ namespace agora {
             NAPI_API(setMaxMetadataSize);
             NAPI_API(registerMediaMetadataObserver);
             NAPI_API(unRegisterMediaMetadataObserver);
-            /**
-             * 3.1.0 Apis
-             */
-            NAPI_API(sendCustomReportMessage);
-            NAPI_API(enableEncryption);
 
         public:
             Isolate* getIsolate() { return m_isolate; }

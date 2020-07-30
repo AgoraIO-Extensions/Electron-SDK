@@ -2,7 +2,6 @@ import {
   PluginInfo,
   Plugin
 } from './plugin';
-import { type } from 'os';
 
 export interface RendererOptions
 {
@@ -700,13 +699,6 @@ export interface LocalVideoStats {
    * The codec type of the local video. See {@link VIDEO_CODEC_TYPE}.
    */
   codecType: number;
-  /** The packet loss rate (%) from the local client to Agora's edge server,
-   * before network countermeasures.
-  */
-  txPacketLossRate: number;
- /** The capture frame rate (fps) of the local video.
-  */
-  captureFrameRate: number;
 }
 /** 
  * The statistics of the local audio stream.
@@ -724,10 +716,6 @@ export interface LocalAudioStats {
    * The average sending bitrate (Kbps).
    */
   sentBitrate: number;
-  /** The packet loss rate (%) from the local client to Agora's edge server,
-   * before network countermeasures.
-   */
-  txPacketLossRate: number;
 }
 /** VideoEncoderConfiguration */
 export interface VideoEncoderConfiguration {
@@ -1084,10 +1072,6 @@ export interface RemoteVideoStats {
    * anti-packet-loss method.
    */
   packetLossRate: number;
-
-  totalActiveTime: number;
-
-  publishDuration: number;
 }
 /** Sets the camera capturer configuration. */
 export enum CaptureOutPreference {
@@ -1159,10 +1143,6 @@ export interface CaptureParam {
    * dimensions of the current screen).
    */
   bitrate: number; //  The bitrate (Kbps) of the shared region. The default value is 0 (the SDK works out a bitrate according to the dimensions of the current screen).
-
-  captureMouseCursor: boolean;
-
-  windowFocus: boolean;
 }
 
 /**
@@ -1266,13 +1246,7 @@ export interface RemoteAudioStats {
    * when the audio is available.
    */
   frozenRate: number;
-
-  totalActiveTime: number;
-
-  publishDuration: number;
 }
-
-export type RTMP_STREAMING_EVENT = 1;
 
 /**
  * State of the remote video:
@@ -1788,44 +1762,6 @@ export interface Metadata {
     timeStampMs: number;
   }
 
-export type AREA_CODE =
-  | 1 //Mainland China.
-  | 2 //North America.
-  | 4 //Europe
-  | 8 // Asia, excluding mainland China、Japan、India
-  | 16//Japan
-  | 32//India
-  | 0xFFFFFFFF//(Default) Global.
-
-export type STREAM_PUBLISH_STATE =
-  | 0 //PUB_STATE_IDLE
-  | 1 //PUB_STATE_NO_PUBLISHED
-  | 2 //PUB_STATE_PUBLISHING
-  | 3 //PUB_STATE_PUBLISHED
-
-export type STREAM_SUBSCRIBE_STATE =
-  | 0 //SUB_STATE_IDLE
-  | 1 //SUB_STATE_NO_SUBSCRIBED
-  | 2 //SUB_STATE_SUBSCRIBING
-  | 3 //SUB_STATE_SUBSCRIBED
-
-/** Encryption mode.
-*/
-export type ENCRYPTION_MODE =
-    | 1 //AES_128_XTS
-    | 2 //AES_128_ECB
-    | 3 //AES_256_XTS
-    | 4 //SM4_128_ECB
-
-export interface EncryptionConfig {
-
-  encryptionMode : ENCRYPTION_MODE;
-  /**
-    * Pointer to the encryption password.
-    */
-  secret: string;
-}
-
 /**
  * interface for c++ addon (.node)
  * @ignore
@@ -1834,7 +1770,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  initialize(appId: string, areaCode: AREA_CODE): number;
+  initialize(appId: string): number;
   /**
    * @ignore
    */
@@ -2768,14 +2704,6 @@ export interface NodeRtcEngine {
    * @ignore
    */
   adjustUserPlaybackSignalVolume(uid: number, volume: number): number;
-  /**
-   * @ignore
-   */
-  sendCustomReportMessage(id: string, category: string, event: string, label: string, value: number): number;
-  /**
-   * @ignore
-   */
-  enableEncryption(encryptionEnable: boolean, config: EncryptionConfig): number;
 }
 /**
  * @ignore
