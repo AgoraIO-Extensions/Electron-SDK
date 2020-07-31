@@ -209,6 +209,7 @@ const AgoraRender = function() {
   }
 
   function uploadYuv(width, height, yplane, uplane, vplane) {
+    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1); 
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, yTexture);
 
