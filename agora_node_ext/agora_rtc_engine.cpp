@@ -5168,7 +5168,9 @@ namespace agora {
                 nodestring buffer;
                 char *_buffer;
 
-                Local<Object> obj = args[0]->ToObject();
+                Local<Object> obj;
+                status = napi_get_value_object_(isolate, args[0], obj);
+                CHECK_NAPI_STATUS(pEngine, status);
                 // status = napi_get_object_property_uid_(isolate, obj, "uid", uid);
                 // CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_object_property_uid_(isolate, obj, "size", size);
@@ -6201,7 +6203,9 @@ namespace agora {
                 double timeStampMs = 0;
                 char *_buffer;
 
-                Local<Object> obj = args[0]->ToObject();
+                Local<Object> obj;
+                status = napi_get_value_object_(isolate, args[0], obj);
+                CHECK_NAPI_STATUS(pChannel, status);
                 // status = napi_get_object_property_uid_(isolate, obj, "uid", uid);
                 // CHECK_NAPI_STATUS(pChannel, status);
                 status = napi_get_object_property_uid_(isolate, obj, "size", size);
