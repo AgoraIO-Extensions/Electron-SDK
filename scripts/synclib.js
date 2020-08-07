@@ -5,6 +5,7 @@ const path = require("path");
 const glob = require("glob")
 const promisify = require("bluebird").promisify
 const fs = require("fs-extra")
+const exec = require('child_process').exec;
 
 const extractPromise = promisify(extract)
 const macExtractPromise = () => {
@@ -18,6 +19,7 @@ const macExtractPromise = () => {
 }
 const globPromise = promisify(glob)
 
+const shellPromise = promisify(exec)
 
 const macPrepare = () => {
   return new Promise((resolve, reject) => {
@@ -26,10 +28,13 @@ const macPrepare = () => {
     ]).then(() => {
       return fs.mkdirp(path.join(__dirname, '../sdk/lib/mac'))
     }).then(() => {
-      return fs.move(
-        path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcKit.framework'),
-        path.join(__dirname, '../sdk/lib/mac/AgoraRtcKit.framework')
-      )
+      // return fs.move(
+      //   path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcKit.framework'),
+      //   path.join(__dirname, '../sdk/lib/mac/AgoraRtcKit.framework')
+      // )
+      let fromPath = path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcKit.framework')
+      let toPath = path.join(__dirname, '../sdk/lib/mac/.')
+      return shellPromise(`mv ${fromPath} ${toPath}`)
     }).then(() => {
       resolve()
     }).catch(e => {
