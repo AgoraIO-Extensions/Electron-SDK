@@ -9,13 +9,14 @@ const exec = require('child_process').exec;
 
 const extractPromise = promisify(extract)
 const macExtractPromise = () => {
-  return new Promise((resolve, reject) => {
-    extractPromise('./tmp/sdk.zip', {dir: path.join(__dirname, '../tmp/')}).then(() => {
-      resolve()
-    }).catch((e) => {
-      reject(e)
-    })
-  })
+  // return new Promise((resolve, reject) => {
+    // extractPromise('./tmp/sdk.zip', {dir: path.join(__dirname, '../tmp/')}).then(() => {
+    //   resolve()
+    // }).catch((e) => {
+    //   reject(e)
+    // })
+  // })
+  return shellPromise(`unzip -o -d tmp tmp/sdk.zip`)
 }
 const globPromise = promisify(glob)
 
