@@ -34,7 +34,7 @@ const macPrepare = () => {
       // )
       let fromPath = path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcKit.framework')
       let toPath = path.join(__dirname, '../sdk/lib/mac/.')
-      return shellPromise(`mv ${fromPath} ${toPath}`)
+      return shellPromise(`cp -Rf ${fromPath} ${toPath}`)
     }).then(() => {
       resolve()
     }).catch(e => {
