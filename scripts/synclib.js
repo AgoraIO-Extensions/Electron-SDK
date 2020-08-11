@@ -4,34 +4,22 @@ const extract = require('extract-zip')
 const path = require("path");
 const glob = require("glob")
 const promisify = require("bluebird").promisify
-const fs = require("fs")
-const rimraf = require("rimraf");
-const mkdirp = require('mkdirp');
+const fs = require("fs-extra")
 
 const extractPromise = promisify(extract)
 const globPromise = promisify(glob)
-const rmdirPromise = (filePath) => {
-  return new Promise((resolve) => {
-    rimraf(filePath, (err) => {
-      err && logger.warn(err.message)
-      resolve()
-    })
-  })
-}
 
-const mvPromise = promisify(fs.rename)
-const mkdirPromise = promisify(mkdirp)
 
 const macPrepare = () => {
   return new Promise((resolve, reject) => {
     Promise.all([
-      rmdirPromise(path.join(__dirname, '../sdk'))
+      fs.remove(path.join(__dirname, '../sdk'))
     ]).then(() => {
-      return mkdirPromise(path.join(__dirname, '../sdk/lib/mac'))
+      return fs.mkdirp(path.join(__dirname, '../sdk/lib/mac'))
     }).then(() => {
-      return mvPromise(
-        path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcEngineKit.framework/'),
-        path.join(__dirname, '../sdk/lib/mac/AgoraRtcEngineKit.framework/')
+      return fs.move(
+        path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcEngineKit.framework'),
+        path.join(__dirname, '../sdk/lib/mac/AgoraRtcEngineKit.framework')
       )
     }).then(() => {
       resolve()
@@ -44,14 +32,32 @@ const macPrepare = () => {
 const winPrepare = (folder) => {
   return new Promise((resolve, reject) => {
     Promise.all([
-      rmdirPromise(path.join(__dirname, '../sdk'))
+      fs.remove(path.join(__dirname, '../sdk'))
     ]).then(() => {
-      return mkdirPromise(path.join(__dirname, '../sdk/lib'))
+      return fs.mkdirp(path.join(__dirname, '../sdk/lib'))
     }).then(() => {
       return Promise.all([
-        mvPromise(path.join(folder, './sdk/include'), path.join(__dirname, '../sdk/include')),
-        mvPromise(path.join(folder, './sdk/dll'), path.join(__dirname, '../sdk/dll')),
-        mvPromise(path.join(folder, './sdk/lib'), path.join(__dirname, '../sdk/lib/win')),
+        fs.move(path.join(folder, './sdk/include'), path.join(__dirname, '../sdk/include')),
+        fs.move(path.join(folder, './sdk/dll'), path.join(__dirname, '../sdk/dll')),
+        fs.move(path.join(folder, './sdk/lib'), path.join(__dirname, '../sdk/lib/win')),
+      ])
+    }).then(() => {
+      resolve()
+    }).catch(e => {
+      reject(e)
+    })
+  })
+}
+
+const win64Prepare = (folder) => {
+  return new Promise((resolve, reject) => {
+    Promise.all([
+      fs.remove(path.join(__dirname, '../sdk'))
+    ]).then(() => {
+      return fs.mkdirp(path.join(__dirname, '../sdk'))
+    }).then(() => {
+      return Promise.all([
+        fs.move(path.join(folder, './sdk'), path.join(__dirname, '../sdk/win64')),
       ])
     }).then(() => {
       resolve()
@@ -63,7 +69,8 @@ const winPrepare = (folder) => {
 
 module.exports = ({
   platform,
-  libUrl
+  libUrl,
+  arch = "ia32"
 }) => {
   const genOS = () => {
     if (platform === "darwin") {
@@ -88,11 +95,10 @@ module.exports = ({
         downloadUrl = libUrl.mac
       }
     } else {
-      if(!libUrl.win){
+      downloadUrl = (arch === 'ia32') ? libUrl.win : libUrl.win64
+      if(!downloadUrl){
         logger.error(`no windows lib specified`)
         return reject(new Error(`no windows lib specified`))
-      } else {
-        downloadUrl = libUrl.win
       }
     }
 
@@ -100,7 +106,7 @@ module.exports = ({
     const outputDir = "./tmp/";
     logger.info(`Downloading ${os} Libs...\n${downloadUrl}\n`);
 
-    rmdirPromise(path.join(__dirname, '../tmp')).then(() => {
+    fs.remove(path.join(__dirname, '../tmp')).then(() => {
       return download(downloadUrl, outputDir, {filename: "sdk.zip"})
     }).then(() => {
       logger.info("Success", "Download finished");
@@ -116,8 +122,11 @@ module.exports = ({
       if(os === "mac") {
         return macPrepare()
       } else {
-        console.log(folder)
-        return winPrepare(folder[0])
+        if(arch === 'ia32') {
+          return winPrepare(folder[0])
+        } else {
+          return win64Prepare(folder[0])
+        }
       }
     }).then(() => {
       logger.info("Success", "Prepare finished");

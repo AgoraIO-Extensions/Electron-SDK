@@ -5,7 +5,8 @@ const path = require("path");
 module.exports = ({
   electronVersion = "5.0.8",
   platform = process.platform,
-  packageVersion
+  packageVersion,
+  arch
 }) => {
   /** get download url */
   const genOS = () => {
@@ -20,18 +21,23 @@ module.exports = ({
     }
   };
   // check electron version
-  const supportedVersions = ['7.1.2', '6.1.5', '5.0.8', '4.2.8', '3.0.6', '1.8.3']
-  if (supportedVersions.indexOf(electronVersion) === -1) {
-    throw new Error(`Prebuilt addon only supported electron version ${supportedVersions.join(' ')}`)
+
+  if (['7.1.2', '6.1.7', '5.0.8', '4.2.8', '3.0.6', '1.8.3'].indexOf(electronVersion) === -1) {
+    throw new Error('Prebuilt addon only supported electron version 7.1.2, 6.1.7, 5.0.8, 4.2.8, 3.0.6, 1.8.3')
   }
 
-  const downloadUrl = `http://download.agora.io/sdk/release/Electron-${genOS()}-${packageVersion}-${electronVersion}.zip`;
+  let downloadUrl = `http://download.agora.io/sdk/release/Electron-${genOS()}-${packageVersion}-${electronVersion}.zip`;
+  if(platform === "win32" && arch === "x64") {
+    downloadUrl = `http://download.agora.io/sdk/release/Electron-win64-${packageVersion}-${electronVersion}.zip`;
+  }
 
   /** start download */
   const outputDir = "./build/";
 
   logger.info("Package Version:", packageVersion);
   logger.info("Platform:", platform);
+  if(arch)
+    logger.info("Arch:", arch)
   logger.info("Electron Version:", electronVersion);
   logger.info("  Download URL  : ", downloadUrl, "\n");
 
