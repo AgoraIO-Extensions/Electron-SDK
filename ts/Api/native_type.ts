@@ -219,6 +219,28 @@ export interface TranscodingConfig {
     /** Height of the image on the broadcasting video. */
     height: number;
   };
+
+  background: {
+    /** 
+     * HTTP/HTTPS URL address of the image on the broadcasting video.
+     * 
+     * The maximum length of this parameter is 1024 bytes.
+     */
+    url: string;
+    /** Horizontal position of the image from the upper left of the 
+     * broadcasting video. 
+     */
+    x: number;
+    /** Vertical position of the image from the upper left of the broadcasting 
+     * video. 
+     */
+    y: number;
+    /** Width of the image on the broadcasting video. */
+    width: number;
+    /** Height of the image on the broadcasting video. */
+    height: number;
+  };
+  
   /** The TranscodingUsers Array. */
   transcodingUsers: Array<TranscodingUser>;
 }
