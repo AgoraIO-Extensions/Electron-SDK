@@ -291,6 +291,15 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
         if (payload) {
             CaptureScreenByDisplayCmd *cmd = (CaptureScreenByDisplayCmd*)payload;
             agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
+            if (cmd->excludeWindowCount > 0) {
+                agora::rtc::view_t exculdeWindows[MAX_WINDOW_ID_COUNT] = {nullptr};
+                for (int i = 0; i < cmd->excludeWindowCount; ++i) {
+                    agora::rtc::view_t windowId = reinterpret_cast<agora::rtc::view_t>(cmd->excludeWindowList[i]);
+                    exculdeWindows[i] = windowId;
+                }
+                cmd->captureParams.excludeWindowList = exculdeWindows;
+                cmd->captureParams.excludeWindowCount  = cmd->excludeWindowCount;
+            }
             int result = 0;
 #if defined(_WIN32)
             result = m_rtcEngine->startScreenCaptureByScreenRect(cmd->screenId, cmd->regionRect, cmd->captureParams);
@@ -321,8 +330,18 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
     }
     else if(msg == AGORA_IPC_UPDATE_SCREEN_CAPTURE_PARAMS) {
         if (payload) {
-            agora::rtc::ScreenCaptureParameters* params = (agora::rtc::ScreenCaptureParameters*)payload;
-            m_rtcEngine->updateScreenCaptureParameters(*params);
+            ScreenCaptureParametersCmd* cmd = (ScreenCaptureParametersCmd*)payload;
+            if (cmd->excludeWindowCount > 0) {
+                agora::rtc::view_t exculdeWindows[MAX_WINDOW_ID_COUNT] = {nullptr};
+                for (int i = 0; i < cmd->excludeWindowCount; ++i) {
+                    agora::rtc::view_t windowId = reinterpret_cast<agora::rtc::view_t>(cmd->excludeWindowList[i]);
+                    exculdeWindows[i] = windowId;
+                }
+                cmd->captureParams.excludeWindowList = exculdeWindows;
+                cmd->captureParams.excludeWindowCount  = cmd->excludeWindowCount;
+            }
+
+            m_rtcEngine->updateScreenCaptureParameters(cmd->captureParams);
         }
     }
     else if(msg == AGORA_IPC_SET_SCREEN_CAPTURE_CONTENT_HINT) {

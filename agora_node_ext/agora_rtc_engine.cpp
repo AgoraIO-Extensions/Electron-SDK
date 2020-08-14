@@ -2042,9 +2042,37 @@ namespace agora {
                 status = napi_get_object_property_bool_(isolate, obj, "windowFocus", captureParams.windowFocus);
                 CHECK_NAPI_STATUS(pEngine, status);
                 captureParams.dimensions = dimensions;
+                
+                std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
 
+                Local<Name> keyName = String::NewFromUtf8(isolate, "excludeWindowList", NewStringType::kInternalized).ToLocalChecked();
+                Local<Context> context = isolate->GetCurrentContext();
+                Local<Value> excludeWindowList = obj->Get(context, keyName).ToLocalChecked();
+                if (!excludeWindowList->IsNull() && excludeWindowList->IsArray()) {
+                    auto excludeWindowListValue = v8::Array::Cast(*excludeWindowList);
+                    for (int i = 0; i < excludeWindowListValue->Length(); ++i) {
+                        agora::rtc::IRtcEngine::WindowIDType windowId;
+                        Local<Value> value = excludeWindowListValue->Get(context, i).ToLocalChecked();
+#if defined(__APPLE__)
+                        status = napi_get_value_uint32_(value, windowId);
+                        CHECK_NAPI_STATUS(pEngine, status);
+#elif defined(_WIN32)
+#if defined(_WIN64)
+                        int64_t wid;
+                        status = napi_get_value_int64_(value, wid);
+#else
+                        uint32_t wid;
+                        status = napi_get_value_uint32_(value, wid);
+#endif
+
+                        CHECK_NAPI_STATUS(pEngine, status);
+                        windowId = (HWND)wid;
+#endif
+                        excludeWindows.push_back(windowId);
+                    }
+                }
                 if (pEngine->m_videoSourceSink.get()) {
-                    pEngine->m_videoSourceSink->startScreenCaptureByScreen(screen, regionRect, captureParams);
+                    pEngine->m_videoSourceSink->startScreenCaptureByScreen(screen, regionRect, captureParams, excludeWindows);
                     result = 0;
                 }
             } while (false);
@@ -2167,8 +2195,36 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 captureParams.dimensions = dimensions;
 
+                std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
+
+                Local<Name> keyName = String::NewFromUtf8(isolate, "excludeWindowList", NewStringType::kInternalized).ToLocalChecked();
+                Local<Context> context = isolate->GetCurrentContext();
+                Local<Value> excludeWindowList = obj->Get(context, keyName).ToLocalChecked();
+                if (!excludeWindowList->IsNull() && excludeWindowList->IsArray()) {
+                    auto excludeWindowListValue = v8::Array::Cast(*excludeWindowList);
+                    for (int i = 0; i < excludeWindowListValue->Length(); ++i) {
+                        agora::rtc::IRtcEngine::WindowIDType windowId;
+                        Local<Value> value = excludeWindowListValue->Get(context, i).ToLocalChecked();
+#if defined(__APPLE__)
+                        status = napi_get_value_uint32_(value, windowId);
+                        CHECK_NAPI_STATUS(pEngine, status);
+#elif defined(_WIN32)
+#if defined(_WIN64)
+                        int64_t wid;
+                        status = napi_get_value_int64_(value, wid);
+#else
+                        uint32_t wid;
+                        status = napi_get_value_uint32_(value, wid);
+#endif
+
+                        CHECK_NAPI_STATUS(pEngine, status);
+                        windowId = (HWND)wid;
+#endif
+                        excludeWindows.push_back(windowId);
+                    }
+                }
                 if (pEngine->m_videoSourceSink.get()) {
-                    pEngine->m_videoSourceSink->updateScreenCaptureParameters(captureParams);
+                    pEngine->m_videoSourceSink->updateScreenCaptureParameters(captureParams, excludeWindows);
                     result = 0;
                 }
             } while (false);
