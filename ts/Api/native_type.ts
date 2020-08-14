@@ -1155,6 +1155,10 @@ export interface CaptureParam {
   captureMouseCursor: boolean;
 
   windowFocus: boolean;
+
+  excludeWindowList: Array<number>;
+
+  excludeWindowCount: number;
 }
 
 /**
