@@ -118,11 +118,22 @@ struct CaptureScreenCmd
     {}
 };
 
+#define MAX_WINDOW_ID_COUNT 128
+
+struct ScreenCaptureParametersCmd
+{
+    agora::rtc::ScreenCaptureParameters captureParams;
+    agora::rtc::IRtcEngine::WindowIDType excludeWindowList[MAX_WINDOW_ID_COUNT];
+    int excludeWindowCount;
+};
+
 struct CaptureScreenByDisplayCmd
 {
     ScreenIDType screenId;
     agora::rtc::Rectangle regionRect;
     agora::rtc::ScreenCaptureParameters captureParams;
+    agora::rtc::IRtcEngine::WindowIDType excludeWindowList[MAX_WINDOW_ID_COUNT];
+    int excludeWindowCount;
 };
 
 struct CaptureScreenByWinCmd
