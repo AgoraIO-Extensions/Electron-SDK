@@ -404,16 +404,35 @@ export default class App extends Component {
       return false
     };
     return new Promise((resolve, reject) => {
-      let rtcEngine = this.getRtcEngine()
+      let rtcEngine = this.getRtcEngine();
+      rtcEngine.videoSourceSetLogFile("videosource.txt");
+      // rtcEngine.videoSourceSetParameters("{\"rtc.log_filter\": 65535}");
       // rtcEngine.startScreenCapture2(windowId, captureFreq, rect, bitrate);
       // there's a known limitation that, videosourcesetvideoprofile has to be called at least once
       // note although it's called, it's not taking any effect, to control the screenshare dimension, use captureParam instead
-      console.log(`start sharing display ${displayId}`)
+      console.log(`start sharing display ${JSON.stringify(displayId)}`);
       // rtcEngine.videoSourceSetVideoProfile(43, false);
       // rtcEngine.videosourceStartScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15})
-      rtcEngine.videoSourceStartScreenCaptureByScreen(displayId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 5, captureMouseCursor: false, windowFocus: false})
+
+      rtcEngine.videoSourceStartScreenCaptureByScreen(displayId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 5, captureMouseCursor: false, windowFocus: false});
+
+      // let list = rtcEngine.getScreenWindowsInfo();
+      // let exculdeList = list.map((item, index) => {
+      //   return item.windowId
+      // });
+      // rtcEngine.videoSourceStartScreenCaptureByScreen(displayId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 5, captureMouseCursor: false, windowFocus: false, excludeWindowList: exculdeList, excludeWindowCount: exculdeList.length});
+      
       rtcEngine.startScreenCapturePreview();
     });
+  }
+
+  updateScreenShareParam = (e) => {
+    // let rtcEngine = this.getRtcEngine()
+    // let list = rtcEngine.getScreenWindowsInfo();
+    // let exculdeList = list.map((item, index) => {
+    //   return item.windowId
+    // });
+    // rtcEngine.videoSourceUpdateScreenCaptureParameters({width: 0, height: 0, bitrate: 500, frameRate: 5, captureMouseCursor: false, windowFocus: false, excludeWindowList: exculdeList, excludeWindowCount: exculdeList.length});
   }
 
   handleScreenSharing = (e) => {
@@ -918,6 +937,9 @@ export default class App extends Component {
             </div>
             <div className="control">
               <button onClick={this.handleDisplaySharing} className="button is-link">Display Share</button>
+            </div>
+            <div className="control">
+              <button onClick={this.updateScreenShareParam} className="button is-link">Update Screen Share</button>
             </div>
           </div>
           <div className="field">
