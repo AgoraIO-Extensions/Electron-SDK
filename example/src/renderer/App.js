@@ -517,7 +517,7 @@ export default class App extends Component {
       return
     }
     if(!this.state.rtmpTestOn) {
-      this.rtcEngine.setLiveTranscoding({
+    let ret =  this.rtcEngine.setLiveTranscoding({
         /** width of canvas */
         width: 640,
         /** height of canvas */
@@ -541,6 +541,7 @@ export default class App extends Component {
         audioSampleRate: 44800,
         audioChannels: 1,
         audioBitrate: 48,
+        transcodingExtraInfo: "",
         /** transcodingusers array */
         transcodingUsers: [
           {
@@ -562,6 +563,8 @@ export default class App extends Component {
           height: 0
         }
       });
+
+      console.log(`setLivetranscoding ===== ${ret}`)
       this.rtcEngine.addPublishStreamUrl(
         url,
         true
