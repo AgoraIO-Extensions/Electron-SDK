@@ -291,13 +291,13 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
         if (payload) {
             CaptureScreenByDisplayCmd *cmd = (CaptureScreenByDisplayCmd*)payload;
             agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
+            agora::rtc::view_t excludeWindows[MAX_WINDOW_ID_COUNT] = {nullptr};
             if (cmd->excludeWindowCount > 0) {
-                agora::rtc::view_t exculdeWindows[MAX_WINDOW_ID_COUNT] = {nullptr};
                 for (int i = 0; i < cmd->excludeWindowCount; ++i) {
                     agora::rtc::view_t windowId = reinterpret_cast<agora::rtc::view_t>(cmd->excludeWindowList[i]);
-                    exculdeWindows[i] = windowId;
+                    excludeWindows[i] = windowId;
                 }
-                cmd->captureParams.excludeWindowList = exculdeWindows;
+                cmd->captureParams.excludeWindowList = excludeWindows;
                 cmd->captureParams.excludeWindowCount  = cmd->excludeWindowCount;
             }
             int result = 0;
@@ -331,13 +331,13 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
     else if(msg == AGORA_IPC_UPDATE_SCREEN_CAPTURE_PARAMS) {
         if (payload) {
             ScreenCaptureParametersCmd* cmd = (ScreenCaptureParametersCmd*)payload;
+            agora::rtc::view_t excludeWindows[MAX_WINDOW_ID_COUNT] = {nullptr};
             if (cmd->excludeWindowCount > 0) {
-                agora::rtc::view_t exculdeWindows[MAX_WINDOW_ID_COUNT] = {nullptr};
                 for (int i = 0; i < cmd->excludeWindowCount; ++i) {
                     agora::rtc::view_t windowId = reinterpret_cast<agora::rtc::view_t>(cmd->excludeWindowList[i]);
-                    exculdeWindows[i] = windowId;
+                    excludeWindows[i] = windowId;
                 }
-                cmd->captureParams.excludeWindowList = exculdeWindows;
+                cmd->captureParams.excludeWindowList = excludeWindows;
                 cmd->captureParams.excludeWindowCount  = cmd->excludeWindowCount;
             }
 
