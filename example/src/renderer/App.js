@@ -556,11 +556,18 @@ export default class App extends Component {
           }
         ],
         watermark: {
-          url: "",
+          url: "http://www.baidu.com",
           x: 0,
           y:0,
           width: 0,
           height: 0
+        },
+        background: {
+          url: "http://www.baidu.2323com",
+          x: 1323,
+          y:4324,
+          width: 23,
+          height: 434
         }
       });
 
