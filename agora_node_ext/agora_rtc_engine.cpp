@@ -610,7 +610,7 @@ namespace agora {
                     transcoding.watermark = &wkImage;
                 }
 
-                Local<Name> keyNameBackground = Nan::New<String>("background").ToLocalChecked();
+                Local<Name> keyNameBackground = Nan::New<String>("backgroundImage").ToLocalChecked();
                 Local<Value> bgValue = obj->Get(isolate->GetCurrentContext(), keyNameBackground).ToLocalChecked();
                 if (!bgValue->IsNullOrUndefined()) {
                     Local<Object> objWm;
@@ -5721,7 +5721,7 @@ namespace agora {
                     transcoding.watermark = &wkImage;
                 }
 
-                Local<Name> keyNameBackground = Nan::New<String>("background").ToLocalChecked();
+                Local<Name> keyNameBackground = Nan::New<String>("backgroundImage").ToLocalChecked();
                 Local<Value> bgValue = obj->Get(isolate->GetCurrentContext(), keyNameBackground).ToLocalChecked();
                 if (!bgValue->IsNullOrUndefined()) {
                     Local<Object> objWm;
