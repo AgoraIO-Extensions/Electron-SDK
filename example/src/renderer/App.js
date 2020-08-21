@@ -517,7 +517,7 @@ export default class App extends Component {
       return
     }
     if(!this.state.rtmpTestOn) {
-      this.rtcEngine.setLiveTranscoding({
+    let ret =  this.rtcEngine.setLiveTranscoding({
         /** width of canvas */
         width: 640,
         /** height of canvas */
@@ -541,6 +541,7 @@ export default class App extends Component {
         audioSampleRate: 44800,
         audioChannels: 1,
         audioBitrate: 48,
+        transcodingExtraInfo: "",
         /** transcodingusers array */
         transcodingUsers: [
           {
@@ -555,13 +556,22 @@ export default class App extends Component {
           }
         ],
         watermark: {
-          url: "",
+          url: "http://www.baidu.com",
           x: 0,
           y:0,
           width: 0,
           height: 0
+        },
+        background: {
+          url: "http://www.baidu.2323com",
+          x: 1323,
+          y:4324,
+          width: 23,
+          height: 434
         }
       });
+
+      console.log(`setLivetranscoding ===== ${ret}`)
       this.rtcEngine.addPublishStreamUrl(
         url,
         true
