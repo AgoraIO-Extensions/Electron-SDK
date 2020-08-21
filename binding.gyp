@@ -79,7 +79,9 @@
                     './common/libyuv/source/compare_win.cc',
                     './common/libyuv/source/rotate_win.cc',
                     './common/libyuv/source/row_win.cc',
-                    './common/libyuv/source/scale_win.cc'
+                    './common/libyuv/source/scale_win.cc',
+                    './resources/resource.h',
+                    './resources/VideoSource.rc'
                 ],
                 'include_dirs': [
                 './sdk/include'
