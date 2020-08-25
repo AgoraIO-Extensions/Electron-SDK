@@ -626,27 +626,27 @@ namespace agora {
                     transcoding.watermark = &wkImage;
                 }
 
+                nodestring bgurl;
                 Local<Name> keyNameBackground = Nan::New<String>("backgroundImage").ToLocalChecked();
                 Local<Value> bgValue = obj->Get(isolate->GetCurrentContext(), keyNameBackground).ToLocalChecked();
                 if (!bgValue->IsNullOrUndefined()) {
-                    Local<Object> objWm;
-                    napi_get_value_object_(isolate, bgValue, objWm);
+                    Local<Object> objBg;
+                    napi_get_value_object_(isolate, bgValue, objBg);
                     
-                    nodestring wmurl;
-                    status = napi_get_object_property_nodestring_(isolate, objWm, "url", wmurl);
+                    status = napi_get_object_property_nodestring_(isolate, objBg, "url", bgurl);
                     CHECK_NAPI_STATUS(pEngine, status);
-                    bgImage.url = wmurl;
+                    bgImage.url = bgurl;
 
-                    status = napi_get_object_property_int32_(isolate, objWm, "x", bgImage.x);
-                    CHECK_NAPI_STATUS(pEngine, status);
-
-                    status = napi_get_object_property_int32_(isolate, objWm, "y", bgImage.y);
+                    status = napi_get_object_property_int32_(isolate, objBg, "x", bgImage.x);
                     CHECK_NAPI_STATUS(pEngine, status);
 
-                    status = napi_get_object_property_int32_(isolate, objWm, "width", bgImage.width);
+                    status = napi_get_object_property_int32_(isolate, objBg, "y", bgImage.y);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
+                    status = napi_get_object_property_int32_(isolate, objBg, "width", bgImage.width);
                     CHECK_NAPI_STATUS(pEngine, status);
                     
-                    status = napi_get_object_property_int32_(isolate, objWm, "height", bgImage.height);
+                    status = napi_get_object_property_int32_(isolate, objBg, "height", bgImage.height);
                     CHECK_NAPI_STATUS(pEngine, status);
                     transcoding.backgroundImage = &bgImage;
                 }
@@ -5957,27 +5957,27 @@ namespace agora {
                     transcoding.watermark = &wkImage;
                 }
 
+                nodestring bgurl;
                 Local<Name> keyNameBackground = Nan::New<String>("backgroundImage").ToLocalChecked();
                 Local<Value> bgValue = obj->Get(isolate->GetCurrentContext(), keyNameBackground).ToLocalChecked();
                 if (!bgValue->IsNullOrUndefined()) {
-                    Local<Object> objWm;
-                    napi_get_value_object_(isolate, bgValue, objWm);
+                    Local<Object> objBg;
+                    napi_get_value_object_(isolate, bgValue, objBg);
                     
-                    nodestring wmurl;
-                    status = napi_get_object_property_nodestring_(isolate, objWm, "url", wmurl);
+                    status = napi_get_object_property_nodestring_(isolate, objBg, "url", bgurl);
                     CHECK_NAPI_STATUS(pChannel, status);
-                    bgImage.url = wmurl;
+                    bgImage.url = bgurl;
 
-                    status = napi_get_object_property_int32_(isolate, objWm, "x", bgImage.x);
-                    CHECK_NAPI_STATUS(pChannel, status);
-
-                    status = napi_get_object_property_int32_(isolate, objWm, "y", bgImage.y);
+                    status = napi_get_object_property_int32_(isolate, objBg, "x", bgImage.x);
                     CHECK_NAPI_STATUS(pChannel, status);
 
-                    status = napi_get_object_property_int32_(isolate, objWm, "width", bgImage.width);
+                    status = napi_get_object_property_int32_(isolate, objBg, "y", bgImage.y);
+                    CHECK_NAPI_STATUS(pChannel, status);
+
+                    status = napi_get_object_property_int32_(isolate, objBg, "width", bgImage.width);
                     CHECK_NAPI_STATUS(pChannel, status);
                     
-                    status = napi_get_object_property_int32_(isolate, objWm, "height", bgImage.height);
+                    status = napi_get_object_property_int32_(isolate, objBg, "height", bgImage.height);
                     CHECK_NAPI_STATUS(pChannel, status);
                     transcoding.backgroundImage = &bgImage;
                 }
