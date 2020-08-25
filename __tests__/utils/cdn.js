@@ -33,6 +33,20 @@ class LiveStreaming {
             audioChannel: 0
           }
         ],
+        watermark: {
+          url: "",
+          x:0,
+          y:0,
+          width:0,
+          height: 0
+        },
+        backgroundImage: {
+          url: "",
+          x:0,
+          y:0,
+          width:0,
+          height: 0
+        },
         backgroundColor: 0x0,
         audioSampleRate: 32000,
         audioBitrate: 48,
