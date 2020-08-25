@@ -729,6 +729,14 @@ export interface LocalVideoStats {
    * The codec type of the local video. See {@link VIDEO_CODEC_TYPE}.
    */
   codecType: number;
+  /** 
+   * The video packet loss rate (%) from the local client to the Agora edge server before applying the anti-packet loss strategies.
+   */
+  txPacketLossRate: number;
+  /** 
+   * The capture frame rate (fps) of the local video.
+   */
+  captureFrameRate: number;
 }
 /** 
  * The statistics of the local audio stream.
@@ -746,6 +754,10 @@ export interface LocalAudioStats {
    * The average sending bitrate (Kbps).
    */
   sentBitrate: number;
+  /** 
+   * The audio packet loss rate (%) from the local client to the Agora edge server before applying the anti-packet loss strategies.
+   */
+  txPacketLossRate: number;
 }
 /** VideoEncoderConfiguration */
 export interface VideoEncoderConfiguration {
@@ -1102,6 +1114,18 @@ export interface RemoteVideoStats {
    * anti-packet-loss method.
    */
   packetLossRate: number;
+  /**
+   * The total time (ms) when the remote user in the Communication profile or the remote
+   * broadcaster in the Live-broadcast profile neither stops sending the video stream nor
+   * disables the video module after joining the channel.
+
+     @since v3.0.1
+   */
+  totalActiveTime: number;
+  /**
+   * The total publish duration (ms) of the remote video stream.
+   */
+  publishDuration: number;
 }
 /** Sets the camera capturer configuration. */
 export enum CaptureOutPreference {
@@ -1284,6 +1308,15 @@ export interface RemoteAudioStats {
    * when the audio is available.
    */
   frozenRate: number;
+  /** 
+   * The total time (ms) when the remote user in the `COMMUNICATION` profile or the remote host in
+   * the `LIVE_BROADCASTING` profile neither stops sending the audio stream nor disables the audio module after joining the channel.
+   */
+  totalActiveTime: number;
+  /**
+   * The total publish duration (ms) of the remote audio stream.
+   */
+  publishDuration: number;
 }
 
 /**
@@ -1623,7 +1656,6 @@ export type STREAM_SUBSCRIBE_STATE =
   | 2 //SUB_STATE_SUBSCRIBING
   | 3 //SUB_STATE_SUBSCRIBED
 
-
 /**
  * The definition of {@link ChannelMediaInfo}.
  */
@@ -1839,6 +1871,19 @@ export type STREAM_PUBLISH_STATE =
     | 1 //PUB_STATE_NO_PUBLISHED
     | 2 //PUB_STATE_PUBLISHING
     | 3 //PUB_STATE_PUBLISHED
+
+export type AUDIO_ROUTE_TYPE = 
+    | -1 //AUDIO_ROUTE_DEFAULT
+    | 0  //AUDIO_ROUTE_HEADSET
+    | 1  //AUDIO_ROUTE_EARPIECE
+    | 2  //AUDIO_ROUTE_HEADSET_NO_MIC
+    | 3  //AUDIO_ROUTE_SPEAKERPHONE
+    | 4  //AUDIO_ROUTE_LOUDSPEAKER
+    | 5  //AUDIO_ROUTE_BLUETOOTH
+    | 6  //AUDIO_ROUTE_USB
+    | 7  //AUDIO_ROUTE_HDMI
+    | 8  //AUDIO_ROUTE_DISPLAYPORT
+    | 9  //AUDIO_ROUTE_AIRPLAY
 
 export interface Metadata {
     /** The User ID.
@@ -2513,6 +2558,10 @@ export interface NodeRtcEngine {
    * @ignore
    */
   setAudioMixingPosition(position: number): number;
+  /**
+   * @ignore
+   */
+  setAudioMixingPitch(pitch: number): number;
   /**
    * @ignore
    */
