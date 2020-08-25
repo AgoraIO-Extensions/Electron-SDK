@@ -45,6 +45,7 @@ import {
   AREA_CODE,
   STREAM_PUBLISH_STATE,
   STREAM_SUBSCRIBE_STATE,
+  AUDIO_ROUTE_TYPE,
   EncryptionConfig
 } from './native_type';
 import { EventEmitter } from 'events';
@@ -729,6 +730,11 @@ class AgoraRtcEngine extends EventEmitter {
     this.rtcEngine.onEvent('videoSubscribeStateChanged', function(channel: string, uid: number, oldState: STREAM_SUBSCRIBE_STATE, newState: STREAM_SUBSCRIBE_STATE, elapseSinceLastState: number) {
       fire('videoSubscribeStateChanged', channel, uid, oldState, newState, elapseSinceLastState);
     })
+
+    this.rtcEngine.onEvent('audioRouteChanged', function(routing: AUDIO_ROUTE_TYPE) {
+      fire('audioRouteChanged', routing);
+    })
+
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
       self.onRegisterDeliverFrame(infos);
     });
@@ -4056,6 +4062,27 @@ class AgoraRtcEngine extends EventEmitter {
    */
   setAudioMixingPosition(position: number): number {
     return this.rtcEngine.setAudioMixingPosition(position);
+  }
+
+  /** Sets the pitch of the local music file.
+   * @since v3.0.1
+   *
+   * When a local music file is mixed with a local human voice, call this method to set the pitch of the local music file only.
+   *
+   * @note
+   * Call this method after calling `startAudioMixing`.
+   *
+   * @param {number} pitch Sets the pitch of the local music file by chromatic scale. The default value is 0,
+   * which means keeping the original pitch. The value ranges from -12 to 12, and the pitch value between
+   * consecutive values is a chromatic value. The greater the absolute value of this parameter, the
+   * higher or lower the pitch of the local music file.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  setAudioMixingPitch(pitch: number): number {
+    return this.rtcEngine.setAudioMixingPitch(pitch);
   }
 
   // ===========================================================================
