@@ -5476,6 +5476,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setMaxMetadataSize);
                 PROPERTY_METHOD_DEFINE(registerMediaMetadataObserver);
                 PROPERTY_METHOD_DEFINE(unRegisterMediaMetadataObserver);
+                PROPERTY_METHOD_DEFINE(enableEncryption);
 
             EN_PROPERTY_DEFINE()
             
@@ -6480,6 +6481,41 @@ namespace agora {
                 status = napi_get_value_int32_(args[0], maxSize);
                 CHECK_NAPI_STATUS(pChannel, status);
                 result = pChannel->metadataObserver.get()->setMaxMetadataSize(maxSize);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcChannel, enableEncryption)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcChannel *pChannel = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+
+                Isolate *isolate = args.GetIsolate();
+                bool enabled;
+                status = napi_get_value_bool_(args[0], enabled);
+                CHECK_NAPI_STATUS(pChannel, status);
+                
+                int encryptionMode;
+                Local<Object> obj;
+                status = napi_get_value_object_(isolate, args[1], obj);
+                CHECK_NAPI_STATUS(pChannel, status);
+                status = napi_get_object_property_int32_(isolate, obj, "encryptionMode", encryptionMode);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                nodestring encryptionKey;
+                status = napi_get_object_property_nodestring_(isolate, obj, "encryptionKey", encryptionKey);
+                CHECK_NAPI_STATUS(pChannel, status);
+
+                EncryptionConfig config;
+                config.encryptionMode = (ENCRYPTION_MODE)encryptionMode;
+                config.encryptionKey = encryptionKey;
+                result = pChannel->m_channel->enableEncryption(enabled, config);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
