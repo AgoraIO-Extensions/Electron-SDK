@@ -4928,7 +4928,7 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.sendCustomReportMessage(id, category, event, label, value);
   }
 
-  enableEncryption(enabled: boolean, config: EncryptionConfig) {
+  enableEncryption(enabled: boolean, config: EncryptionConfig): number {
     return this.rtcEngine.enableEncryption(enabled, config);
   }
 }
@@ -7177,6 +7177,10 @@ class AgoraRtcChannel extends EventEmitter
 
   setMaxMetadataSize(size: number): number {
     return this.rtcChannel.setMaxMetadataSize(size);
+  }
+
+  enableEncryption(enabled: boolean, config: EncryptionConfig): number {
+    return this.rtcChannel.enableEncryption(enabled, config);
   }
 }
 
