@@ -436,7 +436,7 @@ void NodeVideoFrameTransporter::FlushVideo()
                 ++cit;
             }
 
-            if (m_devTestVideoFrame.get()  && m_localVideoFrame->m_count > MAX_MISS_COUNT) {
+            if (m_devTestVideoFrame.get() && m_localVideoFrame && m_localVideoFrame->m_count > MAX_MISS_COUNT) {
                 m_devTestVideoFrame.reset();
             }
             lck.unlock();
