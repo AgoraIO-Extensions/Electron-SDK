@@ -3100,4 +3100,8 @@ export interface NodeRtcChannel {
    * @ignore
    */
   adjustUserPlaybackSignalVolume(uid: number, volume: number): number;
+  /**
+   * @ignore
+   */
+  enableEncryption(enabled: boolean, config: EncryptionConfig): number;
 }
