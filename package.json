@@ -26,7 +26,8 @@
     "scripts",
     "js",
     "jest.config.js",
-    "just-task.js"
+    "just-task.js",
+    "types"
   ],
   "gypfile": false,
   "dependencies": {
