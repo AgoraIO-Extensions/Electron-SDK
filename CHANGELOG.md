@@ -1,3 +1,11 @@
+## 3.1.1-build.914 (August 28th, 2020)
+#### :house: Intrenal
+* 3.1.1 SDK upgrade
+* Add new parameter for CaptureParam:
+  - windowFocus (Whether to bring the window to the front)
+  - excludeWindowList (A list of IDs of windows to be blocked.)
+  - excludeWindowCount (The number of windows to be blocked.)
+
 ## 3.0.1-beta.1 (June 23rd, 2020)
 #### :house: Internal
 * 3.0.1 SDK upgrade
