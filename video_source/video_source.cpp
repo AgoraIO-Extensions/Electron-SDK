@@ -357,6 +357,19 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
     else if(msg == AGORA_IPC_ENABLE_AUDIO) {
         m_rtcEngine->enableAudio();
     }
+    else if(msg == AGORA_IPC_SET_ENCRYPTION_MODE) {
+        m_rtcEngine->setEncryptionMode((const char *)payload);
+    }
+    else if(msg == AGORA_IPC_ENABLE_ENCRYPTION) {
+        EncryptionConfigCmd *cmd = (EncryptionConfigCmd*)payload;
+        agora::rtc::EncryptionConfig config;
+        config.encryptionKey = cmd->encryptionKey;
+        config.encryptionMode = cmd->encryptionMode;
+        m_rtcEngine->enableEncryption(cmd->enable, config);
+    }
+    else if(msg == AGORA_IPC_SET_ENCRYPTION_SECRET) {
+        m_rtcEngine->setEncryptionSecret((const char *)payload);
+    }
 
     LOG_LEAVE;
 }
