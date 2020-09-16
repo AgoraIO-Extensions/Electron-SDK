@@ -190,6 +190,9 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(videoSourceUpdateScreenCaptureRegion)
                 PROPERTY_METHOD_DEFINE(videoSourceEnableLoopbackRecording)
                 PROPERTY_METHOD_DEFINE(videoSourceEnableAudio)
+                PROPERTY_METHOD_DEFINE(videoSourceEnableEncryption)
+                PROPERTY_METHOD_DEFINE(videoSourceSetEncryptionMode)
+                PROPERTY_METHOD_DEFINE(videoSourceSetEncryptionSecret);
                 PROPERTY_METHOD_DEFINE(setBool);
                 PROPERTY_METHOD_DEFINE(setInt);
                 PROPERTY_METHOD_DEFINE(setUInt);
@@ -2332,6 +2335,90 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 if (!pEngine->m_videoSourceSink.get() || pEngine->m_videoSourceSink->enableAudio() != node_ok) {
+                    break;
+                }
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, videoSourceEnableEncryption)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do{
+                Isolate *isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                bool enable;
+                status = napi_get_value_bool_(args[0], enable);
+                CHECK_NAPI_STATUS(pEngine, status);
+                if(!args[1]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+                Local<Object> obj;
+                status = napi_get_value_object_(isolate, args[1], obj);
+                CHECK_NAPI_STATUS(pEngine, status);
+                EncryptionConfig encryptionConfig;
+                int encryptionMode;
+                status = napi_get_object_property_int32_(isolate, obj, "encryptionMode", encryptionMode);
+                CHECK_NAPI_STATUS(pEngine, status);
+                nodestring encryptionKey;
+                status = napi_get_object_property_nodestring_(isolate, obj, "encryptionKey", encryptionKey);
+                CHECK_NAPI_STATUS(pEngine, status);
+                encryptionConfig.encryptionMode = (ENCRYPTION_MODE)encryptionMode;
+                encryptionConfig.encryptionKey = encryptionKey;
+                if (!pEngine->m_videoSourceSink.get() || pEngine->m_videoSourceSink->enableEncryption(enable, encryptionConfig) != node_ok) {
+                    break;
+                }
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetEncryptionMode)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                nodestring encryptionMode;
+                status = napi_get_value_nodestring_(args[0], encryptionMode);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                if (!pEngine->m_videoSourceSink.get() || pEngine->m_videoSourceSink->setEncryptionMode(encryptionMode) != node_ok) {
+                    break;
+                }
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetEncryptionSecret)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                nodestring secret;
+                status = napi_get_value_nodestring_(args[0], secret);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                if (!pEngine->m_videoSourceSink.get() || pEngine->m_videoSourceSink->setEncryptionSecret(secret) != node_ok) {
                     break;
                 }
                 result = 0;

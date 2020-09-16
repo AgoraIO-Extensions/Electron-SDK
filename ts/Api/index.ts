@@ -3724,6 +3724,80 @@ class AgoraRtcEngine extends EventEmitter {
   videoSourceEnableAudio() : number {
     return this.rtcEngine.videoSourceEnableAudio()
   }
+   /** Enables/Disables the built-in encryption.
+     *
+     * @since v3.1.0
+     *
+     * In scenarios requiring high security, Agora recommends calling this method to enable the built-in encryption before joining a channel.
+     *
+     * All users in the same channel must use the same encryption mode and encryption key. Once all users leave the channel, the encryption key of this channel is automatically cleared.
+     *
+     * @note
+     * - If you enable the built-in encryption, you cannot use the RTMP streaming function.
+     * - Agora supports four encryption modes. If you choose an encryption mode (excepting `SM4_128_ECB` mode), you need to add an external encryption library when integrating the SDK. See the advanced guide *Channel Encryption*.
+     *
+     * @param enabled Whether to enable the built-in encryption:
+     * - true: Enable the built-in encryption.
+     * - false: Disable the built-in encryption.
+     * @param config Configurations of built-in encryption schemas. See EncryptionConfig.
+     *
+     * @return
+     * - 0: Success.
+     * - < 0: Failure.
+     *  - -2(ERR_INVALID_ARGUMENT): An invalid parameter is used. Set the parameter with a valid value.
+     *  - -4(ERR_NOT_SUPPORTED): The encryption mode is incorrect or the SDK fails to load the external encryption library. Check the enumeration or reload the external encryption library.
+     *  - -7(ERR_NOT_INITIALIZED): The SDK is not initialized. Initialize the `IRtcEngine` instance before calling this method.
+     */
+  videoSourceEnableEncryption(enabled: boolean, encryptionConfig: EncryptionConfig): number {
+    return this.rtcEngine.videoSourceEnableEncryption(enabled, encryptionConfig);
+  }
+
+    /** **DEPRECATED** Sets the built-in encryption mode.
+
+     @deprecated Deprecated as of v3.1.0. Use the \ref agora::rtc::IRtcEngine::enableEncryption "enableEncryption" instead.
+
+     The Agora SDK supports built-in encryption, which is set to the @p aes-128-xts mode by default. Call this method to use other encryption modes.
+
+     All users in the same channel must use the same encryption mode and password.
+
+     Refer to the information related to the AES encryption algorithm on the differences between the encryption modes.
+
+     @note Call the \ref IRtcEngine::setEncryptionSecret "setEncryptionSecret" method to enable the built-in encryption function before calling this method.
+
+     @param encryptionMode Pointer to the set encryption mode:
+     - "aes-128-xts": (Default) 128-bit AES encryption, XTS mode.
+     - "aes-128-ecb": 128-bit AES encryption, ECB mode.
+     - "aes-256-xts": 256-bit AES encryption, XTS mode.
+     - "": When encryptionMode is set as NULL, the encryption mode is set as "aes-128-xts" by default.
+
+     @return
+     - 0: Success.
+     - < 0: Failure.
+     */
+  videoSourceSetEncryptionMode(mode: string): number {
+    return this.rtcEngine.videoSourceSetEncryptionMode(mode);
+  }
+    /** **DEPRECATED** Enables built-in encryption with an encryption password before users join a channel.
+
+     Deprecated as of v3.1.0. Use the \ref agora::rtc::IRtcEngine::enableEncryption "enableEncryption" instead.
+
+     All users in a channel must use the same encryption password. The encryption password is automatically cleared once a user leaves the channel.
+
+     If an encryption password is not specified, the encryption functionality will be disabled.
+
+     @note
+     - Do not use this method for CDN live streaming.
+     - For optimal transmission, ensure that the encrypted data size does not exceed the original data size + 16 bytes. 16 bytes is the maximum padding size for AES encryption.
+
+     @param secret Pointer to the encryption password.
+
+     @return
+     - 0: Success.
+     - < 0: Failure.
+     */
+  videoSourceSetEncryptionSecret(secret: string): number {
+    return this.rtcEngine.videoSourceSetEncryptionSecret(secret);
+  }
 
   /**
    * Releases the video source object.
