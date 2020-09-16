@@ -70,6 +70,9 @@ namespace agora{
             virtual void setParameters(const char* parameters) override;
             virtual node_error enableLoopbackRecording(bool enabled, const char* deviceName) override;
             virtual node_error enableAudio() override;
+            virtual node_error setEncryptionMode(const char *encryptionMode) override;
+            virtual node_error enableEncryption(bool enable, EncryptionConfig encryptionConfig) override;
+            virtual node_error setEncryptionSecret(const char* secret) override;
         private:
             void msgThread();
             void deliverFrame(const char* payload, int len);
@@ -483,6 +486,36 @@ namespace agora{
         {
             if (m_initialized && m_peerJoined){
                 return m_ipcMsg->sendMessage(AGORA_IPC_ENABLE_AUDIO, nullptr, 0) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::setEncryptionMode(const char *encryptionMode)
+        {
+            if (m_initialized && m_peerJoined){
+                return m_ipcMsg->sendMessage(AGORA_IPC_SET_ENCRYPTION_MODE, (char *)encryptionMode, sizeof(const char *)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::setEncryptionSecret(const char* secret)
+        {
+            if (m_initialized && m_peerJoined){
+                return m_ipcMsg->sendMessage(AGORA_IPC_SET_ENCRYPTION_SECRET, (char *)secret, sizeof(const char *)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;      
+        }
+
+        node_error AgoraVideoSourceSink::enableEncryption(bool enable, EncryptionConfig encryptionConfig)
+        {
+            if (m_initialized && m_peerJoined){
+                EncryptionConfigCmd cmd;
+                cmd.enable = enable;
+                cmd.encryptionMode = encryptionConfig.encryptionMode;
+                if(encryptionConfig.encryptionKey) {
+                    strncpy(cmd.encryptionKey, encryptionConfig.encryptionKey, MAX_DEVICE_ID_LENGTH);
+                }
+                return m_ipcMsg->sendMessage(AGORA_IPC_ENABLE_ENCRYPTION, (char*)&cmd, sizeof(cmd)) ? node_ok : node_generic_error;
             }
             return node_status_error;
         }

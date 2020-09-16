@@ -2482,6 +2482,18 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
+  videoSourceEnableEncryption(enabled: boolean, encryptionConfig: EncryptionConfig): number;
+  /**
+   * @ignore
+   */
+  videoSourceSetEncryptionMode(mode: string): number;
+  /**
+   * @ignore
+   */
+  videoSourceSetEncryptionSecret(mode: string): number;
+  /**
+   * @ignore
+   */
   videoSourceRelease(): number;
   /**
    * @ignore
