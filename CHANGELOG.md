@@ -1,3 +1,11 @@
+## 3.1.1-hotfix.1 (September 17th, 2020)
+#### :house: Intrenal
+* 3.1.1 hotfix
+* Add new api for screen share
+  - videoSourceEnableEncryption
+  - videoSourceSetEncryptionMode
+  - videoSourceSetEncryptionSecret
+
 ## 3.1.1-build.914 (August 28th, 2020)
 #### :house: Intrenal
 * 3.1.1 SDK upgrade
