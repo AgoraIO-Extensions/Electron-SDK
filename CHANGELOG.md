@@ -1,3 +1,8 @@
+## 3.1.1-hotfix.2 (September 21th, 2020)
+#### :house: Intrenal
+* 3.1.1 hotfix
+* fix bug of videoSource screen share
+
 ## 3.1.1-hotfix.1 (September 17th, 2020)
 #### :house: Intrenal
 * 3.1.1 hotfix
