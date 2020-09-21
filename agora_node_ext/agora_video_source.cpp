@@ -492,7 +492,7 @@ namespace agora{
 
         node_error AgoraVideoSourceSink::setEncryptionMode(const char *encryptionMode)
         {
-            if (m_initialized && m_peerJoined){
+            if (m_initialized){
                 return m_ipcMsg->sendMessage(AGORA_IPC_SET_ENCRYPTION_MODE, (char *)encryptionMode, sizeof(const char *)) ? node_ok : node_generic_error;
             }
             return node_status_error;
@@ -500,7 +500,7 @@ namespace agora{
 
         node_error AgoraVideoSourceSink::setEncryptionSecret(const char* secret)
         {
-            if (m_initialized && m_peerJoined){
+            if (m_initialized){
                 return m_ipcMsg->sendMessage(AGORA_IPC_SET_ENCRYPTION_SECRET, (char *)secret, sizeof(const char *)) ? node_ok : node_generic_error;
             }
             return node_status_error;      
@@ -508,7 +508,7 @@ namespace agora{
 
         node_error AgoraVideoSourceSink::enableEncryption(bool enable, EncryptionConfig encryptionConfig)
         {
-            if (m_initialized && m_peerJoined){
+            if (m_initialized){
                 EncryptionConfigCmd cmd;
                 cmd.enable = enable;
                 cmd.encryptionMode = encryptionConfig.encryptionMode;
