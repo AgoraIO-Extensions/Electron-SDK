@@ -78,6 +78,18 @@ void IAVFramePluginManager::unregisterPlugin(std::string& pluginId)
     }
 }
 
+void IAVFramePluginManager::releasePlugin(std::string& pluginId)
+{
+    auto iter = m_mapPlugins.find(pluginId);
+    if(iter!=m_mapPlugins.end())
+    {
+        //free plugin instance
+        if(iter->second.instance) {
+            iter->second.instance->release();
+        }
+    }
+}
+
 bool IAVFramePluginManager::hasPlugin(std::string& pluginId)
 {
     return m_mapPlugins.end() != m_mapPlugins.find(pluginId);

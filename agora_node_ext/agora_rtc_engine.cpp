@@ -216,6 +216,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(initializePluginManager);
                 PROPERTY_METHOD_DEFINE(releasePluginManager);
                 PROPERTY_METHOD_DEFINE(registerPlugin);
+                PROPERTY_METHOD_DEFINE(releasePlugin);
                 PROPERTY_METHOD_DEFINE(unregisterPlugin);
                 PROPERTY_METHOD_DEFINE(enablePlugin);
                 PROPERTY_METHOD_DEFINE(getPlugins);
@@ -4367,6 +4368,26 @@ namespace agora {
                     break;
                 }
                 pEngine->m_avPluginManager->enablePlugin(pluginId, enabled);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+         NAPI_API_DEFINE(NodeRtcEngine, releasePlugin)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                CHECK_PLUGIN_MANAGER_EXIST(pEngine);
+                napi_status status = napi_ok;
+                std::string pluginId;
+                READ_PLUGIN_ID(pEngine, status, args[0], pluginId);
+                CHECK_PLUGIN_INFO_EXIST(pEngine, pluginId);
+                pEngine->m_avPluginManager->releasePlugin(pluginId);
+                result = 0;
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;

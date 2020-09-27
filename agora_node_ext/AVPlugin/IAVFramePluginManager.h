@@ -36,6 +36,7 @@ public:
     virtual bool onPlaybackAudioFrameBeforeMixing(unsigned int uid, AudioFrame& audioFrame);
 
     void registerPlugin(agora_plugin_info& plugin);
+    void releasePlugin(std::string& pluginId);
     void unregisterPlugin(std::string& pluginId);
     bool hasPlugin(std::string& pluginId);
     bool enablePlugin(std::string& pluginId, bool enabled);

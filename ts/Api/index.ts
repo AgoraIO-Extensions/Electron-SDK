@@ -4716,6 +4716,13 @@ class AgoraRtcEngine extends EventEmitter {
   unregisterPlugin(pluginId: string): number {
     return this.rtcEngine.unregisterPlugin(pluginId);
   }
+
+  /**
+   * @ignore
+   */
+  releasePlugin(pluginId: string): number {
+    return this.rtcEngine.releasePlugin(pluginId);
+  }
   /**
    * @ignore
    */

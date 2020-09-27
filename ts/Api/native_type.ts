@@ -2542,6 +2542,12 @@ export interface NodeRtcEngine {
    * @ignore
    */
   unregisterPlugin(pluginId: string): number;
+
+  /**
+   * @ignore
+   */
+  releasePlugin(pluginId: string): number;
+  
   /**
    * @ignore
    */

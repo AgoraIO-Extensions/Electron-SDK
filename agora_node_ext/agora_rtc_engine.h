@@ -267,6 +267,7 @@ namespace agora {
             NAPI_API(initializePluginManager);
             NAPI_API(releasePluginManager);
             NAPI_API(registerPlugin);
+            NAPI_API(releasePlugin);
             NAPI_API(unregisterPlugin);
             NAPI_API(enablePlugin);
             NAPI_API(getPlugins);
