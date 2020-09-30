@@ -4642,6 +4642,10 @@ namespace agora {
                 status = napi_get_value_object_(isolate, args[0], obj);
                 CHECK_NAPI_STATUS(pEngine, status);
 
+                string sourceChannel, sourceToken;
+                std::vector<string> destChannels, destTokens;
+                std::vector<ChannelMediaInfo> destInfos;
+                
                 //srcInfo
                 Local<Name> keyName = String::NewFromUtf8(args.GetIsolate(), "srcInfo", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> srcInfoValue = obj->Get(args.GetIsolate()->GetCurrentContext(), keyName).ToLocalChecked();
@@ -4652,10 +4656,15 @@ namespace agora {
                     napi_get_object_property_nodestring_(args.GetIsolate(), objSrcInfo, "channelName", channelName);
                     napi_get_object_property_nodestring_(args.GetIsolate(), objSrcInfo, "token", token);
                     napi_get_object_property_uid_(args.GetIsolate(), objSrcInfo, "uid", srcInfo.uid);
-                    string mChannelName(channelName);
-                    string mToken(token);
-                    srcInfo.channelName = mChannelName.c_str();
-                    srcInfo.token = mToken.c_str();
+                    
+                    if(channelName != nullptr) {
+                        sourceChannel = string(channelName);
+                        srcInfo.token = sourceChannel.c_str();
+                    }
+                    if(token != nullptr) {
+                        sourceToken = (string)token;
+                        srcInfo.token = sourceToken.c_str();
+                    }
                 }
                 
 
@@ -4668,8 +4677,8 @@ namespace agora {
                 }
                 auto destInfosValue = v8::Array::Cast(*objDestInfos);
                 int destInfoCount = destInfosValue->Length();
-                ChannelMediaInfo* destInfos = new ChannelMediaInfo[destInfoCount];
                 for (uint32 i = 0; i < destInfoCount; i++) {
+                    ChannelMediaInfo destInfo;
                     Local<Value> value = destInfosValue->Get(context, i).ToLocalChecked();
                     Local<Object> destInfoObj = value->ToObject(context).ToLocalChecked();
                     if (destInfoObj->IsNullOrUndefined()) {
@@ -4679,21 +4688,28 @@ namespace agora {
                     NodeString channelName, token;
                     napi_get_object_property_nodestring_(args.GetIsolate(), destInfoObj, "channelName", channelName);
                     napi_get_object_property_nodestring_(args.GetIsolate(), destInfoObj, "token", token);
-                    napi_get_object_property_uid_(args.GetIsolate(), destInfoObj, "uid", destInfos[i].uid);
-                    string mChannelName(channelName);
-                    string mToken(token);
-                    srcInfo.channelName = mChannelName.c_str();
-                    srcInfo.token = mToken.c_str();
+                    napi_get_object_property_uid_(args.GetIsolate(), destInfoObj, "uid", destInfo.uid);
+                    
+                    if(channelName != nullptr) {
+                        destChannels.push_back(string(channelName));
+                        destInfo.channelName = destChannels[i].c_str();
+                    } else {
+                        destChannels.push_back("");
+                    }
+                    if(token != nullptr) {
+                        destTokens.push_back(string(token));
+                        destInfo.token = destTokens[i].c_str();
+                    } else {
+                        destTokens.push_back("");
+                    }
+                    destInfos.push_back(destInfo);
                 }
                 config.srcInfo = &srcInfo;
-                config.destInfos = &destInfos[0];
+                config.destInfos = destInfos.data();
                 config.destCount = destInfoCount;
 
                 result = pEngine->m_engine->startChannelMediaRelay(config);
                 
-                if(destInfos){
-                    delete[] destInfos;
-                }
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -4715,6 +4731,10 @@ namespace agora {
                 napi_status status = napi_get_value_object_(isolate, args[0], obj);
                 CHECK_NAPI_STATUS(pEngine, status);
 
+                string sourceChannel, sourceToken;
+                std::vector<string> destChannels, destTokens;
+                std::vector<ChannelMediaInfo> destInfos;
+                
                 //srcInfo
                 Local<Name> keyName = String::NewFromUtf8(args.GetIsolate(), "srcInfo", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> srcInfoValue = obj->Get(args.GetIsolate()->GetCurrentContext(), keyName).ToLocalChecked();
@@ -4725,10 +4745,15 @@ namespace agora {
                     napi_get_object_property_nodestring_(args.GetIsolate(), objSrcInfo, "channelName", channelName);
                     napi_get_object_property_nodestring_(args.GetIsolate(), objSrcInfo, "token", token);
                     napi_get_object_property_uid_(args.GetIsolate(), objSrcInfo, "uid", srcInfo.uid);
-                    string mChannelName(channelName);
-                    string mToken(token);
-                    srcInfo.channelName = mChannelName.c_str();
-                    srcInfo.token = mToken.c_str();
+                    
+                    if(channelName != nullptr) {
+                        sourceChannel = string(channelName);
+                        srcInfo.token = sourceChannel.c_str();
+                    }
+                    if(token != nullptr) {
+                        sourceToken = (string)token;
+                        srcInfo.token = sourceToken.c_str();
+                    }
                 }
                 
 
@@ -4741,27 +4766,36 @@ namespace agora {
                 }
                 auto destInfosValue = v8::Array::Cast(*objDestInfos);
                 int destInfoCount = destInfosValue->Length();
-                ChannelMediaInfo* destInfos = new ChannelMediaInfo[destInfoCount];
                 for (uint32 i = 0; i < destInfoCount; i++) {
+                    ChannelMediaInfo destInfo;
                     Local<Value> value = destInfosValue->Get(context, i).ToLocalChecked();
                     Local<Object> destInfoObj = value->ToObject(context).ToLocalChecked();
                     NodeString channelName, token;
                     napi_get_object_property_nodestring_(args.GetIsolate(), destInfoObj, "channelName", channelName);
                     napi_get_object_property_nodestring_(args.GetIsolate(), destInfoObj, "token", token);
-                    napi_get_object_property_uid_(args.GetIsolate(), destInfoObj, "uid", destInfos[i].uid);
-                    string mChannelName(channelName);
-                    string mToken(token);
-                    srcInfo.channelName = mChannelName.c_str();
-                    srcInfo.token = mToken.c_str();
+                    napi_get_object_property_uid_(args.GetIsolate(), destInfoObj, "uid", destInfo.uid);
+                    
+                    if(channelName != nullptr) {
+                        destChannels.push_back(string(channelName));
+                        destInfo.channelName = destChannels[i].c_str();
+                    } else {
+                        destChannels.push_back("");
+                        destInfo.channelName = "";
+                    }
+                    if(token != nullptr) {
+                        destTokens.push_back(string(token));
+                        destInfo.token = destTokens[i].c_str();
+                    } else {
+                        destTokens.push_back("");
+                        destInfo.token = "";
+                    }
+                    destInfos.push_back(destInfo);
                 }
                 config.srcInfo = &srcInfo;
-                config.destInfos = &destInfos[0];
+                config.destInfos = destInfos.data();
                 config.destCount = destInfoCount;
 
                 result = pEngine->m_engine->updateChannelMediaRelay(config);
-                if(destInfos){
-                    delete[] destInfos;
-                }
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
