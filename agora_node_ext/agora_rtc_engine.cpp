@@ -4659,11 +4659,15 @@ namespace agora {
                     
                     if(channelName != nullptr) {
                         sourceChannel = string(channelName);
-                        srcInfo.token = sourceChannel.c_str();
+                        srcInfo.channelName = sourceChannel.c_str();
+                    } else {
+                        srcInfo.channelName = nullptr;
                     }
                     if(token != nullptr) {
                         sourceToken = (string)token;
                         srcInfo.token = sourceToken.c_str();
+                    } else {
+                        srcInfo.token = nullptr;
                     }
                 }
                 
@@ -4748,11 +4752,15 @@ namespace agora {
                     
                     if(channelName != nullptr) {
                         sourceChannel = string(channelName);
-                        srcInfo.token = sourceChannel.c_str();
+                        srcInfo.channelName = sourceChannel.c_str();
+                    } else {
+                        srcInfo.channelName = nullptr;
                     }
                     if(token != nullptr) {
                         sourceToken = (string)token;
                         srcInfo.token = sourceToken.c_str();
+                    } else {
+                        srcInfo.token = nullptr;
                     }
                 }
                 
