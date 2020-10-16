@@ -1565,6 +1565,56 @@ export interface Metadata {
     timeStampMs: number;
   }
 
+/** Audio recording qualities.
+*/
+export enum AUDIO_RECORDING_QUALITY_TYPE
+{
+    /** 0: Low quality. The sample rate is 32 kHz, and the file size is around
+     * 1.2 MB after 10 minutes of recording.
+    */
+    AUDIO_RECORDING_QUALITY_LOW = 0,
+    /** 1: Medium quality. The sample rate is 32 kHz, and the file size is
+     * around 2 MB after 10 minutes of recording.
+    */
+    AUDIO_RECORDING_QUALITY_MEDIUM = 1,
+    /** 2: High quality. The sample rate is 32 kHz, and the file size is
+     * around 3.75 MB after 10 minutes of recording.
+    */
+    AUDIO_RECORDING_QUALITY_HIGH = 2,
+}
+
+/** Audio recording position. */
+export enum AUDIO_RECORDING_POSITION {
+  /** The SDK will record the voices of all users in the channel. */
+  AUDIO_RECORDING_POSITION_MIXED_RECORDING_AND_PLAYBACK = 0,
+  /** The SDK will record the voice of the local user. */
+  AUDIO_RECORDING_POSITION_RECORDING = 1,
+  /** The SDK will record the voices of remote users. */
+  AUDIO_RECORDING_POSITION_MIXED_PLAYBACK = 2,
+}
+
+export interface AudioRecordingConfiguration {
+  /** Pointer to the absolute file path of the recording file. The string of the file name is in UTF-8.
+
+     The SDK determines the storage format of the recording file by the file name suffix:
+
+     - .wav: Large file size with high fidelity.
+     - .aac: Small file size with low fidelity.
+
+     Ensure that the directory to save the recording file exists and is writable.
+     */
+  filePath: string;
+  /** Sets the audio recording quality. See #AUDIO_RECORDING_QUALITY_TYPE.
+
+  @note It is effective only when the recording format is AAC.
+  */
+  recordingQuality: AUDIO_RECORDING_QUALITY_TYPE;
+
+  /** Sets the audio recording position. See #AUDIO_RECORDING_POSITION.
+  */
+  recordingPosition: AUDIO_RECORDING_POSITION;
+}
+
 /**
  * interface for c++ addon (.node)
  * @ignore
@@ -1988,6 +2038,10 @@ export interface NodeRtcEngine {
    * @ignore
    */
   startAudioRecording(filePath: string, quality: number): number;
+  /**
+   * @ignore
+   */
+  startAudioRecording2(config: AudioRecordingConfiguration): number;
   /**
    * @ignore
    */

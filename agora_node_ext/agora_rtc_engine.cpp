@@ -82,6 +82,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setRemoteDefaultVideoStreamType)
                 PROPERTY_METHOD_DEFINE(enableAudioVolumeIndication)
                 PROPERTY_METHOD_DEFINE(startAudioRecording)
+                PROPERTY_METHOD_DEFINE(startAudioRecording2)
                 PROPERTY_METHOD_DEFINE(stopAudioRecording)
                 PROPERTY_METHOD_DEFINE(startAudioMixing)
                 PROPERTY_METHOD_DEFINE(stopAudioMixing)
@@ -3320,6 +3321,44 @@ namespace agora {
             } while (false);
             napi_set_int_result(args, result);
 
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, startAudioRecording2)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                Isolate *isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                
+                Local<Object> obj;
+                status = napi_get_value_object_(isolate, args[0], obj);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                int recordingQuality;
+                status = napi_get_object_property_int32_(isolate, obj, "recordingQuality", recordingQuality);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                int recordingPosition;
+                status = napi_get_object_property_int32_(isolate, obj, "recordingPosition", recordingPosition);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                nodestring filePath;
+                status = napi_get_object_property_nodestring_(isolate, obj, "filePath", filePath);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                AudioRecordingConfiguration config;
+                config.filePath = filePath;
+                config.recordingQuality = (AUDIO_RECORDING_QUALITY_TYPE)recordingQuality;
+                config.recordingPosition = (AUDIO_RECORDING_POSITION)recordingPosition;
+
+                result = pEngine->m_engine->startAudioRecording(config);
+            } while (false);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
