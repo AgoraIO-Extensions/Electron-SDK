@@ -39,7 +39,10 @@ import {
   VideoContentHint,
   VideoEncoderConfiguration,
   UserInfo,
-  Metadata
+  Metadata,
+  AUDIO_RECORDING_QUALITY_TYPE,
+  AUDIO_RECORDING_POSITION,
+  AudioRecordingConfiguration
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -3029,6 +3032,22 @@ class AgoraRtcEngine extends EventEmitter {
 
   startAudioRecording(filePath: string, quality: number):number {
     return this.rtcEngine.startAudioRecording(filePath, quality)
+  }
+
+  /** 
+   * Starts an audio recording.
+   * The SDK allows recording during a call.
+   * This method is usually called after the \ref agora::rtc::IRtcEngine::joinChannel "joinChannel" method.
+   * The recording automatically stops when the \ref agora::rtc::IRtcEngine::leaveChannel "leaveChannel" method is called.
+
+   * @param config Sets the audio recording configuration. See #AudioRecordingConfiguration.
+
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  startAudioRecording2(config: AudioRecordingConfiguration): number {
+    return this.rtcEngine.startAudioRecording2(config);
   }
 
   stopAudioRecording():number {
