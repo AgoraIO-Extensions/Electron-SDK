@@ -294,7 +294,7 @@ export default class App extends Component {
     })
 
     rtcEngine.joinChannel("", "123", "", 0);
-
+    // let ret = rtcEngine.startAudioRecording2({filePath: "audio_remote.wav", recordingQuality: 2, recordingPosition: 2});
     //joinning two channels together
   //   this.channel1 = rtcEngine.createChannel(this.state.channel)
   //   this.channel1.registerMediaMetadataObserver();
