@@ -1,3 +1,7 @@
+## 2.9.0-rc.107-build.971
+* Add new API:
+  - startAudioRecording2
+
 ## 2.9.0-rc.106-build.804
 * fix bug of playEffect()
 
