@@ -43,7 +43,7 @@ module.exports = ({
 
   logger.info("Downloading prebuilt C++ addon for Agora Electron SDK...\n");
 
-  download(downloadUrl, outputDir, {
+  return download(downloadUrl, outputDir, {
     strip: 1,
     extract: true
   })
