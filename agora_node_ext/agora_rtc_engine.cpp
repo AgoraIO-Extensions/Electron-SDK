@@ -604,13 +604,13 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 transcoding.transcodingExtraInfo = transcodingExtraInfo;
 
+                nodestring wmurl;
                 Local<Name> keyName = Nan::New<String>("watermark").ToLocalChecked();
                 Local<Value> wmValue = obj->Get(isolate->GetCurrentContext(), keyName).ToLocalChecked();
                 if (!wmValue->IsNullOrUndefined()) {
                     Local<Object> objWm;
                     napi_get_value_object_(isolate, wmValue, objWm);
                     
-                    nodestring wmurl;
                     status = napi_get_object_property_nodestring_(isolate, objWm, "url", wmurl);
                     CHECK_NAPI_STATUS(pEngine, status);
                     wkImage.url = wmurl;
