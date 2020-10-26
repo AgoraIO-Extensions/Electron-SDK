@@ -6022,7 +6022,7 @@ namespace agora {
 
                 Local<Name> keyName = String::NewFromUtf8(isolate, "watermark", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> wmValue = obj->Get(context, keyName).ToLocalChecked();
-                if (wmValue->IsNull() || !wmValue->IsObject()) {
+                if (!wmValue->IsNullOrUndefined()) {
                     Local<Object> objWm;
                     status = napi_get_value_object_(isolate, wmValue, objWm);
                     CHECK_NAPI_STATUS(pChannel, status);
