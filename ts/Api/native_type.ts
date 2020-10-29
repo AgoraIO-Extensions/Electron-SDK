@@ -2623,6 +2623,14 @@ export interface NodeRtcEngine {
    * @ignore
    */
   getPluginParameter(pluginId: string, paramKey: string): string;
+  /**
+   * @ignore
+   */
+  registerRGBAVideoFrameReceiver(callback: Function): number;
+   /**
+   * @ignore
+   */
+  unregisterRGBAVidioFrameReceiver(): number;
 }
 
 export interface NodeRtcChannel {

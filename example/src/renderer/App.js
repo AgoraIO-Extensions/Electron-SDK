@@ -3,7 +3,7 @@ import AgoraRtcEngine from '../../../';
 import { List } from 'immutable';
 import path from 'path';
 import os from 'os'
-
+import electron from 'electron'
 import {voiceChangerList, voiceReverbPreset, videoProfileList, audioProfileList, audioScenarioList, APP_ID, SHARE_ID, RTMP_URL, voiceReverbList, FU_AUTH } from '../utils/settings'
 import {readImage} from '../utils/base64'
 import WindowPicker from './components/WindowPicker/index.js'
@@ -48,7 +48,8 @@ export default class App extends Component {
         encoderWidth: 0,
         encoderHeight: 0,
         hookplayerpath: "",
-        audioHookEnabled: false
+        audioHookEnabled: false,
+        imagedata: null
       }
     }
     this.enableAudioMixing = false;
@@ -293,10 +294,10 @@ export default class App extends Component {
       rednessLevel: 0
     })
 
-    rtcEngine.joinChannel("", "123", "", 0);
+    // rtcEngine.joinChannel("", "123", "", 0);
     // let ret = rtcEngine.startAudioRecording2({filePath: "audio_remote.wav", recordingQuality: 2, recordingPosition: 2});
     //joinning two channels together
-  //   this.channel1 = rtcEngine.createChannel(this.state.channel)
+    this.channel1 = rtcEngine.createChannel("123")
   //   this.channel1.registerMediaMetadataObserver();
   //   setInterval(()=>{
   //     let ptr = {
@@ -314,16 +315,16 @@ export default class App extends Component {
   //     let ret = this.channel1.sendMetadata(metadata);
   //     console.log(`channel: ${this.channel1.channelId()}  sendMetadata  data: ${data}  ret: ${ret}`)
   //  }, 1000);
-  //   this.channel1.setClientRole(1);
-  //   this.subscribeChannelEvents(this.channel1, true)
-  //   this.channel1.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
-  //   this.channel1.publish();
+    this.channel1.setClientRole(1);
+    this.subscribeChannelEvents(this.channel1, true)
+    this.channel1.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
+    this.channel1.publish();
 
-  //   this.channel1.setClientRole(1);
-  //   this.channel2 = rtcEngine.createChannel(`${this.state.channel}-2`)
-  //   this.channel2.registerMediaMetadataObserver()
-  //   this.subscribeChannelEvents(this.channel2, false)
-  //   this.channel2.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
+    this.channel1.setClientRole(1);
+    this.channel2 = rtcEngine.createChannel("234")
+    // this.channel2.registerMediaMetadataObserver()
+    this.subscribeChannelEvents(this.channel2, false)
+    this.channel2.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
 
   }
 
@@ -481,6 +482,33 @@ export default class App extends Component {
         displayList: displayList
       });
     })
+  }
+
+  handleRegisterRGBA = () => {
+    let rtcEngine = this.getRtcEngine();
+    let ret = rtcEngine.registerRGBAVideoFrameReceiver((data) => {
+
+      // var image = new Jimp(data[0].width, data[0].height, (err, img) => {
+
+      // })
+      const buf = Buffer.from(data[0].data);
+      const dataUrl = electron.nativeImage.createFromBuffer(buf, {width: data[0].width, height: data[0].height}).toDataURL();
+
+      this.setState({
+        imagedata: dataUrl
+      });
+      console.log(data);
+    });
+    console.log(`--------registerRGBAVidioFrameReceiver ${ret}`);
+  }
+
+  handleUnRegisterRGBA = () => {
+    let rtcEngine = this.getRtcEngine();
+    let ret = rtcEngine.unregisterRGBAVidioFrameReceiver();
+    console.log(`--------unregisterRGBAVidioFrameReceiver ${ret}`);
+    this.setState({
+      imagedata: ''
+    });
   }
 
   toggleFuPlugin = () => {
@@ -944,6 +972,18 @@ export default class App extends Component {
             </div>
             <div className="control">
               <button onClick={this.handleDisplaySharing} className="button is-link">Display Share</button>
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">RGBA Video Frame Deliver</label>
+            <div className="control">
+              <button onClick={this.handleRegisterRGBA} className="button is-link">Register</button>
+            </div>
+            <div className="control">
+              <button onClick={this.handleUnRegisterRGBA} className="button is-link">UnRegister</button>
+            </div>
+            <div>
+              <img width={640} height={320} src={this.state.imagedata} />
             </div>
           </div>
           <div className="field">

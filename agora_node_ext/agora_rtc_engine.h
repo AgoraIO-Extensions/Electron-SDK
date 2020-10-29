@@ -352,6 +352,13 @@ namespace agora {
              * 2.0.0.107 Apis
              */
             NAPI_API(startAudioRecording2);
+
+            /**
+             * CSD-19344
+             */
+            NAPI_API(registerRGBAVideoFrameReceiver);
+            NAPI_API(unregisterRGBAVidioFrameReceiver);
+
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }

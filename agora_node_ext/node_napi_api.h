@@ -89,6 +89,9 @@ public:
     agora::rtc::uid_t m_uid;
     buffer_list m_bufferList;
     stream_buffer_type m_buffer;
+    std::vector<unsigned char> m_rgbaBuffer;
+    bool m_rgbaBufferPrepared;
+    bool m_rgbaNeedUpdate;
     uint32_t m_destWidth;
     uint32_t m_destHeight;
     bool m_needUpdate;
@@ -100,8 +103,10 @@ public:
         , m_destWidth(0)
         , m_destHeight(0)
         , m_needUpdate(false)
+        , m_rgbaNeedUpdate(false)
         , m_count(0)
         , m_channelId("")
+        , m_rgbaBufferPrepared(false)
     {}
     VideoFrameInfo(NodeRenderType type)
         : m_renderType(type)
@@ -109,8 +114,10 @@ public:
         , m_destWidth(0)
         , m_destHeight(0)
         , m_needUpdate(false)
+        , m_rgbaNeedUpdate(false)
         , m_count(0)
         , m_channelId("")
+        , m_rgbaBufferPrepared(false)
     {
     }
     VideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId)
@@ -119,13 +126,15 @@ public:
         , m_destWidth(0)
         , m_destHeight(0)
         , m_needUpdate(false)
+        , m_rgbaNeedUpdate(false)
         , m_count(0)
         , m_channelId(channelId)
+        , m_rgbaBufferPrepared(false)
     {}
 };
 
 class NodeVideoFrameTransporter {
-    public:
+public:
     NodeVideoFrameTransporter();
     ~NodeVideoFrameTransporter();
     
@@ -138,16 +147,8 @@ class NodeVideoFrameTransporter {
     void setHighFPS(uint32_t fps);
     void setFPS(uint32_t fps);
     //bool deliveryFrame1(enum NodeRenderType type, agora::rtc::uid_t uid, const buffer_list& buffers);
-private:
-
-    struct image_frame_info {
-        int stride;
-        int stride0;
-        int width;
-        int height;
-        int strideU;
-        int strideV;
-    };
+    void AddRGBAVideoFrameCallback(Persistent<Function>& callback);
+    void RemoveRGBAVideoFrameCallback();
 
     struct image_header_type {
         uint8_t format;
@@ -161,6 +162,18 @@ private:
         uint16_t rotation;
         uint32_t timestamp;
     };
+
+private:
+
+    struct image_frame_info {
+        int stride;
+        int stride0;
+        int width;
+        int height;
+        int strideU;
+        int strideV;
+    };
+
     VideoFrameInfo& getVideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId);
     bool deinitialize();
     VideoFrameInfo& getHighVideoFrameInfo(agora::rtc::uid_t uid, std::string channelId);
@@ -175,6 +188,7 @@ private:
     Isolate* env;
     Persistent<Function> callback;
     Persistent<Object> js_this;
+    Persistent<Function> rgba_callback;
     std::unordered_map<std::string, std::unordered_map<agora::rtc::uid_t, VideoFrameInfo>> m_remoteVideoFrames;
     std::unordered_map<std::string, std::unordered_map<agora::rtc::uid_t, VideoFrameInfo>> m_remoteHighVideoFrames;
     std::unique_ptr<VideoFrameInfo> m_localVideoFrame;

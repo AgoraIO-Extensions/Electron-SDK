@@ -68,6 +68,7 @@ bool NodeVideoFrameTransporter::deinitialize()
     env = nullptr;
     callback.Reset();
     js_this.Reset();
+    rgba_callback.Reset();
     return true;
 }
 
@@ -176,6 +177,17 @@ int NodeVideoFrameTransporter::deliverVideoSourceFrame(const char* payload, int 
     videoInfo.m_bufferList[3].length = destWidth / 2 * destHeight / 2;
     videoInfo.m_count = 0;
     videoInfo.m_needUpdate = true;
+    videoInfo.m_rgbaNeedUpdate = true;
+
+    if (!rgba_callback.IsEmpty()) {
+        size_t rgbaImageSize = destWidth * destHeight * 4;
+        videoInfo.m_rgbaBuffer.resize(rgbaImageSize);
+        I420ToABGR((uint8*)desty, destWidth,  (uint8*)destu, destWidth / 2, (uint8*)destv, destWidth / 2, &videoInfo.m_rgbaBuffer[0], destWidth * 4, destWidth, destHeight);
+        videoInfo.m_rgbaBufferPrepared = true;
+    } else {
+        videoInfo.m_rgbaBufferPrepared = false;
+    }
+
     return 0;
 }
 
@@ -206,6 +218,7 @@ int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type, agora::rtc
     copyFrame(videoFrame, info, destStride, stride0, destWidth, destHeight);
     info.m_count = 0;
     info.m_needUpdate = true;
+    info.m_rgbaNeedUpdate = true;
     return 0;
     
 }
@@ -258,6 +271,15 @@ void NodeVideoFrameTransporter::copyFrame(const agora::media::IVideoFrame& video
 
     info.m_bufferList[3].buffer = v;
     info.m_bufferList[3].length = width2 * heigh2;
+
+    if (!rgba_callback.IsEmpty()) {
+        size_t rgbaImageSize = dest_stride * height * 4;
+        info.m_rgbaBuffer.resize(rgbaImageSize);
+        I420ToABGR(planeY, dest_stride,  planeU, width2, planeV, width2, &info.m_rgbaBuffer[0], dest_stride * 4, width, height);
+        info.m_rgbaBufferPrepared = true;
+    } else {
+        info.m_rgbaBufferPrepared = false;
+    }
 }
 
 void NodeVideoFrameTransporter::copyAndCentreYuv(const unsigned char* srcYPlane, const unsigned char* srcUPlane, const unsigned char* srcVPlane, int width, int height, int srcStride,
@@ -350,6 +372,17 @@ void NodeVideoFrameTransporter::setFPS(uint32_t fps)
     m_FPS = fps;
 }
 
+void NodeVideoFrameTransporter::AddRGBAVideoFrameCallback(Persistent<Function>& callback)
+{
+    std::lock_guard<std::mutex> lock(m_lock);
+    rgba_callback.Reset(callback);
+}
+void NodeVideoFrameTransporter::RemoveRGBAVideoFrameCallback()
+{
+    std::lock_guard<std::mutex> lock(m_lock);
+    rgba_callback.Reset();
+}
+
 #define NODE_SET_OBJ_PROP_UINT32(obj, name, val) \
     { \
         Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
@@ -397,6 +430,31 @@ void NodeVideoFrameTransporter::setFPS(uint32_t fps)
         } \
     }
 
+#define NODE_SET_OBJ_PROP_DATA_LENGTH(obj, name, buffer, length) \
+    { \
+        Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
+        Local<v8::ArrayBuffer> buff = v8::ArrayBuffer::New(isolate, buffer, length); \
+        Local<v8::Uint8Array> dataarray = v8::Uint8Array::New(buff, 0, length);\
+        v8::Maybe<bool> ret = obj->Set(isolate->GetCurrentContext(), propName, dataarray); \
+        if(!ret.IsNothing()) { \
+            if(!ret.ToChecked()) { \
+                break; \
+            } \
+        } \
+    }
+
+#define NODE_SET_OBJ_PROP_BOOL(obj, name, val) \
+    { \
+        Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
+        Local<Value> propVal = napi_create_bool_(isolate, val); \
+        v8::Maybe<bool> ret = obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+        if(!ret.IsNothing()) { \
+            if(!ret.ToChecked()) { \
+                break; \
+            } \
+        } \
+    }
+
 bool AddObj(Isolate* isolate, Local<v8::Array>& infos, int index, VideoFrameInfo& info)
 {
     if (!info.m_needUpdate)
@@ -416,6 +474,33 @@ bool AddObj(Isolate* isolate, Local<v8::Array>& infos, int index, VideoFrameInfo
         NODE_SET_OBJ_PROP_DATA(obj, "udata", it);
         ++it;
         NODE_SET_OBJ_PROP_DATA(obj, "vdata", it);
+        result = infos->Set(isolate->GetCurrentContext(), index, obj).FromJust();
+    }while(false);
+    return result;
+}
+
+bool AddRGBAObj(Isolate* isolate, Local<v8::Array>& infos, int index, VideoFrameInfo& info)
+{
+    if (!info.m_rgbaNeedUpdate)
+        return false;
+    info.m_rgbaNeedUpdate = false;
+    bool result = false;
+    do {
+        Local<v8::Object> obj = Object::New(isolate);
+
+        NODE_SET_OBJ_PROP_UINT32(obj, "uid", info.m_uid);
+        NODE_SET_OBJ_PROP_STRING(obj, "channelId", info.m_channelId.c_str());
+
+        NodeVideoFrameTransporter::image_header_type* hdr = reinterpret_cast<NodeVideoFrameTransporter::image_header_type*>(&info.m_buffer[0]);
+
+        NODE_SET_OBJ_PROP_UINT32(obj, "width", (uint32_t)ntohs(hdr->width));
+        NODE_SET_OBJ_PROP_UINT32(obj, "height", (uint32_t)ntohs(hdr->height));
+        NODE_SET_OBJ_PROP_UINT32(obj, "rotation", (uint32_t)ntohs(hdr->rotation));
+        bool mirrored = hdr->mirrored == 0 ? false : true;
+        NODE_SET_OBJ_PROP_BOOL(obj, "mirrored", mirrored);
+
+        NODE_SET_OBJ_PROP_DATA_LENGTH(obj, "data", &info.m_rgbaBuffer[0], info.m_rgbaBuffer.size());
+
         result = infos->Set(isolate->GetCurrentContext(), index, obj).FromJust();
     }while(false);
     return result;
@@ -477,6 +562,52 @@ void NodeVideoFrameTransporter::FlushVideo()
                     callback.Get(isolate)->Call(isolate->GetCurrentContext(), js_this.Get(isolate), 1, args);
                 }
             });
+
+            {
+                std::lock_guard<std::mutex> lock(m_lock);
+                if (!rgba_callback.IsEmpty()) {
+                    agora::rtc::node_async_call::async_call([this]() {
+                        Isolate *isolate = env;
+                        HandleScope scope(isolate);
+                        std::lock_guard<std::mutex> lock(m_lock);
+                        Local<v8::Array> infos = v8::Array::New(isolate);
+
+                        uint32_t i = 0;
+                        for (auto& cit : m_remoteVideoFrames) {
+                            for (auto& it : cit.second) {
+                                if (it.second.m_rgbaBufferPrepared) {
+                                    if (AddRGBAObj(isolate, infos, i, it.second))
+                                        ++i;
+                                    else {
+                                        ++it.second.m_count;
+                                    }
+                                }
+                            }
+                        }
+                        if (m_localVideoFrame.get() && m_localVideoFrame->m_rgbaBufferPrepared) {
+                            if (AddRGBAObj(isolate, infos, i, *m_localVideoFrame.get()))
+                                ++i;
+                            else {
+                                ++m_localVideoFrame->m_count;
+                            }
+                        }
+
+                        if (m_devTestVideoFrame.get() && m_devTestVideoFrame->m_rgbaBufferPrepared) {
+                            if (AddRGBAObj(isolate, infos, i, *m_devTestVideoFrame.get()))
+                                ++i;
+                            else {
+                                ++m_devTestVideoFrame->m_count;
+                            }
+                        }
+                        if (i > 0) {
+                            Local<v8::Value> args[1] = { infos };
+                            if (!rgba_callback.IsEmpty()) {
+                                rgba_callback.Get(isolate)->Call(isolate->GetCurrentContext(), js_this.Get(isolate), 1, args);
+                            }
+                        }
+                    });
+                }
+            }
             std::this_thread::sleep_for(std::chrono::milliseconds(1000 / m_FPS));
         }
     }
@@ -532,6 +663,47 @@ void NodeVideoFrameTransporter::highFlushVideo()
                     callback.Get(isolate)->Call(isolate->GetCurrentContext(), js_this.Get(isolate), 1, args);
                 }
             });
+
+            {
+                std::lock_guard<std::mutex> lock(m_lock);
+                if (!rgba_callback.IsEmpty()) {
+                    agora::rtc::node_async_call::async_call([this]() {
+                        Isolate *isolate = env;
+                        HandleScope scope(isolate);
+                        std::lock_guard<std::mutex> lock(m_lock);
+                        Local<v8::Array> infos = v8::Array::New(isolate);
+                        
+                        uint32_t i = 0;
+                        for (auto& cit : m_remoteHighVideoFrames) {
+                            for (auto& it : cit.second) {
+                                if (it.second.m_rgbaBufferPrepared) {
+                                    if (AddRGBAObj(isolate, infos, i, it.second))
+                                        ++i;
+                                    else {
+                                        ++it.second.m_count;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (m_videoSourceVideoFrame.get() && m_videoSourceVideoFrame->m_rgbaBufferPrepared) {
+                            if (AddRGBAObj(isolate, infos, i, *m_videoSourceVideoFrame.get()))
+                                ++i;
+                            else {
+                                ++m_videoSourceVideoFrame->m_count;
+                            }
+                        }
+
+                        if (i > 0) {
+                            Local<v8::Value> args[1] = { infos };
+                            if (!rgba_callback.IsEmpty()) {
+                                rgba_callback.Get(isolate)->Call(isolate->GetCurrentContext(), js_this.Get(isolate), 1, args);
+                            }
+                        }
+                    });
+                }
+            }
+
             std::this_thread::sleep_for(std::chrono::milliseconds(1000 / m_highFPS));
         }
     }

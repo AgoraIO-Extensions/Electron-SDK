@@ -4755,7 +4755,15 @@ class AgoraRtcEngine extends EventEmitter {
 
   setMaxMetadataSize(size: number): number {
     return this.rtcEngine.setMaxMetadataSize(size);
-  }  
+  }
+
+  registerRGBAVideoFrameReceiver(callback: Function): number {
+    return this.rtcEngine.registerRGBAVideoFrameReceiver(callback);
+  }
+
+  unregisterRGBAVidioFrameReceiver(): number {
+    return this.rtcEngine.unregisterRGBAVidioFrameReceiver();
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
