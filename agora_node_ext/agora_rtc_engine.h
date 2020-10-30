@@ -349,6 +349,13 @@ namespace agora {
             NAPI_API(sendCustomReportMessage);
             NAPI_API(enableEncryption);
 
+            /**
+             * 3.2.0 Apis 
+             */
+            NAPI_API(setAudioEffectPreset);
+            NAPI_API(setVoiceBeautifierPreset);
+            NAPI_API(setAudioEffectParameters);
+            
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }

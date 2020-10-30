@@ -46,7 +46,9 @@ import {
   STREAM_PUBLISH_STATE,
   STREAM_SUBSCRIBE_STATE,
   AUDIO_ROUTE_TYPE,
-  EncryptionConfig
+  EncryptionConfig,
+  AUDIO_EFFECT_PRESET,
+  VOICE_BEAUTIFIER_PRESET,
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -5006,6 +5008,155 @@ class AgoraRtcEngine extends EventEmitter {
   enableEncryption(enabled: boolean, config: EncryptionConfig): number {
     return this.rtcEngine.enableEncryption(enabled, config);
   }
+  /** Sets an SDK preset audio effect.
+   *
+   * @since v3.2.0
+   *
+   * Call this method to set an SDK preset audio effect for the local user who sends an audio stream. This audio effect
+   * does not change the gender characteristics of the original voice. After setting an audio effect, all users in the
+   * channel can hear the effect.
+   *
+   * You can set different audio effects for different scenarios. See *Set the Voice Beautifier and Audio Effects*.
+   *
+   * To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile"
+   * and setting the `scenario` parameter to `AUDIO_SCENARIO_GAME_STREAMING(3)` before calling this method.
+   *
+   * @note
+   * - You can call this method either before or after joining a channel.
+   * - Do not set the profile `parameter` of `setAudioProfile` to `AUDIO_PROFILE_SPEECH_STANDARD(1)` or `AUDIO_PROFILE_IOT(6)`;
+   * otherwise, this method call fails.
+   * - This method works best with the human voice. Agora does not recommend using this method for audio containing music.
+   * - If you call this method and set the `preset` parameter to enumerators except `ROOM_ACOUSTICS_3D_VOICE` or `PITCH_CORRECTION`,
+   * do not call \ref IRtcEngine::setAudioEffectParameters "setAudioEffectParameters"; otherwise, `setAudioEffectParameters`
+   * overrides this method.
+   * - After calling this method, Agora recommends not calling the following methods, because they can override `setAudioEffectPreset`:
+   *  - \ref IRtcEngine::setVoiceBeautifierPreset "setVoiceBeautifierPreset"
+   *  - \ref IRtcEngine::setLocalVoiceReverbPreset "setLocalVoiceReverbPreset"
+   *  - \ref IRtcEngine::setLocalVoiceChanger "setLocalVoiceChanger"
+   *  - \ref IRtcEngine::setLocalVoicePitch "setLocalVoicePitch"
+   *  - \ref IRtcEngine::setLocalVoiceEqualization "setLocalVoiceEqualization"
+   *  - \ref IRtcEngine::setLocalVoiceReverb "setLocalVoiceReverb"
+   *
+   * @param preset The options for SDK preset audio effects. See #AUDIO_EFFECT_PRESET.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  setAudioEffectPreset(preset: AUDIO_EFFECT_PRESET): number {
+    return this.rtcEngine.setAudioEffectPreset(preset);
+  }
+  
+  /** Sets an SDK preset voice beautifier effect.
+   *
+   * @since v3.2.0
+   *
+   * Call this method to set an SDK preset voice beautifier effect for the local user who sends an audio stream. After
+   * setting a voice beautifier effect, all users in the channel can hear the effect.
+   *
+   * You can set different voice beautifier effects for different scenarios. See *Set the Voice Beautifier and Audio Effects*.
+   *
+   * To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and
+   * setting the `scenario` parameter to `AUDIO_SCENARIO_GAME_STREAMING(3)` and the `profile` parameter to
+   * `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before calling this method.
+   *
+   * @note
+   * - You can call this method either before or after joining a channel.
+   * - Do not set the `profile` parameter of \ref IRtcEngine::setAudioProfile "setAudioProfile" to `AUDIO_PROFILE_SPEECH_STANDARD(1)`
+   * or `AUDIO_PROFILE_IOT(6)`; otherwise, this method call fails.
+   * - This method works best with the human voice. Agora does not recommend using this method for audio containing music.
+   * - After calling this method, Agora recommends not calling the following methods, because they can override \ref IRtcEngine::setAudioEffectParameters "setAudioEffectParameters":
+   *  - \ref IRtcEngine::setAudioEffectPreset "setAudioEffectPreset"
+   *  - \ref IRtcEngine::setVoiceBeautifierPreset "setVoiceBeautifierPreset"
+   *  - \ref IRtcEngine::setLocalVoiceReverbPreset "setLocalVoiceReverbPreset"
+   *  - \ref IRtcEngine::setLocalVoiceChanger "setLocalVoiceChanger"
+   *  - \ref IRtcEngine::setLocalVoicePitch "setLocalVoicePitch"
+   *  - \ref IRtcEngine::setLocalVoiceEqualization "setLocalVoiceEqualization"
+   *  - \ref IRtcEngine::setLocalVoiceReverb "setLocalVoiceReverb"
+   *
+   * @param preset The options for SDK preset voice beautifier effects: #VOICE_BEAUTIFIER_PRESET.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  setVoiceBeautifierPreset(preset: VOICE_BEAUTIFIER_PRESET): number {
+    return this.rtcEngine.setVoiceBeautifierPreset(preset);
+  }
+
+  /** Sets parameters for SDK preset audio effects.
+   *
+   * @since v3.2.0
+   *
+   * Call this method to set the following parameters for the local user who send an audio stream:
+   * - 3D voice effect: Sets the cycle period of the 3D voice effect.
+   * - Pitch correction effect: Sets the basic mode and tonic pitch of the pitch correction effect. Different songs
+   * have different modes and tonic pitches. Agora recommends bounding this method with interface elements to enable
+   * users to adjust the pitch correction interactively.
+   *
+   * After setting parameters, all users in the channel can hear the relevant effect.
+   *
+   * You can call this method directly or after \ref IRtcEngine::setAudioEffectPreset "setAudioEffectPreset". If you
+   * call this method after \ref IRtcEngine::setAudioEffectPreset "setAudioEffectPreset", ensure that you set the preset
+   * parameter of `setAudioEffectPreset` to `ROOM_ACOUSTICS_3D_VOICE` or `PITCH_CORRECTION` and then call this method
+   * to set the same enumerator; otherwise, this method overrides `setAudioEffectPreset`.
+   *
+   * @note
+   * - You can call this method either before or after joining a channel.
+   * - To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile"
+   * and setting the `scenario` parameter to `AUDIO_SCENARIO_GAME_STREAMING(3)` before calling this method.
+   * - Do not set the `profile` parameter of \ref IRtcEngine::setAudioProfile "setAudioProfile" to `AUDIO_PROFILE_SPEECH_STANDARD(1)` or
+   * `AUDIO_PROFILE_IOT(6)`; otherwise, this method call fails.
+   * - This method works best with the human voice. Agora does not recommend using this method for audio containing music.
+   * - After calling this method, Agora recommends not calling the following methods, because they can override `setAudioEffectParameters`:
+   *  - \ref IRtcEngine::setAudioEffectPreset "setAudioEffectPreset"
+   *  - \ref IRtcEngine::setVoiceBeautifierPreset "setVoiceBeautifierPreset"
+   *  - \ref IRtcEngine::setLocalVoiceReverbPreset "setLocalVoiceReverbPreset"
+   *  - \ref IRtcEngine::setLocalVoiceChanger "setLocalVoiceChanger"
+   *  - \ref IRtcEngine::setLocalVoicePitch "setLocalVoicePitch"
+   *  - \ref IRtcEngine::setLocalVoiceEqualization "setLocalVoiceEqualization"
+   *  - \ref IRtcEngine::setLocalVoiceReverb "setLocalVoiceReverb"
+   *
+   * @param preset The options for SDK preset audio effects:
+   * - 3D voice effect: `ROOM_ACOUSTICS_3D_VOICE`.
+   *  - Call \ref IRtcEngine::setAudioProfile "setAudioProfile" and set the `profile` parameter to `AUDIO_PROFILE_MUSIC_STANDARD_STEREO(3)`
+   * or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before setting this enumerator; otherwise, the enumerator setting does not take effect.
+   *  - If the 3D voice effect is enabled, users need to use stereo audio playback devices to hear the anticipated voice effect.
+   * - Pitch correction effect: `PITCH_CORRECTION`. To achieve better audio effect quality, Agora recommends calling
+   * \ref IRtcEngine::setAudioProfile "setAudioProfile" and setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or
+   * `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before setting this enumerator.
+   * @param param1
+   * - If you set `preset` to `ROOM_ACOUSTICS_3D_VOICE`, the `param1` sets the cycle period of the 3D voice effect.
+   * The value range is [1,60] and the unit is a second. The default value is 10 seconds, indicating that the voice moves
+   * around you every 10 seconds.
+   * - If you set `preset` to `PITCH_CORRECTION`, `param1` sets the basic mode of the pitch correction effect:
+   *  - `1`: (Default) Natural major scale.
+   *  - `2`: Natural minor scale.
+   *  - `3`: Japanese pentatonic scale.
+   * @param param2
+   * - If you set `preset` to `ROOM_ACOUSTICS_3D_VOICE`, you do not need to set `param2`.
+   * - If you set `preset` to `PITCH_CORRECTION`, `param2` sets the tonic pitch of the pitch correction effect:
+   *  - `1`: A
+   *  - `2`: A#
+   *  - `3`: B
+   *  - `4`: (Default) C
+   *  - `5`: C#
+   *  - `6`: D
+   *  - `7`: D#
+   *  - `8`: E
+   *  - `9`: F
+   *  - `10`: F#
+   *  - `11`: G
+   *  - `12`: G#
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  setAudioEffectParameters(preset: AUDIO_EFFECT_PRESET, param1: number, param2: number): number {
+    return this.rtcEngine.setAudioEffectParameters(preset, param1, param2);
+  }
+
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
