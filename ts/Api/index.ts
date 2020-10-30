@@ -1997,13 +1997,14 @@ class AgoraRtcEngine extends EventEmitter {
    * - 4: Showroom. The showroom scenario, optimizing the audio quality with 
    * external professional equipment.
    * - 5: Chatroom gaming. The game chatting scenario.
+   * - 8: Meeting. Meeting scenario that mainly contains the human voice.
    * @return
    * - 0: Success.
    * - < 0: Failure.
    */
   setAudioProfile(
     profile: 0 | 1 | 2 | 3 | 4 | 5,
-    scenario: 0 | 1 | 2 | 3 | 4 | 5
+    scenario: 0 | 1 | 2 | 3 | 4 | 5 | 8
   ): number {
     return this.rtcEngine.setAudioProfile(profile, scenario);
   }
@@ -5937,6 +5938,18 @@ declare interface AgoraRtcEngine {
    *  - 4: The local video capture fails. Check whether the capturer is 
    * working properly.
    *  - 5: The local video encoding fails.
+   *  - 11: The shared window is minimized
+   *  - 12: The error code indicates that a window shared by the window ID has been closed, or a full-screen window
+   * shared by the window ID has exited full-screen mode.
+   * After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a
+   * black screen, Agora recommends that you immediately stop screen sharing.
+   *
+   * Common scenarios for reporting this error code:
+   * - When the local user closes the shared window, the SDK reports this error code.
+   * - The local user shows some slides in full-screen mode first, and then shares the windows of the slides. After
+   * the user exits full-screen mode, the SDK reports this error code.
+   * - The local user watches web video or reads web document in full-screen mode first, and then shares the window of
+   * the web video or document. After the user exits full-screen mode, the SDK reports this error code.
    */
   on(evt: 'localVideoStateChanged', cb: (
     localVideoState: number,
