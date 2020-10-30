@@ -133,6 +133,9 @@
                     'libresolv.9.dylib',
                     'Accelerate.framework',
                     'AgoraRtcKit.framework',
+                    'Agorafdkaac.framework',
+                    'Agoraffmpeg.framework',
+                    'AgoraSoundTouch.framework',
                     'CoreWLAN.framework',
                     'Cocoa.framework',
                     'VideoToolbox.framework',
@@ -255,7 +258,11 @@
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
                         './sdk/dll/agora_rtc_sdk.dll',
-                        './sdk/dll/agora_sig_sdk.dll'
+                        './sdk/dll/libagora-fdkaac.dll',
+                        './sdk/dll/libagora-ffmpeg.dll',
+                        './sdk/dll/libagora-mpg123.dll',
+                        './sdk/dll/libagora-soundtouch.dll',
+                        './sdk/dll/libhwcodec.dll'
                     ]
                 }],
                 'library_dirs': [
@@ -320,7 +327,10 @@
                 'copies': [{
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
-                        './sdk/lib/mac/AgoraRtcKit.framework'
+                        './sdk/lib/mac/AgoraRtcKit.framework',
+                        './sdk/lib/mac/Agorafdkaac.framework',
+                        './sdk/lib/mac/Agoraffmpeg.framework',
+                        './sdk/lib/mac/AgoraSoundTouch.framework'
                     ]
                 }],
                 'link_settings': {
@@ -328,6 +338,9 @@
                     'libresolv.9.dylib',
                     'Accelerate.framework',
                     'AgoraRtcKit.framework',
+                    'Agorafdkaac.framework',
+                    'Agoraffmpeg.framework',
+                    'AgoraSoundTouch.framework',
                     'CoreWLAN.framework',
                     'Cocoa.framework',
                     'VideoToolbox.framework',
