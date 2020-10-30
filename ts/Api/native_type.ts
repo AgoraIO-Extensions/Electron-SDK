@@ -1650,6 +1650,201 @@ export enum RTMP_STREAMING_EVENT
   RTMP_STREAMING_EVENT_FAILED_LOAD_IMAGE = 1,
 };
 
+export enum AUDIO_EFFECT_PRESET
+{
+    /** Turn off audio effects and use the original voice.
+     */
+    AUDIO_EFFECT_OFF = 0x00000000,
+    /** An audio effect typical of a KTV venue.
+     *
+     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile"
+     * and setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)`
+     * before setting this enumerator.
+     */
+    ROOM_ACOUSTICS_KTV = 0x02010100,
+    /** An audio effect typical of a concert hall.
+     *
+     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile"
+     * and setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)`
+     * before setting this enumerator.
+     */
+    ROOM_ACOUSTICS_VOCAL_CONCERT = 0x02010200,
+    /** An audio effect typical of a recording studio.
+     *
+     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile"
+     * and setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)`
+     * before setting this enumerator.
+     */
+    ROOM_ACOUSTICS_STUDIO = 0x02010300,
+    /** An audio effect typical of a vintage phonograph.
+     *
+     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile"
+     * and setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)`
+     * before setting this enumerator.
+     */
+    ROOM_ACOUSTICS_PHONOGRAPH = 0x02010400,
+    /** A virtual stereo effect that renders monophonic audio as stereo audio.
+     *
+     * @note Call \ref IRtcEngine::setAudioProfile "setAudioProfile" and set the `profile` parameter to
+     * `AUDIO_PROFILE_MUSIC_STANDARD_STEREO(3)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before setting this
+     * enumerator; otherwise, the enumerator setting does not take effect.
+     */
+    ROOM_ACOUSTICS_VIRTUAL_STEREO = 0x02010500,
+    /** A more spatial audio effect.
+     *
+     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile"
+     * and setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)`
+     * before setting this enumerator.
+     */
+    ROOM_ACOUSTICS_SPACIAL = 0x02010600,
+    /** A more ethereal audio effect.
+     *
+     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile"
+     * and setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)`
+     * before setting this enumerator.
+     */
+    ROOM_ACOUSTICS_ETHEREAL = 0x02010700,
+    /** A 3D voice effect that makes the voice appear to be moving around the user. The default cycle period of the 3D
+     * voice effect is 10 seconds. To change the cycle period, call \ref IRtcEngine::setAudioEffectParameters "setAudioEffectParameters"
+     * after this method.
+     *
+     * @note
+     * - Call \ref IRtcEngine::setAudioProfile "setAudioProfile" and set the `profile` parameter to `AUDIO_PROFILE_MUSIC_STANDARD_STEREO(3)`
+     * or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before setting this enumerator; otherwise, the enumerator setting does not take effect.
+     * - If the 3D voice effect is enabled, users need to use stereo audio playback devices to hear the anticipated voice effect.
+     */
+    ROOM_ACOUSTICS_3D_VOICE = 0x02010800,
+    /** The voice of an uncle.
+     *
+     * @note
+     * - Agora recommends using this enumerator to process a male-sounding voice; otherwise, you may not hear the anticipated voice effect.
+     * - To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and
+     * setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before
+     * setting this enumerator.
+     */
+    VOICE_CHANGER_EFFECT_UNCLE = 0x02020100,
+    /** The voice of an old man.
+     *
+     * @note
+     * - Agora recommends using this enumerator to process a male-sounding voice; otherwise, you may not hear the anticipated voice effect.
+     * - To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and setting
+     * the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before setting
+     * this enumerator.
+     */
+    VOICE_CHANGER_EFFECT_OLDMAN = 0x02020200,
+    /** The voice of a boy.
+     *
+     * @note
+     * - Agora recommends using this enumerator to process a male-sounding voice; otherwise, you may not hear the anticipated voice effect.
+     * - To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and setting
+     * the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before
+     * setting this enumerator.
+     */
+    VOICE_CHANGER_EFFECT_BOY = 0x02020300,
+    /** The voice of a young woman.
+     *
+     * @note
+     * - Agora recommends using this enumerator to process a female-sounding voice; otherwise, you may not hear the anticipated voice effect.
+     * - To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and setting
+     * the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before
+     * setting this enumerator.
+     */
+    VOICE_CHANGER_EFFECT_SISTER = 0x02020400,
+    /** The voice of a girl.
+     *
+     * @note
+     * - Agora recommends using this enumerator to process a female-sounding voice; otherwise, you may not hear the anticipated voice effect.
+     * - To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and setting
+     * the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before
+     * setting this enumerator.
+     */
+    VOICE_CHANGER_EFFECT_GIRL = 0x02020500,
+    /** The voice of Pig King, a character in Journey to the West who has a voice like a growling bear.
+     *
+     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and
+     * setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before
+     * setting this enumerator.
+     */
+    VOICE_CHANGER_EFFECT_PIGKING = 0x02020600,
+    /** The voice of Hulk.
+     *
+     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and
+     * setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before
+     * setting this enumerator.
+     */
+    VOICE_CHANGER_EFFECT_HULK = 0x02020700,
+    /** An audio effect typical of R&B music.
+     *
+     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and
+     * setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before
+     * setting this enumerator.
+     */
+    STYLE_TRANSFORMATION_RNB = 0x02030100,
+    /** An audio effect typical of popular music.
+     *
+     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and
+     * setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before
+     * setting this enumerator.
+     */
+    STYLE_TRANSFORMATION_POPULAR = 0x02030200,
+    /** A pitch correction effect that corrects the user's pitch based on the pitch of the natural C major scale.
+     * To change the basic mode and tonic pitch, call \ref IRtcEngine::setAudioEffectParameters "setAudioEffectParameters" after this method.
+     *
+     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and
+     * setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before
+     * setting this enumerator.
+     */
+    PITCH_CORRECTION = 0x02040100
+};
+
+/** The options for SDK preset voice beautifier effects.
+ */
+export enum VOICE_BEAUTIFIER_PRESET
+{
+    /** Turn off voice beautifier effects and use the original voice.
+     */
+    VOICE_BEAUTIFIER_OFF = 0x00000000,
+    /** A more magnetic voice.
+     *
+     * @note Agora recommends using this enumerator to process a male-sounding voice; otherwise, you may experience vocal distortion.
+     */
+    CHAT_BEAUTIFIER_MAGNETIC = 0x01010100,
+    /** A fresher voice.
+     *
+     * @note Agora recommends using this enumerator to process a female-sounding voice; otherwise, you may experience vocal distortion.
+     */
+    CHAT_BEAUTIFIER_FRESH = 0x01010200,
+    /** A more vital voice.
+     *
+     * @note Agora recommends using this enumerator to process a female-sounding voice; otherwise, you may experience vocal distortion.
+     */
+    CHAT_BEAUTIFIER_VITALITY = 0x01010300,
+    /** A more vigorous voice.
+     */
+    TIMBRE_TRANSFORMATION_VIGOROUS = 0x01030100,
+    /** A deeper voice.
+     */
+    TIMBRE_TRANSFORMATION_DEEP = 0x01030200,
+    /** A mellower voice.
+     */
+    TIMBRE_TRANSFORMATION_MELLOW = 0x01030300,
+    /** A falsetto voice.
+     */
+    TIMBRE_TRANSFORMATION_FALSETTO = 0x01030400,
+    /** A falsetto voice.
+     */
+    TIMBRE_TRANSFORMATION_FULL = 0x01030500,
+    /** A clearer voice.
+     */
+    TIMBRE_TRANSFORMATION_CLEAR = 0x01030600,
+    /** A more resounding voice.
+     */
+    TIMBRE_TRANSFORMATION_RESOUNDING = 0x01030700,
+    /** A more ringing voice.
+     */
+    TIMBRE_TRANSFORMATION_RINGING = 0x01030800
+};
+
 export type STREAM_SUBSCRIBE_STATE =
   | 0 //SUB_STATE_IDLE
   | 1 //SUB_STATE_NO_SUBSCRIBED
@@ -2868,6 +3063,18 @@ export interface NodeRtcEngine {
    * @ignore
    */
   enableEncryption(enabled: boolean, config: EncryptionConfig): number;
+  /**
+   * @ignore
+   */
+  setAudioEffectPreset(preset: AUDIO_EFFECT_PRESET): number;
+  /**
+   * @ignore
+   */
+  setVoiceBeautifierPreset(preset: VOICE_BEAUTIFIER_PRESET): number;
+  /**
+   * @ignore
+   */
+  setAudioEffectParameters(presset: AUDIO_EFFECT_PRESET, param1: number, param2: number): number;
 }
 /**
  * @ignore

@@ -290,6 +290,13 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(sendCustomReportMessage);
                 PROPERTY_METHOD_DEFINE(enableEncryption);
 
+                /**
+                 * 3.2.0 Apis
+                 */
+                PROPERTY_METHOD_DEFINE(setAudioEffectPreset);
+                PROPERTY_METHOD_DEFINE(setVoiceBeautifierPreset);
+                PROPERTY_METHOD_DEFINE(setAudioEffectParameters);
+
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -5504,6 +5511,70 @@ namespace agora {
                 config.encryptionMode = (ENCRYPTION_MODE)encryptionMode;
                 config.encryptionKey = encryptionKey;
                 result = pEngine->m_engine->enableEncryption(enabled, config);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setAudioEffectPreset)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                int preset;
+                status = napi_get_value_int32_(args[0], preset);
+                CHECK_NAPI_STATUS(pEngine, status);
+                result = pEngine->m_engine->setAudioEffectPreset(AUDIO_EFFECT_PRESET(preset));
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setVoiceBeautifierPreset)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                int preset;
+                status = napi_get_value_int32_(args[0], preset);
+                CHECK_NAPI_STATUS(pEngine, status);
+                result = pEngine->m_engine->setVoiceBeautifierPreset(VOICE_BEAUTIFIER_PRESET(preset));
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setAudioEffectParameters)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                int preset;
+                status = napi_get_value_int32_(args[0], preset);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                int param1;
+                status = napi_get_value_int32_(args[1], param1);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                int param2;
+                status = napi_get_value_int32_(args[2], param2);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                result = pEngine->m_engine->setAudioEffectParameters(AUDIO_EFFECT_PRESET(preset), param1, param2);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;

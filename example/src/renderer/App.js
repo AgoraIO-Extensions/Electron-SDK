@@ -262,6 +262,9 @@ export default class App extends Component {
       smoothnessLevel: 1,
       rednessLevel: 0
     })
+    rtcEngine.setAudioEffectPreset(0x02010100);
+    rtcEngine.setVoiceBeautifierPreset(0x01010100);
+    rtcEngine.setAudioEffectParameters(0x02010100, 1, 1);
 
     // joinning two channels together
     // let channel = rtcEngine.createChannel(this.state.channel)
