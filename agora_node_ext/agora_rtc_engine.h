@@ -359,6 +359,11 @@ namespace agora {
             NAPI_API(registerRGBAVideoFrameReceiver);
             NAPI_API(unregisterRGBAVidioFrameReceiver);
 
+            /**
+             * CSD-21313
+             */
+            NAPI_API(sendCustomReportMessage);
+
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }

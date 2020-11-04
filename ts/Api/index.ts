@@ -4764,6 +4764,15 @@ class AgoraRtcEngine extends EventEmitter {
   unregisterRGBAVidioFrameReceiver(): number {
     return this.rtcEngine.unregisterRGBAVidioFrameReceiver();
   }
+
+  /** Agora supports reporting and analyzing customized messages.
+   *
+   * This function is in the beta stage with a free trial. The ability provided in its beta test version is reporting a maximum of 10 message pieces within 6 seconds, with each message piece not exceeding 256 bytes and each string not exceeding 100 bytes.
+   * To try out this function, contact [support@agora.io](mailto:support@agora.io) and discuss the format of customized messages with us.
+   */
+  sendCustomReportMessage(id: string, category: string, event: string, label: string, value: number): number {
+    return this.rtcEngine.sendCustomReportMessage(id, category, event, label, value);
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
