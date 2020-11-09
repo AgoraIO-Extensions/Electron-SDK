@@ -268,37 +268,37 @@ export default class App extends Component {
     // this.subscribeChannelEvents(channel, true)
     // channel.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
     // channel.publish();
-    //rtcEngine.joinChannel("", "123", "", 0);
+    rtcEngine.joinChannel("", "123", "", 0);
 
     //joinning two channels together
-    this.channel1 = rtcEngine.createChannel(this.state.channel)
-    this.channel1.registerMediaMetadataObserver();
-    setInterval(()=>{
-      let ptr = {
-        width: 100,
-        height: 210,
-        top: 32323
-      }
-      let data = JSON.stringify(ptr);
-      let metadata = {
-        uid: 123,
-        size: data.length,
-        buffer: data,
-        timeStampMs: 122323
-      }
-      let ret = this.channel1.sendMetadata(metadata);
-      console.log(`channel: ${this.channel1.channelId()}  sendMetadata  data: ${data}  ret: ${ret}`)
-   }, 1000);
-    this.channel1.setClientRole(1);
-    this.subscribeChannelEvents(this.channel1, true)
-    this.channel1.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
-    this.channel1.publish();
+  //   this.channel1 = rtcEngine.createChannel(this.state.channel)
+  //   this.channel1.registerMediaMetadataObserver();
+  //   setInterval(()=>{
+  //     let ptr = {
+  //       width: 100,
+  //       height: 210,
+  //       top: 32323
+  //     }
+  //     let data = JSON.stringify(ptr);
+  //     let metadata = {
+  //       uid: 123,
+  //       size: data.length,
+  //       buffer: data,
+  //       timeStampMs: 122323
+  //     }
+  //     let ret = this.channel1.sendMetadata(metadata);
+  //     console.log(`channel: ${this.channel1.channelId()}  sendMetadata  data: ${data}  ret: ${ret}`)
+  //  }, 1000);
+  //   this.channel1.setClientRole(1);
+  //   this.subscribeChannelEvents(this.channel1, true)
+  //   this.channel1.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
+  //   this.channel1.publish();
 
-    this.channel1.setClientRole(1);
-    this.channel2 = rtcEngine.createChannel(`${this.state.channel}-2`)
-    this.channel2.registerMediaMetadataObserver()
-    this.subscribeChannelEvents(this.channel2, false)
-    this.channel2.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
+  //   this.channel1.setClientRole(1);
+  //   this.channel2 = rtcEngine.createChannel(`${this.state.channel}-2`)
+  //   this.channel2.registerMediaMetadataObserver()
+  //   this.subscribeChannelEvents(this.channel2, false)
+  //   this.channel2.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
 
   }
 
