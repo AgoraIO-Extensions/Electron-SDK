@@ -10,12 +10,25 @@
 
 #include <string>
 #include <vector>
-#include "video_source_ipc.h"
 
 #if defined(_WIN32)
 #include <windows.h>
 #endif
 #define    IMAGE_MAX_PIXEL_SIZE   500
+
+#if defined(__APPLE__)
+        struct DisplayID
+        {
+            unsigned int idVal;
+            
+            DisplayID()
+            : idVal(0)
+            {}
+        };
+        typedef DisplayID ScreenIDType;
+#elif defined(_WIN32)
+        typedef agora::rtc::Rectangle ScreenIDType;
+#endif
 
 struct ScreenDisplayInfo
 {
