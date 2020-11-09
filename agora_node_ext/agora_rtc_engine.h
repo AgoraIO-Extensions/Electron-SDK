@@ -18,7 +18,6 @@
 #include <node_object_wrap.h>
 #include "node_log.h"
 #include "node_event_handler.h"
-#include "node_channel_event_handler.h"
 #include "node_napi_api.h"
 #include <functional>
 #include <list>
@@ -295,7 +294,6 @@ namespace agora {
             /**
              * 2.9.0.100 Apis
              */
-            NAPI_API(createChannel);
             NAPI_API(startScreenCaptureByScreen);
             NAPI_API(startScreenCaptureByWindow);
             NAPI_API(updateScreenCaptureParameters);
@@ -338,82 +336,6 @@ namespace agora {
             AAudioDeviceManager* m_audioVdm = nullptr;
 
             std::unique_ptr<IAVFramePluginManager> m_avPluginManager;
-            std::unique_ptr<NodeMetadataObserver> metadataObserver;
-        };
-
-
-        class NodeRtcChannel : public node::ObjectWrap
-        {
-        public:
-            /*
-            * Constructor
-            */
-            static void createInstance(const FunctionCallbackInfo<Value>& args);
-
-            /*
-            * Helper function, used to declare all supported native interface that are exposed to nodejs.
-            */
-            static Local<Object> Init(Isolate* isolate, IChannel* pChannel);
-
-            NAPI_API(onEvent);
-            NAPI_API(joinChannel);
-            NAPI_API(joinChannelWithUserAccount);
-            NAPI_API(publish);
-            NAPI_API(unpublish);
-            NAPI_API(channelId);
-            NAPI_API(getCallId);
-            NAPI_API(renewToken);
-            NAPI_API(setEncryptionMode);
-            NAPI_API(setEncryptionSecret);
-            NAPI_API(setClientRole);
-            NAPI_API(setRemoteUserPriority);
-            NAPI_API(setRemoteVoicePosition);
-            NAPI_API(setRemoteRenderMode);
-            NAPI_API(setDefaultMuteAllRemoteAudioStreams);
-            NAPI_API(setDefaultMuteAllRemoteVideoStreams);
-            NAPI_API(muteAllRemoteAudioStreams);
-            NAPI_API(muteRemoteAudioStream);
-            NAPI_API(muteAllRemoteVideoStreams);
-            NAPI_API(muteRemoteVideoStream);
-            NAPI_API(setRemoteVideoStreamType);
-            NAPI_API(setRemoteDefaultVideoStreamType);
-            NAPI_API(createDataStream);
-            NAPI_API(sendStreamMessage);
-            NAPI_API(addPublishStreamUrl);
-            NAPI_API(removePublishStreamUrl);
-            NAPI_API(setLiveTranscoding);
-            NAPI_API(addInjectStreamUrl);
-            NAPI_API(removeInjectStreamUrl);
-            NAPI_API(startChannelMediaRelay);
-            NAPI_API(updateChannelMediaRelay);
-            NAPI_API(stopChannelMediaRelay);
-            NAPI_API(getConnectionState);
-            NAPI_API(leaveChannel);
-            NAPI_API(release);
-
-            /**
-             * 3.0.0 Apis
-             */
-            NAPI_API(adjustUserPlaybackSignalVolume);
-
-            NAPI_API(sendMetadata);
-            NAPI_API(addMetadataEventHandler);
-            NAPI_API(setMaxMetadataSize);
-            NAPI_API(registerMediaMetadataObserver);
-            NAPI_API(unRegisterMediaMetadataObserver);
-            NAPI_API(enableEncryption);
-
-        public:
-            Isolate* getIsolate() { return m_isolate; }
-
-        protected:
-            NodeRtcChannel(Isolate *isolate, IChannel* pChannel);
-            ~NodeRtcChannel();
-        private:
-            DECLARE_CLASS;
-            IChannel* m_channel;
-            Isolate *m_isolate;
-            std::unique_ptr<NodeChannelEventHandler> m_eventHandler;
             std::unique_ptr<NodeMetadataObserver> metadataObserver;
         };
 

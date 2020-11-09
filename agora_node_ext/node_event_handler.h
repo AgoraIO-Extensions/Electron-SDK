@@ -198,13 +198,13 @@ namespace agora {
             virtual void onRtmpStreamingStateChanged(const char *url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR errCode) override;
 
             //3.1.0
-            virtual void onFirstLocalAudioFramePublished(int elapsed);
-            virtual void onFirstLocalVideoFramePublished(int elapsed);
-            virtual void onRtmpStreamingEvent(const char* url, RTMP_STREAMING_EVENT eventCode);
-            virtual void onAudioPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState);
-            virtual void onVideoPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState);
-            virtual void onAudioSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState);
-            virtual void onVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState);
+            virtual void onFirstLocalAudioFramePublished(int elapsed) override;
+            virtual void onFirstLocalVideoFramePublished(int elapsed) override;
+            virtual void onRtmpStreamingEvent(const char* url, RTMP_STREAMING_EVENT eventCode) override;
+            virtual void onAudioPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState) override;
+            virtual void onVideoPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState) override;
+            virtual void onAudioSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) override;
+            virtual void onVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) override;
             virtual void onAudioRouteChanged(AUDIO_ROUTE_TYPE routing);
             
   private:
