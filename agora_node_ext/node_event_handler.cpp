@@ -1180,59 +1180,6 @@ namespace agora {
             });
         }
 
-        void NodeEventHandler::onVideoSourceJoinedChannel(agora::rtc::uid_t uid)
-        {
-            FUNC_TRACE;
-            RtcEngineParameters rep(m_engine->getRtcEngine());
-            rep.muteRemoteVideoStream(uid, true);
-            node_async_call::async_call([this, uid]{
-                this->onVideoSourceJoinedChannel_node(uid);
-            });
-        }
-
-        void NodeEventHandler::onVideoSourceJoinedChannel_node(agora::rtc::uid_t uid)
-        {
-            FUNC_TRACE;
-            MAKE_JS_CALL_1(RTC_EVENT_VIDEO_SOURCE_JOIN_SUCCESS, uid, uid);
-        }
-
-        void NodeEventHandler::onVideoSourceRequestNewToken()
-        {
-            FUNC_TRACE;
-            node_async_call::async_call([this]{
-                this->onVideoSourceRequestToken_node();
-            });
-        }
-
-        void NodeEventHandler::onVideoSourceRequestToken_node()
-        {
-            FUNC_TRACE;
-            MAKE_JS_CALL_0(RTC_EVENT_VIDEO_SOURCE_REQUEST_NEW_TOKEN);
-        }
-
-        void NodeEventHandler::onVideoSourceExit()
-        {
-            FUNC_TRACE;
-            node_async_call::async_call([this] {
-                this->onVideoSourceLeaveChannel_node();
-            });
-            m_engine->destroyVideoSource();
-        }
-
-        void NodeEventHandler::onVideoSourceLeaveChannel()
-        {
-            FUNC_TRACE;
-            node_async_call::async_call([this]{
-                this->onVideoSourceLeaveChannel_node();
-            });
-        }
-
-        void NodeEventHandler::onVideoSourceLeaveChannel_node()
-        {
-            FUNC_TRACE;
-            MAKE_JS_CALL_0(RTC_EVENT_VIDEO_SOURCE_LEAVE_CHANNEL);
-        }
-
         void NodeEventHandler::addEventHandler(const std::string& eventName, Persistent<Object>& obj, Persistent<Function>& callback)
         {
             FUNC_TRACE;

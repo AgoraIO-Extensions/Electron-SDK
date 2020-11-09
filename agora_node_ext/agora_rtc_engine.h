@@ -20,7 +20,6 @@
 #include "node_event_handler.h"
 #include "node_channel_event_handler.h"
 #include "node_napi_api.h"
-#include "agora_video_source.h"
 #include <functional>
 #include <list>
 #include <mutex>
@@ -228,30 +227,6 @@ namespace agora {
             NAPI_API(getAudioRecordingDeviceMute);
             NAPI_API(setAudioRecordingDeviceMute);
 
-            /**
-             * Wrapper for video source, which is used to implement multiple video source.
-             */
-            NAPI_API(videoSourceInitialize);
-            NAPI_API(videoSourceJoin);
-            NAPI_API(videoSourceLeave);
-            NAPI_API(videoSourceRenewToken);
-            NAPI_API(videoSourceSetChannelProfile);
-            NAPI_API(videoSourceSetVideoProfile);
-            NAPI_API(startScreenCapture2);
-            NAPI_API(stopScreenCapture2);
-            NAPI_API(videoSourceRelease);
-            NAPI_API(videoSourceStartPreview);
-            NAPI_API(videoSourceStopPreview);
-            NAPI_API(videoSourceEnableWebSdkInteroperability);
-            NAPI_API(videoSourceEnableDualStreamMode);
-            NAPI_API(videoSourceSetLogFile);
-            NAPI_API(videoSourceSetParameter);
-            NAPI_API(videoSourceUpdateScreenCaptureRegion);
-            NAPI_API(videoSourceEnableLoopbackRecording);
-            NAPI_API(videoSourceEnableAudio);
-            NAPI_API(videoSourceEnableEncryption);
-            NAPI_API(videoSourceSetEncryptionMode);
-            NAPI_API(videoSourceSetEncryptionSecret);
             /*
             * Native interface used to setup local and remote video canvas.
             */
@@ -299,10 +274,6 @@ namespace agora {
             NAPI_API(stopAudioDeviceLoopbackTest);
             NAPI_API(setCameraCapturerConfiguration);
             NAPI_API(setLogFileSize);
-            NAPI_API(videosourceStartScreenCaptureByScreen);
-            NAPI_API(videosourceStartScreenCaptureByWindow);
-            NAPI_API(videosourceUpdateScreenCaptureParameters);
-            NAPI_API(videosourceSetScreenCaptureContentHint);
 
 
             /**
@@ -352,7 +323,6 @@ namespace agora {
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }
-            void destroyVideoSource();
 
         protected:
             NodeRtcEngine(Isolate *isolate);
@@ -363,11 +333,6 @@ namespace agora {
             std::unique_ptr<NodeEventHandler> m_eventHandler;
             Isolate *m_isolate;
             std::unique_ptr<IExternalVideoRenderFactory> m_externalVideoRenderFactory;
-
-            /**
-             * Currently we only support one video source. This maybe changed if more video source is needed.
-             */
-            std::unique_ptr<AgoraVideoSource> m_videoSourceSink;
 
             AVideoDeviceManager* m_videoVdm = nullptr;
             AAudioDeviceManager* m_audioVdm = nullptr;

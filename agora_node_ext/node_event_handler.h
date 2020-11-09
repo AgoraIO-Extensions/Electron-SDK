@@ -17,7 +17,6 @@
 #include <string>
 #include <uv.h>
 #include "node_napi_api.h"
-#include "agora_video_source.h"
 namespace agora {
     namespace rtc {
 #define RTC_EVENT_JOIN_CHANNEL "joinchannel"
@@ -108,7 +107,7 @@ namespace agora {
 #define RTC_EVENT_API_ERROR "apierror"
         class NodeRtcEngine;
         class NodeUid;
-        class NodeEventHandler : public IRtcEngineEventHandler, public IAgoraVideoSourceEventHandler
+        class NodeEventHandler : public IRtcEngineEventHandler
         {
         public:
             struct NodeEventCallback
@@ -176,10 +175,6 @@ namespace agora {
             virtual void onMicrophoneEnabled(bool enabled) override;
             virtual void onConnectionStateChanged(CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason) override;
 
-            virtual void onVideoSourceJoinedChannel(agora::rtc::uid_t uid) override;
-            virtual void onVideoSourceRequestNewToken() override;
-            virtual void onVideoSourceLeaveChannel() override;
-            virtual void onVideoSourceExit() override;
             void fireApiError(const char* funcName);
             void addEventHandler(const std::string& eventName, Persistent<Object>& obj, Persistent<Function>& callback);
 
@@ -275,10 +270,6 @@ namespace agora {
             void onRemoteAudioStats_node(const RemoteAudioStats & stats);
             void onMicrophoneEnabled_node(bool enabled);
             void onConnectionStateChanged_node(CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason);
-
-            void onVideoSourceJoinedChannel_node(agora::rtc::uid_t uid);
-            void onVideoSourceRequestToken_node();
-            void onVideoSourceLeaveChannel_node();
 
             //2.4.0
             void onAudioMixingStateChanged_node(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE errorCode);
