@@ -67,6 +67,7 @@ export type MediaDeviceType =
   | 2 // Video renderer
   | 3 // Video capturer
   | 4; // Application audio playback device
+ 
 /**
  * The TranscodingUser class.
  */
@@ -614,53 +615,12 @@ export interface RtcStats {
   txVideoKBytes: number;
   /** Client-server latency. */
   lastmileDelay: number;
-  /** The packet loss rate (%) from the local client to Agora's edge server, 
-   * before using the anti-packet-loss method.
-   */
-  txPacketLossRate: number;
-  /** The packet loss rate (%) from Agora's edge server to the local client,
-   * before using the anti-packet-loss method.
-   */
-  rxPacketLossRate: number;
   /** Number of users in the channel. */
   userCount: number;
   /** Application CPU usage (%). */
   cpuAppUsage: number;
   /** System CPU usage (%). */
   cpuTotalUsage: number;
-  /**
-   * @since v3.0.0
-   * 
-   * The round-trip time delay from the client to the local router.
-   */
-  gatewayRtt: number;
-  /**
-   * @since v3.0.0
-   * 
-   * The memory usage ratio of the app (%).
-   * 
-   * This value is for reference only. Due to system limitations, you may not 
-   * get the value of this member.
-   */
-  memoryAppUsageRatio: number;
-  /**
-   * @since v3.0.0
-   * 
-   * The memory usage ratio of the system (%).
-   * 
-   * This value is for reference only. Due to system limitations, you may not 
-   * get the value of this member.
-   */
-  memoryTotalUsageRatio: number;
-  /**
-   * @since v3.0.0
-   * 
-   * The memory usage of the app (KB).
-   * 
-   * This value is for reference only. Due to system limitations, you may not 
-   * get the value of this member.
-   */
-  memoryAppUsageInKbytes: number;
 }
 /** Quality change of the local video. */
 export enum QualityAdaptIndication {
@@ -693,11 +653,6 @@ export interface LocalVideoStats {
   targetBitrate: number;
   /** The target frame rate (fps) of the current encoder. */
   targetFrameRate: number;
-  /** Quality change of the local video in terms of target frame rate and 
-   * target bit rate in this reported interval. 
-   * See {@link QualityAdaptIndication}.
-   */
-  qualityAdaptIndication: QualityAdaptIndication;
   /**
    * @since 2.9.0
    * 
@@ -729,14 +684,6 @@ export interface LocalVideoStats {
    * The codec type of the local video. See {@link VIDEO_CODEC_TYPE}.
    */
   codecType: number;
-  /** 
-   * The video packet loss rate (%) from the local client to the Agora edge server before applying the anti-packet loss strategies.
-   */
-  txPacketLossRate: number;
-  /** 
-   * The capture frame rate (fps) of the local video.
-   */
-  captureFrameRate: number;
 }
 /** 
  * The statistics of the local audio stream.
@@ -754,10 +701,6 @@ export interface LocalAudioStats {
    * The average sending bitrate (Kbps).
    */
   sentBitrate: number;
-  /** 
-   * The audio packet loss rate (%) from the local client to the Agora edge server before applying the anti-packet loss strategies.
-   */
-  txPacketLossRate: number;
 }
 /** VideoEncoderConfiguration */
 export interface VideoEncoderConfiguration {
@@ -785,7 +728,7 @@ export interface VideoEncoderConfiguration {
    * 
    * The default value is -1.
    */
-  minFrameRate: number;
+  // minFrameRate: number;
    /** The video encoding bitrate (Kbps).
     * 
     * Choose one of the following options:
@@ -1114,18 +1057,6 @@ export interface RemoteVideoStats {
    * anti-packet-loss method.
    */
   packetLossRate: number;
-  /**
-   * The total time (ms) when the remote user in the Communication profile or the remote
-   * broadcaster in the Live-broadcast profile neither stops sending the video stream nor
-   * disables the video module after joining the channel.
-
-     @since v3.0.1
-   */
-  totalActiveTime: number;
-  /**
-   * The total publish duration (ms) of the remote video stream.
-   */
-  publishDuration: number;
 }
 /** Sets the camera capturer configuration. */
 export enum CaptureOutPreference {
@@ -1198,9 +1129,9 @@ export interface CaptureParam {
    */
   bitrate: number; //  The bitrate (Kbps) of the shared region. The default value is 0 (the SDK works out a bitrate according to the dimensions of the current screen).
 
-  captureMouseCursor: boolean;
+  // captureMouseCursor: boolean;
 
-  windowFocus: boolean;
+  // windowFocus: boolean;
 
   excludeWindowList: Array<number>;
 
@@ -1308,15 +1239,6 @@ export interface RemoteAudioStats {
    * when the audio is available.
    */
   frozenRate: number;
-  /** 
-   * The total time (ms) when the remote user in the `COMMUNICATION` profile or the remote host in
-   * the `LIVE_BROADCASTING` profile neither stops sending the audio stream nor disables the audio module after joining the channel.
-   */
-  totalActiveTime: number;
-  /**
-   * The total publish duration (ms) of the remote audio stream.
-   */
-  publishDuration: number;
 }
 
 /**
@@ -1914,10 +1836,6 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  createChannel(channel: string): any;
-  /**
-   * @ignore
-   */
   getVersion(): string;
   /**
    * @ignore
@@ -1951,14 +1869,14 @@ export interface NodeRtcEngine {
    * @ignore
    */
   release(): number;
-  /**
-   * @ignore
-   */
-  setHighQualityAudioParameters(
-    fullband: boolean,
-    stereo: boolean,
-    fullBitrate: boolean
-  ): number;
+  // /**
+  //  * @ignore
+  //  */
+  // setHighQualityAudioParameters(
+  //   fullband: boolean,
+  //   stereo: boolean,
+  //   fullBitrate: boolean
+  // ): number;
   /**
    * @ignore
    */
@@ -2120,7 +2038,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  muteRemoteAudioStream(uid: number, mute: boolean): number;
+  muteRemoteAudioStream(uid: number, mute: boolean, connectionId: number): number;
   /**
    * @ignore
    */
@@ -2144,11 +2062,11 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  enableAudioVolumeIndication(interval: number, smooth: number, report_vad: boolean): number;
+  enableAudioVolumeIndication(interval: number, smooth: number): number;
   /**
    * @ignore
    */
-  muteRemoteVideoStream(uid: number, mute: boolean): number;
+  muteRemoteVideoStream(uid: number, mute: boolean, connectionId: number): number;
   /**
    * @ignore
    */
@@ -2300,11 +2218,15 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  enableLoopbackRecording(enable: boolean, deviceName: string | null): number;
+  enableLoopbackRecording(enable: boolean): number;
   /**
    * @ignore
    */
-  startAudioRecording(filePath: string, sampleRate: number, quality: number): number;
+  enableLoopbackRecording2(connection_id: Number, enable: boolean): number;
+  /**
+   * @ignore
+   */
+  startAudioRecording(filePath: string, quality: number): number;
   /**
    * @ignore
    */
@@ -2320,7 +2242,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  startAudioDeviceLoopbackTest(interval: number): number;
+  startRecordingDeviceTest(interval: number): number;
   /**
    * @ignore
    */
@@ -2495,15 +2417,15 @@ export interface NodeRtcEngine {
    * @ignore
    */
   videoSourceRelease(): number;
-  /**
-   * @ignore
-   */
-  startScreenCapture(
-    windowId: number,
-    captureFreq: number,
-    rect: { left: number; right: number; top: number; bottom: number },
-    bitrate: number
-  ): number;
+  // /**
+  //  * @ignore
+  //  */
+  // startScreenCapture(
+  //   windowId: number,
+  //   captureFreq: number,
+  //   rect: { left: number; right: number; top: number; bottom: number },
+  //   bitrate: number
+  // ): number;
   /**
    * @ignore
    */
@@ -2512,10 +2434,10 @@ export interface NodeRtcEngine {
    * @ignore
    */
   updateScreenCaptureRegion(rect: {
-    left: number;
-    right: number;
-    top: number;
-    bottom: number;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
   }): number;
   /**
    * @ignore
@@ -2570,10 +2492,10 @@ export interface NodeRtcEngine {
    * @ignore
    */
   setAudioMixingPosition(position: number): number;
-  /**
-   * @ignore
-   */
-  setAudioMixingPitch(pitch: number): number;
+  // /**
+  //  * @ignore
+  //  */
+  // setAudioMixingPitch(pitch: number): number;
   /**
    * @ignore
    */
@@ -2737,10 +2659,6 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  setProfile(profile: string, merge: boolean): number;
-  /**
-   * @ignore
-   */
   onEvent(event: string, callback: Function): void;
   /**
    * @ignore
@@ -2750,28 +2668,28 @@ export interface NodeRtcEngine {
    * @ignore
    */
   registerDeliverFrame(callback: Function): number;
+  // /**
+  //  * @ignore
+  //  */
+  // registerLocalUserAccount(appId: string, userAccount: string): number;
   /**
    * @ignore
    */
-  registerLocalUserAccount(appId: string, userAccount: string): number;
+  // joinChannelWithUserAccount(
+  //   token: string,
+  //   channel: string,
+  //   userAccount: string
+  // ): number;
   /**
    * @ignore
    */
-  joinChannelWithUserAccount(
-    token: string,
-    channel: string,
-    userAccount: string
-  ): number;
-  /**
-   * @ignore
-   */
-  getUserInfoByUserAccount(
-    userAccount: string
-  ): { errCode: number; userInfo: UserInfo };
-  /**
-   * @ignore
-   */
-  getUserInfoByUid(uid: number): { errCode: number; userInfo: UserInfo };
+  // getUserInfoByUserAccount(
+  //   userAccount: string
+  // ): { errCode: number; userInfo: UserInfo };
+  // /**
+  //  * @ignore
+  //  */
+  // getUserInfoByUid(uid: number): { errCode: number; userInfo: UserInfo };
   /**
    * @ignore
    */
@@ -2864,254 +2782,6 @@ export interface NodeRtcEngine {
    * @ignore
    */
   sendCustomReportMessage(id: string, category: string, event: string, label: string, value: number): number;
-  /**
-   * @ignore
-   */
-  enableEncryption(enabled: boolean, config: EncryptionConfig): number;
-}
-/**
- * @ignore
- */
-export interface NodeRtcChannel {
-  /**
-   * @ignore
-   */
-  onEvent(event: string, callback: Function): void;
-  /**
-   * @ignore
-   */
-  joinChannel(
-    token: string,
-    info: string,
-    uid: number,
-    options: ChannelMediaOptions
-  ): number;
-
-  /**
-   * @ignore
-   */
-  registerMediaMetadataObserver(): number;
-  /**
-   * @ignore
-   */
-  unRegisterMediaMetadataObserver(): number;
-  /**
-   * @ignore
-   */
-  sendMetadata(metadata: Metadata): number;
-  /**
-   * @ignore
-   */
-  addMetadataEventHandler(callback: Function, callback2: Function): number;
-  /**
-   * @ignore
-   */
-  setMaxMetadataSize(size: number): number;
-
-  /**
-   * @ignore
-   */
-  joinChannelWithUserAccount(
-    token: string,
-    userAccount: string,
-    options: ChannelMediaOptions
-  ): number;
-
-  /**
-   * @ignore
-   */
-  channelId(): string;
-
-  /**
-   * @ignore
-   */
-  getCallId(): string;
-
-  /**
-   * @ignore
-   */
-  setClientRole(
-    clientRole: ClientRoleType
-  ): number;
-
-  /**
-   * @ignore
-   */
-  setRemoteUserPriority(
-    uid: number,
-    priority: Priority
-  ): number;
-
-  /**
-   * @ignore
-   */
-  renewToken(
-    token: string
-  ): number;
-
-  /**
-   * @ignore
-   */
-  setEncryptionSecret(
-    secret: string
-  ): number;
-
-  /**
-   * @ignore
-   */
-  setEncryptionMode(
-    mode: string
-  ): number;
-
-  /**
-   * @ignore
-   */
-  setRemoteVoicePosition(
-    uid: number,
-    pan: number,
-    gain: number
-  ): number;
-
-  /**
-   * @ignore
-   */
-  setDefaultMuteAllRemoteAudioStreams(
-    muted: boolean
-  ): number;
-
-  /**
-   * @ignore
-   */
-  setDefaultMuteAllRemoteVideoStreams(
-    muted: boolean
-  ): number;
-
-  /**
-   * @ignore
-   */
-  muteAllRemoteAudioStreams(
-    muted: boolean
-  ): number;
-
-  /**
-   * @ignore
-   */
-  muteRemoteAudioStream(
-    uid: number,
-    muted: boolean
-  ): number;
-
-  /**
-   * @ignore
-   */
-  muteAllRemoteVideoStreams(
-    muted: boolean
-  ): number;
-
-  /**
-   * @ignore
-   */
-  muteRemoteVideoStream(
-    uid: number,
-    muted: boolean
-  ): number;
-  /**
-   * @ignore
-   */
-  setRemoteVideoStreamType(
-    uid: number,
-    type: StreamType
-  ): number;
-
-  /**
-   * @ignore
-   */
-  setRemoteDefaultVideoStreamType(
-    type: StreamType
-  ): number;
-
-  /**
-   * @ignore
-   */
-  createDataStream(
-    reliable: boolean,
-    ordered: boolean
-  ): number;
-
-  /**
-   * @ignore
-   */
-  sendStreamMessage(
-    streamId: number,
-    msg: string
-  ): number;
-
-  /**
-   * @ignore
-   */
-  addPublishStreamUrl(
-    url: string,
-    transcodingEnabled: boolean
-  ): number;
-
-  /**
-   * @ignore
-   */
-  removePublishStreamUrl(
-    url: string
-  ): number;
-
-  /**
-   * @ignore
-   */
-  setLiveTranscoding(transcoding: TranscodingConfig): number;
-
-  /**
-   * @ignore
-   */
-  addInjectStreamUrl(url: string, config: InjectStreamConfig): number;
-  
-  /**
-   * @ignore
-   */
-  removeInjectStreamUrl(url: string): number;
-
-  /**
-   * @ignore
-   */
-  startChannelMediaRelay(config: ChannelMediaRelayConfiguration): number;
-  /**
-   * @ignore
-   */
-  updateChannelMediaRelay(config: ChannelMediaRelayConfiguration): number;
-  /**
-   * @ignore
-   */
-  stopChannelMediaRelay(): number;
-  /**
-   * @ignore
-   */
-  getConnectionState(): ConnectionState;
-  /**
-   * @ignore
-   */
-  publish(): number;
-  /**
-   * @ignore
-   */
-  unpublish(): number;
-  /**
-   * @ignore
-   */
-  leaveChannel(): number;
-  /**
-   * @ignore
-   */
-  release(): number;
-  /**
-   * @ignore
-   */
-  adjustUserPlaybackSignalVolume(uid: number, volume: number): number;
   /**
    * @ignore
    */
