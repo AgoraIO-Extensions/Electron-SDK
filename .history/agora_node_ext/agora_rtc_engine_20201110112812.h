@@ -40,7 +40,7 @@
 
 namespace agora {
     namespace rtc {
-        // using media::IExternalVideoRenderFactory;
+        using media::IExternalVideoRenderFactory;
         using v8::Isolate;
         const int max_bmp_width = 500;
         const int max_bmp_height = 500;
@@ -329,7 +329,7 @@ namespace agora {
             IRtcEngine *m_engine;
             std::unique_ptr<NodeEventHandler> m_eventHandler;
             Isolate *m_isolate;
-            // std::unique_ptr<IExternalVideoRenderFactory> m_externalVideoRenderFactory;
+            std::unique_ptr<IExternalVideoRenderFactory> m_externalVideoRenderFactory;
 
             AVideoDeviceManager* m_videoVdm = nullptr;
             AAudioDeviceManager* m_audioVdm = nullptr;

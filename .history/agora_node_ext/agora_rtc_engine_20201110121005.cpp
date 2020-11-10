@@ -302,7 +302,7 @@ namespace agora {
             /** m_eventHandler provide SDK event handler. */
             m_eventHandler.reset(new NodeEventHandler(this));
             /** Node ADDON takes advantage of self render interface */
-            // m_externalVideoRenderFactory.reset(new NodeVideoRenderFactory(*this));
+            m_externalVideoRenderFactory.reset(new NodeVideoRenderFactory(*this));
             /** Video/Audio Plugins */
             m_avPluginManager.reset(new IAVFramePluginManager());
             metadataObserver.reset(new NodeMetadataObserver());
@@ -329,7 +329,7 @@ namespace agora {
             if (metadataObserver.get()) {
                 metadataObserver.reset(nullptr);
             }
-            // m_externalVideoRenderFactory.reset(nullptr);
+            m_externalVideoRenderFactory.reset(nullptr);
             m_eventHandler.reset(nullptr);
             m_avPluginManager.reset(nullptr);
             LOG_LEAVE;

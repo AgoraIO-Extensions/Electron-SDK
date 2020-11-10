@@ -183,29 +183,29 @@ namespace agora {
             virtual void onLastmileProbeResult(const LastmileProbeResult &result) override;
 
             //2.8.0
-            // virtual void onLocalUserRegistered(uid_t uid, const char* userAccount) override;
-            // virtual void onUserInfoUpdated(uid_t uid, const UserInfo& info) override;
+            virtual void onLocalUserRegistered(uid_t uid, const char* userAccount) override;
+            virtual void onUserInfoUpdated(uid_t uid, const UserInfo& info) override;
             virtual void onLocalVideoStateChanged(LOCAL_VIDEO_STREAM_STATE localVideoState, LOCAL_VIDEO_STREAM_ERROR error) override;
 
             //2.9.0
             virtual void onLocalAudioStats(const LocalAudioStats& stats) override;
             virtual void onLocalAudioStateChanged(LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error) override;
             virtual void onRemoteAudioStateChanged(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) override;
-            // virtual void onChannelMediaRelayStateChanged(CHANNEL_MEDIA_RELAY_STATE state,CHANNEL_MEDIA_RELAY_ERROR code) override;
-            // virtual void onChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT code) override;
+            virtual void onChannelMediaRelayStateChanged(CHANNEL_MEDIA_RELAY_STATE state,CHANNEL_MEDIA_RELAY_ERROR code) override;
+            virtual void onChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT code) override;
 
             //3.0.0
             virtual void onRtmpStreamingStateChanged(const char *url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR errCode) override;
 
             //3.1.0
             virtual void onFirstLocalAudioFramePublished(int elapsed) override;
-            // virtual void onFirstLocalVideoFramePublished(int elapsed) override;
-            // virtual void onRtmpStreamingEvent(const char* url, RTMP_STREAMING_EVENT eventCode) override;
-            // virtual void onAudioPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState) override;
-            // virtual void onVideoPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState) override;
-            // virtual void onAudioSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) override;
-            // virtual void onVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) override;
-            virtual void onAudioRoutingChanged(int routing);
+            virtual void onFirstLocalVideoFramePublished(int elapsed) override;
+            virtual void onRtmpStreamingEvent(const char* url, RTMP_STREAMING_EVENT eventCode) override;
+            virtual void onAudioPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState) override;
+            virtual void onVideoPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState) override;
+            virtual void onAudioSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) override;
+            virtual void onVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) override;
+            virtual void onAudioRouteChanged(AUDIO_ROUTE_TYPE routing);
             
   private:
             void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
@@ -277,15 +277,15 @@ namespace agora {
 
             //2.8.0
             // void onLocalUserRegistered_node(uid_t uid, const char* userAccount);
-            // void onUserInfoUpdated_node(uid_t uid, const UserInfo& info);
+            void onUserInfoUpdated_node(uid_t uid, const UserInfo& info);
             void onLocalVideoStateChanged_node(LOCAL_VIDEO_STREAM_STATE localVideoState, LOCAL_VIDEO_STREAM_ERROR error);
 
             //2.9.0
             void onLocalAudioStats_node(const LocalAudioStats& stats) ;
             void onLocalAudioStateChanged_node(LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error) ;
             void onRemoteAudioStateChanged_node(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) ;
-            // void onChannelMediaRelayStateChanged_node(CHANNEL_MEDIA_RELAY_STATE state,CHANNEL_MEDIA_RELAY_ERROR code);
-            // void onChannelMediaRelayEvent_node(CHANNEL_MEDIA_RELAY_EVENT code);
+            void onChannelMediaRelayStateChanged_node(CHANNEL_MEDIA_RELAY_STATE state,CHANNEL_MEDIA_RELAY_ERROR code);
+            void onChannelMediaRelayEvent_node(CHANNEL_MEDIA_RELAY_EVENT code);
 
             //3.1.0
         private:

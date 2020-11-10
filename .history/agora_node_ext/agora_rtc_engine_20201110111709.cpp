@@ -302,7 +302,7 @@ namespace agora {
             /** m_eventHandler provide SDK event handler. */
             m_eventHandler.reset(new NodeEventHandler(this));
             /** Node ADDON takes advantage of self render interface */
-            // m_externalVideoRenderFactory.reset(new NodeVideoRenderFactory(*this));
+            m_externalVideoRenderFactory.reset(new NodeVideoRenderFactory(*this));
             /** Video/Audio Plugins */
             m_avPluginManager.reset(new IAVFramePluginManager());
             metadataObserver.reset(new NodeMetadataObserver());
@@ -329,7 +329,7 @@ namespace agora {
             if (metadataObserver.get()) {
                 metadataObserver.reset(nullptr);
             }
-            // m_externalVideoRenderFactory.reset(nullptr);
+            m_externalVideoRenderFactory.reset(nullptr);
             m_eventHandler.reset(nullptr);
             m_avPluginManager.reset(nullptr);
             LOG_LEAVE;
@@ -1658,8 +1658,8 @@ namespace agora {
                 if (pMediaEngine) {
                     pMediaEngine->registerVideoRenderFactory(pEngine->m_externalVideoRenderFactory.get());
                 }
-                // IRtcEngine3 *m_engine2 = (IRtcEngine3 *)pEngine->m_engine;
-                // m_engine2->setAppType(AppType(3));
+                IRtcEngine3 *m_engine2 = (IRtcEngine3 *)pEngine->m_engine;
+                m_engine2->setAppType(AppType(3));
                 pEngine->m_engine->enableVideo();
                 RtcEngineParameters rep(pEngine->m_engine);
                 rep.enableLocalVideo(true);
