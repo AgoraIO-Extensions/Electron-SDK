@@ -90,7 +90,8 @@
                 ],
                 'sources': [
                     './common/node_process_win.cpp',
-                    './sdk/include/IAgoraRtcEngine.h',
+                    './sdk/high_level_api/include/IAgoraRtcEngine.h',
+                    './sdk/high_level_api/include/IAgoraMediaEngine.h',
                     './common/libyuv/source/compare_win.cc',
                     './common/libyuv/source/rotate_win.cc',
                     './common/libyuv/source/row_win.cc',
@@ -99,7 +100,7 @@
                     './agora_node_ext/node_screen_window_info.h'
                 ],
                 'include_dirs': [
-                './sdk/include',
+                './sdk/high_level_api/include',
                 './extra/internal'
                 ],
                 'configurations': {

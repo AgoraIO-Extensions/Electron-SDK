@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
+using namespace agora::media::base;
+
 IAVFramePluginManager::IAVFramePluginManager()
 {
 }
@@ -22,7 +24,12 @@ bool IAVFramePluginManager::onCaptureVideoFrame(VideoFrame& videoFrame)
     return true;
 }
 
-bool IAVFramePluginManager::onRenderVideoFrame(unsigned int uid, VideoFrame& videoFrame)
+bool IAVFramePluginManager::onRenderVideoFrame(agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, VideoFrame& videoFrame)
+{
+    return true;
+}
+
+bool IAVFramePluginManager::onScreenCaptureVideoFrame(VideoFrame& videoFrame)
 {
     return true;
 }
