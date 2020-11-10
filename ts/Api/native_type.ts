@@ -260,6 +260,80 @@ export interface TranscodingConfig {
   /** The TranscodingUsers Array. */
   transcodingUsers: Array<TranscodingUser>;
 }
+
+
+/**
+ * Video source types definition.
+ * - 0: Video captured by the camera.
+ * - 1: Video for screen sharing.
+ * - 2: Video for custom video.
+ * - 3: Video of MediaPlayer
+ * - 4: IMAGE
+ * - 5: Remote video received from network.
+ */
+export declare type VIDEO_SOURCE_TYPE = 0 | 1 | 2 | 3 | 4 | 5
+
+export interface TranscodingVideoStream {
+    /**
+     * Source type of video stream.
+     */
+    sourceType: VIDEO_SOURCE_TYPE;
+    /**
+     * Remote user uid if sourceType is VIDEO_SOURCE_REMOTE.
+     */
+    remoteUserUid: number;
+    /**
+     * connectionId of Remote user uid if sourceType is VIDEO_SOURCE_REMOTE.
+     * Set to 0 if you only join single channel.
+     */
+    connectionId: number;
+    /**
+     * RTC image if sourceType is VIDEO_SOURCE_RTC_IMAGE.
+     */
+    imageUrl: string;
+    /**
+     * The horizontal position of the top left corner of the video frame.
+     */
+    x: number;
+    /**
+     * The vertical position of the top left corner of the video frame.
+     */
+    y: number;
+    /**
+     * The width of the video frame.
+     */
+    width: number;
+    /**
+     * The height of the video frame.
+     */
+    height: number;
+    /**
+     * The layer of the video frame that ranges from 1 to 100:
+     * - 1: (Default) The lowest layer.
+     * - 100: The highest layer.
+     */
+    zOrder: number;
+    /**
+     * The transparency of the video frame.
+     */
+    alpha: number;
+}
+
+export interface LocalTranscoderConfiguration {
+    /**
+     * The number of VideoInputStreams in the transcoder.
+     */
+    streamCount: number;
+    /**
+     * The video stream layout configuration in the transcoder.
+     */
+    videoInputStreams: TranscodingVideoStream [];
+    /**
+     * The video encoder configuration of transcoded video.
+     */ 
+    videoOutputConfiguration: VideoEncoderConfiguration;
+}
+
 /**
  * Configurations of the last-mile network probe test.
  */
@@ -2786,4 +2860,16 @@ export interface NodeRtcEngine {
    * @ignore
    */
   enableEncryption(enabled: boolean, config: EncryptionConfig): number;
+  /**
+   * @ignore
+   */
+  startLocalVideoTranscoder(config: LocalTranscoderConfiguration): number;
+  /**
+   * @ignore
+   */
+  updateLocalTranscoderConfiguration(config: LocalTranscoderConfiguration): number;
+  /**
+   * @ignore
+   */
+  stopLocalVideoTranscoder(): number;
 }
