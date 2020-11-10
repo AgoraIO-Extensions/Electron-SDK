@@ -130,7 +130,7 @@ class NodeVideoFrameTransporter {
     ~NodeVideoFrameTransporter();
     
     bool initialize(Isolate *isolate, const Nan::FunctionCallbackInfo<Value>& callbackinfo);
-    int deliverFrame_I420(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, const IVideoFrame& videoFrame, int rotation, bool mirrored);
+    int deliverFrame_I420(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, const agora::media::IVideoFrameObserver::VideoFrame& videoFrame);
     int deliverVideoSourceFrame(const char* payload, int len);
     int setVideoDimension(NodeRenderType, agora::rtc::uid_t uid, std::string channelId, uint32_t width, uint32_t height);
     void addToHighVideo(agora::rtc::uid_t uid, std::string channelId);
@@ -165,7 +165,7 @@ private:
     bool deinitialize();
     VideoFrameInfo& getHighVideoFrameInfo(agora::rtc::uid_t uid, std::string channelId);
     void setupFrameHeader(image_header_type*header, int stride, int width, int height);
-    void copyFrame(const agora::media::IVideoFrame& videoFrame, VideoFrameInfo& info, int dest_stride, int src_stride, int width, int height);
+    void copyFrame(const agora::media::IVideoFrameObserver::VideoFrame& videoFrame, VideoFrameInfo& info, int dest_stride, int src_stride, int width, int height);
     void copyAndCentreYuv(const unsigned char* srcYPlane, const unsigned char* srcUPlane, const unsigned char* srcVPlane, int width, int height, int srcStride,
     unsigned char* dstYPlane, unsigned char* dstUPlane, unsigned char* dstVPlane, int dstStride);
     void FlushVideo();
