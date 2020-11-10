@@ -318,6 +318,10 @@ namespace agora {
 
             NAPI_API(sendCustomReportMessage);
             NAPI_API(enableEncryption);
+            NAPI_API(startLocalVideoTranscoder);
+            NAPI_API(updateLocalTranscoderConfiguration);
+            NAPI_API(stopLocalVideoTranscoder);
+            NAPI_API(joinChannelEx);
 
         public:
             Isolate* getIsolate() { return m_isolate; }
