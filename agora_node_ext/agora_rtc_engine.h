@@ -27,6 +27,7 @@
 #include "AVPlugin/IAVFramePluginManager.h"
 #include "AVPlugin/IAVFramePlugin.h"
 #include "node_metadata_observer.h"
+#include "node_video_render.h"
 /*
 * Used to declare native interface to nodejs
 */
@@ -41,7 +42,6 @@
 
 namespace agora {
     namespace rtc {
-        using media::IExternalVideoRenderFactory;
         using v8::Isolate;
         const int max_bmp_width = 500;
         const int max_bmp_height = 500;
@@ -330,7 +330,7 @@ namespace agora {
             IRtcEngine *m_engine;
             std::unique_ptr<NodeEventHandler> m_eventHandler;
             Isolate *m_isolate;
-            std::unique_ptr<IExternalVideoRenderFactory> m_externalVideoRenderFactory;
+            std::unique_ptr<agora::rtc::NodeVideoFrameObserver> m_nodeVideoFrameObserver;
 
             AVideoDeviceManager* m_videoVdm = nullptr;
             AAudioDeviceManager* m_audioVdm = nullptr;
