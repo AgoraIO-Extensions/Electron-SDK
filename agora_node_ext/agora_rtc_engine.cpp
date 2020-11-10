@@ -263,6 +263,11 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(sendCustomReportMessage);
                 PROPERTY_METHOD_DEFINE(enableEncryption);
 
+                PROPERTY_METHOD_DEFINE(startLocalVideoTranscoder);
+                PROPERTY_METHOD_DEFINE(updateLocalTranscoderConfiguration);
+                PROPERTY_METHOD_DEFINE(stopLocalVideoTranscoder);
+                PROPERTY_METHOD_DEFINE(joinChannelEx);
+
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -504,6 +509,320 @@ namespace agora {
             LOG_LEAVE;
         }
         NAPI_API_DEFINE_WRAPPER_PARAM_0(clearVideoWatermarks);
+                        
+        NAPI_API_DEFINE(NodeRtcEngine, startLocalVideoTranscoder)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            TranscodingVideoStream* videoInputStreams = nullptr;
+            nodestring* imageUrlList = nullptr;
+            int result = -1;
+            do {
+                //---------------------
+                LocalTranscoderConfiguration localTranscoderConfiguration;
+                NodeRtcEngine *pEngine = nullptr;
+                Isolate* isolate = args.GetIsolate();
+                Local<Context> context = isolate->GetCurrentContext();
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                CHECK_ARG_NUM(pEngine, args, 1);
+
+                unsigned int streamCount;
+                Local<Object> obj;
+                status = napi_get_value_object_(isolate, args[0], obj);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_uint32_(isolate, obj, "streamCount", streamCount);
+                CHECK_NAPI_STATUS(pEngine, status);
+                localTranscoderConfiguration.streamCount = streamCount;
+                if (streamCount > 0) {
+                    videoInputStreams = new TranscodingVideoStream[streamCount];
+                    imageUrlList = new nodestring[streamCount];
+
+                    Local<Name> keyName = Nan::New<String>("videoInputStreams").ToLocalChecked();
+                    Local<Value> videoInputStreamsObj = obj->Get(isolate->GetCurrentContext(), keyName).ToLocalChecked();
+                    if (videoInputStreamsObj->IsNullOrUndefined() || !videoInputStreamsObj->IsArray()) {
+                        status = napi_invalid_arg;
+                        CHECK_NAPI_STATUS(pEngine, status);
+                    }
+                    auto videoInputStreamsValue = v8::Array::Cast(*videoInputStreamsObj);
+                    if (videoInputStreamsValue->Length() != streamCount) {
+                        status = napi_invalid_arg;
+                        CHECK_NAPI_STATUS(pEngine, status);
+                    }
+                    for (uint32 i = 0; i < streamCount; i++) {
+                        Local<Value> value = videoInputStreamsValue->Get(context, i).ToLocalChecked();
+                        Local<Object> videoInputStreamObj;
+                        status = napi_get_value_object_(isolate, value, videoInputStreamObj);
+                        if (videoInputStreamObj->IsNullOrUndefined()) {
+                            status = napi_invalid_arg;
+                            break;
+                        }
+
+                        int sourceType;
+                        napi_get_object_property_int32_(isolate, videoInputStreamObj, "sourceType", sourceType);
+                        CHECK_NAPI_STATUS(pEngine, status);
+                        videoInputStreams[i].sourceType = (VIDEO_SOURCE_TYPE)sourceType;
+                        napi_get_object_property_uint32_(isolate, videoInputStreamObj, "remoteUserUid", videoInputStreams[i].remoteUserUid);
+                        CHECK_NAPI_STATUS(pEngine, status);
+                        napi_get_object_property_uint32_(isolate, videoInputStreamObj, "connectionId", videoInputStreams[i].connectionId);
+                        CHECK_NAPI_STATUS(pEngine, status);
+                        napi_get_object_property_nodestring_(isolate, videoInputStreamObj, "imageUrl", imageUrlList[i]);
+                        CHECK_NAPI_STATUS(pEngine, status);
+                        videoInputStreams[i].imageUrl = imageUrlList[i];
+                        napi_get_object_property_int32_(isolate, videoInputStreamObj, "x", videoInputStreams[i].x);
+                        CHECK_NAPI_STATUS(pEngine, status);
+                        napi_get_object_property_int32_(isolate, videoInputStreamObj, "y", videoInputStreams[i].y);
+                        CHECK_NAPI_STATUS(pEngine, status);
+                        napi_get_object_property_int32_(isolate, videoInputStreamObj, "width", videoInputStreams[i].width);
+                        CHECK_NAPI_STATUS(pEngine, status);
+                        napi_get_object_property_int32_(isolate, videoInputStreamObj, "height", videoInputStreams[i].height);
+                        CHECK_NAPI_STATUS(pEngine, status);
+                        napi_get_object_property_int32_(isolate, videoInputStreamObj, "zOrder", videoInputStreams[i].zOrder);
+                        CHECK_NAPI_STATUS(pEngine, status);
+                        napi_get_object_property_double_(isolate, videoInputStreamObj, "alpha", videoInputStreams[i].alpha);
+                        CHECK_NAPI_STATUS(pEngine, status);
+                    }
+                    localTranscoderConfiguration.VideoInputStreams = videoInputStreams;
+                }
+
+                VideoDimensions dimensions;
+                VideoEncoderConfiguration config;
+                Local<Object> videoOutputConfigurationObj;
+                status = napi_get_value_object_(isolate, args[2], videoOutputConfigurationObj);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "width", dimensions.width);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "height", dimensions.height);
+                CHECK_NAPI_STATUS(pEngine, status);
+                config.dimensions = dimensions;
+                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "bitrate", config.bitrate);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "minBitrate", config.minBitrate);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                int frameRateVal;
+                FRAME_RATE frameRate;
+                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "frameRate", frameRateVal);
+                CHECK_NAPI_STATUS(pEngine, status);
+                config.frameRate = (FRAME_RATE)frameRateVal;
+                int orientationModeVal;
+                ORIENTATION_MODE orientationMode;
+                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "orientationMode", orientationModeVal);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                switch(orientationModeVal) {
+                    case 0:
+                        orientationMode = ORIENTATION_MODE_ADAPTIVE;
+                        break;
+                    case 1:
+                        orientationMode = ORIENTATION_MODE_FIXED_LANDSCAPE;
+                        break;
+                    case 2:
+                        orientationMode = ORIENTATION_MODE_FIXED_PORTRAIT;
+                        break;
+                    default:
+                        status = napi_invalid_arg;
+                        break;
+                }
+                CHECK_NAPI_STATUS(pEngine, status);
+                config.orientationMode = orientationMode;
+                int degradationPrefValue;
+                DEGRADATION_PREFERENCE degradationPref;
+                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "degradationPreference", degradationPrefValue);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                switch(degradationPrefValue) {
+                    case 0:
+                        degradationPref = MAINTAIN_QUALITY;
+                        break;
+                    case 1:
+                        degradationPref = MAINTAIN_FRAMERATE;
+                        break;
+                    case 2:
+                        degradationPref = MAINTAIN_BALANCED;
+                        break;
+                    default:
+                        status = napi_invalid_arg;
+                        break;
+                }
+                CHECK_NAPI_STATUS(pEngine, status);
+                config.degradationPreference = degradationPref;
+
+                int mirrorMode;
+                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "mirrorMode", mirrorMode);
+                config.mirrorMode = VIDEO_MIRROR_MODE_TYPE(mirrorMode);
+                localTranscoderConfiguration.videoOutputConfiguration = config;
+                result = pEngine->m_engine->startLocalVideoTranscoder(localTranscoderConfiguration);
+            } while (false);
+            if (videoInputStreams) {
+                delete[] videoInputStreams;
+                videoInputStreams = nullptr;  
+            }
+            if (imageUrlList) {
+                delete[] imageUrlList;
+                imageUrlList = nullptr;
+            }
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, updateLocalTranscoderConfiguration)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            TranscodingVideoStream* videoInputStreams = nullptr;
+            nodestring* imageUrlList = nullptr;
+            int result = -1;
+            do {
+                //---------------------
+                LocalTranscoderConfiguration localTranscoderConfiguration;
+                NodeRtcEngine *pEngine = nullptr;
+                Isolate* isolate = args.GetIsolate();
+                Local<Context> context = isolate->GetCurrentContext();
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                CHECK_ARG_NUM(pEngine, args, 1);
+
+                unsigned int streamCount;
+                Local<Object> obj;
+                status = napi_get_value_object_(isolate, args[0], obj);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_uint32_(isolate, obj, "streamCount", streamCount);
+                CHECK_NAPI_STATUS(pEngine, status);
+                localTranscoderConfiguration.streamCount = streamCount;
+                if (streamCount > 0) {
+                    videoInputStreams = new TranscodingVideoStream[streamCount];
+                    imageUrlList = new nodestring[streamCount];
+
+                    Local<Name> keyName = Nan::New<String>("videoInputStreams").ToLocalChecked();
+                    Local<Value> videoInputStreamsObj = obj->Get(isolate->GetCurrentContext(), keyName).ToLocalChecked();
+                    if (videoInputStreamsObj->IsNullOrUndefined() || !videoInputStreamsObj->IsArray()) {
+                        status = napi_invalid_arg;
+                        CHECK_NAPI_STATUS(pEngine, status);
+                    }
+                    auto videoInputStreamsValue = v8::Array::Cast(*videoInputStreamsObj);
+                    if (videoInputStreamsValue->Length() != streamCount) {
+                        status = napi_invalid_arg;
+                        CHECK_NAPI_STATUS(pEngine, status);
+                    }
+                    for (uint32 i = 0; i < streamCount; i++) {
+                        Local<Value> value = videoInputStreamsValue->Get(context, i).ToLocalChecked();
+                        Local<Object> videoInputStreamObj;
+                        status = napi_get_value_object_(isolate, value, videoInputStreamObj);
+                        if (videoInputStreamObj->IsNullOrUndefined()) {
+                            status = napi_invalid_arg;
+                            break;
+                        }
+                        int sourceType;
+                        napi_get_object_property_int32_(isolate, videoInputStreamObj, "sourceType", sourceType);
+                        CHECK_NAPI_STATUS(pEngine, status);
+                        videoInputStreams[i].sourceType = (VIDEO_SOURCE_TYPE)sourceType;
+                        napi_get_object_property_uint32_(isolate, videoInputStreamObj, "remoteUserUid", videoInputStreams[i].remoteUserUid);
+                        CHECK_NAPI_STATUS(pEngine, status);
+                        napi_get_object_property_uint32_(isolate, videoInputStreamObj, "connectionId", videoInputStreams[i].connectionId);
+                        CHECK_NAPI_STATUS(pEngine, status);
+                        napi_get_object_property_nodestring_(isolate, videoInputStreamObj, "imageUrl", imageUrlList[i]);
+                        CHECK_NAPI_STATUS(pEngine, status);
+                        videoInputStreams[i].imageUrl = imageUrlList[i];
+                        napi_get_object_property_int32_(isolate, videoInputStreamObj, "x", videoInputStreams[i].x);
+                        CHECK_NAPI_STATUS(pEngine, status);
+                        napi_get_object_property_int32_(isolate, videoInputStreamObj, "y", videoInputStreams[i].y);
+                        CHECK_NAPI_STATUS(pEngine, status);
+                        napi_get_object_property_int32_(isolate, videoInputStreamObj, "width", videoInputStreams[i].width);
+                        CHECK_NAPI_STATUS(pEngine, status);
+                        napi_get_object_property_int32_(isolate, videoInputStreamObj, "height", videoInputStreams[i].height);
+                        CHECK_NAPI_STATUS(pEngine, status);
+                        napi_get_object_property_int32_(isolate, videoInputStreamObj, "zOrder", videoInputStreams[i].zOrder);
+                        CHECK_NAPI_STATUS(pEngine, status);
+                        napi_get_object_property_double_(isolate, videoInputStreamObj, "alpha", videoInputStreams[i].alpha);
+                        CHECK_NAPI_STATUS(pEngine, status);
+                    }
+                    localTranscoderConfiguration.VideoInputStreams = videoInputStreams;
+                }
+
+                VideoDimensions dimensions;
+                VideoEncoderConfiguration config;
+                Local<Object> videoOutputConfigurationObj;
+                status = napi_get_value_object_(isolate, args[2], videoOutputConfigurationObj);
+
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "width", dimensions.width);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "height", dimensions.height);
+                CHECK_NAPI_STATUS(pEngine, status);
+                config.dimensions = dimensions;
+                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "bitrate", config.bitrate);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "minBitrate", config.minBitrate);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                int frameRateVal;
+                FRAME_RATE frameRate;
+                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "frameRate", frameRateVal);
+                CHECK_NAPI_STATUS(pEngine, status);
+                config.frameRate = (FRAME_RATE)frameRateVal;
+                int orientationModeVal;
+                ORIENTATION_MODE orientationMode;
+                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "orientationMode", orientationModeVal);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                switch(orientationModeVal) {
+                    case 0:
+                        orientationMode = ORIENTATION_MODE_ADAPTIVE;
+                        break;
+                    case 1:
+                        orientationMode = ORIENTATION_MODE_FIXED_LANDSCAPE;
+                        break;
+                    case 2:
+                        orientationMode = ORIENTATION_MODE_FIXED_PORTRAIT;
+                        break;
+                    default:
+                        status = napi_invalid_arg;
+                        break;
+                }
+                CHECK_NAPI_STATUS(pEngine, status);
+                config.orientationMode = orientationMode;
+                int degradationPrefValue;
+                DEGRADATION_PREFERENCE degradationPref;
+                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "degradationPreference", degradationPrefValue);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                switch(degradationPrefValue) {
+                    case 0:
+                        degradationPref = MAINTAIN_QUALITY;
+                        break;
+                    case 1:
+                        degradationPref = MAINTAIN_FRAMERATE;
+                        break;
+                    case 2:
+                        degradationPref = MAINTAIN_BALANCED;
+                        break;
+                    default:
+                        status = napi_invalid_arg;
+                        break;
+                }
+                CHECK_NAPI_STATUS(pEngine, status);
+                config.degradationPreference = degradationPref;
+
+                int mirrorMode;
+                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "mirrorMode", mirrorMode);
+                config.mirrorMode = VIDEO_MIRROR_MODE_TYPE(mirrorMode);
+                localTranscoderConfiguration.videoOutputConfiguration = config;
+                result = pEngine->m_engine->updateLocalTranscoderConfiguration(localTranscoderConfiguration);
+            } while (false);
+            if (videoInputStreams) {
+                delete[] videoInputStreams;
+                videoInputStreams = nullptr;  
+            }
+            if (imageUrlList) {
+                delete[] imageUrlList;
+                imageUrlList = nullptr;
+            }
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE_WRAPPER_PARAM_0(stopLocalVideoTranscoder);
 
         NAPI_API_DEFINE(NodeRtcEngine, setLiveTranscoding)
         {
@@ -1663,14 +1982,7 @@ namespace agora {
                     pMediaEngine->registerVideoFrameObserver(pEngine->m_nodeVideoFrameObserver.get());
                     result = 0;
                 }
-                // agora::util::AutoPtr<agora::media::IMediaEngine> pMediaEngine;
 
-                // pMediaEngine.queryInterface(pEngine->m_engine, AGORA_IID_MEDIA_ENGINE);
-                // if (pMediaEngine) {
-                //     pMediaEngine->registerVideoRenderFactory(pEngine->m_externalVideoRenderFactory.get());
-                // }
-                // IRtcEngine3 *m_engine2 = (IRtcEngine3 *)pEngine->m_engine;
-                // m_engine2->setAppType(AppType(3));
                 pEngine->m_engine->enableVideo();
                 pEngine->m_engine->enableLocalVideo(true);
                 result = 0;
@@ -4580,6 +4892,102 @@ namespace agora {
                 status = napi_get_value_int32_(args[0], maxSize);
                 CHECK_NAPI_STATUS(pEngine, status);
                 result = pEngine->metadataObserver.get()->setMaxMetadataSize(maxSize);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, joinChannelEx)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                Isolate *isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                nodestring token;
+                status = napi_get_value_nodestring_(args[0], token);
+                CHECK_NAPI_STATUS(pEngine, status);
+                nodestring channelId;
+                status = napi_get_value_nodestring_(args[1], channelId);
+                CHECK_NAPI_STATUS(pEngine, status);
+                uid_t uid;
+                status = napi_get_value_uint32_(args[2], uid);
+                CHECK_NAPI_STATUS(pEngine, status);
+                ChannelMediaOptions channelMediaOptions;
+                Local<Object> optionObj;
+                status = napi_get_value_object_(isolate, args[3], optionObj);
+                CHECK_NAPI_STATUS(pEngine, status);
+                bool publishCameraTrack;
+                status = napi_get_object_property_bool_(isolate, optionObj, "publishCameraTrack", publishCameraTrack);
+                CHECK_NAPI_STATUS(pEngine, status);
+                channelMediaOptions.publishCameraTrack = publishCameraTrack;
+                bool publishAudioTrack;
+                status = napi_get_object_property_bool_(isolate, optionObj, "publishAudioTrack", publishAudioTrack);
+                CHECK_NAPI_STATUS(pEngine, status);
+                channelMediaOptions.publishCameraTrack = publishAudioTrack;
+                bool publishScreenTrack;
+                status = napi_get_object_property_bool_(isolate, optionObj, "publishScreenTrack", publishScreenTrack);
+                CHECK_NAPI_STATUS(pEngine, status);
+                channelMediaOptions.publishScreenTrack = publishScreenTrack;
+                bool publishCustomAudioTrack;
+                status = napi_get_object_property_bool_(isolate, optionObj, "publishCustomAudioTrack", publishCustomAudioTrack);
+                CHECK_NAPI_STATUS(pEngine, status);
+                channelMediaOptions.publishCustomAudioTrack = publishCustomAudioTrack;
+                bool publishCustomVideoTrack;
+                status = napi_get_object_property_bool_(isolate, optionObj, "publishCustomVideoTrack", publishCustomVideoTrack);
+                CHECK_NAPI_STATUS(pEngine, status);
+                channelMediaOptions.publishCustomVideoTrack = publishCustomVideoTrack;
+                bool publishEncodedVideoTrack;
+                status = napi_get_object_property_bool_(isolate, optionObj, "publishEncodedVideoTrack", publishEncodedVideoTrack);
+                CHECK_NAPI_STATUS(pEngine, status);
+                channelMediaOptions.publishEncodedVideoTrack = publishEncodedVideoTrack;
+                bool publishMediaPlayerAudioTrack;
+                status = napi_get_object_property_bool_(isolate, optionObj, "publishMediaPlayerAudioTrack", publishMediaPlayerAudioTrack);
+                CHECK_NAPI_STATUS(pEngine, status);
+                channelMediaOptions.publishMediaPlayerAudioTrack = publishMediaPlayerAudioTrack;
+                bool publishMediaPlayerVideoTrack;
+                status = napi_get_object_property_bool_(isolate, optionObj, "publishMediaPlayerVideoTrack", publishMediaPlayerVideoTrack);
+                CHECK_NAPI_STATUS(pEngine, status);
+                channelMediaOptions.publishMediaPlayerVideoTrack = publishMediaPlayerVideoTrack;
+                bool publishTrancodedVideoTrack;
+                status = napi_get_object_property_bool_(isolate, optionObj, "publishTrancodedVideoTrack", publishTrancodedVideoTrack);
+                CHECK_NAPI_STATUS(pEngine, status);
+                channelMediaOptions.publishTrancodedVideoTrack = publishTrancodedVideoTrack;
+                bool autoSubscribeAudio;
+                status = napi_get_object_property_bool_(isolate, optionObj, "autoSubscribeAudio", autoSubscribeAudio);
+                CHECK_NAPI_STATUS(pEngine, status);
+                channelMediaOptions.autoSubscribeAudio = autoSubscribeAudio;
+                bool autoSubscribeVideo;
+                status = napi_get_object_property_bool_(isolate, optionObj, "autoSubscribeVideo", autoSubscribeVideo);
+                CHECK_NAPI_STATUS(pEngine, status);
+                channelMediaOptions.autoSubscribeVideo = autoSubscribeVideo;
+                int publishMediaPlayerId;
+                status = napi_get_object_property_int32_(isolate, optionObj, "publishMediaPlayerId", publishMediaPlayerId);
+                CHECK_NAPI_STATUS(pEngine, status);
+                channelMediaOptions.publishMediaPlayerId = publishMediaPlayerId;
+                bool enableAudioRecordingOrPlayout;
+                status = napi_get_object_property_bool_(isolate, optionObj, "enableAudioRecordingOrPlayout", enableAudioRecordingOrPlayout);
+                CHECK_NAPI_STATUS(pEngine, status);
+                channelMediaOptions.enableAudioRecordingOrPlayout = enableAudioRecordingOrPlayout;
+                int clientRoleType;
+                status = napi_get_object_property_int32_(isolate, optionObj, "clientRoleType", clientRoleType);
+                CHECK_NAPI_STATUS(pEngine, status);
+                channelMediaOptions.clientRoleType = (CLIENT_ROLE_TYPE)clientRoleType;
+                int defaultVideoStreamType;
+                status = napi_get_object_property_int32_(isolate, optionObj, "defaultVideoStreamType", defaultVideoStreamType);
+                CHECK_NAPI_STATUS(pEngine, status);
+                channelMediaOptions.defaultVideoStreamType = (REMOTE_VIDEO_STREAM_TYPE)defaultVideoStreamType;
+                int channelProfile;
+                status = napi_get_object_property_int32_(isolate, optionObj, "channelProfile", channelProfile);
+                CHECK_NAPI_STATUS(pEngine, status);
+                channelMediaOptions.channelProfile = (CHANNEL_PROFILE_TYPE)channelProfile;
+                
+                unsigned int connectionId;
+                result = pEngine->m_engine->joinChannelEx(token, channelId, uid, channelMediaOptions, nullptr, &connectionId);
+
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;

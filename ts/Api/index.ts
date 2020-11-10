@@ -45,7 +45,8 @@ import {
   STREAM_PUBLISH_STATE,
   STREAM_SUBSCRIBE_STATE,
   AUDIO_ROUTE_TYPE,
-  EncryptionConfig
+  EncryptionConfig,
+  LocalTranscoderConfiguration
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -4357,6 +4358,18 @@ class AgoraRtcEngine extends EventEmitter {
 
   enableEncryption(enabled: boolean, config: EncryptionConfig): number {
     return this.rtcEngine.enableEncryption(enabled, config);
+  }
+
+  startLocalVideoTranscoder(config: LocalTranscoderConfiguration): number {
+    return this.rtcEngine.startLocalVideoTranscoder(config);
+  }
+
+  updateLocalTranscoderConfiguration(config: LocalTranscoderConfiguration): number {
+    return this.rtcEngine.updateLocalTranscoderConfiguration(config);
+  }
+
+  stopLocalVideoTranscoder(): number {
+    return this.rtcEngine.stopLocalVideoTranscoder();
   }
 }
 /** The AgoraRtcEngine interface. */
