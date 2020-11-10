@@ -26,6 +26,7 @@
 #include "AVPlugin/IAVFramePluginManager.h"
 #include "AVPlugin/IAVFramePlugin.h"
 #include "node_metadata_observer.h"
+#include "node_video_render.h"
 /*
 * Used to declare native interface to nodejs
 */
@@ -581,6 +582,8 @@ typedef unsigned int uint32;
 #define CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM(pointer, func, param) pointer->func(param)
 #define CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM2(pointer, func, param1, param2) pointer->func(param1, param2)
 #define CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM3(pointer, func, param1, param2, param3) pointer->func(param1, param2, param3)
+#define CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM7(pointer, func, param1, param2, param3, param4, param5, param6, param7) pointer->func(param1, param2, param3, param4, param5, param6, param7)
+
 
 #define CALL_MEM_FUNC(cls, func) cls.func()
 #define CALL_MEM_FUNC_WITH_PARAM(cls, func, param) cls.func(param)

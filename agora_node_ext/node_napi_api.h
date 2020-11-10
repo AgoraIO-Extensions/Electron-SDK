@@ -70,7 +70,6 @@ struct buffer_info {
 
 using buffer_list = std::array<buffer_info, 4>;
 using stream_buffer_type = std::vector<unsigned char>;
-using agora::media::IVideoFrame;
 
 enum NodeRenderType
 {
