@@ -18,8 +18,6 @@ export default class App extends Component {
       alert('APP_ID cannot be empty!')
     } else {
       let rtcEngine = this.getRtcEngine()
-      let channel1
-      let channel2
       this.state = {
         local: '',
         localVideoSource: '',
@@ -159,23 +157,6 @@ export default class App extends Component {
     rtcEngine.on("sendMetadataSuccess", (metadata) => {
       console.log(`sendMetadataSuccess : ${JSON.stringify(metadata)}`)
     })
-
-    setInterval(()=>{
-      let ptr = {
-        width: 100,
-        height: 210,
-        top: 32323
-      }
-      let data = JSON.stringify(ptr);
-      let metadata = {
-        uid: 123,
-        size: data.length,
-        buffer: data,
-        timeStampMs: 122323
-      }
-      let ret = this.rtcEngine.sendMetadata(metadata);
-      console.log(`sendMetadata  data: ${data}  ret: ${ret}`)
-      }, 1000);
   }
 
   subscribeChannelEvents = (rtcChannel, publish) => {
@@ -233,8 +214,8 @@ export default class App extends Component {
     let encoderHeight = parseInt(this.state.encoderHeight)
     let rtcEngine = this.getRtcEngine()
     rtcEngine.setParameters("{\"rtc.user_account_server_list\":[\"58.211.82.170\"]}")
-    let result = rtcEngine.registerLocalUserAccount(APP_ID, "TEST")
-    console.log(result)
+    // let result = rtcEngine.registerLocalUserAccount(APP_ID, "TEST")
+    // console.log(result)
     rtcEngine.setChannelProfile(1)
     rtcEngine.setClientRole(this.state.role)
     rtcEngine.registerMediaMetadataObserver();
@@ -245,7 +226,7 @@ export default class App extends Component {
     rtcEngine.enableWebSdkInteroperability(true)
     if(encoderWidth === 0 && encoderHeight === 0) {
       //use video profile
-      rtcEngine.setVideoProfile(this.state.videoProfile, false)
+      // rtcEngine.setVideoProfile(this.state.videoProfile, false)
     } else {
       rtcEngine.setVideoEncoderConfiguration({width: encoderWidth, height: encoderHeight})
     }
@@ -256,12 +237,12 @@ export default class App extends Component {
     rtcEngine.enableAudioVolumeIndication(1000, 3, false)
 
     //enable beauty options
-    rtcEngine.setBeautyEffectOptions(true, {
-      lighteningContrastLevel: 2,
-      lighteningLevel: 1,
-      smoothnessLevel: 1,
-      rednessLevel: 0
-    })
+    // rtcEngine.setBeautyEffectOptions(true, {
+    //   lighteningContrastLevel: 2,
+    //   lighteningLevel: 1,
+    //   smoothnessLevel: 1,
+    //   rednessLevel: 0
+    // })
 
     // joinning two channels together
     // let channel = rtcEngine.createChannel(this.state.channel)

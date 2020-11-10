@@ -6,7 +6,6 @@
 } from '../Renderer';
 import {
   NodeRtcEngine,
-  NodeRtcChannel,
   RtcStats,
   LocalVideoStats,
   LocalAudioStats,
@@ -1151,39 +1150,6 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.release();
   }
 
-  // /**
-  //  * @deprecated This method is deprecated. Agora does not recommend using 
-  //  * this method. Use {@link setAudioProfile} instead.
-  //  * Sets the high-quality audio preferences.
-  //  *
-  //  * Call this method and set all parameters before joining a channel.
-  //  * @param {boolean} fullband Sets whether to enable/disable full-band 
-  //  * codec (48-kHz sample rate).
-  //  * - true: Enable full-band codec.
-  //  * - false: Disable full-band codec.
-  //  * @param {boolean} stereo Sets whether to enable/disable stereo codec.
-  //  * - true: Enable stereo codec.
-  //  * - false: Disable stereo codec.
-  //  * @param {boolean} fullBitrate Sets whether to enable/disable high-bitrate 
-  //  * mode.
-  //  * - true: Enable high-bitrate mode.
-  //  * - false: Disable high-bitrate mode.
-  //  * @return
-  //  * - 0: Success.
-  //  * - < 0: Failure.
-  //  */
-  // setHighQualityAudioParameters(
-  //   fullband: boolean,
-  //   stereo: boolean,
-  //   fullBitrate: boolean
-  // ): number {
-  //   deprecate('setAudioProfile');
-  //   return this.rtcEngine.setHighQualityAudioParameters(
-  //     fullband,
-  //     stereo,
-  //     fullBitrate
-  //   );
-  // }
 
   /**
    * Subscribes to a remote user and initializes the corresponding renderer.
@@ -1441,33 +1407,6 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Starts an audio call test.
-   *
-   * This method starts an audio call test to determine whether the audio 
-   * devices
-   * (for example, headset and speaker) and the network connection are working 
-   * properly.
-   *
-   * In the audio call test, you record your voice. If the recording plays back 
-   * within the set time interval,
-   * the audio devices and the network connection are working properly.
-   *
-   * **Note**:
-   * - Call this method before the {@link joinChannel} method.
-   * - After calling this method, call the {@link stopEchoTest} method to end 
-   * the test. Otherwise, the app cannot run the next echo test,
-   * nor can it call the {@link joinChannel} method to start a new call.
-   * - In the Live Broadcast profile, only hosts can call this method.
-   * @param interval The time interval (s) between when you speak and when the 
-   * recording plays back.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  startEchoTestWithInterval(interval: number): number {
-    return this.rtcEngine.startEchoTestWithInterval(interval);
-  }
-  /**
    * @since v3.0.0
    * 
    * Adds a watermark image to the local video.
@@ -1529,51 +1468,6 @@ class AgoraRtcEngine extends EventEmitter {
    */
   clearVideoWatermarks(){
     return this.rtcEngine.clearVideoWatermarks();
-  }
-
-  /**
-   * Enables the network connection quality test.
-   *
-   * This method tests the quality of the users' network connections and is 
-   * disabled by default.
-   *
-   * Before users join a channel or before an audience switches to a host, 
-   * call this method to check the uplink network quality.
-   * This method consumes additional network traffic, which may affect the 
-   * communication quality.
-   *
-   * Call the {@link disableLastmileTest} method to disable this test after 
-   * receiving the lastmileQuality callback, and before the user joins a 
-   * channel or switches the user role.
-   * **Note**:
-   * - Do not call any other methods before receiving the lastmileQuality 
-   * callback. Otherwise,
-   * the callback may be interrupted by other methods, and hence may not be 
-   * triggered.
-   * - A host should not call this method after joining a channel 
-   * (when in a call).
-   * - If you call this method to test the last-mile quality, the SDK consumes 
-   * the bandwidth of a video stream, whose bitrate corresponds to the bitrate 
-   * you set in the setVideoEncoderConfiguration method. After you join the 
-   * channel, whether you have called the {@link disableLastmileTest} method 
-   * or not, 
-   * the SDK automatically stops consuming the bandwidth.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  enableLastmileTest(): number {
-    return this.rtcEngine.enableLastmileTest();
-  }
-
-  /**
-   * This method disables the network connection quality test.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  disableLastmileTest(): number {
-    return this.rtcEngine.disableLastmileTest();
   }
 
   /**
@@ -1720,62 +1614,6 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @deprecated This method is deprecated. Use 
-   * {@link setVideoEncoderConfiguration} instead.
-   * 
-   * Sets the video profile.
-   * 
-   * @param {VIDEO_PROFILE_TYPE} profile The video profile. See 
-   * {@link VIDEO_PROFILE_TYPE}.
-   * @param {boolean} [swapWidthAndHeight = false] Whether to swap width and 
-   * height:
-   * - true: Swap the width and height.
-   * - false: Do not swap the width and height.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  setVideoProfile(
-    profile: VIDEO_PROFILE_TYPE,
-    swapWidthAndHeight: boolean = false
-  ): number {
-    return this.rtcEngine.setVideoProfile(profile, swapWidthAndHeight);
-  }
-
-  /**
-   * Sets the camera capturer configuration.
-   *
-   * For a video call or live broadcast, generally the SDK controls the camera 
-   * output parameters.
-   * When the default camera capture settings do not meet special requirements 
-   * or cause performance problems, we recommend using this method to set the 
-   * camera capture preference:
-   * - If the resolution or frame rate of the captured raw video data are 
-   * higher than those set by {@link setVideoEncoderConfiguration},
-   * processing video frames requires extra CPU and RAM usage and degrades 
-   * performance. We recommend setting config as 
-   * CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE(1) to avoid such problems.
-   * - If you do not need local video preview or are willing to sacrifice 
-   * preview quality,
-   * we recommend setting config as CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE(1) 
-   * to optimize CPU and RAM usage.
-   * - If you want better quality for the local video preview, we recommend 
-   * setting config as CAPTURER_OUTPUT_PREFERENCE_PREVIEW(2).
-   * **Note**: Call this method before enabling the local camera. That said, 
-   * you can call this method before calling {@link joinChannel}, 
-   * {@link enableVideo}, or {@link enableLocalVideo},
-   * depending on which method you use to turn on your local camera.
-   * @param {CameraCapturerConfiguration} config The camera capturer 
-   * configuration. See {@link CameraCapturerConfiguration}.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  setCameraCapturerConfiguration(config: CameraCapturerConfiguration) {
-    return this.rtcEngine.setCameraCapturerConfiguration(config);
-  }
-
-  /**
    * Sets the video encoder configuration.
    *
    * Each video encoder configuration corresponds to a set of video parameters, 
@@ -1816,39 +1654,6 @@ class AgoraRtcEngine extends EventEmitter {
       degradationPreference,
       mirrorMode
     });
-  }
-
-  /**
-   * Enables/Disables image enhancement and sets the options
-   * @param {boolean} enable Sets whether or not to enable image enhancement:
-   * - true: Enables image enhancement.
-   * - false: Disables image enhancement.
-   * @param {Object} options The image enhancement options. It contains the 
-   * following parameters:
-   * @param {number} options.lighteningContrastLevel The lightening contrast 
-   * level: 0 for low, 1 (default) for normal, and 2 for high.
-   * @param {number} options.lighteningLevel The brightness level. The value 
-   * ranges from 0.0 (original) to 1.0.
-   * @param {number} options.smoothnessLevel The sharpness level. The value 
-   * ranges between 0 (original) and 1. This parameter is usually used to 
-   * remove blemishes.
-   * @param {number} options.rednessLevel The redness level. The value ranges 
-   * between 0 (original) and 1. This parameter adjusts the red saturation 
-   * level.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  setBeautyEffectOptions(
-    enable: boolean,
-    options: {
-      lighteningContrastLevel: 0 | 1 | 2;
-      lighteningLevel: number;
-      smoothnessLevel: number;
-      rednessLevel: number;
-    }
-  ): number {
-    return this.rtcEngine.setBeautyEffectOptions(enable, options);
   }
 
   /**
@@ -1965,25 +1770,6 @@ class AgoraRtcEngine extends EventEmitter {
     scenario: 0 | 1 | 2 | 3 | 4 | 5
   ): number {
     return this.rtcEngine.setAudioProfile(profile, scenario);
-  }
-
-  /**
-   * @deprecated This method is deprecated. Use 
-   * {@link setCameraCapturerConfiguration} and 
-   * {@link setVideoEncoderConfiguration} instead.
-   * Sets the preference option for the video quality (Live Broadcast only).
-   * @param {boolean} preferFrameRateOverImageQuality Sets the video quality 
-   * preference:
-   * - true: Frame rate over image quality.
-   * - false: (Default) Image quality over frame rate.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  setVideoQualityParameters(preferFrameRateOverImageQuality: boolean): number {
-    return this.rtcEngine.setVideoQualityParameters(
-      preferFrameRateOverImageQuality
-    );
   }
 
   /**
@@ -2590,281 +2376,6 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Sets the fallback option for the locally published video stream based on 
-   * the network conditions.
-   * The default setting for option is `STREAM_FALLBACK_OPTION_AUDIO_ONLY (2)`, 
-   * where 
-   * there is no fallback for the locally published video stream when the 
-   * uplink network conditions are poor.
-   * If `option` is set to `STREAM_FALLBACK_OPTION_AUDIO_ONLY (2)`, the SDK 
-   * will:
-   * - Disable the upstream video but enable audio only when the network 
-   * conditions worsen and cannot support both video and audio.
-   * - Re-enable the video when the network conditions improve.
-   * When the locally published stream falls back to audio only or when the 
-   * audio stream switches back to the video,
-   * the `localPublishFallbackToAudioOnly` callback is triggered.
-   * 
-   * **Note**:
-   * Agora does not recommend using this method for CDN live streaming, because 
-   * the remote CDN live user will have a noticeable lag when the locally 
-   * publish stream falls back to audio-only.
-   * 
-   * @param {number} option Sets the fallback option for the locally published 
-   * video stream.
-   * - `STREAM_FALLBACK_OPTION_DISABLED (0)`: (Default) No fallback behavior 
-   * for the local/remote video stream when the uplink/downlink network 
-   * conditions are poor. The quality of the stream is not guaranteed.
-   * - `STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW (1)`: (Default) The remote 
-   * video stream falls back to the low-stream video when the downlink network 
-   * condition worsens. This option works not for the 
-   * {@link setLocalPublishFallbackOption} method.
-   * - `STREAM_FALLBACK_OPTION_AUDIO_ONLY (2)`: Under poor uplink network 
-   * conditions, the locally published video stream falls back to audio only.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  setLocalPublishFallbackOption(option: 0 | 1 | 2): number {
-    return this.rtcEngine.setLocalPublishFallbackOption(option);
-  }
-
-  /**
-   * Sets the fallback option for the remote video stream based 
-   * on the network conditions.
-   *
-   * If `option` is set as `STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW (1)` or 
-   * `STREAM_FALLBACK_OPTION_AUDIO_ONLY (2)`:
-   * - the SDK automatically switches the video from a high-stream to a 
-   * low-stream, or disables the video when the downlink network condition 
-   * cannot support both audio and video
-   * to guarantee the quality of the audio.
-   * - The SDK monitors the network quality and restores the video stream when 
-   * the network conditions improve.
-   *
-   * When the remote video stream falls back to audio only or when 
-   * the audio-only stream switches back to the video stream,
-   * the SDK triggers the `remoteSubscribeFallbackToAudioOnly` callback.
-   * 
-   * @param {number} option Sets the fallback option for the remote stream.
-   * - `STREAM_FALLBACK_OPTION_DISABLED (0)`: No fallback behavior for the 
-   * local/remote video stream when the uplink/downlink network conditions 
-   * are poor. The quality of the stream is not guaranteed.
-   * - `STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW (1)`: (Default) The remote 
-   * video stream falls back to the low-stream video when the downlink network 
-   * condition worsens. This option works only
-   * for this method and not for the {@link setLocalPublishFallbackOption} 
-   * method.
-   * - `STREAM_FALLBACK_OPTION_AUDIO_ONLY (2)`: Under poor downlink network 
-   * conditions, the remotely subscribed video stream first falls back to the 
-   * low-stream video; and then to an audio-only stream if the network 
-   * condition worsens.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  setRemoteSubscribeFallbackOption(option: 0 | 1 | 2): number {
-    return this.rtcEngine.setRemoteSubscribeFallbackOption(option);
-  }
-  /**
-   * Registers a user account.
-   * Once registered, the user account can be used to identify the local user 
-   * when the user joins the channel. After the user successfully registers a 
-   * user account,  the SDK triggers the onLocalUserRegistered callback on the 
-   * local client,
-   * reporting the user ID and user account of the local user.
-   *
-   * To join a channel with a user account, you can choose either of the 
-   * following:
-   * - Call the {@link registerLocalUserAccount} method to create a user 
-   * account, and then the {@link joinChannelWithUserAccount} method to 
-   * join the channel.
-   * - Call the {@link joinChannelWithUserAccount} method to join the 
-   * channel.
-   *
-   * The difference between the two is that for the former, the time elapsed 
-   * between calling the {@link joinChannelWithUserAccount} method and joining 
-   * the channel is shorter than the latter.
-   * 
-   * To ensure smooth communication, use the same parameter type to identify 
-   * the user. For example, if a user joins the channel with a user ID, then 
-   * ensure all the other users use the user ID too. The same applies to the 
-   * user account. If a user joins the channel with the Agora Web SDK, ensure 
-   * that the `uid` of the user is set to the same parameter type.
-   * 
-   * **Note**:
-   * - Ensure that you set the `userAccount` parameter. Otherwise, this method 
-   * does not take effect.
-   * - Ensure that the value of the `userAccount` parameter is unique in the 
-   * channel.
-   *
-   * @param {string} appId The App ID of your project.
-   * @param {string} userAccount The user account. The maximum length of this 
-   * parameter is 255 bytes. Ensure that you set this parameter and do not 
-   * set it as null. Ensure that you set this parameter and do not set it as 
-   * null.
-   * Supported character scopes are:
-   * - All lowercase English letters: a to z.
-   * - All uppercase English letters: A to Z.
-   * - All numeric characters: 0 to 9.
-   * - The space character.
-   * - Punctuation characters and other symbols, including: "!", "#", "$", 
-   * "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", 
-   * ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  // registerLocalUserAccount(appId: string, userAccount: string): number {
-  //   return this.rtcEngine.registerLocalUserAccount(appId, userAccount);
-  // }
-  /**
-   * Joins the channel with a user account.
-   *
-   * After the user successfully joins the channel, the SDK triggers the 
-   * following callbacks:
-   * - The local client: localUserRegistered and userInfoUpdated.
-   * - The remote client: userJoined and userInfoUpdated, if the user joining 
-   * the channel is in the Communication profile, or is a BROADCASTER in the 
-   * Live Broadcast profile.
-   *
-   * **Note**: To ensure smooth communication, use the same parameter type to 
-   * identify the user. For example, if a user joins the channel with a user 
-   * ID, then ensure all the other users use the user ID too.
-   * The same applies to the user account. If a user joins the channel with 
-   * the Agora Web SDK, ensure that the `uid` of the user is set to the same 
-   * parameter type.
-   * @param {string} token The token generated at your server.
-   * - For low-security requirements: You can use the temporary token generated 
-   * at Dashboard. For details, see 
-   * [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-temporary-token).
-   * - For high-security requirements: Set it as the token generated at your 
-   * server. For details, see 
-   * [Get a token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-token).
-   * @param {string} channel The channel name. The maximum length of this 
-   * parameter is 64 bytes. Supported character scopes are:
-   * - The 26 lowercase English letters: a to z.
-   * - The 26 uppercase English letters: A to Z.
-   * - The 10 numbers: 0 to 9.
-   * - The space.
-   * - "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", 
-   * ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
-   * @param {string} userAccount The user account. The maximum length of this 
-   * parameter is 255 bytes. Ensure that you set this parameter and do not set 
-   * it as null.
-   * Supported character scopes are:
-   * - The 26 lowercase English letters: a to z.
-   * - The 26 uppercase English letters: A to Z.
-   * - The 10 numbers: 0 to 9.
-   * - The space.
-   * - "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", 
-   * ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   *  - `ERR_INVALID_ARGUMENT (2)`
-   *  - `ERR_NOT_READY (3)`
-   *  - `ERR_REFUSED (5)`
-   */
-  // joinChannelWithUserAccount(
-  //   token: string,
-  //   channel: string,
-  //   userAccount: string
-  // ): number {
-  //   return this.rtcEngine.joinChannelWithUserAccount(
-  //     token,
-  //     channel,
-  //     userAccount
-  //   );
-  // }
-  /**
-   * Gets the user information by passing in the user account.
-   *
-   * After a remote user joins the channel, the SDK gets the user ID and user 
-   * account of the remote user, caches them in a mapping table object 
-   * (UserInfo),
-   * and triggers the `userInfoUpdated` callback on the local client.
-   * After receiving the callback, you can call this method to get the user ID 
-   * of the remote user from the `UserInfo` object by passing in the user 
-   * account.
-   * @param userAccount The user account. Ensure that you set this parameter.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  /**
-   * 
-   * @param userAccount 
-   */
-  // getUserInfoByUserAccount(
-  //   userAccount: string
-  // ): { errCode: number; userInfo: UserInfo } {
-  //   return this.rtcEngine.getUserInfoByUserAccount(userAccount);
-  // }
-  /**
-   * Gets the user information by passing in the user ID.
-   *
-   * After a remote user joins the channel, the SDK gets the user ID and user 
-   * account of the remote user, caches them in a mapping table object 
-   * (UserInfo), and triggers the userInfoUpdated callback on the local client.
-   * After receiving the callback, you can call this method to get the user 
-   * account of the remote user from the UserInfo object by passing in the 
-   * user ID.
-   * @param uid The user ID. Ensure that you set this parameter.
-   * @param errCode Error code.
-   * @param userInfo [in/out] A UserInfo object that identifies the user:
-   * - Input: A UserInfo object.
-   * - Output: A UserInfo object that contains the user account and user ID 
-   * of the user.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  // getUserInfoByUid(uid: number): { errCode: number; userInfo: UserInfo } {
-  //   return this.rtcEngine.getUserInfoByUid(uid);
-  // }
-  /**
-   * Switches to a different channel.
-   * 
-   * This method allows the audience of a Live-broadcast channel to switch to 
-   * a different channel.
-   * 
-   * After the user successfully switches to another channel, the leavechannel 
-   * and joinedChannel callbacks are triggered to indicate that the user has 
-   * left the original channel and joined a new one.
-   * 
-   * **Note**: 
-   * 
-   * This method applies to the audience role in a Live-broadcast channel only.
-   * 
-   * @param token The token generated at your server:
-   * - For low-security requirements: You can use the temporary token generated 
-   * at Console. For details, 
-   * see [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-temporary-token).
-   * - For high-security requirements: Set it as the token generated at your 
-   * server. For details, 
-   * see [Get a token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-token).
-   * @param channel (Required) Pointer to the unique channel name for the 
-   * Agora RTC session in the string format smaller than 64 bytes. 
-   * Supported characters:
-   * - The 26 lowercase English letters: a to z.
-   * - The 26 uppercase English letters: A to Z.
-   * - The 10 numbers: 0 to 9.
-   * - The space.
-   * - "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", 
-   * ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   *  - `ERR_INVALID_ARGUMENT (2)`
-   *  - `ERR_NOT_READY (3)`
-   *  - `ERR_REFUSED (5)`
-   */
-  switchChannel(token: string, channel: string) : number {
-    return this.rtcEngine.switchChannel(token, channel);
-  }
-
-  /**
    * Adjusts the recording volume.
    * @param {number} volume Recording volume. The value ranges between 0 and 
    * 400:
@@ -2893,34 +2404,6 @@ class AgoraRtcEngine extends EventEmitter {
    */
   adjustPlaybackSignalVolume(volume: number): number {
     return this.rtcEngine.adjustPlaybackSignalVolume(volume);
-  }
-  /**
-   * Adjusts the playback volume of a specified remote user.
-   * 
-   * You can call this method as many times as necessary to adjust the playback 
-   * volume of different remote users, or to repeatedly adjust the playback 
-   * volume of the same remote user.
-   * 
-   * @note 
-   * - Call this method after joining a channel.
-   * - The playback volume here refers to the mixed volume of a specified 
-   * remote user.
-   * - This method can only adjust the playback volume of one specified remote 
-   * user at a time. To adjust the playback volume of different remote users, 
-   * call the method as many times, once for each remote user.
-   * 
-   * @param uid The ID of the remote user.
-   * @param volume The playback volume of the specified remote user. The value 
-   * ranges from 0 to 100:
-   * - 0: Mute.
-   * - 100: Original volume.
-   * 
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  adjustUserPlaybackSignalVolume(uid: number, volume: number): number {
-    return this.rtcEngine.adjustUserPlaybackSignalVolume(uid, volume);
   }
 
   // ===========================================================================
@@ -3843,40 +3326,6 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.videosourceSetScreenCaptureContentHint(hint);
   }
 
-  // ===========================================================================
-  // SCREEN SHARE
-  // When this api is called, your camera stream will be replaced with
-  // screenshare view. i.e. you can only see camera video or screenshare
-  // one at a time via this section's api
-  // ===========================================================================
-  /**
-   * Starts the screen sharing.
-   * @param {number} wndid Sets the screen sharing area.
-   * @param {number} captureFreq (Mandatory) The captured frame rate. The 
-   * value ranges between 1 fps and 15 fps.
-   * @param {*} rect Specifies the screen sharing region. `rect` is valid 
-   * when `wndid` is set as 0. When `rect` is set as NULL, the whole screen 
-   * is shared.
-   * @param {number} bitrate The captured bitrate.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  // startScreenCapture(
-  //   windowId: number,
-  //   captureFreq: number,
-  //   rect: { left: number; right: number; top: number; bottom: number },
-  //   bitrate: number
-  // ): number {
-  //   deprecate();
-  //   return this.rtcEngine.startScreenCapture(
-  //     windowId,
-  //     captureFreq,
-  //     rect,
-  //     bitrate
-  //   );
-  // }
-
   /**
    * Stops screen sharing.
    * @return
@@ -4620,60 +4069,6 @@ class AgoraRtcEngine extends EventEmitter {
    */
   resumeAllEffects(): number {
     return this.rtcEngine.resumeAllEffects();
-  }
-
-  /**
-   * Enables/Disables stereo panning for remote users.
-   *
-   * Ensure that you call this method before {@link joinChannel} to enable 
-   * stereo panning
-   * for remote users so that the local user can track the position of a 
-   * remote user
-   * by calling {@link setRemoteVoicePosition}.
-   * @param {boolean} enable Sets whether or not to enable stereo panning for 
-   * remote users:
-   * - true: enables stereo panning.
-   * - false: disables stereo panning.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  enableSoundPositionIndication(enable: boolean) {
-    return this.rtcEngine.enableSoundPositionIndication(enable);
-  }
-
-  /**
-   * Sets the sound position and gain of a remote user.
-   *
-   * When the local user calls this method to set the sound position of a 
-   * remote user, the sound difference between the left and right channels 
-   * allows
-   * the local user to track the real-time position of the remote user,
-   * creating a real sense of space. This method applies to massively 
-   * multiplayer online games, such as Battle Royale games.
-   *
-   * **Note**:
-   * - For this method to work, enable stereo panning for remote users by 
-   * calling the {@link enableSoundPositionIndication} method before joining 
-   * a channel.
-   * - This method requires hardware support. For the best sound positioning, 
-   * we recommend using a stereo speaker.
-   * @param {number} uid The ID of the remote user.
-   * @param {number} pan The sound position of the remote user. The value 
-   * ranges from -1.0 to 1.0:
-   * - 0.0: The remote sound comes from the front.
-   * - -1.0: The remote sound comes from the left.
-   * - 1.0: The remote sound comes from the right.
-   * @param {number} gain Gain of the remote user. The value ranges from 0.0 
-   * to 100.0. The default value is 100.0 (the original gain of the 
-   * remote user).
-   * The smaller the value, the less the gain.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  setRemoteVoicePosition(uid: number, pan: number, gain: number): number {
-    return this.rtcEngine.setRemoteVoicePosition(uid, pan, gain);
   }
 
   // ===========================================================================
