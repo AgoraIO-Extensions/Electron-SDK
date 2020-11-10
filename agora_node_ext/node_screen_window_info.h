@@ -16,6 +16,8 @@
 #endif
 #define    IMAGE_MAX_PIXEL_SIZE   500
 
+#include "IAgoraRtcEngine.h"
+
 #if defined(__APPLE__)
         struct DisplayID
         {

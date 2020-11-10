@@ -1,5 +1,6 @@
 #pragma once
-#include <IAgoraMediaEngine.h>
+#include "IAgoraMediaEngine.h"
+#include "IAgoraRtcEngine.h"
 #include <string>
 #include <map>
 #include <node.h>
@@ -27,14 +28,15 @@ public:
     IAVFramePluginManager();
     ~IAVFramePluginManager();
 
-    virtual bool onCaptureVideoFrame(VideoFrame& videoFrame);
-    virtual bool onRenderVideoFrame(unsigned int uid, VideoFrame& videoFrame);
+    virtual bool onCaptureVideoFrame(agora::media::base::VideoFrame& videoFrame);
+    bool onRenderVideoFrame(agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, agora::media::base::VideoFrame& videoFrame);
+    virtual bool onScreenCaptureVideoFrame(agora::media::base::VideoFrame& videoFrame);
 
-    virtual bool onRecordAudioFrame(AudioFrame& audioFrame);
-    virtual bool onPlaybackAudioFrame(AudioFrame& audioFrame);
-    virtual bool onMixedAudioFrame(AudioFrame& audioFrame);
-    virtual bool onPlaybackAudioFrameBeforeMixing(unsigned int uid, AudioFrame& audioFrame);
-
+    virtual bool onRecordAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& audioFrame);
+    virtual bool onPlaybackAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& audioFrame);
+    virtual bool onMixedAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& audioFrame);
+    virtual bool onPlaybackAudioFrameBeforeMixing(unsigned int uid, agora::media::IAudioFrameObserver::AudioFrame& audioFrame);
+    
     void registerPlugin(agora_plugin_info& plugin);
     void unregisterPlugin(std::string& pluginId);
     bool hasPlugin(std::string& pluginId);
