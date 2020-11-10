@@ -30,7 +30,7 @@ namespace agora {
             NodeVideoStreamChannel(NodeRenderContext* context);
             ~NodeVideoStreamChannel();
 
-            // int deliverFrame(const agora::media::IVideoFrame& videoFrame, int rotation, bool mirrored);
+            int deliverFrame(const agora::media::IVideoFrame& videoFrame, int rotation, bool mirrored);
         private:
             typedef std::vector<unsigned char> stream_buffer_type;
             std::unique_ptr<NodeRenderContext> m_context;
