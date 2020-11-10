@@ -1655,6 +1655,14 @@ namespace agora {
                     LOG_ERROR("Rtc engine initialize failed with error :%d\n", suc);
                     break;
                 }
+
+                agora::media::IMediaEngine* pMediaEngine = nullptr;
+                pEngine->getRtcEngine()->queryInterface(agora::rtc::INTERFACE_ID_TYPE::AGORA_IID_MEDIA_ENGINE, (void**)&pMediaEngine);
+                if (pMediaEngine && pEngine->m_nodeVideoFrameObserver.get())
+                {
+                    pMediaEngine->registerVideoFrameObserver(pEngine->m_nodeVideoFrameObserver.get());
+                    result = 0;
+                }
                 // agora::util::AutoPtr<agora::media::IMediaEngine> pMediaEngine;
 
                 // pMediaEngine.queryInterface(pEngine->m_engine, AGORA_IID_MEDIA_ENGINE);
@@ -2383,6 +2391,12 @@ namespace agora {
                 if (pEngine->m_engine) {
                     pEngine->m_engine->release();
                     pEngine->m_engine = nullptr;
+                }
+                agora::media::IMediaEngine* pMediaEngine = nullptr;
+                pEngine->getRtcEngine()->queryInterface(agora::rtc::INTERFACE_ID_TYPE::AGORA_IID_MEDIA_ENGINE, (void**)&pMediaEngine);
+                if (pMediaEngine && pEngine->m_nodeVideoFrameObserver.get())
+                {
+                    pMediaEngine->registerVideoFrameObserver(nullptr);
                 }
                 pEngine->m_nodeVideoFrameObserver.reset(nullptr);
                 result = 0;
@@ -3418,7 +3432,7 @@ namespace agora {
 
                 agora::media::IMediaEngine* pMediaEngine = nullptr;
                 pEngine->getRtcEngine()->queryInterface(agora::rtc::INTERFACE_ID_TYPE::AGORA_IID_MEDIA_ENGINE, (void**)&pMediaEngine);
-                pMediaEngine->registerVideoFrameObserver(NULL);
+                // pMediaEngine->registerVideoFrameObserver(NULL);
                 result = 0;
             } while (false);
             napi_set_int_result(args, result);
