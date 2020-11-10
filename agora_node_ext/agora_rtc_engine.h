@@ -13,7 +13,6 @@
 
 #include "IAgoraMediaEngine.h"
 #include "IAgoraRtcEngine.h"
-#include "IAgoraRtcChannel.h"
 #include <node.h>
 #include <node_object_wrap.h>
 #include "node_log.h"
@@ -27,7 +26,6 @@
 #include "AVPlugin/IAVFramePluginManager.h"
 #include "AVPlugin/IAVFramePlugin.h"
 #include "node_metadata_observer.h"
-#include "node_video_render.h"
 /*
 * Used to declare native interface to nodejs
 */
@@ -42,6 +40,7 @@
 
 namespace agora {
     namespace rtc {
+        // using media::IExternalVideoRenderFactory;
         using v8::Isolate;
         const int max_bmp_width = 500;
         const int max_bmp_height = 500;
@@ -74,13 +73,13 @@ namespace agora {
             NAPI_API(setClientRole);
             NAPI_API(startEchoTest);
             NAPI_API(stopEchoTest);
-            NAPI_API(enableLastmileTest);
-            NAPI_API(disableLastmileTest);
+            // NAPI_API(enableLastmileTest);
+            // NAPI_API(disableLastmileTest);
             NAPI_API(enableVideo);
             NAPI_API(disableVideo);
             NAPI_API(startPreview);
             NAPI_API(stopPreview);
-            NAPI_API(setVideoProfile);
+            // NAPI_API(setVideoProfile);
             NAPI_API(setVideoEncoderConfiguration);
             NAPI_API(enableAudio);
             NAPI_API(disableAudio);
@@ -120,7 +119,7 @@ namespace agora {
             NAPI_API(getObject);
             NAPI_API(getArray);
             NAPI_API(setParameters);
-            NAPI_API(setProfile);
+            // NAPI_API(setProfile);
             NAPI_API(convertPath);
 
             NAPI_API(muteLocalAudioStream);
@@ -165,16 +164,16 @@ namespace agora {
             NAPI_API(setLocalVoicePitch);
             NAPI_API(setLocalVoiceEqualization);
             NAPI_API(setLocalVoiceReverb);
-            NAPI_API(setExternalAudioSink);
-            NAPI_API(setLocalPublishFallbackOption);
-            NAPI_API(setRemoteSubscribeFallbackOption);
+            // NAPI_API(setExternalAudioSink);
+            // NAPI_API(setLocalPublishFallbackOption);
+            // NAPI_API(setRemoteSubscribeFallbackOption);
             NAPI_API(pauseAudio);
             NAPI_API(resumeAudio);
             NAPI_API(setExternalAudioSource);
 #if defined(__APPLE__) || defined(_WIN32)
             NAPI_API(getScreenWindowsInfo);
             NAPI_API(getScreenDisplaysInfo);
-            NAPI_API(startScreenCapture);
+            // NAPI_API(startScreenCapture);
             NAPI_API(stopScreenCapture);
             NAPI_API(updateScreenCaptureRegion);
 #endif
@@ -189,11 +188,12 @@ namespace agora {
             NAPI_API(setMixedAudioFrameParameters);
             NAPI_API(adjustRecordingSignalVolume);
             NAPI_API(adjustPlaybackSignalVolume);
-            NAPI_API(setHighQualityAudioParameters);
+            // NAPI_API(setHighQualityAudioParameters);
             NAPI_API(enableWebSdkInteroperability);
-            NAPI_API(setVideoQualityParameters);
+            // NAPI_API(setVideoQualityParameters);
 
             NAPI_API(enableLoopbackRecording);
+            NAPI_API(enableLoopbackRecording2);
             NAPI_API(onEvent);
             NAPI_API(registerDeliverFrame);
 
@@ -260,33 +260,33 @@ namespace agora {
             /**
              * 2.4.0 apis
              */
-            NAPI_API(setBeautyEffectOptions);
+            // NAPI_API(setBeautyEffectOptions);
             NAPI_API(setLocalVoiceChanger);
             NAPI_API(setLocalVoiceReverbPreset);
-            NAPI_API(enableSoundPositionIndication);
-            NAPI_API(setRemoteVoicePosition);
+            // NAPI_API(enableSoundPositionIndication);
+            // NAPI_API(setRemoteVoicePosition);
             NAPI_API(startLastmileProbeTest);
             NAPI_API(stopLastmileProbeTest);
             NAPI_API(setRemoteUserPriority);
-            NAPI_API(startEchoTestWithInterval);
-            NAPI_API(startAudioDeviceLoopbackTest);
-            NAPI_API(stopAudioDeviceLoopbackTest);
-            NAPI_API(setCameraCapturerConfiguration);
+            // NAPI_API(startEchoTestWithInterval);
+            NAPI_API(startRecordingDeviceTest);
+            NAPI_API(stopRecordingDeviceTest);
+            // NAPI_API(setCameraCapturerConfiguration);
             NAPI_API(setLogFileSize);
 
 
             /**
              * 2.8.0 Apis
              */
-            NAPI_API(registerLocalUserAccount);
-            NAPI_API(joinChannelWithUserAccount);
-            NAPI_API(getUserInfoByUserAccount);
-            NAPI_API(getUserInfoByUid);
+            // NAPI_API(registerLocalUserAccount);
+            // NAPI_API(joinChannelWithUserAccount);
+            // NAPI_API(getUserInfoByUserAccount);
+            // NAPI_API(getUserInfoByUid);
 
             /**
              * 2.9.0 Apis
              */
-            NAPI_API(switchChannel);
+            // NAPI_API(switchChannel);
             NAPI_API(startChannelMediaRelay);
             NAPI_API(updateChannelMediaRelay);
             NAPI_API(stopChannelMediaRelay);
@@ -302,7 +302,7 @@ namespace agora {
             /**
              * 3.0.0 Apis
              */
-            NAPI_API(adjustUserPlaybackSignalVolume);
+            // NAPI_API(adjustUserPlaybackSignalVolume);
 
             /**
              * 3.0.1 Apis
@@ -568,6 +568,7 @@ typedef unsigned int uint32;
 #define CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM(pointer, func, param) pointer->##func(param)
 #define CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM2(pointer, func, param1, param2) pointer->##func(param1, param2)
 #define CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM3(pointer, func, param1, param2, param3) pointer->##func(param1, param2, param3)
+#define CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM7(pointer, func, param1, param2, param3, param4, param5, param6, param7) pointer->##func(param1, param2, param3, param4, param5, param6, param7)
 
 
 #define CALL_MEM_FUNC(cls, func) cls.##func()
@@ -660,6 +661,31 @@ typedef unsigned int uint32;
         } while (false);\
         LOG_LEAVE;\
     }
+
+#define NAPI_API_DEFINE_WRAPPER_PARAM_7(method, type, type2, type3, type4, type5, type6, type7) \
+ NAPI_API_DEFINE(NodeRtcEngine, method) \
+    {\
+        LOG_ENTER;\
+        do {\
+            NodeRtcEngine *pEngine = nullptr;\
+            napi_get_native_this(args, pEngine);\
+            CHECK_NATIVE_THIS(pEngine);\
+            napi_status status = napi_ok;\
+            type param;\
+            type2 param2;\
+            type3 param3;\
+            type4 param4;\
+            type5 param5;\
+            type6 param6;\
+            type7 param7;\
+            napi_get_param_7(args, type, param, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, type7, param7);\
+            CHECK_NAPI_STATUS(pEngine, status);\
+            int result = CALL_MEM_FUNC_FROM_POINTER_WITH_PARAM7(pEngine->m_engine, method, param, param2, param3, param4, param5, param6, param7);\
+            args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result));\
+        } while (false);\
+        LOG_LEAVE;\
+    }
+
 /*
 * Helper macro to transfer call directly to rtc.
 */
