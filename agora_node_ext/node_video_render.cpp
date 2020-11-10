@@ -21,10 +21,18 @@ namespace agora {
             return true;
         }
 
-        bool NodeVideoFrameObserver::onRenderVideoFrame(unsigned int uid, agora::media::IVideoFrameObserver::VideoFrame& videoFrame) 
+        bool NodeVideoFrameObserver::onRenderVideoFrame(rtc::uid_t uid, rtc::conn_id_t connectionId, agora::media::IVideoFrameObserver::VideoFrame& videoFrame)
         {
             auto *pTransporter = getNodeVideoFrameTransporter();
             pTransporter->deliverFrame_I420(NodeRenderType::NODE_RENDER_TYPE_REMOTE, uid, "", videoFrame);
+
+            return false;
+        }
+
+        bool NodeVideoFrameObserver::onScreenCaptureVideoFrame(VideoFrame& videoFrame)
+        {
+            auto *pTransporter = getNodeVideoFrameTransporter();
+            pTransporter->deliverFrame_I420(NodeRenderType::NODE_RENDER_TYPE_VIDEO_SOURCE, 0, "", videoFrame);
 
             return false;
         }
