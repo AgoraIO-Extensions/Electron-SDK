@@ -302,7 +302,7 @@ namespace agora {
             /** m_eventHandler provide SDK event handler. */
             m_eventHandler.reset(new NodeEventHandler(this));
             /** Node ADDON takes advantage of self render interface */
-            m_externalVideoRenderFactory.reset(new NodeVideoRenderFactory(*this));
+            m_nodeVideoFrameObserver.reset(new NodeVideoFrameObserver());
             /** Video/Audio Plugins */
             m_avPluginManager.reset(new IAVFramePluginManager());
             metadataObserver.reset(new NodeMetadataObserver());
@@ -329,7 +329,7 @@ namespace agora {
             if (metadataObserver.get()) {
                 metadataObserver.reset(nullptr);
             }
-            m_externalVideoRenderFactory.reset(nullptr);
+            m_nodeVideoFrameObserver.reset(nullptr);
             m_eventHandler.reset(nullptr);
             m_avPluginManager.reset(nullptr);
             LOG_LEAVE;
@@ -1656,7 +1656,7 @@ namespace agora {
 
                 pMediaEngine.queryInterface(pEngine->m_engine, AGORA_IID_MEDIA_ENGINE);
                 if (pMediaEngine) {
-                    pMediaEngine->registerVideoRenderFactory(pEngine->m_externalVideoRenderFactory.get());
+                    pMediaEngine->registerVideoFrameObserver(pEngine->m_nodeVideoFrameObserver.get());
                 }
                 IRtcEngine3 *m_engine2 = (IRtcEngine3 *)pEngine->m_engine;
                 m_engine2->setAppType(AppType(3));
@@ -2126,16 +2126,11 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 
                 std::string sChannel = channel ? std::string(channel) : "";
-                
-                auto context = new NodeRenderContext(NODE_RENDER_TYPE_REMOTE, uid, sChannel);
-                if(!context) {
-                    LOG_ERROR("Failed to allocate NodeRenderContext\n");
-                    break;
-                }
+
                 VideoCanvas canvas;
                 canvas.uid = uid;
                 canvas.renderMode = RENDER_MODE_HIDDEN;
-                canvas.view = (view_t)context;
+                canvas.view = nullptr;
                 if(channel) {
                     strlcpy(canvas.channelId, channel, agora::rtc::MAX_CHANNEL_ID_LENGTH);
                 }
@@ -2182,11 +2177,10 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                auto context = new NodeRenderContext(NODE_RENDER_TYPE_LOCAL);
                 VideoCanvas canvas;
                 canvas.uid = 0;
                 canvas.renderMode = RENDER_MODE_HIDDEN;
-                canvas.view = (view_t)context;
+                canvas.view = nullptr;
                 pEngine->m_engine->setupLocalVideo(canvas);
                 result = 0;
             } while (false);
@@ -2382,7 +2376,7 @@ namespace agora {
                     pEngine->m_engine->release();
                     pEngine->m_engine = nullptr;
                 }
-                pEngine->m_externalVideoRenderFactory.reset(nullptr);
+                pEngine->m_nodeVideoFrameObserver.reset(nullptr);
                 result = 0;
             }while (false);
             napi_set_int_result(args, result);
@@ -2870,13 +2864,13 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                auto context = new NodeRenderContext(NODE_RENDER_TYPE_DEVICE_TEST);
+                // auto context = new NodeRenderContext(NODE_RENDER_TYPE_DEVICE_TEST);
                 
                 if (!pEngine->m_videoVdm) {
                     pEngine->m_videoVdm = new AVideoDeviceManager(pEngine->m_engine);
                 }
                 IVideoDeviceManager* vdm = pEngine->m_videoVdm->get();
-                result = vdm ? vdm->startDeviceTest(context) : -1;
+                result = vdm ? vdm->startDeviceTest(nullptr) : -1;
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -3406,7 +3400,7 @@ namespace agora {
                 pEngine->getRtcEngine()->queryInterface(agora::AGORA_IID_MEDIA_ENGINE, (void**)&pMediaEngine);
                 if (pEngine->m_avPluginManager.get())
                 {
-                    pMediaEngine->registerVideoFrameObserver(pEngine->m_avPluginManager.get());
+                    // pMediaEngine->registerVideoFrameObserver(pEngine->m_avPluginManager.get());
                     result = 0;
                 }
             } while (false);

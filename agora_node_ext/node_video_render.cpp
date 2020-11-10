@@ -9,51 +9,24 @@
 */
 
 #include "node_video_render.h"
+#include "node_napi_api.h"
 
 namespace agora {
     namespace rtc {
-        using namespace std::placeholders;
-
-        NodeVideoRenderFactory::NodeVideoRenderFactory(NodeRtcEngine& engine)
-            : m_engine(engine)
-        {}
-
-        NodeVideoRenderFactory::~NodeVideoRenderFactory() {}
-
-        IExternalVideoRender* NodeVideoRenderFactory::createRenderInstance(const ExternalVideoRenerContext& context)
+        bool NodeVideoFrameObserver::onCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) 
         {
-            if (!context.view) {
-                LOG_ERROR("Create Render Instance with null view");
-                return nullptr;
-            }
-            return new NodeVideoRender((NodeRenderContext*)context.view, context);
+            auto *pTransporter = getNodeVideoFrameTransporter();
+            pTransporter->deliverFrame_I420(NodeRenderType::NODE_RENDER_TYPE_LOCAL, 0, "", videoFrame);
+
+            return true;
         }
 
-        NodeVideoRender::NodeVideoRender(NodeRenderContext* nrc, const ExternalVideoRenerContext& context)
+        bool NodeVideoFrameObserver::onRenderVideoFrame(unsigned int uid, agora::media::IVideoFrameObserver::VideoFrame& videoFrame) 
         {
-            m_channel.reset(new NodeVideoStreamChannel(nrc));
-        }
+            auto *pTransporter = getNodeVideoFrameTransporter();
+            pTransporter->deliverFrame_I420(NodeRenderType::NODE_RENDER_TYPE_REMOTE, uid, "", videoFrame);
 
-        NodeVideoRender::~NodeVideoRender() 
-        {
-        }
-
-        int NodeVideoRender::initialize()
-        {
-            return 0;
-        }
-
-        void NodeVideoRender::release()
-        {
-
-        }
-
-        int NodeVideoRender::deliverFrame(const IVideoFrame& videoFrame, int rotation, bool mirrored)
-        {
-            if (m_channel.get())
-                return m_channel->deliverFrame(videoFrame, rotation, mirrored);
-            LOG_ERROR("Null channel");
-            return -1;
+            return false;
         }
     }
 }

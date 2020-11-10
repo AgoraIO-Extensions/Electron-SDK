@@ -179,27 +179,27 @@ int NodeVideoFrameTransporter::deliverVideoSourceFrame(const char* payload, int 
     return 0;
 }
 
-int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, const agora::media::IVideoFrame& videoFrame, int rotation, bool mirrored)
+int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, const agora::media::IVideoFrameObserver::VideoFrame& videoFrame)
 {
     if (!init)
         return -1;
-    int stride, stride0 = videoFrame.stride(IVideoFrame::Y_PLANE);
-    stride = stride0;
+    int stride0 = videoFrame.yStride;
+    int stride = stride0;
     if (stride & 0xf) {
         stride = (((stride + 15) >> 4) << 4);
     }
-    rotation = rotation < 0 ? rotation + 360 : rotation;
+    int rotation = videoFrame.rotation < 0 ? videoFrame.rotation + 360 : videoFrame.rotation;
     std::lock_guard<std::mutex> lck(m_lock);
     VideoFrameInfo& info = getVideoFrameInfo(type, uid, channelId);
     int destStride = info.m_destWidth ? info.m_destWidth : stride;
-    int destWidth = info.m_destWidth ? info.m_destWidth : videoFrame.width();
-    int destHeight = info.m_destHeight ? info.m_destHeight : videoFrame.height();
+    int destWidth = info.m_destWidth ? info.m_destWidth : videoFrame.width;
+    int destHeight = info.m_destHeight ? info.m_destHeight : videoFrame.height;
     size_t imageSize = sizeof(image_header_type) + destStride * destHeight * 3 / 2;
     auto s = info.m_buffer.size();
     if (s < imageSize || s >= imageSize * 2)
         info.m_buffer.resize(imageSize);
     image_header_type* hdr = reinterpret_cast<image_header_type*>(&info.m_buffer[0]);
-    hdr->mirrored = mirrored ? 1 : 0;
+    hdr->mirrored = 0;
     hdr->rotation = htons(rotation);
     setupFrameHeader(hdr, destStride, destWidth, destHeight);
     
@@ -224,27 +224,27 @@ void NodeVideoFrameTransporter::setupFrameHeader(image_header_type*header, int s
     header->timestamp = 0;
 }
 
-void NodeVideoFrameTransporter::copyFrame(const agora::media::IVideoFrame& videoFrame, VideoFrameInfo& info, int dest_stride, int src_stride, int width, int height)
+void NodeVideoFrameTransporter::copyFrame(const agora::media::IVideoFrameObserver::VideoFrame& videoFrame, VideoFrameInfo& info, int dest_stride, int src_stride, int width, int height)
 {
     int width2 = dest_stride / 2, heigh2 = height / 2;
-    int strideY = videoFrame.stride(IVideoFrame::Y_PLANE);
-    int strideU = videoFrame.stride(IVideoFrame::U_PLANE);
-    int strideV = videoFrame.stride(IVideoFrame::V_PLANE);
+    int strideY = videoFrame.yStride;
+    int strideU = videoFrame.uStride;
+    int strideV = videoFrame.vStride;
 
     unsigned char* y = &info.m_buffer[0] + sizeof(image_header_type);
     unsigned char* u = y + dest_stride * height;
     unsigned char* v = u + width2 * heigh2;
-    const unsigned char* planeY = videoFrame.buffer(IVideoFrame::Y_PLANE);
-    const unsigned char* planeU = videoFrame.buffer(IVideoFrame::U_PLANE);
-    const unsigned char* planeV = videoFrame.buffer(IVideoFrame::V_PLANE);
+    const unsigned char* planeY = (const unsigned char*)videoFrame.yBuffer;
+    const unsigned char* planeU = (const unsigned char*)videoFrame.uBuffer;
+    const unsigned char* planeV = (const unsigned char*)videoFrame.vBuffer;
 
-    if (videoFrame.width() == width && videoFrame.height() == height)
+    if (videoFrame.width == width && videoFrame.height == height)
     {
-        copyAndCentreYuv(planeY, planeU, planeV, videoFrame.width(), videoFrame.height(), src_stride, y, u, v, dest_stride);
+        copyAndCentreYuv(planeY, planeU, planeV, videoFrame.width, videoFrame.height, src_stride, y, u, v, dest_stride);
     }
     else
     {
-        I420Scale(planeY, strideY, planeU, strideU, planeV, strideV, videoFrame.width(), videoFrame.height(), (uint8*)y, dest_stride, (uint8*)u, width2, (uint8*)v, width2, width, height, kFilterNone);
+        I420Scale(planeY, strideY, planeU, strideU, planeV, strideV, videoFrame.width, videoFrame.height, (uint8*)y, dest_stride, (uint8*)u, width2, (uint8*)v, width2, width, height, kFilterNone);
     }
 
     info.m_bufferList[0].buffer = &info.m_buffer[0];

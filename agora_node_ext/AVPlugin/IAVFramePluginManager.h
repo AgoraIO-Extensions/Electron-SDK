@@ -25,7 +25,7 @@ class IAVFramePluginManager :
 {
 public:
     IAVFramePluginManager();
-    ~IAVFramePluginManager();
+    virtual ~IAVFramePluginManager();
 
     virtual bool onCaptureVideoFrame(VideoFrame& videoFrame);
     virtual bool onRenderVideoFrame(unsigned int uid, VideoFrame& videoFrame);

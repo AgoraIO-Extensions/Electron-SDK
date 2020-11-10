@@ -12,62 +12,15 @@
 #define AGORA_NODE_VIDEO_RENDER_H
 
 #include "IAgoraMediaEngine.h"
-#include "IAgoraRtcEngine.h"
-#include "agora_rtc_engine.h"
-#include "node_video_stream_channel.h"
 
 namespace agora {
     namespace rtc {
-        using media::IExternalVideoRenderFactory;
-        using media::IExternalVideoRender;
-        using media::ExternalVideoRenerContext;
-        using media::IVideoFrame;
-        using media::IExternalVideoRenderCallback;
-        
-        struct NodeRenderContext
+        class NodeVideoFrameObserver : public media::IVideoFrameObserver
         {
-            enum NodeRenderType m_type;
-            uid_t m_uid;
-            std::string m_channelId;
-            
-            NodeRenderContext(enum NodeRenderType type, uid_t uid = 0, std::string channelId = "")
-            : m_type(type)
-            , m_uid(uid)
-            , m_channelId(channelId)
-            {
-            }
-        };
-        
-        /**
-         * IExternalVideoRenderFactory implementation used to create video render.
-         */
-        class NodeVideoRenderFactory : public IExternalVideoRenderFactory
-        {
-        public:
-            NodeVideoRenderFactory(NodeRtcEngine& engine);
-            ~NodeVideoRenderFactory();
-
-        public:
-            virtual IExternalVideoRender* createRenderInstance(const ExternalVideoRenerContext& context) override;
-        protected:
-            NodeRtcEngine& m_engine;
-        };
-
-        /**
-         * IExtenral Video Render implementation used to render video data.
-         */
-        class NodeVideoRender : public IExternalVideoRender
-        {
-        public:
-            NodeVideoRender(NodeRenderContext* nrc, const ExternalVideoRenerContext& context);
-            ~NodeVideoRender();
-
-        public:
-            virtual void release() override;
-            virtual int initialize() override;
-            virtual int deliverFrame(const IVideoFrame& videoFrame, int rotation, bool mirrored) override;
-        private:
-            std::unique_ptr<NodeVideoStreamChannel> m_channel;
+            public:
+            virtual ~NodeVideoFrameObserver() = default;
+            virtual bool onCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
+            virtual bool onRenderVideoFrame(unsigned int uid, agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
         };
     }
 }
