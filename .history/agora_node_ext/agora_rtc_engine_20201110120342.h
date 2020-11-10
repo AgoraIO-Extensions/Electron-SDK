@@ -329,7 +329,7 @@ namespace agora {
             IRtcEngine *m_engine;
             std::unique_ptr<NodeEventHandler> m_eventHandler;
             Isolate *m_isolate;
-            // std::unique_ptr<IExternalVideoRenderFactory> m_externalVideoRenderFactory;
+            std::unique_ptr<IExternalVideoRenderFactory> m_externalVideoRenderFactory;
 
             AVideoDeviceManager* m_videoVdm = nullptr;
             AAudioDeviceManager* m_audioVdm = nullptr;

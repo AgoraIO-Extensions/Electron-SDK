@@ -329,7 +329,7 @@ namespace agora {
             if (metadataObserver.get()) {
                 metadataObserver.reset(nullptr);
             }
-            // m_externalVideoRenderFactory.reset(nullptr);
+            m_externalVideoRenderFactory.reset(nullptr);
             m_eventHandler.reset(nullptr);
             m_avPluginManager.reset(nullptr);
             LOG_LEAVE;

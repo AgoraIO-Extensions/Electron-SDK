@@ -1462,16 +1462,16 @@ namespace agora {
         //     });
         // }
 
-        // void NodeEventHandler::onVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState)
-        // {
-        //     FUNC_TRACE;
-        //     std::string mChannel(channel);
-        //     node_async_call::async_call([this, mChannel, uid, oldState, newState, elapseSinceLastState]{
-        //         MAKE_JS_CALL_5(RTC_EVENT_VIDEO_SUBSCRIBE_STATE_CHANGED, string, mChannel.c_str(), uid, uid, int32, oldState, int32, newState, int32, elapseSinceLastState);
-        //     });
-        // }
+        void NodeEventHandler::onVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState)
+        {
+            FUNC_TRACE;
+            std::string mChannel(channel);
+            node_async_call::async_call([this, mChannel, uid, oldState, newState, elapseSinceLastState]{
+                MAKE_JS_CALL_5(RTC_EVENT_VIDEO_SUBSCRIBE_STATE_CHANGED, string, mChannel.c_str(), uid, uid, int32, oldState, int32, newState, int32, elapseSinceLastState);
+            });
+        }
 
-        void NodeEventHandler::onAudioRoutingChanged(int routing) {
+        void NodeEventHandler::onAudioRouteChanged(AUDIO_ROUTE_TYPE routing) {
             FUNC_TRACE;
             node_async_call::async_call([this, routing] {
                 MAKE_JS_CALL_1(RTC_EVENT_AUDIO_ROUTE_CHANGED, int32, (int)routing);

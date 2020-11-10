@@ -179,36 +179,36 @@ int NodeVideoFrameTransporter::deliverVideoSourceFrame(const char* payload, int 
     return 0;
 }
 
-// int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, const agora::media::IVideoFrame& videoFrame, int rotation, bool mirrored)
-// {
-//     if (!init)
-//         return -1;
-//     int stride, stride0 = videoFrame.stride(IVideoFrame::Y_PLANE);
-//     stride = stride0;
-//     if (stride & 0xf) {
-//         stride = (((stride + 15) >> 4) << 4);
-//     }
-//     rotation = rotation < 0 ? rotation + 360 : rotation;
-//     std::lock_guard<std::mutex> lck(m_lock);
-//     VideoFrameInfo& info = getVideoFrameInfo(type, uid, channelId);
-//     int destStride = info.m_destWidth ? info.m_destWidth : stride;
-//     int destWidth = info.m_destWidth ? info.m_destWidth : videoFrame.width();
-//     int destHeight = info.m_destHeight ? info.m_destHeight : videoFrame.height();
-//     size_t imageSize = sizeof(image_header_type) + destStride * destHeight * 3 / 2;
-//     auto s = info.m_buffer.size();
-//     if (s < imageSize || s >= imageSize * 2)
-//         info.m_buffer.resize(imageSize);
-//     image_header_type* hdr = reinterpret_cast<image_header_type*>(&info.m_buffer[0]);
-//     hdr->mirrored = mirrored ? 1 : 0;
-//     hdr->rotation = htons(rotation);
-//     setupFrameHeader(hdr, destStride, destWidth, destHeight);
+int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, const agora::media::IVideoFrame& videoFrame, int rotation, bool mirrored)
+{
+    if (!init)
+        return -1;
+    int stride, stride0 = videoFrame.stride(IVideoFrame::Y_PLANE);
+    stride = stride0;
+    if (stride & 0xf) {
+        stride = (((stride + 15) >> 4) << 4);
+    }
+    rotation = rotation < 0 ? rotation + 360 : rotation;
+    std::lock_guard<std::mutex> lck(m_lock);
+    VideoFrameInfo& info = getVideoFrameInfo(type, uid, channelId);
+    int destStride = info.m_destWidth ? info.m_destWidth : stride;
+    int destWidth = info.m_destWidth ? info.m_destWidth : videoFrame.width();
+    int destHeight = info.m_destHeight ? info.m_destHeight : videoFrame.height();
+    size_t imageSize = sizeof(image_header_type) + destStride * destHeight * 3 / 2;
+    auto s = info.m_buffer.size();
+    if (s < imageSize || s >= imageSize * 2)
+        info.m_buffer.resize(imageSize);
+    image_header_type* hdr = reinterpret_cast<image_header_type*>(&info.m_buffer[0]);
+    hdr->mirrored = mirrored ? 1 : 0;
+    hdr->rotation = htons(rotation);
+    setupFrameHeader(hdr, destStride, destWidth, destHeight);
     
-//     // copyFrame(videoFrame, info, destStride, stride0, destWidth, destHeight);
-//     info.m_count = 0;
-//     info.m_needUpdate = true;
-//     return 0;
+    // copyFrame(videoFrame, info, destStride, stride0, destWidth, destHeight);
+    info.m_count = 0;
+    info.m_needUpdate = true;
+    return 0;
     
-// }
+}
 
 void NodeVideoFrameTransporter::setupFrameHeader(image_header_type*header, int stride, int width, int height)
 {
