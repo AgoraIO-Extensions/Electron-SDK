@@ -86,6 +86,7 @@ class VideoFrameInfo
 public:
     NodeRenderType m_renderType;
     agora::rtc::uid_t m_uid;
+    agora::rtc::conn_id_t m_connectionId
     buffer_list m_bufferList;
     stream_buffer_type m_buffer;
     uint32_t m_destWidth;
@@ -101,6 +102,7 @@ public:
         , m_needUpdate(false)
         , m_count(0)
         , m_channelId("")
+        , m_connectionId(0)
     {}
     VideoFrameInfo(NodeRenderType type)
         : m_renderType(type)
@@ -110,9 +112,10 @@ public:
         , m_needUpdate(false)
         , m_count(0)
         , m_channelId("")
+        , m_connectionId(0)
     {
     }
-    VideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId)
+    VideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, agora::rtc::conn_id_t connectionId)
         : m_renderType(type)
         , m_uid(uid)
         , m_destWidth(0)
@@ -120,6 +123,7 @@ public:
         , m_needUpdate(false)
         , m_count(0)
         , m_channelId(channelId)
+        , m_connectionId(connectionId)
     {}
 };
 
@@ -129,11 +133,11 @@ class NodeVideoFrameTransporter {
     ~NodeVideoFrameTransporter();
     
     bool initialize(Isolate *isolate, const Nan::FunctionCallbackInfo<Value>& callbackinfo);
-    int deliverFrame_I420(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, const agora::media::IVideoFrameObserver::VideoFrame& videoFrame);
+    int deliverFrame_I420(NodeRenderType type, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, const agora::media::IVideoFrameObserver::VideoFrame& videoFrame);
     int deliverVideoSourceFrame(const char* payload, int len);
-    int setVideoDimension(NodeRenderType, agora::rtc::uid_t uid, std::string channelId, uint32_t width, uint32_t height);
-    void addToHighVideo(agora::rtc::uid_t uid, std::string channelId);
-    void removeFromeHighVideo(agora::rtc::uid_t uid, std::string channelId);
+    int setVideoDimension(NodeRenderType, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, uint32_t width, uint32_t height);
+    void addToHighVideo(agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId);
+    void removeFromeHighVideo(agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId);
     void setHighFPS(uint32_t fps);
     void setFPS(uint32_t fps);
     //bool deliveryFrame1(enum NodeRenderType type, agora::rtc::uid_t uid, const buffer_list& buffers);
@@ -160,9 +164,9 @@ private:
         uint16_t rotation;
         uint32_t timestamp;
     };
-    VideoFrameInfo& getVideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId);
+    VideoFrameInfo& getVideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId);
     bool deinitialize();
-    VideoFrameInfo& getHighVideoFrameInfo(agora::rtc::uid_t uid, std::string channelId);
+    VideoFrameInfo& getHighVideoFrameInfo(agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId);
     void setupFrameHeader(image_header_type*header, int stride, int width, int height);
     void copyFrame(const agora::media::IVideoFrameObserver::VideoFrame& videoFrame, VideoFrameInfo& info, int dest_stride, int src_stride, int width, int height);
     void copyAndCentreYuv(const unsigned char* srcYPlane, const unsigned char* srcUPlane, const unsigned char* srcVPlane, int width, int height, int srcStride,
@@ -174,8 +178,8 @@ private:
     Isolate* env;
     Persistent<Function> callback;
     Persistent<Object> js_this;
-    std::unordered_map<std::string, std::unordered_map<agora::rtc::uid_t, VideoFrameInfo>> m_remoteVideoFrames;
-    std::unordered_map<std::string, std::unordered_map<agora::rtc::uid_t, VideoFrameInfo>> m_remoteHighVideoFrames;
+    std::unordered_map<agora::rtc::conn_id_t, std::unordered_map<agora::rtc::uid_t, VideoFrameInfo>> m_remoteVideoFrames;
+    std::unordered_map<agora::rtc::conn_id_t, std::unordered_map<agora::rtc::uid_t, VideoFrameInfo>> m_remoteHighVideoFrames;
     std::unique_ptr<VideoFrameInfo> m_localVideoFrame;
     std::unique_ptr<VideoFrameInfo> m_devTestVideoFrame;
     std::unique_ptr<VideoFrameInfo> m_videoSourceVideoFrame;
