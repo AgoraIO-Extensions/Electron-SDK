@@ -16,7 +16,7 @@ namespace agora {
         bool NodeVideoFrameObserver::onCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) 
         {
             auto *pTransporter = getNodeVideoFrameTransporter();
-            pTransporter->deliverFrame_I420(NodeRenderType::NODE_RENDER_TYPE_LOCAL, 0, "", videoFrame);
+            pTransporter->deliverFrame_I420(NodeRenderType::NODE_RENDER_TYPE_LOCAL, 0, 0, videoFrame);
 
             return true;
         }
@@ -24,7 +24,7 @@ namespace agora {
         bool NodeVideoFrameObserver::onRenderVideoFrame(rtc::uid_t uid, rtc::conn_id_t connectionId, agora::media::IVideoFrameObserver::VideoFrame& videoFrame)
         {
             auto *pTransporter = getNodeVideoFrameTransporter();
-            pTransporter->deliverFrame_I420(NodeRenderType::NODE_RENDER_TYPE_REMOTE, uid, "", videoFrame);
+            pTransporter->deliverFrame_I420(NodeRenderType::NODE_RENDER_TYPE_REMOTE, uid, connectionId, videoFrame);
 
             return false;
         }
@@ -32,7 +32,7 @@ namespace agora {
         bool NodeVideoFrameObserver::onScreenCaptureVideoFrame(VideoFrame& videoFrame)
         {
             auto *pTransporter = getNodeVideoFrameTransporter();
-            pTransporter->deliverFrame_I420(NodeRenderType::NODE_RENDER_TYPE_VIDEO_SOURCE, 0, "", videoFrame);
+            pTransporter->deliverFrame_I420(NodeRenderType::NODE_RENDER_TYPE_VIDEO_SOURCE, 0, 0, videoFrame);
 
             return false;
         }
