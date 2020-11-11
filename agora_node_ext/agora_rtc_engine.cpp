@@ -563,12 +563,11 @@ namespace agora {
                         CHECK_NAPI_STATUS(pEngine, status);
                         videoInputStreams[i].sourceType = (VIDEO_SOURCE_TYPE)sourceType;
                         napi_get_object_property_uint32_(isolate, videoInputStreamObj, "remoteUserUid", videoInputStreams[i].remoteUserUid);
-                        CHECK_NAPI_STATUS(pEngine, status);
                         napi_get_object_property_uint32_(isolate, videoInputStreamObj, "connectionId", videoInputStreams[i].connectionId);
-                        CHECK_NAPI_STATUS(pEngine, status);
                         napi_get_object_property_nodestring_(isolate, videoInputStreamObj, "imageUrl", imageUrlList[i]);
-                        CHECK_NAPI_STATUS(pEngine, status);
-                        videoInputStreams[i].imageUrl = imageUrlList[i];
+                        if (status == napi_ok) {
+                            videoInputStreams[i].imageUrl = imageUrlList[i];
+                        }
                         napi_get_object_property_int32_(isolate, videoInputStreamObj, "x", videoInputStreams[i].x);
                         CHECK_NAPI_STATUS(pEngine, status);
                         napi_get_object_property_int32_(isolate, videoInputStreamObj, "y", videoInputStreams[i].y);
