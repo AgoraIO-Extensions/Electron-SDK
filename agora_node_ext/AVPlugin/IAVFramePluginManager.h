@@ -31,6 +31,7 @@ public:
     virtual bool onCaptureVideoFrame(agora::media::base::VideoFrame& videoFrame);
     bool onRenderVideoFrame(agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, agora::media::base::VideoFrame& videoFrame);
     virtual bool onScreenCaptureVideoFrame(agora::media::base::VideoFrame& videoFrame);
+    virtual bool onTranscodedVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame);
 
     virtual bool onRecordAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& audioFrame);
     virtual bool onPlaybackAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& audioFrame);

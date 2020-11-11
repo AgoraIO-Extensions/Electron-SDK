@@ -1199,6 +1199,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - 1: The remote renderer.
    * - 2: The device test
    * - 3: The video source.
+   * - 4: The transcoded video
    * @param {*} uid The user ID of the targeted user.
    * @param {*} width The target width.
    * @param {*} height The target height.
