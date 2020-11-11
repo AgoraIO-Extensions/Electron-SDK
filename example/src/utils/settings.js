@@ -1,5 +1,5 @@
 export const APP_ID = "***REMOVED***"
-export const SHARE_ID = 2
+export const SHARE_ID = 0
 export const RTMP_URL = ''
 export const FU_AUTH = []
 

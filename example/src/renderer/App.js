@@ -12,6 +12,7 @@ import DisplayPicker from './components/DisplayPicker/index.js'
 const isMac = process.platform === 'darwin'
 
 export default class App extends Component {
+
   constructor(props) {
     super(props)
     if (!APP_ID) {
@@ -21,6 +22,7 @@ export default class App extends Component {
       this.state = {
         local: '',
         localVideoSource: '',
+        transcoded: '',
         localSharing: false,
         users: new List(),
         channel: '',
@@ -82,7 +84,9 @@ export default class App extends Component {
       });
     });
     rtcEngine.on('userjoined', (uid, elapsed) => {
-    
+      this.setState({
+        users: this.state.users.push({channelId: "", uid})
+      })
     })
     rtcEngine.on('removestream', (uid, reason) => {
       this.setState({
@@ -212,7 +216,7 @@ export default class App extends Component {
     rtcEngine.setClientRole(this.state.role)
     rtcEngine.registerMediaMetadataObserver();
     rtcEngine.setAudioProfile(0, 1)
-    let logpath = path.resolve(os.homedir(), "./agoramain.sdk")
+    let logpath = path.resolve(__dirname, "./agoramain.sdk")
     rtcEngine.setLogFile(logpath)
     rtcEngine.enableWebSdkInteroperability(true)
     if(encoderWidth === 0 && encoderHeight === 0) {
@@ -220,49 +224,13 @@ export default class App extends Component {
     } else {
       rtcEngine.setVideoEncoderConfiguration({width: encoderWidth, height: encoderHeight})
     }
+
+    // rtcEngine.setVideoRenderDimension(3, 0, 640, 480)
     rtcEngine.setLocalVoiceChanger(this.state.voiceChangerPreset)
     rtcEngine.setLocalVoiceReverbPreset(this.state.voiceReverbPreset)
     rtcEngine.enableDualStreamMode(true)
     rtcEngine.enableAudioVolumeIndication(1000, 3, false)
-    let filePath = path.resolve(__dirname, "../../static/plugin.png")
-
-    let videoInputStreamobj = [
-      {
-        sourceType: 0,
-        connectionId: 0,
-        x: 2,
-        y: 40,
-        width: 374,
-        height: 235,
-        zOrder: 2,
-        alpha: 1.0
-      },
-      {
-        sourceType: 1,
-        connectionId: 0,
-        x: 233,
-        y: 40,
-        width: 373,
-        height: 232,
-        zOrder: 33,
-        alpha: 1.0
-      },
-      {
-        sourceType: 4,
-        connectionId: 0,
-        x: 80,
-        y: 43,
-        imageUrl: filepath,
-        width: 373,
-        height: 232,
-        zOrder: 33,
-        alpha: 1.0
-      }
-    ]
-    rtcEngine.startLocalVideoTranscoder({
-      streamCount = 3,
-      videoInputStreams = videoInputStreamobj
-    })
+   
     rtcEngine.joinChannel("", "123", "", 0);
   }
 
@@ -306,7 +274,7 @@ export default class App extends Component {
     })
     this.startScreenShare(windowId)
     this.setState({
-      localVideoSource: 0
+      localVideoSource: 1
     })
   }
     /**
@@ -320,13 +288,74 @@ export default class App extends Component {
     return new Promise((resolve, reject) => {
       let rtcEngine = this.getRtcEngine()
       rtcEngine.startScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15})
+   
+      let filePath = path.resolve(__dirname, "../../static/plugin.png")
+      console.log(`startLocalVideoTranscoder ----  ${filePath}`);
+      let videoInputStreamobj = [
+        {
+          sourceType: 0,
+          connectionId: 0,
+          x: 0,
+          y: 0,
+          width: 640,
+          height: 360,
+          zOrder: 1,
+          alpha: 0.0
+        },
+        {
+          sourceType: 1,
+          connectionId: 0,
+          x: 360,
+          y: 100,
+          width: 600,
+          height: 360,
+          zOrder: 33,
+          alpha: 0.0
+        },
+        {
+          sourceType: 4,
+          connectionId: 0,
+          x: 300,
+          y: 200,
+          imageUrl: filePath,
+          width: 100,
+          height: 400,
+          zOrder: 99,
+          alpha: 0.0
+        }
+      ]
+  
+      let videoOutputConfigurationobj = {
+        width: 1080,
+        height: 720,
+        frameRate: 15,
+        bitrate: 0,
+        minBitrate: -1,
+        orientationMode: 0,
+        degradationPreference: 0,
+        mirrorMode: 0
+      }
+  
+      let ret = rtcEngine.startLocalVideoTranscoder({
+        streamCount: 3,
+        videoInputStreams: videoInputStreamobj,
+        videoOutputConfiguration: videoOutputConfigurationobj
+      })
+  
+      if (ret === 0) {
+        this.setState({
+          transcoded: 2
+        })
+      }
+      console.log(`startLocalVideoTranscoder ------ ${ret}`)
     });
   }
 
   handleDisplayPicker = displayId => {
     this.setState({
       showDisplayPicker: false,
-      localSharing: true
+      localSharing: true,
+      localVideoSource: 1
     })
     this.startScreenShareByDisplay(displayId)
   }
@@ -864,6 +893,10 @@ export default class App extends Component {
           {this.state.localVideoSource ? (<Window uid={this.state.localVideoSource} rtcEngine={this.rtcEngine} role="localVideoSource">
 
           </Window>) : ''}
+          
+          {this.state.transcoded ? (<Window uid={this.state.transcoded} rtcEngine={this.rtcEngine} role="transcoded">
+
+          </Window>) : ''}
         </div>
       </div>
     )
@@ -888,12 +921,14 @@ class Window extends Component {
       this.props.rtcEngine.setupViewContentMode('videosource', 1);
       this.props.rtcEngine.setupViewContentMode(String(SHARE_ID), 1);
     } else if (this.props.role === 'remote') {
-      dom && this.props.rtcEngine.subscribe(this.props.uid, dom)
-      this.props.rtcEngine.setupViewContentMode(this.props.uid, 1);
+      this.props.rtcEngine.setupRemoteVideo(this.props.uid, dom)
     } else if (this.props.role === 'remoteVideoSource') {
       dom && this.props.rtcEngine.subscribe(this.props.uid, dom)
       this.props.rtcEngine.setupViewContentMode('videosource', 1);
       this.props.rtcEngine.setupViewContentMode(String(SHARE_ID), 1);
+    } else if (this.props.role === 'transcoded') {
+      this.props.rtcEngine.setupViewContentMode('transcoded', 1)
+      dom && this.props.rtcEngine.setupLocalView(dom, 4)
     }
   }
 
