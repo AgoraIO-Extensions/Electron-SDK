@@ -76,7 +76,8 @@ enum NodeRenderType
     NODE_RENDER_TYPE_LOCAL,
     NODE_RENDER_TYPE_REMOTE,
     NODE_RENDER_TYPE_DEVICE_TEST,
-    NODE_RENDER_TYPE_VIDEO_SOURCE
+    NODE_RENDER_TYPE_VIDEO_SOURCE,
+    NODE_RENDER_TYPE_TRANSCODED
 };
 
 #define MAX_MISS_COUNT 500
@@ -86,7 +87,7 @@ class VideoFrameInfo
 public:
     NodeRenderType m_renderType;
     agora::rtc::uid_t m_uid;
-    agora::rtc::conn_id_t m_connectionId
+    agora::rtc::conn_id_t m_connectionId;
     buffer_list m_bufferList;
     stream_buffer_type m_buffer;
     uint32_t m_destWidth;
@@ -183,6 +184,7 @@ private:
     std::unique_ptr<VideoFrameInfo> m_localVideoFrame;
     std::unique_ptr<VideoFrameInfo> m_devTestVideoFrame;
     std::unique_ptr<VideoFrameInfo> m_videoSourceVideoFrame;
+    std::unique_ptr<VideoFrameInfo> m_transcodedVideoFrame;
     std::mutex m_lock;
     int m_stopFlag;
     std::unique_ptr<std::thread> m_thread;
