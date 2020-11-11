@@ -409,6 +409,16 @@ export interface UserInfo {
   userAccount: string;
 }
 
+/**  */
+export enum RenderType
+{
+    RENDER_TYPE_LOCAL = 0,
+    RENDER_TYPE_REMOTE = 1,
+    RENDER_TYPE_DEVICE_TEST = 2,
+    RENDER_TYPE_VIDEO_SOURCE = 3,
+    RENDER_TYPE_TRANSCODED = 4
+};
+
 /** Sets the local voice changer option. */
 export enum VoiceChangerPreset {
   /**

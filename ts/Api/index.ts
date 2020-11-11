@@ -44,7 +44,8 @@ import {
   STREAM_SUBSCRIBE_STATE,
   AUDIO_ROUTE_TYPE,
   EncryptionConfig,
-  LocalTranscoderConfiguration
+  LocalTranscoderConfiguration,
+  RenderType
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -743,6 +744,8 @@ class AgoraRtcEngine extends EventEmitter {
       return;
     } else if (type === 3) {
       return channelStreams.get('videosource');
+    } else if (type == 4) {
+      return channelStreams.get('transcoded');
     } else {
       console.warn('Invalid type for getRenderer, only accept 0~3.');
       return;
@@ -859,7 +862,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @param key Key for the map that store the renderers, 
    * e.g, `uid` or `videosource` or `local`.
    */
-  resizeRender(key: 'local' | 'videosource' | number, channelId:string | undefined) {
+  resizeRender(key: 'local' | 'videosource' | 'transcoded' | number, channelId:string | undefined) {
     let channelStreams = this._getChannelRenderers(channelId || "")
     if (channelStreams.has(String(key))) {
       const renderers = channelStreams.get(String(key)) || [];
@@ -873,7 +876,7 @@ class AgoraRtcEngine extends EventEmitter {
    * e.g, uid or `videosource` or `local`.
    * @param view The Dom elements to render the video.
    */
-  initRender(key: 'local' | 'videosource' | number, view: Element, channelId: string | undefined, options?: RendererOptions) {
+  initRender(key: 'local' | 'videosource' | 'transcoded' | number, view: Element, channelId: string | undefined, options?: RendererOptions) {
     let rendererOptions = {
       append: options ? options.append : false
     }
@@ -916,7 +919,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   destroyRenderView(
-    key: 'local' | 'videosource' | number, channelId: string | undefined, view: Element,
+    key: 'local' | 'videosource' | 'transcoded' | number, channelId: string | undefined, view: Element,
     onFailure?: (err: Error) => void
   ) {
     let channelStreams = this._getChannelRenderers(channelId || "")
@@ -957,7 +960,7 @@ class AgoraRtcEngine extends EventEmitter {
    * method.
    */
   destroyRender(
-    key: 'local' | 'videosource' | number, channelId: string | undefined,
+    key: 'local' | 'videosource' | 'transcoded' | number, channelId: string | undefined,
     onFailure?: (err: Error) => void
   ) {
     let channelStreams = this._getChannelRenderers(channelId || "")
@@ -1265,7 +1268,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - -1: Failure.
    */
   setupViewContentMode(
-    uid: number | 'local' | 'videosource',
+    uid: number | 'local' | 'videosource' | 'transcoded',
     mode: 0 | 1,
     channelId: string | undefined
   ): number {
@@ -1279,6 +1282,16 @@ class AgoraRtcEngine extends EventEmitter {
       return 0;
     } else {
       return -1;
+    }
+  }
+
+  setupLocalView(view: Element, type: RenderType) {
+    if (type == 0) {
+      this.initRender('local', view, "");
+    } else if (type == 3) {
+      this.initRender('videosource', view, "");
+    } else if (type == 4) {
+      this.initRender('transcoded', view, "");
     }
   }
 
@@ -2134,20 +2147,6 @@ class AgoraRtcEngine extends EventEmitter {
    */
   setLogFileSize(size: number): number {
     return this.rtcEngine.setLogFileSize(size);
-  }
-
-  /**
-   * Specifies an SDK output log file for the video source object.
-   *
-   * **Note**: Call this method after the {@link videoSourceInitialize} method.
-   * @param {string} filepath filepath of log. The string of the log file is 
-   * in UTF-8.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  videoSourceSetLogFile(filepath: string) {
-    return this.rtcEngine.videoSourceSetLogFile(filepath);
   }
 
   /**
@@ -3927,18 +3926,6 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   startLocalVideoTranscoder(config: LocalTranscoderConfiguration): number {
-    const {
-        videoOutputConfiguration: {
-        width = 640,
-        height = 480,
-        frameRate = 15,
-        bitrate = 0,
-        minBitrate = -1,
-        orientationMode = 0,
-        degradationPreference = 0,
-        mirrorMode = 0
-      }
-    } = config;
     return this.rtcEngine.startLocalVideoTranscoder(config);
   }
 
@@ -4624,16 +4611,6 @@ declare interface AgoraRtcEngine {
     evt: 'audioDeviceVolumeChanged',
     cb: (deviceType: MediaDeviceType, volume: number, muted: boolean) => void
   ): this;
-  /** Occurs when the user for sharing screen joined the channel.
-   * - uid: The User ID.
-   */
-  on(evt: 'videoSourceJoinedSuccess', cb: (uid: number) => void): this;
-  /** Occurs when the token expires. */
-  on(evt: 'videoSourceRequestNewToken', cb: () => void): this;
-  /** Occurs when the user for sharing screen leaved the channel.
-   * - uid: The User ID.
-   */
-  on(evt: 'videoSourceLeaveChannel', cb: () => void): this;
   /** Occurs when the remote video state changes.
    * 
    * @param cb.uid ID of the user whose video state changes.
