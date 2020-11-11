@@ -29,6 +29,11 @@ bool IAVFramePluginManager::onRenderVideoFrame(agora::rtc::uid_t uid, agora::rtc
     return true;
 }
 
+bool IAVFramePluginManager::onTranscodedVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame)
+{
+    return true;
+}
+
 bool IAVFramePluginManager::onScreenCaptureVideoFrame(VideoFrame& videoFrame)
 {
     return true;

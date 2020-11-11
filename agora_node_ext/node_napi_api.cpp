@@ -100,6 +100,12 @@ VideoFrameInfo& NodeVideoFrameTransporter::getVideoFrameInfo(NodeRenderType type
             m_localVideoFrame.reset(new VideoFrameInfo(NODE_RENDER_TYPE_LOCAL));
         return *m_localVideoFrame.get();
     }
+    else if (type == NODE_RENDER_TYPE_TRANSCODED) {
+        if (!m_transcodedVideoFrame.get()){
+            m_transcodedVideoFrame.reset(new VideoFrameInfo(NODE_RENDER_TYPE_TRANSCODED));
+        }
+        return *m_transcodedVideoFrame.get();
+    }
     else if (type == NODE_RENDER_TYPE_REMOTE) {
         //try looking in high streams first
         auto hcit = m_remoteHighVideoFrames.find(connectionId);
@@ -143,7 +149,7 @@ int NodeVideoFrameTransporter::deliverVideoSourceFrame(const char* payload, int 
     char* u = y + uv_len * 4;
     char* v = u + uv_len;
     std::lock_guard<std::mutex> lck(m_lock);
-    VideoFrameInfo& videoInfo = getVideoFrameInfo(NODE_RENDER_TYPE_VIDEO_SOURCE, 0, "");
+    VideoFrameInfo& videoInfo = getVideoFrameInfo(NODE_RENDER_TYPE_VIDEO_SOURCE, 0, 0);
     int destWidth = videoInfo.m_destWidth ? videoInfo.m_destWidth : info->width;
     int destHeight = videoInfo.m_destHeight ? videoInfo.m_destHeight : info->height;
     size_t imageSize = sizeof(image_header_type) + destWidth * destHeight * 3 / 2;

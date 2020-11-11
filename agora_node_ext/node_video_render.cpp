@@ -36,5 +36,13 @@ namespace agora {
 
             return false;
         }
+
+        bool NodeVideoFrameObserver::onTranscodedVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame)
+        {
+            auto *pTransporter = getNodeVideoFrameTransporter();
+            pTransporter->deliverFrame_I420(NodeRenderType::NODE_RENDER_TYPE_TRANSCODED, 0, 0, videoFrame);
+
+            return false;
+        }
     }
 }
