@@ -82,12 +82,7 @@ export default class App extends Component {
       });
     });
     rtcEngine.on('userjoined', (uid, elapsed) => {
-      if (uid === SHARE_ID && this.state.localSharing) {
-        return
-      }
-      this.setState({
-        users: this.state.users.push({uid})
-      })
+    
     })
     rtcEngine.on('removestream', (uid, reason) => {
       this.setState({
@@ -213,9 +208,6 @@ export default class App extends Component {
     let encoderWidth = parseInt(this.state.encoderWidth)
     let encoderHeight = parseInt(this.state.encoderHeight)
     let rtcEngine = this.getRtcEngine()
-    rtcEngine.setParameters("{\"rtc.user_account_server_list\":[\"58.211.82.170\"]}")
-    // let result = rtcEngine.registerLocalUserAccount(APP_ID, "TEST")
-    // console.log(result)
     rtcEngine.setChannelProfile(1)
     rtcEngine.setClientRole(this.state.role)
     rtcEngine.registerMediaMetadataObserver();
@@ -225,62 +217,15 @@ export default class App extends Component {
     rtcEngine.setLogFile(logpath)
     rtcEngine.enableWebSdkInteroperability(true)
     if(encoderWidth === 0 && encoderHeight === 0) {
-      //use video profile
-      // rtcEngine.setVideoProfile(this.state.videoProfile, false)
+
     } else {
       rtcEngine.setVideoEncoderConfiguration({width: encoderWidth, height: encoderHeight})
     }
     rtcEngine.setLocalVoiceChanger(this.state.voiceChangerPreset)
     rtcEngine.setLocalVoiceReverbPreset(this.state.voiceReverbPreset)
-    // console.log('loop', rtcEngine.enableLoopbackRecording(true, null))
     rtcEngine.enableDualStreamMode(true)
     rtcEngine.enableAudioVolumeIndication(1000, 3, false)
-
-    //enable beauty options
-    // rtcEngine.setBeautyEffectOptions(true, {
-    //   lighteningContrastLevel: 2,
-    //   lighteningLevel: 1,
-    //   smoothnessLevel: 1,
-    //   rednessLevel: 0
-    // })
-
-    // joinning two channels together
-    // let channel = rtcEngine.createChannel(this.state.channel)
-    // this.subscribeChannelEvents(channel, true)
-    // channel.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
-    // channel.publish();
     rtcEngine.joinChannel("", "123", "", 0);
-
-    //joinning two channels together
-  //   this.channel1 = rtcEngine.createChannel(this.state.channel)
-  //   this.channel1.registerMediaMetadataObserver();
-  //   setInterval(()=>{
-  //     let ptr = {
-  //       width: 100,
-  //       height: 210,
-  //       top: 32323
-  //     }
-  //     let data = JSON.stringify(ptr);
-  //     let metadata = {
-  //       uid: 123,
-  //       size: data.length,
-  //       buffer: data,
-  //       timeStampMs: 122323
-  //     }
-  //     let ret = this.channel1.sendMetadata(metadata);
-  //     console.log(`channel: ${this.channel1.channelId()}  sendMetadata  data: ${data}  ret: ${ret}`)
-  //  }, 1000);
-  //   this.channel1.setClientRole(1);
-  //   this.subscribeChannelEvents(this.channel1, true)
-  //   this.channel1.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
-  //   this.channel1.publish();
-
-  //   this.channel1.setClientRole(1);
-  //   this.channel2 = rtcEngine.createChannel(`${this.state.channel}-2`)
-  //   this.channel2.registerMediaMetadataObserver()
-  //   this.subscribeChannelEvents(this.channel2, false)
-  //   this.channel2.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
-
   }
 
   handleCameraChange = e => {
@@ -316,40 +261,16 @@ export default class App extends Component {
     })
   }
 
-    /**
-   * prepare screen share: initialize and join
-   * @param {string} token 
-   * @param {string} info 
-   * @param {number} timeout 
-   */
-  prepareScreenShare(token = null, info = '', timeout = 30000) {
-    return new Promise((resolve, reject) => {
-      let timer = setTimeout(() => {
-        reject(new Error('Timeout'))
-      }, timeout)
-      let rtcEngine = this.getRtcEngine()
-      rtcEngine.once('videosourcejoinedsuccess', uid => {
-        clearTimeout(timer)
-        this.sharingPrepared = true
-        resolve(uid)
-      });
-      try {
-        rtcEngine.videoSourceInitialize(APP_ID);
-        let logpath = path.resolve(os.homedir(), "./agorascreenshare.log")
-        rtcEngine.videoSourceSetLogFile(logpath)
-        rtcEngine.videoSourceSetChannelProfile(1);
-        rtcEngine.videoSourceEnableWebSdkInteroperability(true)
-        // rtcEngine.videoSourceSetVideoProfile(50, false);
-        // to adjust render dimension to optimize performance
-        // rtcEngine.setVideoRenderDimension(3, SHARE_ID, 1200, 680);
-        rtcEngine.videoSourceJoin(token, this.state.channel, info, SHARE_ID);
-      } catch(err) {
-        clearTimeout(timer)
-        reject(err)
-      }
+  handleWindowPicker = windowId => {
+    this.setState({
+      showWindowPicker: false,
+      localSharing: true
+    })
+    this.startScreenShare(windowId)
+    this.setState({
+      localVideoSource: 0
     })
   }
-
     /**
    * start screen share
    * @param {*} windowId windows id to capture
@@ -357,63 +278,31 @@ export default class App extends Component {
    * @param {*} rect null/if specified, {x: 0, y: 0, width: 0, height: 0}
    * @param {*} bitrate bitrate of video source screencapture
    */
-  startScreenShare(windowId=0, captureFreq=15, 
-    rect={
-      top: 0, left: 0, right: 0, bottom: 0
-    }, bitrate=0
-  ) {
-    if(!this.sharingPrepared) {
-      console.error('Sharing not prepared yet.')
-      return false
-    };
+  startScreenShare(windowId=0) {
     return new Promise((resolve, reject) => {
       let rtcEngine = this.getRtcEngine()
-      // rtcEngine.startScreenCapture2(windowId, captureFreq, rect, bitrate);
-      // there's a known limitation that, videosourcesetvideoprofile has to be called at least once
-      // note although it's called, it's not taking any effect, to control the screenshare dimension, use captureParam instead
-      // rtcEngine.videoSourceSetVideoProfile(43, false);
-      // rtcEngine.startScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15, captureMouseCursor: false, windowFocus: false})
-      rtcEngine.videoSourceStartScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15, captureMouseCursor: false, windowFocus: false})
-      rtcEngine.startScreenCapturePreview();
+      rtcEngine.startScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15})
     });
   }
 
-
+  handleDisplayPicker = displayId => {
+    this.setState({
+      showDisplayPicker: false,
+      localSharing: true
+    })
+    this.startScreenShareByDisplay(displayId)
+  }
+  
   startScreenShareByDisplay(displayId) {
-    if(!this.sharingPrepared) {
-      console.error('Sharing not prepared yet.')
-      return false
-    };
     return new Promise((resolve, reject) => {
       let rtcEngine = this.getRtcEngine();
-      rtcEngine.videoSourceSetLogFile("videosource.txt");
-      // rtcEngine.videoSourceSetParameters("{\"rtc.log_filter\": 65535}");
-      // rtcEngine.startScreenCapture2(windowId, captureFreq, rect, bitrate);
-      // there's a known limitation that, videosourcesetvideoprofile has to be called at least once
-      // note although it's called, it's not taking any effect, to control the screenshare dimension, use captureParam instead
-      console.log(`start sharing display ${JSON.stringify(displayId)}`);
-      // rtcEngine.videoSourceSetVideoProfile(43, false);
-      // rtcEngine.videosourceStartScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15})
-
-      rtcEngine.videoSourceStartScreenCaptureByScreen(displayId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 5, captureMouseCursor: false, windowFocus: false});
-
-      // let list = rtcEngine.getScreenWindowsInfo();
-      // let exculdeList = list.map((item, index) => {
-      //   return item.windowId
-      // });
-      // rtcEngine.videoSourceStartScreenCaptureByScreen(displayId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 5, captureMouseCursor: false, windowFocus: false, excludeWindowList: exculdeList, excludeWindowCount: exculdeList.length});
-      
-      rtcEngine.startScreenCapturePreview();
+      rtcEngine.startScreenCaptureByScreen(displayId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 5})
     });
   }
 
   updateScreenShareParam = (e) => {
-    // let rtcEngine = this.getRtcEngine()
-    // let list = rtcEngine.getScreenWindowsInfo();
-    // let exculdeList = list.map((item, index) => {
-    //   return item.windowId
-    // });
-    // rtcEngine.videoSourceUpdateScreenCaptureParameters({width: 0, height: 0, bitrate: 500, frameRate: 5, captureMouseCursor: false, windowFocus: false, excludeWindowList: exculdeList, excludeWindowCount: exculdeList.length});
+    let rtcEngine = this.getRtcEngine();
+    rtcEngine.updateScreenCaptureParameters({width: 0, height: 0, bitrate: 500, frameRate: 5})
   }
 
   handleScreenSharing = (e) => {
@@ -660,40 +549,6 @@ export default class App extends Component {
     })
   }
 
-  handleWindowPicker = windowId => {
-    this.setState({
-      showWindowPicker: false,
-      localSharing: true
-    })
-    this.prepareScreenShare()
-      .then(uid => {
-        this.startScreenShare(windowId)
-        this.setState({
-          localVideoSource: uid
-        })
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  }
-
-  handleDisplayPicker = displayId => {
-    this.setState({
-      showDisplayPicker: false,
-      localSharing: true
-    })
-    this.prepareScreenShare()
-      .then(uid => {
-        this.startScreenShareByDisplay(displayId)
-        this.setState({
-          localVideoSource: uid
-        })
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  }
-
   togglePlaybackTest = e => {
     let rtcEngine = this.getRtcEngine()
     if (!this.state.playbackTestOn) {
@@ -759,17 +614,6 @@ export default class App extends Component {
     }
     this.setState({audioHookEnabled: !this.state.audioHookEnabled})
   }
-
-  // handleAudioMixing = e => {
-  //   const path = require('path')
-  //   let filepath = path.join(__dirname, './music.mp3');
-  //   if (this.enableAudioMixing) {
-  //     rtcEngine.stopAudioMixing()
-  //   } else {
-  //     rtcEngine.startAudioMixing(filepath, false, false, -1);
-  //   }
-  //   this.enableAudioMixing = !this.enableAudioMixing;
-  // }
 
   render() {
     let windowPicker, displayPicker

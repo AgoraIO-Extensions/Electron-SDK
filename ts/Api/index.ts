@@ -24,14 +24,12 @@ import {
   ConnectionState,
   ConnectionChangeReason,
   MediaDeviceType,
-  VIDEO_PROFILE_TYPE,
   TranscodingConfig,
   InjectStreamConfig,
   VoiceChangerPreset,
   AudioReverbPreset,
   LastmileProbeConfig,
   Priority,
-  CameraCapturerConfiguration,
   ScreenSymbol,
   CaptureRect,
   CaptureParam,
@@ -625,21 +623,6 @@ class AgoraRtcEngine extends EventEmitter {
     ) {
       fire('audiodevicevolumechanged', deviceType, volume, muted);
       fire('audioDeviceVolumeChanged', deviceType, volume, muted);
-    });
-
-    this.rtcEngine.onEvent('videosourcejoinsuccess', function(uid: number) {
-      fire('videosourcejoinedsuccess', uid);
-      fire('videoSourceJoinedSuccess', uid);
-    });
-
-    this.rtcEngine.onEvent('videosourcerequestnewtoken', function() {
-      fire('videosourcerequestnewtoken');
-      fire('videoSourceRequestNewToken');
-    });
-
-    this.rtcEngine.onEvent('videosourceleavechannel', function() {
-      fire('videosourceleavechannel');
-      fire('videoSourceLeaveChannel');
     });
 
     this.rtcEngine.onEvent('localUserRegistered', function(
@@ -2809,29 +2792,6 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.setAudioRecordingDeviceMute(mute);
   }
 
-  // ===========================================================================
-  // VIDEO SOURCE
-  // NOTE. video source is mainly used to do screenshare, the api basically
-  // aligns with normal sdk apis, e.g. videoSourceInitialize vs initialize.
-  // it is used to do screenshare with a separate process, in that case
-  // it allows user to do screensharing and camera stream pushing at the
-  // same time - which is not allowed in single sdk process.
-  // if you only need to display camera and screensharing one at a time
-  // use sdk original screenshare, if you want both, use video source.
-  // ===========================================================================
-  /**
-   * Initializes agora real-time-communicating video source with the app Id.
-   * @param {string} appId The app ID issued to you by Agora.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   *  - `ERR_INVALID_APP_ID (101)`: The app ID is invalid. Check if it is in 
-   * the correct format.
-   */
-  videoSourceInitialize(appId: string): number {
-    return this.rtcEngine.videoSourceInitialize(appId);
-  }
-
   /**
    * Sets the video renderer for video source.
    * @param {Element} view The dom element where video source should be 
@@ -2839,138 +2799,6 @@ class AgoraRtcEngine extends EventEmitter {
    */
   setupLocalVideoSource(view: Element): void {
     this.initRender('videosource', view, "");
-  }
-
-  /**
-   * @deprecated This method is deprecated. As of v3.0.0, the Electron SDK 
-   * automatically enables interoperability with the Web SDK, so you no longer 
-   * need to call this method.
-   * 
-   * Enables the web interoperability of the video source, if you set it to 
-   * true.
-   *
-   * **Note**:
-   * You must call this method after calling the {@link videoSourceInitialize} 
-   * method.
-   *
-   * @param {boolean} enabled Set whether or not to enable the web 
-   * interoperability of the video source.
-   * - true: Enables the web interoperability.
-   * - false: Disables web interoperability.
-   *
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  videoSourceEnableWebSdkInteroperability(enabled: boolean): number {
-    return this.rtcEngine.videoSourceEnableWebSdkInteroperability(enabled);
-  }
-
-  /**
-   * Allows a user to join a channel when using the video source.
-   *
-   * @param {string} token The token generated at your server:
-   * - For low-security requirements: You can use the temporary token 
-   * generated at Console. For details, see 
-   * [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-temporary-token).
-   * - For high-security requirements: Set it as the token generated at your 
-   * server. For details, see 
-   * [Get a token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-token).
-   * @param {string} cname (Required) Pointer to the unique channel name for 
-   * the Agora RTC session in the string format smaller than 64 bytes. 
-   * Supported characters:
-   * - The 26 lowercase English letters: a to z.
-   * - The 26 uppercase English letters: A to Z.
-   * - The 10 numbers: 0 to 9.
-   * - The space.
-   * - "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", 
-   * ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
-   * @param {string} info Pointer to additional information about the channel. 
-   * This parameter can be set to NULL or contain channel related information.
-   * Other users in the channel will not receive this message.
-   * @param {number} uid The User ID. The same user ID cannot appear in a 
-   * channel. Ensure that the user ID of the `videoSource` here is different 
-   * from the `uid` used by the user when calling the {@link joinChannel} 
-   * method.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  videoSourceJoin(
-    token: string,
-    cname: string,
-    info: string,
-    uid: number
-  ): number {
-    return this.rtcEngine.videoSourceJoin(token, cname, info, uid);
-  }
-
-  /**
-   * Allows a user to leave a channe when using the video source.
-   *
-   * **Note**:
-   * You must call this method after calling the {@link videoSourceJoin} method.
-   *
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  videoSourceLeave(): number {
-    return this.rtcEngine.videoSourceLeave();
-  }
-
-  /**
-   * Gets a new token for a user using the video source when the current token 
-   * expires after a period of time.
-   *
-   * The application should call this method to get the new `token`.
-   * Failure to do so will result in the SDK disconnecting from the server.
-   *
-   * @param {string} token The new token.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  videoSourceRenewToken(token: string): number {
-    return this.rtcEngine.videoSourceRenewToken(token);
-  }
-
-  /**
-   * Sets the channel profile when using the video source.
-   *
-   * @param {number} profile Sets the channel profile:
-   * - 0:(Default) Communication.
-   * - 1: Live Broadcast.
-   * - 2: Gaming.
-   *
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  videoSourceSetChannelProfile(profile: number): number {
-    return this.rtcEngine.videoSourceSetChannelProfile(profile);
-  }
-
-  /**
-   * Sets the video profile when using the video source.
-   * @param {VIDEO_PROFILE_TYPE} profile The video profile. See 
-   * {@link VIDEO_PROFILE_TYPE}.
-   * @param {boolean} [swapWidthAndHeight = false] Whether to swap width and 
-   * height:
-   * - true: Swap the width and height.
-   * - false: Do not swap the width and height.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  videoSourceSetVideoProfile(
-    profile: VIDEO_PROFILE_TYPE,
-    swapWidthAndHeight = false
-  ): number {
-    return this.rtcEngine.videoSourceSetVideoProfile(
-      profile,
-      swapWidthAndHeight
-    );
   }
 
   /**
@@ -2998,58 +2826,7 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.getScreenDisplaysInfo();
   }
 
-  /**
-   * @deprecated This method is deprecated. Use 
-   * {@link videoSourceStartScreenCaptureByScreen} or 
-   * {@link videoSourceStartScreenCaptureByWindow} instead.
-   * Starts the video source.
-   * @param {number} wndid Sets the video source area.
-   * @param {number} captureFreq (Mandatory) The captured frame rate. The value 
-   * ranges between 1 fps and 15 fps.
-   * @param {*} rect Specifies the video source region. `rect` is valid when 
-   * `wndid` is set as 0. When `rect` is set as NULL, the whole screen is 
-   * shared.
-   * @param {number} bitrate The captured bitrate.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  startScreenCapture2(
-    windowId: number,
-    captureFreq: number,
-    rect: { left: number; right: number; top: number; bottom: number },
-    bitrate: number
-  ): number {
-    deprecate(
-      '"videoSourceStartScreenCaptureByScreen" or "videoSourceStartScreenCaptureByWindow"'
-    );
-    return this.rtcEngine.startScreenCapture2(
-      windowId,
-      captureFreq,
-      rect,
-      bitrate
-    );
-  }
 
-  /**
-   * Stops the screen sharing when using the video source.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  stopScreenCapture2(): number {
-    return this.rtcEngine.stopScreenCapture2();
-  }
-
-  /**
-   * Starts the local video preview when using the video source.
-   * @return
-   * - 0: Success
-   * - < 0: Failure
-   */
-  startScreenCapturePreview(): number {
-    return this.rtcEngine.videoSourceStartPreview();
-  }
   /**
    * Shares the whole or part of a window by specifying the window symbol.
    * 
@@ -3114,218 +2891,6 @@ class AgoraRtcEngine extends EventEmitter {
    */
   setScreenCaptureContentHint(hint: VideoContentHint): number {
     return this.rtcEngine.setScreenCaptureContentHint(hint)
-  }
-
-  /**
-   * Stops the local video preview when using the video source.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  stopScreenCapturePreview(): number {
-    return this.rtcEngine.videoSourceStopPreview();
-  }
-
-  /**
-   * Enables the dual-stream mode for the video source.
-   * @param {boolean} enable Whether or not to enable the dual-stream mode:
-   * - true: Enables the dual-stream mode.
-   * - false: Disables the dual-stream mode.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  videoSourceEnableDualStreamMode(enable: boolean): number {
-    return this.rtcEngine.videoSourceEnableDualStreamMode(enable);
-  }
-
-  /**
-   * Sets the video source parameters.
-   * @param {string} parameter Sets the video source encoding parameters.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  videoSourceSetParameters(parameter: string): number {
-    return this.rtcEngine.videoSourceSetParameter(parameter);
-  }
-
-  /**
-   * Updates the screen capture region for the video source.
-   * @param {*} rect {left: 0, right: 100, top: 0, bottom: 100} (relative 
-   * distance from the left-top corner of the screen)
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  videoSourceUpdateScreenCaptureRegion(rect: {
-    left: number;
-    right: number;
-    top: number;
-    bottom: number;
-  }) {
-    return this.rtcEngine.videoSourceUpdateScreenCaptureRegion(rect);
-  }
-
-  videoSourceEnableLoopbackRecording(enabled: boolean, deviceName: string | null = null) : number {
-    return this.rtcEngine.videoSourceEnableLoopbackRecording(enabled, deviceName)
-  }
-
-  videoSourceEnableAudio() : number {
-    return this.rtcEngine.videoSourceEnableAudio()
-  }
-   /** Enables/Disables the built-in encryption.
-     *
-     * @since v3.1.0
-     *
-     * In scenarios requiring high security, Agora recommends calling this method to enable the built-in encryption before joining a channel.
-     *
-     * All users in the same channel must use the same encryption mode and encryption key. Once all users leave the channel, the encryption key of this channel is automatically cleared.
-     *
-     * @note
-     * - If you enable the built-in encryption, you cannot use the RTMP streaming function.
-     * - Agora supports four encryption modes. If you choose an encryption mode (excepting `SM4_128_ECB` mode), you need to add an external encryption library when integrating the SDK. See the advanced guide *Channel Encryption*.
-     *
-     * @param enabled Whether to enable the built-in encryption:
-     * - true: Enable the built-in encryption.
-     * - false: Disable the built-in encryption.
-     * @param config Configurations of built-in encryption schemas. See EncryptionConfig.
-     *
-     * @return
-     * - 0: Success.
-     * - < 0: Failure.
-     *  - -2(ERR_INVALID_ARGUMENT): An invalid parameter is used. Set the parameter with a valid value.
-     *  - -4(ERR_NOT_SUPPORTED): The encryption mode is incorrect or the SDK fails to load the external encryption library. Check the enumeration or reload the external encryption library.
-     *  - -7(ERR_NOT_INITIALIZED): The SDK is not initialized. Initialize the `IRtcEngine` instance before calling this method.
-     */
-  videoSourceEnableEncryption(enabled: boolean, encryptionConfig: EncryptionConfig): number {
-    return this.rtcEngine.videoSourceEnableEncryption(enabled, encryptionConfig);
-  }
-
-    /** **DEPRECATED** Sets the built-in encryption mode.
-
-     @deprecated Deprecated as of v3.1.0. Use the \ref agora::rtc::IRtcEngine::enableEncryption "enableEncryption" instead.
-
-     The Agora SDK supports built-in encryption, which is set to the @p aes-128-xts mode by default. Call this method to use other encryption modes.
-
-     All users in the same channel must use the same encryption mode and password.
-
-     Refer to the information related to the AES encryption algorithm on the differences between the encryption modes.
-
-     @note Call the \ref IRtcEngine::setEncryptionSecret "setEncryptionSecret" method to enable the built-in encryption function before calling this method.
-
-     @param encryptionMode Pointer to the set encryption mode:
-     - "aes-128-xts": (Default) 128-bit AES encryption, XTS mode.
-     - "aes-128-ecb": 128-bit AES encryption, ECB mode.
-     - "aes-256-xts": 256-bit AES encryption, XTS mode.
-     - "": When encryptionMode is set as NULL, the encryption mode is set as "aes-128-xts" by default.
-
-     @return
-     - 0: Success.
-     - < 0: Failure.
-     */
-  videoSourceSetEncryptionMode(mode: string): number {
-    return this.rtcEngine.videoSourceSetEncryptionMode(mode);
-  }
-    /** **DEPRECATED** Enables built-in encryption with an encryption password before users join a channel.
-
-     Deprecated as of v3.1.0. Use the \ref agora::rtc::IRtcEngine::enableEncryption "enableEncryption" instead.
-
-     All users in a channel must use the same encryption password. The encryption password is automatically cleared once a user leaves the channel.
-
-     If an encryption password is not specified, the encryption functionality will be disabled.
-
-     @note
-     - Do not use this method for CDN live streaming.
-     - For optimal transmission, ensure that the encrypted data size does not exceed the original data size + 16 bytes. 16 bytes is the maximum padding size for AES encryption.
-
-     @param secret Pointer to the encryption password.
-
-     @return
-     - 0: Success.
-     - < 0: Failure.
-     */
-  videoSourceSetEncryptionSecret(secret: string): number {
-    return this.rtcEngine.videoSourceSetEncryptionSecret(secret);
-  }
-
-  /**
-   * Releases the video source object.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  videoSourceRelease(): number {
-    return this.rtcEngine.videoSourceRelease();
-  }
-
-  // 2.4 new Apis
-  /**
-   * Shares the whole or part of a screen by specifying the screen rect.
-   * @param {ScreenSymbol} screenSymbol The display ID：
-   * - macOS: The display ID.
-   * - Windows: The screen rect.
-   * @param {CaptureRect} rect Sets the relative location of the region 
-   * to the screen.
-   * @param {CaptureParam} param Sets the video source encoding parameters.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  
-  videoSourceStartScreenCaptureByScreen(
-    screenSymbol: ScreenSymbol,
-    rect: CaptureRect,
-    param: CaptureParam
-  ): number {
-    return this.rtcEngine.videosourceStartScreenCaptureByScreen(
-      screenSymbol,
-      rect,
-      param
-    );
-  }
-
-  /**
-   * Shares the whole or part of a window by specifying the window ID.
-   * @param {number} windowSymbol The ID of the window to be shared.
-   * @param {CaptureRect} rect The ID of the window to be shared.
-   * @param {CaptureParam} param Sets the video source encoding parameters.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  videoSourceStartScreenCaptureByWindow(
-    windowSymbol: number,
-    rect: CaptureRect,
-    param: CaptureParam
-  ): number {
-    return this.rtcEngine.videosourceStartScreenCaptureByWindow(
-      windowSymbol,
-      rect,
-      param
-    );
-  }
-
-  /**
-   * Updates the video source parameters.
-   * @param {CaptureParam} param Sets the video source encoding parameters.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  videoSourceUpdateScreenCaptureParameters(param: CaptureParam): number {
-    return this.rtcEngine.videosourceUpdateScreenCaptureParameters(param);
-  }
-
-  /**
-   *  Updates the video source parameters.
-   * @param {VideoContentHint} hint Sets the content hint for the video source.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  videoSourceSetScreenCaptureContentHint(hint: VideoContentHint): number {
-    return this.rtcEngine.videosourceSetScreenCaptureContentHint(hint);
   }
 
   /**
