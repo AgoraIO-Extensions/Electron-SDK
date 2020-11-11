@@ -1931,26 +1931,11 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  switchChannel(
-    token: string,
-    channel: string
-  ): number;
-  /**
-   * @ignore
-   */
   leaveChannel(): number;
   /**
    * @ignore
    */
   release(): number;
-  // /**
-  //  * @ignore
-  //  */
-  // setHighQualityAudioParameters(
-  //   fullband: boolean,
-  //   stereo: boolean,
-  //   fullBitrate: boolean
-  // ): number;
   /**
    * @ignore
    */
@@ -2007,18 +1992,6 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  startEchoTestWithInterval(interval: number): number;
-  /**
-   * @ignore
-   */
-  enableLastmileTest(): number;
-  /**
-   * @ignore
-   */
-  disableLastmileTest(): number;
-  /**
-   * @ignore
-   */
   startLastmileProbeTest(config: LastmileProbeConfig): number;
   /**
    * @ignore
@@ -2040,34 +2013,11 @@ export interface NodeRtcEngine {
    * @ignore
    */
   stopPreview(): number;
-  /**
-   * @ignore
-   */
-  setVideoProfile(
-    profile: VIDEO_PROFILE_TYPE,
-    swapWidthAndHeight: boolean
-  ): number;
-  /**
-   * @ignore
-   */
-  setCameraCapturerConfiguration(config: CameraCapturerConfiguration): number;
-  /**
+   /**
    * @ignore
    */
   setVideoEncoderConfiguration(
     config: VideoEncoderConfiguration
-  ): number;
-  /**
-   * @ignore
-   */
-  setBeautyEffectOptions(
-    enable: boolean,
-    options: {
-      lighteningContrastLevel: 0 | 1 | 2; // 0 for low, 1 for normal, 2 for high
-      lighteningLevel: number;
-      smoothnessLevel: number;
-      rednessLevel: number;
-    }
   ): number;
   /**
    * @ignore
@@ -2085,10 +2035,6 @@ export interface NodeRtcEngine {
    * @ignore
    */
   setAudioProfile(profile: number, scenario: number): number;
-  /**
-   * @ignore
-   */
-  setVideoQualityParameters(preferFrameRateOverImageQuality: boolean): number;
   /**
    * @ignore
    */
@@ -2205,14 +2151,6 @@ export interface NodeRtcEngine {
    * @ignore
    */
   setLocalVoiceReverbPreset(preset: AudioReverbPreset): number;
-  /**
-   * @ignore
-   */
-  setLocalPublishFallbackOption(option: 0 | 1 | 2): number;
-  /**
-   * @ignore
-   */
-  setRemoteSubscribeFallbackOption(option: 0 | 1 | 2): number;
   /**
    * @ignore
    */
@@ -2340,84 +2278,11 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  videoSourceInitialize(appId: string): number;
-  /**
-   * @ignore
-   */
-  videoSourceEnableWebSdkInteroperability(enabled: boolean): number;
-  /**
-   * @ignore
-   */
-  videoSourceJoin(
-    token: string,
-    cname: string,
-    info: string,
-    uid: number
-  ): number;
-  /**
-   * @ignore
-   */
-  videoSourceLeave(): number;
-  /**
-   * @ignore
-   */
-  videoSourceRenewToken(token: string): number;
-  /**
-   * @ignore
-   */
-  videoSourceSetChannelProfile(profile: number): number;
-  /**
-   * @ignore
-   */
-  videoSourceSetVideoProfile(
-    profile: VIDEO_PROFILE_TYPE,
-    swapWidthAndHeight: boolean
-  ): number;
-  /**
-   * @ignore
-   */
-  videosourceStartScreenCaptureByScreen(
-    screenSymbol: ScreenSymbol,
-    rect: CaptureRect,
-    param: CaptureParam
-  ): number;
-  /**
-   * @ignore
-   */
-  videosourceStartScreenCaptureByWindow(
-    windowSymbol: number,
-    rect: CaptureRect,
-    param: CaptureParam
-  ): number;
-  /**
-   * @ignore
-   */
-  videosourceUpdateScreenCaptureParameters(param: CaptureParam): number;
-  /**
-   * @ignore
-   */
-  videosourceSetScreenCaptureContentHint(hint: VideoContentHint): number;
-  /**
-   * @ignore
-   */
   getScreenWindowsInfo(): Array<Object>;
   /**
    * @ignore
    */
   getScreenDisplaysInfo(): Array<Object>;
-  /**
-   * @ignore
-   */
-  startScreenCapture2(
-    windowId: number,
-    captureFreq: number,
-    rect: { left: number; right: number; top: number; bottom: number },
-    bitrate: number
-  ): number;
-  /**
-   * @ignore
-   */
-  stopScreenCapture2(): number;
   /**
    * @ignore
    */
@@ -2442,64 +2307,6 @@ export interface NodeRtcEngine {
    * @ignore
    */
   setScreenCaptureContentHint(hint: VideoContentHint): number;
-  /**
-   * @ignore
-   */
-  videoSourceStartPreview(): number;
-  /**
-   * @ignore
-   */
-  videoSourceStopPreview(): number;
-  /**
-   * @ignore
-   */
-  videoSourceEnableDualStreamMode(enable: boolean): number;
-  /**
-   * @ignore
-   */
-  videoSourceSetParameter(parameter: string): number;
-  /**
-   * @ignore
-   */
-  videoSourceUpdateScreenCaptureRegion(rect: {
-    left: number;
-    right: number;
-    top: number;
-    bottom: number;
-  }): number;
-  /**
-   * @ignore
-   */
-  videoSourceEnableLoopbackRecording(enabled: boolean, deviceName: string | null): number;
-  /**
-   * @ignore
-   */
-  videoSourceEnableAudio(): number;
-  /**
-   * @ignore
-   */
-  videoSourceEnableEncryption(enabled: boolean, encryptionConfig: EncryptionConfig): number;
-  /**
-   * @ignore
-   */
-  videoSourceSetEncryptionMode(mode: string): number;
-  /**
-   * @ignore
-   */
-  videoSourceSetEncryptionSecret(mode: string): number;
-  /**
-   * @ignore
-   */
-  videoSourceRelease(): number;
-  // /**
-  //  * @ignore
-  //  */
-  // startScreenCapture(
-  //   windowId: number,
-  //   captureFreq: number,
-  //   rect: { left: number; right: number; top: number; bottom: number },
-  //   bitrate: number
-  // ): number;
   /**
    * @ignore
    */
@@ -2653,14 +2460,6 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  enableSoundPositionIndication(enable: boolean): number;
-  /**
-   * @ignore
-   */
-  setRemoteVoicePosition(uid: number, pan: number, gain: number): number;
-  /**
-   * @ignore
-   */
   getCallId(): string;
   /**
    * @ignore
@@ -2742,28 +2541,6 @@ export interface NodeRtcEngine {
    * @ignore
    */
   registerDeliverFrame(callback: Function): number;
-  // /**
-  //  * @ignore
-  //  */
-  // registerLocalUserAccount(appId: string, userAccount: string): number;
-  /**
-   * @ignore
-   */
-  // joinChannelWithUserAccount(
-  //   token: string,
-  //   channel: string,
-  //   userAccount: string
-  // ): number;
-  /**
-   * @ignore
-   */
-  // getUserInfoByUserAccount(
-  //   userAccount: string
-  // ): { errCode: number; userInfo: UserInfo };
-  // /**
-  //  * @ignore
-  //  */
-  // getUserInfoByUid(uid: number): { errCode: number; userInfo: UserInfo };
   /**
    * @ignore
    */
@@ -2848,10 +2625,6 @@ export interface NodeRtcEngine {
    * @ignore
    */
   clearVideoWatermarks(): number;
-  /**
-   * @ignore
-   */
-  adjustUserPlaybackSignalVolume(uid: number, volume: number): number;
   /**
    * @ignore
    */
