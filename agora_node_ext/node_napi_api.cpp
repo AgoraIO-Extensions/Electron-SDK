@@ -472,6 +472,15 @@ void NodeVideoFrameTransporter::FlushVideo()
                     }
                 }
 
+                if (m_transcodedVideoFrame.get()) {
+                    if (AddObj(isolate, infos, i, *m_transcodedVideoFrame.get()))
+                        ++i;
+                    else {
+                        ++m_transcodedVideoFrame->m_count;
+                    }
+                }
+                
+                
                 if (m_devTestVideoFrame.get()) {
                     if (AddObj(isolate, infos, i, *m_devTestVideoFrame.get()))
                         ++i;
