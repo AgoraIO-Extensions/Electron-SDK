@@ -212,7 +212,6 @@ export default class App extends Component {
     rtcEngine.setClientRole(this.state.role)
     rtcEngine.registerMediaMetadataObserver();
     rtcEngine.setAudioProfile(0, 1)
-    // rtcEngine.enableVideo()
     let logpath = path.resolve(os.homedir(), "./agoramain.sdk")
     rtcEngine.setLogFile(logpath)
     rtcEngine.enableWebSdkInteroperability(true)
@@ -225,6 +224,45 @@ export default class App extends Component {
     rtcEngine.setLocalVoiceReverbPreset(this.state.voiceReverbPreset)
     rtcEngine.enableDualStreamMode(true)
     rtcEngine.enableAudioVolumeIndication(1000, 3, false)
+    let filePath = path.resolve(__dirname, "../../static/plugin.png")
+
+    let videoInputStreamobj = [
+      {
+        sourceType: 0,
+        connectionId: 0,
+        x: 2,
+        y: 40,
+        width: 374,
+        height: 235,
+        zOrder: 2,
+        alpha: 1.0
+      },
+      {
+        sourceType: 1,
+        connectionId: 0,
+        x: 233,
+        y: 40,
+        width: 373,
+        height: 232,
+        zOrder: 33,
+        alpha: 1.0
+      },
+      {
+        sourceType: 4,
+        connectionId: 0,
+        x: 80,
+        y: 43,
+        imageUrl: filepath,
+        width: 373,
+        height: 232,
+        zOrder: 33,
+        alpha: 1.0
+      }
+    ]
+    rtcEngine.startLocalVideoTranscoder({
+      streamCount = 3,
+      videoInputStreams = videoInputStreamobj
+    })
     rtcEngine.joinChannel("", "123", "", 0);
   }
 
