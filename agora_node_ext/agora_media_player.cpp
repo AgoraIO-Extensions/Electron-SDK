@@ -37,19 +37,19 @@
         */
         #define napi_set_bool_result(args, result) (args).GetReturnValue().Set(v8::Boolean::New(args.GetIsolate(), (result)))
 
-        // #define CHECK_NAPI_STATUS(mediaPlayer, status) \
-        // if(status != napi_ok) { \
-        //     LOG_ERROR("Error :%s, :%d\n", __FUNCTION__, __LINE__); \
-        //     mediaPlayer->nodeMediaPlayerObserver->fireApiError(__FUNCTION__); \
-        //     break; \
-        // }
-
         #define CHECK_NAPI_STATUS(mediaPlayer, status) \
         if(status != napi_ok) { \
             LOG_ERROR("Error :%s, :%d\n", __FUNCTION__, __LINE__); \
-            LOG_F(INFO, "Error :%s, :%d\n", __FUNCTION__, __LINE__); \
+            mediaPlayer->nodeMediaPlayerObserver->fireApiError(__FUNCTION__); \
             break; \
         }
+
+        // #define CHECK_NAPI_STATUS(mediaPlayer, status) \
+        // if(status != napi_ok) { \
+        //     LOG_ERROR("Error :%s, :%d\n", __FUNCTION__, __LINE__); \
+        //     LOG_F(INFO, "Error :%s, :%d\n", __FUNCTION__, __LINE__); \
+        //     break; \
+        // }
 
         #define CHECK_NAPI_OBJ(obj) \
             if (obj.IsEmpty()) \
@@ -116,9 +116,14 @@ namespace agora {
         DEFINE_CLASS(NodeMediaPlayer);
         NodeMediaPlayer::NodeMediaPlayer(Isolate *_isolate, IMediaPlayerSourceWraper* mediaPlayer) : isolate(_isolate), mMediaPlayer(mediaPlayer) {
             LOG_F(INFO, "NodeMediaPlayer::NodeMediaPlayer");
+            nodeMediaPlayerObserver = new NodeMediaPlayerObserver();
+            mMediaPlayer->m_mediaPlayerSource->registerPlayerSourceObserver(nodeMediaPlayerObserver);
         }
 
         NodeMediaPlayer::~NodeMediaPlayer() {
+            mMediaPlayer->m_mediaPlayerSource->unregisterPlayerSourceObserver(nodeMediaPlayerObserver);
+
+            delete nodeMediaPlayerObserver;
 
             delete mMediaPlayer;
             LOG_F(INFO, "NodeMediaPlayer::~NodeMediaPlayer");
@@ -359,37 +364,37 @@ namespace agora {
             media_player_napi_set_int_result(args, result);
         }
 
-        // NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, onEvent)
-        // {
-        //     do {
-        //         NodeMediaPlayer *mediaPlayer = nullptr;
-        //         napi_status status = napi_ok;
-        //         napi_get_native_this(args, mediaPlayer);
-        //         CHECK_NATIVE_THIS(mediaPlayer);
-        //         nodestring eventName;
-        //         status = napi_get_value_nodestring_(args[0], eventName);
-        //         CHECK_NAPI_STATUS(mediaPlayer, status);
+        NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, onEvent)
+        {
+            do {
+                NodeMediaPlayer *mediaPlayer = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, mediaPlayer);
+                CHECK_NATIVE_THIS(mediaPlayer);
+                nodestring eventName;
+                status = napi_get_value_nodestring_(args[0], eventName);
+                CHECK_NAPI_STATUS(mediaPlayer, status);
 
-        //         if (!args[1]->IsFunction()) {
-        //             LOG_ERROR("Function expected\r\n");
-        //             break;
-        //         }
+                if (!args[1]->IsFunction()) {
+                    LOG_ERROR("Function expected\r\n");
+                    break;
+                }
 
-        //         Local<Function> callback = args[1].As<Function>();
-        //         if (callback.IsEmpty()) {
-        //             LOG_ERROR("Function expected.\r\n");
-        //             break;
-        //         }
+                Local<Function> callback = args[1].As<Function>();
+                if (callback.IsEmpty()) {
+                    LOG_ERROR("Function expected.\r\n");
+                    break;
+                }
 
-        //         Persistent<Function> persist;
-        //         persist.Reset(callback);
-        //         Local<Object> obj = args.This();
-        //         Persistent<Object> persistObj;
-        //         persistObj.Reset(obj);
-        //         mediaPlayer->nodeMediaPlayerObserver->addEventHandler((char*)eventName, persistObj, persist);
-        //     } while (false);
-        //     //LOG_LEAVE;
-        // }
+                Persistent<Function> persist;
+                persist.Reset(callback);
+                Local<Object> obj = args.This();
+                Persistent<Object> persistObj;
+                persistObj.Reset(obj);
+                mediaPlayer->nodeMediaPlayerObserver->addEventHandler((char*)eventName, persistObj, persist);
+            } while (false);
+            //LOG_LEAVE;
+        }
 
        
     }

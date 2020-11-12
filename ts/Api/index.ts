@@ -48,7 +48,10 @@ import {
   RenderType,
   MediaStreamInfo,
   MEDIA_PLAYER_PLAY_SPEED,
-  NodeMediaPlayer
+  NodeMediaPlayer,
+  MEDIA_PLAYER_STATE,
+  MEDIA_PLAYER_ERROR,
+  MEDIA_PLAYER_EVENT
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -5007,6 +5010,48 @@ class AgoraMediaPlayer extends EventEmitter {
   constructor(mediaPlayer:NodeMediaPlayer) {
     super();
     this.mediaPlayer = mediaPlayer;
+  }
+
+  initEventHandler(): void {
+    const fire = (event: string, ...args: Array<any>) => {
+      setImmediate(() => {
+        this.emit(event, ...args);
+      });
+    };
+
+    this.mediaPlayer.onEvent('onApiError', (funcName: string) => {
+      console.error(`api ${funcName} failed. this is an error
+              thrown by c++ addon layer. it often means sth is
+              going wrong with this function call and it refused
+              to do what is asked. kindly check your parameter types
+              to see if it matches properly.`);
+    });
+
+    this.mediaPlayer.onEvent('onPlayerStateChanged', (
+      state: MEDIA_PLAYER_STATE,
+      ec: MEDIA_PLAYER_ERROR
+    ) => {
+      fire('onPlayerStateChanged', state, ec);
+    });
+
+    this.mediaPlayer.onEvent('onPlayEvent', (
+      event: MEDIA_PLAYER_EVENT
+    ) => {
+      fire('onPlayEvent', event);
+    });
+
+    // this.mediaPlayer.onEvent('onMetaData', (
+    //   error: number,
+    //   message: string
+    // ) => {
+    //   fire('onMetaData', error, message);
+    // });
+
+    this.mediaPlayer.onEvent('onPositionChanged', (
+      position: number
+    ) => {
+      fire('onPositionChanged', position);
+    });
   }
 
   open(url: string, position: number): number {
