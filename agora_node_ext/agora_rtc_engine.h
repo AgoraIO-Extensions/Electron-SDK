@@ -322,6 +322,8 @@ namespace agora {
             NAPI_API(updateLocalTranscoderConfiguration);
             NAPI_API(stopLocalVideoTranscoder);
             NAPI_API(joinChannelEx);
+            NAPI_API(joinChannel2);
+            NAPI_API(updateChannelMediaOptions);
 
         public:
             Isolate* getIsolate() { return m_isolate; }
