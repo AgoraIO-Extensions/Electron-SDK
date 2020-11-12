@@ -8,6 +8,7 @@ import {voiceChangerList, voiceReverbPreset, videoProfileList, audioProfileList,
 import {readImage} from '../utils/base64'
 import WindowPicker from './components/WindowPicker/index.js'
 import DisplayPicker from './components/DisplayPicker/index.js'
+import ReactSlider from 'react-slider'
 
 const isMac = process.platform === 'darwin'
 
@@ -882,6 +883,75 @@ export default class App extends Component {
               <button onClick={this.toggleByteDancePlugin} className="button is-link">{this.state.bdEnabled ? 'disable' : 'enable'}</button>
             </div>
           </div>
+          <div className='react-slider'
+          style={{width: "10%", height: "10%", margin: '0 auto'}}>
+          <ReactSlider className='horizontal-slider'
+          thumbClassName='example-thumb'
+          trackClassName='example-track'
+          onChange={
+            val=>{
+              let filePath = path.resolve(__dirname, "../../static/plugin.png")
+              console.log(`startLocalVideoTranscoder ----  ${filePath}`);
+              let videoInputStreamobj = [
+                {
+                  sourceType: 0,
+                  connectionId: 0,
+                  x: 0,
+                  y: 0,
+                  width: 640,
+                  height: 360,
+                  zOrder: 1,
+                  alpha: 0.0
+                },
+                {
+                  sourceType: 1,
+                  connectionId: 0,
+                  x: 360,
+                  y: 100,
+                  width: 600,
+                  height: 360,
+                  zOrder: 33,
+                  alpha: 0.0
+                },
+                {
+                  sourceType: 4,
+                  connectionId: 0,
+                  x: val * 10,
+                  y: val * 10,
+                  imageUrl: filePath,
+                  width: val * 10,
+                  height: val * 10,
+                  zOrder: 99,
+                  alpha: 0.0
+                }
+              ]
+          
+              let videoOutputConfigurationobj = {
+                width: 1080,
+                height: 720,
+                frameRate: 15,
+                bitrate: 0,
+                minBitrate: -1,
+                orientationMode: 0,
+                degradationPreference: 0,
+                mirrorMode: 0
+              }
+              console.log(`videoInputStreamobj  ${JSON.stringify(videoInputStreamobj)}`)
+              let ret = this.rtcEngine.updateLocalTranscoderConfiguration(
+                {
+                  streamCount: 3,
+                  videoInputStreams: videoInputStreamobj,
+                  videoOutputConfiguration: videoOutputConfigurationobj
+                }
+              )
+
+            }
+          }
+          renderThumb={
+          (props, state)=><div {...props}>{state.valueNow}</div>
+          }></ReactSlider>
+        </div>
+        <div></div>
         </div>
         <div className="column is-three-quarters window-container">
           {this.state.users.map((item, key) => (
@@ -916,6 +986,7 @@ class Window extends Component {
     let dom = document.querySelector(`#video-${this.props.channel || ""}-${this.props.uid}`)
     if (this.props.role === 'local') {
       dom && this.props.rtcEngine.setupLocalVideo(dom)
+      this.props.rtcEngine.setupViewContentMode('local', 1)
     } else if (this.props.role === 'localVideoSource') {
       dom && this.props.rtcEngine.setupLocalVideoSource(dom)
       this.props.rtcEngine.setupViewContentMode('videosource', 1);
@@ -927,8 +998,8 @@ class Window extends Component {
       this.props.rtcEngine.setupViewContentMode('videosource', 1);
       this.props.rtcEngine.setupViewContentMode(String(SHARE_ID), 1);
     } else if (this.props.role === 'transcoded') {
-      this.props.rtcEngine.setupViewContentMode('transcoded', 1)
       dom && this.props.rtcEngine.setupLocalView(dom, 4)
+      this.props.rtcEngine.setupViewContentMode('transcoded', 1)
     }
   }
 
