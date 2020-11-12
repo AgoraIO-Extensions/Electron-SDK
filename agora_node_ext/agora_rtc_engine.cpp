@@ -2706,17 +2706,19 @@ namespace agora {
                     //delete[] m_videoVdm;
                     pEngine->m_videoVdm = nullptr;
                 }
+				if (pEngine->m_engine) {
+					agora::media::IMediaEngine* pMediaEngine = nullptr;
+					pEngine->getRtcEngine()->queryInterface(agora::rtc::INTERFACE_ID_TYPE::AGORA_IID_MEDIA_ENGINE, (void**)&pMediaEngine);
+					if (pMediaEngine && pEngine->m_nodeVideoFrameObserver.get())
+					{
+						pMediaEngine->registerVideoFrameObserver(nullptr);
+					}
+				}
                 if (pEngine->m_engine) {
-                    pEngine->m_engine->release();
+                    pEngine->m_engine->release(false);
                     pEngine->m_engine = nullptr;
                 }
-                agora::media::IMediaEngine* pMediaEngine = nullptr;
-                pEngine->getRtcEngine()->queryInterface(agora::rtc::INTERFACE_ID_TYPE::AGORA_IID_MEDIA_ENGINE, (void**)&pMediaEngine);
-                if (pMediaEngine && pEngine->m_nodeVideoFrameObserver.get())
-                {
-                    pMediaEngine->registerVideoFrameObserver(nullptr);
-                }
-                pEngine->m_nodeVideoFrameObserver.reset(nullptr);
+				pEngine->m_nodeVideoFrameObserver.reset();
                 result = 0;
             }while (false);
             napi_set_int_result(args, result);
