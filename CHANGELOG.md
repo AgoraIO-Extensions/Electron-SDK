@@ -1,3 +1,7 @@
+## 2.9.0-rc.107-build.998
+* Add new API:
+  - sendCustomReportMessage
+
 ## 2.9.0-rc.107-build.971
 * Add new API:
   - startAudioRecording2
