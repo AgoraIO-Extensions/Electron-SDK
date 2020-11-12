@@ -45,7 +45,10 @@ import {
   AUDIO_ROUTE_TYPE,
   EncryptionConfig,
   LocalTranscoderConfiguration,
-  RenderType
+  RenderType,
+  MediaStreamInfo,
+  MEDIA_PLAYER_PLAY_SPEED,
+  NodeMediaPlayer
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -1003,6 +1006,11 @@ class AgoraRtcEngine extends EventEmitter {
    */
   initialize(appid: string, areaCode: AREA_CODE = (0xFFFFFFFF)): number {
     return this.rtcEngine.initialize(appid, areaCode);
+  }
+
+  createMediaPlayer(): AgoraMediaPlayer {
+    let mediaPlayer = this.rtcEngine.createMediaPlayer()
+    return new AgoraMediaPlayer(mediaPlayer);
   }
 
   /**
@@ -4992,6 +5000,67 @@ declare interface AgoraRtcEngine {
   )=> void): this;
 
   on(evt: string, listener: Function): this;
+}
+
+class AgoraMediaPlayer extends EventEmitter {
+  mediaPlayer: NodeMediaPlayer;
+  constructor(mediaPlayer:NodeMediaPlayer) {
+    super();
+    this.mediaPlayer = mediaPlayer;
+  }
+
+  open(url: string, position: number): number {
+    return this.mediaPlayer.open(url, position);
+  }
+
+  play(): number {
+    return this.mediaPlayer.play();
+  }
+
+  pause(): number {
+    return this.mediaPlayer.pause();
+  }
+
+  stop(): number {
+    return this.mediaPlayer.stop();
+  }
+
+  seek(position: number): number {
+    return this.mediaPlayer.seek(position);
+  }
+
+  getPlayPosition(): number {
+    return this.mediaPlayer.getPlayPosition();
+  }
+
+  getDuration(): number {
+    return this.mediaPlayer.getDuration();
+  }
+
+  getStreamCount(): number {
+    return this.mediaPlayer.getStreamCount();
+  }
+
+  getSourceId(): number {
+    return this.mediaPlayer.getSourceId();
+  }
+
+  getStreamInfo(index: number) : MediaStreamInfo {
+    return this.mediaPlayer.getStreamInfo(index);
+  }
+
+  setPlayerOption(key: string, value: number): number {
+    return this.mediaPlayer.setPlayerOption(key, value);
+  }
+
+  changePlaybackSpeed(speed: MEDIA_PLAYER_PLAY_SPEED): number {
+    return this.mediaPlayer.changePlaybackSpeed(speed);
+  }
+
+  selectAudioTrack(index: number): number {
+    return this.mediaPlayer.selectAudioTrack(index);
+  }
+
 }
 
 export default AgoraRtcEngine;
