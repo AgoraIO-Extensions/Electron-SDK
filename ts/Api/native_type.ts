@@ -2623,6 +2623,11 @@ export interface NodeRtcEngine {
    * @ignore
    */
   getPluginParameter(pluginId: string, paramKey: string): string;
+  /**
+   * @ignore
+   */
+  sendCustomReportMessage(id: string, category: string, event: string, label: string, value: number): number;
+
 }
 
 export interface NodeRtcChannel {
