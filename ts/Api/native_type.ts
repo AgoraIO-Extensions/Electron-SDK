@@ -2021,6 +2021,58 @@ export interface Metadata {
     timeStampMs: number;
   }
 
+export declare type MEDIA_STREAM_TYPE = 
+  | 0 //Unknown stream type
+  | 1 //Video stream
+  | 2 //Audio stream
+  | 3 //Subtitle stream
+
+export interface MediaStreamInfo { /* the index of the stream in the media file */
+    streamIndex : number;
+  
+    /* stream type */
+    streamType : MEDIA_STREAM_TYPE;
+  
+    /* stream encoding name */
+    codecName : string;
+  
+    /* streaming language */
+    language : string;
+  
+    /* If it is a video stream, video frames rate */
+    videoFrameRate : number;
+  
+    /* If it is a video stream, video bit rate */
+    videoBitRate : number;
+  
+    /* If it is a video stream, video width */
+    videoWidth : number;
+  
+    /* If it is a video stream, video height */
+    videoHeight : number;
+  
+    /* If it is a video stream, video rotation */
+    videoRotation : number;
+  
+    /* If it is an audio stream, audio bit rate */
+    audioSampleRate : number;
+  
+    /* If it is an audio stream, the number of audio channels */
+    audioChannels : number;
+  
+    /* stream duration in second */
+    duration : number;
+  };
+
+export declare type MEDIA_PLAYER_PLAY_SPEED = 
+  | 100 //origin playback speed
+  | 75 //playback speed slow down to 0.75
+  | 50 //playback speed slow down to 0.5
+  | 125 //playback speed speed up to 1.25
+  | 150 //playback speed speed up to 1.5
+  | 200 //playback speed speed up to 2.0
+
+
 /**
  * interface for c++ addon (.node)
  * @ignore
@@ -2030,6 +2082,10 @@ export interface NodeRtcEngine {
    * @ignore
    */
   initialize(appId: string, areaCode?: AREA_CODE): number;
+  /**
+   * @ignore
+   */
+  createMediaPlayer(): any;
   /**
    * @ignore
    */
@@ -2776,4 +2832,21 @@ export interface NodeRtcEngine {
    * @ignore
    */
   updateChannelMediaOptions(options: ChannelMediaOptions, connectionId: number): number;
+}
+
+export interface NodeMediaPlayer {
+  open(url: string, position: number): number;
+  play(): number;
+  pause(): number;
+  stop(): number;
+  seek(position: number): number;
+  getPlayPosition(): number;
+  getDuration(): number;
+  getStreamCount(): number;
+  getSourceId(): number;
+  getStreamInfo(index: number): MediaStreamInfo;
+  setPlayerOption(key: string, value: number): number;
+  changePlaybackSpeed(speed: MEDIA_PLAYER_PLAY_SPEED): number;
+  selectAudioTrack(index: number): number;
+
 }
