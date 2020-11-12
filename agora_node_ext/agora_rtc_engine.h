@@ -352,6 +352,12 @@ namespace agora {
              * 2.0.0.107 Apis
              */
             NAPI_API(startAudioRecording2);
+
+            /**
+             * CSD-21313
+             */
+            NAPI_API(sendCustomReportMessage);
+
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }
