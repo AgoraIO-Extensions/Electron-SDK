@@ -80,6 +80,7 @@ export default class App extends Component {
 
   subscribeEvents = (rtcEngine) => {
     rtcEngine.on('joinedchannel', (channel, uid, elapsed) => {
+      console.log(`onJoinChannelSuccess  uid: ${uid}`)
       this.setState({
         local: uid
       });
@@ -225,14 +226,15 @@ export default class App extends Component {
     } else {
       rtcEngine.setVideoEncoderConfiguration({width: encoderWidth, height: encoderHeight})
     }
-
     // rtcEngine.setVideoRenderDimension(3, 0, 640, 480)
     rtcEngine.setLocalVoiceChanger(this.state.voiceChangerPreset)
     rtcEngine.setLocalVoiceReverbPreset(this.state.voiceReverbPreset)
     rtcEngine.enableDualStreamMode(true)
     rtcEngine.enableAudioVolumeIndication(1000, 3, false)
    
-    rtcEngine.joinChannel("", "123", "", 0);
+    // rtcEngine.joinChannel("", "123", "", 0);
+    let ret = rtcEngine.joinChannelWithMediaOptions("", "123", 0, {})
+    rtcEngine.updateChannelMediaOptions({}, 0)
   }
 
   handleCameraChange = e => {
@@ -665,21 +667,21 @@ export default class App extends Component {
   handleAudioHook = e => {
     let rtcEngine = this.getRtcEngine()
     if(!this.state.audioHookEnabled){
-      rtcEngine.registerAudioFramePluginManager()
-      rtcEngine.registerAudioFramePlugin("agora_electron_plugin_audio_hook")
-      let dllpath = path.resolve(__dirname, "./plugins/AgoraPlayerHookPlugin.dll")
-      rtcEngine.loadPlugin("agora_electron_plugin_audio_hook", dllpath)
-      let playerpath = path.resolve(this.state.hookplayerpath)
-      rtcEngine.setPluginStringParameter("agora_electron_plugin_audio_hook","plugin.hookAudio.playerPath", playerpath)
-      rtcEngine.setPluginBoolParameter("agora_electron_plugin_audio_hook", "plugin.hookAudio.forceRestart", true)
-      // important for hook audio quality
-      rtcEngine.setRecordingAudioFrameParameters(44100, 2, 2, 882)
-      rtcEngine.enablePlugin("agora_electron_plugin_audio_hook")
-    } else {
-      rtcEngine.disablePlugin("agora_electron_plugin_audio_hook")
-      console.log(rtcEngine.unRegisterAudioFramePlugin("agora_electron_plugin_audio_hook"))
-      console.log(rtcEngine.unRegisterAudioFramePluginManager())
-    }
+    //   rtcEngine.registerAudioFramePluginManager()
+    //   rtcEngine.registerAudioFramePlugin("agora_electron_plugin_audio_hook")
+    //   let dllpath = path.resolve(__dirname, "./plugins/AgoraPlayerHookPlugin.dll")
+    //   rtcEngine.loadPlugin("agora_electron_plugin_audio_hook", dllpath)
+    //   let playerpath = path.resolve(this.state.hookplayerpath)
+    //   rtcEngine.setPluginStringParameter("agora_electron_plugin_audio_hook","plugin.hookAudio.playerPath", playerpath)
+    //   rtcEngine.setPluginBoolParameter("agora_electron_plugin_audio_hook", "plugin.hookAudio.forceRestart", true)
+    //   // important for hook audio quality
+    //   rtcEngine.setRecordingAudioFrameParameters(44100, 2, 2, 882)
+    //   rtcEngine.enablePlugin("agora_electron_plugin_audio_hook")
+    // } else {
+    //   rtcEngine.disablePlugin("agora_electron_plugin_audio_hook")
+    //   console.log(rtcEngine.unRegisterAudioFramePlugin("agora_electron_plugin_audio_hook"))
+    //   console.log(rtcEngine.unRegisterAudioFramePluginManager())
+   }
     this.setState({audioHookEnabled: !this.state.audioHookEnabled})
   }
 
@@ -896,31 +898,31 @@ export default class App extends Component {
                 {
                   sourceType: 0,
                   connectionId: 0,
-                  x: 0,
-                  y: 0,
-                  width: 640,
-                  height: 360,
+                  x: val * 3,
+                  y: val * 3,
+                  width: 640 - val,
+                  height: 480 - val,
                   zOrder: 1,
                   alpha: 0.0
                 },
                 {
                   sourceType: 1,
                   connectionId: 0,
-                  x: 360,
-                  y: 100,
-                  width: 600,
-                  height: 360,
+                  x: 360 + val,
+                  y: 100 + val,
+                  width: 600 + val * 3,
+                  height: 360 + val * 2,
                   zOrder: 33,
                   alpha: 0.0
                 },
                 {
                   sourceType: 4,
                   connectionId: 0,
-                  x: val * 10,
-                  y: val * 10,
+                  x: val * 5,
+                  y: val * 5,
                   imageUrl: filePath,
-                  width: val * 10,
-                  height: val * 10,
+                  width: val * 5,
+                  height: val * 5,
                   zOrder: 99,
                   alpha: 0.0
                 }
@@ -983,8 +985,10 @@ class Window extends Component {
   }
 
   componentDidMount() {
+    console.log(`componentDidMount-----`)
     let dom = document.querySelector(`#video-${this.props.channel || ""}-${this.props.uid}`)
     if (this.props.role === 'local') {
+      console.log(`setupLocalVideo  -----`)
       dom && this.props.rtcEngine.setupLocalVideo(dom)
       this.props.rtcEngine.setupViewContentMode('local', 1)
     } else if (this.props.role === 'localVideoSource') {
@@ -1007,7 +1011,6 @@ class Window extends Component {
     return (
       <div className="window-item">
         <div className="video-item" id={`video-${this.props.channel || ""}-${this.props.uid}`}></div>
-
       </div>
     )
   }
