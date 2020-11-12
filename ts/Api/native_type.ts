@@ -1662,6 +1662,58 @@ export type STREAM_SUBSCRIBE_STATE =
   | 2 //SUB_STATE_SUBSCRIBING
   | 3 //SUB_STATE_SUBSCRIBED
 
+  /**
+ * Remote video stream types.
+ */
+export enum REMOTE_VIDEO_STREAM_TYPE {
+  /**
+   * 0: The high-quality video stream, which features in high-resolution and high-bitrate.
+   */
+  REMOTE_VIDEO_STREAM_HIGH = 0,
+  /**
+   * 1: The low-quality video stream, which features in low-resolution and low-bitrate.
+   */
+  REMOTE_VIDEO_STREAM_LOW = 1,
+};
+
+
+/**
+ * The channel profile.
+ */
+export enum CHANNEL_PROFILE_TYPE {
+  /**
+   * 0: Communication.
+   *
+   * This profile prioritizes smoothness and applies to the one-to-one scenario.
+   */
+  CHANNEL_PROFILE_COMMUNICATION = 0,
+  /**
+   * 1: Live Broadcast.
+   *
+   * This profile prioritizes supporting a large audience in a live broadcast channel.
+   */
+  CHANNEL_PROFILE_LIVE_BROADCASTING = 1,
+  /**
+   * 2: Gaming.
+   * @deprecated This profile is deprecated.
+   */
+  CHANNEL_PROFILE_GAME = 2,
+  /**
+   * 3: Cloud Gaming.
+   *
+   * This profile prioritizes low end-to-end latency and applies to scenarios where users interact
+   * with each other, and any delay affects the user experience.
+   */
+  CHANNEL_PROFILE_CLOUD_GAMING = 3,
+
+  /**
+   * 4: Communication 1v1.
+   *
+   * This profile uses a special network transport strategy for communication 1v1.
+   */
+  CHANNEL_PROFILE_COMMUNICATION_1v1 = 4,
+};
+
 /**
  * The definition of {@link ChannelMediaInfo}.
  */
@@ -1690,29 +1742,90 @@ export interface ChannelMediaInfo {
  */
 export interface ChannelMediaOptions {
   /**
-   * Determines whether to subscribe to audio streams when the user joins the 
-   * channel:
-   * - true: (Default) Subscribe.
-   * - false: Do not subscribe.
-   * 
-   * This member serves a similar function to the 
-   * {@link AgoraRtcChannel.muteAllRemoteAudioStreams} method. After joining 
-   * the channel, you can call the `muteAllRemoteAudioStreams` method to set 
-   * whether to subscribe to audio streams in the channel.
+   * Determines whether to publish the video of the camera track.
+   * - true: Publish the video track of the camera capturer.
+   * - false: (Default) Do not publish the video track of the camera capturer.
+   */
+    publishCameraTrack: boolean;
+  /**
+   * Determines whether to publish the recorded audio.
+   * - true: Publish the recorded audio.
+   * - false: (Default) Do not publish the recorded audio.
+   */
+    publishAudioTrack: boolean;
+  /**
+   * Determines whether to publish the video of the screen track.
+   * - true: Publish the video track of the screen capturer.
+   * - false: (Default) Do not publish the video track of the screen capturer.
+   */
+   publishScreenTrack: boolean;
+  /**
+   * Determines whether to publish the audio of the custom audio track.
+   * - true: Publish the audio of the custom audio track.
+   * - false: (Default) Do not publish the audio of the custom audio track.
+   */
+   publishCustomAudioTrack: boolean;
+  /**
+   * Determines whether to publish the video of the custom video track.
+   * - true: Publish the video of the custom video track.
+   * - false: (Default) Do not publish the video of the custom video track.
+   */
+  publishCustomVideoTrack: boolean;
+  /**
+   * Determines whether to publish the video of the encoded video track.
+   * - true: Publish the video of the encoded video track.
+   * - false: (default) Do not publish the video of the encoded video track.
+   */
+  publishEncodedVideoTrack: boolean;
+  /**
+  * Determines whether to publish the audio track of media player source.
+  * - true: Publish the audio track of media player source.
+  * - false: (default) Do not publish the audio track of media player source.
+  */
+  publishMediaPlayerAudioTrack: boolean;
+  /**
+  * Determines whether to publish the video track of media player source.
+  * - true: Publish the video track of media player source.
+  * - false: (default) Do not publish the video track of media player source.
+  */
+   publishMediaPlayerVideoTrack: boolean;
+  /**
+   * Determines whether to subscribe to all audio streams automatically. It can replace calling \ref IRtcEngine::setDefaultMuteAllRemoteAudioStreams
+   * "setDefaultMuteAllRemoteAudioStreams" before joining a channel.
+   * - true: Subscribe to all audio streams automatically.
+   * - false: (Default) Do not subscribe to any audio stream automatically.
    */
   autoSubscribeAudio: boolean;
   /**
-   * Determines whether to subscribe to video streams when the user joins the 
-   * channel:
-   * - true: (Default) Subscribe.
-   * - false: Do not subscribe.
-   * 
-   * This member serves a similar function to the 
-   * {@link AgoraRtcChannel.muteAllRemoteVideoStreams} method. After joining 
-   * the channel, you can call the `muteAllRemoteVideoStreams` method to set 
-   * whether to subscribe to video streams in the channel.
+   * Determines whether to subscribe to all video streams automatically. It can replace calling \ref IRtcEngine::setDefaultMuteAllRemoteVideoStreams
+   * "setDefaultMuteAllRemoteVideoStreams" before joining a channel.
+   * - true: Subscribe to all video streams automatically.
+   * - false: (Default) do not subscribe to any video stream automatically.
    */
   autoSubscribeVideo: boolean;
+  /**
+  * Determines which media player source should be published.
+  * - DEFAULT_PLAYER_ID(0) is default.
+  */
+  publishMediaPlayerId: number;
+  /**
+   * Determines whether to enable audio recording or playout.
+   * - true: It's used to publish audio and mix microphone, or subscribe audio and playout
+   * - false: It's used to publish extenal audio frame only without mixing microphone, or no need audio device to playout audio either
+   */
+  enableAudioRecordingOrPlayout: boolean;
+  /**
+   * The client role type: #CLIENT_ROLE_TYPE.
+   */
+  clientRoleType: ClientRoleType;
+  /**
+   * The default video stream type: #REMOTE_VIDEO_STREAM_TYPE.
+   */
+  defaultVideoStreamType: REMOTE_VIDEO_STREAM_TYPE;
+  /**
+   * The channel profile: #CHANNEL_PROFILE_TYPE.
+   */
+  channelProfile: CHANNEL_PROFILE_TYPE;
 }
 /**
  * The watermark's options.
@@ -2655,4 +2768,12 @@ export interface NodeRtcEngine {
    * @ignore
    */
   stopLocalVideoTranscoder(): number;
+  /**
+   * @ignore
+   */
+  joinChannel2(token: string, channelId: string, userId: number, options: ChannelMediaOptions): number;
+  /**
+   * @ignore
+   */
+  updateChannelMediaOptions(options: ChannelMediaOptions, connectionId: number): number;
 }

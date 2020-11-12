@@ -3936,6 +3936,14 @@ class AgoraRtcEngine extends EventEmitter {
   stopLocalVideoTranscoder(): number {
     return this.rtcEngine.stopLocalVideoTranscoder();
   }
+
+  joinChannelWithMediaOptions(token: string, channelId: string, userId: number, options: ChannelMediaOptions): number {
+    return this.rtcEngine.joinChannel2(token, channelId, userId, options);
+  }
+
+  updateChannelMediaOptions(options: ChannelMediaOptions, connectionId: number = 0): number {
+    return this.rtcEngine.updateChannelMediaOptions(options, connectionId);
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
