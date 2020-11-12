@@ -15,6 +15,8 @@
 #include "IAgoraRtcEngine2.h"
 #include <string>
 #include <nan.h>
+#include "agora_meida_player.h"
+
 
 #if defined(__APPLE__) || defined(_WIN32)
 #include "node_screen_window_info.h"
@@ -269,6 +271,8 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(joinChannelEx);
                 PROPERTY_METHOD_DEFINE(joinChannel2);
                 PROPERTY_METHOD_DEFINE(updateChannelMediaOptions);
+
+                PROPERTY_METHOD_DEFINE(createMediaPlayer);
 
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
@@ -5136,6 +5140,29 @@ namespace agora {
                 result = pEngine->m_engine->updateChannelMediaOptions(channelMediaOptions, connectionId);
             } while (false);
             napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, createMediaPlayer)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                Isolate* isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                nodestring channelName;
+                napi_status status = napi_get_value_nodestring_(args[0], channelName);
+                CHECK_NAPI_STATUS(pEngine, status);
+                auto mediaPlayer = pEngine->m_engine->createMediaPlayer();
+
+                // Prepare constructor template
+                Local<Object> jsmediaPlayer = NodeMediaPlayer::Init(isolate, mediaPlayer);
+                args.GetReturnValue().Set(jsmediaPlayer);
+            } while (false);
             LOG_LEAVE;
         }
 
