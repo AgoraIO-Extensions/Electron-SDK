@@ -325,6 +325,8 @@ namespace agora {
             NAPI_API(joinChannel2);
             NAPI_API(updateChannelMediaOptions);
 
+            NAPI_API(createMediaPlayer);
+
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }
