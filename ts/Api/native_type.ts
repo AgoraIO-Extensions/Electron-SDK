@@ -2073,6 +2073,114 @@ export declare type MEDIA_PLAYER_PLAY_SPEED =
   | 200 //playback speed speed up to 2.0
 
 
+export enum MEDIA_PLAYER_STATE {
+    /** Player idle
+     */
+    PLAYER_STATE_IDLE = 0,
+    /** Opening media file
+     */
+    PLAYER_STATE_OPENING,
+    /** Media file opened successfully
+     */
+    PLAYER_STATE_OPEN_COMPLETED,
+    /** Player playing
+     */
+    PLAYER_STATE_PLAYING,
+    /** Player paused
+     */
+    PLAYER_STATE_PAUSED,
+    /** Player playback completed
+     */
+    PLAYER_STATE_PLAYBACK_COMPLETED,
+    /** Player stopped
+     */
+    PLAYER_STATE_STOPPED = PLAYER_STATE_IDLE,
+    /** Player pausing (internal)
+     */
+    PLAYER_STATE_PAUSING_INTERNAL = 50,
+    /** Player stopping (internal)
+     */
+    PLAYER_STATE_STOPPING_INTERNAL,
+    /** Player seeking state (internal)
+     */
+    PLAYER_STATE_SEEKING_INTERNAL,
+    /** Player getting state (internal)
+     */
+    PLAYER_STATE_GETTING_INTERNAL,
+    /** None state for state machine (internal)
+     */
+    PLAYER_STATE_NONE_INTERNAL,
+    /** Do nothing state for state machine (internal)
+     */
+    PLAYER_STATE_DO_NOTHING_INTERNAL,
+    /** Player failed
+     */
+    PLAYER_STATE_FAILED = 100,
+  };
+
+export enum MEDIA_PLAYER_ERROR {
+    /** No error
+     */
+    PLAYER_ERROR_NONE = 0,
+    /** The parameter is incorrect
+     */
+    PLAYER_ERROR_INVALID_ARGUMENTS = -1,
+    /** Internel error
+     */
+    PLAYER_ERROR_INTERNAL = -2,
+    /** No resource error
+     */
+    PLAYER_ERROR_NO_RESOURCE = -3,
+    /** Media source is invalid
+     */
+    PLAYER_ERROR_INVALID_MEDIA_SOURCE = -4,
+    /** Unknown stream type
+     */
+    PLAYER_ERROR_UNKNOWN_STREAM_TYPE = -5,
+    /** Object is not initialized
+     */
+    PLAYER_ERROR_OBJ_NOT_INITIALIZED = -6,
+    /** Decoder codec not supported
+     */
+    PLAYER_ERROR_CODEC_NOT_SUPPORTED = -7,
+    /** Video renderer is invalid
+     */
+    PLAYER_ERROR_VIDEO_RENDER_FAILED = -8,
+    /** Internal state error
+     */
+    PLAYER_ERROR_INVALID_STATE = -9,
+    /** Url not found
+     */
+    PLAYER_ERROR_URL_NOT_FOUND = -10,
+    /** Invalid connection state
+     */
+    PLAYER_ERROR_INVALID_CONNECTION_STATE = -11,
+    /** Insufficient buffer data
+     */
+    PLAYER_ERROR_SRC_BUFFER_UNDERFLOW = -12,
+  };
+
+export enum MEDIA_PLAYER_EVENT {
+    /** player seek begin
+     */
+    PLAYER_EVENT_SEEK_BEGIN = 0,
+    /** player seek complete
+     */
+    PLAYER_EVENT_SEEK_COMPLETE = 1,
+    /** player seek error
+     */
+    PLAYER_EVENT_SEEK_ERROR = 2,
+    /** player video published
+     */
+    PLAYER_EVENT_VIDEO_PUBLISHED = 3,
+    /** player audio published
+     */
+    PLAYER_EVENT_AUDIO_PUBLISHED = 4,
+    /** player audio track changed
+     */
+    PLAYER_EVENT_AUDIO_TRACK_CHANGED = 5,
+  };
+
 /**
  * interface for c++ addon (.node)
  * @ignore
@@ -2835,6 +2943,7 @@ export interface NodeRtcEngine {
 }
 
 export interface NodeMediaPlayer {
+  onEvent(event: string, callback: Function): void;
   open(url: string, position: number): number;
   play(): number;
   pause(): number;

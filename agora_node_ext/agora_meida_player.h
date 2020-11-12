@@ -11,7 +11,7 @@
 #include <unordered_set>
 #include <map>
 #include "IAgoraMediaPlayerSource.h"
-// #include "node_media_player_observer.h"
+#include "node_media_player_observer.h"
 // #include "node_media_player_video_frame_observer.h"
 #include "../common/loguru.hpp"
 
@@ -51,7 +51,7 @@ namespace agora {
                 NAPI_API_MEDIA_PLAYER(changePlaybackSpeed);
                 NAPI_API_MEDIA_PLAYER(selectAudioTrack);
 
-                // NAPI_API_MEDIA_PLAYER(onEvent);
+                NAPI_API_MEDIA_PLAYER(onEvent);
 
 //   virtual int registerPlayerObserver(IMediaPlayerObserver* observer) = 0;
 //   virtual int unregisterPlayerObserver(IMediaPlayerObserver* observer) = 0;
@@ -63,7 +63,7 @@ namespace agora {
                 DECLARE_CLASS;
                 Isolate *isolate = NULL;
                 IMediaPlayerSourceWraper* mMediaPlayer = NULL;
-                // NodeMediaPlayerObserver *nodeMediaPlayerObserver = NULL;
+                NodeMediaPlayerObserver *nodeMediaPlayerObserver = NULL;
                 // NodeMediaPlayerVideoFrameObserver *nodeMediaPlayerVideoFrameObserver = NULL;
          };
     }
