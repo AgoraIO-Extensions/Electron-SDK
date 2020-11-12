@@ -39,6 +39,8 @@
         './agora_node_ext/node_metadata_observer.cpp',
         './agora_node_ext/agora_media_player.h',
         './agora_node_ext/agora_media_player.cpp',
+        './agora_node_ext/node_media_player_observer.h',
+        './agora_node_ext/node_media_player_observer.cpp',
         './common/libyuv/source/compare_common.cc',
         './common/libyuv/source/compare.cc',
         './common/libyuv/source/convert_argb.cc',
