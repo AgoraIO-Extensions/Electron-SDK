@@ -747,70 +747,75 @@ namespace agora {
                 VideoDimensions dimensions;
                 VideoEncoderConfiguration config;
                 Local<Object> videoOutputConfigurationObj;
-                status = napi_get_value_object_(isolate, args[2], videoOutputConfigurationObj);
 
-                CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "width", dimensions.width);
-                CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "height", dimensions.height);
-                CHECK_NAPI_STATUS(pEngine, status);
-                config.dimensions = dimensions;
-                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "bitrate", config.bitrate);
-                CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "minBitrate", config.minBitrate);
-                CHECK_NAPI_STATUS(pEngine, status);
+                Local<Name> keyName = Nan::New<String>("videoOutputConfiguration").ToLocalChecked();
+                Local<Value> videoOutputConfigurationValue = obj->Get(isolate->GetCurrentContext(), keyName).ToLocalChecked();
+                if (!videoOutputConfigurationValue->IsNullOrUndefined()) {
+                    Local<Object> videoOutputConfigurationObj;
+					status = napi_get_value_object_(isolate, videoOutputConfigurationValue, videoOutputConfigurationObj);
+                    CHECK_NAPI_STATUS(pEngine, status)
+                    status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "width", dimensions.width);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "height", dimensions.height);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    config.dimensions = dimensions;
+                    status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "bitrate", config.bitrate);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "minBitrate", config.minBitrate);
+                    CHECK_NAPI_STATUS(pEngine, status);
 
-                int frameRateVal;
-                FRAME_RATE frameRate;
-                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "frameRate", frameRateVal);
-                CHECK_NAPI_STATUS(pEngine, status);
-                config.frameRate = (FRAME_RATE)frameRateVal;
-                int orientationModeVal;
-                ORIENTATION_MODE orientationMode;
-                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "orientationMode", orientationModeVal);
-                CHECK_NAPI_STATUS(pEngine, status);
+                    int frameRateVal;
+                    FRAME_RATE frameRate;
+                    status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "frameRate", frameRateVal);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    config.frameRate = (FRAME_RATE)frameRateVal;
+                    int orientationModeVal;
+                    ORIENTATION_MODE orientationMode;
+                    status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "orientationMode", orientationModeVal);
+                    CHECK_NAPI_STATUS(pEngine, status);
 
-                switch(orientationModeVal) {
-                    case 0:
-                        orientationMode = ORIENTATION_MODE_ADAPTIVE;
-                        break;
-                    case 1:
-                        orientationMode = ORIENTATION_MODE_FIXED_LANDSCAPE;
-                        break;
-                    case 2:
-                        orientationMode = ORIENTATION_MODE_FIXED_PORTRAIT;
-                        break;
-                    default:
-                        status = napi_invalid_arg;
-                        break;
+                    switch(orientationModeVal) {
+                        case 0:
+                            orientationMode = ORIENTATION_MODE_ADAPTIVE;
+                            break;
+                        case 1:
+                            orientationMode = ORIENTATION_MODE_FIXED_LANDSCAPE;
+                            break;
+                        case 2:
+                            orientationMode = ORIENTATION_MODE_FIXED_PORTRAIT;
+                            break;
+                        default:
+                            status = napi_invalid_arg;
+                            break;
+                    }
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    config.orientationMode = orientationMode;
+                    int degradationPrefValue;
+                    DEGRADATION_PREFERENCE degradationPref;
+                    status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "degradationPreference", degradationPrefValue);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
+                    switch(degradationPrefValue) {
+                        case 0:
+                            degradationPref = MAINTAIN_QUALITY;
+                            break;
+                        case 1:
+                            degradationPref = MAINTAIN_FRAMERATE;
+                            break;
+                        case 2:
+                            degradationPref = MAINTAIN_BALANCED;
+                            break;
+                        default:
+                            status = napi_invalid_arg;
+                            break;
+                    }
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    config.degradationPreference = degradationPref;
+
+                    int mirrorMode;
+                    status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "mirrorMode", mirrorMode);
+                    config.mirrorMode = VIDEO_MIRROR_MODE_TYPE(mirrorMode);
                 }
-                CHECK_NAPI_STATUS(pEngine, status);
-                config.orientationMode = orientationMode;
-                int degradationPrefValue;
-                DEGRADATION_PREFERENCE degradationPref;
-                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "degradationPreference", degradationPrefValue);
-                CHECK_NAPI_STATUS(pEngine, status);
-
-                switch(degradationPrefValue) {
-                    case 0:
-                        degradationPref = MAINTAIN_QUALITY;
-                        break;
-                    case 1:
-                        degradationPref = MAINTAIN_FRAMERATE;
-                        break;
-                    case 2:
-                        degradationPref = MAINTAIN_BALANCED;
-                        break;
-                    default:
-                        status = napi_invalid_arg;
-                        break;
-                }
-                CHECK_NAPI_STATUS(pEngine, status);
-                config.degradationPreference = degradationPref;
-
-                int mirrorMode;
-                status = napi_get_object_property_int32_(isolate, videoOutputConfigurationObj, "mirrorMode", mirrorMode);
-                config.mirrorMode = VIDEO_MIRROR_MODE_TYPE(mirrorMode);
                 localTranscoderConfiguration.videoOutputConfiguration = config;
                 result = pEngine->m_engine->updateLocalTranscoderConfiguration(localTranscoderConfiguration);
             } while (false);

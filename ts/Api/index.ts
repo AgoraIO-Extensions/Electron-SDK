@@ -3930,18 +3930,6 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   updateLocalTranscoderConfiguration(config: LocalTranscoderConfiguration): number {
-    const {
-        videoOutputConfiguration: {
-        width = 640,
-        height = 480,
-        frameRate = 15,
-        bitrate = 0,
-        minBitrate = -1,
-        orientationMode = 0,
-        degradationPreference = 0,
-        mirrorMode = 0
-      }
-    } = config;
     return this.rtcEngine.updateLocalTranscoderConfiguration(config);
   }
 
