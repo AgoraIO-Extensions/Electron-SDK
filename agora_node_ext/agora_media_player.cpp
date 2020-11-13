@@ -134,7 +134,7 @@ namespace agora {
 
             v8::Local<v8::Context> context = isolate->GetCurrentContext();
             BEGIN_PROPERTY_DEFINE(NodeMediaPlayer, createInstance, 4)
-                // PROPERTY_METHOD_DEFINE(onEvent);
+                PROPERTY_METHOD_DEFINE(onEvent);
                 PROPERTY_METHOD_DEFINE(open);
                 PROPERTY_METHOD_DEFINE(play);
                 PROPERTY_METHOD_DEFINE(pause);
