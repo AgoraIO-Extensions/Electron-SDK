@@ -9,16 +9,19 @@
     "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
   },
   "dependencies": {
+    "@material-ui/core": "4.9.9",
     "bulma": "0.8.0",
     "immutable": "3.8.2",
     "react": "16.11.0",
     "react-dom": "16.11.0",
+    "react-rnd": "^10.2.3",
+    "react-slider": "^1.1.2",
     "source-map-support": "0.5.16"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "7.7.0",
     "@babel/preset-react": "7.7.0",
-    "electron": "^5.0.8",
+    "electron": "^5.0.13",
     "electron-builder": "22.1.0",
     "electron-webpack": "2.7.4",
     "webpack": "4.41.2"

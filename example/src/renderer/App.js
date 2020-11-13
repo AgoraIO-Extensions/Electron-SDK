@@ -8,7 +8,7 @@ import {voiceChangerList, voiceReverbPreset, videoProfileList, audioProfileList,
 import {readImage} from '../utils/base64'
 import WindowPicker from './components/WindowPicker/index.js'
 import DisplayPicker from './components/DisplayPicker/index.js'
-import ReactSlider from 'react-slider'
+import {Rnd} from 'react-rnd'
 
 const isMac = process.platform === 'darwin'
 
@@ -48,7 +48,10 @@ export default class App extends Component {
         encoderWidth: 0,
         encoderHeight: 0,
         hookplayerpath: "",
-        audioHookEnabled: false
+        audioHookEnabled: false,
+        progress: 0,
+        sources: [],
+        IsStartLocalVideoTranscoder: false
       }
     }
     this.enableAudioMixing = false;
@@ -86,6 +89,7 @@ export default class App extends Component {
       });
     });
     rtcEngine.on('userjoined', (uid, elapsed) => {
+      this.handleAddRemote(uid)
       this.setState({
         users: this.state.users.push({channelId: "", uid})
       })
@@ -233,456 +237,168 @@ export default class App extends Component {
     rtcEngine.enableAudioVolumeIndication(1000, 3, false)
    
     // rtcEngine.joinChannel("", "123", "", 0);
-    let ret = rtcEngine.joinChannelWithMediaOptions("", "123", 0, {})
-    rtcEngine.updateChannelMediaOptions({}, 0)
-  }
-
-  handleCameraChange = e => {
-    this.setState({camera: e.currentTarget.value});
-    this.getRtcEngine().setVideoDevice(this.state.videoDevices[e.currentTarget.value].deviceid);
-  }
-
-  handleMicChange = e => {
-    this.setState({mic: e.currentTarget.value});
-    this.getRtcEngine().setAudioRecordingDevice(this.state.audioDevices[e.currentTarget.value].deviceid);
-  }
-
-  handleSpeakerChange = e => {
-    this.setState({speaker: e.currentTarget.value});
-    this.getRtcEngine().setAudioPlaybackDevice(this.state.audioPlaybackDevices[e.currentTarget.value].deviceid);
-  }
-
-  handleVideoProfile = e => {
-    this.setState({
-      videoProfile: Number(e.currentTarget.value)
-    })
-  }
-
-  handleVoiceChanger = e => {
-    this.setState({
-      voiceChangerPreset: Number(e.currentTarget.value)
-    })
-  }
-
-  handleVoiceReverbPreset = e => {
-    this.setState({
-      voiceReverbPreset: Number(e.currentTarget.value)
-    })
-  }
-
-  handleWindowPicker = windowId => {
-    this.setState({
-      showWindowPicker: false,
-      localSharing: true
-    })
-    this.startScreenShare(windowId)
-    this.setState({
-      localVideoSource: 1
-    })
-  }
-    /**
-   * start screen share
-   * @param {*} windowId windows id to capture
-   * @param {*} captureFreq fps of video source screencapture, 1 - 15
-   * @param {*} rect null/if specified, {x: 0, y: 0, width: 0, height: 0}
-   * @param {*} bitrate bitrate of video source screencapture
-   */
-  startScreenShare(windowId=0) {
-    return new Promise((resolve, reject) => {
-      let rtcEngine = this.getRtcEngine()
-      rtcEngine.startScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15})
-   
-      let filePath = path.resolve(__dirname, "../../static/plugin.png")
-      console.log(`startLocalVideoTranscoder ----  ${filePath}`);
-      let videoInputStreamobj = [
-        {
-          sourceType: 0,
-          connectionId: 0,
-          x: 0,
-          y: 0,
-          width: 640,
-          height: 360,
-          zOrder: 1,
-          alpha: 0.0
-        },
-        {
-          sourceType: 1,
-          connectionId: 0,
-          x: 360,
-          y: 100,
-          width: 600,
-          height: 360,
-          zOrder: 33,
-          alpha: 0.0
-        },
-        {
-          sourceType: 4,
-          connectionId: 0,
-          x: 300,
-          y: 200,
-          imageUrl: filePath,
-          width: 100,
-          height: 400,
-          zOrder: 99,
-          alpha: 0.0
-        }
-      ]
-  
-      let videoOutputConfigurationobj = {
-        width: 1080,
-        height: 720,
-        frameRate: 15,
-        bitrate: 0,
-        minBitrate: -1,
-        orientationMode: 0,
-        degradationPreference: 0,
-        mirrorMode: 0
-      }
-  
-      let ret = rtcEngine.startLocalVideoTranscoder({
-        streamCount: 3,
-        videoInputStreams: videoInputStreamobj,
-        videoOutputConfiguration: videoOutputConfigurationobj
-      })
-  
-      if (ret === 0) {
-        this.setState({
-          transcoded: 2
-        })
-      }
-      console.log(`startLocalVideoTranscoder ------ ${ret}`)
-    });
-  }
-
-  handleDisplayPicker = displayId => {
-    this.setState({
-      showDisplayPicker: false,
-      localSharing: true,
-      localVideoSource: 1
-    })
-    this.startScreenShareByDisplay(displayId)
-  }
-  
-  startScreenShareByDisplay(displayId) {
-    return new Promise((resolve, reject) => {
-      let rtcEngine = this.getRtcEngine();
-      rtcEngine.startScreenCaptureByScreen(displayId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 5})
-    });
-  }
-
-  updateScreenShareParam = (e) => {
-    let rtcEngine = this.getRtcEngine();
-    rtcEngine.updateScreenCaptureParameters({width: 0, height: 0, bitrate: 500, frameRate: 5})
-  }
-
-  handleScreenSharing = (e) => {
-    // getWindowInfo and open Modal
-    let rtcEngine = this.getRtcEngine()
-    let list = rtcEngine.getScreenWindowsInfo();
-    Promise.all(list.map(item => readImage(item.image))).then(imageList => {
-      let windowList = list.map((item, index) => {
-        return {
-          ownerName: item.ownerName,
-          name: item.name,
-          windowId: item.windowId,
-          image: imageList[index],
-        }
-      })
-      this.setState({
-        showWindowPicker: true,
-        windowList: windowList
-      });
-    })
-  }
-
-  handleDisplaySharing = (e) => {
-    // getWindowInfo and open Modal
-    let rtcEngine = this.getRtcEngine()
-    let list = rtcEngine.getScreenDisplaysInfo();
-    Promise.all(list.map(item => readImage(item.image))).then(imageList => {
-      let displayList = list.map((item, index) => {
-        let name = `Display ${index + 1}`
-        return {
-          ownerName: "",
-          name: name,
-          displayId: item.displayId,
-          image: imageList[index],
-        }
-      })
-      this.setState({
-        showDisplayPicker: true,
-        displayList: displayList
-      });
-    })
-  }
-
-  toggleFuPlugin = () => {
-    const plugin = this.rtcEngine.getPlugins().find(plugin => plugin.id === 'bytedance' )
-    if (plugin) {
-      if(this.state.fuEnabled) {
-        plugin.disable();
-        this.setState({
-          fuEnabled: false
-        })
-      } else {
-        plugin.setParameter(JSON.stringify({"plugin.fu.authdata": FU_AUTH}))
-        plugin.setParameter(JSON.stringify({"plugin.fu.bundles.load": [{
-          bundleName: "face_beautification.bundle",
-          bundleOptions: {
-            "filter_name": "tokyo",
-            "filter_level": 1.0,
-            "color_level": 0.2,
-            "red_level": 0.5,
-            "blur_level": 6.0,
-            "skin_detect": 0.0,
-            "nonshin_blur_scale": 0.45,
-            "heavy_blur": 0,
-            "face_shape": 3,
-            "face_shape_level": 1.0,
-            "eye_enlarging": 0.5,
-            "cheek_thinning": 0.0,
-            "cheek_v": 0.0,
-            "cheek_narrow": 0.0,
-            "cheek_small": 0.0,
-            "cheek_oval": 0.0,
-            "intensity_nose": 0.0,
-            "intensity_forehead": 0.5,
-            "intensity_mouth": 0.5,
-            "intensity_chin": 0.0,
-            "change_frames": 0.0,
-            "eye_bright": 1.0,
-            "tooth_whiten": 1.0,
-            "is_beauty_on": 1.0
-          }
-        }]}))
-        plugin.enable();
-        this.setState({
-          fuEnabled: true
-        })
-      }
+    let mediaOptions =  {
+      publishCameraTrack: true,
+      publishAudioTrack: true,
+      publishScreenTrack: true,
+      publishCustomAudioTrack: true,
+      publishCustomVideoTrack: true,
+      publishEncodedVideoTrack: true,
+      publishMediaPlayerAudioTrack: true,
+      publishMediaPlayerVideoTrack: true,
+      autoSubscribeAudio: true,
+      autoSubscribeVideo: true,
+      publishMediaPlayerId: 0,
+      enableAudioRecordingOrPlayout: true,
+      clientRoleType: 1,
+      defaultVideoStreamType: 0,
+      channelProfile: 1
     }
+    let ret = rtcEngine.joinChannelWithMediaOptions("", "123", 0, mediaOptions)
   }
 
-  toggleByteDancePlugin = () => {
-    const plugin = this.rtcEngine.getPlugins().find(plugin => plugin.id === 'bytedance' )
-    if (plugin) {
-      if(this.state.bdEnabled) {
-        plugin.disable();
-        clearInterval(this.byteTimer)
-        this.byteTimer = null
-        this.setState({
-          bdEnabled: false
-        })
-      } else {
-        if(isMac) {
-          plugin.setParameter(JSON.stringify({
-            "plugin.bytedance.licensePath": path.join(__static, "bytedance/resource/license.licbag")
-          }))
-          plugin.setParameter(JSON.stringify({
-            "plugin.bytedance.stickerPath": path.join(__static, "bytedance/resource/StickerResource.bundle")
-          }))
-          plugin.setParameter(JSON.stringify({
-            "plugin.bytedance.beauty.resourcepath": path.join(__static, "bytedance/resource/BeautyResource.bundle/IESBeauty")
-          }))
-          plugin.setParameter(JSON.stringify({
-            "plugin.bytedance.beauty.intensity": {
-              1: 1.0,
-              2: 1.0,
-              9: 1.0
-            }
-          }))
-          plugin.setParameter(JSON.stringify({
-            "plugin.bytedance.faceDetectModelPath": path.join(__static, "bytedance/resource/StickerResource.bundle/ttfacemodel/tt_face_v6.0.model"),
-            "plugin.bytedance.faceDetectExtraModelPath": path.join(__static, "bytedance/resource/StickerResource.bundle/ttfacemodel/tt_face_extra_v9.0.model"),
-            "plugin.bytedance.faceAttributeModelPath": path.join(__static, "bytedance/resource/StickerResource.bundle/ttfaceattri/tt_face_attribute_v4.1.model"),
-            "plugin.bytedance.faceAttributeEnabled": true
-          }))
-          plugin.setParameter(JSON.stringify({
-            "plugin.bytedance.handDetectEnabled": true,
-            "plugin.bytedance.handDetectModelPath": path.join(__static, "bytedance/resource/StickerResource.bundle/handmodel/tt_hand_det_v9.0.model"),
-            "plugin.bytedance.handBoxModelPath": path.join(__static, "bytedance/resource/StickerResource.bundle/handmodel/tt_hand_box_reg_v10.0.model"),
-            "plugin.bytedance.handGestureModelPath": path.join(__static, "bytedance/resource/StickerResource.bundle/handmodel/tt_hand_gesture_v8.1.model"),
-            "plugin.bytedance.handKPModelPath": path.join(__static, "bytedance/resource/StickerResource.bundle/handmodel/tt_hand_kp_v5.0.model"),
-          }))
-
-          this.byteTimer = setInterval(() => {
-            console.log(plugin.getParameter("plugin.bytedance.face.attribute"))
-            console.log(plugin.getParameter("plugin.bytedance.hand.info"))
-          }, 1000)
-        } else {
-          plugin.setParameter(JSON.stringify({
-            "plugin.bytedance.licensePath": path.join(__static, "bytedance/resource/license.bag")
-          }))
-          // plugin.setParameter(JSON.stringify({
-          //   "plugin.bytedance.stickerPath": path.join(__static, "bytedance/resource/StickerResource.bundle")
-          // }))
-          // plugin.setParameter(JSON.stringify({
-          //   "plugin.bytedance.beauty.resourcepath": path.join(__static, "bytedance/resource/BeautyResource.bundle/IESBeauty")
-          // }))
-          // plugin.setParameter(JSON.stringify({
-          //   "plugin.bytedance.beauty.intensity": {
-          //     1: 1.0,
-          //     2: 1.0,
-          //     9: 1.0
-          //   }
-          // }))
-          plugin.setParameter(JSON.stringify({
-            "plugin.bytedance.faceDetectModelPath": path.join(__static, "bytedance/resource/model/ttfacemodel/tt_face_v6.0.model")
-          }))
-          plugin.setParameter(JSON.stringify({
-            "plugin.bytedance.faceAttributeModelPath": path.join(__static, "bytedance/resource/model/ttfaceattrmodel/tt_face_attribute_v4.1.model")
-          }))
-        }
-        
-        plugin.enable();
-        this.setState({
-          bdEnabled: true
-        })
-      }
-    }
-  }
-
-  handleRelease = () => {
-    this.setState({
-      localVideoSource: "",
-      localSharing: false
+  handleAddCamera = () => {
+    let sources = this.state.sources || []
+    let device = this.state.videoDevices[0]
+    sources.push({
+      sourceType: 0,
+      deviceId: device.deviceid,
+      name: device.devicename,
+      x: 0,
+      y: 0,
+      width: 360,
+      height: 240,
+      zOrder: 1,
+      alpha: 0
     })
-    if(this.rtcEngine) {
-      this.rtcEngine.releasePluginManager()
-      this.rtcEngine.release();
-      this.rtcEngine = null;
-    }
+    this.setState({sources})
   }
 
-  handleRtmp = () => {
-    const url = RTMP_URL
-    if(!url) {
-      alert("RTMP URL Empty")
-      return
-    }
-    if(!this.state.rtmpTestOn) {
-      this.rtcEngine.setLiveTranscoding({
-        /** width of canvas */
-        width: 640,
-        /** height of canvas */
-        height: 480,
-        /** kbps value, for 1-1 mapping pls look at https://docs.agora.io/cn/Interactive%20Broadcast/API%20Reference/cpp/structagora_1_1rtc_1_1_video_encoder_configuration.html */
-        videoBitrate: 500,
-        /** fps, default 15 */
-        videoFrameRate: 15,
-        /** true for low latency, no video quality garanteed; false - high latency, video quality garanteed */
-        lowLatency: true,
-        /** Video GOP in frames, default 30 */
-        videoGop: 30,
-        videoCodecProfile: 77,
-        /**
-         * RGB hex value. Value only, do not include a #. For example, 0xC0C0C0.
-         * number color = (A & 0xff) << 24 | (R & 0xff) << 16 | (G & 0xff) << 8 | (B & 0xff)
-         */
-        backgroundColor: 0xc0c0c0,
-        /** The number of users in the live broadcast */
-        userCount: 1,
-        audioSampleRate: 44800,
-        audioChannels: 1,
-        audioBitrate: 48,
-        /** transcodingusers array */
-        transcodingUsers: [
-          {
-            uid: this.state.local,
-            x: 0,
-            y: 0,
-            width: 320,
-            height: 240,
-            zOrder: 1,
-            alpha: 1,
-            audioChannel: 1
-          }
-        ],
-        watermark: {
-          url: "",
-          x: 0,
-          y:0,
-          width: 0,
-          height: 0
-        }
-      });
-      this.rtcEngine.addPublishStreamUrl(
-        url,
-        true
-      );
-    } else {
-      this.rtcEngine.removePublishStreamUrl(url)
-    }
+  handleAddImage = () => {
+    let sources = this.state.sources || []
     
-    this.setState({
-      rtmpTestOn: !this.state.rtmpTestOn
+    let filePath = path.resolve(__dirname, "../../static/plugin.png")
+    sources.push({
+      sourceType: 4,
+      connectionId: 0,
+      x: 0,
+      y: 0,
+      width: 360,
+      height: 240,
+      zOrder: 1,
+      alpha: 0,
+      imageUrl: filePath
     })
+    this.setState({sources})
   }
 
-  togglePlaybackTest = e => {
-    let rtcEngine = this.getRtcEngine()
-    if (!this.state.playbackTestOn) {
-      let filepath = '/Users/menthays/Projects/Agora-RTC-SDK-for-Electron/example/temp/music.mp3';
-      let result = rtcEngine.startAudioPlaybackDeviceTest(filepath);
-      console.log(result);
-    } else {
-      rtcEngine.stopAudioPlaybackDeviceTest();
+  handleAddRemote = (uid) => {
+    let sources = this.state.sources || []
+    sources.push({
+      sourceType: 5,
+      connectionId: 0,
+      remoteUserUid: uid,
+      x: 0,
+      y: 0,
+      width: 360,
+      height: 240,
+      zOrder: 1,
+      alpha: 0
+    })
+    this.setState({sources})
+  }
+
+  handleAddScreenShare = () => {
+    let sources = this.state.sources || []
+    sources.push({
+      sourceType: 1,
+      connectionId: 0,
+      x: 0,
+      y: 0,
+      width: 360,
+      height: 240,
+      zOrder: 1,
+      alpha: 0
+    })
+    this.setState({sources})
+  }
+
+  calcTranscoderOptions = (sources) => {
+    let videoInputStreams = sources.map(s => {
+      return Object.assign({connectionId: 0}, s)
+    })
+
+    let videoOutputConfigurationobj = {
+      width: 800,
+      height: 600,
+      frameRate: 15,
+      bitrate: 0,
+      minBitrate: -1,
+      orientationMode: 0,
+      degradationPreference: 0,
+      mirrorMode: 0
     }
-    this.setState({
-      playbackTestOn: !this.state.playbackTestOn
-    })
-  }
 
-  toggleRecordingTest = e => {
-    let rtcEngine = this.getRtcEngine()
-    if (!this.state.recordingTestOn) {
-      let result = rtcEngine.startAudioRecordingDeviceTest(1000);
-      console.log(result);
-    } else {
-      rtcEngine.stopAudioRecordingDeviceTest();
+    return {
+      streamCount: sources.length,
+      videoInputStreams: videoInputStreams,
+      videoOutputConfiguration: videoOutputConfigurationobj
     }
-    this.setState({
-      recordingTestOn: !this.state.recordingTestOn
-    })
   }
 
-  toggleLastmileTest = e => {
+  handlePreview = () => {
     let rtcEngine = this.getRtcEngine()
-    if (!this.state.lastmileTestOn) {
-      let result = rtcEngine.startLastmileProbeTest({
-        probeUplink: true,
-        probeDownlink: true,
-        expectedDownlinkBitrate: 500,
-        expectedUplinkBitrate: 500,
-      });
-      console.log(result);
-    } else {
-      rtcEngine.stopLastmileProbeTest();
-    }
+    rtcEngine.enableVideo()
+    rtcEngine.setChannelProfile(1)
+    rtcEngine.setClientRole(1)
+    rtcEngine.setVideoEncoderConfiguration({width: 1080, height: 720})
+    rtcEngine.startPreview()
+    let displayId = this.rtcEngine.getScreenDisplaysInfo()[0].displayId
+    rtcEngine.startScreenCaptureByScreen(displayId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 5})
+
+    let res = rtcEngine.startLocalVideoTranscoder(this.calcTranscoderOptions(this.state.sources))
     this.setState({
-      lastmileTestOn: !this.state.lastmileTestOn
+      IsStartLocalVideoTranscoder: true
     })
+    console.log(`startLocalVideoTranscoder ${res}`)
   }
 
-  handleAudioHook = e => {
-    let rtcEngine = this.getRtcEngine()
-    if(!this.state.audioHookEnabled){
-    //   rtcEngine.registerAudioFramePluginManager()
-    //   rtcEngine.registerAudioFramePlugin("agora_electron_plugin_audio_hook")
-    //   let dllpath = path.resolve(__dirname, "./plugins/AgoraPlayerHookPlugin.dll")
-    //   rtcEngine.loadPlugin("agora_electron_plugin_audio_hook", dllpath)
-    //   let playerpath = path.resolve(this.state.hookplayerpath)
-    //   rtcEngine.setPluginStringParameter("agora_electron_plugin_audio_hook","plugin.hookAudio.playerPath", playerpath)
-    //   rtcEngine.setPluginBoolParameter("agora_electron_plugin_audio_hook", "plugin.hookAudio.forceRestart", true)
-    //   // important for hook audio quality
-    //   rtcEngine.setRecordingAudioFrameParameters(44100, 2, 2, 882)
-    //   rtcEngine.enablePlugin("agora_electron_plugin_audio_hook")
-    // } else {
-    //   rtcEngine.disablePlugin("agora_electron_plugin_audio_hook")
-    //   console.log(rtcEngine.unRegisterAudioFramePlugin("agora_electron_plugin_audio_hook"))
-    //   console.log(rtcEngine.unRegisterAudioFramePluginManager())
-   }
-    this.setState({audioHookEnabled: !this.state.audioHookEnabled})
+  handleUpdateTranscoder = (sources) => {
+    rtcEngine.updateLocalTranscoderConfiguration(this.calcTranscoderOptions(sources || this.state.sources))
+  }
+
+  handleDragStop = (e,d) => {
+    let {x, y, node} = d
+    console.log(`drag stop: id: ${node.id} ${x} ${y}`)
+    let sourceId = this.reverseSourceId(node.id)
+    this.updateSource(sourceId, {x, y})
+  }
+
+  handleResizeStop = (e, direction, ref, delta, position) => {
+    let {width, height} = ref.style
+    console.log(`resize stop: ${ref.id} ${width} ${height}`)
+    let widthn = Number(width.replace("px", ""))
+    let heightn = Number(height.replace("px", ""))
+    let sourceId = this.reverseSourceId(ref.id)
+    this.updateSource(sourceId, {width:widthn, height:heightn})
+  }
+
+  updateSource(idx, props) {
+    if (!this.state.IsStartLocalVideoTranscoder)
+      return;
+
+    let {sources} = this.state
+    sources[idx] = Object.assign(sources[idx], props)
+    this.handleUpdateTranscoder(sources)
+    this.setState(sources)
+  }
+
+  getSourceId(idx) {
+    return `source-${idx}`
+  }
+
+  reverseSourceId(key) {
+    return Number(key.split("-")[1])
   }
 
   render() {
@@ -703,272 +419,81 @@ export default class App extends Component {
       />
     }
 
+    let cameraSources = this.state.sources.filter(s => s.sourceType === 0)
 
     return (
-      <div className="columns" style={{padding: "20px", height: '100%', margin: '0'}}>
+      <div className="columns" style={{padding: "20px", height: '100%', margin: '0', background:"#8080"}}>
         { this.state.showWindowPicker ? windowPicker : '' }
         { this.state.showDisplayPicker ? displayPicker : '' }
         <div className="column is-one-quarter" style={{overflowY: 'auto'}}>
           <div className="field">
-            <label className="label">Channel</label>
-            <div className="control">
-              <input onChange={e => this.setState({channel: e.currentTarget.value})} value={this.state.channel} className="input" type="text" placeholder="Input a channel name" />
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">Role</label>
-            <div className="control">
-              <div className="select"  style={{width: '100%'}}>
-                <select onChange={e => this.setState({role: Number(e.currentTarget.value)})} value={this.state.role} style={{width: '100%'}}>
-                  <option value={1}>Anchor</option>
-                  <option value={2}>Audience</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">Video Encoder Configuration</label>
-            <div className="control">
-              <input onChange={e => this.setState({encoderWidth: e.currentTarget.value})} value={this.state.encoderWidth} className="input" type="number" placeholder="Encoder Width" />
-              <input onChange={e => this.setState({encoderHeight: e.currentTarget.value})} value={this.state.encoderHeight} className="input" type="number" placeholder="Encoder Height" />
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">VoiceChanger</label>
-            <div className="control">
-              <div className="select"  style={{width: '100%'}}>
-                <select onChange={this.handleVoiceChanger} value={this.state.voiceChangerPreset} style={{width: '100%'}}>
-                  {voiceChangerList.map(item => (<option key={item.value} value={item.value}>{item.label}</option>))}
-                </select>
-              </div>
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">VoiceReverbPreset</label>
-            <div className="control">
-              <div className="select"  style={{width: '100%'}}>
-                <select onChange={this.handleVoiceReverbPreset} value={this.state.voiceReverbPreset} style={{width: '100%'}}>
-                  {voiceReverbList.map(item => (<option key={item.value} value={item.value}>{item.label}</option>))}
-                </select>
-              </div>
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">VideoProfile</label>
-            <div className="control">
-              <div className="select"  style={{width: '100%'}}>
-                <select onChange={this.handleVideoProfile} value={this.state.videoProfile} style={{width: '100%'}}>
-                  {videoProfileList.map(item => (<option key={item.value} value={item.value}>{item.label}</option>))}
-                </select>
-              </div>
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">AudioProfile</label>
-            <div className="control">
-              <div className="select"  style={{width: '50%'}}>
-                <select onChange={this.handleAudioProfile} value={this.state.audioProfile} style={{width: '100%'}}>
-                  {audioProfileList.map(item => (<option key={item.value} value={item.value}>{item.label}</option>))}
-                </select>
-              </div>
-              <div className="select"  style={{width: '50%'}}>
-                <select onChange={this.handleAudioScenario} value={this.state.audioScenario} style={{width: '100%'}}>
-                  {audioScenarioList.map(item => (<option key={item.value} value={item.value}>{item.label}</option>))}
-                </select>
-              </div>
-            </div>
-          </div>
-          <div className="field">
             <label className="label">Camera</label>
             <div className="control">
               <div className="select"  style={{width: '100%'}}>
-                <select onChange={this.handleCameraChange} value={this.state.camera} style={{width: '100%'}}>
-                  {this.state.videoDevices.map((item, index) => (<option key={index} value={index}>{item.devicename}</option>))}
+                <select onChange={this.handleVoiceChanger} value={this.state.voiceChangerPreset} style={{width: '100%'}}>
+                  {cameraSources.map(item => (<option key={item.deviceid} value={item.deviceid}>{item.name}</option>))}
                 </select>
               </div>
             </div>
           </div>
-          <div className="field">
-            <label className="label">Microphone</label>
+          <div className="field is-grouped is-grouped-left">
             <div className="control">
-              <div className="select"  style={{width: '100%'}}>
-                <select onChange={this.handleMicChange} value={this.state.mic} style={{width: '100%'}}>
-                  {this.state.audioDevices.map((item, index) => (<option key={index} value={index}>{item.devicename}</option>))}
+              <button onClick={this.handleAddCamera} className="button is-link">Add</button>
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">Image</label>
+            <div className="control">
+              {/* <div className="select"  style={{width: '100%'}}>
+                <select onChange={this.handleVoiceChanger} value={this.state.voiceChangerPreset} style={{width: '100%'}}>
+                  {cameraSources.map(item => (<option key={item.deviceid} value={item.deviceid}>{item.name}</option>))}
                 </select>
-              </div>
+              </div> */}
+            </div>
+          </div>
+          <div className="field is-grouped is-grouped-left">
+            <div className="control">
+              <button onClick={this.handleAddImage} className="button is-link">Add</button>
             </div>
           </div>
           <div className="field">
-            <label className="label">Loudspeaker</label>
+            <label className="label">ScreenShare</label>
             <div className="control">
-              <div className="select"  style={{width: '100%'}}>
-                <select onChange={this.handleSpeakerChange} value={this.state.speaker} style={{width: '100%'}}>
-                  {this.state.audioPlaybackDevices.map((item, index) => (<option key={index} value={index}>{item.devicename}</option>))}
+              {/* <div className="select"  style={{width: '100%'}}>
+                <select onChange={this.handleVoiceChanger} value={this.state.voiceChangerPreset} style={{width: '100%'}}>
+                  {cameraSources.map(item => (<option key={item.deviceid} value={item.deviceid}>{item.name}</option>))}
                 </select>
-              </div>
+              </div> */}
             </div>
           </div>
-          {/* <div className="field is-grouped is-grouped-right">
+          <div className="field is-grouped is-grouped-left">
             <div className="control">
-              <button onClick={this.handleAudioMixing} className="button is-link">Start/Stop Audio Mixing</button>
-            </div>
-          </div> */}
-          <div className="field is-grouped is-grouped-right">
-            <div className="control">
-              <button onClick={this.handleJoin} className="button is-link">Join</button>
+              <button onClick={this.handleAddScreenShare} className="button is-link">Add</button>
             </div>
           </div>
-          <hr/>
-          <div className="field">
-            <label className="label">Network Test</label>
+          <div className="field is-grouped is-grouped-left">
             <div className="control">
-              <button onClick={this.toggleLastmileTest} className="button is-link">{this.state.lastmileTestOn ? 'stop' : 'start'}</button>
+              <button onClick={this.handlePreview} className="button is-link">Preview</button>
             </div>
           </div>
-          <div className="field">
-            <label className="label">Screen Share</label>
+          <div className="field is-grouped is-grouped-left">
             <div className="control">
-              <button onClick={this.handleScreenSharing} className="button is-link">Screen Share</button>
-            </div>
-            <div className="control">
-              <button onClick={this.handleDisplaySharing} className="button is-link">Display Share</button>
-            </div>
-            <div className="control">
-              <button onClick={this.updateScreenShareParam} className="button is-link">Update Screen Share</button>
+              <button onClick={this.handleJoin} className="button is-link">JoinChannel</button>
             </div>
           </div>
-          <div className="field">
-            <label className="label">RTMP</label>
-            <div className="control">
-              <button onClick={this.handleRtmp} className="button is-link">{this.state.rtmpTestOn ? 'stop' : 'start'}</button>
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">Release</label>
-            <div className="control">
-              <button onClick={this.handleRelease} className="button is-link">Release</button>
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">Audio Hook Player Path</label>
-            <div className="control">
-              <input onChange={e => this.setState({hookplayerpath: e.currentTarget.value})} value={this.state.hookplayerpath} className="input" type="text" placeholder="Absolute player path" />
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">Audio Hook</label>
-            <div className="control">
-              <button onClick={this.handleAudioHook} className="button is-link">Start</button>
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">Audio Playback Test</label>
-            <div className="control">
-              <button onClick={this.togglePlaybackTest} className="button is-link">{this.state.playbackTestOn ? 'stop' : 'start'}</button>
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">Audio Recording Test</label>
-            <div className="control">
-              <button onClick={this.toggleRecordingTest} className="button is-link">{this.state.recordingTestOn ? 'stop' : 'start'}</button>
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">Toggle FU Plugin</label>
-            <div className="control">
-              <button onClick={this.toggleFuPlugin} className="button is-link">{this.state.fuEnabled ? 'disable' : 'enable'}</button>
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">Toggle ByteDance Plugin</label>
-            <div className="control">
-              <button onClick={this.toggleByteDancePlugin} className="button is-link">{this.state.bdEnabled ? 'disable' : 'enable'}</button>
-            </div>
-          </div>
-          <div className='react-slider'
-          style={{width: "10%", height: "10%", margin: '0 auto'}}>
-          <ReactSlider className='horizontal-slider'
-          thumbClassName='example-thumb'
-          trackClassName='example-track'
-          onChange={
-            val=>{
-              let filePath = path.resolve(__dirname, "../../static/plugin.png")
-              console.log(`startLocalVideoTranscoder ----  ${filePath}`);
-              let videoInputStreamobj = [
-                {
-                  sourceType: 0,
-                  connectionId: 0,
-                  x: val * 3,
-                  y: val * 3,
-                  width: 640 - val,
-                  height: 480 - val,
-                  zOrder: 1,
-                  alpha: 0.0
-                },
-                {
-                  sourceType: 1,
-                  connectionId: 0,
-                  x: 360 + val,
-                  y: 100 + val,
-                  width: 600 + val * 3,
-                  height: 360 + val * 2,
-                  zOrder: 33,
-                  alpha: 0.0
-                },
-                {
-                  sourceType: 4,
-                  connectionId: 0,
-                  x: val * 5,
-                  y: val * 5,
-                  imageUrl: filePath,
-                  width: val * 5,
-                  height: val * 5,
-                  zOrder: 99,
-                  alpha: 0.0
-                }
-              ]
-          
-              let videoOutputConfigurationobj = {
-                width: 1080,
-                height: 720,
-                frameRate: 15,
-                bitrate: 0,
-                minBitrate: -1,
-                orientationMode: 0,
-                degradationPreference: 0,
-                mirrorMode: 0
-              }
-              console.log(`videoInputStreamobj  ${JSON.stringify(videoInputStreamobj)}`)
-              let ret = this.rtcEngine.updateLocalTranscoderConfiguration(
-                {
-                  streamCount: 3,
-                  videoInputStreams: videoInputStreamobj,
-                  videoOutputConfiguration: videoOutputConfigurationobj
-                }
-              )
+        </div>
 
-            }
-          }
-          renderThumb={
-          (props, state)=><div {...props}>{state.valueNow}</div>
-          }></ReactSlider>
-        </div>
-        <div></div>
-        </div>
         <div className="column is-three-quarters window-container">
-          {this.state.users.map((item, key) => (
-            <Window key={key} uid={item.uid} channel={item.channelId} rtcEngine={this.rtcEngine} role={item===SHARE_ID?'remoteVideoSource':'remote'}></Window>
-          ))}
-          {this.state.local ? (<Window uid={this.state.local} rtcEngine={this.rtcEngine} role="local">
-
-          </Window>) : ''}
-          {this.state.localVideoSource ? (<Window uid={this.state.localVideoSource} rtcEngine={this.rtcEngine} role="localVideoSource">
-
-          </Window>) : ''}
-          
-          {this.state.transcoded ? (<Window uid={this.state.transcoded} rtcEngine={this.rtcEngine} role="transcoded">
-
-          </Window>) : ''}
+          <Window uid="0" rtcEngine={this.rtcEngine} role="transcoded" style={{width: 800, height:600, background:"#333"}}>
+            {this.state.sources.map((s, idx) => (
+              <Rnd id={`source-${idx}`} style={{"border":"1px dashed #fff"}} default={{
+                x:s.x,
+                y:s.y,
+                width: s.width,
+                height: s.height
+              }} onDragStop={this.handleDragStop} onResizeStop={this.handleResizeStop}></Rnd>
+            ))}
+          </Window>
         </div>
       </div>
     )
@@ -989,18 +514,17 @@ class Window extends Component {
     let dom = document.querySelector(`#video-${this.props.channel || ""}-${this.props.uid}`)
     if (this.props.role === 'local') {
       console.log(`setupLocalVideo  -----`)
-      dom && this.props.rtcEngine.setupLocalVideo(dom)
+      dom && this.props.rtcEngine.setupLocalView(dom, 0)
       this.props.rtcEngine.setupViewContentMode('local', 1)
     } else if (this.props.role === 'localVideoSource') {
-      dom && this.props.rtcEngine.setupLocalVideoSource(dom)
+      dom && this.props.rtcEngine.setupLocalView(dom, 1)
       this.props.rtcEngine.setupViewContentMode('videosource', 1);
-      this.props.rtcEngine.setupViewContentMode(String(SHARE_ID), 1);
     } else if (this.props.role === 'remote') {
       this.props.rtcEngine.setupRemoteVideo(this.props.uid, dom)
+      this.props.rtcEngine.setupViewContentMode('remote', 1);
     } else if (this.props.role === 'remoteVideoSource') {
       dom && this.props.rtcEngine.subscribe(this.props.uid, dom)
       this.props.rtcEngine.setupViewContentMode('videosource', 1);
-      this.props.rtcEngine.setupViewContentMode(String(SHARE_ID), 1);
     } else if (this.props.role === 'transcoded') {
       dom && this.props.rtcEngine.setupLocalView(dom, 4)
       this.props.rtcEngine.setupViewContentMode('transcoded', 1)
@@ -1009,8 +533,10 @@ class Window extends Component {
 
   render() {
     return (
-      <div className="window-item">
-        <div className="video-item" id={`video-${this.props.channel || ""}-${this.props.uid}`}></div>
+      <div style={this.props.style || {}}>
+        <div className="video-item" id={`video-${this.props.channel || ""}-${this.props.uid}`}>
+          {this.props.children}
+        </div>
       </div>
     )
   }
