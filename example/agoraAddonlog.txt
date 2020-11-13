@@ -1,0 +1,3203 @@
+LoadLibrary Error :126
+Error :agora::rtc::NodeRtcEngine::registerPlugin, :3811, not unload plugin "bytedance"
+
+duration : 1, tx :451408, rx :4367, txbr :0, rxbr :0, txAudioBr :0, rxAudioBr :0, users :1
+
+duration : 3, tx :1116383, rx :6594, txbr :2661, rxbr :8, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 5, tx :1978303, rx :9487, txbr :3423, rxbr :11, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 7, tx :3475877, rx :24101, txbr :6029, rxbr :58, txAudioBr :85, rxAudioBr :0, users :1
+
+duration : 9, tx :4510315, rx :31647, txbr :4125, rxbr :30, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 11, tx :5443594, rx :35271, txbr :3744, rxbr :14, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 13, tx :6741905, rx :42997, txbr :5190, rxbr :30, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 15, tx :7916566, rx :48321, txbr :4698, rxbr :21, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 17, tx :9249410, rx :54326, txbr :5328, rxbr :24, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 19, tx :10259227, rx :58389, txbr :4045, rxbr :16, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 21, tx :11349708, rx :63382, txbr :4361, rxbr :19, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 23, tx :12478130, rx :67071, txbr :4513, rxbr :14, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 25, tx :13678929, rx :70923, txbr :4798, rxbr :15, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 27, tx :14874303, rx :74617, txbr :4783, rxbr :14, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 29, tx :16064002, rx :77942, txbr :4754, rxbr :13, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 31, tx :17199700, rx :82131, txbr :4549, rxbr :16, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 33, tx :18147027, rx :84599, txbr :3789, rxbr :9, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 35, tx :19066044, rx :86618, txbr :3674, rxbr :8, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 37, tx :19981034, rx :88718, txbr :3659, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 39, tx :20902212, rx :91028, txbr :3682, rxbr :9, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 41, tx :22014693, rx :93892, txbr :4449, rxbr :11, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 43, tx :23069637, rx :97995, txbr :4221, rxbr :16, txAudioBr :85, rxAudioBr :0, users :1
+
+duration : 45, tx :24127164, rx :102380, txbr :4230, rxbr :17, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 47, tx :25141076, rx :104840, txbr :4055, rxbr :9, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 49, tx :26029278, rx :106754, txbr :3552, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 51, tx :26904266, rx :108587, txbr :3503, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 53, tx :27833067, rx :111101, txbr :3713, rxbr :10, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 55, tx :28768796, rx :113896, txbr :3741, rxbr :11, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 57, tx :29665152, rx :117493, txbr :3585, rxbr :14, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 59, tx :30524554, rx :119455, txbr :3437, rxbr :7, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 61, tx :31426412, rx :121417, txbr :3605, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 63, tx :32286959, rx :123807, txbr :3440, rxbr :9, txAudioBr :85, rxAudioBr :0, users :1
+
+duration : 65, tx :33053276, rx :125611, txbr :3068, rxbr :7, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 67, tx :33761359, rx :128808, txbr :2832, rxbr :12, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 69, tx :34425180, rx :130886, txbr :2656, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 71, tx :35290480, rx :132800, txbr :3459, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 73, tx :36151592, rx :134791, txbr :3444, rxbr :7, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 75, tx :37051287, rx :136650, txbr :3595, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 77, tx :37827280, rx :139394, txbr :3108, rxbr :10, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 79, tx :38412826, rx :142410, txbr :2342, rxbr :12, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 81, tx :39167829, rx :144600, txbr :3018, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 83, tx :39911564, rx :146591, txbr :2974, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 85, tx :40677058, rx :148505, txbr :3061, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 87, tx :41438106, rx :150454, txbr :3042, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 89, tx :42131945, rx :152875, txbr :2775, rxbr :9, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 91, tx :42793738, rx :155777, txbr :2648, rxbr :11, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 93, tx :43543217, rx :157948, txbr :2997, rxbr :8, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 95, tx :44306698, rx :159910, txbr :3053, rxbr :7, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 97, tx :45084140, rx :162033, txbr :3111, rxbr :8, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 99, tx :45835869, rx :164097, txbr :3003, rxbr :8, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 101, tx :46535259, rx :167381, txbr :2800, rxbr :13, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 103, tx :47179429, rx :170049, txbr :2576, rxbr :10, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 105, tx :47984097, rx :171795, txbr :3213, rxbr :6, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 107, tx :48786541, rx :173845, txbr :3216, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 109, tx :49589098, rx :175968, txbr :3208, rxbr :8, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 111, tx :50375771, rx :178888, txbr :3146, rxbr :11, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 113, tx :51052064, rx :180940, txbr :2705, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 115, tx :51768570, rx :182854, txbr :2864, rxbr :7, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 117, tx :52603700, rx :184622, txbr :3340, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 119, tx :53446865, rx :186591, txbr :3370, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 121, tx :54411541, rx :188565, txbr :3862, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 123, tx :55827930, rx :216304, txbr :5665, rxbr :110, txAudioBr :79, rxAudioBr :13, users :2
+
+duration : 125, tx :56665342, rx :299305, txbr :3349, rxbr :332, txAudioBr :71, rxAudioBr :50, users :2
+
+duration : 127, tx :57860240, rx :383488, txbr :4779, rxbr :336, txAudioBr :79, rxAudioBr :53, users :2
+
+duration : 129, tx :58880398, rx :509965, txbr :4080, rxbr :505, txAudioBr :78, rxAudioBr :50, users :2
+
+duration : 131, tx :59975826, rx :626391, txbr :4379, rxbr :465, txAudioBr :81, rxAudioBr :51, users :2
+
+duration : 133, tx :61370278, rx :762295, txbr :5580, rxbr :543, txAudioBr :74, rxAudioBr :58, users :2
+
+duration : 135, tx :62177658, rx :879026, txbr :3227, rxbr :466, txAudioBr :80, rxAudioBr :48, users :2
+
+duration : 137, tx :63226967, rx :1023640, txbr :4197, rxbr :578, txAudioBr :81, rxAudioBr :53, users :2
+
+duration : 139, tx :64609441, rx :1170484, txbr :5529, rxbr :587, txAudioBr :78, rxAudioBr :55, users :2
+
+duration : 141, tx :65381042, rx :1315868, txbr :3086, rxbr :581, txAudioBr :83, rxAudioBr :53, users :2
+
+duration : 143, tx :66595932, rx :1449591, txbr :4861, rxbr :535, txAudioBr :83, rxAudioBr :49, users :2
+
+duration : 145, tx :67398378, rx :1588171, txbr :3208, rxbr :554, txAudioBr :71, rxAudioBr :56, users :2
+
+duration : 147, tx :69083470, rx :1720140, txbr :6743, rxbr :528, txAudioBr :81, rxAudioBr :58, users :2
+
+duration : 149, tx :70398155, rx :1864771, txbr :5250, rxbr :577, txAudioBr :77, rxAudioBr :53, users :2
+
+duration : 151, tx :71175787, rx :2007393, txbr :3112, rxbr :570, txAudioBr :66, rxAudioBr :49, users :2
+
+duration : 153, tx :71902313, rx :2148014, txbr :2909, rxbr :563, txAudioBr :72, rxAudioBr :49, users :2
+
+duration : 155, tx :72821193, rx :2156638, txbr :3673, rxbr :34, txAudioBr :82, rxAudioBr :2, users :1
+
+duration : 157, tx :73893152, rx :2160939, txbr :4287, rxbr :17, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 159, tx :75129785, rx :2164341, txbr :4949, rxbr :13, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 161, tx :76189086, rx :2166379, txbr :4235, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 163, tx :77224462, rx :2168558, txbr :4141, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 165, tx :78282458, rx :2170256, txbr :4231, rxbr :6, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 167, tx :79380292, rx :2173082, txbr :4391, rxbr :11, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 169, tx :80526170, rx :2177130, txbr :4585, rxbr :16, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 171, tx :81663505, rx :2179712, txbr :4547, rxbr :10, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 173, tx :82698294, rx :2182686, txbr :4139, rxbr :11, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 175, tx :83507199, rx :2184600, txbr :3238, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 177, tx :84335934, rx :2186346, txbr :3311, rxbr :6, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 179, tx :85253486, rx :2188998, txbr :3670, rxbr :10, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 181, tx :86236384, rx :2192996, txbr :3931, rxbr :15, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 183, tx :87167983, rx :2195283, txbr :3728, rxbr :9, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 185, tx :88149670, rx :2197473, txbr :3926, rxbr :8, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 187, tx :88992412, rx :2199387, txbr :3367, rxbr :7, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 189, tx :89839979, rx :2201292, txbr :3393, rxbr :7, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 191, tx :90732808, rx :2204340, txbr :3571, rxbr :12, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 193, tx :91799504, rx :2208049, txbr :4266, rxbr :14, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 195, tx :92868729, rx :2210359, txbr :4274, rxbr :9, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 197, tx :93887263, rx :2212503, txbr :4074, rxbr :8, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 199, tx :94886960, rx :2214494, txbr :3998, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 201, tx :95887772, rx :2216265, txbr :4003, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 203, tx :97137813, rx :2220007, txbr :5000, rxbr :14, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 205, tx :98307494, rx :2224431, txbr :4678, rxbr :17, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 207, tx :99385655, rx :2226786, txbr :4312, rxbr :9, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 209, tx :100399320, rx :2228844, txbr :4056, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 211, tx :101479318, rx :2231668, txbr :4315, rxbr :11, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 213, tx :102811409, rx :2235089, txbr :5328, rxbr :13, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 215, tx :104035925, rx :2241224, txbr :4900, rxbr :24, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 217, tx :105124280, rx :2244200, txbr :4353, rxbr :11, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 219, tx :106256420, rx :2247534, txbr :4533, rxbr :13, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 221, tx :107370514, rx :2250471, txbr :4451, rxbr :11, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 223, tx :108464563, rx :2252648, txbr :4376, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 225, tx :109842640, rx :2256910, txbr :5509, rxbr :17, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 227, tx :111197527, rx :2262076, txbr :5419, rxbr :20, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 229, tx :112537669, rx :2264273, txbr :5363, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 231, tx :113671659, rx :2266658, txbr :4538, rxbr :9, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 233, tx :114747537, rx :2268967, txbr :4301, rxbr :9, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 235, tx :115856296, rx :2273201, txbr :4435, rxbr :16, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 237, tx :116946322, rx :2278184, txbr :4360, rxbr :19, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 239, tx :118172929, rx :2282936, txbr :4903, rxbr :18, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 241, tx :119558488, rx :2286504, txbr :5545, rxbr :14, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 243, tx :120854173, rx :2288967, txbr :5185, rxbr :9, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 245, tx :122059657, rx :2292831, txbr :4819, rxbr :15, txAudioBr :68, rxAudioBr :0, users :1
+
+duration : 247, tx :123326642, rx :2297836, txbr :5067, rxbr :20, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 249, tx :124637301, rx :2303469, txbr :5242, rxbr :22, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 251, tx :125921633, rx :2306706, txbr :5137, rxbr :12, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 253, tx :127101075, rx :2309335, txbr :4717, rxbr :10, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 255, tx :128331814, rx :2311402, txbr :4922, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 257, tx :129720899, rx :2313986, txbr :5556, rxbr :10, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 259, tx :130946722, rx :2316178, txbr :4903, rxbr :8, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 261, tx :132119262, rx :2318050, txbr :4690, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 263, tx :133281093, rx :2320357, txbr :4647, rxbr :9, txAudioBr :62, rxAudioBr :0, users :1
+
+duration : 265, tx :134423017, rx :2322567, txbr :4567, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 267, tx :135683094, rx :2325503, txbr :5042, rxbr :11, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 269, tx :136994198, rx :2331174, txbr :5241, rxbr :22, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 271, tx :138189321, rx :2334506, txbr :4780, rxbr :13, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 273, tx :139449202, rx :2337091, txbr :5042, rxbr :10, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 275, tx :140646018, rx :2341131, txbr :4772, rxbr :16, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 277, tx :141978994, rx :2347010, txbr :5345, rxbr :23, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 279, tx :143298637, rx :2351935, txbr :5281, rxbr :19, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 281, tx :144479679, rx :2354402, txbr :4724, rxbr :9, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 283, tx :145391706, rx :2356460, txbr :3649, rxbr :8, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 285, tx :146259373, rx :2358103, txbr :3467, rxbr :6, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 287, tx :147211937, rx :2361300, txbr :3810, rxbr :12, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 289, tx :148141901, rx :2366441, txbr :3717, rxbr :20, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 291, tx :149124263, rx :2368835, txbr :3931, rxbr :9, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 293, tx :149913586, rx :2371255, txbr :3157, rxbr :9, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 295, tx :150383490, rx :2373217, txbr :1880, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 297, tx :150907809, rx :2374860, txbr :2096, rxbr :6, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 299, tx :151451475, rx :2377098, txbr :2174, rxbr :8, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 301, tx :152057039, rx :2379630, txbr :2422, rxbr :10, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 303, tx :152726286, rx :2381573, txbr :2678, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 305, tx :153371042, rx :2383535, txbr :2577, rxbr :7, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 307, tx :154006395, rx :2385394, txbr :2542, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 309, tx :154556917, rx :2387354, txbr :2200, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 311, tx :155078723, rx :2389824, txbr :2087, rxbr :9, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 313, tx :155783942, rx :2392209, txbr :2820, rxbr :9, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 315, tx :156724921, rx :2394276, txbr :3763, rxbr :8, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 317, tx :157632536, rx :2396324, txbr :3630, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 319, tx :158636645, rx :2398426, txbr :4016, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 321, tx :159667159, rx :2401280, txbr :4119, rxbr :11, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 323, tx :160508455, rx :2405468, txbr :3366, rxbr :16, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 325, tx :161462976, rx :2408853, txbr :3819, rxbr :13, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 327, tx :162349048, rx :2411291, txbr :3544, rxbr :9, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 329, tx :163289761, rx :2413397, txbr :3760, rxbr :8, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 331, tx :164144891, rx :2415715, txbr :3422, rxbr :9, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 333, tx :165064257, rx :2418343, txbr :3677, rxbr :10, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 335, tx :165856219, rx :2422804, txbr :3167, rxbr :17, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 337, tx :166662621, rx :2425420, txbr :3225, rxbr :10, txAudioBr :62, rxAudioBr :0, users :1
+
+duration : 339, tx :168025833, rx :2429009, txbr :5452, rxbr :14, txAudioBr :61, rxAudioBr :0, users :1
+
+duration : 341, tx :169240401, rx :2490195, txbr :4855, rxbr :244, txAudioBr :65, rxAudioBr :42, users :2
+
+duration : 343, tx :170436409, rx :2563277, txbr :4784, rxbr :292, txAudioBr :73, rxAudioBr :40, users :2
+
+duration : 345, tx :171259174, rx :2679244, txbr :3291, rxbr :463, txAudioBr :71, rxAudioBr :43, users :2
+
+duration : 347, tx :172261855, rx :2834521, txbr :4010, rxbr :621, txAudioBr :68, rxAudioBr :53, users :2
+
+duration : 349, tx :173651003, rx :2958489, txbr :5559, rxbr :496, txAudioBr :64, rxAudioBr :47, users :2
+
+duration : 351, tx :175001427, rx :3072211, txbr :5401, rxbr :454, txAudioBr :68, rxAudioBr :47, users :2
+
+duration : 353, tx :175677835, rx :3208260, txbr :2704, rxbr :543, txAudioBr :70, rxAudioBr :42, users :2
+
+duration : 355, tx :176621732, rx :3357207, txbr :3777, rxbr :596, txAudioBr :67, rxAudioBr :50, users :2
+
+duration : 357, tx :177402096, rx :3522385, txbr :3118, rxbr :660, txAudioBr :82, rxAudioBr :56, users :2
+
+duration : 359, tx :178190835, rx :3641753, txbr :3154, rxbr :477, txAudioBr :75, rxAudioBr :51, users :2
+
+duration : 361, tx :179517689, rx :3761987, txbr :5310, rxbr :481, txAudioBr :66, rxAudioBr :48, users :2
+
+duration : 363, tx :180335804, rx :3909720, txbr :3274, rxbr :591, txAudioBr :76, rxAudioBr :51, users :2
+
+duration : 365, tx :181284555, rx :4061777, txbr :3795, rxbr :608, txAudioBr :68, rxAudioBr :50, users :2
+
+duration : 367, tx :182432307, rx :4205254, txbr :4588, rxbr :573, txAudioBr :79, rxAudioBr :51, users :2
+
+duration : 369, tx :183116883, rx :4336844, txbr :2738, rxbr :526, txAudioBr :71, rxAudioBr :49, users :2
+
+duration : 371, tx :183929619, rx :4497580, txbr :3250, rxbr :642, txAudioBr :66, rxAudioBr :54, users :2
+
+duration : 373, tx :184792727, rx :4623647, txbr :3454, rxbr :504, txAudioBr :67, rxAudioBr :49, users :2
+
+duration : 375, tx :185759104, rx :4732681, txbr :3865, rxbr :436, txAudioBr :66, rxAudioBr :48, users :2
+
+duration : 377, tx :186730172, rx :4836859, txbr :3882, rxbr :416, txAudioBr :71, rxAudioBr :45, users :2
+
+duration : 379, tx :187563838, rx :4978594, txbr :3336, rxbr :567, txAudioBr :65, rxAudioBr :53, users :2
+
+duration : 381, tx :188345707, rx :5119818, txbr :3129, rxbr :565, txAudioBr :82, rxAudioBr :59, users :2
+
+duration : 383, tx :189123921, rx :5254647, txbr :3109, rxbr :538, txAudioBr :79, rxAudioBr :51, users :2
+
+duration : 385, tx :189683369, rx :5390400, txbr :2234, rxbr :542, txAudioBr :74, rxAudioBr :53, users :2
+
+duration : 387, tx :190979907, rx :5557239, txbr :5193, rxbr :668, txAudioBr :86, rxAudioBr :55, users :2
+
+duration : 389, tx :192242472, rx :5702080, txbr :5052, rxbr :579, txAudioBr :76, rxAudioBr :52, users :2
+
+duration : 391, tx :192953120, rx :5834445, txbr :2839, rxbr :528, txAudioBr :76, rxAudioBr :51, users :2
+
+duration : 393, tx :193855153, rx :6008621, txbr :3611, rxbr :697, txAudioBr :83, rxAudioBr :58, users :2
+
+duration : 395, tx :194425889, rx :6146589, txbr :2282, rxbr :551, txAudioBr :72, rxAudioBr :51, users :2
+
+duration : 397, tx :195147248, rx :6287068, txbr :2883, rxbr :561, txAudioBr :71, rxAudioBr :47, users :2
+
+duration : 399, tx :195756195, rx :6416935, txbr :2437, rxbr :519, txAudioBr :79, rxAudioBr :61, users :2
+
+duration : 401, tx :196301961, rx :6557419, txbr :2180, rxbr :561, txAudioBr :73, rxAudioBr :52, users :2
+
+duration : 403, tx :197015963, rx :6691892, txbr :2858, rxbr :538, txAudioBr :84, rxAudioBr :55, users :2
+
+duration : 405, tx :197694520, rx :6814093, txbr :2712, rxbr :488, txAudioBr :82, rxAudioBr :55, users :2
+
+duration : 407, tx :198392802, rx :6933023, txbr :2794, rxbr :475, txAudioBr :80, rxAudioBr :55, users :2
+
+duration : 409, tx :199049493, rx :7077670, txbr :2626, rxbr :578, txAudioBr :77, rxAudioBr :56, users :2
+
+duration : 411, tx :199804996, rx :7216650, txbr :3020, rxbr :555, txAudioBr :80, rxAudioBr :51, users :2
+
+duration : 413, tx :200702161, rx :7353481, txbr :3588, rxbr :547, txAudioBr :76, rxAudioBr :54, users :2
+
+duration : 415, tx :201577633, rx :7451910, txbr :3501, rxbr :393, txAudioBr :75, rxAudioBr :56, users :2
+
+duration : 417, tx :202311116, rx :7526154, txbr :2935, rxbr :297, txAudioBr :76, rxAudioBr :52, users :2
+
+duration : 419, tx :203130297, rx :7580696, txbr :3273, rxbr :217, txAudioBr :77, rxAudioBr :51, users :2
+
+duration : 421, tx :203948899, rx :7638606, txbr :3276, rxbr :231, txAudioBr :82, rxAudioBr :53, users :2
+
+duration : 423, tx :204970116, rx :7699097, txbr :4084, rxbr :241, txAudioBr :73, rxAudioBr :50, users :2
+
+duration : 425, tx :205860920, rx :7756921, txbr :3563, rxbr :231, txAudioBr :82, rxAudioBr :53, users :2
+
+duration : 427, tx :206749797, rx :7815485, txbr :3555, rxbr :234, txAudioBr :84, rxAudioBr :56, users :2
+
+duration : 429, tx :207529220, rx :7886737, txbr :3119, rxbr :285, txAudioBr :81, rxAudioBr :52, users :2
+
+duration : 431, tx :208421270, rx :7965816, txbr :3566, rxbr :316, txAudioBr :81, rxAudioBr :53, users :2
+
+duration : 433, tx :209397774, rx :8051811, txbr :3902, rxbr :343, txAudioBr :83, rxAudioBr :54, users :2
+
+duration : 435, tx :210375321, rx :8144121, txbr :3914, rxbr :369, txAudioBr :75, rxAudioBr :54, users :2
+
+duration : 437, tx :211169570, rx :8242674, txbr :3176, rxbr :394, txAudioBr :84, rxAudioBr :55, users :2
+
+duration : 439, tx :211919086, rx :8349607, txbr :2999, rxbr :427, txAudioBr :81, rxAudioBr :49, users :2
+
+duration : 441, tx :212660043, rx :8472087, txbr :2962, rxbr :489, txAudioBr :79, rxAudioBr :52, users :2
+
+duration : 443, tx :213561060, rx :8612793, txbr :3607, rxbr :563, txAudioBr :79, rxAudioBr :58, users :2
+
+duration : 445, tx :214323654, rx :8751965, txbr :3047, rxbr :556, txAudioBr :78, rxAudioBr :56, users :2
+
+duration : 447, tx :215235860, rx :8884124, txbr :3645, rxbr :528, txAudioBr :77, rxAudioBr :52, users :2
+
+duration : 449, tx :216040101, rx :9000727, txbr :3220, rxbr :466, txAudioBr :81, rxAudioBr :50, users :2
+
+duration : 451, tx :216799727, rx :9136755, txbr :3038, rxbr :544, txAudioBr :81, rxAudioBr :54, users :2
+
+duration : 453, tx :217685141, rx :9289660, txbr :3543, rxbr :611, txAudioBr :76, rxAudioBr :52, users :2
+
+duration : 455, tx :218627463, rx :9415655, txbr :3767, rxbr :503, txAudioBr :78, rxAudioBr :49, users :2
+
+duration : 457, tx :219682483, rx :9563382, txbr :4224, rxbr :591, txAudioBr :82, rxAudioBr :54, users :2
+
+duration : 459, tx :221154132, rx :9720448, txbr :5880, rxbr :627, txAudioBr :75, rxAudioBr :50, users :2
+
+duration : 461, tx :222152206, rx :9848403, txbr :3992, rxbr :511, txAudioBr :73, rxAudioBr :53, users :2
+
+duration : 463, tx :222991870, rx :9971642, txbr :3358, rxbr :492, txAudioBr :84, rxAudioBr :48, users :2
+
+duration : 465, tx :224387241, rx :10144227, txbr :5584, rxbr :690, txAudioBr :79, rxAudioBr :52, users :2
+
+duration : 467, tx :225181699, rx :10271678, txbr :3177, rxbr :509, txAudioBr :83, rxAudioBr :57, users :2
+
+duration : 469, tx :226100656, rx :10400995, txbr :3673, rxbr :517, txAudioBr :80, rxAudioBr :57, users :2
+
+duration : 471, tx :226862532, rx :10552067, txbr :3047, rxbr :604, txAudioBr :81, rxAudioBr :57, users :2
+
+duration : 473, tx :227911631, rx :10689799, txbr :4198, rxbr :551, txAudioBr :78, rxAudioBr :54, users :2
+
+duration : 475, tx :228866433, rx :10822266, txbr :3819, rxbr :529, txAudioBr :77, rxAudioBr :51, users :2
+
+duration : 477, tx :229447790, rx :10954306, txbr :2325, rxbr :528, txAudioBr :81, rxAudioBr :52, users :2
+
+duration : 479, tx :230288481, rx :11078476, txbr :3361, rxbr :496, txAudioBr :79, rxAudioBr :56, users :2
+
+duration : 481, tx :231062422, rx :11247847, txbr :3097, rxbr :677, txAudioBr :82, rxAudioBr :59, users :2
+
+duration : 483, tx :231945693, rx :11290197, txbr :3529, rxbr :169, txAudioBr :82, rxAudioBr :16, users :1
+
+duration : 485, tx :232731812, rx :11293396, txbr :3144, rxbr :12, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 487, tx :233499578, rx :11295476, txbr :3069, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 489, tx :234114440, rx :11297653, txbr :2463, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 491, tx :234761806, rx :11300656, txbr :2588, rxbr :12, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 493, tx :235682319, rx :11304161, txbr :3683, rxbr :14, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 495, tx :236413377, rx :11306537, txbr :2924, rxbr :9, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 497, tx :237114294, rx :11308829, txbr :2799, rxbr :9, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 499, tx :237870771, rx :11311710, txbr :3028, rxbr :11, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 501, tx :238511897, rx :11314979, txbr :2564, rxbr :13, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 503, tx :239089320, rx :11317992, txbr :2309, rxbr :12, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 505, tx :239682524, rx :11320191, txbr :2370, rxbr :8, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 507, tx :240366246, rx :11322118, txbr :2737, rxbr :7, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 509, tx :241075094, rx :11323992, txbr :2836, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 511, tx :241699103, rx :11326558, txbr :2494, rxbr :10, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 513, tx :242804969, rx :11330097, txbr :4425, rxbr :14, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 515, tx :243794950, rx :11333749, txbr :3957, rxbr :14, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 517, tx :244618414, rx :11336170, txbr :3295, rxbr :9, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 519, tx :245273618, rx :11338429, txbr :2612, rxbr :9, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 521, tx :246404391, rx :11342772, txbr :4536, rxbr :17, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 523, tx :247442354, rx :11346068, txbr :4151, rxbr :13, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 525, tx :248617860, rx :11349020, txbr :4699, rxbr :11, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 527, tx :249746146, rx :11352660, txbr :4517, rxbr :14, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 529, tx :250935948, rx :11355484, txbr :4754, rxbr :11, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 531, tx :252160257, rx :11357886, txbr :4899, rxbr :9, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 533, tx :253378763, rx :11360406, txbr :4869, rxbr :10, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 535, tx :254517085, rx :11362777, txbr :4551, rxbr :9, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 537, tx :255287785, rx :11364705, txbr :3087, rxbr :7, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 539, tx :255964290, rx :11366856, txbr :2704, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 541, tx :256396735, rx :11368818, txbr :1729, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 543, tx :256902858, rx :11370766, txbr :2024, rxbr :7, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 545, tx :257335933, rx :11372618, txbr :1731, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 547, tx :257912109, rx :11374668, txbr :2305, rxbr :8, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 549, tx :258375360, rx :11376405, txbr :1853, rxbr :6, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 551, tx :258868275, rx :11378495, txbr :1971, rxbr :8, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 553, tx :259330693, rx :11380494, txbr :1850, rxbr :8, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 555, tx :259766387, rx :11382594, txbr :1741, rxbr :8, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 557, tx :260215467, rx :11384729, txbr :1797, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 559, tx :260742339, rx :11386838, txbr :2106, rxbr :8, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 561, tx :261214314, rx :11388584, txbr :1887, rxbr :6, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 563, tx :261650198, rx :11390623, txbr :1743, rxbr :8, txAudioBr :64, rxAudioBr :0, users :1
+
+duration : 565, tx :262127837, rx :11392482, txbr :1910, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 567, tx :262701536, rx :11394650, txbr :2294, rxbr :8, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 569, tx :263221160, rx :11396888, txbr :2079, rxbr :8, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 571, tx :263766920, rx :11398761, txbr :2181, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 573, tx :264310338, rx :11400536, txbr :2174, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 575, tx :264786316, rx :11402498, txbr :1902, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 577, tx :265376590, rx :11404481, txbr :2361, rxbr :7, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 579, tx :265956738, rx :11406644, txbr :2321, rxbr :8, txAudioBr :65, rxAudioBr :0, users :1
+
+duration : 581, tx :266422234, rx :11408633, txbr :1859, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 583, tx :266858664, rx :11410740, txbr :1747, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 585, tx :267329664, rx :11412486, txbr :1884, rxbr :6, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 587, tx :267882586, rx :11414400, txbr :2210, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 589, tx :268457864, rx :11416577, txbr :2301, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 591, tx :269036111, rx :11418804, txbr :2314, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 593, tx :269515723, rx :11420935, txbr :1917, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 595, tx :269965030, rx :11422849, txbr :1797, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 597, tx :270510670, rx :11424547, txbr :2182, rxbr :6, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 599, tx :271062033, rx :11426586, txbr :2206, rxbr :8, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 601, tx :271703535, rx :11428844, txbr :2564, rxbr :9, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 603, tx :272349845, rx :11430992, txbr :2586, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 605, tx :272902747, rx :11433210, txbr :2210, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 607, tx :273439888, rx :11435124, txbr :2148, rxbr :7, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 609, tx :274045885, rx :11436949, txbr :2423, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 611, tx :274695162, rx :11439020, txbr :2598, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 613, tx :275389776, rx :11441255, txbr :2778, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 615, tx :276065800, rx :11443476, txbr :2704, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 617, tx :276686017, rx :11445622, txbr :2479, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 619, tx :277298061, rx :11447613, txbr :2448, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 621, tx :277919187, rx :11449359, txbr :2485, rxbr :6, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 623, tx :278610712, rx :11451522, txbr :2764, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 625, tx :279310365, rx :11453984, txbr :2800, rxbr :9, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 627, tx :279982147, rx :11455996, txbr :2685, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 629, tx :280624077, rx :11458207, txbr :2567, rxbr :8, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 631, tx :281242692, rx :11460228, txbr :2474, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 633, tx :281877340, rx :11462003, txbr :2538, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 635, tx :282481590, rx :11464043, txbr :2417, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 637, tx :283129790, rx :11466324, txbr :2594, rxbr :9, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 639, tx :283805782, rx :11468409, txbr :2701, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 641, tx :284442529, rx :11470323, txbr :2549, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 643, tx :285057354, rx :11472314, txbr :2458, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 645, tx :285692301, rx :11474071, txbr :2541, rxbr :7, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 647, tx :286345586, rx :11476277, txbr :2610, rxbr :8, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 649, tx :287089197, rx :11478851, txbr :2977, rxbr :10, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 651, tx :287778465, rx :11480906, txbr :2757, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 653, tx :288395946, rx :11482897, txbr :2468, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 655, tx :289024668, rx :11484811, txbr :2516, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 657, tx :289651684, rx :11486666, txbr :2506, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 659, tx :290306580, rx :11489009, txbr :2619, rxbr :9, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 661, tx :290991276, rx :11491391, txbr :2738, rxbr :9, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 663, tx :291664208, rx :11493455, txbr :2691, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 665, tx :292361757, rx :11495369, txbr :2790, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 667, tx :293059491, rx :11497283, txbr :2783, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 669, tx :293615370, rx :11499106, txbr :2229, rxbr :7, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 671, tx :294173223, rx :11501081, txbr :2230, rxbr :7, txAudioBr :64, rxAudioBr :0, users :1
+
+duration : 673, tx :294757713, rx :11503433, txbr :2339, rxbr :9, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 675, tx :295176634, rx :11505086, txbr :1478, rxbr :5, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 677, tx :296386657, rx :11507825, txbr :5582, rxbr :12, txAudioBr :92, rxAudioBr :0, users :1
+
+duration : 679, tx :296970145, rx :11510206, txbr :2332, rxbr :9, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 681, tx :297718895, rx :11512725, txbr :2996, rxbr :10, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 683, tx :298447419, rx :11514766, txbr :2912, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 685, tx :299118988, rx :11517192, txbr :2688, rxbr :9, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 687, tx :299827450, rx :11519844, txbr :2833, rxbr :10, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 689, tx :300580878, rx :11522659, txbr :3009, rxbr :11, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 691, tx :301673244, rx :11527046, txbr :4371, rxbr :17, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 693, tx :302631234, rx :11529251, txbr :3833, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 695, tx :303402792, rx :11531436, txbr :3072, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 697, tx :304274510, rx :11534325, txbr :3504, rxbr :11, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 699, tx :305102215, rx :11537628, txbr :3309, rxbr :13, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 701, tx :305884221, rx :11539651, txbr :3121, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 703, tx :306904539, rx :11542467, txbr :4089, rxbr :11, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 705, tx :307743261, rx :11544297, txbr :3354, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 707, tx :308359170, rx :11546259, txbr :2462, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 709, tx :309064015, rx :11548374, txbr :2820, rxbr :8, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 711, tx :309887748, rx :11550305, txbr :3294, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 713, tx :310791142, rx :11553073, txbr :3613, rxbr :11, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 715, tx :311480296, rx :11555009, txbr :2755, rxbr :7, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 717, tx :312108954, rx :11556755, txbr :2515, rxbr :6, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 719, tx :312753485, rx :11559173, txbr :2578, rxbr :9, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 721, tx :313542120, rx :11562843, txbr :3154, rxbr :14, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 723, tx :314316674, rx :11565185, txbr :3096, rxbr :9, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 725, tx :315038593, rx :11567393, txbr :2889, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 727, tx :315696873, rx :11569252, txbr :2634, rxbr :7, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 729, tx :316466387, rx :11571546, txbr :3074, rxbr :9, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 731, tx :317282991, rx :11574883, txbr :3268, rxbr :13, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 733, tx :318149370, rx :11577876, txbr :3467, rxbr :11, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 735, tx :318949448, rx :11580998, txbr :3200, rxbr :12, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 737, tx :319580799, rx :11583140, txbr :2524, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 739, tx :320232470, rx :11585198, txbr :2607, rxbr :8, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 741, tx :320874502, rx :11586896, txbr :2566, rxbr :6, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 743, tx :321634868, rx :11588870, txbr :3039, rxbr :7, txAudioBr :62, rxAudioBr :0, users :1
+
+duration : 745, tx :322526877, rx :11590995, txbr :3569, rxbr :8, txAudioBr :65, rxAudioBr :0, users :1
+
+duration : 747, tx :323200920, rx :11592916, txbr :2693, rxbr :7, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 749, tx :324008610, rx :11594955, txbr :3229, rxbr :8, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 751, tx :324872408, rx :11596869, txbr :3460, rxbr :7, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 753, tx :325655924, rx :11598512, txbr :3134, rxbr :6, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 755, tx :326445095, rx :11600618, txbr :3156, rxbr :8, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 757, tx :326995128, rx :11602532, txbr :2200, rxbr :7, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 759, tx :327561278, rx :11604530, txbr :2264, rxbr :7, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 761, tx :328282463, rx :11606492, txbr :2881, rxbr :7, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 763, tx :328999780, rx :11608406, txbr :2872, rxbr :7, txAudioBr :63, rxAudioBr :0, users :1
+
+duration : 765, tx :329840334, rx :11610193, txbr :3362, rxbr :7, txAudioBr :65, rxAudioBr :0, users :1
+
+duration : 767, tx :330469472, rx :11612174, txbr :2516, rxbr :7, txAudioBr :63, rxAudioBr :0, users :1
+
+duration : 769, tx :331117459, rx :11614067, txbr :2591, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 771, tx :332046637, rx :11616115, txbr :3718, rxbr :8, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 773, tx :332858942, rx :11618096, txbr :3245, rxbr :7, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 775, tx :333587692, rx :11620087, txbr :2916, rxbr :7, txAudioBr :68, rxAudioBr :0, users :1
+
+duration : 777, tx :334465452, rx :11621833, txbr :3512, rxbr :6, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 779, tx :335567891, rx :11623824, txbr :4409, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 781, tx :336400965, rx :11625786, txbr :3323, rxbr :7, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 783, tx :337174199, rx :11627652, txbr :3099, rxbr :7, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 785, tx :337898800, rx :11629643, txbr :2895, rxbr :7, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 787, tx :338610641, rx :11631557, txbr :2850, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 789, tx :339281210, rx :11633332, txbr :2682, rxbr :7, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 791, tx :340062710, rx :11635246, txbr :3122, rxbr :7, txAudioBr :65, rxAudioBr :0, users :1
+
+duration : 793, tx :340851681, rx :11637105, txbr :3160, rxbr :7, txAudioBr :63, rxAudioBr :0, users :1
+
+duration : 795, tx :341796015, rx :11639870, txbr :3771, rxbr :11, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 797, tx :342566562, rx :11642821, txbr :3085, rxbr :11, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 799, tx :343288725, rx :11645972, txbr :2890, rxbr :12, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 801, tx :344169804, rx :11648253, txbr :3524, rxbr :9, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 803, tx :345029172, rx :11650276, txbr :3435, rxbr :8, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 805, tx :345916927, rx :11652322, txbr :3551, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 807, tx :346904342, rx :11654979, txbr :3949, rxbr :10, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 809, tx :347639747, rx :11656853, txbr :2943, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 811, tx :348429479, rx :11658767, txbr :3158, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 813, tx :349125702, rx :11660417, txbr :2783, rxbr :6, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 815, tx :349893532, rx :11662472, txbr :3071, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 817, tx :350659154, rx :11664683, txbr :3064, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 819, tx :351339056, rx :11666674, txbr :2716, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 821, tx :352196778, rx :11668691, txbr :3434, rxbr :8, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 823, tx :353023161, rx :11670967, txbr :3307, rxbr :9, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 825, tx :353820841, rx :11674093, txbr :3185, rxbr :12, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 827, tx :354647439, rx :11677922, txbr :3308, rxbr :15, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 829, tx :355441754, rx :11680634, txbr :3156, rxbr :10, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 831, tx :356224664, rx :11682500, txbr :3153, rxbr :7, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 833, tx :356988296, rx :11684766, txbr :3053, rxbr :9, txAudioBr :63, rxAudioBr :0, users :1
+
+duration : 835, tx :357642062, rx :11686824, txbr :2615, rxbr :8, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 837, tx :358286304, rx :11690019, txbr :2576, rxbr :12, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 839, tx :359157580, rx :11692918, txbr :3485, rxbr :11, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 841, tx :360008685, rx :11695231, txbr :3404, rxbr :9, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 843, tx :360912312, rx :11698242, txbr :3616, rxbr :12, txAudioBr :64, rxAudioBr :0, users :1
+
+duration : 845, tx :361666685, rx :11700415, txbr :3015, rxbr :8, txAudioBr :63, rxAudioBr :0, users :1
+
+duration : 847, tx :362502340, rx :11702892, txbr :3342, rxbr :9, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 849, tx :363483836, rx :11706210, txbr :3927, rxbr :13, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 851, tx :364427215, rx :11709710, txbr :3771, rxbr :13, txAudioBr :63, rxAudioBr :0, users :1
+
+duration : 853, tx :365343412, rx :11711624, txbr :3666, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 855, tx :366081027, rx :11713678, txbr :2946, rxbr :8, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 857, tx :366608116, rx :11715592, txbr :2111, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 859, tx :367140653, rx :11718053, txbr :2129, rxbr :9, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 861, tx :367652235, rx :11720042, txbr :2046, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 863, tx :368262330, rx :11722021, txbr :2439, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 865, tx :368914392, rx :11724067, txbr :2609, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 867, tx :369571836, rx :11726040, txbr :2629, rxbr :7, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 869, tx :370124758, rx :11728339, txbr :2212, rxbr :9, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 871, tx :370773592, rx :11730665, txbr :2595, rxbr :9, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 873, tx :371394756, rx :11732704, txbr :2484, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 875, tx :372007089, rx :11734745, txbr :2448, rxbr :8, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 877, tx :372704478, rx :11736714, txbr :2790, rxbr :7, txAudioBr :65, rxAudioBr :0, users :1
+
+duration : 879, tx :373275070, rx :11738547, txbr :2282, rxbr :7, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 881, tx :373851844, rx :11740686, txbr :2307, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 883, tx :374406341, rx :11742801, txbr :2216, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 885, tx :375024365, rx :11744641, txbr :2472, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 887, tx :375596623, rx :11746555, txbr :2289, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 889, tx :376167148, rx :11748546, txbr :2282, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 891, tx :376804699, rx :11750617, txbr :2550, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 893, tx :377354641, rx :11752703, txbr :2200, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 895, tx :377999309, rx :11755033, txbr :2578, rxbr :9, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 897, tx :378714896, rx :11757066, txbr :2859, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 899, tx :379591812, rx :11759984, txbr :3509, rxbr :11, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 901, tx :380637761, rx :11762461, txbr :4177, rxbr :9, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 903, tx :381535026, rx :11764272, txbr :3596, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 905, tx :382371212, rx :11767985, txbr :3343, rxbr :14, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 907, tx :383194982, rx :11770357, txbr :3295, rxbr :9, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 909, tx :384122809, rx :11773440, txbr :3711, rxbr :12, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 911, tx :384908040, rx :11775520, txbr :3140, rxbr :8, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 913, tx :385706000, rx :11777379, txbr :3182, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 915, tx :386359946, rx :11779458, txbr :2623, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 917, tx :387056431, rx :11781917, txbr :2784, rxbr :9, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 919, tx :387859570, rx :11783908, txbr :3214, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 921, tx :388697059, rx :11785681, txbr :3351, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 923, tx :389510414, rx :11787595, txbr :3251, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 925, tx :390332447, rx :11790565, txbr :3288, rxbr :11, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 927, tx :391166110, rx :11793778, txbr :3334, rxbr :12, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 929, tx :391993665, rx :11797497, txbr :3311, rxbr :14, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 931, tx :392741554, rx :11800152, txbr :2988, rxbr :10, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 933, tx :393581406, rx :11801850, txbr :3362, rxbr :6, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 935, tx :394450130, rx :11804347, txbr :3474, rxbr :9, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 937, tx :395304939, rx :11806372, txbr :3419, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 939, tx :396110697, rx :11809035, txbr :3221, rxbr :10, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 941, tx :396857899, rx :11812259, txbr :2987, rxbr :12, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 943, tx :397697097, rx :11815520, txbr :3360, rxbr :13, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 945, tx :398532615, rx :11818671, txbr :3338, rxbr :12, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 947, tx :399362731, rx :11820877, txbr :3320, rxbr :8, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 949, tx :400146330, rx :11822868, txbr :3137, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 951, tx :401048638, rx :11824859, txbr :3607, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 953, tx :401964123, rx :11828322, txbr :3661, rxbr :13, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 955, tx :402857761, rx :11831421, txbr :3576, rxbr :12, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 957, tx :403884930, rx :11833403, txbr :4106, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 959, tx :404931598, rx :11835584, txbr :4184, rxbr :8, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 961, tx :405980546, rx :11838651, txbr :4191, rxbr :12, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 963, tx :406810576, rx :11841429, txbr :3325, rxbr :11, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 965, tx :407609924, rx :11844591, txbr :3197, rxbr :12, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 967, tx :408646382, rx :11848209, txbr :4145, rxbr :14, txAudioBr :68, rxAudioBr :0, users :1
+
+duration : 969, tx :409663294, rx :11851399, txbr :4069, rxbr :12, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 971, tx :410828908, rx :11854663, txbr :4657, rxbr :13, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 973, tx :411748462, rx :11857097, txbr :3681, rxbr :9, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 975, tx :412499123, rx :11860235, txbr :3001, rxbr :12, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 977, tx :413326462, rx :11863284, txbr :3307, rxbr :12, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 979, tx :414369550, rx :11868171, txbr :4176, rxbr :19, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 981, tx :415320679, rx :11871084, txbr :3802, rxbr :11, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 983, tx :416246507, rx :11873060, txbr :3705, rxbr :7, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 985, tx :417112064, rx :11875477, txbr :3457, rxbr :9, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 987, tx :417688831, rx :11877343, txbr :2309, rxbr :7, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 989, tx :418373780, rx :11880030, txbr :2741, rxbr :10, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 991, tx :419210973, rx :11882484, txbr :3348, rxbr :9, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 993, tx :420065255, rx :11884253, txbr :3413, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 995, tx :420924364, rx :11886237, txbr :3439, rxbr :7, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 997, tx :421572661, rx :11888151, txbr :2591, rxbr :7, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 999, tx :422301682, rx :11890390, txbr :2916, rxbr :8, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1001, tx :423202415, rx :11894022, txbr :3604, rxbr :14, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1003, tx :424119934, rx :11895936, txbr :3670, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1005, tx :425102707, rx :11897711, txbr :3931, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1007, tx :426015979, rx :11899685, txbr :3649, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1009, tx :426848935, rx :11902231, txbr :3333, rxbr :10, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1011, tx :427725679, rx :11906958, txbr :3508, rxbr :18, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1013, tx :428777669, rx :11911354, txbr :4207, rxbr :17, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1015, tx :429721077, rx :11915095, txbr :3771, rxbr :14, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1017, tx :430634813, rx :11917083, txbr :3651, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1019, tx :431517631, rx :11919262, txbr :3536, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1021, tx :432285930, rx :11921272, txbr :3073, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1023, tx :433161806, rx :11924502, txbr :3503, rxbr :12, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1025, tx :434168900, rx :11928838, txbr :4026, rxbr :17, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1027, tx :435124451, rx :11931395, txbr :3824, rxbr :10, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1029, tx :436037171, rx :11933163, txbr :3647, rxbr :7, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1031, tx :436955922, rx :11935551, txbr :3678, rxbr :9, txAudioBr :68, rxAudioBr :0, users :1
+
+duration : 1033, tx :437884789, rx :11937756, txbr :3713, rxbr :8, txAudioBr :63, rxAudioBr :0, users :1
+
+duration : 1035, tx :438836284, rx :11942050, txbr :3805, rxbr :17, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 1037, tx :439785074, rx :11945332, txbr :3797, rxbr :13, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 1039, tx :440753527, rx :11949028, txbr :3871, rxbr :14, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 1041, tx :441786675, rx :11950841, txbr :4134, rxbr :7, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 1043, tx :442591327, rx :11953674, txbr :3213, rxbr :11, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 1045, tx :443386948, rx :11957083, txbr :3187, rxbr :13, txAudioBr :65, rxAudioBr :0, users :1
+
+duration : 1047, tx :444296216, rx :11960190, txbr :3635, rxbr :12, txAudioBr :68, rxAudioBr :0, users :1
+
+duration : 1049, tx :445235528, rx :11963433, txbr :3759, rxbr :12, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 1051, tx :446170721, rx :11965395, txbr :3738, rxbr :7, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1053, tx :447177483, rx :11967111, txbr :4029, rxbr :6, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1055, tx :448070594, rx :11969205, txbr :3572, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1057, tx :448977302, rx :11971966, txbr :3625, rxbr :11, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 1059, tx :450017365, rx :11976560, txbr :4162, rxbr :18, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1061, tx :450874371, rx :11979154, txbr :3426, rxbr :10, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1063, tx :451755003, rx :11982092, txbr :3522, rxbr :11, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1065, tx :452530851, rx :11984152, txbr :3104, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1067, tx :453172202, rx :11986066, txbr :2564, rxbr :7, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1069, tx :453943050, rx :11988057, txbr :3084, rxbr :7, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1071, tx :454727124, rx :11989923, txbr :3134, rxbr :7, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1073, tx :455330444, rx :11991779, txbr :2413, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1075, tx :455921023, rx :11993715, txbr :2363, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1077, tx :456595190, rx :11995296, txbr :2695, rxbr :6, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1079, tx :457217882, rx :11997337, txbr :2490, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1081, tx :457795894, rx :11999299, txbr :2313, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1083, tx :458354717, rx :12002609, txbr :2234, rxbr :13, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1085, tx :459033518, rx :12004892, txbr :2715, rxbr :9, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1087, tx :459730693, rx :12006806, txbr :2787, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1089, tx :460452438, rx :12008629, txbr :2888, rxbr :7, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1091, tx :461167506, rx :12010543, txbr :2861, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1093, tx :461934615, rx :12012685, txbr :3068, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1095, tx :462661569, rx :12015316, txbr :2904, rxbr :10, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1097, tx :463361490, rx :12017352, txbr :2802, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1099, tx :463934426, rx :12019520, txbr :2291, rxbr :8, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1101, tx :464500192, rx :12021266, txbr :2261, rxbr :6, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1103, tx :465208830, rx :12023750, txbr :2835, rxbr :9, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1105, tx :465888082, rx :12026311, txbr :2715, rxbr :10, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1107, tx :466566776, rx :12028289, txbr :2716, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1109, tx :467176551, rx :12030273, txbr :2436, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1111, tx :467729780, rx :12032187, txbr :2214, rxbr :7, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1113, tx :468342696, rx :12033885, txbr :2452, rxbr :6, txAudioBr :64, rxAudioBr :0, users :1
+
+duration : 1115, tx :469038793, rx :12036038, txbr :2784, rxbr :8, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1117, tx :469715723, rx :12038123, txbr :2707, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1119, tx :470390996, rx :12040756, txbr :2701, rxbr :10, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1121, tx :471108647, rx :12042985, txbr :2870, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1123, tx :471673912, rx :12044899, txbr :2259, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1125, tx :472306339, rx :12046674, txbr :2530, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1127, tx :473056151, rx :12048932, txbr :2997, rxbr :9, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1129, tx :473760938, rx :12051591, txbr :2819, rxbr :10, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1131, tx :474465385, rx :12054027, txbr :2817, rxbr :9, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1133, tx :475181798, rx :12055941, txbr :2865, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1135, tx :475747671, rx :12057932, txbr :2264, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1137, tx :476394532, rx :12059678, txbr :2586, rxbr :6, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1139, tx :477108722, rx :12061783, txbr :2858, rxbr :8, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1141, tx :477817168, rx :12064778, txbr :2830, rxbr :11, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 1143, tx :478552042, rx :12067053, txbr :2940, rxbr :9, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1145, tx :479109918, rx :12069275, txbr :2231, rxbr :8, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1147, tx :479663228, rx :12071189, txbr :2214, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1149, tx :480349124, rx :12072887, txbr :2742, rxbr :6, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1151, tx :481080035, rx :12075783, txbr :2923, rxbr :11, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1153, tx :481796169, rx :12078289, txbr :2865, rxbr :10, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1155, tx :482449124, rx :12080928, txbr :2610, rxbr :10, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1157, tx :483068358, rx :12082842, txbr :2476, rxbr :7, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 1159, tx :483767279, rx :12084756, txbr :2795, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1161, tx :484538977, rx :12086579, txbr :3086, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1163, tx :485330183, rx :12088721, txbr :3164, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1165, tx :486112567, rx :12090940, txbr :3129, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1167, tx :486825064, rx :12092928, txbr :2851, rxbr :7, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1169, tx :487378334, rx :12094890, txbr :2211, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1171, tx :488046922, rx :12096881, txbr :2675, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1173, tx :488769669, rx :12098579, txbr :2889, rxbr :6, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1175, tx :489548355, rx :12101833, txbr :3114, rxbr :13, txAudioBr :65, rxAudioBr :0, users :1
+
+duration : 1177, tx :490317808, rx :12104374, txbr :3079, rxbr :10, txAudioBr :65, rxAudioBr :0, users :1
+
+duration : 1179, tx :490970669, rx :12106603, txbr :2612, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1181, tx :491525611, rx :12108594, txbr :2217, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1183, tx :492139439, rx :12110508, txbr :2455, rxbr :7, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1185, tx :492867916, rx :12112331, txbr :2913, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1187, tx :493662768, rx :12115093, txbr :3177, rxbr :11, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1189, tx :494457846, rx :12117007, txbr :3183, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1191, tx :495239161, rx :12118950, txbr :3125, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1193, tx :495999886, rx :12120864, txbr :3041, rxbr :7, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1195, tx :496714363, rx :12122855, txbr :2857, rxbr :7, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 1197, tx :497467955, rx :12125074, txbr :3015, rxbr :8, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1199, tx :498213314, rx :12127169, txbr :2979, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1201, tx :498957238, rx :12129401, txbr :2977, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1203, tx :499515098, rx :12131267, txbr :2231, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1205, tx :500084314, rx :12133097, txbr :2276, rxbr :7, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 1207, tx :500731108, rx :12135289, txbr :2587, rxbr :8, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 1209, tx :501420343, rx :12136877, txbr :2755, rxbr :6, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1211, tx :502114579, rx :12138758, txbr :2776, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1213, tx :502750257, rx :12140672, txbr :2542, rxbr :7, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 1215, tx :503340075, rx :12142608, txbr :2359, rxbr :7, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1217, tx :503994439, rx :12144522, txbr :2617, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1219, tx :504638114, rx :12147635, txbr :2574, rxbr :12, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1221, tx :505282430, rx :12149513, txbr :2577, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1223, tx :506057119, rx :12151475, txbr :3100, rxbr :7, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1225, tx :506842011, rx :12153466, txbr :3139, rxbr :7, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 1227, tx :507546475, rx :12155344, txbr :2816, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1229, tx :508183312, rx :12157591, txbr :2547, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1231, tx :508766969, rx :12159867, txbr :2335, rxbr :9, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1233, tx :509398142, rx :12161620, txbr :2525, rxbr :7, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1235, tx :510149097, rx :12163611, txbr :3000, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1237, tx :510895847, rx :12165470, txbr :2987, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1239, tx :511651631, rx :12167849, txbr :3026, rxbr :9, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1241, tx :512222573, rx :12169897, txbr :2281, rxbr :8, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1243, tx :512873508, rx :12171925, txbr :2603, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1245, tx :513655127, rx :12173755, txbr :3126, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1247, tx :514405306, rx :12175669, txbr :3002, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1249, tx :515121094, rx :12177528, txbr :2861, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1251, tx :515765669, rx :12179642, txbr :2578, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1253, tx :516350821, rx :12182026, txbr :2339, rxbr :9, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1255, tx :517012878, rx :12184357, txbr :2649, rxbr :9, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1257, tx :517792508, rx :12186000, txbr :3121, rxbr :6, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1259, tx :518565504, rx :12187969, txbr :3090, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1261, tx :519279589, rx :12190020, txbr :2854, rxbr :8, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1263, tx :519825874, rx :12192456, txbr :2185, rxbr :9, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1265, tx :520403010, rx :12194846, txbr :2308, rxbr :9, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1267, tx :521112702, rx :12196929, txbr :2840, rxbr :8, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1269, tx :521776956, rx :12198675, txbr :2654, rxbr :6, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1271, tx :522446560, rx :12200666, txbr :2681, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1273, tx :523115176, rx :12202525, txbr :2674, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1275, tx :523650873, rx :12204920, txbr :2142, rxbr :9, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1277, tx :524299869, rx :12207119, txbr :2594, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1279, tx :524985816, rx :12209373, txbr :2745, rxbr :9, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1281, tx :525675933, rx :12211148, txbr :2760, rxbr :7, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1283, tx :526367025, rx :12213007, txbr :2764, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1285, tx :527139884, rx :12215342, txbr :3091, rxbr :9, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1287, tx :527755111, rx :12218159, txbr :2460, rxbr :11, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1289, tx :528376262, rx :12220358, txbr :2484, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1291, tx :529112371, rx :12222404, txbr :2944, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1293, tx :529879070, rx :12224102, txbr :3066, rxbr :6, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1295, tx :530613817, rx :12226086, txbr :2938, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1297, tx :531345856, rx :12228409, txbr :2926, rxbr :9, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1299, tx :531937256, rx :12230446, txbr :2365, rxbr :8, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1301, tx :532559242, rx :12232606, txbr :2487, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1303, tx :533254091, rx :12234520, txbr :2780, rxbr :7, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 1305, tx :534026877, rx :12236295, txbr :3089, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1307, tx :534796704, rx :12238221, txbr :3080, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1309, tx :535502307, rx :12240192, txbr :2822, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1311, tx :536151915, rx :12242135, txbr :2599, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1313, tx :536801586, rx :12244106, txbr :2597, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1315, tx :537578936, rx :12246152, txbr :3107, rxbr :8, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1317, tx :538326921, rx :12247850, txbr :2993, rxbr :6, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1319, tx :539069279, rx :12249709, txbr :2969, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1321, tx :539706642, rx :12251748, txbr :2549, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1323, tx :540335914, rx :12253671, txbr :2517, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1325, tx :541043622, rx :12255717, txbr :2830, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1327, tx :541801285, rx :12257631, txbr :3029, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1329, tx :542519382, rx :12259274, txbr :2872, rxbr :6, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 1331, tx :543400780, rx :12261389, txbr :3525, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1333, tx :544031655, rx :12263474, txbr :2524, rxbr :8, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1335, tx :544695510, rx :12265693, txbr :2654, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1337, tx :545377083, rx :12267659, txbr :2727, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1339, tx :546103071, rx :12269518, txbr :2903, rxbr :7, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 1341, tx :546762719, rx :12271183, txbr :2638, rxbr :6, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1343, tx :547306157, rx :12273145, txbr :2172, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1345, tx :547829978, rx :12275193, txbr :2096, rxbr :8, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1347, tx :548314832, rx :12277276, txbr :1938, rxbr :8, txAudioBr :68, rxAudioBr :0, users :1
+
+duration : 1349, tx :548814122, rx :12279238, txbr :1997, rxbr :7, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1351, tx :549319100, rx :12281284, txbr :2019, rxbr :8, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1353, tx :549796657, rx :12283030, txbr :1910, rxbr :6, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1355, tx :550275442, rx :12285021, txbr :1914, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1357, tx :550853396, rx :12286935, txbr :2312, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1359, tx :551360540, rx :12288899, txbr :2029, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1361, tx :551858909, rx :12290890, txbr :1993, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1363, tx :552353880, rx :12292909, txbr :1979, rxbr :8, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1365, tx :552865870, rx :12294684, txbr :2046, rxbr :7, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1367, tx :553453622, rx :12296646, txbr :2352, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1369, tx :554023634, rx :12298562, txbr :2278, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1371, tx :554603567, rx :12300975, txbr :2318, rxbr :9, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1373, tx :555101317, rx :12302937, txbr :1992, rxbr :7, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1375, tx :555628856, rx :12304983, txbr :2110, rxbr :8, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1377, tx :556162097, rx :12306681, txbr :2131, rxbr :6, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1379, tx :556715208, rx :12308643, txbr :2212, rxbr :7, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1381, tx :557285302, rx :12310787, txbr :2280, rxbr :8, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 1383, tx :557891448, rx :12312763, txbr :2420, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1385, tx :558491154, rx :12314809, txbr :2403, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1387, tx :559075143, rx :12316723, txbr :2335, rxbr :7, txAudioBr :64, rxAudioBr :0, users :1
+
+duration : 1389, tx :559659934, rx :12318421, txbr :2339, rxbr :6, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1391, tx :560245445, rx :12320412, txbr :2340, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1393, tx :560788580, rx :12322429, txbr :2172, rxbr :8, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1395, tx :561324658, rx :12324427, txbr :2146, rxbr :8, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1397, tx :561858522, rx :12326396, txbr :2133, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1399, tx :562371957, rx :12328310, txbr :2053, rxbr :7, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 1401, tx :562913347, rx :12330085, txbr :2165, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1403, tx :563500267, rx :12331999, txbr :2348, rxbr :7, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1405, tx :564051207, rx :12334093, txbr :2202, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1407, tx :564569761, rx :12336007, txbr :2073, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1409, tx :565107620, rx :12337976, txbr :2152, rxbr :7, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1411, tx :565628036, rx :12339967, txbr :2082, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1413, tx :566169999, rx :12341713, txbr :2167, rxbr :6, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1415, tx :566733105, rx :12343761, txbr :2251, rxbr :8, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 1417, tx :567331739, rx :12345888, txbr :2395, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1419, tx :567936224, rx :12347864, txbr :2417, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1421, tx :568520098, rx :12349855, txbr :2334, rxbr :7, txAudioBr :68, rxAudioBr :0, users :1
+
+duration : 1423, tx :569111079, rx :12351769, txbr :2365, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1425, tx :569700978, rx :12353544, txbr :2359, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1427, tx :570222974, rx :12355673, txbr :2087, rxbr :8, txAudioBr :68, rxAudioBr :0, users :1
+
+duration : 1429, tx :570771645, rx :12357642, txbr :2194, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1431, tx :571300274, rx :12359640, txbr :2112, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1433, tx :571814526, rx :12361602, txbr :2059, rxbr :7, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1435, tx :572327399, rx :12363593, txbr :2052, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1437, tx :572891320, rx :12365291, txbr :2253, rxbr :6, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1439, tx :573449545, rx :12367472, txbr :2234, rxbr :8, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1441, tx :574005912, rx :12369616, txbr :2222, rxbr :8, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1443, tx :574530544, rx :12371537, txbr :2100, rxbr :7, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 1445, tx :575030799, rx :12373528, txbr :2001, rxbr :7, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1447, tx :575575994, rx :12375442, txbr :2181, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1449, tx :576139249, rx :12377302, txbr :2253, rxbr :7, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1451, tx :576743619, rx :12379293, txbr :2415, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1453, tx :577333077, rx :12381262, txbr :2357, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1455, tx :577936681, rx :12383356, txbr :2415, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1457, tx :578527547, rx :12385320, txbr :2363, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1459, tx :579109994, rx :12387234, txbr :2330, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1461, tx :579668464, rx :12389002, txbr :2232, rxbr :7, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1463, tx :580232482, rx :12391129, txbr :2256, rxbr :8, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1465, tx :580781003, rx :12393120, txbr :2195, rxbr :7, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 1467, tx :581303869, rx :12395089, txbr :2091, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1469, tx :581772027, rx :12396831, txbr :1870, rxbr :6, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1471, tx :582288804, rx :12398822, txbr :2068, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1473, tx :582760340, rx :12400458, txbr :1887, rxbr :6, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1475, tx :583241169, rx :12402503, txbr :1922, rxbr :8, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1477, tx :583733999, rx :12404417, txbr :1972, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1479, tx :584246407, rx :12406331, txbr :2048, rxbr :7, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1481, tx :584773966, rx :12408495, txbr :2110, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1483, tx :585344287, rx :12410754, txbr :2281, rxbr :9, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1485, tx :585884510, rx :12412638, txbr :2159, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1487, tx :586357430, rx :12414607, txbr :1893, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1489, tx :586809691, rx :12416521, txbr :1808, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1491, tx :587275187, rx :12418464, txbr :1861, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1493, tx :587911935, rx :12420568, txbr :2546, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1495, tx :588436506, rx :12422537, txbr :2098, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1497, tx :589300472, rx :12425197, txbr :3455, rxbr :10, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1499, tx :590028130, rx :12427513, txbr :2910, rxbr :9, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1501, tx :590925268, rx :12430370, txbr :3588, rxbr :11, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1503, tx :591783765, rx :12434056, txbr :3435, rxbr :14, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1505, tx :592653756, rx :12437551, txbr :3478, rxbr :13, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1507, tx :593494525, rx :12440066, txbr :3363, rxbr :10, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1509, tx :594160094, rx :12442054, txbr :2663, rxbr :7, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1511, tx :594811787, rx :12444093, txbr :2606, rxbr :8, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1513, tx :595578820, rx :12446007, txbr :3068, rxbr :7, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1515, tx :596383064, rx :12447950, txbr :3215, rxbr :7, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 1517, tx :597157836, rx :12449914, txbr :3100, rxbr :7, txAudioBr :64, rxAudioBr :0, users :1
+
+duration : 1519, tx :597981056, rx :12452209, txbr :3291, rxbr :9, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1521, tx :598717263, rx :12454255, txbr :2944, rxbr :8, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1523, tx :599422965, rx :12456169, txbr :2822, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1525, tx :600261901, rx :12458229, txbr :3355, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1527, tx :601147870, rx :12460516, txbr :3545, rxbr :9, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1529, tx :601976469, rx :12462843, txbr :3312, rxbr :9, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1531, tx :602745374, rx :12464855, txbr :3075, rxbr :8, txAudioBr :65, rxAudioBr :0, users :1
+
+duration : 1533, tx :603547000, rx :12466981, txbr :3209, rxbr :8, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 1535, tx :604351162, rx :12468972, txbr :3213, rxbr :7, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 1537, tx :605108652, rx :12470886, txbr :3029, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1539, tx :605856830, rx :12473085, txbr :2994, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1541, tx :606657534, rx :12476441, txbr :3201, rxbr :13, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1543, tx :607439091, rx :12479125, txbr :3124, rxbr :10, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1545, tx :608247160, rx :12481046, txbr :3233, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1547, tx :609040964, rx :12483037, txbr :3175, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1549, tx :609844401, rx :12484951, txbr :3213, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1551, tx :610743396, rx :12487018, txbr :3595, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1553, tx :611648914, rx :12491118, txbr :3622, rxbr :16, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 1555, tx :612429242, rx :12493311, txbr :3121, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1557, tx :613149074, rx :12495304, txbr :2880, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1559, tx :613850546, rx :12497218, txbr :2805, rxbr :7, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1561, tx :614712780, rx :12499257, txbr :3448, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1563, tx :615600012, rx :12501564, txbr :3547, rxbr :9, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1565, tx :616443564, rx :12504570, txbr :3375, rxbr :12, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1567, tx :617174602, rx :12506448, txbr :2924, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1569, tx :617905994, rx :12508362, txbr :2924, rxbr :7, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1571, tx :618807935, rx :12510353, txbr :3607, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1573, tx :619711996, rx :12512324, txbr :3616, rxbr :7, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1575, tx :620578038, rx :12515458, txbr :3464, rxbr :12, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1577, tx :621391761, rx :12518099, txbr :3256, rxbr :10, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1579, tx :622134925, rx :12519900, txbr :2972, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1581, tx :622883725, rx :12521843, txbr :2996, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1583, tx :623769029, rx :12523805, txbr :3535, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1585, tx :624641005, rx :12525776, txbr :3491, rxbr :7, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1587, tx :625414264, rx :12527916, txbr :3091, rxbr :8, txAudioBr :65, rxAudioBr :0, users :1
+
+duration : 1589, tx :626076356, rx :12530556, txbr :2648, rxbr :10, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1591, tx :626754826, rx :12532434, txbr :2713, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1593, tx :627389487, rx :12534300, txbr :2539, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1595, tx :628051936, rx :12536262, txbr :2648, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1597, tx :628755674, rx :12538316, txbr :2816, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1599, tx :629430482, rx :12540190, txbr :2696, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1601, tx :630137634, rx :12543024, txbr :2831, rxbr :11, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1603, tx :630771799, rx :12545091, txbr :2537, rxbr :8, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 1605, tx :631507760, rx :12546797, txbr :2940, rxbr :6, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 1607, tx :632241276, rx :12548843, txbr :2934, rxbr :8, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 1609, tx :632906274, rx :12551072, txbr :2659, rxbr :8, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1611, tx :633465440, rx :12553207, txbr :2237, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1613, tx :634082363, rx :12556173, txbr :2466, rxbr :11, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1615, tx :634656453, rx :12557974, txbr :2297, rxbr :7, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 1617, tx :635350193, rx :12559965, txbr :2773, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1619, tx :636143984, rx :12561927, txbr :3175, rxbr :7, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1621, tx :636923674, rx :12563966, txbr :3120, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1623, tx :637700237, rx :12566009, txbr :3104, rxbr :8, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1625, tx :638459656, rx :12568815, txbr :3040, rxbr :11, txAudioBr :62, rxAudioBr :0, users :1
+
+duration : 1627, tx :639149819, rx :12571008, txbr :2759, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1629, tx :639791819, rx :12572874, txbr :2566, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1631, tx :640397150, rx :12574865, txbr :2422, rxbr :7, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1633, tx :641163897, rx :12576836, txbr :3065, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1635, tx :641948674, rx :12578978, txbr :3140, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1637, tx :642749330, rx :12581150, txbr :3202, rxbr :8, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 1639, tx :643481140, rx :12582841, txbr :2927, rxbr :6, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1641, tx :644170276, rx :12584887, txbr :2756, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1643, tx :644861537, rx :12586801, txbr :2763, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1645, tx :645566051, rx :12588886, txbr :2818, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1647, tx :646277674, rx :12591057, txbr :2846, rxbr :8, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1649, tx :647115529, rx :12593143, txbr :3351, rxbr :8, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1651, tx :647806392, rx :12594966, txbr :2764, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1653, tx :648585551, rx :12596832, txbr :3115, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1655, tx :649360023, rx :12598794, txbr :3099, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1657, tx :650144464, rx :12601149, txbr :3137, rxbr :9, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1659, tx :650917542, rx :12604582, txbr :3090, rxbr :13, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1661, tx :651650825, rx :12606858, txbr :2934, rxbr :9, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1663, tx :652245685, rx :12608604, txbr :2378, rxbr :6, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1665, tx :652827972, rx :12610470, txbr :2330, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1667, tx :653543036, rx :12612518, txbr :2860, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1669, tx :654252075, rx :12614546, txbr :2834, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1671, tx :654894872, rx :12616491, txbr :2572, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1673, tx :655558423, rx :12618815, txbr :2652, rxbr :9, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1675, tx :656115545, rx :12620561, txbr :2229, rxbr :6, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1677, tx :656719177, rx :12622504, txbr :2413, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1679, tx :657466660, rx :12624703, txbr :2991, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1681, tx :658227261, rx :12627944, txbr :3040, rxbr :12, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1683, tx :658940148, rx :12630380, txbr :2852, rxbr :9, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1685, tx :659539998, rx :12632593, txbr :2397, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1687, tx :660135431, rx :12634416, txbr :2382, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1689, tx :660816250, rx :12636337, txbr :2723, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1691, tx :661458490, rx :12638376, txbr :2570, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1693, tx :662132101, rx :12640860, txbr :2694, rxbr :9, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1695, tx :662755453, rx :12643011, txbr :2493, rxbr :8, txAudioBr :64, rxAudioBr :0, users :1
+
+duration : 1697, tx :663378426, rx :12645052, txbr :2491, rxbr :8, txAudioBr :63, rxAudioBr :0, users :1
+
+duration : 1699, tx :663998635, rx :12646798, txbr :2480, rxbr :6, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1701, tx :664751987, rx :12648741, txbr :3011, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1703, tx :665532419, rx :12651332, txbr :3121, rxbr :10, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1705, tx :666304087, rx :12653476, txbr :3088, rxbr :8, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1707, tx :666958096, rx :12655522, txbr :2614, rxbr :8, txAudioBr :62, rxAudioBr :0, users :1
+
+duration : 1709, tx :667468698, rx :12657436, txbr :2043, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1711, tx :668069512, rx :12659259, txbr :2403, rxbr :7, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 1713, tx :668745535, rx :12661173, txbr :2704, rxbr :7, txAudioBr :63, rxAudioBr :0, users :1
+
+duration : 1715, tx :669440951, rx :12663885, txbr :2781, rxbr :10, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1717, tx :670101372, rx :12665935, txbr :2641, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1719, tx :670695175, rx :12667856, txbr :2375, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1721, tx :671424682, rx :12669847, txbr :2916, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1723, tx :672218087, rx :12671593, txbr :3172, rxbr :6, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1725, tx :673008363, rx :12673516, txbr :3164, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1727, tx :673814105, rx :12675671, txbr :3221, rxbr :8, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1729, tx :674586602, rx :12678329, txbr :3091, rxbr :10, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1731, tx :675376199, rx :12680461, txbr :3156, rxbr :8, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1733, tx :676161623, rx :12682423, txbr :3143, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1735, tx :676929707, rx :12684169, txbr :3072, rxbr :6, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1737, tx :677702504, rx :12686107, txbr :3089, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1739, tx :678449017, rx :12688075, txbr :2986, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1741, tx :679238275, rx :12690563, txbr :3158, rxbr :9, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1743, tx :679972066, rx :12692673, txbr :2935, rxbr :8, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1745, tx :680784708, rx :12694818, txbr :3250, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1747, tx :681587857, rx :12696641, txbr :3210, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1749, tx :682366258, rx :12698555, txbr :3115, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1751, tx :683094482, rx :12700879, txbr :2912, rxbr :9, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 1753, tx :684027640, rx :12703642, txbr :3730, rxbr :11, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 1755, tx :685331292, rx :12708352, txbr :5212, rxbr :18, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 1757, tx :686305999, rx :12710870, txbr :3898, rxbr :10, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1759, tx :687246832, rx :12712863, txbr :3765, rxbr :7, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 1761, tx :688222344, rx :12715009, txbr :3902, rxbr :8, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 1763, tx :689098572, rx :12717268, txbr :3503, rxbr :9, txAudioBr :61, rxAudioBr :0, users :1
+
+duration : 1765, tx :689999867, rx :12719578, txbr :3606, rxbr :9, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 1767, tx :690809451, rx :12721576, txbr :3238, rxbr :7, txAudioBr :62, rxAudioBr :0, users :1
+
+duration : 1769, tx :691624346, rx :12723538, txbr :3259, rxbr :7, txAudioBr :63, rxAudioBr :0, users :1
+
+duration : 1771, tx :692463037, rx :12725306, txbr :3354, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1773, tx :693295994, rx :12727477, txbr :3331, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1775, tx :694206599, rx :12729562, txbr :3642, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1777, tx :695071965, rx :12731894, txbr :3461, rxbr :9, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1779, tx :695943387, rx :12734364, txbr :3487, rxbr :9, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1781, tx :696796318, rx :12736647, txbr :3411, rxbr :9, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1783, tx :697948251, rx :12739274, txbr :4605, rxbr :10, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1785, tx :699202380, rx :12743882, txbr :5016, rxbr :18, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 1787, tx :700357704, rx :12747445, txbr :4600, rxbr :14, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1789, tx :701382261, rx :12749486, txbr :4116, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1791, tx :702358536, rx :12751364, txbr :3905, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1793, tx :703460665, rx :12753626, txbr :4408, rxbr :9, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1795, tx :704471926, rx :12756022, txbr :4047, rxbr :9, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1797, tx :705355030, rx :12760092, txbr :3530, rxbr :16, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1799, tx :706187139, rx :12763359, txbr :3323, rxbr :13, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1801, tx :707003662, rx :12765398, txbr :3267, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1803, tx :707830966, rx :12767151, txbr :3312, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1805, tx :708603257, rx :12769127, txbr :3089, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1807, tx :709398839, rx :12771878, txbr :3182, rxbr :11, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1809, tx :710229902, rx :12775521, txbr :3324, rxbr :14, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 1811, tx :711064302, rx :12778196, txbr :3335, rxbr :10, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1813, tx :711901527, rx :12780165, txbr :3350, rxbr :7, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1815, tx :712674430, rx :12782018, txbr :3093, rxbr :7, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 1817, tx :713674709, rx :12784155, txbr :4001, rxbr :8, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 1819, tx :714568329, rx :12787280, txbr :3572, rxbr :12, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 1821, tx :715390025, rx :12791327, txbr :3290, rxbr :16, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 1823, tx :716241035, rx :12793526, txbr :3400, rxbr :8, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 1825, tx :717141395, rx :12795596, txbr :3601, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1827, tx :717951469, rx :12797815, txbr :3240, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1829, tx :718605449, rx :12799674, txbr :2617, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1831, tx :719219593, rx :12801834, txbr :2456, rxbr :8, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 1833, tx :719875940, rx :12803973, txbr :2625, rxbr :8, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 1835, tx :720539774, rx :12805887, txbr :2652, rxbr :7, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 1837, tx :721162899, rx :12807878, txbr :2496, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1839, tx :721756899, rx :12809624, txbr :2374, rxbr :6, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1841, tx :722414900, rx :12811734, txbr :2630, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1843, tx :723048618, rx :12813933, txbr :2534, rxbr :8, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1845, tx :723657263, rx :12815902, txbr :2435, rxbr :7, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1847, tx :724286581, rx :12817948, txbr :2516, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1849, tx :724865932, rx :12819807, txbr :2318, rxbr :7, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1851, tx :725414046, rx :12821630, txbr :2191, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1853, tx :726015381, rx :12823737, txbr :2405, rxbr :8, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 1855, tx :726647902, rx :12825886, txbr :2530, rxbr :8, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 1857, tx :727280921, rx :12827939, txbr :2532, rxbr :8, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 1859, tx :727913737, rx :12829908, txbr :2531, rxbr :7, txAudioBr :62, rxAudioBr :0, users :1
+
+duration : 1861, tx :728545132, rx :12831947, txbr :2525, rxbr :8, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 1863, tx :729170077, rx :12833590, txbr :2499, rxbr :6, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1865, tx :729779635, rx :12835632, txbr :2438, rxbr :8, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1867, tx :730375226, rx :12837901, txbr :2382, rxbr :9, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 1869, tx :730977218, rx :12839883, txbr :2405, rxbr :7, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 1871, tx :731531886, rx :12841819, txbr :2217, rxbr :7, txAudioBr :62, rxAudioBr :0, users :1
+
+duration : 1873, tx :732107718, rx :12843733, txbr :2306, rxbr :7, txAudioBr :63, rxAudioBr :0, users :1
+
+duration : 1875, tx :732698878, rx :12845637, txbr :2364, rxbr :7, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 1877, tx :733283046, rx :12847687, txbr :2336, rxbr :8, txAudioBr :63, rxAudioBr :0, users :1
+
+duration : 1879, tx :733823482, rx :12849436, txbr :2161, rxbr :6, txAudioBr :68, rxAudioBr :0, users :1
+
+duration : 1881, tx :734423576, rx :12851609, txbr :2401, rxbr :8, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 1883, tx :734993029, rx :12853636, txbr :2277, rxbr :8, txAudioBr :68, rxAudioBr :0, users :1
+
+duration : 1885, tx :735557103, rx :12855495, txbr :2256, rxbr :7, txAudioBr :68, rxAudioBr :0, users :1
+
+duration : 1887, tx :736131097, rx :12857318, txbr :2297, rxbr :7, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1889, tx :736767106, rx :12859335, txbr :2541, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1891, tx :737391322, rx :12861326, txbr :2496, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1893, tx :738035001, rx :12863489, txbr :2576, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1895, tx :738643028, rx :12865719, txbr :2429, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1897, tx :739198325, rx :12867710, txbr :2223, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1899, tx :739752725, rx :12869408, txbr :2215, rxbr :6, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1901, tx :740396032, rx :12871447, txbr :2574, rxbr :8, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1903, tx :740985568, rx :12873539, txbr :2359, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1905, tx :741576016, rx :12875681, txbr :2360, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1907, tx :742162396, rx :12877923, txbr :2345, rxbr :8, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1909, tx :742741015, rx :12879837, txbr :2314, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1911, tx :743316368, rx :12881612, txbr :2302, rxbr :7, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 1913, tx :743893442, rx :12883574, txbr :2307, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1915, tx :744449894, rx :12885557, txbr :2225, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1917, tx :745052663, rx :12887820, txbr :2412, rxbr :9, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1919, tx :745638917, rx :12889851, txbr :2343, rxbr :8, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1921, tx :746207804, rx :12891890, txbr :2276, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1923, tx :746793567, rx :12893588, txbr :2343, rxbr :6, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1925, tx :747334912, rx :12895550, txbr :2164, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1927, tx :747883969, rx :12897679, txbr :2196, rxbr :8, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1929, tx :748454411, rx :12899865, txbr :2280, rxbr :8, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1931, tx :749033749, rx :12901904, txbr :2319, rxbr :8, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1933, tx :749620753, rx :12903763, txbr :2348, rxbr :7, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 1935, tx :750205446, rx :12905564, txbr :2338, rxbr :7, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 1937, tx :750754383, rx :12907555, txbr :2195, rxbr :7, txAudioBr :63, rxAudioBr :0, users :1
+
+duration : 1939, tx :751381592, rx :12909603, txbr :2508, rxbr :8, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 1941, tx :751950133, rx :12911845, txbr :2273, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1943, tx :752570896, rx :12913818, txbr :2480, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1945, tx :753171915, rx :12915732, txbr :2406, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1947, tx :753798889, rx :12917507, txbr :2509, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1949, tx :754425447, rx :12919421, txbr :2504, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1951, tx :755089774, rx :12921799, txbr :2657, rxbr :9, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1953, tx :755718157, rx :12923793, txbr :2514, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1955, tx :756341258, rx :12925707, txbr :2491, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 1957, tx :756947168, rx :12927698, txbr :2423, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 1959, tx :757534893, rx :12929396, txbr :2352, rxbr :6, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1961, tx :758119882, rx :12931387, txbr :2338, rxbr :7, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 1963, tx :758738839, rx :12933556, txbr :2477, rxbr :8, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1965, tx :759354872, rx :12935491, txbr :2462, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 1967, tx :759968957, rx :12937482, txbr :2457, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1969, tx :760618683, rx :12939341, txbr :2597, rxbr :7, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 1971, tx :761227220, rx :12941332, txbr :2434, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1973, tx :761841213, rx :12943384, txbr :2455, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 1975, tx :762455887, rx :12945639, txbr :2459, rxbr :9, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 1977, tx :763055569, rx :12947630, txbr :2397, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 1979, tx :763654525, rx :12949544, txbr :2395, rxbr :7, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 1981, tx :764320815, rx :12951583, txbr :2666, rxbr :8, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 1983, tx :764939009, rx :12953281, txbr :2471, rxbr :6, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 1985, tx :765585299, rx :12955402, txbr :2585, rxbr :8, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 1987, tx :766237466, rx :12957644, txbr :2608, rxbr :8, txAudioBr :68, rxAudioBr :0, users :1
+
+duration : 1989, tx :766866554, rx :12959510, txbr :2516, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1991, tx :767498854, rx :12961501, txbr :2530, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 1993, tx :768154145, rx :12963415, txbr :2619, rxbr :7, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 1995, tx :768747239, rx :12965113, txbr :2372, rxbr :6, txAudioBr :68, rxAudioBr :0, users :1
+
+duration : 1997, tx :769418207, rx :12967491, txbr :2683, rxbr :9, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 1999, tx :770026424, rx :12969543, txbr :2432, rxbr :8, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 2001, tx :770601756, rx :12971486, txbr :2301, rxbr :7, txAudioBr :61, rxAudioBr :0, users :1
+
+duration : 2003, tx :771186817, rx :12973400, txbr :2336, rxbr :7, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 2005, tx :771807707, rx :12975314, txbr :2488, rxbr :7, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 2007, tx :772420901, rx :12977356, txbr :2451, rxbr :8, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 2009, tx :773073066, rx :12979639, txbr :2609, rxbr :9, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 2011, tx :773638562, rx :12981589, txbr :2260, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2013, tx :774242608, rx :12983620, txbr :2416, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 2015, tx :774855538, rx :12985596, txbr :2451, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 2017, tx :775459687, rx :12987477, txbr :2416, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2019, tx :776047061, rx :12989223, txbr :2349, rxbr :6, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2021, tx :776682173, rx :12991430, txbr :2540, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2023, tx :777276681, rx :12993289, txbr :2379, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2025, tx :777834104, rx :12995323, txbr :2229, rxbr :8, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2027, tx :778444352, rx :12997410, txbr :2439, rxbr :8, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 2029, tx :778999644, rx :12999269, txbr :2221, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2031, tx :779598638, rx :13001044, txbr :2397, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2033, tx :780208853, rx :13003061, txbr :2439, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 2035, tx :780805885, rx :13004975, txbr :2388, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 2037, tx :781427083, rx :13007173, txbr :2486, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2039, tx :782036777, rx :13009204, txbr :2438, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 2041, tx :782632904, rx :13011166, txbr :2384, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2043, tx :783234177, rx :13012996, txbr :2403, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2045, tx :783845796, rx :13014905, txbr :2446, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 2047, tx :784465150, rx :13016951, txbr :2477, rxbr :8, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 2049, tx :785090613, rx :13019009, txbr :2501, rxbr :8, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 2051, tx :785717113, rx :13021116, txbr :2504, rxbr :8, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2053, tx :786340953, rx :13023162, txbr :2497, rxbr :8, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 2055, tx :786972663, rx :13024908, txbr :2525, rxbr :6, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2057, tx :787614800, rx :13026899, txbr :2568, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2059, tx :788253122, rx :13028878, txbr :2554, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 2061, tx :788935719, rx :13031128, txbr :2729, rxbr :8, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 2063, tx :789579775, rx :13033188, txbr :2577, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2065, tx :790259205, rx :13035152, txbr :2715, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2067, tx :790895787, rx :13037030, txbr :2547, rxbr :7, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 2069, tx :791545230, rx :13038992, txbr :2599, rxbr :7, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2071, tx :792172482, rx :13040916, txbr :2507, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2073, tx :792841412, rx :13043355, txbr :2677, rxbr :9, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 2075, tx :793477331, rx :13045269, txbr :2541, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2077, tx :794087139, rx :13047260, txbr :2441, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 2079, tx :794725408, rx :13049013, txbr :2551, rxbr :7, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 2081, tx :795346861, rx :13050982, txbr :2485, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 2083, tx :796012792, rx :13053234, txbr :2665, rxbr :9, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 2085, tx :796674255, rx :13055370, txbr :2644, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 2087, tx :797285781, rx :13057361, txbr :2447, rxbr :7, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 2089, tx :797920555, rx :13059330, txbr :2537, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2091, tx :798636375, rx :13060918, txbr :2864, rxbr :6, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 2093, tx :799277093, rx :13062854, txbr :2561, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2095, tx :799957412, rx :13065106, txbr :2721, rxbr :9, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 2097, tx :800574040, rx :13066829, txbr :2466, rxbr :6, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 2099, tx :801166102, rx :13068688, txbr :2368, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2101, tx :801716799, rx :13070705, txbr :2203, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 2103, tx :802256470, rx :13072480, txbr :2158, rxbr :7, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2105, tx :802810897, rx :13074463, txbr :2216, rxbr :7, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 2107, tx :803377998, rx :13076697, txbr :2268, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 2109, tx :803955773, rx :13078881, txbr :2311, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 2111, tx :804502934, rx :13080740, txbr :2188, rxbr :7, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 2113, tx :805067056, rx :13082786, txbr :2257, rxbr :8, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 2115, tx :805670719, rx :13084532, txbr :2413, rxbr :6, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 2117, tx :806241030, rx :13086650, txbr :2282, rxbr :8, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2119, tx :806929929, rx :13088946, txbr :2755, rxbr :9, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 2121, tx :807528919, rx :13091025, txbr :2394, rxbr :8, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 2123, tx :808212956, rx :13093064, txbr :2737, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2125, tx :808845269, rx :13095033, txbr :2529, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2127, tx :809453524, rx :13096856, txbr :2433, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 2129, tx :810094889, rx :13099023, txbr :2564, rxbr :8, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2131, tx :810728672, rx :13101181, txbr :2536, rxbr :8, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2133, tx :811382114, rx :13103179, txbr :2612, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 2135, tx :811989680, rx :13105196, txbr :2430, rxbr :8, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2137, tx :812609152, rx :13107187, txbr :2476, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2139, tx :813208513, rx :13108950, txbr :2399, rxbr :7, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 2141, tx :813866528, rx :13111234, txbr :2630, rxbr :9, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 2143, tx :814577277, rx :13113463, txbr :2844, rxbr :8, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 2145, tx :815222602, rx :13115329, txbr :2581, rxbr :7, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2147, tx :815869559, rx :13117313, txbr :2585, rxbr :7, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 2149, tx :816483646, rx :13119172, txbr :2457, rxbr :7, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 2151, tx :817132894, rx :13120880, txbr :2596, rxbr :6, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 2153, tx :817781447, rx :13123053, txbr :2595, rxbr :8, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2155, tx :818375102, rx :13124920, txbr :2374, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 2157, tx :818887479, rx :13126976, txbr :2049, rxbr :8, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2159, tx :819323908, rx :13128893, txbr :1744, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 2161, tx :819846644, rx :13130975, txbr :2090, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2163, tx :820344915, rx :13132750, txbr :1994, rxbr :7, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 2165, tx :820816292, rx :13134657, txbr :1884, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2167, tx :821351314, rx :13136757, txbr :2141, rxbr :8, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 2169, tx :821943692, rx :13138692, txbr :2369, rxbr :7, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 2171, tx :822502694, rx :13140912, txbr :2236, rxbr :8, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 2173, tx :823075071, rx :13143089, txbr :2288, rxbr :8, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 2175, tx :823625988, rx :13144732, txbr :2203, rxbr :6, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 2177, tx :824101778, rx :13146778, txbr :1903, rxbr :8, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 2179, tx :824570689, rx :13148692, txbr :1875, rxbr :7, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2181, tx :825192514, rx :13150617, txbr :2488, rxbr :7, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 2183, tx :825808241, rx :13152766, txbr :2461, rxbr :8, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2185, tx :826430498, rx :13154749, txbr :2489, rxbr :7, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 2187, tx :827059419, rx :13156587, txbr :2518, rxbr :7, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 2189, tx :827681547, rx :13158604, txbr :2487, rxbr :8, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 2191, tx :828311466, rx :13160518, txbr :2518, rxbr :7, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2193, tx :828640487, rx :13162124, txbr :1316, rxbr :6, txAudioBr :84, rxAudioBr :0, users :1
+
+duration : 2195, tx :828987306, rx :13164034, txbr :1375, rxbr :7, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 2197, tx :829108734, rx :13165432, txbr :489, rxbr :5, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 2199, tx :829169182, rx :13166530, txbr :241, rxbr :4, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2201, tx :829231205, rx :13167722, txbr :248, rxbr :4, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2203, tx :829313958, rx :13169048, txbr :331, rxbr :5, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2205, tx :829387050, rx :13170247, txbr :292, rxbr :4, txAudioBr :65, rxAudioBr :0, users :1
+
+duration : 2207, tx :829476692, rx :13171516, txbr :358, rxbr :5, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 2209, tx :829566482, rx :13172715, txbr :359, rxbr :4, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 2211, tx :829634035, rx :13173698, txbr :270, rxbr :3, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 2213, tx :829724889, rx :13174967, txbr :363, rxbr :5, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 2215, tx :829822073, rx :13176111, txbr :388, rxbr :4, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2217, tx :829927843, rx :13177339, txbr :423, rxbr :4, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 2219, tx :830101137, rx :13178531, txbr :692, rxbr :4, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 2221, tx :830260546, rx :13179778, txbr :638, rxbr :4, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 2223, tx :830482317, rx :13180838, txbr :887, rxbr :4, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 2225, tx :830678954, rx :13181982, txbr :786, rxbr :4, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 2227, tx :830823146, rx :13183258, txbr :576, rxbr :5, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2229, tx :830936641, rx :13184409, txbr :453, rxbr :4, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2231, tx :831057656, rx :13185553, txbr :484, rxbr :4, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2233, tx :831191681, rx :13186829, txbr :536, rxbr :5, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2235, tx :831426439, rx :13187871, txbr :939, rxbr :4, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2237, tx :831611333, rx :13189140, txbr :739, rxbr :5, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 2239, tx :831816561, rx :13190394, txbr :821, rxbr :5, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 2241, tx :831983215, rx :13191545, txbr :665, rxbr :4, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 2243, tx :832142207, rx :13192766, txbr :636, rxbr :4, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 2245, tx :832311598, rx :13193965, txbr :677, rxbr :4, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2247, tx :832480152, rx :13195025, txbr :674, rxbr :4, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 2249, tx :832646258, rx :13196169, txbr :664, rxbr :4, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 2251, tx :832815842, rx :13197368, txbr :677, rxbr :4, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2253, tx :832983670, rx :13198596, txbr :671, rxbr :4, txAudioBr :83, rxAudioBr :0, users :1
+
+duration : 2255, tx :833144931, rx :13199740, txbr :644, rxbr :4, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 2257, tx :833312940, rx :13201016, txbr :673, rxbr :5, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2259, tx :833482942, rx :13201999, txbr :680, rxbr :3, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2261, tx :833645874, rx :13203143, txbr :651, rxbr :4, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2263, tx :833810047, rx :13204419, txbr :656, rxbr :5, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 2265, tx :833976319, rx :13205570, txbr :665, rxbr :4, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 2267, tx :834134652, rx :13206791, txbr :633, rxbr :4, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 2269, tx :834302249, rx :13207990, txbr :670, rxbr :4, txAudioBr :68, rxAudioBr :0, users :1
+
+duration : 2271, tx :834470352, rx :13208973, txbr :672, rxbr :3, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 2273, tx :834631474, rx :13210194, txbr :644, rxbr :4, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2275, tx :834800891, rx :13211393, txbr :678, rxbr :4, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 2277, tx :834971364, rx :13212621, txbr :681, rxbr :4, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2279, tx :835144774, rx :13213889, txbr :693, rxbr :5, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2281, tx :835316372, rx :13215184, txbr :687, rxbr :5, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2283, tx :835486539, rx :13216244, txbr :680, rxbr :4, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2285, tx :835646466, rx :13217388, txbr :639, rxbr :4, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 2287, tx :835817524, rx :13218664, txbr :684, rxbr :5, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2289, tx :835991217, rx :13219863, txbr :694, rxbr :4, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 2291, tx :836156001, rx :13221007, txbr :658, rxbr :4, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 2293, tx :836322987, rx :13222283, txbr :668, rxbr :5, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2295, tx :836490539, rx :13223266, txbr :670, rxbr :3, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2297, tx :836653588, rx :13224487, txbr :652, rxbr :4, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 2299, tx :836822642, rx :13225686, txbr :675, rxbr :4, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2301, tx :836988864, rx :13226935, txbr :665, rxbr :4, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 2303, tx :837150550, rx :13228156, txbr :646, rxbr :4, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2305, tx :837317946, rx :13229355, txbr :670, rxbr :4, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 2307, tx :837492075, rx :13230415, txbr :696, rxbr :4, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 2309, tx :837654468, rx :13231559, txbr :649, rxbr :4, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 2311, tx :837831568, rx :13232758, txbr :708, rxbr :4, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 2313, tx :838009427, rx :13233986, txbr :711, rxbr :4, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 2315, tx :838176600, rx :13235130, txbr :669, rxbr :4, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 2317, tx :838348187, rx :13236406, txbr :685, rxbr :5, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 2319, tx :838515343, rx :13237389, txbr :669, rxbr :3, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2321, tx :838676881, rx :13238533, txbr :646, rxbr :4, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 2323, tx :838845621, rx :13239809, txbr :674, rxbr :5, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 2325, tx :839014835, rx :13240960, txbr :676, rxbr :4, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 2327, tx :839174389, rx :13242181, txbr :637, rxbr :4, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 2329, tx :839336725, rx :13243380, txbr :649, rxbr :4, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 2331, tx :839519127, rx :13244363, txbr :729, rxbr :3, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2333, tx :839682118, rx :13245584, txbr :652, rxbr :4, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 2335, tx :839856831, rx :13246783, txbr :698, rxbr :4, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 2337, tx :840026759, rx :13248011, txbr :679, rxbr :4, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 2339, tx :840190632, rx :13249155, txbr :655, rxbr :4, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 2341, tx :840357963, rx :13250402, txbr :669, rxbr :4, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2343, tx :840526965, rx :13251462, txbr :675, rxbr :4, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 2345, tx :840691437, rx :13252606, txbr :657, rxbr :4, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 2347, tx :840858912, rx :13253882, txbr :670, rxbr :5, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2349, tx :841027769, rx :13255033, txbr :674, rxbr :4, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 2351, tx :841197720, rx :13256177, txbr :680, rxbr :4, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 2353, tx :841371834, rx :13257453, txbr :696, rxbr :5, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 2355, tx :841543159, rx :13258436, txbr :685, rxbr :3, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 2357, tx :841708996, rx :13259657, txbr :664, rxbr :4, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 2359, tx :841881244, rx :13260856, txbr :688, rxbr :4, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2361, tx :842051618, rx :13262055, txbr :681, rxbr :4, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 2363, tx :842216483, rx :13263276, txbr :658, rxbr :4, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2365, tx :842380890, rx :13264475, txbr :657, rxbr :4, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 2367, tx :842547168, rx :13265585, txbr :664, rxbr :4, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2369, tx :842707917, rx :13266729, txbr :642, rxbr :4, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 2371, tx :842878622, rx :13267928, txbr :683, rxbr :4, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 2373, tx :843050131, rx :13269156, txbr :686, rxbr :4, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 2375, tx :843217646, rx :13270300, txbr :669, rxbr :4, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 2377, tx :843383173, rx :13271576, txbr :662, rxbr :5, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 2379, tx :843554519, rx :13272672, txbr :685, rxbr :4, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 2381, tx :843713033, rx :13273816, txbr :634, rxbr :4, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2383, tx :843882777, rx :13275092, txbr :679, rxbr :5, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2385, tx :844050124, rx :13276243, txbr :669, rxbr :4, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 2387, tx :844213332, rx :13277577, txbr :653, rxbr :5, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 2389, tx :844379240, rx :13278776, txbr :663, rxbr :4, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2391, tx :844545142, rx :13279759, txbr :663, rxbr :3, txAudioBr :68, rxAudioBr :0, users :1
+
+duration : 2393, tx :844709216, rx :13281078, txbr :655, rxbr :5, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 2395, tx :844886563, rx :13282342, txbr :710, rxbr :5, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2397, tx :845052615, rx :13283618, txbr :663, rxbr :5, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 2399, tx :845210157, rx :13284762, txbr :630, rxbr :4, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 2401, tx :845372058, rx :13286064, txbr :647, rxbr :5, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 2403, tx :845531918, rx :13287124, txbr :640, rxbr :4, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 2405, tx :845691676, rx :13288491, txbr :638, rxbr :5, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2407, tx :845849415, rx :13289767, txbr :631, rxbr :5, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 2409, tx :846008897, rx :13290918, txbr :637, rxbr :4, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 2411, tx :846162585, rx :13292062, txbr :614, rxbr :4, txAudioBr :65, rxAudioBr :0, users :1
+
+duration : 2413, tx :846332702, rx :13293451, txbr :680, rxbr :5, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 2415, tx :846487648, rx :13294434, txbr :619, rxbr :3, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 2417, tx :846653560, rx :13295655, txbr :663, rxbr :4, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 2419, tx :846818317, rx :13296758, txbr :659, rxbr :4, txAudioBr :65, rxAudioBr :0, users :1
+
+duration : 2421, tx :846980651, rx :13297902, txbr :649, rxbr :4, txAudioBr :64, rxAudioBr :0, users :1
+
+duration : 2423, tx :847146707, rx :13299237, txbr :663, rxbr :5, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2425, tx :847317398, rx :13300580, txbr :683, rxbr :5, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 2427, tx :847493343, rx :13301696, txbr :704, rxbr :4, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 2429, tx :847650903, rx :13302895, txbr :629, rxbr :4, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 2431, tx :847819667, rx :13304207, txbr :675, rxbr :5, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 2433, tx :847981925, rx :13305380, txbr :648, rxbr :4, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 2435, tx :848153011, rx :13306640, txbr :684, rxbr :5, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2437, tx :848318741, rx :13307964, txbr :662, rxbr :5, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2439, tx :848480750, rx :13308892, txbr :648, rxbr :3, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 2441, tx :848637560, rx :13310091, txbr :627, rxbr :4, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 2443, tx :848803378, rx :13311367, txbr :663, rxbr :5, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 2445, tx :848970962, rx :13312570, txbr :670, rxbr :4, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 2447, tx :849142002, rx :13313846, txbr :683, rxbr :5, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 2449, tx :849308011, rx :13315045, txbr :664, rxbr :4, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 2451, tx :849473701, rx :13315973, txbr :663, rxbr :3, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 2453, tx :849632527, rx :13317249, txbr :634, rxbr :5, txAudioBr :65, rxAudioBr :0, users :1
+
+duration : 2455, tx :849796633, rx :13318564, txbr :656, rxbr :5, txAudioBr :64, rxAudioBr :0, users :1
+
+duration : 2457, tx :849957412, rx :13319737, txbr :643, rxbr :4, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 2459, tx :850114145, rx :13320936, txbr :626, rxbr :4, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2461, tx :850275264, rx :13322015, txbr :644, rxbr :4, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 2463, tx :850434792, rx :13323188, txbr :637, rxbr :4, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 2465, tx :850601302, rx :13324387, txbr :666, rxbr :4, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 2467, tx :850763454, rx :13325783, txbr :648, rxbr :5, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 2469, tx :850929782, rx :13326927, txbr :665, rxbr :4, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 2471, tx :851103097, rx :13328246, txbr :692, rxbr :5, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2473, tx :851268258, rx :13329354, txbr :661, rxbr :4, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2475, tx :851431272, rx :13330450, txbr :652, rxbr :4, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 2477, tx :851584202, rx :13331726, txbr :611, rxbr :5, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2479, tx :851744026, rx :13332925, txbr :639, rxbr :4, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2481, tx :851902323, rx :13334021, txbr :632, rxbr :4, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2483, tx :852054742, rx :13335297, txbr :609, rxbr :5, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 2485, tx :852218853, rx :13336328, txbr :656, rxbr :4, txAudioBr :74, rxAudioBr :0, users :1
+
+duration : 2487, tx :852388521, rx :13337566, txbr :678, rxbr :4, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 2489, tx :852551758, rx :13338813, txbr :653, rxbr :4, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 2491, tx :852715702, rx :13340012, txbr :655, rxbr :4, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 2493, tx :852880149, rx :13341233, txbr :657, rxbr :4, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 2495, tx :853033619, rx :13342432, txbr :613, rxbr :4, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2497, tx :853192754, rx :13343540, txbr :636, rxbr :4, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2499, tx :853347473, rx :13344684, txbr :618, rxbr :4, txAudioBr :63, rxAudioBr :0, users :1
+
+duration : 2501, tx :853514804, rx :13345883, txbr :670, rxbr :4, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 2503, tx :853681247, rx :13347159, txbr :665, rxbr :5, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2505, tx :853840847, rx :13348255, txbr :638, rxbr :4, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 2507, tx :854010359, rx :13349579, txbr :677, rxbr :5, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 2509, tx :854175148, rx :13350610, txbr :659, rxbr :4, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2511, tx :854341979, rx :13351706, txbr :667, rxbr :4, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2513, tx :854505674, rx :13353030, txbr :654, rxbr :5, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2515, tx :854672399, rx :13354229, txbr :667, rxbr :4, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 2517, tx :854833073, rx :13355402, txbr :642, rxbr :4, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2519, tx :854994965, rx :13356601, txbr :647, rxbr :4, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 2521, tx :855156151, rx :13357680, txbr :644, rxbr :4, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 2523, tx :855312919, rx :13358853, txbr :627, rxbr :4, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 2525, tx :855466940, rx :13360052, txbr :616, rxbr :4, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 2527, tx :855630114, rx :13361316, txbr :653, rxbr :5, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 2529, tx :855782298, rx :13362585, txbr :608, rxbr :5, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 2531, tx :855945866, rx :13363784, txbr :654, rxbr :4, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2533, tx :856107315, rx :13364892, txbr :645, rxbr :4, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 2535, tx :856265146, rx :13366036, txbr :631, rxbr :4, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 2537, tx :856434654, rx :13367235, txbr :677, rxbr :4, txAudioBr :77, rxAudioBr :0, users :1
+
+duration : 2539, tx :856603312, rx :13368511, txbr :674, rxbr :5, txAudioBr :72, rxAudioBr :0, users :1
+
+duration : 2541, tx :856760000, rx :13369607, txbr :626, rxbr :4, txAudioBr :61, rxAudioBr :0, users :1
+
+duration : 2543, tx :856921496, rx :13370931, txbr :645, rxbr :5, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 2545, tx :857085041, rx :13371962, txbr :653, rxbr :4, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 2547, tx :857242536, rx :13373058, txbr :629, rxbr :4, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 2549, tx :857393979, rx :13374382, txbr :606, rxbr :5, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 2551, tx :857555420, rx :13375581, txbr :645, rxbr :4, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 2553, tx :857720444, rx :13376815, txbr :660, rxbr :4, txAudioBr :73, rxAudioBr :0, users :1
+
+duration : 2555, tx :857879130, rx :13378062, txbr :634, rxbr :4, txAudioBr :69, rxAudioBr :0, users :1
+
+duration : 2557, tx :858046792, rx :13379152, txbr :670, rxbr :4, txAudioBr :67, rxAudioBr :0, users :1
+
+duration : 2559, tx :858209788, rx :13380325, txbr :651, rxbr :4, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 2561, tx :858377055, rx :13381524, txbr :668, rxbr :4, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2563, tx :858552414, rx :13383018, txbr :701, rxbr :5, txAudioBr :82, rxAudioBr :0, users :1
+
+duration : 2565, tx :858709650, rx :13384114, txbr :628, rxbr :4, txAudioBr :66, rxAudioBr :0, users :1
+
+duration : 2567, tx :858873256, rx :13385313, txbr :654, rxbr :4, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 2569, tx :859037704, rx :13386421, txbr :657, rxbr :4, txAudioBr :71, rxAudioBr :0, users :1
+
+duration : 2571, tx :859198413, rx :13387517, txbr :642, rxbr :4, txAudioBr :79, rxAudioBr :0, users :1
+
+duration : 2573, tx :859363572, rx :13388793, txbr :660, rxbr :5, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 2575, tx :859531543, rx :13389992, txbr :671, rxbr :4, txAudioBr :80, rxAudioBr :0, users :1
+
+duration : 2577, tx :859692239, rx :13391088, txbr :642, rxbr :4, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2579, tx :859859963, rx :13392364, txbr :670, rxbr :5, txAudioBr :81, rxAudioBr :0, users :1
+
+duration : 2581, tx :860034750, rx :13393443, txbr :699, rxbr :4, txAudioBr :76, rxAudioBr :0, users :1
+
+duration : 2583, tx :860200154, rx :13394616, txbr :660, rxbr :4, txAudioBr :78, rxAudioBr :0, users :1
+
+duration : 2585, tx :860369299, rx :13395384, txbr :676, rxbr :3, txAudioBr :70, rxAudioBr :0, users :1
+
+duration : 2587, tx :860529826, rx :13395384, txbr :642, rxbr :0, txAudioBr :75, rxAudioBr :0, users :1
+
+duration : 2589, tx :860642023, rx :13395384, txbr :449, rxbr :0, txAudioBr :51, rxAudioBr :0, users :0
+
+duration : 2591, tx :860644152, rx :13395384, txbr :8, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2593, tx :860645723, rx :13395384, txbr :6, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2595, tx :860647284, rx :13395384, txbr :6, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2597, tx :860650980, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2599, tx :860652723, rx :13395384, txbr :6, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2601, tx :860657497, rx :13395384, txbr :19, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2603, tx :860660023, rx :13395384, txbr :10, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2605, tx :860662778, rx :13395384, txbr :11, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2607, tx :860668190, rx :13395384, txbr :21, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2609, tx :860669710, rx :13395384, txbr :6, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2611, tx :860676505, rx :13395384, txbr :27, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2613, tx :860680034, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2615, tx :860681318, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2617, tx :860689738, rx :13395384, txbr :33, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2619, tx :860690399, rx :13395384, txbr :2, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2621, tx :860699035, rx :13395384, txbr :34, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2623, tx :860702881, rx :13395384, txbr :15, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2625, tx :860703520, rx :13395384, txbr :2, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2627, tx :860712387, rx :13395384, txbr :35, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2629, tx :860713643, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2631, tx :860721455, rx :13395384, txbr :31, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2633, tx :860725052, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2635, tx :860725939, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2637, tx :860734455, rx :13395384, txbr :34, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2639, tx :860735737, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2641, tx :860746941, rx :13395384, txbr :44, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2643, tx :860750671, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2645, tx :860751560, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2647, tx :860763294, rx :13395384, txbr :46, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2649, tx :860764524, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2651, tx :860775393, rx :13395384, txbr :43, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2653, tx :860779329, rx :13395384, txbr :15, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2655, tx :860780190, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2657, tx :860789116, rx :13395384, txbr :35, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2659, tx :860789979, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2661, tx :860798835, rx :13395384, txbr :35, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2663, tx :860803023, rx :13395384, txbr :16, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2665, tx :860803910, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2667, tx :860812169, rx :13395384, txbr :33, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2669, tx :860813659, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2671, tx :860822789, rx :13395384, txbr :36, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2673, tx :860826068, rx :13395384, txbr :13, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2675, tx :860827356, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2677, tx :860836420, rx :13395384, txbr :36, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2679, tx :860837450, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2681, tx :860846318, rx :13395384, txbr :35, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2683, tx :860850216, rx :13395384, txbr :15, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2685, tx :860851244, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2687, tx :860860063, rx :13395384, txbr :35, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2689, tx :860861321, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2691, tx :860869485, rx :13395384, txbr :32, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2693, tx :860873212, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2695, tx :860874674, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2697, tx :860883650, rx :13395384, txbr :35, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2699, tx :860884932, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2701, tx :860896933, rx :13395384, txbr :47, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2703, tx :860900601, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2705, tx :860901883, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2707, tx :860913386, rx :13395384, txbr :46, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2709, tx :860914223, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2711, tx :860925979, rx :13395384, txbr :47, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2713, tx :860929863, rx :13395384, txbr :15, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2715, tx :860931095, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2717, tx :860940293, rx :13395384, txbr :36, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2719, tx :860941549, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2721, tx :860950697, rx :13395384, txbr :36, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2723, tx :860954442, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2725, tx :860955309, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2727, tx :860964223, rx :13395384, txbr :35, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2729, tx :860965709, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2731, tx :860974488, rx :13395384, txbr :35, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2733, tx :860978113, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2735, tx :860979395, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2737, tx :860989271, rx :13395384, txbr :39, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2739, tx :860990507, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2741, tx :860999536, rx :13395384, txbr :36, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2743, tx :861002959, rx :13395384, txbr :13, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2745, tx :861003989, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2747, tx :861013385, rx :13395384, txbr :37, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2749, tx :861014639, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2751, tx :861023853, rx :13395384, txbr :36, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2753, tx :861027703, rx :13395384, txbr :15, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2755, tx :861028957, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2757, tx :861037677, rx :13395384, txbr :34, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2759, tx :861038592, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2761, tx :861049673, rx :13395384, txbr :44, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2763, tx :861053259, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2765, tx :861054541, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2767, tx :861066013, rx :13395384, txbr :45, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2769, tx :861066848, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2771, tx :861078237, rx :13395384, txbr :45, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2773, tx :861082053, rx :13395384, txbr :15, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2775, tx :861083287, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2777, tx :861091719, rx :13395384, txbr :33, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2779, tx :861092975, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2781, tx :861101277, rx :13395384, txbr :33, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2783, tx :861104557, rx :13395384, txbr :13, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2785, tx :861105819, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2787, tx :861114617, rx :13395384, txbr :35, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2789, tx :861116103, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2791, tx :861125711, rx :13395384, txbr :38, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2793, tx :861128876, rx :13395384, txbr :12, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2795, tx :861129791, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2797, tx :861139071, rx :13395384, txbr :37, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2799, tx :861140105, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2801, tx :861148711, rx :13395384, txbr :34, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2803, tx :861152493, rx :13395384, txbr :15, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2805, tx :861153525, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2807, tx :861162255, rx :13395384, txbr :34, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2809, tx :861163118, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2811, tx :861171467, rx :13395384, txbr :33, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2813, tx :861175277, rx :13395384, txbr :15, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2815, tx :861176533, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2817, tx :861185253, rx :13395384, txbr :34, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2819, tx :861185773, rx :13395384, txbr :2, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2821, tx :861197769, rx :13395384, txbr :47, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2823, tx :861201321, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2825, tx :861202234, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2827, tx :861213924, rx :13395384, txbr :46, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2829, tx :861215160, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2831, tx :861226870, rx :13395384, txbr :46, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2833, tx :861230856, rx :13395384, txbr :15, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2835, tx :861231717, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2837, tx :861240490, rx :13395384, txbr :35, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2839, tx :861241746, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2841, tx :861250316, rx :13395384, txbr :34, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2843, tx :861253999, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2845, tx :861255261, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2847, tx :861263728, rx :13395384, txbr :33, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2849, tx :861265212, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2851, tx :861274620, rx :13395384, txbr :37, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2853, tx :861278154, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2855, tx :861279069, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2857, tx :861288711, rx :13395384, txbr :38, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2859, tx :861289350, rx :13395384, txbr :2, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2861, tx :861298437, rx :13395384, txbr :36, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2863, tx :861302515, rx :13395384, txbr :16, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2865, tx :861303545, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2867, tx :861311936, rx :13395384, txbr :33, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2869, tx :861313196, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2871, tx :861321153, rx :13395384, txbr :31, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2873, tx :861325007, rx :13395384, txbr :15, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2875, tx :861325896, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2877, tx :861335168, rx :13395384, txbr :37, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2879, tx :861336055, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2881, tx :861347601, rx :13395384, txbr :46, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2883, tx :861351409, rx :13395384, txbr :15, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2885, tx :861352691, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2887, tx :861364521, rx :13395384, txbr :47, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2889, tx :861365553, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2891, tx :861377014, rx :13395384, txbr :45, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2893, tx :861380461, rx :13395384, txbr :13, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2895, tx :861381489, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2897, tx :861391015, rx :13395384, txbr :38, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2899, tx :861392271, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2901, tx :861400797, rx :13395384, txbr :34, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2903, tx :861404667, rx :13395384, txbr :15, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2905, tx :861406131, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2907, tx :861414893, rx :13395384, txbr :35, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2909, tx :861416177, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2911, tx :861424402, rx :13395384, txbr :32, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2913, tx :861428020, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2915, tx :861429302, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2917, tx :861438053, rx :13395384, txbr :35, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2919, tx :861439081, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2921, tx :861447936, rx :13395384, txbr :35, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2923, tx :861451834, rx :13395384, txbr :15, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2925, tx :861452868, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2927, tx :861461467, rx :13395384, txbr :34, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2929, tx :861462354, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2931, tx :861471100, rx :13395384, txbr :35, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2933, tx :861475028, rx :13395384, txbr :15, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2935, tx :861476284, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2937, tx :861485006, rx :13395384, txbr :34, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2939, tx :861486292, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2941, tx :861497401, rx :13395384, txbr :44, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2943, tx :861501065, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2945, tx :861502349, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2947, tx :861513692, rx :13395384, txbr :45, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2949, tx :861514922, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2951, tx :861526456, rx :13395384, txbr :46, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2953, tx :861529961, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2955, tx :861530824, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2957, tx :861540024, rx :13395384, txbr :36, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2959, tx :861541282, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2961, tx :861550930, rx :13395384, txbr :38, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2963, tx :861554481, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2965, tx :861555737, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2967, tx :861564395, rx :13395384, txbr :34, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2969, tx :861565683, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2971, tx :861573603, rx :13395384, txbr :31, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2973, tx :861577267, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2975, tx :861578551, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2977, tx :861587489, rx :13395384, txbr :35, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2979, tx :861588122, rx :13395384, txbr :2, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2981, tx :861597352, rx :13395384, txbr :36, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2983, tx :861601252, rx :13395384, txbr :15, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2985, tx :861601913, rx :13395384, txbr :2, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2987, tx :861610643, rx :13395384, txbr :34, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2989, tx :861611728, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2991, tx :861620208, rx :13395384, txbr :33, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2993, tx :861623761, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2995, tx :861625015, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2997, tx :861633627, rx :13395384, txbr :34, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 2999, tx :861634915, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3001, tx :861646517, rx :13395384, txbr :46, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3003, tx :861649790, rx :13395384, txbr :13, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3005, tx :861650705, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3007, tx :861662611, rx :13395384, txbr :47, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3009, tx :861663841, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3011, tx :861675573, rx :13395384, txbr :46, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3013, tx :861679100, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3015, tx :861680334, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3017, tx :861689536, rx :13395384, txbr :36, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3019, tx :861690621, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3021, tx :861699253, rx :13395384, txbr :34, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3023, tx :861703167, rx :13395384, txbr :15, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3025, tx :861704056, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3027, tx :861713410, rx :13395384, txbr :37, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3029, tx :861714696, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3031, tx :861724197, rx :13395384, txbr :38, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3033, tx :861727857, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3035, tx :861728772, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3037, tx :861737914, rx :13395384, txbr :36, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3039, tx :861739146, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3041, tx :861747515, rx :13395384, txbr :33, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3043, tx :861751627, rx :13395384, txbr :16, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3045, tx :861752661, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3047, tx :861761674, rx :13395384, txbr :36, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3049, tx :861763136, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3051, tx :861773008, rx :13395384, txbr :39, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3053, tx :861776922, rx :13395384, txbr :15, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3055, tx :861778212, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3057, tx :861786927, rx :13395384, txbr :34, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3059, tx :861787820, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3061, tx :861799268, rx :13395384, txbr :45, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3063, tx :861802561, rx :13395384, txbr :13, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3065, tx :861803843, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3067, tx :861815170, rx :13395384, txbr :45, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3069, tx :861816398, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3071, tx :861827666, rx :13395384, txbr :45, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3073, tx :861831764, rx :13395384, txbr :16, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3075, tx :861832599, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3077, tx :861842023, rx :13395384, txbr :37, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3079, tx :861843283, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3081, tx :861853347, rx :13395384, txbr :40, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3083, tx :861857263, rx :13395384, txbr :15, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3085, tx :861858152, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3087, tx :861867484, rx :13395384, txbr :37, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3089, tx :861868764, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3091, tx :861877547, rx :13395384, txbr :35, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3093, tx :861881209, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3095, tx :861882497, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3097, tx :861891798, rx :13395384, txbr :37, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3099, tx :861892824, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3101, tx :861901397, rx :13395384, txbr :34, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3103, tx :861905291, rx :13395384, txbr :15, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3105, tx :861906319, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3107, tx :861915057, rx :13395384, txbr :34, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3109, tx :861916319, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3111, tx :861924670, rx :13395384, txbr :33, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3113, tx :861928217, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3115, tx :861929475, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3117, tx :861938421, rx :13395384, txbr :35, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3119, tx :861939308, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3121, tx :861949855, rx :13395384, txbr :42, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3123, tx :861953519, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3125, tx :861954839, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3127, tx :861966753, rx :13395384, txbr :47, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3129, tx :861967983, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3131, tx :861980503, rx :13395384, txbr :50, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3133, tx :861983631, rx :13395384, txbr :12, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3135, tx :861984893, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3137, tx :861994133, rx :13395384, txbr :36, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3139, tx :861995395, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3141, tx :862004577, rx :13395384, txbr :36, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3143, tx :862008330, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3145, tx :862009808, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3147, tx :862018768, rx :13395384, txbr :35, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3149, tx :862019655, rx :13395384, txbr :3, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3151, tx :862028767, rx :13395384, txbr :36, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3153, tx :862032639, rx :13395384, txbr :15, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3155, tx :862033921, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3157, tx :862043547, rx :13395384, txbr :38, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3159, tx :862044581, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3161, tx :862054174, rx :13395384, txbr :38, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3163, tx :862057669, rx :13395384, txbr :13, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3165, tx :862058697, rx :13395384, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3167, tx :862067802, rx :13395384, txbr :36, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3169, tx :862069318, rx :13395384, txbr :6, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3171, tx :862079079, rx :13395384, txbr :39, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3173, tx :862082612, rx :13395384, txbr :14, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3175, tx :862084859, rx :13395384, txbr :8, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3177, tx :862094535, rx :13395384, txbr :38, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3179, tx :862096003, rx :13395384, txbr :5, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 3181, tx :862108546, rx :13395384, txbr :50, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 9974, tx :862112347, rx :13395384, txbr :0, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 9995, tx :862114917, rx :13395384, txbr :0, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 9995, tx :862115363, rx :13395384, txbr :74, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 9997, tx :862122337, rx :13397424, txbr :28, rxbr :8, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 9999, tx :862122337, rx :13397616, txbr :0, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 10001, tx :862123407, rx :13397712, txbr :4, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 10003, tx :862123407, rx :13398000, txbr :0, rxbr :1, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 10005, tx :862123953, rx :13398192, txbr :2, rxbr :0, txAudioBr :0, rxAudioBr :0, users :0
+
+duration : 10007, tx :862127585, rx :13399248, txbr :14, rxbr :4, txAudioBr :0, rxAudioBr :0, users :0
+
