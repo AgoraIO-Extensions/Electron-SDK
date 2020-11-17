@@ -605,6 +605,15 @@ namespace agora {
             break; \
         }
 
+#define CHECK_NAPI_STATUS_PARAM(engine, status, key) \
+        if(status != napi_ok) { \
+            LOG_ERROR("Error :%s, :%d, error key: ***\"%s\"***\n", __FUNCTION__, __LINE__, key.c_str()); \
+            char errMessage[256];\
+            sprintf(errMessage, "%s, error key: ******* \"%s\" *******, call", __FUNCTION__, key.c_str()); \
+            engine->m_eventHandler->fireApiError(errMessage); \
+            break; \
+        }
+
 #define CHECK_ARG_NUM(engine, args, num) \
         if(args.Length() < num) { \
             CHECK_NAPI_STATUS(engine, napi_invalid_arg); \
