@@ -166,6 +166,16 @@ std::vector<ScreenWindowInfo> getAllWindowInfo(uint32_t options)
         if (!CFNumberGetValue(layerNumber, kCFNumberSInt32Type, &layer) || layer != 0) {
             continue;
         }
+
+        CFStringRef name = static_cast<CFStringRef>(CFDictionaryGetValue(windowDic, kCGWindowName));
+        if (name) {
+            auto length = CFStringGetLength(name);
+            if (length == 0) {
+                continue;
+            }
+        } else {
+            continue;
+        }
         
         ScreenWindowInfo screenWindow;
         if (!setWindowInfoWithDictionary(screenWindow, windowDic)) {
@@ -179,8 +189,9 @@ std::vector<ScreenWindowInfo> getAllWindowInfo(uint32_t options)
         if (screenShot) {
             copyImageDataToWindowInfo(screenShot, screenWindow);
             CGImageRelease(screenShot);
+            windows.push_back(screenWindow);
         }
-        windows.push_back(screenWindow);
+        
     }
     CFRelease(windowDicCFArray);
     
