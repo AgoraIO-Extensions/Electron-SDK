@@ -574,14 +574,21 @@ namespace agora {
                         if (status == napi_ok) {
                             videoInputStreams[i].imageUrl = imageUrlList[i];
                         }
-                        napi_get_object_property_int32_(isolate, videoInputStreamObj, "x", videoInputStreams[i].x);
+						double x, y, width, height;
+						napi_get_object_property_double_(isolate, videoInputStreamObj, "x", x);
                         CHECK_NAPI_STATUS(pEngine, status);
-                        napi_get_object_property_int32_(isolate, videoInputStreamObj, "y", videoInputStreams[i].y);
+						napi_get_object_property_double_(isolate, videoInputStreamObj, "y", y);
                         CHECK_NAPI_STATUS(pEngine, status);
-                        napi_get_object_property_int32_(isolate, videoInputStreamObj, "width", videoInputStreams[i].width);
+						napi_get_object_property_double_(isolate, videoInputStreamObj, "width", width);
                         CHECK_NAPI_STATUS(pEngine, status);
-                        napi_get_object_property_int32_(isolate, videoInputStreamObj, "height", videoInputStreams[i].height);
+						napi_get_object_property_double_(isolate, videoInputStreamObj, "height", height);
                         CHECK_NAPI_STATUS(pEngine, status);
+
+						videoInputStreams[i].x = (int)x;
+						videoInputStreams[i].y = (int)y;
+						videoInputStreams[i].width = (int)width;
+						videoInputStreams[i].height = (int)height;
+
                         napi_get_object_property_int32_(isolate, videoInputStreamObj, "zOrder", videoInputStreams[i].zOrder);
                         napi_get_object_property_double_(isolate, videoInputStreamObj, "alpha", videoInputStreams[i].alpha);
                     }
@@ -734,14 +741,19 @@ namespace agora {
                         napi_get_object_property_nodestring_(isolate, videoInputStreamObj, "imageUrl", imageUrlList[i]);
                         CHECK_NAPI_STATUS(pEngine, status);
                         videoInputStreams[i].imageUrl = imageUrlList[i];
-                        napi_get_object_property_int32_(isolate, videoInputStreamObj, "x", videoInputStreams[i].x);
+						double x, y, width, height;
+						napi_get_object_property_double_(isolate, videoInputStreamObj, "x", x);
                         CHECK_NAPI_STATUS(pEngine, status);
-                        napi_get_object_property_int32_(isolate, videoInputStreamObj, "y", videoInputStreams[i].y);
+						napi_get_object_property_double_(isolate, videoInputStreamObj, "y", y);
                         CHECK_NAPI_STATUS(pEngine, status);
-                        napi_get_object_property_int32_(isolate, videoInputStreamObj, "width", videoInputStreams[i].width);
+						napi_get_object_property_double_(isolate, videoInputStreamObj, "width", width);
                         CHECK_NAPI_STATUS(pEngine, status);
-                        napi_get_object_property_int32_(isolate, videoInputStreamObj, "height", videoInputStreams[i].height);
+						napi_get_object_property_double_(isolate, videoInputStreamObj, "height", height);
                         CHECK_NAPI_STATUS(pEngine, status);
+						videoInputStreams[i].x = (int)x;
+						videoInputStreams[i].y = (int)y;
+						videoInputStreams[i].width = (int)width;
+						videoInputStreams[i].height = (int)height;
                         napi_get_object_property_int32_(isolate, videoInputStreamObj, "zOrder", videoInputStreams[i].zOrder);
                         CHECK_NAPI_STATUS(pEngine, status);
                         napi_get_object_property_double_(isolate, videoInputStreamObj, "alpha", videoInputStreams[i].alpha);
