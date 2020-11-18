@@ -3293,7 +3293,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @return {Array} The array list of the window ID and relevant information.
    */
   getScreenWindowsInfo(options: number): Array<Object> {
-    let defaultValue = (1 << 0) | (1 << 4)
+    let defaultValue = (0) | (1 << 4)
     let value = (options === null || options === undefined) ? defaultValue : options;
     return this.rtcEngine.getScreenWindowsInfo(value);
   }
