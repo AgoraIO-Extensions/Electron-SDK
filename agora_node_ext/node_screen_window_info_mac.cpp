@@ -186,8 +186,8 @@ std::vector<ScreenWindowInfo> getAllWindowInfo()
         if (screenShot) {
             copyImageDataToWindowInfo(screenShot, screenWindow);
             CGImageRelease(screenShot);
+            windows.push_back(screenWindow);
         }
-        windows.push_back(screenWindow);
     }
     CFRelease(windowDicCFArray);
     
