@@ -451,15 +451,15 @@ export default class App extends Component {
   handleDragStop = (e,d) => {
     let {x, y, node} = d
     // console.log(`drag stop: id: ${node.id} ${x} ${y}`)
-    // let sourceId = this.reverseSourceId(node.id)
-    // this.updateSource(sourceId, {x: x, y: y})
+    let sourceId = this.reverseSourceId(node.id)
+    this.updateSource(sourceId, {x: x, y: y})
   }
   
   handleDrag = (e,d) => {
     let {x, y, node} = d
     // console.log(`drag : id: ${node.id} ${x} ${y}`)
-    let sourceId = this.reverseSourceId(node.id)
-    this.updateSource(sourceId, {x: x, y: y})
+    // let sourceId = this.reverseSourceId(node.id)
+    // this.updateSource(sourceId, {x: x, y: y})
   }
 
   handleResizeStop = (e, direction, ref, delta, position) => {
