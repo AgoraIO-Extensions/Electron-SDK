@@ -17,7 +17,7 @@ class IScreenCaptureObserver;
  */
 class IScreenCapturer : public RefCountInterface {
  public:
-#if defined(TARGET_OS_MAC) && !defined(TARGET_OS_IPHONE)
+#if defined(TARGET_OS_MAC) && !TARGET_OS_IPHONE
   /**
    * Initializes the screen capturer by specifying a display ID.
    *

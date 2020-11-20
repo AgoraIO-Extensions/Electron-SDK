@@ -2065,9 +2065,15 @@ enum VIDEO_SOURCE_TYPE {
   /** Video for media player.
    */
   VIDEO_SOURCE_MEDIA_PLAYER,
-  /** Video for rtc image.
+  /** Video for png image.
    */
-  VIDEO_SOURCE_RTC_IMAGE,
+  VIDEO_SOURCE_RTC_IMAGE_PNG,
+  /** Video for png image.
+   */
+  VIDEO_SOURCE_RTC_IMAGE_JPEG,
+  /** Video for png image.
+   */
+  VIDEO_SOURCE_RTC_IMAGE_GIF,
   /** Remote video received from network.
    */
   VIDEO_SOURCE_REMOTE,

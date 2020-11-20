@@ -17,7 +17,7 @@ static const int kAdmMaxGuidSize = 128;
 static const int kIntervalInMillseconds = 200;
 
 
-#if defined(_WIN32) || (!defined(TARGET_OS_IPHONE)) && defined(TARGET_OS_MAC)
+#if defined(_WIN32) || (!TARGET_OS_IPHONE) && defined(TARGET_OS_MAC)
 /**
  * The struct of AudioDeviceInfo.
  *
@@ -220,7 +220,7 @@ public:
   virtual int getCurrentRouting(AudioRoute& route) = 0;
 #endif
 
-#if defined(_WIN32) || (!defined(TARGET_OS_IPHONE)) && defined(TARGET_OS_MAC)
+#if defined(_WIN32) || (!TARGET_OS_IPHONE) && defined(TARGET_OS_MAC)
   /**
    * Gets the index numbers of all audio playout devices.
    *
