@@ -21,6 +21,11 @@ namespace agora {
             return true;
         }
 
+        bool NodeVideoFrameObserver::onSecondaryCameraCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame)
+        {
+            return false;
+        }
+
         bool NodeVideoFrameObserver::onRenderVideoFrame(rtc::uid_t uid, rtc::conn_id_t connectionId, agora::media::IVideoFrameObserver::VideoFrame& videoFrame)
         {
             auto *pTransporter = getNodeVideoFrameTransporter();
@@ -37,6 +42,12 @@ namespace agora {
             return false;
         }
 
+        bool NodeVideoFrameObserver::onSecondaryScreenCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame)
+        {
+            return false;
+        }
+
+
         bool NodeVideoFrameObserver::onTranscodedVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame)
         {
             auto *pTransporter = getNodeVideoFrameTransporter();
@@ -44,5 +55,11 @@ namespace agora {
 
             return false;
         }
+
+        agora::media::IVideoFrameObserver::VIDEO_FRAME_PROCESS_MODE NodeVideoFrameObserver::getVideoFrameProcessMode()
+        {
+            return agora::media::IVideoFrameObserver::PROCESS_MODE_READ_WRITE;
+        }
+
     }
 }
