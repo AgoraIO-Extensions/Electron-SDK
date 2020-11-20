@@ -62,7 +62,7 @@ export default class App extends Component {
       this.rtcEngine = new AgoraRtcEngine()
       this.rtcEngine.initialize(APP_ID)
       // this.rtcEngine.setRenderMode(2)
-
+      // this.rtcEngine.setLogFile("./agorartc.log")
       this.mediaPlayer = this.rtcEngine.createMediaPlayer();
       this.mediaPlayer.initEventHandler();
       this.mediaPlayer.on('onPlayerStateChanged', (state, ec)=>{
@@ -254,7 +254,7 @@ export default class App extends Component {
     rtcEngine.registerMediaMetadataObserver();
     rtcEngine.setAudioProfile(0, 1)
     let logpath = path.resolve(__dirname, "./agoramain.sdk")
-    rtcEngine.setLogFile(logpath)
+
     rtcEngine.enableWebSdkInteroperability(true)
     if(encoderWidth === 0 && encoderHeight === 0) {
 
@@ -308,9 +308,45 @@ export default class App extends Component {
   handleAddImage = () => {
     let sources = this.state.sources || []
     
-    let filePath = path.resolve(__dirname, "../../static/gif.gif")
+    let filePath = path.resolve(__dirname, "../../static/plugin.png")
     sources.push({
       sourceType: 6,
+      connectionId: 0,
+      x: 0,
+      y: 0,
+      width: 360,
+      height: 240,
+      zOrder: 1,
+      alpha: 0,
+      imageUrl: filePath
+    })
+    this.setState({sources})
+  }
+
+  handleAddJpg = () => {
+    let sources = this.state.sources || []
+  
+    let filePath = path.resolve(__dirname, "../../static/jpg.jpg")
+    sources.push({
+      sourceType: 7,
+      connectionId: 0,
+      x: 0,
+      y: 0,
+      width: 360,
+      height: 240,
+      zOrder: 1,
+      alpha: 0,
+      imageUrl: filePath
+    })
+    this.setState({sources})
+  }
+
+  handleAddGif = () => {
+    let sources = this.state.sources || []
+  
+    let filePath = path.resolve(__dirname, "../../static/gif.gif")
+    sources.push({
+      sourceType: 8,
       connectionId: 0,
       x: 0,
       y: 0,
@@ -326,7 +362,7 @@ export default class App extends Component {
   handleAddRemote = (uid) => {
     let sources = this.state.sources || []
     sources.push({
-      sourceType: 7,
+      sourceType: 9,
       connectionId: 0,
       remoteUserUid: uid,
       x: 0,
@@ -342,7 +378,7 @@ export default class App extends Component {
   handleAddScreenShare = () => {
     let sources = this.state.sources || []
     sources.push({
-      sourceType: 1,
+      sourceType: 2,
       connectionId: 0,
       x: 0,
       y: 0,
@@ -356,7 +392,7 @@ export default class App extends Component {
   handleAddMediaPlayer = () => {
     let sources = this.state.sources || []
     sources.push({
-      sourceType: 3,
+      sourceType: 5,
       connectionId: 0,
       x: 0,
       y: 0,
@@ -414,14 +450,16 @@ export default class App extends Component {
 
   handleDragStop = (e,d) => {
     let {x, y, node} = d
-    console.log(`drag stop: id: ${node.id} ${x} ${y}`)
-    let sourceId = this.reverseSourceId(node.id)
-    this.updateSource(sourceId, {x: x, y: y})
+    // console.log(`drag stop: id: ${node.id} ${x} ${y}`)
+    // let sourceId = this.reverseSourceId(node.id)
+    // this.updateSource(sourceId, {x: x, y: y})
   }
   
   handleDrag = (e,d) => {
     let {x, y, node} = d
-    console.log(`drag : id: ${node.id} ${x} ${y}`)
+    // console.log(`drag : id: ${node.id} ${x} ${y}`)
+    let sourceId = this.reverseSourceId(node.id)
+    this.updateSource(sourceId, {x: x, y: y})
   }
 
   handleResizeStop = (e, direction, ref, delta, position) => {
@@ -492,7 +530,7 @@ export default class App extends Component {
             </div>
           </div>
           <div className="field">
-            <label className="label">Image</label>
+            <label className="label">Image: png</label>
             <div className="control">
               {/* <div className="select"  style={{width: '100%'}}>
                 <select onChange={this.handleVoiceChanger} value={this.state.voiceChangerPreset} style={{width: '100%'}}>
@@ -504,6 +542,26 @@ export default class App extends Component {
           <div className="field is-grouped is-grouped-left">
             <div className="control">
               <button onClick={this.handleAddImage} className="button is-link">Add</button>
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">Image: jpg</label>
+            <div className="control">
+            </div>
+          </div>
+          <div className="field is-grouped is-grouped-left">
+            <div className="control">
+              <button onClick={this.handleAddJpg} className="button is-link">Add</button>
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">Image: gif</label>
+            <div className="control">
+            </div>
+          </div>
+          <div className="field is-grouped is-grouped-left">
+            <div className="control">
+              <button onClick={this.handleAddGif} className="button is-link">Add</button>
             </div>
           </div>
           <div className="field">
