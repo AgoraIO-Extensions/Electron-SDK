@@ -1782,19 +1782,6 @@ struct VideoEncoderConfiguration {
         mirrorMode(VIDEO_MIRROR_MODE_DISABLED) {}
 };
 
-enum CAMERA_DIRECTION {
-  /** The rear camera. */
-  CAMERA_REAR = 0,
-  /** The front camera. */
-  CAMERA_FRONT = 1,
-};
-
-/** Camera capturer configuration.*/
-struct CameraCapturerConfiguration {
-  /** Camera direction settings (for Android/iOS only). See: #CAMERA_DIRECTION. */
-  CAMERA_DIRECTION cameraDirection;
-};
-
 /**
  * The definition of the of SimulcastStreamConfig struct.
  */
@@ -2055,10 +2042,16 @@ struct RtcStats {
 enum VIDEO_SOURCE_TYPE {
   /** Video captured by the camera.
    */
-  VIDEO_SOURCE_CAMERA,
+  VIDEO_SOURCE_CAMERA_PRIMARY,
+  /** Video captured by the secondary camera.
+   */
+  VIDEO_SOURCE_CAMERA_SECONDARY,
   /** Video for screen sharing.
    */
-  VIDEO_SOURCE_SCREEN,
+  VIDEO_SOURCE_SCREEN_PRIMARY,
+  /** Video for the secondary screen sharing.
+   */
+  VIDEO_SOURCE_SCREEN_SECONDARY,
   /** Video for custom video.
    */
   VIDEO_SOURCE_CUSTOM,
@@ -2584,7 +2577,7 @@ struct VideoTrackInfo {
   VideoTrackInfo()
   : ownerUid(0), trackId(0), connectionId(0)
   , streamType(REMOTE_VIDEO_STREAM_HIGH), codecType(VIDEO_CODEC_H264)
-  , encodedFrameOnly(false), sourceType(VIDEO_SOURCE_CAMERA) {}
+  , encodedFrameOnly(false), sourceType(VIDEO_SOURCE_CAMERA_PRIMARY) {}
   /**
    * ID of the user who publishes the video track.
    */
@@ -3195,7 +3188,7 @@ struct TranscodingVideoStream {
   double alpha;
 
   TranscodingVideoStream()
-      : sourceType(VIDEO_SOURCE_CAMERA),
+      : sourceType(VIDEO_SOURCE_CAMERA_PRIMARY),
         remoteUserUid(0),
         connectionId(DEFAULT_CONNECTION_ID),
         imageUrl(NULL),
@@ -3463,11 +3456,11 @@ struct VideoCanvas {
   VIDEO_SOURCE_TYPE sourceType;
 
   VideoCanvas() : view(NULL), renderMode(media::base::RENDER_MODE_HIDDEN), mirrorMode(VIDEO_MIRROR_MODE_AUTO), uid(0), userId(NULL), priv(NULL),
-      sourceType(VIDEO_SOURCE_CAMERA) {}
+      sourceType(VIDEO_SOURCE_CAMERA_PRIMARY) {}
   VideoCanvas(view_t v, media::base::RENDER_MODE_TYPE m, VIDEO_MIRROR_MODE_TYPE mt, uid_t u)
-      : view(v), renderMode(m), mirrorMode(mt), uid(u), userId(NULL), priv(NULL), sourceType(VIDEO_SOURCE_CAMERA) {}
+      : view(v), renderMode(m), mirrorMode(mt), uid(u), userId(NULL), priv(NULL), sourceType(VIDEO_SOURCE_CAMERA_PRIMARY) {}
   VideoCanvas(view_t v, media::base::RENDER_MODE_TYPE m, VIDEO_MIRROR_MODE_TYPE mt, user_id_t u)
-      : view(v), renderMode(m), mirrorMode(mt), uid(0), userId(u), priv(NULL), sourceType(VIDEO_SOURCE_CAMERA) {}
+      : view(v), renderMode(m), mirrorMode(mt), uid(0), userId(u), priv(NULL), sourceType(VIDEO_SOURCE_CAMERA_PRIMARY) {}
 };
 
 /**
@@ -3564,6 +3557,31 @@ struct ScreenCaptureParameters {
       : dimensions(d), frameRate(f), bitrate(b) {}
   ScreenCaptureParameters(int width, int height, int f, int b)
       : dimensions(width, height), frameRate(f), bitrate(b) {}
+};
+
+enum CAMERA_DIRECTION {
+  /** The rear camera. */
+  CAMERA_REAR = 0,
+  /** The front camera. */
+  CAMERA_FRONT = 1,
+};
+
+/** Camera capturer configuration.*/
+struct CameraCapturerConfiguration {
+  /** Camera direction settings (for Android/iOS only). See: #CAMERA_DIRECTION. */
+  CAMERA_DIRECTION cameraDirection;
+  /** For windows */
+  char deviceId[260];
+  VideoFormat format;
+};
+
+struct ScreenCaptureConfiguration {
+  bool isCaptureWindow; // true - capture window, false - capture display
+  unsigned int displayId; // MacOS only
+  Rectangle screenRect; //Windows only
+  view_t windowId;
+  ScreenCaptureParameters params;
+  Rectangle regionRect;
 };
 
 /**

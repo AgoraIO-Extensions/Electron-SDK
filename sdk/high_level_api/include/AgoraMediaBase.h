@@ -504,6 +504,8 @@ class IVideoFrameObserver {
    * - false: Ignore, in which case this method does not sent the current video frame to the SDK.
   */
   virtual bool onCaptureVideoFrame(VideoFrame& videoFrame) = 0;
+  
+  virtual bool onSecondaryCameraCaptureVideoFrame(VideoFrame& videoFrame) = 0;
 
   /**
    * Occurs each time the SDK receives a video frame captured by the screen.
@@ -521,6 +523,8 @@ class IVideoFrameObserver {
    * - false: Ignore, in which case this method does not sent the current video frame to the SDK.
    */
   virtual bool onScreenCaptureVideoFrame(VideoFrame& videoFrame) = 0;
+  
+  virtual bool onSecondaryScreenCaptureVideoFrame(VideoFrame& videoFrame) = 0;
   /**
    * Occurs each time the SDK receives a video frame sent by the remote user.
    *

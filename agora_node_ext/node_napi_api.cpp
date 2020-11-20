@@ -28,7 +28,7 @@ NodeVideoFrameTransporter::NodeVideoFrameTransporter()
 : init(false)
 , env(nullptr)
 , m_highFPS(15)
-, m_FPS(10)
+, m_FPS(30)
 {
     
 }
@@ -48,7 +48,7 @@ bool NodeVideoFrameTransporter::initialize(v8::Isolate *isolate, const Nan::Func
     callback.Reset(callbackinfo[0].As<Function>());
     js_this.Reset(callbackinfo.This());
     m_thread.reset(new std::thread(&NodeVideoFrameTransporter::FlushVideo, this));
-    m_highThread.reset(new std::thread(&NodeVideoFrameTransporter::highFlushVideo, this));
+    // m_highThread.reset(new std::thread(&NodeVideoFrameTransporter::highFlushVideo, this));
     init = true;
     return true;
 }
@@ -60,10 +60,10 @@ bool NodeVideoFrameTransporter::deinitialize()
     m_stopFlag = 1;
     if (m_thread->joinable())
         m_thread->join();
-    if (m_highThread->joinable())
-        m_highThread->join();
+    // if (m_highThread->joinable())
+    //     m_highThread->join();
     init = false;
-    m_highThread.reset();
+    // m_highThread.reset();
     m_thread.reset();
     env = nullptr;
     callback.Reset();

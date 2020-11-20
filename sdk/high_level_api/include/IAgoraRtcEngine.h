@@ -590,6 +590,12 @@ struct ChannelMediaOptions {
    */
   base::Optional<bool> publishCameraTrack;
   /**
+   * Determines whether to publish the video of the secondary camera track.
+   * - true: Publish the video track of the secondary camera capturer.
+   * - false: (Default) Do not publish the video track of the secondary camera capturer.
+   */
+  base::Optional<bool> publishSecondaryCameraTrack;
+  /**
    * Determines whether to publish the recorded audio.
    * - true: Publish the recorded audio.
    * - false: (Default) Do not publish the recorded audio.
@@ -601,6 +607,12 @@ struct ChannelMediaOptions {
    * - false: (Default) Do not publish the video track of the screen capturer.
    */
   base::Optional<bool> publishScreenTrack;
+  /**
+   * Determines whether to publish the video of the secondary screen track.
+   * - true: Publish the video track of the secondary screen capturer.
+   * - false: (Default) Do not publish the video track of the secondary screen capturer.
+   */
+  base::Optional<bool> publishSecondaryScreenTrack;
   /**
    * Determines whether to publish the audio of the custom audio track.
    * - true: Publish the audio of the custom audio track.
@@ -678,8 +690,10 @@ struct ChannelMediaOptions {
 #define SET_FROM(X) SetFrom(&X, change.X)
 
       SET_FROM(publishCameraTrack);
+      SET_FROM(publishSecondaryCameraTrack);
       SET_FROM(publishAudioTrack);
       SET_FROM(publishScreenTrack);
+      SET_FROM(publishSecondaryScreenTrack);
       SET_FROM(publishTrancodedVideoTrack);
       SET_FROM(publishCustomAudioTrack);
       SET_FROM(publishCustomVideoTrack);
@@ -703,8 +717,10 @@ struct ChannelMediaOptions {
 
       BEGIN_COMPARE();
       ADD_COMPARE(publishCameraTrack);
+      ADD_COMPARE(publishSecondaryCameraTrack);
       ADD_COMPARE(publishAudioTrack);
       ADD_COMPARE(publishScreenTrack);
+      ADD_COMPARE(publishSecondaryScreenTrack);
       ADD_COMPARE(publishTrancodedVideoTrack);
       ADD_COMPARE(publishCustomAudioTrack);
       ADD_COMPARE(publishCustomVideoTrack);
@@ -731,8 +747,10 @@ struct ChannelMediaOptions {
 #define REPLACE_BY(X) ReplaceBy(&X, replace.X)
 
         REPLACE_BY(publishCameraTrack);
+        REPLACE_BY(publishSecondaryCameraTrack);
         REPLACE_BY(publishAudioTrack);
         REPLACE_BY(publishScreenTrack);
+        REPLACE_BY(publishSecondaryScreenTrack);
         REPLACE_BY(publishTrancodedVideoTrack);
         REPLACE_BY(publishCustomAudioTrack);
         REPLACE_BY(publishCustomVideoTrack);
@@ -803,15 +821,15 @@ class IRtcEngineEventHandler {
    * Occurs when the local user successfully joins the specified channel.
    *
    * @param channel The channel name.
-   * @param userId The user ID.
+   * @param uid The user ID.
    * - If you specified a `uid` in the `joinChannel` method, the SDK returns the specified ID;
    * - If not, this callback returns an ID that is automatically assigned by the Agora server.
    * @param elapsed The time elapsed (ms) from the local user calling \ref IRtcEngine::joinChannel
    * "joinChannel" until this event occurs.
    */
-  virtual void onJoinChannelSuccess(const char* channel, uid_t userId, int elapsed) {
+  virtual void onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed) {
     (void)channel;
-    (void)userId;
+    (void)uid;
     (void)elapsed;
   }
 
@@ -824,13 +842,13 @@ class IRtcEngineEventHandler {
    * callback method upon reconnection.
    *
    * @param channel The channel name.
-   * @param userId The user ID.
+   * @param uid The user ID.
    * @param elapsed The time elapsed (ms) from the local user calling
    * \ref IRtcEngine::joinChannel "joinChannel" until this event occurs.
    */
-  virtual void onRejoinChannelSuccess(const char* channel, uid_t userId, int elapsed) {
+  virtual void onRejoinChannelSuccess(const char* channel, uid_t uid, int elapsed) {
     (void)channel;
-    (void)userId;
+    (void)uid;
     (void)elapsed;
   }
 
@@ -865,15 +883,15 @@ class IRtcEngineEventHandler {
   multiple remote users/hosts sending audio streams, the SDK triggers this
   callback as many times.
 
-  @param userId The user ID of the speaker.
+  @param uid The user ID of the speaker.
   @param quality The audio quality of the user: #QUALITY_TYPE
   @param delay The time delay (ms) of the audio packet from the sender to the
   receiver.
   @param lost The audio packet loss rate (%) from the sender to the receiver.
   */
-  virtual void onAudioQuality(uid_t userId, int quality, unsigned short delay,
+  virtual void onAudioQuality(uid_t uid, int quality, unsigned short delay,
                               unsigned short lost) {
-    (void)userId;
+    (void)uid;
     (void)quality;
     (void)delay;
     (void)lost;
@@ -959,8 +977,8 @@ class IRtcEngineEventHandler {
   virtual void onRtcStats(const RtcStats& stats) { (void)stats; }
 
   /** Occurs when the audio device state changes.
-   
-   This callback notifies the application that the system's audio device state 
+
+   This callback notifies the application that the system's audio device state
    is changed. For example, a headset is unplugged from the device.
 
    @param deviceId Pointer to the device ID.
@@ -990,8 +1008,8 @@ class IRtcEngineEventHandler {
   
   /** Occurs when the video device state changes.
 
-   This callback notifies the application that the system's video device state 
-   is changed. 
+   This callback notifies the application that the system's video device state
+   is changed.
 
    @param deviceId Pointer to the device ID.
    @param deviceType Device type: #MEDIA_DEVICE_TYPE.
@@ -1008,12 +1026,12 @@ class IRtcEngineEventHandler {
    *
    * This callback is triggered once every two seconds after the user joins the channel.
    *
-   * @param userId The user ID. If `uid` is 0, the SDK reports the local network quality.
+   * @param uid The user ID. If `uid` is 0, the SDK reports the local network quality.
    * @param txQuality The transmission quality of the user: #QUALITY_TYPE.
    * @param rxQuality The receiving quality of the user: #QUALITY_TYPE.
    */
-  virtual void onNetworkQuality(uid_t userId, int txQuality, int rxQuality) {
-    (void)userId;
+  virtual void onNetworkQuality(uid_t uid, int txQuality, int rxQuality) {
+    (void)uid;
     (void)txQuality;
     (void)rxQuality;
   }
@@ -1070,21 +1088,21 @@ class IRtcEngineEventHandler {
   the first video frame from a remote video. The app can configure the
   user view settings in this callback.
 
-  @param userId ID of the user whose video streams are received.
+  @param uid ID of the user whose video streams are received.
   @param width The width (pixels) of the video stream.
   @param height The height (pixels) of the video stream.
   @param elapsed The time elapsed (ms) from the local user calling
   \ref IRtcEngine::joinChannel "joinChannel" until this callback is triggered.
   */
-  virtual void onFirstRemoteVideoDecoded(uid_t userId, int width, int height, int elapsed) {
-    (void)userId;
+  virtual void onFirstRemoteVideoDecoded(uid_t uid, int width, int height, int elapsed) {
+    (void)uid;
     (void)width;
     (void)height;
     (void)elapsed;
   }
 
-  virtual void onVideoSizeChanged(uid_t userId, int width, int height, int rotation) {
-    (void)userId;
+  virtual void onVideoSizeChanged(uid_t uid, int width, int height, int rotation) {
+    (void)uid;
     (void)width;
     (void)height;
     (void)rotation;
@@ -1108,20 +1126,20 @@ class IRtcEngineEventHandler {
   /**
    * Occurs when the remote video state has changed.
    *
-   * @param userId ID of the user whose video state has changed.
+   * @param uid ID of the user whose video state has changed.
    * @param state The remote video state: #REMOTE_VIDEO_STATE.
    * @param reason The reason of the remote video state change: #REMOTE_VIDEO_STATE_REASON.
    * @param elapsed The time elapsed (ms) from the local user calling ref IRtcEngine::joinChannel "joinChannel" until this callback is triggered.
    */
-  virtual void onRemoteVideoStateChanged(uid_t userId, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed) {
-    (void)userId;
+  virtual void onRemoteVideoStateChanged(uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed) {
+    (void)uid;
     (void)state;
     (void)reason;
     (void)elapsed;
   }
 
-  virtual void onFirstRemoteVideoFrame(uid_t userId, int width, int height, int elapsed) {
-    (void)userId;
+  virtual void onFirstRemoteVideoFrame(uid_t uid, int width, int height, int elapsed) {
+    (void)uid;
     (void)width;
     (void)height;
     (void)elapsed;
@@ -1141,12 +1159,12 @@ class IRtcEngineEventHandler {
    * @note
    * When a Web app joins the channel, this callback is triggered as long as the app publishes a stream.
    *
-   * @param userId ID of the remote user or broadcaster joining the channel.
+   * @param uid ID of the remote user or broadcaster joining the channel.
    * @param elapsed The time elapsed (ms) from the local user calling `joinChannel` or `setClientRole`
    * until this callback is triggered.
   */
-  virtual void onUserJoined(uid_t userId, int elapsed) {
-    (void)userId;
+  virtual void onUserJoined(uid_t uid, int elapsed) {
+    (void)uid;
     (void)elapsed;
   }
 
@@ -1161,11 +1179,11 @@ class IRtcEngineEventHandler {
    * the RTM SDK for reliable offline detection.
    * - The user switches the user role from a broadcaster to an audience.
    *
-   * @param userId ID of the remote user or broadcaster who leaves the channel or drops offline.
+   * @param uid ID of the remote user or broadcaster who leaves the channel or drops offline.
    * @param reason The reason why the remote user goes offline: #USER_OFFLINE_REASON_TYPE.
    */
-  virtual void onUserOffline(uid_t userId, USER_OFFLINE_REASON_TYPE reason) {
-    (void)userId;
+  virtual void onUserOffline(uid_t uid, USER_OFFLINE_REASON_TYPE reason) {
+    (void)uid;
     (void)reason;
   }
 
@@ -1176,14 +1194,14 @@ class IRtcEngineEventHandler {
   This callback is invalid when the number of users or broadacasters in a
   channel exceeds 20.
 
-  @param userId ID of the remote user.
+  @param uid ID of the remote user.
   @param muted
 
   - True: The remote user has paused sending the video stream.
   - False: The remote user has resumed sending the video stream.
   */
-  virtual void onUserMuteVideo(uid_t userId, bool muted) {
-    (void)userId;
+  virtual void onUserMuteVideo(uid_t uid, bool muted) {
+    (void)uid;
     (void)muted;
   }
 
@@ -1196,28 +1214,28 @@ class IRtcEngineEventHandler {
   This callback is invalid when the number of users or broadcasters in a channel
   exceeds 20.
 
-  @param userId ID of the remote user.
+  @param uid ID of the remote user.
   @param enabled
 
   - True: The remote user has enabled the video module.
   - False: The remote user has disabled the video module.
   */
-  virtual void onUserEnableVideo(uid_t userId, bool enabled) {
-    (void)userId;
+  virtual void onUserEnableVideo(uid_t uid, bool enabled) {
+    (void)uid;
     (void)enabled;
   }
 
   /** Occurs when a remote user enables or disables the local video function.
   @deprecated Use onRemoteVideoStateChanged instead of.
 
-  @param userId ID of the remote user.
+  @param uid ID of the remote user.
   @param enabled
 
   - True: The remote user has enabled the local video function.
   - False: The remote user has disabled the local video function.
   */
-  virtual void onUserEnableLocalVideo(uid_t userId, bool enabled) {
-    (void)userId;
+  virtual void onUserEnableLocalVideo(uid_t uid, bool enabled) {
+    (void)uid;
     (void)enabled;
   }
 
@@ -1247,8 +1265,8 @@ class IRtcEngineEventHandler {
 
    This callback replaces the \ref IRtcEngineEventHandler::onAudioQuality "onAudioQuality" callback.
 
-   The SDK triggers this callback once every two seconds for each remote 
-   user/host. If a channel includes multiple remote users, the SDK triggers 
+   The SDK triggers this callback once every two seconds for each remote
+   user/host. If a channel includes multiple remote users, the SDK triggers
    this callback as many times.
 
    @param stats Statistics of the received remote audio streams. See RemoteAudioStats.
@@ -1292,16 +1310,16 @@ class IRtcEngineEventHandler {
   virtual void onVideoStopped() {}
 
   /** Occurs when the state of the local user's audio mixing file changes.
-   When you call the \ref IRtcEngine::startAudioMixing "startAudioMixing" 
-   method and the state of audio mixing file changes, the SDK triggers this 
+   When you call the \ref IRtcEngine::startAudioMixing "startAudioMixing"
+   method and the state of audio mixing file changes, the SDK triggers this
    callback.
-   
-   - When the audio mixing file plays, pauses playing, or stops playing, this 
+
+   - When the audio mixing file plays, pauses playing, or stops playing, this
    callback returns 710, 711, or 713 in `state`, and 0 in `errorCode`.
-   - When exceptions occur during playback, this callback returns 714 in 
+   - When exceptions occur during playback, this callback returns 714 in
    `state` and an error in `errorCode`.
-   - If the local audio mixing file does not exist, or if the SDK does not 
-   support the file format or cannot access the music file URL, the SDK 
+   - If the local audio mixing file does not exist, or if the SDK does not
+   support the file format or cannot access the music file URL, the SDK
    returns #WARN_AUDIO_MIXING_OPEN_ERROR (701).
 
    @param state The state code. See #AUDIO_MIXING_STATE_TYPE.
@@ -1346,13 +1364,13 @@ class IRtcEngineEventHandler {
   that the remote user sends by calling the \ref IRtcEngine::sendStreamMessage
   "sendStreamMessage()" method.
 
-  @param userId ID of the remote user that sends the data message.
+  @param uid ID of the remote user that sends the data message.
   @param streamId The stream ID.
   @param data The data received by the local user.
   @param length The length of the data (bytes).
   */
-  virtual void onStreamMessage(uid_t userId, int streamId, const char* data, size_t length) {
-    (void)userId;
+  virtual void onStreamMessage(uid_t uid, int streamId, const char* data, size_t length) {
+    (void)uid;
     (void)streamId;
     (void)data;
     (void)length;
@@ -1365,7 +1383,7 @@ class IRtcEngineEventHandler {
   "sendStreamMessage()"
   method.
 
-  @param userId ID of the remote user who sends the data stream.
+  @param uid ID of the remote user who sends the data stream.
   @param streamId The stream ID.
   @param code The error code: #ERROR_CODE_TYPE.
   @param missed The number of lost messages.
@@ -1373,8 +1391,8 @@ class IRtcEngineEventHandler {
   interrupted.
   *
   */
-  virtual void onStreamMessageError(uid_t userId, int streamId, int code, int missed, int cached) {
-    (void)userId;
+  virtual void onStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached) {
+    (void)uid;
     (void)streamId;
     (void)code;
     (void)missed;
@@ -1474,9 +1492,9 @@ class IRtcEngineEventHandler {
    * - The active speaker means the user ID of the speaker who speaks at the highest volume during a
    * certain period of time.
    *
-   * @param userId The ID of the active speaker. A `uid` of 0 means the local user.
+   * @param uid The ID of the active speaker. A `uid` of 0 means the local user.
    */
-  virtual void onActiveSpeaker(uid_t userId) { (void)userId; }
+  virtual void onActiveSpeaker(uid_t uid) { (void)uid; }
 
   /**
    * Occurs when the user role in a Live-Broadcast channel has switched, for example, from a broadcaster
@@ -1485,7 +1503,10 @@ class IRtcEngineEventHandler {
    * @param oldRole The old role of the user: #CLIENT_ROLE_TYPE.
    * @param newRole The new role of the user: #CLIENT_ROLE_TYPE.
    */
-  virtual void onClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole) {}
+  virtual void onClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole) {
+    (void)oldRole;
+    (void)newRole;
+  }
 
   /** Occurs when the audio device volume changes.
    @param deviceType The device type, see #MEDIA_DEVICE_TYPE
@@ -1588,18 +1609,18 @@ class IRtcEngineEventHandler {
   /** Reports the status of injecting the online media stream.
 
   @param url The URL address of theinjected stream.
-  @param userId The user ID.
+  @param uid The user ID.
   @param status Status of the injected stream: #INJECT_STREAM_STATUS.
   */
-  virtual void onStreamInjectedStatus(const char* url, uid_t userId, int status) {
+  virtual void onStreamInjectedStatus(const char* url, uid_t uid, int status) {
     (void)url;
-    (void)userId;
+    (void)uid;
     (void)status;
   }
   
   /** Occurs when the local audio route changes (for Android and iOS only).
-   
-   The SDK triggers this callback when the local audio route switches to an 
+
+   The SDK triggers this callback when the local audio route switches to an
    earpiece, speakerphone, headset, or Bluetooth device.
    @param routing Audio output routing:
    - -1: Default.
@@ -1677,8 +1698,8 @@ class IRtcEngineEventHandler {
     (void)isFallbackOrRecover;
   }
 
-  virtual void onRemoteSubscribeFallbackToAudioOnly(uid_t userId, bool isFallbackOrRecover) {
-    (void)userId;
+  virtual void onRemoteSubscribeFallbackToAudioOnly(uid_t uid, bool isFallbackOrRecover) {
+    (void)uid;
     (void)isFallbackOrRecover;
   }
 
@@ -1687,7 +1708,7 @@ class IRtcEngineEventHandler {
   This callback is triggered every two seconds once the user has received the
   audio data packet sent from a remote user.
 
-  @param userId ID of the remote user whose audio data packet is received.
+  @param uid ID of the remote user whose audio data packet is received.
   @param delay The network time delay (ms) from the remote user sending the
   audio packet to the local user.
   @param lost The Packet loss rate (%) of the audio packet sent from the remote
@@ -1695,9 +1716,9 @@ class IRtcEngineEventHandler {
   @param rxKBitRate Received bitrate (Kbps) of the audio packet sent from the
   remote user.
   */
-  virtual void onRemoteAudioTransportStats(uid_t userId, unsigned short delay, unsigned short lost,
+  virtual void onRemoteAudioTransportStats(uid_t uid, unsigned short delay, unsigned short lost,
                                            unsigned short rxKBitRate) {
-    (void)userId;
+    (void)uid;
     (void)delay;
     (void)lost;
     (void)rxKBitRate;
@@ -1708,7 +1729,7 @@ class IRtcEngineEventHandler {
   This callback is triggered every two seconds once the user has received the
   video data packet sent from a remote user.
 
-  @param userId ID of the remote user whose video packet is received.
+  @param uid ID of the remote user whose video packet is received.
   @param delay The network time delay (ms) from the remote user sending the
   video packet to the local user.
   @param lost The packet loss rate (%) of the video packet sent from the remote
@@ -1716,9 +1737,9 @@ class IRtcEngineEventHandler {
   @param rxKBitRate The Received bitrate (Kbps) of the video packet sent from
   the remote user.
   */
-  virtual void onRemoteVideoTransportStats(uid_t userId, unsigned short delay, unsigned short lost,
+  virtual void onRemoteVideoTransportStats(uid_t uid, unsigned short delay, unsigned short lost,
                                            unsigned short rxKBitRate) {
-    (void)userId;
+    (void)uid;
     (void)delay;
     (void)lost;
     (void)rxKBitRate;
@@ -2208,22 +2229,28 @@ class IAudioDeviceManager {
 /**
  * The definition of RTCEngineContext.
  */
+class IRtcEngineEventHandlerEx;
+
 struct RtcEngineContext {
   /**
    * The event handler for IRtcEngine.
    */
   IRtcEngineEventHandler* eventHandler;
+  IRtcEngineEventHandlerEx* eventHandlerEx;
+
   /**
    * The App ID issued to the developers by Agora. Apply for a new one from Agora if it is missing from
    * your kit.
    */
   const char* appId;
+
   /**
    * - For Android, it is the context of Activity or Application.
    * - For Windows, it is the window handle of app. Once set, this parameter enables you to plug
    * or unplug the video devices while they are powered.
    */
   void* context;
+
   /**
    * Determines whether to subscribe to audio when joining a channel.
    * - true: (Default) Subscribe to the audio.
@@ -2232,6 +2259,7 @@ struct RtcEngineContext {
    * Use this member to enable or disable the audio before joining the channel.
    */
   bool enableAudio;
+
   /**
    * Determines whether to subscribe to video when joining a channel.
    * - true: Subscribe to the video.
@@ -2268,12 +2296,12 @@ struct RtcEngineContext {
   const char* logDir;
 
   RtcEngineContext()
-      : eventHandler(NULL), appId(NULL), context(NULL),
+      : eventHandler(NULL), eventHandlerEx(NULL), appId(NULL), context(NULL),
         enableAudio(true), enableVideo(false),
         channelProfile(CHANNEL_PROFILE_LIVE_BROADCASTING),
         audioScenario(AUDIO_SCENARIO_DEFAULT),
         areaCode(AREA_CODE_GLOBAL),
-        logDir(nullptr) {}
+        logDir(NULL) {}
 };
 
 /** Definition of IMetadataObserver
@@ -2341,7 +2369,7 @@ public:
 
      @return The video source that you want to attach metadata.
      */
-    virtual VIDEO_SOURCE_TYPE getMetadataSourceType() { return VIDEO_SOURCE_CAMERA; }
+    virtual VIDEO_SOURCE_TYPE getMetadataSourceType() { return VIDEO_SOURCE_CAMERA_PRIMARY; }
 
     /** Occurs when the SDK is ready to receive and send metadata.
 
@@ -2460,7 +2488,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    * @param info (Optional) Additional information about the channel that you want
    * to add. It can be set as a NULL string or channel related information.
    * Other users in the channel will not receive this message.
-   * @param userId (Optional) User ID: A 32-bit unsigned integer ranging from 1 to
+   * @param uid (Optional) User ID: A 32-bit unsigned integer ranging from 1 to
    * (2^32-1). It must be unique. If not assigned (or set to 0), the SDK assigns one
    * and reports it in the \ref IRtcEngineEventHandler::onJoinChannelSuccess "onJoinChannelSuccess" callback.
    * Your app must record and maintain the returned value as the SDK does not maintain it.
@@ -2470,7 +2498,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    * - < 0: Failure.
    */
   virtual int joinChannel(const char* token, const char* channelId, const char* info,
-                          uid_t userId) = 0;
+                          uid_t uid) = 0;
 
   /**
    * Joins a channel with media options.
@@ -2500,7 +2528,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    * - The space character.
    * - Punctuation characters and other symbols, including: "!", "#", "$", "%", "&", "(", ")", "+", "-",
    * ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
-   * @param userId (Optional) User ID: A 32-bit unsigned integer ranging from 1 to
+   * @param uid (Optional) User ID: A 32-bit unsigned integer ranging from 1 to
    * (2^32-1). It must be unique. If not assigned (or set to 0), the SDK assigns one
    * and reports it in the \ref IRtcEngineEventHandler::onJoinChannelSuccess "onJoinChannelSuccess" callback.
    * Your app must record and maintain the returned value as the SDK does not maintain it.
@@ -2510,7 +2538,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    * - 0: Success.
    * - < 0: Failure.
    */
-  virtual int joinChannel(const char* token, const char* channelId, uid_t userId,
+  virtual int joinChannel(const char* token, const char* channelId, uid_t uid,
                           const ChannelMediaOptions& options) = 0;
 
   /**
@@ -4551,6 +4579,16 @@ class IRtcEngine : public agora::base::IEngineBase {
   virtual int startLocalVideoTranscoder(const LocalTranscoderConfiguration& config) = 0;
   virtual int updateLocalTranscoderConfiguration(const LocalTranscoderConfiguration& config) = 0;
   virtual int stopLocalVideoTranscoder() = 0;
+
+  virtual int startPrimaryCameraCapture(const CameraCapturerConfiguration& config) = 0;
+  virtual int startSecondaryCameraCapture(const CameraCapturerConfiguration& config) = 0;
+  virtual int stopPrimaryCameraCapture() = 0;
+  virtual int stopSecondaryCameraCapture() = 0;
+
+  virtual int startPrimaryScreenCapture(const ScreenCaptureConfiguration& config) = 0;
+  virtual int startSecondaryScreenCapture(const ScreenCaptureConfiguration& config) = 0;
+  virtual int stopPrimaryScreenCapture() = 0;
+  virtual int stopSecondaryScreenCapture() = 0;
 
   /** Gets the current connection state of the SDK.
 
