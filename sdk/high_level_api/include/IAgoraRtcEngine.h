@@ -3,9 +3,7 @@
 //
 //  Copyright (c) 2018 Agora.io. All rights reserved.
 //
-
-#ifndef AGORA_RTC_ENGINE_H
-#define AGORA_RTC_ENGINE_H
+#pragma once
 
 #include "AgoraBase.h"
 #include "AgoraOptional.h"
@@ -34,6 +32,7 @@ enum MAX_DEVICE_ID_LENGTH_TYPE {
    */
   MAX_DEVICE_ID_LENGTH = 512
 };
+
 /**
  * The media device types.
  */
@@ -63,6 +62,7 @@ enum MEDIA_DEVICE_TYPE {
    */
   AUDIO_APPLICATION_PLAYOUT_DEVICE = 4,
 };
+
 /**
  * The audio recording quality type.
  */
@@ -110,7 +110,6 @@ enum AUDIO_MIXING_ERROR_TYPE {
   /** 0: The SDK can open the audio mixing file. */
   AUDIO_MIXING_ERROR_OK = 0,
 };
-
 
 /**
  * The status of importing an external video stream in a live broadcast.
@@ -179,7 +178,6 @@ enum RAW_AUDIO_FRAME_OP_MODE_TYPE {
   RAW_AUDIO_FRAME_OP_MODE_READ_WRITE = 2,
 };
 
-
 /**
  * The audio equalization band frequency.
  */
@@ -225,6 +223,7 @@ enum AUDIO_EQUALIZATION_BAND_FREQUENCY {
    */
   AUDIO_EQUALIZATION_BAND_16K = 9,
 };
+
 /**
  * The audio reverberation type.
  */
@@ -278,8 +277,7 @@ enum PRIORITY_TYPE {
 
 /** Statistics of the local video stream.
  */
-struct LocalVideoStats
-{
+struct LocalVideoStats {
 	/**
 	* ID of the local user whose video is sent.
 	*/
@@ -327,7 +325,7 @@ struct LocalVideoStats
 /**
  * The statistics of the remote video stream.
  */
-struct RemoteVideoStats{
+struct RemoteVideoStats {
    /**
    User ID of the remote user sending the video streams.
    */
@@ -372,7 +370,6 @@ struct RemoteVideoStats{
 	int frozenRate;
 };
 
-
 struct VideoCompositingLayout {
   struct Region {
     /** User ID of the user whose video is to be displayed in the region.
@@ -403,6 +400,7 @@ struct VideoCompositingLayout {
 
     media::base::RENDER_MODE_TYPE
     renderMode;  // RENDER_MODE_HIDDEN: Crop, RENDER_MODE_FIT: Zoom to fit
+
     Region()
         : uid(0),
           userId(NULL),
@@ -414,6 +412,7 @@ struct VideoCompositingLayout {
           alpha(1.0),
           renderMode(media::base::RENDER_MODE_HIDDEN) {}
   };
+
   /** Ignore this parameter. The width of the canvas is set by
    agora::rtc::IRtcEngine::configPublisher, and not by
    agora::rtc::VideoCompositingLayout::canvasWidth.
@@ -440,6 +439,7 @@ struct VideoCompositingLayout {
   /** Length of the user-defined data.
    */
   int appDataLength;
+
   VideoCompositingLayout()
       : canvasWidth(0),
         canvasHeight(0),
@@ -498,7 +498,6 @@ struct InjectStreamConfig {
         audioChannels(1) {}
 };
 
-
 /** The video stream lifecycle of CDN Live.
  */
 enum RTMP_STREAM_LIFE_CYCLE_TYPE {
@@ -509,7 +508,6 @@ enum RTMP_STREAM_LIFE_CYCLE_TYPE {
   */
   RTMP_STREAM_LIFE_CYCLE_BIND2OWNER = 2,
 };
-
 
 /** The definition of PublisherConfiguration.
 */
@@ -694,6 +692,7 @@ struct ChannelMediaOptions {
       SET_FROM(clientRoleType);
       SET_FROM(defaultVideoStreamType);
       SET_FROM(channelProfile);
+
 #undef SET_FROM
   }
 
@@ -747,6 +746,7 @@ struct ChannelMediaOptions {
         REPLACE_BY(clientRoleType);
         REPLACE_BY(defaultVideoStreamType);
         REPLACE_BY(channelProfile);
+
 #undef REPLACE_BY
     }
     return *this;
@@ -834,7 +834,6 @@ class IRtcEngineEventHandler {
     (void)elapsed;
   }
 
-  
   /** A warning occurs during the SDK runtime.
 
   In most cases, the app can ignore the warnings reported by the SDK,
@@ -879,7 +878,6 @@ class IRtcEngineEventHandler {
     (void)delay;
     (void)lost;
   }
-  
 
   /** Reports the result of the last-mile network probe result.
    * The SDK triggers this callback within 30 seconds after the app calls the 
@@ -890,7 +888,6 @@ class IRtcEngineEventHandler {
   virtual void onLastmileProbeResult(const LastmileProbeResult& result) {
       (void)result;
   }
-  
 
   /**
    * Reports which users are speaking and the speaker‘s volume.
@@ -985,11 +982,9 @@ class IRtcEngineEventHandler {
    */
   virtual void onAudioMixingFinished() {}
 
-  
   virtual void onRemoteAudioMixingBegin() {}
 
   virtual void onRemoteAudioMixingEnd() {}
-
 
   virtual void onAudioEffectFinished(int soundId) {}
   
@@ -1007,8 +1002,6 @@ class IRtcEngineEventHandler {
     (void)deviceType;
     (void)deviceState;
   }
-  
-
 
   /**
    * Reports the network quality of each user.
@@ -1045,7 +1038,6 @@ class IRtcEngineEventHandler {
     (void)info;
   }
 
-  
   /**
    * Reports the last-mile network quality of the local user.
    *
@@ -1090,6 +1082,7 @@ class IRtcEngineEventHandler {
     (void)height;
     (void)elapsed;
   }
+
   virtual void onVideoSizeChanged(uid_t userId, int width, int height, int rotation) {
     (void)userId;
     (void)width;
@@ -1280,7 +1273,6 @@ class IRtcEngineEventHandler {
    */
   virtual void onRemoteVideoStats(const RemoteVideoStats& stats) { (void)stats; }
 
-  
   virtual void onCameraReady() {}
 
   virtual void onCameraFocusAreaChanged(int x, int y, int width, int height) {
@@ -1298,7 +1290,6 @@ class IRtcEngineEventHandler {
   }
 
   virtual void onVideoStopped() {}
-  
 
   /** Occurs when the state of the local user's audio mixing file changes.
    When you call the \ref IRtcEngine::startAudioMixing "startAudioMixing" 
@@ -1330,7 +1321,6 @@ class IRtcEngineEventHandler {
    */
   virtual void onConnectionLost() {}
 
-  
   /** Occurs when the connection between the SDK and the server is interrupted.
 
   The SDK triggers this callback when it loses connection with the serer for more
@@ -1393,7 +1383,6 @@ class IRtcEngineEventHandler {
 
   virtual void onMediaEngineLoadSuccess() {}
   virtual void onMediaEngineStartCallSuccess() {}
-  
 
   /**
    * Occurs when the token has expired.
@@ -1407,6 +1396,7 @@ class IRtcEngineEventHandler {
    * @sa [How to generate a token](https://docs.agora.io/en/Interactive%20Broadcast/token_server_cpp?platform=CPP).
    */
   virtual void onRequestToken() {}
+
   /**
    * Occurs when the token will expire in 30 seconds.
    *
@@ -1423,7 +1413,6 @@ class IRtcEngineEventHandler {
    */
   virtual void onTokenPrivilegeWillExpire(const char* token) { (void)token; }
 
-  
   /** Occurs when the first local audio frame is published.
 
    @param elapsed The time elapsed (ms) from the local user calling
@@ -1469,7 +1458,6 @@ class IRtcEngineEventHandler {
     (void)elapsed;
   }
 
-  
   /**
    * Occurs when an active speaker is detected.
    *
@@ -1489,7 +1477,6 @@ class IRtcEngineEventHandler {
    * @param userId The ID of the active speaker. A `uid` of 0 means the local user.
    */
   virtual void onActiveSpeaker(uid_t userId) { (void)userId; }
-  
 
   /**
    * Occurs when the user role in a Live-Broadcast channel has switched, for example, from a broadcaster
@@ -1572,6 +1559,7 @@ class IRtcEngineEventHandler {
     (void)url;
     (void)error;
   }
+
   /**
    * Reports the result of calling the \ref IRtcEngine::removePublishStreamUrl "removePublishStreamUrl()"
    * method.
@@ -1583,6 +1571,7 @@ class IRtcEngineEventHandler {
    * @param url The RTMP URL address.
    */
   virtual void onStreamUnpublished(const char* url) { (void)url; }
+
   /**
    * Occurs when the publisher's transcoding settings are updated.
    *
@@ -1596,7 +1585,6 @@ class IRtcEngineEventHandler {
    */
   virtual void onTranscodingUpdated() {}
 
-  
   /** Reports the status of injecting the online media stream.
 
   @param url The URL address of theinjected stream.
@@ -1623,7 +1611,6 @@ class IRtcEngineEventHandler {
    - 5: Bluetooth headset.
    */
   virtual void onAudioRoutingChanged(int routing) { (void)routing; }
-  
 
   /**
    * Occurs when the state of the media stream relay changes.
@@ -1660,6 +1647,7 @@ class IRtcEngineEventHandler {
     (void)state;
     (void)code;
   }
+
   /**
    * Reports events during the media stream relay.
    *
@@ -1685,7 +1673,6 @@ class IRtcEngineEventHandler {
    */
   virtual void onChannelMediaRelayEvent(int code) { (void)code; }
 
-  
   virtual void onLocalPublishFallbackToAudioOnly(bool isFallbackOrRecover) {
     (void)isFallbackOrRecover;
   }
@@ -1845,7 +1832,6 @@ class IVideoDeviceManager {
    */
   virtual int getDevice(char deviceIdUTF8[MAX_DEVICE_ID_LENGTH]) = 0;
 
-
   /**
    * Starts the video capture device test.
    *
@@ -1868,7 +1854,6 @@ class IVideoDeviceManager {
    * - < 0: Failure.
    */
   virtual int stopDeviceTest() = 0;
-
 
   /**
    * Releases all IVideoDeviceManager resources.
@@ -1962,17 +1947,20 @@ class IAudioDeviceCollection {
    * - < 0: Failure.
    */
   virtual int isApplicationMute(bool& mute) = 0;
+
   /**
    * Releases all IAudioDeviceCollection resources.
    */
   virtual void release() = 0;
 };
+
 /**
  * The IAudioDeviceManager class.
  */
 class IAudioDeviceManager {
  public:
   virtual ~IAudioDeviceManager() {}
+
   /**
    * Enumerates the audio playback devices.
    *
@@ -2119,6 +2107,7 @@ class IAudioDeviceManager {
    * - < 0: Failure.
    */
   virtual int setPlaybackDeviceMute(bool mute) = 0;
+
   /**
    * Gets the mute state of the playback device.
    *
@@ -2131,6 +2120,7 @@ class IAudioDeviceManager {
    * - < 0: Failure.
    */
   virtual int getPlaybackDeviceMute(bool* mute) = 0;
+
   /**
    * Mutes or unmutes the audio recording device.
    *
@@ -2143,6 +2133,7 @@ class IAudioDeviceManager {
    * - < 0: Failure.
    */
   virtual int setRecordingDeviceMute(bool mute) = 0;
+
   /**
    * Gets the mute state of the audio recording device.
    *
@@ -2287,8 +2278,7 @@ struct RtcEngineContext {
 
 /** Definition of IMetadataObserver
 */
-class IMetadataObserver
-{
+class IMetadataObserver {
 public:
     /** Metadata type of the observer.
      @note We only support video metadata for now.
@@ -2331,7 +2321,7 @@ public:
         long long timeStampMs;
     };
 
-    virtual ~IMetadataObserver() {};
+    virtual ~IMetadataObserver() {}
 
     /** Occurs when the SDK requests the maximum size of the Metadata.
 
@@ -2423,9 +2413,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    */
   virtual int initialize(const RtcEngineContext& context) = 0;
 
-  
   virtual int queryInterface(INTERFACE_ID_TYPE iid, void** inter) = 0;
-  
 
   /**
    * Gets the SDK version.
@@ -2559,7 +2547,6 @@ class IRtcEngine : public agora::base::IEngineBase {
                             IRtcEngineEventHandler* eventHandler,
                             conn_id_t* connectionId) = 0;
 
-
   /**
    *  Updates the channel media options after joining the channel.
    *
@@ -2640,6 +2627,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    * - < 0: Failure.
    */
   virtual int renewToken(const char* token) = 0;
+
   /**
    * Sets the channel profile.
    *
@@ -2659,6 +2647,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    * - < 0: Failure.
    */
   virtual int setChannelProfile(CHANNEL_PROFILE_TYPE profile) = 0;
+
   /**
    * Sets the role of a user.
    *
@@ -2678,7 +2667,6 @@ class IRtcEngine : public agora::base::IEngineBase {
    */
   virtual int setClientRole(CLIENT_ROLE_TYPE role) = 0;
 
-  
   /** Starts an audio call test.
 
   This method launches an audio call test to determine whether the audio devices
@@ -2688,7 +2676,6 @@ class IRtcEngine : public agora::base::IEngineBase {
   In the test, the user first speaks, and the recording is played back
   in 10 seconds. If the user can hear the recording in 10 seconds, it indicates
   that the audio devices and network connection work properly.
-
 
   @note
   After calling the startEchoTest() method, always call stopEchoTest() to end
@@ -2708,7 +2695,6 @@ class IRtcEngine : public agora::base::IEngineBase {
   - < 0: Failure.
   */
   virtual int stopEchoTest() = 0;
-  
 
   /**
    * Enables the video.
@@ -3042,6 +3028,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    * - < 0: Failure.
    */
   virtual int setDefaultMuteAllRemoteAudioStreams(bool mute) = 0;
+
   /**
    * Stops or resumes receiving the audio stream of a specified user.
    *
@@ -3074,6 +3061,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    * - < 0: Failure.
    */
   virtual int muteLocalVideoStream(bool mute) = 0;
+
   /**
    * Disables or re-enables the local video capture.
    *
@@ -3099,6 +3087,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    * - < 0: Failure.
    */
   virtual int enableLocalVideo(bool enabled) = 0;
+
   /** Stops or resumes receiving all remote video streams.
    
    This method works for all remote users that join or will join a channel 
@@ -3140,6 +3129,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    - < 0: Failure.
    */
   virtual int muteAllRemoteVideoStreams(bool mute) = 0;
+
   /**
    Determines whether to receive all remote video streams by default.
    
@@ -3162,6 +3152,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    - < 0: Failure.
    */
   virtual int setDefaultMuteAllRemoteVideoStreams(bool mute) = 0;
+
   /**
    * Stops or resumes receiving the video stream of a specified user.
    *
@@ -3181,6 +3172,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    */
   virtual int muteRemoteVideoStream(uid_t uid, bool mute,
                                     conn_id_t connectionId = DEFAULT_CONNECTION_ID) = 0;
+
   /**
    * Sets the remote video stream type.
    *
@@ -3199,6 +3191,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    * - < 0: Failure.
    */
   virtual int setRemoteVideoStreamType(uid_t uid, REMOTE_VIDEO_STREAM_TYPE streamType) = 0;
+
   /**
    * Sets the default stream type of the remote video if the remote user has enabled dual-stream.
    *
@@ -3232,7 +3225,6 @@ class IRtcEngine : public agora::base::IEngineBase {
    */
   virtual int enableAudioVolumeIndication(int interval, int smooth) = 0;
 
-  
   /** Starts an audio recording.
 
   The SDK allows recording during a call, which supports either one of the
@@ -3349,6 +3341,7 @@ class IRtcEngine : public agora::base::IEngineBase {
   - < 0: Failure.
   */
   virtual int stopAudioMixing() = 0;
+
   /** Pauses playing and mixing the music file.
 
   Call this method when you are in a channel.
@@ -3358,6 +3351,7 @@ class IRtcEngine : public agora::base::IEngineBase {
   - < 0: Failure.
   */
   virtual int pauseAudioMixing() = 0;
+
   /** Resumes playing and mixing the music file.
 
   Call this method when you are in a channel.
@@ -3367,6 +3361,7 @@ class IRtcEngine : public agora::base::IEngineBase {
   - < 0: Failure.
   */
   virtual int resumeAudioMixing() = 0;
+
   /** Adjusts the volume during audio mixing.
 
   Call this method when you are in a channel.
@@ -3428,6 +3423,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    - < 0: Failure.
    */
   virtual int getAudioMixingDuration() = 0;
+
   /** Gets the playback position (ms) of the music file.
 
    Call this method when you are in a channel.
@@ -3438,6 +3434,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    - < 0: Failure.
    */
   virtual int getAudioMixingCurrentPosition() = 0;
+
   /** Sets the playback position of the music file to a different starting 
    position (the default plays from the beginning).
 
@@ -3655,6 +3652,7 @@ class IRtcEngine : public agora::base::IEngineBase {
   - -1: Failure.
   */
   virtual int setLocalVoicePitch(double pitch) = 0;
+
   /** Sets the local voice equalization effect.
 
   @param bandFrequency The band frequency ranging from 0 to 9, representing the
@@ -3678,7 +3676,6 @@ class IRtcEngine : public agora::base::IEngineBase {
   - -1: Failure.
   */
   virtual int setLocalVoiceReverb(AUDIO_REVERB_TYPE reverbKey, int value) = 0;
-  
 
   /** Sets the preset local voice reverberation effect.
 
@@ -3730,6 +3727,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    * - < 0: Failure.
    */
   virtual int setLogFile(const char* filePath) = 0;
+
   /**
    * Sets the output log level of the SDK.
    *
@@ -3801,6 +3799,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    * - < 0: Failure.
    */
   virtual int setLocalRenderMode(media::base::RENDER_MODE_TYPE renderMode, VIDEO_MIRROR_MODE_TYPE mirrorType) = 0;
+
   /**
    * Updates the display mode of the video view of a remote user.
    *
@@ -3825,7 +3824,6 @@ class IRtcEngine : public agora::base::IEngineBase {
   virtual int setRemoteRenderMode(uid_t uid, media::base::RENDER_MODE_TYPE renderMode,
                                   VIDEO_MIRROR_MODE_TYPE mirrorType,
                                   conn_id_t connectionId = DEFAULT_CONNECTION_ID) = 0;
-  
 
   // The following APIs are either deprecated and going to deleted.
 
@@ -3939,6 +3937,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    */
   virtual int setExternalAudioSource(bool enabled, int sampleRate, int channels,
                                      int sourceNumber = 1) = 0;
+
   /**
    * Sets the audio recording format for the
    * \ref agora::media::IAudioFrameObserver::onRecordAudioFrame "onRecordAudioFrame" callback.
@@ -3960,6 +3959,7 @@ class IRtcEngine : public agora::base::IEngineBase {
   virtual int setRecordingAudioFrameParameters(int sampleRate, int channel,
                                                RAW_AUDIO_FRAME_OP_MODE_TYPE mode,
                                                int samplesPerCall) = 0;
+
   /**
    * Sets the audio playback format for the
    * \ref agora::media::IAudioFrameObserver::onPlaybackAudioFrame "onPlaybackAudioFrame" callback.
@@ -3982,6 +3982,7 @@ class IRtcEngine : public agora::base::IEngineBase {
   virtual int setPlaybackAudioFrameParameters(int sampleRate, int channel,
                                               RAW_AUDIO_FRAME_OP_MODE_TYPE mode,
                                               int samplesPerCall) = 0;
+
   /**
    * Sets the mixed audio format for the
    * \ref agora::media::IAudioFrameObserver::onMixedAudioFrame "onMixedAudioFrame" callback.
@@ -3998,6 +3999,7 @@ class IRtcEngine : public agora::base::IEngineBase {
   * - < 0: Failure.
   */
   virtual int setMixedAudioFrameParameters(int sampleRate, int channel, int samplesPerCall) = 0;
+
   /**
    * Sets the audio playback format before mixing in the
    * \ref agora::media::IAudioFrameObserver::onPlaybackAudioFrameBeforeMixing "onPlaybackAudioFrameBeforeMixing"
@@ -4015,7 +4017,6 @@ class IRtcEngine : public agora::base::IEngineBase {
    */
   virtual int setPlaybackAudioFrameBeforeMixingParameters(int sampleRate, int channel) = 0;
 
-  
   /** Adjusts the recording volume.
 
   @param volume The recording volume, which ranges from 0 to 400:
@@ -4058,7 +4059,6 @@ class IRtcEngine : public agora::base::IEngineBase {
   - < 0: Failure.
   */
   virtual int adjustPlaybackSignalVolume(int volume) = 0;
-
 
   /** Enables loopback recording.
 
@@ -4158,9 +4158,8 @@ class IRtcEngine : public agora::base::IEngineBase {
   virtual int getRemoteVideoFilterProperty(const char* name, const char* vendor, const char* key,
                                            void* value, int size) = 0;
 
-  
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
-  
+
   /** 
    * Switches between front and rear cameras.
    *
@@ -4218,6 +4217,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    - < 0: Failure.
    */
   virtual int setDefaultAudioRouteToSpeakerphone(bool defaultToSpeaker) = 0;
+
   /** Enables/Disables the speakerphone temporarily (for Android and iOS only).
    
    When the audio route changes, the SDK triggers the 
@@ -4245,6 +4245,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    - < 0: Failure.
    */
   virtual int setEnableSpeakerphone(bool speakerOn) = 0;
+
   /** Checks whether the speakerphone is enabled (for Android and iOS only).
 
    @return
@@ -4253,12 +4254,11 @@ class IRtcEngine : public agora::base::IEngineBase {
    other than the speakerphone. For example, the headset or earpiece.
    */
   virtual bool isSpeakerphoneEnabled() = 0;
-  
-#endif
+
+#endif  // __ANDROID__ || (__APPLE__ && TARGET_OS_IOS)
 
 #if (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
 
-  
   /** Shares the whole or part of a screen by specifying the display ID.
 
   @note This method applies to macOS only.
@@ -4283,10 +4283,11 @@ class IRtcEngine : public agora::base::IEngineBase {
   */
   virtual int startScreenCaptureByDisplayId(unsigned int displayId, const Rectangle& regionRect,
                                             const ScreenCaptureParameters& captureParams) = 0;
-  
-#endif
+
+#endif  // __APPLE__ && TARGET_OS_MAC && !TARGET_OS_IPHONE
 
 #if defined(_WIN32)
+
   /**
    * Shares the whole or part of a screen by specifying the screen rect.
    *
@@ -4313,9 +4314,11 @@ class IRtcEngine : public agora::base::IEngineBase {
   virtual int startScreenCaptureByScreenRect(const Rectangle& screenRect,
                                              const Rectangle& regionRect,
                                              const ScreenCaptureParameters& captureParams) = 0;
-#endif
+
+#endif  // _WIN32
 
 #if defined(__ANDROID__)
+
   /**
    * Screen capturer by specifying a result data which obtained from a succesful screen
    * capture request.
@@ -4336,7 +4339,8 @@ class IRtcEngine : public agora::base::IEngineBase {
    */
   virtual int startScreenCapture(void* mediaProjectionPermissionResultData,
                                  const ScreenCaptureParameters& captureParams) = 0;
-#endif
+
+#endif  // __ANDROID__
 
 #if defined(_WIN32) || (defined(__APPLE__) && !(TARGET_OS_IPHONE) && (TARGET_OS_MAC))
   
@@ -4391,7 +4395,8 @@ class IRtcEngine : public agora::base::IEngineBase {
    *   - ERR_NOT_READY: No screen or window is being shared.
    */
   virtual int updateScreenCaptureRegion(const Rectangle& regionRect) = 0;
-#endif
+
+#endif  // _WIN32 || (__APPLE__ && !TARGET_OS_IPHONE && TARGET_OS_MAC)
 
 #if defined(_WIN32) || (defined(__APPLE__) && !(TARGET_OS_IPHONE) && (TARGET_OS_MAC)) || defined(__ANDROID__)
 
@@ -4415,7 +4420,8 @@ class IRtcEngine : public agora::base::IEngineBase {
    * - < 0: Failure.
    */
   virtual int stopScreenCapture() = 0;
-#endif
+
+#endif  // _WIN32 || (__APPLE__ && !TARGET_OS_IPHONE && TARGET_OS_MAC) || __ANDROID__
 
   /**
    * Gets the current call ID.
@@ -4552,12 +4558,10 @@ class IRtcEngine : public agora::base::IEngineBase {
    */
   virtual CONNECTION_STATE_TYPE getConnectionState(conn_id_t connectionId = 0) = 0;
 
-  
   // The following APIs are not implemented yet.
   virtual bool registerEventHandler(IRtcEngineEventHandler* eventHandler) = 0;
   virtual bool unregisterEventHandler(IRtcEngineEventHandler* eventHandler) = 0;
   virtual int setRemoteUserPriority(uid_t uid, PRIORITY_TYPE userPriority) = 0;
-  
 
   /**
    * Registers a packet observer.
@@ -4598,6 +4602,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    * - < 0: Failure.
    */
   virtual int setEncryptionMode(const char* encryptionMode) = 0;
+
   /**
    * Enables built-in encryption.
    *
@@ -4665,6 +4670,7 @@ class IRtcEngine : public agora::base::IEngineBase {
   - < 0: Failure.
   */
   virtual int createDataStream(int* streamId, bool reliable, bool ordered) = 0;
+
   /** Sends data stream messages to all users in a channel.
 
   Up to 30 packets can be sent per second in a channel with each packet having a
@@ -4732,6 +4738,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    - < 0: Failure.
    */
   virtual int addVideoWatermark(const char* watermarkUrl, const WatermarkOptions& options, conn_id_t connectionId = agora::rtc::DEFAULT_CONNECTION_ID) = 0;
+
   /** Removes the watermark image on the video stream added by
   addVideoWatermark().
 
@@ -4742,6 +4749,7 @@ class IRtcEngine : public agora::base::IEngineBase {
   - < 0: Failure.
   */
   virtual int clearVideoWatermark(conn_id_t connectionId = agora::rtc::DEFAULT_CONNECTION_ID) = 0;
+
   /** Removes the watermark image on the video stream added by
   addVideoWatermark().
 
@@ -4778,6 +4786,7 @@ class IRtcEngine : public agora::base::IEngineBase {
   - < 0: Failure.
   */
   virtual int addInjectStreamUrl(const char* url, const InjectStreamConfig& config) = 0;
+
   /** Removes the injected online media stream from a live broadcast.
 
   If this method call is successful, the SDK triggers the
@@ -4811,7 +4820,6 @@ class IRtcEngine : public agora::base::IEngineBase {
    - < 0: Failure.
    */
    virtual int resumeAudio() = 0;
-   
 
   /**
    * Enables interoperability with the Agora Web SDK (Live Broadcast only).
@@ -4923,6 +4931,7 @@ class IRtcEngine : public agora::base::IEngineBase {
      * - < 0: Failure.
      */
   virtual int startChannelMediaRelay(const ChannelMediaRelayConfiguration &configuration) = 0;
+
     /** Updates the channels for media stream relay. After a successful
      * \ref startChannelMediaRelay() "startChannelMediaRelay" method call, if
      * you want to relay the media stream to more channels, or leave the
@@ -4947,6 +4956,7 @@ class IRtcEngine : public agora::base::IEngineBase {
      * - < 0: Failure.
      */
   virtual int updateChannelMediaRelay(const ChannelMediaRelayConfiguration &configuration) = 0;
+
     /** Stops the media stream relay.
      *
      * Once the relay stops, the host quits all the destination
@@ -4972,9 +4982,7 @@ class IRtcEngine : public agora::base::IEngineBase {
      * - < 0: Failure.
      */
   virtual int stopChannelMediaRelay() = 0;
-
 };
-
 
 class IRtcEngineParameter {
  public:
@@ -5139,7 +5147,6 @@ class IRtcEngineParameter {
   virtual int convertPath(const char* filePath, agora::util::AString& value) = 0;
 };
 
-
 class AAudioDeviceManager : public agora::util::AutoPtr<IAudioDeviceManager> {
  public:
   AAudioDeviceManager(IRtcEngine* engine) {
@@ -5154,7 +5161,6 @@ class AVideoDeviceManager : public agora::util::AutoPtr<IVideoDeviceManager> {
   }
 };
 
-
 // The following types are either deprecated or not implmented yet.
 enum QUALITY_REPORT_FORMAT_TYPE {
   /** 0: The quality report in JSON format,
@@ -5164,6 +5170,7 @@ enum QUALITY_REPORT_FORMAT_TYPE {
    */
   QUALITY_REPORT_HTML = 1,
 };
+
 /** Media device states. */
 enum MEDIA_DEVICE_STATE_TYPE {
   /** 1: The device is active.
@@ -5325,8 +5332,6 @@ enum VIDEO_PROFILE_TYPE {
   VIDEO_PROFILE_DEFAULT = VIDEO_PROFILE_LANDSCAPE_360P,
 };
 
-
-
 }  // namespace rtc
 }  // namespace agora
 
@@ -5360,5 +5365,3 @@ AGORA_API agora::rtc::IRtcEngine* AGORA_CALL createAgoraRtcEngine();
 */
 #define getAgoraRtcEngineErrorDescription getAgoraSdkErrorDescription
 #define setAgoraRtcEngineExternalSymbolLoader setAgoraSdkExternalSymbolLoader
-
-#endif

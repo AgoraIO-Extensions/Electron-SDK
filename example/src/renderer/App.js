@@ -61,6 +61,37 @@ export default class App extends Component {
     if(!this.rtcEngine) {
       this.rtcEngine = new AgoraRtcEngine()
       this.rtcEngine.initialize(APP_ID)
+      // this.rtcEngine.setRenderMode(2)
+
+      this.mediaPlayer = this.rtcEngine.createMediaPlayer();
+      this.mediaPlayer.initEventHandler();
+      this.mediaPlayer.on('onPlayerStateChanged', (state, ec)=>{
+        console.log(`onPlayerStateChanged  state: ${state}  ec:${ec}`);
+        if (state == 2) {
+          let a = this.mediaPlayer.play();
+          console.log(`mediaPlayer.play ${a}`);
+          let a9 = this.mediaPlayer.getDuration()
+          console.log(`mediaPlayer.getDuration ${a9}`);
+          // let a10 = this.mediaPlayer.getState()
+          // console.log(`mediaPlayer.getState ${a10}`);
+
+        }
+      })
+
+      this.mediaPlayer.on('onPlayEvent', (event)=>{
+        console.log(`onPlayEvent  event: ${event}`);
+      })
+
+      this.mediaPlayer.on('onPositionChanged', (position)=>{
+        console.log(`onPositionChanged  position: ${position}`);
+          // this.setState({
+          //   mediaPlayerView: "mediaPlayerView"
+          // })
+      })
+      
+      let ret = this.mediaPlayer.open("https://big-class-test.oss-cn-hangzhou.aliyuncs.com/61102.1592987815092.mp4", 0);
+      console.log(`Media palyer ret： ${ret}`);
+
       this.rtcEngine.initializePluginManager();
       const libPath = isMac ? 
             path.resolve(__static, 'bytedance/libByteDancePlugin.dylib')
@@ -262,8 +293,8 @@ export default class App extends Component {
     let device = this.state.videoDevices[0]
     sources.push({
       sourceType: 0,
-      deviceId: device.deviceid,
-      name: device.devicename,
+      // deviceId: device.deviceid,
+      // name: device.devicename,
       x: 0,
       y: 0,
       width: 360,
@@ -277,9 +308,9 @@ export default class App extends Component {
   handleAddImage = () => {
     let sources = this.state.sources || []
     
-    let filePath = path.resolve(__dirname, "../../static/plugin.png")
+    let filePath = path.resolve(__dirname, "../../static/gif.gif")
     sources.push({
-      sourceType: 4,
+      sourceType: 6,
       connectionId: 0,
       x: 0,
       y: 0,
@@ -295,7 +326,7 @@ export default class App extends Component {
   handleAddRemote = (uid) => {
     let sources = this.state.sources || []
     sources.push({
-      sourceType: 5,
+      sourceType: 7,
       connectionId: 0,
       remoteUserUid: uid,
       x: 0,
@@ -312,6 +343,20 @@ export default class App extends Component {
     let sources = this.state.sources || []
     sources.push({
       sourceType: 1,
+      connectionId: 0,
+      x: 0,
+      y: 0,
+      width: 360,
+      height: 240,
+      zOrder: 1,
+      alpha: 0
+    })
+    this.setState({sources})
+  }
+  handleAddMediaPlayer = () => {
+    let sources = this.state.sources || []
+    sources.push({
+      sourceType: 3,
       connectionId: 0,
       x: 0,
       y: 0,
@@ -371,7 +416,12 @@ export default class App extends Component {
     let {x, y, node} = d
     console.log(`drag stop: id: ${node.id} ${x} ${y}`)
     let sourceId = this.reverseSourceId(node.id)
-    this.updateSource(sourceId, {x, y})
+    this.updateSource(sourceId, {x: x, y: y})
+  }
+  
+  handleDrag = (e,d) => {
+    let {x, y, node} = d
+    console.log(`drag : id: ${node.id} ${x} ${y}`)
   }
 
   handleResizeStop = (e, direction, ref, delta, position) => {
@@ -471,6 +521,21 @@ export default class App extends Component {
               <button onClick={this.handleAddScreenShare} className="button is-link">Add</button>
             </div>
           </div>
+          <div className="field">
+            <label className="label">MediaPlayer</label>
+            <div className="control">
+              {/* <div className="select"  style={{width: '100%'}}>
+                <select onChange={this.handleVoiceChanger} value={this.state.voiceChangerPreset} style={{width: '100%'}}>
+                  {cameraSources.map(item => (<option key={item.deviceid} value={item.deviceid}>{item.name}</option>))}
+                </select>
+              </div> */}
+            </div>
+          </div>
+          <div className="field is-grouped is-grouped-left">
+            <div className="control">
+              <button onClick={this.handleAddMediaPlayer} className="button is-link">Add</button>
+            </div>
+          </div>
           <div className="field is-grouped is-grouped-left">
             <div className="control">
               <button onClick={this.handlePreview} className="button is-link">Preview</button>
@@ -491,14 +556,13 @@ export default class App extends Component {
                 y:s.y,
                 width: s.width,
                 height: s.height
-              }} onDragStop={this.handleDragStop} onResizeStop={this.handleResizeStop}></Rnd>
+              }} onDragStop={this.handleDragStop} onDrag={this.handleDrag} onResize={this.handleResizeStop}></Rnd>
             ))}
           </Window>
         </div>
       </div>
     )
   }
-
 }
 
 class Window extends Component {
