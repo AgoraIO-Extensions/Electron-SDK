@@ -20,9 +20,15 @@ namespace agora {
             public:
             virtual ~NodeVideoFrameObserver() = default;
             virtual bool onCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
-            virtual bool onScreenCaptureVideoFrame(VideoFrame& videoFrame) override;
+            virtual bool onSecondaryCameraCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
+
+            virtual bool onScreenCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
+            virtual bool onSecondaryScreenCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
+
             virtual bool onRenderVideoFrame(rtc::uid_t uid, rtc::conn_id_t connectionId, agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
             virtual bool onTranscodedVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
+
+            virtual agora::media::IVideoFrameObserver::VIDEO_FRAME_PROCESS_MODE getVideoFrameProcessMode() override; 
         };
     }
 }
