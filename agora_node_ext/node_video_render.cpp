@@ -23,7 +23,7 @@ namespace agora {
 
         bool NodeVideoFrameObserver::onSecondaryCameraCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame)
         {
-            return false;
+            return true;
         }
 
         bool NodeVideoFrameObserver::onRenderVideoFrame(rtc::uid_t uid, rtc::conn_id_t connectionId, agora::media::IVideoFrameObserver::VideoFrame& videoFrame)
@@ -31,7 +31,7 @@ namespace agora {
             auto *pTransporter = getNodeVideoFrameTransporter();
             pTransporter->deliverFrame_I420(NodeRenderType::NODE_RENDER_TYPE_REMOTE, uid, connectionId, videoFrame);
 
-            return false;
+            return true;
         }
 
         bool NodeVideoFrameObserver::onScreenCaptureVideoFrame(VideoFrame& videoFrame)
@@ -39,12 +39,12 @@ namespace agora {
             auto *pTransporter = getNodeVideoFrameTransporter();
             pTransporter->deliverFrame_I420(NodeRenderType::NODE_RENDER_TYPE_VIDEO_SOURCE, 0, 0, videoFrame);
 
-            return false;
+            return true;
         }
 
         bool NodeVideoFrameObserver::onSecondaryScreenCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame)
         {
-            return false;
+            return true;
         }
 
 
@@ -53,13 +53,13 @@ namespace agora {
             auto *pTransporter = getNodeVideoFrameTransporter();
             pTransporter->deliverFrame_I420(NodeRenderType::NODE_RENDER_TYPE_TRANSCODED, 0, 0, videoFrame);
 
-            return false;
+            return true;
         }
 
-        agora::media::IVideoFrameObserver::VIDEO_FRAME_PROCESS_MODE NodeVideoFrameObserver::getVideoFrameProcessMode()
-        {
-            return agora::media::IVideoFrameObserver::PROCESS_MODE_READ_WRITE;
-        }
+        // agora::media::IVideoFrameObserver::VIDEO_FRAME_PROCESS_MODE NodeVideoFrameObserver::getVideoFrameProcessMode()
+        // {
+        //     return agora::media::IVideoFrameObserver::PROCESS_MODE_READ_WRITE;
+        // }
 
     }
 }
