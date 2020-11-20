@@ -328,6 +328,7 @@ namespace agora {
             : m_isolate(isolate)
         {
             LOG_ENTER;
+            LOG_F(INFO, "NodeRtcEngine constructor");
             /** m_engine provide SDK functionality */
             m_engine = createAgoraRtcEngine();
             /** m_eventHandler provide SDK event handler. */
@@ -344,6 +345,7 @@ namespace agora {
 
         NodeRtcEngine::~NodeRtcEngine()
         {
+            LOG_F(INFO, "NodeRtcEngine destructor");
             LOG_ENTER;
             if (m_audioVdm) {
                 m_audioVdm->release();
@@ -2457,6 +2459,7 @@ namespace agora {
             LOG_ENTER;
             int result = -1;
             do {
+                LOG_F(INFO, "NodeRtcEngine initialize");
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
