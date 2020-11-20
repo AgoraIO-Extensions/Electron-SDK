@@ -21,7 +21,7 @@ typedef struct tag_agora_plugin_info {
 }agora_plugin_info;
 
 class IAVFramePluginManager :
-    public agora::media::IVideoFrameObserver,
+    // public agora::media::IVideoFrameObserver,
     public agora::media::IAudioFrameObserver
 {
 public:
