@@ -1,4 +1,4 @@
-export const APP_ID = "fda6a89b2857451f8d3479a2fda2fbdf"
+export const APP_ID = #APPID
 export const SHARE_ID = 0
 export const RTMP_URL = ''
 export const FU_AUTH = []
