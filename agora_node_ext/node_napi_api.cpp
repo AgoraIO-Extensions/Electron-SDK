@@ -16,6 +16,7 @@
 #include "libyuv.h"
 #include <chrono>
 #include <string>
+#include <nan.h>
 using namespace libyuv;
 NodeVideoFrameTransporter g_transport;
 
@@ -539,13 +540,27 @@ void NodeVideoFrameTransporter::highFlushVideo()
 
 int napi_get_value_string_utf8_(const Local<Value>& str, char *buffer, uint32_t len)
 {
+    Isolate* isolate = Isolate::GetCurrent();
+    if(!isolate) {
+        return 0;
+    }
+    Local<Context> context = isolate->GetCurrentContext();
     if (!str->IsString())
         return 0;
     if (!buffer) {
+#if NODE_MAJOR_VERSION <= 10
         return str.As<String>()->Utf8Length();
+#else
+        return str.As<String>()->Utf8Length(isolate);
+#endif
     }
     else {
+#if NODE_MAJOR_VERSION <= 10
         int copied = str.As<String>()->WriteUtf8(buffer, len - 1, nullptr, String::REPLACE_INVALID_UTF8 | String::NO_NULL_TERMINATION);
+#else
+        int copied = str.As<String>()->WriteUtf8(isolate, buffer, len - 1, nullptr, String::REPLACE_INVALID_UTF8 | String::NO_NULL_TERMINATION);
+#endif
+        
         buffer[copied] = '\0';
         return copied;
     }
@@ -560,7 +575,8 @@ napi_status napi_get_value_uint32_(const Local<Value>& value, uint32_t& result)
 {
     if (!value->IsUint32())
         return napi_invalid_arg;
-    result = value->Uint32Value();
+
+    result = Nan::To<v8::Uint32>(value).ToLocalChecked()->Value();
     return napi_ok;
 }
 
@@ -568,7 +584,8 @@ napi_status napi_get_value_bool_(const Local<Value>& value, bool& result)
 {
     if(!value->IsBoolean())
         return napi_invalid_arg;
-    result = value->BooleanValue();
+    
+    result = Nan::To<v8::Boolean>(value).ToLocalChecked()->Value();
     return napi_ok;
 }
 	
@@ -576,7 +593,8 @@ napi_status napi_get_value_int32_(const Local<Value>& value, int32_t& result)
 {
     if (!value->IsInt32())
         return napi_invalid_arg;
-    result = value->Int32Value();
+
+    result = Nan::To<v8::Int32>(value).ToLocalChecked()->Value();
     return napi_ok;
 }
 
@@ -585,7 +603,7 @@ napi_status napi_get_value_double_(const Local<Value>& value, double &result)
     if (!value->IsNumber())
         return napi_invalid_arg;
 
-    result = value->NumberValue();
+    result = Nan::To<v8::Number>(value).ToLocalChecked()->Value();
     return napi_ok;
 }
 
