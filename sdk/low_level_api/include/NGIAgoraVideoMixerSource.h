@@ -25,6 +25,12 @@ struct MixerLayoutConfig {
   const char* image_path; // url of the place holder picture
 };
 
+enum ImageType {
+  kPng,
+  kJpeg,
+  kGif
+};
+
 static const char* const LOCAL_CAMERA_TRACK_ID = "LocalCamera";
 static const char* const LOCAL_SCREEN_TRACK_ID = "LocalScreen";
 static const char* const LOCAL_CUSTOM_TRACK_ID = "LocalCustom";
@@ -83,7 +89,7 @@ public:
    * 0 - Success
    * <0 - Failure
    */
-  virtual int addImageSource(const char* id, const MixerLayoutConfig& config) = 0;
+  virtual int addImageSource(const char* id, const MixerLayoutConfig& config, ImageType type = kPng) = 0;
   /**
    * Delete a image source to the mixer.
    * @param id The unique id of the image.
