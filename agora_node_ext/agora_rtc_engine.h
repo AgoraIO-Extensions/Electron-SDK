@@ -29,6 +29,7 @@
 #include "AVPlugin/IAVFramePluginManager.h"
 #include "AVPlugin/IAVFramePlugin.h"
 #include "node_metadata_observer.h"
+#include "../common/loguru.hpp"
 /*
 * Used to declare native interface to nodejs
 */
