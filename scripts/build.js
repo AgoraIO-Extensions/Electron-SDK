@@ -88,7 +88,7 @@ module.exports = ({
           
           if(platform === "darwin") {
             logger.info(`patch loader path for mac build..`)
-            shell.exec(`install_name_tool -change "@rpath/AgoraRtcKit.framework/Versions/A/AgoraRtcKit" "@loader_path/AgoraRtcKit.framework/Versions/A/AgoraRtcKit" ${agora_node_ext_path}`, {silent}, (code, stdout, stderr) => {
+            shell.exec(`install_name_tool -add_rpath "@loader_path" ${agora_node_ext_path}`, {silent}, (code, stdout, stderr) => {
               if (code !== 0) {
                 logger.error(stderr);
                 process.exit(1)
