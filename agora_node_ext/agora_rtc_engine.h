@@ -326,6 +326,14 @@ namespace agora {
             NAPI_API(updateChannelMediaOptions);
 
             NAPI_API(createMediaPlayer);
+            NAPI_API(startPrimaryCameraCapture);
+            NAPI_API(startSecondaryCameraCapture);
+            NAPI_API(stopPrimaryCameraCapture);
+            NAPI_API(stopSecondaryCameraCapture);
+            NAPI_API(startPrimaryScreenCapture);
+            NAPI_API(startSecondaryScreenCapture);
+            NAPI_API(stopPrimaryScreenCapture);
+            NAPI_API(stopSecondaryScreenCapture);
 
         public:
             Isolate* getIsolate() { return m_isolate; }

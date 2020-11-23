@@ -60,6 +60,5 @@ namespace agora {
         // {
         //     return agora::media::IVideoFrameObserver::PROCESS_MODE_READ_WRITE;
         // }
-
     }
 }

@@ -273,6 +273,15 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(updateChannelMediaOptions);
 
                 PROPERTY_METHOD_DEFINE(createMediaPlayer);
+                
+                PROPERTY_METHOD_DEFINE(startPrimaryCameraCapture);
+                PROPERTY_METHOD_DEFINE(startSecondaryCameraCapture);
+                PROPERTY_METHOD_DEFINE(stopPrimaryCameraCapture);
+                PROPERTY_METHOD_DEFINE(stopSecondaryCameraCapture);
+                PROPERTY_METHOD_DEFINE(startPrimaryScreenCapture);
+                PROPERTY_METHOD_DEFINE(startSecondaryScreenCapture);
+                PROPERTY_METHOD_DEFINE(stopPrimaryScreenCapture);
+                PROPERTY_METHOD_DEFINE(stopSecondaryScreenCapture);
 
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
@@ -5175,6 +5184,294 @@ namespace agora {
                 Local<Object> jsmediaPlayer = NodeMediaPlayer::Init(isolate, mediaPlayer);
                 args.GetReturnValue().Set(jsmediaPlayer);
             } while (false);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, startPrimaryCameraCapture)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                Isolate* isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                Local<Object> obj;
+                status = napi_get_value_object_(isolate, args[0], obj);
+                CHECK_NAPI_STATUS(pEngine, status);
+                CameraCapturerConfiguration config;
+                int cameraDirection = 0;
+                
+                status = napi_get_object_property_int32_(isolate, obj, "cameraDirection", cameraDirection);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                nodestring deviceId;
+                status = napi_get_object_property_nodestring_(isolate, obj, "deviceId", deviceId);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                Local<Object> videoFormatObj;
+                VideoFormat format;
+                napi_get_object_property_object_(isolate, obj, "format", videoFormatObj);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                status = napi_get_object_property_int32_(isolate, videoFormatObj, "width", format.width);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                status = napi_get_object_property_int32_(isolate, videoFormatObj, "height", format.height);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                status = napi_get_object_property_int32_(isolate, videoFormatObj, "fps", format.fps);
+                CHECK_NAPI_STATUS(pEngine, status);
+                config.cameraDirection = (CAMERA_DIRECTION)cameraDirection;
+                strcpy(config.deviceId, deviceId);
+                config.format = format;
+                result = pEngine->m_engine->startPrimaryCameraCapture(config);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, startSecondaryCameraCapture)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                Isolate* isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                Local<Object> obj;
+                status = napi_get_value_object_(isolate, args[0], obj);
+                CHECK_NAPI_STATUS(pEngine, status);
+                CameraCapturerConfiguration config;
+                int cameraDirection = 0;
+                
+                status = napi_get_object_property_int32_(isolate, obj, "cameraDirection", cameraDirection);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                nodestring deviceId;
+                status = napi_get_object_property_nodestring_(isolate, obj, "deviceId", deviceId);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                Local<Object> videoFormatObj;
+                VideoFormat format;
+                napi_get_object_property_object_(isolate, obj, "format", videoFormatObj);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                status = napi_get_object_property_int32_(isolate, videoFormatObj, "width", format.width);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                status = napi_get_object_property_int32_(isolate, videoFormatObj, "height", format.height);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                status = napi_get_object_property_int32_(isolate, videoFormatObj, "fps", format.fps);
+                CHECK_NAPI_STATUS(pEngine, status);
+                config.cameraDirection = (CAMERA_DIRECTION)cameraDirection;
+                strcpy(config.deviceId, deviceId);
+                config.format = format;
+                result = pEngine->m_engine->startSecondaryCameraCapture(config);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, stopPrimaryCameraCapture)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                Isolate* isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                result = pEngine->m_engine->stopPrimaryCameraCapture();
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, stopSecondaryCameraCapture)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                Isolate* isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                result = pEngine->m_engine->stopSecondaryCameraCapture();
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, startPrimaryScreenCapture)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                Isolate* isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                ScreenCaptureConfiguration configuration;
+                Local<Object> obj;
+                status = napi_get_value_object_(isolate, args[0], obj);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                status = napi_get_object_property_bool_(isolate, obj, "isCaptureWindow", configuration.isCaptureWindow);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                status = napi_get_object_property_uint32_(isolate, obj, "displayId", configuration.displayId);
+
+                Rectangle screenRect;
+                Local<Object> screenRectObj;
+                status = napi_get_object_property_object_(isolate, obj, "screenRect", screenRectObj);
+                GET_OBJECT_PROPERTY(screenRectObj, int32, "x", screenRect.x);
+                GET_OBJECT_PROPERTY(screenRectObj, int32, "y", screenRect.y);
+                GET_OBJECT_PROPERTY(screenRectObj, int32, "width", screenRect.width);
+                GET_OBJECT_PROPERTY(screenRectObj, int32, "height", screenRect.height);
+
+                configuration.screenRect = screenRect;
+
+                unsigned int windowId;
+                status = napi_get_object_property_uint32_(isolate, obj, "windowId", windowId);
+                CHECK_NAPI_STATUS(pEngine, status);
+                configuration.windowId = (view_t)windowId;
+
+                ScreenCaptureParameters params;
+                Local<Object> screenCaptureParameterObj;
+                status = napi_get_object_property_object_(isolate, obj, "params", screenCaptureParameterObj);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                VideoDimensions dimensions;
+                status = napi_get_object_property_int32_(isolate, obj, "width", dimensions.width);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "height", dimensions.height);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "frameRate", params.frameRate);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "bitrate", params.bitrate);
+                CHECK_NAPI_STATUS(pEngine, status);
+                params.dimensions = dimensions;
+                configuration.params = params;
+
+                Rectangle regionRect;
+                Local<Object> regionRectObj;
+                status = napi_get_object_property_object_(isolate, obj, "screenRect", regionRectObj);
+                GET_OBJECT_PROPERTY(regionRectObj, int32, "x", regionRect.x);
+                GET_OBJECT_PROPERTY(regionRectObj, int32, "y", regionRect.y);
+                GET_OBJECT_PROPERTY(regionRectObj, int32, "width", regionRect.width);
+                GET_OBJECT_PROPERTY(regionRectObj, int32, "height", regionRect.height);
+                configuration.regionRect = regionRect;
+
+                result = pEngine->m_engine->startPrimaryScreenCapture(configuration);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE; 
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, startSecondaryScreenCapture)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                Isolate* isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                ScreenCaptureConfiguration configuration;
+                Local<Object> obj;
+                status = napi_get_value_object_(isolate, args[0], obj);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                status = napi_get_object_property_bool_(isolate, obj, "isCaptureWindow", configuration.isCaptureWindow);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                status = napi_get_object_property_uint32_(isolate, obj, "displayId", configuration.displayId);
+
+                Rectangle screenRect;
+                Local<Object> screenRectObj;
+                status = napi_get_object_property_object_(isolate, obj, "screenRect", screenRectObj);
+                GET_OBJECT_PROPERTY(screenRectObj, int32, "x", screenRect.x);
+                GET_OBJECT_PROPERTY(screenRectObj, int32, "y", screenRect.y);
+                GET_OBJECT_PROPERTY(screenRectObj, int32, "width", screenRect.width);
+                GET_OBJECT_PROPERTY(screenRectObj, int32, "height", screenRect.height);
+
+                configuration.screenRect = screenRect;
+
+                unsigned int windowId;
+                status = napi_get_object_property_uint32_(isolate, obj, "windowId", windowId);
+                CHECK_NAPI_STATUS(pEngine, status);
+                configuration.windowId = (view_t)windowId;
+
+                ScreenCaptureParameters params;
+                Local<Object> screenCaptureParameterObj;
+                status = napi_get_object_property_object_(isolate, obj, "params", screenCaptureParameterObj);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                VideoDimensions dimensions;
+                status = napi_get_object_property_int32_(isolate, obj, "width", dimensions.width);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "height", dimensions.height);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "frameRate", params.frameRate);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "bitrate", params.bitrate);
+                CHECK_NAPI_STATUS(pEngine, status);
+                params.dimensions = dimensions;
+                configuration.params = params;
+
+                Rectangle regionRect;
+                Local<Object> regionRectObj;
+                status = napi_get_object_property_object_(isolate, obj, "screenRect", regionRectObj);
+                GET_OBJECT_PROPERTY(regionRectObj, int32, "x", regionRect.x);
+                GET_OBJECT_PROPERTY(regionRectObj, int32, "y", regionRect.y);
+                GET_OBJECT_PROPERTY(regionRectObj, int32, "width", regionRect.width);
+                GET_OBJECT_PROPERTY(regionRectObj, int32, "height", regionRect.height);
+                configuration.regionRect = regionRect;
+
+                result = pEngine->m_engine->startSecondaryScreenCapture(configuration);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE; 
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, stopPrimaryScreenCapture)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                Isolate* isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                result = pEngine->m_engine->stopPrimaryScreenCapture();
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, stopSecondaryScreenCapture)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                Isolate* isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                result = pEngine->m_engine->stopSecondaryScreenCapture();
+            } while (false);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
