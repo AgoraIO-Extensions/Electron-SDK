@@ -12,6 +12,7 @@
 #define AGORA_NODE_EVENT_HANDLER_H
 
 #include "IAgoraRtcEngine.h"
+#include "IAgoraRtcEngineEx.h"
 #include "agora_node_ext.h"
 #include <unordered_map>
 #include <string>
@@ -107,7 +108,7 @@ namespace agora {
 #define RTC_EVENT_API_ERROR "apierror"
         class NodeRtcEngine;
         class NodeUid;
-        class NodeEventHandler : public IRtcEngineEventHandler
+        class NodeEventHandler : public IRtcEngineEventHandlerEx
         {
         public:
             struct NodeEventCallback
@@ -118,172 +119,173 @@ namespace agora {
         public:
             NodeEventHandler(NodeRtcEngine* pEngine);
             ~NodeEventHandler();
-            virtual void onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed) override;
-            virtual void onRejoinChannelSuccess(const char* channel, uid_t uid, int elapsed) override;
-            virtual void onWarning(int warn, const char* msg) override;
-            virtual void onError(int err, const char* msg) override;
-            virtual void onAudioQuality(uid_t uid, int quality, unsigned short delay, unsigned short lost) override;
-            virtual void onAudioVolumeIndication(const AudioVolumeInfo* sperkers, unsigned int speakerNumber, int totalVolume) override;
-            virtual void onLeaveChannel(const RtcStats& stats) override;
-            virtual void onRtcStats(const RtcStats& stats) override;
-            virtual void onAudioDeviceStateChanged(const char* deviceId, int deviceType, int deviceState) override;
-            virtual void onAudioMixingFinished() override;
-            virtual void onRemoteAudioMixingBegin() override;
-            virtual void onRemoteAudioMixingEnd() override;
-            virtual void onAudioEffectFinished(int soundId) override;
-            virtual void onVideoDeviceStateChanged(const char* deviceId, int deviceType, int deviceState) override;
-            virtual void onNetworkQuality(uid_t uid, int txQuality, int rxQuality) override;
-            virtual void onLastmileQuality(int quality) override;
-            virtual void onFirstLocalVideoFrame(int width, int height, int elapsed) override;
-            virtual void onFirstRemoteVideoDecoded(uid_t uid, int width, int height, int elapsed) override;
-            virtual void onVideoSizeChanged(uid_t uid, int width, int height, int rotation) override;
-            virtual void onRemoteVideoStateChanged(uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed) override;
-            virtual void onUserJoined(uid_t uid, int elapsed) override;
-            virtual void onUserOffline(uid_t uid, USER_OFFLINE_REASON_TYPE reason) override;
+            virtual void onJoinChannelSuccess(conn_id_t connId, const char* channel, uid_t uid, int elapsed) override;
+            virtual void onRejoinChannelSuccess(conn_id_t connId, const char* channel, uid_t uid, int elapsed) override;
+            virtual void onWarning(conn_id_t connId, int warn, const char* msg) override;
+            virtual void onError(conn_id_t connId, int err, const char* msg) override;
+            virtual void onAudioQuality(conn_id_t connId, uid_t uid, int quality, unsigned short delay, unsigned short lost) override;
+            virtual void onAudioVolumeIndication(conn_id_t connId, const AudioVolumeInfo* sperkers, unsigned int speakerNumber, int totalVolume) override;
+            virtual void onLeaveChannel(conn_id_t connId, const RtcStats& stats) override;
+            virtual void onRtcStats(conn_id_t connId, const RtcStats& stats) override;
+            virtual void onAudioDeviceStateChanged(conn_id_t connId, const char* deviceId, int deviceType, int deviceState) override;
+            // virtual void onAudioMixingFinished() override;
+            // virtual void onRemoteAudioMixingBegin() override;
+            // virtual void onRemoteAudioMixingEnd() override;
+            virtual void onAudioEffectFinished(conn_id_t connId, int soundId) override;
+            virtual void onVideoDeviceStateChanged(conn_id_t connId, const char* deviceId, int deviceType, int deviceState) override;
+            virtual void onNetworkQuality(conn_id_t connId, uid_t uid, int txQuality, int rxQuality) override;
+            virtual void onLastmileQuality(conn_id_t connId, int quality) override;
+            virtual void onFirstLocalVideoFrame(conn_id_t connId, int width, int height, int elapsed) override;
+            virtual void onFirstRemoteVideoDecoded(conn_id_t connId, uid_t uid, int width, int height, int elapsed) override;
+            virtual void onVideoSizeChanged(conn_id_t connId, uid_t uid, int width, int height, int rotation) override;
+            virtual void onRemoteVideoStateChanged(conn_id_t connId, uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed) override;
+            virtual void onUserJoined(conn_id_t connId, uid_t uid, int elapsed) override;
+            virtual void onUserOffline(conn_id_t connId, uid_t uid, USER_OFFLINE_REASON_TYPE reason) override;
             // virtual void onUserMuteAudio(uid_t uid, bool muted) override;
-            virtual void onUserMuteVideo(uid_t uid, bool muted) override;
-            virtual void onUserEnableVideo(uid_t uid, bool enabled) override;
-            virtual void onUserEnableLocalVideo(uid_t uid, bool enabled) override;
-            virtual void onApiCallExecuted(int err, const char* api, const char* result) override;
-            virtual void onLocalVideoStats(const LocalVideoStats& stats) override;
-            virtual void onRemoteVideoStats(const RemoteVideoStats& stats) override;
-            virtual void onCameraReady() override;
-            virtual void onCameraFocusAreaChanged(int x, int y, int width, int height) override;
-            virtual void onCameraExposureAreaChanged(int x, int y, int width, int height) override;
-            virtual void onVideoStopped() override;
-            virtual void onConnectionLost() override;
-            virtual void onConnectionInterrupted() override;
-            virtual void onConnectionBanned() override;
-            virtual void onStreamMessage(uid_t uid, int streamId, const char* data, size_t length) override;
-            virtual void onStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached) override;
-            virtual void onMediaEngineLoadSuccess() override;
-            virtual void onMediaEngineStartCallSuccess() override;
-            virtual void onRequestToken() override;
-            virtual void onTokenPrivilegeWillExpire(const char* token) override;
+            virtual void onUserMuteVideo(conn_id_t connId, uid_t uid, bool muted) override;  
+            virtual void onUserEnableVideo(conn_id_t connId, uid_t uid, bool enabled) override;
+            virtual void onUserEnableLocalVideo(conn_id_t connId, uid_t uid, bool enabled) override;
+            virtual void onApiCallExecuted(conn_id_t connId, int err, const char* api, const char* result) override;
+            virtual void onLocalVideoStats(conn_id_t connId, const LocalVideoStats& stats) override;
+            virtual void onRemoteVideoStats(conn_id_t connId, const RemoteVideoStats& stats) override;
+            virtual void onCameraReady(conn_id_t connId) override;
+            virtual void onCameraFocusAreaChanged(conn_id_t connId, int x, int y, int width, int height) override;
+            virtual void onCameraExposureAreaChanged(conn_id_t connId, int x, int y, int width, int height) override;
+            virtual void onVideoStopped(conn_id_t connId) override;
+            virtual void onConnectionLost(conn_id_t connId) override;
+            virtual void onConnectionInterrupted(conn_id_t connId) override;
+            virtual void onConnectionBanned(conn_id_t connId) override;
+            virtual void onStreamMessage(conn_id_t connId, uid_t uid, int streamId, const char* data, size_t length) override;
+            virtual void onStreamMessageError(conn_id_t connId, uid_t uid, int streamId, int code, int missed, int cached) override;
+            virtual void onMediaEngineLoadSuccess(conn_id_t connId) override;
+            virtual void onMediaEngineStartCallSuccess(conn_id_t connId) override;
+            virtual void onRequestToken(conn_id_t connId) override;
+            virtual void onTokenPrivilegeWillExpire(conn_id_t connId, const char* token) override;
             // virtual void onFirstLocalAudioFrame(int elapsed) override;
             // virtual void onFirstRemoteAudioDecoded(uid_t uid, int elapsed) override;
-            virtual void onTranscodingUpdated() override;
-            virtual void onStreamInjectedStatus(const char* url, uid_t uid, int status) override;
-            virtual void onLocalPublishFallbackToAudioOnly(bool isFallbackOrRecover) override;
-            virtual void onRemoteSubscribeFallbackToAudioOnly(uid_t uid, bool isFallbackOrRecover) override;
-            virtual void onActiveSpeaker(uid_t uid) override;
-            virtual void onClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole) override;
-            virtual void onAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted) override;
-            virtual void onRemoteAudioTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)override;
-            virtual void onRemoteVideoTransportStats(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)override;
-            virtual void onRemoteAudioStats(const RemoteAudioStats & stats) override;
+            virtual void onTranscodingUpdated(conn_id_t connId) override;
+            virtual void onStreamInjectedStatus(conn_id_t connId, const char* url, uid_t uid, int status) override;
+            virtual void onLocalPublishFallbackToAudioOnly(conn_id_t connId, bool isFallbackOrRecover) override;
+            virtual void onRemoteSubscribeFallbackToAudioOnly(conn_id_t connId, uid_t uid, bool isFallbackOrRecover) override;
+            virtual void onActiveSpeaker(conn_id_t connId, uid_t uid) override;
+            virtual void onClientRoleChanged(conn_id_t connId, CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole) override;
+            virtual void onAudioDeviceVolumeChanged(conn_id_t connId, MEDIA_DEVICE_TYPE deviceType, int volume, bool muted) override;
+            virtual void onRemoteAudioTransportStats(conn_id_t connId, agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)override;
+            virtual void onRemoteVideoTransportStats(conn_id_t connId, agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)override;
+            virtual void onRemoteAudioStats(conn_id_t connId, const RemoteAudioStats & stats) override;
             // virtual void onMicrophoneEnabled(bool enabled) override;
-            virtual void onConnectionStateChanged(CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason) override;
+            virtual void onConnectionStateChanged(conn_id_t connId, CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason) override;
 
             void fireApiError(const char* funcName);
             void addEventHandler(const std::string& eventName, Persistent<Object>& obj, Persistent<Function>& callback);
 
             //2.4.0
-            virtual void onAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE errorCode) override;
-            virtual void onLastmileProbeResult(const LastmileProbeResult &result) override;
+            virtual void onAudioMixingStateChanged(conn_id_t connId, AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE errorCode) override;
+            virtual void onLastmileProbeResult(conn_id_t connId, const LastmileProbeResult &result) override;
 
             //2.8.0
             // virtual void onLocalUserRegistered(uid_t uid, const char* userAccount) override;
             // virtual void onUserInfoUpdated(uid_t uid, const UserInfo& info) override;
-            virtual void onLocalVideoStateChanged(LOCAL_VIDEO_STREAM_STATE localVideoState, LOCAL_VIDEO_STREAM_ERROR error) override;
+            virtual void onLocalVideoStateChanged(conn_id_t connId, LOCAL_VIDEO_STREAM_STATE localVideoState, LOCAL_VIDEO_STREAM_ERROR error) override;
 
             //2.9.0
-            virtual void onLocalAudioStats(const LocalAudioStats& stats) override;
-            virtual void onLocalAudioStateChanged(LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error) override;
-            virtual void onRemoteAudioStateChanged(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) override;
+            virtual void onLocalAudioStats(conn_id_t connId, const LocalAudioStats& stats) override;
+            virtual void onLocalAudioStateChanged(conn_id_t connId, LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error) override;
+            virtual void onRemoteAudioStateChanged(conn_id_t connId, uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) override;
             // virtual void onChannelMediaRelayStateChanged(CHANNEL_MEDIA_RELAY_STATE state,CHANNEL_MEDIA_RELAY_ERROR code) override;
             // virtual void onChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT code) override;
 
             //3.0.0
-            virtual void onRtmpStreamingStateChanged(const char *url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR errCode) override;
+
+            virtual void onRtmpStreamingStateChanged(conn_id_t connId, const char *url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR errCode) override;
 
             //3.1.0
-            virtual void onFirstLocalAudioFramePublished(int elapsed) override;
+            virtual void onFirstLocalAudioFramePublished(conn_id_t connId, int elapsed) override;
             // virtual void onFirstLocalVideoFramePublished(int elapsed) override;
             // virtual void onRtmpStreamingEvent(const char* url, RTMP_STREAMING_EVENT eventCode) override;
             // virtual void onAudioPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState) override;
             // virtual void onVideoPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState) override;
             // virtual void onAudioSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) override;
             // virtual void onVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) override;
-            virtual void onAudioRoutingChanged(int routing);
+            virtual void onAudioRoutingChanged(conn_id_t connId, int routing);
             
   private:
-            void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
-            void onRejoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
-            void onWarning_node(int warn, const char* msg) ;
-            void onError_node(int err, const char* msg) ;
-            void onAudioQuality_node(uid_t uid, int quality, unsigned short delay, unsigned short lost) ;
-            void onAudioVolumeIndication_node(AudioVolumeInfo* sperkers, unsigned int speakerNumber, int totalVolume) ;
-            void onLeaveChannel_node(const RtcStats& stats) ;
-            void onRtcStats_node(const RtcStats& stats) ;
-            void onAudioDeviceStateChanged_node(const char* deviceId, int deviceType, int deviceState) ;
+            void onJoinChannelSuccess_node(conn_id_t connId, const char* channel, uid_t uid, int elapsed) ;
+            void onRejoinChannelSuccess_node(conn_id_t connId, const char* channel, uid_t uid, int elapsed) ;
+            void onWarning_node(conn_id_t connId, int warn, const char* msg) ;
+            void onError_node(conn_id_t connId, int err, const char* msg) ;
+            void onAudioQuality_node(conn_id_t connId, uid_t uid, int quality, unsigned short delay, unsigned short lost) ;
+            void onAudioVolumeIndication_node(conn_id_t connId, AudioVolumeInfo* sperkers, unsigned int speakerNumber, int totalVolume) ;
+            void onLeaveChannel_node(conn_id_t connId, const RtcStats& stats) ;
+            void onRtcStats_node(conn_id_t connId, const RtcStats& stats) ;
+            void onAudioDeviceStateChanged_node(conn_id_t connId, const char* deviceId, int deviceType, int deviceState) ;
             void onAudioMixingFinished_node() ;
             void onRemoteAudioMixingBegin_node() ;
             void onRemoteAudioMixingEnd_node() ;
-            void onAudioEffectFinished_node(int soundId) ;
-            void onVideoDeviceStateChanged_node(const char* deviceId, int deviceType, int deviceState) ;
-            void onNetworkQuality_node(uid_t uid, int txQuality, int rxQuality) ;
-            void onLastmileQuality_node(int quality);
-            void onFirstLocalVideoFrame_node(int width, int height, int elapsed) ;
-            void onFirstRemoteVideoDecoded_node(uid_t uid, int width, int height, int elapsed) ;
-            void onVideoSizeChanged_node(uid_t uid, int width, int height, int rotation) ;
-            void onRemoteVideoStateChanged_node(uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed);
+            void onAudioEffectFinished_node(conn_id_t connId, int soundId) ;
+            void onVideoDeviceStateChanged_node(conn_id_t connId, const char* deviceId, int deviceType, int deviceState) ;
+            void onNetworkQuality_node(conn_id_t connId, uid_t uid, int txQuality, int rxQuality) ;
+            void onLastmileQuality_node(conn_id_t connId, int quality);
+            void onFirstLocalVideoFrame_node(conn_id_t connId, int width, int height, int elapsed) ;
+            void onFirstRemoteVideoDecoded_node(conn_id_t connId, uid_t uid, int width, int height, int elapsed) ;
+            void onVideoSizeChanged_node(conn_id_t connId, uid_t uid, int width, int height, int rotation) ;
+            void onRemoteVideoStateChanged_node(conn_id_t connId, uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed);
             void onFirstRemoteVideoFrame_node(uid_t uid, int width, int height, int elapsed) ;
-            void onUserJoined_node(uid_t uid, int elapsed) ;
-            void onUserOffline_node(uid_t uid, USER_OFFLINE_REASON_TYPE reason) ;
+            void onUserJoined_node(conn_id_t connId, uid_t uid, int elapsed) ;
+            void onUserOffline_node(conn_id_t connId, uid_t uid, USER_OFFLINE_REASON_TYPE reason) ;
             // void onUserMuteAudio_node(uid_t uid, bool muted) ;
-            void onUserMuteVideo_node(uid_t uid, bool muted) ;
-            void onUserEnableVideo_node(uid_t uid, bool enabled) ;
-            void onUserEnableLocalVideo_node(uid_t uid, bool enabled) ;
-            void onApiCallExecuted_node(const char* api, int error) ;
-            void onLocalVideoStats_node(const LocalVideoStats& stats) ;
-            void onRemoteVideoStats_node(const RemoteVideoStats& stats);
-            void onCameraReady_node();
-            void onCameraFocusAreaChanged_node(int x, int y, int width, int height);
-            void onCameraExposureAreaChanged_node(int x, int y, int width, int height);
-            void onVideoStopped_node();
-            void onConnectionLost_node();
-            void onConnectionInterrupted_node();
-            void onConnectionBanned_node();
+            void onUserMuteVideo_node(conn_id_t connId, uid_t uid, bool muted) ;
+            void onUserEnableVideo_node(conn_id_t connId, uid_t uid, bool enabled) ;
+            void onUserEnableLocalVideo_node(conn_id_t connId, uid_t uid, bool enabled) ;
+            void onApiCallExecuted_node(conn_id_t connId, const char* api, int error) ;
+            void onLocalVideoStats_node(conn_id_t connId, const LocalVideoStats& stats) ;
+            void onRemoteVideoStats_node(conn_id_t connId, const RemoteVideoStats& stats);
+            void onCameraReady_node(conn_id_t connId);
+            void onCameraFocusAreaChanged_node(conn_id_t connId, int x, int y, int width, int height);
+            void onCameraExposureAreaChanged_node(conn_id_t connId, int x, int y, int width, int height);
+            void onVideoStopped_node(conn_id_t connId);
+            void onConnectionLost_node(conn_id_t connId);
+            void onConnectionInterrupted_node(conn_id_t connId);
+            void onConnectionBanned_node(conn_id_t connId);
            void onRefreshRecordingServiceStatus_node(int status);
-            void onStreamMessage_node(uid_t uid, int streamId, const char* data, size_t length);
-            void onStreamMessageError_node(uid_t uid, int streamId, int code, int missed, int cached);
-            void onMediaEngineLoadSuccess_node();
-            void onMediaEngineStartCallSuccess_node();
-            void onRequestToken_node();
-            void onTokenPrivilegeWillExpire_node(const char* token);
+            void onStreamMessage_node(conn_id_t connId, uid_t uid, int streamId, const char* data, size_t length);
+            void onStreamMessageError_node(conn_id_t connId, uid_t uid, int streamId, int code, int missed, int cached);
+            void onMediaEngineLoadSuccess_node(conn_id_t connId);
+            void onMediaEngineStartCallSuccess_node(conn_id_t connId);
+            void onRequestToken_node(conn_id_t connId);
+            void onTokenPrivilegeWillExpire_node(conn_id_t connId, const char* token);
             // void onFirstLocalAudioFrame_node(int elapsed);
             void onFirstRemoteAudioFrame_node(uid_t uid, int elapsed);
             // void onFirstRemoteAudioDecoded_node(uid_t uid, int elapsed);
             void onStreamPublished_node(const char *url, int error);
             void onStreamUnpublished_node(const char *url);
-            void onTranscodingUpdated_node();   
-            void onStreamInjectedStatus_node(const char* url, uid_t uid, int status);
+            void onTranscodingUpdated_node(conn_id_t connId);   
+            void onStreamInjectedStatus_node(conn_id_t connId, const char* url, uid_t uid, int status);
 
-            void onLocalPublishFallbackToAudioOnly_node(bool isFallbackOrRecover);
-            void onRemoteSubscribeFallbackToAudioOnly_node(uid_t uid, bool isFallbackOrRecover);
-            void onActiveSpeaker_node(uid_t uid);
-            void onClientRoleChanged_node(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole);
-            void onAudioDeviceVolumeChanged_node(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted);
-            void onRemoteAudioTransportStats_node(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
-            void onRemoteVideoTransportStats_node(agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
-            void onRemoteAudioStats_node(const RemoteAudioStats & stats);
+            void onLocalPublishFallbackToAudioOnly_node(conn_id_t connId, bool isFallbackOrRecover);
+            void onRemoteSubscribeFallbackToAudioOnly_node(conn_id_t connId, uid_t uid, bool isFallbackOrRecover);
+            void onActiveSpeaker_node(conn_id_t connId, uid_t uid);
+            void onClientRoleChanged_node(conn_id_t connId, CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole);
+            void onAudioDeviceVolumeChanged_node(conn_id_t connId, MEDIA_DEVICE_TYPE deviceType, int volume, bool muted);
+            void onRemoteAudioTransportStats_node(conn_id_t connId, agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
+            void onRemoteVideoTransportStats_node(conn_id_t connId, agora::rtc::uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
+            void onRemoteAudioStats_node(conn_id_t connId, const RemoteAudioStats & stats);
             // void onMicrophoneEnabled_node(bool enabled);
-            void onConnectionStateChanged_node(CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason);
+            void onConnectionStateChanged_node(conn_id_t connId, CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason);
 
             //2.4.0
-            void onAudioMixingStateChanged_node(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE errorCode);
-            void onLastmileProbeResult_node(const LastmileProbeResult &result);
+            void onAudioMixingStateChanged_node(conn_id_t connId, AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE errorCode);
+            void onLastmileProbeResult_node(conn_id_t connId, const LastmileProbeResult &result);
 
             //2.8.0
             // void onLocalUserRegistered_node(uid_t uid, const char* userAccount);
             // void onUserInfoUpdated_node(uid_t uid, const UserInfo& info);
-            void onLocalVideoStateChanged_node(LOCAL_VIDEO_STREAM_STATE localVideoState, LOCAL_VIDEO_STREAM_ERROR error);
+            void onLocalVideoStateChanged_node(conn_id_t connId, LOCAL_VIDEO_STREAM_STATE localVideoState, LOCAL_VIDEO_STREAM_ERROR error);
 
             //2.9.0
-            void onLocalAudioStats_node(const LocalAudioStats& stats) ;
-            void onLocalAudioStateChanged_node(LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error) ;
-            void onRemoteAudioStateChanged_node(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) ;
+            void onLocalAudioStats_node(conn_id_t connId, const LocalAudioStats& stats) ;
+            void onLocalAudioStateChanged_node(conn_id_t connId, LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error) ;
+            void onRemoteAudioStateChanged_node(conn_id_t connId, uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) ;
             // void onChannelMediaRelayStateChanged_node(CHANNEL_MEDIA_RELAY_STATE state,CHANNEL_MEDIA_RELAY_ERROR code);
             // void onChannelMediaRelayEvent_node(CHANNEL_MEDIA_RELAY_EVENT code);
 
