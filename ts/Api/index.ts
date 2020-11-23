@@ -51,7 +51,9 @@ import {
   NodeMediaPlayer,
   MEDIA_PLAYER_STATE,
   MEDIA_PLAYER_ERROR,
-  MEDIA_PLAYER_EVENT
+  MEDIA_PLAYER_EVENT,
+  CameraCapturerConfiguration,
+  ScreenCaptureConfiguration
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -3954,6 +3956,38 @@ class AgoraRtcEngine extends EventEmitter {
 
   updateChannelMediaOptions(options: ChannelMediaOptions, connectionId: number = 0): number {
     return this.rtcEngine.updateChannelMediaOptions(options, connectionId);
+  }
+
+  startPrimaryCameraCapture(config: CameraCapturerConfiguration): number {
+    return this.rtcEngine.startPrimaryCameraCapture(config);
+  }
+
+  startSecondaryCameraCapture(config: CameraCapturerConfiguration): number {
+    return this.rtcEngine.startSecondaryCameraCapture(config);
+  }
+
+  stopPrimaryCameraCapture(): number {
+    return this.rtcEngine.stopPrimaryCameraCapture();
+  }
+
+  stopSecondaryCameraCapture(): number {
+    return this.rtcEngine.stopSecondaryCameraCapture();
+  }
+
+  startPrimaryScreenCapture(config: ScreenCaptureConfiguration): number {
+    return this.rtcEngine.startPrimaryScreenCapture(config);
+  }
+
+  startSecondaryScreenCapture(config: ScreenCaptureConfiguration): number {
+    return this.rtcEngine.startSecondaryScreenCapture(config);
+  }
+
+  stopPrimaryScreenCapture(): number {
+    return this.rtcEngine.stopPrimaryScreenCapture();
+  }
+
+  stopSecondaryScreenCapture(): number {
+    return this.rtcEngine.stopSecondaryScreenCapture();
   }
 }
 /** The AgoraRtcEngine interface. */

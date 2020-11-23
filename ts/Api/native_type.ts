@@ -1164,11 +1164,27 @@ export enum CaptureOutPreference {
    */
   CAPTURER_OUTPUT_PREFERENCE_PREVIEW = 2
 }
+
+export enum CAMERA_DIRECTION {
+  /** The rear camera. */
+  CAMERA_REAR = 0,
+  /** The front camera. */
+  CAMERA_FRONT = 1,
+};
+
+export interface VideoFormat {
+  width: number,
+  height: number,
+  fps: number
+}
+
 /** Camera capturer configuration. */
 export interface CameraCapturerConfiguration {
-  /** The output configuration of camera capturer. */
-  preference: CaptureOutPreference;
+  cameraDirection: CAMERA_DIRECTION,
+  deviceId: String,
+  format: VideoFormat
 }
+
 /** The relative location of the region to the screen or window. */
 export interface Rectangle {
   /** The horizontal offset from the top-left corner. */
@@ -2181,6 +2197,26 @@ export enum MEDIA_PLAYER_EVENT {
     PLAYER_EVENT_AUDIO_TRACK_CHANGED = 5,
   };
 
+  export interface VideoDimensions {
+    width: number,
+    height: number
+  }
+
+  export interface ScreenCaptureParameters {
+    dimensions: VideoDimensions,
+    frameRate: number,
+    bitrate: number
+  }
+  
+  export interface ScreenCaptureConfiguration {
+    isCaptureWindow: boolean,
+    displayId: number,
+    screenRect: Rectangle,
+    windowId: number,
+    params: ScreenCaptureParameters,
+    regionRect: Rectangle
+  }
+
 /**
  * interface for c++ addon (.node)
  * @ignore
@@ -2940,6 +2976,38 @@ export interface NodeRtcEngine {
    * @ignore
    */
   updateChannelMediaOptions(options: ChannelMediaOptions, connectionId: number): number;
+ /**
+   * @ignore
+   */
+  startPrimaryCameraCapture(config: CameraCapturerConfiguration): number;
+ /**
+   * @ignore
+   */
+  startSecondaryCameraCapture(config: CameraCapturerConfiguration): number;
+  /**
+   * @ignore
+   */
+  stopPrimaryCameraCapture(): number;
+  /**
+   * @ignore
+   */
+  stopSecondaryCameraCapture(): number;
+  /**
+   * @ignore
+   */
+  startPrimaryScreenCapture(config: ScreenCaptureConfiguration): number;
+  /**
+   * @ignore
+   */
+  startSecondaryScreenCapture(config: ScreenCaptureConfiguration): number;
+  /**
+   * @ignore
+   */
+  stopPrimaryScreenCapture(): number;
+  /**
+  * @ignore
+  */
+  stopSecondaryScreenCapture(): number; 
 }
 
 export interface NodeMediaPlayer {
