@@ -1,7 +1,7 @@
 *.pcm
 coverage
 *.log
-sdk
+sdk/lib/mac
 tmp
 build/
 dist/
