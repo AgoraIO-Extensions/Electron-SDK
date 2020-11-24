@@ -5049,7 +5049,7 @@ namespace agora {
                 // LOG_F(INFO, "defaultVideoStreamType: %d", channelMediaOptions.defaultVideoStreamType.value());
 
                 unsigned int connectionId;
-                result = pEngine->m_engine->joinChannelEx(token, channelId, uid, channelMediaOptions, nullptr, &connectionId);
+                result = pEngine->m_engine->joinChannelEx(token, channelId, uid, channelMediaOptions, pEngine->m_eventHandler.get(), &connectionId);
                 if (result == 0) {
                     result = connectionId;
                 }
@@ -5518,6 +5518,7 @@ namespace agora {
                 GET_OBJECT_PROPERTY_STR(regionRectObj, int32, key, regionRect.height);
                 configuration.regionRect = regionRect;
 
+                LOG_F(INFO, "startSecondaryScreenCapture");
                 result = pEngine->m_engine->startSecondaryScreenCapture(configuration);
             } while (false);
             napi_set_int_result(args, result);
