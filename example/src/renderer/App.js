@@ -350,26 +350,26 @@ export default class App extends Component {
     console.log(windowList);
     let config = {
       isCaptureWindow: false,
-      displayId: 1,
-      screenRect: {
-        x: 12,
-        y: 32,
-        width: 343,
-        height: 2323
-      },
-      windowId: 100,
-      params: {
-        width: 30,
-        height: 23,
-        frameRate: 30,
-        bitrate: 100
-      },
-      regionRect: {
-        x: 10,
-        y: 10,
-        width: 640,
-        height: 360
-      }
+      // displayId: 1,
+      // screenRect: {
+      //   x: 12,
+      //   y: 32,
+      //   width: 343,
+      //   height: 2323
+      // },
+      // windowId: 100,
+      // params: {
+      //   width: 30,
+      //   height: 23,
+      //   frameRate: 30,
+      //   bitrate: 100
+      // },
+      // regionRect: {
+      //   x: 10,
+      //   y: 10,
+      //   width: 640,
+      //   height: 360
+      // }
     }
     let ret = this.rtcEngine.startPrimaryScreenCapture(config)
     console.log(`startPrimaryScreenCapture ret --- ${ret}`)
@@ -392,29 +392,29 @@ export default class App extends Component {
     console.log(windowList);
     let config = {
       isCaptureWindow: true,
-      displayId: 1,
-      screenRect: {
-        x: 12,
-        y: 32,
-        width: 343,
-        height: 2323
-      },
+      // displayId: 1,
+      // screenRect: {
+      //   x: 12,
+      //   y: 32,
+      //   width: 343,
+      //   height: 2323
+      // },
       windowId: windowList[0].windowId,
-      params: {
-        width: 30,
-        height: 23,
-        frameRate: 30,
-        bitrate: 100
-      },
-      regionRect: {
-        x: 10,
-        y: 10,
-        width: 640,
-        height: 360
-      }
+      // params: {
+      //   width: 30,
+      //   height: 23,
+      //   frameRate: 30,
+      //   bitrate: 100
+      // },
+      // regionRect: {
+      //   x: 10,
+      //   y: 10,
+      //   width: 640,
+      //   height: 360
+      // }
     }
     let ret = this.rtcEngine.startSecondaryScreenCapture(config)
-    console.log(`startPrimaryScreenCapture ret --- ${ret}`)
+    console.log(`startSecondaryScreenCapture ret --- ${ret}`)
     let sources = this.state.sources || []
     sources.push({
       sourceType: 3,
