@@ -288,13 +288,46 @@ export default class App extends Component {
     let ret = rtcEngine.joinChannelWithMediaOptions("", "123", 0, mediaOptions)
   }
 
-  handleAddCamera = () => {
+  handleAddPrimaryCamera = () => {
+    let configuration = {
+      cameraDirection: 0,
+      deviceId: "2323",
+      format: {
+        width: 640,
+        height: 480,
+        fps: 30
+      }
+    }
+    this.rtcEngine.startPrimaryCameraCapture(configuration)
     let sources = this.state.sources || []
     let device = this.state.videoDevices[0]
     sources.push({
       sourceType: 0,
-      // deviceId: device.deviceid,
-      // name: device.devicename,
+      x: 0,
+      y: 0,
+      width: 360,
+      height: 240,
+      zOrder: 1,
+      alpha: 0
+    })
+    this.setState({sources})
+  }
+
+  handleAddSecondaryCamera = () => {
+    let configuration = {
+      cameraDirection: 0,
+      deviceId: "23243432",
+      format: {
+        width: 640,
+        height: 480,
+        fps: 30
+      }
+    }
+    this.rtcEngine.startSecondaryCameraCapture(configuration)
+    let sources = this.state.sources || []
+    let device = this.state.videoDevices[1]
+    sources.push({
+      sourceType: 1,
       x: 0,
       y: 0,
       width: 360,
@@ -389,6 +422,87 @@ export default class App extends Component {
     })
     this.setState({sources})
   }
+
+  handleAddPrimaryScreenCapture = () => {
+    let config = {
+      isCaptureWindow: true,
+      displayId: 1,
+      screenRect: {
+        x: 12,
+        y: 32,
+        width: 343,
+        height: 2323
+      },
+      windowId: 100,
+      params: {
+        width: 30,
+        height: 23,
+        frameRate: 30,
+        bitrate: 100
+      },
+      regionRect: {
+        x: 10,
+        y: 10,
+        width: 640,
+        height: 360
+      }
+    }
+    let ret = this.rtcEngine.startPrimaryScreenCapture(config)
+    console.log(`startPrimaryScreenCapture ret --- ${ret}`)
+    let sources = this.state.sources || []
+    sources.push({
+      sourceType: 2,
+      connectionId: 0,
+      x: 0,
+      y: 0,
+      width: 360,
+      height: 240,
+      zOrder: 1,
+      alpha: 0
+    })
+    this.setState({sources})
+  }
+
+  handleAddSecondaryScreenCapture = () => {
+    let config = {
+      isCaptureWindow: true,
+      displayId: 1,
+      screenRect: {
+        x: 12,
+        y: 32,
+        width: 343,
+        height: 2323
+      },
+      windowId: 100,
+      params: {
+        width: 30,
+        height: 23,
+        frameRate: 30,
+        bitrate: 100
+      },
+      regionRect: {
+        x: 10,
+        y: 10,
+        width: 640,
+        height: 360
+      }
+    }
+    let ret = this.rtcEngine.startSecondaryScreenCapture(config)
+    console.log(`startPrimaryScreenCapture ret --- ${ret}`)
+    let sources = this.state.sources || []
+    sources.push({
+      sourceType: 3,
+      connectionId: 0,
+      x: 0,
+      y: 0,
+      width: 360,
+      height: 240,
+      zOrder: 1,
+      alpha: 0
+    })
+    this.setState({sources})
+  }
+  
   handleAddMediaPlayer = () => {
     let sources = this.state.sources || []
     sources.push({
@@ -524,9 +638,34 @@ export default class App extends Component {
               </div>
             </div>
           </div>
+          <div className="field">
+            <label className="label">First Camera</label>
+            <div className="control">
+              {/* <div className="select"  style={{width: '100%'}}>
+                <select onChange={this.handleVoiceChanger} value={this.state.voiceChangerPreset} style={{width: '100%'}}>
+                  {cameraSources.map(item => (<option key={item.deviceid} value={item.deviceid}>{item.name}</option>))}
+                </select>
+              </div> */}
+            </div>
+          </div>
           <div className="field is-grouped is-grouped-left">
             <div className="control">
-              <button onClick={this.handleAddCamera} className="button is-link">Add</button>
+              <button onClick={this.handleAddPrimaryCamera} className="button is-link">Add</button>
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">Second Camera</label>
+            <div className="control">
+              {/* <div className="select"  style={{width: '100%'}}>
+                <select onChange={this.handleVoiceChanger} value={this.state.voiceChangerPreset} style={{width: '100%'}}>
+                  {cameraSources.map(item => (<option key={item.deviceid} value={item.deviceid}>{item.name}</option>))}
+                </select>
+              </div> */}
+            </div>
+          </div>
+          <div className="field is-grouped is-grouped-left">
+            <div className="control">
+              <button onClick={this.handleAddSecondaryCamera} className="button is-link">Add</button>
             </div>
           </div>
           <div className="field">
@@ -565,7 +704,7 @@ export default class App extends Component {
             </div>
           </div>
           <div className="field">
-            <label className="label">ScreenShare</label>
+            <label className="label">First ScreenShare</label>
             <div className="control">
               {/* <div className="select"  style={{width: '100%'}}>
                 <select onChange={this.handleVoiceChanger} value={this.state.voiceChangerPreset} style={{width: '100%'}}>
@@ -576,7 +715,22 @@ export default class App extends Component {
           </div>
           <div className="field is-grouped is-grouped-left">
             <div className="control">
-              <button onClick={this.handleAddScreenShare} className="button is-link">Add</button>
+              <button onClick={this.handleAddPrimaryScreenCapture} className="button is-link">Add</button>
+            </div>
+          </div>
+          <div className="field">
+            <label className="label">Second ScreenShare</label>
+            <div className="control">
+              {/* <div className="select"  style={{width: '100%'}}>
+                <select onChange={this.handleVoiceChanger} value={this.state.voiceChangerPreset} style={{width: '100%'}}>
+                  {cameraSources.map(item => (<option key={item.deviceid} value={item.deviceid}>{item.name}</option>))}
+                </select>
+              </div> */}
+            </div>
+          </div>
+          <div className="field is-grouped is-grouped-left">
+            <div className="control">
+              <button onClick={this.handleAddSecondaryScreenCapture} className="button is-link">Add</button>
             </div>
           </div>
           <div className="field">
