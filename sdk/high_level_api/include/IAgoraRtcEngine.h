@@ -579,6 +579,33 @@ struct PublisherConfiguration {
         extraInfo(NULL) {}
 };
 
+enum CAMERA_DIRECTION {
+  /** The rear camera. */
+  CAMERA_REAR = 0,
+  /** The front camera. */
+  CAMERA_FRONT = 1,
+};
+
+/** Camera capturer configuration.*/
+struct CameraCapturerConfiguration {
+  /** Camera direction settings (for Android/iOS only). See: #CAMERA_DIRECTION. */
+  CAMERA_DIRECTION cameraDirection;
+  /** For windows */
+  char deviceId[MAX_DEVICE_ID_LENGTH];
+  VideoFormat format;
+};
+
+struct ScreenCaptureConfiguration {
+  bool isCaptureWindow; // true - capture window, false - capture display
+  unsigned int displayId; // MacOS only
+  Rectangle screenRect; //Windows only
+  view_t windowId;
+  ScreenCaptureParameters params;
+  Rectangle regionRect;
+
+  ScreenCaptureConfiguration() : isCaptureWindow(false) {}
+};
+
 /**
  * The channel media options.
  */
@@ -994,8 +1021,8 @@ class IRtcEngineEventHandler {
   /** Occurs when the audio mixing file playback finishes.
    @deprecated This method is deprecated, use onAudioMixingStateChanged instead.
 
-   You can start an audio mixing file playback by calling the 
-   \ref IRtcEngine::startAudioMixing "startAudioMixing" method. The SDK 
+   You can start an audio mixing file playback by calling the
+   \ref IRtcEngine::startAudioMixing "startAudioMixing" method. The SDK
    triggers this callback when the audio mixing file playback finishes.
    */
   virtual void onAudioMixingFinished() {}
@@ -1004,7 +1031,9 @@ class IRtcEngineEventHandler {
 
   virtual void onRemoteAudioMixingEnd() {}
 
-  virtual void onAudioEffectFinished(int soundId) {}
+  virtual void onAudioEffectFinished(int soundId) {
+    (void)soundId;
+  }
   
   /** Occurs when the video device state changes.
 
@@ -1068,7 +1097,9 @@ class IRtcEngineEventHandler {
    *
    * @param quality The network quality: #QUALITY_TYPE.
    */
-  virtual void onLastmileQuality(int quality) { (void)quality; }
+  virtual void onLastmileQuality(int quality) {
+    (void)quality;
+  }
   
   /** Occurs when the first local video frame is displayed on the video window.
   @param width The width (pixels) of the video stream.
@@ -1259,7 +1290,9 @@ class IRtcEngineEventHandler {
    * @param stats The statistics of the local audio stream.
    * See LocalAudioStats.
    */
-  virtual void onLocalAudioStats(const LocalAudioStats& stats) { (void)stats; }
+  virtual void onLocalAudioStats(const LocalAudioStats& stats) {
+    (void)stats;
+  }
 
   /** Reports the statistics of the audio stream from each remote user/host.
 
@@ -1271,7 +1304,9 @@ class IRtcEngineEventHandler {
 
    @param stats Statistics of the received remote audio streams. See RemoteAudioStats.
    */
-  virtual void onRemoteAudioStats(const RemoteAudioStats& stats) { (void)stats; }
+  virtual void onRemoteAudioStats(const RemoteAudioStats& stats) {
+    (void)stats;
+  }
 
   /**
    * Reports the statistics of the local video.
@@ -1280,7 +1315,9 @@ class IRtcEngineEventHandler {
    *
    * @param stats The statistics of the uploading local video stream: LocalVideoStats.
    */
-  virtual void onLocalVideoStats(const LocalVideoStats& stats) { (void)stats; }
+  virtual void onLocalVideoStats(const LocalVideoStats& stats) {
+    (void)stats;
+  }
 
   /** Reports the statistics of the remote video.
    *
@@ -1289,7 +1326,9 @@ class IRtcEngineEventHandler {
    * as many times.
    * @param stats The statistics of the remote video streams: RemoteVideoStats.
    */
-  virtual void onRemoteVideoStats(const RemoteVideoStats& stats) { (void)stats; }
+  virtual void onRemoteVideoStats(const RemoteVideoStats& stats) {
+    (void)stats;
+  }
 
   virtual void onCameraReady() {}
 
@@ -1301,10 +1340,10 @@ class IRtcEngineEventHandler {
   }
 
   virtual void onCameraExposureAreaChanged(int x, int y, int width, int height) {
-        (void)x;
-        (void)y;
-        (void)width;
-        (void)height;
+    (void)x;
+    (void)y;
+    (void)width;
+    (void)height;
   }
 
   virtual void onVideoStopped() {}
@@ -1356,7 +1395,9 @@ class IRtcEngineEventHandler {
    */
   virtual void onConnectionBanned() {}
 
-  virtual void onRefreshRecordingServiceStatus(int status) { (void)status; }
+  virtual void onRefreshRecordingServiceStatus(int status) {
+    (void)status;
+  }
 
   /** Occurs when the local user receives the data stream from the peer user.
 
@@ -1429,14 +1470,18 @@ class IRtcEngineEventHandler {
    *
    * @param token The token that will expire in 30 seconds.
    */
-  virtual void onTokenPrivilegeWillExpire(const char* token) { (void)token; }
+  virtual void onTokenPrivilegeWillExpire(const char* token) {
+    (void)token;
+  }
 
   /** Occurs when the first local audio frame is published.
 
    @param elapsed The time elapsed (ms) from the local user calling
    \ref IRtcEngine::joinChannel "joinChannel" to the SDK triggers this callback.
   */
-  virtual void onFirstLocalAudioFramePublished(int elapsed) { (void)elapsed; }
+  virtual void onFirstLocalAudioFramePublished(int elapsed) {
+    (void)elapsed;
+  }
 
   /** Occurs when the local audio state changes.
    *
@@ -1591,7 +1636,9 @@ class IRtcEngineEventHandler {
    *
    * @param url The RTMP URL address.
    */
-  virtual void onStreamUnpublished(const char* url) { (void)url; }
+  virtual void onStreamUnpublished(const char* url) {
+    (void)url;
+  }
 
   /**
    * Occurs when the publisher's transcoding settings are updated.
@@ -1631,7 +1678,9 @@ class IRtcEngineEventHandler {
    - 4: Loudspeaker.
    - 5: Bluetooth headset.
    */
-  virtual void onAudioRoutingChanged(int routing) { (void)routing; }
+  virtual void onAudioRoutingChanged(int routing) {
+    (void)routing;
+  }
 
   /**
    * Occurs when the state of the media stream relay changes.
@@ -1692,7 +1741,9 @@ class IRtcEngineEventHandler {
    * - `RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_IS_NULL(10)`: The destination channel name is NULL.
    * - `RELAY_EVENT_VIDEO_PROFILE_UPDATE(11)`: The video profile is sent to the server.
    */
-  virtual void onChannelMediaRelayEvent(int code) { (void)code; }
+  virtual void onChannelMediaRelayEvent(int code) {
+    (void)code;
+  }
 
   virtual void onLocalPublishFallbackToAudioOnly(bool isFallbackOrRecover) {
     (void)isFallbackOrRecover;
