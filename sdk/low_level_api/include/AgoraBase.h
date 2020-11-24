@@ -3559,31 +3559,6 @@ struct ScreenCaptureParameters {
       : dimensions(width, height), frameRate(f), bitrate(b) {}
 };
 
-enum CAMERA_DIRECTION {
-  /** The rear camera. */
-  CAMERA_REAR = 0,
-  /** The front camera. */
-  CAMERA_FRONT = 1,
-};
-
-/** Camera capturer configuration.*/
-struct CameraCapturerConfiguration {
-  /** Camera direction settings (for Android/iOS only). See: #CAMERA_DIRECTION. */
-  CAMERA_DIRECTION cameraDirection;
-  /** For windows */
-  char deviceId[260];
-  VideoFormat format;
-};
-
-struct ScreenCaptureConfiguration {
-  bool isCaptureWindow; // true - capture window, false - capture display
-  unsigned int displayId; // MacOS only
-  Rectangle screenRect; //Windows only
-  view_t windowId;
-  ScreenCaptureParameters params;
-  Rectangle regionRect;
-};
-
 /**
  * Preset local voice changer options.
  */
