@@ -2203,7 +2203,8 @@ export enum MEDIA_PLAYER_EVENT {
   }
 
   export interface ScreenCaptureParameters {
-    dimensions: VideoDimensions,
+    width: number,
+    height: number,
     frameRate: number,
     bitrate: number
   }
