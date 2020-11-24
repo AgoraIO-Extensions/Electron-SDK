@@ -88,9 +88,6 @@ export default class App extends Component {
           //   mediaPlayerView: "mediaPlayerView"
           // })
       })
-      
-      let ret = this.mediaPlayer.open("https://big-class-test.oss-cn-hangzhou.aliyuncs.com/61102.1592987815092.mp4", 0);
-      console.log(`Media palyer ret： ${ret}`);
 
       this.rtcEngine.initializePluginManager();
       const libPath = isMac ? 
@@ -390,6 +387,10 @@ export default class App extends Component {
     this.setState({sources})
   }
   handleAddMediaPlayer = () => {
+    let ret = this.mediaPlayer.open("https://big-class-test.oss-cn-hangzhou.aliyuncs.com/61102.1592987815092.mp4", 0);
+    console.log(`Media palyer ret： ${ret}`);
+    let sourceId = this.mediaPlayer.getSourceId();
+
     let sources = this.state.sources || []
     sources.push({
       sourceType: 5,
@@ -399,7 +400,8 @@ export default class App extends Component {
       width: 360,
       height: 240,
       zOrder: 1,
-      alpha: 0
+      alpha: 0,
+      imageUrl: sourceId.toString(),
     })
     this.setState({sources})
   }
