@@ -346,8 +346,10 @@ export default class App extends Component {
   }
 
   handleAddPrimaryScreenCapture = () => {
+    let windowList = this.rtcEngine.getScreenWindowsInfo();
+    console.log(windowList);
     let config = {
-      isCaptureWindow: true,
+      isCaptureWindow: false,
       displayId: 1,
       screenRect: {
         x: 12,
@@ -386,6 +388,8 @@ export default class App extends Component {
   }
 
   handleAddSecondaryScreenCapture = () => {
+    let windowList = this.rtcEngine.getScreenWindowsInfo();
+    console.log(windowList);
     let config = {
       isCaptureWindow: true,
       displayId: 1,
@@ -395,7 +399,7 @@ export default class App extends Component {
         width: 343,
         height: 2323
       },
-      windowId: 100,
+      windowId: windowList[0].windowId,
       params: {
         width: 30,
         height: 23,
