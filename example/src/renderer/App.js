@@ -208,9 +208,11 @@ export default class App extends Component {
   }
 
   handleAddPrimaryCamera = () => {
+    let deviceList = this.rtcEngine.getVideoDevices();
+    console.log(`devices: ${JSON.stringify(deviceList)}`);
     let configuration = {
       cameraDirection: 0,
-      deviceId: "2323",
+      deviceId: deviceList[0].deviceid,
       format: {
         width: 640,
         height: 480,
@@ -219,7 +221,6 @@ export default class App extends Component {
     }
     this.rtcEngine.startPrimaryCameraCapture(configuration)
     let sources = this.state.sources || []
-    let device = this.state.videoDevices[0]
     sources.push({
       sourceType: 0,
       x: 0,
@@ -233,9 +234,11 @@ export default class App extends Component {
   }
 
   handleAddSecondaryCamera = () => {
+    let deviceList = this.rtcEngine.getVideoDevices();
+    console.log(`device2: ${deviceList[1].deviceid}`)
     let configuration = {
       cameraDirection: 0,
-      deviceId: "23243432",
+      deviceId: deviceList[1].deviceid,
       format: {
         width: 640,
         height: 480,
@@ -489,15 +492,15 @@ export default class App extends Component {
   handleDragStop = (e,d) => {
     let {x, y, node} = d
     // console.log(`drag stop: id: ${node.id} ${x} ${y}`)
-    let sourceId = this.reverseSourceId(node.id)
-    this.updateSource(sourceId, {x: x, y: y})
+    // let sourceId = this.reverseSourceId(node.id)
+    // this.updateSource(sourceId, {x: x, y: y})
   }
   
   handleDrag = (e,d) => {
     let {x, y, node} = d
     // console.log(`drag : id: ${node.id} ${x} ${y}`)
-    // let sourceId = this.reverseSourceId(node.id)
-    // this.updateSource(sourceId, {x: x, y: y})
+    let sourceId = this.reverseSourceId(node.id)
+    this.updateSource(sourceId, {x: x, y: y})
   }
 
   handleResizeStop = (e, direction, ref, delta, position) => {
