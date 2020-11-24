@@ -2020,6 +2020,7 @@ namespace agora {
                 status = napi_get_value_uint32_(args[1], areaCode);
                 CHECK_NAPI_STATUS(pEngine, status);
                 RtcEngineContext context;
+                context.eventHandlerEx = pEngine->m_eventHandler.get();
                 context.eventHandler = pEngine->m_eventHandler.get();
                 context.appId = appid;
                 context.areaCode = areaCode;
@@ -4975,12 +4976,18 @@ namespace agora {
                 bool publishCameraTrack = false;
                 status = napi_get_object_property_bool_(isolate, optionObj, "publishCameraTrack", publishCameraTrack);
                 channelMediaOptions.publishCameraTrack = publishCameraTrack;
+                bool publishSecondaryCameraTrack = false;
+                status = napi_get_object_property_bool_(isolate, optionObj, "publishSecondaryCameraTrack", publishSecondaryCameraTrack);
+                channelMediaOptions.publishSecondaryCameraTrack = publishSecondaryCameraTrack;
                 bool publishAudioTrack = false;
                 status = napi_get_object_property_bool_(isolate, optionObj, "publishAudioTrack", publishAudioTrack);
                 channelMediaOptions.publishAudioTrack = publishAudioTrack;
                 bool publishScreenTrack = false; 
                 status = napi_get_object_property_bool_(isolate, optionObj, "publishScreenTrack", publishScreenTrack);
                 channelMediaOptions.publishScreenTrack = publishScreenTrack;
+                bool publishSecondaryScreenTrack = false; 
+                status = napi_get_object_property_bool_(isolate, optionObj, "publishSecondaryScreenTrack", publishSecondaryScreenTrack);
+                channelMediaOptions.publishSecondaryScreenTrack = publishSecondaryScreenTrack;
                 bool publishCustomAudioTrack = false;
                 status = napi_get_object_property_bool_(isolate, optionObj, "publishCustomAudioTrack", publishCustomAudioTrack);
                 channelMediaOptions.publishCustomAudioTrack = publishCustomAudioTrack;
@@ -5021,9 +5028,31 @@ namespace agora {
                 status = napi_get_object_property_int32_(isolate, optionObj, "channelProfile", channelProfile);
                 channelMediaOptions.channelProfile = (CHANNEL_PROFILE_TYPE)channelProfile;
                 
+                // LOG_F(INFO, "parameter token: %s, channelId: %s, uid: %d", (char*)token, (char*)channelId, uid);
+                // LOG_F(INFO, "publishCameraTrack: %d", channelMediaOptions.publishCameraTrack.value());
+                // LOG_F(INFO, "publishSecondaryCameraTrack: %d", channelMediaOptions.publishSecondaryCameraTrack.value());
+                // LOG_F(INFO, "publishAudioTrack: %d", channelMediaOptions.publishAudioTrack.value());
+                // LOG_F(INFO, "publishScreenTrack: %d", channelMediaOptions.publishScreenTrack.value());
+                // LOG_F(INFO, "publishSecondaryScreenTrack: %d", channelMediaOptions.publishSecondaryScreenTrack.value());
+                // LOG_F(INFO, "publishCustomAudioTrack: %d", channelMediaOptions.publishCustomAudioTrack.value());
+                // LOG_F(INFO, "publishCustomVideoTrack: %d", channelMediaOptions.publishCustomVideoTrack.value());
+                // LOG_F(INFO, "publishEncodedVideoTrack: %d", channelMediaOptions.publishEncodedVideoTrack.value());
+                // LOG_F(INFO, "publishMediaPlayerAudioTrack: %d", channelMediaOptions.publishMediaPlayerAudioTrack.value());
+                // LOG_F(INFO, "publishMediaPlayerVideoTrack: %d", channelMediaOptions.publishMediaPlayerVideoTrack.value());
+                // LOG_F(INFO, "publishTrancodedVideoTrack: %d", channelMediaOptions.publishTrancodedVideoTrack.value());
+                // LOG_F(INFO, "autoSubscribeAudio: %d", channelMediaOptions.autoSubscribeAudio.value());
+                // LOG_F(INFO, "autoSubscribeVideo: %d", channelMediaOptions.autoSubscribeVideo.value());
+                // LOG_F(INFO, "publishMediaPlayerId: %d", channelMediaOptions.publishMediaPlayerId.value());
+                // LOG_F(INFO, "enableAudioRecordingOrPlayout: %d", channelMediaOptions.enableAudioRecordingOrPlayout.value());
+                // LOG_F(INFO, "clientRoleType: %d", channelMediaOptions.clientRoleType.value());
+                // LOG_F(INFO, "defaultVideoStreamType: %d", channelMediaOptions.defaultVideoStreamType.value());
+                // LOG_F(INFO, "defaultVideoStreamType: %d", channelMediaOptions.defaultVideoStreamType.value());
+
                 unsigned int connectionId;
                 result = pEngine->m_engine->joinChannelEx(token, channelId, uid, channelMediaOptions, nullptr, &connectionId);
-
+                if (result == 0) {
+                    result = connectionId;
+                }
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -5056,12 +5085,18 @@ namespace agora {
                 bool publishCameraTrack = false;
                 status = napi_get_object_property_bool_(isolate, optionObj, "publishCameraTrack", publishCameraTrack);
                 channelMediaOptions.publishCameraTrack = publishCameraTrack;
+                bool publishSecondaryCameraTrack = false;
+                status = napi_get_object_property_bool_(isolate, optionObj, "publishSecondaryCameraTrack", publishSecondaryCameraTrack);
+                channelMediaOptions.publishSecondaryCameraTrack = publishSecondaryCameraTrack;
                 bool publishAudioTrack = false;
                 status = napi_get_object_property_bool_(isolate, optionObj, "publishAudioTrack", publishAudioTrack);
                 channelMediaOptions.publishAudioTrack = publishAudioTrack;
                 bool publishScreenTrack = false; 
                 status = napi_get_object_property_bool_(isolate, optionObj, "publishScreenTrack", publishScreenTrack);
                 channelMediaOptions.publishScreenTrack = publishScreenTrack;
+                bool publishSecondaryScreenTrack = false; 
+                status = napi_get_object_property_bool_(isolate, optionObj, "publishSecondaryScreenTrack", publishSecondaryScreenTrack);
+                channelMediaOptions.publishSecondaryScreenTrack = publishSecondaryScreenTrack;
                 bool publishCustomAudioTrack = false;
                 status = napi_get_object_property_bool_(isolate, optionObj, "publishCustomAudioTrack", publishCustomAudioTrack);
                 channelMediaOptions.publishCustomAudioTrack = publishCustomAudioTrack;

@@ -74,6 +74,8 @@ export default class App extends Component {
           console.log(`mediaPlayer.getDuration ${a9}`);
           // let a10 = this.mediaPlayer.getState()
           // console.log(`mediaPlayer.getState ${a10}`);
+          // let a2 = this.mediaPlayer.selectAudioTrack(0);
+          // console.log(`mediaPlayer.selectAudioTrack ${a2}`);
 
         }
       })
@@ -110,135 +112,49 @@ export default class App extends Component {
   }
 
   subscribeEvents = (rtcEngine) => {
-    rtcEngine.on('joinedchannel', (channel, uid, elapsed) => {
-      console.log(`onJoinChannelSuccess  uid: ${uid}`)
+    rtcEngine.on('joinedchannel', (connId, channel, uid, elapsed) => {
+      console.log(`onJoinChannelSuccess connId:${connId} channel:${channel} uid: ${uid}`)
       this.setState({
         local: uid
       });
     });
-    rtcEngine.on('userjoined', (uid, elapsed) => {
+    rtcEngine.on('userjoined', (connId, uid, elapsed) => {
       this.handleAddRemote(uid)
       this.setState({
         users: this.state.users.push({channelId: "", uid})
       })
     })
-    rtcEngine.on('removestream', (uid, reason) => {
+    rtcEngine.on('removestream', (connId, uid, reason) => {
       this.setState({
         users: this.state.users.filter(user => user.uid !== uid)
       })
     })
-    rtcEngine.on('leavechannel', () => {
+    rtcEngine.on('leavechannel', (connId) => {
       this.setState({
         local: ''
       })
     })
-    rtcEngine.on('audiodevicestatechanged', () => {
+    rtcEngine.on('audiodevicestatechanged', (connId) => {
       this.setState({
         audioDevices: rtcEngine.getAudioRecordingDevices(),
         audioPlaybackDevices: rtcEngine.getAudioPlaybackDevices()
       })
     })
-    rtcEngine.on('videodevicestatechanged', () => {
+    rtcEngine.on('videodevicestatechanged', (connId) => {
       this.setState({
         videoDevices: rtcEngine.getVideoDevices()
       })
     })
-    rtcEngine.on('streamPublished', (url, error) => {
-      console.log(`url: ${url}, err: ${error}`)
-    })
-    rtcEngine.on('streamUnpublished', (url) => {
-      console.log(`url: ${url}`)
-    })
-    rtcEngine.on('lastmileProbeResult', result => {
-      console.log(`lastmileproberesult: ${JSON.stringify(result)}`)
-    })
-    rtcEngine.on('lastMileQuality', quality => {
-      console.log(`lastmilequality: ${JSON.stringify(quality)}`)
-    })
     rtcEngine.on('audioVolumeIndication', (
+      connId, 
       speakers,
       speakerNumber,
       totalVolume
     ) => {
-      console.log(`${JSON.stringify(speakers)} speakerNumber${speakerNumber} totalVolume${totalVolume}`)
+      console.log(`connId:${connId} ${JSON.stringify(speakers)} speakerNumber${speakerNumber} totalVolume${totalVolume}`)
     })
-    rtcEngine.on('error', err => {
+    rtcEngine.on('error', (connId, err) => {
       console.error(err)
-    })
-    rtcEngine.on('executefailed', funcName => {
-      console.error(funcName, 'failed to execute')
-    })
-    rtcEngine.on('localUserRegistered', (uid, userAccount) => {
-      console.log(`local user register: ${uid} ${userAccount}`)
-    })
-    rtcEngine.on('audioPublishStateChange', (channel, oldstate, newstate, elapsed) => {
-      console.log(`rtcEngine audioPublishStateChange   channel: ${channel},  oldstate:${oldstate},  newstate:${newstate},  elapsed:${elapsed}`)
-    })
-    rtcEngine.on('videoPublishStateChange', (channel, oldstate, newstate, elapsed) => {
-      console.log(`rtcEngine videoPublishStateChange   channel: ${channel},  oldstate:${oldstate},  newstate:${newstate}, elapsed:${elapsed}`)
-    })
-    rtcEngine.on('audioSubscribeStateChange', (channel, uid, oldstate, newstate, elapsed) => {
-      console.log(`rtcEngine audioSubscribeStateChange   channel: ${channel}, uid:${uid}, oldstate:${oldstate},  newstate:${newstate}, elapsed:${elapsed}`)
-    })
-    rtcEngine.on('videoSubscribeStateChange', (channel, uid, oldstate, newstate, elapsed) => {
-      console.log(`rtcEngine videoSubscribeStateChange   channel: ${channel}, uid:${uid}, oldstate:${oldstate}, newstate:${newstate}, elapsed:${elapsed}`)
-    })
-    rtcEngine.on("receiveMetadata", (metadata) => {
-      let bufferdata = JSON.parse(metadata.buffer)
-      console.log("receiveMetadata : " + bufferdata.width)
-    })
-    rtcEngine.on("sendMetadataSuccess", (metadata) => {
-      console.log(`sendMetadataSuccess : ${JSON.stringify(metadata)}`)
-    })
-  }
-
-  subscribeChannelEvents = (rtcChannel, publish) => {
-    let channelId = rtcChannel.channelId()
-    rtcChannel.on('joinChannelSuccess', (uid, elapsed) => {
-      console.log(`join channel success: ${uid} ${elapsed}`)
-      if(publish) {
-        this.setState({
-          local: uid
-        });
-      }
-    })
-
-    rtcChannel.on('userJoined', (uid, elapsed) => {
-      if (uid === SHARE_ID && this.state.localSharing) {
-        return
-      }
-      this.setState({
-        users: this.state.users.push({channelId, uid})
-      })
-    })
-
-    rtcChannel.on('userOffline', (uid, reason) => {
-      this.setState({
-        users: this.state.users.delete(this.state.users.indexOf({channelId, uid}))
-      })
-    })
-
-    rtcChannel.on('rtcStats', (stats) => {
-      console.log(stats)
-    })
-    rtcChannel.on('audioPublishStateChange', (oldstate, newstate, elapsed) => {
-      console.log(`audioPublishStateChange  oldstate:${oldstate},  newstate:${newstate},  elapsed:${elapsed}`)
-    })
-    rtcChannel.on('videoPublishStateChange', (oldstate, newstate, elapsed) => {
-      console.log(`videoPublishStateChange  oldstate:${oldstate},  newstate:${newstate}, elapsed:${elapsed}`)
-    })
-    rtcChannel.on('audioSubscribeStateChange', (uid, oldstate, newstate, elapsed) => {
-      console.log(`audioSubscribeStateChange  uid:${uid}, oldstate:${oldstate},  newstate:${newstate}, elapsed:${elapsed}`)
-    })
-    rtcChannel.on('videoSubscribeStateChange', (uid, oldstate, newstate, elapsed) => {
-      console.log(`videoSubscribeStateChange uid:${uid}, oldstate:${oldstate}, newstate:${newstate}, elapsed:${elapsed}`)
-    })
-    rtcChannel.on("receiveMetadata", (metadata) => {
-      console.log(`channel receiveMetadata  ${metadata.uid}  size: ${metadata.size}  buffer: ${metadata.buffer}  timeStampMs: ${metadata.timeStampMs}`)
-    })
-
-    rtcChannel.on("sendMetadataSuccess", (metadata) => {
-      console.log(`channel sendMetadataSuccess  ${metadata.uid}  size: ${metadata.size}  buffer: ${metadata.buffer}  timeStampMs: ${metadata.timeStampMs}`)
     })
   }
 
@@ -266,14 +182,17 @@ export default class App extends Component {
    
     // rtcEngine.joinChannel("", "123", "", 0);
     let mediaOptions =  {
-      publishCameraTrack: true,
+      publishCameraTrack: false,
+      publishSecondaryCameraTrack: false,
       publishAudioTrack: true,
-      publishScreenTrack: true,
-      publishCustomAudioTrack: true,
-      publishCustomVideoTrack: true,
-      publishEncodedVideoTrack: true,
-      publishMediaPlayerAudioTrack: true,
-      publishMediaPlayerVideoTrack: true,
+      publishScreenTrack: false,
+      publishSecondaryScreenTrack: false,
+      publishCustomAudioTrack: false,
+      publishCustomVideoTrack: false,
+      publishEncodedVideoTrack: false,
+      publishMediaPlayerAudioTrack: false,
+      publishMediaPlayerVideoTrack: false,
+      publishTrancodedVideoTrack:true,
       autoSubscribeAudio: true,
       autoSubscribeVideo: true,
       publishMediaPlayerId: 0,
@@ -282,7 +201,10 @@ export default class App extends Component {
       defaultVideoStreamType: 0,
       channelProfile: 1
     }
-    let ret = rtcEngine.joinChannelWithMediaOptions("", "123", 0, mediaOptions)
+    
+    // let ret = rtcEngine.joinChannelWithMediaOptions("", "123", 0, mediaOptions)
+    let ret = rtcEngine.joinChannelEx("", "123", 0, mediaOptions)
+    console.log(`--------join channel: ${ret}`)
   }
 
   handleAddCamera = () => {
