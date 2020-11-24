@@ -5314,6 +5314,7 @@ namespace agora {
             LOG_ENTER;
             napi_status status = napi_ok;
             int result = -1;
+            std::string key = "";
             do {
                 Isolate* isolate = args.GetIsolate();
                 NodeRtcEngine *pEngine = nullptr;
@@ -5323,51 +5324,66 @@ namespace agora {
                 Local<Object> obj;
                 status = napi_get_value_object_(isolate, args[0], obj);
                 CHECK_NAPI_STATUS(pEngine, status);
-
-                status = napi_get_object_property_bool_(isolate, obj, "isCaptureWindow", configuration.isCaptureWindow);
-                CHECK_NAPI_STATUS(pEngine, status);
-
-                status = napi_get_object_property_uint32_(isolate, obj, "displayId", configuration.displayId);
+                key = "isCaptureWindow";
+                status = napi_get_object_property_bool_(isolate, obj, key, configuration.isCaptureWindow);
+                CHECK_NAPI_STATUS_STR(pEngine, status, key);
+                key = "displayId";
+                status = napi_get_object_property_uint32_(isolate, obj, key, configuration.displayId);
 
                 Rectangle screenRect;
                 Local<Object> screenRectObj;
-                status = napi_get_object_property_object_(isolate, obj, "screenRect", screenRectObj);
-                GET_OBJECT_PROPERTY(screenRectObj, int32, "x", screenRect.x);
-                GET_OBJECT_PROPERTY(screenRectObj, int32, "y", screenRect.y);
-                GET_OBJECT_PROPERTY(screenRectObj, int32, "width", screenRect.width);
-                GET_OBJECT_PROPERTY(screenRectObj, int32, "height", screenRect.height);
+                key = "screenRect";
+                status = napi_get_object_property_object_(isolate, obj, key, screenRectObj);
+                key = "x";
+                GET_OBJECT_PROPERTY_STR(screenRectObj, int32, key, screenRect.x);
+                key = "y";
+                GET_OBJECT_PROPERTY_STR(screenRectObj, int32, key, screenRect.y);
+                key = "width";
+                GET_OBJECT_PROPERTY_STR(screenRectObj, int32, key, screenRect.width);
+                key = "height";
+                GET_OBJECT_PROPERTY_STR(screenRectObj, int32, key, screenRect.height);
 
                 configuration.screenRect = screenRect;
 
                 unsigned int windowId;
-                status = napi_get_object_property_uint32_(isolate, obj, "windowId", windowId);
-                CHECK_NAPI_STATUS(pEngine, status);
+                key = "windowId";
+                status = napi_get_object_property_uint32_(isolate, obj, key, windowId);
                 configuration.windowId = (view_t)windowId;
 
                 ScreenCaptureParameters params;
                 Local<Object> screenCaptureParameterObj;
-                status = napi_get_object_property_object_(isolate, obj, "params", screenCaptureParameterObj);
-                CHECK_NAPI_STATUS(pEngine, status);
+                key = "params";
+                status = napi_get_object_property_object_(isolate, obj, key, screenCaptureParameterObj);
+                CHECK_NAPI_STATUS_STR(pEngine, status, key);
 
                 VideoDimensions dimensions;
-                status = napi_get_object_property_int32_(isolate, obj, "width", dimensions.width);
-                CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_object_property_int32_(isolate, obj, "height", dimensions.height);
-                CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_object_property_int32_(isolate, obj, "frameRate", params.frameRate);
-                CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_object_property_int32_(isolate, obj, "bitrate", params.bitrate);
-                CHECK_NAPI_STATUS(pEngine, status);
+                key = "width";
+                status = napi_get_object_property_int32_(isolate, screenCaptureParameterObj, key, dimensions.width);
+                CHECK_NAPI_STATUS_STR(pEngine, status, key);
+                key = "height";
+                status = napi_get_object_property_int32_(isolate, screenCaptureParameterObj, key, dimensions.height);
+                CHECK_NAPI_STATUS_STR(pEngine, status, key);
+                key = "frameRate";
+                status = napi_get_object_property_int32_(isolate, screenCaptureParameterObj, key, params.frameRate);
+                CHECK_NAPI_STATUS_STR(pEngine, status, key);
+                key = "bitrate";
+                status = napi_get_object_property_int32_(isolate, screenCaptureParameterObj, key, params.bitrate);
+                CHECK_NAPI_STATUS_STR(pEngine, status, key);
                 params.dimensions = dimensions;
                 configuration.params = params;
 
                 Rectangle regionRect;
                 Local<Object> regionRectObj;
-                status = napi_get_object_property_object_(isolate, obj, "screenRect", regionRectObj);
-                GET_OBJECT_PROPERTY(regionRectObj, int32, "x", regionRect.x);
-                GET_OBJECT_PROPERTY(regionRectObj, int32, "y", regionRect.y);
-                GET_OBJECT_PROPERTY(regionRectObj, int32, "width", regionRect.width);
-                GET_OBJECT_PROPERTY(regionRectObj, int32, "height", regionRect.height);
+                key = "regionRect";
+                status = napi_get_object_property_object_(isolate, obj, key, regionRectObj);
+                key = "x";
+                GET_OBJECT_PROPERTY_STR(regionRectObj, int32, key, regionRect.x);
+                key = "y";
+                GET_OBJECT_PROPERTY_STR(regionRectObj, int32, key, regionRect.y);
+                key = "width";
+                GET_OBJECT_PROPERTY_STR(regionRectObj, int32, key, regionRect.width);
+                key = "height";
+                GET_OBJECT_PROPERTY_STR(regionRectObj, int32, key, regionRect.height);
                 configuration.regionRect = regionRect;
 
                 result = pEngine->m_engine->startPrimaryScreenCapture(configuration);
@@ -5381,8 +5397,9 @@ namespace agora {
             LOG_ENTER;
             napi_status status = napi_ok;
             int result = -1;
+            std::string key = "";
             do {
-                Isolate* isolate = args.GetIsolate();
+                 Isolate* isolate = args.GetIsolate();
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
@@ -5390,51 +5407,62 @@ namespace agora {
                 Local<Object> obj;
                 status = napi_get_value_object_(isolate, args[0], obj);
                 CHECK_NAPI_STATUS(pEngine, status);
-
-                status = napi_get_object_property_bool_(isolate, obj, "isCaptureWindow", configuration.isCaptureWindow);
-                CHECK_NAPI_STATUS(pEngine, status);
-
-                status = napi_get_object_property_uint32_(isolate, obj, "displayId", configuration.displayId);
+                key = "isCaptureWindow";
+                status = napi_get_object_property_bool_(isolate, obj, key, configuration.isCaptureWindow);
+                CHECK_NAPI_STATUS_STR(pEngine, status, key);
+                key = "displayId";
+                status = napi_get_object_property_uint32_(isolate, obj, key, configuration.displayId);
 
                 Rectangle screenRect;
                 Local<Object> screenRectObj;
-                status = napi_get_object_property_object_(isolate, obj, "screenRect", screenRectObj);
-                GET_OBJECT_PROPERTY(screenRectObj, int32, "x", screenRect.x);
-                GET_OBJECT_PROPERTY(screenRectObj, int32, "y", screenRect.y);
-                GET_OBJECT_PROPERTY(screenRectObj, int32, "width", screenRect.width);
-                GET_OBJECT_PROPERTY(screenRectObj, int32, "height", screenRect.height);
+                key = "screenRect";
+                status = napi_get_object_property_object_(isolate, obj, key, screenRectObj);
+                key = "x";
+                GET_OBJECT_PROPERTY_STR(screenRectObj, int32, key, screenRect.x);
+                key = "y";
+                GET_OBJECT_PROPERTY_STR(screenRectObj, int32, key, screenRect.y);
+                key = "width";
+                GET_OBJECT_PROPERTY_STR(screenRectObj, int32, key, screenRect.width);
+                key = "height";
+                GET_OBJECT_PROPERTY_STR(screenRectObj, int32, key, screenRect.height);
 
                 configuration.screenRect = screenRect;
 
                 unsigned int windowId;
-                status = napi_get_object_property_uint32_(isolate, obj, "windowId", windowId);
-                CHECK_NAPI_STATUS(pEngine, status);
+                key = "windowId";
+                status = napi_get_object_property_uint32_(isolate, obj, key, windowId);
                 configuration.windowId = (view_t)windowId;
 
                 ScreenCaptureParameters params;
                 Local<Object> screenCaptureParameterObj;
-                status = napi_get_object_property_object_(isolate, obj, "params", screenCaptureParameterObj);
-                CHECK_NAPI_STATUS(pEngine, status);
+                key = "params";
+                status = napi_get_object_property_object_(isolate, obj, key, screenCaptureParameterObj);
+                CHECK_NAPI_STATUS_STR(pEngine, status, key);
 
                 VideoDimensions dimensions;
-                status = napi_get_object_property_int32_(isolate, obj, "width", dimensions.width);
-                CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_object_property_int32_(isolate, obj, "height", dimensions.height);
-                CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_object_property_int32_(isolate, obj, "frameRate", params.frameRate);
-                CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_object_property_int32_(isolate, obj, "bitrate", params.bitrate);
-                CHECK_NAPI_STATUS(pEngine, status);
+                key = "width";
+                GET_OBJECT_PROPERTY_STR(screenCaptureParameterObj, int32, key, dimensions.width);
+                key = "height";
+                GET_OBJECT_PROPERTY_STR(screenCaptureParameterObj, int32, key, dimensions.height);
+                key = "frameRate";
+                GET_OBJECT_PROPERTY_STR(screenCaptureParameterObj, int32, key, params.frameRate);
+                key = "bitrate";
+                GET_OBJECT_PROPERTY_STR(screenCaptureParameterObj, int32, key, params.bitrate);
                 params.dimensions = dimensions;
                 configuration.params = params;
 
                 Rectangle regionRect;
                 Local<Object> regionRectObj;
-                status = napi_get_object_property_object_(isolate, obj, "screenRect", regionRectObj);
-                GET_OBJECT_PROPERTY(regionRectObj, int32, "x", regionRect.x);
-                GET_OBJECT_PROPERTY(regionRectObj, int32, "y", regionRect.y);
-                GET_OBJECT_PROPERTY(regionRectObj, int32, "width", regionRect.width);
-                GET_OBJECT_PROPERTY(regionRectObj, int32, "height", regionRect.height);
+                key = "regionRect";
+                status = napi_get_object_property_object_(isolate, obj, key, regionRectObj);
+                key = "x";
+                GET_OBJECT_PROPERTY_STR(regionRectObj, int32, key, regionRect.x);
+                key = "y";
+                GET_OBJECT_PROPERTY_STR(regionRectObj, int32, key, regionRect.y);
+                key = "width";
+                GET_OBJECT_PROPERTY_STR(regionRectObj, int32, key, regionRect.width);
+                key = "height";
+                GET_OBJECT_PROPERTY_STR(regionRectObj, int32, key, regionRect.height);
                 configuration.regionRect = regionRect;
 
                 result = pEngine->m_engine->startSecondaryScreenCapture(configuration);

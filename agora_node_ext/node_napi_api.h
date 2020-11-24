@@ -278,6 +278,10 @@ private:
     status = napi_get_object_property_##type##_(isolate, owner, key, value); \
     CHECK_NAPI_STATUS(pEngine, status); \
 
+#define GET_OBJECT_PROPERTY_STR(owner, type, key, value) \
+    status = napi_get_object_property_##type##_(isolate, owner, key, value); \
+    CHECK_NAPI_STATUS_STR(pEngine, status, key); \
+
 
 /**
  * get the utf8 string from V8 value.
