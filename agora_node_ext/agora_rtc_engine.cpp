@@ -581,7 +581,15 @@ namespace agora {
                         napi_get_object_property_uint32_(isolate, videoInputStreamObj, "connectionId", videoInputStreams[i].connectionId);
                         napi_get_object_property_nodestring_(isolate, videoInputStreamObj, "imageUrl", imageUrlList[i]);
                         if (status == napi_ok) {
-                            videoInputStreams[i].imageUrl = imageUrlList[i];
+                            if (videoInputStreams[i].sourceType == VIDEO_SOURCE_MEDIA_PLAYER) {
+                                char* buffer = imageUrlList[i];
+                                if (buffer) {
+                                    int sourceId = atoi(buffer);  
+                                    videoInputStreams[i].imageUrl = (char*) sourceId;
+                                }
+                            } else {
+                                videoInputStreams[i].imageUrl = imageUrlList[i];
+                            }
                         }
 						double x, y, width, height;
 						napi_get_object_property_double_(isolate, videoInputStreamObj, "x", x);
@@ -749,7 +757,17 @@ namespace agora {
                         CHECK_NAPI_STATUS(pEngine, status);
                         napi_get_object_property_nodestring_(isolate, videoInputStreamObj, "imageUrl", imageUrlList[i]);
                         CHECK_NAPI_STATUS(pEngine, status);
-                        videoInputStreams[i].imageUrl = imageUrlList[i];
+                        if (status == napi_ok) {
+                            if (videoInputStreams[i].sourceType == VIDEO_SOURCE_MEDIA_PLAYER) {
+                                char* buffer = imageUrlList[i];
+                                if (buffer) {
+                                    int sourceId = atoi(buffer);  
+                                    videoInputStreams[i].imageUrl = (char*) sourceId;
+                                }
+                            } else {
+                                videoInputStreams[i].imageUrl = imageUrlList[i];
+                            }
+                        }
 						double x, y, width, height;
 						napi_get_object_property_double_(isolate, videoInputStreamObj, "x", x);
                         CHECK_NAPI_STATUS(pEngine, status);
