@@ -2975,6 +2975,10 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
+  joinChannelEx(token: string, channelId: string, userId: number, options: ChannelMediaOptions): number;
+  /**
+   * @ignore
+   */
   updateChannelMediaOptions(options: ChannelMediaOptions, connectionId: number): number;
  /**
    * @ignore
