@@ -585,7 +585,6 @@ namespace agora {
                                 char* buffer = imageUrlList[i];
                                 if (buffer) {
                                     int sourceId = atoi(buffer);  
-                                    LOG_F(INFO, "the source Id is %d", sourceId);
                                     videoInputStreams[i].imageUrl = (char*) sourceId;
                                 }
                             } else {
@@ -763,7 +762,6 @@ namespace agora {
                                 char* buffer = imageUrlList[i];
                                 if (buffer) {
                                     int sourceId = atoi(buffer);  
-                                    LOG_F(INFO, "the source Id is %d", sourceId);
                                     videoInputStreams[i].imageUrl = (char*) sourceId;
                                 }
                             } else {
