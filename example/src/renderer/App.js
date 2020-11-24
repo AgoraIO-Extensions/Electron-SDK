@@ -474,9 +474,9 @@ export default class App extends Component {
     rtcEngine.setChannelProfile(1)
     rtcEngine.setClientRole(1)
     rtcEngine.setVideoEncoderConfiguration({width: 1080, height: 720})
-    rtcEngine.startPreview()
-    let displayId = this.rtcEngine.getScreenDisplaysInfo()[0].displayId
-    rtcEngine.startScreenCaptureByScreen(displayId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 5})
+    // rtcEngine.startPreview()
+    // let displayId = this.rtcEngine.getScreenDisplaysInfo()[0].displayId
+    // rtcEngine.startScreenCaptureByScreen(displayId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 5})
 
     let res = rtcEngine.startLocalVideoTranscoder(this.calcTranscoderOptions(this.state.sources))
     this.setState({
