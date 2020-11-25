@@ -10,7 +10,6 @@
 #include <string>
 
 #include "IAgoraRtcEngine.h"
-// #include "rtc/rtc_event.h"
 
 namespace agora {
 namespace rtc {
@@ -991,24 +990,6 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
     (void)type;
   }
 
-  // specific to this header
-  virtual void onPublishingRequestAnswered(conn_id_t connId, uid_t uid, int response, int error) {
-    (void)connId;
-    (void)uid;
-    (void)response;
-    (void)error;
-  }
-
-  virtual void onPublishingRequestReceived(conn_id_t connId, uid_t uid) {
-    (void)connId;
-    (void)uid;
-  }
-
-  virtual void onUnpublishingRequestReceived(conn_id_t connId, uid_t uid) {
-    (void)connId;
-    (void)uid;
-  }
-
   // TODO(tomiao): to be supported in Stream RTC Event Handler
 #if 0
   onLeaveChannel()
@@ -1031,6 +1012,24 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
 
   onChannelMediaRelayEvent()
 #endif  // 0
+
+  // specific to this header
+  virtual void onPublishingRequestAnswered(conn_id_t connId, uid_t uid, int response, int error) {
+    (void)connId;
+    (void)uid;
+    (void)response;
+    (void)error;
+  }
+
+  virtual void onPublishingRequestReceived(conn_id_t connId, uid_t uid) {
+    (void)connId;
+    (void)uid;
+  }
+
+  virtual void onUnpublishingRequestReceived(conn_id_t connId, uid_t uid) {
+    (void)connId;
+    (void)uid;
+  }
 
   virtual bool onEvent(RTC_EVENT evt, std::string* payload) {
     (void)evt;

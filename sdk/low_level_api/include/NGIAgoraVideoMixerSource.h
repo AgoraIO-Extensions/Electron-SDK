@@ -16,8 +16,8 @@ namespace rtc {
 class IVideoTrack;
 
 struct MixerLayoutConfig {
-  int32_t top;
-  int32_t left;
+  int32_t x;
+  int32_t y;
   int32_t width;
   int32_t height;
   int32_t zOrder; // larger zOrder prioritizes smaller ones
@@ -30,11 +30,6 @@ enum ImageType {
   kJpeg,
   kGif
 };
-
-static const char* const LOCAL_CAMERA_TRACK_ID = "LocalCamera";
-static const char* const LOCAL_SCREEN_TRACK_ID = "LocalScreen";
-static const char* const LOCAL_CUSTOM_TRACK_ID = "LocalCustom";
-static const char* const LOCAL_MEDIA_PLAYER_ID = "MediaPlayer";
 
 /**
  * The IVideoMixerSource class abstracts a multi-in-multi-out video source which receives video
