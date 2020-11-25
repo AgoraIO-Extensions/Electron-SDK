@@ -119,7 +119,8 @@ export default class App extends Component {
       });
     });
     rtcEngine.on('userjoined', (connId, uid, elapsed) => {
-      this.handleAddRemote(uid)
+      console.log(`onUserJoined connId:${connId} uid: ${uid}`)
+      this.handleAddRemote(connId, uid)
       this.setState({
         users: this.state.users.push({channelId: "", uid})
       })
@@ -151,7 +152,7 @@ export default class App extends Component {
       speakerNumber,
       totalVolume
     ) => {
-      console.log(`connId:${connId} ${JSON.stringify(speakers)} speakerNumber${speakerNumber} totalVolume${totalVolume}`)
+      // console.log(`connId:${connId} ${JSON.stringify(speakers)} speakerNumber${speakerNumber} totalVolume${totalVolume}`)
     })
     rtcEngine.on('error', (connId, err) => {
       console.error(err)
@@ -250,6 +251,7 @@ export default class App extends Component {
     let device = this.state.videoDevices[1]
     sources.push({
       sourceType: 1,
+      deviceId: device.deviceid,
       x: 0,
       y: 0,
       width: 360,
@@ -314,11 +316,11 @@ export default class App extends Component {
     this.setState({sources})
   }
 
-  handleAddRemote = (uid) => {
+  handleAddRemote = (connId, uid) => {
     let sources = this.state.sources || []
     sources.push({
       sourceType: 9,
-      connectionId: 0,
+      connectionId: connId,
       remoteUserUid: uid,
       x: 0,
       y: 0,
