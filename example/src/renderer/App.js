@@ -158,6 +158,11 @@ export default class App extends Component {
     })
   }
 
+  handleRtmp = () => {
+    let rtcEngine = this.getRtcEngine();
+    rtcEngine.addPublishStreamUrl("rtmp://agorapush.yimingym.cn/live/zhangtao?txSecret=60eae020da6e08a9c80cf79c894eda71&txTime=5FED45D8", false);
+  }
+
   handleJoin = () => {
     let encoderWidth = parseInt(this.state.encoderWidth)
     let encoderHeight = parseInt(this.state.encoderHeight)
@@ -687,6 +692,11 @@ export default class App extends Component {
           <div className="field is-grouped is-grouped-left">
             <div className="control">
               <button onClick={this.handleJoin} className="button is-link">JoinChannel</button>
+            </div>
+          </div>
+          <div className="field is-grouped is-grouped-left">
+            <div className="control">
+              <button onClick={this.handleRtmp} className="button is-link">RTMP</button>
             </div>
           </div>
         </div>
