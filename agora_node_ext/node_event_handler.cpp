@@ -974,16 +974,34 @@ namespace agora {
         //     });
         // }
 
-        void NodeEventHandler::onStreamPublished_node(const char *url, int error)
+        void NodeEventHandler::onStreamPublished(conn_id_t connId, const char* url, int error)
         {
             FUNC_TRACE;
-            MAKE_JS_CALL_2(RTC_EVENT_STREAM_PUBLISHED, string, url, int32, error);
+            std::string sUrl(url);
+            node_async_call::async_call([this, connId, sUrl, error] {
+                this->onStreamPublished_node(connId, sUrl.c_str(), error);
+            });
         }
 
-        void NodeEventHandler::onStreamUnpublished_node(const char *url)
+        void NodeEventHandler::onStreamPublished_node(conn_id_t connId, const char *url, int error)
         {
             FUNC_TRACE;
-            MAKE_JS_CALL_1(RTC_EVENT_STREAM_UNPUBLISHED, string, url);
+            MAKE_JS_CALL_3(RTC_EVENT_STREAM_PUBLISHED, uint32, connId, string, url, int32, error);
+        }
+
+        void NodeEventHandler::onStreamUnpublished(conn_id_t connId, const char* url)
+        {
+            FUNC_TRACE;
+            std::string sUrl(url);
+            node_async_call::async_call([this, connId, sUrl] {
+                this->onStreamUnpublished_node(connId, sUrl.c_str());
+            });
+        }
+
+        void NodeEventHandler::onStreamUnpublished_node(conn_id_t connId, const char *url)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_2(RTC_EVENT_STREAM_UNPUBLISHED, uint32, connId, string, url);
         }
 
         void NodeEventHandler::onTranscodingUpdated_node(conn_id_t connId)
