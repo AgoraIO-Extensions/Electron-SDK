@@ -879,7 +879,7 @@ class AgoraRtcEngine extends EventEmitter {
       }
       const renderers = this._getRenderers(type, uid, channelId);
       if (!renderers || renderers.length === 0) {
-        console.warn(`Can't find renderer for uid : ${uid} ${channelId}`);
+        // console.warn(`Can't find renderer for uid : ${uid} ${channelId}`);
         continue;
       }
 
