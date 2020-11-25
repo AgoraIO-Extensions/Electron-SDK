@@ -62,7 +62,7 @@ export default class App extends Component {
       this.rtcEngine = new AgoraRtcEngine()
       this.rtcEngine.initialize(APP_ID)
       // this.rtcEngine.setRenderMode(2)
-      // this.rtcEngine.setLogFile("./agorartc.log")
+      this.rtcEngine.setLogFile("./rtmpagorartc.log")
       this.mediaPlayer = this.rtcEngine.createMediaPlayer();
       this.mediaPlayer.initEventHandler();
       this.mediaPlayer.on('onPlayerStateChanged', (state, ec)=>{
@@ -135,13 +135,15 @@ export default class App extends Component {
         local: ''
       })
     })
-    rtcEngine.on('audiodevicestatechanged', (connId) => {
+    rtcEngine.on('audiodevicestatechanged', (connId, deviceId, deviceType, deviceState) => {
+      console.log(`audio device changed: ${connId} ${deviceId} ${deviceType} ${deviceState}`)
       this.setState({
         audioDevices: rtcEngine.getAudioRecordingDevices(),
         audioPlaybackDevices: rtcEngine.getAudioPlaybackDevices()
       })
     })
-    rtcEngine.on('videodevicestatechanged', (connId) => {
+    rtcEngine.on('videodevicestatechanged', (connId, deviceId, deviceType, deviceState) => {
+      console.log(`video device changed: ${connId} ${deviceId} ${deviceType} ${deviceState}`)
       this.setState({
         videoDevices: rtcEngine.getVideoDevices()
       })
@@ -157,11 +159,26 @@ export default class App extends Component {
     rtcEngine.on('error', (connId, err) => {
       console.error(err)
     })
+
+    rtcEngine.on('rtmpStreamingStateChanged', (connId, url, state, errCode) => {
+      console.log(`rtmpStreamingStateChanged connId: ${connId} state: ${state} errCode: ${errCode} url: ${url}`)
+    })
+
+    rtcEngine.on('streamPublished', (connId, url, error) => {
+      console.log(`streamPublished connId: ${connId} errCode: ${error} url: ${url}`)
+    })
+
+    rtcEngine.on('streamUnpublished', (connId, url) => {
+      console.log(`streamUnpublished connId: ${connId} url: ${url}`)
+    })
+
   }
 
   handleRtmp = () => {
     let rtcEngine = this.getRtcEngine();
-    rtcEngine.addPublishStreamUrl("rtmp://agorapush.yimingym.cn/live/zhangtao?txSecret=60eae020da6e08a9c80cf79c894eda71&txTime=5FED45D8", false);
+    let ret = rtcEngine.addPublishStreamUrl("rtmp://agorapush.yimingym.cn/live/zhangtao?txSecret=60eae020da6e08a9c80cf79c894eda71&txTime=5FED45D8", false);
+    // ret = rtcEngine.addPublishStreamUrl("rtmp://agorapush.yimingym.cn/live/zhangtao?txSecret=60eae020da6e08a9c80cf79c894eda71&txTime=5FED45D8", false);
+    console.log(` rtmp：${ret}`);
   }
 
   handleJoin = () => {
@@ -208,8 +225,8 @@ export default class App extends Component {
       channelProfile: 1
     }
     
-    // let ret = rtcEngine.joinChannelWithMediaOptions("", "123", 0, mediaOptions)
-    let ret = rtcEngine.joinChannelEx("", "123", 0, mediaOptions)
+    let ret = rtcEngine.joinChannelWithMediaOptions("", "zhangtao", 0, mediaOptions)
+    // let ret = rtcEngine.joinChannelEx("", "zhangtao", 0, mediaOptions)
     console.log(`--------join channel: ${ret}`)
   }
 
@@ -281,6 +298,18 @@ export default class App extends Component {
       zOrder: 1,
       alpha: 0,
       imageUrl: filePath
+    })
+    let filePath2 = path.resolve(__dirname, "../../static/png.png")
+    sources.push({
+      sourceType: 6,
+      connectionId: 0,
+      x: 0,
+      y: 0,
+      width: 360,
+      height: 240,
+      zOrder: 1,
+      alpha: 0,
+      imageUrl: filePath2
     })
     this.setState({sources})
   }
