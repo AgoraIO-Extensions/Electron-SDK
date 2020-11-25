@@ -592,16 +592,17 @@ class AgoraRtcEngine extends EventEmitter {
       fire('tokenPrivilegeWillExpire', connId, token);
     });
 
-    // this.rtcEngine.onEvent('streamPublished', function(
-    //   url: string,
-    //   error: number
-    // ) {
-    //   fire('streamPublished', url, error);
-    // });
+    this.rtcEngine.onEvent('streamPublished', function(
+      connId: number, 
+      url: string,
+      error: number
+    ) {
+      fire('streamPublished', connId, url, error);
+    });
 
-    // this.rtcEngine.onEvent('streamUnpublished', function(url: string) {
-    //   fire('streamUnpublished', url);
-    // });
+    this.rtcEngine.onEvent('streamUnpublished', function(connId: number, url: string) {
+      fire('streamUnpublished', connId, url);
+    });
 
     this.rtcEngine.onEvent('transcodingUpdated', function(connId: number) {
       fire('transcodingUpdated', connId);
@@ -4764,7 +4765,7 @@ declare interface AgoraRtcEngine {
    *  - 19: The publishing timed out.
    *  - 130: You cannot publish an encrypted stream.
    */
-  // on(evt: 'streamPublished', cb: (url: string, error: number) => void): this;
+  on(evt: 'streamPublished', cb: (connId: number, url: string, error: number) => void): this;
   /** @deprecated This callback is deprecated. Please use
    * `rtmpStreamingStateChanged` instead.
    * 
@@ -4774,7 +4775,7 @@ declare interface AgoraRtcEngine {
    * Reports the result of calling the {@link removePublishStreamUrl} method.
    * - url: The RTMP URL address.
    */
-  // on(evt: 'streamUnpublished', cb: (url: string) => void): this;
+  on(evt: 'streamUnpublished', cb: (connId: number, url: string) => void): this;
   /**
    * Occurs when the state of the RTMP streaming changes.
    * 

@@ -196,7 +196,8 @@ namespace agora {
             // virtual void onChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT code) override;
 
             //3.0.0
-
+            virtual void onStreamPublished(conn_id_t connId, const char* url, int error) override;
+            virtual void onStreamUnpublished(conn_id_t connId, const char* url) override;
             virtual void onRtmpStreamingStateChanged(conn_id_t connId, const char *url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR errCode) override;
 
             //3.1.0
@@ -257,8 +258,8 @@ namespace agora {
             // void onFirstLocalAudioFrame_node(int elapsed);
             void onFirstRemoteAudioFrame_node(uid_t uid, int elapsed);
             // void onFirstRemoteAudioDecoded_node(uid_t uid, int elapsed);
-            void onStreamPublished_node(const char *url, int error);
-            void onStreamUnpublished_node(const char *url);
+            void onStreamPublished_node(conn_id_t connId, const char *url, int error);
+            void onStreamUnpublished_node(conn_id_t connId, const char *url);
             void onTranscodingUpdated_node(conn_id_t connId);   
             void onStreamInjectedStatus_node(conn_id_t connId, const char* url, uid_t uid, int status);
 
