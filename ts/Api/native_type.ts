@@ -2224,6 +2224,14 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
+  videoSourceSetEncryptionMode(mode: string): number;
+  /**
+   * @ignore
+   */
+  videoSourceSetEncryptionSecret(mode: string): number;
+  /**
+   * @ignore
+   */
   videoSourceRelease(): number;
   /**
    * @ignore

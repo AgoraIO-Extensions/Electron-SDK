@@ -301,7 +301,8 @@ namespace agora {
             NAPI_API(videosourceStartScreenCaptureByWindow);
             NAPI_API(videosourceUpdateScreenCaptureParameters);
             NAPI_API(videosourceSetScreenCaptureContentHint);
-
+            NAPI_API(videoSourceSetEncryptionMode);
+            NAPI_API(videoSourceSetEncryptionSecret);
 
             /**
              * 2.8.0 Apis
