@@ -89,10 +89,12 @@ public:
     agora::rtc::uid_t m_uid;
     agora::rtc::conn_id_t m_connectionId;
     buffer_list m_bufferList;
+    int m_deviceId;
     stream_buffer_type m_buffer;
     uint32_t m_destWidth;
     uint32_t m_destHeight;
     bool m_needUpdate;
+    bool m_subscribed;
     uint32_t m_count;
     std::string m_channelId;
     VideoFrameInfo()
@@ -104,6 +106,8 @@ public:
         , m_count(0)
         , m_channelId("")
         , m_connectionId(0)
+        , m_deviceId(0)
+        , m_subscribed(false)
     {}
     VideoFrameInfo(NodeRenderType type)
         : m_renderType(type)
@@ -114,6 +118,21 @@ public:
         , m_count(0)
         , m_channelId("")
         , m_connectionId(0)
+        , m_deviceId(0)
+        , m_subscribed(false)
+    {
+    }
+    VideoFrameInfo(NodeRenderType type, int deviceId)
+        : m_renderType(type)
+        , m_uid(0)
+        , m_destWidth(0)
+        , m_destHeight(0)
+        , m_needUpdate(false)
+        , m_count(0)
+        , m_channelId("")
+        , m_connectionId(0)
+        , m_deviceId(deviceId)
+        , m_subscribed(false)
     {
     }
     VideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, agora::rtc::conn_id_t connectionId)
@@ -125,6 +144,8 @@ public:
         , m_count(0)
         , m_channelId(channelId)
         , m_connectionId(connectionId)
+        , m_deviceId(0)
+        , m_subscribed(false)
     {}
 };
 
@@ -134,13 +155,15 @@ class NodeVideoFrameTransporter {
     ~NodeVideoFrameTransporter();
     
     bool initialize(Isolate *isolate, const Nan::FunctionCallbackInfo<Value>& callbackinfo);
-    int deliverFrame_I420(NodeRenderType type, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, const agora::media::IVideoFrameObserver::VideoFrame& videoFrame);
+    int deliverFrame_I420(NodeRenderType type, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, int deviceId, const agora::media::IVideoFrameObserver::VideoFrame& videoFrame);
     int deliverVideoSourceFrame(const char* payload, int len);
-    int setVideoDimension(NodeRenderType, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, uint32_t width, uint32_t height);
+    int setVideoDimension(NodeRenderType, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, int deviceId,  uint32_t width, uint32_t height);
     void addToHighVideo(agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId);
     void removeFromeHighVideo(agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId);
     void setHighFPS(uint32_t fps);
     void setFPS(uint32_t fps);
+    void subscribe(NodeRenderType type, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, int deviceId);
+    void unsubscribe(NodeRenderType type, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, int deviceId);
     //bool deliveryFrame1(enum NodeRenderType type, agora::rtc::uid_t uid, const buffer_list& buffers);
 private:
 
@@ -165,7 +188,7 @@ private:
         uint16_t rotation;
         uint32_t timestamp;
     };
-    VideoFrameInfo& getVideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId);
+    VideoFrameInfo& getVideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, int deviceId);
     bool deinitialize();
     VideoFrameInfo& getHighVideoFrameInfo(agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId);
     void setupFrameHeader(image_header_type*header, int stride, int width, int height);
@@ -181,9 +204,9 @@ private:
     Persistent<Object> js_this;
     std::unordered_map<agora::rtc::conn_id_t, std::unordered_map<agora::rtc::uid_t, VideoFrameInfo>> m_remoteVideoFrames;
     std::unordered_map<agora::rtc::conn_id_t, std::unordered_map<agora::rtc::uid_t, VideoFrameInfo>> m_remoteHighVideoFrames;
-    std::unique_ptr<VideoFrameInfo> m_localVideoFrame;
+    std::unordered_map<int, VideoFrameInfo> m_localVideoFrames;
+    std::unordered_map<int, VideoFrameInfo> m_screenCaptureFrames;
     std::unique_ptr<VideoFrameInfo> m_devTestVideoFrame;
-    std::unique_ptr<VideoFrameInfo> m_videoSourceVideoFrame;
     std::unique_ptr<VideoFrameInfo> m_transcodedVideoFrame;
     std::mutex m_lock;
     int m_stopFlag;
