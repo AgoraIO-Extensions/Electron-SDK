@@ -1113,6 +1113,12 @@ class IRtcEngineEventHandler {
     (void)elapsed;
   }
 
+  virtual void onVideoSourceFrameSizedChanged(VIDEO_SOURCE_TYPE sourceType, int width, int height) {
+    (void)sourceType;
+    (void)width;
+    (void)height;
+  }
+
   /** Occurs when the first remote video frame is received and decoded.
 
   This callback is triggered upon the SDK receiving and successfully decoding

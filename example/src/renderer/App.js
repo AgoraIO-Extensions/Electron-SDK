@@ -251,7 +251,7 @@ export default class App extends Component {
       width: 360,
       height: 240,
       zOrder: 1,
-      alpha: 0
+      alpha: 1
     })
     this.setState({sources})
   }
@@ -279,7 +279,7 @@ export default class App extends Component {
       width: 360,
       height: 240,
       zOrder: 1,
-      alpha: 0
+      alpha: 1
     })
     this.setState({sources})
   }
@@ -296,7 +296,7 @@ export default class App extends Component {
       width: 360,
       height: 240,
       zOrder: 1,
-      alpha: 0,
+      alpha: 1,
       imageUrl: filePath
     })
     let filePath2 = path.resolve(__dirname, "../../static/png.png")
@@ -308,7 +308,7 @@ export default class App extends Component {
       width: 360,
       height: 240,
       zOrder: 1,
-      alpha: 0,
+      alpha: 1,
       imageUrl: filePath2
     })
     this.setState({sources})
@@ -326,7 +326,7 @@ export default class App extends Component {
       width: 360,
       height: 240,
       zOrder: 1,
-      alpha: 0,
+      alpha: 1,
       imageUrl: filePath
     })
     this.setState({sources})
@@ -344,7 +344,7 @@ export default class App extends Component {
       width: 360,
       height: 240,
       zOrder: 1,
-      alpha: 0,
+      alpha: 1,
       imageUrl: filePath
     })
     this.setState({sources})
@@ -361,7 +361,7 @@ export default class App extends Component {
       width: 360,
       height: 240,
       zOrder: 1,
-      alpha: 0
+      alpha: 1
     })
     this.setState({sources})
   }
@@ -376,7 +376,7 @@ export default class App extends Component {
       width: 360,
       height: 240,
       zOrder: 1,
-      alpha: 0
+      alpha: 1
     })
     this.setState({sources})
   }
@@ -418,7 +418,7 @@ export default class App extends Component {
       width: 360,
       height: 240,
       zOrder: 1,
-      alpha: 0
+      alpha: 1
     })
     this.setState({sources})
   }
@@ -460,7 +460,7 @@ export default class App extends Component {
       width: 360,
       height: 240,
       zOrder: 1,
-      alpha: 0
+      alpha: 1
     })
     this.setState({sources})
   }
@@ -479,7 +479,7 @@ export default class App extends Component {
       width: 360,
       height: 240,
       zOrder: 1,
-      alpha: 0,
+      alpha: 1,
       imageUrl: sourceId.toString(),
     })
     this.setState({sources})
