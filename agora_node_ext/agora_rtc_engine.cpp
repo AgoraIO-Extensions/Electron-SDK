@@ -2489,35 +2489,35 @@ namespace agora {
         {
             LOG_ENTER;
             int result = -1;
-            do {
-                // NodeRtcEngine *pEngine = nullptr;
-                // napi_status status = napi_ok;
-                // napi_get_native_this(args, pEngine);
-                // CHECK_NATIVE_THIS(pEngine);
-                // uid_t uid;
-                // nodestring channel;
-                // status = napi_get_value_uid_t_(args[0], uid);
-                // CHECK_NAPI_STATUS(pEngine, status);
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
 
-                // status = napi_get_value_nodestring_(args[1], channel);
-                // // CHECK_NAPI_STATUS(pEngine, status);
-                
-                // std::string sChannel = channel ? std::string(channel) : "";
-                
-                // auto context = new NodeRenderContext(NODE_RENDER_TYPE_REMOTE, uid, sChannel);
-                // if(!context) {
-                //     LOG_ERROR("Failed to allocate NodeRenderContext\n");
-                //     break;
-                // }
-                // VideoCanvas canvas;
-                // canvas.uid = uid;
-                // canvas.renderMode = agora::media::base::RENDER_MODE_HIDDEN;
-                // canvas.view = (view_t)context;
-                // if(channel) {
-                //     strlcpy(canvas.channelId, channel, agora::rtc::MAX_CHANNEL_ID_LENGTH);
-                // }
-                // pEngine->m_engine->setupRemoteVideo(canvas);
-                result = 0;
+                int renderType;
+                status = napi_get_value_int32_(args[0], renderType);
+                CHECK_NAPI_STATUS(pEngine, status);
+                if(renderType < NODE_RENDER_TYPE_LOCAL || renderType > NODE_RENDER_TYPE_TRANSCODED) {
+                    LOG_ERROR("Invalid render type : %d\n", renderType);
+                    pEngine->m_eventHandler->fireApiError(__FUNCTION__);
+                    break;
+                }
+                uid_t uid;
+                status = napi_get_value_uid_t_(args[1], uid);
+                CHECK_NAPI_STATUS(pEngine, status);
+                unsigned int connectionId;
+                status = napi_get_value_uint32_(args[2], connectionId);
+                CHECK_NAPI_STATUS(pEngine, status);
+                int deviceId;
+                status = napi_get_value_int32_(args[3], deviceId);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                auto *pTransporter = getNodeVideoFrameTransporter();
+                if (pTransporter) {
+                    pTransporter->subscribe((NodeRenderType) renderType, uid, connectionId, deviceId);
+                    result = 0;
+                }
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -2528,24 +2528,34 @@ namespace agora {
             LOG_ENTER;
             int result = -1;
             do{
-                // NodeRtcEngine *pEngine = nullptr;
-                // napi_status status = napi_ok;
-                // napi_get_native_this(args, pEngine);
-                // CHECK_NATIVE_THIS(pEngine);
-                // uid_t uid;
-                // nodestring channel;
-                // status = napi_get_value_uid_t_(args[0], uid);
-                // CHECK_NAPI_STATUS(pEngine, status);
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
 
-                // status = napi_get_value_nodestring_(args[1], channel);
-                // CHECK_NAPI_STATUS(pEngine, status);
-                // VideoCanvas canvas;
-                // canvas.uid = uid;
-                // if(channel) {
-                //     strlcpy(canvas.channelId, channel, agora::rtc::MAX_CHANNEL_ID_LENGTH);
-                // }
-                // pEngine->m_engine->setupRemoteVideo(canvas);
-                result = 0;
+                int renderType;
+                status = napi_get_value_int32_(args[0], renderType);
+                CHECK_NAPI_STATUS(pEngine, status);
+                if(renderType < NODE_RENDER_TYPE_LOCAL || renderType > NODE_RENDER_TYPE_TRANSCODED) {
+                    LOG_ERROR("Invalid render type : %d\n", renderType);
+                    pEngine->m_eventHandler->fireApiError(__FUNCTION__);
+                    break;
+                }
+                uid_t uid;
+                status = napi_get_value_uid_t_(args[1], uid);
+                CHECK_NAPI_STATUS(pEngine, status);
+                unsigned int connectionId;
+                status = napi_get_value_uint32_(args[2], connectionId);
+                CHECK_NAPI_STATUS(pEngine, status);
+                int deviceId;
+                status = napi_get_value_int32_(args[3], deviceId);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                auto *pTransporter = getNodeVideoFrameTransporter();
+                if (pTransporter) {
+                    pTransporter->unsubscribe((NodeRenderType) renderType, uid, connectionId, deviceId);
+                    result = 0;
+                }
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -2600,10 +2610,13 @@ namespace agora {
                 // agora::rtc:: conn_id_t connectionId;
                 // status = napi_get_value_uint32_(args[4], connectionId);
                 // CHECK_NAPI_STATUS(pEngine, status);
+                // int deviceId;
+                // status = napi_get_value_int32_(args[5], deviceId);
+                // CHECK_NAPI_STATUS(pEngine, status);
 
                 auto *pTransporter = getNodeVideoFrameTransporter();
                 if (pTransporter) {
-                    pTransporter->setVideoDimension(type, uid, 0, width, height);
+                    pTransporter->setVideoDimension(type, uid, 0, 0, width, height);
                     result = 0;
                 }
             }while(false);

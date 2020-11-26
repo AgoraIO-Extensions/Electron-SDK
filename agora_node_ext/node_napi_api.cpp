@@ -71,34 +71,43 @@ bool NodeVideoFrameTransporter::deinitialize()
     return true;
 }
 
-int NodeVideoFrameTransporter::setVideoDimension(NodeRenderType type, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, uint32_t width, uint32_t height)
+int NodeVideoFrameTransporter::setVideoDimension(NodeRenderType type, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, int deviceId, uint32_t width, uint32_t height)
 {
     if (!init)
         return -1;
     std::lock_guard<std::mutex> lck(m_lock);
-    if (type == NODE_RENDER_TYPE_REMOTE) {
-        auto cit = m_remoteHighVideoFrames.find(connectionId);
-        if (cit != m_remoteHighVideoFrames.end()) {
-            auto it = cit->second.find(uid);
-            if (it != cit->second.end()) {
-                it->second.m_destWidth = width;
-                it->second.m_destHeight = height;
-                return 0;
-            }
-        }
-    }
-    VideoFrameInfo& info = getVideoFrameInfo(type, uid, connectionId);
+    VideoFrameInfo& info = getVideoFrameInfo(type, uid, connectionId, deviceId);
     info.m_destWidth = width;
     info.m_destHeight = height;
     return 0;
 }
 
-VideoFrameInfo& NodeVideoFrameTransporter::getVideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId)
+void NodeVideoFrameTransporter::subscribe(NodeRenderType type, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, int deviceId)
+{
+    std::lock_guard<std::mutex> lck(m_lock);
+    VideoFrameInfo& info = getVideoFrameInfo(type, uid, connectionId, deviceId);
+    info.m_subscribed = true;
+    info.m_needUpdate = false;
+    info.m_count = 0;
+}
+
+void NodeVideoFrameTransporter::unsubscribe(NodeRenderType type, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, int deviceId)
+{
+    std::lock_guard<std::mutex> lck(m_lock);
+    VideoFrameInfo& info = getVideoFrameInfo(type, uid, connectionId, deviceId);
+    info.m_subscribed = false;
+    info.m_needUpdate = false;
+    info.m_count = 0;
+
+}
+
+VideoFrameInfo& NodeVideoFrameTransporter::getVideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, int deviceId)
 {
     if (type == NodeRenderType::NODE_RENDER_TYPE_LOCAL) {
-        if (!m_localVideoFrame.get())
-            m_localVideoFrame.reset(new VideoFrameInfo(NODE_RENDER_TYPE_LOCAL));
-        return *m_localVideoFrame.get();
+        if (m_localVideoFrames.find(deviceId) == m_localVideoFrames.end()) {
+            m_localVideoFrames[deviceId] = VideoFrameInfo(NODE_RENDER_TYPE_LOCAL, deviceId);
+        }
+        return m_localVideoFrames[deviceId];
     }
     else if (type == NODE_RENDER_TYPE_TRANSCODED) {
         if (!m_transcodedVideoFrame.get()){
@@ -132,9 +141,10 @@ VideoFrameInfo& NodeVideoFrameTransporter::getVideoFrameInfo(NodeRenderType type
         return *m_devTestVideoFrame.get();
     }
     else {
-        if (!m_videoSourceVideoFrame.get())
-            m_videoSourceVideoFrame.reset(new VideoFrameInfo(NODE_RENDER_TYPE_VIDEO_SOURCE));
-        return *m_videoSourceVideoFrame.get();
+        if (m_screenCaptureFrames.find(deviceId) == m_screenCaptureFrames.end()) {
+            m_screenCaptureFrames[deviceId] = VideoFrameInfo(NODE_RENDER_TYPE_VIDEO_SOURCE, deviceId);
+        }
+        return m_screenCaptureFrames[deviceId];
     }
 }
 
@@ -142,50 +152,50 @@ int NodeVideoFrameTransporter::deliverVideoSourceFrame(const char* payload, int 
 {
     if (!init)
         return -1;
-    image_frame_info *info = (image_frame_info*)payload;
-    image_header_type *hdr = (image_header_type*)(payload + sizeof(image_frame_info));
-    unsigned int uv_len = (info->stride / 2) * (info->height / 2);
-    char* y = (char*)(hdr + 1);
-    char* u = y + uv_len * 4;
-    char* v = u + uv_len;
-    std::lock_guard<std::mutex> lck(m_lock);
-    VideoFrameInfo& videoInfo = getVideoFrameInfo(NODE_RENDER_TYPE_VIDEO_SOURCE, 0, 0);
-    int destWidth = videoInfo.m_destWidth ? videoInfo.m_destWidth : info->width;
-    int destHeight = videoInfo.m_destHeight ? videoInfo.m_destHeight : info->height;
-    size_t imageSize = sizeof(image_header_type) + destWidth * destHeight * 3 / 2;
-    auto s = videoInfo.m_buffer.size();
-    if (s < imageSize || s >= imageSize * 2)
-        videoInfo.m_buffer.resize(imageSize);
-    image_header_type *localHdr = (image_header_type*)&videoInfo.m_buffer[0];
-    localHdr->format = hdr->format;
-    localHdr->mirrored = hdr->mirrored;
-    localHdr->timestamp = htons(hdr->timestamp);
-    localHdr->rotation = htons(hdr->rotation);
-    localHdr->width = htons(destWidth);
-    localHdr->height = htons(destHeight);
-    localHdr->left = htons(0);
-    localHdr->right = htons(0);
-    localHdr->top = htons(0);
-    localHdr->bottom = htons(0);
-    unsigned char* desty = &videoInfo.m_buffer[0] + sizeof(image_header_type);
-    unsigned char* destu = desty + destWidth * destHeight;
-    unsigned char* destv = destu + destWidth / 2 * destHeight / 2;
-    I420Scale((const uint8*)y, info->stride0, (const uint8*)u, info->strideU, (const uint8*)v, info->strideV, info->width, info->height, 
-        (uint8*)desty, destWidth, (uint8*)destu, destWidth / 2, (uint8*)destv, destWidth / 2, destWidth, destHeight, kFilterNone);
-    videoInfo.m_bufferList[0].buffer = (unsigned char*)localHdr;
-    videoInfo.m_bufferList[0].length = sizeof(*localHdr);
-    videoInfo.m_bufferList[1].buffer = (unsigned char*)desty;
-    videoInfo.m_bufferList[1].length = destWidth * destHeight;
-    videoInfo.m_bufferList[2].buffer = (unsigned char*)destu;
-    videoInfo.m_bufferList[2].length = destWidth / 2 * destHeight / 2;
-    videoInfo.m_bufferList[3].buffer = (unsigned char*)destv;
-    videoInfo.m_bufferList[3].length = destWidth / 2 * destHeight / 2;
-    videoInfo.m_count = 0;
-    videoInfo.m_needUpdate = true;
+    // image_frame_info *info = (image_frame_info*)payload;
+    // image_header_type *hdr = (image_header_type*)(payload + sizeof(image_frame_info));
+    // unsigned int uv_len = (info->stride / 2) * (info->height / 2);
+    // char* y = (char*)(hdr + 1);
+    // char* u = y + uv_len * 4;
+    // char* v = u + uv_len;
+    // std::lock_guard<std::mutex> lck(m_lock);
+    // VideoFrameInfo& videoInfo = getVideoFrameInfo(NODE_RENDER_TYPE_VIDEO_SOURCE, 0, 0);
+    // int destWidth = videoInfo.m_destWidth ? videoInfo.m_destWidth : info->width;
+    // int destHeight = videoInfo.m_destHeight ? videoInfo.m_destHeight : info->height;
+    // size_t imageSize = sizeof(image_header_type) + destWidth * destHeight * 3 / 2;
+    // auto s = videoInfo.m_buffer.size();
+    // if (s < imageSize || s >= imageSize * 2)
+    //     videoInfo.m_buffer.resize(imageSize);
+    // image_header_type *localHdr = (image_header_type*)&videoInfo.m_buffer[0];
+    // localHdr->format = hdr->format;
+    // localHdr->mirrored = hdr->mirrored;
+    // localHdr->timestamp = htons(hdr->timestamp);
+    // localHdr->rotation = htons(hdr->rotation);
+    // localHdr->width = htons(destWidth);
+    // localHdr->height = htons(destHeight);
+    // localHdr->left = htons(0);
+    // localHdr->right = htons(0);
+    // localHdr->top = htons(0);
+    // localHdr->bottom = htons(0);
+    // unsigned char* desty = &videoInfo.m_buffer[0] + sizeof(image_header_type);
+    // unsigned char* destu = desty + destWidth * destHeight;
+    // unsigned char* destv = destu + destWidth / 2 * destHeight / 2;
+    // I420Scale((const uint8*)y, info->stride0, (const uint8*)u, info->strideU, (const uint8*)v, info->strideV, info->width, info->height, 
+    //     (uint8*)desty, destWidth, (uint8*)destu, destWidth / 2, (uint8*)destv, destWidth / 2, destWidth, destHeight, kFilterNone);
+    // videoInfo.m_bufferList[0].buffer = (unsigned char*)localHdr;
+    // videoInfo.m_bufferList[0].length = sizeof(*localHdr);
+    // videoInfo.m_bufferList[1].buffer = (unsigned char*)desty;
+    // videoInfo.m_bufferList[1].length = destWidth * destHeight;
+    // videoInfo.m_bufferList[2].buffer = (unsigned char*)destu;
+    // videoInfo.m_bufferList[2].length = destWidth / 2 * destHeight / 2;
+    // videoInfo.m_bufferList[3].buffer = (unsigned char*)destv;
+    // videoInfo.m_bufferList[3].length = destWidth / 2 * destHeight / 2;
+    // videoInfo.m_count = 0;
+    // videoInfo.m_needUpdate = true;
     return 0;
 }
 
-int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, const agora::media::IVideoFrameObserver::VideoFrame& videoFrame)
+int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, int deviceId, const agora::media::IVideoFrameObserver::VideoFrame& videoFrame)
 {
     if (!init)
         return -1;
@@ -196,7 +206,13 @@ int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type, agora::rtc
     }
     int rotation = videoFrame.rotation < 0 ? videoFrame.rotation + 360 : videoFrame.rotation;
     std::lock_guard<std::mutex> lck(m_lock);
-    VideoFrameInfo& info = getVideoFrameInfo(type, uid, connectionId);
+    VideoFrameInfo& info = getVideoFrameInfo(type, uid, connectionId, deviceId);
+
+    if (!info.m_subscribed) {
+        info.m_needUpdate = false;
+        return 0;
+    }
+
     int destStride = info.m_destWidth ? info.m_destWidth : stride;
     int destWidth = info.m_destWidth ? info.m_destWidth : videoFrame.width;
     int destHeight = info.m_destHeight ? info.m_destHeight : videoFrame.height;
@@ -337,7 +353,7 @@ void NodeVideoFrameTransporter::removeFromeHighVideo(agora::rtc::uid_t uid, agor
         if(it != m_remoteHighVideoFrames[connectionId].end())
             m_remoteHighVideoFrames[connectionId].erase(it);
     }
-    getVideoFrameInfo(NODE_RENDER_TYPE_REMOTE, uid, connectionId);
+    getVideoFrameInfo(NODE_RENDER_TYPE_REMOTE, uid, connectionId, 0);
 }
 
 void NodeVideoFrameTransporter::setHighFPS(uint32_t fps)
@@ -367,6 +383,19 @@ void NodeVideoFrameTransporter::setFPS(uint32_t fps)
             } \
         } \
     }
+
+#define NODE_SET_OBJ_PROP_INT32(obj, name, val) \
+    { \
+        Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
+        Local<Value> propVal = napi_create_int32_(isolate, val); \
+        v8::Maybe<bool> ret = obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+        if(!ret.IsNothing()) { \
+            if(!ret.ToChecked()) { \
+                break; \
+            } \
+        } \
+    }
+
 #define NODE_SET_OBJ_PROP_STRING(obj, name, val) \
     { \
         Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
@@ -405,7 +434,7 @@ void NodeVideoFrameTransporter::setFPS(uint32_t fps)
 
 bool AddObj(Isolate* isolate, Local<v8::Array>& infos, int index, VideoFrameInfo& info)
 {
-    if (!info.m_needUpdate)
+    if (!info.m_needUpdate || !info.m_subscribed)
         return false;
     info.m_needUpdate = false;
     bool result = false;
@@ -415,6 +444,7 @@ bool AddObj(Isolate* isolate, Local<v8::Array>& infos, int index, VideoFrameInfo
         NODE_SET_OBJ_PROP_UINT32(obj, "uid", info.m_uid);
         NODE_SET_OBJ_PROP_UINT32(obj, "connectionId", info.m_connectionId);
         NODE_SET_OBJ_PROP_STRING(obj, "channelId", info.m_channelId.c_str());
+        NODE_SET_OBJ_PROP_INT32(obj, "deviceId", info.m_deviceId);
         auto it = info.m_bufferList.begin();
         NODE_SET_OBJ_PROP_HEADER(obj, it);
         ++it;
@@ -443,9 +473,9 @@ void NodeVideoFrameTransporter::FlushVideo()
                 ++cit;
             }
 
-            if (m_devTestVideoFrame.get() && m_localVideoFrame && m_localVideoFrame->m_count > MAX_MISS_COUNT) {
-                m_devTestVideoFrame.reset();
-            }
+            // if (m_devTestVideoFrame.get() && m_localVideoFrame && m_localVideoFrame->m_count > MAX_MISS_COUNT) {
+            //     m_devTestVideoFrame.reset();
+            // }
             lck.unlock();
 
             agora::rtc::node_async_call::async_call([this]() {
@@ -464,11 +494,20 @@ void NodeVideoFrameTransporter::FlushVideo()
                         }
                     }
                 }
-                if (m_localVideoFrame.get()) {
-                    if (AddObj(isolate, infos, i, *m_localVideoFrame.get()))
+
+                for (auto& it : m_localVideoFrames) {
+                    if (AddObj(isolate, infos, i, it.second)) {
                         ++i;
-                    else {
-                        ++m_localVideoFrame->m_count;
+                    } else {
+                        ++it.second.m_count;
+                    }
+                }
+
+                for (auto& it : m_screenCaptureFrames) {
+                    if (AddObj(isolate, infos, i, it.second)) {
+                        ++i;
+                    } else {
+                        ++it.second.m_count;
                     }
                 }
 
@@ -513,8 +552,8 @@ void NodeVideoFrameTransporter::highFlushVideo()
                 ++cit;
             }
 
-            if (m_videoSourceVideoFrame.get() && m_videoSourceVideoFrame->m_count > MAX_MISS_COUNT)
-                m_videoSourceVideoFrame.reset();
+            // if (m_videoSourceVideoFrame.get() && m_videoSourceVideoFrame->m_count > MAX_MISS_COUNT)
+            //     m_videoSourceVideoFrame.reset();
 
             lck.unlock();
 
@@ -535,13 +574,13 @@ void NodeVideoFrameTransporter::highFlushVideo()
                     }
                 }
 
-                if (m_videoSourceVideoFrame.get()) {
-                    if (AddObj(isolate, infos, i, *m_videoSourceVideoFrame.get()))
-                        ++i;
-                    else {
-                        ++m_videoSourceVideoFrame->m_count;
-                    }
-                }
+                // if (m_videoSourceVideoFrame.get()) {
+                //     if (AddObj(isolate, infos, i, *m_videoSourceVideoFrame.get()))
+                //         ++i;
+                //     else {
+                //         ++m_videoSourceVideoFrame->m_count;
+                //     }
+                // }
 
                 if (i > 0) {
                     Local<v8::Value> args[1] = { infos };
