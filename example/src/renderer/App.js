@@ -171,7 +171,7 @@ export default class App extends Component {
     rtcEngine.on('streamUnpublished', (connId, url) => {
       console.log(`streamUnpublished connId: ${connId} url: ${url}`)
     })
-
+    rtcEngine.enableLoopbackRecording(true)
   }
 
   handleRtmp = () => {
@@ -210,7 +210,7 @@ export default class App extends Component {
       publishAudioTrack: true,
       publishScreenTrack: false,
       publishSecondaryScreenTrack: false,
-      publishCustomAudioTrack: false,
+      publishCustomAudioTrack: true,
       publishCustomVideoTrack: false,
       publishEncodedVideoTrack: false,
       publishMediaPlayerAudioTrack: false,
@@ -225,7 +225,7 @@ export default class App extends Component {
       channelProfile: 1
     }
     
-    let ret = rtcEngine.joinChannelWithMediaOptions("", "zhangtao", 0, mediaOptions)
+    let ret = rtcEngine.joinChannelWithMediaOptions("", "123", 0, mediaOptions)
     // let ret = rtcEngine.joinChannelEx("", "zhangtao", 0, mediaOptions)
     console.log(`--------join channel: ${ret}`)
   }
