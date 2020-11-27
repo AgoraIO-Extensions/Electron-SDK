@@ -2267,7 +2267,11 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  subscribe(uid: number, channel?: string): number;
+  subscribe(type: number, uid: number, connId: number, deviceId: number): number;
+  /**
+   * @ignore
+   */
+  unsubscribe(type: number, uid: number, connId: number, deviceId: number): number;
   /**
    * @ignore
    */
@@ -2857,10 +2861,6 @@ export interface NodeRtcEngine {
    * @ignore
    */
   onEvent(event: string, callback: Function): void;
-  /**
-   * @ignore
-   */
-  unsubscribe(uid: number, channel?: string): number;
   /**
    * @ignore
    */
