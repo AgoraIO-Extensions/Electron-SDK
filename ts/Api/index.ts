@@ -75,7 +75,8 @@ const agora = require('../../build/Release/agora_node_ext');
  */
 class AgoraRtcEngine extends EventEmitter {
   rtcEngine: NodeRtcEngine;
-  streams: Map<string, Map<string, IRenderer[]>>;
+  streams: Map<number, Map<number, IRenderer[]>>;
+  localStreams: Map<number, Map<number, IRenderer[]>>;
   renderMode: 1 | 2 | 3;
   customRenderer: any;
   constructor() {
@@ -83,6 +84,7 @@ class AgoraRtcEngine extends EventEmitter {
     this.rtcEngine = new agora.NodeRtcEngine();
     this.initEventHandler();
     this.streams = new Map();
+    this.localStreams = new Map();
     this.renderMode = this._checkWebGL() ? 1 : 2;
     this.customRenderer = CustomRenderer;
   }
@@ -434,8 +436,8 @@ class AgoraRtcEngine extends EventEmitter {
         console.log('Warning!!!!!!, streams is undefined.');
         return;
       }
-      self.destroyRender(uid, "");
-      // self.rtcEngine.unsubscribe(uid);
+      self.destroyRemoteRender(uid, connId);
+      self.rtcEngine.unsubscribe(1, uid, connId, 0);
       fire('removestream', connId, uid, reason);
       fire('removeStream', connId, uid, reason);
     });
@@ -772,40 +774,47 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * @private
    * @ignore
-   * @param {number} type 0-local 1-remote 2-device_test 3-video_source
+   * @param {number} type 0-local 1-remote 2-device_test 3-screen_share 4-transcoded
    * @param {number} uid uid get from native engine, differ from electron engine's uid
+   * @param {number} connId connId get from native engine when join channel
+   * @param {number} deviceId deviceId local device id, support multiple cameras or screen share
    */
-  _getRenderers(type: number, uid: number, channelId: string | undefined): IRenderer[] | undefined {
-    let channelStreams = this._getChannelRenderers(channelId || "")
-    if (type < 2) {
-      if (uid === 0) {
-        return channelStreams.get('local');
-      } else {
-        return channelStreams.get(String(uid));
-      }
+  _getRenderers(type: number, uid: number, connId: number, deviceId: number): IRenderer[] | undefined {
+    if (type === 1) {
+      let channelStreams = this._getChannelRenderers(connId);
+      return channelStreams.get(uid)
+    } else if (type === 0 || type === 3 || type === 4) {
+      let localRenderers = this._getLocalRenderers(type);
+      return localRenderers.get(deviceId);
     } else if (type === 2) {
-      // return this.streams.devtest;
       console.warn('Type 2 not support in production mode.');
       return;
-    } else if (type === 3) {
-      return channelStreams.get('videosource');
-    } else if (type == 4) {
-      return channelStreams.get('transcoded');
     } else {
-      console.warn('Invalid type for getRenderer, only accept 0~3.');
+      console.warn('Invalid type for getRenderer, only accept 0~4.');
       return;
     }
   }
 
-  _getChannelRenderers(channelId: string): Map<string, IRenderer[]> {
-    let channel: Map<string, IRenderer[]>;
-    if(!this.streams.has(channelId)) {
+  _getChannelRenderers(connId: number): Map<number, IRenderer[]> {
+    let channel: Map<number, IRenderer[]>;
+    if(!this.streams.has(connId)) {
       channel = new Map()
-      this.streams.set(channelId, channel)
+      this.streams.set(connId, channel)
     } else {
-      channel = this.streams.get(channelId) as Map<string, IRenderer[]>
+      channel = this.streams.get(connId) as Map<number, IRenderer[]>
     }
     return channel
+  }
+
+  _getLocalRenderers(type: number): Map<number, IRenderer[]> {
+    let renderers: Map<number, IRenderer[]>;
+    if (!this.localStreams.has(type)) {
+      renderers = new Map();
+      this.localStreams.set(type, renderers);
+    } else {
+      renderers = this.localStreams.get(type) as Map<number, IRenderer[]>;
+    }
+    return renderers;
   }
 
   /**
@@ -863,7 +872,7 @@ class AgoraRtcEngine extends EventEmitter {
     const len = infos.length;
     for (let i = 0; i < len; i++) {
       const info = infos[i];
-      const { type, uid, channelId, header, ydata, udata, vdata } = info;
+      const { type, uid, connectionId, deviceId, header, ydata, udata, vdata } = info;
       if (!header || !ydata || !udata || !vdata) {
         console.log(
           'Invalid data param ： ' +
@@ -877,9 +886,9 @@ class AgoraRtcEngine extends EventEmitter {
         );
         continue;
       }
-      const renderers = this._getRenderers(type, uid, channelId);
+      const renderers = this._getRenderers(type, uid, connectionId, deviceId);
       if (!renderers || renderers.length === 0) {
-        // console.warn(`Can't find renderer for uid : ${uid} ${channelId}`);
+        console.warn(`Can't find renderer for uid : ${uid} `);
         continue;
       }
 
@@ -904,34 +913,37 @@ class AgoraRtcEngine extends EventEmitter {
    * to arrive.
    * 
    * Calling this method prevents a view discontinutity.
-   * @param key Key for the map that store the renderers, 
-   * e.g, `uid` or `videosource` or `local`.
+   * @param {number} type 0-local 3-screen_share 4-transcoded
+   * @param {number} uid uid get from native engine, differ from electron engine's uid
+   * @param {number} connId connId get from native engine when join channel
+   * @param {number} deviceId deviceId local device id, support multiple cameras or screen share
    */
-  resizeRender(key: 'local' | 'videosource' | 'transcoded' | number, channelId:string | undefined) {
-    let channelStreams = this._getChannelRenderers(channelId || "")
-    if (channelStreams.has(String(key))) {
-      const renderers = channelStreams.get(String(key)) || [];
-      renderers.forEach(renderer => renderer.refreshCanvas())
-    }
+  resizeRender(type: number, uid: number, connId: number, deviceId: number) {
+    const renderers = this._getRenderers(type, uid, connId, deviceId) || [];
+    renderers.forEach(renderer => renderer.refreshCanvas());
   }
 
-  /**
-   * Initializes the renderer.
-   * @param key Key for the map that store the renderers, 
-   * e.g, uid or `videosource` or `local`.
+    /**
+   * Initializes the local renderer.
+   * @param {number} type 0-local 3-screen_share 4-transcoded
+   * @param {number} deviceId deviceId local device id, support multiple cameras or screen share
    * @param view The Dom elements to render the video.
    */
-  initRender(key: 'local' | 'videosource' | 'transcoded' | number, view: Element, channelId: string | undefined, options?: RendererOptions) {
+  initLocalRender(type: number, devicdId: number, view: Element, options?: RendererOptions) {
+    if (type != 0 && type != 3 && type != 4) {
+      console.warn('Invalid type for initLocalRender, local render type should be 0, 3, 4.');
+      return;
+    }
     let rendererOptions = {
       append: options ? options.append : false
     }
-    let channelStreams = this._getChannelRenderers(channelId || "")
+    let localRenderers = this._getLocalRenderers(type);
 
-    if (channelStreams.has(String(key))) {
+    if (localRenderers.has(devicdId)) {
       if(!rendererOptions.append) {
-        this.destroyRender(key, channelId || "");
+        this.destroyLocalRender(type, devicdId);
       } else {
-        let renderers = channelStreams.get(String(key)) || []
+        let renderers = localRenderers.get(devicdId) || []
         for(let i = 0; i < renderers.length; i++) {
           if(renderers[i].equalsElement(view)){
             console.log(`view exists in renderer list, ignore`)
@@ -940,7 +952,7 @@ class AgoraRtcEngine extends EventEmitter {
         }
       }
     }
-    channelStreams = this._getChannelRenderers(channelId || "")
+    localRenderers = this._getLocalRenderers(type);
     let renderer: IRenderer;
     if (this.renderMode === 1) {
       renderer = new GlRenderer();
@@ -955,23 +967,76 @@ class AgoraRtcEngine extends EventEmitter {
     renderer.bind(view);
 
     if(!rendererOptions.append) {
-      channelStreams.set(String(key), [renderer]);
+      localRenderers.set(devicdId, [renderer]);
     } else {
-      let renderers = channelStreams.get(String(key)) || []
+      let renderers = localRenderers.get(devicdId) || []
       renderers.push(renderer)
-      channelStreams.set(String(key), renderers)
+      localRenderers.set(devicdId, renderers)
     }
   }
 
-  destroyRenderView(
-    key: 'local' | 'videosource' | 'transcoded' | number, channelId: string | undefined, view: Element,
+  /**
+   * Initializes the remote renderer.
+   * @param {number} uid uid get from native engine, differ from electron engine's uid
+   * @param {number} connId connId get from native engine when join channel
+   * @param view The Dom elements to render the video.
+   */
+  initRemoteRender(uid: number, connId: number, view: Element, options?: RendererOptions) {
+    let rendererOptions = {
+      append: options ? options.append : false
+    }
+    let channelStreams = this._getChannelRenderers(connId)
+
+    if (channelStreams.has(uid)) {
+      if(!rendererOptions.append) {
+        this.destroyRemoteRender(uid, connId);
+      } else {
+        let renderers = channelStreams.get(uid) || []
+        for(let i = 0; i < renderers.length; i++) {
+          if(renderers[i].equalsElement(view)){
+            console.log(`view exists in renderer list, ignore`)
+            return
+          }
+        }
+      }
+    }
+    channelStreams = this._getChannelRenderers(connId)
+    let renderer: IRenderer;
+    if (this.renderMode === 1) {
+      renderer = new GlRenderer();
+    } else if (this.renderMode === 2) {
+      renderer = new SoftwareRenderer();
+    } else if (this.renderMode === 3) {
+      renderer = new this.customRenderer();
+    } else {
+      console.warn('Unknown render mode, fallback to 1');
+      renderer = new GlRenderer();
+    }
+    renderer.bind(view);
+
+    if(!rendererOptions.append) {
+      channelStreams.set(uid, [renderer]);
+    } else {
+      let renderers = channelStreams.get(uid) || []
+      renderers.push(renderer)
+      channelStreams.set(uid, renderers)
+    }
+  }
+
+  destroyLocalRenderView(
+    type: number, deviceId: number, view: Element,
     onFailure?: (err: Error) => void
   ) {
-    let channelStreams = this._getChannelRenderers(channelId || "")
-    if (!channelStreams.has(String(key))) {
+    if (type != 0 && type != 3 && type != 4) {
+      console.warn('Invalid type for destroyLocalRenderView, local render type should be 0, 3, 4.');
       return;
     }
-    const renderers = channelStreams.get(String(key)) || [];
+
+    let localRenderers = this._getLocalRenderers(type)
+    if (!localRenderers.has(deviceId)) {
+      return;
+    }
+    const renderers = localRenderers.get(deviceId) || [];
     const matchRenderers = renderers.filter(renderer => renderer.equalsElement(view))
     const otherRenderers = renderers.filter(renderer => !renderer.equalsElement(view))
 
@@ -981,13 +1046,46 @@ class AgoraRtcEngine extends EventEmitter {
         (renderer as IRenderer).unbind();
         if(otherRenderers.length > 0) {
           // has other renderers left, update
-          channelStreams.set(String(key), otherRenderers)
+          localRenderers.set(deviceId, otherRenderers)
         } else {
           // removed renderer is the only one, remove
-          channelStreams.delete(String(key));
+          localRenderers.delete(deviceId);
+        }
+        if(localRenderers.size === 0) {
+          this.localStreams.delete(type)
+        }
+      } catch (err) {
+        onFailure && onFailure(err)
+      }
+    }
+
+  }
+
+  destroyRemoteRenderView(
+    uid: number, connId: number, view: Element,
+    onFailure?: (err: Error) => void
+  ) {
+    let channelStreams = this._getChannelRenderers(connId)
+    if (!channelStreams.has(uid)) {
+      return;
+    }
+    const renderers = channelStreams.get(uid) || [];
+    const matchRenderers = renderers.filter(renderer => renderer.equalsElement(view))
+    const otherRenderers = renderers.filter(renderer => !renderer.equalsElement(view))
+
+    if(matchRenderers.length > 0) {
+      let renderer = matchRenderers[0]
+      try {
+        (renderer as IRenderer).unbind();
+        if(otherRenderers.length > 0) {
+          // has other renderers left, update
+          channelStreams.set(uid, otherRenderers)
+        } else {
+          // removed renderer is the only one, remove
+          channelStreams.delete(uid);
         }
         if(channelStreams.size === 0) {
-          this.streams.delete(channelId || "")
+          this.streams.delete(connId)
         }
       } catch (err) {
         onFailure && onFailure(err)
@@ -998,30 +1096,71 @@ class AgoraRtcEngine extends EventEmitter {
 
 
   /**
-   * Destroys the renderer.
-   * @param key Key for the map that store the renderers, 
-   * e.g, `uid` or `videosource` or `local`.
-   * @param onFailure The error callback for the {@link destroyRenderer} 
+   * Destroys the local renderer.
+   * @param {number} type 0-local 2-device_test 3-screen_share 4-transcoded
+   * @param {number} deviceId deviceId local device id, support multiple cameras or screen share
+   * @param onFailure The error callback for the {@link destroyLocalRender} 
    * method.
    */
-  destroyRender(
-    key: 'local' | 'videosource' | 'transcoded' | number, channelId: string | undefined,
+  destroyLocalRender(
+    type: number, deviceId: number,
     onFailure?: (err: Error) => void
   ) {
-    let channelStreams = this._getChannelRenderers(channelId || "")
-    if (!channelStreams.has(String(key))) {
+    if (type != 0 && type != 3 && type != 4) {
+      console.warn('Invalid type for destroyLocalRender, local render type should be 0, 3, 4.');
       return;
     }
-    const renderers = channelStreams.get(String(key)) || [];
+    let localRenderers = this._getLocalRenderers(type)
+    if (!localRenderers.has(deviceId)) {
+      return;
+    }
+    const renderers = localRenderers.get(deviceId) || [];
 
     let exception = null
     for(let i = 0; i < renderers.length; i++) {
       let renderer = renderers[i]
       try {
         (renderer as IRenderer).unbind();
-        channelStreams.delete(String(key));
+        localRenderers.delete(deviceId);
+        if(localRenderers.size === 0) {
+          this.localStreams.delete(type);
+        }
+      } catch (err) {
+        exception = err
+        console.error(`${err.stack}`)
+      }
+    }
+    if(exception) {
+      onFailure && onFailure(exception)
+    }
+  }
+
+
+  /**
+   * Destroys the remote renderer.
+   * @param {number} uid uid get from native engine, differ from electron engine's uid
+   * @param {number} connId connId get from native engine when join channel
+   * @param onFailure The error callback for the {@link destroyRemoteRender} 
+   * method.
+   */
+  destroyRemoteRender(
+    uid: number, connId: number,
+    onFailure?: (err: Error) => void
+  ) {
+    let channelStreams = this._getChannelRenderers(connId)
+    if (!channelStreams.has(uid)) {
+      return;
+    }
+    const renderers = channelStreams.get(uid) || [];
+
+    let exception = null
+    for(let i = 0; i < renderers.length; i++) {
+      let renderer = renderers[i]
+      try {
+        (renderer as IRenderer).unbind();
+        channelStreams.delete(uid);
         if(channelStreams.size === 0) {
-          this.streams.delete(channelId || "")
+          this.streams.delete(connId)
         }
       } catch (err) {
         exception = err
@@ -1187,42 +1326,45 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.release();
   }
 
-
   /**
    * Subscribes to a remote user and initializes the corresponding renderer.
    * @param {number} uid The user ID of the remote user.
+   * @param {number} connId connId get from native engine when join channel
    * @param {Element} view The Dom where to initialize the renderer.
    * @return
    * - 0: Success.
    * - < 0: Failure.
    */
-  subscribe(uid: number, view: Element, options?: RendererOptions): number {
-    this.initRender(uid, view, "", options);
-    return this.rtcEngine.subscribe(uid);
-  }
 
-  setupRemoteVideo(uid: number, view?: Element, channel?: string, options?: RendererOptions): number {
+  setupRemoteView(uid: number, connId: number, view?: Element, options?: RendererOptions): number {
     if(view) {
       //bind
-      this.initRender(uid, view, channel, options);
-      return this.rtcEngine.subscribe(uid, channel);
+      this.initRemoteRender(uid, connId, view, options);
+      return this.rtcEngine.subscribe(1, uid, connId, 0);
     } else {
       //unbind
-      this.destroyRender(uid, channel);
-      return this.rtcEngine.unsubscribe(uid, channel);
+      this.destroyRemoteRender(uid, connId);
+      return this.rtcEngine.unsubscribe(1, uid, connId, 0);
     }
   }
 
   /**
    * Sets the local video view and the corresponding renderer.
+   * @param {number} type 0-local 3-screen_share 4-transcoded
+   * @param {number} deviceId deviceId local device id, support multiple cameras or screen share
    * @param {Element} view The Dom element where you initialize your view.
    * @return
    * - 0: Success.
    * - < 0: Failure.
    */
-  setupLocalVideo(view: Element, options?: RendererOptions): number {
-    this.initRender('local', view, "", options);
-    return this.rtcEngine.setupLocalVideo();
+  setupLocalView(type: number, deviceId: number, view: Element, options?: RendererOptions): number {
+    if (view) {
+      this.initLocalRender(type, deviceId, view, options);
+      return this.rtcEngine.subscribe(type, 0, 0, deviceId);
+    } else {
+      this.destroyLocalRender(type, deviceId);
+      return this.rtcEngine.unsubscribe(type, 0, 0, deviceId);
+    }
   }
 
   /**
@@ -1300,11 +1442,12 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Sets the view content mode.
-   * @param {number | 'local' | 'videosource'} uid The user ID for operating 
-   * streams. When setting up the view content of the remote user's stream, 
+   * Sets the remote view content mode.
+   * When setting up the view content of the remote user's stream, 
    * make sure you have subscribed to that stream by calling the 
-   * {@link subscribe} method.
+   * {@link setupRemoteView} method.
+   * @param {number} uid The user ID of the remote user.
+   * @param {number} connId connId get from native engine when join channel
    * @param {0|1} mode The view content mode:
    * - 0: Cropped mode. Uniformly scale the video until it fills the visible 
    * boundaries (cropped). One dimension of the video may have clipped 
@@ -1317,14 +1460,14 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - -1: Failure.
    */
-  setupViewContentMode(
-    uid: number | 'local' | 'videosource' | 'transcoded',
-    mode: 0 | 1,
-    channelId: string | undefined
+  setupRemoteViewContentMode(
+    uid: number,
+    connId: number,
+    mode: 0 | 1
   ): number {
-    let channelStreams = this._getChannelRenderers(channelId || "")
-    if (channelStreams.has(String(uid))) {
-      const renderers = channelStreams.get(String(uid)) || [];
+    let channelStreams = this._getChannelRenderers(connId)
+    if (channelStreams.has(uid)) {
+      const renderers = channelStreams.get(uid) || [];
       for(let i = 0; i < renderers.length; i++) {
         let renderer = renderers[i];
         (renderer as IRenderer).setContentMode(mode);
@@ -1335,13 +1478,44 @@ class AgoraRtcEngine extends EventEmitter {
     }
   }
 
-  setupLocalView(view: Element, type: RenderType) {
-    if (type == 0) {
-      this.initRender('local', view, "");
-    } else if (type == 3) {
-      this.initRender('videosource', view, "");
-    } else if (type == 4) {
-      this.initRender('transcoded', view, "");
+  /**
+   * Sets the local view content mode.
+   * When setting up the view content of the local user's stream, 
+   * make sure you have subscribed to that stream by calling the 
+   * {@link setupLocalView} method.
+   * @param {number} type 0-local 3-screen_share 4-transcoded
+   * @param {number} deviceId deviceId local device id, support multiple cameras or screen share
+   * @param {0|1} mode The view content mode:
+   * - 0: Cropped mode. Uniformly scale the video until it fills the visible 
+   * boundaries (cropped). One dimension of the video may have clipped 
+   * contents.
+   * - 1: Fit mode. Uniformly scale the video until one of its dimension fits 
+   * the boundary (zoomed to fit). Areas that are not filled due to the 
+   * disparity
+   * in the aspect ratio will be filled with black.
+   * @return
+   * - 0: Success.
+   * - -1: Failure.
+   */
+  setupLocalViewContentMode(
+    type: number,
+    deviceId: number,
+    mode: 0 | 1
+  ): number {
+    if (type != 0 && type != 3 && type != 4) {
+      console.warn('Invalid type for initLocalRender, local render type should be 0, 3, 4.');
+      return -1;
+    }
+    let localRenderers = this._getLocalRenderers(type)
+    if (localRenderers.has(deviceId)) {
+      const renderers = localRenderers.get(deviceId) || [];
+      for(let i = 0; i < renderers.length; i++) {
+        let renderer = renderers[i];
+        (renderer as IRenderer).setContentMode(mode);
+      }
+      return 0;
+    } else {
+      return -1;
     }
   }
 
@@ -2839,15 +3013,6 @@ class AgoraRtcEngine extends EventEmitter {
    */
   setAudioRecordingDeviceMute(mute: boolean): number {
     return this.rtcEngine.setAudioRecordingDeviceMute(mute);
-  }
-
-  /**
-   * Sets the video renderer for video source.
-   * @param {Element} view The dom element where video source should be 
-   * displayed.
-   */
-  setupLocalVideoSource(view: Element): void {
-    this.initRender('videosource', view, "");
   }
 
   /**

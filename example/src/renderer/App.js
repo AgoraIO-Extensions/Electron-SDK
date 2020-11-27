@@ -762,20 +762,17 @@ class Window extends Component {
     let dom = document.querySelector(`#video-${this.props.channel || ""}-${this.props.uid}`)
     if (this.props.role === 'local') {
       console.log(`setupLocalVideo  -----`)
-      dom && this.props.rtcEngine.setupLocalView(dom, 0)
-      this.props.rtcEngine.setupViewContentMode('local', 1)
+      dom && this.props.rtcEngine.setupLocalView(0, 0, dom);
+      this.props.rtcEngine.setupLocalViewContentMode(0, 0, 1)
     } else if (this.props.role === 'localVideoSource') {
-      dom && this.props.rtcEngine.setupLocalView(dom, 1)
-      this.props.rtcEngine.setupViewContentMode('videosource', 1);
+      dom && this.props.rtcEngine.setupLocalView(3, 0, dom);
+      this.props.rtcEngine.setupLocalViewContentMode(3, 0, 1);
     } else if (this.props.role === 'remote') {
-      this.props.rtcEngine.setupRemoteVideo(this.props.uid, dom)
-      this.props.rtcEngine.setupViewContentMode('remote', 1);
-    } else if (this.props.role === 'remoteVideoSource') {
-      dom && this.props.rtcEngine.subscribe(this.props.uid, dom)
-      this.props.rtcEngine.setupViewContentMode('videosource', 1);
+      dom && this.props.rtcEngine.setupRemoteView(this.props.uid, 0, dom);
+      this.props.rtcEngine.setupRemoteViewContentMode(this.props.uid, 0, 1);
     } else if (this.props.role === 'transcoded') {
-      dom && this.props.rtcEngine.setupLocalView(dom, 4)
-      this.props.rtcEngine.setupViewContentMode('transcoded', 1)
+      dom && this.props.rtcEngine.setupLocalView(4, 0, dom)
+      this.props.rtcEngine.setupLocalViewContentMode(4, 0, 1);
     }
   }
 
