@@ -171,6 +171,11 @@ export default class App extends Component {
     rtcEngine.on('streamUnpublished', (connId, url) => {
       console.log(`streamUnpublished connId: ${connId} url: ${url}`)
     })
+
+    rtcEngine.on('videoSourceFrameSizeChanged', (connId, sourceType, width, height) => {
+      console.log(`videoSourceFrameSizeChanged connId: ${connId} sourceType: ${sourceType}, width: ${width}, height: ${height}`)
+    })
+
     rtcEngine.enableLoopbackRecording(true)
   }
 
@@ -545,7 +550,7 @@ export default class App extends Component {
 
   handleResizeStop = (e, direction, ref, delta, position) => {
     let {width, height} = ref.style
-    console.log(`resize stop: ${ref.id} ${width} ${height}`)
+    // console.log(`resize stop: ${ref.id} ${width} ${height}`)
     let widthn = Number(width.replace("px", ""))
     let heightn = Number(height.replace("px", ""))
     let sourceId = this.reverseSourceId(ref.id)

@@ -261,17 +261,21 @@ export interface TranscodingConfig {
   transcodingUsers: Array<TranscodingUser>;
 }
 
-
 /**
  * Video source types definition.
  * - 0: Video captured by the camera.
- * - 1: Video for screen sharing.
- * - 2: Video for custom video.
- * - 3: Video of MediaPlayer
- * - 4: IMAGE
- * - 5: Remote video received from network.
+ * - 1: Video captured by the secondary camera.
+ * - 2: Video for screen sharing.
+ * - 3: Video for the secondary screen sharing.
+ * - 4: Video for custom video.
+ * - 5: Video of MediaPlayer
+ * - 6: Video for png image.
+ * - 7: Video for jpg image.
+ * - 8: Video for gif image.
+ * - 9: Remote video received from network.
+ * - 10: Video for transcoded.
  */
-export declare type VIDEO_SOURCE_TYPE = 0 | 1 | 2 | 3 | 4 | 5
+export declare type VIDEO_SOURCE_TYPE = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
 
 export interface TranscodingVideoStream {
     /**
@@ -1044,19 +1048,28 @@ export enum VideoMirrorModeType {
   DISABLED = 2
 }
 
-/** The video encoding degradation preference under limited bandwidth. */
+/**
+ * (For future use) Video degradation preferences under limited bandwidth.
+ */
 export enum DegradationPreference {
-  /** 0: (Default) Degrade the frame rate in order to maintain the video 
-   * quality. 
+  /**
+   * 0: (Default) Degrade the frame rate and keep resolution to guarantee the video quality.
    */
   MAINTAIN_QUALITY = 0,
-  /** 1: Degrade the video quality in order to maintain the frame rate. */
+  /**
+   * 1: Degrade resolution in order to maintain framerate.
+   */
   MAINTAIN_FRAMERATE = 1,
-  /** 2: (For future use) Maintain a balance between the frame rate and video 
-   * quality. 
+  /**
+   * 2: Maintain resolution in video quality control process. Under limited bandwidth, degrade video quality first and then degrade frame rate.
    */
   MAINTAIN_BALANCED = 2,
-}
+  /**
+   * 3: Degrade framerate in order to maintain resolution.
+   */
+  MAINTAIN_RESOLUTION = 3,
+};
+
 /** The orientation mode. */
 export enum OrientationMode  {
 /**
