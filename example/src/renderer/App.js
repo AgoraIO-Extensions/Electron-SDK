@@ -172,8 +172,8 @@ export default class App extends Component {
       console.log(`streamUnpublished connId: ${connId} url: ${url}`)
     })
 
-    rtcEngine.on('videoSourceFrameSizeChanged', (connId, sourceType, width, height) => {
-      console.log(`videoSourceFrameSizeChanged connId: ${connId} sourceType: ${sourceType}, width: ${width}, height: ${height}`)
+    rtcEngine.on('videoSourceFrameSizeChanged', (sourceType, width, height) => {
+      console.log(`videoSourceFrameSizeChanged sourceType: ${sourceType}, width: ${width}, height: ${height}`)
     })
 
     rtcEngine.enableLoopbackRecording(true)
