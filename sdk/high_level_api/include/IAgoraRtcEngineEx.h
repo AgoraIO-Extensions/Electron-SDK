@@ -38,6 +38,7 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
   using IRtcEngineEventHandler::onBandwidthEstimationUpdated;
   using IRtcEngineEventHandler::onLastmileQuality;
   using IRtcEngineEventHandler::onFirstLocalVideoFrame;
+  using IRtcEngineEventHandler::onVideoSourceFrameSizeChanged;
   using IRtcEngineEventHandler::onFirstRemoteVideoDecoded;
   using IRtcEngineEventHandler::onVideoSizeChanged;
   using IRtcEngineEventHandler::onLocalVideoStateChanged;
@@ -335,6 +336,13 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
     (void)width;
     (void)height;
     (void)elapsed;
+  }
+
+  virtual void onVideoSourceFrameSizeChanged(conn_id_t connId, VIDEO_SOURCE_TYPE sourceType, int width, int height) {
+    (void)connId;
+    (void)sourceType;
+    (void)width;
+    (void)height;
   }
 
  /**
@@ -1000,6 +1008,8 @@ class IRtcEngineEventHandlerEx : public IRtcEngineEventHandler {
 
   onIntraRequestReceived()
   onBandwidthEstimationUpdated()
+
+  onVideoSourceFrameSizeChanged()
 
   onConnectionLost()
   onConnectionInterrupted()

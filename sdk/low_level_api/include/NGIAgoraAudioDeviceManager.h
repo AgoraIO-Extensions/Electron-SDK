@@ -177,7 +177,7 @@ public:
    */
   virtual int getRecordAudioParameters(AudioParameters* params) const = 0;
 
-#if defined(__ANDROID__) || TARGET_OS_IPHONE
+#if defined(__ANDROID__) || (defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE)
   /**
    * Sets the default audio routing.
    *

@@ -1331,17 +1331,21 @@ enum ORIENTATION_MODE {
  */
 enum DEGRADATION_PREFERENCE {
   /**
-   * 0: (Default) Degrade the frame rate to maintain the video quality.
+   * 0: (Default) Degrade the frame rate and keep resolution to guarantee the video quality.
    */
   MAINTAIN_QUALITY = 0,
   /**
-   * 1: Degrades the video quality to maintain the frame rate.
+   * 1: Degrade resolution in order to maintain framerate.
    */
   MAINTAIN_FRAMERATE = 1,
   /**
-   * 2: Maintains a balance between the frame rate and video quality.
+   * 2: Maintain resolution in video quality control process. Under limited bandwidth, degrade video quality first and then degrade frame rate.
    */
   MAINTAIN_BALANCED = 2,
+  /**
+   * 3: Degrade framerate in order to maintain resolution.
+   */
+  MAINTAIN_RESOLUTION = 3,
 };
 
 /**

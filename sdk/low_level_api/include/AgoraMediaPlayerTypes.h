@@ -58,9 +58,12 @@ enum MEDIA_PLAYER_STATE {
   /** Player paused
    */
   PLAYER_STATE_PAUSED,
-  /** Player playback completed
+  /** Player playback one loop completed
    */
   PLAYER_STATE_PLAYBACK_COMPLETED,
+  /** Player playback all loops completed
+   */
+  PLAYER_STATE_PLAYBACK_ALL_LOOPS_COMPLETED,
   /** Player stopped
    */
   PLAYER_STATE_STOPPED = PLAYER_STATE_IDLE,
