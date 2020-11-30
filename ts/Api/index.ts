@@ -53,7 +53,8 @@ import {
   MEDIA_PLAYER_ERROR,
   MEDIA_PLAYER_EVENT,
   CameraCapturerConfiguration,
-  ScreenCaptureConfiguration
+  ScreenCaptureConfiguration,
+  VIDEO_SOURCE_TYPE
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -736,6 +737,10 @@ class AgoraRtcEngine extends EventEmitter {
 
     this.rtcEngine.onEvent('firstLocalAudioFramePublished', function(connId: number, elapsed: number) {
       fire('firstLocalAudioFramePublished', connId, elapsed);
+    })
+
+    this.rtcEngine.onEvent('videoSourceFrameSizeChanged', function(connId: number, sourceType: VIDEO_SOURCE_TYPE, width: number, height: number) {
+      fire('videoSourceFrameSizeChanged', connId, sourceType, width, height);
     })
 
     // this.rtcEngine.onEvent('firstLocalVideoFramePublished', function(elapsed: number) {
@@ -5212,6 +5217,13 @@ declare interface AgoraRtcEngine {
   on(evt: 'firstLocalAudioFramePublished', cb: (
     connId: number, 
     elapsed: number
+  )=>void): this;
+
+  on(evt: 'videoSourceFrameSizeChanged', cb: (
+    connId: number, 
+    sourceType: VIDEO_SOURCE_TYPE,
+    width: number,
+    height: number
   )=>void): this;
 
   // on(evt: 'firstLocalVideoFramePublished', cb: (
