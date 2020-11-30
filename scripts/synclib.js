@@ -64,14 +64,13 @@ const win64Prepare = (folder) => {
     Promise.all([
       fs.remove(path.join(__dirname, '../sdk'))
     ]).then(() => {
-      return fs.mkdirp(path.join(__dirname, '../sdk/lib'))
-    }).then(() => {
-      return fs.mkdirp(path.join(__dirname, '../sdk/dll'))
+      return fs.mkdirp(path.join(__dirname, '../sdk'))
     }).then(() => {
       return Promise.all([
-        fs.move(path.join(folder, './libs/include'), path.join(__dirname, '../sdk/include')),
-        fs.move(path.join(folder, './libs/x86_64/agora_rtc_sdk.dll'), path.join(__dirname, '../sdk/dll/agora_rtc_sdk.dll')),
-        fs.move(path.join(folder, './libs/x86_64/agora_rtc_sdk.lib'), path.join(__dirname, '../sdk/lib/agora_rtc_sdk.lib')),
+        fs.move(path.join(folder, './sdk/dll'), path.join(__dirname, '../sdk/dll')),
+        fs.move(path.join(folder, './sdk/high_level_api'), path.join(__dirname, '../sdk/high_level_api')),
+        fs.move(path.join(folder, './sdk/lib'), path.join(__dirname, '../sdk/lib')),
+        fs.move(path.join(folder, './sdk/low_level_api'), path.join(__dirname, '../sdk/low_level_api')),
       ])
     }).then(() => {
       resolve()
@@ -109,7 +108,11 @@ module.exports = ({
         downloadUrl = libUrl.mac
       }
     } else {
-      downloadUrl = libUrl.win
+      if (arch === 'ia32') {
+        downloadUrl = libUrl.win
+      } else {
+        downloadUrl = libUrl.win64
+      }
       if(!downloadUrl){
         logger.error(`no windows lib specified`)
         return reject(new Error(`no windows lib specified`))
