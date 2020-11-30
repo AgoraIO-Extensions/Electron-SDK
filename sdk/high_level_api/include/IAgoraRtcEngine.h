@@ -95,6 +95,10 @@ enum AUDIO_MIXING_STATE_TYPE {
    See #AUDIO_MIXING_ERROR_TYPE. 
    */
   AUDIO_MIXING_STATE_FAILED = 714,
+  /** 715: The audio mixing file is played once. */
+  AUDIO_MIXING_STATE_COMPLETED = 715,
+  /** 716: The audio mixing file is all played out. */
+  AUDIO_MIXING_STATE_ALL_LOOPS_COMPLETED = 716,
 };
 
 /**
@@ -1113,7 +1117,7 @@ class IRtcEngineEventHandler {
     (void)elapsed;
   }
 
-  virtual void onVideoSourceFrameSizedChanged(VIDEO_SOURCE_TYPE sourceType, int width, int height) {
+  virtual void onVideoSourceFrameSizeChanged(VIDEO_SOURCE_TYPE sourceType, int width, int height) {
     (void)sourceType;
     (void)width;
     (void)height;
@@ -3877,13 +3881,13 @@ class IRtcEngine : public agora::base::IEngineBase {
    * - During a call, you can call this method as many times as necessary to update the local video view.
    *
    * @param renderMode Sets the local display mode. See #RENDER_MODE_TYPE.
-   * @param mirrorType Sets the local mirror mode. See #VIDEO_MIRROR_MODE_TYPE.
+   * @param mirrorMode Sets the local mirror mode. See #VIDEO_MIRROR_MODE_TYPE.
    *
    * @return
    * - 0: Success.
    * - < 0: Failure.
    */
-  virtual int setLocalRenderMode(media::base::RENDER_MODE_TYPE renderMode, VIDEO_MIRROR_MODE_TYPE mirrorType) = 0;
+  virtual int setLocalRenderMode(media::base::RENDER_MODE_TYPE renderMode, VIDEO_MIRROR_MODE_TYPE mirrorMode) = 0;
 
   /**
    * Updates the display mode of the video view of a remote user.
@@ -3899,7 +3903,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    *
    * @param uid ID of the remote user.
    * @param renderMode Sets the remote display mode. See #RENDER_MODE_TYPE.
-   * @param mirrorType Sets the mirror type. See #VIDEO_MIRROR_MODE_TYPE.
+   * @param mirrorMode Sets the mirror type. See #VIDEO_MIRROR_MODE_TYPE.
    * @param connectionId ID of the connection.
    *
    * @return
@@ -3907,7 +3911,7 @@ class IRtcEngine : public agora::base::IEngineBase {
    * - < 0: Failure.
    */
   virtual int setRemoteRenderMode(uid_t uid, media::base::RENDER_MODE_TYPE renderMode,
-                                  VIDEO_MIRROR_MODE_TYPE mirrorType,
+                                  VIDEO_MIRROR_MODE_TYPE mirrorMode,
                                   conn_id_t connectionId = DEFAULT_CONNECTION_ID) = 0;
 
   // The following APIs are either deprecated and going to deleted.
