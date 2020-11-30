@@ -28,6 +28,13 @@ void DestroyGdiplus()
     }
 }
 
+BOOL CALLBACK EnumTopWindowsProc(_In_ HWND hwnd, _In_ LPARAM lParam)
+{
+	std::unordered_set<HWND> *pSet = reinterpret_cast<std::unordered_set<HWND> *>(lParam);
+    pSet->insert(hwnd);
+	return TRUE;
+}
+
 /**
 * https://chromium.googlesource.com/external/webrtc/+/lkgr/modules/desktop_capture/window_capturer_win.cc
 */
@@ -440,6 +447,44 @@ BOOL CALLBACK Monitorenumproc(
 	return TRUE;
 }
 
+bool IsInvisibleWin10BackgroundAppWindow(HWND hWnd) {
+
+	HRESULT(__stdcall * pDwmGetWindowAttribute) (HWND hwnd, DWORD dwAttribute, PVOID pvAttribute, DWORD cbAttribute) = NULL;
+	HINSTANCE hDll = LoadLibrary("Dwmapi.dll");
+	if (hDll != NULL) {
+		pDwmGetWindowAttribute = (HRESULT(__stdcall*)(
+			HWND hwnd, DWORD dwAttribute, PVOID pvAttribute,
+			DWORD cbAttribute))GetProcAddress(hDll, "DwmGetWindowAttribute");
+		int CloakedVal = 0;
+		HRESULT hRes = pDwmGetWindowAttribute(hWnd, 14 /*DWMWA_CLOAKED*/,
+			&CloakedVal, sizeof(CloakedVal));
+		if (hRes != S_OK) {
+			CloakedVal = 0;
+		}
+		return CloakedVal ? true : false;
+	}
+	return false;
+}
+
+bool IsWindowValid(HWND hwnd)
+{
+	if (!IsWindowVisible(hwnd) || /*IsIconic(hwnd) ||*/
+		IsInvisibleWin10BackgroundAppWindow(hwnd))
+		return false;
+
+	DWORD styles, ex_styles;
+
+	styles = (DWORD)GetWindowLongPtr(hwnd, GWL_STYLE);
+	ex_styles = (DWORD)GetWindowLongPtr(hwnd, GWL_EXSTYLE);
+
+	if (ex_styles & WS_EX_TOOLWINDOW)
+		return false;
+	if (styles & WS_CHILD)
+		return false;
+
+	return true;
+}
+
 std::vector<ScreenWindowInfo> getAllWindowInfo()
 {
     std::vector<ScreenWindowInfo> windows;
@@ -451,11 +496,21 @@ std::vector<ScreenWindowInfo> getAllWindowInfo()
     if (status == Gdiplus::Ok){
         std::unordered_set<HWND> setHwnds;
         setHwnds.clear();
-        EnumWindows(EnumWindowsProc, (LPARAM)(&setHwnds));
+        EnumWindows(EnumTopWindowsProc, (LPARAM)(&setHwnds));
         std::vector<ScreenWindowInfo> wndsInfo;
         wndsInfo.reserve(setHwnds.size());
 
         for (auto iter = setHwnds.begin(); iter != setHwnds.end(); ++iter) {
+			if (!IsWindowValid(*iter)) {
+				continue;
+			}
+
+			RECT rc_wnd;
+			::GetWindowRect(*iter, &rc_wnd);
+			if (rc_wnd.right - rc_wnd.left <= 0 || rc_wnd.bottom - rc_wnd.top <= 0) {
+				continue;
+			}
+			
             char class_name[100] = { 0 };
             WCHAR szName[MAX_PATH] = { 0 };
             char name[MAX_PATH] = { 0 };
@@ -473,7 +528,18 @@ std::vector<ScreenWindowInfo> getAllWindowInfo()
                 || strcmp(class_name, "TXGuiFoundation") == 0)//kuwo advertisement
             {
                 continue;
-            }  
+            }
+			if (strcmp(class_name, "Progman") == 0
+				&& strcmp(name, "Program Manager") == 0)
+			{
+				continue;
+			}
+
+			if (strcmp(class_name, "TaskManagerWindow") == 0)
+			{
+				continue;
+			}
+
             captureBmpToJpeg(windowid, name, windows);
         }
     }
