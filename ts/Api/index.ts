@@ -739,8 +739,8 @@ class AgoraRtcEngine extends EventEmitter {
       fire('firstLocalAudioFramePublished', connId, elapsed);
     })
 
-    this.rtcEngine.onEvent('videoSourceFrameSizeChanged', function(connId: number, sourceType: VIDEO_SOURCE_TYPE, width: number, height: number) {
-      fire('videoSourceFrameSizeChanged', connId, sourceType, width, height);
+    this.rtcEngine.onEvent('videoSourceFrameSizeChanged', function(sourceType: VIDEO_SOURCE_TYPE, width: number, height: number) {
+      fire('videoSourceFrameSizeChanged', sourceType, width, height);
     })
 
     // this.rtcEngine.onEvent('firstLocalVideoFramePublished', function(elapsed: number) {
@@ -5220,7 +5220,6 @@ declare interface AgoraRtcEngine {
   )=>void): this;
 
   on(evt: 'videoSourceFrameSizeChanged', cb: (
-    connId: number, 
     sourceType: VIDEO_SOURCE_TYPE,
     width: number,
     height: number
