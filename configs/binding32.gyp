@@ -37,6 +37,10 @@
         './agora_node_ext/AVPlugin/IAVFramePluginManager.cpp',
         './agora_node_ext/node_metadata_observer.h',
         './agora_node_ext/node_metadata_observer.cpp',
+        './agora_node_ext/agora_media_player.h',
+        './agora_node_ext/agora_media_player.cpp',
+        './agora_node_ext/node_media_player_observer.h',
+        './agora_node_ext/node_media_player_observer.cpp',
         './common/libyuv/source/compare_common.cc',
         './common/libyuv/source/compare.cc',
         './common/libyuv/source/convert_argb.cc',
@@ -90,7 +94,8 @@
                 ],
                 'sources': [
                     './common/node_process_win.cpp',
-                    './sdk/include/IAgoraRtcEngine.h',
+                    './sdk/high_level_api/include/IAgoraRtcEngine.h',
+                    './sdk/high_level_api/include/IAgoraMediaEngine.h',
                     './common/libyuv/source/compare_win.cc',
                     './common/libyuv/source/rotate_win.cc',
                     './common/libyuv/source/row_win.cc',
@@ -99,7 +104,7 @@
                     './agora_node_ext/node_screen_window_info.h'
                 ],
                 'include_dirs': [
-                './sdk/include',
+                './sdk/high_level_api/include',
                 './extra/internal'
                 ],
                 'configurations': {
@@ -135,7 +140,8 @@
                 'copies': [{
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
-                        './sdk/lib/mac/AgoraRtcKit.framework'
+                        './sdk/lib/mac/AgoraRtcKit.framework',
+                        './sdk/lib/mac/Agoraffmpeg.framework'
                     ]
                 }],
                 'link_settings': {
