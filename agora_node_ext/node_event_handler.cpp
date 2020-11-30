@@ -1493,5 +1493,12 @@ namespace agora {
             });
 
         }
+
+        void NodeEventHandler::onVideoSourceFrameSizeChanged(conn_id_t connId, VIDEO_SOURCE_TYPE sourceType, int width, int height) {
+            FUNC_TRACE;
+            node_async_call::async_call([this, connId, sourceType, width, height] {
+                MAKE_JS_CALL_4(RTC_EVENT_VIDEO_FRAME_SIZE_CHANGED, uint32, connId, int32, sourceType, int32, width, int32, height);
+            });
+        }
     }
 }
