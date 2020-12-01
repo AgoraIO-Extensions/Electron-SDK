@@ -334,6 +334,7 @@ namespace agora {
             NAPI_API(startSecondaryScreenCapture);
             NAPI_API(stopPrimaryScreenCapture);
             NAPI_API(stopSecondaryScreenCapture);
+            NAPI_API(adjustLoopbackRecordingVolume);
 
         public:
             Isolate* getIsolate() { return m_isolate; }
