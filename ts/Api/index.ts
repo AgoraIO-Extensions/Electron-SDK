@@ -4200,6 +4200,10 @@ class AgoraRtcEngine extends EventEmitter {
   stopSecondaryScreenCapture(): number {
     return this.rtcEngine.stopSecondaryScreenCapture();
   }
+
+  adjustLoopbackRecordingVolume(volume: number): number {
+    return this.rtcEngine.adjustLoopbackRecordingVolume(volume);
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {

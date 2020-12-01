@@ -3026,6 +3026,10 @@ export interface NodeRtcEngine {
   * @ignore
   */
   stopSecondaryScreenCapture(): number; 
+  /**
+  * @ignore
+  */
+ adjustLoopbackRecordingVolume(volume: number): number; 
 }
 
 export interface NodeMediaPlayer {

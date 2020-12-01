@@ -282,6 +282,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(startSecondaryScreenCapture);
                 PROPERTY_METHOD_DEFINE(stopPrimaryScreenCapture);
                 PROPERTY_METHOD_DEFINE(stopSecondaryScreenCapture);
+                PROPERTY_METHOD_DEFINE(adjustLoopbackRecordingVolume);
 
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
@@ -451,6 +452,8 @@ namespace agora {
         NAPI_API_DEFINE_WRAPPER_PARAM_1(adjustPlaybackSignalVolume, int32);
 
         NAPI_API_DEFINE_WRAPPER_PARAM_1(enableWebSdkInteroperability, bool);
+
+        NAPI_API_DEFINE_WRAPPER_PARAM_1(adjustLoopbackRecordingVolume, int32);
 
         // NAPI_API_DEFINE_WRAPPER_PARAM_1(setVideoQualityParameters, bool);
 
