@@ -321,6 +321,7 @@ export interface TranscodingVideoStream {
      * The transparency of the video frame.
      */
     alpha: number;
+    mirror: boolean;
 }
 
 export interface LocalTranscoderConfiguration {
@@ -711,6 +712,7 @@ export interface RtcStats {
   cpuTotalUsage: number;
   memoryAppUsageRatio: number;
   memoryAppUsageInKbytes: number;
+  memoryTotalUsageRatio: number;
 }
 /** Quality change of the local video. */
 export enum QualityAdaptIndication {
