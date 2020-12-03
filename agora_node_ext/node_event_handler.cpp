@@ -346,6 +346,7 @@ namespace agora {
                 NODE_SET_OBJ_PROP_NUMBER(obj, "cpuTotalUsage", stats.cpuTotalUsage);
                 NODE_SET_OBJ_PROP_NUMBER(obj, "memoryAppUsageRatio", stats.memoryAppUsageRatio);
                 NODE_SET_OBJ_PROP_NUMBER(obj, "memoryAppUsageInKbytes", stats.memoryAppUsageInKbytes);
+                NODE_SET_OBJ_PROP_NUMBER(obj, "memoryTotalUsageRatio", stats.memoryTotalUsageRatio);
 
                 Local<Value> arg[2] = {napi_create_uint32_(isolate, connId), obj };
                 auto it = m_callbacks.find(RTC_EVENT_LEAVE_CHANNEL);
@@ -395,6 +396,7 @@ namespace agora {
                 NODE_SET_OBJ_PROP_NUMBER(obj, "cpuTotalUsage", stats.cpuTotalUsage);
                 NODE_SET_OBJ_PROP_NUMBER(obj, "memoryAppUsageRatio", stats.memoryAppUsageRatio);
                 NODE_SET_OBJ_PROP_NUMBER(obj, "memoryAppUsageInKbytes", stats.memoryAppUsageInKbytes);
+                NODE_SET_OBJ_PROP_NUMBER(obj, "memoryTotalUsageRatio", stats.memoryTotalUsageRatio);
 
                 Local<Value> arg[2] = {napi_create_uint32_(isolate, connId),  obj };
                 auto it = m_callbacks.find(RTC_EVENT_RTC_STATS);

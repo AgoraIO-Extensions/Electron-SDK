@@ -611,6 +611,7 @@ namespace agora {
 
                         napi_get_object_property_int32_(isolate, videoInputStreamObj, "zOrder", videoInputStreams[i].zOrder);
                         napi_get_object_property_double_(isolate, videoInputStreamObj, "alpha", videoInputStreams[i].alpha);
+                        napi_get_object_property_bool_(isolate, videoInputStreamObj, "mirror", videoInputStreams[i].mirror);
                     }
                     localTranscoderConfiguration.VideoInputStreams = videoInputStreams;
                 }
@@ -788,6 +789,7 @@ namespace agora {
                         CHECK_NAPI_STATUS(pEngine, status);
                         napi_get_object_property_double_(isolate, videoInputStreamObj, "alpha", videoInputStreams[i].alpha);
                         CHECK_NAPI_STATUS(pEngine, status);
+                        napi_get_object_property_bool_(isolate, videoInputStreamObj, "mirror", videoInputStreams[i].mirror);
                     }
                     localTranscoderConfiguration.VideoInputStreams = videoInputStreams;
                 }
