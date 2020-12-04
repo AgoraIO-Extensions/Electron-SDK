@@ -401,7 +401,7 @@ class IVideoSinkBase : public RefCountInterface {
    * - `false`, if initialization fails.
    */
   virtual bool onDataStreamWillStart() { return true; }
-   /**
+  /**
    * This function is invoked right before data stream stops.
    * Custom sink can override this function for deinitialization.
    */

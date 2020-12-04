@@ -1960,6 +1960,18 @@ struct RtcStats {
    */
   double cpuTotalUsage;
   /**
+   * The memory usage ratio of the app (%).
+   */
+  double memoryAppUsageRatio;
+  /**
+   * The memory usage ratio of the system (%).
+   */
+  double memoryTotalUsageRatio;
+  /**
+   * The memory usage of the app (KB).
+   */
+  int memoryAppUsageInKbytes;
+  /**
    * The time elapsed from the when the app starts connecting to an Agora channel
    * to when the connection is established. 0 indicates that this member does not apply.
    */
@@ -3190,6 +3202,10 @@ struct TranscodingVideoStream {
    * The transparency of the video frame.
    */
   double alpha;
+  /**
+   * mirror of the source video frame (only valid for camera streams)
+   */
+  bool mirror;
 
   TranscodingVideoStream()
       : sourceType(VIDEO_SOURCE_CAMERA_PRIMARY),
@@ -3201,7 +3217,8 @@ struct TranscodingVideoStream {
         width(0),
         height(0),
         zOrder(0),
-        alpha(1.0) {}
+        alpha(1.0),
+        mirror(false) {}
 };
 
 
