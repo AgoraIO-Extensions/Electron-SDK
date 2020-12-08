@@ -743,8 +743,8 @@ class AgoraRtcEngine extends EventEmitter {
       fire('videoSourceFrameSizeChanged', sourceType, width, height);
     })
 
-    this.rtcEngine.onEvent('mediaDeviceChanged', function(deviceType: number) {
-      fire('mediaDeviceChanged', deviceType);
+    this.rtcEngine.onEvent('mediaDeviceChanged', function(connId: number, deviceType: number) {
+      fire('mediaDeviceChanged', connId, deviceType);
     })
 
     // this.rtcEngine.onEvent('firstLocalVideoFramePublished', function(elapsed: number) {
@@ -5234,6 +5234,7 @@ declare interface AgoraRtcEngine {
   )=>void): this;
 
   on(evt: 'mediaDeviceChanged', cb: (
+    connId: number, 
     deviceType: number
   )=>void): this;
 
