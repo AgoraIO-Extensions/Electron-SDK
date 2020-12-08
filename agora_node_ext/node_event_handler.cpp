@@ -1506,5 +1506,12 @@ namespace agora {
                 MAKE_JS_CALL_3(RTC_EVENT_VIDEO_FRAME_SIZE_CHANGED, int32, sourceType, int32, width, int32, height);
             });
         }
+
+        void NodeEventHandler::onMediaDeviceChanged(int deviceType) {
+            FUNC_TRACE;
+            node_async_call::async_call([this, deviceType] {
+                MAKE_JS_CALL_1(RTC_EVENT_MEDIA_DEVICE_CHANGED, int32, deviceType);
+            });
+        }
     }
 }
