@@ -176,8 +176,8 @@ export default class App extends Component {
       console.log(`videoSourceFrameSizeChanged sourceType: ${sourceType}, width: ${width}, height: ${height}`)
     })
 
-    rtcEngine.on('mediaDeviceChanged', (deviceType) => {
-      console.log(`mediaDeviceChanged deviceType: ${deviceType}`)
+    rtcEngine.on('mediaDeviceChanged', (connId, deviceType) => {
+      console.log(`mediaDeviceChanged connId: ${connId} deviceType: ${deviceType}`)
     })
 
     rtcEngine.enableLoopbackRecording(true)
