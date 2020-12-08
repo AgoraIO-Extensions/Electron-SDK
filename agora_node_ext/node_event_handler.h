@@ -107,6 +107,7 @@ namespace agora {
 #define RTC_EVENT_AUDIO_ROUTE_CHANGED "audioRouteChanged"
 #define RTC_EVENT_API_ERROR "apierror"
 #define RTC_EVENT_VIDEO_FRAME_SIZE_CHANGED "videoSourceFrameSizeChanged"
+#define RTC_EVENT_MEDIA_DEVICE_CHANGED "mediaDeviceChanged"
 
         class NodeRtcEngine;
         class NodeUid;
@@ -211,7 +212,8 @@ namespace agora {
             // virtual void onAudioSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) override;
             // virtual void onVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) override;
             virtual void onAudioRoutingChanged(conn_id_t connId, int routing) override;
-            virtual void onVideoSourceFrameSizeChanged(VIDEO_SOURCE_TYPE sourceType, int width, int height) override;     
+            virtual void onVideoSourceFrameSizeChanged(VIDEO_SOURCE_TYPE sourceType, int width, int height) override;
+            virtual void onMediaDeviceChanged(int deviceType) override;
   private:
             void onJoinChannelSuccess_node(conn_id_t connId, const char* channel, uid_t uid, int elapsed) ;
             void onRejoinChannelSuccess_node(conn_id_t connId, const char* channel, uid_t uid, int elapsed) ;
