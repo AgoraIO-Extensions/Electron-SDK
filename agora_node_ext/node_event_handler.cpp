@@ -1507,10 +1507,10 @@ namespace agora {
             });
         }
 
-        void NodeEventHandler::onMediaDeviceChanged(int deviceType) {
+        void NodeEventHandler::onMediaDeviceChanged(conn_id_t connId, int deviceType) {
             FUNC_TRACE;
-            node_async_call::async_call([this, deviceType] {
-                MAKE_JS_CALL_1(RTC_EVENT_MEDIA_DEVICE_CHANGED, int32, deviceType);
+            node_async_call::async_call([this, connId, deviceType] {
+                MAKE_JS_CALL_2(RTC_EVENT_MEDIA_DEVICE_CHANGED, uint32, connId, int32, deviceType);
             });
         }
     }
