@@ -159,7 +159,7 @@ namespace agora{
             /**
              * start screen capture by screen rect
              */
-            virtual node_error startScreenCaptureByScreen(ScreenIDType screenId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams) = 0;
+            virtual node_error startScreenCaptureByScreen(ScreenIDType screenId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams, const std::vector<agora::rtc::IRtcEngine::WindowIDType>& excludeWindows) = 0;
             
             /**
              * start screen capture by windowId
@@ -169,19 +169,20 @@ namespace agora{
             /**
              * start screen capture by windowId
              */
-            virtual node_error updateScreenCaptureParameters(const agora::rtc::ScreenCaptureParameters & captureParams) = 0;
+            virtual node_error updateScreenCaptureParameters(const agora::rtc::ScreenCaptureParameters & captureParams, const std::vector<agora::rtc::IRtcEngine::WindowIDType>& excludeWindows) = 0;
             
             /**
              * Enable loopbackRecording
              * @param enabled : whether enable loopbackRecording
              */
             virtual node_error enableLoopbackRecording(bool enabled, const char* deviceName) = 0;
-
-            
             /**
              * Enable audio
              */
             virtual node_error enableAudio() = 0;
+            virtual node_error setEncryptionMode(const char *encryptionMode) = 0;
+            virtual node_error enableEncryption(bool enable, EncryptionConfig encryptionConfig) = 0;
+            virtual node_error setEncryptionSecret(const char* secret) = 0;
         };
 
         /**

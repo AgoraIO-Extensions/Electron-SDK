@@ -64,12 +64,15 @@ namespace agora{
             virtual node_error enableDualStreamMode(bool enabled) override;
             virtual node_error setLogFile(const char* file) override;
             virtual node_error setScreenCaptureContentHint(VideoContentHint contentHint) override;
-            virtual node_error startScreenCaptureByScreen(ScreenIDType screenId, const agora::rtc::Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams) override;
+            virtual node_error startScreenCaptureByScreen(ScreenIDType screenId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams, const std::vector<agora::rtc::IRtcEngine::WindowIDType>& excludeWindows) override;
             virtual node_error startScreenCaptureByWindow(agora::rtc::IRtcEngine::WindowIDType windowId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams) override;
-            virtual node_error updateScreenCaptureParameters(const agora::rtc::ScreenCaptureParameters & captureParams) override;
+            virtual node_error updateScreenCaptureParameters(const agora::rtc::ScreenCaptureParameters & captureParams, const std::vector<agora::rtc::IRtcEngine::WindowIDType>& excludeWindows) override;
             virtual void setParameters(const char* parameters) override;
             virtual node_error enableLoopbackRecording(bool enabled, const char* deviceName) override;
             virtual node_error enableAudio() override;
+            virtual node_error setEncryptionMode(const char *encryptionMode) override;
+            virtual node_error enableEncryption(bool enable, EncryptionConfig encryptionConfig) override;
+            virtual node_error setEncryptionSecret(const char* secret) override;
         private:
             void msgThread();
             void deliverFrame(const char* payload, int len);
@@ -416,14 +419,21 @@ namespace agora{
             return node_status_error;
         }
 
-        node_error AgoraVideoSourceSink::startScreenCaptureByScreen(ScreenIDType screenId, const agora::rtc::Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams)
+        node_error AgoraVideoSourceSink::startScreenCaptureByScreen(ScreenIDType screenId, const agora::rtc::Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams,  const std::vector<agora::rtc::IRtcEngine::WindowIDType>& excludeWindows)
         {
             if (m_initialized && m_peerJoined){
                 CaptureScreenByDisplayCmd cmd;
 
+                int count = MAX_WINDOW_ID_COUNT < excludeWindows.size() ? MAX_WINDOW_ID_COUNT : excludeWindows.size();
+
                 cmd.screenId = screenId;
                 cmd.regionRect = regionRect;
                 cmd.captureParams = captureParams;
+                cmd.excludeWindowCount = count;
+                for (int i = 0; i < count; i++) {
+                    cmd.excludeWindowList[i] = excludeWindows[i];
+                }
+                
                 return m_ipcMsg->sendMessage(AGORA_IPC_START_CAPTURE_BY_DISPLAY, (char*)&cmd, sizeof(cmd)) ? node_ok : node_generic_error;
             }
             return node_status_error;
@@ -441,10 +451,20 @@ namespace agora{
             return node_status_error;
         }
 
-        node_error AgoraVideoSourceSink::updateScreenCaptureParameters(const agora::rtc::ScreenCaptureParameters & captureParams)
+        node_error AgoraVideoSourceSink::updateScreenCaptureParameters(const agora::rtc::ScreenCaptureParameters & captureParams, const std::vector<agora::rtc::IRtcEngine::WindowIDType>& excludeWindows)
         {
             if (m_initialized && m_peerJoined){
-                return m_ipcMsg->sendMessage(AGORA_IPC_UPDATE_SCREEN_CAPTURE_PARAMS, (char*)&captureParams, sizeof(captureParams)) ? node_ok : node_generic_error;
+                ScreenCaptureParametersCmd cmd;
+
+                int count = MAX_WINDOW_ID_COUNT < excludeWindows.size() ? MAX_WINDOW_ID_COUNT : excludeWindows.size();
+
+                cmd.captureParams = captureParams;
+                cmd.excludeWindowCount = count;
+                for (int i = 0; i < count; i++) {
+                    cmd.excludeWindowList[i] = excludeWindows[i];
+                }
+                
+                return m_ipcMsg->sendMessage(AGORA_IPC_UPDATE_SCREEN_CAPTURE_PARAMS, (char*)&cmd, sizeof(cmd)) ? node_ok : node_generic_error;
             }
             return node_status_error;
         }
@@ -466,6 +486,36 @@ namespace agora{
         {
             if (m_initialized && m_peerJoined){
                 return m_ipcMsg->sendMessage(AGORA_IPC_ENABLE_AUDIO, nullptr, 0) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::setEncryptionMode(const char *encryptionMode)
+        {
+            if (m_initialized){
+                return m_ipcMsg->sendMessage(AGORA_IPC_SET_ENCRYPTION_MODE, (char *)encryptionMode, sizeof(const char *)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::setEncryptionSecret(const char* secret)
+        {
+            if (m_initialized){
+                return m_ipcMsg->sendMessage(AGORA_IPC_SET_ENCRYPTION_SECRET, (char *)secret, sizeof(const char *)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;      
+        }
+
+        node_error AgoraVideoSourceSink::enableEncryption(bool enable, EncryptionConfig encryptionConfig)
+        {
+            if (m_initialized){
+                EncryptionConfigCmd cmd;
+                cmd.enable = enable;
+                cmd.encryptionMode = encryptionConfig.encryptionMode;
+                if(encryptionConfig.encryptionKey) {
+                    strncpy(cmd.encryptionKey, encryptionConfig.encryptionKey, MAX_DEVICE_ID_LENGTH);
+                }
+                return m_ipcMsg->sendMessage(AGORA_IPC_ENABLE_ENCRYPTION, (char*)&cmd, sizeof(cmd)) ? node_ok : node_generic_error;
             }
             return node_status_error;
         }

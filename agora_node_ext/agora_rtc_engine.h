@@ -28,6 +28,7 @@
 #include <map>
 #include "AVPlugin/IAVFramePluginManager.h"
 #include "AVPlugin/IAVFramePlugin.h"
+#include "node_metadata_observer.h"
 /*
 * Used to declare native interface to nodejs
 */
@@ -248,7 +249,9 @@ namespace agora {
             NAPI_API(videoSourceUpdateScreenCaptureRegion);
             NAPI_API(videoSourceEnableLoopbackRecording);
             NAPI_API(videoSourceEnableAudio);
-
+            NAPI_API(videoSourceEnableEncryption);
+            NAPI_API(videoSourceSetEncryptionMode);
+            NAPI_API(videoSourceSetEncryptionSecret);
             /*
             * Native interface used to setup local and remote video canvas.
             */
@@ -331,6 +334,28 @@ namespace agora {
              * 3.0.0 Apis
              */
             NAPI_API(adjustUserPlaybackSignalVolume);
+
+            /**
+             * 3.0.1 Apis
+             */
+            NAPI_API(setAudioMixingPitch);
+
+            NAPI_API(sendMetadata);
+            NAPI_API(addMetadataEventHandler);
+            NAPI_API(setMaxMetadataSize);
+            NAPI_API(registerMediaMetadataObserver);
+            NAPI_API(unRegisterMediaMetadataObserver);
+
+            NAPI_API(sendCustomReportMessage);
+            NAPI_API(enableEncryption);
+
+            /**
+             * 3.2.0 Apis 
+             */
+            NAPI_API(setAudioEffectPreset);
+            NAPI_API(setVoiceBeautifierPreset);
+            NAPI_API(setAudioEffectParameters);
+            
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }
@@ -355,6 +380,7 @@ namespace agora {
             AAudioDeviceManager* m_audioVdm = nullptr;
 
             std::unique_ptr<IAVFramePluginManager> m_avPluginManager;
+            std::unique_ptr<NodeMetadataObserver> metadataObserver;
         };
 
 
@@ -407,11 +433,18 @@ namespace agora {
             NAPI_API(leaveChannel);
             NAPI_API(release);
 
-
             /**
              * 3.0.0 Apis
              */
             NAPI_API(adjustUserPlaybackSignalVolume);
+
+            NAPI_API(sendMetadata);
+            NAPI_API(addMetadataEventHandler);
+            NAPI_API(setMaxMetadataSize);
+            NAPI_API(registerMediaMetadataObserver);
+            NAPI_API(unRegisterMediaMetadataObserver);
+            NAPI_API(enableEncryption);
+
         public:
             Isolate* getIsolate() { return m_isolate; }
 
@@ -423,6 +456,7 @@ namespace agora {
             IChannel* m_channel;
             Isolate *m_isolate;
             std::unique_ptr<NodeChannelEventHandler> m_eventHandler;
+            std::unique_ptr<NodeMetadataObserver> metadataObserver;
         };
 
 /*
@@ -568,6 +602,15 @@ namespace agora {
         if(status != napi_ok) { \
             LOG_ERROR("Error :%s, :%d\n", __FUNCTION__, __LINE__); \
             engine->m_eventHandler->fireApiError(__FUNCTION__); \
+            break; \
+        }
+
+#define CHECK_NAPI_STATUS_PARAM(engine, status, key) \
+        if(status != napi_ok) { \
+            LOG_ERROR("Error :%s, :%d, error key: ***\"%s\"***\n", __FUNCTION__, __LINE__, key.c_str()); \
+            char errMessage[256];\
+            sprintf(errMessage, "%s, error key: ******* \"%s\" *******, call", __FUNCTION__, key.c_str()); \
+            engine->m_eventHandler->fireApiError(errMessage); \
             break; \
         }
 

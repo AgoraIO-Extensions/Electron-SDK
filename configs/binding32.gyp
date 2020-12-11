@@ -63,7 +63,7 @@
             'OS=="win"',
             {
                 'library_dirs': [
-                './sdk/lib/win',
+                './sdk/lib',
                 ],
                 'link_settings': {
                     'libraries': [
@@ -79,7 +79,9 @@
                     './common/libyuv/source/compare_win.cc',
                     './common/libyuv/source/rotate_win.cc',
                     './common/libyuv/source/row_win.cc',
-                    './common/libyuv/source/scale_win.cc'
+                    './common/libyuv/source/scale_win.cc',
+                    './resources/resource.h',
+                    './resources/VideoSource.rc'
                 ],
                 'include_dirs': [
                 './sdk/include'
@@ -131,6 +133,9 @@
                     'libresolv.9.dylib',
                     'Accelerate.framework',
                     'AgoraRtcKit.framework',
+                    'Agorafdkaac.framework',
+                    'Agoraffmpeg.framework',
+                    'AgoraSoundTouch.framework',
                     'CoreWLAN.framework',
                     'Cocoa.framework',
                     'VideoToolbox.framework',
@@ -194,6 +199,8 @@
         './common/node_event.cpp',
         './common/node_process.h',
         './common/node_error.h',
+        './common/loguru.h',
+        './common/loguru.cpp',
         './agora_node_ext/agora_node_ext.cpp',
         './agora_node_ext/agora_node_ext.h',
         './agora_node_ext/agora_rtc_engine.cpp',
@@ -216,6 +223,8 @@
         './agora_node_ext/AVPlugin/IAVFramePlugin.h',
         './agora_node_ext/AVPlugin/IAVFramePluginManager.h',
         './agora_node_ext/AVPlugin/IAVFramePluginManager.cpp',
+        './agora_node_ext/node_metadata_observer.h',
+        './agora_node_ext/node_metadata_observer.cpp',
         './common/libyuv/source/compare_common.cc',
         './common/libyuv/source/compare.cc',
         './common/libyuv/source/convert_argb.cc',
@@ -249,11 +258,15 @@
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
                         './sdk/dll/agora_rtc_sdk.dll',
-                        './sdk/dll/agora_sig_sdk.dll'
+                        './sdk/dll/libagora-fdkaac.dll',
+                        './sdk/dll/libagora-ffmpeg.dll',
+                        './sdk/dll/libagora-mpg123.dll',
+                        './sdk/dll/libagora-soundtouch.dll',
+                        './sdk/dll/libhwcodec.dll'
                     ]
                 }],
                 'library_dirs': [
-                    './sdk/lib/win',
+                    './sdk/lib',
                 ],
                 'link_settings': {
                     'libraries': [
@@ -311,11 +324,23 @@
                 'mac_framework_dirs': [
                 '../sdk/lib/mac'
                 ],
+                'copies': [{
+                    'destination': '<(PRODUCT_DIR)',
+                    'files': [
+                        './sdk/lib/mac/AgoraRtcKit.framework',
+                        './sdk/lib/mac/Agorafdkaac.framework',
+                        './sdk/lib/mac/Agoraffmpeg.framework',
+                        './sdk/lib/mac/AgoraSoundTouch.framework'
+                    ]
+                }],
                 'link_settings': {
                     'libraries': [
                     'libresolv.9.dylib',
                     'Accelerate.framework',
                     'AgoraRtcKit.framework',
+                    'Agorafdkaac.framework',
+                    'Agoraffmpeg.framework',
+                    'AgoraSoundTouch.framework',
                     'CoreWLAN.framework',
                     'Cocoa.framework',
                     'VideoToolbox.framework',

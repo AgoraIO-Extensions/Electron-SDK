@@ -38,7 +38,17 @@ import {
   CaptureParam,
   VideoContentHint,
   VideoEncoderConfiguration,
-  UserInfo
+  UserInfo,
+  RendererOptions,
+  Metadata,
+  RTMP_STREAMING_EVENT,
+  AREA_CODE,
+  STREAM_PUBLISH_STATE,
+  STREAM_SUBSCRIBE_STATE,
+  AUDIO_ROUTE_TYPE,
+  EncryptionConfig,
+  AUDIO_EFFECT_PRESET,
+  VOICE_BEAUTIFIER_PRESET,
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -60,7 +70,7 @@ const agora = require('../../build/Release/agora_node_ext');
  */
 class AgoraRtcEngine extends EventEmitter {
   rtcEngine: NodeRtcEngine;
-  streams: Map<string, Map<string, IRenderer>>;
+  streams: Map<string, Map<string, IRenderer[]>>;
   renderMode: 1 | 2 | 3;
   customRenderer: any;
   constructor() {
@@ -695,6 +705,38 @@ class AgoraRtcEngine extends EventEmitter {
       fire('rtmpStreamingStateChanged', url, state, errCode);
     })
 
+    this.rtcEngine.onEvent('firstLocalAudioFramePublished', function(elapsed: number) {
+      fire('firstLocalAudioFramePublished', elapsed);
+    })
+
+    this.rtcEngine.onEvent('firstLocalVideoFramePublished', function(elapsed: number) {
+      fire('firstLocalVideoFramePublished', elapsed);
+    })
+
+    this.rtcEngine.onEvent('rtmpStreamingEvent', function(url: string, eventCode: RTMP_STREAMING_EVENT) {
+      fire('rtmpStreamingEvent', url, eventCode);
+    })
+
+    this.rtcEngine.onEvent('audioPublishStateChanged', function(channel: string, oldState: STREAM_PUBLISH_STATE, newState: STREAM_PUBLISH_STATE, elapseSinceLastState: number) {
+      fire('audioPublishStateChanged', channel, oldState, newState, elapseSinceLastState);
+    })
+
+    this.rtcEngine.onEvent('videoPublishStateChanged', function(channel: string, oldState: STREAM_PUBLISH_STATE, newState: STREAM_PUBLISH_STATE, elapseSinceLastState: number) {
+      fire('videoPublishStateChanged', channel, oldState, newState, elapseSinceLastState);
+    })
+
+    this.rtcEngine.onEvent('audioSubscribeStateChanged', function(channel: string, uid: number, oldState: STREAM_SUBSCRIBE_STATE, newState: STREAM_SUBSCRIBE_STATE, elapseSinceLastState: number) {
+      fire('audioSubscribeStateChanged', channel, uid, oldState, newState, elapseSinceLastState);
+    })
+  
+    this.rtcEngine.onEvent('videoSubscribeStateChanged', function(channel: string, uid: number, oldState: STREAM_SUBSCRIBE_STATE, newState: STREAM_SUBSCRIBE_STATE, elapseSinceLastState: number) {
+      fire('videoSubscribeStateChanged', channel, uid, oldState, newState, elapseSinceLastState);
+    })
+
+    this.rtcEngine.onEvent('audioRouteChanged', function(routing: AUDIO_ROUTE_TYPE) {
+      fire('audioRouteChanged', routing);
+    })
+
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
       self.onRegisterDeliverFrame(infos);
     });
@@ -706,7 +748,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {number} type 0-local 1-remote 2-device_test 3-video_source
    * @param {number} uid uid get from native engine, differ from electron engine's uid
    */
-  _getRenderer(type: number, uid: number, channelId: string | undefined): IRenderer | undefined {
+  _getRenderers(type: number, uid: number, channelId: string | undefined): IRenderer[] | undefined {
     let channelStreams = this._getChannelRenderers(channelId || "")
     if (type < 2) {
       if (uid === 0) {
@@ -726,13 +768,13 @@ class AgoraRtcEngine extends EventEmitter {
     }
   }
 
-  _getChannelRenderers(channelId: string): Map<string, IRenderer> {
-    let channel: Map<string, IRenderer>;
+  _getChannelRenderers(channelId: string): Map<string, IRenderer[]> {
+    let channel: Map<string, IRenderer[]>;
     if(!this.streams.has(channelId)) {
       channel = new Map()
       this.streams.set(channelId, channel)
     } else {
-      channel = this.streams.get(channelId) as Map<string, IRenderer>
+      channel = this.streams.get(channelId) as Map<string, IRenderer[]>
     }
     return channel
   }
@@ -806,19 +848,21 @@ class AgoraRtcEngine extends EventEmitter {
         );
         continue;
       }
-      const renderer = this._getRenderer(type, uid, channelId);
-      if (!renderer) {
+      const renderers = this._getRenderers(type, uid, channelId);
+      if (!renderers || renderers.length === 0) {
         console.warn(`Can't find renderer for uid : ${uid} ${channelId}`);
         continue;
       }
 
       if (this._checkData(header, ydata, udata, vdata)) {
-        renderer.drawFrame({
-          header,
-          yUint8Array: ydata,
-          uUint8Array: udata,
-          vUint8Array: vdata
-        });
+        renderers.forEach(renderer => {
+          renderer.drawFrame({
+            header,
+            yUint8Array: ydata,
+            uUint8Array: udata,
+            vUint8Array: vdata
+          });
+        })
       }
     }
   }
@@ -837,10 +881,8 @@ class AgoraRtcEngine extends EventEmitter {
   resizeRender(key: 'local' | 'videosource' | number, channelId:string | undefined) {
     let channelStreams = this._getChannelRenderers(channelId || "")
     if (channelStreams.has(String(key))) {
-      const renderer = channelStreams.get(String(key));
-      if (renderer) {
-        renderer.refreshCanvas();
-      }
+      const renderers = channelStreams.get(String(key)) || [];
+      renderers.forEach(renderer => renderer.refreshCanvas())
     }
   }
 
@@ -850,10 +892,24 @@ class AgoraRtcEngine extends EventEmitter {
    * e.g, uid or `videosource` or `local`.
    * @param view The Dom elements to render the video.
    */
-  initRender(key: 'local' | 'videosource' | number, view: Element, channelId: string | undefined) {
+  initRender(key: 'local' | 'videosource' | number, view: Element, channelId: string | undefined, options?: RendererOptions) {
+    let rendererOptions = {
+      append: options ? options.append : false
+    }
     let channelStreams = this._getChannelRenderers(channelId || "")
+
     if (channelStreams.has(String(key))) {
-      this.destroyRender(key, channelId || "");
+      if(!rendererOptions.append) {
+        this.destroyRender(key, channelId || "");
+      } else {
+        let renderers = channelStreams.get(String(key)) || []
+        for(let i = 0; i < renderers.length; i++) {
+          if(renderers[i].equalsElement(view)){
+            console.log(`view exists in renderer list, ignore`)
+            return
+          }
+        }
+      }
     }
     channelStreams = this._getChannelRenderers(channelId || "")
     let renderer: IRenderer;
@@ -868,8 +924,49 @@ class AgoraRtcEngine extends EventEmitter {
       renderer = new GlRenderer();
     }
     renderer.bind(view);
-    channelStreams.set(String(key), renderer);
+
+    if(!rendererOptions.append) {
+      channelStreams.set(String(key), [renderer]);
+    } else {
+      let renderers = channelStreams.get(String(key)) || []
+      renderers.push(renderer)
+      channelStreams.set(String(key), renderers)
+    }
   }
+
+  destroyRenderView(
+    key: 'local' | 'videosource' | number, channelId: string | undefined, view: Element,
+    onFailure?: (err: Error) => void
+  ) {
+    let channelStreams = this._getChannelRenderers(channelId || "")
+    if (!channelStreams.has(String(key))) {
+      return;
+    }
+    const renderers = channelStreams.get(String(key)) || [];
+    const matchRenderers = renderers.filter(renderer => renderer.equalsElement(view))
+    const otherRenderers = renderers.filter(renderer => !renderer.equalsElement(view))
+
+    if(matchRenderers.length > 0) {
+      let renderer = matchRenderers[0]
+      try {
+        (renderer as IRenderer).unbind();
+        if(otherRenderers.length > 0) {
+          // has other renderers left, update
+          channelStreams.set(String(key), otherRenderers)
+        } else {
+          // removed renderer is the only one, remove
+          channelStreams.delete(String(key));
+        }
+        if(channelStreams.size === 0) {
+          this.streams.delete(channelId || "")
+        }
+      } catch (err) {
+        onFailure && onFailure(err)
+      }
+    }
+
+  }
+
 
   /**
    * Destroys the renderer.
@@ -886,15 +983,24 @@ class AgoraRtcEngine extends EventEmitter {
     if (!channelStreams.has(String(key))) {
       return;
     }
-    const renderer = channelStreams.get(String(key));
-    try {
-      (renderer as IRenderer).unbind();
-      channelStreams.delete(String(key));
-      if(channelStreams.size === 0) {
-        this.streams.delete(channelId || "")
+    const renderers = channelStreams.get(String(key)) || [];
+
+    let exception = null
+    for(let i = 0; i < renderers.length; i++) {
+      let renderer = renderers[i]
+      try {
+        (renderer as IRenderer).unbind();
+        channelStreams.delete(String(key));
+        if(channelStreams.size === 0) {
+          this.streams.delete(channelId || "")
+        }
+      } catch (err) {
+        exception = err
+        console.error(`${err.stack}`)
       }
-    } catch (err) {
-      onFailure && onFailure(err);
+    }
+    if(exception) {
+      onFailure && onFailure(exception)
     }
   }
 
@@ -911,8 +1017,8 @@ class AgoraRtcEngine extends EventEmitter {
    *  - `ERR_INVALID_APP_ID (101)`: The app ID is invalid. Check if it is in 
    * the correct format.
    */
-  initialize(appid: string): number {
-    return this.rtcEngine.initialize(appid);
+  initialize(appid: string, areaCode: AREA_CODE = (0xFFFFFFFF)): number {
+    return this.rtcEngine.initialize(appid, areaCode);
   }
 
   /**
@@ -1128,15 +1234,15 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  subscribe(uid: number, view: Element): number {
-    this.initRender(uid, view, "");
+  subscribe(uid: number, view: Element, options?: RendererOptions): number {
+    this.initRender(uid, view, "", options);
     return this.rtcEngine.subscribe(uid);
   }
 
-  setupRemoteVideo(uid: number, view?: Element, channel?: string): number {
+  setupRemoteVideo(uid: number, view?: Element, channel?: string, options?: RendererOptions): number {
     if(view) {
       //bind
-      this.initRender(uid, view, channel);
+      this.initRender(uid, view, channel, options);
       return this.rtcEngine.subscribe(uid, channel);
     } else {
       //unbind
@@ -1152,8 +1258,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setupLocalVideo(view: Element): number {
-    this.initRender('local', view, "");
+  setupLocalVideo(view: Element, options?: RendererOptions): number {
+    this.initRender('local', view, "", options);
     return this.rtcEngine.setupLocalVideo();
   }
 
@@ -1255,8 +1361,11 @@ class AgoraRtcEngine extends EventEmitter {
   ): number {
     let channelStreams = this._getChannelRenderers(channelId || "")
     if (channelStreams.has(String(uid))) {
-      const renderer = channelStreams.get(String(uid));
-      (renderer as IRenderer).setContentMode(mode);
+      const renderers = channelStreams.get(String(uid)) || [];
+      for(let i = 0; i < renderers.length; i++) {
+        let renderer = renderers[i];
+        (renderer as IRenderer).setContentMode(mode);
+      }
       return 0;
     } else {
       return -1;
@@ -1905,13 +2014,14 @@ class AgoraRtcEngine extends EventEmitter {
    * - 4: Showroom. The showroom scenario, optimizing the audio quality with 
    * external professional equipment.
    * - 5: Chatroom gaming. The game chatting scenario.
+   * - 8: Meeting. Meeting scenario that mainly contains the human voice.
    * @return
    * - 0: Success.
    * - < 0: Failure.
    */
   setAudioProfile(
     profile: 0 | 1 | 2 | 3 | 4 | 5,
-    scenario: 0 | 1 | 2 | 3 | 4 | 5
+    scenario: 0 | 1 | 2 | 3 | 4 | 5 | 8
   ): number {
     return this.rtcEngine.setAudioProfile(profile, scenario);
   }
@@ -2234,7 +2344,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  enableAudioVolumeIndication(interval: number, smooth: number, report_vad: boolean): number {
+  enableAudioVolumeIndication(interval: number, smooth: number, report_vad: boolean = false): number {
     return this.rtcEngine.enableAudioVolumeIndication(interval, smooth, report_vad);
   }
 
@@ -3630,6 +3740,80 @@ class AgoraRtcEngine extends EventEmitter {
   videoSourceEnableAudio() : number {
     return this.rtcEngine.videoSourceEnableAudio()
   }
+   /** Enables/Disables the built-in encryption.
+     *
+     * @since v3.1.0
+     *
+     * In scenarios requiring high security, Agora recommends calling this method to enable the built-in encryption before joining a channel.
+     *
+     * All users in the same channel must use the same encryption mode and encryption key. Once all users leave the channel, the encryption key of this channel is automatically cleared.
+     *
+     * @note
+     * - If you enable the built-in encryption, you cannot use the RTMP streaming function.
+     * - Agora supports four encryption modes. If you choose an encryption mode (excepting `SM4_128_ECB` mode), you need to add an external encryption library when integrating the SDK. See the advanced guide *Channel Encryption*.
+     *
+     * @param enabled Whether to enable the built-in encryption:
+     * - true: Enable the built-in encryption.
+     * - false: Disable the built-in encryption.
+     * @param config Configurations of built-in encryption schemas. See EncryptionConfig.
+     *
+     * @return
+     * - 0: Success.
+     * - < 0: Failure.
+     *  - -2(ERR_INVALID_ARGUMENT): An invalid parameter is used. Set the parameter with a valid value.
+     *  - -4(ERR_NOT_SUPPORTED): The encryption mode is incorrect or the SDK fails to load the external encryption library. Check the enumeration or reload the external encryption library.
+     *  - -7(ERR_NOT_INITIALIZED): The SDK is not initialized. Initialize the `IRtcEngine` instance before calling this method.
+     */
+  videoSourceEnableEncryption(enabled: boolean, encryptionConfig: EncryptionConfig): number {
+    return this.rtcEngine.videoSourceEnableEncryption(enabled, encryptionConfig);
+  }
+
+    /** **DEPRECATED** Sets the built-in encryption mode.
+
+     @deprecated Deprecated as of v3.1.0. Use the \ref agora::rtc::IRtcEngine::enableEncryption "enableEncryption" instead.
+
+     The Agora SDK supports built-in encryption, which is set to the @p aes-128-xts mode by default. Call this method to use other encryption modes.
+
+     All users in the same channel must use the same encryption mode and password.
+
+     Refer to the information related to the AES encryption algorithm on the differences between the encryption modes.
+
+     @note Call the \ref IRtcEngine::setEncryptionSecret "setEncryptionSecret" method to enable the built-in encryption function before calling this method.
+
+     @param encryptionMode Pointer to the set encryption mode:
+     - "aes-128-xts": (Default) 128-bit AES encryption, XTS mode.
+     - "aes-128-ecb": 128-bit AES encryption, ECB mode.
+     - "aes-256-xts": 256-bit AES encryption, XTS mode.
+     - "": When encryptionMode is set as NULL, the encryption mode is set as "aes-128-xts" by default.
+
+     @return
+     - 0: Success.
+     - < 0: Failure.
+     */
+  videoSourceSetEncryptionMode(mode: string): number {
+    return this.rtcEngine.videoSourceSetEncryptionMode(mode);
+  }
+    /** **DEPRECATED** Enables built-in encryption with an encryption password before users join a channel.
+
+     Deprecated as of v3.1.0. Use the \ref agora::rtc::IRtcEngine::enableEncryption "enableEncryption" instead.
+
+     All users in a channel must use the same encryption password. The encryption password is automatically cleared once a user leaves the channel.
+
+     If an encryption password is not specified, the encryption functionality will be disabled.
+
+     @note
+     - Do not use this method for CDN live streaming.
+     - For optimal transmission, ensure that the encrypted data size does not exceed the original data size + 16 bytes. 16 bytes is the maximum padding size for AES encryption.
+
+     @param secret Pointer to the encryption password.
+
+     @return
+     - 0: Success.
+     - < 0: Failure.
+     */
+  videoSourceSetEncryptionSecret(secret: string): number {
+    return this.rtcEngine.videoSourceSetEncryptionSecret(secret);
+  }
 
   /**
    * Releases the video source object.
@@ -3972,6 +4156,27 @@ class AgoraRtcEngine extends EventEmitter {
    */
   setAudioMixingPosition(position: number): number {
     return this.rtcEngine.setAudioMixingPosition(position);
+  }
+
+  /** Sets the pitch of the local music file.
+   * @since v3.0.1
+   *
+   * When a local music file is mixed with a local human voice, call this method to set the pitch of the local music file only.
+   *
+   * @note
+   * Call this method after calling `startAudioMixing`.
+   *
+   * @param {number} pitch Sets the pitch of the local music file by chromatic scale. The default value is 0,
+   * which means keeping the original pitch. The value ranges from -12 to 12, and the pitch value between
+   * consecutive values is a chromatic value. The greater the absolute value of this parameter, the
+   * higher or lower the pitch of the local music file.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  setAudioMixingPitch(pitch: number): number {
+    return this.rtcEngine.setAudioMixingPitch(pitch);
   }
 
   // ===========================================================================
@@ -4791,6 +4996,190 @@ class AgoraRtcEngine extends EventEmitter {
   getPluginParameter(pluginId: string, paramKey: string): string {
     return this.rtcEngine.getPluginParameter(pluginId, paramKey);
   }
+ 
+  unRegisterMediaMetadataObserver(): number {
+    return this.rtcEngine.unRegisterMediaMetadataObserver();
+  }
+
+  registerMediaMetadataObserver(): number {
+    const fire = (event: string, ...args: Array<any>) => {
+      setImmediate(() => {
+        this.emit(event, ...args);
+      });
+    };
+
+    this.rtcEngine.addMetadataEventHandler((metadata: Metadata) => {
+      fire('receiveMetadata', metadata);
+    }, (metadata: Metadata) => {
+      fire('sendMetadataSuccess', metadata);
+    });
+    return this.rtcEngine.registerMediaMetadataObserver();
+  }
+
+  sendMetadata(metadata: Metadata): number {
+    return this.rtcEngine.sendMetadata(metadata);
+  }
+
+  setMaxMetadataSize(size: number): number {
+    return this.rtcEngine.setMaxMetadataSize(size);
+  }
+  
+  sendCustomReportMessage(id: string, category: string, event: string, label: string, value: number): number {
+    return this.rtcEngine.sendCustomReportMessage(id, category, event, label, value);
+  }
+
+  enableEncryption(enabled: boolean, config: EncryptionConfig): number {
+    return this.rtcEngine.enableEncryption(enabled, config);
+  }
+  /** Sets an SDK preset audio effect.
+   *
+   * @since v3.2.0
+   *
+   * Call this method to set an SDK preset audio effect for the local user who sends an audio stream. This audio effect
+   * does not change the gender characteristics of the original voice. After setting an audio effect, all users in the
+   * channel can hear the effect.
+   *
+   * You can set different audio effects for different scenarios. See *Set the Voice Beautifier and Audio Effects*.
+   *
+   * To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile"
+   * and setting the `scenario` parameter to `AUDIO_SCENARIO_GAME_STREAMING(3)` before calling this method.
+   *
+   * @note
+   * - You can call this method either before or after joining a channel.
+   * - Do not set the profile `parameter` of `setAudioProfile` to `AUDIO_PROFILE_SPEECH_STANDARD(1)` or `AUDIO_PROFILE_IOT(6)`;
+   * otherwise, this method call fails.
+   * - This method works best with the human voice. Agora does not recommend using this method for audio containing music.
+   * - If you call this method and set the `preset` parameter to enumerators except `ROOM_ACOUSTICS_3D_VOICE` or `PITCH_CORRECTION`,
+   * do not call \ref IRtcEngine::setAudioEffectParameters "setAudioEffectParameters"; otherwise, `setAudioEffectParameters`
+   * overrides this method.
+   * - After calling this method, Agora recommends not calling the following methods, because they can override `setAudioEffectPreset`:
+   *  - \ref IRtcEngine::setVoiceBeautifierPreset "setVoiceBeautifierPreset"
+   *  - \ref IRtcEngine::setLocalVoiceReverbPreset "setLocalVoiceReverbPreset"
+   *  - \ref IRtcEngine::setLocalVoiceChanger "setLocalVoiceChanger"
+   *  - \ref IRtcEngine::setLocalVoicePitch "setLocalVoicePitch"
+   *  - \ref IRtcEngine::setLocalVoiceEqualization "setLocalVoiceEqualization"
+   *  - \ref IRtcEngine::setLocalVoiceReverb "setLocalVoiceReverb"
+   *
+   * @param preset The options for SDK preset audio effects. See #AUDIO_EFFECT_PRESET.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  setAudioEffectPreset(preset: AUDIO_EFFECT_PRESET): number {
+    return this.rtcEngine.setAudioEffectPreset(preset);
+  }
+  
+  /** Sets an SDK preset voice beautifier effect.
+   *
+   * @since v3.2.0
+   *
+   * Call this method to set an SDK preset voice beautifier effect for the local user who sends an audio stream. After
+   * setting a voice beautifier effect, all users in the channel can hear the effect.
+   *
+   * You can set different voice beautifier effects for different scenarios. See *Set the Voice Beautifier and Audio Effects*.
+   *
+   * To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and
+   * setting the `scenario` parameter to `AUDIO_SCENARIO_GAME_STREAMING(3)` and the `profile` parameter to
+   * `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before calling this method.
+   *
+   * @note
+   * - You can call this method either before or after joining a channel.
+   * - Do not set the `profile` parameter of \ref IRtcEngine::setAudioProfile "setAudioProfile" to `AUDIO_PROFILE_SPEECH_STANDARD(1)`
+   * or `AUDIO_PROFILE_IOT(6)`; otherwise, this method call fails.
+   * - This method works best with the human voice. Agora does not recommend using this method for audio containing music.
+   * - After calling this method, Agora recommends not calling the following methods, because they can override \ref IRtcEngine::setAudioEffectParameters "setAudioEffectParameters":
+   *  - \ref IRtcEngine::setAudioEffectPreset "setAudioEffectPreset"
+   *  - \ref IRtcEngine::setVoiceBeautifierPreset "setVoiceBeautifierPreset"
+   *  - \ref IRtcEngine::setLocalVoiceReverbPreset "setLocalVoiceReverbPreset"
+   *  - \ref IRtcEngine::setLocalVoiceChanger "setLocalVoiceChanger"
+   *  - \ref IRtcEngine::setLocalVoicePitch "setLocalVoicePitch"
+   *  - \ref IRtcEngine::setLocalVoiceEqualization "setLocalVoiceEqualization"
+   *  - \ref IRtcEngine::setLocalVoiceReverb "setLocalVoiceReverb"
+   *
+   * @param preset The options for SDK preset voice beautifier effects: #VOICE_BEAUTIFIER_PRESET.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  setVoiceBeautifierPreset(preset: VOICE_BEAUTIFIER_PRESET): number {
+    return this.rtcEngine.setVoiceBeautifierPreset(preset);
+  }
+
+  /** Sets parameters for SDK preset audio effects.
+   *
+   * @since v3.2.0
+   *
+   * Call this method to set the following parameters for the local user who send an audio stream:
+   * - 3D voice effect: Sets the cycle period of the 3D voice effect.
+   * - Pitch correction effect: Sets the basic mode and tonic pitch of the pitch correction effect. Different songs
+   * have different modes and tonic pitches. Agora recommends bounding this method with interface elements to enable
+   * users to adjust the pitch correction interactively.
+   *
+   * After setting parameters, all users in the channel can hear the relevant effect.
+   *
+   * You can call this method directly or after \ref IRtcEngine::setAudioEffectPreset "setAudioEffectPreset". If you
+   * call this method after \ref IRtcEngine::setAudioEffectPreset "setAudioEffectPreset", ensure that you set the preset
+   * parameter of `setAudioEffectPreset` to `ROOM_ACOUSTICS_3D_VOICE` or `PITCH_CORRECTION` and then call this method
+   * to set the same enumerator; otherwise, this method overrides `setAudioEffectPreset`.
+   *
+   * @note
+   * - You can call this method either before or after joining a channel.
+   * - To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile"
+   * and setting the `scenario` parameter to `AUDIO_SCENARIO_GAME_STREAMING(3)` before calling this method.
+   * - Do not set the `profile` parameter of \ref IRtcEngine::setAudioProfile "setAudioProfile" to `AUDIO_PROFILE_SPEECH_STANDARD(1)` or
+   * `AUDIO_PROFILE_IOT(6)`; otherwise, this method call fails.
+   * - This method works best with the human voice. Agora does not recommend using this method for audio containing music.
+   * - After calling this method, Agora recommends not calling the following methods, because they can override `setAudioEffectParameters`:
+   *  - \ref IRtcEngine::setAudioEffectPreset "setAudioEffectPreset"
+   *  - \ref IRtcEngine::setVoiceBeautifierPreset "setVoiceBeautifierPreset"
+   *  - \ref IRtcEngine::setLocalVoiceReverbPreset "setLocalVoiceReverbPreset"
+   *  - \ref IRtcEngine::setLocalVoiceChanger "setLocalVoiceChanger"
+   *  - \ref IRtcEngine::setLocalVoicePitch "setLocalVoicePitch"
+   *  - \ref IRtcEngine::setLocalVoiceEqualization "setLocalVoiceEqualization"
+   *  - \ref IRtcEngine::setLocalVoiceReverb "setLocalVoiceReverb"
+   *
+   * @param preset The options for SDK preset audio effects:
+   * - 3D voice effect: `ROOM_ACOUSTICS_3D_VOICE`.
+   *  - Call \ref IRtcEngine::setAudioProfile "setAudioProfile" and set the `profile` parameter to `AUDIO_PROFILE_MUSIC_STANDARD_STEREO(3)`
+   * or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before setting this enumerator; otherwise, the enumerator setting does not take effect.
+   *  - If the 3D voice effect is enabled, users need to use stereo audio playback devices to hear the anticipated voice effect.
+   * - Pitch correction effect: `PITCH_CORRECTION`. To achieve better audio effect quality, Agora recommends calling
+   * \ref IRtcEngine::setAudioProfile "setAudioProfile" and setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or
+   * `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before setting this enumerator.
+   * @param param1
+   * - If you set `preset` to `ROOM_ACOUSTICS_3D_VOICE`, the `param1` sets the cycle period of the 3D voice effect.
+   * The value range is [1,60] and the unit is a second. The default value is 10 seconds, indicating that the voice moves
+   * around you every 10 seconds.
+   * - If you set `preset` to `PITCH_CORRECTION`, `param1` sets the basic mode of the pitch correction effect:
+   *  - `1`: (Default) Natural major scale.
+   *  - `2`: Natural minor scale.
+   *  - `3`: Japanese pentatonic scale.
+   * @param param2
+   * - If you set `preset` to `ROOM_ACOUSTICS_3D_VOICE`, you do not need to set `param2`.
+   * - If you set `preset` to `PITCH_CORRECTION`, `param2` sets the tonic pitch of the pitch correction effect:
+   *  - `1`: A
+   *  - `2`: A#
+   *  - `3`: B
+   *  - `4`: (Default) C
+   *  - `5`: C#
+   *  - `6`: D
+   *  - `7`: D#
+   *  - `8`: E
+   *  - `9`: F
+   *  - `10`: F#
+   *  - `11`: G
+   *  - `12`: G#
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  setAudioEffectParameters(preset: AUDIO_EFFECT_PRESET, param1: number, param2: number): number {
+    return this.rtcEngine.setAudioEffectParameters(preset, param1, param2);
+  }
+
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
@@ -4916,7 +5305,7 @@ declare interface AgoraRtcEngine {
    * {@link leaveChannel} method, the SDK uses
    * this callback to notify the app when the user leaves the channel.
    */
-  on(evt: 'leaveChannel', cb: () => void): this;
+  on(evt: 'leaveChannel', cb: (stats: RtcStats) => void): this;
   /** Reports the statistics of the AgoraRtcEngine once every two seconds.
    * 
    * @param cb.stats AgoraRtcEngine's statistics, see {@link RtcStats}
@@ -5388,7 +5777,7 @@ declare interface AgoraRtcEngine {
    * {@link joinChannel} until the
    * SDK triggers this callback.
    */
-  on(evt: 'fristLocalAudioFrame', cb: (elapsed: number) => void): this;
+  on(evt: 'firstLocalAudioFrame', cb: (elapsed: number) => void): this;
   /** @deprecated This callback is deprecated. Please use
    * `remoteAudioStateChanged` instead.
    * 
@@ -5728,6 +6117,18 @@ declare interface AgoraRtcEngine {
    *  - 4: The local video capture fails. Check whether the capturer is 
    * working properly.
    *  - 5: The local video encoding fails.
+   *  - 11: The shared window is minimized
+   *  - 12: The error code indicates that a window shared by the window ID has been closed, or a full-screen window
+   * shared by the window ID has exited full-screen mode.
+   * After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a
+   * black screen, Agora recommends that you immediately stop screen sharing.
+   *
+   * Common scenarios for reporting this error code:
+   * - When the local user closes the shared window, the SDK reports this error code.
+   * - The local user shows some slides in full-screen mode first, and then shares the windows of the slides. After
+   * the user exits full-screen mode, the SDK reports this error code.
+   * - The local user watches web video or reads web document in full-screen mode first, and then shares the window of
+   * the web video or document. After the user exits full-screen mode, the SDK reports this error code.
    */
   on(evt: 'localVideoStateChanged', cb: (
     localVideoState: number,
@@ -5805,7 +6206,57 @@ declare interface AgoraRtcEngine {
   on(evt: 'channelMediaRelayEvent', cb: (
     event: ChannelMediaRelayEvent
   ) => void): this;
- 
+  on(evt: 'receiveMetadata', cb: (
+    metadata: Metadata
+    ) => void): this;
+
+  on(evt: 'sendMetadataSuccess', cb: (
+    metadata: Metadata
+    ) => void): this;
+
+  on(evt: 'firstLocalAudioFramePublished', cb: (
+    elapsed: number
+  )=>void): this;
+
+  on(evt: 'firstLocalVideoFramePublished', cb: (
+    elapsed: number
+  )=>void): this;
+
+  on(evt: 'rtmpStreamingEvent', cb: (
+    url: string,
+    eventCode: RTMP_STREAMING_EVENT
+  )=>void): this;
+
+  on(evt: 'audioPublishStateChanged', cb: (
+    channel: string, 
+    oldState: STREAM_PUBLISH_STATE, 
+    newState: STREAM_PUBLISH_STATE,
+    elapseSinceLastState: number
+  )=> void): this;
+
+  on(evt: 'videoPublishStateChanged', cb: (
+    channel: string, 
+    oldState: STREAM_PUBLISH_STATE, 
+    newState: STREAM_PUBLISH_STATE,
+    elapseSinceLastState: number
+  )=> void): this;
+
+  on(evt: 'audioSubscribeStateChanged', cb: (
+    channel: string,
+    uid: number, 
+    oldState: STREAM_SUBSCRIBE_STATE, 
+    newState: STREAM_SUBSCRIBE_STATE, 
+    elapseSinceLastState: number
+  )=> void): this;
+
+  on(evt: 'videoSubscribeStateChanged', cb: (
+    channel: string,
+    uid: number, 
+    oldState: STREAM_SUBSCRIBE_STATE, 
+    newState: STREAM_SUBSCRIBE_STATE, 
+    elapseSinceLastState: number
+  )=> void): this;
+
   on(evt: string, listener: Function): this;
 }
 
@@ -6063,7 +6514,22 @@ class AgoraRtcChannel extends EventEmitter
     ) => {
         fire('connectionStateChanged', state, reason);
     });
-    
+
+    this.rtcChannel.onEvent('audioPublishStateChanged', function(oldState: STREAM_PUBLISH_STATE, newState: STREAM_PUBLISH_STATE, elapseSinceLastState: number) {
+      fire('audioPublishStateChanged', oldState, newState, elapseSinceLastState);
+    })
+
+    this.rtcChannel.onEvent('videoPublishStateChanged', function(oldState: STREAM_PUBLISH_STATE, newState: STREAM_PUBLISH_STATE, elapseSinceLastState: number) {
+      fire('videoPublishStateChanged', oldState, newState, elapseSinceLastState);
+    })
+
+    this.rtcChannel.onEvent('audioSubscribeStateChanged', function(uid: number, oldState: STREAM_SUBSCRIBE_STATE, newState: STREAM_SUBSCRIBE_STATE, elapseSinceLastState: number) {
+      fire('audioSubscribeStateChanged', uid, oldState, newState, elapseSinceLastState);
+    })
+  
+    this.rtcChannel.onEvent('videoSubscribeStateChanged', function(uid: number, oldState: STREAM_SUBSCRIBE_STATE, newState: STREAM_SUBSCRIBE_STATE, elapseSinceLastState: number) {
+      fire('videoSubscribeStateChanged', uid, oldState, newState, elapseSinceLastState);
+    })
   }
   /**
    * Joins the channel with a user ID.
@@ -6922,6 +7388,7 @@ class AgoraRtcChannel extends EventEmitter
   release(): number {
     return this.rtcChannel.release()
   }
+
   /**
    * Adjusts the playback volume of a specified remote user.
    * 
@@ -6949,6 +7416,37 @@ class AgoraRtcChannel extends EventEmitter
    */
   adjustUserPlaybackSignalVolume(uid: number, volume: number): number {
     return this.rtcChannel.adjustUserPlaybackSignalVolume(uid, volume);
+  }
+
+  unRegisterMediaMetadataObserver(): number {
+    return this.rtcChannel.unRegisterMediaMetadataObserver();
+  }
+
+  registerMediaMetadataObserver(): number {
+    const fire = (event: string, ...args: Array<any>) => {
+      setImmediate(() => {
+        this.emit(event, ...args);
+      });
+    };
+
+    this.rtcChannel.addMetadataEventHandler((metadata: Metadata) => {
+      fire('receiveMetadata', metadata);
+    }, (metadata: Metadata) => {
+      fire('sendMetadataSuccess', metadata);
+    });
+    return this.rtcChannel.registerMediaMetadataObserver();
+  }
+
+  sendMetadata(metadata: Metadata): number {
+    return this.rtcChannel.sendMetadata(metadata);
+  }
+
+  setMaxMetadataSize(size: number): number {
+    return this.rtcChannel.setMaxMetadataSize(size);
+  }
+
+  enableEncryption(enabled: boolean, config: EncryptionConfig): number {
+    return this.rtcChannel.enableEncryption(enabled, config);
   }
 }
 
@@ -7416,6 +7914,32 @@ declare interface AgoraRtcChannel {
     state: ConnectionState,
     reason: ConnectionChangeReason
   ) => void): this;
+
+  on(evt: 'audioPublishStateChanged', cb: (
+    oldState: STREAM_PUBLISH_STATE, 
+    newState: STREAM_PUBLISH_STATE,
+    elapseSinceLastState: number
+  )=> void): this;
+
+  on(evt: 'videoPublishStateChanged', cb: (
+    oldState: STREAM_PUBLISH_STATE, 
+    newState: STREAM_PUBLISH_STATE,
+    elapseSinceLastState: number
+  )=> void): this;
+
+  on(evt: 'audioSubscribeStateChanged', cb: (
+    uid: number, 
+    oldState: STREAM_SUBSCRIBE_STATE, 
+    newState: STREAM_SUBSCRIBE_STATE, 
+    elapseSinceLastState: number
+  )=> void): this;
+
+  on(evt: 'videoSubscribeStateChanged', cb: (
+    uid: number, 
+    oldState: STREAM_SUBSCRIBE_STATE, 
+    newState: STREAM_SUBSCRIBE_STATE, 
+    elapseSinceLastState: number
+  )=> void): this;
 }
 
 export default AgoraRtcEngine;

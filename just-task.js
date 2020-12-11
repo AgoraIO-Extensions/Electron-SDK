@@ -9,7 +9,7 @@ const {getArgvFromNpmEnv, getArgvFromPkgJson} = require('./scripts/npm_argv')
 
 option('electron_version', {default: '5.0.8'});
 option('runtime', {default: 'electron', choices: ['electron', 'node']});
-//option('platform', {default: process.platform, choices: ['darwin', 'win32']});
+option('platform', {default: process.platform, choices: ['darwin', 'win32', 'linux']});
 // option('packageVersion');
 option('platform', {default: process.platform});
 option('debug', {default: false, boolean: true});
@@ -28,15 +28,16 @@ task('switch:arch', () => {
 })
 
 task('sync:lib', () => {
-  const config = Object.assign({}, getArgvFromPkgJson(), getArgvFromNpmEnv() )
+  let pkgConfigs = getArgvFromPkgJson()
+  let argvConfigs = getArgvFromNpmEnv()
   return synclib({
     platform: argv().platform,
     // platform: 'win32',
     arch: argv().arch,
     libUrl: {
-      win: argv().liburl_win || config.libUrl.win,
-      mac: argv().liburl_mac || config.libUrl.mac,
-      win64: argv().liburl_win64 || config.libUrl.win64
+      win: argv().liburl_win || pkgConfigs.lib_sdk_win || argvConfigs.lib_sdk_win,
+      mac: argv().liburl_mac || pkgConfigs.lib_sdk_mac || argvConfigs.lib_sdk_mac,
+      win64: argv().liburl_win64 || pkgConfigs.lib_sdk_win64 || argvConfigs.lib_sdk_win64
     }
   })
 })
@@ -73,7 +74,7 @@ task('build:node', () => {
 // npm run download --
 task('download', () => {
   // work-around
-  const addonVersion = '3.0.0-build.660'
+  const addonVersion = '3.1.2-rc231-build.981'
   cleanup(path.join(__dirname, "./build")).then(_ => {
     cleanup(path.join(__dirname, './js')).then(_ => {
       download({
@@ -89,7 +90,7 @@ task('download', () => {
 task('install', () => {
   const config = Object.assign({}, getArgvFromNpmEnv(), getArgvFromPkgJson())
   // work-around
-  const addonVersion = '3.0.0-build.660'
+  const addonVersion = '3.1.2-rc231-build.981'
   if (config.prebuilt) {
     download({
       electronVersion: config.electronVersion, 
@@ -98,9 +99,31 @@ task('install', () => {
       arch: config.arch
     })
   } else {
-    build(Object.assign({}, config, {
-      packageVersion: addonVersion
-    }))
+    return new Promise((resolve, reject) => {
+      switcharch({
+        arch: argv().arch,
+        // platform: 'win32',
+      }).then(() => {
+        return synclib({
+          platform: argv().platform,
+          // platform: 'win32',
+          arch: argv().arch,
+          libUrl: {
+            win: argv().liburl_win || config.lib_sdk_win,
+            mac: argv().liburl_mac || config.lib_sdk_mac,
+            win64: argv().liburl_win64 || config.lib_sdk_win64
+          }
+        })
+      }).then(() => {
+        return build(Object.assign({}, config, {
+          packageVersion: addonVersion
+        }))
+      }).then(() => {
+        resolve()
+      }).catch(e => {
+        reject(e)
+      })
+    })
   }
 })
 

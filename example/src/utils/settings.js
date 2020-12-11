@@ -3,38 +3,24 @@ export const SHARE_ID = 2
 export const RTMP_URL = ''
 export const FU_AUTH = []
 
+import { VoiceChangerPreset, AudioReverbPreset } from '../../../JS/Api/native_type';
+
 export const voiceReverbList = [
   {
-    value: 0,
+    value: AudioReverbPreset.AUDIO_REVERB_OFF,
     label: "AUDIO_REVERB_OFF"
   },
   {
-    value: 1,
-    label: "AUDIO_REVERB_POPULAR"
+    value: AudioReverbPreset.AUDIO_REVERB_FX_POPULAR,
+    label: "AUDIO_REVERB_FX_POPULAR"
   },
   {
-    value: 2,
-    label: "AUDIO_REVERB_RNB"
+    value: AudioReverbPreset.AUDIO_REVERB_FX_KTV,
+    label: "AUDIO_REVERB_FX_KTV"
   },
   {
-    value: 3,
-    label: "AUDIO_REVERB_ROCK"
-  },
-  {
-    value: 4,
-    label: "VOICE_CHANGER_HIPHOP"
-  },
-  {
-    value: 5,
-    label: "VOICE_CHANGER_VOCAL_CONCERT"
-  },
-  {
-    value: 6,
-    label: "VOICE_CHANGER_KTV"
-  },
-  {
-    value: 7,
-    label: "VOICE_CHANGER_STUDIO"
+    value: AudioReverbPreset.AUDIO_REVERB_FX_UNCLE,
+    label: "AUDIO_REVERB_FX_UNCLE"
   }
 ]
 
@@ -66,6 +52,10 @@ export const voiceChangerList = [
   {
     value: 6,
     label: "VOICE_CHANGER_HULK"
+  },
+  {
+    value: VoiceChangerPreset.GENERAL_BEAUTY_VOICE_MALE_MAGNETIC,
+    label:"GENERAL_BEAUTY_VOICE_MALE_MAGNETIC"
   }
 ]
 
