@@ -2333,7 +2333,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  enableAudioVolumeIndication(interval: number, smooth: number, report_vad: boolean): number {
+  enableAudioVolumeIndication(interval: number, smooth: number, report_vad: boolean = false): number {
     return this.rtcEngine.enableAudioVolumeIndication(interval, smooth, report_vad);
   }
 
