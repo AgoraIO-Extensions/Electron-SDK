@@ -36,6 +36,8 @@ private:
     void clear();
     int deliverFrame_I420(const agora::media::IVideoFrame& videoFrame, int rotation, bool mirrored);
 	void getVideoSize(agora::rtc::VIDEO_PROFILE_TYPE profile, int& width, int& height);
+    void copyAndCentreYuv(const unsigned char* srcYPlane, const unsigned char* srcUPlane, const unsigned char* srcVPlane, int width, int height, int srcStride,
+char* dstYPlane, char* dstUPlane, char* dstVPlane, int dstStride);
 private:
     AgoraVideoSource& m_videoSource;
     std::vector<char> m_buf;
@@ -96,8 +98,10 @@ int AgoraVideoSourceTransporter::deliverFrame_I420(const agora::media::IVideoFra
     int width = videoFrame.width();
     int height = videoFrame.height();
     int destWidth = 0, destHeight = 0;
-    VIDEO_PROFILE_TYPE profile = m_videoSource.getVideoProfile();
-    getVideoSize(profile, destWidth, destHeight);
+    // VIDEO_PROFILE_TYPE profile = m_videoSource.getVideoProfile();
+    // getVideoSize(profile, destWidth, destHeight);
+    destWidth = stride;
+    destHeight = height;
     int destWidthU = destWidth / 2;
     int destHeightU = destHeight / 2;
     char* pbuf = m_buf.data();
@@ -127,9 +131,61 @@ int AgoraVideoSourceTransporter::deliverFrame_I420(const agora::media::IVideoFra
     const unsigned char* planeY = videoFrame.buffer(IVideoFrame::Y_PLANE);
     const unsigned char* planeU = videoFrame.buffer(IVideoFrame::U_PLANE);
     const unsigned char* planeV = videoFrame.buffer(IVideoFrame::V_PLANE);
-	I420Scale(planeY, stride0, planeU, strideU, planeV, strideV, width, height, 
-        (uint8*)y, destWidth, (uint8*)u, destWidthU, (uint8*)v, destWidthU, destWidth, destHeight, kFilterNone);
+	// I420Scale(planeY, stride0, planeU, strideU, planeV, strideV, width, height, 
+    //     (uint8*)y, destWidth, (uint8*)u, destWidthU, (uint8*)v, destWidthU, destWidth, destHeight, kFilterNone);
+    int src_stride = stride0;
+    int dest_stride = stride;
+    int width2 = dest_stride / 2;
+
+
+    if (videoFrame.width() == width && videoFrame.height() == height)
+    {
+        copyAndCentreYuv(planeY, planeU, planeV, videoFrame.width(), videoFrame.height(), src_stride, y, u, v, dest_stride);
+    }
+    else
+    {
+        I420Scale(planeY, stride0, planeU, strideU, planeV, strideV, videoFrame.width(), videoFrame.height(), (uint8*)y, dest_stride, (uint8*)u, width2, (uint8*)v, width2, width, height, kFilterNone);
+    }
+    // memcpy(y, planeY, destWidth * destHeight);
+    // memcpy(u, planeU, destWidthU * destHeightU);
+    // memcpy(v, planeV, destWidthU * destHeightU);
     return 0;
+}
+
+void AgoraVideoSourceTransporter::copyAndCentreYuv(const unsigned char* srcYPlane, const unsigned char* srcUPlane, const unsigned char* srcVPlane, int width, int height, int srcStride,
+char* dstYPlane, char* dstUPlane, char* dstVPlane, int dstStride)
+{
+    if (srcStride == width && dstStride == width)
+    {
+        memcpy(dstYPlane, srcYPlane, width * height);
+        memcpy(dstUPlane, srcUPlane, width * height / 4);
+        memcpy(dstVPlane, srcVPlane, width * height / 4);
+        return;
+    }
+
+    int dstDiff = dstStride - width;
+    //RGB(0,0,0) to YUV(0,128,128)
+    memset(dstYPlane, 0, dstStride * height);
+    memset(dstUPlane, 128, dstStride * height / 4);
+    memset(dstVPlane, 128, dstStride * height / 4);
+
+    for (int i = 0; i < height; ++i)
+    {
+        memcpy(dstYPlane + (dstDiff >> 1), srcYPlane, width);
+        srcYPlane += srcStride;
+        dstYPlane += dstStride;
+
+        if (i % 2 == 0)
+        {
+            memcpy(dstUPlane + (dstDiff >> 2), srcUPlane, width >> 1);
+            srcUPlane += srcStride >> 1;
+            dstUPlane += dstStride >> 1;
+
+            memcpy(dstVPlane + (dstDiff >> 2), srcVPlane, width >> 1);
+            srcVPlane += srcStride >> 1;
+            dstVPlane += dstStride >> 1;
+        }
+    }
 }
 
 void AgoraVideoSourceTransporter::getVideoSize(VIDEO_PROFILE_TYPE profile, int& width, int& height)

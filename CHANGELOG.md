@@ -1,6 +1,41 @@
-## 3.0.0-build.475 (June 17th, 2020)
+## 3.2.0 （December 1，2020）
+* Audio profile: To improve the audio experience for multi-person meetings, this release adds AUDIO_SCENARIO_MEETING(8) in setAudioProfile.
+* Screen sharing:
+* To allow a user to enable shared slides in presentation mode, this release adds support for enabling the shared window (such as slides, web video, or web document) in full-screen mode during the window sharing.
+* This release adds the LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_CLOSED(12) error code, notifying you that a window shared by the window ID has been closed, or a full-screen window shared by the window ID * * has exited full-screen mode.
+* This release optimizes smoothness and image quality of screen sharing with the CONTENT_HINT_DETAILS type in a poor network environment.
+* To improve the usability of the APIs related to voice beautifier and audio effects, this release deprecates setLocalVoiceChanger and setLocalVoiceReverbPreset, and adds the following methods instead:
+* setVoiceBeautifierPreset: Compared with setLocalVoiceChanger, this method deletes audio effects such as a little boy’s voice and a more spatially resonant voice.
+* setAudioEffectPreset: Compared with setLocalVoiceReverbPreset, this method adds audio effects such as the 3D voice, the pitch correction, a little boy’s voice and a more spatially resonant voice.
+* setAudioEffectParameters: This method sets detailed parameters for a specified audio effect. In this release, the supported audio effects are the 3D voice and pitch correction.
+
+
+## 3.1.1-hotfix.2 (September 21th, 2020)
+#### :house: Intrenal
+* 3.1.1 hotfix
+* fix bug of videoSource screen share
+
+## 3.1.1-hotfix.1 (September 17th, 2020)
+#### :house: Intrenal
+* 3.1.1 hotfix
+* Add new api for screen share
+  - videoSourceEnableEncryption
+  - videoSourceSetEncryptionMode
+  - videoSourceSetEncryptionSecret
+
+## 3.1.1-build.914 (August 28th, 2020)
+#### :house: Intrenal
+* 3.1.1 SDK upgrade
+* Add new parameter for CaptureParam:
+  - windowFocus (Whether to bring the window to the front)
+  - excludeWindowList (A list of IDs of windows to be blocked.)
+  - excludeWindowCount (The number of windows to be blocked.)
+
+## 3.0.1-beta.1 (June 23rd, 2020)
 #### :house: Internal
-* fix live transcoding watermark bug
+* 3.0.1 SDK upgrade
+* support multi render
+* support electron 9.0.0
 
 ## 3.0.0-build.473 (April 22nd, 2020)
 #### :house: Internal

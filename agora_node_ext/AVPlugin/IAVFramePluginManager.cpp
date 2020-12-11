@@ -18,12 +18,16 @@ bool IAVFramePluginManager::onCaptureVideoFrame(VideoFrame& videoFrame)
             element.second.instance->onPluginCaptureVideoFrame((VideoPluginFrame*)&videoFrame);
         }
     }
-
     return true;
 }
 
 bool IAVFramePluginManager::onRenderVideoFrame(unsigned int uid, VideoFrame& videoFrame)
 {
+    for (auto const& element : m_mapPlugins) {
+        if(element.second.enabled) {
+            element.second.instance->onPluginRenderVideoFrame(uid, (VideoPluginFrame*)&videoFrame);
+        }
+    }
     return true;
 }
 

@@ -93,7 +93,10 @@ enum AgoraIpcMsg
     AGORA_IPC_SET_PARAMETER,
     AGORA_IPC_ENABLE_LOOPBACK_RECORDING,
     /** Node ADDON ==> video source, to enable audio*/
-    AGORA_IPC_ENABLE_AUDIO
+    AGORA_IPC_ENABLE_AUDIO,
+    AGORA_IPC_SET_ENCRYPTION_MODE,
+    AGORA_IPC_ENABLE_ENCRYPTION,
+    AGORA_IPC_SET_ENCRYPTION_SECRET
 };
 
 /**
@@ -118,11 +121,22 @@ struct CaptureScreenCmd
     {}
 };
 
+#define MAX_WINDOW_ID_COUNT 128
+
+struct ScreenCaptureParametersCmd
+{
+    agora::rtc::ScreenCaptureParameters captureParams;
+    agora::rtc::IRtcEngine::WindowIDType excludeWindowList[MAX_WINDOW_ID_COUNT];
+    int excludeWindowCount;
+};
+
 struct CaptureScreenByDisplayCmd
 {
     ScreenIDType screenId;
     agora::rtc::Rectangle regionRect;
     agora::rtc::ScreenCaptureParameters captureParams;
+    agora::rtc::IRtcEngine::WindowIDType excludeWindowList[MAX_WINDOW_ID_COUNT];
+    int excludeWindowCount;
 };
 
 struct CaptureScreenByWinCmd
@@ -205,6 +219,20 @@ public:
         :parameters{ 0 }
     {}
 };
+
+struct EncryptionConfigCmd
+{
+public:
+    bool enable;
+    agora::rtc::ENCRYPTION_MODE encryptionMode;
+    char encryptionKey[agora::rtc::MAX_DEVICE_ID_LENGTH];
+
+    EncryptionConfigCmd():encryptionMode(agora::rtc::ENCRYPTION_MODE::AES_128_XTS),encryptionKey{'\0'}{
+    }
+
+    /* data */
+};
+
 
 /**
  * AgoraIpcListener is used to monitor IPC message

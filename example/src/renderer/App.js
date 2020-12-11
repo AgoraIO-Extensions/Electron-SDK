@@ -8,7 +8,6 @@ import {voiceChangerList, voiceReverbPreset, videoProfileList, audioProfileList,
 import {readImage} from '../utils/base64'
 import WindowPicker from './components/WindowPicker/index.js'
 import DisplayPicker from './components/DisplayPicker/index.js'
-import { VoiceChangerPreset } from '../../../JS/Api/native_type';
 
 const isMac = process.platform === 'darwin'
 
@@ -19,6 +18,8 @@ export default class App extends Component {
       alert('APP_ID cannot be empty!')
     } else {
       let rtcEngine = this.getRtcEngine()
+      let channel1
+      let channel2
       this.state = {
         local: '',
         localVideoSource: '',
@@ -141,6 +142,42 @@ export default class App extends Component {
     rtcEngine.on('localUserRegistered', (uid, userAccount) => {
       console.log(`local user register: ${uid} ${userAccount}`)
     })
+    rtcEngine.on('audioPublishStateChange', (channel, oldstate, newstate, elapsed) => {
+      console.log(`rtcEngine audioPublishStateChange   channel: ${channel},  oldstate:${oldstate},  newstate:${newstate},  elapsed:${elapsed}`)
+    })
+    rtcEngine.on('videoPublishStateChange', (channel, oldstate, newstate, elapsed) => {
+      console.log(`rtcEngine videoPublishStateChange   channel: ${channel},  oldstate:${oldstate},  newstate:${newstate}, elapsed:${elapsed}`)
+    })
+    rtcEngine.on('audioSubscribeStateChange', (channel, uid, oldstate, newstate, elapsed) => {
+      console.log(`rtcEngine audioSubscribeStateChange   channel: ${channel}, uid:${uid}, oldstate:${oldstate},  newstate:${newstate}, elapsed:${elapsed}`)
+    })
+    rtcEngine.on('videoSubscribeStateChange', (channel, uid, oldstate, newstate, elapsed) => {
+      console.log(`rtcEngine videoSubscribeStateChange   channel: ${channel}, uid:${uid}, oldstate:${oldstate}, newstate:${newstate}, elapsed:${elapsed}`)
+    })
+    rtcEngine.on("receiveMetadata", (metadata) => {
+      let bufferdata = JSON.parse(metadata.buffer)
+      console.log("receiveMetadata : " + bufferdata.width)
+    })
+    rtcEngine.on("sendMetadataSuccess", (metadata) => {
+      console.log(`sendMetadataSuccess : ${JSON.stringify(metadata)}`)
+    })
+
+    setInterval(()=>{
+      let ptr = {
+        width: 100,
+        height: 210,
+        top: 32323
+      }
+      let data = JSON.stringify(ptr);
+      let metadata = {
+        uid: 123,
+        size: data.length,
+        buffer: data,
+        timeStampMs: 122323
+      }
+      let ret = this.rtcEngine.sendMetadata(metadata);
+      console.log(`sendMetadata  data: ${data}  ret: ${ret}`)
+      }, 1000);
   }
 
   subscribeChannelEvents = (rtcChannel, publish) => {
@@ -168,6 +205,29 @@ export default class App extends Component {
         users: this.state.users.delete(this.state.users.indexOf({channelId, uid}))
       })
     })
+
+    rtcChannel.on('rtcStats', (stats) => {
+      console.log(stats)
+    })
+    rtcChannel.on('audioPublishStateChange', (oldstate, newstate, elapsed) => {
+      console.log(`audioPublishStateChange  oldstate:${oldstate},  newstate:${newstate},  elapsed:${elapsed}`)
+    })
+    rtcChannel.on('videoPublishStateChange', (oldstate, newstate, elapsed) => {
+      console.log(`videoPublishStateChange  oldstate:${oldstate},  newstate:${newstate}, elapsed:${elapsed}`)
+    })
+    rtcChannel.on('audioSubscribeStateChange', (uid, oldstate, newstate, elapsed) => {
+      console.log(`audioSubscribeStateChange  uid:${uid}, oldstate:${oldstate},  newstate:${newstate}, elapsed:${elapsed}`)
+    })
+    rtcChannel.on('videoSubscribeStateChange', (uid, oldstate, newstate, elapsed) => {
+      console.log(`videoSubscribeStateChange uid:${uid}, oldstate:${oldstate}, newstate:${newstate}, elapsed:${elapsed}`)
+    })
+    rtcChannel.on("receiveMetadata", (metadata) => {
+      console.log(`channel receiveMetadata  ${metadata.uid}  size: ${metadata.size}  buffer: ${metadata.buffer}  timeStampMs: ${metadata.timeStampMs}`)
+    })
+
+    rtcChannel.on("sendMetadataSuccess", (metadata) => {
+      console.log(`channel sendMetadataSuccess  ${metadata.uid}  size: ${metadata.size}  buffer: ${metadata.buffer}  timeStampMs: ${metadata.timeStampMs}`)
+    })
   }
 
   handleJoin = () => {
@@ -181,6 +241,7 @@ export default class App extends Component {
     console.log(result)
     rtcEngine.setChannelProfile(1)
     rtcEngine.setClientRole(this.state.role)
+    rtcEngine.registerMediaMetadataObserver();
     rtcEngine.setAudioProfile(0, 1)
     // rtcEngine.enableVideo()
     let logpath = path.resolve(os.homedir(), "./agoramain.sdk")
@@ -205,17 +266,47 @@ export default class App extends Component {
       smoothnessLevel: 1,
       rednessLevel: 0
     })
+    rtcEngine.setAudioEffectPreset(0x02010100);
+    rtcEngine.setVoiceBeautifierPreset(0x01010100);
+    rtcEngine.setAudioEffectParameters(0x02010100, 1, 1);
 
     // joinning two channels together
     // let channel = rtcEngine.createChannel(this.state.channel)
     // this.subscribeChannelEvents(channel, true)
     // channel.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
     // channel.publish();
+    //rtcEngine.joinChannel("", "123", "", 0);
 
-    // let channel2 = rtcEngine.createChannel(`${this.state.channel}-2`)
-    // this.subscribeChannelEvents(channel2, false)
-    // channel2.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
-    rtcEngine.joinChannel(null, this.state.channel, '', Number(`${new Date().getTime()}`.slice(7)))
+    //joinning two channels together
+    this.channel1 = rtcEngine.createChannel(this.state.channel)
+    this.channel1.registerMediaMetadataObserver();
+    setInterval(()=>{
+      let ptr = {
+        width: 100,
+        height: 210,
+        top: 32323
+      }
+      let data = JSON.stringify(ptr);
+      let metadata = {
+        uid: 123,
+        size: data.length,
+        buffer: data,
+        timeStampMs: 122323
+      }
+      let ret = this.channel1.sendMetadata(metadata);
+      console.log(`channel: ${this.channel1.channelId()}  sendMetadata  data: ${data}  ret: ${ret}`)
+   }, 1000);
+    this.channel1.setClientRole(1);
+    this.subscribeChannelEvents(this.channel1, true)
+    this.channel1.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
+    this.channel1.publish();
+
+    this.channel1.setClientRole(1);
+    this.channel2 = rtcEngine.createChannel(`${this.state.channel}-2`)
+    this.channel2.registerMediaMetadataObserver()
+    this.subscribeChannelEvents(this.channel2, false)
+    this.channel2.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
+
   }
 
   handleCameraChange = e => {
@@ -276,7 +367,7 @@ export default class App extends Component {
         rtcEngine.videoSourceEnableWebSdkInteroperability(true)
         // rtcEngine.videoSourceSetVideoProfile(50, false);
         // to adjust render dimension to optimize performance
-        rtcEngine.setVideoRenderDimension(3, SHARE_ID, 1200, 680);
+        // rtcEngine.setVideoRenderDimension(3, SHARE_ID, 1200, 680);
         rtcEngine.videoSourceJoin(token, this.state.channel, info, SHARE_ID);
       } catch(err) {
         clearTimeout(timer)
@@ -306,8 +397,9 @@ export default class App extends Component {
       // rtcEngine.startScreenCapture2(windowId, captureFreq, rect, bitrate);
       // there's a known limitation that, videosourcesetvideoprofile has to be called at least once
       // note although it's called, it's not taking any effect, to control the screenshare dimension, use captureParam instead
-      rtcEngine.videoSourceSetVideoProfile(43, false);
-      rtcEngine.videoSourceStartScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15})
+      // rtcEngine.videoSourceSetVideoProfile(43, false);
+      // rtcEngine.startScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15, captureMouseCursor: false, windowFocus: false})
+      rtcEngine.videoSourceStartScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15, captureMouseCursor: false, windowFocus: false})
       rtcEngine.startScreenCapturePreview();
     });
   }
@@ -319,16 +411,35 @@ export default class App extends Component {
       return false
     };
     return new Promise((resolve, reject) => {
-      let rtcEngine = this.getRtcEngine()
+      let rtcEngine = this.getRtcEngine();
+      rtcEngine.videoSourceSetLogFile("videosource.txt");
+      // rtcEngine.videoSourceSetParameters("{\"rtc.log_filter\": 65535}");
       // rtcEngine.startScreenCapture2(windowId, captureFreq, rect, bitrate);
       // there's a known limitation that, videosourcesetvideoprofile has to be called at least once
       // note although it's called, it's not taking any effect, to control the screenshare dimension, use captureParam instead
-      console.log(`start sharing display ${displayId}`)
-      rtcEngine.videoSourceSetVideoProfile(43, false);
+      console.log(`start sharing display ${JSON.stringify(displayId)}`);
+      // rtcEngine.videoSourceSetVideoProfile(43, false);
       // rtcEngine.videosourceStartScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15})
-      rtcEngine.videoSourceStartScreenCaptureByScreen(displayId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 5})
+
+      rtcEngine.videoSourceStartScreenCaptureByScreen(displayId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 5, captureMouseCursor: false, windowFocus: false});
+
+      // let list = rtcEngine.getScreenWindowsInfo();
+      // let exculdeList = list.map((item, index) => {
+      //   return item.windowId
+      // });
+      // rtcEngine.videoSourceStartScreenCaptureByScreen(displayId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 5, captureMouseCursor: false, windowFocus: false, excludeWindowList: exculdeList, excludeWindowCount: exculdeList.length});
+      
       rtcEngine.startScreenCapturePreview();
     });
+  }
+
+  updateScreenShareParam = (e) => {
+    // let rtcEngine = this.getRtcEngine()
+    // let list = rtcEngine.getScreenWindowsInfo();
+    // let exculdeList = list.map((item, index) => {
+    //   return item.windowId
+    // });
+    // rtcEngine.videoSourceUpdateScreenCaptureParameters({width: 0, height: 0, bitrate: 500, frameRate: 5, captureMouseCursor: false, windowFocus: false, excludeWindowList: exculdeList, excludeWindowCount: exculdeList.length});
   }
 
   handleScreenSharing = (e) => {
@@ -846,6 +957,9 @@ export default class App extends Component {
             </div>
             <div className="control">
               <button onClick={this.handleDisplaySharing} className="button is-link">Display Share</button>
+            </div>
+            <div className="control">
+              <button onClick={this.updateScreenShareParam} className="button is-link">Update Screen Share</button>
             </div>
           </div>
           <div className="field">

@@ -6,6 +6,7 @@ interface IRenderer {
   event: EventEmitter;
   bind(element: Element): void;
   unbind(): void;
+  equalsElement(element: Element): boolean;
   drawFrame(imageData: {
     header: any,
     yUint8Array: any,
@@ -28,6 +29,9 @@ class GlRenderer implements IRenderer {
   }
   unbind(): void {
     return this.self.unbind();
+  }
+  equalsElement(element: Element): boolean{
+    return this.self.view === element;
   }
   drawFrame(imageData: {
     header: any,
@@ -59,6 +63,12 @@ class CustomRenderer implements IRenderer {
   unbind() {
     throw new Error('You have to declare your own custom render');
   }
+
+  equalsElement(element: Element) {
+    throw new Error('You have to declare your own custom render');
+    return false;
+  }
+
   drawFrame(imageData: {
     header: any,
     yUint8Array: any,
