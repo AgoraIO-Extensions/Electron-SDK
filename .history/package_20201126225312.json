@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "3.1.2-rc232",
+  "version": "2.9.0-rc.177-build.828",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -17,7 +17,7 @@
     "build:ts": "rimraf ./js && tsc -p tsconfig.json",
     "pretest": "npm run build:node",
     "test": "jest --detectOpenHandles --forceExit",
-    "quicktest": "jest --detectOpenHandles --forceExit --coverage",
+    "quicktest": "jest --detectOpenHandles --forceExit",
     "doc": "typedoc ts/API --out ./docs --hideGenerator --mode file --target es6 --name Agora\\ Electron\\ SDK\\ API\\ Reference --excludeExternals --excludePrivate --readme index.md",
     "prepublishOnly": "npm run build:ts",
     "example": "cd example && npm run dev"
@@ -26,13 +26,7 @@
     "scripts",
     "js",
     "jest.config.js",
-    "just-task.js",
-    "configs",
-    "agora_node_ext",
-    "common",
-    "video_source",
-    "extra",
-    "types"
+    "just-task.js"
   ],
   "gypfile": false,
   "dependencies": {
@@ -69,8 +63,11 @@
     "url": "git+https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron.git"
   },
   "agora_electron": {
-    "lib_sdk_win": "http://192.168.99.149:8086/v3.1.4/AgoraSDK/Windows/testing/Agora_Native_SDK_for_Windows_v3.1.4_FULL_20201208_1474_27453.zip",
-    "lib_sdk_mac": "http://192.168.99.149:8086/v3.1.4/AgoraSDK/Mac/Agora_Native_SDK_for_Mac_v3.1.4_FULL_20201202_1729_26142.zip"
+    "libUrl": {
+      "win": "http://192.168.99.149:8086/v2.9.0.186/AgoraSDK/Windows/testing(x86_release)/Agora_Native_SDK_for_Windows(x86)_v2.9.0.186_20201125_FULL_649.zip",
+      "win64": "http://192.168.99.149:8086/v2.9.0.186/AgoraSDK/Windows/testing(x64_release)/Agora_Native_SDK_for_Windows(x64)_v2.9.0.186_20201126_FULL_558.zip",
+      "mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v2_9_0_177_FULL_20200713_2161.zip"
+    }
   },
   "keywords": [
     "electron",
