@@ -94,7 +94,8 @@ task('install', () => {
       electronVersion: config.electronVersion, 
       platform: config.platform, 
       packageVersion: addonVersion,
-      arch: config.arch
+      arch: config.arch,
+      no_symbol: config.no_symbol,
     })
   } else {
     build(Object.assign({}, config, {
