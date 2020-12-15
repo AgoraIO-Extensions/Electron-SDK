@@ -95,7 +95,8 @@ task('install', () => {
       electronVersion: config.electronVersion, 
       platform: config.platform, 
       packageVersion: addonVersion,
-      arch: config.arch
+      arch: config.arch,
+      no_symbol: config.no_symbol,
     })
   } else {
     return new Promise((resolve, reject) => {
