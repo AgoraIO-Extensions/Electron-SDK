@@ -581,7 +581,7 @@ namespace agora {
         void NodeEventHandler::onUserMuteAudio_node(uid_t uid, bool muted)
         {
             FUNC_TRACE;
-            MAKE_JS_CALL_2(RTC_EVENT_USER_MUTE_AUDIO, uid, uid, int32, muted);
+            MAKE_JS_CALL_2(RTC_EVENT_USER_MUTE_AUDIO, uid, uid, bool, muted);
         }
 
         void NodeEventHandler::onUserMuteAudio(uid_t uid, bool muted)
@@ -595,7 +595,7 @@ namespace agora {
         void NodeEventHandler::onUserMuteVideo_node(uid_t uid, bool muted)
         {
             FUNC_TRACE;
-            MAKE_JS_CALL_2(RTC_EVENT_USER_MUTE_VIDEO, uid, uid, int32, muted);
+            MAKE_JS_CALL_2(RTC_EVENT_USER_MUTE_VIDEO, uid, uid, bool, muted);
         }
 
         void NodeEventHandler::onUserMuteVideo(uid_t uid, bool muted)
@@ -609,7 +609,7 @@ namespace agora {
         void NodeEventHandler::onUserEnableVideo_node(uid_t uid, bool enabled)
         {
             FUNC_TRACE;
-            MAKE_JS_CALL_2(RTC_EVENT_USER_ENABLE_VIDEO, uid, uid, int32, enabled);
+            MAKE_JS_CALL_2(RTC_EVENT_USER_ENABLE_VIDEO, uid, uid, bool, enabled);
         }
 
         void NodeEventHandler::onUserEnableVideo(uid_t uid, bool enabled)
@@ -623,7 +623,7 @@ namespace agora {
         void NodeEventHandler::onUserEnableLocalVideo_node(uid_t uid, bool enabled)
         {
             FUNC_TRACE;
-            MAKE_JS_CALL_2(RTC_EVENT_USER_ENABLE_LOCAL_VIDEO, uid, uid, int32, enabled);
+            MAKE_JS_CALL_2(RTC_EVENT_USER_ENABLE_LOCAL_VIDEO, uid, uid, bool, enabled);
         }
 
         void NodeEventHandler::onUserEnableLocalVideo(uid_t uid, bool enabled)
@@ -1073,7 +1073,7 @@ namespace agora {
         void NodeEventHandler::onAudioDeviceVolumeChanged_node(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted)
         {
             FUNC_TRACE;
-            MAKE_JS_CALL_3(RTC_EVENT_AUDIO_DEVICE_VOLUME_CHANGED, int32, deviceType, int32, volume, int32, muted);
+            MAKE_JS_CALL_3(RTC_EVENT_AUDIO_DEVICE_VOLUME_CHANGED, int32, deviceType, int32, volume, bool, muted);
         }
 
         void NodeEventHandler::onAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted)
