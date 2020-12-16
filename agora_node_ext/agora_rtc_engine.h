@@ -355,6 +355,7 @@ namespace agora {
             NAPI_API(setAudioEffectPreset);
             NAPI_API(setVoiceBeautifierPreset);
             NAPI_API(setAudioEffectParameters);
+            NAPI_API(setClientRoleWithOptions);
             
         public:
             Isolate* getIsolate() { return m_isolate; }
@@ -444,6 +445,10 @@ namespace agora {
             NAPI_API(registerMediaMetadataObserver);
             NAPI_API(unRegisterMediaMetadataObserver);
             NAPI_API(enableEncryption);
+            /**
+             * 3.2.0 Apis 
+             */
+            NAPI_API(setClientRoleWithOptions);
 
         public:
             Isolate* getIsolate() { return m_isolate; }
