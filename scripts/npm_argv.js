@@ -25,7 +25,8 @@ module.exports.getArgvFromPkgJson = () => {
       debug: pkgMeta.agora_electron.debug === true,
       silent: pkgMeta.agora_electron.silent === true,
       arch: pkgMeta.agora_electron.arch,
-      libUrl
+      libUrl,
+      no_symbol: pkgMeta.agora_electron.no_symbol === false ? false : true
     }
   } else {
     return {
