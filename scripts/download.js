@@ -1,12 +1,15 @@
 const { logger } = require("just-task");
 const download = require("download");
 const path = require("path");
+const fs = require('fs-extra');
+
 
 module.exports = ({
   electronVersion = "5.0.8",
   platform = process.platform,
   packageVersion,
-  arch
+  arch,
+  no_symbol = true,
 }) => {
   /** get download url */
   const genOS = () => {
@@ -48,7 +51,62 @@ module.exports = ({
     extract: true
   })
     .then(() => {
-      logger.info("Success", "Download finished");
+      if (no_symbol) {
+        if (platform === "darwin") {
+          try {
+            fs.removeSync("./build/Release/obj.target");
+            fs.removeSync("./build/Api");
+            fs.removeSync("./build/Renderer");
+            fs.removeSync("./build/Utils");
+
+            fs.removeSync("./build/agora_node_ext.target.mk");
+            fs.removeSync("./build/AgoraSdk.js");
+            fs.removeSync("./build/binding.Makefile");
+            fs.removeSync("./build/config.gypi");
+            fs.removeSync("./build/gyp-mac-tool");
+            fs.removeSync("./build/Makefile");
+            fs.removeSync("./build/VideoSource.target.mk");
+            fs.removeSync("./build/Release/agora_node_ext.node.dSYM");
+            fs.removeSync("./build/Release/VideoSource.dSYM");
+          } catch (err) {
+            console.log(err);
+            logger.info("Warning", "Some files doesn't removed.");
+          }
+          logger.info("Success", "Download and cleanup finished");
+        } else if (platform === "win32") {
+          try {
+            fs.removeSync("./build/Release/obj");
+            fs.removeSync("./build/Api");
+            fs.removeSync("./build/Renderer");
+            fs.removeSync("./build/Utils");
+
+            fs.removeSync("./build/agora_node_ext.vcxproj");
+            fs.removeSync("./build/agora_node_ext.vcxproj.filters");
+            fs.removeSync("./build/binding.sln");
+            fs.removeSync("./build/config.gypi");
+            fs.removeSync("./build/VideoSource.vcxproj");
+            fs.removeSync("./build/VideoSource.vcxproj.filters");
+            fs.removeSync("./build/AgoraSdk.js");
+            fs.removeSync("./build/Release/agora_node_ext.exp");
+            fs.removeSync("./build/Release/agora_node_ext.iobj");
+            fs.removeSync("./build/Release/agora_node_ext.ipdb");
+            fs.removeSync("./build/Release/agora_node_ext.lib");
+            fs.removeSync("./build/Release/agora_node_ext.pdb");
+            fs.removeSync("./build/Release/VideoSource.iobj");
+            fs.removeSync("./build/Release/VideoSource.ipdb");
+            fs.removeSync("./build/Release/VideoSource.pdb");
+            fs.removeSync("./build/Release/agora_node_ext.ilk");
+            fs.removeSync("./build/Release/VideoSource.ilk");
+            fs.removeSync("./build/Release/aaa.txt");
+          } catch (err) {
+            console.log(err);
+            logger.info("Warning", "Some files doesn't removed.");
+          }
+          logger.info("Success", "Download and cleanup finished");
+        }
+      } else {
+        logger.info("Success", "Download finished");
+      }
     })
     .catch(err => {
       logger.error("Failed: ", err);
