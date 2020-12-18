@@ -1359,7 +1359,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - 1: Fit mode. Uniformly scale the video until one of its dimension fits
    * the boundary (zoomed to fit). Areas that are not filled due to the
    * disparity
-   * in the aspect ratio will be filled with black. //FIXME(AD) FILL 4
+   * in the aspect ratio will be filled with black.
    * @return
    * - 0: Success.
    * - -1: Failure.
@@ -5049,7 +5049,7 @@ class AgoraRtcEngine extends EventEmitter {
   setMaxMetadataSize(size: number): number {
     return this.rtcEngine.setMaxMetadataSize(size);
   }
-
+  //TODO
   sendCustomReportMessage(id: string, category: string, event: string, label: string, value: number): number {
     return this.rtcEngine.sendCustomReportMessage(id, category, event, label, value);
   }
