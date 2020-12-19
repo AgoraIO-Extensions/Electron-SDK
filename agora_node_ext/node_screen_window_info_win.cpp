@@ -26,7 +26,8 @@ bool IsDisplayLogo(char class_name[100])
 		strcmp(class_name, "XLMAIN") == 0 ||
 		strcmp(class_name, "PPTFrameClass") == 0 ||
 		strcmp(class_name, "screenClass") == 0 ||
-		strcmp(class_name, "QWidget") ==0) {
+		strcmp(class_name, "QWidget") == 0 ||
+		strcmp(class_name, "MozillaWindowClass") == 0) {
 		return true;
 	} else {
 		return false;

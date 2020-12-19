@@ -29,7 +29,8 @@ module.exports.getArgvFromPkgJson = () => {
       arch: pkgMeta.agora_electron.arch,
       lib_sdk_win: pkgMeta.agora_electron.lib_sdk_win,
       lib_sdk_win64: pkgMeta.agora_electron.lib_sdk_win64,
-      lib_sdk_mac: pkgMeta.agora_electron.lib_sdk_mac
+      lib_sdk_mac: pkgMeta.agora_electron.lib_sdk_mac,
+      no_symbol: pkgMeta.agora_electron.no_symbol === false ? false : true
     }
     return config
   } else {
