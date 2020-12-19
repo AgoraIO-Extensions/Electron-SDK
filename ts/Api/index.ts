@@ -5418,6 +5418,10 @@ declare interface AgoraRtcEngine {
   // on(evt: 'audioQuality', cb: (
   //   uid: number, quality: AgoraNetworkQuality, delay: number, lost: number
   // ) => void): this;
+  /**
+   * @deprecated Deprecated. Use the `groupAudioVolumeIndication` callback
+   * instead.
+   */
   on(
     evt: 'audioVolumeIndication',
     cb: (
@@ -5557,8 +5561,6 @@ declare interface AgoraRtcEngine {
     cb: (stats: RemoteAudioTransportStats) => void
   ): this;
   /**
-   * This callback is not work.
-   *
    * Occurs when the audio device state changes.
    * - deviceId: Pointer to the device ID.
    * - deviceType: Device type. See {@link MediaDeviceType}.
@@ -6416,7 +6418,7 @@ declare interface AgoraRtcEngine {
   on(evt: 'channelMediaRelayEvent', cb: (
     event: ChannelMediaRelayEvent
   ) => void): this;
-  /** Receivers the media metadata.
+  /** Receives the media metadata.
    *
    * After the sender sends the media metadata by calling the
    * {@link sendMetadata} method and the receiver receives the media metadata,
@@ -8184,7 +8186,7 @@ declare interface AgoraRtcChannel {
 
   on(evt: string, listener: Function): this;
   /**
-   * Occurs when the state of the RTMP streaming changes.
+   * Occurs when the state of the RTMP or RTMPS streaming changes.
    *
    * The SDK triggers this callback to report the result of the local user
    * calling the {@link addPublishStreamUrl} and {@link removePublishStreamUrl}
