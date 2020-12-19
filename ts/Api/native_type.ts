@@ -20,6 +20,8 @@ export interface RendererOptions
  * - 4: Users cannot communicate smoothly.
  * - 5: The network is so bad that users can barely communicate.
  * - 6: The network is down and users cannot communicate at all.
+ * - 7: Users cannot detect the network quality.
+ * - 8: Detecting the network quality.
  */
 export type AgoraNetworkQuality =
   | 0 // unknown
