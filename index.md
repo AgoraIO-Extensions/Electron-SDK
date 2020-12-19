@@ -139,9 +139,11 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 
 | Method                                                       | Description                                       |
 | ------------------------------------------------------------ | ------------------------------------------------- |
-| {@link AgoraRtcEngine.setLocalVoiceChanger setLocalVoiceChanger} | Sets the local voice changer option.              |
-| {@link AgoraRtcEngine.setLocalVoiceReverbPreset setLocalVoiceReverbPreset} | Sets the preset local voice reverberation effect. |
 | {@link AgoraRtcEngine.setLocalVoicePitch setLocalVoicePitch} | Changes the voice pitch of the local speaker.     |
+| {@link AgoraRtcEngine.setLocalVoiceEqualization setLocalVoiceEqualization} | Sets the local video equalization effect.   |
+| {@link AgoraRtcEngine.setLocalVoiceReverbPreset setLocalVoiceReverbPreset} | Sets the preset local voice reverberation effect. |
+
+| {@link AgoraRtcEngine.setLocalVoiceReverbPreset setLocalVoiceReverbPreset} | Sets the preset local voice reverberation effect. |
 | {@link AgoraRtcEngine.setLocalVoiceEqualization setLocalVoiceEqualization} | Sets the local voice equalization effect.         |
 | {@link AgoraRtcEngine.setLocalVoiceReverb setLocalVoiceReverb} | Sets the local voice reverberation.               |
 

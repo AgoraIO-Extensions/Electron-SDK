@@ -747,7 +747,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @ignore
    * @param {number} type 0-local 1-remote 2-device_test 3-video_source
    * @param {number} uid uid get from native engine, differ from electron engine's uid
-   */
+   */ //TODO(input)
   _getRenderers(type: number, uid: number, channelId: string | undefined): IRenderer[] | undefined {
     let channelStreams = this._getChannelRenderers(channelId || "")
     if (type < 2) {
@@ -767,7 +767,7 @@ class AgoraRtcEngine extends EventEmitter {
       return;
     }
   }
-
+  //TODO(input)
   _getChannelRenderers(channelId: string): Map<string, IRenderer[]> {
     let channel: Map<string, IRenderer[]>;
     if(!this.streams.has(channelId)) {
@@ -787,7 +787,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {*} ydata
    * @param {*} udata
    * @param {*} vdata
-   */
+   *///TODO(input)
   _checkData(
     header: ArrayBuffer,
     ydata: ArrayBuffer,
@@ -933,7 +933,7 @@ class AgoraRtcEngine extends EventEmitter {
       channelStreams.set(String(key), renderers)
     }
   }
-
+  //TODO(input)
   destroyRenderView(
     key: 'local' | 'videosource' | number, channelId: string | undefined, view: Element,
     onFailure?: (err: Error) => void
@@ -1243,12 +1243,12 @@ class AgoraRtcEngine extends EventEmitter {
    * @return
    * - 0: Success.
    * - < 0: Failure.
-   */
+   */ //TODO(input)
   subscribe(uid: number, view: Element, options?: RendererOptions): number {
     this.initRender(uid, view, "", options);
     return this.rtcEngine.subscribe(uid);
   }
-
+  //TODO(input)
   setupRemoteVideo(uid: number, view?: Element, channel?: string, options?: RendererOptions): number {
     if(view) {
       //bind
@@ -1267,7 +1267,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @return
    * - 0: Success.
    * - < 0: Failure.
-   */
+   *///TODO(input)
   setupLocalVideo(view: Element, options?: RendererOptions): number {
     this.initRender('local', view, "", options);
     return this.rtcEngine.setupLocalVideo();
@@ -1840,7 +1840,7 @@ class AgoraRtcEngine extends EventEmitter {
    * If you do not set the video encoder configuration after joining the
    * channel, you can call this method before calling the {@link enableVideo}
    * method to reduce the render time of the first video frame.
-   * @param {VideoEncoderConfiguration} config - The local video encoder
+   * @param {VideoEncoderConfiguration} config The local video encoder
    * configuration. See {@link VideoEncoderConfiguration}.
    * @return
    * - 0: Success.
@@ -3258,14 +3258,26 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.stopAudioDeviceLoopbackTest();
   }
 
-  /**
-   * Enables the loopback recording. Once enabled, the SDK collects all local
-   * sounds.
-   * @param {boolean} [enable = false] Enable the loop back recording.
-   * @param {string|null} [deviceName = null] The audio device.
+  /** Enables loopback audio capturing.
+   *
+   * If you enable loopback audio capturing, the output of the sound card is
+   * mixed into the audio stream sent to the other end.
+   *
+   * @note You can call this method either before or after joining a channel.
+   *
+   * @param enable Sets whether to enable/disable loopback capturing.
+   * - true: Enable loopback capturing.
+   * - false: (Default) Disable loopback capturing.
+   * @param deviceName The device name of the sound card. The default value
+   * is NULL (the default sound card). **Note**: macOS does not support
+   * loopback capturing of the default sound card.
+   * If you need to use this method, please use a virtual sound card and pass
+   * its name to the deviceName parameter. Agora has tested and recommends
+   * using soundflower.
+   *
    * @return
-   * - 0: Success.
-   * - < 0: Failure.
+   * - 0: Success
+   * - < 0: Failure
    */
   enableLoopbackRecording(
     enable = false,
@@ -3763,11 +3775,54 @@ class AgoraRtcEngine extends EventEmitter {
   }) {
     return this.rtcEngine.videoSourceUpdateScreenCaptureRegion(rect);
   }
-
+  /** Enables loopback audio capturing.
+   *
+   * If you enable loopback audio capturing, the output of the sound card is
+   * mixed into the audio stream sent to the other end.
+   *
+   * @note You can call this method either before or after joining a channel.
+   *
+   * @param enable Sets whether to enable/disable loopback capturing.
+   * - true: Enable loopback capturing.
+   * - false: (Default) Disable loopback capturing.
+   * @param deviceName The device name of the sound card. The default value
+   * is NULL (the default sound card). **Note**: macOS does not support
+   * loopback capturing of the default sound card.
+   * If you need to use this method, please use a virtual sound card and pass
+   * its name to the deviceName parameter. Agora has tested and recommends
+   * using soundflower.
+   *
+   * @return
+   * - 0: Success
+   * - < 0: Failure
+   */
   videoSourceEnableLoopbackRecording(enabled: boolean, deviceName: string | null = null) : number {
     return this.rtcEngine.videoSourceEnableLoopbackRecording(enabled, deviceName)
   }
-
+  /**
+   * Enables the audio module.
+   *
+   * The audio module is enabled by default.
+   *
+   * **Note**:
+   * - This method affects the internal engine and can be called after calling
+   * the {@link leaveChannel} method. You can call this method either before
+   * or after joining a channel.
+   * - This method resets the internal engine and takes some time to take
+   * effect. We recommend using the following API methods to control the
+   * audio engine modules separately:
+   *   - {@link enableLocalAudio}: Whether to enable the microphone to create
+   * the local audio stream.
+   *   - {@link muteLocalAudioStream}: Whether to publish the local audio
+   * stream.
+   *   - {@link muteRemoteAudioStream}: Whether to subscribe to and play the
+   * remote audio stream.
+   *   - {@link muteAllRemoteAudioStreams}: Whether to subscribe to and play
+   * all remote audio streams.
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   videoSourceEnableAudio() : number {
     return this.rtcEngine.videoSourceEnableAudio()
   }
@@ -3785,7 +3840,7 @@ class AgoraRtcEngine extends EventEmitter {
    * **Note**:
    * - If you enable the built-in encryption, you cannot use the RTMP or
    * RTMPS streaming function.
-   * - The SDK returns `-4` when the encryption mode is incorrect or //FIXME(encryp)
+   * - The SDK returns `-4` when the encryption mode is incorrect or
    * the SDK fails to load the external encryption library.
    * Check the enumeration or reload the external encryption library.
    *
@@ -4809,7 +4864,7 @@ class AgoraRtcEngine extends EventEmitter {
   complain(callId: string, desc: string): number {
     return this.rtcEngine.complain(callId, desc);
   }
-
+  //TODO(input)
   setRecordingAudioFrameParameters(sampleRate: number, channel: 1 | 2, mode: 0 | 1 | 2, samplesPerCall: number): number {
     return this.rtcEngine.setRecordingAudioFrameParameters(sampleRate, channel, mode, samplesPerCall);
   }
@@ -5022,11 +5077,21 @@ class AgoraRtcEngine extends EventEmitter {
   getPluginParameter(pluginId: string, paramKey: string): string {
     return this.rtcEngine.getPluginParameter(pluginId, paramKey);
   }
-
+  /** Unregisters a media metadata observer.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   unRegisterMediaMetadataObserver(): number {
     return this.rtcEngine.unRegisterMediaMetadataObserver();
   }
-
+  /** Registers a media metadata observer.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   registerMediaMetadataObserver(): number {
     const fire = (event: string, ...args: Array<any>) => {
       setImmediate(() => {
@@ -5041,15 +5106,50 @@ class AgoraRtcEngine extends EventEmitter {
     });
     return this.rtcEngine.registerMediaMetadataObserver();
   }
-
+  /** Sends the media metadata.
+   *
+   * After calling the {@link registerMediaMetadataObserver} method, you can
+   * the `setMetadata` method to send the media metadata.
+   *
+   * If it is a successful sending, the sender receives the
+   * `sendMetadataSuccess` callback, and the receiver receives the
+   * `receiveMetadata` callback.
+   *
+   * @param metadata The media metadata.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   sendMetadata(metadata: Metadata): number {
     return this.rtcEngine.sendMetadata(metadata);
   }
-
+  /** Sets the maximum size of the media metadata.
+   *
+   * After calling the {@link registerMediaMetadataObserver} method, you can
+   * call the `setMaxMetadataSize` method to set the maximum size.
+   *
+   * @param size The maximum size of your metadata.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   setMaxMetadataSize(size: number): number {
     return this.rtcEngine.setMaxMetadataSize(size);
   }
-  //TODO
+  /** Agora supports reporting and analyzing customized messages.
+   *
+   * @since v3.2.0
+   *
+   * This function is in the beta stage with a free trial. The ability
+   * provided in its beta test version is reporting a maximum of 10 message
+   * pieces within 6 seconds, with each message piece not exceeding 256 bytes
+   * and each string not exceeding 100 bytes.
+   *
+   * To try out this function, contact support@agora.io and discuss the
+   * format of customized messages with us.
+   */
   sendCustomReportMessage(id: string, category: string, event: string, label: string, value: number): number {
     return this.rtcEngine.sendCustomReportMessage(id, category, event, label, value);
   }
@@ -5153,9 +5253,9 @@ class AgoraRtcEngine extends EventEmitter {
    * - This method works best with the human voice. Agora does not recommend
    * using this method for audio containing music.
    * - After calling this method, Agora recommends not calling the following
-   * methods, because they can override {@link setAudioEffectParameters}:
+   * methods, because they can override {@link setVoiceBeautifierPreset}:
    *  - {@link setAudioEffectPreset}
-   *  - {@link setVoiceBeautifierPreset}
+   *  - {@link setAudioEffectParameters}
    *  - {@link setLocalVoiceReverbPreset}
    *  - {@link setLocalVoiceChanger}
    *  - {@link setLocalVoicePitch}
@@ -6229,14 +6329,13 @@ declare interface AgoraRtcEngine {
    * After exiting full-screen mode, remote users cannot see the shared window.
    * To prevent remote users from seeing a
    * black screen, Agora recommends that you immediately stop screen sharing.
-   *
    * Common scenarios for reporting this error code:
-   * - When the local user closes the shared window, the SDK reports this
+   *   - When the local user closes the shared window, the SDK reports this
    * error code.
-   * - The local user shows some slides in full-screen mode first, and then
+   *   - The local user shows some slides in full-screen mode first, and then
    * shares the windows of the slides. After
    * the user exits full-screen mode, the SDK reports this error code.
-   * - The local user watches web video or reads web document in full-screen
+   *   - The local user watches web video or reads web document in full-screen
    * mode first, and then shares the window of
    * the web video or document. After the user exits full-screen mode, the
    * SDK reports this error code.
@@ -6317,10 +6416,25 @@ declare interface AgoraRtcEngine {
   on(evt: 'channelMediaRelayEvent', cb: (
     event: ChannelMediaRelayEvent
   ) => void): this;
+  /** Receivers the media metadata.
+   *
+   * After the sender sends the media metadata by calling the
+   * {@link sendMetadata} method and the receiver receives the media metadata,
+   * the SDK triggers this callback and reports the metadata to the receiver.
+   *
+   * @param cb.metadata The media metadata.
+   */
   on(evt: 'receiveMetadata', cb: (
     metadata: Metadata
     ) => void): this;
-  //FIXME
+  /** Sends the media metadata successfully.
+   *
+   * After the sender sends the media metadata successfully by calling the
+   * {@link sendMetadata} method, the SDK triggers this calback to reports the
+   * media metadata to the sender.
+   *
+   * @param cb.metadata The media metadata.
+   */
   on(evt: 'sendMetadataSuccess', cb: (
     metadata: Metadata
     ) => void): this;
@@ -6337,7 +6451,7 @@ declare interface AgoraRtcEngine {
   * - The local client calls {@link disableAudio} and {@link enableAudio}
   * in sequence.
   *
-  * @param elapsed The time elapsed (ms) from the local client calling
+  * @param cb.elapsed The time elapsed (ms) from the local client calling
   * {@link joinChannel} until the SDK triggers this callback.
   */
   on(evt: 'firstLocalAudioFramePublished', cb: (
@@ -6356,7 +6470,7 @@ declare interface AgoraRtcEngine {
    * - The local client calls {@link disableVideo} and {@link enableVideo}
    * in sequence.
    *
-   * @param elapsed The time elapsed (ms) from the local client calling
+   * @param cb.elapsed The time elapsed (ms) from the local client calling
    * {@link joinChannel} until the SDK triggers this callback.
    */
   on(evt: 'firstLocalVideoFramePublished', cb: (
@@ -6380,10 +6494,10 @@ declare interface AgoraRtcEngine {
    * This callback indicates the publishing state change of the local audio
    * stream.
    *
-   * @param channel The channel name.
-   * @param oldState The previous publishing state.
-   * @param newState The current publishing state.
-   * @param elapseSinceLastState The time elapsed (ms) from the previous state
+   * @param cb.channel The channel name.
+   * @param cb.oldState The previous publishing state.
+   * @param cb.newState The current publishing state.
+   * @param cb.elapseSinceLastState The time elapsed (ms) from the previous state
    * to the current state.
    */
   on(evt: 'audioPublishStateChanged', cb: (
@@ -6399,10 +6513,10 @@ declare interface AgoraRtcEngine {
    * This callback indicates the publishing state change of the local video
    * stream.
    *
-   * @param channel The channel name.
-   * @param oldState The previous publishing state.
-   * @param newState The current publishing state.
-   * @param elapseSinceLastState The time elapsed (ms) from the previous state
+   * @param cb.channel The channel name.
+   * @param cb.oldState The previous publishing state.
+   * @param cb.newState The current publishing state.
+   * @param cb.elapseSinceLastState The time elapsed (ms) from the previous state
    * to the current state.
    */
   on(evt: 'videoPublishStateChanged', cb: (
@@ -6418,11 +6532,11 @@ declare interface AgoraRtcEngine {
    * This callback indicates the subscribing state change of a remote audio
    * stream.
    *
-   * @param channel The channel name.
-   * @param uid The ID of the remote user.
-   * @param oldState The previous subscribing state.
-   * @param newState The current subscribing state.
-   * @param elapseSinceLastState The time elapsed (ms) from the previous state
+   * @param cb.channel The channel name.
+   * @param cb.uid The ID of the remote user.
+   * @param cb.oldState The previous subscribing state.
+   * @param cb.newState The current subscribing state.
+   * @param cb.elapseSinceLastState The time elapsed (ms) from the previous state
    * to the current state.
    */
   on(evt: 'audioSubscribeStateChanged', cb: (
@@ -6439,11 +6553,11 @@ declare interface AgoraRtcEngine {
    * This callback indicates the subscribing state change of a remote video
    * stream.
    *
-   * @param channel The channel name.
-   * @param uid The ID of the remote user.
-   * @param oldState The previous subscribing state.
-   * @param newState The current subscribing state.
-   * @param elapseSinceLastState The time elapsed (ms) from the previous state
+   * @param cb.channel The channel name.
+   * @param cb.uid The ID of the remote user.
+   * @param cb.oldState The previous subscribing state.
+   * @param cb.newState The current subscribing state.
+   * @param cb.elapseSinceLastState The time elapsed (ms) from the previous state
    * to the current state.
    */
   on(evt: 'videoSubscribeStateChanged', cb: (
@@ -7617,11 +7731,21 @@ class AgoraRtcChannel extends EventEmitter
   adjustUserPlaybackSignalVolume(uid: number, volume: number): number {
     return this.rtcChannel.adjustUserPlaybackSignalVolume(uid, volume);
   }
-
+  /** Unregisters a media metadata observer.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   unRegisterMediaMetadataObserver(): number {
     return this.rtcChannel.unRegisterMediaMetadataObserver();
   }
-
+  /** Registers a media metadata observer.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   registerMediaMetadataObserver(): number {
     const fire = (event: string, ...args: Array<any>) => {
       setImmediate(() => {
@@ -7636,11 +7760,35 @@ class AgoraRtcChannel extends EventEmitter
     });
     return this.rtcChannel.registerMediaMetadataObserver();
   }
-
+  /** Sends the media metadata.
+   *
+   * After calling the {@link registerMediaMetadataObserver} method, you can
+   * the `setMetadata` method to send the media metadata.
+   *
+   * If it is a successful sending, the sender receives the
+   * `sendMetadataSuccess` callback, and the receiver receives the
+   * `receiveMetadata` callback.
+   *
+   * @param metadata The media metadata.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   sendMetadata(metadata: Metadata): number {
     return this.rtcChannel.sendMetadata(metadata);
   }
-
+  /** Sets the maximum size of the media metadata.
+   *
+   * After calling the {@link registerMediaMetadataObserver} method, you can
+   * call the `setMaxMetadataSize` method to set the maximum size.
+   *
+   * @param size The maximum size of your metadata.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   setMaxMetadataSize(size: number): number {
     return this.rtcChannel.setMaxMetadataSize(size);
   }
@@ -8147,10 +8295,10 @@ declare interface AgoraRtcChannel {
    * This callback indicates the publishing state change of the local audio
    * stream.
    *
-   * @param channel The channel name.
-   * @param oldState The previous publishing state.
-   * @param newState The current publishing state.
-   * @param elapseSinceLastState The time elapsed (ms) from the previous state
+   * @param cb.channel The channel name.
+   * @param cb.oldState The previous publishing state.
+   * @param cb.newState The current publishing state.
+   * @param cb.elapseSinceLastState The time elapsed (ms) from the previous state
    * to the current state.
    */
   on(evt: 'audioPublishStateChanged', cb: (
@@ -8165,10 +8313,10 @@ declare interface AgoraRtcChannel {
    * This callback indicates the publishing state change of the local video
    * stream.
    *
-   * @param channel The channel name.
-   * @param oldState The previous publishing state.
-   * @param newState The current publishing state.
-   * @param elapseSinceLastState The time elapsed (ms) from the previous state
+   * @param cb.channel The channel name.
+   * @param cb.oldState The previous publishing state.
+   * @param cb.newState The current publishing state.
+   * @param cb.elapseSinceLastState The time elapsed (ms) from the previous state
    * to the current state.
    */
   on(evt: 'videoPublishStateChanged', cb: (
@@ -8183,11 +8331,11 @@ declare interface AgoraRtcChannel {
    * This callback indicates the subscribing state change of a remote audio
    * stream.
    *
-   * @param channel The channel name.
-   * @param uid The ID of the remote user.
-   * @param oldState The previous subscribing state.
-   * @param newState The current subscribing state.
-   * @param elapseSinceLastState The time elapsed (ms) from the previous state
+   * @param cb.channel The channel name.
+   * @param cb.uid The ID of the remote user.
+   * @param cb.oldState The previous subscribing state.
+   * @param cb.newState The current subscribing state.
+   * @param cb.elapseSinceLastState The time elapsed (ms) from the previous state
    * to the current state.
    */
   on(evt: 'audioSubscribeStateChanged', cb: (
@@ -8203,11 +8351,11 @@ declare interface AgoraRtcChannel {
    * This callback indicates the subscribing state change of a remote video
    * stream.
    *
-   * @param channel The channel name.
-   * @param uid The ID of the remote user.
-   * @param oldState The previous subscribing state.
-   * @param newState The current subscribing state.
-   * @param elapseSinceLastState The time elapsed (ms) from the previous state
+   * @param cb.channel The channel name.
+   * @param cb.uid The ID of the remote user.
+   * @param cb.oldState The previous subscribing state.
+   * @param cb.newState The current subscribing state.
+   * @param cb.elapseSinceLastState The time elapsed (ms) from the previous state
    * to the current state.
    */
   on(evt: 'videoSubscribeStateChanged', cb: (
