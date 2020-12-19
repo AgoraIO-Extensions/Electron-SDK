@@ -33,11 +33,6 @@ bool IAVFramePluginManager::onRenderVideoFrame(unsigned int uid, VideoFrame& vid
 
 bool IAVFramePluginManager::onRecordAudioFrame(AudioFrame& audioFrame)
 {
-    for (auto const& element : m_mapPlugins) {
-        if(element.second.enabled) {
-            element.second.instance->onPluginRecordAudioFrame((AudioPluginFrame*)&audioFrame);
-        }
-    }
     return true;
 }
 
