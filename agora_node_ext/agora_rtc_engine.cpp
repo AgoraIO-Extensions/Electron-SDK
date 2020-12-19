@@ -569,7 +569,6 @@ namespace agora {
 
                 LiveTranscoding transcoding;
                 nodestring extrainfo;
-                nodestring wmurl;
                 int videoCodecProfile, audioSampleRateType;
                 Local<Object> obj;
                 key = "arg 0 is not a object";
@@ -639,29 +638,6 @@ namespace agora {
                 if (!wmValue->IsNullOrUndefined()) {
                     Local<Object> objWm;
                     napi_get_value_object_(isolate, wmValue, objWm);
-                    status = napi_get_object_property_nodestring_(isolate, objWm, "url", wmurl);
-                    CHECK_NAPI_STATUS(pEngine, status);
-                    wkImage.url = wmurl;
-
-                    status = napi_get_object_property_int32_(isolate, objWm, "x", wkImage.x);
-                    CHECK_NAPI_STATUS(pEngine, status);
-
-                    status = napi_get_object_property_int32_(isolate, objWm, "y", wkImage.y);
-                    CHECK_NAPI_STATUS(pEngine, status);
-
-                    status = napi_get_object_property_int32_(isolate, objWm, "width", wkImage.width);
-                    CHECK_NAPI_STATUS(pEngine, status);
-                    
-                    status = napi_get_object_property_int32_(isolate, objWm, "height", wkImage.height);
-                    CHECK_NAPI_STATUS(pEngine, status);
-                    transcoding.watermark = &wkImage;
-                }
-
-                Local<Name> keyNameBackground = Nan::New<String>("backgroundImage").ToLocalChecked();
-                Local<Value> bgValue = obj->Get(isolate->GetCurrentContext(), keyNameBackground).ToLocalChecked();
-                if (!bgValue->IsNullOrUndefined()) {
-                    Local<Object> objWm;
-                    napi_get_value_object_(isolate, bgValue, objWm);
                     
                     key = "url";
                     status = napi_get_object_property_nodestring_(isolate, objWm, key, wmurl);
@@ -4410,7 +4386,6 @@ namespace agora {
                 if (pEngine->m_avPluginManager.get())
                 {
                     pMediaEngine->registerVideoFrameObserver(pEngine->m_avPluginManager.get());
-                    pMediaEngine->registerAudioFrameObserver(pEngine->m_avPluginManager.get());
                     result = 0;
                 }
             } while (false);
@@ -4430,7 +4405,6 @@ namespace agora {
                 agora::media::IMediaEngine* pMediaEngine = nullptr;
                 pEngine->getRtcEngine()->queryInterface(agora::AGORA_IID_MEDIA_ENGINE, (void**)&pMediaEngine);
                 pMediaEngine->registerVideoFrameObserver(NULL);
-                pMediaEngine->registerAudioFrameObserver(NULL);
                 result = 0;
             } while (false);
             napi_set_int_result(args, result);

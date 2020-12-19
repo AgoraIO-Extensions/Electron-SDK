@@ -8,7 +8,6 @@ mv ./Agora_Native_SDK_for_Mac_FULL/libs/Agorafdkaac.framework ./sdk/lib/mac/.
 mv ./Agora_Native_SDK_for_Mac_FULL/libs/Agoraffmpeg.framework ./sdk/lib/mac/.
 mv ./Agora_Native_SDK_for_Mac_FULL/libs/AgoraSoundTouch.framework ./sdk/lib/mac/.
 
-npm config delete registry
 npm config set ELECTRON_MIRROR http://npm.taobao.org/mirrors/electron/
 rm -rf node_modules
 rm -rf sdk

@@ -67,8 +67,6 @@ export default class App extends Component {
       }) < 0){
         console.error(`load plugin failed`)
       }
-      let hookDll = path.resolve(__dirname, "./plugins/AgoraPlayerHookPlugin.dll")
-      let regist = this.rtcEngine.registerPlugin({id: "hookPlugin", path: hookDll})
       this.subscribeEvents(this.rtcEngine)
       window.rtcEngine = this.rtcEngine;
     }
@@ -234,8 +232,6 @@ export default class App extends Component {
     let encoderWidth = parseInt(this.state.encoderWidth)
     let encoderHeight = parseInt(this.state.encoderHeight)
     let rtcEngine = this.getRtcEngine()
-    let ret = rtcEngine.setRecordingAudioFrameParameters(44100, 2, 2, 882)
-    console.log(`setRecordingAudioFrameParameters ${ret}`)
     rtcEngine.setParameters("{\"rtc.user_account_server_list\":[\"58.211.82.170\"]}")
     let result = rtcEngine.registerLocalUserAccount(APP_ID, "TEST")
     console.log(result)
@@ -628,7 +624,7 @@ export default class App extends Component {
       return
     }
     if(!this.state.rtmpTestOn) {
-    let ret =  this.rtcEngine.setLiveTranscoding({
+      this.rtcEngine.setLiveTranscoding({
         /** width of canvas */
         width: 640,
         /** height of canvas */
@@ -652,7 +648,6 @@ export default class App extends Component {
         audioSampleRate: 44800,
         audioChannels: 1,
         audioBitrate: 48,
-        transcodingExtraInfo: "",
         /** transcodingusers array */
         transcodingUsers: [
           {
@@ -667,22 +662,13 @@ export default class App extends Component {
           }
         ],
         watermark: {
-          url: "http://www.baidu.com",
+          url: "",
           x: 0,
           y:0,
           width: 0,
           height: 0
-        },
-        background: {
-          url: "http://www.baidu.2323com",
-          x: 1323,
-          y:4324,
-          width: 23,
-          height: 434
         }
       });
-
-      console.log(`setLivetranscoding ===== ${ret}`)
       this.rtcEngine.addPublishStreamUrl(
         url,
         true
@@ -777,24 +763,21 @@ export default class App extends Component {
 
   handleAudioHook = e => {
     let rtcEngine = this.getRtcEngine()
-    const plugin = this.rtcEngine.getPlugins().find(plugin=> plugin.id === 'hookPlugin')
-    if (plugin) {
-      if (this.state.audioHookEnabled) {
-        plugin.disable()
-        this.setState({
-          audioHookEnabled: false
-        })
-      } else {
-        let playerPath = path.resolve(this.state.hookplayerpath)
-        plugin.setParameter(JSON.stringify({
-          "plugin.hookAudio.playerPath": playerPath
-        }))
-
-        plugin.setParameter(JSON.stringify({
-          "plugin.hookAudio.foceRestart": true
-        }))
-        plugin.enable()
-      }
+    if(!this.state.audioHookEnabled){
+      rtcEngine.registerAudioFramePluginManager()
+      rtcEngine.registerAudioFramePlugin("agora_electron_plugin_audio_hook")
+      let dllpath = path.resolve(__dirname, "./plugins/AgoraPlayerHookPlugin.dll")
+      rtcEngine.loadPlugin("agora_electron_plugin_audio_hook", dllpath)
+      let playerpath = path.resolve(this.state.hookplayerpath)
+      rtcEngine.setPluginStringParameter("agora_electron_plugin_audio_hook","plugin.hookAudio.playerPath", playerpath)
+      rtcEngine.setPluginBoolParameter("agora_electron_plugin_audio_hook", "plugin.hookAudio.forceRestart", true)
+      // important for hook audio quality
+      rtcEngine.setRecordingAudioFrameParameters(44100, 2, 2, 882)
+      rtcEngine.enablePlugin("agora_electron_plugin_audio_hook")
+    } else {
+      rtcEngine.disablePlugin("agora_electron_plugin_audio_hook")
+      console.log(rtcEngine.unRegisterAudioFramePlugin("agora_electron_plugin_audio_hook"))
+      console.log(rtcEngine.unRegisterAudioFramePluginManager())
     }
     this.setState({audioHookEnabled: !this.state.audioHookEnabled})
   }
