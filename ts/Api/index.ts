@@ -1111,7 +1111,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - The local client: joinedChannel
    * - The remote client: userJoined, if the user joining the channel is in
    * the communication(`0`) profile,
-   * or is a BROADCASTER in the Live Broadcast profile.
+   * or is a host in the `1` (live streaming) profile.
    *
    * When the connection between the client and Agora's server is interrupted
    * due to poor network conditions,
@@ -1175,7 +1175,7 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * A successful leavechannel method call triggers the removeStream callback
    * for the remote client when the user leaving the channel
-   * is in the Communication channel, or is a BROADCASTER in the Live Broadcast
+   * is in the Communication channel, or is a host in the `1` (live streaming)
    * profile.
    *
    * @return
@@ -1417,7 +1417,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - Users in the same channel must use the same channel profile.
    * @param {number} profile The channel profile:
    * - 0: for communication
-   * - 1: for live broadcasting
+   * - 1: for live streaming
    * - 2: for in-game
    * @return
    * - 0: Success.
@@ -1428,13 +1428,13 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Sets the role of a user (Live Broadcast only).
+   * Sets the role of a user (live streaming only).
    *
    * This method sets the role of a user, such as a host or an audience
    * (default), before joining a channel.
    *
    * This method can be used to switch the user role after a user joins a
-   * channel. In the Live Broadcast profile,
+   * channel. In the `1` (live streaming)profile,
    * when a user switches user roles after joining a channel, a successful
    * {@link setClientRole} method call triggers the following callbacks:
    * - The local client: clientRoleChanged
@@ -1442,7 +1442,7 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * @param {ClientRoleType} role The client role:
    *
-   * - 1: The broadcaster
+   * - 1: The host
    * - 2: The audience
    * @return
    * - 0: Success.
@@ -1508,7 +1508,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - After calling this method, call the {@link stopEchoTest} method to end
    * the test. Otherwise, the app cannot run the next echo test,
    * nor can it call the {@link joinChannel} method to start a new call.
-   * - In the Live Broadcast profile, only hosts can call this method.
+   * - In the `1` (live streaming) profile, only hosts can call this method.
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -1545,7 +1545,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - After calling this method, call the {@link stopEchoTest} method to end
    * the test. Otherwise, the app cannot run the next echo test,
    * nor can it call the {@link joinChannel} method to start a new call.
-   * - In the Live Broadcast profile, only hosts can call this method.
+   * - In the `1` (live streaming) profile, only hosts can call this method.
    * @param interval The time interval (s) between when you speak and when the
    * recording plays back.
    * @return
@@ -1579,7 +1579,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @note
    * - Ensure that you have called {@link enableVideo} before this method.
    * - If you only want to add a watermark image to the local video for the
-   * audience in the CDN live broadcast channel to see and capture, you can
+   * audience in the CDN live streaming channel to see and capture, you can
    * call this method or {@link setLiveTranscoding}.
    * - This method supports adding a watermark image in the PNG file format
    * only. Supported pixel formats of the PNG image are RGBA, RGB, Palette,
@@ -1691,7 +1691,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - Do not call other methods before receiving the lastMileQuality and
    * lastmileProbeResult callbacks. Otherwise, the callbacks may be interrupted
    * by other methods.
-   * - In the Live Broadcast profile, a host should not call this method after
+   * - In the `1` (live streaming) profile, a host should not call this method after
    * joining a channel.
    *
    * @param {LastmileProbeConfig} config The configurations of the last-mile
@@ -1833,7 +1833,7 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Sets the camera capturer configuration.
    *
-   * For a video call or live broadcast, generally the SDK controls the camera
+   * For a video call or live streaming, generally the SDK controls the camera
    * output parameters.
    * When the default camera capture settings do not meet special requirements
    * or cause performance problems, we recommend using this method to set the
@@ -2084,7 +2084,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @deprecated This method is deprecated. Use
    * {@link setCameraCapturerConfiguration} and
    * {@link setVideoEncoderConfiguration} instead.
-   * Sets the preference option for the video quality (Live Broadcast only).
+   * Sets the preference option for the video quality (live streaming only).
    * @param {boolean} preferFrameRateOverImageQuality Sets the video quality
    * preference:
    * - true: Frame rate over image quality.
@@ -2588,9 +2588,9 @@ class AgoraRtcEngine extends EventEmitter {
    * automatically enables interoperability with the Web SDK, so you no longer
    * need to call this method.
    *
-   * Enables interoperability with the Agora Web SDK (Live Broadcast only).
+   * Enables interoperability with the Agora Web SDK (live streaming only).
    *
-   * Use this method when the channel profile is Live Broadcast.
+   * Use this method when the channel profile is `1` (live streaming).
    * Interoperability with the Agora Web SDK is enabled by default when the
    * channel profile is Communication.
    *
@@ -2848,8 +2848,8 @@ class AgoraRtcEngine extends EventEmitter {
    * following callbacks:
    * - The local client: localUserRegistered and userInfoUpdated.
    * - The remote client: userJoined and userInfoUpdated, if the user joining
-   * the channel is in the communication(`0`) profile, or is a BROADCASTER in the
-   * Live Broadcast profile.
+   * the channel is in the communication(`0`) profile, or is a host in the
+   * `1` (live streaming) profile.
    *
    * **Note**: To ensure smooth communication, use the same parameter type to
    * identify the user. For example, if a user joins the channel with a user
@@ -3585,7 +3585,7 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * @param {number} profile Sets the channel profile:
    * - 0:(Default) Communication.
-   * - 1: Live Broadcast.
+   * - 1: Live streaming.
    * - 2: Gaming.
    *
    * @return
@@ -4307,9 +4307,9 @@ class AgoraRtcEngine extends EventEmitter {
     * callback.
     *
     * @note
-    * - Only the broadcaster in the `1` (live streaming) profile can call this
+    * - Only the host in the `1` (live streaming) profile can call this
     * method.
-    * - Call this method after the broadcaster joins the channel.
+    * - Call this method after the host joins the channel.
     * - Ensure that you enable the RTMP Converter service before using this
     * function. See *Prerequisites* in the *Push Streams to CDN* guide.
     * - This method adds only one stream URL address each time it is
@@ -4337,7 +4337,7 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Removes an RTMP stream from the CDN.
    * @note
-   * - Only the broadcaster in the `1` (live streaming) profile can call this
+   * - Only the host in the `1` (live streaming) profile can call this
    * method.
    * - This method removes only one RTMP URL address each time it is called.
    * - The RTMP URL address must not contain special characters, such as
@@ -4359,7 +4359,7 @@ class AgoraRtcEngine extends EventEmitter {
    * {@link setLiveTranscoding} method to update the LiveTranscoding class.
    *
    * @note
-   * - Only the broadcaster in the Live-broadcast porfile can call this method.
+   * - Only the host in the Live-broadcast porfile can call this method.
    * - Ensure that you enable the RTMP Converter service before using
    * this function. See *Prerequisites* in the *Push Streams to CDN* guide.
    * - If you call the {@link setLiveTranscoding} method to set the
@@ -4382,7 +4382,7 @@ class AgoraRtcEngine extends EventEmitter {
   // STREAM INJECTION
   // ===========================================================================
   /**
-   * Adds a voice or video stream HTTP/HTTPS URL address to a live broadcast.
+   * Adds a voice or video stream HTTP/HTTPS URL address to a live streaming.
    *
    * This method applies to the Native SDK v2.4.1 and later.
    *
@@ -4402,14 +4402,14 @@ class AgoraRtcEngine extends EventEmitter {
    * media stream is injected into the channel.
    *
    * @note
-   * - Only the broadcaster in the Live-braodcast profile can call this method.
+   * - Only the host in the Live-braodcast profile can call this method.
    * - Ensure that you enable the RTMP Converter service before using this
    * function. See *Prerequisites* in the *Push Streams to CDN* guide.
    * - Ensure that the user joins a channel before calling this method.
    * - This method adds only one stream URL address each time it is called.
    *
    * @param {string} url The HTTP/HTTPS URL address to be added to the ongoing
-   * live broadcast. Valid protocols are RTMP, HLS, and FLV.
+   * live streaming. Valid protocols are RTMP, HLS, and FLV.
    * - Supported FLV audio codec type: AAC.
    * - Supported FLV video codec type: H264 (AVC).
    * @param {InjectStreamConfig} config The InjectStreamConfig object which
@@ -4420,9 +4420,9 @@ class AgoraRtcEngine extends EventEmitter {
    *  - `ERR_INVALID_ARGUMENT (2)`: The injected URL does not exist. Call this
    * method again to inject the stream and ensure that the URL is valid.
    *  - `ERR_NOT_READY (3)`: The user is not in the channel.
-   *  - `ERR_NOT_SUPPORTED (4)`: The channel profile is not Live Broadcast.
+   *  - `ERR_NOT_SUPPORTED (4)`: The channel profile is not Live streaming.
    * Call the {@link setChannelProfile} method and set the channel profile to
-   * Live Broadcast before calling this method.
+   * Live streaming before calling this method.
    *  - `ERR_NOT_INITIALIZED (7)`: The SDK is not initialized. Ensure that
    * the `AgoraRtcEngine` object is initialized before using this method.
    */
@@ -4431,7 +4431,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Removes the injected online media stream from a live broadcast.
+   * Removes the injected online media stream from a live streaming.
    *
    * @param {string} url HTTP/HTTPS URL address of the added stream to be
    * removed.
@@ -4531,7 +4531,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @note
    * - Contact sales-us@agora.io before implementing this function.
    * - Call this method after the {@link joinChannel} method.
-   * - This method takes effect only when you are a broadcaster in a
+   * - This method takes effect only when you are a host in a
    * Live-broadcast channel.
    * - We do not support using string user accounts in this function.
    * - After a successful method call, if you want to call this method again,
@@ -4577,11 +4577,11 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Stops the media stream relay.
    *
-   * Once the relay stops, the broadcaster quits all the destination channels.
+   * Once the relay stops, the host quits all the destination channels.
    *
    * After a successful method call, the SDK triggers the
    * channelMediaRelayState callback. If the callback reports the state
-   * code `0` and the error code `1`, the broadcaster
+   * code `0` and the error code `1`, the host
    * successfully stops the relay.
    *
    * **Note**:
@@ -5824,7 +5824,7 @@ declare interface AgoraRtcEngine {
    * offline detection.
    */
   on(evt: 'removeStream', cb: (uid: number, reason: number) => void): this;
-  /** Occurs when a remote user (Communication)/host (Live Broadcast) leaves
+  /** Occurs when a remote user (Communication)/host (Live streaming) leaves
    * the channel.
    *
    * There are two reasons for users to become offline:
@@ -5844,7 +5844,7 @@ declare interface AgoraRtcEngine {
    * was received within a certain period of time. If a user quits the call
    * and the message is not passed to the SDK (due to an unreliable channel),
    * the SDK assumes the user dropped offline.
-   *  - (Live broadcast only.) The client role switched from the host to the
+   *  - (Live streaming only.) The client role switched from the host to the
    * audience.
    */
   on(evt: 'userOffline', cb: (uid: number, reason: number) => void): this;
@@ -6054,7 +6054,7 @@ declare interface AgoraRtcEngine {
    *
    */
   on(evt: 'activeSpeaker', cb: (uid: number) => void): this;
-  /** Occurs when the user role switches in a live broadcast.
+  /** Occurs when the user role switches in a live streaming.
    *
    * For example,
    * from a host to an audience or vice versa.
@@ -6213,7 +6213,7 @@ declare interface AgoraRtcEngine {
    * - `6`: The RTMP streaming publishes too frequently.
    * - `7`: The host publishes more than 10 URLs. Delete the unnecessary URLs
    * before adding new ones.
-   * - `8`: The broadcaster manipulates other hosts' URLs. Check your app
+   * - `8`: The host manipulates other hosts' URLs. Check your app
    * logic.
    * - `9`: Agora's server fails to find the RTMP stream.
    * - `10`: The format of the stream's URL address is not supported. Check
@@ -6950,8 +6950,8 @@ class AgoraRtcChannel extends EventEmitter
    * following callbacks:
    * - The local client: `localUserRegistered` and `joinChannelSuccess`.
    * - The remote client: `userJoined` and `userInfoUpdated`, if the user
-   * joining the channel is in the communication(`0`) profile, or is a BROADCASTER
-   * in the Live Broadcast profile.
+   * joining the channel is in the communication(`0`) profile, or is a host
+   * in the `1` (live streaming) profile.
    *
    * @note To ensure smooth communication, use the same parameter type to
    * identify the user. For example, if a user joins the channel with a user
@@ -7029,11 +7029,11 @@ class AgoraRtcChannel extends EventEmitter
    * Sets the role of the user.
    *
    * - This method can be used to set the user's role before the user joins a
-   * channel in a live broadcast.
-   * - This method can be used to switch the user role in a live broadcast after
+   * channel in a live streaming.
+   * - This method can be used to switch the user role in a live streaming after
    * the user joins a channel.
    *
-   * In the Live Broadcast profile, when a user calls this method to switch
+   * In the `1` (live streaming) profile, when a user calls this method to switch
    * user roles after joining a channel, SDK triggers the follwoing callbacks:
    * - The local client: `clientRoleChanged` in the `AgoraRtcChannel`
    * interface.
@@ -7448,9 +7448,9 @@ class AgoraRtcChannel extends EventEmitter
    * `streamMessageError` callback.
    *
    * @note This method applies to the users in the communication(`0`) profile or the
-   * broadcasters in the `1` (live streaming) profile. If an audience in the
+   * hosts in the `1` (live streaming) profile. If an audience in the
    * `1` (live streaming) profile calls this method, the role of the audience may be
-   * switched to the broadcaster.
+   * switched to the host.
    *
    * @param streamId he ID of the sent data stream, returned in the
    * {@link createDataStream} method.
@@ -7466,7 +7466,7 @@ class AgoraRtcChannel extends EventEmitter
   /**
    * Publishes the local stream to a specified CDN URL address.
    *
-   * In the `1` (live streaming) profile, the broadcaster can call this method to
+   * In the `1` (live streaming) profile, the host can call this method to
    * publish the local stream to a specified CDN URL address, which is called
    * "Push Streams to CDN" or "CDN live streaming."
    *
@@ -7474,8 +7474,8 @@ class AgoraRtcChannel extends EventEmitter
    * `rtmpStreamingStateChanged` callback is any streaming state changes.
    *
    * @note
-   * - Only the broadcaster in the `1` (live streaming) profile can call this method.
-   * - Call this method after the broadcaster joins the channel.
+   * - Only the host in the `1` (live streaming) profile can call this method.
+   * - Call this method after the host joins the channel.
    * - Ensure that you enable the RTMP Converter service before using this
    * function. See *Prerequisites* in the *Push Streams to CDN* guide.
    * - This method adds only one stream RTMP URL address each time it is
@@ -7514,7 +7514,7 @@ class AgoraRtcChannel extends EventEmitter
    * report the state of removing the URL address.
    *
    * @note
-   * - Only the broadcaster in the `1` (live streaming) profile can call this
+   * - Only the host in the `1` (live streaming) profile can call this
    * method.
    * - This method removes only one RTMP URL address each time it is
    * called.
@@ -7540,7 +7540,7 @@ class AgoraRtcChannel extends EventEmitter
    * trigger the `transcodingUpdated` callback.
    *
    * @note
-   * - Only the broadcaster in the Live-broadcast porfile can call this method.
+   * - Only the host in the Live-broadcast porfile can call this method.
    * - Ensure that you enable the RTMP Converter service before using
    * this function. See *Prerequisites* in the *Push Streams to CDN* guide.
    * - If you call the {@link setLiveTranscoding} method to set the
@@ -7557,7 +7557,7 @@ class AgoraRtcChannel extends EventEmitter
     return this.rtcChannel.setLiveTranscoding(transcoding);
   }
   /**
-   * Injects the online media stream to a live broadcast.
+   * Injects the online media stream to a live streaming.
    *
    * If this method call is successful, the server pulls the voice or video
    * stream and injects it into a live channel. And all audience members in the
@@ -7573,13 +7573,13 @@ class AgoraRtcChannel extends EventEmitter
    * the UID of this stream is 666.
    *
    * @note
-   * - Only the broadcaster in the `1` (live streaming) profile can call this method.
+   * - Only the host in the `1` (live streaming) profile can call this method.
    * - Ensure that you enable the RTMP Converter service before using this
    * function. See *Prerequisites* in the *Push Streams to CDN* guide.
    * - This method applies to the `1` (live streaming) profile only.
    * - You can inject only one media stream into the channel at the same time.
    *
-   * @param url The URL address to be added to the ongoing live broadcast.
+   * @param url The URL address to be added to the ongoing live streaming.
    * Valid protocols are RTMP, HLS, and HTTP-FLV.
    * - Supported audio codec type: AAC.
    * - Supported video codec type: H264 (AVC).
@@ -7592,9 +7592,9 @@ class AgoraRtcChannel extends EventEmitter
    *  - ERR_INVALID_ARGUMENT (2): The injected URL does not exist. Call this
    * method again to inject the stream and ensure that the URL is valid.
    *  - ERR_NOT_READY (3): The user is not in the channel.
-   *  - ERR_NOT_SUPPORTED (4): The channel profile is not live broadcast.
+   *  - ERR_NOT_SUPPORTED (4): The channel profile is not live streaming.
    * Call the {@link setChannelProfile} method and set the channel profile to
-   * live broadcast before calling this method.
+   * live streaming before calling this method.
    *  - ERR_NOT_INITIALIZED (7): The SDK is not initialized. Ensure that the
    * `AgoraRtcChannel` object is initialized before calling this method.
    */
@@ -7602,10 +7602,10 @@ class AgoraRtcChannel extends EventEmitter
     return this.rtcChannel.addInjectStreamUrl(url, config);
   }
   /**
-   * Removes the injected the online media stream in a live broadcast.
+   * Removes the injected the online media stream in a live streaming.
    *
    * This method removes the URL address (added by the
-   * {@link addInjectStreamUrl} method) in a live broadcast.
+   * {@link addInjectStreamUrl} method) in a live streaming.
    *
    * If this method call is successful, the SDK triggers the `userOffline`
    * (uid:666) callback and report the UID of the removed stream is 666.
@@ -7628,14 +7628,14 @@ class AgoraRtcChannel extends EventEmitter
    *
    * - If `channelMediaRelayState` returns the state code `2` and the error
    * code` 0`, and `channelMediaRelayEvent` returns the event code `4`, the
-   * broadcaster starts sending data to the destination channel.
+   * host starts sending data to the destination channel.
    * - If the `channelMediaRelayState` returns the state code `3`, an exception
    * occurs during the media stream relay.
    *
    * @note
    * - Contact sales-us@agora.io before implementing this function.
    * - Call this method after joining the channel.
-   * - This method takes effect only when you are a broadcaster in a
+   * - This method takes effect only when you are a host in a
    * live-broadcast channel.
    * - After a successful method call, if you want to call this method again,
    * ensure that you call the {@link stopChannelMediaRelay} method to quit the
@@ -7677,11 +7677,11 @@ class AgoraRtcChannel extends EventEmitter
   /**
    * Stops the media stream relay.
    *
-   * Once the relay stops, the broadcaster quits all the destination channels.
+   * Once the relay stops, the host quits all the destination channels.
    *
    * After a successful method call, the SDK triggers the
    * `channelMediaRelayState` callback. If the callback returns the state code
-   * `0` and the error code `1`, the broadcaster successfully stops the relay.
+   * `0` and the error code `1`, the host successfully stops the relay.
    *
    * @note If the method call fails, the SDK triggers the
    * channelMediaRelayState callback with the error code `2` and `8` in
@@ -7710,7 +7710,7 @@ class AgoraRtcChannel extends EventEmitter
    * Otherwise, the SDK returns the `ERR_REFUSED (5)`:
    * - This method publishes one stream only to the channel corresponding to
    * the current `AgoraRtcChannel` object.
-   * - In a Live Broadcast channel, only a broadcaster can call this method.
+   * - In a live streaming channel, only a host can call this method.
    * To switch the client role, call {@link setClientRole} of the current
    * `AgoraRtcChannel` object.
    * - You can publish a stream to only one channel at a time. For details on
@@ -7754,7 +7754,7 @@ class AgoraRtcChannel extends EventEmitter
    *
    * A successful leavechannel method call triggers the removeStream callback
    * for the remote client when the user leaving the channel
-   * is in the Communication channel, or is a BROADCASTER in the Live Broadcast
+   * is in the Communication channel, or is a host in the Live streaming
    * profile.
    *
    * @return
@@ -7882,7 +7882,7 @@ class AgoraRtcChannel extends EventEmitter
    * or RTMPS streaming function.
    * - The SDK returns `-4` when the encryption mode is incorrect or the SDK
    * fails to load the external encryption library. Check the enumeration or
-   * reload the external encryption library. 
+   * reload the external encryption library.
    *
    * @param enabled Whether to enable the built-in encryption:
    * - true: Enable the built-in encryption.
@@ -7941,7 +7941,7 @@ declare interface AgoraRtcChannel {
    * @param cb.stats The call statistics, see {@link RtcStats}
    */
   on(evt: 'leaveChannel', cb: (stats:RtcStats) => void): this;
-  /** Occurs when the user role switches in a live broadcast.
+  /** Occurs when the user role switches in a live streaming.
    *
    * For example,
    * from a host to an audience or vice versa.
@@ -7979,7 +7979,7 @@ declare interface AgoraRtcChannel {
    * {@link joinChannel} method until the SDK triggers this callback.
    */
    on(evt: 'userJoined', cb: (uid: number, elapsed: number) => void): this;
-   /** Occurs when a remote user (Communication)/host (Live Broadcast) leaves
+   /** Occurs when a remote user (Communication)/host (Live streaming) leaves
    * the channel.
    *
    * There are two reasons for users to become offline:
@@ -7999,7 +7999,7 @@ declare interface AgoraRtcChannel {
    * was received within a certain period of time. If a user quits the call
    * and the message is not passed to the SDK (due to an unreliable channel),
    * the SDK assumes the user dropped offline.
-   *  - (Live broadcast only.) The client role switched from the host to the
+   *  - (Live streaming only.) The client role switched from the host to the
    * audience.
    */
    on(evt: 'userOffline', cb: (uid: number, reason: number) => void): this;
@@ -8300,7 +8300,7 @@ declare interface AgoraRtcChannel {
    * - `6`: The RTMP streaming publishes too frequently.
    * - `7`: The host publishes more than 10 URLs. Delete the unnecessary URLs
    * before adding new ones.
-   * - `8`: The broadcaster manipulates other hosts' URLs. Check your app
+   * - `8`: The host manipulates other hosts' URLs. Check your app
    * logic.
    * - `9`: Agora's server fails to find the RTMP stream.
    * - `10`: The format of the stream's URL address is not supported. Check
