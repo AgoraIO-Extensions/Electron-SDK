@@ -1452,44 +1452,36 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.setClientRole(role);
   }
 
-  /** Sets the role of a user in a live interactive streaming.
+  /** Sets the role of a user in interactive live streaming.
    *
    * @since v3.2.0
    *
-   * You can call this method either before or after joining the channel to set the user role as audience or host. If
-   * you call this method to switch the user role after joining the channel, the SDK triggers the following callbacks:
-   * - The local client: \ref IRtcEngineEventHandler::onClientRoleChanged "onClientRoleChanged".
-   * - The remote client: \ref IRtcEngineEventHandler::onUserJoined "onUserJoined"
-   * or \ref IRtcEngineEventHandler::onUserOffline "onUserOffline".
+   * You can call this method either before or after joining the channel to
+   * set the user role as audience or host. If
+   * you call this method to switch the user role after joining the channel,
+   * the SDK triggers the following callbacks:
+   * - The local client: `clientRoleChanged`.
+   * - The remote client: `userJoined` or `userOffline`.
    *
    * @note
-   * - This method applies to the `LIVE_BROADCASTING` profile only (when the `profile` parameter in
-   * \ref IRtcEngine::setChannelProfile "setChannelProfile" is set as `CHANNEL_PROFILE_LIVE_BROADCASTING`).
-   * - The difference between this method and \ref IRtcEngine::setClientRole(CLIENT_ROLE_TYPE) "setClientRole1" is that
+   * - This method applies to the `LIVE_BROADCASTING` profile only.
+   * - The difference between this method and {@link setClientRole} is that
    * this method can set the user level in addition to the user role.
-   *  - The user role determines the permissions that the SDK grants to a user, such as permission to send local
+   *  - The user role determines the permissions that the SDK grants to a
+   * user, such as permission to send local
    * streams, receive remote streams, and push streams to a CDN address.
-   *  - The user level determines the level of services that a user can enjoy within the permissions of the user's
-   * role. For example, an audience can choose to receive remote streams with low latency or ultra low latency. Levels
+   *  - The user level determines the level of services that a user can
+   * enjoy within the permissions of the user's
+   * role. For example, an audience can choose to receive remote streams with
+   * low latency or ultra low latency. Levels
    * affect prices.
    *
-   * **Example**
-   * ```cpp
-   * ClientRoleOptions options;
-   * options.audienceLatencyLevel = AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY;
-   * options.audienceLatencyLevel = AUDIENCE_LATENCY_LEVEL_LOW_LATENCY;
-   * agoraEngine->setClientRole(role, options);
-   * ```
-   *
-   * @param role The role of a user in a live interactive streaming. See #CLIENT_ROLE_TYPE.
-   * @param options The detailed options of a user, including user level. See ClientRoleOptions.
+   * @param role The role of a user in interactive live streaming.
+   * @param options The detailed options of a user, including user level.
    *
    * @return
-   * - 0(ERR_OK): Success.
+   * - 0: Success.
    * - < 0: Failure.
-   *  - -1(ERR_FAILED): A general error occurs (no specified reason).
-   *  - -2(ERR_INALID_ARGUMENT): The parameter is invalid.
-   *  - -7(ERR_NOT_INITIALIZED): The SDK is not initialized.
    */
   setClientRoleWithOptions(role: ClientRoleType, options: ClientRoleOptions): number {
     return this.rtcEngine.setClientRoleWithOptions(role, options);
@@ -5212,7 +5204,7 @@ class AgoraRtcEngine extends EventEmitter {
    * **Note**:
    * - If you enable the built-in encryption, you cannot use the RTMP or
    * RTMPS streaming function.
-   * - The SDK returns `-4` when the encryption mode is incorrect or //FIXME(encryp)
+   * - The SDK returns `-4` when the encryption mode is incorrect or
    * the SDK fails to load the external encryption library.
    * Check the enumeration or reload the external encryption library.
    *
@@ -7059,44 +7051,36 @@ class AgoraRtcChannel extends EventEmitter
     return this.rtcChannel.setClientRole(role);
   }
 
-  /** Sets the role of a user in a live interactive streaming.
+  /** Sets the role of a user in interactive live streaming.
    *
    * @since v3.2.0
    *
-   * You can call this method either before or after joining the channel to set the user role as audience or host. If
-   * you call this method to switch the user role after joining the channel, the SDK triggers the following callbacks:
-   * - The local client: \ref IRtcChannelEventHandler::onClientRoleChanged "onClientRoleChanged".
-   * - The remote client: \ref IRtcChannelEventHandler::onUserJoined "onUserJoined"
-   * or \ref IRtcChannelEventHandler::onUserOffline "onUserOffline".
+   * You can call this method either before or after joining the channel to
+   * set the user role as audience or host. If
+   * you call this method to switch the user role after joining the channel,
+   * the SDK triggers the following callbacks:
+   * - The local client: `clientRoleChanged`.
+   * - The remote client: `userJoined` or `userOffline`.
    *
    * @note
-   * - This method applies to the `LIVE_BROADCASTING` profile only (when the `profile` parameter in
-   * \ref IRtcChannel::setChannelProfile "setChannelProfile" is set as `CHANNEL_PROFILE_LIVE_BROADCASTING`).
-   * - The difference between this method and \ref IRtcChannel::setClientRole(CLIENT_ROLE_TYPE) "setClientRole1" is that
+   * - This method applies to the `LIVE_BROADCASTING` profile only.
+   * - The difference between this method and {@link setClientRole} is that
    * this method can set the user level in addition to the user role.
-   *  - The user role determines the permissions that the SDK grants to a user, such as permission to send local
+   *  - The user role determines the permissions that the SDK grants to a
+   * user, such as permission to send local
    * streams, receive remote streams, and push streams to a CDN address.
-   *  - The user level determines the level of services that a user can enjoy within the permissions of the user's
-   * role. For example, an audience can choose to receive remote streams with low latency or ultra low latency. Levels
+   *  - The user level determines the level of services that a user can
+   * enjoy within the permissions of the user's
+   * role. For example, an audience can choose to receive remote streams with
+   * low latency or ultra low latency. Levels
    * affect prices.
    *
-   * **Example**
-   * ```cpp
-   * ClientRoleOptions options;
-   * options.audienceLatencyLevel = AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY;
-   * options.audienceLatencyLevel = AUDIENCE_LATENCY_LEVEL_LOW_LATENCY;
-   * agoraChannel->setClientRole(role, options);
-   * ```
-   *
-   * @param role The role of a user in a live interactive streaming. See #CLIENT_ROLE_TYPE.
-   * @param options The detailed options of a user, including user level. See ClientRoleOptions.
+   * @param role The role of a user in interactive live streaming.
+   * @param options The detailed options of a user, including user level.
    *
    * @return
-   * - 0(ERR_OK): Success.
+   * - 0: Success.
    * - < 0: Failure.
-   *  - -1(ERR_FAILED): A general error occurs (no specified reason).
-   *  - -2(ERR_INALID_ARGUMENT): The parameter is invalid.
-   *  - -7(ERR_NOT_INITIALIZED): The SDK is not initialized.
    */
   setClientRoleWithOptions(role: ClientRoleType, options: ClientRoleOptions): number {
     return this.rtcChannel.setClientRoleWithOptions(role, options);
@@ -7898,7 +7882,7 @@ class AgoraRtcChannel extends EventEmitter
    * or RTMPS streaming function.
    * - The SDK returns `-4` when the encryption mode is incorrect or the SDK
    * fails to load the external encryption library. Check the enumeration or
-   * reload the external encryption library. //FIXME(encry)
+   * reload the external encryption library. 
    *
    * @param enabled Whether to enable the built-in encryption:
    * - true: Enable the built-in encryption.

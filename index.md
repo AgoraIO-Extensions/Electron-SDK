@@ -15,7 +15,8 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.initialize initialize}                 | Initializes an `AgoraRtcEngine` instance.                      |
 | {@link AgoraRtcEngine.release release}                       | Releases an `AgoraRtcEngine` instance.                         |
 | {@link AgoraRtcEngine.setChannelProfile setChannelProfile}   | Sets the channel profile.                                    |
-| {@link AgoraRtcEngine.setClientRole setClientRole}           | Sets the user role (Live Broadcast only).                    |
+| {@link AgoraRtcEngine.setClientRole setClientRole}           | Sets the role of the user (interactive live streaming only).             |
+| {@link AgoraRtcEngine.setClientRoleWithOptions setClientRoleWithOptions}           | Sets the role and level of the user (interactive live streaming only). |
 | {@link AgoraRtcEngine.joinChannel joinChannel}               | Allows a user to join a channel. |
 | {@link AgoraRtcEngine.switchChannel switchChannel}|Switches to a different channel (Live Broadcast only).|
 | {@link AgoraRtcEngine.leaveChannel leaveChannel}             | Allows a user to leave a channel.                            |
@@ -214,7 +215,7 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | Method | Description  |
 |----------|-----------|
 |{@link AgoraRtcEngine.registerMediaMetadataObserver registerMediaMetadataObserver} | Registers a media metadata observer.         |
-|{@link AgoraRtcEngine.unregisterMediaMetadataObserver unregisterMediaMetadataObserver} | Unrgisters a media metadata observer.       |
+|{@link AgoraRtcEngine.unRegisterMediaMetadataObserver unRegisterMediaMetadataObserver} | Unregisters a media metadata observer.       |
 |{@link AgoraRtcEngine.setMaxMetadataSize setMaxMetadataSize}| Sets the maximum size of the media metadata.       |
 |{@link AgoraRtcEngine.sendMetadata sendMetadata}|  Sends the media metadata.      |
 
