@@ -1838,9 +1838,9 @@ export enum VOICE_BEAUTIFIER_PRESET
      */
     TIMBRE_TRANSFORMATION_RINGING = 0x01030800
 };
-/** The latency level of an audience member in a live interactive streaming.
+/** The latency level of an audience member in interactive live streaming.
  *
- * @note Takes effect only when the user role is `CLIENT_ROLE_BROADCASTER`.
+ * @note Takes effect only when the user role is audience.
  */
 export enum AUDIENCE_LATENCY_LEVEL_TYPE
 {
@@ -2236,6 +2236,9 @@ export interface Metadata {
 /** The detailed options of a user.
  */
 export interface ClientRoleOptions {
+  /**
+   * The latency level of an audience member in interactive live streaming.
+   */
   audienceLatencyLevel: AUDIENCE_LATENCY_LEVEL_TYPE;
 };
 
@@ -3291,7 +3294,7 @@ export interface NodeRtcChannel {
    * @ignore
    */
   setClientRoleWithOptions(
-    role: ClientRoleType, 
+    role: ClientRoleType,
     options: ClientRoleOptions
   ): number;
 
