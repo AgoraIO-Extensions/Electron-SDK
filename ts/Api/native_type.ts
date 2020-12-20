@@ -100,21 +100,21 @@ export interface TranscodingUser {
   alpha: number;
   /** The audio channel of the sound.
    * - 0: (Default) Supports dual channels at most, depending on the upstream
-   * of the broadcaster.
-   * - 1: The audio stream of the broadcaster uses the FL audio channel.
-   * If the upstream of the broadcaster uses multiple audio channels,
+   * of the host.
+   * - 1: The audio stream of the host uses the FL audio channel.
+   * If the upstream of the host uses multiple audio channels,
    * these channels will be mixed into mono first.
-   * - 2: The audio stream of the broadcaster uses the FC audio channel.
-   * If the upstream of the broadcaster uses multiple audio channels,
+   * - 2: The audio stream of the host uses the FC audio channel.
+   * If the upstream of the host uses multiple audio channels,
    * these channels will be mixed into mono first.
-   * - 3: The audio stream of the broadcaster uses the FR audio channel.
-   * If the upstream of the broadcaster uses multiple audio channels,
+   * - 3: The audio stream of the host uses the FR audio channel.
+   * If the upstream of the host uses multiple audio channels,
    * these channels will be mixed into mono first.
-   * - 4: The audio stream of the broadcaster uses the BL audio channel.
-   * If the upstream of the broadcaster uses multiple audio channels,
+   * - 4: The audio stream of the host uses the BL audio channel.
+   * If the upstream of the host uses multiple audio channels,
    * these channels will be mixed into mono first.
-   * - 5: The audio stream of the broadcaster uses the BR audio channel.
-   * If the upstream of the broadcaster uses multiple audio channels,
+   * - 5: The audio stream of the host uses the BR audio channel.
+   * If the upstream of the host uses multiple audio channels,
    * these channels will be mixed into mono first.
    */
   audioChannel: number;
@@ -186,7 +186,7 @@ export interface TranscodingConfig {
    * For example, 0xFFB6C1 (light pink). The default value is 0x000000 (black).
    */
   backgroundColor: number;
-  /** The number of users in the live broadcast. */
+  /** The number of users in the live streaming. */
   userCount: number;
   /** Self-defined audio-sample rate:
    * - AUDIO_SAMPLE_RATE_32000 = 32000 Hz
@@ -521,39 +521,39 @@ export enum AudioReverbPreset {
   AUDIO_VIRTUAL_STEREO = 0x00200001
 }
 /**
- * Configuration of the imported live broadcast voice or video stream.
+ * Configuration of the imported live streaming voice or video stream.
  */
 export interface InjectStreamConfig {
   /**
-   * Width of the added stream in the live broadcast.
+   * Width of the added stream in the live streaming.
    *
    * The default value is 0 pixel (same width as the original stream).
    */
   width: number;
   /**
-   * Height of the added stream in the live broadcast.
+   * Height of the added stream in the live streaming.
    *
    * The default value is 0 pixel (same height as the original stream).
    */
   height: number;
   /**
-   * Video bitrate of the added stream in the live broadcast.
+   * Video bitrate of the added stream in the live streaming.
    *
    * The default value is 400 Kbps.
    */
   videoBitrate: number;
-  /** Video frame rate of the added stream in the live broadcast.
+  /** Video frame rate of the added stream in the live streaming.
    *
    * The default value is 15 fps.
    */
   videoFrameRate: number;
-  /** Video GOP of the added stream in the live broadcast in frames.
+  /** Video GOP of the added stream in the live streaming in frames.
    *
    * The default value is 30 fps.
    */
   videoGop: number;
   /**
-   * Audio-sampling rate of the added stream in the live broadcast.
+   * Audio-sampling rate of the added stream in the live streaming.
    *
    * The default value is 44100 Hz.
    *
@@ -564,14 +564,14 @@ export interface InjectStreamConfig {
    */
   audioSampleRate: number;
   /**
-   * Audio bitrate of the added stream in the live broadcast.
+   * Audio bitrate of the added stream in the live streaming.
    *
    * The default value is 48 Kbps.
    *
    * **Note**: Agora recommends setting the default value.
    */
   audioBitrate: number;
-  /** Audio channels in the live broadcast.
+  /** Audio channels in the live streaming.
    * - 1: (Default) Mono
    * - 2: Two-channel stereo
    *
@@ -1473,15 +1473,15 @@ export enum VIDEO_PROFILE_TYPE {
   /** 37: 480 &times; 360, frame rate 30 fps, bitrate 490 Kbps. */
   VIDEO_PROFILE_LANDSCAPE_360P_8 = 37,
   /** 38: 640 &times; 360, frame rate 15 fps, bitrate 800 Kbps.
-   * **Note**: Live broadcast profile only.
+   * **Note**: `1` (live streaming) profile only.
    */
   VIDEO_PROFILE_LANDSCAPE_360P_9 = 38,
   /** 39: 640 &times; 360, frame rate 24 fps, bitrate 800 Kbps.
-   * **Note**: Live broadcast profile only.
+   * **Note**: `1` (live streaming) profile only.
    */
   VIDEO_PROFILE_LANDSCAPE_360P_10 = 39,
   /** 100: 640 &times; 360, frame rate 24 fps, bitrate 1000 Kbps.
-   * **Note**: Live broadcast profile only.
+   * **Note**: `1` (live streaming) profile only.
    */
   VIDEO_PROFILE_LANDSCAPE_360P_11 = 100,
   /** 40: 640 &times; 480, frame rate 15 fps, bitrate 500 Kbps. */
@@ -1549,15 +1549,15 @@ export enum VIDEO_PROFILE_TYPE {
   /** 1037: 360 &times; 480, frame rate 30 fps, bitrate 490 Kbps. */
   VIDEO_PROFILE_PORTRAIT_360P_8 = 1037,
   /** 1038: 360 &times; 640, frame rate 15 fps, bitrate 800 Kbps.
-   * **Note**: Live broadcast profile only.
+   * **Note**: `1` (live streaming) profile only.
    */
   VIDEO_PROFILE_PORTRAIT_360P_9 = 1038,
   /** 1039: 360 &times; 640, frame rate 24 fps, bitrate 800 Kbps.
-   * **Note**: Live broadcast profile only.
+   * **Note**: `1` (live streaming) profile only.
    */
   VIDEO_PROFILE_PORTRAIT_360P_10 = 1039,
   /** 1100: 360 &times; 640, frame rate 24 fps, bitrate 1000 Kbps.
-   * **Note**: Live broadcast profile only.
+   * **Note**: `1` (live streaming) profile only.
    */
   VIDEO_PROFILE_PORTRAIT_360P_11 = 1100,
   /** 1040: 480 &times; 640, frame rate 15 fps, bitrate 500 Kbps. */
@@ -1992,7 +1992,7 @@ export interface ChannelMediaRelayConfiguration {
    * `channel` and `uid` you set in `srcInfo`. The default value is NULL,
    * which means that the SDK passes in the APP ID.
    * - `uid`:
-   *  - ID of the broadcaster whose media stream you want to relay. The
+   *  - ID of the host whose media stream you want to relay. The
    * default value is 0, which means that the SDK randomly generates a UID.
    *  - You must set it as 0.
    *
@@ -2010,7 +2010,7 @@ export interface ChannelMediaRelayConfiguration {
    * and set it as the default value NULL, which means that the SDK passes in
    * the APP ID.
    *  - If you have enabled the App Certificate, you must use Token.
-   * - `uid`: ID of the broadcaster in the destination channel.
+   * - `uid`: ID of the host in the destination channel.
    * The value ranges from 0 to 2<sup>32</sup>-1. To avoid UID conflicts,
    * this `uid` must be different from any other UIDs in the destination
    * channel. The default value is 0, which means the SDK randomly generates
