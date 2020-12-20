@@ -1909,7 +1909,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Enables/Disables image enhancement and sets the options. (Windows only)
+   * Enables/Disables image enhancement and sets the options.
    *
    * @since v3.0.0 for Windows
    * @since v3.2.0 for macOS
@@ -2064,7 +2064,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - 3: High-quality audio chatroom scenario where hosts mainly play music.
    * - 4: Showroom scenario where a single host wants high-quality audio.
    * - 5: Gaming scenario for group chat that only contains the human voice.
-   * - 8: @since v3.2.0. Meeting scenario that mainly contains the human voice.
+   * - 8: Meeting scenario that mainly contains the human voice.
    *
    * Under different audio scenarios, the device uses different volume types.
    * For details, see
@@ -2463,15 +2463,31 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.setLogFile(filepath);
   }
 
-  /**
-   * Sets the log file size (KB).
+  /** Sets the size of a log file that the SDK outputs.
    *
-   * The Agora SDK has two log files, each with a default size of 512 KB.
-   * If you set size as 1024 KB, the SDK outputs log files with a total
-   * maximum size of 2 MB.
-   * If the total size of the log files exceed the set value, the new output
-   * log files overwrite the old output log files.
-   * @param {number} size The SDK log file size (KB).
+   *
+   * @note If you want to set the log file size, ensure that you call
+   * this method before {@link setLogFile}, or the logs are cleared.
+   *
+   * By default, the SDK outputs five log files, `agorasdk.log`,
+   * `agorasdk_1.log`, `agorasdk_2.log`, `agorasdk_3.log`, `agorasdk_4.log`,
+   * each with a default size of 1024 KB.
+   * These log files are encoded in UTF-8. The SDK writes the latest logs in
+   * `agorasdk.log`. When `agorasdk.log` is full, the SDK deletes the log
+   * file with the earliest
+   * modification time among the other four, renames `agorasdk.log` to the
+   * name of the deleted log file, and create a new `agorasdk.log` to record
+   * latest logs.
+   *
+   * Related APIs:
+   * - {@link setLogFile}
+   * - {@link setLogFilter}
+   *
+   * @param size The size (KB) of a log file. The default value is 1024 KB.
+   * If you set `size` to 1024 KB,
+   * the SDK outputs at most 5 MB log files; if you set it to less than
+   * 1024 KB, the maximum size of a log file is still 1024 KB.
+   *
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -5146,7 +5162,7 @@ class AgoraRtcEngine extends EventEmitter {
   /** Sends the media metadata.
    *
    * After calling the {@link registerMediaMetadataObserver} method, you can
-   * the `setMetadata` method to send the media metadata.
+   * call the `setMetadata` method to send the media metadata.
    *
    * If it is a successful sending, the sender receives the
    * `sendMetadataSuccess` callback, and the receiver receives the
@@ -6585,7 +6601,7 @@ declare interface AgoraRtcEngine {
     newState: STREAM_SUBSCRIBE_STATE,
     elapseSinceLastState: number
   )=> void): this;
-  /** Occurs when the audio subscribing state changes.
+  /** Occurs when the video subscribing state changes.
    *
    * @since v3.2.0
    *
@@ -7156,6 +7172,9 @@ class AgoraRtcChannel extends EventEmitter
   }
   /**
    * Sets the built-in encryption mode.
+   *
+   * @depercated This method is deprecated from v3.2.0. Use
+   * the {@link enableEncryption} method instead.
    *
    * The Agora SDK supports built-in encryption, which is set to the
    * `aes-128-xts` mode by default. To use other encryption modes, call this
@@ -7837,7 +7856,7 @@ class AgoraRtcChannel extends EventEmitter
   /** Sends the media metadata.
    *
    * After calling the {@link registerMediaMetadataObserver} method, you can
-   * the `setMetadata` method to send the media metadata.
+   * call the `setMetadata` method to send the media metadata.
    *
    * If it is a successful sending, the sender receives the
    * `sendMetadataSuccess` callback, and the receiver receives the
@@ -8418,7 +8437,7 @@ declare interface AgoraRtcChannel {
     newState: STREAM_SUBSCRIBE_STATE,
     elapseSinceLastState: number
   )=> void): this;
-  /** Occurs when the audio subscribing state changes.
+  /** Occurs when the video subscribing state changes.
    *
    * @since v3.2.0
    *

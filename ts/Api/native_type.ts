@@ -438,7 +438,7 @@ export enum VoiceChangerPreset {
    */
   GENERAL_BEAUTY_VOICE_FEMALE_FRESH = 0x00200002,
   /**
-   * 	(For female only) A more vital voice. Do not use it when the speaker is a male; otherwise, voice distortion occurs.
+   * (For female only) A more vital voice. Do not use it when the speaker is a male; otherwise, voice distortion occurs.
    */
   GENERAL_BEAUTY_VOICE_FEMALE_VITALITY = 0x00200003
 
@@ -1852,7 +1852,7 @@ export enum AUDIENCE_LATENCY_LEVEL_TYPE
 /** The subscribing state.
  *
  * @since v3.2.0
- * 
+ *
  * - 0: The initial subscribing state after joining the channel.
  * - 1: Fails to subscribe to the remote stream. Possible reasons:
  *   - The remote user:
@@ -2090,7 +2090,7 @@ export type ChannelMediaRelayError =
  * Regions for connection.
  *
  * @since v3.2.0
- * 
+ *
  * - 1: Mainland China.
  * - 2: North America.
  * - 4: Europe.
@@ -2110,7 +2110,7 @@ export type AREA_CODE =
 /** The publishing state.
  *
  * @since v3.2.0
- * 
+ *
  * - 0: The initial publishing state after joining the channel.
  * - 1: Fails to publish the local stream. Possible reasons:
  *  - The local user calls
@@ -2140,7 +2140,7 @@ export type STREAM_PUBLISH_STATE =
  * - 3: Speakerphone.
  * - 4: Loudspeaker.
  * - 5: Bluetooth headset.
- * - 6: USB peripheral (macOS only). 
+ * - 6: USB peripheral (macOS only).
  * - 7: HDMI peripheral (macOS only).
  * - 8: DisplayPort peripheral (macOS only).
  * - 9: Apple AirPlay (macOS only).

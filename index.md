@@ -114,6 +114,7 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.adjustAudioMixingVolume adjustAudioMixingVolume} | Adjusts the volume during audio mixing.                 |
 | {@link AgoraRtcEngine.adjustAudioMixingPlayoutVolume adjustAudioMixingPlayoutVolume} | Adjusts the volume of audio mixing for local playback.  |
 | {@link AgoraRtcEngine.adjustAudioMixingPublishVolume adjustAudioMixingPublishVolume} | Adjusts the volume of audio mixing for remote playback. |
+| {@link AgoraRtcEngine.setAudioMixingPitch setAudioMixingPitch}| Sets the pitch of the local music file.   |
 |{@link AgoraRtcEngine.getAudioMixingPlayoutVolume getAudioMixingPlayoutVolume}|Adjusts the audio mixing volume for publishing (for remote users).|
 |{@link AgoraRtcEngine.getAudioMixingPublishVolume getAudioMixingPublishVolume}|Retrieves the audio mixing volume for publishing.|
 | {@link AgoraRtcEngine.getAudioMixingDuration getAudioMixingDuration} | Gets the duration (ms) of the music file.               |
@@ -429,7 +430,7 @@ Agora Electron SDK use the {@link AgoraRtcEngine.on} listens to the events above
 |`channelMediaRelayEvent`| Reports events during the media stream relay.|
 | `localPublishFallbackToAudioOnly`  | Occurs:<br><li>When the published media stream falls back to an audio-only stream due to poor network conditions.</li><br><li>When the published media stream switches back to the video after the network conditions improve.</li> |
 | `remoteSubscribeFallbackToAudioOnly` | Occurs:<br/><li>When the remote media stream falls back to audio-only due to poor network conditions.</li><br><li>When the remote media stream switches back to the video after the network conditions improve.</li> |
-| `receiveMetadata`|  Occurs when the receiver rceives the media metadata.            |
+| `receiveMetadata`|  Occurs when the receiver receives the media metadata.            |
 | `sendMetadataSuccess`|   Occurs when the sender sends the media metadata successfully.          |
 | `videoSourceJoinedSuccess`         | Occurs when a user joins a channel. (The second instance)    |
 | `videoSourceRequestNewToken`       | Occurs when the token expires. (The second instance)         |
@@ -464,7 +465,7 @@ Warning codes occur when the SDK encounters an error that might be recovered aut
 | `-1019`   | Audio Device Module: No valid audio data is collected.                |
 | `-1020`   | Audio Device Module: The playback device fails.                         |
 | `-1021`   | Audio Device Module: The recording device fails.              |
-| `-1029`   |During a call, the audio session category should be set to AVAudioSessionCategoryPlayAndRecord, and AgoraRtcEngine monitors this value. If the audio session category is set to other values, this warning code is triggered and AgoraRtcEngine will forcefully set it back to AVAudioSessionCategoryPlayAndRecord.|
+| `-1029`   |During a call, the audio session category should be set to AVAudioSessionCategoryPlayAndRecord, and `AgoraRtcEngine` monitors this value. If the audio session category is set to other values, this warning code is triggered and `AgoraRtcEngine` will forcefully set it back to AVAudioSessionCategoryPlayAndRecord.|
 | `-1025`   | The audio recording or playback is interrupted by system events (such as a phone call). |
 | `-1031`   | Audio Device Module: The recorded audio voice is too low.               |
 | `-1032`   | Audio Device Module: The playback audio voice is too low.           |
@@ -510,7 +511,7 @@ Error codes occur when the SDK encounters an error that cannot be recovered auto
 | `-22`     | The application uses too much of the system resources and the SDK fails to allocate the resources. |
 | `-101`    | The specified App ID is invalid.<br/>Please try to rejoin the channel with a valid App ID. |
 | `-102`    | The specified channel name is invalid. <br/>Please try to rejoin the channel with a valid channel name.  |
-| `-103` |  AgoraRtcEngine fails to get server resources in the specified region. Try another region when initializing AgoraRtcEngine.   |
+| `-103` |  `AgoraRtcEngine` fails to get server resources in the specified region. Try another region when initializing `AgoraRtcEngine`.   |
 | `-109`    | **DEPRECATED** Please use `9` in `ConnectionChangeReason` instead.<br/>The token expired due to one of the following reasons:<br/><li>Authorized Timestamp expired: The timestamp is represented by the number of seconds elapsed since 1/1/1970. The user can use the Token to access the Agora service within 24 hours after the Token is generated. If the user does not access the Agora service after 24 hours, this Token is no longer valid.</li><li>Call Expiration Timestamp expired: The timestamp is the exact time when a user can no longer use the Agora service (for example, when a user is forced to leave an ongoing call). When a value is set for the Call Expiration Timestamp, it does not mean that the token will expire, but that the user will be banned from the channel.</li> |
 | `-110`    | **DEPRECATED** Please use `8` in `ConnectionChangeReason` instead.<br/>The token is invalid due to one of the following reasons:<br/><li>The App Certificate for the project is enabled in Console, but the user is still using the App ID. Once the App Certificate is enabled, the user must use a token.</li><li>The uid is mandatory, and users must set the same uid as the one set in the `joinChannel` method. </li> |
 | `-113`    | The user is not in the channel when calling the `sendStreamMessage` method. |
