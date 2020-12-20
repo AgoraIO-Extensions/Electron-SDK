@@ -1852,43 +1852,36 @@ export enum AUDIENCE_LATENCY_LEVEL_TYPE
 /** The subscribing state.
  *
  * @since v3.2.0
+ * 
+ * - 0: The initial subscribing state after joining the channel.
+ * - 1: Fails to subscribe to the remote stream. Possible reasons:
+ *   - The remote user:
+ *     - Calls {@link muteLocalAudioStream muteLocalAudioStream(true)} or
+ * {@link muteLocalVideoStream muteLocalVideoStream(true)} to stop
+ * sending local streams.
+ *     - Calls {@link disableAudio} or {@link disableVideo} to disable the
+ * entire audio or video modules.
+ *     - Calls {@link enableLocalAudio enableLocalAudio(false)} or
+ * {@link enableLocalVideo enableLocalVideo(false)} to disable the local
+ * audio sampling or video capturing.
+ *     - The role of the remote user is `2` (audience).
+ *   - The local user calls the following methods to stop receiving remote
+ * streams:
+ *     - Calls {@link muteRemoteAudioStream muteRemoteAudioStream(true)},
+ * {@link muteAllRemoteAudioStreams muteAllRemoteAudioStreams(true)}, or
+ * {@link setDefaultMuteAllRemoteAudioStreams setDefaultMuteAllRemoteAudioStreams(true)}
+ * to stop receiving remote audio streams.
+ *     - Calls {@link muteRemoteVideoStream muteRemoteVideoStream(true)},
+ * {@link muteAllRemoteVideoStreams muteAllRemoteVideoStreams(true)}, or
+ * {@link setDefaultMuteAllRemoteVideoStreams setDefaultMuteAllRemoteVideoStreams(true)}
+ * to stop receiving remote video streams.
+ * - 2: Subscribing.
+ * - 3: Subscribes to and receives the remote stream successfully.
  */
 export type STREAM_SUBSCRIBE_STATE =
-    /**
-     * 0: The initial subscribing state after joining the channel.
-     */
   | 0 //SUB_STATE_IDLE
-    /**
-     * 1: Fails to subscribe to the remote stream. Possible reasons:
-     * - The remote user:
-     *  - Calls {@link muteLocalAudioStream muteLocalAudioStream(true)} or
-     * {@link muteLocalVideoStream muteLocalVideoStream(true)} to stop
-     * sending local streams.
-     *  - Calls {@link disableAudio} or {@link disableVideo} to disable the
-     * entire audio or video modules.
-     *  - Calls {@link enableLocalAudio enableLocalAudio(false)} or
-     * {@link enableLocalVideo enableLocalVideo(false)} to disable the local
-     * audio sampling or video capturing.
-     *  - The role of the remote user is `2` (audience).
-     * - The local user calls the following methods to stop receiving remote
-     * streams:
-     *  - Calls {@link muteRemoteAudioStream muteRemoteAudioStream(true)},
-     * {@link muteAllRemoteAudioStreams muteAllRemoteAudioStreams(true)}, or
-     * {@link setDefaultMuteAllRemoteAudioStreams setDefaultMuteAllRemoteAudioStreams(true)}
-     * to stop receiving remote audio streams.
-     *  - Calls {@link muteRemoteVideoStream muteRemoteVideoStream(true)},
-     * {@link muteAllRemoteVideoStreams muteAllRemoteVideoStreams(true)}, or
-     * {@link setDefaultMuteAllRemoteVideoStreams setDefaultMuteAllRemoteVideoStreams(true)}
-     * to stop receiving remote video streams.
-     */
   | 1 //SUB_STATE_NO_SUBSCRIBED
-    /**
-     * 2: Subscribing.
-     */
   | 2 //SUB_STATE_SUBSCRIBING
-    /**
-     * 3: Subscribes to and receives the remote stream successfully.
-     */
   | 3 //SUB_STATE_SUBSCRIBED
 
 /**
@@ -2097,118 +2090,72 @@ export type ChannelMediaRelayError =
  * Regions for connection.
  *
  * @since v3.2.0
+ * 
+ * - 1: Mainland China.
+ * - 2: North America.
+ * - 4: Europe.
+ * - 8: Asia, excluding Mainland China.
+ * - 16: Japan.
+ * - 32: India.
+ * - 0xFFFFFFFF: (Default) Global.
  */
 export type AREA_CODE =
-    /**
-     * Mainland China.
-     */
   | 1 //AREA_CODE_CN = ,
-    /**
-     * North America.
-     */
   | 2 //AREA_CODE_NA = ,
-    /**
-     * Europe.
-     */
   | 4 //AREA_CODE_EUR = ,
-     /**
-      * Asia, excluding Mainland China.
-      */
   | 8 //AREA_CODE_AS = ,
-     /**
-      * Japan.
-      */
   | 16//AREA_CODE_JAPAN = ,
-     /**
-      * India.
-      */
   | 32 //AREA_CODE_INDIA = ,
-     /**
-      * (Default) Global.
-      */
   | (0xFFFFFFFF); //AREA_CODE_GLOBAL =
 /** The publishing state.
  *
  * @since v3.2.0
+ * 
+ * - 0: The initial publishing state after joining the channel.
+ * - 1: Fails to publish the local stream. Possible reasons:
+ *  - The local user calls
+ * {@link muteLocalAudioStream muteLocalAudioStream(true)} or
+ * {@link muteLocalVideoStream muteLocalVideoStream(true)} to stop
+ * sending local streams.
+ *  - The local user calls {@link disableAudio} or {@link disableVideo} to
+ * disable the entire audio or video module.
+ *  - The local user calls {@link enableLocalAudio enableLocalAudio(false)}
+ * or {@link enableLocalVideo enableLocalVideo(false)} to disable the
+ * local audio sampling or video capturing.
+ *  - The role of the local user is `2` (audience).
+ * - 2: Publishing.
+ * - 3: Publishes successfully.
  */
 export type STREAM_PUBLISH_STATE =
-     /** 0: The initial publishing state after joining the channel.
-      */
     | 0 //PUB_STATE_IDLE
-     /** 1: Fails to publish the local stream. Possible reasons:
-      * - The local user calls
-      * {@link muteLocalAudioStream muteLocalAudioStream(true)} or
-      * {@link muteLocalVideoStream muteLocalVideoStream(true)} to stop
-      * sending local streams.
-      * - The local user calls {@link disableAudio} or {@link disableVideo} to
-      * disable the entire audio or video module.
-      * - The local user calls {@link enableLocalAudio enableLocalAudio(false)}
-      *  or {@link enableLocalVideo enableLocalVideo(false)} to disable the
-      * local audio sampling or video capturing.
-      * - The role of the local user is `2` (audience).
-      */
     | 1 //PUB_STATE_NO_PUBLISHED
-      /** 2: Publishing.
-       */
     | 2 //PUB_STATE_PUBLISHING
-      /** 3: Publishes successfully.
-       */
     | 3 //PUB_STATE_PUBLISHED
 /**
  * Audio output routing.
+ * - -1: Default.
+ * - 0: Headset.
+ * - 1: Earpiece.
+ * - 2: Headset with no microphone.
+ * - 3: Speakerphone.
+ * - 4: Loudspeaker.
+ * - 5: Bluetooth headset.
+ * - 6: USB peripheral (macOS only). 
+ * - 7: HDMI peripheral (macOS only).
+ * - 8: DisplayPort peripheral (macOS only).
+ * - 9: Apple AirPlay (macOS only).
  */
 export type AUDIO_ROUTE_TYPE =
-    /**
-     * -1: Default.
-     */
     | -1 //AUDIO_ROUTE_DEFAULT
-    /**
-     * 0: Headset.
-     */
     | 0  //AUDIO_ROUTE_HEADSET
-    /**
-     * 1: Earpiece.
-     */
     | 1  //AUDIO_ROUTE_EARPIECE
-    /**
-     * 2: Headset with no microphone.
-     */
     | 2  //AUDIO_ROUTE_HEADSET_NO_MIC
-    /**
-     * 3: Speakerphone.
-     */
     | 3  //AUDIO_ROUTE_SPEAKERPHONE
-    /**
-     * 4: Loudspeaker.
-     */
     | 4  //AUDIO_ROUTE_LOUDSPEAKER
-    /**
-     * 5: Bluetooth headset.
-     */
     | 5  //AUDIO_ROUTE_BLUETOOTH
-    /**
-     * 6: USB peripheral (macOS only).
-     *
-     * @since v3.2.0
-     */
     | 6  //AUDIO_ROUTE_USB
-    /**
-     * 7: HDMI peripheral (macOS only).
-     *
-     * @since v3.2.0
-     */
     | 7  //AUDIO_ROUTE_HDMI
-    /**
-     * 8: DisplayPort peripheral (macOS only).
-     *
-     * @since v3.2.0
-     */
     | 8  //AUDIO_ROUTE_DISPLAYPORT
-    /**
-     * 9: Apple AirPlay (macOS only).
-     *
-     * @since v3.2.0
-     */
     | 9  //AUDIO_ROUTE_AIRPLAY
 /**
  * The media metadata.
