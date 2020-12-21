@@ -284,6 +284,9 @@ bool captureBmpToJpeg(const HWND& hWnd, char* szName, std::vector<ScreenWindowIn
 		std::string module_name = temp;
 		if (!displayLogo) break;
 
+		Gdiplus::Color c(0, 0, 0);
+		graphic.Clear(c);
+
 		HICON hIcon = nullptr;
 		ICONINFO icInfo = { 0 };
 
@@ -598,7 +601,7 @@ bool IsInvisibleWin10BackgroundAppWindow(HWND hWnd) {
 
 bool IsWindowValid(HWND hwnd)
 {
-	if (!IsWindowVisible(hwnd) || /*IsIconic(hwnd) ||*/
+	if (!IsWindowVisible(hwnd) || IsIconic(hwnd) ||
 		IsInvisibleWin10BackgroundAppWindow(hwnd))
 		return false;
 
