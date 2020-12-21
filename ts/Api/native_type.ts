@@ -14,12 +14,14 @@ export interface RendererOptions
  *
  * - 0: The network quality is unknown.
  * - 1: The network quality is excellent.
- * - 2: The network quality is quite good, but the bitrate may be slightly 
+ * - 2: The network quality is quite good, but the bitrate may be slightly
  * lower than excellent.
  * - 3: Users can feel the communication slightly impaired.
  * - 4: Users cannot communicate smoothly.
  * - 5: The network is so bad that users can barely communicate.
  * - 6: The network is down and users cannot communicate at all.
+ * - 7: Users cannot detect the network quality.
+ * - 8: Detecting the network quality.
  */
 export type AgoraNetworkQuality =
   | 0 // unknown
@@ -39,7 +41,7 @@ export type VIDEO_CODEC_TYPE =
   | 1; // H264
 
 /**
- * Client roles in a live broadcast.
+ * Client roles in the live streaming.
  *
  * - 1: Host.
  * - 2: Audience.
@@ -81,81 +83,81 @@ export interface TranscodingUser {
   width: number;
   /** Height of the video frame. The default value is 640. */
   height: number;
-  /** 
+  /**
    * Layer position of the video frame. The value ranges between 0 and 100.
    *
    * - 0: (Default) Lowest.
    * - 100: Highest.
    */
   zOrder: number;
-  /**  
-   * Transparency of the video frame in CDN live. 
+  /**
+   * Transparency of the video frame in CDN live.
    * The value ranges between 0 and 1:
    *
    * - 0: Completely transparent.
    * - 1: (Default) Opaque.
    */
   alpha: number;
-  /** The audio channel of the sound. 
-   * - 0: (Default) Supports dual channels at most, depending on the upstream 
-   * of the broadcaster.
-   * - 1: The audio stream of the broadcaster uses the FL audio channel. 
-   * If the upstream of the broadcaster uses multiple audio channels, 
+  /** The audio channel of the sound.
+   * - 0: (Default) Supports dual channels at most, depending on the upstream
+   * of the host.
+   * - 1: The audio stream of the host uses the FL audio channel.
+   * If the upstream of the host uses multiple audio channels,
    * these channels will be mixed into mono first.
-   * - 2: The audio stream of the broadcaster uses the FC audio channel. 
-   * If the upstream of the broadcaster uses multiple audio channels, 
+   * - 2: The audio stream of the host uses the FC audio channel.
+   * If the upstream of the host uses multiple audio channels,
    * these channels will be mixed into mono first.
-   * - 3: The audio stream of the broadcaster uses the FR audio channel. 
-   * If the upstream of the broadcaster uses multiple audio channels, 
+   * - 3: The audio stream of the host uses the FR audio channel.
+   * If the upstream of the host uses multiple audio channels,
    * these channels will be mixed into mono first.
-   * - 4: The audio stream of the broadcaster uses the BL audio channel. 
-   * If the upstream of the broadcaster uses multiple audio channels, 
+   * - 4: The audio stream of the host uses the BL audio channel.
+   * If the upstream of the host uses multiple audio channels,
    * these channels will be mixed into mono first.
-   * - 5: The audio stream of the broadcaster uses the BR audio channel. 
-   * If the upstream of the broadcaster uses multiple audio channels, 
+   * - 5: The audio stream of the host uses the BR audio channel.
+   * If the upstream of the host uses multiple audio channels,
    * these channels will be mixed into mono first.
    */
   audioChannel: number;
 }
 
-/** 
- * Sets the CDN live audio/video transcoding settings. 
+/**
+ * Sets the CDN live audio/video transcoding settings.
  */
 export interface TranscodingConfig {
-  /** 
-   * Width of the video. The default value is 360. 
-   * 
-   * If you push video streams to the CDN, set the value of width x height to 
+  /**
+   * Width of the video. The default value is 360.
+   *
+   * If you push video streams to the CDN, set the value of width x height to
    * at least 64 x 64 (px), or the SDK will adjust it to 64 x 64 (px).
-   * 
-   * If you push audio streams to the CDN, set the value of width x height to 
+   *
+   * If you push audio streams to the CDN, set the value of width x height to
    * 0 x 0 (px).
    */
   width: number;
-  /** 
-   * Height of the video. The default value is 640. 
-   * 
-   * If you push video streams to the CDN, set the value of width x height to 
+  /**
+   * Height of the video. The default value is 640.
+   *
+   * If you push video streams to the CDN, set the value of width x height to
    * at least 64 x 64 (px), or the SDK will adjust it to 64 x 64 (px).
-   * 
-   * If you push audio streams to the CDN, set the value of width x height to 
+   *
+   * If you push audio streams to the CDN, set the value of width x height to
    * 0 x 0 (px).
    */
   height: number;
-  /** 
-   * Bitrate of the CDN live output video stream. 
+  /**
+   * Bitrate of the CDN live output video stream.
    * The default value is 400 Kbps.
-   * 
+   *
    * Set this parameter according to the Video Bitrate Table.
-   * 
-   * If you set a bitrate beyond the proper range, the SDK automatically 
+   *
+   * If you set a bitrate beyond the proper range, the SDK automatically
    * adapts it to a value within the range.
    */
   videoBitrate: number;
-  /** 
-   * Frame rate (fps) of the CDN live output video stream. 
-   * The value range is (0, 30]. The default value is 15. 
-   * 
+  /**
+   * Frame rate (fps) of the CDN live output video stream.
+   * The value range is (0, 30]. The default value is 15.
+   *
    * **Note**: Agora adjusts all values over 30 to 30.
    */
   videoFrameRate: number;
@@ -170,21 +172,21 @@ export interface TranscodingConfig {
    */
   videoGop: number;
   /** Self-defined video codec profile.
-   * - VIDEO_CODEC_PROFILE_BASELINE = 66: Baseline video codec profile. 
+   * - VIDEO_CODEC_PROFILE_BASELINE = 66: Baseline video codec profile.
    * Generally used in video calls on mobile phones.
-   * - VIDEO_CODEC_PROFILE_MAIN = 77: Main video codec profile. 
-   * Generally used in mainstream electronics, such as MP4 players, portable 
+   * - VIDEO_CODEC_PROFILE_MAIN = 77: Main video codec profile.
+   * Generally used in mainstream electronics, such as MP4 players, portable
    * video players, PSP, and iPads.
-   * - VIDEO_CODEC_PROFILE_HIGH = 100: (Default) High video codec profile. 
+   * - VIDEO_CODEC_PROFILE_HIGH = 100: (Default) High video codec profile.
    * Generally used in high-resolution broadcasts or television.
    */
   videoCodecProfile: number;
-  /** 
-   * The background color in RGB hex value. Value only, do not include a #. 
+  /**
+   * The background color in RGB hex value. Value only, do not include a #.
    * For example, 0xFFB6C1 (light pink). The default value is 0x000000 (black).
    */
   backgroundColor: number;
-  /** The number of users in the live broadcast. */
+  /** The number of users in the live streaming. */
   userCount: number;
   /** Self-defined audio-sample rate:
    * - AUDIO_SAMPLE_RATE_32000 = 32000 Hz
@@ -192,11 +194,11 @@ export interface TranscodingConfig {
    * - AUDIO_SAMPLE_RATE_48000 = 48000 Hz
    */
   audioSampleRate: number;
-  /** 
-   * Agora's self-defined audio-channel types. 
-   * 
+  /**
+   * Agora's self-defined audio-channel types.
+   *
    * We recommend choosing option 1 or 2.
-   * 
+   *
    * A special player is required if you choose option 3, 4, or 5:
    * - 1: (Default) Mono.
    * - 2: Two-channel stereo.
@@ -205,57 +207,80 @@ export interface TranscodingConfig {
    * - 5: Five-channel stereo.
    */
   audioChannels: number;
-  /** Bitrate of the CDN live audio output stream. The default value is 48 Kbps, and the highest value is 128.
+  /** Bitrate of the CDN live audio output stream. The default value is 48
+   * Kbps, and the highest value is 128.
    */
   audioBitrate: number;
-  /** Reserved property. Extra user-defined information to send SEI for the H.264/H.265 video stream to the CDN live client. Maximum length: 4096 Bytes.
-
-    For more information on SEI frame, see [SEI-related questions](https://docs.agora.io/cn/Agora%20Platform/live_related_faq?platform=%E7%9B%B4%E6%92%AD%E7%9B%B8%E5%85%B3#sei).
-    */
+  /**
+   * The reserved property.
+   *
+   * Extra user-defined information to send SEI for the H.264 or H.265 stream
+   * to the CDN streaming client. The maximum length is 4096 bytes.
+   *
+   * See [SEI-related FAQ](https://docs.agora.io/en/faq/sei) for more details.
+   */
   transcodingExtraInfo: string;
   /** The watermark image added to the CDN live publishing stream. */
   watermark: {
-    /** 
+    /**
      * HTTP/HTTPS URL address of the image on the broadcasting video.
-     * 
+     *
      * The maximum length of this parameter is 1024 bytes.
      */
     url: string;
-    /** Horizontal position of the image from the upper left of the 
-     * broadcasting video. 
+    /** Horizontal position of the image from the upper left of the
+     * broadcasting video.
      */
     x: number;
-    /** Vertical position of the image from the upper left of the broadcasting 
-     * video. 
+    /** Vertical position of the image from the upper left of the broadcasting
+     * video.
      */
     y: number;
     /** Width of the image on the broadcasting video. */
     width: number;
     /** Height of the image on the broadcasting video. */
+    height: number;
+  };
+  /**
+   * @since v3.2.0
+   *
+   * The background image added to the CDN live publishing stream.
+   *
+   * Once a background image is added, the audience of the CDN live publishing
+   * stream can see the background image.
+   */
+  background: {
+    /**
+     * The HTTP or HTTPS address of the image. The length must not
+     * exceed 1,024 bytes.
+     */
+    url: string;
+    /**
+     * The x coordinate of the image on the output video. With the
+     * top-left corner
+     * of the output video as the origin, the x coordinate is the horizontal
+     * displacement
+     * of the top-left corner of the image relative to the origin.
+     */
+    x: number;
+    /**
+     * The y coordinate of the image on the output video. With the top-left
+     * corner
+     * of the output video as the origin, the y coordinate is the vertical
+     * displacement
+     * of the top-left corner of the image relative to the origin.
+     */
+    y: number;
+    /**
+     * The width (pixel) of the image.
+     */
+    width: number;
+    /**
+     * The height (pixel) of the image.
+     */
     height: number;
   };
 
-  background: {
-    /** 
-     * HTTP/HTTPS URL address of the image on the broadcasting video.
-     * 
-     * The maximum length of this parameter is 1024 bytes.
-     */
-    url: string;
-    /** Horizontal position of the image from the upper left of the 
-     * broadcasting video. 
-     */
-    x: number;
-    /** Vertical position of the image from the upper left of the broadcasting 
-     * video. 
-     */
-    y: number;
-    /** Width of the image on the broadcasting video. */
-    width: number;
-    /** Height of the image on the broadcasting video. */
-    height: number;
-  };
-  
   /** The TranscodingUsers Array. */
   transcodingUsers: Array<TranscodingUser>;
 }
@@ -264,7 +289,7 @@ export interface TranscodingConfig {
  */
 export interface LastmileProbeConfig {
   /**
-   * Sets whether or not to test the uplink network. Some users, for example, 
+   * Sets whether or not to test the uplink network. Some users, for example,
    * the audience in a Live-broadcast channel, do not need such a test.
    *
    * - true: test
@@ -279,13 +304,13 @@ export interface LastmileProbeConfig {
    */
   probeDownlink: boolean;
   /**
-   * The expected maximum sending bitrate (Kbps) of the local user. 
-   * The value ranges between 100 and 5000.
+   * The expected maximum sending bitrate (bps) of the local user.
+   * The value ranges between 100000 and 5000000.
    */
   expectedUplinkBitrate: number;
   /**
-   * The expected maximum receiving bitrate (Kbps) of the local user. 
-   * The value ranges between 100 and 5000.
+   * The expected maximum receiving bitrate (bps) of the local user.
+   * The value ranges between 100000 and 5000000.
    */
   expectedDownlinkBitrate: number;
 }
@@ -305,17 +330,17 @@ export interface LastmileProbeResult {
    * - 1: The last-mile network probe test is complete.
    * - 2: The last-mile network probe test is incomplete and the bandwidth
    * estimation is not available, probably due to limited test resources.
-   * - 3: The last-mile network probe test is not carried out, probably due 
+   * - 3: The last-mile network probe test is not carried out, probably due
    * to poor network conditions.
    */
   state: number;
-  /** 
-   * The uplink last-mile network probe test result. 
-   * See {@link LastmileProbeOneWayResult}. 
+  /**
+   * The uplink last-mile network probe test result.
+   * See {@link LastmileProbeOneWayResult}.
    */
   uplinkReport: LastmileProbeOneWayResult;
-  /** The downlink last-mile network probe test result. 
-   * See {@link LastmileProbeOneWayResult}. 
+  /** The downlink last-mile network probe test result.
+   * See {@link LastmileProbeOneWayResult}.
    */
   downlinkReport: LastmileProbeOneWayResult;
   /** The round-trip delay time (ms). */
@@ -325,16 +350,20 @@ export interface LastmileProbeResult {
 export interface UserInfo {
   /** The user ID. */
   uid: number;
-  /** The user account. 
-   * 
+  /** The user account.
+   *
    * The maximum length of this parameter is 255 bytes.
-   * 
+   *
    * Ensure that you set this parameter and do not set it as null.
    */
   userAccount: string;
 }
 
-/** Sets the local voice changer option. */
+/**
+ * @deprecated Deprecated from v3.2.0.
+ *
+ * Local voice changer options.
+ */
 export enum VoiceChangerPreset {
   /**
    * The original voice (no local voice change).
@@ -409,13 +438,14 @@ export enum VoiceChangerPreset {
    */
   GENERAL_BEAUTY_VOICE_FEMALE_FRESH = 0x00200002,
   /**
-   * 	(For female only) A more vital voice. Do not use it when the speaker is a male; otherwise, voice distortion occurs.
+   * (For female only) A more vital voice. Do not use it when the speaker is a male; otherwise, voice distortion occurs.
    */
   GENERAL_BEAUTY_VOICE_FEMALE_VITALITY = 0x00200003
 
 }
-/**
- * Sets the local voice changer option.
+/** @deprecated Deprecated from v3.2.0.
+ *
+ *  Local voice reverberation presets.
  */
 export enum AudioReverbPreset {
   /**
@@ -486,47 +516,47 @@ export enum AudioReverbPreset {
    * The reverberation of the virtual stereo. The virtual stereo is an effect that renders the monophonic
    * audio as the stereo audio, so that all users in the channel can hear the stereo voice effect.
    * To achieve better virtual stereo reverberation, Agora recommends setting `profile` in `setAudioProfile`
-   * as `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)`.
+   * as `5`.
    */
   AUDIO_VIRTUAL_STEREO = 0x00200001
 }
 /**
- * Configuration of the imported live broadcast voice or video stream.
+ * Configuration of the imported live streaming voice or video stream.
  */
 export interface InjectStreamConfig {
-  /** 
-   * Width of the added stream in the live broadcast. 
-   * 
-   * The default value is 0 pixel (same width as the original stream). 
+  /**
+   * Width of the added stream in the live streaming.
+   *
+   * The default value is 0 pixel (same width as the original stream).
    */
   width: number;
-  /** 
-   * Height of the added stream in the live broadcast. 
-   * 
-   * The default value is 0 pixel (same height as the original stream). 
+  /**
+   * Height of the added stream in the live streaming.
+   *
+   * The default value is 0 pixel (same height as the original stream).
    */
   height: number;
-  /** 
-   * Video bitrate of the added stream in the live broadcast. 
-   * 
-   * The default value is 400 Kbps. 
+  /**
+   * Video bitrate of the added stream in the live streaming.
+   *
+   * The default value is 400 Kbps.
    */
   videoBitrate: number;
-  /** Video frame rate of the added stream in the live broadcast. 
-   * 
-   * The default value is 15 fps. 
+  /** Video frame rate of the added stream in the live streaming.
+   *
+   * The default value is 15 fps.
    */
   videoFrameRate: number;
-  /** Video GOP of the added stream in the live broadcast in frames. 
-   * 
-   * The default value is 30 fps. 
+  /** Video GOP of the added stream in the live streaming in frames.
+   *
+   * The default value is 30 fps.
    */
   videoGop: number;
   /**
-   * Audio-sampling rate of the added stream in the live broadcast. 
-   * 
+   * Audio-sampling rate of the added stream in the live streaming.
+   *
    * The default value is 44100 Hz.
-   * 
+   *
    * **Note**: Agora recommends setting the default value.
    * - AUDIO_SAMPLE_RATE_32000 = 32000 Hz
    * - AUDIO_SAMPLE_RATE_44100 = 44100 Hz
@@ -534,17 +564,17 @@ export interface InjectStreamConfig {
    */
   audioSampleRate: number;
   /**
-   * Audio bitrate of the added stream in the live broadcast. 
-   * 
+   * Audio bitrate of the added stream in the live streaming.
+   *
    * The default value is 48 Kbps.
-   * 
+   *
    * **Note**: Agora recommends setting the default value.
    */
   audioBitrate: number;
-  /** Audio channels in the live broadcast.
+  /** Audio channels in the live streaming.
    * - 1: (Default) Mono
    * - 2: Two-channel stereo
-   * 
+   *
    * **Note**: Agora recommends setting the default value.
    */
   audioChannels: number;
@@ -574,47 +604,47 @@ export interface RtcStats {
   rxKBitRate: number;
   /** Audio receive bitrate (Kbps), represented by an instantaneous value. */
   rxAudioKBitRate: number;
-  /** Audio transmission bitrate (Kbps), represented by an instantaneous 
-   * value. 
+  /** Audio transmission bitrate (Kbps), represented by an instantaneous
+   * value.
    */
   txAudioKBitRate: number;
   /** Video receive bitrate (Kbps), represented by an instantaneous value. */
   rxVideoKBitRate: number;
-  /** Video transmission bitrate (Kbps), represented by an instantaneous 
-   * value. 
+  /** Video transmission bitrate (Kbps), represented by an instantaneous
+   * value.
    */
   txVideoKBitRate: number;
-  /** 
+  /**
    * @since 2.9.0
-   * 
-   * Total number of audio bytes received (bytes), represented by an aggregate 
-   * value. 
+   *
+   * Total number of audio bytes received (bytes), represented by an aggregate
+   * value.
    */
   rxAudioKBytes: number;
-  /** 
+  /**
    * @since 2.9.0
-   * 
-   * Total number of audio bytes sent (bytes), represented by an aggregate 
-   * value. 
+   *
+   * Total number of audio bytes sent (bytes), represented by an aggregate
+   * value.
    */
   txAudioKBytes: number;
-  /** 
+  /**
    * @since 2.9.0
-   * 
-   * Total number of video bytes received (bytes), represented by an aggregate 
-   * value. 
+   *
+   * Total number of video bytes received (bytes), represented by an aggregate
+   * value.
    */
   rxVideoKBytes: number;
-  /** 
+  /**
    * @since 2.9.0
-   * 
-   * Total number of video bytes sent (bytes), represented by an aggregate 
-   * value. 
+   *
+   * Total number of video bytes sent (bytes), represented by an aggregate
+   * value.
    */
   txVideoKBytes: number;
   /** Client-server latency. */
   lastmileDelay: number;
-  /** The packet loss rate (%) from the local client to Agora's edge server, 
+  /** The packet loss rate (%) from the local client to Agora's edge server,
    * before using the anti-packet-loss method.
    */
   txPacketLossRate: number;
@@ -630,34 +660,34 @@ export interface RtcStats {
   cpuTotalUsage: number;
   /**
    * @since v3.0.0
-   * 
+   *
    * The round-trip time delay from the client to the local router.
    */
   gatewayRtt: number;
   /**
    * @since v3.0.0
-   * 
+   *
    * The memory usage ratio of the app (%).
-   * 
-   * This value is for reference only. Due to system limitations, you may not 
+   *
+   * This value is for reference only. Due to system limitations, you may not
    * get the value of this member.
    */
   memoryAppUsageRatio: number;
   /**
    * @since v3.0.0
-   * 
+   *
    * The memory usage ratio of the system (%).
-   * 
-   * This value is for reference only. Due to system limitations, you may not 
+   *
+   * This value is for reference only. Due to system limitations, you may not
    * get the value of this member.
    */
   memoryTotalUsageRatio: number;
   /**
    * @since v3.0.0
-   * 
+   *
    * The memory usage of the app (KB).
-   * 
-   * This value is for reference only. Due to system limitations, you may not 
+   *
+   * This value is for reference only. Due to system limitations, you may not
    * get the value of this member.
    */
   memoryAppUsageInKbytes: number;
@@ -673,11 +703,11 @@ export enum QualityAdaptIndication {
 }
 /** Statistics of the local video. */
 export interface LocalVideoStats {
-  /** Bitrate (Kbps) sent in the reported interval, which does not include 
-   * the bitrate of the re-transmission video after packet loss. 
+  /** Bitrate (Kbps) sent in the reported interval, which does not include
+   * the bitrate of the re-transmission video after packet loss.
    */
   sentBitrate: number;
-  /** Frame rate (fps) sent in the reported interval, which does not include 
+  /** Frame rate (fps) sent in the reported interval, which does not include
    * the frame rate of the re-transmission video after packet loss.
    */
   sentFrameRate: number;
@@ -685,65 +715,68 @@ export interface LocalVideoStats {
   encoderOutputFrameRate: number;
   /** The renderer output frame rate (fps) of the local video. */
   rendererOutputFrameRate: number;
-  /** The target bitrate (Kbps) of the current encoder. 
-   * 
-   * This value is estimated by the SDK based on the current network 
+  /** The target bitrate (Kbps) of the current encoder.
+   *
+   * This value is estimated by the SDK based on the current network
    * conditions.
    */
   targetBitrate: number;
   /** The target frame rate (fps) of the current encoder. */
   targetFrameRate: number;
-  /** Quality change of the local video in terms of target frame rate and 
-   * target bit rate in this reported interval. 
+  /** Quality change of the local video in terms of target frame rate and
+   * target bit rate in this reported interval.
    * See {@link QualityAdaptIndication}.
    */
   qualityAdaptIndication: QualityAdaptIndication;
   /**
    * @since 2.9.0
-   * 
-   * The encoding bitrate (Kbps), which does not include the bitrate of the 
+   *
+   * The encoding bitrate (Kbps), which does not include the bitrate of the
    * retransmission video after packet loss.
    */
   encodedBitrate: number;
   /**
    * @since 2.9.0
-   * 
+   *
    * The width of the encoding frame (px).
    */
   encodedFrameWidth: number;
   /**
    * @since 2.9.0
-   * 
+   *
    * The height of the encoding frame (px).
    */
   encodedFrameHeight: number;
   /**
    * @since 2.9.0
-   * 
+   *
    * The value of the sent frames, represented by an aggregate value.
    */
   encodedFrameCount: number;
   /**
    * @since 2.9.0
-   * 
+   *
    * The codec type of the local video. See {@link VIDEO_CODEC_TYPE}.
    */
   codecType: number;
-  /** 
-   * The video packet loss rate (%) from the local client to the Agora edge server before applying the anti-packet loss strategies.
+  /** The video packet loss rate (%) from the local client to the Agora edge
+   * server before applying the anti-packet loss strategies.
+   *
+   * @since v3.2.0
    */
   txPacketLossRate: number;
-  /** 
-   * The capture frame rate (fps) of the local video.
+  /** The capture frame rate (fps) of the local video.
+   *
+   * @since v3.2.0
    */
   captureFrameRate: number;
 }
-/** 
+/**
  * The statistics of the local audio stream.
  */
 export interface LocalAudioStats {
   /**
-   * The number of channels. 
+   * The number of channels.
    */
   numChannels: number;
   /**
@@ -754,228 +787,112 @@ export interface LocalAudioStats {
    * The average sending bitrate (Kbps).
    */
   sentBitrate: number;
-  /** 
-   * The audio packet loss rate (%) from the local client to the Agora edge server before applying the anti-packet loss strategies.
+  /**
+   * The audio packet loss rate (%) from the local client to the Agora edge
+   * server before applying the anti-packet loss strategies.
+   *
+   * @since v3.2.0
    */
   txPacketLossRate: number;
 }
 /** VideoEncoderConfiguration */
 export interface VideoEncoderConfiguration {
-  /** Width (pixels) of the video. 
-   * 
+  /** Width (pixels) of the video.
+   *
    * The default value is 640(width) x 360(hight).
    */
   width: number;
-  /** Height (pixels) of the video. 
+  /** Height (pixels) of the video.
    *
    * The default value is 640(width) x 360(hight).
    */
   height: number;
   /**
-   * The frame rate (fps) of the video. 
-   * 
+   * The frame rate (fps) of the video.
+   *
    * The default value is 15 fps.
-   * 
+   *
    * **Noete**:
    * We do not recommend setting this to a value greater than 30 fps.
    */
   frameRate: number;
   /**
-   * The minimum frame rate of the video. 
-   * 
+   * The minimum frame rate of the video.
+   *
    * The default value is -1.
    */
   minFrameRate: number;
-   /** The video encoding bitrate (Kbps).
-    * 
-    * Choose one of the following options:
-    * - 0: (Recommended) The standard bitrate.
-    *  - The Communication profile: the encoding bitrate equals the base 
-    * bitrate.
-    *  - The Live-broadcast profile: the encoding bitrate is twice the base 
-    * bitrate.
-    * - -1: The compatible bitrate: the bitrate stays the same regardless of 
-    * the profile.
-    *
-    * The Communication profile prioritizes smoothness, while the 
-    * Live-broadcast profile prioritizes video quality 
-    * (requiring a higher bitrate). We recommend setting the bitrate mode to 
-    * address this difference.
-    *
-    * The following table lists the recommended video encoder configurations, 
-    * where the base bitrate applies to the Communication profile.
-    * Set your bitrate based on this table. If you set a bitrate beyond the 
-    * proper range, the SDK automatically sets it to within the range.
-    *
-    * <table>
-    *     <tr>
-    *         <th>Resolution</th>
-    *         <th>Frame Rate (fps)</th>
-    *         <th>Base Bitrate (Kbps, for Communication)</th>
-    *         <th>Live Bitrate (Kbps, for Live Broadcast)</th>
-    *     </tr>
-    *     <tr>
-    *         <td>160 &times; 120</td>
-    *         <td>15</td>
-    *         <td>65</td>
-    *         <td>130</td>
-    *     </tr>
-    *     <tr>
-    *         <td>120 &times; 120</td>
-    *         <td>15</td>
-    *         <td>50</td>
-    *         <td>100</td>
-    *     </tr>
-    *     <tr>
-    *         <td>320 &times; 180</td>
-    *         <td>15</td>
-    *         <td>140</td>
-    *         <td>280</td>
-    *     </tr>
-    *     <tr>
-    *         <td>180 &times; 180</td>
-    *         <td>15</td>
-    *         <td>100</td>
-    *         <td>200</td>
-    *     </tr>
-    *     <tr>
-    *         <td>240 &times; 180</td>
-    *         <td>15</td>
-    *         <td>120</td>
-    *         <td>240</td>
-    *     </tr>
-    *     <tr>
-    *         <td>320 &times; 240</td>
-    *         <td>15</td>
-    *         <td>200</td>
-    *         <td>400</td>
-    *     </tr>
-    *     <tr>
-    *         <td>240 &times; 240</td>
-    *         <td>15</td>
-    *         <td>140</td>
-    *         <td>280</td>
-    *     </tr>
-    *     <tr>
-    *         <td>424 &times; 240</td>
-    *         <td>15</td>
-    *         <td>220</td>
-    *         <td>440</td>
-    *     </tr>
-    *     <tr>
-    *         <td>640 &times; 360</td>
-    *         <td>15</td>
-    *         <td>400</td>
-    *         <td>800</td>
-    *     </tr>
-    *     <tr>
-    *         <td>360 &times; 360</td>
-    *         <td>15</td>
-    *         <td>260</td>
-    *         <td>520</td>
-    *     </tr>
-    *     <tr>
-    *         <td>640 &times; 360</td>
-    *         <td>30</td>
-    *         <td>600</td>
-    *         <td>1200</td>
-    *     </tr>
-    *     <tr>
-    *         <td>360 &times; 360</td>
-    *         <td>30</td>
-    *         <td>400</td>
-    *         <td>800</td>
-    *     </tr>
-    *     <tr>
-    *         <td>480 &times; 360</td>
-    *         <td>15</td>
-    *         <td>320</td>
-    *         <td>640</td>
-    *     </tr>
-    *     <tr>
-    *         <td>480 &times; 360</td>
-    *         <td>30</td>
-    *         <td>490</td>
-    *         <td>980</td>
-    *     </tr>
-    *     <tr>
-    *         <td>640 &times; 480</td>
-    *         <td>15</td>
-    *         <td>500</td>
-    *         <td>1000</td>
-    *     </tr>
-    *     <tr>
-    *         <td>480 &times; 480</td>
-    *         <td>15</td>
-    *         <td>400</td>
-    *         <td>800</td>
-    *     </tr>
-    *     <tr>
-    *         <td>640 &times; 480</td>
-    *         <td>30</td>
-    *         <td>750</td>
-    *         <td>1500</td>
-    *     </tr>
-    *     <tr>
-    *         <td>480 &times; 480</td>
-    *         <td>30</td>
-    *         <td>600</td>
-    *         <td>1200</td>
-    *     </tr>
-    *     <tr>
-    *         <td>848 &times; 480</td>
-    *         <td>15</td>
-    *         <td>610</td>
-    *         <td>1220</td>
-    *     </tr>
-    *     <tr>
-    *         <td>848 &times; 480</td>
-    *         <td>30</td>
-    *         <td>930</td>
-    *         <td>1860</td>
-    *     </tr>
-    *     <tr>
-    *         <td>640 &times; 480</td>
-    *         <td>10</td>
-    *         <td>400</td>
-    *         <td>800</td>
-    *     </tr>
-    *     <tr>
-    *         <td>1280 &times; 720</td>
-    *         <td>15</td>
-    *         <td>1130</td>
-    *         <td>2260</td>
-    *     </tr>
-    *     <tr>
-    *         <td>1280 &times; 720</td>
-    *         <td>30</td>
-    *         <td>1710</td>
-    *         <td>3420</td>
-    *     </tr>
-    *     <tr>
-    *         <td>960 &times; 720</td>
-    *         <td>15</td>
-    *         <td>910</td>
-    *         <td>1820</td>
-    *     </tr>
-    *     <tr>
-    *         <td>960 &times; 720</td>
-    *         <td>30</td>
-    *         <td>1380</td>
-    *         <td>2760</td>
-    *     </tr>
-    * </table>
-    */
+  /** The video encoding bitrate (Kbps).
+   *
+   * Set your bitrate based on the following table. If you set a bitrate
+   * beyond the proper range, the SDK automatically sets it to within the
+   * range.
+   *
+   * You can also choose one of the following bitrate options:
+   * - `0`: (Recommended) The standard bitrate.
+   *  - The communication(`0`) profile: the encoding bitrate equals the base
+   * bitrate.
+   *  - The `1` (live streaming) profile: the encoding bitrate is twice the base
+   * bitrate.
+   * - `-1`: The compatible bitrate.
+   *  - The communication(`0`) profile: the encoding bitrate equals the base
+   * bitrate.
+   *  - The `1` (live streaming) profile: the encoding bitrate equals the base
+   * bitrate.
+   *
+   * The communication(`0`) profile prioritizes smoothness, while the
+   * `1` (live streaming) profile prioritizes video quality
+   * (requiring a higher bitrate). We recommend setting the bitrate mode as
+   * `0` to address this difference.
+   *
+   * The following table lists the recommended video encoder configurations.
+   *
+   * | Resolution             | Frame Rate (fps) | Base Bitrate (Kbps)   |
+   * |------------------------|------------------|-----------------------|
+   * | 160 * 120              | 15               | 65                    |
+   * | 120 * 120              | 15               | 50                    |
+   * | 320 * 180              | 15               | 140                   |
+   * | 180 * 180              | 15               | 100                   |
+   * | 240 * 180              | 15               | 120                   |
+   * | 320 * 240              | 15               | 200                   |
+   * | 240 * 240              | 15               | 140                   |
+   * | 424 * 240              | 15               | 220                   |
+   * | 640 * 360              | 15               | 400                   |
+   * | 360 * 360              | 15               | 260                   |
+   * | 640 * 360              | 30               | 600                   |
+   * | 360 * 360              | 30               | 400                   |
+   * | 480 * 360              | 15               | 320                   |
+   * | 480 * 360              | 30               | 490                   |
+   * | 640 * 480              | 15               | 500                   |
+   * | 480 * 480              | 15               | 400                   |
+   * | 640 * 480              | 30               | 750                   |
+   * | 480 * 480              | 30               | 600                   |
+   * | 848 * 480              | 15               | 610                   |
+   * | 848 * 480              | 30               | 930                   |
+   * | 640 * 480              | 10               | 400                   |
+   * | 1280 * 720             | 15               | 1130                  |
+   * | 1280 * 720             | 30               | 1710                  |
+   * | 960 * 720              | 15               | 910                   |
+   * | 960 * 720              | 30               | 1380                  |
+   * | 1920 * 1080            | 15               | 2080                  |
+   * | 1920 * 1080            | 30               | 3150                  |
+   * | 1920 * 1080            | 60               | 4780                  |
+   * | 2560 * 1440            | 30               | 4850                  |
+   * | 2560 * 1440            | 60               | 6500                  |
+   * | 3840 * 2160            | 30               | 6500                  |
+   * | 3840 * 2160            | 60               | 6500                  |
+   *
+   */
   bitrate: number;
   /**
-   * The minimum encoding bitrate (Kbps). 
-   * 
-   * The default value is 1 kbps. 
-   * 
-   * Using a value greater than the default value 
-   * forces the video encoder to output high-quality images but may cause more 
-   * packet loss and hence sacrifice the smoothness of the video transmission. 
-   * That said, unless you have special requirements for image quality, 
+   * The minimum encoding bitrate (Kbps).
+   *
+   * The default value is 1 kbps.
+   *
+   * Using a value greater than the default value
+   * forces the video encoder to output high-quality images but may cause more
+   * packet loss and hence sacrifice the smoothness of the video transmission.
+   * That said, unless you have special requirements for image quality,
    * Agora does not recommend changing this value.
    *
    */
@@ -985,16 +902,16 @@ export interface VideoEncoderConfiguration {
    */
   orientationMode: OrientationMode;
   /**
-   * The video encoding degradation preference under limited bandwidth. 
+   * The video encoding degradation preference under limited bandwidth.
    * See {@link DegradationPreference}.
    */
   degradationPreference: DegradationPreference;
   /**
    * @since v3.0.0
-   * 
-   * Sets the mirror mode of the published local video stream. It only affects 
+   *
+   * Sets the mirror mode of the published local video stream. It only affects
    * the video that the remote user sees. See {@link VideoMirrorModeType}
-   * 
+   *
    * @note The SDK disables the mirror mode by default.
    */
   mirrorMode: VideoMirrorModeType;
@@ -1012,56 +929,56 @@ export enum VideoMirrorModeType {
    */
   ENABLED = 1,
   /**
-   * `2`: Disable mirror mode. 
+   * `2`: Disable mirror mode.
    */
   DISABLED = 2
 }
 
 /** The video encoding degradation preference under limited bandwidth. */
 export enum DegradationPreference {
-  /** 0: (Default) Degrade the frame rate in order to maintain the video 
-   * quality. 
+  /** 0: (Default) Degrade the frame rate in order to maintain the video
+   * quality.
    */
   MAINTAIN_QUALITY = 0,
   /** 1: Degrade the video quality in order to maintain the frame rate. */
   MAINTAIN_FRAMERATE = 1,
-  /** 2: (For future use) Maintain a balance between the frame rate and video 
-   * quality. 
+  /** 2: (For future use) Maintain a balance between the frame rate and video
+   * quality.
    */
   MAINTAIN_BALANCED = 2,
 }
 /** The orientation mode. */
 export enum OrientationMode  {
 /**
- * 0: (Default) The output video always follows the orientation of the 
- * captured video, because the receiver takes the rotational information 
- * passed on from the video encoder. 
- * 
+ * 0: (Default) The output video always follows the orientation of the
+ * captured video, because the receiver takes the rotational information
+ * passed on from the video encoder.
+ *
  * Mainly used between Agora SDK.
- * - If the captured video is in landscape mode, the output video is in 
+ * - If the captured video is in landscape mode, the output video is in
  * landscape mode.
- * - If the captured video is in portrait mode, the output video is in 
+ * - If the captured video is in portrait mode, the output video is in
  * portrait mode.
  */
   ORIENTATION_MODE_ADAPTIVE = 0,
 /**
- * 1: The output video is always in landscape mode. 
- * 
- * If the captured video is 
- * in portrait mode, the video encoder crops it to fit the output. Applies to 
- * situations where the receiving end cannot process the rotational 
- * information. 
- * 
+ * 1: The output video is always in landscape mode.
+ *
+ * If the captured video is
+ * in portrait mode, the video encoder crops it to fit the output. Applies to
+ * situations where the receiving end cannot process the rotational
+ * information.
+ *
  * For example, CDN live streaming.
  */
   ORIENTATION_MODE_FIXED_LANDSCAPE = 1,
 /**
- * 2: The output video is always in portrait mode. 
- * 
- * If the captured video is in landscape mode, the video encoder crops it to 
- * fit the output. Applies to situations where the receiving end cannot process 
- * the rotational information. 
- * 
+ * 2: The output video is always in portrait mode.
+ *
+ * If the captured video is in landscape mode, the video encoder crops it to
+ * fit the output. Applies to situations where the receiving end cannot process
+ * the rotational information.
+ *
  * For example, CDN live streaming.
  */
   ORIENTATION_MODE_FIXED_PORTRAIT = 2,
@@ -1094,57 +1011,61 @@ export interface RemoteVideoStats {
    */
   rxStreamType: StreamType;
   /**
-   * The total freeze time (ms) of the remote video stream after the 
+   * The total freeze time (ms) of the remote video stream after the
    * remote user joins the channel.
-   * 
-   * In a video session where the frame rate is set to no less than 5 fps, 
-   * video freeze occurs when the time interval between two adjacent renderable 
+   *
+   * In a video session where the frame rate is set to no less than 5 fps,
+   * video freeze occurs when the time interval between two adjacent renderable
    * video frames is more than 500 ms.
    */
   totalFrozenTime: number;
   /**
-   * The total video freeze time as a percentage (%) of the total time when 
+   * The total video freeze time as a percentage (%) of the total time when
    * the video is available.
    */
   frozenRate: number;
   /**
-   * @since 2.9.0
-   * 
-   * Packet loss rate (%) of the remote video stream after using the 
+   * @since v2.9.0
+   *
+   * Packet loss rate (%) of the remote video stream after using the
    * anti-packet-loss method.
    */
   packetLossRate: number;
   /**
-   * The total time (ms) when the remote user in the Communication profile or the remote
-   * broadcaster in the Live-broadcast profile neither stops sending the video stream nor
+   * The total time (ms) when the remote user in the `0` (communication)
+   * profile or the remote host in the `1` (live streaming) profile neither
+   * stops sending the video stream nor
    * disables the video module after joining the channel.
-
-     @since v3.0.1
+   *
+   * @since v3.2.0
+   *
    */
   totalActiveTime: number;
   /**
    * The total publish duration (ms) of the remote video stream.
+   *
+   * @since v3.2.0
    */
   publishDuration: number;
 }
 /** Sets the camera capturer configuration. */
 export enum CaptureOutPreference {
-  /** 0: (Default) self-adapts the camera output parameters to the system 
-   * performance and network conditions to balance CPU consumption and video 
+  /** 0: (Default) self-adapts the camera output parameters to the system
+   * performance and network conditions to balance CPU consumption and video
    * preview quality.
    */
   CAPTURER_OUTPUT_PREFERENCE_AUTO = 0,
-  /** 1: Prioritizes the system performance. 
-   * 
-   * The SDK chooses the dimension 
-   * and frame rate of the local camera capture closest to those set 
+  /** 1: Prioritizes the system performance.
+   *
+   * The SDK chooses the dimension
+   * and frame rate of the local camera capture closest to those set
    * by the {@link setVideoEncoderConfiguration} method.
    */
   CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE = 1,
-  /** 2: Prioritizes the local preview quality. 
-   * 
-   * The SDK chooses higher camera output parameters to improve the local 
-   * video preview quality. This option requires extra CPU and RAM usage for 
+  /** 2: Prioritizes the local preview quality.
+   *
+   * The SDK chooses higher camera output parameters to improve the local
+   * video preview quality. This option requires extra CPU and RAM usage for
    * video pre-processing.
    */
   CAPTURER_OUTPUT_PREFERENCE_PREVIEW = 2
@@ -1166,7 +1087,7 @@ export interface Rectangle {
   height: number; // The height of the region.
 }
 /**
- * The screen symbol: 
+ * The screen symbol:
  * - The screen symbol on the macOS platform, see {@link MacScreenSymbol}
  * - The screen symbol on the Windows platform, see {@link WindowsScreenSymbol}
  */
@@ -1183,27 +1104,50 @@ export interface CaptureParam {
   width: number; // Width (pixels) of the video
   /** Height (pixels) of the video. */
   height: number; // Height (pixels) of the video
-  /** The frame rate (fps) of the shared region. 
-   * 
-   * The default value is 5. 
-   * 
-   * We do not recommend setting this to a value greater than 15. 
+  /** The frame rate (fps) of the shared region.
+   *
+   * The default value is 5.
+   *
+   * We do not recommend setting this to a value greater than 15.
    */
   frameRate: number; // The frame rate (fps) of the shared region. The default value is 5. We do not recommend setting this to a value greater than 15.
   /**
    * The bitrate (Kbps) of the shared region.
-   * 
-   * The default value is 0 (the SDK works out a bitrate according to the 
+   *
+   * The default value is 0 (the SDK works out a bitrate according to the
    * dimensions of the current screen).
    */
   bitrate: number; //  The bitrate (Kbps) of the shared region. The default value is 0 (the SDK works out a bitrate according to the dimensions of the current screen).
-
+  /** Sets whether or not to capture the mouse for screen sharing:
+   * - true: (Default) Capture the mouse.
+   * - false: Do not capture the mouse.
+   *
+   * @since v3.2.0
+   */
   captureMouseCursor: boolean;
-
+  /** Whether to bring the window to the front when calling
+   * {@link startScreenCaptureByWindow} to share the window:
+   * - true: Bring the window to the front.
+   * - false: (Default) Do not bring the window to the front.
+   *
+   * @since v3.2.0
+   */
   windowFocus: boolean;
-
+  /** A list of IDs of windows to be blocked.
+   *
+   * When calling {@link startScreenCaptureByScreen} to start screen
+   * sharing, you can use this parameter to block the specified windows.
+   * When calling {@link updateScreenCaptureParameters} to update the
+   * configuration for screen sharing, you can use this parameter to
+   * dynamically block the specified windows during screen sharing.
+   *
+   * @since v3.2.0
+   */
   excludeWindowList: Array<number>;
-
+  /** The number of windows to be blocked.
+   *
+   * @since v3.2.0
+   */
   excludeWindowCount: number;
 }
 
@@ -1216,32 +1160,32 @@ export enum VideoContentHint {
    */
   CONTENT_HINT_NONE = 0,
   /**
-   * 1: Motion-intensive content. 
-   * 
-   * Choose this option if you prefer smoothness or when you are sharing a 
+   * 1: Motion-intensive content.
+   *
+   * Choose this option if you prefer smoothness or when you are sharing a
    * video clip, movie, or video game.
    */
   CONTENT_HINT_MOTION = 1,
   /**
-   * 2: Motionless content. 
-   * 
-   * Choose this option if you prefer sharpness or when you are sharing a 
+   * 2: Motionless content.
+   *
+   * Choose this option if you prefer sharpness or when you are sharing a
    * picture, PowerPoint slide, or text.
    */
   CONTENT_HINT_DETAILS = 2
 }
 
 /**
- * @deprecated This callback is deprecated. Use the remoteVideoStats callback 
+ * @deprecated This callback is deprecated. Use the remoteVideoStats callback
  * instead.
- * 
+ *
  * Reports the transport-layer statistics of each remote video stream.
  */
 export interface RemoteVideoTransportStats {
   /** User ID of the remote user sending the video packet. */
   uid: number;
-  /** Network time delay (ms) from the remote user sending the video packet to 
-   * the local user. 
+  /** Network time delay (ms) from the remote user sending the video packet to
+   * the local user.
    */
   delay: number;
   /** Packet loss rate (%) of the video packet sent from the remote user. */
@@ -1253,13 +1197,13 @@ export interface RemoteVideoTransportStats {
 /**
  * @deprecated This callback is deprecated. Use the remoteAudioStats callback
  * instead.
- * 
+ *
  * Reports the transport-layer statistics of each remote audio stream.
  */
 export interface RemoteAudioTransportStats {
   /** User ID of the remote user sending the audio packet. */
   uid: number;
-  /** Network time delay (ms) from the remote user sending the audio packet to 
+  /** Network time delay (ms) from the remote user sending the audio packet to
    * the local user. */
   delay: number;
   /** Packet loss rate (%) of the audio packet sent from the remote user. */
@@ -1284,44 +1228,51 @@ export interface RemoteAudioStats {
   audioLossRate: number;
   /** The number of the channels. */
   numChannels: number;
-  /** 
-   * The sample rate (Hz) of the received audio stream in the reported 
+  /**
+   * The sample rate (Hz) of the received audio stream in the reported
    * interval.
    */
   receivedSampleRate: number;
-  /** The average bitrate (Kbps) of the received audio stream in the reported 
-   * interval. 
+  /** The average bitrate (Kbps) of the received audio stream in the reported
+   * interval.
    */
   receivedBitrate: number;
   /**
-   * The total freeze time (ms) of the remote audio stream after the remote 
+   * The total freeze time (ms) of the remote audio stream after the remote
    * user joins the channel.
-   * 
-   * In the reported interval, audio freeze occurs when the audio frame loss 
-   * rate reaches 4%. Agora uses 2 seconds as an audio piece unit to calculate 
-   * the audio freeze time. The total audio freeze time = The audio freeze 
+   *
+   * In the reported interval, audio freeze occurs when the audio frame loss
+   * rate reaches 4%. Agora uses 2 seconds as an audio piece unit to calculate
+   * the audio freeze time. The total audio freeze time = The audio freeze
    * number × 2000 ms.
    */
   totalFrozenTime: number;
-  /** 
-   * The total audio freeze time as a percentage (%) of the total time 
+  /**
+   * The total audio freeze time as a percentage (%) of the total time
    * when the audio is available.
    */
   frozenRate: number;
-  /** 
-   * The total time (ms) when the remote user in the `COMMUNICATION` profile or the remote host in
-   * the `LIVE_BROADCASTING` profile neither stops sending the audio stream nor disables the audio module after joining the channel.
+  /**
+   * The total time (ms) when the remote user in the `0` (communication)
+   * profile or the remote host in the `1` (live streaming) profile neither
+   * stops sending the audio stream nor
+   * disables the audio module after joining the channel.
+   *
+   * @since v3.2.0
+   *
    */
   totalActiveTime: number;
   /**
    * The total publish duration (ms) of the remote audio stream.
+   *
+   * @since v3.2.0
    */
   publishDuration: number;
 }
 
 /**
  * State of the remote video:
- * 
+ *
  * - 0: The remote video is in the default state.
  * - 1: The first remote video packet is received.
  * - 2: The remote video stream is decoded and plays normally.
@@ -1333,18 +1284,18 @@ export type RemoteVideoState = 0 | 1 | 2 | 3 | 4;
  * - 0: Internal reasons.
  * - 1: Network congestion.
  * - 2: Network recovery.
- * - 3: The local user stops receiving the remote video stream or disables the 
+ * - 3: The local user stops receiving the remote video stream or disables the
  * video module.
- * - 4: The local user resumes receiving the remote video stream or enables the 
+ * - 4: The local user resumes receiving the remote video stream or enables the
  * video module.
- * - 5: The remote user stops sending the video stream or disables the video 
+ * - 5: The remote user stops sending the video stream or disables the video
  * module.
- * - 6: The remote user resumes sending the video stream or enables the video 
+ * - 6: The remote user resumes sending the video stream or enables the video
  * module.
  * - 7: The remote user leaves the channel.
- * - 8: The remote media stream falls back to the audio-only stream due to poor 
+ * - 8: The remote media stream falls back to the audio-only stream due to poor
  * network conditions.
- * - 9: The remote media stream switches back to the video stream after the 
+ * - 9: The remote media stream switches back to the video stream after the
  * network conditions improve.
  */
 export type RemoteVideoStateReason = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
@@ -1359,56 +1310,56 @@ export type RemoteVideoStateReason = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 export type RemoteAudioState = 0 | 1 | 2 | 3 | 4;
 /**
  * The reason of the remote audio state change.
- * - 0: Internal reasons. 
- * - 1: Network congestion. 
- * - 2: Network recovery. 
- * - 3: The local user stops receiving the remote audio stream or disables the 
- * audio module. 
- * - 4: The local user resumes receiving the remote audio stream or enables the 
- * audio module. 
- * - 5: The remote user stops sending the audio stream or disables the audio 
- * module. 
- * - 6: The remote user resumes sending the audio stream or enables the audio 
- * module. 
+ * - 0: Internal reasons.
+ * - 1: Network congestion.
+ * - 2: Network recovery.
+ * - 3: The local user stops receiving the remote audio stream or disables the
+ * audio module.
+ * - 4: The local user resumes receiving the remote audio stream or enables the
+ * audio module.
+ * - 5: The remote user stops sending the audio stream or disables the audio
+ * module.
+ * - 6: The remote user resumes sending the audio stream or enables the audio
+ * module.
  * - 7: The remote user leaves the channel.
  */
 export type RemoteAudioStateReason = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 /**
  * Connection states.
  * - 1: The SDK is disconnected from Agora's edge server.
- *  - This is the initial state before calling the 
+ *  - This is the initial state before calling the
  * {@link AgoraRtcEngine.joinChannel} method.
- *  - The SDK also enters this state when the application calls the 
+ *  - The SDK also enters this state when the application calls the
  * {@link AgoraRtcEngine.leaveChannel} method.
- * - 2: The SDK is connecting to Agora's edge server. When the application 
- * calls the {@link AgoraRtcEngine.joinChannel} method, the SDK starts to 
+ * - 2: The SDK is connecting to Agora's edge server. When the application
+ * calls the {@link AgoraRtcEngine.joinChannel} method, the SDK starts to
  * establish a connection to the specified channel.
- *  - When the SDK successfully joins the channel, it triggers the 
+ *  - When the SDK successfully joins the channel, it triggers the
  * connectionStateChanged callback and switches to the 3 state.
- *  - After the SDK joins the channel and when it finishes initializing the 
+ *  - After the SDK joins the channel and when it finishes initializing the
  * media engine, the SDK triggers the joinedChannel callback.
- * - 3: The SDK is connected to Agora's edge server and has joined a channel. 
- * You can now publish or subscribe to a media stream in the channel.If the 
+ * - 3: The SDK is connected to Agora's edge server and has joined a channel.
+ * You can now publish or subscribe to a media stream in the channel.If the
  * connection to the channel is lost because, for example,
- * if the network is down or switched, the SDK automatically tries to reconnect 
+ * if the network is down or switched, the SDK automatically tries to reconnect
  * and triggers:
  *  - The connectionStateChanged callback and switches to the 4 state.
- * - 4: The SDK keeps rejoining the channel after being disconnected from a 
+ * - 4: The SDK keeps rejoining the channel after being disconnected from a
  * joined channel because of network issues.
- *  - If the SDK cannot rejoin the channel within 10 seconds after being 
- * disconnected from Agora's edge server, the SDK triggers the connectionLost 
+ *  - If the SDK cannot rejoin the channel within 10 seconds after being
+ * disconnected from Agora's edge server, the SDK triggers the connectionLost
  * callback, stays in this state, and keeps rejoining the channel.
- *  - If the SDK fails to rejoin the channel 20 minutes after being 
- * disconnected from Agora's edge server, the SDK triggers the 
- * connectionStateChanged callback, switches to the 5 state, and stops 
+ *  - If the SDK fails to rejoin the channel 20 minutes after being
+ * disconnected from Agora's edge server, the SDK triggers the
+ * connectionStateChanged callback, switches to the 5 state, and stops
  * rejoining the channel.
- * - 5: The SDK fails to connect to Agora's edge server or join the channel. 
- * You must call the {@link AgoraRtcEngine.leaveChannel leaveChannel} method 
+ * - 5: The SDK fails to connect to Agora's edge server or join the channel.
+ * You must call the {@link AgoraRtcEngine.leaveChannel leaveChannel} method
  * to leave this state.
- *  - Calls the {@link AgoraRtcEngine.joinChannel joinChannel} method again to 
+ *  - Calls the {@link AgoraRtcEngine.joinChannel joinChannel} method again to
  * rejoin the channel.
- *  - If the SDK is banned from joining the channel by Agora's edge server 
- * (through the RESTful API), the SDK triggers connectionStateChanged 
+ *  - If the SDK is banned from joining the channel by Agora's edge server
+ * (through the RESTful API), the SDK triggers connectionStateChanged
  * callbacks.
  */
 export type ConnectionState =
@@ -1420,14 +1371,14 @@ export type ConnectionState =
 
   /**
    * Reasons for a connection state change.
-   * 
+   *
    * - 0: The SDK is connecting to Agora's edge server.
    * - 1: The SDK has joined the channel successfully.
-   * - 2: The connection between the SDK and Agora's edge server is 
+   * - 2: The connection between the SDK and Agora's edge server is
    * interrupted.
-   * - 3: The connection between the SDK and Agora's edge server is banned by 
+   * - 3: The connection between the SDK and Agora's edge server is banned by
    * Agora's edge server.
-   * - 4: The SDK fails to join the channel for more than 20 minutes and stops 
+   * - 4: The SDK fails to join the channel for more than 20 minutes and stops
    * reconnecting to the channel.
    * - 5: The SDK has left the channel.
    * - 6: Invalid App ID.
@@ -1454,35 +1405,39 @@ export type ConnectionChangeReason =
   | 11 // 11: SDK reconnects for setting proxy server
   | 12 // 12: Network status change for renew token
   | 13; // 13: Client IP Address changed
-
+/** Encryption mode.
+ */
 export enum ENCRYPTION_MODE {
-      /* OpenSSL Encryption Mode Start */
-      /** 1:"aes-128-xts": (Default) 128-bit AES encryption, XTS mode.
+      /** 1: (Default) 128-bit AES encryption, XTS mode.
        */
       AES_128_XTS = 1,
-      /** 2:"aes-128-ecb": 128-bit AES encryption, ECB mode.
+      /** 2: 128-bit AES encryption, ECB mode.
        */
       AES_128_ECB = 2,
-      /** 3:"aes-256-xts": 256-bit AES encryption, XTS mode.
+      /** 3: 256-bit AES encryption, XTS mode.
        */
       AES_256_XTS = 3,
-      /* OpenSSL Encryption Mode End */
-  
-      /** 4:"sm4-128-ecb": 128-bit SM4 encryption, ECB mode.
-       */
+     /** 4: 128-bit SM4 encryption, ECB mode.
+      */
       SM4_128_ECB = 4,
 };
-
+/**
+ * Configurations of built-in encryption schemas.
+ */
 export interface EncryptionConfig{
-    /**
-     * Encryption mode.  The Agora SDK supports built-in encryption, which is set to the "aes-128-xts" mode by default. See ENCRYPTION_MODE.
-     */
+   /**
+    * Encryption mode. The default encryption mode is `AES_128_XTS`.
+    */
     encryptionMode: ENCRYPTION_MODE;
     /**
-     * Pointer to the encryption password.
+     * Encryption key in string type.
+     *
+     * @note If you do not set an encryption key or set it as NULL, you
+     * cannot use the built-in encryption, and the SDK returns the error code
+     * `-2`.
      */
     encryptionKey: string;
-    
+
 };
 
 /**
@@ -1518,15 +1473,15 @@ export enum VIDEO_PROFILE_TYPE {
   /** 37: 480 &times; 360, frame rate 30 fps, bitrate 490 Kbps. */
   VIDEO_PROFILE_LANDSCAPE_360P_8 = 37,
   /** 38: 640 &times; 360, frame rate 15 fps, bitrate 800 Kbps.
-   * **Note**: Live broadcast profile only.
+   * **Note**: `1` (live streaming) profile only.
    */
   VIDEO_PROFILE_LANDSCAPE_360P_9 = 38,
   /** 39: 640 &times; 360, frame rate 24 fps, bitrate 800 Kbps.
-   * **Note**: Live broadcast profile only.
+   * **Note**: `1` (live streaming) profile only.
    */
   VIDEO_PROFILE_LANDSCAPE_360P_10 = 39,
   /** 100: 640 &times; 360, frame rate 24 fps, bitrate 1000 Kbps.
-   * **Note**: Live broadcast profile only.
+   * **Note**: `1` (live streaming) profile only.
    */
   VIDEO_PROFILE_LANDSCAPE_360P_11 = 100,
   /** 40: 640 &times; 480, frame rate 15 fps, bitrate 500 Kbps. */
@@ -1594,15 +1549,15 @@ export enum VIDEO_PROFILE_TYPE {
   /** 1037: 360 &times; 480, frame rate 30 fps, bitrate 490 Kbps. */
   VIDEO_PROFILE_PORTRAIT_360P_8 = 1037,
   /** 1038: 360 &times; 640, frame rate 15 fps, bitrate 800 Kbps.
-   * **Note**: Live broadcast profile only.
+   * **Note**: `1` (live streaming) profile only.
    */
   VIDEO_PROFILE_PORTRAIT_360P_9 = 1038,
   /** 1039: 360 &times; 640, frame rate 24 fps, bitrate 800 Kbps.
-   * **Note**: Live broadcast profile only.
+   * **Note**: `1` (live streaming) profile only.
    */
   VIDEO_PROFILE_PORTRAIT_360P_10 = 1039,
   /** 1100: 360 &times; 640, frame rate 24 fps, bitrate 1000 Kbps.
-   * **Note**: Live broadcast profile only.
+   * **Note**: `1` (live streaming) profile only.
    */
   VIDEO_PROFILE_PORTRAIT_360P_11 = 1100,
   /** 1040: 480 &times; 640, frame rate 15 fps, bitrate 500 Kbps. */
@@ -1644,12 +1599,22 @@ export enum VIDEO_PROFILE_TYPE {
   /** Default 640 &times; 360, frame rate 15 fps, bitrate 400 Kbps. */
   VIDEO_PROFILE_DEFAULT = VIDEO_PROFILE_LANDSCAPE_360P
 }
-
+/** Events during the RTMP or RTMPS streaming.
+ *
+ * @since v3.2.0
+ */
 export enum RTMP_STREAMING_EVENT
 {
+  /** An error occurs when you add a background image or a watermark image to the RTMP or RTMPS stream.
+   *
+   * @since v3.2.0
+   */
   RTMP_STREAMING_EVENT_FAILED_LOAD_IMAGE = 1,
 };
-
+/** The options for SDK preset audio effects.
+ *
+ * @since v3.2.0
+ */
 export enum AUDIO_EFFECT_PRESET
 {
     /** Turn off audio effects and use the original voice.
@@ -1657,142 +1622,168 @@ export enum AUDIO_EFFECT_PRESET
     AUDIO_EFFECT_OFF = 0x00000000,
     /** An audio effect typical of a KTV venue.
      *
-     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile"
-     * and setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)`
+     * @note To achieve better audio effect quality, Agora recommends
+     * calling {@link setAudioProfile}
+     * and setting the `profile` parameter to `4` or `5`
      * before setting this enumerator.
      */
     ROOM_ACOUSTICS_KTV = 0x02010100,
     /** An audio effect typical of a concert hall.
      *
-     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile"
-     * and setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)`
+     * @note To achieve better audio effect quality, Agora recommends
+     * calling {@link setAudioProfile}
+     * and setting the `profile` parameter to `4` or `5`
      * before setting this enumerator.
      */
     ROOM_ACOUSTICS_VOCAL_CONCERT = 0x02010200,
     /** An audio effect typical of a recording studio.
      *
-     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile"
-     * and setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)`
+     * @note To achieve better audio effect quality, Agora recommends
+     * calling {@link setAudioProfile}
+     * and setting the `profile` parameter to `4` or `5`
      * before setting this enumerator.
      */
     ROOM_ACOUSTICS_STUDIO = 0x02010300,
     /** An audio effect typical of a vintage phonograph.
      *
-     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile"
-     * and setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)`
+     * @note To achieve better audio effect quality, Agora recommends
+     * calling {@link setAudioProfile}
+     * and setting the `profile` parameter to `4` or `5`
      * before setting this enumerator.
      */
     ROOM_ACOUSTICS_PHONOGRAPH = 0x02010400,
     /** A virtual stereo effect that renders monophonic audio as stereo audio.
      *
-     * @note Call \ref IRtcEngine::setAudioProfile "setAudioProfile" and set the `profile` parameter to
-     * `AUDIO_PROFILE_MUSIC_STANDARD_STEREO(3)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before setting this
+     * @note Call {@link setAudioProfile} and set the `profile` parameter to
+     * `3` or `5` before setting this
      * enumerator; otherwise, the enumerator setting does not take effect.
      */
     ROOM_ACOUSTICS_VIRTUAL_STEREO = 0x02010500,
     /** A more spatial audio effect.
      *
-     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile"
-     * and setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)`
+     * @note To achieve better audio effect quality, Agora recommends
+     * calling {@link setAudioProfile}
+     * and setting the `profile` parameter to `4` or `5`
      * before setting this enumerator.
      */
     ROOM_ACOUSTICS_SPACIAL = 0x02010600,
     /** A more ethereal audio effect.
      *
-     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile"
-     * and setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)`
+     * @note To achieve better audio effect quality, Agora recommends
+     * calling {@link setAudioProfile}
+     * and setting the `profile` parameter to `4` or `5`
      * before setting this enumerator.
      */
     ROOM_ACOUSTICS_ETHEREAL = 0x02010700,
-    /** A 3D voice effect that makes the voice appear to be moving around the user. The default cycle period of the 3D
-     * voice effect is 10 seconds. To change the cycle period, call \ref IRtcEngine::setAudioEffectParameters "setAudioEffectParameters"
+    /** A 3D voice effect that makes the voice appear to be moving around
+     * the user. The default cycle period of the 3D
+     * voice effect is 10 seconds. To change the cycle period,
+     * call {@link setAudioEffectParameters}
      * after this method.
      *
      * @note
-     * - Call \ref IRtcEngine::setAudioProfile "setAudioProfile" and set the `profile` parameter to `AUDIO_PROFILE_MUSIC_STANDARD_STEREO(3)`
-     * or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before setting this enumerator; otherwise, the enumerator setting does not take effect.
-     * - If the 3D voice effect is enabled, users need to use stereo audio playback devices to hear the anticipated voice effect.
+     * - Call {@link setAudioProfile} and set the `profile` parameter to `3`
+     * or `5` before setting this enumerator; otherwise, the enumerator
+     * setting does not take effect.
+     * - If the 3D voice effect is enabled, users need to use stereo audio
+     * playback devices to hear the anticipated voice effect.
      */
     ROOM_ACOUSTICS_3D_VOICE = 0x02010800,
     /** The voice of an uncle.
      *
      * @note
-     * - Agora recommends using this enumerator to process a male-sounding voice; otherwise, you may not hear the anticipated voice effect.
-     * - To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and
-     * setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before
-     * setting this enumerator.
+     * - Agora recommends using this enumerator to process a male-sounding
+     * voice; otherwise, you may not hear the anticipated voice effect.
+     * - To achieve better audio effect quality, Agora recommends
+     * calling {@link setAudioProfile}
+     * and setting the `profile` parameter to `4` or `5`
+     * before setting this enumerator.
      */
     VOICE_CHANGER_EFFECT_UNCLE = 0x02020100,
     /** The voice of an old man.
      *
      * @note
-     * - Agora recommends using this enumerator to process a male-sounding voice; otherwise, you may not hear the anticipated voice effect.
-     * - To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and setting
-     * the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before setting
-     * this enumerator.
+     * - Agora recommends using this enumerator to process a male-sounding
+     * voice; otherwise, you may not hear the anticipated voice effect.
+     * - To achieve better audio effect quality, Agora recommends
+     * calling {@link setAudioProfile}
+     * and setting the `profile` parameter to `4` or `5`
+     * before setting this enumerator.
      */
     VOICE_CHANGER_EFFECT_OLDMAN = 0x02020200,
     /** The voice of a boy.
      *
      * @note
-     * - Agora recommends using this enumerator to process a male-sounding voice; otherwise, you may not hear the anticipated voice effect.
-     * - To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and setting
-     * the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before
-     * setting this enumerator.
+     * - Agora recommends using this enumerator to process a male-sounding
+     * voice; otherwise, you may not hear the anticipated voice effect.
+     * - To achieve better audio effect quality, Agora recommends
+     * calling {@link setAudioProfile}
+     * and setting the `profile` parameter to `4` or `5`
+     * before setting this enumerator.
      */
     VOICE_CHANGER_EFFECT_BOY = 0x02020300,
     /** The voice of a young woman.
      *
      * @note
-     * - Agora recommends using this enumerator to process a female-sounding voice; otherwise, you may not hear the anticipated voice effect.
-     * - To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and setting
-     * the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before
-     * setting this enumerator.
+     * - Agora recommends using this enumerator to process a female-sounding
+     * voice; otherwise, you may not hear the anticipated voice effect.
+     * - To achieve better audio effect quality, Agora recommends
+     * calling {@link setAudioProfile}
+     * and setting the `profile` parameter to `4` or `5`
+     * before setting this enumerator.
      */
     VOICE_CHANGER_EFFECT_SISTER = 0x02020400,
     /** The voice of a girl.
      *
      * @note
-     * - Agora recommends using this enumerator to process a female-sounding voice; otherwise, you may not hear the anticipated voice effect.
-     * - To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and setting
-     * the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before
-     * setting this enumerator.
+     * - Agora recommends using this enumerator to process a female-sounding
+     * voice; otherwise, you may not hear the anticipated voice effect.
+     * - To achieve better audio effect quality, Agora recommends
+     * calling {@link setAudioProfile}
+     * and setting the `profile` parameter to `4` or `5`
+     * before setting this enumerator.
      */
     VOICE_CHANGER_EFFECT_GIRL = 0x02020500,
-    /** The voice of Pig King, a character in Journey to the West who has a voice like a growling bear.
+    /** The voice of Pig King, a character in Journey to the West who has a
+     * voice like a growling bear.
      *
-     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and
-     * setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before
-     * setting this enumerator.
+     * @note To achieve better audio effect quality, Agora recommends
+     * calling {@link setAudioProfile}
+     * and setting the `profile` parameter to `4` or `5`
+     * before setting this enumerator.
      */
     VOICE_CHANGER_EFFECT_PIGKING = 0x02020600,
     /** The voice of Hulk.
      *
-     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and
-     * setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before
-     * setting this enumerator.
+     * @note To achieve better audio effect quality, Agora recommends
+     * calling {@link setAudioProfile}
+     * and setting the `profile` parameter to `4` or `5`
+     * before setting this enumerator.
      */
     VOICE_CHANGER_EFFECT_HULK = 0x02020700,
     /** An audio effect typical of R&B music.
      *
-     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and
-     * setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before
-     * setting this enumerator.
+     * @note Call {@link setAudioProfile} and set the `profile` parameter
+     * to `4` or `5` before setting this enumerator; otherwise, the enumerator
+     * setting does not take effect.
      */
     STYLE_TRANSFORMATION_RNB = 0x02030100,
     /** An audio effect typical of popular music.
      *
-     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and
-     * setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before
-     * setting this enumerator.
+     * @note Call {@link setAudioProfile} and set the `profile` parameter
+     * to `4` or `5` before setting this enumerator; otherwise, the enumerator
+     * setting does not take effect.
      */
     STYLE_TRANSFORMATION_POPULAR = 0x02030200,
-    /** A pitch correction effect that corrects the user's pitch based on the pitch of the natural C major scale.
-     * To change the basic mode and tonic pitch, call \ref IRtcEngine::setAudioEffectParameters "setAudioEffectParameters" after this method.
+    /** A pitch correction effect that corrects the user's pitch based on
+     * the pitch of the natural C major scale.
+     * To change the basic mode and tonic pitch,
+     * call {@link setAudioEffectParameters} after this method.
      *
-     * @note To achieve better audio effect quality, Agora recommends calling \ref IRtcEngine::setAudioProfile "setAudioProfile" and
-     * setting the `profile` parameter to `AUDIO_PROFILE_MUSIC_HIGH_QUALITY(4)` or `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)` before
-     * setting this enumerator.
+     * @note To achieve better audio effect quality, Agora recommends
+     * calling {@link setAudioProfile}
+     * and setting the `profile` parameter to `4` or `5`
+     * before setting this enumerator.
      */
     PITCH_CORRECTION = 0x02040100
 };
@@ -1806,17 +1797,20 @@ export enum VOICE_BEAUTIFIER_PRESET
     VOICE_BEAUTIFIER_OFF = 0x00000000,
     /** A more magnetic voice.
      *
-     * @note Agora recommends using this enumerator to process a male-sounding voice; otherwise, you may experience vocal distortion.
+     * @note Agora recommends using this enumerator to process a male-sounding
+     * voice; otherwise, you may experience vocal distortion.
      */
     CHAT_BEAUTIFIER_MAGNETIC = 0x01010100,
     /** A fresher voice.
      *
-     * @note Agora recommends using this enumerator to process a female-sounding voice; otherwise, you may experience vocal distortion.
+     * @note Agora recommends using this enumerator to process a
+     * female-sounding voice; otherwise, you may experience vocal distortion.
      */
     CHAT_BEAUTIFIER_FRESH = 0x01010200,
     /** A more vital voice.
      *
-     * @note Agora recommends using this enumerator to process a female-sounding voice; otherwise, you may experience vocal distortion.
+     * @note Agora recommends using this enumerator to process a
+     * female-sounding voice; otherwise, you may experience vocal distortion.
      */
     CHAT_BEAUTIFIER_VITALITY = 0x01010300,
     /** A more vigorous voice.
@@ -1831,7 +1825,7 @@ export enum VOICE_BEAUTIFIER_PRESET
     /** A falsetto voice.
      */
     TIMBRE_TRANSFORMATION_FALSETTO = 0x01030400,
-    /** A falsetto voice.
+    /** A fuller voice.
      */
     TIMBRE_TRANSFORMATION_FULL = 0x01030500,
     /** A clearer voice.
@@ -1844,10 +1838,9 @@ export enum VOICE_BEAUTIFIER_PRESET
      */
     TIMBRE_TRANSFORMATION_RINGING = 0x01030800
 };
-
-/** The latency level of an audience member in a live interactive streaming.
+/** The latency level of an audience member in interactive live streaming.
  *
- * @note Takes effect only when the user role is `CLIENT_ROLE_BROADCASTER`.
+ * @note Takes effect only when the user role is audience.
  */
 export enum AUDIENCE_LATENCY_LEVEL_TYPE
 {
@@ -1856,7 +1849,35 @@ export enum AUDIENCE_LATENCY_LEVEL_TYPE
     /** 2: (Default) Ultra low latency. */
     AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY = 2,
 };
-
+/** The subscribing state.
+ *
+ * @since v3.2.0
+ *
+ * - 0: The initial subscribing state after joining the channel.
+ * - 1: Fails to subscribe to the remote stream. Possible reasons:
+ *   - The remote user:
+ *     - Calls {@link muteLocalAudioStream muteLocalAudioStream(true)} or
+ * {@link muteLocalVideoStream muteLocalVideoStream(true)} to stop
+ * sending local streams.
+ *     - Calls {@link disableAudio} or {@link disableVideo} to disable the
+ * entire audio or video modules.
+ *     - Calls {@link enableLocalAudio enableLocalAudio(false)} or
+ * {@link enableLocalVideo enableLocalVideo(false)} to disable the local
+ * audio sampling or video capturing.
+ *     - The role of the remote user is `2` (audience).
+ *   - The local user calls the following methods to stop receiving remote
+ * streams:
+ *     - Calls {@link muteRemoteAudioStream muteRemoteAudioStream(true)},
+ * {@link muteAllRemoteAudioStreams muteAllRemoteAudioStreams(true)}, or
+ * {@link setDefaultMuteAllRemoteAudioStreams setDefaultMuteAllRemoteAudioStreams(true)}
+ * to stop receiving remote audio streams.
+ *     - Calls {@link muteRemoteVideoStream muteRemoteVideoStream(true)},
+ * {@link muteAllRemoteVideoStreams muteAllRemoteVideoStreams(true)}, or
+ * {@link setDefaultMuteAllRemoteVideoStreams setDefaultMuteAllRemoteVideoStreams(true)}
+ * to stop receiving remote video streams.
+ * - 2: Subscribing.
+ * - 3: Subscribes to and receives the remote stream successfully.
+ */
 export type STREAM_SUBSCRIBE_STATE =
   | 0 //SUB_STATE_IDLE
   | 1 //SUB_STATE_NO_SUBSCRIBED
@@ -1868,16 +1889,16 @@ export type STREAM_SUBSCRIBE_STATE =
  */
 export interface ChannelMediaInfo {
   /**
-   * The channel name. 
-   * 
-   * The default value is NULL, which means that 
+   * The channel name.
+   *
+   * The default value is NULL, which means that
    * the SDK applies the current channel name.
    */
   channel: string;
   /**
-   * The token that enables the user to join the channel. 
-   * 
-   * The default value is NULL, which means that the SDK applies the current 
+   * The token that enables the user to join the channel.
+   *
+   * The default value is NULL, which means that the SDK applies the current
    * token.
    */
   token: string;
@@ -1891,39 +1912,41 @@ export interface ChannelMediaInfo {
  */
 export interface ChannelMediaOptions {
   /**
-   * Determines whether to subscribe to audio streams when the user joins the 
+   * Determines whether to subscribe to audio streams when the user joins the
    * channel:
    * - true: (Default) Subscribe.
    * - false: Do not subscribe.
-   * 
-   * This member serves a similar function to the 
-   * {@link AgoraRtcChannel.muteAllRemoteAudioStreams} method. After joining 
-   * the channel, you can call the `muteAllRemoteAudioStreams` method to set 
+   *
+   * This member serves a similar function to the
+   * {@link AgoraRtcChannel.muteAllRemoteAudioStreams} method. After joining
+   * the channel, you can call the `muteAllRemoteAudioStreams` method to set
    * whether to subscribe to audio streams in the channel.
    */
   autoSubscribeAudio: boolean;
   /**
-   * Determines whether to subscribe to video streams when the user joins the 
+   * Determines whether to subscribe to video streams when the user joins the
    * channel:
    * - true: (Default) Subscribe.
    * - false: Do not subscribe.
-   * 
-   * This member serves a similar function to the 
-   * {@link AgoraRtcChannel.muteAllRemoteVideoStreams} method. After joining 
-   * the channel, you can call the `muteAllRemoteVideoStreams` method to set 
+   *
+   * This member serves a similar function to the
+   * {@link AgoraRtcChannel.muteAllRemoteVideoStreams} method. After joining
+   * the channel, you can call the `muteAllRemoteVideoStreams` method to set
    * whether to subscribe to video streams in the channel.
    */
   autoSubscribeVideo: boolean;
 }
 /**
  * The watermark's options.
+ *
+ * @since v3.0.0
  */
 export interface WatermarkOptions {
   /**
-   * Sets whether or not the watermark image is visible in the local video 
+   * Sets whether or not the watermark image is visible in the local video
    * preview:
    * - true: (Default) The watermark image is visible in preview.
-   * - false: The watermark image is not visible in preview. 
+   * - false: The watermark image is not visible in preview.
    */
   visibleInPreview: boolean,
   /**
@@ -1938,54 +1961,54 @@ export interface WatermarkOptions {
 
 /**
  * The configuration of the media stream relay.
- * 
+ *
  * **Warning**:
- * - If you want to relay the media stream to multiple channels, define as 
+ * - If you want to relay the media stream to multiple channels, define as
  * many {@link ChannelMediaInfo} interface (at most four).
- * 
+ *
  */
 
 export interface ChannelMediaRelayConfiguration {
   /**
    * The information of the source channel. See {@link ChannelMediaInfo}
-   * 
+   *
    * It contains the following properties:
-   * 
+   *
    * - **Note**:
-   *  - If you have not enabled the App Certificate, Token is unnecessary here 
+   *  - If you have not enabled the App Certificate, Token is unnecessary here
    * and set the following properties as the default value.
-   *  - If you have enabled the App Certificate, you must use Token. 
-   * 
-   * - `channel`: The name of the source channel. The default value is NULL, 
+   *  - If you have enabled the App Certificate, you must use Token.
+   *
+   * - `channel`: The name of the source channel. The default value is NULL,
    * which means that the SDK passes in the name of the current channel.
-   * - `token`: Token for joining the source channel. It is generated with 
-   * `channel` and `uid` you set in `srcInfo`. The default value is NULL, 
+   * - `token`: Token for joining the source channel. It is generated with
+   * `channel` and `uid` you set in `srcInfo`. The default value is NULL,
    * which means that the SDK passes in the APP ID.
-   * - `uid`: 
-   *  - ID of the broadcaster whose media stream you want to relay. The 
-   * default value is 0, which means that the SDK randomly generates a UID. 
+   * - `uid`:
+   *  - ID of the host whose media stream you want to relay. The
+   * default value is 0, which means that the SDK randomly generates a UID.
    *  - You must set it as 0.
-   * 
+   *
    */
   srcInfo: ChannelMediaInfo;
   /**
    * The information of the destination channel. See {@link ChannelMediaInfo}
-   * 
+   *
    * It contains the following properties:
-   * 
-   * - `channel`: The name of the destination channel. 
-   * - `token`:Token for joining the destination channel. 
-   * It is generated with `channel` and `uid` you set in `destInfos`. 
-   *  - If you have not enabled the App Certificate, Token is unnecessary here 
-   * and set it as the default value NULL, which means that the SDK passes in 
+   *
+   * - `channel`: The name of the destination channel.
+   * - `token`:Token for joining the destination channel.
+   * It is generated with `channel` and `uid` you set in `destInfos`.
+   *  - If you have not enabled the App Certificate, Token is unnecessary here
+   * and set it as the default value NULL, which means that the SDK passes in
    * the APP ID.
-   *  - If you have enabled the App Certificate, you must use Token. 
-   * - `uid`: ID of the broadcaster in the destination channel. 
-   * The value ranges from 0 to 2<sup>32</sup>-1. To avoid UID conflicts, 
-   * this `uid` must be different from any other UIDs in the destination 
-   * channel. The default value is 0, which means the SDK randomly generates 
+   *  - If you have enabled the App Certificate, you must use Token.
+   * - `uid`: ID of the host in the destination channel.
+   * The value ranges from 0 to 2<sup>32</sup>-1. To avoid UID conflicts,
+   * this `uid` must be different from any other UIDs in the destination
+   * channel. The default value is 0, which means the SDK randomly generates
    * a UID.
-   * 
+   *
    */
   destInfos: [ChannelMediaInfo];
 }
@@ -2000,7 +2023,7 @@ export interface ChannelMediaRelayConfiguration {
  * - 6: The server receives the audio stream from the source channel.
  * - 7: The destination channel is updated.
  * - 8: The destination channel update fails due to internal reasons.
- * - 9: The destination channel does not change, which means that the 
+ * - 9: The destination channel does not change, which means that the
  * destination channel fails to be updated.
  * - 10: The destination channel name is NULL.
  * - 11: The video profile is sent to the server.
@@ -2022,9 +2045,9 @@ export type ChannelMediaRelayEvent =
  * The state code.
  * - 0: The SDK is initializing.
  * - 1: The SDK tries to relay the media stream to the destination channel.
- * - 2: The SDK successfully relays the media stream to the destination 
+ * - 2: The SDK successfully relays the media stream to the destination
  * channel.
- * - 3: A failure occurs. See the error code in 
+ * - 3: A failure occurs. See the error code in
  * {@link ChannelMediaRelayError}.
  */
 export type ChannelMediaRelayState =
@@ -2036,15 +2059,15 @@ export type ChannelMediaRelayState =
  * The error code.
  * - 0: The state is normal.
  * - 1: An error occurs in the server response.
- * - 2: No server response. You can call the {@link leaveChannel} method to 
+ * - 2: No server response. You can call the {@link leaveChannel} method to
  * leave the channel.
- * - 3: The SDK fails to access the service, probably due to limited resources 
+ * - 3: The SDK fails to access the service, probably due to limited resources
  * of the server.
  * - 4: Fails to send the relay request.
  * - 5: Fails to accept the relay request.
  * - 6: The server fails to receive the media stream.
  * - 7: The server fails to send the media stream.
- * - 8: The SDK disconnects from the server due to poor network connections. 
+ * - 8: The SDK disconnects from the server due to poor network connections.
  * You can call the {@link leaveChannel} method to leave the channel.
  * - 9: An internal error occurs in the server.
  * - 10: The token of the source channel has expired.
@@ -2063,7 +2086,19 @@ export type ChannelMediaRelayError =
   | 9 // 9: RELAY_ERROR_INTERNAL_ERROR
   | 10 // 10: RELAY_ERROR_SRC_TOKEN_EXPIRED
   | 11; // 11: RELAY_ERROR_DEST_TOKEN_EXPIRED
-
+/**
+ * Regions for connection.
+ *
+ * @since v3.2.0
+ *
+ * - 1: Mainland China.
+ * - 2: North America.
+ * - 4: Europe.
+ * - 8: Asia, excluding Mainland China.
+ * - 16: Japan.
+ * - 32: India.
+ * - 0xFFFFFFFF: (Default) Global.
+ */
 export type AREA_CODE =
   | 1 //AREA_CODE_CN = ,
   | 2 //AREA_CODE_NA = ,
@@ -2071,15 +2106,46 @@ export type AREA_CODE =
   | 8 //AREA_CODE_AS = ,
   | 16//AREA_CODE_JAPAN = ,
   | 32 //AREA_CODE_INDIA = ,
-  | (0xFFFFFFFF); //AREA_CODE_GLOBAL = 
-
+  | (0xFFFFFFFF); //AREA_CODE_GLOBAL =
+/** The publishing state.
+ *
+ * @since v3.2.0
+ *
+ * - 0: The initial publishing state after joining the channel.
+ * - 1: Fails to publish the local stream. Possible reasons:
+ *  - The local user calls
+ * {@link muteLocalAudioStream muteLocalAudioStream(true)} or
+ * {@link muteLocalVideoStream muteLocalVideoStream(true)} to stop
+ * sending local streams.
+ *  - The local user calls {@link disableAudio} or {@link disableVideo} to
+ * disable the entire audio or video module.
+ *  - The local user calls {@link enableLocalAudio enableLocalAudio(false)}
+ * or {@link enableLocalVideo enableLocalVideo(false)} to disable the
+ * local audio sampling or video capturing.
+ *  - The role of the local user is `2` (audience).
+ * - 2: Publishing.
+ * - 3: Publishes successfully.
+ */
 export type STREAM_PUBLISH_STATE =
     | 0 //PUB_STATE_IDLE
     | 1 //PUB_STATE_NO_PUBLISHED
     | 2 //PUB_STATE_PUBLISHING
     | 3 //PUB_STATE_PUBLISHED
-
-export type AUDIO_ROUTE_TYPE = 
+/**
+ * Audio output routing.
+ * - -1: Default.
+ * - 0: Headset.
+ * - 1: Earpiece.
+ * - 2: Headset with no microphone.
+ * - 3: Speakerphone.
+ * - 4: Loudspeaker.
+ * - 5: Bluetooth headset.
+ * - 6: USB peripheral (macOS only).
+ * - 7: HDMI peripheral (macOS only).
+ * - 8: DisplayPort peripheral (macOS only).
+ * - 9: Apple AirPlay (macOS only).
+ */
+export type AUDIO_ROUTE_TYPE =
     | -1 //AUDIO_ROUTE_DEFAULT
     | 0  //AUDIO_ROUTE_HEADSET
     | 1  //AUDIO_ROUTE_EARPIECE
@@ -2091,20 +2157,25 @@ export type AUDIO_ROUTE_TYPE =
     | 7  //AUDIO_ROUTE_HDMI
     | 8  //AUDIO_ROUTE_DISPLAYPORT
     | 9  //AUDIO_ROUTE_AIRPLAY
-
+/**
+ * The media metadata.
+ */
 export interface Metadata {
-    /** The User ID.
-    - For the receiver: the ID of the user who sent the metadata.
-    - For the sender: ignore it.
-    */
+    /** ID of the user who sends the metadata.
+     *
+     * @note When sending the metadata, ignore this parameter. When receiving
+     * the metadata, use this parameter to determine who sends the metadata.
+     */
     uid: number;
-    /** Buffer size of the sent or received Metadata.
-      */
+    /**
+     * The size of the metadata.
+     */
     size: number;
-    /** Buffer address of the sent or received Metadata.
+    /**
+     * The buffer of the metadata.
      */
     buffer: string;
-    /** Time statmp of the frame following the metadata.
+    /** The timestamp (ms) that the metadata sends.
      */
     timeStampMs: number;
   }
@@ -2112,6 +2183,9 @@ export interface Metadata {
 /** The detailed options of a user.
  */
 export interface ClientRoleOptions {
+  /**
+   * The latency level of an audience member in interactive live streaming.
+   */
   audienceLatencyLevel: AUDIENCE_LATENCY_LEVEL_TYPE;
 };
 
@@ -3097,6 +3171,10 @@ export interface NodeRtcEngine {
    * @ignore
    */
   setAudioEffectParameters(presset: AUDIO_EFFECT_PRESET, param1: number, param2: number): number;
+  /**
+   * @ignore
+   */
+  setRecordingAudioFrameParameters(sampleRate: number, channel: number, mode: number, samplesPerCall: number): number;
 }
 /**
  * @ignore
@@ -3167,7 +3245,7 @@ export interface NodeRtcChannel {
    * @ignore
    */
   setClientRoleWithOptions(
-    role: ClientRoleType, 
+    role: ClientRoleType,
     options: ClientRoleOptions
   ): number;
 
@@ -3307,7 +3385,7 @@ export interface NodeRtcChannel {
    * @ignore
    */
   addInjectStreamUrl(url: string, config: InjectStreamConfig): number;
-  
+
   /**
    * @ignore
    */
