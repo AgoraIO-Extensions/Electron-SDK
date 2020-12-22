@@ -90,14 +90,12 @@ module.exports = ({
             fs.removeSync("./build/Release/agora_node_ext.exp");
             fs.removeSync("./build/Release/agora_node_ext.iobj");
             fs.removeSync("./build/Release/agora_node_ext.ipdb");
-            fs.removeSync("./build/Release/agora_node_ext.lib");
             fs.removeSync("./build/Release/agora_node_ext.pdb");
             fs.removeSync("./build/Release/VideoSource.iobj");
             fs.removeSync("./build/Release/VideoSource.ipdb");
             fs.removeSync("./build/Release/VideoSource.pdb");
             fs.removeSync("./build/Release/agora_node_ext.ilk");
             fs.removeSync("./build/Release/VideoSource.ilk");
-            fs.removeSync("./build/Release/aaa.txt");
           } catch (err) {
             console.log(err);
             logger.info("Warning", "Some files doesn't removed.");
