@@ -1,4 +1,7 @@
-## 3.2.0 （December 1，2020）
+## 3.2.1 (December 23rd, 2020)
+* Support Electron 9.0.0, 11.0.0
+
+## 3.2.0 （December 1st, 2020）
 * Audio profile: To improve the audio experience for multi-person meetings, this release adds AUDIO_SCENARIO_MEETING(8) in setAudioProfile.
 * Screen sharing:
 * To allow a user to enable shared slides in presentation mode, this release adds support for enabling the shared window (such as slides, web video, or web document) in full-screen mode during the window sharing.
