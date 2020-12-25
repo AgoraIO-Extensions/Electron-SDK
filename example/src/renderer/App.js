@@ -72,11 +72,6 @@ export default class App extends Component {
           console.log(`mediaPlayer.play ${a}`);
           let a9 = this.mediaPlayer.getDuration()
           console.log(`mediaPlayer.getDuration ${a9}`);
-          // let a10 = this.mediaPlayer.getState()
-          // console.log(`mediaPlayer.getState ${a10}`);
-          // let a2 = this.mediaPlayer.selectAudioTrack(0);
-          // console.log(`mediaPlayer.selectAudioTrack ${a2}`);
-
         }
       })
 
@@ -86,9 +81,6 @@ export default class App extends Component {
 
       this.mediaPlayer.on('onPositionChanged', (position)=>{
         console.log(`onPositionChanged  position: ${position}`);
-          // this.setState({
-          //   mediaPlayerView: "mediaPlayerView"
-          // })
       })
 
       this.rtcEngine.initializePluginManager();
@@ -391,30 +383,31 @@ export default class App extends Component {
   }
 
   handleAddPrimaryScreenCapture = () => {
-    let windowList = this.rtcEngine.getScreenWindowsInfo();
-    console.log(windowList);
+    let list = this.rtcEngine.getScreenWindowsInfo();
+    Promise.all(list.map(item => readImage(item.image))).then(imageList => {
+      let windowList = list.map((item, index) => {
+        return {
+          ownerName: item.ownerName,
+          name: item.name,
+          windowId: item.windowId,
+          image: imageList[index],
+        }
+      })
+      this.setState({
+        showWindowPicker: true,
+        windowList: windowList
+      });
+    })
+  }
+
+  handleWindowPicker = (windowId) => {
+    console.log(`handleWindowPicker ${windowId}`)
+    this.setState({
+      showWindowPicker: false
+    })
     let config = {
-      isCaptureWindow: false,
-      // displayId: 1,
-      // screenRect: {
-      //   x: 12,
-      //   y: 32,
-      //   width: 343,
-      //   height: 2323
-      // },
-      // windowId: 100,
-      // params: {
-      //   width: 30,
-      //   height: 23,
-      //   frameRate: 30,
-      //   bitrate: 100
-      // },
-      // regionRect: {
-      //   x: 10,
-      //   y: 10,
-      //   width: 640,
-      //   height: 360
-      // }
+      isCaptureWindow: true,
+      windowId: windowId
     }
     let ret = this.rtcEngine.startPrimaryScreenCapture(config)
     console.log(`startPrimaryScreenCapture ret --- ${ret}`)
@@ -422,6 +415,7 @@ export default class App extends Component {
     sources.push({
       sourceType: 2,
       connectionId: 0,
+      windowId: windowId,
       x: 0,
       y: 0,
       width: 360,
@@ -433,10 +427,31 @@ export default class App extends Component {
   }
 
   handleAddSecondaryScreenCapture = () => {
-    let windowList = this.rtcEngine.getScreenWindowsInfo();
-    console.log(windowList);
+    let list = this.rtcEngine.getScreenDisplaysInfo();
+    Promise.all(list.map(item => readImage(item.image))).then(imageList => {
+      let displayList = list.map((item, index) => {
+        let name = `Display ${index + 1}`
+        return {
+          ownerName: "",
+          name: name,
+          displayId: item.displayId,
+          image: imageList[index],
+        }
+      })
+      this.setState({
+        showDisplayPicker: true,
+        displayList: displayList
+      });
+    })
+  }
+
+  handleDisplayPicker = (displayId) => {
+    console.log(`handlerDisplayPicker ${displayId}`)
+    this.setState({
+      showDisplayPicker: false
+    });
     let config = {
-      isCaptureWindow: true,
+      isCaptureWindow: false,
       // displayId: 1,
       // screenRect: {
       //   x: 12,
@@ -444,7 +459,7 @@ export default class App extends Component {
       //   width: 343,
       //   height: 2323
       // },
-      windowId: windowList[0].windowId,
+      displayId: displayId,
       // params: {
       //   width: 30,
       //   height: 23,
