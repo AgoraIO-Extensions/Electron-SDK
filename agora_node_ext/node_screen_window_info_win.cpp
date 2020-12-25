@@ -11,9 +11,28 @@
 #include <gdiplusheaders.h>
 #include <unordered_set>
 #include <tchar.h>
+#include <Psapi.h>
+#include <algorithm>
 
 Gdiplus::GdiplusStartupInput g_gdiStartup;
 ULONG_PTR g_gdiplusToken = NULL;
+
+bool IsDisplayLogo(char class_name[100])
+{
+	if (strcmp(class_name, "ApplicationFrameWindow") == 0 ||
+		strcmp(class_name, "Windows.UI.Core.CoreWindow") == 0 ||
+		strcmp(class_name, "OpusApp") == 0 ||
+		strcmp(class_name, "Chrome_WidgetWin_1") == 0 ||
+		strcmp(class_name, "XLMAIN") == 0 ||
+		strcmp(class_name, "PPTFrameClass") == 0 ||
+		strcmp(class_name, "screenClass") == 0 ||
+		strcmp(class_name, "QWidget") == 0 ||
+		strcmp(class_name, "MozillaWindowClass") == 0) {
+		return true;
+	} else {
+		return false;
+	}
+}
 
 Gdiplus::Status InitializeGdiplus()
 {
@@ -115,10 +134,39 @@ int GetEncoderClsid(WCHAR *format, CLSID *pClsid)
     return -1;
 }
 
+bool WindowInBlackList(std::string module_name) {
+	std::transform(module_name.begin(), module_name.end(), module_name.begin(), ::towlower);
+
+	if (module_name.rfind("chrome.exe") != std::wstring::npos) {
+		return true;
+	}
+	else if (module_name.rfind("firefox.exe") != std::wstring::npos) {
+		return true;
+	}
+	else if (module_name.rfind("powerpnt.exe") != std::wstring::npos) {
+		return true;
+	}
+	else if (module_name.rfind("keynote.exe") != std::wstring::npos) {
+		return true;
+	}
+	else if (module_name.rfind("word.exe") != std::wstring::npos) {
+		return true;
+	}
+	else if (module_name.rfind("pages.exe") != std::wstring::npos) {
+		return true;
+	}
+	else if (module_name.rfind("wps.exe") != std::wstring::npos) {
+		return true;
+	}
+	else {
+		return true;
+	}
+}
+
 #if 0
 bool captureBmpToJpeg(const HWND& hWnd, char* szName, int i, std::vector<ScreenWindowInfo>& wndsInfo)
 #endif
-bool captureBmpToJpeg(const HWND& hWnd, char* szName, std::vector<ScreenWindowInfo>& wndsInfo)
+bool captureBmpToJpeg(const HWND& hWnd, char* szName, std::vector<ScreenWindowInfo>& wndsInfo, bool displayLogo)
 {
 #if 0
 	WCHAR szFilePath[MAX_PATH] = { 0 };
@@ -216,6 +264,91 @@ bool captureBmpToJpeg(const HWND& hWnd, char* szName, std::vector<ScreenWindowIn
 	GetEncoderClsid(L"image/jpeg", &imageCLSID);
 
 	Gdiplus::Bitmap bitmap(hBitmap, NULL);
+	Gdiplus::Graphics graphic(&bitmap);
+
+	do {
+		DWORD dwProcId = 0;
+		GetWindowThreadProcessId(hWnd, &dwProcId);
+		if (dwProcId == 0) break;
+
+		HANDLE hProc = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, dwProcId);
+		if (!hProc) break;
+
+		TCHAR temp[MAX_PATH] = { 0 };
+		DWORD dwRet = GetModuleFileNameEx(hProc, NULL, temp, MAX_PATH - 1);
+
+		CloseHandle(hProc);
+
+		if (dwRet == 0) break;
+
+		std::string module_name = temp;
+		if (!displayLogo) break;
+
+		Gdiplus::Color c(0, 0, 0);
+		graphic.Clear(c);
+
+		HICON hIcon = nullptr;
+		ICONINFO icInfo = { 0 };
+
+		ExtractIconEx(module_name.c_str(), 0, &hIcon, NULL, 1);
+		if (!hIcon) break;
+
+		if (!::GetIconInfo(hIcon, &icInfo)) break;
+
+		BITMAP bitmap;
+		GetObject(icInfo.hbmColor, sizeof(BITMAP), &bitmap);
+
+		int width = bitmap.bmWidth;
+		int height = bitmap.bmHeight;
+
+		Gdiplus::Bitmap* pBitmap = NULL;
+		Gdiplus::Bitmap* pWrapBitmap = NULL;
+
+		do {
+			if (bitmap.bmBitsPixel != 32)
+			{
+				pBitmap = Gdiplus::Bitmap::FromHICON(hIcon);
+			}
+			else {
+				pWrapBitmap = Gdiplus::Bitmap::FromHBITMAP(icInfo.hbmColor, NULL);
+				if (!pWrapBitmap)
+					break;
+				Gdiplus::BitmapData bitmapData;
+				Gdiplus::Rect rcImage(0, 0, pWrapBitmap->GetWidth(), pWrapBitmap->GetHeight());
+				pWrapBitmap->LockBits(&rcImage, Gdiplus::ImageLockModeRead, pWrapBitmap->GetPixelFormat(), &bitmapData);
+				pBitmap = new (Gdiplus::Bitmap)(bitmapData.Width, bitmapData.Height, bitmapData.Stride, PixelFormat32bppARGB, (BYTE*)bitmapData.Scan0);
+				pWrapBitmap->UnlockBits(&bitmapData);
+			}
+			float maxWidth = bmpWidth / 2.0f;
+			float maxHeight = bmpHeight / 2.0f;
+			float maxLength = maxWidth < maxHeight ? maxWidth : maxHeight;
+			maxLength = 150;
+			float wScale = maxLength / (float)width;
+			float hScale = maxLength / (float)height;
+			float scale = wScale < hScale ? wScale : hScale;
+			float scaleWidth = scale * width;
+			float scaleHeight = scale * height;
+			float x = (bmpWidth - scaleWidth) / 2.0f;
+			float y = (bmpHeight - scaleHeight) / 2.0f;
+			Gdiplus::Rect r((int)x, (int)y, (int)scaleWidth, (int)scaleHeight);
+
+			graphic.DrawImage(pBitmap, r);
+
+		} while (0);
+
+		delete pBitmap;
+
+		if (pWrapBitmap)
+			delete pWrapBitmap;
+
+		DeleteObject(icInfo.hbmColor);
+		DeleteObject(icInfo.hbmMask);
+
+		if (hIcon) DestroyIcon(hIcon);
+
+	} while(false);
+
+	
 
 	IStream* pOutIStream = NULL;
 	if (CreateStreamOnHGlobal(NULL, TRUE, (LPSTREAM*)&pOutIStream) != S_OK) {
@@ -468,7 +601,7 @@ bool IsInvisibleWin10BackgroundAppWindow(HWND hWnd) {
 
 bool IsWindowValid(HWND hwnd)
 {
-	if (!IsWindowVisible(hwnd) || /*IsIconic(hwnd) ||*/
+	if (!IsWindowVisible(hwnd) || IsIconic(hwnd) ||
 		IsInvisibleWin10BackgroundAppWindow(hwnd))
 		return false;
 
@@ -540,7 +673,9 @@ std::vector<ScreenWindowInfo> getAllWindowInfo()
 				continue;
 			}
 
-            captureBmpToJpeg(windowid, name, windows);
+			bool displayLogo = IsDisplayLogo(class_name);
+
+            captureBmpToJpeg(windowid, name, windows, displayLogo);
         }
     }
 
