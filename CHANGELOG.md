@@ -1,5 +1,5 @@
-## 3.2.1 (December 23rd, 2020)
-* Support Electron 9.0.0, 11.0.0
+## 3.2.1.71 (December 29th, 2020)
+* Support Electron 9.0.0, 10.2.0
 
 ## 3.2.0 （December 1st, 2020）
 * Audio profile: To improve the audio experience for multi-person meetings, this release adds AUDIO_SCENARIO_MEETING(8) in setAudioProfile.
