@@ -46,7 +46,7 @@ Recommend to install through npm:
 # install newest sdk and download prebuilt binary file automatically
 npm install agora-electron-sdk
 ```
-
+Prebuilt c++ addon supported electron version 10.2.0 9.0.0, 7.1.2, 6.1.7, 5.0.8, 4.2.8, 3.0.6, 1.8.3
 Usually you have to specify electron version of your application and whether to download prebuilt c++ addon or do node-gyp building locally by configuration in package.json:
 ```
 // package.json
