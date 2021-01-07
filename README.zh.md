@@ -46,7 +46,7 @@
 # 安装最新版本的sdk并自动下载预编译的NodeJS C++ Addon
 npm install agora-electron-sdk
 ```
-
+预编译好的NodeJS C++ Addon支持以下Electron版本：10.2.0 9.0.0, 7.1.2, 6.1.7, 5.0.8, 4.2.8, 3.0.6, 1.8.3
 通常需要在 package.json 中指定你的应用所使用的 Electron 版本以及是否需要下载预编译好的NodeJS C++ Addon（推荐，如果禁用prebuilt则需要自行提供 node-gyp 环境）：
 ```
 // package.json
