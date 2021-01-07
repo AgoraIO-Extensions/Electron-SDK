@@ -18,26 +18,27 @@ class Renderer {
   _calcZoom(vertical = false, contentMode = 0, width, height, clientWidth, clientHeight) {
     let localRatio = clientWidth / clientHeight;
     let tempRatio = width / height;
-
     if (isNaN(localRatio) || isNaN(tempRatio)) {
-      return 1
+      return 1;
     }
-
     if (!contentMode) {
       if (vertical) {
-        return localRatio > tempRatio ?
-          clientHeight / height : clientWidth / width
-      } else {
-        return localRatio < tempRatio ?
-          clientHeight / height : clientWidth / width
+        return clientHeight / clientWidth < width / height ?
+          clientWidth / height : clientHeight / width;
       }
-    } else {
+      else {
+        return clientWidth / clientHeight > width / height ?
+          clientWidth / width : clientHeight / height;
+      }
+    }
+    else {
       if (vertical) {
-        return localRatio < tempRatio ?
-          clientHeight / height : clientWidth / width
-      } else {
-        return localRatio > tempRatio ?
-          clientHeight / height : clientWidth / width
+        return clientHeight / clientWidth < width / height ?
+          clientHeight / width : clientWidth / height;
+      }
+      else {
+        return clientWidth / clientHeight > width / height ?
+          clientWidth / width : clientHeight / height;
       }
     }
   }
@@ -99,6 +100,11 @@ class Renderer {
     if (options.rotation === 0 || options.rotation === 180) {
       this.canvas.width = options.width;
       this.canvas.height = options.height;
+      Object.assign(this.canvas.style, {
+        width: options.width + "px",
+        height: options.height + "px",
+        "object-fit": "cover"
+      })
     } else if (options.rotation === 90 || options.rotation === 270) {
       this.canvas.height = options.width;
       this.canvas.width = options.height;
