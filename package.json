@@ -20,7 +20,8 @@
     "quicktest": "jest --detectOpenHandles --forceExit",
     "doc": "typedoc ts/API --out ./docs --hideGenerator --mode file --target es6 --name Agora\\ Electron\\ SDK\\ API\\ Reference --excludeExternals --excludePrivate --readme index.md",
     "prepublishOnly": "npm run build:ts",
-    "example": "cd example && npm run dev"
+    "example": "cd example && npm run dev",
+    "postinstall": "npm run build:ts"
   },
   "files": [
     "scripts",
