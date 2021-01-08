@@ -4917,6 +4917,10 @@ class AgoraRtcEngine extends EventEmitter {
   complain(callId: string, desc: string): number {
     return this.rtcEngine.complain(callId, desc);
   }
+  //TODO(input)
+  setRecordingAudioFrameParameters(sampleRate: number, channel: 1 | 2, mode: 0 | 1 | 2, samplesPerCall: number): number {
+    return this.rtcEngine.setRecordingAudioFrameParameters(sampleRate, channel, mode, samplesPerCall);
+  }
 
   setRecordingAudioFrameParameters(sampleRate: number, channel: 1 | 2, mode: 0 | 1 | 2, samplesPerCall: number): number {
     return this.rtcEngine.setRecordingAudioFrameParameters(sampleRate, channel, mode, samplesPerCall);

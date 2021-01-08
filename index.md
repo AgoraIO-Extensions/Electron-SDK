@@ -3,7 +3,7 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 * The {@link AgoraRtcEngine} class provides the main methods that can be invoked by your application.
 * The {@link AgoraRtcEngine.on} listens to events during runtime.
 
-* The {@link AgoraRtcChannel} class provides methods that enable real-time communications in a specified channel. By creating multiple `AgoraRtcChannel` objects, the user can join multiple channels.
+* The {@link AgoraRtcChannel} class provides methods that enable real-time communications in a specified channel. By creating multiple AgoraRtcChannel objects, the user can join multiple channels.
 * The {@link AgoraRtcChannel.on} listens to events and statistics of a specified channel.
 
 ## Methods
@@ -15,7 +15,8 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.initialize initialize}                 | Initializes an `AgoraRtcEngine` instance.                      |
 | {@link AgoraRtcEngine.release release}                       | Releases an `AgoraRtcEngine` instance.                         |
 | {@link AgoraRtcEngine.setChannelProfile setChannelProfile}   | Sets the channel profile.                                    |
-| {@link AgoraRtcEngine.setClientRole setClientRole}           | Sets the user role (Live Broadcast only).                    |
+| {@link AgoraRtcEngine.setClientRole setClientRole}           | Sets the role of the user (interactive live streaming only).             |
+| {@link AgoraRtcEngine.setClientRoleWithOptions setClientRoleWithOptions}           | Sets the role and level of the user (interactive live streaming only). |
 | {@link AgoraRtcEngine.joinChannel joinChannel}               | Allows a user to join a channel. |
 | {@link AgoraRtcEngine.switchChannel switchChannel}|Switches to a different channel (Live Broadcast only).|
 | {@link AgoraRtcEngine.leaveChannel leaveChannel}             | Allows a user to leave a channel.                            |
@@ -93,10 +94,9 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | ------------------------------------------------------------ | --------------------- |
 | {@link AgoraRtcEngine.getScreenDisplaysInfo getScreenDisplaysInfo} | Gets the display ID. |
 | {@link AgoraRtcEngine.getScreenWindowsInfo getScreenWindowsInfo} | Gets the window ID. |
-| {@link AgoraRtcEngine.startScreenCapture startScreenCapture} | Shares the whole or part of a window by specifying the window ID. |
-| {@link AgoraRtcEngine.stopScreenCapture stopScreenCapture} | Stops screen sharing. |
 | {@link AgoraRtcEngine.startScreenCaptureByScreen startScreenCaptureByScreen} |Shares the whole or part of a screen by specifying the screen symbol.|
 | {@link AgoraRtcEngine.startScreenCaptureByWindow startScreenCaptureByWindow} |Shares the whole or part of a window by specifying the window symbol.|
+| {@link AgoraRtcEngine.stopScreenCapture stopScreenCapture} | Stops screen sharing. |
 | {@link AgoraRtcEngine.updateScreenCaptureParameters updateScreenCaptureParameters} |Updates the screen sharing parameters.|
 | {@link AgoraRtcEngine.setScreenCaptureContentHint setScreenCaptureContentHint} |Sets the content hint for screen sharing.|
 | {@link AgoraRtcEngine.updateScreenCaptureRegion updateScreenCaptureRegion} | Updates the screen sharing region. |
@@ -114,6 +114,7 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.adjustAudioMixingVolume adjustAudioMixingVolume} | Adjusts the volume during audio mixing.                 |
 | {@link AgoraRtcEngine.adjustAudioMixingPlayoutVolume adjustAudioMixingPlayoutVolume} | Adjusts the volume of audio mixing for local playback.  |
 | {@link AgoraRtcEngine.adjustAudioMixingPublishVolume adjustAudioMixingPublishVolume} | Adjusts the volume of audio mixing for remote playback. |
+| {@link AgoraRtcEngine.setAudioMixingPitch setAudioMixingPitch}| Sets the pitch of the local music file.   |
 |{@link AgoraRtcEngine.getAudioMixingPlayoutVolume getAudioMixingPlayoutVolume}|Adjusts the audio mixing volume for publishing (for remote users).|
 |{@link AgoraRtcEngine.getAudioMixingPublishVolume getAudioMixingPublishVolume}|Retrieves the audio mixing volume for publishing.|
 | {@link AgoraRtcEngine.getAudioMixingDuration getAudioMixingDuration} | Gets the duration (ms) of the music file.               |
@@ -140,11 +141,12 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 
 | Method                                                       | Description                                       |
 | ------------------------------------------------------------ | ------------------------------------------------- |
-| {@link AgoraRtcEngine.setLocalVoiceChanger setLocalVoiceChanger} | Sets the local voice changer option.              |
-| {@link AgoraRtcEngine.setLocalVoiceReverbPreset setLocalVoiceReverbPreset} | Sets the preset local voice reverberation effect. |
 | {@link AgoraRtcEngine.setLocalVoicePitch setLocalVoicePitch} | Changes the voice pitch of the local speaker.     |
-| {@link AgoraRtcEngine.setLocalVoiceEqualization setLocalVoiceEqualization} | Sets the local voice equalization effect.         |
-| {@link AgoraRtcEngine.setLocalVoiceReverb setLocalVoiceReverb} | Sets the local voice reverberation.               |
+| {@link AgoraRtcEngine.setLocalVoiceEqualization setLocalVoiceEqualization} | Sets the local video equalization effect.   |
+| {@link AgoraRtcEngine.setLocalVoiceReverb setLocalVoiceReverb} | Sets the local voice reverberation.  |
+| {@link AgoraRtcEngine.setVoiceBeautifierPreset setVoiceBeautifierPreset} | Sets an SDK preset voice beautifier effect.|
+| {@link AgoraRtcEngine.setAudioEffectPreset setAudioEffectPreset} | Sets an SDK preset audio effect.   |
+| {@link AgoraRtcEngine.setAudioEffectParameters setAudioEffectParameters} | Sets parameters for SDK preset audio effects.  |
 
 ### Sound position indication
 
@@ -153,7 +155,7 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.enableSoundPositionIndication enableSoundPositionIndication} | Enables/Disables stereo panning for remote users.  |
 | {@link AgoraRtcEngine.setRemoteVoicePosition setRemoteVoicePosition} | Sets the sound position and gain of a remote user. |
 
-### CDN publisher 
+### CDN publisher
 
 > This group of methods apply to Live Broadcast only.
 
@@ -191,7 +193,6 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 
 ### Stream fallback
 
-> This group of methods apply to Live Broadcast only.
 
 | Method                                                       | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -210,7 +211,18 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.startLastmileProbeTest startLastmileProbeTest} | Starts the last-mile network probe test.      |
 | {@link AgoraRtcEngine.stopLastmileProbeTest stopLastmileProbeTest} | Stops the last-mile network probe test.       |
 
+### Media Metadata
+
+| Method | Description  |
+|----------|-----------|
+|{@link AgoraRtcEngine.registerMediaMetadataObserver registerMediaMetadataObserver} | Registers a media metadata observer.         |
+|{@link AgoraRtcEngine.unRegisterMediaMetadataObserver unRegisterMediaMetadataObserver} | Unregisters a media metadata observer.       |
+|{@link AgoraRtcEngine.setMaxMetadataSize setMaxMetadataSize}| Sets the maximum size of the media metadata.       |
+|{@link AgoraRtcEngine.sendMetadata sendMetadata}|  Sends the media metadata.      |
+
 ### Watermark
+
+> This group of methods apply to Live Broadcast only.
 
 | Method                                                       | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -221,8 +233,7 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 
 | Method                                                       | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| {@link AgoraRtcEngine.setEncryptionSecret setEncryptionSecret} | Enables built-in encryption with an encryption password before joining a channel. |
-| {@link AgoraRtcEngine.setEncryptionMode setEncryptionMode}|Sets the built-in encryption mode.|
+| {@link AgoraRtcEngine.enableEncryption enableEncryption} | Enables/Disables the built-in encryption. |
 
 ### Audio recorder
 
@@ -240,37 +251,50 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.addInjectStreamUrl addInjectStreamUrl} | Adds an online media stream to a live broadcast.       |
 | {@link AgoraRtcEngine.removeInjectStreamUrl removeInjectStreamUrl} | Removes the online media stream from a live broadcast. |
 
-### Device management
+### Audio playback device management
 
 | Method                                                   | Description              |
 | ------------------------------------------------------------ | -------------------------- |
 | {@link AgoraRtcEngine.setAudioPlaybackDevice setAudioPlaybackDevice} | Sets the audio playback device using the device ID. |
 | {@link AgoraRtcEngine.getAudioPlaybackDevices getAudioPlaybackDevices} | Gets the audio playback device using the device ID. |
-| {@link AgoraRtcEngine.setAudioRecordingDevice setAudioRecordingDevice} | Sets the audio recording device using the device ID. |
-| {@link AgoraRtcEngine.getAudioRecordingDevices getAudioRecordingDevices} | Gets the audio recording device using the device ID. |
-| {@link AgoraRtcEngine.setVideoDevice setVideoDevice}         | Sets the device with the device ID. |
-| {@link AgoraRtcEngine.getVideoDevices getVideoDevices}       | Gets the video-capture device that is in use. |
+| {@link AgoraRtcEngine.getPlaybackDeviceInfo getPlaybackDeviceInfo} | Gets the information of the audio playback device. |
+| {@link AgoraRtcEngine.getCurrentAudioPlaybackDevice getCurrentAudioPlaybackDevice} | Gets the current audio playback device. |
 | {@link AgoraRtcEngine.setAudioPlaybackDeviceMute setAudioPlaybackDeviceMute} | Mutes/Unmutes the audio playback device. |
 | {@link AgoraRtcEngine.getAudioPlaybackDeviceMute getAudioPlaybackDeviceMute} | Gets the mute state of the audio playback device. |
-| {@link AgoraRtcEngine.setAudioRecordingDeviceMute setAudioRecordingDeviceMute} | Mutes/Unmutes the audio recording device. |
-| {@link AgoraRtcEngine.getAudioRecordingDeviceMute getAudioRecordingDeviceMute} | Gets the mute state of the audio recording device. |
-| {@link AgoraRtcEngine.getPlaybackDeviceInfo getPlaybackDeviceInfo} | Gets the information of the audio playback device. |
-| {@link AgoraRtcEngine.getRecordingDeviceInfo getRecordingDeviceInfo} | Gets the information of the recording device. |
-| {@link AgoraRtcEngine.getCurrentAudioPlaybackDevice getCurrentAudioPlaybackDevice} | Gets the current audio playback device. |
-| {@link AgoraRtcEngine.getCurrentAudioRecordingDevice getCurrentAudioRecordingDevice} | Gets the current audio recording device. |
-| {@link AgoraRtcEngine.getCurrentVideoDevice getCurrentVideoDevice} | Gets the current video device. |
-| {@link AgoraRtcEngine.startAudioDeviceLoopbackTest startAudioDeviceLoopbackTest} | Starts the audio device loopback test. |
-| {@link AgoraRtcEngine.stopAudioDeviceLoopbackTest stopAudioDeviceLoopbackTest} | Stops the audio device loopback test. |
-| {@link AgoraRtcEngine.startAudioPlaybackDeviceTest startAudioPlaybackDeviceTest} | Starts the audio playback device test. |
-| {@link AgoraRtcEngine.stopAudioPlaybackDeviceTest stopAudioPlaybackDeviceTest} | Stops the audio playback device test. |
-| {@link AgoraRtcEngine.startAudioRecordingDeviceTest startAudioRecordingDeviceTest} | Starts the recording device test. |
-| {@link AgoraRtcEngine.stopAudioRecordingDeviceTest stopAudioRecordingDeviceTest} | Stops the recording device test. |
-| {@link AgoraRtcEngine.startVideoDeviceTest startVideoDeviceTest} | Starts the video playback device test. |
-| {@link AgoraRtcEngine.stopVideoDeviceTest stopVideoDeviceTest} | Stops the video playback device test. |
 | {@link AgoraRtcEngine.setAudioPlaybackVolume setAudioPlaybackVolume} | Sets the volume of the audio playback device. |
 | {@link AgoraRtcEngine.getAudioPlaybackVolume getAudioPlaybackVolume} | Gets the volume of the audio playback device. |
+| {@link AgoraRtcEngine.startAudioPlaybackDeviceTest startAudioPlaybackDeviceTest} | Starts the audio playback device test. |
+| {@link AgoraRtcEngine.stopAudioPlaybackDeviceTest stopAudioPlaybackDeviceTest} | Stops the audio playback device test. |
+| {@link AgoraRtcEngine.startAudioDeviceLoopbackTest startAudioDeviceLoopbackTest} | Starts the audio device loopback test. |
+| {@link AgoraRtcEngine.stopAudioDeviceLoopbackTest stopAudioDeviceLoopbackTest} | Stops the audio device loopback test. |
+
+### Audio recording device management
+
+| Method                                                   | Description              |
+| ------------------------------------------------------------ | -------------------------- |
+| {@link AgoraRtcEngine.setAudioRecordingDevice setAudioRecordingDevice} | Sets the audio recording device using the device ID. |
+| {@link AgoraRtcEngine.getAudioRecordingDevices getAudioRecordingDevices} | Gets the audio recording device using the device ID. |
+| {@link AgoraRtcEngine.getRecordingDeviceInfo getRecordingDeviceInfo} | Gets the information of the audio recording device. |
+| {@link AgoraRtcEngine.getCurrentAudioRecordingDevice getCurrentAudioRecordingDevice} | Gets the current audio recording device. |
+| {@link AgoraRtcEngine.setAudioRecordingDeviceMute setAudioRecordingDeviceMute} | Mutes/Unmutes the audio recording device. |
+| {@link AgoraRtcEngine.getAudioRecordingDeviceMute getAudioRecordingDeviceMute} | Gets the mute state of the audio recording device. |
 | {@link AgoraRtcEngine.setAudioRecordingVolume setAudioRecordingVolume} | Sets the volume of the recording device. |
 | {@link AgoraRtcEngine.getAudioRecordingVolume getAudioRecordingVolume} | Gets the volume of the recording device. |
+| {@link AgoraRtcEngine.startAudioRecordingDeviceTest startAudioRecordingDeviceTest} | Starts the recording device test. |
+| {@link AgoraRtcEngine.stopAudioRecordingDeviceTest stopAudioRecordingDeviceTest} | Stops the recording device test. |
+| {@link AgoraRtcEngine.startAudioDeviceLoopbackTest startAudioDeviceLoopbackTest} | Starts the audio device loopback test. |
+| {@link AgoraRtcEngine.stopAudioDeviceLoopbackTest stopAudioDeviceLoopbackTest} | Stops the audio device loopback test. |
+
+
+### Video device management
+
+| Method                                                   | Description              |
+| ------------------------------------------------------------ | -------------------------- |
+| {@link AgoraRtcEngine.setVideoDevice setVideoDevice}         | Sets the device with the device ID. |
+| {@link AgoraRtcEngine.getVideoDevices getVideoDevices}       | Gets the video-capture device that is in use. |
+| {@link AgoraRtcEngine.getCurrentVideoDevice getCurrentVideoDevice} | Gets the current video device. |
+| {@link AgoraRtcEngine.startVideoDeviceTest startVideoDeviceTest} | Starts the video playback device test. |
+| {@link AgoraRtcEngine.stopVideoDeviceTest stopVideoDeviceTest} | Stops the video playback device test. |
 
 ### Stream message
 
@@ -289,13 +313,13 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 
 | Method                                                       | Description                             |
 | ------------------------------------------------------------ | --------------------------------------- |
-| {@link AgoraRtcEngine.setLocalVideoMirrorMode setLocalVideoMirrorMode} | Sets the local video mirror mode.       |
 | {@link AgoraRtcEngine.setCameraCapturerConfiguration setCameraCapturerConfiguration} | Sets the camera capturer configuration. |
 
 ### Miscellaneous methods
 
 | Method                                                   | Description      |
 | ------------------------------------------------------------ | ------------------ |
+| {@link AgoraRtcEngine.sendCustomReportMessage sendCustomReportMessage}  | Reports and analyzes customized messages.   |
 | {@link AgoraRtcEngine.getCallId getCallId}                   | Gets the current call ID. |
 | {@link AgoraRtcEngine.rate rate}                             | Allows the user to rate the call and is called after the call ends. |
 | {@link AgoraRtcEngine.complain complain}                     | Allows a user to complain about the call quality after a call ends. |
@@ -324,6 +348,9 @@ Agora Electron SDK provides the methods for the second instance `videoSource` to
 | {@link AgoraRtcEngine.videoSourceJoin videoSourceJoin}       | Allows `videoSource` to join a channel.     |
 | {@link AgoraRtcEngine.videoSourceLeave videoSourceLeave}     | Allows `videoSource` to leave a channel.    |
 | {@link AgoraRtcEngine.videoSourceRenewToken videoSourceRenewToken} | Renews the Token when using the video source.                 |
+| {@link AgoraRtcEngine.videoSourceEnableAudio videoSourceEnableAudio} | Enables the audio module.       |
+| {@link AgoraRtcEngine.videoSourceEnableLoopbackRecording videoSourceEnableLoopbackRecording} | Enables loopback audio capturing.                |
+| {@link AgoraRtcEngine.videoSourceEnableEncryption videoSourceEnableEncryption} |Enables/Disables the built-in encryption.                 |
 | {@link AgoraRtcEngine.getScreenDisplaysInfo getScreenDisplaysInfo} |   Gets the display ID.      |
 | {@link AgoraRtcEngine.getScreenWindowsInfo getScreenWindowsInfo}       |     Gets the window ID.      |
 | {@link AgoraRtcEngine.videoSourceStartScreenCaptureByScreen videoSourceStartScreenCaptureByScreen}     |  Shares the whole or part of a screen by specifying the screen rect when using the video source.   |
@@ -341,7 +368,7 @@ Agora Electron SDK provides the methods for the second instance `videoSource` to
 
 ## AgoraRtcEngine.on
 
-Agora Electron SDK use the {@link AgoraRtcEngine.on} listens to the events above: 
+Agora Electron SDK use the {@link AgoraRtcEngine.on} listens to the events above:
 
 | Event                            | Description                                                  |
 | -------------------------------- | ------------------------------------------------------------ |
@@ -366,8 +393,6 @@ Agora Electron SDK use the {@link AgoraRtcEngine.on} listens to the events above
 | `remoteVideoStats`                 | Reports the statistics of the video stream from each remote user/host. |
 | `localAudioStats`| Reports the statistics of the local audio stream.|
 | `remoteAudioStats`                 | Reports the statistics of the audio stream from each remote user/host. |
-| `audioDeviceStateChanged`          | Occurs when the audio device state changes.                  |
-| `videoDeviceStateChanged`          | Occurs when the video device state changes.                  |
 | `audioMixingStateChanged`          | Occurs when the state of the local user's audio mixing file changes. |
 | `remoteAudioMixingBegin`           | Occurs when a remote user starts audio mixing.               |
 | `remoteAudioMixingEnd`             | Occurs when a remote user finishes audio mixing.             |
@@ -375,7 +400,8 @@ Agora Electron SDK use the {@link AgoraRtcEngine.on} listens to the events above
 | `networkQuality`                   | Reports the network quality of each user.                    |
 | `lastmileQuality`                  | Reports the last-mile network quality of the local user before the user joins a channel. |
 | `lastmileProbeResult`              | Reports the last-mile network probe result.                  |
-| `firstLocalAudioFrame`             | Occurs when the first local audio frame is sent.             |
+| `firstLocalAudioFramePublished`             | Occurs when the first audio frame is published. |
+| `firstLocalVideoFramePublished`| Occurs when the first video frame is published.   |
 | `firstLocalVideoFrame`             | Occurs when the first local video frame is rendered.             |
 | `videoSizeChanged`                 | Occurs when the video size or rotation information of a specified remote user changes. |
 | `removeStream`                     | Occurs when the remote user leaves the channel.              |
@@ -384,11 +410,18 @@ Agora Electron SDK use the {@link AgoraRtcEngine.on} listens to the events above
 | `videoStopped`                     | Occurs when the video stops playing.                         |
 | `streamMessage`                    | Occurs when the local user receives a remote data stream within five seconds. |
 | `streamMessageError`               | Occurs when the local user fails to receive the remote data stream. |
+| `rtmpStreamingStateChanged`| Occurs when the state of the RTMP or RTMPS streaming changes.  |
+| `transcodingUpdated`| Occurs when the publisher's transcoding is updated.   |
+| `rtmpStreamingEvent`|  Reports events during the RTMP or RTMPS streaming.  |
 | `audioDeviceVolumeChanged`         | Occurs when the volume of the playback, microphone, or application changes. |
-|`localAudioStateChanged`|Occurs when the local audio state changes.|
-|`remoteAudioStateChanged`|Occurs when the remote audio state changes.|
-|`localVideoStateChanged`| Occurs when the local video state changes.|
+| `localAudioStateChanged`|Occurs when the local audio state changes.|
+| `remoteAudioStateChanged`|Occurs when the remote audio state changes.|
+| `localVideoStateChanged`| Occurs when the local video state changes.|
 | `remoteVideoStateChanged`          | Occurs when the remote video stream state changes.           |
+| `audioPublishStateChanged`| Occurs when the audio publishing state changes.  |
+| `videoPublishStateChanged`| Occurs when the video publishing state changes.   |
+| `audioSubscribeStateChanged`| Occurs when the audio subscribing state changes.   |
+| `videoSubscribeStateChanged`| Occurs when the audio subscribing state changes.  |
 | `cameraFocusAreaChanged`           | Occurs when the camera focus area changes.                   |
 | `cameraExposureAreaChanged`        | Occurs when the camera exposure area changes.                |
 | `transcodingUpdated`               | Occurs when the publisher's transcoding settings are updated. |
@@ -397,6 +430,8 @@ Agora Electron SDK use the {@link AgoraRtcEngine.on} listens to the events above
 |`channelMediaRelayEvent`| Reports events during the media stream relay.|
 | `localPublishFallbackToAudioOnly`  | Occurs:<br><li>When the published media stream falls back to an audio-only stream due to poor network conditions.</li><br><li>When the published media stream switches back to the video after the network conditions improve.</li> |
 | `remoteSubscribeFallbackToAudioOnly` | Occurs:<br/><li>When the remote media stream falls back to audio-only due to poor network conditions.</li><br><li>When the remote media stream switches back to the video after the network conditions improve.</li> |
+| `receiveMetadata`|  Occurs when the receiver receives the media metadata.            |
+| `sendMetadataSuccess`|   Occurs when the sender sends the media metadata successfully.          |
 | `videoSourceJoinedSuccess`         | Occurs when a user joins a channel. (The second instance)    |
 | `videoSourceRequestNewToken`       | Occurs when the token expires. (The second instance)         |
 | `videoSourceLeaveChannel`          | Occurs when a user leaves a channel. (The second instance)   |
@@ -404,144 +439,148 @@ Agora Electron SDK use the {@link AgoraRtcEngine.on} listens to the events above
 
 <a name = "warn"></a>
 
-## Warning Codes
+## Warning codes
 
 Warning codes occur when the SDK encounters an error that might be recovered automatically. These are only notifications, and can generally be ignored.
 
 | Warn Code | Description                       |
 | ------ | ------------------------------------------------------------ |
-| `8`      | The specified view is invalid.<br>Specify a view when using the video call function. |
-| `16`     | Failed to initialize the video function, possibly caused by a lack of resources.<br/>The users cannot see the video while the voice communication is not affected. |
-| `20`     | The request is pending, usually due to some module not being ready, and the SDK postponed processing the request. |
-| `103`    | No channel resources are available.<br>Maybe because the server cannot allocate any channel resource.  |
-| `104`    | A timeout occurs when looking up the channel.<br>When joining a channel, the SDK looks up the specified channel. This warning usually occurs when the network condition is too poor for the SDK to connect to the server.|
-| `105`    | **DEPRECATED** Please use `10` in `ConnectionChangeReason` instead. <br/>The server rejects the request to look up the channel. <br/>The server cannot process this request or the request is illegal. |
-| `106`    | A timeout occurs when opening the channel. <br/>Once the specific channel is found, the SDK opens the channel. This warning usually occurs when the network condition is too poor for the SDK to connect to the server. |
-| `107`    | The server rejects the request to open the channel. <br/>The server cannot process this request or the request is illegal. |
-| `111`    | A timeout occurs when switching to the live video.   |
-| `118`    | A timeout occurs when setting the client role in the live broadcast profile.     |
-| `119`    | The client role a the live broadcast profile is unauthorized.   |
-| `121`    | The ticket to open the channel is invalid.           |
-| `122`    | Try connecting to another server.                   |
-| `701`    | An error occurs in opening the audio mixing file.                    |
-| `1014`   | Audio Device Module: A warning occurs in the playback device.                   |
-| `1016`   | Audio Device Module: A warning occurs in the recording device.     |
-| `1019`   | Audio Device Module: No valid audio data is collected.                |
-| `1020`   | Audio Device Module: The playback device fails.                         |
-| `1021`   | Audio Device Module: The recording device fails.              |
-| `1025`   | The audio recording or playback is interrupted by system events. |
-| `1031`   | Audio Device Module: The recorded audio voice is too low.               |
-| `1032`   | Audio Device Module: The playback audio voice is too low.           |
-| `1040`   | Audio device module: An exception occurs with the audio drive. <br/>Solutions:<li>Disable or re-enable the audio device.</li><li>Re-enable your device.</li><li>Update the sound card drive.</li> |
-| `1051`   | Audio Device Module: Howling is detected.            |
-| `1052`   | Audio Device Module: The device is in the glitch state.                 |
-| `1053`   | Audio Device Module: The underlying audio settings have changed.      |
-| `1323`   | Audio device module: No available playback device. Solution: Plug in the audio device. |
-| `1324`   | Audio device module: The capture device is released improperly. <br>Solutions:<li>Disable or re-enable the audio device.</li><li>Re-enable your device.</li><li>Update the sound card drive.</li> |
-| `1610`   | Super-resolution warning: The original video dimensions of the remote user exceed 640 × 480. |
-| `1611`   | Super-resolution warning: Another user is using super resolution.               |
-| `1612`   | The device is not supported.                        |
+| `-8`      | The specified view is invalid.<br>Specify a view when using the video call function. |
+| `-16`     | Failed to initialize the video function, possibly caused by a lack of resources.<br/>The users cannot see the video while the voice communication is not affected. |
+| `-20`     | The request is pending, usually due to some module not being ready, and the SDK postponed processing the request. |
+| `-103`    | No channel resources are available.<br>Maybe because the server cannot allocate any channel resource.  |
+| `-104`    | A timeout occurs when looking up the channel.<br>When joining a channel, the SDK looks up the specified channel. This warning usually occurs when the network condition is too poor for the SDK to connect to the server.|
+| `-105`    | **DEPRECATED** Please use `10` in `ConnectionChangeReason` instead. <br/>The server rejects the request to look up the channel. <br/>The server cannot process this request or the request is illegal. |
+| `-106`    | A timeout occurs when opening the channel. <br/>Once the specific channel is found, the SDK opens the channel. This warning usually occurs when the network condition is too poor for the SDK to connect to the server. |
+| `-107`    | The server rejects the request to open the channel. <br/>The server cannot process this request or the request is illegal. |
+| `-111`    | A timeout occurs when switching to the live video.   |
+| `-118`    | A timeout occurs when setting the client role in the live broadcast profile.     |
+| `-119`    | The client role a the live broadcast profile is unauthorized.   |
+| `-121`    | The ticket to open the channel is invalid.           |
+| `-122`    | Try connecting to another server.                   |
+| `-131`    | The channel connection cannot be recovered. |
+| `-701`    | An error occurs in opening the audio mixing file.                    |
+| `-1014`   | Audio Device Module: A warning occurs in the playback device.                   |
+| `-1016`   | Audio Device Module: A warning occurs in the recording device.     |
+| `-1019`   | Audio Device Module: No valid audio data is collected.                |
+| `-1020`   | Audio Device Module: The playback device fails.                         |
+| `-1021`   | Audio Device Module: The recording device fails.              |
+| `-1029`   |During a call, the audio session category should be set to AVAudioSessionCategoryPlayAndRecord, and `AgoraRtcEngine` monitors this value. If the audio session category is set to other values, this warning code is triggered and `AgoraRtcEngine` will forcefully set it back to AVAudioSessionCategoryPlayAndRecord.|
+| `-1025`   | The audio recording or playback is interrupted by system events (such as a phone call). |
+| `-1031`   | Audio Device Module: The recorded audio voice is too low.               |
+| `-1032`   | Audio Device Module: The playback audio voice is too low.           |
+| `-1040`   | Audio device module: An exception occurs with the audio drive. <br/>Solutions:<li>Disable or re-enable the audio device.</li><li>Re-enable your device.</li><li>Update the sound card drive.</li> |
+| `-1042`   |Audio device module: The audio capturing device is different from the audio playback device, which may cause echoes problem. Agora recommends using the same audio device to capture and playback audio.|
+| `-1051`   | Audio Device Module: Howling is detected.            |
+| `-1052`   | Audio Device Module: The device is in the glitch state.                 |
+| `-1053`   | Audio Device Module: A residual echo is detected. This may be caused by the delayed scheduling of system threads or a signal overflow.   |
+| `-1323`   | Audio device module: No available playback device. Solution: Plug in the audio device. |
+| `-1324`   | Audio device module: The capture device is released improperly. <br>Solutions:<li>Disable or re-enable the audio device.</li><li>Re-enable your device.</li><li>Update the sound card drive.</li> |
+| `-1610`   | Super-resolution warning: The original video dimensions of the remote user exceed 640 × 480. |
+| `-1611`   | Super-resolution warning: Another user is using super resolution.  |
+| `-1612`   | The device is not supported.                        |
 
 <a name = "error"></a>
 
-## Error Codes
+## Error codes
 
 Error codes occur when the SDK encounters an error that cannot be recovered automatically without any application intervention. For example, the SDK returns an error if it fails to turn on the camera, and reminds the user not to use the camera.
 
 | Error Code | Description                          |
 | ------ | ------------------------------------------------------------ |
 | `0`      | No error occurs.                                                 |
-| `1`      | A general error occurs (no specified reason).                   |
-| `2`      | An invalid parameter is used. For example, the specific channel name includes illegal characters.        |
-| `3`      | The SDK module is not ready. <br/>Possible solutions:<li>Check the audio device.</li><li>Check the completeness of the application.</li><li>Re-initialize the RTC engine. </li> |
-| `4`      | The SDK does not support this function.       |
-| `5`      | The request is rejected. |
-| `6`      | The buffer size is not big enough to store the returned data.        |
-| `7`      | The SDK is not initialized before calling this method. |
-| `9`      | No permission exists. <br/>Check if the user has granted access to the audio or video device. |
-| `10`     |  An API method timeout occurs.<br/>Some API methods require the SDK to return the execution result, and this error occurs if the request takes too long (more than 10 seconds) for the SDK to process. |
-| `11`     | The request is canceled.<br/>This is for internal SDK use only, and it does not return to the application through any method or callback.|
-| `12`     | The method is called too often. <br/>This is for internal SDK use only, and it does not return to the application through any method or callback.|
-| `13`     | The SDK fails to bind to the network socket.<br/>This is for internal SDK use only, and it does not return to the application through any method or callback. |
-| `14`     | The network is unavailable.<br/>This is for internal SDK use only, and it does not return to the application through any method or callback. |
-| `15`     | No network buffers are available. <br/>This is for internal SDK internal use only, and it does not return to the application through any method or callback. |
-| `17`     |  The request to join the channel is rejected.This error usually occurs when the user is already in the channel, and still calls the `joinChannel` method to join the channel.|
-| `18`     | The request to leave the channel is rejected.This error usually occurs:<li>When the user has left the channel and still calls `leaveChannel` to leave the channel. In this case, stop calling `leaveChannel`.</li><li>When the user has not joined the channel and still calls `leaveChannel` to leave the channel. In this case, no extra operation is needed.</li> |
-| `19`     | Resources are occupied and cannot be reused.                           |
-| `20`     | The SDK gives up the request due to too many requests.          |
-| `21`     | In Windows, specific firewall settings can cause the SDK to fail to initialize and crash.     |
-| `22`     | The application uses too much of the system resources and the SDK fails to allocate the resources. |
-| `101`    | The specified App ID is invalid.<br/>Please try to rejoin the channel with a valid App ID. |
-| `102`    | The specified channel name is invalid. <br/>Please try to rejoin the channel with a valid channel name.  |
-| `109`    | **DEPRECATED** Please use `9` in `ConnectionChangeReason` instead.<br/>The token expired due to one of the following reasons:<br/><li>Authorized Timestamp expired: The timestamp is represented by the number of seconds elapsed since 1/1/1970. The user can use the Token to access the Agora service within five minutes after the Token is generated. If the user does not access the Agora service after five minutes, this Token is no longer valid.</li><li>Call Expiration Timestamp expired: The timestamp is the exact time when a user can no longer use the Agora service (for example, when a user is forced to leave an ongoing call). When a value is set for the Call Expiration Timestamp, it does not mean that the token will expire, but that the user will be banned from the channel.</li> |
-| `110`    | **DEPRECATED** Please use `8` in `ConnectionChangeReason` instead.<br/>The token is invalid due to one of the following reasons:<br/><li>The App Certificate for the project is enabled in Console, but the user is still using the App ID. Once the App Certificate is enabled, the user must use a token.</li><li>The uid is mandatory, and users must set the same uid as the one set in the `joinChannel` method. </li> |
-| `113`    | The user is not in the channel when calling the `sendStreamMessage` method. |
-| `114`    | The size of the sent data is over 1024 bytes when the user calls the `sendStreamMessage` method. |
-| `115`    | The bitrate of the sent data exceeds the limit of 6 Kbps when the user calls the `sendStreamMessage` method.|
-| `116`    | Too many data streams (over 5 streams) are created when the user calls the `createDataStream` method.|
-| `117`    | The data stream transmission timed out.                    |
-| `119`    | Switching roles fail.<br/>Please try to rejoin the channel.                  |
-| `120`    | Decryption fails. The user may have used a different encryption password to join the channel. <br/>Check your settings or try rejoining the channel. |
-| `123`    | The client is banned by the server.                       |
-| `124`    | Incorrect watermark file parameter.                      |
-| `125`    | Incorrect watermark file path.      |
-| `126`    | Incorrect watermark file format.         |
-| `127`    | Incorrect watermark file information.          |
-| `128`    | Incorrect watermark file data format.             |
-| `129`    | An error occurs in reading the watermark file.                    |
-| `130`    | Encryption is enabled when the user calls the `addPublishStreamUrl` method (CDN live streaming does not support encrypted streams). |
-| `134`    | The User Account is invalid.                       |
-| `151`    | CDN related errors.<br/>Remove the original URL address and add a new one by calling the `removePublishStreamUrl` and `addPublishStreamUrl` methods. |
-| `152`    | The host publishes more than 10 URLs. <br/>Delete the unnecessary URLs before adding new ones. |
-| `153`    | The host manipulates other hosts' URLs. <br/>Check your app logic.|
-| `154`    | An error occurs in Agora's streaming server. <br/> Call the `addPublishStreamUrl` method to publish the streaming again.|
-| `155`    | The server fails to find the stream.          |
-| `156`    | The format of the RTMP stream URL is not supported. <br/>Check whether the URL format is correct.  |
-| `1001`   | Fails to load the media engine.                                  |
-| `1002`   | Fails to start the call after enabling the media engine.  |
-| `1003`   | **DEPRECATED** Please use `error (4)` in `localVideoStateChanged` instead.<br/>Fails to start the camera. |
-| `1004`   | Fails to start the video rendering module.                        |
-| `1005`   | Audio Device Module: A general error occurs (no specified reason). <br/>Check if the audio device is used by another application, or try rejoining the channel.|
-| `1006`   | Audio Device Module: An error occurs in using the Java resources.                   |
-| `1007`   | Audio Device Module: An error occurs in setting the sampling frequency.       |
-| `1008`   | Audio Device Module: An error occurs in initializing the playback device. |
-| `1009`   | Audio Device Module: An error occurs in starting the playback device. |
-| `1010`   | Audio Device Module: An error occurs in stopping the playback device.       |
-| `1011`   | Audio Device Module: An error occurs in initializing the recording device.|
-| `1012`   |  Audio Device Module: An error occurs in starting the recording device. |
-| `1013`   | Audio Device Module: An error occurs in stopping the recording device. |
-| `1015`   |  Audio Device Module: A playback error occurs. <br>Check your playback device and try rejoining the channel.|
-| `1017`   | Audio Device Module: A recording error occurs. |
-| `1018`   |  Audio Device Module: The recording fails.    |
-| `1020`   | Audio Device Module: Abnormal audio playback frequency.      |
-| `1021`   | Audio Device Module: Abnormal audio recording frequency.  |
-| `1022`   | Audio Device Module: An error occurs in initializing the loopback device.    |
-| `1023`   | Audio Device Module: An error occurs in starting the loopback device. |
-| `1027`   | Audio Device Module: No recording permission exists. <br/>Check if the recording permission is granted. |
-| `1033`   | Audio device module: The device is occupied.   |
-| `1301`   | Audio device module: An audio driver abnomality or a compatibility issue occurs. <br/>Solutions: Disable and restart the audio device, or reboot the device. |
-| `1303`   | Audio device module: A recording driver abnomality or a compatibility issue occurs. <br/>Solutions: Disable and restart the audio device, or reboot the device.|
-| `1306`   | Audio device module: A playout driver abnomality or a compatibility issue occurs. <br/>Solutions: Disable and restart the audio device, or reboot the device.|
-| `1307`   | Audio device module: No audio device is available. <br/>Solutions: Plug in a proper audio device.  |
-| `1309`   | Audio device module: An audio driver abnomality or a compatibility issue occurs.<br/>Solutions: Disable and restart the audio device, or reboot the device.|
-| `1311`   | Audio device module: Insufficient system memory or poor device performance.<br/>Solutions: reboot the device or replace the device. |
-| `1314`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver.</li> |
-| `1319`   | Audio device module: Insufficient system memory or poor device performance. <br/>Solutions: reboot the device or replace the device. |
-| `1320`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Replace the device.</li>|
-| `1322`   |  Audio device module: No audio sampling device is available. <br/>Solutions: Plug in a proper recording device. |
-| `1323`   | Audio device module: No audio playout device is available. <br/>Solutions: Plug in a proper playback device.|
-| `1351`   | Audio device module: An audio driver abnormality or a compatibility issue occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver.</li> |
-| `1353`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver.</li>  |
-| `1354`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver. |
-| `1355`   |Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver. |
-| `1356`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver. |
-| `1357`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver. |
-| `1358`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver. |
-| `1359`   | Audio Device Module: No recording device exists. |
-| `1360`   | Audio Device Module: No playback device exists.    |
-| `1501`   | Video Device Module: The camera is unauthorized. |
-| `1502`   | **DEPRECATED** Please use `error (3)` in  `localVideoStateChanged` instead.<br/> Video Device Module: The camera is in use. |
-| `1600`   | Video Device Module: An unknown error occurs.              |
-| `1601`   | Video Device Module: An error occurs in initializing the video encoder. <br/>The error is a serious error, please try to rejoin the channel.|
-| `1602`   | Video Device Module: An error occurs in encoding.<br/>The error is a serious error, please try to rejoin the channel. |
-| `1603`   | Video Device Module: An error occurs in setting the video encoder.     |
+| `-1`      | A general error occurs (no specified reason).                   |
+| `-2`      | An invalid parameter is used. For example, the specific channel name includes illegal characters.        |
+| `-3`      | The SDK module is not ready. <br/>Possible solutions:<li>Check the audio device.</li><li>Check the completeness of the application.</li><li>Re-initialize the RTC engine. </li> |
+| `-4`      | The SDK does not support this function.       |
+| `-5`      | The request is rejected. |
+| `-6`      | The buffer size is not big enough to store the returned data.        |
+| `-7`      | The SDK is not initialized before calling this method. |
+| `-9`      | No permission exists. <br/>Check if the user has granted access to the audio or video device. |
+| `-10`     |  An API method timeout occurs.<br/>Some API methods require the SDK to return the execution result, and this error occurs if the request takes too long (more than 10 seconds) for the SDK to process. |
+| `-11`     | The request is canceled.<br/>This is for internal SDK use only, and it does not return to the application through any method or callback.|
+| `-12`     | The method is called too often. <br/>This is for internal SDK use only, and it does not return to the application through any method or callback.|
+| `-13`     | The SDK fails to bind to the network socket.<br/>This is for internal SDK use only, and it does not return to the application through any method or callback. |
+| `-14`     | The network is unavailable.<br/>This is for internal SDK use only, and it does not return to the application through any method or callback. |
+| `-15`     | No network buffers are available. <br/>This is for internal SDK internal use only, and it does not return to the application through any method or callback. |
+| `-17`     |  The request to join the channel is rejected.This error usually occurs when the user is already in the channel, and still calls the `joinChannel` method to join the channel.|
+| `-18`     | The request to leave the channel is rejected.This error usually occurs:<li>When the user has left the channel and still calls `leaveChannel` to leave the channel. In this case, stop calling `leaveChannel`.</li><li>When the user has not joined the channel and still calls `leaveChannel` to leave the channel. In this case, no extra operation is needed.</li> |
+| `-19`     | Resources are occupied and cannot be reused.                           |
+| `-20`     | The SDK gives up the request due to too many requests.          |
+| `-21`     | In Windows, specific firewall settings can cause the SDK to fail to initialize and crash.     |
+| `-22`     | The application uses too much of the system resources and the SDK fails to allocate the resources. |
+| `-101`    | The specified App ID is invalid.<br/>Please try to rejoin the channel with a valid App ID. |
+| `-102`    | The specified channel name is invalid. <br/>Please try to rejoin the channel with a valid channel name.  |
+| `-103` |  `AgoraRtcEngine` fails to get server resources in the specified region. Try another region when initializing `AgoraRtcEngine`.   |
+| `-109`    | **DEPRECATED** Please use `9` in `ConnectionChangeReason` instead.<br/>The token expired due to one of the following reasons:<br/><li>Authorized Timestamp expired: The timestamp is represented by the number of seconds elapsed since 1/1/1970. The user can use the Token to access the Agora service within 24 hours after the Token is generated. If the user does not access the Agora service after 24 hours, this Token is no longer valid.</li><li>Call Expiration Timestamp expired: The timestamp is the exact time when a user can no longer use the Agora service (for example, when a user is forced to leave an ongoing call). When a value is set for the Call Expiration Timestamp, it does not mean that the token will expire, but that the user will be banned from the channel.</li> |
+| `-110`    | **DEPRECATED** Please use `8` in `ConnectionChangeReason` instead.<br/>The token is invalid due to one of the following reasons:<br/><li>The App Certificate for the project is enabled in Console, but the user is still using the App ID. Once the App Certificate is enabled, the user must use a token.</li><li>The uid is mandatory, and users must set the same uid as the one set in the `joinChannel` method. </li> |
+| `-113`    | The user is not in the channel when calling the `sendStreamMessage` method. |
+| `-114`    | The size of the sent data is over 1024 bytes when the user calls the `sendStreamMessage` method. |
+| `-115`    | The bitrate of the sent data exceeds the limit of 6 Kbps when the user calls the `sendStreamMessage` method.|
+| `-116`    | Too many data streams (over 5 streams) are created when the user calls the `createDataStream` method.|
+| `-117`    | The data stream transmission timed out.                    |
+| `-119`    | Switching roles fail.<br/>Please try to rejoin the channel.                  |
+| `-120`    | Decryption fails. The user may have used a different encryption password to join the channel. <br/>Check your settings or try rejoining the channel. |
+| `-123`    | The client is banned by the server.                       |
+| `-124`    | Incorrect watermark file parameter.                      |
+| `-125`    | Incorrect watermark file path.      |
+| `-126`    | Incorrect watermark file format.         |
+| `-127`    | Incorrect watermark file information.          |
+| `-128`    | Incorrect watermark file data format.             |
+| `-129`    | An error occurs in reading the watermark file.                    |
+| `-130`    | Encryption is enabled when the user calls the `addPublishStreamUrl` method (CDN live streaming does not support encrypted streams). |
+| `-134`    | The User Account is invalid.                       |
+| `-151`    | CDN related errors.<br/>Remove the original URL address and add a new one by calling the `removePublishStreamUrl` and `addPublishStreamUrl` methods. |
+| `-152`    | The host publishes more than 10 URLs. <br/>Delete the unnecessary URLs before adding new ones. |
+| `-153`    | The host manipulates other hosts' URLs. <br/>Check your app logic.|
+| `-154`    | An error occurs in Agora's streaming server. <br/> Call the `addPublishStreamUrl` method to publish the streaming again.|
+| `-155`    | The server fails to find the stream.          |
+| `-156`    | The format of the RTMP stream URL is not supported. <br/>Check whether the URL format is correct.  |
+| `-1001`   | Fails to load the media engine.                                  |
+| `-1002`   | Fails to start the call after enabling the media engine.  |
+| `-1003`   | **DEPRECATED** Please use `error (4)` in `localVideoStateChanged` instead.<br/>Fails to start the camera. |
+| `-1004`   | Fails to start the video rendering module.                        |
+| `-1005`   | Audio Device Module: A general error occurs (no specified reason). <br/>Check if the audio device is used by another application, or try rejoining the channel.|
+| `-1006`   | Audio Device Module: An error occurs in using the Java resources.                   |
+| `-1007`   | Audio Device Module: An error occurs in setting the sampling frequency.       |
+| `-1008`   | Audio Device Module: An error occurs in initializing the playback device. |
+| `-1009`   | Audio Device Module: An error occurs in starting the playback device. |
+| `-1010`   | Audio Device Module: An error occurs in stopping the playback device.       |
+| `-1011`   | Audio Device Module: An error occurs in initializing the recording device.|
+| `-1012`   |  Audio Device Module: An error occurs in starting the recording device. |
+| `-1013`   | Audio Device Module: An error occurs in stopping the recording device. |
+| `-1015`   |  Audio Device Module: A playback error occurs. <br>Check your playback device and try rejoining the channel.|
+| `-1017`   | Audio Device Module: A recording error occurs. |
+| `-1018`   |  Audio Device Module: The recording fails.    |
+| `-1020`   | Audio Device Module: Abnormal audio playback frequency.      |
+| `-1021`   | Audio Device Module: Abnormal audio recording frequency.  |
+| `-1022`   | Audio Device Module: An error occurs in initializing the loopback device.    |
+| `-1023`   | Audio Device Module: An error occurs in starting the loopback device. |
+| `-1027`   | Audio Device Module: No recording permission exists. <br/>Check if the recording permission is granted. |
+| `-1033`   | Audio device module: The device is occupied.   |
+| `-1301`   | Audio device module: An audio driver abnomality or a compatibility issue occurs. <br/>Solutions: Disable and restart the audio device, or reboot the device. |
+| `-1303`   | Audio device module: A recording driver abnomality or a compatibility issue occurs. <br/>Solutions: Disable and restart the audio device, or reboot the device.|
+| `-1306`   | Audio device module: A playout driver abnomality or a compatibility issue occurs. <br/>Solutions: Disable and restart the audio device, or reboot the device.|
+| `-1307`   | Audio device module: No audio device is available. <br/>Solutions: Plug in a proper audio device.  |
+| `-1309`   | Audio device module: An audio driver abnomality or a compatibility issue occurs.<br/>Solutions: Disable and restart the audio device, or reboot the device.|
+| `-1311`   | Audio device module: Insufficient system memory or poor device performance.<br/>Solutions: reboot the device or replace the device. |
+| `-1314`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver.</li> |
+| `-1319`   | Audio device module: Insufficient system memory or poor device performance. <br/>Solutions: reboot the device or replace the device. |
+| `-1320`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Replace the device.</li>|
+| `-1322`   |  Audio device module: No audio sampling device is available. <br/>Solutions: Plug in a proper recording device. |
+| `-1323`   | Audio device module: No audio playout device is available. <br/>Solutions: Plug in a proper playback device.|
+| `-1351`   | Audio device module: An audio driver abnormality or a compatibility issue occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver.</li> |
+| `-1353`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver.</li>  |
+| `-1354`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver. |
+| `-1355`   |Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver. |
+| `-1356`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver. |
+| `-1357`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver. |
+| `-1358`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver. |
+| `-1359`   | Audio Device Module: No recording device exists. |
+| `-1360`   | Audio Device Module: No playback device exists.    |
+| `-1501`   | Video Device Module: The camera is unauthorized. |
+| `-1502`   | **DEPRECATED** Please use `error (3)` in  `localVideoStateChanged` instead.<br/> Video Device Module: The camera is in use. |
+| `-1600`   | Video Device Module: An unknown error occurs.              |
+| `-1601`   | Video Device Module: An error occurs in initializing the video encoder. <br/>The error is a serious error, please try to rejoin the channel.|
+| `-1602`   | Video Device Module: An error occurs in encoding.<br/>The error is a serious error, please try to rejoin the channel. |
+| `-1603`   | Video Device Module: An error occurs in setting the video encoder.     |
