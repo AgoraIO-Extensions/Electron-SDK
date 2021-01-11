@@ -283,6 +283,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(stopPrimaryScreenCapture);
                 PROPERTY_METHOD_DEFINE(stopSecondaryScreenCapture);
                 PROPERTY_METHOD_DEFINE(adjustLoopbackRecordingVolume);
+                PROPERTY_METHOD_DEFINE(setCameraDeviceOrientation);
 
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
@@ -5375,6 +5376,28 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 result = pEngine->m_engine->stopSecondaryCameraCapture();
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setCameraDeviceOrientation)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                int type = 0;
+                status = napi_get_value_int32_(args[0], type);
+                CHECK_NAPI_STATUS(pEngine, status);
+                int orientation = 0;
+                status = napi_get_value_int32_(args[1], orientation);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                result = pEngine->m_engine->setCameraDeviceOrientation((VIDEO_SOURCE_TYPE)type, (VIDEO_ORIENTATION)orientation);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
