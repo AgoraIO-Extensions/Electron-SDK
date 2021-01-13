@@ -65,7 +65,7 @@ bool IAVFramePluginManager::onPlaybackAudioFrameBeforeMixing(unsigned int uid, A
 {
     for (auto const& element : m_mapPlugins) {
         if(element.second.enabled) {
-            element.second.instance->onPluginPlaybackAudioFrameBeforeMixing((AudioPluginFrame*)&audioFrame);
+            element.second.instance->onPluginPlaybackAudioFrameBeforeMixing(uid, (AudioPluginFrame*)&audioFrame);
         }
     }
     return true;
