@@ -18,32 +18,56 @@ bool IAVFramePluginManager::onCaptureVideoFrame(VideoFrame& videoFrame)
             element.second.instance->onPluginCaptureVideoFrame((VideoPluginFrame*)&videoFrame);
         }
     }
-
     return true;
 }
 
 bool IAVFramePluginManager::onRenderVideoFrame(unsigned int uid, VideoFrame& videoFrame)
 {
+    for (auto const& element : m_mapPlugins) {
+        if(element.second.enabled) {
+            element.second.instance->onPluginRenderVideoFrame(uid, (VideoPluginFrame*)&videoFrame);
+        }
+    }
     return true;
 }
 
 bool IAVFramePluginManager::onRecordAudioFrame(AudioFrame& audioFrame)
 {
+    for (auto const& element : m_mapPlugins) {
+        if(element.second.enabled) {
+            element.second.instance->onPluginRecordAudioFrame((AudioPluginFrame*)&audioFrame);
+        }
+    }
     return true;
 }
 
 bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame)
 {
+    for (auto const& element : m_mapPlugins) {
+        if(element.second.enabled) {
+            element.second.instance->onPluginPlaybackAudioFrame((AudioPluginFrame*)&audioFrame);
+        }
+    }
     return true;
 }
 
 bool IAVFramePluginManager::onMixedAudioFrame(AudioFrame& audioFrame)
 {
+    for (auto const& element : m_mapPlugins) {
+        if(element.second.enabled) {
+            element.second.instance->onPluginMixedAudioFrame((AudioPluginFrame*)&audioFrame);
+        }
+    }
     return true;
 }
 
 bool IAVFramePluginManager::onPlaybackAudioFrameBeforeMixing(unsigned int uid, AudioFrame& audioFrame)
 {
+    for (auto const& element : m_mapPlugins) {
+        if(element.second.enabled) {
+            element.second.instance->onPluginPlaybackAudioFrameBeforeMixing((AudioPluginFrame*)&audioFrame);
+        }
+    }
     return true;
 }
 
