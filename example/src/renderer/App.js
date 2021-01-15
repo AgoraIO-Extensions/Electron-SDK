@@ -493,10 +493,11 @@ export default class App extends Component {
     let ret = this.mediaPlayer.open("https://big-class-test.oss-cn-hangzhou.aliyuncs.com/61102.1592987815092.mp4", 0);
     console.log(`Media palyer ret： ${ret}`);
     let sourceId = this.mediaPlayer.getSourceId();
+    console.log(`Media source id ${sourceId}`);
 
     let sources = this.state.sources || []
     sources.push({
-      sourceType: 5,
+      sourceType: 4,
       connectionId: 0,
       x: 0,
       y: 0,
