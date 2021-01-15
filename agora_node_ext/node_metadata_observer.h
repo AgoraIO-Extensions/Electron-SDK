@@ -21,7 +21,7 @@ namespace agora {
 
                 virtual int getMaxMetadataSize() override;
 
-                virtual bool onReadyToSendMetadata(Metadata &metadata) override;
+                virtual bool onReadyToSendMetadata(Metadata& metadata, VIDEO_SOURCE_TYPE source_type) override;
 
                 virtual void onMetadataReceived(const Metadata &metadata) override;
 

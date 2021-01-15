@@ -1,6 +1,7 @@
 #ifndef AGORA_ELECTRON_NODE_MEDIA_PLAYER_OBSERVER
 #define AGORA_ELECTRON_NODE_MEDIA_PLAYER_OBSERVER
 #include "IAgoraMediaPlayerSource.h"
+#include "IAgoraMediaPlayer.h"
 #include <unordered_map>
 #include "node_napi_api.h"
 #include "node_async_queue.h"

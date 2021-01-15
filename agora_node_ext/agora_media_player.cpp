@@ -129,7 +129,7 @@ namespace agora {
             LOG_F(INFO, "NodeMediaPlayer::~NodeMediaPlayer");
         }
 
-        Local<Object> NodeMediaPlayer::Init(Isolate* isolate, agora_refptr<IMediaPlayerSource> mediaPlayer) {
+        Local<Object> NodeMediaPlayer::Init(Isolate* isolate, agora_refptr<IMediaPlayer> mediaPlayer) {
             LOG_F(INFO, "NodeMediaPlayer init");
 
             v8::Local<v8::Context> context = isolate->GetCurrentContext();
@@ -279,7 +279,7 @@ namespace agora {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
                 CHECK_NATIVE_THIS(mediaPlayer); 
-                result = mediaPlayer->mMediaPlayer->m_mediaPlayerSource->getSourceId();
+                result = mediaPlayer->mMediaPlayer->m_mediaPlayerSource->getMediaPlayerId();
             } while(false);
             media_player_napi_set_int_result(args, result);
         }

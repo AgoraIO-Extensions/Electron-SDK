@@ -25,6 +25,8 @@ namespace agora {
             virtual bool onScreenCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
             virtual bool onSecondaryScreenCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
 
+            virtual bool onMediaPlayerVideoFrame(VideoFrame& videoFrame, int mediaPlayerId) override;
+
             virtual bool onRenderVideoFrame(rtc::uid_t uid, rtc::conn_id_t connectionId, agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
             virtual bool onTranscodedVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
 
