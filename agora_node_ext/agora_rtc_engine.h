@@ -356,6 +356,12 @@ namespace agora {
             NAPI_API(setVoiceBeautifierPreset);
             NAPI_API(setAudioEffectParameters);
             NAPI_API(setClientRoleWithOptions);
+
+            /**
+             *  3.2.0_segmentation
+             */
+            NAPI_API(setVideoBackgroundSource);
+             
             
         public:
             Isolate* getIsolate() { return m_isolate; }

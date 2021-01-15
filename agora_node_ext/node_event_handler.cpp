@@ -1529,7 +1529,13 @@ namespace agora {
             node_async_call::async_call([this, routing] {
                 MAKE_JS_CALL_1(RTC_EVENT_AUDIO_ROUTE_CHANGED, int32, (int)routing);
             });
+        }
 
+        void NodeEventHandler::onVideoBackgroundSourceEnabled(bool enabled, VIDEO_BACKGROUND_SOURCE_STATE_REASON reason) {
+            FUNC_TRACE;
+            node_async_call::async_call([this, enabled, reason] {
+                MAKE_JS_CALL_2(RTC_EVENT_VIDEO_BACKGROUND_SOURCE_ENABLED, bool, enabled, int32, reason);
+            });
         }
     }
 }

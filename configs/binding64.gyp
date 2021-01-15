@@ -136,6 +136,7 @@
                     'Agorafdkaac.framework',
                     'Agoraffmpeg.framework',
                     'AgoraSoundTouch.framework',
+                    'AgoraVideoSegmentation.framework',
                     'CoreWLAN.framework',
                     'Cocoa.framework',
                     'VideoToolbox.framework',
@@ -330,7 +331,8 @@
                         './sdk/lib/mac/AgoraRtcKit.framework',
                         './sdk/lib/mac/Agorafdkaac.framework',
                         './sdk/lib/mac/Agoraffmpeg.framework',
-                        './sdk/lib/mac/AgoraSoundTouch.framework'
+                        './sdk/lib/mac/AgoraSoundTouch.framework',
+                        './sdk/lib/mac/AgoraVideoSegmentation.framework'
                     ]
                 }],
                 'link_settings': {
@@ -341,6 +343,7 @@
                     'Agorafdkaac.framework',
                     'Agoraffmpeg.framework',
                     'AgoraSoundTouch.framework',
+                    'AgoraVideoSegmentation.framework',
                     'CoreWLAN.framework',
                     'Cocoa.framework',
                     'VideoToolbox.framework',

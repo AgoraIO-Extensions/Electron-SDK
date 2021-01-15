@@ -43,7 +43,10 @@ const macPrepare = () => {
           path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraSoundTouch.framework'),
           path.join(__dirname, '../sdk/lib/mac/AgoraSoundTouch.framework')
         ),
-
+        fs.move(
+          path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraVideoSegmentation.framework'),
+          path.join(__dirname, '../sdk/lib/mac/AgoraVideoSegmentation.framework')
+        ),
       ])
     }).then(() => {
       resolve()
