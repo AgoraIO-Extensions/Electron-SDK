@@ -106,6 +106,8 @@ namespace agora {
 #define RTC_EVENT_VIDEO_SUBSCRIBE_STATE_CHANGED "videoSubscribeStateChanged"
 #define RTC_EVENT_AUDIO_ROUTE_CHANGED "audioRouteChanged"
 #define RTC_EVENT_API_ERROR "apierror"
+#define RTC_EVENT_VIDEO_BACKGROUND_SOURCE_ENABLED "videoBackgroundSourceEnabled"
+
         class NodeRtcEngine;
         class NodeUid;
         class NodeEventHandler : public IRtcEngineEventHandler, public IAgoraVideoSourceEventHandler
@@ -211,6 +213,7 @@ namespace agora {
             virtual void onAudioSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState);
             virtual void onVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState);
             virtual void onAudioRouteChanged(AUDIO_ROUTE_TYPE routing);
+            virtual void onVideoBackgroundSourceEnabled(bool enabled, VIDEO_BACKGROUND_SOURCE_STATE_REASON reason);
             
   private:
             void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
@@ -295,7 +298,6 @@ namespace agora {
             void onRemoteAudioStateChanged_node(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) ;
             void onChannelMediaRelayStateChanged_node(CHANNEL_MEDIA_RELAY_STATE state,CHANNEL_MEDIA_RELAY_ERROR code);
             void onChannelMediaRelayEvent_node(CHANNEL_MEDIA_RELAY_EVENT code);
-
             //3.1.0
         private:
             std::unordered_map<std::string, NodeEventCallback*> m_callbacks;

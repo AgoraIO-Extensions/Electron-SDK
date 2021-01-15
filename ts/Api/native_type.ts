@@ -2189,6 +2189,38 @@ export interface ClientRoleOptions {
   audienceLatencyLevel: AUDIENCE_LATENCY_LEVEL_TYPE;
 };
 
+/** The source used to substitude capture image background.*/
+export enum BACKGROUND_SOURCE_TYPE
+{
+    /** Background source is none*/
+    BACKGROUND_NONE = 0,
+    /** Background source is hex color string*/
+    BACKGROUND_HEX_COLOR,
+    /** Background source is image path, only support png format*/
+    BACKGROUND_IMG_PATH,
+};
+
+export interface VideoBackgroundSource {
+  /** The source type used to substitude capture image background.
+  */
+  background_source_type: BACKGROUND_SOURCE_TYPE;
+  /** Background color value, for example: "#aabbcc" */
+  color: String;
+  /** Background image file path */
+  img_path: String;
+}
+
+export enum VIDEO_BACKGROUND_SOURCE_STATE_REASON
+{
+    VIDEO_BACKGROUND_SOURCE_STATE_REASON_SUCCESS = 0,
+    //background image does not exist
+    VIDEO_BACKGROUND_SOURCE_STATE_REASON_IMAGE_NOT_EXIST = 1,
+    //color format is not supported
+    VIDEO_BACKGROUND_SOURCE_STATE_REASON_COLOR_FORMAT_NOT_SUPPORTED = 2,
+    //The device is not supported
+    VIDEO_BACKGROUND_SOURCE_STATE_REASON_DEVICE_NOT_SUPPORTED = 3,
+};
+
 /**
  * interface for c++ addon (.node)
  * @ignore
@@ -3175,6 +3207,11 @@ export interface NodeRtcEngine {
    * @ignore
    */
   setRecordingAudioFrameParameters(sampleRate: number, channel: number, mode: number, samplesPerCall: number): number;
+  /**
+   * @ignore
+   */
+  setVideoBackgroundSource(enabled: boolean, backgroundSource: VideoBackgroundSource): number;
+
 }
 /**
  * @ignore

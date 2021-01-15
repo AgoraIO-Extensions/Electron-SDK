@@ -50,7 +50,9 @@ import {
   AUDIO_EFFECT_PRESET,
   VOICE_BEAUTIFIER_PRESET,
   AUDIENCE_LATENCY_LEVEL_TYPE,
-  ClientRoleOptions
+  ClientRoleOptions,
+  VideoBackgroundSource,
+  VIDEO_BACKGROUND_SOURCE_STATE_REASON
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -737,6 +739,10 @@ class AgoraRtcEngine extends EventEmitter {
 
     this.rtcEngine.onEvent('audioRouteChanged', function(routing: AUDIO_ROUTE_TYPE) {
       fire('audioRouteChanged', routing);
+    })
+
+    this.rtcEngine.onEvent('videoBackgroundSourceEnabled', function(enabled: boolean, reason: VIDEO_BACKGROUND_SOURCE_STATE_REASON) {
+      fire('videoBackgroundSourceEnabled', enabled, reason);
     })
 
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
@@ -4922,10 +4928,6 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.setRecordingAudioFrameParameters(sampleRate, channel, mode, samplesPerCall);
   }
 
-  setRecordingAudioFrameParameters(sampleRate: number, channel: 1 | 2, mode: 0 | 1 | 2, samplesPerCall: number): number {
-    return this.rtcEngine.setRecordingAudioFrameParameters(sampleRate, channel, mode, samplesPerCall);
-  }
-
   // ===========================================================================
   // replacement for setParameters call
   // ===========================================================================
@@ -5424,6 +5426,21 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.setAudioEffectParameters(preset, param1, param2);
   }
 
+  /** @since v3.4.0
+
+  Enables/Disables capture image background subtitution and sets the options.
+
+  @note
+  - Call this method after calling the enableVideo method.
+
+  @param enabled Sets whether or not to enable capture image background subtitution:
+  - true: enables background subtitution.
+  - false: disables background subtitution.
+  @param options Sets the background source data. See VideoBackgroundSource.
+  */
+  setVideoBackgroundSource(enabled: boolean, backgroundSource: VideoBackgroundSource): number {
+    return this.rtcEngine.setVideoBackgroundSource(enabled, backgroundSource);
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {

@@ -298,6 +298,11 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setAudioEffectParameters);
                 PROPERTY_METHOD_DEFINE(setClientRoleWithOptions);
 
+                /**
+                 *  3.2.0_segmentation Api
+                 */ 
+                PROPERTY_METHOD_DEFINE(setVideoBackgroundSource);
+
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -5724,6 +5729,47 @@ namespace agora {
                     CHECK_NAPI_STATUS(pEngine, status);
                 }
                 result = pEngine->m_engine->setClientRole((CLIENT_ROLE_TYPE)role, opts);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+       NAPI_API_DEFINE(NodeRtcEngine, setVideoBackgroundSource)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                Isolate *isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                bool enabled;
+                status = napi_get_value_bool_(args[0], enabled);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                Local<Object> obj;
+                napi_get_value_object_(isolate, args[1], obj);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                int background_source_type;
+                napi_get_object_property_int32_(isolate, obj, "background_source_type", background_source_type);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                NodeString color;
+                napi_get_object_property_nodestring_(isolate, obj, "color", color);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                NodeString img_path;
+                napi_get_object_property_nodestring_(isolate, obj, "img_path", img_path);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                VideoBackgroundSource videoBackgroundSource;
+                videoBackgroundSource.background_source_type = (VideoBackgroundSource::BACKGROUND_SOURCE_TYPE)background_source_type;
+                videoBackgroundSource.color = color;
+                videoBackgroundSource.img_path = img_path;
+                result = pEngine->m_engine->setVideoBackgroundSource(enabled, videoBackgroundSource);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
