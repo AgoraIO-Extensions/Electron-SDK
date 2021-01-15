@@ -25,7 +25,7 @@ namespace agora {
             static void (m)(const Nan::FunctionCallbackInfo<Value>& args)
 
         struct IMediaPlayerSourceWraper {
-            agora_refptr<IMediaPlayerSource> m_mediaPlayerSource;
+            agora_refptr<IMediaPlayer> m_mediaPlayerSource;
         };
 
          class NodeMediaPlayer : public node::ObjectWrap {
@@ -36,7 +36,7 @@ namespace agora {
                 NodeMediaPlayer(Isolate *isolate, IMediaPlayerSourceWraper* mediaPlayer);
                 ~NodeMediaPlayer();
                 static void createInstance(const FunctionCallbackInfo<Value>& args);
-                static Local<Object> Init(Isolate* isolate, agora_refptr<IMediaPlayerSource> mediaPlayer);
+                static Local<Object> Init(Isolate* isolate, agora_refptr<IMediaPlayer> mediaPlayer);
                 NAPI_API_MEDIA_PLAYER(open);
                 NAPI_API_MEDIA_PLAYER(play);
                 NAPI_API_MEDIA_PLAYER(pause);

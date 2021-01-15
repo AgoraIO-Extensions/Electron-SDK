@@ -52,6 +52,11 @@ namespace agora {
             return true;
         }
 
+        bool NodeVideoFrameObserver::onMediaPlayerVideoFrame(VideoFrame& videoFrame, int mediaPlayerId)
+        {
+          return true;
+        }
+
 
         bool NodeVideoFrameObserver::onTranscodedVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame)
         {

@@ -74,7 +74,7 @@ namespace agora {
             return MAX_META_DATA_SIZE;
         }
 
-        bool NodeMetadataObserver::onReadyToSendMetadata(Metadata &metadata) {
+        bool NodeMetadataObserver::onReadyToSendMetadata(Metadata& metadata, VIDEO_SOURCE_TYPE source_type) {
             std::lock_guard<std::mutex> lock(queueMutex);
             if (!messageQueue.empty() && messageQueue.size() > 0) {
                 Metadata *cachedMetadata = messageQueue.front();

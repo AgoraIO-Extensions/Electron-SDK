@@ -2337,7 +2337,7 @@ namespace agora {
                 napi_get_param_2(args, uint32, profile, uint32, scenario);
                 CHECK_NAPI_STATUS(pEngine, status);
 
-                result = pEngine->m_engine->setAudioProfile(AUDIO_PROFILE_TYPE(profile), AUDIO_SCENARIO_TYPE(scenario));
+                result = pEngine->m_engine->setAudioProfile(AUDIO_PROFILE_TYPE(profile));
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -2828,7 +2828,7 @@ namespace agora {
                 status = napi_get_value_int32_(args[1], streamType);
                 CHECK_NAPI_STATUS(pEngine, status);
 
-                result = pEngine->m_engine->setRemoteVideoStreamType(uid, REMOTE_VIDEO_STREAM_TYPE(streamType));
+                result = pEngine->m_engine->setRemoteVideoStreamType(uid, VIDEO_STREAM_TYPE(streamType));
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -2847,7 +2847,7 @@ namespace agora {
                 napi_get_param_1(args, int32, streamType);
                 CHECK_NAPI_STATUS(pEngine, status);
 
-                result = pEngine->m_engine->setRemoteDefaultVideoStreamType(REMOTE_VIDEO_STREAM_TYPE(streamType));
+                result = pEngine->m_engine->setRemoteDefaultVideoStreamType(VIDEO_STREAM_TYPE(streamType));
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -5041,7 +5041,7 @@ namespace agora {
                 channelMediaOptions.clientRoleType = (CLIENT_ROLE_TYPE)clientRoleType;
                 int defaultVideoStreamType = 0;
                 status = napi_get_object_property_int32_(isolate, optionObj, "defaultVideoStreamType", defaultVideoStreamType);
-                channelMediaOptions.defaultVideoStreamType = (REMOTE_VIDEO_STREAM_TYPE)defaultVideoStreamType;
+                channelMediaOptions.defaultVideoStreamType = (VIDEO_STREAM_TYPE)defaultVideoStreamType;
                 int channelProfile = 0;
                 status = napi_get_object_property_int32_(isolate, optionObj, "channelProfile", channelProfile);
                 channelMediaOptions.channelProfile = (CHANNEL_PROFILE_TYPE)channelProfile;
@@ -5150,7 +5150,7 @@ namespace agora {
                 channelMediaOptions.clientRoleType = (CLIENT_ROLE_TYPE)clientRoleType;
                 int defaultVideoStreamType = 0;
                 status = napi_get_object_property_int32_(isolate, optionObj, "defaultVideoStreamType", defaultVideoStreamType);
-                channelMediaOptions.defaultVideoStreamType = (REMOTE_VIDEO_STREAM_TYPE)defaultVideoStreamType;
+                channelMediaOptions.defaultVideoStreamType = (VIDEO_STREAM_TYPE)defaultVideoStreamType;
                 int channelProfile = 0;
                 status = napi_get_object_property_int32_(isolate, optionObj, "channelProfile", channelProfile);
                 channelMediaOptions.channelProfile = (CHANNEL_PROFILE_TYPE)channelProfile;
@@ -5221,7 +5221,7 @@ namespace agora {
                 channelMediaOptions.clientRoleType = (CLIENT_ROLE_TYPE)clientRoleType;
                 int defaultVideoStreamType = 0;
                 status = napi_get_object_property_int32_(isolate, optionObj, "defaultVideoStreamType", defaultVideoStreamType);
-                channelMediaOptions.defaultVideoStreamType = (REMOTE_VIDEO_STREAM_TYPE)defaultVideoStreamType;
+                channelMediaOptions.defaultVideoStreamType = (VIDEO_STREAM_TYPE)defaultVideoStreamType;
                 int channelProfile = 0;
                 status = napi_get_object_property_int32_(isolate, optionObj, "channelProfile", channelProfile);
                 channelMediaOptions.channelProfile = (CHANNEL_PROFILE_TYPE)channelProfile;

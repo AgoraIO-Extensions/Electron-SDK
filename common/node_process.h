@@ -10,7 +10,7 @@
 
 #ifndef NODE_PROCESS_H
 #define NODE_PROCESS_H
-
+#include <string>
 #include <functional>
 class INodeProcess
 {
