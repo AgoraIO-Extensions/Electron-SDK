@@ -69,8 +69,8 @@
     "url": "git+https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron.git"
   },
   "agora_electron": {
-    "lib_sdk_win": "http://10.80.1.174:8090/agora_sdk/2.7.1.2/nightly_build/2021-01-13/windows/ffmpeg_player/Agora_Native_SDK_for_Windows_x86_rel.v2.7.1.2_41707_ffmpeg_player_20210113_1617.zip",
-    "lib_sdk_win64": "http://10.80.1.174:8090/agora_sdk/2.7.1.2/nightly_build/2021-01-13/windows/ffmpeg_player/Agora_Native_SDK_for_Windows_x64_rel.v2.7.1.2_41708_ffmpeg_player_20210113_1616.zip",
+    "lib_sdk_win": "http://10.80.1.174:8090/agora_sdk/2.7.1.2/nightly_build/2021-01-18/windows/ffmpeg_player/Agora_Native_SDK_for_Windows_x86_rel.v2.7.1.2_41876_ffmpeg_player_20210118_1540.zip",
+    "lib_sdk_win64": "http://10.80.1.174:8090/agora_sdk/2.7.1.2/nightly_build/2021-01-18/windows/ffmpeg_player/Agora_Native_SDK_for_Windows_x64_rel.v2.7.1.2_41877_ffmpeg_player_20210118_1537.zip",
     "lib_sdk_mac": "http://192.168.99.149:8086/v3.1.2.231/AgoraSDK/Mac/Agora_Native_SDK_for_Mac_v3.1.2.231_FULL_20200928_909_16003.zip"
   },
   "keywords": [
