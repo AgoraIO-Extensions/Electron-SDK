@@ -367,9 +367,9 @@ namespace agora {
             ~NodeRtcEngine();
         private:
             DECLARE_CLASS;
-            IRtcEngine *m_engine;
+            IRtcEngine *m_engine = nullptr;
             std::unique_ptr<NodeEventHandler> m_eventHandler;
-            Isolate *m_isolate;
+            Isolate *m_isolate = nullptr;
             std::unique_ptr<IExternalVideoRenderFactory> m_externalVideoRenderFactory;
 
             /**
