@@ -1132,7 +1132,7 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                result = adm->startAudioDeviceLoopbackTest(interval);
+                result = adm ? adm->startAudioDeviceLoopbackTest(interval) : -1;
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -1153,7 +1153,7 @@ namespace agora {
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-                result = adm->stopAudioDeviceLoopbackTest();
+                result = adm ? adm->stopAudioDeviceLoopbackTest() : -1;
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
