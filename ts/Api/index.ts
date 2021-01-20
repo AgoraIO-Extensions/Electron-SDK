@@ -4208,6 +4208,37 @@ class AgoraRtcEngine extends EventEmitter {
   adjustLoopbackRecordingVolume(volume: number): number {
     return this.rtcEngine.adjustLoopbackRecordingVolume(volume);
   }
+
+  /**
+   * Enable/Disable extension.
+   *
+   * @param id id for extension, e.g. agora.beauty.
+   * @param enable enable or disable.
+   * - true: enable.
+   * - false: disable.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+ enableExtension(id: string, enable: boolean): number {
+   return this.rtcEngine.enableExtension(id, enable);
+ }
+
+ /**
+   * Set extension specific property.
+   *
+   * @param id id for extension, e.g. agora.beauty.
+   * @param key key for the property.
+   * @param jsonValue property value.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+ setExtensionProperty(id: string, key: string, jsonValue: string): number {
+   return this.rtcEngine.setExtensionProperty(id, key, jsonValue);
+ }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {

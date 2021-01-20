@@ -336,6 +336,10 @@ namespace agora {
             NAPI_API(stopSecondaryScreenCapture);
             NAPI_API(adjustLoopbackRecordingVolume);
 
+            // Extension
+            NAPI_API(enableExtension);
+            NAPI_API(setExtensionProperty);
+
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }

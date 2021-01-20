@@ -3034,6 +3034,14 @@ export interface NodeRtcEngine {
   * @ignore
   */
  adjustLoopbackRecordingVolume(volume: number): number; 
+ /**
+  * @ignore
+  */
+ enableExtension(id: string, enable: boolean): number;
+ /**
+  * @ignore
+  */
+ setExtensionProperty(id: string, key: string, jsonValue: string): number;
 }
 
 export interface NodeMediaPlayer {

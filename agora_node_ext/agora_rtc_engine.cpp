@@ -284,6 +284,10 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(stopSecondaryScreenCapture);
                 PROPERTY_METHOD_DEFINE(adjustLoopbackRecordingVolume);
 
+                // Extension
+                PROPERTY_METHOD_DEFINE(enableExtension);
+                PROPERTY_METHOD_DEFINE(setExtensionProperty);
+
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -5622,6 +5626,62 @@ namespace agora {
             napi_set_int_result(args, result);
             LOG_LEAVE;
         }
+
+        NAPI_API_DEFINE(NodeRtcEngine, enableExtension)
+        {
+            LOG_ENTER;
+            int result = -1;
+            std::string key = "";
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                nodestring id;
+                bool enable;
+                napi_status status = napi_get_value_nodestring_(args[0], id);
+                key = "id";
+                CHECK_NAPI_STATUS_STR(pEngine, status, key);
+                status = napi_get_value_bool_(args[1], enable);
+                key = "enable";
+                CHECK_NAPI_STATUS_STR(pEngine, status, key);
+
+                result = pEngine->m_engine->enableExtension(id, enable);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setExtensionProperty)
+        {
+            LOG_ENTER;
+            int result = -1;
+            std::string debugKey = "";
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                nodestring id;
+                napi_status status = napi_get_value_nodestring_(args[0], id);
+                debugKey = "id";
+                CHECK_NAPI_STATUS_STR(pEngine, status, debugKey);
+
+                nodestring key;
+                status = napi_get_value_nodestring_(args[1], key);
+                debugKey = "key";
+                CHECK_NAPI_STATUS_STR(pEngine, status, debugKey);
+
+                nodestring json_value;
+                status = napi_get_value_nodestring_(args[2], json_value);
+                debugKey = "jsonValue";
+                CHECK_NAPI_STATUS_STR(pEngine, status, debugKey);
+
+                result = pEngine->m_engine->setExtensionProperty(id, key, json_value);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
     }
 }
 
