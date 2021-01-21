@@ -2234,6 +2234,21 @@ export enum MEDIA_PLAYER_EVENT {
     params: ScreenCaptureParameters,
     regionRect: Rectangle
   }
+  export interface Extension {
+    /**
+     * id of extension
+     */
+    id: string,
+    /**
+     * .so/.dll path
+     */
+    path: string,
+    /**
+     * extension configuration, e.g. resource path.
+     * config should be a json string.
+     */
+    config: string
+  }
 
 /**
  * interface for c++ addon (.node)
@@ -2243,7 +2258,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  initialize(appId: string, areaCode?: AREA_CODE): number;
+  initialize(appId: string, extensions: Extension[], areaCode?: AREA_CODE): number;
   /**
    * @ignore
    */

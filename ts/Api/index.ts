@@ -54,7 +54,8 @@ import {
   MEDIA_PLAYER_EVENT,
   CameraCapturerConfiguration,
   ScreenCaptureConfiguration,
-  VIDEO_SOURCE_TYPE
+  VIDEO_SOURCE_TYPE,
+  Extension
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -1199,8 +1200,8 @@ class AgoraRtcEngine extends EventEmitter {
    *  - `ERR_INVALID_APP_ID (101)`: The app ID is invalid. Check if it is in 
    * the correct format.
    */
-  initialize(appid: string, areaCode: AREA_CODE = (0xFFFFFFFF)): number {
-    return this.rtcEngine.initialize(appid, areaCode);
+  initialize(appid: string, extensions: Extension[] = [], areaCode: AREA_CODE = (0xFFFFFFFF)): number {
+    return this.rtcEngine.initialize(appid, extensions, areaCode);
   }
 
   createMediaPlayer(): AgoraMediaPlayer {
