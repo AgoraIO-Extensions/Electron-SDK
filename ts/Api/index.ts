@@ -980,7 +980,7 @@ class AgoraRtcEngine extends EventEmitter {
     if(!rtcChannel) {
       return null
     }
-    return new AgoraRtcChannel(rtcChannel)
+    return new AgoraRtcChannel(rtcChannel, channelName)
   }
 
   /**
@@ -2855,7 +2855,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - < 0: Failure.
    */
 
-  getPlaybackDeviceInfo(deviceId: string, deviceName: string): number {
+  getPlaybackDeviceInfo(deviceId: string, deviceName: string): Array<Object> {
     return this.rtcEngine.getPlaybackDeviceInfo(deviceId, deviceName);
   }
 
@@ -3292,7 +3292,7 @@ class AgoraRtcEngine extends EventEmitter {
    * You can share the whole or part of a window by specifying the window ID.
    * @return {Array} The array list of the window ID and relevant information.
    */
-  getScreenWindowsInfo(options: number): Array<Object> {
+  getScreenWindowsInfo(options?: number): Array<Object> {
     let defaultValue = (0) | (1 << 4)
     let value = (options === null || options === undefined) ? defaultValue : options;
     return this.rtcEngine.getScreenWindowsInfo(value);
@@ -5674,14 +5674,16 @@ declare interface AgoraRtcEngine {
   on(evt: string, listener: Function): this;
 }
 
-
-class AgoraRtcChannel extends EventEmitter
+export class AgoraRtcChannel extends EventEmitter
 {
   rtcChannel: NodeRtcChannel;
-  constructor(rtcChannel:NodeRtcChannel) {
+  _channelName: string;
+
+  constructor(rtcChannel:NodeRtcChannel, channelName: string) {
     super();
     this.rtcChannel = rtcChannel;
     this.initEventHandler();
+    this._channelName = channelName;
   }
 
   /**
