@@ -13,6 +13,7 @@
 #include "node_uid.h"
 #include "node_napi_api.h"
 #include "IAgoraRtcEngine2.h"
+#include "IAgoraRtcEngineEx.h"
 #include <string>
 #include <nan.h>
 #include "agora_meida_player.h"
@@ -2018,24 +2019,74 @@ namespace agora {
         {
             LOG_ENTER;
             int result = -1;
+            std::string key;
+            Extension* extensions = nullptr;
+            nodestring* idList = nullptr;
+            nodestring* pathList = nullptr;
+            nodestring* configList = nullptr;
             do {
                 NodeRtcEngine *pEngine = nullptr;
+                Isolate* isolate = args.GetIsolate();
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 NodeString appid;
                 napi_status status = napi_get_value_nodestring_(args[0], appid);
-                CHECK_NAPI_STATUS(pEngine, status);
+                key = "appId";
+                CHECK_NAPI_STATUS_STR(pEngine, status, key);
+;
+                Local<Value> extensionsList = args[1];
+                if (extensionsList->IsNullOrUndefined() || !extensionsList->IsArray()) {
+                    status = napi_invalid_arg;
+                    key = "Extensions";
+                    CHECK_NAPI_STATUS_STR(pEngine, status, key);
+                }
+                auto extensionsListValue = v8::Array::Cast(*extensionsList);
+                
+                int extensionCount = extensionsListValue->Length();
+                if (extensionCount > 0) {
+                    extensions = new Extension[extensionCount];
+                    idList = new nodestring[extensionCount];
+                    pathList = new nodestring[extensionCount];
+                    configList = new nodestring[extensionCount];
+                    for (int i = 0; i < extensionCount; i++ ) {
+                        Local<Value> value = extensionsListValue->Get(isolate->GetCurrentContext(), i).ToLocalChecked();
+                        Local<Object> extensionObj;
+                        status = napi_get_value_object_(isolate, value, extensionObj);
+                        if (extensionObj->IsNullOrUndefined()) {
+                            status = napi_invalid_arg;
+                            break;
+                        }
+                        napi_get_object_property_nodestring_(isolate, extensionObj, "id", idList[i]);
+                        napi_get_object_property_nodestring_(isolate, extensionObj, "path", pathList[i]);
+                        napi_get_object_property_nodestring_(isolate, extensionObj, "config", configList[i]);
+                        extensions[i].id = idList[i];
+                        extensions[i].path = pathList[i];
+                        extensions[i].config = configList[i];
+                    }
+                    key = "extension item";
+                    CHECK_NAPI_STATUS_STR(pEngine, status, key);
+                }
+
                 unsigned int areaCode;
-                status = napi_get_value_uint32_(args[1], areaCode);
-                CHECK_NAPI_STATUS(pEngine, status);
-                RtcEngineContext context;
+                status = napi_get_value_uint32_(args[2], areaCode);
+                key = "areaCode";
+                CHECK_NAPI_STATUS_STR(pEngine, status, key);
+
+                RtcEngineContextEx context;
                 context.eventHandlerEx = pEngine->m_eventHandler.get();
-                context.eventHandler = pEngine->m_eventHandler.get();
                 context.appId = appid;
                 context.areaCode = areaCode;
-                int suc = pEngine->m_engine->initialize(context);
+                if (extensionCount > 0) {
+                    context.extensions = extensions;
+                    context.numExtension = extensionCount;
+                }
+                auto engineEx = (IRtcEngineEx*) pEngine->m_engine;
+                int suc = engineEx->initialize(context);
                 if (0 != suc) {
                     LOG_ERROR("Rtc engine initialize failed with error :%d\n", suc);
+                    status = napi_invalid_arg;
+                    key = "initialize";
+                    CHECK_NAPI_STATUS_STR(pEngine, status, key);
                     break;
                 }
 
@@ -2051,6 +2102,10 @@ namespace agora {
                 pEngine->m_engine->enableLocalVideo(true);
                 result = 0;
             } while (false);
+            delete [] extensions;
+            delete [] idList;
+            delete [] pathList;
+            delete [] configList;
             napi_set_int_result(args, result);
             LOG_LEAVE;
         }
