@@ -1513,5 +1513,15 @@ namespace agora {
                 MAKE_JS_CALL_2(RTC_EVENT_MEDIA_DEVICE_CHANGED, uint32, connId, int32, deviceType);
             });
         }
+
+        void NodeEventHandler::onExtensionEvent(const char* id, const char* key, const char* json_value) {
+            FUNC_TRACE
+            std::string sId(id);
+            std::string sKey(key);
+            std::string sJsonValue(json_value);
+            node_async_call::async_call([this, sId, sKey, sJsonValue] {
+                MAKE_JS_CALL_3(RTC_EVENT_EXTENSION_EVENT, string, sId.c_str(), string, sKey.c_str(), string, sJsonValue.c_str());
+            });
+        }
     }
 }
