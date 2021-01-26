@@ -298,6 +298,11 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setAudioEffectParameters);
                 PROPERTY_METHOD_DEFINE(setClientRoleWithOptions);
 
+                /**
+                 * 3.3.0 Apis
+                 */
+                
+
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -2714,6 +2719,7 @@ namespace agora {
             NodeString key, name, chan_info;
             do {
                 NodeRtcEngine *pEngine = nullptr;
+                Isolate *isolate = args.GetIsolate();
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 uid_t uid;
@@ -2738,8 +2744,24 @@ namespace agora {
                 else{
                     extra_info = "Electron";
                 }
-               
-                result = pEngine->m_engine->joinChannel(key, name, extra_info.c_str(), uid);
+
+                Local<Value> vChannelMediaOptions = args[4];
+                Local<Object> oChannelMediaOptions;
+                if(vChannelMediaOptions->IsObject()) {
+                    // with options
+                    status = napi_get_value_object_(isolate, vChannelMediaOptions, oChannelMediaOptions);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
+                    ChannelMediaOptions options;
+                    status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "autoSubscribeAudio", options.autoSubscribeAudio);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "autoSubscribeVideo", options.autoSubscribeVideo);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    result = pEngine->m_engine->joinChannel(key, name, extra_info.c_str(), uid, options);
+                } else {
+                    // without options
+                    result = pEngine->m_engine->joinChannel(key, name, extra_info.c_str(), uid);
+                }
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;

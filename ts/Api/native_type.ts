@@ -2221,7 +2221,8 @@ export interface NodeRtcEngine {
     token: string,
     channel: string,
     info: string,
-    uid: number
+    uid: number,
+    options?: ChannelMediaOptions
   ): number;
   /**
    * @ignore
