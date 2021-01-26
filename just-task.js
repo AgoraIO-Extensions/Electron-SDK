@@ -16,6 +16,8 @@ option('silent', {default: false, boolean: true});
 option('msvs_version', {default: '2015'});
 option('liburl_win', {default: ''});
 option('liburl_mac', {default: ''});
+option('liburl_mediaPlayer_mac', {default: ''});
+option('liburl_mediaPlayer_win', {default: ''});
 
 const packageVersion = require('./package.json').version;
 
@@ -35,7 +37,10 @@ task('sync:lib', () => {
     libUrl: {
       win: argv().liburl_win || config.libUrl.win,
       mac: argv().liburl_mac || config.libUrl.mac,
-      win64: argv().liburl_win64 || config.libUrl.win64
+      win64: argv().liburl_win64 || config.libUrl.win64,
+      mediaPlayer_mac: argv().liburl_mediaPlayer_mac || config.libUrl.mediaPlayer_mac,
+      mediaPlayer_win: argv().liburl_mediaPlayer_win || config.libUrl.mediaPlayer_win,
+      mediaPlayer_win64: argv().liburl_mediaPlayer_win64 || config.libUrl.mediaPlayer_win64
     }
   })
 })
