@@ -2189,6 +2189,21 @@ export interface ClientRoleOptions {
   audienceLatencyLevel: AUDIENCE_LATENCY_LEVEL_TYPE;
 };
 
+export type CLOUD_PROXY_TYPE =
+    | 0 //NONE_PROXY
+    | 1  //UDP_PROXY
+    | 2  //TCP_PROXY
+
+export interface RtcContext {
+  logConfig: LogConfig
+};
+
+export interface LogConfig {
+  filePath: string,
+  fileSize: number,
+  level: number
+};
+
 /**
  * interface for c++ addon (.node)
  * @ignore
@@ -2197,7 +2212,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  initialize(appId: string, areaCode?: AREA_CODE): number;
+  initialize(appId: string, areaCode?: AREA_CODE, logConfig?: LogConfig): number;
   /**
    * @ignore
    */
@@ -2229,7 +2244,8 @@ export interface NodeRtcEngine {
    */
   switchChannel(
     token: string,
-    channel: string
+    channel: string,
+    options?: ChannelMediaOptions
   ): number;
   /**
    * @ignore
@@ -3176,6 +3192,22 @@ export interface NodeRtcEngine {
    * @ignore
    */
   setRecordingAudioFrameParameters(sampleRate: number, channel: number, mode: number, samplesPerCall: number): number;
+  /**
+   * @ignore
+   */
+  setCloudProxy(type:CLOUD_PROXY_TYPE): number;
+  /**
+   * @ignore
+   */
+  enableDeepLearningDenoise(enabled:boolean): number;
+  /**
+   * @ignore
+   */
+  setVoiceBeautifierParameters(preset:VOICE_BEAUTIFIER_PRESET, param1: number, param2: number): number;
+  /**
+   * @ignore
+   */
+  uploadLogFile(): string;
 }
 /**
  * @ignore

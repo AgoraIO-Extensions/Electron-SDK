@@ -56,7 +56,9 @@ export default class App extends Component {
   getRtcEngine() {
     if(!this.rtcEngine) {
       this.rtcEngine = new AgoraRtcEngine()
-      this.rtcEngine.initialize(APP_ID)
+
+      let logpath = path.resolve(os.homedir(), "./agoramainsdk.log")
+      this.rtcEngine.initialize(APP_ID, 0xFFFFFFFF, {logConfig: {filePath: logpath}})
       this.rtcEngine.initializePluginManager();
       const libPath = isMac ? 
             path.resolve(__static, 'bytedance/libByteDancePlugin.dylib')
@@ -241,8 +243,6 @@ export default class App extends Component {
     rtcEngine.registerMediaMetadataObserver();
     rtcEngine.setAudioProfile(0, 1)
     // rtcEngine.enableVideo()
-    let logpath = path.resolve(os.homedir(), "./agoramain.sdk")
-    rtcEngine.setLogFile(logpath)
     rtcEngine.enableWebSdkInteroperability(true)
     if(encoderWidth === 0 && encoderHeight === 0) {
       //use video profile
