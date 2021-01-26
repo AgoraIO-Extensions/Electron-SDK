@@ -1531,5 +1531,15 @@ namespace agora {
             });
 
         }
+
+        // 3.3.0 callbacks
+        void NodeEventHandler::onUploadLogResult(const char * requestId, bool success, UPLOAD_ERROR_REASON reason) {
+            FUNC_TRACE;
+
+            std::string mRequestId(requestId);
+            node_async_call::async_call([this, mRequestId, success, reason] {
+                MAKE_JS_CALL_3(RTC_EVENT_UPLOAD_LOG_RESULT, string, mRequestId.c_str(), bool, success, int32, reason);
+            });
+        }
     }
 }

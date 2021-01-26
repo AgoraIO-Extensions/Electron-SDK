@@ -106,6 +106,7 @@ namespace agora {
 #define RTC_EVENT_VIDEO_SUBSCRIBE_STATE_CHANGED "videoSubscribeStateChanged"
 #define RTC_EVENT_AUDIO_ROUTE_CHANGED "audioRouteChanged"
 #define RTC_EVENT_API_ERROR "apierror"
+#define RTC_EVENT_UPLOAD_LOG_RESULT "uploadLogResult"
         class NodeRtcEngine;
         class NodeUid;
         class NodeEventHandler : public IRtcEngineEventHandler, public IAgoraVideoSourceEventHandler
@@ -212,6 +213,8 @@ namespace agora {
             virtual void onVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState);
             virtual void onAudioRouteChanged(AUDIO_ROUTE_TYPE routing);
             
+            //3.3.0
+            virtual void onUploadLogResult(const char * requestId, bool success, UPLOAD_ERROR_REASON reason );
   private:
             void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
             void onRejoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
