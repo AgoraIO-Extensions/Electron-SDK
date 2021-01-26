@@ -1154,9 +1154,10 @@ class AgoraRtcEngine extends EventEmitter {
     token: string,
     channel: string,
     info: string,
-    uid: number
+    uid: number,
+    options?: ChannelMediaOptions
   ): number {
-    return this.rtcEngine.joinChannel(token, channel, info, uid);
+    return this.rtcEngine.joinChannel(token, channel, info, uid, options);
   }
 
   /**
