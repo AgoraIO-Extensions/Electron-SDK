@@ -335,6 +335,7 @@ namespace agora {
             NAPI_API(stopPrimaryScreenCapture);
             NAPI_API(stopSecondaryScreenCapture);
             NAPI_API(adjustLoopbackRecordingVolume);
+            NAPI_API(setCameraDeviceOrientation);
 
             // Extension
             NAPI_API(enableExtension);

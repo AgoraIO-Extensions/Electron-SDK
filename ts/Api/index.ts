@@ -55,7 +55,8 @@ import {
   CameraCapturerConfiguration,
   ScreenCaptureConfiguration,
   VIDEO_SOURCE_TYPE,
-  Extension
+  Extension,
+  VIDEO_ORIENTATION
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -4193,6 +4194,10 @@ class AgoraRtcEngine extends EventEmitter {
 
   stopSecondaryCameraCapture(): number {
     return this.rtcEngine.stopSecondaryCameraCapture();
+  }
+
+  setCameraDeviceOrientation(type: VIDEO_SOURCE_TYPE, orientation:VIDEO_ORIENTATION): number {
+    return this.rtcEngine.setCameraDeviceOrientation(type, orientation);
   }
 
   startPrimaryScreenCapture(config: ScreenCaptureConfiguration): number {

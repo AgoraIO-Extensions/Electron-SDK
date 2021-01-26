@@ -243,6 +243,7 @@ export default class App extends Component {
         fps: 30
       }
     }
+    this.rtcEngine.setCameraDeviceOrientation(0, 90);
     this.rtcEngine.startPrimaryCameraCapture(configuration)
     let sources = this.state.sources || []
     sources.push({
