@@ -43,6 +43,18 @@ const macPrepare = () => {
           path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraSoundTouch.framework'),
           path.join(__dirname, '../sdk/lib/mac/AgoraSoundTouch.framework')
         ),
+        fs.move(
+          path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraAIDenoiseExtension.framework'),
+          path.join(__dirname, '../sdk/lib/mac/AgoraAIDenoiseExtension.framework')
+        ),
+        fs.move(
+          path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraCore.framework'),
+          path.join(__dirname, '../sdk/lib/mac/AgoraCore.framework')
+        ),
+        fs.move(
+          path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/av1.framework'),
+          path.join(__dirname, '../sdk/lib/mac/av1.framework')
+        )
 
       ])
     }).then(() => {

@@ -1,3 +1,4 @@
+*.txt
 *.pcm
 coverage
 *.log

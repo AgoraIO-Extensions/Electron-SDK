@@ -2,7 +2,7 @@ require('./utils/mock')
 const AgoraRtcEngine = require('../js/AgoraSdk').default;
 const generateRandomNumber = require('./utils/index.js').generateRandomNumber;
 const generateRandomString = require('./utils/index.js').generateRandomString;
-const doJoin = require('./utils/doJoin');
+const {doJoin, doJoinWithOptions} = require('./utils/doJoin');
 const doLeave = require('./utils/doLeave');
 const channelJoin = require('./utils/channelJoin')
 const channelLeave = require('./utils/channelLeave')
@@ -170,7 +170,7 @@ describe('Basic API Coverage', () => {
   });
 
   it('setBeautyEffectOptions', () => {
-    let returnvalue = isMac ? -4 : 0
+    let returnvalue = 0
     expect(
       localRtcEngine.setBeautyEffectOptions(true, {
         lighteningContrastLevel: 1,
@@ -183,6 +183,18 @@ describe('Basic API Coverage', () => {
     expect(
       localRtcEngine.setBeautyEffectOptions(false)
     ).toBe(returnvalue);
+  });
+
+  it('leave channel', async () => {
+    await doLeave(localRtcEngine);
+  });
+
+  it('Join channel with options', async () => {
+    localRtcEngine.setChannelProfile(1);
+    localRtcEngine.setClientRole(1);
+    testChannel = generateRandomString(10);
+    testUid = generateRandomNumber(100000);
+    await doJoinWithOptions(localRtcEngine, testChannel, testUid, {autoSubscribeAudio:true, autoSubscribeVideo:true});
   });
 
   it('leave channel', async () => {
