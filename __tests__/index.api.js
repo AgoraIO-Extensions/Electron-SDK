@@ -9,7 +9,9 @@ const channelLeave = require('./utils/channelLeave')
 const LiveStreaming = require('./utils/cdn');
 const VideoSource = require('./utils/videosource');
 const MultiStream = require('./utils/multistream');
+const {UploadLogFile} = require('./utils/uploadLog');
 const path = require('path')
+const fs = require('fs')
 // const APPID = process.env.APPID
 const APPID = "***REMOVED***"
 let localRtcEngine = null;
@@ -112,6 +114,7 @@ describe('Basic API Coverage', () => {
 
   it('set capture preference', () => {
     expect(localRtcEngine.setCameraCapturerConfiguration({preference: 1})).toBe(0);
+    expect(localRtcEngine.setCameraCapturerConfiguration({preference: 3})).toBe(0);
   });
 
   it('setEncryptionSecret', () => {
@@ -202,7 +205,30 @@ describe('Basic API Coverage', () => {
   });
 });
 
+describe('initialize with context', () => {
+  beforeEach(async () => {
+    let filePath = path.resolve(__dirname, "../testcontext.log")
+    try {
+      await fs.unlink(filePath);
+    } catch (e) {
+      // ignore error as we don't care
+    }
+    localRtcEngine = new AgoraRtcEngine();
+  });
+  afterEach(() => {
+    // Restore mocks after each test
+    jest.restoreAllMocks();
+    localRtcEngine.release()
+  });
 
+  it("initialize", () => {
+    let filePath = path.resolve(__dirname, "../testcontext.log")
+    expect(localRtcEngine.initialize(APPID, 0xFFFFFFFF, {logConfig: {filePath}})).toBe(0);
+    localRtcEngine.setChannelProfile(1);
+    localRtcEngine.setClientRole(1);
+    expect(fs.existsSync(filePath)).toBe(true);
+  })
+})
 
 describe('cdn coverage', () => {
   beforeAll(() => {
@@ -332,6 +358,25 @@ describe('Basic API Coverage 3', () => {
       }
     })).toBe(0);
     expect(localRtcEngine.clearVideoWatermarks()).toBe(0);
+  })
+
+  it('setCloudProxy', () => {
+    expect(localRtcEngine.setCloudProxy(0)).toBe(0);
+    expect(localRtcEngine.setCloudProxy(1)).toBe(0);
+    expect(localRtcEngine.setCloudProxy(2)).toBe(0);
+  })
+  
+  it('enableDeepLearningDenoise', () => {
+    expect(localRtcEngine.enableDeepLearningDenoise(true)).toBe(0);
+    expect(localRtcEngine.enableDeepLearningDenoise(false)).toBe(0);
+  })
+
+  it('setVoiceBeautifierParameters', () => {
+    // expect(localRtcEngine.setVoiceBeautifierParameters(0x01010100, 0, 0)).toBe(0);
+  })
+
+  it('uploadLogFile', async () => {
+    await UploadLogFile(localRtcEngine)
   })
 });
 
