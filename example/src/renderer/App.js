@@ -160,6 +160,10 @@ export default class App extends Component {
       console.log(`sendMetadataSuccess : ${JSON.stringify(metadata)}`)
     })
 
+    rtcEngine.on("videoBackgroundSourceEnabled", (enable, reason) =>{
+      console.log(`videoBackgroundSourceEnabled enable: ${enable}, reason: ${reason}`)
+    } )
+
     setInterval(()=>{
       let ptr = {
         width: 100,
@@ -255,6 +259,13 @@ export default class App extends Component {
     rtcEngine.enableDualStreamMode(true)
     rtcEngine.enableAudioVolumeIndication(1000, 3, false)
 
+    let backgroundSource = {
+      background_source_type: 1,
+      color: "#aabbcc",
+      img_path: ""
+    }
+    let ret2 = rtcEngine.setVideoBackgroundSource(true, backgroundSource);
+    console.log(`setVideoBackgroundSource ${ret2}`);
     //enable beauty options
     rtcEngine.setBeautyEffectOptions(true, {
       lighteningContrastLevel: 2,
