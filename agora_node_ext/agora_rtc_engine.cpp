@@ -5759,11 +5759,9 @@ namespace agora {
 
                 NodeString color;
                 napi_get_object_property_nodestring_(isolate, obj, "color", color);
-                CHECK_NAPI_STATUS(pEngine, status);
 
                 NodeString img_path;
                 napi_get_object_property_nodestring_(isolate, obj, "img_path", img_path);
-                CHECK_NAPI_STATUS(pEngine, status);
 
                 VideoBackgroundSource videoBackgroundSource;
                 videoBackgroundSource.background_source_type = (VideoBackgroundSource::BACKGROUND_SOURCE_TYPE)background_source_type;
