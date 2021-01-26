@@ -277,6 +277,28 @@ export interface TranscodingConfig {
  */
 export declare type VIDEO_SOURCE_TYPE = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
 
+/**
+ * The rotation information.
+ */
+export enum VIDEO_ORIENTATION {
+  /**
+   * 0: Rotate the video by 0 degree clockwise.
+   */
+  VIDEO_ORIENTATION_0 = 0,
+  /**
+   * 90: Rotate the video by 90 degrees clockwise.
+   */
+  VIDEO_ORIENTATION_90 = 90,
+  /**
+   * 180: Rotate the video by 180 degrees clockwise.
+   */
+  VIDEO_ORIENTATION_180 = 180,
+  /**
+   * 270: Rotate the video by 270 degrees clockwise.
+   */
+  VIDEO_ORIENTATION_270 = 270
+};
+
 export interface TranscodingVideoStream {
     /**
      * Source type of video stream.
@@ -3029,6 +3051,10 @@ export interface NodeRtcEngine {
    * @ignore
    */
   stopSecondaryCameraCapture(): number;
+  /**
+   * @ignore
+   */
+  setCameraDeviceOrientation(type: VIDEO_SOURCE_TYPE, orientation:VIDEO_ORIENTATION): number;
   /**
    * @ignore
    */
