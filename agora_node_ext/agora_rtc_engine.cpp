@@ -301,7 +301,10 @@ namespace agora {
                 /**
                  * 3.3.0 Apis
                  */
-                
+                PROPERTY_METHOD_DEFINE(setCloudProxy);
+                PROPERTY_METHOD_DEFINE(enableDeepLearningDenoise);
+                PROPERTY_METHOD_DEFINE(setVoiceBeautifierParameters);
+                PROPERTY_METHOD_DEFINE(uploadLogFile);
 
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
@@ -1147,22 +1150,7 @@ namespace agora {
                 
                 status = napi_get_object_property_int32_(isolate, obj, "preference", preference);
                 CHECK_NAPI_STATUS(pEngine, status);
-
-                switch(preference) {
-                    case 0: 
-                        config.preference = CAPTURER_OUTPUT_PREFERENCE_AUTO;
-                        break;
-                    case 1: 
-                        config.preference = CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE;
-                        break;
-                    case 2: 
-                        config.preference = CAPTURER_OUTPUT_PREFERENCE_PREVIEW;
-                        break;
-                    default:
-                        status = napi_invalid_arg;
-                        break;
-                }
-                CHECK_NAPI_STATUS(pEngine, status);
+                config.preference = (CAPTURER_OUTPUT_PREFERENCE)preference;
 
                 result = param.setCameraCapturerConfiguration(config);
             } while (false);
@@ -2616,18 +2604,58 @@ namespace agora {
             int result = -1;
             do {
                 NodeRtcEngine *pEngine = nullptr;
+                Isolate *isolate = args.GetIsolate();
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                NodeString appid;
+                NodeString appid, logPath;
                 napi_status status = napi_get_value_nodestring_(args[0], appid);
                 CHECK_NAPI_STATUS(pEngine, status);
                 unsigned int areaCode;
                 status = napi_get_value_uint32_(args[1], areaCode);
                 CHECK_NAPI_STATUS(pEngine, status);
                 RtcEngineContext context;
+                LogConfig logConfig;
                 context.eventHandler = pEngine->m_eventHandler.get();
                 context.appId = appid;
                 context.areaCode = areaCode;
+
+                Local<Value> vContextOptions = args[2];
+                Local<Object> oContextOptions;
+                if(vContextOptions->IsObject()) {
+                    // with options
+                    status = napi_get_value_object_(isolate, vContextOptions, oContextOptions);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
+                    Local<Object> oLogConfigs;
+                    status = napi_get_object_property_object_(isolate, oContextOptions, "logConfig", oLogConfigs);
+                    if(status == napi_ok) {
+                        // with valid options
+                        int fileSize = -1, level = 1;
+                        status = napi_get_object_property_nodestring_(isolate, oLogConfigs, "filePath", logPath);
+                        if(status == napi_ok) {
+                            logConfig.filePath = logPath;
+                            LOG_INFO("log config: file path %s", logConfig.filePath);
+                        } else {
+                            LOG_WARNING("log config: no file path found");
+                        }
+                        status = napi_get_object_property_int32_(isolate, oLogConfigs, "fileSize", fileSize);
+                        if(status == napi_ok) {
+                            logConfig.fileSize = fileSize;
+                        }
+                        status = napi_get_object_property_int32_(isolate, oLogConfigs, "level", level);
+                        if(status == napi_ok) {
+                            logConfig.level = (LOG_LEVEL)level;
+                        }
+                        context.logConfig = logConfig;
+                    } else {
+                        LOG_INFO("no logConfig found");
+                    }
+                } else {
+                    LOG_INFO("no context config found");
+                }
+
+                
+                LOG_INFO("begin initialization...");
                 int suc = pEngine->m_engine->initialize(context);
                 if (0 != suc) {
                     LOG_ERROR("Rtc engine initialize failed with error :%d\n", suc);
@@ -2774,6 +2802,7 @@ namespace agora {
             NodeString key, name;
             do {
                 NodeRtcEngine *pEngine = nullptr;
+                Isolate *isolate = args.GetIsolate();
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 napi_status status = napi_get_value_nodestring_(args[0], key);
@@ -2782,7 +2811,24 @@ namespace agora {
                 status = napi_get_value_nodestring_(args[1], name);
                 CHECK_NAPI_STATUS(pEngine, status);
                
-                result = pEngine->m_engine->switchChannel(key, name);
+                Local<Value> vChannelMediaOptions = args[2];
+                Local<Object> oChannelMediaOptions;
+                if(vChannelMediaOptions->IsObject()) {
+                    // with options
+                    status = napi_get_value_object_(isolate, vChannelMediaOptions, oChannelMediaOptions);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
+                    ChannelMediaOptions options;
+                    status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "autoSubscribeAudio", options.autoSubscribeAudio);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "autoSubscribeVideo", options.autoSubscribeVideo);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    result = pEngine->m_engine->switchChannel(key, name, options);
+                } else {
+                    // without options
+                    result = pEngine->m_engine->switchChannel(key, name);
+                }
+
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -5751,7 +5797,71 @@ namespace agora {
             LOG_LEAVE;
         }
 
-        
+        // 3.3.0 APIs
+        NAPI_API_DEFINE(NodeRtcEngine, setCloudProxy)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                int type;
+                status = napi_get_value_int32_(args[0], type);
+                CHECK_NAPI_STATUS(pEngine, status);
+                result = pEngine->m_engine->setCloudProxy(CLOUD_PROXY_TYPE(type));
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE_WRAPPER_PARAM_1(enableDeepLearningDenoise, bool);
+
+        NAPI_API_DEFINE(NodeRtcEngine, setVoiceBeautifierParameters)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                int preset, param1, param2;
+                status = napi_get_value_int32_(args[0], preset);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                status = napi_get_value_int32_(args[1], param1);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                status = napi_get_value_int32_(args[2], param2);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                result = pEngine->m_engine->setVoiceBeautifierParameters(VOICE_BEAUTIFIER_PRESET(preset), param1, param2);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, uploadLogFile)
+        {
+            LOG_ENTER;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                napi_status status = napi_ok;
+                util::AString requestId;
+
+                int result = pEngine->m_engine->uploadLogFile(requestId);
+                if(result < 0) {
+                    napi_set_string_result(args, "");
+                } else {
+                    napi_set_string_result(args, requestId->c_str());
+                }
+            } while (false);
+            LOG_LEAVE;
+        }
 
         /**
          * NodeRtcChannel

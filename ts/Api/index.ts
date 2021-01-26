@@ -50,7 +50,9 @@ import {
   AUDIO_EFFECT_PRESET,
   VOICE_BEAUTIFIER_PRESET,
   AUDIENCE_LATENCY_LEVEL_TYPE,
-  ClientRoleOptions
+  ClientRoleOptions,
+  CLOUD_PROXY_TYPE,
+  LogConfig
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -739,6 +741,10 @@ class AgoraRtcEngine extends EventEmitter {
       fire('audioRouteChanged', routing);
     })
 
+    this.rtcEngine.onEvent('uploadLogResult', function(requestId: string, success: boolean, reason: number) {
+      fire('uploadLogResult', requestId, success, reason);
+    })
+
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
       self.onRegisterDeliverFrame(infos);
     });
@@ -1029,8 +1035,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  initialize(appid: string, areaCode: AREA_CODE = (0xFFFFFFFF)): number {
-    return this.rtcEngine.initialize(appid, areaCode);
+  initialize(appid: string, areaCode: AREA_CODE = (0xFFFFFFFF), logConfig?: LogConfig): number {
+    return this.rtcEngine.initialize(appid, areaCode, logConfig);
   }
 
   /**
@@ -2998,8 +3004,8 @@ class AgoraRtcEngine extends EventEmitter {
    *  - `ERR_NOT_READY (3)`
    *  - `ERR_REFUSED (5)`
    */
-  switchChannel(token: string, channel: string) : number {
-    return this.rtcEngine.switchChannel(token, channel);
+  switchChannel(token: string, channel: string, options?: ChannelMediaOptions) : number {
+    return this.rtcEngine.switchChannel(token, channel, options);
   }
 
   /**
@@ -5421,6 +5427,19 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.setAudioEffectParameters(preset, param1, param2);
   }
 
+  // 3.3.0 apis
+  setCloudProxy(type:CLOUD_PROXY_TYPE): number {
+    return this.rtcEngine.setCloudProxy(type);
+  }
+  enableDeepLearningDenoise(enabled:boolean): number {
+    return this.rtcEngine.enableDeepLearningDenoise(enabled);
+  }
+  setVoiceBeautifierParameters(preset:VOICE_BEAUTIFIER_PRESET, param1:number, param2:number): number {
+    return this.rtcEngine.setVoiceBeautifierParameters(preset, param1, param2);
+  }
+  uploadLogFile(): string {
+    return this.rtcEngine.uploadLogFile();
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
@@ -6622,6 +6641,12 @@ declare interface AgoraRtcEngine {
     oldState: STREAM_SUBSCRIBE_STATE,
     newState: STREAM_SUBSCRIBE_STATE,
     elapseSinceLastState: number
+  )=> void): this;
+
+  on(evt: 'uploadLogResult', cb: (
+    requestId: string,
+    success: boolean,
+    reason: number
   )=> void): this;
 
   on(evt: string, listener: Function): this;
