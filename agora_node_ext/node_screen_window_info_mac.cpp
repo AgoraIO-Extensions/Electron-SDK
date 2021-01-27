@@ -133,6 +133,9 @@ bool setWindowInfoWithDictionary(ScreenWindowInfo& windowInfo, CFDictionaryRef w
     }
     windowInfo.width = CGRectGetWidth(bounds);
     windowInfo.height = CGRectGetHeight(bounds);
+
+    windowInfo.originWidth = CGRectGetWidth(bounds);
+    windowInfo.originHeight = CGRectGetHeight(bounds);
     
     CFStringRef name = static_cast<CFStringRef>(CFDictionaryGetValue(windowDic, kCGWindowName));
     if (name) {
