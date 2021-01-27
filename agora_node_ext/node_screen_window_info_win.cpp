@@ -407,6 +407,8 @@ bool captureBmpToJpeg(const HWND& hWnd, char* szName, std::vector<ScreenWindowIn
 	wndInfo.height = bmpHeight;
 	wndInfo.imageDataLength = dwJpgSize;
 	wndInfo.imageData = std::move(pJPG);
+	wndInfo.originWidth = nWidth;
+	wndInfo.originHeight = nHeight;
 	wndsInfo.push_back(wndInfo);
 	pOutIStream->Release();
 	::DeleteObject(hBMP);
