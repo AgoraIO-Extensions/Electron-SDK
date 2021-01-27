@@ -194,19 +194,19 @@ const AgoraRender = function() {
     var vBegin = uEnd;
     var vEnd = vBegin + vLength;
     if (!this.videoBuffer.hasOwnProperty('width')) {
-        this.videoBuffer.width = width;
-        this.videoBuffer.height = height;
-        this.videoBuffer.yplane = new Uint8Array(width * height);
-        this.videoBuffer.uplane = new Uint8Array(width * height * 1/4);
-        this.videoBuffer.vplane = new Uint8Array(width * height * 1/4);
-    } else if (this.videoBuffer.width != width || this.videoBuffer.height != height) {
-        this.videoBuffer.width = width;
-        this.videoBuffer.height = height;
-        this.videoBuffer.yplane = new Uint8Array(width * height);
-        this.videoBuffer.uplane = new Uint8Array(width * height * 1/4);
-        this.videoBuffer.vplane = new Uint8Array(width * height * 1/4);
+      this.videoBuffer.width = xWidth;
+      this.videoBuffer.height = xHeight;
+      this.videoBuffer.yplane = new Uint8Array(yLength);
+      this.videoBuffer.uplane = new Uint8Array(yLength / 4);
+      this.videoBuffer.vplane = new Uint8Array(yLength / 4);
     }
-
+    else if (this.videoBuffer.width != xWidth || this.videoBuffer.height != xHeight) {
+        this.videoBuffer.width = xWidth;
+        this.videoBuffer.height = xHeight;
+        this.videoBuffer.yplane = new Uint8Array(yLength);
+        this.videoBuffer.uplane = new Uint8Array(yLength / 4);
+        this.videoBuffer.vplane = new Uint8Array(yLength / 4);
+    }
     this.videoBuffer.yplane.set(yUint8Array);
     this.videoBuffer.uplane.set(uUint8Array);
     this.videoBuffer.vplane.set(vUint8Array);
