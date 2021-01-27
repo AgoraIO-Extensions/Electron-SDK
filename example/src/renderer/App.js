@@ -997,7 +997,7 @@ export default class App extends Component {
         </div>
         <div className="column is-three-quarters window-container">
           {this.state.users.map((item, key) => (
-            <Window key={key} uid={item.uid} channel={item.channelId} rtcEngine={this.rtcEngine} role={item===SHARE_ID?'remoteVideoSource':'remote'}></Window>
+            <Window key={key} uid={item} channel={item.channel} rtcEngine={this.rtcEngine} role={item===SHARE_ID?'remoteVideoSource':'remote'}></Window>
           ))}
           {this.state.local ? (<Window uid={this.state.local} rtcEngine={this.rtcEngine} role="local">
 
