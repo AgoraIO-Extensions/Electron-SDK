@@ -475,7 +475,7 @@ void NodeVideoFrameTransporter::FlushVideo()
                 }
                 if (i > 0) {
                     Local<v8::Value> args[1] = { infos };
-                    callback.Get(isolate)->Call(isolate->GetCurrentContext(), js_this.Get(isolate), 1, args);
+                    //callback.Get(isolate)->Call(isolate->GetCurrentContext(), js_this.Get(isolate), 1, args);
                 }
             });
             std::this_thread::sleep_for(std::chrono::milliseconds(1000 / m_FPS));
@@ -530,7 +530,7 @@ void NodeVideoFrameTransporter::highFlushVideo()
 
                 if (i > 0) {
                     Local<v8::Value> args[1] = { infos };
-                    callback.Get(isolate)->Call(isolate->GetCurrentContext(), js_this.Get(isolate), 1, args);
+                    //callback.Get(isolate)->Call(isolate->GetCurrentContext(), js_this.Get(isolate), 1, args);
                 }
             });
             std::this_thread::sleep_for(std::chrono::milliseconds(1000 / m_highFPS));
