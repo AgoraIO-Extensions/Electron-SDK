@@ -60,6 +60,9 @@ struct ScreenWindowInfo
     
     unsigned char* imageData;
     unsigned int imageDataLength;
+
+    unsigned int originWidth;
+    unsigned int originHeight;
     
     ScreenWindowInfo()
     : windowId(0)
@@ -67,6 +70,8 @@ struct ScreenWindowInfo
     , height(0)
     , imageData(nullptr)
     , imageDataLength(0)
+    , originWidth(0)
+    , originHeight(0)
     {}
 };
 
