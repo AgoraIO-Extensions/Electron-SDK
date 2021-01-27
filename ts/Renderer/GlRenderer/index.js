@@ -99,7 +99,7 @@ const AgoraRender = function() {
       console.log('!gl');
       return;
     }
-
+    return;
     if (
       image.width != that.initWidth ||
       image.height != that.initHeight ||
