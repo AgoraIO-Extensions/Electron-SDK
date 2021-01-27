@@ -30,7 +30,8 @@ const AgoraRender = function() {
     firstFrameRender: false,
     lastImageWidth: 0,
     lastImageHeight: 0,
-    lastImageRotation: 0
+    lastImageRotation: 0,
+    videoBuffer: {}
   };
 
   that.setContentMode = function(mode) {
@@ -192,6 +193,24 @@ const AgoraRender = function() {
     var vLength = yLength / 4;
     var vBegin = uEnd;
     var vEnd = vBegin + vLength;
+    if (!this.videoBuffer.hasOwnProperty('width')) {
+        this.videoBuffer.width = width;
+        this.videoBuffer.height = height;
+        this.videoBuffer.yplane = new Uint8Array(width * height);
+        this.videoBuffer.uplane = new Uint8Array(width * height * 1/4);
+        this.videoBuffer.vplane = new Uint8Array(width * height * 1/4);
+    } else if (this.videoBuffer.width != width || this.videoBuffer.height != height) {
+        this.videoBuffer.width = width;
+        this.videoBuffer.height = height;
+        this.videoBuffer.yplane = new Uint8Array(width * height);
+        this.videoBuffer.uplane = new Uint8Array(width * height * 1/4);
+        this.videoBuffer.vplane = new Uint8Array(width * height * 1/4);
+    }
+
+    this.videoBuffer.yplane.set(yUint8Array);
+    this.videoBuffer.uplane.set(uUint8Array);
+    this.videoBuffer.vplane.set(vUint8Array);
+
     that.renderImage({
       mirror: mirror,
       width,
@@ -201,9 +220,9 @@ const AgoraRender = function() {
       right,
       bottom,
       rotation: rotation,
-      yplane: new Uint8Array(yUint8Array),
-      uplane: new Uint8Array(uUint8Array),
-      vplane: new Uint8Array(vUint8Array)
+      yplane: this.videoBuffer.yplane,
+      uplane: this.videoBuffer.uplane,
+      vplane: this.videoBuffer.vplane
     });
     var now32 = (Date.now() & 0xffffffff) >>> 0;
     var latency = now32 - ts;
