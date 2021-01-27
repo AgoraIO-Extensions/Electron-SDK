@@ -30,7 +30,9 @@ export type AgoraNetworkQuality =
   | 3 // poor
   | 4 // bad
   | 5 // very bad
-  | 6; // down
+  | 6 // down
+  | 7 // unSupported
+  | 8 // detecting
 /**
  * The codec type of the local video：
  * - 0: VP8
