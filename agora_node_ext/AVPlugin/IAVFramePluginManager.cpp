@@ -2,6 +2,7 @@
 #include "IAVFramePlugin.h"
 #include <stdint.h>
 #include <stdio.h>
+#include "loguru.hpp"
 
 IAVFramePluginManager::IAVFramePluginManager()
 {
