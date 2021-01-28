@@ -6046,6 +6046,13 @@ class AgoraMediaPlayer extends EventEmitter
     let ret = this.mediaPlayer.release();
     return ret;
   }
+
+  publishVideoToRtc(): number {
+    return this.mediaPlayer.publishVideoToRtc();
+  }
+  unpublishVideoToRtc(): number {
+    return this.mediaPlayer.unpublishVideoToRtc();
+  }
 }
 
 export class AgoraRtcChannel extends EventEmitter

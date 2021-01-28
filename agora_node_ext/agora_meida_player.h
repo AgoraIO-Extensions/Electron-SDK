@@ -13,6 +13,7 @@
 #include "IAgoraMediaPlayer.h"
 #include "node_media_player_observer.h"
 #include "node_media_player_video_frame_observer.h"
+#include "node_media_player_audio_frame_observer.h"
 #include "../common/loguru.hpp"
 
 namespace agora {
@@ -170,6 +171,8 @@ namespace agora {
                 NAPI_API_MEDIA_PLAYER(registerVideoFrameObserver);
                 NAPI_API_MEDIA_PLAYER(unregisterVideoFrameObserver);
                 NAPI_API_MEDIA_PLAYER(setVideoRotation);
+                NAPI_API_MEDIA_PLAYER(publishVideoToRtc);
+                NAPI_API_MEDIA_PLAYER(unpublishVideoToRtc);
 
 //   virtual int registerPlayerObserver(IMediaPlayerObserver* observer) = 0;
 //   virtual int unregisterPlayerObserver(IMediaPlayerObserver* observer) = 0;
@@ -183,6 +186,7 @@ namespace agora {
                 Isolate *isolate = NULL;
                 NodeMediaPlayerObserver *nodeMediaPlayerObserver = NULL;
                 NodeMediaPlayerVideoFrameObserver *nodeMediaPlayerVideoFrameObserver = NULL;
+                NodeMediaPlayerAudioFrameObserver *nodeMediaPlayerAudioFrameObserver = NULL;
          };
     }
 }

@@ -16,6 +16,7 @@
 #include "IAgoraRtcEngine2.h"
 #include <string>
 #include <nan.h>
+#include "agora_rtc_channel_publish_helper.h"
 
 #if defined(__APPLE__) || defined(_WIN32)
 #include "node_screen_window_info.h"
@@ -331,6 +332,7 @@ namespace agora {
             LOG_F(INFO, "NodeRtcEngine constructor");
             /** m_engine provide SDK functionality */
             m_engine = createAgoraRtcEngine();
+            rtc::AgoraRtcChannelPublishHelper::Get()->setRtcEngine(m_engine);
             /** m_eventHandler provide SDK event handler. */
             m_eventHandler.reset(new NodeEventHandler(this));
             /** Node ADDON takes advantage of self render interface */

@@ -9,6 +9,7 @@
 #include <node.h>
 #include "loguru.hpp"
 #include <mutex>
+#include "IAgoraRtcEngine.h"
 
 namespace agora {
     namespace rtc {
@@ -73,6 +74,9 @@ namespace agora {
                     unsigned char* buffer;
                     uint32_t length;
                 };
+
+                void publishVideoToRtc(IRtcEngine *rtc_engine);
+                void unpublishVideoToRtc();
                 
             private:
                 v8::Isolate* mIsolate;
@@ -83,6 +87,8 @@ namespace agora {
                 std::mutex m_lock;
                 std::array<buffer_info, 4> bufferList;
                 int realRotation = 0;
+                bool isPublishVideoFrame = false;
+                IRtcEngine *rtc_engine_ = nullptr;
          };
     }
 }
