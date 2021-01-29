@@ -2995,5 +2995,7 @@ export interface NodeMediaPlayer {
   setVideoRotation(rotation: 0 | 90 | 180 | 270): number;
   release(): number;
   publishVideoToRtc(): number;
-  unpublishVideoToRtc(): number;
+  unpublishVideoFromRtc(): number;
+  publishAudioToRtc(): number;
+  unpublishAudioFromRtc(): number;
 }

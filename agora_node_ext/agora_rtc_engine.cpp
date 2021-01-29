@@ -339,6 +339,7 @@ namespace agora {
             m_externalVideoRenderFactory.reset(new NodeVideoRenderFactory(*this));
             /** Video/Audio Plugins */
             m_avPluginManager.reset(new IAVFramePluginManager());
+            rtc::AgoraRtcChannelPublishHelper::Get()->setAudioObserver(m_avPluginManager.get());
             /** m_videoSourceSink provide facilities to multiple video source based on multiple process */
             m_videoSourceSink.reset(createVideoSource());
             metadataObserver.reset(new NodeMetadataObserver());
@@ -2480,6 +2481,7 @@ namespace agora {
                 pMediaEngine.queryInterface(pEngine->m_engine, AGORA_IID_MEDIA_ENGINE);
                 if (pMediaEngine) {
                     pMediaEngine->registerVideoRenderFactory(pEngine->m_externalVideoRenderFactory.get());
+                    pMediaEngine->registerAudioFrameObserver(pEngine->m_avPluginManager.get());
                 }
                 IRtcEngine3 *m_engine2 = (IRtcEngine3 *)pEngine->m_engine;
                 m_engine2->setAppType(AppType(3));
@@ -4295,7 +4297,7 @@ namespace agora {
                 if (pEngine->m_avPluginManager.get())
                 {
                     pMediaEngine->registerVideoFrameObserver(pEngine->m_avPluginManager.get());
-                    pMediaEngine->registerAudioFrameObserver(pEngine->m_avPluginManager.get());
+                    // pMediaEngine->registerAudioFrameObserver(pEngine->m_avPluginManager.get());
                     result = 0;
                 }
             } while (false);
@@ -4315,7 +4317,7 @@ namespace agora {
                 agora::media::IMediaEngine* pMediaEngine = nullptr;
                 pEngine->getRtcEngine()->queryInterface(agora::AGORA_IID_MEDIA_ENGINE, (void**)&pMediaEngine);
                 pMediaEngine->registerVideoFrameObserver(NULL);
-                pMediaEngine->registerAudioFrameObserver(NULL);
+                // pMediaEngine->registerAudioFrameObserver(NULL);
                 result = 0;
             } while (false);
             napi_set_int_result(args, result);

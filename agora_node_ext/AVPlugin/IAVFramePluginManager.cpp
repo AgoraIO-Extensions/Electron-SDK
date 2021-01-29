@@ -46,6 +46,52 @@ bool IAVFramePluginManager::onRecordAudioFrame(AudioFrame& audioFrame)
         }
     }
     pluginMutex.unlock();
+
+    if (!isPublishMediaPlayerAudio) {
+        return true;
+    }
+
+    std::lock_guard<std::mutex> _(recordMutex);
+    int bytes = audioFrame.samples * audioFrame.channels * audioFrame.bytesPerSample;
+    int16_t *tmpBuf = (int16_t *)malloc(bytes);
+    memcpy(tmpBuf, audioFrame.buffer, bytes);
+
+    if (recordCircularBuffer->mAvailSamples < bytes) {
+        free(tmpBuf);
+        return false;
+    }
+    int ret = recordCircularBuffer->mAvailSamples - bytes;
+    if (ret < 0){
+        memcpy(audioFrame.buffer, tmpBuf, bytes);
+        free(tmpBuf);
+        return false;
+    }
+    char *data = (char *)malloc(sizeof(char)*bytes);
+    recordCircularBuffer->Pop(data, bytes);
+
+    int16_t* p16 = (int16_t*)data;
+    int16_t *audioBuf = (int16_t *)malloc(bytes);
+    memcpy(audioBuf, tmpBuf, bytes);
+    for (int i = 0; i < bytes / 2; ++i) {
+        int tmp = p16[i] * recordVolume;
+        audioBuf[i] = audioBuf[i] * 1;
+        tmp += audioBuf[i];
+
+        if (tmp > 32767) {
+            audioBuf[i] = 32767;
+        }
+        else if (tmp < -32768) {
+            audioBuf[i] = -32768;
+        }
+        else {
+            audioBuf[i] += tmp;
+        }
+    }
+    memcpy(audioFrame.buffer, audioBuf,  bytes);
+    free(audioBuf);
+    free(tmpBuf);
+    free(p16);
+
     return true;
 }
 
@@ -58,6 +104,55 @@ bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame)
         }
     }
     pluginMutex.unlock();
+
+    if (!isPublishMediaPlayerAudio) {
+        return true;
+    }
+
+    std::lock_guard<std::mutex> _(playbackMutex);
+    int bytes = audioFrame.samples * audioFrame.channels * audioFrame.bytesPerSample;
+	int16_t *tmpBuf = (int16_t *)malloc(bytes);
+	memcpy(tmpBuf, audioFrame.buffer, bytes);
+
+	if (playbackCircularBuffer->mAvailSamples < bytes) {
+		memcpy(audioFrame.buffer, tmpBuf, bytes);
+		free(tmpBuf);
+		return true;
+	}
+	
+	int ret = playbackCircularBuffer->mAvailSamples - bytes;
+	if (ret < 0) {
+		memcpy(audioFrame.buffer, tmpBuf, bytes);
+		free(tmpBuf);
+		return true;
+	}
+	char *data = (char *)malloc(sizeof(char)*bytes);
+
+	playbackCircularBuffer->Pop(data, bytes);
+
+	int16_t* p16 = (int16_t*)data;
+	int16_t *audioBuf = (int16_t *)malloc(bytes);
+	memcpy(audioBuf, tmpBuf, bytes);
+	for (int i = 0; i < bytes / 2; ++i) {
+		int tmp = p16[i] * playbackVolume;
+		audioBuf[i] = audioBuf[i] * 1;
+		tmp += audioBuf[i];
+
+		if (tmp > 32767) {
+			audioBuf[i] = 32767;
+		}
+		else if (tmp < -32768) {
+			audioBuf[i] = -32768;
+		}
+		else {
+			audioBuf[i] = tmp;
+		}
+	}
+	memcpy(audioFrame.buffer, audioBuf, bytes);
+	free(audioBuf);
+	free(tmpBuf);
+	free(p16);
+
     return true;
 }
 
@@ -169,4 +264,58 @@ int IAVFramePluginManager::release()
     m_mapPlugins.clear();
     pluginMutex.unlock();
     return 0;
+}
+
+void IAVFramePluginManager::pushAudioData(void* data, int len)
+{
+    {
+        std::lock_guard<std::mutex> _(recordMutex);
+        recordCircularBuffer->Push((char*)data, len);
+    }
+    {
+        std::lock_guard<std::mutex> _(playbackMutex);
+        playbackCircularBuffer->Push((char*)data, len);
+    }
+}
+
+void IAVFramePluginManager::resetAudioBuffer()
+{
+    {
+        std::lock_guard<std::mutex> _(recordMutex);
+        recordCircularBuffer.reset(new AudioCircularBuffer<char>(2048, true));
+    }
+    {
+        std::lock_guard<std::mutex> _(playbackMutex);
+        playbackCircularBuffer.reset(new AudioCircularBuffer<char>(2048, true));
+    }
+}
+
+void IAVFramePluginManager::setRecordVolume(int volume)
+{
+    {
+        std::lock_guard<std::mutex> _(recordMutex);
+        if (volume > 0) {
+            recordVolume = volume / 100.0f;
+        }
+    }
+}
+
+void IAVFramePluginManager::setPlaybackVolume(int volume)
+{
+    {
+        std::lock_guard<std::mutex> _(playbackMutex);
+        if (volume > 0) {
+            playbackVolume = volume / 100.0f;
+        }
+    }
+}
+
+void IAVFramePluginManager::publishMediaPlayerAudio()
+{
+    isPublishMediaPlayerAudio.store(true);
+}
+
+void IAVFramePluginManager::unpublishMediaPlayerAudio()
+{
+    isPublishMediaPlayerAudio.store(false);
 }

@@ -23,6 +23,11 @@ namespace agora {
                 delete nodeMediaPlayerVideoFrameObserver;
                 nodeMediaPlayerVideoFrameObserver = NULL;
             }
+
+            if (nodeMediaPlayerAudioFrameObserver) {
+                delete nodeMediaPlayerAudioFrameObserver;
+                nodeMediaPlayerAudioFrameObserver = NULL;
+            }
             LOG_F(INFO, "NodeMediaPlayer::~NodeMediaPlayer");
         }
 
@@ -66,7 +71,9 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(unregisterVideoFrameObserver);
                 PROPERTY_METHOD_DEFINE(setVideoRotation);
                 PROPERTY_METHOD_DEFINE(publishVideoToRtc);
-                PROPERTY_METHOD_DEFINE(unpublishVideoToRtc);
+                PROPERTY_METHOD_DEFINE(unpublishVideoFromRtc);
+                PROPERTY_METHOD_DEFINE(publishAudioToRtc);
+                PROPERTY_METHOD_DEFINE(unpublishAudioFromRtc);
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeMediaPlayer").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -105,11 +112,13 @@ namespace agora {
                 }
 
                 if (mediaPlayer->nodeMediaPlayerVideoFrameObserver) {
+                    AgoraRtcChannelPublishHelper::Get()->unpublishVideoToRtc(mediaPlayer->nodeMediaPlayerVideoFrameObserver);
                     delete mediaPlayer->nodeMediaPlayerVideoFrameObserver;
                     mediaPlayer->nodeMediaPlayerVideoFrameObserver = NULL;
                 }
 
                 if (mediaPlayer->nodeMediaPlayerAudioFrameObserver) {
+                    AgoraRtcChannelPublishHelper::Get()->unpublishAudioToRtc(mediaPlayer->nodeMediaPlayerAudioFrameObserver);
                     delete mediaPlayer->nodeMediaPlayerAudioFrameObserver;
                     mediaPlayer->nodeMediaPlayerAudioFrameObserver = NULL;
                 }
@@ -228,6 +237,7 @@ namespace agora {
                 status = napi_get_value_int32_(args[0], volume);
                 CHECK_NAPI_STATUS(mediaPlayer, status);
                 result = mediaPlayer->mMediaPlayer->adjustPlayoutVolume(volume);   
+                AgoraRtcChannelPublishHelper::Get()->adjustPlayoutSignalVolume(volume);
             } while(false);
             media_player_napi_set_int_result(args, result);
         }
@@ -418,6 +428,7 @@ namespace agora {
                 status = napi_get_value_int32_(args[0], volume);
                 CHECK_NAPI_STATUS(mediaPlayer, status);
                 result = mediaPlayer->mMediaPlayer->adjustPublishSignalVolume(volume);
+                AgoraRtcChannelPublishHelper::Get()->adjustPublishSignalVolume(volume);
             } while(false);
             media_player_napi_set_int_result(args, result);
         }
@@ -517,11 +528,13 @@ namespace agora {
                 }
 
                 if (mediaPlayer->nodeMediaPlayerVideoFrameObserver) {
+                    AgoraRtcChannelPublishHelper::Get()->unpublishVideoToRtc(mediaPlayer->nodeMediaPlayerVideoFrameObserver);
                     delete mediaPlayer->nodeMediaPlayerVideoFrameObserver;
                     mediaPlayer->nodeMediaPlayerVideoFrameObserver = NULL;
                 }
 
                 if (mediaPlayer->nodeMediaPlayerAudioFrameObserver) {
+                    AgoraRtcChannelPublishHelper::Get()->unpublishAudioToRtc(mediaPlayer->nodeMediaPlayerAudioFrameObserver);
                     delete mediaPlayer->nodeMediaPlayerAudioFrameObserver;
                     mediaPlayer->nodeMediaPlayerAudioFrameObserver = NULL;
                 }
@@ -646,7 +659,7 @@ namespace agora {
             media_player_napi_set_int_result(args, result);
         }
 
-        NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, unpublishVideoToRtc)
+        NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, unpublishVideoFromRtc)
         {
             int result = 1;
             LOG_F(INFO, "unpublishVideoToRtc");
@@ -658,6 +671,46 @@ namespace agora {
                 CHECK_NATIVE_THIS(mediaPlayer);
                 if (mediaPlayer->nodeMediaPlayerVideoFrameObserver) {
                     AgoraRtcChannelPublishHelper::Get()->unpublishVideoToRtc(mediaPlayer->nodeMediaPlayerVideoFrameObserver);
+                    result = 0;
+                } else {
+                    result = -7;
+                } 
+            } while (false);
+            media_player_napi_set_int_result(args, result);
+        }
+
+        NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, publishAudioToRtc)
+        {
+            int result = 1;
+            LOG_F(INFO, "publishAudioToRtc");
+            do {
+                Isolate *isolate = args.GetIsolate();
+                NodeMediaPlayer *mediaPlayer = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, mediaPlayer);
+                CHECK_NATIVE_THIS(mediaPlayer);
+                if (mediaPlayer->nodeMediaPlayerAudioFrameObserver) {
+                    AgoraRtcChannelPublishHelper::Get()->publishAudioToRtc(mediaPlayer->nodeMediaPlayerAudioFrameObserver);
+                    result = 0;
+                } else {
+                    result = -7;
+                } 
+            } while (false);
+            media_player_napi_set_int_result(args, result);
+        }
+
+        NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, unpublishAudioFromRtc)
+        {
+            int result = 1;
+            LOG_F(INFO, "unpublishAudioFromRtc");
+            do {
+                Isolate *isolate = args.GetIsolate();
+                NodeMediaPlayer *mediaPlayer = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, mediaPlayer);
+                CHECK_NATIVE_THIS(mediaPlayer);
+                if (mediaPlayer->nodeMediaPlayerAudioFrameObserver) {
+                    AgoraRtcChannelPublishHelper::Get()->unpublishAudioToRtc(mediaPlayer->nodeMediaPlayerAudioFrameObserver);
                     result = 0;
                 } else {
                     result = -7;

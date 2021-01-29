@@ -4,7 +4,6 @@
 #include <mutex>
 #include "IAgoraMediaPlayer.h"
 #include "IAgoraRtcEngine.h"
-#include "agora_rtc_channel_publish_helper.h"
 
 namespace agora
 {
@@ -13,12 +12,7 @@ namespace agora
         class NodeMediaPlayerAudioFrameObserver : public agora::media::base::IAudioFrameObserver
         {
             public:
-            virtual void onFrame(const agora::media::base::AudioPcmFrame *frame) override
-            {
-                std::lock_guard<std::mutex> lck(mtx_);
-                AgoraRtcChannelPublishHelper::Get()->pushAudioData((void *)(&frame->data_[0]), frame->bytes_per_sample * frame->samples_per_channel_);
-
-            }
+            virtual void onFrame(const agora::media::base::AudioPcmFrame *frame) override;
 
             void publishAudioToRtc() {
                 std::lock_guard<std::mutex> lck(mtx_);

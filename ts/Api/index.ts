@@ -6050,8 +6050,14 @@ class AgoraMediaPlayer extends EventEmitter
   publishVideoToRtc(): number {
     return this.mediaPlayer.publishVideoToRtc();
   }
-  unpublishVideoToRtc(): number {
-    return this.mediaPlayer.unpublishVideoToRtc();
+  unpublishVideoFromRtc(): number {
+    return this.mediaPlayer.unpublishVideoFromRtc();
+  }
+  publishAudioToRtc(): number {
+    return this.mediaPlayer.publishAudioToRtc();
+  }
+  unpublishAudioFromRtc(): number {
+    return this.mediaPlayer.unpublishAudioFromRtc();
   }
 }
 
