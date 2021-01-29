@@ -263,7 +263,8 @@
                         './sdk/dll/libagora-ffmpeg.dll',
                         './sdk/dll/libagora-mpg123.dll',
                         './sdk/dll/libagora-soundtouch.dll',
-                        './sdk/dll/libhwcodec.dll'
+                        './sdk/dll/libhwcodec.dll',
+                        './sdk/dll/libagora_segmentation.dll'
                     ]
                 }],
                 'library_dirs': [
