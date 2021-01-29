@@ -169,10 +169,10 @@ std::vector<ScreenWindowInfo> getAllWindowInfo()
 
         CFStringRef name = static_cast<CFStringRef>(CFDictionaryGetValue(windowDic, kCGWindowName));
         if (name) {
-            auto length = CFStringGetLength(name);
-            if (length == 0) {
-                continue;
-            }
+            // auto length = CFStringGetLength(name);
+            // if (length == 0) {
+            //     continue;
+            // }
         } else {
             continue;
         }
