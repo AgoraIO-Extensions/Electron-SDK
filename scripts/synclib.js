@@ -72,9 +72,9 @@ const winPrepare = (folder) => {
         fs.move(path.join(folder, './libs/x86/libagora-ffmpeg.dll'), path.join(__dirname, '../sdk/dll/libagora-ffmpeg.dll')),
         fs.move(path.join(folder, './libs/x86/libagora-mpg123.dll'), path.join(__dirname, '../sdk/dll/libagora-mpg123.dll')),
         fs.move(path.join(folder, './libs/x86/libagora-soundtouch.dll'), path.join(__dirname, '../sdk/dll/libagora-soundtouch.dll')),
+        fs.move(path.join(folder, './libs/x86/libagora_segmentation.dll'), path.join(__dirname, '../sdk/dll/libagora_segmentation.dll')),
         fs.move(path.join(folder, './libs/x86/libhwcodec.dll'), path.join(__dirname, '../sdk/dll/libhwcodec.dll')),
         fs.move(path.join(folder, './libs/x86/agora_rtc_sdk.lib'), path.join(__dirname, '../sdk/lib/agora_rtc_sdk.lib')),
-        fs.move(path.join(folder, './libs/x86/libagora_segmentation.dll'), path.join(__dirname, '../sdk/lib/libagora_segmentation.dll'))
       ])
     }).then(() => {
       resolve()
@@ -100,9 +100,9 @@ const win64Prepare = (folder) => {
         fs.move(path.join(folder, './libs/x86_64/libagora-ffmpeg.dll'), path.join(__dirname, '../sdk/dll/libagora-ffmpeg.dll')),
         fs.move(path.join(folder, './libs/x86_64/libagora-mpg123.dll'), path.join(__dirname, '../sdk/dll/libagora-mpg123.dll')),
         fs.move(path.join(folder, './libs/x86_64/libagora-soundtouch.dll'), path.join(__dirname, '../sdk/dll/libagora-soundtouch.dll')),
+        fs.move(path.join(folder, './libs/x86_64/libagora_segmentation.dll'), path.join(__dirname, '../sdk/dll/libagora_segmentation.dll')),
         fs.move(path.join(folder, './libs/x86_64/libhwcodec.dll'), path.join(__dirname, '../sdk/dll/libhwcodec.dll')),
-        fs.move(path.join(folder, './libs/x86_64/agora_rtc_sdk.lib'), path.join(__dirname, '../sdk/lib/agora_rtc_sdk.lib')),
-        fs.move(path.join(folder, './libs/x86_64/libagora_segmentation.dll'), path.join(__dirname, '../sdk/lib/libagora_segmentation.dll')),
+        fs.move(path.join(folder, './libs/x86_64/agora_rtc_sdk.lib'), path.join(__dirname, '../sdk/lib/agora_rtc_sdk.lib'))
       ])
     }).then(() => {
       resolve()
