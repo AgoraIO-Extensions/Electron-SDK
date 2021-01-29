@@ -167,6 +167,15 @@ std::vector<ScreenWindowInfo> getAllWindowInfo()
             continue;
         }
 
+        CGRect bounds = CGRectZero;
+        CFDictionaryRef boundsDic = static_cast<CFDictionaryRef>(CFDictionaryGetValue(windowDic, kCGWindowBounds));
+        if (!CGRectMakeWithDictionaryRepresentation(boundsDic, &bounds)) {
+            continue;
+        }
+        if (CGRectGetWidth(bounds) < 96 || CGRectGetHeight(bounds) < 96) {
+            continue;
+        }
+
         CFStringRef name = static_cast<CFStringRef>(CFDictionaryGetValue(windowDic, kCGWindowName));
         if (name) {
             // auto length = CFStringGetLength(name);
