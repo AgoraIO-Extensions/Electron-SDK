@@ -172,7 +172,9 @@ namespace agora {
                 NAPI_API_MEDIA_PLAYER(unregisterVideoFrameObserver);
                 NAPI_API_MEDIA_PLAYER(setVideoRotation);
                 NAPI_API_MEDIA_PLAYER(publishVideoToRtc);
-                NAPI_API_MEDIA_PLAYER(unpublishVideoToRtc);
+                NAPI_API_MEDIA_PLAYER(unpublishVideoFromRtc);
+                NAPI_API_MEDIA_PLAYER(publishAudioToRtc);
+                NAPI_API_MEDIA_PLAYER(unpublishAudioFromRtc);
 
 //   virtual int registerPlayerObserver(IMediaPlayerObserver* observer) = 0;
 //   virtual int unregisterPlayerObserver(IMediaPlayerObserver* observer) = 0;

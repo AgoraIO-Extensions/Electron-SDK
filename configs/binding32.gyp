@@ -233,6 +233,7 @@
         './agora_node_ext/node_metadata_observer.cpp',
         './agora_node_ext/agora_rtc_channel_publish_helper.h',
         './agora_node_ext/node_media_player_audio_frame_observer.h',
+        './agora_node_ext/node_media_player_audio_frame_observer.cpp',
         './common/libyuv/source/compare_common.cc',
         './common/libyuv/source/compare.cc',
         './common/libyuv/source/convert_argb.cc',

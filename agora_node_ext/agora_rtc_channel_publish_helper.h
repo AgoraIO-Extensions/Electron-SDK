@@ -5,6 +5,8 @@
 #include "IAgoraMediaEngine.h"
 #include "AgoraBase.h"
 #include "node_media_player_video_frame_observer.h"
+#include "node_media_player_audio_frame_observer.h"
+#include "AVPlugin/IAVFramePluginManager.h"
 
 namespace agora
 {
@@ -25,29 +27,21 @@ namespace agora
 				rtc_engine_ = rtc_engine;
 			}
 
-			void pushAudioData(void* data, int len) {
-
-			}
-
-			// 启动/停止推送音频流到频道
-			void publishAudio()
+			void setAudioObserver(IAVFramePluginManager* rtcAudioObserver)
 			{
-				
+				rtcAudioObserver_ = rtcAudioObserver;
 			}
-			void unpublishAudio()
-			{
-				
-			}
+
 			// 启动/停止推送视频流到频道
-			void publishVideoToRtc(NodeMediaPlayerVideoFrameObserver *media_playerk_video_frame_observer)
+			void publishVideoToRtc(NodeMediaPlayerVideoFrameObserver *videoObserver)
 			{
-				if (media_playerk_video_frame_observer_ && media_playerk_video_frame_observer_ != media_playerk_video_frame_observer)
+				if (mediaPlayerVideoFrameObserver_ && mediaPlayerVideoFrameObserver_ != videoObserver)
 				{
-					media_playerk_video_frame_observer_->unpublishVideoToRtc();
+					mediaPlayerVideoFrameObserver_->unpublishVideoToRtc();
 				}
-				media_playerk_video_frame_observer_ = media_playerk_video_frame_observer;
+				mediaPlayerVideoFrameObserver_ = videoObserver;
 
-				if (media_playerk_video_frame_observer_) 
+				if (mediaPlayerVideoFrameObserver_) 
 				{
 					if (rtc_engine_)
 					{
@@ -58,16 +52,17 @@ namespace agora
 							mediaEngine->setExternalVideoSource(true, false);
 						}
 					}
-					media_playerk_video_frame_observer_->publishVideoToRtc(rtc_engine_);
+					mediaPlayerVideoFrameObserver_->publishVideoToRtc(rtc_engine_);
 				}
 			}
-			void unpublishVideoToRtc(NodeMediaPlayerVideoFrameObserver *media_playerk_video_frame_observer)
+			void unpublishVideoToRtc(NodeMediaPlayerVideoFrameObserver *videoObserver)
 			{
-				if (media_playerk_video_frame_observer != media_playerk_video_frame_observer_) {
+				if (mediaPlayerVideoFrameObserver_ != videoObserver) 
+				{
 					return;
 				}
 
-				if (media_playerk_video_frame_observer_) 
+				if (mediaPlayerVideoFrameObserver_) 
 				{
 					if (rtc_engine_)
 					{
@@ -78,23 +73,63 @@ namespace agora
 							mediaEngine->setExternalVideoSource(false, false);
 						}
 					}
-					media_playerk_video_frame_observer_->unpublishVideoToRtc();
+					mediaPlayerVideoFrameObserver_->unpublishVideoToRtc();
+					mediaPlayerVideoFrameObserver_ = nullptr;
 				} 
+			}
+
+			void pushAudioData(void* data, int len) {
+				if (rtcAudioObserver_)
+				{
+					rtcAudioObserver_->pushAudioData(data, len);
+				}
+			}
+
+			// 启动/停止推送音频流到频道
+			void publishAudioToRtc(NodeMediaPlayerAudioFrameObserver *audioObserver)
+			{
+				if (mediaPlayerAudioFrameObserver_ && mediaPlayerAudioFrameObserver_ != audioObserver)
+				{
+					mediaPlayerAudioFrameObserver_->unpublishAudioToRtc();
+				}
+				mediaPlayerAudioFrameObserver_ = audioObserver;
+				if (mediaPlayerAudioFrameObserver_)
+				{
+					mediaPlayerAudioFrameObserver_->publishAudioToRtc();
+				}
+
+				if (rtcAudioObserver_)
+				{
+					rtcAudioObserver_->publishMediaPlayerAudio();
+				}
+			}
+			void unpublishAudioToRtc(NodeMediaPlayerAudioFrameObserver *audioObserver)
+			{
+				if (mediaPlayerAudioFrameObserver_ != audioObserver)
+				{
+					return;
+				}
+
+				if (mediaPlayerAudioFrameObserver_)
+				{
+					mediaPlayerAudioFrameObserver_->unpublishAudioToRtc();
+					mediaPlayerAudioFrameObserver_ = nullptr;
+				}
+
+				if (rtcAudioObserver_)
+				{
+					rtcAudioObserver_->unpublishMediaPlayerAudio();
+				}
 			}
 			// 调节推送到频道内音频流的音量
 			void adjustPublishSignalVolume(int volume)
 			{
-
+				rtcAudioObserver_->setRecordVolume(volume);
 			}
 			// 调节本地播放视频音量
 			void adjustPlayoutSignalVolume(int volume)
 			{
-
-			}
-			// 断开 MediaPlayer 和 RTC SDK 的关联
-			void detachPlayerFromRtc()
-			{
-
+				rtcAudioObserver_->setPlaybackVolume(volume);
 			}
 
 			AgoraRtcChannelPublishHelper() {}
@@ -102,7 +137,9 @@ namespace agora
 
 		private:
 			IRtcEngine *rtc_engine_ = nullptr;
-			NodeMediaPlayerVideoFrameObserver *media_playerk_video_frame_observer_ = nullptr;
+			NodeMediaPlayerVideoFrameObserver *mediaPlayerVideoFrameObserver_ = nullptr;
+			IAVFramePluginManager* rtcAudioObserver_ = nullptr;
+			NodeMediaPlayerAudioFrameObserver* mediaPlayerAudioFrameObserver_ = nullptr;
 		};
 	} // namespace rtc
 } // namespace agora
