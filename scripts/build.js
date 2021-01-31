@@ -1,8 +1,20 @@
 const {logger} = require('just-task');
 const shell = require("shelljs");
 const path = require('path')
+const fs = require('fs')
 
-const gyp_exec = `node ${path.resolve(__dirname, '../node_modules/node-gyp/bin/node-gyp.js')}`
+
+// workaround to find executable when install as dependency
+let gyp_path = `${path.resolve(__dirname, '../../node-gyp/bin/node-gyp.js')}`
+
+if(!fs.existsSync(gyp_path)) {
+  logger.info(`gyp_exec not found at ${gyp_path}, switch`)
+  gyp_path = `${path.resolve(__dirname, '../node_modules/node-gyp/bin/node-gyp.js')}`
+}
+const gyp_exec = `node ${gyp_path}`
+const agora_node_ext_path = `${path.resolve(__dirname, '../build/Release/agora_node_ext.node')}`
+const video_source_path = `${path.resolve(__dirname, '../build/Release/VideoSource')}`
+
 
 module.exports = ({
   electronVersion='5.0.8',
@@ -77,9 +89,26 @@ module.exports = ({
             process.exit(1)
           }
           
-          // handle success
-          logger.info('Build complete')
-          process.exit(0)  
+          if(platform === "darwin") {
+            logger.info(`patch loader path for mac build..`)
+            shell.exec(`install_name_tool -add_rpath "@loader_path" ${agora_node_ext_path}`, {silent}, (code, stdout, stderr) => {
+              if (code !== 0) {
+                logger.error(stderr);
+                process.exit(1)
+              }
+  
+              shell.exec(`install_name_tool -add_rpath "@loader_path" ${video_source_path}`, {silent}, (code, stdout, stderr) => {
+                if (code !== 0) {
+                  logger.error(stderr);
+                  process.exit(1)
+                }
+  
+                // handle success
+                logger.info('Build complete')
+                process.exit(0)
+              })
+            })
+          }
         })
       }
     })

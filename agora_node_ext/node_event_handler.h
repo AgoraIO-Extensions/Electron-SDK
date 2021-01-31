@@ -102,6 +102,10 @@ namespace agora {
 #define RTC_EVENT_AUDIO_SUBSCRIBE_STATE_CHANGE "audioSubscribeStateChange"
 #define RTC_EVENT_VIDEO_SUBSCRIBE_STATE_CHANGE "videoSubscribeStateChange"
 
+#define RTC_EVENT_FIRST_LOCAL_AUDIO_FRAME_PUBLISH "firstLocalAudioFramePublished"
+#define RTC_EVENT_FIRST_LOCAL_VIDEO_FRAME_PUBLISH "firstLocalVideoFramePublished"
+#define RTC_EVENT_RTMP_STREAMING_EVENT "rtmpStreamingEvent"
+
         class NodeRtcEngine;
         class NodeUid;
         class NodeEventHandler : public IRtcEngineEventHandler, public IAgoraVideoSourceEventHandler
@@ -200,11 +204,15 @@ namespace agora {
             virtual void onChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT code) override;
 
             //2.9.0.105
-            virtual void onAudioPublishStateChange(const char* channel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed) override;
-            virtual void onVideoPublishStateChange(const char* channel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed) override;
-            virtual void onAudioSubscribeStateChange(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed) override;
-            virtual void onVideoSubscribeStateChange(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed) override;
-
+            virtual void onAudioPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed) override;
+            virtual void onVideoPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed) override;
+            virtual void onAudioSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed) override;
+            virtual void onVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed) override;
+            
+            //3.1.100
+            virtual void onFirstLocalAudioFramePublished(int elapsed);
+            virtual void onFirstLocalVideoFramePublished(int elapsed);
+            virtual void onRtmpStreamingEvent(const char* url, RTMP_STREAMING_EVENT eventCode);
         private:
             void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
             void onRejoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;

@@ -321,41 +321,158 @@ export interface UserInfo {
 
 /** Sets the local voice changer option. */
 export enum VoiceChangerPreset {
-  /** 0: The original voice (no local voice change). */
-  VOICE_CHANGER_OFF = 0,
-  /** 1: An old man's voice. */
-  VOICE_CHANGER_OLDMAN = 1,
-  /** 2: A little boy's voice. */
-  VOICE_CHANGER_BABYBOY = 2,
-  /** 3: A little girl's voice. */
-  VOICE_CHANGER_BABYGIRL = 3,
-  /** 4: The voice of a growling bear. */
-  VOICE_CHANGER_ZHUBAJIE = 4,
-  /** 5: Ethereal vocal effects. */
-  VOICE_CHANGER_ETHEREAL = 5,
-  /** 6: Hulk's voice. */
-  VOICE_CHANGER_HULK = 6
+   /**
+     * The original voice (no local voice change).
+     */
+    VOICE_CHANGER_OFF = 0x00000000, //Turn off the voice changer
+    /**
+     * The voice of an old man.
+     */
+    VOICE_CHANGER_OLDMAN = 0x00000001,
+    /**
+     * The voice of a little boy.
+     */
+    VOICE_CHANGER_BABYBOY = 0x00000002,
+    /**
+     * The voice of a little girl.
+     */
+    VOICE_CHANGER_BABYGIRL = 0x00000003,
+    /**
+     * The voice of Zhu Bajie, a character in Journey to the West who has a voice like that of a growling bear.
+     */
+    VOICE_CHANGER_ZHUBAJIE = 0x00000004,
+    /**
+     * The ethereal voice.
+     */
+    VOICE_CHANGER_ETHEREAL = 0x00000005,
+    /**
+     * The voice of Hulk.
+     */
+    VOICE_CHANGER_HULK = 0x00000006,
+    /**
+     * A more vigorous voice.
+     */
+    VOICE_BEAUTY_VIGOROUS = 0x00100001,//7,
+    /**
+     * A deeper voice.
+     */
+    VOICE_BEAUTY_DEEP = 0x00100002,
+    /**
+     * A mellower voice.
+     */
+    VOICE_BEAUTY_MELLOW = 0x00100003,
+    /**
+     * Falsetto.
+     */
+    VOICE_BEAUTY_FALSETTO = 0x00100004,
+    /**
+     * A fuller voice.
+     */
+    VOICE_BEAUTY_FULL = 0x00100005,
+    /**
+     * A clearer voice.
+     */
+    VOICE_BEAUTY_CLEAR = 0x00100006,
+    /**
+     * A more resounding voice.
+     */
+    VOICE_BEAUTY_RESOUNDING = 0x00100007,
+    /**
+     * A more ringing voice.
+     */
+    VOICE_BEAUTY_RINGING = 0x00100008,
+    /**
+     * A more spatially resonant voice.
+     */
+    VOICE_BEAUTY_SPACIAL = 0x00100009,
+    /**
+     * (For male only) A more magnetic voice. Do not use it when the speaker is a female; otherwise, voice distortion occurs.
+     */
+    GENERAL_BEAUTY_VOICE_MALE_MAGNETIC = 0x00200001,
+    /**
+     * (For female only) A fresher voice. Do not use it when the speaker is a male; otherwise, voice distortion occurs.
+     */
+    GENERAL_BEAUTY_VOICE_FEMALE_FRESH = 0x00200002,
+    /**
+     * 	(For female only) A more vital voice. Do not use it when the speaker is a male; otherwise, voice distortion occurs.
+     */
+    GENERAL_BEAUTY_VOICE_FEMALE_VITALITY = 0x00200003
 }
 /**
  * Sets the local voice changer option.
  */
 export enum AudioReverbPreset {
-  /** 0: The original voice (no local voice reverberation). */
-  AUDIO_REVERB_OFF = 0, // Turn off audio reverb
-  /** 1: Pop music. */
-  AUDIO_REVERB_POPULAR = 1,
-  /** 2: R&B. */
-  AUDIO_REVERB_RNB = 2,
-  /** 3: Rock music. */
-  AUDIO_REVERB_ROCK = 3,
-  /** 4: Hip-hop. */
-  AUDIO_REVERB_HIPHOP = 4,
-  /** 5: Pop concert. */
-  AUDIO_REVERB_VOCAL_CONCERT = 5,
-  /** 6: Karaoke. */
-  AUDIO_REVERB_KTV = 6,
-  /** 7: Recording studio. */
-  AUDIO_REVERB_STUDIO = 7
+    /**
+     * Turn off local voice reverberation, that is, to use the original voice.
+     */
+    AUDIO_REVERB_OFF = 0x00000000, // Turn off audio reverb
+    /**
+     * The reverberation style typical of a KTV venue (enhanced).
+     */
+    AUDIO_REVERB_FX_KTV = 0x00100001,
+    /**
+     * The reverberation style typical of a concert hall (enhanced).
+     */
+    AUDIO_REVERB_FX_VOCAL_CONCERT = 0x00100002,
+    /**
+     * The reverberation style typical of an uncle's voice.
+     */
+    AUDIO_REVERB_FX_UNCLE = 0x00100003,
+    /**
+     * The reverberation style typical of a little sister's voice.
+     */
+    AUDIO_REVERB_FX_SISTER = 0x00100004,
+    /**
+     * The reverberation style typical of a recording studio (enhanced).
+     */
+    AUDIO_REVERB_FX_STUDIO = 0x00100005,
+    /**
+     * The reverberation style typical of popular music (enhanced).
+     */
+    AUDIO_REVERB_FX_POPULAR = 0x00100006,
+    /**
+     * The reverberation style typical of R&B music (enhanced).
+     */
+    AUDIO_REVERB_FX_RNB = 0x00100007,
+    /**
+     * The reverberation style typical of the vintage phonograph.
+     */
+    AUDIO_REVERB_FX_PHONOGRAPH = 0x00100008,
+    /**
+     * The reverberation style typical of popular music.
+     */
+    AUDIO_REVERB_POPULAR = 0x00000001,
+    /**
+     * The reverberation style typical of R&B music.
+     */
+    AUDIO_REVERB_RNB = 0x00000002,
+    /**
+     * The reverberation style typical of rock music.
+     */
+    AUDIO_REVERB_ROCK = 0x00000003,
+    /**
+     * The reverberation style typical of hip-hop music.
+     */
+     AUDIO_REVERB_HIPHOP = 0x00000004,
+    /**
+     * The reverberation style typical of a concert hall.
+     */
+    AUDIO_REVERB_VOCAL_CONCERT = 0x00000005,
+    /**
+     * The reverberation style typical of a KTV venue.
+     */
+    AUDIO_REVERB_KTV = 0x00000006,
+    /**
+     * The reverberation style typical of a recording studio.
+     */
+    AUDIO_REVERB_STUDIO = 0x00000007,
+    /**
+     * The reverberation of the virtual stereo. The virtual stereo is an effect that renders the monophonic
+     * audio as the stereo audio, so that all users in the channel can hear the stereo voice effect.
+     * To achieve better virtual stereo reverberation, Agora recommends setting `profile` in `setAudioProfile`
+     * as `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)`.
+     */
+    AUDIO_VIRTUAL_STEREO = 0x00200001
 }
 /**
  * Configuration of the imported live broadcast voice or video stream.
@@ -496,6 +613,9 @@ export interface RtcStats {
   /** System CPU usage (%). */
   cpuTotalUsage: number;
   gatewayRtt: number;
+  memoryAppUsageRatio: number;
+  memoryTotalUsageRatio: number;
+  memoryAppUsageInKbytes: number;
 }
 /** Quality change of the local video. */
 export enum QualityAdaptIndication {
@@ -590,6 +710,13 @@ export interface LocalAudioStats {
    * The average sending bitrate (Kbps).
    */
   sentBitrate: number;
+  /**
+   * The audio packet loss rate (%) from the local client to the Agora edge
+   * server before applying the anti-packet loss strategies.
+   *
+   * @since v3.1.100
+   */
+  txPacketLossRate: number;
 }
 /** VideoEncoderConfiguration */
 export interface VideoEncoderConfiguration {
@@ -994,20 +1121,51 @@ export interface CaptureParam {
   width: number; // Width (pixels) of the video
   /** Height (pixels) of the video. */
   height: number; // Height (pixels) of the video
-  /** The frame rate (fps) of the shared region. 
-   * 
-   * The default value is 5. 
-   * 
-   * We do not recommend setting this to a value greater than 15. 
+  /** The frame rate (fps) of the shared region.
+   *
+   * The default value is 5.
+   *
+   * We do not recommend setting this to a value greater than 15.
    */
   frameRate: number; // The frame rate (fps) of the shared region. The default value is 5. We do not recommend setting this to a value greater than 15.
   /**
    * The bitrate (Kbps) of the shared region.
-   * 
-   * The default value is 0 (the SDK works out a bitrate according to the 
+   *
+   * The default value is 0 (the SDK works out a bitrate according to the
    * dimensions of the current screen).
    */
   bitrate: number; //  The bitrate (Kbps) of the shared region. The default value is 0 (the SDK works out a bitrate according to the dimensions of the current screen).
+  /** Sets whether or not to capture the mouse for screen sharing:
+   * - true: (Default) Capture the mouse.
+   * - false: Do not capture the mouse.
+   *
+   * @since v3.2.0
+   */
+  captureMouseCursor: boolean;
+  /** Whether to bring the window to the front when calling
+   * {@link startScreenCaptureByWindow} to share the window:
+   * - true: Bring the window to the front.
+   * - false: (Default) Do not bring the window to the front.
+   *
+   * @since v3.2.0
+   */
+  windowFocus: boolean;
+  /** A list of IDs of windows to be blocked.
+   *
+   * When calling {@link startScreenCaptureByScreen} to start screen
+   * sharing, you can use this parameter to block the specified windows.
+   * When calling {@link updateScreenCaptureParameters} to update the
+   * configuration for screen sharing, you can use this parameter to
+   * dynamically block the specified windows during screen sharing.
+   *
+   * @since v3.2.0
+   */
+  excludeWindowList: Array<number>;
+  /** The number of windows to be blocked.
+   *
+   * @since v3.2.0
+   */
+  excludeWindowCount: number;
 }
 
 /**
@@ -1616,6 +1774,93 @@ export interface AudioRecordingConfiguration {
 }
 
 /**
+ * Regions for connection.
+ *
+ * @since v3.2.0
+ *
+ * - 1: Mainland China.
+ * - 2: North America.
+ * - 4: Europe.
+ * - 8: Asia, excluding Mainland China.
+ * - 16: Japan.
+ * - 32: India.
+ * - 0xFFFFFFFF: (Default) Global.
+ */
+export type AREA_CODE =
+  | 1 //AREA_CODE_CN = ,
+  | 2 //AREA_CODE_NA = ,
+  | 4 //AREA_CODE_EUR = ,
+  | 8 //AREA_CODE_AS = ,
+  | 16//AREA_CODE_JAPAN = ,
+  | 32 //AREA_CODE_INDIA = ,
+  | (0xFFFFFFFF); //AREA_CODE_GLOBAL =
+
+/** Events during the RTMP or RTMPS streaming.
+ *
+ * @since v3.1.100
+ */
+export enum RTMP_STREAMING_EVENT
+{
+  /** An error occurs when you add a background image or a watermark image to the RTMP or RTMPS stream.
+   *
+   * @since v3.1.100
+   */
+  RTMP_STREAMING_EVENT_FAILED_LOAD_IMAGE = 1,
+};
+/** Encryption mode.
+ */
+export enum ENCRYPTION_MODE {
+  /** 1: (Default) 128-bit AES encryption, XTS mode.
+   */
+  AES_128_XTS = 1,
+  /** 2: 128-bit AES encryption, ECB mode.
+   */
+  AES_128_ECB = 2,
+  /** 3: 256-bit AES encryption, XTS mode.
+   */
+  AES_256_XTS = 3,
+ /** 4: 128-bit SM4 encryption, ECB mode.
+  */
+  SM4_128_ECB = 4,
+};
+/**
+* Configurations of built-in encryption schemas.
+*/
+export interface EncryptionConfig{
+/**
+* Encryption mode. The default encryption mode is `AES_128_XTS`.
+*/
+encryptionMode: ENCRYPTION_MODE;
+/**
+ * Encryption key in string type.
+ *
+ * @note If you do not set an encryption key or set it as NULL, you
+ * cannot use the built-in encryption, and the SDK returns the error code
+ * `-2`.
+ */
+encryptionKey: string;
+
+};
+
+export interface WatermarkOptions {
+/** Sets whether or not the watermark image is visible in the local video preview:
+ * - true: (Default) The watermark image is visible in preview.
+ * - false: The watermark image is not visible in preview.
+ */
+ visibleInPreview: boolean;
+/**
+ * The watermark position in the landscape mode. See Rectangle.
+ * For detailed information on the landscape mode, see the advanced guide *Video Rotation*.
+ */
+positionInLandscapeMode: Rectangle;
+/**
+ * The watermark position in the portrait mode. See Rectangle.
+ * For detailed information on the portrait mode, see the advanced guide *Video Rotation*.
+ */
+positionInPortraitMode: Rectangle;
+};
+
+/**
  * interface for c++ addon (.node)
  * @ignore
  */
@@ -1623,7 +1868,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  initialize(appId: string): number;
+  initialize(appId: string, areaCode?: AREA_CODE): number;
   /**
    * @ignore
    */
@@ -2081,7 +2326,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  videoSourceInitialize(appId: string): number;
+  videoSourceInitialize(appId: string, areaCode?: AREA_CODE): number;
   /**
    * @ignore
    */
@@ -2627,7 +2872,30 @@ export interface NodeRtcEngine {
    * @ignore
    */
   sendCustomReportMessage(id: string, category: string, event: string, label: string, value: number): number;
-
+  /**
+   * @ignore
+   */
+  setAudioMixingPitch(pitch: number): number;
+  /**
+   * @ignore
+   */
+  adjustUserPlaybackSignalVolume(uid: number, volume: number): number;
+ /**
+   * @ignore
+   */
+  videoSourceEnableEncryption(enabled: boolean, encryptionConfig: EncryptionConfig): number;
+  /**
+   * @ignore
+   */
+  enableEncryption(enabled: boolean, config: EncryptionConfig): number;
+  /**
+   * @ignore
+   */
+  addVideoWatermark(watermarkUrl: string, options: WatermarkOptions): number;
+  /**
+   * @ignore
+   */
+  clearVideoWatermarks(): number;
 }
 
 export interface NodeRtcChannel {
@@ -2866,4 +3134,12 @@ export interface NodeRtcChannel {
    * @ignore
    */
   release(): number;
+  /**
+   * @ignore
+   */
+  adjustUserPlaybackSignalVolume(uid: number, volume: number): number;
+  /**
+   * @ignore
+   */
+  enableEncryption(enabled: boolean, config: EncryptionConfig): number;
 }

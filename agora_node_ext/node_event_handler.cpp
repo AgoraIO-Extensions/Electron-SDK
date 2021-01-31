@@ -352,6 +352,10 @@ namespace agora {
                 NODE_SET_OBJ_PROP_NUMBER(obj, "cpuAppUsage", stats.cpuAppUsage);
                 NODE_SET_OBJ_PROP_NUMBER(obj, "cpuTotalUsage", stats.cpuTotalUsage);
                 NODE_SET_OBJ_PROP_NUMBER(obj, "gatewayRtt", stats.gatewayRtt);
+                NODE_SET_OBJ_PROP_NUMBER(obj, "memoryAppUsageRatio", stats.memoryAppUsageRatio);
+                NODE_SET_OBJ_PROP_NUMBER(obj, "memoryTotalUsageRatio", stats.memoryTotalUsageRatio);
+                NODE_SET_OBJ_PROP_NUMBER(obj, "memoryAppUsageInKbytes", stats.memoryAppUsageInKbytes);
+
                 Local<Value> arg[1] = { obj };
                 auto it = m_callbacks.find(RTC_EVENT_RTC_STATS);
                 if (it != m_callbacks.end()) {
@@ -674,6 +678,7 @@ namespace agora {
                 NODE_SET_OBJ_PROP_UINT32(obj, "txPacketLossRate", stats.txPacketLossRate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "captureFrameRate", stats.captureFrameRate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "videoQualityPoint", stats.videoQualityPoint);
+
                 Local<Value> arg[1] = { obj };
                 auto it = m_callbacks.find(RTC_EVENT_LOCAL_VIDEO_STATS);
                 if (it != m_callbacks.end()) {
@@ -1377,6 +1382,7 @@ namespace agora {
                 NODE_SET_OBJ_PROP_UINT32(obj, "numChannels", stats.numChannels);
                 NODE_SET_OBJ_PROP_UINT32(obj, "sentSampleRate", stats.sentSampleRate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "sentBitrate", stats.sentBitrate);
+                NODE_SET_OBJ_PROP_UINT32(obj, "txPacketLossRate", stats.txPacketLossRate);
 
                 Local<Value> arg[1] = { obj };
                 auto it = m_callbacks.find(RTC_EVENT_LOCAL_AUDIO_STATS);
@@ -1450,7 +1456,7 @@ namespace agora {
             MAKE_JS_CALL_2(RTC_EVENT_CHANNEL_MEDIA_RELAY_STATE, int32, state, int32, code);
         }
 
-        void NodeEventHandler::onAudioPublishStateChange(const char* channel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed)
+        void NodeEventHandler::onAudioPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed)
         {
             FUNC_TRACE;
             std::string mChannel = std::string(channel);
@@ -1465,7 +1471,7 @@ namespace agora {
             MAKE_JS_CALL_4(RTC_EVENT_AUDIO_PUBLISH_STATE_CHANGE, string, channel, int32, oldstate, int32, newstate, int32, elapsed);
         }
 
-        void NodeEventHandler::onVideoPublishStateChange(const char* channel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed)
+        void NodeEventHandler::onVideoPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed)
         {
             FUNC_TRACE;
             std::string mChannel = std::string(channel);
@@ -1480,7 +1486,7 @@ namespace agora {
             MAKE_JS_CALL_4(RTC_EVENT_VIDEO_PUBLISH_STATE_CHANGE, string, channel, int32, oldstate, int32, newstate, int32, elapsed);    
         }
 
-        void NodeEventHandler::onAudioSubscribeStateChange(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed)
+        void NodeEventHandler::onAudioSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed)
         {
             FUNC_TRACE;
             std::string mChannel = std::string(channel);
@@ -1495,7 +1501,7 @@ namespace agora {
             MAKE_JS_CALL_5(RTC_EVENT_AUDIO_SUBSCRIBE_STATE_CHANGE, string, channel, uid, uid, int32, oldstate, int32, newstate, int32, elapsed);
         }
 
-        void NodeEventHandler::onVideoSubscribeStateChange(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed)
+        void NodeEventHandler::onVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed)
         {
             FUNC_TRACE;
             std::string mChannel = std::string(channel);
@@ -1509,5 +1515,30 @@ namespace agora {
             FUNC_TRACE;
             MAKE_JS_CALL_5(RTC_EVENT_VIDEO_SUBSCRIBE_STATE_CHANGE, string, channel, uid, uid, int32, oldstate, int32, newstate, int32, elapsed);    
         }
+
+        void NodeEventHandler::onFirstLocalAudioFramePublished(int elapsed)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, elapsed] {
+                MAKE_JS_CALL_1(RTC_EVENT_FIRST_LOCAL_AUDIO_FRAME_PUBLISH, int32, elapsed);
+            });
+        }
+
+        void NodeEventHandler::onFirstLocalVideoFramePublished(int elapsed)
+        {
+            FUNC_TRACE;
+            node_async_call::async_call([this, elapsed] {
+                MAKE_JS_CALL_1(RTC_EVENT_FIRST_LOCAL_VIDEO_FRAME_PUBLISH, int32, elapsed);
+            });
+        }  
+
+        void NodeEventHandler::onRtmpStreamingEvent(const char* url, RTMP_STREAMING_EVENT eventCode)
+        {
+            FUNC_TRACE;
+            std::string mUrl(url);
+            node_async_call::async_call([this, mUrl, eventCode] {
+                MAKE_JS_CALL_2(RTC_EVENT_RTMP_STREAMING_EVENT, string, mUrl.c_str(), int32, (int)eventCode);
+            });
+        }  
     }
 }

@@ -130,7 +130,7 @@
                     'libraries': [
                     'libresolv.9.dylib',
                     'Accelerate.framework',
-                    'AgoraRtcEngineKit.framework',
+                    'AgoraRtcKit.framework',
                     'CoreWLAN.framework',
                     'Cocoa.framework',
                     'VideoToolbox.framework',
@@ -148,7 +148,7 @@
                     ]
                 },
                 'include_dirs': [
-                './sdk/lib/mac/AgoraRtcEngineKit.framework/Headers'
+                './sdk/lib/mac/AgoraRtcKit.framework/Headers'
                 ],
                 'sources': [
                     './common/node_process_unix.cpp',
@@ -314,11 +314,17 @@
                 'mac_framework_dirs': [
                 '../sdk/lib/mac'
                 ],
+                'copies': [{
+                    'destination': '<(PRODUCT_DIR)',
+                    'files': [
+                        './sdk/lib/mac/AgoraRtcKit.framework'
+                    ]
+                }],
                 'link_settings': {
                     'libraries': [
                     'libresolv.9.dylib',
                     'Accelerate.framework',
-                    'AgoraRtcEngineKit.framework',
+                    'AgoraRtcKit.framework',
                     'CoreWLAN.framework',
                     'Cocoa.framework',
                     'VideoToolbox.framework',
@@ -345,7 +351,7 @@
                     './agora_node_ext/node_screen_window_info.h'
                 ],
                 'include_dirs': [
-                './sdk/lib/mac/AgoraRtcEngineKit.framework/Headers',
+                './sdk/lib/mac/AgoraRtcKit.framework/Headers',
                 './extra/internal'
                 ],
                 'defines!': [

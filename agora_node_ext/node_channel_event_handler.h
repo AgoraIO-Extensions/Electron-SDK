@@ -107,11 +107,11 @@ namespace agora {
             
             virtual void onActiveSpeaker(IChannel *rtcChannel, uid_t uid) override;
             
-            virtual void onFirstRemoteVideoFrame(IChannel *rtcChannel, uid_t uid, int width, int height, int elapsed) override;
+            // virtual void onFirstRemoteVideoFrame(IChannel *rtcChannel, uid_t uid, int width, int height, int elapsed) override;
             
-            virtual void onUserMuteAudio(IChannel *rtcChannel, uid_t uid, bool muted) override;
+            // virtual void onUserMuteAudio(IChannel *rtcChannel, uid_t uid, bool muted) override;
             
-            virtual void onFirstRemoteAudioDecoded(IChannel *rtcChannel, uid_t uid, int elapsed) override;
+            // virtual void onFirstRemoteAudioDecoded(IChannel *rtcChannel, uid_t uid, int elapsed) override;
             
             virtual void onVideoSizeChanged(IChannel *rtcChannel, uid_t uid, int width, int height, int rotation) override;
             
@@ -125,13 +125,13 @@ namespace agora {
             
             virtual void onChannelMediaRelayEvent(IChannel *rtcChannel, CHANNEL_MEDIA_RELAY_EVENT code) override;
             
-            virtual void onFirstRemoteAudioFrame(IChannel *rtcChannel, uid_t uid, int elapsed) override;
+            // virtual void onFirstRemoteAudioFrame(IChannel *rtcChannel, uid_t uid, int elapsed) override;
             
             virtual void onRtmpStreamingStateChanged(IChannel *rtcChannel, const char *url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR errCode) override;
             
-            virtual void onStreamPublished(IChannel *rtcChannel, const char *url, int error) override;
+            // virtual void onStreamPublished(IChannel *rtcChannel, const char *url, int error) override;
             
-            virtual void onStreamUnpublished(IChannel *rtcChannel, const char *url) override;
+            // virtual void onStreamUnpublished(IChannel *rtcChannel, const char *url) override;
             
             virtual void onTranscodingUpdated(IChannel *rtcChannel) override;
             
@@ -143,13 +143,13 @@ namespace agora {
                                                 CONNECTION_STATE_TYPE state,
                                                 CONNECTION_CHANGED_REASON_TYPE reason) override;
 
-            virtual void onAudioPublishStateChange(IChannel *rtcChannel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed) override;
+            virtual void onAudioPublishStateChanged(IChannel *rtcChannel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed) override;
 
-            virtual void onVideoPublishStateChange(IChannel *rtcChannel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed) override;
+            virtual void onVideoPublishStateChanged(IChannel *rtcChannel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed) override;
 
-            virtual void onAudioSubscribeStateChange(IChannel *rtcChannel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed) override;
+            virtual void onAudioSubscribeStateChanged(IChannel *rtcChannel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed) override;
 
-            virtual void onVideoSubscribeStateChange(IChannel *rtcChannel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed) override;
+            virtual void onVideoSubscribeStateChanged(IChannel *rtcChannel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed) override;
 
         private:
             std::unordered_map<std::string, NodeEventCallback*> m_callbacks;

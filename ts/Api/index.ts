@@ -42,7 +42,11 @@ import {
   Metadata,
   AUDIO_RECORDING_QUALITY_TYPE,
   AUDIO_RECORDING_POSITION,
-  AudioRecordingConfiguration
+  AudioRecordingConfiguration,
+  AREA_CODE,
+  EncryptionConfig,
+  WatermarkOptions,
+  RTMP_STREAMING_EVENT
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -753,6 +757,18 @@ class AgoraRtcEngine extends EventEmitter {
       fire('videoSubscribeStateChange', channel, uid, oldstate, newstate, elapsed);
     });
 
+    this.rtcEngine.onEvent('firstLocalAudioFramePublished', function(elapsed: number) {
+      fire('firstLocalAudioFramePublished', elapsed);
+    })
+
+    this.rtcEngine.onEvent('firstLocalVideoFramePublished', function(elapsed: number) {
+      fire('firstLocalVideoFramePublished', elapsed);
+    })
+
+    this.rtcEngine.onEvent('rtmpStreamingEvent', function(url: string, eventCode: RTMP_STREAMING_EVENT) {
+      fire('rtmpStreamingEvent', url, eventCode);
+    })
+
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
       self.onRegisterDeliverFrame(infos);
     });
@@ -967,8 +983,10 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  initialize(appid: string): number {
-    return this.rtcEngine.initialize(appid);
+  initialize(appid: string, areaCode?: AREA_CODE): number {
+    let area = (areaCode === undefined)? 0xFFFFFFFF: areaCode;
+    console.log(`initialize ==== ${appid}, ${area}`);
+    return this.rtcEngine.initialize(appid, area);
   }
 
   /**
@@ -3145,8 +3163,10 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  videoSourceInitialize(appId: string): number {
-    return this.rtcEngine.videoSourceInitialize(appId);
+  videoSourceInitialize(appId: string, areaCode?: AREA_CODE): number {
+    let area = (areaCode === undefined)? 0xFFFFFFFF: areaCode;
+    console.log(`initialize ${appId}, ${area}`);
+    return this.rtcEngine.videoSourceInitialize(appId, area);
   }
 
   /**
@@ -3435,6 +3455,36 @@ class AgoraRtcEngine extends EventEmitter {
 
   videoSourceEnableAudio() : number {
     return this.rtcEngine.videoSourceEnableAudio()
+  }
+  /** Enables/Disables the built-in encryption.
+   *
+   * @since v3.2.0
+   *
+   * In scenarios requiring high security, Agora recommends calling this
+   * method to enable the built-in encryption before joining a channel.
+   *
+   * All users in the same channel must use the same encryption mode and
+   * encryption key. Once all users leave the channel, the encryption key of
+   * this channel is automatically cleared.
+   *
+   * **Note**:
+   * - If you enable the built-in encryption, you cannot use the RTMP or
+   * RTMPS streaming function.
+   * - The SDK returns `-4` when the encryption mode is incorrect or
+   * the SDK fails to load the external encryption library.
+   * Check the enumeration or reload the external encryption library.
+   *
+   * @param enabled Whether to enable the built-in encryption:
+   * - true: Enable the built-in encryption.
+   * - false: Disable the built-in encryption.
+   * @param encryptionConfig Configurations of built-in encryption schemas.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  videoSourceEnableEncryption(enabled: boolean, encryptionConfig: EncryptionConfig): number {
+    return this.rtcEngine.videoSourceEnableEncryption(enabled, encryptionConfig);
   }
 
   /**
@@ -4764,6 +4814,98 @@ class AgoraRtcEngine extends EventEmitter {
   sendCustomReportMessage(id: string, category: string, event: string, label: string, value: number): number {
     return this.rtcEngine.sendCustomReportMessage(id, category, event, label, value);
   }
+  /** Sets the pitch of the local music file.
+   *
+   * @since v3.1.100
+   *
+   * When a local music file is mixed with a local human voice, call this
+   * method to set the pitch of the local music file only.
+   *
+   * @note Call this method after calling {@link startAudioMixing}.
+   *
+   * @param pitch Sets the pitch of the local music file by chromatic scale.
+   * The default value is 0,
+   * which means keeping the original pitch. The value ranges from -12 to 12,
+   * and the pitch value between
+   * consecutive values is a chromatic value. The greater the absolute value
+   * of this parameter, the
+   * higher or lower the pitch of the local music file.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  setAudioMixingPitch(pitch: number): number {
+    return this.rtcEngine.setAudioMixingPitch(pitch);
+  }
+
+  /**
+   * Adjusts the playback volume of a specified remote user.
+   *
+   * You can call this method as many times as necessary to adjust the playback
+   * volume of different remote users, or to repeatedly adjust the playback
+   * volume of the same remote user.
+   *
+   * @note
+   * - Call this method after joining a channel.
+   * - The playback volume here refers to the mixed volume of a specified
+   * remote user.
+   * - This method can only adjust the playback volume of one specified remote
+   * user at a time. To adjust the playback volume of different remote users,
+   * call the method as many times, once for each remote user.
+   *
+   * @param uid The ID of the remote user.
+   * @param volume The playback volume of the specified remote user. The value
+   * ranges from 0 to 100:
+   * - 0: Mute.
+   * - 100: Original volume.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  adjustUserPlaybackSignalVolume(uid: number, volume: number): number {
+    return this.rtcEngine.adjustUserPlaybackSignalVolume(uid, volume);
+  }
+
+  /** Enables/Disables the built-in encryption.
+   *
+   * @since v3.1.100
+   *
+   * In scenarios requiring high security, Agora recommends calling this
+   * method to enable the built-in encryption before joining a channel.
+   *
+   * All users in the same channel must use the same encryption mode and
+   * encryption key. Once all users leave the channel, the encryption key of
+   * this channel is automatically cleared.
+   *
+   * **Note**:
+   * - If you enable the built-in encryption, you cannot use the RTMP or
+   * RTMPS streaming function.
+   * - The SDK returns `-4` when the encryption mode is incorrect or
+   * the SDK fails to load the external encryption library.
+   * Check the enumeration or reload the external encryption library.
+   *
+   * @param enabled Whether to enable the built-in encryption:
+   * - true: Enable the built-in encryption.
+   * - false: Disable the built-in encryption.
+   * @param config Configurations of built-in encryption schemas.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  enableEncryption(enabled: boolean, config: EncryptionConfig): number {
+    return this.rtcEngine.enableEncryption(enabled, config);
+  }
+
+  addVideoWatermark(watermarkUrl: string, options: WatermarkOptions): number {
+    return this.rtcEngine.addVideoWatermark(watermarkUrl, options);
+  }
+
+  clearVideoWatermarks(): number {
+    return this.rtcEngine.clearVideoWatermarks();
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
@@ -5671,6 +5813,57 @@ declare interface AgoraRtcEngine {
     metadata: Metadata
     ) => void): this;
 
+  /** Occurs when the first audio frame is published.
+    *
+    * @since v3.1.100
+    *
+    * The SDK triggers this callback under one of the following circumstances:
+    * - The local client enables the audio module and calls {@link joinChannel}
+    * successfully.
+    * - The local client calls
+    * {@link muteLocalAudioStream muteLocalAudioStream(true)} and
+    * {@link muteLocalAudioStream muteLocalAudioStream(false)} in sequence.
+    * - The local client calls {@link disableAudio} and {@link enableAudio}
+    * in sequence.
+    *
+    * @param cb.elapsed The time elapsed (ms) from the local client calling
+    * {@link joinChannel} until the SDK triggers this callback.
+    */
+  on(evt: 'firstLocalAudioFramePublished', cb: (
+    elapsed: number
+  )=>void): this;
+  /** Occurs when the first video frame is published.
+   *
+   * @since v3.1.100
+   *
+   * The SDK triggers this callback under one of the following circumstances:
+   * - The local client enables the video module and calls {@link joinChannel}
+   * successfully.
+   * - The local client calls
+   * {@link muteLocalVideoStream muteLocalVideoStream(true)}and
+   * {@link muteLocalVideoStream muteLocalVideoStream(false)} in sequence.
+   * - The local client calls {@link disableVideo} and {@link enableVideo}
+   * in sequence.
+   *
+   * @param cb.elapsed The time elapsed (ms) from the local client calling
+   * {@link joinChannel} until the SDK triggers this callback.
+   */
+  on(evt: 'firstLocalVideoFramePublished', cb: (
+    elapsed: number
+  )=>void): this;
+
+ /** Reports events during the RTMP or RTMPS streaming.
+  *
+  * @since v3.1.100
+  *
+  * @param cb.url The RTMP or RTMPS streaming URL.
+  * @param cb.eventCode The event code.
+  */
+ on(evt: 'rtmpStreamingEvent', cb: (
+  url: string,
+  eventCode: RTMP_STREAMING_EVENT
+)=>void): this;
+
   on(evt: string, listener: Function): this;
 }
 
@@ -6154,6 +6347,66 @@ export class AgoraRtcChannel extends EventEmitter
 
   setMaxMetadataSize(size: number): number {
     return this.rtcChannel.setMaxMetadataSize(size);
+  }
+
+/**
+   * Adjusts the playback volume of a specified remote user.
+   *
+   * You can call this method as many times as necessary to adjust the playback
+   * volume of different remote users, or to repeatedly adjust the playback
+   * volume of the same remote user.
+   *
+   * @note
+   * - Call this method after joining a channel.
+   * - The playback volume here refers to the mixed volume of a specified
+   * remote user.
+   * - This method can only adjust the playback volume of one specified remote
+   * user at a time. To adjust the playback volume of different remote users,
+   * call the method as many times, once for each remote user.
+   *
+   * @param uid The ID of the remote user.
+   * @param volume The playback volume of the specified remote user. The value
+   * ranges from 0 to 100:
+   * - 0: Mute.
+   * - 100: Original volume.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  adjustUserPlaybackSignalVolume(uid: number, volume: number): number {
+    return this.rtcChannel.adjustUserPlaybackSignalVolume(uid, volume);
+  }
+
+  /** Enables/Disables the built-in encryption.
+   *
+   * @since v3.1.100
+   *
+   * In scenarios requiring high security, Agora recommends calling this
+   * method to enable the built-in encryption before joining a channel.
+   *
+   * All users in the same channel must use the same encryption mode and
+   * encryption key. Once all users leave the channel, the encryption key
+   * of this channel is automatically cleared.
+   *
+   * @note
+   * - If you enable the built-in encryption, you cannot use the RTMP
+   * or RTMPS streaming function.
+   * - The SDK returns `-4` when the encryption mode is incorrect or the SDK
+   * fails to load the external encryption library. Check the enumeration or
+   * reload the external encryption library.
+   *
+   * @param enabled Whether to enable the built-in encryption:
+   * - true: Enable the built-in encryption.
+   * - false: Disable the built-in encryption.
+   * @param config Configurations of built-in encryption schemas.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  enableEncryption(enabled: boolean, config: EncryptionConfig): number {
+    return this.rtcChannel.enableEncryption(enabled, config);
   }
 }
 

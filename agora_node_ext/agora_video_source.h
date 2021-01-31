@@ -57,7 +57,7 @@ namespace agora{
              * To initialize Video source.
              * @param eventHandler : video source event handler.
              */
-            virtual bool initialize(IAgoraVideoSourceEventHandler *eventHandler, const char* appid) = 0;
+            virtual bool initialize(IAgoraVideoSourceEventHandler *eventHandler, const char* appid, unsigned int areaCode) = 0;
 
             /**
              * To ask video source to join channel with specified parameters.
@@ -159,7 +159,7 @@ namespace agora{
             /**
              * start screen capture by screen rect
              */
-            virtual node_error startScreenCaptureByScreen(ScreenIDType screenId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams) = 0;
+            virtual node_error startScreenCaptureByScreen(ScreenIDType screenId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams, const std::vector<agora::rtc::IRtcEngine::WindowIDType>& excludeWindows) = 0;
             
             /**
              * start screen capture by windowId
@@ -169,8 +169,7 @@ namespace agora{
             /**
              * start screen capture by windowId
              */
-            virtual node_error updateScreenCaptureParameters(const agora::rtc::ScreenCaptureParameters & captureParams) = 0;
-            
+            virtual node_error updateScreenCaptureParameters(const agora::rtc::ScreenCaptureParameters & captureParams, const std::vector<agora::rtc::IRtcEngine::WindowIDType>& excludeWindows) = 0;
             /**
              * Enable loopbackRecording
              * @param enabled : whether enable loopbackRecording
@@ -187,6 +186,8 @@ namespace agora{
              * Set addon logfile path
              */
             virtual node_error setAddonLogFile(const char* filePath) = 0;
+
+            virtual node_error enableEncryption(bool enable, EncryptionConfig encryptionConfig) = 0;
         };
 
         /**

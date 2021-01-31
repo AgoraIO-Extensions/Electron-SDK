@@ -94,7 +94,8 @@ enum AgoraIpcMsg
     AGORA_IPC_ENABLE_LOOPBACK_RECORDING,
     /** Node ADDON ==> video source, to enable audio*/
     AGORA_IPC_ENABLE_AUDIO,
-    AGORA_IPC_SET_ADDON_LOGFILE
+    AGORA_IPC_SET_ADDON_LOGFILE,
+    AGORA_IPC_ENABLE_ENCRYPTION
 };
 
 /**
@@ -119,11 +120,15 @@ struct CaptureScreenCmd
     {}
 };
 
+#define MAX_WINDOW_ID_COUNT 128
+
 struct CaptureScreenByDisplayCmd
 {
     ScreenIDType screenId;
     agora::rtc::Rectangle regionRect;
     agora::rtc::ScreenCaptureParameters captureParams;
+    agora::rtc::IRtcEngine::WindowIDType excludeWindowList[MAX_WINDOW_ID_COUNT];
+    int excludeWindowCount;
 };
 
 struct CaptureScreenByWinCmd
@@ -131,6 +136,13 @@ struct CaptureScreenByWinCmd
     agora::rtc::IRtcEngine::WindowIDType windowId;
     agora::rtc::Rectangle regionRect;
     agora::rtc::ScreenCaptureParameters captureParams;
+};
+
+struct ScreenCaptureParametersCmd
+{
+    agora::rtc::ScreenCaptureParameters captureParams;
+    agora::rtc::IRtcEngine::WindowIDType excludeWindowList[MAX_WINDOW_ID_COUNT];
+    int excludeWindowCount;
 };
 
 #define MAX_TOKEN_LEN 512
@@ -205,6 +217,19 @@ public:
     SetParameterCmd()
         :parameters{ 0 }
     {}
+};
+
+struct EncryptionConfigCmd
+{
+public:
+    bool enable;
+    agora::rtc::ENCRYPTION_MODE encryptionMode;
+    char encryptionKey[agora::rtc::MAX_DEVICE_ID_LENGTH];
+
+    EncryptionConfigCmd():encryptionMode(agora::rtc::ENCRYPTION_MODE::AES_128_XTS),encryptionKey{'\0'}{
+    }
+
+    /* data */
 };
 
 /**
