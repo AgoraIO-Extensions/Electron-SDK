@@ -18,8 +18,8 @@ const macPrepare = () => {
       return fs.mkdirp(path.join(__dirname, '../sdk/lib/mac'))
     }).then(() => {
       return fs.move(
-        path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcEngineKit.framework'),
-        path.join(__dirname, '../sdk/lib/mac/AgoraRtcEngineKit.framework')
+        path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcKit.framework'),
+        path.join(__dirname, '../sdk/lib/mac/AgoraRtcKit.framework')
       )
     }).then(() => {
       resolve()
@@ -114,7 +114,7 @@ module.exports = ({
     }).then(() => {
       logger.info("Success", "Unzip finished");
       if(os === "mac") {
-        return globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcEngineKit.framework/'))
+        return globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcKit.framework/'))
       } else {
         return globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Windows*/'))
       }

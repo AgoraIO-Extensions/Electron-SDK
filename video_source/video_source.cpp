@@ -14,6 +14,7 @@
 #include "video_source_param_parser.h"
 #include "video_source_ipc.h"
 #include "node_log.h"
+#include <sstream>
 
 #define PROCESS_RUN_EVENT_NAME "agora_video_source_process_ready_event_name"
 #define DATA_IPC_NAME "avsipc"
@@ -59,6 +60,8 @@ bool AgoraVideoSource::initialize()
         return false;
     }
 
+    std::string areaCode = m_paramParser->getParameter("areaCode");
+
     std::string id = m_paramParser->getParameter("id");
     if (id.empty()) {
         LOG_ERROR("%s, id is null\n", __FUNCTION__);
@@ -88,9 +91,11 @@ bool AgoraVideoSource::initialize()
 
     m_eventHandler.reset(new AgoraVideoSourceEventHandler(*this));
     m_renderFactory.reset(new AgoraVideoSourceRenderFactory(*this));
+    std::istringstream os(areaCode);
     RtcEngineContext context;
     context.eventHandler = m_eventHandler.get();
     context.appId = appid.c_str();
+    os>>context.areaCode;
     LOG_ERROR("initialized: %s, appid\n", __FUNCTION__);
     if (m_rtcEngine->initialize(context) != 0){
         LOG_ERROR("%s, AgoraVideoSource initialize failed.\n", __FUNCTION__);
@@ -291,6 +296,15 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
         if (payload) {
             CaptureScreenByDisplayCmd *cmd = (CaptureScreenByDisplayCmd*)payload;
             agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
+            agora::rtc::view_t excludeWindows[MAX_WINDOW_ID_COUNT] = {nullptr};
+            if (cmd->excludeWindowCount > 0) {
+                for (int i = 0; i < cmd->excludeWindowCount; ++i) {
+                    agora::rtc::view_t windowId = reinterpret_cast<agora::rtc::view_t>(cmd->excludeWindowList[i]);
+                    excludeWindows[i] = windowId;
+                }
+                cmd->captureParams.excludeWindowList = excludeWindows;
+                cmd->captureParams.excludeWindowCount  = cmd->excludeWindowCount;
+            }
             int result = 0;
 #if defined(_WIN32)
             result = m_rtcEngine->startScreenCaptureByScreenRect(cmd->screenId, cmd->regionRect, cmd->captureParams);
@@ -321,8 +335,18 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
     }
     else if(msg == AGORA_IPC_UPDATE_SCREEN_CAPTURE_PARAMS) {
         if (payload) {
-            agora::rtc::ScreenCaptureParameters* params = (agora::rtc::ScreenCaptureParameters*)payload;
-            m_rtcEngine->updateScreenCaptureParameters(*params);
+            ScreenCaptureParametersCmd* cmd = (ScreenCaptureParametersCmd*)payload;
+            agora::rtc::view_t excludeWindows[MAX_WINDOW_ID_COUNT] = {nullptr};
+            if (cmd->excludeWindowCount > 0) {
+                for (int i = 0; i < cmd->excludeWindowCount; ++i) {
+                    agora::rtc::view_t windowId = reinterpret_cast<agora::rtc::view_t>(cmd->excludeWindowList[i]);
+                    excludeWindows[i] = windowId;
+                }
+                cmd->captureParams.excludeWindowList = excludeWindows;
+                cmd->captureParams.excludeWindowCount  = cmd->excludeWindowCount;
+            }
+
+            m_rtcEngine->updateScreenCaptureParameters(cmd->captureParams);
         }
     }
     else if(msg == AGORA_IPC_SET_SCREEN_CAPTURE_CONTENT_HINT) {
@@ -342,6 +366,13 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
         stopLogService();
         startLogService((char*)payload);
         LOG_INFO("set addon log file\n");
+    }
+    else if(msg == AGORA_IPC_ENABLE_ENCRYPTION) {
+        EncryptionConfigCmd *cmd = (EncryptionConfigCmd*)payload;
+        agora::rtc::EncryptionConfig config;
+        config.encryptionKey = cmd->encryptionKey;
+        config.encryptionMode = cmd->encryptionMode;
+        m_rtcEngine->enableEncryption(cmd->enable, config);
     }
     LOG_LEAVE;
 }
