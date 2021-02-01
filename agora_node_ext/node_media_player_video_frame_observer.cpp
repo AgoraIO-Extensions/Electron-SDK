@@ -8,7 +8,7 @@ namespace agora {
     namespace rtc {
 
         long long GetHighAccuracyTickCount() {
-            auto tse = std::chrono::high_resolution_clock::now();
+            auto tse = std::chrono::system_clock::now();
             auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(tse.time_since_epoch()).count();
             return milliseconds;
         }
@@ -39,7 +39,7 @@ namespace agora {
                 vframe.stride = frame->yStride;
                 vframe.height = frame->height;
                 vframe.timestamp = static_cast<long long>(GetHighAccuracyTickCount());
-                vframe.rotation = 0;
+                vframe.rotation = realRotation;
                 vframe.type = agora::media::ExternalVideoFrame::VIDEO_BUFFER_TYPE::VIDEO_BUFFER_RAW_DATA;
                 vframe.format = agora::media::ExternalVideoFrame::VIDEO_PIXEL_FORMAT::VIDEO_PIXEL_I420;
                 vframe.cropLeft = 0;
