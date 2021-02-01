@@ -1,3 +1,10 @@
+## 3.3.0 (Feb 1st, 2021)
+* add new api:
+  - setCloudProxy
+  - enableDeepLearningDenoise
+  - setVoiceBeautifierParameters
+  - uploadLogFile
+
 ## 3.2.1.71 (December 29th, 2020)
 * Support Electron 9.0.0, 10.2.0
 
