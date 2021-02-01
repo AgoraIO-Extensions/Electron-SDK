@@ -1,4 +1,4 @@
-## 3.3.0 (Feb 1st, 2021)
+## 3.3.0-build.1220 (Feb 1st, 2021)
 * add new api:
   - setCloudProxy
   - enableDeepLearningDenoise
