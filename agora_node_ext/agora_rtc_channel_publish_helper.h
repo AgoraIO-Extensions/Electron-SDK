@@ -45,6 +45,7 @@ namespace agora
 				{
 					if (rtc_engine_)
 					{
+						// rtc_engine_->setLocalVideoMirrorMode(agora::rtc::VIDEO_MIRROR_MODE_DISABLED);
 						agora::util::AutoPtr<agora::media::IMediaEngine> mediaEngine;
 						mediaEngine.queryInterface(rtc_engine_, agora::AGORA_IID_MEDIA_ENGINE);
 						if (mediaEngine)
@@ -88,6 +89,11 @@ namespace agora
 			// 启动/停止推送音频流到频道
 			void publishAudioToRtc(NodeMediaPlayerAudioFrameObserver *audioObserver)
 			{
+				if (rtc_engine_) {
+					// rtc_engine_->setAudioProfile(agora::rtc::AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO, agora::rtc::AUDIO_SCENARIO_CHATROOM_ENTERTAINMENT);
+					rtc_engine_->setRecordingAudioFrameParameters(48000, 2, agora::rtc::RAW_AUDIO_FRAME_OP_MODE_READ_WRITE, 960);
+					rtc_engine_->setPlaybackAudioFrameParameters(48000, 2, agora::rtc::RAW_AUDIO_FRAME_OP_MODE_READ_WRITE, 960);
+				}
 				if (mediaPlayerAudioFrameObserver_ && mediaPlayerAudioFrameObserver_ != audioObserver)
 				{
 					mediaPlayerAudioFrameObserver_->unpublishAudioToRtc();

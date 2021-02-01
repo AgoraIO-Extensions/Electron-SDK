@@ -61,97 +61,6 @@ export default class App extends Component {
     if(!this.rtcEngine) {
       this.rtcEngine = new AgoraRtcEngine()
       this.rtcEngine.setAddonLogFile("electron_test_log.txt");
-      this.mediaPlayer = this.rtcEngine.createMediaPlayer();
-      let ret1 = this.mediaPlayer.initialize();
-      console.log(`initialize  ${ret1}`)
-      this.mediaPlayer.on('onPlayerStateChanged', (state, ec)=>{
-        console.log(`onPlayerStateChanged  state: ${state}  ec:${ec}`);
-        if (state == 2) {
-        //   this.setState({
-        //     mediaPlayerView: "mediaPlayerView"
-        // })
-        let a19 = this.mediaPlayer.setLogFile("log.txt")
-        console.log(`mediaPlayer.setLogFile ${a19}`);
-        
-        let mediaInfo = this.mediaPlayer.getStreamInfo(0);
-        if (mediaInfo.streamType == 1) {
-          let rotation = mediaInfo.videoRotation;
-          this.mediaPlayer.setVideoRotation(rotation)
-        } else {
-          let mediaInfo1 = this.mediaPlayer.getStreamInfo(1);
-          if (mediaInfo1.streamType == 1) {
-            let rotation = mediaInfo1.videoRotation;
-            this.mediaPlayer.setVideoRotation(rotation)
-          }
-        }
-
-        let a = this.mediaPlayer.play();
-        console.log(`mediaPlayer.play ${a}`);
-
-          // let a21 = this.mediaPlayer.setPlayerOption("", 1)
-          // console.log(`mediaPlayer.setPlayerOption ${a21}`);
-
-          // let a1 = this.mediaPlayer.pause()
-          // console.log(`mediaPlayer.pause ${a1}`);
-
-          // let a3 = this.mediaPlayer.seek(5)
-          // console.log(`mediaPlayer.seek ${a3}`);
-          // let a4 = this.mediaPlayer.mute(true)
-          // console.log(`mediaPlayer.mute ${a4}`);
-          // let a5 = this.mediaPlayer.getMute()
-          // console.log(`mediaPlayer.getMute ${a5}`);
-          let a6 = this.mediaPlayer.adjustPlayoutVolume(100)
-          console.log(`mediaPlayer.adjustPlayoutVolume ${a6}`);
-          // let a7 = this.mediaPlayer.getPlayoutVolume()
-          // console.log(`mediaPlayer.getPlayoutVolume ${a7}`);
-          // let a8 = this.mediaPlayer.getPlayPosition()
-          // console.log(`mediaPlayer.getPlayPosition ${a8}`);
-          let a9 = this.mediaPlayer.getDuration()
-          console.log(`mediaPlayer.getDuration ${a9}`);
-          let a10 = this.mediaPlayer.getState()
-          console.log(`mediaPlayer.getState ${a10}`);
-          // let a11 = this.mediaPlayer.getStreamCount()
-          // console.log(`mediaPlayer.getStreamCount ${a11}`);
-          // let a12 = this.mediaPlayer.connect("", "123", "")
-          // console.log(`mediaPlayer.connect ${a12}`);
-          // let a13 = this.mediaPlayer.disconnect()
-          // console.log(`mediaPlayer.disconnect ${a13}`);
-          // let a14 = this.mediaPlayer.publishVideo()
-          // console.log(`mediaPlayer.publishVideo ${a14}`);
-          // let a15 = this.mediaPlayer.unpublishVideo()
-          // console.log(`mediaPlayer.unpublishVideo ${a15}`);
-          // let a16 = this.mediaPlayer.publishAudio()
-          // console.log(`mediaPlayer.publishAudio ${a16}`);
-          // let a17 = this.mediaPlayer.unpublishAudio()
-          // console.log(`mediaPlayer.unpublishAudio ${a17}`);
-          // let a18 = this.mediaPlayer.adjustPublishSignalVolume(90)
-          // console.log(`mediaPlayer.adjustPublishSignalVolume ${a18}`);
-          // let a20 = this.mediaPlayer.setLogFilter(1)
-          // console.log(`mediaPlayer.setLogFilter ${a20}`);
-          // let a22 = this.mediaPlayer.changePlaybackSpeed(200)
-          // console.log(`mediaPlayer.changePlaybackSpeed ${a22}`);
-          // let a23 = this.mediaPlayer.selectAudioTrack(1)
-          // console.log(`mediaPlayer.selectAudioTrack ${a23}`);
-          // let a2 = this.mediaPlayer.stop()
-          // console.log(`mediaPlayer.stop ${a2}`);
-
-        }
-      })
-
-      this.mediaPlayer.on('onPlayEvent', (event)=>{
-        console.log(`onPlayEvent  event: ${event}`);
-      })
-
-      this.mediaPlayer.on('onPositionChanged', (position)=>{
-        console.log(`onPositionChanged  position: ${position}`);
-          this.setState({
-            mediaPlayerView: "mediaPlayerView"
-          })
-      })
-
-      this.mediaPlayer.open("https://big-class-test.oss-cn-hangzhou.aliyuncs.com/61102.1592987815092.mp4", 0);
-    
-      
       this.rtcEngine.initialize(APP_ID)
       this.rtcEngine.initializePluginManager();
       const libPath = isMac ? 
@@ -191,6 +100,8 @@ export default class App extends Component {
       this.setState({
         local: uid
       });
+      this.mediaPlayer.mute(true);
+      this.mediaPlayer.publishAudioToRtc();
     });
     rtcEngine.on('userjoined', (uid, elapsed) => {
       if (uid === SHARE_ID && this.state.localSharing) {
@@ -422,6 +333,102 @@ export default class App extends Component {
 
   }
 
+  openMediaPlayer = e => {
+    let rtcEngine = this.getRtcEngine()
+    this.mediaPlayer = rtcEngine.createMediaPlayer();
+      let ret1 = this.mediaPlayer.initialize();
+      console.log(`initialize  ${ret1}`)
+      this.mediaPlayer.on('onPlayerStateChanged', (state, ec)=>{
+        console.log(`onPlayerStateChanged  state: ${state}  ec:${ec}`);
+        if (state == 2) {
+        //   this.setState({
+        //     mediaPlayerView: "mediaPlayerView"
+        // })
+        let a19 = this.mediaPlayer.setLogFile("log.txt")
+        console.log(`mediaPlayer.setLogFile ${a19}`);
+        
+        let mediaInfo = this.mediaPlayer.getStreamInfo(0);
+        if (mediaInfo.streamType == 1) {
+          let rotation = mediaInfo.videoRotation;
+          this.mediaPlayer.setVideoRotation(rotation)
+        } else {
+          let mediaInfo1 = this.mediaPlayer.getStreamInfo(1);
+          if (mediaInfo1.streamType == 1) {
+            let rotation = mediaInfo1.videoRotation;
+            this.mediaPlayer.setVideoRotation(rotation)
+          }
+        }
+
+        let a = this.mediaPlayer.play();
+        console.log(`mediaPlayer.play ${a}`);
+
+          // let a21 = this.mediaPlayer.setPlayerOption("", 1)
+          // console.log(`mediaPlayer.setPlayerOption ${a21}`);
+
+          // let a1 = this.mediaPlayer.pause()
+          // console.log(`mediaPlayer.pause ${a1}`);
+
+          // let a3 = this.mediaPlayer.seek(5)
+          // console.log(`mediaPlayer.seek ${a3}`);
+          // let a4 = this.mediaPlayer.mute(true)
+          // console.log(`mediaPlayer.mute ${a4}`);
+          // let a5 = this.mediaPlayer.getMute()
+          // console.log(`mediaPlayer.getMute ${a5}`);
+          let a6 = this.mediaPlayer.adjustPlayoutVolume(100)
+          console.log(`mediaPlayer.adjustPlayoutVolume ${a6}`);
+          // let a7 = this.mediaPlayer.getPlayoutVolume()
+          // console.log(`mediaPlayer.getPlayoutVolume ${a7}`);
+          // let a8 = this.mediaPlayer.getPlayPosition()
+          // console.log(`mediaPlayer.getPlayPosition ${a8}`);
+          let a9 = this.mediaPlayer.getDuration()
+          console.log(`mediaPlayer.getDuration ${a9}`);
+          let a10 = this.mediaPlayer.getState()
+          console.log(`mediaPlayer.getState ${a10}`);
+          // let a11 = this.mediaPlayer.getStreamCount()
+          // console.log(`mediaPlayer.getStreamCount ${a11}`);
+          // let a12 = this.mediaPlayer.connect("", "123", "")
+          // console.log(`mediaPlayer.connect ${a12}`);
+          // let a13 = this.mediaPlayer.disconnect()
+          // console.log(`mediaPlayer.disconnect ${a13}`);
+          // let a14 = this.mediaPlayer.publishVideo()
+          // console.log(`mediaPlayer.publishVideo ${a14}`);
+          // let a15 = this.mediaPlayer.unpublishVideo()
+          // console.log(`mediaPlayer.unpublishVideo ${a15}`);
+          // let a16 = this.mediaPlayer.publishAudio()
+          // console.log(`mediaPlayer.publishAudio ${a16}`);
+          // let a17 = this.mediaPlayer.unpublishAudio()
+          // console.log(`mediaPlayer.unpublishAudio ${a17}`);
+          let a18 = this.mediaPlayer.adjustPublishSignalVolume(90)
+          // console.log(`mediaPlayer.adjustPublishSignalVolume ${a18}`);
+          // let a20 = this.mediaPlayer.setLogFilter(1)
+          // console.log(`mediaPlayer.setLogFilter ${a20}`);
+          // let a22 = this.mediaPlayer.changePlaybackSpeed(200)
+          // console.log(`mediaPlayer.changePlaybackSpeed ${a22}`);
+          // let a23 = this.mediaPlayer.selectAudioTrack(1)
+          // console.log(`mediaPlayer.selectAudioTrack ${a23}`);
+          // let a2 = this.mediaPlayer.stop()
+          // console.log(`mediaPlayer.stop ${a2}`);
+          this.mediaPlayer.publishVideoToRtc();
+
+        }
+      })
+
+      this.mediaPlayer.on('onPlayEvent', (event)=>{
+        console.log(`onPlayEvent  event: ${event}`);
+      })
+
+      this.mediaPlayer.on('onPositionChanged', (position)=>{
+        console.log(`onPositionChanged  position: ${position}`);
+          this.setState({
+            mediaPlayerView: "mediaPlayerView"
+          })
+      })
+
+      this.mediaPlayer.open("https://big-class-test.oss-cn-hangzhou.aliyuncs.com/61102.1592987815092.mp4", 0);
+      // this.mediaPlayer.open("/Users/dyf/Documents/project/Electron/61102.1592987815092.mp4", 0);
+
+  }
+
   handleCameraChange = e => {
     this.setState({camera: e.currentTarget.value});
     this.getRtcEngine().setVideoDevice(this.state.videoDevices[e.currentTarget.value].deviceid);
@@ -539,7 +546,7 @@ export default class App extends Component {
 
   handleScreenSharing = (e) => {
     // getWindowInfo and open Modal
-    let rtcEngine = this.getRtcEngine()
+      
     let list = rtcEngine.getScreenWindowsInfo();
     Promise.all(list.map(item => readImage(item.image))).then(imageList => {
       let windowList = list.map((item, index) => {
@@ -1025,6 +1032,11 @@ export default class App extends Component {
               <button onClick={this.handleJoin} className="button is-link">Join</button>
             </div>
           </div>
+          <div className="field is-grouped is-grouped-right">
+            <div className="control">
+              <button onClick={this.openMediaPlayer} className="button is-link">Open Media Player</button>
+            </div>
+          </div>
           <hr/>
           <div className="field">
             <label className="label">Network Test</label>
@@ -1092,7 +1104,7 @@ export default class App extends Component {
         </div>
         <div className="column is-three-quarters window-container">
           {this.state.users.map((item, key) => (
-            <Window key={key} uid={item.uid} channel={item.channelId} rtcEngine={this.rtcEngine} role={item===SHARE_ID?'remoteVideoSource':'remote'}></Window>
+            <Window key={key} uid={item} channel="" rtcEngine={this.rtcEngine} role={item===SHARE_ID?'remoteVideoSource':'remote'}></Window>
           ))}
           {this.state.local ? (<Window uid={this.state.local} rtcEngine={this.rtcEngine} role="local">
 
