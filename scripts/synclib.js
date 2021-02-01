@@ -32,7 +32,7 @@ const macPrepare = () => {
 const winPrepare = (folder) => {
   return new Promise((resolve, reject) => {
     Promise.all([
-      fs.remove(path.join(__dirname, '../sdk'))
+      // fs.remove(path.join(__dirname, '../sdk'))
     ]).then(() => {
       return fs.mkdirp(path.join(__dirname, '../sdk/lib'))
     }).then(() => {
@@ -52,7 +52,7 @@ const winPrepare = (folder) => {
 const win64Prepare = (folder) => {
   return new Promise((resolve, reject) => {
     Promise.all([
-      fs.remove(path.join(__dirname, '../sdk'))
+      // fs.remove(path.join(__dirname, '../sdk'))
     ]).then(() => {
       return fs.mkdirp(path.join(__dirname, '../sdk'))
     }).then(() => {
