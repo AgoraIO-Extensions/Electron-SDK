@@ -265,7 +265,11 @@
                         './sdk/dll/libagora-ffmpeg.dll',
                         './sdk/dll/libagora-mpg123.dll',
                         './sdk/dll/libagora-soundtouch.dll',
-                        './sdk/dll/libhwcodec.dll'
+                        './sdk/dll/libhwcodec.dll',
+                        './sdk/dll/av1.dll',
+                        './sdk/dll/libagora_ai_denoise_extension.dll',
+                        './sdk/dll/libagora_dav1d_extension.dll',
+                        './sdk/dll/libagora-core.dll',
                     ]
                 }],
                 'library_dirs': [
