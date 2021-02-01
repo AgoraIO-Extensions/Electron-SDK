@@ -70,7 +70,7 @@
   },
   "agora_electron": {
     "lib_sdk_win": "http://192.168.99.149:8086/v3.2.1.71/AgoraSDK/Windows/testing/Agora_Native_SDK_for_Windows_v3.2.1.71_FULL_20201225_1808_33515.zip",
-    "lib_sdk_mac": "http://192.168.99.149:8086/v3.2.1.71/AgoraSDK/Mac/Agora_Native_SDK_for_Mac_v3.2.1.71_FULL_20201225_2175_33519.zip"
+    "lib_sdk_mac": "http://192.168.99.149:8086/v3.2.1.92/AgoraSDK/Mac/Agora_Native_SDK_for_Mac_v3.2.1.92_FULL_20201218_2062_31357.zip"
   },
   "keywords": [
     "electron",
