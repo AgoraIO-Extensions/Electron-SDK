@@ -85,7 +85,6 @@ const winPrepare = (folder) => {
         fs.move(path.join(folder, './libs/x86/agora_rtc_sdk.lib'), path.join(__dirname, '../sdk/lib/agora_rtc_sdk.lib')),
         fs.move(path.join(folder, './libs/x86/av1.dll'), path.join(__dirname, '../sdk/dll/av1.dll')),
         fs.move(path.join(folder, './libs/x86/libagora_ai_denoise_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_ai_denoise_extension.dll')),
-        fs.move(path.join(folder, './libs/x86/libagora_dav1d_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_dav1d_extension.dll')),
         fs.move(path.join(folder, './libs/x86/libagora-core.dll'), path.join(__dirname, '../sdk/dll/libagora-core.dll')),
       ])
     }).then(() => {
@@ -116,7 +115,6 @@ const win64Prepare = (folder) => {
         fs.move(path.join(folder, './libs/x86_64/agora_rtc_sdk.lib'), path.join(__dirname, '../sdk/lib/agora_rtc_sdk.lib')),
         fs.move(path.join(folder, './libs/x86_64/av1.dll'), path.join(__dirname, '../sdk/dll/av1.dll')),
         fs.move(path.join(folder, './libs/x86_64/libagora_ai_denoise_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_ai_denoise_extension.dll')),
-        fs.move(path.join(folder, './libs/x86_64/libagora_dav1d_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_dav1d_extension.dll')),
         fs.move(path.join(folder, './libs/x86_64/libagora-core.dll'), path.join(__dirname, '../sdk/dll/libagora-core.dll')),
       ])
     }).then(() => {
