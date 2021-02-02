@@ -980,6 +980,22 @@ namespace agora {
             MAKE_JS_CALL_2(RTC_EVENT_STREAM_PUBLISHED, string, url, int32, error);
         }
 
+        void NodeEventHandler::onStreamPublished(const char *url, int error)
+        {
+            std::string mUrl = std::string(url);
+            node_async_call::async_call([this, mUrl, error] {
+                this->onStreamPublished_node(mUrl.c_str(), error);
+            });
+        }
+        
+        void NodeEventHandler::onStreamUnpublished(const char *url)
+        {
+            std::string mUrl = std::string(url);
+            node_async_call::async_call([this, mUrl] {
+                this->onStreamUnpublished_node(mUrl.c_str());
+            });   
+        }
+
         void NodeEventHandler::onStreamUnpublished_node(const char *url)
         {
             FUNC_TRACE;

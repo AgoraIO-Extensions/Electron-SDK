@@ -211,6 +211,8 @@ namespace agora {
             virtual void onAudioSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState);
             virtual void onVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState);
             virtual void onAudioRouteChanged(AUDIO_ROUTE_TYPE routing);
+            virtual void onStreamPublished(const char *url, int error);
+            virtual void onStreamUnpublished(const char *url);
             
   private:
             void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
