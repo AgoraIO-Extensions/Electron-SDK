@@ -192,6 +192,8 @@ namespace agora {
 
             //3.0.0
             virtual void onRtmpStreamingStateChanged(const char *url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR errCode) override;
+            virtual void onStreamPublished(const char *url, int error);
+            virtual void onStreamUnpublished(const char *url);
         private:
             void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
             void onRejoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
