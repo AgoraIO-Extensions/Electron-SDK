@@ -51,7 +51,9 @@ export default class App extends Component {
         encoderWidth: 0,
         encoderHeight: 0,
         hookplayerpath: "",
-        audioHookEnabled: false
+        audioHookEnabled: false,
+        mediaPlayerUrl: "https://big-class-test.oss-cn-hangzhou.aliyuncs.com/61102.1592987815092.mp4",
+        
       }
     }
     this.enableAudioMixing = false;
@@ -101,7 +103,7 @@ export default class App extends Component {
         local: uid
       });
       this.mediaPlayer.mute(true);
-      this.mediaPlayer.publishAudioToRtc();
+      this.mediaPlayer.publishAudioToRtc(false, true);
     });
     rtcEngine.on('userjoined', (uid, elapsed) => {
       if (uid === SHARE_ID && this.state.localSharing) {
@@ -185,30 +187,30 @@ export default class App extends Component {
     rtcEngine.on('videoSubscribeStateChange', (channel, uid, oldstate, newstate, elapsed) => {
       console.log(`rtcEngine videoSubscribeStateChange   channel: ${channel}, uid:${uid}, oldstate:${oldstate}, newstate:${newstate}, elapsed:${elapsed}`)
     })
-    rtcEngine.on("receiveMetadata", (metadata) => {
-      let bufferdata = JSON.parse(metadata.buffer)
-      console.log("receiveMetadata : " + bufferdata.width)
-    })
-    rtcEngine.on("sendMetadataSuccess", (metadata) => {
-      console.log(`sendMetadataSuccess : ${JSON.stringify(metadata)}`)
-    })
+    // rtcEngine.on("receiveMetadata", (metadata) => {
+    //   let bufferdata = JSON.parse(metadata.buffer)
+    //   console.log("receiveMetadata : " + bufferdata.width)
+    // })
+    // rtcEngine.on("sendMetadataSuccess", (metadata) => {
+    //   console.log(`sendMetadataSuccess : ${JSON.stringify(metadata)}`)
+    // })
 
-    setInterval(()=>{
-      let ptr = {
-        width: 100,
-        height: 210,
-        top: 32323
-      }
-      let data = JSON.stringify(ptr);
-      let metadata = {
-        uid: 123,
-        size: data.length,
-        buffer: data,
-        timeStampMs: 122323
-      }
-      let ret = this.rtcEngine.sendMetadata(metadata);
-      console.log(`sendMetadata  data: ${data}  ret: ${ret}`)
-      }, 1000);
+    // setInterval(()=>{
+    //   let ptr = {
+    //     width: 100,
+    //     height: 210,
+    //     top: 32323
+    //   }
+    //   let data = JSON.stringify(ptr);
+    //   let metadata = {
+    //     uid: 123,
+    //     size: data.length,
+    //     buffer: data,
+    //     timeStampMs: 122323
+    //   }
+    //   let ret = this.rtcEngine.sendMetadata(metadata);
+    //   console.log(`sendMetadata  data: ${data}  ret: ${ret}`)
+    //   }, 1000);
   }
 
   subscribeChannelEvents = (rtcChannel, publish) => {
@@ -261,6 +263,10 @@ export default class App extends Component {
     })
   }
 
+  handleLeave = () => {
+    this.rtcEngine.leaveChannel();
+  }
+
   handleJoin = () => {
     let encoderWidth = parseInt(this.state.encoderWidth)
     let encoderHeight = parseInt(this.state.encoderHeight)
@@ -300,37 +306,6 @@ export default class App extends Component {
     })
 
     rtcEngine.joinChannel("", "123", "", 0);
-    // let ret = rtcEngine.startAudioRecording2({filePath: "audio_remote.wav", recordingQuality: 2, recordingPosition: 2});
-    //joinning two channels together
-  //   this.channel1 = rtcEngine.createChannel(this.state.channel)
-  //   this.channel1.registerMediaMetadataObserver();
-  //   setInterval(()=>{
-  //     let ptr = {
-  //       width: 100,
-  //       height: 210,
-  //       top: 32323
-  //     }
-  //     let data = JSON.stringify(ptr);
-  //     let metadata = {
-  //       uid: 123,
-  //       size: data.length,
-  //       buffer: data,
-  //       timeStampMs: 122323
-  //     }
-  //     let ret = this.channel1.sendMetadata(metadata);
-  //     console.log(`channel: ${this.channel1.channelId()}  sendMetadata  data: ${data}  ret: ${ret}`)
-  //  }, 1000);
-  //   this.channel1.setClientRole(1);
-  //   this.subscribeChannelEvents(this.channel1, true)
-  //   this.channel1.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
-  //   this.channel1.publish();
-
-  //   this.channel1.setClientRole(1);
-  //   this.channel2 = rtcEngine.createChannel(`${this.state.channel}-2`)
-  //   this.channel2.registerMediaMetadataObserver()
-  //   this.subscribeChannelEvents(this.channel2, false)
-  //   this.channel2.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
-
   }
 
   openMediaPlayer = e => {
@@ -408,7 +383,7 @@ export default class App extends Component {
           // console.log(`mediaPlayer.selectAudioTrack ${a23}`);
           // let a2 = this.mediaPlayer.stop()
           // console.log(`mediaPlayer.stop ${a2}`);
-          this.mediaPlayer.publishVideoToRtc();
+          // this.mediaPlayer.publishVideoToRtc();
 
         }
       })
@@ -424,7 +399,7 @@ export default class App extends Component {
           })
       })
 
-      this.mediaPlayer.open("https://big-class-test.oss-cn-hangzhou.aliyuncs.com/61102.1592987815092.mp4", 0);
+      this.mediaPlayer.open(this.state.mediaPlayerUrl, 0);
       // this.mediaPlayer.open("/Users/dyf/Documents/project/Electron/61102.1592987815092.mp4", 0);
 
   }
@@ -1027,14 +1002,30 @@ export default class App extends Component {
               <button onClick={this.handleAudioMixing} className="button is-link">Start/Stop Audio Mixing</button>
             </div>
           </div> */}
+          <div className="field">
+            <label className="label">Media Player Url</label>
+            <div className="control">
+              <input onChange={e => this.setState({mediaPlayerUrl: e.currentTarget.value})} value={this.state.mediaPlayerUrl} className="input" type="text" placeholder="Input a MediaPlayer Url" />
+            </div>
+          </div>
+          
+          <div className="field is-grouped is-grouped-right">
+            
+            <div className="field is-grouped is-grouped-right">
+              <div className="control">
+                <button onClick={this.openMediaPlayer} className="button is-link">Open Media Player</button>
+              </div>
+            </div>
+          </div>
+          
           <div className="field is-grouped is-grouped-right">
             <div className="control">
-              <button onClick={this.handleJoin} className="button is-link">Join</button>
+              <button onClick={this.handleJoin} className="button is-link">Join Channel</button>
             </div>
           </div>
           <div className="field is-grouped is-grouped-right">
             <div className="control">
-              <button onClick={this.openMediaPlayer} className="button is-link">Open Media Player</button>
+              <button onClick={this.handleLeave} className="button is-link">Leave Channel</button>
             </div>
           </div>
           <hr/>
