@@ -105,7 +105,7 @@ bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame)
     }
     pluginMutex.unlock();
 
-    if (!isPublishMediaPlayerAudio) {
+    if (!isPlaybackMediaPlayerAudio) {
         return true;
     }
 
@@ -270,11 +270,13 @@ void IAVFramePluginManager::pushAudioData(void* data, int len)
 {
     {
         std::lock_guard<std::mutex> _(recordMutex);
-        recordCircularBuffer->Push((char*)data, len);
+        if (isPublishMediaPlayerAudio)
+            recordCircularBuffer->Push((char*)data, len);
     }
     {
         std::lock_guard<std::mutex> _(playbackMutex);
-        playbackCircularBuffer->Push((char*)data, len);
+        if (isPlaybackMediaPlayerAudio)
+            playbackCircularBuffer->Push((char*)data, len);
     }
 }
 
@@ -310,12 +312,14 @@ void IAVFramePluginManager::setPlaybackVolume(int volume)
     }
 }
 
-void IAVFramePluginManager::publishMediaPlayerAudio()
+void IAVFramePluginManager::publishMediaPlayerAudio(bool publish, bool localPlayback)
 {
-    isPublishMediaPlayerAudio.store(true);
+    isPublishMediaPlayerAudio.store(publish);
+    isPlaybackMediaPlayerAudio.store(localPlayback);
 }
 
 void IAVFramePluginManager::unpublishMediaPlayerAudio()
 {
     isPublishMediaPlayerAudio.store(false);
+    isPlaybackMediaPlayerAudio.store(false);
 }

@@ -52,7 +52,7 @@ public:
     void resetAudioBuffer();
     void setRecordVolume(int volume);
     void setPlaybackVolume(int volume);
-    void publishMediaPlayerAudio();
+    void publishMediaPlayerAudio(bool publish, bool localPlayback);
     void unpublishMediaPlayerAudio();
 
 private:
@@ -60,6 +60,7 @@ private:
     std::mutex pluginMutex;
 
     std::atomic<bool> isPublishMediaPlayerAudio {false};
+    std::atomic<bool> isPlaybackMediaPlayerAudio {false};
 
     std::mutex recordMutex;
     AgoraRTC::scoped_ptr<AudioCircularBuffer<char>> recordCircularBuffer{new AudioCircularBuffer<char>(2048, true)};

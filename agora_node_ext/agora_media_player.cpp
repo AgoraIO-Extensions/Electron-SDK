@@ -689,8 +689,13 @@ namespace agora {
                 napi_status status = napi_ok;
                 napi_get_native_this(args, mediaPlayer);
                 CHECK_NATIVE_THIS(mediaPlayer);
+                bool publishAudio = false;
+                napi_get_value_bool_(args[0], publishAudio);
+
+                bool playbackAudio = false;
+                napi_get_value_bool_(args[1], playbackAudio);
                 if (mediaPlayer->nodeMediaPlayerAudioFrameObserver) {
-                    AgoraRtcChannelPublishHelper::Get()->publishAudioToRtc(mediaPlayer->nodeMediaPlayerAudioFrameObserver);
+                    AgoraRtcChannelPublishHelper::Get()->publishAudioToRtc(mediaPlayer->nodeMediaPlayerAudioFrameObserver, publishAudio, playbackAudio);
                     result = 0;
                 } else {
                     result = -7;
