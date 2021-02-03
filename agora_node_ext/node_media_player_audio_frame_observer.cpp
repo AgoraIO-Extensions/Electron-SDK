@@ -9,10 +9,9 @@ namespace agora
         void NodeMediaPlayerAudioFrameObserver::onFrame(const agora::media::base::AudioPcmFrame *frame)
         {
             std::lock_guard<std::mutex> lck(mtx_);
-            if (isPublishAudioFrame) {
+            if (isPublishAudioFrame || isPlaybackAudioFrame) {
                 AgoraRtcChannelPublishHelper::Get()->pushAudioData((void *)(&frame->data_[0]), frame->bytes_per_sample * frame->samples_per_channel_);
             }
-
         }
     }
 }

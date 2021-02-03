@@ -14,20 +14,23 @@ namespace agora
             public:
             virtual void onFrame(const agora::media::base::AudioPcmFrame *frame) override;
 
-            void publishAudioToRtc() {
+            void publishAudioToRtc(bool publishAudio, bool playbackAudio) {
                 std::lock_guard<std::mutex> lck(mtx_);
-                isPublishAudioFrame = true;
+                isPublishAudioFrame = publishAudio;
+                isPlaybackAudioFrame = playbackAudio;
+
             }
 
             void unpublishAudioToRtc() {
                 std::lock_guard<std::mutex> lck(mtx_);
                 isPublishAudioFrame = false;
+                isPlaybackAudioFrame = false;
             }
 
             private:
             std::mutex mtx_;
             bool isPublishAudioFrame = false;
-
+            bool isPlaybackAudioFrame = false;
         };
     } // namespace rtc
 } // namespace agora

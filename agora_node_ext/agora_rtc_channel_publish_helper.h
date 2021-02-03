@@ -87,7 +87,7 @@ namespace agora
 			}
 
 			// 启动/停止推送音频流到频道
-			void publishAudioToRtc(NodeMediaPlayerAudioFrameObserver *audioObserver)
+			void publishAudioToRtc(NodeMediaPlayerAudioFrameObserver *audioObserver, bool publishAudio, bool playebackAudio)
 			{
 				if (rtc_engine_) {
 					// rtc_engine_->setAudioProfile(agora::rtc::AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO, agora::rtc::AUDIO_SCENARIO_CHATROOM_ENTERTAINMENT);
@@ -101,12 +101,12 @@ namespace agora
 				mediaPlayerAudioFrameObserver_ = audioObserver;
 				if (mediaPlayerAudioFrameObserver_)
 				{
-					mediaPlayerAudioFrameObserver_->publishAudioToRtc();
+					mediaPlayerAudioFrameObserver_->publishAudioToRtc(publishAudio, playebackAudio);
 				}
 
 				if (rtcAudioObserver_)
 				{
-					rtcAudioObserver_->publishMediaPlayerAudio();
+					rtcAudioObserver_->publishMediaPlayerAudio(publishAudio, playebackAudio);
 				}
 			}
 			void unpublishAudioToRtc(NodeMediaPlayerAudioFrameObserver *audioObserver)
