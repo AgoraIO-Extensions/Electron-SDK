@@ -783,4 +783,13 @@ char* U2G(const char* srcstr)
     if(wstr) delete[] wstr;
     return deststr;
 }
+
+wchar_t* C2W(const char *srcstr)
+{
+    int len = MultiByteToWideChar(CP_UTF8, 0, srcstr, -1, NULL, 0);
+    wchar_t* wstr = new wchar_t[len + 1];
+    memset(wstr, 0, len + 1);
+    MultiByteToWideChar(CP_UTF8, 0, srcstr, -1, wstr, len);
+    return wstr;
+}
 #endif

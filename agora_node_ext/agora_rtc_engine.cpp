@@ -5704,7 +5704,7 @@ namespace agora {
                 #ifdef WIN32
                 NodeString dllPath;
                 napi_get_value_nodestring_(args[0], dllPath);
-                AddDllDirectory(U2G(dllPath));
+                AddDllDirectory((PCWSTR)(C2W(dllPath)));
                 result = 0;
                 #else
                 result = -4;
