@@ -3212,6 +3212,10 @@ export interface NodeRtcEngine {
    */
   setVideoBackgroundSource(enabled: boolean, backgroundSource: VideoBackgroundSource): number;
 
+  /**
+   * @ignore
+   */
+  addDllDirectory(dllfilePath: string): number;
 }
 /**
  * @ignore

@@ -361,6 +361,8 @@ namespace agora {
              *  3.2.0_segmentation
              */
             NAPI_API(setVideoBackgroundSource);
+
+            NAPI_API(addDllDirectory);
              
             
         public:
