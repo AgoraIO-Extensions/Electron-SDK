@@ -15,6 +15,26 @@
     "react-dom": "16.11.0",
     "source-map-support": "0.5.16"
   },
+  "build": {
+    "win":{
+      "target":[
+        {
+          "target":"zip",
+          "arch": ["ia32"]
+        }
+      ]
+    },
+    "extraFiles": [
+      {
+        "from": "../build/Release",
+        "to": "build/Release"
+      },
+      {
+        "from": "../js",
+        "to": "js"
+      }
+    ]
+  },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "7.7.0",
     "@babel/preset-react": "7.7.0",
