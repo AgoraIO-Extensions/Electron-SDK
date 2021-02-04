@@ -383,7 +383,7 @@ export default class App extends Component {
           // console.log(`mediaPlayer.selectAudioTrack ${a23}`);
           // let a2 = this.mediaPlayer.stop()
           // console.log(`mediaPlayer.stop ${a2}`);
-          // this.mediaPlayer.publishVideoToRtc();
+          this.mediaPlayer.publishVideoToRtc();
 
         }
       })
