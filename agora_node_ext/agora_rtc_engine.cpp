@@ -303,6 +303,8 @@ namespace agora {
                  */ 
                 PROPERTY_METHOD_DEFINE(setVideoBackgroundSource);
 
+                PROPERTY_METHOD_DEFINE(addDllDirectory);
+
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -5684,6 +5686,29 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
 
                 result = pEngine->m_engine->setAudioEffectParameters(AUDIO_EFFECT_PRESET(preset), param1, param2);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, addDllDirectory)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                #ifdef WIN32
+                NodeString dllPath;
+                napi_get_value_nodestring_(args[0], dllPath);
+                AddDllDirectory(dllPath.c_str());
+                result = 0;
+                #else
+                result = -4;
+                #endif
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;

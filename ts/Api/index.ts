@@ -67,6 +67,7 @@ import {
   PluginInfo,
   Plugin
 } from './plugin';
+import path from 'path';
 const agora = require('../../build/Release/agora_node_ext');
 
 /**
@@ -1036,6 +1037,9 @@ class AgoraRtcEngine extends EventEmitter {
    * - < 0: Failure.
    */
   initialize(appid: string, areaCode: AREA_CODE = (0xFFFFFFFF)): number {
+    let dllPath = path.resolve(__dirname, "../../build/Release/");
+    let ret = this.rtcEngine.addDllDirectory(dllPath);
+    console.log(`addDllDirectory :  ${dllPath}  ${ret}`)
     return this.rtcEngine.initialize(appid, areaCode);
   }
 
@@ -5440,6 +5444,10 @@ class AgoraRtcEngine extends EventEmitter {
   */
   setVideoBackgroundSource(enabled: boolean, backgroundSource: VideoBackgroundSource): number {
     return this.rtcEngine.setVideoBackgroundSource(enabled, backgroundSource);
+  }
+
+  addDllDirectory(filePath: string): number {
+    return this.rtcEngine.addDllDirectory(filePath);
   }
 }
 /** The AgoraRtcEngine interface. */
