@@ -402,5 +402,7 @@ const char* nullable( char const* s);
 
 #ifdef _WIN32
 char* U2G(const char* srcstr);
+
+wchar_t* C2W(const char *srcstr);
 #endif
 #endif
