@@ -268,6 +268,10 @@ export default class App extends Component {
   }
 
   handleJoin = () => {
+    if(!this.state.channel) {
+      alert("Please enter channel")
+      return
+    }
     let encoderWidth = parseInt(this.state.encoderWidth)
     let encoderHeight = parseInt(this.state.encoderHeight)
     let rtcEngine = this.getRtcEngine()
@@ -305,7 +309,7 @@ export default class App extends Component {
       rednessLevel: 0
     })
 
-    rtcEngine.joinChannel("", "123", "", 0);
+    rtcEngine.joinChannel("", this.state.channel, "", 0);
   }
 
   openMediaPlayer = e => {
