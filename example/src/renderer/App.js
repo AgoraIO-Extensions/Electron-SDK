@@ -102,8 +102,8 @@ export default class App extends Component {
       this.setState({
         local: uid
       });
-      this.mediaPlayer.mute(true);
-      this.mediaPlayer.publishAudioToRtc(false, true);
+      // this.mediaPlayer.mute(true);
+      // this.mediaPlayer.publishAudioToRtc(false, true);
     });
     rtcEngine.on('userjoined', (uid, elapsed) => {
       if (uid === SHARE_ID && this.state.localSharing) {
@@ -387,7 +387,7 @@ export default class App extends Component {
           // console.log(`mediaPlayer.selectAudioTrack ${a23}`);
           // let a2 = this.mediaPlayer.stop()
           // console.log(`mediaPlayer.stop ${a2}`);
-          this.mediaPlayer.publishVideoToRtc();
+          // this.mediaPlayer.publishVideoToRtc();
 
         }
       })
@@ -406,6 +406,24 @@ export default class App extends Component {
       this.mediaPlayer.open(this.state.mediaPlayerUrl, 0);
       // this.mediaPlayer.open("/Users/dyf/Documents/project/Electron/61102.1592987815092.mp4", 0);
 
+  }
+
+  handlePublishVideo = e => {
+    this.mediaPlayer.publishVideoToRtc();
+  }
+
+  handleUnpublishVideo = e => {
+    this.mediaPlayer.unpublishVideoFromRtc();
+  }
+
+  handlePublishAudio = e => {
+    this.mediaPlayer.mute(true);
+    this.mediaPlayer.publishAudioToRtc(true, true);
+  }
+
+  handleUnpublishAudio = e => {
+    this.mediaPlayer.mute(false);
+    this.mediaPlayer.unpublishAudioFromRtc();
   }
 
   handleCameraChange = e => {
@@ -1012,13 +1030,35 @@ export default class App extends Component {
               <input onChange={e => this.setState({mediaPlayerUrl: e.currentTarget.value})} value={this.state.mediaPlayerUrl} className="input" type="text" placeholder="Input a MediaPlayer Url" />
             </div>
           </div>
-          
+
+
           <div className="field is-grouped is-grouped-right">
-            
-            <div className="field is-grouped is-grouped-right">
-              <div className="control">
-                <button onClick={this.openMediaPlayer} className="button is-link">Open Media Player</button>
-              </div>
+            <div className="control">
+              <button onClick={this.openMediaPlayer} className="button is-link">Open Media Player</button>
+            </div>
+          </div>
+    
+          <div className="field is-grouped is-grouped-right">
+            <div className="control">
+              <button onClick={this.handlePublishVideo} className="button is-link">Publish Video</button>
+            </div>
+          </div>
+
+          <div className="field is-grouped is-grouped-right">
+            <div className="control">
+              <button onClick={this.handleUnpublishVideo} className="button is-link">Unpublish Video</button>
+            </div>
+          </div>
+
+          <div className="field is-grouped is-grouped-right">
+            <div className="control">
+              <button onClick={this.handlePublishAudio} className="button is-link">Publish Audio</button>
+            </div>
+          </div>
+
+          <div className="field is-grouped is-grouped-right">
+            <div className="control">
+              <button onClick={this.handleUnpublishAudio} className="button is-link">Unpublish Audio</button>
             </div>
           </div>
           
