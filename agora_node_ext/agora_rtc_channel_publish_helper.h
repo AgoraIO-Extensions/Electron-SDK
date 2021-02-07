@@ -32,6 +32,45 @@ namespace agora
 				rtcAudioObserver_ = rtcAudioObserver;
 			}
 
+			int attachPlayerToRtc()
+			{
+				if (rtc_engine_ == nullptr)
+				{
+					return -7;
+				}
+
+				agora::util::AutoPtr<agora::media::IMediaEngine> mediaEngine;
+				mediaEngine.queryInterface(rtc_engine_, agora::AGORA_IID_MEDIA_ENGINE);
+				if (mediaEngine)
+				{
+					return mediaEngine->setExternalVideoSource(true, false);
+				}
+				else
+				{
+					return -7;
+				}
+			}
+
+			int detachPlayerFromRtc()
+			{
+				if (rtc_engine_ == nullptr)
+				{
+					return -7;
+				}
+
+				agora::util::AutoPtr<agora::media::IMediaEngine> mediaEngine;
+				mediaEngine.queryInterface(rtc_engine_, agora::AGORA_IID_MEDIA_ENGINE);
+				if (mediaEngine)
+				{
+					return mediaEngine->setExternalVideoSource(false, false);
+				}
+				else
+				{
+					return -7;
+				}
+
+			}
+
 			// 启动/停止推送视频流到频道
 			void publishVideoToRtc(NodeMediaPlayerVideoFrameObserver *videoObserver)
 			{
@@ -43,16 +82,6 @@ namespace agora
 
 				if (mediaPlayerVideoFrameObserver_) 
 				{
-					if (rtc_engine_)
-					{
-						// rtc_engine_->setLocalVideoMirrorMode(agora::rtc::VIDEO_MIRROR_MODE_DISABLED);
-						agora::util::AutoPtr<agora::media::IMediaEngine> mediaEngine;
-						mediaEngine.queryInterface(rtc_engine_, agora::AGORA_IID_MEDIA_ENGINE);
-						if (mediaEngine)
-						{
-							mediaEngine->setExternalVideoSource(true, false);
-						}
-					}
 					mediaPlayerVideoFrameObserver_->publishVideoToRtc(rtc_engine_);
 				}
 			}
@@ -65,15 +94,6 @@ namespace agora
 
 				if (mediaPlayerVideoFrameObserver_) 
 				{
-					if (rtc_engine_)
-					{
-						agora::util::AutoPtr<agora::media::IMediaEngine> mediaEngine;
-						mediaEngine.queryInterface(rtc_engine_, agora::AGORA_IID_MEDIA_ENGINE);
-						if (mediaEngine)
-						{
-							mediaEngine->setExternalVideoSource(false, false);
-						}
-					}
 					mediaPlayerVideoFrameObserver_->unpublishVideoToRtc();
 					mediaPlayerVideoFrameObserver_ = nullptr;
 				} 
