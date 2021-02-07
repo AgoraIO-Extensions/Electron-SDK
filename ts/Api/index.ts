@@ -6013,6 +6013,13 @@ class AgoraMediaPlayer extends EventEmitter
     return this.mediaPlayer.unpublishAudio();
   }
 
+  attachPlayerToRtc(): number {
+    return this.mediaPlayer.attachPlayerToRtc();
+  }
+  detachPlayerFromRtc(): number {
+    return this.mediaPlayer.detachPlayerFromRtc();
+  }
+
   adjustPublishSignalVolume(volume: number): number {
     return this.mediaPlayer.adjustPublishSignalVolume(volume);
   }

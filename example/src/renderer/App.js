@@ -432,6 +432,14 @@ export default class App extends Component {
     this.mediaPlayer.unpublishAudioFromRtc();
   }
 
+  attachMediaPlayerToRtc = e => {
+    let ret = this.mediaPlayer.attachPlayerToRtc();
+  }
+
+  detachMediaPlayerToRtc = e => {
+    this.mediaPlayer.detachPlayerFromRtc();
+  }
+
   handleCameraChange = e => {
     this.setState({camera: e.currentTarget.value});
     this.getRtcEngine().setVideoDevice(this.state.videoDevices[e.currentTarget.value].deviceid);
@@ -1037,6 +1045,17 @@ export default class App extends Component {
             </div>
           </div>
 
+          <div className="field is-grouped is-grouped-right">
+            <div className="control">
+              <button onClick={this.attachMediaPlayerToRtc} className="button is-link">Attach Media Player To Rtc</button>
+            </div>
+          </div>
+
+          <div className="field is-grouped is-grouped-right">
+            <div className="control">
+              <button onClick={this.detachMediaPlayerToRtc} className="button is-link">Detach Media Player To Rtc</button>
+            </div>
+          </div>
 
           <div className="field is-grouped is-grouped-right">
             <div className="control">

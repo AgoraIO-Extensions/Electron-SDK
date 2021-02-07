@@ -2998,4 +2998,6 @@ export interface NodeMediaPlayer {
   unpublishVideoFromRtc(): number;
   publishAudioToRtc(publishAudio: boolean, playbackAudio: boolean): number;
   unpublishAudioFromRtc(): number;
+  attachPlayerToRtc(): number;
+  detachPlayerFromRtc(): number;
 }

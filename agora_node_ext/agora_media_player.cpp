@@ -74,6 +74,8 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(unpublishVideoFromRtc);
                 PROPERTY_METHOD_DEFINE(publishAudioToRtc);
                 PROPERTY_METHOD_DEFINE(unpublishAudioFromRtc);
+                PROPERTY_METHOD_DEFINE(attachPlayerToRtc);
+                PROPERTY_METHOD_DEFINE(detachPlayerFromRtc);  
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeMediaPlayer").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -720,6 +722,36 @@ namespace agora {
                 } else {
                     result = -7;
                 } 
+            } while (false);
+            media_player_napi_set_int_result(args, result);
+        }
+
+        NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, attachPlayerToRtc)
+        {
+            int result = 1;
+            LOG_F(INFO, "attachPlayerToRtc");
+            do {
+                Isolate *isolate = args.GetIsolate();
+                NodeMediaPlayer *mediaPlayer = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, mediaPlayer);
+                CHECK_NATIVE_THIS(mediaPlayer);
+                result = AgoraRtcChannelPublishHelper::Get()->attachPlayerToRtc();
+            } while (false);
+            media_player_napi_set_int_result(args, result);
+        }
+
+        NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, detachPlayerFromRtc)
+        {
+            int result = 1;
+            LOG_F(INFO, "detachPlayerFromRtc");
+            do {
+                Isolate *isolate = args.GetIsolate();
+                NodeMediaPlayer *mediaPlayer = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, mediaPlayer);
+                CHECK_NATIVE_THIS(mediaPlayer);
+                result = AgoraRtcChannelPublishHelper::Get()->detachPlayerFromRtc();
             } while (false);
             media_player_napi_set_int_result(args, result);
         }
