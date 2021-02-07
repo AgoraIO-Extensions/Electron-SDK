@@ -313,6 +313,12 @@ export default class App extends Component {
   }
 
   openMediaPlayer = e => {
+    if (this.mediaPlayer) {
+      this.setState({
+        mediaPlayerView: ""
+      })
+      this.mediaPlayer.stop();
+    }
     let rtcEngine = this.getRtcEngine()
     this.mediaPlayer = rtcEngine.createMediaPlayer();
       let ret1 = this.mediaPlayer.initialize();
@@ -320,9 +326,9 @@ export default class App extends Component {
       this.mediaPlayer.on('onPlayerStateChanged', (state, ec)=>{
         console.log(`onPlayerStateChanged  state: ${state}  ec:${ec}`);
         if (state == 2) {
-        //   this.setState({
-        //     mediaPlayerView: "mediaPlayerView"
-        // })
+          this.setState({
+            mediaPlayerView: "mediaPlayerView"
+        })
         let a19 = this.mediaPlayer.setLogFile("log.txt")
         console.log(`mediaPlayer.setLogFile ${a19}`);
         
@@ -398,9 +404,9 @@ export default class App extends Component {
 
       this.mediaPlayer.on('onPositionChanged', (position)=>{
         console.log(`onPositionChanged  position: ${position}`);
-          this.setState({
-            mediaPlayerView: "mediaPlayerView"
-          })
+          // this.setState({
+          //   mediaPlayerView: "mediaPlayerView"
+          // })
       })
 
       this.mediaPlayer.open(this.state.mediaPlayerUrl, 0);
