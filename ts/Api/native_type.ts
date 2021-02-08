@@ -522,6 +522,16 @@ export enum AudioReverbPreset {
    */
   AUDIO_VIRTUAL_STEREO = 0x00200001
 }
+
+export enum CAPTURE_BRIGHTNESS_LEVEL_TYPE {
+  CAPTURE_BRIGHTNESS_LEVEL_INVALID = -1,
+
+  CAPTURE_BRIGHTNESS_LEVEL_NORMAL = 0,
+
+  CAPTURE_BRIGHTNESS_LEVEL_BRIGHT = 1,
+
+  CAPTURE_BRIGHTNESS_LEVEL_DARK = 2,
+}
 /**
  * Configuration of the imported live streaming voice or video stream.
  */
@@ -772,6 +782,8 @@ export interface LocalVideoStats {
    * @since v3.2.0
    */
   captureFrameRate: number;
+
+  captureBrightnessLevel: CAPTURE_BRIGHTNESS_LEVEL_TYPE;
 }
 /**
  * The statistics of the local audio stream.
