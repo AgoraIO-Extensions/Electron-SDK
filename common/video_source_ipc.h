@@ -96,7 +96,10 @@ enum AgoraIpcMsg
     AGORA_IPC_ENABLE_AUDIO,
     AGORA_IPC_SET_ENCRYPTION_MODE,
     AGORA_IPC_ENABLE_ENCRYPTION,
-    AGORA_IPC_SET_ENCRYPTION_SECRET
+    AGORA_IPC_SET_ENCRYPTION_SECRET,
+    AGORA_IPC_ON_LOCAL_AUDIO_STATS,
+    AGORA_IPC_ON_LOCAL_VIDEO_STATS,
+    AGORA_IPC_ON_VIDEO_SIZECHANGED
 };
 
 /**
@@ -231,6 +234,85 @@ public:
     }
 
     /* data */
+};
+
+struct LocalAudioStatsCmd 
+{
+public:
+    int numChannels;
+    /** The sample rate (Hz).
+     */
+    int sentSampleRate;
+    /** The average sending bitrate (Kbps).
+     */
+    int sentBitrate;
+    /** The audio packet loss rate (%) from the local client to the Agora edge server before applying the anti-packet loss strategies.
+     */
+    unsigned short txPacketLossRate;
+};
+
+struct LocalVideoStatsCmd
+{
+public:
+    /** Bitrate (Kbps) sent in the reported interval, which does not include
+     * the bitrate of the retransmission video after packet loss.
+     */
+    int sentBitrate;
+    /** Frame rate (fps) sent in the reported interval, which does not include
+     * the frame rate of the retransmission video after packet loss.
+     */
+    int sentFrameRate;
+    /** The encoder output frame rate (fps) of the local video.
+     */
+    int encoderOutputFrameRate;
+    /** The render output frame rate (fps) of the local video.
+     */
+    int rendererOutputFrameRate;
+    /** The target bitrate (Kbps) of the current encoder. This value is estimated by the SDK based on the current network conditions.
+    */
+    int targetBitrate;
+    /** The target frame rate (fps) of the current encoder.
+    */
+    int targetFrameRate;
+    /** Quality change of the local video in terms of target frame rate and
+     * target bit rate in this reported interval. See #QUALITY_ADAPT_INDICATION.
+     */
+    agora::rtc::QUALITY_ADAPT_INDICATION qualityAdaptIndication;
+    /** The encoding bitrate (Kbps), which does not include the bitrate of the
+     * re-transmission video after packet loss.
+     */
+    int encodedBitrate;
+    /** The width of the encoding frame (px).
+     */
+    int encodedFrameWidth;
+    /** The height of the encoding frame (px).
+     */
+    int encodedFrameHeight;
+    /** The value of the sent frames, represented by an aggregate value.
+     */
+    int encodedFrameCount;
+    /** The codec type of the local video:
+     * - VIDEO_CODEC_VP8 = 1: VP8.
+     * - VIDEO_CODEC_H264 = 2: (Default) H.264.
+     */
+    agora::rtc::VIDEO_CODEC_TYPE codecType;
+    /** The video packet loss rate (%) from the local client to the Agora edge server before applying the anti-packet loss strategies.
+     */
+    unsigned short txPacketLossRate;
+    /** The capture frame rate (fps) of the local video.
+     */
+    int captureFrameRate;
+
+    agora::rtc::CAPTURE_BRIGHTNESS_LEVEL_TYPE captureBrightnessLevel;
+};
+
+struct VideoSizeChangedCmd 
+{
+public:
+    agora::rtc::uid_t uid;
+    int width;
+    int height;
+    int rotation;
 };
 
 

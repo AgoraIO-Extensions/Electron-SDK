@@ -373,6 +373,39 @@ namespace agora{
             else if (msg == AGORA_IPC_START_VS_PREVIEW_COMPLETE) {
                 onStartPreviewComplete();
             }
+            else if (msg == AGORA_IPC_ON_LOCAL_AUDIO_STATS) {
+                LocalAudioStatsCmd* cmd = (LocalAudioStatsCmd *)payload;
+                agora::rtc::LocalAudioStats stats;
+                stats.numChannels = cmd->numChannels;
+                stats.sentSampleRate = cmd->sentSampleRate;
+                stats.sentBitrate = cmd->sentBitrate;
+                stats.txPacketLossRate = cmd->txPacketLossRate;
+                m_eventHandler->onVideoSourceLocalAudioStats(stats);
+            }
+            else if (msg == AGORA_IPC_ON_LOCAL_VIDEO_STATS) {
+                LocalVideoStatsCmd* cmd = (LocalVideoStatsCmd *)payload;
+                agora::rtc::LocalVideoStats stats;
+                stats.sentBitrate = cmd->sentBitrate;
+                stats.sentFrameRate = cmd->sentFrameRate;
+                stats.encoderOutputFrameRate = cmd->encoderOutputFrameRate;
+                stats.rendererOutputFrameRate = cmd->rendererOutputFrameRate;
+                stats.targetBitrate = cmd->targetBitrate;
+                stats.targetFrameRate = cmd->targetFrameRate;
+                stats.qualityAdaptIndication = cmd->qualityAdaptIndication;
+                stats.encodedBitrate = cmd->encodedBitrate;
+                stats.encodedFrameWidth = cmd->encodedFrameWidth;
+                stats.encodedFrameHeight = cmd->encodedFrameHeight;
+                stats.encodedFrameCount = cmd->encodedFrameCount;
+                stats.codecType = cmd->codecType;
+                stats.txPacketLossRate = cmd->txPacketLossRate;
+                stats.captureFrameRate = cmd->captureFrameRate;
+                stats.captureBrightnessLevel = cmd->captureBrightnessLevel;
+                m_eventHandler->onVideoSourceLocalVideoStats(stats);
+            }
+            else if (msg == AGORA_IPC_ON_VIDEO_SIZECHANGED) {
+                VideoSizeChangedCmd* cmd = (VideoSizeChangedCmd*)payload;
+                m_eventHandler->onVideoSourceVideoSizeChanged(cmd->uid, cmd->width, cmd->height, cmd->rotation);
+            }
             else if (msg == AGORA_IPC_STOP_VS_PREVIEW_COMPLETE) {
                 m_ipcReceiver.reset();
             }
