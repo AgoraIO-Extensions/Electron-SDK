@@ -17,6 +17,7 @@ using agora::rtc::IRtcEngineEventHandler;
 using agora::rtc::uid_t;
 using agora::rtc::RtcStats;
 using agora::rtc::LocalVideoStats;
+using agora::rtc::LocalAudioStats;
 
 /**
  * AgoraVideoSourceEventHandler provide implementation of IRtcEngienEventHandler.
@@ -48,6 +49,7 @@ public:
     virtual void onConnectionInterrupted() override;
     virtual void onConnectionBanned() override;
     virtual void onRequestToken() override;
+    virtual void onLocalAudioStats(const LocalAudioStats& stats) override;
 
 private:
     AgoraVideoSource& m_videoSource;

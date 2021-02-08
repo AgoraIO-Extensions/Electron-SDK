@@ -88,6 +88,9 @@ protected:
     void notifyLeaveChannel();
     void notifyRequestNewToken();
     void notifyRenderReady();
+    void notifyLocalAudioStats(const agora::rtc::LocalAudioStats& audioStats);
+    void notifyLocalVideoStats(const agora::rtc::LocalVideoStats& videoStats);
+    void notifyVideoSizeChanged(uid_t uid, int width, int height, int rotation);
 private:
     void exit(bool notifySink);
 private:

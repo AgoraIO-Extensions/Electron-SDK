@@ -76,6 +76,7 @@ void AgoraVideoSourceEventHandler::onFirstLocalVideoFrame(int width, int height,
 void AgoraVideoSourceEventHandler::onVideoSizeChanged(uid_t uid, int width, int height, int rotation)
 {
     LOG_INFO("%s, uid :%d, width :%d, height:%d, rotation :%d", __FUNCTION__, uid, width, height, rotation);
+    m_videoSource.notifyVideoSizeChanged(uid, width, height, rotation);
 }
 
 void AgoraVideoSourceEventHandler::onApiCallExecuted(int err, const char* api, const char* result)
@@ -85,6 +86,7 @@ void AgoraVideoSourceEventHandler::onApiCallExecuted(int err, const char* api, c
 
 void AgoraVideoSourceEventHandler::onLocalVideoStats(const LocalVideoStats& stats)
 {
+    m_videoSource.notifyLocalVideoStats(stats);
     LOG_INFO("%s", __FUNCTION__);
 }
 
@@ -122,4 +124,9 @@ void AgoraVideoSourceEventHandler::onRequestToken()
 {
     LOG_INFO("%s", __FUNCTION__);
     m_videoSource.notifyRequestNewToken();
+}
+
+void AgoraVideoSourceEventHandler::onLocalAudioStats(const LocalAudioStats& stats)
+{
+    m_videoSource.notifyLocalAudioStats(stats);
 }
