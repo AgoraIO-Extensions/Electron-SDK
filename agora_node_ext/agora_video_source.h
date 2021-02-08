@@ -43,6 +43,13 @@ namespace agora{
             virtual void onVideoSourceLeaveChannel() = 0;
 
             virtual void onVideoSourceExit() = 0;
+
+            virtual void onVideoSourceLocalAudioStats(const LocalAudioStats& stats) = 0;
+            
+            virtual void onVideoSourceVideoSizeChanged(uid_t uid, int width, int height, int rotation) = 0;
+
+            virtual void onVideoSourceLocalVideoStats(const LocalVideoStats& stats) = 0;
+
         };
 
         /**

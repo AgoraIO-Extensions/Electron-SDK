@@ -648,6 +648,18 @@ class AgoraRtcEngine extends EventEmitter {
       fire('videoSourceLeaveChannel');
     });
 
+    this.rtcEngine.onEvent('videoSourceLocalAudioStats', function(stats: LocalAudioStats) {
+      fire('videoSourceLocalAudioStats', stats);
+    });
+
+    this.rtcEngine.onEvent('videoSourceLocalVideoStats', function(stats: LocalVideoStats) {
+      fire('videoSourceLocalVideoStats', stats);
+    });
+
+    this.rtcEngine.onEvent('videoSourceVideoSizeChanged', function(uid: number, width: number, height: number, rotation: number) {
+      fire('videoSourceVideoSizeChanged', uid, width, height, rotation);
+    });
+
     this.rtcEngine.onEvent('localUserRegistered', function(
       uid: number,
       userAccount: string
@@ -6128,6 +6140,12 @@ declare interface AgoraRtcEngine {
    * - uid: The User ID.
    */
   on(evt: 'videoSourceLeaveChannel', cb: () => void): this;
+
+  on(evt: 'videoSourceLocalAudioStats', cb: (stats: LocalAudioStats) => void): this;
+
+  on(evt: 'videoSourceLocalVideoStats', cb: (stats: LocalVideoStats) => void): this;
+
+  on(evt: 'videoSourceVideoSizeChanged', cb: (uid: number, width: number, height: number, rotation: number) => void): this;
   /** Occurs when the remote video state changes.
    *
    * @param cb.uid ID of the user whose video state changes.

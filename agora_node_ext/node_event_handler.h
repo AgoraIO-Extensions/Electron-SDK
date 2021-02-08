@@ -96,6 +96,9 @@ namespace agora {
 #define RTC_EVENT_VIDEO_SOURCE_JOIN_SUCCESS "videosourcejoinsuccess"
 #define RTC_EVENT_VIDEO_SOURCE_REQUEST_NEW_TOKEN "videosourcerequestnewtoken"
 #define RTC_EVENT_VIDEO_SOURCE_LEAVE_CHANNEL "videosourceleavechannel"
+#define RTC_EVENT_VIDEO_SOURCE_LOCAL_AUDIO_STATS "videoSourceLocalAudioStats"
+#define RTC_EVENT_VIDEO_SOURCE_LOCAL_VIDEO_STATS "videoSourceLocalVideoStats"
+#define RTC_EVENT_VIDEO_SOURCE_VIDEO_SIZE_CHANGED "videoSourceVideoSizeChanged"
 
 #define RTC_EVENT_FIRST_LOCAL_AUDIO_FRAME_PUBLISH "firstLocalAudioFramePublished"
 #define RTC_EVENT_FIRST_LOCAL_VIDEO_FRAME_PUBLISH "firstLocalVideoFramePublished"
@@ -180,6 +183,9 @@ namespace agora {
             virtual void onVideoSourceJoinedChannel(agora::rtc::uid_t uid) override;
             virtual void onVideoSourceRequestNewToken() override;
             virtual void onVideoSourceLeaveChannel() override;
+            virtual void onVideoSourceLocalAudioStats(const LocalAudioStats& stats) override;
+            virtual void onVideoSourceVideoSizeChanged(uid_t uid, int width, int height, int rotation) override;
+            virtual void onVideoSourceLocalVideoStats(const LocalVideoStats& stats) override;
             virtual void onVideoSourceExit() override;
             void fireApiError(const char* funcName);
             void addEventHandler(const std::string& eventName, Persistent<Object>& obj, Persistent<Function>& callback);
