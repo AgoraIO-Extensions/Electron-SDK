@@ -14,7 +14,7 @@ namespace agora {
         }
 
         NodeMediaPlayerVideoFrameObserver::NodeMediaPlayerVideoFrameObserver() {
-            LOG_F(INFO, "NodeMediaPlayerVideoFrameObserver::NodeMediaPlayerVideoFrameObserver");
+            LOG_F(INFO, "NodeMediaPlayerVideoFrameObserver::NodeMediaPlayerVideoFrameObserver contruct");
         }
 
         NodeMediaPlayerVideoFrameObserver::~NodeMediaPlayerVideoFrameObserver() {
@@ -90,7 +90,7 @@ namespace agora {
             bufferList[3].buffer = bufferList[2].buffer + bufferList[2].length;
             bufferList[3].length = frame->vStride * frame->height / 2;
             lck.unlock();
- 
+            LOG_F(INFO, "MediaPlayer: frameWidth: %d, frameHeight: %d, yStride: %d, uStride: %d, vStride: %d", frameWidth, frameHeight, frame->yStride, frame->uStride, frame->vStride);
             agora::rtc::node_async_call::async_call([this]() {
                 v8::Isolate* isolate = mIsolate;
                 std::unique_lock<std::mutex> lock(m_lock);
