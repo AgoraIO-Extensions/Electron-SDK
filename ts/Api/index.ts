@@ -5849,7 +5849,7 @@ class AgoraMediaPlayer extends EventEmitter
     return true;
   }
 
-  setRenderMode(mode: 0 | 1): void {
+  setRenderMode(mode: 1 | 2): void {
     this.renderMode = mode;
   }
 
@@ -6552,3 +6552,6 @@ export class AgoraRtcChannel extends EventEmitter
 }
 
 export default AgoraRtcEngine;
+
+export {AgoraMediaPlayer};
+
