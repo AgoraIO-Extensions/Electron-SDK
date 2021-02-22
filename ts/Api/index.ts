@@ -5858,9 +5858,9 @@ class AgoraMediaPlayer extends EventEmitter
    * @param {*} view
    */
   setView(viewContentMode: 0 | 1, view?: Element): number {
-    this.initRender(this.renderMode);
     if (view)
     {
+      this.initRender(this.renderMode);
       if (this.renderer)
       {
         this.renderer.bind(view);
