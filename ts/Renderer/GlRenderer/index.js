@@ -50,7 +50,7 @@ const AgoraRender = function() {
 
   that.unbind = function() {
     try {
-      gl.getExtension('WEBGL_lose_context').loseContext();
+        gl && gl.getExtension('WEBGL_lose_context').loseContext();
     } catch (err) {
       console.warn(err)
     }
