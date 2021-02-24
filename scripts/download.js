@@ -49,8 +49,8 @@ module.exports = ({
   download(downloadUrl, outputDir, {
     strip: 1,
     extract: true
-  })
-    .then(() => {
+  }).then(() => {
+      console.log(`Agora:  download then`)
       if (no_symbol) {
         if (platform === "darwin") {
           try {

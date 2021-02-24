@@ -3,11 +3,16 @@
 #include <string>
 #include <map>
 #include <node.h>
+#include <atomic>
+#include <mutex>
 #ifdef _WIN32
 #include <Windows.h>
 #elif defined(__APPLE__)
 #include <dlfcn.h>
 #endif
+
+#include "AudioCircularBuffer.h"
+#include "scoped_ptr.h"
 class IAVFramePlugin;
 
 #define MAX_PLUGIN_ID   512
@@ -42,6 +47,27 @@ public:
     bool getPlugin(std::string& pluginId, agora_plugin_info& pluginInfo);
     std::vector<std::string> getPlugins();
     int release();
+
+    void pushAudioData(void* data, int len);
+    void resetAudioBuffer();
+    void setRecordVolume(int volume);
+    void setPlaybackVolume(int volume);
+    void publishMediaPlayerAudio(bool publish, bool localPlayback);
+    void unpublishMediaPlayerAudio();
+
 private:
     std::map<std::string, agora_plugin_info> m_mapPlugins;
+    std::mutex pluginMutex;
+
+    std::atomic<bool> isPublishMediaPlayerAudio {false};
+    std::atomic<bool> isPlaybackMediaPlayerAudio {false};
+
+    std::mutex recordMutex;
+    AgoraRTC::scoped_ptr<AudioCircularBuffer<char>> recordCircularBuffer{new AudioCircularBuffer<char>(2048, true)};
+    
+    std::mutex playbackMutex;
+    AgoraRTC::scoped_ptr<AudioCircularBuffer<char>> playbackCircularBuffer{new AudioCircularBuffer<char>(2048, true)};
+
+    float recordVolume = 1.0f ;
+    float playbackVolume = 1.0f;
 };

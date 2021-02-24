@@ -201,6 +201,12 @@
         './common/node_error.h',
         './common/loguru.h',
         './common/loguru.cpp',
+        './common/AudioCircularBuffer.h',
+        './common/AudioCircularBuffer.cc',
+        './common/constructor_magic.h',
+        './common/scoped_ptr.h',
+        './common/template_util.h',
+        './common/typedefs.h',
         './agora_node_ext/agora_node_ext.cpp',
         './agora_node_ext/agora_node_ext.h',
         './agora_node_ext/agora_rtc_engine.cpp',
@@ -223,8 +229,17 @@
         './agora_node_ext/AVPlugin/IAVFramePlugin.h',
         './agora_node_ext/AVPlugin/IAVFramePluginManager.h',
         './agora_node_ext/AVPlugin/IAVFramePluginManager.cpp',
+        './agora_node_ext/agora_media_player.h',
+        './agora_node_ext/agora_media_player.cpp',
+        './agora_node_ext/node_media_player_observer.h',
+        './agora_node_ext/node_media_player_observer.cpp',
+        './agora_node_ext/node_media_player_video_frame_observer.h',
+        './agora_node_ext/node_media_player_video_frame_observer.cpp',
         './agora_node_ext/node_metadata_observer.h',
         './agora_node_ext/node_metadata_observer.cpp',
+        './agora_node_ext/agora_rtc_channel_publish_helper.h',
+        './agora_node_ext/node_media_player_audio_frame_observer.h',
+        './agora_node_ext/node_media_player_audio_frame_observer.cpp',
         './common/libyuv/source/compare_common.cc',
         './common/libyuv/source/compare.cc',
         './common/libyuv/source/convert_argb.cc',
@@ -262,18 +277,21 @@
                         './sdk/dll/libagora-ffmpeg.dll',
                         './sdk/dll/libagora-mpg123.dll',
                         './sdk/dll/libagora-soundtouch.dll',
-                        './sdk/dll/libhwcodec.dll'
+                        './sdk/dll/libhwcodec.dll',
+			'./sdk/media_player/win/dll/AgoraMediaPlayer.dll'
                     ]
                 }],
                 'library_dirs': [
                     './sdk/lib',
+		    './sdk/media_player/win/lib'
                 ],
                 'link_settings': {
                     'libraries': [
                         '-lagora_rtc_sdk.lib',
                         '-lws2_32.lib',
                         '-lRpcrt4.lib',
-						'-lgdiplus.lib'
+						'-lgdiplus.lib',
+			'-lAgoraMediaPlayer.lib'
                     ]
                 },
                 'defines!': [
@@ -292,7 +310,8 @@
                 ],
                 'include_dirs': [
                 './sdk/include',
-                './extra/internal'
+                './extra/internal',
+		'./sdk/media_player/win/include'
                 ],
                 'configurations': {
                     'Release': {

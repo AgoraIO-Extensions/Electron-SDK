@@ -16,6 +16,8 @@ option('silent', {default: false, boolean: true});
 option('msvs_version', {default: '2015'});
 option('liburl_win', {default: ''});
 option('liburl_mac', {default: ''});
+option('liburl_mediaPlayer_mac', {default: ''});
+option('liburl_mediaPlayer_win', {default: ''});
 
 const packageVersion = require('./package.json').version;
 
@@ -36,7 +38,10 @@ task('sync:lib', () => {
     libUrl: {
       win: argv().liburl_win || pkgConfigs.lib_sdk_win || argvConfigs.lib_sdk_win,
       mac: argv().liburl_mac || pkgConfigs.lib_sdk_mac || argvConfigs.lib_sdk_mac,
-      win64: argv().liburl_win64 || pkgConfigs.lib_sdk_win64 || argvConfigs.lib_sdk_win64
+      win64: argv().liburl_win64 || pkgConfigs.lib_sdk_win64 || argvConfigs.lib_sdk_win64,
+      mediaPlayer_mac: argv().liburl_mediaPlayer_mac || pkgConfigs.lib_sdk_mediaPlayer_mac,
+      mediaPlayer_win: argv().liburl_mediaPlayer_win || pkgConfigs.lib_sdk_mediaPlayer_win,
+      mediaPlayer_win64: argv().liburl_mediaPlayer_win64 || pkgConfigs.liburl_mediaPlayer_win64
     }
   })
 })
@@ -90,6 +95,7 @@ task('install', () => {
   const config = Object.assign({}, getArgvFromNpmEnv(), getArgvFromPkgJson())
   // work-around
   const addonVersion = '3.2.1-rc.71-build.1123'
+  console.log(`Agora:  prebuilt ${config.prebuilt}`)
   if (config.prebuilt) {
     download({
       electronVersion: config.electronVersion, 
@@ -111,7 +117,10 @@ task('install', () => {
           libUrl: {
             win: argv().liburl_win || config.lib_sdk_win,
             mac: argv().liburl_mac || config.lib_sdk_mac,
-            win64: argv().liburl_win64 || config.lib_sdk_win64
+            win64: argv().liburl_win64 || config.lib_sdk_win64,
+            mediaPlayer_mac: config.lib_sdk_mediaPlayer_mac,
+            mediaPlayer_win: config.lib_sdk_mediaPlayer_win,
+            mediaPlayer_win64: config.liburl_mediaPlayer_win64
           }
         })
       }).then(() => {
