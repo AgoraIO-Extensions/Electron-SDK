@@ -101,6 +101,7 @@ namespace agora {
 #define RTC_EVENT_VIDEO_PUBLISH_STATE_CHANGE "videoPublishStateChange"
 #define RTC_EVENT_AUDIO_SUBSCRIBE_STATE_CHANGE "audioSubscribeStateChange"
 #define RTC_EVENT_VIDEO_SUBSCRIBE_STATE_CHANGE "videoSubscribeStateChange"
+#define RTC_EVENT_UPLOAD_FILE_RESULT "uploadFileResult"
 
         class NodeRtcEngine;
         class NodeUid;
@@ -204,6 +205,7 @@ namespace agora {
             virtual void onVideoPublishStateChange(const char* channel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed) override;
             virtual void onAudioSubscribeStateChange(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed) override;
             virtual void onVideoSubscribeStateChange(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed) override;
+            virtual void onUploadLogResult(const char* requestId, bool success, UPLOAD_ERROR_REASON reason);
 
         private:
             void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;

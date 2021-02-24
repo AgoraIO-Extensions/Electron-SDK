@@ -42,7 +42,8 @@ import {
   Metadata,
   AUDIO_RECORDING_QUALITY_TYPE,
   AUDIO_RECORDING_POSITION,
-  AudioRecordingConfiguration
+  AudioRecordingConfiguration,
+  UPLOAD_ERROR_REASON
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -751,6 +752,14 @@ class AgoraRtcEngine extends EventEmitter {
       elapsed: number
     ) {
       fire('videoSubscribeStateChange', channel, uid, oldstate, newstate, elapsed);
+    });
+
+    this.rtcEngine.onEvent('uploadFileResult', function(
+      requestId: string, 
+      success: boolean, 
+      reason: UPLOAD_ERROR_REASON
+    ) {
+      fire('uploadFileResult', requestId, success, reason);
     });
 
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
@@ -4763,6 +4772,10 @@ class AgoraRtcEngine extends EventEmitter {
    */
   sendCustomReportMessage(id: string, category: string, event: string, label: string, value: number): number {
     return this.rtcEngine.sendCustomReportMessage(id, category, event, label, value);
+  }
+
+  uploadLogFile(): string {
+    return this.rtcEngine.uploadLogFile();
   }
 }
 /** The AgoraRtcEngine interface. */

@@ -293,6 +293,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(unRegisterMediaMetadataObserver);
 
                 PROPERTY_METHOD_DEFINE(sendCustomReportMessage);
+                PROPERTY_METHOD_DEFINE(uploadLogFile);
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -5535,6 +5536,21 @@ namespace agora {
                 result = pEngine->m_engine->sendCustomReportMessage(id, category, event, label, value);
             } while (false);
             napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, uploadLogFile)
+        {
+            LOG_ENTER;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                util::AString logFile;
+                if (-ERR_FAILED != pEngine->m_engine->uploadLogFile(logFile)) {
+                    napi_set_string_result(args, logFile->c_str());
+                }
+            } while (false);
             LOG_LEAVE;
         }
 

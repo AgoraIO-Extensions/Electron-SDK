@@ -1593,6 +1593,13 @@ export enum AUDIO_RECORDING_POSITION {
   AUDIO_RECORDING_POSITION_MIXED_PLAYBACK = 2,
 }
 
+export enum UPLOAD_ERROR_REASON
+{
+    UPLOAD_SUCCESS = 0,
+    UPLOAD_NET_ERROR = 1,
+    UPLOAD_SERVER_ERROR = 2,
+}
+
 export interface AudioRecordingConfiguration {
   /** Pointer to the absolute file path of the recording file. The string of the file name is in UTF-8.
 
@@ -2628,6 +2635,7 @@ export interface NodeRtcEngine {
    */
   sendCustomReportMessage(id: string, category: string, event: string, label: string, value: number): number;
 
+  uploadLogFile(): string;
 }
 
 export interface NodeRtcChannel {

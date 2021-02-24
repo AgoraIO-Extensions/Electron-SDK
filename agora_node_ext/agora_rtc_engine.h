@@ -359,6 +359,8 @@ namespace agora {
              */
             NAPI_API(sendCustomReportMessage);
 
+            NAPI_API(uploadLogFile);
+
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }

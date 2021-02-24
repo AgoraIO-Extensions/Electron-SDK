@@ -1509,5 +1509,13 @@ namespace agora {
             FUNC_TRACE;
             MAKE_JS_CALL_5(RTC_EVENT_VIDEO_SUBSCRIBE_STATE_CHANGE, string, channel, uid, uid, int32, oldstate, int32, newstate, int32, elapsed);    
         }
+
+        void NodeEventHandler::onUploadLogResult(const char* requestId, bool success, UPLOAD_ERROR_REASON reason)
+        {
+            std::string requestIdStr = std::string(requestId);
+            node_async_call::async_call([this, requestIdStr, success, reason] {
+                MAKE_JS_CALL_3(RTC_EVENT_UPLOAD_FILE_RESULT, string, requestIdStr.c_str(), bool, success, int32, reason);
+            });
+        }
     }
 }
