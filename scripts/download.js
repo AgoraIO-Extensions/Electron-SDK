@@ -46,11 +46,14 @@ module.exports = ({
 
   logger.info("Downloading prebuilt C++ addon for Agora Electron SDK...\n");
 
+  // delete unuse file
+  fs.removeSync("./build");
+
   download(downloadUrl, outputDir, {
     strip: 1,
     extract: true
-  })
-    .then(() => {
+  }).then(() => {
+      console.log(`Agora:  download then`)
       if (no_symbol) {
         if (platform === "darwin") {
           try {

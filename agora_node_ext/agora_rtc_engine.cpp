@@ -16,6 +16,7 @@
 #include "IAgoraRtcEngine2.h"
 #include <string>
 #include <nan.h>
+#include "agora_rtc_channel_publish_helper.h"
 
 #if defined(__APPLE__) || defined(_WIN32)
 #include "node_screen_window_info.h"
@@ -368,12 +369,14 @@ namespace agora {
             LOG_ENTER;
             /** m_engine provide SDK functionality */
             m_engine = createAgoraRtcEngine();
+            rtc::AgoraRtcChannelPublishHelper::Get()->setRtcEngine(m_engine);
             /** m_eventHandler provide SDK event handler. */
             m_eventHandler.reset(new NodeEventHandler(this));
             /** Node ADDON takes advantage of self render interface */
             m_externalVideoRenderFactory.reset(new NodeVideoRenderFactory(*this));
             /** Video/Audio Plugins */
             m_avPluginManager.reset(new IAVFramePluginManager());
+            rtc::AgoraRtcChannelPublishHelper::Get()->setAudioObserver(m_avPluginManager.get());
             /** m_videoSourceSink provide facilities to multiple video source based on multiple process */
             m_videoSourceSink.reset(createVideoSource());
             metadataObserver.reset(new NodeMetadataObserver());

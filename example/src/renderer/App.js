@@ -20,9 +20,12 @@ export default class App extends Component {
       let rtcEngine = this.getRtcEngine()
       let channel1
       let channel2
+      let mediaPlayer;
+      let mediaPlayer2;
       this.state = {
         local: '',
         localVideoSource: '',
+        mediaPlayerView: '',
         localSharing: false,
         users: new List(),
         channel: '',
@@ -47,7 +50,9 @@ export default class App extends Component {
         encoderWidth: 0,
         encoderHeight: 0,
         hookplayerpath: "",
-        audioHookEnabled: false
+        audioHookEnabled: false,
+        mediaPlayerUrl: "https://big-class-test.oss-cn-hangzhou.aliyuncs.com/61102.1592987815092.mp4",
+        
       }
     }
     this.enableAudioMixing = false;
@@ -309,6 +314,135 @@ export default class App extends Component {
   //   this.subscribeChannelEvents(this.channel2, false)
   //   this.channel2.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
 
+  }
+  
+  
+  openMediaPlayer = e => {
+    if (this.mediaPlayer) {
+      this.setState({
+        mediaPlayerView: ""
+      })
+      this.mediaPlayer.stop();
+    }
+    let rtcEngine = this.getRtcEngine()
+    this.mediaPlayer = rtcEngine.createMediaPlayer();
+      let ret1 = this.mediaPlayer.initialize();
+      console.log(`initialize  ${ret1}`)
+      this.mediaPlayer.on('onPlayerStateChanged', (state, ec)=>{
+        console.log(`onPlayerStateChanged  state: ${state}  ec:${ec}`);
+        if (state == 2) {
+          this.setState({
+            mediaPlayerView: "mediaPlayerView"
+        })
+        let a19 = this.mediaPlayer.setLogFile("log.txt")
+        console.log(`mediaPlayer.setLogFile ${a19}`);
+        
+        let mediaInfo = this.mediaPlayer.getStreamInfo(0);
+        if (mediaInfo.streamType == 1) {
+          let rotation = mediaInfo.videoRotation;
+          this.mediaPlayer.setVideoRotation(rotation)
+        } else {
+          let mediaInfo1 = this.mediaPlayer.getStreamInfo(1);
+          if (mediaInfo1.streamType == 1) {
+            let rotation = mediaInfo1.videoRotation;
+            this.mediaPlayer.setVideoRotation(rotation)
+          }
+        }
+
+        let a = this.mediaPlayer.play();
+        console.log(`mediaPlayer.play ${a}`);
+
+          // let a21 = this.mediaPlayer.setPlayerOption("", 1)
+          // console.log(`mediaPlayer.setPlayerOption ${a21}`);
+
+          // let a1 = this.mediaPlayer.pause()
+          // console.log(`mediaPlayer.pause ${a1}`);
+
+          // let a3 = this.mediaPlayer.seek(5)
+          // console.log(`mediaPlayer.seek ${a3}`);
+          // let a4 = this.mediaPlayer.mute(true)
+          // console.log(`mediaPlayer.mute ${a4}`);
+          // let a5 = this.mediaPlayer.getMute()
+          // console.log(`mediaPlayer.getMute ${a5}`);
+          let a6 = this.mediaPlayer.adjustPlayoutVolume(100)
+          console.log(`mediaPlayer.adjustPlayoutVolume ${a6}`);
+          // let a7 = this.mediaPlayer.getPlayoutVolume()
+          // console.log(`mediaPlayer.getPlayoutVolume ${a7}`);
+          // let a8 = this.mediaPlayer.getPlayPosition()
+          // console.log(`mediaPlayer.getPlayPosition ${a8}`);
+          let a9 = this.mediaPlayer.getDuration()
+          console.log(`mediaPlayer.getDuration ${a9}`);
+          let a10 = this.mediaPlayer.getState()
+          console.log(`mediaPlayer.getState ${a10}`);
+          // let a11 = this.mediaPlayer.getStreamCount()
+          // console.log(`mediaPlayer.getStreamCount ${a11}`);
+          // let a12 = this.mediaPlayer.connect("", "123", "")
+          // console.log(`mediaPlayer.connect ${a12}`);
+          // let a13 = this.mediaPlayer.disconnect()
+          // console.log(`mediaPlayer.disconnect ${a13}`);
+          // let a14 = this.mediaPlayer.publishVideo()
+          // console.log(`mediaPlayer.publishVideo ${a14}`);
+          // let a15 = this.mediaPlayer.unpublishVideo()
+          // console.log(`mediaPlayer.unpublishVideo ${a15}`);
+          // let a16 = this.mediaPlayer.publishAudio()
+          // console.log(`mediaPlayer.publishAudio ${a16}`);
+          // let a17 = this.mediaPlayer.unpublishAudio()
+          // console.log(`mediaPlayer.unpublishAudio ${a17}`);
+          let a18 = this.mediaPlayer.adjustPublishSignalVolume(90)
+          // console.log(`mediaPlayer.adjustPublishSignalVolume ${a18}`);
+          // let a20 = this.mediaPlayer.setLogFilter(1)
+          // console.log(`mediaPlayer.setLogFilter ${a20}`);
+          // let a22 = this.mediaPlayer.changePlaybackSpeed(200)
+          // console.log(`mediaPlayer.changePlaybackSpeed ${a22}`);
+          // let a23 = this.mediaPlayer.selectAudioTrack(1)
+          // console.log(`mediaPlayer.selectAudioTrack ${a23}`);
+          // let a2 = this.mediaPlayer.stop()
+          // console.log(`mediaPlayer.stop ${a2}`);
+          // this.mediaPlayer.publishVideoToRtc();
+
+        }
+      })
+
+      this.mediaPlayer.on('onPlayEvent', (event)=>{
+        console.log(`onPlayEvent  event: ${event}`);
+      })
+
+      this.mediaPlayer.on('onPositionChanged', (position)=>{
+        console.log(`onPositionChanged  position: ${position}`);
+          // this.setState({
+          //   mediaPlayerView: "mediaPlayerView"
+          // })
+      })
+
+      this.mediaPlayer.open(this.state.mediaPlayerUrl, 0);
+      // this.mediaPlayer.open("/Users/dyf/Documents/project/Electron/61102.1592987815092.mp4", 0);
+
+  }
+
+  handlePublishVideo = e => {
+    this.mediaPlayer.publishVideoToRtc();
+  }
+
+  handleUnpublishVideo = e => {
+    this.mediaPlayer.unpublishVideoFromRtc();
+  }
+
+  handlePublishAudio = e => {
+    this.mediaPlayer.mute(true);
+    this.mediaPlayer.publishAudioToRtc(true, true);
+  }
+
+  handleUnpublishAudio = e => {
+    this.mediaPlayer.mute(false);
+    this.mediaPlayer.unpublishAudioFromRtc();
+  }
+
+  attachMediaPlayerToRtc = e => {
+    let ret = this.mediaPlayer.attachPlayerToRtc();
+  }
+
+  detachMediaPlayerToRtc = e => {
+    this.mediaPlayer.detachPlayerFromRtc();
   }
 
   handleCameraChange = e => {
@@ -927,11 +1061,53 @@ export default class App extends Component {
               <button onClick={this.handleAudioMixing} className="button is-link">Start/Stop Audio Mixing</button>
             </div>
           </div> */}
-          <div className="field is-grouped is-grouped-right">
+          <div className="field">
+            <label className="label">Media Player Url</label>
             <div className="control">
-              <button onClick={this.handleJoin} className="button is-link">Join</button>
+              <input onChange={e => this.setState({mediaPlayerUrl: e.currentTarget.value})} value={this.state.mediaPlayerUrl} className="input" type="text" placeholder="Input a MediaPlayer Url" />
             </div>
           </div>
+          <div className="field is-grouped is-grouped-right">
+            <div className="control">
+              <button onClick={this.attachMediaPlayerToRtc} className="button is-link">Attach Media Player To Rtc</button>
+            </div>
+          </div>
+          <div className="field is-grouped is-grouped-right">
+            <div className="control">
+              <button onClick={this.detachMediaPlayerToRtc} className="button is-link">Detach Media Player To Rtc</button>
+            </div>
+          </div>
+
+          <div className="field is-grouped is-grouped-right">
+            <div className="control">
+              <button onClick={this.openMediaPlayer} className="button is-link">Open Media Player</button>
+            </div>
+          </div>
+    
+          <div className="field is-grouped is-grouped-right">
+            <div className="control">
+              <button onClick={this.handlePublishVideo} className="button is-link">Publish Video</button>
+            </div>
+          </div>
+
+          <div className="field is-grouped is-grouped-right">
+            <div className="control">
+              <button onClick={this.handleUnpublishVideo} className="button is-link">Unpublish Video</button>
+            </div>
+          </div>
+
+          <div className="field is-grouped is-grouped-right">
+            <div className="control">
+              <button onClick={this.handlePublishAudio} className="button is-link">Publish Audio</button>
+            </div>
+          </div>
+
+          <div className="field is-grouped is-grouped-right">
+            <div className="control">
+              <button onClick={this.handleUnpublishAudio} className="button is-link">Unpublish Audio</button>
+            </div>
+          </div>
+              <button onClick={this.handleJoin} className="button is-link">Join</button>
           <hr/>
           <div className="field">
             <label className="label">Network Test</label>
@@ -1010,11 +1186,38 @@ export default class App extends Component {
           {this.state.localVideoSource ? (<Window uid={this.state.localVideoSource} rtcEngine={this.rtcEngine} role="localVideoSource">
 
           </Window>) : ''}
+          {this.state.mediaPlayerView ? (<MediaPlayerWindow mediaPlayer={this.mediaPlayer}>
+
+          </MediaPlayerWindow>) : ''}
         </div>
       </div>
     )
   }
+}
 
+class MediaPlayerWindow extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      loading: false
+    }
+  }
+
+  componentDidMount() {
+    let dom = document.querySelector("#mediaPlayerView")
+    console.log(`MediaPlayerWindow  dom: ${dom}`)
+    this.props.mediaPlayer.setView(1, dom);
+  }
+
+  render() {
+    return (
+      <div className="window-item">
+        <div className="video-item" id="mediaPlayerView">
+        <p className="mirrorRotateHorizontal"></p>
+        </div>
+      </div>
+    )
+  }
 }
 
 class Window extends Component {

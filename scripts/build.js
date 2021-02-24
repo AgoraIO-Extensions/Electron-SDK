@@ -110,6 +110,26 @@ module.exports = ({
               })
             })
           }
+          
+          // if (platform === 'darwin') {
+          //   shell.exec(`install_name_tool -change "@rpath/AgoraMediaPlayer.framework/Versions/A/AgoraMediaPlayer" "@loader_path/AgoraMediaPlayer.framework/Versions/A/AgoraMediaPlayer" ${agora_node_ext_path}`, {silent}, (code, stdout, stderr) => {
+          //     if (code !== 0) {
+          //       logger.error(stderr);
+          //       process.exit(1)
+          //     }
+
+          //     // shell.exec(`install_name_tool -change "@rpath/AgoraMediaPlayer.framework/Versions/A/AgoraMediaPlayer" "@loader_path/AgoraMediaPlayer.framework/AgoraMediaPlayer" ${video_source_path}`, {silent}, (code, stdout, stderr) => {
+          //     //   if (code !== 0) {
+          //     //     logger.error(stderr);
+          //     //     process.exit(1)
+          //     //   }
+
+          //       // handle success
+          //       logger.info('Build complete')
+          //       process.exit(0)
+          //     //})
+          //   })
+          // }
         })
       }
     })
