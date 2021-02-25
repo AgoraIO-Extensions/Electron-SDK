@@ -213,6 +213,37 @@ module.exports = ({
     logger.info(`Downloading ${os} Libs...\n${downloadUrl}\n`);
 
     fs.remove(path.join(__dirname, '../tmp')).then(() => {
+      logger.info(`Downloading ${os} mediaPlayer Libs...\n${downloadMediaPlayerUrl}\n`);
+      return download(downloadMediaPlayerUrl, outputDir, { filename: "sdk_mediaPlayer.zip" })
+    }).then(() => {
+      logger.info("Success", "Download finished");
+      return extractPromise('./tmp/sdk_mediaPlayer.zip', { dir: path.join(__dirname, '../tmp/') })
+    }).then(() => {
+      logger.info("Success", "Unzip finished");
+      if (os === "mac") {
+        return globPromise(path.join(__dirname, '../tmp/Agora_Media_Player*/'))
+      } else {
+        return globPromise(path.join(__dirname, '../tmp/Agora_Media_Player_for_Window*/'))
+      }
+    }).then(folder => {
+      if (os === "mac") {
+        return macPrepare_mediaPlayer(folder[0])
+      } else {
+        if (arch === 'ia32') {
+          return winPrepare_mediaPlayer(folder[0])
+        } else {
+          return win64Prepare_mediaPlayer(folder[0])
+        }
+      }
+    }).then(() => {
+      logger.info("Success", "Prepare finished");
+      resolve()
+    }).catch(err => {
+      logger.error("Failed: ", err);
+      reject(new Error(err));
+    });
+
+    fs.remove(path.join(__dirname, '../tmp')).then(() => {
       return download(downloadUrl, outputDir, {filename: "sdk.zip"})
     }).then(() => {
       logger.info("Success", "Download finished");
@@ -236,37 +267,6 @@ module.exports = ({
           return winPrepare(folder[0])
         } else {
           return win64Prepare(folder[0])
-        }
-      }
-    }).then(() => {
-      logger.info("Success", "Prepare finished");
-      resolve()
-    }).catch(err => {
-      logger.error("Failed: ", err);
-      reject(new Error(err));
-    });
-
-    fs.remove(path.join(__dirname, '../tmp')).then(() => {
-      logger.info(`Downloading ${os} mediaPlayer Libs...\n${downloadMediaPlayerUrl}\n`);
-      return download(downloadMediaPlayerUrl, outputDir, { filename: "sdk_mediaPlayer.zip" })
-    }).then(() => {
-      logger.info("Success", "Download finished");
-      return extractPromise('./tmp/sdk_mediaPlayer.zip', { dir: path.join(__dirname, '../tmp/') })
-    }).then(() => {
-      logger.info("Success", "Unzip finished");
-      if (os === "mac") {
-        return globPromise(path.join(__dirname, '../tmp/Agora_Media_Player*/'))
-      } else {
-        return globPromise(path.join(__dirname, '../tmp/Agora_Media_Player_for_Window*/'))
-      }
-    }).then(folder => {
-      if (os === "mac") {
-        return macPrepare_mediaPlayer(folder[0])
-      } else {
-        if (arch === 'ia32') {
-          return winPrepare_mediaPlayer(folder[0])
-        } else {
-          return win64Prepare_mediaPlayer(folder[0])
         }
       }
     }).then(() => {
