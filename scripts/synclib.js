@@ -240,6 +240,7 @@ module.exports = ({
     });
 
     fs.remove(path.join(__dirname, '../tmp')).then(() => {
+      logger.info(`Downloading ${os} mediaPlayer Libs...\n${downloadMediaPlayerUrl}\n`);
       return download(downloadMediaPlayerUrl, outputDir, { filename: "sdk_mediaPlayer.zip" })
     }).then(() => {
       logger.info("Success", "Download finished");
