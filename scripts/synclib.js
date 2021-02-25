@@ -115,10 +115,15 @@ const macPrepare_mediaPlayer = (folder) => {
       console.log("Agora mkdir mediaPlayer")
       return fs.mkdirp(path.join(__dirname, '../sdk/lib/media_player'))
     }).then(() => {
-      console.log(`macPrepare_mediaPlayer ${folder}`)
-      return fs.move(path.join(folder, './libs/AgoraMediaPlayer.framework'), path.join(__dirname, '../sdk/lib/media_player/AgoraMediaPlayer.framework'))
+      let sourceFilePath = path.join(folder, './libs/AgoraMediaPlayer.framework')
+      let destFilePath = path.join(__dirname, '../sdk/lib/media_player/AgoraMediaPlayer.framework')
+      console.log(`macPrepare_mediaPlayer ${folder},  ${sourceFilePath}:  exist: ${fs.existsSync(sourceFilePath)},  ${destFilePath}: exist: ${fs.existsSync(destFilePath)}`)
+  
+      return fs.move(sourceFilePath, destFilePath)
     }).then(() => {
-      console.log("macPrepare_mediaPlayer down")
+      let sourceFilePath = path.join(folder, './libs/AgoraMediaPlayer.framework')
+      let destFilePath = path.join(__dirname, '../sdk/lib/media_player/AgoraMediaPlayer.framework')
+      console.log(`macPrepare_mediaPlayer after down ${folder},  ${sourceFilePath}:  exist: ${fs.existsSync(sourceFilePath)},  ${destFilePath}: exist: ${fs.existsSync(destFilePath)}`)
       resolve()
     }).catch(e => {
       console.log("macPrepare_mediaPlayer reject exception")
