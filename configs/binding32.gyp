@@ -186,6 +186,8 @@
         './common/node_event.cpp',
         './common/node_process.h',
         './common/node_error.h',
+        './common/loguru.h',
+        './common/loguru.cpp',
         './agora_node_ext/agora_node_ext.cpp',
         './agora_node_ext/agora_node_ext.h',
         './agora_node_ext/agora_rtc_engine.cpp',

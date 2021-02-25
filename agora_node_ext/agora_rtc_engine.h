@@ -26,6 +26,8 @@
 #include <map>
 #include "AVPlugin/IAVFramePluginManager.h"
 #include "AVPlugin/IAVFramePlugin.h"
+#include "loguru.hpp"
+
 /*
 * Used to declare native interface to nodejs
 */

@@ -1364,7 +1364,7 @@ export enum VIDEO_PROFILE_TYPE {
  * String user accounts are not supported in media stream relay.
  */
 export interface ChannelMediaInfo {
-  channel: string;
+  channelName: string;
   token: string;
   uid: number;
 }
