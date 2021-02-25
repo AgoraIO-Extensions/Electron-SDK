@@ -1908,7 +1908,7 @@ export interface ChannelMediaInfo {
    * The default value is NULL, which means that
    * the SDK applies the current channel name.
    */
-  channel: string;
+  channelName: string;
   /**
    * The token that enables the user to join the channel.
    *
