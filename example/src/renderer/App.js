@@ -363,68 +363,112 @@ export default class App extends Component {
   }
 
   handleRtmp = () => {
-    const url = RTMP_URL
-    if(!url) {
-      alert("RTMP URL Empty")
-      return
-    }
-    if(!this.state.rtmpTestOn) {
-      this.rtcEngine.setLiveTranscoding({
-        /** width of canvas */
-        width: 640,
-        /** height of canvas */
-        height: 480,
-        /** kbps value, for 1-1 mapping pls look at https://docs.agora.io/cn/Interactive%20Broadcast/API%20Reference/cpp/structagora_1_1rtc_1_1_video_encoder_configuration.html */
-        videoBitrate: 500,
-        /** fps, default 15 */
-        videoFrameRate: 15,
-        /** true for low latency, no video quality garanteed; false - high latency, video quality garanteed */
-        lowLatency: true,
-        /** Video GOP in frames, default 30 */
-        videoGop: 30,
-        videoCodecProfile: 77,
-        /**
-         * RGB hex value. Value only, do not include a #. For example, 0xC0C0C0.
-         * number color = (A & 0xff) << 24 | (R & 0xff) << 16 | (G & 0xff) << 8 | (B & 0xff)
-         */
-        backgroundColor: 0xc0c0c0,
-        /** The number of users in the live broadcast */
-        userCount: 1,
-        audioSampleRate: 1,
-        audioChannels: 1,
-        audioBitrate: 48,
-        /** transcodingusers array */
-        transcodingUsers: [
-          {
-            uid: this.state.local,
-            x: 0,
-            y: 0,
-            width: 320,
-            height: 240,
-            zOrder: 1,
-            alpha: 1,
-            audioChannel: 1
-          }
-        ],
-        watermark: {
-          url: "",
-          x: 0,
-          y:0,
-          width: 0,
-          height: 0
+    let object = {
+      srcInfo: {
+        channelName: "I am src CHannel",
+        token: "I am src token",
+        uid: 0
+      },
+      destInfos: [
+        {
+          channelName: "I am dest Channel1",
+          token: "I am dest token1",
+          uid: 100
+        }, 
+        {
+          channelName: "I am dest Channel2",
+          token: "I am dest token2",
+          uid: 200
         }
-      });
-      this.rtcEngine.addPublishStreamUrl(
-        url,
-        true
-      );
-    } else {
-      this.rtcEngine.removePublishStreamUrl(url)
+      ]
     }
+    console.log(`startChannelMediaRelay: ${JSON.stringify(object)}`)
+    this.rtcEngine.startChannelMediaRelay(object)
     
-    this.setState({
-      rtmpTestOn: !this.state.rtmpTestOn
-    })
+
+    let object2 = {
+      srcInfo: {
+        channelName: "I am src update CHannel",
+        token: "I am src update token",
+        uid: 0
+      },
+      destInfos: [
+        {
+          channelName: "I am dest update Channel1",
+          token: "I am dest update token1",
+          uid: 100
+        }, 
+        {
+          channelName: "I am dest update Channel2",
+          token: "I am dest update token2",
+          uid: 200
+        }
+      ]
+    }
+    console.log(`updateChannelMediaRelay: ${JSON.stringify(object2)}`)
+    this.rtcEngine.updateChannelMediaRelay(object2)
+    // const url = RTMP_URL
+    // if(!url) {
+    //   alert("RTMP URL Empty")
+    //   return
+    // }
+    // if(!this.state.rtmpTestOn) {
+    //   this.rtcEngine.setLiveTranscoding({
+    //     /** width of canvas */
+    //     width: 640,
+    //     /** height of canvas */
+    //     height: 480,
+    //     /** kbps value, for 1-1 mapping pls look at https://docs.agora.io/cn/Interactive%20Broadcast/API%20Reference/cpp/structagora_1_1rtc_1_1_video_encoder_configuration.html */
+    //     videoBitrate: 500,
+    //     /** fps, default 15 */
+    //     videoFrameRate: 15,
+    //     /** true for low latency, no video quality garanteed; false - high latency, video quality garanteed */
+    //     lowLatency: true,
+    //     /** Video GOP in frames, default 30 */
+    //     videoGop: 30,
+    //     videoCodecProfile: 77,
+    //     /**
+    //      * RGB hex value. Value only, do not include a #. For example, 0xC0C0C0.
+    //      * number color = (A & 0xff) << 24 | (R & 0xff) << 16 | (G & 0xff) << 8 | (B & 0xff)
+    //      */
+    //     backgroundColor: 0xc0c0c0,
+    //     /** The number of users in the live broadcast */
+    //     userCount: 1,
+    //     audioSampleRate: 1,
+    //     audioChannels: 1,
+    //     audioBitrate: 48,
+    //     /** transcodingusers array */
+    //     transcodingUsers: [
+    //       {
+    //         uid: this.state.local,
+    //         x: 0,
+    //         y: 0,
+    //         width: 320,
+    //         height: 240,
+    //         zOrder: 1,
+    //         alpha: 1,
+    //         audioChannel: 1
+    //       }
+    //     ],
+    //     watermark: {
+    //       url: "",
+    //       x: 0,
+    //       y:0,
+    //       width: 0,
+    //       height: 0
+    //     }
+    //   });
+    //   this.rtcEngine.addPublishStreamUrl(
+    //     url,
+    //     true
+    //   );
+    // } else {
+    //   this.rtcEngine.removePublishStreamUrl(url)
+    // }
+    
+    // this.setState({
+    //   rtmpTestOn: !this.state.rtmpTestOn
+    // })
   }
 
   handleWindowPicker = windowId => {
