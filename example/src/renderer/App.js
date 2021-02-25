@@ -91,6 +91,8 @@ export default class App extends Component {
       let parameters = `{\"che.audio.game_play_effect\":{\"soundId\":${soundId},\"filePath\":\"${filePath}\",\"loopCount\":${loopCount},\"pitch\":${pitch},\"pan\":${pan},\"gain\":${gain},\"send2far\":${publish},\"startPos\":${startPos}}}` 
       console.log(`parameters:   ${parameters}`)
       this.rtcEngine.setParameters(parameters)
+      let ret =  this.rtcEngine.uploadLogFile();
+      console.log(`uploadLogFile  ret ${ret}`);
      // let ret =  this.rtcEngine.playEffect(0, filePath, 1, 1, 0, 1, false, 0);
       //console.log(`playEffect ${ret}`)
       this.setState({
@@ -185,6 +187,10 @@ export default class App extends Component {
     })
     rtcEngine.on("sendMetadataSuccess", (metadata) => {
       console.log(`sendMetadataSuccess : ${JSON.stringify(metadata)}`)
+    })
+
+    rtcEngine.on("uploadFileResult", (requestId, success, reason)=>{
+      console.log(`uploadFileResult == requestId: ${requestId}, success: ${success}, reqason: ${reason}`)
     })
 
     setInterval(()=>{
