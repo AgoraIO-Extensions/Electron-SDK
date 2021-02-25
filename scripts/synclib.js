@@ -118,8 +118,10 @@ const macPrepare_mediaPlayer = (folder) => {
       console.log(`macPrepare_mediaPlayer ${folder}`)
       return fs.move(path.join(folder, './libs/AgoraMediaPlayer.framework'), path.join(__dirname, '../sdk/lib/media_player/AgoraMediaPlayer.framework'))
     }).then(() => {
+      console.log("macPrepare_mediaPlayer down")
       resolve()
     }).catch(e => {
+      console.log("macPrepare_mediaPlayer reject exception")
       reject(e)
     })
   })
