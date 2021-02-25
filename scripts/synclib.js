@@ -18,13 +18,12 @@ const macExtractPromise = () => {
 }
 const globPromise = promisify(glob)
 
-
 const macPrepare = () => {
   return new Promise((resolve, reject) => {
     Promise.all([
-      fs.remove(path.join(__dirname, '../sdk'))
+      // fs.remove(path.join(__dirname, '../sdk'))
     ]).then(() => {
-      return fs.mkdirp(path.join(__dirname, '../sdk/lib/mac'))
+      return fs.mkdirpSync(path.join(__dirname, '../sdk/lib/mac'))
     }).then(() => {
       return Promise.all([
         fs.move(
@@ -56,11 +55,11 @@ const macPrepare = () => {
 const winPrepare = (folder) => {
   return new Promise((resolve, reject) => {
     Promise.all([
-      fs.remove(path.join(__dirname, '../sdk'))
+      // fs.remove(path.join(__dirname, '../sdk'))
     ]).then(() => {
-      return fs.mkdirp(path.join(__dirname, '../sdk/lib'))
+      return fs.mkdirpSync(path.join(__dirname, '../sdk/lib'))
     }).then(() => {
-      return fs.mkdirp(path.join(__dirname, '../sdk/dll'))
+      return fs.mkdirpSync(path.join(__dirname, '../sdk/dll'))
     }).then(() => {
       return Promise.all([
         fs.move(path.join(folder, './libs/include'), path.join(__dirname, '../sdk/include')),
@@ -83,11 +82,11 @@ const winPrepare = (folder) => {
 const win64Prepare = (folder) => {
   return new Promise((resolve, reject) => {
     Promise.all([
-      fs.remove(path.join(__dirname, '../sdk'))
+      // fs.remove(path.join(__dirname, '../sdk'))
     ]).then(() => {
-      return fs.mkdirp(path.join(__dirname, '../sdk/lib'))
+      return fs.mkdirpSync(path.join(__dirname, '../sdk/lib'))
     }).then(() => {
-      return fs.mkdirp(path.join(__dirname, '../sdk/dll'))
+      return fs.mkdirpSync(path.join(__dirname, '../sdk/dll'))
     }).then(() => {
       return Promise.all([
         fs.move(path.join(folder, './libs/include'), path.join(__dirname, '../sdk/include')),
@@ -113,7 +112,7 @@ const macPrepare_mediaPlayer = (folder) => {
       //fs.remove(path.join(__dirname, '../sdk/lib/media_player'))
     ]).then(() => {
       console.log("Agora mkdir mediaPlayer")
-      return fs.mkdirp(path.join(__dirname, '../sdk/lib/media_player'))
+      return fs.mkdirpSync(path.join(__dirname, '../sdk/lib/media_player'))
     }).then(() => {
       let sourceFilePath = path.join(folder, './libs/AgoraMediaPlayer.framework')
       let destFilePath = path.join(__dirname, '../sdk/lib/media_player/AgoraMediaPlayer.framework')
@@ -137,7 +136,7 @@ const winPrepare_mediaPlayer = (folder) => {
     Promise.all([
       fs.remove(path.join(__dirname, '../sdk/media_player'))
     ]).then(() => {
-      return fs.mkdirp(path.join(__dirname, '../sdk/media_player'))
+      return fs.mkdirpSync(path.join(__dirname, '../sdk/media_player'))
     }).then(() => {
       return Promise.all([
         fs.move(path.join(folder, './sdk'), path.join(__dirname, '../sdk/media_player/win')),
@@ -156,7 +155,7 @@ const win64Prepare_mediaPlayer = (folder) => {
     Promise.all([
       fs.remove(path.join(__dirname, '../sdk/media_player'))
     ]).then(() => {
-      return fs.mkdirp(path.join(__dirname, '../sdk/media_player'))
+      return fs.mkdirpSync(path.join(__dirname, '../sdk/media_player'))
     }).then(() => {
       return Promise.all([
         fs.move(path.join(folder, './sdk'), path.join(__dirname, '../sdk/media_player/win64')),
@@ -242,38 +241,36 @@ module.exports = ({
       reject(new Error(err));
     });
 
-    // fs.remove(path.join(__dirname, '../tmp')).then(() => {
-    //   return download(downloadUrl, outputDir, {filename: "sdk.zip"})
-    // }).then(() => {
-    //   logger.info("Success", "Download finished");
-    //   if(os === "mac") {
-    //     return macExtractPromise()
-    //   } else {
-    //     return extractPromise('./tmp/sdk.zip', {dir: path.join(__dirname, '../tmp/')})
-    //   }
-    // }).then(() => {
-    //   logger.info("Success", "Unzip finished");
-    //   if(os === "mac") {
-    //     return globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcKit.framework/'))
-    //   } else {
-    //     return globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Windows*/'))
-    //   }
-    // }).then(folder => {
-    //   if(os === "mac") {
-    //     return macPrepare()
-    //   } else {
-    //     if(arch === 'ia32') {
-    //       return winPrepare(folder[0])
-    //     } else {
-    //       return win64Prepare(folder[0])
-    //     }
-    //   }
-    // }).then(() => {
-    //   logger.info("Success", "Prepare finished");
-    //   resolve()
-    // }).catch(err => {
-    //   logger.error("Failed: ", err);
-    //   reject(new Error(err));
-    // });
+    download(downloadUrl, outputDir, {filename: "sdk.zip"}).then(() => {
+      logger.info("Success", "Download finished");
+      if(os === "mac") {
+        return macExtractPromise()
+      } else {
+        return extractPromise('./tmp/sdk.zip', {dir: path.join(__dirname, '../tmp/')})
+      }
+    }).then(() => {
+      logger.info("Success", "Unzip finished");
+      if(os === "mac") {
+        return globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcKit.framework/'))
+      } else {
+        return globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Windows*/'))
+      }
+    }).then(folder => {
+      if(os === "mac") {
+        return macPrepare()
+      } else {
+        if(arch === 'ia32') {
+          return winPrepare(folder[0])
+        } else {
+          return win64Prepare(folder[0])
+        }
+      }
+    }).then(() => {
+      logger.info("Success", "Prepare finished");
+      resolve()
+    }).catch(err => {
+      logger.error("Failed: ", err);
+      reject(new Error(err));
+    });
   })
 };
