@@ -119,7 +119,7 @@ const macPrepare_mediaPlayer = (folder) => {
       let destFilePath = path.join(__dirname, '../sdk/lib/media_player/AgoraMediaPlayer.framework')
       console.log(`macPrepare_mediaPlayer ${folder},  ${sourceFilePath}:  exist: ${fs.existsSync(sourceFilePath)},  ${destFilePath}: exist: ${fs.existsSync(destFilePath)}`)
   
-      return fs.move(sourceFilePath, destFilePath)
+      return Promise.all([fs.move(sourceFilePath, destFilePath)])
     }).then(() => {
       let sourceFilePath = path.join(folder, './libs/AgoraMediaPlayer.framework')
       let destFilePath = path.join(__dirname, '../sdk/lib/media_player/AgoraMediaPlayer.framework')
