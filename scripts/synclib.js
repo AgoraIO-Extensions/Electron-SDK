@@ -118,7 +118,6 @@ const macPrepare_mediaPlayer = (folder) => {
       let sourceFilePath = path.join(folder, './libs/AgoraMediaPlayer.framework')
       let destFilePath = path.join(__dirname, '../sdk/lib/media_player/AgoraMediaPlayer.framework')
       console.log(`macPrepare_mediaPlayer ${folder},  ${sourceFilePath}:  exist: ${fs.existsSync(sourceFilePath)},  ${destFilePath}: exist: ${fs.existsSync(destFilePath)}`)
-  
       return Promise.all([fs.move(sourceFilePath, destFilePath)])
     }).then(() => {
       let sourceFilePath = path.join(folder, './libs/AgoraMediaPlayer.framework')
@@ -243,38 +242,38 @@ module.exports = ({
       reject(new Error(err));
     });
 
-    fs.remove(path.join(__dirname, '../tmp')).then(() => {
-      return download(downloadUrl, outputDir, {filename: "sdk.zip"})
-    }).then(() => {
-      logger.info("Success", "Download finished");
-      if(os === "mac") {
-        return macExtractPromise()
-      } else {
-        return extractPromise('./tmp/sdk.zip', {dir: path.join(__dirname, '../tmp/')})
-      }
-    }).then(() => {
-      logger.info("Success", "Unzip finished");
-      if(os === "mac") {
-        return globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcKit.framework/'))
-      } else {
-        return globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Windows*/'))
-      }
-    }).then(folder => {
-      if(os === "mac") {
-        return macPrepare()
-      } else {
-        if(arch === 'ia32') {
-          return winPrepare(folder[0])
-        } else {
-          return win64Prepare(folder[0])
-        }
-      }
-    }).then(() => {
-      logger.info("Success", "Prepare finished");
-      resolve()
-    }).catch(err => {
-      logger.error("Failed: ", err);
-      reject(new Error(err));
-    });
+    // fs.remove(path.join(__dirname, '../tmp')).then(() => {
+    //   return download(downloadUrl, outputDir, {filename: "sdk.zip"})
+    // }).then(() => {
+    //   logger.info("Success", "Download finished");
+    //   if(os === "mac") {
+    //     return macExtractPromise()
+    //   } else {
+    //     return extractPromise('./tmp/sdk.zip', {dir: path.join(__dirname, '../tmp/')})
+    //   }
+    // }).then(() => {
+    //   logger.info("Success", "Unzip finished");
+    //   if(os === "mac") {
+    //     return globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcKit.framework/'))
+    //   } else {
+    //     return globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Windows*/'))
+    //   }
+    // }).then(folder => {
+    //   if(os === "mac") {
+    //     return macPrepare()
+    //   } else {
+    //     if(arch === 'ia32') {
+    //       return winPrepare(folder[0])
+    //     } else {
+    //       return win64Prepare(folder[0])
+    //     }
+    //   }
+    // }).then(() => {
+    //   logger.info("Success", "Prepare finished");
+    //   resolve()
+    // }).catch(err => {
+    //   logger.error("Failed: ", err);
+    //   reject(new Error(err));
+    // });
   })
 };
