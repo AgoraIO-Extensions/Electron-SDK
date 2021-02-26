@@ -25,7 +25,7 @@ module.exports = ({
   };
   // check electron version
 
-  if (['9.0.0', '7.1.2', '6.1.7', '5.0.8', '4.2.8', '3.0.6', '1.8.3'].indexOf(electronVersion) === -1) {
+  if (['11.0.0', '10.0.2', '9.0.0', '7.1.2', '6.1.7', '5.0.8', '4.2.8', '3.0.6', '1.8.3'].indexOf(electronVersion) === -1) {
     throw new Error('Prebuilt addon only supported electron version 9.0.0 7.1.2, 6.1.7, 5.0.8, 4.2.8, 3.0.6, 1.8.3')
   }
 
