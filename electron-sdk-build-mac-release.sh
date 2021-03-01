@@ -11,4 +11,4 @@ npm install --verbose
 npm run sync:lib
 npm run build:electron -- --electron_version=${ELECTRON_VERSION} --msvs_version=2017
 npm run build:ts
-zip -r electron.zip build js
+zip -ry electron.zip build js
