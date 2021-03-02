@@ -16,7 +16,7 @@ module.exports.getArgvFromPkgJson = () => {
   const projectDir = path.join(process.env.INIT_CWD, 'package.json')
   const pkgMeta = require(projectDir);
   if (pkgMeta.agora_electron) {
-    const libUrl = pkgMeta.agora_electron.libUrl || {}
+    const libUrl = pkgMeta.agora_electron || {}
     return {
       electronVersion: pkgMeta.agora_electron.electron_version,
       prebuilt: pkgMeta.agora_electron.prebuilt === false ? false : true,
@@ -25,7 +25,9 @@ module.exports.getArgvFromPkgJson = () => {
       debug: pkgMeta.agora_electron.debug === true,
       silent: pkgMeta.agora_electron.silent === true,
       arch: pkgMeta.agora_electron.arch,
-      libUrl,
+      lib_sdk_win: pkgMeta.agora_electron.lib_sdk_win,
+      lib_sdk_win64: pkgMeta.agora_electron.lib_sdk_win64,
+      lib_sdk_mac: pkgMeta.agora_electron.lib_sdk_mac,
       no_symbol: pkgMeta.agora_electron.no_symbol === false ? false : true
     }
   } else {

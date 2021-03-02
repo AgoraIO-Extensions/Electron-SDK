@@ -27,15 +27,16 @@ task('switch:arch', () => {
 })
 
 task('sync:lib', () => {
-  const config = Object.assign({}, getArgvFromPkgJson(), getArgvFromNpmEnv() )
+  let pkgConfigs = getArgvFromPkgJson()
+  let argvConfigs = getArgvFromNpmEnv()
   return synclib({
     platform: argv().platform,
     // platform: 'win32',
     arch: argv().arch,
     libUrl: {
-      win: argv().liburl_win || config.libUrl.win,
-      mac: argv().liburl_mac || config.libUrl.mac,
-      win64: argv().liburl_win64 || config.libUrl.win64
+      win: argv().liburl_win || pkgConfigs.lib_sdk_win || argvConfigs.lib_sdk_win,
+      mac: argv().liburl_mac || pkgConfigs.lib_sdk_mac || argvConfigs.lib_sdk_mac,
+      win64: argv().liburl_win64 || pkgConfigs.lib_sdk_win64 || argvConfigs.lib_sdk_win64
     }
   })
 })
