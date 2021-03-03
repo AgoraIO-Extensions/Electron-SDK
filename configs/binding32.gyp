@@ -63,7 +63,7 @@
             'OS=="win"',
             {
                 'library_dirs': [
-                './sdk/lib/win',
+                './sdk/lib',
                 ],
                 'link_settings': {
                     'libraries': [
@@ -256,7 +256,7 @@
                     ]
                 }],
                 'library_dirs': [
-                    './sdk/lib/win',
+                    './sdk/lib',
                 ],
                 'link_settings': {
                     'libraries': [

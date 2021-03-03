@@ -196,8 +196,8 @@ namespace agora{
                 std::string idparam = "id:" + m_peerId;
                 std::string pidparam = "pid:" + ss.str();
                 std::string appidparam = "appid:" + std::string(appid);
-                std::string areaCode = "areaCode:" + std::string(areaCode);
-                const char* params[] = { cmdname.c_str(), idparam.c_str(), pidparam.c_str(), appidparam.c_str(), areaCode.c_str() ,nullptr };
+                std::string _areaCode = "areaCode:" + std::to_string(areaCode);
+                const char* params[] = { cmdname.c_str(), idparam.c_str(), pidparam.c_str(), appidparam.c_str(), _areaCode.c_str() ,nullptr };
                 m_sourceNodeProcess.reset(INodeProcess::CreateNodeProcess(path.c_str(), params));
                 if (!m_sourceNodeProcess.get()) {
                     break;
