@@ -22,6 +22,7 @@ class Renderer {
       return 1;
     }
     if (!contentMode) {
+      // Mode 0
       if (vertical) {
         return clientHeight / clientWidth < width / height ?
           clientWidth / height : clientHeight / width;
@@ -32,13 +33,14 @@ class Renderer {
       }
     }
     else {
+      // Mode 1
       if (vertical) {
         return clientHeight / clientWidth < width / height ?
           clientHeight / width : clientWidth / height;
       }
       else {
         return clientWidth / clientHeight > width / height ?
-          clientWidth / width : clientHeight / height;
+          clientHeight / height: clientWidth / width;
       }
     }
   }
