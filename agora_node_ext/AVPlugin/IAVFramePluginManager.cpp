@@ -56,10 +56,10 @@ bool IAVFramePluginManager::onRecordAudioFrame(AudioFrame& audioFrame)
     int16_t *tmpBuf = (int16_t *)malloc(bytes);
     memcpy(tmpBuf, audioFrame.buffer, bytes);
 
-    if (recordCircularBuffer->mAvailSamples < bytes) {
-        free(tmpBuf);
-        return false;
-    }
+    // if (recordCircularBuffer->mAvailSamples < bytes) {
+    //     free(tmpBuf);
+    //     return false;
+    // }
     int ret = recordCircularBuffer->mAvailSamples - bytes;
     if (ret < 0){
         memcpy(audioFrame.buffer, tmpBuf, bytes);
@@ -114,18 +114,18 @@ bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame)
 	int16_t *tmpBuf = (int16_t *)malloc(bytes);
 	memcpy(tmpBuf, audioFrame.buffer, bytes);
 
-	if (playbackCircularBuffer->mAvailSamples < bytes) {
-		memcpy(audioFrame.buffer, tmpBuf, bytes);
-		free(tmpBuf);
-		return true;
-	}
-	
-	// int ret = playbackCircularBuffer->mAvailSamples - bytes;
-	// if (ret < 0) {
+	// if (playbackCircularBuffer->mAvailSamples < bytes) {
 	// 	memcpy(audioFrame.buffer, tmpBuf, bytes);
 	// 	free(tmpBuf);
 	// 	return true;
 	// }
+	
+	int ret = playbackCircularBuffer->mAvailSamples - bytes;
+	if (ret < 0) {
+		memcpy(audioFrame.buffer, tmpBuf, bytes);
+		free(tmpBuf);
+		return true;
+	}
 	char *data = (char *)malloc(sizeof(char)*bytes);
 
 	playbackCircularBuffer->Pop(data, bytes);
