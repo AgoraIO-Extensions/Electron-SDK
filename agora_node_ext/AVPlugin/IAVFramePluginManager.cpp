@@ -120,12 +120,12 @@ bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame)
 		return true;
 	}
 	
-	int ret = playbackCircularBuffer->mAvailSamples - bytes;
-	if (ret < 0) {
-		memcpy(audioFrame.buffer, tmpBuf, bytes);
-		free(tmpBuf);
-		return true;
-	}
+	// int ret = playbackCircularBuffer->mAvailSamples - bytes;
+	// if (ret < 0) {
+	// 	memcpy(audioFrame.buffer, tmpBuf, bytes);
+	// 	free(tmpBuf);
+	// 	return true;
+	// }
 	char *data = (char *)malloc(sizeof(char)*bytes);
 
 	playbackCircularBuffer->Pop(data, bytes);
