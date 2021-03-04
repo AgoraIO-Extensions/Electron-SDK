@@ -3078,11 +3078,11 @@ export interface NodeRtcEngine {
  /**
   * @ignore
   */
- enableExtension(id: string, enable: boolean): number;
+ enableExtension(type: VIDEO_SOURCE_TYPE, id: string, enable: boolean): number;
  /**
   * @ignore
   */
- setExtensionProperty(id: string, key: string, jsonValue: string): number;
+ setExtensionProperty(type: VIDEO_SOURCE_TYPE, id: string, key: string, jsonValue: string): number;
 }
 
 export interface NodeMediaPlayer {

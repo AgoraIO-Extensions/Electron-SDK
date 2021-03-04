@@ -4232,8 +4232,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
- enableExtension(id: string, enable: boolean): number {
-   return this.rtcEngine.enableExtension(id, enable);
+ enableExtension(type: VIDEO_SOURCE_TYPE, id: string, enable: boolean): number {
+   return this.rtcEngine.enableExtension(type, id, enable);
  }
 
  /**
@@ -4247,8 +4247,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
- setExtensionProperty(id: string, key: string, jsonValue: string): number {
-   return this.rtcEngine.setExtensionProperty(id, key, jsonValue);
+ setExtensionProperty(type: VIDEO_SOURCE_TYPE, id: string, key: string, jsonValue: string): number {
+   return this.rtcEngine.setExtensionProperty(type, id, key, jsonValue);
  }
 }
 /** The AgoraRtcEngine interface. */
