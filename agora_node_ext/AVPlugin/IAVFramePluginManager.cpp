@@ -3,9 +3,16 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "loguru.hpp"
+#include "node_log.h"
+#include <sys/time.h>
+
+#define DEBUG
 
 IAVFramePluginManager::IAVFramePluginManager()
 {
+#ifdef DEBUG
+    loguru::add_file("./Agora_Addon_Log.txt", loguru::Append, loguru::Verbosity_MAX);
+#endif
 }
 
 IAVFramePluginManager::~IAVFramePluginManager()
@@ -39,13 +46,13 @@ bool IAVFramePluginManager::onRenderVideoFrame(unsigned int uid, VideoFrame& vid
 
 bool IAVFramePluginManager::onRecordAudioFrame(AudioFrame& audioFrame)
 {
-    pluginMutex.lock();
+    //pluginMutex.lock();
     for (auto const& element : m_mapPlugins) {
         if(element.second.enabled) {
             element.second.instance->onPluginRecordAudioFrame((AudioPluginFrame*)&audioFrame);
         }
     }
-    pluginMutex.unlock();
+    //pluginMutex.unlock();
 
     if (!isPublishMediaPlayerAudio) {
         return true;
@@ -97,13 +104,16 @@ bool IAVFramePluginManager::onRecordAudioFrame(AudioFrame& audioFrame)
 
 bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame)
 {
-    pluginMutex.lock();
+#ifdef DEBUG
+    LOG_F(MAX, "onPlaybackAudioFrame start ");
+#endif
+
     for (auto const& element : m_mapPlugins) {
         if(element.second.enabled) {
             element.second.instance->onPluginPlaybackAudioFrame((AudioPluginFrame*)&audioFrame);
         }
     }
-    pluginMutex.unlock();
+    //pluginMutex.unlock();
 
     if (!isPlaybackMediaPlayerAudio) {
         return true;
@@ -119,7 +129,9 @@ bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame)
 	// 	free(tmpBuf);
 	// 	return true;
 	// }
-	
+#ifdef DEBUG
+    LOG_F(MAX, "onPlaybackAudioFrame mAvailSamples: %d, bytes: %d\r\n", playbackCircularBuffer->mAvailSamples, bytes);
+#endif
 	int ret = playbackCircularBuffer->mAvailSamples - bytes;
 	if (ret < 0) {
 		memcpy(audioFrame.buffer, tmpBuf, bytes);
@@ -149,34 +161,41 @@ bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame)
 		}
 	}
 	memcpy(audioFrame.buffer, audioBuf, bytes);
+#ifdef DEBUG
+    FILE* fp = fopen("./playout_cpp.pcm", "ab+");
+    fwrite(audioFrame.buffer, 1, bytes, fp);
+    fclose(fp);
+#endif
 	free(audioBuf);
 	free(tmpBuf);
 	free(p16);
-
+#ifdef DEBUG
+    LOG_F(MAX, "onPlaybackAudioFrame end\r\n", playbackCircularBuffer->mAvailSamples, bytes);
+#endif
     return true;
 }
 
 bool IAVFramePluginManager::onMixedAudioFrame(AudioFrame& audioFrame)
 {
-    pluginMutex.lock();
+    //pluginMutex.lock();
     for (auto const& element : m_mapPlugins) {
         if(element.second.enabled) {
             element.second.instance->onPluginMixedAudioFrame((AudioPluginFrame*)&audioFrame);
         }
     }
-    pluginMutex.unlock();
+    //pluginMutex.unlock();
     return true;
 }
 
 bool IAVFramePluginManager::onPlaybackAudioFrameBeforeMixing(unsigned int uid, AudioFrame& audioFrame)
 {
-    pluginMutex.lock();
+    //pluginMutex.lock();
     for (auto const& element : m_mapPlugins) {
         if(element.second.enabled) {
             element.second.instance->onPluginPlaybackAudioFrameBeforeMixing(uid, (AudioPluginFrame*)&audioFrame);
         }
     }
-    pluginMutex.unlock();
+    //pluginMutex.unlock();
     return true;
 }
 
@@ -187,7 +206,7 @@ void IAVFramePluginManager::registerPlugin(agora_plugin_info& plugin)
 
 void IAVFramePluginManager::unregisterPlugin(std::string& pluginId)
 {
-    pluginMutex.lock();
+    //pluginMutex.lock();
     auto iter = m_mapPlugins.find(pluginId);
     if(iter!=m_mapPlugins.end())
     {
@@ -205,7 +224,7 @@ void IAVFramePluginManager::unregisterPlugin(std::string& pluginId)
         }
         m_mapPlugins.erase(iter);
     }
-    pluginMutex.unlock();
+    //pluginMutex.unlock();
 }
 
 bool IAVFramePluginManager::hasPlugin(std::string& pluginId)
