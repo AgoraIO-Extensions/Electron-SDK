@@ -3,8 +3,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "loguru.hpp"
-#include "node_log.h"
-#include <sys/time.h>
 
 #define DEBUG
 
