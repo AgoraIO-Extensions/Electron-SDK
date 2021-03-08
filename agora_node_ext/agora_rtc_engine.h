@@ -364,6 +364,11 @@ namespace agora {
             NAPI_API(enableDeepLearningDenoise);
             NAPI_API(setVoiceBeautifierParameters);
             NAPI_API(uploadLogFile);
+
+            /**
+             *  3.3.1
+             */ 
+            NAPI_API(setVoiceConversionPreset);
             
         public:
             Isolate* getIsolate() { return m_isolate; }

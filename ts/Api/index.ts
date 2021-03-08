@@ -52,7 +52,9 @@ import {
   AUDIENCE_LATENCY_LEVEL_TYPE,
   ClientRoleOptions,
   CLOUD_PROXY_TYPE,
-  LogConfig
+  LogConfig,
+  VOICE_CONVERSION_PRESET,
+  DataStreamConfig
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -2468,7 +2470,7 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * Specifies an SDK output log file.
-   *
+   * @deprecated
    * The log file records all log data for the SDK’s operation. Ensure that
    * the directory for the log file exists and is writable.
    *
@@ -2484,7 +2486,7 @@ class AgoraRtcEngine extends EventEmitter {
 
   /** Sets the size of a log file that the SDK outputs.
    *
-   *
+   * @deprecated
    * @note If you want to set the log file size, ensure that you call
    * this method before {@link setLogFile}, or the logs are cleared.
    *
@@ -2531,7 +2533,7 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * Sets the output log level of the SDK.
-   *
+   * @deprecated
    * You can use one or a combination of the filters. The log level follows
    * the sequence of OFF, CRITICAL, ERROR, WARNING, INFO, and DEBUG.
    * Choose a level to see the logs preceding that level. For example, if you
@@ -4506,7 +4508,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - Returns the ID of the data stream, if this method call succeeds.
    * - < 0: Failure and returns an error code.
    */
-  createDataStream(reliable: boolean, ordered: boolean): number {
+  createDataStream(reliable: boolean|DataStreamConfig, ordered?: boolean): number {
     return this.rtcEngine.createDataStream(reliable, ordered);
   }
 
@@ -5451,6 +5453,10 @@ class AgoraRtcEngine extends EventEmitter {
   }
   uploadLogFile(): string {
     return this.rtcEngine.uploadLogFile();
+  }
+  //3.3.1
+  setVoiceConversionPreset(preset:VOICE_CONVERSION_PRESET): number {
+    return this.rtcEngine.setVoiceConversionPreset(preset);
   }
 }
 /** The AgoraRtcEngine interface. */
@@ -7491,7 +7497,7 @@ class AgoraRtcChannel extends EventEmitter
    * - 0: Success
    * - < 0: Failure
    */
-  createDataStream(reliable: boolean, ordered: boolean): number {
+  createDataStream(reliable: boolean|DataStreamConfig, ordered?: boolean): number {
     return this.rtcChannel.createDataStream(reliable, ordered);
   }
   /**
