@@ -306,6 +306,11 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setVoiceBeautifierParameters);
                 PROPERTY_METHOD_DEFINE(uploadLogFile);
 
+                /**
+                 * 3.3.1
+                 */ 
+                PROPERTY_METHOD_DEFINE(setVoiceConversionPreset);
+                
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -1151,6 +1156,12 @@ namespace agora {
                 status = napi_get_object_property_int32_(isolate, obj, "preference", preference);
                 CHECK_NAPI_STATUS(pEngine, status);
                 config.preference = (CAPTURER_OUTPUT_PREFERENCE)preference;
+
+                status = napi_get_object_property_int32_(isolate, obj, "captureWidth", config.captureWidth);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                status = napi_get_object_property_int32_(isolate, obj, "captureWidth", config.captureHeight);
+                CHECK_NAPI_STATUS(pEngine, status);
 
                 result = param.setCameraCapturerConfiguration(config);
             } while (false);
@@ -3089,16 +3100,34 @@ namespace agora {
         {
             LOG_ENTER;
             do {
+                Isolate *isolate = args.GetIsolate();
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 napi_status status = napi_ok;
+                int result = -1;
                 int streamId;
-                bool reliable, ordered;
-                napi_get_param_2(args, bool, reliable, bool, ordered);
-                CHECK_NAPI_STATUS(pEngine, status);
 
-                int result = pEngine->m_engine->createDataStream(&streamId, reliable, ordered);
+                if(!args[0]->IsObject()) {
+                    bool reliable, ordered;
+                    napi_get_param_2(args, bool, reliable, bool, ordered);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    result = pEngine->m_engine->createDataStream(&streamId, reliable, ordered);
+                } else {
+                        Local<Object> obj;
+                        DataStreamConfig config;
+                        status = napi_get_value_object_(isolate, args[0], obj);
+                        CHECK_NAPI_STATUS(pEngine, status);
+                        
+                        status = napi_get_object_property_bool_(isolate, obj, "syncWithAudio", config.syncWithAudio);
+                        CHECK_NAPI_STATUS(pEngine, status);
+
+                        status = napi_get_object_property_bool_(isolate, obj, "ordered", config.ordered);
+                        CHECK_NAPI_STATUS(pEngine, status);
+
+                        result = pEngine->m_engine->createDataStream(&streamId, config);
+                }
+                 
                 if(result < 0) {
                     napi_set_int_result(args, result);
                 } else {
@@ -5897,6 +5926,26 @@ namespace agora {
             LOG_LEAVE;
         }
 
+        NAPI_API_DEFINE(NodeRtcEngine, setVoiceConversionPreset)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                int preset;
+
+                status = napi_get_value_int32_(args[0], preset);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                result = pEngine->m_engine->setVoiceConversionPreset(VOICE_CONVERSION_PRESET(preset));
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;  
+        }
+
         /**
          * NodeRtcChannel
          */
@@ -6296,17 +6345,29 @@ namespace agora {
             LOG_ENTER;
             int result = -1;
             do {
+                Isolate* isolate = args.GetIsolate();
                 NodeRtcChannel *pChannel = nullptr;
                 napi_get_native_channel(args, pChannel);
                 CHECK_NATIVE_CHANNEL(pChannel);
                 napi_status status;
-
                 int streamId;
-                bool reliable, ordered;
-                napi_get_param_2(args, bool, reliable, bool, ordered);
-                CHECK_NAPI_STATUS(pChannel, status);
-
-                result = pChannel->m_channel->createDataStream(&streamId, reliable, ordered);
+                if(!args[0]->IsObject()) {
+                    bool reliable, ordered;
+                    napi_get_param_2(args, bool, reliable, bool, ordered);
+                    CHECK_NAPI_STATUS(pChannel, status);
+                    result = pChannel->m_channel->createDataStream(&streamId, reliable, ordered);
+                } else {
+                    Local<Object> obj;
+                    DataStreamConfig config;
+                    status = napi_get_value_object_(isolate, args[0], obj);
+                    CHECK_NAPI_STATUS(pChannel, status);
+                    status = napi_get_object_property_bool_(isolate, obj, "syncWithAudio", config.syncWithAudio);
+                    CHECK_NAPI_STATUS(pChannel, status);
+                    status = napi_get_object_property_bool_(isolate, obj, "ordered", config.ordered);
+                    CHECK_NAPI_STATUS(pChannel, status);
+                    result = pChannel->m_channel->createDataStream(&streamId, config);
+                }
+                
                 if(result == 0) {
                     result = streamId;
                 }
