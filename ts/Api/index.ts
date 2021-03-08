@@ -2929,12 +2929,14 @@ class AgoraRtcEngine extends EventEmitter {
   joinChannelWithUserAccount(
     token: string,
     channel: string,
-    userAccount: string
+    userAccount: string,
+    options?: ChannelMediaOptions
   ): number {
     return this.rtcEngine.joinChannelWithUserAccount(
       token,
       channel,
-      userAccount
+      userAccount,
+      options
     );
   }
   /**
@@ -4508,8 +4510,12 @@ class AgoraRtcEngine extends EventEmitter {
    * - Returns the ID of the data stream, if this method call succeeds.
    * - < 0: Failure and returns an error code.
    */
-  createDataStream(reliable: boolean|DataStreamConfig, ordered?: boolean): number {
+  createDataStream(reliable: boolean, ordered: boolean): number {
     return this.rtcEngine.createDataStream(reliable, ordered);
+  }
+
+  createDataStreamWithConfig(config: DataStreamConfig): number {
+    return this.rtcEngine.createDataStream(config);
   }
 
   /**
@@ -7497,8 +7503,12 @@ class AgoraRtcChannel extends EventEmitter
    * - 0: Success
    * - < 0: Failure
    */
-  createDataStream(reliable: boolean|DataStreamConfig, ordered?: boolean): number {
+  createDataStream(reliable: boolean, ordered: boolean): number {
     return this.rtcChannel.createDataStream(reliable, ordered);
+  }
+
+  createDataStreamWithConfig(config: DataStreamConfig) {
+    return this.rtcChannel.createDataStream(config);
   }
   /**
    * Sends data stream messages to all users in the channel.

@@ -5001,6 +5001,7 @@ namespace agora {
             LOG_ENTER;
             int result = -1;
             do {
+                Isolate* isolate = args.GetIsolate();
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
@@ -5015,8 +5016,27 @@ namespace agora {
                 
                 status = napi_get_value_nodestring_(args[2], userAccount);
                 CHECK_NAPI_STATUS(pEngine, status);
-               
-                result = pEngine->m_engine->joinChannelWithUserAccount(token, channel, userAccount);
+
+                if (args[3]->IsNullOrUndefined()) {
+                    LOG_F(INFO, "joinChannelWithUserAccount no mediaOption");
+                    result = pEngine->m_engine->joinChannelWithUserAccount(token, channel, userAccount);
+                } else if (args[3]->IsObject()){
+                    Local<Object> oChannelMediaOptions;
+                    status = napi_get_value_object_(isolate, args[3], oChannelMediaOptions);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
+                    ChannelMediaOptions options;
+                    status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "autoSubscribeAudio", options.autoSubscribeAudio);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
+                    status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "autoSubscribeVideo", options.autoSubscribeVideo);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    LOG_F(INFO, "joinChannelWithUserAccount with mediaOption");
+                    result = pEngine->m_engine->joinChannelWithUserAccount(token, channel, userAccount, options);
+                } else {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
             } while (false);
             napi_set_array_result(args, result);
             LOG_LEAVE;
