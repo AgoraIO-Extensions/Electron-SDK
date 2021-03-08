@@ -3127,7 +3127,8 @@ export interface NodeRtcEngine {
   joinChannelWithUserAccount(
     token: string,
     channel: string,
-    userAccount: string
+    userAccount: string,
+    options?: ChannelMediaOptions
   ): number;
   /**
    * @ignore
