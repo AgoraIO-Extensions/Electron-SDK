@@ -407,6 +407,10 @@ namespace agora {
                     NODE_SET_OBJ_PROP_UINT32(obj, "frozenRate", stats.frozenRate);
                     NODE_SET_OBJ_PROP_UINT32(obj, "totalActiveTime", stats.totalActiveTime);
                     NODE_SET_OBJ_PROP_UINT32(obj, "publishDuration", stats.publishDuration);
+                    NODE_SET_OBJ_PROP_UINT32(obj, "qoeQuality", stats.qoeQuality);
+                    NODE_SET_OBJ_PROP_UINT32(obj, "qualityChangedReason", stats.qualityChangedReason);
+                    NODE_SET_OBJ_PROP_UINT32(obj, "mosValue", stats.mosValue);
+
                     Local<Value> arg[1] = { obj };
                     auto it = m_callbacks.find(RTC_CHANNEL_EVENT_REMOTE_AUDIO_STATS);
                     if (it != m_callbacks.end()) {
