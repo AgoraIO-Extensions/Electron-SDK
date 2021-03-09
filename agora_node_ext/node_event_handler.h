@@ -99,6 +99,8 @@ namespace agora {
 #define RTC_EVENT_VIDEO_SOURCE_LOCAL_AUDIO_STATS "videoSourceLocalAudioStats"
 #define RTC_EVENT_VIDEO_SOURCE_LOCAL_VIDEO_STATS "videoSourceLocalVideoStats"
 #define RTC_EVENT_VIDEO_SOURCE_VIDEO_SIZE_CHANGED "videoSourceVideoSizeChanged"
+#define RTC_EVENT_VIDEO_SOURCE_LOCAL_VIDEO_STATE_CHANGED "videoSourceLocalVideoStateChanged"
+#define RTC_EVENT_VIDEO_SOURCE_LOCAL_AUDIO_STATE_CHANGED "videoSourceLocalAudioStateChanged"
 
 #define RTC_EVENT_FIRST_LOCAL_AUDIO_FRAME_PUBLISH "firstLocalAudioFramePublished"
 #define RTC_EVENT_FIRST_LOCAL_VIDEO_FRAME_PUBLISH "firstLocalVideoFramePublished"
@@ -110,6 +112,7 @@ namespace agora {
 #define RTC_EVENT_AUDIO_ROUTE_CHANGED "audioRouteChanged"
 #define RTC_EVENT_API_ERROR "apierror"
 #define RTC_EVENT_UPLOAD_LOG_RESULT "uploadLogResult"
+
         class NodeRtcEngine;
         class NodeUid;
         class NodeEventHandler : public IRtcEngineEventHandler, public IAgoraVideoSourceEventHandler
@@ -187,6 +190,8 @@ namespace agora {
             virtual void onVideoSourceVideoSizeChanged(uid_t uid, int width, int height, int rotation) override;
             virtual void onVideoSourceLocalVideoStats(const LocalVideoStats& stats) override;
             virtual void onVideoSourceExit() override;
+            virtual void onVideoSourceLocalAudioStateChanged(int state, int error) override;
+            virtual void onVideoSourceLocalVideoStateChanged(int state, int error) override;
             void fireApiError(const char* funcName);
             void addEventHandler(const std::string& eventName, Persistent<Object>& obj, Persistent<Function>& callback);
 

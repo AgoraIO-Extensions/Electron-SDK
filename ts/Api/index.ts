@@ -54,7 +54,11 @@ import {
   CLOUD_PROXY_TYPE,
   LogConfig,
   VOICE_CONVERSION_PRESET,
-  DataStreamConfig
+  DataStreamConfig,
+  LOCAL_AUDIO_STREAM_ERROR,
+  LOCAL_AUDIO_STREAM_STATE,
+  LOCAL_VIDEO_STREAM_STATE,
+  LOCAL_VIDEO_STREAM_ERROR
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -757,6 +761,14 @@ class AgoraRtcEngine extends EventEmitter {
 
     this.rtcEngine.onEvent('uploadLogResult', function(requestId: string, success: boolean, reason: number) {
       fire('uploadLogResult', requestId, success, reason);
+    })
+
+    this.rtcEngine.onEvent('videoSourceLocalAudioStateChanged', function(state: LOCAL_AUDIO_STREAM_STATE, error: LOCAL_AUDIO_STREAM_ERROR) {
+      fire('videoSourceLocalAudioStateChanged', state, error);
+    })
+
+    this.rtcEngine.onEvent('videoSourceLocalVideoStateChanged', function(state: LOCAL_VIDEO_STREAM_STATE, error: LOCAL_VIDEO_STREAM_ERROR) {
+      fire('videoSourceLocalVideoStateChanged', state, error);
     })
 
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
@@ -6158,6 +6170,10 @@ declare interface AgoraRtcEngine {
   on(evt: 'videoSourceLocalVideoStats', cb: (stats: LocalVideoStats) => void): this;
 
   on(evt: 'videoSourceVideoSizeChanged', cb: (uid: number, width: number, height: number, rotation: number) => void): this;
+
+  on(evt: 'videoSourceLocalVideoStateChanged', cb: (state: LOCAL_VIDEO_STREAM_STATE, error: LOCAL_VIDEO_STREAM_ERROR) => void): this;
+
+  on(evt: 'videoSourceLocalAudioStateChanged', cb: (state: LOCAL_AUDIO_STREAM_STATE, error: LOCAL_AUDIO_STREAM_ERROR) => void): this;
   /** Occurs when the remote video state changes.
    *
    * @param cb.uid ID of the user whose video state changes.
