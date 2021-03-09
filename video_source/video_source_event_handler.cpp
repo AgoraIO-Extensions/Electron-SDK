@@ -130,3 +130,13 @@ void AgoraVideoSourceEventHandler::onLocalAudioStats(const LocalAudioStats& stat
 {
     m_videoSource.notifyLocalAudioStats(stats);
 }
+
+void AgoraVideoSourceEventHandler::onLocalAudioStateChanged(LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error)
+{
+    m_videoSource.notifyLocalAudioStateChanged(state, error);
+}
+
+void AgoraVideoSourceEventHandler::onLocalVideoStateChanged(LOCAL_VIDEO_STREAM_STATE localVideoState, LOCAL_VIDEO_STREAM_ERROR error)
+{
+    m_videoSource.notifyLocalVideoStateChanged(localVideoState, error);
+}
