@@ -18,6 +18,10 @@ using agora::rtc::uid_t;
 using agora::rtc::RtcStats;
 using agora::rtc::LocalVideoStats;
 using agora::rtc::LocalAudioStats;
+using agora::rtc::LOCAL_AUDIO_STREAM_STATE;
+using agora::rtc::LOCAL_AUDIO_STREAM_ERROR;
+using agora::rtc::LOCAL_VIDEO_STREAM_STATE;
+using agora::rtc::LOCAL_VIDEO_STREAM_ERROR;
 
 /**
  * AgoraVideoSourceEventHandler provide implementation of IRtcEngienEventHandler.
@@ -50,6 +54,8 @@ public:
     virtual void onConnectionBanned() override;
     virtual void onRequestToken() override;
     virtual void onLocalAudioStats(const LocalAudioStats& stats) override;
+    virtual void onLocalAudioStateChanged(LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error) override;
+    virtual void onLocalVideoStateChanged(LOCAL_VIDEO_STREAM_STATE localVideoState, LOCAL_VIDEO_STREAM_ERROR error) override;
 
 private:
     AgoraVideoSource& m_videoSource;
