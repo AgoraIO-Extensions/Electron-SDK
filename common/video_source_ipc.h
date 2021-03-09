@@ -99,7 +99,9 @@ enum AgoraIpcMsg
     AGORA_IPC_SET_ENCRYPTION_SECRET,
     AGORA_IPC_ON_LOCAL_AUDIO_STATS,
     AGORA_IPC_ON_LOCAL_VIDEO_STATS,
-    AGORA_IPC_ON_VIDEO_SIZECHANGED
+    AGORA_IPC_ON_VIDEO_SIZECHANGED,
+    AGORA_IPC_ON_LOCAL_VIDEO_STATE_CHANGED,
+    AGORA_IPC_ON_LOCAL_AUDIO_STATE_CHANGED
 };
 
 /**
@@ -313,6 +315,20 @@ public:
     int width;
     int height;
     int rotation;
+};
+
+struct LocalVideoStateChangedCmd
+{
+public:
+    int localVideoState;
+    int error;
+};
+
+struct LocalAudioStateChangedCmd
+{
+public:
+    int localAudioState;
+    int error;
 };
 
 

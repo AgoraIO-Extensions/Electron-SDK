@@ -2257,6 +2257,88 @@ export enum VOICE_CONVERSION_PRESET
     VOICE_CHANGER_BASS = 0x03010400
 };
 
+/** Local video state types
+ */
+export enum LOCAL_VIDEO_STREAM_STATE
+{
+    /** Initial state */
+    LOCAL_VIDEO_STREAM_STATE_STOPPED = 0,
+    /** The capturer starts successfully. */
+    LOCAL_VIDEO_STREAM_STATE_CAPTURING = 1,
+    /** The first video frame is successfully encoded. */
+    LOCAL_VIDEO_STREAM_STATE_ENCODING = 2,
+    /** The local video fails to start. */
+    LOCAL_VIDEO_STREAM_STATE_FAILED = 3
+};
+
+/** Local video state error codes
+ */
+export enum LOCAL_VIDEO_STREAM_ERROR {
+    /** The local video is normal. */
+    LOCAL_VIDEO_STREAM_ERROR_OK = 0,
+    /** No specified reason for the local video failure. */
+    LOCAL_VIDEO_STREAM_ERROR_FAILURE = 1,
+    /** No permission to use the local video device. */
+    LOCAL_VIDEO_STREAM_ERROR_DEVICE_NO_PERMISSION = 2,
+    /** The local video capturer is in use. */
+    LOCAL_VIDEO_STREAM_ERROR_DEVICE_BUSY = 3,
+    /** The local video capture fails. Check whether the capturer is working properly. */
+    LOCAL_VIDEO_STREAM_ERROR_CAPTURE_FAILURE = 4,
+    /** The local video encoding fails. */
+    LOCAL_VIDEO_STREAM_ERROR_ENCODE_FAILURE = 5,
+    /** No camera device. */
+    LOCAL_VIDEO_STREAM_ERROR_DEVICE_NOT_FOUND = 6,
+};
+
+/** Local audio state types.
+ */
+export enum LOCAL_AUDIO_STREAM_STATE
+{
+    /** 0: The local audio is in the initial state.
+     */
+    LOCAL_AUDIO_STREAM_STATE_STOPPED = 0,
+    /** 1: The recording device starts successfully.
+     */
+    LOCAL_AUDIO_STREAM_STATE_RECORDING = 1,
+    /** 2: The first audio frame encodes successfully.
+     */
+    LOCAL_AUDIO_STREAM_STATE_ENCODING = 2,
+    /** 3: The local audio fails to start.
+     */
+    LOCAL_AUDIO_STREAM_STATE_FAILED = 3
+};
+
+/** Local audio state error codes.
+ */
+export enum LOCAL_AUDIO_STREAM_ERROR
+{
+    /** 0: The local audio is normal.
+     */
+    LOCAL_AUDIO_STREAM_ERROR_OK = 0,
+    /** 1: No specified reason for the local audio failure.
+     */
+    LOCAL_AUDIO_STREAM_ERROR_FAILURE = 1,
+    /** 2: No permission to use the local audio device.
+     */
+    LOCAL_AUDIO_STREAM_ERROR_DEVICE_NO_PERMISSION = 2,
+    /** 3: The microphone is in use.
+     */
+    LOCAL_AUDIO_STREAM_ERROR_DEVICE_BUSY = 3,
+    /** 4: The local audio recording fails. Check whether the recording device
+     * is working properly.
+     */
+    LOCAL_AUDIO_STREAM_ERROR_RECORD_FAILURE = 4,
+    /** 5: The local audio encoding fails.
+     */
+    LOCAL_AUDIO_STREAM_ERROR_ENCODE_FAILURE = 5,
+    /** 6: No recording audio device.
+    */
+    LOCAL_AUDIO_STREAM_ERROR_NO_RECORDING_DEVICE = 6,
+    /** 7: No playout audio device.
+    */
+    LOCAL_AUDIO_STREAM_ERROR_NO_PLAYOUT_DEVICE = 7
+};
+
 export interface DataStreamConfig
 {
   syncWithAudio: boolean,

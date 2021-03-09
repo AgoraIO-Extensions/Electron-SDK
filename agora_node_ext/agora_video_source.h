@@ -50,6 +50,9 @@ namespace agora{
 
             virtual void onVideoSourceLocalVideoStats(const LocalVideoStats& stats) = 0;
 
+            virtual void onVideoSourceLocalAudioStateChanged(int state, int error) = 0;
+            
+            virtual void onVideoSourceLocalVideoStateChanged(int state, int error) = 0;
         };
 
         /**
