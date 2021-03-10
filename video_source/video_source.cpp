@@ -214,7 +214,7 @@ void AgoraVideoSource::notifyLocalVideoStats(const agora::rtc::LocalVideoStats& 
     m_ipc->sendMessage(AGORA_IPC_ON_LOCAL_VIDEO_STATS, (char*) cmd.get(), sizeof(LocalVideoStatsCmd));
 }
 
-void AgoraVideoSource::notifyVideoSizeChanged(uid_t uid, int width, int height, int rotation)
+void AgoraVideoSource::notifyVideoSizeChanged(agora::rtc::uid_t uid, int width, int height, int rotation)
 {
     std::unique_ptr<VideoSizeChangedCmd> cmd(new VideoSizeChangedCmd());
     cmd->uid = uid;
