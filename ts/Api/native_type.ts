@@ -251,7 +251,7 @@ export interface TranscodingConfig {
    * Once a background image is added, the audience of the CDN live publishing
    * stream can see the background image.
    */
-  background: {
+  backgroundImage: {
     /**
      * The HTTP or HTTPS address of the image. The length must not
      * exceed 1,024 bytes.
