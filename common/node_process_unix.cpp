@@ -20,6 +20,7 @@
 #include <thread>
 #include <dlfcn.h>
 #include "node_log.h"
+#include "../common/loguru.hpp"
 
 class NodeProcessUnixImpl : public INodeProcess
 {
@@ -88,17 +89,19 @@ INodeProcess* INodeProcess::CreateNodeProcess(const char *path, const char **par
         // fork failed.
         return nullptr;
     }else if(pid == 0){
+        LOG_F(INFO, "CreateNodeProcess ");
         // child process here.
         close(fd[0]);
         int flag = fcntl(fd[1], F_GETFD);
         flag &= ~O_CLOEXEC;
         int result = fcntl(fd[1], F_SETFD, flag);
         if( result == 0){
+
             std::stringstream ss;
             ss << fd[1];
             std::string fd_param = "fd:" + ss.str();
-            const char* vs_params[] = {params[0], params[1], params[2], fd_param.c_str(), params[3], nullptr};
-            LOG_INFO("execv : %s, %s, %s, %s,%s\n", vs_params[0], vs_params[1], vs_params[2], vs_params[3],vs_params[4]);
+            const char* vs_params[] = {params[0], params[1], params[2], fd_param.c_str(), params[3], params[4], nullptr};
+            LOG_F(INFO, "====execv : %s, %s, %s, %s,%s, %s\n", vs_params[0], vs_params[1], vs_params[2], vs_params[3],vs_params[4],vs_params[5]);
             execv((std::string(path) + vs_params[0]).c_str(), (char**)vs_params);
         } else {
             LOG_ERROR("fcntl error.");
