@@ -117,7 +117,7 @@ bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame)
         return true;
     }
 
-    std::lock_guard<std::mutex> _(playbackMutex);
+    // std::lock_guard<std::mutex> _(playbackMutex);
     int bytes = audioFrame.samples * audioFrame.channels * audioFrame.bytesPerSample;
 	int16_t *tmpBuf = (int16_t *)malloc(bytes);
 	memcpy(tmpBuf, audioFrame.buffer, bytes);
@@ -144,6 +144,7 @@ bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame)
         LOG_F(MAX, "onPlaybackAudioFrame try to get data from playbackCircularBuffer");
 #endif
     char *data = (char *)malloc(sizeof(char)*bytes);
+    
     {
         std::lock_guard<std::mutex> _(playbackMutex);
         int ret = playbackCircularBuffer->mAvailSamples - bytes;
@@ -157,6 +158,7 @@ bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame)
 #endif
         playbackCircularBuffer->Pop(data, bytes);
     }
+
 #ifdef DEBUG
     LOG_F(MAX, "onPlaybackAudioFrame mixAudioData start");
 #endif
