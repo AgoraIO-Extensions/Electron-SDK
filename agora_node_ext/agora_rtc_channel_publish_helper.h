@@ -58,6 +58,10 @@ namespace agora
 					return -7;
 				}
 
+				if (rtcAudioObserver_) {
+					rtcAudioObserver_->resetAudioBuffer();
+				}
+
 				agora::util::AutoPtr<agora::media::IMediaEngine> mediaEngine;
 				mediaEngine.queryInterface(rtc_engine_, agora::AGORA_IID_MEDIA_ENGINE);
 				if (mediaEngine)
@@ -68,7 +72,6 @@ namespace agora
 				{
 					return -7;
 				}
-
 			}
 
 			// 启动/停止推送视频流到频道
