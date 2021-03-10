@@ -306,6 +306,9 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setVoiceBeautifierParameters);
                 PROPERTY_METHOD_DEFINE(uploadLogFile);
 
+                PROPERTY_METHOD_DEFINE(verifyCertificate);
+                PROPERTY_METHOD_DEFINE(genCredentialJs);
+
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -5895,6 +5898,57 @@ namespace agora {
                 }
             } while (false);
             LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, verifyCertificate)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                napi_status status = napi_ok;
+
+                nodestring cert;
+                nodestring path;
+
+                status = napi_get_value_nodestring_(args[0], cert);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_value_nodestring_(args[1], path);
+                CHECK_NAPI_STATUS(pEngine, status);
+                result = pEngine->m_engine->verifyCertificate(cert, path);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, genCredentialJs)
+        {
+            LOG_ENTER;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                napi_status status = napi_ok;
+                util::AString credential;
+
+                nodestring path;
+                status = napi_get_value_nodestring_(args[0], path);
+                int result = pEngine->genCredentialFuc(credential, path);
+                if(!(credential.get())) {
+                    napi_set_string_result(args, std::to_string(result).c_str());
+                } else {
+                    napi_set_string_result(args, credential->c_str());
+                }
+            } while (false);
+            LOG_LEAVE;
+        }
+
+        int NodeRtcEngine::genCredentialFuc (agora::util::AString &credential, const char *path)
+        {
+            return genCredential(credential, path);
         }
 
         /**

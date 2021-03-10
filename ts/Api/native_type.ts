@@ -3222,6 +3222,14 @@ export interface NodeRtcEngine {
    * @ignore
    */
   uploadLogFile(): string;
+  /**
+   * @ignore
+   */
+  verifyCertificate(cert: string, path: string): number;
+  /**
+   * @ignore
+   */
+  genCredentialJs(path: string): string;
 }
 /**
  * @ignore

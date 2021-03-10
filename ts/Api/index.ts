@@ -757,6 +757,22 @@ class AgoraRtcEngine extends EventEmitter {
       fire('uploadLogResult', requestId, success, reason);
     })
 
+    this.rtcEngine.onEvent('certificateRequired', function() {
+      fire('certificateRequired');
+    })
+
+    this.rtcEngine.onEvent('licenseRequest', function() {
+      fire('licenseRequest');
+    })
+
+    this.rtcEngine.onEvent('licenseValidated', function() {
+      fire('licenseValidated');
+    })
+
+    this.rtcEngine.onEvent('licenseError', function(result: number) {
+      fire('licenseError', result);
+    })
+
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
       self.onRegisterDeliverFrame(infos);
     });
@@ -5452,6 +5468,14 @@ class AgoraRtcEngine extends EventEmitter {
   uploadLogFile(): string {
     return this.rtcEngine.uploadLogFile();
   }
+
+  verifyCertificate(cert: string, path: string): number {
+    return this.rtcEngine.verifyCertificate(cert, path);
+  }
+
+  genCredential(path: string): string {
+    return this.rtcEngine.genCredentialJs(path);
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
@@ -6666,6 +6690,14 @@ declare interface AgoraRtcEngine {
     success: boolean,
     reason: number
   )=> void): this;
+
+  on(evt: 'certificateRequired', cb: ()=> void): this;
+
+  on(evt: 'licenseRequest', cb: ()=> void): this;
+
+  on(evt: 'licenseValidated', cb: ()=> void): this;
+
+  on(evt: 'licenseError', cb: (result: number)=> void): this;
 
   on(evt: string, listener: Function): this;
 }

@@ -29,6 +29,7 @@
 #include "AVPlugin/IAVFramePluginManager.h"
 #include "AVPlugin/IAVFramePlugin.h"
 #include "node_metadata_observer.h"
+#include "loguru.hpp"
 /*
 * Used to declare native interface to nodejs
 */
@@ -364,6 +365,11 @@ namespace agora {
             NAPI_API(enableDeepLearningDenoise);
             NAPI_API(setVoiceBeautifierParameters);
             NAPI_API(uploadLogFile);
+
+            NAPI_API(verifyCertificate);
+            NAPI_API(genCredentialJs);
+
+            int genCredentialFuc(agora::util::AString &credential, const char *path); 
             
         public:
             Isolate* getIsolate() { return m_isolate; }

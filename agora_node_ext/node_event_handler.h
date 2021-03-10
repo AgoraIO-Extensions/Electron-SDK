@@ -110,6 +110,12 @@ namespace agora {
 #define RTC_EVENT_AUDIO_ROUTE_CHANGED "audioRouteChanged"
 #define RTC_EVENT_API_ERROR "apierror"
 #define RTC_EVENT_UPLOAD_LOG_RESULT "uploadLogResult"
+
+#define RTC_EVENT_CERTIFICATE_REQUIRED "certificateRequired"
+#define RTC_EVENT_LICENSE_REQUEST "licenseRequest"
+#define RTC_EVENT_LICENSE_VALIDATED "licenseValidated"
+#define RTC_EVENT_LICENSE_ERROR "licenseError"
+
         class NodeRtcEngine;
         class NodeUid;
         class NodeEventHandler : public IRtcEngineEventHandler, public IAgoraVideoSourceEventHandler
@@ -210,19 +216,24 @@ namespace agora {
             virtual void onRtmpStreamingStateChanged(const char *url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR errCode) override;
 
             //3.1.0
-            virtual void onFirstLocalAudioFramePublished(int elapsed);
-            virtual void onFirstLocalVideoFramePublished(int elapsed);
-            virtual void onRtmpStreamingEvent(const char* url, RTMP_STREAMING_EVENT eventCode);
-            virtual void onAudioPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState);
-            virtual void onVideoPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState);
-            virtual void onAudioSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState);
-            virtual void onVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState);
-            virtual void onAudioRouteChanged(AUDIO_ROUTE_TYPE routing);
-            virtual void onStreamPublished(const char *url, int error);
-            virtual void onStreamUnpublished(const char *url);
+            virtual void onFirstLocalAudioFramePublished(int elapsed) override;
+            virtual void onFirstLocalVideoFramePublished(int elapsed) override;
+            virtual void onRtmpStreamingEvent(const char* url, RTMP_STREAMING_EVENT eventCode) override;
+            virtual void onAudioPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState) override;
+            virtual void onVideoPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState) override;
+            virtual void onAudioSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) override;
+            virtual void onVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) override;
+            virtual void onAudioRouteChanged(AUDIO_ROUTE_TYPE routing) override;
+            virtual void onStreamPublished(const char *url, int error) override;
+            virtual void onStreamUnpublished(const char *url) override;
             
             //3.3.0
-            virtual void onUploadLogResult(const char * requestId, bool success, UPLOAD_ERROR_REASON reason );
+            virtual void onUploadLogResult(const char * requestId, bool success, UPLOAD_ERROR_REASON reason) override;
+            
+            virtual void onCertificateRequired() override;
+            virtual void onLicenseRequest() override;
+            virtual void onLicenseValidated() override;
+            virtual void onLicenseError(int result) override;
   private:
             void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
             void onRejoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;

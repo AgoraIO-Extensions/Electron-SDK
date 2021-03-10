@@ -1624,5 +1624,29 @@ namespace agora {
                 MAKE_JS_CALL_3(RTC_EVENT_UPLOAD_LOG_RESULT, string, mRequestId.c_str(), bool, success, int32, reason);
             });
         }
+
+        void NodeEventHandler::onCertificateRequired() {
+            node_async_call::async_call([this] {
+                MAKE_JS_CALL_0(RTC_EVENT_CERTIFICATE_REQUIRED);
+            });
+        }
+        
+        void NodeEventHandler::onLicenseRequest() {
+            node_async_call::async_call([this] {
+                MAKE_JS_CALL_0(RTC_EVENT_LICENSE_REQUEST);
+            });
+        }
+        
+        void NodeEventHandler::onLicenseValidated() {
+            node_async_call::async_call([this] {
+                MAKE_JS_CALL_0(RTC_EVENT_LICENSE_VALIDATED);
+            });
+        }
+        
+        void NodeEventHandler::onLicenseError(int result) {
+            node_async_call::async_call([this, result] {
+                MAKE_JS_CALL_1(RTC_EVENT_LICENSE_ERROR, int32, result);
+            });
+        }
     }
 }
