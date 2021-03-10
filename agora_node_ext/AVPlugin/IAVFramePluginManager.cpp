@@ -127,18 +127,39 @@ bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame)
 	// 	free(tmpBuf);
 	// 	return true;
 	// }
-#ifdef DEBUG
-    LOG_F(MAX, "onPlaybackAudioFrame mAvailSamples: %d, bytes: %d\r\n", playbackCircularBuffer->mAvailSamples, bytes);
-#endif
-	int ret = playbackCircularBuffer->mAvailSamples - bytes;
-	if (ret < 0) {
-		memcpy(audioFrame.buffer, tmpBuf, bytes);
-		free(tmpBuf);
-		return true;
-	}
-	char *data = (char *)malloc(sizeof(char)*bytes);
+// #ifdef DEBUG
+//     LOG_F(MAX, "onPlaybackAudioFrame mAvailSamples: %d, bytes: %d\r\n", playbackCircularBuffer->mAvailSamples, bytes);
+// #endif
+// 	int ret = playbackCircularBuffer->mAvailSamples - bytes;
+// 	if (ret < 0) {
+// 		memcpy(audioFrame.buffer, tmpBuf, bytes);
+// 		free(tmpBuf);
+// 		return true;
+// 	}
+// 	char *data = (char *)malloc(sizeof(char)*bytes);
 
-	playbackCircularBuffer->Pop(data, bytes);
+// 	playbackCircularBuffer->Pop(data, bytes);
+
+#ifdef DEBUG
+        LOG_F(MAX, "onPlaybackAudioFrame try to get data from playbackCircularBuffer");
+#endif
+    char *data = (char *)malloc(sizeof(char)*bytes);
+    {
+        std::lock_guard<std::mutex> _(playbackMutex);
+        int ret = playbackCircularBuffer->mAvailSamples - bytes;
+        if (ret < 0) {
+            memcpy(audioFrame.buffer, tmpBuf, bytes);
+            free(tmpBuf);
+            return true;
+        }
+#ifdef DEBUG
+        LOG_F(MAX, "onPlaybackAudioFrame mAvailSamples: %d, bytes: %d\r\n", playbackCircularBuffer->mAvailSamples, bytes);
+#endif
+        playbackCircularBuffer->Pop(data, bytes);
+    }
+#ifdef DEBUG
+    LOG_F(MAX, "onPlaybackAudioFrame mixAudioData start");
+#endif
 
 	int16_t* p16 = (int16_t*)data;
 	int16_t *audioBuf = (int16_t *)malloc(bytes);
