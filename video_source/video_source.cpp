@@ -15,6 +15,7 @@
 #include "video_source_ipc.h"
 #include "node_log.h"
 #include <sstream>
+#include "../common/loguru.hpp"
 
 #define PROCESS_RUN_EVENT_NAME "agora_video_source_process_ready_event_name"
 #define DATA_IPC_NAME "avsipc"
@@ -28,6 +29,7 @@ AgoraVideoSource::AgoraVideoSource(const std::string& param)
 	, m_videoProfile(agora::rtc::VIDEO_PROFILE_DEFAULT)
 {
     LOG_ENTER;
+    LOG_F(INFO, "videoSource AgoraVideoSource::AgoraVideoSource");
     LOG_LEAVE;
 }
 
@@ -61,7 +63,6 @@ bool AgoraVideoSource::initialize()
     }
 
     std::string areaCode = m_paramParser->getParameter("areaCode");
-
     std::string id = m_paramParser->getParameter("id");
     if (id.empty()) {
         LOG_ERROR("%s, id is null\n", __FUNCTION__);
@@ -75,6 +76,7 @@ bool AgoraVideoSource::initialize()
         LOG_LEAVE;
         return false;
     }
+
     if (!m_ipc->connect()){
         LOG_ERROR("%s, ipc connect fail.\n", __FUNCTION__);
         LOG_LEAVE;
@@ -88,7 +90,6 @@ bool AgoraVideoSource::initialize()
         return false;
     }
 
-
     m_eventHandler.reset(new AgoraVideoSourceEventHandler(*this));
     m_renderFactory.reset(new AgoraVideoSourceRenderFactory(*this));
     std::istringstream os(areaCode);
@@ -96,7 +97,8 @@ bool AgoraVideoSource::initialize()
     context.eventHandler = m_eventHandler.get();
     context.appId = appid.c_str();
     os>>context.areaCode;
-    LOG_ERROR("initialized: %s, appid\n", __FUNCTION__);
+    
+    LOG_F(INFO, "initialized: %s, appid: %s, areaCode: %u\n", __FUNCTION__, appid.c_str(), context.areaCode);
     if (m_rtcEngine->initialize(context) != 0){
         LOG_ERROR("%s, AgoraVideoSource initialize failed.\n", __FUNCTION__);
         LOG_LEAVE;

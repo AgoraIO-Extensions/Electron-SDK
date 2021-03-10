@@ -71,7 +71,7 @@ namespace agora{
             virtual node_error enableLoopbackRecording(bool enabled, const char* deviceName) override;
             virtual node_error enableAudio() override;
             virtual node_error setAddonLogFile(const char* file) override;
-            virtual node_error enableEncryption(bool enable, EncryptionConfig encryptionConfig) override;
+            virtual node_error enableEncryption(bool enable, agora::rtc::EncryptionConfig encryptionConfig) override;
         private:
             void msgThread();
             void deliverFrame(const char* payload, int len);
@@ -508,7 +508,7 @@ namespace agora{
             p->deliverVideoSourceFrame(pBack, len);
         }
 
-        node_error AgoraVideoSourceSink::enableEncryption(bool enable, EncryptionConfig encryptionConfig)
+        node_error AgoraVideoSourceSink::enableEncryption(bool enable, agora::rtc::EncryptionConfig encryptionConfig)
         {
             if (m_initialized){
                 EncryptionConfigCmd cmd;

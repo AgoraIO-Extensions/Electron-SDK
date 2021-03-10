@@ -22,6 +22,8 @@
         './common/node_log.cpp',
         './common/node_process.h',
         './common/node_error.h',
+        './common/loguru.h',
+        './common/loguru.cpp',
         './video_source/video_source.cpp',
         './video_source/video_source.h',
         './video_source/video_source_event_handler.cpp',
