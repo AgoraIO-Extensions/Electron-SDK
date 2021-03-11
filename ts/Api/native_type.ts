@@ -2238,10 +2238,6 @@ export type CLOUD_PROXY_TYPE =
     | 1  //UDP_PROXY
     | 2  //TCP_PROXY
 
-export interface RtcContext {
-  logConfig: LogConfig
-};
-
 export interface LogConfig {
   filePath: string,
   fileSize: number,
@@ -2286,10 +2282,6 @@ export enum LOCAL_VIDEO_STREAM_ERROR {
     LOCAL_VIDEO_STREAM_ERROR_CAPTURE_FAILURE = 4,
     /** 5: The local video encoding fails. */
     LOCAL_VIDEO_STREAM_ERROR_ENCODE_FAILURE = 5,
-    /** 6: capture InBackground. */
-    LOCAL_VIDEO_STREAM_ERROR_CAPTURE_INBACKGROUND = 6,
-    /** 7:capture MultipleForegroundApps.  */
-    LOCAL_VIDEO_STREAM_ERROR_CAPTURE_MULTIPLE_FOREGROUND_APPS = 7,
     /** 11: The shared window is minimized when you call \ref IRtcEngine::startScreenCaptureByWindowId "startScreenCaptureByWindowId" to share a window.
      */
     LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_MINIMIZED = 11,
