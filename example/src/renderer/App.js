@@ -282,6 +282,7 @@ export default class App extends Component {
     rtcEngine.setClientRole(this.state.role)
     rtcEngine.registerMediaMetadataObserver();
     rtcEngine.setAudioProfile(0, 1)
+    rtcEngine.setPlaybackAudioFrameParameters(48000, 2, 2, 1920)
     // rtcEngine.enableVideo()
     //let logpath = path.resolve(os.homedir(), "./agoramainsdk.log")
     let logpath = path.resolve(os.homedir(), "./agoramainsdk111.log")
