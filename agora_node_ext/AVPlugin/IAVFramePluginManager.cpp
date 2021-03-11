@@ -4,8 +4,6 @@
 #include <stdio.h>
 #include "loguru.hpp"
 
-#define DEBUG
-
 IAVFramePluginManager::IAVFramePluginManager()
 {
 #ifdef DEBUG
