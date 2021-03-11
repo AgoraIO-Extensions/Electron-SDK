@@ -267,6 +267,11 @@ export default class App extends Component {
     rtcEngine.setVoiceBeautifierPreset(0x01010100);
     rtcEngine.setAudioEffectParameters(0x02010100, 1, 1);
 
+    let retGen = rtcEngine.genCredential("./log.txt")
+    console.log(`genCredential  ${retGen}`)
+
+    let retVerify = rtcEngine.verifyCertificate("httkdk", "./log.txt")
+    console.log(`verifyCertificate ${retVerify}`)
     // joinning two channels together
     // let channel = rtcEngine.createChannel(this.state.channel)
     // this.subscribeChannelEvents(channel, true)
