@@ -681,15 +681,15 @@ class AgoraRtcEngine extends EventEmitter {
     });
 
     this.rtcEngine.onEvent('localVideoStateChanged', function(
-      localVideoState: number,
-      err: number
+      localVideoState: LOCAL_VIDEO_STREAM_STATE,
+      err: LOCAL_VIDEO_STREAM_ERROR
     ) {
       fire('localVideoStateChanged', localVideoState, err);
     });
 
     this.rtcEngine.onEvent('localAudioStateChanged', function(
-      state: number,
-      err: number
+      state: LOCAL_AUDIO_STREAM_STATE,
+      err: LOCAL_AUDIO_STREAM_ERROR
     ) {
       fire('localAudioStateChanged', state, err);
     });
@@ -6462,8 +6462,8 @@ declare interface AgoraRtcEngine {
    * SDK reports this error code.
    */
   on(evt: 'localVideoStateChanged', cb: (
-    localVideoState: number,
-    error: number
+    localVideoState: LOCAL_VIDEO_STREAM_STATE,
+    err: LOCAL_VIDEO_STREAM_ERROR
   ) => void): this;
   /**
    * Occurs when the local audio state changes.
@@ -6491,8 +6491,8 @@ declare interface AgoraRtcEngine {
    *  - 5: The local audio encoding fails.
    */
   on(evt: 'localAudioStateChanged', cb: (
-    state: number,
-    error: number
+    state: LOCAL_AUDIO_STREAM_STATE,
+    err: LOCAL_AUDIO_STREAM_ERROR
   ) => void): this;
   /**
    * Occurs when the remote audio state changes.
