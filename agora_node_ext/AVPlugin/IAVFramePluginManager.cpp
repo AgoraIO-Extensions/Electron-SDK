@@ -141,15 +141,23 @@ bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame)
 // 	playbackCircularBuffer->Pop(data, bytes);
 
 #ifdef DEBUG
-        LOG_F(MAX, "onPlaybackAudioFrame try to get data from playbackCircularBuffer");
+        LOG_F(MAX, "onPlaybackAudioFrame start try to get data from playbackCircularBuffer");
 #endif
     char *data = (char *)malloc(sizeof(char)*bytes);
-    
+#ifdef DEBUG
+        LOG_F(MAX, "onPlaybackAudioFrame end try to get data from playbackCircularBuffer");
+#endif    
     {
         std::lock_guard<std::mutex> _(playbackMutex);
         int ret = playbackCircularBuffer->mAvailSamples - bytes;
         if (ret < 0) {
+#ifdef DEBUG
+        LOG_F(MAX, "onPlaybackAudioFrame start memcpy tmpBuf");
+#endif
             memcpy(audioFrame.buffer, tmpBuf, bytes);
+#ifdef DEBUG
+        LOG_F(MAX, "onPlaybackAudioFrame end memcpy tmpBuf");
+#endif
             free(tmpBuf);
             return true;
         }
@@ -162,7 +170,6 @@ bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame)
 #ifdef DEBUG
     LOG_F(MAX, "onPlaybackAudioFrame mixAudioData start");
 #endif
-
 	int16_t* p16 = (int16_t*)data;
 	int16_t *audioBuf = (int16_t *)malloc(bytes);
 	memcpy(audioBuf, tmpBuf, bytes);
@@ -170,7 +177,6 @@ bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame)
 		int tmp = p16[i] * playbackVolume;
 		audioBuf[i] = audioBuf[i] * 1;
 		tmp += audioBuf[i];
-
 		if (tmp > 32767) {
 			audioBuf[i] = 32767;
 		}
@@ -181,7 +187,16 @@ bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame)
 			audioBuf[i] = tmp;
 		}
 	}
+#ifdef DEBUG
+    LOG_F(MAX, "onPlaybackAudioFrame mixAudioData end");
+#endif
+#ifdef DEBUG
+        LOG_F(MAX, "onPlaybackAudioFrame befor memcpy mixingAudioData");
+#endif
 	memcpy(audioFrame.buffer, audioBuf, bytes);
+#ifdef DEBUG
+        LOG_F(MAX, "onPlaybackAudioFrame end memcpy mixingAudioData");
+#endif
 #ifdef DEBUG
     FILE* fp = fopen("./playout_cpp.pcm", "ab+");
     fwrite(audioFrame.buffer, 1, bytes, fp);
