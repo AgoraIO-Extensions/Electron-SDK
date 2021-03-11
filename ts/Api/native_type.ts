@@ -2274,20 +2274,38 @@ export enum LOCAL_VIDEO_STREAM_STATE
 /** Local video state error codes
  */
 export enum LOCAL_VIDEO_STREAM_ERROR {
-    /** The local video is normal. */
+    /** 0: The local video is normal. */
     LOCAL_VIDEO_STREAM_ERROR_OK = 0,
-    /** No specified reason for the local video failure. */
+    /** 1: No specified reason for the local video failure. */
     LOCAL_VIDEO_STREAM_ERROR_FAILURE = 1,
-    /** No permission to use the local video device. */
+    /** 2: No permission to use the local video capturing device. */
     LOCAL_VIDEO_STREAM_ERROR_DEVICE_NO_PERMISSION = 2,
-    /** The local video capturer is in use. */
+    /** 3: The local video capturing device is in use. */
     LOCAL_VIDEO_STREAM_ERROR_DEVICE_BUSY = 3,
-    /** The local video capture fails. Check whether the capturer is working properly. */
+    /** 4: The local video capture fails. Check whether the capturing device is working properly. */
     LOCAL_VIDEO_STREAM_ERROR_CAPTURE_FAILURE = 4,
-    /** The local video encoding fails. */
+    /** 5: The local video encoding fails. */
     LOCAL_VIDEO_STREAM_ERROR_ENCODE_FAILURE = 5,
-    /** No camera device. */
-    LOCAL_VIDEO_STREAM_ERROR_DEVICE_NOT_FOUND = 6,
+    /** 6: capture InBackground. */
+    LOCAL_VIDEO_STREAM_ERROR_CAPTURE_INBACKGROUND = 6,
+    /** 7:capture MultipleForegroundApps.  */
+    LOCAL_VIDEO_STREAM_ERROR_CAPTURE_MULTIPLE_FOREGROUND_APPS = 7,
+    /** 11: The shared window is minimized when you call \ref IRtcEngine::startScreenCaptureByWindowId "startScreenCaptureByWindowId" to share a window.
+     */
+    LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_MINIMIZED = 11,
+    /** 12: The error code indicates that a window shared by the window ID has been closed, or a full-screen window
+     * shared by the window ID has exited full-screen mode.
+     * After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a
+     * black screen, Agora recommends that you immediately stop screen sharing.
+     *
+     * Common scenarios for reporting this error code:
+     * - When the local user closes the shared window, the SDK reports this error code.
+     * - The local user shows some slides in full-screen mode first, and then shares the windows of the slides. After
+     * the user exits full-screen mode, the SDK reports this error code.
+     * - The local user watches web video or reads web document in full-screen mode first, and then shares the window of
+     * the web video or document. After the user exits full-screen mode, the SDK reports this error code.
+     */
+    LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_CLOSED = 12,
 };
 
 /** Local audio state types.
@@ -2324,19 +2342,13 @@ export enum LOCAL_AUDIO_STREAM_ERROR
     /** 3: The microphone is in use.
      */
     LOCAL_AUDIO_STREAM_ERROR_DEVICE_BUSY = 3,
-    /** 4: The local audio recording fails. Check whether the recording device
+    /** 4: The local audio capturing fails. Check whether the capturing device
      * is working properly.
      */
     LOCAL_AUDIO_STREAM_ERROR_RECORD_FAILURE = 4,
     /** 5: The local audio encoding fails.
      */
-    LOCAL_AUDIO_STREAM_ERROR_ENCODE_FAILURE = 5,
-    /** 6: No recording audio device.
-    */
-    LOCAL_AUDIO_STREAM_ERROR_NO_RECORDING_DEVICE = 6,
-    /** 7: No playout audio device.
-    */
-    LOCAL_AUDIO_STREAM_ERROR_NO_PLAYOUT_DEVICE = 7
+    LOCAL_AUDIO_STREAM_ERROR_ENCODE_FAILURE = 5
 };
 
 export interface DataStreamConfig
