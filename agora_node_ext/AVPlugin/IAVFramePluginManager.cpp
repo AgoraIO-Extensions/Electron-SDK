@@ -139,7 +139,6 @@ bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame)
 // 	char *data = (char *)malloc(sizeof(char)*bytes);
 
 // 	playbackCircularBuffer->Pop(data, bytes);
-
 #ifdef DEBUG
         LOG_F(MAX, "onPlaybackAudioFrame start try to get data from playbackCircularBuffer");
 #endif
@@ -188,19 +187,11 @@ bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame)
 		}
 	}
 #ifdef DEBUG
-    LOG_F(MAX, "onPlaybackAudioFrame mixAudioData end");
-#endif
-#ifdef DEBUG
         LOG_F(MAX, "onPlaybackAudioFrame befor memcpy mixingAudioData");
 #endif
 	memcpy(audioFrame.buffer, audioBuf, bytes);
 #ifdef DEBUG
         LOG_F(MAX, "onPlaybackAudioFrame end memcpy mixingAudioData");
-#endif
-#ifdef DEBUG
-    FILE* fp = fopen("./playout_cpp.pcm", "ab+");
-    fwrite(audioFrame.buffer, 1, bytes, fp);
-    fclose(fp);
 #endif
 	free(audioBuf);
 	free(tmpBuf);
