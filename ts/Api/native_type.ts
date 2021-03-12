@@ -522,14 +522,24 @@ export enum AudioReverbPreset {
    */
   AUDIO_VIRTUAL_STEREO = 0x00200001
 }
-
+/** The brightness level of the video image captured by the local camera.
+ *
+ * @since v3.3.1
+ */
 export enum CAPTURE_BRIGHTNESS_LEVEL_TYPE {
+  /** -1: The SDK does not detect the brightness level of the video image.
+   * Wait a few seconds to get the brightness level from
+   * `CAPTURE_BRIGHTNESS_LEVEL_TYPE` in the next callback.
+   */
   CAPTURE_BRIGHTNESS_LEVEL_INVALID = -1,
-
+  /** 0: The brightness level of the video image is normal.
+   */
   CAPTURE_BRIGHTNESS_LEVEL_NORMAL = 0,
-
+  /** 1: The brightness level of the video image is too bright.
+   */
   CAPTURE_BRIGHTNESS_LEVEL_BRIGHT = 1,
-
+  /** 2: The brightness level of the video image is too dark.
+   */
   CAPTURE_BRIGHTNESS_LEVEL_DARK = 2,
 }
 /**
@@ -782,7 +792,11 @@ export interface LocalVideoStats {
    * @since v3.2.0
    */
   captureFrameRate: number;
-
+  /** The brightness level of the video image captured by the local camera.
+   * See {@link CAPTURE_BRIGHTNESS_LEVEL_TYPE}.
+   *
+   * @since v3.3.1
+   */
   captureBrightnessLevel: CAPTURE_BRIGHTNESS_LEVEL_TYPE;
 }
 /**
@@ -1062,7 +1076,7 @@ export interface RemoteVideoStats {
    */
   publishDuration: number;
 }
-/** Sets the camera capturer configuration. */
+/** Sets the camera capturer preference. */
 export enum CaptureOutPreference {
   /** 0: (Default) self-adapts the camera output parameters to the system
    * performance and network conditions to balance CPU consumption and video
@@ -1083,17 +1097,32 @@ export enum CaptureOutPreference {
    * video pre-processing.
    */
   CAPTURER_OUTPUT_PREFERENCE_PREVIEW = 2,
-    /** 3: Allows you to customize the width and height of the video image captured by the local camera.
-    *
-    * @since v3.3.0
-    */
-    CAPTURER_OUTPUT_PREFERENCE_MANUAL = 3,
+  /** 3: Allows you to customize the width and height of the video image
+   * captured by the local camera.
+   *
+   * @since v3.3.1
+   */
+  CAPTURER_OUTPUT_PREFERENCE_MANUAL = 3,
 }
 /** Camera capturer configuration. */
 export interface CameraCapturerConfiguration {
-  /** The output configuration of camera capturer. */
+  /** The output preference of camera capturer. */
   preference: CaptureOutPreference;
+  /** The width (px) of the video image captured by the local camera.
+   * To customize the width of the video image, set `preference`
+   * as `CAPTURER_OUTPUT_PREFERENCE_MANUAL(3)` first,
+   * and then use `captureWidth`.
+   *
+   * @since v3.3.1
+   */
   captureWidth: number;
+  /** The height (px) of the video image captured by the local camera.
+   * To customize the height of the video image, set `preference` as
+   * `CAPTURER_OUTPUT_PREFERENCE_MANUAL(3)` first,
+   * and then use `captureHeight`.
+   *
+   * @since v3.3.1
+   */
   captureHeight: number;
 }
 /** The relative location of the region to the screen or window. */
@@ -1289,11 +1318,83 @@ export interface RemoteAudioStats {
    * @since v3.2.0
    */
   publishDuration: number;
-
+  /**
+   * Quality of experience (QoE) of the local user when receiving a remote
+   * audio stream:
+   * - `0`: QoE of the local user is good.
+   * - `1`: QoE of the local user is poor.
+   *
+   * @since v3.3.1
+   */
   qoeQuality: number;
-
+  /**
+   * The reason for poor QoE of the local user when receiving a remote audio
+   * stream:
+   * - `0`: No reason, indicating good QoE of the local user.
+   * - `1`: The remote user's network quality is poor.
+   * - `2`: The local user's network quality is poor.
+   * - `4`: The local user's Wi-Fi or mobile network signal is weak.
+   * - `8`: The local user enables both Wi-Fi and bluetooth, and their signals
+   * interfere with each other. As a result, audio transmission quality is
+   * undermined.
+   *
+   * @since v3.3.1
+   */
   qualityChangedReason: number;
-
+  /**
+   * The quality of the remote audio stream as determined by the Agora
+   * real-time audio MOS (Mean Opinion Score) measurement method in the
+   * reported interval. The return value ranges from 0 to 500. Dividing the
+   * return value by 100 gets the MOS score, which ranges from 0 to 5. The
+   * higher the score, the better the audio quality.
+   *
+   * @since v3.3.1
+   *
+   * The subjective perception of audio quality corresponding to the Agora
+   * real-time audio MOS scores is as follows:
+   *
+   * <table>
+   * <thead>
+   *   <tr>
+   *     <th>MOS score</th>
+   *     <th>Perception of audio quality</th>
+   *   </tr>
+   * </thead>
+   * <tbody>
+   *   <tr>
+   *     <td>Greater than 4</td>
+   *     <td>Excellent. The audio sounds clear and smooth.</td>
+   *   </tr>
+   *   <tr>
+   *     <td>From 3.5 to 4</td>
+   *     <td>Good. The audio has some perceptible impairment, but still
+   * sounds clear.</td>
+   *   </tr>
+   *   <tr>
+   *     <td>From 3 to 3.5</td>
+   *     <td>Fair. The audio freezes occasionally and requires attentive
+   * listening.</td>
+   *   </tr>
+   *   <tr>
+   *     <td>From 2.5 to 3</td>
+   *     <td>Poor. The audio sounds choppy and requires considerable effort
+   * to understand.</td>
+   *   </tr>
+   *   <tr>
+   *     <td>From 2 to 2.5</td>
+   *     <td>Bad. The audio has occasional noise. Consecutive audio dropouts
+   * occur, resulting in some information loss. The users can communicate
+   * only with difficulty.</td>
+   *   </tr>
+   *   <tr>
+   *     <td>Less than 2</td>
+   *     <td>Very bad. The audio has persistent noise. Consecutive audio
+   * dropouts are frequent, resulting in severe information loss.
+   * Communication is nearly impossible.</td>
+   *   </tr>
+   * </tbody>
+   * </table>
+   */
   mosValue: number;
 }
 
@@ -1444,13 +1545,17 @@ export enum ENCRYPTION_MODE {
       /** 3: 256-bit AES encryption, XTS mode.
        */
       AES_256_XTS = 3,
-     /** 4: 128-bit SM4 encryption, ECB mode.
-      */
+      /** 4: Reserved property.
+       */
       SM4_128_ECB = 4,
       /** 5: 128-bit AES encryption, GCM mode.
+       *
+       * @since v3.3.1
        */
       AES_128_GCM = 5,
       /** 6: 256-bit AES encryption, GCM mode.
+       *
+       * @since v3.3.1
        */
       AES_256_GCM = 6,
 };
@@ -1847,14 +1952,18 @@ export enum VOICE_BEAUTIFIER_PRESET
      */
     CHAT_BEAUTIFIER_VITALITY = 0x01010300,
     /**
-     * @since v3.3.0
+     * @since v3.3.1
      *
      * Singing beautifier effect.
-     * - If you call \ref IRtcEngine::setVoiceBeautifierPreset "setVoiceBeautifierPreset" (SINGING_BEAUTIFIER), you can beautify a male-sounding voice and add a reverberation
-     * effect that sounds like singing in a small room. Agora recommends not using \ref IRtcEngine::setVoiceBeautifierPreset "setVoiceBeautifierPreset" (SINGING_BEAUTIFIER)
-     * to process a female-sounding voice; otherwise, you may experience vocal distortion.
-     * - If you call \ref IRtcEngine::setVoiceBeautifierParameters "setVoiceBeautifierParameters"(SINGING_BEAUTIFIER, param1, param2), you can beautify a male- or
-     * female-sounding voice and add a reverberation effect.
+     * - If you call {@link setVoiceBeautifierPreset}(SINGING_BEAUTIFIER),
+     * you can beautify a male-sounding voice and add a reverberation
+     * effect that sounds like singing in a small room. Agora recommends not
+     * using {@link setVoiceBeautifierPreset}(SINGING_BEAUTIFIER)
+     * to process a female-sounding voice; otherwise, you may experience vocal
+     * distortion.
+     * - If you call {@link setVoiceBeautifierParameters}(SINGING_BEAUTIFIER,
+     * param1, param2), you can beautify a male- or female-sounding voice and
+     * add a reverberation effect.
      */
     SINGING_BEAUTIFIER = 0x01020100,
     /** A more vigorous voice.
@@ -1962,7 +2071,7 @@ export interface ChannelMediaOptions {
    * - false: Do not subscribe.
    *
    * This member serves a similar function to the
-   * {@link AgoraRtcChannel.muteAllRemoteAudioStreams} method. After joining
+   * `muteAllRemoteAudioStreams` method. After joining
    * the channel, you can call the `muteAllRemoteAudioStreams` method to set
    * whether to subscribe to audio streams in the channel.
    */
@@ -1974,7 +2083,7 @@ export interface ChannelMediaOptions {
    * - false: Do not subscribe.
    *
    * This member serves a similar function to the
-   * {@link AgoraRtcChannel.muteAllRemoteVideoStreams} method. After joining
+   * `muteAllRemoteVideoStreams` method. After joining
    * the channel, you can call the `muteAllRemoteVideoStreams` method to set
    * whether to subscribe to video streams in the channel.
    */
@@ -2232,42 +2341,93 @@ export interface ClientRoleOptions {
    */
   audienceLatencyLevel: AUDIENCE_LATENCY_LEVEL_TYPE;
 };
-
+/**
+ * @since v3.3.1
+ *
+ * The cloud proxy type.
+ * - 0: Do not use the cloud proxy.
+ * - 1: The cloud proxy for the UDP protocol.
+ * - 2: Reserved type.
+ *
+ */
 export type CLOUD_PROXY_TYPE =
     | 0 //NONE_PROXY
     | 1  //UDP_PROXY
     | 2  //TCP_PROXY
-
+/** The configuration of the log files.
+ *
+ * @since v3.3.1
+ */
 export interface LogConfig {
+  /** The absolute path of log files.
+   *
+   * Ensure that the directory for the log files exists and is writable.
+   * You can use this parameter to rename the log files.
+   */
   filePath: string,
+  /** The size (KB) of a log file.
+   *
+   * The default value is 1024 KB. If you set
+   * `fileSize` to 1024 KB, the SDK outputs at most 5 MB log files;
+   * if you set it to less than 1024 KB, the setting is invalid, and the
+   * maximum size of a log file is still 1024 KB.
+   */
   fileSize: number,
+  /** The output log level of the SDK:
+   * - `0x0000`: Do not output any log.
+   * - `0x0001`: (Default) Output logs of the FATAL, ERROR, WARN and INFO
+   * level. We recommend setting your log filter as this level.
+   * - `0x0002`: Output logs of the FATAL, ERROR and WARN level.
+   * - `0x0004`: Output logs of the FATAL and ERROR level.
+   * - `0x0008`: Output logs of the FATAL level.
+   */
   level: number
 };
-
+/** The options for SDK preset voice conversion effects.
+ *
+ * @since v3.3.1
+ */
 export enum VOICE_CONVERSION_PRESET
 {
+    /** Turn off voice conversion effects and use the original voice.
+     */
     VOICE_CONVERSION_OFF = 0x00000000,
+    /** A gender-neutral voice. To avoid audio distortion, ensure that you use
+     * this enumerator to process a female-sounding voice.
+     */
     VOICE_CHANGER_NEUTRAL = 0x03010100,
+    /** A sweet voice. To avoid audio distortion, ensure that you use this
+     * enumerator to process a female-sounding voice.
+     */
     VOICE_CHANGER_SWEET = 0x03010200,
+    /** A steady voice. To avoid audio distortion, ensure that you use this
+     * enumerator to process a male-sounding voice.
+     */
     VOICE_CHANGER_SOLID = 0x03010300,
+    /** A deep voice. To avoid audio distortion, ensure that you use this
+     * enumerator to process a male-sounding voice.
+     */
     VOICE_CHANGER_BASS = 0x03010400
 };
 
-/** Local video state types
+/** Local video state types.
  */
 export enum LOCAL_VIDEO_STREAM_STATE
 {
-    /** Initial state */
+    /** 0: Initial state. */
     LOCAL_VIDEO_STREAM_STATE_STOPPED = 0,
-    /** The capturer starts successfully. */
+    /** 1: The local video capturing device starts successfully.
+     *
+     * The SDK also reports this state when you share a maximized window by calling \ref IRtcEngine::startScreenCaptureByWindowId "startScreenCaptureByWindowId".
+     */
     LOCAL_VIDEO_STREAM_STATE_CAPTURING = 1,
-    /** The first video frame is successfully encoded. */
+   /** 2: The first video frame is successfully encoded. */
     LOCAL_VIDEO_STREAM_STATE_ENCODING = 2,
-    /** The local video fails to start. */
+    /** 3: The local video fails to start. */
     LOCAL_VIDEO_STREAM_STATE_FAILED = 3
 };
 
-/** Local video state error codes
+/** Local video state error codes.
  */
 export enum LOCAL_VIDEO_STREAM_ERROR {
     /** 0: The local video is normal. */
@@ -2278,24 +2438,33 @@ export enum LOCAL_VIDEO_STREAM_ERROR {
     LOCAL_VIDEO_STREAM_ERROR_DEVICE_NO_PERMISSION = 2,
     /** 3: The local video capturing device is in use. */
     LOCAL_VIDEO_STREAM_ERROR_DEVICE_BUSY = 3,
-    /** 4: The local video capture fails. Check whether the capturing device is working properly. */
+    /** 4: The local video capture fails. Check whether the capturing device
+     * is working properly.
+     */
     LOCAL_VIDEO_STREAM_ERROR_CAPTURE_FAILURE = 4,
     /** 5: The local video encoding fails. */
     LOCAL_VIDEO_STREAM_ERROR_ENCODE_FAILURE = 5,
-    /** 11: The shared window is minimized when you call \ref IRtcEngine::startScreenCaptureByWindowId "startScreenCaptureByWindowId" to share a window.
+    /** 11: The shared window is minimized when you share a window by the
+     * window symbol.
      */
     LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_MINIMIZED = 11,
-    /** 12: The error code indicates that a window shared by the window ID has been closed, or a full-screen window
-     * shared by the window ID has exited full-screen mode.
-     * After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a
+    /** 12: The error code indicates that a window shared by the window symbol
+     * has been closed, or a full-screen window
+     * shared by the window symbol has exited full-screen mode.
+     * After exiting full-screen mode, remote users cannot see the shared
+     * window. To prevent remote users from seeing a
      * black screen, Agora recommends that you immediately stop screen sharing.
      *
      * Common scenarios for reporting this error code:
-     * - When the local user closes the shared window, the SDK reports this error code.
-     * - The local user shows some slides in full-screen mode first, and then shares the windows of the slides. After
+     * - When the local user closes the shared window, the SDK reports this
+     * error code.
+     * - The local user shows some slides in full-screen mode first, and then
+     * shares the windows of the slides. After
      * the user exits full-screen mode, the SDK reports this error code.
-     * - The local user watches web video or reads web document in full-screen mode first, and then shares the window of
-     * the web video or document. After the user exits full-screen mode, the SDK reports this error code.
+     * - The local user watches web video or reads web document in full-screen
+     * mode first, and then shares the window of
+     * the web video or document. After the user exits full-screen mode, the
+     * SDK reports this error code.
      */
     LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_CLOSED = 12,
 };
@@ -2343,9 +2512,83 @@ export enum LOCAL_AUDIO_STREAM_ERROR
     LOCAL_AUDIO_STREAM_ERROR_ENCODE_FAILURE = 5
 };
 
+/** The configurations for the data stream.
+ *
+ * @since v3.3.1
+ *
+ * <table>
+ * <thead>
+ *   <tr>
+ *     <th>`syncWithAudio`</th>
+ *     <th>`ordered`</th>
+ *     <th>SDK behaviors</th>
+ *   </tr>
+ * </thead>
+ * <tbody>
+ *   <tr>
+ *     <td>false</td>
+ *     <td>false</td>
+ *     <td>The SDK triggers the <br>`streamMessage`<br> callback immediately
+ * after the receiver receives a data packet.</td>
+ *   </tr>
+ *   <tr>
+ *     <td>true</td>
+ *     <td>false</td>
+ *     <td>If the data packet delay is within the audio delay, the SDK
+ * triggers the <br>`streamMessage`<br> callback when the synchronized audio
+ * packet is played out.<br>If the data packet delay exceeds the audio delay,
+ * the SDK triggers the <br>`streamMessage`<br> callback as soon as the data
+ * packet is received. In this case, the data packet is not synchronized with
+ * the audio packet.</td>
+ *   </tr>
+ *   <tr>
+ *     <td>false</td>
+ *     <td>true</td>
+ *     <td>If the delay of a data packet is within five seconds, the SDK
+ * corrects the order of the data packet.<br>If the delay of a data packet
+ * exceeds five seconds, the SDK discards the data packet.</td>
+ *   </tr>
+ *   <tr>
+ *     <td>true</td>
+ *     <td>true</td>
+ *     <td>If the delay of a data packet is within the audio delay, the SDK
+ * corrects the order of the data packet.<br>If the delay of a data packet
+ * exceeds the audio delay, the SDK discards this data packet.</td>
+ *   </tr>
+ * </tbody>
+ * </table>
+ *
+ */
 export interface DataStreamConfig
 {
+  /** Whether to synchronize the data packet with the published audio packet.
+   *
+   * - true: Synchronize the data packet with the audio packet.
+   * - false: Do not synchronize the data packet with the audio packet.
+   *
+   * When you set the data packet to synchronize with the audio, then if the
+   * data
+   * packet delay is within the audio delay, the SDK triggers the
+   * `streamMessage` callback when
+   * the synchronized audio packet is played out. Do not set this parameter
+   * as `true` if you
+   * need the receiver to receive the data packet immediately. Agora
+   * recommends that you set
+   * this parameter to `true` only when you need to implement specific
+   * functions, for example
+   * lyric synchronization.
+   */
   syncWithAudio: boolean,
+  /** Whether the SDK guarantees that the receiver receives the data in the
+   * sent order.
+   *
+   * - true: Guarantee that the receiver receives the data in the sent order.
+   * - false: Do not guarantee that the receiver receives the data in the sent
+   * order.
+   *
+   * Do not set this parameter to `true` if you need the receiver to receive
+   * the data immediately.
+   */
   ordered: boolean
 };
 
