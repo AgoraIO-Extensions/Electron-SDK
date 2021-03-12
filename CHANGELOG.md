@@ -1,3 +1,10 @@
+# 3.3.1 (Mar 12th, 2021)
+* add new api:
+  - setVoiceConversionPreset
+  - add localAudioStateChanged, localVideoStateChanged for videoSource
+  - add createDataStreamWithConfig
+* modify setLiveTranscoding background to backgroundImage
+
 ## 3.3.0-build.1220 (Feb 1st, 2021)
 * add new api:
   - setCloudProxy
