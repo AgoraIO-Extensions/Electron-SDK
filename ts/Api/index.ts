@@ -1049,14 +1049,22 @@ class AgoraRtcEngine extends EventEmitter {
    * See [How to get the App ID](https://docs.agora.io/en/Agora%20Platform/token#get-an-app-id).
    * Only users in apps with the same App ID can join the same channel and
    * communicate with each other. Use an App ID to create only
-   * one `AgoraRtcEngine` . To change your App ID, call `release` to destroy
-   * the current `AgoraRtcEngine`e and then call `initialize` to create
+   * one `AgoraRtcEngine`. To change your App ID, call `release` to destroy
+   * the current `AgoraRtcEngine` and then call `initialize` to create
    * `AgoraRtcEngine` with the new App ID.
    * @param areaCode The region for connection. This advanced feature applies
    * to scenarios that have regional restrictions. For the regions that Agora
    * supports, see {@link AREA_CODE}. After specifying the region, the SDK
-   * connects to the Agora servers within that region. Note: The SDK supports
-   * specify only one region.
+   * connects to the Agora servers within that region.
+   * @param logConfig The configuration of the log files that the SDK outputs.
+   * See {@link LogConfig}. By default, the SDK outputs five log files,
+   * `agorasdk.log`, `agorasdk_1.log`, `agorasdk_2.log`, `agorasdk_3.log`,
+   * `agorasdk_4.log`, each with a default size of 1024 KB. These log files
+   * are encoded in UTF-8. The SDK writes the latest logs in `agorasdk.log`.
+   * When `agorasdk.log` is full, the SDK deletes the log file with the
+   * earliest modification time among the other four, renames `agorasdk.log`
+   * to the name of the deleted log file, and creates a new `agorasdk.log` to
+   * record latest logs.
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -1129,58 +1137,74 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.getConnectionState();
   }
 
-  /**
-   * Allows a user to join a channel.
+  /** Joins a channel with the user ID, and configures whether to
+   * automatically subscribe to the audio or video streams.
+   *
    *
    * Users in the same channel can talk to each other, and multiple users in
-   * the same channel can start a group chat.
-   * Users with different App IDs cannot call each other.You must call the
-   * {@link leaveChannel} method to exit the current call
+   * the same channel can start a group chat. Users with different App IDs
+   * cannot call each other.
+   *
+   * You must call the {@link leaveChannel} method to exit the current call
    * before entering another channel.
    *
-   * This method call triggers the following callbacks:
+   * A successful `joinChannel` method call triggers the following callbacks:
+   * - The local client: `joinChannelSuccess`.
+   * - The remote client: `userJoined`, if the user joining the channel is
+   * in the `0` (communication) profile, or is a host in the `1`
+   * (live streaming) profile.
    *
-   * - The local client: joinedChannel
-   * - The remote client: userJoined, if the user joining the channel is in
-   * the communication(`0`) profile,
-   * or is a host in the `1` (live streaming) profile.
+   * When the connection between the client and the Agora server is
+   * interrupted due to poor network conditions, the SDK tries reconnecting
+   * to the server.
    *
-   * When the connection between the client and Agora's server is interrupted
-   * due to poor network conditions,
-   * the SDK tries reconnecting to the server. When the local client
-   * successfully rejoins the channel, the SDK
-   * triggers the rejoinedChannel callback on the local client.
+   * When the local client successfully rejoins the channel, the SDK triggers
+   * the `rejoinChannelSuccess` callback on the local client.
    *
-   * @param {string} token token The token generated at your server:
-   * - For low-security requirements: You can use the temporary token
-   * generated at Console. For details, see
-   * [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-temporary-token).
-   * - For high-security requirements: Set it as the token generated at your
-   * server. For details, see
-   * [Get a token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-token).
-   * @param {string} channel (Required) Pointer to the unique channel name for
-   * the Agora RTC session in the string format smaller than 64 bytes.
-   * Supported characters:
-   * - The 26 lowercase English letters: a to z.
-   * - The 26 uppercase English letters: A to Z.
-   * - The 10 numbers: 0 to 9.
-   * - The space.
-   * - "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".",
+   * @note Ensure that the App ID used for generating the token is the same
+   * App ID used in the {@link initialize} method for creating an
+   * `AgoraRtcEngine` object.
+   *
+   * @param token The token generated at your server. For details,
+   * see [Generate a token](https://docs.agora.io/en/Interactive%20Broadcast/token_server?platform=Electron).
+   * @param channel The unique channel name for the Agora RTC session in
+   * the string format smaller than 64 bytes. Supported characters:
+   * - All lowercase English letters: a to z.
+   * - All uppercase English letters: A to Z.
+   * - All numeric characters: 0 to 9.
+   * - The space character.
+   * - Punctuation characters and other symbols, including:
+   * "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".",
    * ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
-   * @param {string} info (Optional) Pointer to additional information about
-   * the channel. This parameter can be set to NULL or contain channel related
-   * information.
-   * Other users in the channel will not receive this message.
-   * @param {number} uid The User ID. A 32-bit unsigned integer with a value
-   * ranging from 1 to 2<sup>32</sup>-1. The `uid` must be unique. If a `uid`
-   * is not assigned (or set to 0),
-   * the SDK assigns a `uid`.
+   * @param info (Optional) Reserved for future use.
+   * @param uid (Optional) User ID. A 32-bit unsigned integer with a value
+   * ranging from 1 to 2<sup>32</sup>-1. The @p uid must be unique. If
+   * a @p uid is not assigned (or set to 0), the SDK assigns and returns
+   * a @p uid in the `joinChannelSuccess` callback.
+   * Your application must record and maintain the returned `uid`, because the
+   * SDK does not do so. **Note**: The ID of each user in the channel should
+   * be unique. If you want to join the same channel from different devices,
+   * ensure that the user IDs in all devices are different.
+   * @param options The channel media options. See {@link ChannelMediaOptions}.
+   *
    * @return
    * - 0: Success.
    * - < 0: Failure.
-   *  - `ERR_INVALID_ARGUMENT (2)`
-   *  - `ERR_NOT_READY (3)`
-   *  - `ERR_REFUSED (5) `
+   *    - `-2`: The parameter is invalid.
+   *    - `-3`: The SDK fails to be initialized. You can try
+   * re-initializing the SDK.
+   *    - `-5: The request is rejected. This may be caused by the
+   * following:
+   *        - You have created an `AgoraRtcChannel` object with the same
+   * channel name.
+   *        - You have joined and published a stream in a channel created by
+   * the `AgoraRtcChannel` object. When you join a channel created by the
+   * `AgoraRtcEngine` object, the SDK publishes the local audio and video
+   * streams to that channel by default. Because the SDK does not support
+   * publishing a local stream to more than one channel simultaneously, an
+   * error occurs in this occasion.
+   *    - `-7`: The SDK is not initialized before calling
+   * this method.
    */
   joinChannel(
     token: string,
@@ -1878,14 +1902,19 @@ class AgoraRtcEngine extends EventEmitter {
    * CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE(1) to avoid such problems.
    * - If you do not need local video preview or are willing to sacrifice
    * preview quality,
-   * we recommend setting config as CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE(1)
+   * we recommend setting config as `CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE(1)`
    * to optimize CPU and RAM usage.
    * - If you want better quality for the local video preview, we recommend
    * setting config as CAPTURER_OUTPUT_PREFERENCE_PREVIEW(2).
-   * **Note**: Call this method before enabling the local camera. That said,
+   * - To customize the width and height of the video image captured by the
+   * local camera, set the camera capture configuration as
+   * `CAPTURER_OUTPUT_PREFERENCE_MANUAL(3)`.
+   *
+   * @note Call this method before enabling the local camera. That said,
    * you can call this method before calling {@link joinChannel},
    * {@link enableVideo}, or {@link enableLocalVideo},
    * depending on which method you use to turn on your local camera.
+   *
    * @param {CameraCapturerConfiguration} config The camera capturer
    * configuration. See {@link CameraCapturerConfiguration}.
    * @return
@@ -2191,22 +2220,25 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Stops/Resumes sending the local audio stream.
+   * Stops or resumes publishing the local audio stream.
    *
-   * A successful muteLocalAudioStream method call triggers the userMuteAudio
-   * callback on the remote client.
+   * A successful {@link muteLocalAudioStream} method call
+   * triggers the `userMuteAudio` callback on the remote client.
    *
-   * If you call {@link setChannelProfile} after this method, the SDK resets
-   * whether or not to mute the local audio according to the channel profile
-   * and user role. Therefore, we recommend calling this method after the
-   * {@link setChannelProfile} method.
+   * @note
+   * - When @p mute is set as @p true, this method does not affect any ongoing
+   * audio recording, because it does not disable the microphone.
+   * - You can call this method either before or after joining a channel. If
+   * you call {@link setChannelProfile}
+   * after this method, the SDK resets whether or not to stop publishing the
+   * local audio according to the channel profile and user role.
+   * Therefore, we recommend calling this method after the `setChannelProfile`
+   * method.
    *
-   * **Note**: muteLocalAudioStream(true) does not disable the microphone and
-   * thus does not affect any ongoing recording.
-   * @param {boolean} mute Sets whether to send/stop sending the local audio
-   * stream:
-   * - true: Stop sending the local audio stream.
-   * - false: (Default) Send the local audio stream.
+   * @param mute Sets whether to stop publishing the local audio stream.
+   * - true: Stop publishing the local audio stream.
+   * - false: (Default) Resumes publishing the local audio stream.
+   *
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -2216,11 +2248,23 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Stops/Resumes receiving all remote audio streams.
-   * @param {boolean} mute Sets whether to receive/stop receiving all remote
-   * audio streams:
-   * - true: Stop receiving all remote audio streams.
-   * - false: (Default) Receive all remote audio streams.
+   * Stops or resumes subscribing to the audio streams of all remote users.
+   *
+   * As of v3.3.1, after successfully calling this method, the local user
+   * stops or resumes
+   * subscribing to the audio streams of all remote users, including all
+   * subsequent users.
+   *
+   * @note
+   * - Call this method after joining a channel.
+   * - See recommended settings in *Set the Subscribing State*.
+   *
+   * @param mute Sets whether to stop subscribing to the audio streams of
+   * all remote users.
+   * - true: Stop subscribing to the audio streams of all remote users.
+   * - false: (Default) Resume subscribing to the audio streams of all
+   * remote users.
+   *
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -2229,24 +2273,33 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.muteAllRemoteAudioStreams(mute);
   }
 
-  /**
-   * Sets whether to receive all remote audio streams by default.
+  /** Stops or resumes subscribing to the audio streams of all remote users
+   * by default.
    *
-   * You can call this method either before or after joining a channel. If you
-   * call `setDefaultMuteAllRemoteAudioStreams(true)` after joining a channel,
-   * you will not receive the audio streams of any subsequent user.
+   * @deprecated This method is deprecated from v3.3.1.
    *
-   * @note If you want to resume receiving the audio stream, call
-   * {@link muteRemoteAudioStream}(false), and specify the ID of the remote
-   * user whose audio stream you want to receive. To resume receiving
-   * the audio streams
-   * of multiple remote users, call {@link muteRemoteAudioStream}(false) as
-   * many times. Calling `setDefaultMuteAllRemoteAudioStreams(false)` resumes
-   * receiving the audio streams of subsequent users only.
-   * @param {boolean} mute Sets whether or not to receive/stop receiving all
-   * remote audio streams by default:
-   * - true: Stop receiving all remote audio streams by default.
-   * - false: (Default) Receive all remote audio streams by default.
+   *
+   * Call this method after joining a channel. After successfully calling this
+   * method, the
+   * local user stops or resumes subscribing to the audio streams of all
+   * subsequent users.
+   *
+   * @note If you need to resume subscribing to the audio streams of remote
+   * users in the
+   * channel after calling {@link setDefaultMuteAllRemoteAudioStreams}(true),
+   * do the following:
+   * - If you need to resume subscribing to the audio stream of a specified
+   * user, call {@link muteRemoteAudioStream}(false), and specify the user ID.
+   * - If you need to resume subscribing to the audio streams of multiple
+   * remote users, call {@link muteRemoteAudioStream}(false) multiple times.
+   *
+   * @param mute Sets whether to stop subscribing to the audio streams of all
+   * remote users by default.
+   * - true: Stop subscribing to the audio streams of all remote users by
+   * default.
+   * - false: (Default) Resume subscribing to the audio streams of all remote
+   * users by default.
+   *
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -2256,12 +2309,19 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Stops/Resumes receiving a specified audio stream.
-   * @param {number} uid ID of the specified remote user.
-   * @param {boolean} mute Sets whether to receive/stop receiving the specified
-   * remote user's audio stream:
-   * - true: Stop receiving the specified remote user’s audio stream.
-   * - false: (Default) Receive the specified remote user’s audio stream.
+   * Stops or resumes subscribing to the audio stream of a specified user.
+   *
+   * @note
+   * - Call this method after joining a channel.
+   * - See recommended settings in *Set the Subscribing State*.
+   *
+   * @param userId The user ID of the specified remote user.
+   * @param mute Sets whether to stop subscribing to the audio stream of a
+   * specified user.
+   * - true: Stop subscribing to the audio stream of a specified user.
+   * - false: (Default) Resume subscribing to the audio stream of a specified
+   * user.
+   *
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -2270,23 +2330,28 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.muteRemoteAudioStream(uid, mute);
   }
 
-  /**
-   * Stops/Resumes sending the local video stream.
+  /** Stops or resumes publishing the local video stream.
    *
-   * A successful muteLocalVideoStream method call triggers the userMuteVideo
-   * callback on the remote client.
+   * A successful {@link muteLocalVideoStream} method call
+   * triggers the `userMuteVideo` callback on
+   * the remote client.
    *
-   * If you call {@link setChannelProfile} after this method, the SDK resets
-   * whether or not to mute the local video according to the channel profile
-   * and user role. Therefore, we recommend calling this method after the
-   * {@link setChannelProfile} method.
+   * @note
+   * - This method executes faster than the {@link enableLocalVideo} method,
+   * which controls the sending of the local video stream.
+   * - When `mute` is set as `true`, this method does not affect any ongoing
+   * video recording, because it does not disable the camera.
+   * - You can call this method either before or after joining a channel.
+   * If you call {@link setChannelProfile}
+   * after this method, the SDK resets whether or not to stop publishing the
+   * local video according to the channel profile and user role.
+   * Therefore, Agora recommends calling this method after the
+   * `setChannelProfile` method.
    *
-   * **Note**: muteLocalVideoStream(true) does not disable the camera and thus
-   * does not affect the retrieval of the local video streams.
-   * @param {boolean} mute Sets whether to send/stop sending the local video
-   * stream:
-   * - true: Stop sending the local video stream.
-   * - false: (Default) Send the local video stream.
+   * @param mute Sets whether to stop publishing the local video stream.
+   * - true: Stop publishing the local video stream.
+   * - false: (Default) Resumes publishing the local video stream.
+   *
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -2366,12 +2431,23 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Stops/Resumes receiving all remote video streams.
+   * Stops or resumes subscribing to the video streams of all remote users.
    *
-   * @param {boolean} mute Sets whether to receive/stop receiving all remote
-   * video streams:
-   * - true: Stop receiving all remote video streams.
-   * - false: (Default) Receive all remote video streams.
+   * As of v3.3.1, after successfully calling this method, the local user
+   * stops or resumes
+   * subscribing to the video streams of all remote users, including all
+   * subsequent users.
+   *
+   * @note
+   * - Call this method after joining a channel.
+   * - See recommended settings in *Set the Subscribing State*.
+   *
+   * @param mute Sets whether to stop subscribing to the video streams of
+   * all remote users.
+   * - true: Stop subscribing to the video streams of all remote users.
+   * - false: (Default) Resume subscribing to the video streams of all remote
+   * users.
+   *
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -2380,25 +2456,32 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.muteAllRemoteVideoStreams(mute);
   }
 
-  /**
-   * Sets whether to receive all remote video streams by default.
+  /** Stops or resumes subscribing to the video streams of all remote users
+   * by default.
    *
-   * You can call this method either before or after joining a channel. If you
-   * call `setDefaultMuteAllRemoteVideoStreams(true)` after joining a channel,
-   * you will not receive the video stream of any subsequent user.
+   * @deprecated This method is deprecated from v3.3.1.
    *
-   * @note If you want to resume receiving the video stream, call
-   * {@link muteRemoteVideoStream}(false), and specify the ID of the remote
-   * user whose audio stream you want to receive. To resume receiving
-   * the audio streams
-   * of multiple remote users, call {@link muteRemoteVideoStream}(false) as
-   * many times. Calling `setDefaultMuteAllRemoteVideoStreams(false)` resumes
-   * receiving the audio streams of subsequent users only.
+   * Call this method after joining a channel. After successfully calling
+   * this method, the
+   * local user stops or resumes subscribing to the video streams of all
+   * subsequent users.
    *
-   * @param {boolean} mute Sets whether to receive/stop receiving all remote
-   * video streams by default:
-   * - true: Stop receiving all remote video streams by default.
-   * - false: (Default) Receive all remote video streams by default.
+   * @note If you need to resume subscribing to the video streams of remote
+   * users in the
+   * channel after calling {@link setDefaultMuteAllRemoteVideoStreams}(true),
+   * do the following:
+   * - If you need to resume subscribing to the video stream of a specified
+   * user, call {@link muteRemoteVideoStream}(false), and specify the user ID.
+   * - If you need to resume subscribing to the video streams of multiple
+   * remote users, call {@link muteRemoteVideoStream}(false) multiple times.
+   *
+   * @param mute Sets whether to stop subscribing to the video streams of all
+   * remote users by default.
+   * - true: Stop subscribing to the video streams of all remote users by
+   * default.
+   * - false: (Default) Resume subscribing to the video streams of all remote
+   * users by default.
+   *
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -2442,12 +2525,19 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Stops/Resumes receiving a specified remote user's video stream.
-   * @param {number} uid User ID of the specified remote user.
-   * @param {boolean} mute Sets whether to receive/stop receiving a specified
-   * remote user's video stream:
-   * - true: Stop receiving a specified remote user’s video stream.
-   * - false: (Default) Receive a specified remote user’s video stream.
+   * Stops or resumes subscribing to the video stream of a specified user.
+   *
+   * @note
+   * - Call this method after joining a channel.
+   * - See recommended settings in *Set the Subscribing State*.
+   *
+   * @param userId The user ID of the specified remote user.
+   * @param mute Sets whether to stop subscribing to the video stream of a
+   * specified user.
+   * - true: Stop subscribing to the video stream of a specified user.
+   * - false: (Default) Resume subscribing to the video stream of a specified
+   * user.
+   *
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -2482,9 +2572,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * Specifies an SDK output log file.
-   * @deprecated
-   * The log file records all log data for the SDK’s operation. Ensure that
-   * the directory for the log file exists and is writable.
+   *
+   * @deprecated This method is deprecated from v3.3.1. Use `logConfig` in
+   * the {@link initialize} method instead.
    *
    * @param {string} filepath File path of the log file. The string of the
    * log file is in UTF-8.
@@ -2498,7 +2588,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /** Sets the size of a log file that the SDK outputs.
    *
-   * @deprecated
+   * @deprecated This method is deprecated from v3.3.1. Use `logConfig` in
+   * the {@link initialize} method instead.
+   *
    * @note If you want to set the log file size, ensure that you call
    * this method before {@link setLogFile}, or the logs are cleared.
    *
@@ -2545,7 +2637,10 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * Sets the output log level of the SDK.
-   * @deprecated
+   *
+   * @deprecated This method is deprecated from v3.3.1. Use `logConfig` in
+   * the {@link initialize} method instead.
+   *
    * You can use one or a combination of the filters. The log level follows
    * the sequence of OFF, CRITICAL, ERROR, WARNING, INFO, and DEBUG.
    * Choose a level to see the logs preceding that level. For example, if you
@@ -2590,7 +2685,7 @@ class AgoraRtcEngine extends EventEmitter {
    * Sets the stream type of the remote video.
    *
    * Under limited network conditions, if the publisher has not disabled the
-   * dual-stream mode using {@link enableDualStreamMode}(`false`), the receiver
+   * dual-stream mode using {@link enableDualStreamMode}(false), the receiver
    * can choose to receive either the high-video stream (the high resolution,
    * and high bitrate video stream) or the low-video stream (the low
    * resolution, and low bitrate video stream).
@@ -2730,13 +2825,20 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @deprecated This method is deprecated from v3.2.0
-   * Use the {@link setAudioEffectPreset} or {@link setVoiceBeautifierPreset}
-   * method instead.
+   * @deprecated This method is deprecated from v3.2.0.
+   * Use the following methods instead:
+   * - {@link setAudioEffectPreset}
+   * - {@link setVoiceBeautifierPreset}
+   * - {@link setVoiceConversionPreset}
    *
    * Sets the local voice changer option.
+   *
    * @param {VoiceChangerPreset} preset The local voice changer option.
    * See {@link VoiceChangerPreset}.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setLocalVoiceChanger(preset: VoiceChangerPreset): number {
     return this.rtcEngine.setLocalVoiceChanger(preset);
@@ -2900,20 +3002,16 @@ class AgoraRtcEngine extends EventEmitter {
    * the channel is in the communication(`0`) profile, or is a host in the
    * `1` (live streaming) profile.
    *
-   * **Note**: To ensure smooth communication, use the same parameter type to
+   * @note To ensure smooth communication, use the same parameter type to
    * identify the user. For example, if a user joins the channel with a user
    * ID, then ensure all the other users use the user ID too.
    * The same applies to the user account. If a user joins the channel with
    * the Agora Web SDK, ensure that the `uid` of the user is set to the same
    * parameter type.
-   * @param {string} token The token generated at your server.
-   * - For low-security requirements: You can use the temporary token generated
-   * at Dashboard. For details, see
-   * [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-temporary-token).
-   * - For high-security requirements: Set it as the token generated at your
-   * server. For details, see
-   * [Get a token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-token).
-   * @param {string} channel The channel name. The maximum length of this
+   *
+   * @param token The token generated at your server. For details,
+   * see [Generate a token](https://docs.agora.io/en/Interactive%20Broadcast/token_server?platform=Electron).
+   * @param channel The channel name. The maximum length of this
    * parameter is 64 bytes. Supported character scopes are:
    * - The 26 lowercase English letters: a to z.
    * - The 26 uppercase English letters: A to Z.
@@ -2921,22 +3019,25 @@ class AgoraRtcEngine extends EventEmitter {
    * - The space.
    * - "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".",
    * ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
-   * @param {string} userAccount The user account. The maximum length of this
-   * parameter is 255 bytes. Ensure that you set this parameter and do not set
-   * it as null.
-   * Supported character scopes are:
-   * - The 26 lowercase English letters: a to z.
-   * - The 26 uppercase English letters: A to Z.
-   * - The 10 numbers: 0 to 9.
-   * - The space.
-   * - "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".",
-   * ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
+   * @param userAccount The user account. The maximum length of this parameter
+   * is 255 bytes. Ensure that you set this parameter and do not set it as
+   * null. Supported character scopes are:
+   * - All lowercase English letters: a to z.
+   * - All uppercase English letters: A to Z.
+   * - All numeric characters: 0 to 9.
+   * - The space character.
+   * - Punctuation characters and other symbols, including: "!", "#", "$",
+   * "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@",
+   * "[", "]", "^", "_", " {", "}", "|", "~", ",".
+   * @param options The channel media options. See
+   * {@link ChannelMediaOptions}.
    * @return
    * - 0: Success.
    * - < 0: Failure.
-   *  - `ERR_INVALID_ARGUMENT (2)`
-   *  - `ERR_NOT_READY (3)`
-   *  - `ERR_REFUSED (5)`
+   *  - `-2`
+   *  - `-3`
+   *  - `-5`
+   *  - `-7`
    */
   joinChannelWithUserAccount(
     token: string,
@@ -2996,41 +3097,44 @@ class AgoraRtcEngine extends EventEmitter {
   getUserInfoByUid(uid: number): { errCode: number; userInfo: UserInfo } {
     return this.rtcEngine.getUserInfoByUid(uid);
   }
-  /**
-   * Switches to a different channel.
+  /** Switches to a different channel, and configures whether to automatically
+   * subscribe to audio or video streams in the target channel.
    *
-   * This method allows the audience of a Live-broadcast channel to switch to
-   * a different channel.
    *
-   * After the user successfully switches to another channel, the leavechannel
-   * and joinedChannel callbacks are triggered to indicate that the user has
-   * left the original channel and joined a new one.
+   * This method allows the audience of a `1` (live streaming) channel to
+   * switch to a different channel.
    *
-   * @note
-   * This method applies to the audience in a `1` (live streaming) profile only.
+   * After the user successfully switches to another channel, the
+   * `leaveChannel` and `joinChannelSuccess` callbacks are triggered to
+   * indicate that
+   * the user has left the original channel and joined a new one.
    *
-   * @param token The token generated at your server:
-   * - For low-security requirements: You can use the temporary token generated
-   * at Console. For details,
-   * see [Get a temporary token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-temporary-token).
-   * - For high-security requirements: Set it as the token generated at your
-   * server. For details,
-   * see [Get a token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-token).
-   * @param channel (Required) Pointer to the unique channel name for the
-   * Agora RTC session in the string format smaller than 64 bytes.
-   * Supported characters:
-   * - The 26 lowercase English letters: a to z.
-   * - The 26 uppercase English letters: A to Z.
-   * - The 10 numbers: 0 to 9.
-   * - The space.
-   * - "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".",
+   * @note This method applies to the audience role in a `1` (live streaming)
+   * channel only.
+   *
+   * @param token The token generated at your server. For details,
+   * see [Generate a token](https://docs.agora.io/en/Interactive%20Broadcast/token_server?platform=Electron).
+   * @param channel The unique channel name for the Agora RTC session in
+   * the string format smaller than 64 bytes. Supported characters:
+   * - All lowercase English letters: a to z.
+   * - All uppercase English letters: A to Z.
+   * - All numeric characters: 0 to 9.
+   * - The space character.
+   * - Punctuation characters and other symbols, including:
+   * "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".",
    * ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
+   * @param options The channel media options. See {@link ChannelMediaOptions}.
+   *
    * @return
    * - 0: Success.
    * - < 0: Failure.
-   *  - `ERR_INVALID_ARGUMENT (2)`
-   *  - `ERR_NOT_READY (3)`
-   *  - `ERR_REFUSED (5)`
+   *  - `-1`: A general error occurs (no specified reason).
+   *  - `-2`: The parameter is invalid.
+   *  - `-5`: The request is rejected, probably because the user is not an
+   * audience.
+   *  - `-7`: The SDK is not initialized.
+   *  - `-102`: The channel name is invalid.
+   *  - `-113`: The user is not in the channel.
    */
   switchChannel(token: string, channel: string, options?: ChannelMediaOptions) : number {
     return this.rtcEngine.switchChannel(token, channel, options);
@@ -3572,7 +3676,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - For high-security requirements: Set it as the token generated at your
    * server. For details, see
    * [Get a token](https://docs.agora.io/en/Voice/token?platform=All%20Platforms#get-a-token).
-   * @param {string} cname (Required) Pointer to the unique channel name for
+   * @param {string} cname (Required) The unique channel name for
    * the Agora RTC session in the string format smaller than 64 bytes.
    * Supported characters:
    * - The 26 lowercase English letters: a to z.
@@ -3581,7 +3685,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - The space.
    * - "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".",
    * ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
-   * @param {string} info Pointer to additional information about the channel.
+   * @param {string} info Additional information about the channel.
    * This parameter can be set to NULL or contain channel related information.
    * Other users in the channel will not receive this message.
    * @param {number} uid The User ID. The same user ID cannot appear in a
@@ -3767,7 +3871,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
   /**
    * Shares the whole or part of a screen by specifying the screen symbol.
-   * @param screenSymbol The screen symbol. See {@link screenSymbol}
+   * @param screenSymbol The screen symbol. See {@link ScreenSymbol}.
    * @param rect (Optional) The relative location of the region to the screen.
    * NULL means sharing the whole screen. See {@link CaptureRect}. If the
    * specified region overruns the screen, the SDK shares only the region
@@ -3849,7 +3953,7 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * Updates the screen capture region for the video source.
-   * @param {*} rect {left: 0, right: 100, top: 0, bottom: 100} (relative
+   * @param {*} rect {left: 0, right: 100, top: 0, bottom: 100}(relative
    * distance from the left-top corner of the screen)
    * @return
    * - 0: Success.
@@ -3951,7 +4055,7 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * Sets the built-in encryption mode.
    *
-   * @param encryptionMode Pointer to the set encryption mode:
+   * @param encryptionMode The set encryption mode:
    * - `"aes-128-xts"`: (Default) 128-bit AES encryption, XTS mode.
    * - `"aes-128-ecb"`: 128-bit AES encryption, ECB mode.
    * - `"aes-256-xts"`: 256-bit AES encryption, XTS mode.
@@ -3970,7 +4074,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @deprecated This method is deprecated from v3.2.0. Use the
    * {@link videoSourceEnableEncryption} method instead.
    *
-   * @param secret Pointer to the encryption password.
+   * @param secret The encryption password.
    *
    * @return
    * - 0: Success.
@@ -4109,7 +4213,7 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * Updates the screen capture region.
-   * @param {*} rect {left: 0, right: 100, top: 0, bottom: 100} (relative
+   * @param {*} rect {left: 0, right: 100, top: 0, bottom: 100}(relative
    * distance from the left-top corner of the screen)
    * @return
    * - 0: Success.
@@ -4452,6 +4556,10 @@ class AgoraRtcEngine extends EventEmitter {
    *  - `userJoined (uid: 666)`, if the method call is successful and the online
    * media stream is injected into the channel.
    *
+   * @warning Agora will soon stop the service for injecting online media
+   * streams on the client. If you have not implemented this service, Agora
+   * recommends that you do not use it.
+   *
    * @note
    * - Only the host in the Live-braodcast profile can call this method.
    * - Ensure that you enable the RTMP Converter service before using this
@@ -4484,6 +4592,10 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Removes the injected online media stream from a live streaming.
    *
+   * @warning Agora will soon stop the service for injecting online media
+   * streams on the client. If you have not implemented this service, Agora
+   * recommends that you do not use it.
+   *
    * @param {string} url HTTP/HTTPS URL address of the added stream to be
    * removed.
    * @return
@@ -4502,6 +4614,9 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * Each user can create up to five data streams during the lifecycle of the
    * AgoraRtcEngine.
+   *
+   * @deprecated This method is deprecated from v3.3.1. Use the
+   * {@link createDataStreamWithConfig} method instead.
    *
    * **Note**:
    * Set both the `reliable` and `ordered` parameters to true or false. Do not
@@ -4525,7 +4640,22 @@ class AgoraRtcEngine extends EventEmitter {
   createDataStream(reliable: boolean, ordered: boolean): number {
     return this.rtcEngine.createDataStream(reliable, ordered);
   }
-
+  /** Creates a data stream.
+   *
+   * @since v3.3.1
+   *
+   * Each user can create up to five data streams in a single channel.
+   *
+   * This method does not support data reliability. If the receiver receives
+   * a data packet five
+   * seconds or more after it was sent, the SDK directly discards the data.
+   *
+   * @param config The configurations for the data stream.
+   *
+   * @return
+   * - Returns the ID of the created data stream, if this method call succeeds.
+   * - < 0: Fails to create the data stream.
+   */
   createDataStreamWithConfig(config: DataStreamConfig): number {
     return this.rtcEngine.createDataStream(config);
   }
@@ -4930,11 +5060,11 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * Allows a user to rate a call after the call ends.
-   * @param {string} callId Pointer to the ID of the call, retrieved from
+   * @param {string} callId The ID of the call, retrieved from
    * the {@link getCallId} method.
    * @param {number} rating Rating of the call. The value is between 1
    * (lowest score) and 5 (highest score).
-   * @param {string} desc (Optional) Pointer to the description of the rating,
+   * @param {string} desc (Optional) The description of the rating,
    * with a string length of less than 800 bytes.
    * @return
    * - 0: Success.
@@ -4956,11 +5086,11 @@ class AgoraRtcEngine extends EventEmitter {
   complain(callId: string, desc: string): number {
     return this.rtcEngine.complain(callId, desc);
   }
-
+  //TODO(input)
   setRecordingAudioFrameParameters(sampleRate: number, channel: 1 | 2, mode: 0 | 1 | 2, samplesPerCall: number): number {
     return this.rtcEngine.setRecordingAudioFrameParameters(sampleRate, channel, mode, samplesPerCall);
   }
-
+  
   // ===========================================================================
   // replacement for setParameters call
   // ===========================================================================
@@ -5256,17 +5386,14 @@ class AgoraRtcEngine extends EventEmitter {
    * encryption key. Once all users leave the channel, the encryption key of
    * this channel is automatically cleared.
    *
-   * **Note**:
-   * - If you enable the built-in encryption, you cannot use the RTMP or
+   * @note If you enable the built-in encryption, you cannot use the RTMP or
    * RTMPS streaming function.
-   * - The SDK returns `-4` when the encryption mode is incorrect or
-   * the SDK fails to load the external encryption library.
-   * Check the enumeration or reload the external encryption library.
    *
    * @param enabled Whether to enable the built-in encryption:
    * - true: Enable the built-in encryption.
    * - false: Disable the built-in encryption.
-   * @param config Configurations of built-in encryption schemas.
+   * @param config Configurations of built-in encryption schemas. See
+   * {@link EncryptionConfig}.
    *
    * @return
    * - 0: Success.
@@ -5310,6 +5437,8 @@ class AgoraRtcEngine extends EventEmitter {
    *  - {@link setLocalVoicePitch}
    *  - {@link setLocalVoiceEqualization}
    *  - {@link setLocalVoiceReverb}
+   *  - {@link setVoiceBeautifierParameters}
+   *  - {@link setVoiceConversionPreset}
    *
    * @param preset The options for SDK preset audio effects.
    *
@@ -5353,6 +5482,8 @@ class AgoraRtcEngine extends EventEmitter {
    *  - {@link setLocalVoicePitch}
    *  - {@link setLocalVoiceEqualization}
    *  - {@link setLocalVoiceReverb}
+   *  - {@link setVoiceBeautifierParameters}
+   *  - {@link setVoiceConversionPreset}
    *
    * @param preset The options for SDK preset voice beautifier effects.
    *
@@ -5408,6 +5539,8 @@ class AgoraRtcEngine extends EventEmitter {
    *  - {@link setLocalVoicePitch}
    *  - {@link setLocalVoiceEqualization}
    *  - {@link setLocalVoiceReverb}
+   *  - {@link setVoiceBeautifierParameters}
+   *  - {@link setVoiceConversionPreset}
    *
    * @param preset The options for SDK preset audio effects:
    * - 3D voice effect: `ROOM_ACOUSTICS_3D_VOICE`.
@@ -5460,19 +5593,201 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   // 3.3.0 apis
+  /** Sets the Agora cloud proxy service.
+   *
+   * @since v3.3.1
+   *
+   * When the user's firewall restricts the IP address and port, refer to
+   * *Use Cloud Proxy* to add the specific
+   * IP addresses and ports to the firewall whitelist; then, call this method
+   * to enable the cloud proxy and set
+   * the `type` parameter as `1`, which is the cloud proxy for
+   * the UDP protocol.
+   *
+   * After a successfully cloud proxy connection, the SDK triggers the
+   * `connectionStateChanged(2, 11)` callback.
+   *
+   * To disable the cloud proxy that has been set, call `setCloudProxy(0)`.
+   * To change the cloud proxy type that has been set,
+   * call `setCloudProxy(0)` first, and then call `setCloudProxy`, and pass
+   * the value that you expect in `type`.
+   *
+   * @note
+   * - Agora recommends that you call this method before joining the channel
+   * or after leaving the channel.
+   * - When you use the cloud proxy for the UDP protocol, the services for
+   * pushing streams to CDN and co-hosting across channels are not available.
+   *
+   * @param type The cloud proxy type, see {@link CLOUD_PROXY_TYPE}. This
+   * parameter is required, and the SDK reports an error if you do not pass
+   * in a value.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   *  - `-2`: The parameter is invalid.
+   *  - `-7`: The SDK is not initialized.
+   */
   setCloudProxy(type:CLOUD_PROXY_TYPE): number {
     return this.rtcEngine.setCloudProxy(type);
   }
+  /** Enables or disables deep-learning noise reduction.
+   *
+   * @since v3.3.1
+   *
+   * The SDK enables traditional noise reduction mode by default to reduce
+   * most of the stationary background noise.
+   * If you need to reduce most of the non-stationary background noise, Agora
+   * recommends enabling deep-learning
+   * noise reduction as follows:
+   *
+   * 1. Integrate the dynamical library under the `Release` folder to your
+   * project:
+   *  - macOS: `AgoraAIDenoiseExtension.framework`
+   *  - Windows: `libagora_ai_denoise_extension.dll`
+   * 2. Call `enableDeepLearningDenoise(true)`.
+   *
+   * Deep-learning noise reduction requires high-performance devices. For
+   * example, the following devices and later
+   * models are known to support deep-learning noise reduction:
+   * - iPhone 6S
+   * - MacBook Pro 2015
+   * - iPad Pro (2nd generation)
+   * - iPad mini (5th generation)
+   * - iPad Air (3rd generation)
+   *
+   * After successfully enabling deep-learning noise reduction, if the SDK
+   * detects that the device performance
+   * is not sufficient, it automatically disables deep-learning noise reduction
+   * and enables traditional noise reduction.
+   *
+   * If you call `enableDeepLearningDenoise(false)` or the SDK automatically
+   * disables deep-learning noise reduction
+   * in the channel, when you need to re-enable deep-learning noise reduction,
+   * you need to call {@link leaveChannel}
+   * first, and then call `enableDeepLearningDenoise(true)`.
+   *
+   * @note
+   * - This method dynamically loads the library, so Agora recommends calling
+   * this method before joining a channel.
+   * - This method works best with the human voice. Agora does not recommend
+   * using this method for audio containing music.
+   *
+   * @param enable Sets whether to enable deep-learning noise reduction.
+   * - true: (Default) Enables deep-learning noise reduction.
+   * - false: Disables deep-learning noise reduction.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   *  - `-157: The dynamical library for enabling deep-learning noise
+   * reduction is not integrated.
+   */
   enableDeepLearningDenoise(enabled:boolean): number {
     return this.rtcEngine.enableDeepLearningDenoise(enabled);
   }
+  /** Sets parameters for SDK preset voice beautifier effects.
+   *
+   * @since v3.3.1
+   *
+   * Call this method to set a gender characteristic and a reverberation
+   * effect for the singing beautifier effect. This method sets parameters
+   * for the local user who sends an audio stream.
+   *
+   * After you call this method successfully, all users in the channel can
+   * hear the relevant effect.
+   *
+   * To achieve better audio effect quality, before you call this method,
+   * Agora recommends calling {@link setAudioProfile}, and setting the
+   * `scenario` parameter
+   * as `3` and the `profile` parameter as `4` or `5`.
+   *
+   * @note
+   * - You can call this method either before or after joining a channel.
+   * - Do not set the `profile` parameter of {@link setAudioProfile} as
+   * `1` or `6`; otherwise, this method call does not take effect.
+   * - This method works best with the human voice. Agora does not recommend
+   * using this method for audio containing music.
+   * - After you call this method, Agora recommends not calling the following
+   * methods, because they can override `setVoiceBeautifierParameters`:
+   *    - {@link setAudioEffectPreset}
+   *    - {@link setAudioEffectParameters}
+   *    - {@link setVoiceBeautifierPreset}
+   *    - {@link setLocalVoiceReverbPreset}
+   *    - {@link setLocalVoiceChanger}
+   *    - {@link setLocalVoicePitch}
+   *    - {@link setLocalVoiceEqualization}
+   *    - {@link setLocalVoiceReverb}
+   *    - {@link setVoiceConversionPreset}
+   *
+   * @param preset The options for SDK preset voice beautifier effects:
+   * - `SINGING_BEAUTIFIER`: Singing beautifier effect.
+   * @param param1 The gender characteristics options for the singing voice:
+   * - `1`: A male-sounding voice.
+   * - `2`: A female-sounding voice.
+   * @param param2 The reverberation effects options:
+   * - `1`: The reverberation effect sounds like singing in a small room.
+   * - `2`: The reverberation effect sounds like singing in a large room.
+   * - `3`: The reverberation effect sounds like singing in a hall.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   setVoiceBeautifierParameters(preset:VOICE_BEAUTIFIER_PRESET, param1:number, param2:number): number {
     return this.rtcEngine.setVoiceBeautifierParameters(preset, param1, param2);
   }
+  /**
+   * @ignore
+   */
   uploadLogFile(): string {
     return this.rtcEngine.uploadLogFile();
   }
   //3.3.1
+  /** Sets an SDK preset voice conversion effect.
+   *
+   * @since v3.3.1
+   *
+   * Call this method to set an SDK preset voice conversion effect for the
+   * local user who sends an audio stream. After setting a voice conversion
+   * effect, all users in the channel can hear the effect.
+   *
+   * You can set different voice conversion effects for different scenarios.
+   * See *Set the Voice Effect*.
+   *
+   * To achieve better voice effect quality, Agora recommends calling
+   * {@link setAudioProfile} and setting the
+   * `profile` parameter to `4` or
+   * `5` and the `scenario`
+   * parameter to `3` before calling this
+   * method.
+   *
+   * **Note**:
+   * - You can call this method either before or after joining a channel.
+   * - Do not set the `profile` parameter of `setAudioProfile` to
+   * `1` or
+   * `6`; otherwise, this method call does not take effect.
+   * - This method works best with the human voice. Agora does not recommend
+   * using this method for audio containing music.
+   * - After calling this method, Agora recommends not calling the following
+   * methods, because they can override `setVoiceConversionPreset`:
+   *  - {@link setAudioEffectPreset}
+   *  - {@link setAudioEffectParameters}
+   *  - {@link setVoiceBeautifierPreset}
+   *  - {@link setVoiceBeautifierParameters}
+   *  - {@link setLocalVoiceReverbPreset}
+   *  - {@link setLocalVoiceChanger}
+   *  - {@link setLocalVoicePitch}
+   *  - {@link setLocalVoiceEqualization}
+   *  - {@link setLocalVoiceReverb}
+   *
+   * @param preset The options for SDK preset voice conversion effects.
+   * See {@link VOICE_CONVERSION_PRESET}.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   setVoiceConversionPreset(preset:VOICE_CONVERSION_PRESET): number {
     return this.rtcEngine.setVoiceConversionPreset(preset);
   }
@@ -5671,7 +5986,7 @@ declare interface AgoraRtcEngine {
   ): this;
   /**
    * Occurs when the audio device state changes.
-   * - deviceId: Pointer to the device ID.
+   * - deviceId: The device ID.
    * - deviceType: Device type. See {@link MediaDeviceType}.
    * - deviceState: Device state：
    *
@@ -5715,7 +6030,7 @@ declare interface AgoraRtcEngine {
    * This callback is not work.
    *
    * Occurs when the video device state changes.
-   * - deviceId: Pointer to the device ID.
+   * - deviceId: The device ID.
    * - deviceType: Device type. See {@link MediaDeviceType}.
    * - deviceState: Device state：
    *
@@ -6143,36 +6458,103 @@ declare interface AgoraRtcEngine {
   ): this;
   /** Occurs when the volume of the playback device, microphone, or
    * application changes.
-   * - deviceType: Device type. See {
-   * @link AgoraRtcEngine.MediaDeviceType MediaDeviceType}.
-   * - volume: Volume of the device. The value ranges between 0 and 255.
-   * - muted:
-   *  - true: Volume of the device. The value ranges between 0 and 255.
-   *  - false: The audio device is not muted.
+   *
+   * @param cb.deviceType Device type.
+   * See {@link AgoraRtcEngine.MediaDeviceType MediaDeviceType}.
+   * @param cb.volume Volume of the device. The value ranges between 0 and 255.
+   * @param cb.muted
+   * - true: The audio device is muted.
+   * - false: The audio device is not muted.
    */
   on(
     evt: 'audioDeviceVolumeChanged',
     cb: (deviceType: MediaDeviceType, volume: number, muted: boolean) => void
   ): this;
-  /** Occurs when the user for sharing screen joined the channel.
-   * - uid: The User ID.
+  /** Occurs when the local video source joins the channel.
+   * @param cb.uid The User ID.
    */
   on(evt: 'videoSourceJoinedSuccess', cb: (uid: number) => void): this;
   /** Occurs when the token expires. */
   on(evt: 'videoSourceRequestNewToken', cb: () => void): this;
-  /** Occurs when the user for sharing screen leaved the channel.
-   * - uid: The User ID.
+  /** Occurs when the video source leaves the channel.
    */
   on(evt: 'videoSourceLeaveChannel', cb: () => void): this;
-
+  /** Reports the statistics of the audio stream of the local video source.
+   *
+   * The SDK triggers this callback once every two seconds.
+   *
+   * @param cb.stats The statistics of the local audio stream.
+   */
   on(evt: 'videoSourceLocalAudioStats', cb: (stats: LocalAudioStats) => void): this;
-
+  /** Reports the statistics of the video stream of the local video source.
+   *
+   * The SDK triggers this callback once every two seconds for each
+   * user/host. If there are multiple users/hosts in the channel, the SDK
+   * triggers this callback as many times.
+   *
+   * @note
+   * If you have called the {@link videoSourceEnableDualStreamMode}
+	 * method, this callback
+   * reports the statistics of the high-video
+   * stream (high bitrate, and high-resolution video stream).
+   *
+   * @param cb.stats Statistics of the local video stream.
+   */
   on(evt: 'videoSourceLocalVideoStats', cb: (stats: LocalVideoStats) => void): this;
-
+  /** Occurs when the video size or rotation of the video source
+   * changes.
+   *
+   * @param cb.uid User ID of the remote video source or local video source
+   * (`0`) whose video size
+   * or rotation changes.
+   * @param cb.width New width (pixels) of the video.
+   * @param cb.height New height (pixels) of the video.
+   * @param cb.rotation New rotation of the video [0 to 360).
+   */
   on(evt: 'videoSourceVideoSizeChanged', cb: (uid: number, width: number, height: number, rotation: number) => void): this;
-
+  /**
+   * Occurs when the local video state of the video source changes.
+   *
+   * This callback indicates the state of the local video stream, including
+   * camera capturing and video encoding, and allows you to troubleshoot
+   * issues when exceptions occur.
+   *
+   * The SDK triggers the
+   * `videoSourceLocalVideoStateChanged(LOCAL_VIDEO_STREAM_STATE_FAILED, LOCAL_VIDEO_STREAM_ERROR_CAPTURE_FAILURE)`
+   * callback in the
+   * following situations:
+   * - The application exits to the background, and the system recycles
+   * the camera.
+   * - The camera starts normally, but the captured video is not output for
+   * four seconds.
+   *
+   * When the camera outputs the captured video frames, if all the video
+   * frames are the same for 15 consecutive frames, the SDK triggers the
+   * `videoSourceLocalVideoStateChanged(LOCAL_VIDEO_STREAM_STATE_CAPTURING, LOCAL_VIDEO_STREAM_ERROR_CAPTURE_FAILURE)`
+   * callback. Note that the
+   * video frame duplication detection is only available for video frames
+   * with a resolution greater than 200 × 200, a frame rate greater than
+   * or equal to 10 fps,
+   * and a bitrate less than 20 Kbps.
+   *
+   * @note For some Windows device models, the SDK will not trigger this
+   * callback when the state of the local video changes while the local video
+   * capturing device is in use, so you have to make your own timeout judgment.
+   *
+   * @param cb.state The local video state.
+   * @param cb.error The detailed error information of the local video.
+   */
   on(evt: 'videoSourceLocalVideoStateChanged', cb: (state: LOCAL_VIDEO_STREAM_STATE, error: LOCAL_VIDEO_STREAM_ERROR) => void): this;
-
+  /**
+   * Occurs when the local audio state of the video source changes.
+   *
+   * This callback indicates the state change of the local audio stream,
+   * including the state of the audio recording and encoding, and allows you
+   * to troubleshoot issues when exceptions occur.
+   *
+   * @param cb.state State of the local audio.
+   * @param cb.error The error information of the local audio.
+   */
   on(evt: 'videoSourceLocalAudioStateChanged', cb: (state: LOCAL_AUDIO_STREAM_STATE, error: LOCAL_AUDIO_STREAM_ERROR) => void): this;
   /** Occurs when the remote video state changes.
    *
@@ -6315,7 +6697,12 @@ declare interface AgoraRtcEngine {
   on(evt: 'transcodingUpdated', cb: () => void): this;
   /** Occurs when a voice or video stream URL address is added to a live
    * broadcast.
-   * - url: Pointer to the URL address of the externally injected stream.
+   *
+   * @warning Agora will soon stop the service for injecting online media
+   * streams on the client. If you have not implemented this service, Agora
+   * recommends that you do not use it.
+   *
+   * - url: The URL address of the externally injected stream.
    * - uid: User ID.
    * - status: State of the externally injected stream:
    *  - 0: The external video stream imported successfully.
@@ -6422,44 +6809,31 @@ declare interface AgoraRtcEngine {
    * camera capturing and video encoding, and allows you to troubleshoot
    * issues when exceptions occur.
    *
-   * @note Windows: For some device models, the SDK will not trigger this
+   * The SDK triggers the
+   * `LocalVideoStateChanged(LOCAL_VIDEO_STREAM_STATE_FAILED, LOCAL_VIDEO_STREAM_ERROR_CAPTURE_FAILURE)`
+   * callback in the
+   * following situations:
+   * - The application exits to the background, and the system recycles
+   * the camera.
+   * - The camera starts normally, but the captured video is not output for
+   * four seconds.
+   *
+   * When the camera outputs the captured video frames, if all the video
+   * frames are the same for 15 consecutive frames, the SDK triggers the
+   * `LocalVideoStateChanged(LOCAL_VIDEO_STREAM_STATE_CAPTURING, LOCAL_VIDEO_STREAM_ERROR_CAPTURE_FAILURE)`
+   * callback. Note that the
+   * video frame duplication detection is only available for video frames
+   * with a resolution greater than 200 × 200, a frame rate greater than
+   * or equal to 10 fps,
+   * and a bitrate less than 20 Kbps.
+   *
+   * @note For some Windows device models, the SDK will not trigger this
    * callback when the state of the local video changes while the local video
    * capturing device is in use, so you have to make your own timeout judgment.
    *
-   * @param cb.localVideoState The local video state:
-   *  - 0: The local video is in the initial state.
-   *  - 1: The local video capturer starts successfully. The SDK also reports
-   * this state when you share a maximized window by calling
-   * {@link startScreenCaptureByWindow}.
-   *  - 2:  The first video frame is successfully encoded.
-   *  - 3: The local video fails to start.
+   * @param cb.localVideoState The local video state.
    *
-   * @param cb.error The detailed error information of the local video:
-   *  - 0: The local video is normal.
-   *  - 1: No specified reason for the local video failure.
-   *  - 2: No permission to use the local video device.
-   *  - 3: The local video capturer is in use.
-   *  - 4: The local video capture fails. Check whether the capturer is
-   * working properly.
-   *  - 5: The local video encoding fails.
-   *  - 11: The shared window is minimized when you call
-   * {@link startScreenCaptureByWindow} to share a window.
-   *  - 12: The error code indicates that a window shared by the window ID has
-   * been closed, or a full-screen window
-   * shared by the window ID has exited full-screen mode.
-   * After exiting full-screen mode, remote users cannot see the shared window.
-   * To prevent remote users from seeing a
-   * black screen, Agora recommends that you immediately stop screen sharing.
-   * Common scenarios for reporting this error code:
-   *   - When the local user closes the shared window, the SDK reports this
-   * error code.
-   *   - The local user shows some slides in full-screen mode first, and then
-   * shares the windows of the slides. After
-   * the user exits full-screen mode, the SDK reports this error code.
-   *   - The local user watches web video or reads web document in full-screen
-   * mode first, and then shares the window of
-   * the web video or document. After the user exits full-screen mode, the
-   * SDK reports this error code.
+   * @param cb.err The detailed error information of the local video.
    */
   on(evt: 'localVideoStateChanged', cb: (
     localVideoState: LOCAL_VIDEO_STREAM_STATE,
@@ -6472,23 +6846,8 @@ declare interface AgoraRtcEngine {
    * including the state of the audio recording and encoding, and allows you
    * to troubleshoot issues when exceptions occur.
    *
-   * **Note**:
-   * When the state is 3 in the `state` code, see the `error` code.
-   *
-   * - state State of the local audio:
-   *  - 0: The local audio is in the initial state.
-   *  - 1: The recording device starts successfully.
-   *  - 2: The first audio frame encodes successfully.
-   *  - 3: The local audio fails to start.
-   *
-   * - error The error information of the local audio:
-   *  - 0: The local audio is normal.
-   *  - 1: No specified reason for the local audio failure.
-   *  - 2: No permission to use the local audio device.
-   *  - 3: The microphone is in use.
-   *  - 4: The local audio recording fails. Check whether the recording device
-   * is working properly.
-   *  - 5: The local audio encoding fails.
+   * @param cb.state State of the local audio.
+   * @param cb.err The error information of the local audio.
    */
   on(evt: 'localAudioStateChanged', cb: (
     state: LOCAL_AUDIO_STREAM_STATE,
@@ -6688,7 +7047,9 @@ declare interface AgoraRtcEngine {
     newState: STREAM_SUBSCRIBE_STATE,
     elapseSinceLastState: number
   )=> void): this;
-
+  /**
+   * Reserved callback.
+   */
   on(evt: 'uploadLogResult', cb: (
     requestId: string,
     success: boolean,
@@ -6969,56 +7330,66 @@ class AgoraRtcChannel extends EventEmitter
       fire('videoSubscribeStateChanged', uid, oldState, newState, elapseSinceLastState);
     })
   }
-  /**
-   * Joins the channel with a user ID.
+  /** Joins a channel with the user ID, and configures whether to
+   * automatically subscribe to the audio or video streams.
    *
-   * This method differs from the `joinChannel` method in the `AgoraRtcEngine`
-   * class in the following aspects:
-   * - For the `joinChannel` method in the `AgoraRtcChannel` class:
-   *  - Does not contain the `channel` parameter, because `channel` is
-   * specified when creating the `AgoraRtcChannel` object.
-   *  - Contains the `options` parameter, which decides whether to subscribe
-   * to all streams before joining the channel.
-   *  - Users can join multiple channels simultaneously by creating multiple
-   * `AgoraRtcChannel` objects and calling the `joinChannel` method of each
-   * object.
-   *  - By default, the SDK does not publish any stream after the user joins
-   * the channel. You need to call the {@link publish} method to do that.
-   * - For the `joinChannel` method in the `AgoraRtcEngine` class:
-   *  - Contains the `channel` parameter, which specifies the channel to join.
-   *  - Does not contain the `options` parameter. By default, users subscribe
-   * to all streams when joining the channel.
-   *  - Users can join only one channel.
-   *  - By default, the SDK publishes streams once the user joins the channel.
-   * @note
-   * - If you are already in a channel, you cannot rejoin it with the same `uid`.
-   * - We recommend using different UIDs for different channels.
-   * - If you want to join the same channel from different devices, ensure
-   * that the UIDs in all devices are different.
-   * - Ensure that the app ID you use to generate the token is the same with
-   * the app ID used when creating the `AgoraRtcChannel` object.
-   * @param token The token for authentication:
-   * - In situations not requiring high security: You can use the temporary
-   * token generated at Console. For details, see
-   * [Get a temporary token](https://docs.agora.io/en/Agora%20Platform/token?platfor%20*%20m=All%20Platforms#get-a-temporary-token).
-   * - In situations requiring high security: Set it as the token generated at
-   * your server. For details, see
-   * [Generate a token](https://docs.agora.io/en/Agora%20Platform/token?platfor%20*%20m=All%20Platforms#get-a-token).
-   * @param info (Optional) Additional information about the channel. This parameter can be set as null. Other users in the channel do not receive this information.
-   * @param uid The user ID. A 32-bit unsigned integer with a value ranging
-   * from 1 to (232-1). This parameter must be unique. If `uid` is not
-   * assigned (or set as `0`), the SDK assigns a `uid` and reports it in
-   * the `joinChannelSuccess` callback.
-   * The app must maintain this user ID.
-   * @param options The channel media options, see
-   * {@link ChannelMediaOptions}
+   *
+   * Users in the same channel can talk to each other, and multiple users in
+   * the same channel can start a group chat. Users with different App IDs
+   * cannot call each other.
+   *
+   * You must call the {@link leaveChannel} method to exit the current call
+   * before entering another channel.
+   *
+   * A successful `joinChannel` method call triggers the following callbacks:
+   * - The local client: `joinChannelSuccess`.
+   * - The remote client: `userJoined`, if the user joining the channel is
+   * in the `0` (communication) profile, or is a host in the `1` (live stream
+   * ing) profile.
+   *
+   * When the connection between the client and the Agora server is
+   * interrupted due to poor network conditions, the SDK tries reconnecting
+   * to the server.
+   *
+   * When the local client successfully rejoins the channel, the SDK triggers
+   * the `rejoinChannelSuccess` callback on the local client.
+   *
+   * @note Ensure that the App ID used for generating the token is the same
+   * App ID used in the {@link initialize} method for creating an
+   * `AgoraRtcEngine` object.
+   *
+   * @param token The token generated at your server. For details,
+   * see [Generate a token](https://docs.agora.io/en/Interactive%20Broadcast/token_server?platform=Electron).
+   * @param info (Optional) Reserved for future use.
+   * @param uid (Optional) User ID. A 32-bit unsigned integer with a value
+   * ranging from 1 to 2<sup>32</sup>-1. The @p uid must be unique. If
+   * a @p uid is not assigned (or set to 0), the SDK assigns and returns
+   * a @p uid in the `joinChannelSuccess` callback.
+   * Your application must record and maintain the returned `uid`, because the
+   * SDK does not do so. **Note**: The ID of each user in the channel should
+   * be unique.
+   * If you want to join the same channel from different devices, ensure that
+   * the user IDs in all devices are different.
+   * @param options The channel media options. See {@link ChannelMediaOptions}.
    *
    * @return
    * - 0: Success.
    * - < 0: Failure.
-   *  - `ERR_INVALID_ARGUMENT (2)`
-   *  - `ERR_NOT_READY (3)`
-   *  - `ERR_REFUSED (5)`
+   *    - `-2`: The parameter is invalid.
+   *    - `-3`: The SDK fails to be initialized. You can try
+   * re-initializing the SDK.
+   *    - `-5: The request is rejected. This may be caused by the
+   * following:
+   *        - You have created an `AgoraRtcChannel` object with the same
+   * channel name.
+   *        - You have joined and published a stream in a channel created by
+   * the `AgoraRtcChannel` object. When you join a channel created by the
+   * `AgoraRtcEngine` object, the SDK publishes the local audio and video
+   * streams to that channel by default. Because the SDK does not support
+   * publishing a local stream to more than one channel simultaneously, an
+   * error occurs in this occasion.
+   *    - `-7`: The SDK is not initialized before calling
+   * this method.
    */
   joinChannel(
     token: string,
@@ -7046,13 +7417,8 @@ class AgoraRtcChannel extends EventEmitter
    * ID, then ensure all the other users use the user ID too. The same applies
    * to the user account. If a user joins the channel with the Agora Web SDK,
    * ensure that the uid of the user is set to the same parameter type.
-   * @param token The token generated at your server:
-   * - In situations not requiring high security: You can use the temporary
-   * token generated at Console. For details, see
-   * [Get a temporary token](https://docs.agora.io/en/Agora%20Platform/token?platfor%20*%20m=All%20Platforms#get-a-temporary-token).
-   * - In situations requiring high security: Set it as the token generated at
-   * your server. For details, see
-   * [Generate a token](https://docs.agora.io/en/Agora%20Platform/token?platfor%20*%20m=All%20Platforms#get-a-token).
+   * @param token The token generated at your server. For details,
+   * see [Generate a token](https://docs.agora.io/en/Interactive%20Broadcast/token_server?platform=Electron).
    * @param userAccount The user account. The maximum length of this parameter
    * is 255 bytes. Ensure that you set this parameter and do not set it as
    * null. Supported character scopes are:
@@ -7063,15 +7429,16 @@ class AgoraRtcChannel extends EventEmitter
    * - Punctuation characters and other symbols, including: "!", "#", "$",
    * "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@",
    * "[", "]", "^", "_", " {", "}", "|", "~", ",".
-   * @param options The channel media options, see
-   * {@link ChannelMediaOptions}
+   * @param options The channel media options. See
+   * {@link ChannelMediaOptions}.
    *
    * @return
    * - 0: Success.
    * - < 0: Failure.
-   *  - `ERR_INVALID_ARGUMENT (2)`
-   *  - `ERR_NOT_READY (3)`
-   *  - `ERR_REFUSED (5)`
+   *  - `-2`
+   *  - `-3`
+   *  - `-5`
+   *  - `-7`
    */
   joinChannelWithUserAccount(
     token: string,
@@ -7307,129 +7674,161 @@ class AgoraRtcChannel extends EventEmitter
   setRemoteVoicePosition(uid: number, pan: number, gain: number): number {
     return this.rtcChannel.setRemoteVoicePosition(uid, pan, gain);
   }
-  /**
-   * Sets whether to receive all remote audio streams by default.
+  /** Stops or resumes subscribing to the audio streams of all remote users
+   * by default.
    *
-   * You can call this method either before or after joining a channel. If you
-   * call `setDefaultMuteAllRemoteAudioStreams(true)` after joining a channel,
-   * you will not receive the audio streams of any subsequent user.
+   * @deprecated This method is deprecated from v3.3.1.
    *
-   * @note If you want to resume receiving the audio stream, call
-   * {@link muteRemoteAudioStream}(false), and specify the ID of the remote
-   * user whose audio stream you want to receive. To resume receiving
-   * the audio streams
-   * of multiple remote users, call {@link muteRemoteAudioStream}(false) as
-   * many times. Calling `setDefaultMuteAllRemoteAudioStreams(false)` resumes
-   * receiving the audio streams of subsequent users only.
    *
-   * @param mute Sets whether to receive/stop receiving all remote users'
-   * audio streams by default:
-   * - true:  Stop receiving all remote users' audio streams by default.
-   * - false: (Default) Receive all remote users' audio streams by default.
+   * Call this method after joining a channel. After successfully calling this
+   * method, the
+   * local user stops or resumes subscribing to the audio streams of all
+   * subsequent users.
+   *
+   * @note If you need to resume subscribing to the audio streams of remote
+   * users in the
+   * channel after calling {@link setDefaultMuteAllRemoteAudioStreams}(true),
+   * do the following:
+   * - If you need to resume subscribing to the audio stream of a specified
+   * user, call {@link muteRemoteAudioStream}(false), and specify the user ID.
+   * - If you need to resume subscribing to the audio streams of multiple
+   * remote users, call {@link muteRemoteAudioStream}(false) multiple times.
+   *
+   * @param mute Sets whether to stop subscribing to the audio streams of all
+   * remote users by default.
+   * - true: Stop subscribing to the audio streams of all remote users by
+   * default.
+   * - false: (Default) Resume subscribing to the audio streams of all remote
+   * users by default.
    *
    * @return
-   * - 0: Success
-   * - < 0: Failure
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setDefaultMuteAllRemoteAudioStreams(mute: boolean): number {
     return this.rtcChannel.setDefaultMuteAllRemoteAudioStreams(mute);
   }
-  /**
-   * Sets whether to receive all remote video streams by default.
+  /** Stops or resumes subscribing to the video streams of all remote users
+   * by default.
    *
-   * You can call this method either before or after joining a channel. If you
-   * call `setDefaultMuteAllRemoteVideoStreams(true)` after joining a channel,
-   * you will not receive the video stream of any subsequent user.
+   * @deprecated This method is deprecated from v3.3.1.
    *
-   * @note If you want to resume receiving the video stream, call
-   * {@link muteRemoteVideoStream}(false), and specify the ID of the remote
-   * user whose audio stream you want to receive. To resume receiving
-   * the audio streams
-   * of multiple remote users, call {@link muteRemoteVideoStream}(false) as
-   * many times. Calling `setDefaultMuteAllRemoteVideoStreams(false)` resumes
-   * receiving the audio streams of subsequent users only.
-   * @param mute Sets whether to receive/stop receiving all remote users' video
-   * streams by default:
-   * - true: Stop receiving all remote users' video streams by default.
-   * - false: (Default) Receive all remote users' video streams by default.
+   * Call this method after joining a channel. After successfully calling
+   * this method, the
+   * local user stops or resumes subscribing to the video streams of all
+   * subsequent users.
+   *
+   * @note If you need to resume subscribing to the video streams of remote
+   * users in the
+   * channel after calling {@link setDefaultMuteAllRemoteVideoStreams}(true),
+   * do the following:
+   * - If you need to resume subscribing to the video stream of a specified
+   * user, call {@link muteRemoteVideoStream}(false), and specify the user ID.
+   * - If you need to resume subscribing to the video streams of multiple
+   * remote users, call {@link muteRemoteVideoStream}(false) multiple times.
+   *
+   * @param mute Sets whether to stop subscribing to the video streams of all
+   * remote users by default.
+   * - true: Stop subscribing to the video streams of all remote users by
+   * default.
+   * - false: (Default) Resume subscribing to the video streams of all remote
+   * users by default.
    *
    * @return
-   * - 0: Success
-   * - < 0: Failure
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setDefaultMuteAllRemoteVideoStreams(mute: boolean): number {
     return this.rtcChannel.setDefaultMuteAllRemoteVideoStreams(mute);
   }
   /**
-   * Stops/Resumes receiving all remote users' audio streams.
+   * Stops or resumes subscribing to the audio streams of all remote users.
    *
-   * @param mute Sets whether to receive/stop receiving all remote users'
-   * audio streams.
-   * - true: Stop receiving all remote users' audio streams.
-   * - false: (Default) Receive all remote users' audio streams.
+   * As of v3.3.1, after successfully calling this method, the local user
+   * stops or resumes
+   * subscribing to the audio streams of all remote users, including all
+   * subsequent users.
+   *
+   * @note
+   * - Call this method after joining a channel.
+   * - See recommended settings in *Set the Subscribing State*.
+   *
+   * @param mute Sets whether to stop subscribing to the audio streams of
+   * all remote users.
+   * - true: Stop subscribing to the audio streams of all remote users.
+   * - false: (Default) Resume subscribing to the audio streams of all
+   * remote users.
    *
    * @return
-   * - 0: Success
-   * - < 0: Failure
+   * - 0: Success.
+   * - < 0: Failure.
    */
   muteAllRemoteAudioStreams(mute: boolean): number {
     return this.rtcChannel.muteAllRemoteAudioStreams(mute);
   }
   /**
-   * Stops/Resumes receiving a specified remote user's audio stream.
+   * Stops or resumes subscribing to the audio stream of a specified user.
    *
-   * If you called the {@link muteAllRemoteAudioStreams}(true) method to stop
-   * receiving all remote users' audio streams, please call
-   * the `muteAllRemoteAudioStreams`(false) method before calling the
-   * `muteRemoteAudioStream` method.
+   * @note
+   * - Call this method after joining a channel.
+   * - See recommended settings in *Set the Subscribing State*.
    *
-   * The `muteAllRemoteAudioStreams` method sets all remote audio streams,
-   * while the `muteRemoteAudioStream` method sets a specified remote audio
-   * stream.
-   * @param uid The user ID of the specified remote user sending the audio.
-   * @param mute Sets whether to receive/stop receiving a specified remote
-   * user's audio stream:
-   * - true: Stop receiving the specified remote user's audio stream.
-   * - false: (Default) Receive the specified remote user's audio stream.
+   * @param userId The user ID of the specified remote user.
+   * @param mute Sets whether to stop subscribing to the audio stream of a
+   * specified user.
+   * - true: Stop subscribing to the audio stream of a specified user.
+   * - false: (Default) Resume subscribing to the audio stream of a specified
+   * user.
    *
    * @return
-   * - 0: Success
-   * - < 0: Failure
+   * - 0: Success.
+   * - < 0: Failure.
    */
   muteRemoteAudioStream(uid: number, mute: boolean): number {
     return this.rtcChannel.muteRemoteAudioStream(uid, mute);
   }
   /**
-   * Stops/Resumes receiving all video stream from a specified remote user.
+   * Stops or resumes subscribing to the video streams of all remote users.
    *
-   * @param mute Sets whether to receive/stop receiving all remote users'
-   * video streams:
-   * - true: Stop receiving all remote users' video streams.
-   * - false: (Default) Receive all remote users' video streams.
+   * As of v3.3.1, after successfully calling this method, the local user
+   * stops or resumes
+   * subscribing to the video streams of all remote users, including all
+   * subsequent users.
+   *
+   * @note
+   * - Call this method after joining a channel.
+   * - See recommended settings in *Set the Subscribing State*.
+   *
+   * @param mute Sets whether to stop subscribing to the video streams of
+   * all remote users.
+   * - true: Stop subscribing to the video streams of all remote users.
+   * - false: (Default) Resume subscribing to the video streams of all remote
+   * users.
    *
    * @return
-   * - 0: Success
-   * - < 0: Failure
+   * - 0: Success.
+   * - < 0: Failure.
    */
   muteAllRemoteVideoStreams(mute: boolean): number {
     return this.rtcChannel.muteAllRemoteVideoStreams(mute);
   }
   /**
-   * Stops/Resumes receiving the video stream from a specified remote user.
+   * Stops or resumes subscribing to the video stream of a specified user.
    *
-   * It you called the {@link muteAllRemoteVideoStreams}(true) to stop
-   * receiving all remote video streams, please call the
-   * `muteAllRemoteVideoStreams`(false) before calling `muteRemoteVideoStream`
-   * method.
-   * @param uid The user ID of the specified remote user.
-   * @param mute Sets whether to stop/resume receiving the video stream from a
-   * specified remote user:
-   * - true: Stop receiving the specified remote user's video stream.
-   * - false: (Default) Receive the specified remote user's video stream.
+   * @note
+   * - Call this method after joining a channel.
+   * - See recommended settings in *Set the Subscribing State*.
+   *
+   * @param userId The user ID of the specified remote user.
+   * @param mute Sets whether to stop subscribing to the video stream of a
+   * specified user.
+   * - true: Stop subscribing to the video stream of a specified user.
+   * - false: (Default) Resume subscribing to the video stream of a specified
+   * user.
    *
    * @return
-   * - 0: Success
-   * - < 0: Failure
+   * - 0: Success.
+   * - < 0: Failure.
    */
   muteRemoteVideoStream(uid: number, mute: boolean): number {
     return this.rtcChannel.muteRemoteVideoStream(uid, mute);
@@ -7438,7 +7837,7 @@ class AgoraRtcChannel extends EventEmitter
    * Sets the stream type of the remote video.
    *
    * Under limited network conditions, if the publisher has not disabled the
-   * dual-stream mode using {@link enableDualStreamMode}(`false`), the receiver
+   * dual-stream mode using {@link enableDualStreamMode}(false), the receiver
    * can choose to receive either the high-video stream (the high resolution,
    * and high bitrate video stream) or the low-video stream (the low
    * resolution, and low bitrate video stream).
@@ -7499,6 +7898,9 @@ class AgoraRtcChannel extends EventEmitter
    * Each user can create up to five data streams during the lifecycle of the
    * AgoraRtcChannel.
    *
+   * @deprecated This method is deprecated from v3.3.1. Use the
+   * {@link createDataStreamWithConfig} method instead.
+   *
    * @note Set both the `reliable` and `ordered` parameters to `true` or
    * `false`. Do not set one as `true` and the other as `false`.
    *
@@ -7522,7 +7924,22 @@ class AgoraRtcChannel extends EventEmitter
   createDataStream(reliable: boolean, ordered: boolean): number {
     return this.rtcChannel.createDataStream(reliable, ordered);
   }
-
+  /** Creates a data stream.
+   *
+   * @since v3.3.1
+   *
+   * Each user can create up to five data streams in a single channel.
+   *
+   * This method does not support data reliability. If the receiver receives
+   * a data packet five
+   * seconds or more after it was sent, the SDK directly discards the data.
+   *
+   * @param config The configurations for the data stream.
+   *
+   * @return
+   * - Returns the ID of the created data stream, if this method call succeeds.
+   * - < 0: Fails to create the data stream.
+   */
   createDataStreamWithConfig(config: DataStreamConfig) {
     return this.rtcChannel.createDataStream(config);
   }
@@ -7667,6 +8084,10 @@ class AgoraRtcChannel extends EventEmitter
    *  - `userJoined`(uid:666), reports the stream is injected successfully and
    * the UID of this stream is 666.
    *
+   * @warning Agora will soon stop the service for injecting online media
+   * streams on the client. If you have not implemented this service, Agora
+   * recommends that you do not use it.
+   *
    * @note
    * - Only the host in the `1` (live streaming) profile can call this method.
    * - Ensure that you enable the RTMP Converter service before using this
@@ -7704,6 +8125,10 @@ class AgoraRtcChannel extends EventEmitter
    *
    * If this method call is successful, the SDK triggers the `userOffline`
    * (uid:666) callback and report the UID of the removed stream is 666.
+   *
+   * @warning Agora will soon stop the service for injecting online media
+   * streams on the client. If you have not implemented this service, Agora
+   * recommends that you do not use it.
    *
    * @param url The URL address of the injected stream to be removed.
    *
@@ -7969,20 +8394,17 @@ class AgoraRtcChannel extends EventEmitter
    * method to enable the built-in encryption before joining a channel.
    *
    * All users in the same channel must use the same encryption mode and
-   * encryption key. Once all users leave the channel, the encryption key
-   * of this channel is automatically cleared.
+   * encryption key. Once all users leave the channel, the encryption key of
+   * this channel is automatically cleared.
    *
-   * @note
-   * - If you enable the built-in encryption, you cannot use the RTMP
-   * or RTMPS streaming function.
-   * - The SDK returns `-4` when the encryption mode is incorrect or the SDK
-   * fails to load the external encryption library. Check the enumeration or
-   * reload the external encryption library.
+   * @note If you enable the built-in encryption, you cannot use the RTMP or
+   * RTMPS streaming function.
    *
    * @param enabled Whether to enable the built-in encryption:
    * - true: Enable the built-in encryption.
    * - false: Disable the built-in encryption.
-   * @param config Configurations of built-in encryption schemas.
+   * @param config Configurations of built-in encryption schemas. See
+   * {@link EncryptionConfig}.
    *
    * @return
    * - 0: Success.
@@ -8406,6 +8828,10 @@ declare interface AgoraRtcChannel {
   on(evt: 'transcodingUpdated', cb: () => void): this;
   /** Occurs when a voice or video stream URL address is added to a live
    * broadcast.
+   *
+   * @warning Agora will soon stop the service for injecting online media
+   * streams on the client. If you have not implemented this service, Agora
+   * recommends that you do not use it.
    *
    * @param cb.url The URL address of the externally injected stream.
    * @param cb.uid User ID.
