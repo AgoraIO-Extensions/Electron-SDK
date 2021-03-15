@@ -1,3 +1,15 @@
+## 3.1.100.2 (Mar 15th, 2021)
+* Add new API:
+  - videoSourceEnableEncryption
+  - setAudioMixingPitch
+  - adjustUserPlaybackSignalVolume
+  - enableEncryption
+
+* Add call back:
+  - firstLocalAudioFramePublished
+  - firstLocalVideoFramePublished
+  - rtmpStreamingEvent
+
 ## 2.9.0-rc.107-build.1140
 * fix crash of AudioDeviceManger when rtcEngine not initialize.
 ## 2.9.0-rc.107-build.998
