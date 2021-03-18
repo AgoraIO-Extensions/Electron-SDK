@@ -21,13 +21,13 @@ module.exports = ({
   packageVersion,
   debug = false,
   silent = false,
-  msvsVersion = '2015',
+  msvsVersion = '2019',
   arch = 'ia32',
   distUrl = 'https://electronjs.org/headers'
 }) => {
   /** get command string */
   const command = [`${gyp_exec} configure`];
-  
+  console.log(`Agora VS:${msvsVersion}`)
   // check platform
   if (platform === 'win32') {
     command.push(`--arch=${arch} --msvs_version=${msvsVersion}`)

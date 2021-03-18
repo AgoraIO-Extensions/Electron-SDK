@@ -13,7 +13,7 @@ option('platform', {default: process.platform, choices: ['darwin', 'win32', 'lin
 // option('packageVersion');
 option('debug', {default: false, boolean: true});
 option('silent', {default: false, boolean: true});
-option('msvs_version', {default: '2015'});
+option('msvs_version', {default: '2019'});
 option('liburl_win', {default: ''});
 option('liburl_mac', {default: ''});
 
