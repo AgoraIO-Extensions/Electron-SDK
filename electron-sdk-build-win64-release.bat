@@ -11,6 +11,6 @@ call npm run switch:arch -- --arch=x64
 call npm run sync:lib -- --liburl_win=%RTC_SDK_URL% --arch=x64
 call npm run build:electron -- --electron_version=%ELECTRON_VERSION% --msvs_version=2017 --arch=x64
 call npm run build:ts
-D:\SignatureTools\SignatureTools\signtool.exe sign /f "D:\SignatureTools\SignatureTools\agora.pfx" /p "31169323" /t "http://timestamp.comodoca.com/authenticode" "build/Release/VideoSource.exe"
-D:\SignatureTools\SignatureTools\signtool.exe sign /f "D:\SignatureTools\SignatureTools\agora.pfx" /p "31169323" /t "http://timestamp.comodoca.com/authenticode" "build/Release/agora_node_ext.node"
+C:\SignatureTools\signtool.exe sign /f "C:\SignatureTools\agora.pfx" /p "31169323" /t "http://timestamp.comodoca.com/authenticode" "build/Release/VideoSource.exe"
+C:\SignatureTools\signtool.exe sign /f "C:\SignatureTools\agora.pfx" /p "31169323" /t "http://timestamp.comodoca.com/authenticode" "build/Release/agora_node_ext.node"
 7z a electron.zip build js
