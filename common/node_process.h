@@ -12,6 +12,8 @@
 #define NODE_PROCESS_H
 
 #include <functional>
+#include <string>
+
 class INodeProcess
 {
 public:
