@@ -1,3 +1,5 @@
+## 3.1.100-rc.2-build.324(Mar 24th, 2021)
+* fix windows screen share issue
 ## 3.1.100.2 (Mar 15th, 2021)
 * Add new API:
   - videoSourceEnableEncryption
