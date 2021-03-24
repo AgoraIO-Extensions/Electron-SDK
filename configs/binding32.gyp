@@ -56,7 +56,9 @@
         './common/libyuv/source/scale_argb.cc',
         './common/libyuv/source/scale_common.cc',
         './common/libyuv/source/scale.cc',
-        './common/libyuv/source/video_common.cc'
+        './common/libyuv/source/video_common.cc',
+        './common/loguru.h',
+        './common/loguru.cpp'
         ],
         'conditions': [
             [
