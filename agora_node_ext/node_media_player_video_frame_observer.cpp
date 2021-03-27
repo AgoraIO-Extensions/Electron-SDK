@@ -2,6 +2,7 @@
 #include <chrono>
 #include "IAgoraMediaEngine.h"
 #include "loguru.hpp"
+#include "libyuv.h"
 
 
 namespace agora {
@@ -27,7 +28,7 @@ namespace agora {
         }
 
         void NodeMediaPlayerVideoFrameObserver::onFrame(const agora::media::base::VideoFrame* frame) {
-            std::unique_lock<std::mutex> lck(m_lock);
+            std::unique_lock<std::mutex> lck(m_lock); 
 
             if (isPublishVideoFrame && rtc_engine_) {
                 int size = frame->width * frame->height;
@@ -55,40 +56,61 @@ namespace agora {
 
                 free(tmp);
             }
+            
+            int _realWidth;
+            int _realHeight;
+            int _yStride;
+            int _uStride;
+            int _vStride;
 
+            if (frame->width % 4 != 0 || frame->height % 4 != 0 || _yStride != frame->width) {
+                _realWidth = frame->width / 4 * 4;
+                _realHeight = frame->height / 4 * 4;
+                _yStride = _realWidth;
+                _uStride = _realWidth/2;
+                _vStride = _realWidth/2;
+            } else {
+                _realWidth = frame->width;
+                _realHeight = frame->height;
+                _yStride = frame->yStride;
+                _uStride = frame->uStride;
+                _vStride = frame->vStride;
+            }
+            
             imageHeader.format = htons(0);
             imageHeader.mirrored = htons(0);
-            imageHeader.width = htons(frame->width);
-            imageHeader.height = htons(frame->height);
+            imageHeader.width = htons(_realWidth);
+            imageHeader.height = htons(_realHeight);
             imageHeader.left = htons(0);
             imageHeader.top = htons(0);
             imageHeader.right = htons(0);
             imageHeader.bottom = htons(0);
             imageHeader.rotation = htons(realRotation);
             imageHeader.timestamp = htons(frame->renderTimeMs);
-            size_t videoFrameSize = frame->yStride * frame->height + frame->uStride * frame->height / 2 + frame->vStride * frame->height / 2;
+            size_t videoFrameSize = _yStride * _realHeight + _uStride * _realHeight / 2 + _vStride * _realHeight / 2;
             if (dataList.size() < videoFrameSize || dataList.size() > (videoFrameSize * 2))
             {
                 dataList.resize(videoFrameSize);
             }
  
-            uint32_t frameWidth = frame->width;
-            uint32_t frameHeight = frame->height;
             unsigned char *yData = &dataList[0];
-            unsigned char *uData = yData + frame->yStride * frame->height;
-            unsigned char *vData = uData + frame->uStride * frame->height / 2;
-            memcpy(yData, frame->yBuffer, frame->yStride * frame->height);
-            memcpy(uData, frame->uBuffer, frame->uStride * frame->height / 2);
-            memcpy(vData, frame->vBuffer, frame->vStride * frame->height / 2);
-
+            unsigned char *uData = yData + _yStride * _realHeight;
+            unsigned char *vData = uData + _uStride * _realHeight / 2;
+            if (frame->width % 4 != 0 || frame->height % 4 != 0 || _yStride != frame->width) {
+                libyuv::I420Scale(frame->yBuffer, frame->yStride, frame->uBuffer, frame->uStride, frame->vBuffer, frame->vStride, frame->width, frame->height, (uint8*)yData, _yStride, (uint8*)uData, _uStride, (uint8*)vData, _vStride, _realWidth, _realHeight, libyuv::kFilterNone);
+            } else {
+                memcpy(yData, frame->yBuffer, _yStride * _realHeight);
+                memcpy(uData, frame->uBuffer, _uStride * _realHeight / 2);
+                memcpy(vData, frame->vBuffer, _vStride * _realHeight / 2);
+            }
             bufferList[0].buffer = (unsigned char *)&imageHeader;
             bufferList[0].length = sizeof(image_header_type);
             bufferList[1].buffer = &dataList[0];
-            bufferList[1].length = frame->yStride * frame->height;
+            bufferList[1].length = _yStride * _realHeight;
             bufferList[2].buffer = bufferList[1].buffer + bufferList[1].length;
-            bufferList[2].length = frame->uStride * frame->height / 2;
+            bufferList[2].length = _uStride * _realHeight / 2;
             bufferList[3].buffer = bufferList[2].buffer + bufferList[2].length;
-            bufferList[3].length = frame->vStride * frame->height / 2;
+            bufferList[3].length = _vStride * _realHeight / 2;
             lck.unlock();
             agora::rtc::node_async_call::async_call([this]() {
                 v8::Isolate* isolate = mIsolate;
