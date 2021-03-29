@@ -753,6 +753,12 @@ class AgoraRtcEngine extends EventEmitter {
       fire('videoSubscribeStateChange', channel, uid, oldstate, newstate, elapsed);
     });
 
+    this.rtcEngine.onEvent('udpNetworkAvailability', function(
+      udpAvailable: boolean,
+    ) {
+      fire('udpNetworkAvailability', udpAvailable);
+    });
+
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
       self.onRegisterDeliverFrame(infos);
     });
@@ -4763,6 +4769,12 @@ class AgoraRtcEngine extends EventEmitter {
    */
   sendCustomReportMessage(id: string, category: string, event: string, label: string, value: number): number {
     return this.rtcEngine.sendCustomReportMessage(id, category, event, label, value);
+  }
+  startVideoEchoTest(enableAudio: boolean): string {
+    return this.rtcEngine.startVideoEchoTest(enableAudio);
+  }
+  stopVideoEchoTest(): number {
+    return this.rtcEngine.stopVideoEchoTest();
   }
 }
 /** The AgoraRtcEngine interface. */

@@ -293,6 +293,12 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(unRegisterMediaMetadataObserver);
 
                 PROPERTY_METHOD_DEFINE(sendCustomReportMessage);
+
+                /**
+                 * 2.9.107.133 Apis
+                 */
+                PROPERTY_METHOD_DEFINE(startVideoEchoTest);
+                PROPERTY_METHOD_DEFINE(stopVideoEchoTest);
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -5533,6 +5539,43 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
 
                 result = pEngine->m_engine->sendCustomReportMessage(id, category, event, label, value);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, startVideoEchoTest)
+        {
+            LOG_ENTER;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                auto context = new NodeRenderContext(NODE_RENDER_TYPE_ECHO_TEST);
+                bool enableAudio;
+                status = napi_get_value_bool_(args[0], enableAudio);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                auto result = pEngine->m_engine->startVideoEchoTest(context, enableAudio);
+                Local<Value> resultValue = String::NewFromUtf8(args.GetIsolate(), result, NewStringType::kInternalized).ToLocalChecked();
+                CHECK_NAPI_OBJECT(resultValue);
+                args.GetReturnValue().Set(resultValue);
+            } while (false);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, stopVideoEchoTest)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                result = pEngine->m_engine->stopVideoEchoTest();
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
