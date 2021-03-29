@@ -18,14 +18,14 @@
 namespace agora {
     namespace rtc {
 
-#define FUNC_TRACE 
+#define FUNC_TRACE
 
         NodeEventHandler::NodeEventHandler(NodeRtcEngine *pEngine)
             : m_engine(pEngine)
         {
         }
 
-        NodeEventHandler::~NodeEventHandler() 
+        NodeEventHandler::~NodeEventHandler()
         {
             for (auto& handler : m_callbacks) {
                 delete handler.second;
@@ -1017,7 +1017,7 @@ namespace agora {
                 this->onStreamInjectedStatus_node(url, uid, status);
             });
         }
-        
+
         void NodeEventHandler::onLocalPublishFallbackToAudioOnly_node(bool isFallbackOrRecover)
         {
             FUNC_TRACE;
@@ -1036,7 +1036,7 @@ namespace agora {
         {
             FUNC_TRACE;
             MAKE_JS_CALL_2(RTC_EVENT_REMOTE_SUBSCRIBE_FALLBACK_TO_AUDIO_ONLY, uid, uid, bool, isFallbackOrRecover);
-            
+
         }
 
         void NodeEventHandler::onRemoteSubscribeFallbackToAudioOnly(uid_t uid, bool isFallbackOrRecover)
@@ -1159,7 +1159,7 @@ namespace agora {
             FUNC_TRACE;
             MAKE_JS_CALL_1(RTC_EVENT_MICROPHONE_ENABLED, bool, enabled);
         }
-       
+
         void NodeEventHandler::onMicrophoneEnabled(bool enabled)
         {
             FUNC_TRACE;
@@ -1179,6 +1179,19 @@ namespace agora {
             FUNC_TRACE;
             node_async_call::async_call([this, state, reason] {
                 this->onConnectionStateChanged_node(state, reason);
+            });
+        }
+
+        void NodeEventHandler::onNetworkTypeChanged_node(NETWORK_TYPE type)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_1(RTC_EVENT_NETWORK_TYPE_CHANGED, int32, type);
+        }
+
+        void NodeEventHandler::onNetworkTypeChanged(NETWORK_TYPE type) {
+            FUNC_TRACE;
+            node_async_call::async_call([this, type] {
+                this->onNetworkTypeChanged_node(type);
             });
         }
 
@@ -1340,13 +1353,13 @@ namespace agora {
                 Local<Context> context = isolate->GetCurrentContext();
                 Local<Object> obj = Object::New(isolate);
                 CHECK_NAPI_OBJ(obj);
-                
+
                 NODE_SET_OBJ_PROP_UID(obj, "uid", info.uid);
                 NODE_SET_OBJ_PROP_STRING(obj, "userAccount", info.userAccount);
 
                 Local<Value> arg[2] = {
                     napi_create_uid_(isolate, uid),
-                    obj 
+                    obj
                 };
                 auto it = m_callbacks.find(RTC_EVENT_USER_INFO_UPDATED);
                 if (it != m_callbacks.end()) {
@@ -1483,7 +1496,7 @@ namespace agora {
         void NodeEventHandler::onVideoPublishStateChange_node(const char* channel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed)
         {
             FUNC_TRACE;
-            MAKE_JS_CALL_4(RTC_EVENT_VIDEO_PUBLISH_STATE_CHANGE, string, channel, int32, oldstate, int32, newstate, int32, elapsed);    
+            MAKE_JS_CALL_4(RTC_EVENT_VIDEO_PUBLISH_STATE_CHANGE, string, channel, int32, oldstate, int32, newstate, int32, elapsed);
         }
 
         void NodeEventHandler::onAudioSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed)
@@ -1513,7 +1526,7 @@ namespace agora {
         void NodeEventHandler::onVideoSubscribeStateChange_node(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed)
         {
             FUNC_TRACE;
-            MAKE_JS_CALL_5(RTC_EVENT_VIDEO_SUBSCRIBE_STATE_CHANGE, string, channel, uid, uid, int32, oldstate, int32, newstate, int32, elapsed);    
+            MAKE_JS_CALL_5(RTC_EVENT_VIDEO_SUBSCRIBE_STATE_CHANGE, string, channel, uid, uid, int32, oldstate, int32, newstate, int32, elapsed);
         }
 
         void NodeEventHandler::onFirstLocalAudioFramePublished(int elapsed)
@@ -1530,7 +1543,7 @@ namespace agora {
             node_async_call::async_call([this, elapsed] {
                 MAKE_JS_CALL_1(RTC_EVENT_FIRST_LOCAL_VIDEO_FRAME_PUBLISH, int32, elapsed);
             });
-        }  
+        }
 
         void NodeEventHandler::onRtmpStreamingEvent(const char* url, RTMP_STREAMING_EVENT eventCode)
         {
@@ -1539,6 +1552,6 @@ namespace agora {
             node_async_call::async_call([this, mUrl, eventCode] {
                 MAKE_JS_CALL_2(RTC_EVENT_RTMP_STREAMING_EVENT, string, mUrl.c_str(), int32, (int)eventCode);
             });
-        }  
+        }
     }
 }
