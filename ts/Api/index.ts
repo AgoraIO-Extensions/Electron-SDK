@@ -49,7 +49,7 @@ import {
   EncryptionConfig,
   AUDIO_EFFECT_PRESET,
   VOICE_BEAUTIFIER_PRESET,
-  AUDIENCE_LATENCY_LEVEL_TYPE,
+  NETWORK_TYPE,
   ClientRoleOptions,
   CLOUD_PROXY_TYPE,
   LogConfig,
@@ -615,6 +615,12 @@ class AgoraRtcEngine extends EventEmitter {
       reason: ConnectionChangeReason
     ) {
       fire('connectionStateChanged', state, reason);
+    });
+
+    this.rtcEngine.onEvent('networkTypeChanged', (
+      type: number
+    ) => {
+      fire('networkTypeChanged', type);
     });
 
     this.rtcEngine.onEvent('activespeaker', function(uid: number) {
@@ -5090,7 +5096,7 @@ class AgoraRtcEngine extends EventEmitter {
   setRecordingAudioFrameParameters(sampleRate: number, channel: 1 | 2, mode: 0 | 1 | 2, samplesPerCall: number): number {
     return this.rtcEngine.setRecordingAudioFrameParameters(sampleRate, channel, mode, samplesPerCall);
   }
-  
+
   // ===========================================================================
   // replacement for setParameters call
   // ===========================================================================
@@ -6778,6 +6784,15 @@ declare interface AgoraRtcEngine {
   on(evt: 'connectionStateChanged', cb: (
     state: ConnectionState,
     reason: ConnectionChangeReason
+  ) => void): this;
+  /**
+   * Occurs when the local network type changes.
+   *
+   * When the network connection is interrupted, this callback indicates whether the interruption is caused by a network type change or poor network conditions.
+   * @param cb.type The network type, see {@link NETWORK_TYPE}.
+   */
+  on(evt: 'networkTypeChanged', cb: (
+    type: NETWORK_TYPE
   ) => void): this;
   /** Occurs when the local user successfully registers a user account by
    * calling the {@link registerLocalUserAccount} method.

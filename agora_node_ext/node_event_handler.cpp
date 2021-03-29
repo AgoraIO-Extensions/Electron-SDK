@@ -1200,6 +1200,19 @@ namespace agora {
             });
         }
 
+        void NodeEventHandler::onNetworkTypeChanged_node(NETWORK_TYPE type)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_1(RTC_EVENT_NETWORK_TYPE_CHANGED, int32, type);
+        }
+
+        void NodeEventHandler::onNetworkTypeChanged(NETWORK_TYPE type) {
+            FUNC_TRACE;
+            node_async_call::async_call([this, type] {
+                this->onNetworkTypeChanged_node(type);
+            });
+        }
+
         void NodeEventHandler::onVideoSourceJoinedChannel(agora::rtc::uid_t uid)
         {
             FUNC_TRACE;
