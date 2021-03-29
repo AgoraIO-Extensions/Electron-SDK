@@ -19,8 +19,8 @@ namespace agora {
             LOG_F(INFO, " NodeMediaPlayerObserver::~NodeMediaPlayerObserver");
         }
 
-        void NodeMediaPlayerObserver::onPlayerStateChanged(agora::media::MEDIA_PLAYER_STATE state,
-                                            agora::media::MEDIA_PLAYER_ERROR ec) {
+        void NodeMediaPlayerObserver::onPlayerStateChanged(media::base::MEDIA_PLAYER_STATE state,
+                                            media::base::MEDIA_PLAYER_ERROR ec) {
             node_async_call::async_call([this, state, ec] {
                 MEDIA_PLAYER_MAKE_JS_CALL_2(MEDIA_PLAYER_ON_PLAYER_STATE_CHANGED, int32, state, int32, ec);
             });
@@ -32,15 +32,27 @@ namespace agora {
             });
         }
 
-        void NodeMediaPlayerObserver::onPlayerEvent(agora::media::MEDIA_PLAYER_EVENT event) {
+        void NodeMediaPlayerObserver::onPlayerEvent(media::base::MEDIA_PLAYER_EVENT event) {
             node_async_call::async_call([this, event] {
                 MEDIA_PLAYER_MAKE_JS_CALL_1(MEDIA_PLAYER_ON_PLAY_EVENT, int32, event);
             });
         }
 
-        void NodeMediaPlayerObserver::onMetadata(agora::media::MEDIA_PLAYER_METADATA_TYPE type, const uint8_t* data,
+        void NodeMediaPlayerObserver::onMetadata(media::base::MEDIA_PLAYER_METADATA_TYPE type, const uint8_t* data,
                                         uint32_t length) {
             //node_async_call::async_call([this, type, ])
+        }
+
+        void NodeMediaPlayerObserver::onPlayBufferUpdated(int64_t playCachedBuffer) {
+            node_async_call::async_call([this, playCachedBuffer] {
+                MEDIA_PLAYER_MAKE_JS_CALL_1(MEDIA_PLAYER_ON_PLAY_BUFFER_UPDATED, uint64, playCachedBuffer);
+            });
+        }
+        
+        void NodeMediaPlayerObserver::onCompleted() {
+            node_async_call::async_call([this] {
+                MEDIA_PLAYER_MAKE_JS_CALL_0(MEDIA_PLAYER_ON_COMPLETED);
+            });
         }
 
         void NodeMediaPlayerObserver::fireApiError(const char* funcName) {
