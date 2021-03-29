@@ -67,7 +67,7 @@ bool IAVFramePluginManager::onRecordAudioFrame(AudioFrame& audioFrame)
     if (ret < 0){
         memcpy(audioFrame.buffer, tmpBuf, bytes);
         free(tmpBuf);
-        return false;
+        return true;
     }
     char *data = (char *)malloc(sizeof(char)*bytes);
     recordCircularBuffer->Pop(data, bytes);
