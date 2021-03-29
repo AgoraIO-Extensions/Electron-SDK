@@ -1509,5 +1509,17 @@ namespace agora {
             FUNC_TRACE;
             MAKE_JS_CALL_5(RTC_EVENT_VIDEO_SUBSCRIBE_STATE_CHANGE, string, channel, uid, uid, int32, oldstate, int32, newstate, int32, elapsed);    
         }
+
+        void NodeEventHandler::onUdpNetworkAvailability(bool udpAvailable) {
+            FUNC_TRACE;
+            node_async_call::async_call([this, udpAvailable] {
+                this->onUdpNetworkAvailability_node(udpAvailable);
+            });
+        }
+        
+        void NodeEventHandler::onUdpNetworkAvailability_node(bool udpAvailable) {
+            FUNC_TRACE;
+            MAKE_JS_CALL_1(RTC_EVENT_UDP_NETWORK_AVAILABILITY, bool, udpAvailable);
+        }
     }
 }

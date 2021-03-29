@@ -359,6 +359,12 @@ namespace agora {
              */
             NAPI_API(sendCustomReportMessage);
 
+            /**
+             * 2.9.107.133 Apis
+             */
+            NAPI_API(startVideoEchoTest);
+            NAPI_API(stopVideoEchoTest);
+
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }

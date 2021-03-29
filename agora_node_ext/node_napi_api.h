@@ -77,7 +77,8 @@ enum NodeRenderType
     NODE_RENDER_TYPE_LOCAL,
     NODE_RENDER_TYPE_REMOTE,
     NODE_RENDER_TYPE_DEVICE_TEST,
-    NODE_RENDER_TYPE_VIDEO_SOURCE
+    NODE_RENDER_TYPE_VIDEO_SOURCE,
+    NODE_RENDER_TYPE_ECHO_TEST,
 };
 
 #define MAX_MISS_COUNT 500
@@ -179,6 +180,7 @@ private:
     std::unordered_map<std::string, std::unordered_map<agora::rtc::uid_t, VideoFrameInfo>> m_remoteHighVideoFrames;
     std::unique_ptr<VideoFrameInfo> m_localVideoFrame;
     std::unique_ptr<VideoFrameInfo> m_devTestVideoFrame;
+    std::unique_ptr<VideoFrameInfo> m_echoTestVideoFrame;
     std::unique_ptr<VideoFrameInfo> m_videoSourceVideoFrame;
     std::mutex m_lock;
     int m_stopFlag;

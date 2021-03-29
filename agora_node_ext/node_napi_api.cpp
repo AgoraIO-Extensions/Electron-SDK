@@ -126,6 +126,11 @@ VideoFrameInfo& NodeVideoFrameTransporter::getVideoFrameInfo(NodeRenderType type
             m_devTestVideoFrame.reset(new VideoFrameInfo(NODE_RENDER_TYPE_DEVICE_TEST));
         return *m_devTestVideoFrame.get();
     }
+    else if (type == NODE_RENDER_TYPE_ECHO_TEST) {
+        if (!m_echoTestVideoFrame.get())
+            m_echoTestVideoFrame.reset(new VideoFrameInfo(NODE_RENDER_TYPE_ECHO_TEST));
+        return *m_echoTestVideoFrame.get();
+    }
     else {
         if (!m_videoSourceVideoFrame.get())
             m_videoSourceVideoFrame.reset(new VideoFrameInfo(NODE_RENDER_TYPE_VIDEO_SOURCE));
@@ -440,6 +445,10 @@ void NodeVideoFrameTransporter::FlushVideo()
             if (m_devTestVideoFrame.get() && m_localVideoFrame && m_localVideoFrame->m_count > MAX_MISS_COUNT) {
                 m_devTestVideoFrame.reset();
             }
+
+            if (m_echoTestVideoFrame.get() && m_localVideoFrame && m_localVideoFrame->m_count > MAX_MISS_COUNT) {
+                m_echoTestVideoFrame.reset();
+            }
             lck.unlock();
 
             agora::rtc::node_async_call::async_call([this]() {
@@ -471,6 +480,14 @@ void NodeVideoFrameTransporter::FlushVideo()
                         ++i;
                     else {
                         ++m_devTestVideoFrame->m_count;
+                    }
+                }
+
+                if (m_echoTestVideoFrame.get()) {
+                    if (AddObj(isolate, infos, i, *m_echoTestVideoFrame.get()))
+                        ++i;
+                    else {
+                        ++m_echoTestVideoFrame->m_count;
                     }
                 }
                 if (i > 0) {
