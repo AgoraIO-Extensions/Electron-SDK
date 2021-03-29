@@ -5683,6 +5683,10 @@ declare interface AgoraRtcEngine {
     metadata: Metadata
     ) => void): this;
 
+  on(evt: 'udpNetworkAvailability', cb: (
+    udpAvailable: boolean
+    ) => void): this;
+
   on(evt: string, listener: Function): this;
 }
 
