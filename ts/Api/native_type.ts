@@ -2592,6 +2592,25 @@ export interface DataStreamConfig
   ordered: boolean
 };
 
+/** Network type. */
+export enum NETWORK_TYPE
+{
+  /** -1: The network type is unknown. */
+  NETWORK_TYPE_UNKNOWN = -1,
+  /** 0: The SDK disconnects from the network. */
+  NETWORK_TYPE_DISCONNECTED = 0,
+  /** 1: The network type is LAN. */
+  NETWORK_TYPE_LAN = 1,
+  /** 2: The network type is Wi-Fi (including hotspots). */
+  NETWORK_TYPE_WIFI = 2,
+  /** 3: The network type is mobile 2G. */
+  NETWORK_TYPE_MOBILE_2G = 3,
+  /** 4: The network type is mobile 3G. */
+  NETWORK_TYPE_MOBILE_3G = 4,
+  /** 5: The network type is mobile 4G. */
+  NETWORK_TYPE_MOBILE_4G = 5,
+};
+
 /**
  * interface for c++ addon (.node)
  * @ignore
