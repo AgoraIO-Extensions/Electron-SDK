@@ -70,6 +70,7 @@ class AgoraRtcEngine extends EventEmitter {
   streams: Map<string, Map<string, IRenderer>>;
   renderMode: 1 | 2 | 3;
   customRenderer: any;
+  pauseRender: boolean;
   constructor() {
     super();
     this.rtcEngine = new agora.NodeRtcEngine();
@@ -77,6 +78,7 @@ class AgoraRtcEngine extends EventEmitter {
     this.streams = new Map();
     this.renderMode = this._checkWebGL() ? 1 : 2;
     this.customRenderer = CustomRenderer;
+    this.pauseRender = false;
   }
 
   /**
@@ -95,6 +97,10 @@ class AgoraRtcEngine extends EventEmitter {
    */
   setRenderMode(mode: 1 | 2 | 3 = 1): void {
     this.renderMode = mode;
+  }
+
+  setPauseRenderer(pause: boolean = false) {
+    this.pauseRender = pause;
   }
 
   /**
@@ -775,7 +781,9 @@ class AgoraRtcEngine extends EventEmitter {
     })
 
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
-      self.onRegisterDeliverFrame(infos);
+      if (!self.pauseRender) {
+        self.onRegisterDeliverFrame(infos);
+      }
     });
   }
 
