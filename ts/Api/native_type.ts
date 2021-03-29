@@ -8,7 +8,7 @@ import {
  *
  * - 0: The network quality is unknown.
  * - 1: The network quality is excellent.
- * - 2: The network quality is quite good, but the bitrate may be slightly 
+ * - 2: The network quality is quite good, but the bitrate may be slightly
  * lower than excellent.
  * - 3: Users can feel the communication slightly impaired.
  * - 4: Users cannot communicate smoothly.
@@ -75,69 +75,69 @@ export interface TranscodingUser {
   width: number;
   /** Height of the video frame. The default value is 640. */
   height: number;
-  /** 
+  /**
    * Layer position of the video frame. The value ranges between 0 and 100.
    *
    * - 0: (Default) Lowest.
    * - 100: Highest.
    */
   zOrder: number;
-  /**  
-   * Transparency of the video frame in CDN live. 
+  /**
+   * Transparency of the video frame in CDN live.
    * The value ranges between 0 and 1:
    *
    * - 0: Completely transparent.
    * - 1: (Default) Opaque.
    */
   alpha: number;
-  /** The audio channel of the sound. 
-   * - 0: (Default) Supports dual channels at most, depending on the upstream 
+  /** The audio channel of the sound.
+   * - 0: (Default) Supports dual channels at most, depending on the upstream
    * of the broadcaster.
-   * - 1: The audio stream of the broadcaster uses the FL audio channel. 
-   * If the upstream of the broadcaster uses multiple audio channels, 
+   * - 1: The audio stream of the broadcaster uses the FL audio channel.
+   * If the upstream of the broadcaster uses multiple audio channels,
    * these channels will be mixed into mono first.
-   * - 2: The audio stream of the broadcaster uses the FC audio channel. 
-   * If the upstream of the broadcaster uses multiple audio channels, 
+   * - 2: The audio stream of the broadcaster uses the FC audio channel.
+   * If the upstream of the broadcaster uses multiple audio channels,
    * these channels will be mixed into mono first.
-   * - 3: The audio stream of the broadcaster uses the FR audio channel. 
-   * If the upstream of the broadcaster uses multiple audio channels, 
+   * - 3: The audio stream of the broadcaster uses the FR audio channel.
+   * If the upstream of the broadcaster uses multiple audio channels,
    * these channels will be mixed into mono first.
-   * - 4: The audio stream of the broadcaster uses the BL audio channel. 
-   * If the upstream of the broadcaster uses multiple audio channels, 
+   * - 4: The audio stream of the broadcaster uses the BL audio channel.
+   * If the upstream of the broadcaster uses multiple audio channels,
    * these channels will be mixed into mono first.
-   * - 5: The audio stream of the broadcaster uses the BR audio channel. 
-   * If the upstream of the broadcaster uses multiple audio channels, 
+   * - 5: The audio stream of the broadcaster uses the BR audio channel.
+   * If the upstream of the broadcaster uses multiple audio channels,
    * these channels will be mixed into mono first.
    */
   audioChannel: number;
 }
 
-/** 
- * Sets the CDN live audio/video transcoding settings. 
+/**
+ * Sets the CDN live audio/video transcoding settings.
  */
 export interface TranscodingConfig {
-  /** 
-   * Width of the video. The default value is 360. 
-   * The minimum value of width × height is 16 × 16. 
+  /**
+   * Width of the video. The default value is 360.
+   * The minimum value of width × height is 16 × 16.
    */
   width: number;
-  /** 
-   * Height of the video. The default value is 640. 
-   * The minimum value of width × height is 16 × 16. 
+  /**
+   * Height of the video. The default value is 640.
+   * The minimum value of width × height is 16 × 16.
    */
   height: number;
-  /** 
-   * Bitrate of the CDN live output video stream. 
+  /**
+   * Bitrate of the CDN live output video stream.
    * The default value is 400 Kbps.
-   * 
+   *
    * Set this parameter according to the Video Bitrate Table.
-   * 
-   * If you set a bitrate beyond the proper range, the SDK automatically 
+   *
+   * If you set a bitrate beyond the proper range, the SDK automatically
    * adapts it to a value within the range.
    */
   videoBitrate: number;
-  /** 
-   * Frame rate of the output video stream set for the CDN live broadcast. 
+  /**
+   * Frame rate of the output video stream set for the CDN live broadcast.
    * The default value is 15 fps.
    *
    * **Note**: Agora adjusts all values over 30 to 30.
@@ -154,18 +154,18 @@ export interface TranscodingConfig {
    */
   videoGop: number;
   /** Self-defined video codec profile.
-   * - VIDEO_CODEC_PROFILE_BASELINE = 66: Baseline video codec profile. 
+   * - VIDEO_CODEC_PROFILE_BASELINE = 66: Baseline video codec profile.
    * Generally used in video calls on mobile phones.
-   * - VIDEO_CODEC_PROFILE_MAIN = 77: Main video codec profile. 
-   * Generally used in mainstream electronics, such as MP4 players, portable 
+   * - VIDEO_CODEC_PROFILE_MAIN = 77: Main video codec profile.
+   * Generally used in mainstream electronics, such as MP4 players, portable
    * video players, PSP, and iPads.
-   * - VIDEO_CODEC_PROFILE_HIGH = 100: (Default) High video codec profile. 
+   * - VIDEO_CODEC_PROFILE_HIGH = 100: (Default) High video codec profile.
    * Generally used in high-resolution broadcasts or television.
    */
   videoCodecProfile: number;
   /** RGB hex value.
    *
-   * The background color in RGB hex value. Value only, do not include a #. 
+   * The background color in RGB hex value. Value only, do not include a #.
    * For example, 0xFFB6C1 (light pink). The default value is 0x000000 (black).
    */
   backgroundColor: number;
@@ -177,11 +177,11 @@ export interface TranscodingConfig {
    * - AUDIO_SAMPLE_RATE_48000 = 48000 Hz
    */
   audioSampleRateType: number;
-  /** 
-   * Agora's self-defined audio-channel types. 
-   * 
+  /**
+   * Agora's self-defined audio-channel types.
+   *
    * We recommend choosing option 1 or 2.
-   * 
+   *
    * A special player is required if you choose option 3, 4, or 5:
    * - 1: (Default) Mono.
    * - 2: Two-channel stereo.
@@ -200,18 +200,18 @@ export interface TranscodingConfig {
   transcodingExtraInfo: string,
   /** The watermark image added to the CDN live publishing stream. */
   watermark: {
-    /** 
+    /**
      * HTTP/HTTPS URL address of the image on the broadcasting video.
-     * 
+     *
      * The maximum length of this parameter is 1024 bytes.
      */
     url: string;
-    /** Horizontal position of the image from the upper left of the 
-     * broadcasting video. 
+    /** Horizontal position of the image from the upper left of the
+     * broadcasting video.
      */
     x: number;
-    /** Vertical position of the image from the upper left of the broadcasting 
-     * video. 
+    /** Vertical position of the image from the upper left of the broadcasting
+     * video.
      */
     y: number;
     /** Width of the image on the broadcasting video. */
@@ -221,18 +221,18 @@ export interface TranscodingConfig {
   };
 
   background: {
-    /** 
+    /**
      * HTTP/HTTPS URL address of the image on the broadcasting video.
-     * 
+     *
      * The maximum length of this parameter is 1024 bytes.
      */
     url: string;
-    /** Horizontal position of the image from the upper left of the 
-     * broadcasting video. 
+    /** Horizontal position of the image from the upper left of the
+     * broadcasting video.
      */
     x: number;
-    /** Vertical position of the image from the upper left of the broadcasting 
-     * video. 
+    /** Vertical position of the image from the upper left of the broadcasting
+     * video.
      */
     y: number;
     /** Width of the image on the broadcasting video. */
@@ -240,7 +240,7 @@ export interface TranscodingConfig {
     /** Height of the image on the broadcasting video. */
     height: number;
   };
-  
+
   /** The TranscodingUsers Array. */
   transcodingUsers: Array<TranscodingUser>;
 }
@@ -249,7 +249,7 @@ export interface TranscodingConfig {
  */
 export interface LastmileProbeConfig {
   /**
-   * Sets whether or not to test the uplink network. Some users, for example, 
+   * Sets whether or not to test the uplink network. Some users, for example,
    * the audience in a Live-broadcast channel, do not need such a test.
    *
    * - true: test
@@ -264,12 +264,12 @@ export interface LastmileProbeConfig {
    */
   probeDownlink: boolean;
   /**
-   * The expected maximum sending bitrate (Kbps) of the local user. 
+   * The expected maximum sending bitrate (Kbps) of the local user.
    * The value ranges between 100 and 5000.
    */
   expectedUplinkBitrate: number;
   /**
-   * The expected maximum receiving bitrate (Kbps) of the local user. 
+   * The expected maximum receiving bitrate (Kbps) of the local user.
    * The value ranges between 100 and 5000.
    */
   expectedDownlinkBitrate: number;
@@ -290,17 +290,17 @@ export interface LastmileProbeResult {
    * - 1: The last-mile network probe test is complete.
    * - 2: The last-mile network probe test is incomplete and the bandwidth
    * estimation is not available, probably due to limited test resources.
-   * - 3: The last-mile network probe test is not carried out, probably due 
+   * - 3: The last-mile network probe test is not carried out, probably due
    * to poor network conditions.
    */
   state: number;
-  /** 
-   * The uplink last-mile network probe test result. 
-   * See {@link LastmileProbeOneWayResult}. 
+  /**
+   * The uplink last-mile network probe test result.
+   * See {@link LastmileProbeOneWayResult}.
    */
   uplinkReport: LastmileProbeOneWayResult;
-  /** The downlink last-mile network probe test result. 
-   * See {@link LastmileProbeOneWayResult}. 
+  /** The downlink last-mile network probe test result.
+   * See {@link LastmileProbeOneWayResult}.
    */
   downlinkReport: LastmileProbeOneWayResult;
   /** The round-trip delay time (ms). */
@@ -310,10 +310,10 @@ export interface LastmileProbeResult {
 export interface UserInfo {
   /** The user ID. */
   uid: number;
-  /** The user account. 
-   * 
+  /** The user account.
+   *
    * The maximum length of this parameter is 255 bytes.
-   * 
+   *
    * Ensure that you set this parameter and do not set it as null.
    */
   userAccount: string;
@@ -478,39 +478,39 @@ export enum AudioReverbPreset {
  * Configuration of the imported live broadcast voice or video stream.
  */
 export interface InjectStreamConfig {
-  /** 
-   * Width of the added stream in the live broadcast. 
-   * 
-   * The default value is 0 pixel (same width as the original stream). 
+  /**
+   * Width of the added stream in the live broadcast.
+   *
+   * The default value is 0 pixel (same width as the original stream).
    */
   width: number;
-  /** 
-   * Height of the added stream in the live broadcast. 
-   * 
-   * The default value is 0 pixel (same height as the original stream). 
+  /**
+   * Height of the added stream in the live broadcast.
+   *
+   * The default value is 0 pixel (same height as the original stream).
    */
   height: number;
-  /** 
-   * Video bitrate of the added stream in the live broadcast. 
-   * 
-   * The default value is 400 Kbps. 
+  /**
+   * Video bitrate of the added stream in the live broadcast.
+   *
+   * The default value is 400 Kbps.
    */
   videoBitrate: number;
-  /** Video frame rate of the added stream in the live broadcast. 
-   * 
-   * The default value is 15 fps. 
+  /** Video frame rate of the added stream in the live broadcast.
+   *
+   * The default value is 15 fps.
    */
   videoFrameRate: number;
-  /** Video GOP of the added stream in the live broadcast in frames. 
-   * 
-   * The default value is 30 fps. 
+  /** Video GOP of the added stream in the live broadcast in frames.
+   *
+   * The default value is 30 fps.
    */
   videoGop: number;
   /**
-   * Audio-sampling rate of the added stream in the live broadcast. 
-   * 
+   * Audio-sampling rate of the added stream in the live broadcast.
+   *
    * The default value is 44100 Hz.
-   * 
+   *
    * **Note**: Agora recommends setting the default value.
    * - AUDIO_SAMPLE_RATE_32000 = 32000 Hz
    * - AUDIO_SAMPLE_RATE_44100 = 44100 Hz
@@ -518,17 +518,17 @@ export interface InjectStreamConfig {
    */
   audioSampleRate: number;
   /**
-   * Audio bitrate of the added stream in the live broadcast. 
-   * 
+   * Audio bitrate of the added stream in the live broadcast.
+   *
    * The default value is 48 Kbps.
-   * 
+   *
    * **Note**: Agora recommends setting the default value.
    */
   audioBitrate: number;
   /** Audio channels in the live broadcast.
    * - 1: (Default) Mono
    * - 2: Two-channel stereo
-   * 
+   *
    * **Note**: Agora recommends setting the default value.
    */
   audioChannels: number;
@@ -558,47 +558,47 @@ export interface RtcStats {
   rxKBitRate: number;
   /** Audio receive bitrate (Kbps), represented by an instantaneous value. */
   rxAudioKBitRate: number;
-  /** Audio transmission bitrate (Kbps), represented by an instantaneous 
-   * value. 
+  /** Audio transmission bitrate (Kbps), represented by an instantaneous
+   * value.
    */
   txAudioKBitRate: number;
   /** Video receive bitrate (Kbps), represented by an instantaneous value. */
   rxVideoKBitRate: number;
-  /** Video transmission bitrate (Kbps), represented by an instantaneous 
-   * value. 
+  /** Video transmission bitrate (Kbps), represented by an instantaneous
+   * value.
    */
   txVideoKBitRate: number;
-  /** 
+  /**
    * @since 2.9.0
-   * 
-   * Total number of audio bytes received (bytes), represented by an aggregate 
-   * value. 
+   *
+   * Total number of audio bytes received (bytes), represented by an aggregate
+   * value.
    */
   rxAudioKBytes: number;
-  /** 
+  /**
    * @since 2.9.0
-   * 
-   * Total number of audio bytes sent (bytes), represented by an aggregate 
-   * value. 
+   *
+   * Total number of audio bytes sent (bytes), represented by an aggregate
+   * value.
    */
   txAudioKBytes: number;
-  /** 
+  /**
    * @since 2.9.0
-   * 
-   * Total number of video bytes received (bytes), represented by an aggregate 
-   * value. 
+   *
+   * Total number of video bytes received (bytes), represented by an aggregate
+   * value.
    */
   rxVideoKBytes: number;
-  /** 
+  /**
    * @since 2.9.0
-   * 
-   * Total number of video bytes sent (bytes), represented by an aggregate 
-   * value. 
+   *
+   * Total number of video bytes sent (bytes), represented by an aggregate
+   * value.
    */
   txVideoKBytes: number;
   /** Client-server latency. */
   lastmileDelay: number;
-  /** The packet loss rate (%) from the local client to Agora's edge server, 
+  /** The packet loss rate (%) from the local client to Agora's edge server,
    * before using the anti-packet-loss method.
    */
   txPacketLossRate: number;
@@ -628,11 +628,11 @@ export enum QualityAdaptIndication {
 }
 /** Statistics of the local video. */
 export interface LocalVideoStats {
-  /** Bitrate (Kbps) sent in the reported interval, which does not include 
-   * the bitrate of the re-transmission video after packet loss. 
+  /** Bitrate (Kbps) sent in the reported interval, which does not include
+   * the bitrate of the re-transmission video after packet loss.
    */
   sentBitrate: number;
-  /** Frame rate (fps) sent in the reported interval, which does not include 
+  /** Frame rate (fps) sent in the reported interval, which does not include
    * the frame rate of the re-transmission video after packet loss.
    */
   sentFrameRate: number;
@@ -640,47 +640,47 @@ export interface LocalVideoStats {
   encoderOutputFrameRate: number;
   /** The renderer output frame rate (fps) of the local video. */
   rendererOutputFrameRate: number;
-  /** The target bitrate (Kbps) of the current encoder. 
-   * 
-   * This value is estimated by the SDK based on the current network 
+  /** The target bitrate (Kbps) of the current encoder.
+   *
+   * This value is estimated by the SDK based on the current network
    * conditions.
    */
   targetBitrate: number;
   /** The target frame rate (fps) of the current encoder. */
   targetFrameRate: number;
-  /** Quality change of the local video in terms of target frame rate and 
-   * target bit rate in this reported interval. 
+  /** Quality change of the local video in terms of target frame rate and
+   * target bit rate in this reported interval.
    * See {@link QualityAdaptIndication}.
    */
   qualityAdaptIndication: QualityAdaptIndication;
   /**
    * @since 2.9.0
-   * 
-   * The encoding bitrate (Kbps), which does not include the bitrate of the 
+   *
+   * The encoding bitrate (Kbps), which does not include the bitrate of the
    * retransmission video after packet loss.
    */
   encodedBitrate: number;
   /**
    * @since 2.9.0
-   * 
+   *
    * The width of the encoding frame (px).
    */
   encodedFrameWidth: number;
   /**
    * @since 2.9.0
-   * 
+   *
    * The height of the encoding frame (px).
    */
   encodedFrameHeight: number;
   /**
    * @since 2.9.0
-   * 
+   *
    * The value of the sent frames, represented by an aggregate value.
    */
   encodedFrameCount: number;
   /**
    * @since 2.9.0
-   * 
+   *
    * The codec type of the local video. See {@link VIDEO_CODEC_TYPE}.
    */
   codecType: number;
@@ -694,12 +694,12 @@ export interface LocalVideoStats {
 
   videoQualityPoint: number;
 }
-/** 
+/**
  * The statistics of the local audio stream.
  */
 export interface LocalAudioStats {
   /**
-   * The number of channels. 
+   * The number of channels.
    */
   numChannels: number;
   /**
@@ -720,50 +720,50 @@ export interface LocalAudioStats {
 }
 /** VideoEncoderConfiguration */
 export interface VideoEncoderConfiguration {
-  /** Width (pixels) of the video. 
-   * 
+  /** Width (pixels) of the video.
+   *
    * The default value is 640(width) x 360(hight).
    */
   width: number;
-  /** Height (pixels) of the video. 
+  /** Height (pixels) of the video.
    *
    * The default value is 640(width) x 360(hight).
    */
   height: number;
   /**
-   * The frame rate (fps) of the video. 
-   * 
+   * The frame rate (fps) of the video.
+   *
    * The default value is 15 fps.
-   * 
+   *
    * **Noete**:
    * We do not recommend setting this to a value greater than 30 fps.
    */
   frameRate: number;
   /**
-   * The minimum frame rate of the video. 
-   * 
+   * The minimum frame rate of the video.
+   *
    * The default value is -1.
    */
   minFrameRate: number;
    /** The video encoding bitrate (Kbps).
-    * 
+    *
     * Choose one of the following options:
     * - 0: (Recommended) The standard bitrate.
-    *  - The Communication profile: the encoding bitrate equals the base 
+    *  - The Communication profile: the encoding bitrate equals the base
     * bitrate.
-    *  - The Live-broadcast profile: the encoding bitrate is twice the base 
+    *  - The Live-broadcast profile: the encoding bitrate is twice the base
     * bitrate.
-    * - -1: The compatible bitrate: the bitrate stays the same regardless of 
+    * - -1: The compatible bitrate: the bitrate stays the same regardless of
     * the profile.
     *
-    * The Communication profile prioritizes smoothness, while the 
-    * Live-broadcast profile prioritizes video quality 
-    * (requiring a higher bitrate). We recommend setting the bitrate mode to 
+    * The Communication profile prioritizes smoothness, while the
+    * Live-broadcast profile prioritizes video quality
+    * (requiring a higher bitrate). We recommend setting the bitrate mode to
     * address this difference.
     *
-    * The following table lists the recommended video encoder configurations, 
+    * The following table lists the recommended video encoder configurations,
     * where the base bitrate applies to the Communication profile.
-    * Set your bitrate based on this table. If you set a bitrate beyond the 
+    * Set your bitrate based on this table. If you set a bitrate beyond the
     * proper range, the SDK automatically sets it to within the range.
     *
     * <table>
@@ -927,14 +927,14 @@ export interface VideoEncoderConfiguration {
     */
   bitrate: number;
   /**
-   * The minimum encoding bitrate (Kbps). 
-   * 
-   * The default value is 1 kbps. 
-   * 
-   * Using a value greater than the default value 
-   * forces the video encoder to output high-quality images but may cause more 
-   * packet loss and hence sacrifice the smoothness of the video transmission. 
-   * That said, unless you have special requirements for image quality, 
+   * The minimum encoding bitrate (Kbps).
+   *
+   * The default value is 1 kbps.
+   *
+   * Using a value greater than the default value
+   * forces the video encoder to output high-quality images but may cause more
+   * packet loss and hence sacrifice the smoothness of the video transmission.
+   * That said, unless you have special requirements for image quality,
    * Agora does not recommend changing this value.
    *
    */
@@ -944,7 +944,7 @@ export interface VideoEncoderConfiguration {
    */
   orientationMode: OrientationMode;
   /**
-   * The video encoding degradation preference under limited bandwidth. 
+   * The video encoding degradation preference under limited bandwidth.
    * See {@link DegradationPreference}.
    */
   degradationPreference: DegradationPreference;
@@ -953,49 +953,49 @@ export interface VideoEncoderConfiguration {
 }
 /** The video encoding degradation preference under limited bandwidth. */
 export enum DegradationPreference {
-  /** 0: (Default) Degrade the frame rate in order to maintain the video 
-   * quality. 
+  /** 0: (Default) Degrade the frame rate in order to maintain the video
+   * quality.
    */
   MAINTAIN_QUALITY = 0,
   /** 1: Degrade the video quality in order to maintain the frame rate. */
   MAINTAIN_FRAMERATE = 1,
-  /** 2: (For future use) Maintain a balance between the frame rate and video 
-   * quality. 
+  /** 2: (For future use) Maintain a balance between the frame rate and video
+   * quality.
    */
   MAINTAIN_BALANCED = 2,
 }
 /** The orientation mode. */
 export enum OrientationMode  {
 /**
- * 0: (Default) The output video always follows the orientation of the 
- * captured video, because the receiver takes the rotational information 
- * passed on from the video encoder. 
- * 
+ * 0: (Default) The output video always follows the orientation of the
+ * captured video, because the receiver takes the rotational information
+ * passed on from the video encoder.
+ *
  * Mainly used between Agora’s SDKs.
- * - If the captured video is in landscape mode, the output video is in 
+ * - If the captured video is in landscape mode, the output video is in
  * landscape mode.
- * - If the captured video is in portrait mode, the output video is in 
+ * - If the captured video is in portrait mode, the output video is in
  * portrait mode.
  */
   ORIENTATION_MODE_ADAPTIVE = 0,
 /**
- * 1: The output video is always in landscape mode. 
- * 
- * If the captured video is 
- * in portrait mode, the video encoder crops it to fit the output. Applies to 
- * situations where the receiving end cannot process the rotational 
- * information. 
- * 
+ * 1: The output video is always in landscape mode.
+ *
+ * If the captured video is
+ * in portrait mode, the video encoder crops it to fit the output. Applies to
+ * situations where the receiving end cannot process the rotational
+ * information.
+ *
  * For example, CDN live streaming.
  */
   ORIENTATION_MODE_FIXED_LANDSCAPE = 1,
 /**
- * 2: The output video is always in portrait mode. 
- * 
- * If the captured video is in landscape mode, the video encoder crops it to 
- * fit the output. Applies to situations where the receiving end cannot process 
- * the rotational information. 
- * 
+ * 2: The output video is always in portrait mode.
+ *
+ * If the captured video is in landscape mode, the video encoder crops it to
+ * fit the output. Applies to situations where the receiving end cannot process
+ * the rotational information.
+ *
  * For example, CDN live streaming.
  */
   ORIENTATION_MODE_FIXED_PORTRAIT = 2,
@@ -1039,23 +1039,23 @@ export interface RemoteVideoStats {
    */
   rxStreamType: StreamType;
   /**
-   * The total freeze time (ms) of the remote video stream after the 
+   * The total freeze time (ms) of the remote video stream after the
    * remote user joins the channel.
-   * 
-   * In a video session where the frame rate is set to no less than 5 fps, 
-   * video freeze occurs when the time interval between two adjacent renderable 
+   *
+   * In a video session where the frame rate is set to no less than 5 fps,
+   * video freeze occurs when the time interval between two adjacent renderable
    * video frames is more than 500 ms.
    */
   totalFrozenTime: number;
   /**
-   * The total video freeze time as a percentage (%) of the total time when 
+   * The total video freeze time as a percentage (%) of the total time when
    * the video is available.
    */
   frozenRate: number;
   /**
    * @since 2.9.0
-   * 
-   * Packet loss rate (%) of the remote video stream after using the 
+   *
+   * Packet loss rate (%) of the remote video stream after using the
    * anti-packet-loss method.
    */
   packetLossRate: number;
@@ -1070,22 +1070,22 @@ export interface RemoteVideoStats {
 }
 /** Sets the camera capturer configuration. */
 export enum CaptureOutPreference {
-  /** 0: (Default) self-adapts the camera output parameters to the system 
-   * performance and network conditions to balance CPU consumption and video 
+  /** 0: (Default) self-adapts the camera output parameters to the system
+   * performance and network conditions to balance CPU consumption and video
    * preview quality.
    */
   CAPTURER_OUTPUT_PREFERENCE_AUTO = 0,
-  /** 1: Prioritizes the system performance. 
-   * 
-   * The SDK chooses the dimension 
-   * and frame rate of the local camera capture closest to those set 
+  /** 1: Prioritizes the system performance.
+   *
+   * The SDK chooses the dimension
+   * and frame rate of the local camera capture closest to those set
    * by the {@link setVideoEncoderConfiguration} method.
    */
   CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE = 1,
-  /** 2: Prioritizes the local preview quality. 
-   * 
-   * The SDK chooses higher camera output parameters to improve the local 
-   * video preview quality. This option requires extra CPU and RAM usage for 
+  /** 2: Prioritizes the local preview quality.
+   *
+   * The SDK chooses higher camera output parameters to improve the local
+   * video preview quality. This option requires extra CPU and RAM usage for
    * video pre-processing.
    */
   CAPTURER_OUTPUT_PREFERENCE_PREVIEW = 2
@@ -1177,32 +1177,32 @@ export enum VideoContentHint {
    */
   CONTENT_HINT_NONE = 0,
   /**
-   * 1: Motion-intensive content. 
-   * 
-   * Choose this option if you prefer smoothness or when you are sharing a 
+   * 1: Motion-intensive content.
+   *
+   * Choose this option if you prefer smoothness or when you are sharing a
    * video clip, movie, or video game.
    */
   CONTENT_HINT_MOTION = 1,
   /**
-   * 2: Motionless content. 
-   * 
-   * Choose this option if you prefer sharpness or when you are sharing a 
+   * 2: Motionless content.
+   *
+   * Choose this option if you prefer sharpness or when you are sharing a
    * picture, PowerPoint slide, or text.
    */
   CONTENT_HINT_DETAILS = 2
 }
 
 /**
- * @deprecated This callback is deprecated. Use the remoteVideoStats callback 
+ * @deprecated This callback is deprecated. Use the remoteVideoStats callback
  * instead.
- * 
+ *
  * Reports the transport-layer statistics of each remote video stream.
  */
 export interface RemoteVideoTransportStats {
   /** User ID of the remote user sending the video packet. */
   uid: number;
-  /** Network time delay (ms) from the remote user sending the video packet to 
-   * the local user. 
+  /** Network time delay (ms) from the remote user sending the video packet to
+   * the local user.
    */
   delay: number;
   /** Packet loss rate (%) of the video packet sent from the remote user. */
@@ -1214,13 +1214,13 @@ export interface RemoteVideoTransportStats {
 /**
  * @deprecated This callback is deprecated. Use the remoteAudioStats callback
  * instead.
- * 
+ *
  * Reports the transport-layer statistics of each remote audio stream.
  */
 export interface RemoteAudioTransportStats {
   /** User ID of the remote user sending the audio packet. */
   uid: number;
-  /** Network time delay (ms) from the remote user sending the audio packet to 
+  /** Network time delay (ms) from the remote user sending the audio packet to
    * the local user. */
   delay: number;
   /** Packet loss rate (%) of the audio packet sent from the remote user. */
@@ -1245,26 +1245,26 @@ export interface RemoteAudioStats {
   audioLossRate: number;
   /** The number of the channels. */
   numChannels: number;
-  /** 
-   * The sample rate (Hz) of the received audio stream in the reported 
+  /**
+   * The sample rate (Hz) of the received audio stream in the reported
    * interval.
    */
   receivedSampleRate: number;
-  /** The average bitrate (Kbps) of the received audio stream in the reported 
-   * interval. 
+  /** The average bitrate (Kbps) of the received audio stream in the reported
+   * interval.
    */
   receivedBitrate: number;
   /**
-   * The total freeze time (ms) of the remote audio stream after the remote 
+   * The total freeze time (ms) of the remote audio stream after the remote
    * user joins the channel.
-   * 
-   * In the reported interval, audio freeze occurs when the audio frame loss 
-   * rate reaches 4%. `totalFrozenTime` = the number of audio freeze x 2 x 
+   *
+   * In the reported interval, audio freeze occurs when the audio frame loss
+   * rate reaches 4%. `totalFrozenTime` = the number of audio freeze x 2 x
    * 1000(ms).
    */
   totalFrozenTime: number;
-  /** 
-   * The total audio freeze time as a percentage (%) of the total time 
+  /**
+   * The total audio freeze time as a percentage (%) of the total time
    * when the audio is available.
    */
   frozenRate: number;
@@ -1280,7 +1280,7 @@ export interface RemoteAudioStats {
 
 /**
  * State of the remote video:
- * 
+ *
  * - 0: The remote video is in the default state.
  * - 1: The first remote video packet is received.
  * - 2: The remote video stream is decoded and plays normally.
@@ -1292,18 +1292,18 @@ export type RemoteVideoState = 0 | 1 | 2 | 3 | 4;
  * - 0: Internal reasons.
  * - 1: Network congestion.
  * - 2: Network recovery.
- * - 3: The local user stops receiving the remote video stream or disables the 
+ * - 3: The local user stops receiving the remote video stream or disables the
  * video module.
- * - 4: The local user resumes receiving the remote video stream or enables the 
+ * - 4: The local user resumes receiving the remote video stream or enables the
  * video module.
- * - 5: The remote user stops sending the video stream or disables the video 
+ * - 5: The remote user stops sending the video stream or disables the video
  * module.
- * - 6: The remote user resumes sending the video stream or enables the video 
+ * - 6: The remote user resumes sending the video stream or enables the video
  * module.
  * - 7: The remote user leaves the channel.
- * - 8: The remote media stream falls back to the audio-only stream due to poor 
+ * - 8: The remote media stream falls back to the audio-only stream due to poor
  * network conditions.
- * - 9: The remote media stream switches back to the video stream after the 
+ * - 9: The remote media stream switches back to the video stream after the
  * network conditions improve.
  */
 export type RemoteVideoStateReason = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
@@ -1318,56 +1318,56 @@ export type RemoteVideoStateReason = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 export type RemoteAudioState = 0 | 1 | 2 | 3 | 4;
 /**
  * The reason of the remote audio state change.
- * - 0: Internal reasons. 
- * - 1: Network congestion. 
- * - 2: Network recovery. 
- * - 3: The local user stops receiving the remote audio stream or disables the 
- * audio module. 
- * - 4: The local user resumes receiving the remote audio stream or enables the 
- * audio module. 
- * - 5: The remote user stops sending the audio stream or disables the audio 
- * module. 
- * - 6: The remote user resumes sending the audio stream or enables the audio 
- * module. 
+ * - 0: Internal reasons.
+ * - 1: Network congestion.
+ * - 2: Network recovery.
+ * - 3: The local user stops receiving the remote audio stream or disables the
+ * audio module.
+ * - 4: The local user resumes receiving the remote audio stream or enables the
+ * audio module.
+ * - 5: The remote user stops sending the audio stream or disables the audio
+ * module.
+ * - 6: The remote user resumes sending the audio stream or enables the audio
+ * module.
  * - 7: The remote user leaves the channel.
  */
 export type RemoteAudioStateReason = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 /**
  * Connection states.
  * - 1: The SDK is disconnected from Agora's edge server.
- *  - This is the initial state before calling the 
+ *  - This is the initial state before calling the
  * {@link AgoraRtcEngine.joinChannel} method.
- *  - The SDK also enters this state when the application calls the 
+ *  - The SDK also enters this state when the application calls the
  * {@link AgoraRtcEngine.leaveChannel} method.
- * - 2: The SDK is connecting to Agora's edge server. When the application 
- * calls the {@link AgoraRtcEngine.joinChannel} method, the SDK starts to 
+ * - 2: The SDK is connecting to Agora's edge server. When the application
+ * calls the {@link AgoraRtcEngine.joinChannel} method, the SDK starts to
  * establish a connection to the specified channel.
- *  - When the SDK successfully joins the channel, it triggers the 
+ *  - When the SDK successfully joins the channel, it triggers the
  * connectionStateChanged callback and switches to the 3 state.
- *  - After the SDK joins the channel and when it finishes initializing the 
+ *  - After the SDK joins the channel and when it finishes initializing the
  * media engine, the SDK triggers the joinedChannel callback.
- * - 3: The SDK is connected to Agora's edge server and has joined a channel. 
- * You can now publish or subscribe to a media stream in the channel.If the 
+ * - 3: The SDK is connected to Agora's edge server and has joined a channel.
+ * You can now publish or subscribe to a media stream in the channel.If the
  * connection to the channel is lost because, for example,
- * if the network is down or switched, the SDK automatically tries to reconnect 
+ * if the network is down or switched, the SDK automatically tries to reconnect
  * and triggers:
  *  - The connectionStateChanged callback and switches to the 4 state.
- * - 4: The SDK keeps rejoining the channel after being disconnected from a 
+ * - 4: The SDK keeps rejoining the channel after being disconnected from a
  * joined channel because of network issues.
- *  - If the SDK cannot rejoin the channel within 10 seconds after being 
- * disconnected from Agora's edge server, the SDK triggers the connectionLost 
+ *  - If the SDK cannot rejoin the channel within 10 seconds after being
+ * disconnected from Agora's edge server, the SDK triggers the connectionLost
  * callback, stays in this state, and keeps rejoining the channel.
- *  - If the SDK fails to rejoin the channel 20 minutes after being 
- * disconnected from Agora's edge server, the SDK triggers the 
- * connectionStateChanged callback, switches to the 5 state, and stops 
+ *  - If the SDK fails to rejoin the channel 20 minutes after being
+ * disconnected from Agora's edge server, the SDK triggers the
+ * connectionStateChanged callback, switches to the 5 state, and stops
  * rejoining the channel.
- * - 5: The SDK fails to connect to Agora's edge server or join the channel. 
- * You must call the {@link AgoraRtcEngine.leaveChannel leaveChannel} method 
+ * - 5: The SDK fails to connect to Agora's edge server or join the channel.
+ * You must call the {@link AgoraRtcEngine.leaveChannel leaveChannel} method
  * to leave this state.
- *  - Calls the {@link AgoraRtcEngine.joinChannel joinChannel} method again to 
+ *  - Calls the {@link AgoraRtcEngine.joinChannel joinChannel} method again to
  * rejoin the channel.
- *  - If the SDK is banned from joining the channel by Agora's edge server 
- * (through the RESTful API), the SDK triggers connectionStateChanged 
+ *  - If the SDK is banned from joining the channel by Agora's edge server
+ * (through the RESTful API), the SDK triggers connectionStateChanged
  * callbacks.
  */
 export type ConnectionState =
@@ -1379,14 +1379,14 @@ export type ConnectionState =
 
   /**
    * Reasons for a connection state change.
-   * 
+   *
    * - 0: The SDK is connecting to Agora's edge server.
    * - 1: The SDK has joined the channel successfully.
-   * - 2: The connection between the SDK and Agora's edge server is 
+   * - 2: The connection between the SDK and Agora's edge server is
    * interrupted.
-   * - 3: The connection between the SDK and Agora's edge server is banned by 
+   * - 3: The connection between the SDK and Agora's edge server is banned by
    * Agora's edge server.
-   * - 4: The SDK fails to join the channel for more than 20 minutes and stops 
+   * - 4: The SDK fails to join the channel for more than 20 minutes and stops
    * reconnecting to the channel.
    * - 5: The SDK has left the channel.
    * - 6: Invalid App ID.
@@ -1576,18 +1576,18 @@ export enum VIDEO_PROFILE_TYPE {
 
 /**
  * The definition of {@link ChannelMediaInfo}.
- * 
- * - channel: The channel name. The default value is NULL, which means that 
+ *
+ * - channel: The channel name. The default value is NULL, which means that
  * the SDK applies the current channel name.
- * 
- * - token: The token that enables the user to join the channel. 
- * The default value is NULL, which means that the SDK applies the current 
+ *
+ * - token: The token that enables the user to join the channel.
+ * The default value is NULL, which means that the SDK applies the current
  * token.
- * 
+ *
  * - uid: The user ID.
- * 
- * **Note**: 
- * 
+ *
+ * **Note**:
+ *
  * String user accounts are not supported in media stream relay.
  */
 export interface ChannelMediaInfo {
@@ -1603,26 +1603,26 @@ export interface ChannelMediaOptions {
 
 /**
  * The configuration of the media stream relay.
- * 
+ *
  * - srcInfo: The information of the destination channel:
  * {@link ChannelMediaInfo}.
- * 
+ *
  * **Note**:
- * - `uid`: ID of the user whose media stream you want to relay. 
- * We recommend setting it as 0, which means that the SDK relays the media 
+ * - `uid`: ID of the user whose media stream you want to relay.
+ * We recommend setting it as 0, which means that the SDK relays the media
  * stream of the current broadcaster.
- * - If you do not use a token, we recommend using the default values of the 
+ * - If you do not use a token, we recommend using the default values of the
  * parameters in {@link ChannelMediaInfo}.
- * - If you use a token, set uid as 0, and ensure that the token is generated 
+ * - If you use a token, set uid as 0, and ensure that the token is generated
  * with the `uid` set as 0.
- * 
- * - destInfos: The information of the destination channel: 
+ *
+ * - destInfos: The information of the destination channel:
  * {@link ChannelMediaInfo}.
- * 
+ *
  * **Warning**:
- * - If you want to relay the media stream to multiple channels, define as 
+ * - If you want to relay the media stream to multiple channels, define as
  * many {@link ChannelMediaInfo} interface (at most four).
- * 
+ *
  * **Note**:
  * - `uid`: The user ID in the destination channel.
  */
@@ -1642,7 +1642,7 @@ export interface ChannelMediaRelayConfiguration {
  * - 6: The server receives the audio stream from the source channel.
  * - 7: The destination channel is updated.
  * - 8: The destination channel update fails due to internal reasons.
- * - 9: The destination channel does not change, which means that the 
+ * - 9: The destination channel does not change, which means that the
  * destination channel fails to be updated.
  * - 10: The destination channel name is NULL.
  * - 11: The video profile is sent to the server.
@@ -1664,9 +1664,9 @@ export type ChannelMediaRelayEvent =
  * The state code.
  * - 0: The SDK is initializing.
  * - 1: The SDK tries to relay the media stream to the destination channel.
- * - 2: The SDK successfully relays the media stream to the destination 
+ * - 2: The SDK successfully relays the media stream to the destination
  * channel.
- * - 3: A failure occurs. See the error code in 
+ * - 3: A failure occurs. See the error code in
  * {@link ChannelMediaRelayError}.
  */
 export type ChannelMediaRelayState =
@@ -1678,15 +1678,15 @@ export type ChannelMediaRelayState =
  * The error code.
  * - 0: The state is normal.
  * - 1: An error occurs in the server response.
- * - 2: No server response. You can call the {@link leaveChannel} method to 
+ * - 2: No server response. You can call the {@link leaveChannel} method to
  * leave the channel.
- * - 3: The SDK fails to access the service, probably due to limited resources 
+ * - 3: The SDK fails to access the service, probably due to limited resources
  * of the server.
  * - 4: The server fails to join the source channel.
  * - 5: The server fails to join the destination channel.
  * - 6: The server fails to receive the data from the source channel.
  * - 7: The source channel fails to transmit data.
- * - 8: The SDK disconnects from the server due to poor network connections. 
+ * - 8: The SDK disconnects from the server due to poor network connections.
  * You can call the {@link leaveChannel} method to leave the channel.
  * - 9: An internal error occurs in the server.
  * - 10: The token of the source channel has expired.
@@ -1858,6 +1858,25 @@ positionInLandscapeMode: Rectangle;
  * For detailed information on the portrait mode, see the advanced guide *Video Rotation*.
  */
 positionInPortraitMode: Rectangle;
+};
+
+/** Network type. */
+export enum NETWORK_TYPE
+{
+  /** -1: The network type is unknown. */
+  NETWORK_TYPE_UNKNOWN = -1,
+  /** 0: The SDK disconnects from the network. */
+  NETWORK_TYPE_DISCONNECTED = 0,
+  /** 1: The network type is LAN. */
+  NETWORK_TYPE_LAN = 1,
+  /** 2: The network type is Wi-Fi (including hotspots). */
+  NETWORK_TYPE_WIFI = 2,
+  /** 3: The network type is mobile 2G. */
+  NETWORK_TYPE_MOBILE_2G = 3,
+  /** 4: The network type is mobile 3G. */
+  NETWORK_TYPE_MOBILE_3G = 4,
+  /** 5: The network type is mobile 4G. */
+  NETWORK_TYPE_MOBILE_4G = 5,
 };
 
 /**
@@ -3096,7 +3115,7 @@ export interface NodeRtcChannel {
    * @ignore
    */
   addInjectStreamUrl(url: string, config: InjectStreamConfig): number;
-  
+
   /**
    * @ignore
    */

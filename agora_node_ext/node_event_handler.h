@@ -82,6 +82,7 @@ namespace agora {
 #define RTC_EVENT_REMOTE_VIDEO_TRANSPORT_STATS "remoteVideoTransportStats"
 #define RTC_EVENT_MICROPHONE_ENABLED "microphoneEnabled"
 #define RTC_EVENT_CONNECTION_STATE_CHANED "connectionStateChanged"
+#define RTC_EVENT_NETWORK_TYPE_CHANGED "networkTypeChanged"
 #define RTC_EVENT_AUDIO_MIXING_STATE_CHANGED "audioMixingStateChanged"
 #define RTC_EVENT_LASTMILE_PROBE_RESULT "lastmileProbeResult"
 #define RTC_EVENT_LOCAL_USER_REGISTERED "localUserRegistered"
@@ -179,6 +180,7 @@ namespace agora {
             virtual void onRemoteAudioStats(const RemoteAudioStats & stats);
             virtual void onMicrophoneEnabled(bool enabled) override;
             virtual void onConnectionStateChanged(CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason) override;
+            virtual void onNetworkTypeChanged(NETWORK_TYPE type) override;
 
             virtual void onVideoSourceJoinedChannel(agora::rtc::uid_t uid) override;
             virtual void onVideoSourceRequestNewToken() override;
@@ -208,7 +210,7 @@ namespace agora {
             virtual void onVideoPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldstate, STREAM_PUBLISH_STATE newstate, int elapsed) override;
             virtual void onAudioSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed) override;
             virtual void onVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldstate, STREAM_SUBSCRIBE_STATE newstate, int elapsed) override;
-            
+
             //3.1.100
             virtual void onFirstLocalAudioFramePublished(int elapsed);
             virtual void onFirstLocalVideoFramePublished(int elapsed);
@@ -263,7 +265,7 @@ namespace agora {
             void onFirstRemoteAudioDecoded_node(uid_t uid, int elapsed);
             void onStreamPublished_node(const char *url, int error);
             void onStreamUnpublished_node(const char *url);
-            void onTranscodingUpdated_node();   
+            void onTranscodingUpdated_node();
             void onStreamInjectedStatus_node(const char* url, uid_t uid, int status);
 
             void onLocalPublishFallbackToAudioOnly_node(bool isFallbackOrRecover);
@@ -276,6 +278,7 @@ namespace agora {
             void onRemoteAudioStats_node(const RemoteAudioStats & stats);
             void onMicrophoneEnabled_node(bool enabled);
             void onConnectionStateChanged_node(CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason);
+            void onNetworkTypeChanged_node(NETWORK_TYPE type);
 
             void onVideoSourceJoinedChannel_node(agora::rtc::uid_t uid);
             void onVideoSourceRequestToken_node();
