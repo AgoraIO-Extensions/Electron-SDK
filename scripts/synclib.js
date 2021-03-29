@@ -76,7 +76,10 @@ const macPrepare_mediaPlayer = (folder) => {
       return fs.mkdirp(path.join(__dirname, '../sdk/lib/media_player'))
     }).then(() => {
       console.log(`macPrepare_mediaPlayer ${folder}`)
-      return fs.move(path.join(folder, './libs/AgoraMediaPlayer.framework'), path.join(__dirname, '../sdk/lib/media_player/AgoraMediaPlayer.framework'))
+      return Promise.all([
+        fs.move(path.join(folder, './libs/AgoraMediaPlayer.framework'), path.join(__dirname, '../sdk/lib/media_player/AgoraMediaPlayer.framework')),
+        fs.move(path.join(folder, './libs/AgoraPlayerFFmpeg.framework'), path.join(__dirname, '../sdk/lib/media_player/AgoraPlayerFFmpeg.framework'))
+      ])
     }).then(() => {
       resolve()
     }).catch(e => {

@@ -15,6 +15,8 @@ namespace agora {
 #define MEDIA_PLAYER_ON_POSITION_CHANGED "onPositionChanged"
 #define MEDIA_PLAYER_ON_PLAY_EVENT "onPlayEvent"
 #define MEDIA_PLAYER_ON_META_DATA "onMetaData"
+#define MEDIA_PLAYER_ON_PLAY_BUFFER_UPDATED "onPlayBufferUpdated"
+#define MEDIA_PLAYER_ON_COMPLETED "onCompleted"
 #define MEDIA_PLAYER_ON_FIRE_API_ERROR "onApiError"
 
 
@@ -110,12 +112,14 @@ namespace agora {
             NodeMediaPlayerObserver();
             ~NodeMediaPlayerObserver();
 
-            virtual void onPlayerStateChanged(agora::media::MEDIA_PLAYER_STATE state,
-                                                agora::media::MEDIA_PLAYER_ERROR ec) override;
+            virtual void onPlayerStateChanged(media::base::MEDIA_PLAYER_STATE state,
+                                                media::base::MEDIA_PLAYER_ERROR ec) override;
             virtual void onPositionChanged(const int64_t position) override;
-            virtual void onPlayerEvent(agora::media::MEDIA_PLAYER_EVENT event) override;
-            virtual void onMetadata(agora::media::MEDIA_PLAYER_METADATA_TYPE type, const uint8_t* data,
+            virtual void onPlayerEvent(media::base::MEDIA_PLAYER_EVENT event) override;
+            virtual void onMetadata(media::base::MEDIA_PLAYER_METADATA_TYPE type, const uint8_t* data,
                                             uint32_t length) override;  
+            virtual void onPlayBufferUpdated(int64_t playCachedBuffer) override;
+            virtual void onCompleted() override;
 
             void fireApiError(const char* funcName);
             void addEventHandler(const std::string& eventName, Persistent<Object>& obj, Persistent<Function>& callback);
