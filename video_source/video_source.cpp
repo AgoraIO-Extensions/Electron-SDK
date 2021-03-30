@@ -415,7 +415,7 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
     LOG_LEAVE;
 }
 
-bool AgoraVideoSource::joinChannel(const char* key, const char* name, const char* chanInfo, agora::rtc::uid_t uid)
+bool AgoraVideoSource::joinChannel(const char* key, const char* name, const char* chanInfo, uid_t uid)
 {
     return m_rtcEngine->joinChannel(key ? key : "", name ? name : "", chanInfo ? chanInfo : "", uid);
 }
