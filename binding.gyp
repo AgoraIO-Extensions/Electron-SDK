@@ -157,7 +157,11 @@
                     './common/libyuv/source/compare_gcc.cc',
                     './common/libyuv/source/rotate_gcc.cc',
                     './common/libyuv/source/row_gcc.cc',
-                    './common/libyuv/source/scale_gcc.cc'
+                    './common/libyuv/source/scale_gcc.cc',
+                    './common/libyuv/source/scale_neon64.cc',
+                    './common/libyuv/source/compare_neon64.cc',
+                    './common/libyuv/source/rotate_neon64.cc',
+                    './common/libyuv/source/row_neon64.cc',
                 ],
                 'defines!': [
                 '_HAS_EXCEPTIONS=0',
@@ -173,7 +177,20 @@
                     'FRAMEWORK_SEARCH_PATHS': [
                     './sdk/lib/mac'
                     ],
-                    "DEBUG_INFORMATION_FORMAT": "dwarf-with-dsym"
+                    "DEBUG_INFORMATION_FORMAT": "dwarf-with-dsym",
+                    "DEBUG_INFORMATION_FORMAT": "dwarf-with-dsym",
+                    'conditions':[
+                        ['target_arch=="arm64"',
+                         {
+                            # 'CLANG_CXX_LANGUAGE_STANDARD': 'c++0x',
+                            # 'CLANG_CXX_LIBRARY': 'libc++',
+                            "OTHER_CPLUSPLUSFLAGS": [
+                                "-std=c++14",
+                                "-stdlib=libc++"
+                                ],
+                         }
+                        ]
+                    ]
                 },
 
             }
@@ -349,6 +366,10 @@
                     './common/libyuv/source/rotate_gcc.cc',
                     './common/libyuv/source/row_gcc.cc',
                     './common/libyuv/source/scale_gcc.cc',
+                    './common/libyuv/source/compare_neon64.cc',
+                    './common/libyuv/source/rotate_neon64.cc',
+                    './common/libyuv/source/row_neon64.cc',
+                    './common/libyuv/source/scale_neon64.cc',
                     './agora_node_ext/node_screen_window_info_mac.cpp',
                     './agora_node_ext/node_screen_window_info.h'
                 ],
