@@ -13,7 +13,8 @@ module.exports = ({
   silent = false,
   msvsVersion = '2015',
   arch = 'ia32',
-  distUrl = 'https://electronjs.org/headers'
+  distUrl = 'https://electronjs.org/headers',
+  cb = () => {}
 }) => {
   /** get command string */
   const command = [`${gyp_exec} configure`];
@@ -22,7 +23,9 @@ module.exports = ({
   if (platform === 'win32') {
     command.push(`--arch=${arch} --msvs_version=${msvsVersion}`)
   }
-
+  if (platform === "darwin" && arch === 'arm64') {
+    command.push('--arch=arm64')
+  }
   // check runtime
   if (runtime === 'electron') {
     command.push(`--target=${electronVersion} --dist-url=${distUrl}`)
@@ -79,7 +82,8 @@ module.exports = ({
           
           // handle success
           logger.info('Build complete')
-          process.exit(0)  
+          cb(true);
+          // process.exit(0)  
         })
       }
     })
