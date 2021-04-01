@@ -5778,17 +5778,6 @@ class AgoraMediaPlayer extends EventEmitter
     ) => {
       fire('onPositionChanged', position);
     });
-
-    this.mediaPlayer.onEvent('onPlayBufferUpdated', (
-      playCachedBuffer: number
-    ) => {
-      fire('onPlayBufferUpdated', playCachedBuffer);
-    });
-
-    this.mediaPlayer.onEvent('onCompleted', (
-    ) => {
-      fire('onCompleted');
-    });
   }
 
   /**

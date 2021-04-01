@@ -340,8 +340,7 @@
                 'copies': [{
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
-                        './sdk/lib/media_player/AgoraMediaPlayer.framework',
-                        './sdk/lib/media_player/AgoraPlayerFFmpeg.framework'
+                        './sdk/lib/media_player/AgoraMediaPlayer.framework'
                     ]
                 }],
                 'link_settings': {
@@ -363,8 +362,7 @@
                     'CoreAudio.framework',
                     'Foundation.framework',
                     'AVFoundation.framework',
-                    'AgoraMediaPlayer.framework',
-                    'AgoraPlayerFFmpeg.framework'
+                    'AgoraMediaPlayer.framework'
                     ]
                 },
                 'sources': [
@@ -379,8 +377,7 @@
                 'include_dirs': [
                 './sdk/lib/mac/AgoraRtcEngineKit.framework/Headers',
                 './extra/internal',
-                './sdk/lib/media_player/AgoraMediaPlayer.framework/Headers',
-                './sdk/lib/media_player/AgoraPlayerFFmpeg.framework/Headers'
+                './sdk/lib/media_player/AgoraMediaPlayer.framework/Headers'
                 ],
                 'defines!': [
                     '_NOEXCEPT',

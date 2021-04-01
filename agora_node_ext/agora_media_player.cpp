@@ -291,7 +291,7 @@ namespace agora {
         }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, getStreamCount) {
-            int64_t result = 1;
+            int result = 1;
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
@@ -312,7 +312,7 @@ namespace agora {
                 int index;
                 napi_status status = napi_ok;
                 status = napi_get_value_int32_(args[0], index);
-                media::base::MediaStreamInfo *streamInfo = new media::base::MediaStreamInfo();
+                agora::media::MediaStreamInfo *streamInfo = new agora::media::MediaStreamInfo();
                 result = mediaPlayer->mMediaPlayer->getStreamInfo(index, streamInfo);
                 Local<Object> obj = Object::New(isolate);
                 obj->Set(context, napi_create_string_(isolate, "streamIndex"), napi_create_int32_(isolate, streamInfo->streamIndex));
@@ -493,7 +493,7 @@ namespace agora {
                 napi_status status = napi_ok;
                 status = napi_get_value_int32_(args[0], speed);
                 CHECK_NAPI_STATUS(mediaPlayer, status);
-                result = mediaPlayer->mMediaPlayer->changePlaybackSpeed((media::base::MEDIA_PLAYER_PLAYBACK_SPEED)speed);
+                result = mediaPlayer->mMediaPlayer->changePlaybackSpeed((agora::media::MEDIA_PLAYER_PLAY_SPEED)speed);
             } while(false);
             media_player_napi_set_int_result(args, result);
         }   
