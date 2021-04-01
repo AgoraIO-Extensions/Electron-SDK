@@ -268,8 +268,7 @@
                     'files': [
                         './sdk/dll/agora_rtc_sdk.dll',
                         './sdk/dll/agora_sig_sdk.dll',
-                        './sdk/media_player/win/dll/AgoraMediaPlayer.dll',
-                        './sdk/media_player/win/dll/libagora-player-ffmpeg.dll'
+                        './sdk/media_player/win/dll/AgoraMediaPlayer.dll'
                     ]
                 }],
                 'library_dirs': [
@@ -281,9 +280,8 @@
                         '-lagora_rtc_sdk.lib',
                         '-lws2_32.lib',
                         '-lRpcrt4.lib',
-						            '-lgdiplus.lib',
-                        '-lAgoraMediaPlayer.lib',
-                        '-llibagora-player-ffmpeg.lib'
+						'-lgdiplus.lib',
+                        '-lAgoraMediaPlayer.lib'
                     ]
                 },
                 'defines!': [
