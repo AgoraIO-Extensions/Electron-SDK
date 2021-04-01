@@ -3175,6 +3175,10 @@ export interface NodeRtcEngine {
    * @ignore
    */
   setRecordingAudioFrameParameters(sampleRate: number, channel: number, mode: number, samplesPerCall: number): number;
+  /**
+   * @ignore
+   */
+  setPlaybackAudioFrameParameters(sampleRate: number, channel: number, mode: number, samplesPerCall: number): number;
 }
 /**
  * @ignore
