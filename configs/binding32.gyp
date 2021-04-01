@@ -290,7 +290,7 @@
                 ],
                 'sources': [
                     './common/node_process_win.cpp',
-                    './sdk/include/IAgoraRtcEngine.h',
+                    './sdk/win32/include/IAgoraRtcEngine.h',
                     './common/libyuv/source/compare_win.cc',
                     './common/libyuv/source/rotate_win.cc',
                     './common/libyuv/source/row_win.cc',
