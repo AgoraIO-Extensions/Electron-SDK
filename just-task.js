@@ -41,7 +41,7 @@ task('sync:lib', () => {
       win64: argv().liburl_win64 || pkgConfigs.lib_sdk_win64 || argvConfigs.lib_sdk_win64,
       mediaPlayer_mac: argv().liburl_mediaPlayer_mac || pkgConfigs.lib_sdk_mediaPlayer_mac,
       mediaPlayer_win: argv().liburl_mediaPlayer_win || pkgConfigs.lib_sdk_mediaPlayer_win,
-      mediaPlayer_win64: argv().liburl_mediaPlayer_win64 || pkgConfigs.liburl_mediaPlayer_win64
+      mediaPlayer_win64: argv().liburl_mediaPlayer_win64 || pkgConfigs.lib_sdk_mediaPlayer_win64
     }
   })
 })
