@@ -84,7 +84,8 @@
                     './resources/VideoSource.rc'
                 ],
                 'include_dirs': [
-                './sdk/include'
+                './sdk/include',
+                './sdk/media_player/win64/include'
                 ],
                 'defines!': [
                 '_USING_V110_SDK71_',
