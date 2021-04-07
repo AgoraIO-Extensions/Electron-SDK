@@ -12,6 +12,7 @@
         'include_dirs': [
         './common',
         './common/libyuv/include',
+        './sdk/include',
         "<!(node -e \"require('nan')\")"
         ],
         'sources': [
@@ -32,7 +33,6 @@
         './video_source/video_source_render.h',
         './video_source/video_source_transporter.cpp',
         './video_source/video_source_transporter.h',
-        './sdk/include/IAgoraRtcEngine.h',
         './common/libyuv/source/compare_common.cc',
         './common/libyuv/source/compare.cc',
         './common/libyuv/source/convert_argb.cc',
@@ -272,7 +272,6 @@
                 ],
                 'sources': [
                     './common/node_process_win.cpp',
-                    './sdk/include/IAgoraRtcEngine.h',
                     './common/libyuv/source/compare_win.cc',
                     './common/libyuv/source/rotate_win.cc',
                     './common/libyuv/source/row_win.cc',
