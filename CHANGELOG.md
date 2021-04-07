@@ -1,3 +1,5 @@
+## 2.9.107-rc.136 (Apr 7th 2021)
+* update native sdk
 ## 2.9.0-rc.107-build.1140
 * fix crash of AudioDeviceManger when rtcEngine not initialize.
 ## 2.9.0-rc.107-build.998
