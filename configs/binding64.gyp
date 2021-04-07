@@ -251,8 +251,7 @@
                 'copies': [{
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
-                        './sdk/win64/dll/agora_rtc_sdk.dll',
-                        './sdk/win64/dll/agora_sig_sdk.dll'
+                        './sdk/win64/dll/agora_rtc_sdk.dll'
                     ]
                 }],
                 'library_dirs': [
