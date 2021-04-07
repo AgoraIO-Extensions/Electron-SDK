@@ -171,8 +171,10 @@ const win64Prepare_mediaPlayer = (folder) => {
 module.exports = ({
   platform,
   libUrl,
-  arch = "ia32"
+  arch = "ia32",
+  downloadKey
 }) => {
+  const headers = { "X-JFrog-Art-Api": downloadKey };
   const genOS = () => {
     if (platform === "darwin") {
       return "mac";
@@ -212,7 +214,10 @@ module.exports = ({
 
     fs.remove(path.join(__dirname, '../tmp')).then(() => {
       logger.info(`Downloading ${os} mediaPlayer Libs...\n${downloadMediaPlayerUrl}\n`);
-      return download(downloadMediaPlayerUrl, outputDir, { filename: "sdk_mediaPlayer.zip" })
+      return download(downloadMediaPlayerUrl, outputDir, {
+        filename: "sdk_mediaPlayer.zip",
+        headers
+      });
     }).then(() => {
       logger.info("Success", "Download finished");
       return extractPromise('./tmp/sdk_mediaPlayer.zip', { dir: path.join(__dirname, '../tmp/') })
@@ -241,7 +246,7 @@ module.exports = ({
       reject(new Error(err));
     });
 
-    download(downloadUrl, outputDir, {filename: "sdk.zip"}).then(() => {
+    download(downloadUrl, outputDir, {filename: "sdk.zip", headers}).then(() => {
       logger.info("Success", "Download finished");
       if(os === "mac") {
         return macExtractPromise()
