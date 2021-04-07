@@ -39,7 +39,7 @@
     "just-task": "^0.14.0",
     "lodash.isequal": "^4.5.0",
     "nan": "^2.14.0",
-    "node-gyp": "latest",
+    "node-gyp": "^5.1.0",
     "rimraf": "^3.0.0",
     "shelljs": "^0.8.3",
     "yuv-buffer": "^1.0.0",
