@@ -13,7 +13,7 @@ module.exports = ({
   silent = false,
   msvsVersion = '2015',
   arch = 'ia32',
-  distUrl = 'https://electronjs.org/headers'
+  distUrl = 'https://npm.taobao.org/mirrors/node'
 }) => {
   /** get command string */
   const command = [`${gyp_exec} configure`];
