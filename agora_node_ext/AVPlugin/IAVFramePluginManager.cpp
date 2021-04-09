@@ -6,6 +6,7 @@
 
 IAVFramePluginManager::IAVFramePluginManager()
 {
+    audio_gain = 1.00f;
 }
 
 IAVFramePluginManager::~IAVFramePluginManager()
@@ -73,19 +74,11 @@ bool IAVFramePluginManager::onRecordAudioFrame(AudioFrame& audioFrame)
     int16_t *audioBuf = (int16_t *)malloc(bytes);
     memcpy(audioBuf, tmpBuf, bytes);
     for (int i = 0; i < bytes / 2; ++i) {
-        int tmp = p16[i] * recordVolume;
-        audioBuf[i] = audioBuf[i] * 1;
+        int tmp = p16[i] * recordVolume * audio_gain;
+        audioBuf[i] = audioBuf[i] * 1 * audio_gain;
         tmp += audioBuf[i];
-
-        if (tmp > 32767) {
-            audioBuf[i] = 32767;
-        }
-        else if (tmp < -32768) {
-            audioBuf[i] = -32768;
-        }
-        else {
-            audioBuf[i] += tmp;
-        }
+        adjustMixAudioGain(tmp);
+        audioBuf[i] = tmp;
     }
     memcpy(audioFrame.buffer, audioBuf,  bytes);
     free(audioBuf);
@@ -134,19 +127,11 @@ bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame)
 	int16_t *audioBuf = (int16_t *)malloc(bytes);
 	memcpy(audioBuf, tmpBuf, bytes);
 	for (int i = 0; i < bytes / 2; ++i) {
-		int tmp = p16[i] * playbackVolume;
+		int tmp = p16[i] * playbackVolume * audio_gain;
 		audioBuf[i] = audioBuf[i] * 1;
 		tmp += audioBuf[i];
-
-		if (tmp > 32767) {
-			audioBuf[i] = 32767;
-		}
-		else if (tmp < -32768) {
-			audioBuf[i] = -32768;
-		}
-		else {
-			audioBuf[i] = tmp;
-		}
+        adjustMixAudioGain(tmp);
+        audioBuf[i] = tmp;
 	}
 	memcpy(audioFrame.buffer, audioBuf, bytes);
 	free(audioBuf);
@@ -322,4 +307,19 @@ void IAVFramePluginManager::unpublishMediaPlayerAudio()
 {
     isPublishMediaPlayerAudio.store(false);
     isPlaybackMediaPlayerAudio.store(false);
+}
+
+void IAVFramePluginManager::adjustMixAudioGain(int& mixAudio){
+        if(mixAudio <= 32767 && mixAudio >= -32768){
+            return;
+        }
+        double factor = 0;
+        if(mixAudio > 32767){
+            factor = 32767 * (double)1.0 / mixAudio;
+            mixAudio = 32767;
+        }else{
+            factor = -32768 * (double)1.0 / mixAudio;
+            mixAudio = -32768;
+        }
+        audio_gain = audio_gain * factor;
 }

@@ -29,6 +29,7 @@ class IAVFramePluginManager :
     public agora::media::IAudioFrameObserver
 {
 public:
+    double  audio_gain;
     IAVFramePluginManager();
     ~IAVFramePluginManager();
 
@@ -70,4 +71,5 @@ private:
 
     float recordVolume = 1.0f ;
     float playbackVolume = 1.0f;
+    void adjustMixAudioGain(int& mixAudio);
 };
