@@ -1,4 +1,9 @@
-# 3.3.1 (Mar 12th, 2021)
+## 3.3.1-rc.71 (April 9th, 2021)
+* arm64 support
+* electron 12.0.0 support
+* fix initialize log config bug
+
+## 3.3.1 (Mar 12th, 2021)
 * add new api:
   - setVoiceConversionPreset
   - add localAudioStateChanged, localVideoStateChanged for videoSource
