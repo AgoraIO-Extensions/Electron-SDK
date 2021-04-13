@@ -85,7 +85,8 @@ const win64Prepare = (folder) => {
 module.exports = ({
   platform,
   libUrl,
-  arch = "ia32"
+  arch = "ia32",
+  downloadKey
 }) => {
   const genOS = () => {
     if (platform === "darwin") {
@@ -122,7 +123,10 @@ module.exports = ({
     logger.info(`Downloading ${os} Libs...\n${downloadUrl}\n`);
 
     fs.remove(path.join(__dirname, '../tmp')).then(() => {
-      return download(downloadUrl, outputDir, {filename: "sdk.zip"})
+      return download(downloadUrl, outputDir, {
+        filename: "sdk.zip",
+        headers: { "X-JFrog-Art-Api": downloadKey }
+      });
     }).then(() => {
       logger.info("Success", "Download finished");
       if(os === "mac") {
