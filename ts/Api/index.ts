@@ -4,6 +4,7 @@
   IRenderer,
   CustomRenderer
 } from '../Renderer';
+import throttle from 'lodash.throttle';
 import {
   NodeRtcEngine,
   NodeRtcChannel,
@@ -71,9 +72,12 @@ class AgoraRtcEngine extends EventEmitter {
   streams: Map<string, Map<string, IRenderer[]>>;
   renderMode: 1 | 2 | 3;
   customRenderer: any;
-  constructor() {
+  deliverFrameDuring: number = 1000;
+  constructor(props:any) {
     super();
     this.rtcEngine = new agora.NodeRtcEngine();
+    this.deliverFrameDuring = props;
+    
     this.initEventHandler();
     this.streams = new Map();
     this.renderMode = this._checkWebGL() ? 1 : 2;
@@ -161,6 +165,11 @@ class AgoraRtcEngine extends EventEmitter {
         this.emit(event, ...args);
       });
     };
+    
+    const fireThrottle = throttle(fire, this.deliverFrameDuring, {
+      leading: false,
+      trailing: true
+    });
 
     this.rtcEngine.onEvent('apierror', (funcName: string) => {
       console.error(`api ${funcName} failed. this is an error
@@ -735,8 +744,9 @@ class AgoraRtcEngine extends EventEmitter {
       fire('audioRouteChanged', routing);
     })
 
-    this.rtcEngine.registerDeliverFrame(function(infos: any) {
+    this.rtcEngine.registerDeliverFrame((infos: any) => {
       self.onRegisterDeliverFrame(infos);
+      fireThrottle("onRegisterDeliverFrame", infos);
     });
   }
 
