@@ -1984,7 +1984,7 @@ namespace agora {
                 bool enable;
                 napi_status status = napi_get_value_bool_(args[0], enable);
                 CHECK_NAPI_STATUS(pEngine, status);
-                if (!pEngine->m_videoSourceSink.get() || !pEngine->m_videoSourceSink->enableDualStreamMode(enable)) {
+                if (!pEngine->m_videoSourceSink.get() || pEngine->m_videoSourceSink->enableDualStreamMode(enable) != node_ok) {
                     break;
                 }
 
