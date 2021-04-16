@@ -3,7 +3,7 @@ const download = require("download");
 const extract = require('extract-zip')
 const path = require("path");
 const glob = require("glob")
-const promisify = require("bluebird").promisify
+const promisify = require("util").promisify
 const fs = require("fs-extra")
 
 const extractPromise = promisify(extract)
