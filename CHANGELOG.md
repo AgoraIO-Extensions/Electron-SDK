@@ -1,3 +1,6 @@
+## 2.9.107-rc.136-build.417 (Apr 17th 2021)
+* fix windows addon arch error
+
 ## 2.9.107-rc.136 (Apr 7th 2021)
 * update native sdk
 ## 2.9.0-rc.107-build.1140
