@@ -369,6 +369,14 @@ namespace agora {
              *  3.3.1
              */ 
             NAPI_API(setVoiceConversionPreset);
+            /**
+            * 3.4.0
+            */
+            NAPI_API(adjustLoopbackRecordingSignalVolume);
+            NAPI_API(setEffectPosition);
+            NAPI_API(getEffectDuration);
+            NAPI_API(getEffectCurrentPosition);
+            NAPI_API(getAudioMixingFileDuration);
             
         public:
             Isolate* getIsolate() { return m_isolate; }
@@ -587,6 +595,44 @@ namespace agora {
                 break; \
             } \
             status = napi_get_value_##type7##_(argv[6], (param7)); \
+            if(status != napi_ok) { \
+                break; \
+            } \
+        } while (false);
+/*
+* to extract seven parameters from JS call parameters.
+*/
+#define napi_get_param_8(argv, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5, type6, param6, type7, param7, type8, param8) \
+        do { \
+            status = napi_get_value_##type1##_(argv[0], (param1)); \
+            if(status != napi_ok) { \
+                break; \
+            } \
+            status = napi_get_value_##type2##_(argv[1], (param2)); \
+            if(status != napi_ok) { \
+                break; \
+            } \
+            status = napi_get_value_##type3##_(argv[2], (param3)); \
+            if(status != napi_ok) { \
+                break; \
+            } \
+            status = napi_get_value_##type4##_(argv[3], (param4)); \
+            if(status != napi_ok) { \
+                break; \
+            } \
+		    status = napi_get_value_##type5##_(argv[4], (param5)); \
+            if(status != napi_ok) { \
+                break; \
+            } \
+            status = napi_get_value_##type6##_(argv[5], (param6)); \
+            if(status != napi_ok) { \
+                break; \
+            } \
+            status = napi_get_value_##type7##_(argv[6], (param7)); \
+            if(status != napi_ok) { \
+                break; \
+            } \
+            status = napi_get_value_##type8##_(argv[7], (param8)); \
             if(status != napi_ok) { \
                 break; \
             } \

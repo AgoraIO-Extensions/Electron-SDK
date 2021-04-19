@@ -311,8 +311,16 @@ namespace agora {
                  */
                 PROPERTY_METHOD_DEFINE(setVoiceConversionPreset);
 
-            EN_PROPERTY_DEFINE()
-            module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
+                /**
+                 * 3.4.0
+                 */
+                PROPERTY_METHOD_DEFINE(adjustLoopbackRecordingSignalVolume);
+                PROPERTY_METHOD_DEFINE(setEffectPosition);
+                PROPERTY_METHOD_DEFINE(getEffectDuration);
+                PROPERTY_METHOD_DEFINE(getEffectCurrentPosition);
+                PROPERTY_METHOD_DEFINE(getAudioMixingFileDuration);
+                EN_PROPERTY_DEFINE()
+                module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
 
         /**
@@ -432,8 +440,6 @@ namespace agora {
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setEffectsVolume, int32);
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(setVolumeOfEffect, int32, int32);
-
-        NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_7(playEffect, int32, nodestring, int32, double, double, int32, bool);
 
         NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(stopEffect, int32);
 
@@ -3527,28 +3533,7 @@ namespace agora {
 
         NAPI_API_DEFINE_WRAPPER_PARAM_3(enableAudioVolumeIndication, int32, int32, bool);
 
-        NAPI_API_DEFINE(NodeRtcEngine, startAudioRecording)
-        {
-            LOG_ENTER;
-            int result = -1;
-            NodeString filePath;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_status status = napi_ok;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-
-                nodestring filePath;
-                int quality, sampleRate;
-
-                napi_get_param_3(args, nodestring, filePath, int32, sampleRate, int32, quality);
-
-                result = pEngine->m_engine->startAudioRecording(filePath, sampleRate, AUDIO_RECORDING_QUALITY_TYPE(quality));
-            } while (false);
-            napi_set_int_result(args, result);
-
-            LOG_LEAVE;
-        }
+        
 
         NAPI_API_DEFINE(NodeRtcEngine, startAudioMixing)
         {
@@ -5957,6 +5942,151 @@ namespace agora {
                 result = pEngine->m_engine->setVoiceConversionPreset(VOICE_CONVERSION_PRESET(preset));
             } while (false);
             napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+        /*
+         * 3.4.0
+         */
+        NAPI_API_DEFINE(NodeRtcEngine, getAudioMixingFileDuration)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                NodeString filePath;
+                napi_status status = napi_get_value_nodestring_(args[0], filePath);
+                CHECK_NAPI_STATUS(pEngine, status);
+                result = pEngine->m_engine->getAudioMixingDuration(filePath);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+        NAPI_API_DEFINE(NodeRtcEngine, startAudioRecording)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                NodeString filePath;
+                int quality, sampleRate, pos;
+
+                napi_get_param_4(args, nodestring, filePath, int32, sampleRate, int32, quality, int32, pos);
+                AudioRecordingConfiguration config;
+                config.filePath = filePath;
+                config.recordingSampleRate = sampleRate;
+                config.recordingQuality = AUDIO_RECORDING_QUALITY_TYPE(quality);
+                config.recordingPosition = AUDIO_RECORDING_POSITION(pos);
+                
+                result = pEngine->m_engine->startAudioRecording(config);
+            } while (false);
+            napi_set_int_result(args, result);
+
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, adjustLoopbackRecordingSignalVolume)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                int volume;
+
+                napi_get_param_1(args, int32, volume);
+                
+                result = pEngine->m_engine->adjustLoopbackRecordingSignalVolume(volume);
+            } while (false);
+            napi_set_int_result(args, result);
+
+            LOG_LEAVE;
+        }
+        NAPI_API_DEFINE(NodeRtcEngine, setEffectPosition)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                int soundId, pos;
+
+                napi_get_param_2(args, int32, soundId, int32, pos);
+                
+                result = pEngine->m_engine->setEffectPosition(soundId, pos);
+            } while (false);
+            napi_set_int_result(args, result);
+
+            LOG_LEAVE;
+        }
+        NAPI_API_DEFINE(NodeRtcEngine, getEffectDuration)
+        {
+            LOG_ENTER;
+            int result = -1;
+            NodeString filePath;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                napi_get_param_1(args, nodestring, filePath);
+                result = pEngine->m_engine->getEffectDuration(filePath);
+            } while (false);
+            napi_set_int_result(args, result);
+
+            LOG_LEAVE;
+        }
+        NAPI_API_DEFINE(NodeRtcEngine, getEffectCurrentPosition)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                int soundId;
+
+                napi_get_param_1(args, int32, soundId);
+                
+                result = pEngine->m_engine->getEffectCurrentPosition(soundId);
+            } while (false);
+            napi_set_int_result(args, result);
+
+            LOG_LEAVE;
+        }
+        NAPI_API_DEFINE(NodeRtcEngine, playEffect)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                NodeString filePath;
+                unsigned int soundId, loopCount, gain, startPos;
+                double pitch, pan;
+                bool publish;
+
+                napi_get_param_8(args, uint32, soundId, nodestring, filePath, uint32, loopCount, double, pitch, double, pan, uint32, gain, bool, publish, uint32, startPos);
+                
+                result = pEngine->m_engine->getEffectCurrentPosition(soundId);
+            } while (false);
+            napi_set_int_result(args, result);
+
             LOG_LEAVE;
         }
 
