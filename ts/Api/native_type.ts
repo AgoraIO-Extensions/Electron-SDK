@@ -3019,7 +3019,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  startAudioRecording(filePath: string, sampleRate: number, quality: number): number;
+  startAudioRecording(filePath: string, sampleRate: number, quality: number, pos: number): number;
   /**
    * @ignore
    */
@@ -3339,7 +3339,8 @@ export interface NodeRtcEngine {
     pitch: number,
     pan: number,
     gain: number,
-    publish: number
+    publish: number,
+    startPos: number
   ): number;
   /**
    * @ignore
@@ -3620,6 +3621,27 @@ export interface NodeRtcEngine {
    * @ignore
    */
   setVoiceConversionPreset(preset:VOICE_CONVERSION_PRESET): number;
+  /**
+   * @ignore
+   */
+  adjustLoopbackRecordingSignalVolume(volume: number): number;
+  /**
+   * @ignore
+   */
+  setEffectPosition(soundId: number, pos: number): number;
+  /**
+   * @ignore
+   */
+   getEffectDuration(filePath: string): number;
+  /**
+   * @ignore
+   */
+  getEffectCurrentPosition(soundId: number): number;
+  /**
+   * @ignore
+   */
+   getAudioMixingFileDuration(filePath: string): number;
+  
 }
 /**
  * @ignore

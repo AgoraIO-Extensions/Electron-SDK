@@ -1361,7 +1361,7 @@ namespace agora {
             MAKE_JS_CALL_1(RTC_EVENT_API_ERROR, string, funcName);
         }
 
-        void NodeEventHandler::onAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE errorCode)
+        void NodeEventHandler::onAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_REASON_TYPE errorCode)
         {
             FUNC_TRACE;
             node_async_call::async_call([this, state, errorCode] {
@@ -1369,7 +1369,7 @@ namespace agora {
             });
         }
 
-        void NodeEventHandler::onAudioMixingStateChanged_node(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE errorCode)
+        void NodeEventHandler::onAudioMixingStateChanged_node(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_REASON_TYPE errorCode)
         {
             FUNC_TRACE;
             MAKE_JS_CALL_2(RTC_EVENT_AUDIO_MIXING_STATE_CHANGED, int32, state, int32, errorCode);
