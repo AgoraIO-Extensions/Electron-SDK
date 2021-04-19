@@ -198,7 +198,7 @@ namespace agora {
             void addEventHandler(const std::string& eventName, Persistent<Object>& obj, Persistent<Function>& callback);
 
             //2.4.0
-            virtual void onAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE errorCode) override;
+            virtual void onAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_REASON_TYPE errorCode) override;
             virtual void onLastmileProbeResult(const LastmileProbeResult &result) override;
 
             //2.8.0
@@ -300,7 +300,7 @@ namespace agora {
             void onVideoSourceLeaveChannel_node();
 
             //2.4.0
-            void onAudioMixingStateChanged_node(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE errorCode);
+            void onAudioMixingStateChanged_node(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_REASON_TYPE errorCode);
             void onLastmileProbeResult_node(const LastmileProbeResult &result);
 
             //2.8.0

@@ -308,9 +308,9 @@ class AgoraRtcEngine extends EventEmitter {
 
     this.rtcEngine.onEvent('audioMixingStateChanged', function(
       state: number,
-      err: number
+      reaCode: number
     ) {
-      fire('audioMixingStateChanged', state, err);
+      fire('audioMixingStateChanged', state, reaCode);
     });
 
     this.rtcEngine.onEvent('apicallexecuted', function(
@@ -717,9 +717,9 @@ class AgoraRtcEngine extends EventEmitter {
 
     this.rtcEngine.onEvent('audioMixingStateChanged', function(
       state: number,
-      errorCode: number
+      reaCode: number
     ) {
-      fire('audioMixingStateChanged', state, errorCode);
+      fire('audioMixingStateChanged', state, reaCode);
     });
 
     this.rtcEngine.onEvent('channelMediaRelayState', function(
@@ -3170,6 +3170,24 @@ class AgoraRtcEngine extends EventEmitter {
   adjustRecordingSignalVolume(volume: number): number {
     return this.rtcEngine.adjustRecordingSignalVolume(volume);
   }
+  adjustLoopbackRecordingSignalVolume(volume: number): number {
+    return this.rtcEngine.adjustLoopbackRecordingSignalVolume(volume);
+  }
+  setEffectPosition(soundId: number, pos: number): number {
+    return this.rtcEngine.setEffectPosition(soundId, pos);
+  }
+  getEffectDuration(filePath: string): number {
+    return this.rtcEngine.getEffectDuration(filePath);
+  }
+  getEffectCurrentPosition(soundId: number): number {
+    return this.rtcEngine.getEffectCurrentPosition(soundId);
+  }
+  getAudioMixingFileDuration
+  (filePath: string): number {
+    return this.rtcEngine.  getAudioMixingFileDuration
+    (filePath);
+  }
+  
   /**
    * Adjusts the playback volume of the voice.
    * @param volume Playback volume of the voice. To avoid echoes and improve
@@ -3532,8 +3550,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success
    * - < 0: Failure
    */
-  startAudioRecording(filePath: string, sampleRate:number, quality: number):number {
-    return this.rtcEngine.startAudioRecording(filePath, sampleRate, quality)
+  startAudioRecording(filePath: string, sampleRate:number, quality: number, pos = 0):number {
+    return this.rtcEngine.startAudioRecording(filePath, sampleRate, quality, pos)
   }
   /**
    * Stops an audio recording on the client.
@@ -4891,7 +4909,8 @@ class AgoraRtcEngine extends EventEmitter {
     pitch: number,
     pan: number,
     gain: number,
-    publish: number
+    publish: number,
+    startPos: number
   ): number {
     return this.rtcEngine.playEffect(
       soundId,
@@ -4900,7 +4919,8 @@ class AgoraRtcEngine extends EventEmitter {
       pitch,
       pan,
       gain,
-      publish
+      publish,
+      startPos
     );
   }
   /**
@@ -6029,7 +6049,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: 'audioMixingStateChanged',
-    cb: (state: number, err: number) => void
+    cb: (state: number, reaCode: number) => void
   ): this;
   /** Occurs when a remote user starts audio mixing.
    * When a remote user calls {@link startAudioMixing} to play the background
