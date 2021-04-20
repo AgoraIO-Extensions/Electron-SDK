@@ -111,6 +111,8 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setLocalVoiceEqualization)
                 PROPERTY_METHOD_DEFINE(setLocalVoiceReverb)
                 PROPERTY_METHOD_DEFINE(setExternalAudioSink)
+                PROPERTY_METHOD_DEFINE(getDefaultAudioPlaybackDevices)
+                PROPERTY_METHOD_DEFINE(getDefaultRecordingDevices)
                 PROPERTY_METHOD_DEFINE(setLocalPublishFallbackOption)
                 PROPERTY_METHOD_DEFINE(setRemoteSubscribeFallbackOption)
                 PROPERTY_METHOD_DEFINE(setAudioProfile)
@@ -4009,6 +4011,76 @@ namespace agora {
                     deviceId[0] = '\0';
                 }
                 args.GetReturnValue().Set(devices);
+            } while (false);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, getDefaultAudioPlaybackDevices)
+        {
+            LOG_ENTER;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                Isolate* isolate = args.GetIsolate();
+                Local<Context> context = isolate->GetCurrentContext();
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+              
+                if (!pEngine->m_audioVdm) {
+                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
+                }
+                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+                auto pdc = adm ? adm->enumeratePlaybackDevices() : nullptr;
+                char deviceName[MAX_DEVICE_ID_LENGTH] = { 0 };
+                char deviceId[MAX_DEVICE_ID_LENGTH] = { 0 };
+                Local<v8::Object> parentObj = v8::Object::New(args.GetIsolate());
+                for (int i = -2; i < 0; i++) {
+                    Local<v8::Object> dev = v8::Object::New(args.GetIsolate());
+                    pdc->getDevice(i, deviceName, deviceId);
+                    auto dn = v8::String::NewFromUtf8(args.GetIsolate(), deviceName, NewStringType::kInternalized).ToLocalChecked();
+                    auto di = v8::String::NewFromUtf8(args.GetIsolate(), deviceId, NewStringType::kInternalized).ToLocalChecked();
+                    dev->Set(context, Nan::New<String>("devicename").ToLocalChecked(), dn);
+                    dev->Set(context, Nan::New<String>("deviceid").ToLocalChecked(), di);
+                    deviceName[0] = '\0';
+                    deviceId[0] = '\0';
+
+                    parentObj->Set(context, Nan::New<String>(i == -1 ? "defaultCommunicationDevice" : "defaultDevice").ToLocalChecked(), dev);
+                }
+                args.GetReturnValue().Set(parentObj);
+            } while (false);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, getDefaultRecordingDevices)
+        {
+            LOG_ENTER;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                Isolate* isolate = args.GetIsolate();
+                Local<Context> context = isolate->GetCurrentContext();
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+              
+                if (!pEngine->m_audioVdm) {
+                    pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
+                }
+                IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+                auto pdc = adm ? adm->enumerateRecordingDevices() : nullptr;
+                char deviceName[MAX_DEVICE_ID_LENGTH] = { 0 };
+                char deviceId[MAX_DEVICE_ID_LENGTH] = { 0 };
+                Local<v8::Object> parentObj = v8::Object::New(args.GetIsolate());
+                for (int i = -2; i < 0; i++) {
+                    Local<v8::Object> dev = v8::Object::New(args.GetIsolate());
+                    pdc->getDevice(i, deviceName, deviceId);
+                    auto dn = v8::String::NewFromUtf8(args.GetIsolate(), deviceName, NewStringType::kInternalized).ToLocalChecked();
+                    auto di = v8::String::NewFromUtf8(args.GetIsolate(), deviceId, NewStringType::kInternalized).ToLocalChecked();
+                    dev->Set(context, Nan::New<String>("devicename").ToLocalChecked(), dn);
+                    dev->Set(context, Nan::New<String>("deviceid").ToLocalChecked(), di);
+                    deviceName[0] = '\0';
+                    deviceId[0] = '\0';
+
+                    parentObj->Set(context, Nan::New<String>(i == -1 ? "defaultCommunicationDevice" : "defaultDevice").ToLocalChecked(), dev);
+                }
+                args.GetReturnValue().Set(parentObj);
             } while (false);
             LOG_LEAVE;
         }

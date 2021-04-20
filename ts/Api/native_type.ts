@@ -2960,6 +2960,11 @@ export interface NodeRtcEngine {
    * @ignore
    */
   getAudioPlaybackDevices(): Array<Object>;
+  
+  getDefaultAudioPlaybackDevices(): Object;
+
+  getDefaultRecordingDevices(): Object;
+
   /**
    * @ignore
    */

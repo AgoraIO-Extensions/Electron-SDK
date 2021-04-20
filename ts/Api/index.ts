@@ -3283,6 +3283,12 @@ class AgoraRtcEngine extends EventEmitter {
   getAudioPlaybackDevices(): Array<Object> {
     return this.rtcEngine.getAudioPlaybackDevices();
   }
+  getDefaultAudioPlaybackDevices(): Object {
+    return this.rtcEngine.getDefaultAudioPlaybackDevices();
+  }
+  getDefaultRecordingDevices(): Object {
+    return this.rtcEngine.getDefaultRecordingDevices();
+  }
 
   /**
    * Sets the audio playback device using the device ID.

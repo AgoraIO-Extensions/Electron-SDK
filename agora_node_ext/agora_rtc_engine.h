@@ -207,6 +207,8 @@ namespace agora {
             NAPI_API(getCurrentVideoDevice);
             NAPI_API(startVideoDeviceTest);
             NAPI_API(stopVideoDeviceTest);
+            NAPI_API(getDefaultAudioPlaybackDevices);
+            NAPI_API(getDefaultRecordingDevices);
             NAPI_API(getAudioPlaybackDevices);
             NAPI_API(setAudioPlaybackDevice);
             NAPI_API(getPlaybackDeviceInfo);
