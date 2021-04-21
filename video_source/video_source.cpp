@@ -240,6 +240,11 @@ void AgoraVideoSource::notifyLocalAudioStateChanged(agora::rtc::LOCAL_AUDIO_STRE
     m_ipc->sendMessage(AGORA_IPC_ON_LOCAL_AUDIO_STATE_CHANGED, (char*)cmd.get(), sizeof(LocalAudioStateChangedCmd));
 }
 
+void AgoraVideoSource::setProcessDpiAwareness()
+{
+    SetProcessDpiAwarenessEx();
+}
+
 void AgoraVideoSource::release()
 {
     delete this;
@@ -426,6 +431,8 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
     }
     else if(msg == AGORA_IPC_SET_ENCRYPTION_SECRET) {
         m_rtcEngine->setEncryptionSecret((const char *)payload);
+    } else if(msg == AGORA_IPC_SET_PROCESS_DPI_AWARE_NESS) {
+        setProcessDpiAwareness();
     }
 
     LOG_LEAVE;

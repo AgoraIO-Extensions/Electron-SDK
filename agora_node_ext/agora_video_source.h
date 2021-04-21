@@ -15,6 +15,7 @@
 #include "node_error.h"
 #include <string>
 #include "video_source_ipc.h"
+#include "windows_system_api.h"
 
 namespace agora{
     namespace rtc{
@@ -193,6 +194,7 @@ namespace agora{
             virtual node_error setEncryptionMode(const char *encryptionMode) = 0;
             virtual node_error enableEncryption(bool enable, EncryptionConfig encryptionConfig) = 0;
             virtual node_error setEncryptionSecret(const char* secret) = 0;
+            virtual node_error setProcessDpiAwareness() = 0;
         };
 
         /**
