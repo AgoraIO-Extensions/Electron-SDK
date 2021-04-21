@@ -319,6 +319,8 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(getEffectDuration);
                 PROPERTY_METHOD_DEFINE(getEffectCurrentPosition);
                 PROPERTY_METHOD_DEFINE(getAudioMixingFileDuration);
+                PROPERTY_METHOD_DEFINE(setProcessDpiAwareness);
+                PROPERTY_METHOD_DEFINE(videoSourceSetProcessDpiAwareness);
                 EN_PROPERTY_DEFINE()
                 module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -6090,6 +6092,40 @@ namespace agora {
             LOG_LEAVE;
         }
 
+        NAPI_API_DEFINE(NodeRtcEngine, setProcessDpiAwareness)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);  
+                result = SetProcessDpiAwarenessEx();
+            } while (false);
+            napi_set_int_result(args, result);
+
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetProcessDpiAwareness)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);  
+                if (pEngine->m_videoSourceSink.get()){
+                    pEngine->m_videoSourceSink->setProcessDpiAwareness();
+                    result = 0;
+                }
+            } while (false);
+            napi_set_int_result(args, result);
+
+            LOG_LEAVE;
+        }
         /**
          * NodeRtcChannel
          */

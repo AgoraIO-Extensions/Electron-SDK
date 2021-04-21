@@ -5825,6 +5825,14 @@ class AgoraRtcEngine extends EventEmitter {
   setVoiceConversionPreset(preset:VOICE_CONVERSION_PRESET): number {
     return this.rtcEngine.setVoiceConversionPreset(preset);
   }
+
+  setProcessDpiAwareness(): number {
+    return this.rtcEngine.setProcessDpiAwareness();
+  }
+
+  videoSourceSetProcessDpiAwareness(): number {
+    return this.rtcEngine.videoSourceSetProcessDpiAwareness();
+  } 
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
