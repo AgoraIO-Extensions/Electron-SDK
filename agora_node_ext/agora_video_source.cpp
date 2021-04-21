@@ -73,6 +73,7 @@ namespace agora{
             virtual node_error setEncryptionMode(const char *encryptionMode) override;
             virtual node_error enableEncryption(bool enable, EncryptionConfig encryptionConfig) override;
             virtual node_error setEncryptionSecret(const char* secret) override;
+            virtual node_error setProcessDpiAwareness() override;
         private:
             void msgThread();
             void deliverFrame(const char* payload, int len);
@@ -557,6 +558,14 @@ namespace agora{
                     strncpy(cmd.encryptionKey, encryptionConfig.encryptionKey, MAX_DEVICE_ID_LENGTH);
                 }
                 return m_ipcMsg->sendMessage(AGORA_IPC_ENABLE_ENCRYPTION, (char*)&cmd, sizeof(cmd)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::setProcessDpiAwareness()
+        {
+            if (m_initialized) {
+                return m_ipcMsg->sendMessage(AGORA_IPC_SET_PROCESS_DPI_AWARE_NESS, nullptr, 0) ? node_ok : node_generic_error;
             }
             return node_status_error;
         }

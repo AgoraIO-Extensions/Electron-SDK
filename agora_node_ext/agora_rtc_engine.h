@@ -29,6 +29,7 @@
 #include "AVPlugin/IAVFramePluginManager.h"
 #include "AVPlugin/IAVFramePlugin.h"
 #include "node_metadata_observer.h"
+#include "windows_system_api.h"
 /*
 * Used to declare native interface to nodejs
 */
@@ -377,6 +378,9 @@ namespace agora {
             NAPI_API(getEffectDuration);
             NAPI_API(getEffectCurrentPosition);
             NAPI_API(getAudioMixingFileDuration);
+
+            NAPI_API(setProcessDpiAwareness);
+            NAPI_API(videoSourceSetProcessDpiAwareness);
             
         public:
             Isolate* getIsolate() { return m_isolate; }

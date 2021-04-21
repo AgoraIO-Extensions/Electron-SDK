@@ -3640,8 +3640,15 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-   getAudioMixingFileDuration(filePath: string): number;
-  
+  getAudioMixingFileDuration(filePath: string): number;
+  /**
+   * @ignore
+   */
+  setProcessDpiAwareness(): number;
+  /**
+   * @ignore
+   */
+  videoSourceSetProcessDpiAwareness(): number;
 }
 /**
  * @ignore
