@@ -18,6 +18,7 @@
 #include "node_error.h"
 #include <thread>
 #include <mutex>
+#include "windows_system_api.h"
 
 class AgoraVideoSourceEventHandler;
 class AgoraVideoSourceRenderFactory;
@@ -93,6 +94,7 @@ protected:
     void notifyVideoSizeChanged(agora::rtc::uid_t uid, int width, int height, int rotation);
     void notifyLocalVideoStateChanged(agora::rtc::LOCAL_VIDEO_STREAM_STATE localVideoState, agora::rtc::LOCAL_VIDEO_STREAM_ERROR error);
     void notifyLocalAudioStateChanged(agora::rtc::LOCAL_AUDIO_STREAM_STATE state, agora::rtc::LOCAL_AUDIO_STREAM_ERROR error);
+    void setProcessDpiAwareness();
 private:
     void exit(bool notifySink);
 private:
