@@ -36,6 +36,7 @@
   ],
   "gypfile": false,
   "dependencies": {
+    "download": "^7.1.0",
     "extract-zip": "^1.6.7",
     "fs-extra": "^8.1.0",
     "glob": "^7.1.6",
@@ -46,7 +47,6 @@
     "rimraf": "^3.0.0",
     "shelljs": "^0.8.3",
     "yuv-buffer": "^1.0.0",
-    "download": "^7.1.0",
     "yuv-canvas": "^1.2.1"
   },
   "devDependencies": {
@@ -68,6 +68,7 @@
     "url": "git+https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron.git"
   },
   "agora_electron": {
+    "sdk_dir": true,
     "lib_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_v3_4_1_FULL.zip",
     "lib_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v3_4_1_FULL.zip",
     "JFrog-Art-Api": "AKCp8ihpZLUuQbsvo5N1zrfobsXr79qjQc3UNasrLTnRr5k7oGoRpnaphKLbzWKMDrEPgphqS"
