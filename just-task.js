@@ -130,6 +130,9 @@ task('install', () => {
   const config = Object.assign({}, getArgvFromNpmEnv(), getArgvFromPkgJson())
   // work-around
   const addonVersion = '3.4.1'
+  if (config.sdk_dir) {
+    return;
+  }
   if (config.prebuilt) {
     download({
       electronVersion: config.electronVersion, 
