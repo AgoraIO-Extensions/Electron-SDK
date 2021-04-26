@@ -1,3 +1,10 @@
+## 3.4.1 (April 26st, 2021)
+* add new api:
+  - adjustLoopbackRecordingSignalVolume
+  - getEffectDuration
+  - setEffectPosition
+  - getEffectCurrentPosition
+
 # 3.3.1 (April 14th, 2021)
 * Joining the channel occasionally failed when a user switched back to the app after keeping it in the background for a long time.
 * Remote users saw a distorted image when the local user minimized the shared screen with the genie effect on Mac devices.
