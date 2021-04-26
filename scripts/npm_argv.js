@@ -32,7 +32,6 @@ module.exports.getArgvFromPkgJson = () => {
       lib_sdk_mac: pkgMeta.agora_electron.lib_sdk_mac,
       no_symbol: pkgMeta.agora_electron.no_symbol === false ? false : true,
       downloadKey: pkgMeta.agora_electron["JFrog-Art-Api"],
-      sdk_dir:pkgMeta.agora_electron.sdk_dir
     }
     return config
   } else {
