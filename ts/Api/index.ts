@@ -57,6 +57,7 @@ import {
   PluginInfo,
   Plugin
 } from './plugin';
+
 const agora = require('../../build/Release/agora_node_ext');
 
 /**
@@ -67,13 +68,26 @@ class AgoraRtcEngine extends EventEmitter {
   streams: Map<string, Map<string, IRenderer>>;
   renderMode: 1 | 2 | 3;
   customRenderer: any;
+  firEvents?: (event: string, ...args: Array<any>) => void;
+
+  calFrames: {
+    user: Map<number, {frame: number; lastTime: number;}>;
+    fireEvent?: (event: string, ...args: Array<any>) => void;
+  };
+  firstRenderFrameCallback: Map<number, boolean>;
+
+
   constructor() {
     super();
+    this.calFrames = {
+      user: new Map<number, {frame: number, lastTime: number}>()
+    }
     this.rtcEngine = new agora.NodeRtcEngine();
     this.initEventHandler();
     this.streams = new Map();
     this.renderMode = this._checkWebGL() ? 1 : 2;
     this.customRenderer = CustomRenderer;
+    this.firstRenderFrameCallback = new Map();
   }
 
   /**
@@ -158,6 +172,11 @@ class AgoraRtcEngine extends EventEmitter {
       });
     };
 
+    if (!this.calFrames.fireEvent) {
+      this.calFrames.fireEvent = fire;
+    }
+
+    this.firEvents = fire;
     this.rtcEngine.onEvent('apierror', (funcName: string) => {
       console.error(`api ${funcName} failed. this is an error
               thrown by c++ addon layer. it often means sth is
@@ -409,6 +428,11 @@ class AgoraRtcEngine extends EventEmitter {
       uid: number,
       elapsed: number
     ) {
+      self.calFrames.user.set(uid, {
+        frame: 0,
+        lastTime: Date.now(),
+      })
+
       console.log('user : ' + uid + ' joined.');
       fire('userjoined', uid, elapsed);
       fire('userJoined', uid, elapsed);
@@ -428,6 +452,11 @@ class AgoraRtcEngine extends EventEmitter {
       self.rtcEngine.unsubscribe(uid);
       fire('removestream', uid, reason);
       fire('removeStream', uid, reason);
+      self.calFrames.user.delete(uid);
+      
+      if (self.firstRenderFrameCallback.has(uid)) {
+        self.firstRenderFrameCallback.delete(uid);
+      }
     });
 
     this.rtcEngine.onEvent('usermuteaudio', function(
@@ -758,6 +787,35 @@ class AgoraRtcEngine extends EventEmitter {
     });
   }
 
+  firstLocalVideoFrame(uid: number) {
+    if (this.firstRenderFrameCallback.has(uid) && this.firstRenderFrameCallback.get(uid)) {
+      return;  
+    }
+    
+    if (this.firEvents) {
+      this.firstRenderFrameCallback.set(uid, true);
+      this.firEvents('firstVideoFrameRendered', uid);
+    }
+  }
+
+  calFrameCount(uid: number) {
+    let now = Date.now();
+    let frameInfo = this.calFrames.user.get(uid);
+    if (frameInfo) {
+      frameInfo.frame ++;
+      if (now > (frameInfo.lastTime + 1000) && this.calFrames.fireEvent) {
+        this.calFrames.fireEvent('videoRenderFps', uid, frameInfo.frame);
+        frameInfo.frame = 0;
+        frameInfo.lastTime = now;
+      }
+    } else {
+      this.calFrames.user.set(uid, {
+        frame: 0,
+        lastTime: now
+      })
+    }    
+  }
+
   /**
    * @private
    * @ignore
@@ -878,6 +936,7 @@ class AgoraRtcEngine extends EventEmitter {
           vUint8Array: vdata
         });
       }
+      this.firstLocalVideoFrame(uid);
     }
   }
 
