@@ -539,6 +539,7 @@ void NodeVideoFrameTransporter::highFlushVideo()
 
 int napi_get_value_string_utf8_(const Local<Value>& str, char *buffer, uint32_t len)
 {
+    Isolate *isolate = Isolate::GetCurrent();
     if (!str->IsString())
         return 0;
     if (!buffer) {
