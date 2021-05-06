@@ -112,7 +112,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setLocalVoiceReverb)
                 PROPERTY_METHOD_DEFINE(setExternalAudioSink)
                 PROPERTY_METHOD_DEFINE(getDefaultAudioPlaybackDevices)
-                PROPERTY_METHOD_DEFINE(getDefaultRecordingDevices)
+                PROPERTY_METHOD_DEFINE(getDefaultAudioRecordingDevices)
                 PROPERTY_METHOD_DEFINE(setLocalPublishFallbackOption)
                 PROPERTY_METHOD_DEFINE(setRemoteSubscribeFallbackOption)
                 PROPERTY_METHOD_DEFINE(setAudioProfile)
@@ -4050,7 +4050,7 @@ namespace agora {
             LOG_LEAVE;
         }
 
-        NAPI_API_DEFINE(NodeRtcEngine, getDefaultRecordingDevices)
+        NAPI_API_DEFINE(NodeRtcEngine, getDefaultAudioRecordingDevices)
         {
             LOG_ENTER;
             do {

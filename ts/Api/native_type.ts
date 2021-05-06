@@ -2963,7 +2963,7 @@ export interface NodeRtcEngine {
   
   getDefaultAudioPlaybackDevices(): Object;
 
-  getDefaultRecordingDevices(): Object;
+  getDefaultAudioRecordingDevices(): Object;
 
   /**
    * @ignore

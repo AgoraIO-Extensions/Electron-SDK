@@ -3286,8 +3286,8 @@ class AgoraRtcEngine extends EventEmitter {
   getDefaultAudioPlaybackDevices(): Object {
     return this.rtcEngine.getDefaultAudioPlaybackDevices();
   }
-  getDefaultRecordingDevices(): Object {
-    return this.rtcEngine.getDefaultRecordingDevices();
+  getDefaultAudioRecordingDevices(): Object {
+    return this.rtcEngine.getDefaultAudioRecordingDevices();
   }
 
   /**
