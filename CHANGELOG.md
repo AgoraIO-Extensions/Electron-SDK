@@ -1,3 +1,6 @@
+## 3.2.1-hotfix.1 （May 6， 2021）
+* Fix memory leak of Video Render
+
 ## 3.2.1 (December 23rd, 2020)
 * Support Electron 9.0.0, 11.0.0
 
