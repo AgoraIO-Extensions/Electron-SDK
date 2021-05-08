@@ -24,6 +24,11 @@ bool IAVFramePluginManager::onCaptureVideoFrame(VideoFrame& videoFrame)
     return true;
 }
 
+IAVFramePluginManager::VIDEO_FRAME_MODE IAVFramePluginManager::getVideoFrameMode()
+{
+    return IAVFramePluginManager::VIDEO_FRAME_MODE_WRITE;
+}
+
 bool IAVFramePluginManager::onRenderVideoFrame(unsigned int uid, VideoFrame& videoFrame)
 {
     pluginMutex.lock();
