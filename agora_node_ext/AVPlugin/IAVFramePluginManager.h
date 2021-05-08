@@ -29,6 +29,7 @@ public:
     ~IAVFramePluginManager();
 
     virtual bool onCaptureVideoFrame(VideoFrame& videoFrame);
+    virtual VIDEO_FRAME_MODE getVideoFrameMode();
     virtual bool onRenderVideoFrame(unsigned int uid, VideoFrame& videoFrame);
 
     virtual bool onRecordAudioFrame(AudioFrame& audioFrame);
