@@ -47,10 +47,10 @@ const macPrepare = () => {
           path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraAIDenoiseExtension.framework'),
           path.join(__dirname, '../sdk/lib/mac/AgoraAIDenoiseExtension.framework')
         ),
-        fs.move(
-          path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraDav1dExtension.framework'),
-          path.join(__dirname, '../sdk/lib/mac/AgoraDav1dExtension.framework')
-        ),
+        // fs.move(
+        //   path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraDav1dExtension.framework'),
+        //   path.join(__dirname, '../sdk/lib/mac/AgoraDav1dExtension.framework')
+        // ),
         fs.move(
           path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraCore.framework'),
           path.join(__dirname, '../sdk/lib/mac/AgoraCore.framework')
@@ -120,7 +120,7 @@ const win64Prepare = (folder) => {
         fs.move(path.join(folder, './libs/x86_64/agora_rtc_sdk.lib'), path.join(__dirname, '../sdk/lib/agora_rtc_sdk.lib')),
         fs.move(path.join(folder, './libs/x86_64/av1.dll'), path.join(__dirname, '../sdk/dll/av1.dll')),
         fs.move(path.join(folder, './libs/x86_64/libagora_ai_denoise_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_ai_denoise_extension.dll')),
-        fs.move(path.join(folder, './libs/x86_64/libagora_dav1d_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_dav1d_extension.dll')),
+        // fs.move(path.join(folder, './libs/x86_64/libagora_dav1d_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_dav1d_extension.dll')),
         fs.move(path.join(folder, './libs/x86_64/libagora-core.dll'), path.join(__dirname, '../sdk/dll/libagora-core.dll')),
       ])
     }).then(() => {
