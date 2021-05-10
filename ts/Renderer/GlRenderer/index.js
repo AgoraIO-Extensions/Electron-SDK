@@ -47,9 +47,20 @@ const AgoraRender = function() {
       that.initRotation,
       console.warn
     );
+    const ResizeObserver =
+      window.ResizeObserver ||
+      window.WebKitMutationObserver ||
+      window.MozMutationObserver;
+    if (ResizeObserver) {
+      this.observer = new ResizeObserver(() => {
+        that.refreshCanvas && that.refreshCanvas();
+      });
+      this.observer.observe(view);
+    }
   };
 
-  that.unbind = function() {
+  that.unbind = function () {
+
     try {
       gl && gl.getExtension('WEBGL_lose_context').loseContext();
     } catch (err) {
