@@ -7,7 +7,6 @@
 /*
 *  Created by Wang Yongli, 2017
 */
-
 #include "agora_rtc_engine.h"
 #include "node_video_render.h"
 #include "node_uid.h"
@@ -46,6 +45,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(getErrorDescription)
                 PROPERTY_METHOD_DEFINE(joinChannel)
                 PROPERTY_METHOD_DEFINE(leaveChannel)
+                PROPERTY_METHOD_DEFINE(checkMicrophonePermission)
                 PROPERTY_METHOD_DEFINE(renewToken)
                 PROPERTY_METHOD_DEFINE(setChannelProfile)
                 PROPERTY_METHOD_DEFINE(setClientRole)
@@ -2556,6 +2556,17 @@ namespace agora {
             LOG_LEAVE;
         }
 
+        NAPI_API_DEFINE(NodeRtcEngine, checkMicrophonePermission)
+        {
+            LOG_ENTER;
+            bool result = false;
+            do {
+                result = !MicrophoneAuthorizationDenied();
+            } while (false);
+            napi_set_bool_result(args, result);
+            LOG_LEAVE;
+        }
+        
         NAPI_API_DEFINE(NodeRtcEngine, enableLocalAudio)
         {
             LOG_ENTER;

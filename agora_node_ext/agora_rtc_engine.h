@@ -14,6 +14,7 @@
 #include "IAgoraMediaEngine.h"
 #include "IAgoraRtcEngine.h"
 #include "IAgoraRtcChannel.h"
+#include "check_permission.h"
 #include <node.h>
 #include <node_object_wrap.h>
 #include "node_log.h"
@@ -29,6 +30,7 @@
 #include "AVPlugin/IAVFramePluginManager.h"
 #include "AVPlugin/IAVFramePlugin.h"
 #include "node_metadata_observer.h"
+
 /*
 * Used to declare native interface to nodejs
 */
@@ -71,6 +73,7 @@ namespace agora {
             NAPI_API(getErrorDescription);
             NAPI_API(joinChannel);
             NAPI_API(leaveChannel);
+            NAPI_API(checkMicrophonePermission);
             NAPI_API(renewToken);
             NAPI_API(setChannelProfile);
             NAPI_API(setClientRole);
@@ -445,6 +448,7 @@ namespace agora {
             NAPI_API(stopChannelMediaRelay);
             NAPI_API(getConnectionState);
             NAPI_API(leaveChannel);
+            NAPI_API(checkMicrophonePermission);
             NAPI_API(release);
 
             /**

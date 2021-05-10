@@ -2443,6 +2443,9 @@ class AgoraRtcEngine extends EventEmitter {
   enableLocalAudio(enable: boolean): number {
     return this.rtcEngine.enableLocalAudio(enable);
   }
+  checkMicrophonePermission(): boolean {
+    return this.rtcEngine.checkMicrophonePermission();
+  }
 
   /**
    * Stops or resumes subscribing to the video streams of all remote users.
@@ -8985,3 +8988,4 @@ declare interface AgoraRtcChannel {
 }
 
 export default AgoraRtcEngine;
+

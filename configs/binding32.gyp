@@ -207,6 +207,8 @@
         './common/loguru.cpp',
         './agora_node_ext/agora_node_ext.cpp',
         './agora_node_ext/agora_node_ext.h',
+        './agora_node_ext/check_permission.cpp',
+        './agora_node_ext/check_permission.h',
         './agora_node_ext/agora_rtc_engine.cpp',
         './agora_node_ext/agora_rtc_engine.h',
         './agora_node_ext/agora_video_source.cpp',

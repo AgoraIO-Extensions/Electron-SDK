@@ -2848,6 +2848,9 @@ export interface NodeRtcEngine {
    * @ignore
    */
   enableLocalAudio(enable: boolean): number;
+  
+  checkMicrophonePermission(): boolean;
+  
   /**
    * @ignore
    */
