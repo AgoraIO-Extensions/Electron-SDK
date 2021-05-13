@@ -1,3 +1,6 @@
+## 2.9.107-rc.136-build.513 (May 13th 2021)
+* fix screen share adaptation
+
 ## 2.9.107-rc.136-build.417 (Apr 17th 2021)
 * fix windows addon arch error
 
