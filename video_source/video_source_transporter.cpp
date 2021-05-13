@@ -16,6 +16,7 @@
 #include "video_source.h"
 #include <fstream>
 #include "libyuv.h"
+#include "loguru.hpp"
 
 using namespace libyuv;
 using namespace agora::rtc;
@@ -78,7 +79,6 @@ void AgoraVideoSourceTransporter::release()
 
 int AgoraVideoSourceTransporter::deliverFrame(const agora::media::IVideoFrame& videoFrame, int rotation, bool mirrored)
 {
-    /** Convey data. */
     deliverFrame_I420(videoFrame, rotation, mirrored);
     m_videoSource.sendData(m_buf.data(), AgoraVideoSourceTransporter::S_BUF_LEN);
     return 0;
@@ -95,11 +95,12 @@ int AgoraVideoSourceTransporter::deliverFrame_I420(const agora::media::IVideoFra
     }
     int width = videoFrame.width();
     int height = videoFrame.height();
-    int destWidth = 0, destHeight = 0;
-    VIDEO_PROFILE_TYPE profile = m_videoSource.getVideoProfile();
-    getVideoSize(profile, destWidth, destHeight);
-    int destWidthU = destWidth / 2;
-    int destHeightU = destHeight / 2;
+    int destWidth = width;
+    int destHeight = height;
+    if (width != stride0 || (width % 16) != 0){
+        destWidth = (((width + 15) >> 4) << 4);
+    }
+
     char* pbuf = m_buf.data();
     rotation = rotation < 0 ? rotation + 360 : rotation;
     image_frame_info *info = (image_frame_info*)pbuf;
@@ -107,8 +108,8 @@ int AgoraVideoSourceTransporter::deliverFrame_I420(const agora::media::IVideoFra
 	info->stride0 = destWidth;
 	info->width = destWidth;
 	info->height = destHeight;
-	info->strideU = destWidthU ;
-	info->strideV = destWidthU;
+	info->strideU = destWidth/2 ;
+	info->strideV = destWidth/2;
 
     image_header_type *hdr = (image_header_type*)(pbuf + sizeof(image_frame_info));
     hdr->mirrored = mirrored;
@@ -123,12 +124,12 @@ int AgoraVideoSourceTransporter::deliverFrame_I420(const agora::media::IVideoFra
 
     char* y = pbuf + sizeof(image_frame_info) + sizeof(image_header_type);
 	char* u = y + destWidth * destHeight;
-	char* v = u + destWidthU * destHeightU;
+	char* v = u + destWidth / 2 * destHeight / 2 ;
     const unsigned char* planeY = videoFrame.buffer(IVideoFrame::Y_PLANE);
     const unsigned char* planeU = videoFrame.buffer(IVideoFrame::U_PLANE);
     const unsigned char* planeV = videoFrame.buffer(IVideoFrame::V_PLANE);
 	I420Scale(planeY, stride0, planeU, strideU, planeV, strideV, width, height, 
-        (uint8*)y, destWidth, (uint8*)u, destWidthU, (uint8*)v, destWidthU, destWidth, destHeight, kFilterNone);
+        (uint8*)y, destWidth, (uint8*)u, destWidth / 2, (uint8*)v, destWidth / 2, destWidth, destHeight, kFilterNone);
     return 0;
 }
 
