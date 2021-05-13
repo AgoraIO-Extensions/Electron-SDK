@@ -290,7 +290,10 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setMaxMetadataSize);
                 PROPERTY_METHOD_DEFINE(registerMediaMetadataObserver);
                 PROPERTY_METHOD_DEFINE(unRegisterMediaMetadataObserver);
-
+                /**
+                 * 2.9.0.106.230_xueersi
+                 */
+                PROPERTY_METHOD_DEFINE(applyRemoteStreamSubscribeAdvice)
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -5365,6 +5368,28 @@ namespace agora {
             LOG_LEAVE;
         }
 
+        NAPI_API_DEFINE(NodeRtcEngine, applyRemoteStreamSubscribeAdvice)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                uid_t uid;
+                int streamType;
+                status = NodeUid::getUidFromNodeValue(args[0], uid);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_value_int32_(args[1], streamType);
+                CHECK_NAPI_STATUS(pEngine, status);
+                result = pEngine->m_engine->applyRemoteStreamSubscribeAdvice(uid, (SUBSCRIPTION_STREAM_TYPE) streamType);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
         NAPI_API_DEFINE(NodeRtcEngine, sendMetadata)
         {
             LOG_ENTER;
@@ -5521,6 +5546,8 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setMaxMetadataSize);
                 PROPERTY_METHOD_DEFINE(registerMediaMetadataObserver);
                 PROPERTY_METHOD_DEFINE(unRegisterMediaMetadataObserver);
+                PROPERTY_METHOD_DEFINE(muteLocalAudioStream);
+                PROPERTY_METHOD_DEFINE(muteLocalVideoStream);
 
             EN_PROPERTY_DEFINE()
             
@@ -6519,6 +6546,45 @@ namespace agora {
             napi_set_int_result(args, result);
             LOG_LEAVE;
         }
+
+        NAPI_API_DEFINE(NodeRtcChannel, muteLocalAudioStream)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                
+                NodeRtcChannel *pChannel = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+                bool mute;
+                status = napi_get_value_bool_(args[0], mute);
+                CHECK_NAPI_STATUS(pChannel, status);
+                result = pChannel->m_channel->muteLocalAudioStream(mute);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcChannel, muteLocalVideoStream)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                
+                NodeRtcChannel *pChannel = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+                bool mute;
+                status = napi_get_value_bool_(args[0], mute);
+                CHECK_NAPI_STATUS(pChannel, status);
+                result = pChannel->m_channel->muteLocalVideoStream(mute);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
     }
 }
 

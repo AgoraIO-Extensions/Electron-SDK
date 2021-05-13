@@ -712,6 +712,8 @@ namespace agora {
                 NODE_SET_OBJ_PROP_UINT32(obj, "packetLossRate", stats.packetLossRate);
                 NODE_SET_OBJ_PROP_UINT32(obj, "totalActiveTime", stats.totalActiveTime);
                 NODE_SET_OBJ_PROP_UINT32(obj, "publishDuration", stats.publishDuration);
+                NODE_SET_OBJ_PROP_UINT32(obj, "endToEndDelayMs", stats.endToEndDelayMs);
+                NODE_SET_OBJ_PROP_UINT32(obj, "avSyncTimeMs", stats.avSyncTimeMs);
                 Local<Value> arg[1] = { obj };
                 auto it = m_callbacks.find(RTC_EVENT_REMOTE_VIDEO_STATS);
                 if (it != m_callbacks.end()) {
@@ -1017,6 +1019,17 @@ namespace agora {
         {
             FUNC_TRACE;
             MAKE_JS_CALL_1(RTC_EVENT_LOCAL_PUBLISH_FALLBACK_TO_AUDIO_ONLY, bool, isFallbackOrRecover);
+        }
+
+        void NodeEventHandler::onRemoteStreamSubscribeAdvice(const char* channel, uid_t uid, SUBSCRIPTION_STREAM_TYPE currentStreamType, SUBSCRIPTION_STREAM_TYPE suitableStreamType)
+        {
+            FUNC_TRACE;
+            MAKE_JS_CALL_4(RTC_EVENT_REMOTE_STREAM_SUBSCRIBE_ADVICE, string, channel, uid, uid, int32, currentStreamType, int32, suitableStreamType);
+        }
+
+        void NodeEventHandler::onVideoBufferingStateChanged(uid_t uid, VIDEO_BUFFERING_STATE state, int64_t timestampInMs) {
+            FUNC_TRACE;
+            MAKE_JS_CALL_3(RTC_EVENT_VIDEO_BUFFERING_STATE_CHANGED, uid, uid, int32, state, uint64, timestampInMs);
         }
 
         void NodeEventHandler::onLocalPublishFallbackToAudioOnly(bool isFallbackOrRecover)

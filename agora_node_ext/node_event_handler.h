@@ -74,6 +74,8 @@ namespace agora {
 #define RTC_EVENT_STREAM_UNPUBLISHED "streamUnpublished"
 #define RTC_EVENT_TRANSCODING_UPDATED "transcodingUpdated"
 #define RTC_EVENT_STREAM_INJECT_STATUS "streamInjectStatus"
+#define RTC_EVENT_REMOTE_STREAM_SUBSCRIBE_ADVICE "remoteStreamSubscribeAdvice"
+#define RTC_EVENT_VIDEO_BUFFERING_STATE_CHANGED "videoBufferingStateChanged"
 #define RTC_EVENT_LOCAL_PUBLISH_FALLBACK_TO_AUDIO_ONLY "localPublishFallbackToAudioOnly"
 #define RTC_EVENT_REMOTE_SUBSCRIBE_FALLBACK_TO_AUDIO_ONLY "remoteSubscribeFallbackToAudioOnly"
 #define RTC_EVENT_CLIENT_ROLE_CHANGED "clientrolechanged"
@@ -165,6 +167,8 @@ namespace agora {
             virtual void onStreamUnpublished(const char *url) override;
             virtual void onTranscodingUpdated() override;
             virtual void onStreamInjectedStatus(const char* url, uid_t uid, int status) override;
+            virtual void onRemoteStreamSubscribeAdvice(const char* channel, uid_t uid, SUBSCRIPTION_STREAM_TYPE currentStreamType, SUBSCRIPTION_STREAM_TYPE suitableStreamType)  override;
+            virtual void onVideoBufferingStateChanged(uid_t uid, VIDEO_BUFFERING_STATE state, int64_t timestampInMs)  override;
             virtual void onLocalPublishFallbackToAudioOnly(bool isFallbackOrRecover) override;
             virtual void onRemoteSubscribeFallbackToAudioOnly(uid_t uid, bool isFallbackOrRecover) override;
             virtual void onActiveSpeaker(uid_t uid) override;

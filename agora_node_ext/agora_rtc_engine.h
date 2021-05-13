@@ -347,6 +347,10 @@ namespace agora {
             NAPI_API(setMaxMetadataSize);
             NAPI_API(registerMediaMetadataObserver);
             NAPI_API(unRegisterMediaMetadataObserver);
+            /**
+             * 2.9.0.106.230_xueersi
+             */
+            NAPI_API(applyRemoteStreamSubscribeAdvice);
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }
@@ -429,6 +433,9 @@ namespace agora {
             NAPI_API(setMaxMetadataSize);
             NAPI_API(registerMediaMetadataObserver);
             NAPI_API(unRegisterMediaMetadataObserver);
+            NAPI_API(muteLocalAudioStream);
+            NAPI_API(muteLocalVideoStream);
+
         public:
             Isolate* getIsolate() { return m_isolate; }
 

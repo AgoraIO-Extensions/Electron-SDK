@@ -171,6 +171,14 @@ class AgoraRtcEngine extends EventEmitter {
       fire('joinedchannel', channel, uid, elapsed);
       fire('joinedChannel', channel, uid, elapsed);
     });
+    this.rtcEngine.onEvent('videoBufferingStateChanged', function (
+      uid: number,
+      state: number,
+      timestampInMs: number
+    ) {
+      fire('videoBufferingStateChanged', uid, state,timestampInMs);
+      fire('videobufferingstatechanged', uid, state, timestampInMs);
+    });
 
     this.rtcEngine.onEvent('rejoinchannel', function(
       channel: string,
@@ -4736,7 +4744,12 @@ class AgoraRtcEngine extends EventEmitter {
 
   setMaxMetadataSize(size: number): number {
     return this.rtcEngine.setMaxMetadataSize(size);
-  }  
+  }
+
+  applyRemoteStreamSubscribeAdvice(uid:number, streamType:number):number {
+    return this.rtcEngine.applyRemoteStreamSubscribeAdvice(uid, streamType);
+  }
+
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
@@ -5951,6 +5964,21 @@ class AgoraRtcChannel extends EventEmitter
     ) => {
         fire('videoSubscribeStateChange', uid, oldstate, newstate, elapsed);
     });
+
+    this.rtcChannel.onEvent('videoBufferingStateChanged', (
+      uid: number,
+      state: number,
+      timestampInMs: number
+    ) => {
+        fire('videoBufferingStateChanged', uid, state, timestampInMs);
+    });
+    this.rtcChannel.onEvent('remoteStreamSubscribeAdvice', (
+      uid: number,
+      currentStreamType: number,
+      suitableStreamType: number
+    ) => {
+      fire('remoteStreamSubscribeAdvice', uid, currentStreamType, suitableStreamType);
+    });
   }
 
   joinChannel(
@@ -6095,6 +6123,7 @@ class AgoraRtcChannel extends EventEmitter
   leaveChannel(): number {
     return this.rtcChannel.leaveChannel()
   }
+  
 
   release(): number {
     return this.rtcChannel.release()
@@ -6125,6 +6154,14 @@ class AgoraRtcChannel extends EventEmitter
 
   setMaxMetadataSize(size: number): number {
     return this.rtcChannel.setMaxMetadataSize(size);
+  }
+
+  muteLocalAudioStream(mute: boolean): number {
+    return this.rtcChannel.muteLocalAudioStream(mute);
+  }
+  
+  muteLocalVideoStream(mute: boolean): number {
+    return this.rtcChannel.muteLocalVideoStream(mute);
   }
 }
 
