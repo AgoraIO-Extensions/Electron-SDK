@@ -41,6 +41,8 @@ namespace agora {
 #define RTC_CHANNEL_EVENT_FIRST_REMOTE_AUDIO_DECODED "firstRemoteAudioDecoded"
 #define RTC_CHANNEL_EVENT_VIDEO_SIZE_CHANGED "videoSizeChanged"
 #define RTC_CHANNEL_EVENT_REMOTE_VIDEO_STATE_CHANGED "remoteVideoStateChanged"
+#define RTC_CHANNEL_EVENT_REMOTE_STREAM_SUBSCRIBE_ADVICE "remoteStreamSubscribeAdvice"
+#define RTC_CHANNEL_EVENT_VIDEO_BUFFERING_STATE_CHANGED "videoBufferingStateChanged"
 #define RTC_CHANNEL_EVENT_STREAM_MESSAGE "streamMessage"
 #define RTC_CHANNEL_EVENT_STREAM_MESSAGE_ERROR "streamMessageError"
 #define RTC_CHANNEL_EVENT_CHANNEL_MEDIA_RELAY_STATE_CHANGED "channelMediaRelayStateChanged"
@@ -117,6 +119,10 @@ namespace agora {
             
             virtual void onRemoteVideoStateChanged(IChannel *rtcChannel, uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed) override;
             
+            virtual void onRemoteStreamSubscribeAdvice(IChannel *rtcChannel, uid_t uid, SUBSCRIPTION_STREAM_TYPE currentStreamType, SUBSCRIPTION_STREAM_TYPE suitableStreamType)  override;
+
+            virtual void onVideoBufferingStateChanged(IChannel *rtcChannel, uid_t uid, VIDEO_BUFFERING_STATE state, int64_t timestampInMs) override;
+
             virtual void onStreamMessage(IChannel *rtcChannel, uid_t uid, int streamId, const char* data, size_t length) override;
             
             virtual void onStreamMessageError(IChannel *rtcChannel, uid_t uid, int streamId, int code, int missed, int cached) override;

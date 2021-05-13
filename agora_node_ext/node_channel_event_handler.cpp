@@ -367,6 +367,8 @@ namespace agora {
                     NODE_SET_OBJ_PROP_UINT32(obj, "totalFrozenTime", stats.totalFrozenTime);
                     NODE_SET_OBJ_PROP_UINT32(obj, "frozenRate", stats.frozenRate);
                     NODE_SET_OBJ_PROP_UINT32(obj, "packetLossRate", stats.packetLossRate);
+                    NODE_SET_OBJ_PROP_UINT32(obj, "endToEndDelayMs", stats.endToEndDelayMs);
+                    NODE_SET_OBJ_PROP_UINT32(obj, "avSyncTimeMs", stats.avSyncTimeMs);
                     Local<Value> arg[1] = { obj };
                     auto it = m_callbacks.find(RTC_CHANNEL_EVENT_REMOTE_VIDEO_STATS);
                     if (it != m_callbacks.end()) {
@@ -453,6 +455,20 @@ namespace agora {
                 MAKE_JS_CALL_4(RTC_CHANNEL_EVENT_REMOTE_VIDEO_STATE_CHANGED, uid, uid, int32, state, int32, reason, int32, elapsed);
             });
         }
+        
+        void NodeChannelEventHandler::onRemoteStreamSubscribeAdvice(IChannel *rtcChannel, uid_t uid, SUBSCRIPTION_STREAM_TYPE currentStreamType, SUBSCRIPTION_STREAM_TYPE suitableStreamType) {
+            FUNC_TRACE;
+            node_async_call::async_call([this, uid, currentStreamType, suitableStreamType] {
+                MAKE_JS_CALL_3(RTC_CHANNEL_EVENT_REMOTE_STREAM_SUBSCRIBE_ADVICE, uid, uid, int32, currentStreamType, int32, suitableStreamType);
+            });
+        }
+        void NodeChannelEventHandler::onVideoBufferingStateChanged(IChannel *rtcChannel, uid_t uid, VIDEO_BUFFERING_STATE state, int64_t timestampInMs) {
+            FUNC_TRACE;
+            node_async_call::async_call([this, uid, state, timestampInMs] {
+                MAKE_JS_CALL_3(RTC_CHANNEL_EVENT_VIDEO_BUFFERING_STATE_CHANGED, uid, uid, int32, state, uint64, timestampInMs);
+            });
+        }
+
         
         void NodeChannelEventHandler::onStreamMessage(IChannel *rtcChannel, uid_t uid, int streamId, const char* data, size_t length) {
             FUNC_TRACE;

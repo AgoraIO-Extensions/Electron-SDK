@@ -940,6 +940,10 @@ export interface RemoteVideoStats {
    * The total active time (ms) of the remote video stream after the remote user publish the video stream.
    */
   publishDuration: number;
+
+  endToEndDelayMs: number;
+  
+  avSyncTimeMs: number;
 }
 /** Sets the camera capturer configuration. */
 export enum CaptureOutPreference {
@@ -2569,6 +2573,8 @@ export interface NodeRtcEngine {
    * @ignore
    */
   getPluginParameter(pluginId: string, paramKey: string): string;
+
+  applyRemoteStreamSubscribeAdvice(uid: number, streamType: number): number;
 }
 
 export interface NodeRtcChannel {
@@ -2807,4 +2813,8 @@ export interface NodeRtcChannel {
    * @ignore
    */
   release(): number;
+
+  muteLocalAudioStream(mute: boolean): number;
+  
+  muteLocalVideoStream(mute: boolean): number;
 }
