@@ -37,7 +37,7 @@
     "ts-jest": "26.5.6",
     "ts-node": "8.10.2",
     "tslint": "5.20.1",
-    "typedoc": "0.17.7",
+    "typedoc": "0.20.36",
     "typescript": "3.9.9"
   },
   "peerDependencies": {},
