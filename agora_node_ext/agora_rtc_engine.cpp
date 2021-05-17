@@ -2561,12 +2561,12 @@ namespace agora {
             LOG_ENTER;
             bool result = false;
             do {
-                result = !MicrophoneAuthorizationDenied();
+                result = checkWinMicrophoneAuthorization();
             } while (false);
             napi_set_bool_result(args, result);
             LOG_LEAVE;
         }
-        
+
         NAPI_API_DEFINE(NodeRtcEngine, enableLocalAudio)
         {
             LOG_ENTER;

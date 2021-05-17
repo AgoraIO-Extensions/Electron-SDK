@@ -17,7 +17,7 @@ namespace agora
 {
     namespace rtc
     {
-        bool MicrophoneAuthorizationDenied();
+        bool checkWinMicrophoneAuthorization();
     }
 }
 
