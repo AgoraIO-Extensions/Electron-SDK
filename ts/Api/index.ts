@@ -2312,6 +2312,10 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.videoSourceSetAddonLogFile(filepath);
   }
 
+  videoSourceSetVideoEncoderConfiguration(configuration: VideoEncoderConfiguration) {
+    return this.rtcEngine.videoSourceSetVideoEncoderConfiguration(configuration);
+  }
+
   /**
    * Sets the output log level of the SDK.
    *

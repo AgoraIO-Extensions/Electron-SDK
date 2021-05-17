@@ -71,6 +71,7 @@ namespace agora{
             virtual node_error enableLoopbackRecording(bool enabled, const char* deviceName) override;
             virtual node_error enableAudio() override;
             virtual node_error setAddonLogFile(const char* file) override;
+            virtual node_error setVideoEncoderConfiguration(agora::rtc::VideoEncoderConfiguration configuration) override;
         private:
             void msgThread();
             void deliverFrame(const char* payload, int len);
@@ -475,6 +476,15 @@ namespace agora{
         {
             if (m_initialized){
                 return m_ipcMsg->sendMessage(AGORA_IPC_SET_ADDON_LOGFILE, (char*)file, strlen(file)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::setVideoEncoderConfiguration(agora::rtc::VideoEncoderConfiguration configuration)
+        {
+            if (m_initialized){
+                LOG_F(INFO, "AgoraVideoSourceSink::setVideoEncoderConfiguration");
+                return m_ipcMsg->sendMessage(AGORA_IPC_SET_VIDEO_ENCODER_CONFIGURATION, (char *)&configuration, sizeof(configuration)) ? node_ok : node_generic_error;
             }
             return node_status_error;
         }
