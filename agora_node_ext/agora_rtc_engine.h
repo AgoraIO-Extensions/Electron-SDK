@@ -251,6 +251,7 @@ namespace agora {
             NAPI_API(videoSourceUpdateScreenCaptureRegion);
             NAPI_API(videoSourceEnableLoopbackRecording);
             NAPI_API(videoSourceEnableAudio);
+            NAPI_API(videoSourceSetVideoEncoderConfiguration);
 
             /*
             * Native interface used to setup local and remote video canvas.
