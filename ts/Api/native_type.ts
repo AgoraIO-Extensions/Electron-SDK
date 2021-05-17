@@ -1897,6 +1897,10 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
+  videoSourceSetVideoEncoderConfiguration(config: VideoEncoderConfiguration): number;
+  /**
+   * @ignore
+   */
   setLogFilter(filter: number): number;
   /**
    * @ignore

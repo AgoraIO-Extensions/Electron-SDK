@@ -187,6 +187,8 @@ namespace agora{
              * Set addon logfile path
              */
             virtual node_error setAddonLogFile(const char* filePath) = 0;
+            
+            virtual node_error setVideoEncoderConfiguration(agora::rtc::VideoEncoderConfiguration configuration) = 0;
         };
 
         /**

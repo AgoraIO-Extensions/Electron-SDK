@@ -14,6 +14,7 @@
 #include "video_source_param_parser.h"
 #include "video_source_ipc.h"
 #include "node_log.h"
+#include "loguru.hpp"
 
 #define PROCESS_RUN_EVENT_NAME "agora_video_source_process_ready_event_name"
 #define DATA_IPC_NAME "avsipc"
@@ -342,6 +343,11 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
         stopLogService();
         startLogService((char*)payload);
         LOG_INFO("set addon log file\n");
+    } else if (msg == AGORA_IPC_SET_VIDEO_ENCODER_CONFIGURATION) {
+        if (payload) {
+          agora::rtc::VideoEncoderConfiguration *cmd = (agora::rtc::VideoEncoderConfiguration*)payload;
+          m_rtcEngine->setVideoEncoderConfiguration(*cmd);
+        }
     }
     LOG_LEAVE;
 }
