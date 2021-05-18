@@ -25,9 +25,13 @@
 #include <dlfcn.h>
 #endif
 
+#include "log_helper.h"
+
 using std::string;
 namespace agora {
     namespace rtc {
+
+        LogHelper log("./agoraAddonLog.txt");
 
         DEFINE_CLASS(NodeRtcEngine);
         DEFINE_CLASS(NodeRtcChannel);
@@ -3673,6 +3677,7 @@ namespace agora {
         {
             LOG_ENTER;
             do {
+                LOG_INFO("getVideoDevices enter");
                 NodeRtcEngine *pEngine = nullptr;
                 Isolate* isolate = args.GetIsolate();
                 Local<Context> context = isolate->GetCurrentContext();
@@ -3680,15 +3685,27 @@ namespace agora {
                 CHECK_NATIVE_THIS(pEngine);
 
                 if (!pEngine->m_videoVdm) {
+                    LOG_INFO("getVideoDevices !pEngine->m_videoVdm");
                     pEngine->m_videoVdm = new AVideoDeviceManager(pEngine->m_engine);
                 }
                 IVideoDeviceManager* vdm = pEngine->m_videoVdm->get();
                 auto vdc = vdm ? vdm->enumerateVideoDevices() : nullptr;
+                if (vdm) {
+                    LOG_INFO("getVideoDevices vdm");
+                } else {
+                    LOG_INFO("getVideoDevices vdm is not null");
+                }
                 int count = vdc ? vdc->getCount() : 0;
+                if (vdc) {
+                    LOG_INFO("getVideoDevices vdm count: %d", count);
+                } else {
+                    LOG_INFO("getVideoDevices vdm is not null");
+                }
                 Local<v8::Array> devices = v8::Array::New(args.GetIsolate(), count);
                 char deviceName[MAX_DEVICE_ID_LENGTH] = { 0 };
                 char deviceId[MAX_DEVICE_ID_LENGTH] = { 0 };
                 for (int i = 0; i < count; i++) {
+                    LOG_INFO("getVideoDevices getDevice name: %s, id: %s", deviceName, deviceId);
                     Local<v8::Object> dev = v8::Object::New(args.GetIsolate());
                     vdc->getDevice(i, deviceName, deviceId);
                     auto dn = v8::String::NewFromUtf8(args.GetIsolate(), deviceName, NewStringType::kInternalized).ToLocalChecked();
@@ -3791,6 +3808,7 @@ namespace agora {
         {
             LOG_ENTER;
             do {
+                LOG_INFO("getAudioPlaybackDevices enter");
                 NodeRtcEngine *pEngine = nullptr;
                 Isolate* isolate = args.GetIsolate();
                 Local<Context> context = isolate->GetCurrentContext();
@@ -3798,15 +3816,29 @@ namespace agora {
                 CHECK_NATIVE_THIS(pEngine);
               
                 if (!pEngine->m_audioVdm) {
+                    LOG_INFO("getAudioPlaybackDevices !pEngine->m_audioVdm");
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
                 auto pdc = adm ? adm->enumeratePlaybackDevices() : nullptr;
+                if (adm) {
+                    LOG_INFO("getAudioPlaybackDevices adm");
+                } else {
+                    LOG_INFO("getAudioPlaybackDevices adm is null");
+                }
+
                 int count = pdc ? pdc->getCount() : 0;
+
+                if (pdc) {
+                    LOG_INFO("getAudioPlaybackDevices pdc count : %d", count);
+                } else {
+                    LOG_INFO("getAudioPlaybackDevices pdc is null");
+                }
                 Local<v8::Array> devices = v8::Array::New(args.GetIsolate(), count);
                 char deviceName[MAX_DEVICE_ID_LENGTH] = { 0 };
                 char deviceId[MAX_DEVICE_ID_LENGTH] = { 0 };
                 for (int i = 0; i < count; i++) {
+                    LOG_INFO("getAudioPlaybackDevices getDevice name: %s, id: %s", deviceName, deviceId);
                     Local<v8::Object> dev = v8::Object::New(args.GetIsolate());
                     pdc->getDevice(i, deviceName, deviceId);
                     auto dn = v8::String::NewFromUtf8(args.GetIsolate(), deviceName, NewStringType::kInternalized).ToLocalChecked();
@@ -3951,24 +3983,42 @@ namespace agora {
         {
             LOG_ENTER;
             do {
+                LOG_INFO("getAudioRecordingDevices enter");
                 NodeRtcEngine *pEngine = nullptr;
                 Isolate* isolate = args.GetIsolate();
                 Local<Context> context = isolate->GetCurrentContext();
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-               
+                
+            
                 if (!pEngine->m_audioVdm) {
+                    LOG_INFO("getAudioRecordingDevices !pEngine->m_audioVdm");
                     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
                 }
                 IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
                 auto pdc = adm ? adm->enumerateRecordingDevices() : nullptr;
+                if (adm) {
+                    LOG_INFO("getAudioRecordingDevices enumerateRecordingDevices adm ");
+                } else {
+                    LOG_INFO("getAudioRecordingDevices enumerateRecordingDevices adm is null");
+                }
                 int count = pdc ? pdc->getCount() : 0;
+
+                if (pdc) {
+                    LOG_INFO("getAudioRecordingDevices enumerateRecordingDevices pdc is not null count : %d", count);
+                } else {
+                    LOG_INFO("getAudioRecordingDevices enumerateRecordingDevices pdc is null");
+                }
                 Local<v8::Array> devices = v8::Array::New(args.GetIsolate(), count);
                 char deviceName[MAX_DEVICE_ID_LENGTH] = { 0 };
                 char deviceId[MAX_DEVICE_ID_LENGTH] = { 0 };
+
+
                 for (int i = 0; i < count; i++) {
                     Local<v8::Object> dev = v8::Object::New(args.GetIsolate());
                     pdc->getDevice(i, deviceName, deviceId);
+
+                    LOG_INFO("getAudioRecordingDevices getDevice name: %s, id: %s", deviceName, deviceId);
                     auto dn = v8::String::NewFromUtf8(args.GetIsolate(), deviceName, NewStringType::kInternalized).ToLocalChecked();
                     auto di = v8::String::NewFromUtf8(args.GetIsolate(), deviceId, NewStringType::kInternalized).ToLocalChecked();
                     dev->Set(context, Nan::New<String>("devicename").ToLocalChecked(), dn);

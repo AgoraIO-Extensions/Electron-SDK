@@ -24,7 +24,7 @@ public:
             INodeProcess::getCurrentModuleFileName(path);
             path.append("log.txt");
         }
-        startLogService(path.c_str());
+        startLogService(log_path);
     }
     ~LogHelper()
     {
