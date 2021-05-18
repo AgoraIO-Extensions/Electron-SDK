@@ -20,6 +20,7 @@ using agora::rtc::NodeRtcEngine;
 void InitExt(Local<Object> module)
 {
 	LOG_ENTER;
+    LogHelper::getInstance("./agoraAddonlog.txt");
     NodeRtcEngine::Init(module);
     LOG_LEAVE;
 }

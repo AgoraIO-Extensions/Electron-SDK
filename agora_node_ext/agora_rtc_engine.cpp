@@ -16,6 +16,7 @@
 #include "IAgoraRtcEngine2.h"
 #include <string>
 #include <nan.h>
+#include "log_helper.h"
 
 #if defined(__APPLE__) || defined(_WIN32)
 #include "node_screen_window_info.h"
@@ -5336,10 +5337,8 @@ namespace agora {
                 napi_get_param_1(args, nodestring, path);
                 string sPath;
                 sPath = path ? string(path) : "";
-                stopLogService();
-                if(startLogService(sPath.c_str()) == true){
-                    result = 0;
-                }
+                
+                result = LogHelper::getInstance()->setAddonLogPath(sPath.c_str());
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
