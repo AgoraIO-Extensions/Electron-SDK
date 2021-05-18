@@ -14,7 +14,6 @@
 using v8::Object;
 using agora::rtc::NodeRtcEngine;
 
-LogHelper g_logHelper("./agoraAddonlog.txt");
 
 /**
  * Initialize NODEJS ADDON
@@ -22,6 +21,7 @@ LogHelper g_logHelper("./agoraAddonlog.txt");
 void InitExt(Local<Object> module)
 {
 	LOG_ENTER;
+    LogHelper::getInstance("./agoraAddonlog.txt");
     NodeRtcEngine::Init(module);
     LOG_LEAVE;
 }

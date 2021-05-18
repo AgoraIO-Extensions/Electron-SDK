@@ -2603,6 +2603,22 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.setLogFile(filepath);
   }
 
+  /**
+   * Specifies an SDK output log file.
+   *
+   * The log file records all log data for the SDK’s operation. Ensure that 
+   * the directory for the log file exists and is writable.
+   *
+   * @param {string} filepath File path of the log file. The string of the 
+   * log file is in UTF-8.
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+   setAddonLogFile(filepath: string): number {
+    return this.rtcEngine.setAddonLogFile(filepath);
+  }
+
   /** Sets the size of a log file that the SDK outputs.
    *
    * @deprecated This method is deprecated from v3.3.1. Use `logConfig` in
