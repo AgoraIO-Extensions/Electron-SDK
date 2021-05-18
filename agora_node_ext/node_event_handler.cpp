@@ -378,7 +378,7 @@ namespace agora {
 
         void NodeEventHandler::onAudioDeviceStateChanged(const char* deviceId, int deviceType, int deviceStats)
         {
-          LOG_(INFO, "NodeEventHandler::onAudioDeviceStateChanged_node");
+          LOG_F(INFO, "NodeEventHandler::onAudioDeviceStateChanged_node");
             FUNC_TRACE;
             std::string id(deviceId);
             node_async_call::async_call([this, id, deviceType, deviceStats] {
@@ -450,7 +450,7 @@ namespace agora {
 
         void NodeEventHandler::onVideoDeviceStateChanged(const char* deviceId, int deviceType, int deviceState)
         {
-          LOG_(INFO, "NodeEventHandler::onVideoDeviceStateChanged");
+          LOG_F(INFO, "NodeEventHandler::onVideoDeviceStateChanged");
             FUNC_TRACE;
             std::string id(deviceId);
             node_async_call::async_call([this, id, deviceType, deviceState] {
