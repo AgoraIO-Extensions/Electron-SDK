@@ -372,6 +372,10 @@ namespace agora {
              *  3.3.1
              */ 
             NAPI_API(setVoiceConversionPreset);
+            /**
+             * setAddonLogFile
+             */
+            NAPI_API(setAddonLogFile);
             
         public:
             Isolate* getIsolate() { return m_isolate; }
