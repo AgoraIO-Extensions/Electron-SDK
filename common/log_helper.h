@@ -13,28 +13,24 @@
 
 #include "node_log.h"
 #include "node_process.h"
+#include <string>
+#include <thread>
+#include <mutex>
 
 class LogHelper
 {
 public:
-    LogHelper(const char* log_path = "")
-    {
-        std::string path(log_path);
-        if(path.empty()) {
-            INodeProcess::getCurrentModuleFileName(path);
-            path.append("log.txt");
-        }
-        startLogService(path.c_str());
-    }
-    ~LogHelper()
-    {
-        stopLogService();
-    }
-    
+    static LogHelper *&getInstance(const char* log_path = "");
+    static std::mutex m_tex;
+    static LogHelper *instance;
+    int setAddonLogPath(const char* log_path = "");
+    ~LogHelper();
     LogHelper(const LogHelper& helper) = delete;
     LogHelper(LogHelper&& helper) = delete;
     LogHelper& operator = (const LogHelper& helper) = delete;
     LogHelper& operator = (LogHelper&& helper) = delete;
+private:
+    LogHelper(const char* log_path = "");
 };
 
 #endif /* log_helper_h */

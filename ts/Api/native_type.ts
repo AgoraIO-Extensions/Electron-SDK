@@ -2920,6 +2920,10 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
+   setAddonLogFile(filepath: string): number;
+  /**
+   * @ignore
+   */
   setLogFileSize(size: number): number;
   /**
    * @ignore
