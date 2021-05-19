@@ -1,0 +1,1184 @@
+[
+  {
+    "apiType": "kEngineInitialize",
+    "params": {
+      "context": {
+        "appId": "***REMOVED***",
+        "context": 0,
+        "areaCode": 4294967295,
+        "logConfig": {
+          "filePath": null,
+          "fileSize": 1024,
+          "level": 0
+        }
+      }
+    }
+  },
+  {
+    "apiType": "kEngineGetVersion",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineSetChannelProfile",
+    "params": {
+      "profile": 1
+    }
+  },
+  {
+    "apiType": "kEngineSetClientRole",
+    "params": {
+      "role": 1
+    }
+  },
+  {
+    "apiType": "kEngineJoinChannel",
+    "params": {
+      "token": "",
+      "channelId": "channel1",
+      "info": "someInfo",
+      "uid": 0
+    }
+  },
+  {
+    "apiType": "kEngineLeaveChannel",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineRenewToken",
+    "params": {
+      "token": "newtoken"
+    }
+  },
+  {
+    "apiType": "kEngineRegisterLocalUserAccount",
+    "params": {
+      "appId": "***REMOVED***",
+      "userAccount": "user1"
+    }
+  },
+  {
+    "apiType": "kEngineJoinChannelWithUserAccount",
+    "params": {
+      "token": "",
+      "channelId": "channel1",
+      "userAccount": "user1"
+    }
+  },
+  {
+    "apiType": "kEngineGetErrorDescription",
+    "params": {
+      "code": -7
+    }
+  },
+  {
+    "apiType": "kEngineSetLogFilter",
+    "params": {
+      "filter": 65535
+    }
+  },
+  {
+    "apiType": "kEngineSetLogFile",
+    "params": {
+      "filePath": "log.txt"
+    }
+  },
+  {
+    "apiType": "kEngineSetLogFileSize",
+    "params": {
+      "fileSizeInKBytes": 1024
+    }
+  },
+  {
+    "apiType": "kEngineSetLocalRenderMode",
+    "params": {
+      "renderMode": 2,
+      "mirrorMode": 0
+    }
+  },
+  {
+    "apiType": "kEngineSetRemoteRenderMode",
+    "params": {
+      "userId": 2048,
+      "renderMode": 2,
+      "mirrorMode": 1
+    }
+  },
+  {
+    "apiType": "kEngineEnableLocalAudio",
+    "params": {
+      "enabled": false
+    }
+  },
+  {
+    "apiType": "kEngineSetAudioProfile",
+    "params": {
+      "profile": 0,
+      "scenario": 0
+    }
+  },
+  {
+    "apiType": "kEngineSetDefaultMuteAllRemoteAudioStreams",
+    "params": {
+      "mute": true
+    }
+  },
+  {
+    "apiType": "kEngineEnableAudioVolumeIndication",
+    "params": {
+      "interval": 10,
+      "smooth": 11,
+      "report_vad": false
+    }
+  },
+  {
+    "apiType": "kEngineStopAudioRecording",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineStartEchoTest",
+    "params": {
+      "intervalInSeconds": 1
+    }
+  },
+  {
+    "apiType": "kEngineStopEchoTest",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineEnableVideo",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineDisableVideo",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineSetVideoProfile",
+    "params": {
+      "profile": 38,
+      "swapWidthAndHeight": false
+    }
+  },
+  {
+    "apiType": "kEngineSetVideoEncoderConfiguration",
+    "params": {
+      "config": {
+        "dimensions": {
+          "width": 640,
+          "height": 360
+        },
+        "minFrameRate": 15,
+        "bitrate": 600,
+        "minBitrate": 400,
+        "frameRate": 30,
+        "orientationMode": 0,
+        "degradationPreference": 0,
+        "mirrorMode": 0
+      }
+    }
+  },
+  {
+    "apiType": "kEngineSwitchChannel",
+    "params": {
+      "token": "newtoken",
+      "channelId": "channel1"
+    }
+  },
+  {
+    "apiType": "kEngineStartPreview",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineStopPreview",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineEnableAudio",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineDisableAudio",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineMuteLocalAudioStream",
+    "params": {
+      "mute": true
+    }
+  },
+  {
+    "apiType": "kEngineMuteAllRemoteAudioStreams",
+    "params": {
+      "mute": true
+    }
+  },
+  {
+    "apiType": "kEngineAdjustUserPlaybackSignalVolume",
+    "params": {
+      "uid": 2048,
+      "volume": 50
+    }
+  },
+  {
+    "apiType": "kEngineMuteRemoteAudioStream",
+    "params": {
+      "userId": 2048,
+      "mute": true
+    }
+  },
+  {
+    "apiType": "kEngineMuteLocalVideoStream",
+    "params": {
+      "mute": true
+    }
+  },
+  {
+    "apiType": "kEngineEnableLocalVideo",
+    "params": {
+      "enabled": true
+    }
+  },
+  {
+    "apiType": "kEngineMuteAllRemoteVideoStreams",
+    "params": {
+      "mute": true
+    }
+  },
+  {
+    "apiType": "kEngineSetDefaultMuteAllRemoteVideoStreams",
+    "params": {
+      "mute": true
+    }
+  },
+  {
+    "apiType": "kEngineMuteRemoteVideoStream",
+    "params": {
+      "userId": 2048,
+      "mute": true
+    }
+  },
+  {
+    "apiType": "kEngineSetRemoteVoicePosition",
+    "params": {
+      "uid": 2048,
+      "pan": 1.0,
+      "gain": 100.0
+    }
+  },
+  {
+    "apiType": "kEngineEnableDualStreamMode",
+    "params": {
+      "enabled": true
+    }
+  },
+  {
+    "apiType": "kEngineAdjustRecordingSignalVolume",
+    "params": {
+      "volume": 10
+    }
+  },
+  {
+    "apiType": "kEngineAdjustPlaybackSignalVolume",
+    "params": {
+      "volume": 10
+    }
+  },
+  {
+    "apiType": "kEngineEnableWebSdkInteroperability",
+    "params": {
+      "enabled": true
+    }
+  },
+  {
+    "apiType": "kEngineSetVideoQualityParameters",
+    "params": {
+      "preferFrameRateOverImageQuality": true
+    }
+  },
+  {
+    "apiType": "kEngineRate",
+    "params": {
+      "callId": "abc",
+      "rating": 100,
+      "description": "abc"
+    }
+  },
+  {
+    "apiType": "kEngineComplain",
+    "params": {
+      "callId": "abc",
+      "description": "abc"
+    }
+  },
+  {
+    "apiType": "kEngineEnableLastMileTest",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineDisableLastMileTest",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineStopLastMileProbeTest",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineSetEncryptionSecret",
+    "params": {
+      "secret": "The secret makes a woman woman"
+    }
+  },
+  {
+    "apiType": "kEngineSetEncryptionMode",
+    "params": {
+      "encryptionMode": "abc"
+    }
+  },
+  {
+    "apiType": "kEngineAddPublishStreamUrl",
+    "params": {
+      "url": "www.abc.com",
+      "transcodingEnabled": true
+    }
+  },
+  {
+    "apiType": "kEngineRemovePublishStreamUrl",
+    "params": {
+      "url": "www.abc.com"
+    }
+  },
+  {
+    "apiType": "kEngineStopChannelMediaRelay",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineRemoveInjectStreamUrl",
+    "params": {
+      "url": "www.abc.com"
+    }
+  },
+  {
+    "apiType": "kEngineGetConnectionState",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineSetParameters",
+    "params": {
+      "parameters": "abc"
+    }
+  },
+  {
+    "apiType": "kEngineGetUserInfoByUserAccount",
+    "params": {
+      "userAccount": "abc"
+    }
+  },
+  {
+    "apiType": "kEngineGetUserInfoByUid",
+    "params": {
+      "uid": 2048
+    }
+  },
+  {
+    "apiType": "kEngineSetRemoteUserPriority",
+    "params": {
+      "uid": 2048,
+      "userPriority": 50
+    }
+  },
+  {
+    "apiType": "kEngineSetRemoteVideoStreamType",
+    "params": {
+      "userId": 2048,
+      "streamType": 0
+    }
+  },
+  {
+    "apiType": "kEngineSetRemoteDefaultVideoStreamType",
+    "params": {
+      "streamType": 0
+    }
+  },
+  {
+    "apiType": "kEngineStartAudioRecording",
+    "params": {
+      "filePath": "abc",
+      "sampleRate": 100,
+      "quality": 0
+    }
+  },
+  {
+    "apiType": "kEngineSetLocalVideoMirrorMode",
+    "params": {
+      "mirrorMode": 0
+    }
+  },
+  {
+    "apiType": "kEngineSetLocalPublishFallbackOption",
+    "params": {
+      "option": 0
+    }
+  },
+  {
+    "apiType": "kEngineSetRemoteSubscribeFallbackOption",
+    "params": {
+      "option": 0
+    }
+  },
+  {
+    "apiType": "kEngineStartLastMileProbeTest",
+    "params": {
+      "config": {
+        "probeUplink": true,
+        "probeDownlink": true,
+        "expectedUplinkBitrate": 100,
+        "expectedDownlinkBitrate": 100
+      }
+    }
+  },
+  {
+    "apiType": "kEngineSendStreamMessage",
+    "params": {
+      "streamId": 2048,
+      "length": 3
+    }
+  },
+  {
+    "apiType": "kEngineAddVideoWaterMark",
+    "params": {
+      "watermarkUrl": "www.abc.com",
+      "options": {
+        "visibleInPreview": true,
+        "positionInLandscapeMode": {
+          "x": 1,
+          "y": 1,
+          "width": 100,
+          "height": 100
+        },
+        "positionInPortraitMode": {
+          "x": 1,
+          "y": 1,
+          "width": 100,
+          "height": 100
+        }
+      }
+    }
+  },
+  {
+    "apiType": "kEngineSetBeautyEffectOptions",
+    "params": {
+      "enabled": true,
+      "options": {
+        "lighteningContrastLevel": 0,
+        "lighteningLevel": 10.0,
+        "smoothnessLevel": 10.0,
+        "rednessLevel": 10.0
+      }
+    }
+  },
+  {
+    "apiType": "kEngineAddInjectStreamUrl",
+    "params": {
+      "url": "www.abc.com",
+      "config": {
+        "width": 100,
+        "height": 100,
+        "videoGop": 1,
+        "videoFramerate": 1,
+        "videoBitrate": 1,
+        "audioSampleRate": 44100,
+        "audioBitrate": 1,
+        "audioChannels": 1
+      }
+    }
+  },
+  {
+    "apiType": "kEngineSetCameraCapturerConfiguration",
+    "params": {
+      "config": {
+        "preference": 0,
+        "captureWidth": 640,
+        "captureHeight": 480
+      }
+    }
+  },
+  {
+    "apiType": "kEngineEnableFaceDetection",
+    "params": {
+      "enabled": true
+    }
+  },
+  {
+    "apiType": "kEngineSwitchCamera",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineSwitchCamera",
+    "params": {
+      "direction": 0
+    }
+  },
+  {
+    "apiType": "kEngineSetDefaultAudioRouteToSpeakerPhone",
+    "params": {
+      "defaultToSpeaker": true
+    }
+  },
+  {
+    "apiType": "kEngineSetEnableSpeakerPhone",
+    "params": {
+      "speakerOn": true
+    }
+  },
+  {
+    "apiType": "kEngineEnableInEarMonitoring",
+    "params": {
+      "enabled": true
+    }
+  },
+  {
+    "apiType": "kEngineSetInEarMonitoringVolume",
+    "params": {
+      "volume": 10
+    }
+  },
+  {
+    "apiType": "kEngineIsSpeakerPhoneEnabled",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineSetupLocalVideo",
+    "params": {
+      "canvas": {
+        "view": 0,
+        "renderMode": 1,
+        "channelId": "abc",
+        "uid": 2048,
+        "mirrorMode": 0
+      }
+    }
+  },
+  {
+    "apiType": "kEngineSetupRemoteVideo",
+    "params": {
+      "canvas": {
+        "view": 0,
+        "renderMode": 1,
+        "channelId": "abc",
+        "uid": 2048,
+        "mirrorMode": 0
+      }
+    }
+  },
+  {
+    "apiType": "kEngineSetAudioSessionOperationRestriction",
+    "params": {
+      "restriction": 0
+    }
+  },
+  {
+    "apiType": "kEngineEnableLoopBackRecording",
+    "params": {
+      "enabled": true,
+      "deviceName": "abc"
+    }
+  },
+  {
+    "apiType": "kEngineSetScreenCaptureContentHint",
+    "params": {
+      "contentHint": 0
+    }
+  },
+  {
+    "apiType": "kEngineUpdateScreenCaptureRegion",
+    "params": {
+      "regionRect": {
+        "x": 1,
+        "y": 1,
+        "width": 100,
+        "height": 100
+      }
+    }
+  },
+  {
+    "apiType": "kEngineStartAudioMixing",
+    "params": {
+      "filePath": "audio.mp3",
+      "loopback": true,
+      "replace": true,
+      "cycle": 100
+    }
+  },
+  {
+    "apiType": "kEngineStopAudioMixing",
+    "params": {}
+  },
+  {
+    "apiType": "kEnginePauseAudioMixing",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineResumeAudioMixing",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineSetHighQualityAudioParameters",
+    "params": {
+      "fullband": true,
+      "stereo": true,
+      "fullBitrate": false
+    }
+  },
+  {
+    "apiType": "kEngineAdjustAudioMixingVolume",
+    "params": {
+      "volume": 10
+    }
+  },
+  {
+    "apiType": "kEngineAdjustAudioMixingPlayoutVolume",
+    "params": {
+      "volume": 10
+    }
+  },
+  {
+    "apiType": "kEngineGetAudioMixingPlayoutVolume",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineAdjustAudioMixingPublishVolume",
+    "params": {
+      "volume": 10
+    }
+  },
+  {
+    "apiType": "kEngineGetAudioMixingPublishVolume",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineGetAudioMixingDuration",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineGetAudioMixingCurrentPosition",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineSetAudioMixingPosition",
+    "params": {
+      "pos": 10
+    }
+  },
+  {
+    "apiType": "kEngineSetAudioMixingPitch",
+    "params": {
+      "pitch": 10
+    }
+  },
+  {
+    "apiType": "kEngineGetEffectsVolume",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineSetEffectsVolume",
+    "params": {
+      "volume": 10
+    }
+  },
+  {
+    "apiType": "kEngineSetVolumeOfEffect",
+    "params": {
+      "soundId": 123,
+      "volume": 10
+    }
+  },
+  {
+    "apiType": "kEnginePlayEffect",
+    "params": {
+      "soundId": 123,
+      "filePath": "audio.mp3",
+      "loopCount": 0,
+      "pitch": 1.0,
+      "pan": 1.2,
+      "gain": 10,
+      "publish": false
+    }
+  },
+  {
+    "apiType": "kEngineStopEffect",
+    "params": {
+      "soundId": 123
+    }
+  },
+  {
+    "apiType": "kEngineStopAllEffects",
+    "params": {}
+  },
+  {
+    "apiType": "kEnginePreloadEffect",
+    "params": {
+      "soundId": 123,
+      "filePath": "audio.mp3"
+    }
+  },
+  {
+    "apiType": "kEngineUnloadEffect",
+    "params": {
+      "soundId": 123
+    }
+  },
+  {
+    "apiType": "kEnginePauseEffect",
+    "params": {
+      "soundId": 123
+    }
+  },
+  {
+    "apiType": "kEnginePauseAllEffects",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineResumeEffect",
+    "params": {
+      "soundId": 123
+    }
+  },
+  {
+    "apiType": "kEngineResumeAllEffects",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineEnableSoundPositionIndication",
+    "params": {
+      "enabled": true
+    }
+  },
+  {
+    "apiType": "kEngineSetLocalVoicePitch",
+    "params": {
+      "pitch": 1.0
+    }
+  },
+  {
+    "apiType": "kEngineSetLocalVoiceEqualization",
+    "params": {
+      "bandFrequency": 5,
+      "bandGain": 10
+    }
+  },
+  {
+    "apiType": "kEngineSetLocalVoiceReverb",
+    "params": {
+      "reverbKey": 0,
+      "value": 10
+    }
+  },
+  {
+    "apiType": "kEngineSetLocalVoiceChanger",
+    "params": {
+      "voiceChanger": 0
+    }
+  },
+  {
+    "apiType": "kEngineSetLocalVoiceReverbPreset",
+    "params": {
+      "reverbPreset": 0
+    }
+  },
+  {
+    "apiType": "kEngineSetVoiceBeautifierPreset",
+    "params": {
+      "preset": 0
+    }
+  },
+  {
+    "apiType": "kEngineSetVoiceBeautifierPreset",
+    "params": {
+      "preset": 0
+    }
+  },
+  {
+    "apiType": "kEngineSetAudioEffectPreset",
+    "params": {
+      "preset": 0
+    }
+  },
+  {
+    "apiType": "kEngineSetAudioEffectParameters",
+    "params": {
+      "preset": 0,
+      "param1": 1,
+      "param2": 1
+    }
+  },
+  {
+    "apiType": "kEngineSetExternalAudioSource",
+    "params": {
+      "enabled": true,
+      "sampleRate": 44100,
+      "channels": 1
+    }
+  },
+  {
+    "apiType": "kEngineSetExternalAudioSink",
+    "params": {
+      "enabled": true,
+      "sampleRate": 44100,
+      "channels": 1
+    }
+  },
+  {
+    "apiType": "kEngineSetRecordingAudioFrameParameters",
+    "params": {
+      "sampleRate": 44100,
+      "channel": 1,
+      "mode": 0,
+      "samplesPerCall": 10
+    }
+  },
+  {
+    "apiType": "kEngineSetPlaybackAudioFrameParameters",
+    "params": {
+      "sampleRate": 44100,
+      "channel": 1,
+      "mode": 0,
+      "samplesPerCall": 10
+    }
+  },
+  {
+    "apiType": "kEngineSetMixedAudioFrameParameters",
+    "params": {
+      "sampleRate": 44100,
+      "samplesPerCall": 10
+    }
+  },
+  {
+    "apiType": "kEngineStartScreenCaptureByDisplayId",
+    "params": {
+      "displayId": 10,
+      "regionRect": {
+        "x": 1,
+        "y": 1,
+        "width": 100,
+        "height": 100
+      },
+      "captureParams": {
+        "dimensions": {
+          "width": 100,
+          "height": 100
+        },
+        "frameRate": 5,
+        "bitrate": 0,
+        "captureMouseCursor": true,
+        "windowFocus": false,
+        "excludeWindowList": null,
+        "excludeWindowCount": 0
+      }
+    }
+  },
+  {
+    "apiType": "kEngineStartScreenCaptureByScreenRect",
+    "params": {
+      "screenRect": {
+        "x": 1,
+        "y": 1,
+        "width": 100,
+        "height": 100
+      },
+      "regionRect": {
+        "x": 1,
+        "y": 1,
+        "width": 100,
+        "height": 100
+      },
+      "captureParams": {
+        "dimensions": {
+          "width": 100,
+          "height": 100
+        },
+        "frameRate": 5,
+        "bitrate": 0,
+        "captureMouseCursor": true,
+        "windowFocus": false,
+        "excludeWindowList": null,
+        "excludeWindowCount": 0
+      }
+    }
+  },
+  {
+    "apiType": "kEngineStartScreenCaptureByWindowId",
+    "params": {
+      "windowId": 0,
+      "regionRect": {
+        "x": 1,
+        "y": 1,
+        "width": 100,
+        "height": 100
+      },
+      "captureParams": {
+        "dimensions": {
+          "width": 100,
+          "height": 100
+        },
+        "frameRate": 5,
+        "bitrate": 0,
+        "captureMouseCursor": true,
+        "windowFocus": false,
+        "excludeWindowList": null,
+        "excludeWindowCount": 0
+      }
+    }
+  },
+  {
+    "apiType": "kEngineUpdateScreenCaptureParameters",
+    "params": {
+      "captureParams": {
+        "dimensions": {
+          "width": 100,
+          "height": 100
+        },
+        "frameRate": 5,
+        "bitrate": 0,
+        "captureMouseCursor": true,
+        "windowFocus": false,
+        "excludeWindowList": null,
+        "excludeWindowCount": 0
+      }
+    }
+  },
+  {
+    "apiType": "kEngineStartScreenCapture",
+    "params": {
+      "windowId": 0,
+      "captureFreq": 10,
+      "rect": null,
+      "bitrate": 10
+    }
+  },
+  {
+    "apiType": "kEngineStopScreenCapture",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineGetCallId",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineEnableEncryption",
+    "params": {
+      "enabled": true,
+      "config": {
+        "encryptionMode": 1,
+        "encryptionKey": "abc"
+      }
+    }
+  },
+  {
+    "apiType": "kEngineCreateDataStream",
+    "params": {
+      "reliable": true,
+      "ordered": true
+    }
+  },
+  {
+    "apiType": "kEngineSetLiveTranscoding",
+    "params": {
+      "transcoding": {
+        "width": 100,
+        "height": 100,
+        "videoBitrate": 100,
+        "videoFramerate": 100,
+        "lowLatency": true,
+        "videoGop": 30,
+        "videoCodecProfile": 66,
+        "backgroundColor": 0,
+        "videoCodecType": 0,
+        "userCount": 2,
+        "transcodingUsers": [
+          {
+            "uid": 1,
+            "x": 100,
+            "y": 100,
+            "width": 100,
+            "height": 100,
+            "zOrder": 1,
+            "alpha": 0.5,
+            "audioChannel": 1
+          },
+          {
+            "uid": 2,
+            "x": 50,
+            "y": 50,
+            "width": 100,
+            "height": 100,
+            "zOrder": 2,
+            "alpha": 0.6,
+            "audioChannel": 2
+          }
+        ],
+        "transcodingExtraInfo": "A secret makes a woman woman.",
+        "metadata": "No more secret.",
+        "watermark": {
+          "url": "www.abc.com/watermark_1",
+          "x": 10,
+          "y": 10,
+          "width": 100,
+          "height": 100
+        },
+        "backgroundImage": {
+          "url": "www.abc.com/backgroundImage_1",
+          "x": 10,
+          "y": 10,
+          "width": 100,
+          "height": 100
+        },
+        "audioSampleRate": 1,
+        "audioBitrate": 1,
+        "audioChannels": 1,
+        "audioCodecProfile": 1,
+        "advancedFeatures": [
+          {
+            "featureName": "feat",
+            "opened": true
+          },
+          {
+            "featureName": "FEAT",
+            "opened": false
+          }
+        ],
+        "advancedFeatureCount": 2
+      }
+    }
+  },
+  {
+    "apiType": "kEngineClearVideoWaterMarks",
+    "params": {}
+  },
+  {
+    "apiType": "kEngineStartChannelMediaRelay",
+    "params": {
+      "configuration": {
+        "srcInfo": {
+          "channelName": "123",
+          "token": "abc",
+          "uid": 1
+        },
+        "destInfos": [
+          {
+            "channelName": "123",
+            "token": "abc",
+            "uid": 2
+          }
+        ],
+        "destCount": 1
+      }
+    }
+  },
+  {
+    "apiType": "kEngineUpdateChannelMediaRelay",
+    "params": {
+      "configuration": {
+        "srcInfo": {
+          "channelName": "123",
+          "token": "abc",
+          "uid": 1
+        },
+        "destInfos": [
+          {
+            "channelName": "123",
+            "token": "abc",
+            "uid": 2
+          }
+        ],
+        "destCount": 1
+      }
+    }
+  },
+  {
+    "apiType": "kEngineSendCustomReportMessage",
+    "params": {
+      "id": "123",
+      "category": "abc",
+      "event": "abc",
+      "label": "abc",
+      "value": 10
+    }
+  },
+  {
+    "apiType": "kEngineEnableRemoteSuperResolution",
+    "params": {
+      "userId": 1024,
+      "enable": true
+    }
+  },
+  {
+    "apiType": "kEngineRegisterMediaMetadataObserver",
+    "params": {
+      "type": 0
+    }
+  },
+  {
+    "apiType": "kEngineUnRegisterMediaMetadataObserver",
+    "params": {
+      "type": 0
+    }
+  },
+  {
+    "apiType": "kEngineSetMaxMetadataSize",
+    "params": {
+      "size": 100
+    }
+  },
+  {
+    "apiType": "kEngineSendMetadata",
+    "params": {
+      "metadata": {
+        "uid": 1024,
+        "size": 3,
+        "timeStampMs": 10000000
+      }
+    }
+  },
+  {
+    "apiType": "kMediaPushAudioFrame",
+    "params": {
+      "frame": {
+        "type": 0,
+        "samples": 2,
+        "bytesPerSample": 2,
+        "channels": 1,
+        "samplesPerSec": 10,
+        "renderTimeMs": 10,
+        "avsync_type": 1
+      }
+    }
+  },
+  {
+    "apiType": "kMediaPullAudioFrame",
+    "params": {}
+  },
+  {
+    "apiType": "kMediaSetExternalVideoSource",
+    "params": {
+      "enable": false,
+      "useTexture": false
+    }
+  },
+  {
+    "apiType": "kMediaPushVideoFrame",
+    "params": {
+      "frame": {
+        "type": 1,
+        "format": 0,
+        "stride": 10,
+        "height": 10,
+        "cropLeft": 0,
+        "cropTop": 10,
+        "cropRight": 10,
+        "cropBottom": 10,
+        "rotation": 0,
+        "timestamp": 10
+      }
+    }
+  }
+]

@@ -1,0 +1,412 @@
+[
+  {
+    "apiType": "kChannelSetClientRole",
+    "params": {
+      "channelId": "MyChannel",
+      "role": 1
+    }
+  },
+  {
+    "apiType": "kChannelJoinChannel",
+    "params": {
+      "channelId": "MyChannel",
+      "token": "abc",
+      "info": "abc",
+      "uid": 2048,
+      "options": {
+        "autoSubscribeAudio": true,
+        "autoSubscribeVideo": true
+      }
+    }
+  },
+  {
+    "apiType": "kChannelLeaveChannel",
+    "params": {
+      "channelId": "MyChannel"
+    }
+  },
+  {
+    "apiType": "kChannelJoinChannelWithUserAccount",
+    "params": {
+      "channelId": "MyChannel",
+      "token": "abc",
+      "userAccount": "abc",
+      "options": {
+        "autoSubscribeAudio": true,
+        "autoSubscribeVideo": true
+      }
+    }
+  },
+  {
+    "apiType": "kChannelPublish",
+    "params": {
+      "channelId": "MyChannel"
+    }
+  },
+  {
+    "apiType": "kChannelUnPublish",
+    "params": {
+      "channelId": "MyChannel"
+    }
+  },
+  {
+    "apiType": "kChannelSetEncryptionSecret",
+    "params": {
+      "channelId": "MyChannel",
+      "secret": "A secret makes a woman moman"
+    }
+  },
+  {
+    "apiType": "kChannelSetEncryptionMode",
+    "params": {
+      "channelId": "MyChannel",
+      "encryptionMode": "abc"
+    }
+  },
+  {
+    "apiType": "kChannelSetRemoteUserPriority",
+    "params": {
+      "channelId": "MyChannel",
+      "uid": 2048,
+      "userPriority": 50
+    }
+  },
+  {
+    "apiType": "kChannelSetRemoteVoicePosition",
+    "params": {
+      "channelId": "MyChannel",
+      "uid": 2048,
+      "pan": 1000000,
+      "gain": 1000000
+    }
+  },
+  {
+    "apiType": "kChannelSetRemoteRenderMode",
+    "params": {
+      "channelId": "MyChannel",
+      "userId": 2048,
+      "renderMode": 1,
+      "mirrorMode": 0
+    }
+  },
+  {
+    "apiType": "kChannelSetDefaultMuteAllRemoteAudioStreams",
+    "params": {
+      "channelId": "MyChannel",
+      "mute": true
+    }
+  },
+  {
+    "apiType": "kChannelSetDefaultMuteAllRemoteVideoStreams",
+    "params": {
+      "channelId": "MyChannel",
+      "mute": true
+    }
+  },
+  {
+    "apiType": "kChannelMuteAllRemoteAudioStreams",
+    "params": {
+      "channelId": "MyChannel",
+      "mute": true
+    }
+  },
+  {
+    "apiType": "kChannelAdjustUserPlaybackSignalVolume",
+    "params": {
+      "channelId": "MyChannel",
+      "userId": 2048,
+      "volume": 10
+    }
+  },
+  {
+    "apiType": "kChannelMuteRemoteAudioStream",
+    "params": {
+      "channelId": "MyChannel",
+      "userId": 2048,
+      "mute": true
+    }
+  },
+  {
+    "apiType": "kChannelMuteRemoteVideoStream",
+    "params": {
+      "channelId": "MyChannel",
+      "userId": 2048,
+      "mute": true
+    }
+  },
+  {
+    "apiType": "kChannelMuteAllRemoteVideoStreams",
+    "params": {
+      "channelId": "MyChannel",
+      "mute": true
+    }
+  },
+  {
+    "apiType": "kChannelSetRemoteVideoStreamType",
+    "params": {
+      "channelId": "MyChannel",
+      "userId": 2048,
+      "streamType": 0
+    }
+  },
+  {
+    "apiType": "kChannelSetRemoteDefaultVideoStreamType",
+    "params": {
+      "channelId": "MyChannel",
+      "streamType": 0
+    }
+  },
+  {
+    "apiType": "kChannelAddPublishStreamUrl",
+    "params": {
+      "channelId": "MyChannel",
+      "url": "www.abc.com",
+      "transcodingEnabled": true
+    }
+  },
+  {
+    "apiType": "kChannelRemovePublishStreamUrl",
+    "params": {
+      "channelId": "MyChannel",
+      "url": "www.abc.com"
+    }
+  },
+  {
+    "apiType": "kChannelAddInjectStreamUrl",
+    "params": {
+      "channelId": "MyChannel",
+      "url": "www.abc.com",
+      "config": {
+        "width": 100,
+        "height": 100,
+        "videoGop": 30,
+        "videoFramerate": 100,
+        "videoBitrate": 100,
+        "audioSampleRate": 100,
+        "audioBitrate": 100,
+        "audioChannels": 3
+      }
+    }
+  },
+  {
+    "apiType": "kChannelRemoveInjectStreamUrl",
+    "params": {
+      "channelId": "MyChannel",
+      "url": "www.abc.com"
+    }
+  },
+  {
+    "apiType": "kChannelStopChannelMediaRelay",
+    "params": {
+      "channelId": "MyChannel"
+    }
+  },
+  {
+    "apiType": "kChannelGetConnectionState",
+    "params": {
+      "channelId": "MyChannel"
+    }
+  },
+  {
+    "apiType": "kChannelSetLiveTranscoding",
+    "params": {
+      "channelId": "MyChannel",
+      "transcoding": {
+        "width": 100,
+        "height": 100,
+        "videoBitrate": 100,
+        "videoFramerate": 100,
+        "lowLatency": true,
+        "videoGop": 30,
+        "videoCodecProfile": 66,
+        "backgroundColor": 10000000,
+        "userCount": 2,
+        "transcodingUsers": [
+          {
+            "uid": 1,
+            "x": 100,
+            "y": 100,
+            "width": 100,
+            "height": 100,
+            "zOrder": 1,
+            "alpha": 0.5,
+            "audioChannel": 1
+          },
+          {
+            "uid": 2,
+            "x": 50,
+            "y": 50,
+            "width": 100,
+            "height": 100,
+            "zOrder": 2,
+            "alpha": 0.6,
+            "audioChannel": 2
+          }
+        ],
+        "transcodingExtraInfo": "A secret makes a woman woman.",
+        "metadata": "No more secret.",
+        "watermark": {
+          "url": "www.abc.com/watermark_1",
+          "x": 10,
+          "y": 10,
+          "width": 100,
+          "height": 100
+        },
+        "backgroundImage": {
+          "url": "www.abc.com/backgroundImage_1",
+          "x": 10,
+          "y": 10,
+          "width": 100,
+          "height": 100
+        },
+        "audioSampleRate": 1,
+        "audioBitrate": 1,
+        "audioChannels": 1,
+        "audioCodecProfile": 1,
+        "advancedFeatures": [
+          {
+            "LBHQ": "abc",
+            "VEO": "xyz",
+            "featureName": "feat",
+            "opened": true
+          },
+          {
+            "LBHQ": "ABC",
+            "VEO": "XYZ",
+            "featureName": "FEAT",
+            "opened": false
+          }
+        ],
+        "advancedFeatureCount": 2
+      }
+    }
+  },
+  {
+    "apiType": "kChannelChannelId",
+    "params": {
+      "channelId": "MyChannel"
+    }
+  },
+  {
+    "apiType": "kChannelGetCallId",
+    "params": {
+      "channelId": "MyChannel"
+    }
+  },
+  {
+    "apiType": "kChannelRenewToken",
+    "params": {
+      "channelId": "MyChannel",
+      "token": "abc"
+    }
+  },
+  {
+    "apiType": "kChannelEnableEncryption",
+    "params": {
+      "channelId": "MyChannel",
+      "enabled": true,
+      "config": {
+        "encryptionMode": 1,
+        "encryptionKey": "abc"
+      }
+    }
+  },
+  {
+    "apiType": "kChannelRegisterMediaMetadataObserver",
+    "params": {
+      "channelId": "MyChannel",
+      "type": 0
+    }
+  },
+  {
+    "apiType": "kChannelUnRegisterMediaMetadataObserver",
+    "params": {
+      "channelId": "MyChannel",
+      "type": 0
+    }
+  },
+  {
+    "apiType": "kChannelSetMaxMetadataSize",
+    "params": {
+      "channelId": "MyChannel",
+      "size": 100
+    }
+  },
+  {
+    "apiType": "kChannelSendMetadata",
+    "params": {
+      "channelId": "MyChannel",
+      "metadata": {
+        "uid": 1024,
+        "size": 3,
+        "timeStampMs": 10000000
+      }
+    }
+  },
+  {
+    "apiType": "kChannelCreateDataStream",
+    "params": {
+      "channelId": "MyChannel",
+      "reliable": true,
+      "ordered": true
+    }
+  },
+  {
+    "apiType": "kChannelSendStreamMessage",
+    "params": {
+      "channelId": "MyChannel",
+      "streamId": 2048,
+      "length": 3
+    }
+  },
+  {
+    "apiType": "kChannelStartChannelMediaRelay",
+    "params": {
+      "channelId": "MyChannel",
+      "configuration": {
+        "srcInfo": {
+          "channelName": "123",
+          "token": "abc",
+          "uid": 1
+        },
+        "destInfos": [
+          {
+            "channelName": "123",
+            "token": "abc",
+            "uid": 2
+          }
+        ],
+        "destCount": 1
+      }
+    }
+  },
+  {
+    "apiType": "kChannelUpdateChannelMediaRelay",
+    "params": {
+      "channelId": "MyChannel",
+      "configuration": {
+        "srcInfo": {
+          "channelName": "123",
+          "token": "abc",
+          "uid": 1
+        },
+        "destInfos": [
+          {
+            "channelName": "123",
+            "token": "abc",
+            "uid": 2
+          }
+        ],
+        "destCount": 1
+      }
+    }
+  },
+  {
+    "apiType": "kChannelEnableRemoteSuperResolution",
+    "params": {
+      "channelId": "MyChannel",
+      "userId": 1024,
+      "enable": true
+    }
+  }
+]

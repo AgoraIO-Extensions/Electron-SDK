@@ -1,21 +1,24 @@
-const deprecate = (replaceApi?: string) => {
-  console.warn('This method will be deprecated soon. ', replaceApi ? `Please use ${replaceApi} instead` : '');
+/*
+ * @Author: zhangtao@agora.io 
+ * @Date: 2021-04-28 13:34:31 
+ * @Last Modified by: zhangtao@agora.io
+ * @Last Modified time: 2021-05-10 11:16:41
+ */
+
+export const TAG = "[Agora]: "
+
+export const deprecate = (originApi?: string, replaceApi?: string) => {
+  console.warn(`${TAG} This method ${originApi} will be deprecated soon. `, replaceApi ? `Please use ${replaceApi} instead` : '');
 };
 
-class Config {
-  glDebug: boolean
-  constructor(){
-    this.glDebug = false
-  }
-
-  setGlDebug(enable:boolean){
-    this.glDebug = enable
-  }
-
-  getGlDebug() {
-    return this.glDebug
-  }
+export const logWarn = (msg: string, tag: string = TAG) => {
+  console.warn(`${tag} ${msg}`)
 }
 
-const config = new Config()
-export {config, Config, deprecate}
+export const logError = (msg: string, tag: string = TAG) => {
+  console.error(`${tag} ${msg}`)
+}
+
+export const logInfo = (msg: string, tag: string = TAG) => {
+  console.log(`${tag} ${msg}`)
+}

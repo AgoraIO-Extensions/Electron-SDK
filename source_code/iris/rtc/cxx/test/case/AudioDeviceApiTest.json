@@ -1,0 +1,120 @@
+[
+  {
+    "apiType": "kGetAudioPlaybackDeviceCount",
+    "params": {}
+  },
+  {
+    "apiType": "kGetAudioPlaybackDeviceInfoByIndex",
+    "params": {
+      "index": 123
+    }
+  },
+  {
+    "apiType": "kSetCurrentAudioPlaybackDeviceId",
+    "params": {
+      "deviceId": "123"
+    }
+  },
+  {
+    "apiType": "kGetCurrentAudioPlaybackDeviceId",
+    "params": {}
+  },
+  {
+    "apiType": "kGetCurrentAudioPlaybackDeviceInfo",
+    "params": {}
+  },
+  {
+    "apiType": "kSetAudioPlaybackDeviceVolume",
+    "params": {
+      "volume": 100
+    }
+  },
+  {
+    "apiType": "kGetAudioPlaybackDeviceVolume",
+    "params": {}
+  },
+  {
+    "apiType": "kSetAudioPlaybackDeviceMute",
+    "params": {
+      "mute": true
+    }
+  },
+  {
+    "apiType": "kGetAudioPlaybackDeviceMute",
+    "params": {}
+  },
+  {
+    "apiType": "kStartAudioPlaybackDeviceTest",
+    "params": {
+      "testAudioFilePath": "./abc.mp3"
+    }
+  },
+  {
+    "apiType": "kStopAudioPlaybackDeviceTest",
+    "params": {}
+  },
+  {
+    "apiType": "kStartAudioDeviceLoopbackTest",
+    "params": {
+      "indicationInterval": 10
+    }
+  },
+  {
+    "apiType": "kStopAudioDeviceLoopbackTest",
+    "params": {}
+  },
+  {
+    "apiType": "kGetAudioRecordingDeviceCount",
+    "params": {}
+  },
+  {
+    "apiType": "kGetAudioRecordingDeviceInfoByIndex",
+    "params": {
+      "index": 123
+    }
+  },
+  {
+    "apiType": "kSetCurrentAudioRecordingDeviceId",
+    "params": {
+      "deviceId": "123"
+    }
+  },
+  {
+    "apiType": "kGetCurrentAudioRecordingDeviceId",
+    "params": {}
+  },
+  {
+    "apiType": "kGetCurrentAudioRecordingDeviceInfo",
+    "params": {}
+  },
+  {
+    "apiType": "kSetAudioRecordingDeviceVolume",
+    "params": {
+      "volume": 100
+    }
+  },
+  {
+    "apiType": "kGetAudioRecordingDeviceVolume",
+    "params": {}
+  },
+  {
+    "apiType": "kSetAudioRecordingDeviceMute",
+    "params": {
+      "mute": true
+    }
+  },
+  {
+    "apiType": "kGetAudioRecordingDeviceMute",
+    "params": {}
+  },
+  {
+    "apiType": "kStartAudioRecordingDeviceTest",
+    "params": {
+      "testAudioFilePath": "./abc.mp3"
+    }
+  },
+  {
+    "apiType": "kStopAudioRecordingDeviceTest",
+    "params": {}
+  }
+]

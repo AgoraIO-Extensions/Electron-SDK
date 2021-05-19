@@ -1,87 +1,98 @@
-const {logger} = require('just-task');
-const shell = require("shelljs");
-const path = require('path')
+import logger from './logger'
+import fs from 'fs-extra'
+import path from 'path'
+import { exec } from 'shelljs'
 
-const gyp_exec = `node ${path.resolve(__dirname, '../node_modules/node-gyp/bin/node-gyp.js')}`
+let gyp_path = `${path.resolve(__dirname, '../../node-gyp/bin/node-gyp.js')}`
 
-module.exports = ({
-  electronVersion='5.0.8',
-  runtime='electron',
-  platform=process.platform,
-  packageVersion,
-  debug = false,
-  silent = false,
-  msvsVersion = '2015',
-  arch = 'ia32',
-  distUrl = 'https://electronjs.org/headers'
-}) => {
-  /** get command string */
-  const command = [`${gyp_exec} configure`];
-  
-  // check platform
-  if (platform === 'win32') {
-    command.push(`--arch=${arch} --msvs_version=${msvsVersion}`)
+if (!fs.existsSync(gyp_path)) {
+  logger.info(`gyp_exec not found at ${gyp_path}, switch`)
+  gyp_path = `${path.resolve(
+    __dirname,
+    '../node_modules/node-gyp/bin/node-gyp.js'
+  )}`
+}
+const gyp_exec = `node ${gyp_path}`
+const agora_node_ext_path = `${path.resolve(
+  __dirname,
+  '../build/Release/agora_node_ext.node'
+)}`
+const video_source_path = `${path.resolve(
+  __dirname,
+  '../build/Release/VideoSource'
+)}`
+
+const configWin = (command, { arch, msvsVersion }) => {
+  logger.info(`Agora VS:${msvsVersion}`)
+  command.push(`--arch=${arch} --msvs_version=${msvsVersion}`)
+}
+const configMac = (command, { arch, debug }) => {
+  if (arch === 'arm64') {
+    command.push('--arch=arm64')
   }
+  if (debug) {
+    command.push('--debug')
+    // MUST AT THE END OF THE COMMAND ARR
+    command.push('-- -f xcode')
+  }
+}
 
+const build = async (
+  cb,
+  {
+    electronVersion,
+    runtime,
+    platform,
+    packageVersion,
+    debug,
+    silent,
+    msvsVersion,
+    arch,
+    distUrl,
+  }
+) => {
+  const commandArray = []
+  /** get command string */
+  const command = [`${gyp_exec} configure`]
+  // check platform
+  platform === 'darwin'
+    ? configMac(command, { arch, debug })
+    : configWin(command, { arch, msvsVersion })
   // check runtime
   if (runtime === 'electron') {
     command.push(`--target=${electronVersion} --dist-url=${distUrl}`)
   }
+  const commandStr = command.join(' ')
+  /** start build */
+  logger.info('Package Version: %s', packageVersion)
+  logger.info('Platform: %s', platform)
+  logger.info('Electron Version: %s', electronVersion)
+  logger.info('Runtime: %s', runtime)
+  logger.info('Build C++ addon for Agora Electron SDK...')
 
-  // check debug
-  if (debug) {
-    command.push('--debug');
-    if (platform === 'darwin') {
-      // MUST AT THE END OF THE COMMAND ARR
-      command.push('-- -f xcode')
+  commandArray.push(`${gyp_exec} clean`)
+  commandArray.push(commandStr)
+  commandArray.push(`${gyp_exec} build`)
+  if (platform === 'darwin') {
+    commandArray.push(
+      `install_name_tool -add_rpath "@loader_path" ${agora_node_ext_path}`
+    )
+    commandArray.push(
+      `install_name_tool -add_rpath "@loader_path" ${video_source_path}`
+    )
+  }
+  for (let index = 0; index < commandArray.length; index++) {
+    const shellStr = commandArray[index]
+    logger.info('Will to call %s', shellStr)
+    const { code, stderr } = await exec(shellStr, { silent })
+    if (code !== 0) {
+      logger.error(stderr)
+      cb()
+      return
     }
   }
-
-  const commandStr = command.join(' ')
-
-  /** start build */
-  logger.info(commandStr, '\n');
-
-  logger.info("Package Version:", packageVersion);
-  logger.info("Platform:", platform);
-  logger.info("Electron Version:", electronVersion);
-  logger.info("Runtime:", runtime, "\n");
-
-  logger.info("Build C++ addon for Agora Electron SDK...\n")
-  
-  shell.exec(`${gyp_exec} clean`, {silent}, (code, stdout, stderr) => {
-    // handle error
-    logger.info(`clean done ${stdout}`)
-    if (code !== 0) {
-      logger.error(stderr);
-      process.exit(1)
-    }
-
-    shell.exec(commandStr, {silent}, (code, stdout, stderr) => {
-      // handle error
-      logger.info(`configure done ${stdout}`)
-      if (code !== 0) {
-        logger.error(stderr);
-        process.exit(1)
-      }
-  
-      if (debug) {
-        // handle success
-        logger.info('Complete, please go to `/build` and build manually')
-        process.exit(0)  
-      } else {
-        shell.exec(`${gyp_exec} build`, {silent}, (code, stdout, stderr) => {
-          // handle error
-          if (code !== 0) {
-            logger.error(stderr);
-            process.exit(1)
-          }
-          
-          // handle success
-          logger.info('Build complete')
-          process.exit(0)  
-        })
-      }
-    })
-  })
+  logger.info('Build complete')
+  cb()
 }
+
+export default build

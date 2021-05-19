@@ -1,0 +1,32 @@
+[
+  {
+    "apiType": "kGetVideoDeviceCount",
+    "params": {}
+  },
+  {
+    "apiType": "kGetVideoDeviceInfoByIndex",
+    "params": {
+      "index": 123
+    }
+  },
+  {
+    "apiType": "kSetCurrentVideoDeviceId",
+    "params": {
+      "deviceId": "123"
+    }
+  },
+  {
+    "apiType": "kGetCurrentVideoDeviceId",
+    "params": {}
+  },
+  {
+    "apiType": "kStartVideoDeviceTest",
+    "params": {
+      "hwnd": 0
+    }
+  },
+  {
+    "apiType": "kStopVideoDeviceTest",
+    "params": {}
+  }
+]
