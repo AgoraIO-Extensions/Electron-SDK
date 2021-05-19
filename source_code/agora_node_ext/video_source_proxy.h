@@ -53,6 +53,7 @@ public:
   int EnableVideoFrameCache(const char *channelId, unsigned int uid, int width,
                             int height);
   int DisableVideoFrameCache(const char *channelId, unsigned int uid);
+  int SetAddonLogFile(const char *filePath);
   void Clear();
   void OnApiError(const char *event, const char *data);
   void OnVideoFrameReceive(const char *data, int len);

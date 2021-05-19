@@ -28,17 +28,14 @@ VideoSource::~VideoSource() {
 }
 
 void VideoSource::Clear() {
+  LOG_F(INFO, "VideoSource::Clear() enter");
   _iris_engine.reset();
   _iris_event_handler.reset();
-  LOG_F(INFO, "VideoSource::Clear() 33");
   _ipc_sender.reset();
-  LOG_F(INFO, "VideoSource::Clear() 44");
   _ipc_controller.reset();
-  LOG_F(INFO, "VideoSource::Clear() 55");
   _parameter_parser.reset();
-  LOG_F(INFO, "VideoSource::Clear() 66");
   _video_processer.reset();
-  LOG_F(INFO, "VideoSource::Clear() 77");
+  LOG_F(INFO, "VideoSource::Clear() leave");
 }
 
 bool VideoSource::Initialize(std::string &parameter) {
@@ -176,6 +173,11 @@ void VideoSource::OnMessage(unsigned int msg, char *data, unsigned int len) {
     LOG_F(INFO, "VideoSource OnMessage AGORA_IPC_DISCONNECT");
     this->Exit(false);
     this->Clear();
+  } break;
+
+  case AGORA_IPC_SET_ADDON_LOG_FILE: {
+    ApiParameter *parameter = (ApiParameter *)data;
+    startLogService(parameter->_parameters);
   } break;
 
   default:

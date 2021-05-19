@@ -52,6 +52,7 @@ export interface NodeIrisRtcEngine {
     rotation: number;
     timestamp: number;
   };
+  VideoSourceSetAddonLogFile(filePath: string): Result;
   VideoSourceInitialize(params: string): Result;
   VideoSourceRelease(): Result;
   Release(): Result;
