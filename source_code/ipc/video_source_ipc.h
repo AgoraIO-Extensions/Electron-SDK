@@ -17,14 +17,13 @@
 #define AGORA_VIDEO_SOURCE_IPC_H
 #include "ipc_shm.h"
 #include "iris_rtc_engine.h"
-#include "loguru.hpp"
-#include "node_log.h"
+#include "node_base.h"
+#include <atomic>
 #include <functional>
 #include <memory>
 #include <string>
 #include <thread>
 #include <vector>
-#include <atomic>
 
 #define DATA_IPC_NAME "avsipc"
 

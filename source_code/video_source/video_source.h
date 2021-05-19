@@ -4,7 +4,6 @@
 #include "iris_rtc_raw_data.h"
 #include "iris_rtc_raw_data_plugin_manager.h"
 #include "iris_rtc_renderer.h"
-#include "loguru.hpp"
 #include "node_process.h"
 #include "video_processer.h"
 #include "video_source_ipc.h"

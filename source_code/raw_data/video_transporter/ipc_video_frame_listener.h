@@ -1,6 +1,5 @@
 #pragma once
 #include "iris_rtc_raw_data.h"
-#include "loguru.hpp"
 #include <vector>
 
 namespace agora {
@@ -66,11 +65,6 @@ public:
     bool
     CopyFrame(bool &is_new_frame,
               iris::rtc::IrisRtcVideoFrameObserver::VideoFrame &videoFrame) {
-      LOG_F(INFO,
-            "VideoProcess::CopyFrame  yStride: %d, height: %d, dstWidth %d, "
-            "dstHeight: %d",
-            videoFrame.y_stride, videoFrame.height, _header._yStride,
-            _header._height);
       if (_isFresh) {
         if (videoFrame.y_stride == _header._yStride &&
             videoFrame.height == _header._height) {

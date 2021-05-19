@@ -1,6 +1,5 @@
 #pragma once
 #include "iris_event_handler.h"
-#include "loguru.hpp"
 #include "video_source_ipc.h"
 #include <memory>
 

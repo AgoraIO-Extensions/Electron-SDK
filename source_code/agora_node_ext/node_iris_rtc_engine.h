@@ -2,18 +2,16 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:44
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-05-16 21:57:06
+ * @Last Modified time: 2021-05-19 20:08:46
  */
 #pragma once
 #include "iris_rtc_engine.h"
 #include "iris_rtc_raw_data.h"
 #include "iris_rtc_raw_data_plugin_manager.h"
-#include "loguru.hpp"
 #include "nan_api.h"
 #include "node_base.h"
 #include "node_iris_rtc_channel.h"
 #include "node_iris_rtc_device_manager.h"
-#include "node_log.h"
 #include "node_screen_window_info.h"
 #include "video_processer.h"
 #include "video_source_proxy.h"

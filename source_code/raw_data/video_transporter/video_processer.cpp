@@ -1,5 +1,4 @@
 #include "video_processer.h"
-#include "loguru.hpp"
 
 namespace agora {
 namespace rtc {
