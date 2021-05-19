@@ -8,8 +8,7 @@
 /*
  *  Created by Wang Yongli, 2018
  */
-#include "loguru.hpp"
-#include "node_log.h"
+#include "node_base.h"
 #include "node_process.h"
 #include <dlfcn.h>
 #include <fcntl.h>
@@ -58,19 +57,19 @@ void NodeProcessUnixImpl::Monitor(
 INodeProcess *INodeProcess::CreateNodeProcess(const char *path,
                                               const char **params,
                                               unsigned int flag) {
-  LOG_INFO("TO start process, path : %s", path);
+  LOG_F(INFO, "TO start process, path : %s", path);
   if (!path || !params || !params[0]) {
-    LOG_INFO("Parameter error");
+    LOG_F(INFO, "Parameter error");
     return nullptr;
   }
   int fd[2] = {0, 0};
   if (socketpair(AF_UNIX, SOCK_STREAM, 0, fd) != 0) {
-    LOG_ERROR("socket pair fail");
+    LOG_F(INFO, "socket pair fail");
     return nullptr;
   }
   pid_t pid = fork();
   if (pid == -1) {
-    LOG_ERROR("fork fail.");
+    LOG_F(INFO, "fork fail.");
     // fork failed.
     return nullptr;
   } else if (pid == 0) {
@@ -93,7 +92,7 @@ INodeProcess *INodeProcess::CreateNodeProcess(const char *path,
             vs_params[5]);
       execv((std::string(path) + vs_params[0]).c_str(), (char **)vs_params);
     } else {
-      LOG_ERROR("fcntl error.");
+      LOG_F(INFO, "fcntl error.");
     }
   } else {
     // parent process

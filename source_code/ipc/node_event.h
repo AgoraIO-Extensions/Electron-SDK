@@ -11,7 +11,7 @@
 #ifndef NODE_EVENT_H
 #define NODE_EVENT_H
 
-#include "loguru.hpp"
+#include "node_base.h"
 #include <atomic>
 #include <chrono>
 #include <condition_variable>

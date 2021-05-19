@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:37
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-05-19 16:04:11
+ * @Last Modified time: 2021-05-19 20:38:49
  */
 #include "node_iris_rtc_engine.h"
 #include "node_iris_event_handler.h"
@@ -582,7 +582,6 @@ void NodeIrisRtcEngine::Release(
     _engine->_iris_raw_data = nullptr;
     _engine->_iris_engine.reset();
     _engine->_video_source_proxy.reset();
-    stopLogService();
     LOG_F(INFO, "NodeIrisRtcEngine::Release done");
   } else {
     LOG_F(INFO, "VideoSourceInitialize NodeIris Engine Not Init");

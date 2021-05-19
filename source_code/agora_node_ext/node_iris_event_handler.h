@@ -2,13 +2,13 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:53
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-05-13 22:30:48
+ * @Last Modified time: 2021-05-19 20:07:39
  */
 #pragma once
 #include "iris_event_handler.h"
-#include "loguru.hpp"
 #include "nan_api.h"
 #include "node_async_queue.h"
+#include "node_base.h"
 #include "video_source_event_handler.h"
 #include <unordered_map>
 
