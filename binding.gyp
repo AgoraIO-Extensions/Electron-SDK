@@ -46,7 +46,8 @@
                             'libraries': [
                                 '-lagora_rtc_sdk.lib',
                                 '-lws2_32.lib',
-                                '-lagora_rtc_sdk.lib'
+                                '-lRpcrt4.lib',
+                                '-lgdiplus.lib'
                             ]
                         },
                         'link_settings!': [
