@@ -1,6 +1,6 @@
 {
     'target_defaults': {
-        'default_configuration': 'Debug'
+        'default_configuration': 'Release'
     },
     'targets': [
         {
