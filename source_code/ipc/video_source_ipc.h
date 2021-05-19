@@ -24,6 +24,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <atomic>
 
 #define DATA_IPC_NAME "avsipc"
 
