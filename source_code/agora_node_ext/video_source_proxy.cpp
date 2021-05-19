@@ -208,6 +208,18 @@ int VideoSourceProxy::DisableVideoFrameCache(const char *channelId,
   return -1;
 }
 
+int VideoSourceProxy::SetAddonLogFile(const char *filePath) {
+  if (_initialized) {
+    ApiParameter _parameter;
+    strcpy(_parameter._parameters, filePath);
+    return _agora_ipc->sendMessage(AGORA_IPC_SET_ADDON_LOG_FILE,
+                                   (char *)&_parameter, sizeof(_parameter))
+               ? 0
+               : -1;
+  }
+  return -1;
+}
+
 int VideoSourceProxy::Release() {
   if (_initialized)
     Clear();

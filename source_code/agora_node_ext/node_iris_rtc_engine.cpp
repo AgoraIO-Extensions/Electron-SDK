@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:37
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-05-19 20:38:49
+ * @Last Modified time: 2021-05-19 21:06:42
  */
 #include "node_iris_rtc_engine.h"
 #include "node_iris_event_handler.h"
@@ -58,6 +58,8 @@ void NodeIrisRtcEngine::Init(v8_Local<v8_Object> &_module) {
   Nan::SetPrototypeMethod(_template, "VideoSourceInitialize",
                           VideoSourceInitialize);
   Nan::SetPrototypeMethod(_template, "VideoSourceRelease", VideoSourceRelease);
+  Nan::SetPrototypeMethod(_template, "VideoSourceSetAddonLogFile",
+                          VideoSourceSetAddonLogFile);
   Nan::SetPrototypeMethod(_template, "Release", Release);
   _constructor.Reset(_template->GetFunction(_context).ToLocalChecked());
   _module->Set(_context,
@@ -93,8 +95,7 @@ void NodeIrisRtcEngine::CallApi(
   auto _parameter = nan_api_get_value_utf8string_(args[2]);
   char _result[512];
   memset(_result, '\0', 512);
-  LOG_F(INFO, "CallApi parameter: type: %d, parameter: %s", _process_type,
-        _parameter.c_str());
+
   int _ret = ERROR_PARAMETER_1;
 
   if (_engine->_iris_engine) {
@@ -106,8 +107,11 @@ void NodeIrisRtcEngine::CallApi(
         _ret = _engine->_video_source_proxy->CallApi(
             (ApiTypeEngine)_apiType, _parameter.c_str(), _result);
       }
+      LOG_F(INFO, "CallApi parameter: type: %d, parameter: %s, ret: %d",
+            _process_type, _parameter.c_str(), _ret);
     } catch (std::exception &e) {
       _engine->OnApiError(e.what());
+      LOG_F(INFO, "CallApi parameter: catch excepton msg: %s", e.what());
     }
   } else {
     _ret = ERROR_NOT_INIT;
@@ -340,6 +344,27 @@ void NodeIrisRtcEngine::VideoSourceInitialize(
   } else {
     _ret = ERROR_NOT_INIT;
     LOG_F(INFO, "VideoSourceInitialize NodeIris Engine Not Init");
+  }
+
+  auto _retObj = v8_Object::New(_isolate);
+  v8_SET_OBJECT_PROP_INT32(_isolate, _retObj, "retCode", _ret)
+      v8_SET_OBJECT_PROP_STRING(_isolate, _retObj, "result", "")
+          args.GetReturnValue()
+              .Set(_retObj);
+}
+
+void NodeIrisRtcEngine::VideoSourceSetAddonLogFile(
+    const Nan_FunctionCallbackInfo<v8_Value> &args) {
+  auto _engine = ObjectWrap::Unwrap<NodeIrisRtcEngine>(args.Holder());
+  auto _isolate = args.GetIsolate();
+  auto _parameter = nan_api_get_value_utf8string_(args[0]);
+  auto _ret = ERROR_PARAMETER_1;
+  if (_engine->_video_source_proxy) {
+    if (_engine->_video_source_proxy->SetAddonLogFile(_parameter.c_str()))
+      _ret = ERROR_OK;
+  } else {
+    _ret = ERROR_NOT_INIT;
+    LOG_F(INFO, "VideoSourceSetAddonLogFile NodeIris Engine Not Init");
   }
 
   auto _retObj = v8_Object::New(_isolate);

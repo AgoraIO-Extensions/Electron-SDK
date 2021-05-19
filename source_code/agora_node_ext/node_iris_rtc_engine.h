@@ -49,6 +49,8 @@ public:
   VideoSourceInitialize(const Nan_FunctionCallbackInfo<v8_Value> &args);
   static void
   VideoSourceRelease(const Nan_FunctionCallbackInfo<v8_Value> &args);
+  static void
+  VideoSourceSetAddonLogFile(const Nan_FunctionCallbackInfo<v8_Value> &args);
   static void SetAddonLogFile(const Nan_FunctionCallbackInfo<v8_Value> &args);
   static void Release(const Nan_FunctionCallbackInfo<v8_Value> &args);
   void OnApiError(const char *errorMessage);
