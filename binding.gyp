@@ -54,6 +54,7 @@
                         ],
                         'sources': [
                             './source_code/process/node_process_win.cpp',
+                            './source_code/iris/base/process/iris_process_win.cc'
                         ],
                         'include_dirs': [
                             './sdk/include'
