@@ -64,7 +64,9 @@ export class YUVCanvasRenderer implements IRenderer {
   unbind() {
     this._canvas && this._container?.removeChild(this._canvas);
     this._container && this._customeElement?.removeChild(this._container);
-    this._isWebGL && this._yuvCanvasSink?.loseContext();
+    this._isWebGL &&
+      this._yuvCanvasSink?.loseContext &&
+      this._yuvCanvasSink?.loseContext();
     this._yuvCanvasSink = undefined;
     this._canvas && (this._canvas = undefined);
     this._container && (this._container = undefined);
@@ -174,8 +176,8 @@ export class YUVCanvasRenderer implements IRenderer {
       return;
     }
 
-    let frameWidth = frame.yStride
-    let frameHeight = frame.height
+    let frameWidth = frame.yStride;
+    let frameHeight = frame.height;
 
     if (
       this._videoFrame.width === 0 ||
@@ -183,7 +185,9 @@ export class YUVCanvasRenderer implements IRenderer {
       this._videoFrame.width != frame.width ||
       this._videoFrame.height != frame.height
     ) {
-      logWarn(`YUVCanvasRenderer new Uint8Array before width ${this._videoFrame.width}, height ${this._videoFrame.height}, current: width ${frameWidth} height ${frameHeight}`);
+      logWarn(
+        `YUVCanvasRenderer new Uint8Array before width ${this._videoFrame.width}, height ${this._videoFrame.height}, current: width ${frameWidth} height ${frameHeight}`
+      );
       this._videoFrame.yBuffer = new Uint8Array(frameWidth * frameHeight);
       this._videoFrame.uBuffer = new Uint8Array((frameWidth * frameHeight) / 4);
       this._videoFrame.vBuffer = new Uint8Array((frameWidth * frameHeight) / 4);
