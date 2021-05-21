@@ -57,7 +57,7 @@
                         'include_dirs': [
                             './sdk/include'
                         ],
-                        'defines!': [
+                        'defines': [
                             '_USING_V110_SDK71_',
                             '_HAS_EXCEPTIONS=0',
                             'IRIS_EXPORT'
@@ -118,7 +118,7 @@
                             './source_code/process/node_process_unix.cpp',
                             './source_code/iris/base/process/iris_process_unix.cc',
                         ],
-                        'defines!': [
+                        'defines': [
                             # '_HAS_EXCEPTIONS=0',
                             '-std=gnu++14'
                         ],
@@ -200,7 +200,7 @@
                         'library_dirs': [
                             './sdk/lib/win32/x86_64',
                         ],
-                        'defines!': [
+                        'defines': [
                             '_USING_V110_SDK71_',
                             '_HAS_EXCEPTIONS=0',
                             'IRIS_EXPORT'
@@ -283,7 +283,7 @@
                         'include_dirs': [
                             './sdk/lib/mac/AgoraRtcKit.framework/Headers'
                         ],
-                        'defines!': [
+                        'defines': [
                             '_NOEXCEPT',
                             '-std=c++11'
                         ],

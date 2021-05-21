@@ -65,7 +65,8 @@ bool VideoSourceProxy::Initialize(
   std::string cmdname = "VideoSource";
   std::string idparam = "id:" + _peer_id;
   std::string pidparam = "pid:" + ss.str();
-  const char *params[] = {cmdname.c_str(), idparam.c_str(), pidparam.c_str()};
+  const char *params[] = {cmdname.c_str(), idparam.c_str(), pidparam.c_str(),
+                          nullptr};
   _node_process.reset(INodeProcess::CreateNodeProcess(path.c_str(), params));
   if (!_node_process.get()) {
     LOG_F(INFO, "VideoSourceProxy CreateNodeProcess fail ");
