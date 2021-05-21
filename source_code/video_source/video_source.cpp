@@ -42,7 +42,6 @@ bool VideoSource::Initialize(std::string &parameter) {
   _parameter_parser.reset(new VideoSourceParamParser());
   _parameter_parser->initialize(parameter);
 
-  auto _apiParameter = _parameter_parser->getParameter("apiParameter");
   auto _peerId = _parameter_parser->getParameter("id");
 
   LOG_F(INFO, "VideoSource::Initialize");
@@ -63,14 +62,6 @@ bool VideoSource::Initialize(std::string &parameter) {
   _iris_event_handler.reset(new VideoSourceIrisEventhandler(_ipc_controller));
   _iris_engine->SetEventHandler(_iris_event_handler.get());
   _video_processer.reset(new VideoProcesser(_iris_engine));
-  char result[512];
-  auto ret = _iris_engine->CallApi(ApiTypeEngine::kEngineInitialize,
-                                   _apiParameter.c_str(), result);
-  if (ret != 0) {
-    LOG_F(INFO, "VideoSource  _iris_engine initialize fail");
-    return false;
-  }
-
   _ipc_sender.reset(new AgoraIpcDataSender());
   if (!_ipc_sender->initialize(_peerId + DATA_IPC_NAME)) {
     LOG_F(INFO, "VideoSource  _ipc_sender initialize fail");

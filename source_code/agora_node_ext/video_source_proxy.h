@@ -41,8 +41,7 @@ public:
   virtual void OnMessage(unsigned int msg, char *payload,
                          unsigned int len) override;
   bool
-  Initialize(std::shared_ptr<IVideoSourceEventHandler> videoSourceEventHandler,
-             std::string &parameter);
+  Initialize(std::shared_ptr<IVideoSourceEventHandler> videoSourceEventHandler);
   void LoopMessage();
   int CallApi(ApiTypeEngine apiType, const char *parameter, char *result);
   int CallApi(ApiTypeEngine apiType, const char *parameter, const char *buffer,
