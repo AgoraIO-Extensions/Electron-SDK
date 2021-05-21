@@ -15,8 +15,7 @@ VideoSourceProxy::~VideoSourceProxy() {
 }
 
 bool VideoSourceProxy::Initialize(
-    std::shared_ptr<IVideoSourceEventHandler> videoSourceEventHandler,
-    std::string &parameter) {
+    std::shared_ptr<IVideoSourceEventHandler> videoSourceEventHandler) {
   if (_initialized) {
     LOG_F(INFO, "VideoSourceProxy Initialize already ");
     return true;
@@ -66,9 +65,7 @@ bool VideoSourceProxy::Initialize(
   std::string cmdname = "VideoSource";
   std::string idparam = "id:" + _peer_id;
   std::string pidparam = "pid:" + ss.str();
-  std::string apiParameter = "apiParameter:" + std::string(parameter);
-  const char *params[] = {cmdname.c_str(), idparam.c_str(), pidparam.c_str(),
-                          apiParameter.c_str(), nullptr};
+  const char *params[] = {cmdname.c_str(), idparam.c_str(), pidparam.c_str()};
   _node_process.reset(INodeProcess::CreateNodeProcess(path.c_str(), params));
   if (!_node_process.get()) {
     LOG_F(INFO, "VideoSourceProxy CreateNodeProcess fail ");

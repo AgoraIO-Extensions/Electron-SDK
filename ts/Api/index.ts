@@ -7444,7 +7444,8 @@ class AgoraRtcEngine extends EventEmitter {
       context,
     };
 
-    let ret = this._rtcEngine.VideoSourceInitialize(JSON.stringify(param));
+    let ret = this._rtcEngine.VideoSourceInitialize();
+    this._rtcEngine.CallApi(PROCESS_TYPE.SCREEN_SHARE, ApiTypeEngine.kEngineInitialize, JSON.stringify(param))
     this.videoSourceEnableLocalVideo(false)
     this.videoSourceMuteAllRemoteVideoStreams(true)
     this.videoSourceMuteAllRemoteAudioStreams(true)

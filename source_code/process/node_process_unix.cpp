@@ -84,12 +84,10 @@ INodeProcess *INodeProcess::CreateNodeProcess(const char *path,
       std::stringstream ss;
       ss << fd[1];
       std::string fd_param = "fd:" + ss.str();
-      const char *vs_params[] = {params[0],        params[1], params[2],
-                                 fd_param.c_str(), params[3], params[4],
-                                 nullptr};
-      LOG_F(INFO, "====execv : %s, %s, %s, %s,%s, %s\n", vs_params[0],
-            vs_params[1], vs_params[2], vs_params[3], vs_params[4],
-            vs_params[5]);
+      const char *vs_params[] = {params[0], params[1], params[2],
+                                 fd_param.c_str(), nullptr};
+      LOG_F(INFO, "====execv : %s, %s, %s, %s\n", vs_params[0], vs_params[1],
+            vs_params[2], vs_params[3]);
       execv((std::string(path) + vs_params[0]).c_str(), (char **)vs_params);
     } else {
       LOG_F(INFO, "fcntl error.");

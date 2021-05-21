@@ -334,12 +334,9 @@ void NodeIrisRtcEngine::VideoSourceInitialize(
     const Nan_FunctionCallbackInfo<v8_Value> &args) {
   auto _engine = ObjectWrap::Unwrap<NodeIrisRtcEngine>(args.Holder());
   auto _isolate = args.GetIsolate();
-  auto _parameter = nan_api_get_value_utf8string_(args[0]);
   auto _ret = ERROR_PARAMETER_1;
-  LOG_F(INFO, "VideoSourceInitialize parameter: %s", _parameter.c_str());
   if (_engine->_video_source_proxy) {
-    if (_engine->_video_source_proxy->Initialize(_engine->_iris_event_handler,
-                                                 _parameter))
+    if (_engine->_video_source_proxy->Initialize(_engine->_iris_event_handler))
       _ret = ERROR_OK;
   } else {
     _ret = ERROR_NOT_INIT;
