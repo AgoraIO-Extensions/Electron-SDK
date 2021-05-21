@@ -118,7 +118,7 @@
                             './source_code/process/node_process_unix.cpp',
                             './source_code/iris/base/process/iris_process_unix.cc',
                         ],
-                        'defines': [
+                        'defines!': [
                             # '_HAS_EXCEPTIONS=0',
                             '-std=gnu++14'
                         ],
@@ -283,7 +283,7 @@
                         'include_dirs': [
                             './sdk/lib/mac/AgoraRtcKit.framework/Headers'
                         ],
-                        'defines': [
+                        'defines!': [
                             '_NOEXCEPT',
                             '-std=c++11'
                         ],
