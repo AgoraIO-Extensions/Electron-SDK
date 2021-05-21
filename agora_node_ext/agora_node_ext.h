@@ -12,5 +12,6 @@
 #define AGORA_NODE_EXT_H
 #include "IAgoraRtcEngine.h"
 #include "node_log.h"
+// #pragma comment(lib, "..\\sdk\\lib\\agora_rtc_sdk.lib")
 
 #endif

@@ -2026,83 +2026,91 @@ namespace agora {
             nodestring* idList = nullptr;
             nodestring* pathList = nullptr;
             nodestring* configList = nullptr;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                Isolate* isolate = args.GetIsolate();
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                NodeString appid;
-                napi_status status = napi_get_value_nodestring_(args[0], appid);
-                key = "appId";
+            loguru::add_file("./agora_log.txt", loguru::Append, loguru::Verbosity_MAX);
+            do
+            {
+              NodeRtcEngine *pEngine = nullptr;
+              Isolate *isolate = args.GetIsolate();
+              napi_get_native_this(args, pEngine);
+              CHECK_NATIVE_THIS(pEngine);
+              NodeString appid;
+              napi_status status = napi_get_value_nodestring_(args[0], appid);
+              key = "appId";
+              CHECK_NAPI_STATUS_STR(pEngine, status, key);
+              ;
+              Local<Value> extensionsList = args[1];
+              if (extensionsList->IsNullOrUndefined() || !extensionsList->IsArray())
+              {
+                status = napi_invalid_arg;
+                key = "Extensions";
                 CHECK_NAPI_STATUS_STR(pEngine, status, key);
-;
-                Local<Value> extensionsList = args[1];
-                if (extensionsList->IsNullOrUndefined() || !extensionsList->IsArray()) {
-                    status = napi_invalid_arg;
-                    key = "Extensions";
-                    CHECK_NAPI_STATUS_STR(pEngine, status, key);
-                }
-                auto extensionsListValue = v8::Array::Cast(*extensionsList);
+              }
+              auto extensionsListValue = v8::Array::Cast(*extensionsList);
 
-                int extensionCount = extensionsListValue->Length();
-                if (extensionCount > 0) {
-                    extensions = new Extension[extensionCount];
-                    idList = new nodestring[extensionCount];
-                    pathList = new nodestring[extensionCount];
-                    configList = new nodestring[extensionCount];
-                    for (int i = 0; i < extensionCount; i++ ) {
-                        Local<Value> value = extensionsListValue->Get(isolate->GetCurrentContext(), i).ToLocalChecked();
-                        Local<Object> extensionObj;
-                        status = napi_get_value_object_(isolate, value, extensionObj);
-                        if (extensionObj->IsNullOrUndefined()) {
-                            status = napi_invalid_arg;
-                            break;
-                        }
-                        napi_get_object_property_nodestring_(isolate, extensionObj, "id", idList[i]);
-                        napi_get_object_property_nodestring_(isolate, extensionObj, "path", pathList[i]);
-                        napi_get_object_property_nodestring_(isolate, extensionObj, "config", configList[i]);
-                        extensions[i].id = idList[i];
-                        extensions[i].path = pathList[i];
-                        extensions[i].config = configList[i];
-                    }
-                    key = "extension item";
-                    CHECK_NAPI_STATUS_STR(pEngine, status, key);
-                }
-
-                unsigned int areaCode;
-                status = napi_get_value_uint32_(args[2], areaCode);
-                key = "areaCode";
-                CHECK_NAPI_STATUS_STR(pEngine, status, key);
-
-                RtcEngineContextEx context;
-                context.eventHandlerEx = pEngine->m_eventHandler.get();
-                context.appId = appid;
-                context.areaCode = areaCode;
-                if (extensionCount > 0) {
-                    context.extensions = extensions;
-                    context.numExtension = extensionCount;
-                }
-                auto engineEx = (IRtcEngineEx*) pEngine->m_engine;
-                int suc = engineEx->initialize(context);
-                if (0 != suc) {
-                    LOG_ERROR("Rtc engine initialize failed with error :%d\n", suc);
-                    status = napi_invalid_arg;
-                    key = "initialize";
-                    CHECK_NAPI_STATUS_STR(pEngine, status, key);
-                    break;
-                }
-
-                agora::media::IMediaEngine* pMediaEngine = nullptr;
-                pEngine->getRtcEngine()->queryInterface(agora::rtc::INTERFACE_ID_TYPE::AGORA_IID_MEDIA_ENGINE, (void**)&pMediaEngine);
-                if (pMediaEngine && pEngine->m_nodeVideoFrameObserver.get())
+              int extensionCount = extensionsListValue->Length();
+              if (extensionCount > 0)
+              {
+                extensions = new Extension[extensionCount];
+                idList = new nodestring[extensionCount];
+                pathList = new nodestring[extensionCount];
+                configList = new nodestring[extensionCount];
+                for (int i = 0; i < extensionCount; i++)
                 {
-                    pMediaEngine->registerVideoFrameObserver(pEngine->m_nodeVideoFrameObserver.get());
-                    result = 0;
+                  Local<Value> value = extensionsListValue->Get(isolate->GetCurrentContext(), i).ToLocalChecked();
+                  Local<Object> extensionObj;
+                  status = napi_get_value_object_(isolate, value, extensionObj);
+                  if (extensionObj->IsNullOrUndefined())
+                  {
+                    status = napi_invalid_arg;
+                    break;
+                  }
+                  napi_get_object_property_nodestring_(isolate, extensionObj, "id", idList[i]);
+                  napi_get_object_property_nodestring_(isolate, extensionObj, "path", pathList[i]);
+                  napi_get_object_property_nodestring_(isolate, extensionObj, "config", configList[i]);
+                  extensions[i].id = idList[i];
+                  extensions[i].path = pathList[i];
+                  extensions[i].config = configList[i];
                 }
+                key = "extension item";
+                CHECK_NAPI_STATUS_STR(pEngine, status, key);
+              }
 
-                pEngine->m_engine->enableVideo();
-                pEngine->m_engine->enableLocalVideo(true);
+              unsigned int areaCode;
+              status = napi_get_value_uint32_(args[2], areaCode);
+              key = "areaCode";
+              CHECK_NAPI_STATUS_STR(pEngine, status, key);
+
+              RtcEngineContextEx context;
+              context.eventHandlerEx = pEngine->m_eventHandler.get();
+              context.appId = appid;
+              context.areaCode = areaCode;
+              if (extensionCount > 0)
+              {
+                context.extensions = extensions;
+                context.numExtension = extensionCount;
+              }
+              auto engineEx = (IRtcEngineEx *)pEngine->m_engine;
+              int suc = engineEx->initialize(context);
+              if (0 != suc)
+              {
+                LOG_ERROR("Rtc engine initialize failed with error :%d\n", suc);
+                status = napi_invalid_arg;
+                key = "initialize";
+                CHECK_NAPI_STATUS_STR(pEngine, status, key);
+                break;
+              }
+
+              agora::media::IMediaEngine *pMediaEngine = nullptr;
+              pEngine->getRtcEngine()->queryInterface(agora::rtc::INTERFACE_ID_TYPE::AGORA_IID_MEDIA_ENGINE, (void **)&pMediaEngine);
+              if (pMediaEngine && pEngine->m_nodeVideoFrameObserver.get())
+              {
+                pMediaEngine->registerVideoFrameObserver(pEngine->m_nodeVideoFrameObserver.get());
                 result = 0;
+              }
+
+              pEngine->m_engine->enableVideo();
+              pEngine->m_engine->enableLocalVideo(true);
+              result = 0;
             } while (false);
             delete [] extensions;
             delete [] idList;
@@ -5141,83 +5149,89 @@ namespace agora {
         {
             LOG_ENTER;
             int result = -1;
-            do {
-                Isolate *isolate = args.GetIsolate();
-                NodeRtcEngine *pEngine = nullptr;
-                napi_status status = napi_ok;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                nodestring token;
-                status = napi_get_value_nodestring_(args[0], token);
-                CHECK_NAPI_STATUS(pEngine, status);
-                nodestring channelId;
-                status = napi_get_value_nodestring_(args[1], channelId);
-                CHECK_NAPI_STATUS(pEngine, status);
-                uid_t uid;
-                status = napi_get_value_uint32_(args[2], uid);
-                CHECK_NAPI_STATUS(pEngine, status);
-
-                ChannelMediaOptions channelMediaOptions;
-                Local<Object> optionObj;
-                status = napi_get_value_object_(isolate, args[3], optionObj);
-                CHECK_NAPI_STATUS(pEngine, status);
-                bool publishCameraTrack = false;
-                status = napi_get_object_property_bool_(isolate, optionObj, "publishCameraTrack", publishCameraTrack);
-                channelMediaOptions.publishCameraTrack = publishCameraTrack;
-                bool publishSecondaryCameraTrack = false;
-                status = napi_get_object_property_bool_(isolate, optionObj, "publishSecondaryCameraTrack", publishSecondaryCameraTrack);
-                channelMediaOptions.publishSecondaryCameraTrack = publishSecondaryCameraTrack;
-                bool publishAudioTrack = false;
-                status = napi_get_object_property_bool_(isolate, optionObj, "publishAudioTrack", publishAudioTrack);
-                channelMediaOptions.publishAudioTrack = publishAudioTrack;
-                bool publishScreenTrack = false;
-                status = napi_get_object_property_bool_(isolate, optionObj, "publishScreenTrack", publishScreenTrack);
-                channelMediaOptions.publishScreenTrack = publishScreenTrack;
-                bool publishSecondaryScreenTrack = false;
-                status = napi_get_object_property_bool_(isolate, optionObj, "publishSecondaryScreenTrack", publishSecondaryScreenTrack);
-                channelMediaOptions.publishSecondaryScreenTrack = publishSecondaryScreenTrack;
-                bool publishCustomAudioTrack = false;
-                status = napi_get_object_property_bool_(isolate, optionObj, "publishCustomAudioTrack", publishCustomAudioTrack);
-                channelMediaOptions.publishCustomAudioTrack = publishCustomAudioTrack;
-                bool publishCustomVideoTrack = false;
-                status = napi_get_object_property_bool_(isolate, optionObj, "publishCustomVideoTrack", publishCustomVideoTrack);
-                channelMediaOptions.publishCustomVideoTrack = publishCustomVideoTrack;
-                bool publishEncodedVideoTrack = false;
-                status = napi_get_object_property_bool_(isolate, optionObj, "publishEncodedVideoTrack", publishEncodedVideoTrack);
-                channelMediaOptions.publishEncodedVideoTrack = publishEncodedVideoTrack;
-                bool publishMediaPlayerAudioTrack = false;
-                status = napi_get_object_property_bool_(isolate, optionObj, "publishMediaPlayerAudioTrack", publishMediaPlayerAudioTrack);
-                channelMediaOptions.publishMediaPlayerAudioTrack = publishMediaPlayerAudioTrack;
-                bool publishMediaPlayerVideoTrack = false;
-                status = napi_get_object_property_bool_(isolate, optionObj, "publishMediaPlayerVideoTrack", publishMediaPlayerVideoTrack);
-                channelMediaOptions.publishMediaPlayerVideoTrack = publishMediaPlayerVideoTrack;
-                bool publishTrancodedVideoTrack = false;
-                status = napi_get_object_property_bool_(isolate, optionObj, "publishTrancodedVideoTrack", publishTrancodedVideoTrack);
-                channelMediaOptions.publishTrancodedVideoTrack = publishTrancodedVideoTrack;
-                bool autoSubscribeAudio = false;
-                status = napi_get_object_property_bool_(isolate, optionObj, "autoSubscribeAudio", autoSubscribeAudio);
-                channelMediaOptions.autoSubscribeAudio = autoSubscribeAudio;
-                bool autoSubscribeVideo = false;
-                status = napi_get_object_property_bool_(isolate, optionObj, "autoSubscribeVideo", autoSubscribeVideo);
-                channelMediaOptions.autoSubscribeVideo = autoSubscribeVideo;
-                int publishMediaPlayerId = 0;
-                status = napi_get_object_property_int32_(isolate, optionObj, "publishMediaPlayerId", publishMediaPlayerId);
-                channelMediaOptions.publishMediaPlayerId = publishMediaPlayerId;
-                bool enableAudioRecordingOrPlayout = false;
-                status = napi_get_object_property_bool_(isolate, optionObj, "enableAudioRecordingOrPlayout", enableAudioRecordingOrPlayout);
-                channelMediaOptions.enableAudioRecordingOrPlayout = enableAudioRecordingOrPlayout;
-                int clientRoleType = 2;
-                status = napi_get_object_property_int32_(isolate, optionObj, "clientRoleType", clientRoleType);
-                channelMediaOptions.clientRoleType = (CLIENT_ROLE_TYPE)clientRoleType;
-                int defaultVideoStreamType = 0;
-                status = napi_get_object_property_int32_(isolate, optionObj, "defaultVideoStreamType", defaultVideoStreamType);
-                channelMediaOptions.defaultVideoStreamType = (VIDEO_STREAM_TYPE)defaultVideoStreamType;
-                int channelProfile = 0;
-                status = napi_get_object_property_int32_(isolate, optionObj, "channelProfile", channelProfile);
-                channelMediaOptions.channelProfile = (CHANNEL_PROFILE_TYPE)channelProfile;
-
-                result = pEngine->m_engine->joinChannel(token, channelId, uid, channelMediaOptions);
-
+            LOG_F(INFO, "joinChannel2 enter");
+            do
+            {
+              Isolate *isolate = args.GetIsolate();
+              NodeRtcEngine *pEngine = nullptr;
+              napi_status status = napi_ok;
+              LOG_F(INFO, "joinChannel2 enter 111");
+              napi_get_native_this(args, pEngine);
+              CHECK_NATIVE_THIS(pEngine);
+              nodestring token;
+              LOG_F(INFO, "joinChannel2 enter 222");
+              status = napi_get_value_nodestring_(args[0], token);
+              CHECK_NAPI_STATUS(pEngine, status);
+              nodestring channelId;
+              LOG_F(INFO, "joinChannel2 enter 333");
+              status = napi_get_value_nodestring_(args[1], channelId);
+              CHECK_NAPI_STATUS(pEngine, status);
+              uid_t uid;
+              LOG_F(INFO, "joinChannel2 enter 444");
+              status = napi_get_value_uint32_(args[2], uid);
+              CHECK_NAPI_STATUS(pEngine, status);
+                LOG_F(INFO, "joinChannel2 enter 555");
+              ChannelMediaOptions channelMediaOptions;
+              Local<Object> optionObj;
+              status = napi_get_value_object_(isolate, args[3], optionObj);
+              CHECK_NAPI_STATUS(pEngine, status);
+              bool publishCameraTrack = false;
+              status = napi_get_object_property_bool_(isolate, optionObj, "publishCameraTrack", publishCameraTrack);
+              channelMediaOptions.publishCameraTrack = publishCameraTrack;
+              bool publishSecondaryCameraTrack = false;
+              status = napi_get_object_property_bool_(isolate, optionObj, "publishSecondaryCameraTrack", publishSecondaryCameraTrack);
+              channelMediaOptions.publishSecondaryCameraTrack = publishSecondaryCameraTrack;
+              bool publishAudioTrack = false;
+              status = napi_get_object_property_bool_(isolate, optionObj, "publishAudioTrack", publishAudioTrack);
+              channelMediaOptions.publishAudioTrack = publishAudioTrack;
+              bool publishScreenTrack = false;
+              status = napi_get_object_property_bool_(isolate, optionObj, "publishScreenTrack", publishScreenTrack);
+              channelMediaOptions.publishScreenTrack = publishScreenTrack;
+              bool publishSecondaryScreenTrack = false;
+              status = napi_get_object_property_bool_(isolate, optionObj, "publishSecondaryScreenTrack", publishSecondaryScreenTrack);
+              channelMediaOptions.publishSecondaryScreenTrack = publishSecondaryScreenTrack;
+              bool publishCustomAudioTrack = false;
+              status = napi_get_object_property_bool_(isolate, optionObj, "publishCustomAudioTrack", publishCustomAudioTrack);
+              channelMediaOptions.publishCustomAudioTrack = publishCustomAudioTrack;
+              bool publishCustomVideoTrack = false;
+              status = napi_get_object_property_bool_(isolate, optionObj, "publishCustomVideoTrack", publishCustomVideoTrack);
+              channelMediaOptions.publishCustomVideoTrack = publishCustomVideoTrack;
+              bool publishEncodedVideoTrack = false;
+              status = napi_get_object_property_bool_(isolate, optionObj, "publishEncodedVideoTrack", publishEncodedVideoTrack);
+              channelMediaOptions.publishEncodedVideoTrack = publishEncodedVideoTrack;
+              bool publishMediaPlayerAudioTrack = false;
+              status = napi_get_object_property_bool_(isolate, optionObj, "publishMediaPlayerAudioTrack", publishMediaPlayerAudioTrack);
+              channelMediaOptions.publishMediaPlayerAudioTrack = publishMediaPlayerAudioTrack;
+              bool publishMediaPlayerVideoTrack = false;
+              status = napi_get_object_property_bool_(isolate, optionObj, "publishMediaPlayerVideoTrack", publishMediaPlayerVideoTrack);
+              channelMediaOptions.publishMediaPlayerVideoTrack = publishMediaPlayerVideoTrack;
+              bool publishTrancodedVideoTrack = false;
+              status = napi_get_object_property_bool_(isolate, optionObj, "publishTrancodedVideoTrack", publishTrancodedVideoTrack);
+              channelMediaOptions.publishTrancodedVideoTrack = publishTrancodedVideoTrack;
+              bool autoSubscribeAudio = false;
+              status = napi_get_object_property_bool_(isolate, optionObj, "autoSubscribeAudio", autoSubscribeAudio);
+              channelMediaOptions.autoSubscribeAudio = autoSubscribeAudio;
+              bool autoSubscribeVideo = false;
+              status = napi_get_object_property_bool_(isolate, optionObj, "autoSubscribeVideo", autoSubscribeVideo);
+              channelMediaOptions.autoSubscribeVideo = autoSubscribeVideo;
+              int publishMediaPlayerId = 0;
+              status = napi_get_object_property_int32_(isolate, optionObj, "publishMediaPlayerId", publishMediaPlayerId);
+              channelMediaOptions.publishMediaPlayerId = publishMediaPlayerId;
+              bool enableAudioRecordingOrPlayout = false;
+              status = napi_get_object_property_bool_(isolate, optionObj, "enableAudioRecordingOrPlayout", enableAudioRecordingOrPlayout);
+              channelMediaOptions.enableAudioRecordingOrPlayout = enableAudioRecordingOrPlayout;
+              int clientRoleType = 2;
+              status = napi_get_object_property_int32_(isolate, optionObj, "clientRoleType", clientRoleType);
+              channelMediaOptions.clientRoleType = (CLIENT_ROLE_TYPE)clientRoleType;
+              int defaultVideoStreamType = 0;
+              status = napi_get_object_property_int32_(isolate, optionObj, "defaultVideoStreamType", defaultVideoStreamType);
+              channelMediaOptions.defaultVideoStreamType = (VIDEO_STREAM_TYPE)defaultVideoStreamType;
+              int channelProfile = 0;
+              status = napi_get_object_property_int32_(isolate, optionObj, "channelProfile", channelProfile);
+              channelMediaOptions.channelProfile = (CHANNEL_PROFILE_TYPE)channelProfile;
+              LOG_F(INFO, "joinChannel2 enter  77777");
+              result = pEngine->m_engine->joinChannel(token, channelId, uid, channelMediaOptions);
+              LOG_F(INFO, "joinChannel2 enter");
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;

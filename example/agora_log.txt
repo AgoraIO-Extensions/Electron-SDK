@@ -1,0 +1,61 @@
+
+
+
+
+
+File verbosity level: 9
+date       time         ( uptime  ) [ thread name/id ]                   file:line     v| 
+2021-05-21 17:22:37.702 (   0.311s) [                ]             loguru.cpp:770   INFO| Logging to './agora_log.txt', mode: 'a', verbosity: 9
+2021-05-21 17:22:37.908 (   0.517s) [                ] agora_media_player.cpp:133   INFO| NodeMediaPlayer init
+2021-05-21 17:22:37.908 (   0.517s) [                ] agora_media_player.cpp:163   INFO| NodeMediaPlayer createInstance
+2021-05-21 17:22:37.908 (   0.517s) [                ] agora_media_player.cpp:118   INFO| NodeMediaPlayer::NodeMediaPlayer
+2021-05-21 17:22:37.908 (   0.517s) [                ]node_media_player_obser:6     INFO| NodeMediaPlayerObserver::NodeMediaPlayerObserver
+2021-05-21 17:25:06.521 ( 149.130s) [                ]   agora_rtc_engine.cpp:4906  INFO| registerMediaMetadataObserver
+2021-05-21 17:25:06.522 ( 149.132s) [                ]   agora_rtc_engine.cpp:5152  INFO| joinChannel2 enter
+2021-05-21 17:25:06.523 ( 149.132s) [                ]   agora_rtc_engine.cpp:5158  INFO| joinChannel2 enter 111
+2021-05-21 17:25:06.523 ( 149.132s) [                ]   agora_rtc_engine.cpp:5162  INFO| joinChannel2 enter 222
+2021-05-21 17:25:06.523 ( 149.132s) [                ]   agora_rtc_engine.cpp:5166  INFO| joinChannel2 enter 333
+2021-05-21 17:25:06.523 ( 149.132s) [                ]   agora_rtc_engine.cpp:5170  INFO| joinChannel2 enter 444
+2021-05-21 17:25:06.523 ( 149.132s) [                ]   agora_rtc_engine.cpp:5173  INFO| joinChannel2 enter 555
+2021-05-21 17:25:06.523 ( 149.132s) [                ]   agora_rtc_engine.cpp:5232  INFO| joinChannel2 enter  77777
+2021-05-21 17:25:06.592 ( 149.201s) [                ]   agora_rtc_engine.cpp:5234  INFO| joinChannel2 enter 88888
+
+
+
+
+
+File verbosity level: 9
+date       time         ( uptime  ) [ thread name/id ]                   file:line     v| 
+2021-05-21 17:30:10.354 (   0.209s) [                ]             loguru.cpp:770   INFO| Logging to './agora_log.txt', mode: 'a', verbosity: 9
+2021-05-21 17:30:10.459 (   0.314s) [                ] agora_media_player.cpp:133   INFO| NodeMediaPlayer init
+2021-05-21 17:30:10.460 (   0.314s) [                ] agora_media_player.cpp:163   INFO| NodeMediaPlayer createInstance
+2021-05-21 17:30:10.460 (   0.314s) [                ] agora_media_player.cpp:118   INFO| NodeMediaPlayer::NodeMediaPlayer
+2021-05-21 17:30:10.460 (   0.314s) [                ]node_media_player_obser:6     INFO| NodeMediaPlayerObserver::NodeMediaPlayerObserver
+2021-05-21 17:30:10.573 (   0.428s) [                ]   agora_rtc_engine.cpp:5152  INFO| joinChannel2 enter
+2021-05-21 17:30:10.573 (   0.428s) [                ]   agora_rtc_engine.cpp:5158  INFO| joinChannel2 enter 111
+2021-05-21 17:30:10.573 (   0.428s) [                ]   agora_rtc_engine.cpp:5162  INFO| joinChannel2 enter 222
+2021-05-21 17:30:10.573 (   0.428s) [                ]   agora_rtc_engine.cpp:5166  INFO| joinChannel2 enter 333
+2021-05-21 17:30:10.573 (   0.428s) [                ]   agora_rtc_engine.cpp:5170  INFO| joinChannel2 enter 444
+2021-05-21 17:30:10.573 (   0.428s) [                ]   agora_rtc_engine.cpp:5173  INFO| joinChannel2 enter 555
+2021-05-21 17:30:10.573 (   0.428s) [                ]   agora_rtc_engine.cpp:5232  INFO| joinChannel2 enter  77777
+2021-05-21 17:30:10.648 (   0.503s) [                ]   agora_rtc_engine.cpp:5234  INFO| joinChannel2 enter 88888
+
+
+
+
+
+File verbosity level: 9
+date       time         ( uptime  ) [ thread name/id ]                   file:line     v| 
+2021-05-21 17:37:24.528 (   0.184s) [                ]             loguru.cpp:770   INFO| Logging to './agora_log.txt', mode: 'a', verbosity: 9
+2021-05-21 17:37:24.692 (   0.347s) [                ] agora_media_player.cpp:133   INFO| NodeMediaPlayer init
+2021-05-21 17:37:24.692 (   0.347s) [                ] agora_media_player.cpp:163   INFO| NodeMediaPlayer createInstance
+2021-05-21 17:37:24.692 (   0.347s) [                ] agora_media_player.cpp:118   INFO| NodeMediaPlayer::NodeMediaPlayer
+2021-05-21 17:37:24.692 (   0.347s) [                ]node_media_player_obser:6     INFO| NodeMediaPlayerObserver::NodeMediaPlayerObserver
+2021-05-21 17:37:24.799 (   0.454s) [                ]   agora_rtc_engine.cpp:5152  INFO| joinChannel2 enter
+2021-05-21 17:37:24.799 (   0.454s) [                ]   agora_rtc_engine.cpp:5158  INFO| joinChannel2 enter 111
+2021-05-21 17:37:24.799 (   0.454s) [                ]   agora_rtc_engine.cpp:5162  INFO| joinChannel2 enter 222
+2021-05-21 17:37:24.799 (   0.454s) [                ]   agora_rtc_engine.cpp:5166  INFO| joinChannel2 enter 333
+2021-05-21 17:37:24.799 (   0.454s) [                ]   agora_rtc_engine.cpp:5170  INFO| joinChannel2 enter 444
+2021-05-21 17:37:24.799 (   0.454s) [                ]   agora_rtc_engine.cpp:5173  INFO| joinChannel2 enter 555
+2021-05-21 17:37:24.799 (   0.454s) [                ]   agora_rtc_engine.cpp:5232  INFO| joinChannel2 enter  77777
+2021-05-21 17:37:24.894 (   0.550s) [                ]   agora_rtc_engine.cpp:5234  INFO| joinChannel2 enter 88888

@@ -15,6 +15,8 @@
 #include "agora_rtc_engine.h"
 #include "uv.h"
 #include "node_async_queue.h"
+#include "loguru.hpp"
+
 namespace agora {
     namespace rtc {
 
@@ -191,13 +193,15 @@ namespace agora {
 
         void NodeEventHandler::onJoinChannelSuccess_node(conn_id_t connId, const char* channel, uid_t id, int elapsed)
         {
-            FUNC_TRACE;
-            MAKE_JS_CALL_4(RTC_EVENT_JOIN_CHANNEL, uint32, connId, string, channel, uid, id, int32, elapsed);
+          LOG_F(INFO,"onJoinChannelSuccess_node 33");
+          FUNC_TRACE;
+          MAKE_JS_CALL_4(RTC_EVENT_JOIN_CHANNEL, uint32, connId, string, channel, uid, id, int32, elapsed);
         }
 
         void NodeEventHandler::onJoinChannelSuccess(conn_id_t connId, const char* channel, uid_t uid, int elapsed)
         {
             FUNC_TRACE;
+            LOG_F(INFO,"onJoinChannelSuccess 444");
             std::string channelName = channel;
             node_async_call::async_call([this, connId, channelName, uid, elapsed]() {
                 this->onJoinChannelSuccess_node(connId, channelName.c_str(), uid, elapsed);
@@ -207,12 +211,14 @@ namespace agora {
         void NodeEventHandler::onRejoinChannelSuccess_node(conn_id_t connId, const char* channel, uid_t uid, int elapsed)
         {
             FUNC_TRACE;
+            LOG_F(INFO,"onRejoinChannelSuccess_node 11");
             MAKE_JS_CALL_4(RTC_EVENT_REJOIN_CHANNEL, uint32, connId, string, channel, uid, uid, int32, elapsed);
         }
 
         void NodeEventHandler::onRejoinChannelSuccess(conn_id_t connId, const char* channel, uid_t uid, int elapsed)
         {
             FUNC_TRACE;
+            LOG_F(INFO,"onRejoinChannelSuccess 22");
             std::string channelName(channel);
             node_async_call::async_call([this, connId, channelName, uid, elapsed]() {
                 this->onRejoinChannelSuccess_node(connId, channelName.c_str(), uid, elapsed);

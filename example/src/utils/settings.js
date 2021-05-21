@@ -1,4 +1,4 @@
-export const APP_ID = #APPID
+export const APP_ID = "***REMOVED***"
 export const SHARE_ID = 0
 export const RTMP_URL = ''
 export const FU_AUTH = []
@@ -110,7 +110,7 @@ export const audioProfileList = [
   {
     value: 5,
     label: 'AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO'
-  } 
+  }
 ]
 
 export const audioScenarioList = [
@@ -137,5 +137,5 @@ export const audioScenarioList = [
   {
     value: 5,
     label: 'AUDIO_SCENARIO_CHATROOM_GAMING'
-  } 
+  }
 ]

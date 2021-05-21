@@ -20,16 +20,16 @@ module.exports = ({
   packageVersion,
   debug = false,
   silent = false,
-  msvsVersion = '2015',
+  msvsVersion = '2019',
   arch = 'ia32',
   distUrl = 'https://electronjs.org/headers'
 }) => {
   /** get command string */
   const command = [`${gyp_exec} configure`];
-  
+
   // check platform
   if (platform === 'win32') {
-    command.push(`--arch=${arch} --msvs_version=${msvsVersion}`)
+    command.push(`--arch=${arch} --msvs_version=2019`)
   }
 
   // check runtime
@@ -57,7 +57,7 @@ module.exports = ({
   logger.info("Runtime:", runtime, "\n");
 
   logger.info("Build C++ addon for Agora Electron SDK...\n")
-  
+
   shell.exec(`${gyp_exec} clean`, {silent}, (code, stdout, stderr) => {
     // handle error
     logger.info(`clean done ${stdout}`)
@@ -73,11 +73,11 @@ module.exports = ({
         logger.error(stderr);
         process.exit(1)
       }
-  
+
       if (debug) {
         // handle success
         logger.info('Complete, please go to `/build` and build manually')
-        process.exit(0)  
+        process.exit(0)
       } else {
         shell.exec(`${gyp_exec} build`, {silent}, (code, stdout, stderr) => {
           // handle error
@@ -85,7 +85,7 @@ module.exports = ({
             logger.error(stderr);
             process.exit(1)
           }
-          
+
           if(platform === "darwin") {
             logger.info(`patch loader path for mac build..`)
             shell.exec(`install_name_tool -add_rpath "@loader_path" ${agora_node_ext_path}`, {silent}, (code, stdout, stderr) => {
