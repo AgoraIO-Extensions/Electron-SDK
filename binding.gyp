@@ -7,9 +7,6 @@
             'target_name': 'VideoSource',
             'cflags_cc!': ['-fno-rtti'],
             'type': 'executable',
-            'defines': [
-                'UNICODE'
-            ],
             'include_dirs': [
                 './source_code/common',
                 './source_code/ipc',
@@ -62,7 +59,8 @@
                         ],
                         'defines!': [
                             '_USING_V110_SDK71_',
-                            '_HAS_EXCEPTIONS=0'
+                            '_HAS_EXCEPTIONS=0',
+                            'IRIS_EXPORT'
                         ],
                         'configurations': {
                             'Release': {
@@ -204,7 +202,8 @@
                         ],
                         'defines!': [
                             '_USING_V110_SDK71_',
-                            '_HAS_EXCEPTIONS=0'
+                            '_HAS_EXCEPTIONS=0',
+                            'IRIS_EXPORT'
                         ],
                         'sources': [
                             './source_code/process/node_process_win.cpp',
