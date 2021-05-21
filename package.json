@@ -65,10 +65,11 @@
   },
   "agora_electron": {
     "libUrl": {
-      "win": "http://192.168.99.149:8086/v2.9.107.136/AgoraSDK/Windows/testing(x86_release)/Agora_Native_SDK_for_Windows(x86)_v2.9.107.136_20210420_FULL_1960.zip",
-      "win64": "http://192.168.99.149:8086/v2.9.107.136/AgoraSDK/Windows/testing(x64_release)/Agora_Native_SDK_for_Windows(x64)_v2.9.107.136_20210420_FULL_1867.zip",
-      "mac": "http://192.168.99.149:8086/v2.9.107.136/AgoraSDK/Mac/Agora_Native_SDK_for_Mac_v2_9_107_136_FULL_20210420_3176.zip"
-    }
+      "win": "http://192.168.99.149:8086/v2.9.107.148/AgoraSDK/Windows/testing(x86_release)/Agora_Native_SDK_for_Windows(x86)_v2.9.107.148_20210521_FULL_2299.zip",
+      "win64": "http://192.168.99.149:8086/v2.9.107.148/AgoraSDK/Windows/testing(x64_release)/Agora_Native_SDK_for_Windows(x64)_v2.9.107.148_20210521_FULL_2201.zip",
+      "mac": "http://192.168.99.149:8086/v2.9.107.148/AgoraSDK/Mac/Agora_Native_SDK_for_Mac_v2_9_107_148_FULL_20210521_3391.zip"
+    },
+    "electron_version": "7.1.2"
   },
   "keywords": [
     "electron",
