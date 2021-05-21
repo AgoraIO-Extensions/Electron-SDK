@@ -275,7 +275,7 @@ bool captureBmpToJpeg(const HWND &hWnd, char *szName,
     if (dwRet == 0)
       break;
 
-    std::string module_name = temp;
+    // std::string module_name = temp;
     if (!displayLogo)
       break;
 
@@ -285,7 +285,7 @@ bool captureBmpToJpeg(const HWND &hWnd, char *szName,
     HICON hIcon = nullptr;
     ICONINFO icInfo = {0};
 
-    ExtractIconEx(module_name.c_str(), 0, &hIcon, NULL, 1);
+    ExtractIconEx(temp, 0, &hIcon, NULL, 1);
     if (!hIcon)
       break;
 
@@ -582,7 +582,7 @@ bool IsInvisibleWin10BackgroundAppWindow(HWND hWnd) {
 
   HRESULT(__stdcall * pDwmGetWindowAttribute)
   (HWND hwnd, DWORD dwAttribute, PVOID pvAttribute, DWORD cbAttribute) = NULL;
-  HINSTANCE hDll = LoadLibrary("Dwmapi.dll");
+  HINSTANCE hDll = LoadLibraryA("Dwmapi.dll");
   if (hDll != NULL) {
     pDwmGetWindowAttribute = (HRESULT(__stdcall *)(
         HWND hwnd, DWORD dwAttribute, PVOID pvAttribute,
