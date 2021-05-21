@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:01
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-05-16 21:56:37
+ * @Last Modified time: 2021-05-21 20:12:13
  */
 #pragma once
 #include "node_base.h"
@@ -111,6 +111,7 @@ using v8_Name = v8::Name;
 
 std::string nan_api_get_value_utf8string_(const v8_Local<v8_Value> &value);
 int nan_api_get_value_int32_(const v8_Local<v8_Value> &value);
+unsigned int nan_api_get_value_uint32_(const v8_Local<v8_Value> &value);
 v8_Local<v8_Object> nan_api_get_value_object_(v8_Isolate *isolate,
                                               const v8_Local<v8_Value> &value);
 v8_Local<v8_Value>
@@ -121,6 +122,7 @@ nan_api_get_object_property_value_(v8_Isolate *isolate,
 int nan_api_get_object_int32_(v8_Isolate *isolate,
                               const v8_Local<v8_Object> &obj,
                               const std::string &propName);
+
 unsigned int nan_api_get_object_uint32_(v8_Isolate *isolate,
                                         const v8_Local<v8_Object> &obj,
                                         const std::string &propName);
