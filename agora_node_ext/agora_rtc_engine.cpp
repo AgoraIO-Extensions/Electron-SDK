@@ -294,6 +294,8 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(unRegisterMediaMetadataObserver);
 
                 PROPERTY_METHOD_DEFINE(sendCustomReportMessage);
+                PROPERTY_METHOD_DEFINE(monitorDeviceChange);
+                
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -5635,6 +5637,29 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
 
                 result = pEngine->m_engine->sendCustomReportMessage(id, category, event, label, value);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, monitorDeviceChange)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                bool enabled;
+                status = napi_get_value_bool_(args[0], enabled);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+#if (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
+                result = pEngine->m_engine->monitorDeviceChange(enabled);
+#else
+                result = -4;
+#endif
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
