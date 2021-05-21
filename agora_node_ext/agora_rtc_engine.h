@@ -359,6 +359,7 @@ namespace agora {
              * CSD-21313
              */
             NAPI_API(sendCustomReportMessage);
+            NAPI_API(monitorDeviceChange);
 
         public:
             Isolate* getIsolate() { return m_isolate; }
