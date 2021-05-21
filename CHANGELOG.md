@@ -1,6 +1,8 @@
+## 2.9.107.148 (May 21st 2021)
+* add api monitorDeviceChange
+
 ## 2.9.107-rc.136-build.517 (May 17th 2021)
 * add api named videoSourceSetVideoEncoderConfiguration
-
 ## 2.9.107-rc.136-build.513 (May 13th 2021)
 * fix screen share adaptation
 
