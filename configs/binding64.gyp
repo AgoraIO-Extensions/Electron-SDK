@@ -15,7 +15,7 @@
         './common/node_log.h',
         './common/node_process.h',
         './common/node_error.h',
-        './common/loguru.h',
+        './common/loguru.hpp',
         './common/loguru.cpp',
         './agora_node_ext/agora_node_ext.cpp',
         './agora_node_ext/agora_node_ext.h',
@@ -85,7 +85,8 @@
                         '-lagora_rtc_sdk.lib',
                         '-lws2_32.lib',
                         '-lRpcrt4.lib',
-						'-lgdiplus.lib'
+						'-lgdiplus.lib',
+            '-llibagora-ffmpeg.lib'
                     ]
                 },
                 'defines!': [

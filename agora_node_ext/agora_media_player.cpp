@@ -1,4 +1,4 @@
-#include "agora_meida_player.h"
+#include "agora_media_player.h"
 
         /*
         * Used to define native interface which is exposed to nodejs
@@ -178,12 +178,12 @@ namespace agora {
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
-                CHECK_NATIVE_THIS(mediaPlayer);  
+                CHECK_NATIVE_THIS(mediaPlayer);
                 nodestring url;
-                status = napi_get_value_nodestring_(args[0], url); 
+                status = napi_get_value_nodestring_(args[0], url);
                 CHECK_NAPI_STATUS(mediaPlayer, status);
                 int64_t position;
-                status = napi_get_value_int64_(args[1], position); 
+                status = napi_get_value_int64_(args[1], position);
                 CHECK_NAPI_STATUS(mediaPlayer, status);
                 result = mediaPlayer->mMediaPlayer->m_mediaPlayerSource->open(url, position);
             } while(false);
@@ -207,7 +207,7 @@ namespace agora {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
                 CHECK_NATIVE_THIS(mediaPlayer);
-                result = mediaPlayer->mMediaPlayer->m_mediaPlayerSource->pause();       
+                result = mediaPlayer->mMediaPlayer->m_mediaPlayerSource->pause();
             } while(false);
             media_player_napi_set_int_result(args, result);
         }
@@ -229,11 +229,11 @@ namespace agora {
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
-                CHECK_NATIVE_THIS(mediaPlayer); 
+                CHECK_NATIVE_THIS(mediaPlayer);
                 int64_t position;
                 status = napi_get_value_int64_(args[0], position);
                 CHECK_NAPI_STATUS(mediaPlayer, status);
-                result = mediaPlayer->mMediaPlayer->m_mediaPlayerSource->seek(position); 
+                result = mediaPlayer->mMediaPlayer->m_mediaPlayerSource->seek(position);
             } while(false);
             media_player_napi_set_int_result(args, result);
         }
@@ -246,7 +246,7 @@ namespace agora {
                 CHECK_NATIVE_THIS(mediaPlayer);
                 int64_t position;
                 mediaPlayer->mMediaPlayer->m_mediaPlayerSource->getPlayPosition(position);
-                result = (int)position;    
+                result = (int)position;
             } while(false);
             media_player_napi_set_int_result(args, result);
         }
@@ -256,8 +256,8 @@ namespace agora {
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
-                CHECK_NATIVE_THIS(mediaPlayer); 
-                mediaPlayer->mMediaPlayer->m_mediaPlayerSource->getDuration(result);  
+                CHECK_NATIVE_THIS(mediaPlayer);
+                mediaPlayer->mMediaPlayer->m_mediaPlayerSource->getDuration(result);
             } while(false);
             media_player_napi_set_int_result(args, (int)result);
         }
@@ -267,7 +267,7 @@ namespace agora {
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
-                CHECK_NATIVE_THIS(mediaPlayer); 
+                CHECK_NATIVE_THIS(mediaPlayer);
                 mediaPlayer->mMediaPlayer->m_mediaPlayerSource->getStreamCount(result);
             } while(false);
             media_player_napi_set_int_result(args, result);
@@ -278,7 +278,7 @@ namespace agora {
             do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
-                CHECK_NATIVE_THIS(mediaPlayer); 
+                CHECK_NATIVE_THIS(mediaPlayer);
                 result = mediaPlayer->mMediaPlayer->m_mediaPlayerSource->getMediaPlayerId();
             } while(false);
             media_player_napi_set_int_result(args, result);
@@ -303,7 +303,7 @@ namespace agora {
                 obj->Set(context, napi_create_string_(isolate, "codecName"), napi_create_string_(isolate, std::string(streamInfo->codecName).c_str()));
                 obj->Set(context, napi_create_string_(isolate, "language"), napi_create_string_(isolate, std::string(streamInfo->language).c_str()));
                 obj->Set(context, napi_create_string_(isolate, "videoFrameRate"), napi_create_int32_(isolate, streamInfo->videoFrameRate));
-                obj->Set(context, napi_create_string_(isolate, "videoBitRate"), napi_create_int32_(isolate, (int)(streamInfo->videoBitRate)));         
+                obj->Set(context, napi_create_string_(isolate, "videoBitRate"), napi_create_int32_(isolate, (int)(streamInfo->videoBitRate)));
                 obj->Set(context, napi_create_string_(isolate, "videoWidth"), napi_create_int32_(isolate, streamInfo->videoWidth));
                 obj->Set(context, napi_create_string_(isolate, "videoHeight"), napi_create_int32_(isolate, (int)(streamInfo->videoHeight)));
                 obj->Set(context, napi_create_string_(isolate, "videoRotation"), napi_create_int32_(isolate, streamInfo->videoRotation));
@@ -347,11 +347,11 @@ namespace agora {
                 result = mediaPlayer->mMediaPlayer->m_mediaPlayerSource->changePlaybackSpeed((agora::media::base::MEDIA_PLAYER_PLAYBACK_SPEED)speed);
             } while(false);
             media_player_napi_set_int_result(args, result);
-        }   
+        }
 
         NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, selectAudioTrack) {
             int result = 1;
-            do {    
+            do {
                 NodeMediaPlayer *mediaPlayer = nullptr;
                 napi_get_native_this(args, mediaPlayer);
                 CHECK_NATIVE_THIS(mediaPlayer);
@@ -359,7 +359,7 @@ namespace agora {
                 napi_status status = napi_ok;
                 status = napi_get_value_int32_(args[0], index);
                 CHECK_NAPI_STATUS(mediaPlayer, status);
-                result = mediaPlayer->mMediaPlayer->m_mediaPlayerSource->selectAudioTrack(index);   
+                result = mediaPlayer->mMediaPlayer->m_mediaPlayerSource->selectAudioTrack(index);
             } while(false);
             media_player_napi_set_int_result(args, result);
         }
@@ -396,6 +396,6 @@ namespace agora {
             //LOG_LEAVE;
         }
 
-       
+
     }
 }

@@ -29,7 +29,7 @@ namespace agora {
         };
 
          class NodeMediaPlayer : public node::ObjectWrap {
-             
+
              typedef NodeString nodestring;
 
             public:

@@ -16,7 +16,8 @@
 #include "IAgoraRtcEngineEx.h"
 #include <string>
 #include <nan.h>
-#include "agora_meida_player.h"
+#include "agora_media_player.h"
+#include "loguru.hpp"
 
 
 #if defined(__APPLE__) || defined(_WIN32)
