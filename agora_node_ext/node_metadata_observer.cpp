@@ -67,14 +67,14 @@ namespace agora {
                     metadata = NULL;
                 }
                 messageQueue.pop();
-            }  
+            }
         }
 
         int NodeMetadataObserver::getMaxMetadataSize() {
             return MAX_META_DATA_SIZE;
         }
 
-        bool NodeMetadataObserver::onReadyToSendMetadata(Metadata& metadata, VIDEO_SOURCE_TYPE source_type) {
+        bool NodeMetadataObserver::onReadyToSendMetadata(Metadata& metadata, MEDIA_SOURCE_TYPE source_type) {
             std::lock_guard<std::mutex> lock(queueMutex);
             if (!messageQueue.empty() && messageQueue.size() > 0) {
                 Metadata *cachedMetadata = messageQueue.front();
@@ -139,7 +139,7 @@ namespace agora {
             //     return;
             // }
             // #endif
-            node_async_call::async_call([this, _uid, _size, metaBuffer, _timeStampMs] {             
+            node_async_call::async_call([this, _uid, _size, metaBuffer, _timeStampMs] {
                 Isolate *isolate = Isolate::GetCurrent();
                 Local<Context> context = isolate->GetCurrentContext();
                 HandleScope scope(isolate);

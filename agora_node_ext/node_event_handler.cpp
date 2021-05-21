@@ -18,14 +18,14 @@
 namespace agora {
     namespace rtc {
 
-#define FUNC_TRACE 
+#define FUNC_TRACE
 
         NodeEventHandler::NodeEventHandler(NodeRtcEngine *pEngine)
             : m_engine(pEngine)
         {
         }
 
-        NodeEventHandler::~NodeEventHandler() 
+        NodeEventHandler::~NodeEventHandler()
         {
             for (auto& handler : m_callbacks) {
                 delete handler.second;
@@ -281,7 +281,7 @@ namespace agora {
                     arrSpeakers->Set(context, i, obj);
                 }
 
-                Local<Value> argv[4]{napi_create_uint32_(isolate, connId), 
+                Local<Value> argv[4]{napi_create_uint32_(isolate, connId),
                                     arrSpeakers,
                                     napi_create_uint32_(isolate, speakerNumber),
                                     napi_create_uint32_(isolate, totalVolume)
@@ -1037,7 +1037,7 @@ namespace agora {
                 this->onStreamInjectedStatus_node(connId, url, uid, status);
             });
         }
-        
+
         void NodeEventHandler::onLocalPublishFallbackToAudioOnly_node(conn_id_t connId, bool isFallbackOrRecover)
         {
 
@@ -1057,7 +1057,7 @@ namespace agora {
         {
             FUNC_TRACE;
             MAKE_JS_CALL_3(RTC_EVENT_REMOTE_SUBSCRIBE_FALLBACK_TO_AUDIO_ONLY, uint32, connId, uid, uid, bool, isFallbackOrRecover);
-            
+
         }
 
         void NodeEventHandler::onRemoteSubscribeFallbackToAudioOnly(conn_id_t connId, uid_t uid, bool isFallbackOrRecover)
@@ -1161,7 +1161,7 @@ namespace agora {
                 Local<Value> arg[2] = {napi_create_uint32_(isolate, connId),  obj };
                 auto it = m_callbacks.find(RTC_EVENT_REMOTE_AUDIO_STATS);
                 if (it != m_callbacks.end()) {
-                    it->second->callback.Get(isolate)->Call(context, it->second->js_this.Get(isolate), 2, arg); 
+                    it->second->callback.Get(isolate)->Call(context, it->second->js_this.Get(isolate), 2, arg);
                 }
             } while (false);
         }
@@ -1179,7 +1179,7 @@ namespace agora {
         //     FUNC_TRACE;
         //     MAKE_JS_CALL_1(RTC_EVENT_MICROPHONE_ENABLED, bool, enabled);
         // }
-       
+
         // void NodeEventHandler::onMicrophoneEnabled(bool enabled)
         // {
         //     FUNC_TRACE;
@@ -1307,13 +1307,13 @@ namespace agora {
         //         Local<Context> context = isolate->GetCurrentContext();
         //         Local<Object> obj = Object::New(isolate);
         //         CHECK_NAPI_OBJ(obj);
-                
+
         //         NODE_SET_OBJ_PROP_UID(obj, "uid", info.uid);
         //         NODE_SET_OBJ_PROP_STRING(obj, "userAccount", info.userAccount);
 
         //         Local<Value> arg[2] = {
         //             napi_create_uid_(isolate, uid),
-        //             obj 
+        //             obj
         //         };
         //         auto it = m_callbacks.find(RTC_EVENT_USER_INFO_UPDATED);
         //         if (it != m_callbacks.end()) {
@@ -1353,7 +1353,7 @@ namespace agora {
                 Local<Value> arg[2] = {napi_create_uint32_(isolate, connId), obj };
                 auto it = m_callbacks.find(RTC_EVENT_LOCAL_AUDIO_STATS);
                 if (it != m_callbacks.end()) {
-                    it->second->callback.Get(isolate)->Call(context, it->second->js_this.Get(isolate), 2, arg); 
+                    it->second->callback.Get(isolate)->Call(context, it->second->js_this.Get(isolate), 2, arg);
                 }
             } while (false);
         }
@@ -1500,7 +1500,7 @@ namespace agora {
 
         }
 
-        void NodeEventHandler::onVideoSourceFrameSizeChanged(VIDEO_SOURCE_TYPE sourceType, int width, int height) {
+        void NodeEventHandler::onVideoSourceFrameSizeChanged(MEDIA_SOURCE_TYPE sourceType, int width, int height) {
             FUNC_TRACE;
             node_async_call::async_call([this, sourceType, width, height] {
                 MAKE_JS_CALL_3(RTC_EVENT_VIDEO_FRAME_SIZE_CHANGED, int32, sourceType, int32, width, int32, height);

@@ -146,7 +146,7 @@ namespace agora {
             virtual void onUserJoined(conn_id_t connId, uid_t uid, int elapsed) override;
             virtual void onUserOffline(conn_id_t connId, uid_t uid, USER_OFFLINE_REASON_TYPE reason) override;
             // virtual void onUserMuteAudio(uid_t uid, bool muted) override;
-            virtual void onUserMuteVideo(conn_id_t connId, uid_t uid, bool muted) override;  
+            virtual void onUserMuteVideo(conn_id_t connId, uid_t uid, bool muted) override;
             virtual void onUserEnableVideo(conn_id_t connId, uid_t uid, bool enabled) override;
             virtual void onUserEnableLocalVideo(conn_id_t connId, uid_t uid, bool enabled) override;
             virtual void onApiCallExecuted(conn_id_t connId, int err, const char* api, const char* result) override;
@@ -213,7 +213,7 @@ namespace agora {
             // virtual void onAudioSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) override;
             // virtual void onVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) override;
             virtual void onAudioRoutingChanged(conn_id_t connId, int routing) override;
-            virtual void onVideoSourceFrameSizeChanged(VIDEO_SOURCE_TYPE sourceType, int width, int height) override;
+            virtual void onVideoSourceFrameSizeChanged(MEDIA_SOURCE_TYPE sourceType, int width, int height) override;
             virtual void onMediaDeviceChanged(conn_id_t connId, int deviceType) override;
             virtual void onExtensionEvent(const char* id, const char* key, const char* json_value) override;
   private:
@@ -266,7 +266,7 @@ namespace agora {
             // void onFirstRemoteAudioDecoded_node(uid_t uid, int elapsed);
             void onStreamPublished_node(conn_id_t connId, const char *url, int error);
             void onStreamUnpublished_node(conn_id_t connId, const char *url);
-            void onTranscodingUpdated_node(conn_id_t connId);   
+            void onTranscodingUpdated_node(conn_id_t connId);
             void onStreamInjectedStatus_node(conn_id_t connId, const char* url, uid_t uid, int status);
 
             void onLocalPublishFallbackToAudioOnly_node(conn_id_t connId, bool isFallbackOrRecover);
