@@ -381,6 +381,8 @@ namespace agora {
 
             NAPI_API(setProcessDpiAwareness);
             NAPI_API(videoSourceSetProcessDpiAwareness);
+
+            NAPI_API(startAudioRecordingWithConfig);
             
         public:
             Isolate* getIsolate() { return m_isolate; }
@@ -564,6 +566,33 @@ namespace agora {
                 break; \
             } \
             status = napi_get_value_##type4##_(argv[3], (param4)); \
+            if(status != napi_ok) { \
+                break; \
+            } \
+        } while (false);
+
+/*
+* to extract four parameters from JS call parameters.
+*/
+#define napi_get_param_5(argv, type1, param1, type2, param2, type3, param3, type4, param4, type5, param5) \
+        do { \
+            status = napi_get_value_##type1##_(argv[0], (param1)); \
+            if(status != napi_ok) { \
+                break; \
+            } \
+            status = napi_get_value_##type2##_(argv[1], (param2)); \
+            if(status != napi_ok) { \
+                break; \
+            } \
+            status = napi_get_value_##type3##_(argv[2], (param3)); \
+            if(status != napi_ok) { \
+                break; \
+            } \
+            status = napi_get_value_##type4##_(argv[3], (param4)); \
+            if(status != napi_ok) { \
+                break; \
+            } \
+            status = napi_get_value_##type5##_(argv[4], (param5)); \
             if(status != napi_ok) { \
                 break; \
             } \

@@ -58,7 +58,8 @@ import {
   LOCAL_AUDIO_STREAM_ERROR,
   LOCAL_AUDIO_STREAM_STATE,
   LOCAL_VIDEO_STREAM_STATE,
-  LOCAL_VIDEO_STREAM_ERROR
+  LOCAL_VIDEO_STREAM_ERROR,
+  AudioRecordingConfiguration
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -308,9 +309,9 @@ class AgoraRtcEngine extends EventEmitter {
 
     this.rtcEngine.onEvent('audioMixingStateChanged', function(
       state: number,
-      reaCode: number
+      errorCode: number
     ) {
-      fire('audioMixingStateChanged', state, reaCode);
+      fire('audioMixingStateChanged', state, errorCode);
     });
 
     this.rtcEngine.onEvent('apicallexecuted', function(
@@ -4306,9 +4307,10 @@ class AgoraRtcEngine extends EventEmitter {
     filepath: string,
     loopback: boolean,
     replace: boolean,
-    cycle: number
+    cycle: number,
+    startPos?: number
   ): number {
-    return this.rtcEngine.startAudioMixing(filepath, loopback, replace, cycle);
+    return this.rtcEngine.startAudioMixing(filepath, loopback, replace, cycle, startPos);
   }
 
   /**
@@ -5832,7 +5834,11 @@ class AgoraRtcEngine extends EventEmitter {
 
   videoSourceSetProcessDpiAwareness(): number {
     return this.rtcEngine.videoSourceSetProcessDpiAwareness();
-  } 
+  }
+
+  startAudioRecordingWithConfig(config: AudioRecordingConfiguration): number {
+    return this.rtcEngine.startAudioRecordingWithConfig(config)
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
@@ -6057,7 +6063,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: 'audioMixingStateChanged',
-    cb: (state: number, reaCode: number) => void
+    cb: (state: number, errorCode: number) => void
   ): this;
   /** Occurs when a remote user starts audio mixing.
    * When a remote user calls {@link startAudioMixing} to play the background
