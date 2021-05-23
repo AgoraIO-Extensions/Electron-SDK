@@ -321,6 +321,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(getAudioMixingFileDuration);
                 PROPERTY_METHOD_DEFINE(setProcessDpiAwareness);
                 PROPERTY_METHOD_DEFINE(videoSourceSetProcessDpiAwareness);
+                PROPERTY_METHOD_DEFINE(startAudioRecordingWithConfig);
                 EN_PROPERTY_DEFINE()
                 module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -3546,13 +3547,13 @@ namespace agora {
                 napi_status status = napi_ok;
                 NodeString filepath;
                 bool loopback, replace;
-                int cycle;
+                int cycle, startPos = 0;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                napi_get_param_4(args, nodestring, filepath, bool, loopback, bool, replace, int32, cycle);
+                napi_get_param_5(args, nodestring, filepath, bool, loopback, bool, replace, int32, cycle, int32, startPos);
                 CHECK_NAPI_STATUS(pEngine, status);
                 RtcEngineParameters rep(pEngine->m_engine);
-                result = rep.startAudioMixing(filepath, loopback, replace, cycle);
+                result = rep.startAudioMixing(filepath, loopback, replace, cycle, startPos);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -6079,13 +6080,13 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 NodeString filePath;
-                unsigned int soundId, loopCount, gain, startPos;
+                unsigned int soundId, loopCount, gain, startPos = 0;
                 double pitch, pan;
                 bool publish;
 
                 napi_get_param_8(args, uint32, soundId, nodestring, filePath, uint32, loopCount, double, pitch, double, pan, uint32, gain, bool, publish, uint32, startPos);
-                
-                result = pEngine->m_engine->getEffectCurrentPosition(soundId);
+
+                result = pEngine->m_engine->playEffect(soundId, filePath, loopCount, pitch, pan, gain, publish, startPos);
             } while (false);
             napi_set_int_result(args, result);
 
@@ -6121,6 +6122,45 @@ namespace agora {
                     pEngine->m_videoSourceSink->setProcessDpiAwareness();
                     result = 0;
                 }
+            } while (false);
+            napi_set_int_result(args, result);
+
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, startAudioRecordingWithConfig)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                Isolate *isolate = args.GetIsolate();
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                if(args[0]->IsObject()) {
+                    Local<Object> obj;
+                    status = napi_get_value_object_(isolate, args[0], obj);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    NodeString filePath;
+                    napi_get_object_property_nodestring_(isolate, obj, "filePath", filePath);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
+                    int recordingQuality;
+                    napi_get_object_property_int32_(isolate, obj, "recordingQuality", recordingQuality);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
+                    int recordingPosition;
+                    napi_get_object_property_int32_(isolate, obj, "recordingPosition", recordingPosition);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
+                    AudioRecordingConfiguration config;
+                    config.filePath = (char *)filePath;
+                    config.recordingQuality = (AUDIO_RECORDING_QUALITY_TYPE)recordingQuality;
+                    config.recordingPosition = (AUDIO_RECORDING_POSITION)recordingPosition;
+                    result = pEngine->m_engine->startAudioRecording(config);
+                }
+
             } while (false);
             napi_set_int_result(args, result);
 
