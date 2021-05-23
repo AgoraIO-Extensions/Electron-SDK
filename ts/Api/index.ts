@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 11:39:24
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-05-19 15:39:02
+ * @Last Modified time: 2021-05-23 19:24:01
  */
 import {
   ApiTypeEngine,
@@ -2268,7 +2268,6 @@ class AgoraRtcEngine extends EventEmitter {
       areaCode: areaCode,
       logConfig: logConfig,
     };
-
     return this.initializeWithContext(context);
   }
 
@@ -7434,12 +7433,17 @@ class AgoraRtcEngine extends EventEmitter {
     areaCode?: AREA_CODE,
     logConfig?: LogConfig
   ): number {
+    deprecate("videoSourceInitialize", "videoSourceInitializeWithContext")
     let context = {
       appId,
       areaCode,
       logConfig,
     };
 
+    return this.videoSourceInitializeWithContext(context)
+  }
+
+  videoSourceInitializeWithContext(context: RtcEngineContext): number {
     let param = {
       context,
     };
