@@ -2430,43 +2430,20 @@ export enum LOCAL_VIDEO_STREAM_STATE
 /** Local video state error codes.
  */
 export enum LOCAL_VIDEO_STREAM_ERROR {
-    /** 0: The local video is normal. */
+    /** The local video is normal. */
     LOCAL_VIDEO_STREAM_ERROR_OK = 0,
-    /** 1: No specified reason for the local video failure. */
+    /** No specified reason for the local video failure. */
     LOCAL_VIDEO_STREAM_ERROR_FAILURE = 1,
-    /** 2: No permission to use the local video capturing device. */
+    /** No permission to use the local video device. */
     LOCAL_VIDEO_STREAM_ERROR_DEVICE_NO_PERMISSION = 2,
-    /** 3: The local video capturing device is in use. */
+    /** The local video capturer is in use. */
     LOCAL_VIDEO_STREAM_ERROR_DEVICE_BUSY = 3,
-    /** 4: The local video capture fails. Check whether the capturing device
-     * is working properly.
-     */
+    /** The local video capture fails. Check whether the capturer is working properly. */
     LOCAL_VIDEO_STREAM_ERROR_CAPTURE_FAILURE = 4,
-    /** 5: The local video encoding fails. */
+    /** The local video encoding fails. */
     LOCAL_VIDEO_STREAM_ERROR_ENCODE_FAILURE = 5,
-    /** 11: The shared window is minimized when you share a window by the
-     * window symbol.
-     */
-    LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_MINIMIZED = 11,
-    /** 12: The error code indicates that a window shared by the window symbol
-     * has been closed, or a full-screen window
-     * shared by the window symbol has exited full-screen mode.
-     * After exiting full-screen mode, remote users cannot see the shared
-     * window. To prevent remote users from seeing a
-     * black screen, Agora recommends that you immediately stop screen sharing.
-     *
-     * Common scenarios for reporting this error code:
-     * - When the local user closes the shared window, the SDK reports this
-     * error code.
-     * - The local user shows some slides in full-screen mode first, and then
-     * shares the windows of the slides. After
-     * the user exits full-screen mode, the SDK reports this error code.
-     * - The local user watches web video or reads web document in full-screen
-     * mode first, and then shares the window of
-     * the web video or document. After the user exits full-screen mode, the
-     * SDK reports this error code.
-     */
-    LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_CLOSED = 12,
+    /** No camera device. */
+    LOCAL_VIDEO_STREAM_ERROR_DEVICE_NOT_FOUND = 6,
 };
 
 /** Local audio state types.
@@ -2491,25 +2468,31 @@ export enum LOCAL_AUDIO_STREAM_STATE
  */
 export enum LOCAL_AUDIO_STREAM_ERROR
 {
-    /** 0: The local audio is normal.
-     */
+  /** 0: The local audio is normal.
+   */
     LOCAL_AUDIO_STREAM_ERROR_OK = 0,
     /** 1: No specified reason for the local audio failure.
-     */
+    */
     LOCAL_AUDIO_STREAM_ERROR_FAILURE = 1,
     /** 2: No permission to use the local audio device.
-     */
+    */
     LOCAL_AUDIO_STREAM_ERROR_DEVICE_NO_PERMISSION = 2,
     /** 3: The microphone is in use.
-     */
+    */
     LOCAL_AUDIO_STREAM_ERROR_DEVICE_BUSY = 3,
-    /** 4: The local audio capturing fails. Check whether the capturing device
-     * is working properly.
-     */
+    /** 4: The local audio recording fails. Check whether the recording device
+    * is working properly.
+    */
     LOCAL_AUDIO_STREAM_ERROR_RECORD_FAILURE = 4,
     /** 5: The local audio encoding fails.
-     */
-    LOCAL_AUDIO_STREAM_ERROR_ENCODE_FAILURE = 5
+    */
+    LOCAL_AUDIO_STREAM_ERROR_ENCODE_FAILURE = 5,
+    /** 6: No recording audio device.
+   */
+    LOCAL_AUDIO_STREAM_ERROR_NO_RECORDING_DEVICE = 6,
+    /** 7: No playout audio device.
+   */
+    LOCAL_AUDIO_STREAM_ERROR_NO_PLAYOUT_DEVICE = 7
 };
 
 /** The configurations for the data stream.
@@ -2610,6 +2593,37 @@ export enum NETWORK_TYPE
   /** 5: The network type is mobile 4G. */
   NETWORK_TYPE_MOBILE_4G = 5,
 };
+
+export enum AUDIO_RECORDING_QUALITY_TYPE
+{
+    /** 0: Low quality. The sample rate is 32 kHz, and the file size is around
+     * 1.2 MB after 10 minutes of recording.
+    */
+    AUDIO_RECORDING_QUALITY_LOW = 0,
+    /** 1: Medium quality. The sample rate is 32 kHz, and the file size is
+     * around 2 MB after 10 minutes of recording.
+    */
+    AUDIO_RECORDING_QUALITY_MEDIUM = 1,
+    /** 2: High quality. The sample rate is 32 kHz, and the file size is
+     * around 3.75 MB after 10 minutes of recording.
+    */
+    AUDIO_RECORDING_QUALITY_HIGH = 2,
+}
+
+export enum AUDIO_RECORDING_POSITION {
+  /** The SDK will record the voices of all users in the channel. */
+  AUDIO_RECORDING_POSITION_MIXED_RECORDING_AND_PLAYBACK = 0,
+  /** The SDK will record the voice of the local user. */
+  AUDIO_RECORDING_POSITION_RECORDING = 1,
+  /** The SDK will record the voices of remote users. */
+  AUDIO_RECORDING_POSITION_MIXED_PLAYBACK = 2,
+};
+
+export interface AudioRecordingConfiguration {
+  filePath: string;
+  recordingQuality: AUDIO_RECORDING_QUALITY_TYPE;
+  recordingPosition: AUDIO_RECORDING_POSITION;
+}
 
 /**
  * interface for c++ addon (.node)
@@ -3239,7 +3253,8 @@ export interface NodeRtcEngine {
     filepath: string,
     loopback: boolean,
     replace: boolean,
-    cycle: number
+    cycle: number,
+    startPos?: number
   ): number;
   /**
    * @ignore
@@ -3340,7 +3355,7 @@ export interface NodeRtcEngine {
     pan: number,
     gain: number,
     publish: number,
-    startPos: number
+    startPos?: number
   ): number;
   /**
    * @ignore
@@ -3649,6 +3664,10 @@ export interface NodeRtcEngine {
    * @ignore
    */
   videoSourceSetProcessDpiAwareness(): number;
+  /**
+   * @ignore
+   */
+  startAudioRecordingWithConfig(config: AudioRecordingConfiguration): number;
 }
 /**
  * @ignore
