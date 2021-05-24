@@ -2389,25 +2389,25 @@ export interface LogConfig {
  */
 export enum VOICE_CONVERSION_PRESET
 {
-    /** Turn off voice conversion effects and use the original voice.
-     */
-    VOICE_CONVERSION_OFF = 0x00000000,
-    /** A gender-neutral voice. To avoid audio distortion, ensure that you use
-     * this enumerator to process a female-sounding voice.
-     */
-    VOICE_CHANGER_NEUTRAL = 0x03010100,
-    /** A sweet voice. To avoid audio distortion, ensure that you use this
-     * enumerator to process a female-sounding voice.
-     */
-    VOICE_CHANGER_SWEET = 0x03010200,
-    /** A steady voice. To avoid audio distortion, ensure that you use this
-     * enumerator to process a male-sounding voice.
-     */
-    VOICE_CHANGER_SOLID = 0x03010300,
-    /** A deep voice. To avoid audio distortion, ensure that you use this
-     * enumerator to process a male-sounding voice.
-     */
-    VOICE_CHANGER_BASS = 0x03010400
+  /** Turn off voice conversion effects and use the original voice.
+   */
+  VOICE_CONVERSION_OFF = 0x00000000,
+  /** A gender-neutral voice. To avoid audio distortion, ensure that you use
+   * this enumerator to process a female-sounding voice.
+   */
+  VOICE_CHANGER_NEUTRAL = 0x03010100,
+  /** A sweet voice. To avoid audio distortion, ensure that you use this
+   * enumerator to process a female-sounding voice.
+   */
+  VOICE_CHANGER_SWEET = 0x03010200,
+  /** A steady voice. To avoid audio distortion, ensure that you use this
+   * enumerator to process a male-sounding voice.
+   */
+  VOICE_CHANGER_SOLID = 0x03010300,
+  /** A deep voice. To avoid audio distortion, ensure that you use this
+   * enumerator to process a male-sounding voice.
+   */
+  VOICE_CHANGER_BASS = 0x03010400
 };
 
 /** Local video state types.
@@ -2430,20 +2430,47 @@ export enum LOCAL_VIDEO_STREAM_STATE
 /** Local video state error codes.
  */
 export enum LOCAL_VIDEO_STREAM_ERROR {
-    /** The local video is normal. */
+    /** 0: The local video is normal. */
     LOCAL_VIDEO_STREAM_ERROR_OK = 0,
-    /** No specified reason for the local video failure. */
+    /** 1: No specified reason for the local video failure. */
     LOCAL_VIDEO_STREAM_ERROR_FAILURE = 1,
-    /** No permission to use the local video device. */
+    /** 2: No permission to use the local video capturing device. */
     LOCAL_VIDEO_STREAM_ERROR_DEVICE_NO_PERMISSION = 2,
-    /** The local video capturer is in use. */
+    /** 3: The local video capturing device is in use. */
     LOCAL_VIDEO_STREAM_ERROR_DEVICE_BUSY = 3,
-    /** The local video capture fails. Check whether the capturer is working properly. */
+    /** 4: The local video capture fails. Check whether the capturing device is working properly. */
     LOCAL_VIDEO_STREAM_ERROR_CAPTURE_FAILURE = 4,
-    /** The local video encoding fails. */
+    /** 5: The local video encoding fails. */
     LOCAL_VIDEO_STREAM_ERROR_ENCODE_FAILURE = 5,
-    /** No camera device. */
-    LOCAL_VIDEO_STREAM_ERROR_DEVICE_NOT_FOUND = 6,
+    /** 6: (iOS only) The application is in the background.
+     *
+     * @since v3.3.0
+     */
+    LOCAL_VIDEO_STREAM_ERROR_CAPTURE_INBACKGROUND = 6,
+    /** 7: (iOS only) The application is running in Slide Over, Split View, or Picture in Picture mode.
+     *
+     * @since v3.3.0
+     */
+    LOCAL_VIDEO_STREAM_ERROR_CAPTURE_MULTIPLE_FOREGROUND_APPS = 7,
+    /** 8:capture not found*/
+    LOCAL_VIDEO_STREAM_ERROR_DEVICE_NOT_FOUND = 8,
+
+    LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_MINIMIZED = 11,
+    /** 12: The error code indicates that a window shared by the window ID has been closed, or a full-screen window
+     * shared by the window ID has exited full-screen mode.
+     * After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a
+     * black screen, Agora recommends that you immediately stop screen sharing.
+     *
+     * Common scenarios for reporting this error code:
+     * - When the local user closes the shared window, the SDK reports this error code.
+     * - The local user shows some slides in full-screen mode first, and then shares the windows of the slides. After
+     * the user exits full-screen mode, the SDK reports this error code.
+     * - The local user watches web video or reads web document in full-screen mode first, and then shares the window of
+     * the web video or document. After the user exits full-screen mode, the SDK reports this error code.
+     */
+    LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_CLOSED = 12,
+
+    LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_NOT_SUPPORTED = 20,
 };
 
 /** Local audio state types.
