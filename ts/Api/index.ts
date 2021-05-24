@@ -6063,7 +6063,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: 'audioMixingStateChanged',
-    cb: (state: number, errorCode: number) => void
+    cb: (state: number, reason: number) => void
   ): this;
   /** Occurs when a remote user starts audio mixing.
    * When a remote user calls {@link startAudioMixing} to play the background
