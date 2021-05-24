@@ -93,8 +93,8 @@ bool VideoSourceProxy::Initialize(
   }
 
   _ipc_data_receiver->run(true);
-
   _initialized = true;
+  LOG_F(INFO, "VideoSourceProxy Run success ");
   return true;
 }
 
@@ -219,9 +219,9 @@ int VideoSourceProxy::SetAddonLogFile(const char *filePath) {
 }
 
 int VideoSourceProxy::Release() {
-  if (_initialized)
+  if (_initialized) {
     Clear();
-
+  }
   return 0;
 }
 
@@ -230,11 +230,18 @@ void VideoSourceProxy::Clear() {
   _initialized = false;
   _video_source_event_handler = nullptr;
 
-  _ipc_data_receiver.reset();
+  if (_ipc_data_receiver.get()) {
+    _ipc_data_receiver->stop();
+    _ipc_data_receiver.reset();
+  }
+
   if (_agora_ipc.get()) {
+    LOG_F(INFO, "VideoSourceProxy::Clear() send AGORA_IPC_DISCONNECT ");
     _agora_ipc->sendMessage(AGORA_IPC_DISCONNECT, nullptr, 0);
     _agora_ipc->disconnect();
+    // _agora_ipc.reset();
   }
+
   if (_message_thread.joinable())
     _message_thread.join();
 }
