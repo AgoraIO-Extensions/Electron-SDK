@@ -4912,7 +4912,7 @@ class AgoraRtcEngine extends EventEmitter {
     pan: number,
     gain: number,
     publish: number,
-    startPos: number
+    startPos?: number
   ): number {
     return this.rtcEngine.playEffect(
       soundId,
