@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:37
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-05-19 21:06:42
+ * @Last Modified time: 2021-05-24 23:04:55
  */
 #include "node_iris_rtc_engine.h"
 #include "node_iris_event_handler.h"
@@ -15,10 +15,10 @@ using namespace iris::rtc;
 Nan_Persistent<v8_Function> NodeIrisRtcEngine::_constructor;
 
 NodeIrisRtcEngine::NodeIrisRtcEngine(v8_Isolate *isolate) : _isolate(isolate) {
+  LOG_F(INFO, "NodeIrisRtcEngine::NodeIrisRtcEngine()");
   _iris_event_handler.reset(new NodeIrisEventHandler(this));
   _iris_engine.reset(new IrisRtcEngine());
   _video_processer.reset(new VideoProcesser(_iris_engine));
-  _video_source_proxy.reset(new VideoSourceProxy(_video_processer));
   _iris_raw_data = _iris_engine->raw_data();
   _iris_raw_data_plugin_manager = _iris_raw_data->plugin_manager();
   _iris_engine->SetEventHandler(_iris_event_handler.get());
@@ -104,8 +104,12 @@ void NodeIrisRtcEngine::CallApi(
         _ret = _engine->_iris_engine->CallApi((ApiTypeEngine)_apiType,
                                               _parameter.c_str(), _result);
       } else {
-        _ret = _engine->_video_source_proxy->CallApi(
-            (ApiTypeEngine)_apiType, _parameter.c_str(), _result);
+        if (_engine->_video_source_proxy) {
+          _ret = _engine->_video_source_proxy->CallApi(
+              (ApiTypeEngine)_apiType, _parameter.c_str(), _result);
+        } else {
+          LOG_F(INFO, "CallApi parameter did not initialize videoSource yet");
+        }
       }
       LOG_F(INFO, "CallApi parameter: type: %d, parameter: %s, ret: %d",
             _process_type, _parameter.c_str(), _ret);
@@ -149,9 +153,15 @@ void NodeIrisRtcEngine::CallApiWithBuffer(
               (ApiTypeEngine)_apiType, _parameter.c_str(),
               const_cast<char *>(_buffer.c_str()), _result);
         } else {
-          _ret = _engine->_video_source_proxy->CallApi(
-              (ApiTypeEngine)_apiType, _parameter.c_str(), _buffer.c_str(),
-              _length, _result);
+          if (_engine->_video_source_proxy) {
+            _ret = _engine->_video_source_proxy->CallApi(
+                (ApiTypeEngine)_apiType, _parameter.c_str(), _buffer.c_str(),
+                _length, _result);
+          } else {
+            LOG_F(INFO, "CallApiWithBuffer parameter did not initialize "
+                        "videoSource yet "
+                        "source yet");
+          }
         }
         break;
       }
@@ -335,6 +345,12 @@ void NodeIrisRtcEngine::VideoSourceInitialize(
   auto _engine = ObjectWrap::Unwrap<NodeIrisRtcEngine>(args.Holder());
   auto _isolate = args.GetIsolate();
   auto _ret = ERROR_PARAMETER_1;
+
+  if (!_engine->_video_source_proxy) {
+    _engine->_video_source_proxy.reset(
+        new VideoSourceProxy(_engine->_video_processer));
+  }
+
   if (_engine->_video_source_proxy) {
     if (_engine->_video_source_proxy->Initialize(_engine->_iris_event_handler))
       _ret = ERROR_OK;
@@ -361,7 +377,8 @@ void NodeIrisRtcEngine::VideoSourceSetAddonLogFile(
       _ret = ERROR_OK;
   } else {
     _ret = ERROR_NOT_INIT;
-    LOG_F(INFO, "VideoSourceSetAddonLogFile NodeIris Engine Not Init");
+    LOG_F(INFO,
+          "VideoSourceSetAddonLogFile did not initialize videoSource yet");
   }
 
   auto _retObj = v8_Object::New(_isolate);
@@ -392,8 +409,8 @@ void NodeIrisRtcEngine::VideoSourceRelease(
 
 int NodeIrisRtcEngine::VideoSourceRelease() {
   LOG_F(INFO, "VideoSourceRelease");
-  if (_video_source_proxy.get()) {
-    _video_source_proxy->Release();
+  if (_video_source_proxy) {
+    _video_source_proxy.reset();
   }
   return ERROR_OK;
 }
@@ -438,8 +455,14 @@ void NodeIrisRtcEngine::PluginCallApi(
         _ret = _engine->_iris_raw_data_plugin_manager->CallApi(
             (ApiTypeRawDataPlugin)_apiType, _parameter.c_str(), _result);
       } else {
-        _ret = _engine->_video_source_proxy->PluginCallApi(
-            (ApiTypeRawDataPlugin)_apiType, _parameter.c_str(), _result);
+        if (_engine->_video_source_proxy) {
+          _ret = _engine->_video_source_proxy->PluginCallApi(
+              (ApiTypeRawDataPlugin)_apiType, _parameter.c_str(), _result);
+        } else {
+          LOG_F(INFO,
+                "PluginCallApi parameter did not initialize videoSource yet "
+                "source yet");
+        }
       }
     } catch (std::exception &e) {
       LOG_F(INFO, "PluginCallApi catch exception %s", e.what());
@@ -479,8 +502,10 @@ void NodeIrisRtcEngine::EnableVideoFrameCache(
         _ret = _engine->_video_processer->EnableVideoFrameCache(
             config, _uid, _channelId.c_str());
       } else {
-        _ret = _engine->_video_source_proxy->EnableVideoFrameCache(
-            _channelId.c_str(), _uid, _width, _height);
+        if (_engine->_video_source_proxy) {
+          _ret = _engine->_video_source_proxy->EnableVideoFrameCache(
+              _channelId.c_str(), _uid, _width, _height);
+        }
       }
     } catch (std::exception &e) {
       LOG_F(INFO, "PluginCallApi catch exception %s", e.what());
@@ -515,8 +540,10 @@ void NodeIrisRtcEngine::DisableVideoFrameCache(
         _ret = _engine->_video_processer->DisableVideoFrameCache(
             _channelId.c_str(), _uid);
       } else {
-        _ret = _engine->_video_source_proxy->DisableVideoFrameCache(
-            _channelId.c_str(), _uid);
+        if (_engine->_video_source_proxy) {
+          _ret = _engine->_video_source_proxy->DisableVideoFrameCache(
+              _channelId.c_str(), _uid);
+        }
       }
     } catch (std::exception &e) {
       _engine->OnApiError(e.what());
@@ -609,7 +636,6 @@ void NodeIrisRtcEngine::Release(
     LOG_F(INFO, "VideoSourceInitialize NodeIris Engine Not Init");
   }
 }
-
 } // namespace electron
 } // namespace rtc
 } // namespace agora
