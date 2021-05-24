@@ -309,9 +309,9 @@ class AgoraRtcEngine extends EventEmitter {
 
     this.rtcEngine.onEvent('audioMixingStateChanged', function(
       state: number,
-      errorCode: number
+      reason: number
     ) {
-      fire('audioMixingStateChanged', state, errorCode);
+      fire('audioMixingStateChanged', state, reason);
     });
 
     this.rtcEngine.onEvent('apicallexecuted', function(
@@ -718,9 +718,9 @@ class AgoraRtcEngine extends EventEmitter {
 
     this.rtcEngine.onEvent('audioMixingStateChanged', function(
       state: number,
-      reaCode: number
+      reason: number
     ) {
-      fire('audioMixingStateChanged', state, reaCode);
+      fire('audioMixingStateChanged', state, reason);
     });
 
     this.rtcEngine.onEvent('channelMediaRelayState', function(
