@@ -4239,7 +4239,6 @@ class AgoraRtcEngine extends EventEmitter {
  /**
    * Set extension specific property.
    *
-   * @param id id for extension, e.g. agora.beauty.
    * @param key key for the property.
    * @param jsonValue property value.
    *
@@ -4247,8 +4246,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
- setExtensionProperty(type: VIDEO_SOURCE_TYPE, id: string, key: string, jsonValue: string): number {
-   return this.rtcEngine.setExtensionProperty(type, id, key, jsonValue);
+ setExtensionProperty(key: string, jsonValue: string): number {
+   return this.rtcEngine.setExtensionProperty(key, jsonValue);
  }
 }
 /** The AgoraRtcEngine interface. */

@@ -3082,7 +3082,7 @@ export interface NodeRtcEngine {
  /**
   * @ignore
   */
- setExtensionProperty(type: VIDEO_SOURCE_TYPE, id: string, key: string, jsonValue: string): number;
+ setExtensionProperty(key: string, jsonValue: string): number;
 }
 
 export interface NodeMediaPlayer {

@@ -17,6 +17,7 @@
 #include <string>
 #include <nan.h>
 #include "agora_meida_player.h"
+#include "loguru.hpp"
 
 
 #if defined(__APPLE__) || defined(_WIN32)
@@ -25,6 +26,8 @@
 
 #if defined(__APPLE__)
 #include <dlfcn.h>
+#include "AgoraRefPtr.h"
+#include "IAgoraMediaPlayer.h"
 #endif
 
 using std::string;
@@ -83,7 +86,6 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setRemoteDefaultVideoStreamType)
                 PROPERTY_METHOD_DEFINE(enableAudioVolumeIndication)
                 PROPERTY_METHOD_DEFINE(startAudioRecording)
-                PROPERTY_METHOD_DEFINE(stopAudioRecording)
                 PROPERTY_METHOD_DEFINE(startAudioMixing)
                 PROPERTY_METHOD_DEFINE(stopAudioMixing)
                 PROPERTY_METHOD_DEFINE(pauseAudioMixing)
@@ -2068,21 +2070,37 @@ namespace agora {
                     CHECK_NAPI_STATUS_STR(pEngine, status, key);
                 }
 
+// Put every log message in "everything.log":
+		loguru::add_file("everything.log", loguru::Append, loguru::Verbosity_MAX);
+
+		LOG_F(INFO, "The magic number is %d", 42);
+
                 unsigned int areaCode;
                 status = napi_get_value_uint32_(args[2], areaCode);
                 key = "areaCode";
+                LOG_F(INFO, "areaCode %s", key.c_str());
                 CHECK_NAPI_STATUS_STR(pEngine, status, key);
 
                 RtcEngineContextEx context;
                 context.eventHandlerEx = pEngine->m_eventHandler.get();
                 context.appId = appid;
+                const char *str = appid;
+                // char* p = const_cast<char*>(str)
+                LOG_F(INFO, "appid %s", (char*)appid );
+                
                 context.areaCode = areaCode;
                 if (extensionCount > 0) {
+                    LOG_F(INFO, "extensionCount 1");
                     context.extensions = extensions;
+                    LOG_F(INFO, "extensionCount 2");
                     context.numExtension = extensionCount;
+                    LOG_F(INFO, "extensionCount 3");
                 }
+                LOG_F(INFO, "engineEx 2097");
                 auto engineEx = (IRtcEngineEx*) pEngine->m_engine;
+//                LOG_F(INFO, "engineEx 2098-------",context.appId,);
                 int suc = engineEx->initialize(context);
+                LOG_F(INFO, "engineEx 2099");
                 if (0 != suc) {
                     LOG_ERROR("Rtc engine initialize failed with error :%d\n", suc);
                     status = napi_invalid_arg;
@@ -2090,6 +2108,7 @@ namespace agora {
                     CHECK_NAPI_STATUS_STR(pEngine, status, key);
                     break;
                 }
+
 
                 agora::media::IMediaEngine* pMediaEngine = nullptr;
                 pEngine->getRtcEngine()->queryInterface(agora::rtc::INTERFACE_ID_TYPE::AGORA_IID_MEDIA_ENGINE, (void**)&pMediaEngine);
@@ -5718,15 +5737,14 @@ namespace agora {
                 nodestring id;
                 bool enable;
 
-                napi_status status = napi_get_value_int32_(args[0], type);
-                status = napi_get_value_nodestring_(args[1], id);
+                napi_status status = napi_get_value_nodestring_(args[0], id);
                 key = "id";
                 CHECK_NAPI_STATUS_STR(pEngine, status, key);
-                status = napi_get_value_bool_(args[2], enable);
+                status = napi_get_value_bool_(args[1], enable);
                 key = "enable";
                 CHECK_NAPI_STATUS_STR(pEngine, status, key);
 
-                result = pEngine->m_engine->enableExtension((VIDEO_SOURCE_TYPE)type, id, enable);
+                result = pEngine->m_engine->enableExtension(id, enable);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -5741,25 +5759,24 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                int type;
-                napi_status status = napi_get_value_int32_(args[0], type);
+                
 
                 nodestring id;
-                status = napi_get_value_nodestring_(args[1], id);
+                napi_status status = napi_get_value_nodestring_(args[0], id);
                 debugKey = "id";
                 CHECK_NAPI_STATUS_STR(pEngine, status, debugKey);
 
                 nodestring key;
-                status = napi_get_value_nodestring_(args[2], key);
+                status = napi_get_value_nodestring_(args[1], key);
                 debugKey = "key";
                 CHECK_NAPI_STATUS_STR(pEngine, status, debugKey);
 
                 nodestring json_value;
-                status = napi_get_value_nodestring_(args[3], json_value);
+                status = napi_get_value_nodestring_(args[2], json_value);
                 debugKey = "jsonValue";
                 CHECK_NAPI_STATUS_STR(pEngine, status, debugKey);
 
-                result = pEngine->m_engine->setExtensionProperty((VIDEO_SOURCE_TYPE)type, id, key, json_value);
+                result = pEngine->m_engine->setExtensionProperty(id, key, json_value);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;

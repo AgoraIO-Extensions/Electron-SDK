@@ -1,4 +1,6 @@
 #include "agora_meida_player.h"
+#include "IAgoraMediaPlayer.h"
+
 
         /*
         * Used to define native interface which is exposed to nodejs
@@ -295,7 +297,7 @@ namespace agora {
                 int index;
                 napi_status status = napi_ok;
                 status = napi_get_value_int32_(args[0], index);
-                agora::media::base::MediaStreamInfo *streamInfo = new agora::media::base::MediaStreamInfo();
+                agora::media::base::PlayerStreamInfo *streamInfo = new agora::media::base::PlayerStreamInfo();
                 result = mediaPlayer->mMediaPlayer->m_mediaPlayerSource->getStreamInfo(index, streamInfo);
                 Local<Object> obj = Object::New(isolate);
                 obj->Set(context, napi_create_string_(isolate, "streamIndex"), napi_create_int32_(isolate, streamInfo->streamIndex));

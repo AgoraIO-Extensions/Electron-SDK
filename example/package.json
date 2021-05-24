@@ -28,7 +28,8 @@
     "webpack": "4.41.2"
   },
   "resolutions": {
-    "webpack-sources": "1.0.1"
+    "webpack-sources": "1.0.1",
+    "electron-webpack/html-loader": "1.0.0-alpha.0"
   },
   "electronWebpack": {
     "renderer": {

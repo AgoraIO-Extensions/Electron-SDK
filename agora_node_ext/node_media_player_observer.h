@@ -1,13 +1,18 @@
 #ifndef AGORA_ELECTRON_NODE_MEDIA_PLAYER_OBSERVER
 #define AGORA_ELECTRON_NODE_MEDIA_PLAYER_OBSERVER
 #include "IAgoraMediaPlayerSource.h"
-#include "IAgoraMediaPlayer.h"
 #include <unordered_map>
 #include "node_napi_api.h"
 #include "node_async_queue.h"
 #include <string>
 #include <uv.h>
 #include "loguru.hpp"
+
+#if defined(__APPLE__)
+#include "IAgoraMediaPlayerKit.h"
+#else
+#include "IAgoraMediaPlayer.h"
+#endif
 
 namespace agora {
     namespace rtc {
@@ -117,6 +122,7 @@ namespace agora {
             virtual void onPlayerEvent(media::base::MEDIA_PLAYER_EVENT event) override;
             virtual void onMetaData(const void* data, int length) override;  
 
+            virtual void onPlayBufferUpdated(int64_t playCachedBuffer) override;
             virtual void onCompleted() override;
 
             void fireApiError(const char* funcName);

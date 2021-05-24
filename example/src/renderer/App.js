@@ -552,6 +552,9 @@ export default class App extends Component {
   }
 
   handleUpdateTranscoder = (sources) => {
+    console.log('handleUpdateTranscoder',sources);
+    const opt = this.calcTranscoderOptions(sources || this.state.sources)
+    console.log('calcTranscoderOptions',opt);
     rtcEngine.updateLocalTranscoderConfiguration(this.calcTranscoderOptions(sources || this.state.sources))
   }
 
@@ -566,6 +569,7 @@ export default class App extends Component {
     let {x, y, node} = d
     // console.log(`drag : id: ${node.id} ${x} ${y}`)
     let sourceId = this.reverseSourceId(node.id)
+    console.log('handleDrag',e,d);
     this.updateSource(sourceId, {x: x, y: y})
   }
 
