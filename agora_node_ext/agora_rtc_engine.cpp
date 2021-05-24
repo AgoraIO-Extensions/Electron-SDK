@@ -13,6 +13,7 @@
 #include "node_uid.h"
 #include "agora_video_source.h"
 #include "node_napi_api.h"
+#include "log_helper.h"
 #include "IAgoraRtcEngine2.h"
 #include <string>
 #include <nan.h>
@@ -322,6 +323,10 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setProcessDpiAwareness);
                 PROPERTY_METHOD_DEFINE(videoSourceSetProcessDpiAwareness);
                 PROPERTY_METHOD_DEFINE(startAudioRecordingWithConfig);
+                /**
+                 * setAddonLogFile
+                 */
+                PROPERTY_METHOD_DEFINE(setAddonLogFile);
                 EN_PROPERTY_DEFINE()
                 module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -6163,7 +6168,27 @@ namespace agora {
 
             } while (false);
             napi_set_int_result(args, result);
+            
+            LOG_LEAVE;
+        }
 
+        NAPI_API_DEFINE(NodeRtcEngine, setAddonLogFile)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                nodestring path;
+                napi_get_param_1(args, nodestring, path);
+                string sPath;
+                sPath = path ? string(path) : "";
+                
+                result = LogHelper::getInstance()->setAddonLogPath(sPath.c_str());
+            } while (false);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
         /**

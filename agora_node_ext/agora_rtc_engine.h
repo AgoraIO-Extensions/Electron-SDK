@@ -383,6 +383,10 @@ namespace agora {
             NAPI_API(videoSourceSetProcessDpiAwareness);
 
             NAPI_API(startAudioRecordingWithConfig);
+            /*
+             * setAddonLogFile
+             */
+            NAPI_API(setAddonLogFile);
             
         public:
             Isolate* getIsolate() { return m_isolate; }
