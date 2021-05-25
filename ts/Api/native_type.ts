@@ -3083,6 +3083,10 @@ export interface NodeRtcEngine {
   * @ignore
   */
  setExtensionProperty(type: VIDEO_SOURCE_TYPE, id: string, key: string, jsonValue: string): number;
+ /**
+  * @ignore
+  */
+ setScreenCaptureOrientation(type: VIDEO_SOURCE_TYPE, orientation: OrientationMode): number;
 }
 
 export interface NodeMediaPlayer {

@@ -290,6 +290,8 @@ namespace agora {
                 // Extension
                 PROPERTY_METHOD_DEFINE(enableExtension);
                 PROPERTY_METHOD_DEFINE(setExtensionProperty);
+                PROPERTY_METHOD_DEFINE(setScreenCaptureOrientation);
+                
 
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
@@ -5775,6 +5777,27 @@ namespace agora {
                 CHECK_NAPI_STATUS_STR(pEngine, status, debugKey);
 
                 result = pEngine->m_engine->setExtensionProperty((MEDIA_SOURCE_TYPE)type, id, key, json_value);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setScreenCaptureOrientation)
+        {
+            LOG_ENTER;
+            int result = -1;
+            std::string debugKey = "";
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                int type;
+                napi_status status = napi_get_value_int32_(args[0], type);
+
+                int orientation;
+                status = napi_get_value_int32_(args[1], orientation);
+
+                result = pEngine->m_engine->setScreenCaptureOrientation((MEDIA_SOURCE_TYPE)type, (VIDEO_ORIENTATION)orientation);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
