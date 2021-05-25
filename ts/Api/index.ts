@@ -56,7 +56,8 @@ import {
   ScreenCaptureConfiguration,
   VIDEO_SOURCE_TYPE,
   Extension,
-  VIDEO_ORIENTATION
+  VIDEO_ORIENTATION,
+  OrientationMode
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -4249,6 +4250,10 @@ class AgoraRtcEngine extends EventEmitter {
    */
  setExtensionProperty(type: VIDEO_SOURCE_TYPE, id: string, key: string, jsonValue: string): number {
    return this.rtcEngine.setExtensionProperty(type, id, key, jsonValue);
+ }
+
+ setScreenCaptureOrientation(type: VIDEO_SOURCE_TYPE, orientation: OrientationMode): number {
+   return this.rtcEngine.setScreenCaptureOrientation(type, orientation);
  }
 }
 /** The AgoraRtcEngine interface. */
