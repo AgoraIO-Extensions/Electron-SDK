@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 11:39:24
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-05-25 16:42:01
+ * @Last Modified time: 2021-05-25 17:31:33
  */
 import {
   ApiTypeEngine,
@@ -7714,7 +7714,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  videoSourceUpdateScreenCaptureRegion(regionRect: Rectangle) {
+  videoSourceUpdateScreenCaptureRegion(regionRect: Rectangle): number {
     let param = {
       regionRect,
     };
