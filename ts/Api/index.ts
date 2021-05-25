@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 11:39:24
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-05-23 19:24:01
+ * @Last Modified time: 2021-05-25 16:42:01
  */
 import {
   ApiTypeEngine,
@@ -182,6 +182,10 @@ class AgoraRtcEngine extends EventEmitter {
     }
   }
 
+  /**
+   * @private
+   * @ignore
+   */
   resizeBuffer(
     uid: number,
     channelId: string,
@@ -2213,25 +2217,6 @@ class AgoraRtcEngine extends EventEmitter {
     onFailure?: (err: Error) => void
   ) {
     this._rendererManager?.removeRenderer(user, channelId ? channelId : "");
-  }
-
-  /**
-   * Resizes the renderer.
-   *
-   * When the size of the view changes, this method refresh the zoom level so
-   * that video is sized appropriately while waiting for the next video frame
-   * to arrive.
-   *
-   * Calling this method prevents a view discontinutity.
-   * @param key Key for the map that store the renderers,
-   * e.g, `uid` or `videosource` or `local`.
-   */
-  resizeRender(user: User, channelId: Channel) {
-    // let channelStreams = this._getChannelRenderers(channelId || "");
-    // if (channelStreams.has(String(key))) {
-    //   const renderers = channelStreams.get(String(key)) || [];
-    //   renderers.forEach((renderer) => renderer.refreshCanvas());
-    // }
   }
 
   // ===========================================================================
@@ -7349,9 +7334,13 @@ class AgoraRtcEngine extends EventEmitter {
     });
   }
 
+  /**
+   * @private
+   * @ignore
+   */
   createPlugin(pluginId: string): Plugin {
     return {
-      id: pluginId,
+      pluginId,
       enable: () => {
         return this.enablePlugin(pluginId, true);
       },
@@ -7633,7 +7622,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  videoSourceSetChannelProfile(profile: number): number {
+  videoSourceSetChannelProfile(profile: CHANNEL_PROFILE_TYPE): number {
     let param = {
       profile,
     };
@@ -8094,6 +8083,9 @@ class AgoraRtcEngine extends EventEmitter {
     );
   }
 
+  /**
+   * @deprecated
+   */
   videoSourceStartScreenCapture(
     windowId: number,
     captureFreq: number,
@@ -8251,9 +8243,13 @@ class AgoraRtcEngine extends EventEmitter {
     });
   }
 
+  /**
+   * @private
+   * @ignore
+   */
   videoSourceCreatePlugin(pluginId: string): Plugin {
     return {
-      id: pluginId,
+      pluginId,
       enable: () => {
         return this.videoSourceEnablePlugin(pluginId, true);
       },
@@ -8332,7 +8328,7 @@ declare interface AgoraRtcEngine {
    *
    * `err`: Error code that the SDK returns when the method call fails.
    */
-  on(evt: "apiCallExecuted", cb: (api: string, err: number) => void): this;
+  on(evt: "apiCallExecuted", cb: (api: string, err: number, result: number) => void): this;
 
   on(evt: "apiError", cb: (apiType: ApiTypeEngine, msg: string) => void): this;
   /**
@@ -8925,34 +8921,6 @@ declare interface AgoraRtcEngine {
   on(
     evt: "audioDeviceVolumeChanged",
     cb: (deviceType: MEDIA_DEVICE_TYPE, volume: number, muted: boolean) => void
-  ): this;
-  /** Occurs when the user for sharing screen joined the channel.
-   * - uid: The User ID.
-   */
-  on(
-    evt: "videoSourceJoinChannelSuccess",
-    cb: (channel: string, uid: number, elapsed: number) => void
-  ): this;
-  /** Occurs when the token expires. */
-  on(evt: "videoSourceRequestNewToken", cb: () => void): this;
-  /** Occurs when the user for sharing screen leaved the channel.
-   * - uid: The User ID.
-   */
-  on(evt: "videoSourceLeaveChannel", cb: () => void): this;
-
-  on(
-    evt: "videoSourceLocalAudioStats",
-    cb: (stats: LocalAudioStats) => void
-  ): this;
-
-  on(
-    evt: "videoSourceLocalVideoStats",
-    cb: (stats: LocalVideoStats) => void
-  ): this;
-
-  on(
-    evt: "videoSourceVideoSizeChanged",
-    cb: (uid: number, width: number, height: number, rotation: number) => void
   ): this;
   /** Occurs when the remote video state changes.
    *
@@ -9496,7 +9464,7 @@ declare interface AgoraRtcEngine {
    *
    * `err`: Error code that the SDK returns when the method call fails.
    */
-  on(evt: "apiCallExecuted", cb: (api: string, err: number) => void): this;
+  on(evt: "apiCallExecuted", cb: (api: string, err: number, result: number) => void): this;
 
   on(evt: "apiError", cb: (apiType: ApiTypeEngine, msg: string) => void): this;
   /**
@@ -10090,27 +10058,6 @@ declare interface AgoraRtcEngine {
     evt: "audioDeviceVolumeChanged",
     cb: (deviceType: MEDIA_DEVICE_TYPE, volume: number, muted: boolean) => void
   ): this;
-  /** Occurs when the token expires. */
-  on(evt: "videoSourceRequestNewToken", cb: () => void): this;
-  /** Occurs when the user for sharing screen leaved the channel.
-   * - uid: The User ID.
-   */
-  on(evt: "videoSourceLeaveChannel", cb: () => void): this;
-
-  on(
-    evt: "videoSourceLocalAudioStats",
-    cb: (stats: LocalAudioStats) => void
-  ): this;
-
-  on(
-    evt: "videoSourceLocalVideoStats",
-    cb: (stats: LocalVideoStats) => void
-  ): this;
-
-  on(
-    evt: "videoSourceVideoSizeChanged",
-    cb: (uid: number, width: number, height: number, rotation: number) => void
-  ): this;
   /** Occurs when the remote video state changes.
    *
    * @param cb.uid ID of the user whose video state changes.
@@ -10490,24 +10437,6 @@ declare interface AgoraRtcEngine {
     evt: "channelMediaRelayEvent",
     cb: (event: CHANNEL_MEDIA_RELAY_EVENT) => void
   ): this;
-  /** Receives the media metadata.
-   *
-   * After the sender sends the media metadata by calling the
-   * {@link sendMetadata} method and the receiver receives the media metadata,
-   * the SDK triggers this callback and reports the metadata to the receiver.
-   *
-   * @param cb.metadata The media metadata.
-   */
-  on(evt: "receiveMetadata", cb: (metadata: Metadata) => void): this;
-  /** Sends the media metadata successfully.
-   *
-   * After the sender sends the media metadata successfully by calling the
-   * {@link sendMetadata} method, the SDK triggers this calback to reports the
-   * media metadata to the sender.
-   *
-   * @param cb.metadata The media metadata.
-   */
-  on(evt: "sendMetadataSuccess", cb: (metadata: Metadata) => void): this;
   /** Occurs when the first audio frame is published.
    *
    * @since v3.2.0
@@ -10668,6 +10597,7 @@ declare interface AgoraRtcEngine {
     ) => void
   ): this;
 
+
   /**
    * Occurs when an API method is executed.
    *
@@ -10711,6 +10641,29 @@ declare interface AgoraRtcEngine {
     cb: (channel: string, uid: number, elapsed: number) => void
   ): this;
 
+ /** Occurs when the user for sharing screen joined the channel.
+   * - uid: The User ID.
+   */
+  on(
+    evt: "videoSourceJoinChannelSuccess",
+    cb: (channel: string, uid: number, elapsed: number) => void
+  ): this;
+
+  on(
+    evt: "videoSourceLocalAudioStats",
+    cb: (stats: LocalAudioStats) => void
+  ): this;
+
+  on(
+    evt: "videoSourceLocalVideoStats",
+    cb: (stats: LocalVideoStats) => void
+  ): this;
+
+  on(
+    evt: "videoSourceVideoSizeChanged",
+    cb: (uid: number, width: number, height: number, rotation: number) => void
+  ): this;
+
   on(
     evt: "videoSourceAudioVolumeIndication",
     cb: (
@@ -10730,34 +10683,7 @@ declare interface AgoraRtcEngine {
    * @param cb.stats AgoraRtcEngine's statistics, see {@link RtcStats}
    */
   on(evt: "videoSourceRtcStats", cb: (stats: RtcStats) => void): this;
-  /**
-   * Reports the statistics of the local video streams.
-   *
-   * **Note**:
-   *
-   * If you have called the {@link enableDualStream} method, the
-   * localVideoStats callback reports the statistics of the high-video
-   * stream (high bitrate, and high-resolution video stream).
-   *
-   * - stats: The statistics of the local video stream. See
-   * {@link LocalVideoStats}.
-   */
-  on(
-    evt: "videoSourceLocalVideoStats",
-    cb: (stats: LocalVideoStats) => void
-  ): this;
-  /**
-   * Reports the statistics of the local audio streams.
-   *
-   * The SDK triggers this callback once every two seconds.
-   *
-   * - stats: The statistics of the local audio stream. See
-   * {@link LocalAudioStats}.
-   */
-  on(
-    evt: "videoSourceLocalAudioStats",
-    cb: (stats: LocalAudioStats) => void
-  ): this;
+
   /** Reports the statistics of the video stream from each remote user/host.
    *
    * @param cb.stats Statistics of the received remote video streams. See
@@ -10820,32 +10746,6 @@ declare interface AgoraRtcEngine {
     evt: "videoSourceAudioDeviceStateChanged",
     cb: (deviceId: string, deviceType: number, deviceState: number) => void
   ): this;
-
-  on(evt: "videoSourceAudioMixingFinished", cb: () => void): this;
-  /** Occurs when the state of the local user's audio mixing file changes.
-   * - state: The state code.
-   *  - 710: The audio mixing file is playing.
-   *  - 711: The audio mixing file pauses playing.
-   *  - 713: The audio mixing file stops playing.
-   *  - 714: An exception occurs when playing the audio mixing file.
-   *
-   * - err: The error code.
-   *  - 701: The SDK cannot open the audio mixing file.
-   *  - 702: The SDK opens the audio mixing file too frequently.
-   *  - 703: The audio mixing file playback is interrupted.
-   *
-   */
-  on(
-    evt: "videoSourceAudioMixingStateChanged",
-    cb: (state: number, err: number) => void
-  ): this;
-  /** Occurs when a remote user starts audio mixing.
-   * When a remote user calls {@link startAudioMixing} to play the background
-   * music, the SDK reports this callback.
-   */
-  on(evt: "videoSourceRemoteAudioMixingBegin", cb: () => void): this;
-  /** Occurs when a remote user finishes audio mixing. */
-  on(evt: "videoSourceRemoteAudioMixingEnd", cb: () => void): this;
   /** Occurs when the local audio effect playback finishes. */
   on(
     evt: "videoSourceAudioEffectFinished",
@@ -10951,18 +10851,6 @@ declare interface AgoraRtcEngine {
     evt: "videoSourceFirstRemoteVideoDecoded",
     cb: (uid: number, elapsed: number) => void
   ): this;
-  /** Occurs when the video size or rotation of a specified user changes.
-   * @param cb.uid User ID of the remote user or local user (0) whose video
-   * size or
-   * rotation changes.
-   * @param cb.width New width (pixels) of the video.
-   * @param cb.height New height (pixels) of the video.
-   * @param cb.roation New height (pixels) of the video.
-   */
-  on(
-    evt: "videoSourceVideoSizeChanged",
-    cb: (uid: number, width: number, height: number, rotation: number) => void
-  ): this;
   /** @deprecated This callback is deprecated, please use
    * `remoteVideoStateChanged` instead.
    *
@@ -10979,19 +10867,6 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: "videoSourceFirstRemoteVideoFrame",
-    cb: (uid: number, width: number, height: number, elapsed: number) => void
-  ): this;
-  /** Occurs when the first remote video frame is decoded.
-   * The SDK triggers this callback when the first frame of the remote video
-   * is decoded.
-   * - uid: User ID of the remote user sending the video stream.
-   * - width: Width (pixels) of the video frame.
-   * - height: Height (pixels) of the video stream.
-   * - elapsed: Time elapsed (ms) from the local user calling the
-   * {@link joinChannel} method until the SDK triggers this callback.
-   */
-  on(
-    evt: "videoSourceFirstRemoteVideoDecoded",
     cb: (uid: number, width: number, height: number, elapsed: number) => void
   ): this;
   /** Occurs when a user or host joins the channel.
@@ -11294,34 +11169,7 @@ declare interface AgoraRtcEngine {
     evt: "videoSourceAudioDeviceVolumeChanged",
     cb: (deviceType: MEDIA_DEVICE_TYPE, volume: number, muted: boolean) => void
   ): this;
-  /** Occurs when the user for sharing screen joined the channel.
-   * - uid: The User ID.
-   */
-  on(
-    evt: "videoSourceJoinedSuccess",
-    cb: (channel: string, uid: number, elapsed: number) => void
-  ): this;
-  /** Occurs when the token expires. */
-  on(evt: "videoSourceRequestNewToken", cb: () => void): this;
-  /** Occurs when the user for sharing screen leaved the channel.
-   * - uid: The User ID.
-   */
-  on(evt: "videoSourceLeaveChannel", cb: () => void): this;
 
-  on(
-    evt: "videoSourceLocalAudioStats",
-    cb: (stats: LocalAudioStats) => void
-  ): this;
-
-  on(
-    evt: "videoSourceLocalVideoStats",
-    cb: (stats: LocalVideoStats) => void
-  ): this;
-
-  on(
-    evt: "videoSourceVideoSizeChanged",
-    cb: (uid: number, width: number, height: number, rotation: number) => void
-  ): this;
   /** Occurs when the remote video state changes.
    *
    * @param cb.uid ID of the user whose video state changes.
@@ -11555,29 +11403,6 @@ declare interface AgoraRtcEngine {
       reason: CONNECTION_CHANGED_REASON_TYPE
     ) => void
   ): this;
-  /** Occurs when the local user successfully registers a user account by
-   * calling the {@link registerLocalUserAccount} method.
-   * This callback reports the user ID and user account of the local user.
-   * - uid: The ID of the local user.
-   * - userAccount: The user account of the local user.
-   */
-  on(
-    evt: "videoSourceLocalUserRegistered",
-    cb: (uid: number, userAccount: string) => void
-  ): this;
-  /** Occurs when the SDK gets the user ID and user account of the remote user.
-   *
-   * After a remote user joins the channel, the SDK gets the UID and user
-   * account of the remote user, caches them in a mapping table
-   * object (UserInfo), and triggers this callback on the local client.
-   * - uid: The ID of the remote user.
-   * - userInfo: The UserInfo Object that contains the user ID and user
-   * account of the remote user.
-   */
-  on(
-    evt: "videoSourceUserInfoUpdated",
-    cb: (uid: number, userInfo: UserInfo) => void
-  ): this;
   /**
    * Occurs when the local video state changes.
    *
@@ -11681,52 +11506,6 @@ declare interface AgoraRtcEngine {
       reason: REMOTE_AUDIO_STATE_REASON,
       elapsed: number
     ) => void
-  ): this;
-  /**
-   * Occurs when the state of the media stream relay changes.
-   *
-   * The SDK reports the state of the current media relay and possible error
-   * messages in this callback.
-   *
-   * @param cb.state The state code. See {@link ChannelMediaRelayState}.
-   * @param cb.code The error code. See {@link ChannelMediaRelayError}.
-   */
-  on(
-    evt: "videoSourceChannelMediaRelayState",
-    cb: (
-      state: CHANNEL_MEDIA_RELAY_STATE,
-      code: CHANNEL_MEDIA_RELAY_ERROR
-    ) => void
-  ): this;
-  /**
-   * Reports events during the media stream relay.
-   *
-   * @param cb.event The event code. See {@link ChannelMediaRelayEvent}.
-   */
-  on(
-    evt: "videoSourceChannelMediaRelayEvent",
-    cb: (event: CHANNEL_MEDIA_RELAY_EVENT) => void
-  ): this;
-  /** Receives the media metadata.
-   *
-   * After the sender sends the media metadata by calling the
-   * {@link sendMetadata} method and the receiver receives the media metadata,
-   * the SDK triggers this callback and reports the metadata to the receiver.
-   *
-   * @param cb.metadata The media metadata.
-   */
-  on(evt: "videoSourceReceiveMetadata", cb: (metadata: Metadata) => void): this;
-  /** Sends the media metadata successfully.
-   *
-   * After the sender sends the media metadata successfully by calling the
-   * {@link sendMetadata} method, the SDK triggers this calback to reports the
-   * media metadata to the sender.
-   *
-   * @param cb.metadata The media metadata.
-   */
-  on(
-    evt: "videoSourceSendMetadataSuccess",
-    cb: (metadata: Metadata) => void
   ): this;
   /** Occurs when the first audio frame is published.
    *
