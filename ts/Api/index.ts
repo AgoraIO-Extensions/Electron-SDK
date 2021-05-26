@@ -10607,7 +10607,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: "videoSourceApiCallExecuted",
-    cb: (api: string, err: number) => void
+    cb: (api: string, err: number, result: string) => void
   ): this;
 
   on(
