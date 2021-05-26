@@ -90,8 +90,8 @@ void NodeIrisRtcEngine::CallApi(
     const Nan_FunctionCallbackInfo<v8_Value> &args) {
   auto _engine = ObjectWrap::Unwrap<NodeIrisRtcEngine>(args.Holder());
   auto _isolate = args.GetIsolate();
-  auto _process_type = nan_api_get_value_int32_(args[0]);
-  auto _apiType = nan_api_get_value_int32_(args[1]);
+  auto _process_type = nan_api_get_value<int, v8_Int32>(args[0]);
+  auto _apiType = nan_api_get_value<int, v8_Int32>(args[1]);
   auto _parameter = nan_api_get_value_utf8string_(args[2]);
   char _result[512];
   memset(_result, '\0', 512);
@@ -122,21 +122,21 @@ void NodeIrisRtcEngine::CallApi(
   }
 
   auto _retObj = v8_Object::New(_isolate);
-  v8_SET_OBJECT_PROP_UINT32(_isolate, _retObj, "retCode", _ret)
-      v8_SET_OBJECT_PROP_STRING(_isolate, _retObj, "result", _result)
-          args.GetReturnValue()
-              .Set(_retObj);
+  v8_set_object_prop_value<unsigned int, v8_Uint32>(_isolate, _retObj,
+                                                    "retCode", _ret);
+  v8_set_object_prop_string(_isolate, _retObj, "result", _result);
+  args.GetReturnValue().Set(_retObj);
 }
 
 void NodeIrisRtcEngine::CallApiWithBuffer(
     const Nan_FunctionCallbackInfo<v8_Value> &args) {
   auto _engine = ObjectWrap::Unwrap<NodeIrisRtcEngine>(args.Holder());
   auto _isolate = args.GetIsolate();
-  auto _process_type = nan_api_get_value_int32_(args[0]);
-  auto _apiType = nan_api_get_value_int32_(args[1]);
+  auto _process_type = nan_api_get_value<int, v8_Int32>(args[0]);
+  auto _apiType = nan_api_get_value<int, v8_Int32>(args[1]);
   auto _parameter = nan_api_get_value_utf8string_(args[2]);
   auto _buffer = nan_api_get_value_utf8string_(args[3]);
-  auto _length = nan_api_get_value_int32_(args[4]);
+  auto _length = nan_api_get_value<int, v8_Int32>(args[4]);
   char _result[512];
   int _ret = ERROR_PARAMETER_1;
   memset(_result, '\0', 512);
@@ -189,10 +189,10 @@ void NodeIrisRtcEngine::CallApiWithBuffer(
   }
 
   auto _retObj = v8_Object::New(_isolate);
-  v8_SET_OBJECT_PROP_UINT32(_isolate, _retObj, "retCode", _ret)
-      v8_SET_OBJECT_PROP_STRING(_isolate, _retObj, "result", _result)
-          args.GetReturnValue()
-              .Set(_retObj);
+  v8_set_object_prop_value<unsigned int, v8_Uint32>(_isolate, _retObj,
+                                                    "retCode", _ret);
+  v8_set_object_prop_string(_isolate, _retObj, "result", _result);
+  args.GetReturnValue().Set(_retObj);
 }
 
 void NodeIrisRtcEngine::OnEvent(
@@ -218,7 +218,7 @@ void NodeIrisRtcEngine::CreateChannel(
   LOG_F(INFO, " NodeIrisRtcEngine::CreateChannel");
   auto _engine = ObjectWrap::Unwrap<NodeIrisRtcEngine>(args.Holder());
   auto _isolate = args.GetIsolate();
-  auto _process_type = nan_api_get_value_int32_(args[0]);
+  auto _process_type = nan_api_get_value<int, v8_Int32>(args[0]);
   auto _channelId = nan_api_get_value_utf8string_(args[1]);
   if (_engine->_iris_engine) {
     auto _iris_channel = _engine->_iris_engine->channel();
@@ -263,28 +263,27 @@ void NodeIrisRtcEngine::GetScreenWindowsInfo(
 #elif defined(__APPLE__)
     unsigned int windowId = _windowInfo.windowId;
 #endif
-    v8_SET_OBJECT_PROP_UINT32(_isolate, obj, "windowId", windowId)
-        v8_SET_OBJECT_PROP_STRING(_isolate, obj, "name",
-                                  _windowInfo.name.c_str())
-            v8_SET_OBJECT_PROP_STRING(_isolate, obj, "ownerName",
-                                      _windowInfo.ownerName.c_str())
-                v8_SET_OBJECT_PROP_BOOL(_isolate, obj, "isOnScreen",
-                                        _windowInfo.isOnScreen)
-                    v8_SET_OBJECT_PROP_UINT32(_isolate, obj, "width",
-                                              _windowInfo.width)
-                        v8_SET_OBJECT_PROP_UINT32(_isolate, obj, "height",
-                                                  _windowInfo.height)
-                            v8_SET_OBJECT_PROP_UINT32(_isolate, obj,
-                                                      "originWidth",
-                                                      _windowInfo.originWidth)
-                                v8_SET_OBJECT_PROP_UINT32(
-                                    _isolate, obj, "originHeight",
-                                    _windowInfo.originHeight)
+    v8_set_object_prop_value<unsigned int, v8_Uint32>(_isolate, obj, "windowId",
+                                                      windowId);
+    v8_set_object_prop_string(_isolate, obj, "name", _windowInfo.name.c_str());
+    v8_set_object_prop_string(_isolate, obj, "ownerName",
+                              _windowInfo.ownerName.c_str());
+    v8_set_object_prop_value<bool, v8_Boolean>(_isolate, obj, "isOnScreen",
+                                               _windowInfo.isOnScreen);
+    v8_set_object_prop_value<unsigned int, v8_Uint32>(_isolate, obj, "width",
+                                                      _windowInfo.width);
+    v8_set_object_prop_value<unsigned int, v8_Uint32>(_isolate, obj, "height",
+                                                      _windowInfo.height);
+    v8_set_object_prop_value<unsigned int, v8_Uint32>(
+        _isolate, obj, "originWidth", _windowInfo.originWidth);
+    v8_set_object_prop_value<unsigned int, v8_Uint32>(
+        _isolate, obj, "originHeight", _windowInfo.originHeight);
 
-                                    if (_windowInfo.imageData) {
-      v8_SET_OBJECT_PROP_UINT8_ARRAY(
-          _isolate, obj, "image", _windowInfo.imageData,
-          _windowInfo.imageDataLength) free(_windowInfo.imageData);
+    if (_windowInfo.imageData) {
+      v8_set_object_prop_uint8_array(_isolate, obj, "image",
+                                     _windowInfo.imageData,
+                                     _windowInfo.imageDataLength);
+      free(_windowInfo.imageData);
     }
     auto resultObj = _screenWindowInfoArray->Set(_context, i, obj);
     v8_MAYBE_CHECK_RESULT(resultObj);
@@ -305,34 +304,39 @@ void NodeIrisRtcEngine::GetScreenDisplaysInfo(
     auto _displayId = _displayInfo.displayId;
     auto _displayIdObj = v8_Object::New(_isolate);
 #ifdef _WIN32
-    v8_SET_OBJECT_PROP_UINT32(_isolate, _displayIdObj, "x", _displayId.x)
-        v8_SET_OBJECT_PROP_UINT32(_isolate, _displayIdObj, "y", _displayId.y)
-            v8_SET_OBJECT_PROP_UINT32(_isolate, _displayIdObj, "width",
-                                      _displayId.width)
-                v8_SET_OBJECT_PROP_UINT32(_isolate, _displayIdObj, "height",
-                                          _displayId.height)
+    v8_set_object_prop_value<unsigned int, v8_Uint32>(_isolate, _displayIdObj,
+                                                      "x", _displayId.x);
+    v8_set_object_prop_value<unsigned int, v8_Uint32>(_isolate, _displayIdObj,
+                                                      "y", _displayId.y);
+    v8_set_object_prop_value<unsigned int, v8_Uint32>(
+        _isolate, _displayIdObj, "width", _displayId.width);
+    v8_set_object_prop_value<unsigned int, v8_Uint32>(
+        _isolate, _displayIdObj, "height", _displayId.height);
 #elif defined(__APPLE__)
-    v8_SET_OBJECT_PROP_UINT32(_isolate, _displayIdObj, "id", _displayId.idVal)
+    v8_set_object_prop_value<unsigned int, v8_Uint32>(_isolate, _displayIdObj,
+                                                      "id", _displayId.idVal);
 #endif
-                    auto propName =
-                        v8_String::NewFromUtf8(_isolate, "displayId",
-                                               v8::NewStringType::kInternalized)
-                            .ToLocalChecked();
+    auto propName = v8_String::NewFromUtf8(_isolate, "displayId",
+                                           v8::NewStringType::kInternalized)
+                        .ToLocalChecked();
     auto resultObj = _obj->Set(_context, propName, _displayIdObj);
     v8_MAYBE_CHECK_RESULT(resultObj);
 
-    v8_SET_OBJECT_PROP_UINT32(_isolate, _obj, "width", _displayInfo.width)
-        v8_SET_OBJECT_PROP_UINT32(_isolate, _obj, "height", _displayInfo.height)
-            v8_SET_OBJECT_PROP_BOOL(_isolate, _obj, "isMain",
-                                    _displayInfo.isMain)
-                v8_SET_OBJECT_PROP_BOOL(_isolate, _obj, "isActive",
-                                        _displayInfo.isActive)
-                    v8_SET_OBJECT_PROP_BOOL(
-                        _isolate, _obj, "isBuiltin",
-                        _displayInfo.isBuiltin) if (_displayInfo.imageData) {
-      v8_SET_OBJECT_PROP_UINT8_ARRAY(
-          _isolate, _obj, "image", _displayInfo.imageData,
-          _displayInfo.imageDataLength) free(_displayInfo.imageData);
+    v8_set_object_prop_value<unsigned int, v8_Uint32>(_isolate, _obj, "width",
+                                                      _displayInfo.width);
+    v8_set_object_prop_value<unsigned int, v8_Uint32>(_isolate, _obj, "height",
+                                                      _displayInfo.height);
+    v8_set_object_prop_value<bool, v8_Boolean>(_isolate, _obj, "isMain",
+                                               _displayInfo.isMain);
+    v8_set_object_prop_value<bool, v8_Boolean>(_isolate, _obj, "isActive",
+                                               _displayInfo.isActive);
+    v8_set_object_prop_value<bool, v8_Boolean>(_isolate, _obj, "isBuiltin",
+                                               _displayInfo.isBuiltin);
+    if (_displayInfo.imageData) {
+      v8_set_object_prop_uint8_array(_isolate, _obj, "image",
+                                     _displayInfo.imageData,
+                                     _displayInfo.imageDataLength);
+      free(_displayInfo.imageData);
     }
     auto result = _allDisplayInfoArray->Set(_context, i, _obj);
     v8_MAYBE_CHECK_RESULT(result);
@@ -360,10 +364,9 @@ void NodeIrisRtcEngine::VideoSourceInitialize(
   }
 
   auto _retObj = v8_Object::New(_isolate);
-  v8_SET_OBJECT_PROP_INT32(_isolate, _retObj, "retCode", _ret)
-      v8_SET_OBJECT_PROP_STRING(_isolate, _retObj, "result", "")
-          args.GetReturnValue()
-              .Set(_retObj);
+  v8_set_object_prop_value<int, v8_Int32>(_isolate, _retObj, "retCode", _ret);
+  v8_set_object_prop_string(_isolate, _retObj, "result", "");
+  args.GetReturnValue().Set(_retObj);
 }
 
 void NodeIrisRtcEngine::VideoSourceSetAddonLogFile(
@@ -382,10 +385,9 @@ void NodeIrisRtcEngine::VideoSourceSetAddonLogFile(
   }
 
   auto _retObj = v8_Object::New(_isolate);
-  v8_SET_OBJECT_PROP_INT32(_isolate, _retObj, "retCode", _ret)
-      v8_SET_OBJECT_PROP_STRING(_isolate, _retObj, "result", "")
-          args.GetReturnValue()
-              .Set(_retObj);
+  v8_set_object_prop_value<int, v8_Int32>(_isolate, _retObj, "retCode", _ret);
+  v8_set_object_prop_string(_isolate, _retObj, "result", "");
+  args.GetReturnValue().Set(_retObj);
 }
 
 void NodeIrisRtcEngine::VideoSourceRelease(
@@ -401,10 +403,9 @@ void NodeIrisRtcEngine::VideoSourceRelease(
   }
 
   auto _retObj = v8_Object::New(_isolate);
-  v8_SET_OBJECT_PROP_INT32(_isolate, _retObj, "retCode", _ret)
-      v8_SET_OBJECT_PROP_STRING(_isolate, _retObj, "result", "")
-          args.GetReturnValue()
-              .Set(_retObj);
+  v8_set_object_prop_value<int, v8_Int32>(_isolate, _retObj, "retCode", _ret);
+  v8_set_object_prop_string(_isolate, _retObj, "result", "");
+  args.GetReturnValue().Set(_retObj);
 }
 
 int NodeIrisRtcEngine::VideoSourceRelease() {
@@ -418,7 +419,7 @@ int NodeIrisRtcEngine::VideoSourceRelease() {
 void NodeIrisRtcEngine::SetAddonLogFile(
     const Nan_FunctionCallbackInfo<v8_Value> &args) {
   auto _isolate = args.GetIsolate();
-  auto _process_type = nan_api_get_value_int32_(args[0]);
+  auto _process_type = nan_api_get_value<int, v8_Int32>(args[0]);
   auto _filePath = nan_api_get_value_utf8string_(args[1]);
   int _ret = ERROR_PARAMETER_1;
   if (_process_type == PROCESS_TYPE::MAIN) {
@@ -427,10 +428,10 @@ void NodeIrisRtcEngine::SetAddonLogFile(
   }
   auto _result = ERROR_CODE::ERROR_OK;
   auto _retObj = v8_Object::New(_isolate);
-  v8_SET_OBJECT_PROP_BOOL(_isolate, _retObj, "retCode", _ret)
-      v8_SET_OBJECT_PROP_INT32(_isolate, _retObj, "result", _result)
-          args.GetReturnValue()
-              .Set(_retObj);
+  v8_set_object_prop_value<bool, v8_Boolean>(_isolate, _retObj, "retCode",
+                                             _ret);
+  v8_set_object_prop_value<int, v8_Int32>(_isolate, _retObj, "result", _result);
+  args.GetReturnValue().Set(_retObj);
 }
 
 void NodeIrisRtcEngine::OnApiError(const char *errorMessage) {
@@ -441,8 +442,8 @@ void NodeIrisRtcEngine::PluginCallApi(
     const Nan_FunctionCallbackInfo<v8_Value> &args) {
   auto _engine = ObjectWrap::Unwrap<NodeIrisRtcEngine>(args.Holder());
   auto _isolate = args.GetIsolate();
-  auto _process_type = nan_api_get_value_int32_(args[0]);
-  auto _apiType = nan_api_get_value_int32_(args[1]);
+  auto _process_type = nan_api_get_value<int, v8_Int32>(args[0]);
+  auto _apiType = nan_api_get_value<int, v8_Int32>(args[1]);
   auto _parameter = nan_api_get_value_utf8string_(args[2]);
   char _result[512];
   memset(_result, '\0', 512);
@@ -474,22 +475,24 @@ void NodeIrisRtcEngine::PluginCallApi(
   }
 
   auto _retObj = v8_Object::New(_isolate);
-  v8_SET_OBJECT_PROP_UINT32(_isolate, _retObj, "retCode", _ret)
-      v8_SET_OBJECT_PROP_STRING(_isolate, _retObj, "result", _result)
-          args.GetReturnValue()
-              .Set(_retObj);
+  v8_set_object_prop_value<unsigned int, v8_Uint32>(_isolate, _retObj,
+                                                    "retCode", _ret);
+  v8_set_object_prop_string(_isolate, _retObj, "result", _result);
+  args.GetReturnValue().Set(_retObj);
 }
 
 void NodeIrisRtcEngine::EnableVideoFrameCache(
     const Nan_FunctionCallbackInfo<v8_Value> &args) {
   auto _engine = ObjectWrap::Unwrap<NodeIrisRtcEngine>(args.Holder());
   auto _isolate = args.GetIsolate();
-  auto _process_type = nan_api_get_value_int32_(args[0]);
+  auto _process_type = nan_api_get_value<int, v8_Int32>(args[0]);
   v8_Local<v8_Object> _obj = nan_api_get_value_object_(_isolate, args[1]);
-  auto _uid = nan_api_get_object_uint32_(_isolate, _obj, "uid");
+  auto _uid = nan_api_get_object_value<int, v8_Uint32>(_isolate, _obj, "uid");
   auto _channelId = nan_api_get_object_utf8string_(_isolate, _obj, "channelId");
-  auto _width = nan_api_get_object_int32_(_isolate, _obj, "width");
-  auto _height = nan_api_get_object_int32_(_isolate, _obj, "height");
+  auto _width =
+      nan_api_get_object_value<int, v8_Int32>(_isolate, _obj, "width");
+  auto _height =
+      nan_api_get_object_value<int, v8_Int32>(_isolate, _obj, "height");
 
   int _ret = ERROR_PARAMETER_1;
 
@@ -517,19 +520,19 @@ void NodeIrisRtcEngine::EnableVideoFrameCache(
   }
 
   auto _retObj = v8_Object::New(_isolate);
-  v8_SET_OBJECT_PROP_UINT32(_isolate, _retObj, "retCode", _ret)
-      v8_SET_OBJECT_PROP_STRING(_isolate, _retObj, "result", "")
-          args.GetReturnValue()
-              .Set(_retObj);
+  v8_set_object_prop_value<unsigned int, v8_Uint32>(_isolate, _retObj,
+                                                    "retCode", _ret);
+  v8_set_object_prop_string(_isolate, _retObj, "result", "");
+  args.GetReturnValue().Set(_retObj);
 }
 
 void NodeIrisRtcEngine::DisableVideoFrameCache(
     const Nan_FunctionCallbackInfo<v8_Value> &args) {
   auto _engine = ObjectWrap::Unwrap<NodeIrisRtcEngine>(args.Holder());
   auto _isolate = args.GetIsolate();
-  auto _process_type = nan_api_get_value_int32_(args[0]);
+  auto _process_type = nan_api_get_value<int, v8_Int32>(args[0]);
   auto _obj = nan_api_get_value_object_(_isolate, args[1]);
-  auto _uid = nan_api_get_object_uint32_(_isolate, _obj, "uid");
+  auto _uid = nan_api_get_object_value<int, v8_Uint32>(_isolate, _obj, "uid");
   auto _channelId = nan_api_get_object_utf8string_(_isolate, _obj, "channelId");
 
   int _ret = ERROR_PARAMETER_1;
@@ -554,10 +557,10 @@ void NodeIrisRtcEngine::DisableVideoFrameCache(
   }
 
   auto _retObj = v8_Object::New(_isolate);
-  v8_SET_OBJECT_PROP_UINT32(_isolate, _retObj, "retCode", _ret)
-      v8_SET_OBJECT_PROP_STRING(_isolate, _retObj, "result", "")
-          args.GetReturnValue()
-              .Set(_retObj);
+  v8_set_object_prop_value<unsigned int, v8_Uint32>(_isolate, _retObj,
+                                                    "retCode", _ret);
+  v8_set_object_prop_string(_isolate, _retObj, "result", "");
+  args.GetReturnValue().Set(_retObj);
 }
 
 void NodeIrisRtcEngine::GetVideoStreamData(
@@ -565,9 +568,10 @@ void NodeIrisRtcEngine::GetVideoStreamData(
   auto _engine = ObjectWrap::Unwrap<NodeIrisRtcEngine>(args.Holder());
   auto _isolate = args.GetIsolate();
 
-  auto _process_type = nan_api_get_value_int32_(args[0]);
+  auto _process_type = nan_api_get_value<int, v8_Int32>(args[0]);
   auto _videoStreamObj = nan_api_get_value_object_(_isolate, args[1]);
-  auto _uid = nan_api_get_object_uint32_(_isolate, _videoStreamObj, "uid");
+  auto _uid = nan_api_get_object_value<int, v8_Uint32>(_isolate,
+                                                       _videoStreamObj, "uid");
   auto _channelId =
       nan_api_get_object_utf8string_(_isolate, _videoStreamObj, "channelId");
   auto _yBufferVal =
@@ -576,10 +580,10 @@ void NodeIrisRtcEngine::GetVideoStreamData(
       nan_api_get_object_property_value_(_isolate, _videoStreamObj, "uBuffer");
   auto _vBufferVal =
       nan_api_get_object_property_value_(_isolate, _videoStreamObj, "vBuffer");
-  auto _height =
-      nan_api_get_object_uint32_(_isolate, _videoStreamObj, "height");
-  auto _yStride =
-      nan_api_get_object_uint32_(_isolate, _videoStreamObj, "yStride");
+  auto _height = nan_api_get_object_value<int, v8_Uint32>(
+      _isolate, _videoStreamObj, "height");
+  auto _yStride = nan_api_get_object_value<int, v8_Uint32>(
+      _isolate, _videoStreamObj, "yStride");
   auto _yBuffer = node::Buffer::Data(_yBufferVal);
   auto _uBuffer = node::Buffer::Data(_uBufferVal);
   auto _vBuffer = node::Buffer::Data(_vBufferVal);
@@ -610,14 +614,19 @@ void NodeIrisRtcEngine::GetVideoStreamData(
     LOG_F(INFO, "VideoSourceInitialize NodeIris Engine Not Init");
   }
   auto _retObj = v8_Object::New(_isolate);
-  v8_SET_OBJECT_PROP_BOOL(_isolate, _retObj, "ret", ret);
-  v8_SET_OBJECT_PROP_BOOL(_isolate, _retObj, "isNewFrame", isFresh);
-  v8_SET_OBJECT_PROP_UINT32(_isolate, _retObj, "width", _videoFrame.width);
-  v8_SET_OBJECT_PROP_UINT32(_isolate, _retObj, "height", _videoFrame.height);
-  v8_SET_OBJECT_PROP_UINT32(_isolate, _retObj, "yStride", _videoFrame.y_stride);
-  v8_SET_OBJECT_PROP_UINT32(_isolate, _retObj, "rotation", 0);
-  v8_SET_OBJECT_PROP_UINT32(_isolate, _retObj, "timestamp",
-                            _videoFrame.render_time_ms);
+  v8_set_object_prop_value<bool, v8_Boolean>(_isolate, _retObj, "ret", ret);
+  v8_set_object_prop_value<bool, v8_Boolean>(_isolate, _retObj, "isNewFrame",
+                                             isFresh);
+  v8_set_object_prop_value<unsigned int, v8_Uint32>(_isolate, _retObj, "width",
+                                                    _videoFrame.width);
+  v8_set_object_prop_value<unsigned int, v8_Uint32>(_isolate, _retObj, "height",
+                                                    _videoFrame.height);
+  v8_set_object_prop_value<unsigned int, v8_Uint32>(
+      _isolate, _retObj, "yStride", _videoFrame.y_stride);
+  v8_set_object_prop_value<unsigned int, v8_Uint32>(_isolate, _retObj,
+                                                    "rotation", 0);
+  v8_set_object_prop_value<unsigned int, v8_Uint32>(
+      _isolate, _retObj, "timestamp", _videoFrame.render_time_ms);
   args.GetReturnValue().Set(_retObj);
 }
 

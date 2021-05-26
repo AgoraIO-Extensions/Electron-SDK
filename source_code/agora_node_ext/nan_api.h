@@ -28,8 +28,8 @@ using v8_Context = v8::Context;
 using v8_Isolate = v8::Isolate;
 using v8_FunctionTemplate = v8::FunctionTemplate;
 using v8_String = v8::String;
-using v8_Uint32 = v8::Number;
-using v8_Int32 = v8::Number;
+using v8_Uint32 = v8::Uint32;
+using v8_Int32 = v8::Int32;
 using v8_Function = v8::Function;
 using v8_HandleScope = v8::HandleScope;
 using v8_External = v8::External;
@@ -39,63 +39,24 @@ using v8_Boolean = v8::Boolean;
 using v8_Uint8Array = v8::Uint8Array;
 using v8_Name = v8::Name;
 
-#define v8_SET_OBJECT_PROP_STRING(isolate, object, name, value)                \
-  {                                                                            \
-    auto propName = v8_String::NewFromUtf8(isolate, name,                      \
-                                           v8::NewStringType::kInternalized)   \
-                        .ToLocalChecked();                                     \
-    auto propValue = v8_String::NewFromUtf8(isolate, value,                    \
-                                            v8::NewStringType::kInternalized)  \
-                         .ToLocalChecked();                                    \
-    auto result =                                                              \
-        object->Set(isolate->GetCurrentContext(), propName, propValue);        \
-    v8_MAYBE_CHECK_RESULT(result);                                             \
-  }
+template <typename T, typename O>
+void v8_set_object_prop_value(v8_Isolate *isolate, v8_Local<v8_Object> &obj,
+                              const char *name, T value) {
+  auto _prop_name =
+      v8_String::NewFromUtf8(isolate, name, v8::NewStringType::kInternalized)
+          .ToLocalChecked();
 
-#define v8_SET_OBJECT_PROP_UINT32(isolate, object, name, value)                \
-  {                                                                            \
-    auto propName = v8_String::NewFromUtf8(isolate, name,                      \
-                                           v8::NewStringType::kInternalized)   \
-                        .ToLocalChecked();                                     \
-    auto propValue = v8_Uint32::New(isolate, value);                           \
-    auto result =                                                              \
-        object->Set(isolate->GetCurrentContext(), propName, propValue);        \
-    v8_MAYBE_CHECK_RESULT(result);                                             \
-  }
+  auto _prop_value = O::New(isolate, value);
+  auto _result =
+      obj->Set(isolate->GetCurrentContext(), _prop_name, _prop_value);
+}
 
-#define v8_SET_OBJECT_PROP_INT32(isolate, object, name, value)                 \
-  {                                                                            \
-    auto propName = v8_String::NewFromUtf8(isolate, name,                      \
-                                           v8::NewStringType::kInternalized)   \
-                        .ToLocalChecked();                                     \
-    auto propValue = v8_Int32::New(isolate, value);                            \
-    auto result =                                                              \
-        object->Set(isolate->GetCurrentContext(), propName, propValue);        \
-    v8_MAYBE_CHECK_RESULT(result);                                             \
-  }
+void v8_set_object_prop_string(v8_Isolate *isolate, v8_Local<v8_Object> &obj,
+                               const char *name, const char *value);
 
-#define v8_SET_OBJECT_PROP_BOOL(isolate, obj, name, val)                       \
-  {                                                                            \
-    auto propName = v8_String::NewFromUtf8(isolate, name,                      \
-                                           v8::NewStringType::kInternalized)   \
-                        .ToLocalChecked();                                     \
-    auto propVal = v8_Boolean::New(isolate, val);                              \
-    auto result = obj->Set(isolate->GetCurrentContext(), propName, propVal);   \
-    v8_MAYBE_CHECK_RESULT(result);                                             \
-  }
-
-#define v8_SET_OBJECT_PROP_UINT8_ARRAY(isolate, obj, name, buffer, size)       \
-  {                                                                            \
-    auto propName = v8_String::NewFromUtf8(isolate, name,                      \
-                                           v8::NewStringType::kInternalized)   \
-                        .ToLocalChecked();                                     \
-    auto arrayBuffer = v8_ArrayBuffer::New(isolate, size);                     \
-    memcpy(arrayBuffer->GetContents().Data(), buffer, size);                   \
-    auto uint8Array = v8_Uint8Array::New(arrayBuffer, 0, size);                \
-    auto result =                                                              \
-        obj->Set(isolate->GetCurrentContext(), propName, uint8Array);          \
-    v8_MAYBE_CHECK_RESULT(result);                                             \
-  }
+void v8_set_object_prop_uint8_array(v8_Isolate *isolate,
+                                    v8_Local<v8_Object> &obj, const char *name,
+                                    void *buffer, int size);
 
 #define v8_MAYBE_CHECK_RESULT(maybe)                                           \
   {                                                                            \
@@ -110,28 +71,34 @@ using v8_Name = v8::Name;
   }
 
 std::string nan_api_get_value_utf8string_(const v8_Local<v8_Value> &value);
-int nan_api_get_value_int32_(const v8_Local<v8_Value> &value);
-unsigned int nan_api_get_value_uint32_(const v8_Local<v8_Value> &value);
-v8_Local<v8_Object> nan_api_get_value_object_(v8_Isolate *isolate,
-                                              const v8_Local<v8_Value> &value);
+
 v8_Local<v8_Value>
 nan_api_get_object_property_value_(v8_Isolate *isolate,
                                    const v8_Local<v8_Object> &obj,
                                    const std::string &propName);
 
-int nan_api_get_object_int32_(v8_Isolate *isolate,
-                              const v8_Local<v8_Object> &obj,
-                              const std::string &propName);
+template <typename T, typename N>
+T nan_api_get_value(const v8_Local<v8_Value> &value) {
+  return Nan::To<N>(value).ToLocalChecked()->Value();
+}
 
-unsigned int nan_api_get_object_uint32_(v8_Isolate *isolate,
-                                        const v8_Local<v8_Object> &obj,
-                                        const std::string &propName);
+template <typename T, typename N>
+T nan_api_get_object_value(v8_Isolate *isolate, const v8_Local<v8_Object> &obj,
+                           const std::string &propName) {
+  auto value = nan_api_get_object_property_value_(isolate, obj, propName);
+  return nan_api_get_value<T, N>(value);
+}
+
+v8_Local<v8_Object> nan_api_get_value_object_(v8_Isolate *isolate,
+                                              const v8_Local<v8_Value> &value);
+
 std::string nan_api_get_object_utf8string_(v8_Isolate *isolate,
                                            const v8_Local<v8_Object> &obj,
                                            const std::string &propName);
 
 v8_Local<v8_Value> nan_create_local_value_string_(v8_Isolate *isolate,
                                                   const char *value);
+
 } // namespace electron
 } // namespace rtc
 } // namespace agora
