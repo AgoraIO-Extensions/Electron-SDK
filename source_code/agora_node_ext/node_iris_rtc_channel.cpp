@@ -72,7 +72,7 @@ void NodeIrisRtcChannel::CallApi(
     const Nan_FunctionCallbackInfo<v8_Value> &args) {
   auto _channel = ObjectWrap::Unwrap<NodeIrisRtcChannel>(args.Holder());
   auto _isolate = args.GetIsolate();
-  auto _apiType = nan_api_get_value_int32_(args[0]);
+  auto _apiType = nan_api_get_value<int, v8_Int32>(args[0]);
   auto _parameter = nan_api_get_value_utf8string_(args[1]);
   char _result[512];
   memset(_result, '\0', 512);
@@ -93,20 +93,20 @@ void NodeIrisRtcChannel::CallApi(
     _ret = ERROR_NOT_INIT;
   }
   auto _retObj = v8_Object::New(_isolate);
-  v8_SET_OBJECT_PROP_UINT32(_isolate, _retObj, "retCode", _ret)
-      v8_SET_OBJECT_PROP_STRING(_isolate, _retObj, "result", _result)
-          args.GetReturnValue()
-              .Set(_retObj);
+  v8_set_object_prop_value<unsigned int, v8_Uint32>(_isolate, _retObj,
+                                                    "retCode", _ret);
+  v8_set_object_prop_string(_isolate, _retObj, "result", _result);
+  args.GetReturnValue().Set(_retObj);
 }
 
 void NodeIrisRtcChannel::CallApiWithBuffer(
     const Nan_FunctionCallbackInfo<v8_Value> &args) {
   auto _channel = ObjectWrap::Unwrap<NodeIrisRtcChannel>(args.Holder());
   auto _isolate = args.GetIsolate();
-  auto _apiType = nan_api_get_value_int32_(args[0]);
+  auto _apiType = nan_api_get_value<int, v8_Int32>(args[0]);
   auto _parameter = nan_api_get_value_utf8string_(args[1]);
   auto _buffer = nan_api_get_value_utf8string_(args[2]);
-  auto _length = nan_api_get_value_int32_(args[3]);
+  auto _length = nan_api_get_value<int, v8_Int32>(args[3]);
   char _result[512];
   int _ret = ERROR_PARAMETER_1;
   memset(_result, '\0', 512);
@@ -146,10 +146,10 @@ void NodeIrisRtcChannel::CallApiWithBuffer(
     LOG_F(INFO, "NodeIrisRtcChannel::Release Not Init");
   }
 
-  v8_SET_OBJECT_PROP_UINT32(_isolate, _retObj, "retCode", _ret)
-      v8_SET_OBJECT_PROP_STRING(_isolate, _retObj, "result", _result)
-          args.GetReturnValue()
-              .Set(_retObj);
+  v8_set_object_prop_value<unsigned int, v8_Uint32>(_isolate, _retObj,
+                                                    "retCode", _ret);
+  v8_set_object_prop_string(_isolate, _retObj, "result", _result);
+  args.GetReturnValue().Set(_retObj);
 }
 
 void NodeIrisRtcChannel::OnEvent(
