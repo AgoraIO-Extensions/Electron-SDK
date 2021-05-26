@@ -5,12 +5,12 @@ import download from 'download'
 import extract from 'extract-zip'
 import { promisify } from 'util'
 import glob from 'glob'
-import getArgvFromPkgJson from './getArgvFromPkgJson'
+import getConfig from './getConfig'
 import { getOS, createTmpDir } from './util'
 import { destSDKDir, cleanLibsDir } from './clean'
 
 const globPromise = promisify(glob)
-const { lib_sdk_win, lib_sdk_mac, downloadKey } = getArgvFromPkgJson()
+const { lib_sdk_win, lib_sdk_mac, downloadKey } = getConfig()
 
 const syncLib = async (cb) => {
   try {

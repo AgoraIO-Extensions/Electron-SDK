@@ -1,7 +1,7 @@
 import logger from './logger'
 import download from 'download'
 import path from 'path'
-import getArgvFromPkgJson from './getArgvFromPkgJson'
+import getConfig from './getConfig'
 import { getOS } from './util'
 import { cleanBuildDir, cleanJSDir } from './clean'
 import fs from 'fs-extra'
@@ -12,7 +12,7 @@ const {
   packageVersion,
   arch,
   no_symbol,
-} = getArgvFromPkgJson()
+} = getConfig()
 
 const workspaceDir = `${path.join(__dirname, '..')}`
 
