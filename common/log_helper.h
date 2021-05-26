@@ -20,9 +20,8 @@
 class LogHelper
 {
 public:
-    static LogHelper *&getInstance(const char* log_path = "");
+    static LogHelper* getInstance(const char* log_path = "");
     static std::mutex m_tex;
-    static LogHelper *instance;
     int setAddonLogPath(const char* log_path = "");
     ~LogHelper();
     LogHelper(const LogHelper& helper) = delete;

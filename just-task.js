@@ -76,7 +76,7 @@ task('download', () => {
   cleanup(path.join(__dirname, "./build")).then(_ => {
     cleanup(path.join(__dirname, './js')).then(_ => {
       download({
-        electronVersion: argv().electron_version, 
+        electronVersion: "4.2.8", 
         platform: argv().platform, 
         packageVersion: addonVersion,
         arch: argv().arch
@@ -91,7 +91,7 @@ task('install', () => {
   const addonVersion = '2.9.107.139-build.518'
   if (config.prebuilt) {
     download({
-      electronVersion: config.electronVersion, 
+      electronVersion: "4.2.8", 
       platform: config.platform, 
       packageVersion: addonVersion,
       arch: config.arch,

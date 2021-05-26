@@ -271,7 +271,17 @@ export default class App extends Component {
     let logpath = path.resolve(os.homedir(), "./agoramainsdk111.log")
     let addonlogpath = path.resolve(os.homedir(), "./agoraaddon.log")
     rtcEngine.setLogFile(logpath)
-    rtcEngine.setAddonLogFile(addonlogpath)
+    let ressss;
+    ressss = rtcEngine.setAddonLogFile(addonlogpath)
+    console.error("setAddonLogFile",ressss);
+    setTimeout(() => {
+      ressss = rtcEngine.setAddonLogFile("./1112231.log")
+      console.error("setAddonLogFile",ressss);
+      setTimeout(() => {
+        ressss = rtcEngine.setAddonLogFile("./2222.log")
+        console.error("setAddonLogFile",ressss);
+      }, 1000);
+    }, 1000);
     rtcEngine.enableWebSdkInteroperability(true)
     if(encoderWidth === 0 && encoderHeight === 0) {
       //use video profile

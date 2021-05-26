@@ -1,20 +1,10 @@
 #include "log_helper.h"
 #include <thread>
 #include <mutex>
+LogHelper *LogHelper::getInstance(const char* log_path){
 
-std::mutex LogHelper::m_tex;
-LogHelper *  LogHelper::instance = nullptr;
-
-LogHelper *&LogHelper::getInstance(const char* log_path){
-    if (instance == nullptr)
-    {
-        std::unique_lock<std::mutex> lock(m_tex);
-        if (instance == nullptr)
-        {
-            instance = new (std::nothrow) LogHelper(log_path);
-        }
-    }
-    return instance;
+    static LogHelper _log_helper(log_path);
+    return &_log_helper;
 }
 
 LogHelper::LogHelper(const char* log_path)

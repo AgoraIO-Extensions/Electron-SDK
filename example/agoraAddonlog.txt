@@ -1,0 +1,2 @@
+Error :registerPlugin, :4385, dlopen(/Users/jerry/Projects/Agora/Electron-SDK/example/static/bytedance/libByteDancePlugin.dylib, 1): image not foundn, not unload plugin "bytedance"
+
