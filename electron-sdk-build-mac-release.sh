@@ -3,6 +3,6 @@ rm -rf node_modules
 rm -rf sdk
 rm -rf tmp
 npm install --verbose
-npm run build
-npm run buildJS
+# clear synclib buildFor mac/window
+$(npm bin)/gulp totalBuild --electronVersion ${ELECTRON_VERSION} --arch=${ELECTRON_ARCH}
 zip -ry electron.zip build js
