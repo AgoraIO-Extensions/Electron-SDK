@@ -1,3 +1,6 @@
+## 2.9.0-rc.107-build.524
+* fix screen share adaptation
+
 ## 2.9.0-rc.107-build.513
 * fix screen share adaptation
 
