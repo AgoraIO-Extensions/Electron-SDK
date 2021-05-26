@@ -13512,7 +13512,7 @@ class AgoraRtcChannel extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  unRegisterMediaMetadataObserver(): number {
+  unregisterMediaMetadataObserver(): number {
     let param = {
       channelId: this._channelId,
     };
