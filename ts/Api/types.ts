@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 11:41:00
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-05-18 23:24:14
+ * @Last Modified time: 2021-05-27 12:33:45
  */
 
 /**
@@ -1283,11 +1283,11 @@ export interface Rectangle {
  * - The screen symbol on the macOS platform, see {@link MacScreenSymbol}
  * - The screen symbol on the Windows platform, see {@link WindowsScreenSymbol}
  */
-export type MacScreenId = {id: number}
+export type MacScreenId = { id: number };
 
 export type WindowsScreeId = Rectangle;
 
-export type ScreenSymbol =  MacScreenId | WindowsScreeId ;
+export type ScreenSymbol = MacScreenId | WindowsScreeId;
 
 /** The video source encoding parameters. */
 export interface ScreenCaptureParameters {
