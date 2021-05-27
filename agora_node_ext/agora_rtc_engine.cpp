@@ -6159,10 +6159,15 @@ namespace agora {
                     napi_get_object_property_int32_(isolate, obj, "recordingPosition", recordingPosition);
                     CHECK_NAPI_STATUS(pEngine, status);
 
+                    int recordingSampleRate;
+                    napi_get_object_property_int32_(isolate, obj, "recordingSampleRate", recordingSampleRate);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
                     AudioRecordingConfiguration config;
                     config.filePath = (char *)filePath;
                     config.recordingQuality = (AUDIO_RECORDING_QUALITY_TYPE)recordingQuality;
                     config.recordingPosition = (AUDIO_RECORDING_POSITION)recordingPosition;
+                    config.recordingSampleRate = recordingSampleRate;
                     result = pEngine->m_engine->startAudioRecording(config);
                 }
 
