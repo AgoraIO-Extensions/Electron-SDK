@@ -615,6 +615,33 @@ namespace agora {
                     CHECK_NAPI_STATUS(pEngine, status);
                     transcoding.watermark = wm;
                 }
+
+                RtcImage* backgroundImg = new RtcImage;
+
+                Local<Name> keyNameBI = Nan::New<String>("backgroundImage").ToLocalChecked();
+                Local<Value> biValue = obj->Get(isolate->GetCurrentContext(), keyNameBI).ToLocalChecked();
+                if (!biValue->IsNullOrUndefined()) {
+                    Local<Object> objBI;
+                    napi_get_value_object_(isolate, biValue, objBI);
+                    
+                    nodestring wmurl;
+                    status = napi_get_object_property_nodestring_(isolate, objBI, "url", wmurl);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    backgroundImg->url = wmurl;
+
+                    status = napi_get_object_property_int32_(isolate, objBI, "x", backgroundImg->x);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
+                    status = napi_get_object_property_int32_(isolate, objBI, "y", backgroundImg->y);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
+                    status = napi_get_object_property_int32_(isolate, objBI, "width", backgroundImg->width);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    
+                    status = napi_get_object_property_int32_(isolate, objBI, "height", backgroundImg->height);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    transcoding.backgroundImage = backgroundImg;
+                }
                 
                 if (transcoding.userCount > 0) {
                     users = new TranscodingUser[transcoding.userCount];
