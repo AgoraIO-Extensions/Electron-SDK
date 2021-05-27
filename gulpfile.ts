@@ -34,7 +34,15 @@ const build = config.platform === "darwin" ? buildForMac : buildForWin;
 
 const totalBuild = series(clean, syncLib, build, buildJS);
 
-const NPM_Install = config.prebuilt ? dowmloadPrebuild : totalBuild;
+const wrapDownloadPreBuild = async (cb) => {
+  try {
+    await dowmloadPrebuild(cb);
+  } catch (error) {
+    totalBuild(cb);
+  }
+};
+
+const NPM_Install = config.prebuilt ? wrapDownloadPreBuild : totalBuild;
 
 exports.syncLib = syncLib;
 exports.clean = clean;
