@@ -2,23 +2,14 @@
 import { series } from "gulp";
 import syncLib from "./scripts/syncLib";
 import buildScript from "./scripts/build";
-import getArgvFromPkgJson from "./scripts/getArgvFromPkgJson";
-import minimist from "minimist";
+import getConfig from "./scripts/getConfig";
 import dowmloadPrebuild from "./scripts/dowmloadPrebuild";
 import { cleanLibsDir, cleanBuildDir, cleanJSDir } from "./scripts/clean";
 import buildJS from "./scripts/buildJS";
 import logger from "./scripts/logger";
 import { lipoCreate, createTmpProduct } from "./scripts/util";
 
-const knownOptions = {
-  // string: 'env',
-  // default: { env: process.env.NODE_ENV || 'production' }
-};
-
-const options = minimist(process.argv.slice(2), knownOptions);
-
-const config = { ...getArgvFromPkgJson(), ...options };
-
+const config = getConfig();
 logger.info(`Get Config: \n${JSON.stringify(config, undefined, 4)}`);
 
 const clean = async (cb) => {
