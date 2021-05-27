@@ -86,6 +86,7 @@
                         '-lws2_32.lib',
                         '-lRpcrt4.lib',
 						'-lgdiplus.lib',
+            '-llibagora-ffmpeg.lib'
                     ]
                 },
                 'defines!': [
