@@ -1,26 +1,22 @@
-import {
-  User,
-  Channel,
-  VideoFrame,
-  RENDER_MODE,
-  CONTENT_MODE,
-  VideoFrameCacheConfig,
-  RendererConfig
-} from "./type";
-import { IRenderer } from "./IRender";
-import { YUVCanvasRenderer } from "./YUVCanvasRenderer";
-import { NodeIrisRtcEngine } from "../Api/internal/native_interface";
-import { logInfo, logWarn, logError } from "../Utils";
-import { PROCESS_TYPE } from "../Api/internal/native_type";
+import {NodeIrisRtcEngine} from '../Api/internal/native_interface';
+import {PROCESS_TYPE} from '../Api/internal/native_type';
+import {logError, logInfo, logWarn} from '../Utils';
+
+import {IRenderer} from './IRender';
+import {Channel, CONTENT_MODE, RENDER_MODE, RendererConfig, User, VideoFrame, VideoFrameCacheConfig} from './type';
+import {YUVCanvasRenderer} from './YUVCanvasRenderer';
 
 class RendererManager {
   _config: {
     videoFps: number;
     videoFrameUpdateInterval?: NodeJS.Timeout;
-    renderers: Map<
-      string,
-      Map<string, { render?: IRenderer[]; cachedVideoFrame?: VideoFrame }>
-    >;
+    renderers:
+        Map<string,
+            Map<string,
+                {
+                  render?: IRenderer[];
+                  cachedVideoFrame?: VideoFrame
+                }>>;
     renderMode: RENDER_MODE;
   };
   _rtcEngine: NodeIrisRtcEngine;
@@ -47,24 +43,14 @@ class RendererManager {
    */
   _checkWebGL(): boolean {
     let gl;
-    const canvas = document.createElement("canvas");
-    canvas.width = 1;
-    canvas.height = 1;
-    const options = {
-      // Turn off things we don't need
-      alpha: false,
-      depth: false,
-      stencil: false,
-      antialias: false,
-      preferLowPowerToHighPerformance: true,
-    };
+    const canvas = document.createElement('canvas');
 
     try {
       gl =
-        canvas.getContext("webgl", options) ||
-        canvas.getContext("experimental-webgl", options);
+          canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      logInfo('Your browser support webGL')
     } catch (e) {
-      logWarn("webGL not support");
+      logWarn('Your browser may not support webGL');
       return false;
     }
 
@@ -79,12 +65,8 @@ class RendererManager {
     this._config.renderMode = mode;
   }
 
-  resizeBuffer(
-    uid: number,
-    channelId: string,
-    yStride: number,
-    height: number
-  ): VideoFrame {
+  resizeBuffer(uid: number, channelId: string, yStride: number, height: number):
+      VideoFrame {
     return {
       uid,
       channelId,
@@ -102,39 +84,37 @@ class RendererManager {
    * @ignore
    */
   setRenderer(rendererConfig: RendererConfig): void {
-    let _renders = this.getRenderer(
-      rendererConfig.user,
-      rendererConfig.channelId
-    );
+    let _renders =
+        this.getRenderer(rendererConfig.user, rendererConfig.channelId);
 
     if (_renders) {
-      rendererConfig.rendererOptions?.append
-        ? _renders.forEach((item) => {
+      rendererConfig.rendererOptions?.append ?
+          _renders.forEach((item) => {
             if (rendererConfig.view) {
               if (item.equalsElement(rendererConfig.view)) {
-                console.warn("setVideoView: this view exists in list, ignore");
+                console.warn('setVideoView: this view exists in list, ignore');
                 return;
               }
             }
-          })
-        : this.removeRenderer(rendererConfig.user, rendererConfig.channelId);
+          }) :
+          this.removeRenderer(rendererConfig.user, rendererConfig.channelId);
     }
 
     let config: VideoFrameCacheConfig = {
       user: rendererConfig.user,
-      channelId: rendererConfig.channelId ? rendererConfig.channelId : "",
+      channelId: rendererConfig.channelId ? rendererConfig.channelId : '',
       width: 0,
       height: 0,
     };
 
-    ((rendererConfig.user === "local") || (rendererConfig.user === "videoSource")) ? Object.assign(config, {channelId: ''}) : {}
- 
-    this.enableVideoFrameCache(config);
+    ((rendererConfig.user === 'local') ||
+     (rendererConfig.user === 'videoSource')) ?
+        Object.assign(config, {channelId: ''}) :
+        {}
+
+        this.enableVideoFrameCache(config);
     this.addRenderer(
-      rendererConfig.user,
-      rendererConfig.view!,
-      rendererConfig.channelId!
-    );
+        rendererConfig.user, rendererConfig.view!, rendererConfig.channelId!);
     this.setupViewContentMode(rendererConfig);
   }
 
@@ -153,7 +133,7 @@ class RendererManager {
   addRenderer(user: User, view: Element, channelId: Channel): void {
     let rendererMap = this.ensureRendererMap(user, channelId);
     if (!rendererMap?.get(String(user))) {
-      rendererMap?.set(String(user), { render: [] });
+      rendererMap?.set(String(user), {render: []});
     }
 
     let renderer = this.createRenderer();
@@ -165,23 +145,22 @@ class RendererManager {
    * @private
    * @ignore
    */
-  getRenderer(user: User, channelId: Channel = ""): IRenderer[] | undefined {
+  getRenderer(user: User, channelId: Channel = ''): IRenderer[]|undefined {
     return this._config.renderers.get(channelId)?.get(String(user))?.render;
   }
 
-  removeRenderer(user: User, channelId: Channel = ""): void {
+  removeRenderer(user: User, channelId: Channel = ''): void {
     let videoFramCacheConfig: VideoFrameCacheConfig = {
       user,
       channelId,
     };
     this.disableVideoFrameCache(videoFramCacheConfig);
     this.removeVideoFrameCacheFromMap(user, channelId);
-    this._config.renderers
-      .get(channelId)
-      ?.get(String(user))
-      ?.render?.forEach((renderItem) => {
-        renderItem.unbind();
-      });
+    this._config.renderers.get(channelId)
+        ?.get(String(user))
+        ?.render?.forEach((renderItem) => {
+          renderItem.unbind();
+        });
 
     this._config.renderers.get(channelId)?.delete(String(user));
   }
@@ -217,22 +196,22 @@ class RendererManager {
           let cachedVideoFrame = rendererItem.cachedVideoFrame;
           if (!cachedVideoFrame) {
             logWarn(
-              `Channel: ${channelId} User: ${user} have no cachedVideoFrame`
-            );
+                `Channel: ${channelId} User: ${user} have no cachedVideoFrame`);
             return;
           }
 
           let retObj;
-          if (user !== "videoSource") {
-            retObj = this._rtcEngine.GetVideoStreamData(PROCESS_TYPE.MAIN, cachedVideoFrame);
+          if (user !== 'videoSource') {
+            retObj = this._rtcEngine.GetVideoStreamData(
+                PROCESS_TYPE.MAIN, cachedVideoFrame);
           } else {
-            retObj = this._rtcEngine.GetVideoStreamData(PROCESS_TYPE.SCREEN_SHARE, cachedVideoFrame);
+            retObj = this._rtcEngine.GetVideoStreamData(
+                PROCESS_TYPE.SCREEN_SHARE, cachedVideoFrame);
           }
 
           if (!retObj || !retObj.ret) {
-            logWarn(
-              `Channel: ${channelId} User: ${user} uid: ${cachedVideoFrame.uid} have no stream`
-            );
+            logWarn(`Channel: ${channelId} User: ${user} uid: ${
+                cachedVideoFrame.uid} have no stream`);
             return;
           }
 
@@ -285,9 +264,9 @@ class RendererManager {
 
   userToUid(user: User): number {
     let uid;
-    if (user === "local") {
+    if (user === 'local') {
       uid = 0;
-    } else if (user === "videoSource") {
+    } else if (user === 'videoSource') {
       uid = 0;
     } else {
       uid = user as number;
@@ -299,7 +278,7 @@ class RendererManager {
   uidToUser(uid: number): User {
     let user: User;
     if (uid === 0) {
-      user = "local";
+      user = 'local';
     } else {
       user = String(uid);
     }
@@ -310,44 +289,49 @@ class RendererManager {
   }
 
   enableVideoFrameCache(videoFrameCacheConfig: VideoFrameCacheConfig): number {
-    videoFrameCacheConfig.uid = videoFrameCacheConfig.user
-      ? this.userToUid(videoFrameCacheConfig.user)
-      : 0;
+    videoFrameCacheConfig.uid = videoFrameCacheConfig.user ?
+        this.userToUid(videoFrameCacheConfig.user) :
+        0;
 
     logInfo(`enableVideoFrameCache ${JSON.stringify(videoFrameCacheConfig)}`);
 
-    if (videoFrameCacheConfig.user === "videoSource") {
-      let ret = this._rtcEngine.EnableVideoFrameCache(PROCESS_TYPE.SCREEN_SHARE, videoFrameCacheConfig);
+    if (videoFrameCacheConfig.user === 'videoSource') {
+      let ret = this._rtcEngine.EnableVideoFrameCache(
+          PROCESS_TYPE.SCREEN_SHARE, videoFrameCacheConfig);
       return ret.retCode;
     } else {
       logInfo(`enableVideoFrameCache ${JSON.stringify(videoFrameCacheConfig)}`);
-      let ret = this._rtcEngine.EnableVideoFrameCache(PROCESS_TYPE.MAIN, videoFrameCacheConfig);
+      let ret = this._rtcEngine.EnableVideoFrameCache(
+          PROCESS_TYPE.MAIN, videoFrameCacheConfig);
       return ret.retCode;
     }
   }
 
   disableVideoFrameCache(videoFrameCacheConfig: VideoFrameCacheConfig): number {
-    videoFrameCacheConfig.uid = videoFrameCacheConfig.user
-      ? this.userToUid(videoFrameCacheConfig.user)
-      : 0;
+    videoFrameCacheConfig.uid = videoFrameCacheConfig.user ?
+        this.userToUid(videoFrameCacheConfig.user) :
+        0;
 
-      if (videoFrameCacheConfig.user === "videoSource") {
-        logInfo(`disableVideoFrameCache ${JSON.stringify(videoFrameCacheConfig)}`);
-        let ret = this._rtcEngine.DisableVideoFrameCache(PROCESS_TYPE.SCREEN_SHARE, videoFrameCacheConfig);
-        return ret.retCode;
-      } else {
-        logInfo(`disableVideoFrameCache ${JSON.stringify(videoFrameCacheConfig)}`);
-        let ret = this._rtcEngine.DisableVideoFrameCache(PROCESS_TYPE.MAIN, videoFrameCacheConfig);
-        return ret.retCode;
-      }
+    if (videoFrameCacheConfig.user === 'videoSource') {
+      logInfo(
+          `disableVideoFrameCache ${JSON.stringify(videoFrameCacheConfig)}`);
+      let ret = this._rtcEngine.DisableVideoFrameCache(
+          PROCESS_TYPE.SCREEN_SHARE, videoFrameCacheConfig);
+      return ret.retCode;
+    } else {
+      logInfo(
+          `disableVideoFrameCache ${JSON.stringify(videoFrameCacheConfig)}`);
+      let ret = this._rtcEngine.DisableVideoFrameCache(
+          PROCESS_TYPE.MAIN, videoFrameCacheConfig);
+      return ret.retCode;
+    }
   }
 
-  ensureRendererMap(
-    user: User,
-    channelId: string
-  ):
-    | Map<string, { cachedVideoFrame?: VideoFrame; render?: IRenderer[] }>
-    | undefined {
+  ensureRendererMap(user: User, channelId: string):|Map < string, {
+    cachedVideoFrame?: VideoFrame;
+    render?: IRenderer[]
+  }
+  >|undefined {
     let rendererMap = this._config.renderers.get(channelId);
     if (!rendererMap) {
       logWarn(`ensureRendererMap for ${channelId}  ${user}`);
@@ -358,35 +342,28 @@ class RendererManager {
   }
 
   addVideoFrameCacheToMap(
-    user: User,
-    channelId: string,
-    videoFrame: VideoFrame
-  ): void {
+      user: User, channelId: string, videoFrame: VideoFrame): void {
     let rendererMap = this.ensureRendererMap(user, channelId);
-    rendererMap
-      ? Object.assign(rendererMap.get(String(user)), {
-          cachedVideoFrame: videoFrame,
-        })
-      : logWarn(
-          `addVideoFrameCacheToMap rendererMap ${channelId}  ${user} is null`
-        );
+    rendererMap ? Object.assign(rendererMap.get(String(user)), {
+      cachedVideoFrame: videoFrame,
+    }) :
+                  logWarn(`addVideoFrameCacheToMap rendererMap ${channelId}  ${
+                      user} is null`);
   }
 
   removeVideoFrameCacheFromMap(user: User, channelId: string): void {
     let rendererMap = this._config.renderers.get(channelId);
     let rendererItem = rendererMap?.get(String(user));
-    rendererItem
-      ? Object.assign(rendererItem, { cachedVideoFrame: undefined })
-      : logWarn(
-          `removeVideoFrameCacheFromMap rendererItem ${channelId}  ${user} is null`
-        );
+    rendererItem ? Object.assign(rendererItem, {cachedVideoFrame: undefined}) :
+                   logWarn(`removeVideoFrameCacheFromMap rendererItem ${
+                       channelId}  ${user} is null`);
   }
 
   getDefaultRenderConfig(): RendererConfig {
     let rendererConfig: RendererConfig = {
-      user: "local",
+      user: 'local',
       view: undefined,
-      channelId: "",
+      channelId: '',
       rendererOptions: {
         append: false,
         contentMode: CONTENT_MODE.FIT,
@@ -397,27 +374,21 @@ class RendererManager {
   }
 
   setupViewContentMode(rendererConfig: RendererConfig): number {
-    let defaultConfig: RendererConfig = Object.assign(
-      this.getDefaultRenderConfig(),
-      rendererConfig
-    );
+    let defaultConfig: RendererConfig =
+        Object.assign(this.getDefaultRenderConfig(), rendererConfig);
 
-    let renderList = this.getRenderer(
-      rendererConfig.user,
-      rendererConfig.channelId
-    );
-    renderList
-      ? renderList.forEach((renderItem) =>
-          renderItem.setContentMode(
-            defaultConfig.rendererOptions!.contentMode,
-            defaultConfig.rendererOptions!.mirror
-          )
-        )
-      : console.warn(
-          `User: ${defaultConfig.user} have no render view, you need to call this api after setView`
-        );
+    let renderList =
+        this.getRenderer(rendererConfig.user, rendererConfig.channelId);
+    renderList ?
+        renderList.forEach(
+            (renderItem) => renderItem.setContentMode(
+                defaultConfig.rendererOptions!.contentMode,
+                defaultConfig.rendererOptions!.mirror)) :
+        console.warn(`User: ${
+            defaultConfig
+                .user} have no render view, you need to call this api after setView`);
     return 0;
   }
 }
 
-export { RendererManager };
+export {RendererManager};
