@@ -12,6 +12,19 @@ import { destSDKDir, cleanLibsDir } from "./clean";
 const globPromise = promisify(glob);
 const { lib_sdk_win, lib_sdk_mac, downloadKey } = getConfig();
 
+const renameForWin = async () => {
+  if (getOS() === "mac") {
+    return;
+  }
+  const oldPath = path.join(
+    destSDKDir,
+    config.arch === "ia32" ? "x86" : "x86_64"
+  );
+  const newPath = path.join(destSDKDir, "library");
+  await fs.rename(oldPath, newPath);
+  logger.info("Rename libs finish!");
+};
+const config = getConfig();
 const syncLib = async (cb) => {
   try {
     const os = getOS();
@@ -44,6 +57,7 @@ const syncLib = async (cb) => {
 
     await fs.copy(filterUnzipsFiles[0], destSDKDir);
     logger.info("Move libs finish!");
+    await renameForWin();
   } catch (error) {
     logger.error(error);
   }
