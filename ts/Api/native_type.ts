@@ -2650,6 +2650,7 @@ export interface AudioRecordingConfiguration {
   filePath: string;
   recordingQuality: AUDIO_RECORDING_QUALITY_TYPE;
   recordingPosition: AUDIO_RECORDING_POSITION;
+  recordingSampleRate: number;
 }
 
 /**
