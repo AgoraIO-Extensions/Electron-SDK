@@ -26,8 +26,8 @@ walk = function (r) {
   })();
 };
 
-console.log(`${process.argv }`)
-console.log(`add File ${process.argv[2]}`)
-const res = walk(process.argv[2])
+console.log(`${process.argv}`);
+console.log(`add File ${process.argv[2]}`);
+const res = walk(process.argv[2]);
 res.join(" ");
 console.log(res);

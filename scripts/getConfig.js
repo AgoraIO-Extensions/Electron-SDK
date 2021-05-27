@@ -48,7 +48,7 @@ const getConfig = () => {
   } = process;
 
   const config = minimist(argv.slice(2), {
-    boolean: ["prebuilt"],
+    boolean: ["prebuilt", "debug", "silent", "no_symbol"],
     default: { ...getArgvFromPkgJson() },
   });
 
