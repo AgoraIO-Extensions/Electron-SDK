@@ -20,3 +20,4 @@ example/agoraAddonlog.txt
 example/agoraapi.log.pid
 example/agorartc.log.pid
 sdk/
+.history
