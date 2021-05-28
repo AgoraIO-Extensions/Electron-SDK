@@ -64,7 +64,7 @@ public:
 
     bool
     CopyFrame(bool &is_new_frame,
-              iris::rtc::IrisRtcVideoFrameObserver::VideoFrame &videoFrame) {
+              IrisRtcVideoFrame &videoFrame) {
       if (_isFresh) {
         if (videoFrame.y_stride == _header._yStride &&
             videoFrame.height == _header._height) {

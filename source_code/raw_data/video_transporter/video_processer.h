@@ -35,12 +35,12 @@ public:
                              unsigned int uid = -1);
 
   bool
-  GetVideoFrame(iris::rtc::IrisRtcVideoFrameObserver::VideoFrame &video_frame,
+  GetVideoFrame(IrisRtcVideoFrame &video_frame,
                 bool &is_new_frame, unsigned int uid,
                 const char *channel_id = "");
 
   bool VideoSourceGetVideoFrame(
-      iris::rtc::IrisRtcVideoFrameObserver::VideoFrame &video_frame,
+      IrisRtcVideoFrame &video_frame,
       bool &is_new_frame, unsigned int uid, const char *channel_id = "");
 
   void OnVideoFrameReceived(const char *data, int len) override;

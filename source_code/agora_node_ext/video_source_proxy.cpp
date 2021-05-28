@@ -79,6 +79,7 @@ bool VideoSourceProxy::Initialize(
     return false;
   }
   _node_process->Monitor([videoSourceEventHandler](INodeProcess *pProcess) {
+    LOG_F(INFO, "VideoSourceProxy _node_process->Monitor");
     videoSourceEventHandler->OnVideoSourceExit();
   });
 

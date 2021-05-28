@@ -45,14 +45,14 @@ int VideoProcesser::DisableVideoFrameCache(const char *channel_id,
 }
 
 bool VideoProcesser::GetVideoFrame(
-    IrisRtcVideoFrameObserver::VideoFrame &video_frame, bool &is_new_frame,
+    IrisRtcVideoFrame &video_frame, bool &is_new_frame,
     unsigned int uid, const char *channel_id) {
   return _iris_rtc_renderer->GetVideoFrame(video_frame, is_new_frame, uid,
                                            channel_id);
 }
 
 bool VideoProcesser::VideoSourceGetVideoFrame(
-    iris::rtc::IrisRtcVideoFrameObserver::VideoFrame &video_frame,
+    IrisRtcVideoFrame &video_frame,
     bool &is_new_frame, unsigned int uid, const char *channel_id) {
   std::lock_guard<std::mutex> lock(_video_frame_mutex);
   auto ret =

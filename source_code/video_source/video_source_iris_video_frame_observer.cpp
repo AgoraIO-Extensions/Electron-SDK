@@ -21,9 +21,9 @@ VideoSourceIrisVideoFrameObserver::~VideoSourceIrisVideoFrameObserver() {
   _ipc_data_sender.reset();
 }
 
-void VideoSourceIrisVideoFrameObserver::OnVideoFrameReceived(
-    const iris::rtc::IrisRtcVideoFrameObserver::VideoFrame &video_frame,
-    bool resize) {
+void VideoSourceIrisVideoFrameObserver::OnVideoFrameReceived(const IrisRtcVideoFrame &video_frame,
+                                         unsigned int uid,
+                                         const char *channel_id, bool resize) {
   char *_data = _buffer.data();
   VideoFrameHeader *_header = (VideoFrameHeader *)_data;
   _header->_width = video_frame.width;
