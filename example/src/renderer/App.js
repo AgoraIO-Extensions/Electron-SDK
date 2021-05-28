@@ -57,41 +57,10 @@ export default class App extends Component {
     this.enableAudioMixing = false;
   }
 
-  componentDidMount() {
-    let rtcEngine = this.getRtcEngine();
-
-    // rtcEngine.joinChannel("", "123", "", 0);
-    let mediaOptions =  {
-      publishCameraTrack: false,
-      publishSecondaryCameraTrack: false,
-      publishAudioTrack: true,
-      publishScreenTrack: false,
-      publishSecondaryScreenTrack: false,
-      publishCustomAudioTrack: true,
-      publishCustomVideoTrack: false,
-      publishEncodedVideoTrack: false,
-      publishMediaPlayerAudioTrack: false,
-      publishMediaPlayerVideoTrack: false,
-      publishTrancodedVideoTrack:true,
-      autoSubscribeAudio: true,
-      autoSubscribeVideo: true,
-      publishMediaPlayerId: 0,
-      enableAudioRecordingOrPlayout: true,
-      clientRoleType: 1,
-      defaultVideoStreamType: 0,
-      channelProfile: 1
-    }
-    console.log('11111111111111111');
-    let ret = rtcEngine.joinChannelWithMediaOptions("", "123", 0, mediaOptions)
-    // let ret = rtcEngine.joinChannelEx("", "zhangtao", 0, mediaOptions)
-    console.log(`--------join channel: ${ret}`)
-    // rtcEngine.joinChannel("", "3424", "", 0)
-  }
-
   getRtcEngine() {
     if(!this.rtcEngine) {
       this.rtcEngine = new AgoraRtcEngine()
-      this.rtcEngine.initialize(APP_ID,[])
+      this.rtcEngine.initialize(APP_ID)
       // this.rtcEngine.setRenderMode(2)
       this.rtcEngine.setLogFile("./rtmpagorartc.log")
       this.mediaPlayer = this.rtcEngine.createMediaPlayer();
@@ -115,7 +84,7 @@ export default class App extends Component {
       })
 
       this.rtcEngine.initializePluginManager();
-      const libPath = isMac ?
+      const libPath = isMac ? 
             path.resolve(__static, 'bytedance/libByteDancePlugin.dylib')
           : path.resolve(__static, 'bytedance/ByteDancePlugin.dll')
       if(this.rtcEngine.registerPlugin({
@@ -131,7 +100,8 @@ export default class App extends Component {
     return this.rtcEngine
   }
 
-
+  componentDidMount() {
+  }
 
   subscribeEvents = (rtcEngine) => {
     rtcEngine.on('joinedchannel', (connId, channel, uid, elapsed) => {
@@ -171,7 +141,7 @@ export default class App extends Component {
       })
     })
     rtcEngine.on('audioVolumeIndication', (
-      connId,
+      connId, 
       speakers,
       speakerNumber,
       totalVolume
@@ -233,7 +203,7 @@ export default class App extends Component {
     rtcEngine.setLocalVoiceReverbPreset(this.state.voiceReverbPreset)
     rtcEngine.enableDualStreamMode(true)
     rtcEngine.enableAudioVolumeIndication(1000, 3, false)
-
+   
     // rtcEngine.joinChannel("", "123", "", 0);
     let mediaOptions =  {
       publishCameraTrack: false,
@@ -255,7 +225,7 @@ export default class App extends Component {
       defaultVideoStreamType: 0,
       channelProfile: 1
     }
-
+    
     let ret = rtcEngine.joinChannelWithMediaOptions("", "123", 0, mediaOptions)
     // let ret = rtcEngine.joinChannelEx("", "zhangtao", 0, mediaOptions)
     console.log(`--------join channel: ${ret}`)
@@ -318,7 +288,7 @@ export default class App extends Component {
 
   handleAddImage = () => {
     let sources = this.state.sources || []
-
+    
     let filePath = path.resolve(__dirname, "../../static/plugin.png")
     sources.push({
       sourceType: 6,
@@ -348,7 +318,7 @@ export default class App extends Component {
 
   handleAddJpg = () => {
     let sources = this.state.sources || []
-
+  
     let filePath = path.resolve(__dirname, "../../static/jpg.jpg")
     sources.push({
       sourceType: 7,
@@ -366,7 +336,7 @@ export default class App extends Component {
 
   handleAddGif = () => {
     let sources = this.state.sources || []
-
+  
     let filePath = path.resolve(__dirname, "../../static/gif.gif")
     sources.push({
       sourceType: 8,
@@ -519,7 +489,7 @@ export default class App extends Component {
     })
     this.setState({sources})
   }
-
+  
   handleAddMediaPlayer = () => {
     let ret = this.mediaPlayer.open("https://big-class-test.oss-cn-hangzhou.aliyuncs.com/61102.1592987815092.mp4", 0);
     console.log(`Media palyer ret： ${ret}`);
@@ -591,7 +561,7 @@ export default class App extends Component {
     // let sourceId = this.reverseSourceId(node.id)
     // this.updateSource(sourceId, {x: x, y: y})
   }
-
+  
   handleDrag = (e,d) => {
     let {x, y, node} = d
     // console.log(`drag : id: ${node.id} ${x} ${y}`)
