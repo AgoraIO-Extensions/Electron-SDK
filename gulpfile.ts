@@ -8,6 +8,7 @@ import { cleanLibsDir, cleanBuildDir, cleanJSDir } from "./scripts/clean";
 import buildJS from "./scripts/buildJS";
 import logger from "./scripts/logger";
 import { lipoCreate, createTmpProduct } from "./scripts/util";
+import zipBuild from "./scripts/zipBuild";
 
 const config = getConfig();
 logger.info(`Get Config: \n${JSON.stringify(config, undefined, 4)}`);
@@ -32,7 +33,7 @@ const buildForWin = async (cb) => {
 };
 const build = config.platform === "darwin" ? buildForMac : buildForWin;
 
-const totalBuild = series(clean, syncLib, build, buildJS);
+const totalBuild = series(clean, syncLib, build, buildJS, zipBuild);
 
 const wrapDownloadPreBuild = async (cb) => {
   try {
@@ -48,6 +49,7 @@ exports.syncLib = syncLib;
 exports.clean = clean;
 exports.build = build;
 exports.buildJS = buildJS;
+exports.zipBuild = zipBuild;
 exports.totalBuild = totalBuild;
 exports.NPM_Install = NPM_Install;
 
