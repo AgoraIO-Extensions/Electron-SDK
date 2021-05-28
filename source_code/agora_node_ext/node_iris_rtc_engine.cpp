@@ -498,7 +498,7 @@ void NodeIrisRtcEngine::EnableVideoFrameCache(
 
   if (_engine->_iris_engine) {
     IrisRtcRendererCacheConfig config(
-        IrisRtcVideoFrameObserver::VideoFrameType::kFrameTypeYUV420, nullptr,
+        VideoFrameType::kFrameTypeYUV420, nullptr,
         _width, _height);
     try {
       if (_process_type == PROCESS_TYPE::MAIN) {
@@ -587,13 +587,13 @@ void NodeIrisRtcEngine::GetVideoStreamData(
   auto _yBuffer = node::Buffer::Data(_yBufferVal);
   auto _uBuffer = node::Buffer::Data(_uBufferVal);
   auto _vBuffer = node::Buffer::Data(_vBufferVal);
-  IrisRtcVideoFrameObserver::VideoFrame _videoFrame;
+  IrisRtcVideoFrame _videoFrame = IrisRtcVideoFrame_default;
   _videoFrame.y_buffer = _yBuffer;
   _videoFrame.u_buffer = _uBuffer;
   _videoFrame.v_buffer = _vBuffer;
   _videoFrame.height = _height;
   _videoFrame.y_stride = _yStride;
-
+  
   bool isFresh = false;
   bool ret = false;
 

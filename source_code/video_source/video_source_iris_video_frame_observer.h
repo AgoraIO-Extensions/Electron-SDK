@@ -17,9 +17,9 @@ public:
 
   virtual ~VideoSourceIrisVideoFrameObserver();
 
-  virtual void OnVideoFrameReceived(
-      const iris::rtc::IrisRtcVideoFrameObserver::VideoFrame &video_frame,
-      bool resize) override;
+  virtual void OnVideoFrameReceived(const IrisRtcVideoFrame &video_frame,
+                                    unsigned int uid, const char *channel_id,
+                                    bool resize) override;
 
 private:
   std::shared_ptr<AgoraIpcDataSender> _ipc_data_sender;

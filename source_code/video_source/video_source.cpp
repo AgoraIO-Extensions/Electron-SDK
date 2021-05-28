@@ -1,4 +1,5 @@
 #include "video_source.h"
+#include "iris_rtc_base.h"
 
 int main(int argc, char *argv[]) {
   std::string _parameter;
@@ -85,7 +86,10 @@ void VideoSource::Run() {
     LOG_F(INFO, "VideoSource process open fail");
     return;
   }
-  _process->Monitor([this](INodeProcess *) { this->Exit(false); });
+  _process->Monitor([this](INodeProcess *) {
+    LOG_F(INFO, "VideoSource process _process->Monitor");
+    this->Exit(false);
+  });
 
   _ipc_controller->run();
 }
@@ -146,7 +150,7 @@ void VideoSource::OnMessage(unsigned int msg, char *data, unsigned int len) {
     VideoFrameCacheConfigParameter *_parameter =
         (VideoFrameCacheConfigParameter *)data;
     IrisRtcRendererCacheConfig _cacheConfig(
-        iris::rtc::IrisRtcVideoFrameObserver::VideoFrameType::kFrameTypeYUV420,
+        kFrameTypeYUV420,
         new VideoSourceIrisVideoFrameObserver(_ipc_sender), _parameter->_width,
         _parameter->_height);
     _video_processer->EnableVideoFrameCache(_cacheConfig, _parameter->_uid,
