@@ -90,6 +90,12 @@ import {
   WindowInfo,
   Device,
   MacScreenId,
+  AUDIO_EQUALIZATION_BAND_FREQUENCY,
+  AUDIO_RECORDING_QUALITY_TYPE,
+  AUDIO_REVERB_TYPE,
+  INJECT_STREAM_STATUS,
+  LOG_FILTER_TYPE,
+  MEDIA_DEVICE_STATE_TYPE,
 } from "./types";
 import { EventEmitter } from "events";
 import { deprecate, logWarn, logInfo, logError } from "../Utils";
@@ -715,7 +721,7 @@ class AgoraRtcEngine extends EventEmitter {
               let data: {
                 deviceId: string;
                 deviceType: number;
-                deviceState: number;
+                deviceState: MEDIA_DEVICE_STATE_TYPE;
               } = JSON.parse(_eventData);
               fire(
                 "audiodevicestatechanged",
@@ -1076,7 +1082,7 @@ class AgoraRtcEngine extends EventEmitter {
               let data: {
                 url: string;
                 uid: number;
-                status: number;
+                status: INJECT_STREAM_STATUS;
               } = JSON.parse(_eventData);
               fire("streamInjectedStatus", data.url, data.uid, data.status);
             }
@@ -1315,7 +1321,6 @@ class AgoraRtcEngine extends EventEmitter {
               let data: { stats: RtcStats } = JSON.parse(_eventData);
               fire("videoSourceLeaveChannel", data.stats);
               fire("videosourceleavechannel", data.stats);
-              fire("videoSourceLeaveChannel", data.stats);
             }
             break;
 
@@ -1708,7 +1713,7 @@ class AgoraRtcEngine extends EventEmitter {
               let data: {
                 deviceId: string;
                 deviceType: number;
-                deviceState: number;
+                deviceState: MEDIA_DEVICE_STATE_TYPE;
               } = JSON.parse(_eventData);
               fire(
                 "videoSourceAudioDeviceStateChanged",
@@ -4102,7 +4107,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setLogFilter(filter: number): number {
+  setLogFilter(filter: LOG_FILTER_TYPE): number {
     let param = {
       filter,
     };
@@ -4307,7 +4312,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setLocalVoiceEqualization(bandFrequency: number, bandGain: number): number {
+  setLocalVoiceEqualization(bandFrequency: AUDIO_EQUALIZATION_BAND_FREQUENCY, bandGain: number): number {
     let param = {
       bandFrequency,
       bandGain,
@@ -4341,7 +4346,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setLocalVoiceReverb(reverbKey: number, value: number): number {
+  setLocalVoiceReverb(reverbKey: AUDIO_REVERB_TYPE, value: number): number {
     let param = {
       reverbKey,
       value,
@@ -4907,7 +4912,7 @@ class AgoraRtcEngine extends EventEmitter {
   startAudioRecording(
     filePath: string,
     sampleRate: number,
-    quality: number
+    quality: AUDIO_RECORDING_QUALITY_TYPE
   ): number {
     let param = {
       filePath,
@@ -7500,6 +7505,7 @@ class AgoraRtcEngine extends EventEmitter {
       JSON.stringify(param)
     );
     this.videoSourceEnableLocalVideo(false);
+    this.videoSourceEnableLocalAudio(false);
     this.videoSourceMuteAllRemoteVideoStreams(true);
     this.videoSourceMuteAllRemoteAudioStreams(true);
     return ret.retCode;
@@ -7713,6 +7719,7 @@ class AgoraRtcEngine extends EventEmitter {
     profile: VIDEO_PROFILE_TYPE,
     swapWidthAndHeight: boolean = false
   ): number {
+    deprecate("videoSourceSetVideoProfile", "videoSourceSetVideoEncoderConfiguration");
     let param = {
       profile,
       swapWidthAndHeight,
@@ -7721,6 +7728,32 @@ class AgoraRtcEngine extends EventEmitter {
     let ret = this._rtcEngine.CallApi(
       PROCESS_TYPE.SCREEN_SHARE,
       ApiTypeEngine.kEngineSetVideoProfile,
+      JSON.stringify(param)
+    );
+    return ret.retCode;
+  }
+  videoSourceSetVideoEncoderConfiguration(config: VideoEncoderConfiguration): number {
+    Object.assign(
+      {
+        dimensions: { width: 640, height: 360 },
+        frameRate: 15,
+        minFrameRate: -1,
+        bitrate: 0,
+        minBitrate: -1,
+        orientationMode: 0,
+        degradationPreference: 0,
+        mirrorMode: 0,
+      },
+      config
+    );
+
+    let param = {
+      config,
+    };
+
+    let ret = this._rtcEngine.CallApi(
+      PROCESS_TYPE.SCREEN_SHARE,
+      ApiTypeEngine.kEngineSetVideoEncoderConfiguration,
       JSON.stringify(param)
     );
     return ret.retCode;
@@ -7999,6 +8032,7 @@ class AgoraRtcEngine extends EventEmitter {
     regionRect: Rectangle,
     captureParams: ScreenCaptureParameters
   ): number {
+    
     if (process.platform === "darwin") {
       let param = {
         displayId: (screenSymbol as MacScreenId).id,
@@ -8154,6 +8188,10 @@ class AgoraRtcEngine extends EventEmitter {
     rect: Rect,
     bitrate: number
   ): number {
+    deprecate(
+      "videoSourceStartScreenCapture",
+      '"videoSourceStartScreenCaptureByScreen" or "videoSourceStartScreenCaptureByWindow"'
+    );
     let param = {
       windowId,
       captureFreq,
@@ -8236,6 +8274,19 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   videoSourceEnableLocalVideo(enabled: boolean): number {
+    let param = {
+      enabled,
+    };
+
+    let ret = this._rtcEngine.CallApi(
+      PROCESS_TYPE.SCREEN_SHARE,
+      ApiTypeEngine.kEngineEnableLocalVideo,
+      JSON.stringify(param)
+    );
+    return ret.retCode;
+  }
+
+  videoSourceEnableLocalAudio(enabled: boolean): number {
     let param = {
       enabled,
     };
@@ -8402,9 +8453,8 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: "apiCallExecuted",
-    cb: (api: string, err: number, result: number) => void
+    cb: (api: string, err: number, result: string) => void
   ): this;
-
   on(evt: "apiError", cb: (apiType: ApiTypeEngine, msg: string) => void): this;
   /**
    * Reports a warning during SDK runtime.
@@ -8545,7 +8595,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: "audioDeviceStateChanged",
-    cb: (deviceId: string, deviceType: number, deviceState: number) => void
+    cb: (deviceId: string, deviceType: number, deviceState: MEDIA_DEVICE_STATE_TYPE) => void
   ): this;
 
   on(evt: "audioMixingFinished", cb: () => void): this;
@@ -8875,6 +8925,18 @@ declare interface AgoraRtcEngine {
     evt: "streamMessage",
     cb: (uid: number, streamId: number, msg: string, len: number) => void
   ): this;
+
+  //Todo
+  on(
+    evt: "readyToSendMetadata",
+    cb: (metadata: Metadata) => void
+  ): this;
+  on(
+    evt: "metadataReceived",
+    cb: (metadata: Metadata) => void
+  ): this;
+
+
   /** Occurs when the local user does not receive the data stream from the
    * remote user within five seconds.
    *
@@ -9160,6 +9222,29 @@ declare interface AgoraRtcEngine {
   on(
     evt: "streamInjectStatus",
     cb: (url: string, uid: number, status: number) => void
+  ): this;
+  /** Occurs when a voice or video stream URL address is added to a live
+   * broadcast.
+   *
+   * @param cb.url The URL address of the externally injected stream.
+   * @param cb.uid User ID.
+   * @param cb.status State of the externally injected stream:
+   *  - 0: The external video stream imported successfully.
+   *  - 1: The external video stream already exists.
+   *  - 2: The external video stream to be imported is unauthorized.
+   *  - 3: Import external video stream timeout.
+   *  - 4: Import external video stream failed.
+   *  - 5: The external video stream stopped importing successfully.
+   *  - 6: No external video stream is found.
+   *  - 7: No external video stream is found.
+   *  - 8: Stop importing external video stream timeout.
+   *  - 9: Stop importing external video stream failed.
+   *  - 10: The external video stream is corrupted.
+   *
+   */
+   on(
+    evt: "streamInjectedStatus",
+    cb: (url: string, uid: number, status: INJECT_STREAM_STATUS) => void
   ): this;
   /** Occurs when the locally published media stream falls back to an
    * audio-only stream due to poor network conditions or switches back
@@ -9700,7 +9785,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: "videoSourceAudioDeviceStateChanged",
-    cb: (deviceId: string, deviceType: number, deviceState: number) => void
+    cb: (deviceId: string, deviceType: number, deviceState: MEDIA_DEVICE_STATE_TYPE) => void
   ): this;
   /** Occurs when the local audio effect playback finishes. */
   on(
@@ -9877,23 +9962,6 @@ declare interface AgoraRtcEngine {
   on(
     evt: "videoSourceUserOffline",
     cb: (uid: number, reason: number) => void
-  ): this;
-  /** @deprecated This callback is deprecated, please use
-   * `remoteAudioStateChanged` instead.
-   *
-   * Occurs when a remote user's audio stream is muted/unmuted.
-   *
-   * The SDK triggers this callback when the remote user stops or resumes
-   * sending the audio stream by calling the {@link muteLocalAudioStream}
-   * method.
-   * - uid: User ID of the remote user.
-   * - muted: Whether the remote user's audio stream is muted/unmuted:
-   *  - true: Muted.
-   *  - false: Unmuted.
-   */
-  on(
-    evt: "videoSourceUserMuteAudio",
-    cb: (uid: number, muted: boolean) => void
   ): this;
 
   /**
@@ -11072,7 +11140,7 @@ class AgoraRtcChannel extends EventEmitter {
                 channelId: string;
                 url: string;
                 uid: number;
-                status: number;
+                status: INJECT_STREAM_STATUS;
               } = JSON.parse(_eventData);
               fire(
                 "streamInjectedStatus",
@@ -11130,7 +11198,7 @@ class AgoraRtcChannel extends EventEmitter {
             }
             break;
 
-          case "sendMetadataSuccess":
+          case "onReadyToSendMetadata":
             {
               let data: {
                 uid: number;
@@ -11139,7 +11207,7 @@ class AgoraRtcChannel extends EventEmitter {
                 timeStampMs: number;
               } = JSON.parse(_eventData);
 
-              fire("sendMetadataSuccess", data);
+              fire("readyToSendMetadata", data);
             }
             break;
 
@@ -12918,6 +12986,18 @@ declare interface AgoraRtcChannel {
     evt: "streamMessage",
     cb: (channelId: string, uid: number, streamId: number, data: string) => void
   ): this;
+
+  //Todo
+  on(
+    evt: "readyToSendMetadata",
+    cb: (metadata: Metadata) => void
+  ): this;
+  //Todo
+  on(
+    evt: "metadataReceived",
+    cb: (metadata: Metadata) => void
+  ): this;
+  
   /** Occurs when the local user does not receive the data stream from the
    * remote user within five seconds.
    *
@@ -13062,7 +13142,7 @@ declare interface AgoraRtcChannel {
    */
   on(
     evt: "streamInjectedStatus",
-    cb: (channelId: string, url: string, uid: number, status: number) => void
+    cb: (channelId: string, url: string, uid: number, status: INJECT_STREAM_STATUS) => void
   ): this;
   /** Occurs when the remote media stream falls back to audio-only stream due
    * to poor network conditions or switches back to the video stream after the
