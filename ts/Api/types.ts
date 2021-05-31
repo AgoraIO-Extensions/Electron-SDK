@@ -5,6 +5,23 @@
  * @Last Modified time: 2021-05-27 12:33:45
  */
 
+/** Audio recording qualities.
+ */
+ export enum AUDIO_RECORDING_QUALITY_TYPE {
+  /** 0: Low quality. The sample rate is 32 kHz, and the file size is around
+   * 1.2 MB after 10 minutes of recording.
+   */
+  AUDIO_RECORDING_QUALITY_LOW = 0,
+  /** 1: Medium quality. The sample rate is 32 kHz, and the file size is
+   * around 2 MB after 10 minutes of recording.
+   */
+  AUDIO_RECORDING_QUALITY_MEDIUM = 1,
+  /** 2: High quality. The sample rate is 32 kHz, and the file size is
+   * around 3.75 MB after 10 minutes of recording.
+   */
+  AUDIO_RECORDING_QUALITY_HIGH = 2,
+}
+
 /**
  * Network quality types:
  *
@@ -69,6 +86,26 @@ export enum REMOTE_VIDEO_STREAM_TYPE {
   REMOTE_VIDEO_STREAM_LOW = 1,
 }
 
+/** Media device states.
+ */
+ export enum MEDIA_DEVICE_STATE_TYPE {
+  /** 1: The device is active.
+   */
+  MEDIA_DEVICE_STATE_ACTIVE = 1,
+  /** 2: The device is disabled.
+   */
+  MEDIA_DEVICE_STATE_DISABLED = 2,
+  /** 4: The device is not present.
+   */
+  MEDIA_DEVICE_STATE_NOT_PRESENT = 4,
+  /** 8: The device is unplugged.
+   */
+  MEDIA_DEVICE_STATE_UNPLUGGED = 8,
+  /** 16: The device is not recommended.
+   */
+  MEDIA_DEVICE_STATE_UNRECOMMENDED = 16,
+}
+
 /** Media device types.
  */
 export enum MEDIA_DEVICE_TYPE {
@@ -107,6 +144,30 @@ export enum VIDEO_CODEC_TYPE_FOR_STREAM {
   VIDEO_CODEC_H265_FOR_STREAM = 2,
 }
 
+/** Audio equalization band frequencies. */
+export enum AUDIO_EQUALIZATION_BAND_FREQUENCY {
+  /** 0: 31 Hz */
+  AUDIO_EQUALIZATION_BAND_31 = 0,
+  /** 1: 62 Hz */
+  AUDIO_EQUALIZATION_BAND_62 = 1,
+  /** 2: 125 Hz */
+  AUDIO_EQUALIZATION_BAND_125 = 2,
+  /** 3: 250 Hz */
+  AUDIO_EQUALIZATION_BAND_250 = 3,
+  /** 4: 500 Hz */
+  AUDIO_EQUALIZATION_BAND_500 = 4,
+  /** 5: 1 kHz */
+  AUDIO_EQUALIZATION_BAND_1K = 5,
+  /** 6: 2 kHz */
+  AUDIO_EQUALIZATION_BAND_2K = 6,
+  /** 7: 4 kHz */
+  AUDIO_EQUALIZATION_BAND_4K = 7,
+  /** 8: 8 kHz */
+  AUDIO_EQUALIZATION_BAND_8K = 8,
+  /** 9: 16 kHz */
+  AUDIO_EQUALIZATION_BAND_16K = 9,
+}
+
 /** States of the last-mile network probe test. */
 export enum LASTMILE_PROBE_RESULT_STATE {
   /** 1: The last-mile network probe test is complete. */
@@ -115,6 +176,20 @@ export enum LASTMILE_PROBE_RESULT_STATE {
   LASTMILE_PROBE_RESULT_INCOMPLETE_NO_BWE = 2,
   /** 3: The last-mile network probe test is not carried out, probably due to poor network conditions. */
   LASTMILE_PROBE_RESULT_UNAVAILABLE = 3,
+}
+
+/** Audio reverberation types. */
+export enum AUDIO_REVERB_TYPE {
+  /** 0: The level of the dry signal (db). The value is between -20 and 10. */
+  AUDIO_REVERB_DRY_LEVEL = 0, // (dB, [-20,10]), the level of the dry signal
+  /** 1: The level of the early reflection signal (wet signal) (dB). The value is between -20 and 10. */
+  AUDIO_REVERB_WET_LEVEL = 1, // (dB, [-20,10]), the level of the early reflection signal (wet signal)
+  /** 2: The room size of the reflection. The value is between 0 and 100. */
+  AUDIO_REVERB_ROOM_SIZE = 2, // ([0,100]), the room size of the reflection
+  /** 3: The length of the initial delay of the wet signal (ms). The value is between 0 and 200. */
+  AUDIO_REVERB_WET_DELAY = 3, // (ms, [0,200]), the length of the initial delay of the wet signal in ms
+  /** 4: The reverberation strength. The value is between 0 and 100. */
+  AUDIO_REVERB_STRENGTH = 4, // ([0,100]), the strength of the reverberation
 }
 
 /**
@@ -493,6 +568,9 @@ export interface LiveTranscoding {
    * - 5: Five-channel stereo.
    */
   audioChannels: number;
+  /** Self-defined audio codec profile: #AUDIO_CODEC_PROFILE_TYPE.
+   */
+  audioCodecProfile: AUDIO_CODEC_PROFILE_TYPE;
   /** Bitrate of the CDN live audio output stream. The default value is 48
    * Kbps, and the highest value is 128.
    */
@@ -1477,6 +1555,14 @@ export enum REMOTE_AUDIO_STATE_REASON {
   REMOTE_AUDIO_REASON_REMOTE_OFFLINE = 7,
 }
 
+/** Audio codec profile types. The default value is LC_ACC. */
+export enum AUDIO_CODEC_PROFILE_TYPE {
+  /** 0: LC-AAC, which is the low-complexity audio codec type. */
+  AUDIO_CODEC_PROFILE_LC_AAC = 0,
+  /** 1: HE-AAC, which is the high-efficiency audio codec type. */
+  AUDIO_CODEC_PROFILE_HE_AAC = 1,
+}
+
 /** Remote audio states.
  */
 export enum REMOTE_AUDIO_STATE {
@@ -1789,6 +1875,32 @@ export enum RTMP_STREAMING_EVENT {
    * @since v3.2.0
    */
   RTMP_STREAMING_EVENT_FAILED_LOAD_IMAGE = 1,
+}
+
+/** States of importing an external video stream in the interactive live streaming. */
+export enum INJECT_STREAM_STATUS {
+  /** 0: The external video stream imported successfully. */
+  INJECT_STREAM_STATUS_START_SUCCESS = 0,
+  /** 1: The external video stream already exists. */
+  INJECT_STREAM_STATUS_START_ALREADY_EXISTS = 1,
+  /** 2: The external video stream to be imported is unauthorized. */
+  INJECT_STREAM_STATUS_START_UNAUTHORIZED = 2,
+  /** 3: Import external video stream timeout. */
+  INJECT_STREAM_STATUS_START_TIMEDOUT = 3,
+  /** 4: Import external video stream failed. */
+  INJECT_STREAM_STATUS_START_FAILED = 4,
+  /** 5: The external video stream stopped importing successfully. */
+  INJECT_STREAM_STATUS_STOP_SUCCESS = 5,
+  /** 6: No external video stream is found. */
+  INJECT_STREAM_STATUS_STOP_NOT_FOUND = 6,
+  /** 7: The external video stream to be stopped importing is unauthorized. */
+  INJECT_STREAM_STATUS_STOP_UNAUTHORIZED = 7,
+  /** 8: Stop importing external video stream timeout. */
+  INJECT_STREAM_STATUS_STOP_TIMEDOUT = 8,
+  /** 9: Stop importing external video stream failed. */
+  INJECT_STREAM_STATUS_STOP_FAILED = 9,
+  /** 10: The external video stream is corrupted. */
+  INJECT_STREAM_STATUS_BROKEN = 10,
 }
 
 /** The options for SDK preset audio effects.
@@ -2269,6 +2381,41 @@ export enum CHANNEL_MEDIA_RELAY_STATE {
   RELAY_STATE_FAILURE = 3,
 }
 
+/** Quality of experience (QoE) of the local user when receiving a remote audio stream.
+ *
+ * @since v3.3.0
+ */
+ export enum EXPERIENCE_QUALITY_TYPE {
+  /** 0: QoE of the local user is good.  */
+  EXPERIENCE_QUALITY_GOOD = 0,
+  /** 1: QoE of the local user is poor.  */
+  EXPERIENCE_QUALITY_BAD = 1,
+}
+
+/**
+ * The reason for poor QoE of the local user when receiving a remote audio stream.
+ *
+ * @since v3.3.0
+ */
+ export enum EXPERIENCE_POOR_REASON {
+  /** 0: No reason, indicating good QoE of the local user.
+   */
+  EXPERIENCE_REASON_NONE = 0,
+  /** 1: The remote user's network quality is poor.
+   */
+  REMOTE_NETWORK_QUALITY_POOR = 1,
+  /** 2: The local user's network quality is poor.
+   */
+  LOCAL_NETWORK_QUALITY_POOR = 2,
+  /** 4: The local user's Wi-Fi or mobile network signal is weak.
+   */
+  WIRELESS_SIGNAL_POOR = 4,
+  /** 8: The local user enables both Wi-Fi and bluetooth, and their signals interfere with each other.
+   * As a result, audio transmission quality is undermined.
+   */
+  WIFI_BLUETOOTH_COEXIST = 8,
+}
+
 export enum CHANNEL_MEDIA_RELAY_ERROR {
   /** 0: The state is normal.
    */
@@ -2457,6 +2604,28 @@ export enum CLOUD_PROXY_TYPE {
    */
   TCP_PROXY = 2,
   /// @endcond
+}
+
+/** Output log filter level. */
+export enum LOG_FILTER_TYPE {
+  /** 0: Do not output any log information. */
+  LOG_FILTER_OFF = 0,
+  /** 0x080f: Output all log information.
+   Set your log filter as debug if you want to get the most complete log file.      */
+  LOG_FILTER_DEBUG = 0x080f,
+  /** 0x000f: Output CRITICAL, ERROR, WARNING, and INFO level log information.
+   We recommend setting your log filter as this level.
+   */
+  LOG_FILTER_INFO = 0x000f,
+  /** 0x000e: Outputs CRITICAL, ERROR, and WARNING level log information.
+   */
+  LOG_FILTER_WARN = 0x000e,
+  /** 0x000c: Outputs CRITICAL and ERROR level log information. */
+  LOG_FILTER_ERROR = 0x000c,
+  /** 0x0008: Outputs CRITICAL level log information. */
+  LOG_FILTER_CRITICAL = 0x0008,
+
+  LOG_FILTER_MASK = 0x80f,
 }
 
 /** The output log level of the SDK.
