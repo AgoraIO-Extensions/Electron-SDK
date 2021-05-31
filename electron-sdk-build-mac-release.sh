@@ -1,8 +1,7 @@
 npm config set ELECTRON_MIRROR http://npm.taobao.org/mirrors/electron/
 # Example 1
 npm config set AGORA_ELECTRON_SDK_PRE_BUILT false
-npm config set AGORA_ELECTRON_VERSION 11.0.0
-npm config set AGORA_ELECTRON_SDK_ARCH x86
+npm config set AGORA_ELECTRON_VERSION ${ELECTRON_VERSION}
 rm -rf node_modules
 rm -rf sdk
 rm -rf tmp
