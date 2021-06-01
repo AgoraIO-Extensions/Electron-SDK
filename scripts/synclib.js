@@ -56,6 +56,7 @@ const syncLib = async (cb) => {
     }
 
     await fs.copy(filterUnzipsFiles[0], destSDKDir);
+    await fs.remove(downloadTmp);
     logger.info("Move libs finish!");
     await renameForWin();
   } catch (error) {
