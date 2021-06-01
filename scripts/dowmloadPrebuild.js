@@ -11,10 +11,12 @@ const { electronVersion, platform, packageVersion, arch, no_symbol } =
 
 const workspaceDir = `${path.join(__dirname, "..")}`;
 
+const addonVersion = "3.3.1-iris-build-6101";
+
 const getDownloadURL = () => {
-  let downloadUrl = `http://download.agora.io/sdk/release/Electron-${getOS()}-${packageVersion}-${electronVersion}.zip`;
+  let downloadUrl = `http://download.agora.io/sdk/release/Electron-${getOS()}-${addonVersion}-${electronVersion}.zip`;
   if (platform === "win32" && arch === "x64") {
-    downloadUrl = `http://download.agora.io/sdk/release/Electron-win64-${packageVersion}-${electronVersion}.zip`;
+    downloadUrl = `http://download.agora.io/sdk/release/Electron-win64-${addonVersion}-${electronVersion}.zip`;
   }
   return downloadUrl;
 };
@@ -102,10 +104,16 @@ module.exports = async (cb) => {
   logger.info("Download URL  %s ", downloadUrl);
 
   logger.info("Downloading prebuilt C++ addon for Agora Electron SDK...");
+  try {
+    await download(downloadUrl, workspaceDir, {
+      extract: true,
+    });
+  } catch (error) {
+    logger.error(errStr);
+    logger.error("Agora sdk prepare Local Build");
+    throw new Error(errStr);
+  }
 
-  await download(downloadUrl, workspaceDir, {
-    extract: true,
-  });
   if (no_symbol) {
     await removeFileByFilter();
   }

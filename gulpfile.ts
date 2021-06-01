@@ -33,7 +33,7 @@ const buildForWin = async (cb) => {
 };
 const build = config.platform === "darwin" ? buildForMac : buildForWin;
 
-const totalBuild = series(clean, syncLib, build, buildJS, zipBuild);
+const totalBuild = series(clean, syncLib, build, buildJS);
 
 const wrapDownloadPreBuild = async (cb) => {
   try {
