@@ -5,8 +5,15 @@
   "scripts": {
     "dev": "electron-webpack dev",
     "compile": "electron-webpack",
-    "dist": "npm run compile && electron-builder",
+    "dist": "npm run compile && electron-builder --win --ia32",
     "dist:dir": "npm run dist --dir -c.compression=store -c.mac.identity=null"
+  },
+  "build": {
+    "asar": false,
+    "extraResources": {
+      "from": "./src/extraResources",
+      "to": "extraResources"
+    }
   },
   "dependencies": {
     "@material-ui/core": "4.9.9",

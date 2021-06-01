@@ -84,7 +84,7 @@ export default class App extends Component {
       })
 
       this.rtcEngine.initializePluginManager();
-      const libPath = isMac ? 
+      const libPath = isMac ?
             path.resolve(__static, 'bytedance/libByteDancePlugin.dylib')
           : path.resolve(__static, 'bytedance/ByteDancePlugin.dll')
       if(this.rtcEngine.registerPlugin({
@@ -141,7 +141,7 @@ export default class App extends Component {
       })
     })
     rtcEngine.on('audioVolumeIndication', (
-      connId, 
+      connId,
       speakers,
       speakerNumber,
       totalVolume
@@ -203,7 +203,7 @@ export default class App extends Component {
     rtcEngine.setLocalVoiceReverbPreset(this.state.voiceReverbPreset)
     rtcEngine.enableDualStreamMode(true)
     rtcEngine.enableAudioVolumeIndication(1000, 3, false)
-   
+
     // rtcEngine.joinChannel("", "123", "", 0);
     let mediaOptions =  {
       publishCameraTrack: false,
@@ -225,7 +225,7 @@ export default class App extends Component {
       defaultVideoStreamType: 0,
       channelProfile: 1
     }
-    
+
     let ret = rtcEngine.joinChannelWithMediaOptions("", "123", 0, mediaOptions)
     // let ret = rtcEngine.joinChannelEx("", "zhangtao", 0, mediaOptions)
     console.log(`--------join channel: ${ret}`)
@@ -288,8 +288,9 @@ export default class App extends Component {
 
   handleAddImage = () => {
     let sources = this.state.sources || []
-    
-    let filePath = path.resolve(__dirname, "../../static/plugin.png")
+
+    let filePath = path.resolve(__dirname, "../extraResources/plugin.png")
+
     sources.push({
       sourceType: 6,
       connectionId: 0,
@@ -301,7 +302,7 @@ export default class App extends Component {
       alpha: 1,
       imageUrl: filePath
     })
-    let filePath2 = path.resolve(__dirname, "../../static/png.png")
+    let filePath2 = path.resolve(__dirname, "../extraResources/png.png")
     sources.push({
       sourceType: 6,
       connectionId: 0,
@@ -318,8 +319,9 @@ export default class App extends Component {
 
   handleAddJpg = () => {
     let sources = this.state.sources || []
-  
-    let filePath = path.resolve(__dirname, "../../static/jpg.jpg")
+
+    let filePath = path.resolve(__dirname, "../extraResources/jpg.jpg")
+    console.log('handleAddJpg',filePath);
     sources.push({
       sourceType: 7,
       connectionId: 0,
@@ -336,8 +338,8 @@ export default class App extends Component {
 
   handleAddGif = () => {
     let sources = this.state.sources || []
-  
-    let filePath = path.resolve(__dirname, "../../static/gif.gif")
+
+    let filePath = path.resolve(__dirname, "../extraResources/gif.gif")
     sources.push({
       sourceType: 8,
       connectionId: 0,
@@ -489,7 +491,7 @@ export default class App extends Component {
     })
     this.setState({sources})
   }
-  
+
   handleAddMediaPlayer = () => {
     let ret = this.mediaPlayer.open("https://big-class-test.oss-cn-hangzhou.aliyuncs.com/61102.1592987815092.mp4", 0);
     console.log(`Media palyer ret： ${ret}`);
@@ -561,7 +563,7 @@ export default class App extends Component {
     // let sourceId = this.reverseSourceId(node.id)
     // this.updateSource(sourceId, {x: x, y: y})
   }
-  
+
   handleDrag = (e,d) => {
     let {x, y, node} = d
     // console.log(`drag : id: ${node.id} ${x} ${y}`)
