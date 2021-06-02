@@ -22,6 +22,7 @@ const getDownloadURL = () => {
 };
 
 const verList = [
+  "12.0.0",
   "11.0.0",
   "10.2.0",
   "9.0.0",
