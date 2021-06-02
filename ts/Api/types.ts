@@ -2775,19 +2775,37 @@ export enum AUDIO_MIXING_STATE_TYPE {
 
 /** The error codes of the local user's audio mixing file.
  */
-export enum AUDIO_MIXING_ERROR_TYPE {
+export enum AUDIO_MIXING_REASON_TYPE {
   /** 701: The SDK cannot open the audio mixing file.
    */
-  AUDIO_MIXING_ERROR_CAN_NOT_OPEN = 701,
-  /** 702: The SDK opens the audio mixing file too frequently.
-   */
-  AUDIO_MIXING_ERROR_TOO_FREQUENT_CALL = 702,
-  /** 703: The audio mixing file playback is interrupted.
-   */
-  AUDIO_MIXING_ERROR_INTERRUPTED_EOF = 703,
-  /** 0: The SDK can open the audio mixing file.
-   */
-  AUDIO_MIXING_ERROR_OK = 0,
+   AUDIO_MIXING_REASON_CAN_NOT_OPEN = 701,
+   /** 702: The SDK opens the audio mixing file too frequently.
+    */
+   AUDIO_MIXING_REASON_TOO_FREQUENT_CALL = 702,
+   /** 703: The audio mixing file playback is interrupted.
+    */
+   AUDIO_MIXING_REASON_INTERRUPTED_EOF = 703,
+   /** 720: The audio mixing is started by user.
+    */
+   AUDIO_MIXING_REASON_STARTED_BY_USER = 720,
+   /** 721: The audio mixing file is played once.
+    */
+   AUDIO_MIXING_REASON_ONE_LOOP_COMPLETED = 721,
+   /** 722: The audio mixing file is playing in a new loop.
+    */
+   AUDIO_MIXING_REASON_START_NEW_LOOP = 722,
+   /** 723: The audio mixing file is all played out.
+    */
+   AUDIO_MIXING_REASON_ALL_LOOPS_COMPLETED = 723,
+   /** 724: Playing of audio file is stopped by user.
+    */
+   AUDIO_MIXING_REASON_STOPPED_BY_USER = 724,
+   /** 725: Playing of audio file is paused by user.
+    */
+   AUDIO_MIXING_REASON_PAUSED_BY_USER = 725,
+   /** 726: Playing of audio file is resumed by user.
+    */
+   AUDIO_MIXING_REASON_RESUMED_BY_USER = 726,
 }
 
 /** Local video state types

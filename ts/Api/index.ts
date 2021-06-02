@@ -72,7 +72,7 @@ import {
   LOCAL_AUDIO_STREAM_ERROR,
   AudioVolumeInfo,
   AUDIO_MIXING_STATE_TYPE,
-  AUDIO_MIXING_ERROR_TYPE,
+  AUDIO_MIXING_REASON_TYPE,
   LOCAL_VIDEO_STREAM_ERROR,
   LOCAL_VIDEO_STREAM_STATE,
   SUPER_RESOLUTION_STATE_REASON,
@@ -816,7 +816,7 @@ class AgoraRtcEngine extends EventEmitter {
             {
               let data: {
                 state: AUDIO_MIXING_STATE_TYPE;
-                errorCode: AUDIO_MIXING_ERROR_TYPE;
+                errorCode: AUDIO_MIXING_REASON_TYPE;
               } = JSON.parse(_eventData);
               fire("audioMixingStateChanged", data.state, data.errorCode);
             }
@@ -1794,7 +1794,7 @@ class AgoraRtcEngine extends EventEmitter {
             {
               let data: {
                 state: AUDIO_MIXING_STATE_TYPE;
-                errorCode: AUDIO_MIXING_ERROR_TYPE;
+                errorCode: AUDIO_MIXING_REASON_TYPE;
               } = JSON.parse(_eventData);
               fire("audioMixingStateChanged", data.state, data.errorCode);
             }
@@ -8626,7 +8626,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: "audioMixingStateChanged",
-    cb: (state: number, errorCode: number) => void
+    cb: (state: number, reasonType: AUDIO_MIXING_REASON_TYPE) => void
   ): this;
   /** Occurs when a remote user starts audio mixing.
    * When a remote user calls {@link startAudioMixing} to play the background
