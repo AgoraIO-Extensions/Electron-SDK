@@ -584,6 +584,9 @@ export interface LiveTranscoding {
    * See [SEI-related FAQ](https://docs.agora.io/en/faq/sei) for more details.
    */
   transcodingExtraInfo: string;
+  /** **DEPRECATED** The metadata sent to the CDN live client defined by the RTMP or HTTP-FLV metadata.
+  */
+  metadata?: string;
   /** The watermark image added to the CDN live publishing stream. */
   watermark: RtcImage;
   /**
@@ -1497,6 +1500,22 @@ export interface RemoteAudioStats {
    * @since v3.2.0
    */
   publishDuration: number;
+  /**
+   * Quality of experience (QoE) of the local user when receiving a remote audio stream. See #EXPERIENCE_QUALITY_TYPE.
+   *
+   * @since v3.3.0
+   */
+  qoeQuality: number;
+  /**
+   * The reason for poor QoE of the local user when receiving a remote audio stream. See #EXPERIENCE_POOR_REASON.
+   *
+   * @since v3.3.0
+   */
+  qualityChangedReason: number;
+  /**
+   * The mos value of remote audio.
+   */
+  mosValue: number;
 }
 
 /** The state of the remote video. */
@@ -2947,4 +2966,39 @@ export interface WindowInfo {
   originWidth: number;
   originHeight: number;
   image: Uint8Array;
+}
+
+/** The configurations for the data stream.
+ *
+ * @since v3.3.0
+ *
+ * |`syncWithAudio` |`ordered`| SDK behaviors|
+ * |--------------|--------|-------------|
+ * | false   |  false   |The SDK triggers the `onStreamMessage` callback immediately after the receiver receives a data packet      |
+ * | true |  false | <p>If the data packet delay is within the audio delay, the SDK triggers the `onStreamMessage` callback when the synchronized audio packet is played out.</p><p>If the data packet delay exceeds the audio delay, the SDK triggers the `onStreamMessage` callback as soon as the data packet is received. In this case, the data packet is not synchronized with the audio packet.</p>   |
+ * | false  |  true | <p>If the delay of a data packet is within five seconds, the SDK corrects the order of the data packet.</p><p>If the delay of a data packet exceeds five seconds, the SDK discards the data packet.</p>     |
+ * |  true  |  true   | <p>If the delay of a data packet is within the audio delay, the SDK corrects the order of the data packet.</p><p>If the delay of a data packet exceeds the audio delay, the SDK discards this data packet.</p>     |
+ */
+ export interface DataStreamConfig {
+  /** Whether to synchronize the data packet with the published audio packet.
+   *
+   * - true: Synchronize the data packet with the audio packet.
+   * - false: Do not synchronize the data packet with the audio packet.
+   *
+   * When you set the data packet to synchronize with the audio, then if the data
+   * packet delay is within the audio delay, the SDK triggers the `onStreamMessage` callback when
+   * the synchronized audio packet is played out. Do not set this parameter as `true` if you
+   * need the receiver to receive the data packet immediately. Agora recommends that you set
+   * this parameter to `true` only when you need to implement specific functions, for example
+   * lyric synchronization.
+   */
+  syncWithAudio: boolean;
+  /** Whether the SDK guarantees that the receiver receives the data in the sent order.
+   *
+   * - true: Guarantee that the receiver receives the data in the sent order.
+   * - false: Do not guarantee that the receiver receives the data in the sent order.
+   *
+   * Do not set this parameter to `true` if you need the receiver to receive the data immediately.
+   */
+  ordered: boolean;
 }

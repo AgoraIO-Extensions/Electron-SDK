@@ -96,6 +96,7 @@ import {
   INJECT_STREAM_STATUS,
   LOG_FILTER_TYPE,
   MEDIA_DEVICE_STATE_TYPE,
+  DataStreamConfig
 } from "./types";
 import { EventEmitter } from "events";
 import { deprecate, logWarn, logInfo, logError } from "../Utils";
@@ -6264,17 +6265,27 @@ class AgoraRtcEngine extends EventEmitter {
    * - Returns the ID of the data stream, if this method call succeeds.
    * - < 0: Failure and returns an error code.
    */
-  createDataStream(reliable: boolean, ordered: boolean): number {
-    let param = {
-      reliable,
-      ordered,
-    };
-
-    let ret = this._rtcEngine.CallApi(
-      PROCESS_TYPE.MAIN,
-      ApiTypeEngine.kEngineCreateDataStream,
-      JSON.stringify(param)
-    );
+  createDataStream(reliable: boolean | DataStreamConfig, ordered?: boolean): number {
+    let ret;
+    if (typeof reliable === 'boolean') {
+      const param = {
+        reliable,
+        ordered,
+      };
+  
+      ret = this._rtcEngine.CallApi(
+        PROCESS_TYPE.MAIN,
+        ApiTypeEngine.kEngineCreateDataStream,
+        JSON.stringify(param)
+      );
+    } else {
+      ret = this._rtcEngine.CallApi(
+        PROCESS_TYPE.MAIN,
+        ApiTypeEngine.kEngineCreateDataStream,
+        JSON.stringify(reliable)
+      );
+    }
+    
     return ret.retCode;
   }
 
@@ -12022,17 +12033,26 @@ class AgoraRtcChannel extends EventEmitter {
    * - 0: Success
    * - < 0: Failure
    */
-  createDataStream(reliable: boolean, ordered: boolean): number {
-    let param = {
-      reliable,
-      ordered,
-      channelId: this._channelId,
-    };
-
-    let ret = this._rtcChannel.CallApi(
-      ApiTypeChannel.kChannelCreateDataStream,
-      JSON.stringify(param)
-    );
+  createDataStream(reliable: boolean | DataStreamConfig, ordered?: boolean): number {
+    let ret;
+    if (typeof reliable === 'boolean') {
+      let param = {
+        reliable,
+        ordered,
+        channelId: this._channelId,
+      };
+  
+      ret = this._rtcChannel.CallApi(
+        ApiTypeChannel.kChannelCreateDataStream,
+        JSON.stringify(param)
+      );
+    } else {
+      ret = this._rtcChannel.CallApi(
+        ApiTypeChannel.kChannelCreateDataStream,
+        JSON.stringify(reliable)
+      );
+    }
+    
     return ret.retCode;
   }
   /**
