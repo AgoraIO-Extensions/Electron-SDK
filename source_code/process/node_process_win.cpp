@@ -101,6 +101,7 @@ INodeProcess *INodeProcess::CreateNodeProcess(const char *path,
   if (!pProcess) {
     TerminateProcess(pi.hProcess, 0);
     CloseHandle(pi.hProcess);
+    LOG_F(INFO, "create process failed with CloseHandle");
     return nullptr;
   }
   return pProcess;
