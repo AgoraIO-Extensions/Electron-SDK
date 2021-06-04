@@ -34,7 +34,8 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.enableAudio enableAudio}               | Enables the audio module.                                    |
 | {@link AgoraRtcEngine.disableAudio disableAudio}             | Disables the audio module.                                   |
 | {@link AgoraRtcEngine.setAudioProfile setAudioProfile}       | Sets the audio parameters and application scenarios.         |
-| {@link AgoraRtcEngine.adjustRecordingSignalVolume adjustRecordingSignalVolume} | Adjusts the recording volume.                                |
+| {@link AgoraRtcEngine.adjustRecordingSignalVolume adjustRecordingSignalVolume} | Adjusts the volume of the signal captured by the microphone.                              |
+| {@link AgoraRtcEngine.adjustLoopbackRecordingSignalVolume adjustLoopbackRecordingSignalVolume} |   Adjusts the volume of the signal captured by the sound card.    |
 | {@link AgoraRtcEngine.adjustPlaybackSignalVolume adjustPlaybackSignalVolume} | Adjusts the playback volume of the voice.                    |
 | {@link AgoraRtcEngine.adjustUserPlaybackSignalVolume adjustUserPlaybackSignalVolume} | Adjusts the playback volume of a specified remote user.                |
 | {@link AgoraRtcEngine.enableLocalAudio enableLocalAudio}     | Enables/disables the local audio capture.                    |
@@ -117,7 +118,7 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.setAudioMixingPitch setAudioMixingPitch}| Sets the pitch of the local music file.   |
 |{@link AgoraRtcEngine.getAudioMixingPlayoutVolume getAudioMixingPlayoutVolume}|Adjusts the audio mixing volume for publishing (for remote users).|
 |{@link AgoraRtcEngine.getAudioMixingPublishVolume getAudioMixingPublishVolume}|Retrieves the audio mixing volume for publishing.|
-| {@link AgoraRtcEngine.getAudioMixingDuration getAudioMixingDuration} | Gets the duration (ms) of the music file.               |
+| {@link AgoraRtcEngine.getAudioMixingFileDuration getAudioMixingFileDuration}  | Gets the total duration of the music file.  |
 | {@link AgoraRtcEngine.getAudioMixingCurrentPosition getAudioMixingCurrentPosition} | Gets the playback position (ms) of the music file.      |
 | {@link AgoraRtcEngine.setAudioMixingPosition setAudioMixingPosition} | Sets the playback position of the music file.           |
 
@@ -136,6 +137,9 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.pauseAllEffects pauseAllEffects}     | Pauses all audio effects.                               |
 | {@link AgoraRtcEngine.resumeEffect resumeEffect}           | Resumes playing a specified audio effect.               |
 | {@link AgoraRtcEngine.resumeAllEffects resumeAllEffects}   | Resumes playing all audio effects.                      |
+| {@link AgoraRtcEngine.getEffectDuration getEffectDuration}                   | Gets the duration of the audio effect file.             |
+| {@link AgoraRtcEngine.setEffectPosition setEffectPosition}                   | Sets the playback position of an audio effect file.     |
+| {@link AgoraRtcEngine.getEffectCurrentPosition getEffectCurrentPosition}            | Gets the playback position of the audio effect file.    |
 
 ### Voice Effect
 
@@ -241,8 +245,8 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 
 | Method                                                       | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| {@link AgoraRtcEngine.startAudioRecording startAudioRecording} | Starts an audio recording on the client. |
-| {@link AgoraRtcEngine.stopAudioRecording stopAudioRecording}|Stops an audio recording on the client.|
+| {@link AgoraRtcEngine.startAudioRecordingWithConfig startAudioRecordingWithConfig}         | Starts an audio recording on the client. |
+| {@link AgoraRtcEngine.stopAudioRecording stopAudioRecording} | Stops an audio recording on the client.|
 
 ### Audio playback device management
 
@@ -534,6 +538,7 @@ Error codes occur when the SDK encounters an error that cannot be recovered auto
 | `-154`    | An error occurs in Agora's streaming server. <br/> Call the `addPublishStreamUrl` method to publish the streaming again.|
 | `-155`    | The server fails to find the stream.          |
 | `-156`    | The format of the RTMP stream URL is not supported. <br/>Check whether the URL format is correct.  |
+| `-160`| The client is already recording audio. To start a new recording, call `stopAudioRecording` to stop the current recording first, and then call `startAudioRecording`. |
 | `-1001`   | Fails to load the media engine.                                  |
 | `-1002`   | Fails to start the call after enabling the media engine.  |
 | `-1003`   | **DEPRECATED** Please use `error (4)` in `localVideoStateChanged` instead.<br/>Fails to start the camera. |
@@ -561,19 +566,19 @@ Error codes occur when the SDK encounters an error that cannot be recovered auto
 | `-1306`   | Audio device module: A playout driver abnomality or a compatibility issue occurs. <br/>Solutions: Disable and restart the audio device, or reboot the device.|
 | `-1307`   | Audio device module: No audio device is available. <br/>Solutions: Plug in a proper audio device.  |
 | `-1309`   | Audio device module: An audio driver abnomality or a compatibility issue occurs.<br/>Solutions: Disable and restart the audio device, or reboot the device.|
-| `-1311`   | Audio device module: Insufficient system memory or poor device performance.<br/>Solutions: reboot the device or replace the device. |
-| `-1314`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver.</li> |
-| `-1319`   | Audio device module: Insufficient system memory or poor device performance. <br/>Solutions: reboot the device or replace the device. |
-| `-1320`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Replace the device.</li>|
+| `-1311`   | Audio device module: Insufficient system memory or poor device performance.<br/>Solutions: Reboot the device or replace the device. |
+| `-1314`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>Reboot the device.</li><li>Upgrade your audio card driver.</li> |
+| `-1319`   | Audio device module: Insufficient system memory or poor device performance. <br/>Solutions: Reboot the device or replace the device. |
+| `-1320`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>Reboot the device.</li><li>Replace the device.</li>|
 | `-1322`   |  Audio device module: No audio sampling device is available. <br/>Solutions: Plug in a proper recording device. |
 | `-1323`   | Audio device module: No audio playout device is available. <br/>Solutions: Plug in a proper playback device.|
-| `-1351`   | Audio device module: An audio driver abnormality or a compatibility issue occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver.</li> |
-| `-1353`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver.</li>  |
-| `-1354`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver. |
-| `-1355`   |Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver. |
-| `-1356`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver. |
-| `-1357`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver. |
-| `-1358`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>reboot the device.</li><li>Upgrade your audio card driver. |
+| `-1351`   | Audio device module: An audio driver abnormality or a compatibility issue occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>Reboot the device.</li><li>Upgrade your audio card driver.</li> |
+| `-1353`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>Reboot the device.</li><li>Upgrade your audio card driver.</li>  |
+| `-1354`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>Reboot the device.</li><li>Upgrade your audio card driver. |
+| `-1355`   |Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>Reboot the device.</li><li>Upgrade your audio card driver. |
+| `-1356`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>Reboot the device.</li><li>Upgrade your audio card driver. |
+| `-1357`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>Reboot the device.</li><li>Upgrade your audio card driver. |
+| `-1358`   | Audio device module: An audio driver abnormality occurs. <br/>Solutions:<li>Disable and then re-enable the audio device.</li><li>Reboot the device.</li><li>Upgrade your audio card driver. |
 | `-1359`   | Audio Device Module: No recording device exists. |
 | `-1360`   | Audio Device Module: No playback device exists.    |
 | `-1501`   | Video Device Module: The camera is unauthorized. |
