@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 11:39:24
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-05-27 12:33:15
+ * @Last Modified time: 2021-06-04 18:04:43
  */
 import {
   ApiTypeEngine,
@@ -3314,8 +3314,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setVideoEncoderConfiguration(config: VideoEncoderConfiguration): number {
-    Object.assign(
+  setVideoEncoderConfiguration(videoEncoderConfiguration: VideoEncoderConfiguration): number {
+    let config = Object.assign(
       {
         dimensions: { width: 640, height: 360 },
         frameRate: 15,
@@ -3326,8 +3326,12 @@ class AgoraRtcEngine extends EventEmitter {
         degradationPreference: 0,
         mirrorMode: 0,
       },
-      config
+      videoEncoderConfiguration
     );
+
+    let param = {
+      config,
+    };
 
     let param = {
       config,
