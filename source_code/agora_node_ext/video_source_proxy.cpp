@@ -68,7 +68,7 @@ bool VideoSourceProxy::Initialize(
   const char *params[] = {cmdname.c_str(), idparam.c_str(), pidparam.c_str(),
                           nullptr};
   _node_process.reset(INodeProcess::CreateNodeProcess(path.c_str(), params));
-  if (!_node_process.get()) {
+  if (!_node_process) {
     LOG_F(INFO, "VideoSourceProxy CreateNodeProcess fail ");
     return false;
   }
@@ -114,15 +114,15 @@ void VideoSourceProxy::OnMessage(unsigned int msg, char *payload,
   switch (msg) {
   case AGORA_IPC_ON_EVENT: {
     auto _parameter = reinterpret_cast<CallbackParameter *>(payload);
-    if (_video_source_event_handler.get())
-      _video_source_event_handler.get()->OnVideoSourceEvent(
+    if (_video_source_event_handler)
+      _video_source_event_handler->OnVideoSourceEvent(
           _parameter->_eventName, _parameter->_eventData);
   } break;
 
   case AGORA_IPC_ON_EVENT_WITH_BUFFER: {
     auto _parameter = reinterpret_cast<CallbackParameter *>(payload);
-    if (_video_source_event_handler.get())
-      _video_source_event_handler.get()->OnVideoSourceEvent(
+    if (_video_source_event_handler)
+      _video_source_event_handler->OnVideoSourceEvent(
           _parameter->_eventName, _parameter->_eventData, _parameter->_buffer,
           _parameter->_length);
   } break;
@@ -231,12 +231,12 @@ void VideoSourceProxy::Clear() {
   _initialized = false;
   _video_source_event_handler = nullptr;
 
-  if (_ipc_data_receiver.get()) {
+  if (_ipc_data_receiver) {
     _ipc_data_receiver->stop();
     _ipc_data_receiver.reset();
   }
 
-  if (_agora_ipc.get()) {
+  if (_agora_ipc) {
     LOG_F(INFO, "VideoSourceProxy::Clear() send AGORA_IPC_DISCONNECT ");
     _agora_ipc->sendMessage(AGORA_IPC_DISCONNECT, nullptr, 0);
     _agora_ipc->disconnect();
