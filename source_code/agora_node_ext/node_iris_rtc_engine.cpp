@@ -16,9 +16,9 @@ Nan_Persistent<v8_Function> NodeIrisRtcEngine::_constructor;
 
 NodeIrisRtcEngine::NodeIrisRtcEngine(v8_Isolate *isolate) : _isolate(isolate) {
   LOG_F(INFO, "NodeIrisRtcEngine::NodeIrisRtcEngine()");
-  _iris_event_handler.reset(new NodeIrisEventHandler(this));
-  _iris_engine.reset(new IrisRtcEngine());
-  _video_processer.reset(new VideoProcesser(_iris_engine));
+  _iris_event_handler = std::make_shared<NodeIrisEventHandler>(this);
+  _iris_engine = std::make_shared<IrisRtcEngine>();
+  _video_processer = std::make_shared<VideoProcesser>(_iris_engine);
   _iris_raw_data = _iris_engine->raw_data();
   _iris_raw_data_plugin_manager = _iris_raw_data->plugin_manager();
   _iris_engine->SetEventHandler(_iris_event_handler.get());

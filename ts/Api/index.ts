@@ -3333,10 +3333,6 @@ class AgoraRtcEngine extends EventEmitter {
       config,
     };
 
-    let param = {
-      config,
-    };
-
     let ret = this._rtcEngine.CallApi(
       PROCESS_TYPE.MAIN,
       ApiTypeEngine.kEngineSetVideoEncoderConfiguration,

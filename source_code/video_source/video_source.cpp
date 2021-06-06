@@ -57,13 +57,14 @@ bool VideoSource::Initialize(std::string &parameter) {
     return false;
   }
 
-  _iris_engine.reset(new IrisRtcEngine());
+  _iris_engine = std::make_shared<IrisRtcEngine>();
+  _ipc_sender = std::make_shared<AgoraIpcDataSender>();
+  _video_processer.reset(new VideoProcesser(_iris_engine));
   _iris_raw_data = _iris_engine->raw_data();
   _iris_raw_data_plugin_manager = _iris_raw_data->plugin_manager();
   _iris_event_handler.reset(new VideoSourceIrisEventhandler(_ipc_controller));
   _iris_engine->SetEventHandler(_iris_event_handler.get());
-  _video_processer.reset(new VideoProcesser(_iris_engine));
-  _ipc_sender.reset(new AgoraIpcDataSender());
+
   if (!_ipc_sender->initialize(_peerId + DATA_IPC_NAME)) {
     LOG_F(INFO, "VideoSource  _ipc_sender initialize fail");
     return false;
@@ -82,7 +83,7 @@ void VideoSource::Run() {
 #endif
   _process.reset(INodeProcess::OpenNodeProcess(std::atoi(idstr.c_str())));
 
-  if (!_process.get()) {
+  if (!_process) {
     LOG_F(INFO, "VideoSource process open fail");
     return;
   }
