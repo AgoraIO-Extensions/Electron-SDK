@@ -55,6 +55,7 @@ const unsigned int AgoraVideoSourceTransporter::S_BUF_LEN = (int)(MAX_VIDEO_WIDT
 AgoraVideoSourceTransporter::AgoraVideoSourceTransporter(AgoraVideoSource& videoSource)
     : m_videoSource(videoSource)
 {
+
 }
 
 AgoraVideoSourceTransporter::~AgoraVideoSourceTransporter()
@@ -92,21 +93,26 @@ int AgoraVideoSourceTransporter::deliverFrame_I420(const agora::media::IVideoFra
 
     int width = videoFrame.width();
     int height = videoFrame.height();
+
     int destWidth = width;
     int destHeight = height;
     if (width != strideY || (width % 16) != 0 || (strideY % 16) != 0){
         destWidth = (((width + 15) >> 4) << 4);
     }
 
+    if (height % 2 != 0) {
+        destHeight = (height + 1) / 2 * 2;
+    }
+
     char* pbuf = m_buf.data();
     rotation = rotation < 0 ? rotation + 360 : rotation;
     image_frame_info *info = (image_frame_info*)pbuf;
-	info->stride = destWidth;
-	info->stride0 = destWidth;
-	info->width = destWidth;
-	info->height = destHeight;
-	info->strideU = destWidth/2 ;
-	info->strideV = destWidth/2;
+	  info->stride = destWidth;
+	  info->stride0 = destWidth;
+	  info->width = destWidth;
+	  info->height = destHeight;
+	  info->strideU = destWidth/2 ;
+	  info->strideV = destWidth/2;
 
     image_header_type *hdr = (image_header_type*)(pbuf + sizeof(image_frame_info));
     hdr->mirrored = mirrored;
@@ -120,13 +126,13 @@ int AgoraVideoSourceTransporter::deliverFrame_I420(const agora::media::IVideoFra
     hdr->timestamp = 0;
 
     char* y = pbuf + sizeof(image_frame_info) + sizeof(image_header_type);
-	char* u = y + destWidth * destHeight;
-	char* v = u + destWidth / 2 * destHeight / 2 ;
+    char* u = y + destWidth * destHeight;
+    char* v = u + destWidth / 2 * destHeight / 2 ;
     const unsigned char* planeY = videoFrame.buffer(IVideoFrame::Y_PLANE);
     const unsigned char* planeU = videoFrame.buffer(IVideoFrame::U_PLANE);
     const unsigned char* planeV = videoFrame.buffer(IVideoFrame::V_PLANE);
 	
-    if (destWidth != width) {
+    if (destWidth != width || destHeight != height) {
         I420Scale(planeY, strideY, planeU, strideU, planeV, strideV, width, height, 
         (uint8*)y, destWidth, (uint8*)u, destWidth / 2, (uint8*)v, destWidth / 2, destWidth, destHeight, kFilterNone);
     } else {
