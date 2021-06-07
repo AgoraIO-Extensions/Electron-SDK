@@ -1,3 +1,7 @@
+# 3.3.1.235 (June 4th, 2021)
+* add new api:
+  - videoSourceDisableAudio
+
 # 3.3.1 (Mar 12th, 2021)
 * add new api:
   - setVoiceConversionPreset

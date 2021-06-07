@@ -414,6 +414,14 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
     else if(msg == AGORA_IPC_ENABLE_AUDIO) {
         m_rtcEngine->enableAudio();
     }
+    else if(msg == AGORA_IPC_DISABLE_AUDIO) {
+#if defined(__APPLE__)
+        
+#elif defined(_WIN32)
+        m_rtcEngine->disableAudio();
+#endif
+        
+    }
     else if(msg == AGORA_IPC_SET_ENCRYPTION_MODE) {
         m_rtcEngine->setEncryptionMode((const char *)payload);
     }

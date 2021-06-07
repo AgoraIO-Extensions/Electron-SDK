@@ -3199,6 +3199,7 @@ export interface NodeRtcEngine {
    * @ignore
    */
   videoSourceEnableAudio(): number;
+  videoSourceDisableAudio(): number;
   /**
    * @ignore
    */

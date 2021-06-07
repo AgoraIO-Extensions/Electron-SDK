@@ -70,6 +70,7 @@ namespace agora{
             virtual void setParameters(const char* parameters) override;
             virtual node_error enableLoopbackRecording(bool enabled, const char* deviceName) override;
             virtual node_error enableAudio() override;
+            virtual node_error disableAudio() override;
             virtual node_error setEncryptionMode(const char *encryptionMode) override;
             virtual node_error enableEncryption(bool enable, EncryptionConfig encryptionConfig) override;
             virtual node_error setEncryptionSecret(const char* secret) override;
@@ -245,7 +246,7 @@ namespace agora{
 
             return m_ipcMsg->sendMessage(AGORA_IPC_STOP_VS_PREVIEW, nullptr, 0) ? node_ok : node_generic_error;
         }
-        
+
         node_error AgoraVideoSourceSink::enableWebSdkInteroperability(bool enabled)
         {
             if (m_initialized){
@@ -319,7 +320,7 @@ namespace agora{
             }
             return node_status_error;
         }
-        
+
         node_error AgoraVideoSourceSink::setVideoSourceChannelProfile(agora::rtc::CHANNEL_PROFILE_TYPE profile, const char* permissionKey)
         {
             if (m_initialized){
@@ -333,7 +334,7 @@ namespace agora{
             }
             return node_status_error;
         }
-        
+
         node_error AgoraVideoSourceSink::setVideoSourceVideoProfile(agora::rtc::VIDEO_PROFILE_TYPE profile, bool swapWidthAndHeight)
         {
             if (m_initialized){
@@ -474,7 +475,7 @@ namespace agora{
                 for (int i = 0; i < count; i++) {
                     cmd.excludeWindowList[i] = excludeWindows[i];
                 }
-                
+
                 return m_ipcMsg->sendMessage(AGORA_IPC_START_CAPTURE_BY_DISPLAY, (char*)&cmd, sizeof(cmd)) ? node_ok : node_generic_error;
             }
             return node_status_error;
@@ -531,6 +532,14 @@ namespace agora{
             return node_status_error;
         }
 
+        node_error AgoraVideoSourceSink::disableAudio()
+        {
+            if (m_initialized && m_peerJoined){
+                return m_ipcMsg->sendMessage(AGORA_IPC_DISABLE_AUDIO, nullptr, 0) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
         node_error AgoraVideoSourceSink::setEncryptionMode(const char *encryptionMode)
         {
             if (m_initialized){
@@ -544,7 +553,7 @@ namespace agora{
             if (m_initialized){
                 return m_ipcMsg->sendMessage(AGORA_IPC_SET_ENCRYPTION_SECRET, (char *)secret, sizeof(const char *)) ? node_ok : node_generic_error;
             }
-            return node_status_error;      
+            return node_status_error;
         }
 
         node_error AgoraVideoSourceSink::enableEncryption(bool enable, EncryptionConfig encryptionConfig)

@@ -4038,6 +4038,9 @@ class AgoraRtcEngine extends EventEmitter {
   videoSourceEnableAudio() : number {
     return this.rtcEngine.videoSourceEnableAudio()
   }
+  videoSourceDisableAudio() : number {
+    return this.rtcEngine.videoSourceDisableAudio()
+  }
   /** Enables/Disables the built-in encryption.
    *
    * @since v3.2.0
