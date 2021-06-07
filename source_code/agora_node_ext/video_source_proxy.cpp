@@ -162,7 +162,7 @@ int VideoSourceProxy::CallApi(ApiTypeEngine apiType, const char *parameter,
   return -1;
 }
 
-int VideoSourceProxy::PluginCallApi(ApiTypeRawDataPlugin apiType,
+int VideoSourceProxy::PluginCallApi(ApiTypeRawDataPluginManager apiType,
                                     const char *parameter, char *result) {
   if (_initialized) {
     ApiParameter apiParameter;
