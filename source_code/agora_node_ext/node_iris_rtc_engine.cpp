@@ -454,11 +454,11 @@ void NodeIrisRtcEngine::PluginCallApi(
     try {
       if (_process_type == PROCESS_TYPE::MAIN) {
         _ret = _engine->_iris_raw_data_plugin_manager->CallApi(
-            (ApiTypeRawDataPlugin)_apiType, _parameter.c_str(), _result);
+            (ApiTypeRawDataPluginManager)_apiType, _parameter.c_str(), _result);
       } else {
         if (_engine->_video_source_proxy) {
           _ret = _engine->_video_source_proxy->PluginCallApi(
-              (ApiTypeRawDataPlugin)_apiType, _parameter.c_str(), _result);
+              (ApiTypeRawDataPluginManager)_apiType, _parameter.c_str(), _result);
         } else {
           LOG_F(INFO,
                 "PluginCallApi parameter did not initialize videoSource yet "
@@ -498,7 +498,7 @@ void NodeIrisRtcEngine::EnableVideoFrameCache(
 
   if (_engine->_iris_engine) {
     IrisRtcRendererCacheConfig config(
-        VideoFrameType::kFrameTypeYUV420, nullptr,
+        VideoFrameType::kVideoFrameTypeYUV420, nullptr,
         _width, _height);
     try {
       if (_process_type == PROCESS_TYPE::MAIN) {

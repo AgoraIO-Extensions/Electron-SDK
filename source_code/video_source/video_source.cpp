@@ -139,7 +139,7 @@ void VideoSource::OnMessage(unsigned int msg, char *data, unsigned int len) {
     char result[512];
     try {
       _iris_raw_data_plugin_manager->CallApi(
-          ApiTypeRawDataPlugin(parameter->_apiType), parameter->_parameters,
+          ApiTypeRawDataPluginManager(parameter->_apiType), parameter->_parameters,
           result);
     } catch (std::exception &e) {
       LOG_F(INFO, "VideoSourcePluginCallApi catch exception: %s", e.what());
@@ -151,7 +151,7 @@ void VideoSource::OnMessage(unsigned int msg, char *data, unsigned int len) {
     VideoFrameCacheConfigParameter *_parameter =
         (VideoFrameCacheConfigParameter *)data;
     IrisRtcRendererCacheConfig _cacheConfig(
-        kFrameTypeYUV420,
+        kVideoFrameTypeYUV420,
         new VideoSourceIrisVideoFrameObserver(_ipc_sender), _parameter->_width,
         _parameter->_height);
     _video_processer->EnableVideoFrameCache(_cacheConfig, _parameter->_uid,
