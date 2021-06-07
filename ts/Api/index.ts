@@ -5411,9 +5411,9 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  startAudioRecordingDeviceTest(testAudioFilePath: string): number {
+  startAudioRecordingDeviceTest(indicationInterval: number): number {
     let param = {
-      testAudioFilePath,
+      indicationInterval,
     };
 
     let ret = this._rtcDeviceManager.CallApiAudioDevice(
