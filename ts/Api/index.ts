@@ -11,6 +11,7 @@ import {
   ApiTypeVideoDeviceManager,
   ApiTypeRawDataPlugin,
   PROCESS_TYPE,
+  AudioRecordingConfiguration,
 } from "./internal/native_type";
 import {
   NodeIrisRtcEngine,
@@ -4815,6 +4816,85 @@ class AgoraRtcEngine extends EventEmitter {
     );
     return ret.retCode;
   }
+
+  /**
+   * * @TODO
+   * 3.3.2 ~ 3.4.2
+   * @param volume 
+   * @returns 
+   */
+   adjustLoopbackRecordingSignalVolume(volume: number): number {
+    const param = {
+      volume,
+    };
+
+    const ret = this._rtcEngine.CallApi(
+      PROCESS_TYPE.MAIN,
+      ApiTypeEngine.kEngineAdjustLoopbackRecordingSignalVolume,
+      JSON.stringify(param)
+    );
+    return ret.retCode;
+   }
+  
+  /**
+   * * @TODO
+   * 3.3.2 ~ 3.4.2
+   * @param soundId 
+   * @param pos 
+   * @returns 
+   */
+  setEffectPosition(soundId: number, pos: number): number {
+    const param = {
+      soundId,
+      pos
+    };
+
+    const ret = this._rtcEngine.CallApi(
+      PROCESS_TYPE.MAIN,
+      ApiTypeEngine.kEngineSetEffectPosition,
+      JSON.stringify(param)
+    );
+    return ret.retCode;
+  }
+
+  /**
+   * * @TODO
+   * * 3.3.2 ~ 3.4.2
+   * @param filePath 
+   * @returns 
+   */
+  getEffectDuration(filePath: string): number {
+    const param = {
+      filePath
+    };
+
+    const ret = this._rtcEngine.CallApi(
+      PROCESS_TYPE.MAIN,
+      ApiTypeEngine.kEngineGetEffectDuration,
+      JSON.stringify(param)
+    );
+    return ret.retCode;
+  }
+
+  /**
+   * * @TODO
+   * 3.3.2 ~ 3.4.2
+   * @param soundId 
+   * @returns 
+   */
+  getEffectCurrentPosition(soundId: number): number {
+    const param = {
+      soundId
+    };
+
+    const ret = this._rtcEngine.CallApi(
+      PROCESS_TYPE.MAIN,
+      ApiTypeEngine.kEngineGetEffectCurrentPosition,
+      JSON.stringify(param)
+    );
+    return ret.retCode;
+  }
+
   /**
    * Adjusts the playback volume of a specified remote user.
    *
@@ -4929,6 +5009,26 @@ class AgoraRtcEngine extends EventEmitter {
     );
     return ret.retCode;
   }
+
+  /**
+   * * @TODO
+   * * 3.3.2 ~ 3.4.2
+   * @param config 
+   * @returns 
+   */
+  startAudioRecordingWithConfig(config: AudioRecordingConfiguration): number {
+    const param = {
+      config
+    };
+
+    const ret = this._rtcEngine.CallApi(
+      PROCESS_TYPE.MAIN,
+      ApiTypeEngine.kEngineStartAudioRecording,
+      JSON.stringify(param)
+    );
+    return ret.retCode;
+  }
+
   /**
    * Stops an audio recording on the client.
    *
@@ -5775,13 +5875,15 @@ class AgoraRtcEngine extends EventEmitter {
     filePath: string,
     loopback: boolean,
     replace: boolean,
-    cycle: number
+    cycle: number,
+    startPos?: number,
   ): number {
     let param = {
       filePath,
       loopback,
       replace,
       cycle,
+      startPos
     };
 
     let ret = this._rtcEngine.CallApi(
@@ -5920,11 +6022,11 @@ class AgoraRtcEngine extends EventEmitter {
    * - ≥ 0: The audio mixing duration, if this method call succeeds.
    * - < 0: Failure.
    */
-  getAudioMixingDuration(): number {
+  getAudioMixingDuration(filePath?: string): number {
     let ret = this._rtcEngine.CallApi(
       PROCESS_TYPE.MAIN,
       ApiTypeEngine.kEngineGetAudioMixingDuration,
-      ""
+      filePath ? JSON.stringify({ filePath }) : ""
     );
     return ret.retCode;
   }
@@ -6570,7 +6672,8 @@ class AgoraRtcEngine extends EventEmitter {
     pitch: number,
     pan: number,
     gain: number,
-    publish: number
+    publish: number,
+    startPos?: number
   ): number {
     let param = {
       soundId,
@@ -6580,6 +6683,7 @@ class AgoraRtcEngine extends EventEmitter {
       pan,
       gain,
       publish,
+      startPos
     };
 
     let ret = this._rtcEngine.CallApi(
