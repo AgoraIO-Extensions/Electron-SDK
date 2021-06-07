@@ -220,50 +220,51 @@ export enum ApiTypeChannel {
 }
 
 export enum ApiTypeAudioDeviceManager {
-  kGetAudioPlaybackDeviceCount,
-  kGetAudioPlaybackDeviceInfoByIndex,
-  kSetCurrentAudioPlaybackDeviceId,
-  kGetCurrentAudioPlaybackDeviceId,
-  kGetCurrentAudioPlaybackDeviceInfo,
-  kSetAudioPlaybackDeviceVolume,
-  kGetAudioPlaybackDeviceVolume,
-  kSetAudioPlaybackDeviceMute,
-  kGetAudioPlaybackDeviceMute,
-  kStartAudioPlaybackDeviceTest,
-  kStopAudioPlaybackDeviceTest,
-  kGetAudioRecordingDeviceCount,
-  kGetAudioRecordingDeviceInfoByIndex,
-  kSetCurrentAudioRecordingDeviceId,
-  kGetCurrentAudioRecordingDeviceId,
-  kGetCurrentAudioRecordingDeviceInfo,
-  kSetAudioRecordingDeviceVolume,
-  kGetAudioRecordingDeviceVolume,
-  kSetAudioRecordingDeviceMute,
-  kGetAudioRecordingDeviceMute,
-  kStartAudioRecordingDeviceTest,
-  kStopAudioRecordingDeviceTest,
-  kStartAudioDeviceLoopbackTest,
-  kStopAudioDeviceLoopbackTest,
+  kADMEnumeratePlaybackDevices,
+
+  kADMSetPlaybackDevice,
+  kADMGetPlaybackDevice,
+  kADMGetPlaybackDeviceInfo,
+  kADMSetPlaybackDeviceVolume,
+  kADMGetPlaybackDeviceVolume,
+  kADMSetPlaybackDeviceMute,
+  kADMGetPlaybackDeviceMute,
+  kADMStartPlaybackDeviceTest,
+  kADMStopPlaybackDeviceTest,
+
+  kADMEnumerateRecordingDevices,
+  kADMSetRecordingDevice,
+  kADMGetRecordingDevice,
+  kADMGetRecordingDeviceInfo,
+  kADMSetRecordingDeviceVolume,
+  kADMGetRecordingDeviceVolume,
+  kADMSetRecordingDeviceMute,
+  kADMGetRecordingDeviceMute,
+  kADMStartRecordingDeviceTest,
+  kADMStopRecordingDeviceTest,
+
+  kADMStartAudioDeviceLoopbackTest,
+  kADMStopAudioDeviceLoopbackTest,
 }
 
 export enum ApiTypeVideoDeviceManager {
-  kGetVideoDeviceCount,
-  kGetVideoDeviceInfoByIndex,
-  kSetCurrentVideoDeviceId,
-  kGetCurrentVideoDeviceId,
-  kStartVideoDeviceTest,
-  kStopVideoDeviceTest,
+  kVDMEnumerateVideoDevices,
+  
+  kVDMSetDevice,
+  kVDMGetDevice,
+  kVDMStartDeviceTest,
+  kVDMStopDeviceTest,
 }
 
-export enum ApiTypeRawDataPlugin {
-  kRegisterPlugin,
-  kUnregisterPlugin,
-  kHasPlugin,
-  kEnablePlugin,
-  kGetPlugins,
-  kSetPluginParameter,
-  kGetPluginParameter,
-  kRelease,
+export enum ApiTypeRawDataPluginManager {
+  kRDPMRegisterPlugin,
+  kRDPMUnregisterPlugin,
+  kRDPMHasPlugin,
+  kRDPMEnablePlugin,
+  kRDPMGetPlugins,
+  kRDPMSetPluginParameter,
+  kRDPMGetPluginParameter,
+  kRDPMRelease
 }
 
 export enum PROCESS_TYPE {
