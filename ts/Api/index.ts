@@ -9,7 +9,7 @@ import {
   ApiTypeChannel,
   ApiTypeAudioDeviceManager,
   ApiTypeVideoDeviceManager,
-  ApiTypeRawDataPlugin,
+  ApiTypeRawDataPluginManager,
   PROCESS_TYPE,
   AudioRecordingConfiguration,
 } from "./internal/native_type";
@@ -1795,9 +1795,9 @@ class AgoraRtcEngine extends EventEmitter {
             {
               let data: {
                 state: AUDIO_MIXING_STATE_TYPE;
-                errorCode: AUDIO_MIXING_REASON_TYPE;
+                reason: AUDIO_MIXING_REASON_TYPE;
               } = JSON.parse(_eventData);
-              fire("audioMixingStateChanged", data.state, data.errorCode);
+              fire("audioMixingStateChanged", data.state, data.reason);
             }
             break;
 
@@ -3315,23 +3315,22 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setVideoEncoderConfiguration(videoEncoderConfiguration: VideoEncoderConfiguration): number {
-    let config = Object.assign(
-      {
-        dimensions: { width: 640, height: 360 },
-        frameRate: 15,
-        minFrameRate: -1,
-        bitrate: 0,
-        minBitrate: -1,
-        orientationMode: 0,
-        degradationPreference: 0,
-        mirrorMode: 0,
-      },
-      videoEncoderConfiguration
-    );
+  setVideoEncoderConfiguration(config: VideoEncoderConfiguration): number {
 
-    let param = {
-      config,
+    const param = {
+      config: Object.assign(
+        {
+          dimensions: { width: 640, height: 360 },
+          frameRate: 15,
+          minFrameRate: -1,
+          bitrate: 0,
+          minBitrate: -1,
+          orientationMode: 0,
+          degradationPreference: 0,
+          mirrorMode: 0,
+        },
+        config
+      ),
     };
 
     let ret = this._rtcEngine.CallApi(
@@ -5056,25 +5055,12 @@ class AgoraRtcEngine extends EventEmitter {
    * @return {Array} The array of the video devices.
    */
   getVideoDevices(): Array<Device> {
-    let ret = this._rtcDeviceManager.CallApiVideoDevice(
-      ApiTypeVideoDeviceManager.kGetVideoDeviceCount,
+    const ret = this._rtcDeviceManager.CallApiVideoDevice(
+      ApiTypeVideoDeviceManager.kVDMEnumerateVideoDevices,
       ""
     );
-
-    let deviceList = new Array<Device>();
-    for (let i = 0; i < ret.retCode; i++) {
-      let param = {
-        index: i,
-      };
-
-      let ret = this._rtcDeviceManager.CallApiVideoDevice(
-        ApiTypeVideoDeviceManager.kGetVideoDeviceInfoByIndex,
-        JSON.stringify(param)
-      );
-      let deviceObject = this.convertDeviceInfoToObject(ret.result);
-      deviceList.push(deviceObject);
-    }
-    return deviceList;
+    
+    return JSON.parse(ret.result);
   }
 
   /**
@@ -5090,7 +5076,7 @@ class AgoraRtcEngine extends EventEmitter {
     };
 
     let ret = this._rtcDeviceManager.CallApiVideoDevice(
-      ApiTypeVideoDeviceManager.kSetCurrentVideoDeviceId,
+      ApiTypeVideoDeviceManager.kVDMSetDevice,
       JSON.stringify(param)
     );
     return ret.retCode;
@@ -5102,7 +5088,7 @@ class AgoraRtcEngine extends EventEmitter {
    */
   getCurrentVideoDevice(): Device {
     let ret = this._rtcDeviceManager.CallApiVideoDevice(
-      ApiTypeVideoDeviceManager.kGetCurrentVideoDeviceId,
+      ApiTypeVideoDeviceManager.kVDMGetDevice,
       ""
     );
 
@@ -5132,7 +5118,7 @@ class AgoraRtcEngine extends EventEmitter {
     };
 
     let ret = this._rtcDeviceManager.CallApiVideoDevice(
-      ApiTypeVideoDeviceManager.kStartVideoDeviceTest,
+      ApiTypeVideoDeviceManager.kVDMStartDeviceTest,
       JSON.stringify(param)
     );
     return ret.retCode;
@@ -5152,7 +5138,7 @@ class AgoraRtcEngine extends EventEmitter {
    */
   stopVideoDeviceTest(): number {
     let ret = this._rtcDeviceManager.CallApiVideoDevice(
-      ApiTypeVideoDeviceManager.kStopVideoDeviceTest,
+      ApiTypeVideoDeviceManager.kVDMStopDeviceTest,
       ""
     );
     return ret.retCode;
@@ -5163,25 +5149,12 @@ class AgoraRtcEngine extends EventEmitter {
    * @return {Array} The array of the audio playback device.
    */
   getAudioPlaybackDevices(): Array<Device> {
-    let ret = this._rtcDeviceManager.CallApiAudioDevice(
-      ApiTypeAudioDeviceManager.kGetAudioPlaybackDeviceCount,
+    const ret = this._rtcDeviceManager.CallApiAudioDevice(
+      ApiTypeAudioDeviceManager.kADMEnumeratePlaybackDevices,
       ""
     );
 
-    let deviceList = new Array<Device>();
-    for (let i = 0; i < ret.retCode; i++) {
-      let param = {
-        index: i,
-      };
-
-      let ret = this._rtcDeviceManager.CallApiAudioDevice(
-        ApiTypeAudioDeviceManager.kGetAudioPlaybackDeviceInfoByIndex,
-        JSON.stringify(param)
-      );
-      let deviceObject = this.convertDeviceInfoToObject(ret.result);
-      deviceList.push(deviceObject);
-    }
-    return deviceList;
+    return JSON.parse(ret.result);
   }
 
   /**
@@ -5197,7 +5170,7 @@ class AgoraRtcEngine extends EventEmitter {
     };
 
     let ret = this._rtcDeviceManager.CallApiAudioDevice(
-      ApiTypeAudioDeviceManager.kSetCurrentAudioPlaybackDeviceId,
+      ApiTypeAudioDeviceManager.kADMSetPlaybackDevice,
       JSON.stringify(param)
     );
     return ret.retCode;
@@ -5224,7 +5197,7 @@ class AgoraRtcEngine extends EventEmitter {
    */
   getCurrentAudioPlaybackDevice(): Device {
     let ret = this._rtcDeviceManager.CallApiAudioDevice(
-      ApiTypeAudioDeviceManager.kGetCurrentAudioPlaybackDeviceId,
+      ApiTypeAudioDeviceManager.kADMGetPlaybackDevice,
       ""
     );
 
@@ -5251,7 +5224,7 @@ class AgoraRtcEngine extends EventEmitter {
     };
 
     let ret = this._rtcDeviceManager.CallApiAudioDevice(
-      ApiTypeAudioDeviceManager.kSetAudioPlaybackDeviceVolume,
+      ApiTypeAudioDeviceManager.kADMSetPlaybackDeviceVolume,
       JSON.stringify(param)
     );
     return ret.retCode;
@@ -5263,7 +5236,7 @@ class AgoraRtcEngine extends EventEmitter {
    */
   getAudioPlaybackVolume(): number {
     let ret = this._rtcDeviceManager.CallApiAudioDevice(
-      ApiTypeAudioDeviceManager.kGetAudioPlaybackDeviceVolume,
+      ApiTypeAudioDeviceManager.kADMGetPlaybackDeviceVolume,
       ""
     );
     return ret.retCode;
@@ -5274,25 +5247,12 @@ class AgoraRtcEngine extends EventEmitter {
    * @return {Array} The array of the audio recording device.
    */
   getAudioRecordingDevices(): Array<Device> {
-    let ret = this._rtcDeviceManager.CallApiAudioDevice(
-      ApiTypeAudioDeviceManager.kGetAudioRecordingDeviceCount,
+    const ret = this._rtcDeviceManager.CallApiAudioDevice(
+      ApiTypeAudioDeviceManager.kADMEnumerateRecordingDevices,
       ""
     );
 
-    let deviceList = new Array<Device>();
-    for (let i = 0; i < ret.retCode; i++) {
-      let param = {
-        index: i,
-      };
-
-      let ret = this._rtcDeviceManager.CallApiAudioDevice(
-        ApiTypeAudioDeviceManager.kGetAudioRecordingDeviceInfoByIndex,
-        JSON.stringify(param)
-      );
-      let deviceObject = this.convertDeviceInfoToObject(ret.result);
-      deviceList.push(deviceObject);
-    }
-    return deviceList;
+    return JSON.parse(ret.result);
   }
 
   /**
@@ -5308,7 +5268,7 @@ class AgoraRtcEngine extends EventEmitter {
     };
 
     let ret = this._rtcDeviceManager.CallApiAudioDevice(
-      ApiTypeAudioDeviceManager.kSetCurrentAudioRecordingDeviceId,
+      ApiTypeAudioDeviceManager.kADMSetRecordingDevice,
       JSON.stringify(param)
     );
     return ret.retCode;
@@ -5335,7 +5295,7 @@ class AgoraRtcEngine extends EventEmitter {
    */
   getCurrentAudioRecordingDevice(): Device {
     let ret = this._rtcDeviceManager.CallApiAudioDevice(
-      ApiTypeAudioDeviceManager.kGetCurrentAudioPlaybackDeviceInfo,
+      ApiTypeAudioDeviceManager.kADMGetPlaybackDeviceInfo,
       ""
     );
     let deviceObject = this.convertDeviceInfoToObject(ret.result);
@@ -5349,7 +5309,7 @@ class AgoraRtcEngine extends EventEmitter {
    */
   getAudioRecordingVolume(): number {
     let ret = this._rtcDeviceManager.CallApiAudioDevice(
-      ApiTypeAudioDeviceManager.kGetAudioRecordingDeviceVolume,
+      ApiTypeAudioDeviceManager.kADMGetRecordingDeviceVolume,
       ""
     );
     return ret.retCode;
@@ -5369,7 +5329,7 @@ class AgoraRtcEngine extends EventEmitter {
     };
 
     let ret = this._rtcDeviceManager.CallApiAudioDevice(
-      ApiTypeAudioDeviceManager.kSetAudioRecordingDeviceVolume,
+      ApiTypeAudioDeviceManager.kADMSetRecordingDeviceVolume,
       JSON.stringify(param)
     );
     return ret.retCode;
@@ -5395,7 +5355,7 @@ class AgoraRtcEngine extends EventEmitter {
     };
 
     let ret = this._rtcDeviceManager.CallApiAudioDevice(
-      ApiTypeAudioDeviceManager.kStartAudioPlaybackDeviceTest,
+      ApiTypeAudioDeviceManager.kADMStartPlaybackDeviceTest,
       JSON.stringify(param)
     );
     return ret.retCode;
@@ -5413,7 +5373,7 @@ class AgoraRtcEngine extends EventEmitter {
    */
   stopAudioPlaybackDeviceTest(): number {
     let ret = this._rtcDeviceManager.CallApiAudioDevice(
-      ApiTypeAudioDeviceManager.kStopAudioPlaybackDeviceTest,
+      ApiTypeAudioDeviceManager.kADMStopPlaybackDeviceTest,
       ""
     );
     return ret.retCode;
@@ -5440,7 +5400,7 @@ class AgoraRtcEngine extends EventEmitter {
     };
 
     let ret = this._rtcDeviceManager.CallApiAudioDevice(
-      ApiTypeAudioDeviceManager.kStartAudioDeviceLoopbackTest,
+      ApiTypeAudioDeviceManager.kADMStartAudioDeviceLoopbackTest,
       JSON.stringify(param)
     );
     return ret.retCode;
@@ -5459,7 +5419,7 @@ class AgoraRtcEngine extends EventEmitter {
    */
   stopAudioDeviceLoopbackTest(): number {
     let ret = this._rtcDeviceManager.CallApiAudioDevice(
-      ApiTypeAudioDeviceManager.kStopAudioDeviceLoopbackTest,
+      ApiTypeAudioDeviceManager.kADMStopAudioDeviceLoopbackTest,
       ""
     );
     return ret.retCode;
@@ -5518,7 +5478,7 @@ class AgoraRtcEngine extends EventEmitter {
     };
 
     let ret = this._rtcDeviceManager.CallApiAudioDevice(
-      ApiTypeAudioDeviceManager.kStartAudioRecordingDeviceTest,
+      ApiTypeAudioDeviceManager.kADMStartRecordingDeviceTest,
       JSON.stringify(param)
     );
     return ret.retCode;
@@ -5537,7 +5497,7 @@ class AgoraRtcEngine extends EventEmitter {
    */
   stopAudioRecordingDeviceTest(): number {
     let ret = this._rtcDeviceManager.CallApiAudioDevice(
-      ApiTypeAudioDeviceManager.kStopAudioRecordingDeviceTest,
+      ApiTypeAudioDeviceManager.kADMStopRecordingDeviceTest,
       ""
     );
     return ret.retCode;
@@ -5549,7 +5509,7 @@ class AgoraRtcEngine extends EventEmitter {
    */
   getAudioPlaybackDeviceMute(): boolean {
     let ret = this._rtcDeviceManager.CallApiAudioDevice(
-      ApiTypeAudioDeviceManager.kGetAudioPlaybackDeviceMute,
+      ApiTypeAudioDeviceManager.kADMGetPlaybackDeviceMute,
       ""
     );
     return ret.retCode !== 0;
@@ -5571,7 +5531,7 @@ class AgoraRtcEngine extends EventEmitter {
     };
 
     let ret = this._rtcDeviceManager.CallApiAudioDevice(
-      ApiTypeAudioDeviceManager.kSetAudioPlaybackDeviceMute,
+      ApiTypeAudioDeviceManager.kADMSetPlaybackDeviceMute,
       JSON.stringify(param)
     );
     return ret.retCode;
@@ -5585,7 +5545,7 @@ class AgoraRtcEngine extends EventEmitter {
    */
   getAudioRecordingDeviceMute(): boolean {
     let ret = this._rtcDeviceManager.CallApiAudioDevice(
-      ApiTypeAudioDeviceManager.kGetAudioRecordingDeviceMute,
+      ApiTypeAudioDeviceManager.kADMGetRecordingDeviceMute,
       ""
     );
     return ret.retCode !== 0;
@@ -5607,7 +5567,7 @@ class AgoraRtcEngine extends EventEmitter {
     };
 
     let ret = this._rtcDeviceManager.CallApiAudioDevice(
-      ApiTypeAudioDeviceManager.kSetAudioRecordingDeviceMute,
+      ApiTypeAudioDeviceManager.kADMSetRecordingDeviceMute,
       JSON.stringify(param)
     );
     return ret.retCode;
@@ -7479,7 +7439,7 @@ class AgoraRtcEngine extends EventEmitter {
 
     let ret = this._rtcEngine.PluginCallApi(
       PROCESS_TYPE.MAIN,
-      ApiTypeRawDataPlugin.kRegisterPlugin,
+      ApiTypeRawDataPluginManager.kRDPMRegisterPlugin,
       JSON.stringify(param)
     );
     return ret.retCode;
@@ -7492,7 +7452,7 @@ class AgoraRtcEngine extends EventEmitter {
 
     let ret = this._rtcEngine.PluginCallApi(
       PROCESS_TYPE.MAIN,
-      ApiTypeRawDataPlugin.kUnregisterPlugin,
+      ApiTypeRawDataPluginManager.kRDPMUnregisterPlugin,
       JSON.stringify(param)
     );
     return ret.retCode;
@@ -7501,7 +7461,7 @@ class AgoraRtcEngine extends EventEmitter {
   getPlugins(): Plugin[] {
     let ret = this._rtcEngine.PluginCallApi(
       PROCESS_TYPE.MAIN,
-      ApiTypeRawDataPlugin.kGetPlugins,
+      ApiTypeRawDataPluginManager.kRDPMGetPlugins,
       ""
     );
     let pluginIdArray: string[] = JSON.parse(ret.result);
@@ -7541,7 +7501,7 @@ class AgoraRtcEngine extends EventEmitter {
 
     let ret = this._rtcEngine.PluginCallApi(
       PROCESS_TYPE.MAIN,
-      ApiTypeRawDataPlugin.kEnablePlugin,
+      ApiTypeRawDataPluginManager.kRDPMEnablePlugin,
       JSON.stringify(param)
     );
     return ret.retCode;
@@ -7555,7 +7515,7 @@ class AgoraRtcEngine extends EventEmitter {
 
     let ret = this._rtcEngine.PluginCallApi(
       PROCESS_TYPE.MAIN,
-      ApiTypeRawDataPlugin.kSetPluginParameter,
+      ApiTypeRawDataPluginManager.kRDPMSetPluginParameter,
       JSON.stringify(param)
     );
     return ret.retCode;
@@ -7569,7 +7529,7 @@ class AgoraRtcEngine extends EventEmitter {
 
     let ret = this._rtcEngine.PluginCallApi(
       PROCESS_TYPE.MAIN,
-      ApiTypeRawDataPlugin.kGetPluginParameter,
+      ApiTypeRawDataPluginManager.kRDPMGetPluginParameter,
       JSON.stringify(param)
     );
     return ret.result;
@@ -8450,7 +8410,7 @@ class AgoraRtcEngine extends EventEmitter {
 
     let ret = this._rtcEngine.PluginCallApi(
       PROCESS_TYPE.SCREEN_SHARE,
-      ApiTypeRawDataPlugin.kRegisterPlugin,
+      ApiTypeRawDataPluginManager.kRDPMRegisterPlugin,
       JSON.stringify(param)
     );
     return ret.retCode;
@@ -8463,7 +8423,7 @@ class AgoraRtcEngine extends EventEmitter {
 
     let ret = this._rtcEngine.PluginCallApi(
       PROCESS_TYPE.SCREEN_SHARE,
-      ApiTypeRawDataPlugin.kUnregisterPlugin,
+      ApiTypeRawDataPluginManager.kRDPMUnregisterPlugin,
       JSON.stringify(param)
     );
     return ret.retCode;
@@ -8472,7 +8432,7 @@ class AgoraRtcEngine extends EventEmitter {
   videoSourceGetPlugins(): Plugin[] {
     let ret = this._rtcEngine.PluginCallApi(
       PROCESS_TYPE.SCREEN_SHARE,
-      ApiTypeRawDataPlugin.kGetPlugins,
+      ApiTypeRawDataPluginManager.kRDPMGetPlugins,
       ""
     );
     let pluginIdArray: string[] = JSON.parse(ret.result);
@@ -8512,7 +8472,7 @@ class AgoraRtcEngine extends EventEmitter {
 
     let ret = this._rtcEngine.PluginCallApi(
       PROCESS_TYPE.SCREEN_SHARE,
-      ApiTypeRawDataPlugin.kEnablePlugin,
+      ApiTypeRawDataPluginManager.kRDPMEnablePlugin,
       JSON.stringify(param)
     );
     return ret.retCode;
@@ -8526,7 +8486,7 @@ class AgoraRtcEngine extends EventEmitter {
 
     let ret = this._rtcEngine.PluginCallApi(
       PROCESS_TYPE.SCREEN_SHARE,
-      ApiTypeRawDataPlugin.kSetPluginParameter,
+      ApiTypeRawDataPluginManager.kRDPMSetPluginParameter,
       JSON.stringify(param)
     );
     return ret.retCode;
@@ -8540,7 +8500,7 @@ class AgoraRtcEngine extends EventEmitter {
 
     let ret = this._rtcEngine.PluginCallApi(
       PROCESS_TYPE.SCREEN_SHARE,
-      ApiTypeRawDataPlugin.kGetPluginParameter,
+      ApiTypeRawDataPluginManager.kRDPMGetPluginParameter,
       JSON.stringify(param)
     );
     return ret.result;

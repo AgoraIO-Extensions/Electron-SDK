@@ -11,7 +11,7 @@ import {
   ApiTypeChannel,
   ApiTypeAudioDeviceManager,
   ApiTypeVideoDeviceManager,
-  ApiTypeRawDataPlugin,
+  ApiTypeRawDataPluginManager,
   PROCESS_TYPE
 } from "./native_type";
 import { WindowInfo } from "../types";
@@ -36,7 +36,7 @@ export interface NodeIrisRtcEngine {
     buffer: string,
     bufferLength: number
   ): Result;
-  PluginCallApi(processType: PROCESS_TYPE, apiType: ApiTypeRawDataPlugin, params: string): Result;
+  PluginCallApi(processType: PROCESS_TYPE, apiType: ApiTypeRawDataPluginManager, params: string): Result;
   CreateChannel(processType: PROCESS_TYPE, channelId: string): NodeIrisRtcChannel;
   EnableVideoFrameCache(processType: PROCESS_TYPE, config: VideoFrameCacheConfig): Result;
   DisableVideoFrameCache(processType: PROCESS_TYPE, config: VideoFrameCacheConfig): Result;
