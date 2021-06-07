@@ -3001,4 +3001,13 @@ export interface WindowInfo {
    * Do not set this parameter to `true` if you need the receiver to receive the data immediately.
    */
   ordered: boolean;
-}
+ }
+
+export enum RAW_AUDIO_FRAME_OP_MODE_TYPE {
+  /** 0: Read-only mode: Users only read the \ref agora::media::IAudioFrameObserver::AudioFrame "AudioFrame" data without modifying anything. For example, when users acquire the data with the Agora SDK, then push the RTMP or RTMPS streams. */
+  RAW_AUDIO_FRAME_OP_MODE_READ_ONLY = 0,
+  /** 1: Write-only mode: Users replace the \ref agora::media::IAudioFrameObserver::AudioFrame "AudioFrame" data with their own data and pass the data to the SDK for encoding. For example, when users acquire the data. */
+  RAW_AUDIO_FRAME_OP_MODE_WRITE_ONLY = 1,
+  /** 2: Read and write mode: Users read the data from \ref agora::media::IAudioFrameObserver::AudioFrame "AudioFrame", modify it, and then play it. For example, when users have their own sound-effect processing module and perform some voice pre-processing, such as a voice change. */
+  RAW_AUDIO_FRAME_OP_MODE_READ_WRITE = 2,
+};

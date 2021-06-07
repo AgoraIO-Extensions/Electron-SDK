@@ -96,7 +96,8 @@ import {
   INJECT_STREAM_STATUS,
   LOG_FILTER_TYPE,
   MEDIA_DEVICE_STATE_TYPE,
-  DataStreamConfig
+  DataStreamConfig,
+  RAW_AUDIO_FRAME_OP_MODE_TYPE,
 } from "./types";
 import { EventEmitter } from "events";
 import { deprecate, logWarn, logInfo, logError } from "../Utils";
@@ -6896,7 +6897,7 @@ class AgoraRtcEngine extends EventEmitter {
   setRecordingAudioFrameParameters(
     sampleRate: number,
     channel: 1 | 2,
-    mode: 0 | 1 | 2,
+    mode: RAW_AUDIO_FRAME_OP_MODE_TYPE,
     samplesPerCall: number
   ): number {
     let param = {
