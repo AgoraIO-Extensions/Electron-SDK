@@ -274,6 +274,7 @@
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
                         './sdk/dll/agora_rtc_sdk.dll',
+                        './sdk/dll/libagora-wgc.dll',
                         './sdk/dll/libagora-fdkaac.dll',
                         './sdk/dll/libagora-ffmpeg.dll',
                         './sdk/dll/libagora-mpg123.dll',
