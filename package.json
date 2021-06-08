@@ -1,10 +1,6 @@
 {
   "name": "agora-electron-sdk",
-<<<<<<< HEAD
   "version": "3.1.2-rc.234-build.708",
-=======
-  "version": "3.1.2-rc233-build.706",
->>>>>>> 20415e1f (update addon version)
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
