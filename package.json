@@ -1,0 +1,73 @@
+{
+  "name": "agora-electron-sdk",
+  "version": "3.4.2-iris.602-build.2",
+  "description": "agora-electron-sdk",
+  "main": "js/AgoraSdk.js",
+  "types": "types/AgoraSdk.d.ts",
+  "author": "agora.io",
+  "gypfile": true,
+  "scripts": {
+    "install": "gulp NPM_Install",
+    "build": "gulp build",
+    "clean": "gulp clean",
+    "syncLib": "gulp syncLib",
+    "buildJS": "gulp buildJS",
+    "zipBuild": "gulp zipBuild",
+    "prepublishOnly": "npm run buildJS"
+  },
+  "dependencies": {
+    "lodash.isequal": "^4.5.0",
+    "gulp": "^4.0.2",
+    "yuv-buffer": "1.0.0",
+    "yuv-canvas": "1.2.6"
+  },
+  "agora_electron": {
+    "lib_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_v3.4.2.1_FULL_20210513_2235_77697.zip",
+    "lib_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v3.4.2.1_FULL_20210513_417_77704.zip",
+    "no_symbol": true,
+    "electron_version": "11.0.0"
+  },
+  "devDependencies": {
+    "@types/gulp": "^4.0.8",
+    "@types/node": "10.17.5",
+    "download": "^8.0.0",
+    "extract-zip": "^2.0.1",
+    "fs-extra": "^9.1.0",
+    "gulp-zip": "^5.1.0",
+    "minimist": "^1.2.5",
+    "nan": "2.14.2",
+    "node-gyp": "7.1.2",
+    "rimraf": "^3.0.0",
+    "shelljs": "^0.8.4",
+    "ts-node": "^9.1.1",
+    "typescript": "4.2.4",
+    "winston": "^3.3.3"
+  },
+  "files": [
+    "js",
+    "ts",
+    "types",
+    "scripts",
+    "gulpfile.ts",
+    "agora_node_ext",
+    "common",
+    "video_source",
+    "extra"
+  ],
+  "bundledDependencies": [
+    "@types/gulp",
+    "@types/node",
+    "download",
+    "extract-zip",
+    "fs-extra",
+    "gulp-zip",
+    "minimist",
+    "nan",
+    "node-gyp",
+    "rimraf",
+    "shelljs",
+    "ts-node",
+    "typescript",
+    "winston"
+  ]
+}
