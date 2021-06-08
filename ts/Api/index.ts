@@ -9600,6 +9600,14 @@ declare interface AgoraRtcEngine {
     evt: "rtmpStreamingEvent",
     cb: (url: string, eventCode: RTMP_STREAMING_EVENT) => void
   ): this;
+
+
+  /**
+   * @TODO 3.4.2 doc
+   * @param evt 
+   * @param cb 
+   */
+  on(evt: "networkTypeChanged", cb: (type: NETWORK_TYPE) => void): this;
   /** Occurs when the audio publishing state changes.
    *
    * @since v3.2.0
@@ -9907,6 +9915,16 @@ declare interface AgoraRtcEngine {
   on(
     evt: "videoSourceNetworkQuality",
     cb: (uid: number, txquality: QUALITY_TYPE, rxquality: QUALITY_TYPE) => void
+  ): this;
+
+  /**
+   * @TODO 3.4.2 doc
+   * @param evt 
+   * @param cb 
+   */
+  on(
+    evt: "videoSourceNetworkTypeChanged",
+    cb: (type: NETWORK_TYPE) => void
   ): this;
   /** Reports the last mile network quality of the local user once every two
    * seconds before the user joins the channel.
@@ -13367,6 +13385,13 @@ declare interface AgoraRtcChannel {
   on(evt: "metadataReceived", cb: (metadata: Metadata) => void): this;
 
   on(evt: "readyToSendMetadata", cb: (metadata: Metadata) => void): this;
+
+  /**
+   * @TODO 3.4.2 doc
+   * @param evt 
+   * @param cb 
+   */
+  on(evt: "rtmpStreamingEvent", cb: (url: string, eventCode: RTMP_STREAMING_EVENT) => void): this;
 }
 
 export default AgoraRtcEngine;
