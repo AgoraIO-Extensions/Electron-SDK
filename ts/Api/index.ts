@@ -9002,11 +9002,6 @@ declare interface AgoraRtcEngine {
     cb: (uid: number, streamId: number, msg: string, len: number) => void
   ): this;
 
-  //Todo
-  on(
-    evt: "readyToSendMetadata",
-    cb: (metadata: Metadata) => void
-  ): this;
   on(
     evt: "metadataReceived",
     cb: (metadata: Metadata) => void
