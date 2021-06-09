@@ -815,11 +815,11 @@ class AgoraRtcEngine extends EventEmitter {
 
           case "onAudioMixingStateChanged":
             {
-              let data: {
+              const data: {
                 state: AUDIO_MIXING_STATE_TYPE;
-                errorCode: AUDIO_MIXING_REASON_TYPE;
+                reason: AUDIO_MIXING_REASON_TYPE;
               } = JSON.parse(_eventData);
-              fire("audioMixingStateChanged", data.state, data.errorCode);
+              fire("audioMixingStateChanged", data.state, data.reason);
             }
             break;
 
@@ -8690,7 +8690,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: "audioMixingStateChanged",
-    cb: (state: number, reasonType: AUDIO_MIXING_REASON_TYPE) => void
+    cb: (state: number, reason: AUDIO_MIXING_REASON_TYPE) => void
   ): this;
   /** Occurs when a remote user starts audio mixing.
    * When a remote user calls {@link startAudioMixing} to play the background
