@@ -17,3 +17,5 @@ nohup.out
 js/
 docs/
 types/
+*.pid
+*.txt

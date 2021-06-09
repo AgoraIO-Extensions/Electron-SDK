@@ -69,8 +69,8 @@
     "url": "git+https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron.git"
   },
   "agora_electron": {
-    "lib_sdk_win": "https://artifactory-api.bj2.agoralab.co/artifactory/ACCS_repo/v3.3.1.235/AgoraSDK/Windows/testing/Agora_Native_SDK_for_Windows_v3.3.1.235_FULL_20210603_2541_83798.zip",
-    "lib_sdk_mac": "https://artifactory-api.bj2.agoralab.co/artifactory/ACCS_repo/v3.3.1.231/AgoraSDK/Mac/Agora_Native_SDK_for_Mac_v3.3.1.231_FULL_20210426_4135_73025.zip"
+    "lib_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_v3.3.1.235_FULL_20210607_2606_84915.zip",
+    "lib_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v3.3.1.235_FULL_20210607_523_84746.zip"
   },
   "keywords": [
     "electron",
