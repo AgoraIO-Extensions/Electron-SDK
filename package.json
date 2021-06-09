@@ -8,6 +8,7 @@
   "gypfile": true,
   "scripts": {
     "install": "gulp NPM_Install",
+    "totalBuild": "gulp totalBuild",
     "build": "gulp build",
     "clean": "gulp clean",
     "syncLib": "gulp syncLib",
