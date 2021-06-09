@@ -60,7 +60,7 @@ const build = async (
     : configWin(command, { arch, msvsVersion });
   // check runtime
   if (runtime === "electron") {
-    command.push(`--target=${electronVersion} --dist-url=${distUrl}`);
+    command.push(`--target=${electronVersion}`);
   }
   const commandStr = command.join(" ");
   /** start build */
