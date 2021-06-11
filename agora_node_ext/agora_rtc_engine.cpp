@@ -323,10 +323,12 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setProcessDpiAwareness);
                 PROPERTY_METHOD_DEFINE(videoSourceSetProcessDpiAwareness);
                 PROPERTY_METHOD_DEFINE(startAudioRecordingWithConfig);
+                PROPERTY_METHOD_DEFINE(monitorDeviceChange);
                 /**
                  * setAddonLogFile
                  */
                 PROPERTY_METHOD_DEFINE(setAddonLogFile);
+                
                 EN_PROPERTY_DEFINE()
                 module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
