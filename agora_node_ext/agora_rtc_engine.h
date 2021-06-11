@@ -387,6 +387,7 @@ namespace agora {
              * setAddonLogFile
              */
             NAPI_API(setAddonLogFile);
+            NAPI_API(monitorDeviceChange);
             
         public:
             Isolate* getIsolate() { return m_isolate; }

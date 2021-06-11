@@ -1275,6 +1275,9 @@ class AgoraRtcEngine extends EventEmitter {
   release(): number {
     return this.rtcEngine.release();
   }
+  monitorDeviceChange(enabled: boolean): number {
+    return this.rtcEngine.monitorDeviceChange(enabled);
+  }
 
   /**
    * @deprecated This method is deprecated. Agora does not recommend using
@@ -7130,6 +7133,8 @@ declare interface AgoraRtcEngine {
   )=> void): this;
 
   on(evt: string, listener: Function): this;
+
+
 }
 
 /**

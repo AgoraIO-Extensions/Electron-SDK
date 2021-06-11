@@ -3699,6 +3699,12 @@ export interface NodeRtcEngine {
    * @ignore
    */
   startAudioRecordingWithConfig(config: AudioRecordingConfiguration): number;
+
+
+  /**
+   * @ignore
+   */
+   monitorDeviceChange(enabled: boolean): number;
 }
 /**
  * @ignore
