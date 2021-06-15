@@ -29,6 +29,8 @@ import {
   CHANNEL_MEDIA_RELAY_ERROR,
   INJECT_STREAM_STATUS,
   MEDIA_DEVICE_STATE_TYPE,
+  RTMP_STREAM_PUBLISH_STATE,
+  RTMP_STREAM_PUBLISH_ERROR,
 } from "./types";
 import { EngineEvents, VideoSourceEvents } from "../Common/JSEvents";
 
@@ -821,7 +823,11 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: EngineEvents.RTMP_STREAMING_STATE_CHANGED,
-    cb: (url: string, state: number, code: number) => void
+    cb: (
+      url: string,
+      state: RTMP_STREAM_PUBLISH_STATE,
+      errCode: RTMP_STREAM_PUBLISH_ERROR
+    ) => void
   ): this;
   /** Occurs when the publisher's transcoding is updated.
    *
@@ -1091,11 +1097,11 @@ declare interface AgoraRtcEngine {
   /**
    * Reports events during the media stream relay.
    *
-   * @param cb.event The event code. See {@link ChannelMediaRelayEvent}.
+   * @param cb.code The event code. See {@link ChannelMediaRelayEvent}.
    */
   on(
     evt: EngineEvents.CHANNEL_MEDIA_RELAY_EVENT,
-    cb: (event: CHANNEL_MEDIA_RELAY_EVENT) => void
+    cb: (code: CHANNEL_MEDIA_RELAY_EVENT) => void
   ): this;
   /** Receives the media metadata.
    *
