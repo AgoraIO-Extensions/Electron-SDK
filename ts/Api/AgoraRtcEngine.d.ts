@@ -31,6 +31,7 @@ import {
   MEDIA_DEVICE_STATE_TYPE,
   RTMP_STREAM_PUBLISH_STATE,
   RTMP_STREAM_PUBLISH_ERROR,
+  USER_OFFLINE_REASON_TYPE,
 } from "./types";
 import { EngineEvents, VideoSourceEvents } from "../Common/JSEvents";
 
@@ -437,7 +438,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: EngineEvents.USER_OFFLINE,
-    cb: (uid: number, reason: number) => void
+    cb: (uid: number, reason: USER_OFFLINE_REASON_TYPE) => void
   ): this;
   /** @deprecated This callback is deprecated, please use
    * `remoteAudioStateChanged` instead.
@@ -559,7 +560,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: EngineEvents.STREAM_MESSAGE,
-    cb: (uid: number, streamId: number, data: string, length: number) => void
+    cb: (uid: number, streamId: number, data: string) => void
   ): this;
 
   on(
@@ -1293,17 +1294,6 @@ declare interface AgoraRtcEngine {
   ): this;
 
   on(
-    evt: EngineEvents.FIRST_LOCAL_VIDEO_FRAME,
-    cb: (
-      uid: number,
-      channelId: string,
-      width: number,
-      height: number,
-      elapsed: number
-    ) => void
-  ): this;
-
-  on(
     evt: EngineEvents.FIRST_REMOTE_VIDEO_FRAME,
     cb: (
       uid: number,
@@ -1666,7 +1656,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: VideoSourceEvents.VIDEO_SOURCE_USER_OFFLINE,
-    cb: (uid: number, reason: number) => void
+    cb: (uid: number, reason: USER_OFFLINE_REASON_TYPE) => void
   ): this;
 
   /**
@@ -1777,7 +1767,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: VideoSourceEvents.VIDEO_SOURCE_STREAM_MESSAGE,
-    cb: (uid: number, streamId: number, data: string, length: number) => void
+    cb: (uid: number, streamId: number, data: string) => void
   ): this;
   /** Occurs when the local user does not receive the data stream from the
    * remote user within five seconds.

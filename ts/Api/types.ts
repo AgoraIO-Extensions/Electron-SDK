@@ -7,7 +7,7 @@
 
 /** Audio recording qualities.
  */
- export enum AUDIO_RECORDING_QUALITY_TYPE {
+export enum AUDIO_RECORDING_QUALITY_TYPE {
   /** 0: Low quality. The sample rate is 32 kHz, and the file size is around
    * 1.2 MB after 10 minutes of recording.
    */
@@ -88,7 +88,7 @@ export enum REMOTE_VIDEO_STREAM_TYPE {
 
 /** Media device states.
  */
- export enum MEDIA_DEVICE_STATE_TYPE {
+export enum MEDIA_DEVICE_STATE_TYPE {
   /** 1: The device is active.
    */
   MEDIA_DEVICE_STATE_ACTIVE = 1,
@@ -585,7 +585,7 @@ export interface LiveTranscoding {
    */
   transcodingExtraInfo: string;
   /** **DEPRECATED** The metadata sent to the CDN live client defined by the RTMP or HTTP-FLV metadata.
-  */
+   */
   metadata?: string;
   /** The watermark image added to the CDN live publishing stream. */
   watermark: RtcImage;
@@ -1342,10 +1342,32 @@ export enum CAPTURER_OUTPUT_PREFERENCE {
   CAPTURER_OUTPUT_PREFERENCE_MANUAL = 3,
 }
 
+export enum CAMERA_DIRECTION {
+  /** The rear camera. */
+  CAMERA_REAR = 0,
+  /** The front camera. */
+  CAMERA_FRONT = 1,
+}
 /** Camera capturer configuration. */
 export interface CameraCapturerConfiguration {
-  /** The output configuration of camera capturer. */
-  preference: CAPTURER_OUTPUT_PREFERENCE;
+  /** Camera capturer preference settings. See: #CAPTURER_OUTPUT_PREFERENCE. */
+  preference?: CAPTURER_OUTPUT_PREFERENCE;
+  /** The width (px) of the video image captured by the local camera.
+   * To customize the width of the video image, set `preference` as #CAPTURER_OUTPUT_PREFERENCE_MANUAL (3) first,
+   * and then use `captureWidth`.
+   *
+   * @since v3.3.0
+   */
+  captureWidth?: number;
+  /** The height (px) of the video image captured by the local camera.
+   * To customize the height of the video image, set `preference` as #CAPTURER_OUTPUT_PREFERENCE_MANUAL (3) first,
+   * and then use `captureHeight`.
+   *
+   * @since v3.3.0
+   */
+  captureHeight?: number;
+  /** Camera direction settings (for Android/iOS only). See: #CAMERA_DIRECTION. */
+  cameraDirection?: CAMERA_DIRECTION;
 }
 
 /** The relative location of the region to the screen or window. */
@@ -2404,7 +2426,7 @@ export enum CHANNEL_MEDIA_RELAY_STATE {
  *
  * @since v3.3.0
  */
- export enum EXPERIENCE_QUALITY_TYPE {
+export enum EXPERIENCE_QUALITY_TYPE {
   /** 0: QoE of the local user is good.  */
   EXPERIENCE_QUALITY_GOOD = 0,
   /** 1: QoE of the local user is poor.  */
@@ -2416,7 +2438,7 @@ export enum CHANNEL_MEDIA_RELAY_STATE {
  *
  * @since v3.3.0
  */
- export enum EXPERIENCE_POOR_REASON {
+export enum EXPERIENCE_POOR_REASON {
   /** 0: No reason, indicating good QoE of the local user.
    */
   EXPERIENCE_REASON_NONE = 0,
@@ -2778,34 +2800,34 @@ export enum AUDIO_MIXING_STATE_TYPE {
 export enum AUDIO_MIXING_REASON_TYPE {
   /** 701: The SDK cannot open the audio mixing file.
    */
-   AUDIO_MIXING_REASON_CAN_NOT_OPEN = 701,
-   /** 702: The SDK opens the audio mixing file too frequently.
-    */
-   AUDIO_MIXING_REASON_TOO_FREQUENT_CALL = 702,
-   /** 703: The audio mixing file playback is interrupted.
-    */
-   AUDIO_MIXING_REASON_INTERRUPTED_EOF = 703,
-   /** 720: The audio mixing is started by user.
-    */
-   AUDIO_MIXING_REASON_STARTED_BY_USER = 720,
-   /** 721: The audio mixing file is played once.
-    */
-   AUDIO_MIXING_REASON_ONE_LOOP_COMPLETED = 721,
-   /** 722: The audio mixing file is playing in a new loop.
-    */
-   AUDIO_MIXING_REASON_START_NEW_LOOP = 722,
-   /** 723: The audio mixing file is all played out.
-    */
-   AUDIO_MIXING_REASON_ALL_LOOPS_COMPLETED = 723,
-   /** 724: Playing of audio file is stopped by user.
-    */
-   AUDIO_MIXING_REASON_STOPPED_BY_USER = 724,
-   /** 725: Playing of audio file is paused by user.
-    */
-   AUDIO_MIXING_REASON_PAUSED_BY_USER = 725,
-   /** 726: Playing of audio file is resumed by user.
-    */
-   AUDIO_MIXING_REASON_RESUMED_BY_USER = 726,
+  AUDIO_MIXING_REASON_CAN_NOT_OPEN = 701,
+  /** 702: The SDK opens the audio mixing file too frequently.
+   */
+  AUDIO_MIXING_REASON_TOO_FREQUENT_CALL = 702,
+  /** 703: The audio mixing file playback is interrupted.
+   */
+  AUDIO_MIXING_REASON_INTERRUPTED_EOF = 703,
+  /** 720: The audio mixing is started by user.
+   */
+  AUDIO_MIXING_REASON_STARTED_BY_USER = 720,
+  /** 721: The audio mixing file is played once.
+   */
+  AUDIO_MIXING_REASON_ONE_LOOP_COMPLETED = 721,
+  /** 722: The audio mixing file is playing in a new loop.
+   */
+  AUDIO_MIXING_REASON_START_NEW_LOOP = 722,
+  /** 723: The audio mixing file is all played out.
+   */
+  AUDIO_MIXING_REASON_ALL_LOOPS_COMPLETED = 723,
+  /** 724: Playing of audio file is stopped by user.
+   */
+  AUDIO_MIXING_REASON_STOPPED_BY_USER = 724,
+  /** 725: Playing of audio file is paused by user.
+   */
+  AUDIO_MIXING_REASON_PAUSED_BY_USER = 725,
+  /** 726: Playing of audio file is resumed by user.
+   */
+  AUDIO_MIXING_REASON_RESUMED_BY_USER = 726,
 }
 
 /** Local video state types
@@ -2997,7 +3019,7 @@ export interface WindowInfo {
  * | false  |  true | <p>If the delay of a data packet is within five seconds, the SDK corrects the order of the data packet.</p><p>If the delay of a data packet exceeds five seconds, the SDK discards the data packet.</p>     |
  * |  true  |  true   | <p>If the delay of a data packet is within the audio delay, the SDK corrects the order of the data packet.</p><p>If the delay of a data packet exceeds the audio delay, the SDK discards this data packet.</p>     |
  */
- export interface DataStreamConfig {
+export interface DataStreamConfig {
   /** Whether to synchronize the data packet with the published audio packet.
    *
    * - true: Synchronize the data packet with the audio packet.
@@ -3019,7 +3041,7 @@ export interface WindowInfo {
    * Do not set this parameter to `true` if you need the receiver to receive the data immediately.
    */
   ordered: boolean;
- }
+}
 
 export enum RAW_AUDIO_FRAME_OP_MODE_TYPE {
   /** 0: Read-only mode: Users only read the \ref agora::media::IAudioFrameObserver::AudioFrame "AudioFrame" data without modifying anything. For example, when users acquire the data with the Agora SDK, then push the RTMP or RTMPS streams. */
@@ -3028,4 +3050,4 @@ export enum RAW_AUDIO_FRAME_OP_MODE_TYPE {
   RAW_AUDIO_FRAME_OP_MODE_WRITE_ONLY = 1,
   /** 2: Read and write mode: Users read the data from \ref agora::media::IAudioFrameObserver::AudioFrame "AudioFrame", modify it, and then play it. For example, when users have their own sound-effect processing module and perform some voice pre-processing, such as a voice change. */
   RAW_AUDIO_FRAME_OP_MODE_READ_WRITE = 2,
-};
+}

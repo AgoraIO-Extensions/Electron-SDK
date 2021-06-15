@@ -18,8 +18,9 @@ import {
   CHANNEL_MEDIA_RELAY_STATE,
   CHANNEL_MEDIA_RELAY_ERROR,
   INJECT_STREAM_STATUS,
+  USER_OFFLINE_REASON_TYPE,
 } from "./types";
-import { ChannelEvents } from '../Common/JSEvents';
+import { ChannelEvents } from "../Common/JSEvents";
 
 declare interface AgoraRtcChannel {
   /** Occurs when a user joins a specified channel.
@@ -144,7 +145,11 @@ declare interface AgoraRtcChannel {
    */
   on(
     evt: ChannelEvents.USER_OFFLINE,
-    cb: (channelId: string, uid: number, reason: number) => void
+    cb: (
+      channelId: string,
+      uid: number,
+      reason: USER_OFFLINE_REASON_TYPE
+    ) => void
   ): this;
   /** Occurs when the SDK cannot reconnect to Agora's edge server 10 seconds
    * after its connection to the server is interrupted.
@@ -185,7 +190,10 @@ declare interface AgoraRtcChannel {
    *
    * @param cb.stats AgoraRtcChannel's statistics, see {@link RtcStats}
    */
-  on(evt: ChannelEvents.RTC_STATS, cb: (channelId: string, stats: RtcStats) => void): this;
+  on(
+    evt: ChannelEvents.RTC_STATS,
+    cb: (channelId: string, stats: RtcStats) => void
+  ): this;
   /**
    * Reports the last mile network quality of each user in the channel
    * once every two seconds.
@@ -275,7 +283,10 @@ declare interface AgoraRtcChannel {
    * active speaker detected by the audio volume detection module of the SDK.
    *
    */
-  on(evt: ChannelEvents.ACTIVE_SPEAKER, cb: (channelId: string, uid: number) => void): this;
+  on(
+    evt: ChannelEvents.ACTIVE_SPEAKER,
+    cb: (channelId: string, uid: number) => void
+  ): this;
   /** Occurs when the video size or rotation of a specified user changes.
    * @param cb.uid User ID of the remote user or local user (0) whose video
    * size or
@@ -330,9 +341,15 @@ declare interface AgoraRtcChannel {
   ): this;
 
   //Todo
-  on(evt: ChannelEvents.READY_TO_SEND_METADATA, cb: (metadata: Metadata) => void): this;
+  on(
+    evt: ChannelEvents.READY_TO_SEND_METADATA,
+    cb: (metadata: Metadata) => void
+  ): this;
   //Todo
-  on(evt: ChannelEvents.METADATA_RECEIVED, cb: (metadata: Metadata) => void): this;
+  on(
+    evt: ChannelEvents.METADATA_RECEIVED,
+    cb: (metadata: Metadata) => void
+  ): this;
 
   /** Occurs when the local user does not receive the data stream from the
    * remote user within five seconds.
@@ -438,10 +455,13 @@ declare interface AgoraRtcChannel {
    */
   on(
     evt: ChannelEvents.RTMP_STREAMING_STATE_CHANGED,
-    cb: (channelId: string, url: string, state: number, code: number) => void
+    cb: (channelId: string, url: string, state: number, errCode: number) => void
   ): this;
   /** Occurs when the publisher's transcoding is updated. */
-  on(evt: ChannelEvents.TRANSCODING_UPDATED, cb: (channelId: string) => void): this;
+  on(
+    evt: ChannelEvents.TRANSCODING_UPDATED,
+    cb: (channelId: string) => void
+  ): this;
   /** Occurs when a voice or video stream URL address is added to a live
    * broadcast.
    *
@@ -605,9 +625,15 @@ declare interface AgoraRtcChannel {
     buffer: string
   ): void;
 
-  on(evt: ChannelEvents.METADATA_RECEIVED, cb: (metadata: Metadata) => void): this;
+  on(
+    evt: ChannelEvents.METADATA_RECEIVED,
+    cb: (metadata: Metadata) => void
+  ): this;
 
-  on(evt: ChannelEvents.READY_TO_SEND_METADATA, cb: (metadata: Metadata) => void): this;
+  on(
+    evt: ChannelEvents.READY_TO_SEND_METADATA,
+    cb: (metadata: Metadata) => void
+  ): this;
 
   /**
    * @TODO 3.4.2 doc

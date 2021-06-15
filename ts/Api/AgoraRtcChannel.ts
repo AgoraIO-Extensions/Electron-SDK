@@ -33,6 +33,7 @@ import {
   ChannelMediaRelayConfiguration,
   INJECT_STREAM_STATUS,
   DataStreamConfig,
+  METADATA_TYPE,
 } from "./types";
 import { EventEmitter } from "events";
 import { logWarn } from "../Utils";
@@ -1454,24 +1455,24 @@ class AgoraRtcChannel extends EventEmitter {
    *
    * @param streamId he ID of the sent data stream, returned in the
    * {@link createDataStream} method.
-   * @param msg The data stream messages.
+   * @param data The data stream messages.
    *
    * @return
    * - 0: Success
    * - < 0: Failure
    */
-  sendStreamMessage(streamId: number, msg: string): number {
+  sendStreamMessage(streamId: number, data: string): number {
     let param = {
       streamId,
-      length: msg.length,
+      length: data.length,
       channelId: this._channelId,
     };
 
     let ret = this._rtcChannel.CallApiWithBuffer(
       ApiTypeChannel.kChannelSendStreamMessage,
       JSON.stringify(param),
-      msg,
-      msg.length
+      data,
+      data.length
     );
     return ret.retCode;
   }
