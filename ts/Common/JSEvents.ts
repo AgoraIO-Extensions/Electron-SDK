@@ -209,8 +209,6 @@ export enum VideoSourceEvents {
   VIDEO_SOURCE_STREAM_MESSAGE = "videoSourceStreamMessage",
   VIDEO_SOURCE_FIRST_REMOTE_AUDIO_DECODED = "videoSourceFirstRemoteAudioDecoded",
   VIDEO_SOURCE_REMOTE_VIDEO_STATE_CHANGED = "videoSourceRemoteVideoStateChanged",
-  VIDEO_SOURCE_CAMERA_FOCUS_AREA_CHANGED = "videoSourceCameraFocusAreaChanged",
-  VIDEO_SOURCE_CAMERA_EXPOSURE_AREA_CHANGED = "videoSourceCameraExposureAreaChanged",
   VIDEO_SOURCE_LOCAL_VIDEO_STATE_CHANGED = "videoSourceLocalVideoStateChanged",
 }
 
