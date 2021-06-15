@@ -3104,7 +3104,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  videoSourceInitialize(appId: string): number;
+  videoSourceInitialize(appId: string, areaCode: AREA_CODE): number;
   /**
    * @ignore
    */

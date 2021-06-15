@@ -29,6 +29,7 @@
 #include <fstream>
 #include <memory>
 #include <vector>
+#include <sstream>
 
 #define DATA_IPC_NAME "avsipc"
 #define PROCESS_RUN_EVENT_NAME "agora_video_source_process_ready_event_name"
@@ -46,7 +47,7 @@ namespace agora{
             ~AgoraVideoSourceSink();
 
 
-            virtual bool initialize(IAgoraVideoSourceEventHandler *eventHandler, const char* appid) override;
+            virtual bool initialize(IAgoraVideoSourceEventHandler *eventHandler, const char* appid, unsigned int areaCode) override;
             virtual node_error join(const char* token, const char* cname,
                 const char* chan_info, uid_t uid) override;
             virtual node_error leave() override;
@@ -141,7 +142,7 @@ namespace agora{
             return node_ok;
         }
 
-        bool AgoraVideoSourceSink::initialize(IAgoraVideoSourceEventHandler *eventHandler, const char* appid)
+        bool AgoraVideoSourceSink::initialize(IAgoraVideoSourceEventHandler *eventHandler, const char* appid, unsigned int areaCode)
         {
             if (m_initialized)
                 return true;
@@ -198,7 +199,12 @@ namespace agora{
                 std::string idparam = "id:" + m_peerId;
                 std::string pidparam = "pid:" + ss.str();
                 std::string appidparam = "appid:" + std::string(appid);
-                const char* params[] = { cmdname.c_str(), idparam.c_str(), pidparam.c_str(), appidparam.c_str(), nullptr };
+                std::ostringstream os;
+                os<<areaCode;
+                std::string acparam = "areaCode:" + os.str();
+
+                LOG_F(INFO, "areaCodeStr: %s", acparam.c_str());
+                const char* params[] = { cmdname.c_str(), idparam.c_str(), pidparam.c_str(), appidparam.c_str(), acparam.c_str(), nullptr };
                 m_sourceNodeProcess.reset(INodeProcess::CreateNodeProcess(path.c_str(), params));
                 if (!m_sourceNodeProcess.get()) {
                     break;
