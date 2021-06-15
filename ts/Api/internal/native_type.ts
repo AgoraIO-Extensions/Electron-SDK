@@ -170,7 +170,7 @@ export enum ApiTypeEngine {
   kMediaPushAudioFrame,
   kMediaPullAudioFrame,
   kMediaSetExternalVideoSource,
-  kMediaPushVideoFrame,
+  kMediaPushVideoFrame
 }
 
 export enum ApiTypeChannel {
@@ -216,7 +216,7 @@ export enum ApiTypeChannel {
   kChannelUpdateChannelMediaRelay,
   kChannelStopChannelMediaRelay,
   kChannelGetConnectionState,
-  kChannelEnableRemoteSuperResolution,
+  kChannelEnableRemoteSuperResolution
 }
 
 export enum ApiTypeAudioDeviceManager {
@@ -244,16 +244,16 @@ export enum ApiTypeAudioDeviceManager {
   kADMStopRecordingDeviceTest,
 
   kADMStartAudioDeviceLoopbackTest,
-  kADMStopAudioDeviceLoopbackTest,
+  kADMStopAudioDeviceLoopbackTest
 }
 
 export enum ApiTypeVideoDeviceManager {
   kVDMEnumerateVideoDevices,
-  
+
   kVDMSetDevice,
   kVDMGetDevice,
   kVDMStartDeviceTest,
-  kVDMStopDeviceTest,
+  kVDMStopDeviceTest
 }
 
 export enum ApiTypeRawDataPluginManager {
@@ -275,34 +275,4 @@ export enum PROCESS_TYPE {
 export interface Result {
   retCode: number;
   result: string;
-}
-export enum AUDIO_RECORDING_QUALITY_TYPE
-{
-    /** 0: Low quality. The sample rate is 32 kHz, and the file size is around
-     * 1.2 MB after 10 minutes of recording.
-    */
-    AUDIO_RECORDING_QUALITY_LOW = 0,
-    /** 1: Medium quality. The sample rate is 32 kHz, and the file size is
-     * around 2 MB after 10 minutes of recording.
-    */
-    AUDIO_RECORDING_QUALITY_MEDIUM = 1,
-    /** 2: High quality. The sample rate is 32 kHz, and the file size is
-     * around 3.75 MB after 10 minutes of recording.
-    */
-    AUDIO_RECORDING_QUALITY_HIGH = 2,
-}
-
-export enum AUDIO_RECORDING_POSITION {
-  /** The SDK will record the voices of all users in the channel. */
-  AUDIO_RECORDING_POSITION_MIXED_RECORDING_AND_PLAYBACK = 0,
-  /** The SDK will record the voice of the local user. */
-  AUDIO_RECORDING_POSITION_RECORDING = 1,
-  /** The SDK will record the voices of remote users. */
-  AUDIO_RECORDING_POSITION_MIXED_PLAYBACK = 2,
-};
-
-export interface AudioRecordingConfiguration {
-  filePath: string;
-  recordingQuality: AUDIO_RECORDING_QUALITY_TYPE;
-  recordingPosition: AUDIO_RECORDING_POSITION;
 }
