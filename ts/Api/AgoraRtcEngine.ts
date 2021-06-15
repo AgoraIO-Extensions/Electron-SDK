@@ -5333,7 +5333,6 @@ class AgoraRtcEngine extends EventEmitter {
     return ret.retCode;
   }
 
-
   /**
    * Stops an audio recording on the client.
    *
@@ -7678,9 +7677,9 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   // 3.3.0 apis
-  setCloudProxy(type: CLOUD_PROXY_TYPE): number {
-    let param = {
-      type,
+  setCloudProxy(proxyType: CLOUD_PROXY_TYPE): number {
+    const param = {
+      proxyType,
     };
 
     let ret = this._rtcEngine.CallApi(
