@@ -769,7 +769,7 @@ class AgoraRtcEngine extends EventEmitter {
         {
           let data: {
             deviceId: string;
-            deviceType: number;
+            deviceType: MEDIA_DEVICE_TYPE;
             deviceState: MEDIA_DEVICE_STATE_TYPE;
           } = JSON.parse(_eventData);
           this.fire(
@@ -910,7 +910,7 @@ class AgoraRtcEngine extends EventEmitter {
         {
           let data: {
             deviceId: string;
-            deviceType: number;
+            deviceType: MEDIA_DEVICE_TYPE;
             deviceState: number;
           } = JSON.parse(_eventData);
           this.fire(
@@ -1845,7 +1845,7 @@ class AgoraRtcEngine extends EventEmitter {
         {
           let data: {
             deviceId: string;
-            deviceType: number;
+            deviceType: MEDIA_DEVICE_TYPE;
             deviceState: MEDIA_DEVICE_STATE_TYPE;
           } = JSON.parse(_eventData);
           this.fire(
@@ -1972,7 +1972,7 @@ class AgoraRtcEngine extends EventEmitter {
         {
           let data: {
             deviceId: string;
-            deviceType: number;
+            deviceType: MEDIA_DEVICE_TYPE;
             deviceState: number;
           } = JSON.parse(_eventData);
           this.fire(

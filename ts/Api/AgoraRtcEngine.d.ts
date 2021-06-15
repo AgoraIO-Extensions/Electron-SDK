@@ -204,7 +204,7 @@ declare interface AgoraRtcEngine {
     evt: EngineEvents.AUDIO_DEVICE_STATE_CHANGED,
     cb: (
       deviceId: string,
-      deviceType: number,
+      deviceType: MEDIA_DEVICE_TYPE,
       deviceState: MEDIA_DEVICE_STATE_TYPE
     ) => void
   ): this;
@@ -254,7 +254,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: EngineEvents.VIDEO_DEVICE_STATE_CHANGED,
-    cb: (deviceId: string, deviceType: number, deviceState: number) => void
+    cb: (deviceId: string, deviceType: MEDIA_DEVICE_TYPE, deviceState: number) => void
   ): this;
   /**
    * Reports the last mile network quality of each user in the channel
@@ -1463,7 +1463,7 @@ declare interface AgoraRtcEngine {
     evt: VideoSourceEvents.VIDEO_SOURCE_AUDIO_DEVICE_STATE_CHANGED,
     cb: (
       deviceId: string,
-      deviceType: number,
+      deviceType: MEDIA_DEVICE_TYPE,
       deviceState: MEDIA_DEVICE_STATE_TYPE
     ) => void
   ): this;
@@ -1487,7 +1487,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: VideoSourceEvents.VIDEO_SOURCE_VIDEO_DEVICE_STATE_CHANGED,
-    cb: (deviceId: string, deviceType: number, deviceState: number) => void
+    cb: (deviceId: string, deviceType: MEDIA_DEVICE_TYPE, deviceState: number) => void
   ): this;
   /**
    * Reports the last mile network quality of each user in the channel
