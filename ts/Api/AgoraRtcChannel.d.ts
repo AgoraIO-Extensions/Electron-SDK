@@ -19,6 +19,7 @@ import {
   CHANNEL_MEDIA_RELAY_ERROR,
   INJECT_STREAM_STATUS,
 } from "./types";
+import { ChannelEvents } from '../Common/JSEvents';
 
 declare interface AgoraRtcChannel {
   /** Occurs when a user joins a specified channel.
@@ -27,7 +28,7 @@ declare interface AgoraRtcChannel {
    * {@link joinChannel} method until the SDK triggers this callback.
    */
   on(
-    evt: "joinChannelSuccess",
+    evt: ChannelEvents.JOIN_CHANNEL_SUCCESS,
     cb: (channelId: string, uid: number, elapsed: number) => void
   ): this;
   /**
@@ -36,7 +37,7 @@ declare interface AgoraRtcChannel {
    * @param cb.msg The warning message.
    */
   on(
-    evt: "channelWarning",
+    evt: ChannelEvents.CHANNEL_WARNING,
     cb: (channelId: string, warn: number, msg: string) => void
   ): this;
   /** Reports an error during SDK runtime.
@@ -44,7 +45,7 @@ declare interface AgoraRtcChannel {
    * @param cb.msg The error message.
    */
   on(
-    evt: "channelError",
+    evt: ChannelEvents.CHANNEL_ERROR,
     cb: (channelId: string, err: number, msg: string) => void
   ): this;
   /** Occurs when a user rejoins the channel after disconnection due to network
@@ -58,7 +59,7 @@ declare interface AgoraRtcChannel {
    * method until the SDK triggers this callback.
    */
   on(
-    evt: "rejoinChannelSuccess",
+    evt: ChannelEvents.REJOIN_CHANNEL_SUCCESS,
     cb: (channelId: string, uid: number, elapsed: number) => void
   ): this;
   /** Occurs when the user leaves the channel.
@@ -70,7 +71,7 @@ declare interface AgoraRtcChannel {
    * @param cb.stats The call statistics, see {@link RtcStats}
    */
   on(
-    evt: "leaveChannel",
+    evt: ChannelEvents.LEAVE_CHANNEL,
     cb: (channelId: string, stats: RtcStats) => void
   ): this;
   /** Occurs when the user role switches in a live streaming.
@@ -85,7 +86,7 @@ declare interface AgoraRtcChannel {
    * @param cb.newRole The new role, see {@link ClientRoleType}
    */
   on(
-    evt: "clientRoleChanged",
+    evt: ChannelEvents.CLIENT_ROLE_CHANGED,
     cb: (
       channelId: string,
       oldRole: CLIENT_ROLE_TYPE,
@@ -115,7 +116,7 @@ declare interface AgoraRtcChannel {
    * {@link joinChannel} method until the SDK triggers this callback.
    */
   on(
-    evt: "userJoined",
+    evt: ChannelEvents.USER_JOINED,
     cb: (channelId: string, uid: number, elapsed: number) => void
   ): this;
   /** Occurs when a remote user (Communication)/host (Live streaming) leaves
@@ -142,7 +143,7 @@ declare interface AgoraRtcChannel {
    * audience.
    */
   on(
-    evt: "userOffline",
+    evt: ChannelEvents.USER_OFFLINE,
     cb: (channelId: string, uid: number, reason: number) => void
   ): this;
   /** Occurs when the SDK cannot reconnect to Agora's edge server 10 seconds
@@ -152,7 +153,7 @@ declare interface AgoraRtcChannel {
    * seconds after calling the {@link joinChannel} method, whether or not it
    * is in the channel.
    */
-  on(evt: "connectionLost", cb: (channelId: string) => void): this;
+  on(evt: ChannelEvents.CONNECTION_LOST, cb: (channelId: string) => void): this;
   /** Occurs when the token expires.
    *
    * After a token(channel key) is specified by calling the {@link joinChannel}
@@ -164,7 +165,7 @@ declare interface AgoraRtcChannel {
    * This callback notifies the application to generate a new token and call
    * {@link joinChannel} to rejoin the channel with the new token.
    */
-  on(evt: "requestToken", cb: (channelId: string) => void): this;
+  on(evt: ChannelEvents.REQUEST_TOKEN, cb: (channelId: string) => void): this;
   /** Occurs when the token expires in 30 seconds.
    *
    * The user becomes offline if the token used in the {@link joinChannel}
@@ -177,14 +178,14 @@ declare interface AgoraRtcChannel {
    * @param cb.token The token that expires in 30 seconds.
    */
   on(
-    evt: "tokenPrivilegeWillExpire",
+    evt: ChannelEvents.TOKEN_PRIVILEGE_WILL_EXPIRE,
     cb: (channelId: string, token: string) => void
   ): this;
   /** Reports the statistics of the AgoraRtcChannel once every two seconds.
    *
    * @param cb.stats AgoraRtcChannel's statistics, see {@link RtcStats}
    */
-  on(evt: "rtcStats", cb: (channelId: string, stats: RtcStats) => void): this;
+  on(evt: ChannelEvents.RTC_STATS, cb: (channelId: string, stats: RtcStats) => void): this;
   /**
    * Reports the last mile network quality of each user in the channel
    * once every two seconds.
@@ -205,7 +206,7 @@ declare interface AgoraRtcChannel {
    * See {@link AgoraNetworkQuality}.
    */
   on(
-    evt: "networkQuality",
+    evt: ChannelEvents.NETWORK_QUALITY,
     cb: (
       channelId: string,
       uid: number,
@@ -219,7 +220,7 @@ declare interface AgoraRtcChannel {
    * {@link RemoteVideoState}.
    */
   on(
-    evt: "remoteVideoStats",
+    evt: ChannelEvents.REMOTE_VIDEO_STATS,
     cb: (channelId: string, stats: RemoteVideoStats) => void
   ): this;
   /** Reports the statistics of the audio stream from each remote user/host.
@@ -228,7 +229,7 @@ declare interface AgoraRtcChannel {
    * {@link RemoteAudioStats}.
    */
   on(
-    evt: "remoteAudioStats",
+    evt: ChannelEvents.REMOTE_AUDIO_STATS,
     cb: (channelId: string, stats: RemoteAudioStats) => void
   ): this;
   /**
@@ -248,7 +249,7 @@ declare interface AgoraRtcChannel {
    * {@link joinChannel} method until the SDK triggers this callback.
    */
   on(
-    evt: "remoteAudioStateChanged",
+    evt: ChannelEvents.REMOTE_AUDIO_STATE_CHANGED,
     cb: (
       channelId: string,
       uid: number,
@@ -274,7 +275,7 @@ declare interface AgoraRtcChannel {
    * active speaker detected by the audio volume detection module of the SDK.
    *
    */
-  on(evt: "activeSpeaker", cb: (channelId: string, uid: number) => void): this;
+  on(evt: ChannelEvents.ACTIVE_SPEAKER, cb: (channelId: string, uid: number) => void): this;
   /** Occurs when the video size or rotation of a specified user changes.
    * @param cb.uid User ID of the remote user or local user (0) whose video
    * size or
@@ -284,7 +285,7 @@ declare interface AgoraRtcChannel {
    * @param cb.roation New height (pixels) of the video.
    */
   on(
-    evt: "videoSizeChanged",
+    evt: ChannelEvents.VIDEO_SIZE_CHANGED,
     cb: (
       channelId: string,
       uid: number,
@@ -304,7 +305,7 @@ declare interface AgoraRtcChannel {
    * {@link joinChannel} method until the SDK triggers this callback.
    */
   on(
-    evt: "remoteVideoStateChanged",
+    evt: ChannelEvents.REMOTE_VIDEO_STATE_CHANGED,
     cb: (
       channelId: string,
       uid: number,
@@ -324,14 +325,14 @@ declare interface AgoraRtcChannel {
    * @param cb.data The data received bt the local user.
    */
   on(
-    evt: "streamMessage",
+    evt: ChannelEvents.STREAM_MESSAGE,
     cb: (channelId: string, uid: number, streamId: number, data: string) => void
   ): this;
 
   //Todo
-  on(evt: "readyToSendMetadata", cb: (metadata: Metadata) => void): this;
+  on(evt: ChannelEvents.READY_TO_SEND_METADATA, cb: (metadata: Metadata) => void): this;
   //Todo
-  on(evt: "metadataReceived", cb: (metadata: Metadata) => void): this;
+  on(evt: ChannelEvents.METADATA_RECEIVED, cb: (metadata: Metadata) => void): this;
 
   /** Occurs when the local user does not receive the data stream from the
    * remote user within five seconds.
@@ -348,7 +349,7 @@ declare interface AgoraRtcChannel {
    * is interrupted.
    */
   on(
-    evt: "streamMessageError",
+    evt: ChannelEvents.STREAM_MESSAGE_ERROR,
     cb: (
       channelId: string,
       uid: number,
@@ -368,7 +369,7 @@ declare interface AgoraRtcChannel {
    * @param cb.code The error code. See {@link ChannelMediaRelayError}.
    */
   on(
-    evt: "channelMediaRelayState",
+    evt: ChannelEvents.CHANNEL_MEDIA_RELAY_STATE_CHANGED,
     cb: (
       channelId: string,
       state: CHANNEL_MEDIA_RELAY_STATE,
@@ -381,23 +382,8 @@ declare interface AgoraRtcChannel {
    * @param cb.event The event code. See {@link ChannelMediaRelayEvent}.
    */
   on(
-    evt: "channelMediaRelayEvent",
+    evt: ChannelEvents.CHANNEL_MEDIA_RELAY_EVENT,
     cb: (channelId: string, event: CHANNEL_MEDIA_RELAY_EVENT) => void
-  ): this;
-  /** @deprecated This callback is deprecated. Please use
-   * `remoteAudioStateChanged` instead.
-   *
-   * Occurs when the engine receives the first audio frame from a specific
-   * remote user.
-   *
-   * @param cb.uid User ID of the remote user.
-   * @param cb.elapsed Time elapsed (ms) from the local user calling
-   * {@link joinChannel} until the
-   * SDK triggers this callback.
-   */
-  on(
-    evt: "firstRemoteAudioFrame",
-    cb: (channelId: string, uid: number, elapsed: number) => void
   ): this;
 
   on(evt: string, listener: Function): this;
@@ -451,11 +437,11 @@ declare interface AgoraRtcChannel {
    * whether the URL format is correct.
    */
   on(
-    evt: "rtmpStreamingStateChanged",
+    evt: ChannelEvents.RTMP_STREAMING_STATE_CHANGED,
     cb: (channelId: string, url: string, state: number, code: number) => void
   ): this;
   /** Occurs when the publisher's transcoding is updated. */
-  on(evt: "transcodingUpdated", cb: (channelId: string) => void): this;
+  on(evt: ChannelEvents.TRANSCODING_UPDATED, cb: (channelId: string) => void): this;
   /** Occurs when a voice or video stream URL address is added to a live
    * broadcast.
    *
@@ -476,7 +462,7 @@ declare interface AgoraRtcChannel {
    *
    */
   on(
-    evt: "streamInjectedStatus",
+    evt: ChannelEvents.STREAM_INJECTED_STATUS,
     cb: (
       channelId: string,
       url: string,
@@ -502,7 +488,7 @@ declare interface AgoraRtcChannel {
    * after the network conditions improved.
    */
   on(
-    evt: "remoteSubscribeFallbackToAudioOnly",
+    evt: ChannelEvents.REMOTE_SUBSCRIBE_FALLBACK_TO_AUDIO_ONLY,
     cb: (channelId: string, uid: number, isFallbackOrRecover: boolean) => void
   ): this;
   // on(evt: 'refreshRecordingServiceStatus', cb: () => void): this;
@@ -511,7 +497,7 @@ declare interface AgoraRtcChannel {
    * @param cb.reason The connection reason, see {@link ConnectionState}.
    */
   on(
-    evt: "connectionStateChanged",
+    evt: ChannelEvents.CONNECTION_STATE_CHANGED,
     cb: (
       channelId: string,
       state: CONNECTION_STATE_TYPE,
@@ -532,7 +518,7 @@ declare interface AgoraRtcChannel {
    * to the current state.
    */
   on(
-    evt: "audioPublishStateChanged",
+    evt: ChannelEvents.AUDIO_PUBLISH_STATE_CHANGED,
     cb: (
       channelId: string,
       oldState: STREAM_PUBLISH_STATE,
@@ -554,7 +540,7 @@ declare interface AgoraRtcChannel {
    * to the current state.
    */
   on(
-    evt: "videoPublishStateChanged",
+    evt: ChannelEvents.VIDEO_PUBLISH_STATE_CHANGED,
     cb: (
       channelId: string,
       oldState: STREAM_PUBLISH_STATE,
@@ -577,7 +563,7 @@ declare interface AgoraRtcChannel {
    * to the current state.
    */
   on(
-    evt: "audioSubscribeStateChanged",
+    evt: ChannelEvents.AUDIO_SUBSCRIBE_STATE_CHANGED,
     cb: (
       channelId: string,
       uid: number,
@@ -601,7 +587,7 @@ declare interface AgoraRtcChannel {
    * to the current state.
    */
   on(
-    evt: "videoSubscribeStateChanged",
+    evt: ChannelEvents.VIDEO_SUBSCRIBE_STATE_CHANGED,
     cb: (
       channelId: string,
       uid: number,
@@ -612,16 +598,16 @@ declare interface AgoraRtcChannel {
   ): this;
 
   on(
-    evt: "streamMessage",
+    evt: ChannelEvents.STREAM_MESSAGE,
     channelId: string,
     uid: number,
     streamId: number,
     buffer: string
   ): void;
 
-  on(evt: "metadataReceived", cb: (metadata: Metadata) => void): this;
+  on(evt: ChannelEvents.METADATA_RECEIVED, cb: (metadata: Metadata) => void): this;
 
-  on(evt: "readyToSendMetadata", cb: (metadata: Metadata) => void): this;
+  on(evt: ChannelEvents.READY_TO_SEND_METADATA, cb: (metadata: Metadata) => void): this;
 
   /**
    * @TODO 3.4.2 doc
@@ -629,7 +615,7 @@ declare interface AgoraRtcChannel {
    * @param cb
    */
   on(
-    evt: "rtmpStreamingEvent",
+    evt: ChannelEvents.RTMP_STREAMING_EVENT,
     cb: (url: string, eventCode: RTMP_STREAMING_EVENT) => void
   ): this;
 }

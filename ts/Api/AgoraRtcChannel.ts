@@ -38,7 +38,7 @@ import { EventEmitter } from "events";
 import { logWarn } from "../Utils";
 
 import { User, RendererConfig } from "../Renderer/type";
-import { EngineEvents, VideoSourceEvents } from "../Common/JSEvents";
+import { ChannelEvents } from "../Common/JSEvents";
 import AgoraRtcEngine from "./AgoraRtcEngine";
 
 class AgoraRtcChannel extends EventEmitter {
@@ -81,7 +81,12 @@ class AgoraRtcChannel extends EventEmitter {
                 warn: number;
                 msg: string;
               } = JSON.parse(_eventData);
-              fire("channelWarning", data.channelId, data.warn, data.msg);
+              fire(
+                ChannelEvents.CHANNEL_WARNING,
+                data.channelId,
+                data.warn,
+                data.msg
+              );
             }
             break;
 
@@ -92,7 +97,12 @@ class AgoraRtcChannel extends EventEmitter {
                 err: number;
                 msg: string;
               } = JSON.parse(_eventData);
-              fire("channelError", data.channelId, data.err, data.msg);
+              fire(
+                ChannelEvents.CHANNEL_ERROR,
+                data.channelId,
+                data.err,
+                data.msg
+              );
             }
             break;
 
@@ -104,7 +114,7 @@ class AgoraRtcChannel extends EventEmitter {
                 elapsed: number;
               } = JSON.parse(_eventData);
               fire(
-                "joinChannelSuccess",
+                ChannelEvents.JOIN_CHANNEL_SUCCESS,
                 data.channelId,
                 data.uid,
                 data.elapsed
@@ -120,7 +130,7 @@ class AgoraRtcChannel extends EventEmitter {
                 elapsed: number;
               } = JSON.parse(_eventData);
               fire(
-                "rejoinChannelSuccess",
+                ChannelEvents.REJOIN_CHANNEL_SUCCESS,
                 data.channelId,
                 data.uid,
                 data.elapsed
@@ -132,7 +142,7 @@ class AgoraRtcChannel extends EventEmitter {
             {
               let data: { channelId: string; stats: RtcStats } =
                 JSON.parse(_eventData);
-              fire("leaveChannel", data.channelId, data.stats);
+              fire(ChannelEvents.LEAVE_CHANNEL, data.channelId, data.stats);
             }
             break;
 
@@ -144,7 +154,7 @@ class AgoraRtcChannel extends EventEmitter {
                 newRole: CLIENT_ROLE_TYPE;
               } = JSON.parse(_eventData);
               fire(
-                "clientRoleChanged",
+                ChannelEvents.CLIENT_ROLE_CHANGED,
                 data.channelId,
                 data.oldRole,
                 data.newRole
@@ -159,7 +169,12 @@ class AgoraRtcChannel extends EventEmitter {
                 uid: number;
                 elapsed: number;
               } = JSON.parse(_eventData);
-              fire("userJoined", data.channelId, data.uid, data.elapsed);
+              fire(
+                ChannelEvents.USER_JOINED,
+                data.channelId,
+                data.uid,
+                data.elapsed
+              );
             }
             break;
 
@@ -170,7 +185,12 @@ class AgoraRtcChannel extends EventEmitter {
                 uid: number;
                 reason: USER_OFFLINE_REASON_TYPE;
               } = JSON.parse(_eventData);
-              fire("userOffline", data.channelId, data.uid, data.reason);
+              fire(
+                ChannelEvents.USER_OFFLINE,
+                data.channelId,
+                data.uid,
+                data.reason
+              );
               this.destroyRenderer(data.uid);
             }
             break;
@@ -178,14 +198,14 @@ class AgoraRtcChannel extends EventEmitter {
           case "onConnectionLost":
             {
               let data: { channelId: string } = JSON.parse(_eventData);
-              fire("connectionlost", data.channelId);
+              fire(ChannelEvents.CONNECTION_LOST, data.channelId);
             }
             break;
 
           case "onRequestToken":
             {
               let data: { channelId: string } = JSON.parse(_eventData);
-              fire("requestToken", data.channelId);
+              fire(ChannelEvents.REQUEST_TOKEN, data.channelId);
             }
             break;
 
@@ -193,7 +213,11 @@ class AgoraRtcChannel extends EventEmitter {
             {
               let data: { channelId: string; token: string } =
                 JSON.parse(_eventData);
-              fire("tokenPrivilegeWillExpire", data.channelId, data.token);
+              fire(
+                ChannelEvents.TOKEN_PRIVILEGE_WILL_EXPIRE,
+                data.channelId,
+                data.token
+              );
             }
             break;
 
@@ -201,7 +225,7 @@ class AgoraRtcChannel extends EventEmitter {
             {
               let data: { channelId: string; stats: RtcStats } =
                 JSON.parse(_eventData);
-              fire("rtcstats", data.channelId, data.stats);
+              fire(ChannelEvents.RTC_STATS, data.channelId, data.stats);
             }
             break;
 
@@ -214,7 +238,7 @@ class AgoraRtcChannel extends EventEmitter {
                 rxQuality: QUALITY_TYPE;
               } = JSON.parse(_eventData);
               fire(
-                "networkquality",
+                ChannelEvents.NETWORK_QUALITY,
                 data.channelId,
                 data.uid,
                 data.txQuality,
@@ -229,7 +253,11 @@ class AgoraRtcChannel extends EventEmitter {
                 channelId: string;
                 stats: RemoteVideoStats;
               } = JSON.parse(_eventData);
-              fire("remoteVideoStats", data.channelId, data.stats);
+              fire(
+                ChannelEvents.REMOTE_VIDEO_STATS,
+                data.channelId,
+                data.stats
+              );
             }
             break;
 
@@ -239,7 +267,11 @@ class AgoraRtcChannel extends EventEmitter {
                 channelId: string;
                 stats: RemoteAudioStats;
               } = JSON.parse(_eventData);
-              fire("remoteAudioStats", data.channelId, data.stats);
+              fire(
+                ChannelEvents.REMOTE_AUDIO_STATS,
+                data.channelId,
+                data.stats
+              );
             }
             break;
 
@@ -253,7 +285,7 @@ class AgoraRtcChannel extends EventEmitter {
                 elapsed: number;
               } = JSON.parse(_eventData);
               fire(
-                "remoteAudioStateChanged",
+                ChannelEvents.REMOTE_AUDIO_STATE_CHANGED,
                 data.channelId,
                 data.uid,
                 data.state,
@@ -272,7 +304,7 @@ class AgoraRtcChannel extends EventEmitter {
                 elapseSinceLastState: number;
               } = JSON.parse(_eventData);
               fire(
-                "audioPublishStateChanged",
+                ChannelEvents.AUDIO_PUBLISH_STATE_CHANGED,
                 data.channelId,
                 data.oldState,
                 data.newState,
@@ -290,7 +322,7 @@ class AgoraRtcChannel extends EventEmitter {
                 elapseSinceLastState: number;
               } = JSON.parse(_eventData);
               fire(
-                "videoPublishStateChanged",
+                ChannelEvents.VIDEO_PUBLISH_STATE_CHANGED,
                 data.channelId,
                 data.oldState,
                 data.newState,
@@ -309,7 +341,7 @@ class AgoraRtcChannel extends EventEmitter {
                 elapseSinceLastState: number;
               } = JSON.parse(_eventData);
               fire(
-                "audioSubscribeStateChanged",
+                ChannelEvents.AUDIO_SUBSCRIBE_STATE_CHANGED,
                 data.channelId,
                 data.uid,
                 data.oldState,
@@ -329,7 +361,7 @@ class AgoraRtcChannel extends EventEmitter {
                 elapseSinceLastState: number;
               } = JSON.parse(_eventData);
               fire(
-                "videoSubscribeStateChanged",
+                ChannelEvents.VIDEO_SUBSCRIBE_STATE_CHANGED,
                 data.channelId,
                 data.uid,
                 data.oldState,
@@ -343,7 +375,7 @@ class AgoraRtcChannel extends EventEmitter {
             {
               let data: { channelId: string; uid: number } =
                 JSON.parse(_eventData);
-              fire("activeSpeaker", data.channelId, data.uid);
+              fire(ChannelEvents.ACTIVE_SPEAKER, data.channelId, data.uid);
             }
             break;
 
@@ -357,7 +389,7 @@ class AgoraRtcChannel extends EventEmitter {
                 rotation: number;
               } = JSON.parse(_eventData);
               fire(
-                "videoSizeChanged",
+                ChannelEvents.VIDEO_SIZE_CHANGED,
                 data.channelId,
                 data.uid,
                 data.width,
@@ -377,7 +409,7 @@ class AgoraRtcChannel extends EventEmitter {
                 elapsed: number;
               } = JSON.parse(_eventData);
               fire(
-                "remoteVideoStateChanged",
+                ChannelEvents.REMOTE_VIDEO_STATE_CHANGED,
                 data.channelId,
                 data.uid,
                 data.state,
@@ -398,7 +430,7 @@ class AgoraRtcChannel extends EventEmitter {
                 cached: number;
               } = JSON.parse(_eventData);
               fire(
-                "streamMessageError",
+                ChannelEvents.STREAM_MESSAGE_ERROR,
                 data.channelId,
                 data.uid,
                 data.streamId,
@@ -418,7 +450,7 @@ class AgoraRtcChannel extends EventEmitter {
                 reason: SUPER_RESOLUTION_STATE_REASON;
               } = JSON.parse(_eventData);
               fire(
-                "userSuperResolutionEnabled",
+                ChannelEvents.USER_SUPER_RESOLUTION_ENABLED,
                 data.channelId,
                 data.uid,
                 data.enabled,
@@ -435,7 +467,7 @@ class AgoraRtcChannel extends EventEmitter {
                 code: CHANNEL_MEDIA_RELAY_ERROR;
               } = JSON.parse(_eventData);
               fire(
-                "channelMediaRelayStateChanged",
+                ChannelEvents.CHANNEL_MEDIA_RELAY_STATE_CHANGED,
                 data.channelId,
                 data.state,
                 data.code
@@ -449,7 +481,11 @@ class AgoraRtcChannel extends EventEmitter {
                 channelId: string;
                 code: CHANNEL_MEDIA_RELAY_EVENT;
               } = JSON.parse(_eventData);
-              fire("channelMediaRelayEvent", data.channelId, data.code);
+              fire(
+                ChannelEvents.CHANNEL_MEDIA_RELAY_EVENT,
+                data.channelId,
+                data.code
+              );
             }
             break;
 
@@ -462,7 +498,7 @@ class AgoraRtcChannel extends EventEmitter {
                 errCode: RTMP_STREAM_PUBLISH_ERROR;
               } = JSON.parse(_eventData);
               fire(
-                "rtmpStreamingStateChanged",
+                ChannelEvents.RTMP_STREAMING_STATE_CHANGED,
                 data.channelId,
                 data.url,
                 data.state,
@@ -479,7 +515,7 @@ class AgoraRtcChannel extends EventEmitter {
                 eventCode: RTMP_STREAMING_EVENT;
               } = JSON.parse(_eventData);
               fire(
-                "rtmpStreamingEvent",
+                ChannelEvents.RTMP_STREAMING_EVENT,
                 data.channelId,
                 data.url,
                 data.eventCode
@@ -490,7 +526,7 @@ class AgoraRtcChannel extends EventEmitter {
           case "onTranscodingUpdated":
             {
               let data: { channelId: string } = JSON.parse(_eventData);
-              fire("transcodingUpdated", data.channelId);
+              fire(ChannelEvents.TRANSCODING_UPDATED, data.channelId);
             }
             break;
 
@@ -503,7 +539,7 @@ class AgoraRtcChannel extends EventEmitter {
                 status: INJECT_STREAM_STATUS;
               } = JSON.parse(_eventData);
               fire(
-                "streamInjectedStatus",
+                ChannelEvents.STREAM_INJECTED_STATUS,
                 data.channelId,
                 data.url,
                 data.uid,
@@ -519,7 +555,7 @@ class AgoraRtcChannel extends EventEmitter {
                 isFallbackOrRecover: boolean;
               } = JSON.parse(_eventData);
               fire(
-                "localPublishFallbackToAudioOnly",
+                ChannelEvents.LOCAL_PUBLISH_FALLBACK_TO_AUDIO_ONLY,
                 data.channelId,
                 data.isFallbackOrRecover
               );
@@ -534,7 +570,7 @@ class AgoraRtcChannel extends EventEmitter {
                 isFallbackOrRecover: boolean;
               } = JSON.parse(_eventData);
               fire(
-                "remoteSubscribeFallbackToAudioOnly",
+                ChannelEvents.REMOTE_SUBSCRIBE_FALLBACK_TO_AUDIO_ONLY,
                 data.channelId,
                 data.uid,
                 data.isFallbackOrRecover
@@ -550,27 +586,13 @@ class AgoraRtcChannel extends EventEmitter {
                 reason: CONNECTION_CHANGED_REASON_TYPE;
               } = JSON.parse(_eventData);
               fire(
-                "connectionStateChanged",
+                ChannelEvents.CONNECTION_STATE_CHANGED,
                 data.channelId,
                 data.state,
                 data.reason
               );
             }
             break;
-
-          case "onReadyToSendMetadata":
-            {
-              let data: {
-                uid: number;
-                size: number;
-                buffer: string;
-                timeStampMs: number;
-              } = JSON.parse(_eventData);
-
-              fire("readyToSendMetadata", data);
-            }
-            break;
-
           default:
             break;
         }
@@ -585,7 +607,12 @@ class AgoraRtcChannel extends EventEmitter {
             {
               let data: { uid: number; streamId: number } =
                 JSON.parse(_eventData);
-              fire("streamMessage", data.uid, data.streamId, _eventBuffer);
+              fire(
+                ChannelEvents.STREAM_MESSAGE,
+                data.uid,
+                data.streamId,
+                _eventBuffer
+              );
             }
             break;
 
@@ -593,7 +620,7 @@ class AgoraRtcChannel extends EventEmitter {
             {
               let data: { metadata: Metadata } = JSON.parse(_eventData);
               data.metadata.buffer = _eventBuffer;
-              fire("readyToSendMetadata", data.metadata);
+              fire(ChannelEvents.READY_TO_SEND_METADATA, data.metadata);
             }
             break;
 
@@ -601,7 +628,7 @@ class AgoraRtcChannel extends EventEmitter {
             {
               let data: { metadata: Metadata } = JSON.parse(_eventData);
               data.metadata.buffer = _eventBuffer;
-              fire("metadataReceived", data.metadata);
+              fire(ChannelEvents.METADATA_RECEIVED, data.metadata);
             }
             break;
 
