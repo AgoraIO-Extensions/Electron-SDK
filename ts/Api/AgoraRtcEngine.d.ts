@@ -32,6 +32,11 @@ import {
   RTMP_STREAM_PUBLISH_STATE,
   RTMP_STREAM_PUBLISH_ERROR,
   USER_OFFLINE_REASON_TYPE,
+  AUDIO_MIXING_STATE_TYPE,
+  LOCAL_VIDEO_STREAM_STATE,
+  LOCAL_VIDEO_STREAM_ERROR,
+  LOCAL_AUDIO_STREAM_STATE,
+  LOCAL_AUDIO_STREAM_ERROR,
 } from "./types";
 import { EngineEvents, VideoSourceEvents } from "../Common/JSEvents";
 
@@ -226,7 +231,10 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: EngineEvents.AUDIO_MIXING_STATE_CHANGED,
-    cb: (state: number, reason: AUDIO_MIXING_REASON_TYPE) => void
+    cb: (
+      state: AUDIO_MIXING_STATE_TYPE,
+      reason: AUDIO_MIXING_REASON_TYPE
+    ) => void
   ): this;
   /** Occurs when a remote user starts audio mixing.
    * When a remote user calls {@link startAudioMixing} to play the background
@@ -1585,7 +1593,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: VideoSourceEvents.VIDEO_SOURCE_FIRST_REMOTE_VIDEO_DECODED,
-    cb: (uid: number, elapsed: number) => void
+    cb: (uid: number, width: number, height: number, elapsed: number) => void
   ): this;
   /** @deprecated This callback is deprecated, please use
    * `remoteVideoStateChanged` instead.
@@ -1927,7 +1935,7 @@ declare interface AgoraRtcEngine {
    * - height: Height of the changed camera focus area.
    */
   on(
-    evt: VideoSourceEvents.VIDEO_SOURCE_CAMERA_FOCUS_AREA_CHANGED,
+    evt: VideoSourceEvents.CAMERA_FOCUS_AREA_CHANGED,
     cb: (x: number, y: number, width: number, height: number) => void
   ): this;
   /** Occurs when the camera exposure area changes.
@@ -1937,7 +1945,7 @@ declare interface AgoraRtcEngine {
    * - height: Height of the changed camera exposure area.
    */
   on(
-    evt: VideoSourceEvents.VIDEO_SOURCE_CAMERA_EXPOSURE_AREA_CHANGED,
+    evt: VideoSourceEvents.CAMERA_EXPOSURE_AREA_CHANGED,
     cb: (x: number, y: number, width: number, height: number) => void
   ): this;
   /** Occurs when the token expires in 30 seconds.
@@ -2039,7 +2047,11 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: VideoSourceEvents.VIDEO_SOURCE_RTMP_STREAMING_STATE_CHANGED,
-    cb: (url: string, state: number, code: number) => void
+    cb: (
+      url: string,
+      state: RTMP_STREAM_PUBLISH_STATE,
+      errCode: RTMP_STREAM_PUBLISH_ERROR
+    ) => void
   ): this;
   /** Occurs when the publisher's transcoding is updated.
    *
@@ -2191,7 +2203,10 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: VideoSourceEvents.VIDEO_SOURCE_LOCAL_VIDEO_STATE_CHANGED,
-    cb: (localVideoState: number, error: number) => void
+    cb: (
+      localVideoState: LOCAL_VIDEO_STREAM_STATE,
+      error: LOCAL_VIDEO_STREAM_ERROR
+    ) => void
   ): this;
   /**
    * Occurs when the local audio state changes.
@@ -2220,7 +2235,10 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: VideoSourceEvents.VIDEO_SOURCE_LOCAL_AUDIO_STATE_CHANGED,
-    cb: (state: number, error: number) => void
+    cb: (
+      state: LOCAL_AUDIO_STREAM_STATE,
+      error: LOCAL_AUDIO_STREAM_ERROR
+    ) => void
   ): this;
   /**
    * Occurs when the remote audio state changes.
