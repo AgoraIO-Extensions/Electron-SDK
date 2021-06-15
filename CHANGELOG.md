@@ -1,3 +1,7 @@
+## 3.4.2-rc.1-build.615 (June 15th, 2021)
+* modify:
+  - add areaCode for videoSourceInitialize
+
 ## 3.4.2 (May 17th, 2021)
 
 ## 3.4.1 (April 26st, 2021)
