@@ -3677,8 +3677,8 @@ class AgoraRtcEngine extends EventEmitter {
    *  - `ERR_INVALID_APP_ID (101)`: The app ID is invalid. Check if it is in
    * the correct format.
    */
-  videoSourceInitialize(appId: string): number {
-    return this.rtcEngine.videoSourceInitialize(appId);
+  videoSourceInitialize(appId: string, areaCode: AREA_CODE = (0xFFFFFFFF)): number {
+    return this.rtcEngine.videoSourceInitialize(appId, areaCode);
   }
 
   /**

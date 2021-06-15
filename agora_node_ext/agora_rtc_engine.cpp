@@ -1692,7 +1692,10 @@ namespace agora {
                 NodeString appid;
                 napi_status status = napi_get_value_nodestring_(args[0], appid);
                 CHECK_NAPI_STATUS(pEngine, status);
-                if (!pEngine->m_videoSourceSink.get() || !pEngine->m_videoSourceSink->initialize(pEngine->m_eventHandler.get(), appid)) {
+
+                unsigned int areaCode = AREA_CODE::AREA_CODE_GLOB;
+                napi_get_value_uint32_(args[1], areaCode);
+                if (!pEngine->m_videoSourceSink.get() || !pEngine->m_videoSourceSink->initialize(pEngine->m_eventHandler.get(), appid, areaCode)) {
                     break;
                 }
                 result = 0;
