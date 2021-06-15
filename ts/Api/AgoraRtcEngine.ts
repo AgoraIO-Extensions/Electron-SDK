@@ -644,9 +644,7 @@ class AgoraRtcEngine extends EventEmitter {
 
       case "onFirstLocalVideoFrame":
         {
-          let data: {
-            uid: number;
-            channelId: string;
+          const data: {
             width: number;
             height: number;
             elapsed: number;
@@ -654,14 +652,12 @@ class AgoraRtcEngine extends EventEmitter {
 
           this.fire(
             EngineEvents.FIRST_LOCAL_VIDEO_FRAME,
-            data.uid,
-            data.channelId,
             data.width,
             data.height,
             data.elapsed
           );
 
-          let videoFrameItem = this.resizeBuffer(
+          const videoFrameItem = this.resizeBuffer(
             0,
             "",
             data.width,
@@ -1331,8 +1327,7 @@ class AgoraRtcEngine extends EventEmitter {
             EngineEvents.STREAM_MESSAGE,
             data.uid,
             data.streamId,
-            _eventBuffer,
-            length
+            _eventBuffer
           );
         }
         break;
@@ -2487,8 +2482,7 @@ class AgoraRtcEngine extends EventEmitter {
             VideoSourceEvents.VIDEO_SOURCE_STREAM_MESSAGE,
             data.uid,
             data.streamId,
-            _eventBuffer,
-            length
+            _eventBuffer
           );
         }
         break;
@@ -6694,23 +6688,23 @@ class AgoraRtcEngine extends EventEmitter {
    * audience may be switched to a host.
    * @param {number} streamId ID of the sent data stream, returned in the
    * {@link createDataStream} method.
-   * @param {string} msg Data to be sent.
+   * @param {string} data Data to be sent.
    * @return
    * - 0: Success.
    * - < 0: Failure.
    */
-  sendStreamMessage(streamId: number, msg: string): number {
+  sendStreamMessage(streamId: number, data: string): number {
     let param = {
       streamId,
-      length: msg.length,
+      length: data.length,
     };
 
     let ret = this._rtcEngine.CallApiWithBuffer(
       PROCESS_TYPE.MAIN,
       ApiTypeEngine.kEngineSendStreamMessage,
       JSON.stringify(param),
-      msg,
-      msg.length
+      data,
+      data.length
     );
     return ret.retCode;
   }
