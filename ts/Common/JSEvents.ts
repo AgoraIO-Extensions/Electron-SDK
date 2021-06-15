@@ -112,6 +112,7 @@ export enum EngineEvents {
   NETWORK_TYPE_CHANGED = "networkTypeChanged",
   LOCAL_USER_REGISTERED = "localUserRegistered",
   USER_INFO_UPDATED = "userInfoUpdated",
+  UPLOAD_LOG_RESULT = "UPLOAD_LOG_RESULT",
 
   STREAM_MESSAGE = "streamMessage",
   READY_TO_SEND_METADATA = "readyToSendMetadata",

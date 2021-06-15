@@ -1283,7 +1283,21 @@ class AgoraRtcEngine extends EventEmitter {
           this.fire(EngineEvents.USER_INFO_UPDATED, data.uid, data.info);
         }
         break;
-
+      case "onUploadLogResult":
+        {
+          const data: {
+            requestId: string;
+            success: boolean;
+            reason: number;
+          } = JSON.parse(_eventData);
+          this.fire(
+            EngineEvents.UPLOAD_LOG_RESULT,
+            data.requestId,
+            data.success,
+            data.reason
+          );
+        }
+        break;
       case "videoFrameSizeChanged":
         {
           let data: {

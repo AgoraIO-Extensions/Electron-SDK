@@ -254,7 +254,11 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: EngineEvents.VIDEO_DEVICE_STATE_CHANGED,
-    cb: (deviceId: string, deviceType: MEDIA_DEVICE_TYPE, deviceState: number) => void
+    cb: (
+      deviceId: string,
+      deviceType: MEDIA_DEVICE_TYPE,
+      deviceState: MEDIA_DEVICE_STATE_TYPE
+    ) => void
   ): this;
   /**
    * Reports the last mile network quality of each user in the channel
@@ -555,7 +559,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: EngineEvents.STREAM_MESSAGE,
-    cb: (uid: number, streamId: number, msg: string, len: number) => void
+    cb: (uid: number, streamId: number, data: string, length: number) => void
   ): this;
 
   on(
@@ -973,6 +977,13 @@ declare interface AgoraRtcEngine {
   on(
     evt: EngineEvents.USER_INFO_UPDATED,
     cb: (uid: number, userInfo: UserInfo) => void
+  ): this;
+  /**
+   * Reserved callback.
+   */
+  on(
+    evt: "uploadLogResult",
+    cb: (requestId: string, success: boolean, reason: number) => void
   ): this;
   /**
    * Occurs when the local video state changes.
@@ -1487,7 +1498,11 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: VideoSourceEvents.VIDEO_SOURCE_VIDEO_DEVICE_STATE_CHANGED,
-    cb: (deviceId: string, deviceType: MEDIA_DEVICE_TYPE, deviceState: number) => void
+    cb: (
+      deviceId: string,
+      deviceType: MEDIA_DEVICE_TYPE,
+      deviceState: MEDIA_DEVICE_STATE_TYPE
+    ) => void
   ): this;
   /**
    * Reports the last mile network quality of each user in the channel
@@ -1762,7 +1777,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: VideoSourceEvents.VIDEO_SOURCE_STREAM_MESSAGE,
-    cb: (uid: number, streamId: number, msg: string, len: number) => void
+    cb: (uid: number, streamId: number, data: string, length: number) => void
   ): this;
   /** Occurs when the local user does not receive the data stream from the
    * remote user within five seconds.
