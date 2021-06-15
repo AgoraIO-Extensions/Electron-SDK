@@ -102,9 +102,8 @@ bool AgoraVideoSource::initialize()
 
     LOG_F(INFO, "videoSource initialize areaCode: %u", context.areaCode);
 
-    LOG_ERROR("initialized: %s, appid\n", __FUNCTION__);
     if (m_rtcEngine->initialize(context) != 0){
-        LOG_ERROR("%s, AgoraVideoSource initialize failed.\n", __FUNCTION__);
+        LOG_F(INFO, "%s, AgoraVideoSource initialize failed.\n", __FUNCTION__);
         LOG_LEAVE;
         return false;
     }

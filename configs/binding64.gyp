@@ -26,6 +26,8 @@
         './common/node_error.h',
         './common/windows_system_api.h',
         './common/windows_system_api.cpp',
+        './common/loguru.hpp',
+        './common/loguru.cpp',
         './video_source/video_source.cpp',
         './video_source/video_source.h',
         './video_source/video_source_event_handler.cpp',
