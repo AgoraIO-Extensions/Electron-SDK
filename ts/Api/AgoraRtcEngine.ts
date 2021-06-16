@@ -1897,7 +1897,7 @@ class AgoraRtcEngine extends EventEmitter {
             height: number;
           } = JSON.parse(_eventData);
           this.fire(
-            VideoSourceEvents.CAMERA_FOCUS_AREA_CHANGED,
+            VideoSourceEvents.VIDEO_SOURCE_CAMERA_FOCUS_AREA_CHANGED,
             data.x,
             data.y,
             data.width,
@@ -1915,7 +1915,7 @@ class AgoraRtcEngine extends EventEmitter {
             height: number;
           } = JSON.parse(_eventData);
           this.fire(
-            VideoSourceEvents.CAMERA_EXPOSURE_AREA_CHANGED,
+            VideoSourceEvents.VIDEO_SOURCE_CAMERA_EXPOSURE_AREA_CHANGED,
             data.x,
             data.y,
             data.width,
@@ -1937,7 +1937,7 @@ class AgoraRtcEngine extends EventEmitter {
             reason: AUDIO_MIXING_REASON_TYPE;
           } = JSON.parse(_eventData);
           this.fire(
-            VideoSourceEvents.AUDIO_MIXING_STATE_CHANGED,
+            VideoSourceEvents.VIDEO_SOURCE_AUDIO_MIXING_STATE_CHANGED,
             data.state,
             data.reason
           );
@@ -1966,17 +1966,6 @@ class AgoraRtcEngine extends EventEmitter {
         }
         break;
 
-      case "onFirstRemoteAudioDecoded":
-        {
-          let data: { uid: number; elapsed: number } = JSON.parse(_eventData);
-          this.fire(
-            VideoSourceEvents.FIRST_REMOTE_AUDIO_DECODED,
-            data.uid,
-            data.elapsed
-          );
-        }
-        break;
-
       case "onVideoDeviceStateChanged":
         {
           let data: {
@@ -2000,7 +1989,7 @@ class AgoraRtcEngine extends EventEmitter {
             error: LOCAL_VIDEO_STREAM_ERROR;
           } = JSON.parse(_eventData);
           this.fire(
-            VideoSourceEvents.LOCAL_VIDEO_STATE_CHANGED,
+            VideoSourceEvents.VIDEO_SOURCE_LOCAL_VIDEO_STATE_CHANGED,
             data.localVideoState,
             data.error
           );
@@ -2021,24 +2010,6 @@ class AgoraRtcEngine extends EventEmitter {
             data.width,
             data.height,
             data.rotation
-          );
-        }
-        break;
-
-      case "onRemoteVideoStateChanged":
-        {
-          let data: {
-            uid: number;
-            state: REMOTE_VIDEO_STATE;
-            reason: REMOTE_VIDEO_STATE_REASON;
-            elapsed: number;
-          } = JSON.parse(_eventData);
-          this.fire(
-            VideoSourceEvents.REMOTE_VIDEO_STATE_CHANGED,
-            data.uid,
-            data.state,
-            data.reason,
-            data.elapsed
           );
         }
         break;
@@ -2425,7 +2396,7 @@ class AgoraRtcEngine extends EventEmitter {
             height: number;
           } = JSON.parse(_eventData);
           this.fire(
-            VideoSourceEvents.CAMERA_EXPOSURE_AREA_CHANGED,
+            VideoSourceEvents.VIDEO_SOURCE_CAMERA_EXPOSURE_AREA_CHANGED,
             data.x,
             data.y,
             data.width,
@@ -2445,19 +2416,6 @@ class AgoraRtcEngine extends EventEmitter {
             data.url,
             data.uid,
             data.status
-          );
-        }
-        break;
-      case "onLocalVideoStateChanged":
-        {
-          let data: {
-            localVideoState: LOCAL_VIDEO_STREAM_STATE;
-            error: LOCAL_VIDEO_STREAM_ERROR;
-          } = JSON.parse(_eventData);
-          this.fire(
-            VideoSourceEvents.VIDEO_SOURCE_LOCAL_VIDEO_STATE_CHANGED,
-            data.localVideoState,
-            data.error
           );
         }
         break;
