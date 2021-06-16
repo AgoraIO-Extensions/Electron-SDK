@@ -785,6 +785,7 @@ class AgoraRtcEngine extends EventEmitter {
     })
 
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
+      fire('agoraVideoRowData', infos)
       if (!self.pauseRender) {
         self.onRegisterDeliverFrame(infos);
       }
