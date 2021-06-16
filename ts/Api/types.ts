@@ -3051,3 +3051,18 @@ export enum RAW_AUDIO_FRAME_OP_MODE_TYPE {
   /** 2: Read and write mode: Users read the data from \ref agora::media::IAudioFrameObserver::AudioFrame "AudioFrame", modify it, and then play it. For example, when users have their own sound-effect processing module and perform some voice pre-processing, such as a voice change. */
   RAW_AUDIO_FRAME_OP_MODE_READ_WRITE = 2,
 }
+
+export enum AUDIO_RECORDING_POSITION {
+  /** The SDK will record the voices of all users in the channel. */
+  AUDIO_RECORDING_POSITION_MIXED_RECORDING_AND_PLAYBACK = 0,
+  /** The SDK will record the voice of the local user. */
+  AUDIO_RECORDING_POSITION_RECORDING = 1,
+  /** The SDK will record the voices of remote users. */
+  AUDIO_RECORDING_POSITION_MIXED_PLAYBACK = 2,
+}
+
+export interface AudioRecordingConfiguration {
+  filePath: string;
+  recordingQuality: AUDIO_RECORDING_QUALITY_TYPE;
+  recordingPosition: AUDIO_RECORDING_POSITION;
+}
