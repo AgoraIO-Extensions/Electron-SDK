@@ -13,6 +13,7 @@
 #include <memory>
 #include <Windows.h>
 #include "node_log.h"
+#include "loguru.hpp"
 
 class NodeProcessWinImpl : public INodeProcess
 {
@@ -34,12 +35,12 @@ NodeProcessWinImpl::NodeProcessWinImpl(HANDLE hProcess, int pid)
     : m_pid(pid)
     , m_hProcess(hProcess)
 {
-    LOG_INFO("%s created.\n", __FUNCTION__);
+    LOG_F(INFO, "%s created.\n", __FUNCTION__);
 }
 
 NodeProcessWinImpl::~NodeProcessWinImpl() 
 {
-    LOG_INFO("%s deleted\n", __FUNCTION__);
+    LOG_F(INFO, "%s deleted\n", __FUNCTION__);
 }
 
 int NodeProcessWinImpl::GetProcessId()
@@ -49,7 +50,7 @@ int NodeProcessWinImpl::GetProcessId()
 
 bool NodeProcessWinImpl::TerminateNodeProcess()
 {
-    LOG_INFO("%s, to terminate process.\n", __FUNCTION__);
+    LOG_F(INFO, "%s, to terminate process.\n", __FUNCTION__);
     if (m_hProcess != NULL) {
         TerminateProcess(m_hProcess, 0);
         CloseHandle(m_hProcess);
@@ -57,25 +58,25 @@ bool NodeProcessWinImpl::TerminateNodeProcess()
         m_pid = 0;
     }
     else {
-        LOG_ERROR("%s, process is null.\n", __FUNCTION__);
+        LOG_F(INFO, "%s, process is null.\n", __FUNCTION__);
     }
     return true;
 }
 
 void NodeProcessWinImpl::Monitor(std::function<void(INodeProcess*)> callback)
 {
-    LOG_INFO("%s, to monitor\n", __FUNCTION__);
+    LOG_F(INFO, "%s, to monitor\n", __FUNCTION__);
     HANDLE hp = m_hProcess;
     INodeProcess *pProcess = static_cast<INodeProcess*>(this);
     auto thd = std::thread([hp, pProcess, callback] {
         if (hp != NULL) {
-            LOG_INFO("Waiting for process\n");
+            LOG_F(INFO, "Waiting for process\n");
             WaitForSingleObject(hp, INFINITE);
         }
         else {
-            LOG_ERROR("monitor : process is null\n");
+            LOG_F(INFO, "monitor : process is null\n");
         }
-        LOG_INFO("Monitor complete.\n");
+        LOG_F(INFO, "Monitor complete.\n");
         if (callback) {
             callback(pProcess);
         }
@@ -97,22 +98,26 @@ INodeProcess* INodeProcess::CreateNodeProcess(const char* path, const char** par
         param++;
     }
     cmdline += '\0';
+    LOG_F(INFO, "%s, INodeProcess with success ", __FUNCTION__ );
     if (cmdline.empty()) {
-        LOG_ERROR("%s, cmdline empty\n", __FUNCTION__);
+        LOG_F(INFO, "%s, INodeProcess with error:cmdline.empty() ", __FUNCTION__ );
+        LOG_F(INFO, "%s, cmdline empty\n", __FUNCTION__);
         return nullptr;
     }
 
-    LOG_INFO("%s, cmdline : %s\n", __FUNCTION__, cmdline.c_str());
+    LOG_F(INFO, "%s, cmdline : %s\n", __FUNCTION__, cmdline.c_str());
     if (!CreateProcessA(NULL, (LPSTR)cmdline.c_str(), NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &info, &pi))
     {
         err = GetLastError();
-        LOG_ERROR("%s, create process failed with error %d\n", __FUNCTION__, err);
+        LOG_F(INFO, "%s, create process failed with error %d\n", __FUNCTION__ ,err);
+        LOG_F(INFO, "%s, create process failed with error %d\n", __FUNCTION__, err);
         return nullptr;
     }
-    LOG_INFO("%s success.\n", __FUNCTION__);
+    LOG_F(INFO, "%s success.\n", __FUNCTION__);
     CloseHandle(pi.hThread);
     NodeProcessWinImpl *pProcess = new NodeProcessWinImpl(pi.hProcess, pi.dwProcessId);
     if (!pProcess) {
+        LOG_F(INFO, "create process failed with error :CloseHandle");
         TerminateProcess(pi.hProcess, 0);
         CloseHandle(pi.hProcess);
         return nullptr;
@@ -124,7 +129,7 @@ INodeProcess* INodeProcess::OpenNodeProcess(int pid)
 {
     HANDLE hProcess = OpenProcess(SYNCHRONIZE, FALSE, pid);
     if (!hProcess) {
-        LOG_ERROR("%s, open process failed.\n", __FUNCTION__);
+        LOG_F(INFO, "%s, open process failed.\n", __FUNCTION__);
         return nullptr;
     }
 
@@ -139,12 +144,12 @@ INodeProcess* INodeProcess::OpenNodeProcess(int pid)
 void INodeProcess::DestroyNodeProcess(INodeProcess* pProcess, bool terminate)
 {
     if (!pProcess) {
-        LOG_ERROR("%s, null process\n", __FUNCTION__);
+        LOG_F(INFO, "%s, null process\n", __FUNCTION__);
         return;
     }
     NodeProcessWinImpl *pWinProcess = static_cast<NodeProcessWinImpl*>(pProcess);
     if (!pWinProcess) {
-        LOG_ERROR("%s, not winprocess\n", __FUNCTION__);
+        LOG_F(INFO, "%s, not winprocess\n", __FUNCTION__);
         return;
     }
     if (terminate) {

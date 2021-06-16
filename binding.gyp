@@ -15,6 +15,8 @@
         "<!(node -e \"require('nan')\")"
         ],
         'sources': [
+        './common/loguru.hpp',
+        './common/loguru.cpp',
         './common/ipc_shm.h',
         './common/video_source_ipc.h',
         './common/video_source_ipc.cpp',
@@ -26,8 +28,6 @@
         './common/node_error.h',
         './common/windows_system_api.h',
         './common/windows_system_api.cpp',
-        './common/loguru.hpp',
-        './common/loguru.cpp',
         './video_source/video_source.cpp',
         './video_source/video_source.h',
         './video_source/video_source_event_handler.cpp',
@@ -204,6 +204,8 @@
         "<!(node -e \"require('nan')\")"
         ],
         'sources': [
+        './common/loguru.hpp',
+        './common/loguru.cpp',
         './common/ipc_shm.h',
         './common/node_log.cpp',
         './common/node_log.h',
@@ -215,8 +217,6 @@
         './common/node_event.cpp',
         './common/node_process.h',
         './common/node_error.h',
-        './common/loguru.hpp',
-        './common/loguru.cpp',
         './common/windows_system_api.h',
         './common/windows_system_api.cpp',
         './agora_node_ext/agora_node_ext.cpp',

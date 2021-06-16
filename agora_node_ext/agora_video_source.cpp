@@ -136,6 +136,7 @@ namespace agora{
 
         node_error AgoraVideoSourceSink::release()
         {
+            LOG_F(INFO, "AgoraVideoSourceSink:%s ", __FUNCTION__);
             if (m_initialized){
                 clear();
             }
@@ -144,6 +145,7 @@ namespace agora{
 
         bool AgoraVideoSourceSink::initialize(IAgoraVideoSourceEventHandler *eventHandler, const char* appid, unsigned int areaCode)
         {
+            LOG_F(INFO, "AgoraVideoSourceSink:%s", __FUNCTION__);
             if (m_initialized)
                 return true;
             if (!appid)
@@ -224,17 +226,20 @@ namespace agora{
                 m_initialized = true;
                 return true;
             } while (false);
+            LOG_F(INFO, "AgoraVideoSourceSink:%s  error", __FUNCTION__);
             clear();
             return false;
         }
 
         node_error AgoraVideoSourceSink::startPreview()
         {
+            LOG_F(INFO, "AgoraVideoSourceSink:%s ", __FUNCTION__);
             return m_ipcMsg->sendMessage(AGORA_IPC_START_VS_PREVIEW, nullptr, 0) ? node_ok : node_generic_error;
         }
 
         void AgoraVideoSourceSink::onStartPreviewComplete()
         {
+            LOG_F(INFO, "AgoraVideoSourceSink:%s ", __FUNCTION__);
             if (!m_initialized)
                 return;
             m_ipcReceiver.reset(new AgoraIpcDataReceiver());
@@ -247,6 +252,7 @@ namespace agora{
 
         node_error AgoraVideoSourceSink::stopPreview()
         {
+            LOG_F(INFO, "AgoraVideoSourceSink:%s ", __FUNCTION__);
             if (!m_ipcReceiver)
                 return node_status_error;
 
@@ -288,11 +294,13 @@ namespace agora{
 
         void AgoraVideoSourceSink::msgThread()
         {
+            LOG_F(INFO, "AgoraVideoSourceSink:%s ", __FUNCTION__);
             m_ipcMsg->run();
         }
 
         node_error AgoraVideoSourceSink::join(const char* token, const char* cname, const char* chan_info, uid_t uid)
         {
+            LOG_F(INFO, "%s, AgoraVideoSourceSink  join 1", __FUNCTION__);
             if (m_initialized){
                 m_peerUid = uid;
                 std::unique_ptr<JoinChannelCmd> cmd(new JoinChannelCmd());
@@ -304,6 +312,7 @@ namespace agora{
                 if (chan_info)
                     strncpy(cmd->chan_info, chan_info, MAX_CHAN_INFO);
                 cmd->uid = uid;
+                LOG_F(INFO, "%s, sendMessage  join 2 %s %s", __FUNCTION__,cmd->token,cmd->cname);
                 return m_ipcMsg->sendMessage(AGORA_IPC_JOIN, (char*)cmd.get(), sizeof(JoinChannelCmd)) ? node_ok : node_generic_error;
             }
             return node_status_error;
@@ -311,14 +320,17 @@ namespace agora{
 
         node_error AgoraVideoSourceSink::leave()
         {
+            LOG_F(INFO, "%s, AgoraVideoSourceSink  join 1", __FUNCTION__);
             if (m_initialized) {
                 return m_ipcMsg->sendMessage(AGORA_IPC_LEAVE_CHANNEL, nullptr, 0) ? node_ok : node_generic_error;
             }
+            LOG_F(INFO, "%s, AgoraVideoSourceSink  leave error", __FUNCTION__);
             return node_status_error;
         }
 
         node_error AgoraVideoSourceSink::renewVideoSourceToken(const char* token)
         {
+            LOG_F(INFO, "AgoraVideoSourceSink:%s", __FUNCTION__);
             if (!token)
                 return node_invalid_args;
             if (m_initialized) {
@@ -329,6 +341,7 @@ namespace agora{
         
         node_error AgoraVideoSourceSink::setVideoSourceChannelProfile(agora::rtc::CHANNEL_PROFILE_TYPE profile, const char* permissionKey)
         {
+            LOG_F(INFO, "AgoraVideoSourceSink:%s", __FUNCTION__);
             if (m_initialized){
                 std::unique_ptr<ChannelProfileCmd> cmd(new ChannelProfileCmd());
 				cmd->profile = profile;
@@ -343,6 +356,7 @@ namespace agora{
         
         node_error AgoraVideoSourceSink::setVideoSourceVideoProfile(agora::rtc::VIDEO_PROFILE_TYPE profile, bool swapWidthAndHeight)
         {
+            LOG_F(INFO, "AgoraVideoSourceSink:%s", __FUNCTION__);
             if (m_initialized){
                 VideoProfileCmd cmd(profile, swapWidthAndHeight);
                 return m_ipcMsg->sendMessage(AGORA_IPC_SET_VIDEO_RPOFILE, (char*)&cmd, sizeof(cmd)) ? node_ok : node_generic_error;
@@ -353,18 +367,22 @@ namespace agora{
         void AgoraVideoSourceSink::onMessage(unsigned int msg, char* payload, unsigned int len)
         {
             LOG_INFO("Receive msg : %d\n", msg);
+            LOG_F(INFO, "AgoraVideoSourceSink:%s       msg: %d", __FUNCTION__,msg);
             if (msg == AGORA_IPC_SOURCE_READY) {
+                LOG_F(INFO, "AgoraVideoSourceSink:%s       msg: %s", __FUNCTION__,"AGORA_IPC_SOURCE_READY");
                 m_event.notifyAll();
             }
             if (!m_initialized)
                 return;
            if (msg == AGORA_IPC_JOIN_SUCCESS){
+               LOG_F(INFO, "AgoraVideoSourceSink:%s       msg: %s", __FUNCTION__,"AGORA_IPC_JOIN_SUCCESS");
                 m_peerJoined = true;
                 if (m_eventHandler){
                     m_eventHandler->onVideoSourceJoinedChannel(*((agora::rtc::uid_t*)payload));
                 }
             }
             else if (msg == AGORA_IPC_LEAVE_CHANNEL){
+                LOG_F(INFO, "AgoraVideoSourceSink:%s       msg: %s", __FUNCTION__,"AGORA_IPC_LEAVE_CHANNEL");
                 if (m_eventHandler){
                     m_eventHandler->onVideoSourceLeaveChannel();
                 }
@@ -375,9 +393,11 @@ namespace agora{
                 }
             }
             else if (msg == AGORA_IPC_RENDER_READY){
+                LOG_F(INFO, "AgoraVideoSourceSink:%s       msg: %s", __FUNCTION__,"AGORA_IPC_RENDER_READY");
                 /* TBD */
             }
             else if (msg == AGORA_IPC_START_VS_PREVIEW_COMPLETE) {
+                LOG_F(INFO, "AgoraVideoSourceSink:%s       msg: %s", __FUNCTION__,"AGORA_IPC_START_VS_PREVIEW_COMPLETE");
                 onStartPreviewComplete();
             }
             else if (msg == AGORA_IPC_ON_LOCAL_AUDIO_STATS) {
@@ -422,6 +442,7 @@ namespace agora{
                 m_eventHandler->onVideoSourceLocalVideoStateChanged(cmd->localVideoState, cmd->error);
             }
             else if (msg == AGORA_IPC_STOP_VS_PREVIEW_COMPLETE) {
+                LOG_F(INFO, "AgoraVideoSourceSink:%s       msg: %s", __FUNCTION__,"AGORA_IPC_STOP_VS_PREVIEW_COMPLETE");
                 m_ipcReceiver.reset();
             }
         }
@@ -443,6 +464,7 @@ namespace agora{
 
         node_error AgoraVideoSourceSink::updateScreenCapture(agora::rtc::Rect* rect)
         {
+            LOG_F(INFO, "AgoraVideoSourceSink:%s", __FUNCTION__);
             if (!rect)
                 return node_invalid_args;
             if (m_initialized && m_peerJoined){
@@ -453,6 +475,7 @@ namespace agora{
 
         node_error AgoraVideoSourceSink::stopCaptureScreen()
         {
+            LOG_F(INFO, "AgoraVideoSourceSink:%s", __FUNCTION__);
             if (m_initialized && m_peerJoined){
                 return m_ipcMsg->sendMessage(AGORA_IPC_STOP_CAPTURE_SCREEN, nullptr, 0) ? node_ok : node_generic_error;
             }

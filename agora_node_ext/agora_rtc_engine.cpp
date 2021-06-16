@@ -38,6 +38,7 @@ namespace agora {
          */
         void NodeRtcEngine::Init(Local<Object>& module)
         {
+            loguru::add_file("videoSource_subprocess.log", loguru::Append, loguru::Verbosity_MAX);
             Isolate *isolate = module->GetIsolate();
             v8::Local<v8::Context> context = isolate->GetCurrentContext();
             BEGIN_PROPERTY_DEFINE(NodeRtcEngine, createInstance, 5)
