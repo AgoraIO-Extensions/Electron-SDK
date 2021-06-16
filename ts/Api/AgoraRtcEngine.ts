@@ -4,7 +4,6 @@
   ApiTypeVideoDeviceManager,
   ApiTypeRawDataPluginManager,
   PROCESS_TYPE,
-  AudioRecordingConfiguration,
 } from "./internal/native_type";
 import {
   NodeIrisRtcEngine,
@@ -91,6 +90,7 @@ import {
   MEDIA_DEVICE_STATE_TYPE,
   DataStreamConfig,
   RAW_AUDIO_FRAME_OP_MODE_TYPE,
+  AudioRecordingConfiguration,
 } from "./types";
 import { EventEmitter } from "events";
 import { deprecate, logWarn, logInfo, logError } from "../Utils";
@@ -2425,7 +2425,7 @@ class AgoraRtcEngine extends EventEmitter {
             height: number;
           } = JSON.parse(_eventData);
           this.fire(
-            VideoSourceEvents.VIDEO_SOURCE_CAMERA_EXPOSURE_AREA_CHANGED,
+            VideoSourceEvents.CAMERA_EXPOSURE_AREA_CHANGED,
             data.x,
             data.y,
             data.width,
