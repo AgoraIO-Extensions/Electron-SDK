@@ -4933,12 +4933,14 @@ class AgoraRtcEngine extends EventEmitter {
   joinChannelWithUserAccount(
     token: string,
     channelId: string,
-    userAccount: string
+    userAccount: string,
+    options?: ChannelMediaOptions
   ): number {
-    let param = {
+    const param = {
       token,
       channelId,
       userAccount,
+      options,
     };
 
     let ret = this._rtcEngine.CallApi(
