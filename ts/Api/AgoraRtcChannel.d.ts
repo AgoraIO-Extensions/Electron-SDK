@@ -19,6 +19,8 @@ import {
   CHANNEL_MEDIA_RELAY_ERROR,
   INJECT_STREAM_STATUS,
   USER_OFFLINE_REASON_TYPE,
+  RTMP_STREAM_PUBLISH_STATE,
+  RTMP_STREAM_PUBLISH_ERROR,
 } from "./types";
 import { ChannelEvents } from "../Common/JSEvents";
 
@@ -455,7 +457,12 @@ declare interface AgoraRtcChannel {
    */
   on(
     evt: ChannelEvents.RTMP_STREAMING_STATE_CHANGED,
-    cb: (channelId: string, url: string, state: number, errCode: number) => void
+    cb: (
+      channelId: string,
+      url: string,
+      state: RTMP_STREAM_PUBLISH_STATE,
+      errCode: RTMP_STREAM_PUBLISH_ERROR
+    ) => void
   ): this;
   /** Occurs when the publisher's transcoding is updated. */
   on(
@@ -622,7 +629,7 @@ declare interface AgoraRtcChannel {
     channelId: string,
     uid: number,
     streamId: number,
-    buffer: string
+    data: string
   ): void;
 
   on(
