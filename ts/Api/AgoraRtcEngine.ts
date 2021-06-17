@@ -2025,26 +2025,6 @@ class AgoraRtcEngine extends EventEmitter {
         }
         break;
 
-      case "onStreamMessageError":
-        {
-          let data: {
-            uid: number;
-            streamId: number;
-            code: number;
-            missed: number;
-            cached: number;
-          } = JSON.parse(_eventData);
-          this.fire(
-            VideoSourceEvents.VIDEO_SOURCE_STREAM_MESSAGE_ERROR,
-            data.uid,
-            data.streamId,
-            data.code,
-            data.missed,
-            data.cached
-          );
-        }
-        break;
-
       case "onMediaEngineLoadSuccess":
         {
           this.fire(VideoSourceEvents.VIDEO_SOURCE_MEDIA_ENGINE_LOAD_SUCCESS);
@@ -2131,22 +2111,6 @@ class AgoraRtcEngine extends EventEmitter {
         }
         break;
 
-      case "onRtmpStreamingStateChanged":
-        {
-          let data: {
-            url: string;
-            state: RTMP_STREAM_PUBLISH_STATE;
-            errCode: RTMP_STREAM_PUBLISH_ERROR;
-          } = JSON.parse(_eventData);
-          this.fire(
-            VideoSourceEvents.VIDEO_SOURCE_RTMP_STREAMING_STATE_CHANGED,
-            data.url,
-            data.state,
-            data.errCode
-          );
-        }
-        break;
-
       case "onRtmpStreamingEvent":
         {
           let data: {
@@ -2179,12 +2143,6 @@ class AgoraRtcEngine extends EventEmitter {
             VideoSourceEvents.VIDEO_SOURCE_STREAM_UNPUBLISHED,
             data.url
           );
-        }
-        break;
-
-      case "onTranscodingUpdated":
-        {
-          this.fire(VideoSourceEvents.VIDEO_SOURCE_TRANSCODING_UPDATED);
         }
         break;
 
@@ -2428,25 +2386,7 @@ class AgoraRtcEngine extends EventEmitter {
     _eventData: string,
     _eventBuffer: string
   ) => {
-    switch (_eventName) {
-      case "onStreamMessage":
-        {
-          const data: {
-            uid: number;
-            streamId: number;
-            length: number;
-          } = JSON.parse(_eventData);
-          this.fire(
-            VideoSourceEvents.VIDEO_SOURCE_STREAM_MESSAGE,
-            data.uid,
-            data.streamId,
-            _eventBuffer
-          );
-        }
-        break;
-      default:
-        break;
-    }
+    
   };
 
   setView(rendererConfig: RendererConfig): void {

@@ -342,17 +342,6 @@ declare interface AgoraRtcChannel {
     cb: (channelId: string, uid: number, streamId: number, data: string) => void
   ): this;
 
-  //Todo
-  on(
-    evt: ChannelEvents.READY_TO_SEND_METADATA,
-    cb: (metadata: Metadata) => void
-  ): this;
-  //Todo
-  on(
-    evt: ChannelEvents.METADATA_RECEIVED,
-    cb: (metadata: Metadata) => void
-  ): this;
-
   /** Occurs when the local user does not receive the data stream from the
    * remote user within five seconds.
    *
@@ -626,10 +615,7 @@ declare interface AgoraRtcChannel {
 
   on(
     evt: ChannelEvents.STREAM_MESSAGE,
-    channelId: string,
-    uid: number,
-    streamId: number,
-    data: string
+    cb: (channelId: string, uid: number, streamId: number, data: string) => void
   ): void;
 
   on(
@@ -649,6 +635,10 @@ declare interface AgoraRtcChannel {
    */
   on(
     evt: ChannelEvents.RTMP_STREAMING_EVENT,
-    cb: (url: string, eventCode: RTMP_STREAMING_EVENT) => void
+    cb: (
+      channelId: string,
+      url: string,
+      eventCode: RTMP_STREAMING_EVENT
+    ) => void
   ): this;
 }

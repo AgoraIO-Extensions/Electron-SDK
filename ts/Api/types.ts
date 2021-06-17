@@ -3065,4 +3065,11 @@ export interface AudioRecordingConfiguration {
   filePath: string;
   recordingQuality: AUDIO_RECORDING_QUALITY_TYPE;
   recordingPosition: AUDIO_RECORDING_POSITION;
+  /** Sets the sample rate (Hz) of the recording file. Supported values are as follows:
+   * - 16000
+   * - (Default) 32000
+   * - 44100
+   * - 48000
+   */
+  recordingSampleRate: number;
 }
