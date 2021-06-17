@@ -391,7 +391,7 @@ declare interface AgoraRtcChannel {
    */
   on(
     evt: ChannelEvents.CHANNEL_MEDIA_RELAY_EVENT,
-    cb: (channelId: string, event: CHANNEL_MEDIA_RELAY_EVENT) => void
+    cb: (channelId: string, code: CHANNEL_MEDIA_RELAY_EVENT) => void
   ): this;
 
   on(evt: string, listener: Function): this;
