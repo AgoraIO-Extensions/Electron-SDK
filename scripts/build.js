@@ -3,13 +3,13 @@ import fs from "fs-extra";
 import path from "path";
 import { exec } from "shelljs";
 
-let gyp_path = `${path.resolve(__dirname, "../../node-gyp/bin/node-gyp.js")}`;
+let gyp_path = `${path.resolve(__dirname, "../node_modules/node-gyp/bin/node-gyp.js")}`;
 
 if (!fs.existsSync(gyp_path)) {
   logger.info(`gyp_exec not found at ${gyp_path}, switch`);
   gyp_path = `${path.resolve(
-    __dirname,
-    "../node_modules/node-gyp/bin/node-gyp.js"
+    '$(npm bin)',
+    "node-gyp"
   )}`;
 }
 const gyp_exec = `node ${gyp_path}`;
@@ -48,7 +48,7 @@ const build = async (
     silent,
     msvsVersion,
     arch,
-    distUrl,
+    distUrl = 'https://electronjs.org/headers',
   }
 ) => {
   const commandArray = [];
@@ -60,7 +60,7 @@ const build = async (
     : configWin(command, { arch, msvsVersion });
   // check runtime
   if (runtime === "electron") {
-    command.push(`--target=${electronVersion}`);
+    command.push(`--target=${electronVersion} --dist-url=${distUrl}`);
   }
   const commandStr = command.join(" ");
   /** start build */
@@ -72,7 +72,7 @@ const build = async (
 
   commandArray.push(`${gyp_exec} clean`);
   commandArray.push(commandStr);
-  commandArray.push(`${gyp_exec} build`);
+  commandArray.push(`${gyp_exec} rebuild --target=${electronVersion}`);
   if (platform === "darwin") {
     commandArray.push(
       `install_name_tool -add_rpath "@loader_path" ${agora_node_ext_path}`
