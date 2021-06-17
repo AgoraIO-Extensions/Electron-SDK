@@ -1761,46 +1761,7 @@ declare interface AgoraRtcEngine {
     evt: VideoSourceEvents.VIDEO_SOURCE_CONNECTION_BANNED,
     cb: () => void
   ): this;
-  // on(evt: 'refreshRecordingServiceStatus', cb: () => void): this;
-  /** Occurs when the local user receives the data stream from the remote
-   * user within five seconds.
-   *
-   * The SDK triggers this callback when the local user receives the stream
-   * message that the remote user sends by calling the
-   * {@link sendStreamMessage} method.
-   * @param cb.uid User ID of the remote user sending the message.
-   * @param cb.streamId Stream ID.
-   * @param cb.msg The data received bt the local user.
-   * @param cb.len Length of the data in bytes.
-   */
-  on(
-    evt: VideoSourceEvents.VIDEO_SOURCE_STREAM_MESSAGE,
-    cb: (uid: number, streamId: number, data: string) => void
-  ): this;
-  /** Occurs when the local user does not receive the data stream from the
-   * remote user within five seconds.
-   *
-   * The SDK triggers this callback when the local user fails to receive the
-   * stream message that the remote user sends by calling the
-   * {@link sendStreamMessage} method.
-   *
-   * @param cb.uid User ID of the remote user sending the message.
-   * @param cb.streamId Stream ID.
-   * @param cb.err Error code.
-   * @param cb.missed Number of the lost messages.
-   * @param cb.cached Number of incoming cached messages when the data stream
-   * is interrupted.
-   */
-  on(
-    evt: VideoSourceEvents.VIDEO_SOURCE_STREAM_MESSAGE_ERROR,
-    cb: (
-      uid: number,
-      streamId: number,
-      code: number,
-      missed: number,
-      cached: number
-    ) => void
-  ): this;
+
   /** Occurs when the media engine call starts. */
   on(
     evt: VideoSourceEvents.VIDEO_SOURCE_MEDIA_ENGINE_START_CALL_SUCCESS,
@@ -1935,7 +1896,7 @@ declare interface AgoraRtcEngine {
    * - height: Height of the changed camera focus area.
    */
   on(
-    evt: VideoSourceEvents.CAMERA_FOCUS_AREA_CHANGED,
+    evt: VideoSourceEvents.VIDEO_SOURCE_CAMERA_FOCUS_AREA_CHANGED,
     cb: (x: number, y: number, width: number, height: number) => void
   ): this;
   /** Occurs when the camera exposure area changes.
@@ -1945,7 +1906,7 @@ declare interface AgoraRtcEngine {
    * - height: Height of the changed camera exposure area.
    */
   on(
-    evt: VideoSourceEvents.CAMERA_EXPOSURE_AREA_CHANGED,
+    evt: VideoSourceEvents.VIDEO_SOURCE_CAMERA_EXPOSURE_AREA_CHANGED,
     cb: (x: number, y: number, width: number, height: number) => void
   ): this;
   /** Occurs when the token expires in 30 seconds.
@@ -1996,77 +1957,7 @@ declare interface AgoraRtcEngine {
     evt: VideoSourceEvents.VIDEO_SOURCE_STREAM_UNPUBLISHED,
     cb: (url: string) => void
   ): this;
-  /**
-   * Occurs when the state of the RTMP streaming changes.
-   *
-   * The SDK triggers this callback to report the result of the local user
-   * calling the {@link addPublishStreamUrl} and {@link removePublishStreamUrl}
-   * method.
-   *
-   * This callback indicates the state of the RTMP streaming. When exceptions
-   * occur, you can troubleshoot issues by referring to the detailed error
-   * descriptions in the `code` parameter.
-   * @param cb.url The RTMP URL address.
-   * @param cb.state The RTMP streaming state:
-   * - `0`: The RTMP streaming has not started or has ended. This state is also
-   * triggered after you remove an RTMP address from the CDN by calling
-   * {@link removePublishStreamUrl}.
-   * - `1`: The SDK is connecting to Agora's streaming server and the RTMP
-   * server. This state is triggered after you call the
-   * {@link addPublishStreamUrl} method.
-   * - `2`: The RTMP streaming publishes. The SDK successfully publishes the
-   * RTMP streaming and returns this state.
-   * - `3`: The RTMP streaming is recovering. When exceptions occur to the CDN,
-   * or the streaming is interrupted, the SDK tries to resume RTMP streaming
-   * and returns this state.
-   *  - If the SDK successfully resumes the streaming, `2` returns.
-   *  - If the streaming does not resume within 60 seconds or server errors
-   * occur, `4` returns. You can also reconnect to the server by calling the
-   * {@link removePublishStreamUrl} and then {@link addPublishStreamUrl}
-   * method.
-   * - `4`: The RTMP streaming fails. See the `code` parameter for the
-   * detailed error information. You can also call the
-   * {@link addPublishStreamUrl} method to publish the RTMP streaming again.
-   * @param cb.code The detailed error information:
-   * - `0`: The RTMP streaming publishes successfully.
-   * - `1`: Invalid argument used.
-   * - `2`: The RTMP streams is encrypted and cannot be published.
-   * - `3`: Timeout for the RTMP streaming. Call the
-   * {@link addPublishStreamUrl} to publish the stream again.
-   * - `4`: An error occurs in Agora's streaming server. Call the
-   * {@link addPublishStreamUrl} to publish the stream again.
-   * - `5`: An error occurs in the RTMP server.
-   * - `6`: The RTMP streaming publishes too frequently.
-   * - `7`: The host publishes more than 10 URLs. Delete the unnecessary URLs
-   * before adding new ones.
-   * - `8`: The host manipulates other hosts' URLs. Check your app
-   * logic.
-   * - `9`: Agora's server fails to find the RTMP stream.
-   * - `10`: The format of the stream's URL address is not supported. Check
-   * whether the URL format is correct.
-   */
-  on(
-    evt: VideoSourceEvents.VIDEO_SOURCE_RTMP_STREAMING_STATE_CHANGED,
-    cb: (
-      url: string,
-      state: RTMP_STREAM_PUBLISH_STATE,
-      errCode: RTMP_STREAM_PUBLISH_ERROR
-    ) => void
-  ): this;
-  /** Occurs when the publisher's transcoding is updated.
-   *
-   * When the LiveTranscoding class in the setLiveTranscoding method updates,
-   * the SDK triggers the transcodingUpdated callback to report the update
-   * information to the local host.
-   *
-   * **Note**: If you call the {@link setLiveTranscoding} method to set the
-   * LiveTranscoding class for the first time, the SDK does not trigger the
-   * transcodingUpdated callback.
-   */
-  on(
-    evt: VideoSourceEvents.VIDEO_SOURCE_TRANSCODING_UPDATED,
-    cb: () => void
-  ): this;
+
   /** Occurs when a voice or video stream URL address is added to a live
    * broadcast.
    * - url: Pointer to the URL address of the externally injected stream.
