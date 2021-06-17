@@ -20,6 +20,8 @@
 struct ScreenDisplayInfo
 {
     ScreenIDType displayId;
+
+    DisplayInfo displayInfo;
     
     std::string name;
     std::string ownerName;
@@ -77,6 +79,7 @@ struct ScreenWindowInfo
 
 std::vector<ScreenDisplayInfo> getAllDisplayInfo();
 std::vector<ScreenWindowInfo> getAllWindowInfo();
+std::vector<ScreenDisplayInfo> getAllRealDisplayInfo();
 
 #if defined(_WIN32)
 void DestroyGdiplus();

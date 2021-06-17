@@ -66,6 +66,7 @@ namespace agora{
             virtual node_error setScreenCaptureContentHint(VideoContentHint contentHint) override;
             virtual node_error startScreenCaptureByScreen(ScreenIDType screenId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams, const std::vector<agora::rtc::IRtcEngine::WindowIDType>& excludeWindows) override;
             virtual node_error startScreenCaptureByWindow(agora::rtc::IRtcEngine::WindowIDType windowId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams) override;
+            virtual node_error startScreenCaptureByDisplayId(DisplayInfo displayId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams, const std::vector<agora::rtc::IRtcEngine::WindowIDType>& excludeWindows) override;
             virtual node_error updateScreenCaptureParameters(const agora::rtc::ScreenCaptureParameters & captureParams, const std::vector<agora::rtc::IRtcEngine::WindowIDType>& excludeWindows) override;
             virtual void setParameters(const char* parameters) override;
             virtual node_error enableLoopbackRecording(bool enabled, const char* deviceName) override;
@@ -477,6 +478,26 @@ namespace agora{
                 }
 
                 return m_ipcMsg->sendMessage(AGORA_IPC_START_CAPTURE_BY_DISPLAY, (char*)&cmd, sizeof(cmd)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::startScreenCaptureByDisplayId(DisplayInfo displayId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams, const std::vector<agora::rtc::IRtcEngine::WindowIDType>& excludeWindows) 
+        {
+            if (m_initialized && m_peerJoined) {
+                CaptureScreenByDisplayCmd cmd;
+
+                int count = MAX_WINDOW_ID_COUNT < excludeWindows.size() ? MAX_WINDOW_ID_COUNT : excludeWindows.size();
+
+                cmd.displayInfo = displayId;
+                cmd.regionRect = regionRect;
+                cmd.captureParams = captureParams;
+                cmd.excludeWindowCount = count;
+                for (int i = 0; i < count; i++) {
+                    cmd.excludeWindowList[i] = excludeWindows[i];
+                }
+
+                return m_ipcMsg->sendMessage(AGORA_IPC_START_SCREEN_CAPTURE_BY_DISPLAY_ID, (char*)&cmd, sizeof(cmd)) ? node_ok : node_generic_error;
             }
             return node_status_error;
         }

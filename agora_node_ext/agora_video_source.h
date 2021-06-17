@@ -176,6 +176,7 @@ namespace agora{
              */
             virtual node_error startScreenCaptureByWindow(agora::rtc::IRtcEngine::WindowIDType windowId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams) = 0;
 
+            virtual node_error startScreenCaptureByDisplayId(DisplayInfo displayId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams, const std::vector<agora::rtc::IRtcEngine::WindowIDType>& excludeWindows) = 0;
             /**
              * start screen capture by windowId
              */

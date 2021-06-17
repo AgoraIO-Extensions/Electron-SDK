@@ -2611,6 +2611,18 @@ export enum NETWORK_TYPE
   NETWORK_TYPE_MOBILE_4G = 5,
 };
 
+
+export interface DisplayInfo {
+  displayId: {id: number}
+  height: number,
+  width: number,
+  image: Uint8Array,
+  isActive: boolean,
+  isBuiltin: boolean,
+  isMain: boolean
+}
+
+
 /**
  * interface for c++ addon (.node)
  * @ignore
@@ -3113,6 +3125,8 @@ export interface NodeRtcEngine {
     rect: CaptureRect,
     param: CaptureParam
   ): number;
+
+  videoSourceStartScreenCaptureByDisplayId(displayId: number, rect: CaptureRect, param: CaptureParam): number;
   /**
    * @ignore
    */
@@ -3129,6 +3143,10 @@ export interface NodeRtcEngine {
    * @ignore
    */
   getScreenDisplaysInfo(): Array<Object>;
+  /**
+   * @ignore
+   */
+  getRealScreenDisplayInfo(): Array<DisplayInfo>;
   /**
    * @ignore
    */

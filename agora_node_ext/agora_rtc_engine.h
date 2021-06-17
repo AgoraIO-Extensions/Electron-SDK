@@ -176,6 +176,7 @@ namespace agora {
 #if defined(__APPLE__) || defined(_WIN32)
             NAPI_API(getScreenWindowsInfo);
             NAPI_API(getScreenDisplaysInfo);
+            NAPI_API(getRealScreenDisplayInfo);
             NAPI_API(startScreenCapture);
             NAPI_API(stopScreenCapture);
             NAPI_API(updateScreenCaptureRegion);
@@ -372,6 +373,8 @@ namespace agora {
              *  3.3.1
              */
             NAPI_API(setVoiceConversionPreset);
+            NAPI_API(videoSourceStartScreenCaptureByDisplayId);
+           
 
         public:
             Isolate* getIsolate() { return m_isolate; }

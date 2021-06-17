@@ -37,6 +37,11 @@
         typedef agora::rtc::Rectangle ScreenIDType;
 #endif
 
+typedef struct DisplayInfo {
+    DisplayInfo(): idVal(0){}
+    unsigned int idVal;
+} DisplayInfo;
+
 /**
  * AgoraIpcMsg define the message type transferred between node ADDON and vidoe source process
  */
@@ -87,6 +92,7 @@ enum AgoraIpcMsg
     AGORA_IPC_SET_LOGFILE,
     AGORA_IPC_START_CAPTURE_BY_DISPLAY,
     AGORA_IPC_START_CAPTURE_BY_WINDOW_ID,
+    AGORA_IPC_START_SCREEN_CAPTURE_BY_DISPLAY_ID,
     AGORA_IPC_SET_SCREEN_CAPTURE_CONTENT_HINT,
     AGORA_IPC_UPDATE_SCREEN_CAPTURE_PARAMS,
     /** Node ADDON ==> video source, to set rtc parameters*/
@@ -138,6 +144,7 @@ struct ScreenCaptureParametersCmd
 
 struct CaptureScreenByDisplayCmd
 {
+    DisplayInfo displayInfo;
     ScreenIDType screenId;
     agora::rtc::Rectangle regionRect;
     agora::rtc::ScreenCaptureParameters captureParams;

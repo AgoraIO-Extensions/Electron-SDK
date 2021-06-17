@@ -707,3 +707,53 @@ std::vector<ScreenDisplayInfo> getAllDisplayInfo()
 	}
     return displayInfos;
 }
+
+std::vector<ScreenDisplayInfo> getAllRealDisplayInfo()
+{
+	Gdiplus::Status status = Gdiplus::Ok;
+	bool flag = true;
+	int dsp_num = 0;
+	std::vector<ScreenDisplayInfo> _display_infos;
+	if (g_gdiplusToken == NULL)
+		status = InitializeGdiplus();
+		
+	DISPLAY_DEVICE _display_device;
+	ZeroMemory(&_display_device, sizeof(_display_device));
+	_display_device.cb = sizeof(_display_device);
+	for(int _device_index = 0; ; ++_device_index) {
+		ScreenDisplayInfo _display_info;
+		flag = EnumDisplayDevicesA(NULL, _device_index, &_display_device, 0);
+		
+		if (!flag)
+			break;
+
+		if (!(_display_device.StateFlags & DISPLAY_DEVICE_ACTIVE))
+			continue;
+
+		DEVMODE _dev_mode;
+		_dev_mode.dmSize = sizeof(_dev_mode);
+		_dev_mode.dmDriverExtra = 0;
+		if (EnumDisplaySettingsExA(_display_device.DeviceName, ENUM_CURRENT_SETTINGS, &_dev_mode, 0))
+		{
+			_display_info.displayId.width = _dev_mode.dmPelsWidth;
+			_display_info.displayId.height = _dev_mode.dmPelsHeight;
+			_display_info.displayId.x = _dev_mode.dmPosition.x;
+			_display_info.displayId.y = _dev_mode.dmPosition.y;
+		}
+
+		_display_info.name = _display_device.DeviceName;
+		_display_info.displayInfo.idVal = _device_index;
+    	_display_infos.push_back(_display_info);
+	}
+
+	for (int i = 0; i < _display_infos.size(); i ++) {
+		HWND hDesktop = GetDesktopWindow();
+		HDC hDC = GetDC(hDesktop);
+		for (int i = 0; i < _display_infos.size(); i++)
+		{
+			ScreenDisplayInfo &info = _display_infos[i];
+			dumpDisplayInfo(hDC, &info, i, _display_infos);
+		}
+	} 
+	return _display_infos;
+}

@@ -385,6 +385,29 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
             }
         }
     }
+    else if(msg == AGORA_IPC_START_SCREEN_CAPTURE_BY_DISPLAY_ID) {
+        if (payload) {
+            CaptureScreenByDisplayCmd *cmd = (CaptureScreenByDisplayCmd*)payload;
+            agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
+            agora::rtc::view_t excludeWindows[MAX_WINDOW_ID_COUNT] = {nullptr};
+            if (cmd->excludeWindowCount > 0) {
+                for (int i = 0; i < cmd->excludeWindowCount; ++i) {
+                    agora::rtc::view_t windowId = reinterpret_cast<agora::rtc::view_t>(cmd->excludeWindowList[i]);
+                    excludeWindows[i] = windowId;
+                }
+                cmd->captureParams.excludeWindowList = excludeWindows;
+                cmd->captureParams.excludeWindowCount  = cmd->excludeWindowCount;
+            }
+            int result = m_rtcEngine->startScreenCaptureByDisplayId(cmd->displayInfo.idVal, cmd->regionRect, cmd->captureParams);
+
+            if(result != 0) {
+                LOG_ERROR("start screen capture by display failed.");
+                rep.enableLocalVideo(false);
+            } else {
+                rep.enableLocalVideo(true);
+            }
+        }
+    }
     else if(msg == AGORA_IPC_UPDATE_SCREEN_CAPTURE_PARAMS) {
         if (payload) {
             ScreenCaptureParametersCmd* cmd = (ScreenCaptureParametersCmd*)payload;

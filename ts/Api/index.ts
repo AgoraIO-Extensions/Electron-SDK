@@ -58,7 +58,8 @@ import {
   LOCAL_AUDIO_STREAM_ERROR,
   LOCAL_AUDIO_STREAM_STATE,
   LOCAL_VIDEO_STREAM_STATE,
-  LOCAL_VIDEO_STREAM_ERROR
+  LOCAL_VIDEO_STREAM_ERROR,
+  DisplayInfo
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -73,6 +74,7 @@ import {
   PluginInfo,
   Plugin
 } from './plugin';
+import { read } from 'fs';
 const agora = require('../../build/Release/agora_node_ext');
 
 /**
@@ -3818,6 +3820,10 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.getScreenDisplaysInfo();
   }
 
+  getRealScreenDisplaysInfo(): Array<DisplayInfo> {
+    return this.rtcEngine.getRealScreenDisplayInfo();
+  }
+
   /**
    * @deprecated This method is deprecated. Use
    * {@link videoSourceStartScreenCaptureByScreen} or
@@ -4141,6 +4147,10 @@ class AgoraRtcEngine extends EventEmitter {
       rect,
       param
     );
+  }
+
+  videoSourceStartScreenCaptureByDisplayId(displayId: number, rect: CaptureRect, param: CaptureParam) {
+    return this.rtcEngine.videoSourceStartScreenCaptureByDisplayId(displayId, rect, param);
   }
 
   /**
