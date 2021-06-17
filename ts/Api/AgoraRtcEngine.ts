@@ -93,7 +93,13 @@ import {
   AudioRecordingConfiguration,
 } from "./types";
 import { EventEmitter } from "events";
-import { deprecate, logWarn, logInfo, logError } from "../Utils";
+import {
+  deprecate,
+  logWarn,
+  logInfo,
+  logError,
+  objsKeysToLowerCase,
+} from "../Utils";
 import { PluginInfo, Plugin } from "./plugin";
 import { RendererManager } from "../Renderer/RendererManager";
 import {
@@ -2385,9 +2391,7 @@ class AgoraRtcEngine extends EventEmitter {
     _eventName: string,
     _eventData: string,
     _eventBuffer: string
-  ) => {
-    
-  };
+  ) => {};
 
   setView(rendererConfig: RendererConfig): void {
     let defaultConfig: RendererConfig = Object.assign(
@@ -5272,8 +5276,14 @@ class AgoraRtcEngine extends EventEmitter {
       ApiTypeVideoDeviceManager.kVDMEnumerateVideoDevices,
       ""
     );
-
-    return JSON.parse(ret.result);
+    try {
+      const res: Array<any> = JSON.parse(ret.result);
+      objsKeysToLowerCase(res);
+      return res;
+    } catch (error) {
+      console.log(error);
+      return [];
+    }
   }
 
   /**
@@ -5464,8 +5474,14 @@ class AgoraRtcEngine extends EventEmitter {
       ApiTypeAudioDeviceManager.kADMEnumerateRecordingDevices,
       ""
     );
-
-    return JSON.parse(ret.result);
+    try {
+      const res: Array<any> = JSON.parse(ret.result);
+      objsKeysToLowerCase(res);
+      return res;
+    } catch (error) {
+      console.log(error);
+      return [];
+    }
   }
 
   /**

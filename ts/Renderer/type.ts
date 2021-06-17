@@ -39,7 +39,7 @@ export interface VideoFrameCacheConfig {
   height?: number;
 }
 
-export type User = "local" | "videoSource" | number | string ;
+export type User = "local" | "videoSource" | number | string;
 
 export type Channel = "" | string;
 
