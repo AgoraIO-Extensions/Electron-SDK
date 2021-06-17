@@ -170,7 +170,7 @@ export enum ApiTypeEngine {
   kMediaPushAudioFrame,
   kMediaPullAudioFrame,
   kMediaSetExternalVideoSource,
-  kMediaPushVideoFrame
+  kMediaPushVideoFrame,
 }
 
 export enum ApiTypeChannel {
@@ -216,7 +216,7 @@ export enum ApiTypeChannel {
   kChannelUpdateChannelMediaRelay,
   kChannelStopChannelMediaRelay,
   kChannelGetConnectionState,
-  kChannelEnableRemoteSuperResolution
+  kChannelEnableRemoteSuperResolution,
 }
 
 export enum ApiTypeAudioDeviceManager {
@@ -244,7 +244,7 @@ export enum ApiTypeAudioDeviceManager {
   kADMStopRecordingDeviceTest,
 
   kADMStartAudioDeviceLoopbackTest,
-  kADMStopAudioDeviceLoopbackTest
+  kADMStopAudioDeviceLoopbackTest,
 }
 
 export enum ApiTypeVideoDeviceManager {
@@ -253,7 +253,7 @@ export enum ApiTypeVideoDeviceManager {
   kVDMSetDevice,
   kVDMGetDevice,
   kVDMStartDeviceTest,
-  kVDMStopDeviceTest
+  kVDMStopDeviceTest,
 }
 
 export enum ApiTypeRawDataPluginManager {
@@ -264,12 +264,12 @@ export enum ApiTypeRawDataPluginManager {
   kRDPMGetPlugins,
   kRDPMSetPluginParameter,
   kRDPMGetPluginParameter,
-  kRDPMRelease
+  kRDPMRelease,
 }
 
 export enum PROCESS_TYPE {
   MAIN,
-  SCREEN_SHARE
+  SCREEN_SHARE,
 }
 
 export interface Result {
