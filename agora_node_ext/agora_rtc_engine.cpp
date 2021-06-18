@@ -5209,7 +5209,11 @@ namespace agora {
                 for (unsigned int i = 0; i < allDisplays.size(); ++i) {
                     ScreenDisplayInfo displayInfo = allDisplays[i];
                     Local<v8::Object> obj = Object::New(isolate);
+#ifdef _WIN32
                     DisplayInfo displayId = displayInfo.displayInfo;
+#elif defined(__APPLE__)
+                    ScreenIDType displayId = displayInfo.displayId;
+#endif
                     Local<v8::Object> displayIdObj = Object::New(isolate);
 
                     NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "id", displayId.idVal);
