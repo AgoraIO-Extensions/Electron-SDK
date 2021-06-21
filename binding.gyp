@@ -17,6 +17,7 @@
                 './source_code/iris/third_party/rapidjson/include',
                 './source_code/iris/base',
                 './source_code/process',
+                './source_code/window/',
                 './source_code/raw_data/video_transporter',
                 './source_code/video_source',
                 "<!(node -e \"require('nan')\")"
@@ -54,6 +55,7 @@
                         'sources': [
                             './source_code/process/node_process_win.cpp',
                             './source_code/iris/base/process/iris_process_win.cc',
+                            './source_code/iris/base/window/iris_screen_win.cc'
                         ],
                         'include_dirs': [
                             './sdk/include'
@@ -62,6 +64,7 @@
                             '_USING_V110_SDK71_',
                             '_HAS_EXCEPTIONS=0',
                             'IRIS_EXPORT',
+                            'IRIS_JSON_ARRAY',
                             'EXECUTABLE_NAME=VideoSource'
                         ],
                         'configurations': {
@@ -119,11 +122,13 @@
                         'sources': [
                             './source_code/process/node_process_unix.cpp',
                             './source_code/iris/base/process/iris_process_unix.cc',
+                            './source_code/iris/base/window/iris_screen_mac.mm'
                         ],
-                        'defines!': [
+                        'defines': [
                             # '_HAS_EXCEPTIONS=0',
-                            '-std=gnu++14',
-                            'EXECUTABLE_NAME=VideoSource'
+                            # '-std=gnu++14',
+                            'IRIS_JSON_ARRAY',
+                            # 'EXECUTABLE_NAME=VideoSource'
                         ],
                         'OTHER_CFLAGS': [
                             '-std=c++11',
@@ -158,6 +163,7 @@
                 './source_code/common/',
                 './source_code/ipc/',
                 './source_code/process/',
+                './source_code/window/',
                 './source_code/raw_data/video_transporter/',
                 './source_code/windowInfo/',
                 "<!(node -e \"require('nan')\")"
@@ -207,6 +213,7 @@
                         'defines': [
                             '_USING_V110_SDK71_',
                             '_HAS_EXCEPTIONS=0',
+                            'IRIS_JSON_ARRAY',
                             'IRIS_EXPORT',
                             'EXECUTABLE_NAME=VideoSource'
                         ],
@@ -215,6 +222,7 @@
                             './source_code/windowInfo/node_screen_window_info_win.cpp',
                             './source_code/windowInfo/node_screen_window_info.h',
                             './source_code/iris/base/process/iris_process_win.cc',
+                            './source_code/iris/base/window/iris_screen_win.cc'
                         ],
                         'include_dirs': [
                             './sdk/include',
@@ -280,6 +288,7 @@
                             './source_code/windowInfo/node_screen_window_info_mac.cpp',
                             './source_code/windowInfo/node_screen_window_info.h',
                             './source_code/process/node_process_unix.cpp',
+                            './source_code/iris/base/window/iris_screen_mac.mm',
                             './source_code/iris/third_party/libyuv/source/compare_gcc.cc',
                             './source_code/iris/third_party/libyuv/source/rotate_gcc.cc',
                             './source_code/iris/third_party/libyuv/source/row_gcc.cc',
@@ -288,10 +297,11 @@
                         'include_dirs': [
                             './sdk/lib/mac/AgoraRtcKit.framework/Headers'
                         ],
-                        'defines!': [
-                            '_NOEXCEPT',
-                            '-std=c++11',
-                            'EXECUTABLE_NAME'
+                        'defines': [
+                            # '_NOEXCEPT',
+                            # '-std=c++11',
+                            'IRIS_JSON_ARRAY',
+                            # 'EXECUTABLE_NAME'
                         ],
                         'OTHER_CFLAGS': [
                             '-std=c++11',
