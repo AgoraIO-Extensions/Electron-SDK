@@ -3520,6 +3520,9 @@ export interface NodeRtcEngine {
    * @ignore
    */
   adjustPlaybackSignalVolume(volume: number): number;
+  adjustLoopbackSignalVolume(volume: number): number;
+  videoSourceAdjustRecordingSignalVolume(volume: number): number;
+  videoSourceAdjustLoopbackRecordingSignalVolume(volume: number): number;
   /**
    * @ignore
    */

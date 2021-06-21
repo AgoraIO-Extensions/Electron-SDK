@@ -3172,6 +3172,15 @@ class AgoraRtcEngine extends EventEmitter {
   adjustRecordingSignalVolume(volume: number): number {
     return this.rtcEngine.adjustRecordingSignalVolume(volume);
   }
+  adjustLoopbackSignalVolume(volume: number): number {
+    return this.rtcEngine.adjustLoopbackSignalVolume(volume);
+  }
+  videoSourceAdjustRecordingSignalVolume(volume: number): number {
+    return this.rtcEngine.videoSourceAdjustRecordingSignalVolume(volume);
+  }
+  videoSourceAdjustLoopbackRecordingSignalVolume(volume: number): number {
+    return this.rtcEngine.videoSourceAdjustLoopbackRecordingSignalVolume(volume);
+  }
   /**
    * Adjusts the playback volume of the voice.
    * @param volume Playback volume of the voice. To avoid echoes and improve

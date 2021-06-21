@@ -16,6 +16,7 @@
 #include "IAgoraRtcEngine2.h"
 #include <string>
 #include <nan.h>
+#include "loguru.hpp"
 
 #if defined(__APPLE__) || defined(_WIN32)
 #include "node_screen_window_info.h"
@@ -133,6 +134,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setMixedAudioFrameParameters)
                 PROPERTY_METHOD_DEFINE(adjustRecordingSignalVolume)
                 PROPERTY_METHOD_DEFINE(adjustPlaybackSignalVolume)
+                PROPERTY_METHOD_DEFINE(adjustLoopbackSignalVolume)
                 PROPERTY_METHOD_DEFINE(setHighQualityAudioParameters)
                 PROPERTY_METHOD_DEFINE(enableWebSdkInteroperability)
                 PROPERTY_METHOD_DEFINE(setVideoQualityParameters)
@@ -315,6 +317,9 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setVoiceConversionPreset);
                 PROPERTY_METHOD_DEFINE(videoSourceStartScreenCaptureByDisplayId);
                 PROPERTY_METHOD_DEFINE(getRealScreenDisplayInfo);
+
+                PROPERTY_METHOD_DEFINE(videoSourceAdjustRecordingSignalVolume);
+                PROPERTY_METHOD_DEFINE(videoSourceAdjustLoopbackRecordingSignalVolume);
 
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
@@ -1684,6 +1689,65 @@ namespace agora {
                 napi_status status = napi_get_value_nodestring_(args[0], appid);
                 CHECK_NAPI_STATUS(pEngine, status);
                 if (!pEngine->m_videoSourceSink.get() || !pEngine->m_videoSourceSink->initialize(pEngine->m_eventHandler.get(), appid)) {
+                    break;
+                }
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+        
+        NAPI_API_DEFINE(NodeRtcEngine, adjustLoopbackSignalVolume)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                int32 volume;
+                napi_status status = napi_get_value_int32_(args[0], volume);
+                CHECK_NAPI_STATUS(pEngine, status);
+                LOG_F(INFO, "adjustLoopbackSignalVolume:%d", volume);
+                result = pEngine->m_engine->adjustLoopbackSignalVolume(volume);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+        NAPI_API_DEFINE(NodeRtcEngine, videoSourceAdjustLoopbackRecordingSignalVolume)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                int32 volume;
+                napi_status status = napi_get_value_int32_(args[0], volume);
+                CHECK_NAPI_STATUS(pEngine, status);
+                LOG_F(INFO, "videoSourceAdjustLoopbackRecordingSignalVolume:%d", volume);
+                if (!pEngine->m_videoSourceSink.get() || !pEngine->m_videoSourceSink->adjustLoopbackRecordingSignalVolume(volume)) {
+                    break;
+                }
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, videoSourceAdjustRecordingSignalVolume)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                int32 volume;
+                napi_status status = napi_get_value_int32_(args[0], volume);
+                CHECK_NAPI_STATUS(pEngine, status);
+                LOG_F(INFO, "videoSourceAdjustRecordingSignalVolume:%d", volume);
+                if (!pEngine->m_videoSourceSink.get() || !pEngine->m_videoSourceSink->adjustRecordingSignalVolume(volume)) {
                     break;
                 }
                 result = 0;

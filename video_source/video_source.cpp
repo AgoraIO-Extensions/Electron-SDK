@@ -14,6 +14,7 @@
 #include "video_source_param_parser.h"
 #include "video_source_ipc.h"
 #include "node_log.h"
+#include "loguru.hpp"
 
 #define PROCESS_RUN_EVENT_NAME "agora_video_source_process_ready_event_name"
 #define DATA_IPC_NAME "avsipc"
@@ -109,7 +110,7 @@ bool AgoraVideoSource::initialize()
         LOG_LEAVE;
         return false;
     }
-    
+
     m_rtcEngine->disableAudio();
     m_rtcEngine->enableVideo();
 
@@ -433,6 +434,16 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
         LoopbackRecordingCmd *cmd = (LoopbackRecordingCmd*)payload;
         agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
         rep.enableLoopbackRecording(cmd->enabled, cmd->deviceName);
+    }
+    else if (msg == AGORA_IPC_ADJUST_RECORDING_SIGNAL_VOLUME) {
+      int volume = *payload;
+      LOG_F(INFO, "video_source_adjustRecordingSignalVolume:%d", volume);
+      m_rtcEngine->adjustRecordingSignalVolume(volume);
+    }
+    else if (msg == AGORA_IPC_ADJUST_LOOPBACK_RECORDING_SIGNAL_VOLUME) {
+        int volume = *payload;
+        LOG_F(INFO, "video_source_adjustLoopbackRecordingSignalVolume:%d", volume);
+        m_rtcEngine->adjustLoopbackSignalVolume(volume);
     }
     else if(msg == AGORA_IPC_ENABLE_AUDIO) {
         m_rtcEngine->enableAudio();

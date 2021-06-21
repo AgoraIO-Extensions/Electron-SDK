@@ -98,6 +98,9 @@ enum AgoraIpcMsg
     /** Node ADDON ==> video source, to set rtc parameters*/
     AGORA_IPC_SET_PARAMETER,
     AGORA_IPC_ENABLE_LOOPBACK_RECORDING,
+    AGORA_IPC_ADJUST_LOOPBACK_RECORDING_SIGNAL_VOLUME,
+    AGORA_IPC_ADJUST_RECORDING_SIGNAL_VOLUME,
+    
     /** Node ADDON ==> video source, to enable audio*/
     AGORA_IPC_ENABLE_AUDIO,
     AGORA_IPC_DISABLE_AUDIO,
