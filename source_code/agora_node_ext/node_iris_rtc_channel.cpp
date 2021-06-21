@@ -193,7 +193,7 @@ void NodeIrisRtcChannel::ReleaseNodeSource(void *data) {
 }
 
 void NodeIrisRtcChannel::OnApiError(const char *errorMessage) {
-  _iris_channel_event_handler->OnEvent("apiError", errorMessage);
+  _iris_channel_event_handler->OnEvent("onApiError", errorMessage);
 }
 } // namespace electron
 } // namespace rtc
