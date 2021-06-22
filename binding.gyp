@@ -193,6 +193,8 @@
         "<!(node -e \"require('nan')\")"
         ],
         'sources': [
+        './common/loguru.hpp',
+        './common/loguru.cpp',
         './common/ipc_shm.h',
         './common/node_log.cpp',
         './common/node_log.h',

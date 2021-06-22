@@ -14,6 +14,7 @@
 #include "agora_video_source.h"
 #include "node_napi_api.h"
 #include "IAgoraRtcEngine2.h"
+#include "loguru.hpp"
 #include <string>
 #include <nan.h>
 
@@ -5417,7 +5418,7 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_object_property_uint32_(isolate, displayIdObj, "id", screen.idVal);
                 CHECK_NAPI_STATUS(pEngine, status);
-#endif   
+#endif
 
                 // regionRect
                 if(!args[1]->IsObject()) {
@@ -5437,7 +5438,7 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_object_property_int32_(isolate, obj, "height", regionRect.height);
                 CHECK_NAPI_STATUS(pEngine, status);
-                
+
                 // capture parameters
                 if(!args[2]->IsObject()) {
                     status = napi_invalid_arg;
@@ -5460,7 +5461,53 @@ namespace agora {
                 status = napi_get_object_property_bool_(isolate, obj, "windowFocus", captureParams.windowFocus);
                 CHECK_NAPI_STATUS(pEngine, status);
                 captureParams.dimensions = dimensions;
+                CHECK_NAPI_STATUS(pEngine, status);
+                int t = 0;
 
+                std::string key = "excludeWindowList";
+
+                agora::rtc::view_t excludeWindows[MAX_WINDOW_ID_COUNT] = {nullptr};
+
+                Local<Name> keyName = String::NewFromUtf8(isolate, "excludeWindowList", NewStringType::kInternalized).
+                ToLocalChecked();
+
+                Local<Context> context = isolate->GetCurrentContext();
+
+                Local<Value> excludeWindowList = obj->Get(context, keyName).ToLocalChecked();
+
+                if (!excludeWindowList->IsNull() && excludeWindowList->IsArray()) {
+
+                    auto excludeWindowListValue = v8::Array::Cast(*excludeWindowList);
+                    for (int i = 0; i < excludeWindowListValue->Length(); ++i) {
+
+                        agora::rtc::IRtcEngine::WindowIDType windowId;
+                        Local<Value> value = excludeWindowListValue->Get(context, i).ToLocalChecked();
+#if defined(__APPLE__)
+                        status = napi_get_value_uint32_(value, windowId);
+                        CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+#elif defined(_WIN32)
+#if defined(_WIN64)
+                        int64_t wid;
+                        status = napi_get_value_int64_(value, wid);
+#else
+                        uint32_t wid;
+                        status = napi_get_value_uint32_(value, wid);
+#endif
+
+                        CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+                        windowId = (HWND)wid;
+#endif
+
+                        agora::rtc::view_t winId = reinterpret_cast<agora::rtc::view_t>(windowId);
+                        excludeWindows[i] = winId;
+                    }
+                    captureParams.excludeWindowList = excludeWindows;
+
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    status = napi_get_object_property_int32_(isolate, obj, "excludeWindowCount", captureParams.excludeWindowCount);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
+                }
                 #if defined(_WIN32)
                     result = pEngine->m_engine->startScreenCaptureByScreenRect(screen, regionRect, captureParams);
                 #elif defined(__APPLE__)
