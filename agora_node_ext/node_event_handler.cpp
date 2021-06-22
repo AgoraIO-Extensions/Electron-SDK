@@ -261,6 +261,7 @@ namespace agora {
                     Local<Object> obj = Object::New(isolate);
                     obj->Set(context, napi_create_string_(isolate, "uid"), napi_create_uid_(isolate, speakers[i].uid));
                     obj->Set(context, napi_create_string_(isolate, "volume"), napi_create_uint32_(isolate, speakers[i].volume));
+                    obj->Set(context, napi_create_string_(isolate, "vad"), napi_create_uint32_(isolate, speakers[i].vad));
                     arrSpeakers->Set(context, i, obj);
                 }
 
