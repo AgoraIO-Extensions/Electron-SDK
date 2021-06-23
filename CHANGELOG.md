@@ -1,3 +1,6 @@
+## 3.2.1-build.623 (June 23th 2021)
+* Fix Software render zoom bug
+
 ## 3.2.1-hotfix.1 （May 6， 2021）
 * Fix memory leak of Video Render
 
