@@ -443,6 +443,10 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
         m_rtcEngine->setEncryptionSecret((const char *)payload);
     } else if(msg == AGORA_IPC_SET_PROCESS_DPI_AWARE_NESS) {
         setProcessDpiAwareness();
+    }else if (msg == AGORA_IPC_SET_ADDON_LOGFILE) {
+        stopLogService();
+        startLogService((char*)payload);
+        LOG_INFO("set addon log file %s\n",(char*)payload);
     }
 
     LOG_LEAVE;

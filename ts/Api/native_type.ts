@@ -2920,7 +2920,11 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-   setAddonLogFile(filepath: string): number;
+  setAddonLogFile(filepath: string): number;
+  /**
+   * @ignore
+   */
+   videoSourceSetAddonLogFile(filepath: string): number;
   /**
    * @ignore
    */
@@ -3955,4 +3959,5 @@ export interface NodeRtcChannel {
    * @ignore
    */
   enableEncryption(enabled: boolean, config: EncryptionConfig): number;
+
 }
