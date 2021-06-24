@@ -1404,6 +1404,7 @@ namespace agora {
                 CHECK_NATIVE_THIS(pEngine);
                 nodestring param;
                 status = napi_get_value_nodestring_(args[0], param);
+                LOG_INFO("setParameters %s", std::string(param).c_str());
                 CHECK_NAPI_STATUS(pEngine, status);
                 AParameter ap(pEngine->m_engine);
                 result = ap->setParameters(param);
@@ -1609,17 +1610,27 @@ namespace agora {
             LOG_ENTER;
             int result = -1;
             do{
+                LOG_INFO("VideSource: %s\n", __FUNCTION__);
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
+                LOG_INFO("VideSource: %s check pEngine \n", __FUNCTION__);
                 CHECK_NATIVE_THIS(pEngine);
                 NodeString appid;
                 napi_status status = napi_get_value_nodestring_(args[0], appid);
+                LOG_INFO("VideSource: %s check appid \n", __FUNCTION__);
                 CHECK_NAPI_STATUS(pEngine, status);
                 if (!pEngine->m_videoSourceSink.get() || !pEngine->m_videoSourceSink->initialize(pEngine->m_eventHandler.get(), appid)) {
+                    if (!pEngine->m_videoSourceSink.get())
+                    {
+                        LOG_ERROR("VideSource: %s not get m_videoSourceSink\n", __FUNCTION__);
+                    }else{
+                        LOG_ERROR("VideSource: %s m_videoSourceSink not initialize \n", __FUNCTION__);
+                    }
                     break;
                 }
                 result = 0;
             } while (false);
+            LOG_INFO("VideSource: %s result : %d \n", __FUNCTION__, result);
             napi_set_int_result(args, result);
             LOG_LEAVE;
         }
