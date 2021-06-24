@@ -74,7 +74,7 @@ INodeProcess* INodeProcess::CreateNodeProcess(const char *path, const char **par
 {
     LOG_INFO("TO start process, path : %s", path);
     if(!path || !params || !params[0]) {
-        LOG_INFO("Parameter error");
+        LOG_ERROR("Parameter error");
         return nullptr;
     }
     int fd[2] = {0, 0};
@@ -117,6 +117,7 @@ INodeProcess* INodeProcess::OpenNodeProcess(int pid)
     /**
      * On unix, treate the parameter as the socketpair fd
      */
+    LOG_ENTER;
     NodeProcessUnixImpl* pProcess = new NodeProcessUnixImpl(pid, getppid());
     return pProcess;
 }
@@ -128,11 +129,13 @@ void INodeProcess::DestroyNodeProcess(INodeProcess *pProcess, bool terminate)
 
 int INodeProcess::GetCurrentNodeProcessId()
 {
+    LOG_ENTER;
     return getpid();
 }
 
 bool INodeProcess::getCurrentModuleFileName(std::string &path)
 {
+    LOG_ENTER;
     Dl_info info;
     if(dladdr((const void*)INodeProcess::getCurrentModuleFileName, &info)){
         path.assign(info.dli_fname);

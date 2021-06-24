@@ -13,6 +13,7 @@
 #include <memory>
 #include <Windows.h>
 #include "node_log.h"
+#include "loguru.hpp"
 
 class NodeProcessWinImpl : public INodeProcess
 {
@@ -113,6 +114,7 @@ INodeProcess* INodeProcess::CreateNodeProcess(const char* path, const char** par
     CloseHandle(pi.hThread);
     NodeProcessWinImpl *pProcess = new NodeProcessWinImpl(pi.hProcess, pi.dwProcessId);
     if (!pProcess) {
+        LOG_ERROR("create process failed with error :CloseHandle");
         TerminateProcess(pi.hProcess, 0);
         CloseHandle(pi.hProcess);
         return nullptr;
@@ -122,6 +124,7 @@ INodeProcess* INodeProcess::CreateNodeProcess(const char* path, const char** par
 
 INodeProcess* INodeProcess::OpenNodeProcess(int pid)
 {
+    LOG_ENTER;
     HANDLE hProcess = OpenProcess(SYNCHRONIZE, FALSE, pid);
     if (!hProcess) {
         LOG_ERROR("%s, open process failed.\n", __FUNCTION__);
