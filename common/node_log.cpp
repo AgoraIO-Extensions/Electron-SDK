@@ -14,45 +14,14 @@
 
 using namespace std;
 
-static FILE* log_stream = nullptr;
-static log_level s_level = LOG_LEVEL_INFO;
-
 bool startLogService(const char* path)
 {
-    if(log_stream)
-        return false;
-    if(path){
-        log_stream = fopen(path, "w");
-        return true;
-    }
-    return false;
+    bool res = loguru::add_file(path, loguru::Append, loguru::Verbosity_MAX);
+    return res;
 }
 
 void stopLogService()
 {
-    if(log_stream){
-        fflush(log_stream);
-        fclose(log_stream);
-        log_stream = nullptr;
-    }
+    loguru::remove_all_callbacks();
 }
 
-void setLogLevel(log_level level)
-{
-    s_level = level;
-}
-
-void node_log(enum log_level level, const char *format, ...)
-{
-    //
-    va_list la;
-    va_start(la, format);
-    if(!log_stream)
-        return;
-    if(level > s_level)
-        return;
-    vfprintf(log_stream, format, la);
-    va_end(la);
-    fprintf(log_stream, "\n");
-    fflush(log_stream);
-}
