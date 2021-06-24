@@ -2388,6 +2388,12 @@ class AgoraRtcEngine extends EventEmitter {
   setLogFile(filepath: string): number {
     return this.rtcEngine.setLogFile(filepath);
   }
+   setAddonLogFile(filepath: string): number {
+    return this.rtcEngine.setAddonLogFile(filepath);
+   }
+   videoSourceSetAddonLogFile(filepath: string): number {
+    return this.rtcEngine.videoSourceSetAddonLogFile(filepath);
+   }
 
   /**
    * Sets the log file size (KB).

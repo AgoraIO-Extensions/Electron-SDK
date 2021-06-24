@@ -18,6 +18,7 @@
 #include "node_error.h"
 #include <thread>
 #include <mutex>
+#include "loguru.hpp"
 
 class AgoraVideoSourceEventHandler;
 class AgoraVideoSourceRenderFactory;
