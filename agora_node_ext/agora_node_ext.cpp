@@ -10,7 +10,6 @@
 
 #include "agora_node_ext.h"
 #include "agora_rtc_engine.h"
-#include "log_helper.h"
 using v8::Object;
 using agora::rtc::NodeRtcEngine;
 
