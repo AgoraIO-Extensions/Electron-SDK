@@ -10,7 +10,6 @@
 
 #include "agora_node_ext.h"
 #include "agora_rtc_engine.h"
-#include "log_helper.h"
 using v8::Object;
 using agora::rtc::NodeRtcEngine;
 
@@ -21,7 +20,6 @@ using agora::rtc::NodeRtcEngine;
 void InitExt(Local<Object> module)
 {
 	LOG_ENTER;
-    LogHelper::getInstance("./agoraAddonlog.txt");
     NodeRtcEngine::Init(module);
     LOG_LEAVE;
 }
