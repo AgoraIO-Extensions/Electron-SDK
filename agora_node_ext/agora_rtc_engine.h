@@ -387,6 +387,7 @@ namespace agora {
              * setAddonLogFile
              */
             NAPI_API(setAddonLogFile);
+            NAPI_API(videoSourceSetAddonLogFile);
             
         public:
             Isolate* getIsolate() { return m_isolate; }
