@@ -14,6 +14,8 @@
 #include "video_source_param_parser.h"
 #include "video_source_ipc.h"
 #include "node_log.h"
+#include <sstream>
+#include "loguru.hpp"
 
 #define PROCESS_RUN_EVENT_NAME "agora_video_source_process_ready_event_name"
 #define DATA_IPC_NAME "avsipc"
@@ -49,6 +51,7 @@ std::string AgoraVideoSource::getId()
 bool AgoraVideoSource::initialize()
 {
     LOG_ENTER;
+    LOG_F(INFO, "videoSource initialize m_params: %s", m_params.c_str());
     m_paramParser.reset(new VideoSourceParamParser());
     m_paramParser->initialize(m_params);
 
@@ -93,7 +96,7 @@ bool AgoraVideoSource::initialize()
     context.appId = appid.c_str();
     LOG_ERROR("initialized: %s, appid\n", __FUNCTION__);
     if (m_rtcEngine->initialize(context) != 0){
-        LOG_ERROR("%s, AgoraVideoSource initialize failed.\n", __FUNCTION__);
+        LOG_F(INFO, "%s, AgoraVideoSource initialize failed.\n", __FUNCTION__);
         LOG_LEAVE;
         return false;
     }
@@ -369,6 +372,10 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
     }
     else if(msg == AGORA_IPC_SET_ENCRYPTION_SECRET) {
         m_rtcEngine->setEncryptionSecret((const char *)payload);
+    }else if (msg == AGORA_IPC_SET_ADDON_LOGFILE) {
+        stopLogService();
+        startLogService((char*)payload);
+        LOG_INFO("set addon log file %s\n",(char*)payload);
     }
 
     LOG_LEAVE;

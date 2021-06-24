@@ -348,6 +348,11 @@ namespace agora {
 
             NAPI_API(sendCustomReportMessage);
             NAPI_API(enableEncryption);
+            /*
+             * setAddonLogFile
+             */
+            NAPI_API(setAddonLogFile);
+            NAPI_API(videoSourceSetAddonLogFile);
 
         public:
             Isolate* getIsolate() { return m_isolate; }

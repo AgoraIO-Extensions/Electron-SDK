@@ -289,6 +289,11 @@ namespace agora {
 
                 PROPERTY_METHOD_DEFINE(sendCustomReportMessage);
                 PROPERTY_METHOD_DEFINE(enableEncryption);
+                /**
+                 * setAddonLogFile
+                 */
+                PROPERTY_METHOD_DEFINE(setAddonLogFile);
+                PROPERTY_METHOD_DEFINE(videoSourceSetAddonLogFile);
 
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
@@ -5504,6 +5509,45 @@ namespace agora {
                 config.encryptionMode = (ENCRYPTION_MODE)encryptionMode;
                 config.encryptionKey = encryptionKey;
                 result = pEngine->m_engine->enableEncryption(enabled, config);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+        NAPI_API_DEFINE(NodeRtcEngine, setAddonLogFile)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                nodestring path;
+                napi_get_param_1(args, nodestring, path);
+                string sPath;
+                sPath = path ? string(path) : "";
+                stopLogService();
+                result = startLogService(sPath.c_str());
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+        NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetAddonLogFile)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                nodestring path;
+                napi_get_param_1(args, nodestring, path);
+                CHECK_NAPI_STATUS(pEngine, status);
+                if (!pEngine->m_videoSourceSink.get() || pEngine->m_videoSourceSink->setAddonLogFile(path) != node_ok) {
+                    break;
+                }
+                result = 0;
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
