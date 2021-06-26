@@ -324,10 +324,11 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setProcessDpiAwareness);
                 PROPERTY_METHOD_DEFINE(videoSourceSetProcessDpiAwareness);
                 PROPERTY_METHOD_DEFINE(startAudioRecordingWithConfig);
-                /**
-                 * setAddonLogFile
-                 */
+
                 PROPERTY_METHOD_DEFINE(setAddonLogFile);
+                
+                PROPERTY_METHOD_DEFINE(videoSourceStartScreenCaptureByDisplayId);
+                PROPERTY_METHOD_DEFINE(getRealScreenDisplayInfo);
                 EN_PROPERTY_DEFINE()
                 module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -2213,6 +2214,129 @@ namespace agora {
                 }
                 if (pEngine->m_videoSourceSink.get()) {
                     pEngine->m_videoSourceSink->startScreenCaptureByScreen(screen, regionRect, captureParams, excludeWindows);
+                    result = 0;
+                }
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, videoSourceStartScreenCaptureByDisplayId)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            std::string key = "";
+            do{
+                Isolate *isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                key = "windowId";
+                // screenId
+                DisplayInfo displayInfo;
+
+                if(!args[0]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+                Local<Object> displayIdObj;
+                status = napi_get_value_object_(isolate, args[0], displayIdObj);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_uint32_(isolate, displayIdObj, "id", displayInfo.idVal);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                // regionRect
+                if(!args[1]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+                Local<Object> obj;
+                status = napi_get_value_object_(isolate, args[1], obj);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                Rectangle regionRect;
+                key = "x";
+                status = napi_get_object_property_int32_(isolate, obj, key, regionRect.x);
+                CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+
+                key = "y";
+                status = napi_get_object_property_int32_(isolate, obj, key, regionRect.y);
+                CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+
+                key = "width";
+                status = napi_get_object_property_int32_(isolate, obj, key, regionRect.width);
+                CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+
+                key = "height";
+                status = napi_get_object_property_int32_(isolate, obj, "height", regionRect.height);
+                CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+
+                // capture parameters
+                if(!args[2]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+                status = napi_get_value_object_(isolate, args[2], obj);
+                CHECK_NAPI_STATUS(pEngine, status);
+                ScreenCaptureParameters captureParams;
+                VideoDimensions dimensions;
+                key = "width";
+                status = napi_get_object_property_int32_(isolate, obj, key, dimensions.width);
+                CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+
+                key = "height";
+                status = napi_get_object_property_int32_(isolate, obj, key, dimensions.height);
+                CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+
+                key = "frameRate";
+                status = napi_get_object_property_int32_(isolate, obj, key, captureParams.frameRate);
+                CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+
+                key = "bitrate";
+                status = napi_get_object_property_int32_(isolate, obj, "bitrate", captureParams.bitrate);
+                CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+
+                key = "captureMouseCursor";
+                status = napi_get_object_property_bool_(isolate, obj, "captureMouseCursor", captureParams.captureMouseCursor);
+                CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+
+                key = "windowFocus";
+                status = napi_get_object_property_bool_(isolate, obj, "windowFocus", captureParams.windowFocus);
+                CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+                captureParams.dimensions = dimensions;
+
+                key = "excludeWindowList";
+                std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
+                Local<Name> keyName = String::NewFromUtf8(isolate, "excludeWindowList", NewStringType::kInternalized).ToLocalChecked();
+                Local<Context> context = isolate->GetCurrentContext();
+                Local<Value> excludeWindowList = obj->Get(context, keyName).ToLocalChecked();
+                if (!excludeWindowList->IsNull() && excludeWindowList->IsArray()) {
+                    auto excludeWindowListValue = v8::Array::Cast(*excludeWindowList);
+                    for (int i = 0; i < excludeWindowListValue->Length(); ++i) {
+                        agora::rtc::IRtcEngine::WindowIDType windowId;
+                        Local<Value> value = excludeWindowListValue->Get(context, i).ToLocalChecked();
+#if defined(__APPLE__)
+                        status = napi_get_value_uint32_(value, windowId);
+                        CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+#elif defined(_WIN32)
+#if defined(_WIN64)
+                        int64_t wid;
+                        status = napi_get_value_int64_(value, wid);
+#else
+                        uint32_t wid;
+                        status = napi_get_value_uint32_(value, wid);
+#endif
+
+                        CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+                        windowId = (HWND)wid;
+#endif
+                        excludeWindows.push_back(windowId);
+                    }
+                }
+                if (pEngine->m_videoSourceSink.get()) {
+                    pEngine->m_videoSourceSink->startScreenCaptureByDisplayId(displayInfo, regionRect, captureParams, excludeWindows);
                     result = 0;
                 }
             } while (false);
@@ -4939,6 +5063,53 @@ namespace agora {
 #elif defined(__APPLE__)
                     NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "id", displayId.idVal);
 #endif
+                    Local<Value> propName = String::NewFromUtf8(isolate, "displayId", NewStringType::kInternalized).ToLocalChecked();
+                    obj->Set(context, propName, displayIdObj);
+
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", displayInfo.width);
+                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", displayInfo.height);
+                    NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isMain", displayInfo.isMain);
+                    NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isActive", displayInfo.isActive);
+                    NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isBuiltin", displayInfo.isBuiltin);
+
+                    if (displayInfo.imageData) {
+                        buffer_info imageInfo;
+                        imageInfo.buffer = displayInfo.imageData;
+                        imageInfo.length = displayInfo.imageDataLength;
+                        NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "image", imageInfo);
+
+                        free(displayInfo.imageData);
+                    }
+
+                    infos->Set(context, i, obj);
+                }
+                napi_set_array_result(args, infos);
+            } while (false);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, getRealScreenDisplayInfo)
+        {
+            LOG_ENTER;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                Isolate* isolate = args.GetIsolate();
+                Local<Context> context = isolate->GetCurrentContext();
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                Local<v8::Array> infos = v8::Array::New(isolate);
+
+                std::vector<ScreenDisplayInfo> allDisplays = ::getAllRealDisplayInfo();
+
+                for (unsigned int i = 0; i < allDisplays.size(); ++i) {
+                    ScreenDisplayInfo displayInfo = allDisplays[i];
+                    Local<v8::Object> obj = Object::New(isolate);
+                    DisplayInfo displayId = displayInfo.displayInfo;
+                    Local<v8::Object> displayIdObj = Object::New(isolate);
+
+                    NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "id", displayId.idVal);
+
                     Local<Value> propName = String::NewFromUtf8(isolate, "displayId", NewStringType::kInternalized).ToLocalChecked();
                     obj->Set(context, propName, displayIdObj);
 

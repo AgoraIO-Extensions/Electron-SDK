@@ -2621,6 +2621,16 @@ export enum NETWORK_TYPE
   NETWORK_TYPE_MOBILE_4G = 5,
 };
 
+export interface DisplayInfo {
+  displayId: {id: number}
+  height: number,
+  width: number,
+  image: Uint8Array,
+  isActive: boolean,
+  isBuiltin: boolean,
+  isMain: boolean
+}
+
 export enum AUDIO_RECORDING_QUALITY_TYPE
 {
     /** 0: Low quality. The sample rate is 32 kHz, and the file size is around
@@ -3161,6 +3171,8 @@ export interface NodeRtcEngine {
    * @ignore
    */
   videosourceSetScreenCaptureContentHint(hint: VideoContentHint): number;
+
+  videoSourceStartScreenCaptureByDisplayId(displayId: number, rect: CaptureRect, param: CaptureParam): number;
   /**
    * @ignore
    */
@@ -3169,6 +3181,10 @@ export interface NodeRtcEngine {
    * @ignore
    */
   getScreenDisplaysInfo(): Array<Object>;
+  /**
+   * @ignore
+   */
+  getRealScreenDisplayInfo(): Array<DisplayInfo>;
   /**
    * @ignore
    */
