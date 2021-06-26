@@ -61,7 +61,8 @@ import {
   LOCAL_VIDEO_STREAM_ERROR,
   AudioRecordingConfiguration,
   VirtualBackgroundSource,
-  VIRTUAL_BACKGROUND_SOURCE_STATE_REASON
+  VIRTUAL_BACKGROUND_SOURCE_STATE_REASON,
+  DisplayInfo
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -3975,6 +3976,10 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.getScreenDisplaysInfo();
   }
 
+  getRealScreenDisplaysInfo(): Array<DisplayInfo> {
+    return this.rtcEngine.getRealScreenDisplayInfo();
+  }
+
   /**
    * @deprecated This method is deprecated. Use
    * {@link videoSourceStartScreenCaptureByScreen} or
@@ -4295,6 +4300,10 @@ class AgoraRtcEngine extends EventEmitter {
       rect,
       param
     );
+  }
+
+  videoSourceStartScreenCaptureByDisplayId(displayId: number, rect: CaptureRect, param: CaptureParam) {
+    return this.rtcEngine.videoSourceStartScreenCaptureByDisplayId(displayId, rect, param);
   }
 
   /**

@@ -234,3 +234,7 @@ std::vector<ScreenDisplayInfo> getAllDisplayInfo()
     }
     return displays;
 }
+
+std::vector<ScreenDisplayInfo> getAllRealDisplayInfo() {
+    return std::move(getAllDisplayInfo());
+}
