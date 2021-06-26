@@ -2752,7 +2752,15 @@ export enum NETWORK_TYPE
   /** 5: The network type is mobile 4G. */
   NETWORK_TYPE_MOBILE_4G = 5,
 };
-
+export interface DisplayInfo {
+  displayId: {id: number}
+  height: number,
+  width: number,
+  image: Uint8Array,
+  isActive: boolean,
+  isBuiltin: boolean,
+  isMain: boolean
+}
 /**
  * Audio recording quality, which is set in {@link startAudioRecordingWithConfig}.
  */
@@ -3384,6 +3392,8 @@ export interface NodeRtcEngine {
    * @ignore
    */
   videosourceSetScreenCaptureContentHint(hint: VideoContentHint): number;
+
+  videoSourceStartScreenCaptureByDisplayId(displayId: number, rect: CaptureRect, param: CaptureParam): number;
   /**
    * @ignore
    */
@@ -3392,6 +3402,10 @@ export interface NodeRtcEngine {
    * @ignore
    */
   getScreenDisplaysInfo(): Array<Object>;
+  /**
+   * @ignore
+   */
+  getRealScreenDisplayInfo(): Array<DisplayInfo>;
   /**
    * @ignore
    */
