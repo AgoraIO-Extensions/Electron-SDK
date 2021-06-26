@@ -435,7 +435,7 @@ void NodeIrisRtcEngine::SetAddonLogFile(
 }
 
 void NodeIrisRtcEngine::OnApiError(const char *errorMessage) {
-  _iris_event_handler->OnEvent("apiError", errorMessage);
+  _iris_event_handler->OnEvent("onApiError", errorMessage);
 }
 
 void NodeIrisRtcEngine::PluginCallApi(

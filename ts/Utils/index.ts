@@ -36,3 +36,18 @@ export const objsKeysToLowerCase = (array: Array<any>) => {
     }
   });
 };
+
+export const changeEventNameForEngine = (eventName: string) =>
+  eventName.slice(2, 3).toLocaleLowerCase() + eventName.slice(3);
+
+export const changeEventNameForVideoSource = (eventName: string) =>
+  "videoSource" + eventName.slice(2);
+
+export const jsonStringToArray = (jsonString: string) => {
+  try {
+    return JSON.parse(jsonString);
+  } catch (error) {
+    logError(`jsonStringToArray error: ${jsonString}`);
+    return [];
+  }
+};
