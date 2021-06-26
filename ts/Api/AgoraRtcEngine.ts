@@ -2683,11 +2683,11 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  release(): number {
+  release(sync: boolean = false): number {
     this._rendererManager?.clear();
     this._rendererManager = undefined;
     let param = {
-      sync: true,
+      sync
     };
 
     let ret = this._rtcEngine.CallApi(
