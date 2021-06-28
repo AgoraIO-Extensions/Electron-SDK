@@ -1,5 +1,7 @@
+const { lipoCreate, createTmpProduct } = require("./scripts/lipo");
 const { task, option, logger, argv, series, condition } = require('just-task');
 const path = require('path')
+const semver = require("semver");
 const build = require('./scripts/build')
 const download = require('./scripts/download')
 const switcharch = require('./scripts/switch_arch')
@@ -42,22 +44,59 @@ task('sync:lib', () => {
 })
 
 // npm run build:electron -- 
-task('build:electron', () => {
+task("build:electron", async () => {
+  await cleanup(path.join(__dirname, "./build"));
+  const electronVersion = argv().electron_version;;
+  const isOver11 = semver.satisfies(
+    semver.coerce(electronVersion).version,
+    ">=11.0.0"
+  );
 
-  cleanup(path.join(__dirname, "./build")).then(_ => {
-    build({
-      electronVersion: argv().electron_version, 
-      runtime: argv().runtime, 
-      platform: argv().platform, 
-      packageVersion, 
-      debug: argv().debug, 
-      silent: argv().silent,
-      arch: argv().arch,
-      msvsVersion: argv().msvs_version,
-      distUrl: argv().dist_url
-    })
-  })
-})
+  build({
+    electronVersion,
+    runtime: argv().runtime,
+    platform: argv().platform,
+    packageVersion,
+    debug: argv().debug,
+    silent: argv().silent,
+    arch: argv().arch,
+    msvsVersion: argv().msvs_version,
+    distUrl: argv().dist_url,
+    cb: async isComplete => {
+      console.log("mac build x86 finish..");
+      if (!isComplete) {
+        return;
+      }
+      if (argv().platform === "darwin" && isOver11) {
+        buildMacArm64(electronVersion);
+      }
+    }
+  });
+});
+
+const buildMacArm64 = async electronVersion => {
+  const x86ProConfig = await createTmpProduct();
+  console.log("start build arm 64");
+
+  await cleanup(path.join(__dirname, "./build"));
+  build({
+    electronVersion,
+    runtime: argv().runtime,
+    platform: argv().platform,
+    packageVersion,
+    debug: argv().debug,
+    silent: argv().silent,
+    arch: "arm64",
+    msvsVersion: argv().msvs_version,
+    distUrl: argv().dist_url,
+    cb: async isComplete => {
+      console.log("arm64 build finish...");
+      const arm64ProConfig = await createTmpProduct();
+      lipoCreate(x86ProConfig,arm64ProConfig);
+    }
+  });
+};
+
 // npm run build:node --
 task('build:node', () => {
   build({
@@ -73,7 +112,7 @@ task('build:node', () => {
 // npm run download --
 task('download', () => {
   // work-around
-  const addonVersion = '3.1.2-rc231-build.981'
+  const addonVersion = '3.2.225-build.628'
   cleanup(path.join(__dirname, "./build")).then(_ => {
     cleanup(path.join(__dirname, './js')).then(_ => {
       download({
@@ -89,7 +128,7 @@ task('download', () => {
 task('install', () => {
   const config = Object.assign({}, getArgvFromNpmEnv(), getArgvFromPkgJson())
   // work-around
-  const addonVersion = '3.1.2-rc231-build.981'
+  const addonVersion = '3.2.225-build.628'
   if (config.prebuilt) {
     download({
       electronVersion: config.electronVersion, 
