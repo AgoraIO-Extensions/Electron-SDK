@@ -40,9 +40,9 @@ import { logWarn } from "../Utils";
 
 import { User, RendererConfig } from "../Renderer/type";
 import { ChannelEvents } from "../Common/JSEvents";
-import AgoraRtcEngine from "./AgoraRtcEngine";
+import { AgoraRtcEngine } from "./AgoraRtcEngine";
 
-class AgoraRtcChannel extends EventEmitter {
+export class AgoraRtcChannel extends EventEmitter {
   _rtcChannel: NodeIrisRtcChannel;
   _rtcEngine: AgoraRtcEngine;
   _channelId: string;
@@ -2076,5 +2076,3 @@ class AgoraRtcChannel extends EventEmitter {
     return ret.retCode;
   }
 }
-
-export default AgoraRtcChannel;

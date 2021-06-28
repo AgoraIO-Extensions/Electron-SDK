@@ -113,7 +113,7 @@ import {
   VideoFrame,
 } from "../Renderer/type";
 import { EngineEvents, VideoSourceEvents } from "../Common/JSEvents";
-import AgoraRtcChannel from "./AgoraRtcChannel";
+import { AgoraRtcChannel } from "./AgoraRtcChannel";
 import {
   NativeEngineEvents,
   NativeVideoSourceEvents,
@@ -124,7 +124,7 @@ const agora = require("../../build/Release/agora_node_ext");
 /**
  * The AgoraRtcEngine class.
  */
-class AgoraRtcEngine extends EventEmitter {
+export class AgoraRtcEngine extends EventEmitter {
   _rtcEngine: NodeIrisRtcEngine;
   _rtcDeviceManager: NodeIrisRtcDeviceManager;
   _rendererManager?: RendererManager;
@@ -739,7 +739,7 @@ class AgoraRtcEngine extends EventEmitter {
     this._rendererManager?.clear();
     this._rendererManager = undefined;
     let param = {
-      sync
+      sync,
     };
 
     let ret = this._rtcEngine.CallApi(
@@ -6802,5 +6802,3 @@ class AgoraRtcEngine extends EventEmitter {
     return ret.retCode;
   }
 }
-
-export default AgoraRtcEngine;
