@@ -4,7 +4,9 @@
  * @Last Modified by: zhangtao@agora.io
  * @Last Modified time: 2021-05-27 12:33:55
  */
-import AgoraRtcEngine from "./Api/AgoraRtcEngine";
+import { AgoraRtcEngine } from "./Api/AgoraRtcEngine";
+import "./Api/AgoraRtcEngineEvent";
+import "./Api/AgoraRtcChannelEvent";
 export * from "./Api/AgoraRtcChannel";
 export * from "./Api/types";
 export * from "./Api/plugin";
