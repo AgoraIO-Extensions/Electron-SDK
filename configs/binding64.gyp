@@ -203,8 +203,6 @@
         './common/ipc_shm.h',
         './common/node_log.cpp',
         './common/node_log.h',
-        './common/log_helper.h',
-        './common/log_helper.cpp',
         './common/video_source_ipc.cpp',
         './common/video_source_ipc.h',
         './common/node_event.h',
