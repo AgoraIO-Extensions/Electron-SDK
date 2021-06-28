@@ -82,7 +82,7 @@ const removeFileByFilter = async () => {
   }
   logger.info("Success: Download and cleanup finished");
 };
-module.exports = async (cb) => {
+export default async (cb) => {
   cleanBuildDir();
   cleanJSDir();
 

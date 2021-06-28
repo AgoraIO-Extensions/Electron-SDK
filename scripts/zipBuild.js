@@ -1,21 +1,17 @@
-import { src, dest } from "gulp";
-import zip from "gulp-zip";
-import { join } from "path";
-import { remove, copy } from "fs-extra";
+import { getOS } from "./util";
+import { exec } from "shelljs";
 
 const zipBuild = async () => {
-  const destPath = process.cwd();
-  const buildPath = `${join(destPath, "./build")}`;
-  const jsPath = `${join(destPath, "./js")}`;
-  const dist = `${join(destPath, "./dist")}`;
-  await remove(dist);
-  await copy(buildPath, `${join(dist, "./build")}`);
-  await copy(jsPath, `${join(dist, "./js")}`);
-  return src(["./dist/**"], {
-    cwd: destPath,
-  })
-    .pipe(zip("electron.zip"))
-    .pipe(dest(destPath));
+  const isMac = getOS() === "mac";
+  const shellStr = isMac
+    ? "zip -ry electron.zip build js"
+    : "7z a electron.zip build js";
+  const { code, stderr } = await exec(shellStr);
+  if (code !== 0) {
+    logger.error(stderr);
+    cb();
+    return;
+  }
 };
 
 export default zipBuild;

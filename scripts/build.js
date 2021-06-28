@@ -3,13 +3,13 @@ import fs from "fs-extra";
 import path from "path";
 import { exec } from "shelljs";
 
-let gyp_path = `${path.resolve(__dirname, "../node_modules/node-gyp/bin/node-gyp.js")}`;
+let gyp_path = `${path.resolve(__dirname, "../../node-gyp/bin/node-gyp.js")}`;
 
 if (!fs.existsSync(gyp_path)) {
   logger.info(`gyp_exec not found at ${gyp_path}, switch`);
   gyp_path = `${path.resolve(
-    '$(npm bin)',
-    "node-gyp"
+    __dirname,
+    "../node_modules/node-gyp/bin/node-gyp.js"
   )}`;
 }
 const gyp_exec = `node ${gyp_path}`;
@@ -48,7 +48,7 @@ const build = async (
     silent,
     msvsVersion,
     arch,
-    distUrl = 'https://electronjs.org/headers',
+    distUrl,
   }
 ) => {
   const commandArray = [];
@@ -72,7 +72,7 @@ const build = async (
 
   commandArray.push(`${gyp_exec} clean`);
   commandArray.push(commandStr);
-  commandArray.push(`${gyp_exec} rebuild --target=${electronVersion}`);
+  commandArray.push(`${gyp_exec} build`);
   if (platform === "darwin") {
     commandArray.push(
       `install_name_tool -add_rpath "@loader_path" ${agora_node_ext_path}`
