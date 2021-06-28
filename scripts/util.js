@@ -7,7 +7,7 @@ import os from "os";
 const tmpDir = os.tmpdir();
 const productSrc = "../build/Release/agora_node_ext.node";
 
-const lipoCreate = async (file1, file2) => {
+export const lipoCreate = async (file1, file2) => {
   const cmd = `lipo -create ${file1.src} ${file2.src} -output ${path.join(
     __dirname,
     productSrc
@@ -16,7 +16,7 @@ const lipoCreate = async (file1, file2) => {
   await fs.remove(file1.src);
   await fs.remove(file2.src);
 };
-const createTmpProduct = async () => {
+export const createTmpProduct = async () => {
   const fileName = `agora_node_ext_${new Date().getTime()}.node`;
   const fileConfig = {
     src: path.join(__dirname, `../${fileName}`),
@@ -26,7 +26,7 @@ const createTmpProduct = async () => {
   return fileConfig;
 };
 
-const getOS = () => {
+export const getOS = () => {
   const platform = process.platform;
   if (platform === "darwin") {
     return "mac";
@@ -39,11 +39,6 @@ const getOS = () => {
   }
 };
 
-const createTmpDir = async () => await fs.mkdtemp(`${tmpDir}Tmp`);
+export const createTmpDir = async () => await fs.mkdtemp(`${tmpDir}Tmp`);
 
-module.exports = {
-  lipoCreate,
-  createTmpProduct,
-  getOS,
-  createTmpDir,
-};
+
