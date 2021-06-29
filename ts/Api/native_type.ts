@@ -1536,28 +1536,41 @@ export type ConnectionChangeReason =
 /** Encryption mode.
  */
 export enum ENCRYPTION_MODE {
-      /** 1: (Default) 128-bit AES encryption, XTS mode.
-       */
-      AES_128_XTS = 1,
-      /** 2: 128-bit AES encryption, ECB mode.
-       */
-      AES_128_ECB = 2,
-      /** 3: 256-bit AES encryption, XTS mode.
-       */
-      AES_256_XTS = 3,
-      /** 4: Reserved property.
-       */
-      SM4_128_ECB = 4,
-      /** 5: 128-bit AES encryption, GCM mode.
-       *
-       * @since v3.3.1
-       */
-      AES_128_GCM = 5,
-      /** 6: 256-bit AES encryption, GCM mode.
-       *
-       * @since v3.3.1
-       */
-      AES_256_GCM = 6,
+  /** 1: (Default) 128-bit AES encryption, XTS mode.
+   */
+  AES_128_XTS = 1,
+  /** 2: 128-bit AES encryption, ECB mode.
+   */
+  AES_128_ECB = 2,
+  /** 3: 256-bit AES encryption, XTS mode.
+   */
+  AES_256_XTS = 3,
+  /** 4: 128-bit SM4 encryption, ECB mode.
+   */
+  SM4_128_ECB = 4,
+  /** 5: 128-bit AES encryption, GCM mode.
+   *
+   * @since v3.3.1
+   */
+  AES_128_GCM = 5,
+  /** 6: 256-bit AES encryption, GCM mode.
+   *
+   * @since v3.3.1
+   */
+  AES_256_GCM = 6,
+  /** 7: (Default) 128-bit AES encryption, GCM mode, with custom KDF salt.
+   *
+   * @since v3.4.1
+   */
+  AES_128_GCM2 = 7,
+  /** 8: 256-bit AES encryption, GCM mode, with custom KDF salt.
+   *
+   * @since v3.4.1
+   */
+  AES_256_GCM2 = 8,
+  /** Enumerator boundary.
+   */
+  MODE_END,
 };
 /**
  * Configurations of built-in encryption schemas.
@@ -1575,7 +1588,7 @@ export interface EncryptionConfig{
      * `-2`.
      */
     encryptionKey: string;
-
+    
 };
 
 /**
@@ -1748,6 +1761,9 @@ export enum RTMP_STREAMING_EVENT
    * @since v3.2.0
    */
   RTMP_STREAMING_EVENT_FAILED_LOAD_IMAGE = 1,
+  /** The chosen URL address is already in use for CDN live streaming.
+   */
+  RTMP_STREAMING_EVENT_URL_ALREADY_IN_USE = 2,
 };
 /** The options for SDK preset audio effects.
  *
@@ -2088,6 +2104,10 @@ export interface ChannelMediaOptions {
    * whether to subscribe to video streams in the channel.
    */
   autoSubscribeVideo: boolean;
+  
+  publishLocalAudio: boolean;
+
+  publishLocalVideo: boolean;
 }
 /**
  * The watermark's options.
@@ -2522,6 +2542,16 @@ export enum LOCAL_AUDIO_STREAM_ERROR
     LOCAL_AUDIO_STREAM_ERROR_NO_PLAYOUT_DEVICE = 7
 };
 
+export enum VIRTUAL_BACKGROUND_SOURCE_STATE_REASON {
+  VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_SUCCESS = 0,
+  // background image does not exist
+  VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_IMAGE_NOT_EXIST = 1,
+  // color format is not supported
+  VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_COLOR_FORMAT_NOT_SUPPORTED = 2,
+  // The device is not supported
+  VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_DEVICE_NOT_SUPPORTED = 3,
+};
+
 /** The configurations for the data stream.
  *
  * @since v3.3.1
@@ -2636,6 +2666,12 @@ export enum AUDIO_RECORDING_QUALITY_TYPE
     */
     AUDIO_RECORDING_QUALITY_HIGH = 2,
 }
+export enum BACKGROUND_SOURCE_TYPE {
+  /** Background source is pure color*/
+  BACKGROUND_COLOR = 1,
+  /** Background source is image path, only support png and jpg format*/
+  BACKGROUND_IMG,
+};
 
 export enum AUDIO_RECORDING_POSITION {
   /** The SDK will record the voices of all users in the channel. */
@@ -2651,6 +2687,13 @@ export interface AudioRecordingConfiguration {
   recordingQuality: AUDIO_RECORDING_QUALITY_TYPE;
   recordingPosition: AUDIO_RECORDING_POSITION;
 }
+
+export interface VirtualBackgroundSource {
+  background_source_type: BACKGROUND_SOURCE_TYPE;
+  source: string;
+  color: number;
+}
+
 
 /**
  * interface for c++ addon (.node)
@@ -3703,6 +3746,10 @@ export interface NodeRtcEngine {
    * @ignore
    */
   startAudioRecordingWithConfig(config: AudioRecordingConfiguration): number;
+  /**
+   * @ignore
+   */
+  enableVirtualBackground(enabled: Boolean, backgroundSource: VirtualBackgroundSource): number;
 }
 /**
  * @ignore
@@ -3959,5 +4006,8 @@ export interface NodeRtcChannel {
    * @ignore
    */
   enableEncryption(enabled: boolean, config: EncryptionConfig): number;
-
+  
+  muteLocalAudioStream(mute: boolean): number;
+  muteLocalVideoStream(mute: boolean): number;
+  
 }

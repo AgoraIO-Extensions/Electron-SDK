@@ -388,6 +388,11 @@ namespace agora {
              */
             NAPI_API(setAddonLogFile);
             NAPI_API(videoSourceSetAddonLogFile);
+            /**
+             * 3.4.5
+             */
+            NAPI_API(enableVirtualBackground);
+            NAPI_API(virtualBackgroundSourceEnabled);
             
         public:
             Isolate* getIsolate() { return m_isolate; }
@@ -481,6 +486,11 @@ namespace agora {
              * 3.2.0 Apis 
              */
             NAPI_API(setClientRoleWithOptions);
+            /*
+             *
+             */
+            NAPI_API(muteLocalAudioStream);
+            NAPI_API(muteLocalVideoStream);
 
         public:
             Isolate* getIsolate() { return m_isolate; }
