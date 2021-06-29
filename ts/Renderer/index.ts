@@ -4,7 +4,7 @@ import { EventEmitter } from 'events';
 
 interface IRenderer {
   event: EventEmitter;
-  bind(element: Element): void;
+  bind(element: Element, isWebGL: boolean): void;
   unbind(): void;
   equalsElement(element: Element): boolean;
   drawFrame(imageData: {
