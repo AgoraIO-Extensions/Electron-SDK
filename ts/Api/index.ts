@@ -965,16 +965,16 @@ class AgoraRtcEngine extends EventEmitter {
     channelStreams = this._getChannelRenderers(channelId || "")
     let renderer: IRenderer;
     if (this.renderMode === 1) {
-      renderer = new GlRenderer();
+      renderer = new SoftwareRenderer();
     } else if (this.renderMode === 2) {
       renderer = new SoftwareRenderer();
     } else if (this.renderMode === 3) {
       renderer = new this.customRenderer();
     } else {
       console.warn('Unknown render mode, fallback to 1');
-      renderer = new GlRenderer();
+      renderer = new SoftwareRenderer();
     }
-    renderer.bind(view);
+    renderer.bind(view, this.renderMode === 1);
 
     if(!rendererOptions.append) {
       channelStreams.set(String(key), [renderer]);

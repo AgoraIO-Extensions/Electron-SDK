@@ -45,7 +45,7 @@ class Renderer {
     }
   }
 
-  bind(element) {
+  bind(element, isWebGL) {
     // record element
     this.element = element;
     // create container
@@ -63,7 +63,7 @@ class Renderer {
     // create canvas
     this.canvas = document.createElement('canvas')
     this.container.appendChild(this.canvas)
-    this.yuv = YUVCanvas.attach(this.canvas, { webGL: false });
+    this.yuv = YUVCanvas.attach(this.canvas, { webGL: isWebGL });
   }
 
   unbind() {
