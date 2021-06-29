@@ -10,9 +10,14 @@
   },
   "build": {
     "asar": false,
-    "extraResources": {
-      "from": "./src/extraResources",
-      "to": "extraResources"
+    "mac": {
+      "target": {
+        "target": "dir",
+        "arch": [
+          "arm64",
+          "x64"
+        ]
+      }
     }
   },
   "dependencies": {
@@ -31,24 +36,12 @@
     "electron": "^5.0.8",
     "electron-builder": "22.10.5",
     "electron-webpack": "2.7.4",
-    "html-loader": "^1.0.0-alpha.0",
+    "html-loader": "1.0.0-alpha.0",
     "webpack": "4.41.2"
   },
   "resolutions": {
     "webpack-sources": "1.0.1",
     "electron-webpack/html-loader": "1.0.0-alpha.0"
-  },
-  "build": {
-    "asar": false,
-    "mac": {
-      "target": {
-        "target": "dir",
-        "arch": [
-          "arm64",
-          "x64"
-        ]
-      }
-    }
   },
   "electronWebpack": {
     "renderer": {
