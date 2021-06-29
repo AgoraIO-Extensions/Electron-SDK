@@ -59,7 +59,9 @@ import {
   LOCAL_AUDIO_STREAM_STATE,
   LOCAL_VIDEO_STREAM_STATE,
   LOCAL_VIDEO_STREAM_ERROR,
-  AudioRecordingConfiguration
+  AudioRecordingConfiguration,
+  VirtualBackgroundSource,
+  VIRTUAL_BACKGROUND_SOURCE_STATE_REASON
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -774,6 +776,9 @@ class AgoraRtcEngine extends EventEmitter {
 
     this.rtcEngine.onEvent('uploadLogResult', function(requestId: string, success: boolean, reason: number) {
       fire('uploadLogResult', requestId, success, reason);
+    })
+    this.rtcEngine.onEvent('virtualBackgroundSourceEnabled', function(enabled: boolean, reason: VIRTUAL_BACKGROUND_SOURCE_STATE_REASON) {
+      fire('virtualBackgroundSourceEnabled', enabled, reason);
     })
 
     this.rtcEngine.onEvent('videoSourceLocalAudioStateChanged', function(state: LOCAL_AUDIO_STREAM_STATE, error: LOCAL_AUDIO_STREAM_ERROR) {
@@ -5859,6 +5864,9 @@ class AgoraRtcEngine extends EventEmitter {
   startAudioRecordingWithConfig(config: AudioRecordingConfiguration): number {
     return this.rtcEngine.startAudioRecordingWithConfig(config)
   }
+  enableVirtualBackground(enabled: Boolean, backgroundSource: VirtualBackgroundSource): number{
+    return this.rtcEngine.enableVirtualBackground(enabled, backgroundSource)
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
@@ -7131,7 +7139,11 @@ declare interface AgoraRtcEngine {
     requestId: string,
     success: boolean,
     reason: number
-  )=> void): this;
+  ) => void): this;
+  on(evt: 'virtualBackgroundSourceEnabled', cb: (
+    enabled: boolean,
+    reason: VIRTUAL_BACKGROUND_SOURCE_STATE_REASON
+  ) => void): this;
 
   on(evt: string, listener: Function): this;
 }
@@ -7476,7 +7488,9 @@ class AgoraRtcChannel extends EventEmitter
   ): number {
     return this.rtcChannel.joinChannel(token, info, uid, options || {
       autoSubscribeAudio: true,
-      autoSubscribeVideo: true
+      autoSubscribeVideo: true,
+      publishLocalAudio: true,
+      publishLocalVideo: true
     });
   }
   /**
@@ -7524,7 +7538,9 @@ class AgoraRtcChannel extends EventEmitter
   ): number {
     return this.rtcChannel.joinChannelWithUserAccount(token, userAccount, options || {
       autoSubscribeAudio: true,
-      autoSubscribeVideo: true
+      autoSubscribeVideo: true,
+      publishLocalAudio: true,
+      publishLocalVideo: true,
     });
   }
   /**
@@ -8489,6 +8505,15 @@ class AgoraRtcChannel extends EventEmitter
    */
   enableEncryption(enabled: boolean, config: EncryptionConfig): number {
     return this.rtcChannel.enableEncryption(enabled, config);
+  }
+
+
+  muteLocalAudioStream(mute: boolean): number {
+    return this.rtcChannel.muteLocalAudioStream(mute);
+  }
+
+  muteLocalVideoStream(mute: boolean): number {
+    return this.rtcChannel.muteLocalVideoStream(mute);
   }
 }
 
