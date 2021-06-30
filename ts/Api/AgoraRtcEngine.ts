@@ -4,6 +4,7 @@
   ApiTypeVideoDeviceManager,
   ApiTypeRawDataPluginManager,
   PROCESS_TYPE,
+  VOICE_CONVERSION_PRESET,
 } from "./internal/native_type";
 import {
   NodeIrisRtcEngine,
@@ -6799,6 +6800,17 @@ export class AgoraRtcEngine extends EventEmitter {
    */
   videoSourceRelease(): number {
     let ret = this._rtcEngine.VideoSourceRelease();
+    return ret.retCode;
+  }
+  setVoiceConversionPreset(preset: VOICE_CONVERSION_PRESET): number {
+    const param = {
+      preset,
+    };
+    const ret = this._rtcEngine.CallApi(
+      PROCESS_TYPE.MAIN,
+      ApiTypeEngine.kEngineSetVoiceConversionPreset,
+      JSON.stringify(param)
+    );
     return ret.retCode;
   }
 }

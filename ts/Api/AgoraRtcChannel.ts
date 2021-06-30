@@ -1952,9 +1952,10 @@ export class AgoraRtcChannel extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  unregisterMediaMetadataObserver(): number {
-    let param = {
+  unregisterMediaMetadataObserver(type: METADATA_TYPE = 0): number {
+    const param = {
       channelId: this._channelId,
+      type,
     };
 
     let ret = this._rtcChannel.CallApi(

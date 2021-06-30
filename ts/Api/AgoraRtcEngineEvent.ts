@@ -97,7 +97,7 @@ declare module "./AgoraRtcEngine" {
      * method until the SDK triggers this callback.
      */
     on(
-      evt: EngineEvents.REJOINED_CHANNEL,
+      evt: EngineEvents.REJOIN_CHANNEL_SUCCESS,
       cb: (channel: string, uid: number, elapsed: number) => void
     ): this;
     // on(evt: 'audioQuality', cb: (
