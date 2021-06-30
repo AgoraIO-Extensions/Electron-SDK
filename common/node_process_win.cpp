@@ -13,6 +13,7 @@
 #include <memory>
 #include <Windows.h>
 #include "node_log.h"
+#include <string>
 
 class NodeProcessWinImpl : public INodeProcess
 {
