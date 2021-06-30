@@ -1,13 +1,13 @@
-import logger from "./logger";
-import fs from "fs-extra";
-import path from "path";
-import { exec } from "shelljs";
-import os from "os";
+const logger = require("./logger");
+const fs = require("fs-extra");
+const path = require("path");
+const { exec } = require("shelljs");
+const os = require("os");
 
 const tmpDir = os.tmpdir();
 const productSrc = "../build/Release/agora_node_ext.node";
 
-export const lipoCreate = async (file1, file2) => {
+exports.lipoCreate = async (file1, file2) => {
   const cmd = `lipo -create ${file1.src} ${file2.src} -output ${path.join(
     __dirname,
     productSrc
@@ -16,7 +16,7 @@ export const lipoCreate = async (file1, file2) => {
   await fs.remove(file1.src);
   await fs.remove(file2.src);
 };
-export const createTmpProduct = async () => {
+exports.createTmpProduct = async () => {
   const fileName = `agora_node_ext_${new Date().getTime()}.node`;
   const fileConfig = {
     src: path.join(__dirname, `../${fileName}`),
@@ -26,7 +26,7 @@ export const createTmpProduct = async () => {
   return fileConfig;
 };
 
-export const getOS = () => {
+exports.getOS = () => {
   const platform = process.platform;
   if (platform === "darwin") {
     return "mac";
@@ -39,6 +39,4 @@ export const getOS = () => {
   }
 };
 
-export const createTmpDir = async () => await fs.mkdtemp(`${tmpDir}Tmp`);
-
-
+exports.createTmpDir = async () => await fs.mkdtemp(`${tmpDir}Tmp`);

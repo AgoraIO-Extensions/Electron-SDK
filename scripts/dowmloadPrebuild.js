@@ -1,10 +1,10 @@
-import logger from "./logger";
-import download from "download";
-import path from "path";
-import getConfig from "./getConfig";
-import { getOS } from "./util";
-import { cleanBuildDir, cleanJSDir } from "./clean";
-import fs from "fs-extra";
+const fs = require("fs-extra");
+const { getOS } = require("./util");
+const path = require("path");
+const logger = require("./logger");
+const { cleanBuildDir, cleanJSDir } = require("./clean");
+const download = require("download");
+const getConfig = require("./getConfig");
 
 const { electronVersion, platform, packageVersion, arch, no_symbol } =
   getConfig();
@@ -82,7 +82,7 @@ const removeFileByFilter = async () => {
   }
   logger.info("Success: Download and cleanup finished");
 };
-export default async (cb) => {
+module.exports = async (cb) => {
   cleanBuildDir();
   cleanJSDir();
 

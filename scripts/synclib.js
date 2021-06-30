@@ -1,13 +1,13 @@
-import logger from "./logger";
-import fs from "fs-extra";
-import path from "path";
-import download from "download";
-import extract from "extract-zip";
-import { promisify } from "util";
-import glob from "glob";
-import getConfig from "./getConfig";
-import { getOS, createTmpDir } from "./util";
-import { destSDKDir, cleanLibsDir } from "./clean";
+const logger = require("./logger");
+const fs = require("fs-extra");
+const path = require("path");
+const download = require("download");
+const extract = require("extract-zip");
+const { promisify } = require("util");
+const glob = require("glob");
+const getConfig = require("./getConfig");
+const { getOS, createTmpDir } = require("./util");
+const { destSDKDir, cleanLibsDir } = require("./clean");
 
 const globPromise = promisify(glob);
 const { lib_sdk_win, lib_sdk_mac, downloadKey } = getConfig();
@@ -65,4 +65,4 @@ const syncLib = async (cb) => {
   cb();
 };
 
-export default syncLib;
+module.exports = syncLib;

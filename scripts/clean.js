@@ -1,14 +1,16 @@
-import path from "path";
-import { getOS } from "./util";
-import fs from "fs-extra";
-export const destSDKDir = path.join(__dirname, `../sdk/lib/${getOS()}`);
-export const cleanLibsDir = async () => await fs.remove(destSDKDir);
+const fs = require("fs-extra");
+const { getOS } = require("./util");
+const path = require("path");
+const destSDKDir = path.join(__dirname, `../sdk/lib/${getOS()}`);
 
-export const cleanBuildDir = async () =>
+exports.destSDKDir = exports.cleanLibsDir = async () =>
+  await fs.remove(destSDKDir);
+
+exports.cleanBuildDir = async () =>
   await fs.remove(`${path.resolve(__dirname, "../build")}`);
 
-export const cleanJSDir = async () =>
+exports.cleanJSDir = async () =>
   await fs.remove(`${path.resolve(__dirname, "../js")}`);
 
-export const cleanTypesDir = async () =>
+exports.cleanTypesDir = async () =>
   await fs.remove(`${path.resolve(__dirname, "../types")}`);

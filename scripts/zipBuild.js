@@ -1,5 +1,5 @@
-import { getOS } from "./util";
-import { exec } from "shelljs";
+const { getOS } = require("./util");
+const { exec } = require("shelljs");
 
 const zipBuild = async () => {
   const isMac = getOS() === "mac";
@@ -14,4 +14,4 @@ const zipBuild = async () => {
   }
 };
 
-export default zipBuild;
+module.exports = zipBuild;
