@@ -3189,6 +3189,11 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 
+                bool sync = false;
+                napi_get_value_bool_(args[0], sync);
+
+                LOG_F(INFO, "release engine :%d", sync);
+
                 if (pEngine->m_audioVdm) {
                     pEngine->m_audioVdm->release();
                     //delete[] m_audioVdm;
@@ -3200,7 +3205,7 @@ namespace agora {
                     pEngine->m_videoVdm = nullptr;
                 }
                 if (pEngine->m_engine) {
-                    pEngine->m_engine->release();
+                    pEngine->m_engine->release(sync);
                     pEngine->m_engine = nullptr;
                 }
                 if (pEngine->m_videoSourceSink.get()) {

@@ -1663,7 +1663,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  release(): number;
+  release(sync: boolean): number;
   /**
    * @ignore
    */

@@ -1110,8 +1110,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  release(): number {
-    return this.rtcEngine.release();
+  release(sync: boolean = false): number {
+    return this.rtcEngine.release(sync);
   }
 
   /**
