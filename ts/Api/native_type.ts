@@ -1575,6 +1575,8 @@ export enum ENCRYPTION_MODE {
 /**
  * Configurations of built-in encryption schemas.
  */
+type Uint8ArrayBuffer = ArrayBuffer;
+
 export interface EncryptionConfig{
    /**
     * Encryption mode. The default encryption mode is `AES_128_XTS`.
@@ -1588,7 +1590,11 @@ export interface EncryptionConfig{
      * `-2`.
      */
     encryptionKey: string;
-    
+    /**
+     * Uint8Array.prototype.buffer
+     * maxLength 32
+     */
+    encryptionKdfSalt: Uint8ArrayBuffer
 };
 
 /**
