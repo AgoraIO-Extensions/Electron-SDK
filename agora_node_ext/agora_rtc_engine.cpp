@@ -2824,6 +2824,12 @@ namespace agora {
                     CHECK_NAPI_STATUS(pEngine, status);
                     status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "autoSubscribeVideo", options.autoSubscribeVideo);
                     CHECK_NAPI_STATUS(pEngine, status);
+
+                    status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "publishLocalAudio", options.publishLocalAudio);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    
+                    status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "publishLocalVideo", options.publishLocalVideo);
+                    CHECK_NAPI_STATUS(pEngine, status);
                     result = pEngine->m_engine->joinChannel(key, name, extra_info.c_str(), uid, options);
                 } else {
                     // without options
@@ -2862,6 +2868,13 @@ namespace agora {
                     CHECK_NAPI_STATUS(pEngine, status);
                     status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "autoSubscribeVideo", options.autoSubscribeVideo);
                     CHECK_NAPI_STATUS(pEngine, status);
+                    
+                    status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "publishLocalAudio", options.publishLocalAudio);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    
+                    status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "publishLocalVideo", options.publishLocalVideo);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    
                     result = pEngine->m_engine->switchChannel(key, name, options);
                 } else {
                     // without options
@@ -5040,6 +5053,13 @@ namespace agora {
 
                     status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "autoSubscribeVideo", options.autoSubscribeVideo);
                     CHECK_NAPI_STATUS(pEngine, status);
+
+                    status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "publishLocalAudio", options.publishLocalAudio);
+                    CHECK_NAPI_STATUS(pEngine, status);
+                    
+                    status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "publishLocalVideo", options.publishLocalVideo);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
                     LOG_F(INFO, "joinChannelWithUserAccount with mediaOption");
                     result = pEngine->m_engine->joinChannelWithUserAccount(token, channel, userAccount, options);
                 } else {
@@ -6516,6 +6536,12 @@ namespace agora {
                 status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "autoSubscribeVideo", options.autoSubscribeVideo);
                 CHECK_NAPI_STATUS(pChannel, status);
 
+                status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "publishLocalAudio", options.publishLocalAudio);
+                CHECK_NAPI_STATUS(pChannel, status);
+                    
+                status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "publishLocalVideo", options.publishLocalVideo);
+                CHECK_NAPI_STATUS(pChannel, status);
+
                 result = pChannel->m_channel->joinChannelWithUserAccount(token, userAccount, options);
             } while (false);
             napi_set_array_result(args, result);
@@ -7488,8 +7514,6 @@ namespace agora {
                 napi_status status = napi_ok;
                 napi_get_native_channel(args, pChannel);
                 CHECK_NATIVE_CHANNEL(pChannel);
-
-                Isolate *isolate = args.GetIsolate();
                 bool mute;
                 status = napi_get_value_bool_(args[0], mute);
                 CHECK_NAPI_STATUS(pChannel, status);
@@ -7508,8 +7532,6 @@ namespace agora {
                 napi_status status = napi_ok;
                 napi_get_native_channel(args, pChannel);
                 CHECK_NATIVE_CHANNEL(pChannel);
-
-                Isolate *isolate = args.GetIsolate();
                 bool mute;
                 status = napi_get_value_bool_(args[0], mute);
                 CHECK_NAPI_STATUS(pChannel, status);
