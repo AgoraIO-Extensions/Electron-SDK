@@ -2517,6 +2517,10 @@ namespace agora {
                 nodestring encryptionKey;
                 status = napi_get_object_property_nodestring_(isolate, obj, "encryptionKey", encryptionKey);
                 CHECK_NAPI_STATUS(pEngine, status);
+
+                napi_get_object_property_arraybuffer_(isolate, obj, "encryptionKdfSalt", encryptionConfig.encryptionKdfSalt);
+                CHECK_NAPI_STATUS(pEngine, status);
+                
                 encryptionConfig.encryptionMode = (ENCRYPTION_MODE)encryptionMode;
                 encryptionConfig.encryptionKey = encryptionKey;
                 if (!pEngine->m_videoSourceSink.get() || pEngine->m_videoSourceSink->enableEncryption(enable, encryptionConfig) != node_ok) {
@@ -5768,6 +5772,9 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
 
                 EncryptionConfig config;
+                napi_get_object_property_arraybuffer_(isolate, obj, "encryptionKdfSalt", config.encryptionKdfSalt);
+                CHECK_NAPI_STATUS(pEngine, status);
+                
                 config.encryptionMode = (ENCRYPTION_MODE)encryptionMode;
                 config.encryptionKey = encryptionKey;
                 result = pEngine->m_engine->enableEncryption(enabled, config);
@@ -7413,6 +7420,10 @@ namespace agora {
                 CHECK_NAPI_STATUS(pChannel, status);
 
                 EncryptionConfig config;
+
+                napi_get_object_property_arraybuffer_(isolate, obj, "encryptionKdfSalt", config.encryptionKdfSalt);
+                CHECK_NAPI_STATUS(pChannel, status);
+
                 config.encryptionMode = (ENCRYPTION_MODE)encryptionMode;
                 config.encryptionKey = encryptionKey;
                 result = pChannel->m_channel->enableEncryption(enabled, config);
