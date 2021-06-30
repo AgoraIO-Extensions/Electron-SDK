@@ -1366,8 +1366,6 @@ export interface CameraCapturerConfiguration {
    * @since v3.3.0
    */
   captureHeight?: number;
-  /** Camera direction settings (for Android/iOS only). See: #CAMERA_DIRECTION. */
-  cameraDirection?: CAMERA_DIRECTION;
 }
 
 /** The relative location of the region to the screen or window. */

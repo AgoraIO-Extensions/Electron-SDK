@@ -276,3 +276,26 @@ export interface Result {
   retCode: number;
   result: string;
 }
+
+export enum VOICE_CONVERSION_PRESET
+{
+  /** Turn off voice conversion effects and use the original voice.
+   */
+  VOICE_CONVERSION_OFF = 0x00000000,
+  /** A gender-neutral voice. To avoid audio distortion, ensure that you use
+   * this enumerator to process a female-sounding voice.
+   */
+  VOICE_CHANGER_NEUTRAL = 0x03010100,
+  /** A sweet voice. To avoid audio distortion, ensure that you use this
+   * enumerator to process a female-sounding voice.
+   */
+  VOICE_CHANGER_SWEET = 0x03010200,
+  /** A steady voice. To avoid audio distortion, ensure that you use this
+   * enumerator to process a male-sounding voice.
+   */
+  VOICE_CHANGER_SOLID = 0x03010300,
+  /** A deep voice. To avoid audio distortion, ensure that you use this
+   * enumerator to process a male-sounding voice.
+   */
+  VOICE_CHANGER_BASS = 0x03010400
+};
