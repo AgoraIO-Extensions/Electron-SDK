@@ -3496,11 +3496,11 @@ namespace agora {
                     pEngine->m_videoVdm = nullptr;
                 }
                 if (pEngine->m_engine) {
-                    pEngine->m_engine->release();
+                    pEngine->m_engine->release(sync);
                     pEngine->m_engine = nullptr;
                 }
                 if (pEngine->m_videoSourceSink.get()) {
-                    pEngine->m_videoSourceSink->release(sync);
+                    pEngine->m_videoSourceSink->release();
                 }
                 pEngine->m_videoSourceSink.reset(nullptr);
                 pEngine->m_externalVideoRenderFactory.reset(nullptr);
