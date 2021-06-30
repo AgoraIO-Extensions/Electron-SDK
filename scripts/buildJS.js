@@ -1,6 +1,6 @@
-import { cleanJSDir, cleanTypesDir } from "./clean";
-import logger from "./logger";
-import { exec } from "shelljs";
+const logger = require("./logger");
+const { cleanJSDir, cleanTypesDir } = require("./clean");
+const { exec } = require("shelljs");
 
 const buildJS = async (cb) => {
   logger.info("Build js from typescript");
@@ -11,4 +11,4 @@ const buildJS = async (cb) => {
   cb();
 };
 
-export default buildJS;
+module.exports = buildJS;

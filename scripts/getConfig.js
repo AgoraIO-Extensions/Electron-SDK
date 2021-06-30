@@ -1,10 +1,17 @@
-import path from "path";
-import minimist from "minimist";
-import logger from "./logger";
+const minimist = require("minimist");
+const path = require("path");
+const logger = require("./logger");
+
+//@ts-ignore
+const { INIT_CWD } = minimist(process.argv.slice(2), {
+  string: ["INIT_CWD"],
+  default: {},
+});
+logger.info(`pass INIT_CWD ${INIT_CWD}`);
+logger.info(`process.env.INIT_CWD  ${process.env.INIT_CWD}`);
 
 const getArgvFromPkgJson = () => {
-  //@ts-ignore
-  const projectDir = path.join(process.env.INIT_CWD, "package.json");
+  const projectDir = path.join(INIT_CWD, "package.json");
   const { agora_electron = {}, version } = require(projectDir);
   const {
     electron_version = "5.0.8",
@@ -64,4 +71,4 @@ const getConfig = () => {
   }
   return config;
 };
-export default getConfig;
+module.exports = getConfig;

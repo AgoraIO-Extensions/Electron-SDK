@@ -7,20 +7,14 @@
   "author": "agora.io",
   "gypfile": true,
   "scripts": {
-    "install": "gulp NPM_Install",
-    "totalBuild": "gulp totalBuild",
-    "build": "gulp build",
-    "clean": "gulp clean",
-    "syncLib": "gulp syncLib",
-    "buildJS": "gulp buildJS",
-    "zipBuild": "gulp zipBuild",
-    "prepublishOnly": "npm run buildJS"
-  },
-  "dependencies": {
-    "gulp": "^4.0.2",
-    "lodash.isequal": "^4.5.0",
-    "yuv-buffer": "1.0.0",
-    "yuv-canvas": "1.2.6"
+    "install": "cross-env-shell gulp NPM_Install --INIT_CWD=$INIT_CWD",
+    "totalBuild": "cross-env-shell gulp totalBuild --INIT_CWD=$INIT_CWD",
+    "build": "cross-env-shell gulp build --INIT_CWD=$INIT_CWD",
+    "clean": "cross-env-shell gulp clean --INIT_CWD=$INIT_CWD",
+    "syncLib": "cross-env-shell gulp syncLib --INIT_CWD=$INIT_CWD",
+    "buildJS": "cross-env-shell gulp buildJS --INIT_CWD=$INIT_CWD",
+    "zipBuild": "cross-env-shell gulp zipBuild --INIT_CWD=$INIT_CWD",
+    "prepublishOnly": "cross-env-shell npm run buildJS --INIT_CWD=$INIT_CWD"
   },
   "agora_electron": {
     "lib_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_v3.4.2.1_FULL_20210513_2235_77697.zip",
@@ -28,49 +22,35 @@
     "no_symbol": true,
     "electron_version": "11.0.0"
   },
-  "devDependencies": {
-    "@types/gulp": "^4.0.8",
-    "@types/node": "10.17.5",
+  "dependencies": {
+    "cross-env": "^7.0.3",
     "download": "^8.0.0",
-    "esm": "^3.2.25",
     "extract-zip": "^2.0.1",
     "fs-extra": "^9.1.0",
+    "gulp": "^4.0.2",
+    "gulp-cli": "^2.3.0",
     "gulp-zip": "^5.1.0",
+    "lodash.isequal": "^4.5.0",
     "minimist": "^1.2.5",
     "nan": "2.14.2",
     "node-gyp": "^7.1.2",
     "rimraf": "^3.0.0",
     "shelljs": "^0.8.4",
-    "ts-node": "^9.1.1",
     "typescript": "4.2.4",
-    "winston": "^3.3.3"
+    "winston": "^3.3.3",
+    "yuv-buffer": "1.0.0",
+    "yuv-canvas": "1.2.6"
   },
   "files": [
     "js",
     "ts",
     "types",
     "scripts",
-    "gulpfile.esm.js",
+    "gulpfile.*",
     "agora_node_ext",
     "common",
     "video_source",
     "extra"
   ],
-  "bundledDependencies": [
-    "esm",
-    "@types/gulp",
-    "@types/node",
-    "download",
-    "extract-zip",
-    "fs-extra",
-    "gulp-zip",
-    "minimist",
-    "nan",
-    "node-gyp",
-    "rimraf",
-    "shelljs",
-    "ts-node",
-    "typescript",
-    "winston"
-  ]
+  "bundledDependencies": []
 }

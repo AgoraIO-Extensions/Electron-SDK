@@ -1,14 +1,13 @@
-//@ts-nocheck
-import { series } from "gulp";
-import syncLib from "./scripts/syncLib";
-import buildScript from "./scripts/build";
-import getConfig from "./scripts/getConfig";
-import dowmloadPrebuild from "./scripts/dowmloadPrebuild";
-import { cleanLibsDir, cleanBuildDir, cleanJSDir } from "./scripts/clean";
-import buildJS from "./scripts/buildJS";
-import logger from "./scripts/logger";
-import { lipoCreate, createTmpProduct } from "./scripts/util";
-import zipBuild from "./scripts/zipBuild";
+const { series } = require("gulp");
+const syncLib = require("./scripts/syncLib");
+const buildScript = require("./scripts/build");
+const getConfig = require("./scripts/getConfig");
+const dowmloadPrebuild = require("./scripts/dowmloadPrebuild");
+const { cleanLibsDir, cleanBuildDir, cleanJSDir } = require("./scripts/clean");
+const buildJS = require("./scripts/buildJS");
+const logger = require("./scripts/logger");
+const zipBuild = require("./scripts/zipBuild");
+const { lipoCreate, createTmpProduct } = require("./scripts/util");
 
 const config = getConfig();
 logger.info(`Get Config: \n${JSON.stringify(config, undefined, 4)}`);

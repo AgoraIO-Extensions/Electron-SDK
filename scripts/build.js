@@ -1,9 +1,13 @@
-import logger from "./logger";
-import fs from "fs-extra";
-import path from "path";
-import { exec } from "shelljs";
+const logger = require("./logger");
+const fs = require("fs-extra");
+const path = require("path");
+const { exec } = require("shelljs");
 
-let gyp_path = `${path.resolve(__dirname, "../../node-gyp/bin/node-gyp.js")}`;
+let gyp_path = `${path.resolve(
+  __dirname,
+  "../node_modules/node-gyp/bin/node-gyp.js"
+)}`;
+logger.info(`gyp_path:${gyp_path}`);
 
 if (!fs.existsSync(gyp_path)) {
   logger.info(`gyp_exec not found at ${gyp_path}, switch`);
@@ -11,6 +15,7 @@ if (!fs.existsSync(gyp_path)) {
     __dirname,
     "../node_modules/node-gyp/bin/node-gyp.js"
   )}`;
+  logger.info(`new gyp_path:${gyp_path}`);
 }
 const gyp_exec = `node ${gyp_path}`;
 const agora_node_ext_path = `${path.resolve(
@@ -95,4 +100,4 @@ const build = async (
   cb();
 };
 
-export default build;
+module.exports = build;
