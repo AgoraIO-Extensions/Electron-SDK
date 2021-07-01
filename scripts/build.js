@@ -53,20 +53,20 @@ const build = async (
     silent,
     msvsVersion,
     arch,
-    distUrl,
+    distUrl = 'https://electronjs.org/headers'
   }
 ) => {
   const commandArray = [];
   /** get command string */
   const command = [`${gyp_exec} configure`];
-  // check platform
-  platform === "darwin"
-    ? configMac(command, { arch, debug })
-    : configWin(command, { arch, msvsVersion });
   // check runtime
   if (runtime === "electron") {
     command.push(`--target=${electronVersion} --dist-url=${distUrl}`);
   }
+  // check platform
+  platform === "darwin"
+    ? configMac(command, { arch, debug })
+    : configWin(command, { arch, msvsVersion });
   const commandStr = command.join(" ");
   /** start build */
   logger.info("Package Version: %s", packageVersion);
