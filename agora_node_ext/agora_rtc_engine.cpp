@@ -1696,7 +1696,7 @@ namespace agora {
             napi_set_int_result(args, result);
             LOG_LEAVE;
         }
-        
+
         NAPI_API_DEFINE(NodeRtcEngine, adjustLoopbackSignalVolume)
         {
             LOG_ENTER;
@@ -1726,7 +1726,7 @@ namespace agora {
                 napi_status status = napi_get_value_int32_(args[0], volume);
                 CHECK_NAPI_STATUS(pEngine, status);
                 LOG_F(INFO, "videoSourceAdjustLoopbackRecordingSignalVolume:%d", volume);
-                if (!pEngine->m_videoSourceSink.get() || !pEngine->m_videoSourceSink->adjustLoopbackRecordingSignalVolume(volume)) {
+                if (!pEngine->m_videoSourceSink.get() || pEngine->m_videoSourceSink->adjustLoopbackRecordingSignalVolume(volume) != node_ok) {
                     break;
                 }
                 result = 0;
@@ -1747,7 +1747,7 @@ namespace agora {
                 napi_status status = napi_get_value_int32_(args[0], volume);
                 CHECK_NAPI_STATUS(pEngine, status);
                 LOG_F(INFO, "videoSourceAdjustRecordingSignalVolume:%d", volume);
-                if (!pEngine->m_videoSourceSink.get() || !pEngine->m_videoSourceSink->adjustRecordingSignalVolume(volume)) {
+                if (!pEngine->m_videoSourceSink.get() || pEngine->m_videoSourceSink->adjustRecordingSignalVolume(volume)  != node_ok) {
                     break;
                 }
                 result = 0;
