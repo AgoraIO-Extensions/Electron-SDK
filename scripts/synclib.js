@@ -25,11 +25,19 @@ const macPrepare = () => {
       fs.remove(path.join(__dirname, '../sdk'))
     ]).then(() => {
       return fs.mkdirp(path.join(__dirname, '../sdk/lib/mac'))
-    }).then(() => {
-      return fs.move(
-        path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcKit.framework'),
+    }).then(async () => {
+      const file1 = await globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_*/libs/AgoraRtcKit.framework'))
+      await fs.move(
+        file1[0],
         path.join(__dirname, '../sdk/lib/mac/AgoraRtcKit.framework')
+      );
+
+      const file2 = await globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_*/libs/Agoraffmpeg.framework'))
+      await fs.move(
+        file2[0],
+        path.join(__dirname, '../sdk/lib/mac/Agoraffmpeg.framework')
       )
+      return Promise.resolve();
     }).then(() => {
       resolve()
     }).catch(e => {
@@ -139,7 +147,7 @@ module.exports = ({
     }).then(() => {
       logger.info("Success", "Unzip finished");
       if(os === "mac") {
-        return globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraRtcKit.framework/'))
+        return globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_*/libs/AgoraRtcKit.framework/'))
       } else {
         return globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Windows*/'))
       }

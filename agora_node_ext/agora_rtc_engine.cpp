@@ -17,6 +17,7 @@
 #include <string>
 #include <nan.h>
 #include "agora_meida_player.h"
+#include "loguru.hpp"
 
 
 #if defined(__APPLE__) || defined(_WIN32)
@@ -25,6 +26,8 @@
 
 #if defined(__APPLE__)
 #include <dlfcn.h>
+#include "AgoraRefPtr.h"
+#include "IAgoraMediaPlayer.h"
 #endif
 
 using std::string;
@@ -83,7 +86,6 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setRemoteDefaultVideoStreamType)
                 PROPERTY_METHOD_DEFINE(enableAudioVolumeIndication)
                 PROPERTY_METHOD_DEFINE(startAudioRecording)
-                PROPERTY_METHOD_DEFINE(stopAudioRecording)
                 PROPERTY_METHOD_DEFINE(startAudioMixing)
                 PROPERTY_METHOD_DEFINE(stopAudioMixing)
                 PROPERTY_METHOD_DEFINE(pauseAudioMixing)
@@ -5718,15 +5720,14 @@ namespace agora {
                 nodestring id;
                 bool enable;
 
-                napi_status status = napi_get_value_int32_(args[0], type);
-                status = napi_get_value_nodestring_(args[1], id);
+                napi_status status = napi_get_value_nodestring_(args[0], id);
                 key = "id";
                 CHECK_NAPI_STATUS_STR(pEngine, status, key);
-                status = napi_get_value_bool_(args[2], enable);
+                status = napi_get_value_bool_(args[1], enable);
                 key = "enable";
                 CHECK_NAPI_STATUS_STR(pEngine, status, key);
 
-                result = pEngine->m_engine->enableExtension((VIDEO_SOURCE_TYPE)type, id, enable);
+                result = pEngine->m_engine->enableExtension(id, enable);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -5741,25 +5742,24 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                int type;
-                napi_status status = napi_get_value_int32_(args[0], type);
+                
 
                 nodestring id;
-                status = napi_get_value_nodestring_(args[1], id);
+                napi_status status = napi_get_value_nodestring_(args[0], id);
                 debugKey = "id";
                 CHECK_NAPI_STATUS_STR(pEngine, status, debugKey);
 
                 nodestring key;
-                status = napi_get_value_nodestring_(args[2], key);
+                status = napi_get_value_nodestring_(args[1], key);
                 debugKey = "key";
                 CHECK_NAPI_STATUS_STR(pEngine, status, debugKey);
 
                 nodestring json_value;
-                status = napi_get_value_nodestring_(args[3], json_value);
+                status = napi_get_value_nodestring_(args[2], json_value);
                 debugKey = "jsonValue";
                 CHECK_NAPI_STATUS_STR(pEngine, status, debugKey);
 
-                result = pEngine->m_engine->setExtensionProperty((VIDEO_SOURCE_TYPE)type, id, key, json_value);
+                result = pEngine->m_engine->setExtensionProperty(id, key, json_value);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
