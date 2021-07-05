@@ -302,6 +302,7 @@ export default class App extends Component {
       imageUrl: filePath
     })
     let filePath2 = path.resolve(__dirname, "../../static/png.png")
+    console.log('filePath2',filePath2);
     sources.push({
       sourceType: 6,
       connectionId: 0,
@@ -498,7 +499,7 @@ export default class App extends Component {
 
     let sources = this.state.sources || []
     sources.push({
-      sourceType: 4,
+      sourceType: 5,
       connectionId: 0,
       x: 0,
       y: 0,
@@ -552,7 +553,12 @@ export default class App extends Component {
   }
 
   handleUpdateTranscoder = (sources) => {
-    rtcEngine.updateLocalTranscoderConfiguration(this.calcTranscoderOptions(sources || this.state.sources))
+    console.log('handleUpdateTranscoder',sources);
+    const opt = this.calcTranscoderOptions(sources || this.state.sources)
+    console.log('calcTranscoderOptions',opt);
+    const res = rtcEngine.updateLocalTranscoderConfiguration(this.calcTranscoderOptions(sources || this.state.sources))
+
+
   }
 
   handleDragStop = (e,d) => {
@@ -566,6 +572,7 @@ export default class App extends Component {
     let {x, y, node} = d
     // console.log(`drag : id: ${node.id} ${x} ${y}`)
     let sourceId = this.reverseSourceId(node.id)
+    console.log('handleDrag',e,d);
     this.updateSource(sourceId, {x: x, y: y})
   }
 

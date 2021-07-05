@@ -41,6 +41,9 @@ namespace agora {
         void NodeMediaPlayerObserver::onMetaData(const void* data, int length) {
             //node_async_call::async_call([this, type, ])
         }
+        void NodeMediaPlayerObserver::onPlayBufferUpdated(int64_t playCachedBuffer) {
+            
+        }
 
         void NodeMediaPlayerObserver::onCompleted() {
 
