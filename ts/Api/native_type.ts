@@ -2575,6 +2575,9 @@ export interface NodeRtcEngine {
   getPluginParameter(pluginId: string, paramKey: string): string;
 
   applyRemoteStreamSubscribeAdvice(uid: number, streamType: number): number;
+
+  enableContentInspect(enabled: boolean): number;
+  setContentInspectExtraConfig(config: ContentInspectExtraConfig): number;
 }
 
 export interface NodeRtcChannel {
@@ -2818,3 +2821,16 @@ export interface NodeRtcChannel {
   
   muteLocalVideoStream(mute: boolean): number;
 }
+
+type Int32ArrayBuffer = ArrayBufferLike;
+export interface ContentInspectExtraConfig {
+  /** The extra information, max lenght of extInfo is 1024.
+   */
+  extInfo :string;
+  /**The featureRate, max lenght of the array is 32.
+   */
+   featureRate: Int32ArrayBuffer
+  /**The featureRateCount.
+   */
+  featureRateCount: number;
+};

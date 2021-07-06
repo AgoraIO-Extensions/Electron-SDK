@@ -750,6 +750,19 @@ napi_status napi_get_object_property_uid_(Isolate* isolate, const Local<Object>&
     Local<Value> value = napi_get_object_property_value(isolate, obj, propName);
     return agora::rtc::NodeUid::getUidFromNodeValue(value, uid);
 }
+napi_status napi_get_object_property_arraybuffer_(Isolate* isolate, const Local<Object>& obj, const std::string& propName, void* buffer)
+{
+    Local<Value> value = napi_get_object_property_value(isolate, obj, propName);
+
+    if (!value->IsArrayBuffer()) {
+        return napi_invalid_arg;
+    }
+    
+    auto localBuf = Local<v8::ArrayBuffer>::Cast(value);
+    auto buf = *localBuf;
+    memcpy(buffer, buf->GetContents().Data(), buf->GetContents().ByteLength());
+    return napi_ok;
+}
 
 const char* nullable( char const* s)
 {
