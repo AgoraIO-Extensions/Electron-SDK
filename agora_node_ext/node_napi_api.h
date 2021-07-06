@@ -379,7 +379,7 @@ napi_status napi_get_object_property_nodestring_(Isolate* isolate, const Local<O
 * get nodestring property from V8 object.
 */
 napi_status napi_get_object_property_uid_(Isolate* isolate, const Local<Object>& obj, const std::string& propName, agora::rtc::uid_t& uid);
-
+napi_status napi_get_object_property_arraybuffer_(Isolate* isolate, const Local<Object>& obj, const std::string& propName, void* buffer);
 
 const char* nullable( char const* s);
 

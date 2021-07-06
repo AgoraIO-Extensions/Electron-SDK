@@ -39,7 +39,8 @@ import {
   VideoContentHint,
   VideoEncoderConfiguration,
   UserInfo,
-  Metadata
+  Metadata,
+  ContentInspectExtraConfig
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -4749,7 +4750,12 @@ class AgoraRtcEngine extends EventEmitter {
   applyRemoteStreamSubscribeAdvice(uid:number, streamType:number):number {
     return this.rtcEngine.applyRemoteStreamSubscribeAdvice(uid, streamType);
   }
-
+  enableContentInspect(enabled:boolean): number {
+    return this.rtcEngine.enableContentInspect(enabled)
+  }
+  setContentInspectExtraConfig(config :ContentInspectExtraConfig): number{
+    return this.rtcEngine.setContentInspectExtraConfig(config)
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
@@ -6124,7 +6130,7 @@ class AgoraRtcChannel extends EventEmitter
     return this.rtcChannel.leaveChannel()
   }
   
-
+  
   release(): number {
     return this.rtcChannel.release()
   }

@@ -351,6 +351,8 @@ namespace agora {
              * 2.9.0.106.230_xueersi
              */
             NAPI_API(applyRemoteStreamSubscribeAdvice);
+            NAPI_API(enableContentInspect);
+            NAPI_API(setContentInspectExtraConfig);
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }
