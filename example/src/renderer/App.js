@@ -272,7 +272,12 @@ export default class App extends Component {
     // this.subscribeChannelEvents(channel, true)
     // channel.joinChannel(null, '', Number(`${new Date().getTime()}`.slice(7)));
     // channel.publish();
-    rtcEngine.joinChannel("", "123", "", 0, {autoSubscribeAudio:true, autoSubscribeVideo:true});
+    rtcEngine.joinChannel("", "123", "", 0, {
+      autoSubscribeAudio: true,
+      autoSubscribeVideo: true,
+      publishLocalAudio: true,
+      publishLocalVideo: true,
+    });
 
     //joinning two channels together
   //   this.channel1 = rtcEngine.createChannel(this.state.channel)
