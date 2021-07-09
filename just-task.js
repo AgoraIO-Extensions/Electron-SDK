@@ -74,7 +74,7 @@ task('build:node', () => {
 // npm run download --
 task('download', () => {
   // work-around
-  const addonVersion = '3.3.1-rc.231.build.526'
+  const addonVersion = '3.3.1-rc.235.build.709'
   cleanup(path.join(__dirname, "./build")).then(_ => {
     cleanup(path.join(__dirname, './js')).then(_ => {
       download({
