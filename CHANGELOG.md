@@ -1,3 +1,6 @@
+## 2.9.107-rc.148-build.79 (July 9 2021)
+* add processId for getScreenWindowInfo
+
 ## 2.9.107.148 (May 21st 2021)
 * add api monitorDeviceChange
 
