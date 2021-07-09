@@ -177,6 +177,8 @@ bool captureBmpToJpeg(const HWND& hWnd, char* szName, std::vector<ScreenWindowIn
 #endif
 	//calculate the number of color indexes in the color table
 
+	DWORD currentProcessId = GetCurrentProcessId();
+
 	int nBitCount = 32;
 	int nColorTableEntries = 0;//nBitCunt 16 24 32
 	HDC hDC = GetDC(hWnd);
@@ -266,8 +268,8 @@ bool captureBmpToJpeg(const HWND& hWnd, char* szName, std::vector<ScreenWindowIn
 	Gdiplus::Bitmap bitmap(hBitmap, NULL);
 	Gdiplus::Graphics graphic(&bitmap);
 
+	DWORD dwProcId = 0;
 	do {
-		DWORD dwProcId = 0;
 		GetWindowThreadProcessId(hWnd, &dwProcId);
 		if (dwProcId == 0) break;
 
@@ -409,6 +411,8 @@ bool captureBmpToJpeg(const HWND& hWnd, char* szName, std::vector<ScreenWindowIn
 	wndInfo.imageData = std::move(pJPG);
 	wndInfo.originWidth = nWidth;
 	wndInfo.originHeight = nHeight;
+	wndInfo.processId = dwProcId;
+	wndInfo.currentProcessId = currentProcessId;
 	wndsInfo.push_back(wndInfo);
 	pOutIStream->Release();
 	::DeleteObject(hBMP);

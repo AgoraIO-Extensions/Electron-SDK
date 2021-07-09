@@ -48,8 +48,12 @@ struct ScreenWindowInfo
 {
 #if defined(__APPLE__)
     unsigned int windowId;
+    int processId;
+    int currentProcessId;
 #elif defined(_WIN32)
     HWND windowId;
+    DWORD processId;
+    DWORD currentProcessId;
 #endif
     
     std::string name;
