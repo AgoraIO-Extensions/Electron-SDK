@@ -463,6 +463,18 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
     }
     else if(msg == AGORA_IPC_SET_ENCRYPTION_SECRET) {
         m_rtcEngine->setEncryptionSecret((const char *)payload);
+    }else if(msg == AGORA_IPC_MUTE_REMOTE_AUDIO_STREAM) {
+        MuteRemoteStreamsCmd *cmd = (MuteRemoteStreamsCmd*)payload;
+        m_rtcEngine->muteRemoteAudioStream(cmd->uid, cmd->mute);
+    }else if(msg == AGORA_IPC_MUTE_ALL_REMOTE_AUDIO_STREAMS) {
+        bool mute = (bool)*payload;
+        m_rtcEngine->muteAllRemoteAudioStreams(mute);
+    }else if(msg == AGORA_IPC_MUTE_REMOTE_VIDEO_STREAM) {
+        MuteRemoteStreamsCmd *cmd = (MuteRemoteStreamsCmd*)payload;
+        m_rtcEngine->muteRemoteVideoStream(cmd->uid, cmd->mute);
+    }else if(msg == AGORA_IPC_MUTE_ALL_REMOTE_VIDEO_STREAMS) {
+        bool mute = (bool)*payload;
+        m_rtcEngine->muteAllRemoteVideoStreams(mute);
     }
 
     LOG_LEAVE;

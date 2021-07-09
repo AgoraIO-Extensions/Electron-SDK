@@ -320,7 +320,10 @@ namespace agora {
 
                 PROPERTY_METHOD_DEFINE(videoSourceAdjustRecordingSignalVolume);
                 PROPERTY_METHOD_DEFINE(videoSourceAdjustLoopbackRecordingSignalVolume);
-
+                PROPERTY_METHOD_DEFINE(videoSourceMuteRemoteAudioStream);
+                PROPERTY_METHOD_DEFINE(videoSourceMuteAllRemoteAudioStreams);
+                PROPERTY_METHOD_DEFINE(videoSourceMuteRemoteVideoStream);
+                PROPERTY_METHOD_DEFINE(videoSourceMuteAllRemoteVideoStreams);
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -1748,6 +1751,102 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 LOG_F(INFO, "videoSourceAdjustRecordingSignalVolume:%d", volume);
                 if (!pEngine->m_videoSourceSink.get() || pEngine->m_videoSourceSink->adjustRecordingSignalVolume(volume)  != node_ok) {
+                    break;
+                }
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, videoSourceMuteRemoteAudioStream)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                uid_t uid;
+                napi_status status = NodeUid::getUidFromNodeValue(args[0], uid);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                bool mute;
+                status = napi_get_value_bool_(args[1], mute);
+                CHECK_NAPI_STATUS(pEngine, status);
+                LOG_F(INFO, "videoSourceMuteRemoteAudioStream: %d", mute);
+                if (!pEngine->m_videoSourceSink.get() || pEngine->m_videoSourceSink->muteRemoteAudioStream(uid, mute) != node_ok) {
+                    break;
+                }
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, videoSourceMuteAllRemoteAudioStreams)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                bool mute;
+                napi_status status = napi_get_value_bool_(args[0], mute);
+                CHECK_NAPI_STATUS(pEngine, status);
+                LOG_F(INFO, "videoSourceMuteAllRemoteAudioStreams: %d", mute);
+                if (!pEngine->m_videoSourceSink.get() || pEngine->m_videoSourceSink->muteAllRemoteAudioStreams(mute) != node_ok) {
+                    break;
+                }
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, videoSourceMuteRemoteVideoStream)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                uid_t uid;
+                napi_status status = NodeUid::getUidFromNodeValue(args[0], uid);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                bool mute;
+                status = napi_get_value_bool_(args[1], mute);
+                CHECK_NAPI_STATUS(pEngine, status);
+                LOG_F(INFO, "videoSourceMuteRemoteVideoStream: %d", mute);
+                if (!pEngine->m_videoSourceSink.get() || pEngine->m_videoSourceSink->muteRemoteVideoStream(uid, mute) != node_ok) {
+                    break;
+                }
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, videoSourceMuteAllRemoteVideoStreams)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                bool mute;
+                napi_status status = napi_get_value_bool_(args[0], mute);
+                CHECK_NAPI_STATUS(pEngine, status);
+                LOG_F(INFO, "videoSourceMuteAllRemoteVideoStreams: %d", mute);
+                if (!pEngine->m_videoSourceSink.get() || pEngine->m_videoSourceSink->muteAllRemoteVideoStreams(mute) != node_ok) {
                     break;
                 }
                 result = 0;

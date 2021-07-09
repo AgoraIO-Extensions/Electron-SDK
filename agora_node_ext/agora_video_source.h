@@ -198,6 +198,10 @@ namespace agora{
             virtual node_error enableEncryption(bool enable, EncryptionConfig encryptionConfig) = 0;
             virtual node_error setEncryptionSecret(const char* secret) = 0;
             
+            virtual node_error muteRemoteAudioStream(agora::rtc::uid_t userId, bool mute) = 0;
+            virtual node_error muteAllRemoteAudioStreams(bool mute) = 0;
+            virtual node_error muteRemoteVideoStream(agora::rtc::uid_t userId, bool mute) = 0;
+            virtual node_error muteAllRemoteVideoStreams(bool mute) = 0;
         };
 
         /**

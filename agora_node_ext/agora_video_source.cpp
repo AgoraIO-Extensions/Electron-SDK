@@ -77,6 +77,10 @@ namespace agora{
             virtual node_error setEncryptionMode(const char *encryptionMode) override;
             virtual node_error enableEncryption(bool enable, EncryptionConfig encryptionConfig) override;
             virtual node_error setEncryptionSecret(const char* secret) override;
+            virtual node_error muteRemoteAudioStream(agora::rtc::uid_t userId, bool mute) override;
+            virtual node_error muteAllRemoteAudioStreams(bool mute) override;
+            virtual node_error muteRemoteVideoStream(agora::rtc::uid_t userId, bool mute) override;
+            virtual node_error muteAllRemoteVideoStreams(bool mute) override;
         private:
             void msgThread();
             void deliverFrame(const char* payload, int len);
@@ -591,6 +595,43 @@ namespace agora{
         {
             if (m_initialized){
                 return m_ipcMsg->sendMessage(AGORA_IPC_SET_ENCRYPTION_SECRET, (char *)secret, sizeof(const char *)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+        node_error AgoraVideoSourceSink::muteRemoteAudioStream(agora::rtc::uid_t userId, bool mute)
+        {
+            if (m_initialized){
+                MuteRemoteStreamsCmd cmd;
+                cmd.uid = userId;
+                cmd.mute = mute;
+                return m_ipcMsg->sendMessage(AGORA_IPC_MUTE_REMOTE_AUDIO_STREAM, (char*)&cmd, sizeof(cmd)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::muteAllRemoteAudioStreams(bool mute)
+        {
+            if (m_initialized){
+                return m_ipcMsg->sendMessage(AGORA_IPC_MUTE_ALL_REMOTE_AUDIO_STREAMS, (char *)&mute, sizeof(mute)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::muteRemoteVideoStream(agora::rtc::uid_t userId, bool mute)
+        {
+            if (m_initialized){
+                MuteRemoteStreamsCmd cmd;
+                cmd.uid = userId;
+                cmd.mute = mute;
+                return m_ipcMsg->sendMessage(AGORA_IPC_MUTE_REMOTE_VIDEO_STREAM, (char*)&cmd, sizeof(cmd)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::muteAllRemoteVideoStreams(bool mute)
+        {
+            if (m_initialized){
+                return m_ipcMsg->sendMessage(AGORA_IPC_MUTE_ALL_REMOTE_VIDEO_STREAMS, (char *)&mute, sizeof(mute)) ? node_ok : node_generic_error;
             }
             return node_status_error;
         }

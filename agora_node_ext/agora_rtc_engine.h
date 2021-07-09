@@ -195,6 +195,10 @@ namespace agora {
             NAPI_API(adjustLoopbackSignalVolume);
             NAPI_API(videoSourceAdjustRecordingSignalVolume);
             NAPI_API(videoSourceAdjustLoopbackRecordingSignalVolume);
+            NAPI_API(videoSourceMuteRemoteAudioStream);
+            NAPI_API(videoSourceMuteAllRemoteAudioStreams);
+            NAPI_API(videoSourceMuteRemoteVideoStream);
+            NAPI_API(videoSourceMuteAllRemoteVideoStreams);
             NAPI_API(setHighQualityAudioParameters);
             NAPI_API(enableWebSdkInteroperability);
             NAPI_API(setVideoQualityParameters);

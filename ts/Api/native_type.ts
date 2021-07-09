@@ -3523,6 +3523,10 @@ export interface NodeRtcEngine {
   adjustLoopbackSignalVolume(volume: number): number;
   videoSourceAdjustRecordingSignalVolume(volume: number): number;
   videoSourceAdjustLoopbackRecordingSignalVolume(volume: number): number;
+  videoSourceMuteRemoteAudioStream(uid: number, mute: boolean): number;
+  videoSourceMuteAllRemoteAudioStreams(mute: boolean): number;
+  videoSourceMuteRemoteVideoStream(uid: number, mute: boolean): number;
+  videoSourceMuteAllRemoteVideoStreams(mute: boolean): number;
   /**
    * @ignore
    */

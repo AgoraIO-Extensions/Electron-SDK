@@ -107,6 +107,10 @@ enum AgoraIpcMsg
     AGORA_IPC_SET_ENCRYPTION_MODE,
     AGORA_IPC_ENABLE_ENCRYPTION,
     AGORA_IPC_SET_ENCRYPTION_SECRET,
+    AGORA_IPC_MUTE_REMOTE_AUDIO_STREAM,
+    AGORA_IPC_MUTE_ALL_REMOTE_AUDIO_STREAMS,
+    AGORA_IPC_MUTE_REMOTE_VIDEO_STREAM,
+    AGORA_IPC_MUTE_ALL_REMOTE_VIDEO_STREAMS,
     AGORA_IPC_ON_LOCAL_AUDIO_STATS,
     AGORA_IPC_ON_LOCAL_VIDEO_STATS,
     AGORA_IPC_ON_VIDEO_SIZECHANGED,
@@ -326,6 +330,12 @@ public:
     int width;
     int height;
     int rotation;
+};
+struct MuteRemoteStreamsCmd
+{
+public:
+    agora::rtc::uid_t uid;
+    bool mute;
 };
 
 struct LocalVideoStateChangedCmd

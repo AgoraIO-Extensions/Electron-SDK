@@ -3181,6 +3181,18 @@ class AgoraRtcEngine extends EventEmitter {
   videoSourceAdjustLoopbackRecordingSignalVolume(volume: number): number {
     return this.rtcEngine.videoSourceAdjustLoopbackRecordingSignalVolume(volume);
   }
+  videoSourceMuteRemoteAudioStream(uid: number, mute: boolean): number {
+    return this.rtcEngine.videoSourceMuteRemoteAudioStream(uid, mute);
+  }
+  videoSourceMuteAllRemoteAudioStreams(mute: boolean): number {
+    return this.rtcEngine.videoSourceMuteAllRemoteAudioStreams(mute);
+  }
+  videoSourceMuteRemoteVideoStream(uid: number, mute: boolean): number {
+    return this.rtcEngine.videoSourceMuteRemoteVideoStream(uid, mute);
+  }
+  videoSourceMuteAllRemoteVideoStreams(mute: boolean): number {
+    return this.rtcEngine.videoSourceMuteAllRemoteVideoStreams(mute);
+  }
   /**
    * Adjusts the playback volume of the voice.
    * @param volume Playback volume of the voice. To avoid echoes and improve
