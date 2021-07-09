@@ -36,7 +36,7 @@ int VideoProcesser::EnableVideoFrameCache(
 
 int VideoProcesser::DisableVideoFrameCache(const char *channel_id,
                                            unsigned int uid) {
-  _iris_rtc_renderer->DisableVideoFrameCache(uid, channel_id);
+  _iris_rtc_renderer->DisableVideoFrameCache(&uid, channel_id);
   if (_iris_rtc_renderer_delegate) {
     delete _iris_rtc_renderer_delegate;
     _iris_rtc_renderer_delegate = nullptr;
