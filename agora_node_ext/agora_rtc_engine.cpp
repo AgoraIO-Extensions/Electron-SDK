@@ -4681,7 +4681,6 @@ namespace agora {
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "originHeight", windowInfo.originHeight);
                     NODE_SET_OBJ_PROP_Number(isolate, obj, "processId", windowInfo.processId);
                     NODE_SET_OBJ_PROP_Number(isolate, obj, "currentProcessId", windowInfo.currentProcessId);
-                    NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isCurrentProcess", windowInfo.isCurrentProcess);
 
                     if (windowInfo.imageData) {
                         buffer_info imageInfo;

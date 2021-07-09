@@ -151,7 +151,16 @@ bool setWindowInfoWithDictionary(ScreenWindowInfo& windowInfo, CFDictionaryRef w
     if (ownerName) {
         windowInfo.ownerName = convertCFStringToStdString(ownerName);
     }
+
+    CFNumberRef pid = static_cast<CFNumberRef>(CFDictionaryGetValue(windowDic, kCGWindowOwnerPID));
     
+    if (pid) {
+        int processId = 0;
+        CFNumberGetValue(pid, kCFNumberSInt32Type, &processId);
+        windowInfo.processId = processId;
+    }
+
+    windowInfo.currentProcessId = getpid();
     return true;
 }
 
@@ -171,6 +180,7 @@ std::vector<ScreenWindowInfo> getAllWindowInfo(uint32_t options)
         }
 
         CFStringRef name = static_cast<CFStringRef>(CFDictionaryGetValue(windowDic, kCGWindowName));
+
         if (name) {
             auto length = CFStringGetLength(name);
             if (length == 0) {
@@ -184,7 +194,7 @@ std::vector<ScreenWindowInfo> getAllWindowInfo(uint32_t options)
         if (!setWindowInfoWithDictionary(screenWindow, windowDic)) {
             break;
         }
-        
+
         CGImageRef screenShot = CGWindowListCreateImage(CGRectNull,
                                                         kCGWindowListOptionIncludingWindow,
                                                         screenWindow.windowId,
