@@ -48,8 +48,12 @@ struct ScreenWindowInfo
 {
 #if defined(__APPLE__)
     unsigned int windowId;
+    unsigned int processId;
+    unsigned int currentProcessId;
 #elif defined(_WIN32)
     HWND windowId;
+    DWORD processId;
+    DWORD currentProcessId;
 #endif
     
     std::string name;
@@ -64,7 +68,10 @@ struct ScreenWindowInfo
 
     unsigned int originWidth;
     unsigned int originHeight;
+
+    bool isCurrentProcess;
     
+
     ScreenWindowInfo()
     : windowId(0)
     , isOnScreen(false)
@@ -74,6 +81,7 @@ struct ScreenWindowInfo
     , imageDataLength(0)
     , originWidth(0)
     , originHeight(0)
+    , isCurrentProcess(false)
     {}
 };
 
