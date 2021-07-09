@@ -487,6 +487,9 @@ void AgoraVideoSource::exit(bool notifySink)
         m_ipcSender.reset();
     }
     m_ipc->disconnect();
+
+    ::exit(0);
+    LOG_F(INFO, "VideoSource::exit");
 }
 
 void AgoraVideoSource::run()
@@ -546,19 +549,8 @@ void initLogService()
     startLogService(logFile.c_str());
 }
 
-int main(int argc, char* argv[])
+void run(std::string param) 
 {
-    initLogService();
-    if (argc < 3){
-        LOG_ERROR("Need at least 3 parameter. Current parameter num : %d\n", argc);
-        return 0;
-    }
-    std::string param;
-    for (int i = 1; i < argc; i++) {
-        param.append(argv[i]);
-        param.append(" ");
-    }
-    LOG_INFO("Args : %s\n", param.c_str());
     auto videoSource = new AgoraVideoSource(param);
     videoSource->initialize();
     videoSource->run();
