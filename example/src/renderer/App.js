@@ -445,6 +445,7 @@ export default class App extends Component {
   handleScreenSharing = (e) => {
     // getWindowInfo and open Modal
     let rtcEngine = this.getRtcEngine()
+    console.log(`main process ${remote.process.pid}`)
     let list = rtcEngine.getScreenWindowsInfo();
     Promise.all(list.map(item => readImage(item.image))).then(imageList => {
       let windowList = list.map((item, index) => {
