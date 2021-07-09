@@ -34,6 +34,29 @@
     "extra",
     "types"
   ],
+  "build": {
+    "asar": false,
+    "appId": "io.agora.wayang.electron",
+    "win": {
+      "target": [
+        {
+          "target": "zip",
+          "arch": [
+            "ia32"
+          ]
+        }
+      ]
+    },
+    "mac": {
+      "entitlements": "entitlements/entitlements.mac.plist",
+      "extendInfo": {
+        "NSCameraUsageDescription": "Request camera usage",
+        "NSMicrophoneUsageDescription": "Request mic usage"
+      }
+    },
+    "npmRebuild": false,
+    "publish": null
+  },
   "gypfile": false,
   "dependencies": {
     "bluebird": "^3.7.1",

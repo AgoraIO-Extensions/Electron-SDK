@@ -6,7 +6,33 @@
     "dev": "electron-webpack dev",
     "compile": "electron-webpack",
     "dist": "npm run compile && electron-builder",
-    "dist:dir": "npm run dist --dir -c.compression=store -c.mac.identity=null"
+    "dist:dir": "npm run  compile&& electron-builder --dir -c.compression=store -c.mac.identity=null"
+  },
+  "build": {
+    "asar": false,
+    "appId": "io.agora.wayang.electron",
+    "win": {
+      "target": [
+        {
+          "target": "zip",
+          "arch": [
+            "ia32"
+          ]
+        }
+      ]
+    },
+    "mac": {
+      "hardenedRuntime": true,
+      "entitlements": "entitlements/entitlements.mac.plist",
+      "entitlementsInherit": "entitlements/entitlements.mac.plist",
+      "gatekeeperAssess": false,
+      "extendInfo": {
+        "NSCameraUsageDescription": "Request camera usage",
+        "NSMicrophoneUsageDescription": "Request mic usage"
+      }
+    },
+    "npmRebuild": false,
+    "publish": null
   },
   "dependencies": {
     "@material-ui/core": "4.9.9",
