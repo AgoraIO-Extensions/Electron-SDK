@@ -4798,6 +4798,19 @@ namespace agora {
         } \
     }
 
+#define NODE_SET_OBJ_PROP_Number(isolate, obj, name, val) \
+    { \
+        Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
+        Local<Value> propVal = v8::Number::New(isolate, val); \
+        CHECK_NAPI_OBJ(propVal); \
+        v8::Maybe<bool> ret = obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+        if(!ret.IsNothing()) { \
+            if(!ret.ToChecked()) { \
+                break; \
+            } \
+        } \
+    }
+
 #define NODE_SET_OBJ_PROP_BOOL(isolate, obj, name, val) \
         { \
             Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
@@ -4866,6 +4879,9 @@ namespace agora {
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", windowInfo.height);
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "originWidth", windowInfo.originWidth);
                     NODE_SET_OBJ_PROP_UINT32(isolate, obj, "originHeight", windowInfo.originHeight);
+                    NODE_SET_OBJ_PROP_Number(isolate, obj, "processId", windowInfo.processId);
+                    NODE_SET_OBJ_PROP_Number(isolate, obj, "currentProcessId", windowInfo.currentProcessId);
+ 
 
                     if (windowInfo.imageData) {
                         buffer_info imageInfo;
