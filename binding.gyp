@@ -85,7 +85,8 @@
                     './common/libyuv/source/row_win.cc',
                     './common/libyuv/source/scale_win.cc',
                     './resources/resource.h',
-                    './resources/VideoSource.rc'
+                    './resources/VideoSource.rc',
+                    './video_source/main_win.cpp'
                 ],
                 'include_dirs': [
                 './sdk/include'
@@ -156,8 +157,8 @@
                     'CFNetwork.framework',
                     'AudioToolbox.framework',
                     'CoreAudio.framework',
-                    'Foundation.framework',
-                    'AVFoundation.framework',
+                    'Cocoa.framework',
+                    'Foundation.framework'
                     ]
                 },
                 'include_dirs': [
@@ -172,7 +173,8 @@
                     './common/libyuv/source/compare_neon64.cc',
                     './common/libyuv/source/rotate_neon64.cc',
                     './common/libyuv/source/row_neon64.cc',
-                    './common/libyuv/source/scale_gcc.cc'
+                    './common/libyuv/source/scale_gcc.cc',
+                    './video_source/main_mac.mm'
                 ],
                 'defines!': [
                 '_HAS_EXCEPTIONS=0',
