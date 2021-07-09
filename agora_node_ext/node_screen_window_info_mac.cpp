@@ -146,7 +146,16 @@ bool setWindowInfoWithDictionary(ScreenWindowInfo& windowInfo, CFDictionaryRef w
     if (ownerName) {
         windowInfo.ownerName = convertCFStringToStdString(ownerName);
     }
-    
+
+    CFNumberRef pid = static_cast<CFNumberRef>(CFDictionaryGetValue(windowDic, kCGWindowOwnerPID));
+     
+    if (pid) {
+        int processId = 0;
+        CFNumberGetValue(pid, kCFNumberSInt32Type, &processId);
+        windowInfo.processId = processId;
+    }
+
+    windowInfo.currentProcessId = getpid();
     return true;
 }
 
