@@ -17,3 +17,6 @@ nohup.out
 js/
 docs/
 types/
+package-lock.json
+yarn.lock
+.history/
