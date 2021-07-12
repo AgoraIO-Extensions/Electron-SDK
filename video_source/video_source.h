@@ -117,4 +117,7 @@ private:
 	agora::rtc::VIDEO_PROFILE_TYPE m_videoProfile;
 };
 
+void initLogService();
+
+void run(std::string param);
 #endif
