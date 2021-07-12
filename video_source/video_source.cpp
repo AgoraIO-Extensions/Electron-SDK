@@ -415,6 +415,29 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
             }
         }
     }
+    else if(msg == AGORA_IPC_START_SCREEN_CAPTURE_BY_DISPLAY_ID) {
+        if (payload) {
+            CaptureScreenByDisplayCmd *cmd = (CaptureScreenByDisplayCmd*)payload;
+            agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
+            agora::rtc::view_t excludeWindows[MAX_WINDOW_ID_COUNT] = {nullptr};
+            if (cmd->excludeWindowCount > 0) {
+                for (int i = 0; i < cmd->excludeWindowCount; ++i) {
+                    agora::rtc::view_t windowId = reinterpret_cast<agora::rtc::view_t>(cmd->excludeWindowList[i]);
+                    excludeWindows[i] = windowId;
+                }
+                cmd->captureParams.excludeWindowList = excludeWindows;
+                cmd->captureParams.excludeWindowCount  = cmd->excludeWindowCount;
+            }
+            int result = m_rtcEngine->startScreenCaptureByDisplayId(cmd->displayInfo.idVal, cmd->regionRect, cmd->captureParams);
+
+            if(result != 0) {
+                LOG_ERROR("start screen capture by display failed.");
+                rep.enableLocalVideo(false);
+            } else {
+                rep.enableLocalVideo(true);
+            }
+        }
+    }
     else if(msg == AGORA_IPC_UPDATE_SCREEN_CAPTURE_PARAMS) {
         LOG_INFO("%s    msg: %s", __FUNCTION__,"AGORA_IPC_UPDATE_SCREEN_CAPTURE_PARAMS");
         if (payload) {
@@ -444,9 +467,22 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
         agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
         rep.enableLoopbackRecording(cmd->enabled, cmd->deviceName);
     }
+    else if (msg == AGORA_IPC_ADJUST_RECORDING_SIGNAL_VOLUME) {
+      int volume = *payload;
+      LOG_F(INFO, "video_source_adjustRecordingSignalVolume:%d", volume);
+      m_rtcEngine->adjustRecordingSignalVolume(volume);
+    }
+    else if (msg == AGORA_IPC_ADJUST_LOOPBACK_RECORDING_SIGNAL_VOLUME) {
+        int volume = *payload;
+        LOG_F(INFO, "video_source_adjustLoopbackRecordingSignalVolume:%d", volume);
+        m_rtcEngine->adjustLoopbackRecordingSignalVolume(volume);
+    }
     else if(msg == AGORA_IPC_ENABLE_AUDIO) {
         LOG_INFO("%s    msg: %s", __FUNCTION__,"AGORA_IPC_ENABLE_AUDIO");
         m_rtcEngine->enableAudio();
+    }
+    else if(msg == AGORA_IPC_DISABLE_AUDIO) {
+        m_rtcEngine->disableAudio();
     }
     else if(msg == AGORA_IPC_SET_ENCRYPTION_MODE) {
         LOG_INFO("%s    msg: %s", __FUNCTION__,"AGORA_IPC_SET_ENCRYPTION_MODE");
@@ -469,6 +505,19 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
         stopLogService();
         startLogService((char*)payload);
         LOG_INFO("set addon log file %s\n",(char*)payload);
+    }
+    else if(msg == AGORA_IPC_MUTE_REMOTE_AUDIO_STREAM) {
+        MuteRemoteStreamsCmd *cmd = (MuteRemoteStreamsCmd*)payload;
+        m_rtcEngine->muteRemoteAudioStream(cmd->uid, cmd->mute);
+    }else if(msg == AGORA_IPC_MUTE_ALL_REMOTE_AUDIO_STREAMS) {
+        bool mute = (bool)*payload;
+        m_rtcEngine->muteAllRemoteAudioStreams(mute);
+    }else if(msg == AGORA_IPC_MUTE_REMOTE_VIDEO_STREAM) {
+        MuteRemoteStreamsCmd *cmd = (MuteRemoteStreamsCmd*)payload;
+        m_rtcEngine->muteRemoteVideoStream(cmd->uid, cmd->mute);
+    }else if(msg == AGORA_IPC_MUTE_ALL_REMOTE_VIDEO_STREAMS) {
+        bool mute = (bool)*payload;
+        m_rtcEngine->muteAllRemoteVideoStreams(mute);
     }
 
     LOG_LEAVE;

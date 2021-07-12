@@ -67,15 +67,23 @@ namespace agora{
             virtual node_error setScreenCaptureContentHint(VideoContentHint contentHint) override;
             virtual node_error startScreenCaptureByScreen(ScreenIDType screenId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams, const std::vector<agora::rtc::IRtcEngine::WindowIDType>& excludeWindows) override;
             virtual node_error startScreenCaptureByWindow(agora::rtc::IRtcEngine::WindowIDType windowId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams) override;
+            virtual node_error startScreenCaptureByDisplayId(DisplayInfo displayId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams, const std::vector<agora::rtc::IRtcEngine::WindowIDType>& excludeWindows) override;
             virtual node_error updateScreenCaptureParameters(const agora::rtc::ScreenCaptureParameters & captureParams, const std::vector<agora::rtc::IRtcEngine::WindowIDType>& excludeWindows) override;
             virtual void setParameters(const char* parameters) override;
             virtual node_error enableLoopbackRecording(bool enabled, const char* deviceName) override;
+            virtual node_error adjustRecordingSignalVolume(int volume) override;
+            virtual node_error adjustLoopbackRecordingSignalVolume(int volume) override;
             virtual node_error enableAudio() override;
+            virtual node_error disableAudio() override;
             virtual node_error setEncryptionMode(const char *encryptionMode) override;
             virtual node_error enableEncryption(bool enable, EncryptionConfig encryptionConfig) override;
             virtual node_error setEncryptionSecret(const char* secret) override;
             virtual node_error setProcessDpiAwareness() override;
             virtual node_error setAddonLogFile(const char *file) override;
+            virtual node_error muteRemoteAudioStream(agora::rtc::uid_t userId, bool mute) override;
+            virtual node_error muteAllRemoteAudioStreams(bool mute) override;
+            virtual node_error muteRemoteVideoStream(agora::rtc::uid_t userId, bool mute) override;
+            virtual node_error muteAllRemoteVideoStreams(bool mute) override;
 
         private:
             void msgThread();
@@ -558,6 +566,26 @@ namespace agora{
             return node_status_error;
         }
 
+        node_error AgoraVideoSourceSink::startScreenCaptureByDisplayId(DisplayInfo displayId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams, const std::vector<agora::rtc::IRtcEngine::WindowIDType>& excludeWindows) 
+        {
+            if (m_initialized && m_peerJoined) {
+                CaptureScreenByDisplayCmd cmd;
+
+                int count = MAX_WINDOW_ID_COUNT < excludeWindows.size() ? MAX_WINDOW_ID_COUNT : excludeWindows.size();
+
+                cmd.displayInfo = displayId;
+                cmd.regionRect = regionRect;
+                cmd.captureParams = captureParams;
+                cmd.excludeWindowCount = count;
+                for (int i = 0; i < count; i++) {
+                    cmd.excludeWindowList[i] = excludeWindows[i];
+                }
+
+                return m_ipcMsg->sendMessage(AGORA_IPC_START_SCREEN_CAPTURE_BY_DISPLAY_ID, (char*)&cmd, sizeof(cmd)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
         node_error AgoraVideoSourceSink::startScreenCaptureByWindow(agora::rtc::IRtcEngine::WindowIDType windowId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams)
         {
             LOG_ENTER;
@@ -607,6 +635,22 @@ namespace agora{
             return node_status_error;
         }
 
+        node_error AgoraVideoSourceSink::adjustRecordingSignalVolume(int32 volume)
+        {
+            if (m_initialized){
+                return m_ipcMsg->sendMessage(AGORA_IPC_ADJUST_RECORDING_SIGNAL_VOLUME, (char*)&volume, sizeof(volume)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::adjustLoopbackRecordingSignalVolume(int32 volume)
+        {
+            if (m_initialized && m_peerJoined){
+                return m_ipcMsg->sendMessage(AGORA_IPC_ADJUST_LOOPBACK_RECORDING_SIGNAL_VOLUME, (char*)&volume, sizeof(volume)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
         node_error AgoraVideoSourceSink::enableAudio()
         {
             LOG_ENTER;
@@ -614,6 +658,14 @@ namespace agora{
                 return m_ipcMsg->sendMessage(AGORA_IPC_ENABLE_AUDIO, nullptr, 0) ? node_ok : node_generic_error;
             }
             LOG_ERROR("enableAudio fail");
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::disableAudio()
+        {
+            if (m_initialized && m_peerJoined){
+                return m_ipcMsg->sendMessage(AGORA_IPC_DISABLE_AUDIO, nullptr, 0) ? node_ok : node_generic_error;
+            }
             return node_status_error;
         }
 
@@ -635,6 +687,44 @@ namespace agora{
             }
             LOG_ERROR("setEncryptionSecret fail %s",secret);
             return node_status_error;      
+        }
+
+        node_error AgoraVideoSourceSink::muteRemoteAudioStream(agora::rtc::uid_t userId, bool mute)
+        {
+            if (m_initialized){
+                MuteRemoteStreamsCmd cmd;
+                cmd.uid = userId;
+                cmd.mute = mute;
+                return m_ipcMsg->sendMessage(AGORA_IPC_MUTE_REMOTE_AUDIO_STREAM, (char*)&cmd, sizeof(cmd)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::muteAllRemoteAudioStreams(bool mute)
+        {
+            if (m_initialized){
+                return m_ipcMsg->sendMessage(AGORA_IPC_MUTE_ALL_REMOTE_AUDIO_STREAMS, (char *)&mute, sizeof(mute)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::muteRemoteVideoStream(agora::rtc::uid_t userId, bool mute)
+        {
+            if (m_initialized){
+                MuteRemoteStreamsCmd cmd;
+                cmd.uid = userId;
+                cmd.mute = mute;
+                return m_ipcMsg->sendMessage(AGORA_IPC_MUTE_REMOTE_VIDEO_STREAM, (char*)&cmd, sizeof(cmd)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::muteAllRemoteVideoStreams(bool mute)
+        {
+            if (m_initialized){
+                return m_ipcMsg->sendMessage(AGORA_IPC_MUTE_ALL_REMOTE_VIDEO_STREAMS, (char *)&mute, sizeof(mute)) ? node_ok : node_generic_error;
+            }
+            return node_status_error;
         }
 
         node_error AgoraVideoSourceSink::enableEncryption(bool enable, EncryptionConfig encryptionConfig)

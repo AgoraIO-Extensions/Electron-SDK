@@ -37,6 +37,11 @@
         typedef agora::rtc::Rectangle ScreenIDType;
 #endif
 
+typedef struct DisplayInfo {
+    DisplayInfo(): idVal(0){}
+    unsigned int idVal;
+} DisplayInfo;
+
 /**
  * AgoraIpcMsg define the message type transferred between node ADDON and vidoe source process
  */
@@ -87,16 +92,25 @@ enum AgoraIpcMsg
     AGORA_IPC_SET_LOGFILE,
     AGORA_IPC_START_CAPTURE_BY_DISPLAY,
     AGORA_IPC_START_CAPTURE_BY_WINDOW_ID,
+    AGORA_IPC_START_SCREEN_CAPTURE_BY_DISPLAY_ID,
     AGORA_IPC_SET_SCREEN_CAPTURE_CONTENT_HINT,
     AGORA_IPC_UPDATE_SCREEN_CAPTURE_PARAMS,
     /** Node ADDON ==> video source, to set rtc parameters*/
     AGORA_IPC_SET_PARAMETER,
     AGORA_IPC_ENABLE_LOOPBACK_RECORDING,
+    AGORA_IPC_ADJUST_LOOPBACK_RECORDING_SIGNAL_VOLUME,
+    AGORA_IPC_ADJUST_RECORDING_SIGNAL_VOLUME,
+    
     /** Node ADDON ==> video source, to enable audio*/
     AGORA_IPC_ENABLE_AUDIO,
+    AGORA_IPC_DISABLE_AUDIO,
     AGORA_IPC_SET_ENCRYPTION_MODE,
     AGORA_IPC_ENABLE_ENCRYPTION,
     AGORA_IPC_SET_ENCRYPTION_SECRET,
+    AGORA_IPC_MUTE_REMOTE_AUDIO_STREAM,
+    AGORA_IPC_MUTE_ALL_REMOTE_AUDIO_STREAMS,
+    AGORA_IPC_MUTE_REMOTE_VIDEO_STREAM,
+    AGORA_IPC_MUTE_ALL_REMOTE_VIDEO_STREAMS,
     AGORA_IPC_ON_LOCAL_AUDIO_STATS,
     AGORA_IPC_ON_LOCAL_VIDEO_STATS,
     AGORA_IPC_ON_VIDEO_SIZECHANGED,
@@ -139,6 +153,7 @@ struct ScreenCaptureParametersCmd
 
 struct CaptureScreenByDisplayCmd
 {
+    DisplayInfo displayInfo;
     ScreenIDType screenId;
     agora::rtc::Rectangle regionRect;
     agora::rtc::ScreenCaptureParameters captureParams;
@@ -317,6 +332,12 @@ public:
     int width;
     int height;
     int rotation;
+};
+struct MuteRemoteStreamsCmd
+{
+public:
+    agora::rtc::uid_t uid;
+    bool mute;
 };
 
 struct LocalVideoStateChangedCmd

@@ -23,6 +23,5 @@
 *.png binary
 *.jpg binary
 
-
 package-lock.json -diff
 yarn.lock -diff

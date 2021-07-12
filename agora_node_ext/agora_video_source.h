@@ -177,6 +177,7 @@ namespace agora{
              */
             virtual node_error startScreenCaptureByWindow(agora::rtc::IRtcEngine::WindowIDType windowId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams) = 0;
 
+            virtual node_error startScreenCaptureByDisplayId(DisplayInfo displayId, const Rectangle & regionRect, const agora::rtc::ScreenCaptureParameters & captureParams, const std::vector<agora::rtc::IRtcEngine::WindowIDType>& excludeWindows) = 0;
             /**
              * start screen capture by windowId
              */
@@ -187,15 +188,23 @@ namespace agora{
              * @param enabled : whether enable loopbackRecording
              */
             virtual node_error enableLoopbackRecording(bool enabled, const char* deviceName) = 0;
+            virtual node_error adjustRecordingSignalVolume(int volume) = 0;
+            virtual node_error adjustLoopbackRecordingSignalVolume(int volume) = 0;
             /**
              * Enable audio
              */
             virtual node_error enableAudio() = 0;
+            virtual node_error disableAudio() = 0;
             virtual node_error setEncryptionMode(const char *encryptionMode) = 0;
             virtual node_error enableEncryption(bool enable, EncryptionConfig encryptionConfig) = 0;
             virtual node_error setEncryptionSecret(const char* secret) = 0;
             virtual node_error setProcessDpiAwareness() = 0;
             virtual node_error setAddonLogFile(const char* file) = 0;
+            
+            virtual node_error muteRemoteAudioStream(agora::rtc::uid_t userId, bool mute) = 0;
+            virtual node_error muteAllRemoteAudioStreams(bool mute) = 0;
+            virtual node_error muteRemoteVideoStream(agora::rtc::uid_t userId, bool mute) = 0;
+            virtual node_error muteAllRemoteVideoStreams(bool mute) = 0;
         };
 
         /**

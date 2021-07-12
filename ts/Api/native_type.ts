@@ -2700,6 +2700,16 @@ export interface VirtualBackgroundSource {
   color: number;
 }
 
+export interface DisplayInfo {
+  displayId: {id: number}
+  height: number,
+  width: number,
+  image: Uint8Array,
+  isActive: boolean,
+  isBuiltin: boolean,
+  isMain: boolean
+}
+
 
 /**
  * interface for c++ addon (.node)
@@ -3058,6 +3068,11 @@ export interface NodeRtcEngine {
    * @ignore
    */
   getAudioPlaybackDevices(): Array<Object>;
+  
+  getDefaultAudioPlaybackDevices(): Object;
+
+  getDefaultAudioRecordingDevices(): Object;
+
   /**
    * @ignore
    */
@@ -3206,6 +3221,8 @@ export interface NodeRtcEngine {
     rect: CaptureRect,
     param: CaptureParam
   ): number;
+
+  videoSourceStartScreenCaptureByDisplayId(displayId: number, rect: CaptureRect, param: CaptureParam): number;
   /**
    * @ignore
    */
@@ -3222,6 +3239,10 @@ export interface NodeRtcEngine {
    * @ignore
    */
   getScreenDisplaysInfo(): Array<Object>;
+  /**
+   * @ignore
+   */
+  getRealScreenDisplayInfo(): Array<DisplayInfo>;
   /**
    * @ignore
    */
@@ -3292,6 +3313,7 @@ export interface NodeRtcEngine {
    * @ignore
    */
   videoSourceEnableAudio(): number;
+  videoSourceDisableAudio(): number;
   /**
    * @ignore
    */
@@ -3596,6 +3618,13 @@ export interface NodeRtcEngine {
    * @ignore
    */
   adjustPlaybackSignalVolume(volume: number): number;
+  adjustLoopbackSignalVolume(volume: number): number;
+  videoSourceAdjustRecordingSignalVolume(volume: number): number;
+  videoSourceAdjustLoopbackRecordingSignalVolume(volume: number): number;
+  videoSourceMuteRemoteAudioStream(uid: number, mute: boolean): number;
+  videoSourceMuteAllRemoteAudioStreams(mute: boolean): number;
+  videoSourceMuteRemoteVideoStream(uid: number, mute: boolean): number;
+  videoSourceMuteAllRemoteVideoStreams(mute: boolean): number;
   /**
    * @ignore
    */
