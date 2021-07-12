@@ -142,7 +142,6 @@
                     'AgoraSoundTouch.framework',
                     'AgoraCore.framework',
                     'AgoraAIDenoiseExtension.framework',
-                    'AgoraDav1dExtension.framework',
                     'av1.framework',
                     'CoreWLAN.framework',
                     'Cocoa.framework',
@@ -269,7 +268,6 @@
                     'files': [
                         './sdk/dll/agora_rtc_sdk.dll',
                         './sdk/dll/libagora-wgc.dll',
-                        './sdk/dll/libagora-wgc.dll',
                         './sdk/dll/libagora-fdkaac.dll',
                         './sdk/dll/libagora-ffmpeg.dll',
                         './sdk/dll/libagora-mpg123.dll',
@@ -277,7 +275,6 @@
                         './sdk/dll/libhwcodec.dll',
                         './sdk/dll/av1.dll',
                         './sdk/dll/libagora_ai_denoise_extension.dll',
-                        './sdk/dll/libagora_dav1d_extension.dll',
                         './sdk/dll/libagora-core.dll',
                     ]
                 }],
@@ -350,7 +347,6 @@
                         './sdk/lib/mac/AgoraCore.framework',
                         './sdk/lib/mac/av1.framework',
                         './sdk/lib/mac/AgoraAIDenoiseExtension.framework'
-                        './sdk/lib/mac/AgoraDav1dExtension.framework'
                     ]
                 }],
                 'link_settings': {
@@ -363,7 +359,6 @@
                     'AgoraSoundTouch.framework',
                     'AgoraCore.framework',
                     'AgoraAIDenoiseExtension.framework',
-                    'AgoraDav1dExtension.framework',
                     'av1.framework',
                     'CoreWLAN.framework',
                     'Cocoa.framework',

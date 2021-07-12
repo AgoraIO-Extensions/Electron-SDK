@@ -59,7 +59,11 @@ export default class App extends Component {
 
       let logpath = path.resolve(os.homedir(), "./agoramainsdk.log")
       this.rtcEngine.initialize(APP_ID, 0xFFFFFFFF, {logConfig: {filePath: logpath}})
-      this.rtcEngine.initializePluginManager();
+      // this.rtcEngine.initializePluginManager();
+      this.rtcEngine.videoSourceInitialize(APP_ID)
+      this.rtcEngine.adjustLoopbackSignalVolume(1);
+      this.rtcEngine.videoSourceAdjustRecordingSignalVolume(2);
+      this.rtcEngine.videoSourceAdjustLoopbackRecordingSignalVolume(3);
       const libPath = isMac ? 
             path.resolve(__static, 'bytedance/libByteDancePlugin.dylib')
           : path.resolve(__static, 'bytedance/ByteDancePlugin.dll')

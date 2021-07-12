@@ -61,7 +61,8 @@ import {
   LOCAL_VIDEO_STREAM_ERROR,
   AudioRecordingConfiguration,
   VirtualBackgroundSource,
-  VIRTUAL_BACKGROUND_SOURCE_STATE_REASON
+  VIRTUAL_BACKGROUND_SOURCE_STATE_REASON,
+  DisplayInfo
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -76,6 +77,7 @@ import {
   PluginInfo,
   Plugin
 } from './plugin';
+import { read } from 'fs';
 const agora = require('../../build/Release/agora_node_ext');
 
 /**
@@ -3214,6 +3216,27 @@ class AgoraRtcEngine extends EventEmitter {
     (filePath);
   }
   
+  adjustLoopbackSignalVolume(volume: number): number {
+    return this.rtcEngine.adjustLoopbackSignalVolume(volume);
+  }
+  videoSourceAdjustRecordingSignalVolume(volume: number): number {
+    return this.rtcEngine.videoSourceAdjustRecordingSignalVolume(volume);
+  }
+  videoSourceAdjustLoopbackRecordingSignalVolume(volume: number): number {
+    return this.rtcEngine.videoSourceAdjustLoopbackRecordingSignalVolume(volume);
+  }
+  videoSourceMuteRemoteAudioStream(uid: number, mute: boolean): number {
+    return this.rtcEngine.videoSourceMuteRemoteAudioStream(uid, mute);
+  }
+  videoSourceMuteAllRemoteAudioStreams(mute: boolean): number {
+    return this.rtcEngine.videoSourceMuteAllRemoteAudioStreams(mute);
+  }
+  videoSourceMuteRemoteVideoStream(uid: number, mute: boolean): number {
+    return this.rtcEngine.videoSourceMuteRemoteVideoStream(uid, mute);
+  }
+  videoSourceMuteAllRemoteVideoStreams(mute: boolean): number {
+    return this.rtcEngine.videoSourceMuteAllRemoteVideoStreams(mute);
+  }
   /**
    * Adjusts the playback volume of the voice.
    * @param volume Playback volume of the voice. To avoid echoes and improve
@@ -3326,6 +3349,12 @@ class AgoraRtcEngine extends EventEmitter {
    */
   getAudioPlaybackDevices(): Array<Object> {
     return this.rtcEngine.getAudioPlaybackDevices();
+  }
+  getDefaultAudioPlaybackDevices(): Object {
+    return this.rtcEngine.getDefaultAudioPlaybackDevices();
+  }
+  getDefaultAudioRecordingDevices(): Object {
+    return this.rtcEngine.getDefaultAudioRecordingDevices();
   }
 
   /**
@@ -3856,6 +3885,10 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.getScreenDisplaysInfo();
   }
 
+  getRealScreenDisplaysInfo(): Array<DisplayInfo> {
+    return this.rtcEngine.getRealScreenDisplayInfo();
+  }
+
   /**
    * @deprecated This method is deprecated. Use
    * {@link videoSourceStartScreenCaptureByScreen} or
@@ -4076,6 +4109,9 @@ class AgoraRtcEngine extends EventEmitter {
   videoSourceEnableAudio() : number {
     return this.rtcEngine.videoSourceEnableAudio()
   }
+  videoSourceDisableAudio() : number {
+    return this.rtcEngine.videoSourceDisableAudio()
+  }
   /** Enables/Disables the built-in encryption.
    *
    * @since v3.2.0
@@ -4176,6 +4212,10 @@ class AgoraRtcEngine extends EventEmitter {
       rect,
       param
     );
+  }
+
+  videoSourceStartScreenCaptureByDisplayId(displayId: number, rect: CaptureRect, param: CaptureParam) {
+    return this.rtcEngine.videoSourceStartScreenCaptureByDisplayId(displayId, rect, param);
   }
 
   /**
