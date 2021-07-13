@@ -46,6 +46,7 @@ class Renderer {
   }
 
   bind(element, isWebGL) {
+    console.log(`YuvCanvas render webGL ${isWebGL}`)
     // record element
     this.element = element;
     // create container

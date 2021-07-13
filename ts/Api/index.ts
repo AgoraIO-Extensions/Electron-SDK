@@ -84,7 +84,7 @@ const agora = require('../../build/Release/agora_node_ext');
 class AgoraRtcEngine extends EventEmitter {
   rtcEngine: NodeRtcEngine;
   streams: Map<string, Map<string, IRenderer[]>>;
-  renderMode: 1 | 2 | 3;
+  renderMode: 1 | 2 | 3 | 4;
   customRenderer: any;
   pauseRender: boolean;
   constructor() {
@@ -111,7 +111,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - 2 for software rendering.
    * - 3 for custom rendering.
    */
-  setRenderMode(mode: 1 | 2 | 3 = 1): void {
+  setRenderMode(mode: 1 | 2 | 3 | 4 = 1): void {
     this.renderMode = mode;
   }
 
@@ -969,16 +969,23 @@ class AgoraRtcEngine extends EventEmitter {
     channelStreams = this._getChannelRenderers(channelId || "")
     let renderer: IRenderer;
     if (this.renderMode === 1) {
-      renderer = new SoftwareRenderer();
+      renderer = new GlRenderer();
+      renderer.bind(view, true);
     } else if (this.renderMode === 2) {
       renderer = new SoftwareRenderer();
+      renderer.bind(view, false);
     } else if (this.renderMode === 3) {
       renderer = new this.customRenderer();
+      renderer.bind(view, false);
+    } else if (this.renderMode === 4) {
+      renderer = new SoftwareRenderer();
+      renderer.bind(view, true);
     } else {
       console.warn('Unknown render mode, fallback to 1');
       renderer = new SoftwareRenderer();
+      renderer.bind(view, false);
     }
-    renderer.bind(view, this.renderMode === 1);
+    
 
     if(!rendererOptions.append) {
       channelStreams.set(String(key), [renderer]);
