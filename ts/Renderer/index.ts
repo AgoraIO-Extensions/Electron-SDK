@@ -21,6 +21,7 @@ class GlRenderer implements IRenderer {
   self: any;
   event: EventEmitter;
   constructor() {
+    console.log('GlRenderer')
     this.self = createGlRenderer.apply(this);
     this.event = this.self.event;
   }
