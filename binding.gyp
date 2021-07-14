@@ -376,7 +376,8 @@
                         './sdk/lib/mac/av1.framework',
                         './sdk/lib/mac/AgoraAIDenoiseExtension.framework',
                         './sdk/lib/mac/AgoraDav1dExtension.framework',
-                        './sdk/lib/media_player/AgoraMediaPlayer.framework'
+                        './sdk/lib/media_player/AgoraMediaPlayer.framework',
+                        './sdk/lib/media_player/AgoraPlayerFFmpeg.framework'
                     ]
                 }],
                 'link_settings': {
@@ -405,7 +406,8 @@
                     'CoreAudio.framework',
                     'Foundation.framework',
                     'AVFoundation.framework',
-                    'AgoraMediaPlayer.framework'
+                    'AgoraMediaPlayer.framework',
+                    'AgoraPlayerFFmpeg.framework'
                     ]
                 },
                 'sources': [
@@ -424,7 +426,8 @@
                 'include_dirs': [
                 './sdk/lib/mac/AgoraRtcKit.framework/Headers',
                 './extra/internal',
-                './sdk/lib/media_player/AgoraMediaPlayer.framework/Headers'
+                './sdk/lib/media_player/AgoraMediaPlayer.framework/Headers',
+                './sdk/lib/media_player/AgoraPlayerFFmpeg.framework/Headers'
                 ],
                 'defines!': [
                     '_NOEXCEPT',
