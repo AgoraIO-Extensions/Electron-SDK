@@ -70,7 +70,7 @@
   "agora_electron": {
     "lib_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_v3_4_5_FULL.zip",
     "lib_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v3_4_5_FULL.zip",
-    "mediaPlayer_mac": "https://download.agora.io/sdk/release/Agora_Media_Player_for_Mac_x64_24543_20200928_1349.zip",
+    "mediaPlayer_mac": "https://download.agora.io/sdk/release/Agora_Media_Player_for_Mac_rel.v1.3.0_31706_ffmpeg_player_lite_20210712_1543.zip",
     "mediaPlayer_win": "https://download.agora.io/sdk/release/Agora_Media_Player_for_Windows_x86_32597_20200923_2306.zip",
     "mediaPlayer_win64": "https://download.agora.io/sdk/release/Agora_Media_Player_for_Windows_x64_32598_20200923_2315.zip"
   },

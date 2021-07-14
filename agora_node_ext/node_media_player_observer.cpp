@@ -19,28 +19,42 @@ namespace agora {
             LOG_F(INFO, " NodeMediaPlayerObserver::~NodeMediaPlayerObserver");
         }
 
-        void NodeMediaPlayerObserver::onPlayerStateChanged(agora::media::MEDIA_PLAYER_STATE state,
-                                            agora::media::MEDIA_PLAYER_ERROR ec) {
+        void NodeMediaPlayerObserver::onPlayerStateChanged(media::base::MEDIA_PLAYER_STATE state,
+                                              media::base::MEDIA_PLAYER_ERROR ec) {
             node_async_call::async_call([this, state, ec] {
                 MEDIA_PLAYER_MAKE_JS_CALL_2(MEDIA_PLAYER_ON_PLAYER_STATE_CHANGED, int32, state, int32, ec);
             });
         }
 
-        void NodeMediaPlayerObserver::onPositionChanged(const int64_t position) {
-            node_async_call::async_call([this, position] {
-                MEDIA_PLAYER_MAKE_JS_CALL_1(MEDIA_PLAYER_ON_POSITION_CHANGED, uint64, position);
+        void NodeMediaPlayerObserver::onPositionChanged(const int64_t position_ms) {
+            node_async_call::async_call([this, position_ms] {
+                MEDIA_PLAYER_MAKE_JS_CALL_1(MEDIA_PLAYER_ON_POSITION_CHANGED, uint64, position_ms);
             });
         }
 
-        void NodeMediaPlayerObserver::onPlayerEvent(agora::media::MEDIA_PLAYER_EVENT event) {
+        void NodeMediaPlayerObserver::onPlayerEvent(media::base::MEDIA_PLAYER_EVENT event) {
             node_async_call::async_call([this, event] {
                 MEDIA_PLAYER_MAKE_JS_CALL_1(MEDIA_PLAYER_ON_PLAY_EVENT, int32, event);
             });
         }
 
-        void NodeMediaPlayerObserver::onMetadata(agora::media::MEDIA_PLAYER_METADATA_TYPE type, const uint8_t* data,
-                                        uint32_t length) {
+        void NodeMediaPlayerObserver::onMetadata(media::base::MEDIA_PLAYER_METADATA_TYPE type, 
+                                    const uint8_t* data, uint32_t length) {
             //node_async_call::async_call([this, type, ])
+        }
+
+        void NodeMediaPlayerObserver::onPreloadEvent(const char* src, media::base::PLAYER_PRELOAD_EVENT event){
+            node_async_call::async_call([this, src, event] {
+                MEDIA_PLAYER_MAKE_JS_CALL_2(MEDIA_PLAYER_ON_PRELOAD_EVENT, string, src, int32, event);
+            });
+        }
+        void NodeMediaPlayerObserver::onPlayBufferUpdated(int64_t playCachedBuffer) {
+
+        }
+        void NodeMediaPlayerObserver::onCompleted() {
+            node_async_call::async_call([this] {
+                MEDIA_PLAYER_MAKE_JS_CALL_0(MEDIA_PLAYER_ON_COMPLETED)
+            });
         }
 
         void NodeMediaPlayerObserver::fireApiError(const char* funcName) {

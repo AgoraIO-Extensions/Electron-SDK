@@ -14,6 +14,6 @@ rm -rf sdk
 rm -rf tmp
 npm install --verbose
 npm run sync:lib
-npm run build:electron -- --electron_version=${ELECTRON_VERSION} --msvs_version=2017
+npm run build:electron -- --electron_version=${ELECTRON_VERSION}
 npm run build:ts
 zip -ry electron.zip build js

@@ -9263,7 +9263,7 @@ class AgoraMediaPlayer extends EventEmitter
       this.initRender(this.renderMode);
       if (this.renderer)
       {
-        this.renderer.bind(view);
+        this.renderer.bind(view, this.renderMode === 1);
         this.renderer.setContentMode(viewContentMode);
       }
     }
