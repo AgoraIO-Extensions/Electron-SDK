@@ -1,6 +1,7 @@
 #include "video_source.h"
-#include <thread>  
-#include <chrono> 
+#include <thread>
+#include <chrono>
+#include "node_log.h"
 
 int main(int argc, char* argv[])
 {

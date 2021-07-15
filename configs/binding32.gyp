@@ -85,12 +85,13 @@
                     './common/libyuv/source/row_win.cc',
                     './common/libyuv/source/scale_win.cc',
                     './resources/resource.h',
-                    './resources/VideoSource.rc'
+                    './resources/VideoSource.rc',
+                    './video_source/main_win.cpp'
                 ],
                 'include_dirs': [
                 './sdk/include',
-                './sdk/media_player/win64/include'
-                ],
+                './sdk/media_player/win/include'
+                                ],
                 'defines!': [
                 '_USING_V110_SDK71_',
                 '_HAS_EXCEPTIONS=0'
@@ -294,7 +295,8 @@
                         './sdk/dll/libagora_ai_denoise_extension.dll',
                         './sdk/dll/libagora_dav1d_extension.dll',
                         './sdk/dll/libagora-core.dll',
-                        './sdk/media_player/win/dll/AgoraMediaPlayer.dll'
+                        './sdk/media_player/win/dll/AgoraMediaPlayer.dll',
+                        './sdk/media_player/win/dll/libagora-player-ffmpeg.dll'
                     ]
                 }],
                 'library_dirs': [
@@ -307,7 +309,8 @@
                         '-lws2_32.lib',
                         '-lRpcrt4.lib',
 						'-lgdiplus.lib',
-                        '-lAgoraMediaPlayer.lib'
+                        '-lAgoraMediaPlayer.lib',
+                        '-llibagora-player-ffmpeg.lib'
                     ]
                 },
                 'defines!': [
@@ -327,7 +330,7 @@
                 'include_dirs': [
                 './sdk/include',
                 './extra/internal',
-                './sdk/media_player/win/include'
+                './sdk/media_player/win/high_level_api/include'
                 ],
                 'configurations': {
                     'Release': {

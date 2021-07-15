@@ -71,7 +71,6 @@ namespace agora
 
 			}
 
-			// 启动/停止推送视频流到频道
 			void publishVideoToRtc(NodeMediaPlayerVideoFrameObserver *videoObserver)
 			{
 				if (mediaPlayerVideoFrameObserver_ && mediaPlayerVideoFrameObserver_ != videoObserver)
@@ -80,23 +79,23 @@ namespace agora
 				}
 				mediaPlayerVideoFrameObserver_ = videoObserver;
 
-				if (mediaPlayerVideoFrameObserver_) 
+				if (mediaPlayerVideoFrameObserver_)
 				{
 					mediaPlayerVideoFrameObserver_->publishVideoToRtc(rtc_engine_);
 				}
 			}
 			void unpublishVideoToRtc(NodeMediaPlayerVideoFrameObserver *videoObserver)
 			{
-				if (mediaPlayerVideoFrameObserver_ != videoObserver) 
+				if (mediaPlayerVideoFrameObserver_ != videoObserver)
 				{
 					return;
 				}
 
-				if (mediaPlayerVideoFrameObserver_) 
+				if (mediaPlayerVideoFrameObserver_)
 				{
 					mediaPlayerVideoFrameObserver_->unpublishVideoToRtc();
 					mediaPlayerVideoFrameObserver_ = nullptr;
-				} 
+				}
 			}
 
 			void pushAudioData(void* data, int len) {
@@ -106,7 +105,6 @@ namespace agora
 				}
 			}
 
-			// 启动/停止推送音频流到频道
 			void publishAudioToRtc(NodeMediaPlayerAudioFrameObserver *audioObserver, bool publishAudio, bool playebackAudio)
 			{
 				if (rtc_engine_) {
@@ -147,12 +145,12 @@ namespace agora
 					rtcAudioObserver_->unpublishMediaPlayerAudio();
 				}
 			}
-			// 调节推送到频道内音频流的音量
+
 			void adjustPublishSignalVolume(int volume)
 			{
 				rtcAudioObserver_->setRecordVolume(volume);
 			}
-			// 调节本地播放视频音量
+
 			void adjustPlayoutSignalVolume(int volume)
 			{
 				rtcAudioObserver_->setPlaybackVolume(volume);
