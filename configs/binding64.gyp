@@ -73,12 +73,12 @@
                 'copies': [{
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
-                        './sdk/dll/agora_rtc_sdk.dll',
-                        './sdk/dll/libagora-ffmpeg.dll'
+                        './sdk/agora_rtc_sdk.dll',
+                        './sdk/libagora-ffmpeg.dll'
                     ]
                 }],
                 'library_dirs': [
-                    './sdk/lib',
+                    './sdk',
                 ],
                 'link_settings': {
                     'libraries': [
