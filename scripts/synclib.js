@@ -54,10 +54,10 @@ const winPrepare = (folder) => {
       return fs.mkdirp(path.join(__dirname, '../sdk'))
     }).then(() => {
       return Promise.all([
-        fs.move(path.join(folder, './sdk/dll'), path.join(__dirname, '../sdk/dll')),
-        fs.move(path.join(folder, './sdk/high_level_api'), path.join(__dirname, '../sdk/high_level_api')),
-        fs.move(path.join(folder, './sdk/lib'), path.join(__dirname, '../sdk/lib')),
-        fs.move(path.join(folder, './sdk/low_level_api'), path.join(__dirname, '../sdk/low_level_api')),
+        fs.move(path.join(folder, './rtc/sdk/'), path.join(__dirname, '../sdk/')),
+        // fs.move(path.join(folder, './rtc/sdk/high_level_api'), path.join(__dirname, '../sdk/high_level_api')),
+        // fs.move(path.join(folder, './rtc/sdk/lib'), path.join(__dirname, '../sdk/lib')),
+        // fs.move(path.join(folder, './sdk/low_level_api'), path.join(__dirname, '../sdk/low_level_api')),
       ])
     }).then(() => {
       resolve()
@@ -75,10 +75,10 @@ const win64Prepare = (folder) => {
       return fs.mkdirp(path.join(__dirname, '../sdk'))
     }).then(() => {
       return Promise.all([
-        fs.move(path.join(folder, './sdk/dll'), path.join(__dirname, '../sdk/dll')),
-        fs.move(path.join(folder, './sdk/high_level_api'), path.join(__dirname, '../sdk/high_level_api')),
-        fs.move(path.join(folder, './sdk/lib'), path.join(__dirname, '../sdk/lib')),
-        fs.move(path.join(folder, './sdk/low_level_api'), path.join(__dirname, '../sdk/low_level_api')),
+        fs.move(path.join(folder, './rtc/sdk/'), path.join(__dirname, '../sdk/')),
+        // fs.move(path.join(folder, './sdk/high_level_api'), path.join(__dirname, '../sdk/high_level_api')),
+        // fs.move(path.join(folder, './sdk/lib'), path.join(__dirname, '../sdk/lib')),
+        // fs.move(path.join(folder, './sdk/low_level_api'), path.join(__dirname, '../sdk/low_level_api')),
       ])
     }).then(() => {
       resolve()
