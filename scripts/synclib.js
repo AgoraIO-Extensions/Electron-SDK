@@ -51,8 +51,6 @@ const winPrepare = (folder) => {
     Promise.all([
       fs.remove(path.join(__dirname, '../sdk'))
     ]).then(() => {
-      return fs.mkdirp(path.join(__dirname, '../sdk'))
-    }).then(() => {
       return Promise.all([
         fs.move(path.join(folder, './rtc/sdk/'), path.join(__dirname, '../sdk/')),
         // fs.move(path.join(folder, './rtc/sdk/high_level_api'), path.join(__dirname, '../sdk/high_level_api')),
@@ -72,8 +70,6 @@ const win64Prepare = (folder) => {
     Promise.all([
       fs.remove(path.join(__dirname, '../sdk'))
     ]).then(() => {
-      return fs.mkdirp(path.join(__dirname, '../sdk'))
-    }).then(() => {
       return Promise.all([
         fs.move(path.join(folder, './rtc/sdk/'), path.join(__dirname, '../sdk/')),
         // fs.move(path.join(folder, './sdk/high_level_api'), path.join(__dirname, '../sdk/high_level_api')),
