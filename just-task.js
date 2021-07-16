@@ -113,7 +113,7 @@ task('build:node', () => {
 // npm run download --
 task('download', () => {
   // work-around
-  const addonVersion = '3.4.2-rc.122-build.78'
+  const addonVersion = '3.4.2-rc.123-build.716'
   cleanup(path.join(__dirname, "./build")).then(_ => {
     cleanup(path.join(__dirname, './js')).then(_ => {
       download({
@@ -129,7 +129,7 @@ task('download', () => {
 task('install', () => {
   const config = Object.assign({arch:process.arch}, getArgvFromNpmEnv(), getArgvFromPkgJson())
   // work-around
-  const addonVersion = '3.4.2-rc.122-build.78'
+  const addonVersion = '3.4.2-rc.123-build.716'
   if (config.prebuilt) {
     download({
       electronVersion: config.electronVersion, 
