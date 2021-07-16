@@ -4246,8 +4246,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
- setExtensionProperty(key: string, jsonValue: string): number {
-   return this.rtcEngine.setExtensionProperty(key, jsonValue);
+ setExtensionProperty(type: VIDEO_SOURCE_TYPE, key: string, jsonValue: string): number {
+   return this.rtcEngine.setExtensionProperty(type, key, jsonValue);
  }
 }
 /** The AgoraRtcEngine interface. */

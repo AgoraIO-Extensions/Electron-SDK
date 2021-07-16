@@ -5719,15 +5719,19 @@ namespace agora {
                 int type;
                 nodestring id;
                 bool enable;
+                napi_get_value_int32(args[0], type);
 
-                napi_status status = napi_get_value_nodestring_(args[0], id);
+                napi_status status = napi_get_value_nodestring_(args[1], id);
                 key = "id";
                 CHECK_NAPI_STATUS_STR(pEngine, status, key);
-                status = napi_get_value_bool_(args[1], enable);
+                status = napi_get_value_bool_(args[2], enable);
                 key = "enable";
                 CHECK_NAPI_STATUS_STR(pEngine, status, key);
-
+#if defined(__APPLE__)
                 result = pEngine->m_engine->enableExtension(id, enable);
+#elif defined(_WIN32)
+                result = pEngine->m_engine->enableExtension((VIDEO_SOURCE_TYPE)type, id, enable);
+#endif
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -5742,24 +5746,29 @@ namespace agora {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                
+
+                int type;
+                napi_get_value_int32(args[0], type);        
 
                 nodestring id;
-                napi_status status = napi_get_value_nodestring_(args[0], id);
+                napi_status status = napi_get_value_nodestring_(args[1], id);
                 debugKey = "id";
                 CHECK_NAPI_STATUS_STR(pEngine, status, debugKey);
 
                 nodestring key;
-                status = napi_get_value_nodestring_(args[1], key);
+                status = napi_get_value_nodestring_(args[2], key);
                 debugKey = "key";
                 CHECK_NAPI_STATUS_STR(pEngine, status, debugKey);
 
                 nodestring json_value;
-                status = napi_get_value_nodestring_(args[2], json_value);
+                status = napi_get_value_nodestring_(args[3], json_value);
                 debugKey = "jsonValue";
                 CHECK_NAPI_STATUS_STR(pEngine, status, debugKey);
-
+#if defined(__APPLE__)
                 result = pEngine->m_engine->setExtensionProperty(id, key, json_value);
+#elif defined(_WIN32)
+                result = pEngine->m_engine->setExtensionProperty((VIDEO_SOURCE_TYPE)type, id, key, json_value);
+#endif
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
