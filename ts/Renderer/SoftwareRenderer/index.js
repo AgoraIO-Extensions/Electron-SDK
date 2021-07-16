@@ -22,6 +22,7 @@ class Renderer {
       return 1;
     }
     if (!contentMode) {
+      // Mode 0
       if (vertical) {
         return clientHeight / clientWidth < width / height ?
           clientWidth / height : clientHeight / width;
@@ -32,18 +33,20 @@ class Renderer {
       }
     }
     else {
+      // Mode 1
       if (vertical) {
         return clientHeight / clientWidth < width / height ?
           clientHeight / width : clientWidth / height;
       }
       else {
         return clientWidth / clientHeight > width / height ?
-          clientWidth / width : clientHeight / height;
+          clientHeight / height: clientWidth / width;
       }
     }
   }
 
-  bind(element) {
+  bind(element, isWebGL) {
+    console.log(`YuvCanvas render webGL ${isWebGL}`)
     // record element
     this.element = element;
     // create container
@@ -61,7 +64,7 @@ class Renderer {
     // create canvas
     this.canvas = document.createElement('canvas')
     this.container.appendChild(this.canvas)
-    this.yuv = YUVCanvas.attach(this.canvas, { webGL: false });
+    this.yuv = YUVCanvas.attach(this.canvas, { webGL: isWebGL });
   }
 
   unbind() {
