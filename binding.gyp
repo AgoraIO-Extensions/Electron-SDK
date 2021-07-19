@@ -82,7 +82,7 @@
                 ],
                 'link_settings': {
                     'libraries': [
-                        '-lagora_rtc_sdk.lib',
+                        '-lagora_rtc_sdk.dll.lib',
                         '-lws2_32.lib',
                         '-lRpcrt4.lib',
 						'-lgdiplus.lib'
