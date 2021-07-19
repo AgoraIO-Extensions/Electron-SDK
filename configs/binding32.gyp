@@ -85,7 +85,8 @@
                     './common/libyuv/source/row_win.cc',
                     './common/libyuv/source/scale_win.cc',
                     './resources/resource.h',
-                    './resources/VideoSource.rc'
+                    './resources/VideoSource.rc',
+                    './video_source/main_win.cpp'
                 ],
                 'include_dirs': [
                 './sdk/include'
