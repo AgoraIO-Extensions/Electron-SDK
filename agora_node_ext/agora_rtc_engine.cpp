@@ -5719,7 +5719,7 @@ namespace agora {
                 int type;
                 nodestring id;
                 bool enable;
-                napi_get_value_int32(args[0], type);
+                napi_get_value_int32_(args[0], type);
 
                 napi_status status = napi_get_value_nodestring_(args[1], id);
                 key = "id";
@@ -5748,7 +5748,7 @@ namespace agora {
                 CHECK_NATIVE_THIS(pEngine);
 
                 int type;
-                napi_get_value_int32(args[0], type);        
+                napi_get_value_int32_(args[0], type);        
 
                 nodestring id;
                 napi_status status = napi_get_value_nodestring_(args[1], id);
