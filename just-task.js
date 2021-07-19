@@ -1,4 +1,4 @@
-const { lipoCreate, createTmpProduct } = require("./scripts/lipo");
+const { lipoCreate, createTmpProduct,createTmpVideoSourceProduct,lipoCreateVideoSource } = require("./scripts/lipo");
 const { task, option, logger, argv, series, condition } = require('just-task');
 const path = require('path')
 const semver = require("semver");
@@ -52,7 +52,7 @@ task('sync:lib', () => {
 // npm run build:electron -- 
 task("build:electron", async () => {
   await cleanup(path.join(__dirname, "./build"));
-  const electronVersion = argv().electron_version;;
+  const electronVersion = argv().electron_version;
   const isOver11 = semver.satisfies(
     semver.coerce(electronVersion).version,
     ">=11.0.0"
@@ -82,6 +82,7 @@ task("build:electron", async () => {
 
 const buildMacArm64 = async electronVersion => {
   const x86ProConfig = await createTmpProduct();
+  const x86VDProConfig = await createTmpVideoSourceProduct();
   console.log("start build arm 64");
 
   await cleanup(path.join(__dirname, "./build"));
@@ -98,7 +99,9 @@ const buildMacArm64 = async electronVersion => {
     cb: async isComplete => {
       console.log("arm64 build finish...");
       const arm64ProConfig = await createTmpProduct();
-      lipoCreate(x86ProConfig,arm64ProConfig);
+      const arm64VDProConfig = await createTmpVideoSourceProduct();
+      lipoCreate(x86ProConfig, arm64ProConfig);
+      lipoCreateVideoSource(x86VDProConfig,arm64VDProConfig);
     }
   });
 };
