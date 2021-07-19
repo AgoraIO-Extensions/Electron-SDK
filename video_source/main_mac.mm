@@ -6,6 +6,7 @@
 
 int main(int argc, char* argv[])
 {
+    LOG_F(INFO, "VideoSource::main");
     initLogService();
     if (argc < 3){
         return 0;
