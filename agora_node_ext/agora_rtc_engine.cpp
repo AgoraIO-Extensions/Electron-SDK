@@ -2708,6 +2708,7 @@ namespace agora {
                 pMediaEngine.queryInterface(pEngine->m_engine, AGORA_IID_MEDIA_ENGINE);
                 if (pMediaEngine) {
                     pMediaEngine->registerVideoRenderFactory(pEngine->m_externalVideoRenderFactory.get());
+                    pMediaEngine->registerAudioFrameObserver(pEngine->m_avPluginManager.get());
                 }
                 IRtcEngine3 *m_engine2 = (IRtcEngine3 *)pEngine->m_engine;
                 m_engine2->setAppType(AppType(3));
