@@ -72,7 +72,7 @@ namespace agora {
             }
             void close() {
                 if (!empty()) {
-                    LOG_WARNING(" You should close this queue after taking all the elements!");
+                    //LOG_WARNING(" You should close this queue after taking all the elements!");
                 }
                 closed_ = true;
             }

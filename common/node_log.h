@@ -9,6 +9,7 @@
 */
 #ifndef AGORA_NODE_LOG_H
 #define AGORA_NODE_LOG_H
+#include "loguru.hpp"
 
 /**
  * Log level definition
