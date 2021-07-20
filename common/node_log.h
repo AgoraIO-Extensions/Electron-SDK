@@ -35,22 +35,22 @@ void setLogLevel(log_level level);
 void node_log(enum log_level level, const char *format, ...);
 
 /** write log with error log level */
-#define LOG_ERROR(format, ...) node_log(LOG_LEVEL_ERROR, format, ##__VA_ARGS__)
+#define LOG_ERROR(format, ...) LOG_F(ERROR, format, ##__VA_ARGS__)
 
 /**
  * write log with warning log level
  */
-#define LOG_WARNING(format, ...) node_log(LOG_LEVEL_WARNING, format, ##__VA_ARGS__)
+#define LOG_WARNING(format, ...) LOG_F(WARNING, format, ##__VA_ARGS__)
 
 /**
  * write log with info log level
  */
-#define LOG_INFO(format, ...) node_log(LOG_LEVEL_INFO, format, ##__VA_ARGS__)
+#define LOG_INFO(format, ...) LOG_F(INFO, format, ##__VA_ARGS__)
 
 /**
  * write log with verbose log level
  */
-#define LOG_VERBOSE(format, ...) node_log(LOG_LEVEL_VERBOSE, format, ##__VA_ARGS__)
+#define LOG_VERBOSE(format, ...) LOG_F(INFO, format, ##__VA_ARGS__)
 
 /**
  * write function enter log.

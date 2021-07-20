@@ -4249,6 +4249,10 @@ class AgoraRtcEngine extends EventEmitter {
  setExtensionProperty(key: string, jsonValue: string): number {
    return this.rtcEngine.setExtensionProperty(key, jsonValue);
  }
+
+ setAddonLogFile(filePath: string): void {
+   this.rtcEngine.setAddonLogFile(filePath);
+ }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {

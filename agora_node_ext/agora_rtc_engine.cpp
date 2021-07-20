@@ -291,6 +291,7 @@ namespace agora {
                 // Extension
                 PROPERTY_METHOD_DEFINE(enableExtension);
                 PROPERTY_METHOD_DEFINE(setExtensionProperty);
+                PROPERTY_METHOD_DEFINE(setAddonLogFile);
 
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
@@ -5765,6 +5766,13 @@ namespace agora {
             LOG_LEAVE;
         }
 
+        NAPI_API_DEFINE(NodeRtcEngine, setAddonLogFile)
+        {
+            nodestring filePath;
+            napi_status status = napi_get_value_nodestring_(args[0], filePath);
+            
+            loguru::add_file(filePath, loguru::Append, loguru::Verbosity_MAX);
+        }
     }
 }
 

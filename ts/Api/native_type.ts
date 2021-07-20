@@ -3083,6 +3083,10 @@ export interface NodeRtcEngine {
   * @ignore
   */
  setExtensionProperty(key: string, jsonValue: string): number;
+ /**
+  * @ignore
+  */
+ setAddonLogFile(filePath: string): void;
 }
 
 export interface NodeMediaPlayer {
