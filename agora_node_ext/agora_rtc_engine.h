@@ -340,6 +340,7 @@ namespace agora {
             // Extension
             NAPI_API(enableExtension);
             NAPI_API(setExtensionProperty);
+            NAPI_API(setAddonLogFile);
 
         public:
             Isolate* getIsolate() { return m_isolate; }
