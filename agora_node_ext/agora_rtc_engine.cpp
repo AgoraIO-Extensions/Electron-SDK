@@ -6153,11 +6153,11 @@ namespace agora {
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
                 NodeString filePath;
-                unsigned int soundId, loopCount, gain, startPos = 0;
+                int soundId, loopCount, gain, startPos = 0;
                 double pitch, pan;
                 bool publish;
 
-                napi_get_param_8(args, uint32, soundId, nodestring, filePath, uint32, loopCount, double, pitch, double, pan, uint32, gain, bool, publish, uint32, startPos);
+                napi_get_param_8(args, int32, soundId, nodestring, filePath, int32, loopCount, double, pitch, double, pan, int32, gain, bool, publish, int32, startPos);
 
                 result = pEngine->m_engine->playEffect(soundId, filePath, loopCount, pitch, pan, gain, publish, startPos);
             } while (false);
