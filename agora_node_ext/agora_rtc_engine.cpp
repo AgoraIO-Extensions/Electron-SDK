@@ -2104,7 +2104,7 @@ namespace agora {
 
                 pEngine->m_engine->enableVideo();
                 pEngine->m_engine->enableLocalVideo(true);
-                result = 0;
+                result = suc;
             } while (false);
             delete [] extensions;
             delete [] idList;
