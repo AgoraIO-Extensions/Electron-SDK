@@ -2090,6 +2090,7 @@ namespace agora {
                     LOG_ERROR("Rtc engine initialize failed with error :%d\n", suc);
                     status = napi_invalid_arg;
                     key = "initialize";
+                    result = suc;
                     CHECK_NAPI_STATUS_STR(pEngine, status, key);
                     break;
                 }
@@ -2104,7 +2105,7 @@ namespace agora {
 
                 pEngine->m_engine->enableVideo();
                 pEngine->m_engine->enableLocalVideo(true);
-                result = suc;
+                result = 0;
             } while (false);
             delete [] extensions;
             delete [] idList;
