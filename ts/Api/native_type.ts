@@ -188,6 +188,8 @@ export interface TranscodingConfig {
    * For example, 0xFFB6C1 (light pink). The default value is 0x000000 (black).
    */
   backgroundColor: number;
+
+  videoCodecType:VIDEO_CODEC_TYPE_FOR_STREAM;
   /** The number of users in the live streaming. */
   userCount: number;
   /** Self-defined audio-sample rate:
@@ -445,6 +447,12 @@ export enum VoiceChangerPreset {
   GENERAL_BEAUTY_VOICE_FEMALE_VITALITY = 0x00200003
 
 }
+/** Video Codec types for publishing streams. */
+export enum VIDEO_CODEC_TYPE_FOR_STREAM {
+  VIDEO_CODEC_H264_FOR_STREAM = 1,
+  VIDEO_CODEC_H265_FOR_STREAM = 2,
+};
+
 /** @deprecated Deprecated from v3.2.0.
  *
  *  Local voice reverberation presets.
