@@ -129,20 +129,24 @@ export interface TranscodingConfig {
   /**
    * Width of the video. The default value is 360.
    *
-   * If you push video streams to the CDN, set the value of width x height to
-   * at least 64 x 64 (px), or the SDK will adjust it to 64 x 64 (px).
+   * When pushing video streams to the CDN, the value range of `width` is
+   * [64,1920]. If the value is less than 64, Agora server automatically adjusts
+   * it to 64; if the value is greater than 1920, Agora server automatically
+   * adjusts it to 1920.
    *
-   * If you push audio streams to the CDN, set the value of width x height to
+   * When pushing audio streams to the CDN, set the value of width x height to
    * 0 x 0 (px).
    */
   width: number;
   /**
    * Height of the video. The default value is 640.
    *
-   * If you push video streams to the CDN, set the value of width x height to
-   * at least 64 x 64 (px), or the SDK will adjust it to 64 x 64 (px).
+   * When pushing video streams to the CDN, the value range of `height` is
+   * [64,1080]. If the value is less than 64, Agora server automatically adjusts
+   * it to 64; if the value is greater than 1080, Agora server automatically
+   * adjusts it to 1080.
    *
-   * If you push audio streams to the CDN, set the value of width x height to
+   * When pushing audio streams to the CDN, set the value of width x height to
    * 0 x 0 (px).
    */
   height: number;
@@ -188,7 +192,9 @@ export interface TranscodingConfig {
    * For example, 0xFFB6C1 (light pink). The default value is 0x000000 (black).
    */
   backgroundColor: number;
-
+  /**
+   * The video codec type of the output video stream. See {@link VIDEO_CODEC_TYPE_FOR_STREAM}.
+   */
   videoCodecType:VIDEO_CODEC_TYPE_FOR_STREAM;
   /** The number of users in the live streaming. */
   userCount: number;
@@ -447,9 +453,16 @@ export enum VoiceChangerPreset {
   GENERAL_BEAUTY_VOICE_FEMALE_VITALITY = 0x00200003
 
 }
-/** Video Codec types for publishing streams. */
+
+/** The video codec type of the output video stream. */
 export enum VIDEO_CODEC_TYPE_FOR_STREAM {
+  /**
+   * 1: (Default) H.264
+   */
   VIDEO_CODEC_H264_FOR_STREAM = 1,
+  /**
+   * 2: H.265
+   */
   VIDEO_CODEC_H265_FOR_STREAM = 2,
 };
 
@@ -913,10 +926,6 @@ export interface VideoEncoderConfiguration {
    * | 1920 * 1080            | 15               | 2080                  |
    * | 1920 * 1080            | 30               | 3150                  |
    * | 1920 * 1080            | 60               | 4780                  |
-   * | 2560 * 1440            | 30               | 4850                  |
-   * | 2560 * 1440            | 60               | 6500                  |
-   * | 3840 * 2160            | 30               | 6500                  |
-   * | 3840 * 2160            | 60               | 6500                  |
    *
    */
   bitrate: number;
@@ -970,16 +979,33 @@ export enum VideoMirrorModeType {
   DISABLED = 2
 }
 
-/** The video encoding degradation preference under limited bandwidth. */
+/** Video degradation preferences under limited bandwidth. */
 export enum DegradationPreference {
-  /** 0: (Default) Degrade the frame rate in order to maintain the video
-   * quality.
+  /** 0: (Default) Prefers to reduce the video frame rate while maintaining
+   * video quality during video encoding under limited bandwidth. This
+   * degradation preference is suitable for scenarios where video quality is
+   * prioritized.
+   *
+   * @note In the `COMMUNICATION` channel profile, the resolution of the video
+   * sent may change, so remote users need to handle this issue.
+   * See `videoSizeChanged`.
    */
   MAINTAIN_QUALITY = 0,
-  /** 1: Degrade the video quality in order to maintain the frame rate. */
+  /** 1: Prefers to reduce the video quality while maintaining the video frame
+   * rate during video encoding under limited bandwidth. This degradation
+   * preference is suitable for scenarios where smoothness is prioritized and
+   * video quality is allowed to be reduced.
+   */
   MAINTAIN_FRAMERATE = 1,
-  /** 2: (For future use) Maintain a balance between the frame rate and video
-   * quality.
+  /** 2: Reduces the video frame rate and video quality simultaneously during
+   * video encoding under limited bandwidth. `MAINTAIN_BALANCED` has a lower
+   * reduction than `MAINTAIN_QUALITY` and `MAINTAIN_FRAMERATE`, and this
+   * preference is suitable for scenarios where both smoothness and video
+   * quality are a priority.
+   *
+   * @note The resolution of the video sent may change, so remote users need
+   * to handle this issue.
+   * See `videoSizeChanged`.
    */
   MAINTAIN_BALANCED = 2,
 }
@@ -1541,53 +1567,45 @@ export type ConnectionChangeReason =
   | 11 // 11: SDK reconnects for setting proxy server
   | 12 // 12: Network status change for renew token
   | 13; // 13: Client IP Address changed
-/** Encryption mode.
- */
+
+  /** Encryption mode. Agora recommends using either the `AES_128_GCM` or
+   * `AES_256_GCM` encryption mode, both of which support adding a salt and
+   * are more secure.
+   */
 export enum ENCRYPTION_MODE {
-  /** 1: (Default) 128-bit AES encryption, XTS mode.
-   */
-  AES_128_XTS = 1,
-  /** 2: 128-bit AES encryption, ECB mode.
-   */
-  AES_128_ECB = 2,
-  /** 3: 256-bit AES encryption, XTS mode.
-   */
-  AES_256_XTS = 3,
-  /** 4: 128-bit SM4 encryption, ECB mode.
-   */
-  SM4_128_ECB = 4,
-  /** 5: 128-bit AES encryption, GCM mode.
-   *
-   * @since v3.3.1
-   */
-  AES_128_GCM = 5,
-  /** 6: 256-bit AES encryption, GCM mode.
-   *
-   * @since v3.3.1
-   */
-  AES_256_GCM = 6,
-  /** 7: (Default) 128-bit AES encryption, GCM mode, with custom KDF salt.
-   *
-   * @since v3.4.1
-   */
-  AES_128_GCM2 = 7,
-  /** 8: 256-bit AES encryption, GCM mode, with custom KDF salt.
-   *
-   * @since v3.4.1
-   */
-  AES_256_GCM2 = 8,
-  /** Enumerator boundary.
-   */
-  MODE_END,
+      /** 1: 128-bit AES encryption, XTS mode.
+       */
+      AES_128_XTS = 1,
+      /** 2: 128-bit AES encryption, ECB mode.
+       */
+      AES_128_ECB = 2,
+      /** 3: 256-bit AES encryption, XTS mode.
+       */
+      AES_256_XTS = 3,
+      /** 4: Reserved property.
+       */
+      SM4_128_ECB = 4,
+      /** 5: (Default) 128-bit AES encryption, GCM mode. This mode requires
+       * you to set the salt (`encryptionKdfSalt`).
+       *
+       * @since v3.4.5
+       */
+      AES_128_GCM = 5,
+      /** 6: 256-bit AES encryption, GCM mode.
+       *
+       * @since v3.4.5
+       */
+      AES_256_GCM = 6,
 };
+
+type Uint8ArrayBuffer = ArrayBuffer;
+
 /**
  * Configurations of built-in encryption schemas.
  */
-type Uint8ArrayBuffer = ArrayBuffer;
-
 export interface EncryptionConfig{
    /**
-    * Encryption mode. The default encryption mode is `AES_128_XTS`.
+    * Encryption mode. The default encryption mode is `AES_128_GCM`.
     */
     encryptionMode: ENCRYPTION_MODE;
     /**
@@ -1599,8 +1617,17 @@ export interface EncryptionConfig{
      */
     encryptionKey: string;
     /**
-     * Uint8Array.prototype.buffer
-     * maxLength 32
+     * @since v3.4.5
+     *
+     * The salt with the length of 32 bytes. Agora recommends using OpenSSL to
+     * generate the salt on your server.
+     *
+     * For details, see *Media Stream Encryption*.
+     *
+     * @note This parameter is only valid when you set the encryption mode as
+     * `AES_128_GCM` or `AES_256_GCM`. In this case, ensure that this parameter
+     * is not `0`.
+     *
      */
     encryptionKdfSalt: Uint8ArrayBuffer
 };
@@ -1770,12 +1797,16 @@ export enum VIDEO_PROFILE_TYPE {
  */
 export enum RTMP_STREAMING_EVENT
 {
-  /** An error occurs when you add a background image or a watermark image to the RTMP or RTMPS stream.
+  /** 1: An error occurs when you add a background image or a watermark image to
+   * the RTMP or RTMPS stream.
    *
    * @since v3.2.0
    */
   RTMP_STREAMING_EVENT_FAILED_LOAD_IMAGE = 1,
-  /** The chosen URL address is already in use for CDN live streaming.
+  /** 2: The streaming URL is already being used for CDN live streaming. If you
+   * want to start new streaming, use a new streaming URL.
+   *
+   * @since v3.4.5
    */
   RTMP_STREAMING_EVENT_URL_ALREADY_IN_USE = 2,
 };
@@ -2118,9 +2149,29 @@ export interface ChannelMediaOptions {
    * whether to subscribe to video streams in the channel.
    */
   autoSubscribeVideo: boolean;
-  
+  /** Determines whether to publish the local audio stream when the user joins
+   * a channel:
+   * - true: (Default) Publish.
+   * - false: Do not publish.
+   *
+   * This member serves a similar function to the `muteLocalAudioStream` method.
+   * After the user joins the channel, you can call the `muteLocalAudioStream`
+   * method to set whether to publish the local audio stream in the channel.
+   *
+   * @since v3.4.5
+   */
   publishLocalAudio: boolean;
-
+  /** Determines whether to publish the local video stream when the user joins
+   * a channel:
+   * - true: (Default) Publish.
+   * - false: Do not publish.
+   *
+   * This member serves a similar function to the `muteLocalVideoStream` method.
+   * After the user joins the channel, you can call the `muteLocalVideoStream`
+   * method to set whether to publish the local video stream in the channel.
+   *
+   * @since v3.4.5
+   */
   publishLocalVideo: boolean;
 }
 /**
@@ -2452,7 +2503,7 @@ export enum LOCAL_VIDEO_STREAM_STATE
     LOCAL_VIDEO_STREAM_STATE_STOPPED = 0,
     /** 1: The local video capturing device starts successfully.
      *
-     * The SDK also reports this state when you share a maximized window by calling \ref IRtcEngine::startScreenCaptureByWindowId "startScreenCaptureByWindowId".
+     * The SDK also reports this state when you share a maximized window by calling {@link startScreenCaptureByWindow}.
      */
     LOCAL_VIDEO_STREAM_STATE_CAPTURING = 1,
    /** 2: The first video frame is successfully encoded. */
@@ -2478,32 +2529,48 @@ export enum LOCAL_VIDEO_STREAM_ERROR {
     LOCAL_VIDEO_STREAM_ERROR_ENCODE_FAILURE = 5,
     /** 6: (iOS only) The application is in the background.
      *
-     * @since v3.3.0
+     * @since v3.3.1
      */
     LOCAL_VIDEO_STREAM_ERROR_CAPTURE_INBACKGROUND = 6,
     /** 7: (iOS only) The application is running in Slide Over, Split View, or Picture in Picture mode.
      *
-     * @since v3.3.0
+     * @since v3.3.1
      */
     LOCAL_VIDEO_STREAM_ERROR_CAPTURE_MULTIPLE_FOREGROUND_APPS = 7,
-    /** 8:capture not found*/
+    /** 8: The SDK cannot find the local video capture device.
+     *
+     * @since v3.4.2
+     */
     LOCAL_VIDEO_STREAM_ERROR_DEVICE_NOT_FOUND = 8,
-
+    /**
+     * 11: The shared window is minimized when you call
+     * {@link startScreenCaptureByWindow} to share a window.
+     *
+     * @since 3.2.0
+     */
     LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_MINIMIZED = 11,
-    /** 12: The error code indicates that a window shared by the window ID has been closed, or a full-screen window
+    /** 12: The error code indicates that a window shared by the window ID
+     * has been closed, or a full-screen window
      * shared by the window ID has exited full-screen mode.
-     * After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a
+     * After exiting full-screen mode, remote users cannot see the shared window.
+     * To prevent remote users from seeing a
      * black screen, Agora recommends that you immediately stop screen sharing.
      *
      * Common scenarios for reporting this error code:
-     * - When the local user closes the shared window, the SDK reports this error code.
-     * - The local user shows some slides in full-screen mode first, and then shares the windows of the slides. After
+     * - When the local user closes the shared window, the SDK
+     * reports this error code.
+     * - The local user shows some slides in full-screen mode first,
+     * and then shares the windows of the slides. After
      * the user exits full-screen mode, the SDK reports this error code.
-     * - The local user watches web video or reads web document in full-screen mode first, and then shares the window of
-     * the web video or document. After the user exits full-screen mode, the SDK reports this error code.
+     * - The local user watches web video or reads web document in full-screen
+     * mode first, and then shares the window of
+     * the web video or document. After the user exits full-screen mode,
+     * the SDK reports this error code.
+     *
+     * @since 3.2.0
      */
     LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_CLOSED = 12,
-
+    /** @ignore */
     LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_NOT_SUPPORTED = 20,
 };
 
@@ -2548,21 +2615,42 @@ export enum LOCAL_AUDIO_STREAM_ERROR
     /** 5: The local audio encoding fails.
     */
     LOCAL_AUDIO_STREAM_ERROR_ENCODE_FAILURE = 5,
-    /** 6: No recording audio device.
-   */
+    /** 6: (Windows only) The SDK cannot find the local audio recording device.
+     *
+     * @since v3.4.2
+     */
     LOCAL_AUDIO_STREAM_ERROR_NO_RECORDING_DEVICE = 6,
-    /** 7: No playout audio device.
-   */
+    /** 7: (Windows only) The SDK cannot find the local audio playback device.
+     *
+     * @since v3.4.2
+     */
     LOCAL_AUDIO_STREAM_ERROR_NO_PLAYOUT_DEVICE = 7
 };
 
+/**
+ * The reason why the virtual background is not successfully enabled or the
+ * message that confirms success.
+ *
+ * @since v3.4.5
+ */
 export enum VIRTUAL_BACKGROUND_SOURCE_STATE_REASON {
+  /**
+   * 0: The virtual background is successfully enabled.
+   */
   VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_SUCCESS = 0,
-  // background image does not exist
+  /**
+   * 1: The custom background image does not exist. Please check the value of
+   * `source` in {@link VirtualBackgroundSource}.
+   */
   VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_IMAGE_NOT_EXIST = 1,
-  // color format is not supported
+  /**
+   * 2: The color format of the custom background image is invalid. Please
+   * check the value of `color` in {@link VirtualBackgroundSource}.
+   */
   VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_COLOR_FORMAT_NOT_SUPPORTED = 2,
-  // The device is not supported
+  /**
+   * 3: The device does not support using the virtual background.
+   */
   VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_DEVICE_NOT_SUPPORTED = 3,
 };
 
@@ -2665,50 +2753,124 @@ export enum NETWORK_TYPE
   NETWORK_TYPE_MOBILE_4G = 5,
 };
 
+/**
+ * Audio recording quality, which is set in {@link startAudioRecordingWithConfig}.
+ */
 export enum AUDIO_RECORDING_QUALITY_TYPE
 {
-    /** 0: Low quality. The sample rate is 32 kHz, and the file size is around
-     * 1.2 MB after 10 minutes of recording.
+    /** 0: Low quality. For example, the size of an AAC file with a sample rate
+   * of 32,000 Hz and a 10-minute recording is approximately 1.2 MB.
     */
     AUDIO_RECORDING_QUALITY_LOW = 0,
-    /** 1: Medium quality. The sample rate is 32 kHz, and the file size is
-     * around 2 MB after 10 minutes of recording.
+    /** 1: (Default) Medium quality. For example, the size of an AAC file with
+   * a sample rate of 32,000 Hz and a 10-minute recording is approximately
+   * 2 MB.
     */
     AUDIO_RECORDING_QUALITY_MEDIUM = 1,
-    /** 2: High quality. The sample rate is 32 kHz, and the file size is
-     * around 3.75 MB after 10 minutes of recording.
+    /** 2: High quality. For example, the size of an AAC file with a sample rate
+   * of 32,000 Hz and a 10-minute recording is approximately 3.75 MB.
     */
     AUDIO_RECORDING_QUALITY_HIGH = 2,
 }
+
+/** The type of the custom background image.
+ *
+ * @since v3.4.5
+ */
 export enum BACKGROUND_SOURCE_TYPE {
-  /** Background source is pure color*/
+  /**
+   * 1: (Default) The background image is a solid color.
+   */
   BACKGROUND_COLOR = 1,
-  /** Background source is image path, only support png and jpg format*/
+  /**
+   * The background image is a file in PNG or JPG format.
+   */
   BACKGROUND_IMG,
 };
 
+/**
+ * Recording content, which is set in {@link startAudioRecordingWithConfig}.
+ */
 export enum AUDIO_RECORDING_POSITION {
-  /** The SDK will record the voices of all users in the channel. */
+  /** 0: (Default) Records the mixed audio of the local user and all remote
+   * users.
+   */
   AUDIO_RECORDING_POSITION_MIXED_RECORDING_AND_PLAYBACK = 0,
-  /** The SDK will record the voice of the local user. */
+  /** 1: Records the audio of the local user only.
+   */
   AUDIO_RECORDING_POSITION_RECORDING = 1,
-  /** The SDK will record the voices of remote users. */
+  /** 2: Records the audio of all remote users only.
+   */
   AUDIO_RECORDING_POSITION_MIXED_PLAYBACK = 2,
 };
 
+/**
+ * Recording configuration, which is set in {@link startAudioRecordingWithConfig}.
+ *
+ * @since v3.4.2
+ */
 export interface AudioRecordingConfiguration {
+  /** The absolute path (including the filename extensions) of the recording
+   * file. For example: `C:\music\audio.aac`.
+   *
+   * @note Ensure that the path you specify exists and is writable.
+   */
   filePath: string;
+  /** Audio recording quality. See {@link AUDIO_RECORDING_QUALITY_TYPE}.
+   *
+   * @note This parameter applies to AAC files only.
+   */
   recordingQuality: AUDIO_RECORDING_QUALITY_TYPE;
+  /**
+   * Recording content. See {@link AUDIO_RECORDING_POSITION}.
+   */
   recordingPosition: AUDIO_RECORDING_POSITION;
+  /** Recording sample rate (Hz). The following values are supported:
+   *
+   * - `16000`
+   * - (Default) `32000`
+   * - `44100`
+   * - `48000`
+   *
+   * @note If this parameter is set to `44100` or `48000`, for better
+   * recording effects, Agora recommends recording WAV files or AAC files
+   * whose `recordingQuality` is {@link AUDIO_RECORDING_QUALITY_MEDIUM} or
+   * {@link AUDIO_RECORDING_QUALITY_HIGH}.
+   */
+  recordingSampleRate: number;
 }
 
+/** The custom background image.
+ *
+ * @since v3.4.5
+ */
 export interface VirtualBackgroundSource {
+  /** The type of the custom background image.
+   *
+   * @since v3.4.5
+   */
   background_source_type: BACKGROUND_SOURCE_TYPE;
+  /**
+   * The local absolute path of the custom background image. PNG and JPG formats
+   * are supported. If the path is invalid, the SDK replaces the original
+   * background image with a white background image.
+   *
+   * @note This parameter takes effect only when the type of the custom
+   * background image is `BACKGROUND_IMG`.
+   */
   source: string;
+  /**
+   * The color of the custom background image. The format is a hexadecimal
+   * integer defined by RGB, without the # sign, such as `0xFFB6C1` for light pink.
+   * The default value is `0xFFFFFF`, which signifies white. The value range
+   * is `[0x000000,0xFFFFFF]`. If the value is invalid, the SDK replaces the
+   * original background image with a white background image.
+   *
+   * @note This parameter takes effect only when the type of the custom
+   * background image is `BACKGROUND_COLOR`.
+   */
   color: number;
 }
-
-
 /**
  * interface for c++ addon (.node)
  * @ignore
@@ -4020,8 +4182,8 @@ export interface NodeRtcChannel {
    * @ignore
    */
   enableEncryption(enabled: boolean, config: EncryptionConfig): number;
-  
+
   muteLocalAudioStream(mute: boolean): number;
   muteLocalVideoStream(mute: boolean): number;
-  
+
 }
