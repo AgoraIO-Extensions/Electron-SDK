@@ -500,7 +500,7 @@ const AgoraRender = function() {
       console.error(e);
       return false;
     }
-    
+
     return true
   }
 
