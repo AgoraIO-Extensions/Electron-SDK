@@ -985,7 +985,7 @@ class AgoraRtcEngine extends EventEmitter {
       renderer = new SoftwareRenderer();
       renderer.bind(view, false);
     }
-    
+
 
     if(!rendererOptions.append) {
       channelStreams.set(String(key), [renderer]);
@@ -1335,7 +1335,14 @@ class AgoraRtcEngine extends EventEmitter {
     this.initRender(uid, view, "", options);
     return this.rtcEngine.subscribe(uid);
   }
-  //TODO(input)
+  /**
+   * Sets the remote video view and the corresponding renderer.
+   * @param {number} uid The user ID
+   * @param {Element} view The Dom element where the remote view is initialized.
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   *///TODO(input)
   setupRemoteVideo(uid: number, view?: Element, channel?: string, options?: RendererOptions): number {
     if(view) {
       //bind
@@ -2617,10 +2624,10 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Specifies an SDK output log file.
    *
-   * The log file records all log data for the SDK’s operation. Ensure that 
+   * The log file records all log data for the SDK’s operation. Ensure that
    * the directory for the log file exists and is writable.
    *
-   * @param {string} filepath File path of the log file. The string of the 
+   * @param {string} filepath File path of the log file. The string of the
    * log file is in UTF-8.
    * @return
    * - 0: Success.
@@ -2800,6 +2807,8 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @ignore
+   *
    * Sets the local video mirror mode.
    *
    * Use this method before {@link startPreview}, or it does not take effect
@@ -3188,14 +3197,16 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Adjusts the recording volume.
-   * @param {number} volume Recording volume. To avoid echoes and improve call
-   * quality, Agora recommends setting the value of volume between 0 and 100.
-   * If you need to set the value higher than 100, contact support@agora.io
-   * first.
+   * Adjusts the volume of the signal captured by the microphone.
+   *
+   * @note You can call this method either before or after joining a channel.
+   *
+   * @param volume The volume of the signal captured by the microphone.
+   * The range is 0 to 100. The default value is 100, which represents the
+   * original volume.
    * - 0: Mute.
    * - 100: Original volume.
-   * protection.
+   *
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -3203,33 +3214,133 @@ class AgoraRtcEngine extends EventEmitter {
   adjustRecordingSignalVolume(volume: number): number {
     return this.rtcEngine.adjustRecordingSignalVolume(volume);
   }
+
+  /**
+   * Adjusts the volume of the signal captured by the sound card.
+   *
+   * @since v3.4.2
+   *
+   * After calling `enableLoopbackRecording` to enable loopback audio capturing,
+   * you can call this method to adjust the volume of the signal captured by
+   * the sound card.
+   *
+   * @param volume The volume of the signal captured by the sound card.
+   * The range is 0 to 100. The default value is 100, which represents the
+   * unadjusted volume.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   adjustLoopbackRecordingSignalVolume(volume: number): number {
     return this.rtcEngine.adjustLoopbackRecordingSignalVolume(volume);
   }
+  /**
+   * Sets the playback position of an audio effect file.
+   *
+   * @since v3.4.2
+   *
+   * After a successful setting, the local audio effect file starts playing at
+   * the specified position.
+   *
+   * @note Call this method after {@link playEffect}.
+   *
+   * @param soundId Audio effect ID. Ensure that this parameter is set to the
+   * same value as in `playEffect`.
+   * @param pos The playback position (ms) of the audio effect file.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   *  - `-22`: Cannot find the audio effect file. Please
+   * set a correct `soundId`.
+   */
   setEffectPosition(soundId: number, pos: number): number {
     return this.rtcEngine.setEffectPosition(soundId, pos);
   }
+  /**
+   * Gets the duration of the audio effect file.
+   *
+   * @since v3.4.2
+   *
+   * @note Call this method after joining a channel.
+   *
+   * @param filePath The absolute path or URL address (including the filename
+   * extensions)
+   * of the music file. For example: `C:\music\audio.mp4`. Supported audio
+   * formats include MP3, AAC, M4A, MP4, WAV, and 3GP.
+   * For more information, see
+   * [Supported Media Formats in Media Foundation](https://docs.microsoft.com/en-us/windows/desktop/medfound/supported-media-formats-in-media-foundation).
+   *
+   * @return
+   * - &ge; 0: A successful method call. Returns the total duration (ms) of
+   * the specified audio effect file.
+   * - < 0: Failure.
+   *  - `-22`: Cannot find the audio effect file. Please
+   * set a correct `filePath`.
+   */
   getEffectDuration(filePath: string): number {
     return this.rtcEngine.getEffectDuration(filePath);
   }
+  /**
+   * Gets the playback position of the audio effect file.
+   *
+   * @since v3.4.2
+   *
+   * @note Call this method after {@link playEffect}.
+   *
+   * @param soundId Audio effect ID. Ensure that this parameter is set to the
+   * same value as in `playEffect`.
+   *
+   * @return
+   * - &ge; 0: A successful method call. Returns the playback position (ms) of
+   * the specified audio effect file.
+   * - < 0: Failure.
+   *  - `-22`: Cannot find the audio effect file. Please
+   * set a correct `soundId`.
+   */
   getEffectCurrentPosition(soundId: number): number {
     return this.rtcEngine.getEffectCurrentPosition(soundId);
   }
+  /**
+   * Gets the total duration of the music file.
+   *
+   * @since v3.4.2
+   *
+   * @note Call this method after joining a channel.
+   *
+   * @param filePath The absolute path or URL address (including the filename
+   * extensions) of the music file. For example: `C:\music\audio.mp4`.
+   * Supported audio formats include MP3, AAC, M4A, MP4, WAV, and 3GP.
+   * For more information, see
+   * [Supported Media Formats in Media Foundation](https://docs.microsoft.com/en-us/windows/desktop/medfound/supported-media-formats-in-media-foundation).
+   *
+   * @return
+   * - &ge; 0: A successful method call. Returns the total duration (ms) of the specified music file.
+   * - < 0: Failure.
+   */
   getAudioMixingFileDuration
   (filePath: string): number {
     return this.rtcEngine.  getAudioMixingFileDuration
     (filePath);
   }
-  
+
   /**
-   * Adjusts the playback volume of the voice.
-   * @param volume Playback volume of the voice. To avoid echoes and improve
-   * call quality, Agora recommends setting the value of volume between 0 and
-   * 100. If you need to set the value higher than 100, contact
-   * support@agora.io first.
+   * Adjusts the playback signal volume of all remote users.
+   *
+   * @note
+   * - This method adjusts the playback volume that is the mixed volume of all
+   * remote users.
+   * - You can call this method either before or after joining a channel.
+   * - To mute the local audio playback, call both the
+   * `adjustPlaybackSignalVolume` and {@link adjustAudioMixingVolume}
+   * methods and set the volume as `0`.
+   *
+   * @param volume The playback volume. The range is 0 to 100. The default
+   * value is 100, which represents the original volume.
    * - 0: Mute.
    * - 100: Original volume.
-   * protection.
+   *
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -3543,7 +3654,8 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.enableLoopbackRecording(enable, deviceName);
   }
   /**
-   * @since v3.0.0
+   * @deprecated Deprecated from v3.4.2. Use
+   *  {@link startAudioRecordingWithConfig} instead.
    *
    * Starts an audio recording on the client.
    *
@@ -3559,21 +3671,21 @@ class AgoraRtcEngine extends EventEmitter {
    * is writable.
    * - This method is usually called after {@link joinChannel}. The
    * recording automatically stops when you call {@link leaveChannel}.
-   * - For better recording effects, set quality as MEDIUM or HIGH when
+   * - For better recording effects, set quality as `MEDIUM` or `HIGH` when
    * `sampleRate` is 44.1 kHz or 48 kHz.
    *
    * @param filePath The absolute file path of the recording file. The string
    * of the file name is in UTF-8, such as `c:/music/audio.aac` for Windows and
-   * `file:///Users/Agora/Music/audio.aac` for macOS.
+   * `/var/mobile/Containers/Data/audio.aac` for macOS.
    * @param sampleRate Sample rate (Hz) of the recording file. Supported
    * values are as follows:
    * - 16000
-   * - (Default) 32000
+   * - 32000 (Default)
    * - 44100
    * - 48000
    * @param quality The audio recording quality:
-   * - `0`: Low quality. The sample rate is 32 kHz, and the file size is around
-   * 1.2 MB after 10 minutes of recording.
+   * - `0`: Low quality. The sample rate is 32 kHz, and the file size is
+   * around 1.2 MB after 10 minutes of recording.
    * - `1`: Medium quality. The sample rate is 32 kHz, and the file size is
    * around 2 MB after 10 minutes of recording.
    * - `2`: High quality. The sample rate is 32 kHz, and the file size is
@@ -4059,7 +4171,7 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Enables the audio module.
    *
-   * The audio module is enabled by default.
+   * The audio module is disabled by default.
    *
    * **Note**:
    * - This method affects the internal engine and can be called after calling
@@ -4299,38 +4411,45 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Starts playing and mixing the music file.
    *
-   * This method mixes the specified local audio file with the audio stream
-   * from the microphone, or replaces the microphone’s audio stream with the
-   * specified
-   * local audio file. You can choose whether the other user can hear the
-   * local audio playback
-   * and specify the number of loop playbacks. This API also supports online
-   * music playback.
+   * This method supports mixing or replacing local or online music file and
+   * audio collected by a microphone. After successfully playing the music
+   * file, the SDK triggers the `audioMixingStateChanged(710,720)` callback.
+   * After completing playing the music file, the SDK triggers
+   * `audioMixingStateChanged(713,723)`.
    *
-   * The SDK returns the state of the audio mixing file playback in the
-   * audioMixingStateChanged callback.
+   * @note
+   * - If you need to call `startAudioMixing` multiple times,
+   * ensure that the call interval is longer than 500 ms.
+   * - If the local music file does not exist, or if the SDK does not support
+   * the file format or cannot access the music file URL, the SDK returns
+   * the warning code `701`.
    *
-   * **Note**:
-   * - Call this method when you are in the channel, otherwise it may cause
-   * issues.
-   * - If the local audio mixing file does not exist, or if the SDK does not
-   * support the file format
-   * or cannot access the music file URL, the SDK returns the warning code 701.
+   * @param filepath The absolute path or URL address
+   * (including the filename extensions) of the music file.
+   * For example: `C:\music\audio.mp4`.
+   * Supported audio formats include MP3, AAC, M4A, MP4, WAV, and 3GP.
+   * For more information, see
+   * [Supported Media Formats in Media Foundation](https://docs.microsoft.com/en-us/windows/desktop/medfound/supported-media-formats-in-media-foundation).
+   * When you access a local file on Android, Agora recommends
+   * passing a URI address or the path starts
+   * with `/assets/` in this parameter.
+   * @param loopback Whether to only play the music file on the local client:
+   * - `true`: Only play the music file on the local client so that only the local
+   * user can hear the music.
+   * - `false`: Publish the music file to remote clients so that both the local
+   * user and remote users can hear the music.
+   * @param replace Whether to replace the audio collected by the microphone
+   * with a music file:
+   * - `true`: Replace. Users can only hear music.
+   * - `false`: Do not replace. Users can hear both music and audio collected by
+   * the microphone.
+   * @param cycle The number of times the music file plays.
+   * - &ge; 0: The number of playback times. For example, `0` means that the
+   * SDK does not play the music file, while `1` means that the SDK plays the
+   * music file once.
+   * - `-1`: Play the music in an indefinite loop.
+   * @param startPos The playback position (ms) of the music file.
    *
-   * @param {string} filepath Specifies the absolute path (including the
-   * suffixes of the filename) of the local or online audio file to be mixed.
-   * Supported audio formats: mp3, mp4, m4a, aac, 3gp, mkv and wav.
-   * @param {boolean} loopback Sets which user can hear the audio mixing:
-   * - true: Only the local user can hear the audio mixing.
-   * - false: Both users can hear the audio mixing.
-   * @param {boolean} replace Sets the audio mixing content:
-   * - true: Only publish the specified audio file; the audio stream from the
-   * microphone is not published.
-   * - false: The local audio file is mixed with the audio stream from the
-   * microphone.
-   * @param {number} cycle Sets the number of playback loops:
-   * - Positive integer: Number of playback loops.
-   * - -1: Infinite playback loops.
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -4386,7 +4505,7 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * Call this API when you are in a channel.
    *
-   * **Note**: Calling this method does not affect the volume of audio effect
+   * @note Calling this method does not affect the volume of audio effect
    * file playback invoked by the playEffect method.
    * @param {number} volume Audio mixing volume. The value ranges between 0
    * and 100 (default). 100 is the original volume.
@@ -4426,9 +4545,16 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Gets the duration (ms) of the music file.
    *
-   * Call this API when you are in a channel.
+   * @deprecated Deprecated from v3.4.2. Use
+   * {@link getAudioMixingFileDuration} instead.
+   *
+   * @note
+   * - Call this method when you are in a channel.
+   * - Call this method after calling {@link startAudioMixing}
+   * and receiving the `audioMixingStateChanged(710)` callback.
+   *
    * @return
-   * - ≥ 0: The audio mixing duration, if this method call succeeds.
+   * - &ge; 0: The audio mixing duration, if this method call succeeds.
    * - < 0: Failure.
    */
   getAudioMixingDuration(): number {
@@ -4440,7 +4566,7 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * Call this API when you are in a channel.
    * @return
-   * - ≥ 0: The current playback position of the audio mixing, if this method
+   * - &ge; 0: The current playback position of the audio mixing, if this method
    * call succeeds.
    * - < 0: Failure.
    */
@@ -4454,7 +4580,7 @@ class AgoraRtcEngine extends EventEmitter {
    * Call this API when you are in a channel.
    *
    * @return
-   * - ≥ 0: The audio mixing volume for local playout, if this method call
+   * - &ge; 0: The audio mixing volume for local playout, if this method call
    * succeeds. The value range is [0,100].
    * - < 0: Failure.
    */
@@ -4468,7 +4594,7 @@ class AgoraRtcEngine extends EventEmitter {
    * Call this API when you are in a channel.
    *
    * @return
-   * - ≥ 0: The audio mixing volume for publishing, if this method call
+   * - &ge; 0: The audio mixing volume for publishing, if this method call
    * succeeds. The value range is [0,100].
    * - < 0: Failure.
    */
@@ -4483,6 +4609,12 @@ class AgoraRtcEngine extends EventEmitter {
    * This method drags the playback progress bar of the audio mixing file to
    * where
    * you want to play instead of playing it from the beginning.
+   *
+   * @note Call this method after calling {@link startAudioMixing} and
+   * receiving the `audioMixingStateChanged` callback with the state code
+   * `710`.
+   *
+   *
    * @param {number} position The playback starting position (ms) of the music
    * file.
    * @return
@@ -4858,7 +4990,7 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * The value ranges between 0.0 and 100.0.
    * @return
-   * - ≥ 0: Volume of the audio effects, if this method call succeeds.
+   * - &ge; 0: Volume of the audio effects, if this method call succeeds.
    * - < 0: Failure.
    */
   getEffectsVolume(): number {
@@ -4891,47 +5023,50 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Plays a specified local or online audio effect file.
    *
-   * This method allows you to set the loop count, pitch, pan, and gain of the
-   * audio effect file, as well as whether the remote user can hear the audio
+   * To play multiple audio effect files at the same time, call this method
+   * multiple times with different `soundId` and `filePath` values. For the
+   * best user experience, Agora recommends playing no more than three audio
+   * effect files at the same time.
+   *
+   * After completing playing an audio effect file, the SDK triggers the
+   * `audioEffectFinished` callback.
+   *
+   * @note Call this method after joining a channel.
+   *
+   * @param soundId Audio effect ID. The ID of each audio effect file
+   * is unique. If you preloaded an audio effect into memory by calling
+   * {@link preloadEffect}, ensure that this
+   * parameter is set to the same value as in `preloadEffect`.
+   * @param filePath The absolute path or URL address (including
+   * the filename extensions)
+   * of the music file. For example: `C:\music\audio.mp4`. Supported
+   * audio formats include MP3, AAC, M4A, MP4, WAV, and 3GP.
+   * For more information, see
+   * [Supported Media Formats in Media Foundation](https://docs.microsoft.com/en-us/windows/desktop/medfound/supported-media-formats-in-media-foundation).
+   * If you preloaded an audio effect into memory by calling
+   * {@link preloadEffect}, ensure that this
+   * parameter is set to the same value as in `preloadEffect`.
+   * @param loopcount The number of times the audio effect loops:
+   * - &ge; 0: The number of loops. For example, `1` means loop one time,
+   * which means play the audio effect two times in total.
+   * - `-1`: Play the audio effect in an indefinite loop.
+   * @param pitch The pitch of the audio effect. The range is 0.5 to
+   * 2.0. The default value is 1.0, which means the original pitch. The lower
+   * the value, the lower the pitch.
+   * @param pan The spatial position of the audio effect. The range is `-1.0`
+   * to `1.0`. For example:
+   * - `-1.0`: The audio effect occurs on the left.
+   * - `0.0`: The audio effect occurs in the front.
+   * - `1.0`: The audio effect occurs on the right.
+   * @param gain The volume of the audio effect. The range is 0.0 to 100.0.
+   * The default value is 100.0, which means the original volume. The smaller
+   * the value, the less the gain.
+   * @param publish Whether to publish the audio effect to the remote users:
+   * - true: Publish. Both the local user and remote users can hear the audio
    * effect.
+   * - false: Do not publish. Only the local user can hear the audio effect.
+   * @param startPos The playback position (ms) of the audio effect file.
    *
-   * To play multiple audio effect files simultaneously, call this method
-   * multiple times with different soundIds and filePaths.
-   * We recommend playing no more than three audio effect files at the same
-   * time.
-   *
-   * When the audio effect file playback finishes, the SDK returns the
-   * audioEffectFinished callback.
-   * @param {number} soundId ID of the specified audio effect. Each audio
-   * effect has a unique ID.
-   * @param {string} filePath TSpecifies the absolute path (including the
-   * suffixes of the filename) to the local audio effect file or the URL of
-   * the online audio effect file. Supported audio formats: mp3, mp4, m4a,
-   * aac, 3gp, mkv and wav.
-   * @param {number} loopcount Sets the number of times the audio effect
-   * loops:
-   * - 0: Play the audio effect once.
-   * - 1: Play the audio effect twice.
-   * - -1: Play the audio effect in an indefinite loop until the
-   * {@link stopEffect} or {@link stopEffect} method is called.
-   * @param {number} pitch Sets the pitch of the audio effect. The value ranges
-   * between 0.5 and 2.
-   * The default value is 1 (no change to the pitch). The lower the value, the
-   * lower the pitch.
-   * @param {number} pan Sets the spatial position of the audio effect. The
-   * value ranges between -1.0 and 1.0:
-   * - 0.0: The audio effect displays ahead.
-   * - 1.0: The audio effect displays to the right.
-   * - -1.0: The audio effect displays to the left.
-   * @param {number} gain Sets the volume of the audio effect. The value ranges
-   * between 0.0 and 100.0 (default).
-   * The lower the value, the lower the volume of the audio effect.
-   * @param {boolean} publish Sets whether or not to publish the specified
-   * audio effect to the remote stream:
-   * - true: The locally played audio effect is published to the Agora Cloud
-   * and the remote users can hear it.
-   * - false: The locally played audio effect is not published to the Agora
-   * Cloud and the remote users cannot hear it.
    * @return
    * - 0: Success.
    * - < 0: Failure.
@@ -5715,14 +5850,8 @@ class AgoraRtcEngine extends EventEmitter {
    *  - Windows: `libagora_ai_denoise_extension.dll`
    * 2. Call `enableDeepLearningDenoise(true)`.
    *
-   * Deep-learning noise reduction requires high-performance devices. For
-   * example, the following devices and later
-   * models are known to support deep-learning noise reduction:
-   * - iPhone 6S
-   * - MacBook Pro 2015
-   * - iPad Pro (2nd generation)
-   * - iPad mini (5th generation)
-   * - iPad Air (3rd generation)
+   * Deep-learning noise reduction requires high-performance devices, such as
+   * MacBook Pro 2015.
    *
    * After successfully enabling deep-learning noise reduction, if the SDK
    * detects that the device performance
@@ -5868,9 +5997,83 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.videoSourceSetProcessDpiAwareness();
   }
 
+  /**
+   * Starts an audio recording on the client.
+   *
+   * @since v3.4.2
+   *
+   * The SDK allows recording audio during a call. After successfully calling
+   * this method, you can record the audio of users in the channel and get
+   * an audio recording file. Supported file formats are as follows:
+   * - WAV: High-fidelity files with typically larger file sizes. For example,
+   * if the sample rate is 32,000 Hz, the file size for a 10-minute recording
+   * is approximately 73 MB.
+   * - AAC: Low-fidelity files with typically smaller file sizes. For example,
+   * if the sample rate is 32,000 Hz and the recording quality is
+   * {@link AUDIO_RECORDING_QUALITY_MEDIUM}, the file size for a 10-minute recording
+   * is approximately 2 MB.
+   *
+   * Once the user leaves the channel, the recording automatically stops.
+   *
+   * @note Call this method after joining a channel.
+   *
+   * @param config Recording configuration.
+   * See {@link AudioRecordingConfiguration}.
+   *
+   * @returns
+   * - 0: Success.
+   * - < 0: Failure.
+   *  - `-160`: The client is already recording audio. To start a new recording,
+   * call {@link stopAudioRecording} to stop the
+   * current recording first, and then call {@link startAudioRecording}.
+   */
   startAudioRecordingWithConfig(config: AudioRecordingConfiguration): number {
     return this.rtcEngine.startAudioRecordingWithConfig(config)
   }
+
+  /**
+  * Enables/Disables the virtual background. (beta function)
+  *
+  * @since 3.4.5
+  *
+  * After enabling the virtual background function, you can replace the
+  * original background image of the local user with a custom background image.
+  * After the replacement, all users in the channel can see the custom
+  * background image. You can find out from the
+  * `virtualBackgroundSourceEnabled` callback whether the virtual background
+  * is successfully enabled or the cause of any errors.
+  *
+  * @note
+  * - Before calling this method, ensure that you have integrated the following
+  * dynamic library into your project:
+  *    - macOS: `AgoraVideoSegmentationExtension.framework`
+  *    - Windows: `libagora_segmentation_extension.dll`
+  * - Call this method after {@link enableVideo}.
+  * - This functions requires a high-performance device. Agora recommends that
+  * you use this function on devices with an i5 CPU and better.
+  * - Agora recommends that you use this function in scenarios that meet the
+  * following conditions:
+  * - A high-definition camera device is used, and the environment is
+  * uniformly lit.
+  * - The captured video image is uncluttered, the user's portrait is
+  * half-length and largely unobstructed, and the background is a single color
+  * that differs from the color of the user's clothing.
+  *
+  * @param enabled Sets whether to enable the virtual background:
+  * - true: Enable.
+  * - false: Disable.
+  * @param backgroundSource The custom background image. See
+  * {@link VirtualBackgroundSource}.
+  *
+  * **Note: To adapt the resolution of the custom background image to the
+  * resolution of the SDK capturing video, the SDK scales and crops the custom
+  * background image while ensuring that the content of the custom background
+  * image is not distorted.**
+  *
+  * @return
+  * - 0: Success.
+  * - < 0: Failure.
+  */
   enableVirtualBackground(enabled: Boolean, backgroundSource: VirtualBackgroundSource): number{
     return this.rtcEngine.enableVirtualBackground(enabled, backgroundSource)
   }
@@ -6069,32 +6272,62 @@ declare interface AgoraRtcEngine {
   ): this;
   /**
    * Occurs when the audio device state changes.
-   * - deviceId: The device ID.
-   * - deviceType: Device type. See {@link MediaDeviceType}.
-   * - deviceState: Device state：
    *
-   *  - 1: The device is active
+   * @param cb.deviceId The device ID.
+   * @param cb.deviceType The device type. See {@link MediaDeviceType}.
+   * @param cb.deviceState The device state:
+   * - macOS:
+   *  - 0: The device is ready for use.
+   *  - 8: The device is unplugged.
+   * - Windows:
+   *  - 0: The device is ready for use.
+   *  - 1: The device is in use.
    *  - 2: The device is disabled.
    *  - 4: The device is not present.
    *  - 8: The device is unplugged.
+   *  - 16: The device is not recommended.
    */
   on(
     evt: 'audioDeviceStateChanged',
     cb: (deviceId: string, deviceType: number, deviceState: number) => void
   ): this;
   // on(evt: 'audioMixingFinished', cb: () => void): this;
-  /** Occurs when the state of the local user's audio mixing file changes.
-   * - state: The state code.
-   *  - 710: The audio mixing file is playing.
-   *  - 711: The audio mixing file pauses playing.
-   *  - 713: The audio mixing file stops playing.
-   *  - 714: An exception occurs when playing the audio mixing file.
+  /** Occurs when the state of the local user's music file changes.
    *
-   * - err: The error code.
-   *  - 701: The SDK cannot open the audio mixing file.
-   *  - 702: The SDK opens the audio mixing file too frequently.
-   *  - 703: The audio mixing file playback is interrupted.
+   * @since v3.4.2
    *
+   * When the playback state of the local user's music file changes, the SDK
+   * triggers this callback and
+   * reports the current playback state and the reason for the change.
+   *
+   * @param cb.state The current music file playback state:
+   *  - `710`: The music file is playing. This state comes with **reason**
+   *  `720`, `721`, `722`, or `726`.
+   *  - `711`: The music file pauses playing. This state comes
+   * with **reason** `725`.
+   *  - `713`: The music file stops playing. This state comes
+   *  with **reason** `723` or `724`.
+   *  - `714`: An exception occurs during the playback of the music file.
+   *  This state comes with **reason** `701`, `702`, or `703`.
+   *
+   * @param cb.reason The reason for the change of the music file playback state.
+   *  - `701`: The SDK cannot open the music file. Possible causes include the local
+   *  music file does not exist, the SDK does not support the file format, or the
+   *  SDK cannot access the music file URL.
+   *  - `702`: The SDK opens the music file too frequently. If you need to call
+   *  {@link startAudioMixing} multiple times, ensure
+   *  that the call interval is longer than 500 ms.
+   *  - `703`: The music file playback is interrupted.
+   *  - `720`: Successfully calls {@link startAudioMixing} to play a music file.
+   *  - `721`: The music file completes a loop playback.
+   *  - `722`: The music file starts a new loop playback.
+   *  - `723`: The music file completes all loop playback.
+   *  - `724`: Successfully calls {@link stopAudioMixing}
+   *  to stop playing the music file.
+   *  - `725`: Successfully calls {@link pauseAudioMixing}
+   *  to pause playing the music file.
+   *  - `726`: Successfully calls {@link resumeAudioMixing}
+   *  to resume playing the music file.
    */
   on(
     evt: 'audioMixingStateChanged',
@@ -6110,17 +6343,20 @@ declare interface AgoraRtcEngine {
   /** Occurs when the local audio effect playback finishes. */
   on(evt: 'audioEffectFinished', cb: (soundId: number) => void): this;
   /**
-   * This callback is not work.
-   *
    * Occurs when the video device state changes.
-   * - deviceId: The device ID.
-   * - deviceType: Device type. See {@link MediaDeviceType}.
-   * - deviceState: Device state：
    *
-   *  - 1: The device is active.
+   * @param cb.deviceId The device ID.
+   * @param cb.deviceType The device type. See {@link MediaDeviceType}.
+   * @param cb.deviceState The device state:
+   * - macOS:
+   *  - 0: The device is added.
+   *  - 1: The device is removed.
+   * - Windows:
+   *  - 1: The device is idle.
    *  - 2: The device is disabled.
    *  - 4: The device is not present.
    *  - 8: The device is unplugged.
+   *  - 16: The device is not recommended.
    */
   on(
     evt: 'videoDeviceStateChanged',
@@ -6765,6 +7001,8 @@ declare interface AgoraRtcEngine {
    * - `9`: Agora's server fails to find the RTMP stream.
    * - `10`: The format of the stream's URL address is not supported. Check
    * whether the URL format is correct.
+   * - `100`: The streaming has been stopped normally. After you call
+   * {@link removePublishStreamUrl} to stop streaming, the SDK returns this value.
    */
   on(evt: 'rtmpStreamingStateChanged', cb: (url: string, state: number, code: number) => void): this;
   /** Occurs when the publisher's transcoding is updated.
@@ -7147,6 +7385,26 @@ declare interface AgoraRtcEngine {
     success: boolean,
     reason: number
   ) => void): this;
+  /**
+   * Reports whether the virtual background is successfully enabled. (beta
+   * function)
+   *
+   * @since v3.4.5
+   *
+   * After you call {@link enableVirtualBackground}, the SDK triggers this
+   * callback to report whether the virtual background is successfully enabled.
+   *
+   * @note If the background image customized in the virtual background is in
+   * PNG or JPG format, the triggering of this callback is delayed until the
+   * image is read.
+   *
+   * @param cb.enabled Whether the virtual background is successfully enabled:
+   * - true: The virtual background is successfully enabled.
+   * - false: The virtual background is not successfully enabled.
+   * @param cb.reason The reason why the virtual background is not successfully
+   * enabled or the message that confirms success. See
+   * #VIRTUAL_BACKGROUND_SOURCE_STATE_REASON.
+   */
   on(evt: 'virtualBackgroundSourceEnabled', cb: (
     enabled: boolean,
     reason: VIRTUAL_BACKGROUND_SOURCE_STATE_REASON
@@ -8326,6 +8584,10 @@ class AgoraRtcChannel extends EventEmitter
   /**
    * Publishes the local stream to the channel.
    *
+   * @deprecated This method is deprecated as of v3.4.5. Use
+   * {@link muteLocalAudioStream}(false) or {@link muteLocalVideoStream}(false)
+   * instead.
+
    * You must keep the following restrictions in mind when calling this method.
    * Otherwise, the SDK returns the `ERR_REFUSED (5)`:
    * - This method publishes one stream only to the channel corresponding to
@@ -8346,6 +8608,10 @@ class AgoraRtcChannel extends EventEmitter
   }
   /**
    * Stops publishing a stream to the channel.
+   *
+   * @deprecated This method is deprecated as of v3.4.5. Use
+   * {@link muteLocalAudioStream}(true) or {@link muteLocalVideoStream}(true)
+   * instead.
    *
    * If you call this method in a channel where you are not publishing streams,
    * the SDK returns #ERR_REFUSED (5).
@@ -8515,10 +8781,71 @@ class AgoraRtcChannel extends EventEmitter
   }
 
 
+  /**
+   * Stops or resumes publishing the local audio stream.
+   *
+   * @since v3.4.5
+   *
+   * This method only sets the publishing state of the audio stream in the
+   * channel of IChannel.
+   *
+   * A successful method call triggers the `remoteAudioStateChanged`
+   * callback on the remote client.
+   *
+   * You can only publish the local stream in one channel at a time. If you
+   * create multiple channels, ensure that you only call
+   * `rtcChannel.muteLocalAudioStream(false)` in one channel;
+   * otherwise, the method call fails, and the SDK returns `-5 (ERR_REFUSED)`.
+   *
+   * @note
+   * - This method does not change the usage state of the audio-capturing device.
+   * - Whether this method call takes effect is affected by the
+   * {@link joinChannel} and {@link setClientRole} methods.
+   * For details, see *Set the Publishing State*.
+   *
+   * @param mute Sets whether to stop publishing the local audio stream.
+   * - true: Stop publishing the local audio stream.
+   * - false: Resume publishing the local audio stream.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   *  - `-5 (ERR_REFUSED)`: The request is rejected.
+   */
   muteLocalAudioStream(mute: boolean): number {
     return this.rtcChannel.muteLocalAudioStream(mute);
   }
 
+  /** Stops or resumes publishing the local video stream.
+   *
+   * @since v3.4.5
+   *
+   * This method only sets the publishing state of the video stream in the
+   * channel of IChannel.
+   *
+   * A successful method call triggers the `remoteVideoStateChanged`
+   * callback on the remote client.
+   *
+   * You can only publish the local stream in one channel at a time. If you
+   * create multiple channels, ensure that you only call
+   * `rtcChannel.muteLocalVideoStream(false)` in one channel;
+   * otherwise, the method call fails, and the SDK returns `-5 (ERR_REFUSED)`.
+   *
+   * @note
+   * - This method does not change the usage state of the video-capturing device.
+   * - Whether this method call takes effect is affected by the
+   * {@link joinChannel} and {@link setClientRole} methods.
+   * For details, see *Set the Publishing State*.
+   *
+   * @param mute Sets whether to stop publishing the local video stream.
+   * - true: Stop publishing the local video stream.
+   * - false: Resume publishing the local video stream.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   *  - `-5 (ERR_REFUSED)`: The request is rejected.
+   */
   muteLocalVideoStream(mute: boolean): number {
     return this.rtcChannel.muteLocalVideoStream(mute);
   }
@@ -8931,6 +9258,8 @@ declare interface AgoraRtcChannel {
    * - `9`: Agora's server fails to find the RTMP stream.
    * - `10`: The format of the stream's URL address is not supported. Check
    * whether the URL format is correct.
+   * - `100`: The streaming has been stopped normally. After you call
+   * {@link removePublishStreamUrl} to stop streaming, the SDK returns this value.
    */
   on(evt: 'rtmpStreamingStateChanged', cb: (url: string, state: number, code: number) => void): this;
   /** Occurs when the publisher's transcoding is updated. */
