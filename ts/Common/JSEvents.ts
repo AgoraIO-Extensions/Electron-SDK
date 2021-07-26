@@ -117,6 +117,8 @@ export enum EngineEvents {
   STREAM_MESSAGE = "streamMessage",
   READY_TO_SEND_METADATA = "readyToSendMetadata",
   METADATA_RECEIVED = "metadataReceived",
+  VIRTUAL_BACKGROUND_SOURCE_ENABLED = "virtualBackgroundSourceEnabled",
+  
 }
 
 export enum VideoSourceEvents {

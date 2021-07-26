@@ -90,6 +90,7 @@ import {
   DataStreamConfig,
   RAW_AUDIO_FRAME_OP_MODE_TYPE,
   AudioRecordingConfiguration,
+  VirtualBackgroundSource,
 } from "./types";
 import { EventEmitter } from "events";
 import {
@@ -3099,7 +3100,7 @@ export class AgoraRtcEngine extends EventEmitter {
 
     const ret = this._rtcEngine.CallApi(
       PROCESS_TYPE.MAIN,
-      ApiTypeEngine.kEngineAdjustLoopbackRecordingSignalVolume,
+      ApiTypeEngine.kEngineAdjustLoopBackRecordingSignalVolume,
       JSON.stringify(param)
     );
     return ret.retCode;
@@ -5706,6 +5707,65 @@ export class AgoraRtcEngine extends EventEmitter {
       ""
     );
     return ret.result;
+  }
+  /**
+   * Enables/Disables the virtual background. (beta function)
+   *
+   * @since 3.4.5
+   *
+   * After enabling the virtual background function, you can replace the
+   * original background image of the local user with a custom background image.
+   * After the replacement, all users in the channel can see the custom
+   * background image. You can find out from the
+   * `virtualBackgroundSourceEnabled` callback whether the virtual background
+   * is successfully enabled or the cause of any errors.
+   *
+   * @note
+   * - Before calling this method, ensure that you have integrated the following
+   * dynamic library into your project:
+   *    - macOS: `AgoraVideoSegmentationExtension.framework`
+   *    - Windows: `libagora_segmentation_extension.dll`
+   * - Call this method after {@link enableVideo}.
+   * - This functions requires a high-performance device. Agora recommends that
+   * you use this function on devices with an i5 CPU and better.
+   * - Agora recommends that you use this function in scenarios that meet the
+   * following conditions:
+   * - A high-definition camera device is used, and the environment is
+   * uniformly lit.
+   * - The captured video image is uncluttered, the user's portrait is
+   * half-length and largely unobstructed, and the background is a single color
+   * that differs from the color of the user's clothing.
+   *
+   * @param enabled Sets whether to enable the virtual background:
+   * - true: Enable.
+   * - false: Disable.
+   * @param backgroundSource The custom background image. See
+   * {@link VirtualBackgroundSource}.
+   *
+   * **Note: To adapt the resolution of the custom background image to the
+   * resolution of the SDK capturing video, the SDK scales and crops the custom
+   * background image while ensuring that the content of the custom background
+   * image is not distorted.**
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  enableVirtualBackground(
+    enabled: Boolean,
+    backgroundSource: VirtualBackgroundSource
+  ): number {
+    const param = {
+      enabled,
+      backgroundSource,
+    };
+
+    let ret = this._rtcEngine.CallApi(
+      PROCESS_TYPE.MAIN,
+      ApiTypeEngine.kEngineEnableVirtualBackground,
+      JSON.stringify(param)
+    );
+    return ret.retCode;
   }
 
   // ===========================================================================
