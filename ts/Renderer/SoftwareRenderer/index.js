@@ -115,9 +115,9 @@ class Renderer {
       throw new Error('Invalid value for rotation. Only support 0, 90, 180, 270')
     }
     let transformItems = []
-    
+
     transformItems.push(`rotateZ(${options.rotation}deg)`)
-    
+
     let scale = this._calcZoom(
       options.rotation === 90 || options.rotation === 270,
       options.contentMode,
@@ -126,7 +126,7 @@ class Renderer {
       options.clientWidth,
       options.clientHeight
     );
-    
+
     // transformItems.push(`scale(${scale})`)
     this.canvas.style.zoom = scale;
 
@@ -135,7 +135,7 @@ class Renderer {
       // this.canvas.style.transform = 'rotateY(180deg)';
       transformItems.push('rotateY(180deg)')
     }
-    
+
     if(transformItems.length > 0) {
       let transform = `${transformItems.join(' ')}`
       this.canvas.style.transform = transform
