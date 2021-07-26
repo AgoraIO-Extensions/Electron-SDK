@@ -108,7 +108,7 @@ export enum ApiTypeEngine {
   kEngineSetMixedAudioFrameParameters,
   kEngineAdjustRecordingSignalVolume,
   kEngineAdjustPlaybackSignalVolume,
-  kEngineAdjustLoopbackRecordingSignalVolume,
+  kEngineAdjustLoopBackRecordingSignalVolume,
   kEngineEnableWebSdkInteroperability,
   kEngineSetVideoQualityParameters,
   kEngineSetLocalPublishFallbackOption,
@@ -151,6 +151,7 @@ export enum ApiTypeEngine {
   kEngineAddVideoWaterMark,
   kEngineClearVideoWaterMarks,
   kEngineSetBeautyEffectOptions,
+  kEngineEnableVirtualBackground,
   kEngineAddInjectStreamUrl,
   kEngineStartChannelMediaRelay,
   kEngineUpdateChannelMediaRelay,
@@ -161,6 +162,7 @@ export enum ApiTypeEngine {
   kEngineEnableRemoteSuperResolution,
   kEngineRegisterMediaMetadataObserver,
   kEngineSetParameters,
+  kEngineSetLocalAccessPoint,
 
   kEngineUnRegisterMediaMetadataObserver,
   kEngineSetMaxMetadataSize,
@@ -198,6 +200,8 @@ export enum ApiTypeChannel {
   kChannelSetRemoteRenderMode,
   kChannelSetDefaultMuteAllRemoteAudioStreams,
   kChannelSetDefaultMuteAllRemoteVideoStreams,
+  kChannelMuteLocalAudioStream,
+  kChannelMuteLocalVideoStream,
   kChannelMuteAllRemoteAudioStreams,
   kChannelAdjustUserPlaybackSignalVolume,
   kChannelMuteRemoteAudioStream,
@@ -277,8 +281,7 @@ export interface Result {
   result: string;
 }
 
-export enum VOICE_CONVERSION_PRESET
-{
+export enum VOICE_CONVERSION_PRESET {
   /** Turn off voice conversion effects and use the original voice.
    */
   VOICE_CONVERSION_OFF = 0x00000000,
@@ -297,5 +300,5 @@ export enum VOICE_CONVERSION_PRESET
   /** A deep voice. To avoid audio distortion, ensure that you use this
    * enumerator to process a male-sounding voice.
    */
-  VOICE_CHANGER_BASS = 0x03010400
-};
+  VOICE_CHANGER_BASS = 0x03010400,
+}

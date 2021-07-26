@@ -5,22 +5,25 @@
  * @Last Modified time: 2021-05-27 12:33:45
  */
 
-/** Audio recording qualities.
+/**
+ * Audio recording quality, which is set in {@link startAudioRecordingWithConfig}.
  */
-export enum AUDIO_RECORDING_QUALITY_TYPE {
-  /** 0: Low quality. The sample rate is 32 kHz, and the file size is around
-   * 1.2 MB after 10 minutes of recording.
-   */
-  AUDIO_RECORDING_QUALITY_LOW = 0,
-  /** 1: Medium quality. The sample rate is 32 kHz, and the file size is
-   * around 2 MB after 10 minutes of recording.
-   */
-  AUDIO_RECORDING_QUALITY_MEDIUM = 1,
-  /** 2: High quality. The sample rate is 32 kHz, and the file size is
-   * around 3.75 MB after 10 minutes of recording.
-   */
-  AUDIO_RECORDING_QUALITY_HIGH = 2,
-}
+ export enum AUDIO_RECORDING_QUALITY_TYPE
+ {
+     /** 0: Low quality. For example, the size of an AAC file with a sample rate
+    * of 32,000 Hz and a 10-minute recording is approximately 1.2 MB.
+     */
+     AUDIO_RECORDING_QUALITY_LOW = 0,
+     /** 1: (Default) Medium quality. For example, the size of an AAC file with
+    * a sample rate of 32,000 Hz and a 10-minute recording is approximately
+    * 2 MB.
+     */
+     AUDIO_RECORDING_QUALITY_MEDIUM = 1,
+     /** 2: High quality. For example, the size of an AAC file with a sample rate
+    * of 32,000 Hz and a 10-minute recording is approximately 3.75 MB.
+     */
+     AUDIO_RECORDING_QUALITY_HIGH = 2,
+ }
 
 /**
  * Network quality types:
@@ -1713,7 +1716,7 @@ export enum CONNECTION_CHANGED_REASON_TYPE {
 /** Encryption mode.
  */
 export enum ENCRYPTION_MODE {
-  /** 1: (Default) 128-bit AES encryption, XTS mode.
+  /** 1: 128-bit AES encryption, XTS mode.
    */
   AES_128_XTS = 1,
   /** 2: 128-bit AES encryption, ECB mode.
@@ -1722,11 +1725,37 @@ export enum ENCRYPTION_MODE {
   /** 3: 256-bit AES encryption, XTS mode.
    */
   AES_256_XTS = 3,
+  /// @cond
   /** 4: 128-bit SM4 encryption, ECB mode.
    */
   SM4_128_ECB = 4,
-}
+  /// @endcond
+  /** 5: 128-bit AES encryption, GCM mode.
+   *
+   * @since v3.3.1
+   */
+  AES_128_GCM = 5,
+  /** 6: 256-bit AES encryption, GCM mode.
+   *
+   * @since v3.3.1
+   */
+  AES_256_GCM = 6,
+  /** 7: (Default) 128-bit AES encryption, GCM mode, with custom KDF salt.
+   *
+   * @since v3.4.1
+   */
+  AES_128_GCM2 = 7,
+  /** 8: 256-bit AES encryption, GCM mode, with custom KDF salt.
+   *
+   * @since v3.4.1
+   */
+  AES_256_GCM2 = 8,
+  /** Enumerator boundary.
+   */
+  MODE_END,
+};
 
+type Uint8Array = Array<number>;
 /**
  * Configurations of built-in encryption schemas.
  */
@@ -1743,6 +1772,20 @@ export interface EncryptionConfig {
    * `-2`.
    */
   encryptionKey: string;
+  /**
+   * @since v3.4.5
+   *
+   * The salt with the length of 32 bytes. Agora recommends using OpenSSL to
+   * generate the salt on your server.
+   *
+   * For details, see *Media Stream Encryption*.
+   *
+   * @note This parameter is only valid when you set the encryption mode as
+   * `AES_128_GCM` or `AES_256_GCM`. In this case, ensure that this parameter
+   * is not `0`.
+   *
+   */
+  encryptionKdfSalt: Uint8Array;
 }
 
 /**
@@ -1914,6 +1957,12 @@ export enum RTMP_STREAMING_EVENT {
    * @since v3.2.0
    */
   RTMP_STREAMING_EVENT_FAILED_LOAD_IMAGE = 1,
+  /** 2: The streaming URL is already being used for CDN live streaming. If you
+   * want to start new streaming, use a new streaming URL.
+   *
+   * @since v3.4.5
+   */
+  RTMP_STREAMING_EVENT_URL_ALREADY_IN_USE = 2,
 }
 
 /** States of importing an external video stream in the interactive live streaming. */
@@ -2256,6 +2305,30 @@ export interface ChannelMediaOptions {
    * whether to subscribe to video streams in the channel.
    */
   autoSubscribeVideo: boolean;
+  /** Determines whether to publish the local audio stream when the user joins
+   * a channel:
+   * - true: (Default) Publish.
+   * - false: Do not publish.
+   *
+   * This member serves a similar function to the `muteLocalAudioStream` method.
+   * After the user joins the channel, you can call the `muteLocalAudioStream`
+   * method to set whether to publish the local audio stream in the channel.
+   *
+   * @since v3.4.5
+   */
+  publishLocalAudio: boolean;
+  /** Determines whether to publish the local video stream when the user joins
+   * a channel:
+   * - true: (Default) Publish.
+   * - false: Do not publish.
+   *
+   * This member serves a similar function to the `muteLocalVideoStream` method.
+   * After the user joins the channel, you can call the `muteLocalVideoStream`
+   * method to set whether to publish the local video stream in the channel.
+   *
+   * @since v3.4.5
+   */
+  publishLocalVideo: boolean;
 }
 /**
  * The watermark's options.
@@ -2726,27 +2799,38 @@ export enum LOCAL_AUDIO_STREAM_STATE {
 
 /** Local audio state error codes.
  */
-export enum LOCAL_AUDIO_STREAM_ERROR {
-  /** 0: The local audio is normal.
-   */
-  LOCAL_AUDIO_STREAM_ERROR_OK = 0,
-  /** 1: No specified reason for the local audio failure.
-   */
-  LOCAL_AUDIO_STREAM_ERROR_FAILURE = 1,
-  /** 2: No permission to use the local audio device.
-   */
-  LOCAL_AUDIO_STREAM_ERROR_DEVICE_NO_PERMISSION = 2,
-  /** 3: The microphone is in use.
-   */
-  LOCAL_AUDIO_STREAM_ERROR_DEVICE_BUSY = 3,
-  /** 4: The local audio capturing fails. Check whether the capturing device
-   * is working properly.
-   */
-  LOCAL_AUDIO_STREAM_ERROR_RECORD_FAILURE = 4,
-  /** 5: The local audio encoding fails.
-   */
-  LOCAL_AUDIO_STREAM_ERROR_ENCODE_FAILURE = 5,
-}
+ export enum LOCAL_AUDIO_STREAM_ERROR
+ {
+   /** 0: The local audio is normal.
+    */
+     LOCAL_AUDIO_STREAM_ERROR_OK = 0,
+     /** 1: No specified reason for the local audio failure.
+     */
+     LOCAL_AUDIO_STREAM_ERROR_FAILURE = 1,
+     /** 2: No permission to use the local audio device.
+     */
+     LOCAL_AUDIO_STREAM_ERROR_DEVICE_NO_PERMISSION = 2,
+     /** 3: The microphone is in use.
+     */
+     LOCAL_AUDIO_STREAM_ERROR_DEVICE_BUSY = 3,
+     /** 4: The local audio recording fails. Check whether the recording device
+     * is working properly.
+     */
+     LOCAL_AUDIO_STREAM_ERROR_RECORD_FAILURE = 4,
+     /** 5: The local audio encoding fails.
+     */
+     LOCAL_AUDIO_STREAM_ERROR_ENCODE_FAILURE = 5,
+     /** 6: (Windows only) The SDK cannot find the local audio recording device.
+      *
+      * @since v3.4.2
+      */
+     LOCAL_AUDIO_STREAM_ERROR_NO_RECORDING_DEVICE = 6,
+     /** 7: (Windows only) The SDK cannot find the local audio playback device.
+      *
+      * @since v3.4.2
+      */
+     LOCAL_AUDIO_STREAM_ERROR_NO_PLAYOUT_DEVICE = 7
+ };
 
 export interface AudioVolumeInfo {
   /**
@@ -2846,7 +2930,9 @@ export enum LOCAL_VIDEO_STREAM_STATE {
 
 /** Local video state error codes
  */
-export enum LOCAL_VIDEO_STREAM_ERROR {
+/** Local video state error codes.
+ */
+ export enum LOCAL_VIDEO_STREAM_ERROR {
   /** 0: The local video is normal. */
   LOCAL_VIDEO_STREAM_ERROR_OK = 0,
   /** 1: No specified reason for the local video failure. */
@@ -2859,23 +2945,52 @@ export enum LOCAL_VIDEO_STREAM_ERROR {
   LOCAL_VIDEO_STREAM_ERROR_CAPTURE_FAILURE = 4,
   /** 5: The local video encoding fails. */
   LOCAL_VIDEO_STREAM_ERROR_ENCODE_FAILURE = 5,
-  /** 11: The shared window is minimized when you call \ref IRtcEngine::startScreenCaptureByWindowId "startScreenCaptureByWindowId" to share a window.
+  /** 6: (iOS only) The application is in the background.
+   *
+   * @since v3.3.1
+   */
+  LOCAL_VIDEO_STREAM_ERROR_CAPTURE_INBACKGROUND = 6,
+  /** 7: (iOS only) The application is running in Slide Over, Split View, or Picture in Picture mode.
+   *
+   * @since v3.3.1
+   */
+  LOCAL_VIDEO_STREAM_ERROR_CAPTURE_MULTIPLE_FOREGROUND_APPS = 7,
+  /** 8: The SDK cannot find the local video capture device.
+   *
+   * @since v3.4.2
+   */
+  LOCAL_VIDEO_STREAM_ERROR_DEVICE_NOT_FOUND = 8,
+  /**
+   * 11: The shared window is minimized when you call
+   * {@link startScreenCaptureByWindow} to share a window.
+   *
+   * @since 3.2.0
    */
   LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_MINIMIZED = 11,
-  /** 12: The error code indicates that a window shared by the window ID has been closed, or a full-screen window
+  /** 12: The error code indicates that a window shared by the window ID
+   * has been closed, or a full-screen window
    * shared by the window ID has exited full-screen mode.
-   * After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a
+   * After exiting full-screen mode, remote users cannot see the shared window.
+   * To prevent remote users from seeing a
    * black screen, Agora recommends that you immediately stop screen sharing.
    *
    * Common scenarios for reporting this error code:
-   * - When the local user closes the shared window, the SDK reports this error code.
-   * - The local user shows some slides in full-screen mode first, and then shares the windows of the slides. After
+   * - When the local user closes the shared window, the SDK
+   * reports this error code.
+   * - The local user shows some slides in full-screen mode first,
+   * and then shares the windows of the slides. After
    * the user exits full-screen mode, the SDK reports this error code.
-   * - The local user watches web video or reads web document in full-screen mode first, and then shares the window of
-   * the web video or document. After the user exits full-screen mode, the SDK reports this error code.
+   * - The local user watches web video or reads web document in full-screen
+   * mode first, and then shares the window of
+   * the web video or document. After the user exits full-screen mode,
+   * the SDK reports this error code.
+   *
+   * @since 3.2.0
    */
   LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_CLOSED = 12,
-}
+  /** @ignore */
+  LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_NOT_SUPPORTED = 20,
+};
 
 export enum SUPER_RESOLUTION_STATE_REASON {
   /** 0: The super-resolution algorithm is successfully enabled.
@@ -3051,23 +3166,118 @@ export enum RAW_AUDIO_FRAME_OP_MODE_TYPE {
 }
 
 export enum AUDIO_RECORDING_POSITION {
-  /** The SDK will record the voices of all users in the channel. */
+  /** 0: (Default) Records the mixed audio of the local user and all remote
+   * users.
+   */
   AUDIO_RECORDING_POSITION_MIXED_RECORDING_AND_PLAYBACK = 0,
-  /** The SDK will record the voice of the local user. */
+  /** 1: Records the audio of the local user only.
+   */
   AUDIO_RECORDING_POSITION_RECORDING = 1,
-  /** The SDK will record the voices of remote users. */
+  /** 2: Records the audio of all remote users only.
+   */
   AUDIO_RECORDING_POSITION_MIXED_PLAYBACK = 2,
-}
+};
 
-export interface AudioRecordingConfiguration {
+/**
+ * Recording configuration, which is set in {@link startAudioRecordingWithConfig}.
+ *
+ * @since v3.4.2
+ */
+ export interface AudioRecordingConfiguration {
+  /** The absolute path (including the filename extensions) of the recording
+   * file. For example: `C:\music\audio.aac`.
+   *
+   * @note Ensure that the path you specify exists and is writable.
+   */
   filePath: string;
+  /** Audio recording quality. See {@link AUDIO_RECORDING_QUALITY_TYPE}.
+   *
+   * @note This parameter applies to AAC files only.
+   */
   recordingQuality: AUDIO_RECORDING_QUALITY_TYPE;
+  /**
+   * Recording content. See {@link AUDIO_RECORDING_POSITION}.
+   */
   recordingPosition: AUDIO_RECORDING_POSITION;
-  /** Sets the sample rate (Hz) of the recording file. Supported values are as follows:
-   * - 16000
-   * - (Default) 32000
-   * - 44100
-   * - 48000
+  /** Recording sample rate (Hz). The following values are supported:
+   *
+   * - `16000`
+   * - (Default) `32000`
+   * - `44100`
+   * - `48000`
+   *
+   * @note If this parameter is set to `44100` or `48000`, for better
+   * recording effects, Agora recommends recording WAV files or AAC files
+   * whose `recordingQuality` is {@link AUDIO_RECORDING_QUALITY_MEDIUM} or
+   * {@link AUDIO_RECORDING_QUALITY_HIGH}.
    */
   recordingSampleRate: number;
+}
+
+export enum VIRTUAL_BACKGROUND_SOURCE_STATE_REASON {
+  /**
+   * 0: The virtual background is successfully enabled.
+   */
+  VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_SUCCESS = 0,
+  /**
+   * 1: The custom background image does not exist. Please check the value of
+   * `source` in {@link VirtualBackgroundSource}.
+   */
+  VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_IMAGE_NOT_EXIST = 1,
+  /**
+   * 2: The color format of the custom background image is invalid. Please
+   * check the value of `color` in {@link VirtualBackgroundSource}.
+   */
+  VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_COLOR_FORMAT_NOT_SUPPORTED = 2,
+  /**
+   * 3: The device does not support using the virtual background.
+   */
+  VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_DEVICE_NOT_SUPPORTED = 3,
+}
+
+/** The type of the custom background image.
+ *
+ * @since v3.4.5
+ */
+export enum BACKGROUND_SOURCE_TYPE {
+  /**
+   * 1: (Default) The background image is a solid color.
+   */
+  BACKGROUND_COLOR = 1,
+  /**
+   * The background image is a file in PNG or JPG format.
+   */
+  BACKGROUND_IMG,
+}
+
+/** The custom background image.
+ *
+ * @since v3.4.5
+ */
+export interface VirtualBackgroundSource {
+  /** The type of the custom background image.
+   *
+   * @since v3.4.5
+   */
+  background_source_type: BACKGROUND_SOURCE_TYPE;
+  /**
+   * The local absolute path of the custom background image. PNG and JPG formats
+   * are supported. If the path is invalid, the SDK replaces the original
+   * background image with a white background image.
+   *
+   * @note This parameter takes effect only when the type of the custom
+   * background image is `BACKGROUND_IMG`.
+   */
+  source: string;
+  /**
+   * The color of the custom background image. The format is a hexadecimal
+   * integer defined by RGB, without the # sign, such as `0xFFB6C1` for light pink.
+   * The default value is `0xFFFFFF`, which signifies white. The value range
+   * is `[0x000000,0xFFFFFF]`. If the value is invalid, the SDK replaces the
+   * original background image with a white background image.
+   *
+   * @note This parameter takes effect only when the type of the custom
+   * background image is `BACKGROUND_COLOR`.
+   */
+  color: number;
 }

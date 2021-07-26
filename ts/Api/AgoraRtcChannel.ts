@@ -1189,6 +1189,94 @@ export class AgoraRtcChannel extends EventEmitter {
     );
     return ret.retCode;
   }
+
+
+  /**
+   * Stops or resumes publishing the local audio stream.
+   *
+   * @since v3.4.5
+   *
+   * This method only sets the publishing state of the audio stream in the
+   * channel of IChannel.
+   *
+   * A successful method call triggers the `remoteAudioStateChanged`
+   * callback on the remote client.
+   *
+   * You can only publish the local stream in one channel at a time. If you
+   * create multiple channels, ensure that you only call
+   * `rtcChannel.muteLocalAudioStream(false)` in one channel;
+   * otherwise, the method call fails, and the SDK returns `-5 (ERR_REFUSED)`.
+   *
+   * @note
+   * - This method does not change the usage state of the audio-capturing device.
+   * - Whether this method call takes effect is affected by the
+   * {@link joinChannel} and {@link setClientRole} methods.
+   * For details, see *Set the Publishing State*.
+   *
+   * @param mute Sets whether to stop publishing the local audio stream.
+   * - true: Stop publishing the local audio stream.
+   * - false: Resume publishing the local audio stream.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   *  - `-5 (ERR_REFUSED)`: The request is rejected.
+   */
+  muteLocalAudioStream(mute: boolean): number {
+    const param = {
+      mute,
+      channelId: this._channelId,
+    };
+
+    let ret = this._rtcChannel.CallApi(
+      ApiTypeChannel.kChannelMuteLocalAudioStream,
+      JSON.stringify(param)
+    );
+    return ret.retCode;
+  }
+
+  /** Stops or resumes publishing the local video stream.
+   *
+   * @since v3.4.5
+   *
+   * This method only sets the publishing state of the video stream in the
+   * channel of IChannel.
+   *
+   * A successful method call triggers the `remoteVideoStateChanged`
+   * callback on the remote client.
+   *
+   * You can only publish the local stream in one channel at a time. If you
+   * create multiple channels, ensure that you only call
+   * `rtcChannel.muteLocalVideoStream(false)` in one channel;
+   * otherwise, the method call fails, and the SDK returns `-5 (ERR_REFUSED)`.
+   *
+   * @note
+   * - This method does not change the usage state of the video-capturing device.
+   * - Whether this method call takes effect is affected by the
+   * {@link joinChannel} and {@link setClientRole} methods.
+   * For details, see *Set the Publishing State*.
+   *
+   * @param mute Sets whether to stop publishing the local video stream.
+   * - true: Stop publishing the local video stream.
+   * - false: Resume publishing the local video stream.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   *  - `-5 (ERR_REFUSED)`: The request is rejected.
+   */
+  muteLocalVideoStream(mute: boolean): number {
+    const param = {
+      mute,
+      channelId: this._channelId,
+    };
+
+    let ret = this._rtcChannel.CallApi(
+      ApiTypeChannel.kChannelMuteLocalVideoStream,
+      JSON.stringify(param)
+    );
+    return ret.retCode;
+  }
   /**
    * Stops/Resumes receiving all remote users' audio streams.
    *

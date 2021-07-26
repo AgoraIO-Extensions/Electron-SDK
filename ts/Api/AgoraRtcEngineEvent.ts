@@ -1,43 +1,44 @@
 ﻿import { ApiTypeEngine } from "./internal/native_type";
 
 import {
-  RtcStats,
-  QUALITY_TYPE,
-  LocalVideoStats,
-  LocalAudioStats,
-  RemoteVideoStats,
-  RemoteAudioStats,
-  REMOTE_AUDIO_STATE_REASON,
-  REMOTE_VIDEO_STATE,
-  REMOTE_VIDEO_STATE_REASON,
-  REMOTE_AUDIO_STATE,
-  LastmileProbeResult,
-  CLIENT_ROLE_TYPE,
-  CONNECTION_STATE_TYPE,
-  CONNECTION_CHANGED_REASON_TYPE,
-  MEDIA_DEVICE_TYPE,
-  UserInfo,
-  Metadata,
-  RTMP_STREAMING_EVENT,
-  STREAM_PUBLISH_STATE,
-  STREAM_SUBSCRIBE_STATE,
-  AudioVolumeInfo,
-  AUDIO_MIXING_REASON_TYPE,
-  NETWORK_TYPE,
-  CHANNEL_MEDIA_RELAY_EVENT,
-  CHANNEL_MEDIA_RELAY_STATE,
-  CHANNEL_MEDIA_RELAY_ERROR,
-  INJECT_STREAM_STATUS,
-  MEDIA_DEVICE_STATE_TYPE,
-  RTMP_STREAM_PUBLISH_STATE,
-  RTMP_STREAM_PUBLISH_ERROR,
-  USER_OFFLINE_REASON_TYPE,
-  AUDIO_MIXING_STATE_TYPE,
-  LOCAL_VIDEO_STREAM_STATE,
-  LOCAL_VIDEO_STREAM_ERROR,
-  LOCAL_AUDIO_STREAM_STATE,
-  LOCAL_AUDIO_STREAM_ERROR,
-} from "./types";
+    RtcStats,
+    QUALITY_TYPE,
+    LocalVideoStats,
+    LocalAudioStats,
+    RemoteVideoStats,
+    RemoteAudioStats,
+    REMOTE_AUDIO_STATE_REASON,
+    REMOTE_VIDEO_STATE,
+    REMOTE_VIDEO_STATE_REASON,
+    REMOTE_AUDIO_STATE,
+    LastmileProbeResult,
+    CLIENT_ROLE_TYPE,
+    CONNECTION_STATE_TYPE,
+    CONNECTION_CHANGED_REASON_TYPE,
+    MEDIA_DEVICE_TYPE,
+    UserInfo,
+    Metadata,
+    RTMP_STREAMING_EVENT,
+    STREAM_PUBLISH_STATE,
+    STREAM_SUBSCRIBE_STATE,
+    AudioVolumeInfo,
+    AUDIO_MIXING_REASON_TYPE,
+    NETWORK_TYPE,
+    CHANNEL_MEDIA_RELAY_EVENT,
+    CHANNEL_MEDIA_RELAY_STATE,
+    CHANNEL_MEDIA_RELAY_ERROR,
+    INJECT_STREAM_STATUS,
+    MEDIA_DEVICE_STATE_TYPE,
+    RTMP_STREAM_PUBLISH_STATE,
+    RTMP_STREAM_PUBLISH_ERROR,
+    USER_OFFLINE_REASON_TYPE,
+    AUDIO_MIXING_STATE_TYPE,
+    LOCAL_VIDEO_STREAM_STATE,
+    LOCAL_VIDEO_STREAM_ERROR,
+    LOCAL_AUDIO_STREAM_STATE,
+    LOCAL_AUDIO_STREAM_ERROR,
+    VIRTUAL_BACKGROUND_SOURCE_STATE_REASON
+} from './types';
 import { EngineEvents, VideoSourceEvents } from "../Common/JSEvents";
 
 import { AgoraRtcEngine } from "./AgoraRtcEngine";
@@ -1323,6 +1324,13 @@ declare module "./AgoraRtcEngine" {
         width: number,
         height: number,
         elapsed: number
+      ) => void
+    ): this;
+
+    on(
+      evt: EngineEvents.VIRTUAL_BACKGROUND_SOURCE_ENABLED,
+      cb: (
+        enabled: boolean, reason: VIRTUAL_BACKGROUND_SOURCE_STATE_REASON
       ) => void
     ): this;
 
