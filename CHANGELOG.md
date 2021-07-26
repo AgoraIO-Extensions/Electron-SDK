@@ -1,3 +1,6 @@
+## 2.9.108-rc.4-build.726
+* support Electron 7.1.13 9.4.4
+
 ## 2.9.0-rc.107-build.524
 * fix screen share adaptation
 
