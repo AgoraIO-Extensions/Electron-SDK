@@ -1,3 +1,6 @@
+## 3.4.6-build.727 (July 27th, 2021)
+* support Electron 12.0.15
+
 ## 3.4.2-rc.1-build.615 (June 15th, 2021)
 * modify:
   - add areaCode for videoSourceInitialize
