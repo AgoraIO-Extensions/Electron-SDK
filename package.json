@@ -71,8 +71,8 @@
     "lib_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_v3_4_5_FULL.zip",
     "lib_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v3_4_5_FULL.zip",
     "mediaPlayer_mac": "http://10.80.1.174:8090/agora_sdk/mac/2021-07-27/Agora_Media_Player_for_Mac_liushengqiang_51034_ffmpeg_player_lite_20210727_1648.zip",
-    "mediaPlayer_win": "http://10.80.1.174:8090/agora_sdk/windows/2021-07-15/x86/Agora_Media_Player_for_Windows_x86_rel.v1.3.0_62009_ffmpeg_player_lite_20210715_1220.zip",
-    "mediaPlayer_win64": "http://10.80.1.174:8090/agora_sdk/windows/2021-07-15/x64/Agora_Media_Player_for_Windows_x64_rel.v1.3.0_62010_ffmpeg_player_lite_20210715_1222.zip"
+    "mediaPlayer_win": "https://download.agora.io/sdk/release/Agora_Media_Player_for_Windows_x86_rel.v1.3.0_63393_ffmpeg_player_lite_20210727_1117.zip",
+    "mediaPlayer_win64": "https://download.agora.io/sdk/release/Agora_Media_Player_for_Windows_x64_rel.v1.3.0_63392_ffmpeg_player_lite_20210727_1117.zip"
   },
   "keywords": [
     "electron",
