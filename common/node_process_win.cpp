@@ -83,6 +83,26 @@ void NodeProcessWinImpl::Monitor(std::function<void(INodeProcess*)> callback)
     });
     thd.detach();
 }
+// https://jira.agoralab.co/browse/CSD-30422
+void replaceSpecialString(std::string &cmdline){
+    std::string specialX86 = "Program Files (x86)";
+    std::string simpleX86 = "Progra~2";
+
+    auto res=cmdline.find(specialX86);
+    if (res == cmdline.npos) {
+        std::string special = "Program Files";
+        std::string simple = "Progra~1";
+
+        res=cmdline.find(special);
+        if (res != cmdline.npos)
+        {
+            cmdline.replace(res, special.length(), simple);
+        }
+    }else{
+        cmdline.replace(res, specialX86.length(), simpleX86);
+    }
+    LOG_INFO("%s, cmdline : %s\n", __FUNCTION__, cmdline.c_str());
+}
 
 INodeProcess* INodeProcess::CreateNodeProcess(const char* path, const char** params, unsigned int flag)
 {
@@ -108,7 +128,16 @@ INodeProcess* INodeProcess::CreateNodeProcess(const char* path, const char** par
     {
         err = GetLastError();
         LOG_ERROR("%s, create process failed with error %d\n", __FUNCTION__, err);
-        return nullptr;
+
+        // windows special path replace
+        replaceSpecialString(cmdline);
+        if (!CreateProcessA(NULL, (LPSTR)cmdline.c_str(), NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &info, &pi))
+        {
+          err = GetLastError();
+          LOG_ERROR("%s, again create process failed with error %d\n", __FUNCTION__, err);
+          return nullptr;
+        }
+         LOG_ERROR("%s, create process again success\n", __FUNCTION__);
     }
     LOG_INFO("%s success.\n", __FUNCTION__);
     CloseHandle(pi.hThread);
