@@ -22,6 +22,6 @@ bool startLogService(const char* path)
 
 void stopLogService()
 {
-    loguru::remove_all_callbacks();
+    loguru::shutdown();
 }
 
