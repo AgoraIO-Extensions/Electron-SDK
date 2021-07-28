@@ -3244,6 +3244,7 @@ namespace agora {
             LOG_ENTER;
             int result = -1;
             napi_status status = napi_invalid_arg;
+            stopLogService();
             do{
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
