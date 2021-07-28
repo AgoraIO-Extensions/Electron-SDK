@@ -83,6 +83,25 @@ void NodeProcessWinImpl::Monitor(std::function<void(INodeProcess*)> callback)
     });
     thd.detach();
 }
+// https://jira.agoralab.co/browse/CSD-30422
+void changeStr(std::string cmdline){
+    std::string specialX86 = "Program Files (x86)";
+    std::string simpleX86 = "Progra~2";
+
+    auto res=cmdline.find(specialX86);
+    if (res == cmdline.npos) {
+        string special = "Program Files";
+        string simple = "Progra~1";
+        
+        res=cmdline.find(special);
+        if (res != cmdline.npos)
+        {
+            cmdline.replace(res, special.length(), simple);
+        }
+    }else{
+        cmdline.replace(res, specialX86.length(), simpleX86);
+    }
+}
 
 INodeProcess* INodeProcess::CreateNodeProcess(const char* path, const char** params, unsigned int flag)
 {
@@ -102,6 +121,7 @@ INodeProcess* INodeProcess::CreateNodeProcess(const char* path, const char** par
         LOG_ERROR("%s, cmdline empty\n", __FUNCTION__);
         return nullptr;
     }
+    changeStr(cmdline);
 
     LOG_INFO("%s, cmdline : %s\n", __FUNCTION__, cmdline.c_str());
     if (!CreateProcessA(NULL, (LPSTR)cmdline.c_str(), NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &info, &pi))
