@@ -141,6 +141,8 @@
                     'Agorafdkaac.framework',
                     'Agoraffmpeg.framework',
                     'AgoraSoundTouch.framework',
+                    'AgoraJNDExtension.framework',
+                    'AgoraVideoSegmentationExtension.framework',
                     'AgoraCore.framework',
                     'AgoraAIDenoiseExtension.framework',
                     'AgoraDav1dExtension.framework',
@@ -284,6 +286,8 @@
                         './sdk/dll/libagora_ai_denoise_extension.dll',
                         './sdk/dll/libagora_dav1d_extension.dll',
                         './sdk/dll/libagora-core.dll',
+                        './sdk/dll/libagora_segmentation_extension.dll',
+                        './sdk/dll/libagora_jnd_extension.dll',
                     ]
                 }],
                 'library_dirs': [
@@ -355,7 +359,9 @@
                         './sdk/lib/mac/AgoraCore.framework',
                         './sdk/lib/mac/av1.framework',
                         './sdk/lib/mac/AgoraAIDenoiseExtension.framework',
-                        './sdk/lib/mac/AgoraDav1dExtension.framework'
+                        './sdk/lib/mac/AgoraVideoSegmentationExtension.framework',
+                        './sdk/lib/mac/AgoraDav1dExtension.framework',
+                        './sdk/lib/mac/AgoraJNDExtension.framework',
                     ]
                 }],
                 'link_settings': {
@@ -367,6 +373,8 @@
                     'Agoraffmpeg.framework',
                     'AgoraSoundTouch.framework',
                     'AgoraCore.framework',
+                    'AgoraVideoSegmentationExtension.framework',
+                    'AgoraJNDExtension.framework',
                     'AgoraAIDenoiseExtension.framework',
                     'AgoraDav1dExtension.framework',
                     'av1.framework',
