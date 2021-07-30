@@ -44,6 +44,14 @@ const macPrepare = () => {
           path.join(__dirname, '../sdk/lib/mac/AgoraSoundTouch.framework')
         ),
         fs.move(
+          path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraVideoSegmentationExtension.framework'),
+          path.join(__dirname, '../sdk/lib/mac/AgoraVideoSegmentationExtension.framework')
+        ),
+        fs.move(
+          path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraJNDExtension.framework'),
+          path.join(__dirname, '../sdk/lib/mac/AgoraJNDExtension.framework')
+        ),
+        fs.move(
           path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_FULL/libs/AgoraAIDenoiseExtension.framework'),
           path.join(__dirname, '../sdk/lib/mac/AgoraAIDenoiseExtension.framework')
         ),
@@ -92,6 +100,8 @@ const winPrepare = (folder) => {
         fs.move(path.join(folder, './libs/x86/libagora_ai_denoise_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_ai_denoise_extension.dll')),
         fs.move(path.join(folder, './libs/x86/libagora_dav1d_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_dav1d_extension.dll')),
         fs.move(path.join(folder, './libs/x86/libagora-core.dll'), path.join(__dirname, '../sdk/dll/libagora-core.dll')),
+        fs.move(path.join(folder, './libs/x86/libagora_segmentation_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_segmentation_extension.dll')),
+        fs.move(path.join(folder, './libs/x86/libagora_segmentation_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_jnd_extension.dll')),
       ])
     }).then(() => {
       resolve()
@@ -124,6 +134,8 @@ const win64Prepare = (folder) => {
         fs.move(path.join(folder, './libs/x86_64/libagora_ai_denoise_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_ai_denoise_extension.dll')),
         fs.move(path.join(folder, './libs/x86_64/libagora_dav1d_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_dav1d_extension.dll')),
         fs.move(path.join(folder, './libs/x86_64/libagora-core.dll'), path.join(__dirname, '../sdk/dll/libagora-core.dll')),
+        fs.move(path.join(folder, './libs/x86_64/libagora_segmentation_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_segmentation_extension.dll')),
+        fs.move(path.join(folder, './libs/x86_64/libagora_segmentation_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_jnd_extension.dll')),
       ])
     }).then(() => {
       resolve()
