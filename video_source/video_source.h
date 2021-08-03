@@ -91,6 +91,7 @@ protected:
     void notifyLocalAudioStats(const agora::rtc::LocalAudioStats& audioStats);
     void notifyLocalVideoStats(const agora::rtc::LocalVideoStats& videoStats);
     void notifyVideoSizeChanged(agora::rtc::uid_t uid, int width, int height, int rotation);
+    void notifyLocalVideoStateChanged(agora::rtc::LOCAL_VIDEO_STREAM_STATE localVideoState, agora::rtc::LOCAL_VIDEO_STREAM_ERROR error);
 private:
     void exit(bool notifySink);
 private:

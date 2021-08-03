@@ -224,6 +224,14 @@ void AgoraVideoSource::notifyVideoSizeChanged(uid_t uid, int width, int height, 
     m_ipc->sendMessage(AGORA_IPC_ON_VIDEO_SIZECHANGED, (char*) cmd.get(), sizeof(VideoSizeChangedCmd));
 }
 
+void AgoraVideoSource::notifyLocalVideoStateChanged(agora::rtc::LOCAL_VIDEO_STREAM_STATE localVideoState, agora::rtc::LOCAL_VIDEO_STREAM_ERROR error)
+{
+    std::unique_ptr<LocalVideoStateChangedCmd> cmd(new LocalVideoStateChangedCmd());
+    cmd->localVideoState = localVideoState;
+    cmd->error = error;
+    m_ipc->sendMessage(AGORA_IPC_ON_LOCAL_VIDEO_STATE_CHANGED, (char*) cmd.get(), sizeof(LocalVideoStateChangedCmd));
+}
+
 void AgoraVideoSource::release()
 {
     delete this;

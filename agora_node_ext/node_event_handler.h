@@ -99,6 +99,7 @@ namespace agora {
 #define RTC_EVENT_VIDEO_SOURCE_LOCAL_AUDIO_STATS "videoSourceLocalAudioStats"
 #define RTC_EVENT_VIDEO_SOURCE_LOCAL_VIDEO_STATS "videoSourceLocalVideoStats"
 #define RTC_EVENT_VIDEO_SOURCE_VIDEO_SIZE_CHANGED "videoSourceVideoSizeChanged"
+#define RTC_EVENT_VIDEO_SOURCE_LOCAL_VIDEO_STATE_CHANGED "videoSourceLocalVideoStateChanged"
 
 #define RTC_EVENT_FIRST_LOCAL_AUDIO_FRAME_PUBLISH "firstLocalAudioFramePublished"
 #define RTC_EVENT_FIRST_LOCAL_VIDEO_FRAME_PUBLISH "firstLocalVideoFramePublished"
@@ -191,6 +192,7 @@ namespace agora {
             virtual void onVideoSourceLeaveChannel() override;
             virtual void onVideoSourceLocalAudioStats(const LocalAudioStats& stats) override;
             virtual void onVideoSourceVideoSizeChanged(uid_t uid, int width, int height, int rotation) override;
+            virtual void onVideoSourceLocalVideoStateChanged(agora::rtc::LOCAL_VIDEO_STREAM_STATE localVideoState, agora::rtc::LOCAL_VIDEO_STREAM_ERROR error) override;
             virtual void onVideoSourceLocalVideoStats(const LocalVideoStats& stats) override;
             virtual void onVideoSourceExit() override;
             void fireApiError(const char* funcName);

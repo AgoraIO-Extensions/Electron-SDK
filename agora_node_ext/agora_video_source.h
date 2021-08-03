@@ -49,6 +49,8 @@ namespace agora{
             virtual void onVideoSourceVideoSizeChanged(uid_t uid, int width, int height, int rotation) = 0;
 
             virtual void onVideoSourceLocalVideoStats(const LocalVideoStats& stats) = 0;
+            virtual void onVideoSourceLocalVideoStateChanged(agora::rtc::LOCAL_VIDEO_STREAM_STATE localVideoState,agora::rtc::LOCAL_VIDEO_STREAM_ERROR error) = 0;
+            
 
         };
 

@@ -1280,6 +1280,13 @@ namespace agora {
                 MAKE_JS_CALL_4(RTC_EVENT_VIDEO_SOURCE_VIDEO_SIZE_CHANGED, uid, uid, int32, width, int32, height, int32, rotation);
             });
         }
+
+        void NodeEventHandler::onVideoSourceLocalVideoStateChanged(agora::rtc::LOCAL_VIDEO_STREAM_STATE localVideoState, agora::rtc::LOCAL_VIDEO_STREAM_ERROR error)
+        {
+            node_async_call::async_call([this, localVideoState,error] {
+                MAKE_JS_CALL_2(RTC_EVENT_VIDEO_SOURCE_LOCAL_VIDEO_STATE_CHANGED, int32, localVideoState, int32, error);
+            });
+        }
         
         void NodeEventHandler::onVideoSourceLocalVideoStats(const LocalVideoStats& stats)
         {

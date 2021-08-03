@@ -57,6 +57,11 @@ void AgoraVideoSourceEventHandler::onVideoDeviceStateChanged(const char* deviceI
 {
     LOG_INFO("%s, deviceId :%s, deviceType :%d, deviceStatus :%d", __FUNCTION__, deviceId, deviceType, deviceState);
 }
+void AgoraVideoSourceEventHandler::onLocalVideoStateChanged(agora::rtc::LOCAL_VIDEO_STREAM_STATE localVideoState, agora::rtc::LOCAL_VIDEO_STREAM_ERROR error)
+{
+    LOG_INFO("%s, localVideoState :%d, error :%d", __FUNCTION__, localVideoState, error);
+    m_videoSource.notifyLocalVideoStateChanged(localVideoState, error);
+}
 
 void AgoraVideoSourceEventHandler::onNetworkQuality(uid_t uid, int txQuality, int rxQuality)
 {

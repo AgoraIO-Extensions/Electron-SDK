@@ -36,6 +36,7 @@ public:
     virtual void onLeaveChannel(const RtcStats& stats) override;
     virtual void onRtcStats(const RtcStats& stats) override;
     virtual void onVideoDeviceStateChanged(const char* deviceId, int deviceType, int deviceState) override;
+    virtual void onLocalVideoStateChanged(agora::rtc::LOCAL_VIDEO_STREAM_STATE localVideoState, agora::rtc::LOCAL_VIDEO_STREAM_ERROR error) override;
     virtual void onNetworkQuality(uid_t uid, int txQuality, int rxQuality) override;
     virtual void onLastmileQuality(int quality) override;
     virtual void onFirstLocalVideoFrame(int width, int height, int elapsed) override;

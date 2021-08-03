@@ -660,6 +660,13 @@ class AgoraRtcEngine extends EventEmitter {
       fire('videoSourceVideoSizeChanged', uid, width, height, rotation);
     });
 
+    this.rtcEngine.onEvent('videoSourceLocalVideoStateChanged', function(
+      localVideoState: number,
+      err: number
+    ) {
+      fire('videoSourceLocalVideoStateChanged', localVideoState, err);
+    });
+
     this.rtcEngine.onEvent('localUserRegistered', function(
       uid: number,
       userAccount: string

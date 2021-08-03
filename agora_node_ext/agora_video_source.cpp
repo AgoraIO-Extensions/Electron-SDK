@@ -406,6 +406,10 @@ namespace agora{
                 VideoSizeChangedCmd* cmd = (VideoSizeChangedCmd*)payload;
                 m_eventHandler->onVideoSourceVideoSizeChanged(cmd->uid, cmd->width, cmd->height, cmd->rotation);
             }
+            else if (msg == AGORA_IPC_ON_LOCAL_VIDEO_STATE_CHANGED) {
+                LocalVideoStateChangedCmd* cmd = (LocalVideoStateChangedCmd*)payload;
+                m_eventHandler->onVideoSourceLocalVideoStateChanged(cmd->localVideoState, cmd->error);
+            }
             else if (msg == AGORA_IPC_STOP_VS_PREVIEW_COMPLETE) {
                 m_ipcReceiver.reset();
             }
