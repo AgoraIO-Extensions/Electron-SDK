@@ -86,6 +86,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setRemoteDefaultVideoStreamType)
                 PROPERTY_METHOD_DEFINE(enableAudioVolumeIndication)
                 PROPERTY_METHOD_DEFINE(startAudioRecording)
+                PROPERTY_METHOD_DEFINE(stopAudioRecording)
                 PROPERTY_METHOD_DEFINE(startAudioMixing)
                 PROPERTY_METHOD_DEFINE(stopAudioMixing)
                 PROPERTY_METHOD_DEFINE(pauseAudioMixing)
