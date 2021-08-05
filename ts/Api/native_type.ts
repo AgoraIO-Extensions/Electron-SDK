@@ -1567,8 +1567,8 @@ export type ConnectionChangeReason =
   | 12 // 12: Network status change for renew token
   | 13; // 13: Client IP Address changed
 
-  /** Encryption mode. Agora recommends using either the `AES_128_GCM` or
-   * `AES_256_GCM` encryption mode, both of which support adding a salt and
+  /** Encryption mode. Agora recommends using either the `AES_128_GCM2` or
+   * `AES_256_GCM2` encryption mode, both of which support adding a salt and
    * are more secure.
    */
 export enum ENCRYPTION_MODE {
@@ -1581,20 +1581,36 @@ export enum ENCRYPTION_MODE {
       /** 3: 256-bit AES encryption, XTS mode.
        */
       AES_256_XTS = 3,
-      /** 4: Reserved property.
+      /** 4: 128-bit SM4 encryption, ECB mode.
        */
       SM4_128_ECB = 4,
-      /** 5: (Default) 128-bit AES encryption, GCM mode. This mode requires
-       * you to set the salt (`encryptionKdfSalt`).
+      /** 5: 128-bit AES encryption, GCM mode.
        *
-       * @since v3.4.5
+       * @since v3.3.1
        */
       AES_128_GCM = 5,
       /** 6: 256-bit AES encryption, GCM mode.
        *
-       * @since v3.4.5
+       * @since v3.3.1
        */
       AES_256_GCM = 6,
+      /** 7: (Default) 128-bit AES encryption, GCM mode. This mode requires
+       * you to set the salt (`encryptionKdfSalt`).
+       *
+       * @since v3.4.5
+       */
+       AES_128_GCM2 = 7,
+       /** 8: 256-bit AES encryption, GCM mode. This mode requires
+       * you to set the salt (`encryptionKdfSalt`).
+       *
+       * @since v3.4.5
+       */
+      AES_256_GCM2 = 8,
+      /**
+        * @ignore
+        * Enumerator boundary.
+        */
+       MODE_END,
 };
 
 type Uint8ArrayBuffer = ArrayBuffer;
@@ -1604,7 +1620,7 @@ type Uint8ArrayBuffer = ArrayBuffer;
  */
 export interface EncryptionConfig{
    /**
-    * Encryption mode. The default encryption mode is `AES_128_GCM`.
+    * Encryption mode. The default encryption mode is `AES_128_GCM2`.
     */
     encryptionMode: ENCRYPTION_MODE;
     /**
@@ -1624,7 +1640,7 @@ export interface EncryptionConfig{
      * For details, see *Media Stream Encryption*.
      *
      * @note This parameter is only valid when you set the encryption mode as
-     * `AES_128_GCM` or `AES_256_GCM`. In this case, ensure that this parameter
+     * `AES_128_GCM2` or `AES_256_GCM2`. In this case, ensure that this parameter
      * is not `0`.
      *
      */
