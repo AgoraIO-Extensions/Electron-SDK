@@ -5132,7 +5132,7 @@ namespace agora {
                 // LOG_F(INFO, "defaultVideoStreamType: %d", channelMediaOptions.defaultVideoStreamType.value());
 
                 unsigned int connectionId;
-                result = pEngine->m_engine->joinChannelEx(token, channelId, uid, channelMediaOptions, nullptr, &connectionId);
+                result = pEngine->m_engine->joinChannelEx(token, channelId, uid, channelMediaOptions, pEngine->m_eventHandler.get(), &connectionId);
                 if (result == 0) {
                     result = connectionId;
                 }
