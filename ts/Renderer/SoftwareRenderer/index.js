@@ -91,6 +91,8 @@ class Renderer {
     contentMode: 0,
     clientWidth: 0,
     clientHeight: 0,
+    contentWidth,
+    contentHeight
   }) {
     // check if display options changed
     if (isEqual(this.cacheCanvasOpts, options)) {
@@ -111,6 +113,11 @@ class Renderer {
     } else if (options.rotation === 90 || options.rotation === 270) {
       this.canvas.height = options.width;
       this.canvas.width = options.height;
+      Object.assign(this.canvas.style, {
+        width: options.width + "px",
+        height: options.height + "px",
+        "object-fit": "cover"
+      })
     } else {
       throw new Error('Invalid value for rotation. Only support 0, 90, 180, 270')
     }
@@ -121,8 +128,8 @@ class Renderer {
     let scale = this._calcZoom(
       options.rotation === 90 || options.rotation === 270,
       options.contentMode,
-      options.width,
-      options.height,
+      options.contentWidth,
+      options.contentHeight,
       options.clientWidth,
       options.clientHeight
     );
@@ -167,6 +174,8 @@ class Renderer {
       contentMode: this.contentMode,
       clientWidth: this.container.clientWidth,
       clientHeight: this.container.clientHeight,
+      contentWidth,
+      contentHeight
     })
 
     let format = YUVBuffer.format({
