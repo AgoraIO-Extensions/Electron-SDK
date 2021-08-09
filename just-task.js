@@ -130,7 +130,13 @@ task('download', () => {
 })
 // trigger when run npm install
 task('install', () => {
-  const config = Object.assign({arch:process.arch}, getArgvFromNpmEnv(), getArgvFromPkgJson())
+  const config = Object.assign(
+    {
+      arch:process.arch
+    },
+    getArgvFromPkgJson(),
+    getArgvFromNpmEnv()
+    );
   // work-around
   const addonVersion = "3.4.5-rc.233-build.805";
   if (config.prebuilt) {
