@@ -4499,7 +4499,7 @@ class AgoraRtcEngine extends EventEmitter {
     loopback: boolean,
     replace: boolean,
     cycle: number,
-    startPos?: number
+    startPos: number = 0
   ): number {
     return this.rtcEngine.startAudioMixing(filepath, loopback, replace, cycle, startPos);
   }
