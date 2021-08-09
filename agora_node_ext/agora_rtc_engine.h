@@ -341,6 +341,7 @@ namespace agora {
             NAPI_API(enableExtension);
             NAPI_API(setExtensionProperty);
             NAPI_API(setAddonLogFile);
+            NAPI_API(leaveChannelEx);
 
         public:
             Isolate* getIsolate() { return m_isolate; }

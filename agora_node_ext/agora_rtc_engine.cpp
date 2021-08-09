@@ -293,6 +293,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(enableExtension);
                 PROPERTY_METHOD_DEFINE(setExtensionProperty);
                 PROPERTY_METHOD_DEFINE(setAddonLogFile);
+                PROPERTY_METHOD_DEFINE(leaveChannelEx);
 
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
@@ -4615,6 +4616,29 @@ namespace agora {
                 if(destInfos){
                     delete[] destInfos;
                 }
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, leaveChannelEx)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                nodestring channelId;
+                status = napi_get_value_nodestring_(args[0], channelId);
+                CHECK_NAPI_STATUS(pEngine, status);
+                unsigned int connectionId;
+                status = napi_get_value_uint32_(args[1], connectionId);
+                CHECK_NAPI_STATUS(pEngine, status);
+                // LOG_F(INFO, "leaveChannelEx channelId: %s, connectionId: %u", channelId, connectionId);
+                result = pEngine->m_engine->leaveChannelEx(channelId, connectionId);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
