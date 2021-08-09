@@ -92,7 +92,7 @@ class AgoraRtcEngine extends EventEmitter {
     this.rtcEngine = new agora.NodeRtcEngine();
     this.initEventHandler();
     this.streams = new Map();
-    this.renderMode = this._checkWebGL() ? 1 : 2;
+    this.renderMode = (this._checkWebGL() && this._checkWebGL2()) ? 1 : 2;
     this.customRenderer = CustomRenderer;
     this.pauseRender = false;
   }
@@ -112,7 +112,12 @@ class AgoraRtcEngine extends EventEmitter {
    * - 3 for custom rendering.
    */
   setRenderMode(mode: 1 | 2 | 3 | 4 = 1): void {
-    this.renderMode = mode;
+    if (this._checkWebGL() && this._checkWebGL2()) {
+      this.renderMode = mode;
+    } else {
+      console.log("RendererMode: webGL not support, fallback to software renderer")
+      this.renderMode = 2;
+    }
   }
 
   setPauseRenderer(pause: boolean = false) {
@@ -169,6 +174,32 @@ class AgoraRtcEngine extends EventEmitter {
     }
   }
 
+  _checkWebGL2() {
+    var canvas = document.createElement('canvas'), gl;
+    canvas.width = 1;
+    canvas.height = 1;
+
+    var options = {
+			// Don't trigger discrete GPU in multi-GPU systems
+			preferLowPowerToHighPerformance: true,
+			powerPreference: 'low-power',
+			// Don't try to use software GL rendering!
+			failIfMajorPerformanceCaveat: true,
+			// In case we need to capture the resulting output.
+			preserveDrawingBuffer: true
+		};
+    
+    try {
+      gl = canvas.getContext('webgl', options) || canvas.getContext('experimental-webgl', options);
+    } catch (e) {
+      return false;
+    }
+    if (gl) {
+      return true;
+    } else {
+      return false;
+    }
+  }
   /**
    * init event handler
    * @private
