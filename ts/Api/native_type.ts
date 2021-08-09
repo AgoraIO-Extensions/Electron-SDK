@@ -3034,6 +3034,10 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
+  leaveChannelEx(channelId: string, connectionId: number): number;
+  /**
+   * @ignore
+   */
   updateChannelMediaOptions(options: ChannelMediaOptions, connectionId: number): number;
  /**
    * @ignore
