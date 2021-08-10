@@ -60,7 +60,7 @@ const AgoraRender = function() {
   };
 
   that.unbind = function () {
-    this.observer && this.observer.unobserve && this.observer.unobserve();
+    this.observer && this.observer.unobserve && this.observer.disconnect();
     try {
       gl && gl.getExtension('WEBGL_lose_context').loseContext();
     } catch (err) {
