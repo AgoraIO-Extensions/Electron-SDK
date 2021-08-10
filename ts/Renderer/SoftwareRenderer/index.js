@@ -56,7 +56,8 @@ class Renderer {
       height: '100%',
       display: 'flex',
       justifyContent: 'center',
-      alignItems: 'center'
+      alignItems: 'center',
+      overflow: 'hidden',
     });
     this.container = container;
     element.appendChild(this.container);
