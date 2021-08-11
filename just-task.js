@@ -133,7 +133,7 @@ task('install', () => {
   const config = {
     ...getArgvFromNpmEnv(),
     ...getArgvFromPkgJson(),
-    arch:getArgvFromNpmEnv().arch || getArgvFromPkgJson() || process.arch,
+    arch:getArgvFromNpmEnv().arch || getArgvFromPkgJson().arch || process.arch,
   }
   
   // work-around
