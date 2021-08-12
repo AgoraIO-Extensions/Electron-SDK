@@ -20,6 +20,8 @@
 
 using agora::rtc::RtcEngineContext;
 using agora::rtc::uid_t;
+using agora::rtc::AVideoDeviceManager;
+using agora::rtc::AAudioDeviceManager;
 
 AgoraVideoSource::AgoraVideoSource(const std::string& param)
 	: m_initialized(false)
@@ -337,6 +339,47 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
     }
     else if(msg == AGORA_IPC_ENABLE_AUDIO) {
         m_rtcEngine->enableAudio();
+    }
+    else if(msg == AGORA_IPC_VIDEO_SOURCE_SET_VIDEO_DEVICE) {
+        LOG_INFO("AGORA_IPC_VIDEO_SOURCE_SET_VIDEO_DEVICE");
+        if (!m_videoVdm && m_rtcEngine.get()) {
+            LOG_INFO("AGORA_IPC_VIDEO_SOURCE_SET_VIDEO_DEVICE create m_videoVdm");
+            m_videoVdm = new AVideoDeviceManager(m_rtcEngine.get());
+        }
+        agora::rtc::IVideoDeviceManager* vdm = m_videoVdm->get();
+        if (vdm) {
+            LOG_INFO("AGORA_IPC_VIDEO_SOURCE_SET_VIDEO_DEVICE setDevice %s",payload);
+            vdm->setDevice((char *)payload);
+        }
+    }
+    else if(msg == AGORA_IPC_VIDEO_SOURCE_ENABLE_VIDEO) {
+        LOG_INFO("AGORA_IPC_VIDEO_SOURCE_ENABLE_VIDEO enableVideo");
+        m_rtcEngine->enableVideo();
+    }
+    else if(msg == AGORA_IPC_VIDEO_SOURCE_DISABLE_VIDEO) {
+        LOG_INFO("AGORA_IPC_VIDEO_SOURCE_DISABLE_VIDEO disableVideo");
+        m_rtcEngine->disableVideo();
+    }
+    else if(msg == AGORA_IPC_VIDEO_SOURCE_DISABLE_AUDIO) {
+        LOG_INFO("AGORA_IPC_VIDEO_SOURCE_DISABLE_AUDIO disableAudio");
+        m_rtcEngine->disableAudio();
+    }
+    else if(msg == AGORA_IPC_VIDEO_SOURCE_ENABLE_LOCAL_VIDEO) {
+        LOG_INFO("AGORA_IPC_VIDEO_SOURCE_ENABLE_LOCAL_VIDEO enableLocalAudio %d",*payload);
+        m_rtcEngine->enableLocalVideo((bool)*payload);
+    }
+    else if(msg == AGORA_IPC_VIDEO_SOURCE_ENABLE_LOCAL_AUDIO) {
+        LOG_INFO("AGORA_IPC_VIDEO_SOURCE_ENABLE_LOCAL_AUDIO enableVideo %d",*payload);
+        m_rtcEngine->enableLocalAudio((bool)*payload);
+    }
+    else if(msg == AGORA_IPC_VIDEO_SOURCE_SET_VIDEO_ENCODER_CONFIGURATION) {
+        LOG_INFO("AGORA_IPC_VIDEO_SOURCE_SET_VIDEO_ENCODER_CONFIGURATION setVideoEncoderConfiguration");
+        agora::rtc::VideoEncoderConfiguration *config = (agora::rtc::VideoEncoderConfiguration *)payload;
+        m_rtcEngine->setVideoEncoderConfiguration(*config);
+    }
+    else if(msg == AGORA_IPC_VIDEO_SOURCE_SET_CLIENT_ROLE) {
+        LOG_INFO("AGORA_IPC_VIDEO_SOURCE_SET_CLIENT_ROLE role:%d",*payload);
+        m_rtcEngine->setClientRole((agora::rtc::CLIENT_ROLE_TYPE)*payload);
     }
     else if (msg == AGORA_IPC_SET_ADDON_LOGFILE) {
         stopLogService();

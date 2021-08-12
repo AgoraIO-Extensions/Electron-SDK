@@ -182,6 +182,15 @@ namespace agora{
              * Enable audio
              */
             virtual node_error enableAudio() = 0;
+            
+            virtual node_error setVideoDevice(const char* deviceId) = 0;
+            virtual node_error enableVideo() = 0;
+            virtual node_error disableVideo() = 0;
+            virtual node_error disableAudio() = 0;
+            virtual node_error enableLocalVideo(bool enable) = 0;
+            virtual node_error enableLocalAudio(bool enable) = 0;
+            virtual node_error setVideoEncoderConfiguration(agora::rtc::VideoEncoderConfiguration config) = 0;
+            virtual node_error setClientRole(unsigned int role) = 0;
 
             /**
              * Set addon logfile path

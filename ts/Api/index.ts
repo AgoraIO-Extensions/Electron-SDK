@@ -2239,6 +2239,32 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.videoSourceSetLogFile(filepath);
   }
 
+
+  videoSourceSetVideoDevice(deviceId :string) {
+    return this.rtcEngine.videoSourceSetVideoDevice(deviceId);
+  }
+  videoSourceEnableVideo() {
+    return this.rtcEngine.videoSourceEnableVideo();
+  }
+  videoSourceDisableVideo() {
+    return this.rtcEngine.videoSourceDisableVideo();
+  }
+  videoSourceDisableAudio() {
+    return this.rtcEngine.videoSourceDisableAudio();
+  }
+  videoSourceEnableLocalVideo(enable: boolean) {
+    return this.rtcEngine.videoSourceEnableLocalVideo(enable);
+  }
+  videoSourceEnableLocalAudio(enable: boolean) {
+    return this.rtcEngine.videoSourceEnableLocalAudio(enable);
+  }
+  videoSourceSetVideoEncoderConfiguration(config: VideoEncoderConfiguration) {
+    return this.rtcEngine.videoSourceSetVideoEncoderConfiguration(config);
+  }
+  videoSourceSetClientRole(clientRole :ClientRoleType) {
+    return this.rtcEngine.videoSourceSetClientRole(clientRole);
+  }
+
   /**
    * Specifies an SDK output log file for the video source object.
    *

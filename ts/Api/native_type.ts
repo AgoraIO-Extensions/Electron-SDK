@@ -1890,6 +1890,16 @@ export interface NodeRtcEngine {
    * @ignore
    */
   videoSourceSetLogFile(filepath: string): number;
+
+  videoSourceSetVideoDevice(deviceId :string) :number;
+  videoSourceEnableVideo() :number;
+  videoSourceDisableVideo() :number;
+  videoSourceDisableAudio() :number;
+  videoSourceEnableLocalVideo(enable: boolean) :number;
+  videoSourceEnableLocalAudio(enable: boolean) :number;
+  videoSourceSetVideoEncoderConfiguration(config: VideoEncoderConfiguration) :number;
+  videoSourceSetClientRole(clientRole :ClientRoleType) :number;
+
   /**
    * @ignore
    */

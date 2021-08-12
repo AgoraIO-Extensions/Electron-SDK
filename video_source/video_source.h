@@ -104,6 +104,8 @@ private:
     std::mutex m_ipcSenderMutex;
     /** RTC engine. */
     agora::util::AutoPtr<agora::rtc::IRtcEngine> m_rtcEngine;
+    agora::rtc::AVideoDeviceManager* m_videoVdm = nullptr;
+    agora::rtc::AAudioDeviceManager* m_audioVdm = nullptr;
     bool m_initialized;
     std::string m_params;
     std::unique_ptr<INodeProcess> m_process;
