@@ -45,7 +45,8 @@ class Renderer {
     }
   }
 
-  bind(element) {
+  bind(element, isWebGL) {
+    console.log(`YuvCanvas render webGL ${isWebGL}`)
     // record element
     this.element = element;
     // create container
@@ -55,7 +56,8 @@ class Renderer {
       height: '100%',
       display: 'flex',
       justifyContent: 'center',
-      alignItems: 'center'
+      alignItems: 'center',
+      overflow: 'hidden',
     });
     this.container = container;
     element.appendChild(this.container);
@@ -63,10 +65,22 @@ class Renderer {
     // create canvas
     this.canvas = document.createElement('canvas')
     this.container.appendChild(this.canvas)
-    this.yuv = YUVCanvas.attach(this.canvas, { webGL: false });
+    this.yuv = YUVCanvas.attach(this.canvas, { webGL: isWebGL });
+
+    const ResizeObserver =
+      window.ResizeObserver ||
+      window.WebKitMutationObserver ||
+      window.MozMutationObserver;
+    if (ResizeObserver) {
+      this.observer = new ResizeObserver(() => {
+        this.refreshCanvas && this.refreshCanvas();
+      });
+      this.observer.observe(container);
+    }
   }
 
   unbind() {
+    this.observer && this.observer.unobserve && this.observer.disconnect();
     this.container && this.container.removeChild(this.canvas);
     this.element && this.element.removeChild(this.container);
     this.yuv = null;
@@ -74,8 +88,19 @@ class Renderer {
     this.canvas = null;
     this.view = null;
   }
+
+  equalsElement(element) {
+    return this.element === element
+  }
+
   refreshCanvas() {
-    // Not implemented for software renderer
+    if (this.cacheCanvasOpts) {
+      try {
+        this.updateCanvas(this.cacheCanvasOpts,false)
+      } catch (error) {
+        console.log('software refreshCanvas',error);
+      }
+    }
   }
   updateCanvas(options = {
     width: 0,
@@ -85,13 +110,15 @@ class Renderer {
     contentMode: 0,
     clientWidth: 0,
     clientHeight: 0,
-  }) {
+    contentWidth,
+    contentHeight,
+  } , isOpenCache=true) {
     // check if display options changed
-    if (isEqual(this.cacheCanvasOpts, options)) {
+    if (isOpenCache && isEqual(this.cacheCanvasOpts, options)) {
       return;
     }
 
-    this.cacheCanvasOpts = Object.assign({}, options);
+    this.cacheCanvasOpts = options;
 
     // check for rotation
     if (options.rotation === 0 || options.rotation === 180) {
@@ -105,22 +132,27 @@ class Renderer {
     } else if (options.rotation === 90 || options.rotation === 270) {
       this.canvas.height = options.width;
       this.canvas.width = options.height;
+      Object.assign(this.canvas.style, {
+        width: options.width + "px",
+        height: options.height + "px",
+        "object-fit": "cover"
+      })
     } else {
       throw new Error('Invalid value for rotation. Only support 0, 90, 180, 270')
     }
     let transformItems = []
-    
+
     transformItems.push(`rotateZ(${options.rotation}deg)`)
-    
+
     let scale = this._calcZoom(
       options.rotation === 90 || options.rotation === 270,
       options.contentMode,
-      options.width,
-      options.height,
+      options.contentWidth,
+      options.contentHeight,
       options.clientWidth,
       options.clientHeight
     );
-    
+
     // transformItems.push(`scale(${scale})`)
     this.canvas.style.zoom = scale;
 
@@ -129,7 +161,7 @@ class Renderer {
       // this.canvas.style.transform = 'rotateY(180deg)';
       transformItems.push('rotateY(180deg)')
     }
-    
+
     if(transformItems.length > 0) {
       let transform = `${transformItems.join(' ')}`
       this.canvas.style.transform = transform
@@ -161,6 +193,8 @@ class Renderer {
       contentMode: this.contentMode,
       clientWidth: this.container.clientWidth,
       clientHeight: this.container.clientHeight,
+      contentWidth,
+      contentHeight,
     })
 
     let format = YUVBuffer.format({
