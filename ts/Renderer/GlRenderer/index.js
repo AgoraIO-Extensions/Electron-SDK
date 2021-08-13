@@ -32,6 +32,12 @@ const AgoraRender = function() {
     lastImageHeight: 0,
     lastImageRotation: 0
   };
+  that.snapshot = function (fileType = 'image/png') {
+    if (this.canvas && this.canvas.toDataURL) {
+        return this.canvas.toDataURL(fileType);
+    }
+    return null;
+  }
 
   that.setContentMode = function(mode) {
     that.contentMode = mode;

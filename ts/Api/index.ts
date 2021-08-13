@@ -981,6 +981,8 @@ class AgoraRtcEngine extends EventEmitter {
       renderer = new GlRenderer();
     }
     renderer.bind(view);
+    let temp: any = view;
+    temp.snapshot = renderer.snapshot.bind(renderer);
 
     if(!rendererOptions.append) {
       localRenderers.set(devicdId, [renderer]);
@@ -989,6 +991,7 @@ class AgoraRtcEngine extends EventEmitter {
       renderers.push(renderer)
       localRenderers.set(devicdId, renderers)
     }
+    return renderer;
   }
 
   /**
