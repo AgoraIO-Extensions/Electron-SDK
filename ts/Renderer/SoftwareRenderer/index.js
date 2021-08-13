@@ -14,6 +14,12 @@ class Renderer {
     this.canvas = {};
     this.element = {};
   }
+  snapshot(fileType = 'image/png'){
+    if (this.canvas && this.canvas.toDataURL) {
+        return this.canvas.toDataURL(fileType);
+    }
+    return null;
+  }
 
   _calcZoom(vertical = false, contentMode = 0, width, height, clientWidth, clientHeight) {
     let localRatio = clientWidth / clientHeight;
