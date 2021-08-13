@@ -40,6 +40,14 @@ AgoraVideoSource::~AgoraVideoSource()
     m_renderFactory.reset();
     m_ipc.reset();
     m_paramParser.reset();
+    if (m_videoVdm)
+    {
+        delete m_videoVdm;
+    }
+    if (m_audioVdm)
+    {
+        delete m_audioVdm;
+    }
     LOG_LEAVE;
 }
 
@@ -346,7 +354,10 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
             LOG_INFO("AGORA_IPC_VIDEO_SOURCE_SET_VIDEO_DEVICE create m_videoVdm");
             m_videoVdm = new AVideoDeviceManager(m_rtcEngine.get());
         }
-        agora::rtc::IVideoDeviceManager* vdm = m_videoVdm->get();
+        agora::rtc::IVideoDeviceManager* vdm = nullptr;
+        if (m_videoVdm) {
+            vdm = m_videoVdm->get();
+        }
         if (vdm) {
             LOG_INFO("AGORA_IPC_VIDEO_SOURCE_SET_VIDEO_DEVICE setDevice %s",payload);
             vdm->setDevice((char *)payload);
