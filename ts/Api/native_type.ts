@@ -2272,6 +2272,74 @@ export enum MEDIA_PLAYER_EVENT {
     config: string
   }
 
+  /** Audio recording quality, which is set in
+   * \ref IRtcEngine::startAudioRecording(const AudioRecordingConfiguration&) "startAudioRecording".
+   */
+  export enum AUDIO_RECORDING_QUALITY_TYPE {
+    /** 0: Low quality. For example, the size of an AAC file with a sample rate
+     * of 32,000 Hz and a 10-minute recording is approximately 1.2 MB.
+     */
+    AUDIO_RECORDING_QUALITY_LOW = 0,
+    /** 1: (Default) Medium quality. For example, the size of an AAC file with
+     * a sample rate of 32,000 Hz and a 10-minute recording is approximately
+     * 2 MB.
+     */
+    AUDIO_RECORDING_QUALITY_MEDIUM = 1,
+    /** 2: High quality. For example, the size of an AAC file with a sample rate
+     * of 32,000 Hz and a 10-minute recording is approximately 3.75 MB.
+     */
+    AUDIO_RECORDING_QUALITY_HIGH = 2,
+  };
+
+  /** 
+   * The audio file record type.
+   */
+  export enum AUDIO_FILE_RECORDING_TYPE {
+    /**
+     * 1: mic audio file recording.
+     */
+    AUDIO_FILE_RECORDING_MIC = 1,
+    /**
+     * 2: playback audio file recording.
+     */
+    AUDIO_FILE_RECORDING_PLAYBACK = 2,
+    /**
+     * 3: mixed audio file recording, include mic and playback.
+     */
+    AUDIO_FILE_RECORDING_MIXED = 3,
+  };
+
+
+  /**
+   * The Audio file recording options.
+   */
+  export interface AudioFileRecordingConfig {
+    /**
+     * The path of recording file.
+     * The string of the file path is in UTF-8 code.
+     */
+    filePath: string;
+    /**
+     * Determines whether to encode audio data.
+     * - true: Encode the audio data with AAC Encoder.
+     * - false: (Default) Do not encode the audio data. Save audio data as a wav file.
+     */
+    encode: boolean;
+    /**
+     * The sample rate of audio data. Default is 32000.
+     * The optional value is 16000, 32000, 44100, or 48000.
+     */
+    sampleRate: number;
+    /**
+     * The recording type of audio data.
+     */
+    fileRecordingType: AUDIO_FILE_RECORDING_TYPE;
+    /**
+     * The recording quality of audio data.
+     */
+    quality: AUDIO_RECORDING_QUALITY_TYPE;
+  };
+
 /**
  * interface for c++ addon (.node)
  * @ignore
@@ -2621,6 +2689,8 @@ export interface NodeRtcEngine {
    * @ignore
    */
   startAudioRecording(filePath: string, quality: number): number;
+
+  startAudioRecording2(filePath: string, sampleRate: number, quality: AUDIO_RECORDING_QUALITY_TYPE): number;
   /**
    * @ignore
    */
