@@ -342,6 +342,8 @@ namespace agora {
             NAPI_API(setExtensionProperty);
             NAPI_API(setAddonLogFile);
             NAPI_API(leaveChannelEx);
+            NAPI_API(startAudioRecording2);
+            // NAPI_API(startAudioRecordingWithConfig);
 
         public:
             Isolate* getIsolate() { return m_isolate; }

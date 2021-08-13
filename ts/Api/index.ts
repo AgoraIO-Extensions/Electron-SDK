@@ -56,7 +56,8 @@ import {
   ScreenCaptureConfiguration,
   VIDEO_SOURCE_TYPE,
   Extension,
-  VIDEO_ORIENTATION
+  VIDEO_ORIENTATION,
+  AUDIO_RECORDING_QUALITY_TYPE
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -2940,10 +2941,14 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success
    * - < 0: Failure
    */
-  startAudioRecording(filePath: string, quality: number):number {
+  startAudioRecording(filePath: string, quality: AUDIO_RECORDING_QUALITY_TYPE):number {
     return this.rtcEngine.startAudioRecording(filePath, quality)
   }
-  /**
+
+  startAudioRecording2(filePath: string, sampleRate: number, quality: AUDIO_RECORDING_QUALITY_TYPE): number {
+    return this.rtcEngine.startAudioRecording2(filePath, sampleRate, quality);
+  }
+   /**
    * Stops an audio recording on the client.
    * 
    * You can call this method before calling the {@link leaveChannel} method
