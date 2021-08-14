@@ -15,6 +15,7 @@ interface IRenderer {
   }): void;
   setContentMode(mode: number): void;
   refreshCanvas(): void;
+  snapshot(type :string): string;
 }
 
 class GlRenderer implements IRenderer {
@@ -23,6 +24,9 @@ class GlRenderer implements IRenderer {
   constructor() {
     this.self = createGlRenderer.apply(this);
     this.event = this.self.event;
+  }
+  snapshot(type :string): string{
+    return this.self.snapshot(type);
   }
   bind(element: Element): void {
     return this.self.bind(element);
@@ -55,6 +59,9 @@ class CustomRenderer implements IRenderer {
   }
 
   event: EventEmitter;
+  snapshot(type :string): string{
+    throw new Error('You have to declare your own custom render');
+  }
 
   bind(element: Element) {
     throw new Error('You have to declare your own custom render');
