@@ -11,6 +11,7 @@
 #include <CoreGraphics/CoreGraphics.h>
 #include <CoreServices/CoreServices.h>
 #include <ImageIO/ImageIO.h>
+#include "loguru.hpp"
 
 void copyImageDataToWindowInfo(CGImageRef image, ScreenWindowInfo& windowInfo)
 {
@@ -131,6 +132,11 @@ bool setWindowInfoWithDictionary(ScreenWindowInfo& windowInfo, CFDictionaryRef w
         LOG_ERROR("Get window bounds fail.");
         return false;
     }
+
+    if (CGRectGetWidth(bounds) <= 96 || CGRectGetHeight(bounds) <= 96) {
+        return false;
+    }
+
     windowInfo.width = CGRectGetWidth(bounds);
     windowInfo.height = CGRectGetHeight(bounds);
     
@@ -158,31 +164,35 @@ std::vector<ScreenWindowInfo> getAllWindowInfo()
     for (CFIndex index = 0; index < count; index++) {
         CFDictionaryRef windowDic = static_cast<CFDictionaryRef>(CFArrayGetValueAtIndex(windowDicCFArray, index));
         
+        //layer == 0
         int layer;
         CFNumberRef layerNumber = static_cast<CFNumberRef>(CFDictionaryGetValue(windowDic, kCGWindowLayer));
-        if (!CFNumberGetValue(layerNumber, kCFNumberSInt32Type, &layer) || layer != 0) {
+        if (!CFNumberGetValue(layerNumber, kCFNumberSInt32Type, &layer) || layer != 0)
             continue;
-        }
+        
+        ScreenWindowInfo screenWindow;
+        if (!setWindowInfoWithDictionary(screenWindow, windowDic))
+            continue;
 
         CFStringRef name = static_cast<CFStringRef>(CFDictionaryGetValue(windowDic, kCGWindowName));
         if (name) {
-            auto length = CFStringGetLength(name);
-            if (length == 0) {
-                continue;
+            CFNumberRef sharingStateRef = static_cast<CFNumberRef>(CFDictionaryGetValue(windowDic, kCGWindowSharingState));
+            if (sharingStateRef) {
+                int state = 0;
+                CFNumberGetValue(sharingStateRef, kCFNumberSInt32Type, &state);
+                if (state == 0)
+                    continue;
             }
-        } else {
-            continue;
         }
-        
-        ScreenWindowInfo screenWindow;
-        if (!setWindowInfoWithDictionary(screenWindow, windowDic)) {
-            break;
-        }
-        
+
         CGImageRef screenShot = CGWindowListCreateImage(CGRectNull,
                                                         kCGWindowListOptionIncludingWindow,
                                                         screenWindow.windowId,
                                                         kCGWindowImageBoundsIgnoreFraming);
+        
+        if (!screenShot)
+            continue;
+
         if (screenShot) {
             copyImageDataToWindowInfo(screenShot, screenWindow);
             CGImageRelease(screenShot);
