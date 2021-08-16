@@ -593,7 +593,7 @@ namespace agora {
                         int sourceType;
                         napi_get_object_property_int32_(isolate, videoInputStreamObj, "sourceType", sourceType);
                         CHECK_NAPI_STATUS(pEngine, status);
-                        videoInputStreams[i].sourceType = (VIDEO_SOURCE_TYPE)sourceType;
+                        videoInputStreams[i].sourceType = (MEDIA_SOURCE_TYPE)sourceType;
                         napi_get_object_property_uint32_(isolate, videoInputStreamObj, "remoteUserUid", videoInputStreams[i].remoteUserUid);
                         napi_get_object_property_uint32_(isolate, videoInputStreamObj, "connectionId", videoInputStreams[i].connectionId);
                         napi_get_object_property_nodestring_(isolate, videoInputStreamObj, "imageUrl", imageUrlList[i]);
@@ -768,7 +768,7 @@ namespace agora {
                         int sourceType;
                         napi_get_object_property_int32_(isolate, videoInputStreamObj, "sourceType", sourceType);
                         CHECK_NAPI_STATUS(pEngine, status);
-                        videoInputStreams[i].sourceType = (VIDEO_SOURCE_TYPE)sourceType;
+                        videoInputStreams[i].sourceType = (MEDIA_SOURCE_TYPE)sourceType;
                         napi_get_object_property_uint32_(isolate, videoInputStreamObj, "remoteUserUid", videoInputStreams[i].remoteUserUid);
                         CHECK_NAPI_STATUS(pEngine, status);
                         napi_get_object_property_uint32_(isolate, videoInputStreamObj, "connectionId", videoInputStreams[i].connectionId);
@@ -5592,7 +5592,7 @@ namespace agora {
                 status = napi_get_value_int32_(args[1], orientation);
                 CHECK_NAPI_STATUS(pEngine, status);
 
-                result = pEngine->m_engine->setCameraDeviceOrientation((VIDEO_SOURCE_TYPE)type, (VIDEO_ORIENTATION)orientation);
+                result = pEngine->m_engine->setCameraDeviceOrientation((MEDIA_SOURCE_TYPE)type, (VIDEO_ORIENTATION)orientation);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -5864,7 +5864,7 @@ namespace agora {
 #if defined(__APPLE__)
                 result = pEngine->m_engine->enableExtension(id, enable);
 #elif defined(_WIN32)
-                result = pEngine->m_engine->enableExtension((VIDEO_SOURCE_TYPE)type, id, enable);
+                result = pEngine->m_engine->enableExtension((MEDIA_SOURCE_TYPE)type, id, enable);
 #endif
             } while (false);
             napi_set_int_result(args, result);
@@ -5901,7 +5901,7 @@ namespace agora {
 #if defined(__APPLE__)
                 result = pEngine->m_engine->setExtensionProperty(id, key, json_value);
 #elif defined(_WIN32)
-                result = pEngine->m_engine->setExtensionProperty((VIDEO_SOURCE_TYPE)type, id, key, json_value);
+                result = pEngine->m_engine->setExtensionProperty((MEDIA_SOURCE_TYPE)type, id, key, json_value);
 #endif
             } while (false);
             napi_set_int_result(args, result);

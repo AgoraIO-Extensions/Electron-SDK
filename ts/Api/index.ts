@@ -54,7 +54,7 @@ import {
   MEDIA_PLAYER_EVENT,
   CameraCapturerConfiguration,
   ScreenCaptureConfiguration,
-  VIDEO_SOURCE_TYPE,
+  MEDIA_SOURCE_TYPE,
   Extension,
   VIDEO_ORIENTATION,
   AUDIO_RECORDING_QUALITY_TYPE,
@@ -743,7 +743,7 @@ class AgoraRtcEngine extends EventEmitter {
       fire('firstLocalAudioFramePublished', connId, elapsed);
     })
 
-    this.rtcEngine.onEvent('videoSourceFrameSizeChanged', function(sourceType: VIDEO_SOURCE_TYPE, width: number, height: number) {
+    this.rtcEngine.onEvent('videoSourceFrameSizeChanged', function(sourceType: MEDIA_SOURCE_TYPE, width: number, height: number) {
       fire('videoSourceFrameSizeChanged', sourceType, width, height);
     })
 
@@ -4209,7 +4209,7 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.stopSecondaryCameraCapture();
   }
 
-  setCameraDeviceOrientation(type: VIDEO_SOURCE_TYPE, orientation:VIDEO_ORIENTATION): number {
+  setCameraDeviceOrientation(type: MEDIA_SOURCE_TYPE, orientation:VIDEO_ORIENTATION): number {
     return this.rtcEngine.setCameraDeviceOrientation(type, orientation);
   }
 
@@ -4245,7 +4245,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
- enableExtension(type: VIDEO_SOURCE_TYPE, id: string, enable: boolean): number {
+ enableExtension(type: MEDIA_SOURCE_TYPE, id: string, enable: boolean): number {
    return this.rtcEngine.enableExtension(type, id, enable);
  }
 
@@ -4259,7 +4259,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
- setExtensionProperty(type: VIDEO_SOURCE_TYPE, key: string, jsonValue: string): number {
+ setExtensionProperty(type: MEDIA_SOURCE_TYPE, key: string, jsonValue: string): number {
    return this.rtcEngine.setExtensionProperty(type, key, jsonValue);
  }
 
@@ -5320,7 +5320,7 @@ declare interface AgoraRtcEngine {
   )=>void): this;
 
   on(evt: 'videoSourceFrameSizeChanged', cb: (
-    sourceType: VIDEO_SOURCE_TYPE,
+    sourceType: MEDIA_SOURCE_TYPE,
     width: number,
     height: number
   )=>void): this;

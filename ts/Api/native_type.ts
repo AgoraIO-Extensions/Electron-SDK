@@ -262,20 +262,60 @@ export interface TranscodingConfig {
 }
 
 /**
- * Video source types definition.
- * - 0: Video captured by the camera.
- * - 1: Video captured by the secondary camera.
- * - 2: Video for screen sharing.
- * - 3: Video for the secondary screen sharing.
- * - 4: Video for custom video.
- * - 5: Video of MediaPlayer
- * - 6: Video for png image.
- * - 7: Video for jpg image.
- * - 8: Video for gif image.
- * - 9: Remote video received from network.
- * - 10: Video for transcoded.
- */
-export declare type VIDEO_SOURCE_TYPE = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
+* Video source types definition.
+**/
+export enum MEDIA_SOURCE_TYPE {
+  /**
+   * Video captured by the camera.
+   */
+  VIDEO_SOURCE_CAMERA_PRIMARY,
+  VIDEO_SOURCE_CAMERA = VIDEO_SOURCE_CAMERA_PRIMARY,
+  /**
+   * Video captured by the secondary camera.
+   */
+  VIDEO_SOURCE_CAMERA_SECONDARY,
+  /**
+   * Video for screen sharing.
+   */
+  VIDEO_SOURCE_SCREEN_PRIMARY,
+  VIDEO_SOURCE_SCREEN = VIDEO_SOURCE_SCREEN_PRIMARY,
+  /**
+   * Video for secondary screen sharing.
+   */
+  VIDEO_SOURCE_SCREEN_SECONDARY,
+  /**
+   * Video for custom source.
+   */
+  VIDEO_SOURCE_CUSTOM,
+  /**
+   * Video for media player sharing.
+   */
+  VIDEO_SOURCE_MEDIA_PLAYER,
+  /**
+   * Video for png image.
+   */
+  VIDEO_SOURCE_RTC_IMAGE_PNG,
+  /**
+   * Video for png image.
+   */
+  VIDEO_SOURCE_RTC_IMAGE_JPEG,
+  /**
+   * Video for png image.
+   */
+  VIDEO_SOURCE_RTC_IMAGE_GIF,
+  /**
+   * Remote video received from network.
+   */
+  VIDEO_SOURCE_REMOTE,
+  /**
+   * Video for transcoded.
+   */
+  VIDEO_SOURCE_TRANSCODED,
+  /**
+   * Not define.
+  */
+  MEDIA_SOURCE_UNKNOWN = 100
+};
 
 /**
  * The rotation information.
@@ -303,7 +343,7 @@ export interface TranscodingVideoStream {
     /**
      * Source type of video stream.
      */
-    sourceType: VIDEO_SOURCE_TYPE;
+    sourceType: MEDIA_SOURCE_TYPE;
     /**
      * Remote user uid if sourceType is VIDEO_SOURCE_REMOTE.
      */
@@ -3147,7 +3187,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  setCameraDeviceOrientation(type: VIDEO_SOURCE_TYPE, orientation:VIDEO_ORIENTATION): number;
+  setCameraDeviceOrientation(type: MEDIA_SOURCE_TYPE, orientation:VIDEO_ORIENTATION): number;
   /**
    * @ignore
    */
@@ -3171,11 +3211,11 @@ export interface NodeRtcEngine {
  /**
   * @ignore
   */
- enableExtension(type: VIDEO_SOURCE_TYPE, id: string, enable: boolean): number;
+ enableExtension(type: MEDIA_SOURCE_TYPE, id: string, enable: boolean): number;
  /**
   * @ignore
   */
- setExtensionProperty(type: VIDEO_SOURCE_TYPE, key: string, jsonValue: string): number;
+ setExtensionProperty(type: MEDIA_SOURCE_TYPE, key: string, jsonValue: string): number;
  /**
   * @ignore
   */
