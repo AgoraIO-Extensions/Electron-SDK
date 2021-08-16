@@ -3253,15 +3253,15 @@ export interface NodeRtcEngine {
  /**
   * @ignore
   */
- enableExtension(provider_name: string, extension_name: string,enable :boolean, type: MEDIA_SOURCE_TYPE): number;
+ enableExtension(provider_name: string, extension_name: string,enable :boolean): number;
  /**
   * @ignore
   */
- getExtensionProperty(provider_name: string, extension_name: string, key: string, json_value: string,buf_len: number, type: MEDIA_SOURCE_TYPE): number ;
+ getExtensionProperty(provider_name: string, extension_name: string, key: string, json_value: string,buf_len: number): number ;
  /**
   * @ignore
   */
- setExtensionProperty(provider_name: string, extension_name: string, key :string,json_value :string, type: MEDIA_SOURCE_TYPE): number;
+ setExtensionProperty(provider_name: string, extension_name: string, key :string,json_value :string): number;
  /**
   * @ignore
   */
@@ -3269,7 +3269,7 @@ export interface NodeRtcEngine {
  /**
   * @ignore
   */
-  setBeautyEffectOptions(enabled: boolean, options: BeautyOptions, type: MEDIA_SOURCE_TYPE): number
+  setBeautyEffectOptions(enabled: boolean, options: BeautyOptions): number
   /**
   * @ignore
   */

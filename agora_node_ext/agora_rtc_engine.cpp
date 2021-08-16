@@ -5833,7 +5833,7 @@ namespace agora {
 #if defined(__APPLE__)
                 result = pEngine->m_engine->enableExtension(id, key, json_value);
 #elif defined(_WIN32)
-                result = pEngine->m_engine->enableExtension(provider_name, extension_name, enable, (MEDIA_SOURCE_TYPE)type);
+                result = pEngine->m_engine->enableExtension(provider_name, extension_name, enable);
 #endif
             } while (false);
             napi_set_int_result(args, result);
@@ -5867,7 +5867,7 @@ namespace agora {
                 int type;
                 napi_get_value_int32_(args[5], type);  
 
-                result = pEngine->m_engine->getExtensionProperty(provider_name, extension_name, key, json_value, buf_len,(MEDIA_SOURCE_TYPE)type);
+                result = pEngine->m_engine->getExtensionProperty(provider_name, extension_name, key, json_value, buf_len);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -5918,7 +5918,7 @@ namespace agora {
 
                 int type;
                 napi_get_value_int32_(args[2], type);  
-                result = pEngine->m_engine->setBeautyEffectOptions(enable,options,(MEDIA_SOURCE_TYPE)type);
+                result = pEngine->m_engine->setBeautyEffectOptions(enable,options);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -5952,7 +5952,7 @@ namespace agora {
 #if defined(__APPLE__)
                 result = pEngine->m_engine->setExtensionProperty(id, key, json_value);
 #elif defined(_WIN32)
-                result = pEngine->m_engine->setExtensionProperty(provider_name, extension_name, key, json_value, (MEDIA_SOURCE_TYPE)type);
+                result = pEngine->m_engine->setExtensionProperty(provider_name, extension_name, key, json_value);
 #endif
             } while (false);
             napi_set_int_result(args, result);
