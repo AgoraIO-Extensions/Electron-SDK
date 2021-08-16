@@ -4246,15 +4246,15 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
- enableExtension(provider_name: string, extension_name: string,enable :boolean , type : MEDIA_SOURCE_TYPE): number {
-   return this.rtcEngine.enableExtension(provider_name, extension_name, enable, type);
+ enableExtension(provider_name: string, extension_name: string,enable :boolean): number {
+   return this.rtcEngine.enableExtension(provider_name, extension_name, enable);
  }
 
- getExtensionProperty(provider_name: string, extension_name: string, key: string, json_value: string, type : MEDIA_SOURCE_TYPE): number {
-  return this.rtcEngine.getExtensionProperty(provider_name, extension_name, key, json_value, json_value.length, type);
+ getExtensionProperty(provider_name: string, extension_name: string, key: string, json_value: string): number {
+  return this.rtcEngine.getExtensionProperty(provider_name, extension_name, key, json_value, json_value.length);
 }
- setBeautyEffectOptions(enabled :boolean, options :BeautyOptions, type : MEDIA_SOURCE_TYPE):number {
-   return this.rtcEngine.setBeautyEffectOptions(enabled, options, type);
+ setBeautyEffectOptions(enabled :boolean, options :BeautyOptions):number {
+   return this.rtcEngine.setBeautyEffectOptions(enabled, options);
  }
  setScreenCaptureOrientation(type: MEDIA_SOURCE_TYPE, orientation: VIDEO_ORIENTATION): number{
     return this.rtcEngine.setScreenCaptureOrientation(type, orientation);
@@ -4270,8 +4270,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
- setExtensionProperty(provider_name: string, extension_name: string, key :string,json_value :string, type: MEDIA_SOURCE_TYPE): number {
-   return this.rtcEngine.setExtensionProperty(provider_name, extension_name, key, json_value, type);
+ setExtensionProperty(provider_name: string, extension_name: string, key :string,json_value :string): number {
+   return this.rtcEngine.setExtensionProperty(provider_name, extension_name, key, json_value);
  }
  
  
