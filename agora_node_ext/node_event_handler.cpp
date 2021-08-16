@@ -1500,7 +1500,7 @@ namespace agora {
 
         }
 
-        void NodeEventHandler::onVideoSourceFrameSizeChanged(VIDEO_SOURCE_TYPE sourceType, int width, int height) {
+        void NodeEventHandler::onVideoSourceFrameSizeChanged(MEDIA_SOURCE_TYPE sourceType, int width, int height) {
             FUNC_TRACE;
             node_async_call::async_call([this, sourceType, width, height] {
                 MAKE_JS_CALL_3(RTC_EVENT_VIDEO_FRAME_SIZE_CHANGED, int32, sourceType, int32, width, int32, height);
@@ -1514,14 +1514,14 @@ namespace agora {
             });
         }
 
-        void NodeEventHandler::onExtensionEvent(const char* id, const char* key, const char* json_value) {
-            FUNC_TRACE
-            std::string sId(id);
-            std::string sKey(key);
-            std::string sJsonValue(json_value);
-            node_async_call::async_call([this, sId, sKey, sJsonValue] {
-                MAKE_JS_CALL_3(RTC_EVENT_EXTENSION_EVENT, string, sId.c_str(), string, sKey.c_str(), string, sJsonValue.c_str());
-            });
-        }
+        // void NodeEventHandler::onExtensionEvent(const char* id, const char* key, const char* json_value) {
+        //     FUNC_TRACE
+        //     std::string sId(id);
+        //     std::string sKey(key);
+        //     std::string sJsonValue(json_value);
+        //     node_async_call::async_call([this, sId, sKey, sJsonValue] {
+        //         MAKE_JS_CALL_3(RTC_EVENT_EXTENSION_EVENT, string, sId.c_str(), string, sKey.c_str(), string, sJsonValue.c_str());
+        //     });
+        // }
     }
 }
