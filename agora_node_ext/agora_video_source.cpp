@@ -191,6 +191,7 @@ namespace agora{
             uuid_t uuid;
             uuid_generate(uuid);
             uuid_string_t uid = {0};
+            uuid_unparse(uuid, uid);
             std::ostringstream stringStream;
 
             if(groupId) {

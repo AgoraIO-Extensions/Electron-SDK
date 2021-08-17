@@ -729,8 +729,9 @@ template<uint32_t BLOCK_NUM, uint32_t BLOCK_SIZE>
 int32_t shm_ipc<BLOCK_NUM, BLOCK_SIZE>::write(int fd, const void *buf, int32_t size)
 {
     shm_header<BLOCK_NUM, BLOCK_SIZE> *header = (shm_header<BLOCK_NUM, BLOCK_SIZE> *)shmOp->address();
-    if (fd < 0 || fd > header->channel_count)
+    if (fd < 0 || (header != NULL && fd > header->channel_count)){
         return -1;
+    }
 
     shm_channel<BLOCK_NUM, BLOCK_SIZE> *channel = &header->channels[fd];
     if (AtomicGet(&channel->used) != 1 ||
@@ -765,8 +766,9 @@ template<uint32_t BLOCK_NUM, uint32_t BLOCK_SIZE>
 int32_t shm_ipc<BLOCK_NUM, BLOCK_SIZE>::write(int fd, const std::vector<std::pair<char*, int32_t>>& bufs)
 {
     shm_header<BLOCK_NUM, BLOCK_SIZE> *header = (shm_header<BLOCK_NUM, BLOCK_SIZE> *)shmOp->address();
-    if (fd < 0 || fd > header->channel_count)
+    if (fd < 0 || (header != NULL && fd > header->channel_count)){
         return -1;
+    }
 
     shm_channel<BLOCK_NUM, BLOCK_SIZE> *channel = &header->channels[fd];
     if (AtomicGet(&channel->used) != 1 ||
