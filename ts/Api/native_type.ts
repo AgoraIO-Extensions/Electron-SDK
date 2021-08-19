@@ -476,6 +476,48 @@ export interface UserInfo {
   userAccount: string;
 }
 
+/**
+   * The lightening contrast level.
+   */
+export enum LIGHTENING_CONTRAST_LEVEL {
+  /**
+   * 0: Low contrast level.
+   */
+  LIGHTENING_CONTRAST_LOW = 0,
+  /**
+   * (Default) Normal contrast level.
+   */
+  LIGHTENING_CONTRAST_NORMAL,
+  /**
+   * High contrast level.
+   */
+  LIGHTENING_CONTRAST_HIGH
+};
+
+export interface BeautyOptions {
+  
+
+  /**
+   * The contrast level, usually used with {@link lighteningLevel} to brighten the video:
+   * #LIGHTENING_CONTRAST_LEVEL.
+   */
+  lighteningContrastLevel: LIGHTENING_CONTRAST_LEVEL;
+
+  /** Th
+    e brightness level. The value ranges from 0.0 (original) to 1.0. */
+  lighteningLevel: number;
+  /** The smoothness level. The value ranges between 0 (original) and 1. This parameter is usually used to remove blemishes.
+     */
+  smoothnessLevel: number;
+  /** The redness level. The value ranges between 0 (original) and 1. This parameter adjusts the red saturation level.
+     */
+  rednessLevel: number;
+
+  /** The sharpness level. The value ranges between 0 (original) and 1.
+    */
+  sharpnessLevel: number;
+}
+
 /**  */
 export enum RenderType
 {
@@ -2407,7 +2449,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  initialize(appId: string, extensions: Extension[], areaCode?: AREA_CODE): number;
+  initialize(appId: string, areaCode?: AREA_CODE): number;
   /**
    * @ignore
    */
@@ -3211,11 +3253,23 @@ export interface NodeRtcEngine {
  /**
   * @ignore
   */
- enableExtension(type: MEDIA_SOURCE_TYPE, id: string, enable: boolean): number;
+ enableExtension(provider_name: string, extension_name: string,enable :boolean, type: MEDIA_SOURCE_TYPE): number;
  /**
   * @ignore
   */
- setExtensionProperty(type: MEDIA_SOURCE_TYPE, key: string, jsonValue: string): number;
+ getExtensionProperty(provider_name: string, extension_name: string, key: string, json_value: string,buf_len: number, type: MEDIA_SOURCE_TYPE): number ;
+ /**
+  * @ignore
+  */
+ setExtensionProperty(provider_name: string, extension_name: string, key :string,json_value :string, type: MEDIA_SOURCE_TYPE): number;
+ /**
+  * @ignore
+  */
+ loadExtensionProvider(extension_lib_path: string): number 
+ /**
+  * @ignore
+  */
+ setBeautyEffectOptions(enabled: boolean, options: BeautyOptions, type: MEDIA_SOURCE_TYPE):number
  /**
   * @ignore
   */

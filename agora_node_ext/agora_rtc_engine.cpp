@@ -290,13 +290,16 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setCameraDeviceOrientation);
 
                 // Extension
+                PROPERTY_METHOD_DEFINE(loadExtensionProvider);
                 PROPERTY_METHOD_DEFINE(enableExtension);
+                PROPERTY_METHOD_DEFINE(getExtensionProperty);
                 PROPERTY_METHOD_DEFINE(setExtensionProperty);
                 PROPERTY_METHOD_DEFINE(setAddonLogFile);
                 PROPERTY_METHOD_DEFINE(leaveChannelEx);
                 PROPERTY_METHOD_DEFINE(startAudioRecording2);
                 // PROPERTY_METHOD_DEFINE(startAudioRecordingWithConfig);
                 PROPERTY_METHOD_DEFINE(setClientRoleWithOptions);
+                PROPERTY_METHOD_DEFINE(setBeautyEffectOptions);
 
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
@@ -2029,7 +2032,6 @@ namespace agora {
             LOG_ENTER;
             int result = -1;
             std::string key;
-            Extension* extensions = nullptr;
             nodestring* idList = nullptr;
             nodestring* pathList = nullptr;
             nodestring* configList = nullptr;
@@ -2043,41 +2045,9 @@ namespace agora {
                 key = "appId";
                 CHECK_NAPI_STATUS_STR(pEngine, status, key);
 ;
-                Local<Value> extensionsList = args[1];
-                if (extensionsList->IsNullOrUndefined() || !extensionsList->IsArray()) {
-                    status = napi_invalid_arg;
-                    key = "Extensions";
-                    CHECK_NAPI_STATUS_STR(pEngine, status, key);
-                }
-                auto extensionsListValue = v8::Array::Cast(*extensionsList);
                 
-                int extensionCount = extensionsListValue->Length();
-                if (extensionCount > 0) {
-                    extensions = new Extension[extensionCount];
-                    idList = new nodestring[extensionCount];
-                    pathList = new nodestring[extensionCount];
-                    configList = new nodestring[extensionCount];
-                    for (int i = 0; i < extensionCount; i++ ) {
-                        Local<Value> value = extensionsListValue->Get(isolate->GetCurrentContext(), i).ToLocalChecked();
-                        Local<Object> extensionObj;
-                        status = napi_get_value_object_(isolate, value, extensionObj);
-                        if (extensionObj->IsNullOrUndefined()) {
-                            status = napi_invalid_arg;
-                            break;
-                        }
-                        napi_get_object_property_nodestring_(isolate, extensionObj, "id", idList[i]);
-                        napi_get_object_property_nodestring_(isolate, extensionObj, "path", pathList[i]);
-                        napi_get_object_property_nodestring_(isolate, extensionObj, "config", configList[i]);
-                        extensions[i].id = idList[i];
-                        extensions[i].path = pathList[i];
-                        extensions[i].config = configList[i];
-                    }
-                    key = "extension item";
-                    CHECK_NAPI_STATUS_STR(pEngine, status, key);
-                }
-
                 unsigned int areaCode;
-                status = napi_get_value_uint32_(args[2], areaCode);
+                status = napi_get_value_uint32_(args[1], areaCode);
                 key = "areaCode";
                 CHECK_NAPI_STATUS_STR(pEngine, status, key);
 
@@ -2085,10 +2055,6 @@ namespace agora {
                 context.eventHandlerEx = pEngine->m_eventHandler.get();
                 context.appId = appid;
                 context.areaCode = areaCode;
-                if (extensionCount > 0) {
-                    context.extensions = extensions;
-                    context.numExtension = extensionCount;
-                }
                 auto engineEx = (IRtcEngineEx*) pEngine->m_engine;
                 int suc = engineEx->initialize(context);
                 if (0 != suc) {
@@ -2112,7 +2078,7 @@ namespace agora {
                 pEngine->m_engine->enableLocalVideo(true);
                 result = 0;
             } while (false);
-            delete [] extensions;
+            
             delete [] idList;
             delete [] pathList;
             delete [] configList;
@@ -5845,63 +5811,169 @@ namespace agora {
         {
             LOG_ENTER;
             int result = -1;
-            std::string key = "";
             do {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                int type;
-                nodestring id;
-                bool enable;
-                napi_get_value_int32_(args[0], type);
 
-                napi_status status = napi_get_value_nodestring_(args[1], id);
-                key = "id";
-                CHECK_NAPI_STATUS_STR(pEngine, status, key);
+                nodestring provider_name;
+                napi_status status = napi_get_value_nodestring_(args[0], provider_name);
+
+                nodestring extension_name;
+                status = napi_get_value_nodestring_(args[1], extension_name);
+
+                bool enable;
                 status = napi_get_value_bool_(args[2], enable);
-                key = "enable";
-                CHECK_NAPI_STATUS_STR(pEngine, status, key);
+               
+                int type;
+                napi_get_value_int32_(args[3], type);  
+
+
 #if defined(__APPLE__)
-                result = pEngine->m_engine->enableExtension(id, enable);
+                result = pEngine->m_engine->enableExtension(id, key, json_value);
 #elif defined(_WIN32)
-                result = pEngine->m_engine->enableExtension((MEDIA_SOURCE_TYPE)type, id, enable);
+                result = pEngine->m_engine->enableExtension(provider_name, extension_name, enable, (MEDIA_SOURCE_TYPE)type);
 #endif
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
-        NAPI_API_DEFINE(NodeRtcEngine, setExtensionProperty)
+        NAPI_API_DEFINE(NodeRtcEngine, getExtensionProperty)
         {
             LOG_ENTER;
             int result = -1;
-            std::string debugKey = "";
             do {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
 
-                int type;
-                napi_get_value_int32_(args[0], type);        
+                nodestring provider_name;
+                napi_status status = napi_get_value_nodestring_(args[0], provider_name);
 
-                nodestring id;
-                napi_status status = napi_get_value_nodestring_(args[1], id);
-                debugKey = "id";
-                CHECK_NAPI_STATUS_STR(pEngine, status, debugKey);
+                nodestring extension_name;
+                status = napi_get_value_nodestring_(args[1], extension_name);
 
                 nodestring key;
                 status = napi_get_value_nodestring_(args[2], key);
-                debugKey = "key";
-                CHECK_NAPI_STATUS_STR(pEngine, status, debugKey);
 
                 nodestring json_value;
                 status = napi_get_value_nodestring_(args[3], json_value);
-                debugKey = "jsonValue";
-                CHECK_NAPI_STATUS_STR(pEngine, status, debugKey);
+               
+                unsigned int buf_len;
+                status = napi_get_value_uint32_(args[4], buf_len);
+
+                int type;
+                napi_get_value_int32_(args[5], type);  
+
+                result = pEngine->m_engine->getExtensionProperty(provider_name, extension_name, key, json_value, buf_len,(MEDIA_SOURCE_TYPE)type);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setBeautyEffectOptions)
+        {
+            LOG_ENTER;
+            int result = -1;
+            Isolate *isolate = args.GetIsolate();
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                bool enable;
+                napi_status status = napi_get_value_bool_(args[0], enable);
+
+                if(!args[1]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+
+                Local<Object> obj;
+                status = napi_get_value_object_(isolate, args[1], obj);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                BeautyOptions options;
+                int lighteningContrastLevel;
+                status = napi_get_object_property_int32_(isolate, obj, "lighteningContrastLevel", lighteningContrastLevel);
+                CHECK_NAPI_STATUS(pEngine, status);
+                double lighteningLevel, smoothnessLevel, rednessLevel, sharpnessLevel;
+
+                status = napi_get_object_property_double_(isolate, obj, "lighteningLevel", lighteningLevel);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_double_(isolate, obj, "smoothnessLevel", smoothnessLevel);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_double_(isolate, obj, "rednessLevel", rednessLevel);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_double_(isolate, obj, "sharpnessLevel", sharpnessLevel);
+                CHECK_NAPI_STATUS(pEngine, status);
+                
+                options.lighteningContrastLevel = (agora::rtc::BeautyOptions::LIGHTENING_CONTRAST_LEVEL)lighteningContrastLevel;
+                options.lighteningLevel = lighteningLevel;
+                options.smoothnessLevel = smoothnessLevel;
+                options.rednessLevel = rednessLevel;
+                options.sharpnessLevel = sharpnessLevel;
+
+                int type;
+                napi_get_value_int32_(args[2], type);  
+                result = pEngine->m_engine->setBeautyEffectOptions(enable,options,(MEDIA_SOURCE_TYPE)type);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+        
+
+        NAPI_API_DEFINE(NodeRtcEngine, setExtensionProperty)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                nodestring provider_name;
+                napi_status status = napi_get_value_nodestring_(args[0], provider_name);
+
+                nodestring extension_name;
+                status = napi_get_value_nodestring_(args[1], extension_name);
+
+                nodestring key;
+                status = napi_get_value_nodestring_(args[2], key);
+
+                nodestring json_value;
+                status = napi_get_value_nodestring_(args[3], json_value);
+               
+                int type;
+                napi_get_value_int32_(args[4], type);  
+
 #if defined(__APPLE__)
                 result = pEngine->m_engine->setExtensionProperty(id, key, json_value);
 #elif defined(_WIN32)
-                result = pEngine->m_engine->setExtensionProperty((MEDIA_SOURCE_TYPE)type, id, key, json_value);
+                result = pEngine->m_engine->setExtensionProperty(provider_name, extension_name, key, json_value, (MEDIA_SOURCE_TYPE)type);
+#endif
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+        
+        NAPI_API_DEFINE(NodeRtcEngine, loadExtensionProvider)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                nodestring extension_lib_path;
+                napi_status status = napi_get_value_nodestring_(args[0], extension_lib_path);
+
+#if defined(__APPLE__)
+
+#elif defined(_WIN32)
+                result = pEngine->m_engine->loadExtensionProvider(extension_lib_path);
 #endif
             } while (false);
             napi_set_int_result(args, result);
