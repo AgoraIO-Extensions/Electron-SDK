@@ -340,7 +340,10 @@ namespace agora {
 
             // Extension
             NAPI_API(enableExtension);
+            NAPI_API(loadExtensionProvider);
+            NAPI_API(getExtensionProperty);
             NAPI_API(setExtensionProperty);
+            NAPI_API(setBeautyEffectOptions);
             NAPI_API(setAddonLogFile);
             NAPI_API(leaveChannelEx);
             NAPI_API(startAudioRecording2);
