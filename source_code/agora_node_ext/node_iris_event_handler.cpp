@@ -5,12 +5,14 @@
  * @Last Modified time: 2021-05-18 15:07:20
  */
 #include "node_iris_event_handler.h"
+#include <memory.h>
+#include <string>
 #include "node_iris_rtc_engine.h"
 
 namespace agora {
 namespace rtc {
 namespace electron {
-NodeIrisEventHandler::NodeIrisEventHandler(NodeIrisRtcEngine *engine)
+NodeIrisEventHandler::NodeIrisEventHandler(NodeIrisRtcEngine* engine)
     : _node_iris_engine(engine) {
   node_async_call::close(false);
 }
@@ -21,38 +23,40 @@ NodeIrisEventHandler::~NodeIrisEventHandler() {
   _node_iris_engine = nullptr;
 }
 
-void NodeIrisEventHandler::addEvent(const std::string &eventName,
-                                    Nan_Persistent<v8_Object> &obj,
-                                    Nan_Persistent<v8_Function> &callback) {
-  auto _callback = new EventCallback();
-  _callback->js_this.Reset(obj);
-  _callback->callback.Reset(callback);
-  _callbacks.emplace(eventName, _callback);
+void NodeIrisEventHandler::addEvent(const std::string& eventName,
+                                    napi_env& env,
+                                    napi_value& call_bcak,
+                                    napi_value& global) {
+  auto callback = new EventCallback();
+  callback->env = env;
+  callback->call_back = call_bcak;
+  callback->global = global;
+  _callbacks[eventName] = callback;
 }
 
-void NodeIrisEventHandler::OnEvent(const char *event, const char *data) {
+void NodeIrisEventHandler::OnEvent(const char* event, const char* data) {
   std::string _eventName(event);
   std::string _eventData(data);
   node_async_call::async_call([this, _eventName, _eventData] {
     auto it = _callbacks.find("call_back");
     if (it != _callbacks.end()) {
-      auto _isolate = v8_Isolate::GetCurrent();
-      v8_HandleScope scope(_isolate);
-      auto context = _isolate->GetCurrentContext();
-      v8_Local<v8_Value> argv[2]{
-          nan_create_local_value_string_(_isolate, _eventName.c_str()),
-          nan_create_local_value_string_(_isolate, _eventData.c_str()),
-      };
-      EventCallback &cb = *it->second;
-      auto _result = cb.callback.Get(_isolate)->Call(
-          context, cb.js_this.Get(_isolate), 2, argv);
-      v8_MAYBE_LOCAL_CHECK_RESULT(_result);
+      size_t argc = 2;
+      napi_value args[2];
+      napi_value result;
+      napi_create_string_utf8(it->second->env, _eventName.c_str(),
+                              sizeof(_eventName), &args[0]);
+      napi_create_string_utf8(it->second->env, _eventData.c_str(),
+                              sizeof(_eventData), &args[1]);
+      napi_call_function(it->second->env, it->second->global,
+                         it->second->call_back, argc, args, &result);
     }
   });
 }
 
-void NodeIrisEventHandler::OnEvent(const char *event, const char *data,
-                                   const void *buffer, unsigned length) {
+void NodeIrisEventHandler::OnEvent(const char* event,
+                                   const char* data,
+                                   const void* buffer,
+                                   unsigned int length) {
   std::string _eventName(event);
   std::string _eventData(data);
   std::vector<char> stringData;
@@ -63,47 +67,45 @@ void NodeIrisEventHandler::OnEvent(const char *event, const char *data,
   node_async_call::async_call([this, _eventName, _eventData, _eventBuffer] {
     auto it = _callbacks.find("call_back_with_buffer");
     if (it != _callbacks.end()) {
-      auto _isolate = v8_Isolate::GetCurrent();
-      v8_HandleScope scope(_isolate);
-      auto context = _isolate->GetCurrentContext();
-      v8_Local<v8_Value> argv[3]{
-          nan_create_local_value_string_(_isolate, _eventName.c_str()),
-          nan_create_local_value_string_(_isolate, _eventData.c_str()),
-          nan_create_local_value_string_(_isolate, _eventBuffer.c_str()),
-      };
-      EventCallback &cb = *it->second;
-      auto _result = cb.callback.Get(_isolate)->Call(
-          context, cb.js_this.Get(_isolate), 3, argv);
-      v8_MAYBE_LOCAL_CHECK_RESULT(_result);
+      size_t argc = 3;
+      napi_value args[3];
+      napi_value result;
+      napi_create_string_utf8(it->second->env, _eventName.c_str(),
+                              sizeof(_eventName), &args[0]);
+      napi_create_string_utf8(it->second->env, _eventData.c_str(),
+                              sizeof(_eventData), &args[1]);
+      napi_create_string_utf8(it->second->env, _eventBuffer.c_str(),
+                              sizeof(_eventBuffer), &args[2]);
+      napi_call_function(it->second->env, it->second->global,
+                         it->second->call_back, argc, args, &result);
     }
   });
 }
 
-void NodeIrisEventHandler::OnVideoSourceEvent(const char *eventName,
-                                              const char *eventData) {
+void NodeIrisEventHandler::OnVideoSourceEvent(const char* eventName,
+                                              const char* eventData) {
   std::string _eventName(eventName);
   std::string _eventData(eventData);
   node_async_call::async_call([this, _eventName, _eventData] {
     auto it = _callbacks.find("video_source_call_back");
     if (it != _callbacks.end()) {
-      auto _isolate = v8_Isolate::GetCurrent();
-      v8_HandleScope scope(_isolate);
-      auto context = _isolate->GetCurrentContext();
-      v8_Local<v8_Value> argv[2]{
-          nan_create_local_value_string_(_isolate, _eventName.c_str()),
-          nan_create_local_value_string_(_isolate, _eventData.c_str()),
-      };
-      EventCallback &cb = *it->second;
-      auto _result = cb.callback.Get(_isolate)->Call(
-          context, cb.js_this.Get(_isolate), 2, argv);
-      v8_MAYBE_LOCAL_CHECK_RESULT(_result);
+      size_t argc = 2;
+      napi_value args[2];
+      napi_value result;
+      napi_create_string_utf8(it->second->env, _eventName.c_str(),
+                              sizeof(_eventName), &args[0]);
+      napi_create_string_utf8(it->second->env, _eventData.c_str(),
+                              sizeof(_eventData), &args[1]);
+      napi_call_function(it->second->env, it->second->global,
+                         it->second->call_back, argc, args, &result);
     }
   });
 }
 
-void NodeIrisEventHandler::OnVideoSourceEvent(const char *event,
-                                              const char *data,
-                                              const char *buffer, int length) {
+void NodeIrisEventHandler::OnVideoSourceEvent(const char* event,
+                                              const char* data,
+                                              const char* buffer,
+                                              int length) {
   std::string _eventName(event);
   std::string _eventData(data);
   std::vector<char> stringData;
@@ -113,18 +115,17 @@ void NodeIrisEventHandler::OnVideoSourceEvent(const char *event,
   node_async_call::async_call([this, _eventName, _eventData, _eventBuffer] {
     auto it = _callbacks.find("video_source_call_back_with_buffer");
     if (it != _callbacks.end()) {
-      auto _isolate = v8_Isolate::GetCurrent();
-      v8_HandleScope scope(_isolate);
-      auto context = _isolate->GetCurrentContext();
-      v8_Local<v8_Value> argv[3]{
-          nan_create_local_value_string_(_isolate, _eventName.c_str()),
-          nan_create_local_value_string_(_isolate, _eventData.c_str()),
-          nan_create_local_value_string_(_isolate, _eventBuffer.c_str()),
-      };
-      EventCallback &cb = *it->second;
-      auto _result = cb.callback.Get(_isolate)->Call(
-          context, cb.js_this.Get(_isolate), 3, argv);
-      v8_MAYBE_LOCAL_CHECK_RESULT(_result);
+      size_t argc = 3;
+      napi_value args[3];
+      napi_value result;
+      napi_create_string_utf8(it->second->env, _eventName.c_str(),
+                              sizeof(_eventName), &args[0]);
+      napi_create_string_utf8(it->second->env, _eventData.c_str(),
+                              sizeof(_eventData), &args[1]);
+      napi_create_string_utf8(it->second->env, _eventBuffer.c_str(),
+                              sizeof(_eventBuffer), &args[2]);
+      napi_call_function(it->second->env, it->second->global,
+                         it->second->call_back, argc, args, &result);
     }
   });
 }
@@ -133,6 +134,6 @@ void NodeIrisEventHandler::OnVideoSourceExit() {
   LOG_F(INFO, "NodeIrisEventHandler::OnVideoSourceExit");
   _node_iris_engine->VideoSourceRelease();
 }
-} // namespace electron
-} // namespace rtc
-} // namespace agora
+}  // namespace electron
+}  // namespace rtc
+}  // namespace agora

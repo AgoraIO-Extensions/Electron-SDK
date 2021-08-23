@@ -21,7 +21,7 @@
     "lib_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v3_4_6_FULL.zip",
     "no_symbol": true,
     "electron_version": "11.0.0",
-    "prebuilt":false
+    "prebuilt": false
   },
   "dependencies": {
     "cross-env": "^7.0.3",
@@ -34,6 +34,7 @@
     "lodash.isequal": "^4.5.0",
     "minimist": "^1.2.5",
     "nan": "2.14.2",
+    "node-addon-api": "^4.0.0",
     "node-gyp": "^7.1.2",
     "rimraf": "^3.0.0",
     "shelljs": "^0.8.4",

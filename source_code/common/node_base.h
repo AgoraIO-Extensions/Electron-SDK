@@ -1,5 +1,7 @@
 #pragma once
+#include <node_api.h>
 #include "logger.h"
+#include <node.h>
 
 namespace agora {
 namespace rtc {
