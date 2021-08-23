@@ -19,6 +19,6 @@ node_async_call::node_async_call() {
 }
 
 node_async_call::~node_async_call() {}
-} // namespace electron
-} // namespace rtc
-} // namespace agora
+}  // namespace electron
+}  // namespace rtc
+}  // namespace agora

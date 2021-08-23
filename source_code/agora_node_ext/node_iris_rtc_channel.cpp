@@ -11,11 +11,8 @@ namespace rtc {
 namespace electron {
 using namespace iris::rtc;
 
-Nan_Persistent<v8_Function> NodeIrisRtcChannel::_constructor;
-
-NodeIrisRtcChannel::NodeIrisRtcChannel(v8_Isolate *isolate,
-                                       IrisRtcChannel *irisChannel,
-                                       const char *channelId) {
+NodeIrisRtcChannel::NodeIrisRtcChannel(IrisRtcChannel* irisChannel,
+                                       const char* channelId) {
   node::AddEnvironmentCleanupHook(isolate, ReleaseNodeSource, this);
   _channel_id = channelId;
   _isolate = isolate;
@@ -31,9 +28,9 @@ NodeIrisRtcChannel::~NodeIrisRtcChannel() {
   LOG_F(INFO, "NodeIrisRtcChannel::~NodeIrisRtcChannel  channelId");
 }
 
-v8_Local<v8_Object> NodeIrisRtcChannel::Init(v8_Isolate *isolate,
-                                             IrisRtcChannel *irisChannel,
-                                             const char *channelId) {
+v8_Local<v8_Object> NodeIrisRtcChannel::Init(v8_Isolate* isolate,
+                                             IrisRtcChannel* irisChannel,
+                                             const char* channelId) {
   auto _context = isolate->GetCurrentContext();
   auto _template = v8_FunctionTemplate::New(isolate, CreateInstance);
   _template->SetClassName(
@@ -57,11 +54,11 @@ v8_Local<v8_Object> NodeIrisRtcChannel::Init(v8_Isolate *isolate,
 }
 
 void NodeIrisRtcChannel::CreateInstance(
-    const v8_FunctionCallbackInfo<v8_Value> &args) {
-  auto *_isolate = args.GetIsolate();
+    const v8_FunctionCallbackInfo<v8_Value>& args) {
+  auto* _isolate = args.GetIsolate();
   auto _argChannel = v8_Local<v8_External>::Cast(args[0]);
   auto _argChannelId = nan_api_get_value_utf8string_(args[1]);
-  auto _irisChannel = static_cast<IrisRtcChannel *>(_argChannel->Value());
+  auto _irisChannel = static_cast<IrisRtcChannel*>(_argChannel->Value());
   auto _channel =
       new NodeIrisRtcChannel(_isolate, _irisChannel, _argChannelId.c_str());
   _channel->Wrap(args.This());
@@ -69,7 +66,7 @@ void NodeIrisRtcChannel::CreateInstance(
 }
 
 void NodeIrisRtcChannel::CallApi(
-    const Nan_FunctionCallbackInfo<v8_Value> &args) {
+    const Nan_FunctionCallbackInfo<v8_Value>& args) {
   auto _channel = ObjectWrap::Unwrap<NodeIrisRtcChannel>(args.Holder());
   auto _isolate = args.GetIsolate();
   auto _apiType = nan_api_get_value<int, v8_Int32>(args[0]);
@@ -82,7 +79,7 @@ void NodeIrisRtcChannel::CallApi(
     try {
       _ret = _channel->_iris_channel->CallApi((ApiTypeChannel)_apiType,
                                               _parameter.c_str(), _result);
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
       _channel->OnApiError(e.what());
       LOG_F(INFO,
             "NodeIrisRtcChannel::CallApi apiType: %d, parameter: %s, "
@@ -100,7 +97,7 @@ void NodeIrisRtcChannel::CallApi(
 }
 
 void NodeIrisRtcChannel::CallApiWithBuffer(
-    const Nan_FunctionCallbackInfo<v8_Value> &args) {
+    const Nan_FunctionCallbackInfo<v8_Value>& args) {
   auto _channel = ObjectWrap::Unwrap<NodeIrisRtcChannel>(args.Holder());
   auto _isolate = args.GetIsolate();
   auto _apiType = nan_api_get_value<int, v8_Int32>(args[0]);
@@ -115,27 +112,26 @@ void NodeIrisRtcChannel::CallApiWithBuffer(
   if (_channel->_iris_channel) {
     try {
       switch (ApiTypeChannel(_apiType)) {
-      case ApiTypeChannel::kChannelRegisterPacketObserver: {
-        break;
+        case ApiTypeChannel::kChannelRegisterPacketObserver: {
+          break;
+        }
+        case ApiTypeChannel::kChannelSendStreamMessage: {
+          _ret = _channel->_iris_channel->CallApi(
+              (ApiTypeChannel)_apiType, _parameter.c_str(),
+              const_cast<char*>(_buffer.c_str()), _result);
+          break;
+        }
+        case ApiTypeChannel::kChannelSendMetadata: {
+          _ret = _channel->_iris_channel->CallApi(
+              (ApiTypeChannel)_apiType, _parameter.c_str(),
+              const_cast<char*>(_buffer.c_str()), _result);
+          break;
+        }
+        default: {
+          break;
+        }
       }
-      case ApiTypeChannel::kChannelSendStreamMessage: {
-
-        _ret = _channel->_iris_channel->CallApi(
-            (ApiTypeChannel)_apiType, _parameter.c_str(),
-            const_cast<char *>(_buffer.c_str()), _result);
-        break;
-      }
-      case ApiTypeChannel::kChannelSendMetadata: {
-        _ret = _channel->_iris_channel->CallApi(
-            (ApiTypeChannel)_apiType, _parameter.c_str(),
-            const_cast<char *>(_buffer.c_str()), _result);
-        break;
-      }
-      default: {
-        break;
-      }
-      }
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
       LOG_F(INFO,
             "NodeIrisRtcChannel::CallApiWithBuffer apiType: %d, parameter: %s, "
             "exception: %s",
@@ -153,7 +149,7 @@ void NodeIrisRtcChannel::CallApiWithBuffer(
 }
 
 void NodeIrisRtcChannel::OnEvent(
-    const Nan_FunctionCallbackInfo<v8_Value> &args) {
+    const Nan_FunctionCallbackInfo<v8_Value>& args) {
   auto _channel = ObjectWrap::Unwrap<NodeIrisRtcChannel>(args.Holder());
   auto _parameter = nan_api_get_value_utf8string_(args[0]);
   auto _callback = args[1].As<v8_Function>();
@@ -173,7 +169,7 @@ void NodeIrisRtcChannel::OnEvent(
 }
 
 void NodeIrisRtcChannel::Release(
-    const Nan_FunctionCallbackInfo<v8_Value> &args) {
+    const Nan_FunctionCallbackInfo<v8_Value>& args) {
   auto _channel = ObjectWrap::Unwrap<NodeIrisRtcChannel>(args.Holder());
 
   if (_channel->_iris_channel) {
@@ -186,15 +182,15 @@ void NodeIrisRtcChannel::Release(
   }
 }
 
-void NodeIrisRtcChannel::ReleaseNodeSource(void *data) {
-  NodeIrisRtcChannel *_channel = static_cast<NodeIrisRtcChannel *>(data);
+void NodeIrisRtcChannel::ReleaseNodeSource(void* data) {
+  NodeIrisRtcChannel* _channel = static_cast<NodeIrisRtcChannel*>(data);
   delete _channel;
   _channel = nullptr;
 }
 
-void NodeIrisRtcChannel::OnApiError(const char *errorMessage) {
+void NodeIrisRtcChannel::OnApiError(const char* errorMessage) {
   _iris_channel_event_handler->OnEvent("onApiError", errorMessage);
 }
-} // namespace electron
-} // namespace rtc
-} // namespace agora
+}  // namespace electron
+}  // namespace rtc
+}  // namespace agora

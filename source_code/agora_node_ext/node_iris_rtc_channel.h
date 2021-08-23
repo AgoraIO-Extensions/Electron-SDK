@@ -13,31 +13,29 @@
 namespace agora {
 namespace rtc {
 namespace electron {
-class NodeIrisRtcChannel : public node::ObjectWrap {
-public:
-  explicit NodeIrisRtcChannel(v8_Isolate *isolate,
-                              iris::rtc::IrisRtcChannel *channel,
-                              const char *channelId);
+class NodeIrisRtcChannel {
+ public:
+  explicit NodeIrisRtcChannel(iris::rtc::IrisRtcChannel* channel,
+                              const char* channelId);
   virtual ~NodeIrisRtcChannel();
 
-  static v8_Local<v8_Object> Init(v8_Isolate *isolate,
-                                  iris::rtc::IrisRtcChannel *channel,
-                                  const char *channelId);
-  static void CreateInstance(const v8_FunctionCallbackInfo<v8_Value> &args);
-  static void CallApi(const Nan_FunctionCallbackInfo<v8_Value> &args);
-  static void CallApiWithBuffer(const Nan_FunctionCallbackInfo<v8_Value> &args);
-  static void OnEvent(const Nan_FunctionCallbackInfo<v8_Value> &args);
-  static void Release(const Nan_FunctionCallbackInfo<v8_Value> &args);
-  static void ReleaseNodeSource(void *data);
-  void OnApiError(const char *errorMessage);
+  static v8_Local<v8_Object> Init(v8_Isolate* isolate,
+                                  iris::rtc::IrisRtcChannel* channel,
+                                  const char* channelId);
+  static void CreateInstance(const v8_FunctionCallbackInfo<v8_Value>& args);
+  static void CallApi(const Nan_FunctionCallbackInfo<v8_Value>& args);
+  static void CallApiWithBuffer(const Nan_FunctionCallbackInfo<v8_Value>& args);
+  static void OnEvent(const Nan_FunctionCallbackInfo<v8_Value>& args);
+  static void Release(const Nan_FunctionCallbackInfo<v8_Value>& args);
+  static void ReleaseNodeSource(void* data);
+  void OnApiError(const char* errorMessage);
 
-private:
+ private:
   std::unique_ptr<NodeIrisEventHandler> _iris_channel_event_handler;
-  v8_Isolate *_isolate;
   static Nan_Persistent<v8_Function> _constructor;
-  iris::rtc::IrisRtcChannel *_iris_channel;
+  iris::rtc::IrisRtcChannel* _iris_channel;
   std::string _channel_id;
 };
-} // namespace electron
-} // namespace rtc
-} // namespace agora
+}  // namespace electron
+}  // namespace rtc
+}  // namespace agora

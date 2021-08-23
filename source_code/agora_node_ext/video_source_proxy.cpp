@@ -1,6 +1,6 @@
 #include "video_source_proxy.h"
-#include "ipc_video_frame_listener.h"
 #include <functional>
+#include "ipc_video_frame_listener.h"
 
 namespace agora {
 namespace rtc {
@@ -65,7 +65,7 @@ bool VideoSourceProxy::Initialize(
   std::string cmdname = "VideoSource";
   std::string idparam = "id:" + _peer_id;
   std::string pidparam = "pid:" + ss.str();
-  const char *params[] = {cmdname.c_str(), idparam.c_str(), pidparam.c_str(),
+  const char* params[] = {cmdname.c_str(), idparam.c_str(), pidparam.c_str(),
                           nullptr};
   _node_process.reset(INodeProcess::CreateNodeProcess(path.c_str(), params));
   if (!_node_process) {
@@ -78,7 +78,7 @@ bool VideoSourceProxy::Initialize(
     LOG_F(INFO, "VideoSourceProxy CreateNodeProcess result : %d ", result);
     return false;
   }
-  _node_process->Monitor([videoSourceEventHandler](INodeProcess *pProcess) {
+  _node_process->Monitor([videoSourceEventHandler](INodeProcess* pProcess) {
     LOG_F(INFO, "VideoSourceProxy _node_process->Monitor");
     videoSourceEventHandler->OnVideoSourceExit();
   });
@@ -99,9 +99,12 @@ bool VideoSourceProxy::Initialize(
   return true;
 }
 
-void VideoSourceProxy::LoopMessage() { _agora_ipc->run(); }
+void VideoSourceProxy::LoopMessage() {
+  _agora_ipc->run();
+}
 
-void VideoSourceProxy::OnMessage(unsigned int msg, char *payload,
+void VideoSourceProxy::OnMessage(unsigned int msg,
+                                 char* payload,
                                  unsigned int len) {
   if (msg == AGORA_IPC_SOURCE_READY) {
     LOG_F(INFO, "VideoSourceProxy::OnMessage  AGORA_IPC_SOURCE_READY");
@@ -112,33 +115,34 @@ void VideoSourceProxy::OnMessage(unsigned int msg, char *payload,
     return;
 
   switch (msg) {
-  case AGORA_IPC_ON_EVENT: {
-    auto _parameter = reinterpret_cast<CallbackParameter *>(payload);
-    if (_video_source_event_handler)
-      _video_source_event_handler->OnVideoSourceEvent(
-          _parameter->_eventName, _parameter->_eventData);
-  } break;
+    case AGORA_IPC_ON_EVENT: {
+      auto _parameter = reinterpret_cast<CallbackParameter*>(payload);
+      if (_video_source_event_handler)
+        _video_source_event_handler->OnVideoSourceEvent(_parameter->_eventName,
+                                                        _parameter->_eventData);
+    } break;
 
-  case AGORA_IPC_ON_EVENT_WITH_BUFFER: {
-    auto _parameter = reinterpret_cast<CallbackParameter *>(payload);
-    if (_video_source_event_handler)
-      _video_source_event_handler->OnVideoSourceEvent(
-          _parameter->_eventName, _parameter->_eventData, _parameter->_buffer,
-          _parameter->_length);
-  } break;
+    case AGORA_IPC_ON_EVENT_WITH_BUFFER: {
+      auto _parameter = reinterpret_cast<CallbackParameter*>(payload);
+      if (_video_source_event_handler)
+        _video_source_event_handler->OnVideoSourceEvent(
+            _parameter->_eventName, _parameter->_eventData, _parameter->_buffer,
+            _parameter->_length);
+    } break;
 
-  default:
-    break;
+    default:
+      break;
   }
 }
 
-int VideoSourceProxy::CallApi(ApiTypeEngine apiType, const char *parameter,
-                              char *result) {
+int VideoSourceProxy::CallApi(ApiTypeEngine apiType,
+                              const char* parameter,
+                              char* result) {
   if (_initialized) {
     ApiParameter apiParameter;
     apiParameter._apiType = apiType;
     strncpy(apiParameter._parameters, parameter, MAX_CHAR_LENGTH);
-    return _agora_ipc->sendMessage(AGORA_IPC_CALL_API, (char *)&apiParameter,
+    return _agora_ipc->sendMessage(AGORA_IPC_CALL_API, (char*)&apiParameter,
                                    sizeof(apiParameter))
                ? 0
                : -1;
@@ -146,8 +150,11 @@ int VideoSourceProxy::CallApi(ApiTypeEngine apiType, const char *parameter,
   return -1;
 }
 
-int VideoSourceProxy::CallApi(ApiTypeEngine apiType, const char *parameter,
-                              const char *buffer, int length, char *result) {
+int VideoSourceProxy::CallApi(ApiTypeEngine apiType,
+                              const char* parameter,
+                              const char* buffer,
+                              int length,
+                              char* result) {
   if (_initialized) {
     ApiParameter apiParameter;
     apiParameter._apiType = apiType;
@@ -155,7 +162,7 @@ int VideoSourceProxy::CallApi(ApiTypeEngine apiType, const char *parameter,
     strncpy(apiParameter._buffer, buffer, MAX_CHAR_LENGTH);
     apiParameter.length = length;
     return _agora_ipc->sendMessage(AGORA_IPC_CALL_API_WITH_BUFFER,
-                                   (char *)&apiParameter, sizeof(apiParameter))
+                                   (char*)&apiParameter, sizeof(apiParameter))
                ? 0
                : -1;
   }
@@ -163,21 +170,23 @@ int VideoSourceProxy::CallApi(ApiTypeEngine apiType, const char *parameter,
 }
 
 int VideoSourceProxy::PluginCallApi(ApiTypeRawDataPluginManager apiType,
-                                    const char *parameter, char *result) {
+                                    const char* parameter,
+                                    char* result) {
   if (_initialized) {
     ApiParameter apiParameter;
     apiParameter._apiType = apiType;
     strncpy(apiParameter._parameters, parameter, MAX_CHAR_LENGTH);
     return _agora_ipc->sendMessage(AGORA_IPC_PLUGIN_CALL_API,
-                                   (char *)&apiParameter, sizeof(apiParameter))
+                                   (char*)&apiParameter, sizeof(apiParameter))
                ? 0
                : -1;
   }
   return -1;
 }
 
-int VideoSourceProxy::EnableVideoFrameCache(const char *channelId,
-                                            unsigned int uid, int width,
+int VideoSourceProxy::EnableVideoFrameCache(const char* channelId,
+                                            unsigned int uid,
+                                            int width,
                                             int height) {
   if (_initialized) {
     VideoFrameCacheConfigParameter parameter;
@@ -186,33 +195,33 @@ int VideoSourceProxy::EnableVideoFrameCache(const char *channelId,
     parameter._width = width;
     parameter._height = height;
     return _agora_ipc->sendMessage(AGORA_IPC_ENABLE_VIDEO_FRAME_CACHE,
-                                   (char *)&parameter, sizeof(parameter))
+                                   (char*)&parameter, sizeof(parameter))
                ? 0
                : -1;
   }
   return -1;
 }
 
-int VideoSourceProxy::DisableVideoFrameCache(const char *channelId,
+int VideoSourceProxy::DisableVideoFrameCache(const char* channelId,
                                              unsigned int uid) {
   if (_initialized) {
     VideoFrameCacheConfigParameter parameter;
     strncpy(parameter._channelId, channelId, MAX_CHAR_LENGTH);
     parameter._uid = uid;
     return _agora_ipc->sendMessage(AGORA_IPC_DISABLE_VIDEO_FRAME_CACHE,
-                                   (char *)&parameter, sizeof(parameter))
+                                   (char*)&parameter, sizeof(parameter))
                ? 0
                : -1;
   }
   return -1;
 }
 
-int VideoSourceProxy::SetAddonLogFile(const char *filePath) {
+int VideoSourceProxy::SetAddonLogFile(const char* filePath) {
   if (_initialized) {
     ApiParameter _parameter;
     strcpy(_parameter._parameters, filePath);
     return _agora_ipc->sendMessage(AGORA_IPC_SET_ADDON_LOG_FILE,
-                                   (char *)&_parameter, sizeof(_parameter))
+                                   (char*)&_parameter, sizeof(_parameter))
                ? 0
                : -1;
   }
@@ -247,9 +256,9 @@ void VideoSourceProxy::Clear() {
     _message_thread.join();
 }
 
-void VideoSourceProxy::OnVideoFrameReceive(const char *data, int len) {
+void VideoSourceProxy::OnVideoFrameReceive(const char* data, int len) {
   _ipc_video_frame_listener->OnVideoFrameReceived(data, len);
 }
-} // namespace electron
-} // namespace rtc
-} // namespace agora
+}  // namespace electron
+}  // namespace rtc
+}  // namespace agora

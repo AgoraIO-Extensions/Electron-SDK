@@ -2,103 +2,100 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:01
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-05-21 20:12:13
+ * @Last Modified time: 2021-07-28 17:34:40
  */
 #pragma once
-#include "node_base.h"
+#include <node_buffer.h>
 #include <memory>
-#include <nan.h>
-#include <node.h>
 #include <string>
+#include <vector>
+#include "node_base.h"
 
 namespace agora {
 namespace rtc {
 namespace electron {
-template <typename T> using Nan_Persistent = Nan::Persistent<T>;
-template <typename T>
-using Nan_FunctionCallbackInfo = Nan::FunctionCallbackInfo<T>;
-template <typename T>
-using v8_FunctionCallbackInfo = v8::FunctionCallbackInfo<T>;
-template <typename T> using v8_Local = v8::Local<T>;
-template <class T> using v8_Maybe = v8::Maybe<T>;
-using Nan_Utf8_String = Nan::Utf8String;
-using v8_Object = v8::Object;
-using v8_Value = v8::Value;
-using v8_Context = v8::Context;
-using v8_Isolate = v8::Isolate;
-using v8_FunctionTemplate = v8::FunctionTemplate;
-using v8_String = v8::String;
-using v8_Uint32 = v8::Uint32;
-using v8_Int32 = v8::Int32;
-using v8_Function = v8::Function;
-using v8_HandleScope = v8::HandleScope;
-using v8_External = v8::External;
-using v8_Array = v8::Array;
-using v8_ArrayBuffer = v8::ArrayBuffer;
-using v8_Boolean = v8::Boolean;
-using v8_Uint8Array = v8::Uint8Array;
-using v8_Name = v8::Name;
+#define DECLARE_NAPI_METHOD(name, func) \
+  { name, 0, func, 0, 0, 0, napi_default, 0 }
 
-template <typename T, typename O>
-void v8_set_object_prop_value(v8_Isolate *isolate, v8_Local<v8_Object> &obj,
-                              const char *name, T value) {
-  auto _prop_name =
-      v8_String::NewFromUtf8(isolate, name, v8::NewStringType::kInternalized)
-          .ToLocalChecked();
+#define RETURE_NAPI_OBJ()                                                      \
+  napi_value retObj;                                                           \
+  status = napi_create_object(env, &retObj);                                   \
+  std::string resultStr = std::string(result);                                 \
+  napi_obj_set_property<int>(env, retObj, _ret_code_str, ret);                 \
+  napi_obj_set_property<std::string>(env, retObj, _ret_result_str, resultStr); \
+  return retObj
 
-  auto _prop_value = O::New(isolate, value);
-  auto _result =
-      obj->Set(isolate->GetCurrentContext(), _prop_name, _prop_value);
+napi_status napi_get_value_utf8string(napi_env& env,
+                                      napi_value& value,
+                                      std::string& str) {
+  napi_status status;
+  size_t length = 0;
+  status = napi_get_value_string_utf8(env, value, nullptr, 0, &length);
+
+  std::vector<char> strData;
+  strData.resize(length + 1);
+
+  size_t result = 0;
+  status =
+      napi_get_value_string_utf8(env, value, strData.data(), length, &result);
+  str = strData.data();
+  return status;
 }
 
-void v8_set_object_prop_string(v8_Isolate *isolate, v8_Local<v8_Object> &obj,
-                               const char *name, const char *value);
-
-void v8_set_object_prop_uint8_array(v8_Isolate *isolate,
-                                    v8_Local<v8_Object> &obj, const char *name,
-                                    void *buffer, int size);
-
-#define v8_MAYBE_CHECK_RESULT(maybe)                                           \
-  {                                                                            \
-    if (maybe.IsNothing()) {                                                   \
-    }                                                                          \
+template <typename T>
+napi_status napi_obj_set_property(napi_env& env,
+                                  napi_value& object,
+                                  const char* utf8name,
+                                  T& value,
+                                  int length = 0) {
+  napi_status status;
+  napi_value result;
+  napi_value n_value;
+  if (typeid(T) == typeid(int)) {
+    n_value = napi_create_int32(env, value, &result);
+  } else if (typeid(T) == typeid(std::string)) {
+    n_value = napi_create_string_utf8(env, value.c_str(), sizeof(T), &result);
+  } else if (typeid(T) == typeid(uint32_t)) {
+    n_value = napi_create_uint32(env, value, &result);
+  } else if (typeid(T) == typeid(float)) {
+    n_value = napi_create_double(env, value, &result);
+  } else if (typeid(T) == typeid(bool)) {
+    n_value = napi_create_int32(env, value, &result);
+  } else if (typeid(T) == typeid(double)) {
+    n_value = napi_create_double(env, value, &result);
+  } else if (typeid(T) == typeid(int64_t)) {
+    n_value = napi_create_int64(env, value, &result);
+  } else if (typeid(T) == typeid(unsigned char*)) {
+    n_value = napi_create_external_arraybuffer(env, value, length, nullptr,
+                                               nullptr, &result);
+  } else if (typeid(T) == typeid(napi_value)) {
+    n_value = value;
   }
 
-#define v8_MAYBE_LOCAL_CHECK_RESULT(maybe)                                     \
-  {                                                                            \
-    if (maybe.IsEmpty()) {                                                     \
-    }                                                                          \
+  status = napi_set_named_property(env, object, utf8name, n_value);
+  return status;
+}
+
+template <typename T>
+napi_status napi_obj_get_property(napi_env& env,
+                                  napi_value& object,
+                                  const char* utf8name,
+                                  T& result) {
+  napi_status status;
+  napi_value retValue;
+  if (typeid(T) == typeid(int)) {
+    napi_get_named_property(env, object, utf8name, &retValue);
+    napi_get_value_int32(env, retValue, &result);
+  } else if (typeid(T) == typeid(uint32_t)) {
+    napi_get_named_property(env, object, utf8name, &retValue);
+    napi_get_value_uint32(env, retValue, &result);
+  } else if (typeid(T) == typeid(std::string)) {
+    napi_get_named_property(env, object, utf8name, &retValue);
+    napi_get_value_utf8string(env, retValue, result);
+  } else if (typeid(T) == typeid(napi_value)) {
+    napi_get_named_property(env, object, utf8name, result);
   }
-
-std::string nan_api_get_value_utf8string_(const v8_Local<v8_Value> &value);
-
-v8_Local<v8_Value>
-nan_api_get_object_property_value_(v8_Isolate *isolate,
-                                   const v8_Local<v8_Object> &obj,
-                                   const std::string &propName);
-
-template <typename T, typename N>
-T nan_api_get_value(const v8_Local<v8_Value> &value) {
-  return Nan::To<N>(value).ToLocalChecked()->Value();
 }
-
-template <typename T, typename N>
-T nan_api_get_object_value(v8_Isolate *isolate, const v8_Local<v8_Object> &obj,
-                           const std::string &propName) {
-  auto value = nan_api_get_object_property_value_(isolate, obj, propName);
-  return nan_api_get_value<T, N>(value);
-}
-
-v8_Local<v8_Object> nan_api_get_value_object_(v8_Isolate *isolate,
-                                              const v8_Local<v8_Value> &value);
-
-std::string nan_api_get_object_utf8string_(v8_Isolate *isolate,
-                                           const v8_Local<v8_Object> &obj,
-                                           const std::string &propName);
-
-v8_Local<v8_Value> nan_create_local_value_string_(v8_Isolate *isolate,
-                                                  const char *value);
-
-} // namespace electron
-} // namespace rtc
-} // namespace agora
+}  // namespace electron
+}  // namespace rtc
+}  // namespace agora

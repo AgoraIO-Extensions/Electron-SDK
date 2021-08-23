@@ -6,6 +6,8 @@
  */
 #pragma once
 
+#include <string.h>
+#include <uv.h>
 #include <atomic>
 #include <chrono>
 #include <condition_variable>
@@ -14,8 +16,6 @@
 #include <future>
 #include <mutex>
 #include <queue>
-#include <string.h>
-#include <uv.h>
 
 namespace agora {
 namespace rtc {
@@ -24,23 +24,25 @@ using task_type = std::function<void(void)>;
 
 template <typename Elem, typename T2 = int, typename Lck = std::mutex>
 class async_queue {
-  async_queue(const async_queue &) = delete;
-  async_queue &operator=(const async_queue &) = delete;
+  async_queue(const async_queue&) = delete;
+  async_queue& operator=(const async_queue&) = delete;
 
-public:
-  using callback_type = std::function<void(task_type &)>;
-  async_queue(uv_loop_t *loop, callback_type &&cb)
-      : h_((uv_async_t *)malloc(sizeof(uv_async_t))), closed_(false),
-        cb_(std::move(cb)), capacity_(0) {
+ public:
+  using callback_type = std::function<void(task_type&)>;
+  async_queue(uv_loop_t* loop, callback_type&& cb)
+      : h_((uv_async_t*)malloc(sizeof(uv_async_t))),
+        closed_(false),
+        cb_(std::move(cb)),
+        capacity_(0) {
     ::uv_async_init(loop, h_, async_callback);
     h_->data = this;
   }
 
   ~async_queue() {
-    uv_close((uv_handle_t *)h_, [](uv_handle_t *handle) { free(handle); });
+    uv_close((uv_handle_t*)h_, [](uv_handle_t* handle) { free(handle); });
   }
 
-  int async_call(Elem &&e, uint64_t ts = 0) {
+  int async_call(Elem&& e, uint64_t ts = 0) {
     if (closed_) {
       return -1;
     }
@@ -78,9 +80,9 @@ public:
   }
   uint64_t last_pop_ts() const { return 0; }
 
-private:
-  static void async_callback(uv_async_t *handle) {
-    reinterpret_cast<async_queue *>(handle->data)->on_event();
+ private:
+  static void async_callback(uv_async_t* handle) {
+    reinterpret_cast<async_queue*>(handle->data)->on_event();
   }
   void on_event() {
     std::unique_lock<Lck> lock(lock_);
@@ -93,8 +95,8 @@ private:
     }
   }
 
-private:
-  uv_async_t *h_;
+ private:
+  uv_async_t* h_;
   std::atomic<bool> closed_;
   mutable Lck lock_;
   std::queue<Elem> q_;
@@ -103,8 +105,8 @@ private:
 };
 
 class node_async_call {
-public:
-  static void async_call(task_type &&cb) {
+ public:
+  static void async_call(task_type&& cb) {
     node_async_call::instance().node_queue_->async_call(std::move(cb));
   }
 
@@ -112,15 +114,15 @@ public:
     node_async_call::instance().node_queue_->close(closed);
   }
 
-private:
+ private:
   using node_queue_type = async_queue<task_type>;
   node_async_call();
   ~node_async_call();
-  static node_async_call &instance() { return s_instance_; }
-  void run_task(task_type &task) { task(); }
+  static node_async_call& instance() { return s_instance_; }
+  void run_task(task_type& task) { task(); }
   std::unique_ptr<node_queue_type> node_queue_;
   static node_async_call s_instance_;
 };
-} // namespace electron
-} // namespace rtc
-} // namespace agora
+}  // namespace electron
+}  // namespace rtc
+}  // namespace agora

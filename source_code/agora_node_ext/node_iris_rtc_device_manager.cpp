@@ -14,7 +14,8 @@ using namespace iris::rtc;
 Nan_Persistent<v8_Function> NodeIrisRtcDeviceManager::_constructor;
 
 NodeIrisRtcDeviceManager::NodeIrisRtcDeviceManager(
-    v8_Isolate *isolate, IrisRtcDeviceManager *deviceManager)
+    v8_Isolate* isolate,
+    IrisRtcDeviceManager* deviceManager)
     : _isolate(isolate), _deviceManager(deviceManager) {
   node::AddEnvironmentCleanupHook(isolate, ReleaseNodeSource, this);
 }
@@ -24,9 +25,9 @@ NodeIrisRtcDeviceManager::~NodeIrisRtcDeviceManager() {
   _isolate = nullptr;
 }
 
-v8_Local<v8_Object>
-NodeIrisRtcDeviceManager::Init(v8_Isolate *isolate,
-                               IrisRtcDeviceManager *deviceManager) {
+v8_Local<v8_Object> NodeIrisRtcDeviceManager::Init(
+    v8_Isolate* isolate,
+    IrisRtcDeviceManager* deviceManager) {
   auto _context = isolate->GetCurrentContext();
   auto _template = v8_FunctionTemplate::New(isolate, CreateInstance);
   _template->SetClassName(
@@ -47,19 +48,19 @@ NodeIrisRtcDeviceManager::Init(v8_Isolate *isolate,
 }
 
 void NodeIrisRtcDeviceManager::CreateInstance(
-    const v8_FunctionCallbackInfo<v8_Value> &args) {
-  auto *_isolate = args.GetIsolate();
+    const v8_FunctionCallbackInfo<v8_Value>& args) {
+  auto* _isolate = args.GetIsolate();
   auto _argDeviceManager = v8_Local<v8_External>::Cast(args[0]);
-  auto *_irisDeviceManager =
-      static_cast<IrisRtcDeviceManager *>(_argDeviceManager->Value());
-  auto *_deviceManager =
+  auto* _irisDeviceManager =
+      static_cast<IrisRtcDeviceManager*>(_argDeviceManager->Value());
+  auto* _deviceManager =
       new NodeIrisRtcDeviceManager(_isolate, _irisDeviceManager);
   _deviceManager->Wrap(args.This());
   args.GetReturnValue().Set(args.This());
 }
 
 void NodeIrisRtcDeviceManager::CallApiAudioDevice(
-    const Nan_FunctionCallbackInfo<v8_Value> &args) {
+    const Nan_FunctionCallbackInfo<v8_Value>& args) {
   auto _deviceManager =
       ObjectWrap::Unwrap<NodeIrisRtcDeviceManager>(args.Holder());
   auto _isolate = args.GetIsolate();
@@ -85,7 +86,7 @@ void NodeIrisRtcDeviceManager::CallApiAudioDevice(
 }
 
 void NodeIrisRtcDeviceManager::CallApiVideoDevice(
-    const Nan_FunctionCallbackInfo<v8_Value> &args) {
+    const Nan_FunctionCallbackInfo<v8_Value>& args) {
   auto _deviceManager =
       ObjectWrap::Unwrap<NodeIrisRtcDeviceManager>(args.Holder());
   auto _isolate = args.GetIsolate();
@@ -110,17 +111,17 @@ void NodeIrisRtcDeviceManager::CallApiVideoDevice(
 }
 
 void NodeIrisRtcDeviceManager::Release(
-    const Nan_FunctionCallbackInfo<v8_Value> &args) {
+    const Nan_FunctionCallbackInfo<v8_Value>& args) {
   auto _deviceManager =
       ObjectWrap::Unwrap<NodeIrisRtcDeviceManager>(args.Holder());
   _deviceManager->_deviceManager = nullptr;
 }
 
-void NodeIrisRtcDeviceManager::ReleaseNodeSource(void *selfPtr) {
-  auto _selfPtr = static_cast<NodeIrisRtcDeviceManager *>(selfPtr);
+void NodeIrisRtcDeviceManager::ReleaseNodeSource(void* selfPtr) {
+  auto _selfPtr = static_cast<NodeIrisRtcDeviceManager*>(selfPtr);
   delete _selfPtr;
   _selfPtr = nullptr;
 }
-} // namespace electron
-} // namespace rtc
-} // namespace agora
+}  // namespace electron
+}  // namespace rtc
+}  // namespace agora

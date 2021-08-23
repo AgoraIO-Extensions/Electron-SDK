@@ -2,9 +2,10 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:44
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-05-24 22:31:05
+ * @Last Modified time: 2021-07-29 13:04:39
  */
 #pragma once
+#include <exception>
 #include "iris_rtc_engine.h"
 #include "iris_rtc_raw_data.h"
 #include "iris_rtc_raw_data_plugin_manager.h"
@@ -15,57 +16,61 @@
 #include "node_screen_window_info.h"
 #include "video_processer.h"
 #include "video_source_proxy.h"
-#include <exception>
 
 namespace agora {
 namespace rtc {
 namespace electron {
+
 class NodeIrisEventHandler;
 
-class NodeIrisRtcEngine : public node::ObjectWrap {
-public:
-  explicit NodeIrisRtcEngine(v8_Isolate *isolate);
+class NodeIrisRtcEngine {
+ public:
+  explicit NodeIrisRtcEngine();
   virtual ~NodeIrisRtcEngine();
 
-  static void Init(v8_Local<v8_Object> &module);
-  static void CreateInstance(const v8_FunctionCallbackInfo<v8_Value> &args);
-  static void CallApi(const Nan_FunctionCallbackInfo<v8_Value> &args);
-  static void CallApiWithBuffer(const Nan_FunctionCallbackInfo<v8_Value> &args);
-  static void OnEvent(const Nan_FunctionCallbackInfo<v8_Value> &args);
-  static void CreateChannel(const Nan_FunctionCallbackInfo<v8_Value> &args);
-  static void GetDeviceManager(const Nan_FunctionCallbackInfo<v8_Value> &args);
-  static void
-  GetScreenWindowsInfo(const Nan_FunctionCallbackInfo<v8_Value> &args);
-  static void
-  GetScreenDisplaysInfo(const Nan_FunctionCallbackInfo<v8_Value> &args);
-  static void PluginCallApi(const Nan_FunctionCallbackInfo<v8_Value> &args);
-  static void
-  EnableVideoFrameCache(const Nan_FunctionCallbackInfo<v8_Value> &args);
-  static void
-  DisableVideoFrameCache(const Nan_FunctionCallbackInfo<v8_Value> &args);
-  static void
-  GetVideoStreamData(const Nan_FunctionCallbackInfo<v8_Value> &args);
-  static void
-  VideoSourceInitialize(const Nan_FunctionCallbackInfo<v8_Value> &args);
-  static void
-  VideoSourceRelease(const Nan_FunctionCallbackInfo<v8_Value> &args);
-  static void
-  VideoSourceSetAddonLogFile(const Nan_FunctionCallbackInfo<v8_Value> &args);
-  static void SetAddonLogFile(const Nan_FunctionCallbackInfo<v8_Value> &args);
-  static void Release(const Nan_FunctionCallbackInfo<v8_Value> &args);
-  void OnApiError(const char *errorMessage);
+  static napi_value Init(napi_env env, napi_value exports);
+  static napi_value Constructor(napi_env env);
+  static napi_value New(napi_env env, napi_callback_info info);
+  static void Destructor(napi_env env, void* nativeObject, void* finalize_hint);
+  static napi_value CallApi(napi_env env, napi_callback_info info);
+  static napi_value CallApiWithBuffer(napi_env env, napi_callback_info info);
+  static napi_value OnEvent(napi_env env, napi_callback_info info);
+  static napi_value CreateChannel(napi_env env, napi_callback_info info);
+  static napi_value GetDeviceManager(napi_env env, napi_callback_info info);
+  static napi_value GetScreenWindowsInfo(napi_env env, napi_callback_info info);
+  static napi_value GetScreenDisplaysInfo(napi_env env,
+                                          napi_callback_info info);
+  static napi_value PluginCallApi(napi_env env, napi_callback_info info);
+  static napi_value EnableVideoFrameCache(napi_env env,
+                                          napi_callback_info info);
+  static napi_value DisableVideoFrameCache(napi_env env,
+                                           napi_callback_info info);
+  static napi_value GetVideoStreamData(napi_env env, napi_callback_info info);
+  static napi_value VideoSourceInitialize(napi_env env,
+                                          napi_callback_info info);
+  static napi_value VideoSourceRelease(napi_env env, napi_callback_info info);
+  static napi_value VideoSourceSetAddonLogFile(napi_env env,
+                                               napi_callback_info info);
+  static napi_value SetAddonLogFile(napi_env env, napi_callback_info info);
+  static napi_value Release(napi_env env, napi_callback_info info);
+  void OnApiError(const char* errorMessage);
   int VideoSourceRelease();
 
-private:
-  static Nan_Persistent<v8_Function> _constructor;
-  v8_Isolate *_isolate;
+  napi_env _env;
+  napi_ref _ref;
+
+  static const char* _class_name;
+
+ private:
+  static const char* _ret_code_str;
+  static const char* _ret_result_str;
   std::unique_ptr<VideoSourceProxy> _video_source_proxy;
   std::shared_ptr<VideoProcesser> _video_processer;
   std::shared_ptr<iris::rtc::IrisRtcEngine> _iris_engine;
   std::shared_ptr<NodeIrisEventHandler> _iris_event_handler;
-  iris::rtc::IrisRtcRawDataPluginManager *_iris_raw_data_plugin_manager;
-  iris::rtc::IrisRtcRawData *_iris_raw_data;
+  iris::rtc::IrisRtcRawDataPluginManager* _iris_raw_data_plugin_manager;
+  iris::rtc::IrisRtcRawData* _iris_raw_data;
 };
-} // namespace electron
-} // namespace rtc
-} // namespace agora
+}  // namespace electron
+}  // namespace rtc
+}  // namespace agora
