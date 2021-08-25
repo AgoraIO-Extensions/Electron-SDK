@@ -98,7 +98,6 @@ class Renderer {
       try {
         this.updateCanvas(this.cacheCanvasOpts,false)
       } catch (error) {
-        console.log('software refreshCanvas',error);
       }
     }
   }
