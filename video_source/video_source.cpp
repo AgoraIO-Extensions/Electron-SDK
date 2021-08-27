@@ -16,7 +16,7 @@
 #include "node_log.h"
 #include <sstream>
 #include "loguru.hpp"
-
+#include "IAgoraRtcEngine.h"
 #define PROCESS_RUN_EVENT_NAME "agora_video_source_process_ready_event_name"
 #define DATA_IPC_NAME "avsipc"
 
@@ -428,7 +428,12 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
                 cmd->captureParams.excludeWindowList = excludeWindows;
                 cmd->captureParams.excludeWindowCount  = cmd->excludeWindowCount;
             }
-            int result = m_rtcEngine->startScreenCaptureByDisplayId(cmd->displayInfo.idVal, cmd->regionRect, cmd->captureParams);
+            int result = -1;
+#if defined(_WIN32)
+
+#elif defined(__APPLE__)
+            result = m_rtcEngine->startScreenCaptureByDisplayId(cmd->displayInfo.idVal, cmd->regionRect, cmd->captureParams);
+#endif
 
             if(result != 0) {
                 LOG_ERROR("start screen capture by display failed.");
