@@ -67,7 +67,7 @@
     "libUrl": {
       "win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows(x86)_v2_9_0_107_20201012_FULL_420.zip",
       "win64": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows(x64)_v2_9_0_107_20201012_FULL_473.zip",
-      "mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v2_9_0_107_FULL_20201012_2373.zip"
+      "mac": "http://192.168.99.149:8086/v2.9.0.107/AgoraSDK/Mac/Agora_Native_SDK_for_Mac_v2_9_0_107_FULL_20210826_3660.zip"
     }
   },
   "keywords": [
