@@ -66,6 +66,7 @@ class Renderer {
     this.canvas = document.createElement('canvas')
     this.container.appendChild(this.canvas)
     this.yuv = YUVCanvas.attach(this.canvas, { webGL: isWebGL });
+    YUVCanvas.WebGLFrameSink.stripe = false;
 
     const ResizeObserver =
       window.ResizeObserver ||
