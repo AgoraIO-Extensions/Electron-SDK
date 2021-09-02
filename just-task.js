@@ -64,14 +64,11 @@ task("build:electron", async () => {
     msvsVersion: argv().msvs_version,
     distUrl: argv().dist_url,
     cb: async isComplete => {
-      console.log("mac build x86 finish..");
-      if (!isComplete) {
-        return;
-      }
-      if (argv().platform === "darwin" && isOver11) {
-        buildMacArm64(electronVersion);
-      }
-    }
+                              console.log("mac build x86 finish..");
+                              if (!isComplete) {
+                                return;
+                              }
+                            }
   });
 });
 
