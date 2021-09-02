@@ -114,64 +114,70 @@ task('build:node', () => {
   })
 })
 // npm run download --
-task('download', () => {
+task("download", () => {
   // work-around
-  const addonVersion = '3.4.7-rc.1-build.817'
+  const addonVersion = "3.4.7-rc.3-build.902";
   cleanup(path.join(__dirname, "./build")).then(_ => {
-    cleanup(path.join(__dirname, './js')).then(_ => {
+    cleanup(path.join(__dirname, "./js")).then(_ => {
       download({
-        electronVersion: argv().electron_version, 
-        platform: argv().platform, 
+        electronVersion: argv().electron_version,
+        platform: argv().platform,
         packageVersion: addonVersion,
         arch: argv().arch
-      })
-    })
-  })
-})
+      });
+    });
+  });
+});
 // trigger when run npm install
-task('install', () => {
+task("install", () => {
   const config = {
     ...getArgvFromNpmEnv(),
     ...getArgvFromPkgJson(),
-    arch:getArgvFromNpmEnv().arch || getArgvFromPkgJson().arch || process.arch,
-  }
-  
+    arch: getArgvFromNpmEnv().arch || getArgvFromPkgJson().arch || process.arch
+  };
+
   // work-around
-  const addonVersion = '3.4.7-rc.1-build.817'
+  const addonVersion = "3.4.7-rc.3-build.902";
   if (config.prebuilt) {
     download({
-      electronVersion: config.electronVersion, 
-      platform: config.platform, 
+      electronVersion: config.electronVersion,
+      platform: config.platform,
       packageVersion: addonVersion,
       arch: config.arch,
-      no_symbol: config.no_symbol,
-    })
+      no_symbol: config.no_symbol
+    });
   } else {
     return new Promise((resolve, reject) => {
       switcharch({
-        arch: argv().arch,
+        arch: argv().arch
         // platform: 'win32',
-      }).then(() => {
-        return synclib({
-          platform: argv().platform,
-          // platform: 'win32',
-          arch: argv().arch,
-          libUrl: {
-            win: argv().liburl_win || config.lib_sdk_win,
-            mac: argv().liburl_mac || config.lib_sdk_mac,
-            win64: argv().liburl_win64 || config.lib_sdk_win64
-          }
-        })
-      }).then(() => {
-        return build(Object.assign({}, config, {
-          packageVersion: addonVersion
-        }))
-      }).then(() => {
-        resolve()
-      }).catch(e => {
-        reject(e)
       })
-    })
+        .then(() => {
+          return synclib({
+            platform: argv().platform,
+            // platform: 'win32',
+            arch: argv().arch,
+            libUrl: {
+              win: argv().liburl_win || config.lib_sdk_win,
+              mac: argv().liburl_mac || config.lib_sdk_mac,
+              win64: argv().liburl_win64 || config.lib_sdk_win64
+            }
+          });
+        })
+        .then(() => {
+          return build(
+            Object.assign({}, config, {
+              packageVersion: addonVersion
+            })
+          );
+        })
+        .then(() => {
+          resolve();
+        })
+        .catch(e => {
+          reject(e);
+        });
+    });
   }
-})
+});
 
