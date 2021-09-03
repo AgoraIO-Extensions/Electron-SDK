@@ -74,7 +74,8 @@
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
                         './sdk/agora_rtc_sdk.dll',
-                        './sdk/libagora-ffmpeg.dll'
+                        './sdk/libagora-ffmpeg.dll',
+                        './sdk/libagora-wgc.dll'
                     ]
                 }],
                 'library_dirs': [
