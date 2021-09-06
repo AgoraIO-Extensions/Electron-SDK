@@ -2290,6 +2290,25 @@ export enum MEDIA_PLAYER_EVENT {
      */
     AUDIO_RECORDING_QUALITY_HIGH = 2,
   };
+/** The latency level of an audience member in interactive live streaming.
+ *
+ * @note Takes effect only when the user role is audience.
+ */
+ export enum AUDIENCE_LATENCY_LEVEL_TYPE
+ {
+     /** 1: Low latency. */
+     AUDIENCE_LATENCY_LEVEL_LOW_LATENCY = 1,
+     /** 2: (Default) Ultra low latency. */
+     AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY = 2,
+ };
+/** The detailed options of a user.
+ */
+ export interface ClientRoleOptions {
+  /**
+   * The latency level of an audience member in interactive live streaming.
+   */
+  audienceLatencyLevel: AUDIENCE_LATENCY_LEVEL_TYPE;
+};
 
   /** 
    * The audio file record type.
@@ -3161,6 +3180,11 @@ export interface NodeRtcEngine {
   * @ignore
   */
  setAddonLogFile(filePath: string): void;
+ /**
+   * @ignore
+   */
+ setClientRoleWithOptions(role: ClientRoleType, options: ClientRoleOptions): number;
+  
 }
 
 export interface NodeMediaPlayer {

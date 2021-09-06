@@ -57,7 +57,8 @@ import {
   VIDEO_SOURCE_TYPE,
   Extension,
   VIDEO_ORIENTATION,
-  AUDIO_RECORDING_QUALITY_TYPE
+  AUDIO_RECORDING_QUALITY_TYPE,
+  ClientRoleOptions
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -4265,6 +4266,40 @@ class AgoraRtcEngine extends EventEmitter {
  setAddonLogFile(filePath: string): void {
    this.rtcEngine.setAddonLogFile(filePath);
  }
+ /** Sets the role of a user in interactive live streaming.
+   *
+   * @since v3.2.0
+   *
+   * You can call this method either before or after joining the channel to
+   * set the user role as audience or host. If
+   * you call this method to switch the user role after joining the channel,
+   * the SDK triggers the following callbacks:
+   * - The local client: `clientRoleChanged`.
+   * - The remote client: `userJoined` or `userOffline`.
+   *
+   * @note
+   * - This method applies to the `LIVE_BROADCASTING` profile only.
+   * - The difference between this method and {@link setClientRole} is that
+   * this method can set the user level in addition to the user role.
+   *  - The user role determines the permissions that the SDK grants to a
+   * user, such as permission to send local
+   * streams, receive remote streams, and push streams to a CDN address.
+   *  - The user level determines the level of services that a user can
+   * enjoy within the permissions of the user's
+   * role. For example, an audience can choose to receive remote streams with
+   * low latency or ultra low latency. Levels
+   * affect prices.
+   *
+   * @param role The role of a user in interactive live streaming.
+   * @param options The detailed options of a user, including user level.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  setClientRoleWithOptions(role: ClientRoleType, options: ClientRoleOptions): number {
+    return this.rtcEngine.setClientRoleWithOptions(role, options);
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
