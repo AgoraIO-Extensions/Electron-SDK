@@ -318,6 +318,7 @@ namespace agora {
 
             NAPI_API(sendCustomReportMessage);
             NAPI_API(enableEncryption);
+            NAPI_API(setClientRoleWithOptions);
             NAPI_API(startLocalVideoTranscoder);
             NAPI_API(updateLocalTranscoderConfiguration);
             NAPI_API(stopLocalVideoTranscoder);

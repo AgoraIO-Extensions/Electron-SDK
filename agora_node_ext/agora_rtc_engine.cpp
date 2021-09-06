@@ -296,6 +296,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(leaveChannelEx);
                 PROPERTY_METHOD_DEFINE(startAudioRecording2);
                 // PROPERTY_METHOD_DEFINE(startAudioRecordingWithConfig);
+                PROPERTY_METHOD_DEFINE(setClientRoleWithOptions);
 
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
@@ -2967,6 +2968,51 @@ namespace agora {
             } while (false);
             napi_set_int_result(args, result);
 
+            LOG_LEAVE;
+        }
+        
+        NAPI_API_DEFINE(NodeRtcEngine, setClientRoleWithOptions)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do {
+                Isolate *isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                unsigned int role;
+                status = napi_get_value_uint32_(args[0], role);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                ClientRoleOptions opts;
+
+                if(args[1]->IsObject()) {
+                    Local<Object> obj;
+                    status = napi_get_value_object_(isolate, args[1], obj);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
+                    int audienceLatencyLevel = (int)AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY;
+
+                    status = napi_get_object_property_int32_(isolate, obj, "audienceLatencyLevel", audienceLatencyLevel);
+                    CHECK_NAPI_STATUS(pEngine, status);
+
+                    switch(audienceLatencyLevel) {
+                        case 1:
+                            opts.audienceLatencyLevel = AUDIENCE_LATENCY_LEVEL_LOW_LATENCY;
+                            break;
+                        case 2:
+                            opts.audienceLatencyLevel = AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY;
+                            break;
+                        default:
+                            status = napi_invalid_arg;
+                            break;
+                    }
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+                result = pEngine->m_engine->setClientRole((CLIENT_ROLE_TYPE)role, opts);
+            } while (false);
+            napi_set_int_result(args, result);
             LOG_LEAVE;
         }
 
