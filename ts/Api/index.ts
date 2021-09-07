@@ -4352,6 +4352,9 @@ class AgoraRtcEngine extends EventEmitter {
   videoSourceStartScreenCaptureByDisplayId(displayId: number, rect: CaptureRect, param: CaptureParam) {
     return this.rtcEngine.videoSourceStartScreenCaptureByDisplayId(displayId, rect, param);
   }
+  startScreenCaptureByDisplayId(displayId: number, rect: CaptureRect, param: CaptureParam) {
+    return this.rtcEngine.startScreenCaptureByDisplayId(displayId, rect, param);
+  }
 
   /**
    * Shares the whole or part of a window by specifying the window ID.
