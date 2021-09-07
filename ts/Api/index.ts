@@ -114,6 +114,9 @@ class AgoraRtcEngine extends EventEmitter {
    * - 3 for custom rendering.
    */
   setRenderMode(mode: 1 | 2 | 3 | 4 = 1): void {
+    if (mode === 4) {
+      mode = 1;
+    }
     if (this._checkWebGL() && this._checkWebGL2()) {
       this.renderMode = mode;
     } else {
