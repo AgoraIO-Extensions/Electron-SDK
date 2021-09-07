@@ -82,8 +82,16 @@ class Renderer {
 
   unbind() {
     this.observer && this.observer.unobserve && this.observer.disconnect();
-    this.container && this.container.removeChild(this.canvas);
-    this.element && this.element.removeChild(this.container);
+    try {
+      if (this.container && this.canvas && this.canvas.parentNode === this.container) {
+        this.container.removeChild(this.canvas);
+      }
+      if (this.element && this.container && this.container.parentNode === this.element) {
+        this.element && this.element.removeChild(this.container);
+      }
+    } catch (error) {
+      console.warn(e)
+    }
     this.yuv = null;
     this.element = null;
     this.canvas = null;
