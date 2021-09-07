@@ -2,7 +2,7 @@ const createProgramFromSources = require('./webgl-utils').createProgramFromSourc
 const EventEmitter = require('events').EventEmitter;
 const {config} = require('../../Utils/index')
 
-const AgoraRender = function() {
+const AgoraRender = function(initRenderFailCallBack) {
   let gl;
   let program;
   let positionLocation;
@@ -12,6 +12,8 @@ const AgoraRender = function() {
   let vTexture;
   let texCoordBuffer;
   let surfaceBuffer;
+  // choose softwareRender
+  let failInitRenderCB=()=>initRenderFailCallBack(2, 'webgl render');
   const that = {
     view: undefined,
     mirrorView: false,
@@ -31,7 +33,8 @@ const AgoraRender = function() {
     lastImageWidth: 0,
     lastImageHeight: 0,
     lastImageRotation: 0,
-    videoBuffer: {}
+    videoBuffer: {},
+    gl: undefined
   };
 
   that.setContentMode = function(mode) {
@@ -85,8 +88,12 @@ const AgoraRender = function() {
     gl = undefined;
 
     try {
-      that.container && that.container.removeChild(that.canvas);
-      that.view && that.view.removeChild(that.container);
+      if (that.container && that.canvas && that.canvas.parentNode === that.container) {
+        that.container.removeChild(that.canvas);
+      }
+      if (that.view && that.container && that.container.parentNode === that.view) {
+        that.view.removeChild(that.container);
+      }
     } catch (e) {
       console.warn(e)
     }
@@ -235,6 +242,11 @@ const AgoraRender = function() {
       uplane: this.videoBuffer.uplane,
       vplane: this.videoBuffer.vplane
     });
+    if (!that.gl) {
+      failInitRenderCB && failInitRenderCB();
+      failInitRenderCB = null;
+      return;
+    }
     var now32 = (Date.now() & 0xffffffff) >>> 0;
     var latency = now32 - ts;
   }
@@ -390,12 +402,13 @@ const AgoraRender = function() {
     } catch (e) {
       console.log(e);
     }
-
     if (!gl) {
       gl = undefined;
+      that.gl = undefined;
       onFailure({ error: 'Browser not support! No WebGL detected.' });
       return;
     }
+    that.gl = gl;
 
     // Set clear color to black, fully opaque
     gl.clearColor(0.0, 0.0, 0.0, 1.0);

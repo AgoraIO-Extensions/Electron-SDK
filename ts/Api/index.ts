@@ -950,6 +950,17 @@ class AgoraRtcEngine extends EventEmitter {
    * @param view The Dom elements to render the video.
    */
   initRender(key: 'local' | 'videosource' | number, view: Element, channelId: string | undefined, options?: RendererOptions) {
+    const initRenderFailCallBack = (renderMode : 1|2|3|4, renderDescription = 'initRender')=>{
+      try {
+        console.warn(`info:${renderDescription}  fail, change remderMode to ${renderMode}`);
+        console.warn('key:', key, ' view:', view, ' channelId:',channelId, ' options:', options);
+        this.renderMode = renderMode;
+        this.destroyRender(key, channelId, () => {});
+        this.initRender(key,view,channelId,options);
+      } catch (error) {
+        console.log('initRenderFailCallBack',error);
+      }
+    }
     let rendererOptions = {
       append: options ? options.append : false
     }
@@ -971,7 +982,7 @@ class AgoraRtcEngine extends EventEmitter {
     channelStreams = this._getChannelRenderers(channelId || "")
     let renderer: IRenderer;
     if (this.renderMode === 1) {
-      renderer = new GlRenderer();
+      renderer = new GlRenderer({ initRenderFailCallBack });
       renderer.bind(view, true);
     } else if (this.renderMode === 2) {
       renderer = new SoftwareRenderer();
