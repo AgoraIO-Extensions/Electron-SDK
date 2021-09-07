@@ -3410,6 +3410,8 @@ export interface NodeRtcEngine {
   videosourceSetScreenCaptureContentHint(hint: VideoContentHint): number;
 
   videoSourceStartScreenCaptureByDisplayId(displayId: number, rect: CaptureRect, param: CaptureParam): number;
+
+  startScreenCaptureByDisplayId(displayId: number, rect: CaptureRect, param: CaptureParam): number;
   /**
    * @ignore
    */
