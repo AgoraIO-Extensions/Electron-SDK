@@ -428,12 +428,8 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
                 cmd->captureParams.excludeWindowList = excludeWindows;
                 cmd->captureParams.excludeWindowCount  = cmd->excludeWindowCount;
             }
-            int result = -1;
-#if defined(_WIN32)
-
-#elif defined(__APPLE__)
-            result = m_rtcEngine->startScreenCaptureByDisplayId(cmd->displayInfo.idVal, cmd->regionRect, cmd->captureParams);
-#endif
+            
+            int result = m_rtcEngine->startScreenCaptureByDisplayId(cmd->displayInfo.idVal, cmd->regionRect, cmd->captureParams);
 
             if(result != 0) {
                 LOG_ERROR("start screen capture by display failed.");
