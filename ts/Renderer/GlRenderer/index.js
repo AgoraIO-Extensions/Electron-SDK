@@ -136,7 +136,9 @@ const AgoraRender = function(initRenderFailCallBack) {
         );
       });
     }
-
+    if (!that.gl) {
+      return;
+    }
     // Console.log(image.width, "*", image.height, "planes "
     //    , " y ", image.yplane[0], image.yplane[image.yplane.length - 1]
     //    , " u ", image.uplane[0], image.uplane[image.uplane.length - 1]
@@ -229,19 +231,23 @@ const AgoraRender = function(initRenderFailCallBack) {
     this.videoBuffer.uplane.set(uUint8Array);
     this.videoBuffer.vplane.set(vUint8Array);
 
-    that.renderImage({
-      mirror: mirror,
-      width,
-      height,
-      left,
-      top,
-      right,
-      bottom,
-      rotation: rotation,
-      yplane: this.videoBuffer.yplane,
-      uplane: this.videoBuffer.uplane,
-      vplane: this.videoBuffer.vplane
-    });
+    try {
+      that.renderImage({
+        mirror: mirror,
+        width,
+        height,
+        left,
+        top,
+        right,
+        bottom,
+        rotation: rotation,
+        yplane: this.videoBuffer.yplane,
+        uplane: this.videoBuffer.uplane,
+        vplane: this.videoBuffer.vplane
+      });
+    } catch (error) {
+      console.warn(error)
+    }
     if (!that.gl) {
       failInitRenderCB && failInitRenderCB();
       failInitRenderCB = null;
