@@ -372,6 +372,7 @@ namespace agora {
              */ 
             NAPI_API(setVoiceConversionPreset);
             NAPI_API(videoSourceStartScreenCaptureByDisplayId);
+            NAPI_API(startScreenCaptureByDisplayId);
             /**
             * 3.4.0
             */
