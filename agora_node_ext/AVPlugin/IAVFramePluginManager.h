@@ -21,7 +21,6 @@ typedef struct tag_agora_plugin_info {
 }agora_plugin_info;
 
 class IAVFramePluginManager :
-    // public agora::media::IVideoFrameObserver,
     public agora::media::IAudioFrameObserver
 {
 public:
@@ -36,7 +35,7 @@ public:
     virtual bool onRecordAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& audioFrame);
     virtual bool onPlaybackAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& audioFrame);
     virtual bool onMixedAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& audioFrame);
-    virtual bool onPlaybackAudioFrameBeforeMixing(agora::media::base::user_id_t userId, agora::media::IAudioFrameObserver::AudioFrame& audioFrame);
+    virtual bool onPlaybackAudioFrameBeforeMixing(agora::rtc::uid_t userId, agora::media::IAudioFrameObserver::AudioFrame& audioFrame);
     
     void registerPlugin(agora_plugin_info& plugin);
     void unregisterPlugin(std::string& pluginId);

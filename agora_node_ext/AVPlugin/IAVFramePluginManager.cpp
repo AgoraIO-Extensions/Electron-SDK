@@ -54,7 +54,7 @@ bool IAVFramePluginManager::onMixedAudioFrame(AudioFrame& audioFrame)
     return true;
 }
 
-bool IAVFramePluginManager::onPlaybackAudioFrameBeforeMixing(agora::media::base::user_id_t userId, AudioFrame& audioFrame)
+bool IAVFramePluginManager::onPlaybackAudioFrameBeforeMixing(agora::rtc::uid_t userId, agora::media::IAudioFrameObserver::AudioFrame& audioFrame)
 {
     return true;
 }

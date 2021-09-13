@@ -126,13 +126,13 @@ namespace agora {
             NAPI_API(muteLocalAudioStream);
             NAPI_API(muteAllRemoteAudioStreams);
             NAPI_API(setDefaultMuteAllRemoteAudioStreams);
-            NAPI_API(muteRemoteAudioStream);
+            NAPI_API(muteRemoteAudioStreamEx);
             NAPI_API(muteLocalVideoStream);
             NAPI_API(enableLocalVideo);
             NAPI_API(enableLocalAudio);
             NAPI_API(muteAllRemoteVideoStreams);
             NAPI_API(setDefaultMuteAllRemoteVideoStreams);
-            NAPI_API(muteRemoteVideoStream);
+            NAPI_API(muteRemoteVideoStreamEx);
             NAPI_API(setRemoteVideoStreamType);
             NAPI_API(setRemoteDefaultVideoStreamType);
             NAPI_API(enableAudioVolumeIndication);
@@ -194,7 +194,7 @@ namespace agora {
             // NAPI_API(setVideoQualityParameters);
 
             NAPI_API(enableLoopbackRecording);
-            NAPI_API(enableLoopbackRecording2);
+            NAPI_API(enableLoopbackRecordingEx);
             NAPI_API(onEvent);
             NAPI_API(registerDeliverFrame);
 
@@ -324,7 +324,7 @@ namespace agora {
             NAPI_API(stopLocalVideoTranscoder);
             NAPI_API(joinChannelEx);
             NAPI_API(joinChannel2);
-            NAPI_API(updateChannelMediaOptions);
+            NAPI_API(updateChannelMediaOptionsEx);
 
             NAPI_API(createMediaPlayer);
             NAPI_API(startPrimaryCameraCapture);
