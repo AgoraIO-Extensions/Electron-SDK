@@ -10,6 +10,27 @@ export interface RendererOptions
 }
 
 /**
+* Rtc Connection.
+*/
+export interface RtcConnection {
+ /**
+  *  The unique channel name for the AgoraRTC session in the string format. The string
+  * length must be less than 64 bytes. Supported character scopes are:
+  * - All lowercase English letters: a to z.
+  * - All uppercase English letters: A to Z.
+  * - All numeric characters: 0 to 9.
+  * - The space character.
+  * - Punctuation characters and other symbols, including: "!", "#", "$", "%", "&", "(", ")", "+", "-",
+  * ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
+  */
+ channelId:string;
+ /**
+  * User ID: A 32-bit unsigned integer ranging from 1 to (2^32-1). It must be unique.
+  */
+ localUid:number;
+};
+
+/**
  * Network quality types:
  *
  * - 0: The network quality is unknown.
@@ -264,57 +285,44 @@ export interface TranscodingConfig {
 /**
 * Video source types definition.
 **/
-export enum MEDIA_SOURCE_TYPE {
-  /**
-   * Video captured by the camera.
+export enum VIDEO_SOURCE_TYPE {
+  /** Video captured by the camera.
    */
   VIDEO_SOURCE_CAMERA_PRIMARY,
   VIDEO_SOURCE_CAMERA = VIDEO_SOURCE_CAMERA_PRIMARY,
-  /**
-   * Video captured by the secondary camera.
+  /** Video captured by the secondary camera.
    */
   VIDEO_SOURCE_CAMERA_SECONDARY,
-  /**
-   * Video for screen sharing.
+  /** Video for screen sharing.
    */
   VIDEO_SOURCE_SCREEN_PRIMARY,
   VIDEO_SOURCE_SCREEN = VIDEO_SOURCE_SCREEN_PRIMARY,
-  /**
-   * Video for secondary screen sharing.
+  /** Video for secondary screen sharing.
    */
   VIDEO_SOURCE_SCREEN_SECONDARY,
-  /**
-   * Video for custom source.
+  /** Not define.
    */
   VIDEO_SOURCE_CUSTOM,
-  /**
-   * Video for media player sharing.
+  /** Video for media player sharing.
    */
   VIDEO_SOURCE_MEDIA_PLAYER,
-  /**
-   * Video for png image.
+  /** Video for png image.
    */
   VIDEO_SOURCE_RTC_IMAGE_PNG,
-  /**
-   * Video for png image.
+  /** Video for png image.
    */
   VIDEO_SOURCE_RTC_IMAGE_JPEG,
-  /**
-   * Video for png image.
+  /** Video for png image.
    */
   VIDEO_SOURCE_RTC_IMAGE_GIF,
-  /**
-   * Remote video received from network.
+  /** Remote video received from network.
    */
   VIDEO_SOURCE_REMOTE,
-  /**
-   * Video for transcoded.
+  /** Video for transcoded.
    */
   VIDEO_SOURCE_TRANSCODED,
-  /**
-   * Not define.
-  */
-  MEDIA_SOURCE_UNKNOWN = 100
+
+  VIDEO_SOURCE_UNKNOWN = 100
 };
 
 /**
@@ -343,16 +351,11 @@ export interface TranscodingVideoStream {
     /**
      * Source type of video stream.
      */
-    sourceType: MEDIA_SOURCE_TYPE;
+    sourceType: VIDEO_SOURCE_TYPE;
     /**
      * Remote user uid if sourceType is VIDEO_SOURCE_REMOTE.
      */
     remoteUserUid: number;
-    /**
-     * connectionId of Remote user uid if sourceType is VIDEO_SOURCE_REMOTE.
-     * Set to 0 if you only join single channel.
-     */
-    connectionId: number;
     /**
      * RTC image if sourceType is VIDEO_SOURCE_RTC_IMAGE.
      */
@@ -2609,7 +2612,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  muteRemoteAudioStream(uid: number, mute: boolean, connectionId: number): number;
+  muteRemoteAudioStreamEx(uid: number, mute: boolean, connection: RtcConnection): number;
   /**
    * @ignore
    */
@@ -2637,7 +2640,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  muteRemoteVideoStream(uid: number, mute: boolean, connectionId: number): number;
+  muteRemoteVideoStreamEx(uid: number, mute: boolean, connection: RtcConnection): number;
   /**
    * @ignore
    */
@@ -2785,7 +2788,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  enableLoopbackRecording2(connection_id: Number, enable: boolean): number;
+  enableLoopbackRecordingEx(enabled: boolean, connection: RtcConnection): number;
   /**
    * @ignore
    */
@@ -3201,15 +3204,15 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  joinChannelEx(token: string, channelId: string, userId: number, options: ChannelMediaOptions): number;
+  joinChannelEx(token: string, connection: RtcConnection, options: ChannelMediaOptions): number;
   /**
    * @ignore
    */
-  leaveChannelEx(channelId: string, connectionId: number): number;
+  leaveChannelEx(connection: RtcConnection): number;
   /**
    * @ignore
    */
-  updateChannelMediaOptions(options: ChannelMediaOptions, connectionId: number): number;
+  updateChannelMediaOptions(options: ChannelMediaOptions): number;
  /**
    * @ignore
    */
@@ -3229,7 +3232,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  setCameraDeviceOrientation(type: MEDIA_SOURCE_TYPE, orientation:VIDEO_ORIENTATION): number;
+  setCameraDeviceOrientation(type: VIDEO_SOURCE_TYPE, orientation:VIDEO_ORIENTATION): number;
   /**
    * @ignore
    */
@@ -3273,7 +3276,7 @@ export interface NodeRtcEngine {
   /**
   * @ignore
   */
-   setScreenCaptureOrientation(type: MEDIA_SOURCE_TYPE, orientation: VIDEO_ORIENTATION):number
+   setScreenCaptureOrientation(type: VIDEO_SOURCE_TYPE, orientation: VIDEO_ORIENTATION):number
  /**
   * @ignore
   */

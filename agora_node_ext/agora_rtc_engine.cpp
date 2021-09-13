@@ -75,13 +75,13 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(muteLocalAudioStream)
                 PROPERTY_METHOD_DEFINE(muteAllRemoteAudioStreams)
                 PROPERTY_METHOD_DEFINE(setDefaultMuteAllRemoteAudioStreams)
-                PROPERTY_METHOD_DEFINE(muteRemoteAudioStream)
+                PROPERTY_METHOD_DEFINE(muteRemoteAudioStreamEx)
                 PROPERTY_METHOD_DEFINE(muteLocalVideoStream)
                 PROPERTY_METHOD_DEFINE(enableLocalVideo)
                 PROPERTY_METHOD_DEFINE(enableLocalAudio)
                 PROPERTY_METHOD_DEFINE(muteAllRemoteVideoStreams)
                 PROPERTY_METHOD_DEFINE(setDefaultMuteAllRemoteVideoStreams)         
-                PROPERTY_METHOD_DEFINE(muteRemoteVideoStream)
+                PROPERTY_METHOD_DEFINE(muteRemoteVideoStreamEx)
                 PROPERTY_METHOD_DEFINE(setRemoteVideoStreamType)
                 PROPERTY_METHOD_DEFINE(setRemoteDefaultVideoStreamType)
                 PROPERTY_METHOD_DEFINE(enableAudioVolumeIndication)
@@ -139,7 +139,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(enableWebSdkInteroperability)
                 // PROPERTY_METHOD_DEFINE(setVideoQualityParameters)
                 PROPERTY_METHOD_DEFINE(enableLoopbackRecording)
-                PROPERTY_METHOD_DEFINE(enableLoopbackRecording2)
+                PROPERTY_METHOD_DEFINE(enableLoopbackRecordingEx)
                 PROPERTY_METHOD_DEFINE(registerDeliverFrame)
                 PROPERTY_METHOD_DEFINE(setupLocalVideo)
                 PROPERTY_METHOD_DEFINE(subscribe)
@@ -274,7 +274,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(stopLocalVideoTranscoder);
                 PROPERTY_METHOD_DEFINE(joinChannelEx);
                 PROPERTY_METHOD_DEFINE(joinChannel2);
-                PROPERTY_METHOD_DEFINE(updateChannelMediaOptions);
+                PROPERTY_METHOD_DEFINE(updateChannelMediaOptionsEx);
 
                 PROPERTY_METHOD_DEFINE(createMediaPlayer);
                 
@@ -597,9 +597,8 @@ namespace agora {
                         int sourceType;
                         napi_get_object_property_int32_(isolate, videoInputStreamObj, "sourceType", sourceType);
                         CHECK_NAPI_STATUS(pEngine, status);
-                        videoInputStreams[i].sourceType = (MEDIA_SOURCE_TYPE)sourceType;
+                        videoInputStreams[i].sourceType = (VIDEO_SOURCE_TYPE)sourceType;
                         napi_get_object_property_uint32_(isolate, videoInputStreamObj, "remoteUserUid", videoInputStreams[i].remoteUserUid);
-                        napi_get_object_property_uint32_(isolate, videoInputStreamObj, "connectionId", videoInputStreams[i].connectionId);
                         napi_get_object_property_nodestring_(isolate, videoInputStreamObj, "imageUrl", imageUrlList[i]);
                         if (status == napi_ok) {
                             if (videoInputStreams[i].sourceType == VIDEO_SOURCE_MEDIA_PLAYER) {
@@ -772,10 +771,8 @@ namespace agora {
                         int sourceType;
                         napi_get_object_property_int32_(isolate, videoInputStreamObj, "sourceType", sourceType);
                         CHECK_NAPI_STATUS(pEngine, status);
-                        videoInputStreams[i].sourceType = (MEDIA_SOURCE_TYPE)sourceType;
+                        videoInputStreams[i].sourceType = (VIDEO_SOURCE_TYPE)sourceType;
                         napi_get_object_property_uint32_(isolate, videoInputStreamObj, "remoteUserUid", videoInputStreams[i].remoteUserUid);
-                        CHECK_NAPI_STATUS(pEngine, status);
-                        napi_get_object_property_uint32_(isolate, videoInputStreamObj, "connectionId", videoInputStreams[i].connectionId);
                         CHECK_NAPI_STATUS(pEngine, status);
                         napi_get_object_property_nodestring_(isolate, videoInputStreamObj, "imageUrl", imageUrlList[i]);
                         CHECK_NAPI_STATUS(pEngine, status);
@@ -1861,24 +1858,35 @@ namespace agora {
             LOG_LEAVE;
         }
 
-        NAPI_API_DEFINE(NodeRtcEngine, enableLoopbackRecording2)
+        NAPI_API_DEFINE(NodeRtcEngine, enableLoopbackRecordingEx)
         {
             LOG_ENTER;
             napi_status status = napi_ok;
             int result = -1;
+            Local<Object> obj;
+            Isolate* isolate = args.GetIsolate();
+
             do {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                bool enable;
-                unsigned int connectionId;
-                NodeString deviceName;
-                status = napi_get_value_uint32_(args[0], connectionId);
+                bool enabled;
+                nodestring channelId;
+                RtcConnection connection;
+                status = napi_get_value_bool_(args[0], enabled);
                 CHECK_NAPI_STATUS(pEngine, status);
 
-                status = napi_get_value_bool_(args[1], enable);
+                status = napi_get_value_object_(isolate, args[1], obj);
                 CHECK_NAPI_STATUS(pEngine, status);
-                result = pEngine->m_engine->enableLoopbackRecording(connectionId, enable);
+                
+                status = napi_get_object_property_nodestring_(isolate, obj, "channelId", channelId);
+                connection.channelId = channelId;
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_uint32_(isolate, obj, "localUid", connection.localUid);
+                CHECK_NAPI_STATUS(pEngine, status);
+                
+                IRtcEngineEx* engineEx = (IRtcEngineEx*)pEngine->m_engine;
+                result = engineEx->enableLoopbackRecordingEx(enabled, connection);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -2053,7 +2061,7 @@ namespace agora {
                 CHECK_NAPI_STATUS_STR(pEngine, status, key);
 
                 RtcEngineContextEx context;
-                context.eventHandlerEx = pEngine->m_eventHandler.get();
+                context.eventHandler = pEngine->m_eventHandler.get();
                 context.appId = appid;
                 context.areaCode = areaCode;
                 auto engineEx = (IRtcEngineEx*) pEngine->m_engine;
@@ -2503,7 +2511,7 @@ namespace agora {
             LOG_LEAVE;
         }
 
-        NAPI_API_DEFINE(NodeRtcEngine, muteRemoteAudioStream)
+        NAPI_API_DEFINE(NodeRtcEngine, muteRemoteAudioStreamEx)
         {
             LOG_ENTER;
             int result = -1;
@@ -2512,15 +2520,28 @@ namespace agora {
                 napi_status status = napi_ok;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
-                uid_t uid;
+                uid_t remoteUid;
                 bool mute;
-                unsigned int connectionId;
-                status = NodeUid::getUidFromNodeValue(args[0], uid);
+                nodestring channelId;
+                RtcConnection rtcConnection;
+                status = NodeUid::getUidFromNodeValue(args[0], remoteUid);
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_value_bool_(args[1], mute);
                 CHECK_NAPI_STATUS(pEngine, status);
-                status = napi_get_value_uint32_(args[2], connectionId);
-                result = pEngine->m_engine->muteRemoteAudioStream(uid, mute, connectionId);
+
+                Local<Object> obj;
+                Isolate* isolate = args.GetIsolate();
+                status = napi_get_value_object_(isolate, args[2], obj);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                status = napi_get_object_property_nodestring_(isolate, obj, "channelId", channelId);
+                rtcConnection.channelId = channelId;
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_uint32_(isolate, obj, "localUid", rtcConnection.localUid);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                IRtcEngineEx* engineEx = (IRtcEngineEx*)pEngine->m_engine;
+                result = engineEx->muteRemoteAudioStreamEx(remoteUid, mute, rtcConnection);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -2823,7 +2844,7 @@ namespace agora {
             LOG_LEAVE;
         }
 
-        NAPI_API_DEFINE(NodeRtcEngine, muteRemoteVideoStream)
+        NAPI_API_DEFINE(NodeRtcEngine, muteRemoteVideoStreamEx)
         {
             LOG_ENTER;
             int result = -1;
@@ -2835,13 +2856,26 @@ namespace agora {
                 uid_t uid;
                 bool mute;
                 unsigned int connectionId;
+                RtcConnection rtcConnection;
+                nodestring channelId;
                 status = NodeUid::getUidFromNodeValue(args[0], uid);
                 CHECK_NAPI_STATUS(pEngine, status);
                 status = napi_get_value_bool_(args[1], mute);
                 CHECK_NAPI_STATUS(pEngine, status);
-                napi_get_value_uint32_(args[2], connectionId);
-                CHECK_NAPI_STATUS(pEngine, status)
-                result = pEngine->m_engine->muteRemoteVideoStream(uid, mute, connectionId);
+
+                Local<Object> obj;
+                Isolate* isolate = args.GetIsolate();
+                status = napi_get_value_object_(isolate, args[2], obj);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                status = napi_get_object_property_nodestring_(isolate, obj, "channelId", channelId);
+                rtcConnection.channelId = channelId;
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_uint32_(isolate, obj, "localUid", rtcConnection.localUid);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                IRtcEngineEx* engineEx = (IRtcEngineEx*)pEngine->m_engine;
+                result = engineEx->muteRemoteVideoStreamEx(uid, mute, rtcConnection);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -4700,19 +4734,27 @@ namespace agora {
             LOG_ENTER;
             napi_status status = napi_ok;
             int result = -1;
+            Isolate* isolate = args.GetIsolate();
             do {
                 NodeRtcEngine *pEngine = nullptr;
                 napi_get_native_this(args, pEngine);
                 CHECK_NATIVE_THIS(pEngine);
 
+                RtcConnection rtcConnection;
                 nodestring channelId;
-                status = napi_get_value_nodestring_(args[0], channelId);
+
+                Local<Object> obj;
+                status = napi_get_value_object_(isolate, args[0], obj);
                 CHECK_NAPI_STATUS(pEngine, status);
-                unsigned int connectionId;
-                status = napi_get_value_uint32_(args[1], connectionId);
+
+                status = napi_get_object_property_nodestring_(isolate, obj, "channelId", channelId);
+                rtcConnection.channelId = channelId;
                 CHECK_NAPI_STATUS(pEngine, status);
-                // LOG_F(INFO, "leaveChannelEx channelId: %s, connectionId: %u", channelId, connectionId);
-                result = pEngine->m_engine->leaveChannelEx(channelId, connectionId);
+                status = napi_get_object_property_uint32_(isolate, obj, "localUid", rtcConnection.localUid);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                IRtcEngineEx* engineEx = (IRtcEngineEx*)pEngine->m_engine;
+                result = engineEx->leaveChannelEx(rtcConnection);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -5143,11 +5185,18 @@ namespace agora {
                 nodestring token;
                 status = napi_get_value_nodestring_(args[0], token);
                 CHECK_NAPI_STATUS(pEngine, status);
+
+                RtcConnection rtcConnection;
                 nodestring channelId;
-                status = napi_get_value_nodestring_(args[1], channelId);
+
+                Local<Object> obj;
+                status = napi_get_value_object_(isolate, args[1], obj);
                 CHECK_NAPI_STATUS(pEngine, status);
-                uid_t uid;
-                status = napi_get_value_uint32_(args[2], uid);
+
+                status = napi_get_object_property_nodestring_(isolate, obj, "channelId", channelId);
+                rtcConnection.channelId = channelId;
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_uint32_(isolate, obj, "localUid", rtcConnection.localUid);
                 CHECK_NAPI_STATUS(pEngine, status);
 
                 ChannelMediaOptions channelMediaOptions;
@@ -5209,31 +5258,8 @@ namespace agora {
                 status = napi_get_object_property_int32_(isolate, optionObj, "channelProfile", channelProfile);
                 channelMediaOptions.channelProfile = (CHANNEL_PROFILE_TYPE)channelProfile;
                 
-                // LOG_F(INFO, "parameter token: %s, channelId: %s, uid: %d", (char*)token, (char*)channelId, uid);
-                // LOG_F(INFO, "publishCameraTrack: %d", channelMediaOptions.publishCameraTrack.value());
-                // LOG_F(INFO, "publishSecondaryCameraTrack: %d", channelMediaOptions.publishSecondaryCameraTrack.value());
-                // LOG_F(INFO, "publishAudioTrack: %d", channelMediaOptions.publishAudioTrack.value());
-                // LOG_F(INFO, "publishScreenTrack: %d", channelMediaOptions.publishScreenTrack.value());
-                // LOG_F(INFO, "publishSecondaryScreenTrack: %d", channelMediaOptions.publishSecondaryScreenTrack.value());
-                // LOG_F(INFO, "publishCustomAudioTrack: %d", channelMediaOptions.publishCustomAudioTrack.value());
-                // LOG_F(INFO, "publishCustomVideoTrack: %d", channelMediaOptions.publishCustomVideoTrack.value());
-                // LOG_F(INFO, "publishEncodedVideoTrack: %d", channelMediaOptions.publishEncodedVideoTrack.value());
-                // LOG_F(INFO, "publishMediaPlayerAudioTrack: %d", channelMediaOptions.publishMediaPlayerAudioTrack.value());
-                // LOG_F(INFO, "publishMediaPlayerVideoTrack: %d", channelMediaOptions.publishMediaPlayerVideoTrack.value());
-                // LOG_F(INFO, "publishTrancodedVideoTrack: %d", channelMediaOptions.publishTrancodedVideoTrack.value());
-                // LOG_F(INFO, "autoSubscribeAudio: %d", channelMediaOptions.autoSubscribeAudio.value());
-                // LOG_F(INFO, "autoSubscribeVideo: %d", channelMediaOptions.autoSubscribeVideo.value());
-                // LOG_F(INFO, "publishMediaPlayerId: %d", channelMediaOptions.publishMediaPlayerId.value());
-                // LOG_F(INFO, "enableAudioRecordingOrPlayout: %d", channelMediaOptions.enableAudioRecordingOrPlayout.value());
-                // LOG_F(INFO, "clientRoleType: %d", channelMediaOptions.clientRoleType.value());
-                // LOG_F(INFO, "defaultVideoStreamType: %d", channelMediaOptions.defaultVideoStreamType.value());
-                // LOG_F(INFO, "defaultVideoStreamType: %d", channelMediaOptions.defaultVideoStreamType.value());
-
-                unsigned int connectionId;
-                result = pEngine->m_engine->joinChannelEx(token, channelId, uid, channelMediaOptions, pEngine->m_eventHandler.get(), &connectionId);
-                if (result == 0) {
-                    result = connectionId;
-                }
+                agora::rtc::IRtcEngineEx *engineEx = (agora::rtc::IRtcEngineEx *)pEngine->m_engine;
+                result = engineEx->joinChannelEx(token, rtcConnection, channelMediaOptions, nullptr);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -5325,7 +5351,7 @@ namespace agora {
             LOG_LEAVE;
         }
 
-       NAPI_API_DEFINE(NodeRtcEngine, updateChannelMediaOptions)
+       NAPI_API_DEFINE(NodeRtcEngine, updateChannelMediaOptionsEx)
         {
             LOG_ENTER;
             int result = -1;
@@ -5389,10 +5415,20 @@ namespace agora {
                 status = napi_get_object_property_int32_(isolate, optionObj, "channelProfile", channelProfile);
                 channelMediaOptions.channelProfile = (CHANNEL_PROFILE_TYPE)channelProfile;
                 
-                unsigned int connectionId;
-                status = napi_get_value_uint32_(args[1], connectionId);
+                Local<Object> obj;
+                nodestring channelId;
+                RtcConnection rtcConnection;
+                status = napi_get_value_object_(isolate, args[1], obj);
                 CHECK_NAPI_STATUS(pEngine, status);
-                result = pEngine->m_engine->updateChannelMediaOptions(channelMediaOptions, connectionId);
+
+                status = napi_get_object_property_nodestring_(isolate, obj, "channelId", channelId);
+                rtcConnection.channelId = channelId;
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_uint32_(isolate, obj, "localUid", rtcConnection.localUid);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                IRtcEngineEx* engineEx = (IRtcEngineEx*)pEngine->m_engine;
+                result = engineEx->updateChannelMediaOptionsEx(channelMediaOptions, rtcConnection);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -5559,7 +5595,7 @@ namespace agora {
                 status = napi_get_value_int32_(args[1], orientation);
                 CHECK_NAPI_STATUS(pEngine, status);
 
-                result = pEngine->m_engine->setCameraDeviceOrientation((MEDIA_SOURCE_TYPE)type, (VIDEO_ORIENTATION)orientation);
+                result = pEngine->m_engine->setCameraDeviceOrientation((VIDEO_SOURCE_TYPE)type, (VIDEO_ORIENTATION)orientation);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -5825,13 +5861,7 @@ namespace agora {
 
                 bool enable;
                 status = napi_get_value_bool_(args[2], enable);
-               
-                int type;
-                napi_get_value_int32_(args[3], type);  
-
-
 #if defined(__APPLE__)
-                result = pEngine->m_engine->enableExtension(id, key, json_value);
 #elif defined(_WIN32)
                 result = pEngine->m_engine->enableExtension(provider_name, extension_name, enable);
 #endif
@@ -5998,7 +6028,7 @@ namespace agora {
             unsigned int orientation = 0;
             status = napi_get_value_uint32_(args[1], orientation);
             CHECK_NAPI_STATUS(pEngine, status);
-            result = pEngine->m_engine->setScreenCaptureOrientation((MEDIA_SOURCE_TYPE)type, (VIDEO_ORIENTATION)orientation);
+            result = pEngine->m_engine->setScreenCaptureOrientation((VIDEO_SOURCE_TYPE)type, (VIDEO_ORIENTATION)orientation);
           } while (false);
           napi_set_int_result(args, result);
           LOG_LEAVE;

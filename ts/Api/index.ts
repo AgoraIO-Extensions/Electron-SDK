@@ -54,22 +54,16 @@ import {
   MEDIA_PLAYER_EVENT,
   CameraCapturerConfiguration,
   ScreenCaptureConfiguration,
-  MEDIA_SOURCE_TYPE,
-  Extension,
+  VIDEO_SOURCE_TYPE,
   VIDEO_ORIENTATION,
   AUDIO_RECORDING_QUALITY_TYPE,
-  ClientRoleOptions,
-  BeautyOptions
+  BeautyOptions,
+  RtcConnection,
+  ChannelMediaRelayConfiguration
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
 import { ChannelMediaOptions, WatermarkOptions } from './native_type';
-import {
-  ChannelMediaRelayEvent,
-  ChannelMediaRelayState,
-  ChannelMediaRelayError,
-  ChannelMediaRelayConfiguration
-} from './native_type';
 import {
   PluginInfo,
   Plugin
@@ -744,7 +738,7 @@ class AgoraRtcEngine extends EventEmitter {
       fire('firstLocalAudioFramePublished', connId, elapsed);
     })
 
-    this.rtcEngine.onEvent('videoSourceFrameSizeChanged', function(sourceType: MEDIA_SOURCE_TYPE, width: number, height: number) {
+    this.rtcEngine.onEvent('videoSourceFrameSizeChanged', function(sourceType: VIDEO_SOURCE_TYPE, width: number, height: number) {
       fire('videoSourceFrameSizeChanged', sourceType, width, height);
     })
 
@@ -2143,8 +2137,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  muteRemoteAudioStream(uid: number, mute: boolean, connectionId = 0): number {
-    return this.rtcEngine.muteRemoteAudioStream(uid, mute, connectionId);
+  muteRemoteAudioStreamEx(uid: number, mute: boolean, connection: RtcConnection): number {
+    return this.rtcEngine.muteRemoteAudioStreamEx(uid, mute, connection);
   }
 
   /**
@@ -2334,8 +2328,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  muteRemoteVideoStream(uid: number, mute: boolean, connectionId = 0): number {
-    return this.rtcEngine.muteRemoteVideoStream(uid, mute, connectionId);
+   muteRemoteVideoStreamEx(uid: number, mute: boolean, connection :RtcConnection): number {
+    return this.rtcEngine.muteRemoteVideoStreamEx(uid, mute, connection);
   }
 
   /**
@@ -2900,11 +2894,11 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.enableLoopbackRecording(enable);
   }
 
-  enableLoopbackRecordingByConnectionId(
-    connection_id:Number,
-    enable: boolean
+  enableLoopbackRecordingEx(
+    enabled: boolean,
+    connection: RtcConnection,
   ): number {
-    return this.rtcEngine.enableLoopbackRecording2(connection_id, enable);
+    return this.rtcEngine.enableLoopbackRecordingEx(enabled, connection);
   }
   /**
    * @since v3.0.0
@@ -4182,16 +4176,16 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.joinChannel2(token, channelId, userId, options);
   }
 
-  joinChannelEx(token: string, channelId: string, userId: number, options: ChannelMediaOptions): number {
-    return this.rtcEngine.joinChannelEx(token, channelId, userId, options);
+  joinChannelEx(token: string, connection: RtcConnection, options: ChannelMediaOptions): number {
+    return this.rtcEngine.joinChannelEx(token, connection, options);
   }
 
-  leaveChannelEx(channelId: string, connectionId: number): number {
-    return this.rtcEngine.leaveChannelEx(channelId, connectionId);
+  leaveChannelEx(connection: RtcConnection): number {
+    return this.rtcEngine.leaveChannelEx(connection);
   }
 
-  updateChannelMediaOptions(options: ChannelMediaOptions, connectionId: number = 0): number {
-    return this.rtcEngine.updateChannelMediaOptions(options, connectionId);
+  updateChannelMediaOptions(options: ChannelMediaOptions): number {
+    return this.rtcEngine.updateChannelMediaOptions(options);
   }
 
   startPrimaryCameraCapture(config: CameraCapturerConfiguration): number {
@@ -4210,7 +4204,7 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.stopSecondaryCameraCapture();
   }
 
-  setCameraDeviceOrientation(type: MEDIA_SOURCE_TYPE, orientation:VIDEO_ORIENTATION): number {
+  setCameraDeviceOrientation(type: VIDEO_SOURCE_TYPE, orientation:VIDEO_ORIENTATION): number {
     return this.rtcEngine.setCameraDeviceOrientation(type, orientation);
   }
 
@@ -4256,7 +4250,7 @@ class AgoraRtcEngine extends EventEmitter {
  setBeautyEffectOptions(enabled :boolean, options :BeautyOptions):number {
    return this.rtcEngine.setBeautyEffectOptions(enabled, options);
  }
- setScreenCaptureOrientation(type: MEDIA_SOURCE_TYPE, orientation: VIDEO_ORIENTATION): number{
+ setScreenCaptureOrientation(type: VIDEO_SOURCE_TYPE, orientation: VIDEO_ORIENTATION): number{
     return this.rtcEngine.setScreenCaptureOrientation(type, orientation);
  }
 
@@ -5336,7 +5330,7 @@ declare interface AgoraRtcEngine {
   )=>void): this;
 
   on(evt: 'videoSourceFrameSizeChanged', cb: (
-    sourceType: MEDIA_SOURCE_TYPE,
+    sourceType: VIDEO_SOURCE_TYPE,
     width: number,
     height: number
   )=>void): this;
