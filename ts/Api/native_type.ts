@@ -3269,7 +3269,11 @@ export interface NodeRtcEngine {
  /**
   * @ignore
   */
- setBeautyEffectOptions(enabled: boolean, options: BeautyOptions, type: MEDIA_SOURCE_TYPE):number
+  setBeautyEffectOptions(enabled: boolean, options: BeautyOptions, type: MEDIA_SOURCE_TYPE): number
+  /**
+  * @ignore
+  */
+   setScreenCaptureOrientation(type: MEDIA_SOURCE_TYPE, orientation: VIDEO_ORIENTATION):number
  /**
   * @ignore
   */
@@ -3277,7 +3281,7 @@ export interface NodeRtcEngine {
  /**
    * @ignore
    */
- setClientRoleWithOptions(role: ClientRoleType, options: ClientRoleOptions): number;
+//  setClientRoleWithOptions(role: ClientRoleType, options: ClientRoleOptions): number;
   
 }
 

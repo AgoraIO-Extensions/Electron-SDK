@@ -4256,6 +4256,9 @@ class AgoraRtcEngine extends EventEmitter {
  setBeautyEffectOptions(enabled :boolean, options :BeautyOptions, type : MEDIA_SOURCE_TYPE):number {
    return this.rtcEngine.setBeautyEffectOptions(enabled, options, type);
  }
+ setScreenCaptureOrientation(type: MEDIA_SOURCE_TYPE, orientation: VIDEO_ORIENTATION): number{
+    return this.rtcEngine.setScreenCaptureOrientation(type, orientation);
+ }
 
  /**
    * Set extension specific property.
@@ -4310,9 +4313,9 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setClientRoleWithOptions(role: ClientRoleType, options: ClientRoleOptions): number {
-    return this.rtcEngine.setClientRoleWithOptions(role, options);
-  }
+  // setClientRoleWithOptions(role: ClientRoleType, options: ClientRoleOptions): number {
+  //   return this.rtcEngine.setClientRoleWithOptions(role, options);
+  // }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {

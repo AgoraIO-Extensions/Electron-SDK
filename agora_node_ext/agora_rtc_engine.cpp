@@ -298,8 +298,9 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(leaveChannelEx);
                 PROPERTY_METHOD_DEFINE(startAudioRecording2);
                 // PROPERTY_METHOD_DEFINE(startAudioRecordingWithConfig);
-                PROPERTY_METHOD_DEFINE(setClientRoleWithOptions);
+                // PROPERTY_METHOD_DEFINE(setClientRoleWithOptions);
                 PROPERTY_METHOD_DEFINE(setBeautyEffectOptions);
+                PROPERTY_METHOD_DEFINE(setScreenCaptureOrientation);
 
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
@@ -2937,7 +2938,7 @@ namespace agora {
             LOG_LEAVE;
         }
         
-        NAPI_API_DEFINE(NodeRtcEngine, setClientRoleWithOptions)
+        /*NAPI_API_DEFINE(NodeRtcEngine, setClientRoleWithOptions)
         {
             LOG_ENTER;
             napi_status status = napi_ok;
@@ -2980,7 +2981,7 @@ namespace agora {
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
-        }
+        }*/
 
     //     NAPI_API_DEFINE(NodeRtcEngine, startAudioRecordingWithConfig)
     //     {
@@ -5978,6 +5979,29 @@ namespace agora {
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setScreenCaptureOrientation)
+        {
+          LOG_ENTER;
+          int result = -1;
+          napi_status status = napi_ok;
+          do {
+            NodeRtcEngine* pEngine = nullptr;
+            napi_get_native_this(args, pEngine);
+            CHECK_NATIVE_THIS(pEngine);
+
+            unsigned int type = 0;
+            status = napi_get_value_uint32_(args[0], type);
+            CHECK_NAPI_STATUS(pEngine, status);
+
+            unsigned int orientation = 0;
+            status = napi_get_value_uint32_(args[1], orientation);
+            CHECK_NAPI_STATUS(pEngine, status);
+            result = pEngine->m_engine->setScreenCaptureOrientation((MEDIA_SOURCE_TYPE)type, (VIDEO_ORIENTATION)orientation);
+          } while (false);
+          napi_set_int_result(args, result);
+          LOG_LEAVE;
         }
 
         NAPI_API_DEFINE(NodeRtcEngine, setAddonLogFile)
