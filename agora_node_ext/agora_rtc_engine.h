@@ -318,7 +318,7 @@ namespace agora {
 
             NAPI_API(sendCustomReportMessage);
             NAPI_API(enableEncryption);
-            NAPI_API(setClientRoleWithOptions);
+            //NAPI_API(setClientRoleWithOptions);
             NAPI_API(startLocalVideoTranscoder);
             NAPI_API(updateLocalTranscoderConfiguration);
             NAPI_API(stopLocalVideoTranscoder);
@@ -344,6 +344,7 @@ namespace agora {
             NAPI_API(getExtensionProperty);
             NAPI_API(setExtensionProperty);
             NAPI_API(setBeautyEffectOptions);
+            NAPI_API(setScreenCaptureOrientation);
             NAPI_API(setAddonLogFile);
             NAPI_API(leaveChannelEx);
             NAPI_API(startAudioRecording2);
