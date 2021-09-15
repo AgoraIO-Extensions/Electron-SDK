@@ -71,37 +71,47 @@ bool NodeVideoFrameTransporter::deinitialize()
     return true;
 }
 
-int NodeVideoFrameTransporter::setVideoDimension(NodeRenderType type, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, int deviceId, uint32_t width, uint32_t height)
+int NodeVideoFrameTransporter::setVideoDimension(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, int deviceId, uint32_t width, uint32_t height)
 {
-    if (!init)
-        return -1;
-    std::lock_guard<std::mutex> lck(m_lock);
-    VideoFrameInfo& info = getVideoFrameInfo(type, uid, connectionId, deviceId);
-    info.m_destWidth = width;
-    info.m_destHeight = height;
-    return 0;
+  if (!init)
+    return -1;
+  std::lock_guard<std::mutex> lck(m_lock);
+  if (type == NODE_RENDER_TYPE_REMOTE) {
+    auto cit = m_remoteHighVideoFrames.find(channelId);
+    if (cit != m_remoteHighVideoFrames.end()) {
+      auto it = cit->second.find(uid);
+      if (it != cit->second.end()) {
+        it->second.m_destWidth = width;
+        it->second.m_destHeight = height;
+        return 0;
+      }
+    }
+  }
+  VideoFrameInfo& info = getVideoFrameInfo(type, uid, channelId, deviceId);
+  info.m_destWidth = width;
+  info.m_destHeight = height;
+  return 0;
 }
 
-void NodeVideoFrameTransporter::subscribe(NodeRenderType type, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, int deviceId)
+void NodeVideoFrameTransporter::subscribe(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, int deviceId)
 {
     std::lock_guard<std::mutex> lck(m_lock);
-    VideoFrameInfo& info = getVideoFrameInfo(type, uid, connectionId, deviceId);
+    VideoFrameInfo& info = getVideoFrameInfo(type, uid, channelId, deviceId);
     info.m_subscribed = true;
     info.m_needUpdate = false;
     info.m_count = 0;
 }
 
-void NodeVideoFrameTransporter::unsubscribe(NodeRenderType type, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, int deviceId)
+void NodeVideoFrameTransporter::unsubscribe(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, int deviceId)
 {
     std::lock_guard<std::mutex> lck(m_lock);
-    VideoFrameInfo& info = getVideoFrameInfo(type, uid, connectionId, deviceId);
+    VideoFrameInfo& info = getVideoFrameInfo(type, uid, channelId, deviceId);
     info.m_subscribed = false;
     info.m_needUpdate = false;
     info.m_count = 0;
-
 }
 
-VideoFrameInfo& NodeVideoFrameTransporter::getVideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, int deviceId)
+VideoFrameInfo& NodeVideoFrameTransporter::getVideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, int deviceId)
 {
     if (type == NodeRenderType::NODE_RENDER_TYPE_LOCAL) {
         if (m_localVideoFrames.find(deviceId) == m_localVideoFrames.end()) {
@@ -117,23 +127,23 @@ VideoFrameInfo& NodeVideoFrameTransporter::getVideoFrameInfo(NodeRenderType type
     }
     else if (type == NODE_RENDER_TYPE_REMOTE) {
         //try looking in high streams first
-        auto hcit = m_remoteHighVideoFrames.find(connectionId);
-        if(hcit != m_remoteHighVideoFrames.end()){
-            auto hit = m_remoteHighVideoFrames[connectionId].find(uid);
-            if (hit != m_remoteHighVideoFrames[connectionId].end()) 
-                return m_remoteHighVideoFrames[connectionId][uid];
+        auto hcit = m_remoteHighVideoFrames.find(channelId);
+        if (hcit != m_remoteHighVideoFrames.end()) {
+          auto hit = m_remoteHighVideoFrames[channelId].find(uid);
+         if (hit != m_remoteHighVideoFrames[channelId].end())
+            return m_remoteHighVideoFrames[channelId][uid];
         }
 
         //if not exists, try looking in low streams
-        auto cit = m_remoteVideoFrames.find(connectionId);
-        if(cit == m_remoteVideoFrames.end()){
-            m_remoteVideoFrames[connectionId] = std::unordered_map<agora::rtc::uid_t, VideoFrameInfo>();
+        auto cit = m_remoteVideoFrames.find(channelId);
+        if (cit == m_remoteVideoFrames.end()) {
+         m_remoteVideoFrames[channelId] = std::unordered_map<agora::rtc::uid_t, VideoFrameInfo>();
         }
-        auto it = m_remoteVideoFrames[connectionId].find(uid);
-        if (it == m_remoteVideoFrames[connectionId].end()) 
-            m_remoteVideoFrames[connectionId][uid] = VideoFrameInfo(NODE_RENDER_TYPE_REMOTE, uid, "", connectionId);
+        auto it = m_remoteVideoFrames[channelId].find(uid);
+        if (it == m_remoteVideoFrames[channelId].end())
+          m_remoteVideoFrames[channelId][uid] = VideoFrameInfo(NODE_RENDER_TYPE_REMOTE, uid, channelId);
 
-        return m_remoteVideoFrames[connectionId][uid];
+        return m_remoteVideoFrames[channelId][uid];
     }
     else if (type == NODE_RENDER_TYPE_DEVICE_TEST) {
         if (!m_devTestVideoFrame.get())
@@ -195,7 +205,7 @@ int NodeVideoFrameTransporter::deliverVideoSourceFrame(const char* payload, int 
     return 0;
 }
 
-int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type, agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId, int deviceId, const agora::media::IVideoFrameObserver::VideoFrame& videoFrame)
+int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type,const char* channelId, agora::rtc::uid_t uid, int deviceId, const agora::media::IVideoFrameObserver::VideoFrame& videoFrame)
 {
     if (!init)
         return -1;
@@ -206,7 +216,7 @@ int NodeVideoFrameTransporter::deliverFrame_I420(NodeRenderType type, agora::rtc
     }
     int rotation = videoFrame.rotation < 0 ? videoFrame.rotation + 360 : videoFrame.rotation;
     std::lock_guard<std::mutex> lck(m_lock);
-    VideoFrameInfo& info = getVideoFrameInfo(type, uid, connectionId, deviceId);
+    VideoFrameInfo& info = getVideoFrameInfo(type, uid, channelId, deviceId);
 
     if (!info.m_subscribed) {
         info.m_needUpdate = false;
@@ -318,42 +328,42 @@ unsigned char* dstYPlane, unsigned char* dstUPlane, unsigned char* dstVPlane, in
     }
 }
 
-VideoFrameInfo& NodeVideoFrameTransporter::getHighVideoFrameInfo(agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId)
+VideoFrameInfo& NodeVideoFrameTransporter::getHighVideoFrameInfo(agora::rtc::uid_t uid, std::string channelId)
 {
-    auto cit = m_remoteHighVideoFrames.find(connectionId);
-    if (cit == m_remoteHighVideoFrames.end()) {
-        m_remoteHighVideoFrames[connectionId] = std::unordered_map<agora::rtc::uid_t, VideoFrameInfo>();
-    }
+  auto cit = m_remoteHighVideoFrames.find(channelId);
+  if (cit == m_remoteHighVideoFrames.end()) {
+    m_remoteHighVideoFrames[channelId] = std::unordered_map<agora::rtc::uid_t, VideoFrameInfo>();
+  }
 
-    auto it = m_remoteHighVideoFrames[connectionId].find(uid);
-    if (it == m_remoteHighVideoFrames[connectionId].end()) {
-        m_remoteHighVideoFrames[connectionId][uid] = VideoFrameInfo(NODE_RENDER_TYPE_REMOTE, uid, "", connectionId);
-    }
-    return m_remoteHighVideoFrames[connectionId][uid];
+  auto it = m_remoteHighVideoFrames[channelId].find(uid);
+  if (it == m_remoteHighVideoFrames[channelId].end()) {
+    m_remoteHighVideoFrames[channelId][uid] = VideoFrameInfo(NODE_RENDER_TYPE_REMOTE, uid, channelId);
+  }
+  return m_remoteHighVideoFrames[channelId][uid];
 }
 
-void NodeVideoFrameTransporter::addToHighVideo(agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId)
+void NodeVideoFrameTransporter::addToHighVideo(agora::rtc::uid_t uid, std::string channelId)
 {
-    std::lock_guard<std::mutex> lck(m_lock);
-    auto cit = m_remoteVideoFrames.find(connectionId);
-    if(cit != m_remoteVideoFrames.end()){
-        auto it = m_remoteVideoFrames[connectionId].find(uid);
-        if(it != m_remoteVideoFrames[connectionId].end())
-            m_remoteVideoFrames[connectionId].erase(it);
-    }
-    getHighVideoFrameInfo(uid, connectionId);
+  std::lock_guard<std::mutex> lck(m_lock);
+  auto cit = m_remoteVideoFrames.find(channelId);
+  if (cit != m_remoteVideoFrames.end()) {
+    auto it = m_remoteVideoFrames[channelId].find(uid);
+    if (it != m_remoteVideoFrames[channelId].end())
+      m_remoteVideoFrames[channelId].erase(it);
+  }
+  getHighVideoFrameInfo(uid, channelId);
 }
 
-void NodeVideoFrameTransporter::removeFromeHighVideo(agora::rtc::uid_t uid, agora::rtc::conn_id_t connectionId)
+void NodeVideoFrameTransporter::removeFromeHighVideo(agora::rtc::uid_t uid, std::string channelId)
 {
-    std::lock_guard<std::mutex> lck(m_lock);
-    auto cit = m_remoteHighVideoFrames.find(connectionId);
-    if(cit != m_remoteHighVideoFrames.end()){
-        auto it = m_remoteHighVideoFrames[connectionId].find(uid);
-        if(it != m_remoteHighVideoFrames[connectionId].end())
-            m_remoteHighVideoFrames[connectionId].erase(it);
-    }
-    getVideoFrameInfo(NODE_RENDER_TYPE_REMOTE, uid, connectionId, 0);
+  std::lock_guard<std::mutex> lck(m_lock);
+  auto cit = m_remoteHighVideoFrames.find(channelId);
+  if (cit != m_remoteHighVideoFrames.end()) {
+    auto it = m_remoteHighVideoFrames[channelId].find(uid);
+    if (it != m_remoteHighVideoFrames[channelId].end())
+      m_remoteHighVideoFrames[channelId].erase(it);
+  }
+  getVideoFrameInfo(NODE_RENDER_TYPE_REMOTE, uid, channelId,0);
 }
 
 void NodeVideoFrameTransporter::setHighFPS(uint32_t fps)
@@ -442,7 +452,6 @@ bool AddObj(Isolate* isolate, Local<v8::Array>& infos, int index, VideoFrameInfo
         Local<v8::Object> obj = Object::New(isolate);
         NODE_SET_OBJ_PROP_UINT32(obj, "type", info.m_renderType);
         NODE_SET_OBJ_PROP_UINT32(obj, "uid", info.m_uid);
-        NODE_SET_OBJ_PROP_UINT32(obj, "connectionId", info.m_connectionId);
         NODE_SET_OBJ_PROP_STRING(obj, "channelId", info.m_channelId.c_str());
         NODE_SET_OBJ_PROP_INT32(obj, "deviceId", info.m_deviceId);
         auto it = info.m_bufferList.begin();

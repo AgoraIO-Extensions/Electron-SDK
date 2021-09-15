@@ -2493,11 +2493,11 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  subscribe(type: number, uid: number, connId: number, deviceId: number): number;
+  subscribe(type: number, uid: number, channelId: string, deviceId: number): number;
   /**
    * @ignore
    */
-  unsubscribe(type: number, uid: number, connId: number, deviceId: number): number;
+  unsubscribe(type: number, uid: number, channelId: string, deviceId: number): number;
   /**
    * @ignore
    */
