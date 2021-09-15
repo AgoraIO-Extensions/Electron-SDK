@@ -2568,17 +2568,22 @@ namespace agora {
                 uid_t uid;
                 status = napi_get_value_uid_t_(args[1], uid);
                 CHECK_NAPI_STATUS(pEngine, status);
-                unsigned int connectionId;
-                status = napi_get_value_uint32_(args[2], connectionId);
+                nodestring channelId;
+                std::string channelStr = "";
+                status = napi_get_value_nodestring_(args[2], channelId);
                 CHECK_NAPI_STATUS(pEngine, status);
+                if (channelId) {
+                  channelStr = channelId;
+                }
                 int deviceId;
                 status = napi_get_value_int32_(args[3], deviceId);
                 CHECK_NAPI_STATUS(pEngine, status);
 
                 auto *pTransporter = getNodeVideoFrameTransporter();
                 if (pTransporter) {
-                    pTransporter->subscribe((NodeRenderType) renderType, uid, connectionId, deviceId);
-                    result = 0;
+                  auto hasChannel = channelId != nullptr && channelId != NULL;
+                  pTransporter->subscribe((NodeRenderType)renderType, uid, channelStr, deviceId);
+                  result = 0;
                 }
             } while (false);
             napi_set_int_result(args, result);
@@ -2606,17 +2611,23 @@ namespace agora {
                 uid_t uid;
                 status = napi_get_value_uid_t_(args[1], uid);
                 CHECK_NAPI_STATUS(pEngine, status);
-                unsigned int connectionId;
-                status = napi_get_value_uint32_(args[2], connectionId);
+                nodestring channelId;
+                std::string channelStr = "";
+
+                status = napi_get_value_nodestring_(args[2], channelId);
                 CHECK_NAPI_STATUS(pEngine, status);
+                if (channelId) {
+                  channelStr = channelId;
+                }
                 int deviceId;
                 status = napi_get_value_int32_(args[3], deviceId);
                 CHECK_NAPI_STATUS(pEngine, status);
 
                 auto *pTransporter = getNodeVideoFrameTransporter();
                 if (pTransporter) {
-                    pTransporter->unsubscribe((NodeRenderType) renderType, uid, connectionId, deviceId);
-                    result = 0;
+                  
+                  pTransporter->unsubscribe((NodeRenderType)renderType, uid, channelStr, deviceId);
+                  result = 0;
                 }
             } while (false);
             napi_set_int_result(args, result);

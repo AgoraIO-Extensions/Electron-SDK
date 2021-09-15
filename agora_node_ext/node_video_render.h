@@ -27,7 +27,7 @@ namespace agora {
 
             virtual bool onMediaPlayerVideoFrame(VideoFrame& videoFrame, int mediaPlayerId) override;
 
-            virtual bool onRenderVideoFrame(rtc::uid_t uid, rtc::conn_id_t connectionId, agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
+            virtual bool onRenderVideoFrame(const char* channelId, rtc::uid_t remoteUid, agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
             virtual bool onTranscodedVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
 
             // virtual agora::media::IVideoFrameObserver::VIDEO_FRAME_PROCESS_MODE getVideoFrameProcessMode() override; 
