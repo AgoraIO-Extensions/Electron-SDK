@@ -5212,7 +5212,7 @@ namespace agora {
 
                 ChannelMediaOptions channelMediaOptions;
                 Local<Object> optionObj;
-                status = napi_get_value_object_(isolate, args[3], optionObj);
+                status = napi_get_value_object_(isolate, args[2], optionObj);
                 CHECK_NAPI_STATUS(pEngine, status);
                 bool publishCameraTrack = false;
                 status = napi_get_object_property_bool_(isolate, optionObj, "publishCameraTrack", publishCameraTrack);
