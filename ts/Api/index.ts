@@ -4237,7 +4237,8 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Enable/Disable extension.
    *
-   * @param id id for extension, e.g. agora.beauty.
+   * @param provider_name name for provider, e.g. agora.io.
+   * @param extension_name name for extension, e.g. agora.beauty.
    * @param enable enable or disable.
    * - true: enable.
    * - false: disable.
@@ -4249,10 +4250,30 @@ class AgoraRtcEngine extends EventEmitter {
  enableExtension(provider_name: string, extension_name: string,enable :boolean , type : MEDIA_SOURCE_TYPE): number {
    return this.rtcEngine.enableExtension(provider_name, extension_name, enable, type);
  }
-
+  /**
+   * Get extension specific property.
+   *
+   * @param provider_name name for provider, e.g. agora.io.
+   * @param extension_name name for extension, e.g. agora.beauty.
+   * @param key key for the property.
+   * @param json_value property value.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
  getExtensionProperty(provider_name: string, extension_name: string, key: string, json_value: string, type : MEDIA_SOURCE_TYPE): number {
   return this.rtcEngine.getExtensionProperty(provider_name, extension_name, key, json_value, json_value.length, type);
-}
+ }
+  /** Enables/Disables image enhancement and sets the options.
+   *
+   * @note Call this method after calling the \ref IRtcEngine::enableVideo "enableVideo" method.
+   *
+   * @param enabled Sets whether or not to enable image enhancement:
+   * - true: enables image enhancement.
+   * - false: disables image enhancement.
+   * @param options Sets the image enhancement option. See BeautyOptions.
+   */
  setBeautyEffectOptions(enabled :boolean, options :BeautyOptions, type : MEDIA_SOURCE_TYPE):number {
    return this.rtcEngine.setBeautyEffectOptions(enabled, options, type);
  }
@@ -4260,11 +4281,13 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.setScreenCaptureOrientation(type, orientation);
  }
 
- /**
+  /**
    * Set extension specific property.
    *
+   * @param provider_name name for provider, e.g. agora.io.
+   * @param extension_name name for extension, e.g. agora.beauty.
    * @param key key for the property.
-   * @param jsonValue property value.
+   * @param json_value property value.
    *
    * @return
    * - 0: Success.
