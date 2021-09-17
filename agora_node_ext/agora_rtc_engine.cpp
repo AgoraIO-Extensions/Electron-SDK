@@ -302,6 +302,13 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setBeautyEffectOptions);
                 PROPERTY_METHOD_DEFINE(setScreenCaptureOrientation);
 
+                PROPERTY_METHOD_DEFINE(enableLocalTrapezoidCorrection);
+                PROPERTY_METHOD_DEFINE(setLocalTrapezoidCorrectionOptions);
+                PROPERTY_METHOD_DEFINE(getLocalTrapezoidCorrectionOptions);
+                PROPERTY_METHOD_DEFINE(enableRemoteTrapezoidCorrection);
+                PROPERTY_METHOD_DEFINE(setRemoteTrapezoidCorrectionOptions);
+                PROPERTY_METHOD_DEFINE(getRemoteTrapezoidCorrectionOptions);
+                PROPERTY_METHOD_DEFINE(applyTrapezoidCorrectionToRemote);
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -4293,6 +4300,16 @@ namespace agora {
     if (obj.IsEmpty()) \
         break;
 
+#define NODE_SET_OBJ_PROP_NUMBER(obj, name, val) \
+    { \
+        Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
+        CHECK_NAPI_OBJ(propName); \
+        Local<Value> propVal = v8::Number::New(isolate, val); \
+        CHECK_NAPI_OBJ(propVal); \
+        obj->Set(isolate->GetCurrentContext(), propName, propVal); \
+    }
+
+
 #define NODE_SET_OBJ_PROP_UINT32(isolate, obj, name, val) \
     { \
         Local<Value> propName = String::NewFromUtf8(isolate, name, NewStringType::kInternalized).ToLocalChecked(); \
@@ -5212,7 +5229,7 @@ namespace agora {
 
                 ChannelMediaOptions channelMediaOptions;
                 Local<Object> optionObj;
-                status = napi_get_value_object_(isolate, args[3], optionObj);
+                status = napi_get_value_object_(isolate, args[2], optionObj);
                 CHECK_NAPI_STATUS(pEngine, status);
                 bool publishCameraTrack = false;
                 status = napi_get_object_property_bool_(isolate, optionObj, "publishCameraTrack", publishCameraTrack);
@@ -6051,6 +6068,345 @@ namespace agora {
             napi_status status = napi_get_value_nodestring_(args[0], filePath);
             
             loguru::add_file(filePath, loguru::Append, loguru::Verbosity_MAX);
+        }
+
+
+        NAPI_API_DEFINE(NodeRtcEngine, enableLocalTrapezoidCorrection)
+        {
+          LOG_ENTER;
+          int result = -1;
+          napi_status status = napi_ok;
+          do {
+            NodeRtcEngine* pEngine = nullptr;
+            napi_get_native_this(args, pEngine);
+            CHECK_NATIVE_THIS(pEngine);
+
+            bool enabled = false;
+            status = napi_get_value_bool_(args[0], enabled);
+            CHECK_NAPI_STATUS(pEngine, status);
+
+            bool automatic = false;
+            status = napi_get_value_bool_(args[1], automatic);
+            CHECK_NAPI_STATUS(pEngine, status);
+            result = pEngine->m_engine->enableLocalTrapezoidCorrection(enabled, automatic);
+          } while (false);
+          napi_set_int_result(args, result);
+          LOG_LEAVE;
+        }
+
+        TrapezoidCorrectionOptions getTrapezoidCorrectionOptions(NodeRtcEngine* pEngine,Isolate* isolate,Local<Object> obj) {
+
+          /*Optional<Point> dragSrcPoint;
+            Optional<Point> dragDstPoint;
+            Optional<int> dragFinished;
+            float dragSrcPoints[POINT_ARRAY_LEN];
+            float dragDstPoints[POINT_ARRAY_LEN];
+            bool hasMultiPoints;
+            Optional<int> assistLine;
+            Optional<int> resetDragPoints;*/
+
+          TrapezoidCorrectionOptions options;
+          napi_status status = napi_ok;
+
+          Local<Object> dragSrcPoint;
+          status = napi_get_object_property_object_(isolate, obj, "dragSrcPoint", dragSrcPoint);
+          if (status != napi_invalid_arg && dragSrcPoint->IsObject())
+          {
+            TrapezoidCorrectionOptions::Point srcPoint;
+            double x, y;
+            status = napi_get_object_property_double_(isolate, dragSrcPoint, "x", x);
+            status = napi_get_object_property_double_(isolate, dragSrcPoint, "y", y);
+            srcPoint.x = x;
+            srcPoint.y = y;
+            options.setDragSrcPoint(srcPoint);
+          }
+
+          Local<Object> dragDstPoint;
+          status = napi_get_object_property_object_(isolate, obj, "dragDstPoint", dragDstPoint);
+          if (status != napi_invalid_arg && dragDstPoint->IsObject())
+          {
+            TrapezoidCorrectionOptions::Point dstPoint;
+            double x, y;
+            status = napi_get_object_property_double_(isolate, dragDstPoint, "x", x);
+            status = napi_get_object_property_double_(isolate, dragDstPoint, "y", y);
+            dstPoint.x = x;
+            dstPoint.y = y;
+            options.setDragDstPoint(dstPoint);
+          }
+
+          int dragFinished, assistLine, resetDragPoints;
+          status = napi_get_object_property_int32_(isolate, obj, "dragFinished", dragFinished);
+          options.dragFinished = dragFinished;
+          status = napi_get_object_property_arraybuffer_(isolate, obj, "dragSrcPoints", options.dragSrcPoints);
+          status = napi_get_object_property_arraybuffer_(isolate, obj, "dragDstPoints", options.dragDstPoints);
+          status = napi_get_object_property_int32_(isolate, obj, "assistLine", assistLine);
+          options.assistLine = assistLine;
+          status = napi_get_object_property_int32_(isolate, obj, "resetDragPoints", resetDragPoints);
+          options.resetDragPoints = resetDragPoints;
+          
+          return options;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setLocalTrapezoidCorrectionOptions)
+        {
+          LOG_ENTER;
+          int result = -1;
+          Isolate* isolate = args.GetIsolate();
+          napi_status status = napi_ok;
+          do {
+            NodeRtcEngine* pEngine = nullptr;
+            napi_get_native_this(args, pEngine);
+            CHECK_NATIVE_THIS(pEngine);
+
+            if (!args[0]->IsObject()) {
+              status = napi_invalid_arg;
+              CHECK_NAPI_STATUS(pEngine, status);
+            }
+
+            Local<Object> obj;
+            status = napi_get_value_object_(isolate, args[0], obj);
+            CHECK_NAPI_STATUS(pEngine, status);
+            TrapezoidCorrectionOptions options = getTrapezoidCorrectionOptions(pEngine, isolate, obj);
+
+            result = pEngine->m_engine->setLocalTrapezoidCorrectionOptions(options);
+          } while (false);
+          napi_set_int_result(args, result);
+          LOG_LEAVE;
+        }
+
+        Local<v8::Object> getJSTrapezoidCorrectionOptions(Local<Context> context, Isolate* isolate, TrapezoidCorrectionOptions& options) {
+          Local<v8::Object> jsOpt = v8::Object::New(isolate);
+          if (options.dragSrcPoint.has_value())
+          {
+            TrapezoidCorrectionOptions::Point  dsPoint = options.dragSrcPoint.value();
+            Local<v8::Object> jsDragSrcPoint = v8::Object::New(isolate);
+            do
+            {
+              NODE_SET_OBJ_PROP_NUMBER(jsDragSrcPoint, "x", dsPoint.x);
+              NODE_SET_OBJ_PROP_NUMBER(jsDragSrcPoint, "y", dsPoint.y);
+              jsOpt->Set(context, Nan::New<String>("dragSrcPoint").ToLocalChecked(), jsDragSrcPoint);
+            } while (false);
+          }
+          if (options.dragDstPoint.has_value())
+          {
+            TrapezoidCorrectionOptions::Point  ddPoint = options.dragDstPoint.value();
+            Local<v8::Object> jsDragDstPoint = v8::Object::New(isolate);
+            do
+            {
+              NODE_SET_OBJ_PROP_NUMBER(jsDragDstPoint, "x", ddPoint.x);
+              NODE_SET_OBJ_PROP_NUMBER(jsDragDstPoint, "y", ddPoint.y);
+              jsOpt->Set(context, Nan::New<String>("dragDstPoint").ToLocalChecked(), jsDragDstPoint);
+            } while (false);
+          }
+          if (options.dragFinished.has_value())
+          {
+            auto dragFinished = options.dragFinished.value();
+            do
+            {
+              NODE_SET_OBJ_PROP_NUMBER(jsOpt, "dragFinished", dragFinished);
+            } while (false);
+          }
+          do
+          {
+            NODE_SET_OBJ_PROP_BOOL(isolate, jsOpt, "hasMultiPoints", options.hasMultiPoints);
+          } while (false);
+          if (options.assistLine.has_value())
+          {
+            auto assistLine = options.assistLine.value();
+            do
+            {
+              NODE_SET_OBJ_PROP_NUMBER(jsOpt, "assistLine", assistLine);
+            } while (false);
+          }
+          if (options.resetDragPoints.has_value())
+          {
+            auto resetDragPoints = options.resetDragPoints.value();
+            do
+            {
+              NODE_SET_OBJ_PROP_NUMBER(jsOpt, "resetDragPoints", resetDragPoints);
+            } while (false);
+          }
+
+          Local<v8::Array> dragSrcPoints = v8::Array::New(isolate);
+          std::vector<float> dragSrcPointsVec(options.dragSrcPoints, options.dragSrcPoints + TrapezoidCorrectionOptions::POINT_ARRAY_LEN);
+          for (int i = 0; i < dragSrcPointsVec.size(); i++) {
+            dragSrcPoints->Set(context,i, v8::Number::New(isolate, dragSrcPointsVec[i]));
+          }
+          jsOpt->Set(context, Nan::New<String>("dragSrcPoints").ToLocalChecked(), dragSrcPoints);
+          Local<v8::Array> dragDstPoints = v8::Array::New(isolate);
+          std::vector<float> dragDstPointsVec(options.dragDstPoints, options.dragDstPoints + TrapezoidCorrectionOptions::POINT_ARRAY_LEN);
+          for (int i = 0; i < dragDstPointsVec.size(); i++) {
+            dragDstPoints->Set(context, i, v8::Number::New(isolate, dragDstPointsVec[i]));
+          }
+          jsOpt->Set(context, Nan::New<String>("dragDstPoints").ToLocalChecked(), dragDstPoints);
+          return jsOpt;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, getLocalTrapezoidCorrectionOptions)
+        {
+          LOG_ENTER;
+          int result = -1;
+          NodeRtcEngine* pEngine = nullptr;
+          TrapezoidCorrectionOptions options;
+          Isolate* isolate = args.GetIsolate();
+          Local<Context> context = isolate->GetCurrentContext();
+
+          do {
+            NodeRtcEngine* pEngine = nullptr;
+            napi_get_native_this(args, pEngine);
+            CHECK_NATIVE_THIS(pEngine);
+            result = pEngine->m_engine->getLocalTrapezoidCorrectionOptions(options);
+            auto jsOpt = getJSTrapezoidCorrectionOptions(context, isolate, options);
+            args.GetReturnValue().Set(jsOpt);
+          } while (false);
+          
+          LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, enableRemoteTrapezoidCorrection)
+        {
+          LOG_ENTER;
+          napi_status status = napi_ok;
+          int result = -1;
+          Local<Object> obj;
+          Isolate* isolate = args.GetIsolate();
+
+          do {
+            NodeRtcEngine* pEngine = nullptr;
+            napi_get_native_this(args, pEngine);
+            CHECK_NATIVE_THIS(pEngine);
+            bool enabled;
+            nodestring channelId;
+            RtcConnection connection;
+            uid_t uid;
+            NodeUid::getUidFromNodeValue(args[0], uid);
+            napi_get_value_bool_(args[1], enabled);
+
+            status = napi_get_value_object_(isolate, args[2], obj);
+            IRtcEngineEx* engineEx = (IRtcEngineEx*)pEngine->m_engine;
+            if (status != napi_invalid_arg)
+            {
+              napi_get_object_property_nodestring_(isolate, obj, "channelId", channelId);
+              connection.channelId = channelId;
+              napi_get_object_property_uint32_(isolate, obj, "localUid", connection.localUid);
+              result = engineEx->enableRemoteTrapezoidCorrectionEx(uid, enabled, connection);
+            }
+            else
+            {
+              result = engineEx->enableRemoteTrapezoidCorrection(uid, enabled);
+            }
+          } while (false);
+          napi_set_int_result(args, result);
+          LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setRemoteTrapezoidCorrectionOptions)
+        {
+          LOG_ENTER;
+          napi_status status = napi_ok;
+          int result = -1;
+          Local<Object> connectionObj;
+          Local<Object> optionsObj;
+          Isolate* isolate = args.GetIsolate();
+
+          do {
+            NodeRtcEngine* pEngine = nullptr;
+            napi_get_native_this(args, pEngine);
+            CHECK_NATIVE_THIS(pEngine);
+            bool enabled;
+            nodestring channelId;
+            RtcConnection connection;
+
+            uid_t uid;
+            status = NodeUid::getUidFromNodeValue(args[0], uid);
+
+            status = napi_get_value_object_(isolate, args[1], optionsObj);
+            CHECK_NAPI_STATUS(pEngine, status);
+            TrapezoidCorrectionOptions options = getTrapezoidCorrectionOptions(pEngine, isolate, optionsObj);
+
+            status = napi_get_value_object_(isolate, args[2], connectionObj);
+
+            IRtcEngineEx* engineEx = (IRtcEngineEx*)pEngine->m_engine;
+            if (status != napi_invalid_arg)
+            {
+              napi_get_object_property_nodestring_(isolate, connectionObj, "channelId", channelId);
+              connection.channelId = channelId;
+              napi_get_object_property_uint32_(isolate, connectionObj, "localUid", connection.localUid);
+              result = engineEx->setRemoteTrapezoidCorrectionOptionsEx(uid, options, connection);
+            }
+            else
+            {
+              result = engineEx->setRemoteTrapezoidCorrectionOptions(uid, options);
+            }
+          } while (false);
+          napi_set_int_result(args, result);
+          LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, getRemoteTrapezoidCorrectionOptions)
+        {
+          LOG_ENTER;
+          int result = -1;
+          NodeRtcEngine* pEngine = nullptr;
+          TrapezoidCorrectionOptions options;
+          Isolate* isolate = args.GetIsolate();
+          Local<Context> context = isolate->GetCurrentContext();
+
+          do {
+            NodeRtcEngine* pEngine = nullptr;
+            napi_get_native_this(args, pEngine);
+            CHECK_NATIVE_THIS(pEngine);
+            uid_t uid;
+            NodeUid::getUidFromNodeValue(args[0], uid);
+
+            result = pEngine->m_engine->getRemoteTrapezoidCorrectionOptions(uid, options);
+            auto jsOpt = getJSTrapezoidCorrectionOptions(context, isolate, options);
+            args.GetReturnValue().Set(jsOpt);
+          } while (false);
+
+          LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, applyTrapezoidCorrectionToRemote)
+        {
+          LOG_ENTER;
+          napi_status status = napi_ok;
+          int result = -1;
+          Local<Object> connectionObj;
+          bool enabled;
+          Isolate* isolate = args.GetIsolate();
+
+          do {
+            NodeRtcEngine* pEngine = nullptr;
+            napi_get_native_this(args, pEngine);
+            CHECK_NATIVE_THIS(pEngine);
+            bool enabled;
+            nodestring channelId;
+            RtcConnection connection;
+
+            uid_t uid;
+            status = NodeUid::getUidFromNodeValue(args[0], uid);
+
+            status = napi_get_value_bool_(args[1], enabled);
+            CHECK_NAPI_STATUS(pEngine, status);
+
+            status = napi_get_value_object_(isolate, args[2], connectionObj);
+
+            IRtcEngineEx* engineEx = (IRtcEngineEx*)pEngine->m_engine;
+            if (status != napi_invalid_arg)
+            {
+              napi_get_object_property_nodestring_(isolate, connectionObj, "channelId", channelId);
+              connection.channelId = channelId;
+              napi_get_object_property_uint32_(isolate, connectionObj, "localUid", connection.localUid);
+              result = engineEx->applyTrapezoidCorrectionToRemoteEx(uid, enabled, connection);
+            }
+            else
+            {
+              result = engineEx->applyTrapezoidCorrectionToRemote(uid, enabled);
+            }
+          } while (false);
+          napi_set_int_result(args, result);
+          LOG_LEAVE;
         }
     }
 }

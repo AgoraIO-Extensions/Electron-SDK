@@ -75,7 +75,10 @@
                     'files': [
                         './sdk/agora_rtc_sdk.dll',
                         './sdk/libagora-ffmpeg.dll',
-                        './sdk/libagora-wgc.dll'
+                        './sdk/libagora-wgc.dll',
+                        './sdk/libagora_segmentation_extension.dll',
+                        './sdk/libagora_trapezoid_correction.dll',
+                        './sdk/libagora_video_process.dll',
                     ]
                 }],
                 'library_dirs': [
@@ -86,7 +89,11 @@
                         '-lagora_rtc_sdk.dll.lib',
                         '-lws2_32.lib',
                         '-lRpcrt4.lib',
-						'-lgdiplus.lib'
+						'-lgdiplus.lib',
+                        '-llibagora-ffmpeg.dll.lib',
+                        '-llibagora_video_process.dll.lib',
+                        '-llibagora_trapezoid_correction.lib',
+                        '-llibagora_segmentation_extension.dll.lib',
                     ]
                 },
                 'defines!': [
@@ -97,6 +104,7 @@
                     './common/node_process_win.cpp',
                     './sdk/high_level_api/include/IAgoraRtcEngine.h',
                     './sdk/high_level_api/include/IAgoraMediaEngine.h',
+                    './sdk/high_level_api/include/AgoraBase.h',
                     './common/libyuv/source/compare_win.cc',
                     './common/libyuv/source/rotate_win.cc',
                     './common/libyuv/source/row_win.cc',
