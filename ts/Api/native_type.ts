@@ -281,6 +281,21 @@ export interface TranscodingConfig {
   /** The TranscodingUsers Array. */
   transcodingUsers: Array<TranscodingUser>;
 }
+export interface Point{
+  x: number;
+  y: number;
+}
+
+export interface TrapezoidCorrectionOptions{
+  dragSrcPoint?: Point;
+  dragDstPoint?: Point;
+  dragFinished: number;
+  dragSrcPoints: Float64Array;
+  dragDstPoints: Float64Array;
+  hasMultiPoints: boolean;
+  assistLine?: number;
+  resetDragPoints?: number;
+}
 
 /**
 * Video source types definition.
@@ -3286,6 +3301,14 @@ export interface NodeRtcEngine {
    */
 //  setClientRoleWithOptions(role: ClientRoleType, options: ClientRoleOptions): number;
   
+  enableLocalTrapezoidCorrection(enabled: boolean, automatic: boolean): number;
+  setLocalTrapezoidCorrectionOptions(options: TrapezoidCorrectionOptions): number;
+
+  getLocalTrapezoidCorrectionOptions(): TrapezoidCorrectionOptions;
+  enableRemoteTrapezoidCorrection(uid: number, enabled: boolean, connection?: RtcConnection): number;
+  setRemoteTrapezoidCorrectionOptions(uid: number, options: TrapezoidCorrectionOptions, connection?: RtcConnection): number;
+  getRemoteTrapezoidCorrectionOptions(uid: number): TrapezoidCorrectionOptions;
+  applyTrapezoidCorrectionToRemote(uid: number, enabled: boolean, connection?: RtcConnection): number;
 }
 
 export interface NodeMediaPlayer {

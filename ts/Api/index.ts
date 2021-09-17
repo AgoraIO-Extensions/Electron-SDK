@@ -59,7 +59,8 @@ import {
   AUDIO_RECORDING_QUALITY_TYPE,
   BeautyOptions,
   RtcConnection,
-  ChannelMediaRelayConfiguration
+  ChannelMediaRelayConfiguration,
+  TrapezoidCorrectionOptions
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -4303,6 +4304,30 @@ class AgoraRtcEngine extends EventEmitter {
   // setClientRoleWithOptions(role: ClientRoleType, options: ClientRoleOptions): number {
   //   return this.rtcEngine.setClientRoleWithOptions(role, options);
   // }
+
+  enableLocalTrapezoidCorrection(enabled: boolean, automatic: boolean): number {
+    return this.rtcEngine.enableLocalTrapezoidCorrection(enabled, automatic);
+  }
+  setLocalTrapezoidCorrectionOptions(options: TrapezoidCorrectionOptions): number {
+    return this.rtcEngine.setLocalTrapezoidCorrectionOptions(options);
+  }
+  getLocalTrapezoidCorrectionOptions(): TrapezoidCorrectionOptions{
+    return this.rtcEngine.getLocalTrapezoidCorrectionOptions();
+  }
+  enableRemoteTrapezoidCorrection(uid: number,enabled: boolean, connection?: RtcConnection): number{
+    return this.rtcEngine.enableRemoteTrapezoidCorrection(uid,enabled, connection);
+  }
+
+  setRemoteTrapezoidCorrectionOptions(uid: number, options: TrapezoidCorrectionOptions, connection?: RtcConnection): number{
+    return this.rtcEngine.setRemoteTrapezoidCorrectionOptions(uid, options, connection);
+  }
+  getRemoteTrapezoidCorrectionOptions(uid: number): TrapezoidCorrectionOptions{
+    return this.rtcEngine.getRemoteTrapezoidCorrectionOptions(uid);
+  }
+
+  applyTrapezoidCorrectionToRemote(uid: number,enabled: boolean, connection?: RtcConnection): number{
+    return this.rtcEngine.applyTrapezoidCorrectionToRemote(uid, enabled, connection);
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {

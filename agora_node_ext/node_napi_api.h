@@ -434,6 +434,8 @@ napi_status napi_get_object_property_uid_(Isolate* isolate, const Local<Object>&
 */
 napi_status napi_get_object_property_object_(Isolate* isolate, const Local<Object>& obj, const std::string& propName, Local<Object>& childobj);
 
+napi_status napi_get_object_property_arraybuffer_(Isolate* isolate, const Local<Object>& obj, const std::string& propName, void* buffer);
+
 const char* nullable( char const* s);
 
 #ifdef _WIN32

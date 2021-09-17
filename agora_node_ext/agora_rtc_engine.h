@@ -349,6 +349,14 @@ namespace agora {
             NAPI_API(leaveChannelEx);
             NAPI_API(startAudioRecording2);
             // NAPI_API(startAudioRecordingWithConfig);
+            NAPI_API(enableLocalTrapezoidCorrection);
+            NAPI_API(setLocalTrapezoidCorrectionOptions);
+            NAPI_API(getLocalTrapezoidCorrectionOptions);
+            NAPI_API(enableRemoteTrapezoidCorrection);
+            NAPI_API(setRemoteTrapezoidCorrectionOptions);
+            NAPI_API(getRemoteTrapezoidCorrectionOptions);
+            NAPI_API(applyTrapezoidCorrectionToRemote);
+
 
         public:
             Isolate* getIsolate() { return m_isolate; }
