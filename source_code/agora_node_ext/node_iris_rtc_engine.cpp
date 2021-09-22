@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:37
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-07-29 13:07:26
+ * @Last Modified time: 2021-09-22 23:25:50
  */
 #include "node_iris_rtc_engine.h"
 #include <assert.h>
@@ -64,7 +64,7 @@ napi_value NodeIrisRtcEngine::Init(napi_env env, napi_value exports) {
 
   status = napi_set_instance_data(
       env, constructor,
-      [](napi_value env, void* data, void* hint) {
+      [](napi_env env, void* data, void* hint) {
         napi_ref* constructor = static_cast<napi_ref*>(data);
         napi_status status = napi_delete_reference(env, *constructor);
         assert(status == napi_ok);
@@ -153,11 +153,11 @@ napi_value NodeIrisRtcEngine::CallApi(napi_env env, napi_callback_info info) {
     try {
       if (process_type == PROCESS_TYPE::MAIN) {
         ret = nodeIrisRtcEngine->_iris_engine->CallApi(
-            (ApiTypeEngine)_apiType, parameter.c_str(), result);
+            (ApiTypeEngine)api_type, parameter.c_str(), result);
       } else {
         if (nodeIrisRtcEngine->_video_source_proxy) {
           ret = nodeIrisRtcEngine->_video_source_proxy->CallApi(
-              (ApiTypeEngine)_apiType, parameter.c_str(), result);
+              (ApiTypeEngine)api_type, parameter.c_str(), result);
         } else {
           LOG_F(INFO, "CallApi parameter did not initialize videoSource yet");
         }
@@ -212,12 +212,12 @@ napi_value NodeIrisRtcEngine::CallApiWithBuffer(napi_env env,
         case kEngineSendStreamMessage: {
           if (process_type == PROCESS_TYPE::MAIN) {
             ret = nodeIrisRtcEngine->_iris_engine->CallApi(
-                (ApiTypeEngine)_apiType, parameter.c_str(),
+                (ApiTypeEngine)api_type, parameter.c_str(),
                 const_cast<char*>(buffer.c_str()), result);
           } else {
             if (nodeIrisRtcEngine->_video_source_proxy) {
               ret = nodeIrisRtcEngine->_video_source_proxy->CallApi(
-                  (ApiTypeEngine)_apiType, parameter.c_str(), buffer.c_str(),
+                  (ApiTypeEngine)api_type, parameter.c_str(), buffer.c_str(),
                   length, result);
             } else {
               LOG_F(INFO,
@@ -304,32 +304,33 @@ napi_value NodeIrisRtcEngine::CreateChannel(napi_env env,
   std::string channel_id = "";
   status = napi_get_value_utf8string(env, args[1], channel_id);
 
-  if (nodeIrisRtcEngine->_iris_engine) {
-    auto iris_channel = nodeIrisRtcEngine->_iris_engine->channel();
-    if (process_type == PROCESS_TYPE::MAIN) {
-      auto _js_channel =
-          NodeIrisRtcChannel::Init(_isolate, iris_channel, channel_id.c_str());
-      args.GetReturnValue().Set(_js_channel);
-    } else {
-    }
-  } else {
-    LOG_F(INFO, "NodeIrisRtcEngine::CreateChannel error Not Init Engine");
-  }
+  // if (nodeIrisRtcEngine->_iris_engine) {
+  //   auto iris_channel = nodeIrisRtcEngine->_iris_engine->channel();
+  //   if (process_type == PROCESS_TYPE::MAIN) {
+  //     auto _js_channel =
+  //         NodeIrisRtcChannel::Init(_isolate, iris_channel,
+  //         channel_id.c_str());
+  //     args.GetReturnValue().Set(_js_channel);
+  //   } else {
+  //   }
+  // } else {
+  //   LOG_F(INFO, "NodeIrisRtcEngine::CreateChannel error Not Init Engine");
+  // }
 }
 
 napi_value NodeIrisRtcEngine::GetDeviceManager(napi_env env,
                                                napi_callback_info info) {
-  auto engine = ObjectWrap::Unwrap<NodeIrisRtcEngine>(args.Holder());
-  auto _isolate = args.GetIsolate();
+  // auto engine = ObjectWrap::Unwrap<NodeIrisRtcEngine>(args.Holder());
+  // auto _isolate = args.GetIsolate();
 
-  if (engine->_iris_engine) {
-    auto _device_manager = engine->_iris_engine->device_manager();
-    auto _js_device_manager =
-        NodeIrisRtcDeviceManager::Init(_isolate, _device_manager);
-    args.GetReturnValue().Set(_js_device_manager);
-  } else {
-    LOG_F(INFO, "NodeIrisRtcEngine::GetDeviceManager error Not Init Engine");
-  }
+  // if (engine->_iris_engine) {
+  //   auto _device_manager = engine->_iris_engine->device_manager();
+  //   auto _js_device_manager =
+  //       NodeIrisRtcDeviceManager::Init(_isolate, _device_manager);
+  //   args.GetReturnValue().Set(_js_device_manager);
+  // } else {
+  //   LOG_F(INFO, "NodeIrisRtcEngine::GetDeviceManager error Not Init Engine");
+  // }
 }
 
 napi_value NodeIrisRtcEngine::GetScreenWindowsInfo(napi_env env,
@@ -564,11 +565,11 @@ napi_value NodeIrisRtcEngine::PluginCallApi(napi_env env,
     try {
       if (process_type == PROCESS_TYPE::MAIN) {
         ret = nodeIrisRtcEngine->_iris_raw_data_plugin_manager->CallApi(
-            (ApiTypeRawDataPluginManager)_apiType, parameter.c_str(), result);
+            (ApiTypeRawDataPluginManager)api_type, parameter.c_str(), result);
       } else {
         if (nodeIrisRtcEngine->_video_source_proxy) {
           ret = nodeIrisRtcEngine->_video_source_proxy->PluginCallApi(
-              (ApiTypeRawDataPluginManager)_apiType, parameter.c_str(), result);
+              (ApiTypeRawDataPluginManager)api_type, parameter.c_str(), result);
         } else {
           LOG_F(INFO,
                 "PluginCallApi parameter did not initialize videoSource yet "
@@ -734,14 +735,10 @@ napi_value NodeIrisRtcEngine::GetVideoStreamData(napi_env env,
   napi_obj_get_property(env, obj, "height", height);
   napi_obj_get_property(env, obj, "yStride", y_stride);
 
-  auto yBuffer = node::Buffer::Data(y_buffer);
-  auto uBuffer = node::Buffer::Data(u_buffer);
-  auto vBuffer = node::Buffer::Data(v_buffer);
-
   IrisRtcVideoFrame _videoFrame = IrisRtcVideoFrame_default;
-  _videoFrame.y_buffer = yBuffer;
-  _videoFrame.u_buffer = uBuffer;
-  _videoFrame.v_buffer = vBuffer;
+  _videoFrame.y_buffer = y_buffer;
+  _videoFrame.u_buffer = u_buffer;
+  _videoFrame.v_buffer = v_buffer;
   _videoFrame.height = height;
   _videoFrame.y_stride = y_stride;
 
@@ -767,16 +764,14 @@ napi_value NodeIrisRtcEngine::GetVideoStreamData(napi_env env,
   unsigned int rotation = 0;
   napi_value retObj;
   status = napi_create_object(env, &retObj);
-  napi_obj_set_property<bool>(env, retObj, "ret", ret);
-  napi_obj_set_property<bool>(env, retObj, "isNewFrame", isFresh);
-  napi_obj_set_property<unsigned int>(env, retObj, "width", _videoFrame.width);
-  napi_obj_set_property<unsigned int>(env, retObj, "height",
-                                      _videoFrame.height);
-  napi_obj_set_property<unsigned int>(env, retObj, "yStride",
-                                      _videoFrame.y_stride);
-  napi_obj_set_property<unsigned int>(env, retObj, "rotation", rotation);
-  napi_obj_set_property<unsigned int>(env, retObj, "timestamp",
-                                      _videoFrame.render_time_ms);
+  napi_obj_set_property(env, retObj, "ret", ret);
+  napi_obj_set_property(env, retObj, "isNewFrame", isFresh);
+  napi_obj_set_property(env, retObj, "width", _videoFrame.width);
+  napi_obj_set_property(env, retObj, "height", _videoFrame.height);
+  napi_obj_set_property(env, retObj, "yStride", _videoFrame.y_stride);
+  napi_obj_set_property(env, retObj, "rotation", rotation);
+  napi_obj_set_property(env, retObj, "timestamp",
+                                 _videoFrame.render_time_ms);
   return retObj;
 }
 

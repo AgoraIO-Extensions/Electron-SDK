@@ -2,14 +2,14 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:44
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-07-29 13:04:39
+ * @Last Modified time: 2021-09-22 23:17:44
  */
 #pragma once
+#include <node_api.h>
 #include <exception>
 #include "iris_rtc_engine.h"
 #include "iris_rtc_raw_data.h"
 #include "iris_rtc_raw_data_plugin_manager.h"
-#include "nan_api.h"
 #include "node_base.h"
 #include "node_iris_rtc_channel.h"
 #include "node_iris_rtc_device_manager.h"
