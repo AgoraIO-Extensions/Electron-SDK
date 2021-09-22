@@ -16,3 +16,4 @@ nohup.out
 js/
 docs/
 types/
+package-lock.json

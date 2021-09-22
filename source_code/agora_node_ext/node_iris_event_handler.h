@@ -7,7 +7,7 @@
 #pragma once
 #include <unordered_map>
 #include "iris_event_handler.h"
-#include "nan_api.h"
+#include "node_api_header.h"
 #include "node_async_queue.h"
 #include "node_base.h"
 #include "video_source_event_handler.h"

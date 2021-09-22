@@ -308,12 +308,12 @@
                             './source_code/process/node_process_unix.cpp',
                             './source_code/iris/base/window/iris_screen_mac.mm',
                             './source_code/iris/base/process/iris_process_unix.cc',
-                            './source_code/iris/third_party/libyuv/source/compare_gcc.cc',
-                            './source_code/iris/third_party/libyuv/source/rotate_gcc.cc',
-                            './source_code/iris/third_party/libyuv/source/row_gcc.cc',
+                            # './source_code/iris/third_party/libyuv/source/compare_gcc.cc',
+                            # './source_code/iris/third_party/libyuv/source/rotate_gcc.cc',
+                            # './source_code/iris/third_party/libyuv/source/row_gcc.cc',
                             './source_code/iris/base/log/iris_logger.cc',
                             './source_code/iris/base/iris_base.cc',
-                            './source_code/iris/third_party/libyuv/source/scale_gcc.cc'
+                            # './source_code/iris/third_party/libyuv/source/scale_gcc.cc'
                         ],
                         'include_dirs': [
                             './sdk/lib/mac/AgoraRtcKit.framework/Headers',
