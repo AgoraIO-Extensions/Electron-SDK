@@ -66,6 +66,7 @@ class Renderer {
     this.canvas = document.createElement('canvas')
     this.container.appendChild(this.canvas)
     this.yuv = YUVCanvas.attach(this.canvas, { webGL: isWebGL });
+    YUVCanvas.WebGLFrameSink.stripe = false;
 
     const ResizeObserver =
       window.ResizeObserver ||
@@ -106,7 +107,6 @@ class Renderer {
       try {
         this.updateCanvas(this.cacheCanvasOpts,false)
       } catch (error) {
-        console.log('software refreshCanvas',error);
       }
     }
   }
@@ -140,22 +140,27 @@ class Renderer {
     } else if (options.rotation === 90 || options.rotation === 270) {
       this.canvas.height = options.width;
       this.canvas.width = options.height;
+      Object.assign(this.canvas.style, {
+        width: options.width + "px",
+        height: options.height + "px",
+        "object-fit": "cover"
+      })
     } else {
       throw new Error('Invalid value for rotation. Only support 0, 90, 180, 270')
     }
     let transformItems = []
-    
+
     transformItems.push(`rotateZ(${options.rotation}deg)`)
-    
+
     let scale = this._calcZoom(
       options.rotation === 90 || options.rotation === 270,
       options.contentMode,
-      options.width,
-      options.height,
+      options.contentWidth,
+      options.contentHeight,
       options.clientWidth,
       options.clientHeight
     );
-    
+
     // transformItems.push(`scale(${scale})`)
     this.canvas.style.zoom = scale;
 
@@ -164,7 +169,7 @@ class Renderer {
       // this.canvas.style.transform = 'rotateY(180deg)';
       transformItems.push('rotateY(180deg)')
     }
-    
+
     if(transformItems.length > 0) {
       let transform = `${transformItems.join(' ')}`
       this.canvas.style.transform = transform
