@@ -65,9 +65,9 @@
   },
   "agora_electron": {
     "libUrl": {
-      "win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows(x86)_v2.9.106.230_20210425_FULL_2033.zip",
-      "win64": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows(x86)_v2.9.106.230_20210425_FULL_2033.zip",
-      "mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v2_9_106_230_FULL_20210425_3214.zip"
+      "win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows(x86)_v2.9.106.239_20210916_FULL_2928.zip",
+      "win64": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows(x64)_v2.9.106.239_20210916_FULL_2815.zip",
+      "mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v2_9_106_239_FULL_20210916_3717.zip"
     }
   },
   "keywords": [
