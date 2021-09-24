@@ -1,39 +1,51 @@
-// /*
-//  * @Author: zhangtao@agora.io
-//  * @Date: 2021-04-22 20:53:33
-//  * @Last Modified by: zhangtao@agora.io
-//  * @Last Modified time: 2021-07-29 12:41:41
-//  */
-// #pragma once
-// #include "iris_rtc_device_manager.h"
-// #include "nan_api.h"
+/*
+ * @Author: zhangtao@agora.io
+ * @Date: 2021-04-22 20:53:33
+ * @Last Modified by: zhangtao@agora.io
+ * @Last Modified time: 2021-07-29 12:41:41
+ */
+#pragma once
+#include "iris_rtc_device_manager.h"
+#include <node_api.h>
 
-// namespace agora {
-// namespace rtc {
-// namespace electron {
-// class NodeIrisRtcDeviceManager {
-//  public:
-//   explicit NodeIrisRtcDeviceManager(
-//       v8_Isolate* isolate,
-//       iris::rtc::IrisRtcDeviceManager* deviceManager);
-//   virtual ~NodeIrisRtcDeviceManager();
-
-//   static v8_Local<v8_Object> Init(
-//       v8_Isolate* isolate,
-//       iris::rtc::IrisRtcDeviceManager* deviceManager);
-//   static void CreateInstance(const v8_FunctionCallbackInfo<v8_Value>& args);
-//   static void CallApiAudioDevice(
-//       const Nan_FunctionCallbackInfo<v8_Value>& args);
-//   static void CallApiVideoDevice(
-//       const Nan_FunctionCallbackInfo<v8_Value>& args);
-//   static void Release(const Nan_FunctionCallbackInfo<v8_Value>& args);
-//   static void ReleaseNodeSource(void* selfPtr);
-
-//  private:
-//   static Nan_Persistent<v8_Function> _constructor;
-//   v8_Isolate* _isolate;
-//   iris::rtc::IrisRtcDeviceManager* _deviceManager;
-// };
-// }  // namespace electron
-// }  // namespace rtc
-// }  // namespace agora
+namespace agora {
+namespace rtc {
+namespace electron {
+class NodeIrisRtcDeviceManager {
+public:
+    explicit NodeIrisRtcDeviceManager(
+                                      napi_env env,
+                                      iris::rtc::IrisRtcDeviceManager* deviceManager);
+    virtual ~NodeIrisRtcDeviceManager();
+    
+    static napi_value Init(
+                           napi_env env,
+                           napi_callback_info info,
+                           iris::rtc::IrisRtcDeviceManager* deviceManager);
+         static napi_value CallApiAudioDevice(napi_env env, napi_callback_info info);
+         static napi_value CallApiVideoDevice(napi_env env, napi_callback_info info);
+         static napi_value Release(napi_env env, napi_callback_info info);
+    
+    static void ReleaseNodeSource(void* selfPtr);
+    
+    
+    
+private:
+    static const char* _class_name;
+    static const char* _ret_code_str;
+    static const char* _ret_result_str;
+    static iris::rtc::IrisRtcDeviceManager *staticDeviceManager;
+    static napi_value New(napi_env env, napi_callback_info info);
+    static napi_value Constructor(napi_env env);
+    static void Destructor(napi_env env,
+                           void* nativeObject,
+                           void* finalize_hint);
+    
+    napi_env _env;
+    napi_ref _ref;
+    iris::rtc::IrisRtcDeviceManager* _deviceManager;
+    
+};
+}  // namespace electron
+}  // namespace rtc
+}  // namespace agora
