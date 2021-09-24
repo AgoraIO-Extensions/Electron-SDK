@@ -2067,7 +2067,7 @@ namespace agora {
                 key = "areaCode";
                 CHECK_NAPI_STATUS_STR(pEngine, status, key);
 
-                RtcEngineContextEx context;
+                RtcEngineContext context;
                 context.eventHandler = pEngine->m_eventHandler.get();
                 context.appId = appid;
                 context.areaCode = areaCode;
