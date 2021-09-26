@@ -45,5 +45,10 @@ public:
     int release();
 private:
     std::map<std::string, agora_plugin_info> m_mapPlugins;
-    std::mutex pluginMutex;
+    std::mutex captureVideoFrameMutex;
+    std::mutex renderVideoFrameMutex;
+    std::mutex recordAudioFrameMutex;
+    std::mutex playbackAudioFrameMutex;
+    std::mutex mixedAudioFrameMutex;
+    std::mutex playBackAudioFrameBeforeMixingMutex;
 };

@@ -14,73 +14,73 @@ IAVFramePluginManager::~IAVFramePluginManager()
 
 bool IAVFramePluginManager::onCaptureVideoFrame(VideoFrame& videoFrame)
 {
-    pluginMutex.lock();
+    captureVideoFrameMutex.lock();
     for (auto const& element : m_mapPlugins) {
         if(element.second.enabled) {
             element.second.instance->onPluginCaptureVideoFrame((VideoPluginFrame*)&videoFrame);
         }
     }
-    pluginMutex.unlock();
+    captureVideoFrameMutex.unlock();
     return true;
 }
 
 bool IAVFramePluginManager::onRenderVideoFrame(unsigned int uid, VideoFrame& videoFrame)
 {
-    pluginMutex.lock();
+    renderVideoFrameMutex.lock();
     for (auto const& element : m_mapPlugins) {
         if(element.second.enabled) {
             element.second.instance->onPluginRenderVideoFrame(uid, (VideoPluginFrame*)&videoFrame);
         }
     }
-    pluginMutex.unlock();
+    renderVideoFrameMutex.unlock();
     return true;
 }
 
 bool IAVFramePluginManager::onRecordAudioFrame(AudioFrame& audioFrame)
 {
-    pluginMutex.lock();
+    recordAudioFrameMutex.lock();
     for (auto const& element : m_mapPlugins) {
         if(element.second.enabled) {
             element.second.instance->onPluginRecordAudioFrame((AudioPluginFrame*)&audioFrame);
         }
     }
-    pluginMutex.unlock();
+    recordAudioFrameMutex.unlock();
     return true;
 }
 
 bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame& audioFrame)
 {
-    pluginMutex.lock();
+    playbackAudioFrameMutex.lock();
     for (auto const& element : m_mapPlugins) {
         if(element.second.enabled) {
             element.second.instance->onPluginPlaybackAudioFrame((AudioPluginFrame*)&audioFrame);
         }
     }
-    pluginMutex.unlock();
+    playbackAudioFrameMutex.unlock();
     return true;
 }
 
 bool IAVFramePluginManager::onMixedAudioFrame(AudioFrame& audioFrame)
 {
-    pluginMutex.lock();
+    mixedAudioFrameMutex.lock();
     for (auto const& element : m_mapPlugins) {
         if(element.second.enabled) {
             element.second.instance->onPluginMixedAudioFrame((AudioPluginFrame*)&audioFrame);
         }
     }
-    pluginMutex.unlock();
+    mixedAudioFrameMutex.unlock();
     return true;
 }
 
 bool IAVFramePluginManager::onPlaybackAudioFrameBeforeMixing(unsigned int uid, AudioFrame& audioFrame)
 {
-    pluginMutex.lock();
+    playBackAudioFrameBeforeMixingMutex.lock();
     for (auto const& element : m_mapPlugins) {
         if(element.second.enabled) {
             element.second.instance->onPluginPlaybackAudioFrameBeforeMixing(uid, (AudioPluginFrame*)&audioFrame);
         }
     }
-    pluginMutex.unlock();
+    playBackAudioFrameBeforeMixingMutex.unlock();
     return true;
 }
 
@@ -91,7 +91,12 @@ void IAVFramePluginManager::registerPlugin(agora_plugin_info& plugin)
 
 void IAVFramePluginManager::unregisterPlugin(std::string& pluginId)
 {
-    pluginMutex.lock();
+    captureVideoFrameMutex.lock();
+    renderVideoFrameMutex.lock();
+    recordAudioFrameMutex.lock();
+    playbackAudioFrameMutex.lock();
+    mixedAudioFrameMutex.lock();
+    playBackAudioFrameBeforeMixingMutex.lock();
     auto iter = m_mapPlugins.find(pluginId);
     if(iter!=m_mapPlugins.end())
     {
@@ -109,7 +114,12 @@ void IAVFramePluginManager::unregisterPlugin(std::string& pluginId)
         }
         m_mapPlugins.erase(iter);
     }
-    pluginMutex.unlock();
+    captureVideoFrameMutex.unlock();
+    renderVideoFrameMutex.unlock();
+    recordAudioFrameMutex.unlock();
+    playbackAudioFrameMutex.unlock();
+    mixedAudioFrameMutex.unlock();
+    playBackAudioFrameBeforeMixingMutex.unlock();
 }
 
 bool IAVFramePluginManager::hasPlugin(std::string& pluginId)
@@ -150,7 +160,12 @@ std::vector<std::string> IAVFramePluginManager::getPlugins()
 
 int IAVFramePluginManager::release()
 {
-    pluginMutex.lock();
+    captureVideoFrameMutex.lock();
+    renderVideoFrameMutex.lock();
+    recordAudioFrameMutex.lock();
+    playbackAudioFrameMutex.lock();
+    mixedAudioFrameMutex.lock();
+    playBackAudioFrameBeforeMixingMutex.lock();
     for (auto const& element : m_mapPlugins) {
         //free plugin instance
         if(element.second.instance) {
@@ -166,6 +181,11 @@ int IAVFramePluginManager::release()
         }
     }
     m_mapPlugins.clear();
-    pluginMutex.unlock();
+    captureVideoFrameMutex.unlock();
+    renderVideoFrameMutex.unlock();
+    recordAudioFrameMutex.unlock();
+    playbackAudioFrameMutex.unlock();
+    mixedAudioFrameMutex.unlock();
+    playBackAudioFrameBeforeMixingMutex.unlock();
     return 0;
 }
