@@ -2,7 +2,7 @@ const createProgramFromSources = require('./webgl-utils').createProgramFromSourc
 const EventEmitter = require('events').EventEmitter;
 const {config} = require('../../Utils/index')
 
-const AgoraRender = function() {
+const AgoraRender = function(initRenderFailCallBack) {
   let gl;
   let program;
   let positionLocation;
@@ -12,6 +12,8 @@ const AgoraRender = function() {
   let vTexture;
   let texCoordBuffer;
   let surfaceBuffer;
+  // choose softwareRender
+  let failInitRenderCB=()=>initRenderFailCallBack(2, 'webgl render');
   const that = {
     view: undefined,
     mirrorView: false,
@@ -30,7 +32,9 @@ const AgoraRender = function() {
     firstFrameRender: false,
     lastImageWidth: 0,
     lastImageHeight: 0,
-    lastImageRotation: 0
+    lastImageRotation: 0,
+    videoBuffer: {},
+    gl: undefined
   };
   that.snapshot = function (fileType = 'image/png') {
     if (this.canvas && this.canvas.toDataURL) {
@@ -52,11 +56,22 @@ const AgoraRender = function() {
       that.initRotation,
       console.warn
     );
+    const ResizeObserver =
+      window.ResizeObserver ||
+      window.WebKitMutationObserver ||
+      window.MozMutationObserver;
+    if (ResizeObserver) {
+      this.observer = new ResizeObserver(() => {
+        that.refreshCanvas && that.refreshCanvas();
+      });
+      this.observer.observe(view);
+    }
   };
 
-  that.unbind = function() {
+  that.unbind = function () {
+    this.observer && this.observer.unobserve && this.observer.disconnect();
     try {
-      gl.getExtension('WEBGL_lose_context').loseContext();
+      gl && gl.getExtension('WEBGL_lose_context').loseContext();
     } catch (err) {
       console.warn(err)
     }
@@ -79,8 +94,12 @@ const AgoraRender = function() {
     gl = undefined;
 
     try {
-      that.container && that.container.removeChild(that.canvas);
-      that.view && that.view.removeChild(that.container);
+      if (that.container && that.canvas && that.canvas.parentNode === that.container) {
+        that.container.removeChild(that.canvas);
+      }
+      if (that.view && that.container && that.container.parentNode === that.view) {
+        that.view.removeChild(that.container);
+      }
     } catch (e) {
       console.warn(e)
     }
@@ -123,7 +142,9 @@ const AgoraRender = function() {
         );
       });
     }
-
+    if (!that.gl) {
+      return;
+    }
     // Console.log(image.width, "*", image.height, "planes "
     //    , " y ", image.yplane[0], image.yplane[image.yplane.length - 1]
     //    , " u ", image.uplane[0], image.uplane[image.uplane.length - 1]
@@ -198,19 +219,46 @@ const AgoraRender = function() {
     var vLength = yLength / 4;
     var vBegin = uEnd;
     var vEnd = vBegin + vLength;
-    that.renderImage({
-      mirror: mirror,
-      width,
-      height,
-      left,
-      top,
-      right,
-      bottom,
-      rotation: rotation,
-      yplane: new Uint8Array(yUint8Array),
-      uplane: new Uint8Array(uUint8Array),
-      vplane: new Uint8Array(vUint8Array)
-    });
+    if (!this.videoBuffer.hasOwnProperty('width')) {
+      this.videoBuffer.width = xWidth;
+      this.videoBuffer.height = xHeight;
+      this.videoBuffer.yplane = new Uint8Array(yLength);
+      this.videoBuffer.uplane = new Uint8Array(yLength / 4);
+      this.videoBuffer.vplane = new Uint8Array(yLength / 4);
+    }
+    else if (this.videoBuffer.width != xWidth || this.videoBuffer.height != xHeight) {
+        this.videoBuffer.width = xWidth;
+        this.videoBuffer.height = xHeight;
+        this.videoBuffer.yplane = new Uint8Array(yLength);
+        this.videoBuffer.uplane = new Uint8Array(yLength / 4);
+        this.videoBuffer.vplane = new Uint8Array(yLength / 4);
+    }
+    this.videoBuffer.yplane.set(yUint8Array);
+    this.videoBuffer.uplane.set(uUint8Array);
+    this.videoBuffer.vplane.set(vUint8Array);
+
+    try {
+      that.renderImage({
+        mirror: mirror,
+        width,
+        height,
+        left,
+        top,
+        right,
+        bottom,
+        rotation: rotation,
+        yplane: this.videoBuffer.yplane,
+        uplane: this.videoBuffer.uplane,
+        vplane: this.videoBuffer.vplane
+      });
+    } catch (error) {
+      console.warn(error)
+    }
+    if (!that.gl) {
+      failInitRenderCB && failInitRenderCB();
+      failInitRenderCB = null;
+      return;
+    }
     var now32 = (Date.now() & 0xffffffff) >>> 0;
     var latency = now32 - ts;
   }
@@ -366,12 +414,13 @@ const AgoraRender = function() {
     } catch (e) {
       console.log(e);
     }
-
     if (!gl) {
       gl = undefined;
+      that.gl = undefined;
       onFailure({ error: 'Browser not support! No WebGL detected.' });
       return;
     }
+    that.gl = gl;
 
     // Set clear color to black, fully opaque
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -476,7 +525,7 @@ const AgoraRender = function() {
       console.error(e);
       return false;
     }
-    
+
     return true
   }
 
