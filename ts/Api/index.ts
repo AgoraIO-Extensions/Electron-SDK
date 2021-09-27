@@ -78,16 +78,18 @@ class AgoraRtcEngine extends EventEmitter {
   rtcEngine: NodeRtcEngine;
   streams: Map<string, Map<number, IRenderer[]>>;
   localStreams: Map<number, Map<number, IRenderer[]>>;
-  renderMode: 1 | 2 | 3;
+  renderMode: 1 | 2 | 3 | 4;
   customRenderer: any;
+  pauseRender: boolean;
   constructor() {
     super();
     this.rtcEngine = new agora.NodeRtcEngine();
     this.initEventHandler();
     this.streams = new Map();
     this.localStreams = new Map();
-    this.renderMode = this._checkWebGL() ? 1 : 2;
+    this.renderMode = (this._checkWebGL() && this._checkWebGL2()) ? 1 : 2;
     this.customRenderer = CustomRenderer;
+    this.pauseRender = false;
   }
 
   /**
@@ -104,12 +106,24 @@ class AgoraRtcEngine extends EventEmitter {
    * - 2 for software rendering.
    * - 3 for custom rendering.
    */
-  setRenderMode(mode: 1 | 2 | 3 = 1): void {
-    this.renderMode = mode;
+  setRenderMode(mode: 1 | 2 | 3 | 4 = 1): void {
+    if (mode === 4) {
+      mode = 1;
+    }
+    if (this._checkWebGL() && this._checkWebGL2()) {
+      this.renderMode = mode;
+    } else {
+      console.log("RendererMode: webGL not support, fallback to software renderer")
+      this.renderMode = 2;
+    }
+  }
+
+  setPauseRenderer(pause: boolean = false) {
+    this.pauseRender = pause;
   }
 
   /**
-   * Use this method to set custom Renderer when set renderMode in the 
+   * Use this method to set custom Renderer when set renderMode in the
    * {@link setRenderMode} method to 3.
    * CustomRender should be a class.
    * @param {IRenderer} customRenderer Customizes the video renderer.
@@ -158,12 +172,38 @@ class AgoraRtcEngine extends EventEmitter {
     }
   }
 
+  _checkWebGL2() {
+    var canvas = document.createElement('canvas'), gl;
+    canvas.width = 1;
+    canvas.height = 1;
+
+    var options = {
+			// Don't trigger discrete GPU in multi-GPU systems
+			preferLowPowerToHighPerformance: true,
+			powerPreference: 'low-power',
+			// Don't try to use software GL rendering!
+			failIfMajorPerformanceCaveat: true,
+			// In case we need to capture the resulting output.
+			preserveDrawingBuffer: true
+		};
+    
+    try {
+      gl = canvas.getContext('webgl', options) || canvas.getContext('experimental-webgl', options);
+    } catch (e) {
+      return false;
+    }
+    if (gl) {
+      return true;
+    } else {
+      return false;
+    }
+  }
   /**
    * init event handler
    * @private
    * @ignore
    */
-  initEventHandler(): void {
+   initEventHandler(): void {
     const self = this;
 
     const fire = (event: string, ...args: Array<any>) => {
@@ -773,7 +813,10 @@ class AgoraRtcEngine extends EventEmitter {
     })
 
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
-      self.onRegisterDeliverFrame(infos);
+      fire('agoraVideoRowData', infos)
+      if (!self.pauseRender) {
+        self.onRegisterDeliverFrame(infos);
+      }
     });
   }
 
@@ -874,7 +917,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @ignore
    * @param {number} infos
    */
-  onRegisterDeliverFrame(infos: any) {
+   onRegisterDeliverFrame(infos: any) {
     const len = infos.length;
     for (let i = 0; i < len; i++) {
       const info = infos[i];
@@ -936,6 +979,13 @@ class AgoraRtcEngine extends EventEmitter {
    * @param view The Dom elements to render the video.
    */
   initLocalRender(type: number, devicdId: number, view: Element, options?: RendererOptions) {
+    const initRenderFailCallBack = (renderMode : 1|2|3|4, renderDescription = 'initRender')=>{
+      try {
+        console.log('wait to do')
+      } catch (error) {
+        console.log('initRenderFailCallBack',error);
+      }
+    }
     if (type != 0 && type != 3 && type != 4) {
       console.warn('Invalid type for initLocalRender, local render type should be 0, 3, 4.');
       return;
@@ -961,16 +1011,21 @@ class AgoraRtcEngine extends EventEmitter {
     localRenderers = this._getLocalRenderers(type);
     let renderer: IRenderer;
     if (this.renderMode === 1) {
-      renderer = new GlRenderer();
+      renderer = new GlRenderer({ initRenderFailCallBack });
+      renderer.bind(view, false);
     } else if (this.renderMode === 2) {
       renderer = new SoftwareRenderer();
+      renderer.bind(view, false);
     } else if (this.renderMode === 3) {
       renderer = new this.customRenderer();
+    } else if (this.renderMode === 4) {
+      renderer = new SoftwareRenderer();
+      renderer.bind(view, true);
     } else {
       console.warn('Unknown render mode, fallback to 1');
-      renderer = new GlRenderer();
+      renderer = new GlRenderer({ initRenderFailCallBack });
     }
-    renderer.bind(view);
+    
     let temp: any = view;
     temp.snapshot = renderer.snapshot.bind(renderer);
 
@@ -991,6 +1046,13 @@ class AgoraRtcEngine extends EventEmitter {
    * @param view The Dom elements to render the video.
    */
   initRemoteRender(uid: number, channelId: string, view: Element, options?: RendererOptions) {
+    const initRenderFailCallBack = (renderMode : 1|2|3|4, renderDescription = 'initRender')=>{
+      try {
+        console.log('wait to do')
+      } catch (error) {
+        console.log('initRenderFailCallBack',error);
+      }
+    }
     let rendererOptions = {
       append: options ? options.append : false
     }
@@ -1012,16 +1074,21 @@ class AgoraRtcEngine extends EventEmitter {
     channelStreams = this._getChannelRenderers(channelId)
     let renderer: IRenderer;
     if (this.renderMode === 1) {
-      renderer = new GlRenderer();
+      renderer = new GlRenderer({ initRenderFailCallBack });
+      renderer.bind(view, false);
     } else if (this.renderMode === 2) {
       renderer = new SoftwareRenderer();
+      renderer.bind(view, false);
     } else if (this.renderMode === 3) {
       renderer = new this.customRenderer();
+      renderer.bind(view, false);
+    } else if (this.renderMode === 4) {
+      renderer = new SoftwareRenderer();
+      renderer.bind(view, true);
     } else {
       console.warn('Unknown render mode, fallback to 1');
-      renderer = new GlRenderer();
+      renderer = new GlRenderer({ initRenderFailCallBack });
     }
-    renderer.bind(view);
 
     if(!rendererOptions.append) {
       channelStreams.set(uid, [renderer]);

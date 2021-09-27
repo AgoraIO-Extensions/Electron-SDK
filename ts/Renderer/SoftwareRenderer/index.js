@@ -24,31 +24,35 @@ class Renderer {
   _calcZoom(vertical = false, contentMode = 0, width, height, clientWidth, clientHeight) {
     let localRatio = clientWidth / clientHeight;
     let tempRatio = width / height;
-
     if (isNaN(localRatio) || isNaN(tempRatio)) {
-      return 1
+      return 1;
     }
-
     if (!contentMode) {
+      // Mode 0
       if (vertical) {
-        return localRatio > tempRatio ?
-          clientHeight / height : clientWidth / width
-      } else {
-        return localRatio < tempRatio ?
-          clientHeight / height : clientWidth / width
+        return clientHeight / clientWidth < width / height ?
+          clientWidth / height : clientHeight / width;
       }
-    } else {
+      else {
+        return clientWidth / clientHeight > width / height ?
+          clientWidth / width : clientHeight / height;
+      }
+    }
+    else {
+      // Mode 1
       if (vertical) {
-        return localRatio < tempRatio ?
-          clientHeight / height : clientWidth / width
-      } else {
-        return localRatio > tempRatio ?
-          clientHeight / height : clientWidth / width
+        return clientHeight / clientWidth < width / height ?
+          clientHeight / width : clientWidth / height;
+      }
+      else {
+        return clientWidth / clientHeight > width / height ?
+          clientHeight / height: clientWidth / width;
       }
     }
   }
 
-  bind(element) {
+  bind(element, isWebGL) {
+    console.log(`YuvCanvas render webGL ${isWebGL}`)
     // record element
     this.element = element;
     // create container
@@ -58,7 +62,8 @@ class Renderer {
       height: '100%',
       display: 'flex',
       justifyContent: 'center',
-      alignItems: 'center'
+      alignItems: 'center',
+      overflow: 'hidden',
     });
     this.container = container;
     element.appendChild(this.container);
@@ -66,12 +71,33 @@ class Renderer {
     // create canvas
     this.canvas = document.createElement('canvas')
     this.container.appendChild(this.canvas)
-    this.yuv = YUVCanvas.attach(this.canvas, { webGL: false });
+    this.yuv = YUVCanvas.attach(this.canvas, { webGL: isWebGL });
+    YUVCanvas.WebGLFrameSink.stripe = false;
+
+    const ResizeObserver =
+      window.ResizeObserver ||
+      window.WebKitMutationObserver ||
+      window.MozMutationObserver;
+    if (ResizeObserver) {
+      this.observer = new ResizeObserver(() => {
+        this.refreshCanvas && this.refreshCanvas();
+      });
+      this.observer.observe(container);
+    }
   }
 
   unbind() {
-    this.container && this.container.removeChild(this.canvas);
-    this.element && this.element.removeChild(this.container);
+    this.observer && this.observer.unobserve && this.observer.disconnect();
+    try {
+      if (this.container && this.canvas && this.canvas.parentNode === this.container) {
+        this.container.removeChild(this.canvas);
+      }
+      if (this.element && this.container && this.container.parentNode === this.element) {
+        this.element && this.element.removeChild(this.container);
+      }
+    } catch (error) {
+      console.warn(e)
+    }
     this.yuv = null;
     this.element = null;
     this.canvas = null;
@@ -83,7 +109,12 @@ class Renderer {
   }
 
   refreshCanvas() {
-    // Not implemented for software renderer
+    if (this.cacheCanvasOpts) {
+      try {
+        this.updateCanvas(this.cacheCanvasOpts,false)
+      } catch (error) {
+      }
+    }
   }
   updateCanvas(options = {
     width: 0,
@@ -93,37 +124,49 @@ class Renderer {
     contentMode: 0,
     clientWidth: 0,
     clientHeight: 0,
-  }) {
+    contentWidth,
+    contentHeight,
+  } , isOpenCache=true) {
     // check if display options changed
-    if (isEqual(this.cacheCanvasOpts, options)) {
+    if (isOpenCache && isEqual(this.cacheCanvasOpts, options)) {
       return;
     }
 
-    this.cacheCanvasOpts = Object.assign({}, options);
+    this.cacheCanvasOpts = options;
 
     // check for rotation
     if (options.rotation === 0 || options.rotation === 180) {
       this.canvas.width = options.width;
       this.canvas.height = options.height;
+      Object.assign(this.canvas.style, {
+        width: options.width + "px",
+        height: options.height + "px",
+        "object-fit": "cover"
+      })
     } else if (options.rotation === 90 || options.rotation === 270) {
       this.canvas.height = options.width;
       this.canvas.width = options.height;
+      Object.assign(this.canvas.style, {
+        width: options.width + "px",
+        height: options.height + "px",
+        "object-fit": "cover"
+      })
     } else {
       throw new Error('Invalid value for rotation. Only support 0, 90, 180, 270')
     }
     let transformItems = []
-    
+
     transformItems.push(`rotateZ(${options.rotation}deg)`)
-    
+
     let scale = this._calcZoom(
       options.rotation === 90 || options.rotation === 270,
       options.contentMode,
-      options.width,
-      options.height,
+      options.contentWidth,
+      options.contentHeight,
       options.clientWidth,
       options.clientHeight
     );
-    
+
     // transformItems.push(`scale(${scale})`)
     this.canvas.style.zoom = scale;
 
@@ -132,7 +175,7 @@ class Renderer {
       // this.canvas.style.transform = 'rotateY(180deg)';
       transformItems.push('rotateY(180deg)')
     }
-    
+
     if(transformItems.length > 0) {
       let transform = `${transformItems.join(' ')}`
       this.canvas.style.transform = transform
@@ -164,6 +207,8 @@ class Renderer {
       contentMode: this.contentMode,
       clientWidth: this.container.clientWidth,
       clientHeight: this.container.clientHeight,
+      contentWidth,
+      contentHeight,
     })
 
     let format = YUVBuffer.format({
