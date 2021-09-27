@@ -4,7 +4,7 @@ import { EventEmitter } from 'events';
 
 interface IRenderer {
   event: EventEmitter;
-  bind(element: Element): void;
+  bind(element: Element, isWebGL: boolean): void;
   unbind(): void;
   equalsElement(element: Element): boolean;
   drawFrame(imageData: {
@@ -21,8 +21,9 @@ interface IRenderer {
 class GlRenderer implements IRenderer {
   self: any;
   event: EventEmitter;
-  constructor() {
-    this.self = createGlRenderer.apply(this);
+  constructor(props: any) {
+    console.log('GlRenderer')
+    this.self = createGlRenderer.apply(this,[props.initRenderFailCallBack]);
     this.event = this.self.event;
   }
   snapshot(type :string): string{
