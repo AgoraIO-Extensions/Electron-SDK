@@ -294,8 +294,32 @@ export interface TrapezoidCorrectionOptions{
   dragDstPoints: Float64Array;
   hasMultiPoints: boolean;
   assistLine?: number;
+  autoCorrect?: number;
   resetDragPoints?: number;
 }
+
+export enum BRIGHTNESS_CORRECTION_MODE {
+  AUTO_MODE = 0,
+  MANUAL_MODE = 1,
+};
+
+/**
+ * Video mirror mode types.
+ */
+ export enum VIDEO_MIRROR_MODE_TYPE {
+  /**
+   * (Default) 0: The mirror mode determined by the SDK.
+   */
+  VIDEO_MIRROR_MODE_AUTO = 0,
+  /**
+   * 1: Enable the mirror mode.
+   */
+  VIDEO_MIRROR_MODE_ENABLED = 1,
+  /**
+   * 2: Disable the mirror mode.
+   */
+  VIDEO_MIRROR_MODE_DISABLED = 2,
+};
 
 /**
 * Video source types definition.
@@ -3301,7 +3325,7 @@ export interface NodeRtcEngine {
    */
 //  setClientRoleWithOptions(role: ClientRoleType, options: ClientRoleOptions): number;
   
-  enableLocalTrapezoidCorrection(enabled: boolean, automatic: boolean): number;
+  enableLocalTrapezoidCorrection(enabled: boolean): number;
   setLocalTrapezoidCorrectionOptions(options: TrapezoidCorrectionOptions): number;
 
   getLocalTrapezoidCorrectionOptions(): TrapezoidCorrectionOptions;
@@ -3309,6 +3333,8 @@ export interface NodeRtcEngine {
   setRemoteTrapezoidCorrectionOptions(uid: number, options: TrapezoidCorrectionOptions, connection?: RtcConnection): number;
   getRemoteTrapezoidCorrectionOptions(uid: number): TrapezoidCorrectionOptions;
   applyTrapezoidCorrectionToRemote(uid: number, enabled: boolean, connection?: RtcConnection): number;
+  enableBrightnessCorrection(enabled: boolean, mode: BRIGHTNESS_CORRECTION_MODE): number;
+  applyVideoEncoderMirrorToRemote(uid: number, mirrorMode: VIDEO_MIRROR_MODE_TYPE, connection?: RtcConnection): number;
 }
 
 export interface NodeMediaPlayer {
