@@ -309,6 +309,8 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setRemoteTrapezoidCorrectionOptions);
                 PROPERTY_METHOD_DEFINE(getRemoteTrapezoidCorrectionOptions);
                 PROPERTY_METHOD_DEFINE(applyTrapezoidCorrectionToRemote);
+                PROPERTY_METHOD_DEFINE(enableBrightnessCorrection);
+                PROPERTY_METHOD_DEFINE(applyVideoEncoderMirrorToRemote);
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -6085,10 +6087,7 @@ namespace agora {
             status = napi_get_value_bool_(args[0], enabled);
             CHECK_NAPI_STATUS(pEngine, status);
 
-            bool automatic = false;
-            status = napi_get_value_bool_(args[1], automatic);
-            CHECK_NAPI_STATUS(pEngine, status);
-            result = pEngine->m_engine->enableLocalTrapezoidCorrection(enabled, automatic);
+            result = pEngine->m_engine->enableLocalTrapezoidCorrection(enabled);
           } while (false);
           napi_set_int_result(args, result);
           LOG_LEAVE;
@@ -6134,13 +6133,17 @@ namespace agora {
             options.setDragDstPoint(dstPoint);
           }
 
-          int dragFinished, assistLine, resetDragPoints;
+          int dragFinished, assistLine, resetDragPoints, autoCorrect;
           status = napi_get_object_property_int32_(isolate, obj, "dragFinished", dragFinished);
           options.dragFinished = dragFinished;
           status = napi_get_object_property_arraybuffer_(isolate, obj, "dragSrcPoints", options.dragSrcPoints);
           status = napi_get_object_property_arraybuffer_(isolate, obj, "dragDstPoints", options.dragDstPoints);
           status = napi_get_object_property_int32_(isolate, obj, "assistLine", assistLine);
           options.assistLine = assistLine;
+
+          status = napi_get_object_property_int32_(isolate, obj, "autoCorrect", autoCorrect);
+          options.autoCorrect = autoCorrect;
+          
           status = napi_get_object_property_int32_(isolate, obj, "resetDragPoints", resetDragPoints);
           options.resetDragPoints = resetDragPoints;
           
@@ -6210,6 +6213,14 @@ namespace agora {
           {
             NODE_SET_OBJ_PROP_BOOL(isolate, jsOpt, "hasMultiPoints", options.hasMultiPoints);
           } while (false);
+          if (options.autoCorrect.has_value())
+          {
+            auto autoCorrect = options.autoCorrect.value();
+            do
+            {
+              NODE_SET_OBJ_PROP_NUMBER(jsOpt, "autoCorrect", autoCorrect);
+            } while (false);
+          }
           if (options.assistLine.has_value())
           {
             auto assistLine = options.assistLine.value();
@@ -6403,6 +6414,69 @@ namespace agora {
             else
             {
               result = engineEx->applyTrapezoidCorrectionToRemote(uid, enabled);
+            }
+          } while (false);
+          napi_set_int_result(args, result);
+          LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, enableBrightnessCorrection)
+        {
+          LOG_ENTER;
+          int result = -1;
+          napi_status status = napi_ok;
+          do {
+            NodeRtcEngine* pEngine = nullptr;
+            napi_get_native_this(args, pEngine);
+            CHECK_NATIVE_THIS(pEngine);
+
+            bool enabled = false;
+            int mode;
+            status = napi_get_value_bool_(args[0], enabled);
+            CHECK_NAPI_STATUS(pEngine, status);
+            status = napi_get_value_int32_(args[1], mode);
+            CHECK_NAPI_STATUS(pEngine, status);
+
+            result = pEngine->m_engine->enableBrightnessCorrection(enabled, (BRIGHTNESS_CORRECTION_MODE)mode);
+          } while (false);
+          napi_set_int_result(args, result);
+          LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, applyVideoEncoderMirrorToRemote)
+        {
+          LOG_ENTER;
+          napi_status status = napi_ok;
+          int result = -1;
+          Local<Object> connectionObj;
+          bool enabled;
+          Isolate* isolate = args.GetIsolate();
+          do {
+            NodeRtcEngine* pEngine = nullptr;
+            napi_get_native_this(args, pEngine);
+            CHECK_NATIVE_THIS(pEngine);
+
+            unsigned int uid = 0;
+            int mirrorMode;
+            nodestring channelId;
+            RtcConnection connection;
+            status = napi_get_value_uid_t_(args[0], uid);
+            CHECK_NAPI_STATUS(pEngine, status);
+            status = napi_get_value_int32_(args[1], mirrorMode);
+            CHECK_NAPI_STATUS(pEngine, status);
+
+            IRtcEngineEx* engineEx = (IRtcEngineEx*)pEngine->m_engine;
+            status = napi_get_value_object_(isolate, args[2], connectionObj);
+            if (status != napi_invalid_arg)
+            {
+              napi_get_object_property_nodestring_(isolate, connectionObj, "channelId", channelId);
+              connection.channelId = channelId;
+              napi_get_object_property_uint32_(isolate, connectionObj, "localUid", connection.localUid);
+              result = engineEx->applyVideoEncoderMirrorToRemoteEx(uid,(VIDEO_MIRROR_MODE_TYPE)mirrorMode, connection);
+            }
+            else
+            {
+              result = engineEx->applyVideoEncoderMirrorToRemote(uid, (VIDEO_MIRROR_MODE_TYPE)mirrorMode);
             }
           } while (false);
           napi_set_int_result(args, result);

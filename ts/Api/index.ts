@@ -60,7 +60,9 @@ import {
   BeautyOptions,
   RtcConnection,
   ChannelMediaRelayConfiguration,
-  TrapezoidCorrectionOptions
+  TrapezoidCorrectionOptions,
+  BRIGHTNESS_CORRECTION_MODE,
+  VIDEO_MIRROR_MODE_TYPE
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -4372,8 +4374,8 @@ class AgoraRtcEngine extends EventEmitter {
   //   return this.rtcEngine.setClientRoleWithOptions(role, options);
   // }
 
-  enableLocalTrapezoidCorrection(enabled: boolean, automatic: boolean): number {
-    return this.rtcEngine.enableLocalTrapezoidCorrection(enabled, automatic);
+  enableLocalTrapezoidCorrection(enabled: boolean): number {
+    return this.rtcEngine.enableLocalTrapezoidCorrection(enabled);
   }
   setLocalTrapezoidCorrectionOptions(options: TrapezoidCorrectionOptions): number {
     return this.rtcEngine.setLocalTrapezoidCorrectionOptions(options);
@@ -4395,6 +4397,13 @@ class AgoraRtcEngine extends EventEmitter {
   applyTrapezoidCorrectionToRemote(uid: number,enabled: boolean, connection?: RtcConnection): number{
     return this.rtcEngine.applyTrapezoidCorrectionToRemote(uid, enabled, connection);
   }
+  enableBrightnessCorrection(enabled: boolean,mode: BRIGHTNESS_CORRECTION_MODE): number{
+    return this.rtcEngine.enableBrightnessCorrection(enabled, mode);
+  }
+  applyVideoEncoderMirrorToRemote(uid: number,mirrorMode: VIDEO_MIRROR_MODE_TYPE, connection?: RtcConnection): number{
+    return this.rtcEngine.applyVideoEncoderMirrorToRemote(uid, mirrorMode, connection);
+  }
+  
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
