@@ -138,7 +138,7 @@ namespace agora {
             virtual void onNetworkQuality(const RtcConnection& connection, uid_t uid, int txQuality, int rxQuality) override;
             virtual void onRemoteVideoStateChanged(const RtcConnection& connection, uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed) override;
             virtual void onRemoteAudioStateChanged(const RtcConnection& connection, uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) override;
-            virtual void onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed) override;
+            virtual void onJoinChannelSuccess(const RtcConnection& connection,int elapsed) override;
             virtual void onLocalVideoStateChanged(const RtcConnection& connection, LOCAL_VIDEO_STREAM_STATE localVideoState, LOCAL_VIDEO_STREAM_ERROR error) override;
             virtual void onLocalAudioStateChanged(const RtcConnection& connection, LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error) override;
             virtual void onRtcStats(const RtcConnection& connection, const RtcStats& stats) override;
