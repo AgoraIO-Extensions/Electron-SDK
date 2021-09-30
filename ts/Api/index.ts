@@ -71,6 +71,7 @@ import {
   PluginInfo,
   Plugin
 } from './plugin';
+import path from 'path';
 const agora = require('../../build/Release/agora_node_ext');
 
 /**
@@ -955,6 +956,8 @@ class AgoraRtcEngine extends EventEmitter {
       }
     }
   }
+
+  
 
   /**
    * Resizes the renderer.
@@ -4400,6 +4403,12 @@ class AgoraRtcEngine extends EventEmitter {
   enableBrightnessCorrection(enabled: boolean,mode: BRIGHTNESS_CORRECTION_MODE): number{
     return this.rtcEngine.enableBrightnessCorrection(enabled, mode);
   }
+
+  getBrightnessDllPath(): string {
+     let dllPath = path.resolve(__dirname, '../../build/Release/libagora_video_process.dll');
+     return dllPath;
+  }
+
   applyVideoEncoderMirrorToRemote(uid: number,mirrorMode: VIDEO_MIRROR_MODE_TYPE, connection?: RtcConnection): number{
     return this.rtcEngine.applyVideoEncoderMirrorToRemote(uid, mirrorMode, connection);
   }
