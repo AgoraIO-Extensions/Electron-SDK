@@ -589,11 +589,14 @@ namespace agora {
           });
       }
 
-      void NodeEventHandler::onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed)
+      void NodeEventHandler::onJoinChannelSuccess(const RtcConnection& connection, int elapsed)
       {
-        FUNC_TRACE;
-        std::string channelName = channel;
-        node_async_call::async_call([this, channelName, uid, elapsed]() {
+
+        uid_t uid = connection.localUid;
+        std::string channelName(connection.channelId);
+        node_async_call::async_call([this, uid, channelName, elapsed]()
+          {
+
           MAKE_JS_CALL_3(RTC_EVENT_JOIN_CHANNEL, string, channelName.c_str(), uid, uid, int32, elapsed);
           });
       }
