@@ -290,9 +290,9 @@ export interface TrapezoidCorrectionOptions{
   dragSrcPoint?: Point;
   dragDstPoint?: Point;
   dragFinished: number;
-  dragSrcPoints: Float64Array;
-  dragDstPoints: Float64Array;
-  hasMultiPoints: boolean;
+  dragSrcPoints?: [number];
+  dragDstPoints?: [number];
+  hasMultiPoints?: boolean;
   assistLine?: number;
   autoCorrect?: number;
   resetDragPoints?: number;
@@ -3334,6 +3334,7 @@ export interface NodeRtcEngine {
   getRemoteTrapezoidCorrectionOptions(uid: number): TrapezoidCorrectionOptions;
   applyTrapezoidCorrectionToRemote(uid: number, enabled: boolean, connection?: RtcConnection): number;
   enableBrightnessCorrection(enabled: boolean, mode: BRIGHTNESS_CORRECTION_MODE): number;
+  applyBrightnessCorrectionToRemote(uid: number, enabled: boolean, mode: BRIGHTNESS_CORRECTION_MODE, connection?: RtcConnection): number;
   applyVideoEncoderMirrorToRemote(uid: number, mirrorMode: VIDEO_MIRROR_MODE_TYPE, connection?: RtcConnection): number;
 }
 

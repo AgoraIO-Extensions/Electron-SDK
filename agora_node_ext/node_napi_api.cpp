@@ -669,6 +669,15 @@ napi_status napi_get_value_double_(const Local<Value>& value, double &result)
     return napi_ok;
 }
 
+napi_status napi_get_value_double_(const Local<Value>& value, float& result)
+{
+  if (!value->IsNumber())
+    return napi_invalid_arg;
+
+  result = Nan::To<v8::Number>(value).ToLocalChecked()->Value();
+  return napi_ok;
+}
+
 napi_status napi_get_value_int64_(const Local<Value>& value, int64_t& result)
 {
     int32_t tmp;
@@ -750,7 +759,7 @@ Local<Value> napi_create_uid_(Isolate *isolate, const agora::rtc::uid_t& uid)
     return agora::rtc::NodeUid::getNodeValue(isolate, uid);
 }
 
-static Local<Value> napi_get_object_property_value(Isolate* isolate, const Local<Object>& obj, const std::string& propName)
+Local<Value> napi_get_object_property_value(Isolate* isolate, const Local<Object>& obj, const std::string& propName)
 {
     Local<Name> keyName = Nan::New<String>(propName).ToLocalChecked();
     return obj->Get(isolate->GetCurrentContext(), keyName).ToLocalChecked();
@@ -813,7 +822,6 @@ napi_status napi_get_object_property_nodestring_(Isolate* isolate, const Local<O
 napi_status napi_get_object_property_arraybuffer_(Isolate* isolate, const Local<Object>& obj, const std::string& propName, void* buffer)
 {
   Local<Value> value = napi_get_object_property_value(isolate, obj, propName);
-
   if (!value->IsArrayBuffer()) {
     return napi_invalid_arg;
   }

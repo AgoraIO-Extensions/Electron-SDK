@@ -75,7 +75,10 @@
                     'files': [
                         './sdk/agora_rtc_sdk.dll',
                         './sdk/libagora-ffmpeg.dll',
-                        './sdk/libagora-wgc.dll'
+                        './sdk/libagora-wgc.dll',
+                        './sdk/libagora_segmentation_extension.dll',
+                        './sdk/libagora_trapezoid_correction.dll',
+                        './sdk/libagora_video_process.dll'
                     ]
                 }],
                 'library_dirs': [
