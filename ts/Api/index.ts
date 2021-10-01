@@ -4397,11 +4397,16 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.getRemoteTrapezoidCorrectionOptions(uid);
   }
 
-  applyTrapezoidCorrectionToRemote(uid: number,enabled: boolean, connection?: RtcConnection): number{
+  applyTrapezoidCorrectionToRemote(uid: number, enabled: boolean, connection?: RtcConnection): number{
     return this.rtcEngine.applyTrapezoidCorrectionToRemote(uid, enabled, connection);
   }
-  enableBrightnessCorrection(enabled: boolean,mode: BRIGHTNESS_CORRECTION_MODE): number{
+
+  enableBrightnessCorrection(enabled: boolean, mode: BRIGHTNESS_CORRECTION_MODE): number{
     return this.rtcEngine.enableBrightnessCorrection(enabled, mode);
+  }
+
+  applyBrightnessCorrectionToRemote(uid: number, enabled: boolean, mode: BRIGHTNESS_CORRECTION_MODE, connection?: RtcConnection): number{
+    return this.rtcEngine.applyBrightnessCorrectionToRemote(uid, enabled, mode, connection);
   }
 
   getBrightnessDllPath(): string {
@@ -4412,7 +4417,6 @@ class AgoraRtcEngine extends EventEmitter {
   applyVideoEncoderMirrorToRemote(uid: number,mirrorMode: VIDEO_MIRROR_MODE_TYPE, connection?: RtcConnection): number{
     return this.rtcEngine.applyVideoEncoderMirrorToRemote(uid, mirrorMode, connection);
   }
-  
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {

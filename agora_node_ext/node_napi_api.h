@@ -337,6 +337,7 @@ napi_status napi_get_value_int32_(const Local<Value>& value, int32_t& result);
  */
 napi_status napi_get_value_double_(const Local<Value>& value, double &result);
 
+napi_status napi_get_value_double_(const Local<Value>& value, float& result);
 
 /**
  * get int64 from V8 value.
@@ -435,6 +436,8 @@ napi_status napi_get_object_property_uid_(Isolate* isolate, const Local<Object>&
 napi_status napi_get_object_property_object_(Isolate* isolate, const Local<Object>& obj, const std::string& propName, Local<Object>& childobj);
 
 napi_status napi_get_object_property_arraybuffer_(Isolate* isolate, const Local<Object>& obj, const std::string& propName, void* buffer);
+
+Local<Value> napi_get_object_property_value(Isolate* isolate, const Local<Object>& obj, const std::string& propName);
 
 const char* nullable( char const* s);
 

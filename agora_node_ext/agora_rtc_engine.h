@@ -358,6 +358,7 @@ namespace agora {
             NAPI_API(applyTrapezoidCorrectionToRemote);
             NAPI_API(enableBrightnessCorrection);
             NAPI_API(applyVideoEncoderMirrorToRemote);
+            NAPI_API(applyBrightnessCorrectionToRemote);
 
         public:
             Isolate* getIsolate() { return m_isolate; }

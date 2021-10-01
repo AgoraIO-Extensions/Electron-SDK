@@ -311,6 +311,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(applyTrapezoidCorrectionToRemote);
                 PROPERTY_METHOD_DEFINE(enableBrightnessCorrection);
                 PROPERTY_METHOD_DEFINE(applyVideoEncoderMirrorToRemote);
+                PROPERTY_METHOD_DEFINE(applyBrightnessCorrectionToRemote);
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -6093,7 +6094,7 @@ namespace agora {
           LOG_LEAVE;
         }
 
-        TrapezoidCorrectionOptions getTrapezoidCorrectionOptions(NodeRtcEngine* pEngine,Isolate* isolate,Local<Object> obj) {
+        TrapezoidCorrectionOptions getTrapezoidCorrectionOptions(NodeRtcEngine* pEngine, Local<Context> context, Isolate* isolate,Local<Object> obj) {
 
           /*Optional<Point> dragSrcPoint;
             Optional<Point> dragDstPoint;
@@ -6136,16 +6137,49 @@ namespace agora {
           int dragFinished, assistLine, resetDragPoints, autoCorrect;
           status = napi_get_object_property_int32_(isolate, obj, "dragFinished", dragFinished);
           options.dragFinished = dragFinished;
-          status = napi_get_object_property_arraybuffer_(isolate, obj, "dragSrcPoints", options.dragSrcPoints);
-          status = napi_get_object_property_arraybuffer_(isolate, obj, "dragDstPoints", options.dragDstPoints);
+
+          auto dragSrcPointsValue = napi_get_object_property_value(isolate, obj, "dragSrcPoints");
+          if (dragSrcPointsValue->IsArray()) {
+            auto dragSrcPointsArray = v8::Array::Cast(*dragSrcPointsValue);
+            float data[8];
+            for (auto i = 0; i < 8; i++) {
+              Local<Value> value = dragSrcPointsArray->Get(context, i).ToLocalChecked();
+              napi_get_value_double_(value, data[i]);
+            }
+            memcpy(options.dragSrcPoints, data, sizeof(float) * 8);
+          }
+
+          auto dragDstPointsValue = napi_get_object_property_value(isolate, obj, "dragDstPoints");
+          if (dragDstPointsValue->IsArray()) {
+            auto dragDstPointsArray = v8::Array::Cast(*dragDstPointsValue);
+            float data[8];
+            for (auto i = 0; i < 8; i++) {
+              Local<Value> value = dragDstPointsArray->Get(context, i).ToLocalChecked();
+              napi_get_value_double_(value, data[i]);
+            }
+            memcpy(options.dragDstPoints, data, sizeof(float) * 8);
+          }
+
           status = napi_get_object_property_int32_(isolate, obj, "assistLine", assistLine);
-          options.assistLine = assistLine;
+          if (status == napi_ok) {
+            options.assistLine = assistLine;
+          }
 
           status = napi_get_object_property_int32_(isolate, obj, "autoCorrect", autoCorrect);
-          options.autoCorrect = autoCorrect;
+          if (status == napi_ok) {
+            options.autoCorrect = autoCorrect;
+          }
           
           status = napi_get_object_property_int32_(isolate, obj, "resetDragPoints", resetDragPoints);
-          options.resetDragPoints = resetDragPoints;
+          if (status == napi_ok) {
+            options.resetDragPoints = resetDragPoints;
+          }
+
+          bool hasMultiPoints = false;
+          status = napi_get_object_property_bool_(isolate, obj, "hasMultiPoints", hasMultiPoints);
+          if (status == napi_ok) {
+            options.hasMultiPoints = hasMultiPoints;
+          }
           
           return options;
         }
@@ -6156,6 +6190,7 @@ namespace agora {
           int result = -1;
           Isolate* isolate = args.GetIsolate();
           napi_status status = napi_ok;
+          Local<Context> context = isolate->GetCurrentContext();
           do {
             NodeRtcEngine* pEngine = nullptr;
             napi_get_native_this(args, pEngine);
@@ -6169,7 +6204,7 @@ namespace agora {
             Local<Object> obj;
             status = napi_get_value_object_(isolate, args[0], obj);
             CHECK_NAPI_STATUS(pEngine, status);
-            TrapezoidCorrectionOptions options = getTrapezoidCorrectionOptions(pEngine, isolate, obj);
+            TrapezoidCorrectionOptions options = getTrapezoidCorrectionOptions(pEngine, context, isolate, obj);
 
             result = pEngine->m_engine->setLocalTrapezoidCorrectionOptions(options);
           } while (false);
@@ -6319,6 +6354,7 @@ namespace agora {
           Local<Object> connectionObj;
           Local<Object> optionsObj;
           Isolate* isolate = args.GetIsolate();
+          Local<Context> context = isolate->GetCurrentContext();
 
           do {
             NodeRtcEngine* pEngine = nullptr;
@@ -6333,7 +6369,7 @@ namespace agora {
 
             status = napi_get_value_object_(isolate, args[1], optionsObj);
             CHECK_NAPI_STATUS(pEngine, status);
-            TrapezoidCorrectionOptions options = getTrapezoidCorrectionOptions(pEngine, isolate, optionsObj);
+            TrapezoidCorrectionOptions options = getTrapezoidCorrectionOptions(pEngine, context, isolate, optionsObj);
 
             status = napi_get_value_object_(isolate, args[2], connectionObj);
 
@@ -6438,6 +6474,50 @@ namespace agora {
             CHECK_NAPI_STATUS(pEngine, status);
 
             result = pEngine->m_engine->enableBrightnessCorrection(enabled, (BRIGHTNESS_CORRECTION_MODE)mode);
+          } while (false);
+          napi_set_int_result(args, result);
+          LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, applyBrightnessCorrectionToRemote)
+        {
+          LOG_ENTER;
+          int result = -1;
+          napi_status status = napi_ok;
+          Isolate* isolate = args.GetIsolate();
+          do {
+            NodeRtcEngine* pEngine = nullptr;
+            napi_get_native_this(args, pEngine);
+            CHECK_NATIVE_THIS(pEngine);
+
+            uid_t uid;
+            status = napi_get_value_uid_t_(args[0], uid);
+            CHECK_NAPI_STATUS(pEngine, status);
+
+            bool enabled = false;
+            status = napi_get_value_bool_(args[1], enabled);
+            CHECK_NAPI_STATUS(pEngine, status);
+
+            int mode = 0;
+            status = napi_get_value_int32_(args[2], mode);
+            CHECK_NAPI_STATUS(pEngine, status);
+
+            Local<Object> obj;
+            status = napi_get_value_object_(isolate, args[3], obj);
+            IRtcEngineEx* engineEx = (IRtcEngineEx*)pEngine->m_engine;
+            if (status != napi_invalid_arg)
+            {
+              RtcConnection connection;
+              NodeString channelId;
+              napi_get_object_property_nodestring_(isolate, obj, "channelId", channelId);
+              connection.channelId = channelId;
+              napi_get_object_property_uint32_(isolate, obj, "localUid", connection.localUid);
+              result = engineEx->applyBrightnessCorrectionToRemoteEx(uid, enabled, (BRIGHTNESS_CORRECTION_MODE)mode, connection);
+            }
+            else
+            {
+              result = engineEx->applyBrightnessCorrectionToRemote(uid, enabled, (BRIGHTNESS_CORRECTION_MODE)mode);
+            }     
           } while (false);
           napi_set_int_result(args, result);
           LOG_LEAVE;
