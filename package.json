@@ -92,8 +92,8 @@
     "url": "git+https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron.git"
   },
   "agora_electron": {
-    "lib_sdk_win": "http://10.80.1.174:8090/agora_sdk/develop/yinkaisheng/2021-09-30/windows/full/Agora_Native_SDK_for_Windows_x86_yinkaisheng_51144_20210930_1235_full.zip",
-    "lib_sdk_win64": "http://10.80.1.174:8090/agora_sdk/develop/yinkaisheng/2021-09-30/windows/full/Agora_Native_SDK_for_Windows_x64_yinkaisheng_51145_20210930_1239_full.zip ",
+    "lib_sdk_win": "http://10.80.1.174:8090/agora_sdk/develop/yinkaisheng/2021-10-08/windows/full/Agora_Native_SDK_for_Windows_x86_yinkaisheng_51518_20211008_1108_full.zip",
+    "lib_sdk_win64": "http://10.80.1.174:8090/agora_sdk/develop/yinkaisheng/2021-10-08/windows/full/Agora_Native_SDK_for_Windows_x64_yinkaisheng_51519_20211008_1108_full.zip",
     "lib_sdk_mac": "http://10.80.1.174:8090/agora_sdk/develop/yinkaisheng/2021-09-14/mac/full/Agora_Native_SDK_for_Mac_yinkaisheng_56228_full_20210914_2118.zip"
   },
   "keywords": [
