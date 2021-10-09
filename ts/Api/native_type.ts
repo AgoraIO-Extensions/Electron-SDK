@@ -296,6 +296,7 @@ export interface TrapezoidCorrectionOptions{
   assistLine?: number;
   autoCorrect?: number;
   resetDragPoints?: number;
+  mirror?: boolean;
 }
 
 export enum BRIGHTNESS_CORRECTION_MODE {
@@ -1926,6 +1927,8 @@ export interface ChannelMediaOptions {
    * - false: (Default) Do not publish the video track of the camera capturer.
    */
     publishCameraTrack: boolean;
+
+    publishSecondaryCameraTrack: boolean;
   /**
    * Determines whether to publish the recorded audio.
    * - true: Publish the recorded audio.
@@ -1938,6 +1941,8 @@ export interface ChannelMediaOptions {
    * - false: (Default) Do not publish the video track of the screen capturer.
    */
    publishScreenTrack: boolean;
+
+   publishSecondaryScreenTrack: boolean;
   /**
    * Determines whether to publish the audio of the custom audio track.
    * - true: Publish the audio of the custom audio track.
