@@ -78,7 +78,8 @@
                         './sdk/libagora-wgc.dll',
                         './sdk/libagora_segmentation_extension.dll',
                         './sdk/libagora_trapezoid_correction.dll',
-                        './sdk/libagora_video_process.dll'
+                        './sdk/libagora_video_process.dll',
+                        './sdk/glfw3.dll'
                     ]
                 }],
                 'library_dirs': [
