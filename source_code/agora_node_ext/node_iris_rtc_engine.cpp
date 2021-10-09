@@ -266,15 +266,15 @@ napi_value NodeIrisRtcEngine::OnEvent(napi_env env, napi_callback_info info) {
     NodeIrisRtcEngine* nodeIrisRtcEngine;
     status =
     napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
-    
+    assert(status == napi_ok);
     std::string parameter = "";
     status = napi_get_value_utf8string(env, args[0], parameter);
-    
+    assert(status == napi_ok);
     napi_value cb = args[1];
     
     napi_value global;
     status = napi_get_global(env, &global);
-    
+    assert(status == napi_ok);
     if (nodeIrisRtcEngine->_iris_engine) {
         nodeIrisRtcEngine->_iris_event_handler->addEvent(parameter, env, cb,
                                                          global);
@@ -319,6 +319,7 @@ napi_value NodeIrisRtcEngine::CreateChannel(napi_env env,
 
 napi_value NodeIrisRtcEngine::GetDeviceManager(napi_env env,
                                                napi_callback_info info) {
+    NodeIrisRtcDeviceManager::Init(env);
     napi_status status;
     napi_value jsthis;
     status = napi_get_cb_info(env, info, nullptr, nullptr, &jsthis, nullptr);
@@ -334,8 +335,9 @@ napi_value NodeIrisRtcEngine::GetDeviceManager(napi_env env,
         return ;
     }
     auto _device_manager = nodeIrisRtcEngine->_iris_engine->device_manager();
+    NodeIrisRtcDeviceManager::_staticDeviceManager = _device_manager;
     napi_value _js_device_manager =
-    NodeIrisRtcDeviceManager::Init(env, info, _device_manager);
+    NodeIrisRtcDeviceManager::NewInstance(env);
     return _js_device_manager;
 }
 

@@ -12,7 +12,9 @@ napi_status napi_get_value_utf8string(napi_env& env,
   status = napi_get_value_string_utf8(env, value, nullptr, 0, &length);
 
   std::vector<char> strData;
-  strData.resize(length + 1);
+  // https://github.com/nodejs/node-addon-examples/issues/83
+  length += 1;
+  strData.resize(length);
 
   size_t result = 0;
   status =
