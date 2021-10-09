@@ -9456,6 +9456,20 @@ declare interface AgoraRtcChannel {
     newState: STREAM_SUBSCRIBE_STATE,
     elapseSinceLastState: number
   )=> void): this;
+
+  on(
+    evt: "agoraVideoRowData",
+    cb: (info: {
+      type: number;
+      uid: number;
+      channelId: string;
+      header: any;
+      ydata: Uint8Array;
+      udata: Uint8Array;
+      vdata: Uint8Array;
+    }) => void
+  ): this;
+  
 }
 
 export default AgoraRtcEngine;
