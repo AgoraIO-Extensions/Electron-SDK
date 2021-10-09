@@ -10,6 +10,6 @@
 using namespace agora::rtc::electron;
 
 napi_value Init(napi_env env, napi_value exports) {
-  return NodeIrisRtcEngine::Init(env, exports);
+    return NodeIrisRtcEngine::Init(env, exports);
 }
 NAPI_MODULE(NODE_GYP_MODULE_NAME, Init)

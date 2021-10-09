@@ -13,18 +13,18 @@ namespace rtc {
 namespace electron {
 class NodeIrisRtcDeviceManager {
 public:
+    static iris::rtc::IrisRtcDeviceManager * _staticDeviceManager;
     explicit NodeIrisRtcDeviceManager(
                                       napi_env env,
                                       iris::rtc::IrisRtcDeviceManager* deviceManager);
     virtual ~NodeIrisRtcDeviceManager();
-    
-    static napi_value Init(
-                           napi_env env,
-                           napi_callback_info info,
-                           iris::rtc::IrisRtcDeviceManager* deviceManager);
-         static napi_value CallApiAudioDevice(napi_env env, napi_callback_info info);
-         static napi_value CallApiVideoDevice(napi_env env, napi_callback_info info);
-         static napi_value Release(napi_env env, napi_callback_info info);
+
+    static napi_value Init(napi_env env);
+    static napi_value New(napi_env env, napi_callback_info info);
+    static napi_value NewInstance(napi_env env);
+    static napi_value CallApiAudioDevice(napi_env env, napi_callback_info info);
+    static napi_value CallApiVideoDevice(napi_env env, napi_callback_info info);
+    static napi_value Release(napi_env env, napi_callback_info info);
     
     static void ReleaseNodeSource(void* selfPtr);
     
@@ -34,8 +34,6 @@ private:
     static const char* _class_name;
     static const char* _ret_code_str;
     static const char* _ret_result_str;
-    static iris::rtc::IrisRtcDeviceManager *staticDeviceManager;
-    static napi_value New(napi_env env, napi_callback_info info);
     static napi_value Constructor(napi_env env);
     static void Destructor(napi_env env,
                            void* nativeObject,

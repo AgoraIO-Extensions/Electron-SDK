@@ -7,6 +7,7 @@
 #include "node_iris_rtc_device_manager.h"
 #include <assert.h>
 #include "node_api_header.h"
+#include <node_api.h>
 
 namespace agora {
 namespace rtc {
@@ -15,9 +16,9 @@ using namespace iris::rtc;
 const char* NodeIrisRtcDeviceManager::_class_name = "NodeIrisRtcDeviceManager";
 const char* NodeIrisRtcDeviceManager::_ret_code_str = "retCode";
 const char* NodeIrisRtcDeviceManager::_ret_result_str = "result";
-NodeIrisRtcDeviceManager::NodeIrisRtcDeviceManager(
-                                                   napi_env env,
-                                                   IrisRtcDeviceManager* deviceManager)
+agora::iris::rtc::IrisRtcDeviceManager*  NodeIrisRtcDeviceManager::_staticDeviceManager = nullptr;
+NodeIrisRtcDeviceManager::NodeIrisRtcDeviceManager(napi_env env,
+                                                   iris::rtc::IrisRtcDeviceManager* deviceManager)
 : _env(env), _deviceManager(deviceManager) {
     napi_add_env_cleanup_hook(env, ReleaseNodeSource, this);
 }
@@ -27,37 +28,32 @@ NodeIrisRtcDeviceManager::~NodeIrisRtcDeviceManager() {
     _env = nullptr;
 }
 
+napi_value NodeIrisRtcDeviceManager::NewInstance(napi_env env) {
+    napi_status status;
+    napi_value instance ;
+    status = napi_new_instance(env, Constructor(env), 0, nullptr, &instance);
+    return instance;
+}
 napi_value NodeIrisRtcDeviceManager::New(napi_env env, napi_callback_info info) {
     napi_status status;
-    napi_value target;
-    status = napi_get_new_target(env, info, &target);
+    napi_value jsthis;
+    status = napi_get_cb_info(env, info, nullptr, nullptr, &jsthis, nullptr);
     assert(status == napi_ok);
-    bool is_constructor = target != nullptr;
     
-    if (is_constructor) {
-        napi_value jsthis;
-        status = napi_get_cb_info(env, info, nullptr, nullptr, &jsthis, nullptr);
-        assert(status == napi_ok);
-        
-        auto deviceManager = new NodeIrisRtcDeviceManager(env, staticDeviceManager);
-        deviceManager->_env = env;
-        status =
-        napi_wrap(env, jsthis, reinterpret_cast<void*>(deviceManager),
-                  NodeIrisRtcDeviceManager::Destructor, nullptr, &deviceManager->_ref);
-        assert(status == napi_ok);
-    } else {
-        napi_value instance;
-        status = napi_new_instance(env, Constructor(env), 0, nullptr, &instance);
-        assert(status == napi_ok);
-        return instance;
-    }
+    auto deviceManager = new NodeIrisRtcDeviceManager(env, _staticDeviceManager);
+    deviceManager->_env = env;
+    status =
+    napi_wrap(env, jsthis, reinterpret_cast<void*>(deviceManager),
+              NodeIrisRtcDeviceManager::Destructor, nullptr, &deviceManager->_ref);
+    assert(status == napi_ok);
+    return jsthis;
 }
 
 napi_value NodeIrisRtcDeviceManager::Constructor(napi_env env) {
-    void* instance = nullptr;
-    napi_status status = napi_get_instance_data(env, &instance);
+    void* instance_data = nullptr;
+    napi_status status = napi_get_instance_data(env, &instance_data);
     assert(status == napi_ok);
-    napi_ref* constructor = static_cast<napi_ref*>(instance);
+    napi_ref* constructor = static_cast<napi_ref*>(instance_data);
     
     napi_value cons;
     status = napi_get_reference_value(env, *constructor, &cons);
@@ -73,18 +69,13 @@ void NodeIrisRtcDeviceManager::Destructor(napi_env env,
 }
 
 
-napi_value NodeIrisRtcDeviceManager::Init(
-                                          napi_env env,
-                                          napi_callback_info info,
-                                          IrisRtcDeviceManager* deviceManager) {
+napi_value NodeIrisRtcDeviceManager::Init(napi_env env) {
     napi_status status;
     napi_property_descriptor properties[] = {
         DECLARE_NAPI_METHOD("CallApiAudioDevice", CallApiAudioDevice),
         DECLARE_NAPI_METHOD("CallApiVideoDevice", CallApiVideoDevice),
         DECLARE_NAPI_METHOD("Release", Release)
-        
     };
-    staticDeviceManager = deviceManager;
     
     napi_value cons;
     status = napi_define_class(env, _class_name, NAPI_AUTO_LENGTH, New, nullptr,
@@ -182,6 +173,7 @@ napi_value NodeIrisRtcDeviceManager::Release(napi_env env, napi_callback_info in
     status =
     napi_unwrap(env, jsthis, reinterpret_cast<void**>(&_deviceManager));
     _deviceManager->_deviceManager = nullptr;
+    _staticDeviceManager = nullptr;
 }
 
 void NodeIrisRtcDeviceManager::ReleaseNodeSource(void* selfPtr) {
