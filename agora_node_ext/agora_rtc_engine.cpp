@@ -6180,6 +6180,12 @@ namespace agora {
           if (status == napi_ok) {
             options.hasMultiPoints = hasMultiPoints;
           }
+
+          bool mirror = false;
+          status = napi_get_object_property_bool_(isolate, obj, "mirror", mirror);
+          if (status = napi_ok) {
+              options.mirror = mirror;
+          }
           
           return options;
         }
@@ -6272,7 +6278,14 @@ namespace agora {
               NODE_SET_OBJ_PROP_NUMBER(jsOpt, "resetDragPoints", resetDragPoints);
             } while (false);
           }
-
+          if (options.mirror.has_value())
+          {
+            auto mirror = options.mirror.value();
+            do
+            {
+              NODE_SET_OBJ_PROP_NUMBER(jsOpt, "mirror", mirror);
+            } while (false);
+          }
           Local<v8::Array> dragSrcPoints = v8::Array::New(isolate);
           std::vector<float> dragSrcPointsVec(options.dragSrcPoints, options.dragSrcPoints + TrapezoidCorrectionOptions::POINT_ARRAY_LEN);
           for (int i = 0; i < dragSrcPointsVec.size(); i++) {
