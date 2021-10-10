@@ -133,9 +133,8 @@
 //       }
 //     } catch (std::exception& e) {
 //       LOG_F(INFO,
-//             "NodeIrisRtcChannel::CallApiWithBuffer apiType: %d, parameter: %s, "
-//             "exception: %s",
-//             _apiType, _parameter.c_str(), e.what());
+//             "NodeIrisRtcChannel::CallApiWithBuffer apiType: %d, parameter:
+//             %s, " "exception: %s", _apiType, _parameter.c_str(), e.what());
 //       _channel->OnApiError(e.what());
 //     }
 //   } else {

@@ -24,8 +24,8 @@
 //                                   const char* channelId);
 //   static void CreateInstance(const v8_FunctionCallbackInfo<v8_Value>& args);
 //   static void CallApi(const Nan_FunctionCallbackInfo<v8_Value>& args);
-//   static void CallApiWithBuffer(const Nan_FunctionCallbackInfo<v8_Value>& args);
-//   static void OnEvent(const Nan_FunctionCallbackInfo<v8_Value>& args);
+//   static void CallApiWithBuffer(const Nan_FunctionCallbackInfo<v8_Value>&
+//   args); static void OnEvent(const Nan_FunctionCallbackInfo<v8_Value>& args);
 //   static void Release(const Nan_FunctionCallbackInfo<v8_Value>& args);
 //   static void ReleaseNodeSource(void* data);
 //   void OnApiError(const char* errorMessage);

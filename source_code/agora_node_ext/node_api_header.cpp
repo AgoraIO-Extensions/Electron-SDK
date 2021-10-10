@@ -14,7 +14,7 @@ napi_status napi_get_value_utf8string(napi_env& env,
   std::vector<char> strData;
   // https://github.com/nodejs/node-addon-examples/issues/83
   length += 1;
-  strData.resize(length);
+  strData.resize(length, '\0');
 
   size_t result = 0;
   status =
