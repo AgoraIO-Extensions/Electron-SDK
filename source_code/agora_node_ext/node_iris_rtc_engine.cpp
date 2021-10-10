@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:37
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-10-10 22:08:11
+ * @Last Modified time: 2021-10-10 22:09:53
  */
 #include "node_iris_rtc_engine.h"
 #include <assert.h>
@@ -332,8 +332,9 @@ napi_value NodeIrisRtcEngine::GetDeviceManager(napi_env env,
 
   if (!nodeIrisRtcEngine->_iris_engine) {
     LOG_F(INFO, "NodeIrisRtcEngine::GetDeviceManager error Not Init Engine");
+    // TODO
     napi_value value;
-    return;
+    return value;
   }
   auto _device_manager = nodeIrisRtcEngine->_iris_engine->device_manager();
   NodeIrisRtcDeviceManager::_staticDeviceManager = _device_manager;

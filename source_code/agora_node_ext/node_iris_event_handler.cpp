@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:49
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-10-10 22:07:58
+ * @Last Modified time: 2021-10-11 00:24:13
  */
 #include "node_iris_event_handler.h"
 #include <memory.h>
@@ -19,6 +19,7 @@ NodeIrisEventHandler::NodeIrisEventHandler(NodeIrisRtcEngine* engine)
 
 NodeIrisEventHandler::~NodeIrisEventHandler() {
   node_async_call::close(true);
+  // TODO release call back memory and ref
   _callbacks.clear();
   _node_iris_engine = nullptr;
 }
@@ -29,8 +30,9 @@ void NodeIrisEventHandler::addEvent(const std::string& eventName,
                                     napi_value& global) {
   auto callback = new EventCallback();
   callback->env = env;
-  callback->call_back = call_bcak;
-  callback->global = global;
+
+  napi_status status =
+      napi_create_reference(env, call_bcak, 1, &(callback->call_back_ref));
   _callbacks[eventName] = callback;
 }
 
@@ -43,12 +45,21 @@ void NodeIrisEventHandler::OnEvent(const char* event, const char* data) {
       size_t argc = 2;
       napi_value args[2];
       napi_value result;
-      napi_create_string_utf8(it->second->env, _eventName.c_str(),
-                              sizeof(_eventName), &args[0]);
-      napi_create_string_utf8(it->second->env, _eventData.c_str(),
-                              sizeof(_eventData), &args[1]);
-      napi_call_function(it->second->env, it->second->global,
-                         it->second->call_back, argc, args, &result);
+      napi_status status;
+      status = napi_create_string_utf8(it->second->env, _eventName.c_str(),
+                                       _eventName.length(), &args[0]);
+      status = napi_create_string_utf8(it->second->env, _eventData.c_str(),
+                                       _eventData.length(), &args[1]);
+
+      napi_value call_back_value;
+      status = napi_get_reference_value(
+          it->second->env, it->second->call_back_ref, &call_back_value);
+
+      napi_value recv_value;
+      status = napi_get_undefined(it->second->env, &recv_value);
+
+      status = napi_call_function(it->second->env, recv_value, call_back_value,
+                                  argc, args, &result);
     }
   });
 }
@@ -70,14 +81,23 @@ void NodeIrisEventHandler::OnEvent(const char* event,
       size_t argc = 3;
       napi_value args[3];
       napi_value result;
-      napi_create_string_utf8(it->second->env, _eventName.c_str(),
-                              sizeof(_eventName), &args[0]);
-      napi_create_string_utf8(it->second->env, _eventData.c_str(),
-                              sizeof(_eventData), &args[1]);
-      napi_create_string_utf8(it->second->env, _eventBuffer.c_str(),
-                              sizeof(_eventBuffer), &args[2]);
-      napi_call_function(it->second->env, it->second->global,
-                         it->second->call_back, argc, args, &result);
+      napi_status status;
+      status = napi_create_string_utf8(it->second->env, _eventName.c_str(),
+                                       _eventName.length(), &args[0]);
+      status = napi_create_string_utf8(it->second->env, _eventData.c_str(),
+                                      _eventData.length(), &args[1]);
+      status = napi_create_string_utf8(it->second->env, _eventBuffer.c_str(),
+                                       _eventBuffer.length(), &args[2]);
+
+      napi_value call_back_value;
+      status = napi_get_reference_value(
+          it->second->env, it->second->call_back_ref, &call_back_value);
+
+      napi_value recv_value;
+      status = napi_get_undefined(it->second->env, &recv_value);
+
+      status = napi_call_function(it->second->env, recv_value, call_back_value,
+                                  argc, args, &result);
     }
   });
 }
@@ -89,15 +109,24 @@ void NodeIrisEventHandler::OnVideoSourceEvent(const char* eventName,
   node_async_call::async_call([this, _eventName, _eventData] {
     auto it = _callbacks.find("video_source_call_back");
     if (it != _callbacks.end()) {
+      napi_status status;
       size_t argc = 2;
       napi_value args[2];
       napi_value result;
-      napi_create_string_utf8(it->second->env, _eventName.c_str(),
-                              sizeof(_eventName), &args[0]);
-      napi_create_string_utf8(it->second->env, _eventData.c_str(),
-                              sizeof(_eventData), &args[1]);
-      napi_call_function(it->second->env, it->second->global,
-                         it->second->call_back, argc, args, &result);
+      status = napi_create_string_utf8(it->second->env, _eventName.c_str(),
+                                       _eventName.length(), &args[0]);
+      status = napi_create_string_utf8(it->second->env, _eventData.c_str(),
+                                       _eventData.length(), &args[1]);
+
+      napi_value call_back_value;
+      status = napi_get_reference_value(
+          it->second->env, it->second->call_back_ref, &call_back_value);
+
+      napi_value recv_value;
+      status = napi_get_undefined(it->second->env, &recv_value);
+
+      status = napi_call_function(it->second->env, recv_value, call_back_value,
+                                  argc, args, &result);
     }
   });
 }
@@ -115,17 +144,26 @@ void NodeIrisEventHandler::OnVideoSourceEvent(const char* event,
   node_async_call::async_call([this, _eventName, _eventData, _eventBuffer] {
     auto it = _callbacks.find("video_source_call_back_with_buffer");
     if (it != _callbacks.end()) {
+      napi_status status;
       size_t argc = 3;
       napi_value args[3];
       napi_value result;
-      napi_create_string_utf8(it->second->env, _eventName.c_str(),
-                              sizeof(_eventName), &args[0]);
-      napi_create_string_utf8(it->second->env, _eventData.c_str(),
-                              sizeof(_eventData), &args[1]);
-      napi_create_string_utf8(it->second->env, _eventBuffer.c_str(),
-                              sizeof(_eventBuffer), &args[2]);
-      napi_call_function(it->second->env, it->second->global,
-                         it->second->call_back, argc, args, &result);
+      status = napi_create_string_utf8(it->second->env, _eventName.c_str(),
+                                       _eventName.length(), &args[0]);
+      status = napi_create_string_utf8(it->second->env, _eventData.c_str(),
+                                       _eventData.length(), &args[1]);
+      status = napi_create_string_utf8(it->second->env, _eventBuffer.c_str(),
+                                       _eventBuffer.length(), &args[2]);
+
+      napi_value call_back_value;
+      status = napi_get_reference_value(
+          it->second->env, it->second->call_back_ref, &call_back_value);
+
+      napi_value recv_value;
+      status = napi_get_undefined(it->second->env, &recv_value);
+
+      status = napi_call_function(it->second->env, recv_value, call_back_value,
+                                  argc, args, &result);
     }
   });
 }

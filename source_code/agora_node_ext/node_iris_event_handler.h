@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:53
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-10-10 22:08:01
+ * @Last Modified time: 2021-10-10 23:52:32
  */
 #pragma once
 #include <unordered_map>
@@ -21,8 +21,7 @@ class NodeIrisEventHandler : public iris::IrisEventHandler,
  public:
   typedef struct NodeEventCallback {
     napi_env env;
-    napi_value call_back;
-    napi_value global;
+    napi_ref call_back_ref;
   } EventCallback;
 
  public:
