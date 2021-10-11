@@ -750,7 +750,6 @@ std::vector<ScreenDisplayInfo> getAllRealDisplayInfo()
     	_display_infos.push_back(_display_info);
 	}
 
-	for (int i = 0; i < _display_infos.size(); i ++) {
 		HWND hDesktop = GetDesktopWindow();
 		HDC hDC = GetDC(hDesktop);
 		for (int i = 0; i < _display_infos.size(); i++)
@@ -758,6 +757,5 @@ std::vector<ScreenDisplayInfo> getAllRealDisplayInfo()
 			ScreenDisplayInfo &info = _display_infos[i];
 			dumpDisplayInfo(hDC, &info, i, _display_infos);
 		}
-	} 
 	return _display_infos;
 }
