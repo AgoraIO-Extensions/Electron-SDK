@@ -3952,10 +3952,6 @@ export interface NodeRtcEngine {
    * @ignore
    */
   startAudioRecordingWithConfig(config: AudioRecordingConfiguration): number;
-  /**
-   * @ignore
-   */
-  enableVirtualBackground(enabled: Boolean, backgroundSource: VirtualBackgroundSource): number;
 }
 /**
  * @ignore
