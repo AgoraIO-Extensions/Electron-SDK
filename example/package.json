@@ -11,6 +11,7 @@
   "dependencies": {
     "bulma": "0.8.0",
     "electron": "5.0.8",
+    "html-loader": "^1.0.0-alpha.0",
     "immutable": "3.8.2",
     "react": "16.11.0",
     "react-dom": "16.11.0",
@@ -25,7 +26,8 @@
   },
   "resolutions": {
     "webpack-sources": "1.0.1",
-    "electron-webpack/html-loader": "1.0.0-alpha.0"
+    "electron-webpack/html-loader": "1.0.0-alpha.0",
+    "html-loader": "1.0.0-alpha.0"
   },
   "build": {
     "asar": false,
