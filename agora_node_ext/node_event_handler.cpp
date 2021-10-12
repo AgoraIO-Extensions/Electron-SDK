@@ -1655,12 +1655,5 @@ namespace agora {
                 MAKE_JS_CALL_3(RTC_EVENT_UPLOAD_LOG_RESULT, string, mRequestId.c_str(), bool, success, int32, reason);
             });
         }
-        // 3.4.5
-        void NodeEventHandler::onVirtualBackgroundSourceEnabled(bool enabled, VIRTUAL_BACKGROUND_SOURCE_STATE_REASON reason) {
-            FUNC_TRACE;;
-            node_async_call::async_call([this, enabled, reason] {
-                MAKE_JS_CALL_2(RTC_EVENT_VIRTUAL_BACKGROUND_SOURCE_ENABLED, bool, enabled, int32, reason);
-            });
-        }
     }
 }

@@ -100,8 +100,7 @@ const winPrepare = (folder) => {
         fs.move(path.join(folder, './libs/x86/libagora_ai_denoise_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_ai_denoise_extension.dll')),
         fs.move(path.join(folder, './libs/x86/libagora_dav1d_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_dav1d_extension.dll')),
         fs.move(path.join(folder, './libs/x86/libagora-core.dll'), path.join(__dirname, '../sdk/dll/libagora-core.dll')),
-        fs.move(path.join(folder, './libs/x86/libagora_segmentation_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_segmentation_extension.dll')),
-        fs.move(path.join(folder, './libs/x86/libagora_segmentation_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_jnd_extension.dll')),
+        fs.move(path.join(folder, './libs/x86/libagora_jnd_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_jnd_extension.dll')),
       ])
     }).then(() => {
       resolve()

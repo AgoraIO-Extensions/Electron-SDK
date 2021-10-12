@@ -113,7 +113,6 @@ namespace agora {
 #define RTC_EVENT_AUDIO_ROUTE_CHANGED "audioRouteChanged"
 #define RTC_EVENT_API_ERROR "apierror"
 #define RTC_EVENT_UPLOAD_LOG_RESULT "uploadLogResult"
-#define RTC_EVENT_VIRTUAL_BACKGROUND_SOURCE_ENABLED "virtualBackgroundSourceEnabled"
 
 
         class NodeRtcEngine;
@@ -232,8 +231,7 @@ namespace agora {
             
             //3.3.0
             virtual void onUploadLogResult(const char * requestId, bool success, UPLOAD_ERROR_REASON reason );
-            //3.4.5
-            virtual void onVirtualBackgroundSourceEnabled(bool enabled, VIRTUAL_BACKGROUND_SOURCE_STATE_REASON reason);
+
   private:
             void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;
             void onRejoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed) ;

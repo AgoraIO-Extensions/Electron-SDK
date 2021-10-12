@@ -325,10 +325,6 @@ namespace agora {
 
                 PROPERTY_METHOD_DEFINE(setAddonLogFile);
                 PROPERTY_METHOD_DEFINE(videoSourceSetAddonLogFile);
-                /*
-                 * 3.4.4
-                 */
-                PROPERTY_METHOD_DEFINE(enableVirtualBackground);
                 
                 PROPERTY_METHOD_DEFINE(videoSourceStartScreenCaptureByDisplayId);
                 PROPERTY_METHOD_DEFINE(getRealScreenDisplayInfo);
@@ -2641,9 +2637,6 @@ namespace agora {
                 nodestring encryptionKey;
                 status = napi_get_object_property_nodestring_(isolate, obj, "encryptionKey", encryptionKey);
                 CHECK_NAPI_STATUS(pEngine, status);
-
-                napi_get_object_property_arraybuffer_(isolate, obj, "encryptionKdfSalt", encryptionConfig.encryptionKdfSalt);
-                CHECK_NAPI_STATUS(pEngine, status);
                 
                 encryptionConfig.encryptionMode = (ENCRYPTION_MODE)encryptionMode;
                 encryptionConfig.encryptionKey = encryptionKey;
@@ -2949,11 +2942,6 @@ namespace agora {
                     status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "autoSubscribeVideo", options.autoSubscribeVideo);
                     CHECK_NAPI_STATUS(pEngine, status);
 
-                    status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "publishLocalAudio", options.publishLocalAudio);
-                    CHECK_NAPI_STATUS(pEngine, status);
-                    
-                    status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "publishLocalVideo", options.publishLocalVideo);
-                    CHECK_NAPI_STATUS(pEngine, status);
                     result = pEngine->m_engine->joinChannel(key, name, extra_info.c_str(), uid, options);
                 } else {
                     // without options
@@ -2992,13 +2980,7 @@ namespace agora {
                     CHECK_NAPI_STATUS(pEngine, status);
                     status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "autoSubscribeVideo", options.autoSubscribeVideo);
                     CHECK_NAPI_STATUS(pEngine, status);
-                    
-                    status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "publishLocalAudio", options.publishLocalAudio);
-                    CHECK_NAPI_STATUS(pEngine, status);
-                    
-                    status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "publishLocalVideo", options.publishLocalVideo);
-                    CHECK_NAPI_STATUS(pEngine, status);
-                    
+
                     result = pEngine->m_engine->switchChannel(key, name, options);
                 } else {
                     // without options
@@ -5245,12 +5227,6 @@ namespace agora {
                     status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "autoSubscribeVideo", options.autoSubscribeVideo);
                     CHECK_NAPI_STATUS(pEngine, status);
 
-                    status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "publishLocalAudio", options.publishLocalAudio);
-                    CHECK_NAPI_STATUS(pEngine, status);
-                    
-                    status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "publishLocalVideo", options.publishLocalVideo);
-                    CHECK_NAPI_STATUS(pEngine, status);
-
                     LOG_F(INFO, "joinChannelWithUserAccount with mediaOption");
                     result = pEngine->m_engine->joinChannelWithUserAccount(token, channel, userAccount, options);
                 } else {
@@ -5983,9 +5959,7 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
 
                 EncryptionConfig config;
-                napi_get_object_property_arraybuffer_(isolate, obj, "encryptionKdfSalt", config.encryptionKdfSalt);
-                CHECK_NAPI_STATUS(pEngine, status);
-                
+                                
                 config.encryptionMode = (ENCRYPTION_MODE)encryptionMode;
                 config.encryptionKey = encryptionKey;
                 result = pEngine->m_engine->enableEncryption(enabled, config);
@@ -6447,47 +6421,6 @@ namespace agora {
             napi_set_int_result(args, result);
             LOG_LEAVE;
         }
-        NAPI_API_DEFINE(NodeRtcEngine, enableVirtualBackground)
-        {
-            LOG_ENTER;
-            int result = -1;
-            do {
-                NodeRtcEngine *pEngine = nullptr;
-                napi_status status = napi_ok;
-                Isolate *isolate = args.GetIsolate();
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-
-                bool enabled;
-                status = napi_get_value_bool_(args[0], enabled);
-                CHECK_NAPI_STATUS(pEngine, status);
-                if (!args[1]->IsObject())
-                {
-                    break;
-                }
-                
-                Local<Object> obj;
-                status = napi_get_value_object_(isolate, args[1], obj);
-                CHECK_NAPI_STATUS(pEngine, status);
-
-                VirtualBackgroundSource backgroundSource;
-                nodestring source;
-                status = napi_get_object_property_nodestring_(isolate, obj, "source", source);
-                CHECK_NAPI_STATUS(pEngine, status);
-                backgroundSource.source = source;
-                int background_source_type;
-                status = napi_get_object_property_int32_(isolate, obj, "background_source_type", background_source_type);
-                CHECK_NAPI_STATUS(pEngine, status);
-                backgroundSource.background_source_type = (VirtualBackgroundSource::BACKGROUND_SOURCE_TYPE)background_source_type;
-
-                status = napi_get_object_property_uint32_(isolate, obj, "color", backgroundSource.color);
-                CHECK_NAPI_STATUS(pEngine, status);
-
-                result = pEngine->m_engine->enableVirtualBackground(enabled, backgroundSource);
-            } while (false);
-            napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
         /**
          * NodeRtcChannel
          */
@@ -6547,8 +6480,8 @@ namespace agora {
                 /*
                  * 3.4.5
                  */ 
-                PROPERTY_METHOD_DEFINE(muteLocalAudioStream);
-                PROPERTY_METHOD_DEFINE(muteLocalVideoStream);
+                //PROPERTY_METHOD_DEFINE(muteLocalAudioStream);
+                //PROPERTY_METHOD_DEFINE(muteLocalVideoStream);
 
             EN_PROPERTY_DEFINE()
 
@@ -6673,10 +6606,6 @@ namespace agora {
                 CHECK_NAPI_STATUS(pChannel, status);
                 status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "autoSubscribeVideo", options.autoSubscribeVideo);
                 CHECK_NAPI_STATUS(pChannel, status);
-                status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "publishLocalAudio", options.publishLocalAudio);
-                CHECK_NAPI_STATUS(pChannel, status);
-                status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "publishLocalVideo", options.publishLocalVideo);
-                CHECK_NAPI_STATUS(pChannel, status);
 
                 std::string extra_info = "";
 
@@ -6725,12 +6654,6 @@ namespace agora {
                 status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "autoSubscribeAudio", options.autoSubscribeAudio);
                 CHECK_NAPI_STATUS(pChannel, status);
                 status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "autoSubscribeVideo", options.autoSubscribeVideo);
-                CHECK_NAPI_STATUS(pChannel, status);
-
-                status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "publishLocalAudio", options.publishLocalAudio);
-                CHECK_NAPI_STATUS(pChannel, status);
-                    
-                status = napi_get_object_property_bool_(isolate, oChannelMediaOptions, "publishLocalVideo", options.publishLocalVideo);
                 CHECK_NAPI_STATUS(pChannel, status);
 
                 result = pChannel->m_channel->joinChannelWithUserAccount(token, userAccount, options);
@@ -7638,9 +7561,6 @@ namespace agora {
 
                 EncryptionConfig config;
 
-                napi_get_object_property_arraybuffer_(isolate, obj, "encryptionKdfSalt", config.encryptionKdfSalt);
-                CHECK_NAPI_STATUS(pChannel, status);
-
                 config.encryptionMode = (ENCRYPTION_MODE)encryptionMode;
                 config.encryptionKey = encryptionKey;
                 result = pChannel->m_channel->enableEncryption(enabled, config);
@@ -7696,41 +7616,41 @@ namespace agora {
             LOG_LEAVE;
         }
 
-        NAPI_API_DEFINE(NodeRtcChannel, muteLocalAudioStream)
-        {
-            LOG_ENTER;
-            int result = -1;
-            do {
-                NodeRtcChannel *pChannel = nullptr;
-                napi_status status = napi_ok;
-                napi_get_native_channel(args, pChannel);
-                CHECK_NATIVE_CHANNEL(pChannel);
-                bool mute;
-                status = napi_get_value_bool_(args[0], mute);
-                CHECK_NAPI_STATUS(pChannel, status);
-                result = pChannel->m_channel->muteLocalAudioStream(mute);
-            } while (false);
-            napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
+        //NAPI_API_DEFINE(NodeRtcChannel, muteLocalAudioStream)
+        //{
+        //    LOG_ENTER;
+        //    int result = -1;
+        //    do {
+        //        NodeRtcChannel *pChannel = nullptr;
+        //        napi_status status = napi_ok;
+        //        napi_get_native_channel(args, pChannel);
+        //        CHECK_NATIVE_CHANNEL(pChannel);
+        //        bool mute;
+        //        status = napi_get_value_bool_(args[0], mute);
+        //        CHECK_NAPI_STATUS(pChannel, status);
+        //        result = pChannel->m_channel->muteLocalAudioStream(mute);
+        //    } while (false);
+        //    napi_set_int_result(args, result);
+        //    LOG_LEAVE;
+        //}
 
-        NAPI_API_DEFINE(NodeRtcChannel, muteLocalVideoStream)
-        {
-            LOG_ENTER;
-            int result = -1;
-            do {
-                NodeRtcChannel *pChannel = nullptr;
-                napi_status status = napi_ok;
-                napi_get_native_channel(args, pChannel);
-                CHECK_NATIVE_CHANNEL(pChannel);
-                bool mute;
-                status = napi_get_value_bool_(args[0], mute);
-                CHECK_NAPI_STATUS(pChannel, status);
-                result = pChannel->m_channel->muteLocalVideoStream(mute);
-            } while (false);
-            napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
+        //NAPI_API_DEFINE(NodeRtcChannel, muteLocalVideoStream)
+        //{
+        //    LOG_ENTER;
+        //    int result = -1;
+        //    do {
+        //        NodeRtcChannel *pChannel = nullptr;
+        //        napi_status status = napi_ok;
+        //        napi_get_native_channel(args, pChannel);
+        //        CHECK_NATIVE_CHANNEL(pChannel);
+        //        bool mute;
+        //        status = napi_get_value_bool_(args[0], mute);
+        //        CHECK_NAPI_STATUS(pChannel, status);
+        //        result = pChannel->m_channel->muteLocalVideoStream(mute);
+        //    } while (false);
+        //    napi_set_int_result(args, result);
+        //    LOG_LEAVE;
+        //}
     }
 }
 
