@@ -809,10 +809,7 @@ class AgoraRtcEngine extends EventEmitter {
     this.rtcEngine.onEvent('uploadLogResult', function(requestId: string, success: boolean, reason: number) {
       fire('uploadLogResult', requestId, success, reason);
     })
-    this.rtcEngine.onEvent('virtualBackgroundSourceEnabled', function(enabled: boolean, reason: VIRTUAL_BACKGROUND_SOURCE_STATE_REASON) {
-      fire('virtualBackgroundSourceEnabled', enabled, reason);
-    })
-
+    
     this.rtcEngine.onEvent('videoSourceLocalAudioStateChanged', function(state: LOCAL_AUDIO_STREAM_STATE, error: LOCAL_AUDIO_STREAM_ERROR) {
       fire('videoSourceLocalAudioStateChanged', state, error);
     })
@@ -7377,30 +7374,6 @@ declare interface AgoraRtcEngine {
     requestId: string,
     success: boolean,
     reason: number
-  ) => void): this;
-  /**
-   * Reports whether the virtual background is successfully enabled. (beta
-   * function)
-   *
-   * @since v3.4.5
-   *
-   * After you call {@link enableVirtualBackground}, the SDK triggers this
-   * callback to report whether the virtual background is successfully enabled.
-   *
-   * @note If the background image customized in the virtual background is in
-   * PNG or JPG format, the triggering of this callback is delayed until the
-   * image is read.
-   *
-   * @param cb.enabled Whether the virtual background is successfully enabled:
-   * - true: The virtual background is successfully enabled.
-   * - false: The virtual background is not successfully enabled.
-   * @param cb.reason The reason why the virtual background is not successfully
-   * enabled or the message that confirms success. See
-   * #VIRTUAL_BACKGROUND_SOURCE_STATE_REASON.
-   */
-  on(evt: 'virtualBackgroundSourceEnabled', cb: (
-    enabled: boolean,
-    reason: VIRTUAL_BACKGROUND_SOURCE_STATE_REASON
   ) => void): this;
 
   on(evt: string, listener: Function): this;
