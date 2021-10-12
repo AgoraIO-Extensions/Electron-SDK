@@ -51,7 +51,7 @@ class NodeIrisEventHandler : public iris::IrisEventHandler,
                 napi_value& global);
 
  private:
-  std::unordered_map<std::string, EventCallback*> _callbacks;
+  std::unordered_map<std::string, EventCallback *> _callbacks;
   NodeIrisRtcEngine* _node_iris_engine;
 };
 }  // namespace electron

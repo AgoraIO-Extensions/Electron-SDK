@@ -1,41 +1,42 @@
-// /*
-//  * @Author: zhangtao@agora.io
-//  * @Date: 2021-04-22 20:53:26
-//  * @Last Modified by: zhangtao@agora.io
-//  * @Last Modified time: 2021-05-10 15:18:03
-//  */
-// #pragma once
-// #include "iris_rtc_channel.h"
-// #include "nan_api.h"
-// #include "node_base.h"
-// #include "node_iris_event_handler.h"
+#pragma once
+#include "iris_rtc_channel.h"
+#include <node_api.h>
+#include "node_base.h"
+#include "node_iris_event_handler.h"
 
-// namespace agora {
-// namespace rtc {
-// namespace electron {
-// class NodeIrisRtcChannel {
-//  public:
-//   explicit NodeIrisRtcChannel(iris::rtc::IrisRtcChannel* channel,
-//                               const char* channelId);
-//   virtual ~NodeIrisRtcChannel();
-
-//   static v8_Local<v8_Object> Init(v8_Isolate* isolate,
-//                                   iris::rtc::IrisRtcChannel* channel,
-//                                   const char* channelId);
-//   static void CreateInstance(const v8_FunctionCallbackInfo<v8_Value>& args);
-//   static void CallApi(const Nan_FunctionCallbackInfo<v8_Value>& args);
-//   static void CallApiWithBuffer(const Nan_FunctionCallbackInfo<v8_Value>&
-//   args); static void OnEvent(const Nan_FunctionCallbackInfo<v8_Value>& args);
-//   static void Release(const Nan_FunctionCallbackInfo<v8_Value>& args);
-//   static void ReleaseNodeSource(void* data);
-//   void OnApiError(const char* errorMessage);
-
-//  private:
-//   std::unique_ptr<NodeIrisEventHandler> _iris_channel_event_handler;
-//   static Nan_Persistent<v8_Function> _constructor;
-//   iris::rtc::IrisRtcChannel* _iris_channel;
-//   std::string _channel_id;
-// };
-// }  // namespace electron
-// }  // namespace rtc
-// }  // namespace agora
+namespace agora {
+namespace rtc {
+namespace electron {
+class NodeIrisRtcChannel {
+public:
+    static iris::rtc::IrisRtcChannel* _staticIrisChannel;
+    static const char* _staticChannelId;
+    explicit NodeIrisRtcChannel(napi_env env,iris::rtc::IrisRtcChannel* channel,
+                                const char* channelId);
+    virtual ~NodeIrisRtcChannel();
+    static napi_value Init(napi_env env);
+    static napi_value New(napi_env env, napi_callback_info info);
+    static napi_value NewInstance(napi_env env);
+    static napi_value CallApi(napi_env env, napi_callback_info info);
+    static napi_value CallApiWithBuffer(napi_env env, napi_callback_info info);
+    static napi_value OnEvent(napi_env env, napi_callback_info info);
+    static napi_value Release(napi_env env, napi_callback_info info);
+    static void ReleaseNodeSource(void* selfPtr);
+    void OnApiError(const char* errorMessage);
+    
+private:
+    static const char* _class_name;
+    static const char* _ret_code_str;
+    static const char* _ret_result_str;
+    static napi_value Constructor(napi_env env);
+    static void Destructor(napi_env env, void* nativeObject, void* finalize_hint);
+    
+    napi_env _env;
+    napi_ref _ref;
+    std::unique_ptr<NodeIrisEventHandler> _iris_channel_event_handler;
+    iris::rtc::IrisRtcChannel* _iris_channel;
+    std::string _channel_id;
+};
+}  // namespace electron
+}  // namespace rtc
+}  // namespace agora
