@@ -6070,53 +6070,6 @@ class AgoraRtcEngine extends EventEmitter {
   startAudioRecordingWithConfig(config: AudioRecordingConfiguration): number {
     return this.rtcEngine.startAudioRecordingWithConfig(config)
   }
-
-  /**
-  * Enables/Disables the virtual background. (beta function)
-  *
-  * @since 3.4.5
-  *
-  * After enabling the virtual background function, you can replace the
-  * original background image of the local user with a custom background image.
-  * After the replacement, all users in the channel can see the custom
-  * background image. You can find out from the
-  * `virtualBackgroundSourceEnabled` callback whether the virtual background
-  * is successfully enabled or the cause of any errors.
-  *
-  * @note
-  * - Before calling this method, ensure that you have integrated the following
-  * dynamic library into your project:
-  *    - macOS: `AgoraVideoSegmentationExtension.framework`
-  *    - Windows: `libagora_segmentation_extension.dll`
-  * - Call this method after {@link enableVideo}.
-  * - This functions requires a high-performance device. Agora recommends that
-  * you use this function on devices with an i5 CPU and better.
-  * - Agora recommends that you use this function in scenarios that meet the
-  * following conditions:
-  * - A high-definition camera device is used, and the environment is
-  * uniformly lit.
-  * - The captured video image is uncluttered, the user's portrait is
-  * half-length and largely unobstructed, and the background is a single color
-  * that differs from the color of the user's clothing.
-  *
-  * @param enabled Sets whether to enable the virtual background:
-  * - true: Enable.
-  * - false: Disable.
-  * @param backgroundSource The custom background image. See
-  * {@link VirtualBackgroundSource}.
-  *
-  * **Note: To adapt the resolution of the custom background image to the
-  * resolution of the SDK capturing video, the SDK scales and crops the custom
-  * background image while ensuring that the content of the custom background
-  * image is not distorted.**
-  *
-  * @return
-  * - 0: Success.
-  * - < 0: Failure.
-  */
-  enableVirtualBackground(enabled: Boolean, backgroundSource: VirtualBackgroundSource): number{
-    return this.rtcEngine.enableVirtualBackground(enabled, backgroundSource)
-  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
@@ -8819,77 +8772,7 @@ class AgoraRtcChannel extends EventEmitter
   enableEncryption(enabled: boolean, config: EncryptionConfig): number {
     return this.rtcChannel.enableEncryption(enabled, config);
   }
-
-
-  /**
-   * Stops or resumes publishing the local audio stream.
-   *
-   * @since v3.4.5
-   *
-   * This method only sets the publishing state of the audio stream in the
-   * channel of IChannel.
-   *
-   * A successful method call triggers the `remoteAudioStateChanged`
-   * callback on the remote client.
-   *
-   * You can only publish the local stream in one channel at a time. If you
-   * create multiple channels, ensure that you only call
-   * `rtcChannel.muteLocalAudioStream(false)` in one channel;
-   * otherwise, the method call fails, and the SDK returns `-5 (ERR_REFUSED)`.
-   *
-   * @note
-   * - This method does not change the usage state of the audio-capturing device.
-   * - Whether this method call takes effect is affected by the
-   * {@link joinChannel} and {@link setClientRole} methods.
-   * For details, see *Set the Publishing State*.
-   *
-   * @param mute Sets whether to stop publishing the local audio stream.
-   * - true: Stop publishing the local audio stream.
-   * - false: Resume publishing the local audio stream.
-   *
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   *  - `-5 (ERR_REFUSED)`: The request is rejected.
-   */
-  muteLocalAudioStream(mute: boolean): number {
-    return this.rtcChannel.muteLocalAudioStream(mute);
-  }
-
-  /** Stops or resumes publishing the local video stream.
-   *
-   * @since v3.4.5
-   *
-   * This method only sets the publishing state of the video stream in the
-   * channel of IChannel.
-   *
-   * A successful method call triggers the `remoteVideoStateChanged`
-   * callback on the remote client.
-   *
-   * You can only publish the local stream in one channel at a time. If you
-   * create multiple channels, ensure that you only call
-   * `rtcChannel.muteLocalVideoStream(false)` in one channel;
-   * otherwise, the method call fails, and the SDK returns `-5 (ERR_REFUSED)`.
-   *
-   * @note
-   * - This method does not change the usage state of the video-capturing device.
-   * - Whether this method call takes effect is affected by the
-   * {@link joinChannel} and {@link setClientRole} methods.
-   * For details, see *Set the Publishing State*.
-   *
-   * @param mute Sets whether to stop publishing the local video stream.
-   * - true: Stop publishing the local video stream.
-   * - false: Resume publishing the local video stream.
-   *
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   *  - `-5 (ERR_REFUSED)`: The request is rejected.
-   */
-  muteLocalVideoStream(mute: boolean): number {
-    return this.rtcChannel.muteLocalVideoStream(mute);
-  }
-}
+ }
 
 
 
