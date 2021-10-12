@@ -491,8 +491,8 @@ namespace agora {
             /*
              *
              */
-            NAPI_API(muteLocalAudioStream);
-            NAPI_API(muteLocalVideoStream);
+            //NAPI_API(muteLocalAudioStream);
+            //NAPI_API(muteLocalVideoStream);
 
         public:
             Isolate* getIsolate() { return m_isolate; }
