@@ -281,7 +281,6 @@
                         './sdk/dll/libagora_ai_denoise_extension.dll',
                         './sdk/dll/libagora_dav1d_extension.dll',
                         './sdk/dll/libagora-core.dll',
-                        './sdk/dll/libagora_segmentation_extension.dll',
                         './sdk/dll/libagora_jnd_extension.dll',
                     ]
                 }],
