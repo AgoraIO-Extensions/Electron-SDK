@@ -8,18 +8,26 @@
 #include <memory.h>
 #include <string>
 #include "node_iris_rtc_engine.h"
-
+#include <node_api.h>
 namespace agora {
 namespace rtc {
 namespace electron {
 NodeIrisEventHandler::NodeIrisEventHandler(NodeIrisRtcEngine* engine)
-    : _node_iris_engine(engine) {
-  node_async_call::close(false);
+: _node_iris_engine(engine) {
+    node_async_call::close(false);
 }
 
 NodeIrisEventHandler::~NodeIrisEventHandler() {
   node_async_call::close(true);
   // TODO release call back memory and ref
+    for(auto it = _callbacks.begin(); it != _callbacks.end();) {
+        auto item = it->second;
+        auto ref = item->call_back_ref;
+        napi_delete_reference(item->env, ref);
+        delete item;
+        item = nullptr;
+        _callbacks.erase(it++);
+    }
   _callbacks.clear();
   _node_iris_engine = nullptr;
 }
@@ -169,8 +177,8 @@ void NodeIrisEventHandler::OnVideoSourceEvent(const char* event,
 }
 
 void NodeIrisEventHandler::OnVideoSourceExit() {
-  LOG_F(INFO, "NodeIrisEventHandler::OnVideoSourceExit");
-  _node_iris_engine->VideoSourceRelease();
+    LOG_F(INFO, "NodeIrisEventHandler::OnVideoSourceExit");
+    _node_iris_engine->VideoSourceRelease();
 }
 }  // namespace electron
 }  // namespace rtc

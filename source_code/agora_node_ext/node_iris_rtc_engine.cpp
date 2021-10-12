@@ -287,35 +287,37 @@ napi_value NodeIrisRtcEngine::OnEvent(napi_env env, napi_callback_info info) {
 
 napi_value NodeIrisRtcEngine::CreateChannel(napi_env env,
                                             napi_callback_info info) {
-  LOG_F(INFO, " NodeIrisRtcEngine::CreateChannel");
-  napi_status status;
-  size_t argc = 2;
-  napi_value args[2];
-  napi_value jsthis;
-  status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
-
-  NodeIrisRtcEngine* nodeIrisRtcEngine;
-  status =
-      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
-
-  int process_type = 0;
-  status = napi_get_value_int32(env, args[0], &process_type);
-
-  std::string channel_id = "";
-  status = napi_get_value_utf8string(env, args[1], channel_id);
-
-  //  if (nodeIrisRtcEngine->_iris_engine) {
-  //    auto iris_channel = nodeIrisRtcEngine->_iris_engine->channel();
-  //    if (process_type == PROCESS_TYPE::MAIN) {
-  //      auto _js_channel =
-  //          NodeIrisRtcChannel::Init(_isolate, iris_channel,
-  //          channel_id.c_str());
-  //      args.GetReturnValue().Set(_js_channel);
-  //    } else {
-  //    }
-  //  } else {
-  //    LOG_F(INFO, "NodeIrisRtcEngine::CreateChannel error Not Init Engine");
-  //  }
+    LOG_F(INFO, " NodeIrisRtcEngine::CreateChannel");
+    NodeIrisRtcChannel::Init(env);
+    napi_status status;
+    size_t argc = 2;
+    napi_value args[2];
+    napi_value jsthis;
+    napi_value _js_channel_manager;
+    status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
+    
+    NodeIrisRtcEngine* nodeIrisRtcEngine;
+    status =
+    napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
+    
+    int process_type = 0;
+    status = napi_get_value_int32(env, args[0], &process_type);
+    
+    std::string channel_id = "";
+    status = napi_get_value_utf8string(env, args[1], channel_id);
+    if (!nodeIrisRtcEngine->_iris_engine) {
+        LOG_F(INFO, "NodeIrisRtcEngine::CreateChannel error Not Init Engine");
+        return _js_channel_manager;
+    }
+    if (process_type != PROCESS_TYPE::MAIN) {
+        LOG_F(INFO, "NodeIrisRtcEngine::CreateChannel with process_type error");
+        return _js_channel_manager;
+    }
+    auto iris_channel = nodeIrisRtcEngine->_iris_engine->channel();
+    NodeIrisRtcChannel::_staticIrisChannel = iris_channel;
+    NodeIrisRtcChannel::_staticChannelId = channel_id.c_str();
+    _js_channel_manager = NodeIrisRtcChannel::NewInstance(env);
+    return _js_channel_manager;
 }
 
 napi_value NodeIrisRtcEngine::GetDeviceManager(napi_env env,
