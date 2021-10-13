@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "3.6.200-rc.100-build.10091",
+  "version": "3.6.200-rc.100-build.1013",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -92,8 +92,8 @@
     "url": "git+https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron.git"
   },
   "agora_electron": {
-    "lib_sdk_win": "http://10.80.1.174:8090/agora_sdk/develop/yinkaisheng/2021-10-09/windows/full/Agora_Native_SDK_for_Windows_x86_yinkaisheng_51598_20211009_1458_full.zip",
-    "lib_sdk_win64": "http://10.80.1.174:8090/agora_sdk/develop/yinkaisheng/2021-10-09/windows/full/Agora_Native_SDK_for_Windows_x64_yinkaisheng_51599_20211009_1502_full.zip",
+    "lib_sdk_win": "http://10.80.1.174:8090/agora_sdk/develop/yinkaisheng/2021-10-13/windows/full/Agora_Native_SDK_for_Windows_x86_yinkaisheng_51787_20211013_1750_full.zip",
+    "lib_sdk_win64": "http://10.80.1.174:8090/agora_sdk/develop/yinkaisheng/2021-10-13/windows/full/Agora_Native_SDK_for_Windows_x64_yinkaisheng_51788_20211013_1803_full.zip",
     "lib_sdk_mac": "http://10.80.1.174:8090/agora_sdk/develop/yinkaisheng/2021-09-14/mac/full/Agora_Native_SDK_for_Mac_yinkaisheng_56228_full_20210914_2118.zip"
   },
   "keywords": [

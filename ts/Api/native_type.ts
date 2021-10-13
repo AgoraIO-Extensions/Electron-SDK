@@ -365,6 +365,65 @@ export enum VIDEO_SOURCE_TYPE {
   VIDEO_SOURCE_UNKNOWN = 100
 };
 
+export enum MEDIA_SOURCE_TYPE {
+  /** 
+   * 0: The audio playback device.
+   */
+  AUDIO_PLAYOUT_SOURCE = 0,
+  /** 
+   * 1: Microphone.
+   */
+  AUDIO_RECORDING_SOURCE = 1,
+  /**
+   * 2: Video captured by primary camera.
+   */
+  PRIMARY_CAMERA_SOURCE = 2,
+  /**
+   * 3: Video captured by secondary camera.
+   */
+  SECONDARY_CAMERA_SOURCE = 3,
+  /**
+   * 4: Video captured by primary screen capturer.
+   */
+  PRIMARY_SCREEN_SOURCE = 4,
+  /**
+   * 5: Video captured by secondary screen capturer.
+   */
+  SECONDARY_SCREEN_SOURCE = 5,
+  /**
+   * 6: Video captured by custom video source.
+   */
+  CUSTOM_VIDEO_SOURCE = 6,
+  /**
+   * 7: Video for media player sharing.
+   */
+  MEDIA_PLAYER_SOURCE = 7,
+  /**
+   * 8: Video for png image.
+   */
+  RTC_IMAGE_PNG_SOURCE = 8,
+  /**
+   * 9: Video for jpeg image.
+   */
+  RTC_IMAGE_JPEG_SOURCE = 9,
+  /**
+   * 10: Video for gif image.
+   */
+  RTC_IMAGE_GIF_SOURCE = 10,
+  /**
+   * 11: Remote video received from network.
+   */
+  REMOTE_VIDEO_SOURCE = 11,
+  /**
+   * 12: Video for transcoded.
+   */
+  TRANSCODED_VIDEO_SOURCE = 12,
+  /**
+   * 100: unknown media source.
+   */
+  UNKNOWN_MEDIA_SOURCE = 100
+};
+
 /**
  * The rotation information.
  */
@@ -2606,11 +2665,11 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  startPreview(): number;
+  startPreview(sourceType?: VIDEO_SOURCE_TYPE): number;
   /**
    * @ignore
    */
-  stopPreview(): number;
+  stopPreview(sourceType?: VIDEO_SOURCE_TYPE): number;
    /**
    * @ignore
    */
@@ -3300,15 +3359,15 @@ export interface NodeRtcEngine {
  /**
   * @ignore
   */
- enableExtension(provider_name: string, extension_name: string,enable :boolean): number;
+ enableExtension(provider_name: string, extension_name: string, enable :boolean, type?: MEDIA_SOURCE_TYPE): number;
  /**
   * @ignore
   */
- getExtensionProperty(provider_name: string, extension_name: string, key: string, json_value: string,buf_len: number): number ;
+ getExtensionProperty(provider_name: string, extension_name: string, key: string, json_value: string,buf_len: number, type?: MEDIA_SOURCE_TYPE): number ;
  /**
   * @ignore
   */
- setExtensionProperty(provider_name: string, extension_name: string, key :string,json_value :string): number;
+ setExtensionProperty(provider_name: string, extension_name: string, key :string, json_value :string, type?: MEDIA_SOURCE_TYPE): number;
  /**
   * @ignore
   */
@@ -3316,7 +3375,7 @@ export interface NodeRtcEngine {
  /**
   * @ignore
   */
-  setBeautyEffectOptions(enabled: boolean, options: BeautyOptions): number
+  setBeautyEffectOptions(enabled: boolean, options: BeautyOptions, type?: MEDIA_SOURCE_TYPE): number
   /**
   * @ignore
   */
@@ -3330,15 +3389,15 @@ export interface NodeRtcEngine {
    */
 //  setClientRoleWithOptions(role: ClientRoleType, options: ClientRoleOptions): number;
   
-  enableLocalTrapezoidCorrection(enabled: boolean): number;
-  setLocalTrapezoidCorrectionOptions(options: TrapezoidCorrectionOptions): number;
+  enableLocalTrapezoidCorrection(enabled: boolean, sourceType?: VIDEO_SOURCE_TYPE): number;
+  setLocalTrapezoidCorrectionOptions(options: TrapezoidCorrectionOptions, sourceType?: VIDEO_SOURCE_TYPE): number;
 
-  getLocalTrapezoidCorrectionOptions(): TrapezoidCorrectionOptions;
+  getLocalTrapezoidCorrectionOptions(sourceType?: VIDEO_SOURCE_TYPE): TrapezoidCorrectionOptions;
   enableRemoteTrapezoidCorrection(uid: number, enabled: boolean, connection?: RtcConnection): number;
   setRemoteTrapezoidCorrectionOptions(uid: number, options: TrapezoidCorrectionOptions, connection?: RtcConnection): number;
   getRemoteTrapezoidCorrectionOptions(uid: number): TrapezoidCorrectionOptions;
   applyTrapezoidCorrectionToRemote(uid: number, enabled: boolean, connection?: RtcConnection): number;
-  enableBrightnessCorrection(enabled: boolean, mode: BRIGHTNESS_CORRECTION_MODE): number;
+  enableBrightnessCorrection(enabled: boolean, mode: BRIGHTNESS_CORRECTION_MODE, sourceType?: VIDEO_SOURCE_TYPE): number;
   applyBrightnessCorrectionToRemote(uid: number, enabled: boolean, mode: BRIGHTNESS_CORRECTION_MODE, connection?: RtcConnection): number;
   applyVideoEncoderMirrorToRemote(uid: number, mirrorMode: VIDEO_MIRROR_MODE_TYPE, connection?: RtcConnection): number;
 }

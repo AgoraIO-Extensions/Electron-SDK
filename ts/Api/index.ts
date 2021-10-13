@@ -55,6 +55,7 @@ import {
   CameraCapturerConfiguration,
   ScreenCaptureConfiguration,
   VIDEO_SOURCE_TYPE,
+  MEDIA_SOURCE_TYPE,
   VIDEO_ORIENTATION,
   AUDIO_RECORDING_QUALITY_TYPE,
   BeautyOptions,
@@ -1903,8 +1904,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  startPreview(): number {
-    return this.rtcEngine.startPreview();
+  startPreview(sourceType?: VIDEO_SOURCE_TYPE): number {
+    return this.rtcEngine.startPreview(sourceType);
   }
 
   /**
@@ -1913,8 +1914,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  stopPreview(): number {
-    return this.rtcEngine.stopPreview();
+  stopPreview(sourceType?: VIDEO_SOURCE_TYPE): number {
+    return this.rtcEngine.stopPreview(sourceType);
   }
 
   /**
@@ -4306,15 +4307,15 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
- enableExtension(provider_name: string, extension_name: string,enable :boolean): number {
-   return this.rtcEngine.enableExtension(provider_name, extension_name, enable);
+ enableExtension(provider_name: string, extension_name: string,enable :boolean, type?: MEDIA_SOURCE_TYPE): number {
+   return this.rtcEngine.enableExtension(provider_name, extension_name, enable, type);
  }
 
- getExtensionProperty(provider_name: string, extension_name: string, key: string, json_value: string): number {
-  return this.rtcEngine.getExtensionProperty(provider_name, extension_name, key, json_value, json_value.length);
+ getExtensionProperty(provider_name: string, extension_name: string, key: string, json_value: string, type?: MEDIA_SOURCE_TYPE): number {
+  return this.rtcEngine.getExtensionProperty(provider_name, extension_name, key, json_value, json_value.length, type);
 }
- setBeautyEffectOptions(enabled :boolean, options :BeautyOptions):number {
-   return this.rtcEngine.setBeautyEffectOptions(enabled, options);
+ setBeautyEffectOptions(enabled :boolean, options :BeautyOptions, type?: MEDIA_SOURCE_TYPE):number {
+   return this.rtcEngine.setBeautyEffectOptions(enabled, options, type);
  }
  setScreenCaptureOrientation(type: VIDEO_SOURCE_TYPE, orientation: VIDEO_ORIENTATION): number{
     return this.rtcEngine.setScreenCaptureOrientation(type, orientation);
@@ -4330,8 +4331,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
- setExtensionProperty(provider_name: string, extension_name: string, key :string,json_value :string): number {
-   return this.rtcEngine.setExtensionProperty(provider_name, extension_name, key, json_value);
+ setExtensionProperty(provider_name: string, extension_name: string, key :string,json_value :string, type?: MEDIA_SOURCE_TYPE): number {
+   return this.rtcEngine.setExtensionProperty(provider_name, extension_name, key, json_value, type);
  }
  
  
@@ -4377,14 +4378,14 @@ class AgoraRtcEngine extends EventEmitter {
   //   return this.rtcEngine.setClientRoleWithOptions(role, options);
   // }
 
-  enableLocalTrapezoidCorrection(enabled: boolean): number {
-    return this.rtcEngine.enableLocalTrapezoidCorrection(enabled);
+  enableLocalTrapezoidCorrection(enabled: boolean, sourceType?: VIDEO_SOURCE_TYPE): number {
+    return this.rtcEngine.enableLocalTrapezoidCorrection(enabled, sourceType);
   }
-  setLocalTrapezoidCorrectionOptions(options: TrapezoidCorrectionOptions): number {
-    return this.rtcEngine.setLocalTrapezoidCorrectionOptions(options);
+  setLocalTrapezoidCorrectionOptions(options: TrapezoidCorrectionOptions, sourceType?: VIDEO_SOURCE_TYPE): number {
+    return this.rtcEngine.setLocalTrapezoidCorrectionOptions(options, sourceType);
   }
-  getLocalTrapezoidCorrectionOptions(): TrapezoidCorrectionOptions{
-    return this.rtcEngine.getLocalTrapezoidCorrectionOptions();
+  getLocalTrapezoidCorrectionOptions(sourceType?: VIDEO_SOURCE_TYPE): TrapezoidCorrectionOptions{
+    return this.rtcEngine.getLocalTrapezoidCorrectionOptions(sourceType);
   }
   enableRemoteTrapezoidCorrection(uid: number,enabled: boolean, connection?: RtcConnection): number{
     return this.rtcEngine.enableRemoteTrapezoidCorrection(uid,enabled, connection);
@@ -4401,8 +4402,8 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.applyTrapezoidCorrectionToRemote(uid, enabled, connection);
   }
 
-  enableBrightnessCorrection(enabled: boolean, mode: BRIGHTNESS_CORRECTION_MODE): number{
-    return this.rtcEngine.enableBrightnessCorrection(enabled, mode);
+  enableBrightnessCorrection(enabled: boolean, mode: BRIGHTNESS_CORRECTION_MODE, sourceType?: VIDEO_SOURCE_TYPE): number{
+    return this.rtcEngine.enableBrightnessCorrection(enabled, mode, sourceType);
   }
 
   applyBrightnessCorrectionToRemote(uid: number, enabled: boolean, mode: BRIGHTNESS_CORRECTION_MODE, connection?: RtcConnection): number{
