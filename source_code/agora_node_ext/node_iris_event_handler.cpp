@@ -19,14 +19,16 @@ NodeIrisEventHandler::NodeIrisEventHandler(NodeIrisRtcEngine* engine)
 
 NodeIrisEventHandler::~NodeIrisEventHandler() {
   node_async_call::close(true);
+
   // TODO release call back memory and ref
-    for(auto it = _callbacks.begin(); it != _callbacks.end();) {
-        auto item = it->second;
-        auto ref = item->call_back_ref;
-        napi_delete_reference(item->env, ref);
-        delete item;
-        item = nullptr;
-        _callbacks.erase(it++);
+  for (auto it = _callbacks.begin(); it != _callbacks.end();)
+  {
+    auto item = it->second;
+    auto ref = item->call_back_ref;
+    napi_delete_reference(item->env, ref);
+    delete item;
+    item = nullptr;
+    _callbacks.erase(it++);
     }
   _callbacks.clear();
   _node_iris_engine = nullptr;

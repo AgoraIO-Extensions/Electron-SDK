@@ -293,9 +293,9 @@ napi_value NodeIrisRtcEngine::CreateChannel(napi_env env,
     size_t argc = 2;
     napi_value args[2];
     napi_value jsthis;
-    napi_value _js_channel_manager;
+    napi_value _js_channel_manager = nullptr;
     status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
-    
+
     NodeIrisRtcEngine* nodeIrisRtcEngine;
     status =
     napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
@@ -335,7 +335,7 @@ napi_value NodeIrisRtcEngine::GetDeviceManager(napi_env env,
   if (!nodeIrisRtcEngine->_iris_engine) {
     LOG_F(INFO, "NodeIrisRtcEngine::GetDeviceManager error Not Init Engine");
     // TODO
-    napi_value value;
+    napi_value value = nullptr;
     return value;
   }
   auto _device_manager = nodeIrisRtcEngine->_iris_engine->device_manager();
