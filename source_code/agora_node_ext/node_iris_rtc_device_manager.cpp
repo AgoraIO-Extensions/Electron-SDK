@@ -45,7 +45,7 @@ napi_value NodeIrisRtcDeviceManager::New(napi_env env,
 
   auto deviceManager = new NodeIrisRtcDeviceManager(env, _staticDeviceManager);
   _staticDeviceManager = nullptr;
-  status = napi_wrap(env, jsthis, reinterpret_cast<void*>(deviceManager),
+  status = napi_wrap(env, jsthis, reinterpret_cast<void *>(deviceManager),
                      NodeIrisRtcDeviceManager::Destructor, nullptr,
                      &deviceManager->_ref);
   assert(status == napi_ok);
