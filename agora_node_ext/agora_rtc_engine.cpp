@@ -397,9 +397,7 @@ namespace agora {
 
         NAPI_API_DEFINE_WRAPPER_PARAM_0(disableVideo);
 
-        NAPI_API_DEFINE_WRAPPER_PARAM_0(startPreview);
-
-        NAPI_API_DEFINE_WRAPPER_PARAM_0(stopPreview);
+        // NAPI_API_DEFINE_WRAPPER_PARAM_0(startPreview);
 
         NAPI_API_DEFINE_WRAPPER_PARAM_0(enableAudio);
 
@@ -501,6 +499,48 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
 
                 result = pEngine->m_engine->addPublishStreamUrl(url, transcodingEnabled);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, startPreview)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                int type;
+                napi_status status = napi_get_value_int32_(args[0], type);
+                
+                if (status == napi_ok) {
+                  result = pEngine->m_engine->startPreview((agora::rtc::VIDEO_SOURCE_TYPE)type);
+                } else {
+                  result = pEngine->m_engine->startPreview();
+                }
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, stopPreview)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                int type;
+                napi_status status = napi_get_value_int32_(args[0], type);
+                
+                if (status == napi_ok) {
+                  result = pEngine->m_engine->stopPreview((agora::rtc::VIDEO_SOURCE_TYPE)type);
+                } else {
+                  result = pEngine->m_engine->stopPreview();
+                }
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -5892,9 +5932,12 @@ namespace agora {
 
                 bool enable;
                 status = napi_get_value_bool_(args[2], enable);
+
+                int type = 100;
+                status = napi_get_value_int32_(args[3], type);
 #if defined(__APPLE__)
 #elif defined(_WIN32)
-                result = pEngine->m_engine->enableExtension(provider_name, extension_name, enable);
+                result = pEngine->m_engine->enableExtension(provider_name, extension_name, enable, (agora::media::MEDIA_SOURCE_TYPE)type);
 #endif
             } while (false);
             napi_set_int_result(args, result);
@@ -5925,10 +5968,10 @@ namespace agora {
                 unsigned int buf_len;
                 status = napi_get_value_uint32_(args[4], buf_len);
 
-                int type;
+                int type = 100;
                 napi_get_value_int32_(args[5], type);  
 
-                result = pEngine->m_engine->getExtensionProperty(provider_name, extension_name, key, json_value, buf_len);
+                result = pEngine->m_engine->getExtensionProperty(provider_name, extension_name, key, json_value, buf_len, (agora::media::MEDIA_SOURCE_TYPE)type);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -5977,9 +6020,9 @@ namespace agora {
                 options.rednessLevel = rednessLevel;
                 options.sharpnessLevel = sharpnessLevel;
 
-                int type;
+                int type = 100;
                 napi_get_value_int32_(args[2], type);  
-                result = pEngine->m_engine->setBeautyEffectOptions(enable,options);
+                result = pEngine->m_engine->setBeautyEffectOptions(enable, options, (agora::media::MEDIA_SOURCE_TYPE)type);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -6007,13 +6050,13 @@ namespace agora {
                 nodestring json_value;
                 status = napi_get_value_nodestring_(args[3], json_value);
                
-                int type;
+                int type = 100;
                 napi_get_value_int32_(args[4], type);  
 
 #if defined(__APPLE__)
-                result = pEngine->m_engine->setExtensionProperty(id, key, json_value);
+               // result = pEngine->m_engine->setExtensionProperty(id, key, json_value);
 #elif defined(_WIN32)
-                result = pEngine->m_engine->setExtensionProperty(provider_name, extension_name, key, json_value);
+                result = pEngine->m_engine->setExtensionProperty(provider_name, extension_name, key, json_value, (agora::media::MEDIA_SOURCE_TYPE)type);
 #endif
             } while (false);
             napi_set_int_result(args, result);
@@ -6088,7 +6131,10 @@ namespace agora {
             status = napi_get_value_bool_(args[0], enabled);
             CHECK_NAPI_STATUS(pEngine, status);
 
-            result = pEngine->m_engine->enableLocalTrapezoidCorrection(enabled);
+            int type = 0;
+            status = napi_get_value_int32_(args[1], type);
+
+            result = pEngine->m_engine->enableLocalTrapezoidCorrection(enabled, (agora::rtc::VIDEO_SOURCE_TYPE)type);
           } while (false);
           napi_set_int_result(args, result);
           LOG_LEAVE;
@@ -6212,7 +6258,10 @@ namespace agora {
             CHECK_NAPI_STATUS(pEngine, status);
             TrapezoidCorrectionOptions options = getTrapezoidCorrectionOptions(pEngine, context, isolate, obj);
 
-            result = pEngine->m_engine->setLocalTrapezoidCorrectionOptions(options);
+            int type = 0;
+            status = napi_get_value_int32_(args[1], type);
+
+            result = pEngine->m_engine->setLocalTrapezoidCorrectionOptions(options, (agora::rtc::VIDEO_SOURCE_TYPE)type);
           } while (false);
           napi_set_int_result(args, result);
           LOG_LEAVE;
@@ -6314,7 +6363,11 @@ namespace agora {
             NodeRtcEngine* pEngine = nullptr;
             napi_get_native_this(args, pEngine);
             CHECK_NATIVE_THIS(pEngine);
-            result = pEngine->m_engine->getLocalTrapezoidCorrectionOptions(options);
+
+            int type = 0;
+            status = napi_get_value_int32_(args[0], type);
+
+            result = pEngine->m_engine->getLocalTrapezoidCorrectionOptions(options, (agora::rtc::VIDEO_SOURCE_TYPE)type);
             auto jsOpt = getJSTrapezoidCorrectionOptions(context, isolate, options);
             args.GetReturnValue().Set(jsOpt);
           } while (false);
@@ -6486,7 +6539,10 @@ namespace agora {
             status = napi_get_value_int32_(args[1], mode);
             CHECK_NAPI_STATUS(pEngine, status);
 
-            result = pEngine->m_engine->enableBrightnessCorrection(enabled, (BRIGHTNESS_CORRECTION_MODE)mode);
+            int type = 0
+            status = napi_get_value_int32_(args[2], type);
+
+            result = pEngine->m_engine->enableBrightnessCorrection(enabled, (BRIGHTNESS_CORRECTION_MODE)mode, (agora::rtc::VIDEO_SOURCE_TYPE)type);
           } while (false);
           napi_set_int_result(args, result);
           LOG_LEAVE;
