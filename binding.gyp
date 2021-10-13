@@ -231,8 +231,8 @@
                         ],
                         'sources': [
                             './source_code/process/node_process_win.cpp',
-                            './source_code/windowInfo/node_screen_window_info_win.cpp',
-                            './source_code/windowInfo/node_screen_window_info.h',
+                            './source_code/window_Info/node_screen_window_info_win.cpp',
+                            './source_code/window_Info/node_screen_window_info.h',
                             './source_code/iris/base/process/iris_process_win.cc',
                             './source_code/iris/base/log/iris_logger.cc',
                             './source_code/iris/base/iris_base.cc',
@@ -303,8 +303,8 @@
                             ]
                         },
                         'sources': [
-                            './source_code/windowInfo/node_screen_window_info_mac.cpp',
-                            './source_code/windowInfo/node_screen_window_info.h',
+                            './source_code/window_Info/node_screen_window_info_mac.cpp',
+                            './source_code/window_Info/node_screen_window_info.h',
                             './source_code/process/node_process_unix.cpp',
                             './source_code/iris/base/window/iris_screen_mac.mm',
                             './source_code/iris/base/process/iris_process_unix.cc',
