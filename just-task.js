@@ -116,7 +116,7 @@ task('build:node', () => {
 // npm run download --
 task('download', () => {
   // work-around
-  const addonVersion = "3.4.5-rc.233-build.810";
+  const addonVersion = "3.4.5-rc.233-build.1013";
   cleanup(path.join(__dirname, "./build")).then(_ => {
     cleanup(path.join(__dirname, './js')).then(_ => {
       download({
@@ -138,7 +138,7 @@ task('install', () => {
     getArgvFromNpmEnv()
     );
   // work-around
-  const addonVersion = "3.4.5-rc.233-build.810";
+  const addonVersion = "3.4.5-rc.233-build.1013";
   if (config.prebuilt) {
     download({
       electronVersion: config.electronVersion, 
