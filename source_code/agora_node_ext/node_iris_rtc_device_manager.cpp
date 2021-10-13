@@ -176,6 +176,8 @@ napi_value NodeIrisRtcDeviceManager::Release(napi_env env,
   status = napi_unwrap(env, jsthis, reinterpret_cast<void**>(&_deviceManager));
   _deviceManager->_deviceManager = nullptr;
   _staticDeviceManager = nullptr;
+  napi_value retValue = nullptr;
+  return retValue;
 }
 
 void NodeIrisRtcDeviceManager::ReleaseNodeSource(void* selfPtr) {
