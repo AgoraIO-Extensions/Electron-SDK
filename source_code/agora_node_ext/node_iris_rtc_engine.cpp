@@ -400,11 +400,12 @@ napi_value NodeIrisRtcEngine::GetScreenDisplaysInfo(napi_env env,
     auto _displayInfo = _allDisplays[i];
     auto _displayId = _displayInfo.displayId;
     napi_value obj;
+    napi_create_object(env, &obj);
 #ifdef _WIN32
     napi_obj_set_property(env, obj, "x", _displayId.x);
-    napi_obj_set_property(env, obj, "x", _displayId.y);
-    napi_obj_set_property(env, obj, "x", _displayId.width);
-    napi_obj_set_property(env, obj, "x", _displayId.height);
+    napi_obj_set_property(env, obj, "y", _displayId.y);
+    napi_obj_set_property(env, obj, "width", _displayId.width);
+    napi_obj_set_property(env, obj, "height", _displayId.height);
 #elif defined(__APPLE__)
     napi_obj_set_property(env, obj, "id", _displayId.idVal);
 #endif
