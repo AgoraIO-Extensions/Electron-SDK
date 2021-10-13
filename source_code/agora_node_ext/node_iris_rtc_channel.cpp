@@ -223,7 +223,7 @@ napi_value NodeIrisRtcChannel::OnEvent(napi_env env,napi_callback_info info) {
     } else {
         LOG_F(INFO, "NodeIrisRtcChannel::Release Not Init");
     }
-    napi_value retValue;
+    napi_value retValue = nullptr;
     return retValue;
 }
 
@@ -245,6 +245,8 @@ napi_value NodeIrisRtcChannel::Release(napi_env env,
     } else {
         LOG_F(INFO, "NodeIrisRtcChannel::Release Not Init");
     }
+    napi_value retValue = nullptr;
+    return retValue;
 }
 
 void NodeIrisRtcChannel::ReleaseNodeSource(void* data) {

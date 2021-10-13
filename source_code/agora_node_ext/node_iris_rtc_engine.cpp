@@ -281,7 +281,7 @@ napi_value NodeIrisRtcEngine::OnEvent(napi_env env, napi_callback_info info) {
   } else {
     LOG_F(INFO, "NodeIrisRtcEngine::OnEvent error Not Init Engine");
   }
-  napi_value retValue;
+  napi_value retValue = nullptr;
   return retValue;
 }
 
@@ -808,6 +808,8 @@ napi_value NodeIrisRtcEngine::Release(napi_env env, napi_callback_info info) {
   } else {
     LOG_F(INFO, "VideoSourceInitialize NodeIris Engine Not Init");
   }
+  napi_value retValue = nullptr;
+  return retValue;
 }
 }  // namespace electron
 }  // namespace rtc
