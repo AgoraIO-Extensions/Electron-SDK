@@ -1,3 +1,6 @@
+## 3.5.0.4-build.1013 (Oct 13th, 2021)
+* Improve sdk stability
+
 ## 3.4.6-build.727 (July 27th, 2021)
 * support Electron 12.0.15
 
