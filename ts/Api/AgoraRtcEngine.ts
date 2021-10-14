@@ -146,11 +146,31 @@ export class AgoraRtcEngine extends EventEmitter {
     this._rtcEngine = new agora.NodeIrisRtcEngine();
     this._rtcDeviceManager = this._rtcEngine.GetDeviceManager();
 
-    this._rtcEngine.OnEvent("call_back", this.engineEvent);
+    this._rtcEngine.OnEvent(
+      "call_back",
+      (processType: PROCESS_TYPE, eventName: string, eventData: string) => {
+        const finalFunc =
+          processType === PROCESS_TYPE.MAIN
+            ? this.engineEvent
+            : this.videoSourceEvent;
+        finalFunc(eventName, eventData);
+      }
+    );
 
     this._rtcEngine.OnEvent(
       "call_back_with_buffer",
-      this.engineEventWithBuffer
+      (
+        processType: PROCESS_TYPE,
+        eventName: string,
+        eventData: string,
+        eventBuffer: string
+      ) => {
+        const finalFunc =
+          processType === PROCESS_TYPE.MAIN
+            ? this.engineEventWithBuffer
+            : this.videoSourceEventWithBuffer;
+        finalFunc(eventName, eventData, eventBuffer);
+      }
     );
 
     this._rtcEngine.OnEvent("video_source_call_back", this.videoSourceEvent);
@@ -254,6 +274,7 @@ export class AgoraRtcEngine extends EventEmitter {
   };
 
   engineEvent = (_eventName: string, _eventData: string) => {
+    console.log("engineEvent", _eventName, _eventData);
     const params: Array<any> = jsonStringToArray(_eventData);
 
     const isSended = this.sendJSEvent(
@@ -5915,9 +5936,7 @@ export class AgoraRtcEngine extends EventEmitter {
     let param = {
       context,
     };
-
-    let ret = this._rtcEngine.VideoSourceInitialize();
-    this._rtcEngine.CallApi(
+    const ret = this._rtcEngine.CallApi(
       PROCESS_TYPE.SCREEN_SHARE,
       ApiTypeEngine.kEngineInitialize,
       JSON.stringify(param)
@@ -6858,8 +6877,15 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  videoSourceRelease(): number {
-    let ret = this._rtcEngine.VideoSourceRelease();
+  videoSourceRelease(sync: boolean): number {
+    const param = {
+      sync,
+    };
+    const ret = this._rtcEngine.CallApi(
+      PROCESS_TYPE.SCREEN_SHARE,
+      ApiTypeEngine.kEngineRelease,
+      JSON.stringify(param)
+    );
     return ret.retCode;
   }
   setVoiceConversionPreset(preset: VOICE_CONVERSION_PRESET): number {

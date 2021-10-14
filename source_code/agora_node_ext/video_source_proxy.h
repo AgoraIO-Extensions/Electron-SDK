@@ -37,7 +37,7 @@ class VideoSourceProxy : public AgoraIpcListener {
  public:
   VideoSourceProxy(std::shared_ptr<IpcVideoFrameListener> listener);
   ~VideoSourceProxy();
-
+  
   virtual void OnMessage(unsigned int msg,
                          char* payload,
                          unsigned int len) override;
