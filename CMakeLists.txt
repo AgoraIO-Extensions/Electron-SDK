@@ -82,11 +82,21 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
         set(AGORA_RTC_SDK_PATH 
                 ${CMAKE_CURRENT_SOURCE_DIR}/iris/RTC/Agora_Native_SDK_for_Mac_FULL/libs
                 )
+        # native rtc sdk library
+        file(GLOB AGORA_RTC_SDK_LIBRARY 
+                ${AGORA_RTC_SDK_PATH}/*.framework
+                )
+
         # iris sdk path
         set(AGORA_IRIS_SDK_PATH 
                 ${CMAKE_CURRENT_SOURCE_DIR}/iris/MAC/Release
                 )
-        # native rtc sdk include file
+        # iris sdk library
+        file(GLOB AGORA_IRIS_SDK_LIBRARY
+                ${AGORA_IRIS_SDK_PATH}/AgoraRtcScreenSharing
+                ${AGORA_IRIS_SDK_PATH}/*.framework
+                )
+
         set(AGORA_RTC_SDK_HEADER_FILE_DIR 
                 ${AGORA_RTC_SDK_PATH}/AgoraRtcKit.framework/Headers
                 )
@@ -161,7 +171,6 @@ function(build_target_agora_node_ext)
                         ${SYSTEM_FRAMEWORK}
                         )
         elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-
         #TODO
         endif()
 endfunction(build_target_agora_node_ext)
@@ -208,6 +217,17 @@ function(build_target_video_source)
         endif()        
 endfunction(build_target_video_source)
 
+function(copy_library)
+        if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin") 
+                #copy native library
+                file(COPY ${AGORA_RTC_SDK_LIBRARY} DESTINATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}) 
+                #copy iris library
+                file(COPY ${AGORA_IRIS_SDK_LIBRARY} DESTINATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}) 
+        elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows") 
+        #TODO
+        endif()
+        message("copy native sdk done") 
+endfunction(copy_library)
+
 build_target_agora_node_ext()
-build_target_video_source()
-# add_definitions(-DNAPI_VERSION=3)
+copy_library()
