@@ -1,23 +1,23 @@
 /*
-* Copyright (c) 2018 Agora.io
-* All rights reserved.
-* Proprietary and Confidential -- Agora.io
-*/
+ * Copyright (c) 2018 Agora.io
+ * All rights reserved.
+ * Proprietary and Confidential -- Agora.io
+ */
 
 /*
-*  Created by Wang Yongli, 2018
-*/
+ *  Created by Wang Yongli, 2018
+ */
 
 #ifndef AGORA_VIDEO_SOURCE_H
 #define AGORA_VIDEO_SOURCE_H
-#include "IAgoraRtcEngine.h"
-#include "video_source_ipc.h"
 #include <memory>
-#include "video_source_param_parser.h"
-#include "node_process.h"
-#include "node_error.h"
-#include <thread>
 #include <mutex>
+#include <thread>
+#include "IAgoraRtcEngine.h"
+#include "node_error.h"
+#include "node_process.h"
+#include "video_source_ipc.h"
+#include "video_source_param_parser.h"
 #include "windows_system_api.h"
 
 class AgoraVideoSourceEventHandler;
@@ -26,95 +26,110 @@ class AgoraVideoSourceRenderFactory;
 /**
  * AgoraVideoSource is used to wrap RTC engine and provide IPC functionality.
  */
-class AgoraVideoSource : public AgoraIpcListener
-{
-    /**
-     * AgoraVideoSourceEventHandle need to access IPC related functions.
-     */
-    friend class AgoraVideoSourceEventHandler;
-public:
-    /**
-     * To construct AgoraVideoSource
-     * @param : the parameters to construct AgoraVideoSource. It's like 'id:***** pid:****'.Currently id and pid parameters is needed.
-     */
-    AgoraVideoSource(const std::string& param);
-    ~AgoraVideoSource();
+class AgoraVideoSource : public AgoraIpcListener {
+  /**
+   * AgoraVideoSourceEventHandle need to access IPC related functions.
+   */
+  friend class AgoraVideoSourceEventHandler;
 
-    /**
-     * To run video source, including following two steps:
-     * 1) To start monitor thread, when the sink process exit, video source stopped.
-     * 2) To run IPC to monitor cmds from sink
-     */
-    void run();
+ public:
+  /**
+   * To construct AgoraVideoSource
+   * @param : the parameters to construct AgoraVideoSource. It's like 'id:*****
+   * pid:****'.Currently id and pid parameters is needed.
+   */
+  AgoraVideoSource(const std::string& param);
+  ~AgoraVideoSource();
 
-    /**
-     * Initialize the video source. Must be called before run.
-     */
-    bool initialize();
+  /**
+   * To run video source, including following two steps:
+   * 1) To start monitor thread, when the sink process exit, video source
+   * stopped. 2) To run IPC to monitor cmds from sink
+   */
+  void run();
 
-    /**
-     * After release, the video source object could not be accessed any more.
-     */
-    void release();
+  /**
+   * Initialize the video source. Must be called before run.
+   */
+  bool initialize();
 
-    /**
-     * Each video source has one specific Id.
-     */
-    std::string getId();
+  /**
+   * After release, the video source object could not be accessed any more.
+   */
+  void release();
 
-    /**
-    * To start send local video.
-    */
-    node_error startPreview();
+  /**
+   * Each video source has one specific Id.
+   */
+  std::string getId();
 
-    /**
-    * To stop send lcoal video.
-    */
-    node_error stopPreview();
+  /**
+   * To start send local video.
+   */
+  node_error startPreview();
 
-    /**
-     * To process IPC messages.
-     */
-    virtual void onMessage(unsigned int msg, char* payload, unsigned int len) override;
+  /**
+   * To stop send lcoal video.
+   */
+  node_error stopPreview();
 
-    /**
-     * To send data via IPC
-     */
-    virtual bool sendData(char* payload, int len);
+  /**
+   * To process IPC messages.
+   */
+  virtual void onMessage(unsigned int msg,
+                         char* payload,
+                         unsigned int len) override;
 
-	agora::rtc::VIDEO_PROFILE_TYPE getVideoProfile();
-protected:
-    bool joinChannel(const char* key, const char* name, const char* chanInfo, agora::rtc::uid_t uid);
-    void notifyJoinedChannel(agora::rtc::uid_t uid);
-    void notifyLeaveChannel();
-    void notifyRequestNewToken();
-    void notifyRenderReady();
-    void notifyLocalAudioStats(const agora::rtc::LocalAudioStats& audioStats);
-    void notifyLocalVideoStats(const agora::rtc::LocalVideoStats& videoStats);
-    void notifyVideoSizeChanged(agora::rtc::uid_t uid, int width, int height, int rotation);
-    void notifyLocalVideoStateChanged(agora::rtc::LOCAL_VIDEO_STREAM_STATE localVideoState, agora::rtc::LOCAL_VIDEO_STREAM_ERROR error);
-    void notifyLocalAudioStateChanged(agora::rtc::LOCAL_AUDIO_STREAM_STATE state, agora::rtc::LOCAL_AUDIO_STREAM_ERROR error);
-    void setProcessDpiAwareness();
-private:
-    void exit(bool notifySink);
-private:
-    /** Used to process RTC events. */
-    std::unique_ptr<AgoraVideoSourceEventHandler> m_eventHandler;
-    /** Self video render interface implementation */
-    std::unique_ptr<AgoraVideoSourceRenderFactory> m_renderFactory;
-    /** Used to parse parameters from sink */
-    std::unique_ptr<VideoSourceParamParser> m_paramParser;
-    /** Used to provide IPC functionality. */
-    std::unique_ptr<IAgoraIpc> m_ipc;
-    /** Used to transfer video data */
-    std::unique_ptr<AgoraIpcDataSender> m_ipcSender;
-    std::mutex m_ipcSenderMutex;
-    /** RTC engine. */
-    agora::util::AutoPtr<agora::rtc::IRtcEngine> m_rtcEngine;
-    bool m_initialized;
-    std::string m_params;
-    std::unique_ptr<INodeProcess> m_process;
-	agora::rtc::VIDEO_PROFILE_TYPE m_videoProfile;
+  /**
+   * To send data via IPC
+   */
+  virtual bool sendData(char* payload, int len);
+
+  agora::rtc::VIDEO_PROFILE_TYPE getVideoProfile();
+
+ protected:
+  bool joinChannel(const char* key,
+                   const char* name,
+                   const char* chanInfo,
+                   agora::rtc::uid_t uid);
+  void notifyJoinedChannel(agora::rtc::uid_t uid);
+  void notifyLeaveChannel();
+  void notifyRequestNewToken();
+  void notifyRenderReady();
+  void notifyLocalAudioStats(const agora::rtc::LocalAudioStats& audioStats);
+  void notifyLocalVideoStats(const agora::rtc::LocalVideoStats& videoStats);
+  void notifyVideoSizeChanged(agora::rtc::uid_t uid,
+                              int width,
+                              int height,
+                              int rotation);
+  void notifyLocalVideoStateChanged(
+      agora::rtc::LOCAL_VIDEO_STREAM_STATE localVideoState,
+      agora::rtc::LOCAL_VIDEO_STREAM_ERROR error);
+  void notifyLocalAudioStateChanged(agora::rtc::LOCAL_AUDIO_STREAM_STATE state,
+                                    agora::rtc::LOCAL_AUDIO_STREAM_ERROR error);
+  void setProcessDpiAwareness();
+
+ private:
+  void exit(bool notifySink);
+
+ private:
+  /** Used to process RTC events. */
+  std::unique_ptr<AgoraVideoSourceEventHandler> m_eventHandler;
+  /** Self video render interface implementation */
+  std::unique_ptr<AgoraVideoSourceRenderFactory> m_renderFactory;
+  /** Used to parse parameters from sink */
+  std::unique_ptr<VideoSourceParamParser> m_paramParser;
+  /** Used to provide IPC functionality. */
+  std::unique_ptr<IAgoraIpc> m_ipc;
+  /** Used to transfer video data */
+  std::unique_ptr<AgoraIpcDataSender> m_ipcSender;
+  std::mutex m_ipcSenderMutex;
+  /** RTC engine. */
+  agora::util::AutoPtr<agora::rtc::IRtcEngine> m_rtcEngine;
+  bool m_initialized;
+  std::string m_params;
+  std::unique_ptr<INodeProcess> m_process;
+  agora::rtc::VIDEO_PROFILE_TYPE m_videoProfile;
 };
 
 void initLogService();
