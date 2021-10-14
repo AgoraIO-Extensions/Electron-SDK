@@ -15,69 +15,65 @@
 #if defined(_WIN32)
 #include <windows.h>
 #endif
-#define    IMAGE_MAX_PIXEL_SIZE   500
+#define IMAGE_MAX_PIXEL_SIZE 500
 
-struct ScreenDisplayInfo
-{
-    ScreenIDType displayId;
-    DisplayInfo displayInfo;
-    
-    std::string name;
-    std::string ownerName;
-    
-    unsigned int width;
-    unsigned int height;
-    bool isActive;
-    bool isMain;
-    bool isBuiltin;
-    
-    unsigned char* imageData;
-    unsigned int imageDataLength;
-    
-    ScreenDisplayInfo()
-    : width(0)
-    , height(0)
-    , isActive(false)
-    , isMain(false)
-    , isBuiltin(false)
-    , imageData(nullptr)
-    , imageDataLength(0)
-    {}
+struct ScreenDisplayInfo {
+  ScreenIDType displayId;
+  DisplayInfo displayInfo;
+
+  std::string name;
+  std::string ownerName;
+
+  unsigned int width;
+  unsigned int height;
+  bool isActive;
+  bool isMain;
+  bool isBuiltin;
+
+  unsigned char* imageData;
+  unsigned int imageDataLength;
+
+  ScreenDisplayInfo()
+      : width(0),
+        height(0),
+        isActive(false),
+        isMain(false),
+        isBuiltin(false),
+        imageData(nullptr),
+        imageDataLength(0) {}
 };
 
-struct ScreenWindowInfo
-{
+struct ScreenWindowInfo {
 #if defined(__APPLE__)
-    unsigned int windowId;
-    int processId;
-    int currentProcessId;
+  unsigned int windowId;
+  int processId;
+  int currentProcessId;
 #elif defined(_WIN32)
-    HWND windowId;
-    DWORD processId;
-    DWORD currentProcessId;
+  HWND windowId;
+  DWORD processId;
+  DWORD currentProcessId;
 #endif
-    
-    std::string name;
-    std::string ownerName;
-    
-    unsigned int width;
-    unsigned int height;
-    
-    unsigned char* imageData;
-    unsigned int imageDataLength;
 
-    unsigned int originWidth;
-    unsigned int originHeight;
-    
-    ScreenWindowInfo()
-    : windowId(0)
-    , width(0)
-    , height(0)
-    , imageData(nullptr)
-    , imageDataLength(0)
-    , originWidth(0)
-    , originHeight(0)
-    {}
+  std::string name;
+  std::string ownerName;
+
+  unsigned int width;
+  unsigned int height;
+
+  unsigned char* imageData;
+  unsigned int imageDataLength;
+
+  unsigned int originWidth;
+  unsigned int originHeight;
+
+  ScreenWindowInfo()
+      : windowId(0),
+        width(0),
+        height(0),
+        imageData(nullptr),
+        imageDataLength(0),
+        originWidth(0),
+        originHeight(0) {}
 };
 
 std::vector<ScreenDisplayInfo> getAllDisplayInfo();
