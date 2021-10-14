@@ -15,7 +15,7 @@ NodeIrisRtcChannel::NodeIrisRtcChannel(napi_env env,IrisRtcChannel* irisChannel,
                                        const char* channelId):_env(env),_iris_channel(irisChannel),_channel_id(channelId) {
     
     napi_add_env_cleanup_hook(env, ReleaseNodeSource, this);
-    _iris_channel_event_handler.reset(new NodeIrisEventHandler(nullptr));
+    _iris_channel_event_handler.reset(new NodeIrisEventHandler(MAIN));
     _iris_channel->RegisterEventHandler(channelId,
                                         _iris_channel_event_handler.get());
     LOG_F(INFO, "NodeIrisRtcChannel::NodeIrisRtcChannel  channelId: %s",
@@ -223,7 +223,7 @@ napi_value NodeIrisRtcChannel::OnEvent(napi_env env,napi_callback_info info) {
     } else {
         LOG_F(INFO, "NodeIrisRtcChannel::Release Not Init");
     }
-    napi_value retValue;
+    napi_value retValue = nullptr;
     return retValue;
 }
 
@@ -245,6 +245,8 @@ napi_value NodeIrisRtcChannel::Release(napi_env env,
     } else {
         LOG_F(INFO, "NodeIrisRtcChannel::Release Not Init");
     }
+    napi_value retValue = nullptr;
+    return retValue;
 }
 
 void NodeIrisRtcChannel::ReleaseNodeSource(void* data) {

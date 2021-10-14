@@ -1,4 +1,4 @@
-import { ApiTypeChannel } from "./internal/native_type";
+import { ApiTypeChannel, PROCESS_TYPE } from "./internal/native_type";
 import { NodeIrisRtcChannel } from "./internal/native_interface";
 import {
   RtcStats,
@@ -73,7 +73,7 @@ export class AgoraRtcChannel extends EventEmitter {
 
     this._rtcChannel.OnEvent(
       "call_back",
-      (_eventName: string, _eventData: string) => {
+      (_: PROCESS_TYPE, _eventName: string, _eventData: string) => {
         switch (_eventName) {
           case "onChannelWarning":
             {
@@ -602,7 +602,12 @@ export class AgoraRtcChannel extends EventEmitter {
 
     this._rtcChannel.OnEvent(
       "call_back_with_buffer",
-      (_eventName: string, _eventData: string, _eventBuffer: string) => {
+      (
+        _: PROCESS_TYPE,
+        _eventName: string,
+        _eventData: string,
+        _eventBuffer: string
+      ) => {
         switch (_eventName) {
           case "onStreamMessage":
             {
@@ -1189,7 +1194,6 @@ export class AgoraRtcChannel extends EventEmitter {
     );
     return ret.retCode;
   }
-
 
   /**
    * Stops or resumes publishing the local audio stream.
