@@ -15,7 +15,7 @@ NodeIrisRtcChannel::NodeIrisRtcChannel(napi_env env,IrisRtcChannel* irisChannel,
                                        const char* channelId):_env(env),_iris_channel(irisChannel),_channel_id(channelId) {
     
     napi_add_env_cleanup_hook(env, ReleaseNodeSource, this);
-    _iris_channel_event_handler.reset(new NodeIrisEventHandler(nullptr));
+    _iris_channel_event_handler.reset(new NodeIrisEventHandler(MAIN));
     _iris_channel->RegisterEventHandler(channelId,
                                         _iris_channel_event_handler.get());
     LOG_F(INFO, "NodeIrisRtcChannel::NodeIrisRtcChannel  channelId: %s",
