@@ -647,7 +647,7 @@ namespace agora {
                         int sourceType;
                         napi_get_object_property_int32_(isolate, videoInputStreamObj, "sourceType", sourceType);
                         CHECK_NAPI_STATUS(pEngine, status);
-                        videoInputStreams[i].sourceType = (VIDEO_SOURCE_TYPE)sourceType;
+                        videoInputStreams[i].sourceType = (agora::media::MEDIA_SOURCE_TYPE)sourceType;
                         napi_get_object_property_uint32_(isolate, videoInputStreamObj, "remoteUserUid", videoInputStreams[i].remoteUserUid);
                         napi_get_object_property_nodestring_(isolate, videoInputStreamObj, "imageUrl", imageUrlList[i]);
                         if (status == napi_ok) {
@@ -821,7 +821,7 @@ namespace agora {
                         int sourceType;
                         napi_get_object_property_int32_(isolate, videoInputStreamObj, "sourceType", sourceType);
                         CHECK_NAPI_STATUS(pEngine, status);
-                        videoInputStreams[i].sourceType = (VIDEO_SOURCE_TYPE)sourceType;
+                        videoInputStreams[i].sourceType = (agora::media::MEDIA_SOURCE_TYPE)sourceType;
                         napi_get_object_property_uint32_(isolate, videoInputStreamObj, "remoteUserUid", videoInputStreams[i].remoteUserUid);
                         CHECK_NAPI_STATUS(pEngine, status);
                         napi_get_object_property_nodestring_(isolate, videoInputStreamObj, "imageUrl", imageUrlList[i]);
@@ -6365,7 +6365,7 @@ namespace agora {
             CHECK_NATIVE_THIS(pEngine);
 
             int type = 0;
-            status = napi_get_value_int32_(args[0], type);
+            napi_get_value_int32_(args[0], type);
 
             result = pEngine->m_engine->getLocalTrapezoidCorrectionOptions(options, (agora::rtc::VIDEO_SOURCE_TYPE)type);
             auto jsOpt = getJSTrapezoidCorrectionOptions(context, isolate, options);
@@ -6539,7 +6539,7 @@ namespace agora {
             status = napi_get_value_int32_(args[1], mode);
             CHECK_NAPI_STATUS(pEngine, status);
 
-            int type = 0
+            int type = 0;
             status = napi_get_value_int32_(args[2], type);
 
             result = pEngine->m_engine->enableBrightnessCorrection(enabled, (BRIGHTNESS_CORRECTION_MODE)mode, (agora::rtc::VIDEO_SOURCE_TYPE)type);
