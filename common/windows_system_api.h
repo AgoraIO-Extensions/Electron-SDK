@@ -4,9 +4,4 @@
 #include <windows.h>
 #endif
 
-
-
 int SetProcessDpiAwarenessEx();
-
-
-
