@@ -10,14 +10,12 @@
 #include "node_api_header.h"
 #include "node_async_queue.h"
 #include "node_base.h"
-#include "video_source_event_handler.h"
 
 namespace agora {
 namespace rtc {
 namespace electron {
 class NodeIrisRtcEngine;
-class NodeIrisEventHandler : public iris::IrisEventHandler,
-                             public IVideoSourceEventHandler {
+class NodeIrisEventHandler : public iris::IrisEventHandler{
  public:
   typedef struct NodeEventCallback {
     napi_env env;
@@ -25,7 +23,7 @@ class NodeIrisEventHandler : public iris::IrisEventHandler,
   } EventCallback;
 
  public:
-  NodeIrisEventHandler(NodeIrisRtcEngine* engine);
+  NodeIrisEventHandler(PROCESS_TYPE type);
   virtual ~NodeIrisEventHandler();
 
   virtual void OnEvent(const char* event, const char* data) override;
@@ -35,15 +33,6 @@ class NodeIrisEventHandler : public iris::IrisEventHandler,
                        const void* buffer,
                        unsigned length) override;
 
-  virtual void OnVideoSourceEvent(const char* eventName,
-                                  const char* eventData) override;
-
-  virtual void OnVideoSourceEvent(const char* eventName,
-                                  const char* eventData,
-                                  const char* buffer,
-                                  int length) override;
-
-  virtual void OnVideoSourceExit() override;
 
   void addEvent(const std::string& eventName,
                 napi_env& env,
@@ -52,7 +41,7 @@ class NodeIrisEventHandler : public iris::IrisEventHandler,
 
  private:
   std::unordered_map<std::string, EventCallback *> _callbacks;
-  NodeIrisRtcEngine* _node_iris_engine;
+  PROCESS_TYPE _type;
 };
 }  // namespace electron
 }  // namespace rtc

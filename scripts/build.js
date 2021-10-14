@@ -82,9 +82,6 @@ const build = async (
     commandArray.push(
       `install_name_tool -add_rpath "@loader_path" ${agora_node_ext_path}`
     );
-    commandArray.push(
-      `install_name_tool -add_rpath "@loader_path" ${video_source_path}`
-    );
   }
   for (let index = 0; index < commandArray.length; index++) {
     const shellStr = commandArray[index];

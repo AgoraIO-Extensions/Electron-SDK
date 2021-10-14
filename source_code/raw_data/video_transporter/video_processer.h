@@ -39,10 +39,6 @@ public:
                 bool &is_new_frame, unsigned int uid,
                 const char *channel_id = "");
 
-  bool VideoSourceGetVideoFrame(
-      IrisRtcVideoFrame &video_frame,
-      bool &is_new_frame, unsigned int uid, const char *channel_id = "");
-
   void OnVideoFrameReceived(const char *data, int len) override;
 };
 } // namespace electron
