@@ -450,7 +450,7 @@ export interface TranscodingVideoStream {
     /**
      * Source type of video stream.
      */
-    sourceType: VIDEO_SOURCE_TYPE;
+    sourceType: MEDIA_SOURCE_TYPE;
     /**
      * Remote user uid if sourceType is VIDEO_SOURCE_REMOTE.
      */
