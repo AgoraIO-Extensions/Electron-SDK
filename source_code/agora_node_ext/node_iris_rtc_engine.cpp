@@ -20,12 +20,20 @@ const char* NodeIrisRtcEngine::_ret_result_str = "result";
 
 NodeIrisRtcEngine::NodeIrisRtcEngine() {
   LOG_F(INFO, "NodeIrisRtcEngine::NodeIrisRtcEngine()");
-  _iris_event_handler = std::make_shared<NodeIrisEventHandler>(this);
+  
+  // main_process
   _iris_engine = std::make_shared<IrisRtcEngine>();
   _video_processer = std::make_shared<VideoProcesser>(_iris_engine);
   _iris_raw_data = _iris_engine->raw_data();
   _iris_raw_data_plugin_manager = _iris_raw_data->plugin_manager();
+  _iris_event_handler = std::make_shared<NodeIrisEventHandler>(MAIN);
   _iris_engine->SetEventHandler(_iris_event_handler.get());
+    
+  // sub_process for video_source
+  _iris_sub_process_engine = std::make_shared<IrisRtcEngine>(kEngineTypeSubProcess);
+  _video_processer_for_sub_process = std::make_shared<VideoProcesser>(_iris_sub_process_engine);
+  _iris_event_handler_for_sub_process = std::make_shared<NodeIrisEventHandler>(SCREEN_SHARE);
+  _iris_sub_process_engine->SetEventHandler(_iris_event_handler_for_sub_process.get());
 }
 
 NodeIrisRtcEngine::~NodeIrisRtcEngine() {
@@ -47,15 +55,11 @@ napi_value NodeIrisRtcEngine::Init(napi_env env, napi_value exports) {
       DECLARE_NAPI_METHOD("GetVideoStreamData", GetVideoStreamData),
       DECLARE_NAPI_METHOD("SetAddonLogFile", SetAddonLogFile),
       DECLARE_NAPI_METHOD("PluginCallApi", PluginCallApi),
-      DECLARE_NAPI_METHOD("VideoSourceInitialize", VideoSourceInitialize),
-      DECLARE_NAPI_METHOD("VideoSourceRelease", VideoSourceRelease),
-      DECLARE_NAPI_METHOD("VideoSourceSetAddonLogFile",
-                          VideoSourceSetAddonLogFile),
       DECLARE_NAPI_METHOD("Release", Release)};
 
   napi_value cons;
   status = napi_define_class(env, _class_name, NAPI_AUTO_LENGTH, New, nullptr,
-                             16, properties, &cons);
+                             13, properties, &cons);
   assert(status == napi_ok);
 
   napi_ref* constructor = new napi_ref();
@@ -148,27 +152,19 @@ napi_value NodeIrisRtcEngine::CallApi(napi_env env, napi_callback_info info) {
   memset(result, '\0', 512);
 
   int ret = ERROR_PARAMETER_1;
-
-  if (nodeIrisRtcEngine->_iris_engine) {
+  std::shared_ptr<iris::rtc::IrisRtcEngine> finalEngine = process_type == PROCESS_TYPE::MAIN ? nodeIrisRtcEngine->_iris_engine:nodeIrisRtcEngine->_iris_sub_process_engine;
+  if (finalEngine) {
     try {
-      if (process_type == PROCESS_TYPE::MAIN) {
-        ret = nodeIrisRtcEngine->_iris_engine->CallApi(
-            (ApiTypeEngine)api_type, parameter.c_str(), result);
-      } else {
-        if (nodeIrisRtcEngine->_video_source_proxy) {
-          ret = nodeIrisRtcEngine->_video_source_proxy->CallApi(
-              (ApiTypeEngine)api_type, parameter.c_str(), result);
-        } else {
-          LOG_F(INFO, "CallApi parameter did not initialize videoSource yet");
-        }
-      }
-      LOG_F(INFO, "CallApi parameter: type: %d, parameter: %s, ret: %d",
+      ret = finalEngine->CallApi((ApiTypeEngine)api_type,
+                                                     parameter.c_str(), result);
+      LOG_F(INFO, "CallApi(type:%d) parameter: %s, ret: %d",
             process_type, parameter.c_str(), ret);
-    } catch (std::exception& e) {
+    } catch (std::exception &e) {
       nodeIrisRtcEngine->OnApiError(e.what());
       LOG_F(INFO, "CallApi parameter: catch excepton msg: %s", e.what());
     }
   } else {
+    LOG_F(INFO, "CallApi(type:%d) parameter did not initialize engine yet", api_type);
     ret = ERROR_NOT_INIT;
   }
   RETURE_NAPI_OBJ();
@@ -210,21 +206,13 @@ napi_value NodeIrisRtcEngine::CallApiWithBuffer(napi_env env,
           break;
         }
         case kEngineSendStreamMessage: {
-          if (process_type == PROCESS_TYPE::MAIN) {
-            ret = nodeIrisRtcEngine->_iris_engine->CallApi(
+          std::shared_ptr<iris::rtc::IrisRtcEngine> finalEngine = process_type == PROCESS_TYPE::MAIN ? nodeIrisRtcEngine->_iris_engine:nodeIrisRtcEngine->_iris_sub_process_engine;
+          if (finalEngine) {
+            ret = finalEngine->CallApi(
                 (ApiTypeEngine)api_type, parameter.c_str(),
                 const_cast<char*>(buffer.c_str()), result);
-          } else {
-            if (nodeIrisRtcEngine->_video_source_proxy) {
-              ret = nodeIrisRtcEngine->_video_source_proxy->CallApi(
-                  (ApiTypeEngine)api_type, parameter.c_str(), buffer.c_str(),
-                  length, result);
-            } else {
-              LOG_F(INFO,
-                    "CallApiWithBuffer parameter did not initialize "
-                    "videoSource yet "
-                    "source yet");
-            }
+          }else{
+            LOG_F(INFO, "CallApiWithBuffer(type:%d) parameter did not initialize engine yet and type is %d", process_type, api_type);
           }
           break;
         }
@@ -281,7 +269,7 @@ napi_value NodeIrisRtcEngine::OnEvent(napi_env env, napi_callback_info info) {
   } else {
     LOG_F(INFO, "NodeIrisRtcEngine::OnEvent error Not Init Engine");
   }
-  napi_value retValue;
+  napi_value retValue = nullptr;
   return retValue;
 }
 
@@ -293,9 +281,9 @@ napi_value NodeIrisRtcEngine::CreateChannel(napi_env env,
     size_t argc = 2;
     napi_value args[2];
     napi_value jsthis;
-    napi_value _js_channel_manager;
+    napi_value _js_channel_manager = nullptr;
     status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
-    
+
     NodeIrisRtcEngine* nodeIrisRtcEngine;
     status =
     napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
@@ -335,7 +323,7 @@ napi_value NodeIrisRtcEngine::GetDeviceManager(napi_env env,
   if (!nodeIrisRtcEngine->_iris_engine) {
     LOG_F(INFO, "NodeIrisRtcEngine::GetDeviceManager error Not Init Engine");
     // TODO
-    napi_value value;
+    napi_value value = nullptr;
     return value;
   }
   auto _device_manager = nodeIrisRtcEngine->_iris_engine->device_manager();
@@ -425,98 +413,6 @@ napi_value NodeIrisRtcEngine::GetScreenDisplaysInfo(napi_env env,
   return array;
 }
 
-napi_value NodeIrisRtcEngine::VideoSourceInitialize(napi_env env,
-                                                    napi_callback_info info) {
-  napi_status status;
-  napi_value jsthis;
-  status = napi_get_cb_info(env, info, nullptr, nullptr, &jsthis, nullptr);
-
-  NodeIrisRtcEngine* nodeIrisRtcEngine;
-  status =
-      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
-
-  char result[512];
-  int ret = ERROR_PARAMETER_1;
-  memset(result, '\0', 512);
-
-  if (!nodeIrisRtcEngine->_video_source_proxy) {
-    nodeIrisRtcEngine->_video_source_proxy.reset(
-        new VideoSourceProxy(nodeIrisRtcEngine->_video_processer));
-  }
-
-  if (nodeIrisRtcEngine->_video_source_proxy) {
-    if (nodeIrisRtcEngine->_video_source_proxy->Initialize(
-            nodeIrisRtcEngine->_iris_event_handler))
-      ret = ERROR_OK;
-  } else {
-    ret = ERROR_NOT_INIT;
-    LOG_F(INFO, "VideoSourceInitialize NodeIris Engine Not Init");
-  }
-
-  RETURE_NAPI_OBJ();
-}
-
-napi_value NodeIrisRtcEngine::VideoSourceSetAddonLogFile(
-    napi_env env,
-    napi_callback_info info) {
-  napi_status status;
-  napi_value jsthis;
-  size_t argc = 1;
-  napi_value args[1];
-  status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
-
-  NodeIrisRtcEngine* nodeIrisRtcEngine;
-  status =
-      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
-
-  std::string parameter = "";
-  status = napi_get_value_utf8string(env, args[0], parameter);
-  char result[512];
-  int ret = ERROR_PARAMETER_1;
-  memset(result, '\0', 512);
-  if (nodeIrisRtcEngine->_video_source_proxy) {
-    if (nodeIrisRtcEngine->_video_source_proxy->SetAddonLogFile(
-            parameter.c_str()))
-      ret = ERROR_OK;
-  } else {
-    ret = ERROR_NOT_INIT;
-    LOG_F(INFO,
-          "VideoSourceSetAddonLogFile did not initialize videoSource yet");
-  }
-
-  RETURE_NAPI_OBJ();
-}
-
-napi_value NodeIrisRtcEngine::VideoSourceRelease(napi_env env,
-                                                 napi_callback_info info) {
-  napi_status status;
-  napi_value jsthis;
-  status = napi_get_cb_info(env, info, nullptr, nullptr, &jsthis, nullptr);
-
-  NodeIrisRtcEngine* nodeIrisRtcEngine;
-  status =
-      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
-
-  char result[512];
-  int ret = ERROR_PARAMETER_1;
-  memset(result, '\0', 512);
-  if (nodeIrisRtcEngine->_video_source_proxy) {
-    ret = nodeIrisRtcEngine->VideoSourceRelease();
-  } else {
-    ret = ERROR_NOT_INIT;
-    LOG_F(INFO, "VideoSourceInitialize NodeIris Engine Not Init");
-  }
-
-  RETURE_NAPI_OBJ();
-}
-
-int NodeIrisRtcEngine::VideoSourceRelease() {
-  LOG_F(INFO, "VideoSourceRelease");
-  if (_video_source_proxy) {
-    _video_source_proxy.reset();
-  }
-  return ERROR_OK;
-}
 
 napi_value NodeIrisRtcEngine::SetAddonLogFile(napi_env env,
                                               napi_callback_info info) {
@@ -579,14 +475,15 @@ napi_value NodeIrisRtcEngine::PluginCallApi(napi_env env,
         ret = nodeIrisRtcEngine->_iris_raw_data_plugin_manager->CallApi(
             (ApiTypeRawDataPluginManager)api_type, parameter.c_str(), result);
       } else {
-        if (nodeIrisRtcEngine->_video_source_proxy) {
-          ret = nodeIrisRtcEngine->_video_source_proxy->PluginCallApi(
-              (ApiTypeRawDataPluginManager)api_type, parameter.c_str(), result);
-        } else {
-          LOG_F(INFO,
-                "PluginCallApi parameter did not initialize videoSource yet "
-                "source yet");
-        }
+        // TODO: video_source plugin have not to do
+//        if (nodeIrisRtcEngine->_video_source_proxy) {
+//          ret = nodeIrisRtcEngine->_video_source_proxy->PluginCallApi(
+//              (ApiTypeRawDataPluginManager)api_type, parameter.c_str(), result);
+//        } else {
+//          LOG_F(INFO,
+//                "PluginCallApi parameter did not initialize videoSource yet "
+//                "source yet");
+//        }
       }
     } catch (std::exception& e) {
       LOG_F(INFO, "PluginCallApi catch exception %s", e.what());
@@ -628,27 +525,21 @@ napi_value NodeIrisRtcEngine::EnableVideoFrameCache(napi_env env,
   char result[512];
   memset(result, '\0', 512);
   int ret = ERROR_PARAMETER_1;
-
-  if (nodeIrisRtcEngine->_iris_engine) {
-    IrisRtcRendererCacheConfig config(VideoFrameType::kVideoFrameTypeYUV420,
-                                      nullptr, width, height);
+  
+  IrisRtcRendererCacheConfig config(VideoFrameType::kVideoFrameTypeYUV420,
+                                    nullptr, width, height);
+  
+  std::shared_ptr<VideoProcesser> finalVideoProcess = process_type == PROCESS_TYPE::MAIN ? nodeIrisRtcEngine->_video_processer:nodeIrisRtcEngine->_video_processer_for_sub_process;
+  if (!finalVideoProcess) {
+    ret = ERROR_NOT_INIT;
+    LOG_F(INFO, "VideoProcess(type:%d) Not Init", process_type);
+  }else{
     try {
-      if (process_type == PROCESS_TYPE::MAIN) {
-        ret = nodeIrisRtcEngine->_video_processer->EnableVideoFrameCache(
-            config, uid, channelId.c_str());
-      } else {
-        if (nodeIrisRtcEngine->_video_source_proxy) {
-          ret = nodeIrisRtcEngine->_video_source_proxy->EnableVideoFrameCache(
-              channelId.c_str(), uid, width, height);
-        }
-      }
+      ret = finalVideoProcess->EnableVideoFrameCache(config, uid, channelId.c_str());
     } catch (std::exception& e) {
-      LOG_F(INFO, "PluginCallApi catch exception %s", e.what());
+      LOG_F(INFO, "EnableVideoFrameCache(type:%d) catch exception %s",process_type, e.what());
       nodeIrisRtcEngine->OnApiError(e.what());
     }
-  } else {
-    ret = ERROR_NOT_INIT;
-    LOG_F(INFO, "VideoSourceInitialize NodeIris Engine Not Init");
   }
 
   RETURE_NAPI_OBJ();
@@ -680,23 +571,17 @@ napi_value NodeIrisRtcEngine::DisableVideoFrameCache(napi_env env,
   memset(result, '\0', 512);
   int ret = ERROR_PARAMETER_1;
 
-  if (nodeIrisRtcEngine->_iris_engine) {
+  std::shared_ptr<VideoProcesser> finalVideoProcess = process_type == PROCESS_TYPE::MAIN ? nodeIrisRtcEngine->_video_processer:nodeIrisRtcEngine->_video_processer_for_sub_process;
+  if (!finalVideoProcess) {
+    ret = ERROR_NOT_INIT;
+    LOG_F(INFO, "VideoProcess(type:%d) Not Init", process_type);
+  }else{
     try {
-      if (process_type == PROCESS_TYPE::MAIN) {
-        ret = nodeIrisRtcEngine->_video_processer->DisableVideoFrameCache(
-            channelId.c_str(), uid);
-      } else {
-        if (nodeIrisRtcEngine->_video_source_proxy) {
-          ret = nodeIrisRtcEngine->_video_source_proxy->DisableVideoFrameCache(
-              channelId.c_str(), uid);
-        }
-      }
+      ret = finalVideoProcess->DisableVideoFrameCache(channelId.c_str(), uid);
     } catch (std::exception& e) {
+      LOG_F(INFO, "DisableVideoFrameCache(type:%d) catch exception %s",process_type, e.what());
       nodeIrisRtcEngine->OnApiError(e.what());
     }
-  } else {
-    ret = ERROR_NOT_INIT;
-    LOG_F(INFO, "VideoSourceInitialize NodeIris Engine Not Init");
   }
 
   RETURE_NAPI_OBJ();
@@ -756,19 +641,11 @@ napi_value NodeIrisRtcEngine::GetVideoStreamData(napi_env env,
 
   bool isFresh = false;
   bool ret = false;
-
+  std::shared_ptr<VideoProcesser> finalVideoProcess = process_type == PROCESS_TYPE::MAIN ? nodeIrisRtcEngine->_video_processer:nodeIrisRtcEngine->_video_processer_for_sub_process;
+  
   if (nodeIrisRtcEngine->_iris_engine) {
-    try {
-      if (process_type == PROCESS_TYPE::MAIN) {
-        ret = nodeIrisRtcEngine->_video_processer->GetVideoFrame(
-            _videoFrame, isFresh, uid, channel_id.c_str());
-      } else {
-        ret = nodeIrisRtcEngine->_video_processer->VideoSourceGetVideoFrame(
-            _videoFrame, isFresh, uid, channel_id.c_str());
-      }
-    } catch (std::exception& e) {
-      nodeIrisRtcEngine->OnApiError(e.what());
-    }
+    ret = finalVideoProcess->GetVideoFrame(
+        _videoFrame, isFresh, uid, channel_id.c_str());
   } else {
     ret = false;
     LOG_F(INFO, "VideoSourceInitialize NodeIris Engine Not Init");
@@ -803,11 +680,17 @@ napi_value NodeIrisRtcEngine::Release(napi_env env, napi_callback_info info) {
     nodeIrisRtcEngine->_iris_raw_data_plugin_manager = nullptr;
     nodeIrisRtcEngine->_iris_raw_data = nullptr;
     nodeIrisRtcEngine->_iris_engine.reset();
-    nodeIrisRtcEngine->_video_source_proxy.reset();
+
+    // release sub_process_engine(for video_souece)
+    nodeIrisRtcEngine->_video_processer_for_sub_process.reset();
+    nodeIrisRtcEngine->_iris_event_handler_for_sub_process.reset();
+    nodeIrisRtcEngine->_iris_sub_process_engine.reset();
     LOG_F(INFO, "NodeIrisRtcEngine::Release done");
   } else {
     LOG_F(INFO, "VideoSourceInitialize NodeIris Engine Not Init");
   }
+  napi_value retValue = nullptr;
+  return retValue;
 }
 }  // namespace electron
 }  // namespace rtc

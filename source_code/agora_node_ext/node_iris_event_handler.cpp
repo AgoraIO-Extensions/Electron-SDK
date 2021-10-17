@@ -12,24 +12,25 @@
 namespace agora {
 namespace rtc {
 namespace electron {
-NodeIrisEventHandler::NodeIrisEventHandler(NodeIrisRtcEngine* engine)
-: _node_iris_engine(engine) {
+NodeIrisEventHandler::NodeIrisEventHandler(PROCESS_TYPE type)
+:_type(type) {
     node_async_call::close(false);
 }
 
 NodeIrisEventHandler::~NodeIrisEventHandler() {
   node_async_call::close(true);
+
   // TODO release call back memory and ref
-    for(auto it = _callbacks.begin(); it != _callbacks.end();) {
-        auto item = it->second;
-        auto ref = item->call_back_ref;
-        napi_delete_reference(item->env, ref);
-        delete item;
-        item = nullptr;
-        _callbacks.erase(it++);
+  for (auto it = _callbacks.begin(); it != _callbacks.end();)
+  {
+    auto item = it->second;
+    auto ref = item->call_back_ref;
+    napi_delete_reference(item->env, ref);
+    delete item;
+    item = nullptr;
+    _callbacks.erase(it++);
     }
   _callbacks.clear();
-  _node_iris_engine = nullptr;
 }
 
 void NodeIrisEventHandler::addEvent(const std::string& eventName,
@@ -47,17 +48,19 @@ void NodeIrisEventHandler::addEvent(const std::string& eventName,
 void NodeIrisEventHandler::OnEvent(const char* event, const char* data) {
   std::string _eventName(event);
   std::string _eventData(data);
-  node_async_call::async_call([this, _eventName, _eventData] {
+  int32_t type = (int32_t)_type;
+  node_async_call::async_call([this, _eventName, _eventData, type] {
     auto it = _callbacks.find("call_back");
     if (it != _callbacks.end()) {
-      size_t argc = 2;
-      napi_value args[2];
+      size_t argc = 3;
+      napi_value args[3];
       napi_value result;
       napi_status status;
+      status = napi_create_int32(it->second->env, type, &args[0]);
       status = napi_create_string_utf8(it->second->env, _eventName.c_str(),
-                                       _eventName.length(), &args[0]);
+                                       _eventName.length(), &args[1]);
       status = napi_create_string_utf8(it->second->env, _eventData.c_str(),
-                                       _eventData.length(), &args[1]);
+                                       _eventData.length(), &args[2]);
 
       napi_value call_back_value;
       status = napi_get_reference_value(
@@ -79,23 +82,25 @@ void NodeIrisEventHandler::OnEvent(const char* event,
   std::string _eventName(event);
   std::string _eventData(data);
   std::vector<char> stringData;
+  int32_t type = (int32_t)_type;
   stringData.resize(length + 1, '\0');
 
   memcpy(stringData.data(), buffer, length);
   std::string _eventBuffer(stringData.data());
-  node_async_call::async_call([this, _eventName, _eventData, _eventBuffer] {
+  node_async_call::async_call([this, _eventName, _eventData, _eventBuffer, type] {
     auto it = _callbacks.find("call_back_with_buffer");
     if (it != _callbacks.end()) {
-      size_t argc = 3;
-      napi_value args[3];
+      size_t argc = 4;
+      napi_value args[4];
       napi_value result;
       napi_status status;
+      status = napi_create_int32(it->second->env, type, &args[0]);
       status = napi_create_string_utf8(it->second->env, _eventName.c_str(),
-                                       _eventName.length(), &args[0]);
+                                       _eventName.length(), &args[1]);
       status = napi_create_string_utf8(it->second->env, _eventData.c_str(),
-                                      _eventData.length(), &args[1]);
+                                      _eventData.length(), &args[2]);
       status = napi_create_string_utf8(it->second->env, _eventBuffer.c_str(),
-                                       _eventBuffer.length(), &args[2]);
+                                       _eventBuffer.length(), &args[3]);
 
       napi_value call_back_value;
       status = napi_get_reference_value(
@@ -110,76 +115,6 @@ void NodeIrisEventHandler::OnEvent(const char* event,
   });
 }
 
-void NodeIrisEventHandler::OnVideoSourceEvent(const char* eventName,
-                                              const char* eventData) {
-  std::string _eventName(eventName);
-  std::string _eventData(eventData);
-  node_async_call::async_call([this, _eventName, _eventData] {
-    auto it = _callbacks.find("video_source_call_back");
-    if (it != _callbacks.end()) {
-      napi_status status;
-      size_t argc = 2;
-      napi_value args[2];
-      napi_value result;
-      status = napi_create_string_utf8(it->second->env, _eventName.c_str(),
-                                       _eventName.length(), &args[0]);
-      status = napi_create_string_utf8(it->second->env, _eventData.c_str(),
-                                       _eventData.length(), &args[1]);
-
-      napi_value call_back_value;
-      status = napi_get_reference_value(
-          it->second->env, it->second->call_back_ref, &call_back_value);
-
-      napi_value recv_value;
-      status = napi_get_undefined(it->second->env, &recv_value);
-
-      status = napi_call_function(it->second->env, recv_value, call_back_value,
-                                  argc, args, &result);
-    }
-  });
-}
-
-void NodeIrisEventHandler::OnVideoSourceEvent(const char* event,
-                                              const char* data,
-                                              const char* buffer,
-                                              int length) {
-  std::string _eventName(event);
-  std::string _eventData(data);
-  std::vector<char> stringData;
-  stringData.resize(length + 1, '\0');
-  memcpy(stringData.data(), buffer, length);
-  std::string _eventBuffer(stringData.data());
-  node_async_call::async_call([this, _eventName, _eventData, _eventBuffer] {
-    auto it = _callbacks.find("video_source_call_back_with_buffer");
-    if (it != _callbacks.end()) {
-      napi_status status;
-      size_t argc = 3;
-      napi_value args[3];
-      napi_value result;
-      status = napi_create_string_utf8(it->second->env, _eventName.c_str(),
-                                       _eventName.length(), &args[0]);
-      status = napi_create_string_utf8(it->second->env, _eventData.c_str(),
-                                       _eventData.length(), &args[1]);
-      status = napi_create_string_utf8(it->second->env, _eventBuffer.c_str(),
-                                       _eventBuffer.length(), &args[2]);
-
-      napi_value call_back_value;
-      status = napi_get_reference_value(
-          it->second->env, it->second->call_back_ref, &call_back_value);
-
-      napi_value recv_value;
-      status = napi_get_undefined(it->second->env, &recv_value);
-
-      status = napi_call_function(it->second->env, recv_value, call_back_value,
-                                  argc, args, &result);
-    }
-  });
-}
-
-void NodeIrisEventHandler::OnVideoSourceExit() {
-    LOG_F(INFO, "NodeIrisEventHandler::OnVideoSourceExit");
-    _node_iris_engine->VideoSourceRelease();
-}
 }  // namespace electron
 }  // namespace rtc
 }  // namespace agora
