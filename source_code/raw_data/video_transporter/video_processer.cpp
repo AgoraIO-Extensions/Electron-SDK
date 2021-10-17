@@ -51,15 +51,6 @@ bool VideoProcesser::GetVideoFrame(
                                            channel_id);
 }
 
-bool VideoProcesser::VideoSourceGetVideoFrame(
-    IrisRtcVideoFrame &video_frame,
-    bool &is_new_frame, unsigned int uid, const char *channel_id) {
-  std::lock_guard<std::mutex> lock(_video_frame_mutex);
-  auto ret =
-      _cached_video_source_video_frame->CopyFrame(is_new_frame, video_frame);
-  return ret;
-}
-
 void VideoProcesser::OnVideoFrameReceived(const char *data, int len) {
   std::lock_guard<std::mutex> lock(_video_frame_mutex);
   _cached_video_source_video_frame->UpdateBuffer(data);
