@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:37
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-10-10 22:09:53
+ * @Last Modified time: 2021-10-17 17:36:39
  */
 #include "node_iris_rtc_engine.h"
 #include <assert.h>
@@ -20,7 +20,7 @@ const char* NodeIrisRtcEngine::_ret_result_str = "result";
 
 NodeIrisRtcEngine::NodeIrisRtcEngine() {
   LOG_F(INFO, "NodeIrisRtcEngine::NodeIrisRtcEngine()");
-  
+  ::UseJsonArray();
   // main_process
   _iris_engine = std::make_shared<IrisRtcEngine>();
   _video_processer = std::make_shared<VideoProcesser>(_iris_engine);
@@ -102,6 +102,7 @@ napi_value NodeIrisRtcEngine::New(napi_env env, napi_callback_info info) {
         napi_wrap(env, jsthis, reinterpret_cast<void*>(iris_engine),
                   NodeIrisRtcEngine::Destructor, nullptr, &iris_engine->_ref);
     assert(status == napi_ok);
+    return jsthis;
   } else {
     napi_value instance;
     status = napi_new_instance(env, Constructor(env), 0, nullptr, &instance);
