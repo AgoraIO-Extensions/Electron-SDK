@@ -2,11 +2,12 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:44
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-09-22 23:17:44
+ * @Last Modified time: 2021-10-17 17:35:28
  */
 #pragma once
 #include <node_api.h>
 #include <exception>
+#include "iris_base.h"
 #include "iris_rtc_engine.h"
 #include "iris_rtc_raw_data.h"
 #include "iris_rtc_raw_data_plugin_manager.h"
