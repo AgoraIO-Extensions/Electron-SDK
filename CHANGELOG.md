@@ -1,3 +1,6 @@
+## 3.6.200-rc.100-build.1018(Oct 18th, 2021)
+* add api setVideoEncoderConfigurationEx
+* add api updateChannelMediaOptionsEx
 ## 3.1.1-hotfix.2 (September 21th, 2020)
 #### :house: Intrenal
 * 3.1.1 hotfix
