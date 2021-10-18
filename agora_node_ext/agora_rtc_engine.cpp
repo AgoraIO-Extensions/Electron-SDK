@@ -2080,7 +2080,7 @@ namespace agora {
 
                   status = napi_get_object_property_uint32_(isolate, logConfig, "fileSizeInKB", logConfigStrut.fileSizeInKB);
                   CHECK_NAPI_STATUS(pEngine, status);
-                  uint32_t logLevel = 0x0000;
+                  uint32_t logLevel = 0x0001;
                   status = napi_get_object_property_uint32_(isolate, logConfig, "level", logLevel);
                   logConfigStrut.level = (agora::commons::LOG_LEVEL)logLevel;
 
