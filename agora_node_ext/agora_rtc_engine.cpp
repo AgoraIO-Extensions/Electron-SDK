@@ -63,6 +63,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(stopPreview)
                 // PROPERTY_METHOD_DEFINE(setVideoProfile)
                 PROPERTY_METHOD_DEFINE(setVideoEncoderConfiguration)
+                PROPERTY_METHOD_DEFINE(setVideoEncoderConfigurationEx)
                 PROPERTY_METHOD_DEFINE(enableAudio)
                 PROPERTY_METHOD_DEFINE(disableAudio)
                 PROPERTY_METHOD_DEFINE(setAudioProfile)
@@ -2413,6 +2414,115 @@ namespace agora {
                 config.mirrorMode = VIDEO_MIRROR_MODE_TYPE(mirrorMode);
 
                 result = pEngine->m_engine->setVideoEncoderConfiguration(config);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setVideoEncoderConfigurationEx)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                napi_status status = napi_ok;
+                Isolate *isolate = args.GetIsolate();
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+
+                if(!args[0]->IsObject()) {
+                    status = napi_invalid_arg;
+                    CHECK_NAPI_STATUS(pEngine, status);
+                }
+                Local<Object> obj;
+                status = napi_get_value_object_(isolate, args[0], obj);
+                CHECK_NAPI_STATUS(pEngine, status);
+                VideoDimensions dimensions;
+                VideoEncoderConfiguration config;
+
+                status = napi_get_object_property_int32_(isolate, obj, "width", dimensions.width);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "height", dimensions.height);
+                CHECK_NAPI_STATUS(pEngine, status);
+                config.dimensions = dimensions;
+                status = napi_get_object_property_int32_(isolate, obj, "bitrate", config.bitrate);
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_int32_(isolate, obj, "minBitrate", config.minBitrate);
+                CHECK_NAPI_STATUS(pEngine, status);
+                // status = napi_get_object_property_int32_(isolate, obj, "minFrameRate", config.minFrameRate);
+                // CHECK_NAPI_STATUS(pEngine, status);
+
+                int frameRateVal;
+                FRAME_RATE frameRate;
+                status = napi_get_object_property_int32_(isolate, obj, "frameRate", frameRateVal);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                config.frameRate = (FRAME_RATE)frameRateVal;
+
+                int orientationModeVal;
+                ORIENTATION_MODE orientationMode;
+                status = napi_get_object_property_int32_(isolate, obj, "orientationMode", orientationModeVal);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                switch(orientationModeVal) {
+                    case 0:
+                        orientationMode = ORIENTATION_MODE_ADAPTIVE;
+                        break;
+                    case 1:
+                        orientationMode = ORIENTATION_MODE_FIXED_LANDSCAPE;
+                        break;
+                    case 2:
+                        orientationMode = ORIENTATION_MODE_FIXED_PORTRAIT;
+                        break;
+                    default:
+                        status = napi_invalid_arg;
+                        break;
+                }
+                CHECK_NAPI_STATUS(pEngine, status);
+                config.orientationMode = orientationMode;
+
+                
+                int degradationPrefValue;
+                DEGRADATION_PREFERENCE degradationPref;
+                status = napi_get_object_property_int32_(isolate, obj, "degradationPreference", degradationPrefValue);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                switch(degradationPrefValue) {
+                    case 0:
+                        degradationPref = MAINTAIN_QUALITY;
+                        break;
+                    case 1:
+                        degradationPref = MAINTAIN_FRAMERATE;
+                        break;
+                    case 2:
+                        degradationPref = MAINTAIN_BALANCED;
+                        break;
+                    default:
+                        status = napi_invalid_arg;
+                        break;
+                }
+                CHECK_NAPI_STATUS(pEngine, status);
+                config.degradationPreference = degradationPref;
+
+                int mirrorMode;
+                status = napi_get_object_property_int32_(isolate, obj, "mirrorMode", mirrorMode);
+                config.mirrorMode = VIDEO_MIRROR_MODE_TYPE(mirrorMode);
+
+                Local<Object> objConnection;
+                nodestring channelId;
+                RtcConnection connection;
+
+                status = napi_get_value_object_(isolate, args[1], objConnection);
+                CHECK_NAPI_STATUS(pEngine, status);
+                
+                status = napi_get_object_property_nodestring_(isolate, objConnection, "channelId", channelId);
+                connection.channelId = channelId;
+                CHECK_NAPI_STATUS(pEngine, status);
+                status = napi_get_object_property_uint32_(isolate, objConnection, "localUid", connection.localUid);
+                CHECK_NAPI_STATUS(pEngine, status);
+
+                IRtcEngineEx* engineEx = (IRtcEngineEx*)pEngine->m_engine;
+                result = engineEx->setVideoEncoderConfigurationEx(config, connection);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;

@@ -1961,6 +1961,28 @@ class AgoraRtcEngine extends EventEmitter {
     });
   }
 
+  setVideoEncoderConfigurationEx(config: VideoEncoderConfiguration, connection: RtcConnection): number {
+    const {
+      width = 640,
+      height = 480,
+      frameRate = 15,
+      bitrate = 0,
+      minBitrate = -1,
+      orientationMode = 0,
+      degradationPreference = 0,
+      mirrorMode = 0
+    } = config;
+    return this.rtcEngine.setVideoEncoderConfigurationEx({
+      width,
+      height,
+      frameRate,
+      bitrate,
+      minBitrate,
+      orientationMode,
+      degradationPreference,
+      mirrorMode
+    }, connection);
+  }
   /**
    * Sets the priority of a remote user's media stream.
    *
@@ -4253,6 +4275,10 @@ class AgoraRtcEngine extends EventEmitter {
 
   updateChannelMediaOptions(options: ChannelMediaOptions): number {
     return this.rtcEngine.updateChannelMediaOptions(options);
+  }
+
+  updateChannelMediaOptionsEx(options: ChannelMediaOptions, connection: RtcConnection): number {
+    return this.rtcEngine.updateChannelMediaOptionsEx(options, connection);
   }
 
   startPrimaryCameraCapture(config: CameraCapturerConfiguration): number {

@@ -2676,6 +2676,13 @@ export interface NodeRtcEngine {
   setVideoEncoderConfiguration(
     config: VideoEncoderConfiguration
   ): number;
+   /**
+   * @ignore
+   */
+    setVideoEncoderConfigurationEx(
+      config: VideoEncoderConfiguration,
+      connection: RtcConnection
+    ): number;
   /**
    * @ignore
    */
@@ -3316,11 +3323,15 @@ export interface NodeRtcEngine {
    * @ignore
    */
   updateChannelMediaOptions(options: ChannelMediaOptions): number;
- /**
+  /**
+   * @ignore
+   */
+  updateChannelMediaOptionsEx(options: ChannelMediaOptions, connection: RtcConnection): number;
+  /**
    * @ignore
    */
   startPrimaryCameraCapture(config: CameraCapturerConfiguration): number;
- /**
+  /**
    * @ignore
    */
   startSecondaryCameraCapture(config: CameraCapturerConfiguration): number;

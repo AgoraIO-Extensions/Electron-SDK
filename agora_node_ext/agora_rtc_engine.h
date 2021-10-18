@@ -82,6 +82,7 @@ namespace agora {
             NAPI_API(stopPreview);
             // NAPI_API(setVideoProfile);
             NAPI_API(setVideoEncoderConfiguration);
+            NAPI_API(setVideoEncoderConfigurationEx);
             NAPI_API(enableAudio);
             NAPI_API(disableAudio);
             NAPI_API(setAudioProfile);
