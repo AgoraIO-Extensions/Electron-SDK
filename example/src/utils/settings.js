@@ -1,26 +1,39 @@
-export const APP_ID = #APPID
-export const SHARE_ID = 0
+export const SHARE_ID = 10000
+export const LOCAL_USER_ID = 10001
 export const RTMP_URL = ''
-export const FU_AUTH = []
-
-import { VoiceChangerPreset, AudioReverbPreset } from '../../../JS/Api/native_type';
 
 export const voiceReverbList = [
   {
-    value: AudioReverbPreset.AUDIO_REVERB_OFF,
+    value: 0,
     label: "AUDIO_REVERB_OFF"
   },
   {
-    value: AudioReverbPreset.AUDIO_REVERB_FX_POPULAR,
-    label: "AUDIO_REVERB_FX_POPULAR"
+    value: 1,
+    label: "AUDIO_REVERB_POPULAR"
   },
   {
-    value: AudioReverbPreset.AUDIO_REVERB_FX_KTV,
-    label: "AUDIO_REVERB_FX_KTV"
+    value: 2,
+    label: "AUDIO_REVERB_RNB"
   },
   {
-    value: AudioReverbPreset.AUDIO_REVERB_FX_UNCLE,
-    label: "AUDIO_REVERB_FX_UNCLE"
+    value: 3,
+    label: "AUDIO_REVERB_ROCK"
+  },
+  {
+    value: 4,
+    label: "VOICE_CHANGER_HIPHOP"
+  },
+  {
+    value: 5,
+    label: "VOICE_CHANGER_VOCAL_CONCERT"
+  },
+  {
+    value: 6,
+    label: "VOICE_CHANGER_KTV"
+  },
+  {
+    value: 7,
+    label: "VOICE_CHANGER_STUDIO"
   }
 ]
 
@@ -52,37 +65,57 @@ export const voiceChangerList = [
   {
     value: 6,
     label: "VOICE_CHANGER_HULK"
-  },
-  {
-    value: VoiceChangerPreset.GENERAL_BEAUTY_VOICE_MALE_MAGNETIC,
-    label:"GENERAL_BEAUTY_VOICE_MALE_MAGNETIC"
   }
 ]
 
 export const videoProfileList = [
   {
     value: 0,
-    label: '160x120	15fps	65kbps'
+    label: '160x120	15fps	65kbps',
+    width: 160,
+    height: 120,
+    fps: 15,
+    bitrate: 65
   },
   {
-    value: 20,
-    label: '320x240	15fps	200kbps'
+    value: 1,
+    label: '320x240	15fps	200kbps',
+    width: 320,
+    height: 240,
+    fps: 15,
+    bitrate: 200
   },
   {
-    value: 30,
-    label: '640x360	15fps	400kbps'
+    value: 2,
+    label: '640x360	15fps	400kbps',
+    width: 640,
+    height: 360,
+    fps: 15,
+    bitrate: 400
   },
   {
-    value: 43,
-    label: '640x480	30fps	750kbps'
+    value: 3,
+    label: '640x480	30fps	750kbps',
+    width: 640,
+    height: 480,
+    fps: 30,
+    bitrate: 750
   },
   {
-    value: 50,
-    label: '1280x720 15fps 1130kbps'
+    value: 4,
+    label: '1280x720 15fps 1130kbps',
+    width: 1280,
+    height: 720,
+    fps: 15,
+    bitrate: 1130
   },
   {
-    value: 60,
-    label: '1920x1080 15fps 2080kbps'
+    value: 5,
+    label: '1920x1080 15fps 2080kbps',
+    width: 1920,
+    height: 1080,
+    fps: 15,
+    bitrate: 2080
   }
 ]
 
