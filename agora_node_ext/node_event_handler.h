@@ -112,6 +112,7 @@ namespace agora {
 
         class NodeRtcEngine;
         class NodeUid;
+        class CustomRtcConnection;
         class NodeEventHandler : public IRtcEngineEventHandlerEx
         {
         public:
@@ -157,13 +158,13 @@ namespace agora {
             std::unordered_map<std::string, NodeEventCallback*> m_callbacks;
             NodeRtcEngine* m_engine;
 
-            void onAudioVolumeIndication_node(const RtcConnection& connection, AudioVolumeInfo* sperkers, unsigned int speakerNumber, int totalVolume);
-            void onRtcStats_node_with_type(const char *type,const RtcConnection& connection, const RtcStats& stats);
-            void onLocalAudioStats_node(const RtcConnection& connection, const LocalAudioStats& stats);
-            void onLocalVideoStats_node(const RtcConnection& connection, const LocalVideoStats& stats);
-            void onRemoteVideoStats_node(const RtcConnection& connection, const RemoteVideoStats& stats);
-            void onRemoteAudioStats_node(const RtcConnection& connection, const RemoteAudioStats& stats);
-            void sendJSWithConnection(const char* type, int count, const RtcConnection connection, ...);
+            void onAudioVolumeIndication_node(const CustomRtcConnection& connection, AudioVolumeInfo* sperkers, unsigned int speakerNumber, int totalVolume);
+            void onRtcStats_node_with_type(const char *type,const CustomRtcConnection& connection, const RtcStats& stats);
+            void onLocalAudioStats_node(const CustomRtcConnection& connection, const LocalAudioStats& stats);
+            void onLocalVideoStats_node(const CustomRtcConnection& connection, const LocalVideoStats& stats);
+            void onRemoteVideoStats_node(const CustomRtcConnection& connection, const RemoteVideoStats& stats);
+            void onRemoteAudioStats_node(const CustomRtcConnection& connection, const RemoteAudioStats& stats);
+            void sendJSWithConnection(const char* type, int count, const CustomRtcConnection connection, ...);
         };
     }
 }
