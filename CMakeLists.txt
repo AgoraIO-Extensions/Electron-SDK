@@ -53,13 +53,11 @@ file(GLOB COMMON_RAW_DATA_FILE
 
 # platform file
 set(PLATFORM_MAC_FILE 
-        ${SOURCE_CODE_PATH}/window_Info/node_screen_window_info_mac.cpp 
-        ${SOURCE_CODE_PATH}/process/node_process_unix.cpp
+        ${SOURCE_CODE_PATH}/window_Info/node_screen_window_info_mac.cpp
         )
 
 set(PLATFORM_WIN_FILE 
-        ${SOURCE_CODE_PATH}/window_Info/node_screen_window_info_win.cpp 
-        ${SOURCE_CODE_PATH}/process/node_process_win.cpp
+        ${SOURCE_CODE_PATH}/window_Info/node_screen_window_info_win.cpp
         )
 
 # different target file

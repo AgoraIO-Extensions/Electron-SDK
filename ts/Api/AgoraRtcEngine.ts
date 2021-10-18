@@ -149,6 +149,7 @@ export class AgoraRtcEngine extends EventEmitter {
     this._rtcEngine.OnEvent(
       "call_back",
       (processType: PROCESS_TYPE, eventName: string, eventData: string) => {
+        console.log(`call_back ${processType} == ${eventName} == ${eventData}`)
         const finalFunc =
           processType === PROCESS_TYPE.MAIN
             ? this.engineEvent
@@ -172,14 +173,6 @@ export class AgoraRtcEngine extends EventEmitter {
         finalFunc(eventName, eventData, eventBuffer);
       }
     );
-
-    this._rtcEngine.OnEvent("video_source_call_back", this.videoSourceEvent);
-
-    this._rtcEngine.OnEvent(
-      "video_source_on_event_with_buffer",
-      this.videoSourceEventWithBuffer
-    );
-
     this._rendererManager = new RendererManager(this._rtcEngine);
   }
 
