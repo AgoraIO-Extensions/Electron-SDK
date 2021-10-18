@@ -257,6 +257,9 @@ namespace agora {
           NODE_SET_OBJ_PROP_NUMBER(obj, "memoryAppUsageRatio", stats.memoryAppUsageRatio);
           NODE_SET_OBJ_PROP_NUMBER(obj, "memoryAppUsageInKbytes", stats.memoryAppUsageInKbytes);
           NODE_SET_OBJ_PROP_NUMBER(obj, "memoryTotalUsageRatio", stats.memoryTotalUsageRatio);
+          NODE_SET_OBJ_PROP_NUMBER(obj, "txPacketLossRate", stats.txPacketLossRate);
+          NODE_SET_OBJ_PROP_NUMBER(obj, "rxPacketLossRate", stats.rxPacketLossRate);
+          
 
           Local<Object> connectionObj = Object::New(isolate);
           connectionObj->Set(context, napi_create_string_(isolate, "localUid"), napi_create_uid_(isolate, connection.localUid));
@@ -589,12 +592,18 @@ namespace agora {
           });
       }
 
-      void NodeEventHandler::onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed)
+      void NodeEventHandler::onJoinChannelSuccess(const RtcConnection& connection, int elapsed)
       {
         FUNC_TRACE;
-        std::string channelName = channel;
-        node_async_call::async_call([this, channelName, uid, elapsed]() {
-          MAKE_JS_CALL_3(RTC_EVENT_JOIN_CHANNEL, string, channelName.c_str(), uid, uid, int32, elapsed);
+        node_async_call::async_call([this, connection, elapsed] {
+          Isolate* isolate = Isolate::GetCurrent();
+          HandleScope scope(isolate);
+          this->sendJSWithConnection(
+            RTC_EVENT_JOIN_CHANNEL,
+            2,
+            connection,
+            napi_create_int32_(isolate, elapsed)
+          );
           });
       }
 

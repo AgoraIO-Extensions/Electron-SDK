@@ -42,6 +42,7 @@ import {
   AREA_CODE,
   STREAM_PUBLISH_STATE,
   STREAM_SUBSCRIBE_STATE,
+  LogConfig,
   AUDIO_ROUTE_TYPE,
   EncryptionConfig,
   LocalTranscoderConfiguration,
@@ -59,7 +60,8 @@ import {
   AUDIO_RECORDING_QUALITY_TYPE,
   BeautyOptions,
   RtcConnection,
-  ChannelMediaRelayConfiguration
+  ChannelMediaRelayConfiguration,
+  MEDIA_SOURCE_TYPE
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -220,12 +222,11 @@ class AgoraRtcEngine extends EventEmitter {
     });
 
     this.rtcEngine.onEvent('joinchannel', function(
-      channel: string,
-      uid: number,
+      connection: RtcConnection,
       elapsed: number
     ) {
-      fire('joinedchannel', channel, uid, elapsed);
-      fire('joinedChannel', channel, uid, elapsed);
+      fire('joinedchannel', connection, elapsed);
+      fire('joinedChannel', connection, elapsed);
     });
 
     this.rtcEngine.onEvent('rejoinchannel', function(
@@ -1261,8 +1262,8 @@ class AgoraRtcEngine extends EventEmitter {
    *  - `ERR_INVALID_APP_ID (101)`: The app ID is invalid. Check if it is in 
    * the correct format.
    */
-  initialize(appid: string, areaCode: AREA_CODE = (0xFFFFFFFF)): number {
-    return this.rtcEngine.initialize(appid, areaCode);
+  initialize(appid: string, areaCode: AREA_CODE = (0xFFFFFFFF), logConfig?: LogConfig): number {
+    return this.rtcEngine.initialize(appid, areaCode, logConfig);
   }
 
   createMediaPlayer(): AgoraMediaPlayer {
@@ -4291,7 +4292,8 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Enable/Disable extension.
    *
-   * @param id id for extension, e.g. agora.beauty.
+   * @param provider_name name for provider, e.g. agora.io.
+   * @param extension_name name for extension, e.g. agora.beauty.
    * @param enable enable or disable.
    * - true: enable.
    * - false: disable.
@@ -4300,32 +4302,68 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
- enableExtension(provider_name: string, extension_name: string,enable :boolean): number {
-   return this.rtcEngine.enableExtension(provider_name, extension_name, enable);
+ enableExtension(provider_name: string, extension_name: string,enable :boolean, type = MEDIA_SOURCE_TYPE.UNKNOWN_MEDIA_SOURCE): number {
+   return this.rtcEngine.enableExtension(provider_name, extension_name, enable, type);
  }
-
- getExtensionProperty(provider_name: string, extension_name: string, key: string, json_value: string): number {
-  return this.rtcEngine.getExtensionProperty(provider_name, extension_name, key, json_value, json_value.length);
-}
+  /**
+   * Get extension specific property.
+   *
+   * @param provider_name name for provider, e.g. agora.io.
+   * @param extension_name name for extension, e.g. agora.beauty.
+   * @param key key for the property.
+   * @param json_value property value.
+   * @param buf_len max length of the json value buffer
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+ getExtensionProperty(provider_name: string, extension_name: string, key: string, json_value: string, type = MEDIA_SOURCE_TYPE.UNKNOWN_MEDIA_SOURCE): number {
+  return this.rtcEngine.getExtensionProperty(provider_name, extension_name, key, json_value, json_value.length, type);
+ }
+    /** Enables/Disables image enhancement and sets the options.
+   *
+   * @note Call this method after calling the \ref IRtcEngine::enableVideo "enableVideo" method.
+   *
+   * @param enabled Sets whether or not to enable image enhancement:
+   * - true: enables image enhancement.
+   * - false: disables image enhancement.
+   * @param options Sets the image enhancement option. See BeautyOptions.
+   */
  setBeautyEffectOptions(enabled :boolean, options :BeautyOptions):number {
    return this.rtcEngine.setBeautyEffectOptions(enabled, options);
  }
  setScreenCaptureOrientation(type: VIDEO_SOURCE_TYPE, orientation: VIDEO_ORIENTATION): number{
     return this.rtcEngine.setScreenCaptureOrientation(type, orientation);
  }
-
- /**
+  /**
    * Set extension specific property.
    *
+   * @param provider_name name for provider, e.g. agora.io.
+   * @param extension_name name for extension, e.g. agora.beauty.
    * @param key key for the property.
-   * @param jsonValue property value.
+   * @param json_value property value.
    *
    * @return
    * - 0: Success.
    * - < 0: Failure.
    */
- setExtensionProperty(provider_name: string, extension_name: string, key :string,json_value :string): number {
-   return this.rtcEngine.setExtensionProperty(provider_name, extension_name, key, json_value);
+ setExtensionProperty(provider_name: string, extension_name: string, key :string,json_value :string, type = MEDIA_SOURCE_TYPE.UNKNOWN_MEDIA_SOURCE): number {
+   return this.rtcEngine.setExtensionProperty(provider_name, extension_name, key, json_value, type);
+ }
+    /**
+   * Set extension provider specific property.
+   *
+   * @param provider_name name for provider, e.g. agora.io.
+   * @param key key for the property.
+   * @param json_value property value.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  setExtensionProviderProperty(provider_name: string, key: string, json_value: string): number{
+    return this.rtcEngine.setExtensionProviderProperty(provider_name, key, json_value);
  }
  
  
@@ -4401,7 +4439,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: 'joinedChannel',
-    cb: (channel: string, uid: number, elapsed: number) => void
+    cb: (connection: RtcConnection, elapsed: number) => void
   ): this;
   /** Occurs when a user rejoins the channel after disconnection due to network 
    * problems.
