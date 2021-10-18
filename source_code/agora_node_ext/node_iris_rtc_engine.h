@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:44
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-10-17 17:35:28
+ * @Last Modified time: 2021-10-18 22:44:00
  */
 #pragma once
 #include <node_api.h>
@@ -16,7 +16,6 @@
 #include "node_iris_rtc_device_manager.h"
 #include "node_screen_window_info.h"
 #include "video_processer.h"
-#include "video_source_proxy.h"
 
 namespace agora {
 namespace rtc {
