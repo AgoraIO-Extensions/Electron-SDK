@@ -17,9 +17,18 @@
 #include "node_async_queue.h"
 #include <vector>
 #include <iostream>
+
 namespace agora {
     namespace rtc {
 
+      struct CustomRtcConnection {
+        std::string channelId;
+        uid_t localUid;
+        CustomRtcConnection(const RtcConnection &rtcConnection){
+          channelId = rtcConnection.channelId;
+          localUid = rtcConnection.localUid;
+        }
+      };
 #define FUNC_TRACE 
 
         NodeEventHandler::NodeEventHandler(NodeRtcEngine *pEngine)
@@ -193,7 +202,7 @@ namespace agora {
 
       // private
 
-      void NodeEventHandler::onAudioVolumeIndication_node(const RtcConnection& connection, AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume)
+      void NodeEventHandler::onAudioVolumeIndication_node(const CustomRtcConnection& connection, AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume)
       {
         FUNC_TRACE;
         auto it = m_callbacks.find(RTC_EVENT_AUDIO_VOLUME_INDICATION);
@@ -211,7 +220,7 @@ namespace agora {
 
           Local<Object> connectionObj = Object::New(isolate);
           connectionObj->Set(context, napi_create_string_(isolate, "localUid"), napi_create_uid_(isolate, connection.localUid));
-          connectionObj->Set(context, napi_create_string_(isolate, "channelId"), napi_create_string_(isolate, connection.channelId));
+          connectionObj->Set(context, napi_create_string_(isolate, "channelId"), napi_create_string_(isolate, connection.channelId.c_str()));
 
           Local<Value> argv[4]{
             connectionObj,
@@ -224,7 +233,7 @@ namespace agora {
         }
       }
 
-      void NodeEventHandler::onRtcStats_node_with_type(const char*type, const RtcConnection& connection, const RtcStats& stats)
+      void NodeEventHandler::onRtcStats_node_with_type(const char*type, const CustomRtcConnection& connection, const RtcStats& stats)
       {
         unsigned int usercount = stats.userCount;
         LOG_INFO("duration : %d, tx :%d, rx :%d, txbr :%d, rxbr :%d, txAudioBr :%d, rxAudioBr :%d, users :%d\n",
@@ -263,7 +272,7 @@ namespace agora {
 
           Local<Object> connectionObj = Object::New(isolate);
           connectionObj->Set(context, napi_create_string_(isolate, "localUid"), napi_create_uid_(isolate, connection.localUid));
-          connectionObj->Set(context, napi_create_string_(isolate, "channelId"), napi_create_string_(isolate, connection.channelId));
+          connectionObj->Set(context, napi_create_string_(isolate, "channelId"), napi_create_string_(isolate, connection.channelId.c_str()));
 
 
           Local<Value> arg[2] = { connectionObj, obj };
@@ -274,7 +283,7 @@ namespace agora {
         } while (false);
       }
 
-      void NodeEventHandler::onLocalAudioStats_node(const RtcConnection& connection, const LocalAudioStats& stats)
+      void NodeEventHandler::onLocalAudioStats_node(const CustomRtcConnection& connection, const LocalAudioStats& stats)
       {
         FUNC_TRACE;
         do {
@@ -290,7 +299,7 @@ namespace agora {
 
           Local<Object> connectionObj = Object::New(isolate);
           connectionObj->Set(context, napi_create_string_(isolate, "localUid"), napi_create_uid_(isolate, connection.localUid));
-          connectionObj->Set(context, napi_create_string_(isolate, "channelId"), napi_create_string_(isolate, connection.channelId));
+          connectionObj->Set(context, napi_create_string_(isolate, "channelId"), napi_create_string_(isolate, connection.channelId.c_str()));
 
           Local<Value> arg[2] = { connectionObj, obj };
           auto it = m_callbacks.find(RTC_EVENT_LOCAL_AUDIO_STATS);
@@ -300,7 +309,7 @@ namespace agora {
         } while (false);
       }
 
-      void NodeEventHandler::onLocalVideoStats_node(const RtcConnection& connection, const LocalVideoStats& stats)
+      void NodeEventHandler::onLocalVideoStats_node(const CustomRtcConnection& connection, const LocalVideoStats& stats)
       {
         FUNC_TRACE;
         do {
@@ -324,7 +333,7 @@ namespace agora {
 
           Local<Object> connectionObj = Object::New(isolate);
           connectionObj->Set(context, napi_create_string_(isolate, "localUid"), napi_create_uid_(isolate, connection.localUid));
-          connectionObj->Set(context, napi_create_string_(isolate, "channelId"), napi_create_string_(isolate, connection.channelId));
+          connectionObj->Set(context, napi_create_string_(isolate, "channelId"), napi_create_string_(isolate, connection.channelId.c_str()));
 
           Local<Value> arg[2] = { connectionObj, obj };
           auto it = m_callbacks.find(RTC_EVENT_LOCAL_VIDEO_STATS);
@@ -334,7 +343,7 @@ namespace agora {
         } while (false);
       }
 
-      void NodeEventHandler::onRemoteVideoStats_node(const RtcConnection& connection, const RemoteVideoStats& stats)
+      void NodeEventHandler::onRemoteVideoStats_node(const CustomRtcConnection& connection, const RemoteVideoStats& stats)
       {
         FUNC_TRACE;
         do {
@@ -357,7 +366,7 @@ namespace agora {
 
           Local<Object> connectionObj = Object::New(isolate);
           connectionObj->Set(context, napi_create_string_(isolate, "localUid"), napi_create_uid_(isolate, connection.localUid));
-          connectionObj->Set(context, napi_create_string_(isolate, "channelId"), napi_create_string_(isolate, connection.channelId));
+          connectionObj->Set(context, napi_create_string_(isolate, "channelId"), napi_create_string_(isolate, connection.channelId.c_str()));
 
           Local<Value> arg[2] = { connectionObj, obj };
           auto it = m_callbacks.find(RTC_EVENT_REMOTE_VIDEO_STATS);
@@ -367,7 +376,7 @@ namespace agora {
         } while (false);
       }
 
-      void NodeEventHandler::onRemoteAudioStats_node(const RtcConnection& connection, const RemoteAudioStats& stats)
+      void NodeEventHandler::onRemoteAudioStats_node(const CustomRtcConnection& connection, const RemoteAudioStats& stats)
       {
         FUNC_TRACE;
         do {
@@ -389,7 +398,7 @@ namespace agora {
 
           Local<Object> connectionObj = Object::New(isolate);
           connectionObj->Set(context, napi_create_string_(isolate, "localUid"), napi_create_uid_(isolate, connection.localUid));
-          connectionObj->Set(context, napi_create_string_(isolate, "channelId"), napi_create_string_(isolate, connection.channelId));
+          connectionObj->Set(context, napi_create_string_(isolate, "channelId"), napi_create_string_(isolate, connection.channelId.c_str()));
 
           Local<Value> arg[2] = { connectionObj, obj };
           auto it = m_callbacks.find(RTC_EVENT_REMOTE_AUDIO_STATS);
@@ -399,14 +408,14 @@ namespace agora {
         } while (false);
       }
 
-      void NodeEventHandler::sendJSWithConnection(const char* type, int count, const RtcConnection connection, ...) {
+      void NodeEventHandler::sendJSWithConnection(const char* type, int count, const CustomRtcConnection connection, ...) {
         do {
           Isolate* isolate = Isolate::GetCurrent();
           HandleScope scope(isolate);
           Local<Context> context = isolate->GetCurrentContext();
           Local<Object> obj = Object::New(isolate);
 
-          NODE_SET_OBJ_PROP_STRING(obj, "channelId", connection.channelId);
+          NODE_SET_OBJ_PROP_STRING(obj, "channelId", connection.channelId.c_str());
           NODE_SET_OBJ_PROP_UID(obj, "localUid", connection.localUid);
 
           va_list ap;
@@ -426,7 +435,7 @@ namespace agora {
           }
         } while (false);
       }
-
+      
       //public
       void NodeEventHandler::fireApiError(const char* funcName)
       {
@@ -476,6 +485,7 @@ namespace agora {
       void NodeEventHandler::onAudioVolumeIndication(const RtcConnection& connection, const AudioVolumeInfo* speaker, unsigned int speakerNumber, int totalVolume)
       {
         FUNC_TRACE;
+        CustomRtcConnection  _connection(connection);
         if (speaker) {
           AudioVolumeInfo* localSpeakers = new AudioVolumeInfo[speakerNumber];
           for (unsigned int i = 0; i < speakerNumber; i++) {
@@ -483,14 +493,14 @@ namespace agora {
             localSpeakers[i].uid = tmp.uid;
             localSpeakers[i].volume = tmp.volume;
           }
-          node_async_call::async_call([this, connection, localSpeakers, speakerNumber, totalVolume] {
-            this->onAudioVolumeIndication_node(connection, localSpeakers, speakerNumber, totalVolume);
+          node_async_call::async_call([this, _connection, localSpeakers, speakerNumber, totalVolume] {
+            this->onAudioVolumeIndication_node(_connection, localSpeakers, speakerNumber, totalVolume);
             delete[]localSpeakers;
             });
         }
         else {
-          node_async_call::async_call([this, connection, speakerNumber, totalVolume] {
-            this->onAudioVolumeIndication_node(connection, NULL, speakerNumber, totalVolume);
+          node_async_call::async_call([this, _connection, speakerNumber, totalVolume] {
+            this->onAudioVolumeIndication_node(_connection, NULL, speakerNumber, totalVolume);
             });
         }
       }
@@ -498,12 +508,13 @@ namespace agora {
       void NodeEventHandler::onUserJoined(const RtcConnection& connection, uid_t remoteUid, int elapsed)
       {
         FUNC_TRACE;
-        node_async_call::async_call([this, connection, remoteUid, elapsed] {
+        CustomRtcConnection  _connection(connection);
+        node_async_call::async_call([this, _connection, remoteUid, elapsed] {
           Isolate* isolate = Isolate::GetCurrent();
           HandleScope scope(isolate);
           this->sendJSWithConnection(RTC_EVENT_USER_JOINED,
             3,
-            connection,
+            _connection,
             napi_create_uid_(isolate, remoteUid),
             napi_create_int32_(isolate, elapsed)
           );
@@ -513,12 +524,13 @@ namespace agora {
       void NodeEventHandler::onUserOffline(const RtcConnection& connection, uid_t remoteUid, USER_OFFLINE_REASON_TYPE reason)
       {
         FUNC_TRACE;
-        node_async_call::async_call([this, connection, remoteUid, reason] {
+        CustomRtcConnection  _connection(connection);
+        node_async_call::async_call([this, _connection, remoteUid, reason] {
           Isolate* isolate = Isolate::GetCurrent();
           HandleScope scope(isolate);
           this->sendJSWithConnection(RTC_EVENT_USER_OFFLINE,
             3,
-            connection,
+            _connection,
             napi_create_uid_(isolate, remoteUid),
             napi_create_int32_(isolate, reason)
           );
@@ -528,13 +540,14 @@ namespace agora {
       void NodeEventHandler::onConnectionStateChanged(const RtcConnection& connection, CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason)
       {
         FUNC_TRACE;
-        node_async_call::async_call([this, connection, state, reason] {
+        CustomRtcConnection  _connection(connection);
+        node_async_call::async_call([this, _connection, state, reason] {
           Isolate* isolate = Isolate::GetCurrent();
           HandleScope scope(isolate);
           this->sendJSWithConnection(
             RTC_EVENT_CONNECTION_STATE_CHANED,
             3,
-            connection,
+            _connection,
             napi_create_int32_(isolate, state),
             napi_create_int32_(isolate, reason)
           );
@@ -544,13 +557,14 @@ namespace agora {
       void NodeEventHandler::onNetworkQuality(const RtcConnection& connection, uid_t uid, int txQuality, int rxQuality)
       {
         FUNC_TRACE;
-        node_async_call::async_call([this, connection, uid, txQuality, rxQuality] {
+        CustomRtcConnection  _connection(connection);
+        node_async_call::async_call([this, _connection, uid, txQuality, rxQuality] {
           Isolate* isolate = Isolate::GetCurrent();
           HandleScope scope(isolate);
           this->sendJSWithConnection(
             RTC_EVENT_NETWORK_QUALITY,
             4,
-            connection,
+            _connection,
             napi_create_uid_(isolate, uid),
             napi_create_int32_(isolate, txQuality),
             napi_create_int32_(isolate, rxQuality)
@@ -561,13 +575,14 @@ namespace agora {
       void NodeEventHandler::onRemoteVideoStateChanged(const RtcConnection& connection, uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed)
       {
         FUNC_TRACE;
-        node_async_call::async_call([this, connection, uid, state, reason] {
+        CustomRtcConnection  _connection(connection);
+        node_async_call::async_call([this, _connection, uid, state, reason] {
           Isolate* isolate = Isolate::GetCurrent();
           HandleScope scope(isolate);
           this->sendJSWithConnection(
             RTC_EVENT_REMOTE_VIDEO_STATE_CHANGED,
             4,
-            connection,
+            _connection,
             napi_create_uid_(isolate, uid),
             napi_create_int32_(isolate, state),
             napi_create_int32_(isolate, reason)
@@ -578,13 +593,14 @@ namespace agora {
       void NodeEventHandler::onRemoteAudioStateChanged(const RtcConnection& connection, uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed)
       {
         FUNC_TRACE;
-        node_async_call::async_call([this, connection, uid, state, reason] {
+        CustomRtcConnection  _connection(connection);
+        node_async_call::async_call([this, _connection, uid, state, reason] {
           Isolate* isolate = Isolate::GetCurrent();
           HandleScope scope(isolate);
           this->sendJSWithConnection(
             RTC_EVENT_REMOTE_AUDIO_STATE_CHANGED,
             4,
-            connection,
+            _connection,
             napi_create_uid_(isolate, uid),
             napi_create_int32_(isolate, state),
             napi_create_int32_(isolate, reason)
@@ -595,13 +611,14 @@ namespace agora {
       void NodeEventHandler::onJoinChannelSuccess(const RtcConnection& connection, int elapsed)
       {
         FUNC_TRACE;
-        node_async_call::async_call([this, connection, elapsed] {
+        CustomRtcConnection  _connection(connection);
+        node_async_call::async_call([this, _connection, elapsed] {
           Isolate* isolate = Isolate::GetCurrent();
           HandleScope scope(isolate);
           this->sendJSWithConnection(
             RTC_EVENT_JOIN_CHANNEL,
             2,
-            connection,
+            _connection,
             napi_create_int32_(isolate, elapsed)
           );
           });
@@ -610,7 +627,8 @@ namespace agora {
       void NodeEventHandler::onLocalVideoStateChanged(const RtcConnection& connection, LOCAL_VIDEO_STREAM_STATE localVideoState, LOCAL_VIDEO_STREAM_ERROR error)
       {
         FUNC_TRACE;
-        node_async_call::async_call([this, connection, localVideoState, error] {
+        CustomRtcConnection  _connection(connection);
+        node_async_call::async_call([this, _connection, localVideoState, error] {
           Isolate* isolate = Isolate::GetCurrent();
           HandleScope scope(isolate);
           this->sendJSWithConnection(
@@ -626,13 +644,14 @@ namespace agora {
       void NodeEventHandler::onLocalAudioStateChanged(const RtcConnection& connection, LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error)
       {
         FUNC_TRACE;
-        node_async_call::async_call([this, connection, state, error] {
+        CustomRtcConnection  _connection(connection);
+        node_async_call::async_call([this, _connection, state, error] {
           Isolate* isolate = Isolate::GetCurrent();
           HandleScope scope(isolate);
           this->sendJSWithConnection(
             RTC_EVENT_LOCAL_AUDIO_STATE_CHANGED,
             3,
-            connection,
+            _connection,
             napi_create_int32_(isolate, state),
             napi_create_int32_(isolate, error)
           );
@@ -641,30 +660,34 @@ namespace agora {
 
       void NodeEventHandler::onRtcStats(const RtcConnection& connection, const RtcStats& stats)
       {
-        node_async_call::async_call([this, connection, stats] {
-          this->onRtcStats_node_with_type(RTC_EVENT_RTC_STATS,connection, stats);
+        CustomRtcConnection  _connection(connection);
+        node_async_call::async_call([this, _connection, stats] {
+          this->onRtcStats_node_with_type(RTC_EVENT_RTC_STATS,_connection, stats);
           });
       }
       void NodeEventHandler::onLeaveChannel(const RtcConnection& connection, const RtcStats& stats)
       {
-        node_async_call::async_call([this, connection, stats] {
-          this->onRtcStats_node_with_type(RTC_EVENT_LEAVE_CHANNEL, connection, stats);
+        CustomRtcConnection  _connection(connection);
+        node_async_call::async_call([this, _connection, stats] {
+          this->onRtcStats_node_with_type(RTC_EVENT_LEAVE_CHANNEL, _connection, stats);
           });
       }
 
       void NodeEventHandler::onLocalAudioStats(const RtcConnection& connection, const LocalAudioStats& stats)
       {
         FUNC_TRACE;
-        node_async_call::async_call([this, connection, stats] {
-          this->onLocalAudioStats_node(connection, stats);
+        CustomRtcConnection  _connection(connection);
+        node_async_call::async_call([this, _connection, stats] {
+          this->onLocalAudioStats_node(_connection, stats);
           });
       }
 
       void NodeEventHandler::onLocalVideoStats(const RtcConnection& connection, const LocalVideoStats& stats)
       {
         FUNC_TRACE;
-        node_async_call::async_call([this, connection, stats] {
-          this->onLocalVideoStats_node(connection, stats);
+        CustomRtcConnection  _connection(connection);
+        node_async_call::async_call([this, _connection, stats] {
+          this->onLocalVideoStats_node(_connection, stats);
           });
       }
 
@@ -672,16 +695,18 @@ namespace agora {
       {
         FUNC_TRACE;
         printf("frame rate : %d, bitrate : %d, width %d, height %d\n", stats.rendererOutputFrameRate, stats.receivedBitrate, stats.width, stats.height);
-        node_async_call::async_call([this, connection, stats] {
-          this->onRemoteVideoStats_node(connection, stats);
+        CustomRtcConnection  _connection(connection);
+        node_async_call::async_call([this, _connection, stats] {
+          this->onRemoteVideoStats_node(_connection, stats);
           });
       }
 
       void NodeEventHandler::onRemoteAudioStats(const RtcConnection& connection, const RemoteAudioStats& stats)
       {
         FUNC_TRACE;
-        node_async_call::async_call([this, connection, stats] {
-          this->onRemoteAudioStats_node(connection, stats);
+        CustomRtcConnection  _connection(connection);
+        node_async_call::async_call([this, _connection, stats] {
+          this->onRemoteAudioStats_node(_connection, stats);
           });
       }
 
