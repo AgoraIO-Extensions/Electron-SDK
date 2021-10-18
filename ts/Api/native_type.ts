@@ -324,7 +324,68 @@ export enum VIDEO_SOURCE_TYPE {
 
   VIDEO_SOURCE_UNKNOWN = 100
 };
-
+/** 
+ * The type of media device.
+ */
+export enum MEDIA_SOURCE_TYPE {
+  /** 
+   * 0: The audio playback device.
+   */
+  AUDIO_PLAYOUT_SOURCE = 0,
+  /** 
+   * 1: Microphone.
+   */
+  AUDIO_RECORDING_SOURCE = 1,
+  /**
+   * 2: Video captured by primary camera.
+   */
+  PRIMARY_CAMERA_SOURCE = 2,
+  /**
+   * 3: Video captured by secondary camera.
+   */
+  SECONDARY_CAMERA_SOURCE = 3,
+  /**
+   * 4: Video captured by primary screen capturer.
+   */
+  PRIMARY_SCREEN_SOURCE = 4,
+  /**
+   * 5: Video captured by secondary screen capturer.
+   */
+  SECONDARY_SCREEN_SOURCE = 5,
+  /**
+   * 6: Video captured by custom video source.
+   */
+  CUSTOM_VIDEO_SOURCE = 6,
+  /**
+   * 7: Video for media player sharing.
+   */
+  MEDIA_PLAYER_SOURCE = 7,
+  /**
+   * 8: Video for png image.
+   */
+  RTC_IMAGE_PNG_SOURCE = 8,
+  /**
+   * 9: Video for jpeg image.
+   */
+  RTC_IMAGE_JPEG_SOURCE = 9,
+  /**
+   * 10: Video for gif image.
+   */
+  RTC_IMAGE_GIF_SOURCE = 10,
+  /**
+   * 11: Remote video received from network.
+   */
+  REMOTE_VIDEO_SOURCE = 11,
+  /**
+   * 12: Video for transcoded.
+   */
+  TRANSCODED_VIDEO_SOURCE = 12,
+  /**
+   * 100: unknown media source.
+   */
+  UNKNOWN_MEDIA_SOURCE = 100
+};
+  
 /**
  * The rotation information.
  */
@@ -820,6 +881,14 @@ export interface RtcStats {
   memoryAppUsageRatio: number;
   memoryAppUsageInKbytes: number;
   memoryTotalUsageRatio: number;
+  /**
+   * The packet loss rate of sender(broadcaster).
+   */
+  txPacketLossRate: number;
+   /**
+    * The packet loss rate of receiver(audience).
+    */
+  rxPacketLossRate: number;
 }
 /** Quality change of the local video. */
 export enum QualityAdaptIndication {
@@ -2167,6 +2236,30 @@ export declare type MEDIA_STREAM_TYPE =
   | 2 //Audio stream
   | 3 //Subtitle stream
 
+
+
+  export enum LOG_LEVEL {
+    LOG_LEVEL_NONE = 0x0000,
+    LOG_LEVEL_INFO = 0x0001,
+    LOG_LEVEL_WARN = 0x0002,
+    LOG_LEVEL_ERROR = 0x0004,
+    LOG_LEVEL_FATAL = 0x0008,
+  };
+  /** Definition of LogConfiguration
+ */
+export interface LogConfig
+{
+  /**The log file path, default is NULL for default log path
+   */
+  filePath: string;
+  /** The log file size, KB , set 1024KB to use default log size
+   */
+  fileSizeInKB: number;
+  /** The log level, set LOG_LEVEL_INFO to use default log level
+   */
+  level?: LOG_LEVEL
+};
+
 export interface MediaStreamInfo { /* the index of the stream in the media file */
     streamIndex : number;
   
@@ -2452,7 +2545,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  initialize(appId: string, areaCode?: AREA_CODE): number;
+  initialize(appId: string, areaCode?: AREA_CODE, logConfig?: LogConfig): number;
   /**
    * @ignore
    */
@@ -3256,15 +3349,19 @@ export interface NodeRtcEngine {
  /**
   * @ignore
   */
- enableExtension(provider_name: string, extension_name: string,enable :boolean): number;
+ enableExtension(provider_name: string, extension_name: string,enable :boolean, type:MEDIA_SOURCE_TYPE): number;
  /**
   * @ignore
   */
- getExtensionProperty(provider_name: string, extension_name: string, key: string, json_value: string,buf_len: number): number ;
+ getExtensionProperty(provider_name: string, extension_name: string, key: string, json_value: string,buf_len: number,type:MEDIA_SOURCE_TYPE): number ;
  /**
   * @ignore
   */
- setExtensionProperty(provider_name: string, extension_name: string, key :string,json_value :string): number;
+  setExtensionProperty(provider_name: string, extension_name: string, key: string, json_value: string, type: MEDIA_SOURCE_TYPE): number;
+ /**
+  * @ignore
+  */
+  setExtensionProviderProperty(provider_name: string, key :string, json_value :string): number;
  /**
   * @ignore
   */

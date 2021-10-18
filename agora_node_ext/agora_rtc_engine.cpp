@@ -297,10 +297,11 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setAddonLogFile);
                 PROPERTY_METHOD_DEFINE(leaveChannelEx);
                 PROPERTY_METHOD_DEFINE(startAudioRecording2);
-                // PROPERTY_METHOD_DEFINE(startAudioRecordingWithConfig);
-                // PROPERTY_METHOD_DEFINE(setClientRoleWithOptions);
+
                 PROPERTY_METHOD_DEFINE(setBeautyEffectOptions);
                 PROPERTY_METHOD_DEFINE(setScreenCaptureOrientation);
+                PROPERTY_METHOD_DEFINE(setExtensionProviderProperty);
+                
 
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
@@ -597,7 +598,7 @@ namespace agora {
                         int sourceType;
                         napi_get_object_property_int32_(isolate, videoInputStreamObj, "sourceType", sourceType);
                         CHECK_NAPI_STATUS(pEngine, status);
-                        videoInputStreams[i].sourceType = (VIDEO_SOURCE_TYPE)sourceType;
+                        videoInputStreams[i].sourceType = (agora::media::MEDIA_SOURCE_TYPE)sourceType;
                         napi_get_object_property_uint32_(isolate, videoInputStreamObj, "remoteUserUid", videoInputStreams[i].remoteUserUid);
                         napi_get_object_property_nodestring_(isolate, videoInputStreamObj, "imageUrl", imageUrlList[i]);
                         if (status == napi_ok) {
@@ -771,7 +772,7 @@ namespace agora {
                         int sourceType;
                         napi_get_object_property_int32_(isolate, videoInputStreamObj, "sourceType", sourceType);
                         CHECK_NAPI_STATUS(pEngine, status);
-                        videoInputStreams[i].sourceType = (VIDEO_SOURCE_TYPE)sourceType;
+                        videoInputStreams[i].sourceType = (agora::media::MEDIA_SOURCE_TYPE)sourceType;
                         napi_get_object_property_uint32_(isolate, videoInputStreamObj, "remoteUserUid", videoInputStreams[i].remoteUserUid);
                         CHECK_NAPI_STATUS(pEngine, status);
                         napi_get_object_property_nodestring_(isolate, videoInputStreamObj, "imageUrl", imageUrlList[i]);
@@ -2064,6 +2065,28 @@ namespace agora {
                 context.eventHandler = pEngine->m_eventHandler.get();
                 context.appId = appid;
                 context.areaCode = areaCode;
+
+                Local<Object> logConfig;
+                nodestring filePath;
+                status = napi_get_value_object_(isolate, args[2], logConfig);
+                if (status == napi_ok)
+                {
+                  commons::LogConfig logConfigStrut;
+                  
+
+                  status = napi_get_object_property_nodestring_(isolate, logConfig, "filePath", filePath);
+                  CHECK_NAPI_STATUS(pEngine, status);
+                  logConfigStrut.filePath = filePath;
+
+                  status = napi_get_object_property_uint32_(isolate, logConfig, "fileSizeInKB", logConfigStrut.fileSizeInKB);
+                  CHECK_NAPI_STATUS(pEngine, status);
+                  uint32_t logLevel = 0x0000;
+                  status = napi_get_object_property_uint32_(isolate, logConfig, "level", logLevel);
+                  logConfigStrut.level = (agora::commons::LOG_LEVEL)logLevel;
+
+                  context.logConfig = logConfigStrut;
+                }
+                
                 auto engineEx = (IRtcEngineEx*) pEngine->m_engine;
                 int suc = engineEx->initialize(context);
                 if (0 != suc) {
@@ -5872,9 +5895,12 @@ namespace agora {
 
                 bool enable;
                 status = napi_get_value_bool_(args[2], enable);
+
+                uint32_t type = 100;
+                status = napi_get_value_uint32_(args[3], type);
 #if defined(__APPLE__)
 #elif defined(_WIN32)
-                result = pEngine->m_engine->enableExtension(provider_name, extension_name, enable);
+                result = pEngine->m_engine->enableExtension(provider_name, extension_name, enable, (agora::media::MEDIA_SOURCE_TYPE)type);
 #endif
             } while (false);
             napi_set_int_result(args, result);
@@ -5908,7 +5934,7 @@ namespace agora {
                 int type;
                 napi_get_value_int32_(args[5], type);  
 
-                result = pEngine->m_engine->getExtensionProperty(provider_name, extension_name, key, json_value, buf_len);
+                result = pEngine->m_engine->getExtensionProperty(provider_name, extension_name, key, json_value, buf_len, (agora::media::MEDIA_SOURCE_TYPE)type);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -5987,13 +6013,13 @@ namespace agora {
                 nodestring json_value;
                 status = napi_get_value_nodestring_(args[3], json_value);
                
-                int type;
-                napi_get_value_int32_(args[4], type);  
+                uint32_t type = 100;
+                status = napi_get_value_uint32_(args[4], type);
 
 #if defined(__APPLE__)
                 result = pEngine->m_engine->setExtensionProperty(id, key, json_value);
 #elif defined(_WIN32)
-                result = pEngine->m_engine->setExtensionProperty(provider_name, extension_name, key, json_value);
+                result = pEngine->m_engine->setExtensionProperty(provider_name, extension_name, key, json_value, (agora::media::MEDIA_SOURCE_TYPE)type);
 #endif
             } while (false);
             napi_set_int_result(args, result);
@@ -6040,6 +6066,34 @@ namespace agora {
             status = napi_get_value_uint32_(args[1], orientation);
             CHECK_NAPI_STATUS(pEngine, status);
             result = pEngine->m_engine->setScreenCaptureOrientation((VIDEO_SOURCE_TYPE)type, (VIDEO_ORIENTATION)orientation);
+          } while (false);
+          napi_set_int_result(args, result);
+          LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, setExtensionProviderProperty)
+        {
+          LOG_ENTER;
+          int result = -1;
+          napi_status status = napi_ok;
+          do {
+            NodeRtcEngine* pEngine = nullptr;
+            napi_get_native_this(args, pEngine);
+            CHECK_NATIVE_THIS(pEngine);
+
+            nodestring provider_name;
+            napi_status status = napi_get_value_nodestring_(args[0], provider_name);
+            CHECK_NAPI_STATUS(pEngine, status);
+
+            nodestring key;
+            status = napi_get_value_nodestring_(args[1], key);
+            CHECK_NAPI_STATUS(pEngine, status);
+
+            nodestring json_value;
+            status = napi_get_value_nodestring_(args[2], json_value);
+            CHECK_NAPI_STATUS(pEngine, status);
+
+            result = pEngine->m_engine->setExtensionProviderProperty(provider_name, key, json_value);
           } while (false);
           napi_set_int_result(args, result);
           LOG_LEAVE;
