@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:37
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-10-19 14:14:18
+ * @Last Modified time: 2021-10-19 18:43:09
  */
 #include "node_iris_rtc_engine.h"
 #include <assert.h>
@@ -17,6 +17,7 @@ using namespace iris::rtc;
 const char* NodeIrisRtcEngine::_class_name = "NodeIrisRtcEngine";
 const char* NodeIrisRtcEngine::_ret_code_str = "retCode";
 const char* NodeIrisRtcEngine::_ret_result_str = "result";
+napi_ref* NodeIrisRtcEngine::_ref_construcotr_ptr = nullptr;
 
 NodeIrisRtcEngine::NodeIrisRtcEngine() {
   LOG_F(INFO, "NodeIrisRtcEngine::NodeIrisRtcEngine()");
@@ -66,22 +67,25 @@ napi_value NodeIrisRtcEngine::Init(napi_env env, napi_value exports) {
                              13, properties, &cons);
   assert(status == napi_ok);
 
-  napi_ref* constructor = new napi_ref();
-  status = napi_create_reference(env, cons, 1, constructor);
+  // #if NAPI_VERSION >= 6
+  // napi_ref* constructor = new napi_ref();
+  // status = napi_create_reference(env, cons, 1, constructor);
+  // assert(status == napi_ok);
+  // status = napi_set_instance_data(
+  //     env, constructor,
+  //     [](napi_env env, void* data, void* hint) {
+  //       napi_ref* constructor = static_cast<napi_ref*>(data);
+  //       napi_status status = napi_delete_reference(env, *constructor);
+  //       assert(status == napi_ok);
+  //       delete constructor;
+  //     },
+  //     nullptr);
+  // #else
+  NodeIrisRtcEngine::_ref_construcotr_ptr = new napi_ref();
+  status = napi_create_reference(env, cons, 1, NodeIrisRtcEngine::_ref_construcotr_ptr);
+  // #endif
+
   assert(status == napi_ok);
-
-  status = napi_set_instance_data(
-      env, constructor,
-      [](napi_env env, void* data, void* hint) {
-        napi_ref* constructor = static_cast<napi_ref*>(data);
-        napi_status status = napi_delete_reference(env, *constructor);
-        assert(status == napi_ok);
-        delete constructor;
-      },
-      nullptr);
-
-  assert(status == napi_ok);
-
   status = napi_set_named_property(env, exports, _class_name, cons);
   assert(status == napi_ok);
   return exports;
@@ -117,12 +121,17 @@ napi_value NodeIrisRtcEngine::New(napi_env env, napi_callback_info info) {
 
 napi_value NodeIrisRtcEngine::Constructor(napi_env env) {
   void* instance = nullptr;
-  napi_status status = napi_get_instance_data(env, &instance);
-  assert(status == napi_ok);
-  napi_ref* constructor = static_cast<napi_ref*>(instance);
-
   napi_value cons;
-  status = napi_get_reference_value(env, *constructor, &cons);
+  napi_status status;
+  // #if NAPI_VERSION >= 6
+  // status = napi_get_instance_data(env, &instance);
+  // assert(status == napi_ok);
+  // napi_ref* constructor = static_cast<napi_ref*>(instance);
+  // status = napi_get_reference_value(env, *constructor, &cons);
+  // #else
+  status = napi_get_reference_value(env, *NodeIrisRtcEngine::_ref_construcotr_ptr, &cons);
+  // #endif
+  
   assert(status == napi_ok);
   return cons;
 }

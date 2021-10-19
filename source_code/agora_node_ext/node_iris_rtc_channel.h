@@ -26,6 +26,7 @@ class NodeIrisRtcChannel {
   void OnApiError(const char* errorMessage);
 
  private:
+  static napi_ref* _ref_construcotr_ptr;
   static const char* _class_name;
   static const char* _ret_code_str;
   static const char* _ret_result_str;

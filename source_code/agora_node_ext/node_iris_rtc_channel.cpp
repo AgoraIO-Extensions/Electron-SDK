@@ -10,6 +10,7 @@ const char* NodeIrisRtcChannel::_ret_code_str = "retCode";
 const char* NodeIrisRtcChannel::_ret_result_str = "result";
 iris::rtc::IrisRtcChannel* NodeIrisRtcChannel::_staticIrisChannel = nullptr;
 const char* NodeIrisRtcChannel::_staticChannelId = "";
+napi_ref* NodeIrisRtcChannel::_ref_construcotr_ptr = nullptr;
 
 NodeIrisRtcChannel::NodeIrisRtcChannel(napi_env env,
                                        IrisRtcChannel* irisChannel,
@@ -58,12 +59,15 @@ napi_value NodeIrisRtcChannel::New(napi_env env, napi_callback_info info) {
 
 napi_value NodeIrisRtcChannel::Constructor(napi_env env) {
   void* instance_data = nullptr;
-  napi_status status = napi_get_instance_data(env, &instance_data);
-  assert(status == napi_ok);
-  napi_ref* constructor = static_cast<napi_ref*>(instance_data);
-
   napi_value cons;
-  status = napi_get_reference_value(env, *constructor, &cons);
+  napi_status status;
+  // #if NAPI_VERSION >= 6
+  // status = napi_get_instance_data(env, &instance_data);
+  // napi_ref* constructor = static_cast<napi_ref*>(instance_data);
+  // status = napi_get_reference_value(env, *constructor, &cons);
+  // #else
+  status = napi_get_reference_value(env, *NodeIrisRtcChannel::_ref_construcotr_ptr, &cons);
+  // #endif
   assert(status == napi_ok);
   return cons;
 }
@@ -85,20 +89,23 @@ napi_value NodeIrisRtcChannel::Init(napi_env env) {
                              4, properties, &cons);
   assert(status == napi_ok);
 
-  napi_ref* constructor = new napi_ref();
-  status = napi_create_reference(env, cons, 1, constructor);
-  assert(status == napi_ok);
-
-  status = napi_set_instance_data(
-      env, constructor,
-      [](napi_env env, void* data, void* hint) {
-        napi_ref* constructor = static_cast<napi_ref*>(data);
-        napi_status status = napi_delete_reference(env, *constructor);
-        assert(status == napi_ok);
-        delete constructor;
-      },
-      nullptr);
-
+  // #if NAPI_VERSION >= 6
+  // napi_ref* constructor = new napi_ref();
+  // status = napi_create_reference(env, cons, 1, constructor);
+  // assert(status == napi_ok);
+  // status = napi_set_instance_data(
+  //     env, constructor,
+  //     [](napi_env env, void* data, void* hint) {
+  //       napi_ref* constructor = static_cast<napi_ref*>(data);
+  //       napi_status status = napi_delete_reference(env, *constructor);
+  //       assert(status == napi_ok);
+  //       delete constructor;
+  //     },
+  //     nullptr);
+  // #else
+  NodeIrisRtcChannel::_ref_construcotr_ptr = new napi_ref();
+  status = napi_create_reference(env, cons, 1, NodeIrisRtcChannel::_ref_construcotr_ptr);
+  // #endif
   assert(status == napi_ok);
 
   return cons;
