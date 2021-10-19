@@ -4441,8 +4441,12 @@ class AgoraRtcEngine extends EventEmitter {
      return dllPath;
   }
 
-  applyVideoEncoderMirrorToRemote(uid: number,mirrorMode: VIDEO_MIRROR_MODE_TYPE, connection?: RtcConnection): number{
+  applyVideoEncoderMirrorToRemote(uid: number, mirrorMode: VIDEO_MIRROR_MODE_TYPE, connection?: RtcConnection): number{
     return this.rtcEngine.applyVideoEncoderMirrorToRemote(uid, mirrorMode, connection);
+  }
+
+  applyVideoOrientationToRemote(uid: number, orientation: VIDEO_ORIENTATION, connection?: RtcConnection) {
+    return this.rtcEngine.applyVideoOrientationToRemote(uid, orientation, connection);
   }
 }
 /** The AgoraRtcEngine interface. */
