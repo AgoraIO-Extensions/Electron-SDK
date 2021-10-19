@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:44
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-10-19 14:14:18
+ * @Last Modified time: 2021-10-19 18:14:39
  */
 #pragma once
 #include <node_api.h>
@@ -56,6 +56,7 @@ class NodeIrisRtcEngine {
   static const char* _class_name;
 
  private:
+  static napi_ref* _ref_construcotr_ptr;
   static const char* _ret_code_str;
   static const char* _ret_result_str;
   //  std::unique_ptr<VideoSourceProxy> _video_source_proxy;
