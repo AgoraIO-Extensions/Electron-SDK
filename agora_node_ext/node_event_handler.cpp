@@ -597,7 +597,7 @@ namespace agora {
         node_async_call::async_call([this, uid, channelName, elapsed]()
           {
 
-          MAKE_JS_CALL_3(RTC_EVENT_JOIN_CHANNEL, string, channelName.c_str(), uid, uid, int32, elapsed);
+          MAKE_JS_CALL_3(RTC_EVENT_JOIN_CHANNEL, string, channelName.c_str(), int32, uid, int32, elapsed);
           });
       }
 

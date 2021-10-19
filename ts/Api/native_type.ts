@@ -3411,6 +3411,7 @@ export interface NodeRtcEngine {
   enableBrightnessCorrection(enabled: boolean, mode: BRIGHTNESS_CORRECTION_MODE, sourceType?: VIDEO_SOURCE_TYPE): number;
   applyBrightnessCorrectionToRemote(uid: number, enabled: boolean, mode: BRIGHTNESS_CORRECTION_MODE, connection?: RtcConnection): number;
   applyVideoEncoderMirrorToRemote(uid: number, mirrorMode: VIDEO_MIRROR_MODE_TYPE, connection?: RtcConnection): number;
+  applyVideoOrientationToRemote(uid: number, orientation: VIDEO_ORIENTATION, connection?: RtcConnection): number;
 }
 
 export interface NodeMediaPlayer {
