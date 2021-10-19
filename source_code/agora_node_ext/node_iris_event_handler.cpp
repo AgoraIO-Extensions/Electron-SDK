@@ -2,34 +2,32 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:49
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-10-11 00:24:13
+ * @Last Modified time: 2021-10-19 14:13:32
  */
 #include "node_iris_event_handler.h"
 #include <memory.h>
+#include <node_api.h>
 #include <string>
 #include "node_iris_rtc_engine.h"
-#include <node_api.h>
 namespace agora {
 namespace rtc {
 namespace electron {
-NodeIrisEventHandler::NodeIrisEventHandler(PROCESS_TYPE type)
-:_type(type) {
-    node_async_call::close(false);
+NodeIrisEventHandler::NodeIrisEventHandler(PROCESS_TYPE type) : _type(type) {
+  node_async_call::close(false);
 }
 
 NodeIrisEventHandler::~NodeIrisEventHandler() {
   node_async_call::close(true);
 
   // TODO release call back memory and ref
-  for (auto it = _callbacks.begin(); it != _callbacks.end();)
-  {
+  for (auto it = _callbacks.begin(); it != _callbacks.end();) {
     auto item = it->second;
     auto ref = item->call_back_ref;
     napi_delete_reference(item->env, ref);
     delete item;
     item = nullptr;
     _callbacks.erase(it++);
-    }
+  }
   _callbacks.clear();
 }
 
@@ -87,7 +85,8 @@ void NodeIrisEventHandler::OnEvent(const char* event,
 
   memcpy(stringData.data(), buffer, length);
   std::string _eventBuffer(stringData.data());
-  node_async_call::async_call([this, _eventName, _eventData, _eventBuffer, type] {
+  node_async_call::async_call([this, _eventName, _eventData, _eventBuffer,
+                               type] {
     auto it = _callbacks.find("call_back_with_buffer");
     if (it != _callbacks.end()) {
       size_t argc = 4;
@@ -98,7 +97,7 @@ void NodeIrisEventHandler::OnEvent(const char* event,
       status = napi_create_string_utf8(it->second->env, _eventName.c_str(),
                                        _eventName.length(), &args[1]);
       status = napi_create_string_utf8(it->second->env, _eventData.c_str(),
-                                      _eventData.length(), &args[2]);
+                                       _eventData.length(), &args[2]);
       status = napi_create_string_utf8(it->second->env, _eventBuffer.c_str(),
                                        _eventBuffer.length(), &args[3]);
 

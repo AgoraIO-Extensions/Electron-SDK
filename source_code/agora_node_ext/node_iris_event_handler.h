@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:53
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-10-10 23:52:32
+ * @Last Modified time: 2021-10-19 14:13:45
  */
 #pragma once
 #include <unordered_map>
@@ -15,7 +15,7 @@ namespace agora {
 namespace rtc {
 namespace electron {
 class NodeIrisRtcEngine;
-class NodeIrisEventHandler : public iris::IrisEventHandler{
+class NodeIrisEventHandler : public iris::IrisEventHandler {
  public:
   typedef struct NodeEventCallback {
     napi_env env;
@@ -33,14 +33,13 @@ class NodeIrisEventHandler : public iris::IrisEventHandler{
                        const void* buffer,
                        unsigned length) override;
 
-
   void addEvent(const std::string& eventName,
                 napi_env& env,
                 napi_value& call_bcak,
                 napi_value& global);
 
  private:
-  std::unordered_map<std::string, EventCallback *> _callbacks;
+  std::unordered_map<std::string, EventCallback*> _callbacks;
   PROCESS_TYPE _type;
 };
 }  // namespace electron

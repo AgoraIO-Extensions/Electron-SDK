@@ -113,17 +113,19 @@ napi_status napi_obj_set_property(napi_env& env,
                                   const char* utf8name,
                                   unsigned char* value,
                                   int length) {
-    napi_status status;
-    napi_value n_value;
-    // just for get ArrayBuffer pointer.
-    unsigned char* array_buffer = value;
-    status = napi_create_arraybuffer(env, length, (void **)&array_buffer, &n_value);
-    memcpy(array_buffer, value, length);
-    
-    napi_value typed_array_value;
-    status = napi_create_typedarray(env, napi_uint8_array, length, n_value, 0, &typed_array_value);
-    status = napi_set_named_property(env, object, utf8name, typed_array_value);
-    return status;
+  napi_status status;
+  napi_value n_value;
+  // just for get ArrayBuffer pointer.
+  unsigned char* array_buffer = value;
+  status =
+      napi_create_arraybuffer(env, length, (void**)&array_buffer, &n_value);
+  memcpy(array_buffer, value, length);
+
+  napi_value typed_array_value;
+  status = napi_create_typedarray(env, napi_uint8_array, length, n_value, 0,
+                                  &typed_array_value);
+  status = napi_set_named_property(env, object, utf8name, typed_array_value);
+  return status;
 }
 
 napi_status napi_obj_set_property(napi_env& env,

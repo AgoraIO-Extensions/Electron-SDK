@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:29
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-10-10 22:08:08
+ * @Last Modified time: 2021-10-19 14:14:02
  */
 #include "node_iris_rtc_device_manager.h"
 #include <assert.h>
@@ -45,7 +45,7 @@ napi_value NodeIrisRtcDeviceManager::New(napi_env env,
 
   auto deviceManager = new NodeIrisRtcDeviceManager(env, _staticDeviceManager);
   _staticDeviceManager = nullptr;
-  status = napi_wrap(env, jsthis, reinterpret_cast<void *>(deviceManager),
+  status = napi_wrap(env, jsthis, reinterpret_cast<void*>(deviceManager),
                      NodeIrisRtcDeviceManager::Destructor, nullptr,
                      &deviceManager->_ref);
   assert(status == napi_ok);

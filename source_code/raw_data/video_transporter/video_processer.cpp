@@ -6,7 +6,7 @@ namespace electron {
 using namespace iris::rtc;
 
 VideoProcesser::VideoProcesser(
-    std::shared_ptr<iris::rtc::IrisRtcEngine> &irisRtcEngine)
+    std::shared_ptr<iris::rtc::IrisRtcEngine>& irisRtcEngine)
     : _iris_rtc_renderer_delegate(nullptr) {
   _iris_rtc_engine = irisRtcEngine;
   _iris_rtc_raw_data = _iris_rtc_engine.lock()->raw_data();
@@ -26,15 +26,16 @@ VideoProcesser::~VideoProcesser() {
 }
 
 int VideoProcesser::EnableVideoFrameCache(
-    const IrisRtcRendererCacheConfig &cache_config, unsigned int uid,
-    const char *channel_id) {
+    const IrisRtcRendererCacheConfig& cache_config,
+    unsigned int uid,
+    const char* channel_id) {
   LOG_F(INFO, "EnableVideoFrameCache uid: %u", uid);
   _iris_rtc_renderer_delegate = cache_config.delegate;
   _iris_rtc_renderer->EnableVideoFrameCache(cache_config, uid, channel_id);
   return ERROR_OK;
 }
 
-int VideoProcesser::DisableVideoFrameCache(const char *channel_id,
+int VideoProcesser::DisableVideoFrameCache(const char* channel_id,
                                            unsigned int uid) {
   _iris_rtc_renderer->DisableVideoFrameCache(&uid, channel_id);
   if (_iris_rtc_renderer_delegate) {
@@ -44,17 +45,18 @@ int VideoProcesser::DisableVideoFrameCache(const char *channel_id,
   return ERROR_OK;
 }
 
-bool VideoProcesser::GetVideoFrame(
-    IrisRtcVideoFrame &video_frame, bool &is_new_frame,
-    unsigned int uid, const char *channel_id) {
+bool VideoProcesser::GetVideoFrame(IrisRtcVideoFrame& video_frame,
+                                   bool& is_new_frame,
+                                   unsigned int uid,
+                                   const char* channel_id) {
   return _iris_rtc_renderer->GetVideoFrame(video_frame, is_new_frame, uid,
                                            channel_id);
 }
 
-void VideoProcesser::OnVideoFrameReceived(const char *data, int len) {
+void VideoProcesser::OnVideoFrameReceived(const char* data, int len) {
   std::lock_guard<std::mutex> lock(_video_frame_mutex);
   _cached_video_source_video_frame->UpdateBuffer(data);
 }
-} // namespace electron
-} // namespace rtc
-} // namespace agora
+}  // namespace electron
+}  // namespace rtc
+}  // namespace agora
