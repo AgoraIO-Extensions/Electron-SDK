@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:37
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-10-17 17:36:39
+ * @Last Modified time: 2021-10-19 13:09:20
  */
 #include "node_iris_rtc_engine.h"
 #include <assert.h>
@@ -266,6 +266,8 @@ napi_value NodeIrisRtcEngine::OnEvent(napi_env env, napi_callback_info info) {
   assert(status == napi_ok);
   if (nodeIrisRtcEngine->_iris_engine) {
     nodeIrisRtcEngine->_iris_event_handler->addEvent(parameter, env, cb,
+                                                     global);
+    nodeIrisRtcEngine->_iris_event_handler_for_sub_process->addEvent(parameter, env, cb,
                                                      global);
   } else {
     LOG_F(INFO, "NodeIrisRtcEngine::OnEvent error Not Init Engine");
