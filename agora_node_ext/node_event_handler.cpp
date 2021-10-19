@@ -676,7 +676,6 @@ void NodeEventHandler::onAudioVolumeIndication_node(
     const CustomRtcConnection &connection, AudioVolumeInfo *speakers,
     unsigned int speakerNumber, int totalVolume) {
   FUNC_TRACE;
-  CustomRtcConnection _connection(connection);
   auto it = m_callbacks.find(RTC_EVENT_AUDIO_VOLUME_INDICATION);
   if (it != m_callbacks.end()) {
     Isolate *isolate = Isolate::GetCurrent();
@@ -841,7 +840,7 @@ void NodeEventHandler::onFirstRemoteVideoDecoded(const RtcConnection& connection
     HandleScope scope(isolate);
     this->sendJSWithConnection(
       RTC_EVENT_FIRST_REMOTE_VIDEO_DECODED,
-      4,
+      5,
       _connection,
       napi_create_uid_(isolate, remoteUid),
       napi_create_int32_(isolate, width),
@@ -860,7 +859,7 @@ void NodeEventHandler::onVideoSizeChanged(const RtcConnection& connection, uid_t
     HandleScope scope(isolate);
     this->sendJSWithConnection(
       RTC_EVENT_VIDEO_SIZE_CHANGED,
-      4,
+      5,
       _connection,
       napi_create_uid_(isolate, uid),
       napi_create_int32_(isolate, width),
