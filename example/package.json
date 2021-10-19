@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "electron-webpack dev",
     "compile": "electron-webpack",
+    "write-config": "node ./scripts/writeAppId.js",
     "dist": "npm run compile && electron-builder",
-    "dist:dir": "npm run  compile&& electron-builder --dir -c.compression=store -c.mac.identity=null"
+    "dist:dir": "npm run dist --dir -c.compression=store -c.mac.identity=null"
   },
   "build": {
     "asar": false,
@@ -35,27 +36,22 @@
     "publish": null
   },
   "dependencies": {
-    "@material-ui/core": "4.9.9",
-    "bulma": "0.8.0",
-    "immutable": "3.8.2",
-    "react": "16.11.0",
-    "react-dom": "16.11.0",
-    "react-rnd": "^10.2.3",
-    "react-slider": "^1.1.2",
-    "source-map-support": "0.5.16"
+    "bulma": "^0.7.1",
+    "immutable": "^3.8.2",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
+    "source-map-support": "^0.5.9"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "7.7.0",
-    "@babel/preset-react": "7.7.0",
-    "electron": "^5.0.8",
-    "electron-builder": "22.1.0",
-    "electron-webpack": "2.7.4",
-    "html-loader": "1.0.0-alpha.0",
-    "webpack": "4.41.2"
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "electron": "5.0.8",
+    "electron-builder": "21.2.0",
+    "electron-webpack": "^2.7.4",
+    "webpack": "^4.39.2"
   },
   "resolutions": {
-    "webpack-sources": "1.0.1",
-    "electron-webpack/html-loader": "1.0.0-alpha.0"
+    "electron-rebuild": "1.0.1"
   },
   "electronWebpack": {
     "renderer": {
