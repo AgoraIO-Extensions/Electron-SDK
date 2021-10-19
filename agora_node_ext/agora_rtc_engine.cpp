@@ -313,6 +313,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(enableBrightnessCorrection);
                 PROPERTY_METHOD_DEFINE(applyVideoEncoderMirrorToRemote);
                 PROPERTY_METHOD_DEFINE(applyBrightnessCorrectionToRemote);
+                PROPERTY_METHOD_DEFINE(applyVideoOrientationToRemote);
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -6696,6 +6697,46 @@ namespace agora {
             else
             {
               result = engineEx->applyBrightnessCorrectionToRemote(uid, enabled, (BRIGHTNESS_CORRECTION_MODE)mode);
+            }     
+          } while (false);
+          napi_set_int_result(args, result);
+          LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, applyVideoOrientationToRemote)
+        {
+          LOG_ENTER;
+          int result = -1;
+          napi_status status = napi_ok;
+          Isolate* isolate = args.GetIsolate();
+          do {
+            NodeRtcEngine* pEngine = nullptr;
+            napi_get_native_this(args, pEngine);
+            CHECK_NATIVE_THIS(pEngine);
+
+            uid_t uid;
+            status = napi_get_value_uid_t_(args[0], uid);
+            CHECK_NAPI_STATUS(pEngine, status);
+
+            int orientation = 0;
+            status = napi_get_value_int32_(args[1], orientation);
+            CHECK_NAPI_STATUS(pEngine, status);
+
+            Local<Object> obj;
+            status = napi_get_value_object_(isolate, args[2], obj);
+            IRtcEngineEx* engineEx = (IRtcEngineEx*)pEngine->m_engine;
+            if (status != napi_invalid_arg)
+            {
+              RtcConnection connection;
+              NodeString channelId;
+              napi_get_object_property_nodestring_(isolate, obj, "channelId", channelId);
+              connection.channelId = channelId;
+              napi_get_object_property_uint32_(isolate, obj, "localUid", connection.localUid);
+              result = engineEx->applyVideoOrientationToRemoteEx(uid, (VIDEO_ORIENTATION)orientation, connection);
+            }
+            else
+            {
+              result = engineEx->applyVideoOrientationToRemote(uid, (VIDEO_ORIENTATION)orientation);
             }     
           } while (false);
           napi_set_int_result(args, result);
