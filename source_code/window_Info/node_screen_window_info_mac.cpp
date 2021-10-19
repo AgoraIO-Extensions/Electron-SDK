@@ -2,15 +2,15 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:57
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-05-19 20:12:46
+ * @Last Modified time: 2021-10-19 14:15:00
  */
-#include "node_screen_window_info.h"
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreGraphics/CoreGraphics.h>
 #include <CoreServices/CoreServices.h>
 #include <ImageIO/ImageIO.h>
+#include "node_screen_window_info.h"
 
-void copyImageDataToWindowInfo(CGImageRef image, ScreenWindowInfo &windowInfo) {
+void copyImageDataToWindowInfo(CGImageRef image, ScreenWindowInfo& windowInfo) {
   int maxSize = IMAGE_MAX_PIXEL_SIZE;
 
   CFMutableDataRef cfImageData = CFDataCreateMutable(NULL, 0);
@@ -29,8 +29,8 @@ void copyImageDataToWindowInfo(CGImageRef image, ScreenWindowInfo &windowInfo) {
 
   unsigned int imageDataLength = (unsigned int)CFDataGetLength(cfImageData);
   if (imageDataLength > 0) {
-    unsigned char *imageData =
-        (unsigned char *)calloc(imageDataLength, sizeof(unsigned char));
+    unsigned char* imageData =
+        (unsigned char*)calloc(imageDataLength, sizeof(unsigned char));
     if (imageData == NULL) {
       // LOG_ERROR("Out of memory.");
     } else {
@@ -43,7 +43,7 @@ void copyImageDataToWindowInfo(CGImageRef image, ScreenWindowInfo &windowInfo) {
 }
 
 void copyImageDataToDisplayInfo(CGImageRef image,
-                                ScreenDisplayInfo &displayInfo) {
+                                ScreenDisplayInfo& displayInfo) {
   int maxSize = IMAGE_MAX_PIXEL_SIZE;
 
   CFMutableDataRef cfImageData = CFDataCreateMutable(NULL, 0);
@@ -62,8 +62,8 @@ void copyImageDataToDisplayInfo(CGImageRef image,
 
   unsigned int imageDataLength = (unsigned int)CFDataGetLength(cfImageData);
   if (imageDataLength > 0) {
-    unsigned char *imageData =
-        (unsigned char *)calloc(imageDataLength, sizeof(unsigned char));
+    unsigned char* imageData =
+        (unsigned char*)calloc(imageDataLength, sizeof(unsigned char));
     if (imageData == NULL) {
       // LOG_ERROR("Out of memory.");
     } else {
@@ -88,7 +88,7 @@ std::string convertCFStringToStdString(CFStringRef cfString) {
     cfString = newString;
   }
 
-  const char *cName = CFStringGetCStringPtr(cfString, kCFStringEncodingUTF8);
+  const char* cName = CFStringGetCStringPtr(cfString, kCFStringEncodingUTF8);
   if (cName) {
     stdString = std::string(cName);
   } else {
@@ -96,7 +96,7 @@ std::string convertCFStringToStdString(CFStringRef cfString) {
     if (length > 0) {
       CFIndex maxSize =
           CFStringGetMaximumSizeForEncoding(length, kCFStringEncodingUTF8) + 1;
-      char *buffer = (char *)malloc(maxSize);
+      char* buffer = (char*)malloc(maxSize);
       if (buffer) {
         if (CFStringGetCString(cfString, buffer, maxSize,
                                kCFStringEncodingUTF8)) {
@@ -116,7 +116,7 @@ std::string convertCFStringToStdString(CFStringRef cfString) {
   return stdString;
 }
 
-bool setWindowInfoWithDictionary(ScreenWindowInfo &windowInfo,
+bool setWindowInfoWithDictionary(ScreenWindowInfo& windowInfo,
                                  CFDictionaryRef windowDic) {
   CGWindowID windowId = 0;
   CFNumberRef windowIdNumber = static_cast<CFNumberRef>(

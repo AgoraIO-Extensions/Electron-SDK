@@ -1,8 +1,8 @@
 #pragma once
 
-#include "IAgoraRtcEngine.h"
 #include <string>
 #include <vector>
+#include "IAgoraRtcEngine.h"
 
 #if defined(_WIN32)
 #include <windows.h>
@@ -32,12 +32,17 @@ struct ScreenDisplayInfo {
   bool isMain;
   bool isBuiltin;
 
-  unsigned char *imageData;
+  unsigned char* imageData;
   unsigned int imageDataLength;
 
   ScreenDisplayInfo()
-      : width(0), height(0), isActive(false), isMain(false), isBuiltin(false),
-        imageData(nullptr), imageDataLength(0) {}
+      : width(0),
+        height(0),
+        isActive(false),
+        isMain(false),
+        isBuiltin(false),
+        imageData(nullptr),
+        imageDataLength(0) {}
 };
 
 struct ScreenWindowInfo {
@@ -54,15 +59,21 @@ struct ScreenWindowInfo {
   unsigned int width;
   unsigned int height;
 
-  unsigned char *imageData;
+  unsigned char* imageData;
   unsigned int imageDataLength;
 
   unsigned int originWidth;
   unsigned int originHeight;
 
   ScreenWindowInfo()
-      : windowId(0), isOnScreen(false), width(0), height(0), imageData(nullptr),
-        imageDataLength(0), originWidth(0), originHeight(0) {}
+      : windowId(0),
+        isOnScreen(false),
+        width(0),
+        height(0),
+        imageData(nullptr),
+        imageDataLength(0),
+        originWidth(0),
+        originHeight(0) {}
 };
 
 std::vector<ScreenDisplayInfo> getAllDisplayInfo();
