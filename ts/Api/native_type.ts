@@ -60,12 +60,18 @@ export type VIDEO_CODEC_TYPE =
   | 1; // H264
 
 /**
- * Client roles in a live broadcast.
- *
- * - 1: Host.
- * - 2: Audience.
+ * User role types.
  */
-export type ClientRoleType = 1 | 2;
+ export enum CLIENT_ROLE_TYPE {
+  /**
+   * 1: Broadcaster. A broadcaster can both send and receive streams.
+   */
+  CLIENT_ROLE_BROADCASTER = 1,
+  /**
+   * 2: Audience. An audience can only receive streams.
+   */
+  CLIENT_ROLE_AUDIENCE = 2,
+};
 
 /** Video stream types.
  *
@@ -73,22 +79,71 @@ export type ClientRoleType = 1 | 2;
  * - 1: Low-stream video.
  */
 export type StreamType = 0 | 1;
-/** Media Device Type.
- * - -1: Unknown device type.
- * - 0: Audio playback device.
- * - 1: Audio recording device.
- * - 2: Video renderer.
- * - 3: Video capturer.
- * - 4: Application audio playback device.
+
+/**
+ The states of the local user's audio mixing file.
  */
-export type MediaDeviceType =
-  | -1 // Unknown device type
-  | 0 // Audio playback device
-  | 1 // Audio recording device
-  | 2 // Video renderer
-  | 3 // Video capturer
-  | 4; // Application audio playback device
+export enum AUDIO_MIXING_STATE_TYPE {
+  /** 710: The audio mixing file is playing. */
+   AUDIO_MIXING_STATE_PLAYING = 710,
+   /** 711: The audio mixing file pauses playing. */
+   AUDIO_MIXING_STATE_PAUSED = 711,
+   /** 713: The audio mixing file stops playing. */
+   AUDIO_MIXING_STATE_STOPPED = 713,
+   /** 714: An exception occurs when playing the audio mixing file.
+    See #AUDIO_MIXING_ERROR_TYPE.
+    */
+   AUDIO_MIXING_STATE_FAILED = 714,
+   /** 715: The audio mixing file is played once. */
+   AUDIO_MIXING_STATE_COMPLETED = 715,
+   /** 716: The audio mixing file is all played out. */
+   AUDIO_MIXING_STATE_ALL_LOOPS_COMPLETED = 716,
+ };
  
+ /**
+  The error codes of the local user's audio mixing file.
+  */
+ export enum AUDIO_MIXING_ERROR_TYPE {
+   /** 701: The SDK cannot open the audio mixing file. */
+   AUDIO_MIXING_ERROR_CAN_NOT_OPEN = 701,
+   /** 702: The SDK opens the audio mixing file too frequently. */
+   AUDIO_MIXING_ERROR_TOO_FREQUENT_CALL = 702,
+   /** 703: The audio mixing file playback is interrupted. */
+   AUDIO_MIXING_ERROR_INTERRUPTED_EOF = 703,
+   /** 0: The SDK can open the audio mixing file. */
+   AUDIO_MIXING_ERROR_OK = 0,
+ };
+
+  /**
+ * The media device types.
+ */
+export enum MEDIA_DEVICE_TYPE {
+  /**
+   * -1: Unknown device type.
+   */
+  UNKNOWN_AUDIO_DEVICE = -1,
+  /**
+   * 0: The audio playback device.
+   */
+  AUDIO_PLAYOUT_DEVICE = 0,
+  /**
+   * 1: The audio recording device.
+   */
+  AUDIO_RECORDING_DEVICE = 1,
+  /**
+   * 2: The video renderer.
+   */
+  VIDEO_RENDER_DEVICE = 2,
+  /**
+   * 3: The video capturer.
+   */
+  VIDEO_CAPTURE_DEVICE = 3,
+  /**
+   * 4: The audio playback device of the app.
+   */
+  AUDIO_APPLICATION_PLAYOUT_DEVICE = 4,
+};
+
 /**
  * The TranscodingUser class.
  */
@@ -953,6 +1008,105 @@ export interface LocalVideoStats {
    */
   codecType: number;
 }
+
+/** Local video state types.
+ */
+ export enum LOCAL_VIDEO_STREAM_STATE {
+  /**
+   * 0: The local video is in the initial state.
+   */
+  LOCAL_VIDEO_STREAM_STATE_STOPPED = 0,
+  /**
+   * 1: The capturer starts successfully.
+   */
+  LOCAL_VIDEO_STREAM_STATE_CAPTURING = 1,
+  /**
+   * 2: The first video frame is successfully encoded.
+   */
+  LOCAL_VIDEO_STREAM_STATE_ENCODING = 2,
+  /**
+   * 3: The local video fails to start.
+   */
+  LOCAL_VIDEO_STREAM_STATE_FAILED = 3
+};
+
+/**
+ * Local video state error codes.
+ */
+ export enum LOCAL_VIDEO_STREAM_ERROR {
+  /** 0: The local video is normal. */
+  LOCAL_VIDEO_STREAM_ERROR_OK = 0,
+  /** 1: No specified reason for the local video failure. */
+  LOCAL_VIDEO_STREAM_ERROR_FAILURE = 1,
+  /** 2: No permission to use the local video capturing device. */
+  LOCAL_VIDEO_STREAM_ERROR_DEVICE_NO_PERMISSION = 2,
+  /** 3: The local video capturing device is in use. */
+  LOCAL_VIDEO_STREAM_ERROR_DEVICE_BUSY = 3,
+  /** 4: The local video capture fails. Check whether the capturing device is working properly. */
+  LOCAL_VIDEO_STREAM_ERROR_CAPTURE_FAILURE = 4,
+  /** 5: The local video encoding fails. */
+  LOCAL_VIDEO_STREAM_ERROR_ENCODE_FAILURE = 5,
+  /** 6: The local video capturing device not avalible due to app did enter background.*/
+  LOCAL_VIDEO_STREAM_ERROR_BACKGROUD = 6,
+  /** 7: The local video capturing device not avalible because the app is running in a multi-app layout (generally on the pad) */
+  LOCAL_VIDEO_STREAM_ERROR_MULTIPLE_FOREGROUND_APPS = 7,
+  /** 8: The local video capturing device  temporarily being made unavailable due to system pressure. */
+  LOCAL_VIDEO_STREAM_ERROR_SYSTEM_PRESSURE = 8
+};
+
+/**
+ * States of the local audio.
+ */
+ export enum LOCAL_AUDIO_STREAM_STATE {
+  /**
+   * 0: The local audio is in the initial state.
+   */
+  LOCAL_AUDIO_STREAM_STATE_STOPPED = 0,
+  /**
+   * 1: The audio recording device starts successfully.
+   */
+  LOCAL_AUDIO_STREAM_STATE_RECORDING = 1,
+  /**
+   * 2: The first audio frame is encoded successfully.
+   */
+  LOCAL_AUDIO_STREAM_STATE_ENCODING = 2,
+  /**
+   * 3: The local audio fails to start.
+   */
+  LOCAL_AUDIO_STREAM_STATE_FAILED = 3
+};
+
+/**
+ * Reasons for the local audio failure.
+ */
+export enum LOCAL_AUDIO_STREAM_ERROR {
+  /**
+   * 0: The local audio is normal.
+   */
+  LOCAL_AUDIO_STREAM_ERROR_OK = 0,
+  /**
+   * 1: No specified reason for the local audio failure.
+   */
+  LOCAL_AUDIO_STREAM_ERROR_FAILURE = 1,
+  /**
+   * 2: No permission to use the local audio device.
+   */
+  LOCAL_AUDIO_STREAM_ERROR_DEVICE_NO_PERMISSION = 2,
+  /**
+   * 3: The microphone is in use.
+   */
+  LOCAL_AUDIO_STREAM_ERROR_DEVICE_BUSY = 3,
+  /**
+   * 4: The local audio recording fails. Check whether the recording device
+   * is working properly.
+   */
+  LOCAL_AUDIO_STREAM_ERROR_RECORD_FAILURE = 4,
+  /**
+   * 5: The local audio encoding fails.
+   */
+  LOCAL_AUDIO_STREAM_ERROR_ENCODE_FAILURE = 5
+};
+
 /** 
  * The statistics of the local audio stream.
  */
@@ -1534,141 +1688,463 @@ export interface RemoteAudioStats {
   frozenRate: number;
 }
 
-/**
- * State of the remote video:
- * 
- * - 0: The remote video is in the default state.
- * - 1: The first remote video packet is received.
- * - 2: The remote video stream is decoded and plays normally.
- * - 3: The remote video is frozen.
- * - 4: The remote video fails to start.
- */
-export type RemoteVideoState = 0 | 1 | 2 | 3 | 4;
-/**
- * - 0: Internal reasons.
- * - 1: Network congestion.
- * - 2: Network recovery.
- * - 3: The local user stops receiving the remote video stream or disables the 
- * video module.
- * - 4: The local user resumes receiving the remote video stream or enables the 
- * video module.
- * - 5: The remote user stops sending the video stream or disables the video 
- * module.
- * - 6: The remote user resumes sending the video stream or enables the video 
- * module.
- * - 7: The remote user leaves the channel.
- * - 8: The remote media stream falls back to the audio-only stream due to poor 
- * network conditions.
- * - 9: The remote media stream switches back to the video stream after the 
- * network conditions improve.
- */
-export type RemoteVideoStateReason = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
-/**
- * State of the remote audio stream.
- * - 0: The remote audio is in the default state.
- * - 1: The first remote audio packet is received.
- * - 2: The remote audio stream is decoded and plays normally.
- * - 3: The remote audio is frozen.
- * - 4: The remote audio fails to start.
- */
-export type RemoteAudioState = 0 | 1 | 2 | 3 | 4;
-/**
- * The reason of the remote audio state change.
- * - 0: Internal reasons. 
- * - 1: Network congestion. 
- * - 2: Network recovery. 
- * - 3: The local user stops receiving the remote audio stream or disables the 
- * audio module. 
- * - 4: The local user resumes receiving the remote audio stream or enables the 
- * audio module. 
- * - 5: The remote user stops sending the audio stream or disables the audio 
- * module. 
- * - 6: The remote user resumes sending the audio stream or enables the audio 
- * module. 
- * - 7: The remote user leaves the channel.
- */
-export type RemoteAudioStateReason = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
-/**
- * Connection states.
- * - 1: The SDK is disconnected from Agora's edge server.
- *  - This is the initial state before calling the 
- * {@link AgoraRtcEngine.joinChannel} method.
- *  - The SDK also enters this state when the application calls the 
- * {@link AgoraRtcEngine.leaveChannel} method.
- * - 2: The SDK is connecting to Agora's edge server. When the application 
- * calls the {@link AgoraRtcEngine.joinChannel} method, the SDK starts to 
- * establish a connection to the specified channel.
- *  - When the SDK successfully joins the channel, it triggers the 
- * connectionStateChanged callback and switches to the 3 state.
- *  - After the SDK joins the channel and when it finishes initializing the 
- * media engine, the SDK triggers the joinedChannel callback.
- * - 3: The SDK is connected to Agora's edge server and has joined a channel. 
- * You can now publish or subscribe to a media stream in the channel.If the 
- * connection to the channel is lost because, for example,
- * if the network is down or switched, the SDK automatically tries to reconnect 
- * and triggers:
- *  - The connectionStateChanged callback and switches to the 4 state.
- * - 4: The SDK keeps rejoining the channel after being disconnected from a 
- * joined channel because of network issues.
- *  - If the SDK cannot rejoin the channel within 10 seconds after being 
- * disconnected from Agora's edge server, the SDK triggers the connectionLost 
- * callback, stays in this state, and keeps rejoining the channel.
- *  - If the SDK fails to rejoin the channel 20 minutes after being 
- * disconnected from Agora's edge server, the SDK triggers the 
- * connectionStateChanged callback, switches to the 5 state, and stops 
- * rejoining the channel.
- * - 5: The SDK fails to connect to Agora's edge server or join the channel. 
- * You must call the {@link AgoraRtcEngine.leaveChannel leaveChannel} method 
- * to leave this state.
- *  - Calls the {@link AgoraRtcEngine.joinChannel joinChannel} method again to 
- * rejoin the channel.
- *  - If the SDK is banned from joining the channel by Agora's edge server 
- * (through the RESTful API), the SDK triggers connectionStateChanged 
- * callbacks.
- */
-export type ConnectionState =
-  | 1 // 1: The SDK is disconnected from Agora's edge server
-  | 2 // 2: The SDK is connecting to Agora's edge server.
-  | 3
-  | 4
-  | 5; // 5: The SDK fails to connect to Agora's edge server or join the channel.
+/** The state of the remote video. */
+export enum REMOTE_VIDEO_STATE {
+  /** 0: The remote video is in the default state, probably due to
+   * #REMOTE_VIDEO_STATE_REASON_LOCAL_MUTED (3),
+   * #REMOTE_VIDEO_STATE_REASON_REMOTE_MUTED (5), or
+   * #REMOTE_VIDEO_STATE_REASON_REMOTE_OFFLINE (7).
+   */
+  REMOTE_VIDEO_STATE_STOPPED = 0,
+  /** 1: The first remote video packet is received.
+   */
+  REMOTE_VIDEO_STATE_STARTING = 1,
+  /** 2: The remote video stream is decoded and plays normally, probably due to
+   * #REMOTE_VIDEO_STATE_REASON_NETWORK_RECOVERY (2),
+   * #REMOTE_VIDEO_STATE_REASON_LOCAL_UNMUTED (4),
+   * #REMOTE_VIDEO_STATE_REASON_REMOTE_UNMUTED (6), or
+   * #REMOTE_VIDEO_STATE_REASON_AUDIO_FALLBACK_RECOVERY (9).
+   */
+  REMOTE_VIDEO_STATE_DECODING = 2,
+  /** 3: The remote video is frozen, probably due to
+   * #REMOTE_VIDEO_STATE_REASON_NETWORK_CONGESTION (1) or
+   * #REMOTE_VIDEO_STATE_REASON_AUDIO_FALLBACK (8).
+   */
+  REMOTE_VIDEO_STATE_FROZEN = 3,
+  /** 4: The remote video fails to start, probably due to
+   * #REMOTE_VIDEO_STATE_REASON_INTERNAL (0).
+   */
+  REMOTE_VIDEO_STATE_FAILED = 4,
+};
+/** The reason for the remote video state change. */
+export enum REMOTE_VIDEO_STATE_REASON {
+  /**
+  * 0: Internal reasons.
+  */
+  REMOTE_VIDEO_STATE_REASON_INTERNAL = 0,
 
   /**
-   * Reasons for a connection state change.
-   * 
-   * - 0: The SDK is connecting to Agora's edge server.
-   * - 1: The SDK has joined the channel successfully.
-   * - 2: The connection between the SDK and Agora's edge server is 
-   * interrupted.
-   * - 3: The connection between the SDK and Agora's edge server is banned by 
-   * Agora's edge server.
-   * - 4: The SDK fails to join the channel for more than 20 minutes and stops 
-   * reconnecting to the channel.
-   * - 5: The SDK has left the channel.
-   * - 6: Invalid App ID.
-   * - 7: Invalid Channel Name.
-   * - 8: Invalid Token.
-   * - 9: Token Expired.
-   * - 10: This user has been banned by server.
-   * - 11: SDK reconnects for setting proxy server.
-   * - 12: Network status change for renew token.
-   * - 13: Client IP Address changed.
+  * 1: Network congestion.
+  */
+  REMOTE_VIDEO_STATE_REASON_NETWORK_CONGESTION = 1,
+
+  /**
+  * 2: Network recovery.
+  */
+  REMOTE_VIDEO_STATE_REASON_NETWORK_RECOVERY = 2,
+
+  /**
+  * 3: The local user stops receiving the remote video stream or disables the video module.
+  */
+  REMOTE_VIDEO_STATE_REASON_LOCAL_MUTED = 3,
+
+  /**
+  * 4: The local user resumes receiving the remote video stream or enables the video module.
+  */
+  REMOTE_VIDEO_STATE_REASON_LOCAL_UNMUTED = 4,
+
+  /**
+  * 5: The remote user stops sending the video stream or disables the video module.
+  */
+  REMOTE_VIDEO_STATE_REASON_REMOTE_MUTED = 5,
+
+  /**
+  * 6: The remote user resumes sending the video stream or enables the video module.
+  */
+  REMOTE_VIDEO_STATE_REASON_REMOTE_UNMUTED = 6,
+
+  /**
+  * 7: The remote user leaves the channel.
+  */
+  REMOTE_VIDEO_STATE_REASON_REMOTE_OFFLINE = 7,
+
+  /** 8: The remote audio-and-video stream falls back to the audio-only stream
+   * due to poor network conditions.
    */
-export type ConnectionChangeReason =
-  | 0 // 0: The SDK is connecting to Agora's edge server.
-  | 1 // 1: The SDK has joined the channel successfully.
-  | 2 // 2: The connection between the SDK and Agora's edge server is interrupted.
-  | 3 // 3: The connection between the SDK and Agora's edge server is banned by Agora's edge server.
-  | 4 // 4: The SDK fails to join the channel for more than 20 minutes and stops reconnecting to the channel.
-  | 5 // 5: The SDK has left the channel.
-  | 6 // 6: Invalid App ID
-  | 7 // 7: Invalid Channel Name
-  | 8 // 8: Invalid Token
-  | 9 // 9: Token Expired
-  | 10 // 10: This user has been banned by server
-  | 11 // 11: SDK reconnects for setting proxy server
-  | 12 // 12: Network status change for renew token
-  | 13; // 13: Client IP Address changed
+  REMOTE_VIDEO_STATE_REASON_AUDIO_FALLBACK = 8,
+
+  /** 9: The remote audio-only stream switches back to the audio-and-video
+   * stream after the network conditions improve.
+   */
+  REMOTE_VIDEO_STATE_REASON_AUDIO_FALLBACK_RECOVERY = 9,
+  
+  /** 10: The remote video stream type change to low stream type
+   *  just for internal use
+   */
+  REMOTE_VIDEO_STATE_REASON_VIDEO_STREAM_TYPE_CHANGE_TO_LOW = 10,
+  /** 11: The remote video stream type change to high stream type
+   *  just for internal use
+   */
+  REMOTE_VIDEO_STATE_REASON_VIDEO_STREAM_TYPE_CHANGE_TO_HIGH = 11,
+
+};
+
+/**
+ * Reasons for a user being offline.
+ */
+ export enum USER_OFFLINE_REASON_TYPE {
+  /**
+   * 0: The user leaves the current channel.
+   */
+  USER_OFFLINE_QUIT = 0,
+  /**
+   * 1: The SDK times out and the user drops offline because no data packet was received within a certain
+   * period of time. If a user quits the call and the message is not passed to the SDK (due to an
+   * unreliable channel), the SDK assumes that the user drops offline.
+   */
+  USER_OFFLINE_DROPPED = 1,
+  /**
+   * 2: (Live Broadcast only.) The user role switches from broadcaster to audience.
+   */
+  USER_OFFLINE_BECOME_AUDIENCE = 2,
+};
+
+/**
+ * Remote audio states.
+ */
+ export enum REMOTE_AUDIO_STATE
+ {
+   /**
+    * 0: The remote audio is in the default state, probably due to
+    * `REMOTE_AUDIO_REASON_LOCAL_MUTED(3)`,
+    * `REMOTE_AUDIO_REASON_REMOTE_MUTED(5)`, or
+    * `REMOTE_AUDIO_REASON_REMOTE_OFFLINE(7)`.
+    */
+   REMOTE_AUDIO_STATE_STOPPED = 0,  // Default state, audio is started or remote user disabled/muted audio stream
+   /**
+    * 1: The first remote audio packet is received.
+    */
+   REMOTE_AUDIO_STATE_STARTING = 1,  // The first audio frame packet has been received
+   /**
+    * 2: The remote audio stream is decoded and plays normally, probably
+    * due to `REMOTE_AUDIO_REASON_NETWORK_RECOVERY(2)`,
+    * `REMOTE_AUDIO_REASON_LOCAL_UNMUTED(4)`, or
+    * `REMOTE_AUDIO_REASON_REMOTE_UNMUTED(6)`.
+    */
+   REMOTE_AUDIO_STATE_DECODING = 2,  // The first remote audio frame has been decoded or fronzen state ends
+   /**
+    * 3: The remote audio is frozen, probably due to
+    * `REMOTE_AUDIO_REASON_NETWORK_CONGESTION(1)`.
+    */
+   REMOTE_AUDIO_STATE_FROZEN = 3,    // Remote audio is frozen, probably due to network issue
+   /**
+    * 4: The remote audio fails to start, probably due to
+    * `REMOTE_AUDIO_REASON_INTERNAL(0)`.
+    */
+   REMOTE_AUDIO_STATE_FAILED = 4,    // Remote audio play failed
+ };
+ 
+ /**
+  * Reasons for a remote audio state change.
+  */
+ export enum REMOTE_AUDIO_STATE_REASON
+ {
+   /**
+    * 0: Internal reasons.
+    */
+   REMOTE_AUDIO_REASON_INTERNAL = 0,
+   /**
+    * 1: Network congestion.
+    */
+   REMOTE_AUDIO_REASON_NETWORK_CONGESTION = 1,
+   /**
+    * 2: Network recovery.
+    */
+   REMOTE_AUDIO_REASON_NETWORK_RECOVERY = 2,
+   /**
+    * 3: The local user stops receiving the remote audio stream or
+    * disables the audio module.
+    */
+   REMOTE_AUDIO_REASON_LOCAL_MUTED = 3,
+   /**
+    * 4: The local user resumes receiving the remote audio stream or
+    * enables the audio module.
+    */
+   REMOTE_AUDIO_REASON_LOCAL_UNMUTED = 4,
+   /**
+    * 5: The remote user stops sending the audio stream or disables the
+    * audio module.
+    */
+   REMOTE_AUDIO_REASON_REMOTE_MUTED = 5,
+   /**
+    * 6: The remote user resumes sending the audio stream or enables the
+    * audio module.
+    */
+   REMOTE_AUDIO_REASON_REMOTE_UNMUTED = 6,
+   /**
+    * 7: The remote user leaves the channel.
+    */
+   REMOTE_AUDIO_REASON_REMOTE_OFFLINE = 7,
+ };
+ 
+
+/**
+ * Connection state types.
+ */
+ export enum CONNECTION_STATE_TYPE
+ {
+   /**
+    * 1: The SDK is disconnected from the server.
+    */
+   CONNECTION_STATE_DISCONNECTED = 1,
+   /**
+    * 2: The SDK is connecting to the server.
+    */
+   CONNECTION_STATE_CONNECTING = 2,
+   /**
+    * 3: The SDK is connected to the server and has joined a channel. You can now publish or subscribe to
+    * a track in the channel.
+    */
+   CONNECTION_STATE_CONNECTED = 3,
+   /**
+    * 4: The SDK keeps rejoining the channel after being disconnected from the channel, probably because of
+    * network issues.
+    */
+   CONNECTION_STATE_RECONNECTING = 4,
+   /**
+    * 5: The SDK fails to connect to the server or join the channel.
+    */
+   CONNECTION_STATE_FAILED = 5,
+ };
+ 
+ /**
+ * Reasons for a connection state change.
+ */
+export enum CONNECTION_CHANGED_REASON_TYPE
+{
+  /**
+   * 0: The SDK is connecting to the server.
+   */
+  CONNECTION_CHANGED_CONNECTING = 0,
+  /**
+   * 1: The SDK has joined the channel successfully.
+   */
+  CONNECTION_CHANGED_JOIN_SUCCESS = 1,
+  /**
+   * 2: The connection between the SDK and the server is interrupted.
+   */
+  CONNECTION_CHANGED_INTERRUPTED = 2,
+  /**
+   * 3: The connection between the SDK and the server is banned by the server.
+   */
+  CONNECTION_CHANGED_BANNED_BY_SERVER = 3,
+  /**
+   * 4: The SDK fails to join the channel for more than 20 minutes and stops reconnecting to the channel.
+   */
+  CONNECTION_CHANGED_JOIN_FAILED = 4,
+  /**
+   * 5: The SDK has left the channel.
+   */
+  CONNECTION_CHANGED_LEAVE_CHANNEL = 5,
+  /**
+   * 6: The connection fails because the App ID is not valid.
+   */
+  CONNECTION_CHANGED_INVALID_APP_ID = 6,
+  /**
+   * 7: The connection fails because the channel name is not valid.
+   */
+  CONNECTION_CHANGED_INVALID_CHANNEL_NAME = 7,
+  /**
+   * 8: The connection fails because the token is not valid.
+   */
+  CONNECTION_CHANGED_INVALID_TOKEN = 8,
+  /**
+   * 9: The connection fails because the token has expired.
+   */
+  CONNECTION_CHANGED_TOKEN_EXPIRED = 9,
+  /**
+   * 10: The connection is rejected by the server.
+   */
+  CONNECTION_CHANGED_REJECTED_BY_SERVER = 10,
+  /**
+   * 11: The connection changes to reconnecting because the SDK has set a proxy server.
+   */
+  CONNECTION_CHANGED_SETTING_PROXY_SERVER = 11,
+  /**
+   * 12: When the connection state changes because the app has renewed the token.
+   */
+  CONNECTION_CHANGED_RENEW_TOKEN = 12,
+  /**
+   * 13: The IP Address of the app has changed. A change in the network type or IP/Port changes the IP
+   * address of the app.
+   */
+  CONNECTION_CHANGED_CLIENT_IP_ADDRESS_CHANGED = 13,
+  /**
+   * 14: A timeout occurs for the keep-alive of the connection between the SDK and the server.
+   */
+  CONNECTION_CHANGED_KEEP_ALIVE_TIMEOUT = 14,
+  /**
+   * 15: The SDK has rejoined the channel successfully.
+   */
+  CONNECTION_CHANGED_REJOIN_SUCCESS = 15,
+  /**
+   * 16: The connection between the SDK and the server is lost.
+   */
+  CONNECTION_CHANGED_LOST = 16,
+  /**
+   * 17: The change of connection state is caused by echo test.
+   */
+  CONNECTION_CHANGED_ECHO_TEST = 17,
+  /**
+   * 18: The local IP Address is changed by user.
+   */
+  CONNECTION_CHANGED_CLIENT_IP_ADDRESS_CHANGED_BY_USER = 18,
+};
+
+/**
+* The network type.
+*/
+export enum NETWORK_TYPE {
+ /**
+  * -1: The network type is unknown.
+  */
+ NETWORK_TYPE_UNKNOWN = -1,
+ /**
+  * 0: The network type is disconnected.
+  */
+ NETWORK_TYPE_DISCONNECTED = 0,
+ /**
+  * 1: The network type is LAN.
+  */
+ NETWORK_TYPE_LAN = 1,
+ /**
+  * 2: The network type is Wi-Fi.
+  */
+ NETWORK_TYPE_WIFI = 2,
+ /**
+  * 3: The network type is mobile 2G.
+  */
+ NETWORK_TYPE_MOBILE_2G = 3,
+ /**
+  * 4: The network type is mobile 3G.
+  */
+ NETWORK_TYPE_MOBILE_3G = 4,
+ /**
+  * 5: The network type is mobile 4G.
+  */
+ NETWORK_TYPE_MOBILE_4G = 5,
+};
+
+/** Encryption error type.
+ */
+export enum ENCRYPTION_ERROR_TYPE {
+  ENCRYPTION_ERROR_INTERNAL_FAILURE = 0,
+  ENCRYPTION_ERROR_DECRYPTION_FAILURE = 1,
+  ENCRYPTION_ERROR_ENCRYPTION_FAILURE = 2,
+};
+
+ /** Type of permission.
+ */
+export enum PERMISSION_TYPE {
+  RECORD_AUDIO = 0,
+  CAMERA = 1,
+};
+
+/**
+ * States of the RTMP streaming.
+ */
+export enum RTMP_STREAM_PUBLISH_STATE {
+  /**
+   * 0: The RTMP streaming has not started or has ended.
+   *
+   * This state is also reported after you remove
+   * an RTMP address from the CDN by calling `removePublishStreamUrl`.
+   */
+  RTMP_STREAM_PUBLISH_STATE_IDLE = 0,
+  /**
+   * 1: The SDK is connecting to the streaming server and the RTMP server.
+   *
+   * This state is reported after you call `addPublishStreamUrl`.
+   */
+  RTMP_STREAM_PUBLISH_STATE_CONNECTING = 1,
+  /**
+   * 2: The RTMP streaming publishes. The SDK successfully publishes the RTMP streaming and returns
+   * this state.
+   */
+  RTMP_STREAM_PUBLISH_STATE_RUNNING = 2,
+  /**
+   * 3: The RTMP streaming is recovering. When exceptions occur to the CDN, or the streaming is
+   * interrupted, the SDK tries to resume RTMP streaming and reports this state.
+   *
+   * - If the SDK successfully resumes the streaming, `RTMP_STREAM_PUBLISH_STATE_RUNNING(2)` is reported.
+   * - If the streaming does not resume within 60 seconds or server errors occur,
+   * `RTMP_STREAM_PUBLISH_STATE_FAILURE(4)` is reported. You can also reconnect to the server by calling
+   * `removePublishStreamUrl` and `addPublishStreamUrl`.
+   */
+  RTMP_STREAM_PUBLISH_STATE_RECOVERING = 3,
+  /**
+   * 4: The RTMP streaming fails. See the `errCode` parameter for the detailed error information. You
+   * can also call `addPublishStreamUrl` to publish the RTMP streaming again.
+   */
+  RTMP_STREAM_PUBLISH_STATE_FAILURE = 4,
+};
+
+/**
+ * Error codes of the RTMP streaming.
+ */
+export enum RTMP_STREAM_PUBLISH_ERROR {
+  /**
+   * -1: The RTMP streaming fails.
+   */
+  RTMP_STREAM_PUBLISH_ERROR_FAILED = -1,
+  /**
+   * 0: The RTMP streaming publishes successfully.
+   */
+  RTMP_STREAM_PUBLISH_ERROR_OK = 0,
+  /**
+   * 1: Invalid argument. If, for example, you did not call `setLiveTranscoding` to configure the
+   * LiveTranscoding parameters before calling `addPublishStreamUrl`, the SDK reports this error.
+   * Check whether you set the parameters in `LiveTranscoding` properly.
+   */
+  RTMP_STREAM_PUBLISH_ERROR_INVALID_ARGUMENT = 1,
+  /**
+   * 2: The RTMP streaming is encrypted and cannot be published.
+   */
+  RTMP_STREAM_PUBLISH_ERROR_ENCRYPTED_STREAM_NOT_ALLOWED = 2,
+  /**
+   * 3: A timeout occurs with the RTMP streaming. Call `addPublishStreamUrl`
+   * to publish the streaming again.
+   */
+  RTMP_STREAM_PUBLISH_ERROR_CONNECTION_TIMEOUT = 3,
+  /**
+   * 4: An error occurs in the streaming server. Call `addPublishStreamUrl` to publish
+   * the stream again.
+   */
+  RTMP_STREAM_PUBLISH_ERROR_INTERNAL_SERVER_ERROR = 4,
+  /**
+   * 5: An error occurs in the RTMP server.
+   */
+  RTMP_STREAM_PUBLISH_ERROR_RTMP_SERVER_ERROR = 5,
+  /**
+   * 6: The RTMP streaming publishes too frequently.
+   */
+  RTMP_STREAM_PUBLISH_ERROR_TOO_OFTEN = 6,
+  /**
+   * 7: The host publishes more than 10 URLs. Delete the unnecessary URLs before adding new ones.
+   */
+  RTMP_STREAM_PUBLISH_ERROR_REACH_LIMIT = 7,
+  /**
+   * 8: The host manipulates other hosts' URLs. Check your app logic.
+   */
+  RTMP_STREAM_PUBLISH_ERROR_NOT_AUTHORIZED = 8,
+  /**
+   * 9: The Agora server fails to find the RTMP streaming.
+   */
+  RTMP_STREAM_PUBLISH_ERROR_STREAM_NOT_FOUND = 9,
+  /**
+   * 10: The format of the RTMP streaming URL is not supported. Check whether the URL format is correct.
+   */
+  RTMP_STREAM_PUBLISH_ERROR_FORMAT_NOT_SUPPORTED = 10,
+  /**
+   * 11: CDN related errors. Remove the original URL address and add a new one by calling
+   * `removePublishStreamUrl` and `addPublishStreamUrl`.
+   */
+  RTMP_STREAM_PUBLISH_ERROR_CDN_ERROR = 11,
+  /**
+   * 12: Resources are occupied and cannot be reused.
+   */
+  RTMP_STREAM_PUBLISH_ERROR_ALREADY_IN_USE = 12,
+};
 
 export enum ENCRYPTION_MODE {
       /* OpenSSL Encryption Mode Start */
@@ -1865,11 +2341,15 @@ export enum RTMP_STREAMING_EVENT
   RTMP_STREAMING_EVENT_FAILED_LOAD_IMAGE = 1,
 };
 
-export type STREAM_SUBSCRIBE_STATE =
-  | 0 //SUB_STATE_IDLE
-  | 1 //SUB_STATE_NO_SUBSCRIBED
-  | 2 //SUB_STATE_SUBSCRIBING
-  | 3 //SUB_STATE_SUBSCRIBED
+/**
+* The stream subscribe state.
+*/
+export enum STREAM_SUBSCRIBE_STATE {
+ SUB_STATE_IDLE = 0,
+ SUB_STATE_NO_SUBSCRIBED = 1,
+ SUB_STATE_SUBSCRIBING = 2,
+ SUB_STATE_SUBSCRIBED = 3
+};
 
   /**
  * Remote video stream types.
@@ -2026,7 +2506,7 @@ export interface ChannelMediaOptions {
   /**
    * The client role type: #CLIENT_ROLE_TYPE.
    */
-  clientRoleType: ClientRoleType;
+  clientRoleType: CLIENT_ROLE_TYPE;
   /**
    * The default video stream type: #REMOTE_VIDEO_STREAM_TYPE.
    */
@@ -2194,11 +2674,15 @@ export type AREA_CODE =
   | 32 //AREA_CODE_INDIA = ,
   | (0xFFFFFFFF); //AREA_CODE_GLOBAL = 
 
-export type STREAM_PUBLISH_STATE =
-    | 0 //PUB_STATE_IDLE
-    | 1 //PUB_STATE_NO_PUBLISHED
-    | 2 //PUB_STATE_PUBLISHING
-    | 3 //PUB_STATE_PUBLISHED
+ /**
+ * The stream publish state.
+ */
+export enum STREAM_PUBLISH_STATE {
+  PUB_STATE_IDLE = 0,
+  PUB_STATE_NO_PUBLISHED = 1,
+  PUB_STATE_PUBLISHING = 2,
+  PUB_STATE_PUBLISHED = 3
+};
 
 export type AUDIO_ROUTE_TYPE = 
     | -1 //AUDIO_ROUTE_DEFAULT
@@ -2537,6 +3021,92 @@ export enum MEDIA_PLAYER_EVENT {
     quality: AUDIO_RECORDING_QUALITY_TYPE;
   };
 
+  export interface UplinkNetworkInfo {
+  /**
+   * The target video encoder bitrate (bps).
+   */
+    video_encoder_target_bitrate_bps: number;
+  };
+
+  export interface PeerDownlinkInfo {
+    /**
+     * The ID of the user who owns the remote video stream.
+     */
+    uid: string;
+    /**
+     * The remote video stream type: #VIDEO_STREAM_TYPE.
+     */
+    stream_type: number;
+    /**
+     * The remote video downscale type: #REMOTE_VIDEO_DOWNSCALE_LEVEL.
+     */
+    current_downscale_level:number;
+    /**
+     * The expected bitrate in bps.
+     */
+    expected_bitrate_bps:number;
+  };
+
+  export interface DownlinkNetworkInfo {
+  /**
+   * The lastmile buffer delay queue time in ms.
+   */
+  lastmile_buffer_delay_time_ms: number;
+  /**
+   * The current downlink bandwidth estimation(bps) after downscale.
+   */
+  bandwidth_estimation_bps: number;
+  /**
+   * The total video downscale level count.
+   */
+  total_downscale_level_count: number;
+  /**
+   * The peer video downlink info array.
+   */
+  peer_downlink_info: PeerDownlinkInfo; // PeerDownlinkInfo* peer_downlink_info;
+  /**
+   * The total video received count.
+   */
+  total_received_video_count: number;
+  };
+
+  export interface VIDEO_STREAM_TYPE {
+    /**
+     * 0: The high-quality video stream, which has a higher resolution and bitrate.
+     */
+    VIDEO_STREAM_HIGH : 0,
+    /**
+     * 1: The low-quality video stream, which has a lower resolution and bitrate.
+     */
+    VIDEO_STREAM_LOW :1
+  };
+
+/**
+ * The downscale level of the remote video stream . The higher the downscale level, the more the video downscales.
+ */
+export interface  REMOTE_VIDEO_DOWNSCALE_LEVEL {
+  /**
+   * No downscale.
+   */
+  REMOTE_VIDEO_DOWNSCALE_LEVEL_NONE: 0,
+  /**
+   * Downscale level 1.
+   */
+  REMOTE_VIDEO_DOWNSCALE_LEVEL_1: 1,
+  /**
+   * Downscale level 2.
+   */
+  REMOTE_VIDEO_DOWNSCALE_LEVEL_2: 2,
+  /**
+   * Downscale level 3.
+   */
+  REMOTE_VIDEO_DOWNSCALE_LEVEL_3 : 3,
+  /**
+   * Downscale level 4.
+   */
+  REMOTE_VIDEO_DOWNSCALE_LEVEL_4: 4
+};
+
 /**
  * interface for c++ addon (.node)
  * @ignore
@@ -2561,7 +3131,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  getConnectionState(): ConnectionState;
+  getConnectionState(): CONNECTION_STATE_TYPE;
   /**
    * @ignore
    */
@@ -2627,7 +3197,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  setClientRole(role: ClientRoleType): number;
+  setClientRole(role: CLIENT_ROLE_TYPE): number;
   /**
    * @ignore
    */
