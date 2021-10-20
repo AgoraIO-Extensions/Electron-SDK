@@ -14,27 +14,22 @@
 #include "node_log.h"
 #include "node_process.h"
 
-class LogHelper
-{
+class LogHelper {
 public:
-    LogHelper(const char* log_path = "")
-    {
-        std::string path(log_path);
-        if(path.empty()) {
-            INodeProcess::getCurrentModuleFileName(path);
-            path.append("log.txt");
-        }
-        startLogService(path.c_str());
+  LogHelper(const char *log_path = "") {
+    std::string path(log_path);
+    if (path.empty()) {
+      INodeProcess::getCurrentModuleFileName(path);
+      path.append("log.txt");
     }
-    ~LogHelper()
-    {
-        stopLogService();
-    }
-    
-    LogHelper(const LogHelper& helper) = delete;
-    LogHelper(LogHelper&& helper) = delete;
-    LogHelper& operator = (const LogHelper& helper) = delete;
-    LogHelper& operator = (LogHelper&& helper) = delete;
+    startLogService(path.c_str());
+  }
+  ~LogHelper() { stopLogService(); }
+
+  LogHelper(const LogHelper &helper) = delete;
+  LogHelper(LogHelper &&helper) = delete;
+  LogHelper &operator=(const LogHelper &helper) = delete;
+  LogHelper &operator=(LogHelper &&helper) = delete;
 };
 
 #endif /* log_helper_h */
