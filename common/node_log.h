@@ -1,12 +1,12 @@
 /*
-* Copyright (c) 2017 Agora.io
-* All rights reserved.
-* Proprietary and Confidential -- Agora.io
-*/
+ * Copyright (c) 2017 Agora.io
+ * All rights reserved.
+ * Proprietary and Confidential -- Agora.io
+ */
 
 /*
-*  Created by Wang Yongli, 2017
-*/
+ *  Created by Wang Yongli, 2017
+ */
 #ifndef AGORA_NODE_LOG_H
 #define AGORA_NODE_LOG_H
 #include "loguru.hpp"
@@ -14,12 +14,11 @@
 /**
  * Log level definition
  */
-enum log_level
-{
-	LOG_LEVEL_ERROR,
-	LOG_LEVEL_WARNING,
-	LOG_LEVEL_INFO,
-	LOG_LEVEL_VERBOSE
+enum log_level {
+  LOG_LEVEL_ERROR,
+  LOG_LEVEL_WARNING,
+  LOG_LEVEL_INFO,
+  LOG_LEVEL_VERBOSE
 };
 
 bool startLogService(const char *path);

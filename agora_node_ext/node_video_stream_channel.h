@@ -1,12 +1,12 @@
 /*
-* Copyright (c) 2017 Agora.io
-* All rights reserved.
-* Proprietary and Confidential -- Agora.io
-*/
+ * Copyright (c) 2017 Agora.io
+ * All rights reserved.
+ * Proprietary and Confidential -- Agora.io
+ */
 
 /*
-*  Created by Wang Yongli, 2017
-*/
+ *  Created by Wang Yongli, 2017
+ */
 
 #ifndef NODE_VIDEO_STREAM_CHANNEL_H
 #define NODE_VIDEO_STREAM_CHANNEL_H
@@ -22,7 +22,8 @@
 //         struct NodeRenderContext;
 
 //         /**
-//          * NodeVideoStreamChannel is used to transfer video data from SDK to JS layer.
+//          * NodeVideoStreamChannel is used to transfer video data from SDK to
+//          JS layer.
 //          */
 //         class NodeVideoStreamChannel
 //         {
@@ -30,7 +31,8 @@
 //             NodeVideoStreamChannel(NodeRenderContext* context);
 //             ~NodeVideoStreamChannel();
 
-//             int deliverFrame(const agora::media::IVideoFrame& videoFrame, int rotation, bool mirrored);
+//             int deliverFrame(const agora::media::IVideoFrame& videoFrame, int
+//             rotation, bool mirrored);
 //         private:
 //             typedef std::vector<unsigned char> stream_buffer_type;
 //             std::unique_ptr<NodeRenderContext> m_context;
