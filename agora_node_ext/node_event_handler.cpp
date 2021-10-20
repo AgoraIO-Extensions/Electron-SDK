@@ -634,7 +634,7 @@ namespace agora {
           this->sendJSWithConnection(
             RTC_EVENT_LOCAL_VIDEO_STATE_CHANGED,
             3,
-            connection,
+            _connection,
             napi_create_int32_(isolate, localVideoState),
             napi_create_int32_(isolate, error)
           );

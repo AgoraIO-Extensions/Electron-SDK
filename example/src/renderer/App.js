@@ -569,10 +569,24 @@ export default class App extends Component {
   onPressTestBtn = () => {
     //setExtensionProviderProperty(provider_name: string, key: string, json_value: string): number;
     let rtcEngine = this.getRtcEngine();
-    let res = rtcEngine.setExtensionProviderProperty('provider_name', 'key', 'json_value');
-    console.log('setExtensionProviderProperty',res);
-    // rtcEngine.setExtensionProperty("setExtensionProperty", "key1", "jvvvvvvvvv");
-    // rtcEngine.enableExtension("setExtensionProperty", "key1", "jvvvvvvvvv");
+    let res;
+    
+    res = rtcEngine.enableExtension("enableExtension", "key1", "jvvvvvvvvv");
+    console.log('enableExtension',res);
+    res = rtcEngine.enableExtension("enableExtension1", "key1", "jvvvvvvvvv", 2);
+    console.log('enableExtension',res);
+    res = rtcEngine.getExtensionProperty("getExtensionProperty", "extension_name", "key", "json_value")
+    console.log('getExtensionProperty',res);
+    res = rtcEngine.getExtensionProperty("getExtensionProperty", "extension_name", "key", "json_value",2)
+    console.log('getExtensionProperty',res);
+
+    res = rtcEngine.setExtensionProperty("setExtensionProperty", "key1", "jvvvvvvvvv","jjjjjjjj1");
+    console.log('setExtensionProperty',res);
+    res = rtcEngine.setExtensionProperty("setExtensionProperty", "key1", "jvvvvvvvvv","jjjjjjj2", 2);
+    console.log('setExtensionProperty',res);
+
+    rtcEngine.setExtensionProviderProperty('provider_name', 'key', 'json_value');
+    console.log('setExtensionProviderProperty', res);
     
   }
 
