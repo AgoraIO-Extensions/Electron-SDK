@@ -1,3 +1,11 @@
+## 3.6.204-build.1020(Oct 20th, 2020)
+- API change
+  - initialize: add LogConfig
+  - enableExtension: add MEDIA_SOURCE_TYPE
+  - getExtensionProperty: add MEDIA_SOURCE_TYPE
+  - setExtensionProperty: add MEDIA_SOURCE_TYPE
+  - add setExtensionProviderProperty
+- change connectionId to RTCConection
 ## 3.1.1-hotfix.2 (September 21th, 2020)
 #### :house: Intrenal
 * 3.1.1 hotfix
