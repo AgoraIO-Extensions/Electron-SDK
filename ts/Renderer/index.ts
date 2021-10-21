@@ -8,10 +8,10 @@ interface IRenderer {
   unbind(): void;
   equalsElement(element: Element): boolean;
   drawFrame(imageData: {
-    header: any,
-    yUint8Array: any,
-    uUint8Array: any,
-    vUint8Array: any
+    header: any;
+    yUint8Array: any;
+    uUint8Array: any;
+    vUint8Array: any;
   }): void;
   setContentMode(mode: number): void;
   refreshCanvas(): void;
@@ -21,8 +21,8 @@ class GlRenderer implements IRenderer {
   self: any;
   event: EventEmitter;
   constructor(props: any) {
-    console.log('GlRenderer')
-    this.self = createGlRenderer.apply(this,[props.initRenderFailCallBack]);
+    console.log('GlRenderer');
+    this.self = createGlRenderer.apply(this, [props.initRenderFailCallBack]);
     this.event = this.self.event;
   }
   bind(element: Element): void {
@@ -31,14 +31,14 @@ class GlRenderer implements IRenderer {
   unbind(): void {
     return this.self.unbind();
   }
-  equalsElement(element: Element): boolean{
+  equalsElement(element: Element): boolean {
     return this.self.view === element;
   }
   drawFrame(imageData: {
-    header: any,
-    yUint8Array: any,
-    uUint8Array: any,
-    vUint8Array: any
+    header: any;
+    yUint8Array: any;
+    uUint8Array: any;
+    vUint8Array: any;
   }): void {
     return this.self.drawFrame(imageData);
   }
@@ -46,7 +46,7 @@ class GlRenderer implements IRenderer {
     return this.self.setContentMode(mode);
   }
   refreshCanvas() {
-      return this.self.refreshCanvas();
+    return this.self.refreshCanvas();
   }
 }
 
@@ -71,10 +71,10 @@ class CustomRenderer implements IRenderer {
   }
 
   drawFrame(imageData: {
-    header: any,
-    yUint8Array: any,
-    uUint8Array: any,
-    vUint8Array: any
+    header: any;
+    yUint8Array: any;
+    uUint8Array: any;
+    vUint8Array: any;
   }) {
     throw new Error('You have to declare your own custom render');
   }
@@ -86,10 +86,6 @@ class CustomRenderer implements IRenderer {
   refreshCanvas() {
     throw new Error('You have to declare your own custom render');
   }
-
-
 }
 
-export {
-  SoftwareRenderer, GlRenderer, IRenderer, CustomRenderer
-};
+export { SoftwareRenderer, GlRenderer, IRenderer, CustomRenderer };
