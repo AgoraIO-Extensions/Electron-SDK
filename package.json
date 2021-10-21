@@ -16,7 +16,11 @@
     "zipBuild": "cross-env-shell gulp zipBuild --INIT_CWD=$INIT_CWD",
     "prepublishOnly": "cross-env-shell npm run buildJS --INIT_CWD=$INIT_CWD",
     "build_mac": "cmake-js rebuild --CDCMAKE_OSX_ARCHITECTURES=\"arm64;x86_64\"",
-    "build_mac_xcode": "cmake-js rebuild --CDCMAKE_OSX_ARCHITECTURES=\"arm64;x86_64\" -x"
+    "build_mac_xcode": "cmake-js rebuild --arch=ia32 --CDCMAKE_OSX_ARCHITECTURES=\"arm64;x86_64\" -G Xcode",
+    "build_windows_win32_debug": "cmake-js rebuild --arch=ia32 --CDCMAKE_OSX_ARCHITECTURES=\"i386\" --CDCMAKE_BUILD_TYPE=Debug -G \"Visual Studio 16 2019\" ",
+    "build_windows_win32_release": "cmake-js rebuild --CDCMAKE_OSX_ARCHITECTURES=\"i386\" --CDCMAKE_BUILD_TYPE=Release",
+    "build_windows_x64_debug": "cmake-js rebuild --arch=x64 --CDCMAKE_OSX_ARCHITECTURES=\"x86_64\" --CDCMAKE_BUILD_TYPE=Debug -G \"Visual Studio 16 2019\"",
+    "build_windows_x64_release": "cmake-js rebuild --arch=x64 --CDCMAKE_OSX_ARCHITECTURES=\"x86_64\" --CDCMAKE_BUILD_TYPE=Release"
   },
   "agora_electron": {
     "lib_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_v3_5_0_4_FULL.zip",
@@ -26,6 +30,7 @@
     "prebuilt": false
   },
   "dependencies": {
+    "bindings": "1.2.1",
     "cross-env": "^7.0.3",
     "download": "^8.0.0",
     "extract-zip": "^2.0.1",
@@ -35,14 +40,12 @@
     "gulp-zip": "^5.1.0",
     "lodash.isequal": "^4.5.0",
     "minimist": "^1.2.5",
-    "node-gyp": "7.1.2",
     "rimraf": "^3.0.0",
     "shelljs": "^0.8.4",
     "typescript": "4.2.4",
     "winston": "^3.3.3",
     "yuv-buffer": "1.0.0",
-    "yuv-canvas": "1.2.6",
-    "bindings": "1.2.1"
+    "yuv-canvas": "1.2.6"
   },
   "files": [
     "js",
