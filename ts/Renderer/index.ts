@@ -1,6 +1,6 @@
-import SoftwareRenderer from "./SoftwareRenderer";
-import createGlRenderer from "./GlRenderer";
-import { EventEmitter } from "events";
+import SoftwareRenderer from './SoftwareRenderer';
+import createGlRenderer from './GlRenderer';
+import { EventEmitter } from 'events';
 
 interface IRenderer {
   event: EventEmitter;
@@ -21,7 +21,7 @@ class GlRenderer implements IRenderer {
   self: any;
   event: EventEmitter;
   constructor(props: any) {
-    console.log("GlRenderer");
+    console.log('GlRenderer');
     this.self = createGlRenderer.apply(this, [props.initRenderFailCallBack]);
     this.event = this.self.event;
   }
@@ -52,21 +52,21 @@ class GlRenderer implements IRenderer {
 
 class CustomRenderer implements IRenderer {
   constructor() {
-    throw new Error("You have to declare your own custom render");
+    throw new Error('You have to declare your own custom render');
   }
 
   event: EventEmitter;
 
   bind(element: Element) {
-    throw new Error("You have to declare your own custom render");
+    throw new Error('You have to declare your own custom render');
   }
 
   unbind() {
-    throw new Error("You have to declare your own custom render");
+    throw new Error('You have to declare your own custom render');
   }
 
   equalsElement(element: Element) {
-    throw new Error("You have to declare your own custom render");
+    throw new Error('You have to declare your own custom render');
     return false;
   }
 
@@ -76,15 +76,15 @@ class CustomRenderer implements IRenderer {
     uUint8Array: any;
     vUint8Array: any;
   }) {
-    throw new Error("You have to declare your own custom render");
+    throw new Error('You have to declare your own custom render');
   }
 
   setContentMode(mode: number) {
-    throw new Error("You have to declare your own custom render");
+    throw new Error('You have to declare your own custom render');
   }
 
   refreshCanvas() {
-    throw new Error("You have to declare your own custom render");
+    throw new Error('You have to declare your own custom render');
   }
 }
 

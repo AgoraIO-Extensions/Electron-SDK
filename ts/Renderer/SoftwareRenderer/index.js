@@ -1,7 +1,7 @@
-const EventEmitter = require("events").EventEmitter;
-const isEqual = require("lodash.isequal");
-const YUVBuffer = require("yuv-buffer");
-const YUVCanvas = require("yuv-canvas");
+const EventEmitter = require('events').EventEmitter;
+const isEqual = require('lodash.isequal');
+const YUVBuffer = require('yuv-buffer');
+const YUVCanvas = require('yuv-canvas');
 
 class Renderer {
   constructor() {
@@ -58,20 +58,20 @@ class Renderer {
     // record element
     this.element = element;
     // create container
-    let container = document.createElement("div");
+    let container = document.createElement('div');
     Object.assign(container.style, {
-      width: "100%",
-      height: "100%",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      overflow: "hidden"
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      overflow: 'hidden',
     });
     this.container = container;
     element.appendChild(this.container);
 
     // create canvas
-    this.canvas = document.createElement("canvas");
+    this.canvas = document.createElement('canvas');
     this.container.appendChild(this.canvas);
     this.yuv = YUVCanvas.attach(this.canvas, { webGL: isWebGL });
     YUVCanvas.WebGLFrameSink.stripe = false;
@@ -135,7 +135,7 @@ class Renderer {
       clientWidth: 0,
       clientHeight: 0,
       contentWidth,
-      contentHeight
+      contentHeight,
     },
     isOpenCache = true
   ) {
@@ -151,21 +151,21 @@ class Renderer {
       this.canvas.width = options.width;
       this.canvas.height = options.height;
       Object.assign(this.canvas.style, {
-        width: options.width + "px",
-        height: options.height + "px",
-        "object-fit": "cover"
+        'width': options.width + 'px',
+        'height': options.height + 'px',
+        'object-fit': 'cover',
       });
     } else if (options.rotation === 90 || options.rotation === 270) {
       this.canvas.height = options.width;
       this.canvas.width = options.height;
       Object.assign(this.canvas.style, {
-        width: options.width + "px",
-        height: options.height + "px",
-        "object-fit": "cover"
+        'width': options.width + 'px',
+        'height': options.height + 'px',
+        'object-fit': 'cover',
       });
     } else {
       throw new Error(
-        "Invalid value for rotation. Only support 0, 90, 180, 270"
+        'Invalid value for rotation. Only support 0, 90, 180, 270'
       );
     }
     let transformItems = [];
@@ -187,11 +187,11 @@ class Renderer {
     // check for mirror
     if (options.mirrorView) {
       // this.canvas.style.transform = 'rotateY(180deg)';
-      transformItems.push("rotateY(180deg)");
+      transformItems.push('rotateY(180deg)');
     }
 
     if (transformItems.length > 0) {
-      let transform = `${transformItems.join(" ")}`;
+      let transform = `${transformItems.join(' ')}`;
       this.canvas.style.transform = transform;
     }
   }
@@ -199,7 +199,7 @@ class Renderer {
   drawFrame(imageData = { header, yUint8Array, uUint8Array, vUint8Array }) {
     if (!this.ready) {
       this.ready = true;
-      this.event.emit("ready");
+      this.event.emit('ready');
     }
     let dv = new DataView(imageData.header);
     // let format = dv.getUint8(0);
@@ -224,14 +224,14 @@ class Renderer {
       clientWidth: this.container.clientWidth,
       clientHeight: this.container.clientHeight,
       contentWidth,
-      contentHeight
+      contentHeight,
     });
 
     let format = YUVBuffer.format({
       width,
       height,
       chromaWidth: width / 2,
-      chromaHeight: height / 2
+      chromaHeight: height / 2,
     });
 
     let y = YUVBuffer.lumaPlane(format, imageData.yUint8Array);

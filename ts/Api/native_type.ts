@@ -1,5 +1,5 @@
-import { PluginInfo, Plugin } from "./plugin";
-import { type } from "os";
+import { PluginInfo, Plugin } from './plugin';
+import { type } from 'os';
 
 export interface RendererOptions {
   append: boolean;
@@ -438,7 +438,7 @@ export enum VoiceChangerPreset {
   /**
    * (For female only) A more vital voice. Do not use it when the speaker is a male; otherwise, voice distortion occurs.
    */
-  GENERAL_BEAUTY_VOICE_FEMALE_VITALITY = 0x00200003
+  GENERAL_BEAUTY_VOICE_FEMALE_VITALITY = 0x00200003,
 }
 /** @deprecated Deprecated from v3.2.0.
  *
@@ -515,7 +515,7 @@ export enum AudioReverbPreset {
    * To achieve better virtual stereo reverberation, Agora recommends setting `profile` in `setAudioProfile`
    * as `5`.
    */
-  AUDIO_VIRTUAL_STEREO = 0x00200001
+  AUDIO_VIRTUAL_STEREO = 0x00200001,
 }
 /** The brightness level of the video image captured by the local camera.
  *
@@ -535,7 +535,7 @@ export enum CAPTURE_BRIGHTNESS_LEVEL_TYPE {
   CAPTURE_BRIGHTNESS_LEVEL_BRIGHT = 1,
   /** 2: The brightness level of the video image is too dark.
    */
-  CAPTURE_BRIGHTNESS_LEVEL_DARK = 2
+  CAPTURE_BRIGHTNESS_LEVEL_DARK = 2,
 }
 /**
  * Configuration of the imported live streaming voice or video stream.
@@ -603,7 +603,7 @@ export enum Priority {
   /** 50: The user's priority is high. */
   PRIORITY_HIGH = 50,
   /** 100: (Default) The user's priority is normal. */
-  PRIORITY_NORMAL = 100
+  PRIORITY_NORMAL = 100,
 }
 /**
  * Statistics of the channel.
@@ -716,7 +716,7 @@ export enum QualityAdaptIndication {
   /** 1: The quality improves because the network bandwidth increases. */
   ADAPT_UP_BANDWIDTH = 1,
   /** 2: The quality worsens because the network bandwidth decreases. */
-  ADAPT_DOWN_BANDWIDTH = 2
+  ADAPT_DOWN_BANDWIDTH = 2,
 }
 /** Statistics of the local video. */
 export interface LocalVideoStats {
@@ -954,7 +954,7 @@ export enum VideoMirrorModeType {
   /**
    * `2`: Disable mirror mode.
    */
-  DISABLED = 2
+  DISABLED = 2,
 }
 
 /** The video encoding degradation preference under limited bandwidth. */
@@ -968,7 +968,7 @@ export enum DegradationPreference {
   /** 2: (For future use) Maintain a balance between the frame rate and video
    * quality.
    */
-  MAINTAIN_BALANCED = 2
+  MAINTAIN_BALANCED = 2,
 }
 /** The orientation mode. */
 export enum OrientationMode {
@@ -1004,7 +1004,7 @@ export enum OrientationMode {
    *
    * For example, CDN live streaming.
    */
-  ORIENTATION_MODE_FIXED_PORTRAIT = 2
+  ORIENTATION_MODE_FIXED_PORTRAIT = 2,
 }
 /**
  * Video statistics of the remote stream.
@@ -1097,7 +1097,7 @@ export enum CaptureOutPreference {
    *
    * @since v3.3.1
    */
-  CAPTURER_OUTPUT_PREFERENCE_MANUAL = 3
+  CAPTURER_OUTPUT_PREFERENCE_MANUAL = 3,
 }
 /** Camera capturer configuration. */
 export interface CameraCapturerConfiguration {
@@ -1217,7 +1217,7 @@ export enum VideoContentHint {
    * Choose this option if you prefer sharpness or when you are sharing a
    * picture, PowerPoint slide, or text.
    */
-  CONTENT_HINT_DETAILS = 2
+  CONTENT_HINT_DETAILS = 2,
 }
 
 /**
@@ -1565,7 +1565,7 @@ export enum ENCRYPTION_MODE {
   AES_256_GCM2 = 8,
   /** Enumerator boundary.
    */
-  MODE_END
+  MODE_END,
 }
 /**
  * Configurations of built-in encryption schemas.
@@ -1749,7 +1749,7 @@ export enum VIDEO_PROFILE_TYPE {
   /** 1072: 2160 &times; 3840, frame rate 60 fps, bitrate 6500 Kbps. */
   VIDEO_PROFILE_PORTRAIT_4K_3 = 1072,
   /** Default 640 &times; 360, frame rate 15 fps, bitrate 400 Kbps. */
-  VIDEO_PROFILE_DEFAULT = VIDEO_PROFILE_LANDSCAPE_360P
+  VIDEO_PROFILE_DEFAULT = VIDEO_PROFILE_LANDSCAPE_360P,
 }
 /** Events during the RTMP or RTMPS streaming.
  *
@@ -1763,7 +1763,7 @@ export enum RTMP_STREAMING_EVENT {
   RTMP_STREAMING_EVENT_FAILED_LOAD_IMAGE = 1,
   /** The chosen URL address is already in use for CDN live streaming.
    */
-  RTMP_STREAMING_EVENT_URL_ALREADY_IN_USE = 2
+  RTMP_STREAMING_EVENT_URL_ALREADY_IN_USE = 2,
 }
 /** The options for SDK preset audio effects.
  *
@@ -1938,7 +1938,7 @@ export enum AUDIO_EFFECT_PRESET {
    * and setting the `profile` parameter to `4` or `5`
    * before setting this enumerator.
    */
-  PITCH_CORRECTION = 0x02040100
+  PITCH_CORRECTION = 0x02040100,
 }
 
 /** The options for SDK preset voice beautifier effects.
@@ -2003,7 +2003,7 @@ export enum VOICE_BEAUTIFIER_PRESET {
   TIMBRE_TRANSFORMATION_RESOUNDING = 0x01030700,
   /** A more ringing voice.
    */
-  TIMBRE_TRANSFORMATION_RINGING = 0x01030800
+  TIMBRE_TRANSFORMATION_RINGING = 0x01030800,
 }
 /** The latency level of an audience member in interactive live streaming.
  *
@@ -2013,7 +2013,7 @@ export enum AUDIENCE_LATENCY_LEVEL_TYPE {
   /** 1: Low latency. */
   AUDIENCE_LATENCY_LEVEL_LOW_LATENCY = 1,
   /** 2: (Default) Ultra low latency. */
-  AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY = 2
+  AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY = 2,
 }
 /** The subscribing state.
  *
@@ -2423,7 +2423,7 @@ export enum VOICE_CONVERSION_PRESET {
   /** A deep voice. To avoid audio distortion, ensure that you use this
    * enumerator to process a male-sounding voice.
    */
-  VOICE_CHANGER_BASS = 0x03010400
+  VOICE_CHANGER_BASS = 0x03010400,
 }
 
 /** Local video state types.
@@ -2439,7 +2439,7 @@ export enum LOCAL_VIDEO_STREAM_STATE {
   /** 2: The first video frame is successfully encoded. */
   LOCAL_VIDEO_STREAM_STATE_ENCODING = 2,
   /** 3: The local video fails to start. */
-  LOCAL_VIDEO_STREAM_STATE_FAILED = 3
+  LOCAL_VIDEO_STREAM_STATE_FAILED = 3,
 }
 
 /** Local video state error codes.
@@ -2485,7 +2485,7 @@ export enum LOCAL_VIDEO_STREAM_ERROR {
    */
   LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_CLOSED = 12,
 
-  LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_NOT_SUPPORTED = 20
+  LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_NOT_SUPPORTED = 20,
 }
 
 /** Local audio state types.
@@ -2502,7 +2502,7 @@ export enum LOCAL_AUDIO_STREAM_STATE {
   LOCAL_AUDIO_STREAM_STATE_ENCODING = 2,
   /** 3: The local audio fails to start.
    */
-  LOCAL_AUDIO_STREAM_STATE_FAILED = 3
+  LOCAL_AUDIO_STREAM_STATE_FAILED = 3,
 }
 
 /** Local audio state error codes.
@@ -2532,7 +2532,7 @@ export enum LOCAL_AUDIO_STREAM_ERROR {
   LOCAL_AUDIO_STREAM_ERROR_NO_RECORDING_DEVICE = 6,
   /** 7: No playout audio device.
    */
-  LOCAL_AUDIO_STREAM_ERROR_NO_PLAYOUT_DEVICE = 7
+  LOCAL_AUDIO_STREAM_ERROR_NO_PLAYOUT_DEVICE = 7,
 }
 
 export enum VIRTUAL_BACKGROUND_SOURCE_STATE_REASON {
@@ -2542,7 +2542,7 @@ export enum VIRTUAL_BACKGROUND_SOURCE_STATE_REASON {
   // color format is not supported
   VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_COLOR_FORMAT_NOT_SUPPORTED = 2,
   // The device is not supported
-  VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_DEVICE_NOT_SUPPORTED = 3
+  VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_DEVICE_NOT_SUPPORTED = 3,
 }
 
 /** The configurations for the data stream.
@@ -2639,7 +2639,7 @@ export enum NETWORK_TYPE {
   /** 4: The network type is mobile 3G. */
   NETWORK_TYPE_MOBILE_3G = 4,
   /** 5: The network type is mobile 4G. */
-  NETWORK_TYPE_MOBILE_4G = 5
+  NETWORK_TYPE_MOBILE_4G = 5,
 }
 
 export enum AUDIO_RECORDING_QUALITY_TYPE {
@@ -2654,13 +2654,13 @@ export enum AUDIO_RECORDING_QUALITY_TYPE {
   /** 2: High quality. The sample rate is 32 kHz, and the file size is
    * around 3.75 MB after 10 minutes of recording.
    */
-  AUDIO_RECORDING_QUALITY_HIGH = 2
+  AUDIO_RECORDING_QUALITY_HIGH = 2,
 }
 export enum BACKGROUND_SOURCE_TYPE {
   /** Background source is pure color*/
   BACKGROUND_COLOR = 1,
   /** Background source is image path, only support png and jpg format*/
-  BACKGROUND_IMG
+  BACKGROUND_IMG,
 }
 
 export enum AUDIO_RECORDING_POSITION {
@@ -2669,7 +2669,7 @@ export enum AUDIO_RECORDING_POSITION {
   /** The SDK will record the voice of the local user. */
   AUDIO_RECORDING_POSITION_RECORDING = 1,
   /** The SDK will record the voices of remote users. */
-  AUDIO_RECORDING_POSITION_MIXED_PLAYBACK = 2
+  AUDIO_RECORDING_POSITION_MIXED_PLAYBACK = 2,
 }
 
 export interface AudioRecordingConfiguration {
