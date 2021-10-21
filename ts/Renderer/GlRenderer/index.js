@@ -397,25 +397,33 @@ const AgoraRender = function(initRenderFailCallBack) {
     }
     that.container.appendChild(that.canvas);
     try {
-      // Try to grab the standard context. If it fails, fallback to experimental.
-      gl =
-        that.canvas.getContext('webgl', { preserveDrawingBuffer: true }) ||
-        that.canvas.getContext('experimental-webgl');
-      // 切换分辨率
-      handleContextLost= function () {
-        try {
-          gl = null;
-          that.gl = null;
-          that.canvas.removeEventListener('webglcontextlost',handleContextLost, false );
-        } catch (error) {
-          console.warn('webglcontextlost error',error);
-        } finally {
-          console.warn('webglcontextlost');
-        }
-      }
-      that.canvas.addEventListener(
-        "webglcontextlost", handleContextLost, false);
-    } catch (e) {
+          // Try to grab the standard context. If it fails, fallback to experimental.
+          gl =
+            that.canvas.getContext("webgl", { preserveDrawingBuffer: true }) ||
+            that.canvas.getContext("experimental-webgl");
+          // context list after toggle resolution on electron 12.0.6
+          handleContextLost = function() {
+            try {
+              gl = null;
+              that.gl = null;
+              that.canvas &&
+                that.canvas.removeEventListener(
+                  "webglcontextlost",
+                  handleContextLost,
+                  false
+                );
+            } catch (error) {
+              console.warn("webglcontextlost error", error);
+            } finally {
+              console.warn("webglcontextlost");
+            }
+          };
+          that.canvas.addEventListener(
+            "webglcontextlost",
+            handleContextLost,
+            false
+          );
+        } catch (e) {
       console.log(e);
     }
     if (!gl) {
