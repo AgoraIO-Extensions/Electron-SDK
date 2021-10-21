@@ -1,12 +1,8 @@
-import {
-  PluginInfo,
-  Plugin
-} from './plugin';
+import { PluginInfo, Plugin } from './plugin';
 import { type } from 'os';
 
-export interface RendererOptions
-{
-  append: boolean
+export interface RendererOptions {
+  append: boolean;
 }
 
 /**
@@ -32,7 +28,7 @@ export type AgoraNetworkQuality =
   | 5 // very bad
   | 6 // down
   | 7 // unSupported
-  | 8 // detecting
+  | 8; // detecting
 /**
  * The codec type of the local video：
  * - 0: VP8
@@ -398,7 +394,7 @@ export enum VoiceChangerPreset {
   /**
    * A more vigorous voice.
    */
-  VOICE_BEAUTY_VIGOROUS = 0x00100001,//7,
+  VOICE_BEAUTY_VIGOROUS = 0x00100001, //7,
   /**
    * A deeper voice.
    */
@@ -442,8 +438,7 @@ export enum VoiceChangerPreset {
   /**
    * (For female only) A more vital voice. Do not use it when the speaker is a male; otherwise, voice distortion occurs.
    */
-  GENERAL_BEAUTY_VOICE_FEMALE_VITALITY = 0x00200003
-
+  GENERAL_BEAUTY_VOICE_FEMALE_VITALITY = 0x00200003,
 }
 /** @deprecated Deprecated from v3.2.0.
  *
@@ -501,7 +496,7 @@ export enum AudioReverbPreset {
   /**
    * The reverberation style typical of hip-hop music.
    */
-   AUDIO_REVERB_HIPHOP = 0x00000004,
+  AUDIO_REVERB_HIPHOP = 0x00000004,
   /**
    * The reverberation style typical of a concert hall.
    */
@@ -520,7 +515,7 @@ export enum AudioReverbPreset {
    * To achieve better virtual stereo reverberation, Agora recommends setting `profile` in `setAudioProfile`
    * as `5`.
    */
-  AUDIO_VIRTUAL_STEREO = 0x00200001
+  AUDIO_VIRTUAL_STEREO = 0x00200001,
 }
 /** The brightness level of the video image captured by the local camera.
  *
@@ -608,7 +603,7 @@ export enum Priority {
   /** 50: The user's priority is high. */
   PRIORITY_HIGH = 50,
   /** 100: (Default) The user's priority is normal. */
-  PRIORITY_NORMAL = 100
+  PRIORITY_NORMAL = 100,
 }
 /**
  * Statistics of the channel.
@@ -721,7 +716,7 @@ export enum QualityAdaptIndication {
   /** 1: The quality improves because the network bandwidth increases. */
   ADAPT_UP_BANDWIDTH = 1,
   /** 2: The quality worsens because the network bandwidth decreases. */
-  ADAPT_DOWN_BANDWIDTH = 2
+  ADAPT_DOWN_BANDWIDTH = 2,
 }
 /** Statistics of the local video. */
 export interface LocalVideoStats {
@@ -959,7 +954,7 @@ export enum VideoMirrorModeType {
   /**
    * `2`: Disable mirror mode.
    */
-  DISABLED = 2
+  DISABLED = 2,
 }
 
 /** The video encoding degradation preference under limited bandwidth. */
@@ -976,39 +971,39 @@ export enum DegradationPreference {
   MAINTAIN_BALANCED = 2,
 }
 /** The orientation mode. */
-export enum OrientationMode  {
-/**
- * 0: (Default) The output video always follows the orientation of the
- * captured video, because the receiver takes the rotational information
- * passed on from the video encoder.
- *
- * Mainly used between Agora SDK.
- * - If the captured video is in landscape mode, the output video is in
- * landscape mode.
- * - If the captured video is in portrait mode, the output video is in
- * portrait mode.
- */
+export enum OrientationMode {
+  /**
+   * 0: (Default) The output video always follows the orientation of the
+   * captured video, because the receiver takes the rotational information
+   * passed on from the video encoder.
+   *
+   * Mainly used between Agora SDK.
+   * - If the captured video is in landscape mode, the output video is in
+   * landscape mode.
+   * - If the captured video is in portrait mode, the output video is in
+   * portrait mode.
+   */
   ORIENTATION_MODE_ADAPTIVE = 0,
-/**
- * 1: The output video is always in landscape mode.
- *
- * If the captured video is
- * in portrait mode, the video encoder crops it to fit the output. Applies to
- * situations where the receiving end cannot process the rotational
- * information.
- *
- * For example, CDN live streaming.
- */
+  /**
+   * 1: The output video is always in landscape mode.
+   *
+   * If the captured video is
+   * in portrait mode, the video encoder crops it to fit the output. Applies to
+   * situations where the receiving end cannot process the rotational
+   * information.
+   *
+   * For example, CDN live streaming.
+   */
   ORIENTATION_MODE_FIXED_LANDSCAPE = 1,
-/**
- * 2: The output video is always in portrait mode.
- *
- * If the captured video is in landscape mode, the video encoder crops it to
- * fit the output. Applies to situations where the receiving end cannot process
- * the rotational information.
- *
- * For example, CDN live streaming.
- */
+  /**
+   * 2: The output video is always in portrait mode.
+   *
+   * If the captured video is in landscape mode, the video encoder crops it to
+   * fit the output. Applies to situations where the receiving end cannot process
+   * the rotational information.
+   *
+   * For example, CDN live streaming.
+   */
   ORIENTATION_MODE_FIXED_PORTRAIT = 2,
 }
 /**
@@ -1222,7 +1217,7 @@ export enum VideoContentHint {
    * Choose this option if you prefer sharpness or when you are sharing a
    * picture, PowerPoint slide, or text.
    */
-  CONTENT_HINT_DETAILS = 2
+  CONTENT_HINT_DETAILS = 2,
 }
 
 /**
@@ -1497,27 +1492,27 @@ export type ConnectionState =
   | 4
   | 5; // 5: The SDK fails to connect to Agora's edge server or join the channel.
 
-  /**
-   * Reasons for a connection state change.
-   *
-   * - 0: The SDK is connecting to Agora's edge server.
-   * - 1: The SDK has joined the channel successfully.
-   * - 2: The connection between the SDK and Agora's edge server is
-   * interrupted.
-   * - 3: The connection between the SDK and Agora's edge server is banned by
-   * Agora's edge server.
-   * - 4: The SDK fails to join the channel for more than 20 minutes and stops
-   * reconnecting to the channel.
-   * - 5: The SDK has left the channel.
-   * - 6: Invalid App ID.
-   * - 7: Invalid Channel Name.
-   * - 8: Invalid Token.
-   * - 9: Token Expired.
-   * - 10: This user has been banned by server.
-   * - 11: SDK reconnects for setting proxy server.
-   * - 12: Network status change for renew token.
-   * - 13: Client IP Address changed.
-   */
+/**
+ * Reasons for a connection state change.
+ *
+ * - 0: The SDK is connecting to Agora's edge server.
+ * - 1: The SDK has joined the channel successfully.
+ * - 2: The connection between the SDK and Agora's edge server is
+ * interrupted.
+ * - 3: The connection between the SDK and Agora's edge server is banned by
+ * Agora's edge server.
+ * - 4: The SDK fails to join the channel for more than 20 minutes and stops
+ * reconnecting to the channel.
+ * - 5: The SDK has left the channel.
+ * - 6: Invalid App ID.
+ * - 7: Invalid Channel Name.
+ * - 8: Invalid Token.
+ * - 9: Token Expired.
+ * - 10: This user has been banned by server.
+ * - 11: SDK reconnects for setting proxy server.
+ * - 12: Network status change for renew token.
+ * - 13: Client IP Address changed.
+ */
 export type ConnectionChangeReason =
   | 0 // 0: The SDK is connecting to Agora's edge server.
   | 1 // 1: The SDK has joined the channel successfully.
@@ -1571,31 +1566,31 @@ export enum ENCRYPTION_MODE {
   /** Enumerator boundary.
    */
   MODE_END,
-};
+}
 /**
  * Configurations of built-in encryption schemas.
  */
 type Uint8ArrayBuffer = ArrayBuffer;
 
-export interface EncryptionConfig{
-   /**
-    * Encryption mode. The default encryption mode is `AES_128_XTS`.
-    */
-    encryptionMode: ENCRYPTION_MODE;
-    /**
-     * Encryption key in string type.
-     *
-     * @note If you do not set an encryption key or set it as NULL, you
-     * cannot use the built-in encryption, and the SDK returns the error code
-     * `-2`.
-     */
-    encryptionKey: string;
-    /**
-     * Uint8Array.prototype.buffer
-     * maxLength 32
-     */
-    encryptionKdfSalt: Uint8ArrayBuffer
-};
+export interface EncryptionConfig {
+  /**
+   * Encryption mode. The default encryption mode is `AES_128_XTS`.
+   */
+  encryptionMode: ENCRYPTION_MODE;
+  /**
+   * Encryption key in string type.
+   *
+   * @note If you do not set an encryption key or set it as NULL, you
+   * cannot use the built-in encryption, and the SDK returns the error code
+   * `-2`.
+   */
+  encryptionKey: string;
+  /**
+   * Uint8Array.prototype.buffer
+   * maxLength 32
+   */
+  encryptionKdfSalt: Uint8ArrayBuffer;
+}
 
 /**
  * @deprecated Video profile.
@@ -1754,14 +1749,13 @@ export enum VIDEO_PROFILE_TYPE {
   /** 1072: 2160 &times; 3840, frame rate 60 fps, bitrate 6500 Kbps. */
   VIDEO_PROFILE_PORTRAIT_4K_3 = 1072,
   /** Default 640 &times; 360, frame rate 15 fps, bitrate 400 Kbps. */
-  VIDEO_PROFILE_DEFAULT = VIDEO_PROFILE_LANDSCAPE_360P
+  VIDEO_PROFILE_DEFAULT = VIDEO_PROFILE_LANDSCAPE_360P,
 }
 /** Events during the RTMP or RTMPS streaming.
  *
  * @since v3.2.0
  */
-export enum RTMP_STREAMING_EVENT
-{
+export enum RTMP_STREAMING_EVENT {
   /** An error occurs when you add a background image or a watermark image to the RTMP or RTMPS stream.
    *
    * @since v3.2.0
@@ -1770,260 +1764,257 @@ export enum RTMP_STREAMING_EVENT
   /** The chosen URL address is already in use for CDN live streaming.
    */
   RTMP_STREAMING_EVENT_URL_ALREADY_IN_USE = 2,
-};
+}
 /** The options for SDK preset audio effects.
  *
  * @since v3.2.0
  */
-export enum AUDIO_EFFECT_PRESET
-{
-    /** Turn off audio effects and use the original voice.
-     */
-    AUDIO_EFFECT_OFF = 0x00000000,
-    /** An audio effect typical of a KTV venue.
-     *
-     * @note To achieve better audio effect quality, Agora recommends
-     * calling {@link setAudioProfile}
-     * and setting the `profile` parameter to `4` or `5`
-     * before setting this enumerator.
-     */
-    ROOM_ACOUSTICS_KTV = 0x02010100,
-    /** An audio effect typical of a concert hall.
-     *
-     * @note To achieve better audio effect quality, Agora recommends
-     * calling {@link setAudioProfile}
-     * and setting the `profile` parameter to `4` or `5`
-     * before setting this enumerator.
-     */
-    ROOM_ACOUSTICS_VOCAL_CONCERT = 0x02010200,
-    /** An audio effect typical of a recording studio.
-     *
-     * @note To achieve better audio effect quality, Agora recommends
-     * calling {@link setAudioProfile}
-     * and setting the `profile` parameter to `4` or `5`
-     * before setting this enumerator.
-     */
-    ROOM_ACOUSTICS_STUDIO = 0x02010300,
-    /** An audio effect typical of a vintage phonograph.
-     *
-     * @note To achieve better audio effect quality, Agora recommends
-     * calling {@link setAudioProfile}
-     * and setting the `profile` parameter to `4` or `5`
-     * before setting this enumerator.
-     */
-    ROOM_ACOUSTICS_PHONOGRAPH = 0x02010400,
-    /** A virtual stereo effect that renders monophonic audio as stereo audio.
-     *
-     * @note Call {@link setAudioProfile} and set the `profile` parameter to
-     * `3` or `5` before setting this
-     * enumerator; otherwise, the enumerator setting does not take effect.
-     */
-    ROOM_ACOUSTICS_VIRTUAL_STEREO = 0x02010500,
-    /** A more spatial audio effect.
-     *
-     * @note To achieve better audio effect quality, Agora recommends
-     * calling {@link setAudioProfile}
-     * and setting the `profile` parameter to `4` or `5`
-     * before setting this enumerator.
-     */
-    ROOM_ACOUSTICS_SPACIAL = 0x02010600,
-    /** A more ethereal audio effect.
-     *
-     * @note To achieve better audio effect quality, Agora recommends
-     * calling {@link setAudioProfile}
-     * and setting the `profile` parameter to `4` or `5`
-     * before setting this enumerator.
-     */
-    ROOM_ACOUSTICS_ETHEREAL = 0x02010700,
-    /** A 3D voice effect that makes the voice appear to be moving around
-     * the user. The default cycle period of the 3D
-     * voice effect is 10 seconds. To change the cycle period,
-     * call {@link setAudioEffectParameters}
-     * after this method.
-     *
-     * @note
-     * - Call {@link setAudioProfile} and set the `profile` parameter to `3`
-     * or `5` before setting this enumerator; otherwise, the enumerator
-     * setting does not take effect.
-     * - If the 3D voice effect is enabled, users need to use stereo audio
-     * playback devices to hear the anticipated voice effect.
-     */
-    ROOM_ACOUSTICS_3D_VOICE = 0x02010800,
-    /** The voice of an uncle.
-     *
-     * @note
-     * - Agora recommends using this enumerator to process a male-sounding
-     * voice; otherwise, you may not hear the anticipated voice effect.
-     * - To achieve better audio effect quality, Agora recommends
-     * calling {@link setAudioProfile}
-     * and setting the `profile` parameter to `4` or `5`
-     * before setting this enumerator.
-     */
-    VOICE_CHANGER_EFFECT_UNCLE = 0x02020100,
-    /** The voice of an old man.
-     *
-     * @note
-     * - Agora recommends using this enumerator to process a male-sounding
-     * voice; otherwise, you may not hear the anticipated voice effect.
-     * - To achieve better audio effect quality, Agora recommends
-     * calling {@link setAudioProfile}
-     * and setting the `profile` parameter to `4` or `5`
-     * before setting this enumerator.
-     */
-    VOICE_CHANGER_EFFECT_OLDMAN = 0x02020200,
-    /** The voice of a boy.
-     *
-     * @note
-     * - Agora recommends using this enumerator to process a male-sounding
-     * voice; otherwise, you may not hear the anticipated voice effect.
-     * - To achieve better audio effect quality, Agora recommends
-     * calling {@link setAudioProfile}
-     * and setting the `profile` parameter to `4` or `5`
-     * before setting this enumerator.
-     */
-    VOICE_CHANGER_EFFECT_BOY = 0x02020300,
-    /** The voice of a young woman.
-     *
-     * @note
-     * - Agora recommends using this enumerator to process a female-sounding
-     * voice; otherwise, you may not hear the anticipated voice effect.
-     * - To achieve better audio effect quality, Agora recommends
-     * calling {@link setAudioProfile}
-     * and setting the `profile` parameter to `4` or `5`
-     * before setting this enumerator.
-     */
-    VOICE_CHANGER_EFFECT_SISTER = 0x02020400,
-    /** The voice of a girl.
-     *
-     * @note
-     * - Agora recommends using this enumerator to process a female-sounding
-     * voice; otherwise, you may not hear the anticipated voice effect.
-     * - To achieve better audio effect quality, Agora recommends
-     * calling {@link setAudioProfile}
-     * and setting the `profile` parameter to `4` or `5`
-     * before setting this enumerator.
-     */
-    VOICE_CHANGER_EFFECT_GIRL = 0x02020500,
-    /** The voice of Pig King, a character in Journey to the West who has a
-     * voice like a growling bear.
-     *
-     * @note To achieve better audio effect quality, Agora recommends
-     * calling {@link setAudioProfile}
-     * and setting the `profile` parameter to `4` or `5`
-     * before setting this enumerator.
-     */
-    VOICE_CHANGER_EFFECT_PIGKING = 0x02020600,
-    /** The voice of Hulk.
-     *
-     * @note To achieve better audio effect quality, Agora recommends
-     * calling {@link setAudioProfile}
-     * and setting the `profile` parameter to `4` or `5`
-     * before setting this enumerator.
-     */
-    VOICE_CHANGER_EFFECT_HULK = 0x02020700,
-    /** An audio effect typical of R&B music.
-     *
-     * @note Call {@link setAudioProfile} and set the `profile` parameter
-     * to `4` or `5` before setting this enumerator; otherwise, the enumerator
-     * setting does not take effect.
-     */
-    STYLE_TRANSFORMATION_RNB = 0x02030100,
-    /** An audio effect typical of popular music.
-     *
-     * @note Call {@link setAudioProfile} and set the `profile` parameter
-     * to `4` or `5` before setting this enumerator; otherwise, the enumerator
-     * setting does not take effect.
-     */
-    STYLE_TRANSFORMATION_POPULAR = 0x02030200,
-    /** A pitch correction effect that corrects the user's pitch based on
-     * the pitch of the natural C major scale.
-     * To change the basic mode and tonic pitch,
-     * call {@link setAudioEffectParameters} after this method.
-     *
-     * @note To achieve better audio effect quality, Agora recommends
-     * calling {@link setAudioProfile}
-     * and setting the `profile` parameter to `4` or `5`
-     * before setting this enumerator.
-     */
-    PITCH_CORRECTION = 0x02040100
-};
+export enum AUDIO_EFFECT_PRESET {
+  /** Turn off audio effects and use the original voice.
+   */
+  AUDIO_EFFECT_OFF = 0x00000000,
+  /** An audio effect typical of a KTV venue.
+   *
+   * @note To achieve better audio effect quality, Agora recommends
+   * calling {@link setAudioProfile}
+   * and setting the `profile` parameter to `4` or `5`
+   * before setting this enumerator.
+   */
+  ROOM_ACOUSTICS_KTV = 0x02010100,
+  /** An audio effect typical of a concert hall.
+   *
+   * @note To achieve better audio effect quality, Agora recommends
+   * calling {@link setAudioProfile}
+   * and setting the `profile` parameter to `4` or `5`
+   * before setting this enumerator.
+   */
+  ROOM_ACOUSTICS_VOCAL_CONCERT = 0x02010200,
+  /** An audio effect typical of a recording studio.
+   *
+   * @note To achieve better audio effect quality, Agora recommends
+   * calling {@link setAudioProfile}
+   * and setting the `profile` parameter to `4` or `5`
+   * before setting this enumerator.
+   */
+  ROOM_ACOUSTICS_STUDIO = 0x02010300,
+  /** An audio effect typical of a vintage phonograph.
+   *
+   * @note To achieve better audio effect quality, Agora recommends
+   * calling {@link setAudioProfile}
+   * and setting the `profile` parameter to `4` or `5`
+   * before setting this enumerator.
+   */
+  ROOM_ACOUSTICS_PHONOGRAPH = 0x02010400,
+  /** A virtual stereo effect that renders monophonic audio as stereo audio.
+   *
+   * @note Call {@link setAudioProfile} and set the `profile` parameter to
+   * `3` or `5` before setting this
+   * enumerator; otherwise, the enumerator setting does not take effect.
+   */
+  ROOM_ACOUSTICS_VIRTUAL_STEREO = 0x02010500,
+  /** A more spatial audio effect.
+   *
+   * @note To achieve better audio effect quality, Agora recommends
+   * calling {@link setAudioProfile}
+   * and setting the `profile` parameter to `4` or `5`
+   * before setting this enumerator.
+   */
+  ROOM_ACOUSTICS_SPACIAL = 0x02010600,
+  /** A more ethereal audio effect.
+   *
+   * @note To achieve better audio effect quality, Agora recommends
+   * calling {@link setAudioProfile}
+   * and setting the `profile` parameter to `4` or `5`
+   * before setting this enumerator.
+   */
+  ROOM_ACOUSTICS_ETHEREAL = 0x02010700,
+  /** A 3D voice effect that makes the voice appear to be moving around
+   * the user. The default cycle period of the 3D
+   * voice effect is 10 seconds. To change the cycle period,
+   * call {@link setAudioEffectParameters}
+   * after this method.
+   *
+   * @note
+   * - Call {@link setAudioProfile} and set the `profile` parameter to `3`
+   * or `5` before setting this enumerator; otherwise, the enumerator
+   * setting does not take effect.
+   * - If the 3D voice effect is enabled, users need to use stereo audio
+   * playback devices to hear the anticipated voice effect.
+   */
+  ROOM_ACOUSTICS_3D_VOICE = 0x02010800,
+  /** The voice of an uncle.
+   *
+   * @note
+   * - Agora recommends using this enumerator to process a male-sounding
+   * voice; otherwise, you may not hear the anticipated voice effect.
+   * - To achieve better audio effect quality, Agora recommends
+   * calling {@link setAudioProfile}
+   * and setting the `profile` parameter to `4` or `5`
+   * before setting this enumerator.
+   */
+  VOICE_CHANGER_EFFECT_UNCLE = 0x02020100,
+  /** The voice of an old man.
+   *
+   * @note
+   * - Agora recommends using this enumerator to process a male-sounding
+   * voice; otherwise, you may not hear the anticipated voice effect.
+   * - To achieve better audio effect quality, Agora recommends
+   * calling {@link setAudioProfile}
+   * and setting the `profile` parameter to `4` or `5`
+   * before setting this enumerator.
+   */
+  VOICE_CHANGER_EFFECT_OLDMAN = 0x02020200,
+  /** The voice of a boy.
+   *
+   * @note
+   * - Agora recommends using this enumerator to process a male-sounding
+   * voice; otherwise, you may not hear the anticipated voice effect.
+   * - To achieve better audio effect quality, Agora recommends
+   * calling {@link setAudioProfile}
+   * and setting the `profile` parameter to `4` or `5`
+   * before setting this enumerator.
+   */
+  VOICE_CHANGER_EFFECT_BOY = 0x02020300,
+  /** The voice of a young woman.
+   *
+   * @note
+   * - Agora recommends using this enumerator to process a female-sounding
+   * voice; otherwise, you may not hear the anticipated voice effect.
+   * - To achieve better audio effect quality, Agora recommends
+   * calling {@link setAudioProfile}
+   * and setting the `profile` parameter to `4` or `5`
+   * before setting this enumerator.
+   */
+  VOICE_CHANGER_EFFECT_SISTER = 0x02020400,
+  /** The voice of a girl.
+   *
+   * @note
+   * - Agora recommends using this enumerator to process a female-sounding
+   * voice; otherwise, you may not hear the anticipated voice effect.
+   * - To achieve better audio effect quality, Agora recommends
+   * calling {@link setAudioProfile}
+   * and setting the `profile` parameter to `4` or `5`
+   * before setting this enumerator.
+   */
+  VOICE_CHANGER_EFFECT_GIRL = 0x02020500,
+  /** The voice of Pig King, a character in Journey to the West who has a
+   * voice like a growling bear.
+   *
+   * @note To achieve better audio effect quality, Agora recommends
+   * calling {@link setAudioProfile}
+   * and setting the `profile` parameter to `4` or `5`
+   * before setting this enumerator.
+   */
+  VOICE_CHANGER_EFFECT_PIGKING = 0x02020600,
+  /** The voice of Hulk.
+   *
+   * @note To achieve better audio effect quality, Agora recommends
+   * calling {@link setAudioProfile}
+   * and setting the `profile` parameter to `4` or `5`
+   * before setting this enumerator.
+   */
+  VOICE_CHANGER_EFFECT_HULK = 0x02020700,
+  /** An audio effect typical of R&B music.
+   *
+   * @note Call {@link setAudioProfile} and set the `profile` parameter
+   * to `4` or `5` before setting this enumerator; otherwise, the enumerator
+   * setting does not take effect.
+   */
+  STYLE_TRANSFORMATION_RNB = 0x02030100,
+  /** An audio effect typical of popular music.
+   *
+   * @note Call {@link setAudioProfile} and set the `profile` parameter
+   * to `4` or `5` before setting this enumerator; otherwise, the enumerator
+   * setting does not take effect.
+   */
+  STYLE_TRANSFORMATION_POPULAR = 0x02030200,
+  /** A pitch correction effect that corrects the user's pitch based on
+   * the pitch of the natural C major scale.
+   * To change the basic mode and tonic pitch,
+   * call {@link setAudioEffectParameters} after this method.
+   *
+   * @note To achieve better audio effect quality, Agora recommends
+   * calling {@link setAudioProfile}
+   * and setting the `profile` parameter to `4` or `5`
+   * before setting this enumerator.
+   */
+  PITCH_CORRECTION = 0x02040100,
+}
 
 /** The options for SDK preset voice beautifier effects.
  */
-export enum VOICE_BEAUTIFIER_PRESET
-{
-    /** Turn off voice beautifier effects and use the original voice.
-     */
-    VOICE_BEAUTIFIER_OFF = 0x00000000,
-    /** A more magnetic voice.
-     *
-     * @note Agora recommends using this enumerator to process a male-sounding
-     * voice; otherwise, you may experience vocal distortion.
-     */
-    CHAT_BEAUTIFIER_MAGNETIC = 0x01010100,
-    /** A fresher voice.
-     *
-     * @note Agora recommends using this enumerator to process a
-     * female-sounding voice; otherwise, you may experience vocal distortion.
-     */
-    CHAT_BEAUTIFIER_FRESH = 0x01010200,
-    /** A more vital voice.
-     *
-     * @note Agora recommends using this enumerator to process a
-     * female-sounding voice; otherwise, you may experience vocal distortion.
-     */
-    CHAT_BEAUTIFIER_VITALITY = 0x01010300,
-    /**
-     * @since v3.3.1
-     *
-     * Singing beautifier effect.
-     * - If you call {@link setVoiceBeautifierPreset}(SINGING_BEAUTIFIER),
-     * you can beautify a male-sounding voice and add a reverberation
-     * effect that sounds like singing in a small room. Agora recommends not
-     * using {@link setVoiceBeautifierPreset}(SINGING_BEAUTIFIER)
-     * to process a female-sounding voice; otherwise, you may experience vocal
-     * distortion.
-     * - If you call {@link setVoiceBeautifierParameters}(SINGING_BEAUTIFIER,
-     * param1, param2), you can beautify a male- or female-sounding voice and
-     * add a reverberation effect.
-     */
-    SINGING_BEAUTIFIER = 0x01020100,
-    /** A more vigorous voice.
-     */
-    TIMBRE_TRANSFORMATION_VIGOROUS = 0x01030100,
-    /** A deeper voice.
-     */
-    TIMBRE_TRANSFORMATION_DEEP = 0x01030200,
-    /** A mellower voice.
-     */
-    TIMBRE_TRANSFORMATION_MELLOW = 0x01030300,
-    /** A falsetto voice.
-     */
-    TIMBRE_TRANSFORMATION_FALSETTO = 0x01030400,
-    /** A fuller voice.
-     */
-    TIMBRE_TRANSFORMATION_FULL = 0x01030500,
-    /** A clearer voice.
-     */
-    TIMBRE_TRANSFORMATION_CLEAR = 0x01030600,
-    /** A more resounding voice.
-     */
-    TIMBRE_TRANSFORMATION_RESOUNDING = 0x01030700,
-    /** A more ringing voice.
-     */
-    TIMBRE_TRANSFORMATION_RINGING = 0x01030800
-};
+export enum VOICE_BEAUTIFIER_PRESET {
+  /** Turn off voice beautifier effects and use the original voice.
+   */
+  VOICE_BEAUTIFIER_OFF = 0x00000000,
+  /** A more magnetic voice.
+   *
+   * @note Agora recommends using this enumerator to process a male-sounding
+   * voice; otherwise, you may experience vocal distortion.
+   */
+  CHAT_BEAUTIFIER_MAGNETIC = 0x01010100,
+  /** A fresher voice.
+   *
+   * @note Agora recommends using this enumerator to process a
+   * female-sounding voice; otherwise, you may experience vocal distortion.
+   */
+  CHAT_BEAUTIFIER_FRESH = 0x01010200,
+  /** A more vital voice.
+   *
+   * @note Agora recommends using this enumerator to process a
+   * female-sounding voice; otherwise, you may experience vocal distortion.
+   */
+  CHAT_BEAUTIFIER_VITALITY = 0x01010300,
+  /**
+   * @since v3.3.1
+   *
+   * Singing beautifier effect.
+   * - If you call {@link setVoiceBeautifierPreset}(SINGING_BEAUTIFIER),
+   * you can beautify a male-sounding voice and add a reverberation
+   * effect that sounds like singing in a small room. Agora recommends not
+   * using {@link setVoiceBeautifierPreset}(SINGING_BEAUTIFIER)
+   * to process a female-sounding voice; otherwise, you may experience vocal
+   * distortion.
+   * - If you call {@link setVoiceBeautifierParameters}(SINGING_BEAUTIFIER,
+   * param1, param2), you can beautify a male- or female-sounding voice and
+   * add a reverberation effect.
+   */
+  SINGING_BEAUTIFIER = 0x01020100,
+  /** A more vigorous voice.
+   */
+  TIMBRE_TRANSFORMATION_VIGOROUS = 0x01030100,
+  /** A deeper voice.
+   */
+  TIMBRE_TRANSFORMATION_DEEP = 0x01030200,
+  /** A mellower voice.
+   */
+  TIMBRE_TRANSFORMATION_MELLOW = 0x01030300,
+  /** A falsetto voice.
+   */
+  TIMBRE_TRANSFORMATION_FALSETTO = 0x01030400,
+  /** A fuller voice.
+   */
+  TIMBRE_TRANSFORMATION_FULL = 0x01030500,
+  /** A clearer voice.
+   */
+  TIMBRE_TRANSFORMATION_CLEAR = 0x01030600,
+  /** A more resounding voice.
+   */
+  TIMBRE_TRANSFORMATION_RESOUNDING = 0x01030700,
+  /** A more ringing voice.
+   */
+  TIMBRE_TRANSFORMATION_RINGING = 0x01030800,
+}
 /** The latency level of an audience member in interactive live streaming.
  *
  * @note Takes effect only when the user role is audience.
  */
-export enum AUDIENCE_LATENCY_LEVEL_TYPE
-{
-    /** 1: Low latency. */
-    AUDIENCE_LATENCY_LEVEL_LOW_LATENCY = 1,
-    /** 2: (Default) Ultra low latency. */
-    AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY = 2,
-};
+export enum AUDIENCE_LATENCY_LEVEL_TYPE {
+  /** 1: Low latency. */
+  AUDIENCE_LATENCY_LEVEL_LOW_LATENCY = 1,
+  /** 2: (Default) Ultra low latency. */
+  AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY = 2,
+}
 /** The subscribing state.
  *
  * @since v3.2.0
@@ -2057,7 +2048,7 @@ export type STREAM_SUBSCRIBE_STATE =
   | 0 //SUB_STATE_IDLE
   | 1 //SUB_STATE_NO_SUBSCRIBED
   | 2 //SUB_STATE_SUBSCRIBING
-  | 3 //SUB_STATE_SUBSCRIBED
+  | 3; //SUB_STATE_SUBSCRIBED
 
 /**
  * The definition of {@link ChannelMediaInfo}.
@@ -2110,7 +2101,7 @@ export interface ChannelMediaOptions {
    * whether to subscribe to video streams in the channel.
    */
   autoSubscribeVideo: boolean;
-  
+
   publishLocalAudio: boolean;
 
   publishLocalVideo: boolean;
@@ -2127,15 +2118,15 @@ export interface WatermarkOptions {
    * - true: (Default) The watermark image is visible in preview.
    * - false: The watermark image is not visible in preview.
    */
-  visibleInPreview: boolean,
+  visibleInPreview: boolean;
   /**
    * The watermark position in the portrait mode. See {@link Rectangle}
    */
-  positionInPortraitMode: Rectangle,
+  positionInPortraitMode: Rectangle;
   /**
    * The watermark position in the landscape mode. See {@link Rectangle}
    */
-  positionInLandscapeMode: Rectangle
+  positionInLandscapeMode: Rectangle;
 }
 
 /**
@@ -2283,9 +2274,9 @@ export type AREA_CODE =
   | 2 //AREA_CODE_NA = ,
   | 4 //AREA_CODE_EUR = ,
   | 8 //AREA_CODE_AS = ,
-  | 16//AREA_CODE_JAPAN = ,
+  | 16 //AREA_CODE_JAPAN = ,
   | 32 //AREA_CODE_INDIA = ,
-  | (0xFFFFFFFF); //AREA_CODE_GLOBAL =
+  | 0xffffffff; //AREA_CODE_GLOBAL =
 /** The publishing state.
  *
  * @since v3.2.0
@@ -2306,10 +2297,10 @@ export type AREA_CODE =
  * - 3: Publishes successfully.
  */
 export type STREAM_PUBLISH_STATE =
-    | 0 //PUB_STATE_IDLE
-    | 1 //PUB_STATE_NO_PUBLISHED
-    | 2 //PUB_STATE_PUBLISHING
-    | 3 //PUB_STATE_PUBLISHED
+  | 0 //PUB_STATE_IDLE
+  | 1 //PUB_STATE_NO_PUBLISHED
+  | 2 //PUB_STATE_PUBLISHING
+  | 3; //PUB_STATE_PUBLISHED
 /**
  * Audio output routing.
  * - -1: Default.
@@ -2325,39 +2316,39 @@ export type STREAM_PUBLISH_STATE =
  * - 9: Apple AirPlay (macOS only).
  */
 export type AUDIO_ROUTE_TYPE =
-    | -1 //AUDIO_ROUTE_DEFAULT
-    | 0  //AUDIO_ROUTE_HEADSET
-    | 1  //AUDIO_ROUTE_EARPIECE
-    | 2  //AUDIO_ROUTE_HEADSET_NO_MIC
-    | 3  //AUDIO_ROUTE_SPEAKERPHONE
-    | 4  //AUDIO_ROUTE_LOUDSPEAKER
-    | 5  //AUDIO_ROUTE_BLUETOOTH
-    | 6  //AUDIO_ROUTE_USB
-    | 7  //AUDIO_ROUTE_HDMI
-    | 8  //AUDIO_ROUTE_DISPLAYPORT
-    | 9  //AUDIO_ROUTE_AIRPLAY
+  | -1 //AUDIO_ROUTE_DEFAULT
+  | 0 //AUDIO_ROUTE_HEADSET
+  | 1 //AUDIO_ROUTE_EARPIECE
+  | 2 //AUDIO_ROUTE_HEADSET_NO_MIC
+  | 3 //AUDIO_ROUTE_SPEAKERPHONE
+  | 4 //AUDIO_ROUTE_LOUDSPEAKER
+  | 5 //AUDIO_ROUTE_BLUETOOTH
+  | 6 //AUDIO_ROUTE_USB
+  | 7 //AUDIO_ROUTE_HDMI
+  | 8 //AUDIO_ROUTE_DISPLAYPORT
+  | 9; //AUDIO_ROUTE_AIRPLAY
 /**
  * The media metadata.
  */
 export interface Metadata {
-    /** ID of the user who sends the metadata.
-     *
-     * @note When sending the metadata, ignore this parameter. When receiving
-     * the metadata, use this parameter to determine who sends the metadata.
-     */
-    uid: number;
-    /**
-     * The size of the metadata.
-     */
-    size: number;
-    /**
-     * The buffer of the metadata.
-     */
-    buffer: string;
-    /** The timestamp (ms) that the metadata sends.
-     */
-    timeStampMs: number;
-  }
+  /** ID of the user who sends the metadata.
+   *
+   * @note When sending the metadata, ignore this parameter. When receiving
+   * the metadata, use this parameter to determine who sends the metadata.
+   */
+  uid: number;
+  /**
+   * The size of the metadata.
+   */
+  size: number;
+  /**
+   * The buffer of the metadata.
+   */
+  buffer: string;
+  /** The timestamp (ms) that the metadata sends.
+   */
+  timeStampMs: number;
+}
 
 /** The detailed options of a user.
  */
@@ -2366,7 +2357,7 @@ export interface ClientRoleOptions {
    * The latency level of an audience member in interactive live streaming.
    */
   audienceLatencyLevel: AUDIENCE_LATENCY_LEVEL_TYPE;
-};
+}
 /**
  * @since v3.3.1
  *
@@ -2377,9 +2368,9 @@ export interface ClientRoleOptions {
  *
  */
 export type CLOUD_PROXY_TYPE =
-    | 0 //NONE_PROXY
-    | 1  //UDP_PROXY
-    | 2  //TCP_PROXY
+  | 0 //NONE_PROXY
+  | 1 //UDP_PROXY
+  | 2; //TCP_PROXY
 /** The configuration of the log files.
  *
  * @since v3.3.1
@@ -2390,7 +2381,7 @@ export interface LogConfig {
    * Ensure that the directory for the log files exists and is writable.
    * You can use this parameter to rename the log files.
    */
-  filePath: string,
+  filePath: string;
   /** The size (KB) of a log file.
    *
    * The default value is 1024 KB. If you set
@@ -2398,7 +2389,7 @@ export interface LogConfig {
    * if you set it to less than 1024 KB, the setting is invalid, and the
    * maximum size of a log file is still 1024 KB.
    */
-  fileSize: number,
+  fileSize: number;
   /** The output log level of the SDK:
    * - `0x0000`: Do not output any log.
    * - `0x0001`: (Default) Output logs of the FATAL, ERROR, WARN and INFO
@@ -2407,14 +2398,13 @@ export interface LogConfig {
    * - `0x0004`: Output logs of the FATAL and ERROR level.
    * - `0x0008`: Output logs of the FATAL level.
    */
-  level: number
-};
+  level: number;
+}
 /** The options for SDK preset voice conversion effects.
  *
  * @since v3.3.1
  */
-export enum VOICE_CONVERSION_PRESET
-{
+export enum VOICE_CONVERSION_PRESET {
   /** Turn off voice conversion effects and use the original voice.
    */
   VOICE_CONVERSION_OFF = 0x00000000,
@@ -2433,120 +2423,117 @@ export enum VOICE_CONVERSION_PRESET
   /** A deep voice. To avoid audio distortion, ensure that you use this
    * enumerator to process a male-sounding voice.
    */
-  VOICE_CHANGER_BASS = 0x03010400
-};
+  VOICE_CHANGER_BASS = 0x03010400,
+}
 
 /** Local video state types.
  */
-export enum LOCAL_VIDEO_STREAM_STATE
-{
-    /** 0: Initial state. */
-    LOCAL_VIDEO_STREAM_STATE_STOPPED = 0,
-    /** 1: The local video capturing device starts successfully.
-     *
-     * The SDK also reports this state when you share a maximized window by calling \ref IRtcEngine::startScreenCaptureByWindowId "startScreenCaptureByWindowId".
-     */
-    LOCAL_VIDEO_STREAM_STATE_CAPTURING = 1,
-   /** 2: The first video frame is successfully encoded. */
-    LOCAL_VIDEO_STREAM_STATE_ENCODING = 2,
-    /** 3: The local video fails to start. */
-    LOCAL_VIDEO_STREAM_STATE_FAILED = 3
-};
+export enum LOCAL_VIDEO_STREAM_STATE {
+  /** 0: Initial state. */
+  LOCAL_VIDEO_STREAM_STATE_STOPPED = 0,
+  /** 1: The local video capturing device starts successfully.
+   *
+   * The SDK also reports this state when you share a maximized window by calling \ref IRtcEngine::startScreenCaptureByWindowId "startScreenCaptureByWindowId".
+   */
+  LOCAL_VIDEO_STREAM_STATE_CAPTURING = 1,
+  /** 2: The first video frame is successfully encoded. */
+  LOCAL_VIDEO_STREAM_STATE_ENCODING = 2,
+  /** 3: The local video fails to start. */
+  LOCAL_VIDEO_STREAM_STATE_FAILED = 3,
+}
 
 /** Local video state error codes.
  */
 export enum LOCAL_VIDEO_STREAM_ERROR {
-    /** 0: The local video is normal. */
-    LOCAL_VIDEO_STREAM_ERROR_OK = 0,
-    /** 1: No specified reason for the local video failure. */
-    LOCAL_VIDEO_STREAM_ERROR_FAILURE = 1,
-    /** 2: No permission to use the local video capturing device. */
-    LOCAL_VIDEO_STREAM_ERROR_DEVICE_NO_PERMISSION = 2,
-    /** 3: The local video capturing device is in use. */
-    LOCAL_VIDEO_STREAM_ERROR_DEVICE_BUSY = 3,
-    /** 4: The local video capture fails. Check whether the capturing device is working properly. */
-    LOCAL_VIDEO_STREAM_ERROR_CAPTURE_FAILURE = 4,
-    /** 5: The local video encoding fails. */
-    LOCAL_VIDEO_STREAM_ERROR_ENCODE_FAILURE = 5,
-    /** 6: (iOS only) The application is in the background.
-     *
-     * @since v3.3.0
-     */
-    LOCAL_VIDEO_STREAM_ERROR_CAPTURE_INBACKGROUND = 6,
-    /** 7: (iOS only) The application is running in Slide Over, Split View, or Picture in Picture mode.
-     *
-     * @since v3.3.0
-     */
-    LOCAL_VIDEO_STREAM_ERROR_CAPTURE_MULTIPLE_FOREGROUND_APPS = 7,
-    /** 8:capture not found*/
-    LOCAL_VIDEO_STREAM_ERROR_DEVICE_NOT_FOUND = 8,
+  /** 0: The local video is normal. */
+  LOCAL_VIDEO_STREAM_ERROR_OK = 0,
+  /** 1: No specified reason for the local video failure. */
+  LOCAL_VIDEO_STREAM_ERROR_FAILURE = 1,
+  /** 2: No permission to use the local video capturing device. */
+  LOCAL_VIDEO_STREAM_ERROR_DEVICE_NO_PERMISSION = 2,
+  /** 3: The local video capturing device is in use. */
+  LOCAL_VIDEO_STREAM_ERROR_DEVICE_BUSY = 3,
+  /** 4: The local video capture fails. Check whether the capturing device is working properly. */
+  LOCAL_VIDEO_STREAM_ERROR_CAPTURE_FAILURE = 4,
+  /** 5: The local video encoding fails. */
+  LOCAL_VIDEO_STREAM_ERROR_ENCODE_FAILURE = 5,
+  /** 6: (iOS only) The application is in the background.
+   *
+   * @since v3.3.0
+   */
+  LOCAL_VIDEO_STREAM_ERROR_CAPTURE_INBACKGROUND = 6,
+  /** 7: (iOS only) The application is running in Slide Over, Split View, or Picture in Picture mode.
+   *
+   * @since v3.3.0
+   */
+  LOCAL_VIDEO_STREAM_ERROR_CAPTURE_MULTIPLE_FOREGROUND_APPS = 7,
+  /** 8:capture not found*/
+  LOCAL_VIDEO_STREAM_ERROR_DEVICE_NOT_FOUND = 8,
 
-    LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_MINIMIZED = 11,
-    /** 12: The error code indicates that a window shared by the window ID has been closed, or a full-screen window
-     * shared by the window ID has exited full-screen mode.
-     * After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a
-     * black screen, Agora recommends that you immediately stop screen sharing.
-     *
-     * Common scenarios for reporting this error code:
-     * - When the local user closes the shared window, the SDK reports this error code.
-     * - The local user shows some slides in full-screen mode first, and then shares the windows of the slides. After
-     * the user exits full-screen mode, the SDK reports this error code.
-     * - The local user watches web video or reads web document in full-screen mode first, and then shares the window of
-     * the web video or document. After the user exits full-screen mode, the SDK reports this error code.
-     */
-    LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_CLOSED = 12,
+  LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_MINIMIZED = 11,
+  /** 12: The error code indicates that a window shared by the window ID has been closed, or a full-screen window
+   * shared by the window ID has exited full-screen mode.
+   * After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a
+   * black screen, Agora recommends that you immediately stop screen sharing.
+   *
+   * Common scenarios for reporting this error code:
+   * - When the local user closes the shared window, the SDK reports this error code.
+   * - The local user shows some slides in full-screen mode first, and then shares the windows of the slides. After
+   * the user exits full-screen mode, the SDK reports this error code.
+   * - The local user watches web video or reads web document in full-screen mode first, and then shares the window of
+   * the web video or document. After the user exits full-screen mode, the SDK reports this error code.
+   */
+  LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_CLOSED = 12,
 
-    LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_NOT_SUPPORTED = 20,
-};
+  LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_NOT_SUPPORTED = 20,
+}
 
 /** Local audio state types.
  */
-export enum LOCAL_AUDIO_STREAM_STATE
-{
-    /** 0: The local audio is in the initial state.
-     */
-    LOCAL_AUDIO_STREAM_STATE_STOPPED = 0,
-    /** 1: The recording device starts successfully.
-     */
-    LOCAL_AUDIO_STREAM_STATE_RECORDING = 1,
-    /** 2: The first audio frame encodes successfully.
-     */
-    LOCAL_AUDIO_STREAM_STATE_ENCODING = 2,
-    /** 3: The local audio fails to start.
-     */
-    LOCAL_AUDIO_STREAM_STATE_FAILED = 3
-};
+export enum LOCAL_AUDIO_STREAM_STATE {
+  /** 0: The local audio is in the initial state.
+   */
+  LOCAL_AUDIO_STREAM_STATE_STOPPED = 0,
+  /** 1: The recording device starts successfully.
+   */
+  LOCAL_AUDIO_STREAM_STATE_RECORDING = 1,
+  /** 2: The first audio frame encodes successfully.
+   */
+  LOCAL_AUDIO_STREAM_STATE_ENCODING = 2,
+  /** 3: The local audio fails to start.
+   */
+  LOCAL_AUDIO_STREAM_STATE_FAILED = 3,
+}
 
 /** Local audio state error codes.
  */
-export enum LOCAL_AUDIO_STREAM_ERROR
-{
+export enum LOCAL_AUDIO_STREAM_ERROR {
   /** 0: The local audio is normal.
    */
-    LOCAL_AUDIO_STREAM_ERROR_OK = 0,
-    /** 1: No specified reason for the local audio failure.
-    */
-    LOCAL_AUDIO_STREAM_ERROR_FAILURE = 1,
-    /** 2: No permission to use the local audio device.
-    */
-    LOCAL_AUDIO_STREAM_ERROR_DEVICE_NO_PERMISSION = 2,
-    /** 3: The microphone is in use.
-    */
-    LOCAL_AUDIO_STREAM_ERROR_DEVICE_BUSY = 3,
-    /** 4: The local audio recording fails. Check whether the recording device
-    * is working properly.
-    */
-    LOCAL_AUDIO_STREAM_ERROR_RECORD_FAILURE = 4,
-    /** 5: The local audio encoding fails.
-    */
-    LOCAL_AUDIO_STREAM_ERROR_ENCODE_FAILURE = 5,
-    /** 6: No recording audio device.
+  LOCAL_AUDIO_STREAM_ERROR_OK = 0,
+  /** 1: No specified reason for the local audio failure.
    */
-    LOCAL_AUDIO_STREAM_ERROR_NO_RECORDING_DEVICE = 6,
-    /** 7: No playout audio device.
+  LOCAL_AUDIO_STREAM_ERROR_FAILURE = 1,
+  /** 2: No permission to use the local audio device.
    */
-    LOCAL_AUDIO_STREAM_ERROR_NO_PLAYOUT_DEVICE = 7
-};
+  LOCAL_AUDIO_STREAM_ERROR_DEVICE_NO_PERMISSION = 2,
+  /** 3: The microphone is in use.
+   */
+  LOCAL_AUDIO_STREAM_ERROR_DEVICE_BUSY = 3,
+  /** 4: The local audio recording fails. Check whether the recording device
+   * is working properly.
+   */
+  LOCAL_AUDIO_STREAM_ERROR_RECORD_FAILURE = 4,
+  /** 5: The local audio encoding fails.
+   */
+  LOCAL_AUDIO_STREAM_ERROR_ENCODE_FAILURE = 5,
+  /** 6: No recording audio device.
+   */
+  LOCAL_AUDIO_STREAM_ERROR_NO_RECORDING_DEVICE = 6,
+  /** 7: No playout audio device.
+   */
+  LOCAL_AUDIO_STREAM_ERROR_NO_PLAYOUT_DEVICE = 7,
+}
 
 export enum VIRTUAL_BACKGROUND_SOURCE_STATE_REASON {
   VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_SUCCESS = 0,
@@ -2556,7 +2543,7 @@ export enum VIRTUAL_BACKGROUND_SOURCE_STATE_REASON {
   VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_COLOR_FORMAT_NOT_SUPPORTED = 2,
   // The device is not supported
   VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_DEVICE_NOT_SUPPORTED = 3,
-};
+}
 
 /** The configurations for the data stream.
  *
@@ -2605,8 +2592,7 @@ export enum VIRTUAL_BACKGROUND_SOURCE_STATE_REASON {
  * </table>
  *
  */
-export interface DataStreamConfig
-{
+export interface DataStreamConfig {
   /** Whether to synchronize the data packet with the published audio packet.
    *
    * - true: Synchronize the data packet with the audio packet.
@@ -2624,7 +2610,7 @@ export interface DataStreamConfig
    * functions, for example
    * lyric synchronization.
    */
-  syncWithAudio: boolean,
+  syncWithAudio: boolean;
   /** Whether the SDK guarantees that the receiver receives the data in the
    * sent order.
    *
@@ -2635,12 +2621,11 @@ export interface DataStreamConfig
    * Do not set this parameter to `true` if you need the receiver to receive
    * the data immediately.
    */
-  ordered: boolean
-};
+  ordered: boolean;
+}
 
 /** Network type. */
-export enum NETWORK_TYPE
-{
+export enum NETWORK_TYPE {
   /** -1: The network type is unknown. */
   NETWORK_TYPE_UNKNOWN = -1,
   /** 0: The SDK disconnects from the network. */
@@ -2655,29 +2640,28 @@ export enum NETWORK_TYPE
   NETWORK_TYPE_MOBILE_3G = 4,
   /** 5: The network type is mobile 4G. */
   NETWORK_TYPE_MOBILE_4G = 5,
-};
+}
 
-export enum AUDIO_RECORDING_QUALITY_TYPE
-{
-    /** 0: Low quality. The sample rate is 32 kHz, and the file size is around
-     * 1.2 MB after 10 minutes of recording.
-    */
-    AUDIO_RECORDING_QUALITY_LOW = 0,
-    /** 1: Medium quality. The sample rate is 32 kHz, and the file size is
-     * around 2 MB after 10 minutes of recording.
-    */
-    AUDIO_RECORDING_QUALITY_MEDIUM = 1,
-    /** 2: High quality. The sample rate is 32 kHz, and the file size is
-     * around 3.75 MB after 10 minutes of recording.
-    */
-    AUDIO_RECORDING_QUALITY_HIGH = 2,
+export enum AUDIO_RECORDING_QUALITY_TYPE {
+  /** 0: Low quality. The sample rate is 32 kHz, and the file size is around
+   * 1.2 MB after 10 minutes of recording.
+   */
+  AUDIO_RECORDING_QUALITY_LOW = 0,
+  /** 1: Medium quality. The sample rate is 32 kHz, and the file size is
+   * around 2 MB after 10 minutes of recording.
+   */
+  AUDIO_RECORDING_QUALITY_MEDIUM = 1,
+  /** 2: High quality. The sample rate is 32 kHz, and the file size is
+   * around 3.75 MB after 10 minutes of recording.
+   */
+  AUDIO_RECORDING_QUALITY_HIGH = 2,
 }
 export enum BACKGROUND_SOURCE_TYPE {
   /** Background source is pure color*/
   BACKGROUND_COLOR = 1,
   /** Background source is image path, only support png and jpg format*/
   BACKGROUND_IMG,
-};
+}
 
 export enum AUDIO_RECORDING_POSITION {
   /** The SDK will record the voices of all users in the channel. */
@@ -2686,7 +2670,7 @@ export enum AUDIO_RECORDING_POSITION {
   AUDIO_RECORDING_POSITION_RECORDING = 1,
   /** The SDK will record the voices of remote users. */
   AUDIO_RECORDING_POSITION_MIXED_PLAYBACK = 2,
-};
+}
 
 export interface AudioRecordingConfiguration {
   filePath: string;
@@ -2701,15 +2685,14 @@ export interface VirtualBackgroundSource {
 }
 
 export interface DisplayInfo {
-  displayId: {id: number}
-  height: number,
-  width: number,
-  image: Uint8Array,
-  isActive: boolean,
-  isBuiltin: boolean,
-  isMain: boolean
+  displayId: { id: number };
+  height: number;
+  width: number;
+  image: Uint8Array;
+  isActive: boolean;
+  isBuiltin: boolean;
+  isMain: boolean;
 }
-
 
 /**
  * interface for c++ addon (.node)
@@ -2719,7 +2702,11 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  initialize(appId: string, areaCode?: AREA_CODE, logConfig?: LogConfig): number;
+  initialize(
+    appId: string,
+    areaCode?: AREA_CODE,
+    logConfig?: LogConfig
+  ): number;
   /**
    * @ignore
    */
@@ -2818,7 +2805,10 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  setClientRoleWithOptions(role: ClientRoleType, options: ClientRoleOptions): number;
+  setClientRoleWithOptions(
+    role: ClientRoleType,
+    options: ClientRoleOptions
+  ): number;
   /**
    * @ignore
    */
@@ -2877,9 +2867,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  setVideoEncoderConfiguration(
-    config: VideoEncoderConfiguration
-  ): number;
+  setVideoEncoderConfiguration(config: VideoEncoderConfiguration): number;
   /**
    * @ignore
    */
@@ -2959,7 +2947,11 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  enableAudioVolumeIndication(interval: number, smooth: number, report_vad: boolean): number;
+  enableAudioVolumeIndication(
+    interval: number,
+    smooth: number,
+    report_vad: boolean
+  ): number;
   /**
    * @ignore
    */
@@ -2983,7 +2975,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-   videoSourceSetAddonLogFile(filepath: string): number;
+  videoSourceSetAddonLogFile(filepath: string): number;
   /**
    * @ignore
    */
@@ -3068,7 +3060,7 @@ export interface NodeRtcEngine {
    * @ignore
    */
   getAudioPlaybackDevices(): Array<Object>;
-  
+
   getDefaultAudioPlaybackDevices(): Object;
 
   getDefaultAudioRecordingDevices(): Object;
@@ -3132,7 +3124,12 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  startAudioRecording(filePath: string, sampleRate: number, quality: number, pos: number): number;
+  startAudioRecording(
+    filePath: string,
+    sampleRate: number,
+    quality: number,
+    pos: number
+  ): number;
   /**
    * @ignore
    */
@@ -3222,7 +3219,11 @@ export interface NodeRtcEngine {
     param: CaptureParam
   ): number;
 
-  videoSourceStartScreenCaptureByDisplayId(displayId: number, rect: CaptureRect, param: CaptureParam): number;
+  videoSourceStartScreenCaptureByDisplayId(
+    displayId: number,
+    rect: CaptureRect,
+    param: CaptureParam
+  ): number;
   /**
    * @ignore
    */
@@ -3308,7 +3309,10 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  videoSourceEnableLoopbackRecording(enabled: boolean, deviceName: string | null): number;
+  videoSourceEnableLoopbackRecording(
+    enabled: boolean,
+    deviceName: string | null
+  ): number;
   /**
    * @ignore
    */
@@ -3317,7 +3321,10 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  videoSourceEnableEncryption(enabled: boolean, encryptionConfig: EncryptionConfig): number;
+  videoSourceEnableEncryption(
+    enabled: boolean,
+    encryptionConfig: EncryptionConfig
+  ): number;
   /**
    * @ignore
    */
@@ -3433,7 +3440,10 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  createDataStream(reliable: boolean | DataStreamConfig, ordered ?: boolean): number;
+  createDataStream(
+    reliable: boolean | DataStreamConfig,
+    ordered?: boolean
+  ): number;
   /**
    * @ignore
    */
@@ -3672,7 +3682,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  getPlugins(): Array<{id: string}>;
+  getPlugins(): Array<{ id: string }>;
   /**
    * @ignore
    */
@@ -3708,7 +3718,13 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  sendCustomReportMessage(id: string, category: string, event: string, label: string, value: number): number;
+  sendCustomReportMessage(
+    id: string,
+    category: string,
+    event: string,
+    label: string,
+    value: number
+  ): number;
   /**
    * @ignore
    */
@@ -3724,23 +3740,36 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  setAudioEffectParameters(presset: AUDIO_EFFECT_PRESET, param1: number, param2: number): number;
+  setAudioEffectParameters(
+    presset: AUDIO_EFFECT_PRESET,
+    param1: number,
+    param2: number
+  ): number;
   /**
    * @ignore
    */
-  setRecordingAudioFrameParameters(sampleRate: number, channel: number, mode: number, samplesPerCall: number): number;
+  setRecordingAudioFrameParameters(
+    sampleRate: number,
+    channel: number,
+    mode: number,
+    samplesPerCall: number
+  ): number;
   /**
    * @ignore
    */
-  setCloudProxy(type:CLOUD_PROXY_TYPE): number;
+  setCloudProxy(type: CLOUD_PROXY_TYPE): number;
   /**
    * @ignore
    */
-  enableDeepLearningDenoise(enabled:boolean): number;
+  enableDeepLearningDenoise(enabled: boolean): number;
   /**
    * @ignore
    */
-  setVoiceBeautifierParameters(preset:VOICE_BEAUTIFIER_PRESET, param1: number, param2: number): number;
+  setVoiceBeautifierParameters(
+    preset: VOICE_BEAUTIFIER_PRESET,
+    param1: number,
+    param2: number
+  ): number;
   /**
    * @ignore
    */
@@ -3748,7 +3777,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  setVoiceConversionPreset(preset:VOICE_CONVERSION_PRESET): number;
+  setVoiceConversionPreset(preset: VOICE_CONVERSION_PRESET): number;
   /**
    * @ignore
    */
@@ -3760,7 +3789,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-   getEffectDuration(filePath: string): number;
+  getEffectDuration(filePath: string): number;
   /**
    * @ignore
    */
@@ -3784,7 +3813,10 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  enableVirtualBackground(enabled: Boolean, backgroundSource: VirtualBackgroundSource): number;
+  enableVirtualBackground(
+    enabled: Boolean,
+    backgroundSource: VirtualBackgroundSource
+  ): number;
 }
 /**
  * @ignore
@@ -3847,11 +3879,9 @@ export interface NodeRtcChannel {
   /**
    * @ignore
    */
-  setClientRole(
-    clientRole: ClientRoleType
-  ): number;
+  setClientRole(clientRole: ClientRoleType): number;
 
-    /**
+  /**
    * @ignore
    */
   setClientRoleWithOptions(
@@ -3862,98 +3892,66 @@ export interface NodeRtcChannel {
   /**
    * @ignore
    */
-  setRemoteUserPriority(
-    uid: number,
-    priority: Priority
-  ): number;
+  setRemoteUserPriority(uid: number, priority: Priority): number;
 
   /**
    * @ignore
    */
-  renewToken(
-    token: string
-  ): number;
+  renewToken(token: string): number;
 
   /**
    * @ignore
    */
-  setEncryptionSecret(
-    secret: string
-  ): number;
+  setEncryptionSecret(secret: string): number;
 
   /**
    * @ignore
    */
-  setEncryptionMode(
-    mode: string
-  ): number;
+  setEncryptionMode(mode: string): number;
 
   /**
    * @ignore
    */
-  setRemoteVoicePosition(
-    uid: number,
-    pan: number,
-    gain: number
-  ): number;
+  setRemoteVoicePosition(uid: number, pan: number, gain: number): number;
 
   /**
    * @ignore
    */
-  setDefaultMuteAllRemoteAudioStreams(
-    muted: boolean
-  ): number;
+  setDefaultMuteAllRemoteAudioStreams(muted: boolean): number;
 
   /**
    * @ignore
    */
-  setDefaultMuteAllRemoteVideoStreams(
-    muted: boolean
-  ): number;
+  setDefaultMuteAllRemoteVideoStreams(muted: boolean): number;
 
   /**
    * @ignore
    */
-  muteAllRemoteAudioStreams(
-    muted: boolean
-  ): number;
+  muteAllRemoteAudioStreams(muted: boolean): number;
 
   /**
    * @ignore
    */
-  muteRemoteAudioStream(
-    uid: number,
-    muted: boolean
-  ): number;
+  muteRemoteAudioStream(uid: number, muted: boolean): number;
 
   /**
    * @ignore
    */
-  muteAllRemoteVideoStreams(
-    muted: boolean
-  ): number;
+  muteAllRemoteVideoStreams(muted: boolean): number;
 
   /**
    * @ignore
    */
-  muteRemoteVideoStream(
-    uid: number,
-    muted: boolean
-  ): number;
+  muteRemoteVideoStream(uid: number, muted: boolean): number;
   /**
    * @ignore
    */
-  setRemoteVideoStreamType(
-    uid: number,
-    type: StreamType
-  ): number;
+  setRemoteVideoStreamType(uid: number, type: StreamType): number;
 
   /**
    * @ignore
    */
-  setRemoteDefaultVideoStreamType(
-    type: StreamType
-  ): number;
+  setRemoteDefaultVideoStreamType(type: StreamType): number;
 
   /**
    * @ignore
@@ -3966,25 +3964,17 @@ export interface NodeRtcChannel {
   /**
    * @ignore
    */
-  sendStreamMessage(
-    streamId: number,
-    msg: string
-  ): number;
+  sendStreamMessage(streamId: number, msg: string): number;
 
   /**
    * @ignore
    */
-  addPublishStreamUrl(
-    url: string,
-    transcodingEnabled: boolean
-  ): number;
+  addPublishStreamUrl(url: string, transcodingEnabled: boolean): number;
 
   /**
    * @ignore
    */
-  removePublishStreamUrl(
-    url: string
-  ): number;
+  removePublishStreamUrl(url: string): number;
 
   /**
    * @ignore
@@ -4041,8 +4031,7 @@ export interface NodeRtcChannel {
    * @ignore
    */
   enableEncryption(enabled: boolean, config: EncryptionConfig): number;
-  
+
   muteLocalAudioStream(mute: boolean): number;
   muteLocalVideoStream(mute: boolean): number;
-  
 }
