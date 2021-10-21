@@ -1,21 +1,24 @@
 const deprecate = (replaceApi?: string) => {
-  console.warn('This method will be deprecated soon. ', replaceApi ? `Please use ${replaceApi} instead` : '');
+  console.warn(
+    'This method will be deprecated soon. ',
+    replaceApi ? `Please use ${replaceApi} instead` : ''
+  );
 };
 
 class Config {
-  glDebug: boolean
-  constructor(){
-    this.glDebug = false
+  glDebug: boolean;
+  constructor() {
+    this.glDebug = false;
   }
 
-  setGlDebug(enable:boolean){
-    this.glDebug = enable
+  setGlDebug(enable: boolean) {
+    this.glDebug = enable;
   }
 
   getGlDebug() {
-    return this.glDebug
+    return this.glDebug;
   }
 }
 
-const config = new Config()
-export {config, Config, deprecate}
+const config = new Config();
+export { config, Config, deprecate };
