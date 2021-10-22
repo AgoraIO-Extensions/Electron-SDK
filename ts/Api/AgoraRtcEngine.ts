@@ -123,6 +123,15 @@ import {
 
 const agora = require("../../build/Release/agora_node_ext");
 
+interface ForwardEventParam {
+  event: {
+    eventName: string;
+    params: string;
+    buffer?: string;
+    changeNameHandler: (_eventName: string) => string;
+  };
+  filter: (eventName: string, params: Array<any>, buffer?: string) => Boolean;
+}
 /**
  * The AgoraRtcEngine class.
  */
@@ -140,6 +149,89 @@ export class AgoraRtcEngine extends EventEmitter {
     });
   };
 
+  filterEvent = (_eventName: string, params: Array<any>): Boolean => {
+    switch (_eventName) {
+      case NativeEngineEvents.onJoinChannelSuccess: {
+        const [channel] = params;
+        this._info.currentChannel = channel;
+        this.fire(EngineEvents.JOINED_CHANNEL, ...params);
+        this.fire(EngineEvents.JOINEDCHANNEL, ...params);
+        return true;
+      }
+      case NativeEngineEvents.onLeaveChannel: {
+        this._info.currentChannel = undefined;
+        this.fire(EngineEvents.LEAVE_CHANNEL, ...params);
+        this.fire(EngineEvents.LEAVECHANNEL, ...params);
+        return true;
+      }
+      case NativeEngineEvents.onUserOffline: {
+        this.fire(EngineEvents.USER_OFFLINE, ...params);
+        if (!this._info.currentChannel) return true;
+        const [uid] = params;
+        this._rendererManager?.removeRenderer(
+          String(uid),
+          this._info.currentChannel
+        );
+        this.fire(EngineEvents.REMOVE_STREAM, ...params);
+        return true;
+      }
+      case NativeEngineEvents.onFirstLocalVideoFrame: {
+        const [uid, channel, width, height, elapsed] = params;
+        this.fire(EngineEvents.FIRST_LOCAL_VIDEO_FRAME, ...params);
+        const videoFrameItem = this.resizeBuffer(0, "", width, height);
+        this._rendererManager?.addVideoFrameCacheToMap(
+          "local",
+          "",
+          videoFrameItem
+        );
+        logError(`firstLocalVideoFrame local ${width}, ${height}`);
+        return true;
+      }
+      case NativeEngineEvents.onFirstRemoteVideoFrame: {
+        const [uid, channelId, width, height] = params;
+        this.fire(EngineEvents.FIRST_REMOTE_VIDEO_FRAME, ...params);
+        logWarn(`onFirstRemoteVideoFrame uid: ${uid}, channelId ${channelId}`);
+        let videoFrameItem = this.resizeBuffer(uid, channelId, width, height);
+        this._rendererManager?.addVideoFrameCacheToMap(
+          uid,
+          channelId,
+          videoFrameItem
+        );
+        return true;
+      }
+      // for NativeVideoSourceEvents
+      case NativeVideoSourceEvents.onFirstLocalVideoFrame: {
+        const [uid, channelId, width, height, elapsed] = params;
+        this.fire(
+          VideoSourceEvents.VIDEO_SOURCE_FIRST_LOCAL_VIDEO_FRAME,
+          ...params
+        );
+        logError(`videoSourceFirstLocalVideoFrame ${width} ${height}`);
+        let videoFrameItem = this.resizeBuffer(0, "", width, height);
+        this._rendererManager?.addVideoFrameCacheToMap(
+          "videoSource",
+          "",
+          videoFrameItem
+        );
+        return true;
+      }
+      case NativeVideoSourceEvents.onFirstRemoteVideoDecoded: {
+        const [uid, width, height, elapsed] = params;
+        this.fire(
+          VideoSourceEvents.VIDEO_SOURCE_FIRST_REMOTE_VIDEO_DECODED,
+          uid,
+          width,
+          height,
+          elapsed
+        );
+        this.fire(VideoSourceEvents.ADDSTREAM, uid, elapsed);
+        this.fire(VideoSourceEvents.ADD_STREAM, uid, elapsed);
+        return true;
+      }
+      default:
+        return false;
+    }
+  };
   constructor() {
     super();
     logInfo("AgoraRtcEngine constructor()");
@@ -148,14 +240,21 @@ export class AgoraRtcEngine extends EventEmitter {
 
     this._rtcEngine.OnEvent(
       "call_back",
-      (processType: PROCESS_TYPE, eventName: string, eventData: string) => {
-        console.log(`call_back ${processType} == ${eventName} == ${eventData}`)
-        const finalFunc =
-          processType === PROCESS_TYPE.MAIN
-            ? this.engineEvent
-            : this.videoSourceEvent;
-        finalFunc(eventName, eventData);
-      }
+      (processType: PROCESS_TYPE, eventName: string, eventData: string) =>
+        this.forwardEvent({
+          event: {
+            eventName,
+            params: eventData,
+            changeNameHandler:
+              processType === PROCESS_TYPE.MAIN
+                ? changeEventNameForEngine
+                : changeEventNameForVideoSource,
+          },
+          filter:
+            processType === PROCESS_TYPE.MAIN
+              ? this.engineFilterEvent
+              : this.videoSourceFilterEvent,
+        })
     );
 
     this._rtcEngine.OnEvent(
@@ -165,13 +264,22 @@ export class AgoraRtcEngine extends EventEmitter {
         eventName: string,
         eventData: string,
         eventBuffer: string
-      ) => {
-        const finalFunc =
-          processType === PROCESS_TYPE.MAIN
-            ? this.engineEventWithBuffer
-            : this.videoSourceEventWithBuffer;
-        finalFunc(eventName, eventData, eventBuffer);
-      }
+      ) =>
+        this.forwardEvent({
+          event: {
+            eventName,
+            params: eventData,
+            buffer: eventBuffer,
+            changeNameHandler:
+              processType === PROCESS_TYPE.MAIN
+                ? changeEventNameForEngine
+                : changeEventNameForVideoSource,
+          },
+          filter:
+            processType === PROCESS_TYPE.MAIN
+              ? this.engineFilterEventWithBuffer
+              : this.videoSourceFilterEventWithBuffer,
+        })
     );
     this._rendererManager = new RendererManager(this._rtcEngine);
   }
@@ -250,42 +358,22 @@ export class AgoraRtcEngine extends EventEmitter {
     };
   }
 
-  sendJSEvent = (
-    _eventName: string,
-    changeNameHandler: (_eventName: string) => string,
-    params: Array<any>,
-    excludeEventNames?: Array<string>
-  ) => {
-    if (excludeEventNames && excludeEventNames.indexOf(_eventName) !== -1) {
-      return false;
-    }
-
-    const eventName = changeNameHandler(_eventName);
-    this.fire(eventName, ...params);
-    this.fire(eventName.toLocaleLowerCase(), ...params);
-    return true;
-  };
-
-  engineEvent = (_eventName: string, _eventData: string) => {
-    console.log("engineEvent", _eventName, _eventData);
-    const params: Array<any> = jsonStringToArray(_eventData);
-
-    const isSended = this.sendJSEvent(
-      _eventName,
-      changeEventNameForEngine,
-      params,
-      [
-        NativeEngineEvents.onJoinChannelSuccess,
-        NativeEngineEvents.onLeaveChannel,
-        NativeEngineEvents.onUserOffline,
-        NativeEngineEvents.onFirstLocalVideoFrame,
-        NativeEngineEvents.onFirstRemoteVideoFrame,
-      ]
-    );
-    if (isSended) {
+  forwardEvent = ({
+    event: { eventName, params, buffer, changeNameHandler },
+    filter,
+  }: ForwardEventParam) => {
+    const _params = jsonStringToArray(params);
+    const isFilter = filter(eventName, _params, buffer);
+    if (isFilter) {
       return;
     }
 
+    const finalEventName = changeNameHandler(eventName);
+    this.fire(finalEventName, ..._params);
+    this.fire(finalEventName.toLocaleLowerCase(), ..._params);
+  };
+
+  engineFilterEvent = (_eventName: string, params: Array<any>): Boolean => {
     switch (_eventName) {
       case NativeEngineEvents.onJoinChannelSuccess:
         {
@@ -294,21 +382,22 @@ export class AgoraRtcEngine extends EventEmitter {
           this.fire(EngineEvents.JOINED_CHANNEL, ...params);
           this.fire(EngineEvents.JOINEDCHANNEL, ...params);
         }
-        break;
-
+        return true;
       case NativeEngineEvents.onLeaveChannel:
         {
           this._info.currentChannel = undefined;
           this.fire(EngineEvents.LEAVE_CHANNEL, ...params);
           this.fire(EngineEvents.LEAVECHANNEL, ...params);
         }
-        break;
+        return true;
 
       case NativeEngineEvents.onUserOffline:
         {
           this.fire(EngineEvents.USER_OFFLINE, ...params);
 
-          if (!this._info.currentChannel) return;
+          if (!this._info.currentChannel) {
+            return true;
+          }
           const [uid] = params;
           this._rendererManager?.removeRenderer(
             String(uid),
@@ -316,8 +405,7 @@ export class AgoraRtcEngine extends EventEmitter {
           );
           this.fire(EngineEvents.REMOVE_STREAM, ...params);
         }
-        break;
-
+        return true;
       case NativeEngineEvents.onFirstLocalVideoFrame:
         {
           const [uid, channel, width, height, elapsed] = params;
@@ -333,7 +421,7 @@ export class AgoraRtcEngine extends EventEmitter {
 
           logError(`firstLocalVideoFrame local ${width}, ${height}`);
         }
-        break;
+        return true;
 
       case NativeEngineEvents.onFirstRemoteVideoFrame:
         {
@@ -352,71 +440,50 @@ export class AgoraRtcEngine extends EventEmitter {
             videoFrameItem
           );
         }
-        break;
-
+        return true;
       default:
-        break;
+        return false;
     }
   };
 
-  engineEventWithBuffer = (
+  engineFilterEventWithBuffer = (
     _eventName: string,
-    _eventData: string,
-    _eventBuffer: string
-  ) => {
+    _eventData: Array<any>,
+    _eventBuffer?: string
+  ): Boolean => {
     switch (_eventName) {
       case "onStreamMessage":
         {
-          let data: {
-            uid: number;
-            streamId: number;
-            length: number;
-          } = JSON.parse(_eventData);
-          this.fire(
-            EngineEvents.STREAM_MESSAGE,
-            data.uid,
-            data.streamId,
-            _eventBuffer
-          );
+          const [uid, streamId, length] = _eventData;
+          this.fire(EngineEvents.STREAM_MESSAGE, uid, streamId, _eventBuffer);
         }
-        break;
+        return true;
 
       case "onReadyToSendMetadata":
         {
-          let data: { metadata: Metadata } = JSON.parse(_eventData);
-          data.metadata.buffer = _eventBuffer;
-          this.fire(EngineEvents.READY_TO_SEND_METADATA, data.metadata);
+          const eventData: Array<Metadata> = _eventData;
+          const [metadata] = eventData;
+          metadata.buffer = _eventBuffer!;
+          this.fire(EngineEvents.READY_TO_SEND_METADATA, metadata);
         }
-        break;
-
+        return true;
       case "onMetadataReceived":
         {
-          let data: { metadata: Metadata } = JSON.parse(_eventData);
-          data.metadata.buffer = _eventBuffer;
-          this.fire(EngineEvents.METADATA_RECEIVED, data.metadata);
+          const eventData: Array<Metadata> = _eventData;
+          const [metadata] = eventData;
+          metadata.buffer = _eventBuffer!;
+          this.fire(EngineEvents.METADATA_RECEIVED, metadata);
         }
-        break;
-
+        return true;
       default:
-        break;
+        return false;
     }
   };
 
-  videoSourceEvent = (_eventName: string, _eventData: string) => {
-    const params: Array<any> = jsonStringToArray(_eventData);
-
-    const isSended = this.sendJSEvent(
-      _eventName,
-      changeEventNameForVideoSource,
-      params,
-      [
-        NativeVideoSourceEvents.onFirstLocalVideoFrame,
-        NativeVideoSourceEvents.onFirstRemoteVideoDecoded,
-      ]
-    );
-    if (isSended) {
-      return;
-    }
+  videoSourceFilterEvent = (
+    _eventName: string,
+    params: Array<any>
+  ): Boolean => {
     switch (_eventName) {
       case NativeVideoSourceEvents.onFirstLocalVideoFrame:
         {
@@ -433,7 +500,7 @@ export class AgoraRtcEngine extends EventEmitter {
             videoFrameItem
           );
         }
-        break;
+        return true;
 
       case NativeVideoSourceEvents.onFirstRemoteVideoDecoded:
         {
@@ -448,18 +515,18 @@ export class AgoraRtcEngine extends EventEmitter {
           this.fire(VideoSourceEvents.ADDSTREAM, uid, elapsed);
           this.fire(VideoSourceEvents.ADD_STREAM, uid, elapsed);
         }
-        break;
+        return true;
 
       default:
-        break;
+        return false;
     }
   };
 
-  videoSourceEventWithBuffer = (
+  videoSourceFilterEventWithBuffer = (
     _eventName: string,
-    _eventData: string,
-    _eventBuffer: string
-  ) => {};
+    _eventData: Array<any>,
+    _eventBuffer?: string
+  ) => false;
 
   setView(rendererConfig: RendererConfig): void {
     let defaultConfig: RendererConfig = Object.assign(
