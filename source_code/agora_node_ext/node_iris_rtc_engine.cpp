@@ -39,6 +39,7 @@ NodeIrisRtcEngine::NodeIrisRtcEngine() {
       std::make_shared<NodeIrisEventHandler>(SCREEN_SHARE);
   _iris_sub_process_engine->SetEventHandler(
       _iris_event_handler_for_sub_process.get());
+  _iris_raw_data_plugin_manager_for_sub_process = _iris_sub_process_engine->raw_data()->plugin_manager();
 }
 
 NodeIrisRtcEngine::~NodeIrisRtcEngine() {
@@ -493,31 +494,23 @@ napi_value NodeIrisRtcEngine::PluginCallApi(napi_env env,
   memset(result, '\0', 512);
   LOG_F(INFO, "CallApi parameter: %s", parameter.c_str());
   int ret = ERROR_PARAMETER_1;
-
-  if (nodeIrisRtcEngine->_iris_engine) {
+  
+  auto finalPluginManager =
+      process_type == PROCESS_TYPE::MAIN
+          ? nodeIrisRtcEngine->_iris_raw_data_plugin_manager
+          : nodeIrisRtcEngine->_iris_raw_data_plugin_manager_for_sub_process;
+  if (!finalPluginManager) {
+    ret = ERROR_NOT_INIT;
+    LOG_F(INFO, "PluginManager(type:%d) Not Init", process_type);
+  } else {
     try {
-      if (process_type == PROCESS_TYPE::MAIN) {
-        ret = nodeIrisRtcEngine->_iris_raw_data_plugin_manager->CallApi(
-            (ApiTypeRawDataPluginManager)api_type, parameter.c_str(), result);
-      } else {
-        // TODO: video_source plugin have not to do
-        //        if (nodeIrisRtcEngine->_video_source_proxy) {
-        //          ret = nodeIrisRtcEngine->_video_source_proxy->PluginCallApi(
-        //              (ApiTypeRawDataPluginManager)api_type,
-        //              parameter.c_str(), result);
-        //        } else {
-        //          LOG_F(INFO,
-        //                "PluginCallApi parameter did not initialize
-        //                videoSource yet " "source yet");
-        //        }
-      }
-    } catch (std::exception& e) {
-      LOG_F(INFO, "PluginCallApi catch exception %s", e.what());
+      ret = finalPluginManager->CallApi((ApiTypeRawDataPluginManager)api_type,
+                                        parameter.c_str(), result);
+    } catch (std::exception &e) {
+      LOG_F(INFO, "PluginCallApi(type:%d) catch exception %s", process_type,
+            e.what());
       nodeIrisRtcEngine->OnApiError(e.what());
     }
-  } else {
-    ret = ERROR_NOT_INIT;
-    LOG_F(INFO, "VideoSourceInitialize NodeIris Engine Not Init");
   }
   RETURE_NAPI_OBJ();
 }
@@ -720,6 +713,7 @@ napi_value NodeIrisRtcEngine::Release(napi_env env, napi_callback_info info) {
     nodeIrisRtcEngine->_iris_engine.reset();
 
     // release sub_process_engine(for video_souece)
+    nodeIrisRtcEngine->_iris_raw_data_plugin_manager_for_sub_process = nullptr;
     nodeIrisRtcEngine->_video_processer_for_sub_process.reset();
     nodeIrisRtcEngine->_iris_event_handler_for_sub_process.reset();
     nodeIrisRtcEngine->_iris_sub_process_engine.reset();
