@@ -59,17 +59,17 @@ class NodeIrisRtcEngine {
   static napi_ref* _ref_construcotr_ptr;
   static const char* _ret_code_str;
   static const char* _ret_result_str;
-  //  std::unique_ptr<VideoSourceProxy> _video_source_proxy;
-  iris::rtc::IrisRtcRawDataPluginManager* _iris_raw_data_plugin_manager;
-
+  
   std::shared_ptr<VideoProcesser> _video_processer;
   std::shared_ptr<iris::rtc::IrisRtcEngine> _iris_engine;
   std::shared_ptr<NodeIrisEventHandler> _iris_event_handler;
   iris::rtc::IrisRtcRawData* _iris_raw_data;
+  iris::rtc::IrisRtcRawDataPluginManager* _iris_raw_data_plugin_manager;
 
   std::shared_ptr<iris::rtc::IrisRtcEngine> _iris_sub_process_engine;
   std::shared_ptr<VideoProcesser> _video_processer_for_sub_process;
   std::shared_ptr<NodeIrisEventHandler> _iris_event_handler_for_sub_process;
+  iris::rtc::IrisRtcRawDataPluginManager* _iris_raw_data_plugin_manager_for_sub_process;
 };
 }  // namespace electron
 }  // namespace rtc
