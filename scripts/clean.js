@@ -1,12 +1,11 @@
 const fs = require("fs-extra");
-const { getOS } = require("./util");
 const path = require("path");
 
-const destSDKDir = path.join(__dirname, `../sdk/lib/${getOS()}`);
+const destIrisSDKDir = path.join(__dirname, `../iris`);
 
-exports.destSDKDir = destSDKDir;
+exports.destIrisSDKDir = destIrisSDKDir;
 
-exports.cleanLibsDir = async () => await fs.remove(destSDKDir);
+exports.cleanIrisDir = async () => await fs.remove(destIrisSDKDir);
 
 exports.cleanBuildDir = async () =>
   await fs.remove(`${path.resolve(__dirname, "../build")}`);
