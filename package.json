@@ -23,11 +23,10 @@
     "build_windows_x64_release": "cmake-js rebuild --arch=x64 --CDCMAKE_OSX_ARCHITECTURES=\"x86_64\" --CDCMAKE_BUILD_TYPE=Release"
   },
   "agora_electron": {
-    "lib_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_v3_5_0_4_FULL.zip",
-    "lib_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v3_5_0_4_FULL.zip",
+    "iris_sdk_win":"http://192.168.99.149:8086/CSDC_repo/iris_3.5.0.3_RTC_Windows_20211021_0848.zip",
+    "iris_sdk_mac":"http://192.168.99.149:8086/CSDC_repo/iris_3.5.0.3_RTC_Mac_20211021_0912.zip",
     "no_symbol": true,
-    "electron_version": "11.0.0",
-    "prebuilt": false
+    "prebuilt": true
   },
   "dependencies": {
     "bindings": "1.2.1",
@@ -58,5 +57,8 @@
     "video_source",
     "extra"
   ],
+  "devDependencies": {
+    "cmake-js": "^6.2.1"
+  },
   "bundledDependencies": []
 }

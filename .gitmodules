@@ -1,4 +1,0 @@
-[submodule "source_code/iris"]
-	path = source_code/iris
-	url = ssh://git@git.agoralab.co/aduc/iris.git
-	branch = main/3.5.0.3_fix_IrisEventHandlerWrapper

@@ -1,6 +1,6 @@
+const { exec } = require("shelljs");
 const logger = require("./logger");
 const { cleanJSDir, cleanTypesDir } = require("./clean");
-const { exec } = require("shelljs");
 
 const buildJS = async (cb) => {
   logger.info("Build js from typescript");

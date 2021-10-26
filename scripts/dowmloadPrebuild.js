@@ -1,9 +1,9 @@
+const path = require("path");
+const download = require("download");
 const fs = require("fs-extra");
 const { getOS } = require("./util");
-const path = require("path");
 const logger = require("./logger");
 const { cleanBuildDir, cleanJSDir } = require("./clean");
-const download = require("download");
 const getConfig = require("./getConfig");
 
 const { electronVersion, platform, packageVersion, arch, no_symbol } =
@@ -14,25 +14,12 @@ const workspaceDir = `${path.join(__dirname, "..")}`;
 const addonVersion = "3.4.2-iris.723-build.1";
 
 const getDownloadURL = () => {
-  let downloadUrl = `http://download.agora.io/sdk/release/Electron-${getOS()}-${addonVersion}-${electronVersion}.zip`;
+  let downloadUrl = `http://download.agora.io/sdk/release/Electron-${getOS()}-${addonVersion}-napi.zip`;
   if (platform === "win32" && arch === "x64") {
-    downloadUrl = `http://download.agora.io/sdk/release/Electron-win64-${addonVersion}-${electronVersion}.zip`;
+    downloadUrl = `http://download.agora.io/sdk/release/Electron-win64-${addonVersion}-napi.zip`;
   }
   return downloadUrl;
 };
-
-const verList = [
-  "12.0.0",
-  "11.0.0",
-  "10.2.0",
-  "9.0.0",
-  "7.1.2",
-  "6.1.7",
-  "5.0.8",
-  "4.2.8",
-  "3.0.6",
-  "1.8.3",
-];
 
 const macNoSymbolList = [
   "./build/Release/obj.target",
@@ -86,15 +73,6 @@ module.exports = async (cb) => {
   cleanBuildDir();
   cleanJSDir();
 
-  if (verList.indexOf(electronVersion) === -1) {
-    const errStr = `Prebuilt addon only supported electron version ${verList.reduce(
-      (str1, str2) => `${str1}, ${str2}`
-    )}`;
-    logger.error(errStr);
-    logger.error("Agora sdk prepare Local Build");
-    throw new Error(errStr);
-  }
-
   const downloadUrl = getDownloadURL();
 
   /** start download */
@@ -111,7 +89,7 @@ module.exports = async (cb) => {
     });
   } catch (error) {
     logger.error(errStr);
-    logger.error("Agora sdk prepare Local Build");
+    logger.error("Agora sdk download base sdk error");
     throw new Error(errStr);
   }
 
