@@ -6146,12 +6146,9 @@ NAPI_API_DEFINE(NodeRtcEngine, enableExtension) {
 
     uint32_t type = 100;
     status = napi_get_value_uint32_(args[3], type);
-#if defined(__APPLE__)
-#elif defined(_WIN32)
     result = pEngine->m_engine->enableExtension(
         provider_name, extension_name, enable,
         (agora::media::MEDIA_SOURCE_TYPE)type);
-#endif
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -6271,13 +6268,9 @@ NAPI_API_DEFINE(NodeRtcEngine, setExtensionProperty) {
     uint32_t type = 100;
     status = napi_get_value_uint32_(args[4], type);
 
-#if defined(__APPLE__)
-    result = pEngine->m_engine->setExtensionProperty(id, key, json_value);
-#elif defined(_WIN32)
     result = pEngine->m_engine->setExtensionProperty(
         provider_name, extension_name, key, json_value,
         (agora::media::MEDIA_SOURCE_TYPE)type);
-#endif
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -6294,12 +6287,9 @@ NAPI_API_DEFINE(NodeRtcEngine, loadExtensionProvider) {
     nodestring extension_lib_path;
     napi_status status =
         napi_get_value_nodestring_(args[0], extension_lib_path);
-
-#if defined(__APPLE__)
-
-#elif defined(_WIN32)
+    #if defined (_WIN32) || (defined(__linux__) && !defined(__ANDROID__))
     result = pEngine->m_engine->loadExtensionProvider(extension_lib_path);
-#endif
+    #endif
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
