@@ -1,99 +1,33 @@
-const logger = require("./logger");
-const fs = require("fs-extra");
-const path = require("path");
 const { exec } = require("shelljs");
+const getConfig = require("./getConfig");
+const logger = require("./logger");
+const { getOS } = require("./util");
 
-let gyp_path = `${path.resolve(
-  __dirname,
-  "../node_modules/node-gyp/bin/node-gyp.js"
-)}`;
-logger.info(`gyp_path:${gyp_path}`);
+const { debug, arch } = getConfig();
 
-if (!fs.existsSync(gyp_path)) {
-  logger.info(`gyp_exec not found at ${gyp_path}, switch`);
-  gyp_path = `${path.resolve(
-    __dirname,
-    "../node_modules/node-gyp/bin/node-gyp.js"
-  )}`;
-  logger.info(`new gyp_path:${gyp_path}`);
-}
-const gyp_exec = `node ${gyp_path}`;
-const agora_node_ext_path = `${path.resolve(
-  __dirname,
-  "../build/Release/agora_node_ext.node"
-)}`;
-const video_source_path = `${path.resolve(
-  __dirname,
-  "../build/Release/VideoSource"
-)}`;
-
-const configWin = (command, { arch, msvsVersion }) => {
-  logger.info(`Agora VS:${msvsVersion}`);
-  command.push(`--arch=${arch} --msvs_version=${msvsVersion}`);
-};
-const configMac = (command, { arch, debug }) => {
-  if (arch === "arm64") {
-    command.push("--arch=arm64");
+const build = async (cb) => {
+  let scriptStr;
+  switch (getOS()) {
+    case "mac":
+      scriptStr = debug ? "build_mac_xcode" : "build_mac";
+      break;
+    case "win32":
+      if (arch === "x64") {
+        scriptStr = debug
+          ? "build_windows_x64_debug"
+          : "build_windows_x64_release";
+      } else {
+        scriptStr = debug
+          ? "build_windows_win32_debug"
+          : "build_windows_win32_release";
+      }
+      break;
+    default:
+      break;
   }
-  if (debug) {
-    command.push("--debug");
-    // MUST AT THE END OF THE COMMAND ARR
-    command.push("-- -f xcode");
-  }
-};
-
-const build = async (
-  cb,
-  {
-    electronVersion,
-    runtime,
-    platform,
-    packageVersion,
-    debug,
-    silent,
-    msvsVersion,
-    arch,
-    distUrl = 'https://electronjs.org/headers'
-  }
-) => {
-  const commandArray = [];
-  /** get command string */
-  const command = [`${gyp_exec} configure`];
-  // check runtime
-  if (runtime === "electron") {
-    command.push(`--target=${electronVersion} --dist-url=${distUrl}`);
-  }
-  // check platform
-  platform === "darwin"
-    ? configMac(command, { arch, debug })
-    : configWin(command, { arch, msvsVersion });
-  const commandStr = command.join(" ");
-  /** start build */
-  logger.info("Package Version: %s", packageVersion);
-  logger.info("Platform: %s", platform);
-  logger.info("Electron Version: %s", electronVersion);
-  logger.info("Runtime: %s", runtime);
-  logger.info("Build C++ addon for Agora Electron SDK...");
-
-  commandArray.push(`${gyp_exec} clean`);
-  commandArray.push(commandStr);
-  commandArray.push(`${gyp_exec} build`);
-  if (platform === "darwin") {
-    commandArray.push(
-      `install_name_tool -add_rpath "@loader_path" ${agora_node_ext_path}`
-    );
-  }
-  for (let index = 0; index < commandArray.length; index++) {
-    const shellStr = commandArray[index];
-    logger.info("Will to call %s", shellStr);
-    const { code, stderr } = await exec(shellStr, { silent });
-    if (code !== 0) {
-      logger.error(stderr);
-      cb();
-      return;
-    }
-  }
-  logger.info("Build complete");
+  scriptStr = `npm run ${scriptStr}`;
+  logger.info(`Will to run: ${scriptStr}`);
+  await exec(scriptStr, { silent: false });
   cb();
 };
 
