@@ -37,7 +37,7 @@ export const objsKeysToLowerCase = (array: Array<any>) => {
   });
 };
 
-export const changeEventNameForEngine = (eventName: string) =>
+export const changeEventNameForOnXX = (eventName: string) =>
   eventName.slice(2, 3).toLocaleLowerCase() + eventName.slice(3);
 
 export const changeEventNameForVideoSource = (eventName: string) =>
@@ -50,4 +50,29 @@ export const jsonStringToArray = (jsonString: string) => {
     logError(`jsonStringToArray error: ${jsonString}`);
     return [];
   }
+};
+interface ForwardEventParam {
+  event: {
+    eventName: string;
+    params: string;
+    buffer?: string;
+    changeNameHandler: (_eventName: string) => string;
+  };
+  fire: (eventName: string, ...arg: any[]) => void;
+  filter: (eventName: string, params: Array<any>, buffer?: string) => Boolean;
+}
+export const forwardEvent = ({
+  event: { eventName, params, buffer, changeNameHandler },
+  fire,
+  filter,
+}: ForwardEventParam) => {
+  const _params = jsonStringToArray(params);
+  const isFilter = filter(eventName, _params, buffer);
+  if (isFilter || !fire) {
+    return;
+  }
+  const finalEventName = changeNameHandler(eventName);
+
+  fire(finalEventName, ..._params);
+  fire(finalEventName.toLocaleLowerCase(), ..._params);
 };

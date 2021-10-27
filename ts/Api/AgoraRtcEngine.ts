@@ -99,9 +99,10 @@ import {
   logInfo,
   logError,
   objsKeysToLowerCase,
-  changeEventNameForEngine,
+  changeEventNameForOnXX,
   jsonStringToArray,
   changeEventNameForVideoSource,
+  forwardEvent,
 } from "../Utils";
 import { PluginInfo, Plugin } from "./plugin";
 import { RendererManager } from "../Renderer/RendererManager";
@@ -123,15 +124,6 @@ import {
 
 const agora = require("../../build/Release/agora_node_ext");
 
-interface ForwardEventParam {
-  event: {
-    eventName: string;
-    params: string;
-    buffer?: string;
-    changeNameHandler: (_eventName: string) => string;
-  };
-  filter: (eventName: string, params: Array<any>, buffer?: string) => Boolean;
-}
 /**
  * The AgoraRtcEngine class.
  */
@@ -158,15 +150,16 @@ export class AgoraRtcEngine extends EventEmitter {
     this._rtcEngine.OnEvent(
       "call_back",
       (processType: PROCESS_TYPE, eventName: string, eventData: string) =>
-        this.forwardEvent({
+        forwardEvent({
           event: {
             eventName,
             params: eventData,
             changeNameHandler:
               processType === PROCESS_TYPE.MAIN
-                ? changeEventNameForEngine
+                ? changeEventNameForOnXX
                 : changeEventNameForVideoSource,
           },
+          fire: this.fire,
           filter:
             processType === PROCESS_TYPE.MAIN
               ? this.engineFilterEvent
@@ -182,16 +175,17 @@ export class AgoraRtcEngine extends EventEmitter {
         eventData: string,
         eventBuffer: string
       ) =>
-        this.forwardEvent({
+        forwardEvent({
           event: {
             eventName,
             params: eventData,
             buffer: eventBuffer,
             changeNameHandler:
               processType === PROCESS_TYPE.MAIN
-                ? changeEventNameForEngine
+                ? changeEventNameForOnXX
                 : changeEventNameForVideoSource,
           },
+          fire: this.fire,
           filter:
             processType === PROCESS_TYPE.MAIN
               ? this.engineFilterEventWithBuffer
@@ -274,21 +268,6 @@ export class AgoraRtcEngine extends EventEmitter {
       height,
     };
   }
-
-  forwardEvent = ({
-    event: { eventName, params, buffer, changeNameHandler },
-    filter,
-  }: ForwardEventParam) => {
-    const _params = jsonStringToArray(params);
-    const isFilter = filter(eventName, _params, buffer);
-    if (isFilter) {
-      return;
-    }
-
-    const finalEventName = changeNameHandler(eventName);
-    this.fire(finalEventName, ..._params);
-    this.fire(finalEventName.toLocaleLowerCase(), ..._params);
-  };
 
   engineFilterEvent = (_eventName: string, params: Array<any>): Boolean => {
     switch (_eventName) {
