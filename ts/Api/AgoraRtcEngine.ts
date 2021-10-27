@@ -5922,11 +5922,6 @@ export class AgoraRtcEngine extends EventEmitter {
     return ret.retCode;
   }
 
-  videoSourceSetAddonLogFile(filePath: string): number {
-    let ret = this._rtcEngine.VideoSourceSetAddonLogFile(filePath);
-    return ret.retCode;
-  }
-
   /**
    * Specifies an SDK output log file for the video source object.
    *
