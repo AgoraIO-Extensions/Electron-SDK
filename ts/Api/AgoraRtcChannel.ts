@@ -36,7 +36,7 @@ import {
   METADATA_TYPE,
 } from "./types";
 import { EventEmitter } from "events";
-import { logWarn } from "../Utils";
+import { logWarn, changeEventNameForOnXX, forwardEvent } from "../Utils";
 
 import { User, RendererConfig } from "../Renderer/type";
 import { ChannelEvents } from "../Common/JSEvents";
@@ -58,6 +58,11 @@ export class AgoraRtcChannel extends EventEmitter {
     this.createChannel(this._channelId);
     this.initEventHandler();
   }
+  fire = (event: string, ...args: Array<any>) => {
+    setImmediate(() => {
+      this.emit(event, ...args);
+    });
+  };
 
   /**
    * init event handler
@@ -65,586 +70,130 @@ export class AgoraRtcChannel extends EventEmitter {
    * @ignore
    */
   initEventHandler(): void {
-    const fire = (event: string, ...args: Array<any>) => {
-      setImmediate(() => {
-        this.emit(event, ...args);
-      });
-    };
-
     this._rtcChannel.OnEvent(
       "call_back",
-      (_: PROCESS_TYPE, _eventName: string, _eventData: string) => {
-        switch (_eventName) {
-          case "onChannelWarning":
-            {
-              let data: {
-                channelId: string;
-                warn: number;
-                msg: string;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.CHANNEL_WARNING,
-                data.channelId,
-                data.warn,
-                data.msg
-              );
-            }
-            break;
-
-          case "onChannelError":
-            {
-              let data: {
-                channelId: string;
-                err: number;
-                msg: string;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.CHANNEL_ERROR,
-                data.channelId,
-                data.err,
-                data.msg
-              );
-            }
-            break;
-
-          case "onJoinChannelSuccess":
-            {
-              let data: {
-                channelId: string;
-                uid: number;
-                elapsed: number;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.JOIN_CHANNEL_SUCCESS,
-                data.channelId,
-                data.uid,
-                data.elapsed
-              );
-            }
-            break;
-
-          case "onRejoinChannelSuccess":
-            {
-              let data: {
-                channelId: string;
-                uid: number;
-                elapsed: number;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.REJOIN_CHANNEL_SUCCESS,
-                data.channelId,
-                data.uid,
-                data.elapsed
-              );
-            }
-            break;
-
-          case "onLeaveChannel":
-            {
-              let data: { channelId: string; stats: RtcStats } =
-                JSON.parse(_eventData);
-              fire(ChannelEvents.LEAVE_CHANNEL, data.channelId, data.stats);
-            }
-            break;
-
-          case "onClientRoleChanged":
-            {
-              let data: {
-                channelId: string;
-                oldRole: CLIENT_ROLE_TYPE;
-                newRole: CLIENT_ROLE_TYPE;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.CLIENT_ROLE_CHANGED,
-                data.channelId,
-                data.oldRole,
-                data.newRole
-              );
-            }
-            break;
-
-          case "onUserJoined":
-            {
-              let data: {
-                channelId: string;
-                uid: number;
-                elapsed: number;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.USER_JOINED,
-                data.channelId,
-                data.uid,
-                data.elapsed
-              );
-            }
-            break;
-
-          case "onUserOffline":
-            {
-              let data: {
-                channelId: string;
-                uid: number;
-                reason: USER_OFFLINE_REASON_TYPE;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.USER_OFFLINE,
-                data.channelId,
-                data.uid,
-                data.reason
-              );
-              this.destroyRenderer(data.uid);
-            }
-            break;
-
-          case "onConnectionLost":
-            {
-              let data: { channelId: string } = JSON.parse(_eventData);
-              fire(ChannelEvents.CONNECTION_LOST, data.channelId);
-            }
-            break;
-
-          case "onRequestToken":
-            {
-              let data: { channelId: string } = JSON.parse(_eventData);
-              fire(ChannelEvents.REQUEST_TOKEN, data.channelId);
-            }
-            break;
-
-          case "onTokenPrivilegeWillExpire":
-            {
-              let data: { channelId: string; token: string } =
-                JSON.parse(_eventData);
-              fire(
-                ChannelEvents.TOKEN_PRIVILEGE_WILL_EXPIRE,
-                data.channelId,
-                data.token
-              );
-            }
-            break;
-
-          case "onRtcStats":
-            {
-              let data: { channelId: string; stats: RtcStats } =
-                JSON.parse(_eventData);
-              fire(ChannelEvents.RTC_STATS, data.channelId, data.stats);
-            }
-            break;
-
-          case "onNetworkQuality":
-            {
-              let data: {
-                channelId: string;
-                uid: number;
-                txQuality: QUALITY_TYPE;
-                rxQuality: QUALITY_TYPE;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.NETWORK_QUALITY,
-                data.channelId,
-                data.uid,
-                data.txQuality,
-                data.rxQuality
-              );
-            }
-            break;
-
-          case "onRemoteVideoStats":
-            {
-              let data: {
-                channelId: string;
-                stats: RemoteVideoStats;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.REMOTE_VIDEO_STATS,
-                data.channelId,
-                data.stats
-              );
-            }
-            break;
-
-          case "onRemoteAudioStats":
-            {
-              let data: {
-                channelId: string;
-                stats: RemoteAudioStats;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.REMOTE_AUDIO_STATS,
-                data.channelId,
-                data.stats
-              );
-            }
-            break;
-
-          case "onRemoteAudioStateChanged":
-            {
-              let data: {
-                channelId: string;
-                uid: number;
-                state: REMOTE_AUDIO_STATE;
-                reason: REMOTE_AUDIO_STATE_REASON;
-                elapsed: number;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.REMOTE_AUDIO_STATE_CHANGED,
-                data.channelId,
-                data.uid,
-                data.state,
-                data.reason,
-                data.elapsed
-              );
-            }
-            break;
-
-          case "onAudioPublishStateChanged":
-            {
-              let data: {
-                channelId: string;
-                oldState: STREAM_PUBLISH_STATE;
-                newState: STREAM_PUBLISH_STATE;
-                elapseSinceLastState: number;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.AUDIO_PUBLISH_STATE_CHANGED,
-                data.channelId,
-                data.oldState,
-                data.newState,
-                data.elapseSinceLastState
-              );
-            }
-            break;
-
-          case "onVideoPublishStateChanged":
-            {
-              let data: {
-                channelId: string;
-                oldState: STREAM_PUBLISH_STATE;
-                newState: STREAM_PUBLISH_STATE;
-                elapseSinceLastState: number;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.VIDEO_PUBLISH_STATE_CHANGED,
-                data.channelId,
-                data.oldState,
-                data.newState,
-                data.elapseSinceLastState
-              );
-            }
-            break;
-
-          case "onAudioSubscribeStateChanged":
-            {
-              let data: {
-                channelId: string;
-                uid: number;
-                oldState: STREAM_SUBSCRIBE_STATE;
-                newState: STREAM_SUBSCRIBE_STATE;
-                elapseSinceLastState: number;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.AUDIO_SUBSCRIBE_STATE_CHANGED,
-                data.channelId,
-                data.uid,
-                data.oldState,
-                data.newState,
-                data.elapseSinceLastState
-              );
-            }
-            break;
-
-          case "onVideoSubscribeStateChanged":
-            {
-              let data: {
-                channelId: string;
-                uid: number;
-                oldState: STREAM_SUBSCRIBE_STATE;
-                newState: STREAM_SUBSCRIBE_STATE;
-                elapseSinceLastState: number;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.VIDEO_SUBSCRIBE_STATE_CHANGED,
-                data.channelId,
-                data.uid,
-                data.oldState,
-                data.newState,
-                data.elapseSinceLastState
-              );
-            }
-            break;
-
-          case "onActiveSpeaker":
-            {
-              let data: { channelId: string; uid: number } =
-                JSON.parse(_eventData);
-              fire(ChannelEvents.ACTIVE_SPEAKER, data.channelId, data.uid);
-            }
-            break;
-
-          case "onVideoSizeChanged":
-            {
-              let data: {
-                channelId: string;
-                uid: number;
-                width: number;
-                height: number;
-                rotation: number;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.VIDEO_SIZE_CHANGED,
-                data.channelId,
-                data.uid,
-                data.width,
-                data.height,
-                data.rotation
-              );
-            }
-            break;
-
-          case "onRemoteVideoStateChanged":
-            {
-              let data: {
-                channelId: string;
-                uid: number;
-                state: REMOTE_VIDEO_STATE;
-                reason: REMOTE_VIDEO_STATE_REASON;
-                elapsed: number;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.REMOTE_VIDEO_STATE_CHANGED,
-                data.channelId,
-                data.uid,
-                data.state,
-                data.reason,
-                data.elapsed
-              );
-            }
-            break;
-
-          case "onStreamMessageError":
-            {
-              let data: {
-                channelId: string;
-                uid: number;
-                streamId: number;
-                code: number;
-                missed: number;
-                cached: number;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.STREAM_MESSAGE_ERROR,
-                data.channelId,
-                data.uid,
-                data.streamId,
-                data.code,
-                data.missed,
-                data.cached
-              );
-            }
-            break;
-
-          case "onUserSuperResolutionEnabled":
-            {
-              let data: {
-                channelId: string;
-                uid: number;
-                enabled: boolean;
-                reason: SUPER_RESOLUTION_STATE_REASON;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.USER_SUPER_RESOLUTION_ENABLED,
-                data.channelId,
-                data.uid,
-                data.enabled,
-                data.reason
-              );
-            }
-            break;
-
-          case "onChannelMediaRelayStateChanged":
-            {
-              let data: {
-                channelId: string;
-                state: CHANNEL_MEDIA_RELAY_STATE;
-                code: CHANNEL_MEDIA_RELAY_ERROR;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.CHANNEL_MEDIA_RELAY_STATE_CHANGED,
-                data.channelId,
-                data.state,
-                data.code
-              );
-            }
-            break;
-
-          case "onChannelMediaRelayEvent":
-            {
-              let data: {
-                channelId: string;
-                code: CHANNEL_MEDIA_RELAY_EVENT;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.CHANNEL_MEDIA_RELAY_EVENT,
-                data.channelId,
-                data.code
-              );
-            }
-            break;
-
-          case "onRtmpStreamingStateChanged":
-            {
-              let data: {
-                channelId: string;
-                url: string;
-                state: RTMP_STREAM_PUBLISH_STATE;
-                errCode: RTMP_STREAM_PUBLISH_ERROR;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.RTMP_STREAMING_STATE_CHANGED,
-                data.channelId,
-                data.url,
-                data.state,
-                data.errCode
-              );
-            }
-            break;
-
-          case "onRtmpStreamingEvent":
-            {
-              let data: {
-                channelId: string;
-                url: string;
-                eventCode: RTMP_STREAMING_EVENT;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.RTMP_STREAMING_EVENT,
-                data.channelId,
-                data.url,
-                data.eventCode
-              );
-            }
-            break;
-
-          case "onTranscodingUpdated":
-            {
-              let data: { channelId: string } = JSON.parse(_eventData);
-              fire(ChannelEvents.TRANSCODING_UPDATED, data.channelId);
-            }
-            break;
-
-          case "onStreamInjectedStatus":
-            {
-              let data: {
-                channelId: string;
-                url: string;
-                uid: number;
-                status: INJECT_STREAM_STATUS;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.STREAM_INJECTED_STATUS,
-                data.channelId,
-                data.url,
-                data.uid,
-                data.status
-              );
-            }
-            break;
-
-          case "onLocalPublishFallbackToAudioOnly":
-            {
-              let data: {
-                channelId: string;
-                isFallbackOrRecover: boolean;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.LOCAL_PUBLISH_FALLBACK_TO_AUDIO_ONLY,
-                data.channelId,
-                data.isFallbackOrRecover
-              );
-            }
-            break;
-
-          case "onRemoteSubscribeFallbackToAudioOnly":
-            {
-              let data: {
-                channelId: string;
-                uid: number;
-                isFallbackOrRecover: boolean;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.REMOTE_SUBSCRIBE_FALLBACK_TO_AUDIO_ONLY,
-                data.channelId,
-                data.uid,
-                data.isFallbackOrRecover
-              );
-            }
-            break;
-
-          case "onConnectionStateChanged":
-            {
-              let data: {
-                channelId: string;
-                state: CONNECTION_STATE_TYPE;
-                reason: CONNECTION_CHANGED_REASON_TYPE;
-              } = JSON.parse(_eventData);
-              fire(
-                ChannelEvents.CONNECTION_STATE_CHANGED,
-                data.channelId,
-                data.state,
-                data.reason
-              );
-            }
-            break;
-          default:
-            break;
-        }
-      }
+      (_: PROCESS_TYPE, eventName: string, eventData: string) =>
+        forwardEvent({
+          event: {
+            eventName,
+            params: eventData,
+            changeNameHandler: changeEventNameForOnXX,
+          },
+          filter: this.channelFilterEvent,
+          fire: this.fire,
+        })
     );
 
     this._rtcChannel.OnEvent(
       "call_back_with_buffer",
       (
         _: PROCESS_TYPE,
-        _eventName: string,
-        _eventData: string,
-        _eventBuffer: string
-      ) => {
-        switch (_eventName) {
-          case "onStreamMessage":
-            {
-              let data: { uid: number; streamId: number } =
-                JSON.parse(_eventData);
-              fire(
-                ChannelEvents.STREAM_MESSAGE,
-                data.uid,
-                data.streamId,
-                _eventBuffer
-              );
-            }
-            break;
-
-          case "onReadyToSendMetadata":
-            {
-              let data: { metadata: Metadata } = JSON.parse(_eventData);
-              data.metadata.buffer = _eventBuffer;
-              fire(ChannelEvents.READY_TO_SEND_METADATA, data.metadata);
-            }
-            break;
-
-          case "onMetadataReceived":
-            {
-              let data: { metadata: Metadata } = JSON.parse(_eventData);
-              data.metadata.buffer = _eventBuffer;
-              fire(ChannelEvents.METADATA_RECEIVED, data.metadata);
-            }
-            break;
-
-          default:
-            break;
-        }
-      }
+        eventName: string,
+        eventData: string,
+        eventBuffer: string
+      ) =>
+        forwardEvent({
+          event: {
+            eventName,
+            params: eventData,
+            buffer: eventBuffer,
+            changeNameHandler: changeEventNameForOnXX,
+          },
+          fire: this.fire,
+          filter: this.channelFilterEventWithBuffer,
+        })
     );
   }
+  channelFilterEvent = (_eventName: string, params: Array<any>): Boolean => {
+    switch (_eventName) {
+      case "onChannelWarning":
+        {
+          const [channelId, warn, msg] = params;
 
+          this.fire(ChannelEvents.CHANNEL_WARNING, channelId, warn, msg);
+        }
+        return true;
+
+      case "onChannelError":
+        {
+          const [channelId, err, msg] = params;
+          this.fire(ChannelEvents.CHANNEL_ERROR, channelId, err, msg);
+        }
+        return true;
+
+      case "onJoinChannelSuccess":
+        {
+          const [channelId, channel, uid, elapsed] = params;
+
+          this.fire(
+            ChannelEvents.JOIN_CHANNEL_SUCCESS,
+            channelId,
+            uid,
+            elapsed
+          );
+        }
+        return true;
+
+      case "onRejoinChannelSuccess":
+        {
+          const [channelId, channel, uid, elapsed] = params;
+          this.fire(
+            ChannelEvents.REJOIN_CHANNEL_SUCCESS,
+            channelId,
+            uid,
+            elapsed
+          );
+        }
+        return true;
+
+      case "onUserOffline":
+        {
+          const [channelId, uid, reason] = params;
+          this.fire(ChannelEvents.USER_OFFLINE, channelId, uid, reason);
+          this.destroyRenderer(uid);
+        }
+        return true;
+
+      default:
+        return false;
+    }
+  };
+  channelFilterEventWithBuffer = (
+    _eventName: string,
+    _eventData: Array<any>,
+    _eventBuffer?: string
+  ): Boolean => {
+    switch (_eventName) {
+      case "onStreamMessage":
+        {
+          const [uid, streamId] = _eventData;
+          this.fire(ChannelEvents.STREAM_MESSAGE, uid, streamId, _eventBuffer);
+        }
+        return true;
+
+      case "onReadyToSendMetadata":
+        {
+          const eventData: Array<Metadata> = _eventData;
+          const [metadata] = eventData;
+          metadata.buffer = _eventBuffer!;
+
+          this.fire(ChannelEvents.READY_TO_SEND_METADATA, metadata);
+        }
+        return true;
+
+      case "onMetadataReceived":
+        {
+          const eventData: Array<Metadata> = _eventData;
+          const [metadata] = eventData;
+          metadata.buffer = _eventBuffer!;
+          this.fire(ChannelEvents.METADATA_RECEIVED, metadata);
+        }
+        return true;
+
+      default:
+        return false;
+    }
+  };
   createChannel(channelId: string): number {
     let param = {
       channelId,
