@@ -1109,7 +1109,7 @@ export class AgoraRtcChannel extends EventEmitter {
    * - 0: Success
    * - < 0: Failure
    */
-  setRemoteVoicePosition(uid: number, pan: number, gain: number): number {
+  setRemoteVoicePosition(uid: number, pan: number, gain = 100): number {
     let param = {
       uid,
       pan,
@@ -1147,7 +1147,7 @@ export class AgoraRtcChannel extends EventEmitter {
    * - 0: Success
    * - < 0: Failure
    */
-  setDefaultMuteAllRemoteAudioStreams(mute: boolean): number {
+  setDefaultMuteAllRemoteAudioStreams(mute = false): number {
     let param = {
       mute,
       channelId: this._channelId,
@@ -1182,7 +1182,7 @@ export class AgoraRtcChannel extends EventEmitter {
    * - 0: Success
    * - < 0: Failure
    */
-  setDefaultMuteAllRemoteVideoStreams(mute: boolean): number {
+  setDefaultMuteAllRemoteVideoStreams(mute = false): number {
     let param = {
       mute,
       channelId: this._channelId,
@@ -1293,7 +1293,7 @@ export class AgoraRtcChannel extends EventEmitter {
    * - 0: Success
    * - < 0: Failure
    */
-  muteAllRemoteAudioStreams(mute: boolean): number {
+  muteAllRemoteAudioStreams(mute = false): number {
     let param = {
       mute,
       channelId: this._channelId,
@@ -1326,7 +1326,7 @@ export class AgoraRtcChannel extends EventEmitter {
    * - 0: Success
    * - < 0: Failure
    */
-  muteRemoteAudioStream(userId: number, mute: boolean): number {
+  muteRemoteAudioStream(userId: number, mute = false): number {
     let param = {
       userId,
       mute,
@@ -1351,7 +1351,7 @@ export class AgoraRtcChannel extends EventEmitter {
    * - 0: Success
    * - < 0: Failure
    */
-  muteAllRemoteVideoStreams(mute: boolean): number {
+  muteAllRemoteVideoStreams(mute = false): number {
     let param = {
       mute,
       channelId: this._channelId,
@@ -1380,7 +1380,7 @@ export class AgoraRtcChannel extends EventEmitter {
    * - 0: Success
    * - < 0: Failure
    */
-  muteRemoteVideoStream(userId: number, mute: boolean): number {
+  muteRemoteVideoStream(userId: number, mute = false): number {
     let param = {
       userId,
       mute,
@@ -1502,7 +1502,7 @@ export class AgoraRtcChannel extends EventEmitter {
    * - 0: Success
    * - < 0: Failure
    */
-  createDataStream(reliable: boolean, ordered?: boolean): number {
+  createDataStream(reliable: boolean, ordered: boolean): number {
     let param = {
       reliable,
       ordered,
