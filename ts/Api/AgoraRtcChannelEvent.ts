@@ -21,6 +21,7 @@ import {
   USER_OFFLINE_REASON_TYPE,
   RTMP_STREAM_PUBLISH_STATE,
   RTMP_STREAM_PUBLISH_ERROR,
+  SUPER_RESOLUTION_STATE_REASON,
 } from "./types";
 import { ChannelEvents } from "../Common/JSEvents";
 import { AgoraRtcChannel } from "./AgoraRtcChannel";
@@ -225,8 +226,8 @@ declare module "./AgoraRtcChannel" {
       cb: (
         channelId: string,
         uid: number,
-        txquality: QUALITY_TYPE,
-        rxquality: QUALITY_TYPE
+        txQuality: QUALITY_TYPE,
+        rxQuality: QUALITY_TYPE
       ) => void
     ): this;
     /** Reports the statistics of the video stream from each remote user/host.
@@ -655,6 +656,20 @@ declare module "./AgoraRtcChannel" {
         url: string,
         eventCode: RTMP_STREAMING_EVENT
       ) => void
+    ): this;
+
+    on(
+      evt: ChannelEvents.USER_SUPER_RESOLUTION_ENABLED,
+      cb: (
+        channelId: string,
+        uid: number,
+        enabled: boolean,
+        reason: SUPER_RESOLUTION_STATE_REASON
+      ) => void
+    ): this;
+    on(
+      evt: ChannelEvents.LOCAL_PUBLISH_FALLBACK_TO_AUDIO_ONLY,
+      cb: (channelId: string, uid: number, isFallbackOrRecover: boolean) => void
     ): this;
   }
 }
