@@ -735,7 +735,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  release(sync: boolean = false): number {
+  release(sync = false): number {
     this._rendererManager?.clear();
     this._rendererManager = undefined;
     let param = {
@@ -791,22 +791,8 @@ export class AgoraRtcEngine extends EventEmitter {
       JSON.stringify(param)
     );
     return ret.retCode;
-  } //TODO(input)
+  }
 
-  // /**
-  //  * Subscribes to a remote user and initializes the corresponding renderer.
-  //  * @param {number} uid The user ID of the remote user.
-  //  * @param {Element} view The Dom where to initialize the renderer.
-  //  * @return
-  //  * - 0: Success.
-  //  * - < 0: Failure.
-  //  */
-  // subscribe(uid: number, view: Element, options?: RendererOptions): number {
-  //   //this.initRender(uid, view, "", options);
-  //   return 0;
-  // }
-
-  //TODO(input)
   setupRemoteVideo(
     uid: number,
     view?: Element,
@@ -833,7 +819,7 @@ export class AgoraRtcEngine extends EventEmitter {
       this._rendererManager?.removeRenderer(uid, channel ? channel : "");
       return 0;
     }
-  } //TODO(input)
+  }
 
   /**
    * Sets the local video view and the corresponding renderer.
@@ -1114,11 +1100,16 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  startEchoTest(): number {
+  startEchoTest(intervalInSeconds?: number): number {
+    let jsonString = "";
+    if (intervalInSeconds !== undefined) {
+      jsonString = JSON.stringify({ intervalInSeconds });
+    }
+
     let ret = this._rtcEngine.CallApi(
       PROCESS_TYPE.MAIN,
       ApiTypeEngine.kEngineStartEchoTest,
-      ""
+      jsonString
     );
     return ret.retCode;
   }
@@ -1163,6 +1154,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - < 0: Failure.
    */
   startEchoTestWithInterval(intervalInSeconds: number): number {
+    deprecate("startEchoTestWithInterval", "startEchoTest");
     let param = {
       intervalInSeconds,
     };
@@ -1822,7 +1814,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setVideoQualityParameters(preferFrameRateOverImageQuality: boolean): number {
+  setVideoQualityParameters(preferFrameRateOverImageQuality = false): number {
     let param = {
       preferFrameRateOverImageQuality,
     };
@@ -1955,7 +1947,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  muteAllRemoteAudioStreams(mute: boolean): number {
+  muteAllRemoteAudioStreams(mute = false): number {
     let param = {
       mute,
     };
@@ -1990,7 +1982,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setDefaultMuteAllRemoteAudioStreams(mute: boolean): number {
+  setDefaultMuteAllRemoteAudioStreams(mute = false): number {
     let param = {
       mute,
     };
@@ -2014,7 +2006,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  muteRemoteAudioStream(userId: number, mute: boolean): number {
+  muteRemoteAudioStream(userId: number, mute = false): number {
     let param = {
       userId,
       mute,
@@ -2089,7 +2081,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  enableLocalVideo(enabled: boolean): number {
+  enableLocalVideo(enabled = true): number {
     let param = {
       enabled,
     };
@@ -2137,7 +2129,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  enableLocalAudio(enabled: boolean): number {
+  enableLocalAudio(enabled = true): number {
     let param = {
       enabled,
     };
@@ -2161,7 +2153,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  muteAllRemoteVideoStreams(mute: boolean): number {
+  muteAllRemoteVideoStreams(mute = false): number {
     let param = {
       mute,
     };
@@ -2197,7 +2189,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setDefaultMuteAllRemoteVideoStreams(mute: boolean): number {
+  setDefaultMuteAllRemoteVideoStreams(mute = false): number {
     let param = {
       mute,
     };
@@ -2270,7 +2262,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  muteRemoteVideoStream(userId: number, mute: boolean): number {
+  muteRemoteVideoStream(userId: number, mute = false): number {
     let param = {
       userId,
       mute,
@@ -2503,7 +2495,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  enableWebSdkInteroperability(enabled: boolean): number {
+  enableWebSdkInteroperability(enabled = false): number {
     let param = {
       enabled,
     };
@@ -2552,7 +2544,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setLocalVoicePitch(pitch: number): number {
+  setLocalVoicePitch(pitch = 1.0): number {
     let param = {
       pitch,
     };
@@ -2638,7 +2630,9 @@ export class AgoraRtcEngine extends EventEmitter {
    * @param {VoiceChangerPreset} preset The local voice changer option.
    * See {@link VoiceChangerPreset}.
    */
-  setLocalVoiceChanger(voiceChanger: VOICE_CHANGER_PRESET): number {
+  setLocalVoiceChanger(
+    voiceChanger = VOICE_CHANGER_PRESET.VOICE_CHANGER_OFF
+  ): number {
     let param = {
       voiceChanger,
     };
@@ -2665,7 +2659,9 @@ export class AgoraRtcEngine extends EventEmitter {
    * @param {AudioReverbPreset} preset The local voice reverberation preset.
    * See {@link AudioReverbPreset}.
    */
-  setLocalVoiceReverbPreset(reverbPreset: AUDIO_REVERB_PRESET) {
+  setLocalVoiceReverbPreset(
+    reverbPreset = AUDIO_REVERB_PRESET.AUDIO_REVERB_OFF
+  ) {
     let param = {
       reverbPreset,
     };
@@ -2715,7 +2711,9 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setLocalPublishFallbackOption(option: STREAM_FALLBACK_OPTIONS): number {
+  setLocalPublishFallbackOption(
+    option = STREAM_FALLBACK_OPTIONS.STREAM_FALLBACK_OPTION_DISABLED
+  ): number {
     let param = {
       option,
     };
@@ -2762,7 +2760,9 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setRemoteSubscribeFallbackOption(option: STREAM_FALLBACK_OPTIONS): number {
+  setRemoteSubscribeFallbackOption(
+    option: STREAM_FALLBACK_OPTIONS.STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW
+  ): number {
     let param = {
       option,
     };
@@ -3047,7 +3047,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  adjustRecordingSignalVolume(volume: number): number {
+  adjustRecordingSignalVolume(volume = 100): number {
     let param = {
       volume,
     };
@@ -3072,7 +3072,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  adjustPlaybackSignalVolume(volume: number): number {
+  adjustPlaybackSignalVolume(volume = 100): number {
     let param = {
       volume,
     };
@@ -3091,7 +3091,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * @param volume
    * @returns
    */
-  adjustLoopbackRecordingSignalVolume(volume: number): number {
+  adjustLoopbackRecordingSignalVolume(volume = 100): number {
     const param = {
       volume,
     };
@@ -3727,10 +3727,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success
    * - < 0: Failure
    */
-  enableLoopbackRecording(
-    enabled = false,
-    deviceName: string | null = null
-  ): number {
+  enableLoopbackRecording(enabled = false, deviceName?: string): number {
     let param = {
       enabled,
       deviceName,
@@ -4200,7 +4197,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  adjustAudioMixingVolume(volume: number): number {
+  adjustAudioMixingVolume(volume = 100): number {
     let param = {
       volume,
     };
@@ -4221,7 +4218,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  adjustAudioMixingPlayoutVolume(volume: number): number {
+  adjustAudioMixingPlayoutVolume(volume = 100): number {
     let param = {
       volume,
     };
@@ -4242,7 +4239,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  adjustAudioMixingPublishVolume(volume: number): number {
+  adjustAudioMixingPublishVolume(volume = 100): number {
     let param = {
       volume,
     };
@@ -4823,7 +4820,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setEffectsVolume(volume: number): number {
+  setEffectsVolume(volume = 100): number {
     let param = {
       volume,
     };
@@ -4845,7 +4842,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setVolumeOfEffect(soundId: number, volume: number): number {
+  setVolumeOfEffect(soundId: number, volume = 100): number {
     let param = {
       soundId,
       volume,
@@ -5147,7 +5144,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setRemoteVoicePosition(uid: number, pan: number, gain: number): number {
+  setRemoteVoicePosition(uid: number, pan: number, gain = 100): number {
     let param = {
       uid,
       pan,
@@ -5201,7 +5198,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  rate(callId: string, rating: number, description: string): number {
+  rate(callId: string, rating: number, description?: string): number {
     let param = {
       callId,
       rating,
@@ -5225,7 +5222,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  complain(callId: string, description: string): number {
+  complain(callId: string, description?: string): number {
     let param = {
       callId,
       description,
@@ -5666,7 +5663,7 @@ export class AgoraRtcEngine extends EventEmitter {
     return ret.retCode;
   }
 
-  enableDeepLearningDenoise(enable: boolean): number {
+  enableDeepLearningDenoise(enable = true): number {
     let param = {
       enable,
     };
@@ -5996,7 +5993,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  videoSourceEnableWebSdkInteroperability(enabled: boolean): number {
+  videoSourceEnableWebSdkInteroperability(enabled = false): number {
     let param = {
       enabled,
     };
@@ -6263,7 +6260,7 @@ export class AgoraRtcEngine extends EventEmitter {
    */
   videoSourceEnableLoopbackRecording(
     enabled = false,
-    deviceName: string | null = null
+    deviceName?: string
   ): number {
     let param = {
       enabled,
@@ -6691,7 +6688,7 @@ export class AgoraRtcEngine extends EventEmitter {
     return ret.retCode;
   }
 
-  videoSourceEnableLocalVideo(enabled: boolean): number {
+  videoSourceEnableLocalVideo(enabled = true): number {
     let param = {
       enabled,
     };
@@ -6704,7 +6701,7 @@ export class AgoraRtcEngine extends EventEmitter {
     return ret.retCode;
   }
 
-  videoSourceEnableLocalAudio(enabled: boolean): number {
+  videoSourceEnableLocalAudio(enabled = true): number {
     let param = {
       enabled,
     };
@@ -6717,7 +6714,7 @@ export class AgoraRtcEngine extends EventEmitter {
     return ret.retCode;
   }
 
-  videoSourceMuteAllRemoteVideoStreams(mute: boolean): number {
+  videoSourceMuteAllRemoteVideoStreams(mute = false): number {
     let param = {
       mute,
     };
@@ -6730,7 +6727,7 @@ export class AgoraRtcEngine extends EventEmitter {
     return ret.retCode;
   }
 
-  videoSourceMuteAllRemoteAudioStreams(mute: boolean): number {
+  videoSourceMuteAllRemoteAudioStreams(mute = false): number {
     let param = {
       mute,
     };
@@ -6854,7 +6851,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  videoSourceRelease(sync: boolean): number {
+  videoSourceRelease(sync = false): number {
     const param = {
       sync,
     };
