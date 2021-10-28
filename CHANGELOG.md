@@ -1,3 +1,6 @@
+# 3.4.5-rc.240-build.1027 (Oct 27th, 2021)
+* update native sdk
+
 # 3.3.1.235 (June 4th, 2021)
 * add new api:
   - videoSourceDisableAudio
