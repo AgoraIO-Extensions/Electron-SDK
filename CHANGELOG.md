@@ -1,3 +1,5 @@
+## 3.6.205-build.1029(Oct 29th, 2020)
+* add mac support
 ## 3.6.204-build.1020(Oct 20th, 2020)
 - API change
   - initialize: add LogConfig
