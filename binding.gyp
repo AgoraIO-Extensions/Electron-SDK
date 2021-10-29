@@ -191,7 +191,7 @@
                     ],
                     "DEBUG_INFORMATION_FORMAT": "dwarf-with-dsym",
                     'OTHER_CFLAGS' : [
-                        '-std=c++11',
+                        # '-std=c++11',
                         '-stdlib=libc++',
                         '-fexceptions',
                         '-Wno-error=non-pod-varargs'
