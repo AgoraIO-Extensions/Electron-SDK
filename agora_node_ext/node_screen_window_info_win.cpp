@@ -5,14 +5,14 @@
 //  Copyright © 2018 Agora. All rights reserved.
 //
 
-#include <Psapi.h>
+#include "node_screen_window_info.h"
+#include "node_log.h"
 #include <gdiplus.h>
 #include <gdiplusheaders.h>
-#include <tchar.h>
-#include <algorithm>
 #include <unordered_set>
-#include "node_log.h"
-#include "node_screen_window_info.h"
+#include <tchar.h>
+#include <Psapi.h>
+#include <algorithm>
 
 Gdiplus::GdiplusStartupInput g_gdiStartup;
 ULONG_PTR g_gdiplusToken = NULL;
