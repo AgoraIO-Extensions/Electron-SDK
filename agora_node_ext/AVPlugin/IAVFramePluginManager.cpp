@@ -70,6 +70,42 @@ bool IAVFramePluginManager::onPlaybackAudioFrameBeforeMixing(
   return true;
 }
 
+bool IAVFramePluginManager::onSendAudioPacket(Packet& packet) {
+  for (auto const& element : m_mapPlugins) {
+    if (element.second.enabled) {
+      element.second.instance->onPluginSendAudioPacket((PluginPacket*)&packet);
+    }
+  }
+  return true;
+}
+
+bool IAVFramePluginManager::onSendVideoPacket(Packet& packet) {
+  for (auto const& element : m_mapPlugins) {
+    if (element.second.enabled) {
+      element.second.instance->onPluginSendVideoPacket((PluginPacket*)&packet);
+    }
+  }
+  return true;
+}
+
+bool IAVFramePluginManager::onReceiveAudioPacket(Packet& packet) {
+  for (auto const& element : m_mapPlugins) {
+    if (element.second.enabled) {
+      element.second.instance->onPluginReceiveAudioPacket((PluginPacket*)&packet);
+    }
+  }
+  return true;
+}
+
+bool IAVFramePluginManager::onReceiveVideoPacket(Packet& packet) {
+  for (auto const& element : m_mapPlugins) {
+    if (element.second.enabled) {
+      element.second.instance->onPluginReceiveVideoPacket((PluginPacket*)&packet);
+    }
+  }
+  return true;
+}
+
 void IAVFramePluginManager::registerPlugin(agora_plugin_info& plugin) {
   m_mapPlugins.emplace(plugin.id, plugin);
 }
