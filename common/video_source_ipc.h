@@ -15,13 +15,13 @@
 
 #ifndef AGORA_VIDEO_SOURCE_IPC_H
 #define AGORA_VIDEO_SOURCE_IPC_H
-#include <functional>
-#include <memory>
 #include <string>
-#include <thread>
 #include <vector>
-#include "IAgoraRtcEngine.h"
 #include "ipc_shm.h"
+#include <functional>
+#include "IAgoraRtcEngine.h"
+#include <thread>
+#include <memory>
 
 #if defined(__APPLE__)
 struct DisplayID {
