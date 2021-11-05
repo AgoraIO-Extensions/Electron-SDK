@@ -4829,6 +4829,8 @@ NAPI_API_DEFINE(NodeRtcEngine, initializePluginManager) {
           pEngine->m_avPluginManager.get());
       pMediaEngine->registerAudioFrameObserver(
           pEngine->m_avPluginManager.get());
+      pEngine->getRtcEngine()->registerPacketObserver(
+          pEngine->m_avPluginManager.get());
       result = 0;
     }
   } while (false);
@@ -4849,6 +4851,7 @@ NAPI_API_DEFINE(NodeRtcEngine, releasePluginManager) {
                                             (void**)&pMediaEngine);
     pMediaEngine->registerVideoFrameObserver(NULL);
     pMediaEngine->registerAudioFrameObserver(NULL);
+     pEngine->getRtcEngine()->registerPacketObserver(NULL);
     result = 0;
   } while (false);
   napi_set_int_result(args, result);

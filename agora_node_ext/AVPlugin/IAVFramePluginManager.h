@@ -1,5 +1,6 @@
 #pragma once
 #include <IAgoraMediaEngine.h>
+#include <IAgoraRtcEngine.h>
 #include <node.h>
 #include <map>
 #include <string>
@@ -20,7 +21,8 @@ typedef struct tag_agora_plugin_info {
 } agora_plugin_info;
 
 class IAVFramePluginManager : public agora::media::IVideoFrameObserver,
-                              public agora::media::IAudioFrameObserver {
+                              public agora::media::IAudioFrameObserver,
+                              public agora::rtc::IPacketObserver {
  public:
   IAVFramePluginManager();
   ~IAVFramePluginManager();
@@ -33,6 +35,10 @@ class IAVFramePluginManager : public agora::media::IVideoFrameObserver,
   virtual bool onMixedAudioFrame(AudioFrame& audioFrame);
   virtual bool onPlaybackAudioFrameBeforeMixing(unsigned int uid,
                                                 AudioFrame& audioFrame);
+  virtual bool onSendAudioPacket(Packet& packet);
+  virtual bool onSendVideoPacket(Packet& packet);
+  virtual bool onReceiveAudioPacket(Packet& packet);
+  virtual bool onReceiveVideoPacket(Packet& packet);
 
   void registerPlugin(agora_plugin_info& plugin);
   void unregisterPlugin(std::string& pluginId);
