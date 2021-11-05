@@ -5,14 +5,14 @@
 //  Copyright © 2018 Agora. All rights reserved.
 //
 
-#include <Psapi.h>
+#include "node_screen_window_info.h"
+#include "node_log.h"
 #include <gdiplus.h>
 #include <gdiplusheaders.h>
-#include <tchar.h>
-#include <algorithm>
 #include <unordered_set>
-#include "node_log.h"
-#include "node_screen_window_info.h"
+#include <tchar.h>
+#include <Psapi.h>
+#include <algorithm>
 
 Gdiplus::GdiplusStartupInput g_gdiStartup;
 ULONG_PTR g_gdiplusToken = NULL;
@@ -55,42 +55,42 @@ BOOL CALLBACK EnumTopWindowsProc(_In_ HWND hwnd, _In_ LPARAM lParam) {
  * https://chromium.googlesource.com/external/webrtc/+/lkgr/modules/desktop_capture/window_capturer_win.cc
  */
 BOOL CALLBACK EnumWindowsProc(_In_ HWND hwnd, _In_ LPARAM lParam) {
-  // Skip windows that are invisible, minimized, have no title, or are owned,
-  // unless they have the app window style set.
-  HWND owner = GetWindow(hwnd, GW_OWNER);
-  LONG exstyle = GetWindowLong(hwnd, GWL_EXSTYLE);
-  if (IsIconic(hwnd) || !IsWindowVisible(hwnd) ||
-      (owner && !(exstyle & WS_EX_APPWINDOW))) {
-    return TRUE;
-  }
+    // Skip windows that are invisible, minimized, have no title, or are owned,
+    // unless they have the app window style set.
+    HWND owner = GetWindow(hwnd, GW_OWNER);
+    LONG exstyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+    if (IsIconic(hwnd) || !IsWindowVisible(hwnd) ||
+        (owner && !(exstyle & WS_EX_APPWINDOW))) {
+        return TRUE;
+    }
 
-  // Skip the Program Manager window and the Start button.
-  const size_t kClassLength = 256;
-  char class_name[kClassLength];
-  const int class_name_length = GetClassNameA(hwnd, class_name, kClassLength);
+    // Skip the Program Manager window and the Start button.
+    const size_t kClassLength = 256;
+    char class_name[kClassLength];
+    const int class_name_length = GetClassNameA(hwnd, class_name, kClassLength);
 
-  //    RTC_DCHECK(class_name_length)
-  //        << "Error retrieving the application's class name";
-  // Skip Program Manager window and the Start button. This is the same logic
-  // that's used in Win32WindowPicker in libjingle. Consider filtering other
-  // windows as well (e.g. toolbars).
-  if (strcmp(class_name, "Progman") == 0 || strcmp(class_name, "Button") == 0)
-    return TRUE;
+    //    RTC_DCHECK(class_name_length)
+    //        << "Error retrieving the application's class name";
+    // Skip Program Manager window and the Start button. This is the same logic
+    // that's used in Win32WindowPicker in libjingle. Consider filtering other
+    // windows as well (e.g. toolbars).
+    if (strcmp(class_name, "Progman") == 0 || strcmp(class_name, "Button") == 0)
+        return TRUE;
 
-  // Windows 8 introduced a "Modern App" identified by their class name being
-  // either ApplicationFrameWindow or windows.UI.Core.coreWindow. The
-  // associated windows cannot be captured, so we skip them.
-  // http://crbug.com/526883.
+    // Windows 8 introduced a "Modern App" identified by their class name being
+    // either ApplicationFrameWindow or windows.UI.Core.coreWindow. The
+    // associated windows cannot be captured, so we skip them.
+    // http://crbug.com/526883.
 
-  ULONGLONG dwConditionMask = 0;
-  VER_SET_CONDITION(dwConditionMask, VER_MAJORVERSION, VER_GREATER_EQUAL);
-  VER_SET_CONDITION(dwConditionMask, VER_MINORVERSION, VER_GREATER_EQUAL);
-  OSVERSIONINFOEX osx;
-  ZeroMemory(&osx, sizeof(OSVERSIONINFOEX));
-  osx.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-  osx.dwMajorVersion = 6;
-  osx.dwMinorVersion = 2;
-  int ret = VerifyVersionInfo(&osx, VER_MAJORVERSION | VER_MINORVERSION,
+    ULONGLONG dwConditionMask = 0;
+    VER_SET_CONDITION(dwConditionMask, VER_MAJORVERSION, VER_GREATER_EQUAL);
+    VER_SET_CONDITION(dwConditionMask, VER_MINORVERSION, VER_GREATER_EQUAL);
+    OSVERSIONINFOEX osx;
+    ZeroMemory(&osx, sizeof(OSVERSIONINFOEX));
+    osx.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+    osx.dwMajorVersion = 6;
+    osx.dwMinorVersion = 2;
+    int ret = VerifyVersionInfo(&osx, VER_MAJORVERSION | VER_MINORVERSION,
                               dwConditionMask);
   // win8
   if (ret && (strcmp(class_name, "ApplicationFrameWindow") == 0 ||
@@ -109,7 +109,7 @@ BOOL CALLBACK EnumWindowsProc(_In_ HWND hwnd, _In_ LPARAM lParam) {
 }
 /**
  * https://docs.microsoft.com/en-us/windows/desktop/gdiplus/-gdiplus-retrieving-the-class-identifier-for-an-encoder-use
- */
+*/
 
 int GetEncoderClsid(WCHAR* format, CLSID* pClsid) {
   unsigned int num = 0, size = 0;
