@@ -1,3 +1,9 @@
+## 3.6.200-rc.100-build.1108(Nov 8th, 2021)
+* update native sdk
+
+## 3.6.200-rc.100-build.1008(Oct 20th, 2021)
+* add api applyVideoOrientationToRemote
+
 ## 3.6.200-rc.100-build.1020(Oct 20th, 2021)
 * add api applyVideoOrientationToRemote
 ## 3.6.200-rc.100-build.1018(Oct 18th, 2021)
