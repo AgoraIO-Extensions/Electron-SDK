@@ -4889,7 +4889,7 @@ export class AgoraRtcEngine extends EventEmitter {
     pitch: number,
     pan: number,
     gain: number,
-    publish: number,
+    publish: boolean,
     startPos?: number
   ): number {
     let param = {
