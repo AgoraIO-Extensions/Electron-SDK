@@ -1561,24 +1561,24 @@ export interface CaptureParam {
   width: number; // Width (pixels) of the video
   /** Height (pixels) of the video. */
   height: number; // Height (pixels) of the video
-  /** The frame rate (fps) of the shared region. 
-   * 
-   * The default value is 5. 
-   * 
-   * We do not recommend setting this to a value greater than 15. 
+  /** The frame rate (fps) of the shared region.
+   *
+   * The default value is 5.
+   *
+   * We do not recommend setting this to a value greater than 15.
    */
   frameRate: number; // The frame rate (fps) of the shared region. The default value is 5. We do not recommend setting this to a value greater than 15.
   /**
    * The bitrate (Kbps) of the shared region.
-   * 
-   * The default value is 0 (the SDK works out a bitrate according to the 
+   *
+   * The default value is 0 (the SDK works out a bitrate according to the
    * dimensions of the current screen).
    */
   bitrate: number; //  The bitrate (Kbps) of the shared region. The default value is 0 (the SDK works out a bitrate according to the dimensions of the current screen).
 
-  // captureMouseCursor: boolean;
+  captureMouseCursor: boolean;
 
-  // windowFocus: boolean;
+  windowFocus: boolean;
 
   excludeWindowList: Array<number>;
 
