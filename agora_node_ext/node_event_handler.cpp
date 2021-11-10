@@ -1350,7 +1350,7 @@ namespace agora {
         void NodeEventHandler::onVideoSourceScreenCaptureInfoUpdated(ScreenCaptureInfoCmd& info)
         {
           std::string cardType(info.cardType);
-          FILT_WINDOW_ERROR errCode = info.errCode;
+          auto errCode = info.errCode;
           node_async_call::async_call([this, cardType, errCode] {
             do {
               Isolate* isolate = Isolate::GetCurrent();
