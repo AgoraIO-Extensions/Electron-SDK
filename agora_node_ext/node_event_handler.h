@@ -102,6 +102,7 @@ namespace agora {
 #define RTC_EVENT_VIDEO_SOURCE_VIDEO_SIZE_CHANGED "videoSourceVideoSizeChanged"
 #define RTC_EVENT_VIDEO_SOURCE_LOCAL_VIDEO_STATE_CHANGED "videoSourceLocalVideoStateChanged"
 #define RTC_EVENT_VIDEO_SOURCE_LOCAL_AUDIO_STATE_CHANGED "videoSourceLocalAudioStateChanged"
+#define RTC_EVENT_VIDEO_SOURCE_SCREEN_CAPTURE_INFO_UPDATED "videoSourceScreenCaptureInfoUpdated"
 
 #define RTC_EVENT_FIRST_LOCAL_AUDIO_FRAME_PUBLISH "firstLocalAudioFramePublished"
 #define RTC_EVENT_FIRST_LOCAL_VIDEO_FRAME_PUBLISH "firstLocalVideoFramePublished"
@@ -196,6 +197,7 @@ namespace agora {
             virtual void onVideoSourceExit() override;
             virtual void onVideoSourceLocalAudioStateChanged(int state, int error) override;
             virtual void onVideoSourceLocalVideoStateChanged(int state, int error) override;
+            virtual void onVideoSourceScreenCaptureInfoUpdated(ScreenCaptureInfoCmd &info) override;
             void fireApiError(const char* funcName);
             void addEventHandler(const std::string& eventName, Persistent<Object>& obj, Persistent<Function>& callback);
 

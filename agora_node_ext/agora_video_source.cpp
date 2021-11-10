@@ -487,6 +487,10 @@ namespace agora{
                 LocalVideoStateChangedCmd* cmd = (LocalVideoStateChangedCmd*)payload;
                 m_eventHandler->onVideoSourceLocalVideoStateChanged(cmd->localVideoState, cmd->error);
             }
+            else if (msg == AGORA_IPC_ON_SCREEN_CAPTURE_INFO_UPDATED) {
+             ScreenCaptureInfoCmd* cmd = (ScreenCaptureInfoCmd*)payload;
+             m_eventHandler->onVideoSourceScreenCaptureInfoUpdated(*cmd);
+           }
             else if (msg == AGORA_IPC_STOP_VS_PREVIEW_COMPLETE) {
                 LOG_INFO("AgoraVideoSourceSink:%s       msg: %s", __FUNCTION__,"AGORA_IPC_STOP_VS_PREVIEW_COMPLETE");
                 m_ipcReceiver.reset();

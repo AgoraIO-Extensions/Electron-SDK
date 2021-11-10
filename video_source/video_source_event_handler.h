@@ -56,7 +56,10 @@ public:
     virtual void onLocalAudioStats(const LocalAudioStats& stats) override;
     virtual void onLocalAudioStateChanged(LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error) override;
     virtual void onLocalVideoStateChanged(LOCAL_VIDEO_STREAM_STATE localVideoState, LOCAL_VIDEO_STREAM_ERROR error) override;
-
+#if defined(_WIN32)
+    virtual void onScreenCaptureInfoUpdated(agora::rtc::ScreenCaptureInfo& info)  override;
+#endif
+    
 private:
     AgoraVideoSource& m_videoSource;
 };

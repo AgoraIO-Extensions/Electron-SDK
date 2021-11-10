@@ -90,6 +90,9 @@ export default class App extends Component {
         local: uid
       });
     });
+    rtcEngine.on('videoSourceScreenCaptureInfoUpdated', (info) => {
+      console.warn('videoSourceScreenCaptureInfoUpdated',info);
+    });
     rtcEngine.on('userjoined', (uid, elapsed) => {
       if (uid === SHARE_ID && this.state.localSharing) {
         return

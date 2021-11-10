@@ -54,6 +54,8 @@ namespace agora{
             virtual void onVideoSourceLocalAudioStateChanged(int state, int error) = 0;
             
             virtual void onVideoSourceLocalVideoStateChanged(int state, int error) = 0;
+
+            virtual void onVideoSourceScreenCaptureInfoUpdated(ScreenCaptureInfoCmd& info) = 0;
         };
 
         /**
