@@ -94,7 +94,7 @@ protected:
     void notifyVideoSizeChanged(agora::rtc::uid_t uid, int width, int height, int rotation);
     void notifyLocalVideoStateChanged(agora::rtc::LOCAL_VIDEO_STREAM_STATE localVideoState, agora::rtc::LOCAL_VIDEO_STREAM_ERROR error);
     void notifyLocalAudioStateChanged(agora::rtc::LOCAL_AUDIO_STREAM_STATE state, agora::rtc::LOCAL_AUDIO_STREAM_ERROR error);
-    void notifyScreenCaptureInfoUpdated(const char* cardType, agora::rtc::FILT_WINDOW_ERROR errCode);
+    void notifyScreenCaptureInfoUpdated(const char* cardType, int errCode);
 
     void setProcessDpiAwareness();
 private:

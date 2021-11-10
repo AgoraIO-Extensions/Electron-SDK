@@ -358,7 +358,7 @@ struct ScreenCaptureInfoCmd
 {
 public:
   char cardType[MAX_PARAMETER_LEN];
-  agora::rtc::FILT_WINDOW_ERROR errCode;
+  int errCode;
 };
 
 
