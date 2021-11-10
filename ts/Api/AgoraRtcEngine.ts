@@ -4603,7 +4603,7 @@ export class AgoraRtcEngine extends EventEmitter {
     const ret = this._rtcEngine.CallApi(
       PROCESS_TYPE.MAIN,
       ApiTypeEngine.kEngineCreateDataStream,
-      JSON.stringify(config)
+      JSON.stringify({ config })
     );
 
     return ret.retCode;
