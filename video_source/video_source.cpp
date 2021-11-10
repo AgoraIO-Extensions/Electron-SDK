@@ -249,7 +249,7 @@ void AgoraVideoSource::notifyLocalAudioStateChanged(agora::rtc::LOCAL_AUDIO_STRE
     cmd->localAudioState = state;
     m_ipc->sendMessage(AGORA_IPC_ON_LOCAL_AUDIO_STATE_CHANGED, (char*)cmd.get(), sizeof(LocalAudioStateChangedCmd));
 }
-void AgoraVideoSource::notifyScreenCaptureInfoUpdated(const char* cardType, agora::rtc::FILT_WINDOW_ERROR errCode)
+void AgoraVideoSource::notifyScreenCaptureInfoUpdated(const char* cardType, int errCode)
 {
   std::unique_ptr<ScreenCaptureInfoCmd> cmd(new ScreenCaptureInfoCmd());
   if (cardType) {

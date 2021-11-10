@@ -361,6 +361,11 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^13.0.0"
 
+"@juggle/resize-observer@^3.3.1":
+  version "3.3.1"
+  resolved "https://registry.nlark.com/@juggle/resize-observer/download/@juggle/resize-observer-3.3.1.tgz#b50a781709c81e10701004214340f25475a171a0"
+  integrity sha1-tQp4FwnIHhBwEAQhQ0DyVHWhcaA=
+
 "@microsoft/node-core-library@3.19.3":
   version "3.19.3"
   resolved "https://registry.npm.taobao.org/@microsoft/node-core-library/download/@microsoft/node-core-library-3.19.3.tgz"
