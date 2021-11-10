@@ -5,6 +5,23 @@ export interface RendererOptions {
   append: boolean;
 }
 
+/** screencapture filter window err.
+ *
+ *
+ */
+ export enum FILT_WINDOW_ERROR {
+  /** negative : fail to filter window.
+   */
+  FILT_WINDOW_ERROR_FAIL = -1,
+  /** 0: none define.
+   */
+  FILT_WINDOW_ERROR_NONE = 0
+};
+export interface ScreenCaptureInfo {
+  cardType: string;
+  errCode: FILT_WINDOW_ERROR
+}
+
 /**
  * Network quality types:
  *

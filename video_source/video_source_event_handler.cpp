@@ -140,3 +140,10 @@ void AgoraVideoSourceEventHandler::onLocalVideoStateChanged(LOCAL_VIDEO_STREAM_S
 {
     m_videoSource.notifyLocalVideoStateChanged(localVideoState, error);
 }
+
+#if defined(_WIN32)
+void AgoraVideoSourceEventHandler::onScreenCaptureInfoUpdated(agora::rtc::ScreenCaptureInfo& info) {
+  m_videoSource.notifyScreenCaptureInfoUpdated(info.cardType, info.errCode);
+}
+#endif
+

@@ -117,6 +117,7 @@ enum AgoraIpcMsg
     AGORA_IPC_ON_LOCAL_VIDEO_STATE_CHANGED,
     AGORA_IPC_ON_LOCAL_AUDIO_STATE_CHANGED,
     AGORA_IPC_SET_PROCESS_DPI_AWARE_NESS,
+    AGORA_IPC_ON_SCREEN_CAPTURE_INFO_UPDATED,
     AGORA_IPC_SET_ADDON_LOGFILE
 };
 
@@ -352,6 +353,12 @@ struct LocalAudioStateChangedCmd
 public:
     int localAudioState;
     int error;
+};
+struct ScreenCaptureInfoCmd
+{
+public:
+  char cardType[MAX_PARAMETER_LEN];
+  agora::rtc::FILT_WINDOW_ERROR errCode;
 };
 
 
