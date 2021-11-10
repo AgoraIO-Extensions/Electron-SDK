@@ -5001,11 +5001,12 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByWindow) {
     status = napi_get_object_property_int32_(isolate, obj, "bitrate",
                                              captureParams.bitrate);
     CHECK_NAPI_STATUS(pEngine, status);
-    // status = napi_get_object_property_bool_(isolate, obj,
-    // "captureMouseCursor", captureParams.captureMouseCursor);
-    // CHECK_NAPI_STATUS(pEngine, status);
-    // status = napi_get_object_property_bool_(isolate, obj, "windowFocus",
-    // captureParams.windowFocus); CHECK_NAPI_STATUS(pEngine, status);
+    status = napi_get_object_property_bool_(isolate, obj, "captureMouseCursor",
+                                            captureParams.captureMouseCursor);
+    CHECK_NAPI_STATUS(pEngine, status);
+    status = napi_get_object_property_bool_(isolate, obj, "windowFocus",
+                                            captureParams.windowFocus);
+    CHECK_NAPI_STATUS(pEngine, status);
     captureParams.dimensions = dimensions;
 
     result = pEngine->m_engine->startScreenCaptureByWindowId(
@@ -5105,11 +5106,12 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByScreen) {
     status = napi_get_object_property_int32_(isolate, obj, "bitrate",
                                              captureParams.bitrate);
     CHECK_NAPI_STATUS(pEngine, status);
-    // status = napi_get_object_property_bool_(isolate, obj,
-    // "captureMouseCursor", captureParams.captureMouseCursor);
-    // CHECK_NAPI_STATUS(pEngine, status);
-    // status = napi_get_object_property_bool_(isolate, obj, "windowFocus",
-    // captureParams.windowFocus); CHECK_NAPI_STATUS(pEngine, status);
+    status = napi_get_object_property_bool_(isolate, obj, "captureMouseCursor",
+                                            captureParams.captureMouseCursor);
+    CHECK_NAPI_STATUS(pEngine, status);
+    status = napi_get_object_property_bool_(isolate, obj, "windowFocus",
+                                            captureParams.windowFocus);
+    CHECK_NAPI_STATUS(pEngine, status);
     captureParams.dimensions = dimensions;
 
 #if defined(_WIN32)
@@ -5156,11 +5158,12 @@ NAPI_API_DEFINE(NodeRtcEngine, updateScreenCaptureParameters) {
     status = napi_get_object_property_int32_(isolate, obj, "bitrate",
                                              captureParams.bitrate);
     CHECK_NAPI_STATUS(pEngine, status);
-    // status = napi_get_object_property_bool_(isolate, obj,
-    // "captureMouseCursor", captureParams.captureMouseCursor);
-    // CHECK_NAPI_STATUS(pEngine, status);
-    // status = napi_get_object_property_bool_(isolate, obj, "windowFocus",
-    // captureParams.windowFocus); CHECK_NAPI_STATUS(pEngine, status);
+    status = napi_get_object_property_bool_(isolate, obj, "captureMouseCursor",
+                                            captureParams.captureMouseCursor);
+    CHECK_NAPI_STATUS(pEngine, status);
+    status = napi_get_object_property_bool_(isolate, obj, "windowFocus",
+                                            captureParams.windowFocus);
+    CHECK_NAPI_STATUS(pEngine, status);
     captureParams.dimensions = dimensions;
 
     result = pEngine->m_engine->updateScreenCaptureParameters(captureParams);
@@ -6287,9 +6290,9 @@ NAPI_API_DEFINE(NodeRtcEngine, loadExtensionProvider) {
     nodestring extension_lib_path;
     napi_status status =
         napi_get_value_nodestring_(args[0], extension_lib_path);
-    #if defined (_WIN32) || (defined(__linux__) && !defined(__ANDROID__))
+#if defined(_WIN32) || (defined(__linux__) && !defined(__ANDROID__))
     result = pEngine->m_engine->loadExtensionProvider(extension_lib_path);
-    #endif
+#endif
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
