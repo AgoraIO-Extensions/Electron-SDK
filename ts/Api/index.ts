@@ -63,6 +63,7 @@ import {
   VirtualBackgroundSource,
   VIRTUAL_BACKGROUND_SOURCE_STATE_REASON,
   DisplayInfo,
+  ScreenCaptureInfo
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -704,6 +705,10 @@ class AgoraRtcEngine extends EventEmitter {
       fire('videosourceleavechannel');
       fire('videoSourceLeaveChannel');
     });
+    this.rtcEngine.onEvent('videoSourceScreenCaptureInfoUpdated', function(info: ScreenCaptureInfo) {
+      fire('videoSourceScreenCaptureInfoUpdated',info);
+    });
+    
 
     this.rtcEngine.onEvent('videoSourceLocalAudioStats', function(
       stats: LocalAudioStats
@@ -6866,6 +6871,13 @@ declare interface AgoraRtcEngine {
   /** Occurs when the video source leaves the channel.
    */
   on(evt: 'videoSourceLeaveChannel', cb: () => void): this;
+  /** Occurs when screencapture fail to filter window
+   *
+   *
+   * @param ScreenCaptureInfo
+   */
+  on(evt: 'videoSourceScreenCaptureInfoUpdated', cb: (info: ScreenCaptureInfo) => void): this;
+  
   /** Reports the statistics of the audio stream of the local video source.
    *
    * The SDK triggers this callback once every two seconds.

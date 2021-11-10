@@ -1347,6 +1347,30 @@ namespace agora {
             });
         }
 
+        void NodeEventHandler::onVideoSourceScreenCaptureInfoUpdated(ScreenCaptureInfoCmd& info)
+        {
+          std::string cardType(info.cardType);
+          FILT_WINDOW_ERROR errCode = info.errCode;
+          node_async_call::async_call([this, cardType, errCode] {
+            do {
+              Isolate* isolate = Isolate::GetCurrent();
+              HandleScope scope(isolate);
+              Local<Context> context = isolate->GetCurrentContext();
+              Local<Object> obj = Object::New(isolate);
+              CHECK_NAPI_OBJ(obj);
+
+              NODE_SET_OBJ_PROP_STRING(obj, "cardType", cardType.c_str());
+              NODE_SET_OBJ_PROP_UINT32(obj, "errCode", errCode);
+
+              Local<Value> arg[1] = { obj };
+              auto it = m_callbacks.find(RTC_EVENT_VIDEO_SOURCE_SCREEN_CAPTURE_INFO_UPDATED);
+              if (it != m_callbacks.end()) {
+                it->second->callback.Get(isolate)->Call(context, it->second->js_this.Get(isolate), 1, arg); \
+              }
+            } while (false);
+            });
+        }
+
         void NodeEventHandler::addEventHandler(const std::string& eventName, Persistent<Object>& obj, Persistent<Function>& callback)
         {
             FUNC_TRACE;
