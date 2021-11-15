@@ -63,6 +63,9 @@ import {
   VirtualBackgroundSource,
   VIRTUAL_BACKGROUND_SOURCE_STATE_REASON,
   DisplayInfo,
+  AUDIO_MIXING_DUAL_MONO_MODE,
+  AudioFileInfo,
+  AUDIO_FILE_INFO_ERROR,
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -330,6 +333,12 @@ class AgoraRtcEngine extends EventEmitter {
         lost,
         rxKBitRate,
       });
+    });
+    this.rtcEngine.onEvent('requestAudioFileInfo', function(
+      info: AudioFileInfo,
+      error: AUDIO_FILE_INFO_ERROR
+    ) {
+      fire('requestAudioFileInfo', info, error);
     });
 
     this.rtcEngine.onEvent('audiodevicestatechanged', function(
@@ -3480,25 +3489,37 @@ class AgoraRtcEngine extends EventEmitter {
   getEffectCurrentPosition(soundId: number): number {
     return this.rtcEngine.getEffectCurrentPosition(soundId);
   }
-  /**
-   * Gets the total duration of the music file.
+
+  /** Gets the information of a specified audio file.
    *
-   * @since v3.4.2
+   * @since v3.5.1
    *
-   * @note Call this method after joining a channel.
+   * After calling this method successfully, the SDK triggers the
+   * \ref IRtcEngineEventHandler::onRequestAudioFileInfo "onRequestAudioFileInfo"
+   * callback to report the information of an audio file, such as audio duration.
+   * You can call this method multiple times to get the information of multiple audio files.
    *
-   * @param filePath The absolute path or URL address (including the filename
-   * extensions) of the music file. For example: `C:\music\audio.mp4`.
-   * Supported audio formats include MP3, AAC, M4A, MP4, WAV, and 3GP.
-   * For more information, see
-   * [Supported Media Formats in Media Foundation](https://docs.microsoft.com/en-us/windows/desktop/medfound/supported-media-formats-in-media-foundation).
+   * @note
+   * - Call this method after joining a channel.
+   * - For the audio file formats supported by this method, see [What formats of audio files does the Agora RTC SDK support](https://docs.agora.io/en/faq/audio_format).
+   *
+   * @param filePath The file path:
+   * - Windows: The absolute path or URL address (including the filename extensions) of
+   * the audio file. For example: `C:\music\audio.mp4`.
+   * - Android: The file path, including the filename extensions. To access an online file,
+   * Agora supports using a URL address; to access a local file, Agora supports using a URI
+   * address, an absolute path, or a path that starts with `/assets/`. You might encounter
+   * permission issues if you use an absolute path to access a local file, so Agora recommends
+   * using a URI address instead. For example: `content://com.android.providers.media.documents/document/audio%3A14441`.
+   * - iOS or macOS: The absolute path or URL address (including the filename extensions) of the audio file.
+   * For example: `/var/mobile/Containers/Data/audio.mp4`.
    *
    * @return
-   * - &ge; 0: A successful method call. Returns the total duration (ms) of the specified music file.
+   * - 0: Success.
    * - < 0: Failure.
    */
-  getAudioMixingFileDuration(filePath: string): number {
-    return this.rtcEngine.getAudioMixingFileDuration(filePath);
+  getAudioFileInfo(filePath: string): number {
+    return this.rtcEngine.getAudioFileInfo(filePath);
   }
 
   /**
@@ -6360,6 +6381,100 @@ class AgoraRtcEngine extends EventEmitter {
   ): number {
     return this.rtcEngine.enableVirtualBackground(enabled, backgroundSource);
   }
+
+  /**
+   * Pauses the media stream relay to all destination channels.
+   *
+   * @since v3.5.1
+   *
+   * After the cross-channel media stream relay starts, you can call this method
+   * to pause relaying media streams to all destination channels; after the pause,
+   * if you want to resume the relay, call \ref IRtcEngine::resumeAllChannelMediaRelay "resumeAllChannelMediaRelay".
+   *
+   * After a successful method call, the SDK triggers the
+   * \ref IRtcEngineEventHandler::onChannelMediaRelayEvent "onChannelMediaRelayEvent"
+   * callback to report whether the media stream relay is successfully paused.
+   *
+   * @note Call this method after the \ref IRtcEngine::startChannelMediaRelay "startChannelMediaRelay" method.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  pauseAllChannelMediaRelay(): number {
+    return this.rtcEngine.pauseAllChannelMediaRelay();
+  }
+
+  /** Resumes the media stream relay to all destination channels.
+   *
+   * @since v3.5.1
+   *
+   * After calling the \ref IRtcEngine::pauseAllChannelMediaRelay "pauseAllChannelMediaRelay" method,
+   * you can call this method to resume relaying media streams to all destination channels.
+   *
+   * After a successful method call, the SDK triggers the
+   * \ref IRtcEngineEventHandler::onChannelMediaRelayEvent "onChannelMediaRelayEvent"
+   * callback to report whether the media stream relay is successfully resumed.
+   *
+   * @note Call this method after the \ref IRtcEngine::pauseAllChannelMediaRelay "pauseAllChannelMediaRelay" method.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  resumeAllChannelMediaRelay(): number {
+    return this.rtcEngine.resumeAllChannelMediaRelay();
+  }
+
+  /**
+   * Sets the playback speed of the current music file.
+   *
+   * @since v3.5.1
+   *
+   * @note Call this method after calling \ref IRtcEngine::startAudioMixing(const char*,bool,bool,int,int) "startAudioMixing" [2/2]
+   * and receiving the \ref IRtcEngineEventHandler::onAudioMixingStateChanged "onAudioMixingStateChanged" (AUDIO_MIXING_STATE_PLAYING) callback.
+   *
+   * @param speed The playback speed. Agora recommends that you limit this value to between 50 and 400, defined as follows:
+   * - 50: Half the original speed.
+   * - 100: The original speed.
+   * - 400: 4 times the original speed.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  setAudioMixingPlaybackSpeed(speed = 100): number {
+    return this.rtcEngine.setAudioMixingPlaybackSpeed(speed);
+  }
+
+  /**
+   * Sets the channel mode of the current music file.
+   *
+   * @since v3.5.1
+   *
+   * In a stereo music file, the left and right channels can store different audio data.
+   * According to your needs, you can set the channel mode to original mode, left channel mode,
+   * right channel mode, or mixed channel mode. For example, in the KTV scenario, the left
+   * channel of the music file stores the musical accompaniment, and the right channel
+   * stores the singing voice. If you only need to listen to the accompaniment, call this
+   * method to set the channel mode of the music file to left channel mode; if you need to
+   * listen to the accompaniment and the singing voice at the same time, call this method
+   * to set the channel mode to mixed channel mode.
+   *
+   * @note
+   * - Call this method after calling \ref IRtcEngine::startAudioMixing(const char*,bool,bool,int,int) "startAudioMixing" [2/2]
+   * and receiving the \ref IRtcEngineEventHandler::onAudioMixingStateChanged "onAudioMixingStateChanged" (AUDIO_MIXING_STATE_PLAYING) callback.
+   * - This method only applies to stereo audio files.
+   *
+   * @param mode The channel mode. See \ref agora::media::AUDIO_MIXING_DUAL_MONO_MODE "AUDIO_MIXING_DUAL_MONO_MODE".
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  setAudioMixingDualMonoMode(mode: AUDIO_MIXING_DUAL_MONO_MODE): number {
+    return this.rtcEngine.setAudioMixingDualMonoMode(mode);
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
@@ -6556,6 +6671,12 @@ declare interface AgoraRtcEngine {
     evt: 'remoteAudioTransportStats',
     cb: (stats: RemoteAudioTransportStats) => void
   ): this;
+
+  on(
+    evt: 'requestAudioFileInfo',
+    cb: (info: AudioFileInfo, error: AUDIO_FILE_INFO_ERROR) => void
+  ): this;
+
   /**
    * Occurs when the audio device state changes.
    *

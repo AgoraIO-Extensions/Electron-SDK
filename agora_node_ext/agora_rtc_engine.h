@@ -378,7 +378,6 @@ class NodeRtcEngine : public node::ObjectWrap {
   NAPI_API(setEffectPosition);
   NAPI_API(getEffectDuration);
   NAPI_API(getEffectCurrentPosition);
-  NAPI_API(getAudioMixingFileDuration);
 
   NAPI_API(setProcessDpiAwareness);
   NAPI_API(videoSourceSetProcessDpiAwareness);
@@ -394,6 +393,15 @@ class NodeRtcEngine : public node::ObjectWrap {
    */
   NAPI_API(enableVirtualBackground);
   NAPI_API(virtualBackgroundSourceEnabled);
+  
+  /*
+   * 3.5.1
+   */
+  NAPI_API(pauseAllChannelMediaRelay);
+  NAPI_API(resumeAllChannelMediaRelay);
+  NAPI_API(setAudioMixingPlaybackSpeed);
+  NAPI_API(setAudioMixingDualMonoMode);
+  NAPI_API(getAudioFileInfo);
 
  public:
   Isolate* getIsolate() { return m_isolate; }
