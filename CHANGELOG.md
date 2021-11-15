@@ -1,3 +1,11 @@
+## 3.5.1-build.1116 (Nov 15th, 2021)
+* add new api:
+  - pauseAllChannelMediaRelay
+  - resumeAllChannelMediaRelay
+  - setAudioMixingPlaybackSpeed
+  - setAudioMixingDualMonoMode
+* modify getAudioMixingFileDuration to getAudioFileInfo
+
 ## 3.5.0-rc.4-build.1105 (Nov 8th, 2021)
 * Improve sdk stabilit
 
