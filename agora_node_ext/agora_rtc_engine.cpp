@@ -2529,8 +2529,12 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByDisplayId) {
         excludeWindows.push_back(windowId);
       }
     }
+#if defined(_WIN32)
+    result = -1;
+#elif
     result = pEngine->m_engine->startScreenCaptureByDisplayId(
         displayInfo.idVal, regionRect, captureParams);
+#endif
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
