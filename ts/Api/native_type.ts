@@ -2257,35 +2257,68 @@ export interface ChannelMediaRelayConfiguration {
    */
   destInfos: [ChannelMediaInfo];
 }
-/**
- * The event code.
- * - 0: The user disconnects from the server due to poor network connections.
- * - 1: The network reconnects.
- * - 2: The user joins the source channel.
- * - 3: The user joins the destination channel.
- * - 4: The SDK starts relaying the media stream to the destination channel.
- * - 5: The server receives the video stream from the source channel.
- * - 6: The server receives the audio stream from the source channel.
- * - 7: The destination channel is updated.
- * - 8: The destination channel update fails due to internal reasons.
- * - 9: The destination channel does not change, which means that the
- * destination channel fails to be updated.
- * - 10: The destination channel name is NULL.
- * - 11: The video profile is sent to the server.
- */
-export type ChannelMediaRelayEvent =
-  | 0 // 0: RELAY_EVENT_NETWORK_DISCONNECTED
-  | 1 // 1: RELAY_EVENT_NETWORK_CONNECTED
-  | 2 // 2: RELAY_EVENT_PACKET_JOINED_SRC_CHANNEL
-  | 3 // 3: RELAY_EVENT_PACKET_JOINED_DEST_CHANNEL
-  | 4 // 4: RELAY_EVENT_PACKET_SENT_TO_DEST_CHANNEL
-  | 5 // 5: RELAY_EVENT_PACKET_RECEIVED_VIDEO_FROM_SRC
-  | 6 // 6: RELAY_EVENT_PACKET_RECEIVED_AUDIO_FROM_SRC
-  | 7 // 7: RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL
-  | 8 // 8: RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_REFUSED
-  | 9 // 9: RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_NOT_CHANGE
-  | 10 // 10: RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_IS_NULL
-  | 11; // 11: RELAY_EVENT_VIDEO_PROFILE_UPDATE
+
+/** The event code in CHANNEL_MEDIA_RELAY_EVENT. */
+export enum ChannelMediaRelayEvent {
+  /** 0: The user disconnects from the server due to poor network
+   * connections.
+   */
+  RELAY_EVENT_NETWORK_DISCONNECTED = 0,
+  /** 1: The network reconnects.
+   */
+  RELAY_EVENT_NETWORK_CONNECTED = 1,
+  /** 2: The user joins the source channel.
+   */
+  RELAY_EVENT_PACKET_JOINED_SRC_CHANNEL = 2,
+  /** 3: The user joins the destination channel.
+   */
+  RELAY_EVENT_PACKET_JOINED_DEST_CHANNEL = 3,
+  /** 4: The SDK starts relaying the media stream to the destination channel.
+   */
+  RELAY_EVENT_PACKET_SENT_TO_DEST_CHANNEL = 4,
+  /** 5: The server receives the video stream from the source channel.
+   */
+  RELAY_EVENT_PACKET_RECEIVED_VIDEO_FROM_SRC = 5,
+  /** 6: The server receives the audio stream from the source channel.
+   */
+  RELAY_EVENT_PACKET_RECEIVED_AUDIO_FROM_SRC = 6,
+  /** 7: The destination channel is updated.
+   */
+  RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL = 7,
+  /** 8: The destination channel update fails due to internal reasons.
+   */
+  RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_REFUSED = 8,
+  /** 9: The destination channel does not change, which means that the
+   * destination channel fails to be updated.
+   */
+  RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_NOT_CHANGE = 9,
+  /** 10: The destination channel name is NULL.
+   */
+  RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_IS_NULL = 10,
+  /** 11: The video profile is sent to the server.
+   */
+  RELAY_EVENT_VIDEO_PROFILE_UPDATE = 11,
+  /** 12: The SDK successfully pauses relaying the media stream to destination channels.
+   *
+   * @since v3.5.1
+   */
+  RELAY_EVENT_PAUSE_SEND_PACKET_TO_DEST_CHANNEL_SUCCESS = 12,
+  /** 13: The SDK fails to pause relaying the media stream to destination channels.
+   *
+   * @since v3.5.1
+   */
+  RELAY_EVENT_PAUSE_SEND_PACKET_TO_DEST_CHANNEL_FAILED = 13,
+  /** 14: The SDK successfully resumes relaying the media stream to destination channels.
+   *
+   * @since v3.5.1
+   */
+  RELAY_EVENT_RESUME_SEND_PACKET_TO_DEST_CHANNEL_SUCCESS = 14,
+  /** 15: The SDK fails to resume relaying the media stream to destination channels.
+   *
+   * @since v3.5.1
+   */
+  RELAY_EVENT_RESUME_SEND_PACKET_TO_DEST_CHANNEL_FAILED = 15,
+}
 /**
  * The state code.
  * - 0: The SDK is initializing.
@@ -2611,23 +2644,37 @@ export enum LOCAL_AUDIO_STREAM_ERROR {
   /** 3: The microphone is in use.
    */
   LOCAL_AUDIO_STREAM_ERROR_DEVICE_BUSY = 3,
-  /** 4: The local audio recording fails. Check whether the recording device
+  /** 4: The local audio capturing fails. Check whether the capturing device
    * is working properly.
    */
   LOCAL_AUDIO_STREAM_ERROR_RECORD_FAILURE = 4,
   /** 5: The local audio encoding fails.
    */
   LOCAL_AUDIO_STREAM_ERROR_ENCODE_FAILURE = 5,
-  /** 6: (Windows only) The SDK cannot find the local audio recording device.
+  /** 6: The SDK cannot find the local audio recording device.
    *
-   * @since v3.4.2
+   * @since v3.4.0
    */
   LOCAL_AUDIO_STREAM_ERROR_NO_RECORDING_DEVICE = 6,
-  /** 7: (Windows only) The SDK cannot find the local audio playback device.
+  /** 7: The SDK cannot find the local audio playback device.
    *
-   * @since v3.4.2
+   * @since v3.4.0
    */
   LOCAL_AUDIO_STREAM_ERROR_NO_PLAYOUT_DEVICE = 7,
+  /**
+   * 8: The local audio capturing is interrupted by the system call.
+   */
+  LOCAL_AUDIO_STREAM_ERROR_INTERRUPTED = 8,
+  /** 9: An invalid audio capture device ID.
+   *
+   * @since v3.5.1
+   */
+  LOCAL_AUDIO_STREAM_ERROR_RECORD_INVALID_ID = 9,
+  /** 10: An invalid audio playback device ID.
+   *
+   * @since v3.5.1
+   */
+  LOCAL_AUDIO_STREAM_ERROR_PLAYOUT_INVALID_ID = 10,
 }
 
 /**
@@ -2752,6 +2799,11 @@ export enum NETWORK_TYPE {
   NETWORK_TYPE_MOBILE_3G = 4,
   /** 5: The network type is mobile 4G. */
   NETWORK_TYPE_MOBILE_4G = 5,
+  /** 6: The network type is mobile 5G.
+   *
+   * @since v3.5.1
+   */
+  NETWORK_TYPE_MOBILE_5G = 6,
 }
 export interface DisplayInfo {
   displayId: { id: number };
@@ -2848,6 +2900,89 @@ export interface AudioRecordingConfiguration {
   recordingSampleRate: number;
 }
 
+/**
+ * The degree of blurring applied to the custom background image.
+ *
+ * @since v3.5.1
+ */
+export enum BACKGROUND_BLUR_DEGREE {
+  /**
+   * 1: The degree of blurring applied to the custom background image is low.
+   * The user can almost see the background clearly.
+   */
+  BLUR_DEGREE_LOW = 1,
+  /**
+   * The degree of blurring applied to the custom background image is medium.
+   * It is difficult for the user to recognize details in the background.
+   */
+  BLUR_DEGREE_MEDIUM,
+  /**
+   * (Default) The degree of blurring applied to the custom background image is high.
+   * The user can barely see any distinguishing features in the background.
+   */
+  BLUR_DEGREE_HIGH,
+}
+
+/**
+ * The channel mode. Set in \ref agora::rtc::IRtcEngine::setAudioMixingDualMonoMode "setAudioMixingDualMonoMode".
+ *
+ * @since v3.5.1
+ */
+export enum AUDIO_MIXING_DUAL_MONO_MODE {
+  /**
+   * 0: Original mode.
+   */
+  AUDIO_MIXING_DUAL_MONO_AUTO = 0,
+  /**
+   * 1: Left channel mode. This mode replaces the audio of the right channel
+   * with the audio of the left channel, which means the user can only hear
+   * the audio of the left channel.
+   */
+  AUDIO_MIXING_DUAL_MONO_L = 1,
+  /**
+   * 2: Right channel mode. This mode replaces the audio of the left channel with
+   * the audio of the right channel, which means the user can only hear the audio
+   * of the right channel.
+   */
+  AUDIO_MIXING_DUAL_MONO_R = 2,
+  /**
+   * 3: Mixed channel mode. This mode mixes the audio of the left channel and
+   * the right channel, which means the user can hear the audio of the left
+   * channel and the right channel at the same time.
+   */
+  AUDIO_MIXING_DUAL_MONO_MIX = 3,
+}
+
+/**
+ * The information of an audio file. This struct is reported
+ * in \ref IRtcEngineEventHandler::onRequestAudioFileInfo "onRequestAudioFileInfo".
+ *
+ * @since v3.5.1
+ */
+export interface AudioFileInfo {
+  /** The file path.
+   */
+  filePath: string;
+  /** The file duration (ms).
+   */
+  durationMs: number;
+}
+
+/** The information acquisition state. This enum is reported
+ * in \ref IRtcEngineEventHandler::onRequestAudioFileInfo "onRequestAudioFileInfo".
+ *
+ * @since v3.5.1
+ */
+export enum AUDIO_FILE_INFO_ERROR {
+  /** 0: Successfully get the information of an audio file.
+   */
+  AUDIO_FILE_INFO_ERROR_OK = 0,
+
+  /** 1: Fail to get the information of an audio file.
+   */
+  AUDIO_FILE_INFO_ERROR_FAILURE = 1,
+}
+
 /** The custom background image.
  *
  * @since v3.4.5
@@ -2878,6 +3013,15 @@ export interface VirtualBackgroundSource {
    * background image is `BACKGROUND_COLOR`.
    */
   color: number;
+
+  /**
+   * The degree of blurring applied to the custom background image. See #BACKGROUND_BLUR_DEGREE.
+   *
+   * @note This parameter takes effect only when the type of the custom background image is `BACKGROUND_BLUR`.
+   *
+   * @since v3.5.1
+   */
+  blur_degree: BACKGROUND_BLUR_DEGREE;
 }
 /**
  * interface for c++ addon (.node)
@@ -3980,7 +4124,8 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  getAudioMixingFileDuration(filePath: string): number;
+  getAudioFileInfo(filePath: string): number;
+
   /**
    * @ignore
    */
@@ -4000,6 +4145,24 @@ export interface NodeRtcEngine {
     enabled: Boolean,
     backgroundSource: VirtualBackgroundSource
   ): number;
+  /**
+   * @ignore
+   */
+  pauseAllChannelMediaRelay(): number;
+  /**
+   * @ignore
+   */
+  resumeAllChannelMediaRelay(): number;
+
+  /**
+   * @ignore
+   */
+  setAudioMixingPlaybackSpeed(speed: number): number;
+
+  /**
+   * @ignore
+   */
+  setAudioMixingDualMonoMode(mode: AUDIO_MIXING_DUAL_MONO_MODE): number;
 }
 /**
  * @ignore

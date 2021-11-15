@@ -316,7 +316,6 @@ void NodeRtcEngine::Init(Local<Object>& module) {
   PROPERTY_METHOD_DEFINE(setEffectPosition);
   PROPERTY_METHOD_DEFINE(getEffectDuration);
   PROPERTY_METHOD_DEFINE(getEffectCurrentPosition);
-  PROPERTY_METHOD_DEFINE(getAudioMixingFileDuration);
   PROPERTY_METHOD_DEFINE(setProcessDpiAwareness);
   PROPERTY_METHOD_DEFINE(videoSourceSetProcessDpiAwareness);
   PROPERTY_METHOD_DEFINE(startAudioRecordingWithConfig);
@@ -331,6 +330,14 @@ void NodeRtcEngine::Init(Local<Object>& module) {
   PROPERTY_METHOD_DEFINE(videoSourceStartScreenCaptureByDisplayId);
   PROPERTY_METHOD_DEFINE(startScreenCaptureByDisplayId);
   PROPERTY_METHOD_DEFINE(getRealScreenDisplayInfo);
+  /*
+   * 3.5.1
+   */
+  PROPERTY_METHOD_DEFINE(pauseAllChannelMediaRelay);
+  PROPERTY_METHOD_DEFINE(resumeAllChannelMediaRelay);
+  PROPERTY_METHOD_DEFINE(setAudioMixingPlaybackSpeed);
+  PROPERTY_METHOD_DEFINE(setAudioMixingDualMonoMode);
+  PROPERTY_METHOD_DEFINE(getAudioFileInfo);
   EN_PROPERTY_DEFINE()
   module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(),
               tpl->GetFunction(context).ToLocalChecked());
@@ -2522,8 +2529,12 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByDisplayId) {
         excludeWindows.push_back(windowId);
       }
     }
+#if defined(_WIN32)
+    result = -1;
+#else
     result = pEngine->m_engine->startScreenCaptureByDisplayId(
         displayInfo.idVal, regionRect, captureParams);
+#endif
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -3930,20 +3941,6 @@ NAPI_API_DEFINE(NodeRtcEngine, startAudioMixing) {
     result = rep.startAudioMixing(filepath, loopback, replace, cycle, startPos);
   } while (false);
   napi_set_int_result(args, result);
-  LOG_LEAVE;
-}
-
-NAPI_API_DEFINE(NodeRtcEngine, getAudioMixingDuration) {
-  LOG_ENTER;
-  do {
-    NodeRtcEngine* pEngine = nullptr;
-    napi_get_native_this(args, pEngine);
-    CHECK_NATIVE_THIS(pEngine);
-
-    RtcEngineParameters rep(pEngine->m_engine);
-    int duration = rep.getAudioMixingDuration();
-    napi_set_int_result(args, duration);
-  } while (false);
   LOG_LEAVE;
 }
 
@@ -6489,17 +6486,14 @@ NAPI_API_DEFINE(NodeRtcEngine, setVoiceConversionPreset) {
 /*
  * 3.4.0
  */
-NAPI_API_DEFINE(NodeRtcEngine, getAudioMixingFileDuration) {
+NAPI_API_DEFINE(NodeRtcEngine, getAudioMixingDuration) {
   LOG_ENTER;
   int result = -1;
   do {
     NodeRtcEngine* pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    NodeString filePath;
-    napi_status status = napi_get_value_nodestring_(args[0], filePath);
-    CHECK_NAPI_STATUS(pEngine, status);
-    result = pEngine->m_engine->getAudioMixingDuration(filePath);
+    result = pEngine->m_engine->getAudioMixingDuration();
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -6777,9 +6771,90 @@ NAPI_API_DEFINE(NodeRtcEngine, enableVirtualBackground) {
     status = napi_get_object_property_uint32_(isolate, obj, "color",
                                               backgroundSource.color);
     CHECK_NAPI_STATUS(pEngine, status);
+      
+    int blur_degree = VirtualBackgroundSource::BLUR_DEGREE_HIGH;
+    status = napi_get_object_property_int32_(isolate, obj, "blur_degree", blur_degree);
+    backgroundSource.blur_degree = (VirtualBackgroundSource::BACKGROUND_BLUR_DEGREE)blur_degree;
 
     result =
         pEngine->m_engine->enableVirtualBackground(enabled, backgroundSource);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, pauseAllChannelMediaRelay) {
+  LOG_ENTER;
+  int result = -1;
+  do {
+    NodeRtcEngine* pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    result = pEngine->m_engine->pauseAllChannelMediaRelay();
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, resumeAllChannelMediaRelay) {
+  LOG_ENTER;
+  int result = -1;
+  do {
+    NodeRtcEngine* pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    result = pEngine->m_engine->resumeAllChannelMediaRelay();
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, setAudioMixingPlaybackSpeed) {
+  LOG_ENTER;
+  int result = -1;
+  napi_status status = napi_ok;
+  do {
+    NodeRtcEngine* pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    int speed = 100;
+    napi_get_param_1(args, int32, speed);
+    result = pEngine->m_engine->setAudioMixingPlaybackSpeed(speed);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, setAudioMixingDualMonoMode) {
+  LOG_ENTER;
+  int result = -1;
+  napi_status status = napi_ok;
+  do {
+    NodeRtcEngine* pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    int mode;
+    napi_get_param_1(args, int32, mode);
+    result = pEngine->m_engine->setAudioMixingDualMonoMode((agora::media::AUDIO_MIXING_DUAL_MONO_MODE)mode);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, getAudioFileInfo) {
+  LOG_ENTER;
+  int result = -1;
+  napi_status status = napi_ok;
+  do {
+    
+    NodeRtcEngine* pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    NodeString filePath;
+    napi_get_param_1(args, nodestring, filePath);
+    result = pEngine->m_engine->getAudioFileInfo(filePath);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
