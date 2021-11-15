@@ -1746,5 +1746,32 @@ void NodeEventHandler::onVirtualBackgroundSourceEnabled(
                    int32, reason);
   });
 }
+// 3.5.1
+void NodeEventHandler::onRequestAudioFileInfo(const agora::rtc::AudioFileInfo& info, AUDIO_FILE_INFO_ERROR error) {
+  FUNC_TRACE;
+  std::string filePath(info.filePath);
+  node_async_call::async_call([this, info, filePath, error] {
+      FUNC_TRACE;
+      do {
+        Isolate* isolate = Isolate::GetCurrent();
+        HandleScope scope(isolate);
+        Local<Context> context = isolate->GetCurrentContext();
+        Local<Object> obj = Object::New(isolate);
+        CHECK_NAPI_OBJ(obj);
+
+        NODE_SET_OBJ_PROP_STRING(obj, "filePath", filePath.c_str());
+        NODE_SET_OBJ_PROP_UINT32(obj, "durationMs", info.durationMs);
+
+        Local<Value> arg[2] = {obj, napi_create_int32_(isolate, error)};
+        auto it = m_callbacks.find(RTC_EVENT_REQUEST_AUDIO_FILE_INFO);
+        if (it != m_callbacks.end()) {
+          it->second->callback.Get(isolate)->Call(
+              context, it->second->js_this.Get(isolate), 2, arg);
+        }
+      } while (false);
+  });
+}
+
+
 }  // namespace rtc
 }  // namespace agora

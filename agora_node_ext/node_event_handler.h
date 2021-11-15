@@ -122,6 +122,9 @@ namespace rtc {
 #define RTC_EVENT_UPLOAD_LOG_RESULT "uploadLogResult"
 #define RTC_EVENT_VIRTUAL_BACKGROUND_SOURCE_ENABLED \
   "virtualBackgroundSourceEnabled"
+#define RTC_EVENT_REQUEST_AUDIO_FILE_INFO \
+  "requestAudioFileInfo"
+
 
 class NodeRtcEngine;
 class NodeUid;
@@ -344,6 +347,9 @@ class NodeEventHandler : public IRtcEngineEventHandler,
   virtual void onVirtualBackgroundSourceEnabled(
       bool enabled,
       VIRTUAL_BACKGROUND_SOURCE_STATE_REASON reason);
+  // 3.5.1
+  virtual void onRequestAudioFileInfo(const agora::rtc::AudioFileInfo& info, AUDIO_FILE_INFO_ERROR error);
+                             
 
  private:
   void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed);

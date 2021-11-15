@@ -119,7 +119,6 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.setAudioMixingPitch setAudioMixingPitch}| Sets the pitch of the local music file.   |
 |{@link AgoraRtcEngine.getAudioMixingPlayoutVolume getAudioMixingPlayoutVolume}|Adjusts the audio mixing volume for publishing (for remote users).|
 |{@link AgoraRtcEngine.getAudioMixingPublishVolume getAudioMixingPublishVolume}|Retrieves the audio mixing volume for publishing.|
-| {@link AgoraRtcEngine.getAudioMixingFileDuration getAudioMixingFileDuration}  | Gets the total duration of the music file.  |
 | {@link AgoraRtcEngine.getAudioMixingCurrentPosition getAudioMixingCurrentPosition} | Gets the playback position (ms) of the music file.      |
 | {@link AgoraRtcEngine.setAudioMixingPosition setAudioMixingPosition} | Sets the playback position of the music file.           |
 
