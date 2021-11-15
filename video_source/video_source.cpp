@@ -422,10 +422,12 @@ void AgoraVideoSource::onMessage(unsigned int msg,
         cmd->captureParams.excludeWindowList = excludeWindows;
         cmd->captureParams.excludeWindowCount = cmd->excludeWindowCount;
       }
-
-      int result = m_rtcEngine->startScreenCaptureByDisplayId(
+      int result = -1;
+#if defined(_WIN32)
+#else
+      result = m_rtcEngine->startScreenCaptureByDisplayId(
           cmd->displayInfo.idVal, cmd->regionRect, cmd->captureParams);
-
+#endif
       if (result != 0) {
         LOG_ERROR("start screen capture by display failed.");
         rep.enableLocalVideo(false);
