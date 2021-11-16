@@ -66,6 +66,7 @@ import {
   AUDIO_MIXING_DUAL_MONO_MODE,
   AudioFileInfo,
   AUDIO_FILE_INFO_ERROR,
+  ScreenCaptureInfo,
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -914,6 +915,12 @@ class AgoraRtcEngine extends EventEmitter {
       error: LOCAL_VIDEO_STREAM_ERROR
     ) {
       fire('videoSourceLocalVideoStateChanged', state, error);
+    });
+
+    this.rtcEngine.onEvent('videoSourceScreenCaptureInfoUpdated', function(
+      info: ScreenCaptureInfo
+    ) {
+      fire('videoSourceScreenCaptureInfoUpdated', info);
     });
 
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
@@ -4028,19 +4035,6 @@ class AgoraRtcEngine extends EventEmitter {
     );
   }
 
-  videoSourceMuteRemoteAudioStream(uid: number, mute: boolean): number {
-    return this.rtcEngine.videoSourceMuteRemoteAudioStream(uid, mute);
-  }
-  videoSourceMuteAllRemoteAudioStreams(mute: boolean): number {
-    return this.rtcEngine.videoSourceMuteAllRemoteAudioStreams(mute);
-  }
-  videoSourceMuteRemoteVideoStream(uid: number, mute: boolean): number {
-    return this.rtcEngine.videoSourceMuteRemoteVideoStream(uid, mute);
-  }
-  videoSourceMuteAllRemoteVideoStreams(mute: boolean): number {
-    return this.rtcEngine.videoSourceMuteAllRemoteVideoStreams(mute);
-  }
-
   /**
    * Sets the video renderer for video source.
    * @param {Element} view The dom element where video source should be
@@ -6488,6 +6482,43 @@ class AgoraRtcEngine extends EventEmitter {
   setAudioMixingDualMonoMode(mode: AUDIO_MIXING_DUAL_MONO_MODE): number {
     return this.rtcEngine.setAudioMixingDualMonoMode(mode);
   }
+
+  /**
+   * meeting
+   */
+  videoSourceDisableAudio(): number {
+    return this.rtcEngine.videoSourceDisableAudio();
+  }
+  adjustLoopbackSignalVolume(volume: number): number {
+    return this.rtcEngine.adjustLoopbackSignalVolume(volume);
+  }
+  videoSourceAdjustRecordingSignalVolume(volume: number): number {
+    return this.rtcEngine.videoSourceAdjustRecordingSignalVolume(volume);
+  }
+  videoSourceAdjustLoopbackRecordingSignalVolume(volume: number): number {
+    return this.rtcEngine.videoSourceAdjustLoopbackRecordingSignalVolume(
+      volume
+    );
+  }
+  videoSourceMuteRemoteAudioStream(uid: number, mute: boolean): number {
+    return this.rtcEngine.videoSourceMuteRemoteAudioStream(uid, mute);
+  }
+  videoSourceMuteAllRemoteAudioStreams(mute: boolean): number {
+    return this.rtcEngine.videoSourceMuteAllRemoteAudioStreams(mute);
+  }
+  videoSourceMuteRemoteVideoStream(uid: number, mute: boolean): number {
+    return this.rtcEngine.videoSourceMuteRemoteVideoStream(uid, mute);
+  }
+  videoSourceMuteAllRemoteVideoStreams(mute: boolean): number {
+    return this.rtcEngine.videoSourceMuteAllRemoteVideoStreams(mute);
+  }
+
+  getDefaultAudioPlaybackDevices(): Object {
+    return this.rtcEngine.getDefaultAudioPlaybackDevices();
+  }
+  getDefaultAudioRecordingDevices(): Object {
+    return this.rtcEngine.getDefaultAudioRecordingDevices();
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
@@ -6711,7 +6742,6 @@ declare interface AgoraRtcEngine {
     evt: 'audioDeviceStateChanged',
     cb: (deviceId: string, deviceType: number, deviceState: number) => void
   ): this;
-  // on(evt: 'audioMixingFinished', cb: () => void): this;
   /** Occurs when the state of the local user's music file changes.
    *
    * @since v3.4.2
@@ -7218,6 +7248,17 @@ declare interface AgoraRtcEngine {
   /** Occurs when the video source leaves the channel.
    */
   on(evt: 'videoSourceLeaveChannel', cb: () => void): this;
+
+  /** Occurs when screencapture fail to filter window
+   *
+   *
+   * @param ScreenCaptureInfo
+   */
+  on(
+    evt: 'videoSourceScreenCaptureInfoUpdated',
+    cb: (info: ScreenCaptureInfo) => void
+  ): this;
+
   /** Reports the statistics of the audio stream of the local video source.
    *
    * The SDK triggers this callback once every two seconds.

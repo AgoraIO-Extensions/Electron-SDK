@@ -5,6 +5,23 @@ export interface RendererOptions {
   append: boolean;
 }
 
+/** screencapture filter window err.
+ *
+ *
+ */
+export enum FILT_WINDOW_ERROR {
+  /** negative : fail to filter window.
+   */
+  FILT_WINDOW_ERROR_FAIL = -1,
+  /** 0: none define.
+   */
+  FILT_WINDOW_ERROR_NONE = 0,
+}
+export interface ScreenCaptureInfo {
+  cardType: string;
+  errCode: FILT_WINDOW_ERROR;
+}
+
 /**
  * Network quality types:
  *
@@ -3512,18 +3529,6 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  videoSourceMuteRemoteAudioStream(uid: number, mute: boolean): number;
-  /**
-   * @ignore
-   */
-  videoSourceMuteAllRemoteAudioStreams(mute: boolean): number;
-  /**
-   * @ignore
-   */
-  videoSourceMuteRemoteVideoStream(uid: number, mute: boolean): number;
-  /**
-   * @ignore
-   */
   videoSourceMuteAllRemoteVideoStreams(mute: boolean): number;
   /**
    * @ignore
@@ -3984,6 +3989,16 @@ export interface NodeRtcEngine {
    * @ignore
    */
   adjustPlaybackSignalVolume(volume: number): number;
+  getDefaultAudioPlaybackDevices(): Object;
+  getDefaultAudioRecordingDevices(): Object;
+  videoSourceDisableAudio(): number;
+  adjustLoopbackSignalVolume(volume: number): number;
+  videoSourceAdjustRecordingSignalVolume(volume: number): number;
+  videoSourceAdjustLoopbackRecordingSignalVolume(volume: number): number;
+  videoSourceMuteRemoteAudioStream(uid: number, mute: boolean): number;
+  videoSourceMuteAllRemoteAudioStreams(mute: boolean): number;
+  videoSourceMuteRemoteVideoStream(uid: number, mute: boolean): number;
+  videoSourceMuteAllRemoteVideoStreams(mute: boolean): number;
   /**
    * @ignore
    */

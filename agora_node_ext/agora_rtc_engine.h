@@ -402,10 +402,19 @@ class NodeRtcEngine : public node::ObjectWrap {
   NAPI_API(setAudioMixingDualMonoMode);
   NAPI_API(getAudioFileInfo);
 
+  /*
+   * meeting
+   */
+  NAPI_API(adjustLoopbackSignalVolume);
+  NAPI_API(videoSourceAdjustRecordingSignalVolume);
+  NAPI_API(videoSourceAdjustLoopbackRecordingSignalVolume);
   NAPI_API(videoSourceMuteRemoteAudioStream);
   NAPI_API(videoSourceMuteAllRemoteAudioStreams);
   NAPI_API(videoSourceMuteRemoteVideoStream);
   NAPI_API(videoSourceMuteAllRemoteVideoStreams);
+  NAPI_API(getDefaultAudioPlaybackDevices);
+  NAPI_API(getDefaultAudioRecordingDevices);
+  NAPI_API(videoSourceDisableAudio);
 
  public:
   Isolate* getIsolate() { return m_isolate; }

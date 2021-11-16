@@ -338,10 +338,19 @@ void NodeRtcEngine::Init(Local<Object>& module) {
   PROPERTY_METHOD_DEFINE(setAudioMixingDualMonoMode);
   PROPERTY_METHOD_DEFINE(getAudioFileInfo);
 
+  /*
+   * meeting
+   */
+  PROPERTY_METHOD_DEFINE(adjustLoopbackSignalVolume);
+  PROPERTY_METHOD_DEFINE(videoSourceAdjustRecordingSignalVolume);
+  PROPERTY_METHOD_DEFINE(videoSourceAdjustLoopbackRecordingSignalVolume);
   PROPERTY_METHOD_DEFINE(videoSourceMuteRemoteAudioStream);
   PROPERTY_METHOD_DEFINE(videoSourceMuteAllRemoteAudioStreams);
   PROPERTY_METHOD_DEFINE(videoSourceMuteRemoteVideoStream);
   PROPERTY_METHOD_DEFINE(videoSourceMuteAllRemoteVideoStreams);
+  PROPERTY_METHOD_DEFINE(videoSourceDisableAudio);
+  PROPERTY_METHOD_DEFINE(getDefaultAudioPlaybackDevices);
+  PROPERTY_METHOD_DEFINE(getDefaultAudioRecordingDevices);
 
   EN_PROPERTY_DEFINE()
   module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(),
@@ -2534,12 +2543,8 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByDisplayId) {
         excludeWindows.push_back(windowId);
       }
     }
-#if defined(_WIN32)
-    result = -1;
-#else
     result = pEngine->m_engine->startScreenCaptureByDisplayId(
-        displayInfo.idVal, regionRect, captureParams);
-#endif
+          displayInfo.idVal, regionRect, captureParams);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -6920,6 +6925,168 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceMuteAllRemoteVideoStreams) {
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, adjustLoopbackSignalVolume) {
+  LOG_ENTER;
+  int result = -1;
+  do {
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    int32 volume;
+    napi_status status = napi_get_value_int32_(args[0], volume);
+    CHECK_NAPI_STATUS(pEngine, status);
+    LOG_F(INFO, "adjustLoopbackRecordingSignalVolume:%d", volume);
+    result = pEngine->m_engine->adjustLoopbackRecordingSignalVolume(volume);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, videoSourceAdjustLoopbackRecordingSignalVolume) {
+  LOG_ENTER;
+  int result = -1;
+  do {
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    int32 volume;
+    napi_status status = napi_get_value_int32_(args[0], volume);
+    CHECK_NAPI_STATUS(pEngine, status);
+    LOG_F(INFO, "videoSourceAdjustLoopbackRecordingSignalVolume:%d", volume);
+    if (!pEngine->m_videoSourceSink.get() ||
+        pEngine->m_videoSourceSink->adjustLoopbackRecordingSignalVolume(
+            volume) != node_ok) {
+      break;
+    }
+    result = 0;
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, videoSourceAdjustRecordingSignalVolume) {
+  LOG_ENTER;
+  int result = -1;
+  do {
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    int32 volume;
+    napi_status status = napi_get_value_int32_(args[0], volume);
+    CHECK_NAPI_STATUS(pEngine, status);
+    LOG_F(INFO, "videoSourceAdjustRecordingSignalVolume:%d", volume);
+    if (!pEngine->m_videoSourceSink.get() ||
+        pEngine->m_videoSourceSink->adjustRecordingSignalVolume(volume) !=
+            node_ok) {
+      break;
+    }
+    result = 0;
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, videoSourceDisableAudio) {
+  LOG_ENTER;
+  int result = -1;
+  do {
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    if (!pEngine->m_videoSourceSink.get() ||
+        pEngine->m_videoSourceSink->disableAudio() != node_ok) {
+      break;
+    }
+    result = 0;
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, getDefaultAudioPlaybackDevices) {
+  LOG_ENTER;
+  do {
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    Local<Context> context = isolate->GetCurrentContext();
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    if (!pEngine->m_audioVdm) {
+      pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
+    }
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
+    auto pdc = adm ? adm->enumeratePlaybackDevices() : nullptr;
+    char deviceName[MAX_DEVICE_ID_LENGTH] = {0};
+    char deviceId[MAX_DEVICE_ID_LENGTH] = {0};
+    Local<v8::Object> parentObj = v8::Object::New(args.GetIsolate());
+    for (int i = -2; i < 0; i++) {
+      Local<v8::Object> dev = v8::Object::New(args.GetIsolate());
+      pdc->getDevice(i, deviceName, deviceId);
+      auto dn = v8::String::NewFromUtf8(args.GetIsolate(), deviceName,
+                                        NewStringType::kInternalized)
+                    .ToLocalChecked();
+      auto di = v8::String::NewFromUtf8(args.GetIsolate(), deviceId,
+                                        NewStringType::kInternalized)
+                    .ToLocalChecked();
+      dev->Set(context, Nan::New<String>("devicename").ToLocalChecked(), dn);
+      dev->Set(context, Nan::New<String>("deviceid").ToLocalChecked(), di);
+      deviceName[0] = '\0';
+      deviceId[0] = '\0';
+
+      parentObj->Set(context,
+                     Nan::New<String>(i == -1 ? "defaultCommunicationDevice"
+                                              : "defaultDevice")
+                         .ToLocalChecked(),
+                     dev);
+    }
+    args.GetReturnValue().Set(parentObj);
+  } while (false);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, getDefaultAudioRecordingDevices) {
+  LOG_ENTER;
+  do {
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    Local<Context> context = isolate->GetCurrentContext();
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    if (!pEngine->m_audioVdm) {
+      pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
+    }
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
+    auto pdc = adm ? adm->enumerateRecordingDevices() : nullptr;
+    char deviceName[MAX_DEVICE_ID_LENGTH] = {0};
+    char deviceId[MAX_DEVICE_ID_LENGTH] = {0};
+    Local<v8::Object> parentObj = v8::Object::New(args.GetIsolate());
+    for (int i = -2; i < 0; i++) {
+      Local<v8::Object> dev = v8::Object::New(args.GetIsolate());
+      pdc->getDevice(i, deviceName, deviceId);
+      auto dn = v8::String::NewFromUtf8(args.GetIsolate(), deviceName,
+                                        NewStringType::kInternalized)
+                    .ToLocalChecked();
+      auto di = v8::String::NewFromUtf8(args.GetIsolate(), deviceId,
+                                        NewStringType::kInternalized)
+                    .ToLocalChecked();
+      dev->Set(context, Nan::New<String>("devicename").ToLocalChecked(), dn);
+      dev->Set(context, Nan::New<String>("deviceid").ToLocalChecked(), di);
+      deviceName[0] = '\0';
+      deviceId[0] = '\0';
+
+      parentObj->Set(context,
+                     Nan::New<String>(i == -1 ? "defaultCommunicationDevice"
+                                              : "defaultDevice")
+                         .ToLocalChecked(),
+                     dev);
+    }
+    args.GetReturnValue().Set(parentObj);
+  } while (false);
   LOG_LEAVE;
 }
 

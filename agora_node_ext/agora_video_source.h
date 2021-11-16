@@ -56,6 +56,8 @@ class IAgoraVideoSourceEventHandler {
   virtual void onVideoSourceLocalAudioStateChanged(int state, int error) = 0;
 
   virtual void onVideoSourceLocalVideoStateChanged(int state, int error) = 0;
+
+  virtual void onVideoSourceScreenCaptureInfoUpdated(ScreenCaptureInfoCmd &info) = 0;
 };
 
 /**
@@ -183,12 +185,6 @@ class AgoraVideoSource {
   virtual node_error setScreenCaptureContentHint(
       VideoContentHint contentHint) = 0;
 
-  virtual node_error muteRemoteAudioStream(agora::rtc::uid_t userId,
-                                           bool mute) = 0;
-  virtual node_error muteAllRemoteAudioStreams(bool mute) = 0;
-  virtual node_error muteRemoteVideoStream(agora::rtc::uid_t userId,
-                                           bool mute) = 0;
-  virtual node_error muteAllRemoteVideoStreams(bool mute) = 0;
 
   /**
    * start screen capture by screen rect
@@ -239,6 +235,17 @@ class AgoraVideoSource {
   virtual node_error setEncryptionSecret(const char* secret) = 0;
   virtual node_error setProcessDpiAwareness() = 0;
   virtual node_error setAddonLogFile(const char* file) = 0;
+
+  /* meeting */
+  virtual node_error adjustRecordingSignalVolume(int volume) = 0;
+  virtual node_error adjustLoopbackRecordingSignalVolume(int volume) = 0;
+  virtual node_error disableAudio() = 0;
+  virtual node_error muteRemoteAudioStream(agora::rtc::uid_t userId,
+                                           bool mute) = 0;
+  virtual node_error muteAllRemoteAudioStreams(bool mute) = 0;
+  virtual node_error muteRemoteVideoStream(agora::rtc::uid_t userId,
+                                           bool mute) = 0;
+  virtual node_error muteAllRemoteVideoStreams(bool mute) = 0;
 };
 
 /**

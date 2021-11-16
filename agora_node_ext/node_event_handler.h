@@ -125,6 +125,8 @@ namespace rtc {
 #define RTC_EVENT_REQUEST_AUDIO_FILE_INFO \
   "requestAudioFileInfo"
 
+/* meeting */
+#define RTC_EVENT_VIDEO_SOURCE_SCREEN_CAPTURE_INFO_UPDATED "videoSourceScreenCaptureInfoUpdated"
 
 class NodeRtcEngine;
 class NodeUid;
@@ -349,9 +351,12 @@ class NodeEventHandler : public IRtcEngineEventHandler,
       VIRTUAL_BACKGROUND_SOURCE_STATE_REASON reason);
   // 3.5.1
   virtual void onRequestAudioFileInfo(const agora::rtc::AudioFileInfo& info, AUDIO_FILE_INFO_ERROR error);
-                             
 
- private:
+  /* meeting */
+  virtual void
+  onVideoSourceScreenCaptureInfoUpdated(ScreenCaptureInfoCmd &info) override;
+
+private:
   void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed);
   void onRejoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed);
   void onWarning_node(int warn, const char* msg);
