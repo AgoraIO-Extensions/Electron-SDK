@@ -509,6 +509,8 @@ void AgoraVideoSource::exit(bool notifySink)
         //std::lock_guard<std::mutex> lock(m_ipcSenderMutex);
         m_ipcSender.reset();
     }
+    m_rtcEngine->leaveChannel();
+    m_rtcEngine->release(true);
     m_ipc->disconnect();
 
     ::exit(0);
