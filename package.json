@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "3.5.0-rc.3-iris.1027-build.1",
+  "version": "3.5.0-rc.3-iris.1018-build.1",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -10,7 +10,7 @@
     "install": "cross-env-shell gulp NPM_Install --INIT_CWD=$INIT_CWD",
     "totalBuild": "cross-env-shell gulp totalBuild --INIT_CWD=$INIT_CWD",
     "build": "cross-env-shell gulp build --INIT_CWD=$INIT_CWD",
-    "clean": "cross-env-shell gulp clean --INIT_CWD=$INIT_CWD",
+  "clean": "cross-env-shell gulp clean --INIT_CWD=$INIT_CWD",
     "syncLib": "cross-env-shell gulp syncLib --INIT_CWD=$INIT_CWD",
     "buildJS": "cross-env-shell gulp buildJS --INIT_CWD=$INIT_CWD",
     "zipBuild": "cross-env-shell gulp zipBuild --INIT_CWD=$INIT_CWD",
