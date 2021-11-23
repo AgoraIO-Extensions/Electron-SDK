@@ -322,6 +322,7 @@ public:
   NAPI_API(stopLocalVideoTranscoder);
   NAPI_API(joinChannelEx);
   NAPI_API(joinChannel2);
+  NAPI_API(updateChannelMediaOptions);
   NAPI_API(updateChannelMediaOptionsEx);
 
   NAPI_API(createMediaPlayer);
