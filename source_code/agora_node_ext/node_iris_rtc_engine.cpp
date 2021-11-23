@@ -382,9 +382,10 @@ napi_value NodeIrisRtcEngine::GetScreenWindowsInfo(napi_env env,
     napi_obj_set_property(env, obj, "windowId", windowId);
     napi_obj_set_property(env, obj, "name", _windowInfo.name);
     napi_obj_set_property(env, obj, "ownerName", _windowInfo.ownerName);
-    napi_obj_set_property(env, obj, "isOnScreen", _windowInfo.isOnScreen);
     napi_obj_set_property(env, obj, "width", _windowInfo.width);
     napi_obj_set_property(env, obj, "height", _windowInfo.height);
+    napi_obj_set_property(env, obj, "x", _windowInfo.x);
+    napi_obj_set_property(env, obj, "y", _windowInfo.y);
     napi_obj_set_property(env, obj, "originWidth", _windowInfo.originWidth);
     napi_obj_set_property(env, obj, "originHeight", _windowInfo.originHeight);
 
@@ -413,20 +414,24 @@ napi_value NodeIrisRtcEngine::GetScreenDisplaysInfo(napi_env env,
     napi_value displayObj;
     napi_create_object(env, &displayObj);
     auto _displayInfo = _allDisplays[i];
+#ifdef WIN32 // __WIN32
+    auto _displayId = _displayInfo.displayInfo;
+#else
     auto _displayId = _displayInfo.displayId;
+#endif
     napi_value obj;
     napi_create_object(env, &obj);
-#ifdef _WIN32
-    napi_obj_set_property(env, obj, "x", _displayId.x);
-    napi_obj_set_property(env, obj, "y", _displayId.y);
-    napi_obj_set_property(env, obj, "width", _displayId.width);
-    napi_obj_set_property(env, obj, "height", _displayId.height);
-#elif defined(__APPLE__)
+
+    napi_obj_set_property(env, obj, "x", _displayInfo.x);
+    napi_obj_set_property(env, obj, "y", _displayInfo.y);
+    napi_obj_set_property(env, obj, "width", _displayInfo.width);
+    napi_obj_set_property(env, obj, "height", _displayInfo.height);
     napi_obj_set_property(env, obj, "id", _displayId.idVal);
-#endif
     napi_obj_set_property(env, displayObj, "displayId", obj);
     napi_obj_set_property(env, displayObj, "width", _displayInfo.width);
     napi_obj_set_property(env, displayObj, "height", _displayInfo.height);
+    napi_obj_set_property(env, displayObj, "x", _displayInfo.x);
+    napi_obj_set_property(env, displayObj, "y", _displayInfo.y);
     napi_obj_set_property(env, displayObj, "isMain", _displayInfo.isMain);
     napi_obj_set_property(env, displayObj, "isActive", _displayInfo.isActive);
     napi_obj_set_property(env, displayObj, "isBuiltin", _displayInfo.isBuiltin);

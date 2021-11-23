@@ -91,6 +91,7 @@ import {
   RAW_AUDIO_FRAME_OP_MODE_TYPE,
   AudioRecordingConfiguration,
   VirtualBackgroundSource,
+  DisplayInfo,
 } from "./types";
 import { EventEmitter } from "events";
 import {
@@ -3854,12 +3855,12 @@ export class AgoraRtcEngine extends EventEmitter {
    * @private
    * @ignore
    */
-  getScreenDisplaysInfo(): Array<Object> {
+  getScreenDisplaysInfo(): Array<DisplayInfo> {
     deprecate("getScreenDisplaysInfo", "getScreensInfo");
     return this.getScreensInfo();
   }
 
-  getScreensInfo(): Array<Object> {
+  getScreensInfo(): Array<DisplayInfo> {
     return this._rtcEngine.GetScreenDisplaysInfo();
   }
 

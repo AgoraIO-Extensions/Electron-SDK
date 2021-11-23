@@ -1,4 +1,5 @@
-#pragma once
+#ifndef AGORA_SCREEN_WINDOW_INFO_H
+#define AGORA_SCREEN_WINDOW_INFO_H
 
 #include <string>
 #include <vector>
@@ -20,14 +21,21 @@ typedef DisplayID ScreenIDType;
 typedef agora::rtc::Rectangle ScreenIDType;
 #endif
 
+typedef struct DisplayInfo {
+  DisplayInfo() : idVal(0) {}
+  unsigned int idVal;
+} DisplayInfo;
 struct ScreenDisplayInfo {
   ScreenIDType displayId;
+  DisplayInfo displayInfo;
 
   std::string name;
   std::string ownerName;
 
   unsigned int width;
   unsigned int height;
+  int x;
+  int y;
   bool isActive;
   bool isMain;
   bool isBuiltin;
@@ -48,16 +56,21 @@ struct ScreenDisplayInfo {
 struct ScreenWindowInfo {
 #if defined(__APPLE__)
   unsigned int windowId;
+  int processId;
+  int currentProcessId;
 #elif defined(_WIN32)
   HWND windowId;
+  DWORD processId;
+  DWORD currentProcessId;
 #endif
 
   std::string name;
   std::string ownerName;
-  bool isOnScreen;
 
   unsigned int width;
   unsigned int height;
+  int x;
+  int y;
 
   unsigned char* imageData;
   unsigned int imageDataLength;
@@ -67,7 +80,6 @@ struct ScreenWindowInfo {
 
   ScreenWindowInfo()
       : windowId(0),
-        isOnScreen(false),
         width(0),
         height(0),
         imageData(nullptr),
@@ -82,3 +94,5 @@ std::vector<ScreenWindowInfo> getAllWindowInfo();
 #if defined(_WIN32)
 void DestroyGdiplus();
 #endif
+
+#endif /* AGORA_SCREEN_WINDOW_INFO_H */
