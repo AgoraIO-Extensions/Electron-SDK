@@ -321,7 +321,7 @@ bool AgoraVideoSourceSink::initialize(
     }
 
     m_sourceNodeProcess->Monitor([eventHandler](INodeProcess* pProcess) {
-      LOG_ERROR("VideoSource: AgoraVideoSourceSink %s onVideoSourceExit",
+      LOG_INFO("VideoSource: AgoraVideoSourceSink %s onVideoSourceExit",
                 __FUNCTION__);
       eventHandler->onVideoSourceExit();
     });

@@ -1,3 +1,9 @@
+## 3.5.1-build.1123 (Nov 23th, 2021)
+* modify
+ - getScreenDisplaysInfo
+ - getRealScreenDisplaysInfo
+ - getScreenWindowsInfo
+
 ## 3.5.1-build.1116 (Nov 15th, 2021)
 * add new api:
   - pauseAllChannelMediaRelay

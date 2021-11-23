@@ -144,6 +144,8 @@ bool setWindowInfoWithDictionary(ScreenWindowInfo& windowInfo,
 
   windowInfo.width = CGRectGetWidth(bounds);
   windowInfo.height = CGRectGetHeight(bounds);
+  windowInfo.x = bounds.origin.x;
+  windowInfo.y = bounds.origin.y;
 
   windowInfo.originWidth = CGRectGetWidth(bounds);
   windowInfo.originHeight = CGRectGetHeight(bounds);
@@ -240,12 +242,17 @@ std::vector<ScreenDisplayInfo> getAllDisplayInfo() {
   for (uint32_t index = 0; index < displayCount; index++) {
     CGDirectDisplayID displayID = displayIDs[index];
     ScreenDisplayInfo screenDisplay;
-    screenDisplay.displayId.idVal = displayID;
+    screenDisplay.displayInfo.idVal = screenDisplay.displayId.idVal = displayID;
     screenDisplay.width = CGDisplayPixelsWide(displayID);
     screenDisplay.height = CGDisplayPixelsHigh(displayID);
     screenDisplay.isActive = CGDisplayIsActive(displayID);
     screenDisplay.isMain = CGDisplayIsMain(displayID);
     screenDisplay.isBuiltin = CGDisplayIsBuiltin(displayID);
+    CGRect rect = CGDisplayBounds(displayID);
+    screenDisplay.x = rect.origin.x;
+    screenDisplay.y = rect.origin.y;
+    screenDisplay.width = rect.size.width;
+    screenDisplay.height = rect.size.height;
 
     CGImageRef screenshot = CGDisplayCreateImage(displayID);
     if (screenshot) {
@@ -256,8 +263,4 @@ std::vector<ScreenDisplayInfo> getAllDisplayInfo() {
     displays.push_back(screenDisplay);
   }
   return displays;
-}
-
-std::vector<ScreenDisplayInfo> getAllRealDisplayInfo() {
-  return std::move(getAllDisplayInfo());
 }
