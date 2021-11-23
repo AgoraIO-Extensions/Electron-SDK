@@ -134,8 +134,15 @@ bool setWindowInfoWithDictionary(ScreenWindowInfo& windowInfo,
     // LOG_ERROR("Get window bounds fail.");
     return false;
   }
+
+  if (CGRectGetWidth(bounds) <= 96 || CGRectGetHeight(bounds) <= 96) {
+    return false;
+  }
+
   windowInfo.width = CGRectGetWidth(bounds);
   windowInfo.height = CGRectGetHeight(bounds);
+  windowInfo.x = bounds.origin.x;
+  windowInfo.y = bounds.origin.y;
 
   windowInfo.originWidth = CGRectGetWidth(bounds);
   windowInfo.originHeight = CGRectGetHeight(bounds);
@@ -146,18 +153,22 @@ bool setWindowInfoWithDictionary(ScreenWindowInfo& windowInfo,
     windowInfo.name = convertCFStringToStdString(name);
   }
 
-  CFBooleanRef isOnScreen = static_cast<CFBooleanRef>(
-      CFDictionaryGetValue(windowDic, kCGWindowIsOnscreen));
-  if (isOnScreen) {
-    windowInfo.isOnScreen = CFBooleanGetValue(isOnScreen);
-  }
-
   CFStringRef ownerName = static_cast<CFStringRef>(
       CFDictionaryGetValue(windowDic, kCGWindowOwnerName));
   if (ownerName) {
     windowInfo.ownerName = convertCFStringToStdString(ownerName);
   }
 
+  CFNumberRef pid = static_cast<CFNumberRef>(
+      CFDictionaryGetValue(windowDic, kCGWindowOwnerPID));
+
+  if (pid) {
+    int processId = 0;
+    CFNumberGetValue(pid, kCFNumberSInt32Type, &processId);
+    windowInfo.processId = processId;
+  }
+
+  windowInfo.currentProcessId = getpid();
   return true;
 }
 
@@ -175,33 +186,38 @@ std::vector<ScreenWindowInfo> getAllWindowInfo() {
     CFDictionaryRef windowDic = static_cast<CFDictionaryRef>(
         CFArrayGetValueAtIndex(windowDicCFArray, index));
 
+    // layer == 0
     int layer;
     CFNumberRef layerNumber = static_cast<CFNumberRef>(
         CFDictionaryGetValue(windowDic, kCGWindowLayer));
     if (!CFNumberGetValue(layerNumber, kCFNumberSInt32Type, &layer) ||
-        layer != 0) {
+        layer != 0)
       continue;
-    }
+
+    ScreenWindowInfo screenWindow;
+    if (!setWindowInfoWithDictionary(screenWindow, windowDic))
+      continue;
 
     CFStringRef name = static_cast<CFStringRef>(
         CFDictionaryGetValue(windowDic, kCGWindowName));
     if (name) {
-      auto length = CFStringGetLength(name);
-      if (length == 0) {
-        continue;
+      CFNumberRef sharingStateRef = static_cast<CFNumberRef>(
+          CFDictionaryGetValue(windowDic, kCGWindowSharingState));
+      if (sharingStateRef) {
+        int state = 0;
+        CFNumberGetValue(sharingStateRef, kCFNumberSInt32Type, &state);
+        if (state == 0)
+          continue;
       }
-    } else {
-      continue;
-    }
-
-    ScreenWindowInfo screenWindow;
-    if (!setWindowInfoWithDictionary(screenWindow, windowDic)) {
-      break;
     }
 
     CGImageRef screenShot = CGWindowListCreateImage(
         CGRectNull, kCGWindowListOptionIncludingWindow, screenWindow.windowId,
         kCGWindowImageBoundsIgnoreFraming);
+
+    if (!screenShot)
+      continue;
+
     if (screenShot) {
       copyImageDataToWindowInfo(screenShot, screenWindow);
       CGImageRelease(screenShot);
@@ -223,12 +239,17 @@ std::vector<ScreenDisplayInfo> getAllDisplayInfo() {
   for (uint32_t index = 0; index < displayCount; index++) {
     CGDirectDisplayID displayID = displayIDs[index];
     ScreenDisplayInfo screenDisplay;
-    screenDisplay.displayId.idVal = displayID;
+    screenDisplay.displayInfo.idVal = screenDisplay.displayId.idVal = displayID;
     screenDisplay.width = CGDisplayPixelsWide(displayID);
     screenDisplay.height = CGDisplayPixelsHigh(displayID);
     screenDisplay.isActive = CGDisplayIsActive(displayID);
     screenDisplay.isMain = CGDisplayIsMain(displayID);
     screenDisplay.isBuiltin = CGDisplayIsBuiltin(displayID);
+    CGRect rect = CGDisplayBounds(displayID);
+    screenDisplay.x = rect.origin.x;
+    screenDisplay.y = rect.origin.y;
+    screenDisplay.width = rect.size.width;
+    screenDisplay.height = rect.size.height;
 
     CGImageRef screenshot = CGDisplayCreateImage(displayID);
     if (screenshot) {

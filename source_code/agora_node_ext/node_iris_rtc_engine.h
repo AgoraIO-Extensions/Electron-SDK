@@ -7,7 +7,6 @@
 #pragma once
 #include <node_api.h>
 #include <exception>
-#include "iris_base.h"
 #include "iris_rtc_engine.h"
 #include "iris_rtc_raw_data.h"
 #include "iris_rtc_raw_data_plugin_manager.h"

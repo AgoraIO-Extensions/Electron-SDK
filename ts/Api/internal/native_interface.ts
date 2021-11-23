@@ -14,7 +14,7 @@ import {
   ApiTypeRawDataPluginManager,
   PROCESS_TYPE,
 } from "./native_type";
-import { WindowInfo } from "../types";
+import { WindowInfo, DisplayInfo } from "../types";
 import { VideoFrameCacheConfig, VideoFrame } from "../../renderer/type";
 
 /**
@@ -25,7 +25,7 @@ import { VideoFrameCacheConfig, VideoFrame } from "../../renderer/type";
 export interface NodeIrisRtcEngine {
   OnEvent(callbackName: string, callback: Function): void;
   GetDeviceManager(): NodeIrisRtcDeviceManager;
-  GetScreenDisplaysInfo(): Array<Object>;
+  GetScreenDisplaysInfo(): Array<DisplayInfo>;
   GetScreenWindowsInfo(): Array<WindowInfo>;
   SetAddonLogFile(processType: PROCESS_TYPE, filePath: string): Result;
   CallApi(
