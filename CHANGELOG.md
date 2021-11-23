@@ -1,3 +1,9 @@
+## 3.4.8-build.1123 (Nov 23th, 2021)
+* modify
+ - getScreenDisplaysInfo
+ - getRealScreenDisplaysInfo
+ - getScreenWindowsInfo
+
 ## 3.4.6-build.727 (July 27th, 2021)
 * support Electron 12.0.15
 
