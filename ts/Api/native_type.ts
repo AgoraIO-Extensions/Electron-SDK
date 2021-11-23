@@ -2806,7 +2806,13 @@ export enum NETWORK_TYPE {
   NETWORK_TYPE_MOBILE_5G = 6,
 }
 export interface DisplayInfo {
-  displayId: { id: number };
+  displayId: {
+    id: number;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
   height: number;
   width: number;
   image: Uint8Array;
@@ -3574,7 +3580,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  getScreenDisplaysInfo(): Array<Object>;
+  getScreenDisplaysInfo(): Array<DisplayInfo>;
   /**
    * @ignore
    */

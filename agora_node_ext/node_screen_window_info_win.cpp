@@ -180,12 +180,20 @@ bool captureBmpToJpeg(const HWND& hWnd,
 
   int nWidth = 0;
   int nHeight = 0;
+  int nX = 0;
+  int nY = 0;
 
   if (hWnd != HWND_DESKTOP) {
     RECT rect;
     ::GetClientRect(hWnd, &rect);
     nWidth = rect.right - rect.left;
     nHeight = rect.bottom - rect.top;
+
+    RECT oriRect;
+    ::GetWindowRect(hWnd, &oriRect);
+
+    nX = oriRect.left;
+    nY = oriRect.top;
   } else {
     nWidth = ::GetSystemMetrics(SM_CXSCREEN);
     nHeight = ::GetSystemMetrics(SM_CYSCREEN);
@@ -410,6 +418,8 @@ bool captureBmpToJpeg(const HWND& hWnd,
   wndInfo.ownerName = "";
   wndInfo.width = bmpWidth;
   wndInfo.height = bmpHeight;
+  wndInfo.x = nX;
+  wndInfo.y = nY;
   wndInfo.imageDataLength = dwJpgSize;
   wndInfo.imageData = std::move(pJPG);
   wndInfo.originWidth = nWidth;
@@ -694,27 +704,6 @@ std::vector<ScreenWindowInfo> getAllWindowInfo() {
 
 std::vector<ScreenDisplayInfo> getAllDisplayInfo() {
   Gdiplus::Status status = Gdiplus::Ok;
-  std::vector<ScreenDisplayInfo> displayInfos;
-  if (g_gdiplusToken == NULL)
-    status = InitializeGdiplus();
-
-  if (status == Gdiplus::Ok) {
-    EnumDisplayMonitors(NULL, NULL, Monitorenumproc, LPARAM(&displayInfos));
-    RECT rc = {0, 0, 0, 0};
-
-    HWND hDesktop = GetDesktopWindow();
-    HDC hDC = GetDC(hDesktop);
-    RECT rcCapture = {0, 0, 0, 0};
-    for (int i = 0; i < displayInfos.size(); i++) {
-      ScreenDisplayInfo& info = displayInfos[i];
-      dumpDisplayInfo(hDC, &info, 20, displayInfos);
-    }
-  }
-  return displayInfos;
-}
-
-std::vector<ScreenDisplayInfo> getAllRealDisplayInfo() {
-  Gdiplus::Status status = Gdiplus::Ok;
   bool flag = true;
   int dsp_num = 0;
   std::vector<ScreenDisplayInfo> _display_infos;
@@ -739,14 +728,15 @@ std::vector<ScreenDisplayInfo> getAllRealDisplayInfo() {
     _dev_mode.dmDriverExtra = 0;
     if (EnumDisplaySettingsExA(_display_device.DeviceName,
                                ENUM_CURRENT_SETTINGS, &_dev_mode, 0)) {
-      _display_info.displayId.width = _dev_mode.dmPelsWidth;
-      _display_info.displayId.height = _dev_mode.dmPelsHeight;
-      _display_info.displayId.x = _dev_mode.dmPosition.x;
-      _display_info.displayId.y = _dev_mode.dmPosition.y;
+      _display_info.width = _display_info.displayId.width = _dev_mode.dmPelsWidth;
+      _display_info.height = _display_info.displayId.height = _dev_mode.dmPelsHeight;
+      _display_info.x = _display_info.displayId.x = _dev_mode.dmPosition.x;
+      _display_info.y = _display_info.displayId.y = _dev_mode.dmPosition.y;
     }
 
     _display_info.name = _display_device.DeviceName;
     _display_info.displayInfo.idVal = _device_index;
+    _display_info.isMain = _display_device.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE;
     _display_infos.push_back(_display_info);
   }
 

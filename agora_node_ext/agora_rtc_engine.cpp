@@ -329,7 +329,6 @@ void NodeRtcEngine::Init(Local<Object>& module) {
 
   PROPERTY_METHOD_DEFINE(videoSourceStartScreenCaptureByDisplayId);
   PROPERTY_METHOD_DEFINE(startScreenCaptureByDisplayId);
-  PROPERTY_METHOD_DEFINE(getRealScreenDisplayInfo);
   /*
    * 3.5.1
    */
@@ -5257,6 +5256,8 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenWindowsInfo) {
                                windowInfo.ownerName.c_str());
       NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", windowInfo.width);
       NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", windowInfo.height);
+      NODE_SET_OBJ_PROP_Number(isolate, obj, "x", windowInfo.x);
+      NODE_SET_OBJ_PROP_Number(isolate, obj, "y", windowInfo.y);
       NODE_SET_OBJ_PROP_UINT32(isolate, obj, "originWidth",
                                windowInfo.originWidth);
       NODE_SET_OBJ_PROP_UINT32(isolate, obj, "originHeight",
@@ -5323,63 +5324,17 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenDisplaysInfo) {
     for (unsigned int i = 0; i < allDisplays.size(); ++i) {
       ScreenDisplayInfo displayInfo = allDisplays[i];
       Local<v8::Object> obj = Object::New(isolate);
-      ScreenIDType displayId = displayInfo.displayId;
-      Local<v8::Object> displayIdObj = Object::New(isolate);
-#ifdef _WIN32
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "x", displayId.x);
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "y", displayId.y);
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "width", displayId.width);
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "height",
-                               displayId.height);
-#elif defined(__APPLE__)
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "id", displayId.idVal);
-#endif
-      Local<Value> propName = String::NewFromUtf8(isolate, "displayId",
-                                                  NewStringType::kInternalized)
-                                  .ToLocalChecked();
-      obj->Set(context, propName, displayIdObj);
-
-      NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", displayInfo.width);
-      NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", displayInfo.height);
-      NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isMain", displayInfo.isMain);
-      NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isActive", displayInfo.isActive);
-      NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isBuiltin", displayInfo.isBuiltin);
-
-      if (displayInfo.imageData) {
-        buffer_info imageInfo;
-        imageInfo.buffer = displayInfo.imageData;
-        imageInfo.length = displayInfo.imageDataLength;
-        NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "image", imageInfo);
-
-        free(displayInfo.imageData);
-      }
-
-      infos->Set(context, i, obj);
-    }
-    napi_set_array_result(args, infos);
-  } while (false);
-  LOG_LEAVE;
-}
-
-NAPI_API_DEFINE(NodeRtcEngine, getRealScreenDisplayInfo) {
-  LOG_ENTER;
-  do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
-    Local<Context> context = isolate->GetCurrentContext();
-    napi_get_native_this(args, pEngine);
-    CHECK_NATIVE_THIS(pEngine);
-
-    Local<v8::Array> infos = v8::Array::New(isolate);
-
-    std::vector<ScreenDisplayInfo> allDisplays = ::getAllRealDisplayInfo();
-
-    for (unsigned int i = 0; i < allDisplays.size(); ++i) {
-      ScreenDisplayInfo displayInfo = allDisplays[i];
-      Local<v8::Object> obj = Object::New(isolate);
+#ifdef WIN32 // __WIN32
       DisplayInfo displayId = displayInfo.displayInfo;
+#else
+      ScreenIDType displayId = displayInfo.displayId;
+#endif
       Local<v8::Object> displayIdObj = Object::New(isolate);
-
+      
+      NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "x", displayInfo.x);
+      NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "y", displayInfo.y);
+      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "width", displayInfo.width);
+      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "height", displayInfo.height);
       NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "id", displayId.idVal);
 
       Local<Value> propName = String::NewFromUtf8(isolate, "displayId",
@@ -5389,6 +5344,8 @@ NAPI_API_DEFINE(NodeRtcEngine, getRealScreenDisplayInfo) {
 
       NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", displayInfo.width);
       NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", displayInfo.height);
+      NODE_SET_OBJ_PROP_Number(isolate, obj, "x", displayInfo.x);
+      NODE_SET_OBJ_PROP_Number(isolate, obj, "y", displayInfo.y);
       NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isMain", displayInfo.isMain);
       NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isActive", displayInfo.isActive);
       NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isBuiltin", displayInfo.isBuiltin);
