@@ -5683,9 +5683,6 @@ NAPI_API_DEFINE(NodeRtcEngine, updateChannelMediaOptions) {
                                              "channelProfile", channelProfile);
     channelMediaOptions.channelProfile = (CHANNEL_PROFILE_TYPE)channelProfile;
 
-    Local<Object> obj;
-    nodestring channelId;
-    RtcConnection rtcConnection;
     IRtcEngineEx *engineEx = (IRtcEngineEx *)pEngine->m_engine;
     result = engineEx->updateChannelMediaOptions(channelMediaOptions);
       
@@ -5786,6 +5783,15 @@ NAPI_API_DEFINE(NodeRtcEngine, updateChannelMediaOptionsEx) {
     nodestring channelId;
     RtcConnection rtcConnection;
     status = napi_get_value_object_(isolate, args[1], obj);
+    
+    status = napi_get_object_property_nodestring_(isolate, obj, "channelId",
+                                                  channelId);
+    rtcConnection.channelId = channelId;
+    CHECK_NAPI_STATUS(pEngine, status);
+    status = napi_get_object_property_uint32_(isolate, obj, "localUid",
+                                              rtcConnection.localUid);
+    CHECK_NAPI_STATUS(pEngine, status);
+    
     IRtcEngineEx *engineEx = (IRtcEngineEx *)pEngine->m_engine;
     result = engineEx->updateChannelMediaOptionsEx(channelMediaOptions,
                                                    rtcConnection);
