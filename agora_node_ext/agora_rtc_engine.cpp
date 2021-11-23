@@ -271,7 +271,7 @@ void NodeRtcEngine::Init(Local<Object> &module) {
   PROPERTY_METHOD_DEFINE(stopLocalVideoTranscoder);
   PROPERTY_METHOD_DEFINE(joinChannelEx);
   PROPERTY_METHOD_DEFINE(joinChannel2);
-  PROPERTY_METHOD_DEFINE(updateChannelMediaOptionsEx);
+  PROPERTY_METHOD_DEFINE(updateChannelMediaOptions);
 
   PROPERTY_METHOD_DEFINE(createMediaPlayer);
 
@@ -5594,7 +5594,7 @@ NAPI_API_DEFINE(NodeRtcEngine, joinChannel2) {
   LOG_LEAVE;
 }
 
-NAPI_API_DEFINE(NodeRtcEngine, updateChannelMediaOptionsEx) {
+NAPI_API_DEFINE(NodeRtcEngine, updateChannelMediaOptions) {
   LOG_ENTER;
   int result = -1;
   do {
@@ -5686,19 +5686,23 @@ NAPI_API_DEFINE(NodeRtcEngine, updateChannelMediaOptionsEx) {
     nodestring channelId;
     RtcConnection rtcConnection;
     status = napi_get_value_object_(isolate, args[1], obj);
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    status = napi_get_object_property_nodestring_(isolate, obj, "channelId",
-                                                  channelId);
-    rtcConnection.channelId = channelId;
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_uint32_(isolate, obj, "localUid",
-                                              rtcConnection.localUid);
-    CHECK_NAPI_STATUS(pEngine, status);
-
     IRtcEngineEx *engineEx = (IRtcEngineEx *)pEngine->m_engine;
-    result = engineEx->updateChannelMediaOptionsEx(channelMediaOptions,
-                                                   rtcConnection);
+    if (status == napi_ok) {
+      status = napi_get_object_property_nodestring_(isolate, obj, "channelId",
+                                                    channelId);
+      rtcConnection.channelId = channelId;
+      CHECK_NAPI_STATUS(pEngine, status);
+      status = napi_get_object_property_uint32_(isolate, obj, "localUid",
+                                                rtcConnection.localUid);
+      CHECK_NAPI_STATUS(pEngine, status);
+
+      
+      result = engineEx->updateChannelMediaOptionsEx(channelMediaOptions,
+                                                     rtcConnection);
+    }else{
+      result = engineEx->updateChannelMediaOptions(channelMediaOptions);
+    }
+      
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;

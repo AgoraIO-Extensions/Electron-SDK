@@ -4319,8 +4319,8 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.leaveChannelEx(connection);
   }
 
-  updateChannelMediaOptionsEx(options: ChannelMediaOptions): number {
-    return this.rtcEngine.updateChannelMediaOptionsEx(options);
+  updateChannelMediaOptions(options: ChannelMediaOptions, connection?: RtcConnection): number {
+    return this.rtcEngine.updateChannelMediaOptions(options, connection);
   }
 
   startPrimaryCameraCapture(config: CameraCapturerConfiguration): number {

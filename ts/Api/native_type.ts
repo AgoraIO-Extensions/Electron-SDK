@@ -3875,7 +3875,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  updateChannelMediaOptionsEx(options: ChannelMediaOptions): number;
+  updateChannelMediaOptions(options: ChannelMediaOptions, connection?: RtcConnection): number;
  /**
    * @ignore
    */
