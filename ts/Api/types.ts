@@ -8,22 +8,21 @@
 /**
  * Audio recording quality, which is set in {@link startAudioRecordingWithConfig}.
  */
- export enum AUDIO_RECORDING_QUALITY_TYPE
- {
-     /** 0: Low quality. For example, the size of an AAC file with a sample rate
-    * of 32,000 Hz and a 10-minute recording is approximately 1.2 MB.
-     */
-     AUDIO_RECORDING_QUALITY_LOW = 0,
-     /** 1: (Default) Medium quality. For example, the size of an AAC file with
-    * a sample rate of 32,000 Hz and a 10-minute recording is approximately
-    * 2 MB.
-     */
-     AUDIO_RECORDING_QUALITY_MEDIUM = 1,
-     /** 2: High quality. For example, the size of an AAC file with a sample rate
-    * of 32,000 Hz and a 10-minute recording is approximately 3.75 MB.
-     */
-     AUDIO_RECORDING_QUALITY_HIGH = 2,
- }
+export enum AUDIO_RECORDING_QUALITY_TYPE {
+  /** 0: Low quality. For example, the size of an AAC file with a sample rate
+   * of 32,000 Hz and a 10-minute recording is approximately 1.2 MB.
+   */
+  AUDIO_RECORDING_QUALITY_LOW = 0,
+  /** 1: (Default) Medium quality. For example, the size of an AAC file with
+   * a sample rate of 32,000 Hz and a 10-minute recording is approximately
+   * 2 MB.
+   */
+  AUDIO_RECORDING_QUALITY_MEDIUM = 1,
+  /** 2: High quality. For example, the size of an AAC file with a sample rate
+   * of 32,000 Hz and a 10-minute recording is approximately 3.75 MB.
+   */
+  AUDIO_RECORDING_QUALITY_HIGH = 2,
+}
 
 /**
  * Network quality types:
@@ -1753,7 +1752,7 @@ export enum ENCRYPTION_MODE {
   /** Enumerator boundary.
    */
   MODE_END,
-};
+}
 
 type Uint8Array = Array<number>;
 /**
@@ -2799,38 +2798,37 @@ export enum LOCAL_AUDIO_STREAM_STATE {
 
 /** Local audio state error codes.
  */
- export enum LOCAL_AUDIO_STREAM_ERROR
- {
-   /** 0: The local audio is normal.
-    */
-     LOCAL_AUDIO_STREAM_ERROR_OK = 0,
-     /** 1: No specified reason for the local audio failure.
-     */
-     LOCAL_AUDIO_STREAM_ERROR_FAILURE = 1,
-     /** 2: No permission to use the local audio device.
-     */
-     LOCAL_AUDIO_STREAM_ERROR_DEVICE_NO_PERMISSION = 2,
-     /** 3: The microphone is in use.
-     */
-     LOCAL_AUDIO_STREAM_ERROR_DEVICE_BUSY = 3,
-     /** 4: The local audio recording fails. Check whether the recording device
-     * is working properly.
-     */
-     LOCAL_AUDIO_STREAM_ERROR_RECORD_FAILURE = 4,
-     /** 5: The local audio encoding fails.
-     */
-     LOCAL_AUDIO_STREAM_ERROR_ENCODE_FAILURE = 5,
-     /** 6: (Windows only) The SDK cannot find the local audio recording device.
-      *
-      * @since v3.4.2
-      */
-     LOCAL_AUDIO_STREAM_ERROR_NO_RECORDING_DEVICE = 6,
-     /** 7: (Windows only) The SDK cannot find the local audio playback device.
-      *
-      * @since v3.4.2
-      */
-     LOCAL_AUDIO_STREAM_ERROR_NO_PLAYOUT_DEVICE = 7
- };
+export enum LOCAL_AUDIO_STREAM_ERROR {
+  /** 0: The local audio is normal.
+   */
+  LOCAL_AUDIO_STREAM_ERROR_OK = 0,
+  /** 1: No specified reason for the local audio failure.
+   */
+  LOCAL_AUDIO_STREAM_ERROR_FAILURE = 1,
+  /** 2: No permission to use the local audio device.
+   */
+  LOCAL_AUDIO_STREAM_ERROR_DEVICE_NO_PERMISSION = 2,
+  /** 3: The microphone is in use.
+   */
+  LOCAL_AUDIO_STREAM_ERROR_DEVICE_BUSY = 3,
+  /** 4: The local audio recording fails. Check whether the recording device
+   * is working properly.
+   */
+  LOCAL_AUDIO_STREAM_ERROR_RECORD_FAILURE = 4,
+  /** 5: The local audio encoding fails.
+   */
+  LOCAL_AUDIO_STREAM_ERROR_ENCODE_FAILURE = 5,
+  /** 6: (Windows only) The SDK cannot find the local audio recording device.
+   *
+   * @since v3.4.2
+   */
+  LOCAL_AUDIO_STREAM_ERROR_NO_RECORDING_DEVICE = 6,
+  /** 7: (Windows only) The SDK cannot find the local audio playback device.
+   *
+   * @since v3.4.2
+   */
+  LOCAL_AUDIO_STREAM_ERROR_NO_PLAYOUT_DEVICE = 7,
+}
 
 export interface AudioVolumeInfo {
   /**
@@ -2932,7 +2930,7 @@ export enum LOCAL_VIDEO_STREAM_STATE {
  */
 /** Local video state error codes.
  */
- export enum LOCAL_VIDEO_STREAM_ERROR {
+export enum LOCAL_VIDEO_STREAM_ERROR {
   /** 0: The local video is normal. */
   LOCAL_VIDEO_STREAM_ERROR_OK = 0,
   /** 1: No specified reason for the local video failure. */
@@ -2990,7 +2988,7 @@ export enum LOCAL_VIDEO_STREAM_STATE {
   LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_CLOSED = 12,
   /** @ignore */
   LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_NOT_SUPPORTED = 20,
-};
+}
 
 export enum SUPER_RESOLUTION_STATE_REASON {
   /** 0: The super-resolution algorithm is successfully enabled.
@@ -3113,7 +3111,8 @@ export interface WindowInfo {
   windowId: number;
   name: string;
   ownerName: string;
-  isOnScreen: boolean;
+  x: number;
+  y: number;
   width: number;
   height: number;
   originWidth: number;
@@ -3176,14 +3175,14 @@ export enum AUDIO_RECORDING_POSITION {
   /** 2: Records the audio of all remote users only.
    */
   AUDIO_RECORDING_POSITION_MIXED_PLAYBACK = 2,
-};
+}
 
 /**
  * Recording configuration, which is set in {@link startAudioRecordingWithConfig}.
  *
  * @since v3.4.2
  */
- export interface AudioRecordingConfiguration {
+export interface AudioRecordingConfiguration {
   /** The absolute path (including the filename extensions) of the recording
    * file. For example: `C:\music\audio.aac`.
    *
@@ -3280,4 +3279,20 @@ export interface VirtualBackgroundSource {
    * background image is `BACKGROUND_COLOR`.
    */
   color: number;
+}
+
+export interface DisplayInfo {
+  displayId: {
+    id: number;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  height: number;
+  width: number;
+  image: Uint8Array;
+  isActive: boolean;
+  isBuiltin: boolean;
+  isMain: boolean;
 }
