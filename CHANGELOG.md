@@ -1,3 +1,6 @@
+## 3.6.205-build.1123(Nov 19th, 2020)
+* fix updateChannelMediaOptions
+
 ## 3.6.205-build.1119(Nov 19th, 2020)
 * fix updateChannelMediaOptionsEx for js api
 ## 3.6.205-build.1029(Oct 29th, 2020)
