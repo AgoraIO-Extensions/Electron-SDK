@@ -267,7 +267,7 @@ namespace agora{
                 }
 
                 m_sourceNodeProcess->Monitor([eventHandler](INodeProcess* pProcess) {
-                    LOG_ERROR("VideoSource: AgoraVideoSourceSink %s onVideoSourceExit", __FUNCTION__);
+                    LOG_INFO("VideoSource: AgoraVideoSourceSink %s onVideoSourceExit", __FUNCTION__);
                     eventHandler->onVideoSourceExit();
                 });
                 auto nrc = new NodeRenderContext(NODE_RENDER_TYPE_VIDEO_SOURCE);
