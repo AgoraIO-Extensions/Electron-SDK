@@ -27,6 +27,8 @@ struct ScreenDisplayInfo
     
     unsigned int width;
     unsigned int height;
+    int x;
+    int y;
     bool isActive;
     bool isMain;
     bool isBuiltin;
@@ -62,6 +64,8 @@ struct ScreenWindowInfo
     
     unsigned int width;
     unsigned int height;
+    int x;
+    int y;
     
     unsigned char* imageData;
     unsigned int imageDataLength;
@@ -82,7 +86,6 @@ struct ScreenWindowInfo
 
 std::vector<ScreenDisplayInfo> getAllDisplayInfo();
 std::vector<ScreenWindowInfo> getAllWindowInfo();
-std::vector<ScreenDisplayInfo> getAllRealDisplayInfo();
 
 #if defined(_WIN32)
 void DestroyGdiplus();

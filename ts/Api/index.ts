@@ -4019,12 +4019,12 @@ class AgoraRtcEngine extends EventEmitter {
    * You don't need to pay attention to the specific content of the returned
    * object, just use it for screen sharing.
    */
-  getScreenDisplaysInfo(): Array<Object> {
+  getScreenDisplaysInfo(): Array<DisplayInfo> {
     return this.rtcEngine.getScreenDisplaysInfo();
   }
 
   getRealScreenDisplaysInfo(): Array<DisplayInfo> {
-    return this.rtcEngine.getRealScreenDisplayInfo();
+    return this.rtcEngine.getScreenDisplaysInfo();
   }
 
   /**

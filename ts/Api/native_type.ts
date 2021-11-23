@@ -2769,13 +2769,19 @@ export enum NETWORK_TYPE
   NETWORK_TYPE_MOBILE_4G = 5,
 };
 export interface DisplayInfo {
-  displayId: {id: number}
-  height: number,
-  width: number,
-  image: Uint8Array,
-  isActive: boolean,
-  isBuiltin: boolean,
-  isMain: boolean
+  displayId: {
+    id: number;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  height: number;
+  width: number;
+  image: Uint8Array;
+  isActive: boolean;
+  isBuiltin: boolean;
+  isMain: boolean;
 }
 /**
  * Audio recording quality, which is set in {@link startAudioRecordingWithConfig}.
@@ -3419,7 +3425,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  getScreenDisplaysInfo(): Array<Object>;
+  getScreenDisplaysInfo(): Array<DisplayInfo>;
   /**
    * @ignore
    */
