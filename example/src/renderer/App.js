@@ -385,8 +385,10 @@ export default class App extends Component {
     )
     this.state.screenShareConnectionId = rtcEngine.joinChannelEx(
       '',
-      this.state.channel,
-      SHARE_ID,
+      {
+        localUid: SHARE_ID,
+        channelId:this.state.channel
+      },
       {
         publishCameraTrack: false,
         publishAudioTrack: false,
