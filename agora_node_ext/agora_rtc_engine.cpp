@@ -318,7 +318,6 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setEffectPosition);
                 PROPERTY_METHOD_DEFINE(getEffectDuration);
                 PROPERTY_METHOD_DEFINE(getEffectCurrentPosition);
-                PROPERTY_METHOD_DEFINE(getAudioMixingFileDuration);
                 PROPERTY_METHOD_DEFINE(setProcessDpiAwareness);
                 PROPERTY_METHOD_DEFINE(videoSourceSetProcessDpiAwareness);
                 PROPERTY_METHOD_DEFINE(startAudioRecordingWithConfig);
@@ -6278,22 +6277,6 @@ namespace agora {
         /*
          * 3.4.0
          */
-        NAPI_API_DEFINE(NodeRtcEngine, getAudioMixingFileDuration)
-        {
-            LOG_ENTER;
-            int result = -1;
-            do{
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                NodeString filePath;
-                napi_status status = napi_get_value_nodestring_(args[0], filePath);
-                CHECK_NAPI_STATUS(pEngine, status);
-                result = pEngine->m_engine->getAudioMixingDuration(filePath);
-            } while (false);
-            napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
         NAPI_API_DEFINE(NodeRtcEngine, startAudioRecording)
         {
             LOG_ENTER;

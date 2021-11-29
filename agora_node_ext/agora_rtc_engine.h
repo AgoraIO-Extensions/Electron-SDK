@@ -379,7 +379,6 @@ namespace agora {
             NAPI_API(setEffectPosition);
             NAPI_API(getEffectDuration);
             NAPI_API(getEffectCurrentPosition);
-            NAPI_API(getAudioMixingFileDuration);
 
             NAPI_API(setProcessDpiAwareness);
             NAPI_API(videoSourceSetProcessDpiAwareness);

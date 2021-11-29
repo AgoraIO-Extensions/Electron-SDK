@@ -3944,10 +3944,7 @@ export interface NodeRtcEngine {
    * @ignore
    */
   getEffectCurrentPosition(soundId: number): number;
-  /**
-   * @ignore
-   */
-  getAudioMixingFileDuration(filePath: string): number;
+  
   /**
    * @ignore
    */
