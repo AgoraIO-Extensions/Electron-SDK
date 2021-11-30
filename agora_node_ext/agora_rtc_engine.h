@@ -394,6 +394,11 @@ namespace agora {
              */
             NAPI_API(enableVirtualBackground);
             NAPI_API(virtualBackgroundSourceEnabled);
+            /**
+             * 3.4.11
+             */
+            NAPI_API(getScreenCaptureSources);
+            
             
         public:
             Isolate* getIsolate() { return m_isolate; }

@@ -14,6 +14,7 @@
 #include <Psapi.h>
 #include <algorithm>
 #include "win_enumer.h"
+#include "wingdi.h"
 
 Gdiplus::GdiplusStartupInput g_gdiStartup;
 ULONG_PTR g_gdiplusToken = NULL;
@@ -712,4 +713,35 @@ std::vector<ScreenDisplayInfo> getAllDisplayInfo()
 		}
 	} 
 	return _display_infos;
+}
+
+void ConvertRGBToBMP(unsigned char* RGBBuffer, BufferInfo & bufferInfo, unsigned int ImageWidth, unsigned int ImageHeight)
+{
+  unsigned long bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + ImageWidth * ImageHeight * 4;;
+  bufferInfo.buffer = new unsigned char[bfSize];
+  BITMAPFILEHEADER* BmpFileHeader = (BITMAPFILEHEADER*)bufferInfo.buffer;//填充BMP文件头信息
+  BmpFileHeader->bfType = ((WORD)('M' << 8) | 'B');
+  BmpFileHeader->bfSize = bfSize;
+  bufferInfo.length = bfSize;
+  BmpFileHeader->bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
+  BmpFileHeader->bfReserved1 = 0;
+  BmpFileHeader->bfReserved2 = 0;
+
+  BITMAPINFOHEADER* BmpInfoHeader = (BITMAPINFOHEADER*)((unsigned char*)bufferInfo.buffer + sizeof(BITMAPFILEHEADER));
+
+  BmpInfoHeader->biSize = sizeof(BITMAPINFOHEADER);
+  BmpInfoHeader->biWidth = ImageWidth;
+  BmpInfoHeader->biHeight = -ImageHeight;
+  BmpInfoHeader->biPlanes = 1;
+  BmpInfoHeader->biBitCount = 32;//RGB图像
+  BmpInfoHeader->biCompression = BI_RGB;
+  BmpInfoHeader->biSizeImage = 0;
+  BmpInfoHeader->biXPelsPerMeter = 0;
+  BmpInfoHeader->biYPelsPerMeter = 0;
+  BmpInfoHeader->biClrUsed = 0;
+  BmpInfoHeader->biClrImportant = 0;
+
+  void* ImageBufferHeader = (void*)((unsigned char*)BmpInfoHeader + sizeof(BITMAPINFOHEADER));
+
+  memcpy(ImageBufferHeader, RGBBuffer, ImageWidth * ImageHeight * 4);
 }

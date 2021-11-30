@@ -62,7 +62,8 @@ import {
   AudioRecordingConfiguration,
   VirtualBackgroundSource,
   VIRTUAL_BACKGROUND_SOURCE_STATE_REASON,
-  DisplayInfo
+  DisplayInfo,
+  SIZE
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -6113,6 +6114,9 @@ class AgoraRtcEngine extends EventEmitter {
   */
   enableVirtualBackground(enabled: Boolean, backgroundSource: VirtualBackgroundSource): number{
     return this.rtcEngine.enableVirtualBackground(enabled, backgroundSource)
+  }
+  getScreenCaptureSources(thumbSize: SIZE, iconSize: SIZE, includeScreen:boolean): Array<Object> {
+    return this.rtcEngine.getScreenCaptureSources(thumbSize, iconSize, includeScreen)
   }
 }
 /** The AgoraRtcEngine interface. */
