@@ -6115,8 +6115,17 @@ class AgoraRtcEngine extends EventEmitter {
   enableVirtualBackground(enabled: Boolean, backgroundSource: VirtualBackgroundSource): number{
     return this.rtcEngine.enableVirtualBackground(enabled, backgroundSource)
   }
-  getScreenCaptureSources(thumbSize: SIZE, iconSize: SIZE, includeScreen:boolean): Array<Object> {
-    return this.rtcEngine.getScreenCaptureSources(thumbSize, iconSize, includeScreen)
+
+  getScreenCaptureSources(
+    thumbSize: SIZE,
+    iconSize: SIZE,
+    includeScreen: boolean
+  ): Array<Object> {
+    return this.rtcEngine.getScreenCaptureSources(
+      thumbSize,
+      iconSize,
+      includeScreen
+    )
   }
 }
 /** The AgoraRtcEngine interface. */

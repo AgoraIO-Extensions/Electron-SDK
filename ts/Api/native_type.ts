@@ -8,6 +8,7 @@ export interface RendererOptions
 {
   append: boolean
 }
+
 export interface SIZE
 {
   width: number
@@ -3970,7 +3971,11 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-   getScreenCaptureSources(thumbSize: SIZE, iconSize: SIZE, includeScreen:boolean): Array<Object>;
+  getScreenCaptureSources(
+    thumbSize: SIZE,
+    iconSize: SIZE,
+    includeScreen: boolean
+  ): Array<Object>;
 }
 /**
  * @ignore
