@@ -23,6 +23,8 @@
 
 #if defined(__APPLE__)
 #include <dlfcn.h>
+#else
+#include <windef.h>
 #endif
 
 using std::string;
@@ -318,7 +320,6 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setEffectPosition);
                 PROPERTY_METHOD_DEFINE(getEffectDuration);
                 PROPERTY_METHOD_DEFINE(getEffectCurrentPosition);
-                PROPERTY_METHOD_DEFINE(getAudioMixingFileDuration);
                 PROPERTY_METHOD_DEFINE(setProcessDpiAwareness);
                 PROPERTY_METHOD_DEFINE(videoSourceSetProcessDpiAwareness);
                 PROPERTY_METHOD_DEFINE(startAudioRecordingWithConfig);
@@ -332,6 +333,11 @@ namespace agora {
                 
                 PROPERTY_METHOD_DEFINE(videoSourceStartScreenCaptureByDisplayId);
                 PROPERTY_METHOD_DEFINE(startScreenCaptureByDisplayId);
+                /*
+                 * 3.4.11
+                 */
+                PROPERTY_METHOD_DEFINE(getScreenCaptureSources);
+
                 EN_PROPERTY_DEFINE()
                 module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -6278,22 +6284,6 @@ namespace agora {
         /*
          * 3.4.0
          */
-        NAPI_API_DEFINE(NodeRtcEngine, getAudioMixingFileDuration)
-        {
-            LOG_ENTER;
-            int result = -1;
-            do{
-                NodeRtcEngine *pEngine = nullptr;
-                napi_get_native_this(args, pEngine);
-                CHECK_NATIVE_THIS(pEngine);
-                NodeString filePath;
-                napi_status status = napi_get_value_nodestring_(args[0], filePath);
-                CHECK_NAPI_STATUS(pEngine, status);
-                result = pEngine->m_engine->getAudioMixingDuration(filePath);
-            } while (false);
-            napi_set_int_result(args, result);
-            LOG_LEAVE;
-        }
         NAPI_API_DEFINE(NodeRtcEngine, startAudioRecording)
         {
             LOG_ENTER;
@@ -6575,6 +6565,139 @@ namespace agora {
             napi_set_int_result(args, result);
             LOG_LEAVE;
         }
+
+        NAPI_API_DEFINE(NodeRtcEngine, getScreenCaptureSources)
+        {
+          LOG_ENTER;
+          int result = -1;
+          NodeRtcEngine *pEngine = nullptr;
+          napi_status status = napi_ok;
+          Isolate *isolate = args.GetIsolate();
+          Local<v8::Array> infos = v8::Array::New(isolate);
+          Local<Context> context = isolate->GetCurrentContext();
+          do {
+            napi_get_native_this(args, pEngine);
+            CHECK_NATIVE_THIS(pEngine);
+            if (!args[0]->IsObject())
+            {
+                break;
+            }
+            
+            Local<Object> thumbSizeObj;
+            status = napi_get_value_object_(isolate, args[0], thumbSizeObj);
+            CHECK_NAPI_STATUS(pEngine, status);
+
+#if defined(_WIN32)
+            SIZE thumbSize;
+            SIZE iconSize;
+#else
+            agora::rtc::SIZE thumbSize;
+            agora::rtc::SIZE iconSize;
+#endif
+            int32_t thumbWidth, thumbHeight, iconWidth, iconHeight;
+            status = napi_get_object_property_int32_(isolate, thumbSizeObj, "width", thumbWidth);
+            CHECK_NAPI_STATUS(pEngine, status);
+            status = napi_get_object_property_int32_(isolate, thumbSizeObj, "height", thumbHeight);
+            CHECK_NAPI_STATUS(pEngine, status)
+            
+            Local<Object> iconSizeSizeObj;
+            status = napi_get_value_object_(isolate, args[1], iconSizeSizeObj);
+            CHECK_NAPI_STATUS(pEngine, status);
+
+            status = napi_get_object_property_int32_(isolate, iconSizeSizeObj, "width", iconWidth);
+            CHECK_NAPI_STATUS(pEngine, status);
+            status = napi_get_object_property_int32_(isolate, iconSizeSizeObj, "height", iconHeight);
+            CHECK_NAPI_STATUS(pEngine, status);
+#if defined(_WIN32)
+            thumbSize.cx = thumbWidth;
+            thumbSize.cy = thumbHeight;
+            iconSize.cx = iconWidth;
+            iconSize.cy = iconHeight;
+#else
+            thumbSize.width = thumbWidth;
+            thumbSize.height = thumbHeight;
+            iconSize.width = iconWidth;
+            iconSize.height = iconHeight;
+#endif
+            
+            bool includeScreen;
+            status = napi_get_value_bool_(args[2], includeScreen);
+            CHECK_NAPI_STATUS(pEngine, status);
+            
+            auto list = pEngine->m_engine->getScreenCaptureSources(thumbSize, iconSize, includeScreen);
+            
+            for (int i=0; i < list->getCount(); i++) {
+              Local<v8::Object> obj = Object::New(isolate);
+              agora::rtc::ScreenCaptureSourceInfo info = list->getSourceInfo(i);
+              
+              int type = info.type;
+#if defined(_WIN32)
+              auto sourceId = info.sourceId;
+#else
+              auto sourceId = NSNumberToLong(info.sourceId);
+#endif
+              
+              std::string sourceName(info.sourceName == nullptr ? "" : info.sourceName);
+              std::string processPath(info.processPath == nullptr ? "" : info.processPath);
+              std::string sourceTitle(info.sourceTitle == nullptr ? "" : info.sourceTitle);
+              bool primaryMonitor = info.primaryMonitor;
+              
+              NODE_SET_OBJ_PROP_UINT32(isolate, obj, "type", type);
+              NODE_SET_OBJ_PROP_UINT32(isolate, obj, "sourceId", (unsigned long)sourceId);
+              NODE_SET_OBJ_PROP_String(isolate, obj, "sourceName", sourceName.c_str());
+              NODE_SET_OBJ_PROP_String(isolate, obj, "processPath", processPath.c_str());
+              NODE_SET_OBJ_PROP_String(isolate, obj, "sourceTitle", sourceTitle.c_str());
+              NODE_SET_OBJ_PROP_BOOL(isolate, obj, "primaryMonitor", primaryMonitor);
+            
+              Local<v8::Object> iconImageObj = Object::New(isolate);
+              if (info.iconImage.buffer) {
+                  BufferInfo iconImageInfo;
+#if defined(_WIN32)
+                  ConvertRGBToBMP(const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>(info.iconImage.buffer)), iconImageInfo, info.iconImage.width, info.iconImage.height);
+                  NODE_SET_OBJ_WINDOWINFO_DATA(isolate, iconImageObj, "buffer", iconImageInfo);
+                  free(iconImageInfo.buffer);
+#else
+                  auto buffer = reinterpret_cast<const unsigned char*>(info.iconImage.buffer);
+                  iconImageInfo.buffer = const_cast<unsigned char*>(buffer);
+                  iconImageInfo.length = info.iconImage.length;
+                  NODE_SET_OBJ_WINDOWINFO_DATA(isolate, iconImageObj, "buffer", iconImageInfo);
+#endif
+                  NODE_SET_OBJ_PROP_UINT32(isolate, iconImageObj, "width", info.iconImage.width);
+                  NODE_SET_OBJ_PROP_UINT32(isolate, iconImageObj, "height", info.iconImage.height);
+                
+                  Local<Value> propName = String::NewFromUtf8(isolate, "iconImage", NewStringType::kInternalized).ToLocalChecked();
+                  obj->Set(isolate->GetCurrentContext(), propName, iconImageObj);
+              }
+              
+              
+              Local<v8::Object> thumbImageObj = Object::New(isolate);
+              if (info.thumbImage.buffer) {
+                  BufferInfo thumbImageInfo;
+#if defined(_WIN32)
+                  ConvertRGBToBMP(const_cast<unsigned char*>(reinterpret_cast<const unsigned char*>(info.thumbImage.buffer)), thumbImageInfo, info.thumbImage.width, info.thumbImage.height);
+                  NODE_SET_OBJ_WINDOWINFO_DATA(isolate, thumbImageObj, "buffer", thumbImageInfo);
+                  free(thumbImageInfo.buffer);
+#else
+                  auto buffer = reinterpret_cast<const unsigned char*>(info.thumbImage.buffer);
+                  thumbImageInfo.buffer = const_cast<unsigned char*>(buffer);
+                  thumbImageInfo.length = info.thumbImage.length;
+                    NODE_SET_OBJ_WINDOWINFO_DATA(isolate, thumbImageObj, "buffer", thumbImageInfo);
+#endif
+                  NODE_SET_OBJ_PROP_UINT32(isolate, thumbImageObj, "width", info.thumbImage.width);
+                  NODE_SET_OBJ_PROP_UINT32(isolate, thumbImageObj, "height", info.thumbImage.height);
+                  Local<Value> propName = String::NewFromUtf8(isolate, "thumbImage", NewStringType::kInternalized).ToLocalChecked();
+                  obj->Set(isolate->GetCurrentContext(), propName, thumbImageObj);
+              }
+              
+              infos->Set(context, i, obj);
+            }
+            list->release();
+            
+          } while (false);
+          napi_set_array_result(args, infos);
+          LOG_LEAVE;
+        }
+    
         /**
          * NodeRtcChannel
          */

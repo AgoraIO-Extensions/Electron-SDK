@@ -379,7 +379,6 @@ namespace agora {
             NAPI_API(setEffectPosition);
             NAPI_API(getEffectDuration);
             NAPI_API(getEffectCurrentPosition);
-            NAPI_API(getAudioMixingFileDuration);
 
             NAPI_API(setProcessDpiAwareness);
             NAPI_API(videoSourceSetProcessDpiAwareness);
@@ -395,6 +394,11 @@ namespace agora {
              */
             NAPI_API(enableVirtualBackground);
             NAPI_API(virtualBackgroundSourceEnabled);
+            /**
+             * 3.4.11
+             */
+            NAPI_API(getScreenCaptureSources);
+            
             
         public:
             Isolate* getIsolate() { return m_isolate; }
