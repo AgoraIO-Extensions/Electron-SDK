@@ -62,7 +62,8 @@ import {
   AudioRecordingConfiguration,
   VirtualBackgroundSource,
   VIRTUAL_BACKGROUND_SOURCE_STATE_REASON,
-  DisplayInfo
+  DisplayInfo,
+  SIZE
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -3348,28 +3349,6 @@ class AgoraRtcEngine extends EventEmitter {
   getEffectCurrentPosition(soundId: number): number {
     return this.rtcEngine.getEffectCurrentPosition(soundId);
   }
-  /**
-   * Gets the total duration of the music file.
-   *
-   * @since v3.4.2
-   *
-   * @note Call this method after joining a channel.
-   *
-   * @param filePath The absolute path or URL address (including the filename
-   * extensions) of the music file. For example: `C:\music\audio.mp4`.
-   * Supported audio formats include MP3, AAC, M4A, MP4, WAV, and 3GP.
-   * For more information, see
-   * [Supported Media Formats in Media Foundation](https://docs.microsoft.com/en-us/windows/desktop/medfound/supported-media-formats-in-media-foundation).
-   *
-   * @return
-   * - &ge; 0: A successful method call. Returns the total duration (ms) of the specified music file.
-   * - < 0: Failure.
-   */
-  getAudioMixingFileDuration
-  (filePath: string): number {
-    return this.rtcEngine.  getAudioMixingFileDuration
-    (filePath);
-  }
 
   /**
    * Adjusts the playback signal volume of all remote users.
@@ -6135,6 +6114,18 @@ class AgoraRtcEngine extends EventEmitter {
   */
   enableVirtualBackground(enabled: Boolean, backgroundSource: VirtualBackgroundSource): number{
     return this.rtcEngine.enableVirtualBackground(enabled, backgroundSource)
+  }
+
+  getScreenCaptureSources(
+    thumbSize: SIZE,
+    iconSize: SIZE,
+    includeScreen: boolean
+  ): Array<Object> {
+    return this.rtcEngine.getScreenCaptureSources(
+      thumbSize,
+      iconSize,
+      includeScreen
+    )
   }
 }
 /** The AgoraRtcEngine interface. */

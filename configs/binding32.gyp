@@ -308,7 +308,9 @@
                     './common/libyuv/source/row_win.cc',
                     './common/libyuv/source/scale_win.cc',
 					'./agora_node_ext/node_screen_window_info_win.cpp',
-                    './agora_node_ext/node_screen_window_info.h'
+                    './agora_node_ext/node_screen_window_info.h',
+                    './agora_node_ext/win_enumer.h',
+                    './agora_node_ext/win_enumer.cpp'
                 ],
                 'include_dirs': [
                 './sdk/include',

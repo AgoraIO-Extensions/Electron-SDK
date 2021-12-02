@@ -13,6 +13,12 @@
 #include <ImageIO/ImageIO.h>
 #include "loguru.hpp"
 
+unsigned long  NSNumberToLong(void *nsNumber){
+    CFNumberRef number = (CFNumberRef)nsNumber;
+    unsigned long value=0;
+    CFNumberGetValue(number, kCFNumberLongLongType, &value);
+    return value;
+}
 void copyImageDataToWindowInfo(CGImageRef image, ScreenWindowInfo& windowInfo)
 {
     int maxSize = IMAGE_MAX_PIXEL_SIZE;

@@ -15,7 +15,13 @@
 #if defined(_WIN32)
 #include <windows.h>
 #endif
+
 #define    IMAGE_MAX_PIXEL_SIZE   500
+
+struct BufferInfo {
+  unsigned char* buffer;
+  uint32_t length;
+};
 
 struct ScreenDisplayInfo
 {
@@ -89,6 +95,9 @@ std::vector<ScreenWindowInfo> getAllWindowInfo();
 
 #if defined(_WIN32)
 void DestroyGdiplus();
+void ConvertRGBToBMP(unsigned char* RGBBuffer, BufferInfo& bufferInfo, unsigned int ImageWidth, unsigned int ImageHeight);
+#else
+unsigned long  NSNumberToLong(void *nsNumber);
 #endif
 
 #endif /* AGORA_SCREEN_WINDOW_INFO_H */

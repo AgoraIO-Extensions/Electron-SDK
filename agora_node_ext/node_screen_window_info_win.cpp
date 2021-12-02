@@ -13,6 +13,8 @@
 #include <tchar.h>
 #include <Psapi.h>
 #include <algorithm>
+#include "win_enumer.h"
+#include "wingdi.h"
 
 Gdiplus::GdiplusStartupInput g_gdiStartup;
 ULONG_PTR g_gdiplusToken = NULL;
@@ -27,6 +29,8 @@ bool IsDisplayLogo(char class_name[100])
 		strcmp(class_name, "PPTFrameClass") == 0 ||
 		strcmp(class_name, "screenClass") == 0 ||
 		strcmp(class_name, "QWidget") == 0 ||
+    strcmp(class_name, "TXGuiFoundation") == 0 ||
+    strcmp(class_name, "QMShadowWndClass") == 0 ||
 		strcmp(class_name, "MozillaWindowClass") == 0) {
 		return true;
 	} else {
@@ -637,64 +641,25 @@ bool IsWindowValid(HWND hwnd)
 std::vector<ScreenWindowInfo> getAllWindowInfo()
 {
     std::vector<ScreenWindowInfo> windows;
-
-    Gdiplus::Status status = Gdiplus::Ok;
+		Gdiplus::Status status = Gdiplus::Ok;
     if (g_gdiplusToken == NULL)
         status = InitializeGdiplus();
 
-    if (status == Gdiplus::Ok){
-        std::unordered_set<HWND> setHwnds;
-        setHwnds.clear();
-        EnumWindows(EnumTopWindowsProc, (LPARAM)(&setHwnds));
-        std::vector<ScreenWindowInfo> wndsInfo;
-        wndsInfo.reserve(setHwnds.size());
-
-        for (auto iter = setHwnds.begin(); iter != setHwnds.end(); ++iter) {
-			if (!IsWindowValid(*iter)) {
+		auto windowInfoList = agora::electron::WindowEnumer::EnumAllWindows();
+		windows.reserve(windowInfoList.size());
+    for (auto iter = windowInfoList.begin(); iter != windowInfoList.end(); ++iter) {
+      auto windowInfo = *iter;
+			if (!IsWindowValid(windowInfo.hwnd)) {
 				continue;
 			}
+      char class_name[100] = { 0 };
+      char window_name[100] = { 0 };
+      strcpy(class_name, windowInfo.class_name.c_str());
+      strcpy(window_name, windowInfo.window_name.c_str());
+      bool hasLogo = IsDisplayLogo(class_name);
 
-			RECT rc_wnd;
-			::GetWindowRect(*iter, &rc_wnd);
-			if (rc_wnd.right - rc_wnd.left <= 0 || rc_wnd.bottom - rc_wnd.top <= 0) {
-				continue;
-			}
-			
-            char class_name[100] = { 0 };
-            WCHAR szName[MAX_PATH] = { 0 };
-            char name[MAX_PATH] = { 0 };
-            GetWindowTextW(*iter, szName, MAX_PATH);
-            if (wcslen(szName) == 0)//
-                continue;
-            ::WideCharToMultiByte(CP_UTF8, 0, szName, wcslen(szName), name, MAX_PATH, NULL, NULL);
-            GetClassNameA(*iter, class_name, 99);
-            HWND windowid = *iter;
-            if (strcmp(class_name, "EdgeUiInputTopWndClass") == 0
-                || strcmp(class_name, "Shell_TrayWnd") == 0
-                || strcmp(class_name, "DummyDWMListenerWindow") == 0
-                || strcmp(class_name, "WorkerW") == 0
-                || strcmp(class_name, "PopupRbWebDialog") == 0
-                || strcmp(class_name, "TXGuiFoundation") == 0)//kuwo advertisement
-            {
-                continue;
-            }
-			if (strcmp(class_name, "Progman") == 0
-				&& strcmp(name, "Program Manager") == 0)
-			{
-				continue;
-			}
-
-			if (strcmp(class_name, "TaskManagerWindow") == 0)
-			{
-				continue;
-			}
-
-			bool displayLogo = IsDisplayLogo(class_name);
-
-            captureBmpToJpeg(windowid, name, windows, displayLogo);
-        }
+      captureBmpToJpeg(windowInfo.hwnd, window_name, windows, hasLogo);
     }
-
     return windows;
 }
 
@@ -748,4 +713,35 @@ std::vector<ScreenDisplayInfo> getAllDisplayInfo()
 		}
 	} 
 	return _display_infos;
+}
+
+void ConvertRGBToBMP(unsigned char* RGBBuffer, BufferInfo & bufferInfo, unsigned int ImageWidth, unsigned int ImageHeight)
+{
+  unsigned long bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + ImageWidth * ImageHeight * 4;;
+  bufferInfo.buffer = new unsigned char[bfSize];
+  BITMAPFILEHEADER* BmpFileHeader = (BITMAPFILEHEADER*)bufferInfo.buffer;//填充BMP文件头信息
+  BmpFileHeader->bfType = ((WORD)('M' << 8) | 'B');
+  BmpFileHeader->bfSize = bfSize;
+  bufferInfo.length = bfSize;
+  BmpFileHeader->bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
+  BmpFileHeader->bfReserved1 = 0;
+  BmpFileHeader->bfReserved2 = 0;
+
+  BITMAPINFOHEADER* BmpInfoHeader = (BITMAPINFOHEADER*)((unsigned char*)bufferInfo.buffer + sizeof(BITMAPFILEHEADER));
+
+  BmpInfoHeader->biSize = sizeof(BITMAPINFOHEADER);
+  BmpInfoHeader->biWidth = ImageWidth;
+  BmpInfoHeader->biHeight = -ImageHeight;
+  BmpInfoHeader->biPlanes = 1;
+  BmpInfoHeader->biBitCount = 32;//RGB图像
+  BmpInfoHeader->biCompression = BI_RGB;
+  BmpInfoHeader->biSizeImage = 0;
+  BmpInfoHeader->biXPelsPerMeter = 0;
+  BmpInfoHeader->biYPelsPerMeter = 0;
+  BmpInfoHeader->biClrUsed = 0;
+  BmpInfoHeader->biClrImportant = 0;
+
+  void* ImageBufferHeader = (void*)((unsigned char*)BmpInfoHeader + sizeof(BITMAPINFOHEADER));
+
+  memcpy(ImageBufferHeader, RGBBuffer, ImageWidth * ImageHeight * 4);
 }

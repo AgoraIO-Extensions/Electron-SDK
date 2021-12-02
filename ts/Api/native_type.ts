@@ -9,6 +9,13 @@ export interface RendererOptions
   append: boolean
 }
 
+export interface SIZE
+{
+  width: number
+  height: number
+}
+
+
 /**
  * Network quality types:
  *
@@ -3944,10 +3951,7 @@ export interface NodeRtcEngine {
    * @ignore
    */
   getEffectCurrentPosition(soundId: number): number;
-  /**
-   * @ignore
-   */
-  getAudioMixingFileDuration(filePath: string): number;
+  
   /**
    * @ignore
    */
@@ -3964,6 +3968,14 @@ export interface NodeRtcEngine {
    * @ignore
    */
   enableVirtualBackground(enabled: Boolean, backgroundSource: VirtualBackgroundSource): number;
+  /**
+   * @ignore
+   */
+  getScreenCaptureSources(
+    thumbSize: SIZE,
+    iconSize: SIZE,
+    includeScreen: boolean
+  ): Array<Object>;
 }
 /**
  * @ignore

@@ -1,6 +1,11 @@
-## 3.4.8-rc.1-build.1018(Oct 18th, 2021)
-* update native sdk
-* support Electron 12.0.0
+## 3.4.11-build.1202(Dec 2th, 2021)
+* remove getAudioMixingFileDuration
+* add getScreenCaptureSources
+## 3.4.8-build.1123 (Nov 23th, 2021)
+* modify
+ - getScreenDisplaysInfo
+ - getRealScreenDisplaysInfo
+ - getScreenWindowsInfo
 
 ## 3.4.6-build.727 (July 27th, 2021)
 * support Electron 12.0.15
