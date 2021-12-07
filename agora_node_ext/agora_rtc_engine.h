@@ -398,6 +398,10 @@ namespace agora {
              * 3.4.11
              */
             NAPI_API(getScreenCaptureSources);
+            NAPI_API(videoSourceMuteRemoteAudioStream);
+            NAPI_API(videoSourceMuteAllRemoteAudioStreams);
+            NAPI_API(videoSourceMuteRemoteVideoStream);
+            NAPI_API(videoSourceMuteAllRemoteVideoStreams);
             
             
         public:

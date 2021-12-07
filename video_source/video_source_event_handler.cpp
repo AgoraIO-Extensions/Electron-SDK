@@ -24,6 +24,8 @@ void AgoraVideoSourceEventHandler::onJoinChannelSuccess(const char* channel, uid
 {
     LOG_INFO("%s, channel :%s, uid : %d, elapsed :%d", __FUNCTION__, channel, uid, elapsed);
     m_videoSource.notifyJoinedChannel(uid);
+    m_videoSource.m_rtcEngine->muteAllRemoteAudioStreams(true);
+    m_videoSource.m_rtcEngine->muteAllRemoteVideoStreams(true);
 }
 
 void AgoraVideoSourceEventHandler::onRejoinChannelSuccess(const char* channel, uid_t uid, int elapsed)
