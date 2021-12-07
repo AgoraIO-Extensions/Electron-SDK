@@ -475,6 +475,19 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
         LOG_INFO("%s    msg: %s", __FUNCTION__,"AGORA_IPC_SET_ENCRYPTION_MODE");
         m_rtcEngine->setEncryptionMode((const char *)payload);
     }
+    else if(msg == AGORA_IPC_MUTE_REMOTE_AUDIO_STREAM) {
+        MuteRemoteStreamsCmd *cmd = (MuteRemoteStreamsCmd*)payload;
+        m_rtcEngine->muteRemoteAudioStream(cmd->uid, cmd->mute);
+    }else if(msg == AGORA_IPC_MUTE_ALL_REMOTE_AUDIO_STREAMS) {
+        bool mute = (bool)*payload;
+        m_rtcEngine->muteAllRemoteAudioStreams(mute);
+    }else if(msg == AGORA_IPC_MUTE_REMOTE_VIDEO_STREAM) {
+        MuteRemoteStreamsCmd *cmd = (MuteRemoteStreamsCmd*)payload;
+        m_rtcEngine->muteRemoteVideoStream(cmd->uid, cmd->mute);
+    }else if(msg == AGORA_IPC_MUTE_ALL_REMOTE_VIDEO_STREAMS) {
+        bool mute = (bool)*payload;
+        m_rtcEngine->muteAllRemoteVideoStreams(mute);
+    }
     else if(msg == AGORA_IPC_ENABLE_ENCRYPTION) {
         LOG_INFO("%s    msg: %s", __FUNCTION__,"AGORA_IPC_ENABLE_ENCRYPTION");
         EncryptionConfigCmd *cmd = (EncryptionConfigCmd*)payload;
@@ -499,7 +512,12 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
 
 bool AgoraVideoSource::joinChannel(const char* key, const char* name, const char* chanInfo, agora::rtc::uid_t uid)
 {
-    return m_rtcEngine->joinChannel(key ? key : "", name ? name : "", chanInfo ? chanInfo : "", uid);
+    agora::rtc::ChannelMediaOptions options;
+    options.autoSubscribeAudio = false;
+    options.autoSubscribeVideo = false;
+    options.publishLocalAudio = false;
+    options.publishLocalVideo = true;
+    return m_rtcEngine->joinChannel(key ? key : "", name ? name : "", chanInfo ? chanInfo : "", uid, options);
 }
 
 void AgoraVideoSource::exit(bool notifySink)

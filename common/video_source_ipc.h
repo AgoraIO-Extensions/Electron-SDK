@@ -109,6 +109,10 @@ enum AgoraIpcMsg
     AGORA_IPC_ON_LOCAL_VIDEO_STATE_CHANGED,
     AGORA_IPC_ON_LOCAL_AUDIO_STATE_CHANGED,
     AGORA_IPC_SET_PROCESS_DPI_AWARE_NESS,
+    AGORA_IPC_MUTE_REMOTE_AUDIO_STREAM,
+    AGORA_IPC_MUTE_ALL_REMOTE_AUDIO_STREAMS,
+    AGORA_IPC_MUTE_REMOTE_VIDEO_STREAM,
+    AGORA_IPC_MUTE_ALL_REMOTE_VIDEO_STREAMS,
     AGORA_IPC_SET_ADDON_LOGFILE
 };
 
@@ -340,6 +344,12 @@ public:
     int error;
 };
 
+struct MuteRemoteStreamsCmd
+{
+public:
+    agora::rtc::uid_t uid;
+    bool mute;
+};
 
 /**
  * AgoraIpcListener is used to monitor IPC message

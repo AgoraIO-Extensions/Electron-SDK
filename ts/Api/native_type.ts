@@ -3359,6 +3359,22 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
+  videoSourceMuteRemoteAudioStream(uid: number, mute: boolean): number;
+  /**
+   * @ignore
+   */
+  videoSourceMuteAllRemoteAudioStreams(mute: boolean): number;
+  /**
+   * @ignore
+   */
+  videoSourceMuteRemoteVideoStream(uid: number, mute: boolean): number;
+  /**
+   * @ignore
+   */
+  videoSourceMuteAllRemoteVideoStreams(mute: boolean): number;
+  /**
+   * @ignore
+   */
   videoSourceJoin(
     token: string,
     cname: string,

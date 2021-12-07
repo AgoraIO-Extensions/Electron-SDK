@@ -396,7 +396,12 @@ namespace agora {
              */
             NAPI_API(enableVirtualBackground);
             NAPI_API(virtualBackgroundSourceEnabled);
-            
+
+            NAPI_API(videoSourceMuteRemoteAudioStream);
+            NAPI_API(videoSourceMuteAllRemoteAudioStreams);
+            NAPI_API(videoSourceMuteRemoteVideoStream);
+            NAPI_API(videoSourceMuteAllRemoteVideoStreams);
+
         public:
             Isolate* getIsolate() { return m_isolate; }
             IRtcEngine* getRtcEngine() { return m_engine; }
