@@ -1,3 +1,11 @@
+## 3.5.1-build.1207(Dec 7th, 2021)
+* add new api:
+  - videoSourceMuteRemoteAudioStream
+  - videoSourceMuteRemoteVideoStream
+  - videoSourceMuteAllRemoteAudioStreams
+  - videoSourceMuteAllRemoteVideoStreams
+* fix videoSource
+
 ## 3.5.1-build.1123 (Nov 23th, 2021)
 * modify
  - getScreenDisplaysInfo

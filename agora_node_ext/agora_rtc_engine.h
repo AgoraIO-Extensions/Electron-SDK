@@ -402,6 +402,11 @@ class NodeRtcEngine : public node::ObjectWrap {
   NAPI_API(setAudioMixingDualMonoMode);
   NAPI_API(getAudioFileInfo);
 
+  NAPI_API(videoSourceMuteRemoteAudioStream);
+  NAPI_API(videoSourceMuteAllRemoteAudioStreams);
+  NAPI_API(videoSourceMuteRemoteVideoStream);
+  NAPI_API(videoSourceMuteAllRemoteVideoStreams);
+
  public:
   Isolate* getIsolate() { return m_isolate; }
   IRtcEngine* getRtcEngine() { return m_engine; }

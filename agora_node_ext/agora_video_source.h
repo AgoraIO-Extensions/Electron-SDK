@@ -183,6 +183,13 @@ class AgoraVideoSource {
   virtual node_error setScreenCaptureContentHint(
       VideoContentHint contentHint) = 0;
 
+  virtual node_error muteRemoteAudioStream(agora::rtc::uid_t userId,
+                                           bool mute) = 0;
+  virtual node_error muteAllRemoteAudioStreams(bool mute) = 0;
+  virtual node_error muteRemoteVideoStream(agora::rtc::uid_t userId,
+                                           bool mute) = 0;
+  virtual node_error muteAllRemoteVideoStreams(bool mute) = 0;
+
   /**
    * start screen capture by screen rect
    */
