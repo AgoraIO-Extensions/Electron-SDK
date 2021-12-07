@@ -1,6 +1,15 @@
+## 3.4.11-build.1207(Dec 7th, 2021)
+* add new api:
+  - videoSourceMuteRemoteAudioStream
+  - videoSourceMuteRemoteVideoStream
+  - videoSourceMuteAllRemoteAudioStreams
+  - videoSourceMuteAllRemoteVideoStreams
+* fix videoSource
+
 ## 3.4.11-build.1202(Dec 2th, 2021)
 * remove getAudioMixingFileDuration
 * add getScreenCaptureSources
+
 ## 3.4.8-build.1123 (Nov 23th, 2021)
 * modify
  - getScreenDisplaysInfo
