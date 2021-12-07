@@ -162,6 +162,14 @@
                     'Cocoa.framework',
                     'Foundation.framework'
                     ]
+                    ,
+                    "xcode_settings": {
+                        "OTHER_LDFLAGS": [
+                            "-Wl",
+                            "-rpath",
+                            "@loader_path"
+                            ]
+                    }
                 },
                 'include_dirs': [
                 './sdk/lib/mac/AgoraRtcKit.framework/Headers'
@@ -392,6 +400,14 @@
                     'Foundation.framework',
                     'AVFoundation.framework'
                     ]
+                    ,
+                    "xcode_settings": {
+                        "OTHER_LDFLAGS": [
+                            "-Wl",
+                            "-rpath",
+                            "@loader_path"
+                            ]
+                    }
                 },
                 'sources': [
                     './common/node_process_unix.cpp',
