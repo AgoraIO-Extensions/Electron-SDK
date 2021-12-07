@@ -3857,6 +3857,19 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.videoSourceInitialize(appId, areaCode, groupId, bundleId);
   }
 
+  videoSourceMuteRemoteAudioStream(uid: number, mute: boolean): number {
+    return this.rtcEngine.videoSourceMuteRemoteAudioStream(uid, mute);
+  }
+  videoSourceMuteAllRemoteAudioStreams(mute: boolean): number {
+    return this.rtcEngine.videoSourceMuteAllRemoteAudioStreams(mute);
+  }
+  videoSourceMuteRemoteVideoStream(uid: number, mute: boolean): number {
+    return this.rtcEngine.videoSourceMuteRemoteVideoStream(uid, mute);
+  }
+  videoSourceMuteAllRemoteVideoStreams(mute: boolean): number {
+    return this.rtcEngine.videoSourceMuteAllRemoteVideoStreams(mute);
+  }
+
   /**
    * Sets the video renderer for video source.
    * @param {Element} view The dom element where video source should be
