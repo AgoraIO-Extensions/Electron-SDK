@@ -93,6 +93,11 @@ namespace agora{
             * To stop receive local video of video source.
             */
             virtual node_error stopPreview() = 0;
+            
+            virtual node_error muteRemoteAudioStream(agora::rtc::uid_t userId, bool mute) = 0;
+            virtual node_error muteAllRemoteAudioStreams(bool mute) = 0;
+            virtual node_error muteRemoteVideoStream(agora::rtc::uid_t userId, bool mute) = 0;
+            virtual node_error muteAllRemoteVideoStreams(bool mute) = 0;
 
             /**
              * Release video source.
