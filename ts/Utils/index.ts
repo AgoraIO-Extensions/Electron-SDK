@@ -1,3 +1,9 @@
+import {
+  VideoSourceType,
+  RendererConfigInternal,
+  RendererConfig,
+  CONTENT_MODE,
+} from "../Renderer/type";
 /*
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-28 13:34:31
@@ -39,10 +45,6 @@ export const objsKeysToLowerCase = (array: Array<any>) => {
 
 export const changeEventNameForOnXX = (eventName: string) =>
   eventName.slice(2, 3).toLocaleLowerCase() + eventName.slice(3);
-
-export const changeEventNameForVideoSource = (eventName: string) =>
-  "videoSource" + eventName.slice(2);
-
 export const jsonStringToArray = (jsonString: string) => {
   try {
     return JSON.parse(jsonString);
@@ -66,13 +68,83 @@ export const forwardEvent = ({
   fire,
   filter,
 }: ForwardEventParam) => {
-  const _params = jsonStringToArray(params);
-  const isFilter = filter(eventName, _params, buffer);
-  if (isFilter || !fire) {
+  let _params;
+  try {
+    _params = JSON.parse(params);
+  } catch (error) {
+    console.error(`eventName:${eventName}  params:${params}`);
+    console.error("parse error: ", error);
     return;
   }
-  const finalEventName = changeNameHandler(eventName);
+  try {
+    const isFilter = filter(eventName, _params, buffer);
+    if (isFilter || !fire) {
+      return;
+    }
+    const finalEventName = changeNameHandler(eventName);
 
-  fire(finalEventName, ..._params);
-  fire(finalEventName.toLocaleLowerCase(), ..._params);
+    fire(finalEventName, ..._params);
+    fire(finalEventName.toLocaleLowerCase(), ..._params);
+  } catch (error) {
+    console.error(`eventName:${eventName}  params:${params}`);
+    console.error("fire error: ", error);
+  }
+};
+
+export const getUidAndChannelIdForIrisRender = (
+  videoSourceType: VideoSourceType,
+  originChannelId?: string,
+  originUid?: number
+): {
+  uid: number;
+  channelId: string;
+} => {
+  let uid = originUid;
+  let channelId = originChannelId;
+
+  switch (videoSourceType) {
+    case VideoSourceType.kVideoSourceCameraPrimary:
+    case VideoSourceType.kVideoSourceCameraSecondary:
+    case VideoSourceType.kVideoSourceScreenPrimary:
+    case VideoSourceType.kVideoSourceScreenSecondary:
+      channelId = "";
+      uid = videoSourceType;
+      break;
+    case VideoSourceType.kVideoSourceRemote:
+      if (!uid || !channelId) {
+        throw new Error(`must have uid:${uid}}  channelId:${channelId}`);
+      }
+      break;
+    default:
+      break;
+  }
+  return { uid: uid!, channelId: channelId! };
+};
+
+export const getRendererConfigInternal = (
+  originConfig: RendererConfig
+): RendererConfigInternal => {
+  const rendererOptions = Object.assign(
+    {
+      append: false,
+      contentMode: CONTENT_MODE.FIT,
+      mirror: false,
+    },
+    originConfig.rendererOptions
+  );
+  // set default RendererConfig
+  const newConfig = Object.assign(
+    {
+      videoSourceType: VideoSourceType.kVideoSourceCameraPrimary,
+    },
+    originConfig
+  );
+
+  const { uid, channelId } = getUidAndChannelIdForIrisRender(
+    newConfig.videoSourceType,
+    newConfig.channelId,
+    newConfig.uid
+  );
+
+  return { ...newConfig, uid, channelId, rendererOptions };
 };

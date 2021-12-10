@@ -8,11 +8,9 @@
 import {
   Result,
   ApiTypeEngine,
-  ApiTypeChannel,
   ApiTypeAudioDeviceManager,
   ApiTypeVideoDeviceManager,
   ApiTypeRawDataPluginManager,
-  PROCESS_TYPE,
 } from "./native_type";
 import { WindowInfo, DisplayInfo } from "../types";
 import { VideoFrameCacheConfig, VideoFrame } from "../../renderer/type";
@@ -27,40 +25,18 @@ export interface NodeIrisRtcEngine {
   GetDeviceManager(): NodeIrisRtcDeviceManager;
   GetScreenDisplaysInfo(): Array<DisplayInfo>;
   GetScreenWindowsInfo(): Array<WindowInfo>;
-  SetAddonLogFile(processType: PROCESS_TYPE, filePath: string): Result;
-  CallApi(
-    processType: PROCESS_TYPE,
-    apiType: ApiTypeEngine,
-    params: string
-  ): Result;
+  SetAddonLogFile(filePath: string): Result;
+  CallApi(apiType: ApiTypeEngine, params: string): Result;
   CallApiWithBuffer(
-    processType: PROCESS_TYPE,
     apiType: ApiTypeEngine,
     params: string,
     buffer: string,
     bufferLength: number
   ): Result;
-  PluginCallApi(
-    processType: PROCESS_TYPE,
-    apiType: ApiTypeRawDataPluginManager,
-    params: string
-  ): Result;
-  CreateChannel(
-    processType: PROCESS_TYPE,
-    channelId: string
-  ): NodeIrisRtcChannel;
-  EnableVideoFrameCache(
-    processType: PROCESS_TYPE,
-    config: VideoFrameCacheConfig
-  ): Result;
-  DisableVideoFrameCache(
-    processType: PROCESS_TYPE,
-    config: VideoFrameCacheConfig
-  ): Result;
-  GetVideoStreamData(
-    processType: PROCESS_TYPE,
-    streamInfo: VideoFrame
-  ): {
+  PluginCallApi(apiType: ApiTypeRawDataPluginManager, params: string): Result;
+  EnableVideoFrameCache(config: VideoFrameCacheConfig): Result;
+  DisableVideoFrameCache(config: VideoFrameCacheConfig): Result;
+  GetVideoStreamData(streamInfo: VideoFrame): {
     ret: boolean;
     isNewFrame: boolean;
     yStride: number;
@@ -72,22 +48,6 @@ export interface NodeIrisRtcEngine {
   VideoSourceInitialize(): Result;
   VideoSourceRelease(): Result;
   Release(): Result;
-}
-
-/**
- * @private
- * @ignore
- */
-export interface NodeIrisRtcChannel {
-  CallApi(apiType: ApiTypeChannel, params: string): Result;
-  CallApiWithBuffer(
-    apiType: ApiTypeChannel,
-    params: string,
-    buffer: string,
-    length: number
-  ): Result;
-  OnEvent(callbackName: string, callback: Function): void;
-  Release(): void;
 }
 
 /**

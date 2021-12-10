@@ -1344,30 +1344,16 @@ export enum CAPTURER_OUTPUT_PREFERENCE {
   CAPTURER_OUTPUT_PREFERENCE_MANUAL = 3,
 }
 
-export enum CAMERA_DIRECTION {
-  /** The rear camera. */
-  CAMERA_REAR = 0,
-  /** The front camera. */
-  CAMERA_FRONT = 1,
+export interface VideoFormat {
+  width: number;
+  height: number;
+  fps: FRAME_RATE;
 }
+
 /** Camera capturer configuration. */
 export interface CameraCapturerConfiguration {
-  /** Camera capturer preference settings. See: #CAPTURER_OUTPUT_PREFERENCE. */
-  preference?: CAPTURER_OUTPUT_PREFERENCE;
-  /** The width (px) of the video image captured by the local camera.
-   * To customize the width of the video image, set `preference` as #CAPTURER_OUTPUT_PREFERENCE_MANUAL (3) first,
-   * and then use `captureWidth`.
-   *
-   * @since v3.3.0
-   */
-  captureWidth?: number;
-  /** The height (px) of the video image captured by the local camera.
-   * To customize the height of the video image, set `preference` as #CAPTURER_OUTPUT_PREFERENCE_MANUAL (3) first,
-   * and then use `captureHeight`.
-   *
-   * @since v3.3.0
-   */
-  captureHeight?: number;
+  deviceId: String;
+  format: VideoFormat;
 }
 
 /** The relative location of the region to the screen or window. */
@@ -3295,4 +3281,53 @@ export interface DisplayInfo {
   isActive: boolean;
   isBuiltin: boolean;
   isMain: boolean;
+}
+
+export enum VOICE_CONVERSION_PRESET {
+  /** Turn off voice conversion effects and use the original voice.
+   */
+  VOICE_CONVERSION_OFF = 0x00000000,
+  /** A gender-neutral voice. To avoid audio distortion, ensure that you use
+   * this enumerator to process a female-sounding voice.
+   */
+  VOICE_CHANGER_NEUTRAL = 0x03010100,
+  /** A sweet voice. To avoid audio distortion, ensure that you use this
+   * enumerator to process a female-sounding voice.
+   */
+  VOICE_CHANGER_SWEET = 0x03010200,
+  /** A steady voice. To avoid audio distortion, ensure that you use this
+   * enumerator to process a male-sounding voice.
+   */
+  VOICE_CHANGER_SOLID = 0x03010300,
+  /** A deep voice. To avoid audio distortion, ensure that you use this
+   * enumerator to process a male-sounding voice.
+   */
+  VOICE_CHANGER_BASS = 0x03010400,
+}
+
+export interface RtcConnection {
+  /**
+   *  The unique channel name for the AgoraRTC session in the string format. The string
+   * length must be less than 64 bytes. Supported character scopes are:
+   * - All lowercase English letters: a to z.
+   * - All uppercase English letters: A to Z.
+   * - All numeric characters: 0 to 9.
+   * - The space character.
+   * - Punctuation characters and other symbols, including: "!", "#", "$", "%", "&", "(", ")", "+", "-",
+   * ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
+   */
+  channelId: string;
+  /**
+   * User ID: A 32-bit unsigned integer ranging from 1 to (2^32-1). It must be unique.
+   */
+  localUid: number;
+}
+
+export interface ScreenCaptureConfiguration {
+  isCaptureWindow: boolean;
+  displayId: number;
+  screenRect: Rectangle;
+  windowId: number;
+  params: ScreenCaptureParameters;
+  regionRect: Rectangle;
 }

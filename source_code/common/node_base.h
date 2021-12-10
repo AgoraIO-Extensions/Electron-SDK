@@ -15,7 +15,6 @@ enum ERROR_CODE {
   ERROR_NOT_INIT = -6
 };
 
-enum PROCESS_TYPE { MAIN, SCREEN_SHARE };
 } // namespace electron
 } // namespace rtc
 } // namespace agora

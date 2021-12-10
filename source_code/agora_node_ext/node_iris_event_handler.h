@@ -23,7 +23,7 @@ class NodeIrisEventHandler : public iris::IrisEventHandler {
   } EventCallback;
 
  public:
-  NodeIrisEventHandler(PROCESS_TYPE type);
+  NodeIrisEventHandler();
   virtual ~NodeIrisEventHandler();
 
   virtual void OnEvent(const char* event, const char* data) override;
@@ -40,7 +40,6 @@ class NodeIrisEventHandler : public iris::IrisEventHandler {
 
  private:
   std::unordered_map<std::string, EventCallback*> _callbacks;
-  PROCESS_TYPE _type;
 };
 }  // namespace electron
 }  // namespace rtc

@@ -1,283 +1,440 @@
-import React, { Component } from "react";
-import AgoraRtcEngine from "../../../";
+import React, { Component, useEffect } from "react";
+import AgoraRtcEngine, {
+  ApiTypeEngine,
+  CHANNEL_PROFILE_TYPE,
+  CLIENT_ROLE_TYPE,
+  AUDIO_PROFILE_TYPE,
+  AUDIO_SCENARIO_TYPE,
+  VideoSourceType,
+  FRAME_RATE,
+  EngineEvents,
+} from "../../../";
 import { List } from "immutable";
 import path from "path";
-import os from "os";
-
-import {
-  voiceChangerList,
-  voiceReverbPreset,
-  videoProfileList,
-  audioProfileList,
-  audioScenarioList,
-  APP_ID,
-  SHARE_ID,
-  RTMP_URL,
-  voiceReverbList,
-  FU_AUTH,
-} from "../utils/settings";
-import { readImage } from "../utils/base64";
-import WindowPicker from "./components/WindowPicker/index.js";
-import DisplayPicker from "./components/DisplayPicker/index.js";
-import { VoiceChangerPreset } from "../../../js/Api/types";
+import { APP_ID } from "../utils/settings";
 
 const isMac = process.platform === "darwin";
+let rtcEngine = new AgoraRtcEngine();
+rtcEngine = null;
 
+const RemoteWindow = ({ uid, channelId }) => {
+  const id = `remoteVideo-${uid}`;
+  console.log("users", uid);
+  useEffect(() => {
+    try {
+      let dom = document.getElementById(id);
+      console.log("dom", dom);
+      setTimeout(() => {
+        rtcEngine.setView({
+          videoSourceType: VideoSourceType.kVideoSourceRemote,
+          uid,
+          channelId,
+
+          view: dom,
+          rendererOptions: { mirror: true, contentMode: 1 },
+        });
+      }, 2000);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      console.log("finish setView");
+    }
+    return () => {
+      // rtcEngine.setView({
+      //   videoSourceType: VideoSourceType.kVideoSourceRemote,
+      //   uid,
+      //   channelId,
+      //   view: dom,
+      //   rendererOptions: { mirror: true, contentMode: 1 },
+      // });
+    };
+  }, []);
+
+  return (
+    <div
+      key={id}
+      className="render-view"
+      id={id}
+      style={{ backgroundColor: "green" }}
+    />
+  );
+};
+const defaultState = {
+  isSetFirstCameraView: false,
+  isSetSecondCameraView: false,
+  isSetFirstScreenShareView: false,
+  isSetSecondScreenShareView: false,
+
+  isOpenFirstCamera: true,
+  isOpenSecondCamera: false,
+  isStartFirstScreenShare: false,
+  isStartSecondScreenShare: false,
+
+  users: [],
+  channelId: "testLH123",
+};
 export default class App extends Component {
   constructor(props) {
     super(props);
-    const process = window.process || process;
+  }
+  state = Object.assign({}, defaultState);
+  componentDidMount() {
+    console.log("## pid", process.pid);
+    window.ApiTypeEngine = ApiTypeEngine;
+    window.rtcEngine = new AgoraRtcEngine();
+  }
 
-    if (process) {
-      console.log("## pid", process.pid);
+  onPressInitialize = () => {
+    if (rtcEngine) {
+      return;
     }
-    if (!APP_ID) {
-      alert("APP_ID cannot be empty!");
+    rtcEngine = new AgoraRtcEngine();
+    window.rtcEngine = rtcEngine;
+
+    let res = rtcEngine.initialize({
+      appId: APP_ID,
+      areaCode: 1,
+      logConfig: {
+        filePath: "/Users/jerry/Downloads/111",
+        fileSize: 1024,
+        level: 1,
+      },
+    });
+
+    console.log("initialize res", res);
+
+    res = rtcEngine.setChannelProfile(
+      CHANNEL_PROFILE_TYPE.CHANNEL_PROFILE_LIVE_BROADCASTING
+    );
+    console.log("setChannelProfile", res);
+
+    res = rtcEngine.setClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+    console.log("setClientRole", res);
+
+    res = rtcEngine.setAudioProfile(
+      AUDIO_PROFILE_TYPE.AUDIO_PROFILE_DEFAULT,
+      AUDIO_SCENARIO_TYPE.AUDIO_SCENARIO_CHATROOM_ENTERTAINMENT
+    );
+    console.log("setAudioProfile", res);
+
+    res = rtcEngine.enableVideo();
+    console.log("enableVideo", res);
+
+    res = rtcEngine.enableWebSdkInteroperability(true);
+    console.log("enableWebSdkInteroperability", res);
+
+    res = rtcEngine.setVideoEncoderConfiguration({
+      //      label: "160x120	15fps	65kbps",
+      width: 160,
+      height: 120,
+      frameRate: 15,
+      bitrate: 65,
+    });
+    console.log("setVideoEncoderConfiguration", res);
+
+    res = rtcEngine.enableDualStreamMode(true);
+    console.log("enableDualStreamMode", res);
+
+    const ver = rtcEngine.getVersion();
+    console.log("getVersion", ver);
+    // rtcEngine.startPreview();
+    this.subscribeEvent();
+  };
+  subscribeEvent = () => {
+    rtcEngine.on(EngineEvents.JOINED_CHANNEL, (connection, elapsed) => {
+      console.info("JOINED_CHANNEL", connection, elapsed);
+    });
+    rtcEngine.on(EngineEvents.LEAVE_CHANNEL, (stats) => {
+      console.info("LEAVE_CHANNEL", stats);
+    });
+
+    rtcEngine.on(EngineEvents.USER_OFFLINE, (connection, remoteUid, reason) => {
+      console.info("USER_OFFLINE", connection, remoteUid, reason);
+
+      const { users } = this.state;
+      this.setState({ users: users.filter((uid) => uid !== remoteUid) });
+    });
+
+    rtcEngine.on(EngineEvents.USER_JOINED, (connection, uid, elapsed) => {
+      console.info("USER_JOINED", connection, uid, elapsed);
+      const { users } = this.state;
+      this.setState({ users: [...users, uid] });
+    });
+  };
+  onPressJoin = () => {
+    const { channelId } = this.state;
+    let res = rtcEngine.joinChannel(null, channelId, "", window.uid || 10086, {
+      autoSubscribeAudio: true,
+      autoSubscribeVideo: true,
+      publishAudioTrack: true,
+      publishCameraTrack: true,
+      publishScreenTrack: false,
+      clientRoleType: CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER,
+      channelProfile: CHANNEL_PROFILE_TYPE.CHANNEL_PROFILE_LIVE_BROADCASTING,
+    });
+    console.log("joinChannel", res);
+  };
+  onPressRelease = () => {
+    if (!rtcEngine) {
+      return;
+    }
+    rtcEngine.release();
+    rtcEngine = null;
+    this.setState(defaultState);
+  };
+
+  onPressSetViewForFirstCamera = () => {
+    const { isSetFirstCameraView } = this.state;
+    rtcEngine.setRenderMode(2);
+    let dom = document.getElementById("firstCamera");
+    rtcEngine.setView({
+      videoSourceType: VideoSourceType.kVideoSourceCamera,
+
+      view: isSetFirstCameraView ? null : dom,
+      rendererOptions: { mirror: true, contentMode: 1 },
+    });
+    this.setState({ isSetFirstCameraView: !isSetFirstCameraView });
+  };
+  onPressToggleFirstCamera = () => {
+    const { isOpenFirstCamera } = this.state;
+    if (isOpenFirstCamera) {
+      rtcEngine.stopPrimaryCameraCapture();
     } else {
-      let rtcEngine = this.getRtcEngine();
-      let channel1;
-      let channel2;
-      this.state = {
-        local: "",
-        localVideoSource: "",
-        localSharing: false,
-        users: new List(),
-        channel: "",
-        role: 1,
-        voiceReverbPreset: 0,
-        voiceChangerPreset: 0,
-        camera: 0,
-        mic: 0,
-        speaker: 0,
-        videoProfile: 43,
-        showWindowPicker: false,
-        showDisplayPicker: false,
-        recordingTestOn: false,
-        playbackTestOn: false,
-        lastmileTestOn: false,
-        rtmpTestOn: false,
-        windowList: [],
-        displayList: [],
-        encoderWidth: 0,
-        encoderHeight: 0,
-        hookplayerpath: "",
-        audioHookEnabled: false,
-      };
+      const videoList = rtcEngine.getVideoDevices();
+      rtcEngine.startPrimaryCameraCapture({
+        deviceId: videoList[0].deviceId,
+        format: { width: 640, height: 320, fps: FRAME_RATE.FRAME_RATE_FPS_10 },
+      });
     }
-    this.enableAudioMixing = false;
-  }
-  componentDidMount() {}
+    this.setState({ isOpenFirstCamera: !isOpenFirstCamera });
+  };
+  onPressSetViewForSecondCamera = () => {
+    const { isSetSecondCameraView } = this.state;
+    rtcEngine.setRenderMode(2);
+    let dom = document.getElementById("secondCamera");
+    rtcEngine.setView({
+      videoSourceType: VideoSourceType.kVideoSourceCameraSecondary,
 
-  getRtcEngine() {
-    if (!this.rtcEngine) {
-      this.rtcEngine = new AgoraRtcEngine();
-      console.log("new AgoraRtcEngine111");
-      let ret = this.rtcEngine.initialize(APP_ID);
+      view: isSetSecondCameraView ? null : dom,
+      rendererOptions: { mirror: true, contentMode: 1 },
+    });
+    this.setState({ isSetSecondCameraView: !isSetSecondCameraView });
+  };
+  onPressToggleSecondCamera = () => {
+    const { isOpenSecondCamera } = this.state;
 
-      this.rtcEngine.enableVideo();
+    if (isOpenSecondCamera) {
+      rtcEngine.stopSecondaryCameraCapture();
+    } else {
+      const videoList = rtcEngine.getVideoDevices();
 
-      this.rtcEngine.on("firstLocalVideoFrame", (width, height, elapsed) => {
-        console.log(`firstLocalVideoFrame width: ${width}, ${height}`);
+      rtcEngine.startSecondaryCameraCapture({
+        deviceId: videoList[1].deviceId,
+        format: { width: 640, height: 320, fps: FRAME_RATE.FRAME_RATE_FPS_10 },
       });
-
-      this.rtcEngine.on(
-        "firstRemoteVideoFrame",
-        (uid, width, height, elapsed) => {
-          console.log(`firstRemoteVideoFrame ${uid}, ${width} ${height}`);
-        }
-      );
-
-      //   let channel1 = this.rtcEngine.createChannel("channel1")
-      //   channel1.on('joinChannelSuccess', (channelId, uid, elapsed)=>{
-      //     console.log(`channel  joinChannelSuccess ${channelId}`)
-      //     if (channelId === "channel1") {
-      //       setTimeout(() => {
-      //         this.rtcEngine.setRenderMode(2)
-      //         let dom = document.getElementById("localVideo")
-      //         console.log(`joinedChannel dom is ${dom}`)
-      //         this.rtcEngine.setView({view: dom, rendererOptions: {mirror: true, contentMode: 1}})
-      //         // this.rtcEngine.setupViewContentMode('local', '', 1, true)
-      //       }, 5000)
-      //     }
-      //   })
-
-      //   channel1.on('userJoined', (channelId, uid, elapsed) => {
-      //     let dom = document.getElementById("remoteVideo")
-      //     console.log(`channel userJoined ${channelId}, ${uid}`)
-      //     this.rtcEngine.setView({
-      //       user: uid,
-      //       view: dom,
-      //       channelId: "channel1",
-      //       rendererOptions: {
-      //         append: true,
-      //         contentMode: 1,
-      //         mirror: true
-      //       }
-      //     })
-      //   })
-
-      //   channel1.setClientRole(1)
-
-      //   let ret1 = channel1.joinChannel("", "", 0, {
-      //     autoSubscribeAudio: true,
-      //     autoSubscribeVideo: true
-      //   })
-
-      //   let channel2 = this.rtcEngine.createChannel("channel2")
-      //   channel2.on('joinChannelSuccess', (channelId, uid, elapsed)=>{
-      //     console.log(`channel2  joinChannelSuccess ${channelId}`)
-      //   })
-
-      //   channel2.on('userJoined', (channelId, uid, elapsed)=>{
-      //     console.log(`channel2 userJoined ${channelId} ${uid} ${elapsed}`)
-
-      //   })
-
-      //   channel2.setClientRole(1)
-
-      //   channel2.joinChannel('', "", 0, {
-      //     autoSubscribeAudio: true,
-      //     autoSubscribeVideo: true
-      //   })
-
-      //   let ret2 = channel1.publish()
-      //   console.log(`channel join ${ret1}, ${ret2}`)
-      //   channel1.publish()
-      // }
-
-      setTimeout(() => {
-        this.rtcEngine.setRenderMode(2);
-        let dom = document.getElementById("localVideo");
-        this.rtcEngine.setView({
-          user: "local",
-          view: dom,
-          rendererOptions: { mirror: true, contentMode: 1 },
-        });
-        // this.rtcEngine.setupViewContentMode('local', '', 1, true)
-      }, 5000);
-
-      // setTimeout(() => {
-      //   this.rtcEngine.videoSourceStartPreview()
-      //   this.rtcEngine.videoSourceSetChannelProfile(0)
-      // }, 10000)
-
-      this.rtcEngine.on("joinedChannel", (channel, uid, elapsed) => {
-        console.log(`joinChannelSuccess channel: ${channel}, uid: ${uid}`);
-      });
-
-      this.rtcEngine.on("userJoined", (uid, elapsed) => {
-        let dom = document.getElementById("remoteVideo");
-        console.log(`userJoined dom is ${dom}`);
-        this.rtcEngine.setView({
-          user: uid,
-          view: dom,
-          channelId: "456",
-          rendererOptions: { mirror: true, contentMode: 1 },
-        });
-      });
-
-      this.rtcEngine.on("apiError", (msg) => {
-        console.log(`apiError : ${msg}`);
-      });
-
-      this.rtcEngine.on("warning", (msg) => {
-        console.log(`warning  ${msg}`);
-      });
-
-      this.rtcEngine.on("apiCallExecuted", (api, err) =>
-        console.log(`apiCallExecuted ${api} ${err}`)
-      );
-
-      this.rtcEngine.on("videoSourceApiCallExecuted", (api, err) =>
-        console.log(`videoSourceApiCallExecuted ${api} ${err}`)
-      );
-      window.rtcEngine = this.rtcEngine;
-      console.log(`initialize ${ret}`);
-
-      let ret2 = this.rtcEngine.videoSourceInitialize(APP_ID);
-      this.rtcEngine.videoSourceEnableVideo();
-      this.rtcEngine.videoSourceEnableAudio();
-
-      this.rtcEngine.on(
-        "videoSourceJoinChannelSuccess",
-        (channel, uid, elapsed) => {
-          console.log(
-            `videoSourceJoinChannelSuccess  channel: ${channel}, uid: ${uid}, elapsed:${elapsed}`
-          );
-          this.rtcEngine.videoSourceStartScreenCaptureByScreen(
-            { id: 69734208 },
-            { x: 0, y: 0, width: 1920, height: 1080 },
-            {
-              dimensions: {
-                width: 1920,
-                height: 1080,
-              },
-            }
-          );
-
-          let dom2 = document.getElementById("videoSource");
-          this.rtcEngine.setupLocalVideoSource(dom2);
-        }
-      );
-      this.rtcEngine.on("firstLocalVideoFrame", (width, height, elapsed) => {
-        console.log(`firstLocalVideoFrame width: ${width}, ${height}`);
-      });
-
-      this.rtcEngine.on(
-        "videoSourceFirstRemoteVideoFrame",
-        (uid, width, height, elapsed) => {
-          console.log(
-            `videoSourceFirstRemoteVideoFrame  ${uid}, ${width}, ${height}`
-          );
-        }
-      );
-
-      this.rtcEngine.on(
-        "videoSourceFirstLocalVideoFrame",
-        (width, height, elapsed) => {
-          console.log(`videoSourceFirstLocalVideoFrame ${width}, ${height} `);
-        }
-      );
-
-      let pluginPath = path.resolve(__static, "libagoraElectronPlugin.dylib");
-      let videoSourceret1 = this.rtcEngine.videoSourceRegisterPlugin({
-        pluginId: "121",
-        pluginPath:
-          " /Users/zt/Documents/work/cross-platform-sdk/Electron/SDK/Electron-SDK-iris/example/static/libagoraElectronPlugin.dylib",
-        order: 1,
-      });
-
-      // this.rtcEngine.videoSourceEnableAudio();
-      // this.rtcEngine.videoSourceEnableVideo();
-      console.log(`videoSourceRegisterPlugin ${videoSourceret1}`);
-      let ret3 = this.rtcEngine.enableAudio();
-      console.log(`enableAduio  ${ret3}`);
-
-      this.rtcEngine.enableVideo();
-
-      // console.log(`pluginPath:  ${pluginPath}`);
-      // let ret222 = this.rtcEngine.registerPlugin({
-      //   pluginId: "121",
-      //   pluginPath,
-      //   order: 2,
-      // });
-      // this.rtcEngine.startPreview();
-      // console.log(`registerPlugin ${ret222}`)
-      let ret4 = this.rtcEngine.joinChannel("", "456", "", 0);
-      console.log(`joinChannel ${ret4}`);
-
-      this.rtcEngine.videoSourceJoinChannel("", "456", "", 0);
     }
+    this.setState({ isOpenSecondCamera: !isOpenSecondCamera });
+  };
+  onPressSetViewForFirstScreenShare = () => {
+    const { isSetFirstScreenShareView } = this.state;
+    rtcEngine.setRenderMode(2);
+    let dom = document.getElementById("scrrenShare1");
+    rtcEngine.setView({
+      videoSourceType: VideoSourceType.kVideoSourceScreenPrimary,
 
-    return this.rtcEngine;
-  }
+      view: isSetFirstScreenShareView ? null : dom,
+      rendererOptions: { mirror: true, contentMode: 1 },
+    });
+    this.setState({ isSetFirstScreenShareView: !isSetFirstScreenShareView });
+  };
+  onPressToggleFirstScreenShare = () => {
+    const { isStartFirstScreenShare } = this.state;
+    const displayList = rtcEngine.getScreenDisplaysInfo();
+    const windowList = rtcEngine.getScreenWindowsInfo();
+    const {
+      displayId: { id },
+    } = displayList[0];
+    const { windowId } = windowList[0];
+    console.log("getScreenDisplaysInfo", displayList);
+    console.log("getScreenWindowsInfo", windowList);
+
+    if (!isStartFirstScreenShare) {
+      const res = rtcEngine.startPrimaryScreenCapture({
+        isCaptureWindow: false,
+        displayId: id,
+        screenRect: { width: 0, height: 0, x: 0, y: 0 },
+        windowId: windowId,
+        params: {
+          dimensions: { width: 1920, height: 1080 },
+          bitrate: 1000,
+          frameRate: 15,
+          captureMouseCursor: false,
+          windowFocus: false,
+          excludeWindowList: [],
+          excludeWindowCount: 0,
+        },
+
+        regionRect: { x: 0, y: 0, width: 0, height: 0 },
+      });
+      // const res = rtcEngine.startScreenCaptureByScreen(
+      //   list[0].displayId,
+      //   { x: 0, y: 0, width: 0, height: 0 },
+      //   {
+      //     width: 1920,
+      //     height: 1080,
+      //     bitrate: 1000,
+      //     frameRate: 15,
+      //     captureMouseCursor: false,
+      //     windowFocus: false,
+      //     excludeWindowList: [],
+      //     excludeWindowCount: [],
+      //   }
+      // );
+      console.log("startSecondaryScreenCapture", res);
+    } else {
+      rtcEngine.stopPrimaryScreenCapture();
+    }
+    this.setState({ isStartFirstScreenShare: !isStartFirstScreenShare });
+  };
+  onPressSetViewForSecondScreenShare = () => {
+    const { isSetSecondScreenShareView } = this.state;
+    rtcEngine.setRenderMode(2);
+    let dom = document.getElementById("scrrenShare2");
+    rtcEngine.setView({
+      videoSourceType: VideoSourceType.kVideoSourceScreenSecondary,
+
+      view: isSetSecondScreenShareView ? null : dom,
+      rendererOptions: { mirror: true, contentMode: 1 },
+    });
+    this.setState({ isSetSecondScreenShareView: !isSetSecondScreenShareView });
+  };
+  onPressToggleSecondScreenShare = () => {
+    const { isStartSecondScreenShare } = this.state;
+    const displayList = rtcEngine.getScreenDisplaysInfo();
+    const windowList = rtcEngine.getScreenWindowsInfo();
+    const {
+      displayId: { id },
+    } = displayList[1];
+    const { windowId } = windowList[2];
+    console.log("getScreenDisplaysInfo", displayList);
+    console.log("getScreenWindowsInfo", windowList);
+
+    if (!isStartSecondScreenShare) {
+      const res = rtcEngine.startSecondaryScreenCapture({
+        isCaptureWindow: false,
+        displayId: id,
+        screenRect: { width: 0, height: 0, x: 0, y: 0 },
+        windowId: windowId,
+        params: {
+          dimensions: { width: 1920, height: 1080 },
+          bitrate: 1000,
+          frameRate: 15,
+          captureMouseCursor: false,
+          windowFocus: false,
+          excludeWindowList: [],
+          excludeWindowCount: 0,
+        },
+
+        regionRect: { x: 0, y: 0, width: 0, height: 0 },
+      });
+      console.log("startSecondaryScreenCapture", res);
+    } else {
+      rtcEngine.stopSecondaryScreenCapture();
+    }
+    this.setState({ isStartSecondScreenShare: !isStartSecondScreenShare });
+  };
+  renderViews = () => {
+    const { users, channelId } = this.state;
+    return (
+      <div className="renderViewList">
+        <div className="renderViewListForRow">
+          <div
+            className="render-view"
+            id={"firstCamera"}
+            style={{ backgroundColor: "yellow" }}
+          />
+          <div
+            className="render-view"
+            id={"secondCamera"}
+            style={{ backgroundColor: "red" }}
+          />
+
+          <div
+            className="render-view"
+            id={"scrrenShare1"}
+            style={{ backgroundColor: "gray" }}
+          />
+          <div
+            className="render-view"
+            id={"scrrenShare2"}
+            style={{ backgroundColor: "blue" }}
+          />
+        </div>
+        <div className="renderViewListForRow">
+          {users.map((uid) => (
+            <RemoteWindow uid={uid} channelId={channelId} />
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   render() {
+    const { isOpenFirstCamera, isOpenSecondCamera, isStartFirstScreenShare } =
+      this.state;
     return (
-      <div className="window-item">
-        <div className="local-video-item" id={"localVideo"}></div>
-        <div className="local-video-item" id={"remoteVideo"}></div>
-        <div className="local-video-item" id={"videoSource"}></div>
+      <div className="content">
+        <button onClick={this.onPressInitialize}>Initialize</button>
+        <button onClick={this.onPressRelease}>Release</button>
+        <button onClick={this.onPressJoin}>JoinChannel</button>
+        <button
+          onClick={() => {
+            // console.log(rtcEngine.getVideoDevices());
+            // const res = rtcEngine.startPreview();
+            // console.log("startPreview", res);
+
+            console.log(this.state.users);
+          }}
+        >
+          Test
+        </button>
+        <div>
+          FirstCamera:
+          <button onClick={this.onPressSetViewForFirstCamera}>
+            setViewForFirstCamera
+          </button>
+          <button onClick={this.onPressToggleFirstCamera}>
+            {!isOpenFirstCamera ? "Open FirstCamera" : "Close FirstCamera"}
+          </button>
+        </div>
+        <div>
+          SecondCamera:
+          <button onClick={this.onPressSetViewForSecondCamera}>
+            setViewForSecondCamera
+          </button>
+          <button onClick={this.onPressToggleSecondCamera}>
+            {!isOpenSecondCamera ? "Open SecondCamera" : "Close SecondCamera"}
+          </button>
+        </div>
+        <div>
+          FirstScreenShare:
+          <button onClick={this.onPressSetViewForFirstScreenShare}>
+            setViewForFirstScreenShare
+          </button>
+          <button onClick={this.onPressToggleFirstScreenShare}>
+            StartFirstScreenShare
+          </button>
+        </div>
+        <div>
+          SecondScreenShare:
+          <button onClick={this.onPressSetViewForSecondScreenShare}>
+            setViewForSecondScreenShare
+          </button>
+          <button onClick={this.onPressToggleSecondScreenShare}>
+            StartSecondScreenShare
+          </button>
+        </div>
+        {this.renderViews()}
       </div>
     );
   }

@@ -12,7 +12,7 @@
 namespace agora {
 namespace rtc {
 namespace electron {
-NodeIrisEventHandler::NodeIrisEventHandler(PROCESS_TYPE type) : _type(type) {
+NodeIrisEventHandler::NodeIrisEventHandler() {
   node_async_call::close(false);
 }
 
@@ -46,19 +46,17 @@ void NodeIrisEventHandler::addEvent(const std::string& eventName,
 void NodeIrisEventHandler::OnEvent(const char* event, const char* data) {
   std::string _eventName(event);
   std::string _eventData(data);
-  int32_t type = (int32_t)_type;
-  node_async_call::async_call([this, _eventName, _eventData, type] {
+  node_async_call::async_call([this, _eventName, _eventData] {
     auto it = _callbacks.find("call_back");
     if (it != _callbacks.end()) {
-      size_t argc = 3;
-      napi_value args[3];
+      size_t argc = 2;
+      napi_value args[2];
       napi_value result;
       napi_status status;
-      status = napi_create_int32(it->second->env, type, &args[0]);
       status = napi_create_string_utf8(it->second->env, _eventName.c_str(),
-                                       _eventName.length(), &args[1]);
+                                       _eventName.length(), &args[0]);
       status = napi_create_string_utf8(it->second->env, _eventData.c_str(),
-                                       _eventData.length(), &args[2]);
+                                       _eventData.length(), &args[1]);
 
       napi_value call_back_value;
       status = napi_get_reference_value(
@@ -80,26 +78,23 @@ void NodeIrisEventHandler::OnEvent(const char* event,
   std::string _eventName(event);
   std::string _eventData(data);
   std::vector<char> stringData;
-  int32_t type = (int32_t)_type;
   stringData.resize(length + 1, '\0');
 
   memcpy(stringData.data(), buffer, length);
   std::string _eventBuffer(stringData.data());
-  node_async_call::async_call([this, _eventName, _eventData, _eventBuffer,
-                               type] {
+  node_async_call::async_call([this, _eventName, _eventData, _eventBuffer] {
     auto it = _callbacks.find("call_back_with_buffer");
     if (it != _callbacks.end()) {
-      size_t argc = 4;
-      napi_value args[4];
+      size_t argc = 3;
+      napi_value args[3];
       napi_value result;
       napi_status status;
-      status = napi_create_int32(it->second->env, type, &args[0]);
       status = napi_create_string_utf8(it->second->env, _eventName.c_str(),
-                                       _eventName.length(), &args[1]);
+                                       _eventName.length(), &args[0]);
       status = napi_create_string_utf8(it->second->env, _eventData.c_str(),
-                                       _eventData.length(), &args[2]);
+                                       _eventData.length(), &args[1]);
       status = napi_create_string_utf8(it->second->env, _eventBuffer.c_str(),
-                                       _eventBuffer.length(), &args[3]);
+                                       _eventBuffer.length(), &args[2]);
 
       napi_value call_back_value;
       status = napi_get_reference_value(
