@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 set (CMAKE_CXX_STANDARD 11)
 
-project(agora-electron-rtc-sdk)
+project(agora-electron-dcg-sdk)
 
 include_directories(${CMAKE_JS_INC})
 set(BUILD_TYPE ${CMAKE_BUILD_TYPE})
@@ -28,14 +28,6 @@ file(GLOB COMMON_FILE
         ${COMMON_FILE_DIR}/*.cpp
         )
 
-set(COMMON_IPC_FILE_DIR 
-        ${SOURCE_CODE_PATH}/ipc
-        )
-
-file(GLOB COMMON_IPC_FILE 
-        ${COMMON_IPC_FILE_DIR}/*.cpp
-        )
-
 set(COMMON_PROCESS_FILE_DIR 
         ${SOURCE_CODE_PATH}/process
         )
@@ -44,13 +36,6 @@ set(COMMON_WINDOW_INFO_FILE_DIR
         ${SOURCE_CODE_PATH}/window_Info
         )
 
-set(COMMON_RAW_DATA_FILE_DIR 
-        ${SOURCE_CODE_PATH}/raw_data/video_transporter
-        )
-
-file(GLOB COMMON_RAW_DATA_FILE 
-        ${COMMON_RAW_DATA_FILE_DIR}/*.cpp
-        )
 
 # platform file
 set(PLATFORM_MAC_FILE 
@@ -75,13 +60,13 @@ set(TARGET_AGORA_NODE_EXT_FILE_DIR
         )
 
 file(GLOB TARGET_AGORA_NODE_EXT_FILE 
-        ${TARGET_AGORA_NODE_EXT_FILE_DIR}/*.cpp
+        ${TARGET_AGORA_NODE_EXT_FILE_DIR}/*
         )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin") 
         set(AGORA_IRIS_PROJECT_ARCH "MAC")
         set(AGORA_RTC_SDK_PATH 
-                ${CMAKE_CURRENT_SOURCE_DIR}/iris/RTC/Agora_Native_SDK_for_Mac_FULL/libs
+                ${CMAKE_CURRENT_SOURCE_DIR}/iris/DCG/Agora_Native_SDK_for_Mac_rel.v3.6.200_34767_full_20211130_1114/libs
                 )
         # native rtc sdk library
         file(GLOB AGORA_RTC_SDK_LIBRARY 
@@ -106,12 +91,10 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
                 ${AGORA_IRIS_SDK_PATH}/AgoraRtcWrapper.framework/Headers
                 )
         set(AGORA_RTC_FRAMEWORKS
-                "-framework AgoraCore"
-                "-framework Agorafdkaac"
                 "-framework Agoraffmpeg"
                 "-framework AgoraRtcKit"
-                "-framework AgoraSoundTouch"
-                "-framework av1"
+                "-framework AgoraRTE"
+                "-framework AgoraVideoProcess"
                 )
         set(AGORA_IRIS_FRAMEWORKS 
                 "-framework AgoraRtcWrapper"
@@ -161,11 +144,19 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
                 )
 endif()
 
+file(GLOB COMMON_FILE1 
+        ${AGORA_RTC_SDK_HEADER_FILE_DIR}/*.h
+        )
+file(GLOB COMMON_FILE2
+        ${AGORA_IRIS_SDK_HEADER_FILE_DIR}/*.h
+        )  
+
 function(build_target_agora_node_ext)
         if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin") 
                 add_library(${AGORA_NODE_EXT_NAME} SHARED 
+                        ${COMMON_FILE1}
+                        ${COMMON_FILE2}
                         ${COMMON_FILE} 
-                        ${COMMON_IPC_FILE} 
                         ${COMMON_RAW_DATA_FILE} 
                         ${TARGET_AGORA_NODE_EXT_FILE} 
                         ${PLATFORM_MAC_FILE}
@@ -183,7 +174,6 @@ function(build_target_agora_node_ext)
         elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
                 add_library(${AGORA_NODE_EXT_NAME} SHARED 
                         ${COMMON_FILE} 
-                        ${COMMON_IPC_FILE} 
                         ${COMMON_RAW_DATA_FILE} 
                         ${TARGET_AGORA_NODE_EXT_FILE} 
                         ${PLATFORM_WIN_FILE}
@@ -202,9 +192,7 @@ function(build_target_agora_node_ext)
         target_include_directories(${AGORA_NODE_EXT_NAME} PUBLIC 
                 ${NODE_ADDON_API_DIR}
                 ${COMMON_FILE_DIR} 
-                ${COMMON_IPC_FILE_DIR} 
                 ${COMMON_PROCESS_FILE_DIR} 
-                ${COMMON_RAW_DATA_FILE_DIR} 
                 ${TARGET_AGORA_NODE_EXT_FILE_DIR} 
                 ${COMMON_WINDOW_INFO_FILE_DIR} 
                 ${AGORA_RTC_SDK_HEADER_FILE_DIR} 

@@ -16,13 +16,13 @@ using namespace iris::rtc;
 const char* NodeIrisRtcDeviceManager::_class_name = "NodeIrisRtcDeviceManager";
 const char* NodeIrisRtcDeviceManager::_ret_code_str = "retCode";
 const char* NodeIrisRtcDeviceManager::_ret_result_str = "result";
-agora::iris::rtc::IrisRtcDeviceManager*
+agora::iris::rtc::IIrisRtcDeviceManager*
     NodeIrisRtcDeviceManager::_staticDeviceManager = nullptr;
 napi_ref* NodeIrisRtcDeviceManager::_ref_construcotr_ptr = nullptr;
 
 NodeIrisRtcDeviceManager::NodeIrisRtcDeviceManager(
     napi_env env,
-    iris::rtc::IrisRtcDeviceManager* deviceManager)
+    iris::rtc::IIrisRtcDeviceManager* deviceManager)
     : _env(env), _deviceManager(deviceManager) {
   napi_add_env_cleanup_hook(env, ReleaseNodeSource, this);
 }
@@ -132,9 +132,11 @@ napi_value NodeIrisRtcDeviceManager::CallApiAudioDevice(
   char result[512];
   memset(result, '\0', 512);
   int ret = ERROR_PARAMETER_1;
-
+  if (strcmp(parameter.c_str(), "") == 0) {
+    parameter = "{}";
+  }
   if (_deviceManager->_deviceManager) {
-    ret = _deviceManager->_deviceManager->CallApi(
+    ret = static_cast<IIrisRtcAudioDeviceManager *>(_deviceManager->_deviceManager)->CallApi(
         (ApiTypeAudioDeviceManager)_apiType, parameter.c_str(), result);
   } else {
     ret = ERROR_NOT_INIT;
@@ -163,9 +165,12 @@ napi_value NodeIrisRtcDeviceManager::CallApiVideoDevice(
   char result[512];
   memset(result, '\0', 512);
   int ret = ERROR_PARAMETER_1;
+  if (strcmp(parameter.c_str(), "") == 0) {
+    parameter = "{}";
+  }
 
   if (_deviceManager->_deviceManager) {
-    ret = _deviceManager->_deviceManager->CallApi(
+      ret = static_cast<IIrisRtcVideoDeviceManager *>(_deviceManager->_deviceManager)->CallApi(
         (ApiTypeVideoDeviceManager)_apiType, parameter.c_str(), result);
   } else {
     ret = ERROR_NOT_INIT;

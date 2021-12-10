@@ -1047,10 +1047,10 @@
   resolved "https://registry.nlark.com/@types/node/download/@types/node-15.12.2.tgz#1f2b42c4be7156ff4a6f914b2fb03d05fa84e38d"
   integrity sha1-HytCxL5xVv9Kb5FLL7A9BfqE440=
 
-"@types/node@^12.0.12":
-  version "12.20.15"
-  resolved "https://registry.nlark.com/@types/node/download/@types/node-12.20.15.tgz#10ee6a6a3f971966fddfa3f6e89ef7a73ec622df"
-  integrity sha1-EO5qaj+XGWb936P26J73pz7GIt8=
+"@types/node@^14.6.2":
+  version "14.17.34"
+  resolved "https://registry.npmmirror.com/@types/node/download/@types/node-14.17.34.tgz#fe4b38b3f07617c0fa31ae923fca9249641038f0"
+  integrity sha512-USUftMYpmuMzeWobskoPfzDi+vkpe0dvcOBRNOscFrGxVp4jomnRxWuVohgqBow2xyIPC0S3gjxV/5079jhmDg==
 
 "@types/plist@^3.0.1":
   version "3.0.2"
@@ -3114,13 +3114,13 @@ electron-webpack@2.7.4:
     webpack-merge "^4.2.1"
     yargs "^13.2.4"
 
-electron@11.0.0:
-  version "11.0.0"
-  resolved "https://registry.nlark.com/electron/download/electron-11.0.0.tgz#e4966d358832e47189069444799e3b72224e37d9"
-  integrity sha1-5JZtNYgy5HGJBpREeZ47ciJON9k=
+electron@12.0.0:
+  version "12.0.0"
+  resolved "https://registry.npmmirror.com/electron/download/electron-12.0.0.tgz#b3b1d88cc64622e59c637521da5a6b6ab4df4eb5"
+  integrity sha1-s7HYjMZGIuWcY3Uh2lprarTfTrU=
   dependencies:
     "@electron/get" "^1.0.1"
-    "@types/node" "^12.0.12"
+    "@types/node" "^14.6.2"
     extract-zip "^1.0.3"
 
 elliptic@^6.5.3:

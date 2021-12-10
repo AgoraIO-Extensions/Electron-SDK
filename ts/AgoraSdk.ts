@@ -6,11 +6,10 @@
  */
 import { AgoraRtcEngine } from "./Api/AgoraRtcEngine";
 import "./Api/AgoraRtcEngineEvent";
-import "./Api/AgoraRtcChannelEvent";
-export * from "./Api/AgoraRtcChannel";
 export * from "./Api/types";
 export * from "./Api/plugin";
 export * from "./Renderer/type";
 export * from "./Common/JSEvents";
+export { ApiTypeEngine } from "./Api/internal/native_type";
 
 export default AgoraRtcEngine;

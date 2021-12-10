@@ -10,11 +10,10 @@
 #include "iris_rtc_engine.h"
 #include "iris_rtc_raw_data.h"
 #include "iris_rtc_raw_data_plugin_manager.h"
+#include "iris_video_processor.h"
 #include "node_base.h"
-#include "node_iris_rtc_channel.h"
 #include "node_iris_rtc_device_manager.h"
 #include "node_screen_window_info.h"
-#include "video_processer.h"
 
 namespace agora {
 namespace rtc {
@@ -59,16 +58,11 @@ class NodeIrisRtcEngine {
   static const char* _ret_code_str;
   static const char* _ret_result_str;
   
-  std::shared_ptr<VideoProcesser> _video_processer;
   std::shared_ptr<iris::rtc::IrisRtcEngine> _iris_engine;
   std::shared_ptr<NodeIrisEventHandler> _iris_event_handler;
   iris::rtc::IrisRtcRawData* _iris_raw_data;
+  std::shared_ptr<iris::IrisVideoFrameBufferManager> _iris_video_frame_buffer_manager;
   iris::rtc::IrisRtcRawDataPluginManager* _iris_raw_data_plugin_manager;
-
-  std::shared_ptr<iris::rtc::IrisRtcEngine> _iris_sub_process_engine;
-  std::shared_ptr<VideoProcesser> _video_processer_for_sub_process;
-  std::shared_ptr<NodeIrisEventHandler> _iris_event_handler_for_sub_process;
-  iris::rtc::IrisRtcRawDataPluginManager* _iris_raw_data_plugin_manager_for_sub_process;
 };
 }  // namespace electron
 }  // namespace rtc
