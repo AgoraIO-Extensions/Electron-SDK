@@ -52,6 +52,9 @@ bool IAVFramePluginManager::onPlaybackAudioFrameBeforeMixing(
     agora::media::IAudioFrameObserver::AudioFrame &audioFrame) {
   return true;
 }
+bool IAVFramePluginManager::onPlaybackAudioFrameBeforeMixing(const char* channelId, agora::rtc::uid_t uid, AudioFrame& audioFrame){
+  return true;
+}
 
 void IAVFramePluginManager::registerPlugin(agora_plugin_info &plugin) {
   m_mapPlugins.emplace(plugin.id, plugin);

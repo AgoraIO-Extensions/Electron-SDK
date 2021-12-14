@@ -83,7 +83,7 @@ void NodeRtcEngine::Init(Local<Object> &module) {
   PROPERTY_METHOD_DEFINE(muteRemoteVideoStreamEx)
   PROPERTY_METHOD_DEFINE(setRemoteVideoStreamType)
   PROPERTY_METHOD_DEFINE(setRemoteDefaultVideoStreamType)
-  PROPERTY_METHOD_DEFINE(enableAudioVolumeIndication)
+//  PROPERTY_METHOD_DEFINE(enableAudioVolumeIndication)
   PROPERTY_METHOD_DEFINE(startAudioRecording)
   PROPERTY_METHOD_DEFINE(stopAudioRecording)
   PROPERTY_METHOD_DEFINE(startAudioMixing)
@@ -3033,7 +3033,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setRemoteDefaultVideoStreamType) {
   LOG_LEAVE;
 }
 
-NAPI_API_DEFINE_WRAPPER_PARAM_2(enableAudioVolumeIndication, int32, int32);
+//NAPI_API_DEFINE_WRAPPER_PARAM_2(enableAudioVolumeIndication, int32, int32);
 
 NAPI_API_DEFINE(NodeRtcEngine, startAudioRecording) {
   LOG_ENTER;
@@ -5862,7 +5862,7 @@ NAPI_API_DEFINE(NodeRtcEngine, startPrimaryCameraCapture) {
     status = napi_get_object_property_int32_(isolate, videoFormatObj, "fps",
                                              format.fps);
     CHECK_NAPI_STATUS(pEngine, status);
-    config.cameraDirection = (CAMERA_DIRECTION)cameraDirection;
+//    config.cameraDirection = (CAMERA_DIRECTION)cameraDirection;
     strcpy(config.deviceId, deviceId);
     config.format = format;
     result = pEngine->m_engine->startPrimaryCameraCapture(config);
@@ -5911,7 +5911,7 @@ NAPI_API_DEFINE(NodeRtcEngine, startSecondaryCameraCapture) {
     status = napi_get_object_property_int32_(isolate, videoFormatObj, "fps",
                                              format.fps);
     CHECK_NAPI_STATUS(pEngine, status);
-    config.cameraDirection = (CAMERA_DIRECTION)cameraDirection;
+//    config.cameraDirection = (CAMERA_DIRECTION)cameraDirection;
     strcpy(config.deviceId, deviceId);
     config.format = format;
     result = pEngine->m_engine->startSecondaryCameraCapture(config);

@@ -135,7 +135,7 @@ public:
   NAPI_API(muteRemoteVideoStreamEx);
   NAPI_API(setRemoteVideoStreamType);
   NAPI_API(setRemoteDefaultVideoStreamType);
-  NAPI_API(enableAudioVolumeIndication);
+//  NAPI_API(enableAudioVolumeIndication);
   NAPI_API(startAudioRecording);
   NAPI_API(stopAudioRecording);
   NAPI_API(startAudioMixing);
