@@ -1,3 +1,5 @@
+## 2.9.108-rc.7-build.1214
+* update native sdk
 ## 2.9.108-rc.4-build.726
 * support Electron 7.1.13 9.4.4
 
