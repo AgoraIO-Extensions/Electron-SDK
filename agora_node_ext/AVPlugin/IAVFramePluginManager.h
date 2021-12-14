@@ -43,6 +43,7 @@ public:
   virtual bool onPlaybackAudioFrameBeforeMixing(
       agora::rtc::uid_t userId,
       agora::media::IAudioFrameObserver::AudioFrame &audioFrame);
+  virtual bool onPlaybackAudioFrameBeforeMixing(const char* channelId, agora::rtc::uid_t uid, AudioFrame& audioFrame);
 
   void registerPlugin(agora_plugin_info &plugin);
   void unregisterPlugin(std::string &pluginId);
