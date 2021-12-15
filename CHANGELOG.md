@@ -1,3 +1,7 @@
+## 3.4.11-build.1202(Dec 2th, 2021)
+* remove getAudioMixingFileDuration
+* add getScreenCaptureSources
+
 ## 3.5.1-build.1207(Dec 7th, 2021)
 * add new api:
   - videoSourceMuteRemoteAudioStream

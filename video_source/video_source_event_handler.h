@@ -78,8 +78,11 @@ class AgoraVideoSourceEventHandler : public IRtcEngineEventHandler {
   virtual void onLocalVideoStateChanged(
       LOCAL_VIDEO_STREAM_STATE localVideoState,
       LOCAL_VIDEO_STREAM_ERROR error) override;
+//#define _MEETING_ ;
 #if defined(_WIN32)
+#if defined(_MEETING_)
     virtual void onScreenCaptureInfoUpdated(agora::rtc::ScreenCaptureInfo& info)  override;
+#endif
 #endif
  private:
   AgoraVideoSource& m_videoSource;

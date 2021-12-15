@@ -148,9 +148,11 @@ void AgoraVideoSourceEventHandler::onLocalVideoStateChanged(
 }
 
 #if defined(_WIN32)
+#if defined(_MEETING_)
 void AgoraVideoSourceEventHandler::onScreenCaptureInfoUpdated(
     agora::rtc::ScreenCaptureInfo &info) {
   m_videoSource.notifyScreenCaptureInfoUpdated(info.cardType,
                                                (int)info.errCode);
 }
+#endif
 #endif

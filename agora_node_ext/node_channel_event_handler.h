@@ -173,10 +173,9 @@ class NodeChannelEventHandler : public IChannelEventHandler {
       CHANNEL_MEDIA_RELAY_EVENT code) override;
 
   virtual void onRtmpStreamingStateChanged(
-      IChannel* rtcChannel,
-      const char* url,
-      RTMP_STREAM_PUBLISH_STATE state,
-      RTMP_STREAM_PUBLISH_ERROR errCode) override;
+      IChannel *rtcChannel, const char *url,
+      agora::rtc::RTMP_STREAM_PUBLISH_STATE state,
+      agora::rtc::RTMP_STREAM_PUBLISH_ERROR_TYPE errCode) override;
 
   virtual void onTranscodingUpdated(IChannel* rtcChannel) override;
 

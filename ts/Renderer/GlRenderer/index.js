@@ -2,7 +2,6 @@ const createProgramFromSources = require('./webgl-utils')
   .createProgramFromSources;
 const EventEmitter = require('events').EventEmitter;
 const { config } = require('../../Utils/index');
-import { ResizeObserver as RO } from '@juggle/resize-observer';
 
 const AgoraRender = function(initRenderFailCallBack) {
   let gl;
@@ -55,7 +54,7 @@ const AgoraRender = function(initRenderFailCallBack) {
     );
     const ResizeObserver =
       window.ResizeObserver ||
-      RO ||
+      require('@juggle/resize-observer').ResizeObserver ||
       window.WebKitMutationObserver ||
       window.MozMutationObserver;
     if (ResizeObserver) {
