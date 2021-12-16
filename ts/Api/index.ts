@@ -69,6 +69,10 @@ import {
   ScreenCaptureInfo,
   SIZE,
   BeautyOptions,
+  AudioDeviceTestVolumeType,
+  LowLightEnhanceOptions,
+  VideoDenoiserOptions,
+  ColorEnhanceOptions,
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -537,6 +541,12 @@ class AgoraRtcEngine extends EventEmitter {
       elapsed: number
     ) {
       fire('snapshotTaken', channel, uid, elapsed);
+    });
+    this.rtcEngine.onEvent('audioDeviceTestVolumeIndication', function(
+      volumeType: AudioDeviceTestVolumeType,
+      volume: number
+    ) {
+      fire('audioDeviceTestVolumeIndication', volumeType, volume);
     });
 
     // this.rtcEngine.onEvent('connectioninterrupted', function() {
@@ -6568,7 +6578,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * 3.5.2 && 3.6.0 && 3.6.1
+   * 3.5.2 && 3.6.0 && 3.6.0.1
    */
   /**
    * Takes a snapshot of a video stream.
@@ -6784,6 +6794,28 @@ class AgoraRtcEngine extends EventEmitter {
       iconSize,
       includeScreen
     );
+  }
+
+  /**
+   * 3.6.0.2
+   */
+  setLowlightEnhanceOptions(
+    enabled: boolean,
+    options: LowLightEnhanceOptions
+  ): number {
+    return this.rtcEngine.setLowlightEnhanceOptions(enabled, options);
+  }
+  setVideoDenoiserOptions(
+    enabled: boolean,
+    options: VideoDenoiserOptions
+  ): number {
+    return this.rtcEngine.setVideoDenoiserOptions(enabled, options);
+  }
+  setColorEnhanceOptions(
+    enabled: boolean,
+    options: ColorEnhanceOptions
+  ): number {
+    return this.rtcEngine.setColorEnhanceOptions(enabled, options);
   }
 }
 /** The AgoraRtcEngine interface. */
@@ -9952,6 +9984,10 @@ declare interface AgoraRtcChannel {
       height: number,
       errCode: number
     ) => void
+  ): this;
+  on(
+    evt: 'audioDeviceTestVolumeIndication',
+    cb: (volumeType: AudioDeviceTestVolumeType, volume: number) => void
   ): this;
 
   /** Occurs when the local user does not receive the data stream from the

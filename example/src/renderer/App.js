@@ -883,6 +883,13 @@ export default class App extends Component {
     console.log('getDefaultAudioPlaybackDevices', list);
     list = engine.getDefaultAudioRecordingDevices();
     console.log('getDefaultAudioRecordingDevices', list);
+
+    engine.setLowlightEnhanceOptions(true, { mode: 1, level: 1 });
+    engine.setVideoDenoiserOptions(true, { mode: 1, level: 1 });
+    engine.setColorEnhanceOptions(true, {
+      strengthLevel: 2,
+      skinProtectLevel: 3,
+    });
   };
 
   handleRelease = () => {

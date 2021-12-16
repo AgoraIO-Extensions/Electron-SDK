@@ -433,6 +433,13 @@ class NodeRtcEngine : public node::ObjectWrap {
   * 3.4.11
   */
   NAPI_API(getScreenCaptureSources);
+
+  /*
+  * 3.6.0.2
+  */
+  NAPI_API(setLowlightEnhanceOptions);
+  NAPI_API(setColorEnhanceOptions);
+  NAPI_API(setVideoDenoiserOptions);
   
 
  public:
