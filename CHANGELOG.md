@@ -1,5 +1,13 @@
 ## 3.6.0-build.1216(Dec 16th, 2021)
 * add new api:
+  - setLowlightEnhanceOptions
+  - setVideoDenoiserOptions
+  - setColorEnhanceOptions
+* add event:
+  - audioDeviceTestVolumeIndication
+
+## 3.6.0-build.1216(Dec 16th, 2021)
+* add new api:
   - videoSourceDisableAudio
   - adjustLoopbackSignalVolume
   - videoSourceAdjustRecordingSignalVolume
