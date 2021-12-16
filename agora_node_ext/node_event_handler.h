@@ -126,6 +126,8 @@ namespace rtc {
   "requestAudioFileInfo"
 #define RTC_EVENT_SNAPSHOT_TAKEN \
   "snapshotTaken"
+#define RTC_EVENT_AUDIO_DEVICE_TEST_VOLUME_INDICATION \
+  "audioDeviceTestVolumeIndication"
 
 /* meeting */
 #define RTC_EVENT_VIDEO_SOURCE_SCREEN_CAPTURE_INFO_UPDATED "videoSourceScreenCaptureInfoUpdated"
@@ -358,6 +360,8 @@ class NodeEventHandler : public IRtcEngineEventHandler,
   onVideoSourceScreenCaptureInfoUpdated(ScreenCaptureInfoCmd &info) override;
   // 3.5.2
   virtual void onSnapshotTaken(const char* channel, uid_t uid, const char* filePath, int width, int height, int errCode) override;
+  // 3.6.0.2
+  virtual void onAudioDeviceTestVolumeIndication(AudioDeviceTestVolumeType volumeType, int volume) override;
 
 private:
   void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed);

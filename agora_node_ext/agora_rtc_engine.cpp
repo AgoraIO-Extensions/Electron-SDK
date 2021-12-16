@@ -650,11 +650,16 @@ void NodeRtcEngine::Init(Local<Object>& module) {
   PROPERTY_METHOD_DEFINE(setAVSyncSource);
   PROPERTY_METHOD_DEFINE(followSystemPlaybackDevice);
   PROPERTY_METHOD_DEFINE(followSystemRecordingDevice);
-
   /*
   * 3.4.11
   */
   PROPERTY_METHOD_DEFINE(getScreenCaptureSources);
+  /*
+  * 3.6.0.2
+  */
+  PROPERTY_METHOD_DEFINE(setLowlightEnhanceOptions);
+  PROPERTY_METHOD_DEFINE(setColorEnhanceOptions);
+  PROPERTY_METHOD_DEFINE(setVideoDenoiserOptions);
   
   EN_PROPERTY_DEFINE()
   module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(),
@@ -7577,6 +7582,107 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenCaptureSources) {
 
   } while (false);
   napi_set_array_result(args, infos);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, setLowlightEnhanceOptions) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  do {
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    bool enabled;
+    status = napi_get_value_bool_(args[0], enabled);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    int mode = 0, level = 0;
+
+    if (args[1]->IsObject()) {
+      Local<Object> obj;
+      status = napi_get_value_object_(isolate, args[1], obj);
+      CHECK_NAPI_STATUS(pEngine, status);
+
+      status = napi_get_object_property_int32_(isolate, obj, "mode", mode);
+      CHECK_NAPI_STATUS(pEngine, status);
+      status = napi_get_object_property_int32_(isolate, obj, "level", level);
+      CHECK_NAPI_STATUS(pEngine, status);
+    }
+    agora::rtc::LowLightEnhanceOptions opts(
+        (agora::rtc::LowLightEnhanceOptions::LOW_LIGHT_ENHANCE_MODE)mode,
+        (agora::rtc::LowLightEnhanceOptions::LOW_LIGHT_ENHANCE_LEVEL)level);
+    result = pEngine->m_engine->setLowlightEnhanceOptions(enabled, opts);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, setVideoDenoiserOptions) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  do {
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    bool enabled;
+    status = napi_get_value_bool_(args[0], enabled);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    int mode = 0, level = 0;
+
+    if (args[1]->IsObject()) {
+      Local<Object> obj;
+      status = napi_get_value_object_(isolate, args[1], obj);
+      CHECK_NAPI_STATUS(pEngine, status);
+
+      status = napi_get_object_property_int32_(isolate, obj, "mode", mode);
+      CHECK_NAPI_STATUS(pEngine, status);
+      status = napi_get_object_property_int32_(isolate, obj, "level", level);
+      CHECK_NAPI_STATUS(pEngine, status);
+    }
+    agora::rtc::VideoDenoiserOptions opts(
+        (agora::rtc::VideoDenoiserOptions::VIDEO_DENOISER_MODE)mode,
+        (agora::rtc::VideoDenoiserOptions::VIDEO_DENOISER_LEVEL)level);
+    result = pEngine->m_engine->setVideoDenoiserOptions(enabled, opts);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, setColorEnhanceOptions) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  do {
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    bool enabled;
+    status = napi_get_value_bool_(args[0], enabled);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    double strengthLevel = 0, skinProtectLevel = 0;
+    if (args[1]->IsObject()) {
+      Local<Object> obj;
+      status = napi_get_value_object_(isolate, args[1], obj);
+      CHECK_NAPI_STATUS(pEngine, status);
+
+      status = napi_get_object_property_double_(isolate, obj, "strengthLevel",
+                                                strengthLevel);
+      CHECK_NAPI_STATUS(pEngine, status);
+      status = napi_get_object_property_double_(
+          isolate, obj, "skinProtectLevel", skinProtectLevel);
+      CHECK_NAPI_STATUS(pEngine, status);
+    }
+    agora::rtc::ColorEnhanceOptions opts(strengthLevel, skinProtectLevel);
+    result = pEngine->m_engine->setColorEnhanceOptions(enabled, opts);
+  } while (false);
+  napi_set_int_result(args, result);
   LOG_LEAVE;
 }
 

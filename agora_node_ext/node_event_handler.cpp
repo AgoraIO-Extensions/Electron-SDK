@@ -1825,5 +1825,12 @@ void NodeEventHandler::onSnapshotTaken(const char* channel, uid_t uid, const cha
   });
 }
 
+// 3.6.0.2
+void NodeEventHandler::onAudioDeviceTestVolumeIndication(AudioDeviceTestVolumeType volumeType, int volume) {
+  node_async_call::async_call([this, volumeType, volume] {
+    MAKE_JS_CALL_2(RTC_EVENT_AUDIO_DEVICE_TEST_VOLUME_INDICATION, int32, volumeType, int32, volume);
+  });
+}
+
 }  // namespace rtc
 }  // namespace agora
