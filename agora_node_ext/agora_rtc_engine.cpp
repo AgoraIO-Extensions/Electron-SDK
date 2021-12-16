@@ -30,22 +30,26 @@
 using std::string;
 namespace agora {
 namespace rtc {
-template<typename T> agora::rtc::LiveTranscoding* getLiveTranscoding(Local<Object> &obj,const Nan::FunctionCallbackInfo<Value>& args,T* pEngine){
-  TranscodingUser* users = nullptr;
+template <typename T>
+agora::rtc::LiveTranscoding *
+getLiveTranscoding(Local<Object> &obj,
+                   const Nan::FunctionCallbackInfo<Value> &args, T *pEngine) {
+  TranscodingUser *users = nullptr;
   RtcImage *wkImages = nullptr;
-  RtcImage *bgImages =  nullptr;
-  LiveStreamAdvancedFeature* liveStreamAdvancedFeature = nullptr;
-  
+  RtcImage *bgImages = nullptr;
+  LiveStreamAdvancedFeature *liveStreamAdvancedFeature = nullptr;
+
   std::string key = "";
   LiveTranscoding *transcoding = new LiveTranscoding();
   do {
-    Isolate* isolate = args.GetIsolate();
+    Isolate *isolate = args.GetIsolate();
     Local<Context> context = isolate->GetCurrentContext();
     napi_status status;
 
     nodestring extrainfo;
-    int videoCodecProfile, audioSampleRateType, videoCodecType, audioCodecProfile;
-    
+    int videoCodecProfile, audioSampleRateType, videoCodecType,
+        audioCodecProfile;
+
     key = "width";
     nodestring transcodingExtraInfo;
     status =
@@ -81,30 +85,30 @@ template<typename T> agora::rtc::LiveTranscoding* getLiveTranscoding(Local<Objec
     status =
         napi_get_object_property_int32_(isolate, obj, key, videoCodecProfile);
     CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-    transcoding->videoCodecProfile = (VIDEO_CODEC_PROFILE_TYPE)videoCodecProfile;
-    
+    transcoding->videoCodecProfile =
+        (VIDEO_CODEC_PROFILE_TYPE)videoCodecProfile;
+
     key = "videoCodecType";
-    status =
-        napi_get_object_property_int32_(isolate, obj, key, videoCodecType);
+    status = napi_get_object_property_int32_(isolate, obj, key, videoCodecType);
     transcoding->videoCodecType = (VIDEO_CODEC_TYPE_FOR_STREAM)videoCodecType;
-    
+
     key = "backgroundColor";
     status = napi_get_object_property_uint32_(isolate, obj, key,
                                               transcoding->backgroundColor);
     CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
 
-    
     key = "audioSampleRate";
     status =
         napi_get_object_property_int32_(isolate, obj, key, audioSampleRateType);
     transcoding->audioSampleRate = (AUDIO_SAMPLE_RATE_TYPE)audioSampleRateType;
     CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-    
+
     key = "audioCodecProfile";
     status =
         napi_get_object_property_int32_(isolate, obj, key, audioCodecProfile);
     if (status == napi_ok) {
-      transcoding->audioCodecProfile = (AUDIO_CODEC_PROFILE_TYPE)audioCodecProfile;
+      transcoding->audioCodecProfile =
+          (AUDIO_CODEC_PROFILE_TYPE)audioCodecProfile;
     }
 
     key = "audioBitrate";
@@ -116,20 +120,22 @@ template<typename T> agora::rtc::LiveTranscoding* getLiveTranscoding(Local<Objec
     status = napi_get_object_property_int32_(isolate, obj, key,
                                              transcoding->audioChannels);
     CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-    
+
     key = "transcodingExtraInfo";
     status = napi_get_object_property_nodestring_(isolate, obj, key,
                                                   transcodingExtraInfo);
     CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
     transcoding->transcodingExtraInfo = transcodingExtraInfo;
 
-    v8::Array* advancedFeaturesArr;
-    status = napi_get_object_property_array_(isolate,obj,"advancedFeatures",advancedFeaturesArr);
-    if (status == napi_ok && advancedFeaturesArr->Length()>0) {
-      auto count=advancedFeaturesArr->Length();
+    v8::Array *advancedFeaturesArr;
+    status = napi_get_object_property_array_(isolate, obj, "advancedFeatures",
+                                             advancedFeaturesArr);
+    if (status == napi_ok && advancedFeaturesArr->Length() > 0) {
+      auto count = advancedFeaturesArr->Length();
       liveStreamAdvancedFeature = new LiveStreamAdvancedFeature[count];
       for (uint32 i = 0; i < advancedFeaturesArr->Length(); i++) {
-        Local<Value> value = advancedFeaturesArr->Get(context, i).ToLocalChecked();
+        Local<Value> value =
+            advancedFeaturesArr->Get(context, i).ToLocalChecked();
         Local<Object> advancedFeatureObj;
         status = napi_get_value_object_(isolate, value, advancedFeatureObj);
         if (advancedFeatureObj->IsNullOrUndefined()) {
@@ -138,24 +144,28 @@ template<typename T> agora::rtc::LiveTranscoding* getLiveTranscoding(Local<Objec
         }
         key = "featureName";
         NodeString featureName;
-        napi_get_object_property_nodestring_(isolate, advancedFeatureObj, key, featureName);
+        napi_get_object_property_nodestring_(isolate, advancedFeatureObj, key,
+                                             featureName);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
         if (featureName) {
-          liveStreamAdvancedFeature[i].featureName = string(featureName).c_str();
+          liveStreamAdvancedFeature[i].featureName =
+              string(featureName).c_str();
         }
 
         key = "opened";
-        napi_get_object_property_bool_(isolate, advancedFeatureObj, key, liveStreamAdvancedFeature[i].opened);
+        napi_get_object_property_bool_(isolate, advancedFeatureObj, key,
+                                       liveStreamAdvancedFeature[i].opened);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
       }
       transcoding->advancedFeatures = liveStreamAdvancedFeature;
       transcoding->advancedFeatureCount = count;
     }
-    
-    v8::Array* watermarkArr;
-    status = napi_get_object_property_array_(isolate,obj,"watermark",watermarkArr);
-    if (status == napi_ok && watermarkArr->Length()>0) {
-      auto count=watermarkArr->Length();
+
+    v8::Array *watermarkArr;
+    status = napi_get_object_property_array_(isolate, obj, "watermark",
+                                             watermarkArr);
+    if (status == napi_ok && watermarkArr->Length() > 0) {
+      auto count = watermarkArr->Length();
       wkImages = new RtcImage[count];
       for (uint32 i = 0; i < watermarkArr->Length(); i++) {
         Local<Value> value = watermarkArr->Get(context, i).ToLocalChecked();
@@ -167,39 +177,46 @@ template<typename T> agora::rtc::LiveTranscoding* getLiveTranscoding(Local<Objec
         }
         key = "url";
         NodeString urlStr;
-        status = napi_get_object_property_nodestring_(isolate, watermarkObj, key, urlStr);
+        status = napi_get_object_property_nodestring_(isolate, watermarkObj,
+                                                      key, urlStr);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
         if (urlStr) {
           wkImages[i].url = std::string(urlStr).c_str();
         }
 
         key = "x";
-        napi_get_object_property_int32_(isolate, watermarkObj, key, wkImages[i].x);
+        napi_get_object_property_int32_(isolate, watermarkObj, key,
+                                        wkImages[i].x);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
 
         key = "y";
-        napi_get_object_property_int32_(isolate, watermarkObj, key, wkImages[i].y);
+        napi_get_object_property_int32_(isolate, watermarkObj, key,
+                                        wkImages[i].y);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
 
         key = "width";
-        napi_get_object_property_int32_(isolate, watermarkObj, key, wkImages[i].width);
+        napi_get_object_property_int32_(isolate, watermarkObj, key,
+                                        wkImages[i].width);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
 
         key = "height";
-        napi_get_object_property_int32_(isolate, watermarkObj, key, wkImages[i].height);
+        napi_get_object_property_int32_(isolate, watermarkObj, key,
+                                        wkImages[i].height);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
       }
       transcoding->watermark = wkImages;
       transcoding->watermarkCount = count;
     }
 
-    v8::Array* backgroundImageArr;
-    status = napi_get_object_property_array_(isolate,obj,"backgroundImage",backgroundImageArr);
-    if (status == napi_ok && backgroundImageArr->Length()>0) {
-      auto count=backgroundImageArr->Length();
+    v8::Array *backgroundImageArr;
+    status = napi_get_object_property_array_(isolate, obj, "backgroundImage",
+                                             backgroundImageArr);
+    if (status == napi_ok && backgroundImageArr->Length() > 0) {
+      auto count = backgroundImageArr->Length();
       bgImages = new RtcImage[count];
       for (uint32 i = 0; i < backgroundImageArr->Length(); i++) {
-        Local<Value> value = backgroundImageArr->Get(context, i).ToLocalChecked();
+        Local<Value> value =
+            backgroundImageArr->Get(context, i).ToLocalChecked();
         Local<Object> advancedFeatureObj;
         status = napi_get_value_object_(isolate, value, advancedFeatureObj);
         if (advancedFeatureObj->IsNullOrUndefined()) {
@@ -208,36 +225,42 @@ template<typename T> agora::rtc::LiveTranscoding* getLiveTranscoding(Local<Objec
         }
         key = "url";
         NodeString urlStr;
-        napi_get_object_property_nodestring_(isolate, advancedFeatureObj, key, urlStr);
+        napi_get_object_property_nodestring_(isolate, advancedFeatureObj, key,
+                                             urlStr);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
         if (urlStr) {
           bgImages[i].url = string(urlStr).c_str();
         }
 
         key = "x";
-        napi_get_object_property_int32_(isolate, advancedFeatureObj, key, bgImages[i].x);
+        napi_get_object_property_int32_(isolate, advancedFeatureObj, key,
+                                        bgImages[i].x);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
 
         key = "y";
-        napi_get_object_property_int32_(isolate, advancedFeatureObj, key, bgImages[i].y);
+        napi_get_object_property_int32_(isolate, advancedFeatureObj, key,
+                                        bgImages[i].y);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
 
         key = "width";
-        napi_get_object_property_int32_(isolate, advancedFeatureObj, key, bgImages[i].width);
+        napi_get_object_property_int32_(isolate, advancedFeatureObj, key,
+                                        bgImages[i].width);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
 
         key = "height";
-        napi_get_object_property_int32_(isolate, advancedFeatureObj, key, bgImages[i].height);
+        napi_get_object_property_int32_(isolate, advancedFeatureObj, key,
+                                        bgImages[i].height);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
       }
       transcoding->backgroundImage = bgImages;
       transcoding->backgroundImageCount = count;
     }
 
-    v8::Array* usersValue;
-    status = napi_get_object_property_array_(isolate,obj,"transcodingUsers",usersValue);
-    if (status == napi_ok && usersValue->Length()>0) {
-      auto count=usersValue->Length();
+    v8::Array *usersValue;
+    status = napi_get_object_property_array_(isolate, obj, "transcodingUsers",
+                                             usersValue);
+    if (status == napi_ok && usersValue->Length() > 0) {
+      auto count = usersValue->Length();
       users = new TranscodingUser[count];
       for (uint32 i = 0; i < count; i++) {
         Local<Value> value = usersValue->Get(context, i).ToLocalChecked();
@@ -286,7 +309,7 @@ template<typename T> agora::rtc::LiveTranscoding* getLiveTranscoding(Local<Objec
     }
     return transcoding;
   } while (false);
-  
+
   return nullptr;
 }
 
