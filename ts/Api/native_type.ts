@@ -4578,6 +4578,19 @@ export interface NodeRtcEngine {
     iconSize: SIZE,
     includeScreen: boolean
   ): Array<Object>;
+
+  setLowlightEnhanceOptions(
+    enabled: boolean,
+    options: LowLightEnhanceOptions
+  ): number;
+  setVideoDenoiserOptions(
+    enabled: boolean,
+    options: VideoDenoiserOptions
+  ): number;
+  setColorEnhanceOptions(
+    enabled: boolean,
+    options: ColorEnhanceOptions
+  ): number;
 }
 /**
  * @ignore
@@ -4838,4 +4851,75 @@ export interface BeautyOptions {
   smoothnessLevel: number;
   rednessLevel: number;
   sharpnessLevel: number;
+}
+
+export enum LOW_LIGHT_ENHANCE_MODE {
+  /** low light enhancement is applied automatically when neccessary. */
+  LOW_LIGHT_ENHANCE_AUTO = 0,
+  /** low light enhancement is applied manually. */
+  LOW_LIGHT_ENHANCE_MANUAL,
+}
+
+export enum LOW_LIGHT_ENHANCE_LEVEL {
+  /** low light enhancement is applied without reducing frame rate. */
+  LOW_LIGHT_ENHANCE_LEVEL_HIGH_QUALITY = 0,
+  /** High-quality low light enhancement is applied, at the cost of possibly reduced frame rate and higher cpu usage. */
+  LOW_LIGHT_ENHANCE_LEVEL_FAST,
+}
+
+/** lowlight enhancement options.
+ */
+export interface LowLightEnhanceOptions {
+  /** lowlight enhancement mode.
+   */
+  mode: LOW_LIGHT_ENHANCE_MODE;
+
+  /** lowlight enhancement level.
+   */
+  level: LOW_LIGHT_ENHANCE_LEVEL;
+}
+
+/** video noise reduction mode
+ */
+export enum VIDEO_DENOISER_MODE {
+  /** video noise reduction is applied automatically when neccessary. */
+  VIDEO_DENOISER_AUTO = 0,
+  /** video noise reduction is applied manually. */
+  VIDEO_DENOISER_MANUAL,
+}
+
+export enum VIDEO_DENOISER_LEVEL {
+  /** Video noise reduction is applied for the default scene  */
+  VIDEO_DENOISER_LEVEL_HIGH_QUALITY = 0,
+  /** Video noise reduction is applied for the fixed-camera scene to save the cpu usage */
+  VIDEO_DENOISER_LEVEL_FAST,
+  /** Video noise reduction is applied for the high noisy scene to further denoise the video. */
+  VIDEO_DENOISER_LEVEL_STRENGTH,
+}
+export interface VideoDenoiserOptions {
+  /** video noise reduction mode.
+   */
+  mode: VIDEO_DENOISER_MODE;
+
+  /** video noise reduction level.
+   */
+  level: VIDEO_DENOISER_LEVEL;
+}
+
+/** color enhancement options.
+ */
+export interface ColorEnhanceOptions {
+  /** Color enhance strength. The value ranges between 0 (original) and 1.
+   */
+  strengthLevel: number;
+
+  /** Skin protect level. The value ranges between 0 (original) and 1.
+   */
+  skinProtectLevel: number;
+}
+
+/**Audio Device Test.different volume Type*/
+export enum AudioDeviceTestVolumeType {
+  AudioTestRecordingVolume = 0,
+  AudioTestPlaybackVolume = 1,
 }
