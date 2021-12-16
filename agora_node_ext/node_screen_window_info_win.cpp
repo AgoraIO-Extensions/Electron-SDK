@@ -1,10 +1,3 @@
-//
-//  node_screen_window_info.cpp
-//
-//  Created by suleyu on 2018/8/8.
-//  Copyright © 2018 Agora. All rights reserved.
-//
-
 #include "node_screen_window_info.h"
 #include "node_log.h"
 #include <gdiplus.h>
@@ -13,6 +6,8 @@
 #include <tchar.h>
 #include <Psapi.h>
 #include <algorithm>
+#include "win_enumer.h"
+#include "wingdi.h"
 
 Gdiplus::GdiplusStartupInput g_gdiStartup;
 ULONG_PTR g_gdiplusToken = NULL;
@@ -26,6 +21,8 @@ bool IsDisplayLogo(char class_name[100]) {
       strcmp(class_name, "PPTFrameClass") == 0 ||
       strcmp(class_name, "screenClass") == 0 ||
       strcmp(class_name, "QWidget") == 0 ||
+      strcmp(class_name, "TXGuiFoundation") == 0 ||
+      strcmp(class_name, "QMShadowWndClass") == 0 ||
       strcmp(class_name, "MozillaWindowClass") == 0) {
     return true;
   } else {
@@ -45,8 +42,8 @@ void DestroyGdiplus() {
 }
 
 BOOL CALLBACK EnumTopWindowsProc(_In_ HWND hwnd, _In_ LPARAM lParam) {
-  std::unordered_set<HWND>* pSet =
-      reinterpret_cast<std::unordered_set<HWND>*>(lParam);
+  std::unordered_set<HWND> *pSet =
+      reinterpret_cast<std::unordered_set<HWND> *>(lParam);
   pSet->insert(hwnd);
   return TRUE;
 }
@@ -98,8 +95,8 @@ BOOL CALLBACK EnumWindowsProc(_In_ HWND hwnd, _In_ LPARAM lParam) {
     return TRUE;
   }
 
-  std::unordered_set<HWND>* pSet =
-      reinterpret_cast<std::unordered_set<HWND>*>(lParam);
+  std::unordered_set<HWND> *pSet =
+      reinterpret_cast<std::unordered_set<HWND> *>(lParam);
   LONG lStyle = ::GetWindowLong(hwnd, GWL_STYLE);
   if ((lStyle & WS_VISIBLE) != 0 && (lStyle & (WS_POPUP | WS_SYSMENU)) != 0) {
     pSet->insert(hwnd);
@@ -111,13 +108,13 @@ BOOL CALLBACK EnumWindowsProc(_In_ HWND hwnd, _In_ LPARAM lParam) {
  * https://docs.microsoft.com/en-us/windows/desktop/gdiplus/-gdiplus-retrieving-the-class-identifier-for-an-encoder-use
  */
 
-int GetEncoderClsid(WCHAR* format, CLSID* pClsid) {
+int GetEncoderClsid(WCHAR *format, CLSID *pClsid) {
   unsigned int num = 0, size = 0;
   Gdiplus::GetImageEncodersSize(&num, &size);
   if (size == 0)
     return -1;
-  Gdiplus::ImageCodecInfo* pImageCodecInfo =
-      (Gdiplus::ImageCodecInfo*)(malloc(size));
+  Gdiplus::ImageCodecInfo *pImageCodecInfo =
+      (Gdiplus::ImageCodecInfo *)(malloc(size));
   if (pImageCodecInfo == NULL)
     return -1;
   Gdiplus::GetImageEncoders(num, size, pImageCodecInfo);
@@ -158,9 +155,8 @@ bool WindowInBlackList(std::string module_name) {
 #if 0
 bool captureBmpToJpeg(const HWND& hWnd, char* szName, int i, std::vector<ScreenWindowInfo>& wndsInfo)
 #endif
-bool captureBmpToJpeg(const HWND& hWnd,
-                      char* szName,
-                      std::vector<ScreenWindowInfo>& wndsInfo,
+bool captureBmpToJpeg(const HWND &hWnd, char *szName,
+                      std::vector<ScreenWindowInfo> &wndsInfo,
                       bool displayLogo) {
 #if 0
 	WCHAR szFilePath[MAX_PATH] = { 0 };
@@ -174,7 +170,7 @@ bool captureBmpToJpeg(const HWND& hWnd,
   DWORD currentProcessId = GetCurrentProcessId();
 
   int nBitCount = 32;
-  int nColorTableEntries = 0;  // nBitCunt 16 24 32
+  int nColorTableEntries = 0; // nBitCunt 16 24 32
   HDC hDC = GetDC(hWnd);
   HDC hMemDC = CreateCompatibleDC(hDC);
 
@@ -253,7 +249,7 @@ bool captureBmpToJpeg(const HWND& hWnd,
   LPBYTE lpDibBits = 0;
   HBITMAP hBitmap =
       ::CreateDIBSection(hMemDC, (LPBITMAPINFO)lpBitmapInfoHeader,
-                         DIB_RGB_COLORS, (void**)&lpDibBits, NULL, 0);
+                         DIB_RGB_COLORS, (void **)&lpDibBits, NULL, 0);
   SelectObject(hMemDC, hBitmap);
   SetStretchBltMode(hMemDC, COLORONCOLOR);
   StretchBlt(hMemDC, 0, 0, bmpWidth, bmpHeight, hDC, 0, 0, nWidth, nHeight,
@@ -315,8 +311,8 @@ bool captureBmpToJpeg(const HWND& hWnd,
     int width = bitmap.bmWidth;
     int height = bitmap.bmHeight;
 
-    Gdiplus::Bitmap* pBitmap = NULL;
-    Gdiplus::Bitmap* pWrapBitmap = NULL;
+    Gdiplus::Bitmap *pBitmap = NULL;
+    Gdiplus::Bitmap *pWrapBitmap = NULL;
 
     do {
       if (bitmap.bmBitsPixel != 32) {
@@ -332,7 +328,7 @@ bool captureBmpToJpeg(const HWND& hWnd,
                               pWrapBitmap->GetPixelFormat(), &bitmapData);
         pBitmap = new (Gdiplus::Bitmap)(bitmapData.Width, bitmapData.Height,
                                         bitmapData.Stride, PixelFormat32bppARGB,
-                                        (BYTE*)bitmapData.Scan0);
+                                        (BYTE *)bitmapData.Scan0);
         pWrapBitmap->UnlockBits(&bitmapData);
       }
       float maxWidth = bmpWidth / 2.0f;
@@ -365,8 +361,8 @@ bool captureBmpToJpeg(const HWND& hWnd,
 
   } while (false);
 
-  IStream* pOutIStream = NULL;
-  if (CreateStreamOnHGlobal(NULL, TRUE, (LPSTREAM*)&pOutIStream) != S_OK) {
+  IStream *pOutIStream = NULL;
+  if (CreateStreamOnHGlobal(NULL, TRUE, (LPSTREAM *)&pOutIStream) != S_OK) {
     // LOG_ERROR("Failed to create stream on global memory!\n");
     ::DeleteObject(hBMP);
     ::DeleteObject(hBitmap);
@@ -398,7 +394,7 @@ bool captureBmpToJpeg(const HWND& hWnd,
 
   // copy the stream JPG to memory
   DWORD dwJpgSize = (DWORD)ulnSize.QuadPart;
-  BYTE* pJPG = new BYTE[dwJpgSize];
+  BYTE *pJPG = new BYTE[dwJpgSize];
   memset(pJPG, 0, dwJpgSize);
   DWORD dwRead = 0;
   if (pOutIStream->Read(pJPG, dwJpgSize, &dwRead) != S_OK) {
@@ -411,8 +407,8 @@ bool captureBmpToJpeg(const HWND& hWnd,
   }
 
   std::string name = szName;
-  ScreenWindowInfo wndInfo;  // = std::make_tuple(hWnd, name, bmpWidth,
-                             // bmpHeight, bmpSize, std::move(szBmp));
+  ScreenWindowInfo wndInfo; // = std::make_tuple(hWnd, name, bmpWidth,
+                            // bmpHeight, bmpSize, std::move(szBmp));
   wndInfo.windowId = hWnd;
   wndInfo.name = name;
   wndInfo.ownerName = "";
@@ -437,10 +433,8 @@ bool captureBmpToJpeg(const HWND& hWnd,
 #if 0
 bool dumpDisplayInfo(HDC hDC, RECT rcMonitor, int i, std::vector<ScreenInfo>& screenInfo)
 #else
-bool dumpDisplayInfo(HDC hDC,
-                     ScreenDisplayInfo* info,
-                     int i,
-                     std::vector<ScreenDisplayInfo>& screenInfos)
+bool dumpDisplayInfo(HDC hDC, ScreenDisplayInfo *info, int i,
+                     std::vector<ScreenDisplayInfo> &screenInfos)
 #endif
 {
 #if 0
@@ -453,9 +447,9 @@ bool dumpDisplayInfo(HDC hDC,
   // calculate the number of color indexes in the color table
 
   int nBitCount = 32;
-  int nColorTableEntries = 0;  // nBitCunt 16 24 32
-                               // HWND hWnd = GetDesktopWindow();
-                               // HDC hDC = GetDC(hWnd);
+  int nColorTableEntries = 0; // nBitCunt 16 24 32
+                              // HWND hWnd = GetDesktopWindow();
+                              // HDC hDC = GetDC(hWnd);
   HDC hMemDC = CreateCompatibleDC(hDC);
 
   int nWidth = info->displayId.width;
@@ -503,7 +497,7 @@ bool dumpDisplayInfo(HDC hDC,
   LPBYTE lpDibBits = 0;
   HBITMAP hBitmap =
       ::CreateDIBSection(hMemDC, (LPBITMAPINFO)lpBitmapInfoHeader,
-                         DIB_RGB_COLORS, (void**)&lpDibBits, NULL, 0);
+                         DIB_RGB_COLORS, (void **)&lpDibBits, NULL, 0);
   SelectObject(hMemDC, hBitmap);
   SetStretchBltMode(hMemDC, COLORONCOLOR);
   StretchBlt(hMemDC, 0, 0, bmpWidth, bmpHeight, hDC, x, y, nWidth, nHeight,
@@ -522,8 +516,8 @@ bool dumpDisplayInfo(HDC hDC,
 
   Gdiplus::Bitmap bitmap(hBitmap, NULL);
 
-  IStream* pOutIStream = NULL;
-  if (CreateStreamOnHGlobal(NULL, TRUE, (LPSTREAM*)&pOutIStream) != S_OK) {
+  IStream *pOutIStream = NULL;
+  if (CreateStreamOnHGlobal(NULL, TRUE, (LPSTREAM *)&pOutIStream) != S_OK) {
     // LOG_ERROR("Failed to create stream on global memory!\n");
     ::DeleteObject(hBMP);
     ::DeleteObject(hBitmap);
@@ -555,7 +549,7 @@ bool dumpDisplayInfo(HDC hDC,
 
   // copy the stream JPG to memory
   DWORD dwJpgSize = (DWORD)ulnSize.QuadPart;
-  BYTE* pJPG = new BYTE[dwJpgSize];
+  BYTE *pJPG = new BYTE[dwJpgSize];
   memset(pJPG, 0, dwJpgSize);
   DWORD dwRead = 0;
   if (pOutIStream->Read(pJPG, dwJpgSize, &dwRead) != S_OK) {
@@ -584,9 +578,7 @@ bool dumpDisplayInfo(HDC hDC,
   return true;
 }
 
-BOOL CALLBACK Monitorenumproc(HMONITOR Arg1,
-                              HDC Arg2,
-                              LPRECT Arg3,
+BOOL CALLBACK Monitorenumproc(HMONITOR Arg1, HDC Arg2, LPRECT Arg3,
                               LPARAM Arg4) {
   ScreenDisplayInfo screen;
   RECT rc = *Arg3;
@@ -597,8 +589,8 @@ BOOL CALLBACK Monitorenumproc(HMONITOR Arg1,
 
   screen.width = rc.right - rc.left;
   screen.height = rc.bottom - rc.top;
-  std::vector<ScreenDisplayInfo>* screenInfos =
-      (std::vector<ScreenDisplayInfo>*)Arg4;
+  std::vector<ScreenDisplayInfo> *screenInfos =
+      (std::vector<ScreenDisplayInfo> *)Arg4;
   screenInfos->push_back(screen);
   return TRUE;
 }
@@ -608,7 +600,7 @@ bool IsInvisibleWin10BackgroundAppWindow(HWND hWnd) {
   (HWND hwnd, DWORD dwAttribute, PVOID pvAttribute, DWORD cbAttribute) = NULL;
   HINSTANCE hDll = LoadLibrary("Dwmapi.dll");
   if (hDll != NULL) {
-    pDwmGetWindowAttribute = (HRESULT(__stdcall*)(
+    pDwmGetWindowAttribute = (HRESULT(__stdcall *)(
         HWND hwnd, DWORD dwAttribute, PVOID pvAttribute,
         DWORD cbAttribute))GetProcAddress(hDll, "DwmGetWindowAttribute");
     int CloakedVal = 0;
@@ -642,63 +634,26 @@ bool IsWindowValid(HWND hwnd) {
 
 std::vector<ScreenWindowInfo> getAllWindowInfo() {
   std::vector<ScreenWindowInfo> windows;
-
   Gdiplus::Status status = Gdiplus::Ok;
   if (g_gdiplusToken == NULL)
     status = InitializeGdiplus();
 
-  if (status == Gdiplus::Ok) {
-    std::unordered_set<HWND> setHwnds;
-    setHwnds.clear();
-    EnumWindows(EnumTopWindowsProc, (LPARAM)(&setHwnds));
-    std::vector<ScreenWindowInfo> wndsInfo;
-    wndsInfo.reserve(setHwnds.size());
-
-    for (auto iter = setHwnds.begin(); iter != setHwnds.end(); ++iter) {
-      if (!IsWindowValid(*iter)) {
-        continue;
-      }
-
-      RECT rc_wnd;
-      ::GetWindowRect(*iter, &rc_wnd);
-      if (rc_wnd.right - rc_wnd.left <= 0 || rc_wnd.bottom - rc_wnd.top <= 0) {
-        continue;
-      }
-
-      char class_name[100] = {0};
-      WCHAR szName[MAX_PATH] = {0};
-      char name[MAX_PATH] = {0};
-      GetWindowTextW(*iter, szName, MAX_PATH);
-      if (wcslen(szName) == 0)  //
-        continue;
-      ::WideCharToMultiByte(CP_UTF8, 0, szName, wcslen(szName), name, MAX_PATH,
-                            NULL, NULL);
-      GetClassNameA(*iter, class_name, 99);
-      HWND windowid = *iter;
-      if (strcmp(class_name, "EdgeUiInputTopWndClass") == 0 ||
-          strcmp(class_name, "Shell_TrayWnd") == 0 ||
-          strcmp(class_name, "DummyDWMListenerWindow") == 0 ||
-          strcmp(class_name, "WorkerW") == 0 ||
-          strcmp(class_name, "PopupRbWebDialog") == 0 ||
-          strcmp(class_name, "TXGuiFoundation") == 0)  // kuwo advertisement
-      {
-        continue;
-      }
-      if (strcmp(class_name, "Progman") == 0 &&
-          strcmp(name, "Program Manager") == 0) {
-        continue;
-      }
-
-      if (strcmp(class_name, "TaskManagerWindow") == 0) {
-        continue;
-      }
-
-      bool displayLogo = IsDisplayLogo(class_name);
-
-      captureBmpToJpeg(windowid, name, windows, displayLogo);
+  auto windowInfoList = agora::electron::WindowEnumer::EnumAllWindows();
+  windows.reserve(windowInfoList.size());
+  for (auto iter = windowInfoList.begin(); iter != windowInfoList.end();
+       ++iter) {
+    auto windowInfo = *iter;
+    if (!IsWindowValid(windowInfo.hwnd)) {
+      continue;
     }
-  }
+    char class_name[100] = {0};
+    char window_name[100] = {0};
+    strcpy(class_name, windowInfo.class_name.c_str());
+    strcpy(window_name, windowInfo.window_name.c_str());
+    bool hasLogo = IsDisplayLogo(class_name);
 
+    captureBmpToJpeg(windowInfo.hwnd, window_name, windows, hasLogo);
+  }
   return windows;
 }
 
@@ -728,23 +683,66 @@ std::vector<ScreenDisplayInfo> getAllDisplayInfo() {
     _dev_mode.dmDriverExtra = 0;
     if (EnumDisplaySettingsExA(_display_device.DeviceName,
                                ENUM_CURRENT_SETTINGS, &_dev_mode, 0)) {
-      _display_info.width = _display_info.displayId.width = _dev_mode.dmPelsWidth;
-      _display_info.height = _display_info.displayId.height = _dev_mode.dmPelsHeight;
+      _display_info.width = _display_info.displayId.width =
+          _dev_mode.dmPelsWidth;
+      _display_info.height = _display_info.displayId.height =
+          _dev_mode.dmPelsHeight;
       _display_info.x = _display_info.displayId.x = _dev_mode.dmPosition.x;
       _display_info.y = _display_info.displayId.y = _dev_mode.dmPosition.y;
     }
 
     _display_info.name = _display_device.DeviceName;
     _display_info.displayInfo.idVal = _device_index;
-    _display_info.isMain = _display_device.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE;
+    _display_info.isMain =
+        _display_device.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE;
     _display_infos.push_back(_display_info);
   }
 
-  HWND hDesktop = GetDesktopWindow();
-  HDC hDC = GetDC(hDesktop);
   for (int i = 0; i < _display_infos.size(); i++) {
-    ScreenDisplayInfo& info = _display_infos[i];
-    dumpDisplayInfo(hDC, &info, i, _display_infos);
+    HWND hDesktop = GetDesktopWindow();
+    HDC hDC = GetDC(hDesktop);
+    for (int i = 0; i < _display_infos.size(); i++) {
+      ScreenDisplayInfo &info = _display_infos[i];
+      dumpDisplayInfo(hDC, &info, i, _display_infos);
+    }
   }
   return _display_infos;
+}
+
+void ConvertRGBToBMP(unsigned char *RGBBuffer, BufferInfo &bufferInfo,
+                     unsigned int ImageWidth, unsigned int ImageHeight) {
+  unsigned long bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) +
+                         ImageWidth * ImageHeight * 4;
+  ;
+  bufferInfo.buffer = new unsigned char[bfSize];
+  BITMAPFILEHEADER *BmpFileHeader =
+      (BITMAPFILEHEADER *)bufferInfo.buffer; //填充BMP文件头信息
+  BmpFileHeader->bfType = ((WORD)('M' << 8) | 'B');
+  BmpFileHeader->bfSize = bfSize;
+  bufferInfo.length = bfSize;
+  BmpFileHeader->bfOffBits =
+      sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
+  BmpFileHeader->bfReserved1 = 0;
+  BmpFileHeader->bfReserved2 = 0;
+
+  BITMAPINFOHEADER *BmpInfoHeader =
+      (BITMAPINFOHEADER *)((unsigned char *)bufferInfo.buffer +
+                           sizeof(BITMAPFILEHEADER));
+
+  BmpInfoHeader->biSize = sizeof(BITMAPINFOHEADER);
+  BmpInfoHeader->biWidth = ImageWidth;
+  BmpInfoHeader->biHeight = -ImageHeight;
+  BmpInfoHeader->biPlanes = 1;
+  BmpInfoHeader->biBitCount = 32; // RGB图像
+  BmpInfoHeader->biCompression = BI_RGB;
+  BmpInfoHeader->biSizeImage = 0;
+  BmpInfoHeader->biXPelsPerMeter = 0;
+  BmpInfoHeader->biYPelsPerMeter = 0;
+  BmpInfoHeader->biClrUsed = 0;
+  BmpInfoHeader->biClrImportant = 0;
+
+  void *ImageBufferHeader =
+      (void *)((unsigned char *)BmpInfoHeader + sizeof(BITMAPINFOHEADER));
+
+  memcpy(ImageBufferHeader, RGBBuffer, ImageWidth * ImageHeight * 4);
 }

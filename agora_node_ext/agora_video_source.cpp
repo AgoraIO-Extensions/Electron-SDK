@@ -111,6 +111,10 @@ class AgoraVideoSourceSink : public AgoraVideoSource, public AgoraIpcListener {
   virtual node_error setProcessDpiAwareness() override;
   virtual node_error setAddonLogFile(const char* file) override;
 
+  /* meeting */
+  virtual node_error adjustRecordingSignalVolume(int volume) override;
+  virtual node_error adjustLoopbackRecordingSignalVolume(int volume) override;
+  virtual node_error disableAudio() override;
   virtual node_error muteRemoteAudioStream(agora::rtc::uid_t userId,
                                            bool mute) override;
   virtual node_error muteAllRemoteAudioStreams(bool mute) override;
@@ -586,6 +590,9 @@ void AgoraVideoSourceSink::onMessage(unsigned int msg,
     LOG_INFO("AgoraVideoSourceSink:%s       msg: %s", __FUNCTION__,
              "AGORA_IPC_STOP_VS_PREVIEW_COMPLETE");
     m_ipcReceiver.reset();
+  } else if (msg == AGORA_IPC_ON_SCREEN_CAPTURE_INFO_UPDATED) {
+    ScreenCaptureInfoCmd *cmd = (ScreenCaptureInfoCmd *)payload;
+    m_eventHandler->onVideoSourceScreenCaptureInfoUpdated(*cmd);
   }
 }
 
@@ -865,6 +872,38 @@ node_error AgoraVideoSourceSink::setAddonLogFile(const char* file) {
   return node_status_error;
 }
 
+/**
+ * meeting
+*/
+node_error AgoraVideoSourceSink::adjustRecordingSignalVolume(int32 volume) {
+  if (m_initialized) {
+    return m_ipcMsg->sendMessage(AGORA_IPC_ADJUST_RECORDING_SIGNAL_VOLUME,
+                                 (char *)&volume, sizeof(volume))
+               ? node_ok
+               : node_generic_error;
+  }
+  return node_status_error;
+}
+
+node_error
+AgoraVideoSourceSink::adjustLoopbackRecordingSignalVolume(int32 volume) {
+  if (m_initialized && m_peerJoined) {
+    return m_ipcMsg->sendMessage(
+               AGORA_IPC_ADJUST_LOOPBACK_RECORDING_SIGNAL_VOLUME,
+               (char *)&volume, sizeof(volume))
+               ? node_ok
+               : node_generic_error;
+  }
+  return node_status_error;
+}
+node_error AgoraVideoSourceSink::disableAudio() {
+  if (m_initialized && m_peerJoined) {
+    return m_ipcMsg->sendMessage(AGORA_IPC_DISABLE_AUDIO, nullptr, 0)
+               ? node_ok
+               : node_generic_error;
+  }
+  return node_status_error;
+}
 node_error AgoraVideoSourceSink::muteRemoteAudioStream(agora::rtc::uid_t userId,
                                                        bool mute) {
   if (m_initialized) {
