@@ -110,10 +110,16 @@ enum AgoraIpcMsg {
   AGORA_IPC_ON_LOCAL_VIDEO_STATE_CHANGED,
   AGORA_IPC_ON_LOCAL_AUDIO_STATE_CHANGED,
   AGORA_IPC_SET_PROCESS_DPI_AWARE_NESS,
+  /* meeting*/
+  AGORA_IPC_ON_SCREEN_CAPTURE_INFO_UPDATED,
+  AGORA_IPC_ADJUST_LOOPBACK_RECORDING_SIGNAL_VOLUME,
+  AGORA_IPC_ADJUST_RECORDING_SIGNAL_VOLUME,
+  AGORA_IPC_DISABLE_AUDIO,
   AGORA_IPC_MUTE_REMOTE_AUDIO_STREAM,
   AGORA_IPC_MUTE_ALL_REMOTE_AUDIO_STREAMS,
   AGORA_IPC_MUTE_REMOTE_VIDEO_STREAM,
   AGORA_IPC_MUTE_ALL_REMOTE_VIDEO_STREAMS,
+
   AGORA_IPC_SET_ADDON_LOGFILE
 };
 
@@ -215,12 +221,12 @@ struct LoopbackRecordingCmd {
 struct SetParameterCmd {
   char parameters[MAX_PARAMETER_LEN];
 
- public:
+public:
   SetParameterCmd() : parameters{0} {}
 };
 
 struct EncryptionConfigCmd {
- public:
+public:
   bool enable;
   agora::rtc::ENCRYPTION_MODE encryptionMode;
   char encryptionKey[agora::rtc::MAX_DEVICE_ID_LENGTH];
@@ -233,7 +239,7 @@ struct EncryptionConfigCmd {
 };
 
 struct LocalAudioStatsCmd {
- public:
+public:
   int numChannels;
   /** The sample rate (Hz).
    */
@@ -248,7 +254,7 @@ struct LocalAudioStatsCmd {
 };
 
 struct LocalVideoStatsCmd {
- public:
+public:
   /** Bitrate (Kbps) sent in the reported interval, which does not include
    * the bitrate of the retransmission video after packet loss.
    */
@@ -304,7 +310,7 @@ struct LocalVideoStatsCmd {
 };
 
 struct VideoSizeChangedCmd {
- public:
+public:
   agora::rtc::uid_t uid;
   int width;
   int height;
@@ -312,22 +318,28 @@ struct VideoSizeChangedCmd {
 };
 
 struct LocalVideoStateChangedCmd {
- public:
+public:
   int localVideoState;
   int error;
 };
 
 struct LocalAudioStateChangedCmd {
- public:
+public:
   int localAudioState;
   int error;
+};
+
+struct ScreenCaptureInfoCmd {
+public:
+  char cardType[MAX_PARAMETER_LEN];
+  int errCode;
 };
 
 /**
  * AgoraIpcListener is used to monitor IPC message
  */
 class AgoraIpcListener {
- public:
+public:
   virtual ~AgoraIpcListener() {}
   virtual void onMessage(unsigned int msg, char* payload, unsigned int len) {
     (void)payload;
@@ -340,7 +352,7 @@ class AgoraIpcListener {
  * virtual class, may have different implementation on different platforms.
  */
 class IAgoraIpc {
- public:
+public:
   IAgoraIpc(AgoraIpcListener* listener) : m_listener(listener) {}
   virtual ~IAgoraIpc() {}
   virtual const std::string& getId() { return m_id; }
@@ -388,7 +400,7 @@ class IAgoraIpc {
 #define DATA_DELIVER_BLOCK_SIZE 6145000
 // 3110450
 class AgoraIpcDataSender {
- public:
+public:
   AgoraIpcDataSender();
   ~AgoraIpcDataSender();
 
@@ -412,7 +424,7 @@ class AgoraIpcDataSender {
   /** Disconnect the sender and IPC */
   void Disconnect();
 
- private:
+private:
   shm_ipc<1, DATA_DELIVER_BLOCK_SIZE> m_ipcData;
   bool m_initialized;
   std::string m_id;
@@ -423,7 +435,7 @@ class AgoraIpcDataSender {
  * The AgoraIpcDataReceiver provide receive-only facilities.
  */
 class AgoraIpcDataReceiver {
- public:
+public:
   AgoraIpcDataReceiver();
   ~AgoraIpcDataReceiver();
 
@@ -444,7 +456,7 @@ class AgoraIpcDataReceiver {
    */
   void stop();
 
- private:
+private:
   std::function<void(const char*, int)> m_handler;
   std::string m_id;
   bool m_initialized;

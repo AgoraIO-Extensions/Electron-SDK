@@ -17,6 +17,11 @@
 #endif
 #define IMAGE_MAX_PIXEL_SIZE 500
 
+struct BufferInfo {
+  unsigned char *buffer;
+  uint32_t length;
+};
+
 struct ScreenDisplayInfo {
   ScreenIDType displayId;
   DisplayInfo displayInfo;
@@ -32,17 +37,12 @@ struct ScreenDisplayInfo {
   bool isMain;
   bool isBuiltin;
 
-  unsigned char* imageData;
+  unsigned char *imageData;
   unsigned int imageDataLength;
 
   ScreenDisplayInfo()
-      : width(0),
-        height(0),
-        isActive(false),
-        isMain(false),
-        isBuiltin(false),
-        imageData(nullptr),
-        imageDataLength(0) {}
+      : width(0), height(0), isActive(false), isMain(false), isBuiltin(false),
+        imageData(nullptr), imageDataLength(0) {}
 };
 
 struct ScreenWindowInfo {
@@ -64,24 +64,21 @@ struct ScreenWindowInfo {
   int x;
   int y;
 
-  unsigned char* imageData;
+  unsigned char *imageData;
   unsigned int imageDataLength;
 
   unsigned int originWidth;
   unsigned int originHeight;
 
   ScreenWindowInfo()
-      : windowId(0),
-        width(0),
-        height(0),
-        imageData(nullptr),
-        imageDataLength(0),
-        originWidth(0),
-        originHeight(0) {}
+      : windowId(0), width(0), height(0), imageData(nullptr),
+        imageDataLength(0), originWidth(0), originHeight(0) {}
 };
 
 std::vector<ScreenDisplayInfo> getAllDisplayInfo();
 std::vector<ScreenWindowInfo> getAllWindowInfo();
+void ConvertRGBToBMP(unsigned char *RGBBuffer, BufferInfo &bufferInfo,
+                     unsigned int ImageWidth, unsigned int ImageHeight);
 
 #if defined(_WIN32)
 void DestroyGdiplus();

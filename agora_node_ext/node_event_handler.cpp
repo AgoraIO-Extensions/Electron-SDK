@@ -111,6 +111,25 @@ NodeEventHandler::~NodeEventHandler() {
     cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 5, argv); \
   }
 
+#define MAKE_JS_CALL_6(ev, type1, param1, type2, param2, type3, param3, type4, \
+                       param4, type5, param5, type6, param6)                   \
+  auto it = m_callbacks.find(ev);                                              \
+  if (it != m_callbacks.end()) {                                               \
+    Isolate *isolate = Isolate::GetCurrent();                                  \
+    HandleScope scope(isolate);                                                \
+    Local<Context> context = isolate->GetCurrentContext();                     \
+    Local<Value> argv[6]{                                                      \
+        napi_create_##type1##_(isolate, param1),                               \
+        napi_create_##type2##_(isolate, param2),                               \
+        napi_create_##type3##_(isolate, param3),                               \
+        napi_create_##type4##_(isolate, param4),                               \
+        napi_create_##type5##_(isolate, param5),                               \
+        napi_create_##type6##_(isolate, param6),                               \
+    };                                                                         \
+    NodeEventCallback &cb = *it->second;                                       \
+    cb.callback.Get(isolate)->Call(context, cb.js_this.Get(isolate), 6, argv); \
+  }
+
 #define CHECK_NAPI_OBJ(obj) \
   if (obj.IsEmpty())        \
     break;
@@ -1621,9 +1640,8 @@ void NodeEventHandler::onChannelMediaRelayStateChanged_node(
 }
 
 void NodeEventHandler::onRtmpStreamingStateChanged(
-    const char* url,
-    agora::rtc::RTMP_STREAM_PUBLISH_STATE state,
-    agora::rtc::RTMP_STREAM_PUBLISH_ERROR errCode) {
+    const char *url, agora::rtc::RTMP_STREAM_PUBLISH_STATE state,
+    agora::rtc::RTMP_STREAM_PUBLISH_ERROR_TYPE errCode) {
   FUNC_TRACE;
   std::string sUrl(url);
   node_async_call::async_call([this, sUrl, state, errCode] {
@@ -1771,7 +1789,41 @@ void NodeEventHandler::onRequestAudioFileInfo(const agora::rtc::AudioFileInfo& i
       } while (false);
   });
 }
+/* meeting */
+void NodeEventHandler::onVideoSourceScreenCaptureInfoUpdated(
+    ScreenCaptureInfoCmd &info) {
+  std::string cardType(info.cardType);
+  auto errCode = info.errCode;
+  node_async_call::async_call([this, cardType, errCode] {
+    do {
+      Isolate *isolate = Isolate::GetCurrent();
+      HandleScope scope(isolate);
+      Local<Context> context = isolate->GetCurrentContext();
+      Local<Object> obj = Object::New(isolate);
+      CHECK_NAPI_OBJ(obj);
 
+      NODE_SET_OBJ_PROP_STRING(obj, "cardType", cardType.c_str());
+      NODE_SET_OBJ_PROP_UINT32(obj, "errCode", errCode);
+
+      Local<Value> arg[1] = {obj};
+      auto it =
+          m_callbacks.find(RTC_EVENT_VIDEO_SOURCE_SCREEN_CAPTURE_INFO_UPDATED);
+      if (it != m_callbacks.end()) {
+        it->second->callback.Get(isolate)->Call(
+            context, it->second->js_this.Get(isolate), 1, arg);
+      }
+    } while (false);
+  });
+}
+
+// 3.5.2
+void NodeEventHandler::onSnapshotTaken(const char* channel, uid_t uid, const char* filePath, int width, int height, int errCode) {
+  std::string channelIdStr(channel);
+  std::string filePathStr(filePath);
+  node_async_call::async_call([this, channelIdStr, uid, filePathStr, width, height, errCode] {
+    MAKE_JS_CALL_6(RTC_EVENT_SNAPSHOT_TAKEN, string, channelIdStr.c_str(), uid, uid, string, filePathStr.c_str(), int32, width, int32, height, int32, errCode);
+  });
+}
 
 }  // namespace rtc
 }  // namespace agora

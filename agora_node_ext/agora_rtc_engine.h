@@ -401,15 +401,44 @@ class NodeRtcEngine : public node::ObjectWrap {
   NAPI_API(setAudioMixingPlaybackSpeed);
   NAPI_API(setAudioMixingDualMonoMode);
   NAPI_API(getAudioFileInfo);
+  NAPI_API(getAudioTrackCount);
+  NAPI_API(selectAudioTrack);
 
+  /*
+   * meeting
+   */
+  NAPI_API(adjustLoopbackSignalVolume);
+  NAPI_API(videoSourceAdjustRecordingSignalVolume);
+  NAPI_API(videoSourceAdjustLoopbackRecordingSignalVolume);
   NAPI_API(videoSourceMuteRemoteAudioStream);
   NAPI_API(videoSourceMuteAllRemoteAudioStreams);
   NAPI_API(videoSourceMuteRemoteVideoStream);
   NAPI_API(videoSourceMuteAllRemoteVideoStreams);
+  NAPI_API(getDefaultAudioPlaybackDevices);
+  NAPI_API(getDefaultAudioRecordingDevices);
+  NAPI_API(videoSourceDisableAudio);
+  /*
+  * 3.5.2 && 3.6.0
+  */
+  NAPI_API(takeSnapshot);
+  NAPI_API(startRtmpStreamWithoutTranscoding);
+  NAPI_API(startRtmpStreamWithTranscoding);
+  NAPI_API(updateRtmpTranscoding);
+  NAPI_API(stopRtmpStream);
+  NAPI_API(setAVSyncSource);
+  NAPI_API(followSystemPlaybackDevice);
+  NAPI_API(followSystemRecordingDevice);
+
+  /**
+  * 3.4.11
+  */
+  NAPI_API(getScreenCaptureSources);
+  
 
  public:
   Isolate* getIsolate() { return m_isolate; }
   IRtcEngine* getRtcEngine() { return m_engine; }
+  std::unique_ptr<NodeEventHandler> m_eventHandler;
   void destroyVideoSource();
 
  protected:
@@ -419,7 +448,6 @@ class NodeRtcEngine : public node::ObjectWrap {
  private:
   DECLARE_CLASS;
   IRtcEngine* m_engine = nullptr;
-  std::unique_ptr<NodeEventHandler> m_eventHandler;
   Isolate* m_isolate = nullptr;
   std::unique_ptr<IExternalVideoRenderFactory> m_externalVideoRenderFactory;
 
@@ -508,7 +536,7 @@ class NodeRtcChannel : public node::ObjectWrap {
 
  public:
   Isolate* getIsolate() { return m_isolate; }
-
+  std::unique_ptr<NodeChannelEventHandler> m_eventHandler;
  protected:
   NodeRtcChannel(Isolate* isolate, IChannel* pChannel);
   ~NodeRtcChannel();
@@ -517,7 +545,7 @@ class NodeRtcChannel : public node::ObjectWrap {
   DECLARE_CLASS;
   IChannel* m_channel;
   Isolate* m_isolate;
-  std::unique_ptr<NodeChannelEventHandler> m_eventHandler;
+  
   std::unique_ptr<NodeMetadataObserver> metadataObserver;
 };
 

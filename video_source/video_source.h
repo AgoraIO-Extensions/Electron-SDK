@@ -109,7 +109,10 @@ class AgoraVideoSource : public AgoraIpcListener {
                                     agora::rtc::LOCAL_AUDIO_STREAM_ERROR error);
   void setProcessDpiAwareness();
 
- private:
+  /* meeting */
+  void notifyScreenCaptureInfoUpdated(const char *cardType, int errCode);
+
+private:
   void exit(bool notifySink);
 
  private:

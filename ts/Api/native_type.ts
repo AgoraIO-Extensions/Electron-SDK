@@ -1,8 +1,29 @@
-import { PluginInfo, Plugin } from './plugin';
-import { type } from 'os';
+import { PluginInfo } from './plugin';
 
 export interface RendererOptions {
   append: boolean;
+}
+
+/** screencapture filter window err.
+ *
+ *
+ */
+export enum FILT_WINDOW_ERROR {
+  /** negative : fail to filter window.
+   */
+  FILT_WINDOW_ERROR_FAIL = -1,
+  /** 0: none define.
+   */
+  FILT_WINDOW_ERROR_NONE = 0,
+}
+export interface ScreenCaptureInfo {
+  cardType: string;
+  errCode: FILT_WINDOW_ERROR;
+}
+
+export interface SIZE {
+  width: number;
+  height: number;
 }
 
 /**
@@ -19,24 +40,41 @@ export interface RendererOptions {
  * - 7: Users cannot detect the network quality.
  * - 8: Detecting the network quality.
  */
-export type AgoraNetworkQuality =
-  | 0 // unknown
-  | 1 // excellent
-  | 2 // good
-  | 3 // poor
-  | 4 // bad
-  | 5 // very bad
-  | 6 // down
-  | 7 // unSupported
-  | 8; // detecting
+export enum AgoraNetworkQuality {
+  /** The network quality is unknown. */
+  AgoraNetworkQualityUnknown = 0,
+  /** The network quality is excellent. */
+  AgoraNetworkQualityExcellent = 1,
+  /** The network quality is quite good, but the bitrate may be slightly lower than excellent. */
+  AgoraNetworkQualityGood = 2,
+  /** Users can feel the communication slightly impaired. */
+  AgoraNetworkQualityPoor = 3,
+  /** Users can communicate only not very smoothly. */
+  AgoraNetworkQualityBad = 4,
+  /** The network quality is so bad that users can hardly communicate. */
+  AgoraNetworkQualityVBad = 5,
+  /** The network is disconnected and users cannot communicate at all. */
+  AgoraNetworkQualityDown = 6,
+  /** Users cannot detect the network quality. (Not in use.) */
+  AgoraNetworkQualityUnsupported = 7,
+  /** Detecting the network quality. */
+  AgoraNetworkQualityDetecting = 8,
+}
 /**
  * The codec type of the local video：
  * - 0: VP8
  * - 1: (Default) H.264
  */
-export type VIDEO_CODEC_TYPE =
-  | 0 // VP8
-  | 1; // H264
+export enum VIDEO_CODEC_TYPE {
+  /** 1: VP8 */
+  VIDEO_CODEC_VP8 = 1,
+  /** 2: (Default) H.264 */
+  VIDEO_CODEC_H264 = 2,
+  /** 3: Enhanced VP8 */
+  VIDEO_CODEC_EVP = 3,
+  /** 4: Enhanced H.264 */
+  VIDEO_CODEC_E264 = 4,
+}
 
 /**
  * Client roles in the live streaming.
@@ -44,14 +82,24 @@ export type VIDEO_CODEC_TYPE =
  * - 1: Host.
  * - 2: Audience.
  */
-export type ClientRoleType = 1 | 2;
+export enum ClientRoleType {
+  /** 1: Host. A host can both send and receive streams. */
+  CLIENT_ROLE_BROADCASTER = 1,
+  /** 2: (Default) Audience. An `audience` member can only receive streams. */
+  CLIENT_ROLE_AUDIENCE = 2,
+}
 
 /** Video stream types.
  *
  * - 0: High-stream video.
  * - 1: Low-stream video.
  */
-export type StreamType = 0 | 1;
+export enum StreamType {
+  /** 0: High-stream video. */
+  REMOTE_VIDEO_STREAM_HIGH = 0,
+  /** 1: Low-stream video. */
+  REMOTE_VIDEO_STREAM_LOW = 1,
+}
 /** Media Device Type.
  * - -1: Unknown device type.
  * - 0: Audio playback device.
@@ -60,13 +108,26 @@ export type StreamType = 0 | 1;
  * - 3: Video capturer.
  * - 4: Application audio playback device.
  */
-export type MediaDeviceType =
-  | -1 // Unknown device type
-  | 0 // Audio playback device
-  | 1 // Audio recording device
-  | 2 // Video renderer
-  | 3 // Video capturer
-  | 4; // Application audio playback device
+export enum MediaDeviceType {
+  /** -1: Unknown device type.
+   */
+  UNKNOWN_AUDIO_DEVICE = -1,
+  /** 0: Audio playback device.
+   */
+  AUDIO_PLAYOUT_DEVICE = 0,
+  /** 1: Audio capturing device.
+   */
+  AUDIO_RECORDING_DEVICE = 1,
+  /** 2: Video renderer.
+   */
+  VIDEO_RENDER_DEVICE = 2,
+  /** 3: Video capturer.
+   */
+  VIDEO_CAPTURE_DEVICE = 3,
+  /** 4: Application audio playback device.
+   */
+  AUDIO_APPLICATION_PLAYOUT_DEVICE = 4,
+}
 /**
  * The TranscodingUser class.
  */
@@ -118,6 +179,35 @@ export interface TranscodingUser {
   audioChannel: number;
 }
 
+export interface RtcImage {
+  /**
+   * HTTP/HTTPS URL address of the image on the broadcasting video.
+   *
+   * The maximum length of this parameter is 1024 bytes.
+   */
+  url: string;
+  /** Horizontal position of the image from the upper left of the
+   * broadcasting video.
+   */
+  x: number;
+  /** Vertical position of the image from the upper left of the broadcasting
+   * video.
+   */
+  y: number;
+  /** Width of the image on the broadcasting video. */
+  width: number;
+  /** Height of the image on the broadcasting video. */
+  height: number;
+  /**
+   * The layer number of the watermark or background image. The value range is
+   * [0,255]:
+   * - `0`: (Default) The bottom layer.
+   * - `255`: The top layer.
+   *
+   * @since v3.6.0
+   */
+  zOrder: number;
+}
 /**
  * Sets the CDN live audio/video transcoding settings.
  */
@@ -191,9 +281,7 @@ export interface TranscodingConfig {
   /**
    * The video codec type of the output video stream. See {@link VIDEO_CODEC_TYPE_FOR_STREAM}.
    */
-  videoCodecType: VIDEO_CODEC_TYPE_FOR_STREAM;
-  /** The number of users in the live streaming. */
-  userCount: number;
+  videoCodecType?: VIDEO_CODEC_TYPE_FOR_STREAM;
   /** Self-defined audio-sample rate:
    * - AUDIO_SAMPLE_RATE_32000 = 32000 Hz
    * - AUDIO_SAMPLE_RATE_44100 = (Default)44100 Hz
@@ -227,26 +315,7 @@ export interface TranscodingConfig {
    */
   transcodingExtraInfo: string;
   /** The watermark image added to the CDN live publishing stream. */
-  watermark: {
-    /**
-     * HTTP/HTTPS URL address of the image on the broadcasting video.
-     *
-     * The maximum length of this parameter is 1024 bytes.
-     */
-    url: string;
-    /** Horizontal position of the image from the upper left of the
-     * broadcasting video.
-     */
-    x: number;
-    /** Vertical position of the image from the upper left of the broadcasting
-     * video.
-     */
-    y: number;
-    /** Width of the image on the broadcasting video. */
-    width: number;
-    /** Height of the image on the broadcasting video. */
-    height: number;
-  };
+  watermark: RtcImage[];
   /**
    * @since v3.2.0
    *
@@ -255,40 +324,20 @@ export interface TranscodingConfig {
    * Once a background image is added, the audience of the CDN live publishing
    * stream can see the background image.
    */
-  backgroundImage: {
-    /**
-     * The HTTP or HTTPS address of the image. The length must not
-     * exceed 1,024 bytes.
-     */
-    url: string;
-    /**
-     * The x coordinate of the image on the output video. With the
-     * top-left corner
-     * of the output video as the origin, the x coordinate is the horizontal
-     * displacement
-     * of the top-left corner of the image relative to the origin.
-     */
-    x: number;
-    /**
-     * The y coordinate of the image on the output video. With the top-left
-     * corner
-     * of the output video as the origin, the y coordinate is the vertical
-     * displacement
-     * of the top-left corner of the image relative to the origin.
-     */
-    y: number;
-    /**
-     * The width (pixel) of the image.
-     */
-    width: number;
-    /**
-     * The height (pixel) of the image.
-     */
-    height: number;
-  };
+  backgroundImage: RtcImage[];
 
   /** The TranscodingUsers Array. */
-  transcodingUsers: Array<TranscodingUser>;
+  transcodingUsers: TranscodingUser[];
+
+  /** Self-defined audio codec profile: #AUDIO_CODEC_PROFILE_TYPE.
+   */
+  audioCodecProfile?: AUDIO_CODEC_PROFILE_TYPE;
+  /** Advanced features of the RTMP or RTMPS streaming with transcoding. See
+   * LiveStreamAdvancedFeature.
+   *
+   * @since v3.1.0
+   */
+  advancedFeatures?: LiveStreamAdvancedFeature[];
 }
 /**
  * Configurations of the last-mile network probe test.
@@ -1298,7 +1347,7 @@ export interface RemoteAudioStats {
   /** User ID of the remote user sending the audio streams. */
   uid: number;
   /** Audio quality received by the user. See {@link AgoraNetworkQuality}. */
-  quality: number;
+  quality: AgoraNetworkQuality;
   /** Network delay (ms) from the sender to the receiver. */
   networkTransportDelay: number;
   /** Network delay (ms) from the receiver to the jitter buffer. */
@@ -1436,7 +1485,27 @@ export interface RemoteAudioStats {
  * - 3: The remote video is frozen.
  * - 4: The remote video fails to start.
  */
-export type RemoteVideoState = 0 | 1 | 2 | 3 | 4;
+export enum RemoteVideoState {
+  /** 0: The remote video is in the default state, probably due to #REMOTE_VIDEO_STATE_REASON_LOCAL_MUTED (3), #REMOTE_VIDEO_STATE_REASON_REMOTE_MUTED (5), or #REMOTE_VIDEO_STATE_REASON_REMOTE_OFFLINE (7).
+   */
+  REMOTE_VIDEO_STATE_STOPPED = 0,
+
+  /** 1: The first remote video packet is received.
+   */
+  REMOTE_VIDEO_STATE_STARTING = 1,
+
+  /** 2: The remote video stream is decoded and plays normally, probably due to #REMOTE_VIDEO_STATE_REASON_NETWORK_RECOVERY (2), #REMOTE_VIDEO_STATE_REASON_LOCAL_UNMUTED (4), #REMOTE_VIDEO_STATE_REASON_REMOTE_UNMUTED (6), or #REMOTE_VIDEO_STATE_REASON_AUDIO_FALLBACK_RECOVERY (9).
+   */
+  REMOTE_VIDEO_STATE_DECODING = 2,
+
+  /** 3: The remote video is frozen, probably due to #REMOTE_VIDEO_STATE_REASON_NETWORK_CONGESTION (1) or #REMOTE_VIDEO_STATE_REASON_AUDIO_FALLBACK (8).
+   */
+  REMOTE_VIDEO_STATE_FROZEN = 3,
+
+  /** 4: The remote video fails to start, probably due to #REMOTE_VIDEO_STATE_REASON_INTERNAL (0).
+   */
+  REMOTE_VIDEO_STATE_FAILED = 4,
+}
 /**
  * - 0: Internal reasons.
  * - 1: Network congestion.
@@ -1455,7 +1524,48 @@ export type RemoteVideoState = 0 | 1 | 2 | 3 | 4;
  * - 9: The remote media stream switches back to the video stream after the
  * network conditions improve.
  */
-export type RemoteVideoStateReason = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+export enum RemoteVideoStateReason {
+  /** 0: The SDK reports this reason when the video state changes.
+   */
+  REMOTE_VIDEO_STATE_REASON_INTERNAL = 0,
+
+  /** 1: Network congestion.
+   */
+  REMOTE_VIDEO_STATE_REASON_NETWORK_CONGESTION = 1,
+
+  /** 2: Network recovery.
+   */
+  REMOTE_VIDEO_STATE_REASON_NETWORK_RECOVERY = 2,
+
+  /** 3: The local user stops receiving the remote video stream or disables the video module.
+   */
+  REMOTE_VIDEO_STATE_REASON_LOCAL_MUTED = 3,
+
+  /** 4: The local user resumes receiving the remote video stream or enables the video module.
+   */
+  REMOTE_VIDEO_STATE_REASON_LOCAL_UNMUTED = 4,
+
+  /** 5: The remote user stops sending the video stream or disables the video module.
+   */
+  REMOTE_VIDEO_STATE_REASON_REMOTE_MUTED = 5,
+
+  /** 6: The remote user resumes sending the video stream or enables the video module.
+   */
+  REMOTE_VIDEO_STATE_REASON_REMOTE_UNMUTED = 6,
+
+  /** 7: The remote user leaves the channel.
+   */
+  REMOTE_VIDEO_STATE_REASON_REMOTE_OFFLINE = 7,
+
+  /** 8: The remote audio-and-video stream falls back to the audio-only stream due to poor network conditions.
+   */
+  REMOTE_VIDEO_STATE_REASON_AUDIO_FALLBACK = 8,
+
+  /** 9: The remote audio-only stream switches back to the audio-and-video stream after the network conditions improve.
+   */
+  REMOTE_VIDEO_STATE_REASON_AUDIO_FALLBACK_RECOVERY = 9,
+}
+
 /**
  * State of the remote audio stream.
  * - 0: The remote audio is in the default state.
@@ -1464,7 +1574,32 @@ export type RemoteVideoStateReason = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
  * - 3: The remote audio is frozen.
  * - 4: The remote audio fails to start.
  */
-export type RemoteAudioState = 0 | 1 | 2 | 3 | 4;
+export enum RemoteAudioState {
+  /** 0: The remote audio is in the default state, probably due to
+   * #REMOTE_AUDIO_REASON_LOCAL_MUTED (3),
+   * #REMOTE_AUDIO_REASON_REMOTE_MUTED (5), or
+   * #REMOTE_AUDIO_REASON_REMOTE_OFFLINE (7).
+   */
+  REMOTE_AUDIO_STATE_STOPPED = 0, // Default state, audio is started or remote user disabled/muted audio stream
+  /** 1: The first remote audio packet is received.
+   */
+  REMOTE_AUDIO_STATE_STARTING = 1, // The first audio frame packet has been received
+  /** 2: The remote audio stream is decoded and plays normally, probably
+   * due to #REMOTE_AUDIO_REASON_NETWORK_RECOVERY (2),
+   * #REMOTE_AUDIO_REASON_LOCAL_UNMUTED (4), or
+   * #REMOTE_AUDIO_REASON_REMOTE_UNMUTED (6).
+   */
+  REMOTE_AUDIO_STATE_DECODING = 2, // The first remote audio frame has been decoded or fronzen state ends
+  /** 3: The remote audio is frozen, probably due to
+   * #REMOTE_AUDIO_REASON_NETWORK_CONGESTION (1).
+   */
+  REMOTE_AUDIO_STATE_FROZEN = 3, // Remote audio is frozen, probably due to network issue
+  /** 4: The remote audio fails to start, probably due to
+   * #REMOTE_AUDIO_REASON_INTERNAL (0).
+   */
+  REMOTE_AUDIO_STATE_FAILED = 4, // Remote audio play failed
+}
+
 /**
  * The reason of the remote audio state change.
  * - 0: Internal reasons.
@@ -1480,7 +1615,36 @@ export type RemoteAudioState = 0 | 1 | 2 | 3 | 4;
  * module.
  * - 7: The remote user leaves the channel.
  */
-export type RemoteAudioStateReason = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+export enum RemoteAudioStateReason {
+  /** 0: The SDK reports this reason when the audio state changes.
+   */
+  REMOTE_AUDIO_REASON_INTERNAL = 0,
+  /** 1: Network congestion.
+   */
+  REMOTE_AUDIO_REASON_NETWORK_CONGESTION = 1,
+  /** 2: Network recovery.
+   */
+  REMOTE_AUDIO_REASON_NETWORK_RECOVERY = 2,
+  /** 3: The local user stops receiving the remote audio stream or
+   * disables the audio module.
+   */
+  REMOTE_AUDIO_REASON_LOCAL_MUTED = 3,
+  /** 4: The local user resumes receiving the remote audio stream or
+   * enables the audio module.
+   */
+  REMOTE_AUDIO_REASON_LOCAL_UNMUTED = 4,
+  /** 5: The remote user stops sending the audio stream or disables the
+   * audio module.
+   */
+  REMOTE_AUDIO_REASON_REMOTE_MUTED = 5,
+  /** 6: The remote user resumes sending the audio stream or enables the
+   * audio module.
+   */
+  REMOTE_AUDIO_REASON_REMOTE_UNMUTED = 6,
+  /** 7: The remote user leaves the channel.
+   */
+  REMOTE_AUDIO_REASON_REMOTE_OFFLINE = 7,
+}
 /**
  * Connection states.
  * - 1: The SDK is disconnected from Agora's edge server.
@@ -1519,12 +1683,41 @@ export type RemoteAudioStateReason = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
  * (through the RESTful API), the SDK triggers connectionStateChanged
  * callbacks.
  */
-export type ConnectionState =
-  | 1 // 1: The SDK is disconnected from Agora's edge server
-  | 2 // 2: The SDK is connecting to Agora's edge server.
-  | 3
-  | 4
-  | 5; // 5: The SDK fails to connect to Agora's edge server or join the channel.
+export enum ConnectionState {
+  /** 1: The SDK is disconnected from Agora's edge server.
+
+   - This is the initial state before calling the \ref agora::rtc::IRtcEngine::joinChannel "joinChannel" method.
+   - The SDK also enters this state when the application calls the \ref agora::rtc::IRtcEngine::leaveChannel "leaveChannel" method.
+   */
+  CONNECTION_STATE_DISCONNECTED = 1,
+  /** 2: The SDK is connecting to Agora's edge server.
+
+   - When the application calls the \ref agora::rtc::IRtcEngine::joinChannel "joinChannel" method, the SDK starts to establish a connection to the specified channel, triggers the \ref agora::rtc::IRtcEngineEventHandler::onConnectionStateChanged "onConnectionStateChanged" callback, and switches to the #CONNECTION_STATE_CONNECTING state.
+   - When the SDK successfully joins the channel, it triggers the \ref agora::rtc::IRtcEngineEventHandler::onConnectionStateChanged "onConnectionStateChanged" callback and switches to the #CONNECTION_STATE_CONNECTED state.
+   - After the SDK joins the channel and when it finishes initializing the media engine, the SDK triggers the \ref agora::rtc::IRtcEngineEventHandler::onJoinChannelSuccess "onJoinChannelSuccess" callback.
+   */
+  CONNECTION_STATE_CONNECTING = 2,
+  /** 3: The SDK is connected to Agora's edge server and has joined a channel. You can now publish or subscribe to a media stream in the channel.
+
+   If the connection to the channel is lost because, for example, if the network is down or switched, the SDK automatically tries to reconnect and triggers:
+   - The \ref agora::rtc::IRtcEngineEventHandler::onConnectionInterrupted "onConnectionInterrupted" callback (deprecated).
+   - The \ref agora::rtc::IRtcEngineEventHandler::onConnectionStateChanged "onConnectionStateChanged" callback and switches to the #CONNECTION_STATE_RECONNECTING state.
+   */
+  CONNECTION_STATE_CONNECTED = 3,
+  /** 4: The SDK keeps rejoining the channel after being disconnected from a joined channel because of network issues.
+
+   - If the SDK cannot rejoin the channel within 10 seconds after being disconnected from Agora's edge server, the SDK triggers the \ref agora::rtc::IRtcEngineEventHandler::onConnectionLost "onConnectionLost" callback, stays in the #CONNECTION_STATE_RECONNECTING state, and keeps rejoining the channel.
+   - If the SDK fails to rejoin the channel 20 minutes after being disconnected from Agora's edge server, the SDK triggers the \ref agora::rtc::IRtcEngineEventHandler::onConnectionStateChanged "onConnectionStateChanged" callback, switches to the #CONNECTION_STATE_FAILED state, and stops rejoining the channel.
+   */
+  CONNECTION_STATE_RECONNECTING = 4,
+  /** 5: The SDK fails to connect to Agora's edge server or join the channel.
+
+   You must call the \ref agora::rtc::IRtcEngine::leaveChannel "leaveChannel" method to leave this state, and call the \ref agora::rtc::IRtcEngine::joinChannel "joinChannel" method again to rejoin the channel.
+
+   If the SDK is banned from joining the channel by Agora's edge server (through the RESTful API), the SDK triggers the \ref agora::rtc::IRtcEngineEventHandler::onConnectionBanned "onConnectionBanned" (deprecated) and \ref agora::rtc::IRtcEngineEventHandler::onConnectionStateChanged "onConnectionStateChanged" callbacks.
+   */
+  CONNECTION_STATE_FAILED = 5,
+}
 
 /**
  * Reasons for a connection state change.
@@ -1547,21 +1740,50 @@ export type ConnectionState =
  * - 12: Network status change for renew token.
  * - 13: Client IP Address changed.
  */
-export type ConnectionChangeReason =
-  | 0 // 0: The SDK is connecting to Agora's edge server.
-  | 1 // 1: The SDK has joined the channel successfully.
-  | 2 // 2: The connection between the SDK and Agora's edge server is interrupted.
-  | 3 // 3: The connection between the SDK and Agora's edge server is banned by Agora's edge server.
-  | 4 // 4: The SDK fails to join the channel for more than 20 minutes and stops reconnecting to the channel.
-  | 5 // 5: The SDK has left the channel.
-  | 6 // 6: Invalid App ID
-  | 7 // 7: Invalid Channel Name
-  | 8 // 8: Invalid Token
-  | 9 // 9: Token Expired
-  | 10 // 10: This user has been banned by server
-  | 11 // 11: SDK reconnects for setting proxy server
-  | 12 // 12: Network status change for renew token
-  | 13; // 13: Client IP Address changed
+export enum ConnectionChangeReason {
+  /** 0: The SDK is connecting to Agora's edge server. */
+  CONNECTION_CHANGED_CONNECTING = 0,
+  /** 1: The SDK has joined the channel successfully. */
+  CONNECTION_CHANGED_JOIN_SUCCESS = 1,
+  /** 2: The connection between the SDK and Agora's edge server is interrupted. */
+  CONNECTION_CHANGED_INTERRUPTED = 2,
+  /** 3: The user is banned by the server. This error occurs when the user is kicked out the channel from the server. */
+  CONNECTION_CHANGED_BANNED_BY_SERVER = 3,
+  /** 4: The SDK fails to join the channel for more than 20 minutes and stops reconnecting to the channel. */
+  CONNECTION_CHANGED_JOIN_FAILED = 4,
+  /** 5: The SDK has left the channel. */
+  CONNECTION_CHANGED_LEAVE_CHANNEL = 5,
+  /**
+   * 6: The specified App ID is invalid. Try to rejoin the channel with a valid App ID.
+   */
+  CONNECTION_CHANGED_INVALID_APP_ID = 6,
+  /** 7: The connection failed since channel name is not valid. */
+  CONNECTION_CHANGED_INVALID_CHANNEL_NAME = 7,
+  /** 8: The connection failed since token is not valid, possibly because:
+
+   - The App Certificate for the project is enabled in Console, but you do not use Token when joining the channel. If you enable the App Certificate, you must use a token to join the channel.
+   - The uid that you specify in the \ref agora::rtc::IRtcEngine::joinChannel "joinChannel" method is different from the uid that you pass for generating the token.
+   */
+  CONNECTION_CHANGED_INVALID_TOKEN = 8,
+  /** 9: The connection failed since token is expired. */
+  CONNECTION_CHANGED_TOKEN_EXPIRED = 9,
+  /** 10: The connection is rejected by server. This error usually occurs in the following situations:
+   * - When the user is already in the channel, and still calls the method to join the channel, for example,
+   * \ref IRtcEngine::joinChannel "joinChannel".
+   * - When the user tries to join a channel during \ref IRtcEngine::startEchoTest "startEchoTest". Once you
+   * call \ref IRtcEngine::startEchoTest "startEchoTest", you need to call \ref IRtcEngine::stopEchoTest "stopEchoTest" before joining a channel.
+   *
+   */
+  CONNECTION_CHANGED_REJECTED_BY_SERVER = 10,
+  /** 11: The connection changed to reconnecting since SDK has set a proxy server. */
+  CONNECTION_CHANGED_SETTING_PROXY_SERVER = 11,
+  /** 12: When SDK is in connection failed, the renew token operation will make it connecting. */
+  CONNECTION_CHANGED_RENEW_TOKEN = 12,
+  /** 13: The IP Address of SDK client has changed. i.e., Network type or IP/Port changed by network operator might change client IP address. */
+  CONNECTION_CHANGED_CLIENT_IP_ADDRESS_CHANGED = 13,
+  /** 14: Timeout for the keep-alive of the connection between the SDK and Agora's edge server. The connection state changes to CONNECTION_STATE_RECONNECTING(4). */
+  CONNECTION_CHANGED_KEEP_ALIVE_TIMEOUT = 14,
+}
 
 /** Encryption mode. Agora recommends using either the `AES_128_GCM2` or
  * `AES_256_GCM2` encryption mode, both of which support adding a salt and
@@ -2099,11 +2321,28 @@ export enum AUDIENCE_LATENCY_LEVEL_TYPE {
  * - 2: Subscribing.
  * - 3: Subscribes to and receives the remote stream successfully.
  */
-export type STREAM_SUBSCRIBE_STATE =
-  | 0 //SUB_STATE_IDLE
-  | 1 //SUB_STATE_NO_SUBSCRIBED
-  | 2 //SUB_STATE_SUBSCRIBING
-  | 3; //SUB_STATE_SUBSCRIBED
+export enum STREAM_SUBSCRIBE_STATE {
+  /** 0: The initial subscribing state after joining the channel.
+   */
+  SUB_STATE_IDLE = 0,
+  /** 1: Fails to subscribe to the remote stream. Possible reasons:
+   * - The remote user:
+   *  - Calls \ref IRtcEngine::muteLocalAudioStream "muteLocalAudioStream(true)" or \ref IRtcEngine::muteLocalVideoStream "muteLocalVideoStream(true)" to stop sending local streams.
+   *  - Calls \ref IRtcEngine::disableAudio "disableAudio" or \ref IRtcEngine::disableVideo "disableVideo" to disable the entire audio or video modules.
+   *  - Calls \ref IRtcEngine::enableLocalAudio "enableLocalAudio(false)" or \ref IRtcEngine::enableLocalVideo "enableLocalVideo(false)" to disable the local audio sampling or video capturing.
+   *  - The role of the remote user is `AUDIENCE`.
+   * - The local user calls the following methods to stop receiving remote streams:
+   *  - Calls \ref IRtcEngine::muteRemoteAudioStream "muteRemoteAudioStream(true)", \ref IRtcEngine::muteAllRemoteAudioStreams "muteAllRemoteAudioStreams(true)", or \ref IRtcEngine::setDefaultMuteAllRemoteAudioStreams "setDefaultMuteAllRemoteAudioStreams(true)" to stop receiving remote audio streams.
+   *  - Calls \ref IRtcEngine::muteRemoteVideoStream "muteRemoteVideoStream(true)", \ref IRtcEngine::muteAllRemoteVideoStreams "muteAllRemoteVideoStreams(true)", or \ref IRtcEngine::setDefaultMuteAllRemoteVideoStreams "setDefaultMuteAllRemoteVideoStreams(true)" to stop receiving remote video streams.
+   */
+  SUB_STATE_NO_SUBSCRIBED = 1,
+  /** 2: Subscribing.
+   */
+  SUB_STATE_SUBSCRIBING = 2,
+  /** 3: Subscribes to and receives the remote stream successfully.
+   */
+  SUB_STATE_SUBSCRIBED = 3,
+}
 
 /**
  * The definition of {@link ChannelMediaInfo}.
@@ -2328,11 +2567,23 @@ export enum ChannelMediaRelayEvent {
  * - 3: A failure occurs. See the error code in
  * {@link ChannelMediaRelayError}.
  */
-export type ChannelMediaRelayState =
-  | 0 // 0: RELAY_STATE_IDLE
-  | 1 // 1: RELAY_STATE_CONNECTING
-  | 2 // 2: RELAY_STATE_RUNNING
-  | 3; // 3: RELAY_STATE_FAILURE
+export enum ChannelMediaRelayState {
+  /** 0: The initial state. After you successfully stop the channel media
+   * relay by calling \ref IRtcEngine::stopChannelMediaRelay "stopChannelMediaRelay",
+   * the \ref IRtcEngineEventHandler::onChannelMediaRelayStateChanged "onChannelMediaRelayStateChanged" callback returns this state.
+   */
+  RELAY_STATE_IDLE = 0,
+  /** 1: The SDK tries to relay the media stream to the destination channel.
+   */
+  RELAY_STATE_CONNECTING = 1,
+  /** 2: The SDK successfully relays the media stream to the destination
+   * channel.
+   */
+  RELAY_STATE_RUNNING = 2,
+  /** 3: A failure occurs. See the details in code.
+   */
+  RELAY_STATE_FAILURE = 3,
+}
 /**
  * The error code.
  * - 0: The state is normal.
@@ -2351,19 +2602,56 @@ export type ChannelMediaRelayState =
  * - 10: The token of the source channel has expired.
  * - 11: The token of the destination channel has expired.
  */
-export type ChannelMediaRelayError =
-  | 0 // 0: RELAY_OK
-  | 1 // 1: RELAY_ERROR_SERVER_ERROR_RESPONSE
-  | 2 // 2: RELAY_ERROR_SERVER_NO_RESPONSE
-  | 3 // 3: RELAY_ERROR_NO_RESOURCE_AVAILABLE
-  | 4 // 4: RELAY_ERROR_FAILED_JOIN_SRC
-  | 5 // 5: RELAY_ERROR_FAILED_JOIN_DEST
-  | 6 // 6: RELAY_ERROR_FAILED_PACKET_RECEIVED_FROM_SRC
-  | 7 // 7: RELAY_ERROR_FAILED_PACKET_SENT_TO_DEST
-  | 8 // 8: RELAY_ERROR_SERVER_CONNECTION_LOST
-  | 9 // 9: RELAY_ERROR_INTERNAL_ERROR
-  | 10 // 10: RELAY_ERROR_SRC_TOKEN_EXPIRED
-  | 11; // 11: RELAY_ERROR_DEST_TOKEN_EXPIRED
+export enum ChannelMediaRelayError {
+  /** 0: The state is normal.
+   */
+  RELAY_OK = 0,
+  /** 1: An error occurs in the server response.
+   */
+  RELAY_ERROR_SERVER_ERROR_RESPONSE = 1,
+  /** 2: No server response.
+   *
+   * You can call the
+   * \ref agora::rtc::IRtcEngine::leaveChannel "leaveChannel" method to
+   * leave the channel.
+   *
+   * This error can also occur if your project has not enabled co-host token
+   * authentication. Contact support@agora.io to enable the co-host token
+   * authentication service before starting a channel media relay.
+   */
+  RELAY_ERROR_SERVER_NO_RESPONSE = 2,
+  /** 3: The SDK fails to access the service, probably due to limited
+   * resources of the server.
+   */
+  RELAY_ERROR_NO_RESOURCE_AVAILABLE = 3,
+  /** 4: Fails to send the relay request.
+   */
+  RELAY_ERROR_FAILED_JOIN_SRC = 4,
+  /** 5: Fails to accept the relay request.
+   */
+  RELAY_ERROR_FAILED_JOIN_DEST = 5,
+  /** 6: The server fails to receive the media stream.
+   */
+  RELAY_ERROR_FAILED_PACKET_RECEIVED_FROM_SRC = 6,
+  /** 7: The server fails to send the media stream.
+   */
+  RELAY_ERROR_FAILED_PACKET_SENT_TO_DEST = 7,
+  /** 8: The SDK disconnects from the server due to poor network
+   * connections. You can call the \ref agora::rtc::IRtcEngine::leaveChannel
+   * "leaveChannel" method to leave the channel.
+   */
+  RELAY_ERROR_SERVER_CONNECTION_LOST = 8,
+  /** 9: An internal error occurs in the server.
+   */
+  RELAY_ERROR_INTERNAL_ERROR = 9,
+  /** 10: The token of the source channel has expired.
+   */
+  RELAY_ERROR_SRC_TOKEN_EXPIRED = 10,
+  /** 11: The token of the destination channel has expired.
+   */
+  RELAY_ERROR_DEST_TOKEN_EXPIRED = 11,
+}
+
 /**
  * Regions for connection.
  *
@@ -2404,11 +2692,25 @@ export type AREA_CODE =
  * - 2: Publishing.
  * - 3: Publishes successfully.
  */
-export type STREAM_PUBLISH_STATE =
-  | 0 //PUB_STATE_IDLE
-  | 1 //PUB_STATE_NO_PUBLISHED
-  | 2 //PUB_STATE_PUBLISHING
-  | 3; //PUB_STATE_PUBLISHED
+export enum STREAM_PUBLISH_STATE {
+  /** 0: The initial publishing state after joining the channel.
+   */
+  PUB_STATE_IDLE = 0,
+  /** 1: Fails to publish the local stream. Possible reasons:
+   * - The local user calls \ref IRtcEngine::muteLocalAudioStream "muteLocalAudioStream(true)" or \ref IRtcEngine::muteLocalVideoStream "muteLocalVideoStream(true)" to stop sending local streams.
+   * - The local user calls \ref IRtcEngine::disableAudio "disableAudio" or \ref IRtcEngine::disableVideo "disableVideo" to disable the entire audio or video module.
+   * - The local user calls \ref IRtcEngine::enableLocalAudio "enableLocalAudio(false)" or \ref IRtcEngine::enableLocalVideo "enableLocalVideo(false)" to disable the local audio sampling or video capturing.
+   * - The role of the local user is `AUDIENCE`.
+   */
+  PUB_STATE_NO_PUBLISHED = 1,
+  /** 2: Publishing.
+   */
+  PUB_STATE_PUBLISHING = 2,
+  /** 3: Publishes successfully.
+   */
+  PUB_STATE_PUBLISHED = 3,
+}
+
 /**
  * Audio output routing.
  * - -1: Default.
@@ -2423,18 +2725,42 @@ export type STREAM_PUBLISH_STATE =
  * - 8: DisplayPort peripheral (macOS only).
  * - 9: Apple AirPlay (macOS only).
  */
-export type AUDIO_ROUTE_TYPE =
-  | -1 //AUDIO_ROUTE_DEFAULT
-  | 0 //AUDIO_ROUTE_HEADSET
-  | 1 //AUDIO_ROUTE_EARPIECE
-  | 2 //AUDIO_ROUTE_HEADSET_NO_MIC
-  | 3 //AUDIO_ROUTE_SPEAKERPHONE
-  | 4 //AUDIO_ROUTE_LOUDSPEAKER
-  | 5 //AUDIO_ROUTE_BLUETOOTH
-  | 6 //AUDIO_ROUTE_USB
-  | 7 //AUDIO_ROUTE_HDMI
-  | 8 //AUDIO_ROUTE_DISPLAYPORT
-  | 9; //AUDIO_ROUTE_AIRPLAY
+export enum AUDIO_ROUTE_TYPE {
+  /** -1: Default audio route.
+   */
+  AUDIO_ROUTE_DEFAULT = -1,
+  /** 0: The audio route is a headset with a microphone.
+   */
+  AUDIO_ROUTE_HEADSET = 0,
+  /** 1: The audio route is an earpiece.
+   */
+  AUDIO_ROUTE_EARPIECE = 1,
+  /** 2: The audio route is a headset without a microphone.
+   */
+  AUDIO_ROUTE_HEADSET_NO_MIC = 2,
+  /** 3: The audio route is the speaker that comes with the device.
+   */
+  AUDIO_ROUTE_SPEAKERPHONE = 3,
+  /** 4: (iOS and macOS only) The audio route is an external speaker.
+   */
+  AUDIO_ROUTE_LOUDSPEAKER = 4,
+  /** 5: The audio route is a Bluetooth headset.
+   */
+  AUDIO_ROUTE_BLUETOOTH = 5,
+  /** 6: (macOS only) The audio route is a USB peripheral device.
+   */
+  AUDIO_ROUTE_USB = 6,
+  /** 7: (macOS only) The audio route is an HDMI peripheral device.
+   */
+  AUDIO_ROUTE_HDMI = 7,
+  /** 8: (macOS only) The audio route is a DisplayPort peripheral device.
+   */
+  AUDIO_ROUTE_DISPLAYPORT = 8,
+  /** 9: (iOS and macOS only) The audio route is Apple AirPlay.
+   */
+  AUDIO_ROUTE_AIRPLAY = 9,
+}
+
 /**
  * The media metadata.
  */
@@ -2475,10 +2801,19 @@ export interface ClientRoleOptions {
  * - 2: Reserved type.
  *
  */
-export type CLOUD_PROXY_TYPE =
-  | 0 //NONE_PROXY
-  | 1 //UDP_PROXY
-  | 2; //TCP_PROXY
+export enum CLOUD_PROXY_TYPE {
+  /** 0: Do not use the cloud proxy.
+   */
+  NONE_PROXY = 0,
+  /** 1: The cloud proxy for the UDP protocol.
+   */
+  UDP_PROXY = 1,
+  /// @cond
+  /** 2: The cloud proxy for the TCP (encrypted) protocol.
+   */
+  TCP_PROXY = 2,
+  /// @endcond
+}
 /** The configuration of the log files.
  *
  * @since v3.3.1
@@ -2567,48 +2902,58 @@ export enum LOCAL_VIDEO_STREAM_ERROR {
   LOCAL_VIDEO_STREAM_ERROR_ENCODE_FAILURE = 5,
   /** 6: (iOS only) The application is in the background.
    *
-   * @since v3.3.1
+   * @since v3.3.0
    */
   LOCAL_VIDEO_STREAM_ERROR_CAPTURE_INBACKGROUND = 6,
   /** 7: (iOS only) The application is running in Slide Over, Split View, or Picture in Picture mode.
    *
-   * @since v3.3.1
+   * @since v3.3.0
    */
   LOCAL_VIDEO_STREAM_ERROR_CAPTURE_MULTIPLE_FOREGROUND_APPS = 7,
-  /** 8: The SDK cannot find the local video capture device.
+  /**
+   * 8: The SDK cannot find the local video capture device.
    *
-   * @since v3.4.2
+   * @since v3.4.0
    */
   LOCAL_VIDEO_STREAM_ERROR_DEVICE_NOT_FOUND = 8,
   /**
-   * 11: The shared window is minimized when you call
-   * {@link startScreenCaptureByWindow} to share a window.
+   * 10: (macOS and Windows only) The SDK cannot find the video device in the video device list. Check whether the ID
+   * of the video device is valid.
    *
-   * @since 3.2.0
+   * @since v3.5.2
+   */
+  LOCAL_VIDEO_STREAM_ERROR_DEVICE_INVALID_ID = 10,
+  /**
+   * 11: The shared window is minimized when you call
+   * \ref IRtcEngine::startScreenCaptureByWindowId "startScreenCaptureByWindowId"
+   * to share a window.
    */
   LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_MINIMIZED = 11,
-  /** 12: The error code indicates that a window shared by the window ID
-   * has been closed, or a full-screen window
+  /** 12: The error code indicates that a window shared by the window ID has been closed, or a full-screen window
    * shared by the window ID has exited full-screen mode.
-   * After exiting full-screen mode, remote users cannot see the shared window.
-   * To prevent remote users from seeing a
+   * After exiting full-screen mode, remote users cannot see the shared window. To prevent remote users from seeing a
    * black screen, Agora recommends that you immediately stop screen sharing.
    *
    * Common scenarios for reporting this error code:
-   * - When the local user closes the shared window, the SDK
-   * reports this error code.
-   * - The local user shows some slides in full-screen mode first,
-   * and then shares the windows of the slides. After
+   * - When the local user closes the shared window, the SDK reports this error code.
+   * - The local user shows some slides in full-screen mode first, and then shares the windows of the slides. After
    * the user exits full-screen mode, the SDK reports this error code.
-   * - The local user watches web video or reads web document in full-screen
-   * mode first, and then shares the window of
-   * the web video or document. After the user exits full-screen mode,
-   * the SDK reports this error code.
-   *
-   * @since 3.2.0
+   * - The local user watches web video or reads web document in full-screen mode first, and then shares the window of
+   * the web video or document. After the user exits full-screen mode, the SDK reports this error code.
    */
   LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_CLOSED = 12,
-  /** @ignore */
+  /**
+   * 13: (Windows only) The window being shared is overlapped by another window, so the overlapped area is blacked out by
+   * the SDK during window sharing.
+   *
+   * @since v3.5.2
+   */
+  LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_OCCLUDED = 13,
+  /**
+   * 20: (Windows only) The SDK does not support sharing this type of window.
+   *
+   * @since v3.5.2
+   */
   LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_NOT_SUPPORTED = 20,
 }
 
@@ -2852,6 +3197,12 @@ export enum BACKGROUND_SOURCE_TYPE {
    * The background image is a file in PNG or JPG format.
    */
   BACKGROUND_IMG,
+  /**
+   * The background image is blurred.
+   *
+   * @since v3.5.1
+   */
+  BACKGROUND_BLUR,
 }
 
 /**
@@ -3206,15 +3557,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  setBeautyEffectOptions(
-    enable: boolean,
-    options: {
-      lighteningContrastLevel: 0 | 1 | 2; // 0 for low, 1 for normal, 2 for high
-      lighteningLevel: number;
-      smoothnessLevel: number;
-      rednessLevel: number;
-    }
-  ): number;
+  setBeautyEffectOptions(enable: boolean, options: BeautyOptions): number;
   /**
    * @ignore
    */
@@ -3311,6 +3654,49 @@ export interface NodeRtcEngine {
    * @ignore
    */
   videoSourceSetAddonLogFile(filepath: string): number;
+  /**
+   * @ignore
+   */
+  getAudioTrackCount(): number;
+  /**
+   * @ignore
+   */
+  selectAudioTrack(index: number): number;
+  /**
+   * @ignore
+   */
+  takeSnapshot(channel: string, uid: number, filepath: string): number;
+  /**
+   * @ignore
+   */
+  startRtmpStreamWithoutTranscoding(url: string): number;
+  /**
+   * @ignore
+   */
+  startRtmpStreamWithTranscoding(
+    url: string,
+    transcoding: TranscodingConfig
+  ): number;
+  /**
+   * @ignore
+   */
+  updateRtmpTranscoding(transcoding: TranscodingConfig): number;
+  /**
+   * @ignore
+   */
+  stopRtmpStream(url: string): number;
+  /**
+   * @ignore
+   */
+  setAVSyncSource(channelId: string, uid: number): number;
+  /**
+   * @ignore
+   */
+  followSystemPlaybackDevice(enable: boolean): number;
+  /**
+   * @ignore
+   */
+  followSystemRecordingDevice(enable: boolean): number;
   /**
    * @ignore
    */
@@ -3509,18 +3895,6 @@ export interface NodeRtcEngine {
    * @ignore
    */
   videoSourceEnableWebSdkInteroperability(enabled: boolean): number;
-  /**
-   * @ignore
-   */
-  videoSourceMuteRemoteAudioStream(uid: number, mute: boolean): number;
-  /**
-   * @ignore
-   */
-  videoSourceMuteAllRemoteAudioStreams(mute: boolean): number;
-  /**
-   * @ignore
-   */
-  videoSourceMuteRemoteVideoStream(uid: number, mute: boolean): number;
   /**
    * @ignore
    */
@@ -3984,6 +4358,16 @@ export interface NodeRtcEngine {
    * @ignore
    */
   adjustPlaybackSignalVolume(volume: number): number;
+  getDefaultAudioPlaybackDevices(): Object;
+  getDefaultAudioRecordingDevices(): Object;
+  videoSourceDisableAudio(): number;
+  adjustLoopbackSignalVolume(volume: number): number;
+  videoSourceAdjustRecordingSignalVolume(volume: number): number;
+  videoSourceAdjustLoopbackRecordingSignalVolume(volume: number): number;
+  videoSourceMuteRemoteAudioStream(uid: number, mute: boolean): number;
+  videoSourceMuteAllRemoteAudioStreams(mute: boolean): number;
+  videoSourceMuteRemoteVideoStream(uid: number, mute: boolean): number;
+  videoSourceMuteAllRemoteVideoStreams(mute: boolean): number;
   /**
    * @ignore
    */
@@ -4185,6 +4569,15 @@ export interface NodeRtcEngine {
    * @ignore
    */
   setAudioMixingDualMonoMode(mode: AUDIO_MIXING_DUAL_MONO_MODE): number;
+
+  /**
+   * @ignore
+   */
+  getScreenCaptureSources(
+    thumbSize: SIZE,
+    iconSize: SIZE,
+    includeScreen: boolean
+  ): Array<Object>;
 }
 /**
  * @ignore
@@ -4402,4 +4795,47 @@ export interface NodeRtcChannel {
 
   muteLocalAudioStream(mute: boolean): number;
   muteLocalVideoStream(mute: boolean): number;
+}
+
+/** Audio codec profile types. The default value is LC_ACC. */
+export enum AUDIO_CODEC_PROFILE_TYPE {
+  /** 0: (Default) LC-AAC */
+  AUDIO_CODEC_PROFILE_LC_AAC = 0,
+  /** 1: HE-AAC */
+  AUDIO_CODEC_PROFILE_HE_AAC = 1,
+  /** 2: HE-AAC v2
+   *
+   * @since v3.6.0
+   */
+  AUDIO_CODEC_PROFILE_HE_AAC_V2 = 2,
+}
+
+export interface LiveStreamAdvancedFeature {
+  /** The name of the advanced feature. It contains LBHQ and VEO.
+   */
+  featureName: string;
+
+  /** Whether to enable the advanced feature:
+   * - true: Enable the advanced feature.
+   * - false: (Default) Disable the advanced feature.
+   */
+  opened: boolean;
+}
+enum LIGHTENING_CONTRAST_LEVEL {
+  /** 0: Low contrast level. */
+  LIGHTENING_CONTRAST_LOW = 0,
+  /** (Default) Normal contrast level. */
+  LIGHTENING_CONTRAST_NORMAL,
+  /** High contrast level. */
+  LIGHTENING_CONTRAST_HIGH,
+}
+
+/** Image enhancement options.
+ */
+export interface BeautyOptions {
+  lighteningContrastLevel: LIGHTENING_CONTRAST_LEVEL;
+  lighteningLevel: number;
+  smoothnessLevel: number;
+  rednessLevel: number;
+  sharpnessLevel: number;
 }

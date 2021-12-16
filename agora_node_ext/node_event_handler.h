@@ -124,7 +124,11 @@ namespace rtc {
   "virtualBackgroundSourceEnabled"
 #define RTC_EVENT_REQUEST_AUDIO_FILE_INFO \
   "requestAudioFileInfo"
+#define RTC_EVENT_SNAPSHOT_TAKEN \
+  "snapshotTaken"
 
+/* meeting */
+#define RTC_EVENT_VIDEO_SOURCE_SCREEN_CAPTURE_INFO_UPDATED "videoSourceScreenCaptureInfoUpdated"
 
 class NodeRtcEngine;
 class NodeUid;
@@ -308,9 +312,8 @@ class NodeEventHandler : public IRtcEngineEventHandler,
 
   // 3.0.0
   virtual void onRtmpStreamingStateChanged(
-      const char* url,
-      RTMP_STREAM_PUBLISH_STATE state,
-      RTMP_STREAM_PUBLISH_ERROR errCode) override;
+      const char *url, agora::rtc::RTMP_STREAM_PUBLISH_STATE state,
+      agora::rtc::RTMP_STREAM_PUBLISH_ERROR_TYPE errCode) override;
 
   // 3.1.0
   virtual void onFirstLocalAudioFramePublished(int elapsed);
@@ -349,9 +352,14 @@ class NodeEventHandler : public IRtcEngineEventHandler,
       VIRTUAL_BACKGROUND_SOURCE_STATE_REASON reason);
   // 3.5.1
   virtual void onRequestAudioFileInfo(const agora::rtc::AudioFileInfo& info, AUDIO_FILE_INFO_ERROR error);
-                             
 
- private:
+  /* meeting */
+  virtual void
+  onVideoSourceScreenCaptureInfoUpdated(ScreenCaptureInfoCmd &info) override;
+  // 3.5.2
+  virtual void onSnapshotTaken(const char* channel, uid_t uid, const char* filePath, int width, int height, int errCode) override;
+
+private:
   void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed);
   void onRejoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed);
   void onWarning_node(int warn, const char* msg);
