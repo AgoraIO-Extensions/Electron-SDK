@@ -1,3 +1,31 @@
+## 3.6.0-build.1216(Dec 16th, 2021)
+* add new api:
+  - videoSourceDisableAudio
+  - adjustLoopbackSignalVolume
+  - videoSourceAdjustRecordingSignalVolume
+  - videoSourceAdjustLoopbackRecordingSignalVolume
+  - getDefaultAudioPlaybackDevices
+  - getDefaultAudioRecordingDevices
+  - getAudioTrackCount
+  - selectAudioTrack
+  - takeSnapshot
+  - startRtmpStreamWithoutTranscoding
+  - startRtmpStreamWithTranscoding
+  - updateRtmpTranscoding
+  - stopRtmpStream
+  - setAVSyncSource
+  - followSystemPlaybackDevice
+  - followSystemRecordingDevice
+  - getScreenCaptureSources
+* modify
+ - setBeautyEffectOptions
+* add event:
+  - videoSourceScreenCaptureInfoUpdated(For windows)
+
+## 3.4.11-build.1202(Dec 2th, 2021)
+* remove getAudioMixingFileDuration
+* add getScreenCaptureSources
+
 ## 3.5.1-build.1207(Dec 7th, 2021)
 * add new api:
   - videoSourceMuteRemoteAudioStream

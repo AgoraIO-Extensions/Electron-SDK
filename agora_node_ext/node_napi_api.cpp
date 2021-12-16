@@ -797,7 +797,18 @@ napi_status napi_get_object_property_nodestring_(Isolate* isolate,
   Local<Value> value = napi_get_object_property_value(isolate, obj, propName);
   return napi_get_value_nodestring_(value, nodechar);
 }
+napi_status napi_get_object_property_array_(Isolate *isolate,
+                                            const Local<Object> &obj,
+                                            const std::string &propName,
+                                            v8::Array *&array) {
+  Local<Value> value = napi_get_object_property_value(isolate, obj, propName);
 
+  if (value->IsNullOrUndefined() || !value->IsArray()) {
+    return napi_invalid_arg;
+  }
+  array = v8::Array::Cast(*value);
+  return napi_ok;
+}
 napi_status napi_get_object_property_arraybuffer_(Isolate* isolate,
                                                   const Local<Object>& obj,
                                                   const std::string& propName,

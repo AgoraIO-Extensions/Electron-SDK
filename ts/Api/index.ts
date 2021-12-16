@@ -66,6 +66,9 @@ import {
   AUDIO_MIXING_DUAL_MONO_MODE,
   AudioFileInfo,
   AUDIO_FILE_INFO_ERROR,
+  ScreenCaptureInfo,
+  SIZE,
+  BeautyOptions,
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -528,6 +531,14 @@ class AgoraRtcEngine extends EventEmitter {
       fire('connectionLost');
     });
 
+    this.rtcEngine.onEvent('snapshotTaken', function(
+      channel: string,
+      uid: number,
+      elapsed: number
+    ) {
+      fire('snapshotTaken', channel, uid, elapsed);
+    });
+
     // this.rtcEngine.onEvent('connectioninterrupted', function() {
     //   fire('connectioninterrupted');
     //   fire('connectionInterrupted');
@@ -916,7 +927,14 @@ class AgoraRtcEngine extends EventEmitter {
       fire('videoSourceLocalVideoStateChanged', state, error);
     });
 
+    this.rtcEngine.onEvent('videoSourceScreenCaptureInfoUpdated', function(
+      info: ScreenCaptureInfo
+    ) {
+      fire('videoSourceScreenCaptureInfoUpdated', info);
+    });
+
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
+      fire('agoraVideoRawData', infos);
       fire('agoraVideoRowData', infos);
       if (!self.pauseRender) {
         self.onRegisterDeliverFrame(infos);
@@ -2210,15 +2228,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setBeautyEffectOptions(
-    enable: boolean,
-    options: {
-      lighteningContrastLevel: 0 | 1 | 2;
-      lighteningLevel: number;
-      smoothnessLevel: number;
-      rednessLevel: number;
-    }
-  ): number {
+  setBeautyEffectOptions(enable: boolean, options: BeautyOptions): number {
     return this.rtcEngine.setBeautyEffectOptions(enable, options);
   }
 
@@ -4026,19 +4036,6 @@ class AgoraRtcEngine extends EventEmitter {
       groupId,
       bundleId
     );
-  }
-
-  videoSourceMuteRemoteAudioStream(uid: number, mute: boolean): number {
-    return this.rtcEngine.videoSourceMuteRemoteAudioStream(uid, mute);
-  }
-  videoSourceMuteAllRemoteAudioStreams(mute: boolean): number {
-    return this.rtcEngine.videoSourceMuteAllRemoteAudioStreams(mute);
-  }
-  videoSourceMuteRemoteVideoStream(uid: number, mute: boolean): number {
-    return this.rtcEngine.videoSourceMuteRemoteVideoStream(uid, mute);
-  }
-  videoSourceMuteAllRemoteVideoStreams(mute: boolean): number {
-    return this.rtcEngine.videoSourceMuteAllRemoteVideoStreams(mute);
   }
 
   /**
@@ -6488,6 +6485,306 @@ class AgoraRtcEngine extends EventEmitter {
   setAudioMixingDualMonoMode(mode: AUDIO_MIXING_DUAL_MONO_MODE): number {
     return this.rtcEngine.setAudioMixingDualMonoMode(mode);
   }
+  /**
+   * Gets the audio track index of the current music file.
+   *
+   * @since v3.5.1
+   *
+   * @note
+   * - This method is for Android, iOS, and Windows only.
+   * - Call this method after calling \ref IRtcEngine::startAudioMixing(const char*,bool,bool,int,int) "startAudioMixing" [2/2]
+   * and receiving the \ref IRtcEngineEventHandler::onAudioMixingStateChanged "onAudioMixingStateChanged" (AUDIO_MIXING_STATE_PLAYING) callback.
+   * - For the audio file formats supported by this method, see [What formats of audio files does the Agora RTC SDK support](https://docs.agora.io/en/faq/audio_format).
+   *
+   * @return
+   * - ≥ 0: The audio track index of the current music file, if this method call succeeds.
+   * - < 0: Failure.
+   */
+  getAudioTrackCount(): number {
+    return this.rtcEngine.getAudioTrackCount();
+  }
+  /**
+   * Specifies the playback track of the current music file.
+   *
+   * @since v3.5.1
+   *
+   * After getting the audio track index of the current music file, call this
+   * method to specify any audio track to play. For example, if different tracks
+   * of a multitrack file store songs in different languages, you can call this
+   * method to set the language of the music file to play.
+   *
+   * @note
+   * - This method is for Android, iOS, and Windows only.
+   * - Call this method after calling \ref IRtcEngine::startAudioMixing(const char*,bool,bool,int,int) "startAudioMixing" [2/2]
+   * and receiving the \ref IRtcEngineEventHandler::onAudioMixingStateChanged "onAudioMixingStateChanged" (AUDIO_MIXING_STATE_PLAYING) callback.
+   * - For the audio file formats supported by this method, see [What formats of audio files does the Agora RTC SDK support](https://docs.agora.io/en/faq/audio_format).
+   *
+   * @param index The specified playback track. This parameter must be less than or equal to the return value
+   * of \ref IRtcEngine::getAudioTrackCount "getAudioTrackCount".
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  selectAudioTrack(index: number): number {
+    return this.rtcEngine.selectAudioTrack(index);
+  }
+
+  /**
+   * meeting
+   */
+  videoSourceDisableAudio(): number {
+    return this.rtcEngine.videoSourceDisableAudio();
+  }
+  adjustLoopbackSignalVolume(volume: number): number {
+    return this.rtcEngine.adjustLoopbackSignalVolume(volume);
+  }
+  videoSourceAdjustRecordingSignalVolume(volume: number): number {
+    return this.rtcEngine.videoSourceAdjustRecordingSignalVolume(volume);
+  }
+  videoSourceAdjustLoopbackRecordingSignalVolume(volume: number): number {
+    return this.rtcEngine.videoSourceAdjustLoopbackRecordingSignalVolume(
+      volume
+    );
+  }
+  videoSourceMuteRemoteAudioStream(uid: number, mute: boolean): number {
+    return this.rtcEngine.videoSourceMuteRemoteAudioStream(uid, mute);
+  }
+  videoSourceMuteAllRemoteAudioStreams(mute: boolean): number {
+    return this.rtcEngine.videoSourceMuteAllRemoteAudioStreams(mute);
+  }
+  videoSourceMuteRemoteVideoStream(uid: number, mute: boolean): number {
+    return this.rtcEngine.videoSourceMuteRemoteVideoStream(uid, mute);
+  }
+  videoSourceMuteAllRemoteVideoStreams(mute: boolean): number {
+    return this.rtcEngine.videoSourceMuteAllRemoteVideoStreams(mute);
+  }
+
+  getDefaultAudioPlaybackDevices(): Object {
+    return this.rtcEngine.getDefaultAudioPlaybackDevices();
+  }
+  getDefaultAudioRecordingDevices(): Object {
+    return this.rtcEngine.getDefaultAudioRecordingDevices();
+  }
+
+  /**
+   * 3.5.2 && 3.6.0 && 3.6.1
+   */
+  /**
+   * Takes a snapshot of a video stream.
+   *
+   * @since v3.5.2
+   *
+   * This method takes a snapshot of a video stream from the specified user, generates a JPG image,
+   * and saves it to the specified path.
+   *
+   * The method is asynchronous, and the SDK has not taken the snapshot when the method call returns.
+   * After a successful method call, the SDK triggers the \ref IRtcEngineEventHandler::onSnapshotTaken "onSnapshotTaken"
+   * callback to report whether the snapshot is successfully taken as well as the details of the snapshot taken.
+   *
+   * @note
+   * - Call this method after joining a channel.
+   * - If the video of the specified user is pre-processed, for example, added with watermarks or image enhancement
+   * effects, the generated snapshot also includes the pre-processing effects.
+   *
+   * @param channel The channel name.
+   * @param uid The user ID of the user. Set `uid` as 0 if you want to take a snapshot of the local user's video.
+   * @param filePath The local path (including the filename extensions) of the snapshot. For example,
+   * `C:\Users\<user_name>\AppData\Local\Agora\<process_name>\example.jpg` on Windows,
+   * `/App Sandbox/Library/Caches/example.jpg` on iOS, `～/Library/Logs/example.jpg` on macOS, and
+   * `/storage/emulated/0/Android/data/<package name>/files/example.jpg` on Android. Ensure that the path you specify
+   * exists and is writable.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  takeSnapshot(channel: string, uid: number, filePath: string): number {
+    return this.rtcEngine.takeSnapshot(channel, uid, filePath);
+  }
+  /**
+   * Starts pushing media streams to a CDN without transcoding.
+   *
+   * @since v3.6.0
+   *
+   * You can call this method to push a live audio-and-video stream to the specified CDN address. This method can push
+   * media streams to only one CDN address at a time, so if you need to push streams to multiple addresses, call this
+   * method multiple times.
+   *
+   * After you call this method, the SDK triggers the \ref IRtcEngineEventHandler::onRtmpStreamingStateChanged "onRtmpStreamingStateChanged"
+   * callback on the local client to report the state of the streaming.
+   *
+   * @note
+   * - Ensure that you enable the RTMP Converter service before using this function. See Prerequisites in *Push Streams to CDN*.
+   * - Call this method after joining a channel.
+   * - Only hosts in the `LIVE_BROADCASTING` profile can call this method.
+   * - If you want to retry pushing streams after a failed push, make sure to call \ref IRtcEngine::stopRtmpStream "stopRtmpStream" first,
+   * then call this method to retry pushing streams; otherwise, the SDK returns the same error code as the last failed push.
+   * - If you want to push media streams in the RTMPS protocol to CDN, call \ref IRtcEngine::startRtmpStreamWithTranscoding "startRtmpStreamWithTranscoding"
+   * instead of \ref IRtcEngine::startRtmpStreamWithoutTranscoding "startRtmpStreamWithoutTranscoding".
+   *
+   * @param url The address of the CDN live streaming. The format is RTMP. The character length cannot exceed 1024 bytes.
+   * Special characters such as Chinese characters are not supported.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   *  - `ERR_INVALID_ARGUMENT(-2)`: url is null or the string length is 0.
+   *  - `ERR_NOT_INITIALIZED(-7)`: The SDK is not initialized before calling this method.
+   */
+  startRtmpStreamWithoutTranscoding(url: string): number {
+    return this.rtcEngine.startRtmpStreamWithoutTranscoding(url);
+  }
+  /**
+   * Starts pushing media streams to a CDN and sets the transcoding configuration.
+   *
+   * @since v3.6.0
+   *
+   * You can call this method to push a live audio-and-video stream to the specified CDN address and set the transcoding
+   * configuration. This method can push media streams to only one CDN address at a time, so if you need to push streams to
+   * multiple addresses, call this method multiple times.
+   *
+   * After you call this method, the SDK triggers the \ref IRtcEngineEventHandler::onRtmpStreamingStateChanged "onRtmpStreamingStateChanged"
+   * callback on the local client to report the state of the streaming.
+   *
+   * @note
+   * - Ensure that you enable the RTMP Converter service before using this function. See Prerequisites in *Push Streams to CDN*.
+   * - Call this method after joining a channel.
+   * - Only hosts in the `LIVE_BROADCASTING` profile can call this method.
+   * - If you want to retry pushing streams after a failed push, make sure to call \ref IRtcEngine::stopRtmpStream "stopRtmpStream" first,
+   * then call this method to retry pushing streams; otherwise, the SDK returns the same error code as the last failed push.
+   * - If you want to push media streams in the RTMPS protocol to CDN, call \ref IRtcEngine::startRtmpStreamWithTranscoding "startRtmpStreamWithTranscoding"
+   * instead of \ref IRtcEngine::startRtmpStreamWithoutTranscoding "startRtmpStreamWithoutTranscoding".
+   *
+   * @param url The address of the CDN live streaming. The format is RTMP or RTMPS. The character length cannot exceed 1024 bytes.
+   * Special characters such as Chinese characters are not supported.
+   * @param transcoding The transcoding configuration for CDN live streaming. See LiveTranscoding.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   *  - `ERR_INVALID_ARGUMENT(-2)`: url is null or the string length is 0.
+   *  - `ERR_NOT_INITIALIZED(-7)`: The SDK is not initialized before calling this method.
+   */
+  startRtmpStreamWithTranscoding(
+    url: string,
+    transcoding: TranscodingConfig
+  ): number {
+    return this.rtcEngine.startRtmpStreamWithTranscoding(url, transcoding);
+  }
+  /**
+   * Updates the transcoding configuration.
+   *
+   * @since v3.6.0
+   *
+   * After you start pushing media streams to CDN with transcoding, you can dynamically update the transcoding configuration according to the scenario.
+   * The SDK triggers the \ref IRtcEngineEventHandler::onTranscodingUpdated "onTranscodingUpdated" callback after the
+   * transcoding configuration is updated.
+   *
+   * @param transcoding The transcoding configuration for CDN live streaming. See LiveTranscoding.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  updateRtmpTranscoding(transcoding: TranscodingConfig): number {
+    return this.rtcEngine.updateRtmpTranscoding(transcoding);
+  }
+  /**
+   * Stops pushing media streams to a CDN.
+   *
+   * @since v3.6.0
+   *
+   * You can call this method to stop the live stream on the specified CDN address.
+   * This method can stop pushing media streams to only one CDN address at a time, so if you need to stop pushing streams to multiple addresses, call this method multiple times.
+   *
+   * After you call this method, the SDK triggers the \ref IRtcEngineEventHandler::onRtmpStreamingStateChanged "onRtmpStreamingStateChanged" callback on the local client to report the state of the streaming.
+   *
+   * @param url The address of the CDN live streaming. The format is RTMP or RTMPS.
+   * The character length cannot exceed 1024 bytes. Special characters such as Chinese characters are not supported.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  stopRtmpStream(url: string): number {
+    return this.rtcEngine.stopRtmpStream(url);
+  }
+  setAVSyncSource(channelId: string, uid: number): number {
+    return this.rtcEngine.setAVSyncSource(channelId, uid);
+  }
+  /**
+   * Sets the audio playback device used by the SDK to follow the system default audio playback device.
+   *
+   * @since v3.6.0
+   *
+   * @param enable Whether to follow the system default audio playback device:
+   * - true: Follow. The SDK immediately switches the audio playback device when the system default audio playback device changes.
+   * - false: Do not follow. The SDK switches the audio playback device to the system default audio playback device only when the currently used audio playback device is disconnected.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  followSystemPlaybackDevice(enable: boolean): number {
+    return this.rtcEngine.followSystemPlaybackDevice(enable);
+  }
+  /**
+   * Sets the audio recording device used by the SDK to follow the system default audio recording device.
+   *
+   * @since v3.6.0
+   *
+   * @param enable Whether to follow the system default audio recording device:
+   * - true: Follow. The SDK immediately switches the audio recording device when the system default audio recording device changes.
+   * - false: Do not follow. The SDK switches the audio recording device to the system default audio recording device only when the currently used audio recording device is disconnected.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  followSystemRecordingDevice(enable: boolean): number {
+    return this.rtcEngine.followSystemRecordingDevice(enable);
+  }
+  /**
+   * Gets a list of shareable screens and windows.
+   *
+   * @since v3.5.2
+   *
+   * You can call this method before sharing a screen or window to get a list of shareable screens and windows, which
+   * enables a user to use thumbnails in the list to easily choose a particular screen or window to share. This list
+   * also contains important information such as window ID and screen ID, with which you can
+   * call \ref IRtcEngine::startScreenCaptureByWindowId "startScreenCaptureByWindowId" or
+   * \ref IRtcEngine::startScreenCaptureByDisplayId "startScreenCaptureByDisplayId" to start the sharing.
+   *
+   * @note This method applies to macOS and Windows only.
+   *
+   * @param thumbSize The target size of the screen or window thumbnail. The width and height are in pixels. See SIZE.
+   * The SDK scales the original image to make the length of the longest side of the image the same as that of the
+   * target size without distorting the original image. For example, if the original image is 400 × 300 and `thumbSize`
+   * is 100 × 100, the actual size of the thumbnail is 100 × 75. If the target size is larger than the original size,
+   * the thumbnail is the original image and the SDK does not scale it.
+   * @param iconSize The target size of the icon corresponding to the application program. The width and height are in
+   * pixels. See SIZE. The SDK scales the original image to make the length of the longest side of the image the same
+   * as that of the target size without distorting the original image. For example, if the original image is 400 × 300
+   * and `iconSize` is 100 × 100, the actual size of the icon is 100 × 75. If the target size is larger than the
+   * original size, the icon is the original image and the SDK does not scale it.
+   * @param includeScreen Whether the SDK returns screen information in addition to window information:
+   * - true: The SDK returns screen and window information.
+   * - false: The SDK returns window information only.
+   *
+   * @return IScreenCaptureSourceList
+   */
+  getScreenCaptureSources(
+    thumbSize: SIZE,
+    iconSize: SIZE,
+    includeScreen: boolean
+  ): Array<Object> {
+    return this.rtcEngine.getScreenCaptureSources(
+      thumbSize,
+      iconSize,
+      includeScreen
+    );
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
@@ -6711,7 +7008,6 @@ declare interface AgoraRtcEngine {
     evt: 'audioDeviceStateChanged',
     cb: (deviceId: string, deviceType: number, deviceState: number) => void
   ): this;
-  // on(evt: 'audioMixingFinished', cb: () => void): this;
   /** Occurs when the state of the local user's music file changes.
    *
    * @since v3.4.2
@@ -7218,6 +7514,17 @@ declare interface AgoraRtcEngine {
   /** Occurs when the video source leaves the channel.
    */
   on(evt: 'videoSourceLeaveChannel', cb: () => void): this;
+
+  /** Occurs when screencapture fail to filter window
+   *
+   *
+   * @param ScreenCaptureInfo
+   */
+  on(
+    evt: 'videoSourceScreenCaptureInfoUpdated',
+    cb: (info: ScreenCaptureInfo) => void
+  ): this;
+
   /** Reports the statistics of the audio stream of the local video source.
    *
    * The SDK triggers this callback once every two seconds.
@@ -9634,6 +9941,19 @@ declare interface AgoraRtcChannel {
     evt: 'streamMessage',
     cb: (uid: number, streamId: number, data: string) => void
   ): this;
+
+  on(
+    evt: 'snapshotTaken',
+    cb: (
+      channel: string,
+      uid: number,
+      filePath: number,
+      width: number,
+      height: number,
+      errCode: number
+    ) => void
+  ): this;
+
   /** Occurs when the local user does not receive the data stream from the
    * remote user within five seconds.
    *
@@ -9901,7 +10221,7 @@ declare interface AgoraRtcChannel {
   ): this;
 
   on(
-    evt: 'agoraVideoRowData',
+    evt: 'agoraVideoRawData',
     cb: (info: {
       type: number;
       uid: number;

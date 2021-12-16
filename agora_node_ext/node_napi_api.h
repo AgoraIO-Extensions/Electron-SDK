@@ -440,7 +440,10 @@ napi_status napi_get_object_property_object_(Isolate* isolate,
                                              const Local<Object>& obj,
                                              const std::string& propName,
                                              Local<Object>& childobj);
-
+napi_status napi_get_object_property_array_(Isolate *isolate,
+                                            const Local<Object> &obj,
+                                            const std::string &propName,
+                                            v8::Array *&array);
 napi_status napi_get_object_property_arraybuffer_(Isolate* isolate,
                                                   const Local<Object>& obj,
                                                   const std::string& propName,
