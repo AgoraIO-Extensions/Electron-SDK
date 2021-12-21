@@ -35,24 +35,24 @@ bool IAVFramePluginManager::onScreenCaptureVideoFrame(VideoFrame &videoFrame) {
   return true;
 }
 
-bool IAVFramePluginManager::onRecordAudioFrame(AudioFrame &audioFrame) {
+bool IAVFramePluginManager::onRecordAudioFrame(const char *channelId,
+                                               AudioFrame &audioFrame) {
   return true;
 }
 
-bool IAVFramePluginManager::onPlaybackAudioFrame(AudioFrame &audioFrame) {
+bool IAVFramePluginManager::onPlaybackAudioFrame(const char *channelId,
+                                                 AudioFrame &audioFrame) {
   return true;
 }
 
-bool IAVFramePluginManager::onMixedAudioFrame(AudioFrame &audioFrame) {
+bool IAVFramePluginManager::onMixedAudioFrame(const char *channelId,
+                                              AudioFrame &audioFrame) {
   return true;
 }
 
 bool IAVFramePluginManager::onPlaybackAudioFrameBeforeMixing(
-    agora::rtc::uid_t userId,
+    const char *channelId, agora::rtc::uid_t userId,
     agora::media::IAudioFrameObserver::AudioFrame &audioFrame) {
-  return true;
-}
-bool IAVFramePluginManager::onPlaybackAudioFrameBeforeMixing(const char* channelId, agora::rtc::uid_t uid, AudioFrame& audioFrame){
   return true;
 }
 

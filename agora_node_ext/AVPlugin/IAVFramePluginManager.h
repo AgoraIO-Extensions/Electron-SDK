@@ -35,15 +35,17 @@ public:
       agora::media::IVideoFrameObserver::VideoFrame &videoFrame);
 
   virtual bool
-  onRecordAudioFrame(agora::media::IAudioFrameObserver::AudioFrame &audioFrame);
+  onRecordAudioFrame(const char *channelId,
+                     agora::media::IAudioFrameObserver::AudioFrame &audioFrame);
   virtual bool onPlaybackAudioFrame(
+      const char *channelId,
       agora::media::IAudioFrameObserver::AudioFrame &audioFrame);
   virtual bool
-  onMixedAudioFrame(agora::media::IAudioFrameObserver::AudioFrame &audioFrame);
+  onMixedAudioFrame(const char *channelId,
+                    agora::media::IAudioFrameObserver::AudioFrame &audioFrame);
   virtual bool onPlaybackAudioFrameBeforeMixing(
-      agora::rtc::uid_t userId,
+      const char *channelId, agora::rtc::uid_t userId,
       agora::media::IAudioFrameObserver::AudioFrame &audioFrame);
-  virtual bool onPlaybackAudioFrameBeforeMixing(const char* channelId, agora::rtc::uid_t uid, AudioFrame& audioFrame);
 
   void registerPlugin(agora_plugin_info &plugin);
   void unregisterPlugin(std::string &pluginId);
