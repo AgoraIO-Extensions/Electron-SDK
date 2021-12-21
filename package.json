@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "3.6.205-build.1123",
+  "version": "3.6.205-build.1221",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -92,9 +92,9 @@
     "url": "git+https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron.git"
   },
   "agora_electron": {
-    "lib_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_x86_rel.v3.6.205_52312_20211025_1941_full.zip",
-    "lib_sdk_win64": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_x64_rel.v3.6.205_52313_20211025_2000_full.zip",
-    "lib_sdk_mac": "http://10.80.1.174:8090/agora_sdk/3.6.200/nightly_build/2021-12-14/mac/full/Agora_Native_SDK_for_Mac_rel.v3.6.200_35147_full_20211214_0118.zip"
+    "lib_sdk_win": "http://10.80.1.174:8090/agora_sdk/3.6.212/official_build/2021-12-14/windows/full/Agora_Native_SDK_for_Windows_x86_rel.v3.6.212_54472_20211214_1651_full.zip",
+    "lib_sdk_win64": "http://10.80.1.174:8090/agora_sdk/3.6.212/official_build/2021-12-14/windows/full/Agora_Native_SDK_for_Windows_x64_rel.v3.6.212_54471_20211214_1648_full.zip",
+    "lib_sdk_mac": "http://10.80.1.174:8090/agora_sdk/3.6.212/official_build/2021-12-14/mac/full/Agora_Native_SDK_for_Mac_rel.v3.6.212_35168_full_20211214_1605.zip"
   },
   "keywords": [
     "electron",
