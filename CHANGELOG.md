@@ -1,4 +1,4 @@
-## 3.6.205-build.1221(Dec 21th, 2020)
+## 3.6.212-build.1221(Dec 21th, 2020)
 * updata native sdk
 
 ## 3.6.205-build.1123(Nov 19th, 2020)
