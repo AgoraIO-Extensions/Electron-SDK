@@ -1,3 +1,6 @@
+## 3.4.7-rc.3-build.1221(Dev 21th, 2021)
+- fix video source 
+
 ## 3.4.6-build.727 (July 27th, 2021)
 * support Electron 12.0.15
 
