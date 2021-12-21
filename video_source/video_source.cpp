@@ -510,9 +510,14 @@ void AgoraVideoSource::exit(bool notifySink)
         m_ipcSender.reset();
     }
     m_ipc->disconnect();
-
-    ::exit(0);
+    LOG_F(INFO, "VideoSource::disconnect");
+    m_ipc->disconnect();
+    LOG_F(INFO, "VideoSource::leaveChannel");
+    m_rtcEngine->leaveChannel();
+    LOG_F(INFO, "VideoSource::release");
+    m_rtcEngine->release(true);
     LOG_F(INFO, "VideoSource::exit");
+    ::exit(0);
 }
 
 void AgoraVideoSource::run()
