@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "2.9.107-rc.156-build.803",
+  "version": "2.9.107-rc.158-build.1222",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -65,9 +65,9 @@
   },
   "agora_electron": {
     "libUrl": {
-      "win": "http://192.168.99.149:8086/v2.9.107.156/AgoraSDK/Windows/testing(x86_release)/Agora_Native_SDK_for_Windows(x86)_v2.9.107.156_20210729_FULL_2689.zip",
-      "win64": " http://192.168.99.149:8086/v2.9.107.156/AgoraSDK/Windows/testing(x64_release)/Agora_Native_SDK_for_Windows(x64)_v2.9.107.156_20210729_FULL_2579.zip",
-      "mac": "http://192.168.99.149:8086/v2.9.107.156/AgoraSDK/Mac/Agora_Native_SDK_for_Mac_v2_9_107_156_FULL_20210729_3584.zip"
+      "win": "http://192.168.99.149:8086/v2.9.107.158/AgoraSDK/Windows/testing(x86_release)/Agora_Native_SDK_for_Windows(x86)_v2.9.107.158_20211221_FULL_2987.zip",
+      "win64": "http://192.168.99.149:8086/v2.9.107.158/AgoraSDK/Windows/testing(x64_release)/Agora_Native_SDK_for_Windows(x64)_v2.9.107.158_20211221_FULL_2873.zip",
+      "mac": "http://192.168.99.149:8086/v2.9.107.158/AgoraSDK/Mac/Agora_Native_SDK_for_Mac_v2_9_107_158_FULL_20211221_3742.zip"
     },
     "electron_version": "7.1.2"
   },

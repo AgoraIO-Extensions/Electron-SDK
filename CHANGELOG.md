@@ -1,3 +1,6 @@
+## 2.9.107-rc.158-build.1222 (Dec 21 2021)
+* update native sdk
+
 ## 2.9.107-rc.148-build.79 (July 9 2021)
 * add processId for getScreenWindowInfo
 
