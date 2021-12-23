@@ -192,11 +192,12 @@ napi_value NodeIrisRtcEngine::CallApiWithBuffer(napi_env env,
 
   std::string parameter = "";
   std::string buffer = "";
-  int api_type = 0;
+  int api_type = 0, bufferLength = 0;
 
   status = napi_get_value_int32(env, args[0], &api_type);
   status = napi_get_value_utf8string(env, args[1], parameter);
   status = napi_get_value_utf8string(env, args[2], buffer);
+  status = napi_get_value_int32(env, args[3], &bufferLength);
 
   char result[512];
   int ret = ERROR_PARAMETER_1;
@@ -213,7 +214,7 @@ napi_value NodeIrisRtcEngine::CallApiWithBuffer(napi_env env,
           if (finalEngine) {
             ret =
                 finalEngine->CallApi((ApiTypeEngine)api_type, parameter.c_str(),
-                                     const_cast<char*>(buffer.c_str()), result);
+                                     const_cast<char*>(buffer.c_str()),bufferLength, result);
           } else {
             LOG_F(INFO,
                   "CallApiWithBuffer parameter did not initialize "

@@ -9,28 +9,13 @@ import {
   NodeIrisRtcDeviceManager,
 } from "./internal/native_interface";
 import {
-  Rect,
   Rectangle,
-  RtcStats,
   ScreenCaptureConfiguration,
-  QUALITY_TYPE,
-  LocalVideoStats,
-  LocalAudioStats,
-  RemoteVideoStats,
-  RemoteAudioStats,
-  REMOTE_AUDIO_STATE_REASON,
-  REMOTE_VIDEO_STATE,
-  REMOTE_VIDEO_STATE_REASON,
-  REMOTE_AUDIO_STATE,
-  LastmileProbeResult,
   RtcConnection,
   VOICE_CONVERSION_PRESET,
   CLIENT_ROLE_TYPE,
   REMOTE_VIDEO_STREAM_TYPE,
   CONNECTION_STATE_TYPE,
-  CONNECTION_CHANGED_REASON_TYPE,
-  MEDIA_DEVICE_TYPE,
-  VIDEO_PROFILE_TYPE,
   LiveTranscoding,
   InjectStreamConfig,
   VOICE_CHANGER_PRESET,
@@ -44,38 +29,17 @@ import {
   VideoEncoderConfiguration,
   UserInfo,
   Metadata,
-  RTMP_STREAMING_EVENT,
-  AREA_CODE,
-  STREAM_PUBLISH_STATE,
-  STREAM_SUBSCRIBE_STATE,
-  AUDIO_ROUTE_TYPE,
   EncryptionConfig,
   AUDIO_EFFECT_PRESET,
   VOICE_BEAUTIFIER_PRESET,
   ClientRoleOptions,
-  CLOUD_PROXY_TYPE,
-  LogConfig,
   RtcEngineContext,
   BeautyOptions,
   AUDIO_PROFILE_TYPE,
   AUDIO_SCENARIO_TYPE,
   VIDEO_MIRROR_MODE_TYPE,
-  STREAM_FALLBACK_OPTIONS,
-  USER_OFFLINE_REASON_TYPE,
-  LOCAL_AUDIO_STREAM_STATE,
-  LOCAL_AUDIO_STREAM_ERROR,
-  AudioVolumeInfo,
-  AUDIO_MIXING_STATE_TYPE,
-  AUDIO_MIXING_REASON_TYPE,
-  LOCAL_VIDEO_STREAM_ERROR,
-  LOCAL_VIDEO_STREAM_STATE,
-  SUPER_RESOLUTION_STATE_REASON,
-  NETWORK_TYPE,
   ChannelMediaOptions,
   WatermarkOptions,
-  CHANNEL_MEDIA_RELAY_EVENT,
-  CHANNEL_MEDIA_RELAY_STATE,
-  CHANNEL_MEDIA_RELAY_ERROR,
   ChannelMediaRelayConfiguration,
   METADATA_TYPE,
   CHANNEL_PROFILE_TYPE,
@@ -85,14 +49,20 @@ import {
   AUDIO_EQUALIZATION_BAND_FREQUENCY,
   AUDIO_RECORDING_QUALITY_TYPE,
   AUDIO_REVERB_TYPE,
-  INJECT_STREAM_STATUS,
   LOG_FILTER_TYPE,
-  MEDIA_DEVICE_STATE_TYPE,
   DataStreamConfig,
   RAW_AUDIO_FRAME_OP_MODE_TYPE,
   AudioRecordingConfiguration,
-  VirtualBackgroundSource,
   DisplayInfo,
+  AudioEncodedFrameObserverConfig,
+  LOG_LEVEL,
+  AudioTrackConfig,
+  LocalTranscoderConfiguration,
+  VIDEO_SOURCE_TYPE,
+  VIDEO_ORIENTATION,
+  DirectCdnStreamingMediaOptions,
+  AppType,
+  EncodedVideoTrackOptions,
 } from "./types";
 import { EventEmitter } from "events";
 import {
@@ -110,10 +80,8 @@ import {
 import { PluginInfo, Plugin } from "./plugin";
 import { RendererManager } from "../Renderer/RendererManager";
 import {
-  User,
   Channel,
   RENDER_MODE,
-  RendererOptions,
   CONTENT_MODE,
   RendererConfig,
   VideoFrame,
@@ -135,7 +103,11 @@ export class AgoraRtcEngine extends EventEmitter {
 
   fire = (event: string, ...args: Array<any>) => {
     setImmediate(() => {
-      this.emit(event, ...args);
+      try {
+        this.emit(event, ...args);
+      } catch (error) {
+        console.error(`fire: event:${event} args:${args} fire error:`, error);
+      }
     });
   };
 
@@ -256,6 +228,7 @@ export class AgoraRtcEngine extends EventEmitter {
         {
           this.fire(EngineEvents.JOINED_CHANNEL, ...params);
           this.fire(EngineEvents.JOINEDCHANNEL, ...params);
+          this.fire(EngineEvents.JOIN_CHANNEL_SUCCESS, ...params);
         }
         return true;
       case NativeEngineEvents.onLeaveChannel:
@@ -763,12 +736,11 @@ export class AgoraRtcEngine extends EventEmitter {
    * - < 0: Failure.
    */
   renewToken(token: string): number {
-    let param = {
-      token,
-    };
     let ret = this._rtcEngine.CallApi(
       ApiTypeEngine.kEngineRenewToken,
-      JSON.stringify(param)
+      JSON.stringify({
+        token,
+      })
     );
     return ret.retCode;
   }
@@ -909,14 +881,9 @@ export class AgoraRtcEngine extends EventEmitter {
    * - < 0: Failure.
    */
   startEchoTest(intervalInSeconds?: number): number {
-    let jsonString = "";
-    if (intervalInSeconds !== undefined) {
-      jsonString = JSON.stringify({ intervalInSeconds });
-    }
-
     let ret = this._rtcEngine.CallApi(
       ApiTypeEngine.kEngineStartEchoTest,
-      jsonString
+      JSON.stringify({ intervalInSeconds })
     );
     return ret.retCode;
   }
@@ -1017,7 +984,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success
    * - < 0: Failure
    */
-  addVideoWatermark(watermarkUrl: string, options: WatermarkOptions): number {
+  addVideoWaterMark(watermarkUrl: string, options: WatermarkOptions): number {
     let param = {
       watermarkUrl,
       options,
@@ -1037,7 +1004,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success
    * - < 0: Failure
    */
-  clearVideoWatermarks(): number {
+  clearVideoWaterMarks(): number {
     let ret = this._rtcEngine.CallApi(
       ApiTypeEngine.kEngineClearVideoWaterMarks,
       ""
@@ -1133,7 +1100,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * @param {LastmileProbeConfig} config The configurations of the last-mile
    * network probe test. See {@link LastmileProbeConfig}.
    */
-  startLastmileProbeTest(config: LastmileProbeConfig): number {
+  startLastMileProbeTest(config: LastmileProbeConfig): number {
     let param = {
       config,
     };
@@ -1151,7 +1118,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  stopLastmileProbeTest(): number {
+  stopLastMileProbeTest(): number {
     let ret = this._rtcEngine.CallApi(
       ApiTypeEngine.kEngineStopLastMileProbeTest,
       ""
@@ -5583,6 +5550,1011 @@ export class AgoraRtcEngine extends EventEmitter {
     const ret = this._rtcEngine.CallApi(
       ApiTypeEngine.kEngineStopSecondaryScreenCapture,
       ""
+    );
+    return ret.retCode;
+  }
+
+  updateChannelMediaOptions(options: ChannelMediaOptions): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineUpdateChannelMediaOptions,
+      JSON.stringify({ options })
+    );
+    return ret.retCode;
+  }
+
+  muteRemoteAudioStreamEx(
+    remoteUid: number,
+    mute: boolean,
+    connection: RtcConnection
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineMuteRemoteAudioStreamEx,
+      JSON.stringify({ remoteUid, mute, connection })
+    );
+    return ret.retCode;
+  }
+
+  muteRemoteVideoStreamEx(
+    remoteUid: number,
+    mute: boolean,
+    connection: RtcConnection
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineMuteRemoteVideoStreamEx,
+      JSON.stringify({ remoteUid, mute, connection })
+    );
+    return ret.retCode;
+  }
+  setRemoteVoicePositionEx(
+    remoteUid: number,
+    pan: number,
+    gain: number,
+    connection: RtcConnection
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineSetRemoteVoicePositionEx,
+      JSON.stringify({ remoteUid, pan, gain, connection })
+    );
+    return ret.retCode;
+  }
+
+  setRemoteVoice3DPositionEx(
+    remoteUid: number,
+    azimuth: number,
+    elevation: number,
+    distance: number,
+    connection: RtcConnection
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineSetRemoteVoice3DPositionEx,
+      JSON.stringify({ remoteUid, azimuth, elevation, distance, connection })
+    );
+    return ret.retCode;
+  }
+
+  enableLoopBackRecordingEx(
+    enabled: boolean,
+    connection: RtcConnection
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineEnableLoopBackRecordingEx,
+      JSON.stringify({ enabled, connection })
+    );
+    return ret.retCode;
+  }
+
+  getConnectionStateEx(connection: RtcConnection): CONNECTION_STATE_TYPE {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineGetConnectionStateEx,
+      JSON.stringify({ connection })
+    );
+    return ret.retCode;
+  }
+
+  enableEncryptionEx(
+    connection: RtcConnection,
+    enabled: boolean,
+    config: EncryptionConfig
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineEnableEncryptionEx,
+      JSON.stringify({ connection, enabled, config })
+    );
+    return ret.retCode;
+  }
+
+  createDataStreamEx(
+    config: DataStreamConfig,
+    connection: RtcConnection
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineCreateDataStreamEx,
+      JSON.stringify({ config, connection })
+    );
+    return ret.retCode;
+  }
+
+  sendStreamMessageEx(streamId: number, data: string): number {
+    const ret = this._rtcEngine.CallApiWithBuffer(
+      ApiTypeEngine.kEngineSendStreamMessageEx,
+      JSON.stringify({
+        streamId,
+        length: data.length,
+      }),
+      data,
+      data.length
+    );
+    return ret.retCode;
+  }
+
+  addVideoWaterMarkEx(
+    watermarkUrl: string,
+    options: WatermarkOptions,
+    connection: RtcConnection
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineAddVideoWaterMarkEx,
+      JSON.stringify({ watermarkUrl, options, connection })
+    );
+    return ret.retCode;
+  }
+
+  clearVideoWatermarkEx(connection: RtcConnection): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineClearVideoWatermarkEx,
+      JSON.stringify({ connection })
+    );
+    return ret.retCode;
+  }
+
+  sendCustomReportMessageEx(
+    id: string,
+    category: string,
+    event: string,
+    label: string,
+    value: number,
+    connection: RtcConnection
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineSendCustomReportMessageEx,
+      JSON.stringify({
+        id,
+        category,
+        event,
+        label,
+        value,
+        connection,
+      })
+    );
+    return ret.retCode;
+  }
+
+  //  TODO
+
+  // 自渲染
+  // setupRemoteVideo(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineSetupRemoteVideo,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // setupLocalVideo(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineSetupLocalVideo,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+
+  registerAudioEncodedFrameObserver(
+    conf: AudioEncodedFrameObserverConfig
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineRegisterAudioEncodedFrameObserver,
+      JSON.stringify({ conf })
+    );
+    return ret.retCode;
+  }
+
+  playAllEffects(
+    loopCount: number,
+    pitch: number,
+    pan: number,
+    gain: number,
+    publish: boolean
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEnginePlayAllEffects,
+      JSON.stringify({
+        loopCount,
+        pitch,
+        pan,
+        gain,
+        publish,
+      })
+    );
+    return ret.retCode;
+  }
+  getVolumeOfEffect(soundId: number): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineGetVolumeOfEffect,
+      JSON.stringify({ soundId })
+    );
+    return ret.retCode;
+  }
+
+  unloadAllEffects(): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineUnloadAllEffects,
+      ""
+    );
+    return ret.retCode;
+  }
+
+  setRemoteVoice3DPosition(
+    uid: number,
+    azimuth: number,
+    elevation: number,
+    distance: number
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineSetRemoteVoice3DPosition,
+      JSON.stringify({
+        uid,
+        azimuth,
+        elevation,
+        distance,
+      })
+    );
+    return ret.retCode;
+  }
+
+  setVoiceConversionParameters(
+    preset: VOICE_CONVERSION_PRESET,
+    param1: number,
+    param2: number
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineSetVoiceConversionParameters,
+      JSON.stringify({ preset, param1, param2 })
+    );
+    return ret.retCode;
+  }
+
+  setLogLevel(level: LOG_LEVEL): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineSetLogLevel,
+      JSON.stringify({ level })
+    );
+    return ret.retCode;
+  }
+
+  //自渲染
+  // setLocalRenderMode(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineSetLocalRenderMode,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // setRemoteRenderMode(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineSetRemoteRenderMode,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+
+  setExternalAudioSink(sampleRate: number, channels: number): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineSetExternalAudioSink,
+      JSON.stringify({ sampleRate, channels })
+    );
+    return ret.retCode;
+  }
+
+  startPrimaryCustomAudioTrack(config: AudioTrackConfig): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineStartPrimaryCustomAudioTrack,
+      JSON.stringify({ config })
+    );
+    return ret.retCode;
+  }
+  stopPrimaryCustomAudioTrack(): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineStopPrimaryCustomAudioTrack,
+      ""
+    );
+    return ret.retCode;
+  }
+  startSecondaryCustomAudioTrack(config: AudioTrackConfig): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineStartSecondaryCustomAudioTrack,
+      JSON.stringify({ config })
+    );
+    return ret.retCode;
+  }
+  stopSecondaryCustomAudioTrack(): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineStopSecondaryCustomAudioTrack,
+      JSON.stringify({})
+    );
+    return ret.retCode;
+  }
+
+  setPlaybackAudioFrameParameters(
+    sampleRate: number,
+    channel: number,
+    mode: RAW_AUDIO_FRAME_OP_MODE_TYPE,
+    samplesPerCall: number
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineSetPlaybackAudioFrameParameters,
+      JSON.stringify({
+        sampleRate,
+        channel,
+        mode,
+        samplesPerCall,
+      })
+    );
+    return ret.retCode;
+  }
+  setMixedAudioFrameParameters(
+    sampleRate: number,
+    channel: number,
+    samplesPerCall: number
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineSetMixedAudioFrameParameters,
+      JSON.stringify({
+        sampleRate,
+        channel,
+        samplesPerCall,
+      })
+    );
+    return ret.retCode;
+  }
+  setPlaybackAudioFrameBeforeMixingParameters(
+    sampleRate: number,
+    channel: number
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineSetPlaybackAudioFrameBeforeMixingParameters,
+      JSON.stringify({ sampleRate, channel })
+    );
+    return ret.retCode;
+  }
+  enableAudioSpectrumMonitor(intervalInMS?: number): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineEnableAudioSpectrumMonitor,
+      JSON.stringify({ intervalInMS })
+    );
+    return ret.retCode;
+  }
+  disableAudioSpectrumMonitor(): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineDisableAudioSpectrumMonitor,
+      ""
+    );
+    return ret.retCode;
+  }
+  // registerAudioSpectrumObserver(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineRegisterAudioSpectrumObserver,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // unregisterAudioSpectrumObserver(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineUnregisterAudioSpectrumObserver,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+
+  muteRecordingSignal(mute: boolean): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineMuteRecordingSignal,
+      JSON.stringify({ mute })
+    );
+    return ret.retCode;
+  }
+
+  enableLoopBackRecording(enabled: boolean): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineEnableLoopBackRecording,
+      JSON.stringify({ enabled })
+    );
+    return ret.retCode;
+  }
+  adjustLoopbackRecordingVolume(volume: number): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineAdjustLoopbackRecordingVolume,
+      JSON.stringify({ volume })
+    );
+    return ret.retCode;
+  }
+  getLoopbackRecordingVolume(): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineGetLoopbackRecordingVolume,
+      JSON.stringify({})
+    );
+    return ret.retCode;
+  }
+  enableInEarMonitoring(enabled: boolean, includeAudioFilters: number): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineEnableInEarMonitoring,
+      JSON.stringify({ enabled, includeAudioFilters })
+    );
+    return ret.retCode;
+  }
+  setInEarMonitoringVolume(volume: number): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineSetInEarMonitoringVolume,
+      JSON.stringify({ volume })
+    );
+    return ret.retCode;
+  }
+  //TODO: android ios
+  // loadExtensionProvider(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineLoadExtensionProvider,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // setExtensionProviderProperty(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineSetExtensionProviderProperty,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // enableExtension(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineEnableExtension,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // setExtensionProperty(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineSetExtensionProperty,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // getExtensionProperty(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineGetExtensionProperty,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+
+  // switchCamera(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineSwitchCamera,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // isCameraZoomSupported(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineIsCameraZoomSupported,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // isCameraFaceDetectSupported(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineIsCameraFaceDetectSupported,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // isCameraTorchSupported(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineIsCameraTorchSupported,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // isCameraFocusSupported(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineIsCameraFocusSupported,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // isCameraAutoFocusFaceModeSupported(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineIsCameraAutoFocusFaceModeSupported,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // setCameraZoomFactor(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineSetCameraZoomFactor,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // enableFaceDetection(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineEnableFaceDetection,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // getCameraMaxZoomFactor(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineGetCameraMaxZoomFactor,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // setCameraFocusPositionInPreview(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineSetCameraFocusPositionInPreview,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // setCameraTorchOn(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineSetCameraTorchOn,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // setCameraAutoFocusFaceModeEnabled(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineSetCameraAutoFocusFaceModeEnabled,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // isCameraExposurePositionSupported(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineIsCameraExposurePositionSupported,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // setCameraExposurePosition(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineSetCameraExposurePosition,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // isCameraAutoExposureFaceModeSupported(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineIsCameraAutoExposureFaceModeSupported,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // setCameraAutoExposureFaceModeEnabled(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineSetCameraAutoExposureFaceModeEnabled,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // setDefaultAudioRouteToSpeakerphone(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineSetDefaultAudioRouteToSpeakerphone,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // setEnableSpeakerphone(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineSetEnableSpeakerphone,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // isSpeakerphoneEnabled(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineIsSpeakerphoneEnabled,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // startScreenCaptureByDisplayId(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineStartScreenCaptureByDisplayId,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // startScreenCaptureByScreenRect(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineStartScreenCaptureByScreenRect,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // startScreenCapture(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineStartScreenCapture,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // startScreenCaptureByWindowId(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineStartScreenCaptureByWindowId,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+
+  startLocalVideoTranscoder(config: LocalTranscoderConfiguration): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineStartLocalVideoTranscoder,
+      JSON.stringify({ config })
+    );
+    return ret.retCode;
+  }
+  updateLocalTranscoderConfiguration(
+    config: LocalTranscoderConfiguration
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineUpdateLocalTranscoderConfiguration,
+      JSON.stringify({ config })
+    );
+    return ret.retCode;
+  }
+  stopLocalVideoTranscoder(): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineStopLocalVideoTranscoder,
+      ""
+    );
+    return ret.retCode;
+  }
+
+  setCameraDeviceOrientation(
+    type: VIDEO_SOURCE_TYPE,
+    orientation: VIDEO_ORIENTATION
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineSetCameraDeviceOrientation,
+      JSON.stringify({ type, orientation })
+    );
+    return ret.retCode;
+  }
+  setScreenCaptureOrientation(
+    type: VIDEO_SOURCE_TYPE,
+    orientation: VIDEO_ORIENTATION
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineSetScreenCaptureOrientation,
+      JSON.stringify({ type, orientation })
+    );
+    return ret.retCode;
+  }
+
+  stopPrimaryScreenCapture(): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineStopPrimaryScreenCapture,
+      JSON.stringify({})
+    );
+    return ret.retCode;
+  }
+
+  // registerEventHandler(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineRegisterEventHandler,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // unregisterEventHandler(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineUnregisterEventHandler,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+
+  // registerPacketObserver(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineRegisterPacketObserver,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+
+  clearVideoWatermark(): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineClearVideoWatermark,
+      ""
+    );
+    return ret.retCode;
+  }
+
+  pauseAudio(): number {
+    const ret = this._rtcEngine.CallApi(ApiTypeEngine.kEnginePauseAudio, "");
+    return ret.retCode;
+  }
+  resumeAudio(): number {
+    const ret = this._rtcEngine.CallApi(ApiTypeEngine.kEngineResumeAudio, "");
+    return ret.retCode;
+  }
+
+  unRegisterMediaMetadataObserver(type: METADATA_TYPE): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineUnRegisterMediaMetadataObserver,
+      JSON.stringify({ type })
+    );
+    return ret.retCode;
+  }
+  startAudioFrameDump(
+    channel_id: string,
+    user_id: number,
+    location: string,
+    uuid: string,
+    passwd: string,
+    duration_ms: number,
+    auto_upload: boolean
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineStartAudioFrameDump,
+      JSON.stringify({
+        channel_id,
+        user_id,
+        location,
+        uuid,
+        passwd,
+        duration_ms,
+        auto_upload,
+      })
+    );
+    return ret.retCode;
+  }
+  stopAudioFrameDump(
+    channel_id: string,
+    user_id: number,
+    location: string
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineStopAudioFrameDump,
+      JSON.stringify({ channel_id, user_id, location })
+    );
+    return ret.retCode;
+  }
+
+  joinChannelWithUserAccountEx(
+    token: string,
+    channelId: string,
+    userAccount: string,
+    options: ChannelMediaOptions
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineJoinChannelWithUserAccountEx,
+      JSON.stringify({ token, channelId, userAccount, options })
+    );
+    return ret.retCode;
+  }
+
+  setDirectCdnStreamingAudioConfiguration(profile: AUDIO_PROFILE_TYPE): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineSetDirectCdnStreamingAudioConfiguration,
+      JSON.stringify({ profile })
+    );
+    return ret.retCode;
+  }
+  setDirectCdnStreamingVideoConfiguration(
+    config: VideoEncoderConfiguration
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineSetDirectCdnStreamingVideoConfiguration,
+      JSON.stringify({ config })
+    );
+    return ret.retCode;
+  }
+  startDirectCdnStreaming(
+    publishUrl: string,
+    options: DirectCdnStreamingMediaOptions
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineStartDirectCdnStreaming,
+      JSON.stringify({ publishUrl, options })
+    );
+    return ret.retCode;
+  }
+  stopDirectCdnStreaming(): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineStopDirectCdnStreaming,
+      ""
+    );
+    return ret.retCode;
+  }
+  updateDirectCdnStreamingMediaOptions(
+    options: DirectCdnStreamingMediaOptions
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineUpdateDirectCdnStreamingMediaOptions,
+      JSON.stringify({ options })
+    );
+    return ret.retCode;
+  }
+
+  joinChannelEx(
+    token: string,
+    connection: RtcConnection,
+    options: ChannelMediaOptions
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineJoinChannelEx,
+      JSON.stringify({
+        token,
+        connection,
+        options,
+      })
+    );
+    return ret.retCode;
+  }
+  leaveChannelEx(connection: RtcConnection): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineLeaveChannelEx,
+      JSON.stringify({ connection })
+    );
+    return ret.retCode;
+  }
+  updateChannelMediaOptionsEx(
+    options: ChannelMediaOptions,
+    connection: RtcConnection
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineUpdateChannelMediaOptionsEx,
+      JSON.stringify({ options, connection })
+    );
+    return ret.retCode;
+  }
+  setVideoEncoderConfigurationEx(
+    config: VideoEncoderConfiguration,
+    connection: RtcConnection
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineSetVideoEncoderConfigurationEx,
+      JSON.stringify({ config, connection })
+    );
+    return ret.retCode;
+  }
+  // setupRemoteVideoEx(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineSetupRemoteVideoEx,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+
+  // setRemoteRenderModeEx(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineSetRemoteRenderModeEx,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+
+  setAppType(appType = AppType.APP_TYPE_ELECTRON): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineSetAppType,
+      JSON.stringify({ appType })
+    );
+    return ret.retCode;
+  }
+  // pushAudioFrame(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kMediaPushAudioFrame,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // pullAudioFrame(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kMediaPullAudioFrame,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  setExternalVideoSource(
+    enabled: boolean,
+    useTexture: boolean,
+    encodedFrame: boolean,
+    encodedVideoOption: EncodedVideoTrackOptions
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kMediaSetExternalVideoSource,
+      JSON.stringify({ enabled, useTexture, encodedFrame, encodedVideoOption })
+    );
+    return ret.retCode;
+  }
+  setExternalAudioSource(
+    enabled: boolean,
+    sampleRate: number,
+    channels: number,
+    sourceNumber: number,
+    localPlayback: boolean,
+    publish?: boolean
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kMediaSetExternalAudioSource,
+      JSON.stringify({
+        enabled,
+        sampleRate,
+        channels,
+        sourceNumber,
+        localPlayback,
+        publish,
+      })
+    );
+    return ret.retCode;
+  }
+  // pushVideoFrame(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kMediaPushVideoFrame,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // pushEncodedVideoImage(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kMediaPushEncodedVideoImage,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  getCertificateVerifyResult(
+    credential_buf: string,
+    certificate_buf: string
+  ): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineGetCertificateVerifyResult,
+      JSON.stringify({
+        credential_buf,
+        credential_len: credential_buf.length,
+        certificate_buf,
+        certificate_len: certificate_buf.length,
+      })
+    );
+    return ret.retCode;
+  }
+  // setAudioSessionOperationRestriction(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineSetAudioSessionOperationRestriction,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  adjustCustomAudioPublishVolume(sourceId: number, volume: number): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineAdjustCustomAudioPublishVolume,
+      JSON.stringify({ sourceId, volume })
+    );
+    return ret.retCode;
+  }
+  adjustCustomAudioPlayoutVolume(sourceId: number, volume: number): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineAdjustCustomAudioPlayoutVolume,
+      JSON.stringify({ sourceId, volume })
+    );
+    return ret.retCode;
+  }
+
+  enableDirectExternalAudioSource(enabled: boolean): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kEngineEnableDirectExternalAudioSource,
+      JSON.stringify({ enabled })
+    );
+    return ret.retCode;
+  }
+  // getAudioDeviceInfo(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kEngineGetAudioDeviceInfo,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  // pushDirectSendAudioFrame(): number {
+  //   const ret = this._rtcEngine.CallApi(
+  //     ApiTypeEngine.kMediaPushDirectSendAudioFrame,
+  //     JSON.stringify({})
+  //   );
+  //   return ret.retCode;
+  // }
+  enableCustomAudioLocalPlayback(sourceId: number, enabled: boolean): number {
+    const ret = this._rtcEngine.CallApi(
+      ApiTypeEngine.kMediaEnableCustomAudioLocalPlayback,
+      JSON.stringify({ sourceId, enabled })
     );
     return ret.retCode;
   }

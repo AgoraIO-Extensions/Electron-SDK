@@ -10,6 +10,7 @@ import {
  * @Last Modified by: zhangtao@agora.io
  * @Last Modified time: 2021-05-10 11:16:41
  */
+import { EngineEvents } from "../Common/JSEvents";
 
 export const TAG = "[Agora]: ";
 
@@ -63,20 +64,20 @@ interface ForwardEventParam {
   fire: (eventName: string, ...arg: any[]) => void;
   filter: (eventName: string, params: Array<any>, buffer?: string) => Boolean;
 }
+const onApiErrorEventName = "onApiError";
+
 export const forwardEvent = ({
   event: { eventName, params, buffer, changeNameHandler },
   fire,
   filter,
 }: ForwardEventParam) => {
-  let _params;
-  try {
-    _params = JSON.parse(params);
-  } catch (error) {
-    console.error(`eventName:${eventName}  params:${params}`);
-    console.error("parse error: ", error);
+  if (eventName === onApiErrorEventName) {
+    console.error(eventName, params);
+    fire(EngineEvents.API_ERROR, params);
     return;
   }
   try {
+    const _params = JSON.parse(params);
     const isFilter = filter(eventName, _params, buffer);
     if (isFilter || !fire) {
       return;
@@ -86,8 +87,10 @@ export const forwardEvent = ({
     fire(finalEventName, ..._params);
     fire(finalEventName.toLocaleLowerCase(), ..._params);
   } catch (error) {
-    console.error(`eventName:${eventName}  params:${params}`);
-    console.error("fire error: ", error);
+    console.error(
+      `forwardEvent eventName:${eventName}  params:${params}  error:`,
+      error
+    );
   }
 };
 

@@ -1006,6 +1006,13 @@ export interface BeautyOptions {
 
 /** VideoEncoderConfiguration */
 export interface VideoEncoderConfiguration {
+  /**
+   * The video encoder code type: #VIDEO_CODEC_TYPE.
+   */
+  codecType: VIDEO_CODEC_TYPE;
+  /**
+   * The video dimension: VideoDimensions.
+   */
   dimensions: VideoDimensions;
   /**
    * The frame rate (fps) of the video.
@@ -1016,12 +1023,7 @@ export interface VideoEncoderConfiguration {
    * We do not recommend setting this to a value greater than 30 fps.
    */
   frameRate: FRAME_RATE;
-  /**
-   * The minimum frame rate of the video.
-   *
-   * The default value is -1.
-   */
-  minFrameRate: number;
+
   /** The video encoding bitrate (Kbps).
    *
    * Set your bitrate based on the following table. If you set a bitrate
@@ -1084,6 +1086,13 @@ export interface VideoEncoderConfiguration {
    *
    */
   bitrate: number;
+
+  /**
+   * The minimum frame rate of the video.
+   *
+   * The default value is -1.
+   */
+  minFrameRate: number;
   /**
    * The minimum encoding bitrate (Kbps).
    *
@@ -1770,7 +1779,7 @@ export interface EncryptionConfig {
    * is not `0`.
    *
    */
-  encryptionKdfSalt: Uint8Array;
+  encryptionKdfSalt: number[];
 }
 
 /**
@@ -2267,54 +2276,143 @@ export interface ChannelMediaInfo {
  */
 export interface ChannelMediaOptions {
   /**
-   * Determines whether to subscribe to audio streams when the user joins the
-   * channel:
-   * - true: (Default) Subscribe.
-   * - false: Do not subscribe.
-   *
-   * This member serves a similar function to the
-   * {@link AgoraRtcChannel.muteAllRemoteAudioStreams} method. After joining
-   * the channel, you can call the `muteAllRemoteAudioStreams` method to set
-   * whether to subscribe to audio streams in the channel.
+   * Determines whether to publish the video of the camera track.
+   * - true: Publish the video track of the camera capturer.
+   * - false: (Default) Do not publish the video track of the camera capturer.
    */
-  autoSubscribeAudio: boolean;
+  publishCameraTrack?: boolean;
   /**
-   * Determines whether to subscribe to video streams when the user joins the
-   * channel:
-   * - true: (Default) Subscribe.
-   * - false: Do not subscribe.
-   *
-   * This member serves a similar function to the
-   * {@link AgoraRtcChannel.muteAllRemoteVideoStreams} method. After joining
-   * the channel, you can call the `muteAllRemoteVideoStreams` method to set
-   * whether to subscribe to video streams in the channel.
+   * Determines whether to publish the video of the secondary camera track.
+   * - true: Publish the video track of the secondary camera capturer.
+   * - false: (Default) Do not publish the video track of the secondary camera capturer.
    */
-  autoSubscribeVideo: boolean;
-  /** Determines whether to publish the local audio stream when the user joins
-   * a channel:
-   * - true: (Default) Publish.
-   * - false: Do not publish.
-   *
-   * This member serves a similar function to the `muteLocalAudioStream` method.
-   * After the user joins the channel, you can call the `muteLocalAudioStream`
-   * method to set whether to publish the local audio stream in the channel.
-   *
-   * @since v3.4.5
+  publishSecondaryCameraTrack?: boolean;
+  /**
+   * Determines whether to publish the recorded audio.
+   * - true: Publish the recorded audio.
+   * - false: (Default) Do not publish the recorded audio.
    */
-  publishLocalAudio: boolean;
-  /** Determines whether to publish the local video stream when the user joins
-   * a channel:
-   * - true: (Default) Publish.
-   * - false: Do not publish.
-   *
-   * This member serves a similar function to the `muteLocalVideoStream` method.
-   * After the user joins the channel, you can call the `muteLocalVideoStream`
-   * method to set whether to publish the local video stream in the channel.
-   *
-   * @since v3.4.5
+  publishAudioTrack?: boolean;
+  /**
+   * Determines whether to publish the video of the screen track.
+   * - true: Publish the video track of the screen capturer.
+   * - false: (Default) Do not publish the video track of the screen capturer.
    */
-  publishLocalVideo: boolean;
+  publishScreenTrack?: boolean;
+  /**
+   * Determines whether to publish the video of the secondary screen track.
+   * - true: Publish the video track of the secondary screen capturer.
+   * - false: (Default) Do not publish the video track of the secondary screen capturer.
+   */
+  publishSecondaryScreenTrack?: boolean;
+  /**
+   * Determines whether to publish the audio of the custom audio track.
+   * - true: Publish the audio of the custom audio track.
+   * - false: (Default) Do not publish the audio of the custom audio track.
+   */
+  publishCustomAudioTrack?: boolean;
+  /**
+   * Determines the source id of the custom audio, default is 0.
+   */
+  publishCustomAudioSourceId?: boolean;
+  /**
+   * Determines whether to enable AEC when publish custom audio track.
+   * - true: Enable AEC.
+   * - false: (Default) Do not enable AEC.
+   */
+  publishCustomAudioTrackEnableAec?: boolean;
+  /**
+   * Determines whether to publish direct custom audio track.
+   * - true: publish.
+   * - false: (Default) Do not publish.
+   */
+  publishDirectCustomAudioTrack?: boolean;
+  /**
+   * Determines whether to publish the video of the custom video track.
+   * - true: Publish the video of the custom video track.
+   * - false: (Default) Do not publish the video of the custom video track.
+   */
+  publishCustomVideoTrack?: boolean;
+  /**
+   * Determines whether to publish the video of the encoded video track.
+   * - true: Publish the video of the encoded video track.
+   * - false: (default) Do not publish the video of the encoded video track.
+   */
+  publishEncodedVideoTrack?: boolean;
+  /**
+   * Determines whether to publish the audio track of media player source.
+   * - true: Publish the audio track of media player source.
+   * - false: (default) Do not publish the audio track of media player source.
+   */
+  publishMediaPlayerAudioTrack?: boolean;
+  /**
+   * Determines whether to publish the video track of media player source.
+   * - true: Publish the video track of media player source.
+   * - false: (default) Do not publish the video track of media player source.
+   */
+  publishMediaPlayerVideoTrack?: boolean;
+  /**
+   * Determines whether to publish the local transcoded video track.
+   * - true: Publish the video track of local transcoded video track.
+   * - false: (default) Do not publish the local transcoded video track.
+   */
+  publishTrancodedVideoTrack?: boolean;
+  /**
+   * Determines whether to subscribe to all audio streams automatically. It can replace calling \ref IRtcEngine::setDefaultMuteAllRemoteAudioStreams
+   * "setDefaultMuteAllRemoteAudioStreams" before joining a channel.
+   * - true: Subscribe to all audio streams automatically.
+   * - false: (Default) Do not subscribe to any audio stream automatically.
+   */
+  autoSubscribeAudio?: boolean;
+  /**
+   * Determines whether to subscribe to all video streams automatically. It can replace calling \ref IRtcEngine::setDefaultMuteAllRemoteVideoStreams
+   * "setDefaultMuteAllRemoteVideoStreams" before joining a channel.
+   * - true: Subscribe to all video streams automatically.
+   * - false: (Default) do not subscribe to any video stream automatically.
+   */
+  autoSubscribeVideo?: boolean;
+  /**
+   * Determines whether to enable audio recording or playout.
+   * - true: It's used to publish audio and mix microphone, or subscribe audio and playout
+   * - false: It's used to publish extenal audio frame only without mixing microphone, or no need audio device to playout audio either
+   */
+  enableAudioRecordingOrPlayout?: boolean;
+  /**
+   * Determines which media player source should be published.
+   * - DEFAULT_PLAYER_ID(0) is default.
+   */
+  publishMediaPlayerId?: boolean;
+  /**
+   * The client role type: #CLIENT_ROLE_TYPE.
+   */
+  clientRoleType?: CLIENT_ROLE_TYPE;
+  /**
+   * The audience latency level type. See \ref agora::rtc::AUDIENCE_LATENCY_LEVEL_TYPE "AUDIENCE_LATENCY_LEVEL_TYPE"
+   */
+  audienceLatencyLevel?: AUDIENCE_LATENCY_LEVEL_TYPE;
+  /**
+   * The default video stream type: #VIDEO_STREAM_TYPE.
+   */
+  defaultVideoStreamType?: VIDEO_STREAM_TYPE;
+  /**
+   * The channel profile: #CHANNEL_PROFILE_TYPE.
+   */
+  channelProfile?: CHANNEL_PROFILE_TYPE;
+  /**
+   * The delay in ms for sending audio frames. This is used for explicit control of A/V sync.
+   * To switch off the delay, set the value to zero.
+   */
+  audioDelayMs?: number;
+  /**
+   * The token
+   */
+  token?: string;
+  /**
+   * The sender option for video encoded track.
+   */
+  encodedVideoTrackOption: EncodedVideoTrackOptions;
 }
+
 /**
  * The watermark's options.
  *
@@ -3330,4 +3428,538 @@ export interface ScreenCaptureConfiguration {
   windowId: number;
   params: ScreenCaptureParameters;
   regionRect: Rectangle;
+}
+
+/**
+ * audio encoded frame observer position.
+ */
+export enum AUDIO_ENCODED_FRAME_OBSERVER_POSITION {
+  /**
+   * 1: mic
+   */
+  AUDIO_ENCODED_FRAME_OBSERVER_POSITION_RECORD = 1,
+  /**
+   * 2: playback audio file recording.
+   */
+  AUDIO_ENCODED_FRAME_OBSERVER_POSITION_PLAYBACK = 2,
+  /**
+   * 3: mixed audio file recording, include mic and playback.
+   */
+  AUDIO_ENCODED_FRAME_OBSERVER_POSITION_MIXED = 3,
+}
+
+/**
+ * audio encoding type of audio encoded frame observer.
+ */
+export enum AUDIO_ENCODING_TYPE {
+  /**
+   * 1: codecType AAC; sampleRate 16000; quality low which around 1.2 MB after 10 minutes
+   */
+  AUDIO_ENCODING_TYPE_AAC_16000_LOW = 0x010101,
+  /**
+   * 1: codecType AAC; sampleRate 16000; quality medium which around 2 MB after 10 minutes
+   */
+  AUDIO_ENCODING_TYPE_AAC_16000_MEDIUM = 0x010102,
+  /**
+   * 1: codecType AAC; sampleRate 32000; quality low which around 1.2 MB after 10 minutes
+   */
+  AUDIO_ENCODING_TYPE_AAC_32000_LOW = 0x010201,
+  /**
+   * 1: codecType AAC; sampleRate 32000; quality medium which around 2 MB after 10 minutes
+   */
+  AUDIO_ENCODING_TYPE_AAC_32000_MEDIUM = 0x010202,
+  /**
+   * 1: codecType AAC; sampleRate 32000; quality high which around 3.5 MB after 10 minutes
+   */
+  AUDIO_ENCODING_TYPE_AAC_32000_HIGH = 0x010203,
+  /**
+   * 1: codecType AAC; sampleRate 48000; quality medium which around 2 MB after 10 minutes
+   */
+  AUDIO_ENCODING_TYPE_AAC_48000_MEDIUM = 0x010302,
+  /**
+   * 1: codecType AAC; sampleRate 48000; quality high which around 3.5 MB after 10 minutes
+   */
+  AUDIO_ENCODING_TYPE_AAC_48000_HIGH = 0x010303,
+
+  /**
+   * 1: codecType OPUS; sampleRate 16000; quality low which around 1.2 MB after 10 minutes
+   */
+  AUDIO_ENCODING_TYPE_OPUS_16000_LOW = 0x020101,
+  /**
+   * 1: codecType OPUS; sampleRate 16000; quality medium which around 2 MB after 10 minutes
+   */
+  AUDIO_ENCODING_TYPE_OPUS_16000_MEDIUM = 0x020102,
+  /**
+   * 1: codecType OPUS; sampleRate 48000; quality medium which around 2 MB after 10 minutes
+   */
+  AUDIO_ENCODING_TYPE_OPUS_48000_MEDIUM = 0x020302,
+  /**
+   * 1: codecType OPUS; sampleRate 48000; quality high which around 3.5 MB after 10 minutes
+   */
+  AUDIO_ENCODING_TYPE_OPUS_48000_HIGH = 0x020303,
+}
+export interface AudioEncodedFrameObserverConfig {
+  /**
+   * The position where SDK record the audio, and callback to encoded audio frame receiver.
+   */
+  postionType: AUDIO_ENCODED_FRAME_OBSERVER_POSITION;
+  /**
+   * The audio encoding type of encoded frame.
+   */
+  encodingType: AUDIO_ENCODING_TYPE;
+}
+
+export interface AudioTrackConfig {
+  enableLocalPlayback: boolean;
+}
+/**
+ * The definition of the LocalTranscodingConfiguration struct.
+ */
+export interface LocalTranscoderConfiguration {
+  /**
+   * The number of VideoInputStreams in the transcoder.
+   */
+  streamCount: number;
+  /**
+   * The video stream layout configuration in the transcoder.
+   */
+  VideoInputStreams: TranscodingVideoStream[];
+  /**
+   * The video encoder configuration of transcoded video.
+   */
+  videoOutputConfiguration: VideoEncoderConfiguration;
+}
+/**
+ * The type of media device.
+ */
+export enum MEDIA_SOURCE_TYPE {
+  /**
+   * 0: The audio playback device.
+   */
+  AUDIO_PLAYOUT_SOURCE = 0,
+  /**
+   * 1: Microphone.
+   */
+  AUDIO_RECORDING_SOURCE = 1,
+  /**
+   * 2: Video captured by primary camera.
+   */
+  PRIMARY_CAMERA_SOURCE = 2,
+  /**
+   * 3: Video captured by secondary camera.
+   */
+  SECONDARY_CAMERA_SOURCE = 3,
+  /**
+   * 4: Video captured by primary screen capturer.
+   */
+  PRIMARY_SCREEN_SOURCE = 4,
+  /**
+   * 5: Video captured by secondary screen capturer.
+   */
+  SECONDARY_SCREEN_SOURCE = 5,
+  /**
+   * 6: Video captured by custom video source.
+   */
+  CUSTOM_VIDEO_SOURCE = 6,
+  /**
+   * 7: Video for media player sharing.
+   */
+  MEDIA_PLAYER_SOURCE = 7,
+  /**
+   * 8: Video for png image.
+   */
+  RTC_IMAGE_PNG_SOURCE = 8,
+  /**
+   * 9: Video for jpeg image.
+   */
+  RTC_IMAGE_JPEG_SOURCE = 9,
+  /**
+   * 10: Video for gif image.
+   */
+  RTC_IMAGE_GIF_SOURCE = 10,
+  /**
+   * 11: Remote video received from network.
+   */
+  REMOTE_VIDEO_SOURCE = 11,
+  /**
+   * 12: Video for transcoded.
+   */
+  TRANSCODED_VIDEO_SOURCE = 12,
+  /**
+   * 100: unknown media source.
+   */
+  UNKNOWN_MEDIA_SOURCE = 100,
+}
+
+/**
+ * The definition of the LocalTranscodingVideoStream struct.
+ */
+export interface TranscodingVideoStream {
+  /**
+   * Source type of video stream.
+   */
+  sourceType: MEDIA_SOURCE_TYPE;
+  /**
+   * Remote user uid if sourceType is VIDEO_SOURCE_REMOTE.
+   */
+  remoteUserUid: number;
+  /**
+   * RTC image if sourceType is VIDEO_SOURCE_RTC_IMAGE.
+   */
+  imageUrl: number;
+  /**
+   * The horizontal position of the top left corner of the video frame.
+   */
+  x: number;
+  /**
+   * The vertical position of the top left corner of the video frame.
+   */
+  y: number;
+  /**
+   * The width of the video frame.
+   */
+  width: number;
+  /**
+   * The height of the video frame.
+   */
+  height: number;
+  /**
+   * The layer of the video frame that ranges from 1 to 100:
+   * - 1: (Default) The lowest layer.
+   * - 100: The highest layer.
+   */
+  zOrder: number;
+  /**
+   * The transparency of the video frame.
+   */
+  alpha: number;
+  /**
+   * mirror of the source video frame (only valid for camera streams)
+   */
+  mirror: boolean;
+}
+
+/**
+ * Video source types definition.
+ **/
+export enum VIDEO_SOURCE_TYPE {
+  /** Video captured by the camera.
+   */
+  VIDEO_SOURCE_CAMERA_PRIMARY,
+  VIDEO_SOURCE_CAMERA = VIDEO_SOURCE_CAMERA_PRIMARY,
+  /** Video captured by the secondary camera.
+   */
+  VIDEO_SOURCE_CAMERA_SECONDARY,
+  /** Video for screen sharing.
+   */
+  VIDEO_SOURCE_SCREEN_PRIMARY,
+  VIDEO_SOURCE_SCREEN = VIDEO_SOURCE_SCREEN_PRIMARY,
+  /** Video for secondary screen sharing.
+   */
+  VIDEO_SOURCE_SCREEN_SECONDARY,
+  /** Not define.
+   */
+  VIDEO_SOURCE_CUSTOM,
+  /** Video for media player sharing.
+   */
+  VIDEO_SOURCE_MEDIA_PLAYER,
+  /** Video for png image.
+   */
+  VIDEO_SOURCE_RTC_IMAGE_PNG,
+  /** Video for png image.
+   */
+  VIDEO_SOURCE_RTC_IMAGE_JPEG,
+  /** Video for png image.
+   */
+  VIDEO_SOURCE_RTC_IMAGE_GIF,
+  /** Remote video received from network.
+   */
+  VIDEO_SOURCE_REMOTE,
+  /** Video for transcoded.
+   */
+  VIDEO_SOURCE_TRANSCODED,
+
+  VIDEO_SOURCE_UNKNOWN = 100,
+}
+
+/**
+ * The rotation information.
+ */
+export enum VIDEO_ORIENTATION {
+  /**
+   * 0: Rotate the video by 0 degree clockwise.
+   */
+  VIDEO_ORIENTATION_0 = 0,
+  /**
+   * 90: Rotate the video by 90 degrees clockwise.
+   */
+  VIDEO_ORIENTATION_90 = 90,
+  /**
+   * 180: Rotate the video by 180 degrees clockwise.
+   */
+  VIDEO_ORIENTATION_180 = 180,
+  /**
+   * 270: Rotate the video by 270 degrees clockwise.
+   */
+  VIDEO_ORIENTATION_270 = 270,
+}
+
+/**
+ * The channel media options.
+ */
+export interface DirectCdnStreamingMediaOptions {
+  /**
+   * Determines whether to publish the video of the camera track.
+   * - true: Publish the video track of the camera capturer.
+   * - false: (Default) Do not publish the video track of the camera capturer.
+   */
+  publishCameraTrack?: boolean;
+  /**
+   * Determines whether to publish the recorded audio.
+   * - true: Publish the recorded audio.
+   * - false: (Default) Do not publish the recorded audio.
+   */
+  publishMicrophoneTrack?: boolean;
+  /**
+   * Determines whether to publish the audio of the custom audio track.
+   * - true: Publish the audio of the custom audio track.
+   * - false: (Default) Do not publish the audio of the custom audio track.
+   */
+  publishCustomAudioTrack?: boolean;
+  /**
+   * Determines whether to publish the video of the custom video track.
+   * - true: Publish the video of the custom video track.
+   * - false: (Default) Do not publish the video of the custom video track.
+   */
+  publishCustomVideoTrack?: boolean;
+}
+
+export enum AppType {
+  APP_TYPE_NATIVE = 0,
+  APP_TYPE_COCOS = 1,
+  APP_TYPE_UNITY = 2,
+  APP_TYPE_ELECTRON = 3,
+  APP_TYPE_FLUTTER = 4,
+  APP_TYPE_UNREAL = 5,
+  APP_TYPE_XAMARIN = 6,
+  APP_TYPE_API_CLOUD = 7,
+  APP_TYPE_REACT_NATIVE = 8,
+  APP_TYPE_PYTHON = 9,
+  APP_TYPE_COCOS_CREATOR = 10,
+  APP_TYPE_RUST = 11,
+  APP_TYPE_C_SHARP = 12,
+  APP_TYPE_CEF = 13,
+  APP_TYPE_UNI_APP = 14,
+}
+
+/**
+ * The CC (Congestion Control) mode options.
+ */
+export enum TCcMode {
+  /**
+   * Enable CC mode.
+   */
+  CC_ENABLED,
+  /**
+   * Disable CC mode.
+   */
+  CC_DISABLED,
+}
+/**
+ * The encoded video track options.
+ */
+export interface EncodedVideoTrackOptions {
+  /**
+   * Whether to enable CC mode. See #TCcMode.
+   */
+  ccMode?: TCcMode;
+  /**
+   * The codec type used for the encoded images:
+   * \ref agora::rtc::VIDEO_CODEC_TYPE "VIDEO_CODEC_TYPE".
+   */
+  codecType?: VIDEO_CODEC_TYPE;
+  /**
+   * Target bitrate (Kbps) for sending encoded video frame.
+   */
+  targetBitrate: number;
+}
+
+/**
+ * Video stream types.
+ */
+export enum VIDEO_STREAM_TYPE {
+  /**
+   * 0: The high-quality video stream, which has a higher resolution and bitrate.
+   */
+  VIDEO_STREAM_HIGH = 0,
+  /**
+   * 1: The low-quality video stream, which has a lower resolution and bitrate.
+   */
+  VIDEO_STREAM_LOW = 1,
+}
+
+/**
+ * Types of the video frame.
+ */
+export enum VIDEO_FRAME_TYPE {
+  /** (Default) Blank frame */
+  VIDEO_FRAME_TYPE_BLANK_FRAME = 0,
+  /** (Default) Key frame */
+  VIDEO_FRAME_TYPE_KEY_FRAME = 3,
+  /** (Default) Delta frame */
+  VIDEO_FRAME_TYPE_DELTA_FRAME = 4,
+  /** (Default) B frame */
+  VIDEO_FRAME_TYPE_B_FRAME = 5,
+  /** (Default) Droppable frame */
+  VIDEO_FRAME_TYPE_DROPPABLE_FRAME = 6,
+  /** (Default) Unknown frame type */
+  VIDEO_FRAME_TYPE_UNKNOW,
+}
+/**
+ * The definition of the EncodedVideoFrameInfo struct.
+ */
+export interface EncodedVideoFrameInfo {
+  /**
+   * The video codec: #VIDEO_CODEC_TYPE.
+   */
+  codecType: VIDEO_CODEC_TYPE;
+  /**
+   * The width (px) of the video.
+   */
+  width: number;
+  /**
+   * The height (px) of the video.
+   */
+  height: number;
+  /**
+   * The number of video frames per second.
+   * This value will be used for calculating timestamps of the encoded image.
+   * If framesPerSecond equals zero, then real timestamp will be used.
+   * Otherwise, timestamp will be adjusted to the value of framesPerSecond set.
+   */
+  framesPerSecond: number;
+  /**
+   * The frame type of the encoded video frame: #VIDEO_FRAME_TYPE.
+   */
+  frameType: VIDEO_FRAME_TYPE;
+  /**
+   * The rotation information of the encoded video frame: #VIDEO_ORIENTATION.
+   */
+  rotation: VIDEO_ORIENTATION;
+  /**
+   * The track ID of the video frame.
+   */
+  trackId: number; // This can be reserved for multiple video tracks, we need to create different ssrc
+  // and additional payload for later implementation.
+  /**
+   * The timestamp for rendering the video.
+   */
+  renderTimeMs: number;
+  /**
+   * Use this timestamp for audio and video sync. You can get this timestamp from the `OnEncodedVideoImageReceived` callback when `encodedFrameOnly` is `true`.
+   */
+  internalSendTs: number;
+  /**
+   * ID of the user.
+   */
+  uid: number;
+  /**
+   * The stream type of video frame.
+   */
+  streamType: VIDEO_STREAM_TYPE;
+}
+
+/**
+ * The collections of uplink network info.
+ */
+export interface UplinkNetworkInfo {
+  /**
+   * The target video encoder bitrate (bps).
+   */
+  video_encoder_target_bitrate_bps: number;
+}
+
+/**
+ * The downscale level of the remote video stream . The higher the downscale level, the more the video downscales.
+ */
+export enum REMOTE_VIDEO_DOWNSCALE_LEVEL {
+  /**
+   * No downscale.
+   */
+  REMOTE_VIDEO_DOWNSCALE_LEVEL_NONE,
+  /**
+   * Downscale level 1.
+   */
+  REMOTE_VIDEO_DOWNSCALE_LEVEL_1,
+  /**
+   * Downscale level 2.
+   */
+  REMOTE_VIDEO_DOWNSCALE_LEVEL_2,
+  /**
+   * Downscale level 3.
+   */
+  REMOTE_VIDEO_DOWNSCALE_LEVEL_3,
+  /**
+   * Downscale level 4.
+   */
+  REMOTE_VIDEO_DOWNSCALE_LEVEL_4,
+}
+export interface PeerDownlinkInfo {
+  /**
+   * The ID of the user who owns the remote video stream.
+   */
+  uid: number;
+  /**
+   * The remote video stream type: #VIDEO_STREAM_TYPE.
+   */
+  stream_type: VIDEO_STREAM_TYPE;
+  /**
+   * The remote video downscale type: #REMOTE_VIDEO_DOWNSCALE_LEVEL.
+   */
+  current_downscale_level: REMOTE_VIDEO_DOWNSCALE_LEVEL;
+  /**
+   * The expected bitrate in bps.
+   */
+  expected_bitrate_bps: number;
+}
+
+/**
+ * The collections of downlink network info.
+ */
+export interface DownlinkNetworkInfo {
+  /**
+   * The lastmile buffer delay queue time in ms.
+   */
+  lastmile_buffer_delay_time_ms: number;
+  /**
+   * The current downlink bandwidth estimation(bps) after downscale.
+   */
+  bandwidth_estimation_bps: number;
+  /**
+   * The total video downscale level count.
+   */
+  total_downscale_level_count: number;
+  /**
+   * The peer video downlink info array.
+   */
+  peer_downlink_info: PeerDownlinkInfo[];
+  /**
+   * The total video received count.
+   */
+  total_received_video_count: number;
+}
+
+/** Encryption error type.
+ */
+export enum ENCRYPTION_ERROR_TYPE {
+  ENCRYPTION_ERROR_INTERNAL_FAILURE = 0,
+  ENCRYPTION_ERROR_DECRYPTION_FAILURE = 1,
+  ENCRYPTION_ERROR_ENCRYPTION_FAILURE = 2,
+}
+
+/** Type of permission.
+ */
+export enum PERMISSION_TYPE {
+  RECORD_AUDIO = 0,
+  CAMERA = 1,
 }
