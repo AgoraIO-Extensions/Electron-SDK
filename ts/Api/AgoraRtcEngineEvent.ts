@@ -18,7 +18,6 @@ import {
   MEDIA_DEVICE_TYPE,
   UserInfo,
   Metadata,
-  RTMP_STREAMING_EVENT,
   STREAM_PUBLISH_STATE,
   STREAM_SUBSCRIBE_STATE,
   AudioVolumeInfo,
@@ -33,12 +32,13 @@ import {
   RTMP_STREAM_PUBLISH_ERROR,
   USER_OFFLINE_REASON_TYPE,
   AUDIO_MIXING_STATE_TYPE,
-  LOCAL_VIDEO_STREAM_STATE,
-  LOCAL_VIDEO_STREAM_ERROR,
-  LOCAL_AUDIO_STREAM_STATE,
-  LOCAL_AUDIO_STREAM_ERROR,
-  VIRTUAL_BACKGROUND_SOURCE_STATE_REASON,
   RtcConnection,
+  UplinkNetworkInfo,
+  DownlinkNetworkInfo,
+  VIDEO_SOURCE_TYPE,
+  ENCRYPTION_ERROR_TYPE,
+  PERMISSION_TYPE,
+  Rectangle,
 } from "./types";
 import { EngineEvents } from "../Common/JSEvents";
 
@@ -56,7 +56,7 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.API_CALL_EXECUTED,
-      cb: (api: string, err: number, result: string) => void
+      cb: (err: number, api: string, result: string) => void
     ): this;
     on(
       evt: EngineEvents.API_ERROR,
@@ -84,7 +84,7 @@ declare module "./AgoraRtcEngine" {
      * method until the SDK triggers this callback.
      */
     on(
-      evt: EngineEvents.JOINED_CHANNEL,
+      evt: EngineEvents.JOIN_CHANNEL_SUCCESS,
       cb: (connection: RtcConnection, elapsed: number) => void
     ): this;
     /** Occurs when a user rejoins the channel after disconnection due to network
@@ -112,6 +112,7 @@ declare module "./AgoraRtcEngine" {
     on(
       evt: EngineEvents.AUDIO_VOLUME_INDICATION,
       cb: (
+        connection: RtcConnection,
         speakers: AudioVolumeInfo[],
         speakerNumber: number,
         totalVolume: number
@@ -122,12 +123,18 @@ declare module "./AgoraRtcEngine" {
      * {@link leaveChannel} method, the SDK uses
      * this callback to notify the app when the user leaves the channel.
      */
-    on(evt: EngineEvents.LEAVE_CHANNEL, cb: (stats: RtcStats) => void): this;
+    on(
+      evt: EngineEvents.LEAVE_CHANNEL,
+      cb: (connection: RtcConnection, stats: RtcStats) => void
+    ): this;
     /** Reports the statistics of the AgoraRtcEngine once every two seconds.
      *
      * @param cb.stats AgoraRtcEngine's statistics, see {@link RtcStats}
      */
-    on(evt: EngineEvents.RTC_STATS, cb: (stats: RtcStats) => void): this;
+    on(
+      evt: EngineEvents.RTC_STATS,
+      cb: (connection: RtcConnection, stats: RtcStats) => void
+    ): this;
     /**
      * Reports the statistics of the local video streams.
      *
@@ -142,7 +149,7 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.LOCAL_VIDEO_STATS,
-      cb: (stats: LocalVideoStats) => void
+      cb: (connection: RtcConnection, stats: LocalVideoStats) => void
     ): this;
     /**
      * Reports the statistics of the local audio streams.
@@ -154,7 +161,7 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.LOCAL_AUDIO_STATS,
-      cb: (stats: LocalAudioStats) => void
+      cb: (connection: RtcConnection, stats: LocalAudioStats) => void
     ): this;
     /** Reports the statistics of the video stream from each remote user/host.
      *
@@ -163,7 +170,7 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.REMOTE_VIDEO_STATS,
-      cb: (stats: RemoteVideoStats) => void
+      cb: (connection: RtcConnection, stats: RemoteVideoStats) => void
     ): this;
     /** Reports the statistics of the audio stream from each remote user/host.
      *
@@ -172,7 +179,7 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.REMOTE_AUDIO_STATS,
-      cb: (stats: RemoteAudioStats) => void
+      cb: (connection: RtcConnection, stats: RemoteAudioStats) => void
     ): this;
     /**
      * @deprecated This callback is deprecated. Use remoteVideoStats instead.
@@ -187,7 +194,13 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.REMOTE_VIDEO_TRANSPORT_STATS,
-      cb: (uid: number, delay: number, lost: number, rxKBitRate: number) => void
+      cb: (
+        connection: RtcConnection,
+        remoteUid: number,
+        delay: number,
+        lost: number,
+        rxKBitRate: number
+      ) => void
     ): this;
 
     /**
@@ -200,7 +213,13 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.REMOTE_AUDIO_TRANSPORT_STATS,
-      cb: (uid: number, delay: number, lost: number, rxKBitRate: number) => void
+      cb: (
+        connection: RtcConnection,
+        remoteUid: number,
+        delay: number,
+        lost: number,
+        rxKBitRate: number
+      ) => void
     ): this;
 
     /**
@@ -241,16 +260,10 @@ declare module "./AgoraRtcEngine" {
       evt: EngineEvents.AUDIO_MIXING_STATE_CHANGED,
       cb: (
         state: AUDIO_MIXING_STATE_TYPE,
-        reason: AUDIO_MIXING_REASON_TYPE
+        errorCode: AUDIO_MIXING_REASON_TYPE
       ) => void
     ): this;
-    /** Occurs when a remote user starts audio mixing.
-     * When a remote user calls {@link startAudioMixing} to play the background
-     * music, the SDK reports this callback.
-     */
-    on(evt: EngineEvents.REMOTE_AUDIO_MIXING_BEGIN, cb: () => void): this;
-    /** Occurs when a remote user finishes audio mixing. */
-    on(evt: EngineEvents.REMOTE_AUDIO_MIXING_END, cb: () => void): this;
+
     /** Occurs when the local audio effect playback finishes. */
     on(
       evt: EngineEvents.AUDIO_EFFECT_FINISHED,
@@ -299,7 +312,8 @@ declare module "./AgoraRtcEngine" {
     on(
       evt: EngineEvents.NETWORK_QUALITY,
       cb: (
-        uid: number,
+        connection: RtcConnection,
+        remoteUid: number,
         txquality: QUALITY_TYPE,
         rxquality: QUALITY_TYPE
       ) => void
@@ -340,30 +354,15 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.FIRST_LOCAL_VIDEO_FRAME,
-      cb: (width: number, height: number, elapsed: number) => void
+      cb: (
+        uid: number,
+        channelId: number,
+        width: number,
+        height: number,
+        elapsed: number
+      ) => void
     ): this;
-    /**
-     * @deprecated This callback is deprecated. Use the remoteVideoStateChanged
-     * callback instead.
-     *
-     * Occurs when the first remote video frame is received and decoded.
-     * - uid: User ID of the remote user sending the video stream.
-     * - elapsed: Time elapsed (ms) from the local user calling the
-     * {@link joinChannel} method until the SDK triggers this callback.
-     * This callback is triggered in either of the following scenarios:
-     * - The remote user joins the channel and sends the video stream.
-     * - The remote user stops sending the video stream and re-sends it after
-     * 15 seconds. Reasons for such an interruption include:
-     *  - The remote user leaves the channel.
-     *  - The remote user drops offline.
-     *  - The remote user calls the {@link muteLocalVideoStream} method to stop
-     * sending the video stream.
-     *  - The remote user calls the {@link disableVideo} method to disable video.
-     */
-    on(
-      evt: EngineEvents.FIRST_REMOTE_VIDEO_DECODED,
-      cb: (uid: number, elapsed: number) => void
-    ): this;
+
     /** Occurs when the video size or rotation of a specified user changes.
      * @param cb.uid User ID of the remote user or local user (0) whose video
      * size or
@@ -374,7 +373,13 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.VIDEO_SIZE_CHANGED,
-      cb: (uid: number, width: number, height: number, rotation: number) => void
+      cb: (
+        connection: RtcConnection,
+        uid: number,
+        width: number,
+        height: number,
+        rotation: number
+      ) => void
     ): this;
     /** @deprecated This callback is deprecated, please use
      * `remoteVideoStateChanged` instead.
@@ -392,21 +397,15 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.FIRST_REMOTE_VIDEO_FRAME,
-      cb: (uid: number, width: number, height: number, elapsed: number) => void
+      cb: (
+        connection: RtcConnection,
+        remoteUid: number,
+        width: number,
+        height: number,
+        elapsed: number
+      ) => void
     ): this;
-    /** Occurs when the first remote video frame is decoded.
-     * The SDK triggers this callback when the first frame of the remote video
-     * is decoded.
-     * - uid: User ID of the remote user sending the video stream.
-     * - width: Width (pixels) of the video frame.
-     * - height: Height (pixels) of the video stream.
-     * - elapsed: Time elapsed (ms) from the local user calling the
-     * {@link joinChannel} method until the SDK triggers this callback.
-     */
-    on(
-      evt: EngineEvents.FIRST_REMOTE_VIDEO_DECODED,
-      cb: (uid: number, width: number, height: number, elapsed: number) => void
-    ): this;
+
     /** Occurs when a user or host joins the channel.
      *
      * The SDK triggers this callback under one of the following circumstances:
@@ -483,7 +482,7 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.USER_MUTE_AUDIO,
-      cb: (uid: number, muted: boolean) => void
+      cb: (connId: number, uid: number, muted: boolean) => void
     ): this;
 
     /**
@@ -503,7 +502,7 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.USER_MUTE_VIDEO,
-      cb: (uid: number, muted: boolean) => void
+      cb: (connection: RtcConnection, uid: number, muted: boolean) => void
     ): this;
     /**
      * @deprecated This callback is deprecated. Use the remoteVideoStateChanged
@@ -522,7 +521,7 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.USER_ENABLE_VIDEO,
-      cb: (uid: number, enabled: boolean) => void
+      cb: (connection: RtcConnection, uid: number, enabled: boolean) => void
     ): this;
     /**
      * @deprecated This callback is deprecated. Use the remoteVideoStateChanged
@@ -544,7 +543,7 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.USER_ENABLE_LOCAL_VIDEO,
-      cb: (uid: number, enabled: boolean) => void
+      cb: (connection: RtcConnection, uid: number, enabled: boolean) => void
     ): this;
     /**
      * @deprecated Replaced by the localVideoStateChanged callback.
@@ -566,14 +565,23 @@ declare module "./AgoraRtcEngine" {
      * disconnected from Agora's edge server, the SDK stops rejoining the
      * channel.
      */
-    on(evt: EngineEvents.CONNECTION_LOST, cb: () => void): this;
+    on(
+      evt: EngineEvents.CONNECTION_LOST,
+      cb: (connection: RtcConnection) => void
+    ): this;
 
-    on(evt: EngineEvents.CONNECTION_INTERRUPTED, cb: () => void): this;
+    on(
+      evt: EngineEvents.CONNECTION_INTERRUPTED,
+      cb: (connection: RtcConnection) => void
+    ): this;
     /**
      * @deprecated Replaced by the connectionStateChanged callback.
      * Occurs when your connection is banned by the Agora Server.
      */
-    on(evt: EngineEvents.CONNECTION_BANNED, cb: () => void): this;
+    on(
+      evt: EngineEvents.CONNECTION_BANNED,
+      cb: (connection: RtcConnection) => void
+    ): this;
     // on(evt: 'refreshRecordingServiceStatus', cb: () => void): this;
     /** Occurs when the local user receives the data stream from the remote
      * user within five seconds.
@@ -588,7 +596,14 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.STREAM_MESSAGE,
-      cb: (uid: number, streamId: number, data: string) => void
+      cb: (
+        connection: RtcConnection,
+        remoteUid: number,
+        streamId: number,
+        data: string,
+        length: number,
+        sentTs: number
+      ) => void
     ): this;
 
     on(
@@ -613,15 +628,15 @@ declare module "./AgoraRtcEngine" {
     on(
       evt: EngineEvents.STREAM_MESSAGE_ERROR,
       cb: (
-        uid: number,
+        connection: RtcConnection,
+        remoteUid: number,
         streamId: number,
         code: number,
         missed: number,
         cached: number
       ) => void
     ): this;
-    /** Occurs when the media engine call starts. */
-    on(evt: EngineEvents.MEDIA_ENGINE_START_CALL_SUCCESS, cb: () => void): this;
+
     /** Occurs when the token expires.
      *
      * After a token(channel key) is specified by calling the {@link joinChannel}
@@ -633,7 +648,10 @@ declare module "./AgoraRtcEngine" {
      * This callback notifies the application to generate a new token. Call
      * the {@link renewToken} method to renew the token
      */
-    on(evt: EngineEvents.REQUEST_TOKEN, cb: () => void): this;
+    on(
+      evt: EngineEvents.REQUEST_TOKEN,
+      cb: (connection: RtcConnection) => void
+    ): this;
     /** Occurs when the engine sends the first local audio frame.
      *
      * @deprecated This callback is deprecated from v3.2.0. Use
@@ -645,7 +663,7 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.FIRST_LOCAL_AUDIO_FRAME,
-      cb: (elapsed: number) => void
+      cb: (connection: RtcConnection, elapsed: number) => void
     ): this;
     /**
      * @deprecated This callback is deprecated. Please use
@@ -660,7 +678,7 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.FIRST_REMOTE_AUDIO_FRAME,
-      cb: (uid: number, elapsed: number) => void
+      cb: (connection: RtcConnection, uid: number, elapsed: number) => void
     ): this;
     /** @deprecated This callback is deprecated, please use
      * `remoteAudioStateChanged` instead.
@@ -673,7 +691,7 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.FIRST_REMOTE_AUDIO_DECODED,
-      cb: (uid: number, elapsed: number) => void
+      cb: (connection: RtcConnection, uid: number, elapsed: number) => void
     ): this;
     /**
      * Reports which user is the loudest speaker.
@@ -692,7 +710,10 @@ declare module "./AgoraRtcEngine" {
      * active speaker detected by the audio volume detection module of the SDK.
      *
      */
-    on(evt: EngineEvents.ACTIVE_SPEAKER, cb: (uid: number) => void): this;
+    on(
+      evt: EngineEvents.ACTIVE_SPEAKER,
+      cb: (connection: RtcConnection, userId: number) => void
+    ): this;
     /** Occurs when the user role switches in a live streaming.
      *
      * For example,
@@ -706,7 +727,11 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.CLIENT_ROLE_CHANGED,
-      cb: (oldRole: CLIENT_ROLE_TYPE, newRole: CLIENT_ROLE_TYPE) => void
+      cb: (
+        connection: RtcConnection,
+        oldRole: CLIENT_ROLE_TYPE,
+        newRole: CLIENT_ROLE_TYPE
+      ) => void
     ): this;
     /** Occurs when the volume of the playback device, microphone, or
      * application changes.
@@ -738,7 +763,8 @@ declare module "./AgoraRtcEngine" {
     on(
       evt: EngineEvents.REMOTE_VIDEO_STATE_CHANGED,
       cb: (
-        uid: number,
+        connection: RtcConnection,
+        remoteUid: number,
         state: REMOTE_VIDEO_STATE,
         reason: REMOTE_VIDEO_STATE_REASON,
         elapsed: number
@@ -777,7 +803,7 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.TOKEN_PRIVILEGE_WILL_EXPIRE,
-      cb: (token: string) => void
+      cb: (connection: RtcConnection, token: string) => void
     ): this;
     /** @deprecated This callback is deprecated. Please use
      * `rtmpStreamingStateChanged` instead.
@@ -877,51 +903,7 @@ declare module "./AgoraRtcEngine" {
      * transcodingUpdated callback.
      */
     on(evt: EngineEvents.TRANSCODING_UPDATED, cb: () => void): this;
-    /** Occurs when a voice or video stream URL address is added to a live
-     * broadcast.
-     * - url: Pointer to the URL address of the externally injected stream.
-     * - uid: User ID.
-     * - status: State of the externally injected stream:
-     *  - 0: The external video stream imported successfully.
-     *  - 1: The external video stream already exists.
-     *  - 2: The external video stream to be imported is unauthorized.
-     *  - 3: Import external video stream timeout.
-     *  - 4: Import external video stream failed.
-     *  - 5: The external video stream stopped importing successfully.
-     *  - 6: No external video stream is found.
-     *  - 7: No external video stream is found.
-     *  - 8: Stop importing external video stream timeout.
-     *  - 9: Stop importing external video stream failed.
-     *  - 10: The external video stream is corrupted.
-     *
-     */
-    on(
-      evt: EngineEvents.STREAM_INJECTED_STATUS,
-      cb: (url: string, uid: number, status: number) => void
-    ): this;
-    /** Occurs when a voice or video stream URL address is added to a live
-     * broadcast.
-     *
-     * @param cb.url The URL address of the externally injected stream.
-     * @param cb.uid User ID.
-     * @param cb.status State of the externally injected stream:
-     *  - 0: The external video stream imported successfully.
-     *  - 1: The external video stream already exists.
-     *  - 2: The external video stream to be imported is unauthorized.
-     *  - 3: Import external video stream timeout.
-     *  - 4: Import external video stream failed.
-     *  - 5: The external video stream stopped importing successfully.
-     *  - 6: No external video stream is found.
-     *  - 7: No external video stream is found.
-     *  - 8: Stop importing external video stream timeout.
-     *  - 9: Stop importing external video stream failed.
-     *  - 10: The external video stream is corrupted.
-     *
-     */
-    on(
-      evt: EngineEvents.STREAM_INJECTED_STATUS,
-      cb: (url: string, uid: number, status: INJECT_STREAM_STATUS) => void
-    ): this;
+
     /** Occurs when the locally published media stream falls back to an
      * audio-only stream due to poor network conditions or switches back
      * to the video after the network conditions improve.
@@ -964,19 +946,7 @@ declare module "./AgoraRtcEngine" {
       evt: EngineEvents.REMOTE_SUBSCRIBE_FALLBACK_TO_AUDIO_ONLY,
       cb: (uid: number, isFallbackOrRecover: boolean) => void
     ): this;
-    /**
-     * @deprecated This callback is deprecated. Use the localAudioStateChanged
-     * callback instead.
-     *
-     * Occurs when the microphone is enabled/disabled.
-     * - enabled: Whether the microphone is enabled/disabled:
-     *  - true: Enabled.
-     *  - false: Disabled.
-     */
-    on(
-      evt: EngineEvents.MICROPHONE_ENABLED,
-      cb: (enabled: boolean) => void
-    ): this;
+
     /** Occurs when the connection state between the SDK and the server changes.
      * @param cb.state The connection state, see {@link ConnectionState}.
      * @param cb.reason The connection reason, see {@link ConnectionState}.
@@ -984,6 +954,7 @@ declare module "./AgoraRtcEngine" {
     on(
       evt: EngineEvents.CONNECTION_STATE_CHANGED,
       cb: (
+        connection: RtcConnection,
         state: CONNECTION_STATE_TYPE,
         reason: CONNECTION_CHANGED_REASON_TYPE
       ) => void
@@ -1011,13 +982,7 @@ declare module "./AgoraRtcEngine" {
       evt: EngineEvents.USER_INFO_UPDATED,
       cb: (uid: number, userInfo: UserInfo) => void
     ): this;
-    /**
-     * Reserved callback.
-     */
-    on(
-      evt: "uploadLogResult",
-      cb: (requestId: string, success: boolean, reason: number) => void
-    ): this;
+
     /**
      * Occurs when the local video state changes.
      *
@@ -1066,7 +1031,11 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.LOCAL_VIDEO_STATE_CHANGED,
-      cb: (localVideoState: number, error: number) => void
+      cb: (
+        connection: RtcConnection,
+        localVideoState: number,
+        error: number
+      ) => void
     ): this;
     /**
      * Occurs when the local audio state changes.
@@ -1095,7 +1064,7 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.LOCAL_AUDIO_STATE_CHANGED,
-      cb: (state: number, error: number) => void
+      cb: (connection: RtcConnection, state: number, error: number) => void
     ): this;
     /**
      * Occurs when the remote audio state changes.
@@ -1116,7 +1085,8 @@ declare module "./AgoraRtcEngine" {
     on(
       evt: EngineEvents.REMOTE_AUDIO_STATE_CHANGED,
       cb: (
-        uid: number,
+        connection: RtcConnection,
+        remoteUid: number,
         state: REMOTE_AUDIO_STATE,
         reason: REMOTE_AUDIO_STATE_REASON,
         elapsed: number
@@ -1189,7 +1159,7 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.FIRST_LOCAL_AUDIO_FRAME_PUBLISHED,
-      cb: (elapsed: number) => void
+      cb: (connection: RtcConnection, elapsed: number) => void
     ): this;
     /** Occurs when the first video frame is published.
      *
@@ -1209,18 +1179,7 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.FIRST_LOCAL_VIDEO_FRAME_PUBLISHED,
-      cb: (elapsed: number) => void
-    ): this;
-    /** Reports events during the RTMP or RTMPS streaming.
-     *
-     * @since v3.2.0
-     *
-     * @param cb.url The RTMP or RTMPS streaming URL.
-     * @param cb.eventCode The event code.
-     */
-    on(
-      evt: EngineEvents.RTMP_STREAMING_EVENT,
-      cb: (url: string, eventCode: RTMP_STREAMING_EVENT) => void
+      cb: (connection: RtcConnection, elapsed: number) => void
     ): this;
 
     /**
@@ -1230,7 +1189,7 @@ declare module "./AgoraRtcEngine" {
      */
     on(
       evt: EngineEvents.NETWORK_TYPE_CHANGED,
-      cb: (type: NETWORK_TYPE) => void
+      cb: (connection: RtcConnection, type: NETWORK_TYPE) => void
     ): this;
     /** Occurs when the audio publishing state changes.
      *
@@ -1328,8 +1287,8 @@ declare module "./AgoraRtcEngine" {
     on(
       evt: EngineEvents.FIRST_REMOTE_VIDEO_FRAME,
       cb: (
-        uid: number,
-        channelId: string,
+        connection: RtcConnection,
+        remoteUid: number,
         width: number,
         height: number,
         elapsed: number
@@ -1337,19 +1296,96 @@ declare module "./AgoraRtcEngine" {
     ): this;
 
     on(
-      evt: EngineEvents.VIRTUAL_BACKGROUND_SOURCE_ENABLED,
+      evt: EngineEvents.MEDIA_DEVICE_CHANGED,
+      cb: (deviceType: MEDIA_DEVICE_TYPE) => void
+    ): this;
+    on(
+      evt: EngineEvents.INTRA_REQUEST_RECEIVED,
+      cb: (connection: RtcConnection) => void
+    ): this;
+
+    on(
+      evt: EngineEvents.UPLINK_NETWORK_INFO_UPDATED,
+      cb: (info: UplinkNetworkInfo) => void
+    ): this;
+
+    on(
+      evt: EngineEvents.DOWNLINK_NETWORK_INFO_UPDATED,
+      cb: (info: DownlinkNetworkInfo) => void
+    ): this;
+    on(
+      evt: EngineEvents.VIDEO_SOURCE_FRAME_SIZE_CHANGED,
       cb: (
-        enabled: boolean,
-        reason: VIRTUAL_BACKGROUND_SOURCE_STATE_REASON
+        connection: RtcConnection,
+        sourceType: VIDEO_SOURCE_TYPE,
+        width: number,
+        height: number
       ) => void
     ): this;
 
-    /**
-     * Occurs when an API method is executed.
-     *
-     * `api`: The method executed by the SDK.
-     *
-     * `err`: Error code that the SDK returns when the method call fails.
-     */
+    on(
+      evt: EngineEvents.FACE_POSITION_CHANGED,
+      cb: (
+        imageWidth: number,
+        imageHeight: number,
+        vecRectangle: Rectangle,
+        vecDistance: number[],
+        numFaces: number
+      ) => void
+    ): this;
+    on(
+      evt: EngineEvents.AUDIO_ROUTING_CHANGED,
+      cb: (routing: number) => void
+    ): this;
+    on(
+      evt: EngineEvents.AUDIO_SESSION_RESTRICTION_RESUME,
+      cb: () => void
+    ): this;
+
+    on(
+      evt: EngineEvents.ENCRYPTION_ERROR,
+      cb: (connection: RtcConnection, errorType: ENCRYPTION_ERROR_TYPE) => void
+    ): this;
+    on(
+      evt: EngineEvents.PERMISSION_ERROR,
+      cb: (permissionType: PERMISSION_TYPE) => void
+    ): this;
+
+    on(
+      evt: EngineEvents.EXTENSION_EVENT,
+      cb: (
+        provider_name: string,
+        ext_name: string,
+        key: string,
+        json_value: string
+      ) => void
+    ): this;
+
+    on(
+      evt: EngineEvents.EXTENSION_STARTED,
+      cb: (provider_name: string, ext_name: string) => void
+    ): this;
+
+    on(
+      evt: EngineEvents.EXTENSION_STARTED,
+      cb: (provider_name: string, ext_name: string) => void
+    ): this;
+    on(
+      evt: EngineEvents.EXTENSION_STOPPED,
+      cb: (provider_name: string, ext_name: string) => void
+    ): this;
+    on(
+      evt: EngineEvents.EXTENSION_ERRORED,
+      cb: (provider_name: string, ext_name: string) => void
+    ): this;
+
+    on(
+      evt: EngineEvents.USER_ACCOUNT_UPDATED,
+      cb: (
+        connection: RtcConnection,
+        remoteUid: number,
+        userAccount: string
+      ) => void
+    ): this;
   }
 }

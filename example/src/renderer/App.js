@@ -8,6 +8,25 @@ import AgoraRtcEngine, {
   VideoSourceType,
   FRAME_RATE,
   EngineEvents,
+  ENCRYPTION_MODE,
+  ChannelMediaOptions,
+  AUDIO_ENCODED_FRAME_OBSERVER_POSITION,
+  AUDIO_ENCODING_TYPE,
+  LOG_LEVEL,
+  RAW_AUDIO_FRAME_OP_MODE_TYPE,
+  MEDIA_SOURCE_TYPE,
+  VIDEO_SOURCE_TYPE,
+  VIDEO_ORIENTATION,
+  METADATA_TYPE,
+  AUDIO_CODEC_PROFILE_TYPE,
+  VIDEO_CODEC_TYPE,
+  ORIENTATION_MODE,
+  DEGRADATION_PREFERENCE,
+  VIDEO_MIRROR_MODE_TYPE,
+  TCcMode,
+  VOICE_CONVERSION_PRESET,
+  AUDIENCE_LATENCY_LEVEL_TYPE,
+  VIDEO_STREAM_TYPE,
 } from "../../../";
 import { List } from "immutable";
 import path from "path";
@@ -141,6 +160,9 @@ export default class App extends Component {
     this.subscribeEvent();
   };
   subscribeEvent = () => {
+    rtcEngine.on(EngineEvents.ERROR, (...args) => {
+      console.log("EngineEvents.ERROR", args);
+    });
     rtcEngine.on(EngineEvents.JOINED_CHANNEL, (connection, elapsed) => {
       console.info("JOINED_CHANNEL", connection, elapsed);
     });
@@ -378,12 +400,224 @@ export default class App extends Component {
       </div>
     );
   };
+  onPressTest = () => {
+    const mediaOpt = {
+      autoSubscribeAudio: true,
+      autoSubscribeVideo: true,
+      publishAudioTrack: true,
+      publishCameraTrack: true,
+      publishScreenTrack: false,
+      clientRoleType: CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER,
+      channelProfile: CHANNEL_PROFILE_TYPE.CHANNEL_PROFILE_LIVE_BROADCASTING,
+    };
+    const rtcConnection = {
+      channelId: "asda",
+      localUid: 2,
+    };
+    const rect = { x: 1, y: 2, width: 111, height: 222 };
+    const watermarkOpt = {
+      visibleInPreview: true,
+      positionInLandscapeMode: rect,
+      positionInPortraitMode: rect,
+    };
+    const VideoInputStreams = [
+      {
+        sourceType: MEDIA_SOURCE_TYPE.AUDIO_PLAYOUT_SOURCE,
+        remoteUserUid: 1,
+        imageUrl: "ads",
+        x: 1,
+        y: 1,
+        width: 1,
+        height: 1,
+        zOrder: 1,
+        alpha: 1,
+        mirror: true,
+      },
+    ];
+    const videoOutputConfiguration = {
+      codecType: 1,
+      dimensions: { width: 300, height: 300 },
+      frameRate: 1,
+      bitrate: 1,
+      minFrameRate: 1,
+      minBitrate: 1,
+      orientationMode: 1,
+      degradationPreference: 1,
+      mirrorMode: 1,
+    };
+    const LocalTranscoderConfiguration = {
+      streamCount: 0,
+      VideoInputStreams,
+      videoOutputConfiguration,
+    };
+    const EncodedVideoTrackOptions = {
+      ccMode: TCcMode.CC_DISABLED,
+      codecType: VIDEO_CODEC_TYPE.VIDEO_CODEC_E264,
+      targetBitrate: 200,
+    };
+    const channelMediaOpt = {
+      publishCameraTrack: false,
+      publishSecondaryCameraTrack: false,
+      publishAudioTrack: false,
+      publishScreenTrack: false,
+      publishSecondaryScreenTrack: false,
+      publishCustomAudioTrack: false,
+      publishCustomAudioSourceId: false,
+      publishCustomAudioTrackEnableAec: false,
+      publishDirectCustomAudioTrack: false,
+      publishCustomVideoTrack: false,
+      publishEncodedVideoTrack: false,
+      publishMediaPlayerAudioTrack: false,
+      publishMediaPlayerVideoTrack: false,
+      publishTrancodedVideoTrack: false,
+      autoSubscribeAudio: false,
+      autoSubscribeVideo: false,
+      enableAudioRecordingOrPlayout: false,
+      publishMediaPlayerId: false,
+      clientRoleType: CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE,
+      audienceLatencyLevel:
+        AUDIENCE_LATENCY_LEVEL_TYPE.AUDIENCE_LATENCY_LEVEL_LOW_LATENCY,
+      defaultVideoStreamType: VIDEO_STREAM_TYPE.VIDEO_STREAM_HIGH,
+      channelProfile: CHANNEL_PROFILE_TYPE.CHANNEL_PROFILE_COMMUNICATION,
+      audioDelayMs: 10,
+      token: "token",
+      encodedVideoTrackOption: EncodedVideoTrackOptions,
+    };
+    const videoEncoderConf = {
+      codecType: VIDEO_CODEC_TYPE.VIDEO_CODEC_E264,
+      dimensions: { width: 300, height: 300 },
+      frameRate: FRAME_RATE.FRAME_RATE_FPS_10,
+      bitrate: 200,
+      minFrameRate: 200,
+      minBitrate: 200,
+      orientationMode: ORIENTATION_MODE.ORIENTATION_MODE_ADAPTIVE,
+      degradationPreference: DEGRADATION_PREFERENCE.MAINTAIN_BALANCED,
+      mirrorMode: VIDEO_MIRROR_MODE_TYPE.AUTO,
+    };
+    const directCdnStreamingMediaOpt = {
+      publishCameraTrack: true,
+      publishMicrophoneTrack: true,
+      publishCustomAudioTrack: true,
+      publishCustomVideoTrack: true,
+    };
+    // rtcEngine.updateChannelMediaOptions(mediaOpt);
+    // rtcEngine.muteRemoteAudioStreamEx(1, true, rtcConnection);
+
+    // rtcEngine.muteRemoteVideoStreamEx(1, true, rtcConnection);
+    // rtcEngine.setRemoteVoicePositionEx(1, 2.2, 3.3, rtcConnection);
+    // rtcEngine.setRemoteVoice3DPositionEx(1, 2.1, 3.2, 4.1, rtcConnection);
+    // rtcEngine.enableLoopBackRecordingEx(true, rtcConnection);
+    // rtcEngine.getConnectionStateEx(rtcConnection);
+    // rtcEngine.enableEncryptionEx(rtcConnection, true, {
+    //   encryptionMode: ENCRYPTION_MODE.AES_128_ECB,
+    //   encryptionKey: "asd",
+    //   encryptionKdfSalt: [1, 2, 3],
+    // });
+    // rtcEngine.createDataStreamEx(
+    //   { syncWithAudio: true, ordered: true },
+    //   rtcConnection
+    // );
+
+    rtcEngine.sendStreamMessageEx(1, "12321");
+    rtcEngine.addVideoWaterMarkEx("asdasd", watermarkOpt, rtcConnection);
+    rtcEngine.clearVideoWatermarkEx(rtcConnection);
+    rtcEngine.sendCustomReportMessageEx("1", "2", "3", "4", 5, rtcConnection);
+    rtcEngine.registerAudioEncodedFrameObserver({
+      postionType:
+        AUDIO_ENCODED_FRAME_OBSERVER_POSITION.AUDIO_ENCODED_FRAME_OBSERVER_POSITION_MIXED,
+      encodingType: AUDIO_ENCODING_TYPE.AUDIO_ENCODING_TYPE_AAC_16000_MEDIUM,
+    });
+    rtcEngine.playAllEffects(1, 2.2, 3.3, 4, true);
+    rtcEngine.getVolumeOfEffect(1);
+
+    rtcEngine.unloadAllEffects();
+    rtcEngine.setRemoteVoice3DPosition(1, 2.2, 3.3, 4.4);
+    rtcEngine.setVoiceConversionParameters(
+      VOICE_CONVERSION_PRESET.VOICE_CHANGER_BASS,
+      1,
+      2
+    );
+    rtcEngine.setLogLevel(1, LOG_LEVEL.LOG_LEVEL_FATAL);
+    rtcEngine.setExternalAudioSink(1, 2);
+    const audioTrack = { enableLocalPlayback: true };
+    rtcEngine.startPrimaryCustomAudioTrack(audioTrack);
+    rtcEngine.stopPrimaryCustomAudioTrack();
+    rtcEngine.startSecondaryCustomAudioTrack(audioTrack);
+    rtcEngine.stopSecondaryCustomAudioTrack();
+    //crash
+    rtcEngine.setPlaybackAudioFrameParameters(
+      8000,
+      2,
+      RAW_AUDIO_FRAME_OP_MODE_TYPE.RAW_AUDIO_FRAME_OP_MODE_READ_WRITE,
+      3
+    );
+    //crash
+    rtcEngine.setMixedAudioFrameParameters(8000, 2, 3);
+    //crash
+    rtcEngine.setPlaybackAudioFrameBeforeMixingParameters(1, 2);
+
+    rtcEngine.enableAudioSpectrumMonitor(1);
+    rtcEngine.disableAudioSpectrumMonitor();
+    rtcEngine.muteRecordingSignal(true);
+    rtcEngine.enableLoopBackRecording(true);
+    rtcEngine.adjustLoopbackRecordingVolume(22);
+    rtcEngine.getLoopbackRecordingVolume();
+    rtcEngine.enableInEarMonitoring(true, 2);
+    rtcEngine.setInEarMonitoringVolume(1);
+
+    rtcEngine.startLocalVideoTranscoder(LocalTranscoderConfiguration);
+    rtcEngine.updateLocalTranscoderConfiguration(LocalTranscoderConfiguration);
+    rtcEngine.stopLocalVideoTranscoder();
+    rtcEngine.setCameraDeviceOrientation(
+      VIDEO_SOURCE_TYPE.VIDEO_SOURCE_CAMERA,
+      VIDEO_ORIENTATION.VIDEO_ORIENTATION_0
+    );
+    rtcEngine.setScreenCaptureOrientation(
+      VIDEO_SOURCE_TYPE.VIDEO_SOURCE_CAMERA,
+      VIDEO_ORIENTATION.VIDEO_ORIENTATION_0
+    );
+    rtcEngine.stopPrimaryScreenCapture();
+    rtcEngine.pauseAudio();
+    rtcEngine.resumeAudio();
+    rtcEngine.unRegisterMediaMetadataObserver(METADATA_TYPE.VIDEO_METADATA);
+    rtcEngine.startAudioFrameDump("1", 2, "3", "4", "5", 6, true);
+    rtcEngine.stopAudioFrameDump("1", 2, "3");
+    rtcEngine.joinChannelWithUserAccountEx("1", "2", "3", channelMediaOpt);
+    rtcEngine.setDirectCdnStreamingAudioConfiguration(
+      AUDIO_CODEC_PROFILE_TYPE.AUDIO_CODEC_PROFILE_HE_AAC
+    );
+
+    rtcEngine.setDirectCdnStreamingVideoConfiguration(videoEncoderConf);
+
+    rtcEngine.startDirectCdnStreaming("12321", directCdnStreamingMediaOpt);
+    rtcEngine.stopDirectCdnStreaming();
+    rtcEngine.updateDirectCdnStreamingMediaOptions(directCdnStreamingMediaOpt);
+    rtcEngine.joinChannelEx("token", rtcConnection, channelMediaOpt);
+    rtcEngine.leaveChannelEx(rtcConnection);
+    rtcEngine.updateChannelMediaOptionsEx(channelMediaOpt, rtcConnection);
+    rtcEngine.setVideoEncoderConfigurationEx(videoEncoderConf, rtcConnection);
+    rtcEngine.setAppType();
+
+    rtcEngine.setExternalVideoSource(
+      true,
+      true,
+      true,
+      EncodedVideoTrackOptions
+    );
+    rtcEngine.setExternalAudioSource(true, 200, 1, 2, true, true);
+    rtcEngine.getCertificateVerifyResult("1", "2");
+    rtcEngine.adjustCustomAudioPublishVolume(1, 2);
+    rtcEngine.adjustCustomAudioPlayoutVolume(1, 2);
+    rtcEngine.enableDirectExternalAudioSource(true);
+    rtcEngine.enableCustomAudioLocalPlayback(1, true);
+  };
 
   render() {
     const { isOpenFirstCamera, isOpenSecondCamera, isStartFirstScreenShare } =
       this.state;
     return (
       <div className="content">
+        <p>process uid:{process.pid}</p>
         <button onClick={this.onPressInitialize}>Initialize</button>
         <button onClick={this.onPressRelease}>Release</button>
         <button onClick={this.onPressJoin}>JoinChannel</button>
@@ -433,6 +667,9 @@ export default class App extends Component {
           <button onClick={this.onPressToggleSecondScreenShare}>
             StartSecondScreenShare
           </button>
+        </div>
+        <div>
+          <button onClick={this.onPressTest}>test</button>
         </div>
         {this.renderViews()}
       </div>
