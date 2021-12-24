@@ -3906,7 +3906,8 @@ export interface NodeRtcEngine {
     token: string,
     cname: string,
     info: string,
-    uid: number
+    uid: number,
+    options?: ChannelMediaOptions
   ): number;
   /**
    * @ignore
