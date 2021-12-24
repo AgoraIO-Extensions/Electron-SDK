@@ -84,10 +84,9 @@ class AgoraVideoSource {
    * @param chan_info : channel information
    * @param uid : uid of video source.
    */
-  virtual node_error join(const char* token,
-                          const char* cname,
-                          const char* chan_info,
-                          uid_t uid) = 0;
+  virtual node_error join(const char *token, const char *cname,
+                          const char *chan_info, uid_t uid,
+                          agora::rtc::ChannelMediaOptions opt) = 0;
 
   /**
    * To ask video source to leave channel.

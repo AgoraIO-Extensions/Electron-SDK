@@ -4116,9 +4116,10 @@ class AgoraRtcEngine extends EventEmitter {
     token: string,
     cname: string,
     info: string,
-    uid: number
+    uid: number,
+    options?: ChannelMediaOptions
   ): number {
-    return this.rtcEngine.videoSourceJoin(token, cname, info, uid);
+    return this.rtcEngine.videoSourceJoin(token, cname, info, uid, options);
   }
 
   /**

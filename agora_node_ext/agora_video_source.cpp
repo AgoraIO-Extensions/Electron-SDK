@@ -50,10 +50,9 @@ class AgoraVideoSourceSink : public AgoraVideoSource, public AgoraIpcListener {
                           unsigned int areaCode,
                           const char* groupId,
                           const char* bundleId) override;
-  virtual node_error join(const char* token,
-                          const char* cname,
-                          const char* chan_info,
-                          uid_t uid) override;
+  virtual node_error join(const char *token, const char *cname,
+                          const char *chan_info, uid_t uid,
+                          agora::rtc::ChannelMediaOptions opt) override;
   virtual node_error leave() override;
   virtual node_error release() override;
   virtual node_error renewVideoSourceToken(const char* token) override;
@@ -429,7 +428,9 @@ void AgoraVideoSourceSink::msgThread() {
 node_error AgoraVideoSourceSink::join(const char* token,
                                       const char* cname,
                                       const char* chan_info,
-                                      uid_t uid) {
+                                      uid_t uid,
+                                      agora::rtc::ChannelMediaOptions opt
+                                      ) {
   LOG_ENTER;
   if (m_initialized) {
     m_peerUid = uid;
@@ -442,6 +443,10 @@ node_error AgoraVideoSourceSink::join(const char* token,
     if (chan_info)
       strncpy(cmd->chan_info, chan_info, MAX_CHAN_INFO);
     cmd->uid = uid;
+    cmd->autoSubscribeAudio = opt.autoSubscribeAudio;
+    cmd->autoSubscribeVideo = opt.autoSubscribeVideo;
+    cmd->publishLocalAudio = opt.publishLocalAudio;
+    cmd->publishLocalVideo = opt.publishLocalVideo;
     LOG_INFO("%s, sendMessage  join 2 token:%s cname:%s", __FUNCTION__,
              cmd->token, cmd->cname);
     return m_ipcMsg->sendMessage(AGORA_IPC_JOIN, (char*)cmd.get(),
