@@ -74,17 +74,7 @@ export default class App extends Component {
         logConfig: { filePath: logpath },
       });
       this.rtcEngine.initializePluginManager();
-      const libPath = isMac
-        ? path.resolve(__static, 'bytedance/libByteDancePlugin.dylib')
-        : path.resolve(__static, 'bytedance/ByteDancePlugin.dll');
-      if (
-        this.rtcEngine.registerPlugin({
-          id: 'bytedance',
-          path: libPath,
-        }) < 0
-      ) {
-        console.error(`load plugin failed`);
-      }
+
       this.subscribeEvents(this.rtcEngine);
       window.rtcEngine = this.rtcEngine;
     }
@@ -439,7 +429,12 @@ export default class App extends Component {
         // rtcEngine.videoSourceSetVideoProfile(50, false);
         // to adjust render dimension to optimize performance
         // rtcEngine.setVideoRenderDimension(3, SHARE_ID, 1200, 680);
-        rtcEngine.videoSourceJoin(token, this.state.channel, info, SHARE_ID);
+        rtcEngine.videoSourceJoin(token, this.state.channel, info, SHARE_ID, {
+          publishLocalAudio: true,
+          publishLocalVideo: true,
+          autoSubscribeAudio: false,
+          autoSubscribeVideo: false,
+        });
       } catch (err) {
         clearTimeout(timer);
         reject(err);
