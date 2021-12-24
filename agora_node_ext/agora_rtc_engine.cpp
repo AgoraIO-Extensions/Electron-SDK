@@ -1885,6 +1885,7 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceJoin) {
     NodeRtcEngine* pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
+    Isolate* isolate = args.GetIsolate();
     NodeString key, name, chan_info;
     uid_t uid;
     napi_status status = napi_get_value_nodestring_(args[0], key);
@@ -1898,8 +1899,42 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceJoin) {
 
     status = NodeUid::getUidFromNodeValue(args[3], uid);
     CHECK_NAPI_STATUS(pEngine, status);
+
+    Local<Value> vChannelMediaOptions = args[4];
+    Local<Object> oChannelMediaOptions;
+    ChannelMediaOptions options;
+    options.autoSubscribeAudio = false;
+    options.autoSubscribeVideo = false;
+    options.publishLocalAudio = false;
+    options.publishLocalVideo = true;
+    if (vChannelMediaOptions->IsObject()) {
+      // with options
+      status = napi_get_value_object_(isolate, vChannelMediaOptions,
+                                      oChannelMediaOptions);
+      CHECK_NAPI_STATUS(pEngine, status);
+
+      status = napi_get_object_property_bool_(isolate, oChannelMediaOptions,
+                                              "autoSubscribeAudio",
+                                              options.autoSubscribeAudio);
+      CHECK_NAPI_STATUS(pEngine, status);
+      status = napi_get_object_property_bool_(isolate, oChannelMediaOptions,
+                                              "autoSubscribeVideo",
+                                              options.autoSubscribeVideo);
+      CHECK_NAPI_STATUS(pEngine, status);
+
+      status = napi_get_object_property_bool_(isolate, oChannelMediaOptions,
+                                              "publishLocalAudio",
+                                              options.publishLocalAudio);
+      CHECK_NAPI_STATUS(pEngine, status);
+
+      status = napi_get_object_property_bool_(isolate, oChannelMediaOptions,
+                                              "publishLocalVideo",
+                                              options.publishLocalVideo);
+      CHECK_NAPI_STATUS(pEngine, status);
+    }
+
     if (pEngine->m_videoSourceSink.get()) {
-      pEngine->m_videoSourceSink->join(key, name, chan_info, uid);
+      pEngine->m_videoSourceSink->join(key, name, chan_info, uid, options);
       result = 0;
     }
   } while (false);

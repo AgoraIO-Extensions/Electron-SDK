@@ -88,10 +88,7 @@ class AgoraVideoSource : public AgoraIpcListener {
   agora::rtc::VIDEO_PROFILE_TYPE getVideoProfile();
 
  protected:
-  bool joinChannel(const char* key,
-                   const char* name,
-                   const char* chanInfo,
-                   agora::rtc::uid_t uid);
+  bool joinChannel(JoinChannelCmd* cmd);
   void notifyJoinedChannel(agora::rtc::uid_t uid);
   void notifyLeaveChannel();
   void notifyRequestNewToken();

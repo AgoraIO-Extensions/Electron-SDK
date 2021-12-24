@@ -182,7 +182,14 @@ struct JoinChannelCmd {
   char cname[MAX_CNAME_LEN];
   char chan_info[MAX_CHAN_INFO];
   agora::rtc::uid_t uid;
-  JoinChannelCmd() : token{0}, cname{0}, chan_info{0}, uid{0} {}
+  bool autoSubscribeAudio;
+  bool autoSubscribeVideo;
+  bool publishLocalAudio;
+  bool publishLocalVideo;
+  JoinChannelCmd()
+      : token{0}, cname{0}, chan_info{0}, uid{0}, autoSubscribeAudio{false},
+        autoSubscribeVideo{false}, publishLocalAudio{false}, publishLocalVideo{
+                                                                 true} {}
 };
 
 /**
