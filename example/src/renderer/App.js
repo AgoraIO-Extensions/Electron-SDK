@@ -542,7 +542,7 @@ export default class App extends Component {
     let list = rtcEngine.getScreenCaptureSources(
       { width: 400, height: 400 },
       { width: 400, height: 400 },
-      true
+      false
     );
     Promise.all(list.map(item => readImage(item.thumbImage.buffer))).then(
       imageList => {
