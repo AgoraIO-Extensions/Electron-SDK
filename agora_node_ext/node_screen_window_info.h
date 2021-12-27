@@ -82,6 +82,8 @@ void ConvertRGBToBMP(unsigned char *RGBBuffer, BufferInfo &bufferInfo,
 
 #if defined(_WIN32)
 void DestroyGdiplus();
+void ConvertRGBToBMP(void *srcRGBABuffer, BufferInfo &bufferInfo, int32_t width,
+                     int32_t height);
 #endif
 
 #endif /* AGORA_SCREEN_WINDOW_INFO_H */
