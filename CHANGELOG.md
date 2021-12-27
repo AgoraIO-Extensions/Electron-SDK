@@ -1,3 +1,6 @@
+## 3.4.11-build.1228(Dec 28th, 2021)
+* fix ConvertRGBToBMP
+
 ## 3.4.11-build.1207(Dec 7th, 2021)
 * add new api:
   - videoSourceMuteRemoteAudioStream
