@@ -77,9 +77,9 @@ struct ScreenWindowInfo {
 
 std::vector<ScreenDisplayInfo> getAllDisplayInfo();
 std::vector<ScreenWindowInfo> getAllWindowInfo();
-void ConvertRGBToBMP(unsigned char *RGBBuffer, BufferInfo &bufferInfo,
-                     unsigned int ImageWidth, unsigned int ImageHeight);
 
+void ConvertRGBToBMP(void *srcRGBABuffer, BufferInfo &bufferInfo, int32_t width,
+                     int32_t height);
 #if defined(_WIN32)
 void DestroyGdiplus();
 #endif
