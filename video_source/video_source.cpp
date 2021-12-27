@@ -284,7 +284,7 @@ void AgoraVideoSource::onMessage(unsigned int msg,
     LOG_INFO("%s    msg: %s", __FUNCTION__, "AGORA_IPC_JOIN");
     if (payload) {
       JoinChannelCmd* cmd = (JoinChannelCmd*)payload;
-      joinChannel(cmd->token, cmd->cname, cmd->chan_info, cmd->uid);
+      joinChannel(cmd);
     }
   } else if (msg == AGORA_IPC_CAPTURE_SCREEN) {
     LOG_INFO("%s    msg: %s", __FUNCTION__, "AGORA_IPC_CAPTURE_SCREEN");
@@ -521,17 +521,16 @@ void AgoraVideoSource::onMessage(unsigned int msg,
   LOG_LEAVE;
 }
 
-bool AgoraVideoSource::joinChannel(const char* key,
-                                   const char* name,
-                                   const char* chanInfo,
-                                   agora::rtc::uid_t uid) {
+bool AgoraVideoSource::joinChannel(JoinChannelCmd* cmd) {
+
   agora::rtc::ChannelMediaOptions options;
-  options.autoSubscribeAudio = false;
-  options.autoSubscribeVideo = false;
-  options.publishLocalAudio = false;
-  options.publishLocalVideo = true;
-  return m_rtcEngine->joinChannel(key ? key : "", name ? name : "",
-                                  chanInfo ? chanInfo : "", uid, options);
+  options.autoSubscribeAudio = cmd->autoSubscribeAudio;
+  options.autoSubscribeVideo = cmd->autoSubscribeVideo;
+  options.publishLocalAudio = cmd->publishLocalAudio;
+  options.publishLocalVideo = cmd->publishLocalVideo;
+  return m_rtcEngine->joinChannel(
+      cmd->token ? cmd->token : "", cmd->cname ? cmd->cname : "",
+      cmd->chan_info ? cmd->chan_info : "", cmd->uid, options);
 }
 
 void AgoraVideoSource::exit(bool notifySink) {
