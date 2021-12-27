@@ -7,13 +7,13 @@
 #include <CoreServices/CoreServices.h>
 #include <ImageIO/ImageIO.h>
 
-void ConvertRGBToBMP(unsigned char *RGBBuffer, BufferInfo &bufferInfo,
-                     unsigned int ImageWidth, unsigned int ImageHeight) {
+void ConvertRGBToBMP(void *srcRGBABuffer, BufferInfo &bufferInfo, int32_t width,
+                     int32_t height) {
   CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
   CGContextRef bitmapContext =
-      CGBitmapContextCreate(RGBBuffer, ImageWidth, ImageHeight,
-                            8,              // bitsPerComponent
-                            4 * ImageWidth, // bytesPerRow
+      CGBitmapContextCreate(srcRGBABuffer, width, height,
+                            8,         // bitsPerComponent
+                            4 * width, // bytesPerRow
                             colorSpace, kCGImageAlphaPremultipliedLast);
 
   CFRelease(colorSpace);

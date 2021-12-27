@@ -1,3 +1,11 @@
+## 3.6.0-build.1230(Dec 29th, 2021)
+- fix 
+  - ConvertRGBToBMP for c++
+  - videoSourceRelease
+- modify
+  - getScreenWindowInfo for chinese
+  - videoSourceJoin
+
 ## 3.6.0-build.1216(Dec 16th, 2021)
 * add new api:
   - videoSourceDisableAudio
