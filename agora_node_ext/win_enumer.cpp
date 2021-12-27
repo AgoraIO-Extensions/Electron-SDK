@@ -104,8 +104,11 @@ BOOL WINAPI WindowEnumCallback(HWND hwnd,
     ::GetClassName(hwnd, class_name, MAX_PATH);
 
     TCHAR window_name[MAX_PATH]{ 0 };
-    ::GetWindowText(hwnd, window_name, MAX_PATH);
+    WCHAR szName[MAX_PATH] = { 0 };
+    ::GetWindowTextW(hwnd, szName, MAX_PATH);
 
+    ::WideCharToMultiByte(CP_UTF8, 0, szName, wcslen(szName), window_name, MAX_PATH,
+      NULL, NULL);
     if (_tcscmp(class_name, "TaskManagerWindow") == 0)
       break;
 
