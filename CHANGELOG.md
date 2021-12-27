@@ -1,6 +1,14 @@
 ## 3.6.0-rtc.2-build.1219(Dec 18th, 2021)
 - update native sdk
 
+## 3.6.0-build.1230(Dec 29th, 2021)
+- fix 
+  - ConvertRGBToBMP for c++
+  - videoSourceRelease
+- modify
+  - getScreenWindowInfo for chinese
+  - videoSourceJoin
+
 ## 3.6.0-build.1216(Dec 16th, 2021)
 * add new api:
   - setLowlightEnhanceOptions
