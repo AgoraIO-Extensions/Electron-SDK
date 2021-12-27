@@ -95,7 +95,9 @@ std::vector<ScreenWindowInfo> getAllWindowInfo();
 
 #if defined(_WIN32)
 void DestroyGdiplus();
-void ConvertRGBToBMP(unsigned char* RGBBuffer, BufferInfo& bufferInfo, unsigned int ImageWidth, unsigned int ImageHeight);
+void ConvertRGBToBMP(void *srcRGBABuffer, BufferInfo &bufferInfo, int32_t width,
+                     int32_t height);
+
 #else
 unsigned long  NSNumberToLong(void *nsNumber);
 #endif

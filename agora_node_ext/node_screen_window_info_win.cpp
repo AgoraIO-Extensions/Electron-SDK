@@ -715,33 +715,43 @@ std::vector<ScreenDisplayInfo> getAllDisplayInfo()
 	return _display_infos;
 }
 
-void ConvertRGBToBMP(unsigned char* RGBBuffer, BufferInfo & bufferInfo, unsigned int ImageWidth, unsigned int ImageHeight)
-{
-  unsigned long bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + ImageWidth * ImageHeight * 4;;
-  bufferInfo.buffer = new unsigned char[bfSize];
-  BITMAPFILEHEADER* BmpFileHeader = (BITMAPFILEHEADER*)bufferInfo.buffer;//填充BMP文件头信息
-  BmpFileHeader->bfType = ((WORD)('M' << 8) | 'B');
-  BmpFileHeader->bfSize = bfSize;
-  bufferInfo.length = bfSize;
-  BmpFileHeader->bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
-  BmpFileHeader->bfReserved1 = 0;
-  BmpFileHeader->bfReserved2 = 0;
+void ConvertRGBToBMP(void *srcRGBABuffer, BufferInfo &bufferInfo, int32_t width,
+                     int32_t height) {
+  DWORD bits = 32;
 
-  BITMAPINFOHEADER* BmpInfoHeader = (BITMAPINFOHEADER*)((unsigned char*)bufferInfo.buffer + sizeof(BITMAPFILEHEADER));
+  BITMAPFILEHEADER bfh;
+  ZeroMemory(&bfh, sizeof(BITMAPFILEHEADER));
+  bfh.bfType = ((WORD)('M' << 8) | 'B');
+  bfh.bfSize = 0;
+  bfh.bfReserved2 = 0;
+  bfh.bfReserved1 = 0;
+  bfh.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
+  BITMAPINFO BitmapInfo;
+  BitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  BitmapInfo.bmiHeader.biPlanes = 1;
+  BitmapInfo.bmiHeader.biBitCount = bits;
+  BitmapInfo.bmiHeader.biCompression = BI_RGB;
+  BitmapInfo.bmiHeader.biSizeImage = 0;
+  BitmapInfo.bmiHeader.biXPelsPerMeter = 0;
+  BitmapInfo.bmiHeader.biYPelsPerMeter = 0;
+  BitmapInfo.bmiHeader.biClrUsed = 0;
+  BitmapInfo.bmiHeader.biClrImportant = 0;
+  BitmapInfo.bmiHeader.biWidth = width;
+  BitmapInfo.bmiHeader.biHeight = (long)(-height);
+  int dwPitch = width * bits / 8;
+  while (dwPitch % 4 != 0)
+    dwPitch++;
+  unsigned int rawDataLength = height * dwPitch;
 
-  BmpInfoHeader->biSize = sizeof(BITMAPINFOHEADER);
-  BmpInfoHeader->biWidth = ImageWidth;
-  BmpInfoHeader->biHeight = -ImageHeight;
-  BmpInfoHeader->biPlanes = 1;
-  BmpInfoHeader->biBitCount = 32;//RGB图像
-  BmpInfoHeader->biCompression = BI_RGB;
-  BmpInfoHeader->biSizeImage = 0;
-  BmpInfoHeader->biXPelsPerMeter = 0;
-  BmpInfoHeader->biYPelsPerMeter = 0;
-  BmpInfoHeader->biClrUsed = 0;
-  BmpInfoHeader->biClrImportant = 0;
-
-  void* ImageBufferHeader = (void*)((unsigned char*)BmpInfoHeader + sizeof(BITMAPINFOHEADER));
-
-  memcpy(ImageBufferHeader, RGBBuffer, ImageWidth * ImageHeight * 4);
+  bufferInfo.buffer =
+      new unsigned char[sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) +
+                        rawDataLength];
+  bufferInfo.length =
+      sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + rawDataLength;
+  memcpy(bufferInfo.buffer, &bfh, sizeof(BITMAPFILEHEADER));
+  memcpy(bufferInfo.buffer + sizeof(BITMAPFILEHEADER), &BitmapInfo,
+         sizeof(BITMAPINFOHEADER));
+  memcpy(bufferInfo.buffer + sizeof(BITMAPFILEHEADER) +
+             sizeof(BITMAPINFOHEADER),
+         srcRGBABuffer, rawDataLength);
 }
