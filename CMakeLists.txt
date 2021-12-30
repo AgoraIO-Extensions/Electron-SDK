@@ -228,20 +228,6 @@ function(build_target_agora_node_ext)
                set(CMAKE_INSTALL_RPATH "\${ORIGIN}")
                message(=======CMAKE_JS_LIB=${CMAKE_JS_LIB} =====origin_path==== ${ORIGIN} === RTC === ${AGORA_RTC_SDK_LIB} == IRIs == ${AGORA_IRIS_SDK_LIB})
 
-                add_library(libagora-ffmpeg SHARED IMPORTED)
-                set_target_properties(
-                        libagora-ffmpeg
-                        PROPERTIES IMPORTED_LOCATION
-                        ${AGORA_RTC_SDK_PATH}/x86_64/libagora-ffmpeg.so
-                        )
-                
-                add_library(libagora_rtc_sdk SHARED IMPORTED)
-                set_target_properties(
-                        libagora_rtc_sdk
-                        PROPERTIES IMPORTED_LOCATION
-                        ${AGORA_RTC_SDK_PATH}/x86_64/libagora_rtc_sdk.so
-                        )
-
                 add_library(libagora_iris_sdk SHARED IMPORTED)
                 set_target_properties(
                         libagora_iris_sdk
@@ -260,8 +246,6 @@ function(build_target_agora_node_ext)
                         )
                 target_link_libraries(${AGORA_NODE_EXT_NAME}
                         PRIVATE
-                        libagora-ffmpeg
-                        libagora_rtc_sdk
                         libagora_iris_sdk
                         )
         endif()
