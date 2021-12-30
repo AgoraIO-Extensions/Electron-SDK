@@ -39,6 +39,7 @@ public:
      */
     AgoraVideoSource(const std::string& param);
     ~AgoraVideoSource();
+    void exit(bool notifySink);
 
     /**
      * To run video source, including following two steps:
@@ -95,8 +96,7 @@ protected:
     void notifyLocalVideoStateChanged(agora::rtc::LOCAL_VIDEO_STREAM_STATE localVideoState, agora::rtc::LOCAL_VIDEO_STREAM_ERROR error);
     void notifyLocalAudioStateChanged(agora::rtc::LOCAL_AUDIO_STREAM_STATE state, agora::rtc::LOCAL_AUDIO_STREAM_ERROR error);
     void setProcessDpiAwareness();
-private:
-    void exit(bool notifySink);
+    
 private:
     /** Used to process RTC events. */
     std::unique_ptr<AgoraVideoSourceEventHandler> m_eventHandler;
