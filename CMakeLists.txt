@@ -11,7 +11,6 @@ message(====agora_electron_sdk==== build config: build_type=${BUILD_TYPE}, CMAKE
 set(AGORA_NODE_EXT_NAME agora_node_ext)  
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/${BUILD_TYPE})
 
-
 message(=====Node js include ===== ${CMAKE_JS_SRC} == lib === ${CMAKE_JS_LIB} )
 
 # source code path
@@ -172,7 +171,7 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
                 ${CMAKE_CURRENT_SOURCE_DIR}/iris
                 )
         file(GLOB AGORA_IRIS_SDK_LIBRARY
-                ${AGORA_IRIS_SDK_PATH}/x86_64/*.so
+                ${AGORA_IRIS_SDK_PATH}/x86_64/*
                 )
         # iris sdk include file
         set(AGORA_IRIS_SDK_HEADER_FILE_DIR 
@@ -224,8 +223,11 @@ function(build_target_agora_node_ext)
                         Rpcrt4.lib
                         ws2_32.lib
                         )
-        message(=======CMAKE_JS_LIB=${CMAKE_JS_LIB} === RTC === ${AGORA_RTC_SDK_LIB} == IRIs == ${AGORA_IRIS_SDK_LIB})
         elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+               set(CMAKE_BUILD_WITH_INSTALL_RPATH true)
+               set(CMAKE_INSTALL_RPATH "\${ORIGIN}")
+               message(=======CMAKE_JS_LIB=${CMAKE_JS_LIB} =====origin_path==== ${ORIGIN} === RTC === ${AGORA_RTC_SDK_LIB} == IRIs == ${AGORA_IRIS_SDK_LIB})
+
                 add_library(libagora-ffmpeg SHARED IMPORTED)
                 set_target_properties(
                         libagora-ffmpeg
@@ -246,7 +248,7 @@ function(build_target_agora_node_ext)
                         PROPERTIES IMPORTED_LOCATION
                         ${AGORA_IRIS_SDK_PATH}/x86_64/libAgoraRtcWrapper.so
                         )
-
+                
                 add_library(${AGORA_NODE_EXT_NAME} SHARED
                         ${COMMON_FILE1}
                         ${COMMON_FILE2}
@@ -256,7 +258,6 @@ function(build_target_agora_node_ext)
                         ${PLATFORM_LINUX_FILE}
                         ${CMAKE_JS_SRC}
                         )
-                        
                 target_link_libraries(${AGORA_NODE_EXT_NAME}
                         PRIVATE
                         libagora-ffmpeg
