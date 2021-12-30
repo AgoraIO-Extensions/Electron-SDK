@@ -6,7 +6,7 @@ project(agora-electron-dcg-sdk)
 include_directories(${CMAKE_JS_INC})
 set(BUILD_TYPE ${CMAKE_BUILD_TYPE})
 
-message(====agora_electron_sdk==== build config: build_type=${BUILD_TYPE}, arch: ${CMAKE_OSX_ARCHITECTURES}, platform: ${CMAKE_SYSTEM_NAME})
+message(====agora_electron_sdk==== build config: build_type=${BUILD_TYPE}, CMAKE_JS_INC==${CMAKE_JS_INC} arch: ${CMAKE_OSX_ARCHITECTURES}, platform: ${CMAKE_SYSTEM_NAME})
 # library name
 set(AGORA_NODE_EXT_NAME agora_node_ext)  
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/${BUILD_TYPE})
@@ -44,6 +44,10 @@ set(PLATFORM_MAC_FILE
 
 set(PLATFORM_WIN_FILE 
         ${SOURCE_CODE_PATH}/window_Info/node_screen_window_info_win.cpp
+        )
+
+set(PLATFORM_LINUX_FILE
+        ${SOURCE_CODE_PATH}/window_Info/node_screen_linux_info.cpp
         )
 
 # different target file
@@ -142,6 +146,39 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
         set(AGORA_IRIS_SDK_HEADER_FILE_DIR 
                 ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/include
                 )
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+        # if(${CMAKE_OSX_ARCHITECTURES} STREQUAL "i386")
+        #         set(AGORA_RTC_PROJECT_ARCH "x86")
+        #         set(AGORA_IRIS_PROJECT_ARCH "Win32")
+        #         elseif(${CMAKE_OSX_ARCHITECTURES} STREQUAL "x86_64")
+        #         set(AGORA_RTC_PROJECT_ARCH "x86_64")
+        #         set(AGORA_IRIS_PROJECT_ARCH "x64")
+        # endif()
+
+        # native rtc sdk path
+        set(AGORA_RTC_SDK_PATH 
+                ${CMAKE_CURRENT_SOURCE_DIR}/iris/RTC/sdk
+                )
+
+        file(GLOB AGORA_RTC_SDK_LIBRARY
+                ${AGORA_RTC_SDK_PATH}/x86_64/*.so
+                )
+
+        set(AGORA_RTC_SDK_HEADER_FILE_DIR 
+                ${AGORA_RTC_SDK_PATH}/high_level_api/include
+                )
+        # iris sdk path
+        set(AGORA_IRIS_SDK_PATH 
+                ${CMAKE_CURRENT_SOURCE_DIR}/iris
+                )
+        file(GLOB AGORA_IRIS_SDK_LIBRARY
+                ${AGORA_IRIS_SDK_PATH}/x86_64/*.so
+                )
+        # iris sdk include file
+        set(AGORA_IRIS_SDK_HEADER_FILE_DIR 
+                ${AGORA_IRIS_SDK_PATH}/include
+                )
+
 endif()
 
 file(GLOB COMMON_FILE1 
@@ -188,6 +225,44 @@ function(build_target_agora_node_ext)
                         ws2_32.lib
                         )
         message(=======CMAKE_JS_LIB=${CMAKE_JS_LIB} === RTC === ${AGORA_RTC_SDK_LIB} == IRIs == ${AGORA_IRIS_SDK_LIB})
+        elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+                add_library(libagora-ffmpeg SHARED IMPORTED)
+                set_target_properties(
+                        libagora-ffmpeg
+                        PROPERTIES IMPORTED_LOCATION
+                        ${AGORA_RTC_SDK_PATH}/x86_64/libagora-ffmpeg.so
+                        )
+                
+                add_library(libagora_rtc_sdk SHARED IMPORTED)
+                set_target_properties(
+                        libagora_rtc_sdk
+                        PROPERTIES IMPORTED_LOCATION
+                        ${AGORA_RTC_SDK_PATH}/x86_64/libagora_rtc_sdk.so
+                        )
+
+                add_library(libagora_iris_sdk SHARED IMPORTED)
+                set_target_properties(
+                        libagora_iris_sdk
+                        PROPERTIES IMPORTED_LOCATION
+                        ${AGORA_IRIS_SDK_PATH}/x86_64/libAgoraRtcWrapper.so
+                        )
+
+                add_library(${AGORA_NODE_EXT_NAME} SHARED
+                        ${COMMON_FILE1}
+                        ${COMMON_FILE2}
+                        ${COMMON_FILE} 
+                        ${COMMON_RAW_DATA_FILE} 
+                        ${TARGET_AGORA_NODE_EXT_FILE} 
+                        ${PLATFORM_LINUX_FILE}
+                        ${CMAKE_JS_SRC}
+                        )
+                        
+                target_link_libraries(${AGORA_NODE_EXT_NAME}
+                        PRIVATE
+                        libagora-ffmpeg
+                        libagora_rtc_sdk
+                        libagora_iris_sdk
+                        )
         endif()
         target_include_directories(${AGORA_NODE_EXT_NAME} PUBLIC 
                 ${NODE_ADDON_API_DIR}
