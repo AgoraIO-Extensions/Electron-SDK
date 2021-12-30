@@ -40,7 +40,7 @@ class AgoraVideoSource : public AgoraIpcListener {
    */
   AgoraVideoSource(const std::string& param);
   ~AgoraVideoSource();
-
+  void exit(bool notifySink);
   /**
    * To run video source, including following two steps:
    * 1) To start monitor thread, when the sink process exit, video source
@@ -108,9 +108,6 @@ class AgoraVideoSource : public AgoraIpcListener {
 
   /* meeting */
   void notifyScreenCaptureInfoUpdated(const char *cardType, int errCode);
-
-private:
-  void exit(bool notifySink);
 
  private:
   /** Used to process RTC events. */
