@@ -1,3 +1,7 @@
+## 3.6.0-build.1231(Dec 31th, 2021)
+- fix 
+  -  videoSource process killed after main process killed
+
 ## 3.6.0-build.1230(Dec 29th, 2021)
 - fix 
   - ConvertRGBToBMP for c++
