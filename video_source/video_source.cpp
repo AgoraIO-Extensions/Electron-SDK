@@ -545,6 +545,7 @@ void AgoraVideoSource::exit(bool notifySink) {
   LOG_F(INFO, "VideoSource::release");
   m_rtcEngine->release(true);
   LOG_F(INFO, "VideoSource::exit");
+  stopLogService();
   ::exit(0);
 }
 
@@ -604,6 +605,5 @@ void run(std::string param) {
   auto videoSource = new AgoraVideoSource(param);
   videoSource->initialize();
   videoSource->run();
-  videoSource->release();
-  stopLogService();
+  videoSource->exit(true);
 }
