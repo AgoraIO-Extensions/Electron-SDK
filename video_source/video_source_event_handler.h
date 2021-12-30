@@ -79,7 +79,7 @@ class AgoraVideoSourceEventHandler : public IRtcEngineEventHandler {
       LOCAL_VIDEO_STREAM_STATE localVideoState,
       LOCAL_VIDEO_STREAM_ERROR error) override;
 #if defined(_WIN32)
-    // virtual void onScreenCaptureInfoUpdated(agora::rtc::ScreenCaptureInfo& info)  override;
+    virtual void onScreenCaptureInfoUpdated(agora::rtc::ScreenCaptureInfo& info)  override;
 #endif
  private:
   AgoraVideoSource& m_videoSource;
