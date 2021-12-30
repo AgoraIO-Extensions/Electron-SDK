@@ -10,7 +10,7 @@
 #endif
 #define IMAGE_MAX_PIXEL_SIZE 500
 
-#if defined(__APPLE__)
+#if defined(__APPLE__) || defined(__linux__)
 struct DisplayID {
   unsigned int idVal;
 
@@ -54,7 +54,7 @@ struct ScreenDisplayInfo {
 };
 
 struct ScreenWindowInfo {
-#if defined(__APPLE__)
+#if defined(__APPLE__) || defined(__linux__)
   unsigned int windowId;
   int processId;
   int currentProcessId;

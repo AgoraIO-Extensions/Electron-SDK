@@ -318,7 +318,7 @@ napi_value NodeIrisRtcEngine::GetScreenWindowsInfo(napi_env env,
     napi_create_object(env, &obj);
 #ifdef _WIN32
     UINT32 windowId = (UINT32)_windowInfo.windowId;
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) || (__linux__)
     unsigned int windowId = _windowInfo.windowId;
 #endif
 
@@ -481,7 +481,7 @@ napi_value NodeIrisRtcEngine::EnableVideoFrameCache(napi_env env,
     LOG_F(INFO, "IrisVideoFrameBufferManager Not Init");
   } else {
     try {
-      iris::IrisVideoFrameBuffer buffer(VideoFrameType::kVideoFrameTypeYUV420, nullptr, width, height);
+      iris::IrisVideoFrameBuffer buffer(IrisVideoFrameType::kVideoFrameTypeYUV420, nullptr, width, height);
       nodeIrisRtcEngine->_iris_video_frame_buffer_manager->EnableVideoFrameBuffer(buffer, uid,
                                                      channelId.c_str());
       ret = ERROR_OK;
