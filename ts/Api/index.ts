@@ -6633,9 +6633,9 @@ class AgoraRtcEngine extends EventEmitter {
    *  - `ERR_INVALID_ARGUMENT(-2)`: url is null or the string length is 0.
    *  - `ERR_NOT_INITIALIZED(-7)`: The SDK is not initialized before calling this method.
    */
-  startRtmpStreamWithoutTranscoding(url: string): number {
-    return this.rtcEngine.startRtmpStreamWithoutTranscoding(url);
-  }
+  // startRtmpStreamWithoutTranscoding(url: string): number {
+  //   return this.rtcEngine.startRtmpStreamWithoutTranscoding(url);
+  // }
   /**
    * Starts pushing media streams to a CDN and sets the transcoding configuration.
    *
@@ -6667,12 +6667,12 @@ class AgoraRtcEngine extends EventEmitter {
    *  - `ERR_INVALID_ARGUMENT(-2)`: url is null or the string length is 0.
    *  - `ERR_NOT_INITIALIZED(-7)`: The SDK is not initialized before calling this method.
    */
-  startRtmpStreamWithTranscoding(
-    url: string,
-    transcoding: TranscodingConfig
-  ): number {
-    return this.rtcEngine.startRtmpStreamWithTranscoding(url, transcoding);
-  }
+  // startRtmpStreamWithTranscoding(
+  //   url: string,
+  //   transcoding: TranscodingConfig
+  // ): number {
+  //   return this.rtcEngine.startRtmpStreamWithTranscoding(url, transcoding);
+  // }
   /**
    * Updates the transcoding configuration.
    *
@@ -6688,9 +6688,9 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  updateRtmpTranscoding(transcoding: TranscodingConfig): number {
-    return this.rtcEngine.updateRtmpTranscoding(transcoding);
-  }
+  // updateRtmpTranscoding(transcoding: TranscodingConfig): number {
+  //   return this.rtcEngine.updateRtmpTranscoding(transcoding);
+  // }
   /**
    * Stops pushing media streams to a CDN.
    *
@@ -6708,12 +6708,12 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  stopRtmpStream(url: string): number {
-    return this.rtcEngine.stopRtmpStream(url);
-  }
-  setAVSyncSource(channelId: string, uid: number): number {
-    return this.rtcEngine.setAVSyncSource(channelId, uid);
-  }
+  // stopRtmpStream(url: string): number {
+  //   return this.rtcEngine.stopRtmpStream(url);
+  // }
+  // setAVSyncSource(channelId: string, uid: number): number {
+  //   return this.rtcEngine.setAVSyncSource(channelId, uid);
+  // }
   /**
    * Sets the audio playback device used by the SDK to follow the system default audio playback device.
    *
@@ -6727,9 +6727,9 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  followSystemPlaybackDevice(enable: boolean): number {
-    return this.rtcEngine.followSystemPlaybackDevice(enable);
-  }
+  // followSystemPlaybackDevice(enable: boolean): number {
+  //   return this.rtcEngine.followSystemPlaybackDevice(enable);
+  // }
   /**
    * Sets the audio recording device used by the SDK to follow the system default audio recording device.
    *
@@ -6743,9 +6743,9 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  followSystemRecordingDevice(enable: boolean): number {
-    return this.rtcEngine.followSystemRecordingDevice(enable);
-  }
+  // followSystemRecordingDevice(enable: boolean): number {
+  //   return this.rtcEngine.followSystemRecordingDevice(enable);
+  // }
   /**
    * Gets a list of shareable screens and windows.
    *

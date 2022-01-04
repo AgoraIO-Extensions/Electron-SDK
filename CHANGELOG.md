@@ -1,38 +1,12 @@
-## 3.6.0-build.1231(Dec 31th, 2021)
-- fix 
-  -  videoSource process killed after main process killed
-
-## 3.6.0-build.1230(Dec 29th, 2021)
-- fix 
+## 3.5.2-rc.1-build.104(Jan 4th, 2022)
+- update native sdk
+- fix
+  - videoSource process killed after main process killed
   - ConvertRGBToBMP for c++
   - videoSourceRelease
 - modify
   - getScreenWindowInfo for chinese
   - videoSourceJoin
-
-## 3.6.0-build.1216(Dec 16th, 2021)
-* add new api:
-  - videoSourceDisableAudio
-  - adjustLoopbackSignalVolume
-  - videoSourceAdjustRecordingSignalVolume
-  - videoSourceAdjustLoopbackRecordingSignalVolume
-  - getDefaultAudioPlaybackDevices
-  - getDefaultAudioRecordingDevices
-  - getAudioTrackCount
-  - selectAudioTrack
-  - takeSnapshot
-  - startRtmpStreamWithoutTranscoding
-  - startRtmpStreamWithTranscoding
-  - updateRtmpTranscoding
-  - stopRtmpStream
-  - setAVSyncSource
-  - followSystemPlaybackDevice
-  - followSystemRecordingDevice
-  - getScreenCaptureSources
-* modify
- - setBeautyEffectOptions
-* add event:
-  - videoSourceScreenCaptureInfoUpdated(For windows)
 
 ## 3.4.11-build.1202(Dec 2th, 2021)
 * remove getAudioMixingFileDuration
