@@ -91,7 +91,7 @@ import {
 import { EngineEvents } from "../Common/JSEvents";
 import { NativeEngineEvents } from "../Common/NativeEvents";
 
-const agora = require("/Users/jerry/Projects/Agora/Electron-SDK-iris/build/Release/agora_node_ext");
+const agora = require("../../build/Release/agora_node_ext");
 
 /**
  * The AgoraRtcEngine class.
