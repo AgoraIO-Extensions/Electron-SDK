@@ -567,8 +567,7 @@ void NodeChannelEventHandler::onChannelMediaRelayEvent(
 
 void NodeChannelEventHandler::onRtmpStreamingStateChanged(
     IChannel *rtcChannel, const char *url,
-    agora::rtc::RTMP_STREAM_PUBLISH_STATE state,
-    agora::rtc::RTMP_STREAM_PUBLISH_ERROR_TYPE errCode) {
+    agora::rtc::RTMP_STREAM_PUBLISH_STATE state, agora::rtc::RTMP_STREAM_PUBLISH_ERROR errCode) {
   FUNC_TRACE;
   std::string m_url(nullable(url));
   node_async_call::async_call([this, m_url, state, errCode] {

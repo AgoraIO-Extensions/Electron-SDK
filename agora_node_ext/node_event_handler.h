@@ -312,8 +312,7 @@ class NodeEventHandler : public IRtcEngineEventHandler,
 
   // 3.0.0
   virtual void onRtmpStreamingStateChanged(
-      const char *url, agora::rtc::RTMP_STREAM_PUBLISH_STATE state,
-      agora::rtc::RTMP_STREAM_PUBLISH_ERROR_TYPE errCode) override;
+      const char *url, agora::rtc::RTMP_STREAM_PUBLISH_STATE state, agora::rtc::RTMP_STREAM_PUBLISH_ERROR errCode) override;
 
   // 3.1.0
   virtual void onFirstLocalAudioFramePublished(int elapsed);
