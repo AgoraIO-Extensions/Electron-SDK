@@ -1,4 +1,4 @@
-## 3.5.2-rc.1-build.104(Jan 31th, 2022)
+## 3.5.2-rc.1-build.104(Jan 4th, 2022)
 - update native sdk
 ## 3.6.0-build.1231(Dec 31th, 2021)
 - fix 
