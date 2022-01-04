@@ -1,11 +1,7 @@
 ## 3.5.2-rc.1-build.104(Jan 4th, 2022)
 - update native sdk
-## 3.6.0-build.1231(Dec 31th, 2021)
-- fix 
-  -  videoSource process killed after main process killed
-
-## 3.6.0-build.1230(Dec 29th, 2021)
-- fix 
+- fix
+  - videoSource process killed after main process killed
   - ConvertRGBToBMP for c++
   - videoSourceRelease
 - modify
