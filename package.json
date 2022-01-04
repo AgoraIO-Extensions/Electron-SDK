@@ -22,7 +22,7 @@
     "build_windows_x64_debug": "cmake-js rebuild --arch=x64 --CDCMAKE_OSX_ARCHITECTURES=\"x86_64\" --CDCMAKE_BUILD_TYPE=Debug -G \"Visual Studio 16 2019\"",
     "build_windows_x64_release": "cmake-js rebuild --arch=x64 --CDCMAKE_OSX_ARCHITECTURES=\"x86_64\" --CDCMAKE_BUILD_TYPE=Release",
     "build_linux_debug": "cmake-js rebuild --arch=x64 --CDCMAKE_BUILD_TYPE=Debug -G \"Unix Makefiles\"",
-    "build_linux_release": "cmake-js rebuid --arch=x64 --CDCMAKE_BUILD_TYPE=Release -G \"Unix Makefiles\""
+    "build_linux_release": "cmake-js rebuild --arch=x64 --CDCMAKE_BUILD_TYPE=Release -G \"Unix Makefiles\""
   },
   "agora_electron": {
     "iris_sdk_win": "http://192.168.99.149:8086/CSDC_repo/iris_0.0.0_RTC_Windows_20211208_0632.zip",

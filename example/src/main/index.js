@@ -5,7 +5,9 @@ import * as path from 'path'
 import { format as formatUrl } from 'url'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
-
+if (process.platform === 'linux') {
+    app.disableHardwareAcceleration();
+}
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 let mainWindow
 app.allowRendererProcessReuse = true;

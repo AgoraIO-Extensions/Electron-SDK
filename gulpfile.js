@@ -1,5 +1,5 @@
 const { series } = require("gulp");
-const syncLib = require("./scripts/syncLib");
+const syncLib = require("./scripts/synclib");
 const build = require("./scripts/build");
 const getConfig = require("./scripts/getConfig");
 const dowmloadPrebuild = require("./scripts/dowmloadPrebuild");
