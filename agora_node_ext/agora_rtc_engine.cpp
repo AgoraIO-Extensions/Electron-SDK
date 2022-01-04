@@ -205,7 +205,7 @@ getLiveTranscoding(Local<Object> &obj,
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
       }
       transcoding->watermark = wkImages;
-      transcoding->watermarkCount = count;
+//      transcoding->watermarkCount = count;
     }
 
     v8::Array *backgroundImageArr;
@@ -253,7 +253,7 @@ getLiveTranscoding(Local<Object> &obj,
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
       }
       transcoding->backgroundImage = bgImages;
-      transcoding->backgroundImageCount = count;
+//      transcoding->backgroundImageCount = count;
     }
 
     v8::Array *usersValue;
@@ -7304,7 +7304,7 @@ NAPI_API_DEFINE(NodeRtcEngine, startRtmpStreamWithoutTranscoding) {
     napi_status status = napi_get_value_nodestring_(args[0], url);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    result = pEngine->m_engine->startRtmpStreamWithoutTranscoding(url);
+//    result = pEngine->m_engine->startRtmpStreamWithoutTranscoding(url);
 
   } while (false);
   napi_set_int_result(args, result);
@@ -7332,8 +7332,8 @@ NAPI_API_DEFINE(NodeRtcEngine, startRtmpStreamWithTranscoding) {
     if (liveTranscoding == nullptr) {
       break;
     }
-    result = pEngine->m_engine->startRtmpStreamWithTranscoding(
-        url, *liveTranscoding);
+//    result = pEngine->m_engine->startRtmpStreamWithTranscoding(
+//        url, *liveTranscoding);
     if (liveTranscoding->watermark) {
       delete[] liveTranscoding->watermark;
     }
@@ -7370,7 +7370,7 @@ NAPI_API_DEFINE(NodeRtcEngine, updateRtmpTranscoding) {
     if (liveTranscoding == nullptr) {
       break;
     }
-    result = pEngine->m_engine->updateRtmpTranscoding(*liveTranscoding);
+//    result = pEngine->m_engine->updateRtmpTranscoding(*liveTranscoding);
     if (liveTranscoding->watermark) {
       delete[] liveTranscoding->watermark;
     }
@@ -7401,7 +7401,7 @@ NAPI_API_DEFINE(NodeRtcEngine, stopRtmpStream) {
     napi_status status = napi_get_value_nodestring_(args[0], url);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    result = pEngine->m_engine->stopRtmpStream(url);
+//    result = pEngine->m_engine->stopRtmpStream(url);
 
   } while (false);
   napi_set_int_result(args, result);
@@ -7424,7 +7424,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setAVSyncSource) {
     status = napi_get_value_uid_t_(args[1], uid);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    result = pEngine->m_engine->setAVSyncSource(channelId, uid);
+//    result = pEngine->m_engine->setAVSyncSource(channelId, uid);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -7445,7 +7445,7 @@ NAPI_API_DEFINE(NodeRtcEngine, followSystemPlaybackDevice) {
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    result = pEngine->m_audioVdm->get()->followSystemPlaybackDevice(enable);
+//    result = pEngine->m_audioVdm->get()->followSystemPlaybackDevice(enable);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -7466,7 +7466,7 @@ NAPI_API_DEFINE(NodeRtcEngine, followSystemRecordingDevice) {
     if (!pEngine->m_audioVdm) {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
-    result = pEngine->m_audioVdm->get()->followSystemRecordingDevice(enable);
+//    result = pEngine->m_audioVdm->get()->followSystemRecordingDevice(enable);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
