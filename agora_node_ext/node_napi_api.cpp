@@ -763,6 +763,20 @@ napi_status napi_get_object_property_arraybuffer_(Isolate* isolate, const Local<
     memcpy(buffer, buf->GetContents().Data(), buf->GetContents().ByteLength());
     return napi_ok;
 }
+napi_status napi_get_value_arraybuffer_(const Local<Value> &value,
+                                        std::vector<uint8_t> &buffer,
+                                        uint32_t &length) {
+  if (!value->IsArrayBuffer()) {
+    return napi_invalid_arg;
+  }
+  auto localBuf = Local<v8::ArrayBuffer>::Cast(value);
+  auto buf = *localBuf;
+  std::shared_ptr<v8::BackingStore> backing = buf->GetBackingStore();
+  length = backing->ByteLength();
+  buffer.resize(length);
+  std::memcpy(&buffer[0], backing->Data(), length);
+  return napi_ok;
+}
 
 const char* nullable( char const* s)
 {

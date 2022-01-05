@@ -40,7 +40,8 @@ import {
   VideoEncoderConfiguration,
   UserInfo,
   Metadata,
-  ContentInspectExtraConfig
+  ContentInspectExtraConfig,
+  UInt8ArrayBuffer
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -4050,6 +4051,10 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.sendStreamMessage(streamId, msg);
   }
 
+  sendStreamMessageWithArrayBuffer(streamId: number, buffer: UInt8ArrayBuffer): number {
+    return this.rtcEngine.sendStreamMessageWithArrayBuffer(streamId, buffer);
+  }
+
   // ===========================================================================
   // CHANNEL MEDIA RELAY
   // ===========================================================================
@@ -6080,6 +6085,9 @@ class AgoraRtcChannel extends EventEmitter
 
   sendStreamMessage(streamId: number, msg: string): number {
     return this.rtcChannel.sendStreamMessage(streamId, msg);
+  }
+  sendStreamMessageWithArrayBuffer(streamId: number, buffer: UInt8ArrayBuffer): number {
+    return this.rtcChannel.sendStreamMessageWithArrayBuffer(streamId, buffer);
   }
 
   addPublishStreamUrl(url: string, transcodingEnabled: boolean): number {

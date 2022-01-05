@@ -92,7 +92,8 @@ namespace agora {
             NAPI_API(complain);
             NAPI_API(setEncryptionSecret);
             NAPI_API(createDataStream);
-            NAPI_API(sendStreamMessage);       
+            NAPI_API(sendStreamMessage);
+            NAPI_API(sendStreamMessageWithArrayBuffer);
             NAPI_API(setEncryptionMode);
 
             NAPI_API(configPublisher);
@@ -418,6 +419,7 @@ namespace agora {
             NAPI_API(setRemoteDefaultVideoStreamType);
             NAPI_API(createDataStream);
             NAPI_API(sendStreamMessage);
+            NAPI_API(sendStreamMessageWithArrayBuffer);
             NAPI_API(addPublishStreamUrl);
             NAPI_API(removePublishStreamUrl);
             NAPI_API(setLiveTranscoding);

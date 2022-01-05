@@ -1,3 +1,7 @@
+## 2.9.0-rc.106-build.105
+- add sendStreamMessageWithArrayBuffer
+- fix setLiveTranscoding of channel
+
 ## 2.9.0-rc.106-build.804
 * fix bug of playEffect()
 
