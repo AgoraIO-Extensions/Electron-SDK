@@ -6732,11 +6732,20 @@ namespace agora {
               napi_get_object_property_nodestring_(isolate, obj, "channelId", channelId);
               connection.channelId = channelId;
               napi_get_object_property_uint32_(isolate, obj, "localUid", connection.localUid);
+#if defined(_WIN32)
               result = engineEx->applyVideoOrientationToRemoteEx(uid, (VIDEO_ORIENTATION)orientation, connection);
+#else
+              result = 0;
+#endif
             }
             else
             {
+#if defined(_WIN32)
               result = engineEx->applyVideoOrientationToRemote(uid, (VIDEO_ORIENTATION)orientation);
+#else
+              result = 0;
+#endif
+            }
             }     
           } while (false);
           napi_set_int_result(args, result);
