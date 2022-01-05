@@ -68,6 +68,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setEncryptionSecret)
                 PROPERTY_METHOD_DEFINE(createDataStream)
                 PROPERTY_METHOD_DEFINE(sendStreamMessage)
+                PROPERTY_METHOD_DEFINE(sendStreamMessageWithArrayBuffer)
                 PROPERTY_METHOD_DEFINE(muteLocalAudioStream)
                 PROPERTY_METHOD_DEFINE(muteAllRemoteAudioStreams)
                 PROPERTY_METHOD_DEFINE(setDefaultMuteAllRemoteAudioStreams)
@@ -2905,6 +2906,29 @@ namespace agora {
                 napi_get_value_nodestring_(args[1], msg);
                 CHECK_NAPI_STATUS(pEngine, status);
                 result = pEngine->m_engine->sendStreamMessage(streamId, msg, strlen(msg));
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, sendStreamMessageWithArrayBuffer)
+        {
+            LOG_ENTER;
+            uint8_t * buffer;
+            int result = -1;
+            uint32_t length = 0;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                napi_status status = napi_ok;
+                int streamId;
+                status = napi_get_value_int32_(args[0], streamId);
+                CHECK_NAPI_STATUS(pEngine, status);
+                napi_get_value_arraybuffer_(args[1], buffer, length);
+                CHECK_NAPI_STATUS(pEngine, status);
+                result = pEngine->m_engine->sendStreamMessage(streamId, (const char*)buffer, length);
+                free(buffer);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -6059,7 +6083,7 @@ namespace agora {
 
                 Local<Name> keyName = String::NewFromUtf8(isolate, "watermark", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> wmValue = obj->Get(context, keyName).ToLocalChecked();
-                if (wmValue->IsNull() || !wmValue->IsObject()) {
+                if (!wmValue->IsNullOrUndefined()) {
                     Local<Object> objWm;
                     status = napi_get_value_object_(isolate, wmValue, objWm);
                     CHECK_NAPI_STATUS(pChannel, status);
@@ -6070,16 +6094,16 @@ namespace agora {
 
                     status = napi_get_object_property_int32_(isolate, objWm, "x", wkImage.x);
                     CHECK_NAPI_STATUS(pChannel, status);
-                    
+
                     status = napi_get_object_property_int32_(isolate, objWm, "y", wkImage.y);
                     CHECK_NAPI_STATUS(pChannel, status);
-                    
+
                     status = napi_get_object_property_int32_(isolate, objWm, "width", wkImage.width);
                     CHECK_NAPI_STATUS(pChannel, status);
                     
                     status = napi_get_object_property_int32_(isolate, objWm, "height", wkImage.height);
                     CHECK_NAPI_STATUS(pChannel, status);
-                    
+
                     transcoding.watermark = &wkImage;
                 }
 

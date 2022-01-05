@@ -2301,6 +2301,10 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
+  sendStreamMessageWithArrayBuffer(streamId: number, buffer: UInt8ArrayBuffer): number 
+  /**
+   * @ignore
+   */
   getEffectsVolume(): number;
   /**
    * @ignore
@@ -2834,3 +2838,5 @@ export interface ContentInspectExtraConfig {
    */
   featureRateCount: number;
 };
+
+export type UInt8ArrayBuffer = ArrayBufferLike;

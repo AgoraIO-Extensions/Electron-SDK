@@ -92,7 +92,8 @@ namespace agora {
             NAPI_API(complain);
             NAPI_API(setEncryptionSecret);
             NAPI_API(createDataStream);
-            NAPI_API(sendStreamMessage);       
+            NAPI_API(sendStreamMessage);
+            NAPI_API(sendStreamMessageWithArrayBuffer);
             NAPI_API(setEncryptionMode);
 
             NAPI_API(configPublisher);

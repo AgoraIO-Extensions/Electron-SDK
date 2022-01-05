@@ -40,7 +40,8 @@ import {
   VideoEncoderConfiguration,
   UserInfo,
   Metadata,
-  ContentInspectExtraConfig
+  ContentInspectExtraConfig,
+  UInt8ArrayBuffer
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -4048,6 +4049,10 @@ class AgoraRtcEngine extends EventEmitter {
    */
   sendStreamMessage(streamId: number, msg: string): number {
     return this.rtcEngine.sendStreamMessage(streamId, msg);
+  }
+
+  sendStreamMessageWithArrayBuffer(streamId: number, buffer: UInt8ArrayBuffer): number {
+    return this.rtcEngine.sendStreamMessageWithArrayBuffer(streamId, buffer);
   }
 
   // ===========================================================================
