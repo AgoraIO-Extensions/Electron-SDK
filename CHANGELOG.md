@@ -1,3 +1,7 @@
+## 3.4.11-rc.1-build.105(Dec 28th, 2021)
+* update native sdk
+* fix chinese for getScreenWindowInfo
+
 ## 3.4.11-build.1228(Dec 28th, 2021)
 * fix ConvertRGBToBMP
 
