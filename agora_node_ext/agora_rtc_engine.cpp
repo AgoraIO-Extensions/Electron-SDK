@@ -6745,7 +6745,6 @@ namespace agora {
 #else
               result = 0;
 #endif
-            }
             }     
           } while (false);
           napi_set_int_result(args, result);
