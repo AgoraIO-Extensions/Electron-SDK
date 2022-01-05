@@ -68,6 +68,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setEncryptionSecret)
                 PROPERTY_METHOD_DEFINE(createDataStream)
                 PROPERTY_METHOD_DEFINE(sendStreamMessage)
+                PROPERTY_METHOD_DEFINE(sendStreamMessageWithArrayBuffer)
                 PROPERTY_METHOD_DEFINE(muteLocalAudioStream)
                 PROPERTY_METHOD_DEFINE(muteAllRemoteAudioStreams)
                 PROPERTY_METHOD_DEFINE(setDefaultMuteAllRemoteAudioStreams)
@@ -2910,6 +2911,28 @@ namespace agora {
             LOG_LEAVE;
         }
 
+        NAPI_API_DEFINE(NodeRtcEngine, sendStreamMessageWithArrayBuffer)
+        {
+            LOG_ENTER;
+            std::vector<uint8_t> buffer;
+            int result = -1;
+            uint32_t length = 0;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                napi_status status = napi_ok;
+                int streamId;
+                status = napi_get_value_int32_(args[0], streamId);
+                CHECK_NAPI_STATUS(pEngine, status);
+                napi_get_value_arraybuffer_(args[1], buffer, length);
+                CHECK_NAPI_STATUS(pEngine, status);
+                result = pEngine->m_engine->sendStreamMessage(streamId, (const char*)buffer.data(), length);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
         NAPI_API_DEFINE(NodeRtcEngine, muteRemoteAudioStream)
         {
             LOG_ENTER;
@@ -5588,6 +5611,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setRemoteDefaultVideoStreamType)
                 PROPERTY_METHOD_DEFINE(createDataStream)
                 PROPERTY_METHOD_DEFINE(sendStreamMessage)
+                PROPERTY_METHOD_DEFINE(sendStreamMessageWithArrayBuffer)
                 PROPERTY_METHOD_DEFINE(addPublishStreamUrl)
                 PROPERTY_METHOD_DEFINE(removePublishStreamUrl)
                 PROPERTY_METHOD_DEFINE(setLiveTranscoding)
@@ -5985,6 +6009,27 @@ namespace agora {
             napi_set_int_result(args, result);
             LOG_LEAVE;
         }
+        NAPI_API_DEFINE(NodeRtcChannel, sendStreamMessageWithArrayBuffer)
+        {
+            LOG_ENTER;
+            std::vector<uint8_t> buffer;
+            int result = -1;
+            uint32_t length = 0;
+            do {
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+                napi_status status = napi_ok;
+                int streamId;
+                status = napi_get_value_int32_(args[0], streamId);
+                CHECK_NAPI_STATUS(pChannel, status);
+                napi_get_value_arraybuffer_(args[1], buffer, length);
+                CHECK_NAPI_STATUS(pChannel, status);
+                result = pChannel->m_channel->sendStreamMessage(streamId, (const char*)buffer.data(), length);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
 
         NAPI_API_CHANNEL_DEFINE_WRAPPER_2(addPublishStreamUrl, nodestring, bool);
         NAPI_API_CHANNEL_DEFINE_WRAPPER_1(removePublishStreamUrl, nodestring);
@@ -6059,7 +6104,7 @@ namespace agora {
 
                 Local<Name> keyName = String::NewFromUtf8(isolate, "watermark", NewStringType::kInternalized).ToLocalChecked();
                 Local<Value> wmValue = obj->Get(context, keyName).ToLocalChecked();
-                if (wmValue->IsNull() || !wmValue->IsObject()) {
+                if (!wmValue->IsNullOrUndefined()) {
                     Local<Object> objWm;
                     status = napi_get_value_object_(isolate, wmValue, objWm);
                     CHECK_NAPI_STATUS(pChannel, status);
@@ -6070,16 +6115,16 @@ namespace agora {
 
                     status = napi_get_object_property_int32_(isolate, objWm, "x", wkImage.x);
                     CHECK_NAPI_STATUS(pChannel, status);
-                    
+
                     status = napi_get_object_property_int32_(isolate, objWm, "y", wkImage.y);
                     CHECK_NAPI_STATUS(pChannel, status);
-                    
+
                     status = napi_get_object_property_int32_(isolate, objWm, "width", wkImage.width);
                     CHECK_NAPI_STATUS(pChannel, status);
                     
                     status = napi_get_object_property_int32_(isolate, objWm, "height", wkImage.height);
                     CHECK_NAPI_STATUS(pChannel, status);
-                    
+
                     transcoding.watermark = &wkImage;
                 }
 
