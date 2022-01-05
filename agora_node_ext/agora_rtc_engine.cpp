@@ -2914,7 +2914,7 @@ namespace agora {
         NAPI_API_DEFINE(NodeRtcEngine, sendStreamMessageWithArrayBuffer)
         {
             LOG_ENTER;
-            uint8_t * buffer;
+            std::vector<uint8_t> buffer;
             int result = -1;
             uint32_t length = 0;
             do {
@@ -2927,8 +2927,7 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
                 napi_get_value_arraybuffer_(args[1], buffer, length);
                 CHECK_NAPI_STATUS(pEngine, status);
-                result = pEngine->m_engine->sendStreamMessage(streamId, (const char*)buffer, length);
-                free(buffer);
+                result = pEngine->m_engine->sendStreamMessage(streamId, (const char*)buffer.data(), length);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
@@ -6013,7 +6012,7 @@ namespace agora {
         NAPI_API_DEFINE(NodeRtcChannel, sendStreamMessageWithArrayBuffer)
         {
             LOG_ENTER;
-            uint8_t * buffer;
+            std::vector<uint8_t> buffer;
             int result = -1;
             uint32_t length = 0;
             do {
@@ -6026,7 +6025,7 @@ namespace agora {
                 CHECK_NAPI_STATUS(pChannel, status);
                 napi_get_value_arraybuffer_(args[1], buffer, length);
                 CHECK_NAPI_STATUS(pChannel, status);
-                result = pChannel->m_channel->sendStreamMessage(streamId, (const char*)buffer, length);
+                result = pChannel->m_channel->sendStreamMessage(streamId, (const char*)buffer.data(), length);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;
