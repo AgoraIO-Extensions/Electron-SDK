@@ -771,10 +771,9 @@ napi_status napi_get_value_arraybuffer_(const Local<Value> &value,
   }
   auto localBuf = Local<v8::ArrayBuffer>::Cast(value);
   auto buf = *localBuf;
-  std::shared_ptr<v8::BackingStore> backing = buf->GetBackingStore();
-  length = backing->ByteLength();
+  length = buf->GetContents().ByteLength();
   buffer.resize(length);
-  std::memcpy(&buffer[0], backing->Data(), length);
+  std::memcpy(&buffer[0], buf->GetContents().Data(), length);
   return napi_ok;
 }
 
