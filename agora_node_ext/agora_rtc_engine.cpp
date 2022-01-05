@@ -5612,6 +5612,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(setRemoteDefaultVideoStreamType)
                 PROPERTY_METHOD_DEFINE(createDataStream)
                 PROPERTY_METHOD_DEFINE(sendStreamMessage)
+                PROPERTY_METHOD_DEFINE(sendStreamMessageWithArrayBuffer)
                 PROPERTY_METHOD_DEFINE(addPublishStreamUrl)
                 PROPERTY_METHOD_DEFINE(removePublishStreamUrl)
                 PROPERTY_METHOD_DEFINE(setLiveTranscoding)
@@ -6005,6 +6006,27 @@ namespace agora {
                 status = napi_get_value_nodestring_(args[1], msg);
                 CHECK_NAPI_STATUS(pChannel, status);
                 result = pChannel->m_channel->sendStreamMessage(streamId, msg, strlen(msg));
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+        NAPI_API_DEFINE(NodeRtcChannel, sendStreamMessageWithArrayBuffer)
+        {
+            LOG_ENTER;
+            uint8_t * buffer;
+            int result = -1;
+            uint32_t length = 0;
+            do {
+                NodeRtcChannel *pChannel = nullptr;
+                napi_get_native_channel(args, pChannel);
+                CHECK_NATIVE_CHANNEL(pChannel);
+                napi_status status = napi_ok;
+                int streamId;
+                status = napi_get_value_int32_(args[0], streamId);
+                CHECK_NAPI_STATUS(pChannel, status);
+                napi_get_value_arraybuffer_(args[1], buffer, length);
+                CHECK_NAPI_STATUS(pChannel, status);
+                result = pChannel->m_channel->sendStreamMessage(streamId, (const char*)buffer, length);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;

@@ -2757,6 +2757,10 @@ export interface NodeRtcChannel {
     streamId: number,
     msg: string
   ): number;
+  /**
+   * @ignore
+   */
+  sendStreamMessageWithArrayBuffer(streamId: number, buffer: UInt8ArrayBuffer): number
 
   /**
    * @ignore

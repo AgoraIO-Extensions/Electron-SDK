@@ -6086,6 +6086,9 @@ class AgoraRtcChannel extends EventEmitter
   sendStreamMessage(streamId: number, msg: string): number {
     return this.rtcChannel.sendStreamMessage(streamId, msg);
   }
+  sendStreamMessageWithArrayBuffer(streamId: number, buffer: UInt8ArrayBuffer): number {
+    return this.rtcChannel.sendStreamMessageWithArrayBuffer(streamId, buffer);
+  }
 
   addPublishStreamUrl(url: string, transcodingEnabled: boolean): number {
     return this.rtcChannel.addPublishStreamUrl(url, transcodingEnabled);
