@@ -1,3 +1,6 @@
+## 3.6.0-build.106(Jan 6th, 2021)
+- fix max path for getScreenWindowInfo 
+
 ## 3.6.0-build.1231(Dec 31th, 2021)
 - fix 
   -  videoSource process killed after main process killed
