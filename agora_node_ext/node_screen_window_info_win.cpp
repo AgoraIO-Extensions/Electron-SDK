@@ -19,7 +19,7 @@
 Gdiplus::GdiplusStartupInput g_gdiStartup;
 ULONG_PTR g_gdiplusToken = NULL;
 
-bool IsDisplayLogo(char class_name[100])
+bool IsDisplayLogo(char class_name[MAX_PATH])
 {
 	if (strcmp(class_name, "ApplicationFrameWindow") == 0 ||
 		strcmp(class_name, "Windows.UI.Core.CoreWindow") == 0 ||
@@ -652,8 +652,8 @@ std::vector<ScreenWindowInfo> getAllWindowInfo()
 			if (!IsWindowValid(windowInfo.hwnd)) {
 				continue;
 			}
-      char class_name[100] = { 0 };
-      char window_name[100] = { 0 };
+      char class_name[MAX_PATH] = { 0 };
+      char window_name[MAX_PATH] = { 0 };
       strcpy(class_name, windowInfo.class_name.c_str());
       strcpy(window_name, windowInfo.window_name.c_str());
       bool hasLogo = IsDisplayLogo(class_name);
