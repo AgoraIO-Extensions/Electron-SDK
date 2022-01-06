@@ -34,6 +34,7 @@ export enum RENDER_MODE {
 export interface VideoFrameCacheConfig {
   uid: number;
   channelId: string;
+  videoSourceType: VideoSourceType;
   width?: number;
   height?: number;
 }
@@ -46,42 +47,18 @@ export type Channel = "" | string;
  * Video source types definition.
  **/
 export enum VideoSourceType {
-  /** Video captured by the camera.
-   */
-  kVideoSourceCameraPrimary = 0,
-  kVideoSourceCamera = kVideoSourceCameraPrimary,
-  /** Video captured by the secondary camera.
-   */
-  kVideoSourceCameraSecondary,
-  /** Video for screen sharing.
-   */
-  kVideoSourceScreenPrimary,
-  kVideoSourceScreen = kVideoSourceScreenPrimary,
-  /** Video for secondary screen sharing.
-   */
-  kVideoSourceScreenSecondary,
-  /** Not define.
-   */
-  kVideoSourceCustom,
-  /** Video for media player sharing.
-   */
-  kVideoSourceMediaPlayer,
-  /** Video for png image.
-   */
-  kVideoSourceRtmImagePng,
-  /** Video for png image.
-   */
-  kVideoSourceRtcImageJpeg,
-  /** Video for png image.
-   */
-  kVideoSourceRtcImageGif,
-  /** Remote video received from network.
-   */
-  kVideoSourceRemote,
-  /** Video for transcoded.
-   */
-  kVideoSourceTranscoded,
-  kVideoSourceUnknown,
+  kVideoSourceTypeCameraPrimary,
+  kVideoSourceTypeCameraSecondary,
+  kVideoSourceTypeScreenPrimary,
+  kVideoSourceTypeScreenSecondary,
+  kVideoSourceTypeCustom,
+  kVideoSourceTypeMediaPlayer,
+  kVideoSourceTypeRtcImagePng,
+  kVideoSourceTypeRtcImageJpeg,
+  kVideoSourceTypeRtcImageGif,
+  kVideoSourceTypeRemote,
+  kVideoSourceTypeTranscoded,
+  kVideoSourceTypeUnknown,
 }
 
 export interface RendererConfig {
@@ -110,4 +87,5 @@ export interface VideoFrame {
   rotation?: number;
   uid?: number;
   channelId?: string;
+  videoSourceType: VideoSourceType;
 }

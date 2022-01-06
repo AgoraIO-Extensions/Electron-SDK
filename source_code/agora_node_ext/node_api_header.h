@@ -14,6 +14,7 @@
 namespace agora {
 namespace rtc {
 namespace electron {
+const int kMaxResultLength = 2048;
 #define DECLARE_NAPI_METHOD(name, func) \
   { name, 0, func, 0, 0, 0, napi_default, 0 }
 

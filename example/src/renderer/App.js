@@ -45,7 +45,7 @@ const RemoteWindow = ({ uid, channelId }) => {
       console.log("dom", dom);
       setTimeout(() => {
         rtcEngine.setView({
-          videoSourceType: VideoSourceType.kVideoSourceRemote,
+          videoSourceType: VideoSourceType.kVideoSourceTypeRemote,
           uid,
           channelId,
 
@@ -60,7 +60,7 @@ const RemoteWindow = ({ uid, channelId }) => {
     }
     return () => {
       // rtcEngine.setView({
-      //   videoSourceType: VideoSourceType.kVideoSourceRemote,
+      // videoSourceType: VideoSourceType.kVideoSourceTypeRemote,
       //   uid,
       //   channelId,
       //   view: dom,
@@ -210,7 +210,7 @@ export default class App extends Component {
     rtcEngine.setRenderMode(2);
     let dom = document.getElementById("firstCamera");
     rtcEngine.setView({
-      videoSourceType: VideoSourceType.kVideoSourceCamera,
+      videoSourceType: VideoSourceType.kVideoSourceTypeCameraPrimary,
 
       view: isSetFirstCameraView ? null : dom,
       rendererOptions: { mirror: true, contentMode: 1 },
@@ -235,7 +235,7 @@ export default class App extends Component {
     rtcEngine.setRenderMode(2);
     let dom = document.getElementById("secondCamera");
     rtcEngine.setView({
-      videoSourceType: VideoSourceType.kVideoSourceCameraSecondary,
+      videoSourceType: VideoSourceType.kVideoSourceTypeCameraSecondary,
 
       view: isSetSecondCameraView ? null : dom,
       rendererOptions: { mirror: true, contentMode: 1 },
@@ -244,12 +244,10 @@ export default class App extends Component {
   };
   onPressToggleSecondCamera = () => {
     const { isOpenSecondCamera } = this.state;
-
     if (isOpenSecondCamera) {
       rtcEngine.stopSecondaryCameraCapture();
     } else {
       const videoList = rtcEngine.getVideoDevices();
-
       rtcEngine.startSecondaryCameraCapture({
         deviceId: videoList[1].deviceId,
         format: { width: 640, height: 320, fps: FRAME_RATE.FRAME_RATE_FPS_10 },
@@ -262,7 +260,7 @@ export default class App extends Component {
     rtcEngine.setRenderMode(2);
     let dom = document.getElementById("scrrenShare1");
     rtcEngine.setView({
-      videoSourceType: VideoSourceType.kVideoSourceScreenPrimary,
+      videoSourceType: VideoSourceType.kVideoSourceTypeScreenPrimary,
 
       view: isSetFirstScreenShareView ? null : dom,
       rendererOptions: { mirror: true, contentMode: 1 },
@@ -323,7 +321,7 @@ export default class App extends Component {
     rtcEngine.setRenderMode(2);
     let dom = document.getElementById("scrrenShare2");
     rtcEngine.setView({
-      videoSourceType: VideoSourceType.kVideoSourceScreenSecondary,
+      videoSourceType: VideoSourceType.kVideoSourceTypeScreenSecondary,
 
       view: isSetSecondScreenShareView ? null : dom,
       rendererOptions: { mirror: true, contentMode: 1 },

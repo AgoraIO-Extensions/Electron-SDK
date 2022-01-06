@@ -74,7 +74,7 @@ import {
   changeEventNameForOnXX,
   jsonStringToArray,
   forwardEvent,
-  getUidAndChannelIdForIrisRender,
+  formatVideoFrameBufferConfig,
   getRendererConfigInternal,
 } from "../Utils";
 import { PluginInfo, Plugin } from "./plugin";
@@ -208,7 +208,8 @@ export class AgoraRtcEngine extends EventEmitter {
     uid: number,
     channelId: string,
     yStride: number,
-    height: number
+    height: number,
+    videoSourceType: VideoSourceType
   ): VideoFrame {
     return {
       uid,
@@ -219,6 +220,7 @@ export class AgoraRtcEngine extends EventEmitter {
       yStride,
       width: 0,
       height,
+      videoSourceType,
     };
   }
 
@@ -242,11 +244,12 @@ export class AgoraRtcEngine extends EventEmitter {
         {
           this.fire(EngineEvents.USER_OFFLINE, ...params);
           const [connection] = params as [RtcConnection];
-
-          this._rendererManager?.removeRenderer(
-            connection.localUid,
-            connection.channelId
+          const config = formatVideoFrameBufferConfig(
+            VideoSourceType.kVideoSourceTypeRemote,
+            connection.channelId,
+            connection.localUid
           );
+          this._rendererManager?.removeRendererWithConfig(config);
           this.fire(EngineEvents.REMOVE_STREAM, ...params);
         }
         return true;
@@ -255,13 +258,8 @@ export class AgoraRtcEngine extends EventEmitter {
           if (params.length <= 3) {
             return true;
           }
-          const [uid, channelId, width, height, elapsed] = params as [
-            number,
-            string,
-            number,
-            number,
-            number
-          ];
+          const [videoSourceType, uid, channelId, width, height, elapsed] =
+            params as [VideoSourceType, number, string, number, number, number];
 
           this.fire(EngineEvents.FIRST_LOCAL_VIDEO_FRAME, ...params);
 
@@ -269,11 +267,16 @@ export class AgoraRtcEngine extends EventEmitter {
             uid,
             channelId,
             width,
-            height
+            height,
+            videoSourceType
           );
-          this._rendererManager?.addVideoFrameCacheToMap(
-            uid,
+          const config = formatVideoFrameBufferConfig(
+            videoSourceType,
             channelId,
+            uid
+          );
+          this._rendererManager?.updateVideoFrameCacheInMap(
+            config,
             videoFrameItem
           );
 
@@ -295,20 +298,25 @@ export class AgoraRtcEngine extends EventEmitter {
             number,
             number
           ];
-          const { localUid, channelId } = connection;
+          const { channelId } = connection;
 
           this.fire(EngineEvents.FIRST_REMOTE_VIDEO_FRAME, ...params);
 
-          let videoFrameItem = this.resizeBuffer(
+          const videoFrameItem = this.resizeBuffer(
             remoteUid,
             channelId,
             width,
-            height
+            height,
+            VideoSourceType.kVideoSourceTypeRemote
+          );
+          const config = formatVideoFrameBufferConfig(
+            VideoSourceType.kVideoSourceTypeRemote,
+            channelId,
+            remoteUid
           );
 
-          this._rendererManager?.addVideoFrameCacheToMap(
-            remoteUid,
-            channelId,
+          this._rendererManager?.updateVideoFrameCacheInMap(
+            config,
             videoFrameItem
           );
         }
@@ -361,7 +369,7 @@ export class AgoraRtcEngine extends EventEmitter {
       this._rendererManager?.setRenderer(config);
     } else {
       logWarn("Note: setView view is null!");
-      this._rendererManager?.removeRenderer(config.uid, config.channelId);
+      this._rendererManager?.removeRendererWithConfig(config);
     }
   }
 
@@ -377,9 +385,12 @@ export class AgoraRtcEngine extends EventEmitter {
     channelId?: Channel,
     uid?: number
   ) {
-    const { uid: newUid, channelId: newChannelId } =
-      getUidAndChannelIdForIrisRender(videoSourceType, channelId, uid);
-    this._rendererManager?.removeRenderer(newUid, newChannelId);
+    const config = formatVideoFrameBufferConfig(
+      videoSourceType,
+      channelId,
+      uid
+    );
+    this._rendererManager?.removeRendererWithConfig(config);
   }
 
   // ===========================================================================
@@ -649,15 +660,16 @@ export class AgoraRtcEngine extends EventEmitter {
     uid?: number
   ) {
     this._rendererManager?.stopRenderer();
-    const { uid: newUid, channelId: newChannelId } =
-      getUidAndChannelIdForIrisRender(videoSourceType, channelId, uid);
-    let videoFrameCacheConfig = {
-      uid: newUid,
+    const config = formatVideoFrameBufferConfig(
+      videoSourceType,
+      channelId,
+      uid
+    );
+    this._rendererManager?.enableVideoFrameCache({
+      ...config,
       width,
       height,
-      channelId: newChannelId,
-    };
-    this._rendererManager?.enableVideoFrameCache(videoFrameCacheConfig);
+    });
     this._rendererManager?.startRenderer();
   }
 
@@ -704,9 +716,12 @@ export class AgoraRtcEngine extends EventEmitter {
     mode: CONTENT_MODE = CONTENT_MODE.FIT,
     mirror: boolean = false
   ): number {
-    const { uid: newUid, channelId: newChannelId } =
-      getUidAndChannelIdForIrisRender(videoSourceType, channelId, uid);
-    let renderList = this._rendererManager?.getRenderer(newUid, newChannelId);
+    const config = formatVideoFrameBufferConfig(
+      videoSourceType,
+      channelId,
+      uid
+    );
+    let renderList = this._rendererManager?.getRenderers(config);
     renderList
       ? renderList.forEach((renderItem) =>
           renderItem.setContentMode(mode, mirror)
