@@ -129,8 +129,8 @@ napi_value NodeIrisRtcDeviceManager::CallApiAudioDevice(
 
   status = napi_get_value_int32(env, args[0], &_apiType);
   status = napi_get_value_utf8string(env, args[1], parameter);
-  char result[512];
-  memset(result, '\0', 512);
+  char result[kMaxResultLength];
+  memset(result, '\0', kMaxResultLength);
   int ret = ERROR_PARAMETER_1;
   if (strcmp(parameter.c_str(), "") == 0) {
     parameter = "{}";
@@ -162,8 +162,8 @@ napi_value NodeIrisRtcDeviceManager::CallApiVideoDevice(
 
   status = napi_get_value_int32(env, args[0], &_apiType);
   status = napi_get_value_utf8string(env, args[1], parameter);
-  char result[512];
-  memset(result, '\0', 512);
+  char result[kMaxResultLength];
+  memset(result, '\0', kMaxResultLength);
   int ret = ERROR_PARAMETER_1;
   if (strcmp(parameter.c_str(), "") == 0) {
     parameter = "{}";
@@ -175,7 +175,12 @@ napi_value NodeIrisRtcDeviceManager::CallApiVideoDevice(
   } else {
     ret = ERROR_NOT_INIT;
   }
-  RETURE_NAPI_OBJ();
+    napi_value retObj;
+    status = napi_create_object(env, &retObj);
+    std::string resultStr = std::string(result);
+    napi_obj_set_property(env, retObj, _ret_code_str, ret);
+    napi_obj_set_property(env, retObj, _ret_result_str, resultStr);
+    return retObj;
 }
 
 napi_value NodeIrisRtcDeviceManager::Release(napi_env env,

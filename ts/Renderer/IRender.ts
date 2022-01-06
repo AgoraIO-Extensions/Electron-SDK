@@ -9,6 +9,7 @@ import { VideoFrame } from "./type";
 
 export interface IRenderer {
   _event?: EventEmitter;
+  getView(): Element;
   bind(element: Element): void;
   unbind(): void;
   equalsElement(element: Element): boolean;

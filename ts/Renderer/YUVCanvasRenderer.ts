@@ -37,7 +37,11 @@ export class YUVCanvasRenderer implements IRenderer {
       yBuffer: new Uint8Array(0),
       uBuffer: new Uint8Array(0),
       vBuffer: new Uint8Array(0),
+      videoSourceType: -1,
     };
+  }
+  getView(): Element {
+    return this._customeElement!;
   }
 
   bind(element: Element) {

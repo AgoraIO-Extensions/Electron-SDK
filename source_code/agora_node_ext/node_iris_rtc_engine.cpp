@@ -155,8 +155,8 @@ napi_value NodeIrisRtcEngine::CallApi(napi_env env, napi_callback_info info) {
     parameter = "{}";
   }
 
-  char result[512];
-  memset(result, '\0', 512);
+  char result[kMaxResultLength];
+  memset(result, '\0', kMaxResultLength);
 
   int ret = ERROR_PARAMETER_1;
   std::shared_ptr<iris::rtc::IrisRtcEngine> finalEngine = nodeIrisRtcEngine->_iris_engine;
@@ -199,9 +199,9 @@ napi_value NodeIrisRtcEngine::CallApiWithBuffer(napi_env env,
   status = napi_get_value_utf8string(env, args[2], buffer);
   status = napi_get_value_int32(env, args[3], &bufferLength);
 
-  char result[512];
+  char result[kMaxResultLength];
   int ret = ERROR_PARAMETER_1;
-  memset(result, '\0', 512);
+  memset(result, '\0', kMaxResultLength);
 
   if (nodeIrisRtcEngine->_iris_engine) {
     try {
@@ -403,9 +403,9 @@ napi_value NodeIrisRtcEngine::SetAddonLogFile(napi_env env,
   std::string file_path = "";
   status = napi_get_value_utf8string(env, args[0], file_path);
 
-  char result[512];
+  char result[kMaxResultLength];
   int ret = ERROR_PARAMETER_1;
-  memset(result, '\0', 512);
+  memset(result, '\0', kMaxResultLength);
 
   ret = startLogService(file_path.c_str());
   RETURE_NAPI_OBJ();
@@ -431,8 +431,8 @@ napi_value NodeIrisRtcEngine::PluginCallApi(napi_env env,
   std::string parameter = "";
   status = napi_get_value_int32(env, args[0], &api_type);
   status = napi_get_value_utf8string(env, args[1], parameter);
-  char result[512];
-  memset(result, '\0', 512);
+  char result[kMaxResultLength];
+  memset(result, '\0', kMaxResultLength);
   LOG_F(INFO, "CallApi parameter: %s", parameter.c_str());
   int ret = ERROR_PARAMETER_1;
   
@@ -460,20 +460,24 @@ napi_value NodeIrisRtcEngine::EnableVideoFrameCache(napi_env env,
   status =
       napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
 
+  IrisVideoFrameBufferConfig config;
   napi_value obj = args[0];
 
-  unsigned int uid = 0;
+  int videoSourceType;
   std::string channelId = "";
   unsigned int width = 0;
   unsigned int height = 0;
 
-  napi_obj_get_property(env, obj, "uid", uid);
+  napi_obj_get_property(env, obj, "uid", config.id);
+  napi_obj_get_property(env, obj, "videoSourceType", videoSourceType);
+  config.type = (IrisVideoSourceType)videoSourceType;
   napi_obj_get_property(env, obj, "channelId", channelId);
+  strcpy(config.key, channelId.c_str());
   napi_obj_get_property(env, obj, "width", width);
   napi_obj_get_property(env, obj, "height", height);
 
-  char result[512];
-  memset(result, '\0', 512);
+  char result[kMaxResultLength];
+  memset(result, '\0', kMaxResultLength);
   int ret = ERROR_PARAMETER_1;
   
   if (!nodeIrisRtcEngine->_iris_video_frame_buffer_manager) {
@@ -482,8 +486,7 @@ napi_value NodeIrisRtcEngine::EnableVideoFrameCache(napi_env env,
   } else {
     try {
       iris::IrisVideoFrameBuffer buffer(IrisVideoFrameType::kVideoFrameTypeYUV420, nullptr, width, height);
-      nodeIrisRtcEngine->_iris_video_frame_buffer_manager->EnableVideoFrameBuffer(buffer, uid,
-                                                     channelId.c_str());
+      nodeIrisRtcEngine->_iris_video_frame_buffer_manager->EnableVideoFrameBuffer(buffer, &config);
       ret = ERROR_OK;
     } catch (std::exception& e) {
       LOG_F(INFO, "EnableVideoFrameCache catch exception %s", e.what());
@@ -507,17 +510,19 @@ napi_value NodeIrisRtcEngine::DisableVideoFrameCache(napi_env env,
       napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
 
   napi_value obj = args[0];
+  IrisVideoFrameBufferConfig config;
 
-  unsigned int uid = 0;
+  int videoSourceType;
   std::string channelId = "";
 
-  napi_obj_get_property(env, obj, "uid", uid);
-  unsigned int *uidPtr;
-  uidPtr = &uid;
+  napi_obj_get_property(env, obj, "uid", config.id);
+  napi_obj_get_property(env, obj, "videoSourceType", videoSourceType);
+  config.type = (IrisVideoSourceType)videoSourceType;
   napi_obj_get_property(env, obj, "channelId", channelId);
-  
-  char result[512];
-  memset(result, '\0', 512);
+  strcpy(config.key, channelId.c_str());
+
+  char result[kMaxResultLength];
+  memset(result, '\0', kMaxResultLength);
   int ret = ERROR_PARAMETER_1;
 
   if (!nodeIrisRtcEngine->_iris_video_frame_buffer_manager) {
@@ -525,7 +530,7 @@ napi_value NodeIrisRtcEngine::DisableVideoFrameCache(napi_env env,
     LOG_F(INFO, "IrisVideoFrameBufferManager Not Init");
   } else {
     try {
-      nodeIrisRtcEngine->_iris_video_frame_buffer_manager->DisableVideoFrameBuffer(uidPtr, channelId.c_str());
+      nodeIrisRtcEngine->_iris_video_frame_buffer_manager->DisableVideoFrameBuffer(&config);
       ret = ERROR_OK;
     } catch (std::exception& e) {
       LOG_F(INFO, "DisableVideoFrameCache catch exception %s", e.what());
@@ -547,9 +552,10 @@ napi_value NodeIrisRtcEngine::GetVideoStreamData(napi_env env,
   NodeIrisRtcEngine* nodeIrisRtcEngine;
   status =
       napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
+  IrisVideoFrameBufferConfig config;
 
   napi_value obj = args[0];
-  unsigned int uid;
+  int videoSourceType;
   std::string channel_id;
   napi_value y_buffer_obj;
   void* y_buffer;
@@ -563,8 +569,11 @@ napi_value NodeIrisRtcEngine::GetVideoStreamData(napi_env env,
   int height;
   int y_stride;
 
-  napi_obj_get_property(env, obj, "uid", uid);
+  napi_obj_get_property(env, obj, "uid", config.id);
+  napi_obj_get_property(env, obj, "videoSourceType", videoSourceType);
+  config.type = (IrisVideoSourceType)videoSourceType;
   napi_obj_get_property(env, obj, "channelId", channel_id);
+  strcpy(config.key, channel_id.c_str());
 
   napi_obj_get_property(env, obj, "yBuffer", y_buffer_obj);
   napi_get_buffer_info(env, y_buffer_obj, &y_buffer, &y_length);
@@ -589,8 +598,8 @@ napi_value NodeIrisRtcEngine::GetVideoStreamData(napi_env env,
   bool ret = false;
   
   if (nodeIrisRtcEngine->_iris_video_frame_buffer_manager) {
-    ret = nodeIrisRtcEngine->_iris_video_frame_buffer_manager->GetVideoFrame(_videoFrame, isFresh, uid,
-                                           channel_id.c_str());
+    ret = nodeIrisRtcEngine->_iris_video_frame_buffer_manager->GetVideoFrame(_videoFrame,
+        isFresh, &config);
   } else {
     ret = false;
     LOG_F(INFO, "IrisVideoFrameBufferManager Not Init");

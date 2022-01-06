@@ -94,26 +94,27 @@ export const forwardEvent = ({
   }
 };
 
-export const getUidAndChannelIdForIrisRender = (
+export const formatVideoFrameBufferConfig = (
   videoSourceType: VideoSourceType,
-  originChannelId?: string,
-  originUid?: number
+  originChannelId = "",
+  originUid = 0
 ): {
   uid: number;
   channelId: string;
+  videoSourceType: VideoSourceType;
 } => {
   let uid = originUid;
   let channelId = originChannelId;
 
   switch (videoSourceType) {
-    case VideoSourceType.kVideoSourceCameraPrimary:
-    case VideoSourceType.kVideoSourceCameraSecondary:
-    case VideoSourceType.kVideoSourceScreenPrimary:
-    case VideoSourceType.kVideoSourceScreenSecondary:
+    case VideoSourceType.kVideoSourceTypeCameraPrimary:
+    case VideoSourceType.kVideoSourceTypeCameraSecondary:
+    case VideoSourceType.kVideoSourceTypeScreenPrimary:
+    case VideoSourceType.kVideoSourceTypeScreenSecondary:
       channelId = "";
-      uid = videoSourceType;
+      uid = 0;
       break;
-    case VideoSourceType.kVideoSourceRemote:
+    case VideoSourceType.kVideoSourceTypeRemote:
       if (!uid || !channelId) {
         throw new Error(`must have uid:${uid}}  channelId:${channelId}`);
       }
@@ -121,7 +122,7 @@ export const getUidAndChannelIdForIrisRender = (
     default:
       break;
   }
-  return { uid: uid!, channelId: channelId! };
+  return { uid, channelId, videoSourceType };
 };
 
 export const getRendererConfigInternal = (
@@ -138,12 +139,12 @@ export const getRendererConfigInternal = (
   // set default RendererConfig
   const newConfig = Object.assign(
     {
-      videoSourceType: VideoSourceType.kVideoSourceCameraPrimary,
+      videoSourceType: VideoSourceType.kVideoSourceTypeCameraPrimary,
     },
     originConfig
   );
 
-  const { uid, channelId } = getUidAndChannelIdForIrisRender(
+  const { uid, channelId } = formatVideoFrameBufferConfig(
     newConfig.videoSourceType,
     newConfig.channelId,
     newConfig.uid
