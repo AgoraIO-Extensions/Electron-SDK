@@ -83,7 +83,7 @@ void NodeRtcEngine::Init(Local<Object> &module) {
   PROPERTY_METHOD_DEFINE(muteRemoteVideoStreamEx)
   PROPERTY_METHOD_DEFINE(setRemoteVideoStreamType)
   PROPERTY_METHOD_DEFINE(setRemoteDefaultVideoStreamType)
-//  PROPERTY_METHOD_DEFINE(enableAudioVolumeIndication)
+  PROPERTY_METHOD_DEFINE(enableAudioVolumeIndication)
   PROPERTY_METHOD_DEFINE(startAudioRecording)
   PROPERTY_METHOD_DEFINE(stopAudioRecording)
   PROPERTY_METHOD_DEFINE(startAudioMixing)
@@ -3033,7 +3033,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setRemoteDefaultVideoStreamType) {
   LOG_LEAVE;
 }
 
-//NAPI_API_DEFINE_WRAPPER_PARAM_2(enableAudioVolumeIndication, int32, int32);
+NAPI_API_DEFINE_WRAPPER_PARAM_3(enableAudioVolumeIndication, int32, int32, bool);
 
 NAPI_API_DEFINE(NodeRtcEngine, startAudioRecording) {
   LOG_ENTER;
