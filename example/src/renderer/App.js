@@ -90,7 +90,7 @@ const defaultState = {
   isStartSecondScreenShare: false,
 
   users: [],
-  channelId: "testLH123",
+  channelId: "testLinux",
 };
 export default class App extends Component {
   constructor(props) {
@@ -190,7 +190,7 @@ export default class App extends Component {
       autoSubscribeVideo: true,
       publishAudioTrack: true,
       publishCameraTrack: true,
-      publishScreenTrack: false,
+      publishScreenTrack: true,
       clientRoleType: CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER,
       channelProfile: CHANNEL_PROFILE_TYPE.CHANNEL_PROFILE_LIVE_BROADCASTING,
     });
@@ -296,6 +296,26 @@ export default class App extends Component {
 
         regionRect: { x: 0, y: 0, width: 0, height: 0 },
       });
+      rtcEngine.joinChannelEx(
+        "",
+        {
+          localUid: 10002,
+          channelId: this.state.channelId,
+        },
+        {
+          publishCameraTrack: false,
+          publishAudioTrack: false,
+          publishScreenTrack: true,
+          publishCustomAudioTrack: false,
+          publishCustomVideoTrack: false,
+          publishEncodedVideoTrack: false,
+          publishMediaPlayerAudioTrack: false,
+          publishMediaPlayerVideoTrack: false,
+          autoSubscribeAudio: false,
+          autoSubscribeVideo: false,
+          clientRoleType: 1,
+        }
+      );
       // const res = rtcEngine.startScreenCaptureByScreen(
       //   list[0].displayId,
       //   { x: 0, y: 0, width: 0, height: 0 },
@@ -357,6 +377,27 @@ export default class App extends Component {
 
         regionRect: { x: 0, y: 0, width: 0, height: 0 },
       });
+      rtcEngine.joinChannelEx(
+        "",
+        {
+          localUid: 10001,
+          channelId: this.state.channelId,
+        },
+        {
+          publishCameraTrack: false,
+          publishAudioTrack: false,
+          publishScreenTrack: false,
+          publishSecondaryScreenTrack:true,
+          publishCustomAudioTrack: false,
+          publishCustomVideoTrack: false,
+          publishEncodedVideoTrack: false,
+          publishMediaPlayerAudioTrack: false,
+          publishMediaPlayerVideoTrack: false,
+          autoSubscribeAudio: false,
+          autoSubscribeVideo: false,
+          clientRoleType: 1,
+        }
+      );
       console.log("startSecondaryScreenCapture", res);
     } else {
       rtcEngine.stopSecondaryScreenCapture();
