@@ -7203,28 +7203,20 @@ NAPI_API_DEFINE(NodeRtcEngine, getDefaultAudioPlaybackDevices) {
     auto pdc = adm ? adm->enumeratePlaybackDevices() : nullptr;
     char deviceName[MAX_DEVICE_ID_LENGTH] = {0};
     char deviceId[MAX_DEVICE_ID_LENGTH] = {0};
-    Local<v8::Object> parentObj = v8::Object::New(args.GetIsolate());
-    for (int i = -2; i < 0; i++) {
-      Local<v8::Object> dev = v8::Object::New(args.GetIsolate());
-      pdc->getDevice(i, deviceName, deviceId);
-      auto dn = v8::String::NewFromUtf8(args.GetIsolate(), deviceName,
-                                        NewStringType::kInternalized)
-                    .ToLocalChecked();
-      auto di = v8::String::NewFromUtf8(args.GetIsolate(), deviceId,
-                                        NewStringType::kInternalized)
-                    .ToLocalChecked();
-      dev->Set(context, Nan::New<String>("devicename").ToLocalChecked(), dn);
-      dev->Set(context, Nan::New<String>("deviceid").ToLocalChecked(), di);
-      deviceName[0] = '\0';
-      deviceId[0] = '\0';
+    Local<v8::Object> dev = v8::Object::New(args.GetIsolate());
+    pdc->getDefaultDevice(deviceName, deviceId);
+    auto dn = v8::String::NewFromUtf8(args.GetIsolate(), deviceName,
+                                      NewStringType::kInternalized)
+                  .ToLocalChecked();
+    auto di = v8::String::NewFromUtf8(args.GetIsolate(), deviceId,
+                                      NewStringType::kInternalized)
+                  .ToLocalChecked();
+    dev->Set(context, Nan::New<String>("devicename").ToLocalChecked(), dn);
+    dev->Set(context, Nan::New<String>("deviceid").ToLocalChecked(), di);
+    deviceName[0] = '\0';
+    deviceId[0] = '\0';
 
-      parentObj->Set(context,
-                     Nan::New<String>(i == -1 ? "defaultCommunicationDevice"
-                                              : "defaultDevice")
-                         .ToLocalChecked(),
-                     dev);
-    }
-    args.GetReturnValue().Set(parentObj);
+    args.GetReturnValue().Set(dev);
   } while (false);
   LOG_LEAVE;
 }
@@ -7245,28 +7237,19 @@ NAPI_API_DEFINE(NodeRtcEngine, getDefaultAudioRecordingDevices) {
     auto pdc = adm ? adm->enumerateRecordingDevices() : nullptr;
     char deviceName[MAX_DEVICE_ID_LENGTH] = {0};
     char deviceId[MAX_DEVICE_ID_LENGTH] = {0};
-    Local<v8::Object> parentObj = v8::Object::New(args.GetIsolate());
-    for (int i = -2; i < 0; i++) {
-      Local<v8::Object> dev = v8::Object::New(args.GetIsolate());
-      pdc->getDevice(i, deviceName, deviceId);
-      auto dn = v8::String::NewFromUtf8(args.GetIsolate(), deviceName,
-                                        NewStringType::kInternalized)
-                    .ToLocalChecked();
-      auto di = v8::String::NewFromUtf8(args.GetIsolate(), deviceId,
-                                        NewStringType::kInternalized)
-                    .ToLocalChecked();
-      dev->Set(context, Nan::New<String>("devicename").ToLocalChecked(), dn);
-      dev->Set(context, Nan::New<String>("deviceid").ToLocalChecked(), di);
-      deviceName[0] = '\0';
-      deviceId[0] = '\0';
-
-      parentObj->Set(context,
-                     Nan::New<String>(i == -1 ? "defaultCommunicationDevice"
-                                              : "defaultDevice")
-                         .ToLocalChecked(),
-                     dev);
-    }
-    args.GetReturnValue().Set(parentObj);
+    Local<v8::Object> dev = v8::Object::New(args.GetIsolate());
+    pdc->getDefaultDevice(deviceName, deviceId);
+    auto dn = v8::String::NewFromUtf8(args.GetIsolate(), deviceName,
+                                      NewStringType::kInternalized)
+                  .ToLocalChecked();
+    auto di = v8::String::NewFromUtf8(args.GetIsolate(), deviceId,
+                                      NewStringType::kInternalized)
+                  .ToLocalChecked();
+    dev->Set(context, Nan::New<String>("devicename").ToLocalChecked(), dn);
+    dev->Set(context, Nan::New<String>("deviceid").ToLocalChecked(), di);
+    deviceName[0] = '\0';
+    deviceId[0] = '\0';
+    args.GetReturnValue().Set(dev);
   } while (false);
   LOG_LEAVE;
 }
