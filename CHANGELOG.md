@@ -1,3 +1,6 @@
+## 3.6.214-build.107(Jan 7th, 2020)
+* add api enableAudioVolumeIndication
+
 ## 3.6.214-build.1224(Dec 24th, 2020)
 * updata native sdk
 

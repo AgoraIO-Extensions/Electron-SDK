@@ -3299,7 +3299,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  enableAudioVolumeIndication(interval: number, smooth: number): number;
+  enableAudioVolumeIndication(interval: number, smooth: number, reportVad:number): number;
   /**
    * @ignore
    */
