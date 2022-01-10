@@ -1,4 +1,4 @@
-## 3.6.0-rtc.2-build.1219(Dec 18th, 2021)
+## 3.6.0-rtc.2-build.110(Jan 10th, 2021)
 - update native sdk
 
 ## 3.6.0-build.1230(Dec 29th, 2021)
