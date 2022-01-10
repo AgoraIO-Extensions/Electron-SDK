@@ -3951,12 +3951,16 @@ export interface NodeRtcEngine {
  /**
   * @ignore
   */
- setAddonLogFile(filePath: string): void;
+setAddonLogFile(filePath: string): void;
  /**
    * @ignore
    */
 //  setClientRoleWithOptions(role: ClientRoleType, options: ClientRoleOptions): number;
-  
+
+  /**
+  * @ignore
+  */
+  setProcessDpiAwareness(): void;
 }
 
 export interface NodeMediaPlayer {

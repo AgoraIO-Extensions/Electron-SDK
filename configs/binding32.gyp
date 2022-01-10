@@ -64,7 +64,9 @@
         './common/libyuv/source/scale_argb.cc',
         './common/libyuv/source/scale_common.cc',
         './common/libyuv/source/scale.cc',
-        './common/libyuv/source/video_common.cc'
+        './common/libyuv/source/video_common.cc',
+        './common/windows_system_api.h',
+        './common/windows_system_api.cpp',
         ],
         'conditions': [
             [
