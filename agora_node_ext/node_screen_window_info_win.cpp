@@ -158,32 +158,42 @@ bool WindowInBlackList(std::string module_name) {
 #if 0
 bool captureBmpToJpeg(const HWND& hWnd, char* szName, int i, std::vector<ScreenWindowInfo>& wndsInfo)
 #endif
-bool captureBmpToJpeg(const HWND &hWnd, char *szName,
-                      std::vector<ScreenWindowInfo> &wndsInfo,
-                      bool displayLogo) {
+bool captureBmpToJpeg(const HWND& hWnd, char* szName, std::vector<ScreenWindowInfo>& wndsInfo, bool displayLogo)
+{
 #if 0
-	WCHAR szFilePath[MAX_PATH] = { 0 };
-	wsprintfW(szFilePath, L"D:\\bmp\\%d.jpg", i++);
+  WCHAR szFilePath[MAX_PATH] = { 0 };
+  wsprintfW(szFilePath, L"D:\\bmp\\%d.jpg", i++);
 
-	if (!szFilePath || !wcslen(szFilePath))
-		return false;
+  if (!szFilePath || !wcslen(szFilePath))
+    return false;
 #endif
-  // calculate the number of color indexes in the color table
+  //calculate the number of color indexes in the color table
+
+  DWORD currentProcessId = GetCurrentProcessId();
 
   int nBitCount = 32;
-  int nColorTableEntries = 0; // nBitCunt 16 24 32
+  int nColorTableEntries = 0;//nBitCunt 16 24 32
   HDC hDC = GetDC(hWnd);
   HDC hMemDC = CreateCompatibleDC(hDC);
 
   int nWidth = 0;
   int nHeight = 0;
+  int nX = 0;
+  int nY = 0;
 
   if (hWnd != HWND_DESKTOP) {
     RECT rect;
     ::GetClientRect(hWnd, &rect);
     nWidth = rect.right - rect.left;
     nHeight = rect.bottom - rect.top;
-  } else {
+
+    RECT oriRect;
+    ::GetWindowRect(hWnd, &oriRect);
+
+    nX = oriRect.left;
+    nY = oriRect.top;
+  }
+  else {
     nWidth = ::GetSystemMetrics(SM_CXSCREEN);
     nHeight = ::GetSystemMetrics(SM_CYSCREEN);
   }
@@ -196,12 +206,14 @@ bool captureBmpToJpeg(const HWND &hWnd, char *szName,
   if (nWidth <= IMAGE_MAX_PIXEL_SIZE && nHeight < IMAGE_MAX_PIXEL_SIZE) {
     bmpWidth = nWidth;
     bmpHeight = nHeight;
-  } else if (nWidth > nHeight && nWidth > 500) {
+  }
+  else if (nWidth > nHeight && nWidth > 500) {
     float rate = nWidth / 500.0f;
     float h = (float)nHeight / rate;
     bmpWidth = 500;
     bmpHeight = (int)h;
-  } else if (nHeight > nWidth && nHeight > 500) {
+  }
+  else if (nHeight > nWidth && nHeight > 500) {
     float rate = nHeight / 500.0f;
     float w = (float)nWidth / rate;
     bmpHeight = 500;
@@ -211,12 +223,9 @@ bool captureBmpToJpeg(const HWND &hWnd, char *szName,
   HBITMAP hBMP = CreateCompatibleBitmap(hDC, nWidth, nHeight);
   SelectObject(hMemDC, hBMP);
   SetStretchBltMode(hMemDC, COLORONCOLOR);
-  StretchBlt(hMemDC, 0, 0, bmpWidth, bmpHeight, hDC, 0, 0, nWidth, nHeight,
-             SRCCOPY);
-  int nStructLength =
-      sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * nColorTableEntries;
-  LPBITMAPINFOHEADER lpBitmapInfoHeader =
-      (LPBITMAPINFOHEADER) new char[nStructLength];
+  StretchBlt(hMemDC, 0, 0, bmpWidth, bmpHeight, hDC, 0, 0, nWidth, nHeight, SRCCOPY);
+  int nStructLength = sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * nColorTableEntries;
+  LPBITMAPINFOHEADER lpBitmapInfoHeader = (LPBITMAPINFOHEADER)new char[nStructLength];
   ::ZeroMemory(lpBitmapInfoHeader, nStructLength);
 
   lpBitmapInfoHeader->biSize = sizeof(BITMAPINFOHEADER);
@@ -240,13 +249,10 @@ bool captureBmpToJpeg(const HWND &hWnd, char *szName,
   lpBitmapInfoHeader->biSizeImage = dwSizeImage;
 
   LPBYTE lpDibBits = 0;
-  HBITMAP hBitmap =
-      ::CreateDIBSection(hMemDC, (LPBITMAPINFO)lpBitmapInfoHeader,
-                         DIB_RGB_COLORS, (void **)&lpDibBits, NULL, 0);
+  HBITMAP hBitmap = ::CreateDIBSection(hMemDC, (LPBITMAPINFO)lpBitmapInfoHeader, DIB_RGB_COLORS, (void**)&lpDibBits, NULL, 0);
   SelectObject(hMemDC, hBitmap);
   SetStretchBltMode(hMemDC, COLORONCOLOR);
-  StretchBlt(hMemDC, 0, 0, bmpWidth, bmpHeight, hDC, 0, 0, nWidth, nHeight,
-             SRCCOPY);
+  StretchBlt(hMemDC, 0, 0, bmpWidth, bmpHeight, hDC, 0, 0, nWidth, nHeight, SRCCOPY);
   ReleaseDC(hWnd, hDC);
 
   LONG uQuality = 100L;
@@ -262,41 +268,34 @@ bool captureBmpToJpeg(const HWND &hWnd, char *szName,
   Gdiplus::Bitmap bitmap(hBitmap, NULL);
   Gdiplus::Graphics graphic(&bitmap);
 
+  DWORD dwProcId = 0;
   do {
-    DWORD dwProcId = 0;
     GetWindowThreadProcessId(hWnd, &dwProcId);
-    if (dwProcId == 0)
-      break;
+    if (dwProcId == 0) break;
 
-    HANDLE hProc = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ,
-                               FALSE, dwProcId);
-    if (!hProc)
-      break;
+    HANDLE hProc = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, dwProcId);
+    if (!hProc) break;
 
-    TCHAR temp[MAX_PATH] = {0};
+    TCHAR temp[MAX_PATH] = { 0 };
     DWORD dwRet = GetModuleFileNameEx(hProc, NULL, temp, MAX_PATH - 1);
 
     CloseHandle(hProc);
 
-    if (dwRet == 0)
-      break;
+    if (dwRet == 0) break;
 
     std::string module_name = temp;
-    if (!displayLogo)
-      break;
+    if (!displayLogo) break;
 
     Gdiplus::Color c(0, 0, 0);
     graphic.Clear(c);
 
     HICON hIcon = nullptr;
-    ICONINFO icInfo = {0};
+    ICONINFO icInfo = { 0 };
 
     ExtractIconEx(module_name.c_str(), 0, &hIcon, NULL, 1);
-    if (!hIcon)
-      break;
+    if (!hIcon) break;
 
-    if (!::GetIconInfo(hIcon, &icInfo))
-      break;
+    if (!::GetIconInfo(hIcon, &icInfo)) break;
 
     BITMAP bitmap;
     GetObject(icInfo.hbmColor, sizeof(BITMAP), &bitmap);
@@ -304,24 +303,22 @@ bool captureBmpToJpeg(const HWND &hWnd, char *szName,
     int width = bitmap.bmWidth;
     int height = bitmap.bmHeight;
 
-    Gdiplus::Bitmap *pBitmap = NULL;
-    Gdiplus::Bitmap *pWrapBitmap = NULL;
+    Gdiplus::Bitmap* pBitmap = NULL;
+    Gdiplus::Bitmap* pWrapBitmap = NULL;
 
     do {
-      if (bitmap.bmBitsPixel != 32) {
+      if (bitmap.bmBitsPixel != 32)
+      {
         pBitmap = Gdiplus::Bitmap::FromHICON(hIcon);
-      } else {
+      }
+      else {
         pWrapBitmap = Gdiplus::Bitmap::FromHBITMAP(icInfo.hbmColor, NULL);
         if (!pWrapBitmap)
           break;
         Gdiplus::BitmapData bitmapData;
-        Gdiplus::Rect rcImage(0, 0, pWrapBitmap->GetWidth(),
-                              pWrapBitmap->GetHeight());
-        pWrapBitmap->LockBits(&rcImage, Gdiplus::ImageLockModeRead,
-                              pWrapBitmap->GetPixelFormat(), &bitmapData);
-        pBitmap = new (Gdiplus::Bitmap)(bitmapData.Width, bitmapData.Height,
-                                        bitmapData.Stride, PixelFormat32bppARGB,
-                                        (BYTE *)bitmapData.Scan0);
+        Gdiplus::Rect rcImage(0, 0, pWrapBitmap->GetWidth(), pWrapBitmap->GetHeight());
+        pWrapBitmap->LockBits(&rcImage, Gdiplus::ImageLockModeRead, pWrapBitmap->GetPixelFormat(), &bitmapData);
+        pBitmap = new (Gdiplus::Bitmap)(bitmapData.Width, bitmapData.Height, bitmapData.Stride, PixelFormat32bppARGB, (BYTE*)bitmapData.Scan0);
         pWrapBitmap->UnlockBits(&bitmapData);
       }
       float maxWidth = bmpWidth / 2.0f;
@@ -349,34 +346,36 @@ bool captureBmpToJpeg(const HWND &hWnd, char *szName,
     DeleteObject(icInfo.hbmColor);
     DeleteObject(icInfo.hbmMask);
 
-    if (hIcon)
-      DestroyIcon(hIcon);
+    if (hIcon) DestroyIcon(hIcon);
 
   } while (false);
 
-  IStream *pOutIStream = NULL;
-  if (CreateStreamOnHGlobal(NULL, TRUE, (LPSTREAM *)&pOutIStream) != S_OK) {
+
+
+  IStream* pOutIStream = NULL;
+  if (CreateStreamOnHGlobal(NULL, TRUE, (LPSTREAM*)&pOutIStream) != S_OK) {
     // LOG_ERROR("Failed to create stream on global memory!\n");
     ::DeleteObject(hBMP);
     ::DeleteObject(hBitmap);
-    delete[] lpBitmapInfoHeader;
+    delete[]lpBitmapInfoHeader;
     return false;
   }
 #if 0   
-	bitmap.Save(szFilePath, &imageCLSID, &encoderParams);
+  bitmap.Save(szFilePath, &imageCLSID, &encoderParams);
 #endif
   if (bitmap.Save(pOutIStream, &imageCLSID, &encoderParams) != Gdiplus::Ok) {
     return false;
-  }
+}
   LARGE_INTEGER lnOffset;
   ULARGE_INTEGER ulnSize;
   lnOffset.QuadPart = 0;
-  if (pOutIStream->Seek(lnOffset, STREAM_SEEK_END, &ulnSize) != S_OK) {
-    // LOG_ERROR("Failed to get size!\n");
+  if (pOutIStream->Seek(lnOffset, STREAM_SEEK_END, &ulnSize) != S_OK)
+  {
+    //LOG_ERROR("Failed to get size!\n");
     pOutIStream->Release();
     ::DeleteObject(hBMP);
     ::DeleteObject(hBitmap);
-    delete[] lpBitmapInfoHeader;
+    delete[]lpBitmapInfoHeader;
     return false;
   }
 
@@ -385,35 +384,36 @@ bool captureBmpToJpeg(const HWND &hWnd, char *szName,
   l.QuadPart = 0;
   pOutIStream->Seek(l, STREAM_SEEK_SET, &ul);
 
-  // copy the stream JPG to memory
+
+  //copy the stream JPG to memory
   DWORD dwJpgSize = (DWORD)ulnSize.QuadPart;
-  BYTE *pJPG = new BYTE[dwJpgSize];
+  BYTE* pJPG = new BYTE[dwJpgSize];
   memset(pJPG, 0, dwJpgSize);
   DWORD dwRead = 0;
-  if (pOutIStream->Read(pJPG, dwJpgSize, &dwRead) != S_OK) {
+  if (pOutIStream->Read(pJPG, dwJpgSize, &dwRead) != S_OK)
+  {
     //  LOG_ERROR("Failed to read pBMP!\n");
     pOutIStream->Release();
     ::DeleteObject(hBMP);
     ::DeleteObject(hBitmap);
-    delete[] lpBitmapInfoHeader;
+    delete[]lpBitmapInfoHeader;
     return FALSE;
   }
 
   std::string name = szName;
-  ScreenWindowInfo wndInfo; // = std::make_tuple(hWnd, name, bmpWidth,
-                            // bmpHeight, bmpSize, std::move(szBmp));
+  ScreenWindowInfo wndInfo;// = std::make_tuple(hWnd, name, bmpWidth, bmpHeight, bmpSize, std::move(szBmp));
   wndInfo.windowId = hWnd;
   wndInfo.name = name;
   wndInfo.ownerName = "";
-  wndInfo.width = bmpWidth;
-  wndInfo.height = bmpHeight;
+  wndInfo.width = nWidth;
+  wndInfo.height = nHeight;
   wndInfo.imageDataLength = dwJpgSize;
   wndInfo.imageData = std::move(pJPG);
   wndsInfo.push_back(wndInfo);
   pOutIStream->Release();
   ::DeleteObject(hBMP);
   ::DeleteObject(hBitmap);
-  delete[] lpBitmapInfoHeader;
+  delete[]lpBitmapInfoHeader;
   return true;
 }
 
