@@ -20,7 +20,6 @@ export interface CanvasOptions {
 }
 
 export interface RendererOptions {
-  append: boolean;
   contentMode: CONTENT_MODE;
   mirror: boolean;
 }
