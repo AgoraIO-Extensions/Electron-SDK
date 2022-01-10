@@ -1,3 +1,7 @@
+## 3.6.214-build.110(Jan 10th, 2020)
+* add api setProcessDpiAwareness
+* fix captureBmpToJpeg for windows
+
 ## 3.6.214-build.107(Jan 7th, 2020)
 * add api enableAudioVolumeIndication
 

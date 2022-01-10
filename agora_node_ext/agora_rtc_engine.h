@@ -348,6 +348,7 @@ public:
   NAPI_API(setAddonLogFile);
   NAPI_API(leaveChannelEx);
   NAPI_API(startAudioRecording2);
+  NAPI_API(setProcessDpiAwareness);
 
 public:
   Isolate *getIsolate() { return m_isolate; }

@@ -4451,6 +4451,9 @@ class AgoraRtcEngine extends EventEmitter {
  setAddonLogFile(filePath: string): void {
    this.rtcEngine.setAddonLogFile(filePath);
  }
+ setProcessDpiAwareness(): void {
+  this.rtcEngine.setProcessDpiAwareness();
+ }
  /** Sets the role of a user in interactive live streaming.
    *
    * @since v3.2.0
