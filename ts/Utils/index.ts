@@ -130,7 +130,6 @@ export const getRendererConfigInternal = (
 ): RendererConfigInternal => {
   const rendererOptions = Object.assign(
     {
-      append: false,
       contentMode: CONTENT_MODE.FIT,
       mirror: false,
     },
