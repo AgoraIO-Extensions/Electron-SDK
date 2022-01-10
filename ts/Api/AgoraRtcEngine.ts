@@ -249,7 +249,7 @@ export class AgoraRtcEngine extends EventEmitter {
             connection.channelId,
             connection.localUid
           );
-          this._rendererManager?.removeRendererWithConfig(config);
+          this._rendererManager?.removeRendererByConfig(config);
           this.fire(EngineEvents.REMOVE_STREAM, ...params);
         }
         return true;
@@ -369,8 +369,11 @@ export class AgoraRtcEngine extends EventEmitter {
       this._rendererManager?.setRenderer(config);
     } else {
       logWarn("Note: setView view is null!");
-      this._rendererManager?.removeRendererWithConfig(config);
+      this._rendererManager?.removeRendererByConfig(config);
     }
+  }
+  destroyRendererByView(view: Element): void {
+    this._rendererManager?.removeRendererByView(view);
   }
 
   /**
@@ -380,7 +383,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * @param onFailure The error callback for the {@link destroyRenderer}
    * method.
    */
-  destroyRenderer(
+  destroyRendererByConfig(
     videoSourceType: VideoSourceType,
     channelId?: Channel,
     uid?: number
@@ -390,7 +393,7 @@ export class AgoraRtcEngine extends EventEmitter {
       channelId,
       uid
     );
-    this._rendererManager?.removeRendererWithConfig(config);
+    this._rendererManager?.removeRendererByConfig(config);
   }
 
   // ===========================================================================

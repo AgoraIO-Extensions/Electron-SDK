@@ -179,13 +179,25 @@ export default class App extends Component {
 
     rtcEngine.on(EngineEvents.USER_JOINED, (connection, uid, elapsed) => {
       console.info("USER_JOINED", connection, uid, elapsed);
+      if (uid === 10001 || uid === 10011 || uid === 10012) {
+        console.log("USER_JOINED 过滤", uid);
+        return;
+      }
       const { users } = this.state;
+      console.log("USER_JOINED", users);
+
+      if (users.filter((id) => id === uid).length > 0) {
+        console.log("USER_JOINED filterUser length", filterUser);
+        return;
+      }
+
+      console.log("USER_JOINED 没有过滤", uid);
       this.setState({ users: [...users, uid] });
     });
   };
   onPressJoin = () => {
     const { channelId } = this.state;
-    let res = rtcEngine.joinChannel(null, channelId, "", window.uid || 10086, {
+    let res = rtcEngine.joinChannel(null, channelId, "", window.uid || 10001, {
       autoSubscribeAudio: true,
       autoSubscribeVideo: true,
       publishAudioTrack: true,
@@ -209,10 +221,17 @@ export default class App extends Component {
     const { isSetFirstCameraView } = this.state;
     rtcEngine.setRenderMode(2);
     let dom = document.getElementById("firstCamera");
+    let domAppend = document.getElementById("firstCamera-append");
     rtcEngine.setView({
       videoSourceType: VideoSourceType.kVideoSourceTypeCameraPrimary,
 
       view: isSetFirstCameraView ? null : dom,
+      rendererOptions: { mirror: true, contentMode: 1 },
+    });
+    rtcEngine.setView({
+      videoSourceType: VideoSourceType.kVideoSourceTypeCameraPrimary,
+
+      view: isSetFirstCameraView ? null : domAppend,
       rendererOptions: { mirror: true, contentMode: 1 },
     });
     this.setState({ isSetFirstCameraView: !isSetFirstCameraView });
@@ -299,7 +318,7 @@ export default class App extends Component {
       rtcEngine.joinChannelEx(
         "",
         {
-          localUid: 10002,
+          localUid: 10011,
           channelId: this.state.channelId,
         },
         {
@@ -380,14 +399,14 @@ export default class App extends Component {
       rtcEngine.joinChannelEx(
         "",
         {
-          localUid: 10001,
+          localUid: 10012,
           channelId: this.state.channelId,
         },
         {
           publishCameraTrack: false,
           publishAudioTrack: false,
           publishScreenTrack: false,
-          publishSecondaryScreenTrack:true,
+          publishSecondaryScreenTrack: true,
           publishCustomAudioTrack: false,
           publishCustomVideoTrack: false,
           publishEncodedVideoTrack: false,
@@ -412,6 +431,11 @@ export default class App extends Component {
           <div
             className="render-view"
             id={"firstCamera"}
+            style={{ backgroundColor: "yellow" }}
+          />
+          <div
+            className="render-view"
+            id={"firstCamera-append"}
             style={{ backgroundColor: "yellow" }}
           />
           <div
@@ -709,6 +733,17 @@ export default class App extends Component {
         </div>
         <div>
           <button onClick={this.onPressTest}>test</button>
+        </div>
+        <div>
+          <button
+            onClick={() => {
+              rtcEngine.destroyRendererByView(
+                document.getElementById("firstCamera")
+              );
+            }}
+          >
+            testDestoryLocalCameraView
+          </button>
         </div>
         {this.renderViews()}
       </div>
