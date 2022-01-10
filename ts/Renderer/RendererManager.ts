@@ -22,11 +22,14 @@ interface RenderConfig {
   cachedVideoFrame?: VideoFrame;
 }
 
+export type UidMap = Map<number, RenderConfig>;
+export type ChannelIdMap = Map<Channel, UidMap>;
+export type RenderMap = Map<VideoSourceType, ChannelIdMap>;
 class RendererManager {
   _config: {
     videoFps: number;
     videoFrameUpdateInterval?: NodeJS.Timeout;
-    renderers: Map<VideoSourceType, Map<Channel, Map<number, RenderConfig>>>;
+    renderers: RenderMap;
     renderMode: RENDER_MODE;
   };
   _rtcEngine: NodeIrisRtcEngine;
@@ -135,7 +138,7 @@ class RendererManager {
     );
   }
 
-  removeRendererWithConfig(config: VideoFrameCacheConfig): void {
+  removeRendererByConfig(config: VideoFrameCacheConfig): void {
     const { videoSourceType, channelId, uid } = config;
     this.disableVideoFrameCache(config);
     this._config.renderers
@@ -148,29 +151,61 @@ class RendererManager {
 
     this._config.renderers.get(videoSourceType)?.get(channelId)?.delete(uid);
   }
+  removeRendererByView(view: Element): void {
+    let currentRenders: IRenderer[] | undefined;
+    this.forEachRenderers((renderConfig, _, { uidMap }) => {
+      renderConfig.renders?.forEach((render) => {
+        if (render.getView() !== view) {
+          return;
+        }
+        currentRenders = renderConfig.renders;
+        render.unbind();
+      });
+    });
+    if (!currentRenders) {
+      return;
+    }
+    currentRenders = currentRenders!.filter(
+      (render) => render.getView() !== view
+    );
+  }
 
   removeAllRenderer(): void {
+    const renderMap = this.forEachRenderers(
+      (renderConfig, videoFrameCacheConfig) => {
+        this.disableVideoFrameCache(videoFrameCacheConfig);
+        renderConfig.renders?.forEach((renderItem) => {
+          renderItem.unbind();
+        });
+        renderConfig.renders = [];
+      }
+    );
+    renderMap.clear();
+  }
+
+  forEachRenderers(
+    callbackfn: (
+      renderConfig: RenderConfig,
+      videoFrameCacheConfig: VideoFrameCacheConfig,
+      maps: {
+        channelMap: ChannelIdMap;
+        uidMap: UidMap;
+      }
+    ) => void
+  ): RenderMap {
     const renders = this._config.renderers;
     renders.forEach((channelMap, videoSourceType) => {
       channelMap.forEach((uidMap, channelId) => {
         uidMap.forEach((renderConfig, uid) => {
-          const videoFrameCacheConfig: VideoFrameCacheConfig = {
-            uid,
-            channelId,
-            videoSourceType,
-          };
-
-          this.disableVideoFrameCache(videoFrameCacheConfig);
-          renderConfig.renders?.forEach((renderItem) => {
-            renderItem.unbind();
-          });
-          uidMap.delete(uid);
+          callbackfn(
+            renderConfig,
+            { videoSourceType, channelId, uid },
+            { channelMap, uidMap }
+          );
         });
-        channelMap.delete(channelId);
       });
-      renders.delete(videoSourceType);
     });
-    renders.clear();
+    return renders;
   }
 
   /**
@@ -183,14 +218,14 @@ class RendererManager {
       config: VideoFrameCacheConfig
     ) => {
       const { videoSourceType, channelId, uid } = config;
-      let cachedVideoFrame = rendererItem.cachedVideoFrame;
+      const { cachedVideoFrame, renders } = rendererItem;
+
       if (!cachedVideoFrame) {
         logWarn(
           `VideoSourceType:${videoSourceType} Channel: ${channelId} Uid: ${uid} have no cachedVideoFrame`
         );
         return;
       }
-      cachedVideoFrame.videoSourceType = config.videoSourceType;
 
       let retObj;
       retObj = this._rtcEngine.GetVideoStreamData(cachedVideoFrame);
@@ -203,14 +238,13 @@ class RendererManager {
       }
 
       if (!retObj.isNewFrame) return;
-
-      let renders = this.getRenderers(config);
+      const { yBuffer, uBuffer, vBuffer } = cachedVideoFrame;
       let videoFrame: VideoFrame = {
         width: retObj.width,
         height: retObj.height,
-        yBuffer: cachedVideoFrame.yBuffer,
-        uBuffer: cachedVideoFrame.uBuffer,
-        vBuffer: cachedVideoFrame.vBuffer,
+        yBuffer,
+        uBuffer,
+        vBuffer,
         mirror: false,
         yStride: retObj.yStride,
         rotation: retObj.rotation,
@@ -228,13 +262,7 @@ class RendererManager {
       }
     };
     this._config.videoFrameUpdateInterval = setInterval(() => {
-      this._config.renderers.forEach((channelMap, videoSourceType) => {
-        channelMap.forEach((uidMap, channelId) => {
-          uidMap.forEach((renderConfig, uid) =>
-            renderFunc(renderConfig, { videoSourceType, channelId, uid })
-          );
-        });
-      });
+      this.forEachRenderers(renderFunc);
     }, 1000 / this._config.videoFps);
   }
 

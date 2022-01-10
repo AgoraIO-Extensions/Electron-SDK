@@ -103,6 +103,9 @@ export const formatVideoFrameBufferConfig = (
   channelId: string;
   videoSourceType: VideoSourceType;
 } => {
+  if (videoSourceType === undefined || videoSourceType === null) {
+    throw new Error(`must set videoSourceType`);
+  }
   let uid = originUid;
   let channelId = originChannelId;
 
@@ -126,28 +129,21 @@ export const formatVideoFrameBufferConfig = (
 };
 
 export const getRendererConfigInternal = (
-  originConfig: RendererConfig
+  config: RendererConfig
 ): RendererConfigInternal => {
   const rendererOptions = Object.assign(
     {
       contentMode: CONTENT_MODE.FIT,
       mirror: false,
     },
-    originConfig.rendererOptions
-  );
-  // set default RendererConfig
-  const newConfig = Object.assign(
-    {
-      videoSourceType: VideoSourceType.kVideoSourceTypeCameraPrimary,
-    },
-    originConfig
+    config.rendererOptions
   );
 
   const { uid, channelId } = formatVideoFrameBufferConfig(
-    newConfig.videoSourceType,
-    newConfig.channelId,
-    newConfig.uid
+    config.videoSourceType,
+    config.channelId,
+    config.uid
   );
 
-  return { ...newConfig, uid, channelId, rendererOptions };
+  return { ...config, uid, channelId, rendererOptions };
 };
