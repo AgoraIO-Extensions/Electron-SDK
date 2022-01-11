@@ -1,3 +1,6 @@
+## 3.6.0-build.111(Jan 11th, 2021)
+- fix dll import for windows
+
 ## 3.6.0-build.106(Jan 6th, 2021)
 - fix max path for getScreenWindowInfo 
 
