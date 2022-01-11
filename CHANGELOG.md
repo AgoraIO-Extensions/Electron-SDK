@@ -1,3 +1,6 @@
+## 3.6.0-rtc.2-build.111(Jan 11th, 2021)
+- fix dll import for windows
+
 ## 3.6.0-rtc.2-build.110(Jan 10th, 2021)
 - update native sdk
 
