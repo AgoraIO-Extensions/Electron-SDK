@@ -7204,6 +7204,10 @@ NAPI_API_DEFINE(NodeRtcEngine, getDefaultAudioPlaybackDevices) {
     char deviceName[MAX_DEVICE_ID_LENGTH] = {0};
     char deviceId[MAX_DEVICE_ID_LENGTH] = {0};
     Local<v8::Object> dev = v8::Object::New(args.GetIsolate());
+    if (!pdc) {
+      args.GetReturnValue().Set(dev);
+      return;
+    }
     pdc->getDefaultDevice(deviceName, deviceId);
     auto dn = v8::String::NewFromUtf8(args.GetIsolate(), deviceName,
                                       NewStringType::kInternalized)
@@ -7238,6 +7242,10 @@ NAPI_API_DEFINE(NodeRtcEngine, getDefaultAudioRecordingDevices) {
     char deviceName[MAX_DEVICE_ID_LENGTH] = {0};
     char deviceId[MAX_DEVICE_ID_LENGTH] = {0};
     Local<v8::Object> dev = v8::Object::New(args.GetIsolate());
+    if (!pdc) {
+      args.GetReturnValue().Set(dev);
+      return;
+    }
     pdc->getDefaultDevice(deviceName, deviceId);
     auto dn = v8::String::NewFromUtf8(args.GetIsolate(), deviceName,
                                       NewStringType::kInternalized)
