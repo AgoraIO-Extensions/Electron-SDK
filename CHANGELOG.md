@@ -1,3 +1,6 @@
+## 3.5.2-rc.1-build.112(Jan 11th, 2022)
+- fix dll import for windows
+
 ## 3.5.2-rc.1-build.104(Jan 4th, 2022)
 - update native sdk
 - fix
