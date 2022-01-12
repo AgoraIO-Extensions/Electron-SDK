@@ -83,6 +83,11 @@ declare module "./AgoraRtcEngine" {
      * {@link joinChannel}
      * method until the SDK triggers this callback.
      */
+
+    on(
+      evt: EngineEvents.JOINED_CHANNEL,
+      cb: (connection: RtcConnection, elapsed: number) => void
+    ): this;
     on(
       evt: EngineEvents.JOIN_CHANNEL_SUCCESS,
       cb: (connection: RtcConnection, elapsed: number) => void
@@ -102,6 +107,7 @@ declare module "./AgoraRtcEngine" {
       evt: EngineEvents.REJOIN_CHANNEL_SUCCESS,
       cb: (connection: RtcConnection, elapsed: number) => void
     ): this;
+
     // on(evt: 'audioQuality', cb: (
     //   uid: number, quality: AgoraNetworkQuality, delay: number, lost: number
     // ) => void): this;
