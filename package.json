@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "3.5.0-rc.3-iris.1123-build.1",
+  "version": "3.5.0-rc.3-iris.112-build.1",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -29,6 +29,7 @@
     "prebuilt": true
   },
   "dependencies": {
+    "agora-electron-sdk":"3.5.0-rc.3-iris.1123-build.1",
     "bindings": "1.2.1",
     "cross-env": "^7.0.3",
     "download": "^8.0.0",
