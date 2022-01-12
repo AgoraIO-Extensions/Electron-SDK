@@ -1,3 +1,6 @@
+## 3.5.0-rc.3-iris.112-build.1 (Jan 12th, 2021)
+- force consistent casing in fileNames for js
+
 ## 3.5.0-rc.3-iris.1123-build.1 (Nov 15th, 2021)
 - modify
   - getScreenDisplaysInfo
