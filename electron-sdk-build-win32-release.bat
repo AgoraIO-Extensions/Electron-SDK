@@ -12,11 +12,12 @@ if exist build\\Release\\VideoSource.exe (
     C:\\SignatureTools\\signtool.exe sign /f "C:\\SignatureTools\\agora.pfx" /p "31169323" /t "http://timestamp.comodoca.com/authenticode" "build\\Release\\VideoSource.exe"
 )
 C:\\SignatureTools\\signtool.exe sign /f "C:\\SignatureTools\\agora.pfx" /p "31169323" /t "http://timestamp.comodoca.com/authenticode" "build\\Release\\agora_node_ext.node"
-
-if %errorlevel% equ 0 goto endloop
-if %count% neq 5 goto loop
+if %count% equ 5 goto endloop
+if %errorlevel% equ 1 (
+    sleep 15
+    goto loop
+)
 :endloop
-
 if %count% equ 5 (
     echo "******sign error*******"
     exit 1
