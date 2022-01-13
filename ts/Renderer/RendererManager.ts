@@ -101,7 +101,7 @@ class RendererManager {
    * @ignore
    */
   createRenderer(): IRenderer {
-    return new YUVCanvasRenderer(this._config.renderMode === RENDER_MODE.WEBGL);
+    return new YUVCanvasRenderer(false);
   }
 
   /**
