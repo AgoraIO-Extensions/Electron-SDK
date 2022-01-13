@@ -1,4 +1,6 @@
 import React, { Component, useEffect } from "react";
+import electron from "electron";
+window.electron = electron;
 import AgoraRtcEngine, {
   ApiTypeEngine,
   CHANNEL_PROFILE_TYPE,
@@ -109,12 +111,12 @@ export default class App extends Component {
     }
     rtcEngine = new AgoraRtcEngine();
     window.rtcEngine = rtcEngine;
-
+    console.log('123123');
     let res = rtcEngine.initialize({
       appId: APP_ID,
       areaCode: 1,
       logConfig: {
-        filePath: "/Users/jerry/Downloads/111",
+        filePath: "/home/parallels/projects/Electron-SDK/example/linux_e.log",
         fileSize: 1024,
         level: 1,
       },
@@ -134,6 +136,7 @@ export default class App extends Component {
       AUDIO_PROFILE_TYPE.AUDIO_PROFILE_DEFAULT,
       AUDIO_SCENARIO_TYPE.AUDIO_SCENARIO_CHATROOM_ENTERTAINMENT
     );
+  
     console.log("setAudioProfile", res);
 
     res = rtcEngine.enableVideo();
@@ -151,8 +154,6 @@ export default class App extends Component {
     });
     console.log("setVideoEncoderConfiguration", res);
 
-    res = rtcEngine.enableDualStreamMode(true);
-    console.log("enableDualStreamMode", res);
 
     const ver = rtcEngine.getVersion();
     console.log("getVersion", ver);
@@ -286,23 +287,28 @@ export default class App extends Component {
     });
     this.setState({ isSetFirstScreenShareView: !isSetFirstScreenShareView });
   };
-  onPressToggleFirstScreenShare = () => {
+  onPressToggleFirstScreenShare = async () => {
     const { isStartFirstScreenShare } = this.state;
-    const displayList = rtcEngine.getScreenDisplaysInfo();
-    const windowList = rtcEngine.getScreenWindowsInfo();
-    const {
-      displayId: { id },
-    } = displayList[0];
-    const { windowId } = windowList[0];
-    console.log("getScreenDisplaysInfo", displayList);
-    console.log("getScreenWindowsInfo", windowList);
-
+    // const displayList = rtcEngine.getScreenDisplaysInfo();
+    // const windowList = rtcEngine.getScreenWindowsInfo();
+    // const {
+    //   displayId: { id },
+    // } = displayList[0];
+    // const { windowId } = windowList[0];
+    const res = await electron.desktopCapturer.getSources({ types: ['window', 'screen'] })
+    const id = res[0].id.split(":")[1];
+    const windowId =res[1].id.split(":")[1];
+    console.log('getSources',res);
+    // console.log("getScreenDisplaysInfo", displayList);
+    // console.log("getScreenWindowsInfo", windowList);
+    // return 
+    console.log('getSources  id',id,'  windowId',windowId);
     if (!isStartFirstScreenShare) {
       const res = rtcEngine.startPrimaryScreenCapture({
         isCaptureWindow: false,
-        displayId: id,
+        displayId: parseInt(id),
         screenRect: { width: 0, height: 0, x: 0, y: 0 },
-        windowId: windowId,
+        windowId: parseInt(windowId),
         params: {
           dimensions: { width: 1920, height: 1080 },
           bitrate: 1000,
@@ -463,7 +469,10 @@ export default class App extends Component {
       </div>
     );
   };
-  onPressTest = () => {
+  onPressTest = async() => {
+    const res = await electron.desktopCapturer.getSources({ types: ['window', 'screen'] })
+    console.log('getScreenSources',res);
+    return
     const mediaOpt = {
       autoSubscribeAudio: true,
       autoSubscribeVideo: true,
