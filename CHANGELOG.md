@@ -1,3 +1,6 @@
+## 3.6.0-rtc.2-build.114(Jan 14th, 2021)
+- Vulnerability check and fix for dependent libraries: `npm audit fix --force`
+
 ## 3.6.0-rtc.2-build.111(Jan 11th, 2021)
 - fix dll import for windows
 
