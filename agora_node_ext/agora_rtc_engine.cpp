@@ -148,8 +148,9 @@ getLiveTranscoding(Local<Object> &obj,
                                              featureName);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
         if (featureName) {
-          liveStreamAdvancedFeature[i].featureName =
-              string(featureName).c_str();
+          char *string = new char[strlen(featureName)];
+          strcpy(string, featureName);
+          liveStreamAdvancedFeature[i].featureName = string;
         }
 
         key = "opened";
@@ -181,7 +182,9 @@ getLiveTranscoding(Local<Object> &obj,
                                                       key, urlStr);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
         if (urlStr) {
-          wkImages[i].url = std::string(urlStr).c_str();
+          char *string = new char[strlen(urlStr)];
+          strcpy(string, urlStr);
+          wkImages[i].url = string;
         }
 
         key = "x";
@@ -229,7 +232,9 @@ getLiveTranscoding(Local<Object> &obj,
                                              urlStr);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
         if (urlStr) {
-          bgImages[i].url = string(urlStr).c_str();
+          char *string = new char[strlen(urlStr)];
+          strcpy(string, urlStr);
+          bgImages[i].url = string;
         }
 
         key = "x";
@@ -934,15 +939,24 @@ NAPI_API_DEFINE(NodeRtcEngine, setLiveTranscoding) {
     }
     result = pEngine->m_engine->setLiveTranscoding(*liveTranscoding);
     if (liveTranscoding->watermark) {
+      for (unsigned int i = 0; i < liveTranscoding->watermarkCount; i++) {
+        delete liveTranscoding->watermark[i].url;
+      }
       delete[] liveTranscoding->watermark;
     }
     if (liveTranscoding->backgroundImage) {
+      for (unsigned int i = 0; i < liveTranscoding->backgroundImageCount; i++) {
+        delete liveTranscoding->backgroundImage[i].url;
+      }
       delete[] liveTranscoding->backgroundImage;
     }
     if (liveTranscoding->transcodingUsers) {
       delete[] liveTranscoding->transcodingUsers;
     }
     if (liveTranscoding->advancedFeatures) {
+      for (unsigned int i = 0; i < liveTranscoding->advancedFeatureCount; i++) {
+        delete liveTranscoding->advancedFeatures[i].featureName;
+      }
       delete[] liveTranscoding->advancedFeatures;
     }
     delete liveTranscoding;
@@ -7331,15 +7345,24 @@ NAPI_API_DEFINE(NodeRtcEngine, startRtmpStreamWithTranscoding) {
     result = pEngine->m_engine->startRtmpStreamWithTranscoding(
         url, *liveTranscoding);
     if (liveTranscoding->watermark) {
+        for (unsigned int i=0; i<liveTranscoding->watermarkCount; i++) {
+            delete liveTranscoding->watermark[i].url;
+        }
       delete[] liveTranscoding->watermark;
     }
     if (liveTranscoding->backgroundImage) {
+        for (unsigned int i=0; i<liveTranscoding->backgroundImageCount; i++) {
+            delete liveTranscoding->backgroundImage[i].url;
+        }
       delete[] liveTranscoding->backgroundImage;
     }
     if (liveTranscoding->transcodingUsers) {
       delete[] liveTranscoding->transcodingUsers;
     }
     if (liveTranscoding->advancedFeatures) {
+        for (unsigned int i=0; i<liveTranscoding->advancedFeatureCount; i++) {
+            delete liveTranscoding->advancedFeatures[i].featureName;
+        }
       delete[] liveTranscoding->advancedFeatures;
     }
     delete liveTranscoding;
@@ -7368,15 +7391,24 @@ NAPI_API_DEFINE(NodeRtcEngine, updateRtmpTranscoding) {
     }
     result = pEngine->m_engine->updateRtmpTranscoding(*liveTranscoding);
     if (liveTranscoding->watermark) {
+      for (unsigned int i = 0; i < liveTranscoding->watermarkCount; i++) {
+        delete liveTranscoding->watermark[i].url;
+      }
       delete[] liveTranscoding->watermark;
     }
     if (liveTranscoding->backgroundImage) {
+      for (unsigned int i = 0; i < liveTranscoding->backgroundImageCount; i++) {
+        delete liveTranscoding->backgroundImage[i].url;
+      }
       delete[] liveTranscoding->backgroundImage;
     }
     if (liveTranscoding->transcodingUsers) {
       delete[] liveTranscoding->transcodingUsers;
     }
     if (liveTranscoding->advancedFeatures) {
+      for (unsigned int i = 0; i < liveTranscoding->advancedFeatureCount; i++) {
+        delete liveTranscoding->advancedFeatures[i].featureName;
+      }
       delete[] liveTranscoding->advancedFeatures;
     }
     delete liveTranscoding;
