@@ -1,3 +1,7 @@
+## 3.6.1-rc.1-build.118(Jan 18th, 2021)
+- fix getLiveTranscoding
+- update native sdk
+
 ## 3.6.0-build.111(Jan 11th, 2021)
 - fix dll import for windows
 
