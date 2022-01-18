@@ -1,3 +1,6 @@
+## 3.6.0-rc.2-build.119(Jan 18th, 2021)
+- fix getLiveTranscoding
+
 ## 3.6.0-rtc.2-build.114(Jan 14th, 2021)
 - Vulnerability check and fix for dependent libraries: `npm audit fix --force`
 

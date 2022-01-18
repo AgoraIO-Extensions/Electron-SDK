@@ -1,11 +1,11 @@
 {
   "name": "agora-electron-sdk",
-  "version": "3.6.0-rc.2-build.114",
+  "version": "3.6.0-rc.2-build.119",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
   "author": "agora.io",
-  "scripts": {
+"scripts": {
     "switch:arch": "just switch:arch",
     "sync:lib": "just sync:lib",
     "install": "just install",

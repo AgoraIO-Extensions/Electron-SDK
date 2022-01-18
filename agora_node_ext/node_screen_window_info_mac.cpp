@@ -7,8 +7,8 @@
 #include <CoreServices/CoreServices.h>
 #include <ImageIO/ImageIO.h>
 
-void ConvertRGBToBMP(unsigned char *srcRGBABuffer, BufferInfo &bufferInfo,
-                     unsigned int width, unsigned int height) {
+void ConvertRGBToBMP(void *srcRGBABuffer, BufferInfo &bufferInfo, int32_t width,
+                     int32_t height) {
   CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
   CGContextRef bitmapContext =
       CGBitmapContextCreate(srcRGBABuffer, width, height,
