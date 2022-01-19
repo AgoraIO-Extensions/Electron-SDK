@@ -156,22 +156,22 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 
         # native rtc sdk path
         set(AGORA_RTC_SDK_PATH 
-                ${CMAKE_CURRENT_SOURCE_DIR}/iris/RTC/sdk
+                ${CMAKE_CURRENT_SOURCE_DIR}/iris/DCG/sdk
                 )
 
         file(GLOB AGORA_RTC_SDK_LIBRARY
-                ${AGORA_RTC_SDK_PATH}/x86_64/*.so
+                ${AGORA_RTC_SDK_PATH}/*.so
                 )
 
         set(AGORA_RTC_SDK_HEADER_FILE_DIR 
-                ${AGORA_RTC_SDK_PATH}/high_level_api/include
+                ${AGORA_RTC_SDK_PATH}/include
                 )
         # iris sdk path
         set(AGORA_IRIS_SDK_PATH 
                 ${CMAKE_CURRENT_SOURCE_DIR}/iris
                 )
         file(GLOB AGORA_IRIS_SDK_LIBRARY
-                ${AGORA_IRIS_SDK_PATH}/x86_64/*
+                ${AGORA_IRIS_SDK_PATH}/*.so
                 )
         # iris sdk include file
         set(AGORA_IRIS_SDK_HEADER_FILE_DIR 
@@ -232,7 +232,7 @@ function(build_target_agora_node_ext)
                 set_target_properties(
                         libagora_iris_sdk
                         PROPERTIES IMPORTED_LOCATION
-                        ${AGORA_IRIS_SDK_PATH}/x86_64/libAgoraRtcWrapper.so
+                        ${AGORA_IRIS_SDK_PATH}/libAgoraRtcWrapper.so
                         )
                 
                 add_library(${AGORA_NODE_EXT_NAME} SHARED

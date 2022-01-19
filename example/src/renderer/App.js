@@ -92,7 +92,7 @@ const defaultState = {
   isStartSecondScreenShare: false,
 
   users: [],
-  channelId: "testLinux",
+  channelId: "zwqtests",
 };
 export default class App extends Component {
   constructor(props) {
@@ -111,7 +111,6 @@ export default class App extends Component {
     }
     rtcEngine = new AgoraRtcEngine();
     window.rtcEngine = rtcEngine;
-    console.log('123123');
     let res = rtcEngine.initialize({
       appId: APP_ID,
       areaCode: 1,
@@ -136,7 +135,7 @@ export default class App extends Component {
       AUDIO_PROFILE_TYPE.AUDIO_PROFILE_DEFAULT,
       AUDIO_SCENARIO_TYPE.AUDIO_SCENARIO_CHATROOM_ENTERTAINMENT
     );
-  
+
     console.log("setAudioProfile", res);
 
     res = rtcEngine.enableVideo();
@@ -154,9 +153,9 @@ export default class App extends Component {
     });
     console.log("setVideoEncoderConfiguration", res);
 
-
     const ver = rtcEngine.getVersion();
     console.log("getVersion", ver);
+    rtcEngine.enableAudio();
     // rtcEngine.startPreview();
     this.subscribeEvent();
   };
@@ -188,7 +187,7 @@ export default class App extends Component {
       console.log("USER_JOINED", users);
 
       if (users.filter((id) => id === uid).length > 0) {
-        console.log("USER_JOINED filterUser length", filterUser);
+        console.log("USER_JOINED filterUser ", uid);
         return;
       }
 
@@ -196,18 +195,29 @@ export default class App extends Component {
       this.setState({ users: [...users, uid] });
     });
   };
+
   onPressJoin = () => {
     const { channelId } = this.state;
-    let res = rtcEngine.joinChannel(null, channelId, "", window.uid || 10001, {
-      autoSubscribeAudio: true,
-      autoSubscribeVideo: true,
-      publishAudioTrack: true,
-      publishCameraTrack: true,
-      publishScreenTrack: true,
-      clientRoleType: CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER,
-      channelProfile: CHANNEL_PROFILE_TYPE.CHANNEL_PROFILE_LIVE_BROADCASTING,
-    });
-    console.log("joinChannel", res);
+    rtcEngine.joinChannelEx(
+      "",
+      {
+        localUid: window.uid || 10001,
+        channelId,
+      },
+      {
+        publishCameraTrack: true,
+        publishAudioTrack: true,
+        publishScreenTrack: false,
+        publishCustomAudioTrack: false,
+        publishCustomVideoTrack: false,
+        publishEncodedVideoTrack: false,
+        publishMediaPlayerAudioTrack: false,
+        publishMediaPlayerVideoTrack: false,
+        autoSubscribeAudio: true,
+        autoSubscribeVideo: true,
+        clientRoleType: 1,
+      }
+    );
   };
   onPressRelease = () => {
     if (!rtcEngine) {
@@ -295,14 +305,17 @@ export default class App extends Component {
     //   displayId: { id },
     // } = displayList[0];
     // const { windowId } = windowList[0];
-    const res = await electron.desktopCapturer.getSources({ types: ['window', 'screen'] })
+    const res = await electron.desktopCapturer.getSources({
+      types: ["window", "screen"],
+    });
     const id = res[0].id.split(":")[1];
-    const windowId =res[1].id.split(":")[1];
-    console.log('getSources',res);
+    const windowId = res[3].id.split(":")[1];
+    console.log("getSources", res);
     // console.log("getScreenDisplaysInfo", displayList);
     // console.log("getScreenWindowsInfo", windowList);
-    // return 
-    console.log('getSources  id',id,'  windowId',windowId);
+    // return
+    console.log("getSources  id", id, "  windowId", windowId);
+    console.log(" 是否打开了屏幕共享", isStartFirstScreenShare);
     if (!isStartFirstScreenShare) {
       const res = rtcEngine.startPrimaryScreenCapture({
         isCaptureWindow: false,
@@ -355,11 +368,15 @@ export default class App extends Component {
       //     excludeWindowCount: [],
       //   }
       // );
-      console.log("startSecondaryScreenCapture", res);
+      console.log("startPrimaryScreenCapture", res);
     } else {
-      rtcEngine.stopPrimaryScreenCapture();
+      const res = rtcEngine.stopPrimaryScreenCapture();
+      console.log("stopPrimaryScreenCapture", res);
     }
-    this.setState({ isStartFirstScreenShare: !isStartFirstScreenShare });
+
+    this.setState({ isStartFirstScreenShare: !isStartFirstScreenShare }, () => {
+      console.log("调用结果", isStartFirstScreenShare);
+    });
   };
   onPressSetViewForSecondScreenShare = () => {
     const { isSetSecondScreenShareView } = this.state;
@@ -469,10 +486,12 @@ export default class App extends Component {
       </div>
     );
   };
-  onPressTest = async() => {
-    const res = await electron.desktopCapturer.getSources({ types: ['window', 'screen'] })
-    console.log('getScreenSources',res);
-    return
+  onPressTest = async () => {
+    const res = await electron.desktopCapturer.getSources({
+      types: ["window", "screen"],
+    });
+    console.log("getScreenSources", res);
+    return;
     const mediaOpt = {
       autoSubscribeAudio: true,
       autoSubscribeVideo: true,
