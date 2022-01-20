@@ -1,3 +1,6 @@
+## 3.6.200-rc.101-build.120(Jan 5th, 2022)
+* update native sdk
+
 ## 3.6.200-rc.101-build.0105(Jan 5th, 2022)
 * update native sdk
 ## 3.6.200-rc.100-build.1118(Nov 18th, 2021)
