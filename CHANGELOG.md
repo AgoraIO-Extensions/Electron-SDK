@@ -1,3 +1,6 @@
+## 3.6.0-rc.2-build.120(Jan 20th, 2021)
+- fix API compatibility for windows
+
 ## 3.6.0-rc.2-build.119(Jan 18th, 2021)
 - fix getLiveTranscoding
 

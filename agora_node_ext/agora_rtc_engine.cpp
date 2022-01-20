@@ -148,7 +148,9 @@ getLiveTranscoding(Local<Object> &obj,
                                              featureName);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
         if (featureName) {
-          char *string = new char[strlen(featureName)];
+          int len = strlen(featureName) + 1;
+          char *string = new char[len];
+          memset(string, 0, len);
           strcpy(string, featureName);
           liveStreamAdvancedFeature[i].featureName = string;
         }
@@ -182,7 +184,9 @@ getLiveTranscoding(Local<Object> &obj,
                                                       key, urlStr);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
         if (urlStr) {
-          char *string = new char[strlen(urlStr)];
+          int len = strlen(urlStr) + 1;
+          char *string = new char[len];
+          memset(string, 0, len);
           strcpy(string, urlStr);
           wkImages[i].url = string;
         }
@@ -232,7 +236,9 @@ getLiveTranscoding(Local<Object> &obj,
                                              urlStr);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
         if (urlStr) {
-          char *string = new char[strlen(urlStr)];
+          int len = strlen(urlStr) + 1;
+          char *string = new char[len];
+          memset(string, 0, len);
           strcpy(string, urlStr);
           bgImages[i].url = string;
         }
@@ -8248,15 +8254,24 @@ NAPI_API_DEFINE(NodeRtcChannel, setLiveTranscoding) {
     }
     result = pChannel->m_channel->setLiveTranscoding(*liveTranscoding);
     if (liveTranscoding->watermark) {
+      for (unsigned int i = 0; i < liveTranscoding->watermarkCount; i++) {
+        delete liveTranscoding->watermark[i].url;
+      }
       delete[] liveTranscoding->watermark;
     }
     if (liveTranscoding->backgroundImage) {
+      for (unsigned int i = 0; i < liveTranscoding->backgroundImageCount; i++) {
+        delete liveTranscoding->backgroundImage[i].url;
+      }
       delete[] liveTranscoding->backgroundImage;
     }
     if (liveTranscoding->transcodingUsers) {
       delete[] liveTranscoding->transcodingUsers;
     }
     if (liveTranscoding->advancedFeatures) {
+      for (unsigned int i = 0; i < liveTranscoding->advancedFeatureCount; i++) {
+        delete liveTranscoding->advancedFeatures[i].featureName;
+      }
       delete[] liveTranscoding->advancedFeatures;
     }
     delete liveTranscoding;
