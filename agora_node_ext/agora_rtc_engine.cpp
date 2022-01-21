@@ -210,6 +210,16 @@ getLiveTranscoding(Local<Object> &obj,
         napi_get_object_property_int32_(isolate, watermarkObj, key,
                                         wkImages[i].height);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+
+        key = "zOrder";
+        napi_get_object_property_int32_(isolate, watermarkObj, key,
+                                        wkImages[i].zOrder);
+        CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+          
+        key = "alpha";
+        napi_get_object_property_double_(isolate, watermarkObj, key,
+                                        wkImages[i].alpha);
+        CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
       }
       transcoding->watermark = wkImages;
       transcoding->watermarkCount = count;
@@ -261,6 +271,16 @@ getLiveTranscoding(Local<Object> &obj,
         key = "height";
         napi_get_object_property_int32_(isolate, advancedFeatureObj, key,
                                         bgImages[i].height);
+        CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+        
+        key = "zOrder";
+        napi_get_object_property_int32_(isolate, advancedFeatureObj, key,
+                                        bgImages[i].zOrder);
+        CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+            
+        key = "alpha";
+        napi_get_object_property_double_(isolate, advancedFeatureObj, key,
+                                        bgImages[i].alpha);
         CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
       }
       transcoding->backgroundImage = bgImages;

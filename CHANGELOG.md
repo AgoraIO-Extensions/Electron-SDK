@@ -1,3 +1,6 @@
+## 3.6.1-rc.1-build.122(Jan 22th, 2021)
+- RtcImage not pass alpha and zOrder
+
 ## 3.6.1-rc.1-build.121(Jan 21th, 2021)
 - fix API compatibility for windows
 - update native sdk
