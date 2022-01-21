@@ -30,12 +30,13 @@ const AgoraRender = function() {
     firstFrameRender: false,
     lastImageWidth: 0,
     lastImageHeight: 0,
-    lastImageRotation: 0
+    lastImageRotation: 0,
+    gl: undefined,
   };
 
   that.setContentMode = function(mode) {
     that.contentMode = mode;
-  }
+  };
 
   that.bind = function(view) {
     initCanvas(
@@ -46,14 +47,20 @@ const AgoraRender = function() {
       that.initRotation,
       console.warn
     );
+    const ResizeObserver =
+      window.ResizeObserver ||
+      window.WebKitMutationObserver ||
+      window.MozMutationObserver;
+    if (ResizeObserver) {
+      this.observer = new ResizeObserver(() => {
+        that.refreshCanvas && that.refreshCanvas();
+      });
+      this.observer.observe(view);
+    }
   };
 
   that.unbind = function() {
-    try {
-      gl.getExtension('WEBGL_lose_context').loseContext();
-    } catch (err) {
-      console.warn(err)
-    }
+    this.observer && this.observer.unobserve && this.observer.disconnect();
     program = undefined;
     positionLocation = undefined;
     texCoordLocation = undefined;
@@ -73,10 +80,22 @@ const AgoraRender = function() {
     gl = undefined;
 
     try {
-      that.container && that.container.removeChild(that.canvas);
-      that.view && that.view.removeChild(that.container);
+      if (
+        that.container &&
+        that.canvas &&
+        that.canvas.parentNode === that.container
+      ) {
+        that.container.removeChild(that.canvas);
+      }
+      if (
+        that.view &&
+        that.container &&
+        that.container.parentNode === that.view
+      ) {
+        that.view.removeChild(that.container);
+      }
     } catch (e) {
-      console.warn(e)
+      console.warn(e);
     }
 
 
@@ -109,15 +128,19 @@ const AgoraRender = function() {
       const view = that.view;
       that.unbind();
       // Console.log('init canvas ' + image.width + "*" + image.height + " rotation " + image.rotation);
-      initCanvas(view, image.mirror, image.width, image.height, image.rotation, e => {
-        console.error(
-          `init canvas ${image.width}*${image.height} rotation ${
-            image.rotation
-          } failed. ${e}`
-        );
-      });
+      initCanvas(
+        view,
+        image.mirror,
+        image.width,
+        image.height,
+        image.rotation,
+        e => {
+          console.error(
+            `init canvas ${image.width}*${image.height} rotation ${image.rotation} failed. ${e}`
+          );
+        }
+      );
     }
-
     // Console.log(image.width, "*", image.height, "planes "
     //    , " y ", image.yplane[0], image.yplane[image.yplane.length - 1]
     //    , " u ", image.uplane[0], image.uplane[image.uplane.length - 1]
@@ -159,7 +182,7 @@ const AgoraRender = function() {
     }
   };
 
-      /**
+  /**
    * draw image with params
    * @private
    * @param {*} render
@@ -168,7 +191,7 @@ const AgoraRender = function() {
    * @param {*} uplanedata
    * @param {*} vplanedata
    */
-  that.drawFrame = function({header, yUint8Array, uUint8Array, vUint8Array}) {
+   that.drawFrame = function({header, yUint8Array, uUint8Array, vUint8Array}) {
     var headerLength = 20;
     var dv = new DataView(header);
     var format = dv.getUint8(0);
@@ -192,19 +215,19 @@ const AgoraRender = function() {
     var vLength = yLength / 4;
     var vBegin = uEnd;
     var vEnd = vBegin + vLength;
-    that.renderImage({
-      mirror: mirror,
-      width,
-      height,
-      left,
-      top,
-      right,
-      bottom,
-      rotation: rotation,
-      yplane: new Uint8Array(yUint8Array),
-      uplane: new Uint8Array(uUint8Array),
-      vplane: new Uint8Array(vUint8Array)
-    });
+      that.renderImage({
+        mirror: mirror,
+        width,
+        height,
+        left,
+        top,
+        right,
+        bottom,
+        rotation: rotation,
+        yplane: new Uint8Array(yUint8Array),
+        uplane: new Uint8Array(uUint8Array),
+        vplane: new Uint8Array(vUint8Array)
+      });
     var now32 = (Date.now() & 0xffffffff) >>> 0;
     var latency = now32 - ts;
   }
@@ -470,7 +493,7 @@ const AgoraRender = function() {
       console.error(e);
       return false;
     }
-    
+
     return true
   }
 
@@ -479,16 +502,16 @@ const AgoraRender = function() {
     //   return;
     // }
     if (width || height) {
-	    that.lastImageWidth = width;
-	    that.lastImageHeight = height;
-	    that.lastImageRotation = rotation;
-	  } else {
-	    width  = that.lastImageWidth;
-	    height = that.lastImageHeight;
-	    rotation = that.lastImageRotation;
-	  }
+      that.lastImageWidth = width;
+      that.lastImageHeight = height;
+      that.lastImageRotation = rotation;
+    } else {
+      width = that.lastImageWidth;
+      height = that.lastImageHeight;
+      rotation = that.lastImageRotation;
+    }
     if (!updateViewZoomLevel(rotation, width, height)) {
-	    return;
+      return;
     }
     gl.bindBuffer(gl.ARRAY_BUFFER, surfaceBuffer);
     gl.enableVertexAttribArray(positionLocation);

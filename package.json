@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "2.9.0-rc.106-build.105",
+  "version": "2.9.106-rc.243-build.121",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -65,8 +65,8 @@
   },
   "agora_electron": {
     "libUrl": {
-      "win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows(x86)_v2.9.106.239_20210916_FULL_2928.zip",
-      "win64": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows(x64)_v2.9.106.239_20210916_FULL_2815.zip",
+      "win": "http://192.168.99.149:8086/v2.9.106.243/AgoraSDK/Windows/testing(x86_release)/Agora_Native_SDK_for_Windows(x86)_v2.9.106.243_20220121_FULL_2991.zip",
+      "win64": "http://192.168.99.149:8086/v2.9.106.243/AgoraSDK/Windows/testing(x64_release)/Agora_Native_SDK_for_Windows(x64)_v2.9.106.243_20220121_FULL_2877.zip",
       "mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v2_9_106_239_FULL_20210916_3717.zip"
     }
   },
