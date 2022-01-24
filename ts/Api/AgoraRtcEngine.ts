@@ -6404,6 +6404,31 @@ export class AgoraRtcEngine extends EventEmitter {
     );
     return ret.retCode;
   }
+  videoSourceStartScreenCaptureByDisplayId(
+    screenSymbol: ScreenSymbol,
+    regionRect: Rectangle,
+    captureParams: ScreenCaptureParameters
+  ): number {
+    let param = {
+      displayId: (screenSymbol as MacScreenId).id,
+      regionRect,
+      captureParams,
+    };
+
+    let ret = this._rtcEngine.CallApi(
+      PROCESS_TYPE.SCREEN_SHARE,
+      ApiTypeEngine.kEngineStartScreenCaptureByDisplayId,
+      JSON.stringify(param)
+    );
+
+    if (ret.retCode === 0) {
+      this.videoSourceEnableLocalVideo(true);
+    } else {
+      this.videoSourceEnableLocalVideo(false);
+    }
+
+    return ret.retCode;
+  }
 
   // 2.4 new Apis
   /**

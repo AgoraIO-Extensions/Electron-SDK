@@ -1,3 +1,8 @@
+## 3.5.2-rc.1-iris.124-build.1 (Jan 24th, 2021)
+- add api
+  - videoSourceStartScreenCaptureByDisplayId
+- update native sdk
+
 ## 3.5.0-rc.3-iris.112-build.1 (Jan 12th, 2021)
 - force consistent casing in fileNames for js
 
