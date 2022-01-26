@@ -4,6 +4,7 @@ export enum NativeEngineEvents {
   onUserOffline = "onUserOffline",
   onFirstLocalVideoFrame = "onFirstLocalVideoFrame",
   onFirstRemoteVideoFrame = "onFirstRemoteVideoFrame",
+  onVideoSourceFrameSizeChangedIris = "onVideoSourceFrameSizeChangedIris",
 }
 
 export enum NativeVideoSourceEvents {
