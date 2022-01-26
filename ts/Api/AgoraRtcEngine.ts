@@ -253,15 +253,15 @@ export class AgoraRtcEngine extends EventEmitter {
           this.fire(EngineEvents.REMOVE_STREAM, ...params);
         }
         return true;
-      case NativeEngineEvents.onFirstLocalVideoFrame:
+      case NativeEngineEvents.onVideoSourceFrameSizeChangedIris:
         {
-          if (params.length <= 3) {
-            return true;
-          }
-          const [videoSourceType, uid, channelId, width, height, elapsed] =
-            params as [VideoSourceType, number, string, number, number, number];
-
-          this.fire(EngineEvents.FIRST_LOCAL_VIDEO_FRAME, ...params);
+          const [uid, channelId, videoSourceType, width, height] = params as [
+            number,
+            string,
+            VideoSourceType,
+            number,
+            number
+          ];
 
           const videoFrameItem = this.resizeBuffer(
             uid,
@@ -280,45 +280,7 @@ export class AgoraRtcEngine extends EventEmitter {
             videoFrameItem
           );
 
-          logError(`firstLocalVideoFrame local ${width}, ${height}`);
-        }
-        return true;
-
-      case NativeEngineEvents.onFirstRemoteVideoFrame:
-        {
-          logWarn(`onFirstRemoteVideoFrame params: ${params}`);
-          if (typeof params[0] !== "object") {
-            logWarn(`onFirstRemoteVideoFrame params: ${params}`);
-            return true;
-          }
-          const [connection, remoteUid, width, height, elapsed] = params as [
-            RtcConnection,
-            number,
-            number,
-            number,
-            number
-          ];
-          const { channelId } = connection;
-
-          this.fire(EngineEvents.FIRST_REMOTE_VIDEO_FRAME, ...params);
-
-          const videoFrameItem = this.resizeBuffer(
-            remoteUid,
-            channelId,
-            width,
-            height,
-            VideoSourceType.kVideoSourceTypeRemote
-          );
-          const config = formatVideoFrameBufferConfig(
-            VideoSourceType.kVideoSourceTypeRemote,
-            channelId,
-            remoteUid
-          );
-
-          this._rendererManager?.updateVideoFrameCacheInMap(
-            config,
-            videoFrameItem
-          );
+          logError(`onVideoSourceFrameSizeChangedIris ${width}, ${height}`);
         }
         return true;
       default:
