@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "3.5.2-rc.1-iris.124-build.1",
+  "version": "3.5.2-rc.1-iris.126-build.1",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
