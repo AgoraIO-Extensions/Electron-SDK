@@ -5,6 +5,12 @@ project(agora-electron-rtc-sdk)
 
 include_directories(${CMAKE_JS_INC})
 set(BUILD_TYPE ${CMAKE_BUILD_TYPE})
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    set(IRIS_DEBUG 1)
+else ()
+    set(IRIS_DEBUG 0)
+endif ()
+message(STATUS "IRIS_DEBUG ${IRIS_DEBUG}")
 
 message(====agora_electron_sdk==== build config: build_type=${BUILD_TYPE}, arch: ${CMAKE_OSX_ARCHITECTURES}, platform: ${CMAKE_SYSTEM_NAME})
 # library name
@@ -152,6 +158,16 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
                 ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/${BUILD_TYPE}/*.dll
                 ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/${BUILD_TYPE}/*.exe
                 )
+        if (NOT IRIS_DEBUG)
+                if (MSVC)
+                message("test add_compile_options")
+                        add_compile_options(
+                                $<$<CONFIG:>:/MT> #---------|
+                                $<$<CONFIG:Debug>:/MTd> #---|-- Statically link the runtime libraries
+                                $<$<CONFIG:Release>:/MT> #--|
+                        )
+                endif ()
+        endif ()            
         set(AGORA_RTC_SDK_HEADER_FILE_DIR 
                 ${AGORA_RTC_SDK_PATH}/include
                 )
