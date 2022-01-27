@@ -1,3 +1,7 @@
+## 3.6.1-rc.1-build.126(Jan 26th, 2021)
+- fix doc
+- add api: startEchoTestWithConfig
+
 ## 3.6.1-rc.1-build.122(Jan 22th, 2021)
 - RtcImage not pass alpha and zOrder
 

@@ -691,7 +691,7 @@ void NodeRtcEngine::Init(Local<Object>& module) {
   PROPERTY_METHOD_DEFINE(setLowlightEnhanceOptions);
   PROPERTY_METHOD_DEFINE(setColorEnhanceOptions);
   PROPERTY_METHOD_DEFINE(setVideoDenoiserOptions);
-  
+  PROPERTY_METHOD_DEFINE(startEchoTestWithConfig)
   EN_PROPERTY_DEFINE()
   module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(),
               tpl->GetFunction(context).ToLocalChecked());
@@ -1309,6 +1309,45 @@ NAPI_API_DEFINE(NodeRtcEngine, startEchoTestWithInterval) {
     CHECK_NAPI_STATUS(pEngine, status);
 
     result = pEngine->m_engine->startEchoTest(interval);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, startEchoTestWithConfig) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  nodestring token, channelId;
+  do {
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    if (!args[0]->IsObject()) {
+      status = napi_invalid_arg;
+      CHECK_NAPI_STATUS(pEngine, status);
+    }
+
+    Local<Object> obj;
+    status = napi_get_value_object_(isolate, args[0], obj);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    EchoTestConfiguration config;
+    status = napi_get_object_property_bool_(isolate, obj, "enableAudio",
+                                            config.enableAudio);
+    status = napi_get_object_property_bool_(isolate, obj, "enableVideo",
+                                            config.enableVideo);
+
+    status = napi_get_object_property_nodestring_(isolate, obj, "token", token);
+    CHECK_NAPI_STATUS(pEngine, status);
+    config.token = token;
+
+    status = napi_get_object_property_nodestring_(isolate, obj, "channelId",
+                                                  channelId);
+    CHECK_NAPI_STATUS(pEngine, status);
+    config.channelId = channelId;
+
+    result = pEngine->m_engine->startEchoTest(config);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
