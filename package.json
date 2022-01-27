@@ -1,11 +1,11 @@
 {
   "name": "agora-electron-sdk",
-  "version": "3.6.1-rc.1-build.122",
+  "version": "3.6.1-rc.1-build.126",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
   "author": "agora.io",
-"scripts": {
+  "scripts": {
     "switch:arch": "just switch:arch",
     "sync:lib": "just sync:lib",
     "install": "just install",
@@ -46,7 +46,7 @@
     "nan": "^2.14.0",
     "node-gyp": "7.1.2",
     "rimraf": "^3.0.0",
-    "shelljs": "^0.8.3",
+    "shelljs": "^0.8.5",
     "yuv-buffer": "^1.0.0",
     "yuv-canvas": "^1.2.1"
   },
