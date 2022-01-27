@@ -8,68 +8,55 @@
 #ifndef AGORA_SCREEN_WINDOW_INFO_H
 #define AGORA_SCREEN_WINDOW_INFO_H
 
+#include "video_source_ipc.h"
 #include <string>
 #include <vector>
-#include "video_source_ipc.h"
 
 #if defined(_WIN32)
 #include <windows.h>
 #endif
-#define    IMAGE_MAX_PIXEL_SIZE   500
+#define IMAGE_MAX_PIXEL_SIZE 500
 
-struct ScreenDisplayInfo
-{
-    ScreenIDType displayId;
-    
-    std::string name;
-    std::string ownerName;
-    
-    unsigned int width;
-    unsigned int height;
-    bool isActive;
-    bool isMain;
-    bool isBuiltin;
-    
-    unsigned char* imageData;
-    unsigned int imageDataLength;
-    
-    ScreenDisplayInfo()
-    : width(0)
-    , height(0)
-    , isActive(false)
-    , isMain(false)
-    , isBuiltin(false)
-    , imageData(nullptr)
-    , imageDataLength(0)
-    {}
+struct ScreenDisplayInfo {
+  ScreenIDType displayId;
+
+  std::string name;
+  std::string ownerName;
+
+  unsigned int width;
+  unsigned int height;
+  bool isActive;
+  bool isMain;
+  bool isBuiltin;
+
+  unsigned char *imageData;
+  unsigned int imageDataLength;
+
+  ScreenDisplayInfo()
+      : width(0), height(0), isActive(false), isMain(false), isBuiltin(false),
+        imageData(nullptr), imageDataLength(0) {}
 };
 
-struct ScreenWindowInfo
-{
+struct ScreenWindowInfo {
 #if defined(__APPLE__)
-    unsigned int windowId;
+  unsigned int windowId;
 #elif defined(_WIN32)
-    HWND windowId;
+  HWND windowId;
 #endif
-    
-    std::string name;
-    std::string ownerName;
-    bool isOnScreen;
-    
-    unsigned int width;
-    unsigned int height;
-    
-    unsigned char* imageData;
-    unsigned int imageDataLength;
-    
-    ScreenWindowInfo()
-    : windowId(0)
-    , isOnScreen(false)
-    , width(0)
-    , height(0)
-    , imageData(nullptr)
-    , imageDataLength(0)
-    {}
+
+  std::string name;
+  std::string ownerName;
+  bool isOnScreen;
+
+  unsigned int width;
+  unsigned int height;
+
+  unsigned char *imageData;
+  unsigned int imageDataLength;
+
+  ScreenWindowInfo()
+      : windowId(0), isOnScreen(false), width(0), height(0), imageData(nullptr),
+        imageDataLength(0) {}
 };
 
 std::vector<ScreenDisplayInfo> getAllDisplayInfo();
