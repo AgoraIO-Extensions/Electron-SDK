@@ -1,3 +1,6 @@
+##2.9.106-rc.243-build.127
+-  fix getAllWindowInfo for image
+
 ## 2.9.0-rc.106-build.105
 - update native sdk
 - fix render
