@@ -440,8 +440,8 @@ class NodeRtcEngine : public node::ObjectWrap {
   NAPI_API(setLowlightEnhanceOptions);
   NAPI_API(setColorEnhanceOptions);
   NAPI_API(setVideoDenoiserOptions);
+  NAPI_API(startEchoTestWithConfig);
   
-
  public:
   Isolate* getIsolate() { return m_isolate; }
   IRtcEngine* getRtcEngine() { return m_engine; }
