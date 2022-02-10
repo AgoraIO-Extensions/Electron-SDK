@@ -30,56 +30,53 @@ import AgoraRtcEngine, {
   AUDIENCE_LATENCY_LEVEL_TYPE,
   VIDEO_STREAM_TYPE,
 } from "../../../";
-import { List } from "immutable";
-import path from "path";
+
 import { APP_ID } from "../utils/settings";
 
-const isMac = process.platform === "darwin";
 let rtcEngine = new AgoraRtcEngine();
 rtcEngine = null;
 
-const RemoteWindow = ({ uid, channelId }) => {
-  const id = `remoteVideo-${uid}`;
-  console.log("users", uid);
-  useEffect(() => {
-    try {
-      let dom = document.getElementById(id);
-      console.log("dom", dom);
-      setTimeout(() => {
-        rtcEngine.setView({
-          videoSourceType: VideoSourceType.kVideoSourceTypeRemote,
-          uid,
-          channelId,
+class RemoteWindow extends Component {
+  constructor(props) {
+    super(props);
+  }
 
-          view: dom,
-          rendererOptions: { mirror: true, contentMode: 1 },
-        });
-      }, 2000);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      console.log("finish setView");
-    }
-    return () => {
-      // rtcEngine.setView({
-      // videoSourceType: VideoSourceType.kVideoSourceTypeRemote,
-      //   uid,
-      //   channelId,
-      //   view: dom,
-      //   rendererOptions: { mirror: true, contentMode: 1 },
-      // });
-    };
-  }, []);
+  componentDidMount() {
+    const { uid, channelId } = this.props;
+    const id = `remoteVideo-${uid}`;
+    let dom = document.getElementById(id);
+    setTimeout(() => {
+      rtcEngine.setView({
+        videoSourceType: VideoSourceType.kVideoSourceTypeRemote,
+        uid,
+        channelId,
 
-  return (
-    <div
-      key={id}
-      className="render-view"
-      id={id}
-      style={{ backgroundColor: "green" }}
-    />
-  );
-};
+        view: dom,
+        rendererOptions: { mirror: true, contentMode: 1 },
+      });
+    }, 1000);
+  }
+  componentWillUnmount() {
+    const { uid, channelId } = this.props;
+    const id = `remoteVideo-${uid}`;
+    let dom = document.getElementById(id);
+    rtcEngine && rtcEngine.destroyRendererByView(dom);
+  }
+
+  render() {
+    const { uid } = this.props;
+    const id = `remoteVideo-${uid}`;
+    return (
+      <div
+        key={id}
+        className="render-view"
+        id={id}
+        style={{ backgroundColor: "green" }}
+      />
+    );
+  }
+}
+
 const defaultState = {
   isSetFirstCameraView: false,
   isSetSecondCameraView: false,
@@ -480,7 +477,7 @@ export default class App extends Component {
         </div>
         <div className="renderViewListForRow">
           {users.map((uid) => (
-            <RemoteWindow uid={uid} channelId={channelId} />
+            <RemoteWindow uid={uid} channelId={channelId} key={"view" + uid} />
           ))}
         </div>
       </div>

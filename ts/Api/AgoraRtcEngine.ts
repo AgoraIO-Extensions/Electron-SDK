@@ -211,6 +211,7 @@ export class AgoraRtcEngine extends EventEmitter {
     height: number,
     videoSourceType: VideoSourceType
   ): VideoFrame {
+    yStride = ((yStride + 15) >> 4) << 4;
     return {
       uid,
       channelId,
@@ -243,11 +244,11 @@ export class AgoraRtcEngine extends EventEmitter {
       case NativeEngineEvents.onUserOffline:
         {
           this.fire(EngineEvents.USER_OFFLINE, ...params);
-          const [connection] = params as [RtcConnection];
+          const [connection, remoteUid] = params as [RtcConnection, number];
           const config = formatVideoFrameBufferConfig(
             VideoSourceType.kVideoSourceTypeRemote,
             connection.channelId,
-            connection.localUid
+            remoteUid
           );
           this._rendererManager?.removeRendererByConfig(config);
           this.fire(EngineEvents.REMOVE_STREAM, ...params);
