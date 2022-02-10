@@ -1,3 +1,6 @@
+## 3.6.1-rc.2-build.210(Jan 26th, 2021)
+- update native sdk
+
 ## 3.6.1-rc.1-build.126(Jan 26th, 2021)
 - fix doc
 - add api: startEchoTestWithConfig
