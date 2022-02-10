@@ -141,23 +141,24 @@ class RendererManager {
   removeRendererByConfig(config: VideoFrameCacheConfig): void {
     const { videoSourceType, channelId, uid } = config;
     this.disableVideoFrameCache(config);
-    this._config.renderers
-      .get(videoSourceType)
-      ?.get(channelId)
-      ?.get(uid)
-      ?.renders?.forEach((renderItem) => {
-        renderItem.unbind();
-      });
-
-    this._config.renderers.get(videoSourceType)?.get(channelId)?.delete(uid);
+    const uidMap = this._config.renderers.get(videoSourceType)?.get(channelId);
+    const renderMap = uidMap?.get(uid);
+    renderMap?.renders?.forEach((renderItem) => {
+      renderItem.unbind();
+    });
+    uidMap?.delete(uid);
   }
   removeRendererByView(view: Element): void {
     let currentRenders: IRenderer[] | undefined;
-    this.forEachRenderers((renderConfig, _, { uidMap }) => {
+    let currentUid: number | undefined;
+    let currentUidMap: UidMap | undefined;
+    this.forEachRenderers((renderConfig, { uid }, { uidMap }) => {
       renderConfig.renders?.forEach((render) => {
         if (render.getView() !== view) {
           return;
         }
+        currentUidMap = uidMap;
+        currentUid = uid;
         currentRenders = renderConfig.renders;
         render.unbind();
       });
@@ -168,6 +169,9 @@ class RendererManager {
     currentRenders = currentRenders!.filter(
       (render) => render.getView() !== view
     );
+    if (currentRenders.length === 0) {
+      currentUidMap?.delete(currentUid!);
+    }
   }
 
   removeAllRenderer(): void {
