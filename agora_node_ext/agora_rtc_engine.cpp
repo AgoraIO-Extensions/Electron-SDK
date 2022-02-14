@@ -6293,7 +6293,10 @@ namespace agora {
 
           int dragFinished, assistLine, resetDragPoints, autoCorrect;
           status = napi_get_object_property_int32_(isolate, obj, "dragFinished", dragFinished);
-          options.dragFinished = dragFinished;
+          if (status == napi_ok) {
+            options.setDragFinished(dragFinished);
+          }
+          
 
           auto dragSrcPointsValue = napi_get_object_property_value(isolate, obj, "dragSrcPoints");
           if (dragSrcPointsValue->IsArray()) {
@@ -6340,7 +6343,7 @@ namespace agora {
 
           bool mirror = false;
           status = napi_get_object_property_bool_(isolate, obj, "mirror", mirror);
-          if (status = napi_ok) {
+          if (status == napi_ok) {
               options.mirror = mirror;
           }
           
