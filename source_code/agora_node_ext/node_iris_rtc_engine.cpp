@@ -453,7 +453,7 @@ napi_value NodeIrisRtcEngine::EnableVideoFrameCache(napi_env env,
   napi_status status;
   napi_value jsthis;
   size_t argc = 1;
-  napi_value args[0];
+  napi_value args[1];
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
 
   NodeIrisRtcEngine* nodeIrisRtcEngine;
@@ -502,7 +502,7 @@ napi_value NodeIrisRtcEngine::DisableVideoFrameCache(napi_env env,
   napi_status status;
   napi_value jsthis;
   size_t argc = 1;
-  napi_value args[0];
+  napi_value args[1];
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
 
   NodeIrisRtcEngine* nodeIrisRtcEngine;
@@ -546,7 +546,7 @@ napi_value NodeIrisRtcEngine::GetVideoStreamData(napi_env env,
   napi_status status;
   napi_value jsthis;
   size_t argc = 1;
-  napi_value args[0];
+  napi_value args[1];
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
 
   NodeIrisRtcEngine* nodeIrisRtcEngine;
