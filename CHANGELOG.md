@@ -1,3 +1,6 @@
+## 3.5.2-rc.1-iris.218-build.1 (Feb 18th, 2021)
+- update iris sdk
+
 ## 3.5.2-rc.1-iris.126-build.1 (Jan 26th, 2021)
 - config MSVC_RUNTIME_LIBRARY for release
 

@@ -1,5 +1,5 @@
 import { NodeIrisRtcEngine } from "../Api/internal/native_interface";
-import { PROCESS_TYPE } from "../Api/internal/native_type";
+import { IrisVideoSourceType, PROCESS_TYPE } from "../Api/internal/native_type";
 import { logError, logInfo, logWarn } from "../Utils";
 
 import { IRenderer } from "./IRender";
@@ -74,24 +74,6 @@ class RendererManager {
 
   setRenderMode(mode: RENDER_MODE) {
     this._config.renderMode = mode;
-  }
-
-  resizeBuffer(
-    uid: number,
-    channelId: string,
-    yStride: number,
-    height: number
-  ): VideoFrame {
-    return {
-      uid,
-      channelId,
-      yBuffer: Buffer.alloc(yStride * height),
-      uBuffer: Buffer.alloc((yStride * height) / 4),
-      vBuffer: Buffer.alloc((yStride * height) / 4),
-      yStride,
-      width: 0,
-      height,
-    };
   }
 
   /**
@@ -318,7 +300,19 @@ class RendererManager {
     videoFrameCacheConfig.uid = videoFrameCacheConfig.user
       ? this.userToUid(videoFrameCacheConfig.user)
       : 0;
-
+    switch (videoFrameCacheConfig.user) {
+      case "local":
+      case "videoSource":
+        {
+          videoFrameCacheConfig.videoSourceType =
+            IrisVideoSourceType.kVideoSourceTypeCameraPrimary;
+        }
+        break;
+      default:
+        videoFrameCacheConfig.videoSourceType =
+          IrisVideoSourceType.kVideoSourceTypeRemote;
+        break;
+    }
     logInfo(`enableVideoFrameCache ${JSON.stringify(videoFrameCacheConfig)}`);
 
     if (videoFrameCacheConfig.user === "videoSource") {
@@ -341,7 +335,19 @@ class RendererManager {
     videoFrameCacheConfig.uid = videoFrameCacheConfig.user
       ? this.userToUid(videoFrameCacheConfig.user)
       : 0;
-
+    switch (videoFrameCacheConfig.user) {
+      case "local":
+      case "videoSource":
+        {
+          videoFrameCacheConfig.videoSourceType =
+            IrisVideoSourceType.kVideoSourceTypeCameraPrimary;
+        }
+        break;
+      default:
+        videoFrameCacheConfig.videoSourceType =
+          IrisVideoSourceType.kVideoSourceTypeRemote;
+        break;
+    }
     if (videoFrameCacheConfig.user === "videoSource") {
       logInfo(
         `disableVideoFrameCache ${JSON.stringify(videoFrameCacheConfig)}`

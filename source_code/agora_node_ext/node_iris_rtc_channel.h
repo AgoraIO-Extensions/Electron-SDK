@@ -1,5 +1,6 @@
 #pragma once
 #include <node_api.h>
+
 #include "iris_rtc_channel.h"
 #include "node_base.h"
 #include "node_iris_event_handler.h"
@@ -9,10 +10,9 @@ namespace rtc {
 namespace electron {
 class NodeIrisRtcChannel {
  public:
-  static iris::rtc::IrisRtcChannel* _staticIrisChannel;
+  static iris::rtc::IIrisRtcChannel* _staticIrisChannel;
   static const char* _staticChannelId;
-  explicit NodeIrisRtcChannel(napi_env env,
-                              iris::rtc::IrisRtcChannel* channel,
+  explicit NodeIrisRtcChannel(napi_env env, iris::rtc::IIrisRtcChannel* channel,
                               const char* channelId);
   virtual ~NodeIrisRtcChannel();
   static napi_value Init(napi_env env);
@@ -36,7 +36,7 @@ class NodeIrisRtcChannel {
   napi_env _env;
   napi_ref _ref;
   std::unique_ptr<NodeIrisEventHandler> _iris_channel_event_handler;
-  iris::rtc::IrisRtcChannel* _iris_channel;
+  iris::rtc::IIrisRtcChannel* _iris_channel;
   std::string _channel_id;
 };
 }  // namespace electron
