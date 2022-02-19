@@ -1,3 +1,6 @@
+## 3.4.11-rc.121-build.219(Feb 19th, 2021)
+- update native sdk
+
 ## 3.4.11-rc.1-build.106(Jan 6th, 2021)
 - fix max path for getScreenWindowInfo 
 
