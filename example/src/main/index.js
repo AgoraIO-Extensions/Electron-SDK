@@ -5,7 +5,7 @@ import * as path from 'path'
 import { format as formatUrl } from 'url'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
-
+app.allowRendererProcessReuse = false;
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 let mainWindow
 
@@ -14,7 +14,8 @@ function createMainWindow() {
     width: 1366,
     height: 768,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      contextIsolation:false
     }
   })
 
