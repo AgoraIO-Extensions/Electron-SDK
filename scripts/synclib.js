@@ -164,6 +164,16 @@ const winPrepare = folder => {
             path.join(folder, './libs/x86/libagora-core.dll'),
             path.join(__dirname, '../sdk/dll/libagora-core.dll')
           ),
+          fs.move(
+            path.join(
+              folder,
+              './libs/x86/libagora_video_process_extension.dll'
+            ),
+            path.join(
+              __dirname,
+              '../sdk/dll/libagora_video_process_extension.dll'
+            )
+          ),
         ]);
       })
       .then(() => {
@@ -195,7 +205,7 @@ const win64Prepare = folder => {
             path.join(__dirname, '../sdk/dll/agora_rtc_sdk.dll')
           ),
           fs.move(
-            path.join(folder, './libs/x86/libagora-wgc.dll'),
+            path.join(folder, './libs/x86_64/libagora-wgc.dll'),
             path.join(__dirname, '../sdk/dll/libagora-wgc.dll')
           ),
           fs.move(
@@ -234,6 +244,20 @@ const win64Prepare = folder => {
           fs.move(
             path.join(folder, './libs/x86_64/av1.dll'),
             path.join(__dirname, '../sdk/dll/av1.dll')
+          ),
+          fs.move(
+            path.join(folder, './libs/x86_64/libagora-core.dll'),
+            path.join(__dirname, '../sdk/dll/libagora-core.dll')
+          ),
+          fs.move(
+            path.join(
+              folder,
+              './libs/x86_64/libagora_video_process_extension.dll'
+            ),
+            path.join(
+              __dirname,
+              '../sdk/dll/libagora_video_process_extension.dll'
+            )
           ),
         ]);
       })
