@@ -5,6 +5,8 @@
  * @Last Modified time: 2021-05-19 15:51:34
  */
 
+import { IrisVideoSourceType } from "ts/Api/internal/native_type";
+
 export enum CONTENT_MODE {
   CROPPED = 0,
   FIT = 1,
@@ -37,6 +39,7 @@ export interface VideoFrameCacheConfig {
   channelId: string;
   width?: number;
   height?: number;
+  videoSourceType?: IrisVideoSourceType;
 }
 
 export type User = "local" | "videoSource" | number | string;
@@ -62,4 +65,5 @@ export interface VideoFrame {
   rotation?: number;
   uid?: number;
   channelId?: string;
+  videoSourceType?: IrisVideoSourceType;
 }

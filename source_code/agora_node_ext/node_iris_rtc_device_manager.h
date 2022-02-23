@@ -6,6 +6,7 @@
  */
 #pragma once
 #include <node_api.h>
+
 #include "iris_rtc_device_manager.h"
 
 namespace agora {
@@ -13,10 +14,9 @@ namespace rtc {
 namespace electron {
 class NodeIrisRtcDeviceManager {
  public:
-  static iris::rtc::IrisRtcDeviceManager* _staticDeviceManager;
+  static iris::rtc::IIrisRtcDeviceManager* _staticDeviceManager;
   explicit NodeIrisRtcDeviceManager(
-      napi_env env,
-      iris::rtc::IrisRtcDeviceManager* deviceManager);
+      napi_env env, iris::rtc::IIrisRtcDeviceManager* deviceManager);
   virtual ~NodeIrisRtcDeviceManager();
 
   static napi_value Init(napi_env env);
@@ -38,7 +38,7 @@ class NodeIrisRtcDeviceManager {
 
   napi_env _env;
   napi_ref _ref;
-  iris::rtc::IrisRtcDeviceManager* _deviceManager;
+  iris::rtc::IIrisRtcDeviceManager* _deviceManager;
 };
 }  // namespace electron
 }  // namespace rtc

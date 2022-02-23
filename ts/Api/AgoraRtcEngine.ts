@@ -5,6 +5,9 @@
   ApiTypeRawDataPluginManager,
   PROCESS_TYPE,
   VOICE_CONVERSION_PRESET,
+  IrisVideoSourceType,
+  AUDIO_MIXING_DUAL_MONO_MODE,
+  SIZE,
 } from "./internal/native_type";
 import {
   NodeIrisRtcEngine,
@@ -256,8 +259,10 @@ export class AgoraRtcEngine extends EventEmitter {
     uid: number,
     channelId: string,
     yStride: number,
-    height: number
+    height: number,
+    videoSourceType: IrisVideoSourceType
   ): VideoFrame {
+    yStride = ((yStride + 15) >> 4) << 4;
     return {
       uid,
       channelId,
@@ -267,6 +272,7 @@ export class AgoraRtcEngine extends EventEmitter {
       yStride,
       width: 0,
       height,
+      videoSourceType,
     };
   }
 
@@ -303,36 +309,35 @@ export class AgoraRtcEngine extends EventEmitter {
           this.fire(EngineEvents.REMOVE_STREAM, ...params);
         }
         return true;
-      case NativeEngineEvents.onFirstLocalVideoFrame:
+
+      case NativeEngineEvents.onVideoSourceFrameSizeChangedIris:
         {
-          const [uid, channel, width, height, elapsed] = params;
-
-          this.fire(EngineEvents.FIRST_LOCAL_VIDEO_FRAME, ...params);
-
-          const videoFrameItem = this.resizeBuffer(0, "", width, height);
-          this._rendererManager?.addVideoFrameCacheToMap(
-            "local",
-            "",
-            videoFrameItem
-          );
-
-          logError(`firstLocalVideoFrame local ${width}, ${height}`);
-        }
-        return true;
-
-      case NativeEngineEvents.onFirstRemoteVideoFrame:
-        {
-          const [uid, channelId, width, height] = params;
+          const [uid, channelId, sourceType, width, height] = params;
 
           this.fire(EngineEvents.FIRST_REMOTE_VIDEO_FRAME, ...params);
+          let user;
+          let newUid;
+          if (sourceType === IrisVideoSourceType.kVideoSourceTypeRemote) {
+            user = uid;
+            newUid = uid;
+          } else {
+            user = "local";
+            newUid = 0;
+          }
 
           logWarn(
-            `onFirstRemoteVideoFrame uid: ${uid}, channelId ${channelId}`
+            `onVideoSourceFrameSizeChangedIris uid: ${newUid}, channelId ${channelId}`
           );
-          let videoFrameItem = this.resizeBuffer(uid, channelId, width, height);
+          let videoFrameItem = this.resizeBuffer(
+            newUid,
+            channelId,
+            width,
+            height,
+            sourceType
+          );
 
           this._rendererManager?.addVideoFrameCacheToMap(
-            uid,
+            user,
             channelId,
             videoFrameItem
           );
@@ -382,35 +387,26 @@ export class AgoraRtcEngine extends EventEmitter {
     params: Array<any>
   ): Boolean => {
     switch (_eventName) {
-      case NativeVideoSourceEvents.onFirstLocalVideoFrame:
+      case NativeVideoSourceEvents.onVideoSourceFrameSizeChangedIris:
         {
-          const [uid, channelId, width, height, elapsed] = params;
+          const [uid, channelId, sourceType, width, height] = params;
           this.fire(
             VideoSourceEvents.VIDEO_SOURCE_FIRST_LOCAL_VIDEO_FRAME,
             ...params
           );
           logError(`videoSourceFirstLocalVideoFrame ${width} ${height}`);
-          let videoFrameItem = this.resizeBuffer(0, "", width, height);
+          let videoFrameItem = this.resizeBuffer(
+            0,
+            "",
+            width,
+            height,
+            sourceType
+          );
           this._rendererManager?.addVideoFrameCacheToMap(
             "videoSource",
             "",
             videoFrameItem
           );
-        }
-        return true;
-
-      case NativeVideoSourceEvents.onFirstRemoteVideoDecoded:
-        {
-          const [uid, width, height, elapsed] = params;
-          this.fire(
-            VideoSourceEvents.VIDEO_SOURCE_FIRST_REMOTE_VIDEO_DECODED,
-            uid,
-            width,
-            height,
-            elapsed
-          );
-          this.fire(VideoSourceEvents.ADDSTREAM, uid, elapsed);
-          this.fire(VideoSourceEvents.ADD_STREAM, uid, elapsed);
         }
         return true;
 
@@ -6873,4 +6869,275 @@ export class AgoraRtcEngine extends EventEmitter {
     );
     return ret.retCode;
   }
+
+  setAudioMixingPlaybackSpeed(speed: number): number {
+    const param = { speed };
+    const ret = this._rtcEngine.CallApi(
+      PROCESS_TYPE.MAIN,
+      ApiTypeEngine.kEngineSetAudioMixingPlaybackSpeed,
+      JSON.stringify(param)
+    );
+    return ret.retCode;
+  }
+  selectAudioTrack(index: number): number {
+    const param = { index };
+    const ret = this._rtcEngine.CallApi(
+      PROCESS_TYPE.MAIN,
+      ApiTypeEngine.kEngineSelectAudioTrack,
+      JSON.stringify(param)
+    );
+    return ret.retCode;
+  }
+  getAudioTrackCount(): number {
+    const param = {};
+    const ret = this._rtcEngine.CallApi(
+      PROCESS_TYPE.MAIN,
+      ApiTypeEngine.kEngineGetAudioTrackCount,
+      JSON.stringify(param)
+    );
+    return ret.retCode;
+  }
+  setAudioMixingDualMonoMode(mode: AUDIO_MIXING_DUAL_MONO_MODE): number {
+    const param = { mode };
+    const ret = this._rtcEngine.CallApi(
+      PROCESS_TYPE.MAIN,
+      ApiTypeEngine.kEngineSetAudioMixingDualMonoMode,
+      JSON.stringify(param)
+    );
+    return ret.retCode;
+  }
+  getAudioFileInfo(filePath: string): number {
+    const param = { filePath };
+    const ret = this._rtcEngine.CallApi(
+      PROCESS_TYPE.MAIN,
+      ApiTypeEngine.kEngineGetAudioFileInfo,
+      JSON.stringify(param)
+    );
+    return ret.retCode;
+  }
+  setVideoProfileEx(
+    width: number,
+    height: number,
+    frameRate: number,
+    bitrate: number
+  ): number {
+    const param = { width, height, frameRate, bitrate };
+    const ret = this._rtcEngine.CallApi(
+      PROCESS_TYPE.MAIN,
+      ApiTypeEngine.kEngineSetVideoProfileEx,
+      JSON.stringify(param)
+    );
+    return ret.retCode;
+  }
+  setExternalAudioSourceVolume(sourcePos: number, volume: number): number {
+    const param = { sourcePos, volume };
+    const ret = this._rtcEngine.CallApi(
+      PROCESS_TYPE.MAIN,
+      ApiTypeEngine.kMediaSetExternalAudioSourceVolume,
+      JSON.stringify(param)
+    );
+    return ret.retCode;
+  }
+  // setLogWriter(): number {
+  //   const param = {};
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineSetLogWriter,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret.retCode;
+  // }
+  // releaseLogWriter(): number {
+  //   const param = {};
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineReleaseLogWriter,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret.retCode;
+  // }
+  // setLocalVideoRenderer(): number {
+  //   const param = {};
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineSetLocalVideoRenderer,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret.retCode;
+  // }
+  // setRemoteVideoRenderer(): number {
+  //   const param = {};
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineSetRemoteVideoRenderer,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret.retCode;
+  // }
+  // setCameraTorchOn(): number {
+  //   const param = {};
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineSetCameraTorchOn,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret.retCode;
+  // }
+  // isCameraTorchSupported(): number {
+  //   const param = {};
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineIsCameraTorchSupported,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret.retCode;
+  // }
+  // getCameraMaxZoomFactor(): number {
+  //   const param = {};
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineGetCameraMaxZoomFactor,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret.retCode;
+  // }
+  // isCameraAutoFocusFaceModeSupported(): number {
+  //   const param = {};
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineIsCameraAutoFocusFaceModeSupported,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret.retCode;
+  // }
+  // isCameraExposurePositionSupported(): number {
+  //   const param = {};
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineIsCameraExposurePositionSupported,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret.retCode;
+  // }
+  // isCameraFocusSupported(): number {
+  //   const param = {};
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineIsCameraFocusSupported,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret.retCode;
+  // }
+  // isCameraZoomSupported(): number {
+  //   const param = {};
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineIsCameraZoomSupported,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret.retCode;
+  // }
+  // setCameraAutoFocusFaceModeEnabled(): number {
+  //   const param = {};
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineSetCameraAutoFocusFaceModeEnabled,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret.retCode;
+  // }
+  // setCameraExposurePosition(): number {
+  //   const param = {};
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineSetCameraExposurePosition,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret.retCode;
+  // }
+  // setCameraFocusPositionInPreview(): number {
+  //   const param = {};
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineSetCameraFocusPositionInPreview,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret.retCode;
+  // }
+  // setCameraZoomFactor(): number {
+  //   const param = {};
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineSetCameraZoomFactor,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret.retCode;
+  // }
+  // startRhythmPlayer(): number {
+  //   const param = {};
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineStartRhythmPlayer,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret.retCode;
+  // }
+  // stopRhythmPlayer(): number {
+  //   const param = {};
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineStopRhythmPlayer,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret.retCode;
+  // }
+  // configRhythmPlayer(): number {
+  //   const param = {};
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineConfigRhythmPlayer,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret.retCode;
+  // }
+  // getNativeHandle(): number {
+  //   const param = {};
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineGetNativeHandle,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret.retCode;
+  // }
+  // getScreenCaptureSources(
+  //   thumbSize: SIZE,
+  //   iconSize: SIZE,
+  //   includeScreen: boolean
+  // ): any {
+  //   const param = { thumbSize, iconSize, includeScreen };
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineGetScreenCaptureSources,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret;
+  // }
+  // takeSnapshot(channel: string, uid: number, filePath: string): number {
+  //   const param = { channel, uid, filePath };
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineTakeSnapshot,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret.retCode;
+  // }
+  // enableContentInspect(): number {
+  //   const param = {};
+  //   const ret = this._rtcEngine.CallApi(
+  //     PROCESS_TYPE.MAIN,
+  //     ApiTypeEngine.kEngineEnableContentInspect,
+  //     JSON.stringify(param)
+  //   );
+  //   return ret.retCode;
+  // }
 }

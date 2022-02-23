@@ -66,13 +66,20 @@ export const forwardEvent = ({
   fire,
   filter,
 }: ForwardEventParam) => {
-  const _params = jsonStringToArray(params);
-  const isFilter = filter(eventName, _params, buffer);
-  if (isFilter || !fire) {
-    return;
-  }
-  const finalEventName = changeNameHandler(eventName);
+  try {
+    const _params = JSON.parse(params);
+    const isFilter = filter(eventName, _params, buffer);
+    if (isFilter || !fire) {
+      return;
+    }
+    const finalEventName = changeNameHandler(eventName);
 
-  fire(finalEventName, ..._params);
-  fire(finalEventName.toLocaleLowerCase(), ..._params);
+    fire(finalEventName, ..._params);
+    fire(finalEventName.toLocaleLowerCase(), ..._params);
+  } catch (error) {
+    console.error(
+      `forwardEvent eventName:${eventName}  params:${params}  error:`,
+      error
+    );
+  }
 };

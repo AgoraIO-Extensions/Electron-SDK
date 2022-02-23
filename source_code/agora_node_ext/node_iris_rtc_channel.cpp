@@ -8,12 +8,12 @@ using namespace iris::rtc;
 const char* NodeIrisRtcChannel::_class_name = "NodeIrisRtcChannel";
 const char* NodeIrisRtcChannel::_ret_code_str = "retCode";
 const char* NodeIrisRtcChannel::_ret_result_str = "result";
-iris::rtc::IrisRtcChannel* NodeIrisRtcChannel::_staticIrisChannel = nullptr;
+iris::rtc::IIrisRtcChannel* NodeIrisRtcChannel::_staticIrisChannel = nullptr;
 const char* NodeIrisRtcChannel::_staticChannelId = "";
 napi_ref* NodeIrisRtcChannel::_ref_construcotr_ptr = nullptr;
 
 NodeIrisRtcChannel::NodeIrisRtcChannel(napi_env env,
-                                       IrisRtcChannel* irisChannel,
+                                       IIrisRtcChannel* irisChannel,
                                        const char* channelId)
     : _env(env), _iris_channel(irisChannel), _channel_id(channelId) {
   napi_add_env_cleanup_hook(env, ReleaseNodeSource, this);
@@ -66,14 +66,14 @@ napi_value NodeIrisRtcChannel::Constructor(napi_env env) {
   // napi_ref* constructor = static_cast<napi_ref*>(instance_data);
   // status = napi_get_reference_value(env, *constructor, &cons);
   // #else
-  status = napi_get_reference_value(env, *NodeIrisRtcChannel::_ref_construcotr_ptr, &cons);
+  status = napi_get_reference_value(
+      env, *NodeIrisRtcChannel::_ref_construcotr_ptr, &cons);
   // #endif
   assert(status == napi_ok);
   return cons;
 }
 
-void NodeIrisRtcChannel::Destructor(napi_env env,
-                                    void* nativeObject,
+void NodeIrisRtcChannel::Destructor(napi_env env, void* nativeObject,
                                     void* finalize_hint) {
   reinterpret_cast<NodeIrisRtcChannel*>(nativeObject)->~NodeIrisRtcChannel();
 }
@@ -104,7 +104,8 @@ napi_value NodeIrisRtcChannel::Init(napi_env env) {
   //     nullptr);
   // #else
   NodeIrisRtcChannel::_ref_construcotr_ptr = new napi_ref();
-  status = napi_create_reference(env, cons, 1, NodeIrisRtcChannel::_ref_construcotr_ptr);
+  status = napi_create_reference(env, cons, 1,
+                                 NodeIrisRtcChannel::_ref_construcotr_ptr);
   // #endif
   assert(status == napi_ok);
 
@@ -128,8 +129,8 @@ napi_value NodeIrisRtcChannel::CallApi(napi_env env, napi_callback_info info) {
   status = napi_get_value_int32(env, args[0], &_apiType);
   status = napi_get_value_utf8string(env, args[1], parameter);
 
-  char result[512];
-  memset(result, '\0', 512);
+  char result[kMaxResultLength];
+  memset(result, '\0', kMaxResultLength);
   int ret = ERROR_PARAMETER_1;
   if (_channel->_iris_channel) {
     try {
@@ -167,8 +168,8 @@ napi_value NodeIrisRtcChannel::CallApiWithBuffer(napi_env env,
   status = napi_get_value_int32(env, args[0], &_apiType);
   status = napi_get_value_utf8string(env, args[1], parameter);
   status = napi_get_value_utf8string(env, args[2], buffer);
-  char result[512];
-  memset(result, '\0', 512);
+  char result[kMaxResultLength];
+  memset(result, '\0', kMaxResultLength);
   int ret = ERROR_PARAMETER_1;
 
   if (_channel->_iris_channel) {

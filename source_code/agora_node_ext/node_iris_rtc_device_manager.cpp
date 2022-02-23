@@ -5,8 +5,10 @@
  * @Last Modified time: 2021-10-19 18:45:19
  */
 #include "node_iris_rtc_device_manager.h"
+
 #include <assert.h>
 #include <node_api.h>
+
 #include "node_api_header.h"
 
 namespace agora {
@@ -16,13 +18,12 @@ using namespace iris::rtc;
 const char* NodeIrisRtcDeviceManager::_class_name = "NodeIrisRtcDeviceManager";
 const char* NodeIrisRtcDeviceManager::_ret_code_str = "retCode";
 const char* NodeIrisRtcDeviceManager::_ret_result_str = "result";
-agora::iris::rtc::IrisRtcDeviceManager*
+agora::iris::rtc::IIrisRtcDeviceManager*
     NodeIrisRtcDeviceManager::_staticDeviceManager = nullptr;
 napi_ref* NodeIrisRtcDeviceManager::_ref_construcotr_ptr = nullptr;
 
 NodeIrisRtcDeviceManager::NodeIrisRtcDeviceManager(
-    napi_env env,
-    iris::rtc::IrisRtcDeviceManager* deviceManager)
+    napi_env env, iris::rtc::IIrisRtcDeviceManager* deviceManager)
     : _env(env), _deviceManager(deviceManager) {
   napi_add_env_cleanup_hook(env, ReleaseNodeSource, this);
 }
@@ -64,14 +65,14 @@ napi_value NodeIrisRtcDeviceManager::Constructor(napi_env env) {
   // napi_ref* constructor = static_cast<napi_ref*>(instance_data);
   // status = napi_get_reference_value(env, *constructor, &cons);
   // #else
-  status = napi_get_reference_value(env, *NodeIrisRtcDeviceManager::_ref_construcotr_ptr, &cons);
+  status = napi_get_reference_value(
+      env, *NodeIrisRtcDeviceManager::_ref_construcotr_ptr, &cons);
   // #endif
   assert(status == napi_ok);
   return cons;
 }
 
-void NodeIrisRtcDeviceManager::Destructor(napi_env env,
-                                          void* nativeObject,
+void NodeIrisRtcDeviceManager::Destructor(napi_env env, void* nativeObject,
                                           void* finalize_hint) {
   reinterpret_cast<NodeIrisRtcDeviceManager*>(nativeObject)
       ->~NodeIrisRtcDeviceManager();
@@ -104,7 +105,8 @@ napi_value NodeIrisRtcDeviceManager::Init(napi_env env) {
   //     nullptr);
   // #else
   NodeIrisRtcDeviceManager::_ref_construcotr_ptr = new napi_ref();
-  status = napi_create_reference(env, cons, 1, NodeIrisRtcDeviceManager::_ref_construcotr_ptr);
+  status = napi_create_reference(
+      env, cons, 1, NodeIrisRtcDeviceManager::_ref_construcotr_ptr);
   // #endif
   assert(status == napi_ok);
 
@@ -112,8 +114,7 @@ napi_value NodeIrisRtcDeviceManager::Init(napi_env env) {
 }
 
 napi_value NodeIrisRtcDeviceManager::CallApiAudioDevice(
-    napi_env env,
-    napi_callback_info info) {
+    napi_env env, napi_callback_info info) {
   napi_status status;
   size_t argc = 3;
   napi_value args[3];
@@ -129,13 +130,18 @@ napi_value NodeIrisRtcDeviceManager::CallApiAudioDevice(
 
   status = napi_get_value_int32(env, args[0], &_apiType);
   status = napi_get_value_utf8string(env, args[1], parameter);
-  char result[512];
-  memset(result, '\0', 512);
+  if (strcmp(parameter.c_str(), "") == 0) {
+    parameter = "{}";
+  }
+  char result[kMaxResultLength];
+  memset(result, '\0', kMaxResultLength);
   int ret = ERROR_PARAMETER_1;
 
   if (_deviceManager->_deviceManager) {
-    ret = _deviceManager->_deviceManager->CallApi(
-        (ApiTypeAudioDeviceManager)_apiType, parameter.c_str(), result);
+    ret =
+        static_cast<IIrisRtcAudioDeviceManager*>(_deviceManager->_deviceManager)
+            ->CallApi((ApiTypeAudioDeviceManager)_apiType, parameter.c_str(),
+                      result);
   } else {
     ret = ERROR_NOT_INIT;
   }
@@ -143,8 +149,7 @@ napi_value NodeIrisRtcDeviceManager::CallApiAudioDevice(
 }
 
 napi_value NodeIrisRtcDeviceManager::CallApiVideoDevice(
-    napi_env env,
-    napi_callback_info info) {
+    napi_env env, napi_callback_info info) {
   napi_status status;
   size_t argc = 3;
   napi_value args[3];
@@ -160,13 +165,18 @@ napi_value NodeIrisRtcDeviceManager::CallApiVideoDevice(
 
   status = napi_get_value_int32(env, args[0], &_apiType);
   status = napi_get_value_utf8string(env, args[1], parameter);
-  char result[512];
-  memset(result, '\0', 512);
+  if (strcmp(parameter.c_str(), "") == 0) {
+    parameter = "{}";
+  }
+  char result[kMaxResultLength];
+  memset(result, '\0', kMaxResultLength);
   int ret = ERROR_PARAMETER_1;
 
   if (_deviceManager->_deviceManager) {
-    ret = _deviceManager->_deviceManager->CallApi(
-        (ApiTypeVideoDeviceManager)_apiType, parameter.c_str(), result);
+    ret =
+        static_cast<IIrisRtcVideoDeviceManager*>(_deviceManager->_deviceManager)
+            ->CallApi((ApiTypeVideoDeviceManager)_apiType, parameter.c_str(),
+                      result);
   } else {
     ret = ERROR_NOT_INIT;
   }
