@@ -74,6 +74,8 @@ import {
   VideoDenoiserOptions,
   ColorEnhanceOptions,
   EchoTestConfiguration,
+  WindowInfo,
+  DisplayId,
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -4227,8 +4229,8 @@ class AgoraRtcEngine extends EventEmitter {
    * You can share the whole or part of a window by specifying the window ID.
    * @return {Array} The array list of the window ID and relevant information.
    */
-  getScreenWindowsInfo(): Array<Object> {
-    return this.rtcEngine.getScreenWindowsInfo();
+  getScreenWindowsInfo(callback: (list: WindowInfo[]) => void): void {
+    return this.rtcEngine.getScreenWindowsInfo(callback);
   }
 
   /**
@@ -4241,12 +4243,12 @@ class AgoraRtcEngine extends EventEmitter {
    * You don't need to pay attention to the specific content of the returned
    * object, just use it for screen sharing.
    */
-  getScreenDisplaysInfo(): Array<DisplayInfo> {
-    return this.rtcEngine.getScreenDisplaysInfo();
+  getScreenDisplaysInfo(callback: (list: DisplayInfo[]) => void): void {
+    return this.rtcEngine.getScreenDisplaysInfo(callback);
   }
 
-  getRealScreenDisplaysInfo(): Array<DisplayInfo> {
-    return this.rtcEngine.getScreenDisplaysInfo();
+  getRealScreenDisplaysInfo(callback: (list: DisplayInfo[]) => void): void {
+    return this.rtcEngine.getScreenDisplaysInfo(callback);
   }
 
   /**
@@ -4592,7 +4594,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   videoSourceStartScreenCaptureByDisplayId(
-    displayId: number,
+    displayId: DisplayId,
     rect: CaptureRect,
     param: CaptureParam
   ) {
@@ -4603,7 +4605,7 @@ class AgoraRtcEngine extends EventEmitter {
     );
   }
   startScreenCaptureByDisplayId(
-    displayId: number,
+    displayId: DisplayId,
     rect: CaptureRect,
     param: CaptureParam
   ) {
