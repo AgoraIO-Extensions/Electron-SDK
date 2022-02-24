@@ -11,7 +11,7 @@ const { electronVersion, platform, packageVersion, arch, no_symbol } =
 
 const workspaceDir = `${path.join(__dirname, "..")}`;
 
-const addonVersion = "3.5.2-rc.1-iris.218-build.1";
+const addonVersion = "3.5.2-iris.224-build.1";
 
 const getDownloadURL = () => {
   let downloadUrl = `http://download.agora.io/sdk/release/Electron-${getOS()}-${addonVersion}-napi.zip`;

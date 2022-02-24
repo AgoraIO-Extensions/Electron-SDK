@@ -1,3 +1,6 @@
+## 3.5.2-iris.224-build.1 (Feb 24th, 2022)
+- update iris sdk
+
 ## 3.5.2-rc.1-iris.218-build.1 (Feb 18th, 2021)
 - update iris sdk
 

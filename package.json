@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "3.5.2-rc.1-iris.218-build.1",
+  "version": "3.5.2-iris.224-build.1",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -23,8 +23,8 @@
     "build_windows_x64_release": "cmake-js rebuild --arch=x64 --CDCMAKE_OSX_ARCHITECTURES=\"x86_64\" --CDCMAKE_BUILD_TYPE=Release"
   },
   "agora_electron": {
-    "iris_sdk_win": "http://192.168.99.149:8086/CSDC_repo/iris_3.5.2_RTC_Windows_20220218_0628.zip",
-    "iris_sdk_mac": "http://192.168.99.149:8086/CSDC_repo/iris_3.5.2_RTC_Mac_20220218_0626.zip",
+    "iris_sdk_win": "http://192.168.99.149:8086/CSDC_repo/iris_3.5.2_RTC_Windows_20220224_0833.zip",
+    "iris_sdk_mac": "http://192.168.99.149:8086/CSDC_repo/iris_3.5.2_RTC_Mac_20220224_0832.zip",
     "no_symbol": true,
     "prebuilt": true
   },
