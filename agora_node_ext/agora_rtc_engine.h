@@ -53,6 +53,10 @@ const int max_bmp_height = 500;
  */
 class NodeRtcEngine : public node::ObjectWrap {
  public:
+   struct NodeEventCallback {
+     Persistent<Function> callback;
+     Persistent<Object> js_this;
+   };
   /*
    * Constructor
    */
