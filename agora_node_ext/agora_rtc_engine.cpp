@@ -5474,137 +5474,115 @@ NAPI_API_DEFINE(NodeRtcEngine, sendCustomReportMessage) {
 
 NAPI_API_DEFINE(NodeRtcEngine, getScreenWindowsInfo) {
   LOG_ENTER;
-  do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
+  NodeEventCallback *cb = new NodeEventCallback();
+  cb->callback.Reset(args[0].As<Function>());
+  cb->js_this.Reset(args.This());
+  Isolate *isolate = args.GetIsolate();
+
+  agora::rtc::node_async_call::async_call([isolate, cb]() {
+    HandleScope scope(isolate);
     Local<Context> context = isolate->GetCurrentContext();
-    napi_get_native_this(args, pEngine);
-    CHECK_NATIVE_THIS(pEngine);
-
     Local<v8::Array> infos = v8::Array::New(isolate);
-
-    std::vector<ScreenWindowInfo> allWindows = getAllWindowInfo();
-    for (unsigned int i = 0; i < allWindows.size(); ++i) {
-      ScreenWindowInfo windowInfo = allWindows[i];
-      Local<v8::Object> obj = Object::New(isolate);
+    do {
+      std::vector<ScreenWindowInfo> allWindows = getAllWindowInfo();
+      for (unsigned int i = 0; i < allWindows.size(); ++i) {
+        ScreenWindowInfo windowInfo = allWindows[i];
+        Local<v8::Object> obj = Object::New(isolate);
 #ifdef _WIN32
-      UINT32 windowId = (UINT32)windowInfo.windowId;
+        UINT32 windowId = (UINT32)windowInfo.windowId;
 #elif defined(__APPLE__)
-      unsigned int windowId = windowInfo.windowId;
+        unsigned int windowId = windowInfo.windowId;
 #endif
-      NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowId", windowId);
-      NODE_SET_OBJ_PROP_String(isolate, obj, "name", windowInfo.name.c_str());
-      NODE_SET_OBJ_PROP_String(isolate, obj, "ownerName",
-                               windowInfo.ownerName.c_str());
-      NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", windowInfo.width);
-      NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", windowInfo.height);
-      NODE_SET_OBJ_PROP_Number(isolate, obj, "x", windowInfo.x);
-      NODE_SET_OBJ_PROP_Number(isolate, obj, "y", windowInfo.y);
-      NODE_SET_OBJ_PROP_UINT32(isolate, obj, "originWidth",
-                               windowInfo.originWidth);
-      NODE_SET_OBJ_PROP_UINT32(isolate, obj, "originHeight",
-                               windowInfo.originHeight);
-      NODE_SET_OBJ_PROP_Number(isolate, obj, "processId", windowInfo.processId);
-      NODE_SET_OBJ_PROP_Number(isolate, obj, "currentProcessId",
-                               windowInfo.currentProcessId);
+        NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowId", windowId);
+        NODE_SET_OBJ_PROP_String(isolate, obj, "name", windowInfo.name.c_str());
+        NODE_SET_OBJ_PROP_String(isolate, obj, "ownerName",
+                                 windowInfo.ownerName.c_str());
+        NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", windowInfo.width);
+        NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", windowInfo.height);
+        NODE_SET_OBJ_PROP_Number(isolate, obj, "x", windowInfo.x);
+        NODE_SET_OBJ_PROP_Number(isolate, obj, "y", windowInfo.y);
+        NODE_SET_OBJ_PROP_UINT32(isolate, obj, "originWidth",
+                                 windowInfo.originWidth);
+        NODE_SET_OBJ_PROP_UINT32(isolate, obj, "originHeight",
+                                 windowInfo.originHeight);
+        NODE_SET_OBJ_PROP_Number(isolate, obj, "processId",
+                                 windowInfo.processId);
+        NODE_SET_OBJ_PROP_Number(isolate, obj, "currentProcessId",
+                                 windowInfo.currentProcessId);
 
-      if (windowInfo.imageData) {
-        buffer_info imageInfo;
-        imageInfo.buffer = windowInfo.imageData;
-        imageInfo.length = windowInfo.imageDataLength;
-        NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "image", imageInfo);
-
-        free(windowInfo.imageData);
+        if (windowInfo.imageData) {
+          buffer_info imageInfo;
+          imageInfo.buffer = windowInfo.imageData;
+          imageInfo.length = windowInfo.imageDataLength;
+          NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "image", imageInfo);
+          free(windowInfo.imageData);
+        }
+        infos->Set(context, i, obj);
       }
-
-      infos->Set(context, i, obj);
-    }
-#if 0  // APPLE
-                std::vector<ScreenWindowInfo> allWindows = getAllWindowInfo();
-                for (unsigned int i = 0; i < allWindows.size(); ++i) {
-                    ScreenWindowInfo windowInfo = allWindows[i];
-                    Local<v8::Object> obj = Object::New(isolate);
-                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowId", windowInfo.windowId);
-                    NODE_SET_OBJ_PROP_String(isolate, obj, "name", windowInfo.name.c_str());
-                    NODE_SET_OBJ_PROP_String(isolate, obj, "ownerName", windowInfo.ownerName.c_str());
-                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", windowInfo.width);
-                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", windowInfo.height);
-                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "originWidth", windowInfo.originWidth);
-                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "originHeight", windowInfo.originHeight);
-
-                    if (windowInfo.imageData) {
-                        buffer_info imageInfo;
-                        imageInfo.buffer = windowInfo.imageData;
-                        imageInfo.length = windowInfo.imageDataLength;
-                        NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "image", imageInfo);
-
-                        free(windowInfo.imageData);
-                    }
-
-                    infos->Set(context, i, obj);
-                }
-#endif
-
-    napi_set_array_result(args, infos);
-  } while (false);
+    } while (false);
+    Local<v8::Value> rec[1] = {infos};
+    cb->callback.Get(isolate)->Call(context, cb->js_this.Get(isolate), 1, rec);
+    delete cb;
+  });
   LOG_LEAVE;
 }
 
 NAPI_API_DEFINE(NodeRtcEngine, getScreenDisplaysInfo) {
   LOG_ENTER;
-  do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
+  NodeEventCallback *cb = new NodeEventCallback();
+  cb->callback.Reset(args[0].As<Function>());
+  cb->js_this.Reset(args.This());
+  Isolate *isolate = args.GetIsolate();
+
+  agora::rtc::node_async_call::async_call([isolate, cb]() {
+    HandleScope scope(isolate);
     Local<Context> context = isolate->GetCurrentContext();
-    napi_get_native_this(args, pEngine);
-    CHECK_NATIVE_THIS(pEngine);
-
     Local<v8::Array> infos = v8::Array::New(isolate);
-
-    std::vector<ScreenDisplayInfo> allDisplays = getAllDisplayInfo();
-
-    for (unsigned int i = 0; i < allDisplays.size(); ++i) {
-      ScreenDisplayInfo displayInfo = allDisplays[i];
-      Local<v8::Object> obj = Object::New(isolate);
+    do {
+      std::vector<ScreenDisplayInfo> allDisplays = getAllDisplayInfo();
+      for (unsigned int i = 0; i < allDisplays.size(); ++i) {
+        ScreenDisplayInfo displayInfo = allDisplays[i];
+        Local<v8::Object> obj = Object::New(isolate);
 #ifdef WIN32 // __WIN32
-      DisplayInfo displayId = displayInfo.displayInfo;
+        DisplayInfo displayId = displayInfo.displayInfo;
 #else
-      ScreenIDType displayId = displayInfo.displayId;
+        ScreenIDType displayId = displayInfo.displayId;
 #endif
-      Local<v8::Object> displayIdObj = Object::New(isolate);
-      
-      NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "x", displayInfo.x);
-      NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "y", displayInfo.y);
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "width", displayInfo.width);
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "height", displayInfo.height);
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "id", displayId.idVal);
-
-      Local<Value> propName = String::NewFromUtf8(isolate, "displayId",
-                                                  NewStringType::kInternalized)
-                                  .ToLocalChecked();
-      obj->Set(context, propName, displayIdObj);
-
-      NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", displayInfo.width);
-      NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", displayInfo.height);
-      NODE_SET_OBJ_PROP_Number(isolate, obj, "x", displayInfo.x);
-      NODE_SET_OBJ_PROP_Number(isolate, obj, "y", displayInfo.y);
-      NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isMain", displayInfo.isMain);
-      NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isActive", displayInfo.isActive);
-      NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isBuiltin", displayInfo.isBuiltin);
-
-      if (displayInfo.imageData) {
-        buffer_info imageInfo;
-        imageInfo.buffer = displayInfo.imageData;
-        imageInfo.length = displayInfo.imageDataLength;
-        NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "image", imageInfo);
-
-        free(displayInfo.imageData);
+        Local<v8::Object> displayIdObj = Object::New(isolate);
+        NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "x", displayInfo.x);
+        NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "y", displayInfo.y);
+        NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "width",
+                                 displayInfo.width);
+        NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "height",
+                                 displayInfo.height);
+        NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "id", displayId.idVal);
+        Local<Value> propName =
+            String::NewFromUtf8(isolate, "displayId",
+                                NewStringType::kInternalized)
+                .ToLocalChecked();
+        obj->Set(context, propName, displayIdObj);
+        NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", displayInfo.width);
+        NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", displayInfo.height);
+        NODE_SET_OBJ_PROP_Number(isolate, obj, "x", displayInfo.x);
+        NODE_SET_OBJ_PROP_Number(isolate, obj, "y", displayInfo.y);
+        NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isMain", displayInfo.isMain);
+        NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isActive", displayInfo.isActive);
+        NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isBuiltin",
+                               displayInfo.isBuiltin);
+        if (displayInfo.imageData) {
+          buffer_info imageInfo;
+          imageInfo.buffer = displayInfo.imageData;
+          imageInfo.length = displayInfo.imageDataLength;
+          NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "image", imageInfo);
+          free(displayInfo.imageData);
+        }
+        infos->Set(context, i, obj);
       }
-
-      infos->Set(context, i, obj);
-    }
-    napi_set_array_result(args, infos);
-  } while (false);
+    } while (false);
+    Local<v8::Value> rec[1] = {infos};
+    cb->callback.Get(isolate)->Call(context, cb->js_this.Get(isolate), 1, rec);
+    delete cb;
+  });
   LOG_LEAVE;
 }
 

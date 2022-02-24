@@ -3163,20 +3163,38 @@ export enum NETWORK_TYPE {
    */
   NETWORK_TYPE_MOBILE_5G = 6,
 }
+
+export interface DisplayId {
+  id: number;
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+}
+
 export interface DisplayInfo {
-  displayId: {
-    id: number;
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
+  displayId: DisplayId;
   height: number;
   width: number;
   image: Uint8Array;
   isActive: boolean;
   isBuiltin: boolean;
   isMain: boolean;
+}
+
+export interface WindowInfo {
+  currentProcessId: number;
+  height: number;
+  image: Uint8Array;
+  name: string;
+  originHeight: number;
+  originWidth: number;
+  ownerName: string;
+  processId: number;
+  width: number;
+  windowId: number;
+  x: number;
+  y: number;
 }
 /**
  * Audio recording quality, which is set in {@link startAudioRecordingWithConfig}.
@@ -3967,28 +3985,28 @@ export interface NodeRtcEngine {
   videosourceSetScreenCaptureContentHint(hint: VideoContentHint): number;
 
   videoSourceStartScreenCaptureByDisplayId(
-    displayId: number,
+    displayId: DisplayId,
     rect: CaptureRect,
     param: CaptureParam
   ): number;
 
   startScreenCaptureByDisplayId(
-    displayId: number,
+    displayId: DisplayId,
     rect: CaptureRect,
     param: CaptureParam
   ): number;
   /**
    * @ignore
    */
-  getScreenWindowsInfo(): Array<Object>;
+  getScreenWindowsInfo(callback: (list: WindowInfo[]) => void): void;
   /**
    * @ignore
    */
-  getScreenDisplaysInfo(): Array<DisplayInfo>;
+  getScreenDisplaysInfo(callback: (list: DisplayInfo[]) => void): void;
   /**
    * @ignore
    */
-  getRealScreenDisplayInfo(): Array<DisplayInfo>;
+  getRealScreenDisplayInfo(callback: (list: DisplayInfo[]) => void): void;
   /**
    * @ignore
    */
