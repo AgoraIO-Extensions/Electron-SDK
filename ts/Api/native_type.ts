@@ -286,10 +286,10 @@ export interface Point{
   y: number;
 }
 
-export interface TrapezoidCorrectionOptions{
+export interface TrapezoidCorrectionOptions {
   dragSrcPoint?: Point;
   dragDstPoint?: Point;
-  dragFinished: number;
+  dragFinished?: number;
   dragSrcPoints?: [number];
   dragDstPoints?: [number];
   hasMultiPoints?: boolean;

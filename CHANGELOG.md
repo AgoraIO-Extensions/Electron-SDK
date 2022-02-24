@@ -1,3 +1,6 @@
+## 3.6.200-rc.101-build.224(Feb 24th, 2021)
+* update native sdk
+
 ## 3.6.200-rc.101-build.214(Feb 14th, 2021)
 * fix getTrapezoidCorrectionOptions
 
