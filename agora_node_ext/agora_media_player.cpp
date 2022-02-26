@@ -168,7 +168,6 @@ Local<Object> NodeMediaPlayer::Init(Isolate *isolate,
   PROPERTY_METHOD_DEFINE(getSourceId);
   PROPERTY_METHOD_DEFINE(getStreamInfo);
   PROPERTY_METHOD_DEFINE(setPlayerOption);
-  PROPERTY_METHOD_DEFINE(changePlaybackSpeed);
   PROPERTY_METHOD_DEFINE(selectAudioTrack);
   EN_PROPERTY_DEFINE()
 
@@ -374,23 +373,6 @@ NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, setPlayerOption) {
     CHECK_NAPI_STATUS(mediaPlayer, status);
     result = mediaPlayer->mMediaPlayer->m_mediaPlayerSource->setPlayerOption(
         key, value);
-  } while (false);
-  media_player_napi_set_int_result(args, result);
-}
-
-NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, changePlaybackSpeed) {
-  int result = 1;
-  do {
-    NodeMediaPlayer *mediaPlayer = nullptr;
-    napi_get_native_this(args, mediaPlayer);
-    CHECK_NATIVE_THIS(mediaPlayer);
-    int speed;
-    napi_status status = napi_ok;
-    status = napi_get_value_int32_(args[0], speed);
-    CHECK_NAPI_STATUS(mediaPlayer, status);
-    result =
-        mediaPlayer->mMediaPlayer->m_mediaPlayerSource->changePlaybackSpeed(
-            (agora::media::base::MEDIA_PLAYER_PLAYBACK_SPEED)speed);
   } while (false);
   media_player_napi_set_int_result(args, result);
 }

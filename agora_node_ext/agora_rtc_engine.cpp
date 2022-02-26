@@ -301,6 +301,7 @@ void NodeRtcEngine::Init(Local<Object> &module) {
   PROPERTY_METHOD_DEFINE(setScreenCaptureOrientation);
   PROPERTY_METHOD_DEFINE(setExtensionProviderProperty);
   PROPERTY_METHOD_DEFINE(setProcessDpiAwareness);
+  PROPERTY_METHOD_DEFINE(enableVirtualBackground);
 
   EN_PROPERTY_DEFINE()
   module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(),
@@ -6468,6 +6469,97 @@ NAPI_API_DEFINE(NodeRtcEngine, setAddonLogFile) {
 
   loguru::add_file(filePath, loguru::Append, loguru::Verbosity_MAX);
 }
+
+NAPI_API_DEFINE(NodeRtcEngine, enableVirtualBackground) {
+  LOG_ENTER;
+  int result = -1;
+  napi_status status = napi_ok;
+
+  bool enabled;
+  VirtualBackgroundSource backgroundSource;
+  SegmentationProperty segpropert;
+  uint32 background_source_type, blur_degree, modeltype, modeltypeSegpropert, type;
+
+  nodestring source;
+  double greencapacity, greencapacitySegpropert;
+  Isolate *isolate = args.GetIsolate();
+
+  do {
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    napi_status status = napi_get_value_bool_(args[0], enabled);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    if (!args[1]->IsObject()) {
+      status = napi_invalid_arg;
+      CHECK_NAPI_STATUS(pEngine, status);
+    }
+
+    Local<Object> backgroundSourceObj;
+    status = napi_get_value_object_(isolate, args[1], backgroundSourceObj);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    status = napi_get_object_property_uint32_(isolate, backgroundSourceObj,
+                                              "background_source_type",
+                                              background_source_type);
+    backgroundSource.background_source_type =
+        (VirtualBackgroundSource::BACKGROUND_SOURCE_TYPE)background_source_type;
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    status = napi_get_object_property_uint32_(isolate, backgroundSourceObj,
+                                              "color", backgroundSource.color);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    status = napi_get_object_property_nodestring_(isolate, backgroundSourceObj,
+                                                  "source", source);
+    backgroundSource.source = source;
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    status = napi_get_object_property_uint32_(isolate, backgroundSourceObj,
+                                              "blur_degree", blur_degree);
+    backgroundSource.blur_degree =
+        (VirtualBackgroundSource::BACKGROUND_BLUR_DEGREE)blur_degree;
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    if (!args[2]->IsObject()) {
+      status = napi_invalid_arg;
+      CHECK_NAPI_STATUS(pEngine, status);
+    }
+
+    Local<Object> segpropertObj;
+    status = napi_get_value_object_(isolate, args[2], segpropertObj);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    status = napi_get_object_property_uint32_(isolate, segpropertObj,
+                                              "modelType", modeltypeSegpropert);
+    segpropert.modelType =
+        (SegmentationProperty::SEG_MODEL_TYPE)modeltypeSegpropert;
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    status = napi_get_object_property_int32_(
+        isolate, segpropertObj, "preferVelocity", segpropert.preferVelocity);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    status = napi_get_object_property_double_(
+        isolate, segpropertObj, "greenCapacity", greencapacitySegpropert);
+    segpropert.greenCapacity = greencapacitySegpropert;
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    status = napi_get_value_uint32_(args[3], type);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    result = pEngine->m_engine->enableVirtualBackground(
+        enabled, backgroundSource, segpropert, (agora::media::MEDIA_SOURCE_TYPE)type);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
 } // namespace rtc
 } // namespace agora
 

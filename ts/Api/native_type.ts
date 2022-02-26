@@ -9,6 +9,68 @@ export interface RendererOptions
   append: boolean
 }
 
+export enum BACKGROUND_SOURCE_TYPE {
+  /**
+   * 1: (Default) The background image is a solid color.
+   */
+  BACKGROUND_COLOR = 1,
+  /**
+   * The background image is a file in PNG or JPG format.
+   */
+  BACKGROUND_IMG,
+  /** Background source is blur background besides human body*/
+  BACKGROUND_BLUR
+}
+
+/** The blur degree used to blur background in different level.(foreground keeps same as before).
+ */
+export enum BACKGROUND_BLUR_DEGREE {
+  /** blur degree level low, background can see things, but have some blur effect */
+  BLUR_DEGREE_LOW = 1,
+  /** blur degree level medium, blur more than level medium */
+  BLUR_DEGREE_MEDIUM,
+  /** blur degree level high, blur default, hard to find background */
+  BLUR_DEGREE_HIGH
+}
+
+export interface VirtualBackgroundSource {
+  /** The type of the custom background image. See #BACKGROUND_SOURCE_TYPE.
+   */
+  background_source_type: BACKGROUND_SOURCE_TYPE;
+
+  /**
+   * The color of the custom background image. The format is a hexadecimal integer defined by RGB, without the # sign,
+   * such as 0xFFB6C1 for light pink. The default value is 0xFFFFFF, which signifies white. The value range
+   * is [0x000000,0xFFFFFF]. If the value is invalid, the SDK replaces the original background image with a white
+   * background image.
+   *
+   * @note This parameter takes effect only when the type of the custom background image is `BACKGROUND_COLOR`.
+   */
+  color: number;
+
+  /**
+   * The local absolute path of the custom background image. PNG and JPG formats are supported. If the path is invalid,
+   * the SDK replaces the original background image with a white background image.
+   *
+   * @note This parameter takes effect only when the type of the custom background image is `BACKGROUND_IMG`.
+   */
+  source: string;
+
+  /** blur degree */
+  blur_degree: BACKGROUND_BLUR_DEGREE;
+}
+
+export enum SEG_MODEL_TYPE {
+  SEG_MODEL_AGORA_AI_ONE = 0,
+  SEG_MODEL_AGORA_GREEN = 2
+}
+
+export interface SegmentationProperty {
+  modelType: SEG_MODEL_TYPE;
+  preferVelocity: number;
+  greenCapacity: number;
+}
+
 /**
 * Rtc Connection.
 */
@@ -2878,25 +2940,43 @@ export enum MEDIA_PLAYER_ERROR {
   };
 
 export enum MEDIA_PLAYER_EVENT {
-    /** player seek begin
-     */
-    PLAYER_EVENT_SEEK_BEGIN = 0,
-    /** player seek complete
-     */
-    PLAYER_EVENT_SEEK_COMPLETE = 1,
-    /** player seek error
-     */
-    PLAYER_EVENT_SEEK_ERROR = 2,
-    /** player video published
-     */
-    PLAYER_EVENT_VIDEO_PUBLISHED = 3,
-    /** player audio published
-     */
-    PLAYER_EVENT_AUDIO_PUBLISHED = 4,
-    /** player audio track changed
-     */
-    PLAYER_EVENT_AUDIO_TRACK_CHANGED = 5,
-  };
+  /** The player begins to seek to the new playback position.
+   */
+  PLAYER_EVENT_SEEK_BEGIN = 0,
+  /** The seek operation completes.
+   */
+  PLAYER_EVENT_SEEK_COMPLETE = 1,
+  /** An error occurs during the seek operation.
+   */
+  PLAYER_EVENT_SEEK_ERROR = 2,
+  /** The player changes the audio track for playback.
+   */
+  PLAYER_EVENT_AUDIO_TRACK_CHANGED = 5,
+  /** player buffer low
+   */
+  PLAYER_EVENT_BUFFER_LOW = 6,
+    /** player buffer recover
+   */
+  PLAYER_EVENT_BUFFER_RECOVER = 7,
+  /** The video or audio is interrupted
+   */
+  PLAYER_EVENT_FREEZE_START = 8,
+  /** Interrupt at the end of the video or audio
+   */
+  PLAYER_EVENT_FREEZE_STOP = 9,
+  /** switch source begin
+  */
+  PLAYER_EVENT_SWITCH_BEGIN = 10,
+  /** switch source complete
+  */
+  PLAYER_EVENT_SWITCH_COMPLETE = 11,
+  /** switch source error
+  */
+  PLAYER_EVENT_SWITCH_ERROR = 12,
+  /** An application can render the video to less than a second
+   */
+  PLAYER_EVENT_FIRST_DISPLAYED = 13,
+};
 
   export interface VideoDimensions {
     width: number,
@@ -3116,6 +3196,15 @@ export interface NodeRtcEngine {
    * @ignore
    */
   initialize(appId: string, areaCode?: AREA_CODE, logConfig?: LogConfig): number;
+  /**
+   * @ignore
+   */
+   enableVirtualBackground(
+    enable: boolean,
+    backgroundSource: VirtualBackgroundSource,
+    segpropert: SegmentationProperty,
+    type: MEDIA_SOURCE_TYPE
+  ): number;
   /**
    * @ignore
    */
@@ -3976,7 +4065,5 @@ export interface NodeMediaPlayer {
   getSourceId(): number;
   getStreamInfo(index: number): MediaStreamInfo;
   setPlayerOption(key: string, value: number): number;
-  changePlaybackSpeed(speed: MEDIA_PLAYER_PLAY_SPEED): number;
   selectAudioTrack(index: number): number;
-
 }
