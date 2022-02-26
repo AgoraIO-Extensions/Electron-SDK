@@ -77,7 +77,9 @@ import {
   VIDEO_STREAM_TYPE,
   REMOTE_VIDEO_DOWNSCALE_LEVEL,
   AUDIO_MIXING_STATE_TYPE,
-  AUDIO_MIXING_ERROR_TYPE
+  AUDIO_MIXING_ERROR_TYPE,
+  VirtualBackgroundSource,
+  SegmentationProperty
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -1338,6 +1340,20 @@ class AgoraRtcEngine extends EventEmitter {
    */
   initialize(appid: string, areaCode: AREA_CODE = (0xFFFFFFFF), logConfig?: LogConfig): number {
     return this.rtcEngine.initialize(appid, areaCode, logConfig);
+  }
+  
+  enableVirtualBackground(
+    enable: boolean,
+    backgroundSource: VirtualBackgroundSource,
+    segpropert: SegmentationProperty,
+    type: MEDIA_SOURCE_TYPE
+  ) {
+    return this.rtcEngine.enableVirtualBackground(
+      enable,
+      backgroundSource,
+      segpropert,
+      type
+    );
   }
 
   createMediaPlayer(): AgoraMediaPlayer {
@@ -5793,9 +5809,11 @@ class AgoraMediaPlayer extends EventEmitter {
     });
 
     this.mediaPlayer.onEvent('onPlayEvent', (
-      event: MEDIA_PLAYER_EVENT
+      event: MEDIA_PLAYER_EVENT,
+      elapsedTime: number,
+      msg: string,
     ) => {
-      fire('onPlayEvent', event);
+      fire('onPlayEvent', event, elapsedTime, msg);
     });
 
     // this.mediaPlayer.onEvent('onMetaData', (
@@ -5856,9 +5874,6 @@ class AgoraMediaPlayer extends EventEmitter {
     return this.mediaPlayer.setPlayerOption(key, value);
   }
 
-  changePlaybackSpeed(speed: MEDIA_PLAYER_PLAY_SPEED): number {
-    return this.mediaPlayer.changePlaybackSpeed(speed);
-  }
 
   selectAudioTrack(index: number): number {
     return this.mediaPlayer.selectAudioTrack(index);

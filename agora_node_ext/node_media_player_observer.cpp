@@ -36,15 +36,29 @@ void NodeMediaPlayerObserver::onPositionChanged(int64_t position) {
 }
 
 void NodeMediaPlayerObserver::onPlayerEvent(
-    media::base::MEDIA_PLAYER_EVENT event) {
-  node_async_call::async_call([this, event] {
-    MEDIA_PLAYER_MAKE_JS_CALL_1(MEDIA_PLAYER_ON_PLAY_EVENT, int32, event);
+    media::base::MEDIA_PLAYER_EVENT eventCode, int64_t elapsedTime,
+    const char *message) {
+  std::string msg;
+  if (message)
+    msg.assign(message);
+
+  node_async_call::async_call([this, eventCode, elapsedTime, msg] {
+    MEDIA_PLAYER_MAKE_JS_CALL_3(MEDIA_PLAYER_ON_PLAY_EVENT, uint32, eventCode, uint64, eventCode, string, msg.c_str())
   });
 }
 
 void NodeMediaPlayerObserver::onMetaData(const void *data, int length) {
   // node_async_call::async_call([this, type, ])
 }
+void NodeMediaPlayerObserver::onPreloadEvent(
+    const char *src, media::base::PLAYER_PRELOAD_EVENT event) {}
+void NodeMediaPlayerObserver::onAgoraCDNTokenWillExpire() {}
+void NodeMediaPlayerObserver::onPlayerSrcInfoChanged(
+    const media::base::SrcInfo &from, const media::base::SrcInfo &to) {}
+void NodeMediaPlayerObserver::onPlayerInfoUpdated(
+    const media::base::PlayerUpdatedInfo &info) {}
+void NodeMediaPlayerObserver::onAudioVolumeIndication(int volume) {}
+
 void NodeMediaPlayerObserver::onPlayBufferUpdated(int64_t playCachedBuffer) {}
 
 void NodeMediaPlayerObserver::onCompleted() {}

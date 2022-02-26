@@ -349,6 +349,7 @@ public:
   NAPI_API(leaveChannelEx);
   NAPI_API(startAudioRecording2);
   NAPI_API(setProcessDpiAwareness);
+  NAPI_API(enableVirtualBackground);
 
 public:
   Isolate *getIsolate() { return m_isolate; }
