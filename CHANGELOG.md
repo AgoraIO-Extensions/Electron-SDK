@@ -1,3 +1,7 @@
+## 3.6.1-rc.3-build.228(Jan 28th, 2021)
+- change api: getScreenWindowsInfo getScreenDisplaysInfo getRealScreenDisplaysInfo
+- update native sdk
+
 ## 3.6.1-rc.1-build.126(Jan 26th, 2021)
 - fix doc
 - add api: startEchoTestWithConfig
