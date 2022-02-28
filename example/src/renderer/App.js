@@ -37,7 +37,7 @@ export default class App extends Component {
         localVideoSource: '',
         localSharing: false,
         users: new List(),
-        channel: '',
+        channel: 'electron',
         role: 1,
         voiceReverbPreset: 0,
         voiceChangerPreset: 0,
@@ -503,8 +503,8 @@ export default class App extends Component {
       // rtcEngine.videoSourceSetVideoProfile(43, false);
       // rtcEngine.videosourceStartScreenCaptureByWindow(windowId, {x: 0, y: 0, width: 0, height: 0}, {width: 0, height: 0, bitrate: 500, frameRate: 15})
 
-      rtcEngine.videoSourceStartScreenCaptureByScreen(
-        displayId,
+      rtcEngine.videoSourceStartScreenCaptureByDisplayId(
+        { id: displayId },
         { x: 0, y: 0, width: 0, height: 0 },
         {
           width: 0,
@@ -535,7 +535,7 @@ export default class App extends Component {
     // rtcEngine.videoSourceUpdateScreenCaptureParameters({width: 0, height: 0, bitrate: 500, frameRate: 5, captureMouseCursor: false, windowFocus: false, excludeWindowList: exculdeList, excludeWindowCount: exculdeList.length});
   };
 
-  handleScreenSharing = e => {
+  handleWindowSharing = e => {
     // getWindowInfo and open Modal
     let rtcEngine = this.getRtcEngine();
     // let list = rtcEngine.getScreenWindowsInfo();
@@ -565,22 +565,31 @@ export default class App extends Component {
   handleDisplaySharing = e => {
     // getWindowInfo and open Modal
     let rtcEngine = this.getRtcEngine();
-    let list = rtcEngine.getScreenDisplaysInfo();
-    Promise.all(list.map(item => readImage(item.image))).then(imageList => {
-      let displayList = list.map((item, index) => {
-        let name = `Display ${index + 1}`;
-        return {
-          ownerName: '',
-          name: name,
-          displayId: item.displayId,
-          image: imageList[index],
-        };
-      });
-      this.setState({
-        showDisplayPicker: true,
-        displayList: displayList,
-      });
-    });
+    let list = rtcEngine
+      .getScreenCaptureSources(
+        { width: 400, height: 400 },
+        { width: 400, height: 400 },
+        true
+      )
+      .filter(obj => obj.type === 1);
+
+    Promise.all(list.map(item => readImage(item.thumbImage.buffer))).then(
+      imageList => {
+        let displayList = list.map((item, index) => {
+          let name = `Display ${index + 1}`;
+          return {
+            ownerName: '',
+            name: name,
+            displayId: item.sourceId,
+            image: imageList[index],
+          };
+        });
+        this.setState({
+          showDisplayPicker: true,
+          displayList: displayList,
+        });
+      }
+    );
   };
 
   toggleFuPlugin = () => {
@@ -1340,10 +1349,10 @@ export default class App extends Component {
             <label className="label">Screen Share</label>
             <div className="control">
               <button
-                onClick={this.handleScreenSharing}
+                onClick={this.handleWindowSharing}
                 className="button is-link"
               >
-                Screen Share
+                Window Share
               </button>
             </div>
             <div className="control">

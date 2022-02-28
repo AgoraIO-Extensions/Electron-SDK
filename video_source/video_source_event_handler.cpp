@@ -150,7 +150,7 @@ void AgoraVideoSourceEventHandler::onLocalVideoStateChanged(
 #if defined(_WIN32)
 void AgoraVideoSourceEventHandler::onScreenCaptureInfoUpdated(
     agora::rtc::ScreenCaptureInfo &info) {
-  m_videoSource.notifyScreenCaptureInfoUpdated(info.cardType,
+  m_videoSource.notifyScreenCaptureInfoUpdated(info.graphicsCardType,
                                                (int)info.errCode);
 }
 #endif
