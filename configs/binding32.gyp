@@ -82,6 +82,7 @@
                         './sdk/libagora_segmentation_extension.dll',
                         './sdk/libagora_pvc_extension.dll',
                         './sdk/glfw3.dll',
+                        './sdk/agora_rtm_sdk.dll',
                         './sdk/bequic.dll',
                     ]
                 }],

@@ -38,13 +38,13 @@ public:
       agora::media::IVideoFrameObserver::VideoFrame &videoFrame) override;
 
   
-  virtual bool onPreEncodeVideoFrame(VideoFrame& videoFrame) override;
+  virtual bool onPreEncodeVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
 
-  virtual bool onPreEncodeScreenVideoFrame(VideoFrame& videoFrame) override;
+  virtual bool onPreEncodeScreenVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
   
-  virtual bool onSecondaryPreEncodeCameraVideoFrame(VideoFrame& videoFrame) override;
+  virtual bool onSecondaryPreEncodeCameraVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
 
-  virtual bool onSecondaryPreEncodeScreenVideoFrame(VideoFrame& videoFrame) override;
+  virtual bool onSecondaryPreEncodeScreenVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
   // virtual agora::media::IVideoFrameObserver::VIDEO_FRAME_PROCESS_MODE
   // getVideoFrameProcessMode() override;
 };

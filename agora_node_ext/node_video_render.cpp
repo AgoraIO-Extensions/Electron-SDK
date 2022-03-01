@@ -71,19 +71,19 @@ bool NodeVideoFrameObserver::onTranscodedVideoFrame(
   return true;
 }
 
-bool onPreEncodeVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame){
+bool NodeVideoFrameObserver::onPreEncodeVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame){
   return true;
 }
 
-bool onPreEncodeScreenVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame){
+bool NodeVideoFrameObserver::onPreEncodeScreenVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame){
   return true;
 }
 
-bool onSecondaryPreEncodeCameraVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame){
+bool NodeVideoFrameObserver::onSecondaryPreEncodeCameraVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame){
   return true;
 }
 
-bool onSecondaryPreEncodeScreenVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame){
+bool NodeVideoFrameObserver::onSecondaryPreEncodeScreenVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame){
   return true;
 }
 
