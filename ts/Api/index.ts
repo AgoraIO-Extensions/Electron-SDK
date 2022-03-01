@@ -76,6 +76,7 @@ import {
   EchoTestConfiguration,
   WindowInfo,
   DisplayId,
+  LocalAccessPointConfiguration,
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -6849,6 +6850,11 @@ class AgoraRtcEngine extends EventEmitter {
     options: ColorEnhanceOptions
   ): number {
     return this.rtcEngine.setColorEnhanceOptions(enabled, options);
+  }
+  setLocalAccessPoint(
+    localAccessPointConfiguration: LocalAccessPointConfiguration
+  ): number {
+    return this.rtcEngine.setLocalAccessPoint(localAccessPointConfiguration);
   }
 }
 /** The AgoraRtcEngine interface. */
