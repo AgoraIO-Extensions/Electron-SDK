@@ -1,4 +1,4 @@
-## 3.7.202-build.225(Feb 17th, 2020)
+## 3.7.200-build.301(Feb 17th, 2020)
 * update native sdk
 * add api: enableVirtualBackground
 
