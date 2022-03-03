@@ -1380,17 +1380,24 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalAccessPoint) {
     v8::Array *domainList;
     std::vector<const char *> ipListVec;
     std::vector<const char *> domainListVec;
+    std::vector<std::string> ipListVecString;
+    std::vector<std::string> domainListVecString;
 
     status = napi_get_object_property_array_(isolate, obj, "ipList", ipList);
     if (status == napi_ok && ipList->Length() > 0) {
       auto count = ipList->Length();
       ipListVec.reserve(count);
+      ipListVecString.reserve(count);
       for (uint32 i = 0; i < ipList->Length(); i++) {
         Local<Value> value = ipList->Get(context, i).ToLocalChecked();
         NodeString str;
         status = napi_get_value_nodestring_(value, str);
         CHECK_NAPI_STATUS(pEngine, status);
-        ipListVec.push_back(string(str).c_str());
+        ipListVecString.push_back(string(str));
+      }
+      for(int index = 0; index < count; ++index)
+      {
+        ipListVec.push_back(ipListVecString[index].c_str());
       }
       localAccessPointConfiguration.ipList = ipListVec.data();
       localAccessPointConfiguration.ipListSize = count;
@@ -1400,12 +1407,17 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalAccessPoint) {
     if (status == napi_ok && domainList->Length() > 0) {
       auto count = domainList->Length();
       domainListVec.reserve(count);
+      domainListVecString.reserve(count);
       for (uint32 i = 0; i < domainList->Length(); i++) {
         Local<Value> value = domainList->Get(context, i).ToLocalChecked();
         NodeString str;
         status = napi_get_value_nodestring_(value, str);
         CHECK_NAPI_STATUS(pEngine, status);
-        domainListVec.push_back(string(str).c_str());
+        domainListVecString.push_back(string(str));
+      }
+      for(int index = 0; index < count; ++index)
+      {
+        domainListVec.push_back(domainListVecString[index].c_str());
       }
       localAccessPointConfiguration.domainList = domainListVec.data();
       localAccessPointConfiguration.domainListSize = count;
