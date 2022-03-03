@@ -1,8 +1,6 @@
 import {
   PluginInfo,
-  Plugin
 } from './plugin';
-import { type } from 'os';
 
 export interface RendererOptions
 {
@@ -2427,11 +2425,44 @@ export enum REMOTE_VIDEO_STREAM_TYPE {
   REMOTE_VIDEO_STREAM_LOW = 1,
 };
 
+/**
+ * Audio application scenarios.
+ */
+export enum AUDIO_SCENARIO_TYPE {
+  /**
+   * 0: (Recommended) The default audio scenario.
+   */
+  AUDIO_SCENARIO_DEFAULT = 0,
+  /**
+   * 3: (Recommended) The live gaming scenario, which needs to enable gaming
+   * audio effects in the speaker. Choose this scenario to achieve high-fidelity
+   * music playback.
+   */
+  AUDIO_SCENARIO_GAME_STREAMING = 3,
+  /**
+   * 5: The chatroom scenario, which needs to keep recording when setClientRole to audience.
+   * Normally, app developer can also use mute api to achieve the same result,
+   * and we implement this 'non-orthogonal' behavior only to make API backward compatible.
+   */
+  AUDIO_SCENARIO_CHATROOM = 5,
+  /**
+   * 6: (Recommended) The scenario requiring high-quality audio.
+   */
+  AUDIO_SCENARIO_HIGH_DEFINITION = 6,
+  /**
+   * 7: Chorus
+   */
+  AUDIO_SCENARIO_CHORUS = 7,
+  /**
+   * 8: Reserved.
+   */
+  AUDIO_SCENARIO_NUM = 8,
+};
 
 /**
  * The channel profile.
  */
-export enum CHANNEL_PROFILE_TYPE {
+ export enum CHANNEL_PROFILE_TYPE {
   /**
    * 0: Communication.
    *
@@ -2439,7 +2470,7 @@ export enum CHANNEL_PROFILE_TYPE {
    */
   CHANNEL_PROFILE_COMMUNICATION = 0,
   /**
-   * 1: Live Broadcast.
+   * 1: (Default) Live Broadcast.
    *
    * This profile prioritizes supporting a large audience in a live broadcast channel.
    */
@@ -2463,6 +2494,13 @@ export enum CHANNEL_PROFILE_TYPE {
    * This profile uses a special network transport strategy for communication 1v1.
    */
   CHANNEL_PROFILE_COMMUNICATION_1v1 = 4,
+
+  /**
+   * 5: Live Broadcast 2.
+   *
+   * This profile technical preview.
+   */
+  CHANNEL_PROFILE_LIVE_BROADCASTING_2 = 5,
 };
 
 /**
@@ -2497,7 +2535,13 @@ export interface ChannelMediaOptions {
    * - true: Publish the video track of the camera capturer.
    * - false: (Default) Do not publish the video track of the camera capturer.
    */
-    publishCameraTrack: boolean;
+  publishCameraTrack: boolean;
+  /**
+   * Determines whether to publish the video of the secondary camera track.
+   * - true: Publish the video track of the secondary camera capturer.
+   * - false: (Default) Do not publish the video track of the secondary camera capturer.
+   */
+  publishSecondaryCameraTrack: boolean;
   /**
    * Determines whether to publish the recorded audio.
    * - true: Publish the recorded audio.
@@ -3195,7 +3239,16 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  initialize(appId: string, areaCode?: AREA_CODE, logConfig?: LogConfig): number;
+   initialize(
+    appid: string,
+    areaCode: AREA_CODE,
+    logConfig?: LogConfig,
+    config?: {
+      enableAudioDevice?: boolean;
+      channelProfile?: CHANNEL_PROFILE_TYPE;
+      audioScenario?: AUDIO_SCENARIO_TYPE;
+    }
+  ): number
   /**
    * @ignore
    */
@@ -3340,7 +3393,11 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  setAudioProfile(profile: number, scenario: number): number;
+  setAudioProfile(profile: number): number;
+  /**
+   * @ignore
+   */
+  adjustUserPlaybackSignalVolume(uid:number, volume : number): number
   /**
    * @ignore
    */

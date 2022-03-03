@@ -255,7 +255,7 @@ void NodeRtcEngine::Init(Local<Object> &module) {
   /**
    * 3.0.0 Apis
    */
-  // PROPERTY_METHOD_DEFINE(adjustUserPlaybackSignalVolume);
+  PROPERTY_METHOD_DEFINE(adjustUserPlaybackSignalVolume);
 
   // PROPERTY_METHOD_DEFINE(setAudioMixingPitch);
   PROPERTY_METHOD_DEFINE(sendMetadata);
@@ -392,8 +392,7 @@ NAPI_API_DEFINE_WRAPPER_PARAM_0(enableAudio);
 
 NAPI_API_DEFINE_WRAPPER_PARAM_0(disableAudio);
 
-// NAPI_API_DEFINE_WRAPPER_PARAM_2(adjustUserPlaybackSignalVolume, uid_t,
-// int32);
+NAPI_API_DEFINE_WRAPPER_PARAM_2(adjustUserPlaybackSignalVolume, uid_t, int32);
 
 NAPI_API_DEFINE_WRAPPER_PARAM_0(stopAudioRecording);
 
@@ -2164,6 +2163,26 @@ NAPI_API_DEFINE(NodeRtcEngine, initialize) {
       context.logConfig = logConfigStrut;
     }
 
+    Local<Object> config;
+    status = napi_get_value_object_(isolate, args[3], config);
+    if (status == napi_ok) {
+
+      bool enableAudioDevice = true;
+      status = napi_get_object_property_bool_(isolate, config,
+        "enableAudioDevice", enableAudioDevice);
+      context.enableAudioDevice = enableAudioDevice;
+
+
+      int32_t channelProfile = 1;
+      status = napi_get_object_property_int32_(isolate, config,
+        "channelProfile", channelProfile);
+      context.channelProfile = (CHANNEL_PROFILE_TYPE)channelProfile;
+
+      int32_t audioScenario = 0;
+      status = napi_get_object_property_int32_(isolate, config,
+        "audioScenario", audioScenario);
+      context.audioScenario = (AUDIO_SCENARIO_TYPE)audioScenario;
+    }
     auto engineEx = (IRtcEngineEx *)pEngine->m_engine;
     int suc = engineEx->initialize(context);
     if (0 != suc) {
@@ -2487,7 +2506,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setAudioProfile) {
     CHECK_NATIVE_THIS(pEngine);
     napi_status status = napi_ok;
     unsigned int profile, scenario;
-    napi_get_param_2(args, uint32, profile, uint32, scenario);
+    napi_get_param_1(args, uint32, profile);
     CHECK_NAPI_STATUS(pEngine, status);
 
     result = pEngine->m_engine->setAudioProfile(AUDIO_PROFILE_TYPE(profile));
@@ -5532,6 +5551,20 @@ NAPI_API_DEFINE(NodeRtcEngine, joinChannel2) {
     status = napi_get_object_property_bool_(
         isolate, optionObj, "publishCustomAudioTrack", publishCustomAudioTrack);
     channelMediaOptions.publishCustomAudioTrack = publishCustomAudioTrack;
+    int publishCustomAudioSourceId = 0;
+    status = napi_get_object_property_int32_(
+      isolate, optionObj, "publishCustomAudioSourceId", publishCustomAudioSourceId);
+    channelMediaOptions.publishCustomAudioSourceId = publishCustomAudioSourceId;
+    bool publishCustomAudioTrackEnableAec = false;
+    status = napi_get_object_property_bool_(
+      isolate, optionObj, "publishCustomAudioTrackEnableAec", publishCustomAudioTrackEnableAec);
+    channelMediaOptions.publishCustomAudioTrackEnableAec = publishCustomAudioTrackEnableAec;
+
+    bool publishDirectCustomAudioTrack = false;
+    status = napi_get_object_property_bool_(
+      isolate, optionObj, "publishDirectCustomAudioTrack", publishDirectCustomAudioTrack);
+    channelMediaOptions.publishDirectCustomAudioTrack = publishDirectCustomAudioTrack;
+
     bool publishCustomVideoTrack = false;
     status = napi_get_object_property_bool_(
         isolate, optionObj, "publishCustomVideoTrack", publishCustomVideoTrack);

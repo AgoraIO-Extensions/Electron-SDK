@@ -79,7 +79,9 @@ import {
   AUDIO_MIXING_STATE_TYPE,
   AUDIO_MIXING_ERROR_TYPE,
   VirtualBackgroundSource,
-  SegmentationProperty
+  SegmentationProperty,
+  CHANNEL_PROFILE_TYPE,
+  AUDIO_SCENARIO_TYPE
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -1338,8 +1340,17 @@ class AgoraRtcEngine extends EventEmitter {
    *  - `ERR_INVALID_APP_ID (101)`: The app ID is invalid. Check if it is in 
    * the correct format.
    */
-  initialize(appid: string, areaCode: AREA_CODE = (0xFFFFFFFF), logConfig?: LogConfig): number {
-    return this.rtcEngine.initialize(appid, areaCode, logConfig);
+   initialize(
+    appid: string,
+    areaCode: AREA_CODE = 0xffffffff,
+    logConfig?: LogConfig,
+    config?: {
+      enableAudioDevice?: boolean;
+      channelProfile?: CHANNEL_PROFILE_TYPE;
+      audioScenario?: AUDIO_SCENARIO_TYPE;
+    }
+  ): number {
+    return this.rtcEngine.initialize(appid, areaCode, logConfig, config);
   }
   
   enableVirtualBackground(
@@ -2155,10 +2166,33 @@ class AgoraRtcEngine extends EventEmitter {
    * - < 0: Failure.
    */
   setAudioProfile(
-    profile: 0 | 1 | 2 | 3 | 4 | 5,
-    scenario: 0 | 1 | 2 | 3 | 4 | 5
+    profile: 0 | 1 | 2 | 3 | 4 | 5
   ): number {
-    return this.rtcEngine.setAudioProfile(profile, scenario);
+    return this.rtcEngine.setAudioProfile(profile);
+  }
+
+  /*
+   * Adjust the playback volume of the user specified by uid.
+   *
+   * You can call this method to adjust the playback volume of the user specified by uid
+   * in call. If you want to adjust playback volume of the multi user, you can call this
+   * this method multi times.
+   *
+   * @note
+   * Please call this method after join channel.
+   * This method adjust the playback volume of specified user.
+   *
+   * @param uid Remote user ID。
+   * @param volume The playback volume of the specified remote user. The value ranges between 0 and 400, including the following:
+   * 0: Mute.
+   * 100: (Default) Original volume.
+   * 400: Four times the original volume with signal-clipping protection.
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  adjustUserPlaybackSignalVolume(uid:number, volume = 100): number{
+    return this.rtcEngine.adjustUserPlaybackSignalVolume(uid, volume);
   }
 
   /**
