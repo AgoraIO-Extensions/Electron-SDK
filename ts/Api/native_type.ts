@@ -4624,6 +4624,9 @@ export interface NodeRtcEngine {
     options: ColorEnhanceOptions
   ): number;
 
+  setLocalAccessPoint(
+    localAccessPointConfiguration: LocalAccessPointConfiguration
+  ): number;
   /**
    * @ignore
    */
@@ -4954,7 +4957,48 @@ export interface ColorEnhanceOptions {
    */
   skinProtectLevel: number;
 }
+/** The local  proxy mode type. */
+export enum LOCAL_PROXY_MODE {
+  /** 0: Connect local proxy with high priority, if not connected to local proxy, fallback to sdrtn.
+   */
+  ConnectivityFirst = 0,
+  /** 1: Only connect local proxy
+   */
+  LocalOnly = 1,
+}
 
+export interface UploadServerInfo {
+  serverDomain:string;
+
+  serverPath:string;
+
+  serverPort: number;
+
+  serverHttps: boolean;
+}
+export interface AdvancedConfigInfo {
+  // log upload server
+
+  logUploadServer: UploadServerInfo;
+}
+export interface LocalAccessPointConfiguration {
+  /** local access point ip address list.
+   */
+  ipList: string[];
+  /** local access point domain list.
+   */
+  domainList: string[];
+  /** the number of local access point domain.
+   */
+  domainListSize: number;
+  /** certificate domain name installed on specific local access point. pass "" means using sni domain on specific local access point
+   */
+  verifyDomainName: string;
+  /** local proxy connection mode, connectivity first or local only.
+   */
+  mode: LOCAL_PROXY_MODE;
+  advancedConfig: AdvancedConfigInfo;
+}
 /**Audio Device Test.different volume Type*/
 export enum AudioDeviceTestVolumeType {
   AudioTestRecordingVolume = 0,
