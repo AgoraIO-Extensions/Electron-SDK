@@ -1,4 +1,7 @@
-## 3.6.1-rc.3-build.228(Jan 28th, 2021)
+## 3.6.1-rc.3-build.301(Mar 1th, 2022)
+- add api: setLocalAccessPoint
+
+## 3.6.1-rc.3-build.228(Jan 28th, 2022)
 - change api: getScreenWindowsInfo getScreenDisplaysInfo getRealScreenDisplaysInfo
 - update native sdk
 

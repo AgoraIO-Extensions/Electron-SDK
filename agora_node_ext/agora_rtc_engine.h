@@ -445,6 +445,7 @@ class NodeRtcEngine : public node::ObjectWrap {
   NAPI_API(setColorEnhanceOptions);
   NAPI_API(setVideoDenoiserOptions);
   NAPI_API(startEchoTestWithConfig);
+  NAPI_API(setLocalAccessPoint);
   
  public:
   Isolate* getIsolate() { return m_isolate; }
