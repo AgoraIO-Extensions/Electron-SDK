@@ -301,7 +301,7 @@ public:
   /**
    * 3.0.0 Apis
    */
-  // NAPI_API(adjustUserPlaybackSignalVolume);
+  NAPI_API(adjustUserPlaybackSignalVolume);
 
   /**
    * 3.0.1 Apis
