@@ -1228,7 +1228,7 @@ export interface Rectangle {
  */
 export type ScreenSymbol = MacScreenSymbol | WindowsScreenSymbol;
 
-export type MacScreenSymbol = number;
+export type MacScreenSymbol = DisplayId;
 
 export type WindowsScreenSymbol = Rectangle;
 
