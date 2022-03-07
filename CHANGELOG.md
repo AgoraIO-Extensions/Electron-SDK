@@ -1,3 +1,8 @@
+## 3.7.200-build.307(Mar 07th, 2020)
+* add api: adjustUserPlaybackSignalVolume
+* update api: setAudioProfile, initialize
+* ChannelMediaOptions add property publishSecondaryCameraTrack
+
 ## 3.7.200-build.301(Feb 17th, 2020)
 * update native sdk
 * add api: enableVirtualBackground
