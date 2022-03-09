@@ -204,14 +204,14 @@ export interface RtcImage {
    * - `0`: (Default) The bottom layer.
    * - `255`: The top layer.
    *
-   * @since v3.6.0
+   * @since v3.6.1.4
    */
   zOrder: number;
   /** The transparency of the watermark or background image. The value range is [0.0,1.0]:
    * - `0.0`: Completely transparent.
    * - `1.0`: (Default) Opaque.
    *
-   * @since v3.6.0
+   * @since v3.6.1.4
    */
   alpha: number;
 }
@@ -1082,7 +1082,7 @@ export enum OrientationMode {
    * situations where the receiving end cannot process the rotational
    * information.
    *
-   * For example, CDN live streaming.
+   * For example, Media Push.
    */
   ORIENTATION_MODE_FIXED_LANDSCAPE = 1,
   /**
@@ -1092,7 +1092,7 @@ export enum OrientationMode {
    * fit the output. Applies to situations where the receiving end cannot process
    * the rotational information.
    *
-   * For example, CDN live streaming.
+   * For example, Media Push.
    */
   ORIENTATION_MODE_FIXED_PORTRAIT = 2,
 }
@@ -2039,19 +2039,19 @@ export enum RTMP_STREAMING_EVENT {
   /** 1: An error occurs when you add a background image or a watermark image to the RTMP or RTMPS stream.
    */
   RTMP_STREAMING_EVENT_FAILED_LOAD_IMAGE = 1,
-  /** 2: The streaming URL is already being used for CDN live streaming. If you want to start new streaming, use a new streaming URL.
+  /** 2: The streaming URL is already being used for Media Push. If you want to start new streaming, use a new streaming URL.
    *
    * @since v3.4.5
    */
   RTMP_STREAMING_EVENT_URL_ALREADY_IN_USE = 2,
   /** 3: The feature is not supported.
    *
-   * @since v3.6.0
+   * @since v3.6.1.4
    */
   RTMP_STREAMING_EVENT_ADVANCED_FEATURE_NOT_SUPPORT = 3,
   /** 4: Reserved.
    *
-   * @since v3.6.0
+   * @since v3.6.1.4
    */
   RTMP_STREAMING_EVENT_REQUEST_TOO_OFTEN = 4,
 }
@@ -2552,22 +2552,22 @@ export enum ChannelMediaRelayEvent {
   RELAY_EVENT_VIDEO_PROFILE_UPDATE = 11,
   /** 12: The SDK successfully pauses relaying the media stream to destination channels.
    *
-   * @since v3.5.1
+   * @since v3.6.1.4
    */
   RELAY_EVENT_PAUSE_SEND_PACKET_TO_DEST_CHANNEL_SUCCESS = 12,
   /** 13: The SDK fails to pause relaying the media stream to destination channels.
    *
-   * @since v3.5.1
+   * @since v3.6.1.4
    */
   RELAY_EVENT_PAUSE_SEND_PACKET_TO_DEST_CHANNEL_FAILED = 13,
   /** 14: The SDK successfully resumes relaying the media stream to destination channels.
    *
-   * @since v3.5.1
+   * @since v3.6.1.4
    */
   RELAY_EVENT_RESUME_SEND_PACKET_TO_DEST_CHANNEL_SUCCESS = 14,
   /** 15: The SDK fails to resume relaying the media stream to destination channels.
    *
-   * @since v3.5.1
+   * @since v3.6.1.4
    */
   RELAY_EVENT_RESUME_SEND_PACKET_TO_DEST_CHANNEL_FAILED = 15,
 }
@@ -2933,7 +2933,7 @@ export enum LOCAL_VIDEO_STREAM_ERROR {
    * 10: (macOS and Windows only) The SDK cannot find the video device in the video device list. Check whether the ID
    * of the video device is valid.
    *
-   * @since v3.5.2
+   * @since v3.6.1.4
    */
   LOCAL_VIDEO_STREAM_ERROR_DEVICE_INVALID_ID = 10,
   /**
@@ -2959,13 +2959,13 @@ export enum LOCAL_VIDEO_STREAM_ERROR {
    * 13: (Windows only) The window being shared is overlapped by another window, so the overlapped area is blacked out by
    * the SDK during window sharing.
    *
-   * @since v3.5.2
+   * @since v3.6.1.4
    */
   LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_OCCLUDED = 13,
   /**
    * 20: (Windows only) The SDK does not support sharing this type of window.
    *
-   * @since v3.5.2
+   * @since v3.6.1.4
    */
   LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_NOT_SUPPORTED = 20,
 }
@@ -3025,12 +3025,12 @@ export enum LOCAL_AUDIO_STREAM_ERROR {
   LOCAL_AUDIO_STREAM_ERROR_INTERRUPTED = 8,
   /** 9: An invalid audio capture device ID.
    *
-   * @since v3.5.1
+   * @since v3.6.1.4
    */
   LOCAL_AUDIO_STREAM_ERROR_RECORD_INVALID_ID = 9,
   /** 10: An invalid audio playback device ID.
    *
-   * @since v3.5.1
+   * @since v3.6.1.4
    */
   LOCAL_AUDIO_STREAM_ERROR_PLAYOUT_INVALID_ID = 10,
 }
@@ -3159,7 +3159,7 @@ export enum NETWORK_TYPE {
   NETWORK_TYPE_MOBILE_4G = 5,
   /** 6: The network type is mobile 5G.
    *
-   * @since v3.5.1
+   * @since v3.6.1.4
    */
   NETWORK_TYPE_MOBILE_5G = 6,
 }
@@ -3231,7 +3231,7 @@ export enum BACKGROUND_SOURCE_TYPE {
   /**
    * The background image is blurred.
    *
-   * @since v3.5.1
+   * @since v3.6.1.4
    */
   BACKGROUND_BLUR,
 }
@@ -3291,7 +3291,7 @@ export interface AudioRecordingConfiguration {
 /**
  * The degree of blurring applied to the custom background image.
  *
- * @since v3.5.1
+ * @since v3.6.1.4
  */
 export enum BACKGROUND_BLUR_DEGREE {
   /**
@@ -3312,9 +3312,9 @@ export enum BACKGROUND_BLUR_DEGREE {
 }
 
 /**
- * The channel mode. Set in \ref agora::rtc::IRtcEngine::setAudioMixingDualMonoMode "setAudioMixingDualMonoMode".
+ * The channel mode. Set in {@link setAudioMixingDualMonoMode}.
  *
- * @since v3.5.1
+ * @since v3.6.1.4
  */
 export enum AUDIO_MIXING_DUAL_MONO_MODE {
   /**
@@ -3343,9 +3343,9 @@ export enum AUDIO_MIXING_DUAL_MONO_MODE {
 
 /**
  * The information of an audio file. This struct is reported
- * in \ref IRtcEngineEventHandler::onRequestAudioFileInfo "onRequestAudioFileInfo".
+ * in the `requestAudioFileInfo` callback.
  *
- * @since v3.5.1
+ * @since v3.6.1.4
  */
 export interface AudioFileInfo {
   /** The file path.
@@ -3357,9 +3357,9 @@ export interface AudioFileInfo {
 }
 
 /** The information acquisition state. This enum is reported
- * in \ref IRtcEngineEventHandler::onRequestAudioFileInfo "onRequestAudioFileInfo".
+ * in `requestAudioFileInfo`.
  *
- * @since v3.5.1
+ * @since v3.6.1.4
  */
 export enum AUDIO_FILE_INFO_ERROR {
   /** 0: Successfully get the information of an audio file.
@@ -3407,7 +3407,7 @@ export interface VirtualBackgroundSource {
    *
    * @note This parameter takes effect only when the type of the custom background image is `BACKGROUND_BLUR`.
    *
-   * @since v3.5.1
+   * @since v3.6.1.4
    */
   blur_degree: BACKGROUND_BLUR_DEGREE;
 }
@@ -4858,7 +4858,7 @@ export enum AUDIO_CODEC_PROFILE_TYPE {
   AUDIO_CODEC_PROFILE_HE_AAC = 1,
   /** 2: HE-AAC v2
    *
-   * @since v3.6.0
+   * @since v3.6.1.4
    */
   AUDIO_CODEC_PROFILE_HE_AAC_V2 = 2,
 }
