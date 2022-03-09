@@ -1,4 +1,7 @@
-## 3.6.216-build.308(Mar 17th, 2020)
+## 3.6.216-build.309(Mar 9th, 2020)
+* fix CustomRtcConnection
+
+## 3.6.216-build.309(Mar 17th, 2020)
 * update native sdk
 
 ## 3.6.214-build.110(Jan 10th, 2020)
