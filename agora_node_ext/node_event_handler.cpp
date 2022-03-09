@@ -23,7 +23,7 @@ struct CustomRtcConnection {
   std::string channelId;
   uid_t localUid;
   CustomRtcConnection(const RtcConnection &rtcConnection) {
-    channelId = rtcConnection.channelId;
+    channelId = rtcConnection.channelId ? rtcConnection.channelId : "";
     localUid = rtcConnection.localUid;
   }
 };
