@@ -4988,9 +4988,6 @@ export interface LocalAccessPointConfiguration {
   /** local access point domain list.
    */
   domainList: string[];
-  /** the number of local access point domain.
-   */
-  domainListSize: number;
   /** certificate domain name installed on specific local access point. pass "" means using sni domain on specific local access point
    */
   verifyDomainName: string;
