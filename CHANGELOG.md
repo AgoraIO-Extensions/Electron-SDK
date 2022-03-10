@@ -1,3 +1,6 @@
+## 3.6.1-rc.4-build.310(Mar 10th, 2022)
+- update native sdk
+
 ## 3.6.1-rc.3-build.301(Mar 1th, 2022)
 - add api: setLocalAccessPoint
 
