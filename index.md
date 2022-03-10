@@ -96,6 +96,8 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | ------------------------------------------------------------ | --------------------- |
 | {@link AgoraRtcEngine.getScreenDisplaysInfo getScreenDisplaysInfo} | Gets the display ID. |
 | {@link AgoraRtcEngine.getScreenWindowsInfo getScreenWindowsInfo} | Gets the window ID. |
+| {@link AgoraRtcEngine.getScreenCaptureSources getScreenCaptureSources}        | Gets a list of shareable screens and windows (for macOS and Windows only). |
+| {@link AgoraRtcEngine.startScreenCaptureByDisplayId startScreenCaptureByDisplayId}   | Shares the whole or part of a screen by specifying the display ID (for macOS and Windows only). |
 | {@link AgoraRtcEngine.startScreenCaptureByScreen startScreenCaptureByScreen} |Shares the whole or part of a screen by specifying the screen symbol.|
 | {@link AgoraRtcEngine.startScreenCaptureByWindow startScreenCaptureByWindow} |Shares the whole or part of a window by specifying the window symbol.|
 | {@link AgoraRtcEngine.stopScreenCapture stopScreenCapture} | Stops screen sharing. |
@@ -121,6 +123,10 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 |{@link AgoraRtcEngine.getAudioMixingPublishVolume getAudioMixingPublishVolume}|Retrieves the audio mixing volume for publishing.|
 | {@link AgoraRtcEngine.getAudioMixingCurrentPosition getAudioMixingCurrentPosition} | Gets the playback position (ms) of the music file.      |
 | {@link AgoraRtcEngine.setAudioMixingPosition setAudioMixingPosition} | Sets the playback position of the music file.           |
+| {@link AgoraRtcEngine.getAudioTrackCount getAudioTrackCount}                            | Gets the audio track index of the current music file (for Android, iOS, and Windows only).  |
+| {@link AgoraRtcEngine.selectAudioTrack selectAudioTrack}                                | Specifies the playback track of the current music file (for Android, iOS, and Windows only).     |
+| {@link AgoraRtcEngine.setAudioMixingPlaybackSpeed setAudioMixingPlaybackSpeed}          | Sets the playback speed of the current music file.      |
+| {@link AgoraRtcEngine.setAudioMixingDualMonoMode setAudioMixingDualMonoMode}            | Sets the channel mode of the current music file.     |
 
 ### Audio effect playback
 
@@ -140,6 +146,12 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.getEffectDuration getEffectDuration}                   | Gets the duration of the audio effect file.             |
 | {@link AgoraRtcEngine.setEffectPosition setEffectPosition}                   | Sets the playback position of an audio effect file.     |
 | {@link AgoraRtcEngine.getEffectCurrentPosition getEffectCurrentPosition}            | Gets the playback position of the audio effect file.    |
+
+### Audio file information
+
+| Method                                                                             | Description                                   |
+|------------------------------------------------------------------------------------|-----------------------------------------------|
+| {@link AgoraRtcEngine.getAudioFileInfo getAudioFileInfo}          |  Gets the information of a specified audio file.          |
 
 ### Voice Effect
 
@@ -161,15 +173,19 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.enableSoundPositionIndication enableSoundPositionIndication} | Enables/Disables stereo panning for remote users.  |
 | {@link AgoraRtcEngine.setRemoteVoicePosition setRemoteVoicePosition} | Sets the sound position and gain of a remote user. |
 
-### CDN publisher
+### Media Push
 
 > This group of methods apply to Live Streaming only.
 
 | Method                                                       | Description                                   |
 | ------------------------------------------------------------ | --------------------------------------------- |
+| {@link AgoraRtcEngine.startRtmpStreamWithoutTranscoding startRtmpStreamWithoutTranscoding}| Starts pushing media streams to a CDN without transcoding.|
+| {@link AgoraRtcEngine.startRtmpStreamWithTranscoding startRtmpStreamWithTranscoding}| Starts pushing media streams to a CDN and sets the transcoding configuration. |
+| {@link AgoraRtcEngine.updateRtmpTranscoding updateRtmpTranscoding}|Updates the transcoding configuration.  |
+| {@link AgoraRtcEngine.stopRtmpStream stopRtmpStream}| Stops pushing media streams to a CDN.|
 | {@link AgoraRtcEngine.setLiveTranscoding setLiveTranscoding} | Sets the video layout and audio for CDN live. |
 | {@link AgoraRtcEngine.addPublishStreamUrl addPublishStreamUrl} | Adds a CDN stream address.                    |
-| {@link AgoraRtcEngine.removePublishStreamUrl removePublishStreamUrl} | Removes a CDN stream address.                 |
+| {@link AgoraRtcEngine.removePublishStreamUrl removePublishStreamUrl} | Removes a CDN stream address.                |
 
 ### Channel Media Relay
 
@@ -179,6 +195,8 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | ------------------------------------------------------------ | ---------------------------------------------- |
 | {@link AgoraRtcEngine.startChannelMediaRelay startChannelMediaRelay} | Starts to relay media streams across channels. |
 | {@link AgoraRtcEngine.updateChannelMediaRelay updateChannelMediaRelay} | Updates the channels for media stream relay.   |
+| {@link AgoraRtcEngine.pauseAllChannelMediaRelay pauseAllChannelMediaRelay}   |Pauses the media stream relay to all destination channels. |
+| {@link AgoraRtcEngine.resumeAllChannelMediaRelay resumeAllChannelMediaRelay} |Resumes the media stream relay to all destination channels. |
 | {@link AgoraRtcEngine.stopChannelMediaRelay stopChannelMediaRelay} | Stops the media stream relay.                  |
 
 
@@ -211,6 +229,7 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | Method                                                       | Description                                   |
 | ------------------------------------------------------------ | --------------------------------------------- |
 | {@link AgoraRtcEngine.startEchoTestWithInterval startEchoTestWithInterval} | Starts an audio call test.|
+| {@link AgoraRtcEngine.startEchoTestWithConfig startEchoTestWithConfig} | Starts an audio and video call loop test.|
 | {@link AgoraRtcEngine.stopEchoTest stopEchoTest}             | Stops the audio call test.                    |
 | {@link AgoraRtcEngine.enableLastmileTest enableLastmileTest} | Enables the network connection quality test.  |
 | {@link AgoraRtcEngine.disableLastmileTest disableLastmileTest} | Disables the network connection quality test. |
@@ -235,6 +254,12 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.addVideoWatermark addVideoWatermark} | Adds a watermark image to the local video. |
 | {@link AgoraRtcEngine.clearVideoWatermarks clearVideoWatermarks}|Removes the watermark image.|
 
+### Video snapshot
+
+| Method                        | Description   |
+|------------------------------------------------------------------------------|------------|
+| {@link AgoraRtcEngine.takeSnapshot takeSnapshot}             | Takes a snapshot of a video stream. |
+
 ### Encryption
 
 | Method                                                       | Description                                                  |
@@ -256,6 +281,8 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.getAudioPlaybackDevices getAudioPlaybackDevices} | Gets the audio playback device using the device ID. |
 | {@link AgoraRtcEngine.getPlaybackDeviceInfo getPlaybackDeviceInfo} | Gets the information of the audio playback device. |
 | {@link AgoraRtcEngine.getCurrentAudioPlaybackDevice getCurrentAudioPlaybackDevice} | Gets the current audio playback device. |
+| {@link AgoraRtcEngine.getDefaultAudioPlaybackDevices getDefaultAudioPlaybackDevices} | Gets the default audio playback device of the system. |
+| {@link AgoraRtcEngine.followSystemPlaybackDevice followSystemPlaybackDevice} | Sets the audio playback device used by the SDK to follow the system default audio playback device. |
 | {@link AgoraRtcEngine.setAudioPlaybackDeviceMute setAudioPlaybackDeviceMute} | Mutes/Unmutes the audio playback device. |
 | {@link AgoraRtcEngine.getAudioPlaybackDeviceMute getAudioPlaybackDeviceMute} | Gets the mute state of the audio playback device. |
 | {@link AgoraRtcEngine.setAudioPlaybackVolume setAudioPlaybackVolume} | Sets the volume of the audio playback device. |
@@ -273,6 +300,8 @@ This Agora Electron SDK is developed upon the Native SDK for macOS and the Nativ
 | {@link AgoraRtcEngine.getAudioRecordingDevices getAudioRecordingDevices} | Gets the audio recording device using the device ID. |
 | {@link AgoraRtcEngine.getRecordingDeviceInfo getRecordingDeviceInfo} | Gets the information of the audio recording device. |
 | {@link AgoraRtcEngine.getCurrentAudioRecordingDevice getCurrentAudioRecordingDevice} | Gets the current audio recording device. |
+| {@link AgoraRtcEngine.getDefaultAudioRecordingDevices getDefaultAudioRecordingDevices} | Gets the default audio recording device of the system. |
+| {@link AgoraRtcEngine.followSystemRecordingDevice followSystemRecordingDevice} | Sets the audio recording device used by the SDK to follow the system default audio recording device. |
 | {@link AgoraRtcEngine.setAudioRecordingDeviceMute setAudioRecordingDeviceMute} | Mutes/Unmutes the audio recording device. |
 | {@link AgoraRtcEngine.getAudioRecordingDeviceMute getAudioRecordingDeviceMute} | Gets the mute state of the audio recording device. |
 | {@link AgoraRtcEngine.setAudioRecordingVolume setAudioRecordingVolume} | Sets the volume of the recording device. |
@@ -352,7 +381,7 @@ Agora Electron SDK provides the methods for the second instance `videoSource` to
 | {@link AgoraRtcEngine.getScreenWindowsInfo getScreenWindowsInfo}       |     Gets the window ID.      |
 | {@link AgoraRtcEngine.videoSourceStartScreenCaptureByScreen videoSourceStartScreenCaptureByScreen}     |  Shares the whole or part of a screen by specifying the screen rect when using the video source.   |
 | {@link AgoraRtcEngine.videoSourceStartScreenCaptureByWindow videoSourceStartScreenCaptureByWindow} |   Shares the whole or part of a window by specifying the window ID when using the video source.   |
-| {@link AgoraRtcEngine.videoSourceSetVideoProfile videoSourceSetVideoProfile} | Sets the video profile when using the video source.  |
+| {@link AgoraRtcEngine.videoSourceSetVideoProfile videoSourceSetVideoProfile} | Sets the video profile for the video captured by the camera device.  |
 | {@link AgoraRtcEngine.stopScreenCapture2 stopScreenCapture2} | Stops the screen sharing when using the video source.|
 | {@link AgoraRtcEngine.startScreenCapturePreview startScreenCapturePreview} |    Starts the local video preview when using the video source.   |
 | {@link AgoraRtcEngine.stopScreenCapturePreview stopScreenCapturePreview} |  Stops the local video preview when using the video source.   |
@@ -407,9 +436,9 @@ Agora Electron SDK use the {@link AgoraRtcEngine.on} listens to the events above
 | `videoStopped`                     | Occurs when the video stops playing.                         |
 | `streamMessage`                    | Occurs when the local user receives a remote data stream within five seconds. |
 | `streamMessageError`               | Occurs when the local user fails to receive the remote data stream. |
-| `rtmpStreamingStateChanged`| Occurs when the state of the RTMP or RTMPS streaming changes.  |
+| `rtmpStreamingStateChanged`| Occurs when the state of Media Push changes.  |
 | `transcodingUpdated`| Occurs when the publisher's transcoding is updated.   |
-| `rtmpStreamingEvent`|  Reports events during the RTMP or RTMPS streaming.  |
+| `rtmpStreamingEvent`|  Reports events during Media Push.  |
 | `audioDeviceVolumeChanged`         | Occurs when the volume of the playback, microphone, or application changes. |
 | `localAudioStateChanged`|Occurs when the local audio state changes.|
 | `remoteAudioStateChanged`|Occurs when the remote audio state changes.|
@@ -438,6 +467,9 @@ Agora Electron SDK use the {@link AgoraRtcEngine.on} listens to the events above
 | `videoSourceVideoSizeChanged`| Occurs when the video size or rotation information of a specified remote user changes. (The second instance)|
 | `videoSourceLocalVideoStateChanged`|Occurs when the local video state changes. (The second instance)  |
 | `videoSourceLocalAudioStateChanged`|Occurs when the local audio state changes. (The second instance) |
+| `requestAudioFileInfo`         |Reports the information of an audio file.  |
+| `channelMediaRelayEvent`               | Reports events during the media stream relay.            |
+| `snapshotTaken`      | Reports the result of taking a video snapshot.|
 
 
 <a name = "warn"></a>
@@ -532,7 +564,7 @@ Error codes occur when the SDK encounters an error that cannot be recovered auto
 | `-127`    | Incorrect watermark file information.          |
 | `-128`    | Incorrect watermark file data format.             |
 | `-129`    | An error occurs in reading the watermark file.                    |
-| `-130`    | Encryption is enabled when the user calls the `addPublishStreamUrl` method (CDN live streaming does not support encrypted streams). |
+| `-130`    | Encryption is enabled when the user calls the `addPublishStreamUrl` method (Media Push does not support encrypted streams). |
 | `-134`    | The User Account is invalid.                       |
 | `-151`    | CDN related errors.<br/>Remove the original URL address and add a new one by calling the `removePublishStreamUrl` and `addPublishStreamUrl` methods. |
 | `-152`    | The host publishes more than 10 URLs. <br/>Delete the unnecessary URLs before adding new ones. |
@@ -589,3 +621,4 @@ Error codes occur when the SDK encounters an error that cannot be recovered auto
 | `-1601`   | Video Device Module: An error occurs in initializing the video encoder. <br/>The error is a serious error, please try to rejoin the channel.|
 | `-1602`   | Video Device Module: An error occurs in encoding.<br/>The error is a serious error, please try to rejoin the channel. |
 | `-1603`   | Video Device Module: An error occurs in setting the video encoder.     |
+
