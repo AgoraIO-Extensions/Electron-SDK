@@ -1819,7 +1819,7 @@ class AgoraRtcEngine extends EventEmitter {
 
   /** Starts an audio and video call loop test.
    *
-   * @since v3.5.2
+   * @since v3.6.1.4
    *
    * Before joining a channel, to test whether the user's local sending and receiving streams are normal, you can call
    * this method to perform an audio and video call loop test, which tests whether the audio and video devices and the
@@ -1832,7 +1832,7 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * @note
    * - Call this method before joining a channel.
-   * - After calling this method, call \ref IRtcEngine::stopEchoTest "stopEchoTest" to end the test; otherwise, the
+   * - After calling this method, call {@link stopEchoTest} to end the test; otherwise, the
    * user cannot perform the next audio and video call loop test and cannot join the channel.
    * - In the `LIVE_BROADCASTING` profile, only a host can call this method.
    *
@@ -1907,7 +1907,7 @@ class AgoraRtcEngine extends EventEmitter {
    * @note
    * - Ensure that you have called {@link enableVideo} before this method.
    * - If you only want to add a watermark image to the local video for the
-   * audience in the CDN live streaming channel to see and capture, you can
+   * audience in the Media Push channel to see and capture, you can
    * call this method or {@link setLiveTranscoding}.
    * - This method supports adding a watermark image in the PNG file format
    * only. Supported pixel formats of the PNG image are RGBA, RGB, Palette,
@@ -2441,7 +2441,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - For optimal transmission, ensure that the encrypted data size does not
    * exceed the original data size + 16 bytes. 16 bytes is the maximum padding
    * size for AES encryption.
-   * - Do not use this method for CDN live streaming.
+   * - Do not use this method for Media Push.
    * @param {string} secret Encryption Password
    * @return
    * - 0: Success.
@@ -3172,7 +3172,7 @@ class AgoraRtcEngine extends EventEmitter {
    * the `localPublishFallbackToAudioOnly` callback is triggered.
    *
    * @note
-   * Agora does not recommend using this method for CDN live streaming, because
+   * Agora does not recommend using this method for Media Push, because
    * the CDN audience will have a noticeable lag when the locally
    * publish stream falls back to audio-only.
    *
@@ -3442,10 +3442,11 @@ class AgoraRtcEngine extends EventEmitter {
    * @note You can call this method either before or after joining a channel.
    *
    * @param volume The volume of the signal captured by the microphone.
-   * The range is 0 to 100. The default value is 100, which represents the
+   * The range is 0 to 400. The default value is 100, which represents the
    * original volume.
    * - 0: Mute.
    * - 100: Original volume.
+   * - 400: Four times the original volume with signal-clipping protection.
    *
    * @return
    * - 0: Success.
@@ -3545,10 +3546,10 @@ class AgoraRtcEngine extends EventEmitter {
 
   /** Gets the information of a specified audio file.
    *
-   * @since v3.5.1
+   * @since v3.6.1.4
    *
    * After calling this method successfully, the SDK triggers the
-   * \ref IRtcEngineEventHandler::onRequestAudioFileInfo "onRequestAudioFileInfo"
+   * `requestAudioFileInfo`
    * callback to report the information of an audio file, such as audio duration.
    * You can call this method multiple times to get the information of multiple audio files.
    *
@@ -3586,10 +3587,11 @@ class AgoraRtcEngine extends EventEmitter {
    * `adjustPlaybackSignalVolume` and {@link adjustAudioMixingVolume}
    * methods and set the volume as `0`.
    *
-   * @param volume The playback volume. The range is 0 to 100. The default
+   * @param volume The playback volume. The range is 0 to 400. The default
    * value is 100, which represents the original volume.
    * - 0: Mute.
    * - 100: Original volume.
+   * - 400: Four times the original volume with signal-clipping protection.
    *
    * @return
    * - 0: Success.
@@ -4202,7 +4204,7 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * Sets the video profile when using the video source.
+   * Sets the video profile for the video captured by the camera device.
    * @param {VIDEO_PROFILE_TYPE} profile The video profile. See
    * {@link VIDEO_PROFILE_TYPE}.
    * @param {boolean} [swapWidthAndHeight = false] Whether to swap width and
@@ -4228,7 +4230,8 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * This method gets the ID of the whole window and relevant inforamtion.
    * You can share the whole or part of a window by specifying the window ID.
-   * @return {Array} The array list of the window ID and relevant information.
+   * @param callback The callback that returns a list of {@link WindowInfo}.
+   * @returns
    */
   getScreenWindowsInfo(callback: (list: WindowInfo[]) => void): void {
     return this.rtcEngine.getScreenWindowsInfo(callback);
@@ -4238,16 +4241,19 @@ class AgoraRtcEngine extends EventEmitter {
    * Gets the display ID when using the video source.
    *
    * This method gets the ID of the whole display and relevant inforamtion.
-   * You can share the whole or part of a display by specifying the window ID.
-   * @return {Array} The array list of the display ID and relevant information.
-   * The display ID returned is different on Windows and macOS systems.
-   * You don't need to pay attention to the specific content of the returned
-   * object, just use it for screen sharing.
+   * You can share the whole or part of a display by specifying the display ID.
+   *
+   * @param callback The callback that returns a list of {@link DisplayInfo}.
+   * @returns
    */
   getScreenDisplaysInfo(callback: (list: DisplayInfo[]) => void): void {
     return this.rtcEngine.getScreenDisplaysInfo(callback);
   }
 
+  /**
+   * @deprecated This method is deprecated. Use {@link getScreenDisplaysInfo} instead.
+   *
+   */
   getRealScreenDisplaysInfo(callback: (list: DisplayInfo[]) => void): void {
     return this.rtcEngine.getScreenDisplaysInfo(callback);
   }
@@ -4985,8 +4991,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - Only the host in the `1` (live streaming) profile can call this
    * method.
    * - Call this method after the host joins the channel.
-   * - Ensure that you enable the RTMP Converter service before using this
-   * function. See *Prerequisites* in the *Push Streams to CDN* guide.
+   * - Ensure that you enable the Media Push service before using this
+   * function. See *Prerequisites* in the *Media Push* guide.
    * - This method adds only one stream URL address each time it is
    * called.
    *
@@ -5035,8 +5041,8 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * @note
    * - Only the host in the Live-broadcast porfile can call this method.
-   * - Ensure that you enable the RTMP Converter service before using
-   * this function. See *Prerequisites* in the *Push Streams to CDN* guide.
+   * - Ensure that you enable the Media Push service before using
+   * this function. See *Prerequisites* in the *Media Push* guide.
    * - If you call the {@link setLiveTranscoding} method to set the
    * LiveTranscoding class for the first time, the SDK does not trigger the
    * transcodingUpdated callback.
@@ -5082,8 +5088,8 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * @note
    * - Only the host in the Live-braodcast profile can call this method.
-   * - Ensure that you enable the RTMP Converter service before using this
-   * function. See *Prerequisites* in the *Push Streams to CDN* guide.
+   * - Ensure that you enable the Media Push service before using this
+   * function. See *Prerequisites* in the *Media Push* guide.
    * - Ensure that the user joins a channel before calling this method.
    * - This method adds only one stream URL address each time it is called.
    *
@@ -6439,17 +6445,17 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Pauses the media stream relay to all destination channels.
    *
-   * @since v3.5.1
+   * @since v3.6.1.4
    *
    * After the cross-channel media stream relay starts, you can call this method
    * to pause relaying media streams to all destination channels; after the pause,
-   * if you want to resume the relay, call \ref IRtcEngine::resumeAllChannelMediaRelay "resumeAllChannelMediaRelay".
+   * if you want to resume the relay, call {@link resumeAllChannelMediaRelay}.
    *
    * After a successful method call, the SDK triggers the
-   * \ref IRtcEngineEventHandler::onChannelMediaRelayEvent "onChannelMediaRelayEvent"
+   * `channelMediaRelayEvent`
    * callback to report whether the media stream relay is successfully paused.
    *
-   * @note Call this method after the \ref IRtcEngine::startChannelMediaRelay "startChannelMediaRelay" method.
+   * @note Call this method after the {@link startChannelMediaRelay} method.
    *
    * @return
    * - 0: Success.
@@ -6461,16 +6467,16 @@ class AgoraRtcEngine extends EventEmitter {
 
   /** Resumes the media stream relay to all destination channels.
    *
-   * @since v3.5.1
+   * @since v3.6.1.4
    *
-   * After calling the \ref IRtcEngine::pauseAllChannelMediaRelay "pauseAllChannelMediaRelay" method,
+   * After calling the {@link pauseAllChannelMediaRelay} method,
    * you can call this method to resume relaying media streams to all destination channels.
    *
    * After a successful method call, the SDK triggers the
-   * \ref IRtcEngineEventHandler::onChannelMediaRelayEvent "onChannelMediaRelayEvent"
+   * `channelMediaRelayEvent`
    * callback to report whether the media stream relay is successfully resumed.
    *
-   * @note Call this method after the \ref IRtcEngine::pauseAllChannelMediaRelay "pauseAllChannelMediaRelay" method.
+   * @note Call this method after the `pauseAllChannelMediaRelay` method.
    *
    * @return
    * - 0: Success.
@@ -6483,10 +6489,10 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Sets the playback speed of the current music file.
    *
-   * @since v3.5.1
+   * @since v3.6.1.4
    *
-   * @note Call this method after calling \ref IRtcEngine::startAudioMixing(const char*,bool,bool,int,int) "startAudioMixing" [2/2]
-   * and receiving the \ref IRtcEngineEventHandler::onAudioMixingStateChanged "onAudioMixingStateChanged" (AUDIO_MIXING_STATE_PLAYING) callback.
+   * @note Call this method after calling {@link startAudioMixing}
+   * and receiving the `audioMixingStateChanged (710)` callback.
    *
    * @param speed The playback speed. Agora recommends that you limit this value to between 50 and 400, defined as follows:
    * - 50: Half the original speed.
@@ -6504,7 +6510,7 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Sets the channel mode of the current music file.
    *
-   * @since v3.5.1
+   * @since v3.6.1.4
    *
    * In a stereo music file, the left and right channels can store different audio data.
    * According to your needs, you can set the channel mode to original mode, left channel mode,
@@ -6516,11 +6522,11 @@ class AgoraRtcEngine extends EventEmitter {
    * to set the channel mode to mixed channel mode.
    *
    * @note
-   * - Call this method after calling \ref IRtcEngine::startAudioMixing(const char*,bool,bool,int,int) "startAudioMixing" [2/2]
-   * and receiving the \ref IRtcEngineEventHandler::onAudioMixingStateChanged "onAudioMixingStateChanged" (AUDIO_MIXING_STATE_PLAYING) callback.
+   * - Call this method after calling {@link startAudioMixing}
+   * and receiving the `audioMixingStateChanged (710)` callback.
    * - This method only applies to stereo audio files.
    *
-   * @param mode The channel mode. See \ref agora::media::AUDIO_MIXING_DUAL_MONO_MODE "AUDIO_MIXING_DUAL_MONO_MODE".
+   * @param mode The channel mode. See `AUDIO_MIXING_DUAL_MONO_MODE`.
    *
    * @return
    * - 0: Success.
@@ -6532,12 +6538,12 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Gets the audio track index of the current music file.
    *
-   * @since v3.5.1
+   * @since v3.6.1.4
    *
    * @note
    * - This method is for Android, iOS, and Windows only.
-   * - Call this method after calling \ref IRtcEngine::startAudioMixing(const char*,bool,bool,int,int) "startAudioMixing" [2/2]
-   * and receiving the \ref IRtcEngineEventHandler::onAudioMixingStateChanged "onAudioMixingStateChanged" (AUDIO_MIXING_STATE_PLAYING) callback.
+   * - Call this method after calling {@link startAudioMixing}
+   * and receiving the `audioMixingStateChanged (710)` callback.
    * - For the audio file formats supported by this method, see [What formats of audio files does the Agora RTC SDK support](https://docs.agora.io/en/faq/audio_format).
    *
    * @return
@@ -6550,7 +6556,7 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Specifies the playback track of the current music file.
    *
-   * @since v3.5.1
+   * @since v3.6.1.4
    *
    * After getting the audio track index of the current music file, call this
    * method to specify any audio track to play. For example, if different tracks
@@ -6559,12 +6565,12 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * @note
    * - This method is for Android, iOS, and Windows only.
-   * - Call this method after calling \ref IRtcEngine::startAudioMixing(const char*,bool,bool,int,int) "startAudioMixing" [2/2]
-   * and receiving the \ref IRtcEngineEventHandler::onAudioMixingStateChanged "onAudioMixingStateChanged" (AUDIO_MIXING_STATE_PLAYING) callback.
+   * - Call this method after calling {@link startAudioMixing}
+   * and receiving the `audioMixingStateChanged (710)` callback.
    * - For the audio file formats supported by this method, see [What formats of audio files does the Agora RTC SDK support](https://docs.agora.io/en/faq/audio_format).
    *
    * @param index The specified playback track. This parameter must be less than or equal to the return value
-   * of \ref IRtcEngine::getAudioTrackCount "getAudioTrackCount".
+   * of {@link getAudioTrackCount}.
    *
    * @return
    * - 0: Success.
@@ -6604,9 +6610,20 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.videoSourceMuteAllRemoteVideoStreams(mute);
   }
 
+  /**
+   * Gets the default audio playback device of the system.
+   *
+   * @since v3.6.1.4
+   */
   getDefaultAudioPlaybackDevices(): Object {
     return this.rtcEngine.getDefaultAudioPlaybackDevices();
   }
+
+  /**
+   * Gets the default audio recording device of the system.
+   *
+   * @since v3.6.1.4
+   */
   getDefaultAudioRecordingDevices(): Object {
     return this.rtcEngine.getDefaultAudioRecordingDevices();
   }
@@ -6615,15 +6632,16 @@ class AgoraRtcEngine extends EventEmitter {
    * 3.5.2 && 3.6.0 && 3.6.0.1
    */
   /**
+  /**
    * Takes a snapshot of a video stream.
    *
-   * @since v3.5.2
+   * @since v3.6.1.4
    *
    * This method takes a snapshot of a video stream from the specified user, generates a JPG image,
    * and saves it to the specified path.
    *
    * The method is asynchronous, and the SDK has not taken the snapshot when the method call returns.
-   * After a successful method call, the SDK triggers the \ref IRtcEngineEventHandler::onSnapshotTaken "onSnapshotTaken"
+   * After a successful method call, the SDK triggers the `snapshotTaken`
    * callback to report whether the snapshot is successfully taken as well as the details of the snapshot taken.
    *
    * @note
@@ -6649,25 +6667,25 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Starts pushing media streams to a CDN without transcoding.
    *
-   * @since v3.6.0
+   * @since v3.6.1.4
    *
    * You can call this method to push a live audio-and-video stream to the specified CDN address. This method can push
    * media streams to only one CDN address at a time, so if you need to push streams to multiple addresses, call this
    * method multiple times.
    *
-   * After you call this method, the SDK triggers the \ref IRtcEngineEventHandler::onRtmpStreamingStateChanged "onRtmpStreamingStateChanged"
+   * After you call this method, the SDK triggers the `rtmpStreamingStateChanged`
    * callback on the local client to report the state of the streaming.
    *
    * @note
-   * - Ensure that you enable the RTMP Converter service before using this function. See Prerequisites in *Push Streams to CDN*.
+   * - Ensure that you enable the Media Push service before using this function. See Prerequisites in *Media Push*.
    * - Call this method after joining a channel.
    * - Only hosts in the `LIVE_BROADCASTING` profile can call this method.
-   * - If you want to retry pushing streams after a failed push, make sure to call \ref IRtcEngine::stopRtmpStream "stopRtmpStream" first,
+   * - If you want to retry pushing streams after a failed push, make sure to call {@link stopRtmpStream} first,
    * then call this method to retry pushing streams; otherwise, the SDK returns the same error code as the last failed push.
-   * - If you want to push media streams in the RTMPS protocol to CDN, call \ref IRtcEngine::startRtmpStreamWithTranscoding "startRtmpStreamWithTranscoding"
-   * instead of \ref IRtcEngine::startRtmpStreamWithoutTranscoding "startRtmpStreamWithoutTranscoding".
+   * - If you want to push media streams in the RTMPS protocol to CDN, call {@link startRtmpStreamWithTranscoding}
+   * instead of `startRtmpStreamWithoutTranscoding`.
    *
-   * @param url The address of the CDN live streaming. The format is RTMP. The character length cannot exceed 1024 bytes.
+   * @param url The address of Media Push. The format is RTMP. The character length cannot exceed 1024 bytes.
    * Special characters such as Chinese characters are not supported.
    *
    * @return
@@ -6682,27 +6700,27 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Starts pushing media streams to a CDN and sets the transcoding configuration.
    *
-   * @since v3.6.0
+   * @since v3.6.1.4
    *
    * You can call this method to push a live audio-and-video stream to the specified CDN address and set the transcoding
    * configuration. This method can push media streams to only one CDN address at a time, so if you need to push streams to
    * multiple addresses, call this method multiple times.
    *
-   * After you call this method, the SDK triggers the \ref IRtcEngineEventHandler::onRtmpStreamingStateChanged "onRtmpStreamingStateChanged"
+   * After you call this method, the SDK triggers the `rtmpStreamingStateChanged`
    * callback on the local client to report the state of the streaming.
    *
    * @note
-   * - Ensure that you enable the RTMP Converter service before using this function. See Prerequisites in *Push Streams to CDN*.
+   * - Ensure that you enable the Media Push service before using this function. See Prerequisites in *Media Push*.
    * - Call this method after joining a channel.
    * - Only hosts in the `LIVE_BROADCASTING` profile can call this method.
-   * - If you want to retry pushing streams after a failed push, make sure to call \ref IRtcEngine::stopRtmpStream "stopRtmpStream" first,
+   * - If you want to retry pushing streams after a failed push, make sure to call {@link stopRtmpStream} first,
    * then call this method to retry pushing streams; otherwise, the SDK returns the same error code as the last failed push.
-   * - If you want to push media streams in the RTMPS protocol to CDN, call \ref IRtcEngine::startRtmpStreamWithTranscoding "startRtmpStreamWithTranscoding"
-   * instead of \ref IRtcEngine::startRtmpStreamWithoutTranscoding "startRtmpStreamWithoutTranscoding".
+   * - If you want to push media streams in the RTMPS protocol to CDN, call `startRtmpStreamWithTranscoding`
+   * instead of {@link startRtmpStreamWithoutTranscoding}.
    *
-   * @param url The address of the CDN live streaming. The format is RTMP or RTMPS. The character length cannot exceed 1024 bytes.
+   * @param url The address of Media Push. The format is RTMP or RTMPS. The character length cannot exceed 1024 bytes.
    * Special characters such as Chinese characters are not supported.
-   * @param transcoding The transcoding configuration for CDN live streaming. See LiveTranscoding.
+   * @param transcoding The transcoding configuration for Media Push. See LiveTranscoding.
    *
    * @return
    * - 0: Success.
@@ -6719,13 +6737,13 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Updates the transcoding configuration.
    *
-   * @since v3.6.0
+   * @since v3.6.1.4
    *
    * After you start pushing media streams to CDN with transcoding, you can dynamically update the transcoding configuration according to the scenario.
-   * The SDK triggers the \ref IRtcEngineEventHandler::onTranscodingUpdated "onTranscodingUpdated" callback after the
+   * The SDK triggers the `transcodingUpdated` callback after the
    * transcoding configuration is updated.
    *
-   * @param transcoding The transcoding configuration for CDN live streaming. See LiveTranscoding.
+   * @param transcoding The transcoding configuration for Media Push. See LiveTranscoding.
    *
    * @return
    * - 0: Success.
@@ -6737,14 +6755,14 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Stops pushing media streams to a CDN.
    *
-   * @since v3.6.0
+   * @since v3.6.1.4
    *
    * You can call this method to stop the live stream on the specified CDN address.
    * This method can stop pushing media streams to only one CDN address at a time, so if you need to stop pushing streams to multiple addresses, call this method multiple times.
    *
-   * After you call this method, the SDK triggers the \ref IRtcEngineEventHandler::onRtmpStreamingStateChanged "onRtmpStreamingStateChanged" callback on the local client to report the state of the streaming.
+   * After you call this method, the SDK triggers the `rtmpStreamingStateChanged` callback on the local client to report the state of the streaming.
    *
-   * @param url The address of the CDN live streaming. The format is RTMP or RTMPS.
+   * @param url The address of Media Push. The format is RTMP or RTMPS.
    * The character length cannot exceed 1024 bytes. Special characters such as Chinese characters are not supported.
    *
    * @return
@@ -6760,7 +6778,7 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Sets the audio playback device used by the SDK to follow the system default audio playback device.
    *
-   * @since v3.6.0
+   * @since v3.6.1.4
    *
    * @param enable Whether to follow the system default audio playback device:
    * - true: Follow. The SDK immediately switches the audio playback device when the system default audio playback device changes.
@@ -6776,7 +6794,7 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Sets the audio recording device used by the SDK to follow the system default audio recording device.
    *
-   * @since v3.6.0
+   * @since v3.6.1.4
    *
    * @param enable Whether to follow the system default audio recording device:
    * - true: Follow. The SDK immediately switches the audio recording device when the system default audio recording device changes.
@@ -6792,13 +6810,13 @@ class AgoraRtcEngine extends EventEmitter {
   /**
    * Gets a list of shareable screens and windows.
    *
-   * @since v3.5.2
+   * @since v3.6.1.4
    *
    * You can call this method before sharing a screen or window to get a list of shareable screens and windows, which
    * enables a user to use thumbnails in the list to easily choose a particular screen or window to share. This list
    * also contains important information such as window ID and screen ID, with which you can
-   * call \ref IRtcEngine::startScreenCaptureByWindowId "startScreenCaptureByWindowId" or
-   * \ref IRtcEngine::startScreenCaptureByDisplayId "startScreenCaptureByDisplayId" to start the sharing.
+   * call {@link startScreenCaptureByWindow} or
+   * {@link startScreenCaptureByDisplayId} to start the sharing.
    *
    * @note This method applies to macOS and Windows only.
    *
@@ -6816,7 +6834,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - true: The SDK returns screen and window information.
    * - false: The SDK returns window information only.
    *
-   * @return IScreenCaptureSourceList
+   * @return Array<Object>
    */
   getScreenCaptureSources(
     thumbSize: SIZE,
@@ -7296,7 +7314,9 @@ declare interface AgoraRtcEngine {
    * {@link joinChannel} method until the SDK triggers this callback.
    */
   on(evt: 'userJoined', cb: (uid: number, elapsed: number) => void): this;
-  /** Occurs when a remote user leaves the channel.
+  /** @deprecated This callback is deprecated. Use `userOffline` instead.
+   *
+   * Occurs when a remote user leaves the channel.
    * - uid: User ID of the user leaving the channel or going offline.
    * - reason: Reason why the user is offline:
    *  - 0: The user quits the call.
@@ -7538,8 +7558,7 @@ declare interface AgoraRtcEngine {
    * @note To receive this callback, you need to call the
    * {@link enableAudioVolumeIndication} method.
    *
-   * @param cb.uid User ID of the active speaker. A uid of 0 represents the
-   * local user.
+   * @param cb.uid User ID of the active speaker.
    * If the user enables the audio volume indication by calling the
    * {@link enableAudioVolumeIndication} method, this callback returns the uid
    * of the
@@ -7748,7 +7767,7 @@ declare interface AgoraRtcEngine {
   /** @deprecated This callback is deprecated. Please use
    * `rtmpStreamingStateChanged` instead.
    *
-   * Reports the result of CDN live streaming.
+   * Reports the result of Media Push.
    *
    * - url: The RTMP URL address.
    * - error: Error code:
@@ -7773,46 +7792,46 @@ declare interface AgoraRtcEngine {
    */
   on(evt: 'streamUnpublished', cb: (url: string) => void): this;
   /**
-   * Occurs when the state of the RTMP streaming changes.
+   * Occurs when the state of Media Push changes.
    *
    * The SDK triggers this callback to report the result of the local user
    * calling the {@link addPublishStreamUrl} and {@link removePublishStreamUrl}
    * method.
    *
-   * This callback indicates the state of the RTMP streaming. When exceptions
+   * This callback indicates the state of Media Push. When exceptions
    * occur, you can troubleshoot issues by referring to the detailed error
    * descriptions in the `code` parameter.
    * @param cb.url The RTMP URL address.
-   * @param cb.state The RTMP streaming state:
-   * - `0`: The RTMP streaming has not started or has ended. This state is also
+   * @param cb.state Media Push state:
+   * - `0`: Media Push has not started or has ended. This state is also
    * triggered after you remove an RTMP address from the CDN by calling
    * {@link removePublishStreamUrl}.
    * - `1`: The SDK is connecting to Agora's streaming server and the RTMP
    * server. This state is triggered after you call the
    * {@link addPublishStreamUrl} method.
-   * - `2`: The RTMP streaming publishes. The SDK successfully publishes the
-   * RTMP streaming and returns this state.
-   * - `3`: The RTMP streaming is recovering. When exceptions occur to the CDN,
-   * or the streaming is interrupted, the SDK tries to resume RTMP streaming
+   * - `2`: Media Push publishes. The SDK successfully publishes the
+   * Media Push stream and returns this state.
+   * - `3`: Media Push is recovering. When exceptions occur to the CDN,
+   * or the streaming is interrupted, the SDK tries to resume Media Push
    * and returns this state.
    *  - If the SDK successfully resumes the streaming, `2` returns.
    *  - If the streaming does not resume within 60 seconds or server errors
    * occur, `4` returns. You can also reconnect to the server by calling the
    * {@link removePublishStreamUrl} and then {@link addPublishStreamUrl}
    * method.
-   * - `4`: The RTMP streaming fails. See the `code` parameter for the
+   * - `4`: Media Push fails. See the `code` parameter for the
    * detailed error information. You can also call the
-   * {@link addPublishStreamUrl} method to publish the RTMP streaming again.
+   * {@link addPublishStreamUrl} method to publish Media Push again.
    * @param cb.code The detailed error information:
-   * - `0`: The RTMP streaming publishes successfully.
+   * - `0`: Media Push publishes successfully.
    * - `1`: Invalid argument used.
    * - `2`: The RTMP streams is encrypted and cannot be published.
-   * - `3`: Timeout for the RTMP streaming. Call the
+   * - `3`: Timeout for Media Push. Call the
    * {@link addPublishStreamUrl} to publish the stream again.
    * - `4`: An error occurs in Agora's streaming server. Call the
    * {@link addPublishStreamUrl} to publish the stream again.
    * - `5`: An error occurs in the RTMP server.
-   * - `6`: The RTMP streaming publishes too frequently.
+   * - `6`: Media Push publishes too frequently.
    * - `7`: The host publishes more than 10 URLs. Delete the unnecessary URLs
    * before adding new ones.
    * - `8`: The host manipulates other hosts' URLs. Check your app
@@ -8811,7 +8830,7 @@ class AgoraRtcChannel extends EventEmitter {
    * functionality will be disabled.
    *
    * @note
-   * - Do not use this method for the CDN live streaming function.
+   * - Do not use this method for the Media Push function.
    * - For optimal transmission, ensure that the encrypted data size does not
    * exceed the original data size + 16 bytes. 16 bytes is the maximum padding
    * size for AES encryption.
@@ -9196,16 +9215,16 @@ class AgoraRtcChannel extends EventEmitter {
    *
    * In the `1` (live streaming) profile, the host can call this method to
    * publish the local stream to a specified CDN URL address, which is called
-   * "Push Streams to CDN" or "CDN live streaming."
+   * "Media Push."
    *
-   * During the CDN live streaming, the SDK triggers the
+   * During Media Push, the SDK triggers the
    * `rtmpStreamingStateChanged` callback is any streaming state changes.
    *
    * @note
    * - Only the host in the `1` (live streaming) profile can call this method.
    * - Call this method after the host joins the channel.
-   * - Ensure that you enable the RTMP Converter service before using this
-   * function. See *Prerequisites* in the *Push Streams to CDN* guide.
+   * - Ensure that you enable the Media Push service before using this
+   * function. See *Prerequisites* in the *Media Push* guide.
    * - This method adds only one stream RTMP URL address each time it is
    * called.
    *
@@ -9236,7 +9255,7 @@ class AgoraRtcChannel extends EventEmitter {
    * Removes the RTMP stream from the CDN.
    *
    * This method removes the RTMP URL address (added by
-   * {@link addPublishStreamUrl}) and stops the CDN live streaming.
+   * {@link addPublishStreamUrl}) and stops Media Push.
    *
    * This method call triggers the `rtmpStreamingStateChanged` callback to
    * report the state of removing the URL address.
@@ -9269,13 +9288,13 @@ class AgoraRtcChannel extends EventEmitter {
    *
    * @note
    * - Only the host in the Live-broadcast porfile can call this method.
-   * - Ensure that you enable the RTMP Converter service before using
-   * this function. See *Prerequisites* in the *Push Streams to CDN* guide.
+   * - Ensure that you enable the Media Push service before using
+   * this function. See *Prerequisites* in the *Media Push* guide.
    * - If you call the {@link setLiveTranscoding} method to set the
    * LiveTranscoding class for the first time, the SDK does not trigger the
    * transcodingUpdated callback.
    * @param transcoding The transcoding setting for the audio and video streams
-   * during the CDN live streaming. See {@link LiveTranscoding}
+   * during Media Push. See {@link LiveTranscoding}
    *
    * @return
    * - 0: Success
@@ -9306,8 +9325,8 @@ class AgoraRtcChannel extends EventEmitter {
    *
    * @note
    * - Only the host in the `1` (live streaming) profile can call this method.
-   * - Ensure that you enable the RTMP Converter service before using this
-   * function. See *Prerequisites* in the *Push Streams to CDN* guide.
+   * - Ensure that you enable the Media Push service before using this
+   * function. See *Prerequisites* in the *Media Push* guide.
    * - This method applies to the `1` (live streaming) profile only.
    * - You can inject only one media stream into the channel at the same time.
    *
@@ -10099,40 +10118,40 @@ declare interface AgoraRtcChannel {
    * calling the {@link addPublishStreamUrl} and {@link removePublishStreamUrl}
    * method.
    *
-   * This callback indicates the state of the RTMP streaming. When exceptions
+   * This callback indicates the state of Media Push. When exceptions
    * occur, you can troubleshoot issues by referring to the detailed error
    * descriptions in the `code` parameter.
    * @param cb.url The RTMP URL address.
-   * @param cb.state The RTMP streaming state:
-   * - `0`: The RTMP streaming has not started or has ended. This state is also
+   * @param cb.state Media Push state:
+   * - `0`: Media Push has not started or has ended. This state is also
    * triggered after you remove an RTMP address from the CDN by calling
    * {@link removePublishStreamUrl}.
    * - `1`: The SDK is connecting to Agora's streaming server and the RTMP
    * server. This state is triggered after you call the
    * {@link addPublishStreamUrl} method.
-   * - `2`: The RTMP streaming publishes. The SDK successfully publishes the
-   * RTMP streaming and returns this state.
-   * - `3`: The RTMP streaming is recovering. When exceptions occur to the CDN,
-   * or the streaming is interrupted, the SDK tries to resume RTMP streaming
+   * - `2`: Media Push publishes. The SDK successfully publishes the
+   * Media Push stream and returns this state.
+   * - `3`: Media Push is recovering. When exceptions occur to the CDN,
+   * or the streaming is interrupted, the SDK tries to resume Media Push
    * and returns this state.
    *  - If the SDK successfully resumes the streaming, `2` returns.
    *  - If the streaming does not resume within 60 seconds or server errors
    * occur, `4` returns. You can also reconnect to the server by calling the
    * {@link removePublishStreamUrl} and then {@link addPublishStreamUrl}
    * method.
-   * - `4`: The RTMP streaming fails. See the `code` parameter for the
+   * - `4`: Media Push fails. See the `code` parameter for the
    * detailed error information. You can also call the
-   * {@link addPublishStreamUrl} method to publish the RTMP streaming again.
+   * {@link addPublishStreamUrl} method to publish Media Push again.
    * @param cb.code The detailed error information:
-   * - `0`: The RTMP streaming publishes successfully.
+   * - `0`: Media Push publishes successfully.
    * - `1`: Invalid argument used.
    * - `2`: The RTMP streams is encrypted and cannot be published.
-   * - `3`: Timeout for the RTMP streaming. Call the
+   * - `3`: Timeout for Media Push. Call the
    * {@link addPublishStreamUrl} to publish the stream again.
    * - `4`: An error occurs in Agora's streaming server. Call the
    * {@link addPublishStreamUrl} to publish the stream again.
    * - `5`: An error occurs in the RTMP server.
-   * - `6`: The RTMP streaming publishes too frequently.
+   * - `6`: Media Push publishes too frequently.
    * - `7`: The host publishes more than 10 URLs. Delete the unnecessary URLs
    * before adding new ones.
    * - `8`: The host manipulates other hosts' URLs. Check your app
