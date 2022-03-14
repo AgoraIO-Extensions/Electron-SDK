@@ -1459,7 +1459,8 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalAccessPoint) {
     uploadServerInfo.serverDomain = serverDomainStr;
     
     NodeString serverPathStr;
-    status = napi_get_object_property_nodestring_(isolate, uploadServerInfoObj, "serverDomain", serverPathStr);
+    status = napi_get_object_property_nodestring_(isolate, uploadServerInfoObj,
+                                                  "serverPath", serverPathStr);
     CHECK_NAPI_STATUS(pEngine, status);
     uploadServerInfo.serverPath = serverPathStr;
     
