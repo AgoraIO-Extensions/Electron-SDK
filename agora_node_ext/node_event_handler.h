@@ -228,9 +228,9 @@ public:
                                   const char *ext_name) override;
   virtual void onExtensionStopped(const char *provider_name,
                                   const char *ext_name) override;
-  virtual void onExtensionErrored(const char *provider_name,
+  /*virtual void onExtensionErrored(const char *provider_name,
                                   const char *ext_name, int error,
-                                  const char *msg) override;
+                                  const char *msg) override;*/
 
   // ex
   virtual void onJoinChannelSuccess(const class RtcConnection &connection,

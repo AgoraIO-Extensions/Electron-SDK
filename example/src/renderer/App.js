@@ -368,9 +368,9 @@ export default class App extends Component {
     let rtcEngine = this.getRtcEngine()
 
     let excludeWindowList = []
-
-    rtcEngine.startScreenCaptureByScreen(
-      displayId,
+    console.log("startScreenShareByDisplay", displayId);
+    rtcEngine.startScreenCaptureByDisplayId(
+      displayId.id,
       { x: 0, y: 0, width: 0, height: 0 },
       {
         width: 1920,
@@ -380,7 +380,6 @@ export default class App extends Component {
         captureMouseCursor: false,
         windowFocus: false,
         excludeWindowList,
-        excludeWindowCount: excludeWindowList.length,
       }
     )
     this.state.screenShareConnectionId = rtcEngine.joinChannelEx(

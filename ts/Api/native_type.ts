@@ -65,7 +65,6 @@ export enum SEG_MODEL_TYPE {
 
 export interface SegmentationProperty {
   modelType: SEG_MODEL_TYPE;
-  preferVelocity: number;
   greenCapacity: number;
 }
 
@@ -1641,8 +1640,6 @@ export interface CaptureParam {
   windowFocus: boolean;
 
   excludeWindowList: Array<number>;
-
-  excludeWindowCount: number;
 }
 
 /**
@@ -3661,6 +3658,11 @@ export interface NodeRtcEngine {
    */
   startScreenCaptureByScreen(
     screenSymbol: ScreenSymbol,
+    rect: CaptureRect,
+    param: CaptureParam
+  ): number;
+  startScreenCaptureByDisplayId(
+    displayId: number,
     rect: CaptureRect,
     param: CaptureParam
   ): number;
