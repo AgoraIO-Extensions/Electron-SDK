@@ -1641,8 +1641,6 @@ export interface CaptureParam {
   windowFocus: boolean;
 
   excludeWindowList: Array<number>;
-
-  excludeWindowCount: number;
 }
 
 /**
@@ -3661,6 +3659,11 @@ export interface NodeRtcEngine {
    */
   startScreenCaptureByScreen(
     screenSymbol: ScreenSymbol,
+    rect: CaptureRect,
+    param: CaptureParam
+  ): number;
+  startScreenCaptureByDisplayId(
+    displayId: number,
     rect: CaptureRect,
     param: CaptureParam
   ): number;
