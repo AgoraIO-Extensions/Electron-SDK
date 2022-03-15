@@ -65,7 +65,6 @@ export enum SEG_MODEL_TYPE {
 
 export interface SegmentationProperty {
   modelType: SEG_MODEL_TYPE;
-  preferVelocity: number;
   greenCapacity: number;
 }
 

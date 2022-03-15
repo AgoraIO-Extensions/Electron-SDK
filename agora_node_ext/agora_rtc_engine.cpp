@@ -1966,7 +1966,7 @@ NAPI_API_DEFINE(NodeRtcEngine, enableLoopbackRecordingEx) {
     CHECK_NAPI_STATUS(pEngine, status);
 
     IRtcEngineEx *engineEx = (IRtcEngineEx *)pEngine->m_engine;
-    result = engineEx->enableLoopbackRecordingEx(enabled, connection);
+    result = engineEx->enableLoopbackRecordingEx(connection, enabled);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -4414,6 +4414,23 @@ NAPI_API_DEFINE(NodeRtcEngine, sendCustomReportMessage) {
   if (obj.IsEmpty())                                                           \
     break;
 
+#define NODE_SET_OBJ_PROP_Number(isolate, obj, name, val)                \
+  {                                                                      \
+    Local<Value> propName =                                              \
+        String::NewFromUtf8(isolate, name, NewStringType::kInternalized) \
+            .ToLocalChecked();                                           \
+    Local<Value> propVal = v8::Number::New(isolate, val);                \
+    CHECK_NAPI_OBJ(propVal);                                             \
+    v8::Maybe<bool> ret =                                                \
+        obj->Set(isolate->GetCurrentContext(), propName, propVal);       \
+    if (!ret.IsNothing()) {                                              \
+      if (!ret.ToChecked()) {                                            \
+        break;                                                           \
+      }                                                                  \
+    }                                                                    \
+  }
+
+
 #define NODE_SET_OBJ_PROP_UINT32(isolate, obj, name, val)                      \
   {                                                                            \
     Local<Value> propName =                                                    \
@@ -4565,15 +4582,17 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenDisplaysInfo) {
     for (unsigned int i = 0; i < allDisplays.size(); ++i) {
       ScreenDisplayInfo displayInfo = allDisplays[i];
       Local<v8::Object> obj = Object::New(isolate);
-      ScreenIDType displayId = displayInfo.displayId;
+      
       Local<v8::Object> displayIdObj = Object::New(isolate);
 #ifdef _WIN32
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "x", displayId.x);
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "y", displayId.y);
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "width", displayId.width);
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "height",
-                               displayId.height);
+      NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "x", displayInfo.x);
+      NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "y", displayInfo.y);
+      NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "width", displayInfo.width);
+      NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "height",
+        displayInfo.height);
+      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "id", displayInfo.displayId);
 #elif defined(__APPLE__)
+      ScreenIDType displayId = displayInfo.displayId;
       NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "id", displayId.idVal);
 #endif
       Local<Value> propName = String::NewFromUtf8(isolate, "displayId",
@@ -6666,9 +6685,9 @@ NAPI_API_DEFINE(NodeRtcEngine, enableVirtualBackground) {
         (SegmentationProperty::SEG_MODEL_TYPE)modeltypeSegpropert;
     CHECK_NAPI_STATUS(pEngine, status);
 
-    status = napi_get_object_property_int32_(
-        isolate, segpropertObj, "preferVelocity", segpropert.preferVelocity);
-    CHECK_NAPI_STATUS(pEngine, status);
+    //status = napi_get_object_property_int32_(
+    //    isolate, segpropertObj, "preferVelocity", segpropert.preferVelocity);
+    //CHECK_NAPI_STATUS(pEngine, status);
 
     status = napi_get_object_property_double_(
         isolate, segpropertObj, "greenCapacity", greencapacitySegpropert);
