@@ -30,13 +30,13 @@ typedef agora::rtc::Rectangle ScreenIDType;
 #endif
 
 struct ScreenDisplayInfo {
-  ScreenIDType displayId;
-
   std::string name;
   std::string ownerName;
-
+  unsigned int displayId;
   unsigned int width;
   unsigned int height;
+  int x;
+  int y;
   bool isActive;
   bool isMain;
   bool isBuiltin;

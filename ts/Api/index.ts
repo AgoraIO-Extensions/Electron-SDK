@@ -3282,6 +3282,13 @@ class AgoraRtcEngine extends EventEmitter {
   startScreenCaptureByScreen(screenSymbol: ScreenSymbol, rect: CaptureRect, param: CaptureParam): number {
     return this.rtcEngine.startScreenCaptureByScreen(screenSymbol, rect, param)
   }
+  startScreenCaptureByDisplayId(
+    displayId: number,
+    rect: CaptureRect,
+    param: CaptureParam
+  ): number {
+    return this.rtcEngine.startScreenCaptureByDisplayId(displayId, rect, param);
+  }
   /**
    * Updates the screen sharing parameters.
    * 
