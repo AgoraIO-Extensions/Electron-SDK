@@ -4590,11 +4590,8 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenDisplaysInfo) {
       NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "width", displayInfo.width);
       NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "height",
         displayInfo.height);
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "id", displayInfo.displayId);
-#elif defined(__APPLE__)
-      ScreenIDType displayId = displayInfo.displayId;
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "id", displayId.idVal);
 #endif
+      NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "id", displayInfo.displayId);
       Local<Value> propName = String::NewFromUtf8(isolate, "displayId",
                                                   NewStringType::kInternalized)
                                   .ToLocalChecked();
