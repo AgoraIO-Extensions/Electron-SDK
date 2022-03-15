@@ -146,7 +146,10 @@
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
                         './sdk/lib/mac/AgoraRtcKit.framework',
-                        './sdk/lib/mac/Agoraffmpeg.framework'
+                        './sdk/lib/mac/Agoraffmpeg.framework',
+                        './sdk/lib/mac/AgoraRTE.framework',
+                        './sdk/lib/mac/AgoraTrapezoidCorrection.framework',
+                        './sdk/lib/mac/AgoraVideoProcess.framework',
                     ]
                 }],
                 'link_settings': {
