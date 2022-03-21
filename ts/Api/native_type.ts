@@ -3251,7 +3251,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  setAudioProfile(profile: number, scenario: number): number;
+  setAudioProfile(profile: number): number;
   /**
    * @ignore
    */

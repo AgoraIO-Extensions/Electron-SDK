@@ -2140,9 +2140,8 @@ class AgoraRtcEngine extends EventEmitter {
    */
   setAudioProfile(
     profile: 0 | 1 | 2 | 3 | 4 | 5,
-    scenario: 0 | 1 | 2 | 3 | 4 | 5
   ): number {
-    return this.rtcEngine.setAudioProfile(profile, scenario);
+    return this.rtcEngine.setAudioProfile(profile);
   }
 
   /**

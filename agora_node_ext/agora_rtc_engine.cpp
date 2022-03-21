@@ -2485,8 +2485,8 @@ NAPI_API_DEFINE(NodeRtcEngine, setAudioProfile) {
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     napi_status status = napi_ok;
-    unsigned int profile, scenario;
-    napi_get_param_2(args, uint32, profile, uint32, scenario);
+    unsigned int profile;
+    napi_get_param_1(args, uint32, profile);
     CHECK_NAPI_STATUS(pEngine, status);
 
     result = pEngine->m_engine->setAudioProfile(AUDIO_PROFILE_TYPE(profile));
