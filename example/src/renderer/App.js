@@ -224,12 +224,28 @@ export default class App extends Component {
     rtcEngine.enableAudioVolumeIndication(1000, 3, false)
 
     rtcEngine.setRenderMode(2)
-    rtcEngine.joinChannel(
-      this.state.token || null,
-      this.state.channel,
+    const res=rtcEngine.joinChannelEx(
       '',
-      LOCAL_USER_ID
+      {
+        localUid: LOCAL_USER_ID,
+        channelId:this.state.channel
+      },
+      {
+        publishCameraTrack: true,
+        publishAudioTrack: true,
+        publishScreenTrack: false,
+        publishCustomAudioTrack: false,
+        publishCustomVideoTrack: false,
+        publishEncodedVideoTrack: false,
+        publishMediaPlayerAudioTrack: false,
+        publishMediaPlayerVideoTrack: false,
+        autoSubscribeAudio: true,
+        autoSubscribeVideo: true,
+        enableAudioRecordingOrPlayout:true,
+        clientRoleType: 1,
+      }
     )
+    console.log('joinChannelEx',res)
   }
 
   handleLeave = () => {
