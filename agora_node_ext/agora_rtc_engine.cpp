@@ -302,7 +302,8 @@ void NodeRtcEngine::Init(Local<Object> &module) {
   PROPERTY_METHOD_DEFINE(setExtensionProviderProperty);
   PROPERTY_METHOD_DEFINE(setProcessDpiAwareness);
   PROPERTY_METHOD_DEFINE(enableVirtualBackground);
-
+  PROPERTY_METHOD_DEFINE(startScreenCaptureByDisplayId);
+    
   EN_PROPERTY_DEFINE()
   module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(),
               tpl->GetFunction(context).ToLocalChecked());
@@ -1965,7 +1966,7 @@ NAPI_API_DEFINE(NodeRtcEngine, enableLoopbackRecordingEx) {
     CHECK_NAPI_STATUS(pEngine, status);
 
     IRtcEngineEx *engineEx = (IRtcEngineEx *)pEngine->m_engine;
-    result = engineEx->enableLoopbackRecordingEx(enabled, connection);
+    result = engineEx->enableLoopbackRecordingEx(connection, enabled);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -4413,6 +4414,23 @@ NAPI_API_DEFINE(NodeRtcEngine, sendCustomReportMessage) {
   if (obj.IsEmpty())                                                           \
     break;
 
+#define NODE_SET_OBJ_PROP_Number(isolate, obj, name, val)                \
+  {                                                                      \
+    Local<Value> propName =                                              \
+        String::NewFromUtf8(isolate, name, NewStringType::kInternalized) \
+            .ToLocalChecked();                                           \
+    Local<Value> propVal = v8::Number::New(isolate, val);                \
+    CHECK_NAPI_OBJ(propVal);                                             \
+    v8::Maybe<bool> ret =                                                \
+        obj->Set(isolate->GetCurrentContext(), propName, propVal);       \
+    if (!ret.IsNothing()) {                                              \
+      if (!ret.ToChecked()) {                                            \
+        break;                                                           \
+      }                                                                  \
+    }                                                                    \
+  }
+
+
 #define NODE_SET_OBJ_PROP_UINT32(isolate, obj, name, val)                      \
   {                                                                            \
     Local<Value> propName =                                                    \
@@ -4564,17 +4582,16 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenDisplaysInfo) {
     for (unsigned int i = 0; i < allDisplays.size(); ++i) {
       ScreenDisplayInfo displayInfo = allDisplays[i];
       Local<v8::Object> obj = Object::New(isolate);
-      ScreenIDType displayId = displayInfo.displayId;
+      
       Local<v8::Object> displayIdObj = Object::New(isolate);
 #ifdef _WIN32
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "x", displayId.x);
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "y", displayId.y);
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "width", displayId.width);
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "height",
-                               displayId.height);
-#elif defined(__APPLE__)
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "id", displayId.idVal);
+      NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "x", displayInfo.x);
+      NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "y", displayInfo.y);
+      NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "width", displayInfo.width);
+      NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "height",
+        displayInfo.height);
 #endif
+      NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "id", displayInfo.displayId);
       Local<Value> propName = String::NewFromUtf8(isolate, "displayId",
                                                   NewStringType::kInternalized)
                                   .ToLocalChecked();
@@ -6411,6 +6428,97 @@ NAPI_API_DEFINE(NodeRtcEngine, setExtensionProperty) {
   LOG_LEAVE;
 }
 
+NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByDisplayId) {
+  LOG_ENTER;
+  int result = -1;
+  uint32_t displayId = 0;
+  Rectangle regionRect;
+  ScreenCaptureParameters captureParams;
+  Isolate* isolate = args.GetIsolate();
+  Local<Context> context = isolate->GetCurrentContext();
+  NodeRtcEngine *pEngine = nullptr;
+  do {
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    
+    napi_status status = napi_get_value_uint32_(args[0], displayId);
+    CHECK_NAPI_STATUS(pEngine, status);
+    
+    // regionRect
+    if (!args[1]->IsObject()) {
+      status = napi_invalid_arg;
+      CHECK_NAPI_STATUS(pEngine, status);
+    }
+    
+    Local<Object> obj;
+    status = napi_get_value_object_(isolate, args[1], obj);
+    CHECK_NAPI_STATUS(pEngine, status);
+    
+    Rectangle regionRect;
+    status = napi_get_object_property_int32_(isolate, obj, "x", regionRect.x);
+    CHECK_NAPI_STATUS(pEngine, status);
+    status = napi_get_object_property_int32_(isolate, obj, "y", regionRect.y);
+    CHECK_NAPI_STATUS(pEngine, status);
+    status = napi_get_object_property_int32_(isolate, obj, "width",
+                                             regionRect.width);
+    CHECK_NAPI_STATUS(pEngine, status);
+    status = napi_get_object_property_int32_(isolate, obj, "height",
+                                             regionRect.height);
+    CHECK_NAPI_STATUS(pEngine, status);
+    
+    // capture parameters
+    if (!args[2]->IsObject()) {
+      status = napi_invalid_arg;
+      CHECK_NAPI_STATUS(pEngine, status);
+    }
+    status = napi_get_value_object_(isolate, args[2], obj);
+    CHECK_NAPI_STATUS(pEngine, status);
+    VideoDimensions dimensions;
+    status = napi_get_object_property_int32_(isolate, obj, "width",
+                                             dimensions.width);
+    CHECK_NAPI_STATUS(pEngine, status);
+    status = napi_get_object_property_int32_(isolate, obj, "height",
+                                             dimensions.height);
+    CHECK_NAPI_STATUS(pEngine, status);
+    
+    status = napi_get_object_property_int32_(isolate, obj, "frameRate", captureParams.frameRate);
+    CHECK_NAPI_STATUS(pEngine, status);
+    status = napi_get_object_property_int32_(isolate, obj, "bitrate",
+                                             captureParams.bitrate);
+    CHECK_NAPI_STATUS(pEngine, status);
+    status = napi_get_object_property_bool_(isolate, obj, "captureMouseCursor",
+                                            captureParams.captureMouseCursor);
+    CHECK_NAPI_STATUS(pEngine, status);
+    status = napi_get_object_property_bool_(isolate, obj, "windowFocus",
+                                            captureParams.windowFocus);
+    CHECK_NAPI_STATUS(pEngine, status);
+    captureParams.dimensions = dimensions;
+    
+    std::vector<uint32_t> excludeWindows;
+    Local<Name> keyName = String::NewFromUtf8(isolate, "excludeWindowList", NewStringType::kInternalized).ToLocalChecked();
+    Local<Value> excludeWindowList = obj->Get(context, keyName).ToLocalChecked();
+    
+    if (!excludeWindowList->IsNull() && excludeWindowList->IsArray()) {
+      auto excludeWindowListValue = v8::Array::Cast(*excludeWindowList);
+      auto length = excludeWindowListValue->Length();
+      for (uint32_t i = 0; i < length; ++i) {
+        uint32_t windowId;
+        Local<Value> value = excludeWindowListValue->Get(context, i).ToLocalChecked();
+        status = napi_get_value_uint32_(value, windowId);
+        excludeWindows.push_back(windowId);
+      }
+      captureParams.excludeWindowCount = length;
+    }
+    
+    captureParams.excludeWindowList = reinterpret_cast<view_t *>(excludeWindows.data());
+    
+    result = pEngine->m_engine->startScreenCaptureByDisplayId(displayId, regionRect, captureParams);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+
 NAPI_API_DEFINE(NodeRtcEngine, loadExtensionProvider) {
   LOG_ENTER;
   int result = -1;
@@ -6574,9 +6682,9 @@ NAPI_API_DEFINE(NodeRtcEngine, enableVirtualBackground) {
         (SegmentationProperty::SEG_MODEL_TYPE)modeltypeSegpropert;
     CHECK_NAPI_STATUS(pEngine, status);
 
-    status = napi_get_object_property_int32_(
-        isolate, segpropertObj, "preferVelocity", segpropert.preferVelocity);
-    CHECK_NAPI_STATUS(pEngine, status);
+    //status = napi_get_object_property_int32_(
+    //    isolate, segpropertObj, "preferVelocity", segpropert.preferVelocity);
+    //CHECK_NAPI_STATUS(pEngine, status);
 
     status = napi_get_object_property_double_(
         isolate, segpropertObj, "greenCapacity", greencapacitySegpropert);

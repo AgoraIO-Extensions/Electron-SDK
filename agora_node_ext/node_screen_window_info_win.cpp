@@ -439,16 +439,16 @@ bool dumpDisplayInfo(HDC hDC, ScreenDisplayInfo *info, int i,
                               // HDC hDC = GetDC(hWnd);
   HDC hMemDC = CreateCompatibleDC(hDC);
 
-  int nWidth = info->displayId.width;
-  int nHeight = info->displayId.height;
+  int nWidth = info->width;
+  int nHeight = info->height;
 
   if (nWidth == 0 || nHeight == 0)
     return false;
 
   int bmpWidth = nWidth;
   int bmpHeight = nHeight;
-  int x = info->displayId.x;
-  int y = info->displayId.y;
+  int x = info->x;
+  int y = info->y;
 
   HBITMAP hBMP = CreateCompatibleBitmap(hDC, nWidth, nHeight);
   SelectObject(hMemDC, hBMP);
@@ -569,10 +569,8 @@ BOOL CALLBACK Monitorenumproc(HMONITOR Arg1, HDC Arg2, LPRECT Arg3,
                               LPARAM Arg4) {
   ScreenDisplayInfo screen;
   RECT rc = *Arg3;
-  screen.displayId.x = rc.left;
-  screen.displayId.width = rc.right - rc.left;
-  screen.displayId.y = rc.top;
-  screen.displayId.height = rc.bottom - rc.top;
+  screen.x = rc.left;
+  screen.y = rc.top;
 
   screen.width = rc.right - rc.left;
   screen.height = rc.bottom - rc.top;
@@ -684,21 +682,51 @@ std::vector<ScreenWindowInfo> getAllWindowInfo() {
 
 std::vector<ScreenDisplayInfo> getAllDisplayInfo() {
   Gdiplus::Status status = Gdiplus::Ok;
-  std::vector<ScreenDisplayInfo> displayInfos;
+  bool flag = true;
+  int dsp_num = 0;
+  std::vector<ScreenDisplayInfo> _display_infos;
   if (g_gdiplusToken == NULL)
     status = InitializeGdiplus();
 
-  if (status == Gdiplus::Ok) {
-    EnumDisplayMonitors(NULL, NULL, Monitorenumproc, LPARAM(&displayInfos));
-    RECT rc = {0, 0, 0, 0};
+  DISPLAY_DEVICE _display_device;
+  ZeroMemory(&_display_device, sizeof(_display_device));
+  _display_device.cb = sizeof(_display_device);
+  for (int _device_index = 0;; ++_device_index) {
+    ScreenDisplayInfo _display_info;
+    flag = EnumDisplayDevicesA(NULL, _device_index, &_display_device, 0);
 
+    if (!flag)
+      break;
+
+    if (!(_display_device.StateFlags & DISPLAY_DEVICE_ACTIVE))
+      continue;
+
+    DEVMODE _dev_mode;
+    _dev_mode.dmSize = sizeof(_dev_mode);
+    _dev_mode.dmDriverExtra = 0;
+    if (EnumDisplaySettingsExA(_display_device.DeviceName,
+      ENUM_CURRENT_SETTINGS, &_dev_mode, 0)) {
+      _display_info.width = _dev_mode.dmPelsWidth;
+      _display_info.height =
+        _dev_mode.dmPelsHeight;
+      _display_info.x = _dev_mode.dmPosition.x;
+      _display_info.y = _dev_mode.dmPosition.y;
+    }
+
+    _display_info.name = _display_device.DeviceName;
+    _display_info.displayId = _device_index;
+    _display_info.isMain =
+      _display_device.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE;
+    _display_infos.push_back(_display_info);
+  }
+
+  for (int i = 0; i < _display_infos.size(); i++) {
     HWND hDesktop = GetDesktopWindow();
     HDC hDC = GetDC(hDesktop);
-    RECT rcCapture = {0, 0, 0, 0};
-    for (int i = 0; i < displayInfos.size(); i++) {
-      ScreenDisplayInfo &info = displayInfos[i];
-      dumpDisplayInfo(hDC, &info, 20, displayInfos);
+    for (int i = 0; i < _display_infos.size(); i++) {
+      ScreenDisplayInfo& info = _display_infos[i];
+      dumpDisplayInfo(hDC, &info, i, _display_infos);
     }
   }
-  return displayInfos;
+  return _display_infos;
 }

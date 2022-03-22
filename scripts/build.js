@@ -85,19 +85,6 @@ module.exports = ({
             logger.error(stderr);
             process.exit(1)
           }
-          
-          if(platform === "darwin") {
-            logger.info(`patch loader path for mac build..`)
-            shell.exec(`install_name_tool -add_rpath "@loader_path" ${agora_node_ext_path}`, {silent}, (code, stdout, stderr) => {
-              if (code !== 0) {
-                logger.error(stderr);
-                process.exit(1)
-              }
-              // handle success
-              logger.info('Build complete')
-              process.exit(0)
-            })
-          }
         })
       }
     })

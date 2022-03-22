@@ -640,18 +640,18 @@ void NodeEventHandler::onExtensionStopped(const char *provider_name,
   });
 }
 
-void NodeEventHandler::onExtensionErrored(const char *provider_name,
-                                          const char *ext_name, int error,
-                                          const char *msg) {
-  FUNC_TRACE;
-  std::string sProviderName(provider_name);
-  std::string sExtName(ext_name);
-  std::string sMsg(msg);
-  node_async_call::async_call([this, sProviderName, sExtName, sMsg] {
-    MAKE_JS_CALL_3(RTC_EVENT_EXTENSION_ERRORED, string, sProviderName.c_str(),
-                   string, sExtName.c_str(), string, sMsg.c_str());
-  });
-}
+//void NodeEventHandler::onExtensionErrored(const char *provider_name,
+//                                          const char *ext_name, int error,
+//                                          const char *msg) {
+//  FUNC_TRACE;
+//  std::string sProviderName(provider_name);
+//  std::string sExtName(ext_name);
+//  std::string sMsg(msg);
+//  node_async_call::async_call([this, sProviderName, sExtName, sMsg] {
+//    MAKE_JS_CALL_3(RTC_EVENT_EXTENSION_ERRORED, string, sProviderName.c_str(),
+//                   string, sExtName.c_str(), string, sMsg.c_str());
+//  });
+//}
 
 //-------------------------------- ex --------------------------------
 void NodeEventHandler::onJoinChannelSuccess(const RtcConnection &connection,

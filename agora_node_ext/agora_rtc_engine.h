@@ -350,6 +350,7 @@ public:
   NAPI_API(startAudioRecording2);
   NAPI_API(setProcessDpiAwareness);
   NAPI_API(enableVirtualBackground);
+  NAPI_API(startScreenCaptureByDisplayId);
 
 public:
   Isolate *getIsolate() { return m_isolate; }
