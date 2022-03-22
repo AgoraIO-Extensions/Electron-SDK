@@ -1,3 +1,6 @@
+## 3.4.11-rc.3-build.322(Mar 11th, 2021)
+- update native sdk
+
 ## 3.4.11-rc.3-build.311(Mar 11th, 2021)
 - update native sdk
 
