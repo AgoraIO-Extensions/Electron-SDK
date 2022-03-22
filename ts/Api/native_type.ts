@@ -1003,6 +1003,10 @@ export interface RtcStats {
     * The packet loss rate of receiver(audience).
     */
   rxPacketLossRate: number;
+  /** 
+   * gateway Rtt
+  */
+  gatewayRtt: number;
 }
 /** Quality change of the local video. */
 export enum QualityAdaptIndication {
@@ -3590,7 +3594,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  enableLoopbackRecording(enable: boolean): number;
+  enableLoopbackRecording(enable: boolean,deviceName: string | null): number;
   /**
    * @ignore
    */

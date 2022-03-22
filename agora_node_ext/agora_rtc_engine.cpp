@@ -1931,7 +1931,8 @@ NAPI_API_DEFINE(NodeRtcEngine, enableLoopbackRecording) {
     NodeString deviceName;
     status = napi_get_value_bool_(args[0], enable);
     CHECK_NAPI_STATUS(pEngine, status);
-    result = pEngine->m_engine->enableLoopbackRecording(enable);
+    napi_get_value_nodestring_(args[1], deviceName);
+    result = pEngine->m_engine->enableLoopbackRecording(enable, deviceName);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;

@@ -1472,6 +1472,7 @@ void NodeEventHandler::onRtcStats_node_with_type(
                              stats.memoryTotalUsageRatio);
     NODE_SET_OBJ_PROP_NUMBER(obj, "txPacketLossRate", stats.txPacketLossRate);
     NODE_SET_OBJ_PROP_NUMBER(obj, "rxPacketLossRate", stats.rxPacketLossRate);
+    NODE_SET_OBJ_PROP_NUMBER(obj, "gatewayRTT", stats.gatewayRtt);
 
     Local<Object> connectionObj = Object::New(isolate);
     connectionObj->Set(context, napi_create_string_(isolate, "localUid"),
