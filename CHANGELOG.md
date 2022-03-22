@@ -1,3 +1,6 @@
+## 3.7.204-build.322(Mar 22th, 2020)
+* update native sdk
+* update api: enableLoopbackRecording,RCTStats
 ## 3.7.200-build.315(Mar 15th, 2020)
 * update native sdk
 * add api: startScreenCaptureByDisplayId

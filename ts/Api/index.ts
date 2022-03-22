@@ -3074,9 +3074,10 @@ class AgoraRtcEngine extends EventEmitter {
    * - < 0: Failure.
    */
   enableLoopbackRecording(
-    enable = false
+    enable = false,
+    deviceName: string | null
   ): number {
-    return this.rtcEngine.enableLoopbackRecording(enable);
+    return this.rtcEngine.enableLoopbackRecording(enable, deviceName);
   }
 
   enableLoopbackRecordingEx(
