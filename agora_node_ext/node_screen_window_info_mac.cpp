@@ -227,7 +227,7 @@ std::vector<ScreenDisplayInfo> getAllDisplayInfo() {
   for (uint32_t index = 0; index < displayCount; index++) {
     CGDirectDisplayID displayID = displayIDs[index];
     ScreenDisplayInfo screenDisplay;
-    screenDisplay.displayId.idVal = displayID;
+    screenDisplay.displayId = displayID;
     screenDisplay.width = CGDisplayPixelsWide(displayID);
     screenDisplay.height = CGDisplayPixelsHigh(displayID);
     screenDisplay.isActive = CGDisplayIsActive(displayID);

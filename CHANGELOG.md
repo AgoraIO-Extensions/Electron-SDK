@@ -1,4 +1,8 @@
-## 3.7.200-build.307(Mar 07th, 2020)
+## 3.7.200-build.315(Mar 15th, 2020)
+* update native sdk
+* add api: startScreenCaptureByDisplayId
+
+## 3.7.200-build.315(Mar 07th, 2020)
 * add api: adjustUserPlaybackSignalVolume
 * update api: setAudioProfile, initialize
 * ChannelMediaOptions add property publishSecondaryCameraTrack
