@@ -1,3 +1,6 @@
+## 3.6.1-rc.4-build.324(Mar 24th, 2022)
+- update native sdk
+
 ## 3.6.1-rc.4-build.310(Mar 10th, 2022)
 - update native sdk
 
