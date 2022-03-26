@@ -95,6 +95,7 @@ int AgoraVideoSourceTransporter::deliverFrame(
     const agora::media::IVideoFrame& videoFrame,
     int rotation,
     bool mirrored) {
+      LOG_INFO("lhlhlh %s    msg: m_buf %p", __FUNCTION__,m_buf.data());
   /** Convey data. */
   deliverFrame_I420(videoFrame, rotation, mirrored);
   m_videoSource.sendData(m_buf.data(), AgoraVideoSourceTransporter::S_BUF_LEN);
