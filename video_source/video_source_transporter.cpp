@@ -16,6 +16,7 @@
 #include "video_source.h"
 #include "video_source_ipc.h"
 #include "video_source_transporter.h"
+#include "node_log.h"
 
 using namespace libyuv;
 using namespace agora::rtc;
@@ -154,10 +155,12 @@ int AgoraVideoSourceTransporter::deliverFrame_I420(
   int src_stride = stride0;
   int dest_stride = stride;
   int width2 = dest_stride / 2;
-
+  LOG_INFO("deliverFrame_I420-1------%s    msg: srcYPlane :%p, srcUPlane : %p, srcVPlane :%p, width:%d, height:%d, srcStride:%d, dstYPlane :%p, dstUPlane :%p, dstVPlane :%p, dstVPlane :%d", __FUNCTION__,planeY, planeU, planeV, videoFrame.width(), videoFrame.height(), src_stride, y, u, v, dest_stride);
   if (videoFrame.width() == width && videoFrame.height() == height) {
+    LOG_INFO("deliverFrame_I420-1------%s    msg: srcYPlane :%p, srcUPlane : %p, srcVPlane :%p, width:%d, height:%d, srcStride:%d, dstYPlane :%p, dstUPlane :%p, dstVPlane :%p, dstVPlane :%d", __FUNCTION__,planeY, planeU, planeV, videoFrame.width(), videoFrame.height(), src_stride, y, u, v, dest_stride);
     copyAndCentreYuv(planeY, planeU, planeV, videoFrame.width(),
                      videoFrame.height(), src_stride, y, u, v, dest_stride);
+                     LOG_INFO("deliverFrame_I420-3------%s    msg: srcYPlane :%p, srcUPlane : %p, srcVPlane :%p, width:%d, height:%d, srcStride:%d, dstYPlane :%p, dstUPlane :%p, dstVPlane :%p, dstVPlane :%d", __FUNCTION__,planeY, planeU, planeV, videoFrame.width(), videoFrame.height(), src_stride, y, u, v, dest_stride);
   } else {
     I420Scale(planeY, stride0, planeU, strideU, planeV, strideV,
               videoFrame.width(), videoFrame.height(), (uint8_t*)y, dest_stride,
@@ -181,7 +184,10 @@ void AgoraVideoSourceTransporter::copyAndCentreYuv(
     char* dstUPlane,
     char* dstVPlane,
     int dstStride) {
+      LOG_INFO("copyAndCentreYuv-1------%s    msg: srcYPlane :%p, srcUPlane : %p, srcVPlane :%p, width:%d, height:%d, srcStride:%d, dstYPlane :%p, dstUPlane :%p, dstVPlane :%p, dstVPlane :%d", __FUNCTION__,srcYPlane, srcUPlane, srcVPlane, width, height, srcStride, dstYPlane, dstUPlane, dstVPlane, dstStride);
+      LOG_INFO("copyAndCentreYuv-2------%s    msg: srcStride :%d, width : %d, dstStride :%d", __FUNCTION__,srcStride,width,dstStride);
   if (srcStride == width && dstStride == width) {
+    LOG_INFO("copyAndCentreYuv-3------%s    msg: width * height: %d", __FUNCTION__,width * height);
     memcpy(dstYPlane, srcYPlane, width * height);
     memcpy(dstUPlane, srcUPlane, width * height / 4);
     memcpy(dstVPlane, srcVPlane, width * height / 4);
@@ -189,11 +195,12 @@ void AgoraVideoSourceTransporter::copyAndCentreYuv(
   }
 
   int dstDiff = dstStride - width;
+  LOG_INFO("copyAndCentreYuv-4------%s    msg: dstStride - width: %d", __FUNCTION__,dstStride - width);
   // RGB(0,0,0) to YUV(0,128,128)
   memset(dstYPlane, 0, dstStride * height);
   memset(dstUPlane, 128, dstStride * height / 4);
   memset(dstVPlane, 128, dstStride * height / 4);
-
+  LOG_INFO("copyAndCentreYuv-5------%s    msg: srcYPlane :%p, srcUPlane : %p, srcVPlane :%p, width:%d, height:%d, srcStride:%d, dstYPlane :%p, dstUPlane :%p, dstVPlane :%p, dstVPlane :%d", __FUNCTION__,srcYPlane, srcUPlane, srcVPlane, width, height, srcStride, dstYPlane, dstUPlane, dstVPlane, dstStride);
   for (int i = 0; i < height; ++i) {
     memcpy(dstYPlane + (dstDiff >> 1), srcYPlane, width);
     srcYPlane += srcStride;
