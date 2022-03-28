@@ -13,7 +13,6 @@ export interface CanvasOptions {
   frameWidth: number;
   frameHeight: number;
   rotation: number;
-  mirror: boolean;
   contentMode: CONTENT_MODE;
   clientWidth: number;
   clientHeight: number;
@@ -64,14 +63,14 @@ export interface RendererConfig {
   videoSourceType: VideoSourceType;
   channelId?: Channel;
   uid?: number;
-  view?: Element;
+  view?: HTMLElement;
   rendererOptions?: RendererOptions;
 }
 export interface RendererConfigInternal {
   videoSourceType: VideoSourceType;
   channelId: Channel;
   uid: number;
-  view?: Element;
+  view?: HTMLElement;
   rendererOptions: RendererOptions;
 }
 

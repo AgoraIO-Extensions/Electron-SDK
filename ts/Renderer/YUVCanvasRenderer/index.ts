@@ -9,27 +9,21 @@ const YUVBuffer = require("yuv-buffer");
 const YUVCanvas = require("yuv-canvas");
 const isEqual = require("lodash.isequal");
 
-import { CanvasOptions, CONTENT_MODE, VideoFrame } from "./type";
-import { IRenderer } from "./IRender";
-import { logWarn } from "../Utils";
+import { CanvasOptions, CONTENT_MODE, VideoFrame } from "../type";
+import { IRenderer } from "../IRender";
+import { logDebug } from "../../Utils";
 
-export class YUVCanvasRenderer implements IRenderer {
+export class YUVCanvasRenderer extends IRenderer {
   private _cacheCanvasOptions?: CanvasOptions;
   private _yuvCanvasSink?: any;
-  private _contentMode: CONTENT_MODE;
-  private _mirror: boolean;
-  private _canvas?: HTMLCanvasElement;
-  private _customeElement?: Element;
-  private _container?: Element;
+  private _container?: HTMLElement;
   private _isWebGL: boolean;
   private _videoFrame: VideoFrame;
 
   constructor(isWebGL: boolean) {
-    this._contentMode = CONTENT_MODE.CROPPED;
+    super();
     this._isWebGL = isWebGL;
-    this._mirror = false;
     this._videoFrame = {
-      mirror: false,
       rotation: 0,
       width: 0,
       height: 0,
@@ -40,12 +34,9 @@ export class YUVCanvasRenderer implements IRenderer {
       videoSourceType: -1,
     };
   }
-  getView(): Element {
-    return this._customeElement!;
-  }
 
-  bind(element: Element) {
-    this._customeElement = element;
+  bind(element: HTMLElement) {
+    super.bind(element);
     let container = document.createElement("div");
     Object.assign(container.style, {
       width: "100%",
@@ -53,27 +44,38 @@ export class YUVCanvasRenderer implements IRenderer {
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
+      overflow: "hidden",
     });
     this._container = container;
-    this._customeElement.appendChild(this._container);
-    this._canvas = document.createElement("canvas");
-    this._container.appendChild(this._canvas);
+    this.parentElement!.appendChild(this._container);
+    this.canvas = document.createElement("canvas");
+    this._container.appendChild(this.canvas);
 
-    logWarn(`current render is webGL ${this._isWebGL}`);
-    this._yuvCanvasSink = YUVCanvas.attach(this._canvas, {
+    logDebug(`current render is webGL ${this._isWebGL}`);
+    this._yuvCanvasSink = YUVCanvas.attach(this.canvas, {
       webGL: this._isWebGL,
     });
   }
 
   unbind() {
-    this._canvas && this._container?.removeChild(this._canvas);
-    this._container && this._customeElement?.removeChild(this._container);
-    this._isWebGL &&
-      this._yuvCanvasSink?.loseContext &&
+    if (this._container) {
+      this._container.replaceChildren();
+      this._container = undefined;
+    }
+    if (this.parentElement) {
+      this.parentElement.replaceChildren();
+      this.parentElement = undefined;
+    }
+    if (this.canvas) {
+      this.canvas = undefined;
+    }
+    if (
+      this._isWebGL &&
+      this._yuvCanvasSink &&
+      this._yuvCanvasSink?.loseContext
+    ) {
       this._yuvCanvasSink?.loseContext();
-    this._yuvCanvasSink = undefined;
-    this._canvas && (this._canvas = undefined);
-    this._container && (this._container = undefined);
+    }
   }
 
   zoom(
@@ -118,7 +120,6 @@ export class YUVCanvasRenderer implements IRenderer {
       frameWidth: 0,
       frameHeight: 0,
       rotation: 0,
-      mirror: false,
       contentMode: 0,
       clientWidth: 0,
       clientHeight: 0,
@@ -132,18 +133,18 @@ export class YUVCanvasRenderer implements IRenderer {
 
     this._cacheCanvasOptions = Object.assign({}, options);
 
-    if (this._canvas) {
+    if (this.canvas) {
       if (options.rotation === 0 || options.rotation === 180) {
-        this._canvas.width = options.frameWidth;
-        this._canvas.height = options.frameHeight;
-        Object.assign(this._canvas.style, {
+        this.canvas.width = options.frameWidth;
+        this.canvas.height = options.frameHeight;
+        Object.assign(this.canvas.style, {
           width: options.frameWidth + "px",
           height: options.frameHeight + "px",
           "object-fit": "cover",
         });
       } else if (options.rotation === 90 || options.rotation === 270) {
-        this._canvas.height = options.frameWidth;
-        this._canvas.width = options.frameHeight;
+        this.canvas.height = options.frameWidth;
+        this.canvas.width = options.frameHeight;
       } else {
         throw new Error(
           "Invalid value for rotation. Only support 0, 90, 180, 270"
@@ -162,15 +163,11 @@ export class YUVCanvasRenderer implements IRenderer {
         options.clientHeight
       );
 
-      this._canvas.style.zoom = scale.toString();
-
-      if (this._mirror) {
-        transformItems.push("rotateY(180deg)");
-      }
+      this.canvas.style.zoom = scale.toString();
 
       if (transformItems.length > 0) {
         let transform = `${transformItems.join(" ")}`;
-        this._canvas.style.transform = transform;
+        this.canvas.style.transform = transform;
       }
     }
   }
@@ -189,7 +186,7 @@ export class YUVCanvasRenderer implements IRenderer {
       this._videoFrame.width != frame.width ||
       this._videoFrame.height != frame.height
     ) {
-      logWarn(
+      logDebug(
         `YUVCanvasRenderer new Uint8Array before width ${this._videoFrame.width}, height ${this._videoFrame.height}, current: width ${frameWidth} height ${frameHeight}`
       );
       this._videoFrame.yBuffer = new Uint8Array(frameWidth * frameHeight);
@@ -203,15 +200,13 @@ export class YUVCanvasRenderer implements IRenderer {
 
     this._videoFrame.width = frame.width;
     this._videoFrame.height = frame.height;
-    this._videoFrame.mirror = frame.mirror;
     this._videoFrame.rotation = frame.rotation;
 
     let options: CanvasOptions = {
       frameWidth: frame.width,
       frameHeight: frame.height,
       rotation: frame.rotation ? frame.rotation : 0,
-      mirror: frame.mirror ? frame.mirror : false,
-      contentMode: this._contentMode,
+      contentMode: this.contentMode,
       clientWidth: this._container.clientWidth,
       clientHeight: this._container.clientHeight,
     };
@@ -230,18 +225,6 @@ export class YUVCanvasRenderer implements IRenderer {
     let v = YUVBuffer.chromaPlane(format, this._videoFrame.vBuffer);
     let yuvBufferFrame = YUVBuffer.frame(format, y, u, v);
     this._yuvCanvasSink.drawFrame(yuvBufferFrame);
-  }
-
-  setContentMode(
-    mode: CONTENT_MODE = CONTENT_MODE.CROPPED,
-    mirror: boolean = false
-  ) {
-    this._contentMode = mode;
-    this._mirror = mirror;
-  }
-
-  equalsElement(element: Element) {
-    return this._customeElement ? false : this._customeElement === element;
   }
 
   refreshCanvas() {

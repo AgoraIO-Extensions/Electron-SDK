@@ -29,13 +29,13 @@ import AgoraRtcEngine, {
   VOICE_CONVERSION_PRESET,
   AUDIENCE_LATENCY_LEVEL_TYPE,
   VIDEO_STREAM_TYPE,
+  CONTENT_MODE,
 } from "../../../";
 
 import { APP_ID } from "../utils/settings";
 
-let rtcEngine = new AgoraRtcEngine();
-rtcEngine = null;
-
+let rtcEngine;
+window.ApiTypeEngine = ApiTypeEngine;
 class RemoteWindow extends Component {
   constructor(props) {
     super(props);
@@ -50,7 +50,6 @@ class RemoteWindow extends Component {
         videoSourceType: VideoSourceType.kVideoSourceTypeRemote,
         uid,
         channelId,
-
         view: dom,
         rendererOptions: { mirror: true, contentMode: 1 },
       });
@@ -98,17 +97,16 @@ export default class App extends Component {
   state = Object.assign({}, defaultState);
   componentDidMount() {
     console.log("## pid", process.pid);
-    window.ApiTypeEngine = ApiTypeEngine;
-    window.rtcEngine = new AgoraRtcEngine();
   }
 
   onPressInitialize = () => {
     if (rtcEngine) {
       return;
     }
-    rtcEngine = new AgoraRtcEngine();
+    rtcEngine = window.rtcEngine = new AgoraRtcEngine();
+
     window.rtcEngine = rtcEngine;
-    console.log('123123');
+
     let res = rtcEngine.initialize({
       appId: APP_ID,
       areaCode: 1,
@@ -120,6 +118,7 @@ export default class App extends Component {
     });
 
     console.log("initialize res", res);
+    rtcEngine.setRenderMode(1);
 
     res = rtcEngine.setChannelProfile(
       CHANNEL_PROFILE_TYPE.CHANNEL_PROFILE_LIVE_BROADCASTING
@@ -133,7 +132,7 @@ export default class App extends Component {
       AUDIO_PROFILE_TYPE.AUDIO_PROFILE_DEFAULT,
       AUDIO_SCENARIO_TYPE.AUDIO_SCENARIO_CHATROOM_ENTERTAINMENT
     );
-  
+
     console.log("setAudioProfile", res);
 
     res = rtcEngine.enableVideo();
@@ -151,7 +150,6 @@ export default class App extends Component {
     });
     console.log("setVideoEncoderConfiguration", res);
 
-
     const ver = rtcEngine.getVersion();
     console.log("getVersion", ver);
     // rtcEngine.startPreview();
@@ -162,6 +160,7 @@ export default class App extends Component {
       console.log("EngineEvents.ERROR", args);
     });
     rtcEngine.on(EngineEvents.JOINED_CHANNEL, (connection, elapsed) => {
+      this.setState({ isJoin: true });
       console.info("JOINED_CHANNEL", connection, elapsed);
     });
     rtcEngine.on(EngineEvents.LEAVE_CHANNEL, (stats) => {
@@ -224,13 +223,13 @@ export default class App extends Component {
       videoSourceType: VideoSourceType.kVideoSourceTypeCameraPrimary,
 
       view: isSetFirstCameraView ? null : dom,
-      rendererOptions: { mirror: true, contentMode: 1 },
+      rendererOptions: { mirror: false, contentMode: CONTENT_MODE.FIT },
     });
     rtcEngine.setView({
       videoSourceType: VideoSourceType.kVideoSourceTypeCameraPrimary,
 
       view: isSetFirstCameraView ? null : domAppend,
-      rendererOptions: { mirror: true, contentMode: 1 },
+      rendererOptions: { mirror: true, contentMode: CONTENT_MODE.CROPPED },
     });
     this.setState({ isSetFirstCameraView: !isSetFirstCameraView });
   };
@@ -292,14 +291,16 @@ export default class App extends Component {
     //   displayId: { id },
     // } = displayList[0];
     // const { windowId } = windowList[0];
-    const res = await electron.desktopCapturer.getSources({ types: ['window', 'screen'] })
+    const res = await electron.desktopCapturer.getSources({
+      types: ["window", "screen"],
+    });
     const id = res[0].id.split(":")[1];
-    const windowId =res[1].id.split(":")[1];
-    console.log('getSources',res);
+    const windowId = res[1].id.split(":")[1];
+    console.log("getSources", res);
     // console.log("getScreenDisplaysInfo", displayList);
     // console.log("getScreenWindowsInfo", windowList);
-    // return 
-    console.log('getSources  id',id,'  windowId',windowId);
+    // return
+    console.log("getSources  id", id, "  windowId", windowId);
     if (!isStartFirstScreenShare) {
       const res = rtcEngine.startPrimaryScreenCapture({
         isCaptureWindow: false,
@@ -466,10 +467,12 @@ export default class App extends Component {
       </div>
     );
   };
-  onPressTest = async() => {
-    const res = await electron.desktopCapturer.getSources({ types: ['window', 'screen'] })
-    console.log('getScreenSources',res);
-    return
+  onPressTest = async () => {
+    const res = await electron.desktopCapturer.getSources({
+      types: ["window", "screen"],
+    });
+    console.log("getScreenSources", res);
+    return;
     const mediaOpt = {
       autoSubscribeAudio: true,
       autoSubscribeVideo: true,
@@ -750,8 +753,21 @@ export default class App extends Component {
           >
             testDestoryLocalCameraView
           </button>
+          <agora-view
+            style={{
+              width: 250,
+              height: 250,
+              background: "green",
+              display: "block",
+            }}
+            video-source-type={VideoSourceType.kVideoSourceTypeCameraPrimary}
+            uid={0}
+            channel-id={""}
+            renderer-content-mode={CONTENT_MODE.FIT}
+            renderer-mirror={false}
+          ></agora-view>
+          {this.renderViews()}
         </div>
-        {this.renderViews()}
       </div>
     );
   }

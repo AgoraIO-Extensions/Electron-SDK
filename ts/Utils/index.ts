@@ -1,18 +1,17 @@
+import { EventEmitter } from "events";
+
 import {
   VideoSourceType,
   RendererConfigInternal,
   RendererConfig,
   CONTENT_MODE,
 } from "../Renderer/type";
-/*
- * @Author: zhangtao@agora.io
- * @Date: 2021-04-28 13:34:31
- * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-05-10 11:16:41
- */
+
 import { EngineEvents } from "../Common/JSEvents";
+import { AgoraRtcEngine } from "../Api/AgoraRtcEngine";
 
 export const TAG = "[Agora]: ";
+export const DEBUG_TAG = "[Agora]: ";
 
 export const deprecate = (originApi?: string, replaceApi?: string) => {
   console.warn(
@@ -31,6 +30,9 @@ export const logError = (msg: string, tag: string = TAG) => {
 
 export const logInfo = (msg: string, tag: string = TAG) => {
   console.log(`${tag} ${msg}`);
+};
+export const logDebug = (msg: string, tag: string = DEBUG_TAG) => {
+  console.warn(`${tag} ${msg}`);
 };
 
 export const objsKeysToLowerCase = (array: Array<any>) => {
@@ -147,3 +149,22 @@ export const getRendererConfigInternal = (
 
   return { ...config, uid, channelId, rendererOptions };
 };
+
+export const EVENT_ENGINE_INITIALIZE = "onEngineInitialize"
+export const EVENT_ENGINE_RELEASE = "onEngineRelease";
+export const agoraEventEmitter = new EventEmitter();
+// const rtcEngineMap: Map<string, AgoraRtcEngine> = new Map();
+
+// export const getEngineById = (id: string): AgoraRtcEngine | undefined => {
+//   return rtcEngineMap.get(id);
+// };
+// export const deleteEngineById = (id: string): boolean => {
+//   return rtcEngineMap.delete(id);
+// };
+
+// export const setEngineById = (
+//   id: string,
+//   engine: AgoraRtcEngine
+// ): Map<string, AgoraRtcEngine> => {
+//   return rtcEngineMap.set(id, engine);
+// };
