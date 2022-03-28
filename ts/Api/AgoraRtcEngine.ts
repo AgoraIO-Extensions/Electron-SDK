@@ -76,6 +76,9 @@ import {
   forwardEvent,
   formatVideoFrameBufferConfig,
   getRendererConfigInternal,
+  agoraEventEmitter,
+  EVENT_ENGINE_RELEASE,
+  EVENT_ENGINE_INITIALIZE,
 } from "../Utils";
 import { PluginInfo, Plugin } from "./plugin";
 import { RendererManager } from "../Renderer/RendererManager";
@@ -90,6 +93,7 @@ import {
 } from "../Renderer/type";
 import { EngineEvents } from "../Common/JSEvents";
 import { NativeEngineEvents } from "../Common/NativeEvents";
+import AgoraView from "../Renderer/AgoraView";
 
 const agora = require("../../build/Release/agora_node_ext");
 
@@ -100,6 +104,7 @@ export class AgoraRtcEngine extends EventEmitter {
   _rtcEngine: NodeIrisRtcEngine;
   _rtcDeviceManager: NodeIrisRtcDeviceManager;
   _rendererManager?: RendererManager;
+  engineId = `${parseInt(`${Math.random() * 100000}`)}`;
 
   fire = (event: string, ...args: Array<any>) => {
     setImmediate(() => {
@@ -280,8 +285,6 @@ export class AgoraRtcEngine extends EventEmitter {
             config,
             videoFrameItem
           );
-
-          logError(`onVideoSourceFrameSizeChangedIris ${width}, ${height}`);
         }
         return true;
       default:
@@ -327,7 +330,6 @@ export class AgoraRtcEngine extends EventEmitter {
     const config: RendererConfigInternal =
       getRendererConfigInternal(rendererConfig);
 
-    logWarn(`setView: ${config}`);
     if (rendererConfig.view) {
       this._rendererManager?.setRenderer(config);
     } else {
@@ -383,6 +385,8 @@ export class AgoraRtcEngine extends EventEmitter {
    * - < 0: Failure.
    */
   initialize(context: RtcEngineContext): number {
+    AgoraView.rtcEngine = this;
+    agoraEventEmitter.emit(EVENT_ENGINE_INITIALIZE, this);
     const ret = this._rtcEngine.CallApi(
       ApiTypeEngine.kEngineInitialize,
       JSON.stringify({ context })
@@ -548,6 +552,7 @@ export class AgoraRtcEngine extends EventEmitter {
    * - < 0: Failure.
    */
   release(sync = false): number {
+    agoraEventEmitter.emit(EVENT_ENGINE_RELEASE);
     this._rendererManager?.clear();
     this._rendererManager = undefined;
     let param = {
@@ -652,7 +657,7 @@ export class AgoraRtcEngine extends EventEmitter {
    */
   setVideoRenderFPS(fps: number) {
     if (this._rendererManager) {
-      this._rendererManager._config.videoFps = fps;
+      this._rendererManager.videoFps = fps;
       this._rendererManager.restartRenderer();
     }
   }
@@ -675,27 +680,12 @@ export class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - -1: Failure.
    */
-  setupViewContentMode(
-    videoSourceType: VideoSourceType,
-    channelId?: Channel,
-    uid?: number,
-    mode: CONTENT_MODE = CONTENT_MODE.FIT,
+  setRenderOption(
+    view: HTMLElement,
+    contentMode = CONTENT_MODE.FIT,
     mirror: boolean = false
-  ): number {
-    const config = formatVideoFrameBufferConfig(
-      videoSourceType,
-      channelId,
-      uid
-    );
-    let renderList = this._rendererManager?.getRenderers(config);
-    renderList
-      ? renderList.forEach((renderItem) =>
-          renderItem.setContentMode(mode, mirror)
-        )
-      : console.warn(
-          `VideoSourceType: ${videoSourceType} channelId: ${channelId} uid:${uid} have no render view, you need to call this api after setView`
-        );
-    return 0;
+  ): void {
+    this._rendererManager?.setRenderOption(view, contentMode, mirror);
   }
 
   /**

@@ -2,18 +2,36 @@ export enum EngineEvents {
   API_ERROR = "apiError",
   WARNING = "warning",
   ERROR = "error",
+  /**
+   * @deprecated
+   */
   JOINED_CHANNEL = "joinedChannel",
+  /**
+   * @deprecated
+   */
   JOINEDCHANNEL = "joinedchannel",
   REJOIN_CHANNEL_SUCCESS = "rejoinChannelSuccess",
   REJOINCHANNELSUCCESS = "rejoinchannelsuccess",
   LEAVE_CHANNEL = "leaveChannel",
+  /**
+   * @deprecated
+   */
   LEAVECHANNEL = "leavechannel",
   CLIENT_ROLE_CHANGED = "clientRoleChanged",
+  /**
+   * @deprecated
+   */
   CLIENTROLECHANGED = "clientrolechanged",
   USER_JOINED = "userJoined",
+  /**
+   * @deprecated
+   */
   USERJOINED = "userjoined",
   USER_OFFLINE = "userOffline",
   REMOVE_STREAM = "removeStream",
+  /**
+   * @deprecated
+   */
   LASTMILEQUALITY = "lastmilequality",
   LASTMILE_QUALITY = "lastmileQuality",
   LASTMILE_PROBE_RESULT = "lastmileProbeResult",

@@ -4,6 +4,7 @@ import {
   logInfo,
   logWarn,
   getRendererConfigInternal,
+  logDebug,
 } from "../Utils";
 
 import { IRenderer } from "./IRender";
@@ -15,8 +16,11 @@ import {
   VideoSourceType,
   Channel,
   RendererConfigInternal,
+  CONTENT_MODE,
 } from "./type";
 import { YUVCanvasRenderer } from "./YUVCanvasRenderer";
+import GlRenderer from "./GlRenderer";
+
 interface RenderConfig {
   renders?: IRenderer[];
   cachedVideoFrame?: VideoFrame;
@@ -26,20 +30,21 @@ export type UidMap = Map<number, RenderConfig>;
 export type ChannelIdMap = Map<Channel, UidMap>;
 export type RenderMap = Map<VideoSourceType, ChannelIdMap>;
 class RendererManager {
-  _config: {
-    videoFps: number;
-    videoFrameUpdateInterval?: NodeJS.Timeout;
-    renderers: RenderMap;
-    renderMode: RENDER_MODE;
-  };
+  videoFps: number;
+  videoFrameUpdateInterval?: NodeJS.Timeout;
+  renderers: RenderMap;
+  renderMode: RENDER_MODE;
   _rtcEngine: NodeIrisRtcEngine;
 
   constructor(rtcEngine: NodeIrisRtcEngine) {
-    this._config = {
-      videoFps: 10,
-      renderers: new Map(),
-      renderMode: this._checkWebGL() ? RENDER_MODE.WEBGL : RENDER_MODE.SOFTWARE,
-    };
+    this.videoFps = 15;
+    this.renderers = new Map();
+    this.renderMode = this._checkWebGL()
+      ? RENDER_MODE.WEBGL
+      : RENDER_MODE.SOFTWARE;
+
+    logDebug(`renderMode: ${this.renderMode === RENDER_MODE.WEBGL}`);
+
     this._rtcEngine = rtcEngine;
   }
 
@@ -75,7 +80,7 @@ class RendererManager {
   }
 
   setRenderMode(mode: RENDER_MODE) {
-    this._config.renderMode = mode;
+    this.renderMode = mode;
   }
 
   /**
@@ -83,7 +88,7 @@ class RendererManager {
    * @ignore
    */
   setRenderer(rendererConfig: RendererConfigInternal): void {
-    const { uid, channelId, videoSourceType } = rendererConfig;
+    const { uid, channelId, videoSourceType, rendererOptions } = rendererConfig;
     const config = {
       uid,
       channelId,
@@ -92,8 +97,8 @@ class RendererManager {
       height: 0,
     };
     this.enableVideoFrameCache(config);
-    this.addRenderer(config, rendererConfig.view!);
-    this.setupViewContentMode(rendererConfig);
+    const render = this.addRenderer(rendererConfig, rendererConfig.view!);
+    render.setRenderOption(rendererOptions);
   }
 
   /**
@@ -101,26 +106,32 @@ class RendererManager {
    * @ignore
    */
   createRenderer(): IRenderer {
-    return new YUVCanvasRenderer(false);
+    if (this.renderMode === RENDER_MODE.SOFTWARE) {
+      return new YUVCanvasRenderer(false);
+    } else {
+      let render = new GlRenderer(() => {});
+      return render as IRenderer;
+    }
   }
 
   /**
    * @private
    * @ignore
    */
-  addRenderer(config: VideoFrameCacheConfig, view: Element): void {
+  addRenderer(config: RendererConfigInternal, view: HTMLElement): IRenderer {
     this.ensureRendererConfig(config);
     const renders = this.getRenderers(config);
     const filterRenders =
-      renders?.filter((render) => render.getView() == view) || [];
+      renders?.filter((render) => render.equalsElement(view)) || [];
     const hasBeenAdd = filterRenders.length > 0;
     if (hasBeenAdd) {
       console.warn("addRenderer: this view exists in list, ignore");
-      return;
+      return filterRenders[0];
     }
     const renderer = this.createRenderer();
     renderer.bind(view);
-    renders?.push(renderer);
+    renders.push(renderer);
+    return renderer;
   }
 
   /**
@@ -133,49 +144,47 @@ class RendererManager {
     uid,
   }: VideoFrameCacheConfig): IRenderer[] {
     return (
-      this._config.renderers.get(videoSourceType)?.get(channelId)?.get(uid)
-        ?.renders || []
+      this.renderers.get(videoSourceType)?.get(channelId)?.get(uid)?.renders ||
+      []
     );
   }
 
   removeRendererByConfig(config: VideoFrameCacheConfig): void {
     const { videoSourceType, channelId, uid } = config;
-    this.disableVideoFrameCache(config);
-    const uidMap = this._config.renderers.get(videoSourceType)?.get(channelId);
+    // this.disableVideoFrameCache(config);
+    const uidMap = this.renderers.get(videoSourceType)?.get(channelId);
     const renderMap = uidMap?.get(uid);
-    renderMap?.renders?.forEach((renderItem) => {
-      renderItem.unbind();
-    });
-    uidMap?.delete(uid);
-  }
-  removeRendererByView(view: Element): void {
-    let currentRenders: IRenderer[] | undefined;
-    let currentUid: number | undefined;
-    let currentUidMap: UidMap | undefined;
-    this.forEachRenderers((renderConfig, { uid }, { uidMap }) => {
-      renderConfig.renders?.forEach((render) => {
-        if (render.getView() !== view) {
-          return;
-        }
-        currentUidMap = uidMap;
-        currentUid = uid;
-        currentRenders = renderConfig.renders;
-        render.unbind();
-      });
-    });
-    if (!currentRenders) {
+    if (!renderMap) {
       return;
     }
-    currentRenders = currentRenders!.filter(
-      (render) => render.getView() !== view
+    renderMap.renders?.forEach((renderItem) => {
+      renderItem.unbind();
+    });
+    renderMap.renders = [];
+  }
+  removeRendererByView(view: Element): void {
+    this.forEachStream(
+      (renderConfig, { uid, channelId, videoSourceType }, { uidMap }) => {
+        const render = renderConfig.renders?.find((render) =>
+          render.equalsElement(view)
+        );
+        if (!render) {
+          return;
+        }
+        renderConfig.renders = renderConfig.renders?.filter(
+          (render) => !render.equalsElement(view)
+        );
+        render.unbind();
+
+        if (renderConfig.renders?.length === 0) {
+          this.disableVideoFrameCache({ uid, channelId, videoSourceType });
+        }
+      }
     );
-    if (currentRenders.length === 0) {
-      currentUidMap?.delete(currentUid!);
-    }
   }
 
   removeAllRenderer(): void {
-    const renderMap = this.forEachRenderers(
+    const renderMap = this.forEachStream(
       (renderConfig, videoFrameCacheConfig) => {
         this.disableVideoFrameCache(videoFrameCacheConfig);
         renderConfig.renders?.forEach((renderItem) => {
@@ -187,7 +196,7 @@ class RendererManager {
     renderMap.clear();
   }
 
-  forEachRenderers(
+  forEachStream(
     callbackfn: (
       renderConfig: RenderConfig,
       videoFrameCacheConfig: VideoFrameCacheConfig,
@@ -197,7 +206,7 @@ class RendererManager {
       }
     ) => void
   ): RenderMap {
-    const renders = this._config.renderers;
+    const renders = this.renderers;
     renders.forEach((channelMap, videoSourceType) => {
       channelMap.forEach((uidMap, channelId) => {
         uidMap.forEach((renderConfig, uid) => {
@@ -223,6 +232,9 @@ class RendererManager {
     ) => {
       const { videoSourceType, channelId, uid } = config;
       const { cachedVideoFrame, renders } = rendererItem;
+      if (!renders || renders?.length === 0) {
+        return;
+      }
 
       if (!cachedVideoFrame) {
         logWarn(
@@ -265,9 +277,9 @@ class RendererManager {
         );
       }
     };
-    this._config.videoFrameUpdateInterval = setInterval(() => {
-      this.forEachRenderers(renderFunc);
-    }, 1000 / this._config.videoFps);
+    this.videoFrameUpdateInterval = setInterval(() => {
+      this.forEachStream(renderFunc);
+    }, 1000 / this.videoFps);
   }
 
   /**
@@ -275,9 +287,9 @@ class RendererManager {
    * @ignore
    */
   stopRenderer(): void {
-    if (this._config.videoFrameUpdateInterval) {
-      clearInterval(this._config.videoFrameUpdateInterval);
-      this._config.videoFrameUpdateInterval = undefined;
+    if (this.videoFrameUpdateInterval) {
+      clearInterval(this.videoFrameUpdateInterval);
+      this.videoFrameUpdateInterval = undefined;
     }
   }
 
@@ -286,10 +298,10 @@ class RendererManager {
    * @ignore
    */
   restartRenderer(): void {
-    if (this._config.videoFrameUpdateInterval) {
+    if (this.videoFrameUpdateInterval) {
       this.stopRenderer();
       this.startRenderer();
-      logInfo(`setFps ${this._config.videoFps} restartInterval`);
+      logInfo(`setFps ${this.videoFps} restartInterval`);
     }
   }
 
@@ -318,7 +330,7 @@ class RendererManager {
     const emptyUidMap = new Map([[uid, emptyRenderConfig]]);
     const emptyChannelMap = new Map([[channelId, emptyUidMap]]);
 
-    const renderers = this._config.renderers;
+    const renderers = this.renderers;
     const videoSourceMap = renderers.get(videoSourceType);
     if (!videoSourceMap) {
       renderers.set(videoSourceType, emptyChannelMap);
@@ -354,26 +366,41 @@ class RendererManager {
         );
   }
 
-  setupViewContentMode(rendererConfig: RendererConfig): number {
-    const {
-      uid,
-      channelId,
-      rendererOptions,
-      videoSourceType,
-    }: RendererConfigInternal = getRendererConfigInternal(rendererConfig);
+  // setRenderOptionByView(rendererConfig: RendererConfig): number {
+  //   const {
+  //     uid,
+  //     channelId,
+  //     rendererOptions,
+  //     videoSourceType,
+  //   }: RendererConfigInternal = getRendererConfigInternal(rendererConfig);
 
-    const renderList = this.getRenderers({ uid, channelId, videoSourceType });
-    renderList
-      ? renderList.forEach((renderItem) =>
-          renderItem.setContentMode(
-            rendererOptions.contentMode,
-            rendererOptions.mirror
-          )
-        )
-      : console.warn(
-          `RenderStreamType: ${videoSourceType} channelId:${channelId} uid:${uid} have no render view, you need to call this api after setView`
-        );
-    return 0;
+  //   if (!rendererConfig.view) {
+  //     logError("setRenderOptionByView");
+  //   }
+  //   const renderList = this.getRenderers({ uid, channelId, videoSourceType });
+  //   renderList
+  //     ? renderList
+  //         .filter((renderItem) =>
+  //           renderItem.equalsElement(rendererConfig.view!)
+  //         )
+  //         .forEach((renderItem) => renderItem.setRenderOption(rendererOptions))
+  //     : console.warn(
+  //         `RenderStreamType: ${videoSourceType} channelId:${channelId} uid:${uid} have no render view, you need to call this api after setView`
+  //       );
+  //   return 0;
+  // }
+  setRenderOption(
+    view: HTMLElement,
+    contentMode = CONTENT_MODE.FIT,
+    mirror: boolean = false
+  ): void {
+    this.forEachStream(({ renders }) => {
+      renders?.forEach((render) => {
+        if (render.equalsElement(view)) {
+          render.setRenderOption({ contentMode, mirror });
+        }
+      });
+    });
   }
 }
 
