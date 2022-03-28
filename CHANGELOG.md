@@ -1,3 +1,6 @@
+## 3.7.204-build.328(Mar 28th, 2020)
+* update native sdk
+
 ## 3.7.204-build.322(Mar 22th, 2020)
 * update native sdk
 * update api: enableLoopbackRecording,RCTStats
