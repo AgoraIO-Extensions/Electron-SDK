@@ -202,6 +202,8 @@ public:
    * Wrapper for device manager
    */
   NAPI_API(getVideoDevices);
+  NAPI_API(getVideoNumberOfCapabilities);
+  NAPI_API(getVideoCapability);
   NAPI_API(setVideoDevice);
   NAPI_API(getCurrentVideoDevice);
   NAPI_API(startVideoDeviceTest);

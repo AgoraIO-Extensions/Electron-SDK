@@ -79,7 +79,8 @@ import {
   AUDIO_MIXING_STATE_TYPE,
   AUDIO_MIXING_ERROR_TYPE,
   VirtualBackgroundSource,
-  SegmentationProperty
+  SegmentationProperty,
+  VideoFormat
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -2790,6 +2791,31 @@ class AgoraRtcEngine extends EventEmitter {
    */
   getVideoDevices(): Array<Object> {
     return this.rtcEngine.getVideoDevices();
+  }
+  /**
+   * Gets the capability number for a specified device.
+   *
+   * @param deviceUniqueIdUTF8 The pointer to the ID of the device in the UTF8 format.
+   *
+   * @return
+   * - The capability number of the device.
+   */
+  getVideoNumberOfCapabilities(deviceUniqueIdUTF8: string): number {
+    return this.rtcEngine.getVideoNumberOfCapabilities(deviceUniqueIdUTF8);
+  }
+   /**
+   * Gets the capability of capture device by index.
+   *
+   * @param deviceUniqueIdUTF8 ID of the video capture device.
+   * @param deviceCapabilityNumber index of available capabilities
+   * @param capability specific capability
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+   getVideoCapability(deviceUniqueIdUTF8: string, deviceCapabilityNumber: number, capability: VideoFormat): number {
+    return this.rtcEngine.getVideoCapability(deviceUniqueIdUTF8, deviceCapabilityNumber, capability);
   }
 
   /**
