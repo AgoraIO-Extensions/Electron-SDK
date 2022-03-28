@@ -145,6 +145,8 @@ void NodeRtcEngine::Init(Local<Object> &module) {
   PROPERTY_METHOD_DEFINE(subscribe)
   PROPERTY_METHOD_DEFINE(unsubscribe)
   PROPERTY_METHOD_DEFINE(getVideoDevices)
+  PROPERTY_METHOD_DEFINE(getVideoNumberOfCapabilities)
+  PROPERTY_METHOD_DEFINE(getVideoCapability)
   PROPERTY_METHOD_DEFINE(setVideoDevice)
   PROPERTY_METHOD_DEFINE(getCurrentVideoDevice)
   PROPERTY_METHOD_DEFINE(startVideoDeviceTest)
@@ -3495,6 +3497,86 @@ NAPI_API_DEFINE(NodeRtcEngine, getVideoDevices) {
   } while (false);
   LOG_LEAVE;
 }
+NAPI_API_DEFINE(NodeRtcEngine, getVideoNumberOfCapabilities) {
+  LOG_ENTER;
+  int result = -1;
+  do {
+    NodeRtcEngine* pEngine = nullptr;
+    Isolate* isolate = args.GetIsolate();
+    Local<Context> context = isolate->GetCurrentContext();
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    if (!pEngine->m_videoVdm) {
+      pEngine->m_videoVdm = new AVideoDeviceManager(pEngine->m_engine);
+    }
+    
+    IVideoDeviceManager* vdm = pEngine->m_videoVdm->get();
+    if (!vdm)
+    {
+      break;
+    }
+    nodestring deviceUniqueIdUTF8;
+    napi_status status = napi_get_value_nodestring_(args[0], deviceUniqueIdUTF8);
+    CHECK_NAPI_STATUS(pEngine, status);
+    result = vdm->numberOfCapabilities(deviceUniqueIdUTF8);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+
+NAPI_API_DEFINE(NodeRtcEngine, getVideoCapability) {
+  LOG_ENTER;
+  int result = -1;
+  do {
+    NodeRtcEngine* pEngine = nullptr;
+    Isolate* isolate = args.GetIsolate();
+    Local<Context> context = isolate->GetCurrentContext();
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    if (!pEngine->m_videoVdm) {
+      pEngine->m_videoVdm = new AVideoDeviceManager(pEngine->m_engine);
+    }
+
+    IVideoDeviceManager* vdm = pEngine->m_videoVdm->get();
+    if (!vdm)
+    {
+      break;
+    }
+    nodestring deviceUniqueIdUTF8;
+    napi_status status = napi_get_value_nodestring_(args[0], deviceUniqueIdUTF8);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    int64_t deviceCapabilityNumber;
+    status = napi_get_value_int64_(args[1], deviceCapabilityNumber);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    VideoFormat videoFormat;
+    Local<Object> videoFormatObj;
+
+    napi_get_value_object_(isolate, args[2], videoFormatObj);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    status = napi_get_object_property_int32_(isolate, videoFormatObj, "width",
+      videoFormat.width);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    status = napi_get_object_property_int32_(isolate, videoFormatObj, "height",
+      videoFormat.height);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    status = napi_get_object_property_int32_(isolate, videoFormatObj, "fps",
+      videoFormat.fps);
+
+
+    result = vdm->getCapability(deviceUniqueIdUTF8, deviceCapabilityNumber, videoFormat);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
 
 NAPI_API_DEFINE(NodeRtcEngine, setVideoDevice) {
   LOG_ENTER;

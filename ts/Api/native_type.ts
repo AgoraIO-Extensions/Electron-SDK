@@ -3464,6 +3464,14 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
+  getVideoNumberOfCapabilities(deviceUniqueIdUTF8: string): number;
+  /**
+   * @ignore
+   */
+  getVideoCapability(deviceUniqueIdUTF8: string, deviceCapabilityNumber: number, capability: VideoFormat): number
+  /**
+   * @ignore
+   */
   setVideoDevice(deviceId: string): number;
   /**
    * @ignore
