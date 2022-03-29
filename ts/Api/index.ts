@@ -3265,24 +3265,7 @@ class AgoraRtcEngine extends EventEmitter {
   startScreenCaptureByWindow(windowSymbol: number, rect: CaptureRect, param: CaptureParam): number {
     return this.rtcEngine.startScreenCaptureByWindow(windowSymbol, rect, param)
   }
-  /**
-   * Shares the whole or part of a screen by specifying the screen symbol.
-   * @param screenSymbol The screen symbol. See {@link screenSymbol}
-   * @param rect (Optional) The relative location of the region to the screen. 
-   * NULL means sharing the whole screen. See {@link CaptureRect}. If the 
-   * specified region overruns the screen, the SDK shares only the region 
-   * within it; if you set width or height as 0, the SDK shares the whole 
-   * screen.
-   * @param param The screen sharing encoding parameters. See 
-   * {@link CaptureParam}
-   * 
-   * @return 
-   * - 0: Success
-   * - < 0: Failure
-   */
-  startScreenCaptureByScreen(screenSymbol: ScreenSymbol, rect: CaptureRect, param: CaptureParam): number {
-    return this.rtcEngine.startScreenCaptureByScreen(screenSymbol, rect, param)
-  }
+  
   startScreenCaptureByDisplayId(
     displayId: number,
     rect: CaptureRect,
