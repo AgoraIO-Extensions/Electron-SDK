@@ -434,11 +434,12 @@ void AgoraVideoSource::onMessage(unsigned int msg,
       }
       int result = m_rtcEngine->startScreenCaptureByDisplayId(
                                                                        cmd->displayInfo.idVal, cmd->regionRect, cmd->captureParams);
-      if (result != 0) {
+      LOG_INFO("startScreenCaptureByDisplayId res:%d",result);                                                                       
+      if (result == 0 || result == 1736 || result == -1736) {
+        m_rtcEngine->enableLocalVideo(true);
+      } else {
         LOG_ERROR("start screen capture by display failed.");
         m_rtcEngine->enableLocalVideo(false);
-      } else {
-        m_rtcEngine->enableLocalVideo(true);
       }
     }
   } else if (msg == AGORA_IPC_UPDATE_SCREEN_CAPTURE_PARAMS) {
