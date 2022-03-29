@@ -1,3 +1,9 @@
+## 3.7.204-build.329(Mar 28th, 2020)
+* delete api: startScreenCaptureByScreen
+* optimize api:
+  * getScreenWindowsInfo
+  * getScreenDisplaysInfo
+
 ## 3.7.204-build.328(Mar 28th, 2020)
 * update native sdk
 

@@ -293,7 +293,6 @@ public:
   /**
    * 2.9.0.100 Apis
    */
-  NAPI_API(startScreenCaptureByScreen);
   NAPI_API(startScreenCaptureByWindow);
   NAPI_API(updateScreenCaptureParameters);
   NAPI_API(setScreenCaptureContentHint);

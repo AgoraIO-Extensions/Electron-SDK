@@ -247,7 +247,6 @@ void NodeRtcEngine::Init(Local<Object> &module) {
   /**
    * 2.9.0.100 Apis
    */
-  PROPERTY_METHOD_DEFINE(startScreenCaptureByScreen);
   PROPERTY_METHOD_DEFINE(startScreenCaptureByWindow);
   PROPERTY_METHOD_DEFINE(updateScreenCaptureParameters);
   PROPERTY_METHOD_DEFINE(setScreenCaptureContentHint);
@@ -4522,10 +4521,15 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenWindowsInfo) {
 #endif
       NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowId", windowId);
       NODE_SET_OBJ_PROP_String(isolate, obj, "name", windowInfo.name.c_str());
-      NODE_SET_OBJ_PROP_String(isolate, obj, "ownerName",
-                               windowInfo.ownerName.c_str());
+      NODE_SET_OBJ_PROP_String(isolate, obj, "ownerName", windowInfo.ownerName.c_str());
       NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", windowInfo.width);
       NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", windowInfo.height);
+      NODE_SET_OBJ_PROP_Number(isolate, obj, "x", windowInfo.x);
+      NODE_SET_OBJ_PROP_Number(isolate, obj, "y", windowInfo.y);
+      NODE_SET_OBJ_PROP_UINT32(isolate, obj, "originWidth", windowInfo.originWidth);
+      NODE_SET_OBJ_PROP_UINT32(isolate, obj, "originHeight", windowInfo.originHeight);
+      NODE_SET_OBJ_PROP_Number(isolate, obj, "processId", windowInfo.processId);
+      NODE_SET_OBJ_PROP_Number(isolate, obj, "currentProcessId", windowInfo.currentProcessId);
 
       if (windowInfo.imageData) {
         buffer_info imageInfo;
@@ -4538,29 +4542,6 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenWindowsInfo) {
 
       infos->Set(context, i, obj);
     }
-#if 0 // APPLE
-                std::vector<ScreenWindowInfo> allWindows = getAllWindowInfo();
-                for (unsigned int i = 0; i < allWindows.size(); ++i) {
-                    ScreenWindowInfo windowInfo = allWindows[i];
-                    Local<v8::Object> obj = Object::New(isolate);
-                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowId", windowInfo.windowId);
-                    NODE_SET_OBJ_PROP_String(isolate, obj, "name", windowInfo.name.c_str());
-                    NODE_SET_OBJ_PROP_String(isolate, obj, "ownerName", windowInfo.ownerName.c_str());
-                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", windowInfo.width);
-                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", windowInfo.height);
-                    
-                    if (windowInfo.imageData) {
-                        buffer_info imageInfo;
-                        imageInfo.buffer = windowInfo.imageData;
-                        imageInfo.length = windowInfo.imageDataLength;
-                        NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "image", imageInfo);
-                        
-                        free(windowInfo.imageData);
-                    }
-                    
-                    infos->Set(context, i, obj);
-                }
-#endif
 
     napi_set_array_result(args, infos);
   } while (false);
@@ -4585,13 +4566,11 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenDisplaysInfo) {
       Local<v8::Object> obj = Object::New(isolate);
       
       Local<v8::Object> displayIdObj = Object::New(isolate);
-#ifdef _WIN32
       NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "x", displayInfo.x);
       NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "y", displayInfo.y);
       NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "width", displayInfo.width);
       NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "height",
         displayInfo.height);
-#endif
       NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "id", displayInfo.displayId);
       Local<Value> propName = String::NewFromUtf8(isolate, "displayId",
                                                   NewStringType::kInternalized)
@@ -4600,6 +4579,8 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenDisplaysInfo) {
 
       NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", displayInfo.width);
       NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", displayInfo.height);
+      NODE_SET_OBJ_PROP_Number(isolate, obj, "x", displayInfo.x);
+      NODE_SET_OBJ_PROP_Number(isolate, obj, "y", displayInfo.y);
       NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isMain", displayInfo.isMain);
       NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isActive", displayInfo.isActive);
       NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isBuiltin", displayInfo.isBuiltin);
@@ -5057,115 +5038,6 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByWindow) {
   LOG_LEAVE;
 }
 
-NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByScreen) {
-  LOG_ENTER;
-  napi_status status = napi_ok;
-  int result = -1;
-  do {
-    Isolate *isolate = args.GetIsolate();
-    NodeRtcEngine *pEngine = nullptr;
-    napi_get_native_this(args, pEngine);
-    CHECK_NATIVE_THIS(pEngine);
-
-    // screenId
-    ScreenIDType screen;
-#ifdef _WIN32
-    if (!args[0]->IsObject()) {
-      status = napi_invalid_arg;
-      CHECK_NAPI_STATUS(pEngine, status);
-    }
-    Local<Object> screenRectObj;
-    status = napi_get_value_object_(isolate, args[0], screenRectObj);
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    Rectangle screenRect;
-    status = napi_get_object_property_int32_(isolate, screenRectObj, "x",
-                                             screenRect.x);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_int32_(isolate, screenRectObj, "y",
-                                             screenRect.y);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_int32_(isolate, screenRectObj, "width",
-                                             screenRect.width);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_int32_(isolate, screenRectObj, "height",
-                                             screenRect.height);
-    CHECK_NAPI_STATUS(pEngine, status);
-    screen = screenRect;
-#elif defined(__APPLE__)
-    if (!args[0]->IsObject()) {
-      status = napi_invalid_arg;
-      CHECK_NAPI_STATUS(pEngine, status);
-    }
-    Local<Object> displayIdObj;
-    status = napi_get_value_object_(isolate, args[0], displayIdObj);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_uint32_(isolate, displayIdObj, "id",
-                                              screen.idVal);
-    CHECK_NAPI_STATUS(pEngine, status);
-#endif
-
-    // regionRect
-    if (!args[1]->IsObject()) {
-      status = napi_invalid_arg;
-      CHECK_NAPI_STATUS(pEngine, status);
-    }
-    Local<Object> obj;
-    status = napi_get_value_object_(isolate, args[1], obj);
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    Rectangle regionRect;
-    status = napi_get_object_property_int32_(isolate, obj, "x", regionRect.x);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_int32_(isolate, obj, "y", regionRect.y);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_int32_(isolate, obj, "width",
-                                             regionRect.width);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_int32_(isolate, obj, "height",
-                                             regionRect.height);
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    // capture parameters
-    if (!args[2]->IsObject()) {
-      status = napi_invalid_arg;
-      CHECK_NAPI_STATUS(pEngine, status);
-    }
-    status = napi_get_value_object_(isolate, args[2], obj);
-    CHECK_NAPI_STATUS(pEngine, status);
-    ScreenCaptureParameters captureParams;
-    VideoDimensions dimensions;
-    status = napi_get_object_property_int32_(isolate, obj, "width",
-                                             dimensions.width);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_int32_(isolate, obj, "height",
-                                             dimensions.height);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_int32_(isolate, obj, "frameRate",
-                                             captureParams.frameRate);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_int32_(isolate, obj, "bitrate",
-                                             captureParams.bitrate);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_bool_(isolate, obj, "captureMouseCursor",
-                                            captureParams.captureMouseCursor);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_bool_(isolate, obj, "windowFocus",
-                                            captureParams.windowFocus);
-    CHECK_NAPI_STATUS(pEngine, status);
-    captureParams.dimensions = dimensions;
-
-#if defined(_WIN32)
-    result = pEngine->m_engine->startScreenCaptureByScreenRect(
-        screen, regionRect, captureParams);
-#elif defined(__APPLE__)
-    result = pEngine->m_engine->startScreenCaptureByDisplayId(
-        screen.idVal, regionRect, captureParams);
-#endif
-  } while (false);
-  napi_set_int_result(args, result);
-  LOG_LEAVE;
-}
 
 NAPI_API_DEFINE(NodeRtcEngine, updateScreenCaptureParameters) {
   LOG_ENTER;
