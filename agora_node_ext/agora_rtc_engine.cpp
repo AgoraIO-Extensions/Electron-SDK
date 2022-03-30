@@ -3525,59 +3525,6 @@ NAPI_API_DEFINE(NodeRtcEngine, getVideoNumberOfCapabilities) {
   LOG_LEAVE;
 }
 
-
-NAPI_API_DEFINE(NodeRtcEngine, getVideoCapability) {
-  LOG_ENTER;
-  int result = -1;
-  do {
-    NodeRtcEngine* pEngine = nullptr;
-    Isolate* isolate = args.GetIsolate();
-    Local<Context> context = isolate->GetCurrentContext();
-    napi_get_native_this(args, pEngine);
-    CHECK_NATIVE_THIS(pEngine);
-
-    if (!pEngine->m_videoVdm) {
-      pEngine->m_videoVdm = new AVideoDeviceManager(pEngine->m_engine);
-    }
-
-    IVideoDeviceManager* vdm = pEngine->m_videoVdm->get();
-    if (!vdm)
-    {
-      break;
-    }
-    nodestring deviceUniqueIdUTF8;
-    napi_status status = napi_get_value_nodestring_(args[0], deviceUniqueIdUTF8);
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    int64_t deviceCapabilityNumber;
-    status = napi_get_value_int64_(args[1], deviceCapabilityNumber);
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    VideoFormat videoFormat;
-    Local<Object> videoFormatObj;
-
-    napi_get_value_object_(isolate, args[2], videoFormatObj);
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    status = napi_get_object_property_int32_(isolate, videoFormatObj, "width",
-      videoFormat.width);
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    status = napi_get_object_property_int32_(isolate, videoFormatObj, "height",
-      videoFormat.height);
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    status = napi_get_object_property_int32_(isolate, videoFormatObj, "fps",
-      videoFormat.fps);
-
-
-    result = vdm->getCapability(deviceUniqueIdUTF8, deviceCapabilityNumber, videoFormat);
-  } while (false);
-  napi_set_int_result(args, result);
-  LOG_LEAVE;
-}
-
-
 NAPI_API_DEFINE(NodeRtcEngine, setVideoDevice) {
   LOG_ENTER;
   int result = -1;
@@ -4662,6 +4609,49 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenDisplaysInfo) {
     }
     napi_set_array_result(args, infos);
   } while (false);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, getVideoCapability) {
+  LOG_ENTER;
+  int result = -1;
+  Isolate* isolate = args.GetIsolate();
+  Local<Object> videoFormatObj = Object::New(isolate);
+  do {
+    NodeRtcEngine* pEngine = nullptr;
+    Local<Context> context = isolate->GetCurrentContext();
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    if (!pEngine->m_videoVdm) {
+      pEngine->m_videoVdm = new AVideoDeviceManager(pEngine->m_engine);
+    }
+
+    IVideoDeviceManager* vdm = pEngine->m_videoVdm->get();
+    if (!vdm)
+    {
+      break;
+    }
+    nodestring deviceUniqueIdUTF8;
+    napi_status status = napi_get_value_nodestring_(args[0], deviceUniqueIdUTF8);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    int64_t deviceCapabilityNumber;
+    napi_get_value_int64_(args[1], deviceCapabilityNumber);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    VideoFormat videoFormat;
+    videoFormat.width = 0;
+    videoFormat.height = 0;
+    videoFormat.fps = 0;
+
+    result = vdm->getCapability(deviceUniqueIdUTF8, deviceCapabilityNumber, videoFormat);
+
+    NODE_SET_OBJ_PROP_UINT32(isolate, videoFormatObj, "windowId", videoFormat.width);
+    NODE_SET_OBJ_PROP_UINT32(isolate, videoFormatObj, "height", videoFormat.height);
+    NODE_SET_OBJ_PROP_UINT32(isolate, videoFormatObj, "fps", videoFormat.fps);
+  } while (false);
+  args.GetReturnValue().Set(videoFormatObj);
   LOG_LEAVE;
 }
 

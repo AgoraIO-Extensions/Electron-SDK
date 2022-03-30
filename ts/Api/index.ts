@@ -2814,8 +2814,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-   getVideoCapability(deviceUniqueIdUTF8: string, deviceCapabilityNumber: number, capability: VideoFormat): number {
-    return this.rtcEngine.getVideoCapability(deviceUniqueIdUTF8, deviceCapabilityNumber, capability);
+   getVideoCapability(deviceUniqueIdUTF8: string, deviceCapabilityNumber: number): VideoFormat {
+    return this.rtcEngine.getVideoCapability(deviceUniqueIdUTF8, deviceCapabilityNumber);
   }
 
   /**
