@@ -1,3 +1,7 @@
+## 3.7.202-rc.203-build.330(Mar 30th, 2022)
+* update native sdk
+* add api: getVideoCapability, getVideoNumberOfCapabilities
+
 ## 3.7.202-build.225(Feb 17th, 2020)
 * update native sdk
 * add api: enableVirtualBackground
