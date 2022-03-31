@@ -223,7 +223,7 @@ export default class App extends Component {
     rtcEngine.enableDualStreamMode(true)
     rtcEngine.enableAudioVolumeIndication(1000, 3, false)
 
-    rtcEngine.setRenderMode(2)
+    rtcEngine.setRenderMode(1)
     rtcEngine.joinChannel(
       this.state.token || null,
       this.state.channel,
