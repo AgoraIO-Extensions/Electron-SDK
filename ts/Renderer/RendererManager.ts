@@ -7,7 +7,7 @@ import {
   logDebug,
 } from "../Utils";
 
-import { IRenderer } from "./IRender";
+import { IRenderer, RenderFailCallback } from "./IRender";
 import {
   RENDER_MODE,
   RendererConfig,
@@ -105,12 +105,11 @@ class RendererManager {
    * @private
    * @ignore
    */
-  createRenderer(): IRenderer {
+  createRenderer(failCallback?: RenderFailCallback): IRenderer {
     if (this.renderMode === RENDER_MODE.SOFTWARE) {
       return new YUVCanvasRenderer(false);
     } else {
-      let render = new GlRenderer(() => {});
-      return render as IRenderer;
+      return new GlRenderer(failCallback);
     }
   }
 
@@ -128,7 +127,18 @@ class RendererManager {
       console.warn("addRenderer: this view exists in list, ignore");
       return filterRenders[0];
     }
-    const renderer = this.createRenderer();
+    const renderer = this.createRenderer(() => {
+      const renderConfig = this.getRenderConfig(config);
+      if (!renderConfig) {
+        return;
+      }
+      renderConfig.renders = renders.filter((r) => r !== renderer);
+      renderer.unbind();
+      this.renderMode = RENDER_MODE.SOFTWARE;
+      const newRender = this.createRenderer();
+      newRender.bind(view);
+      renderConfig.renders.push(newRender);
+    });
     renderer.bind(view);
     renders.push(renderer);
     return renderer;
@@ -147,6 +157,10 @@ class RendererManager {
       this.renderers.get(videoSourceType)?.get(channelId)?.get(uid)?.renders ||
       []
     );
+  }
+
+  getRenderConfig({ videoSourceType, channelId, uid }: VideoFrameCacheConfig) {
+    return this.renderers.get(videoSourceType)?.get(channelId)?.get(uid);
   }
 
   removeRendererByConfig(config: VideoFrameCacheConfig): void {
