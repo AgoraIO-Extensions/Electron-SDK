@@ -3,7 +3,7 @@ const createProgramFromSources =
 
 import { EventEmitter } from "events";
 import { VideoFrame } from "../type";
-import { IRenderer } from "../IRender";
+import { IRenderer, RenderFailCallback } from "../IRender";
 
 const vertexShaderSource =
   "attribute vec2 a_position;" +
@@ -39,8 +39,6 @@ const yuvShaderSource =
   "  gl_FragColor=vec4(r,g,b,1.0);" +
   "}";
 
-type FailCallback = ((obj: { error: string }) => void) | undefined | null;
-
 export class GlRenderer extends IRenderer {
   gl: WebGL2RenderingContext | undefined | null;
   handleContextLost: any;
@@ -72,9 +70,9 @@ export class GlRenderer extends IRenderer {
 
   observer?: ResizeObserver;
 
-  failInitRenderCB: FailCallback;
+  failInitRenderCB: RenderFailCallback;
 
-  constructor(failCallback: FailCallback) {
+  constructor(failCallback: RenderFailCallback) {
     super();
     this.failInitRenderCB = failCallback;
   }
@@ -280,6 +278,7 @@ export class GlRenderer extends IRenderer {
   }
 
   drawFrame(videoFrame: VideoFrame) {
+    let error;
     try {
       this.renderImage({
         width: videoFrame.width,
@@ -293,11 +292,11 @@ export class GlRenderer extends IRenderer {
         uplane: videoFrame.uBuffer,
         vplane: videoFrame.vBuffer,
       });
-    } catch (error) {
-      console.warn(error);
+    } catch (err) {
+      error = err;
     }
-    if (!this.gl) {
-      this.failInitRenderCB && this.failInitRenderCB({ error: "test" });
+    if (!this.gl || error) {
+      this.failInitRenderCB && this.failInitRenderCB({ error: "webgl lost or webgl initialize failed" });
       this.failInitRenderCB = null;
       return;
     }
@@ -336,9 +335,9 @@ export class GlRenderer extends IRenderer {
       this.unbind();
       // Console.log('init canvas ' + image.width + "*" + image.height + " rotation " + image.rotation);
       this.initCanvas(view, image.width, image.height, image.rotation, (e) => {
-        console.error(
-          `init canvas ${image.width}*${image.height} rotation ${image.rotation} failed. ${e}`
-        );
+        const errStr = `webgl lost or initialize failed`;
+        console.error(errStr);
+        this.failInitRenderCB && this.failInitRenderCB!({ error: errStr });
       });
       const ResizeObserver = window.ResizeObserver;
       if (ResizeObserver) {
@@ -464,9 +463,8 @@ export class GlRenderer extends IRenderer {
     width: number,
     height: number,
     rotation: number,
-    onFailure: FailCallback
+    onFailure: RenderFailCallback
   ) {
-    let gl = this.gl;
     this.clientWidth = view.clientWidth;
     this.clientHeight = view.clientHeight;
 
@@ -495,7 +493,7 @@ export class GlRenderer extends IRenderer {
     this.container.appendChild(this.canvas);
     try {
       // Try to grab the standard context. If it fails, fallback to experimental.
-      this.gl = gl = this.canvas.getContext("webgl2", {
+      this.gl = this.canvas.getContext("webgl2", {
         preserveDrawingBuffer: true,
       });
       // context list after toggle resolution on electron 12.0.6
@@ -512,6 +510,9 @@ export class GlRenderer extends IRenderer {
           console.warn("webglcontextlost error", error);
         } finally {
           console.warn("webglcontextlost");
+          this.gl = undefined;
+          onFailure &&
+            onFailure({ error: "Browser not support! No WebGL detected." });
         }
       };
       this.canvas.addEventListener(
@@ -522,13 +523,12 @@ export class GlRenderer extends IRenderer {
     } catch (e) {
       console.log(e);
     }
-    if (!gl) {
-      this.gl = undefined;
+    if (!this.gl) {
       onFailure &&
         onFailure({ error: "Browser not support! No WebGL detected." });
       return;
     }
-    this.gl = gl;
+    const gl = this.gl as WebGL2RenderingContext;
 
     // Set clear color to black, fully opaque
     gl.clearColor(0.0, 0.0, 0.0, 1.0);

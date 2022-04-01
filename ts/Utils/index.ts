@@ -8,7 +8,6 @@ import {
 } from "../Renderer/type";
 
 import { EngineEvents } from "../Common/JSEvents";
-import { AgoraRtcEngine } from "../Api/AgoraRtcEngine";
 
 export const TAG = "[Agora]: ";
 export const DEBUG_TAG = "[Agora]: ";
@@ -150,21 +149,6 @@ export const getRendererConfigInternal = (
   return { ...config, uid, channelId, rendererOptions };
 };
 
-export const EVENT_ENGINE_INITIALIZE = "onEngineInitialize"
+export const EVENT_ENGINE_INITIALIZE = "onEngineInitialize";
 export const EVENT_ENGINE_RELEASE = "onEngineRelease";
 export const agoraEventEmitter = new EventEmitter();
-// const rtcEngineMap: Map<string, AgoraRtcEngine> = new Map();
-
-// export const getEngineById = (id: string): AgoraRtcEngine | undefined => {
-//   return rtcEngineMap.get(id);
-// };
-// export const deleteEngineById = (id: string): boolean => {
-//   return rtcEngineMap.delete(id);
-// };
-
-// export const setEngineById = (
-//   id: string,
-//   engine: AgoraRtcEngine
-// ): Map<string, AgoraRtcEngine> => {
-//   return rtcEngineMap.set(id, engine);
-// };
