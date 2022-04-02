@@ -1059,9 +1059,15 @@ class AgoraRtcEngine extends EventEmitter {
   initLocalRender(type: number, devicdId: number, view: Element, options?: RendererOptions) {
     const initRenderFailCallBack = (renderMode : 1|2|3|4, renderDescription = 'initRender')=>{
       try {
-        console.log('wait to do')
+        console.warn(
+          `info:${renderDescription}  fail, change remderMode to ${renderMode}`
+        );
+      
+        this.renderMode = 2;
+        this.destroyLocalRender(type, devicdId);
+        this.initLocalRender(type, devicdId, view, options);
       } catch (error) {
-        console.log('initRenderFailCallBack',error);
+        console.log("initRenderFailCallBack", error);
       }
     }
     if (type != 0 && type != 3 && type != 4) {
@@ -1126,9 +1132,24 @@ class AgoraRtcEngine extends EventEmitter {
   initRemoteRender(uid: number, channelId: string, view: Element, options?: RendererOptions) {
     const initRenderFailCallBack = (renderMode : 1|2|3|4, renderDescription = 'initRender')=>{
       try {
-        console.log('wait to do')
+        console.warn(
+          `info:${renderDescription}  fail, change remderMode to ${renderMode}`
+        );
+        console.warn(
+          "uid:",
+          uid,
+          " view:",
+          view,
+          " channelId:",
+          channelId,
+          " options:",
+          options
+        );
+        this.renderMode = 2;
+        this.destroyRemoteRender(uid, channelId);
+        this.initRemoteRender(uid, channelId, view, options);
       } catch (error) {
-        console.log('initRenderFailCallBack',error);
+        console.log("initRenderFailCallBack", error);
       }
     }
     let rendererOptions = {
@@ -1535,7 +1556,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setupLocalView(type: number, deviceId: number, view: Element, options?: RendererOptions): number {
+  setupLocalView(type: number, deviceId: number, view?: Element, options?: RendererOptions): number {
     if (view) {
       this.initLocalRender(type, deviceId, view, options);
       return this.rtcEngine.subscribe(type, 0, '', deviceId);
@@ -3265,24 +3286,7 @@ class AgoraRtcEngine extends EventEmitter {
   startScreenCaptureByWindow(windowSymbol: number, rect: CaptureRect, param: CaptureParam): number {
     return this.rtcEngine.startScreenCaptureByWindow(windowSymbol, rect, param)
   }
-  /**
-   * Shares the whole or part of a screen by specifying the screen symbol.
-   * @param screenSymbol The screen symbol. See {@link screenSymbol}
-   * @param rect (Optional) The relative location of the region to the screen. 
-   * NULL means sharing the whole screen. See {@link CaptureRect}. If the 
-   * specified region overruns the screen, the SDK shares only the region 
-   * within it; if you set width or height as 0, the SDK shares the whole 
-   * screen.
-   * @param param The screen sharing encoding parameters. See 
-   * {@link CaptureParam}
-   * 
-   * @return 
-   * - 0: Success
-   * - < 0: Failure
-   */
-  startScreenCaptureByScreen(screenSymbol: ScreenSymbol, rect: CaptureRect, param: CaptureParam): number {
-    return this.rtcEngine.startScreenCaptureByScreen(screenSymbol, rect, param)
-  }
+  
   startScreenCaptureByDisplayId(
     displayId: number,
     rect: CaptureRect,

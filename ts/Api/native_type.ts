@@ -3657,14 +3657,7 @@ export interface NodeRtcEngine {
     rect: CaptureRect,
     param: CaptureParam
   ): number;
-  /**
-   * @ignore
-   */
-  startScreenCaptureByScreen(
-    screenSymbol: ScreenSymbol,
-    rect: CaptureRect,
-    param: CaptureParam
-  ): number;
+
   startScreenCaptureByDisplayId(
     displayId: number,
     rect: CaptureRect,

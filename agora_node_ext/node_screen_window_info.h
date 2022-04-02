@@ -18,18 +18,8 @@
 
 #include "IAgoraRtcEngine.h"
 
-#if defined(__APPLE__)
-struct DisplayID {
-  unsigned int idVal;
+struct ScreenDisplayInfo {;
 
-  DisplayID() : idVal(0) {}
-};
-typedef DisplayID ScreenIDType;
-#elif defined(_WIN32)
-typedef agora::rtc::Rectangle ScreenIDType;
-#endif
-
-struct ScreenDisplayInfo {
   std::string name;
   std::string ownerName;
   unsigned int displayId;
@@ -52,8 +42,12 @@ struct ScreenDisplayInfo {
 struct ScreenWindowInfo {
 #if defined(__APPLE__)
   unsigned int windowId;
+  int processId;
+  int currentProcessId;
 #elif defined(_WIN32)
   HWND windowId;
+  DWORD processId;
+  DWORD currentProcessId;
 #endif
 
   std::string name;
@@ -61,13 +55,18 @@ struct ScreenWindowInfo {
 
   unsigned int width;
   unsigned int height;
+  int x;
+  int y;
 
   unsigned char *imageData;
   unsigned int imageDataLength;
 
+  unsigned int originWidth;
+  unsigned int originHeight;
+
   ScreenWindowInfo()
       : windowId(0), width(0), height(0), imageData(nullptr),
-        imageDataLength(0) {}
+        imageDataLength(0), originWidth(0), originHeight(0) {}
 };
 
 std::vector<ScreenDisplayInfo> getAllDisplayInfo();
