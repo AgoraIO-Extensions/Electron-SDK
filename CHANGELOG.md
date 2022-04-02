@@ -1,4 +1,13 @@
-## 3.7.204-build.328(Mar 28th, 2020)
+## 3.7.204-build.401(Apr 1th, 2022)
+update mac sdk
+
+## 3.7.204-build.329(Mar 28th, 2020)
+* delete api: startScreenCaptureByScreen
+* optimize api:
+  * getScreenWindowsInfo
+  * getScreenDisplaysInfo
+
+## 3.7.204-build.401(Mar 28th, 2020)
 * update native sdk
 
 ## 3.7.204-build.322(Mar 22th, 2020)
