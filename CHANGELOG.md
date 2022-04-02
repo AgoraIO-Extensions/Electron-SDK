@@ -1,3 +1,6 @@
+##2.9.106-rc.243-build.402
+- fix getAllWindowInfo
+
 ##2.9.106-rc.243-build.127
 -  fix getAllWindowInfo for image
 

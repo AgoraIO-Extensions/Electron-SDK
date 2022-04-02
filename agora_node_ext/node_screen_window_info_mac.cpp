@@ -155,8 +155,9 @@ bool setWindowInfoWithDictionary(ScreenWindowInfo& windowInfo, CFDictionaryRef w
 std::vector<ScreenWindowInfo> getAllWindowInfo(uint32_t options)
 {
     std::vector<ScreenWindowInfo> windows;
-    CFArrayRef windowDicCFArray = CGWindowListCopyWindowInfo(options,
-                                                             kCGNullWindowID);
+    CFArrayRef windowDicCFArray = CGWindowListCopyWindowInfo(
+        kCGWindowListOptionAll | kCGWindowListExcludeDesktopElements,
+        kCGNullWindowID);
     CFIndex count = CFArrayGetCount(windowDicCFArray);
     for (CFIndex index = 0; index < count; index++) {
         CFDictionaryRef windowDic = static_cast<CFDictionaryRef>(CFArrayGetValueAtIndex(windowDicCFArray, index));
@@ -169,9 +170,43 @@ std::vector<ScreenWindowInfo> getAllWindowInfo(uint32_t options)
         
         ScreenWindowInfo screenWindow;
         if (!setWindowInfoWithDictionary(screenWindow, windowDic)) {
-            break;
+          continue;
         }
-        
+
+        CFStringRef name = static_cast<CFStringRef>(
+            CFDictionaryGetValue(windowDic, kCGWindowName));
+        if (name) {
+          CFNumberRef sharingStateRef = static_cast<CFNumberRef>(
+              CFDictionaryGetValue(windowDic, kCGWindowSharingState));
+          if (sharingStateRef) {
+            int state = 0;
+            CFNumberGetValue(sharingStateRef, kCFNumberSInt32Type, &state);
+            if (state == 0)
+              continue;
+          }
+        }
+
+        CFBooleanRef isOnScreenRef = static_cast<CFBooleanRef>(
+            CFDictionaryGetValue(windowDic, kCGWindowIsOnscreen));
+        if (isOnScreenRef) {
+          bool isOnScreen = CFBooleanGetValue(isOnScreenRef);
+          if (isOnScreen == false)
+            continue;
+        } else {
+            continue;
+        }
+
+        CFNumberRef alphaRef = static_cast<CFNumberRef>(
+            CFDictionaryGetValue(windowDic, kCGWindowAlpha));
+        if (alphaRef) {
+          CGFloat alpha = 0;
+          CFNumberGetValue(alphaRef, kCFNumberFloat64Type, &alpha);
+          if (!(alpha > 0))
+            continue;
+        } else {
+          continue;
+        }
+
         CGImageRef screenShot = CGWindowListCreateImage(CGRectNull,
                                                         kCGWindowListOptionIncludingWindow,
                                                         screenWindow.windowId,
