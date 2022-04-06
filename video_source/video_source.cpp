@@ -269,6 +269,24 @@ void AgoraVideoSource::release() {
   delete this;
 }
 
+std::vector<std::string> split(std::string str, std::string pattern) {
+  std::string::size_type pos;
+  std::vector<std::string> result;
+
+  str += pattern;
+  int size = str.size();
+
+  for (int i = 0; i < size; i++) {
+    pos = str.find(pattern, i);
+    if (pos < size) {
+      std::string s = str.substr(i, pos - i);
+      result.push_back(s);
+      i = pos + pattern.size() - 1;
+    }
+  }
+  return result;
+}
+
 void AgoraVideoSource::onMessage(unsigned int msg,
                                  char* payload,
                                  unsigned int len) {
@@ -517,6 +535,52 @@ void AgoraVideoSource::onMessage(unsigned int msg,
     stopLogService();
     startLogService((char *)payload);
     LOG_INFO("set addon log file %s\n", (char *)payload);
+  } else if (msg == AGORA_IPC_SET_LOCAL_ACCESS_POINT) {
+    LocalAccessPointConfigurationCmd *cmd =
+        (LocalAccessPointConfigurationCmd *)payload;
+
+    agora::rtc::LocalAccessPointConfiguration localAccessPointConfiguration;
+    agora::rtc::AdvancedConfigInfo advancedConfigInfo;
+    agora::rtc::UploadServerInfo uploadServerInfo;
+    advancedConfigInfo.logUploadServer = &uploadServerInfo;
+    localAccessPointConfiguration.advancedConfig = &advancedConfigInfo;
+
+    std::vector<std::string> ipListVecString =
+        split(std::string(cmd->ipList), IPC_STRING_PARTTERN);
+    std::vector<const char *> ipListVec;
+    if (cmd->ipList) {
+      auto ipListSize = ipListVecString.size() - 1;
+      for (int index = 0; index < ipListSize; ++index) {
+        ipListVec.push_back(ipListVecString[index].c_str());
+      }
+      localAccessPointConfiguration.ipList = ipListVec.data();
+      localAccessPointConfiguration.ipListSize = ipListSize;
+    }
+
+    std::vector<std::string> domainListVecString =
+        split(std::string(cmd->domainList), IPC_STRING_PARTTERN);
+    std::vector<const char *> domainListVec;
+    if (cmd->domainList) {
+
+      auto domainListSize = domainListVecString.size() - 1;
+      for (int index = 0; index < domainListSize; ++index) {
+        domainListVec.push_back(domainListVecString[index].c_str());
+      }
+      localAccessPointConfiguration.domainList = domainListVec.data();
+      localAccessPointConfiguration.domainListSize = domainListSize;
+    }
+
+    localAccessPointConfiguration.mode = cmd->mode;
+    localAccessPointConfiguration.verifyDomainName = cmd->verifyDomainName;
+
+    uploadServerInfo.serverDomain = cmd->uploadServerDomain;
+    uploadServerInfo.serverPort = cmd->uploadServerPort;
+    uploadServerInfo.serverHttps = cmd->uploadServerHttps;
+    uploadServerInfo.serverPath = cmd->uploadServerPath;
+
+    m_rtcEngine->setLocalAccessPoint(localAccessPointConfiguration);
+    ;
+    LOG_INFO("AGORA_IPC_SET_LOCAL_ACCESS_POINT");
   }
 
   LOG_LEAVE;

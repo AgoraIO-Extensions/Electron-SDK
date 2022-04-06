@@ -6874,6 +6874,13 @@ class AgoraRtcEngine extends EventEmitter {
   ): number {
     return this.rtcEngine.setLocalAccessPoint(localAccessPointConfiguration);
   }
+  videoSourceSetLocalAccessPoint(
+    localAccessPointConfiguration: LocalAccessPointConfiguration
+  ): number {
+    return this.rtcEngine.videoSourceSetLocalAccessPoint(
+      localAccessPointConfiguration
+    );
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
