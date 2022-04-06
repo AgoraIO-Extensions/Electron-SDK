@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "3.6.0-rc.200-build.918",
+  "version": "3.6.0-rc.202-build.406",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -92,9 +92,9 @@
     "url": "git+https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron.git"
   },
   "agora_electron": {
-    "lib_sdk_win": "http://10.80.1.174:8090/agora_sdk//develop/panqingyou/2021-09-16/windows/ffmpeg_player/Agora_Native_SDK_for_Windows_x86_panqingyou_50473_20210916_1601_ffmpeg_player.zip",
+    "lib_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_x86_rel.v3.6.220_60367_20220402_2306_full.zip",
     
-    "lib_sdk_win64": "http://10.80.1.174:8090/agora_sdk//develop/panqingyou/2021-09-16/windows/ffmpeg_player/Agora_Native_SDK_for_Windows_x64_panqingyou_50474_20210916_1556_ffmpeg_player.zip",
+    "lib_sdk_win64": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_x64_rel.v3.6.220_60368_20220402_2306_full.zip",
     "lib_sdk_mac": "http://10.80.1.174:8090/agora_sdk/3.4.200/nightly_build/2021-07-05/mac/ffmpeg_player/Agora_Native_SDK_for_Mac_x64_rel.v3.4.200_31632_ffmpeg_player_20210705_0037.zip"
   },
   "keywords": [
