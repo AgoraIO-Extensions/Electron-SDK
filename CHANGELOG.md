@@ -1,3 +1,6 @@
+## 3.6.220-build.407(Apr 07th, 2022)
+* update windows native sdk url
+
 ## 3.6.217-build.316(Mar 16th, 2022)
 * fix CustomRtcConnection
 
