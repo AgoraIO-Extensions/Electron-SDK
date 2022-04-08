@@ -9,7 +9,7 @@ const synclib = require('./scripts/synclib')
 const cleanup = require('./scripts/cleanup')
 const {getArgvFromNpmEnv, getArgvFromPkgJson} = require('./scripts/npm_argv')
 
-option('electron_version', {default: '5.0.8'});
+option('electron_version', {default: '12.0.0'});
 option('runtime', {default: 'electron', choices: ['electron', 'node']});
 option('platform', {default: process.platform, choices: ['darwin', 'win32', 'linux']});
 // option('packageVersion');
