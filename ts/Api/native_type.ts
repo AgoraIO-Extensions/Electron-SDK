@@ -3368,11 +3368,11 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  startPreview(): number;
+  startPreview(type: VIDEO_SOURCE_TYPE): number;
   /**
    * @ignore
    */
-  stopPreview(): number;
+  stopPreview(type :VIDEO_SOURCE_TYPE): number;
    /**
    * @ignore
    */

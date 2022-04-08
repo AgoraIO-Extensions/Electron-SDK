@@ -384,10 +384,11 @@ NAPI_API_DEFINE_WRAPPER_PARAM_0(enableVideo);
 
 NAPI_API_DEFINE_WRAPPER_PARAM_0(disableVideo);
 
-NAPI_API_DEFINE_WRAPPER_PARAM_0(startPreview);
-
+<<<<<<< Updated upstream
 NAPI_API_DEFINE_WRAPPER_PARAM_0(stopPreview);
 
+=======
+>>>>>>> Stashed changes
 NAPI_API_DEFINE_WRAPPER_PARAM_0(enableAudio);
 
 NAPI_API_DEFINE_WRAPPER_PARAM_0(disableAudio);
@@ -494,6 +495,43 @@ NAPI_API_DEFINE(NodeRtcEngine, addPublishStreamUrl) {
 }
 
 NAPI_API_DEFINE_WRAPPER_PARAM_1(removePublishStreamUrl, nodestring);
+
+NAPI_API_DEFINE(NodeRtcEngine, startPreview) {
+  LOG_ENTER;
+  int result = -1;
+  do {
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    Local<Context> context = isolate->GetCurrentContext();
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    napi_status status;
+    int type = 0;
+    status = napi_get_value_int32_(args[0], type);
+    result = pEngine->m_engine->startPreview((agora::rtc::VIDEO_SOURCE_TYPE)type);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, stopPreview) {
+  LOG_ENTER;
+  int result = -1;
+  do {
+    NodeRtcEngine *pEngine = nullptr;
+    Isolate *isolate = args.GetIsolate();
+    Local<Context> context = isolate->GetCurrentContext();
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    napi_status status;
+    int type = 0;
+    status = napi_get_value_int32_(args[0], type);
+    result = pEngine->m_engine->stopPreview((agora::rtc::VIDEO_SOURCE_TYPE)type);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
 NAPI_API_DEFINE(NodeRtcEngine, addVideoWatermark) {
   LOG_ENTER;
   int result = -1;
