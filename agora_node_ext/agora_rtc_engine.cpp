@@ -694,6 +694,7 @@ void NodeRtcEngine::Init(Local<Object>& module) {
   PROPERTY_METHOD_DEFINE(startEchoTestWithConfig)
   
   PROPERTY_METHOD_DEFINE(setLocalAccessPoint);
+  PROPERTY_METHOD_DEFINE(videoSourceSetLocalAccessPoint);
   EN_PROPERTY_DEFINE()
   module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(),
               tpl->GetFunction(context).ToLocalChecked());
@@ -1476,6 +1477,127 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalAccessPoint) {
   LOG_LEAVE;
 }
 
+NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetLocalAccessPoint) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  std::unique_ptr<LocalAccessPointConfigurationCmd> cmd(
+      new LocalAccessPointConfigurationCmd());
+
+  do {
+    Isolate *isolate = args.GetIsolate();
+    Local<Context> context = isolate->GetCurrentContext();
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    if (!args[0]->IsObject()) {
+      status = napi_invalid_arg;
+      CHECK_NAPI_STATUS(pEngine, status);
+    }
+
+    Local<Object> obj;
+    status = napi_get_value_object_(isolate, args[0], obj);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    v8::Array *ipList;
+    v8::Array *domainList;
+
+    std::string ipListStr;
+    std::string domainListStr;
+    status = napi_get_object_property_array_(isolate, obj, "ipList", ipList);
+    if (status == napi_ok && ipList->Length() > 0) {
+      for (uint32 i = 0; i < ipList->Length(); i++) {
+        Local<Value> value = ipList->Get(context, i).ToLocalChecked();
+        NodeString str;
+        status = napi_get_value_nodestring_(value, str);
+        CHECK_NAPI_STATUS(pEngine, status);
+        ipListStr += string(str) + IPC_STRING_PARTTERN;
+      }
+    }
+    memset(cmd->ipList, 0, MAX_STRING_LEN);
+    strncpy(cmd->ipList, ipListStr.c_str(), ipListStr.size());
+
+    status =
+        napi_get_object_property_array_(isolate, obj, "domainList", domainList);
+    if (status == napi_ok && domainList->Length() > 0) {
+      for (uint32 i = 0; i < domainList->Length(); i++) {
+        Local<Value> value = domainList->Get(context, i).ToLocalChecked();
+        NodeString str;
+        status = napi_get_value_nodestring_(value, str);
+        CHECK_NAPI_STATUS(pEngine, status);
+        domainListStr += string(str) + IPC_STRING_PARTTERN;
+      }
+    }
+    memset(cmd->domainList, 0, MAX_STRING_LEN);
+    strncpy(cmd->domainList, domainListStr.c_str(), domainListStr.size());
+
+    NodeString verifyDomainNameStr;
+    status = napi_get_object_property_nodestring_(
+        isolate, obj, "verifyDomainName", verifyDomainNameStr);
+    CHECK_NAPI_STATUS(pEngine, status);
+    if (verifyDomainNameStr) {
+      memset(cmd->verifyDomainName, 0, MAX_STRING_LEN);
+      strncpy(cmd->verifyDomainName, verifyDomainNameStr,
+              std::string(verifyDomainNameStr).size());
+    }
+    int32_t mode;
+    status = napi_get_object_property_int32_(isolate, obj, "mode", mode);
+    CHECK_NAPI_STATUS(pEngine, status);
+    cmd->mode = (LOCAL_PROXY_MODE)mode;
+
+    Local<Object> advancedConfigObj;
+    status = napi_get_object_property_object_(isolate, obj, "advancedConfig",
+                                              advancedConfigObj);
+    CHECK_NAPI_STATUS(pEngine, status);
+    if (!advancedConfigObj->IsObject()) {
+      status = napi_invalid_arg;
+      CHECK_NAPI_STATUS(pEngine, status);
+    }
+
+    Local<Object> uploadServerInfoObj;
+    status = napi_get_object_property_object_(
+        isolate, advancedConfigObj, "logUploadServer", uploadServerInfoObj);
+    CHECK_NAPI_STATUS(pEngine, status);
+    if (!uploadServerInfoObj->IsObject()) {
+      status = napi_invalid_arg;
+      CHECK_NAPI_STATUS(pEngine, status);
+    }
+
+    NodeString serverDomainStr;
+    status = napi_get_object_property_nodestring_(
+        isolate, uploadServerInfoObj, "serverDomain", serverDomainStr);
+    CHECK_NAPI_STATUS(pEngine, status);
+    if (serverDomainStr) {
+      memset(cmd->uploadServerDomain, 0, MAX_STRING_LEN);
+      strncpy(cmd->uploadServerDomain, serverDomainStr,
+              std::string(serverDomainStr).size());
+    }
+
+    NodeString serverPathStr;
+    status = napi_get_object_property_nodestring_(isolate, uploadServerInfoObj,
+                                                  "serverPath", serverPathStr);
+    CHECK_NAPI_STATUS(pEngine, status);
+    if (serverPathStr) {
+      memset(cmd->uploadServerPath, 0, MAX_STRING_LEN);
+      strncpy(cmd->uploadServerPath, serverPathStr,
+              std::string(serverPathStr).size());
+    }
+
+    status = napi_get_object_property_int32_(
+        isolate, uploadServerInfoObj, "serverPort", cmd->uploadServerPort);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    status = napi_get_object_property_bool_(
+        isolate, uploadServerInfoObj, "serverHttps", cmd->uploadServerHttps);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    if (pEngine->m_videoSourceSink.get()) {
+      pEngine->m_videoSourceSink->setLocalAccessPoint(cmd);
+      result = 0;
+    }
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
 
 NAPI_API_DEFINE(NodeRtcEngine, startAudioDeviceLoopbackTest) {
   LOG_ENTER;

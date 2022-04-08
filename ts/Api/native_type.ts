@@ -4627,6 +4627,9 @@ export interface NodeRtcEngine {
   setLocalAccessPoint(
     localAccessPointConfiguration: LocalAccessPointConfiguration
   ): number;
+  videoSourceSetLocalAccessPoint(
+    localAccessPointConfiguration: LocalAccessPointConfiguration
+  ): number;
   /**
    * @ignore
    */
