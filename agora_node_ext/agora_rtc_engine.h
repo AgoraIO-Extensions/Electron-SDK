@@ -30,6 +30,8 @@
 #include "node_metadata_observer.h"
 #include "node_napi_api.h"
 #include "windows_system_api.h"
+#include "video_source_ipc.h"
+
 /*
  * Used to declare native interface to nodejs
  */
@@ -445,7 +447,11 @@ class NodeRtcEngine : public node::ObjectWrap {
   NAPI_API(setColorEnhanceOptions);
   NAPI_API(setVideoDenoiserOptions);
   NAPI_API(startEchoTestWithConfig);
+  /*
+  * 3.6.1.4
+  */
   NAPI_API(setLocalAccessPoint);
+  NAPI_API(videoSourceSetLocalAccessPoint);
   
  public:
   Isolate* getIsolate() { return m_isolate; }

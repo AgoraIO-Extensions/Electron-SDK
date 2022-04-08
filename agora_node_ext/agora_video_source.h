@@ -245,6 +245,8 @@ class AgoraVideoSource {
   virtual node_error muteRemoteVideoStream(agora::rtc::uid_t userId,
                                            bool mute) = 0;
   virtual node_error muteAllRemoteVideoStreams(bool mute) = 0;
+  
+  virtual node_error setLocalAccessPoint(std::unique_ptr<LocalAccessPointConfigurationCmd> &cmd) = 0;
 };
 
 /**
