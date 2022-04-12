@@ -14,7 +14,7 @@ const gyp_exec = `node ${gyp_path}`
 const agora_node_ext_path = `${path.resolve(__dirname, '../build/Release/agora_node_ext.node')}`
 
 module.exports = ({
-  electronVersion='5.0.8',
+  electronVersion='12.0.0',
   runtime='electron',
   platform=process.platform,
   packageVersion,

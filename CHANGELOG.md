@@ -1,3 +1,11 @@
+## 3.7.204-build.412(Apr 12th, 2022)
+- update native sdk
+- update api
+  - startPreview
+  - stopPreview
+- fix videoFrame cache
+- update default electron_version
+
 ## 3.7.204-build.401(Apr 1th, 2022)
 update mac sdk
 
