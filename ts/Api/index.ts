@@ -2020,8 +2020,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  startPreview(): number {
-    return this.rtcEngine.startPreview();
+  startPreview(type = VIDEO_SOURCE_TYPE.VIDEO_SOURCE_CAMERA_PRIMARY): number {
+    return this.rtcEngine.startPreview(type);
   }
 
   /**
@@ -2030,8 +2030,8 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  stopPreview(): number {
-    return this.rtcEngine.stopPreview();
+  stopPreview(type = VIDEO_SOURCE_TYPE.VIDEO_SOURCE_CAMERA_PRIMARY): number {
+    return this.rtcEngine.stopPreview(type);
   }
 
   /**
