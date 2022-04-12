@@ -165,6 +165,7 @@ private:
   };
   VideoFrameInfo &getVideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid,
                                     std::string channelId, int deviceId);
+  void erase(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, int deviceId);
   bool deinitialize();
   VideoFrameInfo &getHighVideoFrameInfo(agora::rtc::uid_t uid,
                                         std::string channelId);
