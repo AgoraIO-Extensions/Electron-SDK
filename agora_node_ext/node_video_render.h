@@ -23,6 +23,9 @@ public:
   virtual bool onSecondaryCameraCaptureVideoFrame(
       agora::media::IVideoFrameObserver::VideoFrame &videoFrame) override;
 
+  virtual bool onTertiaryCameraCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
+  virtual bool onQuaternaryCameraCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
+
   virtual bool onScreenCaptureVideoFrame(
       agora::media::IVideoFrameObserver::VideoFrame &videoFrame) override;
   virtual bool onSecondaryScreenCaptureVideoFrame(
@@ -43,6 +46,10 @@ public:
   virtual bool onPreEncodeScreenVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
   
   virtual bool onSecondaryPreEncodeCameraVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
+
+  virtual bool onTertiaryPreEncodeCameraVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
+
+  virtual bool onQuaternaryPreEncodeCameraVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
 
   virtual bool onSecondaryPreEncodeScreenVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) override;
   // virtual agora::media::IVideoFrameObserver::VIDEO_FRAME_PROCESS_MODE
