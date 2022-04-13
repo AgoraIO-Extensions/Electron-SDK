@@ -435,6 +435,12 @@ export enum VIDEO_SOURCE_TYPE {
   /** Video for transcoded.
    */
   VIDEO_SOURCE_TRANSCODED,
+  /** Video captured by the tertiary camera.
+   */
+  VIDEO_SOURCE_CAMERA_TERTIARY,
+  /** Video captured by the quaternary camera.
+   */
+  VIDEO_SOURCE_CAMERA_QUATERNARY,
 
   VIDEO_SOURCE_UNKNOWN = 100
 };
@@ -442,11 +448,11 @@ export enum VIDEO_SOURCE_TYPE {
  * The type of media device.
  */
 export enum MEDIA_SOURCE_TYPE {
-  /** 
+  /**
    * 0: The audio playback device.
    */
   AUDIO_PLAYOUT_SOURCE = 0,
-  /** 
+  /**
    * 1: Microphone.
    */
   AUDIO_RECORDING_SOURCE = 1,
@@ -495,7 +501,15 @@ export enum MEDIA_SOURCE_TYPE {
    */
   TRANSCODED_VIDEO_SOURCE = 12,
   /**
-   * 100: unknown media source.
+   * 13: Video captured by tertiary screen capturer.
+   */
+  TERTIARY_CAMERA_SOURCE = 13,
+  /**
+   * 14: Video captured by quaternary screen capturer.
+   */
+  QUATERNARY_CAMERA_SOURCE = 14,
+  /**
+   * 100: Internal Usage only.
    */
   UNKNOWN_MEDIA_SOURCE = 100
 };
@@ -1590,7 +1604,6 @@ export interface VideoFormat {
 
 /** Camera capturer configuration. */
 export interface CameraCapturerConfiguration {
-  cameraDirection: CAMERA_DIRECTION,
   deviceId: String,
   format: VideoFormat
 }
@@ -2527,101 +2540,217 @@ export interface ChannelMediaInfo {
    */
   uid: number;
 }
+
+/**
+ * The CC (Congestion Control) mode options.
+ */
+ export enum TCcMode {
+  /**
+   * Enable CC mode.
+   */
+  CC_ENABLED,
+  /**
+   * Disable CC mode.
+   */
+  CC_DISABLED,
+};
+
+export interface EncodedVideoTrackOptions {
+  /**
+   * Whether to enable CC mode. See #TCcMode.
+   */
+  ccMode?: TCcMode;
+  /**
+   * The codec type used for the encoded images:
+   * \ref agora::rtc::VIDEO_CODEC_TYPE "VIDEO_CODEC_TYPE".
+   */
+  codecType?: VIDEO_CODEC_TYPE;
+  /**
+   * Target bitrate (Kbps) for sending encoded video frame.
+   */
+  targetBitrate?: number;
+}
+
+export interface AudioOptionsAdvanced {
+  enable_aec_external_custom_: boolean;
+  enable_aec_external_loopback_: boolean;
+}
 /**
  * The channel media options.
  */
 export interface ChannelMediaOptions {
-  /**
+   /**
    * Determines whether to publish the video of the camera track.
    * - true: Publish the video track of the camera capturer.
    * - false: (Default) Do not publish the video track of the camera capturer.
    */
-  publishCameraTrack: boolean;
+  
+  publishCameraTrack?: boolean;
   /**
    * Determines whether to publish the video of the secondary camera track.
    * - true: Publish the video track of the secondary camera capturer.
    * - false: (Default) Do not publish the video track of the secondary camera capturer.
    */
-  publishSecondaryCameraTrack: boolean;
+  publishSecondaryCameraTrack?: boolean;
+
+  publishTertiaryCameraTrack?: boolean;
+  publishQuaternaryCameraTrack?: boolean;
   /**
    * Determines whether to publish the recorded audio.
    * - true: Publish the recorded audio.
    * - false: (Default) Do not publish the recorded audio.
    */
-    publishAudioTrack: boolean;
+  publishAudioTrack?: boolean;
   /**
    * Determines whether to publish the video of the screen track.
    * - true: Publish the video track of the screen capturer.
    * - false: (Default) Do not publish the video track of the screen capturer.
    */
-   publishScreenTrack: boolean;
+  publishScreenTrack?: boolean;
+  /**
+   * Determines whether to publish the video of the secondary screen track.
+   * - true: Publish the video track of the secondary screen capturer.
+   * - false: (Default) Do not publish the video track of the secondary screen capturer.
+   */
+  publishSecondaryScreenTrack?: boolean;
   /**
    * Determines whether to publish the audio of the custom audio track.
    * - true: Publish the audio of the custom audio track.
    * - false: (Default) Do not publish the audio of the custom audio track.
    */
-   publishCustomAudioTrack: boolean;
+  publishCustomAudioTrack?: boolean;
+  /**
+   * Determines the source id of the custom audio, default is 0.
+   */
+  publishCustomAudioSourceId?: number;
+  /**
+   * Determines whether to enable AEC when publish custom audio track.
+   * - true: Enable AEC.
+   * - false: (Default) Do not enable AEC.
+   */
+  publishCustomAudioTrackEnableAec?: boolean;
+  /**
+   * Determines whether to publish direct custom audio track.
+   * - true: publish.
+   * - false: (Default) Do not publish.
+   */
+  publishDirectCustomAudioTrack?: boolean;
+  /**
+   * Determines whether to publish AEC custom audio track.
+   * - true: Publish AEC track.
+   * - false: (Default) Do not publish AEC track.
+   */
+  publishCustomAudioTrackAec?: boolean;
   /**
    * Determines whether to publish the video of the custom video track.
    * - true: Publish the video of the custom video track.
    * - false: (Default) Do not publish the video of the custom video track.
    */
-  publishCustomVideoTrack: boolean;
+  publishCustomVideoTrack?: boolean;
   /**
    * Determines whether to publish the video of the encoded video track.
    * - true: Publish the video of the encoded video track.
    * - false: (default) Do not publish the video of the encoded video track.
    */
-  publishEncodedVideoTrack: boolean;
+  publishEncodedVideoTrack?: boolean;
   /**
   * Determines whether to publish the audio track of media player source.
   * - true: Publish the audio track of media player source.
   * - false: (default) Do not publish the audio track of media player source.
   */
-  publishMediaPlayerAudioTrack: boolean;
+  publishMediaPlayerAudioTrack?: boolean;
   /**
   * Determines whether to publish the video track of media player source.
   * - true: Publish the video track of media player source.
   * - false: (default) Do not publish the video track of media player source.
   */
-   publishMediaPlayerVideoTrack: boolean;
+  publishMediaPlayerVideoTrack?: boolean;
+  /**
+  * Determines whether to publish the local transcoded video track.
+  * - true: Publish the video track of local transcoded video track.
+  * - false: (default) Do not publish the local transcoded video track.
+  */
+  publishTrancodedVideoTrack?: boolean;
   /**
    * Determines whether to subscribe to all audio streams automatically. It can replace calling \ref IRtcEngine::setDefaultMuteAllRemoteAudioStreams
    * "setDefaultMuteAllRemoteAudioStreams" before joining a channel.
    * - true: Subscribe to all audio streams automatically.
    * - false: (Default) Do not subscribe to any audio stream automatically.
    */
-  autoSubscribeAudio: boolean;
+  autoSubscribeAudio?: boolean;
   /**
    * Determines whether to subscribe to all video streams automatically. It can replace calling \ref IRtcEngine::setDefaultMuteAllRemoteVideoStreams
    * "setDefaultMuteAllRemoteVideoStreams" before joining a channel.
    * - true: Subscribe to all video streams automatically.
    * - false: (Default) do not subscribe to any video stream automatically.
    */
-  autoSubscribeVideo: boolean;
-  /**
-  * Determines which media player source should be published.
-  * - DEFAULT_PLAYER_ID(0) is default.
-  */
-  publishMediaPlayerId: number;
+  autoSubscribeVideo?: boolean;
   /**
    * Determines whether to enable audio recording or playout.
    * - true: It's used to publish audio and mix microphone, or subscribe audio and playout
    * - false: It's used to publish extenal audio frame only without mixing microphone, or no need audio device to playout audio either
    */
-  enableAudioRecordingOrPlayout: boolean;
+  enableAudioRecordingOrPlayout?: boolean;
+  /**
+  * Determines which media player source should be published.
+  * - DEFAULT_PLAYER_ID(0) is default.
+  */
+  publishMediaPlayerId?: number;
   /**
    * The client role type: #CLIENT_ROLE_TYPE.
    */
-  clientRoleType: CLIENT_ROLE_TYPE;
+  clientRoleType?: CLIENT_ROLE_TYPE;
   /**
-   * The default video stream type: #REMOTE_VIDEO_STREAM_TYPE.
+   * The audience latency level type. See \ref agora::rtc::AUDIENCE_LATENCY_LEVEL_TYPE "AUDIENCE_LATENCY_LEVEL_TYPE"
    */
-  defaultVideoStreamType: REMOTE_VIDEO_STREAM_TYPE;
+  audienceLatencyLevel?: AUDIENCE_LATENCY_LEVEL_TYPE;
+  /**
+   * The default video stream type: #VIDEO_STREAM_TYPE.
+   */
+  defaultVideoStreamType?: VIDEO_STREAM_TYPE;
   /**
    * The channel profile: #CHANNEL_PROFILE_TYPE.
    */
-  channelProfile: CHANNEL_PROFILE_TYPE;
+  channelProfile?: CHANNEL_PROFILE_TYPE;
+  /**
+   * The delay in ms for sending audio frames. This is used for explicit control of A/V sync.
+   * To switch off the delay, set the value to zero.
+   */
+  audioDelayMs?: number;
+  /**
+   * The delay in ms for sending media player audio frames. This is used for explicit control of A/V sync.
+   * To switch off the delay, set the value to zero.
+   */
+  mediaPlayerAudioDelayMs?: number;
+  /**
+   * The token
+   */
+  token?: string;
+  /**
+   * Enable media packet encryption.
+   * This parameter is ignored when calling function updateChannelMediaOptions()
+   * - false is default.
+   */
+  enableBuiltInMediaEncryption?: boolean;
+  /**
+   * Determines whether to publish the sound of the rhythm player to remote users.
+   * - true: (Default) Publish the sound of the rhythm player.
+   * - false: Do not publish the sound of the rhythm player.
+   */
+  publishRhythmPlayerTrack?: boolean;
+  /**
+   * This mode is only used for audience. In PK mode, client might join one
+   * channel as broadcaster, and join another channel as interactive audience to
+   * achieve low lentancy and smooth video from remote user.
+   * - true: Enable low lentancy and smooth video when joining as an audience.
+   * - false: (Default) Use default settings for audience role.
+   */
+  isInteractiveAudience?: boolean;
+  /**
+   * The sender option for video encoded track.
+   */
+  encodedVideoTrackOption?: EncodedVideoTrackOptions;
+  audioOptionsAdvanced?: AudioOptionsAdvanced;
 }
 /**
  * The watermark's options.
@@ -4041,6 +4170,10 @@ export interface NodeRtcEngine {
    * @ignore
    */
   stopSecondaryCameraCapture(): number;
+  startTertiaryCameraCapture(config: CameraCapturerConfiguration): number;
+  startQuaternaryCameraCapture(config: CameraCapturerConfiguration): number;
+  stopTertiaryCameraCapture(): number;
+  stopQuaternaryCameraCapture(): number;
   /**
    * @ignore
    */
