@@ -224,12 +224,23 @@ export default class App extends Component {
     rtcEngine.enableAudioVolumeIndication(1000, 3, false)
 
     rtcEngine.setRenderMode(1)
-    rtcEngine.joinChannel(
+    rtcEngine.joinChannelEx(
       this.state.token || null,
-      this.state.channel,
-      '',
-      LOCAL_USER_ID
-    )
+      {
+        channelId:this.state.channel,
+        localUid:LOCAL_USER_ID
+      },
+      {
+        autoSubscribeAudio: true,
+        autoSubscribeVideo: true,
+        publishAudioTrack: true,
+        publishCameraTrack: true,
+        publishScreenTrack: false,
+        clientRoleType: 1,
+        channelProfile: 1,
+        encodedVideoTrackOption: { targetBitrate: 600 },
+      }
+    );
   }
 
   handleLeave = () => {
@@ -636,6 +647,7 @@ export default class App extends Component {
         className='columns'
         style={{ padding: '20px', height: '100%', margin: '0' }}
       >
+        <p>{process.pid}</p>
         {this.state.showScreenPicker ? windowPicker : ''}
         {this.state.showDisplayPicker ? displayPicker : ''}
         <div className='column is-one-quarter' style={{ overflowY: 'auto' }}>
