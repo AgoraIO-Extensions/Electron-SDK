@@ -1,3 +1,8 @@
+## 3.7.204-build.414(Apr 14th, 2022)
+- update native sdk
+- Optimize the logic for ChannelMediaOption
+
+
 ## 3.7.204-build.412(Apr 12th, 2022)
 - update native sdk
 - update api
