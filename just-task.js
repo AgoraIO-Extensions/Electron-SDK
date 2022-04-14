@@ -90,7 +90,7 @@ task('download', () => {
 task('install', () => {
   const config = Object.assign({}, getArgvFromNpmEnv(), getArgvFromPkgJson())
   // work-around
-  const addonVersion = '3.6.217-build.316'
+  const addonVersion = '3.6.220-build.407'
   if (config.prebuilt) {
     download({
       electronVersion: config.electronVersion, 
