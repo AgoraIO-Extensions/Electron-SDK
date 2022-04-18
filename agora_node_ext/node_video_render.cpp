@@ -30,6 +30,22 @@ bool NodeVideoFrameObserver::onSecondaryCameraCaptureVideoFrame(
   return true;
 }
 
+bool NodeVideoFrameObserver::onTertiaryCameraCaptureVideoFrame(
+  agora::media::IVideoFrameObserver::VideoFrame& videoFrame) {
+  auto* pTransporter = getNodeVideoFrameTransporter();
+  pTransporter->deliverFrame_I420(NodeRenderType::NODE_RENDER_TYPE_LOCAL, "", 0,
+    2, videoFrame);
+  return true;
+}
+
+bool NodeVideoFrameObserver::onQuaternaryCameraCaptureVideoFrame(
+  agora::media::IVideoFrameObserver::VideoFrame& videoFrame) {
+  auto* pTransporter = getNodeVideoFrameTransporter();
+  pTransporter->deliverFrame_I420(NodeRenderType::NODE_RENDER_TYPE_LOCAL, "", 0,
+    3, videoFrame);
+  return true;
+}
+
 bool NodeVideoFrameObserver::onRenderVideoFrame(
     const char *channelId, rtc::uid_t remoteUid,
     agora::media::IVideoFrameObserver::VideoFrame &videoFrame) {
@@ -80,6 +96,12 @@ bool NodeVideoFrameObserver::onPreEncodeScreenVideoFrame(agora::media::IVideoFra
 }
 
 bool NodeVideoFrameObserver::onSecondaryPreEncodeCameraVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame){
+  return true;
+}
+bool NodeVideoFrameObserver::onTertiaryPreEncodeCameraVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) {
+  return true;
+}
+bool NodeVideoFrameObserver::onQuaternaryPreEncodeCameraVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& videoFrame) {
   return true;
 }
 
