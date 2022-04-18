@@ -333,12 +333,6 @@ public:
   NAPI_API(startSecondaryScreenCapture);
   NAPI_API(stopPrimaryScreenCapture);
   NAPI_API(stopSecondaryScreenCapture);
-
-  NAPI_API(startTertiaryCameraCapture);
-  NAPI_API(startQuaternaryCameraCapture);
-  NAPI_API(stopTertiaryCameraCapture);
-  NAPI_API(stopQuaternaryCameraCapture);
-
   NAPI_API(adjustLoopbackRecordingVolume);
   NAPI_API(setCameraDeviceOrientation);
 
