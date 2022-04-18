@@ -4403,6 +4403,18 @@ class AgoraRtcEngine extends EventEmitter {
   stopSecondaryCameraCapture(): number {
     return this.rtcEngine.stopSecondaryCameraCapture();
   }
+  // startTertiaryCameraCapture(config: CameraCapturerConfiguration): number {
+  //   return this.rtcEngine.startTertiaryCameraCapture(config);
+  // }
+  // startQuaternaryCameraCapture(config: CameraCapturerConfiguration): number {
+  //   return this.rtcEngine.startQuaternaryCameraCapture(config);
+  // }
+  // stopTertiaryCameraCapture(): number {
+  //   return this.rtcEngine.stopTertiaryCameraCapture();
+  // }
+  // stopQuaternaryCameraCapture(): number {
+  //   return this.rtcEngine.stopQuaternaryCameraCapture();
+  // }
 
   setCameraDeviceOrientation(type: VIDEO_SOURCE_TYPE, orientation:VIDEO_ORIENTATION): number {
     return this.rtcEngine.setCameraDeviceOrientation(type, orientation);
