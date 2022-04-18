@@ -1119,6 +1119,7 @@ class AgoraRtcEngine extends EventEmitter {
   ) {
     const initRenderFailCallBack = (
       renderMode: 1 | 2 | 3 | 4,
+      contentMode: 0 | 1,
       renderDescription = 'initRender'
     ) => {
       try {
@@ -1138,6 +1139,7 @@ class AgoraRtcEngine extends EventEmitter {
         this.renderMode = renderMode;
         this.destroyRender(key, channelId, () => {});
         this.initRender(key, view, channelId, options);
+        this.setupViewContentMode(key, contentMode, channelId);
       } catch (error) {
         console.log('initRenderFailCallBack', error);
       }
