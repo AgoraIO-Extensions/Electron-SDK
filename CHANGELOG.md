@@ -1,3 +1,7 @@
+## 3.7.202-rc.204-build.418(April 18th, 2022)
+* update native sdk
+* fix api typo: getVideoCapability
+
 ## 3.7.202-rc.203-build.330(Mar 30th, 2022)
 * update native sdk
 * add api: getVideoCapability, getVideoNumberOfCapabilities
