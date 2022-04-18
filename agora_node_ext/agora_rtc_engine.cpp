@@ -152,6 +152,8 @@ void NodeRtcEngine::Init(Local<Object> &module) {
   PROPERTY_METHOD_DEFINE(startVideoDeviceTest)
   PROPERTY_METHOD_DEFINE(stopVideoDeviceTest)
   PROPERTY_METHOD_DEFINE(getAudioPlaybackDevices)
+  PROPERTY_METHOD_DEFINE(followSystemPlaybackDevice)
+  PROPERTY_METHOD_DEFINE(followSystemRecordingDevice)
   PROPERTY_METHOD_DEFINE(setAudioPlaybackDevice)
   PROPERTY_METHOD_DEFINE(getPlaybackDeviceInfo)
   PROPERTY_METHOD_DEFINE(getCurrentAudioPlaybackDevice)
@@ -3642,6 +3644,42 @@ NAPI_API_DEFINE(NodeRtcEngine, getAudioPlaybackDevices) {
   LOG_LEAVE;
 }
 
+NAPI_API_DEFINE(NodeRtcEngine, followSystemPlaybackDevice) {
+  // LOG_ENTER;
+  // do {
+  //   NodeRtcEngine* pEngine = nullptr;
+  //   Isolate* isolate = args.GetIsolate();
+  //   Local<Context> context = isolate->GetCurrentContext();
+  //   napi_get_native_this(args, pEngine);
+  //   CHECK_NATIVE_THIS(pEngine);
+
+  //   if (!pEngine->m_audioVdm) {
+  //     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
+  //   }
+  //   IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+
+  // } while (false);
+  // LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, followSystemRecordingDevice) {
+  // LOG_ENTER;
+  // do {
+  //   NodeRtcEngine* pEngine = nullptr;
+  //   Isolate* isolate = args.GetIsolate();
+  //   Local<Context> context = isolate->GetCurrentContext();
+  //   napi_get_native_this(args, pEngine);
+  //   CHECK_NATIVE_THIS(pEngine);
+
+  //   if (!pEngine->m_audioVdm) {
+  //     pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
+  //   }
+  //   IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+   
+  // } while (false);
+  // LOG_LEAVE;
+}
+
 NAPI_API_DEFINE(NodeRtcEngine, setAudioPlaybackDevice) {
   LOG_ENTER;
   int result = -1;
@@ -4647,7 +4685,7 @@ NAPI_API_DEFINE(NodeRtcEngine, getVideoCapability) {
 
     result = vdm->getCapability(deviceUniqueIdUTF8, deviceCapabilityNumber, videoFormat);
 
-    NODE_SET_OBJ_PROP_UINT32(isolate, videoFormatObj, "windowId", videoFormat.width);
+    NODE_SET_OBJ_PROP_UINT32(isolate, videoFormatObj, "width", videoFormat.width);
     NODE_SET_OBJ_PROP_UINT32(isolate, videoFormatObj, "height", videoFormat.height);
     NODE_SET_OBJ_PROP_UINT32(isolate, videoFormatObj, "fps", videoFormat.fps);
   } while (false);

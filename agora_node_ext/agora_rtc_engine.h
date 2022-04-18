@@ -209,6 +209,8 @@ public:
   NAPI_API(startVideoDeviceTest);
   NAPI_API(stopVideoDeviceTest);
   NAPI_API(getAudioPlaybackDevices);
+  NAPI_API(followSystemPlaybackDevice);
+  NAPI_API(followSystemRecordingDevice);
   NAPI_API(setAudioPlaybackDevice);
   NAPI_API(getPlaybackDeviceInfo);
   NAPI_API(getCurrentAudioPlaybackDevice);
