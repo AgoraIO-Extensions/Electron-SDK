@@ -15,7 +15,8 @@ const AgoraRender = function(initRenderFailCallBack) {
   let texCoordBuffer;
   let surfaceBuffer;
   // choose softwareRender
-  let failInitRenderCB = () => initRenderFailCallBack(2, 'webgl render');
+  let failInitRenderCB = contentMode =>
+    initRenderFailCallBack(2, contentMode, 'webgl render');
   const that = {
     view: undefined,
     mirrorView: false,
@@ -264,7 +265,7 @@ const AgoraRender = function(initRenderFailCallBack) {
       console.warn(error);
     }
     if (!that.gl) {
-      failInitRenderCB && failInitRenderCB();
+      failInitRenderCB && failInitRenderCB(this.contentMode);
       failInitRenderCB = null;
       return;
     }
