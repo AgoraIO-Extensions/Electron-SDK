@@ -133,9 +133,11 @@ class RendererManager {
         return;
       }
       renderConfig.renders = renders.filter((r) => r !== renderer);
+      const contentMode = renderer.contentMode;
       renderer.unbind();
       this.renderMode = RENDER_MODE.SOFTWARE;
       const newRender = this.createRenderer();
+      newRender.contentMode = contentMode;
       newRender.bind(view);
       renderConfig.renders.push(newRender);
     });
