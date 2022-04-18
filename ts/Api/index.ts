@@ -1057,19 +1057,24 @@ class AgoraRtcEngine extends EventEmitter {
    * @param view The Dom elements to render the video.
    */
   initLocalRender(type: number, devicdId: number, view: Element, options?: RendererOptions) {
-    const initRenderFailCallBack = (renderMode : 1|2|3|4, renderDescription = 'initRender')=>{
+    const initRenderFailCallBack = (
+      renderMode: 1 | 2 | 3 | 4,
+      contentMode: 0 | 1,
+      renderDescription = "initRender"
+    ) => {
       try {
         console.warn(
           `info:${renderDescription}  fail, change remderMode to ${renderMode}`
         );
-      
+
         this.renderMode = 2;
         this.destroyLocalRender(type, devicdId);
         this.initLocalRender(type, devicdId, view, options);
+        this.setupLocalViewContentMode(type, devicdId, contentMode);
       } catch (error) {
         console.log("initRenderFailCallBack", error);
       }
-    }
+    };
     if (type != 0 && type != 3 && type != 4) {
       console.warn('Invalid type for initLocalRender, local render type should be 0, 3, 4.');
       return;
@@ -1130,7 +1135,11 @@ class AgoraRtcEngine extends EventEmitter {
    * @param view The Dom elements to render the video.
    */
   initRemoteRender(uid: number, channelId: string, view: Element, options?: RendererOptions) {
-    const initRenderFailCallBack = (renderMode : 1|2|3|4, renderDescription = 'initRender')=>{
+    const initRenderFailCallBack = (
+      renderMode: 1 | 2 | 3 | 4,
+      contentMode: 0 | 1,
+      renderDescription = "initRender"
+    ) => {
       try {
         console.warn(
           `info:${renderDescription}  fail, change remderMode to ${renderMode}`
@@ -1148,10 +1157,11 @@ class AgoraRtcEngine extends EventEmitter {
         this.renderMode = 2;
         this.destroyRemoteRender(uid, channelId);
         this.initRemoteRender(uid, channelId, view, options);
+        this.setupRemoteViewContentMode(uid, channelId, contentMode);
       } catch (error) {
         console.log("initRenderFailCallBack", error);
       }
-    }
+    };
     let rendererOptions = {
       append: options ? options.append : false
     }
