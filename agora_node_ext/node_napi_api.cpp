@@ -148,6 +148,9 @@ int NodeVideoFrameTransporter::deliverVideoSourceFrame(const char* payload,
   int destWidth = videoInfo.m_destWidth ? videoInfo.m_destWidth : info->width;
   int destHeight =
       videoInfo.m_destHeight ? videoInfo.m_destHeight : info->height;
+  if (destHeight % 2 != 0) {
+    destHeight = (destHeight + 1) / 2 * 2;
+  }
   size_t imageSize = sizeof(image_header_type) + destWidth * destHeight * 3 / 2;
   auto s = videoInfo.m_buffer.size();
   if (s < imageSize || s >= imageSize * 2)
