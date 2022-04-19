@@ -1,3 +1,6 @@
+##2.9.106-rc.243-build.419
+- fix destHeight
+
 ##2.9.106-rc.243-build.402
 - fix getAllWindowInfo
 
