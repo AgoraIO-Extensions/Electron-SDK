@@ -118,6 +118,9 @@ int AgoraVideoSourceTransporter::deliverFrame_I420(
   // getVideoSize(profile, destWidth, destHeight);
   destWidth = stride;
   destHeight = height;
+  if (destHeight % 2 != 0) {
+    destHeight = (destHeight + 1) / 2 * 2;
+  }
   int destWidthU = destWidth / 2;
   int destHeightU = destHeight / 2;
   char* pbuf = m_buf.data();
