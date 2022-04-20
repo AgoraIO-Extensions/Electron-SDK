@@ -11,7 +11,7 @@
 #include "agora_rtc_engine.h"
 #include "IAgoraRtcEngine2.h"
 #include "IAgoraRtcEngineEx.h"
-#include "agora_meida_player.h"
+#include "agora_media_player.h"
 #include "loguru.hpp"
 #include "node_napi_api.h"
 #include "node_uid.h"
@@ -33,362 +33,6 @@
 using std::string;
 namespace agora {
 namespace rtc {
-
-void setChannelMediaOptions(ChannelMediaOptions &option, std::string &token,
-                            const Nan::FunctionCallbackInfo<Value> &args,
-                            const Local<Object> &value) {
-  Isolate *isolate = args.GetIsolate();
-  napi_status status = napi_invalid_arg;
-
-  // publishCameraTrack;//1
-  bool publishCameraTrack = false;
-  status = napi_get_object_property_bool_(isolate, value, "publishCameraTrack",
-                                          publishCameraTrack);
-  if (status == napi_ok) {
-    option.publishCameraTrack = publishCameraTrack;
-  }
-
-  // publishSecondaryCameraTrack;//2
-  bool publishSecondaryCameraTrack = false;
-  status = napi_get_object_property_bool_(isolate, value,
-                                          "publishSecondaryCameraTrack",
-                                          publishSecondaryCameraTrack);
-  if (status == napi_ok) {
-    option.publishSecondaryCameraTrack = publishSecondaryCameraTrack;
-  }
-
-  // //publishTertiaryCameraTrack;//3
-  // bool publishTertiaryCameraTrack = false;
-  // status = napi_get_object_property_bool_(isolate, value,
-  // "publishTertiaryCameraTrack", publishTertiaryCameraTrack); if (status ==
-  // napi_ok) {
-  //   option.publishTertiaryCameraTrack = publishTertiaryCameraTrack;
-  // }
-
-  // //publishQuaternaryCameraTrack;//4
-  // bool publishQuaternaryCameraTrack = false;
-  // status = napi_get_object_property_bool_(isolate, value,
-  // "publishQuaternaryCameraTrack", publishQuaternaryCameraTrack); if (status
-  // == napi_ok) {
-  //   option.publishQuaternaryCameraTrack = publishQuaternaryCameraTrack;
-  // }
-
-  // publishAudioTrack;//5
-  bool publishAudioTrack = false;
-  status = napi_get_object_property_bool_(isolate, value, "publishAudioTrack",
-                                          publishAudioTrack);
-  if (status == napi_ok) {
-    option.publishAudioTrack = publishAudioTrack;
-  }
-
-  // publishScreenTrack;//6
-  bool publishScreenTrack = false;
-  status = napi_get_object_property_bool_(isolate, value, "publishScreenTrack",
-                                          publishScreenTrack);
-  if (status == napi_ok) {
-    option.publishScreenTrack = publishScreenTrack;
-  }
-
-  // publishSecondaryScreenTrack;//7
-  bool publishSecondaryScreenTrack = false;
-  status = napi_get_object_property_bool_(isolate, value,
-                                          "publishSecondaryScreenTrack",
-                                          publishSecondaryScreenTrack);
-  if (status == napi_ok) {
-    option.publishSecondaryScreenTrack = publishSecondaryScreenTrack;
-  }
-
-  // publishCustomAudioTrack;//8
-  bool publishCustomAudioTrack = false;
-  status = napi_get_object_property_bool_(
-      isolate, value, "publishCustomAudioTrack", publishCustomAudioTrack);
-  if (status == napi_ok) {
-    option.publishCustomAudioTrack = publishCustomAudioTrack;
-  }
-
-  // publishCustomAudioSourceId;//9
-  int32_t publishCustomAudioSourceId = 0;
-  status = napi_get_object_property_int32_(
-      isolate, value, "publishCustomAudioSourceId", publishCustomAudioSourceId);
-  if (status == napi_ok) {
-    option.publishCustomAudioSourceId = publishCustomAudioSourceId;
-  }
-
-  // publishCustomAudioTrackEnableAec;//10
-  bool publishCustomAudioTrackEnableAec = false;
-  status = napi_get_object_property_bool_(isolate, value,
-                                          "publishCustomAudioTrackEnableAec",
-                                          publishCustomAudioTrackEnableAec);
-  if (status == napi_ok) {
-    option.publishCustomAudioTrackEnableAec = publishCustomAudioTrackEnableAec;
-  }
-
-  // publishDirectCustomAudioTrack;//11
-  bool publishDirectCustomAudioTrack = false;
-  status = napi_get_object_property_bool_(isolate, value,
-                                          "publishDirectCustomAudioTrack",
-                                          publishDirectCustomAudioTrack);
-  if (status == napi_ok) {
-    option.publishDirectCustomAudioTrack = publishDirectCustomAudioTrack;
-  }
-
-  // publishCustomAudioTrackAec;//12
-  bool publishCustomAudioTrackAec = false;
-  status = napi_get_object_property_bool_(
-      isolate, value, "publishCustomAudioTrackAec", publishCustomAudioTrackAec);
-  if (status == napi_ok) {
-    option.publishCustomAudioTrackAec = publishCustomAudioTrackAec;
-  }
-
-  // publishCustomVideoTrack;//13
-  bool publishCustomVideoTrack = false;
-  status = napi_get_object_property_bool_(
-      isolate, value, "publishCustomVideoTrack", publishCustomVideoTrack);
-  if (status == napi_ok) {
-    option.publishCustomVideoTrack = publishCustomVideoTrack;
-  }
-
-  // publishEncodedVideoTrack;//14
-  bool publishEncodedVideoTrack = false;
-  status = napi_get_object_property_bool_(
-      isolate, value, "publishEncodedVideoTrack", publishEncodedVideoTrack);
-  if (status == napi_ok) {
-    option.publishEncodedVideoTrack = publishEncodedVideoTrack;
-  }
-
-  // publishMediaPlayerAudioTrack;//15
-  bool publishMediaPlayerAudioTrack = false;
-  status = napi_get_object_property_bool_(isolate, value,
-                                          "publishMediaPlayerAudioTrack",
-                                          publishMediaPlayerAudioTrack);
-  if (status == napi_ok) {
-    option.publishMediaPlayerAudioTrack = publishMediaPlayerAudioTrack;
-  }
-
-  // publishMediaPlayerVideoTrack;//16
-  bool publishMediaPlayerVideoTrack = false;
-  status = napi_get_object_property_bool_(isolate, value,
-                                          "publishMediaPlayerVideoTrack",
-                                          publishMediaPlayerVideoTrack);
-  if (status == napi_ok) {
-    option.publishMediaPlayerVideoTrack = publishMediaPlayerVideoTrack;
-  }
-
-  // publishTrancodedVideoTrack;//17
-  bool publishTrancodedVideoTrack = false;
-  status = napi_get_object_property_bool_(
-      isolate, value, "publishTrancodedVideoTrack", publishTrancodedVideoTrack);
-  if (status == napi_ok) {
-    option.publishTrancodedVideoTrack = publishTrancodedVideoTrack;
-  }
-
-  // autoSubscribeAudio;//18
-  bool autoSubscribeAudio = false;
-  status = napi_get_object_property_bool_(isolate, value, "autoSubscribeAudio",
-                                          autoSubscribeAudio);
-  if (status == napi_ok) {
-    option.autoSubscribeAudio = autoSubscribeAudio;
-  }
-
-  // autoSubscribeVideo;//19
-  bool autoSubscribeVideo = false;
-  status = napi_get_object_property_bool_(isolate, value, "autoSubscribeVideo",
-                                          autoSubscribeVideo);
-  if (status == napi_ok) {
-    option.autoSubscribeVideo = autoSubscribeVideo;
-  }
-
-  // enableAudioRecordingOrPlayout;//20
-  bool enableAudioRecordingOrPlayout = false;
-  status = napi_get_object_property_bool_(isolate, value,
-                                          "enableAudioRecordingOrPlayout",
-                                          enableAudioRecordingOrPlayout);
-  if (status == napi_ok) {
-    option.enableAudioRecordingOrPlayout = enableAudioRecordingOrPlayout;
-  }
-
-  // publishMediaPlayerId;//21
-  int32_t publishMediaPlayerId = 0;
-  status = napi_get_object_property_int32_(
-      isolate, value, "publishMediaPlayerId", publishMediaPlayerId);
-  if (status == napi_ok) {
-    option.publishMediaPlayerId = publishMediaPlayerId;
-  }
-
-  // publishMediaPlayerId;//22
-  int32_t clientRoleType = 0;
-  status = napi_get_object_property_int32_(isolate, value, "clientRoleType",
-                                           clientRoleType);
-  if (status == napi_ok) {
-    option.clientRoleType = (CLIENT_ROLE_TYPE)clientRoleType;
-  }
-
-  // audienceLatencyLevel;//23
-  int32_t audienceLatencyLevel = 0;
-  status = napi_get_object_property_int32_(
-      isolate, value, "audienceLatencyLevel", audienceLatencyLevel);
-  if (status == napi_ok) {
-    option.audienceLatencyLevel =
-        (AUDIENCE_LATENCY_LEVEL_TYPE)audienceLatencyLevel;
-  }
-
-  // defaultVideoStreamType;//24
-  int32_t defaultVideoStreamType = 0;
-  status = napi_get_object_property_int32_(
-      isolate, value, "defaultVideoStreamType", defaultVideoStreamType);
-  if (status == napi_ok) {
-    option.defaultVideoStreamType = (VIDEO_STREAM_TYPE)defaultVideoStreamType;
-  }
-
-  // channelProfile;//25
-  int32_t channelProfile = 0;
-  status = napi_get_object_property_int32_(isolate, value, "channelProfile",
-                                           channelProfile);
-  if (status == napi_ok) {
-    option.channelProfile = (CHANNEL_PROFILE_TYPE)channelProfile;
-  }
-
-  // audioDelayMs;//26
-  int32_t audioDelayMs = 0;
-  status = napi_get_object_property_int32_(isolate, value, "audioDelayMs",
-                                           audioDelayMs);
-  if (status == napi_ok) {
-    option.audioDelayMs = audioDelayMs;
-  }
-
-  // mediaPlayerAudioDelayMs;//27
-  int32_t mediaPlayerAudioDelayMs = 0;
-  status = napi_get_object_property_int32_(
-      isolate, value, "mediaPlayerAudioDelayMs", mediaPlayerAudioDelayMs);
-  if (status == napi_ok) {
-    option.mediaPlayerAudioDelayMs = mediaPlayerAudioDelayMs;
-  }
-
-  // token;//28
-  NodeString tokenNodeString;
-  status = napi_get_object_property_nodestring_(isolate, value, "token",
-                                                tokenNodeString);
-  if (status == napi_ok && tokenNodeString) {
-    token = std::string(tokenNodeString);
-    option.token = token.c_str();
-  }
-
-  // enableBuiltInMediaEncryption;29
-  bool enableBuiltInMediaEncryption = false;
-  status = napi_get_object_property_bool_(isolate, value,
-                                          "enableBuiltInMediaEncryption",
-                                          enableBuiltInMediaEncryption);
-  if (status == napi_ok) {
-    option.enableBuiltInMediaEncryption = enableBuiltInMediaEncryption;
-  }
-
-  // publishRhythmPlayerTrack;//30
-  bool publishRhythmPlayerTrack = false;
-  status = napi_get_object_property_bool_(
-      isolate, value, "publishRhythmPlayerTrack", publishRhythmPlayerTrack);
-  if (status == napi_ok) {
-    option.publishRhythmPlayerTrack = publishRhythmPlayerTrack;
-  }
-
-  // isInteractiveAudience;//31
-  bool isInteractiveAudience = false;
-  status = napi_get_object_property_bool_(
-      isolate, value, "isInteractiveAudience", isInteractiveAudience);
-  if (status == napi_ok) {
-    option.isInteractiveAudience = isInteractiveAudience;
-  }
-
-  Local<Object> encodedVideoTrackOptionObj;
-  status = napi_get_object_property_object_(
-      isolate, value, "encodedVideoTrackOption", encodedVideoTrackOptionObj);
-  if (status == napi_ok && encodedVideoTrackOptionObj->IsObject()) {
-    // Optional<TCcMode> ccMode;
-    // Optional<VIDEO_CODEC_TYPE> codecType;
-    // Optional<int> targetBitrate;
-
-    int32_t ccMode = 0;
-    status = napi_get_object_property_int32_(
-        isolate, encodedVideoTrackOptionObj, "ccMode", ccMode);
-    if (status == napi_ok) {
-      option.encodedVideoTrackOption.ccMode = (TCcMode)ccMode;
-    }
-
-    int32_t codecType = 0;
-    status = napi_get_object_property_int32_(
-        isolate, encodedVideoTrackOptionObj, "codecType", codecType);
-    if (status == napi_ok) {
-      option.encodedVideoTrackOption.codecType = (VIDEO_CODEC_TYPE)codecType;
-    }
-
-    int32_t targetBitrate = 0;
-    status = napi_get_object_property_int32_(
-        isolate, encodedVideoTrackOptionObj, "targetBitrate", targetBitrate);
-    if (status == napi_ok) {
-      option.encodedVideoTrackOption.targetBitrate = targetBitrate;
-    }
-  }
-
-  Local<Object> audioOptionsAdvancedObj;
-  status = napi_get_object_property_object_(
-      isolate, value, "audioOptionsAdvanced", audioOptionsAdvancedObj);
-  if (status == napi_ok && audioOptionsAdvancedObj->IsObject()) {
-    // Optional<bool> enable_aec_external_custom_;
-    // Optional<bool> enable_aec_external_loopback_;
-
-    bool enable_aec_external_custom_ = 0;
-    status = napi_get_object_property_bool_(isolate, audioOptionsAdvancedObj,
-                                            "enable_aec_external_custom_",
-                                            enable_aec_external_custom_);
-    if (status == napi_ok) {
-      option.audioOptionsAdvanced.enable_aec_external_custom_ =
-          enable_aec_external_custom_;
-    }
-
-    bool enable_aec_external_loopback_ = 0;
-    status = napi_get_object_property_bool_(isolate, audioOptionsAdvancedObj,
-                                            "enable_aec_external_loopback_",
-                                            enable_aec_external_loopback_);
-    if (status == napi_ok) {
-      option.audioOptionsAdvanced.enable_aec_external_loopback_ =
-          enable_aec_external_loopback_;
-    }
-  }
-
-  // Optional<bool> publishCameraTrack; 1
-  // Optional<bool> publishSecondaryCameraTrack; 2
-  // Optional<bool> publishTertiaryCameraTrack;3
-  // Optional<bool> publishQuaternaryCameraTrack;4
-  // Optional<bool> publishAudioTrack;5
-  // Optional<bool> publishScreenTrack;6
-  // Optional<bool> publishSecondaryScreenTrack;7
-  // Optional<bool> publishCustomAudioTrack;8
-  // Optional<int> publishCustomAudioSourceId;//9
-  // Optional<bool> publishCustomAudioTrackEnableAec;//10
-  // Optional<bool> publishDirectCustomAudioTrack;//11
-  // Optional<bool> publishCustomAudioTrackAec;//12
-  // Optional<bool> publishCustomVideoTrack;//13
-  // Optional<bool> publishEncodedVideoTrack;//14
-  // Optional<bool> publishMediaPlayerAudioTrack;//15
-  // Optional<bool> publishMediaPlayerVideoTrack;//16
-  // Optional<bool> publishTrancodedVideoTrack;//17
-  // Optional<bool> autoSubscribeAudio;//18
-  // Optional<bool> autoSubscribeVideo;//19
-  // Optional<bool> enableAudioRecordingOrPlayout;//20
-  // Optional<int> publishMediaPlayerId;//21
-  // Optional<CLIENT_ROLE_TYPE> clientRoleType;//22
-  // Optional<AUDIENCE_LATENCY_LEVEL_TYPE> audienceLatencyLevel;//23
-  // Optional<VIDEO_STREAM_TYPE> defaultVideoStreamType;//24
-  // Optional<CHANNEL_PROFILE_TYPE> channelProfile;//25
-  // Optional<int> audioDelayMs;//26
-  // Optional<int> mediaPlayerAudioDelayMs;//27
-  // Optional<const char*> token;//28
-  // Optional<bool> enableBuiltInMediaEncryption;29
-  // Optional<bool> publishRhythmPlayerTrack;//30
-  // Optional<bool> isInteractiveAudience;//31
-  // EncodedVideoTrackOptions encodedVideoTrackOption;//32
-  // AudioOptionsAdvanced audioOptionsAdvanced;//33
-}
-
 DEFINE_CLASS(NodeRtcEngine);
 
 /**
@@ -418,6 +62,7 @@ void NodeRtcEngine::Init(Local<Object> &module) {
   PROPERTY_METHOD_DEFINE(stopPreview)
   // PROPERTY_METHOD_DEFINE(setVideoProfile)
   PROPERTY_METHOD_DEFINE(setVideoEncoderConfiguration)
+  PROPERTY_METHOD_DEFINE(setVideoEncoderConfigurationEx)
   PROPERTY_METHOD_DEFINE(enableAudio)
   PROPERTY_METHOD_DEFINE(disableAudio)
   PROPERTY_METHOD_DEFINE(setAudioProfile)
@@ -2344,17 +1989,12 @@ NAPI_API_DEFINE(NodeRtcEngine, enableLoopbackRecordingEx) {
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     bool enabled;
-    nodestring channelId;
+    std::string channelId;
     RtcConnection connection;
-    status = napi_get_value_bool_(args[0], enabled);
-    CHECK_NAPI_STATUS(pEngine, status);
 
-    status = napi_get_value_object_(isolate, args[1], obj);
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    status = napi_get_object_property_nodestring_(isolate, obj, "channelId",
-                                                  channelId);
-    connection.channelId = channelId;
+    Local<Object> connectionObj;
+    status = napi_get_value_object_(isolate, args[1], connectionObj);
+    decodeRtcConnection(connection, channelId, status, args, connectionObj);
     CHECK_NAPI_STATUS(pEngine, status);
     status = napi_get_object_property_uint32_(isolate, obj, "localUid",
                                               connection.localUid);
@@ -2802,92 +2442,47 @@ NAPI_API_DEFINE(NodeRtcEngine, setVideoEncoderConfiguration) {
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
-    if (!args[0]->IsObject()) {
-      status = napi_invalid_arg;
-      CHECK_NAPI_STATUS(pEngine, status);
-    }
     Local<Object> obj;
     status = napi_get_value_object_(isolate, args[0], obj);
-    CHECK_NAPI_STATUS(pEngine, status);
-    VideoDimensions dimensions;
+
     VideoEncoderConfiguration config;
-
-    status = napi_get_object_property_int32_(isolate, obj, "width",
-                                             dimensions.width);
+    decodeVideoEncoderConfiguration(config, status, args, obj);
     CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_int32_(isolate, obj, "height",
-                                             dimensions.height);
-    CHECK_NAPI_STATUS(pEngine, status);
-    config.dimensions = dimensions;
-    status = napi_get_object_property_int32_(isolate, obj, "bitrate",
-                                             config.bitrate);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_int32_(isolate, obj, "minBitrate",
-                                             config.minBitrate);
-    CHECK_NAPI_STATUS(pEngine, status);
-    // status = napi_get_object_property_int32_(isolate, obj, "minFrameRate",
-    // config.minFrameRate); CHECK_NAPI_STATUS(pEngine, status);
-
-    int frameRateVal;
-    FRAME_RATE frameRate;
-    status = napi_get_object_property_int32_(isolate, obj, "frameRate",
-                                             frameRateVal);
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    config.frameRate = (FRAME_RATE)frameRateVal;
-
-    int orientationModeVal;
-    ORIENTATION_MODE orientationMode;
-    status = napi_get_object_property_int32_(isolate, obj, "orientationMode",
-                                             orientationModeVal);
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    switch (orientationModeVal) {
-    case 0:
-      orientationMode = ORIENTATION_MODE_ADAPTIVE;
-      break;
-    case 1:
-      orientationMode = ORIENTATION_MODE_FIXED_LANDSCAPE;
-      break;
-    case 2:
-      orientationMode = ORIENTATION_MODE_FIXED_PORTRAIT;
-      break;
-    default:
-      status = napi_invalid_arg;
-      break;
-    }
-    CHECK_NAPI_STATUS(pEngine, status);
-    config.orientationMode = orientationMode;
-
-    int degradationPrefValue;
-    DEGRADATION_PREFERENCE degradationPref;
-    status = napi_get_object_property_int32_(
-        isolate, obj, "degradationPreference", degradationPrefValue);
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    switch (degradationPrefValue) {
-    case 0:
-      degradationPref = MAINTAIN_QUALITY;
-      break;
-    case 1:
-      degradationPref = MAINTAIN_FRAMERATE;
-      break;
-    case 2:
-      degradationPref = MAINTAIN_BALANCED;
-      break;
-    default:
-      status = napi_invalid_arg;
-      break;
-    }
-    CHECK_NAPI_STATUS(pEngine, status);
-    config.degradationPreference = degradationPref;
-
-    int mirrorMode;
-    status =
-        napi_get_object_property_int32_(isolate, obj, "mirrorMode", mirrorMode);
-    config.mirrorMode = VIDEO_MIRROR_MODE_TYPE(mirrorMode);
 
     result = pEngine->m_engine->setVideoEncoderConfiguration(config);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, setVideoEncoderConfigurationEx) {
+  LOG_ENTER;
+  int result = -1;
+  do {
+    napi_status status = napi_ok;
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    Local<Object> obj;
+    status = napi_get_value_object_(isolate, args[0], obj);
+
+    VideoEncoderConfiguration config;
+    decodeVideoEncoderConfiguration(config, status, args, obj);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    RtcConnection connection;
+    std::string channelId;
+
+    Local<Object> connectionObj;
+    status = napi_get_value_object_(isolate, args[1], connectionObj);
+    decodeRtcConnection(connection, channelId, status, args, connectionObj);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    IRtcEngineEx *engineEx = (IRtcEngineEx *)pEngine->m_engine;
+
+    result = engineEx->setVideoEncoderConfigurationEx(config, connection);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -3036,28 +2631,21 @@ NAPI_API_DEFINE(NodeRtcEngine, muteRemoteAudioStreamEx) {
   do {
     NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
+    Isolate *isolate = args.GetIsolate();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     uid_t remoteUid;
     bool mute;
-    nodestring channelId;
+    std::string channelId;
     RtcConnection rtcConnection;
     status = NodeUid::getUidFromNodeValue(args[0], remoteUid);
     CHECK_NAPI_STATUS(pEngine, status);
     status = napi_get_value_bool_(args[1], mute);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    Local<Object> obj;
-    Isolate *isolate = args.GetIsolate();
-    status = napi_get_value_object_(isolate, args[2], obj);
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    status = napi_get_object_property_nodestring_(isolate, obj, "channelId",
-                                                  channelId);
-    rtcConnection.channelId = channelId;
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_uint32_(isolate, obj, "localUid",
-                                              rtcConnection.localUid);
+    Local<Object> connectionObj;
+    status = napi_get_value_object_(isolate, args[2], connectionObj);
+    decodeRtcConnection(rtcConnection, channelId, status, args, connectionObj);
     CHECK_NAPI_STATUS(pEngine, status);
 
     IRtcEngineEx *engineEx = (IRtcEngineEx *)pEngine->m_engine;
@@ -3377,29 +2965,22 @@ NAPI_API_DEFINE(NodeRtcEngine, muteRemoteVideoStreamEx) {
   do {
     NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
+    Isolate *isolate = args.GetIsolate();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     uid_t uid;
     bool mute;
     unsigned int connectionId;
     RtcConnection rtcConnection;
-    nodestring channelId;
+    std::string channelId;
     status = NodeUid::getUidFromNodeValue(args[0], uid);
     CHECK_NAPI_STATUS(pEngine, status);
     status = napi_get_value_bool_(args[1], mute);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    Local<Object> obj;
-    Isolate *isolate = args.GetIsolate();
-    status = napi_get_value_object_(isolate, args[2], obj);
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    status = napi_get_object_property_nodestring_(isolate, obj, "channelId",
-                                                  channelId);
-    rtcConnection.channelId = channelId;
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_uint32_(isolate, obj, "localUid",
-                                              rtcConnection.localUid);
+    Local<Object> connectionObj;
+    status = napi_get_value_object_(isolate, args[2], connectionObj);
+    decodeRtcConnection(rtcConnection, channelId, status, args, connectionObj);
     CHECK_NAPI_STATUS(pEngine, status);
 
     IRtcEngineEx *engineEx = (IRtcEngineEx *)pEngine->m_engine;
@@ -5309,18 +4890,11 @@ NAPI_API_DEFINE(NodeRtcEngine, leaveChannelEx) {
     CHECK_NATIVE_THIS(pEngine);
 
     RtcConnection rtcConnection;
-    nodestring channelId;
+    std::string channelId;
 
-    Local<Object> obj;
-    status = napi_get_value_object_(isolate, args[0], obj);
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    status = napi_get_object_property_nodestring_(isolate, obj, "channelId",
-                                                  channelId);
-    rtcConnection.channelId = channelId;
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_uint32_(isolate, obj, "localUid",
-                                              rtcConnection.localUid);
+    Local<Object> connectionObj;
+    status = napi_get_value_object_(isolate, args[0], connectionObj);
+    decodeRtcConnection(rtcConnection, channelId, status, args, connectionObj);
     CHECK_NAPI_STATUS(pEngine, status);
 
     IRtcEngineEx *engineEx = (IRtcEngineEx *)pEngine->m_engine;
@@ -5672,18 +5246,11 @@ NAPI_API_DEFINE(NodeRtcEngine, joinChannelEx) {
     CHECK_NAPI_STATUS(pEngine, status);
 
     RtcConnection rtcConnection;
-    nodestring channelId;
+    std::string channelId;
 
-    Local<Object> obj;
-    status = napi_get_value_object_(isolate, args[1], obj);
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    status = napi_get_object_property_nodestring_(isolate, obj, "channelId",
-                                                  channelId);
-    rtcConnection.channelId = channelId;
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_uint32_(isolate, obj, "localUid",
-                                              rtcConnection.localUid);
+    Local<Object> connectionObj;
+    status = napi_get_value_object_(isolate, args[1], connectionObj);
+    decodeRtcConnection(rtcConnection, channelId, status, args, connectionObj);
     CHECK_NAPI_STATUS(pEngine, status);
 
     ChannelMediaOptions channelMediaOptions;
@@ -5692,7 +5259,7 @@ NAPI_API_DEFINE(NodeRtcEngine, joinChannelEx) {
     CHECK_NAPI_STATUS(pEngine, status);
 
     std::string tokenStr;
-    setChannelMediaOptions(channelMediaOptions, tokenStr, args, optionObj);
+    decodeChannelMediaOptions(channelMediaOptions, tokenStr, args, optionObj);
     
     agora::rtc::IRtcEngineEx *engineEx =
         (agora::rtc::IRtcEngineEx *)pEngine->m_engine;
@@ -5727,7 +5294,7 @@ NAPI_API_DEFINE(NodeRtcEngine, joinChannel2) {
     status = napi_get_value_object_(isolate, args[3], optionObj);
     CHECK_NAPI_STATUS(pEngine, status);
     std::string tokenStr;
-    setChannelMediaOptions(channelMediaOptions, tokenStr, args, optionObj);
+    decodeChannelMediaOptions(channelMediaOptions, tokenStr, args, optionObj);
 
     result = pEngine->m_engine->joinChannel(token, channelId, uid,
                                             channelMediaOptions);
@@ -5752,7 +5319,7 @@ NAPI_API_DEFINE(NodeRtcEngine, updateChannelMediaOptions) {
     status = napi_get_value_object_(isolate, args[0], optionObj);
     CHECK_NAPI_STATUS(pEngine, status);
     std::string tokenStr;
-    setChannelMediaOptions(channelMediaOptions, tokenStr, args, optionObj);
+    decodeChannelMediaOptions(channelMediaOptions, tokenStr, args, optionObj);
 
     IRtcEngineEx *engineEx = (IRtcEngineEx *)pEngine->m_engine;
     result = engineEx->updateChannelMediaOptions(channelMediaOptions);
@@ -5777,19 +5344,14 @@ NAPI_API_DEFINE(NodeRtcEngine, updateChannelMediaOptionsEx) {
     status = napi_get_value_object_(isolate, args[0], optionObj);
     CHECK_NAPI_STATUS(pEngine, status);
     std::string tokenStr;
-    setChannelMediaOptions(channelMediaOptions, tokenStr, args, optionObj);
+    decodeChannelMediaOptions(channelMediaOptions, tokenStr, args, optionObj);
 
     Local<Object> obj;
-    nodestring channelId;
+    std::string channelId;
     RtcConnection rtcConnection;
-    status = napi_get_value_object_(isolate, args[1], obj);
-    
-    status = napi_get_object_property_nodestring_(isolate, obj, "channelId",
-                                                  channelId);
-    rtcConnection.channelId = channelId;
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_uint32_(isolate, obj, "localUid",
-                                              rtcConnection.localUid);
+    Local<Object> connectionObj;
+    status = napi_get_value_object_(isolate, args[1], connectionObj);
+    decodeRtcConnection(rtcConnection, channelId, status, args, connectionObj);
     CHECK_NAPI_STATUS(pEngine, status);
     
     IRtcEngineEx *engineEx = (IRtcEngineEx *)pEngine->m_engine;

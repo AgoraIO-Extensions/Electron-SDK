@@ -1201,268 +1201,131 @@ export interface LocalAudioStats {
    */
   sentBitrate: number;
 }
+
 /** VideoEncoderConfiguration */
 export interface VideoEncoderConfiguration {
-  /** Width (pixels) of the video. 
-   * 
-   * The default value is 640(width) x 360(hight).
-   */
-  width: number;
-  /** Height (pixels) of the video. 
-   *
-   * The default value is 640(width) x 360(hight).
-   */
-  height: number;
   /**
-   * The frame rate (fps) of the video. 
-   * 
-   * The default value is 15 fps.
-   * 
-   * **Noete**:
-   * We do not recommend setting this to a value greater than 30 fps.
+   * The video encoder code type: #VIDEO_CODEC_TYPE.
+   */
+  codecType: VIDEO_CODEC_TYPE;
+  /**
+   * The video dimension: VideoDimensions.
+   */
+  dimensions: VideoDimensions;
+  /**
+   * The frame rate of the video. You can set it manually, or choose one from #FRAME_RATE.
    */
   frameRate: number;
   /**
-   * The minimum frame rate of the video. 
-   * 
-   * The default value is -1.
-   */
-  // minFrameRate: number;
-   /** The video encoding bitrate (Kbps).
-    * 
-    * Choose one of the following options:
-    * - 0: (Recommended) The standard bitrate.
-    *  - The Communication profile: the encoding bitrate equals the base 
-    * bitrate.
-    *  - The Live-broadcast profile: the encoding bitrate is twice the base 
-    * bitrate.
-    * - -1: The compatible bitrate: the bitrate stays the same regardless of 
-    * the profile.
-    *
-    * The Communication profile prioritizes smoothness, while the 
-    * Live-broadcast profile prioritizes video quality 
-    * (requiring a higher bitrate). We recommend setting the bitrate mode to 
-    * address this difference.
-    *
-    * The following table lists the recommended video encoder configurations, 
-    * where the base bitrate applies to the Communication profile.
-    * Set your bitrate based on this table. If you set a bitrate beyond the 
-    * proper range, the SDK automatically sets it to within the range.
-    *
-    * <table>
-    *     <tr>
-    *         <th>Resolution</th>
-    *         <th>Frame Rate (fps)</th>
-    *         <th>Base Bitrate (Kbps, for Communication)</th>
-    *         <th>Live Bitrate (Kbps, for Live Broadcast)</th>
-    *     </tr>
-    *     <tr>
-    *         <td>160 &times; 120</td>
-    *         <td>15</td>
-    *         <td>65</td>
-    *         <td>130</td>
-    *     </tr>
-    *     <tr>
-    *         <td>120 &times; 120</td>
-    *         <td>15</td>
-    *         <td>50</td>
-    *         <td>100</td>
-    *     </tr>
-    *     <tr>
-    *         <td>320 &times; 180</td>
-    *         <td>15</td>
-    *         <td>140</td>
-    *         <td>280</td>
-    *     </tr>
-    *     <tr>
-    *         <td>180 &times; 180</td>
-    *         <td>15</td>
-    *         <td>100</td>
-    *         <td>200</td>
-    *     </tr>
-    *     <tr>
-    *         <td>240 &times; 180</td>
-    *         <td>15</td>
-    *         <td>120</td>
-    *         <td>240</td>
-    *     </tr>
-    *     <tr>
-    *         <td>320 &times; 240</td>
-    *         <td>15</td>
-    *         <td>200</td>
-    *         <td>400</td>
-    *     </tr>
-    *     <tr>
-    *         <td>240 &times; 240</td>
-    *         <td>15</td>
-    *         <td>140</td>
-    *         <td>280</td>
-    *     </tr>
-    *     <tr>
-    *         <td>424 &times; 240</td>
-    *         <td>15</td>
-    *         <td>220</td>
-    *         <td>440</td>
-    *     </tr>
-    *     <tr>
-    *         <td>640 &times; 360</td>
-    *         <td>15</td>
-    *         <td>400</td>
-    *         <td>800</td>
-    *     </tr>
-    *     <tr>
-    *         <td>360 &times; 360</td>
-    *         <td>15</td>
-    *         <td>260</td>
-    *         <td>520</td>
-    *     </tr>
-    *     <tr>
-    *         <td>640 &times; 360</td>
-    *         <td>30</td>
-    *         <td>600</td>
-    *         <td>1200</td>
-    *     </tr>
-    *     <tr>
-    *         <td>360 &times; 360</td>
-    *         <td>30</td>
-    *         <td>400</td>
-    *         <td>800</td>
-    *     </tr>
-    *     <tr>
-    *         <td>480 &times; 360</td>
-    *         <td>15</td>
-    *         <td>320</td>
-    *         <td>640</td>
-    *     </tr>
-    *     <tr>
-    *         <td>480 &times; 360</td>
-    *         <td>30</td>
-    *         <td>490</td>
-    *         <td>980</td>
-    *     </tr>
-    *     <tr>
-    *         <td>640 &times; 480</td>
-    *         <td>15</td>
-    *         <td>500</td>
-    *         <td>1000</td>
-    *     </tr>
-    *     <tr>
-    *         <td>480 &times; 480</td>
-    *         <td>15</td>
-    *         <td>400</td>
-    *         <td>800</td>
-    *     </tr>
-    *     <tr>
-    *         <td>640 &times; 480</td>
-    *         <td>30</td>
-    *         <td>750</td>
-    *         <td>1500</td>
-    *     </tr>
-    *     <tr>
-    *         <td>480 &times; 480</td>
-    *         <td>30</td>
-    *         <td>600</td>
-    *         <td>1200</td>
-    *     </tr>
-    *     <tr>
-    *         <td>848 &times; 480</td>
-    *         <td>15</td>
-    *         <td>610</td>
-    *         <td>1220</td>
-    *     </tr>
-    *     <tr>
-    *         <td>848 &times; 480</td>
-    *         <td>30</td>
-    *         <td>930</td>
-    *         <td>1860</td>
-    *     </tr>
-    *     <tr>
-    *         <td>640 &times; 480</td>
-    *         <td>10</td>
-    *         <td>400</td>
-    *         <td>800</td>
-    *     </tr>
-    *     <tr>
-    *         <td>1280 &times; 720</td>
-    *         <td>15</td>
-    *         <td>1130</td>
-    *         <td>2260</td>
-    *     </tr>
-    *     <tr>
-    *         <td>1280 &times; 720</td>
-    *         <td>30</td>
-    *         <td>1710</td>
-    *         <td>3420</td>
-    *     </tr>
-    *     <tr>
-    *         <td>960 &times; 720</td>
-    *         <td>15</td>
-    *         <td>910</td>
-    *         <td>1820</td>
-    *     </tr>
-    *     <tr>
-    *         <td>960 &times; 720</td>
-    *         <td>30</td>
-    *         <td>1380</td>
-    *         <td>2760</td>
-    *     </tr>
-    * </table>
-    */
-  bitrate: number;
-  /**
-   * The minimum encoding bitrate (Kbps). 
-   * 
-   * The default value is 1 kbps. 
-   * 
-   * Using a value greater than the default value 
-   * forces the video encoder to output high-quality images but may cause more 
-   * packet loss and hence sacrifice the smoothness of the video transmission. 
-   * That said, unless you have special requirements for image quality, 
-   * Agora does not recommend changing this value.
+   * The bitrate (Kbps) of the video.
    *
+   * Refer to the **Video Bitrate Table** below and set your bitrate. If you set a bitrate beyond the
+   * proper range, the SDK automatically adjusts it to a value within the range. You can also choose
+   * from the following options:
+   *
+   * - #STANDARD_BITRATE: (Recommended) Standard bitrate mode. In this mode, the bitrates differ between
+   * the Live Broadcast and Communication profiles:
+   *   - In the Communication profile, the video bitrate is the same as the base bitrate.
+   *   - In the Live Broadcast profile, the video bitrate is twice the base bitrate.
+   * - #COMPATIBLE_BITRATE: Compatible bitrate mode. The compatible bitrate mode. In this mode, the bitrate
+   * stays the same regardless of the profile. If you choose this mode for the Live Broadcast profile,
+   * the video frame rate may be lower than the set value.
+   *
+   * Agora uses different video codecs for different profiles to optimize the user experience. For example,
+   * the communication profile prioritizes the smoothness while the live-broadcast profile prioritizes the
+   * video quality (a higher bitrate). Therefore, We recommend setting this parameter as #STANDARD_BITRATE.
+   *
+   * | Resolution             | Frame Rate (fps) | Base Bitrate (Kbps) | Live Bitrate (Kbps)|
+   * |------------------------|------------------|---------------------|--------------------|
+   * | 160 * 120              | 15               | 65                  | 130                |
+   * | 120 * 120              | 15               | 50                  | 100                |
+   * | 320 * 180              | 15               | 140                 | 280                |
+   * | 180 * 180              | 15               | 100                 | 200                |
+   * | 240 * 180              | 15               | 120                 | 240                |
+   * | 320 * 240              | 15               | 200                 | 400                |
+   * | 240 * 240              | 15               | 140                 | 280                |
+   * | 424 * 240              | 15               | 220                 | 440                |
+   * | 640 * 360              | 15               | 400                 | 800                |
+   * | 360 * 360              | 15               | 260                 | 520                |
+   * | 640 * 360              | 30               | 600                 | 1200               |
+   * | 360 * 360              | 30               | 400                 | 800                |
+   * | 480 * 360              | 15               | 320                 | 640                |
+   * | 480 * 360              | 30               | 490                 | 980                |
+   * | 640 * 480              | 15               | 500                 | 1000               |
+   * | 480 * 480              | 15               | 400                 | 800                |
+   * | 640 * 480              | 30               | 750                 | 1500               |
+   * | 480 * 480              | 30               | 600                 | 1200               |
+   * | 848 * 480              | 15               | 610                 | 1220               |
+   * | 848 * 480              | 30               | 930                 | 1860               |
+   * | 640 * 480              | 10               | 400                 | 800                |
+   * | 1280 * 720             | 15               | 1130                | 2260               |
+   * | 1280 * 720             | 30               | 1710                | 3420               |
+   * | 960 * 720              | 15               | 910                 | 1820               |
+   * | 960 * 720              | 30               | 1380                | 2760               |
+   * | 1920 * 1080            | 15               | 2080                | 4160               |
+   * | 1920 * 1080            | 30               | 3150                | 6300               |
+   * | 1920 * 1080            | 60               | 4780                | 6500               |
+   * | 2560 * 1440            | 30               | 4850                | 6500               |
+   * | 2560 * 1440            | 60               | 6500                | 6500               |
+   * | 3840 * 2160            | 30               | 6500                | 6500               |
+   * | 3840 * 2160            | 60               | 6500                | 6500               |
+   */
+  bitrate: number;
+
+  /**
+   * (For future use) The minimum encoding bitrate (Kbps).
+   *
+   * The Agora SDK automatically adjusts the encoding bitrate to adapt to the
+   * network conditions.
+   *
+   * Using a value greater than the default value forces the video encoder to
+   * output high-quality images but may cause more packet loss and hence
+   * sacrifice the smoothness of the video transmission. That said, unless you
+   * have special requirements for image quality, Agora does not recommend
+   * changing this value.
+   *
+   * @note
+   * This parameter applies to the live-broadcast profile only.
    */
   minBitrate: number;
   /**
-   * The orientation mode. See {@link OrientationMode}.
+   * The video orientation mode: #ORIENTATION_MODE.
    */
-  orientationMode: OrientationMode;
+  orientationMode: ORIENTATION_MODE;
   /**
-   * The video encoding degradation preference under limited bandwidth. 
-   * See {@link DegradationPreference}.
+   *
+   * The video degradation preference under limited bandwidth: #DEGRADATION_PREFERENCE.
    */
-  degradationPreference: DegradationPreference;
+  degradationPreference: DEGRADATION_PREFERENCE;
+
   /**
-   * @since v3.0.0
-   * 
-   * Sets the mirror mode of the published local video stream. It only affects 
-   * the video that the remote user sees. See {@link VideoMirrorModeType}
-   * 
-   * @note The SDK disables the mirror mode by default.
+   * If mirror_type is set to VIDEO_MIRROR_MODE_ENABLED, then the video frame would be mirrored before encoding.
    */
-  mirrorMode: VideoMirrorModeType;
+  mirrorMode: VIDEO_MIRROR_MODE_TYPE;
 }
+
 /**
- * The type of video mirror mode.
+ * Video mirror mode types.
  */
-export enum VideoMirrorModeType {
+export enum VIDEO_MIRROR_MODE_TYPE {
   /**
-   * `0`: (Default) The SDK determines whether enable the mirror mode.
+   * (Default) 0: The mirror mode determined by the SDK.
    */
-  AUTO = 0,
+  VIDEO_MIRROR_MODE_AUTO = 0,
   /**
-   * `1`: Enable mirror mode.
+   * 1: Enable the mirror mode.
    */
-  ENABLED = 1,
+  VIDEO_MIRROR_MODE_ENABLED = 1,
   /**
-   * `2`: Disable mirror mode. 
+   * 2: Disable the mirror mode.
    */
-  DISABLED = 2
-}
+  VIDEO_MIRROR_MODE_DISABLED = 2,
+};
 
 /**
  * (For future use) Video degradation preferences under limited bandwidth.
  */
-export enum DegradationPreference {
+export enum DEGRADATION_PREFERENCE {
   /**
    * 0: (Default) Degrade the frame rate and keep resolution to guarantee the video quality.
    */
@@ -1479,44 +1342,42 @@ export enum DegradationPreference {
    * 3: Degrade framerate in order to maintain resolution.
    */
   MAINTAIN_RESOLUTION = 3,
+  /**
+   * 4: Disable VQC adjustion.
+   */
+  DISABLED = 100,
 };
 
-/** The orientation mode. */
-export enum OrientationMode  {
 /**
- * 0: (Default) The output video always follows the orientation of the 
- * captured video, because the receiver takes the rotational information 
- * passed on from the video encoder. 
- * 
- * Mainly used between Agora SDK.
- * - If the captured video is in landscape mode, the output video is in 
- * landscape mode.
- * - If the captured video is in portrait mode, the output video is in 
- * portrait mode.
+ * Video output orientation modes.
  */
+ export enum ORIENTATION_MODE {
+  /**
+   * 0: (Default) Adaptive mode.
+   *
+   * In this mode, the output video always follows the orientation of the captured video.
+   * - If the captured video is in landscape mode, the output video is in landscape mode.
+   * - If the captured video is in portrait mode, the output video is in portrait mode.
+   */
   ORIENTATION_MODE_ADAPTIVE = 0,
-/**
- * 1: The output video is always in landscape mode. 
- * 
- * If the captured video is 
- * in portrait mode, the video encoder crops it to fit the output. Applies to 
- * situations where the receiving end cannot process the rotational 
- * information. 
- * 
- * For example, CDN live streaming.
- */
+  /**
+   * 1: Landscape mode.
+   *
+   * In this mode, the output video is always in landscape mode. If the captured video is in portrait
+   * mode, the video encoder crops it to fit the output. Applies to scenarios where the receiver
+   * cannot process the rotation information, for example, CDN live streaming.
+   */
   ORIENTATION_MODE_FIXED_LANDSCAPE = 1,
-/**
- * 2: The output video is always in portrait mode. 
- * 
- * If the captured video is in landscape mode, the video encoder crops it to 
- * fit the output. Applies to situations where the receiving end cannot process 
- * the rotational information. 
- * 
- * For example, CDN live streaming.
- */
+  /**
+   * 2: Portrait mode.
+   *
+   * In this mode, the output video is always in portrait mode. If the captured video is in landscape
+   * mode, the video encoder crops it to fit the output. Applies to scenarios where the receiver
+   * cannot process the rotation information, for example, CDN live streaming.
+   */
   ORIENTATION_MODE_FIXED_PORTRAIT = 2,
 }
+
 /**
  * Video statistics of the remote stream.
  */
@@ -3508,6 +3369,15 @@ export interface NodeRtcEngine {
   setVideoEncoderConfiguration(
     config: VideoEncoderConfiguration
   ): number;
+
+  /**
+   * @ignore
+   */
+   setVideoEncoderConfigurationEx(
+    config: VideoEncoderConfiguration,
+    connection: RtcConnection
+  ): number;
+
   /**
    * @ignore
    */

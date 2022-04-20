@@ -20,6 +20,7 @@
 #include "node_metadata_observer.h"
 #include "node_napi_api.h"
 #include "node_video_render.h"
+#include "decode_data.hpp"
 #include <functional>
 #include <list>
 #include <map>
@@ -82,6 +83,7 @@ public:
   NAPI_API(stopPreview);
   // NAPI_API(setVideoProfile);
   NAPI_API(setVideoEncoderConfiguration);
+  NAPI_API(setVideoEncoderConfigurationEx);
   NAPI_API(enableAudio);
   NAPI_API(disableAudio);
   NAPI_API(setAudioProfile);

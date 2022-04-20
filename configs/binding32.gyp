@@ -17,6 +17,8 @@
         './common/node_error.h',
         './common/loguru.h',
         './common/loguru.cpp',
+        './agora_node_ext/decode_data.hpp',
+        './agora_node_ext/decode_data.cpp',
         './agora_node_ext/win_enumer.h',
         './agora_node_ext/win_enumer.cpp',
         './agora_node_ext/agora_node_ext.cpp',
