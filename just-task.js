@@ -159,7 +159,6 @@ task('install', () => {
           libUrl: {
             win: argv().liburl_win || config.lib_sdk_win,
             mac: argv().liburl_mac || config.lib_sdk_mac,
-            win64: argv().liburl_win64 || config.lib_sdk_win64
           }
         })
       }).then(() => {

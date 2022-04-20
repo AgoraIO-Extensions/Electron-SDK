@@ -200,10 +200,10 @@ struct LocalAccessPointConfigurationCmd {
   char domainList[MAX_STRING_LEN];
   char verifyDomainName[MAX_STRING_LEN];
   agora::rtc::LOCAL_PROXY_MODE mode;
-  char uploadServerDomain[MAX_STRING_LEN];
-  char uploadServerPath[MAX_STRING_LEN];
-  int uploadServerPort;
-  bool uploadServerHttps;
+//  char uploadServerDomain[MAX_STRING_LEN];
+//  char uploadServerPath[MAX_STRING_LEN];
+//  int uploadServerPort;
+//  bool uploadServerHttps;
 };
 
 /**

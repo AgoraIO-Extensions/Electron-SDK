@@ -61,6 +61,10 @@ namespace rtc {
   "audioSubscribeStateChanged"
 #define RTC_CHANNEL_EVENT_VIDEO_SUBSCRIBE_STATE_CHANGED \
   "videoSubscribeStateChanged"
+//3.7.0
+#define RTC_CHANNEL_EVENT_FIRST_REMOTE_VIDEO_FRAME \
+  "firstRemoteVideoFrame"
+
 
 class NodeRtcChannel;
 class NodeUid;
@@ -215,8 +219,12 @@ class NodeChannelEventHandler : public IChannelEventHandler {
                                             STREAM_SUBSCRIBE_STATE oldState,
                                             STREAM_SUBSCRIBE_STATE newState,
                                             int elapseSinceLastState) override;
+  // 3.7.0
+  virtual void onFirstRemoteVideoFrame(IChannel *rtcChannel, uid_t uid,
+                                       int width, int height,
+                                       int elapsed) override;
 
- private:
+private:
   std::unordered_map<std::string, NodeEventCallback*> m_callbacks;
   NodeRtcChannel* m_channel;
 };
