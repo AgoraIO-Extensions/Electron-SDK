@@ -1,5 +1,5 @@
 #include "IAgoraMediaPlayer.h"
-#include "agora_meida_player.h"
+#include "agora_media_player.h"
 
 /*
  * Used to define native interface which is exposed to nodejs

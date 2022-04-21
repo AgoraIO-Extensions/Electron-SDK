@@ -2065,26 +2065,10 @@ class AgoraRtcEngine extends EventEmitter {
    * - < 0: Failure.
    */
   setVideoEncoderConfiguration(config: VideoEncoderConfiguration): number {
-    const {
-      width = 640,
-      height = 480,
-      frameRate = 15,
-      bitrate = 0,
-      minBitrate = -1,
-      orientationMode = 0,
-      degradationPreference = 0,
-      mirrorMode = 0
-    } = config;
-    return this.rtcEngine.setVideoEncoderConfiguration({
-      width,
-      height,
-      frameRate,
-      bitrate,
-      minBitrate,
-      orientationMode,
-      degradationPreference,
-      mirrorMode
-    });
+    return this.rtcEngine.setVideoEncoderConfiguration(config);
+  }
+  setVideoEncoderConfigurationEx(config: VideoEncoderConfiguration, connection: RtcConnection): number {
+    return this.rtcEngine.setVideoEncoderConfigurationEx(config, connection);
   }
 
   /**
