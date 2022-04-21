@@ -4970,20 +4970,6 @@ export enum LOCAL_PROXY_MODE {
   LocalOnly = 1,
 }
 
-export interface UploadServerInfo {
-  serverDomain:string;
-
-  serverPath:string;
-
-  serverPort: number;
-
-  serverHttps: boolean;
-}
-export interface AdvancedConfigInfo {
-  // log upload server
-
-  logUploadServer: UploadServerInfo;
-}
 export interface LocalAccessPointConfiguration {
   /** local access point ip address list.
    */
@@ -4997,7 +4983,6 @@ export interface LocalAccessPointConfiguration {
   /** local proxy connection mode, connectivity first or local only.
    */
   mode: LOCAL_PROXY_MODE;
-  advancedConfig: AdvancedConfigInfo;
 }
 /**Audio Device Test.different volume Type*/
 export enum AudioDeviceTestVolumeType {
