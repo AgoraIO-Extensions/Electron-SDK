@@ -1,3 +1,7 @@
+## 3.7.204-build.421(Apr 21th, 2022)
+- update native sdk
+- add api: setVideoEncoderConfigurationEx
+
 ## 3.7.204-build.418(Apr 18th, 2022)
 - update native sdk
 - fix web fail callback

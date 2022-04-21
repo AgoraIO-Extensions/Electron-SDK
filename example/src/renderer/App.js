@@ -183,11 +183,18 @@ export default class App extends Component {
     rtcEngine.enableWebSdkInteroperability(true)
     let encoderProfile = videoProfileList[this.state.encoderConfiguration]
     let rett = rtcEngine.setVideoEncoderConfiguration({
-      width: encoderProfile.width,
-      height: encoderProfile.height,
+      dimensions: {
+        width: encoderProfile.width,
+        height: encoderProfile.height
+      },
       frameRate: encoderProfile.fps,
       bitrate: encoderProfile.bitrate,
-    })
+      codecType: 2,
+      minBitrate: 100,
+      orientationMode: 0,
+      degradationPreference: 2,
+      mirrorMode: 0
+    });
     console.log(
       `setVideoEncoderConfiguration --- ${JSON.stringify(
         encoderProfile
