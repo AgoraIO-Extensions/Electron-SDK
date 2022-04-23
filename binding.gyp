@@ -199,6 +199,7 @@
                     '-fexceptions'
                 ],
                 'xcode_settings': {
+                    'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
                     'MACOSX_DEPLOYMENT_TARGET': '10.13',
                     'FRAMEWORK_SEARCH_PATHS': [
                     './sdk/lib/mac'
@@ -449,6 +450,7 @@
                     '-fexceptions'
                 ],
                 'xcode_settings': {
+                    'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
                     'MACOSX_DEPLOYMENT_TARGET': '10.11',
                     'EXECUTABLE_EXTENSION': 'node',
                     'FRAMEWORK_SEARCH_PATHS': [

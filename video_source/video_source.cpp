@@ -599,16 +599,17 @@ bool AgoraVideoSource::joinChannel(JoinChannelCmd* cmd) {
 }
 
 void AgoraVideoSource::exit(bool notifySink) {
-  {
-    // fix CSD-8509
-    // std::lock_guard<std::mutex> lock(m_ipcSenderMutex);
-    m_ipcSender.reset();
-  }
   m_ipc->disconnect();
   LOG_F(INFO, "VideoSource::leaveChannel");
   m_rtcEngine->leaveChannel();
   LOG_F(INFO, "VideoSource::release");
   m_rtcEngine->release(true);
+  //CSD-42301: change call order
+  {
+    // fix CSD-8509
+    // std::lock_guard<std::mutex> lock(m_ipcSenderMutex);
+    m_ipcSender.reset();
+  }
   LOG_F(INFO, "VideoSource::exit");
   stopLogService();
   ::exit(0);
