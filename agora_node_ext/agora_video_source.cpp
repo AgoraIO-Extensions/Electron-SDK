@@ -407,7 +407,7 @@ node_error AgoraVideoSourceSink::setLogFile(const char* file) {
   LOG_ENTER;
   if (m_initialized) {
     return m_ipcMsg->sendMessage(AGORA_IPC_SET_LOGFILE, (char*)file,
-                                 strlen(file))
+                                 strlen(file)+1)
                ? node_ok
                : node_generic_error;
   }
@@ -885,7 +885,7 @@ node_error AgoraVideoSourceSink::setAddonLogFile(const char* file) {
   LOG_ENTER;
   if (m_initialized) {
     return m_ipcMsg->sendMessage(AGORA_IPC_SET_ADDON_LOGFILE, (char*)file,
-                                 strlen(file))
+                                 strlen(file)+1)
                ? node_ok
                : node_generic_error;
   }
