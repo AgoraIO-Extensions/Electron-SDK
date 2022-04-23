@@ -16,6 +16,7 @@
 #include "node_video_stream_channel.h"
 #include <chrono>
 #include <string>
+#include "ipc_manager.hpp"
 using namespace libyuv;
 NodeVideoFrameTransporter g_transport;
 
@@ -270,6 +271,27 @@ int NodeVideoFrameTransporter::deliverFrame_I420(
   copyFrame(videoFrame, info, destStride, stride0, destWidth, destHeight);
   info.m_count = 0;
   info.m_needUpdate = true;
+
+  switch (type) {
+  case NODE_RENDER_TYPE_LOCAL:
+    IpcManager::get_instance().sendData(std::string("local"), deviceId,
+                                        (char *)&info, sizeof(info));
+    break;
+  case NODE_RENDER_TYPE_REMOTE:
+    IpcManager::get_instance().sendData(channelId, uid, (char *)&info,
+                                        sizeof(info));
+    break;
+  case NODE_RENDER_TYPE_VIDEO_SOURCE:
+    IpcManager::get_instance().sendData(std::string("video_source"), deviceId,
+                                        (char *)&info, sizeof(info));
+    break;
+  case NODE_RENDER_TYPE_TRANSCODED:
+    IpcManager::get_instance().sendData(std::string("TRANSCODED"), 0,
+                                        (char *)&info, sizeof(info));
+    break;
+  default:
+    break;
+  }
   return 0;
 }
 

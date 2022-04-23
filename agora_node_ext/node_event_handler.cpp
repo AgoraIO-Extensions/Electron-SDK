@@ -17,6 +17,8 @@
 #include <iostream>
 #include <stdio.h>
 #include <vector>
+#include "ipc_manager.hpp"
+
 namespace agora {
 namespace rtc {
 struct CustomRtcConnection {
@@ -931,6 +933,7 @@ void NodeEventHandler::onFirstRemoteVideoFrame(const RtcConnection &connection,
 void NodeEventHandler::onUserJoined(const RtcConnection &connection,
                                     uid_t remoteUid, int elapsed) {
   FUNC_TRACE;
+  IpcManager::get_instance().createIpc(std::string(connection.channelId), remoteUid);
   CustomRtcConnection _connection(connection);
   node_async_call::async_call([this, _connection, remoteUid, elapsed] {
     Isolate *isolate = Isolate::GetCurrent();
@@ -944,6 +947,7 @@ void NodeEventHandler::onUserJoined(const RtcConnection &connection,
 void NodeEventHandler::onUserOffline(const RtcConnection &connection,
                                      uid_t remoteUid,
                                      USER_OFFLINE_REASON_TYPE reason) {
+  IpcManager::get_instance().releaseIpc(std::string(connection.channelId),remoteUid);
   FUNC_TRACE;
   CustomRtcConnection _connection(connection);
   node_async_call::async_call([this, _connection, remoteUid, reason] {

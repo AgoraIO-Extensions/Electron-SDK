@@ -19,6 +19,7 @@
 #include <nan.h>
 #include <string>
 #include "windows_system_api.h"
+#include "ipc_manager.hpp"
 
 #if defined(__APPLE__) || defined(_WIN32)
 #include "node_screen_window_info.h"
@@ -2243,6 +2244,12 @@ NAPI_API_DEFINE(NodeRtcEngine, initialize) {
     pEngine->m_engine->enableVideo();
     pEngine->m_engine->enableLocalVideo(true);
     result = 0;
+    IpcManager::get_instance().createIpc(std::string("local"), 0);
+    IpcManager::get_instance().createIpc(std::string("local"), 1);
+    IpcManager::get_instance().createIpc(std::string("video_source"), 0);
+    IpcManager::get_instance().createIpc(std::string("video_source"), 1);
+    IpcManager::get_instance().createIpc(std::string("TRANSCODED"), 0);
+
   } while (false);
 
   delete[] idList;
@@ -2954,6 +2961,7 @@ NAPI_API_DEFINE(NodeRtcEngine, release) {
     }
     pEngine->m_nodeVideoFrameObserver.reset();
     result = 0;
+    IpcManager::get_instance().releaseAllIpc();
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -5492,6 +5500,7 @@ NAPI_API_DEFINE(NodeRtcEngine, stopPrimaryCameraCapture) {
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     result = pEngine->m_engine->stopPrimaryCameraCapture();
+    IpcManager::get_instance().releaseIpc(std::string("local"), 0);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -5507,6 +5516,7 @@ NAPI_API_DEFINE(NodeRtcEngine, stopSecondaryCameraCapture) {
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     result = pEngine->m_engine->stopSecondaryCameraCapture();
+    IpcManager::get_instance().releaseIpc(std::string("local"), 1);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;

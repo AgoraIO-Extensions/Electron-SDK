@@ -17,6 +17,8 @@
         './common/node_error.h',
         './common/loguru.hpp',
         './common/loguru.cpp',
+        './agora_node_ext/ipc_manager.hpp',
+        './agora_node_ext/ipc_manager.cpp',
         './agora_node_ext/decode_data.hpp',
         './agora_node_ext/decode_data.cpp',
         './agora_node_ext/agora_node_ext.cpp',
@@ -146,6 +148,8 @@
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
                         './sdk/lib/mac/AgoraRtcKit.framework',
+                        './lib/mac/libipcmodule.1.0.0.0.dylib',
+                        './lib/mac/libipcmodule.dylib',
                         './sdk/lib/mac/Agoraffmpeg.framework',
                         './sdk/lib/mac/AgoraPvcExtension.framework',
                         './sdk/lib/mac/AgoraRtmKit.framework',
@@ -153,6 +157,7 @@
                 }],
                 'link_settings': {
                     'libraries': [
+                    'libipcmodule.dylib',
                     'libresolv.9.dylib',
                     'Accelerate.framework',
                     'AgoraRtcKit.framework',
@@ -190,6 +195,7 @@
                 ],
                 'include_dirs': [
                 './sdk/lib/mac/AgoraRtcKit.framework/Headers',
+                './lib/include',
                 './extra/internal'
                 ],
                 'defines!': [
