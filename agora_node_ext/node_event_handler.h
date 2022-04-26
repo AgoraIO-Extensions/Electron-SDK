@@ -132,6 +132,14 @@ namespace rtc {
 /* meeting */
 #define RTC_EVENT_VIDEO_SOURCE_SCREEN_CAPTURE_INFO_UPDATED "videoSourceScreenCaptureInfoUpdated"
 
+// 3.7.0
+#define RTC_EVENT_LOCAL_VOICE_PITCH_IN_HZ "localVoicePitchInHz"
+#define RTC_EVENT_CLIENT_ROLE_CHANGE_FAILED "clientRoleChangeFailed"
+#define RTC_EVENT_WL_ACC_MESSAGE "wlAccMessage"
+#define RTC_EVENT_WL_ACC_STATS "wlAccStats"
+#define RTC_EVENT_CONTENT_INSPECT_RESULT "contentInspectResult"
+#define RTC_EVENT_PROXY_CONNECTED "proxyConnected"
+
 class NodeRtcEngine;
 class NodeUid;
 class NodeEventHandler : public IRtcEngineEventHandler,
@@ -362,6 +370,22 @@ class NodeEventHandler : public IRtcEngineEventHandler,
   virtual void onSnapshotTaken(const char* channel, uid_t uid, const char* filePath, int width, int height, int errCode) override;
   // 3.6.0.2
   virtual void onAudioDeviceTestVolumeIndication(AudioDeviceTestVolumeType volumeType, int volume) override;
+
+  //3.7.0
+  virtual void onLocalVoicePitchInHz(int pitchInHz) override;
+  // virtual void IChannelEventHandler->onFirstRemoteVideoFrame
+  virtual void onClientRoleChangeFailed(CLIENT_ROLE_CHANGE_FAILED_REASON reason,
+                                        CLIENT_ROLE_TYPE currentRole) override;
+  virtual void onWlAccMessage(WLACC_MESSAGE_REASON reason,
+                              WLACC_SUGGEST_ACTION action,
+                              const char *wlAccMsg) override;
+  virtual void onWlAccStats(WlAccStats currentStats,
+                            WlAccStats averageStats) override;
+  virtual void onContentInspectResult(CONTENT_INSPECT_RESULT result) override;
+  virtual void onProxyConnected(const char *channel, uid_t uid,
+                                PROXY_TYPE proxyType, const char *localProxyIp,
+                                int elapsed) override;
+  ;
 
 private:
   void onJoinChannelSuccess_node(const char* channel, uid_t uid, int elapsed);

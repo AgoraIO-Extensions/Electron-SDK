@@ -540,10 +540,6 @@ void AgoraVideoSource::onMessage(unsigned int msg,
         (LocalAccessPointConfigurationCmd *)payload;
 
     agora::rtc::LocalAccessPointConfiguration localAccessPointConfiguration;
-    agora::rtc::AdvancedConfigInfo advancedConfigInfo;
-    agora::rtc::UploadServerInfo uploadServerInfo;
-    advancedConfigInfo.logUploadServer = &uploadServerInfo;
-    localAccessPointConfiguration.advancedConfig = &advancedConfigInfo;
 
     std::vector<std::string> ipListVecString =
         split(std::string(cmd->ipList), IPC_STRING_PARTTERN);
@@ -572,11 +568,6 @@ void AgoraVideoSource::onMessage(unsigned int msg,
 
     localAccessPointConfiguration.mode = cmd->mode;
     localAccessPointConfiguration.verifyDomainName = cmd->verifyDomainName;
-
-    uploadServerInfo.serverDomain = cmd->uploadServerDomain;
-    uploadServerInfo.serverPort = cmd->uploadServerPort;
-    uploadServerInfo.serverHttps = cmd->uploadServerHttps;
-    uploadServerInfo.serverPath = cmd->uploadServerPath;
 
     m_rtcEngine->setLocalAccessPoint(localAccessPointConfiguration);
     ;
