@@ -6,6 +6,7 @@
     {
         'target_name': 'agora_node_ext',
         'include_dirs': [
+        './lib/include',
         './common',
         './common/libyuv/include',
         "<!(node -e \"require('nan')\")"
@@ -17,6 +18,8 @@
         './common/node_error.h',
         './common/loguru.h',
         './common/loguru.cpp',
+        './agora_node_ext/ipc_manager.hpp',
+        './agora_node_ext/ipc_manager.cpp',
         './agora_node_ext/decode_data.hpp',
         './agora_node_ext/decode_data.cpp',
         './agora_node_ext/win_enumer.h',
@@ -79,6 +82,7 @@
                 'copies': [{
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
+                        './lib/Windows/x64/ipcmodule.dll',
                         './sdk/agora_rtc_sdk.dll',
                         './sdk/libagora-ffmpeg.dll',
                         './sdk/libagora-wgc.dll',
@@ -92,9 +96,11 @@
                 }],
                 'library_dirs': [
                     './sdk',
+                    './lib/Windows/x64',
                 ],
                 'link_settings': {
                     'libraries': [
+                        '-lipcmodule.lib',
                         '-lagora_rtc_sdk.dll.lib',
                         '-lws2_32.lib',
                         '-lRpcrt4.lib',
