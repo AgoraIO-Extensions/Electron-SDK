@@ -82,11 +82,36 @@ export enum VIDEO_CODEC_TYPE {
  * - 1: Host.
  * - 2: Audience.
  */
-export enum ClientRoleType {
+export enum CLIENT_ROLE_TYPE {
   /** 1: Host. A host can both send and receive streams. */
   CLIENT_ROLE_BROADCASTER = 1,
   /** 2: (Default) Audience. An `audience` member can only receive streams. */
   CLIENT_ROLE_AUDIENCE = 2,
+}
+
+/**
+ * The reason for a user role switch failure.
+ *
+ * @since v3.7.0
+ */
+export enum CLIENT_ROLE_CHANGE_FAILED_REASON {
+  /** 1: The number of hosts in the channel is already at the upper limit.
+   *
+   * @note This enumerator is reported only when the support for 128 users is enabled. The maximum number of hosts is based on the actual number of hosts configured when you enable the 128-user feature.
+   */
+  CLIENT_ROLE_CHANGE_FAILED_BY_TOO_MANY_BROADCASTERS = 1,
+
+  /** 2: The request is rejected by the Agora server. Agora recommends you prompt the user to try to switch their user role again.
+   */
+  CLIENT_ROLE_CHANGE_FAILED_BY_NOT_AUTHORIZED = 2,
+
+  /** 3: The request is timed out. Agora recommends you prompt the user to check the network connection and try to switch their user role again.
+   */
+  CLIENT_ROLE_CHANGE_FAILED_BY_REQUEST_TIME_OUT = 3,
+
+  /** 4: The SDK connection fails. You can use `reason` reported in the `onConnectionStateChanged` callback to troubleshoot the failure.
+   */
+  CLIENT_ROLE_CHANGE_FAILED_BY_CONNECTION_FAILED = 4,
 }
 
 /** Video stream types.
@@ -1690,7 +1715,7 @@ export enum RemoteAudioStateReason {
  * (through the RESTful API), the SDK triggers connectionStateChanged
  * callbacks.
  */
-export enum ConnectionState {
+export enum CONNECTION_STATE_TYPE {
   /** 1: The SDK is disconnected from Agora's edge server.
 
    - This is the initial state before calling the \ref agora::rtc::IRtcEngine::joinChannel "joinChannel" method.
@@ -1747,7 +1772,7 @@ export enum ConnectionState {
  * - 12: Network status change for renew token.
  * - 13: Client IP Address changed.
  */
-export enum ConnectionChangeReason {
+export enum CONNECTION_CHANGED_REASON_TYPE {
   /** 0: The SDK is connecting to Agora's edge server. */
   CONNECTION_CHANGED_CONNECTING = 0,
   /** 1: The SDK has joined the channel successfully. */
@@ -1790,6 +1815,18 @@ export enum ConnectionChangeReason {
   CONNECTION_CHANGED_CLIENT_IP_ADDRESS_CHANGED = 13,
   /** 14: Timeout for the keep-alive of the connection between the SDK and Agora's edge server. The connection state changes to CONNECTION_STATE_RECONNECTING(4). */
   CONNECTION_CHANGED_KEEP_ALIVE_TIMEOUT = 14,
+  /** 19: Join the same channel from different devices using the same user ID.
+   *
+   * @since v3.7.0
+   */
+  CONNECTION_CHANGED_SAME_UID_LOGIN = 19,
+  /** 20: The number of hosts in the channel is already at the upper limit.
+   *
+   * @note This enumerator is reported only when the support for 128 users is enabled. The maximum number of hosts is based on the actual number of hosts configured when you enable the 128-user feature.
+   *
+   * @since v3.7.0
+   */
+  CONNECTION_CHANGED_TOO_MANY_BROADCASTERS = 20,
 }
 
 /** Encryption mode. Agora recommends using either the `AES_128_GCM2` or
@@ -2805,6 +2842,7 @@ export interface ClientRoleOptions {
    */
   audienceLatencyLevel: AUDIENCE_LATENCY_LEVEL_TYPE;
 }
+
 /**
  * @since v3.3.1
  *
@@ -2815,17 +2853,20 @@ export interface ClientRoleOptions {
  *
  */
 export enum CLOUD_PROXY_TYPE {
-  /** 0: Do not use the cloud proxy.
+  /** 0: The automatic mode. In this mode, the SDK attempts a direct connection to SD-RTN™ and automatically
+   * switches to TLS 443 if the attempt fails. As of v3.6.2, the SDK has this mode enabled by default.
    */
   NONE_PROXY = 0,
-  /** 1: The cloud proxy for the UDP protocol.
+  /** 1: The cloud proxy for the UDP protocol, that is, the Force UDP cloud proxy mode.
+   * In this mode, the SDK always transmits data over UDP.
    */
   UDP_PROXY = 1,
-  /// @cond
-  /** 2: The cloud proxy for the TCP (encrypted) protocol.
+  /** 2: The cloud proxy for the TCP (encryption) protocol, that is, the Force TCP cloud proxy mode.
+   * In this mode, the SDK always transmits data over TLS 443.
+   *
+   * @since v3.6.2
    */
   TCP_PROXY = 2,
-  /// @endcond
 }
 /** The configuration of the log files.
  *
@@ -3213,6 +3254,12 @@ export enum AUDIO_RECORDING_QUALITY_TYPE {
    * of 32,000 Hz and a 10-minute recording is approximately 3.75 MB.
    */
   AUDIO_RECORDING_QUALITY_HIGH = 2,
+  /** 3: Ultra high quality. For example, the size of an AAC file with a sample rate
+   * of 32,000 Hz and a 10-minute recording is approximately 7.5 MB.
+   *
+   * @since v3.6.2
+   */
+  AUDIO_RECORDING_QUALITY_ULTRA_HIGH = 3,
 }
 
 /** The type of the custom background image.
@@ -3286,6 +3333,19 @@ export interface AudioRecordingConfiguration {
    * {@link AUDIO_RECORDING_QUALITY_HIGH}.
    */
   recordingSampleRate: number;
+  /**
+   * @since v3.6.2
+   *
+   * The recorded audio channel. The following values are supported:
+   * - `1`: (Default) Mono channel.
+   * - `2`: Dual channel.
+   *
+   * @note The actual recorded audio channel is related to the audio channel that you capture.
+   * If the captured audio is mono and `recordingChannel` is 2, the recorded audio is the dual-channel data that is copied from mono data, not stereo.
+   * If the captured audio is dual channel and `recordingChannel` is 1, the recorded audio is the mono data that is mixed by dual-channel data.
+   * The integration scheme also affects the final recorded audio channel. Therefore, to record in stereo, contact technical support for assistance.
+   */
+  recordingChannel: number;
 }
 
 /**
@@ -3439,7 +3499,7 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  getConnectionState(): ConnectionState;
+  getConnectionState(): CONNECTION_STATE_TYPE;
   /**
    * @ignore
    */
@@ -3518,12 +3578,12 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  setClientRole(role: ClientRoleType): number;
+  setClientRole(role: CLIENT_ROLE_TYPE): number;
   /**
    * @ignore
    */
   setClientRoleWithOptions(
-    role: ClientRoleType,
+    role: CLIENT_ROLE_TYPE,
     options: ClientRoleOptions
   ): number;
   /**
@@ -3868,15 +3928,6 @@ export interface NodeRtcEngine {
    * @ignore
    */
   enableLoopbackRecording(enable: boolean, deviceName: string | null): number;
-  /**
-   * @ignore
-   */
-  startAudioRecording(
-    filePath: string,
-    sampleRate: number,
-    quality: number,
-    pos: number
-  ): number;
   /**
    * @ignore
    */
@@ -4634,6 +4685,17 @@ export interface NodeRtcEngine {
    * @ignore
    */
   startEchoTestWithConfig(config: EchoTestConfiguration): number;
+
+  //3.7.0
+  setScreenCaptureScenario(screenScenario: SCREEN_SCENARIO_TYPE): number;
+  enableLocalVoicePitchCallback(interval: number): number;
+  enableWirelessAccelerate(enabled: boolean): number;
+  enableContentInspect(enabled: boolean, config: ContentInspectConfig): number;
+  enableSpatialAudio(enabled: boolean): number;
+  setRemoteUserSpatialAudioParams(
+    uid: number,
+    spatial_audio_params?: SpatialAudioParams
+  ): number;
 }
 /**
  * @ignore
@@ -4696,13 +4758,13 @@ export interface NodeRtcChannel {
   /**
    * @ignore
    */
-  setClientRole(clientRole: ClientRoleType): number;
+  setClientRole(clientRole: CLIENT_ROLE_TYPE): number;
 
   /**
    * @ignore
    */
   setClientRoleWithOptions(
-    role: ClientRoleType,
+    role: CLIENT_ROLE_TYPE,
     options: ClientRoleOptions
   ): number;
 
@@ -4823,7 +4885,7 @@ export interface NodeRtcChannel {
   /**
    * @ignore
    */
-  getConnectionState(): ConnectionState;
+  getConnectionState(): CONNECTION_STATE_TYPE;
   /**
    * @ignore
    */
@@ -4970,20 +5032,6 @@ export enum LOCAL_PROXY_MODE {
   LocalOnly = 1,
 }
 
-export interface UploadServerInfo {
-  serverDomain:string;
-
-  serverPath:string;
-
-  serverPort: number;
-
-  serverHttps: boolean;
-}
-export interface AdvancedConfigInfo {
-  // log upload server
-
-  logUploadServer: UploadServerInfo;
-}
 export interface LocalAccessPointConfiguration {
   /** local access point ip address list.
    */
@@ -4997,7 +5045,6 @@ export interface LocalAccessPointConfiguration {
   /** local proxy connection mode, connectivity first or local only.
    */
   mode: LOCAL_PROXY_MODE;
-  advancedConfig: AdvancedConfigInfo;
 }
 /**Audio Device Test.different volume Type*/
 export enum AudioDeviceTestVolumeType {
@@ -5031,4 +5078,144 @@ export interface EchoTestConfiguration {
    * perform audio and video call loop tests on different devices.
    */
   channelId: string;
+}
+
+/**
+ * The screen sharing scenario.
+ *
+ * @since v3.7.0
+ */
+export enum SCREEN_SCENARIO_TYPE {
+  /** 1: (Default) Document. This scenario prioritizes the video quality of screen sharing and reduces the latency of the shared video for the receiver. If you share documents, slides, and tables, you can set this scenario.
+   */
+  SCREEN_SCENARIO_DOCUMENT = 1,
+  /** 2: Game. This scenario prioritizes the smoothness of screen sharing. If you share games, you can set this scenario.
+   */
+  SCREEN_SCENARIO_GAMING = 2,
+  /** 3: Video. This scenario prioritizes the smoothness of screen sharing. If you share movies or live videos, you can set this scenario.
+   */
+  SCREEN_SCENARIO_VIDEO = 3,
+  /** 4: Remote control. This scenario prioritizes the video quality of screen sharing and reduces the latency of the shared video for the receiver. If you share the device desktop being remotely controlled, you can set this scenario.
+   */
+  SCREEN_SCENARIO_RDC = 4,
+}
+
+export interface ContentInspectModule {
+  /**
+   * The content inspect module type.
+   * the module type can be 0 to 31.
+   * kContentInspectInvalid(0)
+   * kContentInspectModeration(1)
+   * kContentInspectSupervise(2)
+   */
+  type: number;
+  /**The content inspect frequency, default is 0 second.
+   * the frequency <= 0 is invalid.
+   */
+  interval: number;
+}
+export interface ContentInspectConfig {
+  /** The extra information, max length of extraInfo is 1024.
+   *  The extra information will send to server with content(image).
+   */
+  extraInfo: number;
+  /**The content inspect modules, max length of modules is 32.
+   * the content(snapshot of send video stream, image) can be used to max of 32 types functions.
+   */
+  modules: ContentInspectModule[];
+}
+
+export enum WLACC_MESSAGE_REASON {
+  /** WIFI signal is weak.*/
+  WLACC_MESSAGE_REASON_WEAK_SIGNAL = 0,
+  /** Channel congestion.*/
+  WLACC_MESSAGE_REASON_CHANNEL_CONGESTION = 1,
+}
+export enum WLACC_SUGGEST_ACTION {
+  /** Please get close to AP.*/
+  WLACC_SUGGEST_ACTION_CLOSE_TO_WIFI = 0,
+  /** The user is advised to connect to the prompted SSID.*/
+  WLACC_SUGGEST_ACTION_CONNECT_SSID = 1,
+  /** The user is advised to check whether the AP supports 5G band and enable 5G band (the aciton link is attached), or purchases an AP that supports 5G. AP does not support 5G band.*/
+  WLACC_SUGGEST_ACTION_CHECK_5G = 2,
+  /** The user is advised to change the SSID of the 2.4G or 5G band (the aciton link is attached). The SSID of the 2.4G band AP is the same as that of the 5G band.*/
+  WLACC_SUGGEST_ACTION_MODIFY_SSID = 3,
+}
+
+export interface WlAccStats {
+  /** End-to-end delay optimization percentage.*/
+  e2eDelayPercent: number;
+  /** Frozen Ratio optimization percentage.*/
+  frozenRatioPercent: number;
+  /** Loss Rate optimization percentage.*/
+  lossRatePercent: number;
+}
+
+export enum CONTENT_INSPECT_RESULT {
+  CONTENT_INSPECT_NEUTRAL = 1,
+  CONTENT_INSPECT_SEXY = 2,
+  CONTENT_INSPECT_PORN = 3,
+}
+
+/**
+ * The proxy type.
+ *
+ * @since v3.6.2
+ */
+export enum PROXY_TYPE {
+  /** 0: Reserved for future use.
+   */
+  NONE_PROXY_TYPE = 0,
+  /** 1: The cloud proxy for the UDP protocol, that is, the Force UDP cloud proxy mode. In this mode, the SDK always transmits data over UDP.
+   */
+  UDP_PROXY_TYPE = 1,
+  /** 2: The cloud proxy for the TCP (encryption) protocol, that is, the Force TCP cloud proxy mode. In this mode, the SDK always transmits data over TLS 443.
+   */
+  TCP_PROXY_TYPE = 2,
+  /** 3: Reserved for future use.
+   */
+  LOCAL_PROXY_TYPE = 3,
+  /** 4: The automatic mode. In this mode, the SDK attempts a direct connection to SD-RTN™ and automatically switches to TLS 443 if the attempt fails.
+   */
+  TCP_PROXY_AUTO_FALLBACK_TYPE = 4,
+}
+
+export interface SpatialAudioParams {
+  /**
+   * The azimuthal angle in degrees of the remote user relative to the local user in the spherical coordinate system (taking the position of the local user as its origin). The value range is [0,360], as defined by the following main directions:
+   * - `0`: (Default) 0 degrees, which means the remote user is directly in front of the local user.
+   * - `90`: 90 degrees, which means the remote user is directly to the left of the local user.
+   * - `180`: 180 degrees, which means the remote user is directly behind the local user.
+   * - `270`: 270 degrees, which means the remote user is directly to the right of the local user.
+   */
+  speaker_azimuth: number;
+  /**
+   * The elevation angle in degrees of the remote user relative to the local user in the spherical coordinate system (taking the position of the local user as its origin). The value range is [-90,90], as defined by the following main directions:
+   * - `0`: (Default) 0 degrees, which means the remote user is at the same horizontal level as the local user.
+   * - `-90`: -90 degrees, which means the remote user is directly above the local user.
+   * - `90`: 90 degrees, which means the remote user is directly below the local user.
+   */
+  speaker_elevation: number;
+  /**
+   * The distance in meters of the remote user relative to the local user in the spherical coordinate system (taking the position of the local user as its origin). The value range is [1,50]. The default value is 1 meter.
+   */
+  speaker_distance: number;
+  /**
+   * The orientation in degrees of the remote user's head relative to the local user's head in a spherical coordinate system (taking the position of the local user as its origin). The value range is [0,180], as defined by the following main directions:
+   * - `0`: (Default) 0 degrees, which means the remote user's head and the local user's head face the same direction.
+   * - `180`: 180 degrees, which means the remote user's head and the local user's head face opposite directions.
+   */
+  speaker_orientation: number;
+  /**
+   * Whether to enable audio blurring:
+   * - true: Enable blurring.
+   * - false: (Default) Disables blurring.
+   */
+  enable_blur: boolean;
+  /**
+   * Whether to enable air absorption. This function simulates the energy attenuation of audio when the audio transmits in the air:
+   * - true: (Default) Enables air absorption.
+   * - false: Disable air absorption.
+   */
+  enable_air_absorb: boolean;
 }

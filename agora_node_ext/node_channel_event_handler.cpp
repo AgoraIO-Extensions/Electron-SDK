@@ -671,5 +671,17 @@ void NodeChannelEventHandler::onVideoSubscribeStateChanged(
                        elapseSinceLastState);
       });
 }
+
+// 3.7.0
+void NodeChannelEventHandler::onFirstRemoteVideoFrame(IChannel *rtcChannel,
+                                                      uid_t uid, int width,
+                                                      int height, int elapsed) {
+  FUNC_TRACE;
+  node_async_call::async_call([this, uid, width, height, elapsed] {
+    MAKE_JS_CALL_4(RTC_CHANNEL_EVENT_FIRST_REMOTE_VIDEO_FRAME, uid, uid,
+                   int32, width, int32, height, int32, elapsed);
+  });
+}
+
 }  // namespace rtc
 }  // namespace agora
