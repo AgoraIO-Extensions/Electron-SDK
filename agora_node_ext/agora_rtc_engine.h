@@ -145,7 +145,6 @@ class NodeRtcEngine : public node::ObjectWrap {
   NAPI_API(setRemoteVideoStreamType);
   NAPI_API(setRemoteDefaultVideoStreamType);
   NAPI_API(enableAudioVolumeIndication);
-  NAPI_API(startAudioRecording);
   NAPI_API(stopAudioRecording);
   NAPI_API(startAudioMixing);
   NAPI_API(stopAudioMixing);
@@ -453,6 +452,16 @@ class NodeRtcEngine : public node::ObjectWrap {
   NAPI_API(setLocalAccessPoint);
   NAPI_API(videoSourceSetLocalAccessPoint);
   
+  /*
+  * 3.7.0
+  */
+  NAPI_API(setScreenCaptureScenario);
+  NAPI_API(enableLocalVoicePitchCallback);
+  NAPI_API(enableWirelessAccelerate);
+  NAPI_API(enableContentInspect);
+  
+  NAPI_API(enableSpatialAudio);
+  NAPI_API(setRemoteUserSpatialAudioParams);
  public:
   Isolate* getIsolate() { return m_isolate; }
   IRtcEngine* getRtcEngine() { return m_engine; }

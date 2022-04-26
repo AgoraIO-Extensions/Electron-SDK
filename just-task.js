@@ -116,7 +116,7 @@ task('build:node', () => {
 // npm run download --
 task('download', () => {
   // work-around
-  const addonVersion = '3.6.1-rc.4-build.406';
+  const addonVersion = '3.7.0-build.426';
   cleanup(path.join(__dirname, "./build")).then(_ => {
     cleanup(path.join(__dirname, './js')).then(_ => {
       download({
@@ -137,7 +137,7 @@ task('install', () => {
   }
   
   // work-around
-  const addonVersion = '3.6.1-rc.4-build.406';
+  const addonVersion = '3.7.0-build.426';
   if (config.prebuilt) {
     download({
       electronVersion: config.electronVersion, 
@@ -159,7 +159,6 @@ task('install', () => {
           libUrl: {
             win: argv().liburl_win || config.lib_sdk_win,
             mac: argv().liburl_mac || config.lib_sdk_mac,
-            win64: argv().liburl_win64 || config.lib_sdk_win64
           }
         })
       }).then(() => {
