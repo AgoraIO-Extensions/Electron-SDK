@@ -2962,6 +2962,17 @@ NAPI_API_DEFINE(NodeRtcEngine, release) {
     pEngine->m_nodeVideoFrameObserver.reset();
     result = 0;
     IpcManager::get_instance().releaseAllIpc();
+    getNodeVideoFrameTransporter()->eraseIpcData(NODE_RENDER_TYPE_LOCAL, 0,
+                                                 nullptr, 1);
+    getNodeVideoFrameTransporter()->eraseIpcData(NODE_RENDER_TYPE_LOCAL, 0,
+                                                 nullptr, 0);
+    getNodeVideoFrameTransporter()->eraseIpcData(NODE_RENDER_TYPE_VIDEO_SOURCE,
+                                                 0, nullptr, 0);
+    getNodeVideoFrameTransporter()->eraseIpcData(NODE_RENDER_TYPE_VIDEO_SOURCE,
+                                                 0, nullptr, 1);
+    getNodeVideoFrameTransporter()->eraseIpcData(NODE_RENDER_TYPE_TRANSCODED, 0,
+                                                 nullptr, 0);
+
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;

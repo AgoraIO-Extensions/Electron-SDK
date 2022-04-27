@@ -41,7 +41,7 @@ bool NodeVideoFrameTransporter::initialize(
   env = isolate;
   callback.Reset(callbackinfo[0].As<Function>());
   js_this.Reset(callbackinfo.This());
-  m_thread.reset(new std::thread(&NodeVideoFrameTransporter::FlushVideo, this));
+  //  m_thread.reset(new std::thread(&NodeVideoFrameTransporter::FlushVideo, this));
   // m_highThread.reset(new
   // std::thread(&NodeVideoFrameTransporter::highFlushVideo, this));
   init = true;
@@ -52,13 +52,13 @@ bool NodeVideoFrameTransporter::deinitialize() {
   if (!init)
     return true;
   m_stopFlag = 1;
-  if (m_thread->joinable())
-    m_thread->join();
+  //  if (m_thread->joinable())
+  //    m_thread->join();
   // if (m_highThread->joinable())
   //     m_highThread->join();
   init = false;
   // m_highThread.reset();
-  m_thread.reset();
+  //  m_thread.reset();
   env = nullptr;
   callback.Reset();
   js_this.Reset();
@@ -355,8 +355,8 @@ int NodeVideoFrameTransporter::deliverFrame_I420(
     NodeRenderType type, const char *channelId, agora::rtc::uid_t uid,
     int deviceId,
     const agora::media::IVideoFrameObserver::VideoFrame &videoFrame) {
-  if (!init)
-    return -1;
+//  if (!init)
+//    return -1;
   int stride0 = videoFrame.yStride;
   int stride = stride0;
   if (stride & 0xf) {
@@ -366,12 +366,10 @@ int NodeVideoFrameTransporter::deliverFrame_I420(
       videoFrame.rotation < 0 ? videoFrame.rotation + 360 : videoFrame.rotation;
   std::lock_guard<std::mutex> lck(m_lock);
   VideoFrameInfo &info = getVideoFrameInfo(type, uid, channelId, deviceId);
- 
-  if (!info.m_subscribed) {
-    info.m_needUpdate = false;
-    return 0;
-  }
-
+//  if (!info.m_subscribed) {
+//    info.m_needUpdate = false;
+//    return 0;
+//  }
   int destStride = info.m_destWidth ? info.m_destWidth : stride;
   int destWidth = info.m_destWidth ? info.m_destWidth : videoFrame.width;
   int destHeight = info.m_destHeight ? info.m_destHeight : videoFrame.height;
@@ -390,8 +388,8 @@ int NodeVideoFrameTransporter::deliverFrame_I420(
   setupFrameHeader(hdr, destStride, destWidth, destHeight);
 
   copyFrame(videoFrame, info, destStride, stride0, destWidth, destHeight);
-  info.m_count = 0;
-  info.m_needUpdate = true;
+//  info.m_count = 0;
+//  info.m_needUpdate = true;
 
   video_ipc_info ipcInfo;
   ipcInfo.width = destWidth;
@@ -405,26 +403,8 @@ int NodeVideoFrameTransporter::deliverFrame_I420(
     ipcInfo.length += info.m_bufferList[i].length;
 
   SendIpcData(info, ipcInfo);
- /* switch (type) {
-  case NODE_RENDER_TYPE_LOCAL:
-    IpcManager::get_instance().sendData(std::string("local"), deviceId,
-                                        (char *)&info, sizeof(info));
-    break;
-  case NODE_RENDER_TYPE_REMOTE:
-    IpcManager::get_instance().sendData(channelId, uid, (char *)&info,
-                                        sizeof(info));
-    break;
-  case NODE_RENDER_TYPE_VIDEO_SOURCE:
-    IpcManager::get_instance().sendData(std::string("video_source"), deviceId,
-                                        (char *)&info, sizeof(info));
-    break;
-  case NODE_RENDER_TYPE_TRANSCODED:
-    IpcManager::get_instance().sendData(std::string("TRANSCODED"), 0,
-                                        (char *)&info, sizeof(info));
-    break;
-  default:
-    break;
-  }*/
+ 
+  
   return 0;
 }
 

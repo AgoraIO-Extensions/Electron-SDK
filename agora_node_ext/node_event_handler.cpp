@@ -948,6 +948,9 @@ void NodeEventHandler::onUserOffline(const RtcConnection &connection,
                                      uid_t remoteUid,
                                      USER_OFFLINE_REASON_TYPE reason) {
   IpcManager::get_instance().releaseIpc(std::string(connection.channelId),remoteUid);
+  getNodeVideoFrameTransporter()->eraseIpcData(
+      NODE_RENDER_TYPE_DEVICE_TEST, remoteUid,
+      std::string(connection.channelId), 0);
   FUNC_TRACE;
   CustomRtcConnection _connection(connection);
   node_async_call::async_call([this, _connection, remoteUid, reason] {

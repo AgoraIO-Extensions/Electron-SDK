@@ -169,6 +169,7 @@ public:
                    std::string channelId, int deviceId);
   // bool deliveryFrame1(enum NodeRenderType type, agora::rtc::uid_t uid, const
   // buffer_list& buffers);
+  void eraseIpcData(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, int deviceId);
 private:
   struct image_frame_info {
     int stride;
@@ -212,7 +213,7 @@ private:
                         int dstStride);
   void FlushVideo();
   void highFlushVideo();
-  void eraseIpcData(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, int deviceId);
+  
   video_ipc_data& getIpcSendData(std::string channelId, unsigned int uid,  VideoFrameInfo& videoInfo,  video_ipc_info& ipcInfo);
   void SendIpcData(VideoFrameInfo& videoInfo,  video_ipc_info& ipcInfo);
 private:
