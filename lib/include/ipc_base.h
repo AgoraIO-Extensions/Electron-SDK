@@ -78,11 +78,10 @@ public:
     virtual ~IAgoraIpcDataReceiver() {};
 
     virtual bool initialize(const std::string& id,
-                  const std::function<void(const char*, int)>& handler) = 0;
+                  const std::function<void(const char*, int, unsigned int, const char*)>& handler,
+		unsigned int uid, const std::string& channelId) = 0;
 
     virtual void run(bool async = false) = 0;
-
-    virtual void stop() = 0;
 };
 
 AGORA_API IAgoraIpcDataSender* AGORA_CALL createIpcSender();
