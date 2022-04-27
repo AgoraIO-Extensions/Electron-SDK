@@ -116,6 +116,34 @@ public:
         m_needUpdate(false), m_count(0), m_channelId(channelId) {}
 };
 
+struct video_ipc_info {
+  int stride;
+  int stride0;
+  int width;
+  int height;
+  int strideU;
+  int strideV;
+  int length;
+};
+
+struct video_ipc_header_type {
+  uint16_t width;
+  uint16_t height;
+  uint8_t format;
+  uint8_t mirrored;
+  uint16_t left;
+  uint16_t top;
+  uint16_t right;
+  uint16_t bottom;
+  uint16_t rotation;
+  uint32_t timestamp;
+};
+
+struct video_ipc_data {
+
+  stream_buffer_type buffer;
+};
+
 class NodeVideoFrameTransporter {
 public:
   NodeVideoFrameTransporter();
@@ -163,6 +191,7 @@ private:
     uint16_t rotation;
     uint32_t timestamp;
   };
+
   VideoFrameInfo &getVideoFrameInfo(NodeRenderType type, agora::rtc::uid_t uid,
                                     std::string channelId, int deviceId);
   void erase(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, int deviceId);
@@ -183,7 +212,9 @@ private:
                         int dstStride);
   void FlushVideo();
   void highFlushVideo();
-
+  void eraseIpcData(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, int deviceId);
+  video_ipc_data& getIpcSendData(std::string channelId, unsigned int uid,  VideoFrameInfo& videoInfo,  video_ipc_info& ipcInfo);
+  void SendIpcData(VideoFrameInfo& videoInfo,  video_ipc_info& ipcInfo);
 private:
   bool init;
   Isolate *env;
@@ -199,6 +230,9 @@ private:
   std::unordered_map<int, VideoFrameInfo> m_screenCaptureFrames;
   std::unique_ptr<VideoFrameInfo> m_devTestVideoFrame;
   std::unique_ptr<VideoFrameInfo> m_transcodedVideoFrame;
+  std::unordered_map<std::string,
+    std::unordered_map<agora::rtc::uid_t, video_ipc_data>>
+    m_ipcSendVideoData;
   std::mutex m_lock;
   int m_stopFlag;
   std::unique_ptr<std::thread> m_thread;

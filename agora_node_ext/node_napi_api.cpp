@@ -25,9 +25,11 @@ NodeVideoFrameTransporter *getNodeVideoFrameTransporter() {
 }
 
 NodeVideoFrameTransporter::NodeVideoFrameTransporter()
-    : init(false), env(nullptr), m_highFPS(15), m_FPS(30) {}
+    : init(false), env(nullptr), m_highFPS(15), m_FPS(30) {
 
-NodeVideoFrameTransporter::~NodeVideoFrameTransporter() { deinitialize(); }
+ }
+
+NodeVideoFrameTransporter::~NodeVideoFrameTransporter() { }
 
 bool NodeVideoFrameTransporter::initialize(
     v8::Isolate *isolate,
@@ -101,6 +103,7 @@ void NodeVideoFrameTransporter::subscribe(NodeRenderType type,
 void NodeVideoFrameTransporter::erase(NodeRenderType type,
                                       agora::rtc::uid_t uid,
                                       std::string channelId, int deviceId) {
+  eraseIpcData(type, uid, channelId, deviceId);
   if (type == NodeRenderType::NODE_RENDER_TYPE_LOCAL) {
     m_localVideoFrames.erase(deviceId);
   } else if (type == NODE_RENDER_TYPE_TRANSCODED) {
@@ -181,6 +184,124 @@ VideoFrameInfo &NodeVideoFrameTransporter::getVideoFrameInfo(
   }
 }
 
+video_ipc_data& NodeVideoFrameTransporter::getIpcSendData(std::string channelId, unsigned int uid, VideoFrameInfo& videoInfo, video_ipc_info& ipcInfo)
+{
+  auto cit = m_ipcSendVideoData.find(channelId);
+  if (cit == m_ipcSendVideoData.end()) {
+    m_ipcSendVideoData[channelId] =
+      std::unordered_map<agora::rtc::uid_t, video_ipc_data>();
+  }
+
+  auto it = m_ipcSendVideoData[channelId].find(uid);
+  if (it == m_ipcSendVideoData[channelId].end()) {
+    m_ipcSendVideoData[channelId][uid] = video_ipc_data();
+  }
+
+  int sizeHeader = sizeof(video_ipc_header_type);
+  int sizeInfo = sizeof(video_ipc_info);
+  int size = sizeHeader + sizeInfo + ipcInfo.length;
+  int bufferSize = m_ipcSendVideoData[channelId][uid].buffer.size();
+  if (size < bufferSize || size >= bufferSize * 2)
+    m_ipcSendVideoData[channelId][uid].buffer.resize(size);
+
+  LOG_INFO("ipc buffer size =%d", m_ipcSendVideoData[channelId][uid].buffer.size());
+  video_ipc_header_type* hdr =
+    reinterpret_cast<video_ipc_header_type*>(&videoInfo.m_buffer[0]);
+ 
+  unsigned char* y = (unsigned char*)&m_ipcSendVideoData[channelId][uid].buffer[0] + sizeHeader + sizeInfo;
+  unsigned char* u = y + videoInfo.m_bufferList[1].length;
+  unsigned char* v = u + videoInfo.m_bufferList[2].length;
+  memcpy(&m_ipcSendVideoData[channelId][uid].buffer[0], hdr, sizeHeader);
+  memcpy((unsigned char*)&m_ipcSendVideoData[channelId][uid].buffer[0] + sizeHeader, &ipcInfo, sizeInfo);
+  memcpy(y, videoInfo.m_bufferList[1].buffer, videoInfo.m_bufferList[1].length);
+  memcpy(u, videoInfo.m_bufferList[2].buffer, videoInfo.m_bufferList[2].length);
+  memcpy(v, videoInfo.m_bufferList[3].buffer, videoInfo.m_bufferList[3].length);
+ 
+  return m_ipcSendVideoData[channelId][uid];
+}
+
+void NodeVideoFrameTransporter::eraseIpcData(NodeRenderType type, agora::rtc::uid_t uid, std::string channelId, int deviceId)
+{
+  switch (type) {
+  case NODE_RENDER_TYPE_LOCAL:
+  {
+    channelId = "local";
+    uid = deviceId;
+  }
+  break;
+  case NODE_RENDER_TYPE_REMOTE:
+  {
+    uid = uid;
+    channelId = channelId;
+  }
+  break;
+  case NODE_RENDER_TYPE_VIDEO_SOURCE:
+  { channelId = "video_source";
+  uid = deviceId;
+  }
+  break;
+  case NODE_RENDER_TYPE_TRANSCODED:
+  {
+    channelId = "TRANSCODED";
+    uid = 0;
+  }
+  break;
+  default:
+    break;
+  }
+  auto cit = m_ipcSendVideoData.find(channelId);
+  if (cit != m_ipcSendVideoData.end()) {
+    m_ipcSendVideoData[channelId] =
+      std::unordered_map<agora::rtc::uid_t, video_ipc_data>();
+
+    auto it = m_ipcSendVideoData[channelId].find(uid);
+    if (it != m_ipcSendVideoData[channelId].end()) {
+      m_ipcSendVideoData[channelId].erase(it);
+    }
+    m_ipcSendVideoData.erase(cit);
+  }
+}
+
+void NodeVideoFrameTransporter::SendIpcData(VideoFrameInfo& videoInfo, video_ipc_info& ipcInfo)
+{
+  unsigned int  uid = videoInfo.m_uid;
+  std::string channelId = videoInfo.m_channelId;
+
+  switch (videoInfo.m_renderType) {
+  case NODE_RENDER_TYPE_LOCAL:
+  {
+    channelId = "local";
+    uid = videoInfo.m_deviceId;
+  }
+  break;
+  case NODE_RENDER_TYPE_REMOTE:
+  {
+    uid = videoInfo.m_uid;
+    channelId = videoInfo.m_channelId;
+  }
+    break;
+  case NODE_RENDER_TYPE_VIDEO_SOURCE:
+  { channelId = "video_source";
+  uid = videoInfo.m_deviceId;
+  }
+  break;
+  case NODE_RENDER_TYPE_TRANSCODED:
+  {
+    channelId = "TRANSCODED";
+    uid = 0;
+  }
+  break;
+  default:
+    break;
+  }
+  LOG_INFO("Send IPC Data: %s_%d", channelId.c_str(), uid);
+  video_ipc_data& data = getIpcSendData(channelId, uid, videoInfo, ipcInfo);
+
+  IpcManager::get_instance().sendData(channelId, uid,
+    (char*)&data.buffer[0], sizeof(video_ipc_header_type) + sizeof(video_ipc_info) + ipcInfo.length); //+ sizeof(char*));//
+
+}
+
 int NodeVideoFrameTransporter::deliverVideoSourceFrame(const char *payload,
                                                        int len) {
   if (!init)
@@ -245,7 +366,7 @@ int NodeVideoFrameTransporter::deliverFrame_I420(
       videoFrame.rotation < 0 ? videoFrame.rotation + 360 : videoFrame.rotation;
   std::lock_guard<std::mutex> lck(m_lock);
   VideoFrameInfo &info = getVideoFrameInfo(type, uid, channelId, deviceId);
-
+ 
   if (!info.m_subscribed) {
     info.m_needUpdate = false;
     return 0;
@@ -272,7 +393,19 @@ int NodeVideoFrameTransporter::deliverFrame_I420(
   info.m_count = 0;
   info.m_needUpdate = true;
 
-  switch (type) {
+  video_ipc_info ipcInfo;
+  ipcInfo.width = destWidth;
+  ipcInfo.height = destHeight;
+  ipcInfo.stride = destStride;
+  ipcInfo.stride0 = stride0;
+  ipcInfo.strideU = destStride / 2;
+  ipcInfo.strideV = destStride / 2;
+  ipcInfo.length = 0;
+  for (int i = 1; i < 4; ++i)
+    ipcInfo.length += info.m_bufferList[i].length;
+
+  SendIpcData(info, ipcInfo);
+ /* switch (type) {
   case NODE_RENDER_TYPE_LOCAL:
     IpcManager::get_instance().sendData(std::string("local"), deviceId,
                                         (char *)&info, sizeof(info));
@@ -291,7 +424,7 @@ int NodeVideoFrameTransporter::deliverFrame_I420(
     break;
   default:
     break;
-  }
+  }*/
   return 0;
 }
 
@@ -341,10 +474,10 @@ void NodeVideoFrameTransporter::copyFrame(
 
   info.m_bufferList[1].buffer = y;
   info.m_bufferList[1].length = dest_stride * height;
-
+  
   info.m_bufferList[2].buffer = u;
   info.m_bufferList[2].length = width2 * heigh2;
-
+  
   info.m_bufferList[3].buffer = v;
   info.m_bufferList[3].length = width2 * heigh2;
 }
@@ -661,6 +794,9 @@ void NodeVideoFrameTransporter::highFlushVideo() {
     }
   }
 }
+
+
+
 
 int napi_get_value_string_utf8_(const Local<Value> &str, char *buffer,
                                 uint32_t len) {

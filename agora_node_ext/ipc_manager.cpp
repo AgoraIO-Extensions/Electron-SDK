@@ -7,7 +7,7 @@
 
 #include "ipc_manager.hpp"
 #include <iostream>
-
+#include "node_log.h"
 IpcManager::~IpcManager() { std::cout << "destructor called!" << std::endl; }
 
 IpcManager::IpcManager(token) {
@@ -96,7 +96,8 @@ IAgoraIpcDataSender *IpcManager::ensureIpcMap(std::string channelId,
     m_ipcMap[channelId][uid] = createIpcSender();
     std::string id = std::string("agoravideosource_") + channelId +
                      std::string("_") + std::to_string(uid);
-    m_ipcMap[channelId][uid]->initialize(id);
+    bool b = m_ipcMap[channelId][uid]->initialize(id);
+    LOG_INFO("ipc Manager initialize id:%s, ret: %d", id.c_str(), b);
   }
 
   return m_ipcMap[channelId][uid];
