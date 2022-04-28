@@ -665,7 +665,7 @@ export interface InjectStreamConfig {
    *
    * The default value is 15 fps.
    */
-  videoFrameRate: number;
+  videoFramerate: number;
   /** Video GOP of the added stream in the live streaming in frames.
    *
    * The default value is 30 fps.
