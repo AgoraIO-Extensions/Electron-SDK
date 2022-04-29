@@ -443,9 +443,11 @@ static int shm_block_lock(shm_block<BLOCK_SIZE>* block) {
     // we assume the lock test fails quite little because use have
     // more than one buffers for one channel, so we can pipe line the
     // read and write operation
-    // retry_count++;
-    // if (retry_count > 20) {
-    //   retry_count = 0;
+    retry_count++;
+    if (retry_count > 200) {
+      retry_count = 0;
+      break;
+    }
     YIELD();
     //}
   }
