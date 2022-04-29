@@ -590,6 +590,7 @@ bool AgoraVideoSource::joinChannel(JoinChannelCmd* cmd) {
 }
 
 void AgoraVideoSource::exit(bool notifySink) {
+  m_rtcEngine->unregisterEventHandler(this->m_eventHandler.get());
   m_ipc->disconnect();
   LOG_F(INFO, "VideoSource::leaveChannel");
   m_rtcEngine->leaveChannel();
