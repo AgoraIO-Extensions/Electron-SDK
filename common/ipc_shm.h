@@ -498,11 +498,14 @@ static int shm_block_wait_for_data_state(shm_block<BLOCK_SIZE>* block,
     } else {
       // continue loop
       shm_block_unblock<BLOCK_SIZE>(block);
-      retry_count++;
-      if (retry_count > 20) {
-        retry_count = 0;
-        YIELD();
-      }
+	       retry_count++;
+		   if (retry_count > 20) {
+			 retry_count = 0;
+			 YIELD();
+
+			 if (state == 0)
+				 break;
+		   }
     }
   }
   return 0;
