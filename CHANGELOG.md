@@ -1,4 +1,4 @@
-## 3.6.1-rc.5-build.429(April 28th, 2022)
+## 3.6.1-rc.5-build.430(April 28th, 2022)
 - update native sdk
 - bug fix:
   - fix logPath for videoSource
