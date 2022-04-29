@@ -1,4 +1,4 @@
-## 3.7.0-build.426(April 26th, 2022)
+## 3.7.0-build.429(April 26th, 2022)
 - update native sdk
 - add api: 
   - setScreenCaptureScenario
@@ -15,6 +15,7 @@
   - Engine->contentInspectResult
   - Engine->proxyConnected
   - Channel->firstRemoteVideoFrame
+- fix ipc send
 
 
 ## 3.6.1-rc.4-build.406(April 6th, 2022)
