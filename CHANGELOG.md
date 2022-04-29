@@ -1,8 +1,9 @@
-## 3.6.1-rc.5-build.428(April 28th, 2022)
+## 3.6.1-rc.5-build.429(April 28th, 2022)
 - update native sdk
 - bug fix:
   - fix logPath for videoSource
   - fix videoSourceRelease crash
+  - fix ipc send
 
 ## 3.6.1-rc.4-build.406(April 6th, 2022)
 - add api: videoSourceSetLocalAccessPoint
