@@ -1,4 +1,4 @@
-## 3.7.0-build.429(April 26th, 2022)
+## 3.7.0-build.430(April 30th, 2022)
 - update native sdk
 - add api: 
   - setScreenCaptureScenario
