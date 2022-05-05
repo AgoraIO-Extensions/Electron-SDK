@@ -962,9 +962,10 @@ class AgoraRtcEngine extends EventEmitter {
 
     this.rtcEngine.onEvent('wlAccMessage', function(
       reason: WLACC_MESSAGE_REASON,
-      action: WLACC_SUGGEST_ACTION
+      action: WLACC_SUGGEST_ACTION,
+      wlAccMsg: string
     ) {
-      fire('wlAccMessage', reason, action);
+      fire('wlAccMessage', reason, action, wlAccMsg);
     });
     this.rtcEngine.onEvent('wlAccStats', function(
       currentStats: WlAccStats,
@@ -8364,7 +8365,7 @@ declare interface AgoraRtcEngine {
 
   on(
     evt: 'wlAccMessage',
-    cb: (reason: WLACC_MESSAGE_REASON, action: WLACC_SUGGEST_ACTION) => void
+    cb: (reason: WLACC_MESSAGE_REASON, action: WLACC_SUGGEST_ACTION, wlAccMsg: string) => void
   ): this;
 
   on(

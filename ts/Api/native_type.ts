@@ -5118,7 +5118,7 @@ export interface ContentInspectConfig {
   /** The extra information, max length of extraInfo is 1024.
    *  The extra information will send to server with content(image).
    */
-  extraInfo: number;
+  extraInfo: string;
   /**The content inspect modules, max length of modules is 32.
    * the content(snapshot of send video stream, image) can be used to max of 32 types functions.
    */
