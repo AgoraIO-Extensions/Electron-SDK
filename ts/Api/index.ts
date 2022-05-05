@@ -8351,7 +8351,7 @@ declare interface AgoraRtcEngine {
   //3.7.0
   on(
     evt: 'localVoicePitchInHz',
-    cb: (localVoicePitchInHz: number) => void
+    cb: (pitchInHz: number) => void
   ): this;
 
   on(
@@ -8529,13 +8529,6 @@ class AgoraRtcChannel extends EventEmitter {
     this.rtcChannel.onEvent('activeSpeaker', (uid: number) => {
       fire('activeSpeaker', uid);
     });
-
-    this.rtcChannel.onEvent(
-      'firstRemoteVideoFrame',
-      (uid: number, width: number, height: number, elapsed: number) => {
-        fire('firstRemoteVideoFrame', uid, width, height, elapsed);
-      }
-    );
 
     this.rtcChannel.onEvent(
       'firstRemoteAudioDecoded',
