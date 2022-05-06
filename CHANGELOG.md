@@ -1,3 +1,19 @@
+## 3.7.204-build.506(May 6th, 2022)
+- add mpk api:
+  - selectAudioTrack
+  - resume
+  - setLoopCount
+  - setPlaybackSpeed
+  - mute
+  - getMute
+  - adjustPlayoutVolume
+  - getPlayoutVolume
+  - adjustPublishSignalVolume
+  - getPublishSignalVolume
+  - preloadSrc
+  - playPreloadedSrc
+  - unloadSrc
+
 ## 3.7.204-build.421(Apr 21th, 2022)
 - update native sdk
 - add api: setVideoEncoderConfigurationEx

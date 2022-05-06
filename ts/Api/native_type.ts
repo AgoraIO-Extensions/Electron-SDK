@@ -4125,4 +4125,18 @@ export interface NodeMediaPlayer {
   getStreamInfo(index: number): MediaStreamInfo;
   setPlayerOption(key: string, value: number): number;
   selectAudioTrack(index: number): number;
+
+  selectAudioTrack(index: number): number;
+  resume(): number;
+  setLoopCount(loopCount: number): number;
+  setPlaybackSpeed(speed: number): number;
+  mute(mute: boolean): number;
+  getMute(): boolean;
+  adjustPlayoutVolume(volume: number): number;
+  getPlayoutVolume(): number;
+  adjustPublishSignalVolume(volume: number): number;
+  getPublishSignalVolume(): number;
+  preloadSrc(src: string, startPos: number): number;
+  playPreloadedSrc(src: string): number;
+  unloadSrc(src: string): number;
 }

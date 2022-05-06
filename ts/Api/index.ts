@@ -5825,7 +5825,7 @@ declare interface AgoraRtcEngine {
 
 class AgoraMediaPlayer extends EventEmitter {
   mediaPlayer: NodeMediaPlayer;
-  constructor(mediaPlayer:NodeMediaPlayer) {
+  constructor(mediaPlayer: NodeMediaPlayer) {
     super();
     this.mediaPlayer = mediaPlayer;
   }
@@ -5837,7 +5837,7 @@ class AgoraMediaPlayer extends EventEmitter {
       });
     };
 
-    this.mediaPlayer.onEvent('onApiError', (funcName: string) => {
+    this.mediaPlayer.onEvent("onApiError", (funcName: string) => {
       console.error(`api ${funcName} failed. this is an error
               thrown by c++ addon layer. it often means sth is
               going wrong with this function call and it refused
@@ -5845,20 +5845,19 @@ class AgoraMediaPlayer extends EventEmitter {
               to see if it matches properly.`);
     });
 
-    this.mediaPlayer.onEvent('onPlayerStateChanged', (
-      state: MEDIA_PLAYER_STATE,
-      ec: MEDIA_PLAYER_ERROR
-    ) => {
-      fire('onPlayerStateChanged', state, ec);
-    });
+    this.mediaPlayer.onEvent(
+      "onPlayerStateChanged",
+      (state: MEDIA_PLAYER_STATE, ec: MEDIA_PLAYER_ERROR) => {
+        fire("onPlayerStateChanged", state, ec);
+      }
+    );
 
-    this.mediaPlayer.onEvent('onPlayEvent', (
-      event: MEDIA_PLAYER_EVENT,
-      elapsedTime: number,
-      msg: string,
-    ) => {
-      fire('onPlayEvent', event, elapsedTime, msg);
-    });
+    this.mediaPlayer.onEvent(
+      "onPlayEvent",
+      (event: MEDIA_PLAYER_EVENT, elapsedTime: number, msg: string) => {
+        fire("onPlayEvent", event, elapsedTime, msg);
+      }
+    );
 
     // this.mediaPlayer.onEvent('onMetaData', (
     //   error: number,
@@ -5867,10 +5866,8 @@ class AgoraMediaPlayer extends EventEmitter {
     //   fire('onMetaData', error, message);
     // });
 
-    this.mediaPlayer.onEvent('onPositionChanged', (
-      position: number
-    ) => {
-      fire('onPositionChanged', position);
+    this.mediaPlayer.onEvent("onPositionChanged", (position: number) => {
+      fire("onPositionChanged", position);
     });
   }
 
@@ -5910,7 +5907,7 @@ class AgoraMediaPlayer extends EventEmitter {
     return this.mediaPlayer.getSourceId();
   }
 
-  getStreamInfo(index: number) : MediaStreamInfo {
+  getStreamInfo(index: number): MediaStreamInfo {
     return this.mediaPlayer.getStreamInfo(index);
   }
 
@@ -5918,11 +5915,46 @@ class AgoraMediaPlayer extends EventEmitter {
     return this.mediaPlayer.setPlayerOption(key, value);
   }
 
-
   selectAudioTrack(index: number): number {
     return this.mediaPlayer.selectAudioTrack(index);
   }
 
+  resume(): number {
+    return this.mediaPlayer.resume();
+  }
+  setLoopCount(loopCount: number): number {
+    return this.mediaPlayer.setLoopCount(loopCount);
+  }
+  setPlaybackSpeed(speed: number): number {
+    return this.mediaPlayer.setPlaybackSpeed(speed);
+  }
+  mute(mute: boolean): number {
+    return this.mediaPlayer.mute(mute);
+  }
+  getMute(): boolean {
+    return this.mediaPlayer.getMute();
+  }
+  adjustPlayoutVolume(volume: number): number {
+    return this.mediaPlayer.adjustPlayoutVolume(volume);
+  }
+  getPlayoutVolume(): number {
+    return this.mediaPlayer.getPlayoutVolume();
+  }
+  adjustPublishSignalVolume(volume: number): number {
+    return this.mediaPlayer.adjustPublishSignalVolume(volume);
+  }
+  getPublishSignalVolume(): number {
+    return this.mediaPlayer.getPublishSignalVolume();
+  }
+  preloadSrc(src: string, startPos: number): number {
+    return this.mediaPlayer.preloadSrc(src, startPos);
+  }
+  playPreloadedSrc(src: string): number {
+    return this.mediaPlayer.playPreloadedSrc(src);
+  }
+  unloadSrc(src: string): number {
+    return this.mediaPlayer.unloadSrc(src);
+  }
 }
 
 export default AgoraRtcEngine;
