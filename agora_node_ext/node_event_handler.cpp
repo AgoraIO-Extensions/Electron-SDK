@@ -1832,5 +1832,83 @@ void NodeEventHandler::onAudioDeviceTestVolumeIndication(AudioDeviceTestVolumeTy
   });
 }
 
-}  // namespace rtc
-}  // namespace agora
+// 3.7.0
+void NodeEventHandler::onLocalVoicePitchInHz(int pitchInHz) {
+
+  node_async_call::async_call([this, pitchInHz] {
+    MAKE_JS_CALL_1(RTC_EVENT_LOCAL_VOICE_PITCH_IN_HZ, int32, pitchInHz);
+  });
+}
+
+void NodeEventHandler::onClientRoleChangeFailed(
+    CLIENT_ROLE_CHANGE_FAILED_REASON reason, CLIENT_ROLE_TYPE currentRole) {
+  node_async_call::async_call([this, reason, currentRole] {
+    MAKE_JS_CALL_2(RTC_EVENT_CLIENT_ROLE_CHANGE_FAILED, int32, reason, int32,
+                   currentRole);
+  });
+}
+void NodeEventHandler::onWlAccMessage(WLACC_MESSAGE_REASON reason,
+                                      WLACC_SUGGEST_ACTION action,
+                                      const char *wlAccMsg) {
+  std::string msg(wlAccMsg);
+
+  node_async_call::async_call([this, reason, action, msg] {
+    MAKE_JS_CALL_3(RTC_EVENT_WL_ACC_MESSAGE, int32, reason, int32, action,
+                   string, msg.c_str());
+  });
+}
+
+
+
+void NodeEventHandler::onWlAccStats(WlAccStats currentStats,
+                                    WlAccStats averageStats) {
+  FUNC_TRACE;
+  node_async_call::async_call([this, currentStats, averageStats] {
+      FUNC_TRACE;
+      do {
+        Isolate* isolate = Isolate::GetCurrent();
+        HandleScope scope(isolate);
+        Local<Context> context = isolate->GetCurrentContext();
+        Local<Object> obj1 = Object::New(isolate);
+        Local<Object> obj2 = Object::New(isolate);
+
+        NODE_SET_OBJ_PROP_NUMBER(obj1, "e2eDelayPercent", currentStats.e2eDelayPercent);
+        NODE_SET_OBJ_PROP_NUMBER(obj1, "frozenRatioPercent", currentStats.frozenRatioPercent);
+        NODE_SET_OBJ_PROP_NUMBER(obj1, "lossRatePercent", currentStats.lossRatePercent);
+        
+        NODE_SET_OBJ_PROP_NUMBER(obj2, "e2eDelayPercent", averageStats.e2eDelayPercent);
+        NODE_SET_OBJ_PROP_NUMBER(obj2, "frozenRatioPercent", averageStats.frozenRatioPercent);
+        NODE_SET_OBJ_PROP_NUMBER(obj2, "lossRatePercent", averageStats.lossRatePercent);
+
+        Local<Value> arg[2] = {obj1,obj2};
+        auto it = m_callbacks.find(RTC_EVENT_WL_ACC_STATS);
+        if (it != m_callbacks.end()) {
+          it->second->callback.Get(isolate)->Call(
+              context, it->second->js_this.Get(isolate), 2, arg);
+        }
+      } while (false);
+  });
+}
+
+void NodeEventHandler::onContentInspectResult(CONTENT_INSPECT_RESULT result) {
+
+  node_async_call::async_call([this, result] {
+    MAKE_JS_CALL_1(RTC_EVENT_CONTENT_INSPECT_RESULT, int32, result);
+  });
+}
+void NodeEventHandler::onProxyConnected(const char *channel, uid_t uid,
+                                        PROXY_TYPE proxyType,
+                                        const char *localProxyIp, int elapsed) {
+  std::string channelIdStr(channel);
+  std::string localProxyIpStr(localProxyIp);
+
+  node_async_call::async_call(
+      [this, channelIdStr, uid, proxyType, localProxyIpStr, elapsed] {
+        MAKE_JS_CALL_5(RTC_EVENT_PROXY_CONNECTED, string, channelIdStr.c_str(),
+                       uid, uid, int32, proxyType, string,
+                       localProxyIpStr.c_str(), int32, elapsed);
+      });
+}
+
+} // namespace rtc
+} // namespace agora

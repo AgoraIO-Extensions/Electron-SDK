@@ -396,7 +396,6 @@ void NodeRtcEngine::Init(Local<Object>& module) {
   PROPERTY_METHOD_DEFINE(setRemoteVideoStreamType)
   PROPERTY_METHOD_DEFINE(setRemoteDefaultVideoStreamType)
   PROPERTY_METHOD_DEFINE(enableAudioVolumeIndication)
-  PROPERTY_METHOD_DEFINE(startAudioRecording)
   PROPERTY_METHOD_DEFINE(stopAudioRecording)
   PROPERTY_METHOD_DEFINE(startAudioMixing)
   PROPERTY_METHOD_DEFINE(stopAudioMixing)
@@ -694,6 +693,18 @@ void NodeRtcEngine::Init(Local<Object>& module) {
   PROPERTY_METHOD_DEFINE(startEchoTestWithConfig)
   
   PROPERTY_METHOD_DEFINE(setLocalAccessPoint);
+  PROPERTY_METHOD_DEFINE(videoSourceSetLocalAccessPoint);
+  
+  /*
+  * 3.7.0
+  */
+  PROPERTY_METHOD_DEFINE(setScreenCaptureScenario);
+  PROPERTY_METHOD_DEFINE(enableLocalVoicePitchCallback);
+  PROPERTY_METHOD_DEFINE(enableWirelessAccelerate);
+  PROPERTY_METHOD_DEFINE(enableContentInspect);
+  PROPERTY_METHOD_DEFINE(enableSpatialAudio);
+  PROPERTY_METHOD_DEFINE(setRemoteUserSpatialAudioParams);
+  
   EN_PROPERTY_DEFINE()
   module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(),
               tpl->GetFunction(context).ToLocalChecked());
@@ -1433,48 +1444,87 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalAccessPoint) {
     CHECK_NAPI_STATUS(pEngine, status);
     localAccessPointConfiguration.mode = (LOCAL_PROXY_MODE)mode;
     
-    Local<Object> advancedConfigObj;
-    status = napi_get_object_property_object_(isolate, obj, "advancedConfig", advancedConfigObj);
-    CHECK_NAPI_STATUS(pEngine, status);
-    if (!advancedConfigObj->IsObject()) {
-      status = napi_invalid_arg;
-      CHECK_NAPI_STATUS(pEngine, status);
-    }
-    AdvancedConfigInfo advancedConfigInfo;
-    UploadServerInfo uploadServerInfo;
-    advancedConfigInfo.logUploadServer = &uploadServerInfo;
-    localAccessPointConfiguration.advancedConfig = &advancedConfigInfo;
-    
-    Local<Object> uploadServerInfoObj;
-    status = napi_get_object_property_object_(isolate, advancedConfigObj, "logUploadServer", uploadServerInfoObj);
-    CHECK_NAPI_STATUS(pEngine, status);
-    if (!uploadServerInfoObj->IsObject()) {
-      status = napi_invalid_arg;
-      CHECK_NAPI_STATUS(pEngine, status);
-    }
-    
-    NodeString serverDomainStr;
-    status = napi_get_object_property_nodestring_(isolate, uploadServerInfoObj, "serverDomain", serverDomainStr);
-    CHECK_NAPI_STATUS(pEngine, status);
-    uploadServerInfo.serverDomain = serverDomainStr;
-    
-    NodeString serverPathStr;
-    status = napi_get_object_property_nodestring_(isolate, uploadServerInfoObj, "serverDomain", serverPathStr);
-    CHECK_NAPI_STATUS(pEngine, status);
-    uploadServerInfo.serverPath = serverPathStr;
-    
-    status = napi_get_object_property_int32_(isolate, uploadServerInfoObj, "serverPort", uploadServerInfo.serverPort);
-    CHECK_NAPI_STATUS(pEngine, status);
-    
-    status = napi_get_object_property_bool_(isolate, uploadServerInfoObj, "serverHttps", uploadServerInfo.serverHttps);
-    CHECK_NAPI_STATUS(pEngine, status);
-    
     result = pEngine->m_engine->setLocalAccessPoint(localAccessPointConfiguration);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
 }
 
+NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetLocalAccessPoint) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  std::unique_ptr<LocalAccessPointConfigurationCmd> cmd(
+      new LocalAccessPointConfigurationCmd());
+
+  do {
+    Isolate *isolate = args.GetIsolate();
+    Local<Context> context = isolate->GetCurrentContext();
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    if (!args[0]->IsObject()) {
+      status = napi_invalid_arg;
+      CHECK_NAPI_STATUS(pEngine, status);
+    }
+
+    Local<Object> obj;
+    status = napi_get_value_object_(isolate, args[0], obj);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    v8::Array *ipList;
+    v8::Array *domainList;
+
+    std::string ipListStr;
+    std::string domainListStr;
+    status = napi_get_object_property_array_(isolate, obj, "ipList", ipList);
+    if (status == napi_ok && ipList->Length() > 0) {
+      for (uint32 i = 0; i < ipList->Length(); i++) {
+        Local<Value> value = ipList->Get(context, i).ToLocalChecked();
+        NodeString str;
+        status = napi_get_value_nodestring_(value, str);
+        CHECK_NAPI_STATUS(pEngine, status);
+        ipListStr += string(str) + IPC_STRING_PARTTERN;
+      }
+    }
+    memset(cmd->ipList, 0, MAX_STRING_LEN);
+    strncpy(cmd->ipList, ipListStr.c_str(), ipListStr.size());
+
+    status =
+        napi_get_object_property_array_(isolate, obj, "domainList", domainList);
+    if (status == napi_ok && domainList->Length() > 0) {
+      for (uint32 i = 0; i < domainList->Length(); i++) {
+        Local<Value> value = domainList->Get(context, i).ToLocalChecked();
+        NodeString str;
+        status = napi_get_value_nodestring_(value, str);
+        CHECK_NAPI_STATUS(pEngine, status);
+        domainListStr += string(str) + IPC_STRING_PARTTERN;
+      }
+    }
+    memset(cmd->domainList, 0, MAX_STRING_LEN);
+    strncpy(cmd->domainList, domainListStr.c_str(), domainListStr.size());
+
+    NodeString verifyDomainNameStr;
+    status = napi_get_object_property_nodestring_(
+        isolate, obj, "verifyDomainName", verifyDomainNameStr);
+    CHECK_NAPI_STATUS(pEngine, status);
+    if (verifyDomainNameStr) {
+      memset(cmd->verifyDomainName, 0, MAX_STRING_LEN);
+      strncpy(cmd->verifyDomainName, verifyDomainNameStr,
+              std::string(verifyDomainNameStr).size());
+    }
+    int32_t mode;
+    status = napi_get_object_property_int32_(isolate, obj, "mode", mode);
+    CHECK_NAPI_STATUS(pEngine, status);
+    cmd->mode = (LOCAL_PROXY_MODE)mode;
+
+    if (pEngine->m_videoSourceSink.get()) {
+      pEngine->m_videoSourceSink->setLocalAccessPoint(cmd);
+      result = 0;
+    }
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
 
 NAPI_API_DEFINE(NodeRtcEngine, startAudioDeviceLoopbackTest) {
   LOG_ENTER;
@@ -6798,32 +6848,6 @@ NAPI_API_DEFINE(NodeRtcEngine, getAudioMixingDuration) {
   napi_set_int_result(args, result);
   LOG_LEAVE;
 }
-NAPI_API_DEFINE(NodeRtcEngine, startAudioRecording) {
-  LOG_ENTER;
-  int result = -1;
-  do {
-    NodeRtcEngine* pEngine = nullptr;
-    napi_status status = napi_ok;
-    napi_get_native_this(args, pEngine);
-    CHECK_NATIVE_THIS(pEngine);
-
-    NodeString filePath;
-    int quality, sampleRate, pos;
-
-    napi_get_param_4(args, nodestring, filePath, int32, sampleRate, int32,
-                     quality, int32, pos);
-    AudioRecordingConfiguration config;
-    config.filePath = filePath;
-    config.recordingSampleRate = sampleRate;
-    config.recordingQuality = AUDIO_RECORDING_QUALITY_TYPE(quality);
-    config.recordingPosition = AUDIO_RECORDING_POSITION(pos);
-
-    result = pEngine->m_engine->startAudioRecording(config);
-  } while (false);
-  napi_set_int_result(args, result);
-
-  LOG_LEAVE;
-}
 
 NAPI_API_DEFINE(NodeRtcEngine, adjustLoopbackRecordingSignalVolume) {
   LOG_ENTER;
@@ -6960,9 +6984,9 @@ NAPI_API_DEFINE(NodeRtcEngine, startAudioRecordingWithConfig) {
   LOG_ENTER;
   int result = -1;
   do {
-    NodeRtcEngine* pEngine = nullptr;
+    NodeRtcEngine *pEngine = nullptr;
     napi_status status = napi_ok;
-    Isolate* isolate = args.GetIsolate();
+    Isolate *isolate = args.GetIsolate();
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
     if (args[0]->IsObject()) {
@@ -6983,10 +7007,21 @@ NAPI_API_DEFINE(NodeRtcEngine, startAudioRecordingWithConfig) {
                                       recordingPosition);
       CHECK_NAPI_STATUS(pEngine, status);
 
+      int sampleRate;
+      napi_get_object_property_int32_(isolate, obj, "sampleRate", sampleRate);
+      CHECK_NAPI_STATUS(pEngine, status);
+
+      int recordingChannel;
+      napi_get_object_property_int32_(isolate, obj, "recordingChannel",
+                                      recordingChannel);
+      CHECK_NAPI_STATUS(pEngine, status);
+
       AudioRecordingConfiguration config;
-      config.filePath = (char*)filePath;
+      config.filePath = (char *)filePath;
       config.recordingQuality = (AUDIO_RECORDING_QUALITY_TYPE)recordingQuality;
       config.recordingPosition = (AUDIO_RECORDING_POSITION)recordingPosition;
+      config.recordingSampleRate = sampleRate;
+      config.recordingChannel = recordingChannel;
       result = pEngine->m_engine->startAudioRecording(config);
     }
 
@@ -7905,6 +7940,217 @@ NAPI_API_DEFINE(NodeRtcEngine, setColorEnhanceOptions) {
     }
     agora::rtc::ColorEnhanceOptions opts(strengthLevel, skinProtectLevel);
     result = pEngine->m_engine->setColorEnhanceOptions(enabled, opts);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+/*
+ * 3.7.0
+ */
+NAPI_API_DEFINE(NodeRtcEngine, setScreenCaptureScenario) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  do {
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    int32_t screenScenario;
+    status = napi_get_value_int32_(args[0], screenScenario);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    result = pEngine->m_engine->setScreenCaptureScenario(
+        (SCREEN_SCENARIO_TYPE)screenScenario);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, enableLocalVoicePitchCallback) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  do {
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    int32_t interval;
+    status = napi_get_value_int32_(args[0], interval);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    result = pEngine->m_engine->enableLocalVoicePitchCallback(interval);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, enableWirelessAccelerate) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  do {
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    bool enabled;
+    status = napi_get_value_bool_(args[0], enabled);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    result = pEngine->m_engine->enableWirelessAccelerate(enabled);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, enableContentInspect) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  Isolate *isolate = args.GetIsolate();
+  Local<Context> context = isolate->GetCurrentContext();
+  do {
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    bool enabled;
+    status = napi_get_value_bool_(args[0], enabled);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    ContentInspectConfig config;
+    nodestring extraInfo;
+    if (args[1]->IsObject()) {
+      Local<Object> obj;
+      status = napi_get_value_object_(isolate, args[1], obj);
+      CHECK_NAPI_STATUS(pEngine, status);
+
+      status = napi_get_object_property_nodestring_(isolate, obj, "extraInfo",
+                                                    extraInfo);
+      CHECK_NAPI_STATUS(pEngine, status);
+      config.extraInfo = extraInfo;
+
+      v8::Array *modulesArr;
+      status =
+          napi_get_object_property_array_(isolate, obj, "modules", modulesArr);
+      auto hasValue = status == napi_ok && modulesArr->Length() > 0;
+      if (!hasValue) {
+        status = napi_invalid_arg;
+        CHECK_NAPI_STATUS(pEngine, status);
+      }
+
+      auto count = modulesArr->Length();
+      config.moduleCount = count;
+
+      for (uint32 i = 0; i < modulesArr->Length(); i++) {
+        Local<Value> value = modulesArr->Get(context, i).ToLocalChecked();
+        Local<Object> moduleObj;
+        status = napi_get_value_object_(isolate, value, moduleObj);
+        if (moduleObj->IsNullOrUndefined()) {
+          status = napi_invalid_arg;
+          CHECK_NAPI_STATUS(pEngine, status);
+        }
+
+        std::string key = "type";
+        int32_t type;
+        status = napi_get_object_property_int32_(isolate, moduleObj, key, type);
+        CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+        config.modules[i].type = (ContentInspectType)type;
+
+        key = "interval";
+        status = napi_get_object_property_int32_(isolate, moduleObj, key,
+                                                 config.modules[i].interval);
+        CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+      }
+      CHECK_NAPI_STATUS(pEngine, status);
+    }
+
+    result = pEngine->m_engine->enableContentInspect(enabled, config);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, enableSpatialAudio) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  do {
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    bool enabled;
+    status = napi_get_value_bool_(args[0], enabled);
+    CHECK_NAPI_STATUS(pEngine, status);
+    result = pEngine->m_engine->enableSpatialAudio(enabled);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, setRemoteUserSpatialAudioParams) {
+  LOG_ENTER;
+  int result = -1;
+  do {
+    Isolate *isolate = args.GetIsolate();
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    uid_t uid;
+    napi_status status = napi_get_value_uid_t_(args[0], uid);
+    CHECK_NAPI_STATUS(pEngine, status);
+    media::SpatialAudioParams params;
+
+    if (args[1]->IsObject()) {
+      Local<Object> spatialAudioParamsObj;
+      status = napi_get_value_object_(isolate, args[1], spatialAudioParamsObj);
+
+      double speaker_azimuth, speaker_elevation, speaker_distance;
+      int speaker_orientation;
+      bool enable_blur, enable_air_absorb;
+
+      status = napi_get_object_property_double_(
+          isolate, spatialAudioParamsObj, "speaker_azimuth", speaker_azimuth);
+      if (status == napi_ok) {
+        params.speaker_azimuth = speaker_azimuth;
+      }
+      status = napi_get_object_property_double_(isolate, spatialAudioParamsObj,
+                                                "speaker_elevation",
+                                                speaker_elevation);
+      if (status == napi_ok) {
+        params.speaker_elevation = speaker_elevation;
+      }
+
+      status = napi_get_object_property_double_(
+          isolate, spatialAudioParamsObj, "speaker_distance", speaker_distance);
+      if (status == napi_ok) {
+        params.speaker_distance = speaker_distance;
+      }
+
+      status = napi_get_object_property_int32_(isolate, spatialAudioParamsObj,
+                                               "speaker_orientation",
+                                               speaker_orientation);
+      if (status == napi_ok) {
+        params.speaker_orientation = speaker_orientation;
+      }
+
+      status = napi_get_object_property_bool_(isolate, spatialAudioParamsObj,
+                                              "enable_blur", enable_blur);
+      if (status == napi_ok) {
+        params.enable_blur = enable_blur;
+      }
+
+      status = napi_get_object_property_bool_(isolate, spatialAudioParamsObj,
+                                              "enable_air_absorb",
+                                              enable_air_absorb);
+      if (status == napi_ok) {
+        params.enable_air_absorb = enable_air_absorb;
+      }
+    }
+
+    result = pEngine->m_engine->setRemoteUserSpatialAudioParams(uid, params);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;

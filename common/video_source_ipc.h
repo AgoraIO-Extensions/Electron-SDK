@@ -120,7 +120,8 @@ enum AgoraIpcMsg {
   AGORA_IPC_MUTE_REMOTE_VIDEO_STREAM,
   AGORA_IPC_MUTE_ALL_REMOTE_VIDEO_STREAMS,
 
-  AGORA_IPC_SET_ADDON_LOGFILE
+  AGORA_IPC_SET_ADDON_LOGFILE,
+  AGORA_IPC_SET_LOCAL_ACCESS_POINT
 };
 
 /**
@@ -174,6 +175,8 @@ struct CaptureScreenByWinCmd {
 #define MAX_CNAME_LEN 256
 #define MAX_CHAN_INFO 512
 #define MAX_PERMISSION_KEY 128
+#define MAX_STRING_LEN 2048
+#define IPC_STRING_PARTTERN std::string("---IPC_ARRAY_DATA_PATTERN---")
 /**
  * Join channel parameters when ADDON ask video source to join channel
  */
@@ -190,6 +193,17 @@ struct JoinChannelCmd {
       : token{0}, cname{0}, chan_info{0}, uid{0}, autoSubscribeAudio{false},
         autoSubscribeVideo{false}, publishLocalAudio{false}, publishLocalVideo{
                                                                  true} {}
+};
+
+struct LocalAccessPointConfigurationCmd {
+  char ipList[MAX_STRING_LEN];
+  char domainList[MAX_STRING_LEN];
+  char verifyDomainName[MAX_STRING_LEN];
+  agora::rtc::LOCAL_PROXY_MODE mode;
+//  char uploadServerDomain[MAX_STRING_LEN];
+//  char uploadServerPath[MAX_STRING_LEN];
+//  int uploadServerPort;
+//  bool uploadServerHttps;
 };
 
 /**

@@ -121,6 +121,9 @@ class AgoraVideoSourceSink : public AgoraVideoSource, public AgoraIpcListener {
                                            bool mute) override;
   virtual node_error muteAllRemoteVideoStreams(bool mute) override;
 
+  virtual node_error setLocalAccessPoint(
+      std::unique_ptr<LocalAccessPointConfigurationCmd> &cmd) override;
+
 private:
   void msgThread();
   void deliverFrame(const char* payload, int len);
@@ -404,7 +407,7 @@ node_error AgoraVideoSourceSink::setLogFile(const char* file) {
   LOG_ENTER;
   if (m_initialized) {
     return m_ipcMsg->sendMessage(AGORA_IPC_SET_LOGFILE, (char*)file,
-                                 strlen(file))
+                                 strlen(file)+1)
                ? node_ok
                : node_generic_error;
   }
@@ -456,6 +459,19 @@ node_error AgoraVideoSourceSink::join(const char* token,
   }
   LOG_ERROR("%s, AgoraVideoSourceSink not m_initialized", __FUNCTION__);
   return node_status_error;
+}
+
+node_error AgoraVideoSourceSink::setLocalAccessPoint(
+    std::unique_ptr<LocalAccessPointConfigurationCmd> &cmd) {
+  LOG_ENTER;
+  if (!m_ipcMsg) {
+    return node_generic_error;
+  }
+  return m_ipcMsg->sendMessage(AGORA_IPC_SET_LOCAL_ACCESS_POINT,
+                               (char *)cmd.get(),
+                               sizeof(LocalAccessPointConfigurationCmd))
+             ? node_ok
+             : node_generic_error;
 }
 
 node_error AgoraVideoSourceSink::leave() {
@@ -869,7 +885,7 @@ node_error AgoraVideoSourceSink::setAddonLogFile(const char* file) {
   LOG_ENTER;
   if (m_initialized) {
     return m_ipcMsg->sendMessage(AGORA_IPC_SET_ADDON_LOGFILE, (char*)file,
-                                 strlen(file))
+                                 strlen(file)+1)
                ? node_ok
                : node_generic_error;
   }

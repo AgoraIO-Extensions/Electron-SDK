@@ -9,7 +9,7 @@ const synclib = require('./scripts/synclib')
 const cleanup = require('./scripts/cleanup')
 const {getArgvFromNpmEnv, getArgvFromPkgJson} = require('./scripts/npm_argv')
 
-option('electron_version', {default: '5.0.8'});
+option('electron_version', {default: '12.0.0'});
 option('runtime', {default: 'electron', choices: ['electron', 'node']});
 option('platform', {default: process.platform, choices: ['darwin', 'win32', 'linux']});
 // option('packageVersion');
@@ -116,7 +116,7 @@ task('build:node', () => {
 // npm run download --
 task('download', () => {
   // work-around
-  const addonVersion = '3.6.1-rc.3-build.301';
+  const addonVersion = '3.7.0-build.430';
   cleanup(path.join(__dirname, "./build")).then(_ => {
     cleanup(path.join(__dirname, './js')).then(_ => {
       download({
@@ -137,7 +137,7 @@ task('install', () => {
   }
   
   // work-around
-  const addonVersion = '3.6.1-rc.3-build.301';
+  const addonVersion = '3.7.0-build.430';
   if (config.prebuilt) {
     download({
       electronVersion: config.electronVersion, 
@@ -159,7 +159,6 @@ task('install', () => {
           libUrl: {
             win: argv().liburl_win || config.lib_sdk_win,
             mac: argv().liburl_mac || config.lib_sdk_mac,
-            win64: argv().liburl_win64 || config.lib_sdk_win64
           }
         })
       }).then(() => {

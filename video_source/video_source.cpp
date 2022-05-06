@@ -269,6 +269,24 @@ void AgoraVideoSource::release() {
   delete this;
 }
 
+std::vector<std::string> split(std::string str, std::string pattern) {
+  std::string::size_type pos;
+  std::vector<std::string> result;
+
+  str += pattern;
+  int size = str.size();
+
+  for (int i = 0; i < size; i++) {
+    pos = str.find(pattern, i);
+    if (pos < size) {
+      std::string s = str.substr(i, pos - i);
+      result.push_back(s);
+      i = pos + pattern.size() - 1;
+    }
+  }
+  return result;
+}
+
 void AgoraVideoSource::onMessage(unsigned int msg,
                                  char* payload,
                                  unsigned int len) {
@@ -434,11 +452,12 @@ void AgoraVideoSource::onMessage(unsigned int msg,
       }
       int result = m_rtcEngine->startScreenCaptureByDisplayId(
                                                                        cmd->displayInfo.idVal, cmd->regionRect, cmd->captureParams);
-      if (result != 0) {
+      LOG_INFO("startScreenCaptureByDisplayId res:%d",result);                                                                       
+      if (result == 0 || result == 1736 || result == -1736) {
+        m_rtcEngine->enableLocalVideo(true);
+      } else {
         LOG_ERROR("start screen capture by display failed.");
         m_rtcEngine->enableLocalVideo(false);
-      } else {
-        m_rtcEngine->enableLocalVideo(true);
       }
     }
   } else if (msg == AGORA_IPC_UPDATE_SCREEN_CAPTURE_PARAMS) {
@@ -516,6 +535,43 @@ void AgoraVideoSource::onMessage(unsigned int msg,
     stopLogService();
     startLogService((char *)payload);
     LOG_INFO("set addon log file %s\n", (char *)payload);
+  } else if (msg == AGORA_IPC_SET_LOCAL_ACCESS_POINT) {
+    LocalAccessPointConfigurationCmd *cmd =
+        (LocalAccessPointConfigurationCmd *)payload;
+
+    agora::rtc::LocalAccessPointConfiguration localAccessPointConfiguration;
+
+    std::vector<std::string> ipListVecString =
+        split(std::string(cmd->ipList), IPC_STRING_PARTTERN);
+    std::vector<const char *> ipListVec;
+    if (cmd->ipList) {
+      auto ipListSize = ipListVecString.size() - 1;
+      for (int index = 0; index < ipListSize; ++index) {
+        ipListVec.push_back(ipListVecString[index].c_str());
+      }
+      localAccessPointConfiguration.ipList = ipListVec.data();
+      localAccessPointConfiguration.ipListSize = ipListSize;
+    }
+
+    std::vector<std::string> domainListVecString =
+        split(std::string(cmd->domainList), IPC_STRING_PARTTERN);
+    std::vector<const char *> domainListVec;
+    if (cmd->domainList) {
+
+      auto domainListSize = domainListVecString.size() - 1;
+      for (int index = 0; index < domainListSize; ++index) {
+        domainListVec.push_back(domainListVecString[index].c_str());
+      }
+      localAccessPointConfiguration.domainList = domainListVec.data();
+      localAccessPointConfiguration.domainListSize = domainListSize;
+    }
+
+    localAccessPointConfiguration.mode = cmd->mode;
+    localAccessPointConfiguration.verifyDomainName = cmd->verifyDomainName;
+
+    m_rtcEngine->setLocalAccessPoint(localAccessPointConfiguration);
+    ;
+    LOG_INFO("AGORA_IPC_SET_LOCAL_ACCESS_POINT");
   }
 
   LOG_LEAVE;
@@ -534,16 +590,18 @@ bool AgoraVideoSource::joinChannel(JoinChannelCmd* cmd) {
 }
 
 void AgoraVideoSource::exit(bool notifySink) {
-  {
-    // fix CSD-8509
-    // std::lock_guard<std::mutex> lock(m_ipcSenderMutex);
-    m_ipcSender.reset();
-  }
+  m_rtcEngine->unregisterEventHandler(this->m_eventHandler.get());
   m_ipc->disconnect();
   LOG_F(INFO, "VideoSource::leaveChannel");
   m_rtcEngine->leaveChannel();
   LOG_F(INFO, "VideoSource::release");
   m_rtcEngine->release(true);
+  //CSD-42301: change call order
+  {
+    // fix CSD-8509
+    // std::lock_guard<std::mutex> lock(m_ipcSenderMutex);
+    m_ipcSender.reset();
+  }
   LOG_F(INFO, "VideoSource::exit");
   stopLogService();
   ::exit(0);

@@ -1,3 +1,32 @@
+## 3.7.0-build.430(April 30th, 2022)
+- update native sdk
+- add api: 
+  - setScreenCaptureScenario
+  - enableLocalVoicePitchCallback
+  - enableWirelessAccelerate
+  - enableContentInspect
+  - enableSpatialAudio
+  - setRemoteUserSpatialAudioParams
+- add event:
+  - Engine->localVoicePitchInHz
+  - Engine->clientRoleChangeFailed
+  - Engine->wlAccMessage
+  - Engine->wlAccStats
+  - Engine->contentInspectResult
+  - Engine->proxyConnected
+  - Channel->firstRemoteVideoFrame
+- fix ipc send
+
+
+## 3.6.1-rc.4-build.406(April 6th, 2022)
+- add api: videoSourceSetLocalAccessPoint
+
+## 3.6.1-rc.4-build.329(Mar 29th, 2022)
+- update native sdk
+
+## 3.6.1-rc.4-build.310(Mar 10th, 2022)
+- update native sdk
+
 ## 3.6.1-rc.3-build.301(Mar 1th, 2022)
 - add api: setLocalAccessPoint
 

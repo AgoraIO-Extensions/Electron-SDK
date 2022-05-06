@@ -20,10 +20,10 @@ import {
   RemoteAudioStateReason,
   AgoraNetworkQuality,
   LastmileProbeResult,
-  ClientRoleType,
+  CLIENT_ROLE_TYPE,
   StreamType,
-  ConnectionState,
-  ConnectionChangeReason,
+  CONNECTION_STATE_TYPE,
+  CONNECTION_CHANGED_REASON_TYPE,
   MediaDeviceType,
   VIDEO_PROFILE_TYPE,
   TranscodingConfig,
@@ -77,6 +77,17 @@ import {
   WindowInfo,
   DisplayId,
   LocalAccessPointConfiguration,
+  SCREEN_SCENARIO_TYPE,
+  ContentInspectConfig,
+  CLIENT_ROLE_CHANGE_FAILED_REASON,
+  WLACC_MESSAGE_REASON,
+  WLACC_SUGGEST_ACTION,
+  WlAccStats,
+  CONTENT_INSPECT_RESULT,
+  PROXY_TYPE,
+  AUDIO_RECORDING_QUALITY_TYPE,
+  AUDIO_RECORDING_POSITION,
+  SpatialAudioParams,
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -124,17 +135,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - 3 for custom rendering.
    */
   setRenderMode(mode: 1 | 2 | 3 | 4 = 1): void {
-    if (mode === 4) {
-      mode = 1;
-    }
-    if (this._checkWebGL() && this._checkWebGL2()) {
-      this.renderMode = mode;
-    } else {
-      console.log(
-        'RendererMode: webGL not support, fallback to software renderer'
-      );
-      this.renderMode = 2;
-    }
+    this.renderMode = mode;
   }
 
   setPauseRenderer(pause: boolean = false) {
@@ -691,8 +692,8 @@ class AgoraRtcEngine extends EventEmitter {
     });
 
     this.rtcEngine.onEvent('connectionStateChanged', function(
-      state: ConnectionState,
-      reason: ConnectionChangeReason
+      state: CONNECTION_STATE_TYPE,
+      reason: CONNECTION_CHANGED_REASON_TYPE
     ) {
       fire('connectionStateChanged', state, reason);
     });
@@ -707,8 +708,8 @@ class AgoraRtcEngine extends EventEmitter {
     });
 
     this.rtcEngine.onEvent('clientrolechanged', function(
-      oldRole: ClientRoleType,
-      newRole: ClientRoleType
+      oldRole: CLIENT_ROLE_TYPE,
+      newRole: CLIENT_ROLE_TYPE
     ) {
       fire('clientrolechanged', oldRole, newRole);
       fire('clientRoleChanged', oldRole, newRole);
@@ -947,6 +948,48 @@ class AgoraRtcEngine extends EventEmitter {
       fire('videoSourceScreenCaptureInfoUpdated', info);
     });
 
+    //3.7.0
+    this.rtcEngine.onEvent('localVoicePitchInHz', function(pitchInHz: number) {
+      fire('localVoicePitchInHz', pitchInHz);
+    });
+
+    this.rtcEngine.onEvent('clientRoleChangeFailed', function(
+      reason: CLIENT_ROLE_CHANGE_FAILED_REASON,
+      currentRole: CLIENT_ROLE_TYPE
+    ) {
+      fire('clientRoleChangeFailed', reason, currentRole);
+    });
+
+    this.rtcEngine.onEvent('wlAccMessage', function(
+      reason: WLACC_MESSAGE_REASON,
+      action: WLACC_SUGGEST_ACTION,
+      wlAccMsg: string
+    ) {
+      fire('wlAccMessage', reason, action, wlAccMsg);
+    });
+    this.rtcEngine.onEvent('wlAccStats', function(
+      currentStats: WlAccStats,
+      averageStats: WlAccStats
+    ) {
+      fire('wlAccStats', currentStats, averageStats);
+    });
+
+    this.rtcEngine.onEvent('contentInspectResult', function(
+      result: CONTENT_INSPECT_RESULT
+    ) {
+      fire('contentInspectResult', result);
+    });
+
+    this.rtcEngine.onEvent('proxyConnected', function(
+      channel: string,
+      uid: number,
+      proxyType: PROXY_TYPE,
+      localProxyIp: string,
+      elapsed: number
+    ) {
+      fire('proxyConnected', channel, uid, proxyType, localProxyIp, elapsed);
+    });
+
     this.rtcEngine.registerDeliverFrame(function(infos: any) {
       fire('agoraVideoRawData', infos);
       fire('agoraVideoRowData', infos);
@@ -1119,6 +1162,7 @@ class AgoraRtcEngine extends EventEmitter {
   ) {
     const initRenderFailCallBack = (
       renderMode: 1 | 2 | 3 | 4,
+      contentMode: 0 | 1,
       renderDescription = 'initRender'
     ) => {
       try {
@@ -1138,6 +1182,7 @@ class AgoraRtcEngine extends EventEmitter {
         this.renderMode = renderMode;
         this.destroyRender(key, channelId, () => {});
         this.initRender(key, view, channelId, options);
+        this.setupViewContentMode(key, contentMode, channelId);
       } catch (error) {
         console.log('initRenderFailCallBack', error);
       }
@@ -1361,9 +1406,9 @@ class AgoraRtcEngine extends EventEmitter {
 
   /**
    * Gets the connection state of the SDK.
-   * @return {ConnectionState} Connect states. See {@link ConnectionState}.
+   * @return {CONNECTION_STATE_TYPE} Connect states. See {@link ConnectionState}.
    */
-  getConnectionState(): ConnectionState {
+  getConnectionState(): CONNECTION_STATE_TYPE {
     return this.rtcEngine.getConnectionState();
   }
 
@@ -1736,7 +1781,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - The local client: clientRoleChanged
    * - The remote client: userJoined
    *
-   * @param {ClientRoleType} role The client role:
+   * @param {CLIENT_ROLE_TYPE} role The client role:
    *
    * - 1: The host
    * - 2: The audience
@@ -1744,7 +1789,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success.
    * - < 0: Failure.
    */
-  setClientRole(role: ClientRoleType): number {
+  setClientRole(role: CLIENT_ROLE_TYPE): number {
     return this.rtcEngine.setClientRole(role);
   }
 
@@ -1780,7 +1825,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - < 0: Failure.
    */
   setClientRoleWithOptions(
-    role: ClientRoleType,
+    role: CLIENT_ROLE_TYPE,
     options: ClientRoleOptions
   ): number {
     return this.rtcEngine.setClientRoleWithOptions(role, options);
@@ -3949,16 +3994,18 @@ class AgoraRtcEngine extends EventEmitter {
    */
   startAudioRecording(
     filePath: string,
-    sampleRate: number,
-    quality: number,
-    pos = 0
+    recordingSampleRate = 32000,
+    recordingQuality: AUDIO_RECORDING_QUALITY_TYPE.AUDIO_RECORDING_QUALITY_LOW,
+    recordingPosition: AUDIO_RECORDING_POSITION.AUDIO_RECORDING_POSITION_MIXED_RECORDING_AND_PLAYBACK,
+    recordingChannel = 1
   ): number {
-    return this.rtcEngine.startAudioRecording(
+    return this.rtcEngine.startAudioRecordingWithConfig({
       filePath,
-      sampleRate,
-      quality,
-      pos
-    );
+      recordingSampleRate,
+      recordingQuality,
+      recordingPosition,
+      recordingChannel,
+    });
   }
   /**
    * Stops an audio recording on the client.
@@ -6874,6 +6921,40 @@ class AgoraRtcEngine extends EventEmitter {
   ): number {
     return this.rtcEngine.setLocalAccessPoint(localAccessPointConfiguration);
   }
+  videoSourceSetLocalAccessPoint(
+    localAccessPointConfiguration: LocalAccessPointConfiguration
+  ): number {
+    return this.rtcEngine.videoSourceSetLocalAccessPoint(
+      localAccessPointConfiguration
+    );
+  }
+
+  //3.7.0
+  setScreenCaptureScenario(screenScenario: SCREEN_SCENARIO_TYPE): number {
+    return this.rtcEngine.setScreenCaptureScenario(screenScenario);
+  }
+  enableLocalVoicePitchCallback(interval: number): number {
+    return this.rtcEngine.enableLocalVoicePitchCallback(interval);
+  }
+  enableWirelessAccelerate(enabled: boolean): number {
+    return this.rtcEngine.enableWirelessAccelerate(enabled);
+  }
+  enableContentInspect(enabled: boolean, config: ContentInspectConfig): number {
+    return this.rtcEngine.enableContentInspect(enabled, config);
+  }
+
+  enableSpatialAudio(enabled: boolean): number {
+    return this.rtcEngine.enableSpatialAudio(enabled);
+  }
+  setRemoteUserSpatialAudioParams(
+    uid: number,
+    spatial_audio_params?: SpatialAudioParams
+  ): number {
+    return this.rtcEngine.setRemoteUserSpatialAudioParams(
+      uid,
+      spatial_audio_params
+    );
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
@@ -7579,7 +7660,7 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: 'clientRoleChanged',
-    cb: (oldRole: ClientRoleType, newRole: ClientRoleType) => void
+    cb: (oldRole: CLIENT_ROLE_TYPE, newRole: CLIENT_ROLE_TYPE) => void
   ): this;
   /** Occurs when the volume of the playback device, microphone, or
    * application changes.
@@ -7942,7 +8023,10 @@ declare interface AgoraRtcEngine {
    */
   on(
     evt: 'connectionStateChanged',
-    cb: (state: ConnectionState, reason: ConnectionChangeReason) => void
+    cb: (
+      state: CONNECTION_STATE_TYPE,
+      reason: CONNECTION_CHANGED_REASON_TYPE
+    ) => void
   ): this;
   /**
    * Occurs when the local network type changes.
@@ -8265,6 +8349,58 @@ declare interface AgoraRtcEngine {
     ) => void
   ): this;
 
+  //3.7.0
+  on(
+    evt: 'localVoicePitchInHz',
+    cb: (pitchInHz: number) => void
+  ): this;
+
+  on(
+    evt: 'clientRoleChangeFailed',
+    cb: (
+      reason: CLIENT_ROLE_CHANGE_FAILED_REASON,
+      currentRole: CLIENT_ROLE_TYPE
+    ) => void
+  ): this;
+
+  on(
+    evt: 'wlAccMessage',
+    cb: (reason: WLACC_MESSAGE_REASON, action: WLACC_SUGGEST_ACTION, wlAccMsg: string) => void
+  ): this;
+
+  on(
+    evt: 'wlAccStats',
+    cb: (currentStats: WlAccStats, averageStats: WlAccStats) => void
+  ): this;
+
+  on(
+    evt: 'contentInspectResult',
+    cb: (result: CONTENT_INSPECT_RESULT) => void
+  ): this;
+
+  on(
+    evt: 'proxyConnected',
+    cb: (
+      channel: string,
+      uid: number,
+      proxyType: PROXY_TYPE,
+      localProxyIp: string,
+      elapsed: number
+    ) => void
+  ): this;
+
+  on(
+    evt: 'agoraVideoRawData',
+    cb: (info: {
+      type: number;
+      uid: number;
+      channelId: string;
+      header: any;
+      ydata: Uint8Array;
+      udata: Uint8Array;
+      vdata: Uint8Array;
+    }) => void
+  ): this;
   on(evt: string, listener: Function): this;
 }
 
@@ -8394,13 +8530,6 @@ class AgoraRtcChannel extends EventEmitter {
     this.rtcChannel.onEvent('activeSpeaker', (uid: number) => {
       fire('activeSpeaker', uid);
     });
-
-    this.rtcChannel.onEvent(
-      'firstRemoteVideoFrame',
-      (uid: number, width: number, height: number, elapsed: number) => {
-        fire('firstRemoteVideoFrame', uid, width, height, elapsed);
-      }
-    );
 
     this.rtcChannel.onEvent(
       'firstRemoteAudioDecoded',
@@ -8547,6 +8676,14 @@ class AgoraRtcChannel extends EventEmitter {
         newState,
         elapseSinceLastState
       );
+    });
+    this.rtcChannel.onEvent('firstRemoteVideoFrame', function(
+      uid: number,
+      width: number,
+      height: number,
+      elapsed: number
+    ) {
+      fire('firstRemoteVideoFrame', uid, width, height, elapsed);
     });
   }
   /** Joins a channel with the user ID, and configures whether to
@@ -8734,7 +8871,7 @@ class AgoraRtcChannel extends EventEmitter {
    * - 0: Success
    * - < 0: Failure
    */
-  setClientRole(role: ClientRoleType): number {
+  setClientRole(role: CLIENT_ROLE_TYPE): number {
     return this.rtcChannel.setClientRole(role);
   }
 
@@ -8770,7 +8907,7 @@ class AgoraRtcChannel extends EventEmitter {
    * - < 0: Failure.
    */
   setClientRoleWithOptions(
-    role: ClientRoleType,
+    role: CLIENT_ROLE_TYPE,
     options: ClientRoleOptions
   ): number {
     return this.rtcChannel.setClientRoleWithOptions(role, options);
@@ -9453,9 +9590,9 @@ class AgoraRtcChannel extends EventEmitter {
   }
   /**
    * Gets the connection state of the SDK.
-   * @return {ConnectionState} Connect states. See {@link ConnectionState}.
+   * @return {CONNECTION_STATE_TYPE} Connect states. See {@link ConnectionState}.
    */
-  getConnectionState(): ConnectionState {
+  getConnectionState(): CONNECTION_STATE_TYPE {
     return this.rtcChannel.getConnectionState();
   }
   /**
@@ -9787,7 +9924,7 @@ declare interface AgoraRtcChannel {
    */
   on(
     evt: 'clientRoleChanged',
-    cb: (oldRole: ClientRoleType, newRole: ClientRoleType) => void
+    cb: (oldRole: CLIENT_ROLE_TYPE, newRole: CLIENT_ROLE_TYPE) => void
   ): this;
   /** Occurs when a user or host joins the channel.
    *
@@ -9955,24 +10092,6 @@ declare interface AgoraRtcChannel {
    *
    */
   on(evt: 'activeSpeaker', cb: (uid: number) => void): this;
-  /** @deprecated This callback is deprecated, please use
-   * `remoteVideoStateChanged` instead.
-   *
-   * Occurs when the first remote video frame is rendered.
-   *
-   * The SDK triggers this callback when the first frame of the remote video
-   * is displayed in the user's video window.
-   *
-   * @param cb.uid User ID of the remote user sending the video stream.
-   * @param cb.width Width (pixels) of the video frame.
-   * @param cb.height Height (pixels) of the video stream.
-   * @param cb.elapsed Time elapsed (ms) from the local user calling the
-   * {@link joinChannel} method until the SDK triggers this callback.
-   */
-  on(
-    evt: 'firstRemoteVideoFrame',
-    cb: (uid: number, width: number, height: number, elapsed: number) => void
-  ): this;
   /** @deprecated This callback is deprecated, please use
    * `remoteAudioStateChanged` instead.
    *
@@ -10223,7 +10342,10 @@ declare interface AgoraRtcChannel {
    */
   on(
     evt: 'connectionStateChanged',
-    cb: (state: ConnectionState, reason: ConnectionChangeReason) => void
+    cb: (
+      state: CONNECTION_STATE_TYPE,
+      reason: CONNECTION_CHANGED_REASON_TYPE
+    ) => void
   ): this;
   /** Occurs when the audio publishing state changes.
    *
@@ -10315,16 +10437,8 @@ declare interface AgoraRtcChannel {
   ): this;
 
   on(
-    evt: 'agoraVideoRawData',
-    cb: (info: {
-      type: number;
-      uid: number;
-      channelId: string;
-      header: any;
-      ydata: Uint8Array;
-      udata: Uint8Array;
-      vdata: Uint8Array;
-    }) => void
+    evt: 'firstRemoteVideoFrame',
+    cb: (uid: number, width: number, height: number, elapsed: number) => void
   ): this;
 }
 

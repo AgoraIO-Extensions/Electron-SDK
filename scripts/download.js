@@ -2,27 +2,16 @@ const { logger } = require("just-task");
 const download = require("download");
 const path = require("path");
 const fs = require('fs-extra');
+const genOS = require("./genOS");
 
 
 module.exports = ({
-  electronVersion = "5.0.8",
+  electronVersion = "12.0.0",
   platform = process.platform,
   packageVersion,
   arch,
   no_symbol = true,
 }) => {
-  /** get download url */
-  const genOS = () => {
-    if (platform === "darwin") {
-      return "mac";
-    } else if (platform === "win32") {
-      return "win32";
-    } else {
-      // not supported in temp
-      logger.error("Unsupported platform!");
-      throw new Error("Unsupported platform!");
-    }
-  };
   // check electron version
 
   if (['12.0.15', '12.0.0', '11.4.10', '11.0.0', '10.2.0', "10.1.5", '9.4.2', '9.0.0', '7.1.2', '6.1.7', '5.0.8', '4.2.8', '3.0.6', '1.8.3'].indexOf(electronVersion) === -1) {
