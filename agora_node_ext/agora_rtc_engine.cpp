@@ -293,6 +293,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(unRegisterMediaMetadataObserver);
 
                 PROPERTY_METHOD_DEFINE(sendCustomReportMessage);
+                PROPERTY_METHOD_DEFINE(setEffectTempo);
             EN_PROPERTY_DEFINE()
             module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked());
         }
@@ -5538,6 +5539,27 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
 
                 result = pEngine->m_engine->sendCustomReportMessage(id, category, event, label, value);
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+    
+        NAPI_API_DEFINE(NodeRtcEngine, setEffectTempo)
+        {
+            LOG_ENTER;
+            int result = -1;
+            do {
+                NodeRtcEngine *pEngine = nullptr;
+                napi_status status = napi_ok;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                int32_t soundId;
+                status = napi_get_value_int32_(args[0], soundId);
+                CHECK_NAPI_STATUS(pEngine, status);
+                int32_t tempo;
+                status = napi_get_value_int32_(args[1], tempo);
+                CHECK_NAPI_STATUS(pEngine, status);
+              result = pEngine->m_engine->setEffectTempo(soundId, tempo);
             } while (false);
             napi_set_int_result(args, result);
             LOG_LEAVE;

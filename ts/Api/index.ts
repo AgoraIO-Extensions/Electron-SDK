@@ -4764,6 +4764,10 @@ class AgoraRtcEngine extends EventEmitter {
   sendCustomReportMessage(id: string, category: string, event: string, label: string, value: number): number {
     return this.rtcEngine.sendCustomReportMessage(id, category, event, label, value);
   }
+
+  setEffectTempo(soundId: number,tempo: number): number {
+    return this.rtcEngine.setEffectTempo(soundId, tempo);
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
