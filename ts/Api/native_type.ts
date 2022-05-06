@@ -2627,7 +2627,10 @@ export interface NodeRtcEngine {
    * @ignore
    */
   sendCustomReportMessage(id: string, category: string, event: string, label: string, value: number): number;
-
+  /**
+   * @ignore
+   */
+  setEffectTempo(soundId: number, tempo: number): number;
 }
 
 export interface NodeRtcChannel {
