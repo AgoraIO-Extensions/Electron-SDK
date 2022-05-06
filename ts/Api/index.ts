@@ -10093,24 +10093,6 @@ declare interface AgoraRtcChannel {
    */
   on(evt: 'activeSpeaker', cb: (uid: number) => void): this;
   /** @deprecated This callback is deprecated, please use
-   * `remoteVideoStateChanged` instead.
-   *
-   * Occurs when the first remote video frame is rendered.
-   *
-   * The SDK triggers this callback when the first frame of the remote video
-   * is displayed in the user's video window.
-   *
-   * @param cb.uid User ID of the remote user sending the video stream.
-   * @param cb.width Width (pixels) of the video frame.
-   * @param cb.height Height (pixels) of the video stream.
-   * @param cb.elapsed Time elapsed (ms) from the local user calling the
-   * {@link joinChannel} method until the SDK triggers this callback.
-   */
-  on(
-    evt: 'firstRemoteVideoFrame',
-    cb: (uid: number, width: number, height: number, elapsed: number) => void
-  ): this;
-  /** @deprecated This callback is deprecated, please use
    * `remoteAudioStateChanged` instead.
    *
    * Occurs when the engine receives the first audio frame from a specified
