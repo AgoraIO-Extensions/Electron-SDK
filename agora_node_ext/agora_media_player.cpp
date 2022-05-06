@@ -169,6 +169,19 @@ Local<Object> NodeMediaPlayer::Init(Isolate *isolate,
   PROPERTY_METHOD_DEFINE(getStreamInfo);
   PROPERTY_METHOD_DEFINE(setPlayerOption);
   PROPERTY_METHOD_DEFINE(selectAudioTrack);
+
+  PROPERTY_METHOD_DEFINE(resume);
+  PROPERTY_METHOD_DEFINE(setLoopCount);
+  PROPERTY_METHOD_DEFINE(setPlaybackSpeed);
+  PROPERTY_METHOD_DEFINE(mute);
+  PROPERTY_METHOD_DEFINE(getMute);
+  PROPERTY_METHOD_DEFINE(adjustPlayoutVolume);
+  PROPERTY_METHOD_DEFINE(getPlayoutVolume);
+  PROPERTY_METHOD_DEFINE(adjustPublishSignalVolume);
+  PROPERTY_METHOD_DEFINE(getPublishSignalVolume);
+  PROPERTY_METHOD_DEFINE(preloadSrc);
+  PROPERTY_METHOD_DEFINE(playPreloadedSrc);
+  PROPERTY_METHOD_DEFINE(unloadSrc);
   EN_PROPERTY_DEFINE()
 
   Local<Function> cons = tpl->GetFunction(context).ToLocalChecked();
@@ -389,6 +402,187 @@ NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, selectAudioTrack) {
     CHECK_NAPI_STATUS(mediaPlayer, status);
     result =
         mediaPlayer->mMediaPlayer->m_mediaPlayerSource->selectAudioTrack(index);
+  } while (false);
+  media_player_napi_set_int_result(args, result);
+}
+
+NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, resume) {
+  int result = 1;
+  do {
+    NodeMediaPlayer *mediaPlayer = nullptr;
+    napi_get_native_this(args, mediaPlayer);
+    CHECK_NATIVE_THIS(mediaPlayer);
+    result = mediaPlayer->mMediaPlayer->m_mediaPlayerSource->resume();
+  } while (false);
+  media_player_napi_set_int_result(args, result);
+}
+
+NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, setLoopCount) {
+  int result = 1;
+  do {
+    NodeMediaPlayer *mediaPlayer = nullptr;
+    napi_get_native_this(args, mediaPlayer);
+    CHECK_NATIVE_THIS(mediaPlayer);
+    int loopCount;
+    napi_status status = napi_ok;
+    status = napi_get_value_int32_(args[0], loopCount);
+    CHECK_NAPI_STATUS(mediaPlayer, status);
+    result =
+        mediaPlayer->mMediaPlayer->m_mediaPlayerSource->setLoopCount(loopCount);
+  } while (false);
+  media_player_napi_set_int_result(args, result);
+}
+
+NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, setPlaybackSpeed) {
+  int result = 1;
+  do {
+    NodeMediaPlayer *mediaPlayer = nullptr;
+    napi_get_native_this(args, mediaPlayer);
+    CHECK_NATIVE_THIS(mediaPlayer);
+    int speed;
+    napi_status status = napi_ok;
+    status = napi_get_value_int32_(args[0], speed);
+    CHECK_NAPI_STATUS(mediaPlayer, status);
+    result =
+        mediaPlayer->mMediaPlayer->m_mediaPlayerSource->setPlaybackSpeed(speed);
+  } while (false);
+  media_player_napi_set_int_result(args, result);
+}
+
+NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, mute) {
+  int result = 1;
+  do {
+    NodeMediaPlayer *mediaPlayer = nullptr;
+    napi_get_native_this(args, mediaPlayer);
+    CHECK_NATIVE_THIS(mediaPlayer);
+    bool mute;
+    napi_status status = napi_ok;
+    status = napi_get_value_bool_(args[0], mute);
+    CHECK_NAPI_STATUS(mediaPlayer, status);
+    result = mediaPlayer->mMediaPlayer->m_mediaPlayerSource->mute(mute);
+  } while (false);
+  media_player_napi_set_int_result(args, result);
+}
+
+NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, getMute) {
+  bool mute = false;
+  do {
+    NodeMediaPlayer *mediaPlayer = nullptr;
+    napi_get_native_this(args, mediaPlayer);
+    CHECK_NATIVE_THIS(mediaPlayer);
+    mediaPlayer->mMediaPlayer->m_mediaPlayerSource->getMute(mute);
+  } while (false);
+  napi_set_bool_result(args, mute);
+}
+
+NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, adjustPlayoutVolume) {
+  int result = 1;
+  do {
+    NodeMediaPlayer *mediaPlayer = nullptr;
+    napi_get_native_this(args, mediaPlayer);
+    CHECK_NATIVE_THIS(mediaPlayer);
+    int volume;
+    napi_status status = napi_ok;
+    status = napi_get_value_int32_(args[0], volume);
+    CHECK_NAPI_STATUS(mediaPlayer, status);
+    result =
+        mediaPlayer->mMediaPlayer->m_mediaPlayerSource->adjustPlayoutVolume(
+            volume);
+  } while (false);
+  media_player_napi_set_int_result(args, result);
+}
+
+NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, getPlayoutVolume) {
+  int result = 1;
+  do {
+    NodeMediaPlayer *mediaPlayer = nullptr;
+    napi_get_native_this(args, mediaPlayer);
+    CHECK_NATIVE_THIS(mediaPlayer);
+    mediaPlayer->mMediaPlayer->m_mediaPlayerSource->getPlayoutVolume(result);
+  } while (false);
+  media_player_napi_set_int_result(args, result);
+}
+
+NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, adjustPublishSignalVolume) {
+  int result = 1;
+  do {
+    NodeMediaPlayer *mediaPlayer = nullptr;
+    napi_get_native_this(args, mediaPlayer);
+    CHECK_NATIVE_THIS(mediaPlayer);
+    int volume;
+    napi_status status = napi_ok;
+    status = napi_get_value_int32_(args[0], volume);
+    CHECK_NAPI_STATUS(mediaPlayer, status);
+    result = mediaPlayer->mMediaPlayer->m_mediaPlayerSource
+                 ->adjustPublishSignalVolume(volume);
+  } while (false);
+  media_player_napi_set_int_result(args, result);
+}
+
+NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, getPublishSignalVolume) {
+  int result = 1;
+  do {
+    NodeMediaPlayer *mediaPlayer = nullptr;
+    napi_get_native_this(args, mediaPlayer);
+    CHECK_NATIVE_THIS(mediaPlayer);
+    mediaPlayer->mMediaPlayer->m_mediaPlayerSource->getPublishSignalVolume(
+        result);
+  } while (false);
+  media_player_napi_set_int_result(args, result);
+}
+
+NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, preloadSrc) {
+  int result = 1;
+  do {
+    NodeMediaPlayer *mediaPlayer = nullptr;
+    napi_get_native_this(args, mediaPlayer);
+    CHECK_NATIVE_THIS(mediaPlayer);
+
+    napi_status status = napi_ok;
+    nodestring src;
+    status = napi_get_value_nodestring_(args[0], src);
+    CHECK_NAPI_STATUS(mediaPlayer, status);
+
+    int64_t startPos;
+    status = napi_get_value_int64_(args[1], startPos);
+
+    result = mediaPlayer->mMediaPlayer->m_mediaPlayerSource->preloadSrc(
+        src, startPos);
+  } while (false);
+  media_player_napi_set_int_result(args, result);
+}
+
+NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, playPreloadedSrc) {
+  int result = 1;
+  do {
+    NodeMediaPlayer *mediaPlayer = nullptr;
+    napi_get_native_this(args, mediaPlayer);
+    CHECK_NATIVE_THIS(mediaPlayer);
+
+    napi_status status = napi_ok;
+    nodestring src;
+    status = napi_get_value_nodestring_(args[0], src);
+    CHECK_NAPI_STATUS(mediaPlayer, status);
+
+    result =
+        mediaPlayer->mMediaPlayer->m_mediaPlayerSource->playPreloadedSrc(src);
+  } while (false);
+  media_player_napi_set_int_result(args, result);
+}
+
+NAPI_API_DEFINE_MEDIA_PLAYER(NodeMediaPlayer, unloadSrc) {
+  int result = 1;
+  do {
+    NodeMediaPlayer *mediaPlayer = nullptr;
+    napi_get_native_this(args, mediaPlayer);
+    CHECK_NATIVE_THIS(mediaPlayer);
+
+    napi_status status = napi_ok;
+    nodestring src;
+    status = napi_get_value_nodestring_(args[0], src);
+    CHECK_NAPI_STATUS(mediaPlayer, status);
+
+    result = mediaPlayer->mMediaPlayer->m_mediaPlayerSource->unloadSrc(src);
   } while (false);
   media_player_napi_set_int_result(args, result);
 }
