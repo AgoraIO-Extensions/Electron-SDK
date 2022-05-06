@@ -52,6 +52,19 @@ public:
   NAPI_API_MEDIA_PLAYER(changePlaybackSpeed);
   NAPI_API_MEDIA_PLAYER(selectAudioTrack);
 
+  NAPI_API_MEDIA_PLAYER(resume);
+  NAPI_API_MEDIA_PLAYER(setLoopCount);
+  NAPI_API_MEDIA_PLAYER(setPlaybackSpeed);
+  NAPI_API_MEDIA_PLAYER(mute);
+  NAPI_API_MEDIA_PLAYER(getMute);
+  NAPI_API_MEDIA_PLAYER(adjustPlayoutVolume);
+  NAPI_API_MEDIA_PLAYER(getPlayoutVolume);
+  NAPI_API_MEDIA_PLAYER(adjustPublishSignalVolume);
+  NAPI_API_MEDIA_PLAYER(getPublishSignalVolume);
+  NAPI_API_MEDIA_PLAYER(preloadSrc);
+  NAPI_API_MEDIA_PLAYER(playPreloadedSrc);
+  NAPI_API_MEDIA_PLAYER(unloadSrc);
+
   NAPI_API_MEDIA_PLAYER(onEvent);
 
   //   virtual int registerPlayerObserver(IMediaPlayerObserver* observer) = 0;
