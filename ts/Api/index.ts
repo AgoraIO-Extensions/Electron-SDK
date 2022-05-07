@@ -2724,10 +2724,10 @@ class AgoraRtcEngine extends EventEmitter {
    *
    * @note This method is different from the {@link muteLocalAudioStream}
    * method:
-   *  - enableLocalAudio: If you disable or re-enable local audio recording
+   *  - `enableLocalAudio`: If you disable or re-enable local audio recording
    * using the enableLocalAudio method, the local user may hear a pause in the
    * remote audio playback.
-   *  - {@link }muteLocalAudioStream: Stops/Continues sending the local audio
+   *  - `muteLocalAudioStream`: Stops/Continues sending the local audio
    * streams and the local user will not hear a pause in the remote audio
    * playback.
    * @return
@@ -6679,7 +6679,6 @@ class AgoraRtcEngine extends EventEmitter {
    * 3.5.2 && 3.6.0 && 3.6.0.1
    */
   /**
-  /**
    * Takes a snapshot of a video stream.
    *
    * @since v3.6.1.4
@@ -6819,6 +6818,9 @@ class AgoraRtcEngine extends EventEmitter {
   stopRtmpStream(url: string): number {
     return this.rtcEngine.stopRtmpStream(url);
   }
+  /**
+   * @ignore
+   */
   setAVSyncSource(channelId: string, uid: number): number {
     return this.rtcEngine.setAVSyncSource(channelId, uid);
   }
@@ -6881,7 +6883,7 @@ class AgoraRtcEngine extends EventEmitter {
    * - true: The SDK returns screen and window information.
    * - false: The SDK returns window information only.
    *
-   * @return Array<Object>
+   * @return Array of ScreenCaptureSources objects
    */
   getScreenCaptureSources(
     thumbSize: SIZE,
@@ -6895,8 +6897,31 @@ class AgoraRtcEngine extends EventEmitter {
     );
   }
 
+  // 3.6.0.2
   /**
-   * 3.6.0.2
+   * Sets low-light enhancement.
+   *
+   * @since v3.7.0
+   *
+   * The low-light enhancement feature can adaptively adjust the brightness value of the video captured in situations with low or uneven lighting, such as backlit, cloudy, or dark scenes. It restores or highlights the image details and improves the overall visual effect of the video.
+   *
+   * You can call this method to enable the low-light enhancement feature and set the options of the low-light enhancement effect.
+   *
+   * @note
+   * - Before calling this method, ensure that you have integrated the following dynamic library into your project:
+   *  - macOS: `AgoraVideoSegmentationExtension.xcframework`
+   *  - Windows: `libagora_segmentation_extension.dll`
+   * - Call this method after {@link enableVideo}.
+   * - The low-light enhancement feature has certain performance requirements on devices. If your device overheats after you enable low-light enhancement, Agora recommends modifying the low-light enhancement options to a less performance-consuming level or disabling low-light enhancement entirely.
+   *
+   * @param enabled Sets whether to enable low-light enhancement:
+   * - `true`: Enable.
+   * - `false`: (Default) Disable.
+   * @param options The low-light enhancement options. See {@link LowLightEnhanceOptions}.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
    */
   setLowlightEnhanceOptions(
     enabled: boolean,
@@ -6904,12 +6929,62 @@ class AgoraRtcEngine extends EventEmitter {
   ): number {
     return this.rtcEngine.setLowlightEnhanceOptions(enabled, options);
   }
+  /**
+   * Sets video noise reduction.
+   *
+   * @since v3.7.0
+   *
+   * Underlit environments and low-end video capture devices can cause video images to contain significant noise, which affects video quality. In real-time interactive scenarios, video noise also consumes bitstream resources and reduces encoding efficiency during encoding.
+   *
+   * You can call this method to enable the video noise reduction feature and set the options of the video noise reduction effect.
+   *
+   * @note
+   * - Before calling this method, ensure that you have integrated the following dynamic library into your project:
+   *   - macOS: `AgoraVideoSegmentationExtension.xcframework`
+   *   - Windows: `libagora_segmentation_extension.dll`
+   * - Call this method after {@link enableVideo}.
+   * - The video noise reduction feature has certain performance requirements on devices. If your device overheats after you enable video noise reduction, Agora recommends modifying the video noise reduction options to a less performance-consuming level or disabling video noise reduction entirely.
+   *
+   * @param enabled Sets whether to enable video noise reduction:
+   * - `true`: Enable.
+   * - `false`: (Default) Disable.
+   * @param options The video noise reduction options. See {@link VideoDenoiserOptions}.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   setVideoDenoiserOptions(
     enabled: boolean,
     options: VideoDenoiserOptions
   ): number {
     return this.rtcEngine.setVideoDenoiserOptions(enabled, options);
   }
+  /**
+   * Sets color enhancement.
+   *
+   * @since v3.7.0
+   *
+   * The video images captured by the camera can have color distortion. The color enhancement feature intelligently adjusts video characteristics such as saturation and contrast to enhance the video color richness and color reproduction, making the video more vivid.
+   *
+   * You can call this method to enable the color enhancement feature and set the options of the color enhancement effect.
+   *
+   * @note
+   * - Before calling this method, ensure that you have integrated the following dynamic library into your project:
+   *  - macOS: `AgoraVideoSegmentationExtension.xcframework`
+   *  - Windows: `libagora_segmentation_extension.dll`
+   * - Call this method after {@link enableVideo}.
+   * - The color enhancement feature has certain performance requirements on devices. If your device overheats after you enable color enhancement, Agora recommends modifying the color enhancement options to a less performance-consuming level or disabling color enhancement entirely.
+   *
+   * @param enabled Sets whether to enable color enhancement:
+   * - `true`: Enable.
+   * - `false`: (Default) Disable.
+   * @param options The color enhancement options. See {@link ColorEnhanceOptions}.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   setColorEnhanceOptions(
     enabled: boolean,
     options: ColorEnhanceOptions
@@ -6930,15 +7005,69 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   //3.7.0
+  /**
+   * Sets the screen sharing scenario.
+   *
+   * @since v3.7.0
+   *
+   * When you start screen sharing or window sharing, you can call this method
+   * to set the screen sharing scenario. The SDK adjusts the video quality and
+   * experience of the sharing according to the scenario.
+   *
+   * @param screenScenario The screen sharing scenario. See {@link SCREEN_SCENARIO_TYPE}.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   setScreenCaptureScenario(screenScenario: SCREEN_SCENARIO_TYPE): number {
     return this.rtcEngine.setScreenCaptureScenario(screenScenario);
   }
+
+  /** Enables reporting the voice pitch of the local user.
+   *
+   * @since v3.7.0
+   *
+   * This method enables the SDK to regularly report the voice pitch of the local user. After the local audio capture is enabled, and you call this method, the SDK triggers the `localVoicePitchInHz` callback at the time interval set in this method.
+   *
+   * @note You can call this method either before or after joining a channel.
+   *
+   * @param interval Sets the time interval at which the SDK triggers the `localVoicePitchInHz` callback:
+   * - ≤ 0: Disables the `localVoicePitchInHz` callback.
+   * - &gt; 0: The time interval (ms) at which the SDK triggers the `localVoicePitchInHz` callback. The value must be greater than or equal to 10. If the value is less than 10, the SDK automatically changes it to 10.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
   enableLocalVoicePitchCallback(interval: number): number {
     return this.rtcEngine.enableLocalVoicePitchCallback(interval);
   }
+
+  /** @ignore
+   * Turn WIFI acceleration on or off.
+
+   @note
+   - This method is called before and after joining a channel.
+   - Users check the WIFI router app for information about acceleration. Therefore, if this interface is invoked, the caller accepts that the caller's name will be displayed to the user in the WIFI router application on behalf of the caller.
+
+   @param enabled
+   - true：Turn WIFI acceleration on.
+   - false：Turn WIFI acceleration off.
+
+   @return
+   - 0: Success.
+   - < 0: Failure.
+   */
   enableWirelessAccelerate(enabled: boolean): number {
     return this.rtcEngine.enableWirelessAccelerate(enabled);
   }
+  /** @ignore
+   *
+   * @param enabled
+   * @param config
+   * @returns
+   */
   enableContentInspect(enabled: boolean, config: ContentInspectConfig): number {
     return this.rtcEngine.enableContentInspect(enabled, config);
   }
@@ -7903,6 +8032,8 @@ declare interface AgoraRtcEngine {
    * - `4`: Media Push fails. See the `code` parameter for the
    * detailed error information. You can also call the
    * {@link addPublishStreamUrl} method to publish Media Push again.
+   * - `5`: The SDK is disconnecting from the Agora streaming server and CDN.
+   * When you call remove or stop to stop the streaming normally, the SDK reports the streaming state as `DISCONNECTING`, `IDLE` in sequence.
    * @param cb.code The detailed error information:
    * - `0`: Media Push publishes successfully.
    * - `1`: Invalid argument used.
@@ -7920,6 +8051,14 @@ declare interface AgoraRtcEngine {
    * - `9`: Agora's server fails to find the RTMP stream.
    * - `10`: The format of the stream's URL address is not supported. Check
    * whether the URL format is correct.
+   * - `11`: The user role is not host, so the user cannot use the CDN live streaming function.
+   * Check your application code logic.
+   * - `13`: The `updateRtmpTranscoding` or `setLiveTranscoding` method is called to update the transcoding configuration in a scenario where there is streaming without transcoding.
+   * Check your application code logic.
+   * - `14`: Errors occurred in the host's network.
+   * - `15`: Your App ID does not have permission to use the CDN live streaming function.
+   * Refer to [Prerequisites](https://docs.agora.io/en/Interactive%20Broadcast/cdn_streaming_windows?platform=Windows#prerequisites) to
+   * enable the CDN live streaming permission.
    * - `100`: The streaming has been stopped normally. After you call
    * {@link removePublishStreamUrl} to stop streaming, the SDK returns this value.
    */
@@ -8339,7 +8478,7 @@ declare interface AgoraRtcEngine {
    * - false: The virtual background is not successfully enabled.
    * @param cb.reason The reason why the virtual background is not successfully
    * enabled or the message that confirms success. See
-   * #VIRTUAL_BACKGROUND_SOURCE_STATE_REASON.
+   * {@link VIRTUAL_BACKGROUND_SOURCE_STATE_REASON}.
    */
   on(
     evt: 'virtualBackgroundSourceEnabled',
@@ -8350,11 +8489,31 @@ declare interface AgoraRtcEngine {
   ): this;
 
   //3.7.0
+  /**
+   * Reports the voice pitch of the local user.
+   *
+   * @since v3.7.0
+   *
+   * After the local audio capture is enabled, and you call {@link enableLocalVoicePitchCallback} , the SDK triggers this callback at the time interval set in `enableLocalVoicePitchCallback`.
+   *
+   * @note After this callback is enabled, if the user disables the local audio capture, for example, by calling {@link enableLocalAudio}`(false)`, the SDK immediately stops sending the `localVoicePitchInHz` callback.
+   *
+   * @param cb.pitchInHz The voice pitch (Hz) of the local user.
+   */
   on(
     evt: 'localVoicePitchInHz',
     cb: (pitchInHz: number) => void
   ): this;
 
+  /** Occurs when the user role switch fails in the interactive live streaming.
+   *
+   * @since v3.7.0
+   *
+   * In the `LIVE_BROADCASTING` channel profile, when the local user calls {@link setClientRole} to switch their user role after joining the channel but the switch fails, the SDK triggers this callback to report the reason for the failure and the current user role.
+   *
+   * @param cb.reason The reason for the user role switch failure. See {@link CLIENT_ROLE_CHANGE_FAILED_REASON}.
+   * @param cb.currentRole The current user role. See {@link CLIENT_ROLE_TYPE}.
+   */
   on(
     evt: 'clientRoleChangeFailed',
     cb: (
@@ -8363,21 +8522,39 @@ declare interface AgoraRtcEngine {
     ) => void
   ): this;
 
-  on(
-    evt: 'wlAccMessage',
-    cb: (reason: WLACC_MESSAGE_REASON, action: WLACC_SUGGEST_ACTION, wlAccMsg: string) => void
-  ): this;
+/**  Hide in 3.7.0 */
+on(
+  evt: 'wlAccMessage',
+  cb: (reason: WLACC_MESSAGE_REASON, action: WLACC_SUGGEST_ACTION, wlAccMsg: string) => void
+): this;
 
+/**  Hide in 3.7.0 */
   on(
     evt: 'wlAccStats',
     cb: (currentStats: WlAccStats, averageStats: WlAccStats) => void
   ): this;
 
+/** Hide in 3.7.0 */
   on(
     evt: 'contentInspectResult',
     cb: (result: CONTENT_INSPECT_RESULT) => void
   ): this;
 
+  /**
+   * Reports the proxy connection state.
+   *
+   * @since v3.7.0
+   *
+   * You can use this callback to listen for the state of the SDK connecting to a proxy.
+   * For example, when a user calls {@link setCloudProxy} and joins a channel successfully, the SDK triggers this callback to report the user ID, the proxy type connected, and the time elapsed from the user calling {@link joinChannel} until this callback is triggered.
+   *
+   * @param cb.channel The channel name.
+   * @param cb.uid The user ID.
+   * @param cb.proxyType The proxy type connected. See {@link PROXY_TYPE}.
+   * @param cb.localProxyIp Reserved for future use.
+   * @param cb.elapsed The time elapsed (ms) from the user calling `joinChannel` until this callback is triggered.
+   *
+   */
   on(
     evt: 'proxyConnected',
     cb: (
@@ -10162,6 +10339,17 @@ declare interface AgoraRtcChannel {
       errCode: number
     ) => void
   ): this;
+
+  /**
+   * Reports the result of an audio device test.
+   * @since v3.7.0
+   *
+   * After successfully calling {@link startAudioDeviceLoopbackTest} to start an audio device test,
+   * the SDK triggers the `audioDeviceTestVolumeIndication` callback at the set time interval to report the volume information of the audio device tested.
+   *
+   * @param cb.volumeType The volume type. See {@link AudioDeviceTestVolumeType}.
+   * @param cb.volume The volume, in the range of [0,255].
+   */
   on(
     evt: 'audioDeviceTestVolumeIndication',
     cb: (volumeType: AudioDeviceTestVolumeType, volume: number) => void
@@ -10436,6 +10624,17 @@ declare interface AgoraRtcChannel {
     ) => void
   ): this;
 
+  /** Occurs when the first remote video frame is rendered.
+   *
+   * @since v3.7.0
+   *
+   * The SDK triggers this callback when the first frame of the remote video is displayed in the user's video window. The application can get the time elapsed from a user joining the channel until the first video frame is displayed.
+   *
+   * @param cb.uid User ID of the remote user sending the video stream.
+   * @param cb.width Width (px) of the video frame.
+   * @param cb.height Height (px) of the video stream.
+   * @param cb.elapsed Time elapsed (ms) from the local user calling the {@link joinChannel} method until the SDK triggers this callback.
+   */
   on(
     evt: 'firstRemoteVideoFrame',
     cb: (uid: number, width: number, height: number, elapsed: number) => void
