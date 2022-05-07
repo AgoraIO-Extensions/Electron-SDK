@@ -8522,25 +8522,23 @@ declare interface AgoraRtcEngine {
     ) => void
   ): this;
 
-// Hide in 3.7.0
-//  on(
-//    evt: 'wlAccMessage',
-//    cb: (reason: WLACC_MESSAGE_REASON, action: WLACC_SUGGEST_ACTION, wlAccMsg: string) => void
-//  ): this;
-//
-//
-//  on(
-//    evt: 'wlAccStats',
-//    cb: (currentStats: WlAccStats, averageStats: WlAccStats) => void
-//  ): this;
+/**  Hide in 3.7.0 */
+on(
+  evt: 'wlAccMessage',
+  cb: (reason: WLACC_MESSAGE_REASON, action: WLACC_SUGGEST_ACTION, wlAccMsg: string) => void
+): this;
 
- /**
-  * Reports result of Content Inspect
-  */
-//  on(
-//    evt: 'contentInspectResult',
-//    cb: (result: CONTENT_INSPECT_RESULT) => void
-//  ): this;
+/**  Hide in 3.7.0 */
+  on(
+    evt: 'wlAccStats',
+    cb: (currentStats: WlAccStats, averageStats: WlAccStats) => void
+  ): this;
+
+/** Hide in 3.7.0 */
+  on(
+    evt: 'contentInspectResult',
+    cb: (result: CONTENT_INSPECT_RESULT) => void
+  ): this;
 
   /**
    * Reports the proxy connection state.
