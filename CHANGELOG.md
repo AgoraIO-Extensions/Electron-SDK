@@ -1,3 +1,6 @@
+# 3.3.2-rc.3-build.509 (May 9th, 2022)
+* update native sdk
+
 # 3.3.1 (April 14th, 2021)
 * Joining the channel occasionally failed when a user switched back to the app after keeping it in the background for a long time.
 * Remote users saw a distorted image when the local user minimized the shared screen with the genie effect on Mac devices.
