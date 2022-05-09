@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "3.3.2-NetEase-build.519",
+  "version": "3.3.2-rc.3-build.509",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -68,8 +68,8 @@
     "url": "git+https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron.git"
   },
   "agora_electron": {
-    "lib_sdk_win": "https://artifactory-api.bj2.agoralab.co/artifactory/ACCS_repo/v3.3.2.2/AgoraSDK/Windows/testing/Agora_Native_SDK_for_Windows_v3.3.2.2_VOICE_20210426_2026_73170.zip",
-    "lib_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v3_3_2_FULL.zip"
+    "lib_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_v3.3.2.3_FULL_20210429_2090_74341.zip",
+    "lib_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v3.3.2.3_FULL_20210429_4222_74325.zip"
   },
   "keywords": [
     "electron",
