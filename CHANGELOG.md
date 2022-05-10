@@ -1,3 +1,6 @@
+## 3.7.204-build.510(May 10th, 2022)
+- fix error of addonVersion for just-task
+
 ## 3.7.204-build.506(May 6th, 2022)
 - add mpk api:
   - selectAudioTrack
