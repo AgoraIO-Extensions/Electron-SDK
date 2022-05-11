@@ -1,3 +1,6 @@
+## 3.6.1-rc.5-build.511(May 11th, 2022)
+- add api sendStreamMessageWithArrayBuffer
+
 ## 3.6.1-rc.5-build.430(April 28th, 2022)
 - update native sdk
 - bug fix:
