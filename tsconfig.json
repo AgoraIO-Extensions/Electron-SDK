@@ -6,6 +6,7 @@
     "strict": true,
     "module": "commonjs",
     "esModuleInterop": true,
+    "declaration": true,
     "allowJs": true,
     "moduleResolution": "node",
     "lib": ["es2015", "dom"],
