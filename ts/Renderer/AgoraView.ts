@@ -21,6 +21,22 @@ const observedAttributes = [
   RENDERER_MIRROR_STRING,
 ];
 
+declare global {
+  interface AgoraView {
+    "video-source-type": VideoSourceType;
+    uid: number;
+    "channel-id": string;
+    "renderer-content-mode": CONTENT_MODE;
+    "renderer-mirror": boolean;
+    style: any;
+  }
+  namespace JSX {
+    interface IntrinsicElements {
+      "agora-view": AgoraView | HTMLElement;
+    }
+  }
+}
+
 export default class AgoraView extends HTMLElement {
   static rtcEngine?: AgoraRtcEngine;
   static errorForEngineInitialize = new Error(
@@ -95,7 +111,7 @@ export default class AgoraView extends HTMLElement {
 
   constructor() {
     super();
-    
+
     agoraEventEmitter.on(EVENT_ENGINE_INITIALIZE, this.initializeRender);
     agoraEventEmitter.on(EVENT_ENGINE_RELEASE, this.removeRender);
   }
