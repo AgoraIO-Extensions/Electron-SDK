@@ -77,6 +77,7 @@ import {
   WindowInfo,
   DisplayId,
   LocalAccessPointConfiguration,
+  UInt8ArrayBuffer,
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -6873,6 +6874,13 @@ class AgoraRtcEngine extends EventEmitter {
       localAccessPointConfiguration
     );
   }
+
+  sendStreamMessageWithArrayBuffer(
+    streamId: number,
+    buffer: UInt8ArrayBuffer
+  ): number {
+    return this.rtcEngine.sendStreamMessageWithArrayBuffer(streamId, buffer);
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
@@ -9726,6 +9734,12 @@ class AgoraRtcChannel extends EventEmitter {
    */
   muteLocalVideoStream(mute: boolean): number {
     return this.rtcChannel.muteLocalVideoStream(mute);
+  }
+  sendStreamMessageWithArrayBuffer(
+    streamId: number,
+    buffer: UInt8ArrayBuffer
+  ): number {
+    return this.rtcChannel.sendStreamMessageWithArrayBuffer(streamId, buffer);
   }
 }
 
