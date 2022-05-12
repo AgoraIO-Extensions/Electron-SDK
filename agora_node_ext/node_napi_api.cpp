@@ -847,6 +847,20 @@ napi_status napi_get_object_property_object_(Isolate* isolate,
   return napi_get_value_object_(isolate, value, childobj);
 }
 
+napi_status napi_get_value_arraybuffer_(const Local<Value> &value,
+                                        std::vector<uint8_t> &buffer,
+                                        uint32_t &length) {
+  if (!value->IsArrayBuffer()) {
+    return napi_invalid_arg;
+  }
+  auto localBuf = Local<v8::ArrayBuffer>::Cast(value);
+  auto buf = *localBuf;
+  length = buf->GetContents().ByteLength();
+  buffer.resize(length);
+  std::memcpy(&buffer[0], buf->GetContents().Data(), length);
+  return napi_ok;
+}
+
 const char* nullable(char const* s) {
   return (s ? s : "");
 }

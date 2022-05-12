@@ -695,6 +695,7 @@ void NodeRtcEngine::Init(Local<Object>& module) {
   
   PROPERTY_METHOD_DEFINE(setLocalAccessPoint);
   PROPERTY_METHOD_DEFINE(videoSourceSetLocalAccessPoint);
+  PROPERTY_METHOD_DEFINE(sendStreamMessageWithArrayBuffer);
   EN_PROPERTY_DEFINE()
   module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(),
               tpl->GetFunction(context).ToLocalChecked());
@@ -1594,6 +1595,28 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetLocalAccessPoint) {
       pEngine->m_videoSourceSink->setLocalAccessPoint(cmd);
       result = 0;
     }
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, sendStreamMessageWithArrayBuffer) {
+  LOG_ENTER;
+  std::vector<uint8_t> buffer;
+  int result = -1;
+  uint32_t length = 0;
+  do {
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    napi_status status = napi_ok;
+    int streamId;
+    status = napi_get_value_int32_(args[0], streamId);
+    CHECK_NAPI_STATUS(pEngine, status);
+    napi_get_value_arraybuffer_(args[1], buffer, length);
+    CHECK_NAPI_STATUS(pEngine, status);
+    result = pEngine->m_engine->sendStreamMessage(
+        streamId, (const char *)buffer.data(), length);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -8093,6 +8116,7 @@ Local<Object> NodeRtcChannel::Init(Isolate* isolate, IChannel* pChannel) {
    */
   PROPERTY_METHOD_DEFINE(muteLocalAudioStream);
   PROPERTY_METHOD_DEFINE(muteLocalVideoStream);
+  PROPERTY_METHOD_DEFINE(sendStreamMessageWithArrayBuffer);
 
   EN_PROPERTY_DEFINE()
 
@@ -9165,6 +9189,29 @@ NAPI_API_DEFINE(NodeRtcChannel, muteLocalVideoStream) {
   napi_set_int_result(args, result);
   LOG_LEAVE;
 }
+
+NAPI_API_DEFINE(NodeRtcChannel, sendStreamMessageWithArrayBuffer) {
+  LOG_ENTER;
+  std::vector<uint8_t> buffer;
+  int result = -1;
+  uint32_t length = 0;
+  do {
+    NodeRtcChannel *pChannel = nullptr;
+    napi_get_native_channel(args, pChannel);
+    CHECK_NATIVE_CHANNEL(pChannel);
+    napi_status status = napi_ok;
+    int streamId;
+    status = napi_get_value_int32_(args[0], streamId);
+    CHECK_NAPI_STATUS(pChannel, status);
+    napi_get_value_arraybuffer_(args[1], buffer, length);
+    CHECK_NAPI_STATUS(pChannel, status);
+    result = pChannel->m_channel->sendStreamMessage(
+        streamId, (const char *)buffer.data(), length);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
 }  // namespace rtc
 }  // namespace agora
 
