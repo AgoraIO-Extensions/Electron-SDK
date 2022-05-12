@@ -3,7 +3,7 @@ const download = require("download");
 const fs = require("fs-extra");
 const { getOS } = require("./util");
 const logger = require("./logger");
-const { cleanBuildDir, cleanJSDir } = require("./clean");
+const { cleanBuildDir, cleanJSDir, buildDir } = require("./clean");
 const getConfig = require("./getConfig");
 
 const { electronVersion, platform, packageVersion, arch, no_symbol } =
@@ -71,7 +71,7 @@ const removeFileByFilter = async () => {
 };
 module.exports = async (cb) => {
   cleanBuildDir();
-  cleanJSDir();
+  // cleanJSDir();
 
   const downloadUrl = getDownloadURL();
 
@@ -84,7 +84,8 @@ module.exports = async (cb) => {
 
   logger.info("Downloading prebuilt C++ addon for Agora Electron SDK...");
   try {
-    await download(downloadUrl, workspaceDir, {
+    await download(downloadUrl, buildDir, {
+      strip: 1,
       extract: true,
     });
   } catch (error) {
