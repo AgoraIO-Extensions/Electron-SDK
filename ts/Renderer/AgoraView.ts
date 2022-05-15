@@ -183,7 +183,7 @@ export default class AgoraView extends HTMLElement {
     }
     this.initializeRender();
   }
-  disconnectedCallback = () => {
+  disconnectedCallback() {
     this.isConnectedCallback = false;
     agoraEventEmitter.removeListener(
       EVENT_ENGINE_INITIALIZE,
@@ -194,7 +194,7 @@ export default class AgoraView extends HTMLElement {
       this.disconnectedCallback
     );
     this.removeRender();
-  };
+  }
 }
 
 window.customElements.define("agora-view", AgoraView);

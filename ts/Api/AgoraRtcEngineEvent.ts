@@ -42,8 +42,6 @@ import {
 } from "./types";
 import { EngineEvents } from "../Common/JSEvents";
 
-import { AgoraRtcEngine } from "./AgoraRtcEngine";
-
 /** The AgoraRtcEngine interface. */
 declare module "./AgoraRtcEngine" {
   interface AgoraRtcEngine {
