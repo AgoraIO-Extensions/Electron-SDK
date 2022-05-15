@@ -553,6 +553,7 @@ export class AgoraRtcEngine extends EventEmitter {
    */
   release(sync = false): number {
     agoraEventEmitter.emit(EVENT_ENGINE_RELEASE);
+    AgoraView.rtcEngine = undefined;
     this._rendererManager?.clear();
     this._rendererManager = undefined;
     let param = {
