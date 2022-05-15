@@ -149,7 +149,6 @@ export default class AgoraView extends HTMLElement {
       return;
     }
     rtcEngine.destroyRendererByView(this);
-    AgoraView.rtcEngine = undefined;
   };
 
   connectedCallback() {
