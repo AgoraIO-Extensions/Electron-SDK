@@ -1,4 +1,4 @@
-## 3.6.122-build.517(May 17th, 2022)
+## 3.6.1-rc.122-build.517(May 17th, 2022)
 - update native sdk
 
 ## 3.6.1-rc.5-build.511(May 11th, 2022)

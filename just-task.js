@@ -116,7 +116,7 @@ task('build:node', () => {
 // npm run download --
 task('download', () => {
   // work-around
-  const addonVersion = '3.6.122-build.517';
+  const addonVersion = '3.6.1-rc.122-build.517.1';
   cleanup(path.join(__dirname, "./build")).then(_ => {
     cleanup(path.join(__dirname, './js')).then(_ => {
       download({
@@ -137,7 +137,7 @@ task('install', () => {
   }
   
   // work-around
-  const addonVersion = '3.6.122-build.517';
+  const addonVersion = '3.6.1-rc.122-build.517.1';
   if (config.prebuilt) {
     download({
       electronVersion: config.electronVersion, 
