@@ -1372,11 +1372,11 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalAccessPoint) {
       CHECK_NAPI_STATUS(pEngine, status);
     }
 
-    Local<Object> obj;
-    status = napi_get_value_object_(isolate, args[0], obj);
-    CHECK_NAPI_STATUS(pEngine, status);
+   Local<Object> obj;
+   status = napi_get_value_object_(isolate, args[0], obj);
+   CHECK_NAPI_STATUS(pEngine, status);
 
-    LocalAccessPointConfiguration localAccessPointConfiguration;
+   LocalAccessPointConfiguration localAccessPointConfiguration;
     
     v8::Array *ipList;
     v8::Array *domainList;
@@ -1434,43 +1434,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalAccessPoint) {
     status = napi_get_object_property_int32_(isolate, obj, "mode", mode);
     CHECK_NAPI_STATUS(pEngine, status);
     localAccessPointConfiguration.mode = (LOCAL_PROXY_MODE)mode;
-    
-    Local<Object> advancedConfigObj;
-    status = napi_get_object_property_object_(isolate, obj, "advancedConfig", advancedConfigObj);
-    CHECK_NAPI_STATUS(pEngine, status);
-    if (!advancedConfigObj->IsObject()) {
-      status = napi_invalid_arg;
-      CHECK_NAPI_STATUS(pEngine, status);
-    }
-    AdvancedConfigInfo advancedConfigInfo;
-    UploadServerInfo uploadServerInfo;
-    advancedConfigInfo.logUploadServer = &uploadServerInfo;
-    localAccessPointConfiguration.advancedConfig = &advancedConfigInfo;
-    
-    Local<Object> uploadServerInfoObj;
-    status = napi_get_object_property_object_(isolate, advancedConfigObj, "logUploadServer", uploadServerInfoObj);
-    CHECK_NAPI_STATUS(pEngine, status);
-    if (!uploadServerInfoObj->IsObject()) {
-      status = napi_invalid_arg;
-      CHECK_NAPI_STATUS(pEngine, status);
-    }
-    
-    NodeString serverDomainStr;
-    status = napi_get_object_property_nodestring_(isolate, uploadServerInfoObj, "serverDomain", serverDomainStr);
-    CHECK_NAPI_STATUS(pEngine, status);
-    uploadServerInfo.serverDomain = serverDomainStr;
-    
-    NodeString serverPathStr;
-    status = napi_get_object_property_nodestring_(isolate, uploadServerInfoObj,
-                                                  "serverPath", serverPathStr);
-    CHECK_NAPI_STATUS(pEngine, status);
-    uploadServerInfo.serverPath = serverPathStr;
-    
-    status = napi_get_object_property_int32_(isolate, uploadServerInfoObj, "serverPort", uploadServerInfo.serverPort);
-    CHECK_NAPI_STATUS(pEngine, status);
-    
-    status = napi_get_object_property_bool_(isolate, uploadServerInfoObj, "serverHttps", uploadServerInfo.serverHttps);
-    CHECK_NAPI_STATUS(pEngine, status);
     
     result = pEngine->m_engine->setLocalAccessPoint(localAccessPointConfiguration);
   } while (false);
@@ -1544,52 +1507,6 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetLocalAccessPoint) {
     status = napi_get_object_property_int32_(isolate, obj, "mode", mode);
     CHECK_NAPI_STATUS(pEngine, status);
     cmd->mode = (LOCAL_PROXY_MODE)mode;
-
-    Local<Object> advancedConfigObj;
-    status = napi_get_object_property_object_(isolate, obj, "advancedConfig",
-                                              advancedConfigObj);
-    CHECK_NAPI_STATUS(pEngine, status);
-    if (!advancedConfigObj->IsObject()) {
-      status = napi_invalid_arg;
-      CHECK_NAPI_STATUS(pEngine, status);
-    }
-
-    Local<Object> uploadServerInfoObj;
-    status = napi_get_object_property_object_(
-        isolate, advancedConfigObj, "logUploadServer", uploadServerInfoObj);
-    CHECK_NAPI_STATUS(pEngine, status);
-    if (!uploadServerInfoObj->IsObject()) {
-      status = napi_invalid_arg;
-      CHECK_NAPI_STATUS(pEngine, status);
-    }
-
-    NodeString serverDomainStr;
-    status = napi_get_object_property_nodestring_(
-        isolate, uploadServerInfoObj, "serverDomain", serverDomainStr);
-    CHECK_NAPI_STATUS(pEngine, status);
-    if (serverDomainStr) {
-      memset(cmd->uploadServerDomain, 0, MAX_STRING_LEN);
-      strncpy(cmd->uploadServerDomain, serverDomainStr,
-              std::string(serverDomainStr).size());
-    }
-
-    NodeString serverPathStr;
-    status = napi_get_object_property_nodestring_(isolate, uploadServerInfoObj,
-                                                  "serverPath", serverPathStr);
-    CHECK_NAPI_STATUS(pEngine, status);
-    if (serverPathStr) {
-      memset(cmd->uploadServerPath, 0, MAX_STRING_LEN);
-      strncpy(cmd->uploadServerPath, serverPathStr,
-              std::string(serverPathStr).size());
-    }
-
-    status = napi_get_object_property_int32_(
-        isolate, uploadServerInfoObj, "serverPort", cmd->uploadServerPort);
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    status = napi_get_object_property_bool_(
-        isolate, uploadServerInfoObj, "serverHttps", cmd->uploadServerHttps);
-    CHECK_NAPI_STATUS(pEngine, status);
 
     if (pEngine->m_videoSourceSink.get()) {
       pEngine->m_videoSourceSink->setLocalAccessPoint(cmd);
