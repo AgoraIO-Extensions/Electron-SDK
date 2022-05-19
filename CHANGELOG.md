@@ -1,3 +1,7 @@
+## 3.7.0-build.519(May 19th, 2022)
+- fix load for mac Extension
+- add sendStreamMessageWithArrayBuffer
+
 ## 3.7.0-build.430(April 30th, 2022)
 - update native sdk
 - add api: 

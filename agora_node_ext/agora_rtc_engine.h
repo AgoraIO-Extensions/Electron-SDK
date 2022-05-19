@@ -451,6 +451,7 @@ class NodeRtcEngine : public node::ObjectWrap {
   */
   NAPI_API(setLocalAccessPoint);
   NAPI_API(videoSourceSetLocalAccessPoint);
+  NAPI_API(sendStreamMessageWithArrayBuffer);
   
   /*
   * 3.7.0
@@ -560,6 +561,7 @@ class NodeRtcChannel : public node::ObjectWrap {
    */
   NAPI_API(muteLocalAudioStream);
   NAPI_API(muteLocalVideoStream);
+  NAPI_API(sendStreamMessageWithArrayBuffer);
 
  public:
   Isolate* getIsolate() { return m_isolate; }
