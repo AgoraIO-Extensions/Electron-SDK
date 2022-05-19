@@ -1,5 +1,7 @@
 import { PluginInfo } from './plugin';
 
+export type UInt8ArrayBuffer = ArrayBufferLike;
+
 export interface RendererOptions {
   append: boolean;
 }
@@ -4767,6 +4769,10 @@ export interface NodeRtcEngine {
     uid: number,
     spatial_audio_params?: SpatialAudioParams
   ): number;
+  sendStreamMessageWithArrayBuffer(
+    streamId: number,
+    buffer: UInt8ArrayBuffer
+  ): number;
 }
 /**
  * @ignore
@@ -4984,6 +4990,10 @@ export interface NodeRtcChannel {
 
   muteLocalAudioStream(mute: boolean): number;
   muteLocalVideoStream(mute: boolean): number;
+  sendStreamMessageWithArrayBuffer(
+    streamId: number,
+    buffer: UInt8ArrayBuffer
+  ): number 
 }
 
 /** Audio codec profile types. The default value is LC_ACC. */
