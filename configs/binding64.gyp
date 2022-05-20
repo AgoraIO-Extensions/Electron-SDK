@@ -277,8 +277,8 @@
                         './sdk/dll/libagora-wgc.dll',
                         './sdk/dll/libagora-wgc.dll',
                         './sdk/dll/libagora_fdkaac.dll',
-                        './sdk/dll/libagora_ci_extension.dll',
-                        './sdk/dll/libagora_fd_extension.dll',
+
+
                         './sdk/dll/libagora_mpg123.dll',
                         './sdk/dll/libagora_video_process_extension.dll',
                         './sdk/dll/libagora-ffmpeg.dll',
@@ -286,10 +286,10 @@
                         './sdk/dll/libhwcodec.dll',
                         './sdk/dll/av1.dll',
                         './sdk/dll/libagora_ai_denoise_extension.dll',
-                        './sdk/dll/libagora_dav1d_extension.dll',
+
                         './sdk/dll/libagora-core.dll',
-                        './sdk/dll/libagora_segmentation_extension.dll',
-                        './sdk/dll/libagora_jnd_extension.dll',
+
+
                     ]
                 }],
                 'library_dirs': [

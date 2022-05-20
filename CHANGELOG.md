@@ -1,3 +1,8 @@
+## 3.6.1-rc.6-wps.520(May 11th, 2022)
+- remain Extension
+  - AI Denoise Extension
+  - Video Process Extension
+
 ## 3.6.1-rc.6-build.520(May 11th, 2022)
 - delete api
   - pauseAudio

@@ -141,14 +141,15 @@
                     'Agorafdkaac.framework',
                     'Agoraffmpeg.framework',
                     'AgoraSoundTouch.framework',
-                    'AgoraJNDExtension.framework',
-                    'AgoraVideoSegmentationExtension.framework',
-                    'AgoraCIExtension.framework',
-                    'AgoraFDExtension.framework',
+
+
+
+
                     'AgoraVideoProcessExtension.framework',
                     'AgoraCore.framework',
                     'AgoraAIDenoiseExtension.framework',
-                    'AgoraDav1dExtension.framework',
+
+
                     'av1.framework',
                     'CoreWLAN.framework',
                     'Cocoa.framework',
@@ -374,12 +375,12 @@
                         './sdk/lib/mac/AgoraCore.framework',
                         './sdk/lib/mac/av1.framework',
                         './sdk/lib/mac/AgoraAIDenoiseExtension.framework',
-                        './sdk/lib/mac/AgoraVideoSegmentationExtension.framework',
-                        './sdk/lib/mac/AgoraCIExtension.framework',
-                        './sdk/lib/mac/AgoraFDExtension.framework',
+
+
+
                         './sdk/lib/mac/AgoraVideoProcessExtension.framework',
-                        './sdk/lib/mac/AgoraDav1dExtension.framework',
-                        './sdk/lib/mac/AgoraJNDExtension.framework',
+
+
                     ]
                 }],
                 'link_settings': {
@@ -387,15 +388,15 @@
                     'libresolv.9.dylib',
                     'Accelerate.framework',
                     'AgoraAIDenoiseExtension.framework',
-                    'AgoraCIExtension.framework',
+
                     'AgoraCore.framework',
-                    'AgoraDav1dExtension.framework',
-                    'AgoraFDExtension.framework',
-                    'AgoraJNDExtension.framework',
+
+
+
                     'AgoraRtcKit.framework',
                     'AgoraSoundTouch.framework',
                     'AgoraVideoProcessExtension.framework',
-                    'AgoraVideoSegmentationExtension.framework',
+
                     'Agorafdkaac.framework',
                     'Agoraffmpeg.framework',
                     'av1.framework',
