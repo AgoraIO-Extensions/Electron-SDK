@@ -2811,30 +2811,6 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
-   * @deprecated This method is deprecated. Use {@link disableAudio} instead.
-   * Disables the audio function in the channel.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  pauseAudio() {
-    deprecate('disableAudio');
-    return this.rtcEngine.pauseAudio();
-  }
-
-  /**
-   * @deprecated  This method is deprecated. Use {@link enableAudio} instead.
-   * Resumes the audio function in the channel.
-   * @return
-   * - 0: Success.
-   * - < 0: Failure.
-   */
-  resumeAudio() {
-    deprecate('enableAudio');
-    return this.rtcEngine.resumeAudio();
-  }
-
-  /**
    * Specifies an SDK output log file.
    *
    * @deprecated This method is deprecated from v3.3.1. Use `logConfig` in
