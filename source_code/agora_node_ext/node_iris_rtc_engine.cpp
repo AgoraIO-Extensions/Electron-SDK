@@ -173,12 +173,12 @@ napi_value NodeIrisRtcEngine::CallApi(napi_env env, napi_callback_info info) {
   std::string func_name = "";
   std::string parameter = "";
   uint32_t buffer_count = 0;
+ 
   status = napi_get_value_utf8string(env, args[0], func_name);
   status = napi_get_value_utf8string(env, args[1], parameter);
-  // todo buffer
+ 
   status = napi_get_value_uint32(env, args[3], &buffer_count);
-  uint64 *buffer = nullptr;
-
+  
   if (strcmp(parameter.c_str(), "") == 0) {
     parameter = "{}";
   }
@@ -199,13 +199,20 @@ napi_value NodeIrisRtcEngine::CallApi(napi_env env, napi_callback_info info) {
           func_name.compare(FUNC_MEDIAENGINE_PULLAUDIOFRAME) == 0 ||
           func_name.compare(FUNC_MEDIAENGINE_PUSHAUDIOFRAME) == 0 ||
           func_name.compare(FUNC_MEDIAENGINE_PUSHENCODEDVIDEOIMAGE) == 0 ||
-          func_name.compare(FUNC_MEDIAENGINE_PUSHENCODEDVIDEOIMAGE2) == 0 ||
-          func_name.compare(FUNC_MEDIAENGINE_PUSHVIDEOFRAME) == 0 ||
-          func_name.compare(FUNC_MEDIAENGINE_PUSHVIDEOFRAME2) == 0) {
+          func_name.compare(FUNC_MEDIAENGINE_PUSHENCODEDVIDEOIMAGE2) == 0) {
+        uint64* buffer = nullptr; // = node_buffer  todo
         ret = finalEngine->CallIrisApi(func_name.c_str(), parameter.c_str(),
                                        parameter.length(), buffer, buffer_count,
                                        result);
-      } else
+      }
+      else if (func_name.compare(FUNC_MEDIAENGINE_PUSHVIDEOFRAME) == 0 ||
+        func_name.compare(FUNC_MEDIAENGINE_PUSHVIDEOFRAME2) == 0) {
+        uint64 buffer[3] = { 0 }; // todo memcpy(buffer, node_buffer, buffer_count)
+        ret = finalEngine->CallIrisApi(func_name.c_str(), parameter.c_str(),
+          parameter.length(), buffer, buffer_count,
+          result);
+      }
+      else
         ret = finalEngine->CallIrisApi(func_name.c_str(), parameter.c_str(),
                                        parameter.length(), nullptr, 0, result);
       LOG_F(INFO, "CallApi(func name:%s) parameter: %s, ret: %d",
