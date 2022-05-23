@@ -200,14 +200,14 @@ napi_value NodeIrisRtcEngine::CallApi(napi_env env, napi_callback_info info) {
           func_name.compare(FUNC_MEDIAENGINE_PUSHAUDIOFRAME) == 0 ||
           func_name.compare(FUNC_MEDIAENGINE_PUSHENCODEDVIDEOIMAGE) == 0 ||
           func_name.compare(FUNC_MEDIAENGINE_PUSHENCODEDVIDEOIMAGE2) == 0) {
-        uint64* buffer = nullptr; // = node_buffer  todo
+        uint64* buffer = nullptr; // get node buffer  todo
         ret = finalEngine->CallIrisApi(func_name.c_str(), parameter.c_str(),
                                        parameter.length(), buffer, buffer_count,
                                        result);
       }
       else if (func_name.compare(FUNC_MEDIAENGINE_PUSHVIDEOFRAME) == 0 ||
         func_name.compare(FUNC_MEDIAENGINE_PUSHVIDEOFRAME2) == 0) {
-        uint64 buffer[3] = { 0 }; // todo memcpy(buffer, node_buffer, buffer_count)
+        uint64* buffer = nullptr; // todo get node buffers
         ret = finalEngine->CallIrisApi(func_name.c_str(), parameter.c_str(),
           parameter.length(), buffer, buffer_count,
           result);
