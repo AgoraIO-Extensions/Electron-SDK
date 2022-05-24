@@ -27,14 +27,9 @@ file(GLOB COMMON_FILE
         ${COMMON_FILE_DIR}/*.cpp
         )
 
-set(COMMON_PROCESS_FILE_DIR
-        ${SOURCE_CODE_PATH}/process
-        )
-
 set(COMMON_WINDOW_INFO_FILE_DIR
         ${SOURCE_CODE_PATH}/window_Info
         )
-
 
 # platform file
 set(PLATFORM_MAC_FILE
@@ -50,14 +45,6 @@ set(PLATFORM_LINUX_FILE
         )
 
 # different target file
-set(TARGET_VIDEO_SOURCE_FILE_DIR
-        ${SOURCE_CODE_PATH}/video_source
-        )
-
-file(GLOB TARGET_VIDEO_SOURCE_FILE
-        ${TARGET_VIDEO_SOURCE_FILE_DIR}/*.cpp
-        )
-
 set(TARGET_AGORA_NODE_EXT_FILE_DIR
         ${SOURCE_CODE_PATH}/agora_node_ext
         )
@@ -69,7 +56,7 @@ file(GLOB TARGET_AGORA_NODE_EXT_FILE
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     set(AGORA_IRIS_PROJECT_ARCH "MAC")
     set(AGORA_RTC_SDK_PATH
-            ${CMAKE_CURRENT_SOURCE_DIR}/iris/DCG/Agora_Native_SDK_for_Mac_rel.v3.6.200_34767_full_20211130_1114/libs
+            ${CMAKE_CURRENT_SOURCE_DIR}/iris/DCG/Agora_Native_SDK_for_Mac_FULL/libs
             )
     # native rtc sdk library
     file(GLOB AGORA_RTC_SDK_LIBRARY
@@ -78,11 +65,10 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
 
     # iris sdk path
     set(AGORA_IRIS_SDK_PATH
-            ${CMAKE_CURRENT_SOURCE_DIR}/iris/${AGORA_IRIS_PROJECT_ARCH}/${BUILD_TYPE}
+            ${CMAKE_CURRENT_SOURCE_DIR}/iris/MAC/Release
             )
     # iris sdk library
     file(GLOB AGORA_IRIS_SDK_LIBRARY
-            ${AGORA_IRIS_SDK_PATH}/AgoraRtcScreenSharing
             ${AGORA_IRIS_SDK_PATH}/*.framework
             )
 
@@ -97,11 +83,12 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
             "-framework Agoraffmpeg"
             "-framework AgoraRtcKit"
             "-framework AgoraRTE"
-            "-framework AgoraVideoProcess"
+            "-framework av1"
             )
     set(AGORA_IRIS_FRAMEWORKS
             "-framework AgoraRtcWrapper"
             )
+
     set(SYSTEM_FRAMEWORK
             "-framework CoreFoundation"
             "-framework CoreGraphics"
@@ -138,7 +125,6 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
             )
     file(GLOB AGORA_IRIS_SDK_LIBRARY
             ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/${BUILD_TYPE}/*.dll
-            ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/${BUILD_TYPE}/*.exe
             )
   
     # iris sdk include file
