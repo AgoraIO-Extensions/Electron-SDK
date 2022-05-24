@@ -109,29 +109,24 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
             "-framework ImageIO"
             )
 elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-    if (${CMAKE_OSX_ARCHITECTURES} STREQUAL "i386")
+   if (${CMAKE_OSX_ARCHITECTURES} STREQUAL "i386")
         set(AGORA_RTC_PROJECT_ARCH "x86")
         set(AGORA_IRIS_PROJECT_ARCH "Win32")
         set(AGORA_DCG_SDK_ARCH_FILE_NAME
-                "Agora_Native_SDK_for_Windows_x86_rel.v3.6.200_53745_20211130_1054_full/rtc/sdk")
+              "Win32/Release")
     elseif (${CMAKE_OSX_ARCHITECTURES} STREQUAL "x86_64")
         set(AGORA_RTC_PROJECT_ARCH "x86_64")
         set(AGORA_IRIS_PROJECT_ARCH "x64")
         set(AGORA_DCG_SDK_ARCH_FILE_NAME
-                "Agora_Native_SDK_for_Windows_x64_rel.v3.6.200_53746_20211130_1051_full/rtc/sdk")
+               "x64/Release")
     endif ()
 
     # native rtc sdk path
     set(AGORA_RTC_SDK_PATH
             ${CMAKE_CURRENT_SOURCE_DIR}/iris/DCG)
 
-
-    file(GLOB AGORA_RTC_SDK_LIB
-            ${AGORA_RTC_SDK_PATH}/${AGORA_DCG_SDK_ARCH_FILE_NAME}/*.lib
-            )
-
     file(GLOB AGORA_RTC_SDK_LIBRARY
-            ${AGORA_RTC_SDK_PATH}/${AGORA_DCG_SDK_ARCH_FILE_NAME}/*.dll
+            ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_FULL/${AGORA_RTC_PROJECT_ARCH}/rtc/sdk/*.dll
             )
 
     # iris sdk path
@@ -139,19 +134,23 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
             ${CMAKE_CURRENT_SOURCE_DIR}/iris
             )
     file(GLOB AGORA_IRIS_SDK_LIB
-            ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/${BUILD_TYPE}/*.lib
+            ${AGORA_IRIS_SDK_PATH}/${AGORA_DCG_SDK_ARCH_FILE_NAME}/*.lib
             )
     file(GLOB AGORA_IRIS_SDK_LIBRARY
             ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/${BUILD_TYPE}/*.dll
             ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/${BUILD_TYPE}/*.exe
             )
-    set(AGORA_RTC_SDK_HEADER_FILE_DIR
-            ${AGORA_RTC_SDK_PATH}/${AGORA_DCG_SDK_ARCH_FILE_NAME}/high_level_api/include
-            )
-
+  
     # iris sdk include file
     set(AGORA_IRIS_SDK_HEADER_FILE_DIR
             ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/include
+            )
+
+    set(AGORA_RTC_SDK_HEADER_FILE_DIR
+            ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_FULL/${AGORA_RTC_PROJECT_ARCH}/rtc/sdk/high_level_api/include
+            )
+    set(AGORA_IRIS_SDK_LIB
+            ${AGORA_IRIS_SDK_PATH}/${AGORA_DCG_SDK_ARCH_FILE_NAME}/AgoraRtcWrapper.lib
             )
 elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     # if(${CMAKE_OSX_ARCHITECTURES} STREQUAL "i386")
@@ -182,11 +181,12 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
             ${AGORA_IRIS_SDK_PATH}/x86_64/*
             )
     # iris sdk include file
-    set(AGORA_IRIS_SDK_HEADER_FILE_DIR
-            ${AGORA_IRIS_SDK_PATH}/include
+   set(AGORA_IRIS_SDK_HEADER_FILE_DIR
+            ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/include
             )
-
 endif ()
+ message(=====iris include ===== ${AGORA_IRIS_SDK_HEADER_FILE_DIR} )
+ message(=======iris windows lib= IRIs == ${AGORA_IRIS_SDK_LIB})
 
 file(GLOB COMMON_FILE1
         ${AGORA_RTC_SDK_HEADER_FILE_DIR}/*.h

@@ -26,7 +26,7 @@ class NodeIrisEventHandler : public iris::IrisEventHandler {
   NodeIrisEventHandler();
   virtual ~NodeIrisEventHandler();
 
-  virtual void OnEvent(const char* event, const char* data) override;
+  // virtual void OnEvent(const char* event, const char* data) override;
 
   virtual void OnEvent(const char* event,
                        const char* data,
