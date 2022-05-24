@@ -43,7 +43,7 @@ void NodeIrisEventHandler::addEvent(const std::string& eventName,
   _callbacks[eventName] = callback;
 }
 
-void NodeIrisEventHandler::OnEvent(const char* event, const char* data) {
+/*void NodeIrisEventHandler::OnEvent(const char* event, const char* data) {
   std::string _eventName(event);
   std::string _eventData(data);
   node_async_call::async_call([this, _eventName, _eventData] {
@@ -69,7 +69,7 @@ void NodeIrisEventHandler::OnEvent(const char* event, const char* data) {
                                   argc, args, &result);
     }
   });
-}
+}*/
 
 void NodeIrisEventHandler::OnEvent(const char* event,
                                    const char* data,
