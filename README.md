@@ -58,7 +58,6 @@ Usually you have to specify electron version of your application and whether to 
 {
 ...
   "agora_electron": {
-    "electron_version": "5.0.8",
     "prebuilt": true
   }
 ...
@@ -107,10 +106,10 @@ You will need to build **Agora RTC Electron SDK** from source if you want to wor
 You just to install `agora-electron-sdk` from your fork. For example, to install the master branch from the official repo, run the following:
 
 ```sh
-npm install --save github:AgoraIO/Electron-SDK#dev/electron_iris --verbose --agora_electron_sdk_pre_built=false --agora_electron_version=${Electron_Version}
+npm install --save github:AgoraIO/Electron-SDK#dev/electron_iris --verbose --agora_electron_sdk_pre_built=false
 ```
 
-Alternatively, you can clone the repo to your `node_modules` directory and run `npm install --verbose --agora_electron_sdk_pre_built=false --agora_electron_version=${Electron_Version}` inside the cloned repo.
+Alternatively, you can clone the repo to your `node_modules` directory and run `npm install --verbose --agora_electron_sdk_pre_built=false` inside the cloned repo.
 
 ### Additional notes
 

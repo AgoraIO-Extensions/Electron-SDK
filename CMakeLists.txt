@@ -81,6 +81,10 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
             )
     set(AGORA_RTC_FRAMEWORKS
             "-framework Agoraffmpeg"
+            "-framework AgoraDav1dExtension"
+            "-framework AgoraPvcExtension"
+            "-framework AgoraVideoProcessExtension"
+            "-framework AgoraVideoSegmentationExtension"
             "-framework AgoraRtcKit"
             "-framework AgoraRTE"
             "-framework av1"
