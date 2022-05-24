@@ -59,6 +59,7 @@ NodeIrisRtcEngine::NodeIrisRtcEngine() {
   _iris_video_frame_buffer_manager = std::make_shared<iris::IrisVideoFrameBufferManager>();
   _iris_event_handler = std::make_shared<NodeIrisEventHandler>();
   _iris_api_engine->SetIrisRtcEngineEventHandler(_iris_event_handler.get());
+  _iris_api_engine->Attach(_iris_video_frame_buffer_manager.get());
 }
 
 NodeIrisRtcEngine::~NodeIrisRtcEngine() {
@@ -553,6 +554,7 @@ napi_value NodeIrisRtcEngine::Release(napi_env env, napi_callback_info info) {
   NodeIrisRtcEngine* nodeIrisRtcEngine;
   status =
       napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
+  nodeIrisRtcEngine->_iris_api_engine->Detach(nodeIrisRtcEngine->_iris_video_frame_buffer_manager.get());
   nodeIrisRtcEngine->_iris_event_handler.reset();
   // nodeIrisRtcEngine->_iris_raw_data_plugin_manager = nullptr;
   // nodeIrisRtcEngine->_iris_raw_data = nullptr;
