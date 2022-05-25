@@ -1,3 +1,71 @@
+## 3.7.0-build.526(May 26th, 2022)
+- delete api
+  - pauseAudio
+  - resumeAudio
+- replace impl
+  - setLocalVoiceChanger
+  - setLocalVoiceReverbPreset
+  - enableSoundPositionIndication
+  - setRemoteVoicePosition
+  - setCameraCapturerConfiguration
+  - setLogFileSize
+  - setExternalAudioSource
+  - setLocalVideoMirrorMode
+  - enableLoopbackRecording
+  - setLocalVoiceEqualization
+  - setLocalVoiceReverb
+  - setLocalPublishFallbackOption
+  - setRemoteSubscribeFallbackOption
+  - muteRemoteAudioStream
+  - muteRemoteVideoStream
+  - setRemoteVideoStreamType
+  - setRemoteDefaultVideoStreamType
+  - startAudioMixing
+  - getAudioMixingCurrentPosition
+  - getAudioMixingPlayoutVolume
+  - getAudioMixingPublishVolume
+  - setRecordingAudioFrameParameters
+  - setPlaybackAudioFrameParameters
+  - setMixedAudioFrameParameters
+  - setHighQualityAudioParameters
+- Replace the macro definition
+  - stopAudioRecording
+  - stopAudioMixing
+  - pauseAudioMixing
+  - resumeAudioMixing
+  - getEffectsVolume
+  - setEffectsVolume
+  - setVolumeOfEffect
+  - stopEffect
+  - stopAllEffects
+  - preloadEffect
+  - unloadEffect
+  - pauseEffect
+  - pauseAllEffects
+  - resumeEffect
+  - resumeAllEffects
+  - muteLocalAudioStream
+  - muteAllRemoteAudioStreams
+  - setDefaultMuteAllRemoteAudioStreams
+  - muteLocalVideoStream
+  - enableLocalVideo
+  - muteAllRemoteVideoStreams
+  - setDefaultMuteAllRemoteVideoStreams
+  - adjustAudioMixingVolume
+  - adjustAudioMixingPlayoutVolume
+  - adjustAudioMixingPublishVolume
+  - setAudioMixingPosition
+  - setLocalVoicePitch
+  - setExternalAudioSink
+  - setLogFile
+  - setLogFilter
+  - enableDualStreamMode
+  - adjustRecordingSignalVolume
+  - adjustPlaybackSignalVolume
+  - enableWebSdkInteroperability
+  - setVideoQualityParameters
+- videoSource mute remote audio after join
+
 ## 3.7.0-build.519(May 19th, 2022)
 - fix load for mac Extension
 - add sendStreamMessageWithArrayBuffer

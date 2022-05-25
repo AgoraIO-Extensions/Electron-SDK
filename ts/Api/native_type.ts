@@ -3780,14 +3780,6 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
-  pauseAudio(): number;
-  /**
-   * @ignore
-   */
-  resumeAudio(): number;
-  /**
-   * @ignore
-   */
   setLogFile(filepath: string): number;
   /**
    * @ignore
