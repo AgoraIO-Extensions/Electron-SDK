@@ -1265,8 +1265,7 @@ void NodeEventHandler::onNetworkTypeChanged(NETWORK_TYPE type) {
 
 void NodeEventHandler::onVideoSourceJoinedChannel(agora::rtc::uid_t uid) {
   FUNC_TRACE;
-  RtcEngineParameters rep(m_engine->getRtcEngine());
-  rep.muteRemoteVideoStream(uid, true);
+  m_engine->getRtcEngine()->muteRemoteVideoStream(uid, true);
   node_async_call::async_call(
       [this, uid] { this->onVideoSourceJoinedChannel_node(uid); });
 }

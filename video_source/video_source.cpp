@@ -117,7 +117,6 @@ bool AgoraVideoSource::initialize() {
   m_rtcEngine->disableAudio();
   m_rtcEngine->enableVideo();
 
-  agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
   m_rtcEngine->enableLocalVideo(false);
   m_rtcEngine->muteAllRemoteVideoStreams(true);
   m_rtcEngine->muteAllRemoteAudioStreams(true);
@@ -311,7 +310,6 @@ void AgoraVideoSource::onMessage(unsigned int msg,
       LOG_LEAVE;
       return;
     }
-    agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
     CaptureScreenCmd* cmd = (CaptureScreenCmd*)payload;
     LOG_INFO("Start screen share, top : %d, left : %d, bottom :%d, right :%d\n",
              cmd->rect.top, cmd->rect.left, cmd->rect.bottom, cmd->rect.right);
@@ -324,7 +322,6 @@ void AgoraVideoSource::onMessage(unsigned int msg,
     }
   } else if (msg == AGORA_IPC_STOP_CAPTURE_SCREEN) {
     LOG_INFO("%s    msg: %s", __FUNCTION__, "AGORA_IPC_STOP_CAPTURE_SCREEN");
-    agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
     m_rtcEngine->enableLocalVideo(false);
     m_rtcEngine->stopScreenCapture();
   } else if (msg == AGORA_IPC_START_VS_PREVIEW) {
@@ -366,16 +363,13 @@ void AgoraVideoSource::onMessage(unsigned int msg,
     LOG_INFO("%s    msg: %s", __FUNCTION__, "AGORA_IPC_DISCONNECT");
     this->exit(false);
   } else if (msg == AGORA_IPC_ENABLE_WEB_SDK_INTEROPERABILITY) {
-    agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
     m_rtcEngine->enableWebSdkInteroperability((bool)*payload);
   } else if (msg == AGORA_IPC_ENABLE_DUAL_STREAM_MODE) {
     LOG_INFO("%s    msg: %s", __FUNCTION__,
              "AGORA_IPC_ENABLE_DUAL_STREAM_MODE");
-    agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
     m_rtcEngine->enableDualStreamMode((bool)*payload);
   } else if (msg == AGORA_IPC_SET_LOGFILE) {
     LOG_INFO("%s    msg: %s", __FUNCTION__, "AGORA_IPC_SET_LOGFILE");
-    agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
     m_rtcEngine->setLogFile((char*)payload);
   } else if (msg == AGORA_IPC_SET_PARAMETER) {
     if (len != sizeof(SetParameterCmd))
@@ -393,7 +387,6 @@ void AgoraVideoSource::onMessage(unsigned int msg,
              "AGORA_IPC_START_CAPTURE_BY_DISPLAY");
     if (payload) {
       CaptureScreenByDisplayCmd* cmd = (CaptureScreenByDisplayCmd*)payload;
-      agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
       agora::rtc::view_t excludeWindows[MAX_WINDOW_ID_COUNT] = {nullptr};
       if (cmd->excludeWindowCount > 0) {
         for (int i = 0; i < cmd->excludeWindowCount; ++i) {
@@ -424,7 +417,6 @@ void AgoraVideoSource::onMessage(unsigned int msg,
              "AGORA_IPC_START_CAPTURE_BY_WINDOW_ID");
     if (payload) {
       CaptureScreenByWinCmd* cmd = (CaptureScreenByWinCmd*)payload;
-      agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
       int result = m_rtcEngine->startScreenCaptureByWindowId(
           reinterpret_cast<agora::rtc::view_t>(cmd->windowId), cmd->regionRect,
           cmd->captureParams);
@@ -439,7 +431,6 @@ void AgoraVideoSource::onMessage(unsigned int msg,
   } else if (msg == AGORA_IPC_START_SCREEN_CAPTURE_BY_DISPLAY_ID) {
     if (payload) {
       CaptureScreenByDisplayCmd* cmd = (CaptureScreenByDisplayCmd*)payload;
-      agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
       agora::rtc::view_t excludeWindows[MAX_WINDOW_ID_COUNT] = {nullptr};
       if (cmd->excludeWindowCount > 0) {
         for (int i = 0; i < cmd->excludeWindowCount; ++i) {
@@ -489,7 +480,6 @@ void AgoraVideoSource::onMessage(unsigned int msg,
     if (len != sizeof(LoopbackRecordingCmd))
       return;
     LoopbackRecordingCmd* cmd = (LoopbackRecordingCmd*)payload;
-    agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
     m_rtcEngine->enableLoopbackRecording(cmd->enabled, cmd->deviceName);
   } else if (msg == AGORA_IPC_ENABLE_AUDIO) {
     LOG_INFO("%s    msg: %s", __FUNCTION__, "AGORA_IPC_ENABLE_AUDIO");
