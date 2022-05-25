@@ -176,8 +176,6 @@ class NodeRtcEngine : public node::ObjectWrap {
   NAPI_API(setExternalAudioSink);
   NAPI_API(setLocalPublishFallbackOption);
   NAPI_API(setRemoteSubscribeFallbackOption);
-  NAPI_API(pauseAudio);
-  NAPI_API(resumeAudio);
   NAPI_API(setExternalAudioSource);
 #if defined(__APPLE__) || defined(_WIN32)
   NAPI_API(getScreenWindowsInfo);
@@ -999,107 +997,6 @@ typedef unsigned int uint32;
       args.GetReturnValue().Set(Integer::New(args.GetIsolate(), result)); \
     } while (false);                                                      \
     LOG_LEAVE;                                                            \
-  }
-/*
- * Helper macro to transfer call directly to rtc.
- */
-#define NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(method) \
-  NAPI_API_DEFINE(NodeRtcEngine, method) {              \
-    LOG_ENTER;                                          \
-    do {                                                \
-      NodeRtcEngine* pEngine = nullptr;                 \
-      napi_get_native_this(args, pEngine);              \
-      CHECK_NATIVE_THIS(pEngine);                       \
-      RtcEngineParameters rep(pEngine->m_engine);       \
-      int result = CALL_MEM_FUNC(rep, method);          \
-      napi_set_int_result(args, result);                \
-    } while (false);                                    \
-    LOG_LEAVE;                                          \
-  }
-
-#define NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(method, type)    \
-  NAPI_API_DEFINE(NodeRtcEngine, method) {                       \
-    LOG_ENTER;                                                   \
-    do {                                                         \
-      NodeRtcEngine* pEngine = nullptr;                          \
-      napi_get_native_this(args, pEngine);                       \
-      CHECK_NATIVE_THIS(pEngine);                                \
-      napi_status status = napi_ok;                              \
-      type param;                                                \
-      napi_get_param_1(args, type, param);                       \
-      CHECK_NAPI_STATUS(pEngine, status);                        \
-      RtcEngineParameters rep(pEngine->m_engine);                \
-      int result = CALL_MEM_FUNC_WITH_PARAM(rep, method, param); \
-      napi_set_int_result(args, result);                         \
-    } while (false);                                             \
-    LOG_LEAVE;                                                   \
-  }
-
-#define NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(method, type, type2)      \
-  NAPI_API_DEFINE(NodeRtcEngine, method) {                                \
-    LOG_ENTER;                                                            \
-    do {                                                                  \
-      NodeRtcEngine* pEngine = nullptr;                                   \
-      napi_get_native_this(args, pEngine);                                \
-      CHECK_NATIVE_THIS(pEngine);                                         \
-      napi_status status = napi_ok;                                       \
-      type param;                                                         \
-      type2 param2;                                                       \
-      napi_get_param_2(args, type, param, type2, param2);                 \
-      CHECK_NAPI_STATUS(pEngine, status);                                 \
-      RtcEngineParameters rep(pEngine->m_engine);                         \
-      int result = CALL_MEM_FUNC_WITH_PARAM2(rep, method, param, param2); \
-      napi_set_int_result(args, result);                                  \
-    } while (false);                                                      \
-    LOG_LEAVE;                                                            \
-  }
-
-#define NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_3(method, type, type2, type3) \
-  NAPI_API_DEFINE(NodeRtcEngine, method) {                                  \
-    LOG_ENTER;                                                              \
-    do {                                                                    \
-      NodeRtcEngine* pEngine = nullptr;                                     \
-      napi_get_native_this(args, pEngine);                                  \
-      CHECK_NATIVE_THIS(pEngine);                                           \
-      napi_status status = napi_ok;                                         \
-      type param;                                                           \
-      type2 param2;                                                         \
-      type3 param3;                                                         \
-      napi_get_param_3(args, type, param, type2, param2, type3, param3);    \
-      CHECK_NAPI_STATUS(pEngine, status);                                   \
-      RtcEngineParameters rep(pEngine->m_engine);                           \
-      int result =                                                          \
-          CALL_MEM_FUNC_WITH_PARAM3(rep, method, param, param2, param3);    \
-      napi_set_int_result(args, result);                                    \
-    } while (false);                                                        \
-    LOG_LEAVE;                                                              \
-  }
-
-#define NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_7(method, type, type2, type3,    \
-                                                type4, type5, type6, type7)    \
-  NAPI_API_DEFINE(NodeRtcEngine, method) {                                     \
-    LOG_ENTER;                                                                 \
-    do {                                                                       \
-      NodeRtcEngine* pEngine = nullptr;                                        \
-      napi_get_native_this(args, pEngine);                                     \
-      CHECK_NATIVE_THIS(pEngine);                                              \
-      napi_status status = napi_ok;                                            \
-      type param;                                                              \
-      type2 param2;                                                            \
-      type3 param3;                                                            \
-      type4 param4;                                                            \
-      type5 param5;                                                            \
-      type6 param6;                                                            \
-      type7 param7;                                                            \
-      napi_get_param_7(args, type, param, type2, param2, type3, param3, type4, \
-                       param4, type5, param5, type6, param6, type7, param7);   \
-      CHECK_NAPI_STATUS(pEngine, status);                                      \
-      RtcEngineParameters rep(pEngine->m_engine);                              \
-      int result = CALL_MEM_FUNC_WITH_PARAM7(                                  \
-          rep, method, param, param2, param3, param4, param5, param6, param7); \
-      napi_set_int_result(args, result);                                       \
-    } while (false);                                                           \
-    LOG_LEAVE;                                                                 \
   }
 
 }  // namespace rtc
