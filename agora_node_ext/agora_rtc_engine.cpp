@@ -428,8 +428,6 @@ void NodeRtcEngine::Init(Local<Object>& module) {
   PROPERTY_METHOD_DEFINE(setLocalPublishFallbackOption)
   PROPERTY_METHOD_DEFINE(setRemoteSubscribeFallbackOption)
   PROPERTY_METHOD_DEFINE(setAudioProfile)
-  PROPERTY_METHOD_DEFINE(pauseAudio)
-  PROPERTY_METHOD_DEFINE(resumeAudio)
   PROPERTY_METHOD_DEFINE(setExternalAudioSource)
   PROPERTY_METHOD_DEFINE(getScreenWindowsInfo)
   PROPERTY_METHOD_DEFINE(getScreenDisplaysInfo)
@@ -806,84 +804,80 @@ NAPI_API_DEFINE_WRAPPER_PARAM_0(disableAudio);
 
 NAPI_API_DEFINE_WRAPPER_PARAM_2(adjustUserPlaybackSignalVolume, uid_t, int32);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(stopAudioRecording);
+NAPI_API_DEFINE_WRAPPER_PARAM_0(stopAudioRecording);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(stopAudioMixing);
+NAPI_API_DEFINE_WRAPPER_PARAM_0(stopAudioMixing);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(pauseAudioMixing);
+NAPI_API_DEFINE_WRAPPER_PARAM_0(pauseAudioMixing);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(resumeAudioMixing);
+NAPI_API_DEFINE_WRAPPER_PARAM_0(resumeAudioMixing);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(pauseAudio);
+NAPI_API_DEFINE_WRAPPER_PARAM_0(getEffectsVolume);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(resumeAudio);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(setEffectsVolume, int32);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(getEffectsVolume);
+NAPI_API_DEFINE_WRAPPER_PARAM_2(setVolumeOfEffect, int32, int32);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setEffectsVolume, int32);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(stopEffect, int32);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(setVolumeOfEffect, int32, int32);
+NAPI_API_DEFINE_WRAPPER_PARAM_0(stopAllEffects);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(stopEffect, int32);
+NAPI_API_DEFINE_WRAPPER_PARAM_2(preloadEffect, int32, nodestring);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(stopAllEffects);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(unloadEffect, int32);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_2(preloadEffect, int32, nodestring);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(pauseEffect, int32);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(unloadEffect, int32);
+NAPI_API_DEFINE_WRAPPER_PARAM_0(pauseAllEffects);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(pauseEffect, int32);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(resumeEffect, int32);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(pauseAllEffects);
+NAPI_API_DEFINE_WRAPPER_PARAM_0(resumeAllEffects);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(resumeEffect, int32);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(muteLocalAudioStream, bool);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_0(resumeAllEffects);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(muteAllRemoteAudioStreams, bool);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(muteLocalAudioStream, bool);
-
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(muteAllRemoteAudioStreams, bool);
-
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setDefaultMuteAllRemoteAudioStreams,
+NAPI_API_DEFINE_WRAPPER_PARAM_1(setDefaultMuteAllRemoteAudioStreams,
                                         bool);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(muteLocalVideoStream, bool);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(muteLocalVideoStream, bool);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(enableLocalVideo, bool);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(enableLocalVideo, bool);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(muteAllRemoteVideoStreams, bool);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(muteAllRemoteVideoStreams, bool);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setDefaultMuteAllRemoteVideoStreams,
+NAPI_API_DEFINE_WRAPPER_PARAM_1(setDefaultMuteAllRemoteVideoStreams,
                                         bool);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(adjustAudioMixingVolume, int32);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(adjustAudioMixingVolume, int32);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(adjustAudioMixingPlayoutVolume, int32);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(adjustAudioMixingPlayoutVolume, int32);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(adjustAudioMixingPublishVolume, int32);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(adjustAudioMixingPublishVolume, int32);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setAudioMixingPosition, int32);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(setAudioMixingPosition, int32);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setLocalVoicePitch, double);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(setLocalVoicePitch, double);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_3(setExternalAudioSink,
+NAPI_API_DEFINE_WRAPPER_PARAM_3(setExternalAudioSink,
                                         bool,
                                         int32,
                                         int32);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setLogFile, nodestring);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(setLogFile, nodestring);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setLogFilter, uint32);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(setLogFilter, uint32);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(enableDualStreamMode, bool);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(enableDualStreamMode, bool);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(adjustRecordingSignalVolume, int32);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(adjustRecordingSignalVolume, int32);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(adjustPlaybackSignalVolume, int32);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(adjustPlaybackSignalVolume, int32);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(enableWebSdkInteroperability, bool);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(enableWebSdkInteroperability, bool);
 
-NAPI_API_DEFINE_WRAPPER_SET_PARAMETER_1(setVideoQualityParameters, bool);
+NAPI_API_DEFINE_WRAPPER_PARAM_1(setVideoQualityParameters, bool);
 
 NAPI_API_DEFINE(NodeRtcEngine, addPublishStreamUrl) {
   LOG_ENTER;
@@ -1143,14 +1137,12 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceChanger) {
     NodeRtcEngine* pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    RtcEngineParameters param(pEngine->m_engine);
 
-    VOICE_CHANGER_PRESET preset = VOICE_CHANGER_OFF;
-    int preset_value = 0;
-    status = napi_get_value_int32_(args[0], preset_value);
+    int voiceChanger = 0;
+    status = napi_get_value_int32_(args[0], voiceChanger);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    result = param.setLocalVoiceChanger(VOICE_CHANGER_PRESET(preset_value));
+    result = pEngine->m_engine->setLocalVoiceChanger(VOICE_CHANGER_PRESET(voiceChanger));
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -1164,13 +1156,12 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceReverbPreset) {
     NodeRtcEngine* pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    RtcEngineParameters param(pEngine->m_engine);
 
     int preset_value = 0;
     status = napi_get_value_int32_(args[0], preset_value);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    result = param.setLocalVoiceReverbPreset(AUDIO_REVERB_PRESET(preset_value));
+    result = pEngine->m_engine->setLocalVoiceReverbPreset(AUDIO_REVERB_PRESET(preset_value));
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -1183,13 +1174,12 @@ NAPI_API_DEFINE(NodeRtcEngine, enableSoundPositionIndication) {
   do {
     NodeRtcEngine* pEngine = nullptr;
     napi_get_native_this(args, pEngine);
-    CHECK_NATIVE_THIS(pEngine);
-    RtcEngineParameters param(pEngine->m_engine);
+    CHECK_NATIVE_THIS(pEngine); 
 
     bool enabled;
     status = napi_get_value_bool_(args[0], enabled);
 
-    result = param.enableSoundPositionIndication(enabled);
+    result = pEngine->m_engine->enableSoundPositionIndication(enabled);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -1203,7 +1193,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setRemoteVoicePosition) {
     NodeRtcEngine* pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    RtcEngineParameters param(pEngine->m_engine);
 
     uid_t uid;
     double pan = 0, gain = 0;
@@ -1217,7 +1206,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setRemoteVoicePosition) {
     status = napi_get_value_double_(args[2], gain);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    result = param.setRemoteVoicePosition(uid, pan, gain);
+    result = pEngine->m_engine->setRemoteVoicePosition(uid, pan, gain);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -1600,7 +1589,6 @@ NAPI_API_DEFINE(NodeRtcEngine, setCameraCapturerConfiguration) {
     NodeRtcEngine* pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    RtcEngineParameters param(pEngine->m_engine);
 
     if (!args[0]->IsObject()) {
       status = napi_invalid_arg;
@@ -1626,7 +1614,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setCameraCapturerConfiguration) {
                                              config.captureHeight);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    result = param.setCameraCapturerConfiguration(config);
+    result = pEngine->m_engine->setCameraCapturerConfiguration(config);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -1641,13 +1629,12 @@ NAPI_API_DEFINE(NodeRtcEngine, setLogFileSize) {
     NodeRtcEngine* pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    RtcEngineParameters param(pEngine->m_engine);
 
     unsigned int size;
     status = napi_get_value_uint32_(args[0], size);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    result = param.setLogFileSize(size);
+    result = pEngine->m_engine->setLogFileSize(size);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -1971,7 +1958,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setExternalAudioSource) {
     NodeRtcEngine* pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    RtcEngineParameters param(pEngine->m_engine);
+    
     int sampleRate, channels;
     bool enabled;
     status = napi_get_value_bool_(args[0], enabled);
@@ -1980,7 +1967,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setExternalAudioSource) {
     CHECK_NAPI_STATUS(pEngine, status);
     status = napi_get_value_int32_(args[2], channels);
     CHECK_NAPI_STATUS(pEngine, status);
-    result = param.setExternalAudioSource(enabled, sampleRate, channels);
+    result = pEngine->m_engine->setExternalAudioSource(enabled, sampleRate, channels);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -1997,8 +1984,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalVideoMirrorMode) {
     int32 mirrorType;
     status = napi_get_value_int32_(args[0], mirrorType);
     CHECK_NAPI_STATUS(pEngine, status);
-    RtcEngineParameters param(pEngine->m_engine);
-    result = param.setLocalVideoMirrorMode(
+    result = pEngine->m_engine->setLocalVideoMirrorMode(
         (agora::rtc::VIDEO_MIRROR_MODE_TYPE)mirrorType);
   } while (false);
   napi_set_int_result(args, result);
@@ -2019,12 +2005,10 @@ NAPI_API_DEFINE(NodeRtcEngine, enableLoopbackRecording) {
     CHECK_NAPI_STATUS(pEngine, status);
     if (!args[1]->IsNull()) {
       status = napi_get_value_nodestring_(args[1], deviceName);
-      CHECK_NAPI_STATUS(pEngine, status);
-      RtcEngineParameters param(pEngine->m_engine);
-      result = param.enableLoopbackRecording(enable, deviceName);
+      CHECK_NAPI_STATUS(pEngine, status); 
+      result = pEngine->m_engine->enableLoopbackRecording(enable, deviceName);
     } else {
-      RtcEngineParameters param(pEngine->m_engine);
-      result = param.enableLoopbackRecording(enable);
+      result = pEngine->m_engine->enableLoopbackRecording(enable);
     }
 
   } while (false);
@@ -2040,13 +2024,12 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceEqualization) {
     NodeRtcEngine* pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    RtcEngineParameters param(pEngine->m_engine);
     int32 bandFrequency, bandGain;
     status = napi_get_value_int32_(args[0], bandFrequency);
     CHECK_NAPI_STATUS(pEngine, status);
     status = napi_get_value_int32_(args[1], bandGain);
     CHECK_NAPI_STATUS(pEngine, status);
-    result = param.setLocalVoiceEqualization(
+    result = pEngine->m_engine->setLocalVoiceEqualization(
         (AUDIO_EQUALIZATION_BAND_FREQUENCY)bandFrequency, bandGain);
   } while (false);
   napi_set_int_result(args, result);
@@ -2061,13 +2044,12 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceReverb) {
     NodeRtcEngine* pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    RtcEngineParameters param(pEngine->m_engine);
     int32 reverbKey, value;
     status = napi_get_value_int32_(args[0], reverbKey);
     CHECK_NAPI_STATUS(pEngine, status);
     status = napi_get_value_int32_(args[1], value);
     CHECK_NAPI_STATUS(pEngine, status);
-    result = param.setLocalVoiceReverb((AUDIO_REVERB_TYPE)reverbKey, value);
+    result = pEngine->m_engine->setLocalVoiceReverb((AUDIO_REVERB_TYPE)reverbKey, value);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -2081,12 +2063,11 @@ NAPI_API_DEFINE(NodeRtcEngine, setLocalPublishFallbackOption) {
     NodeRtcEngine* pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    RtcEngineParameters param(pEngine->m_engine);
     int32 option;
     status = napi_get_value_int32_(args[0], option);
     CHECK_NAPI_STATUS(pEngine, status);
     result =
-        param.setLocalPublishFallbackOption((STREAM_FALLBACK_OPTIONS)option);
+    pEngine->m_engine->setLocalPublishFallbackOption((STREAM_FALLBACK_OPTIONS)option);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -2100,12 +2081,11 @@ NAPI_API_DEFINE(NodeRtcEngine, setRemoteSubscribeFallbackOption) {
     NodeRtcEngine* pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    RtcEngineParameters param(pEngine->m_engine);
     int32 option;
     status = napi_get_value_int32_(args[0], option);
     CHECK_NAPI_STATUS(pEngine, status);
     result =
-        param.setRemoteSubscribeFallbackOption((STREAM_FALLBACK_OPTIONS)option);
+    pEngine->m_engine->setRemoteSubscribeFallbackOption((STREAM_FALLBACK_OPTIONS)option);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -3473,8 +3453,7 @@ NAPI_API_DEFINE(NodeRtcEngine, initialize) {
     IRtcEngine3* m_engine2 = (IRtcEngine3*)pEngine->m_engine;
     m_engine2->setAppType(AppType(3));
     pEngine->m_engine->enableVideo();
-    RtcEngineParameters rep(pEngine->m_engine);
-    rep.enableLocalVideo(true);
+    pEngine->m_engine->enableLocalVideo(true);
     result = 0;
   } while (false);
   napi_set_int_result(args, result);
@@ -4000,9 +3979,7 @@ NAPI_API_DEFINE(NodeRtcEngine, muteRemoteAudioStream) {
     CHECK_NAPI_STATUS(pEngine, status);
     status = napi_get_value_bool_(args[1], mute);
     CHECK_NAPI_STATUS(pEngine, status);
-
-    RtcEngineParameters rep(pEngine->m_engine);
-    result = rep.muteRemoteAudioStream(uid, mute);
+    result = pEngine->m_engine->muteRemoteAudioStream(uid, mute);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -4304,8 +4281,8 @@ NAPI_API_DEFINE(NodeRtcEngine, muteRemoteVideoStream) {
     status = napi_get_value_bool_(args[1], mute);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    RtcEngineParameters rep(pEngine->m_engine);
-    result = rep.muteRemoteVideoStream(uid, mute);
+    
+    result = pEngine->m_engine->muteRemoteVideoStream(uid, mute);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -4327,9 +4304,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setRemoteVideoStreamType) {
     status = napi_get_value_int32_(args[1], streamType);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    RtcEngineParameters rep(pEngine->m_engine);
-    result =
-        rep.setRemoteVideoStreamType(uid, REMOTE_VIDEO_STREAM_TYPE(streamType));
+    result = pEngine->m_engine->setRemoteVideoStreamType(uid, REMOTE_VIDEO_STREAM_TYPE(streamType));
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -4347,8 +4322,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setRemoteDefaultVideoStreamType) {
     napi_get_param_1(args, int32, streamType);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    RtcEngineParameters rep(pEngine->m_engine);
-    result = rep.setRemoteDefaultVideoStreamType(
+    result = pEngine->m_engine->setRemoteDefaultVideoStreamType(
         REMOTE_VIDEO_STREAM_TYPE(streamType));
   } while (false);
   napi_set_int_result(args, result);
@@ -4374,8 +4348,7 @@ NAPI_API_DEFINE(NodeRtcEngine, startAudioMixing) {
     napi_get_param_5(args, nodestring, filepath, bool, loopback, bool, replace,
                      int32, cycle, int32, startPos);
     CHECK_NAPI_STATUS(pEngine, status);
-    RtcEngineParameters rep(pEngine->m_engine);
-    result = rep.startAudioMixing(filepath, loopback, replace, cycle, startPos);
+    result = pEngine->m_engine->startAudioMixing(filepath, loopback, replace, cycle, startPos);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -4388,8 +4361,7 @@ NAPI_API_DEFINE(NodeRtcEngine, getAudioMixingCurrentPosition) {
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
-    RtcEngineParameters rep(pEngine->m_engine);
-    int position = rep.getAudioMixingCurrentPosition();
+    int position = pEngine->m_engine->getAudioMixingCurrentPosition();
     napi_set_int_result(args, position);
   } while (false);
   LOG_LEAVE;
@@ -4402,8 +4374,7 @@ NAPI_API_DEFINE(NodeRtcEngine, getAudioMixingPlayoutVolume) {
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
-    RtcEngineParameters rep(pEngine->m_engine);
-    int volume = rep.getAudioMixingPlayoutVolume();
+    int volume = pEngine->m_engine->getAudioMixingPlayoutVolume();
     napi_set_int_result(args, volume);
   } while (false);
   LOG_LEAVE;
@@ -4416,8 +4387,7 @@ NAPI_API_DEFINE(NodeRtcEngine, getAudioMixingPublishVolume) {
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
-    RtcEngineParameters rep(pEngine->m_engine);
-    int volume = rep.getAudioMixingPublishVolume();
+    int volume = pEngine->m_engine->getAudioMixingPublishVolume();
     napi_set_int_result(args, volume);
   } while (false);
   LOG_LEAVE;
@@ -4436,8 +4406,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setRecordingAudioFrameParameters) {
                      int32, samplesPerCall);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    RtcEngineParameters rep(pEngine->m_engine);
-    result = rep.setRecordingAudioFrameParameters(
+    result = pEngine->m_engine->setRecordingAudioFrameParameters(
         sampleRate, channel, RAW_AUDIO_FRAME_OP_MODE_TYPE(mode),
         samplesPerCall);
   } while (false);
@@ -4458,8 +4427,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setPlaybackAudioFrameParameters) {
                      int32, samplesPerCall);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    RtcEngineParameters rep(pEngine->m_engine);
-    result = rep.setPlaybackAudioFrameParameters(
+    result = pEngine->m_engine->setPlaybackAudioFrameParameters(
         sampleRate, channel, RAW_AUDIO_FRAME_OP_MODE_TYPE(mode),
         samplesPerCall);
   } while (false);
@@ -4479,8 +4447,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setMixedAudioFrameParameters) {
     napi_get_param_2(args, int32, sampleRate, int32, samplesPerCall);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    RtcEngineParameters rep(pEngine->m_engine);
-    result = rep.setMixedAudioFrameParameters(sampleRate, samplesPerCall);
+    result = pEngine->m_engine->setMixedAudioFrameParameters(sampleRate, samplesPerCall);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -4498,8 +4465,7 @@ NAPI_API_DEFINE(NodeRtcEngine, setHighQualityAudioParameters) {
     napi_get_param_3(args, bool, fullband, bool, stereo, bool, fullBitrate);
     CHECK_NAPI_STATUS(pEngine, status);
 
-    RtcEngineParameters rep(pEngine->m_engine);
-    result = rep.setHighQualityAudioParameters(fullband, stereo, fullBitrate);
+    result = pEngine->m_engine->setHighQualityAudioParameters(fullband, stereo, fullBitrate);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
