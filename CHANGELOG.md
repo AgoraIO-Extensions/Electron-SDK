@@ -1,3 +1,6 @@
+## 3.7.0-rc.121-build.526(May 26th, 2022)
+- update native sdk
+
 ## 3.7.0-build.526(May 26th, 2022)
 - delete api
   - pauseAudio
