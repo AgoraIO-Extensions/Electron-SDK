@@ -47,7 +47,6 @@ void AgoraVideoSourceEventHandler::onLeaveChannel(const RtcStats& stats) {
 }
 
 void AgoraVideoSourceEventHandler::onRtcStats(const RtcStats& stats) {
-  LOG_INFO("%s", __FUNCTION__);
 }
 
 void AgoraVideoSourceEventHandler::onVideoDeviceStateChanged(
@@ -66,7 +65,6 @@ void AgoraVideoSourceEventHandler::onNetworkQuality(uid_t uid,
 }
 
 void AgoraVideoSourceEventHandler::onLastmileQuality(int quality) {
-  LOG_INFO("%s, quality :%d", __FUNCTION__, quality);
 }
 
 void AgoraVideoSourceEventHandler::onFirstLocalVideoFrame(int width,

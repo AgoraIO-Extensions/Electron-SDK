@@ -4738,6 +4738,11 @@ export interface NodeRtcEngine {
    * @ignore
    */
   setScreenCaptureScenario(screenScenario: SCREEN_SCENARIO_TYPE): number;
+
+  /**
+   * @ignore
+   */
+  videoSourceSetScreenCaptureScenario(screenScenario: SCREEN_SCENARIO_TYPE): number;
   /**
    * @ignore
    */
@@ -4985,7 +4990,7 @@ export interface NodeRtcChannel {
   sendStreamMessageWithArrayBuffer(
     streamId: number,
     buffer: UInt8ArrayBuffer
-  ): number 
+  ): number
 }
 
 /** Audio codec profile types. The default value is LC_ACC. */
