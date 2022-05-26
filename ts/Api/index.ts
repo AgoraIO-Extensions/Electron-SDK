@@ -7000,6 +7000,9 @@ class AgoraRtcEngine extends EventEmitter {
   setScreenCaptureScenario(screenScenario: SCREEN_SCENARIO_TYPE): number {
     return this.rtcEngine.setScreenCaptureScenario(screenScenario);
   }
+  videoSourceSetScreenCaptureScenario(screenScenario: SCREEN_SCENARIO_TYPE): number {
+    return this.rtcEngine.videoSourceSetScreenCaptureScenario(screenScenario);
+  }
 
   /** Enables reporting the voice pitch of the local user.
    *

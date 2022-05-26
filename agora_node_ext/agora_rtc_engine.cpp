@@ -704,6 +704,7 @@ void NodeRtcEngine::Init(Local<Object>& module) {
   PROPERTY_METHOD_DEFINE(setRemoteUserSpatialAudioParams);
   
   PROPERTY_METHOD_DEFINE(sendStreamMessageWithArrayBuffer);
+  PROPERTY_METHOD_DEFINE(videoSourceSetScreenCaptureScenario);
   EN_PROPERTY_DEFINE()
   module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(),
               tpl->GetFunction(context).ToLocalChecked());
@@ -7952,6 +7953,28 @@ NAPI_API_DEFINE(NodeRtcEngine, setScreenCaptureScenario) {
 
     result = pEngine->m_engine->setScreenCaptureScenario(
         (SCREEN_SCENARIO_TYPE)screenScenario);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetScreenCaptureScenario) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  do {
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    int32_t screenScenario;
+    status = napi_get_value_int32_(args[0], screenScenario);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    if (pEngine->m_videoSourceSink.get()) {
+      pEngine->m_videoSourceSink->setScreenCaptureScenario(screenScenario);
+      result = 0;
+    }
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;

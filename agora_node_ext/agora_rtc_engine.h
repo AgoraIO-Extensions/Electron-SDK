@@ -461,6 +461,7 @@ class NodeRtcEngine : public node::ObjectWrap {
   
   NAPI_API(enableSpatialAudio);
   NAPI_API(setRemoteUserSpatialAudioParams);
+  NAPI_API(videoSourceSetScreenCaptureScenario);
  public:
   Isolate* getIsolate() { return m_isolate; }
   IRtcEngine* getRtcEngine() { return m_engine; }
