@@ -123,6 +123,7 @@ class AgoraVideoSourceSink : public AgoraVideoSource, public AgoraIpcListener {
 
   virtual node_error setLocalAccessPoint(
       std::unique_ptr<LocalAccessPointConfigurationCmd> &cmd) override;
+  virtual node_error setScreenCaptureScenario(int32_t screenScenario) override;
 
 private:
   void msgThread();
@@ -530,6 +531,7 @@ node_error AgoraVideoSourceSink::setVideoSourceVideoProfile(
   }
   return node_status_error;
 }
+
 
 void AgoraVideoSourceSink::onMessage(unsigned int msg,
                                      char* payload,
@@ -972,5 +974,19 @@ node_error AgoraVideoSourceSink::muteAllRemoteVideoStreams(bool mute) {
   }
   return node_status_error;
 }
+
+node_error
+AgoraVideoSourceSink::setScreenCaptureScenario(int32_t screenScenario) {
+  LOG_ENTER;
+  if (m_initialized) {
+    return m_ipcMsg->sendMessage(AGORA_IPC_SET_SCREEN_CAPTURE_SCENARIO,
+                                 (char *)&screenScenario,
+                                 sizeof(screenScenario))
+               ? node_ok
+               : node_generic_error;
+  }
+  return node_status_error;
+}
+
 }  // namespace rtc
 }  // namespace agora

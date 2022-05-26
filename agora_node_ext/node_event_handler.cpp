@@ -401,12 +401,6 @@ void NodeEventHandler::onLeaveChannel(const RtcStats& stats) {
 
 void NodeEventHandler::onRtcStats_node(const RtcStats& stats) {
   unsigned int usercount = stats.userCount;
-  LOG_INFO(
-      "duration : %d, tx :%d, rx :%d, txbr :%d, rxbr :%d, txAudioBr :%d, "
-      "rxAudioBr :%d, users :%d\n",
-      stats.duration, stats.txBytes, stats.rxBytes, stats.txKBitRate,
-      stats.rxKBitRate, stats.txAudioKBitRate, stats.rxAudioKBitRate,
-      usercount);
   do {
     Isolate* isolate = Isolate::GetCurrent();
     HandleScope scope(isolate);

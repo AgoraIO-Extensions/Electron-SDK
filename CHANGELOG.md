@@ -1,4 +1,4 @@
-## 3.7.0-build.526(May 26th, 2022)
+## 3.7.0-build.527(May 26th, 2022)
 - delete api
   - pauseAudio
   - resumeAudio

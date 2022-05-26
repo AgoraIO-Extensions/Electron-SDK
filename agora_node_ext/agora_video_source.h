@@ -247,6 +247,8 @@ class AgoraVideoSource {
   virtual node_error muteAllRemoteVideoStreams(bool mute) = 0;
   
   virtual node_error setLocalAccessPoint(std::unique_ptr<LocalAccessPointConfigurationCmd> &cmd) = 0;
+
+  virtual node_error setScreenCaptureScenario(int32_t screenScenario) = 0;
 };
 
 /**

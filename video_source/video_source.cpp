@@ -515,6 +515,10 @@ void AgoraVideoSource::onMessage(unsigned int msg,
     int volume = *payload;
     LOG_F(INFO, "video_source_adjustRecordingSignalVolume:%d", volume);
     m_rtcEngine->adjustRecordingSignalVolume(volume);
+  } else if (msg == AGORA_IPC_SET_SCREEN_CAPTURE_SCENARIO) {
+    int screenScenario = *payload;
+    LOG_F(INFO, "video_source_setScreenCaptureScenario:%d", screenScenario);
+    m_rtcEngine->setScreenCaptureScenario((agora::rtc::SCREEN_SCENARIO_TYPE)screenScenario);
   } else if (msg == AGORA_IPC_ADJUST_LOOPBACK_RECORDING_SIGNAL_VOLUME) {
     int volume = *payload;
     LOG_F(INFO, "video_source_adjustLoopbackRecordingSignalVolume:%d", volume);
