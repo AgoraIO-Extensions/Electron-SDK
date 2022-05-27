@@ -1,9 +1,3 @@
-//
-//  node_screen_window_info.cpp
-//
-//  Created by suleyu on 2018/8/8.
-//  Copyright © 2018 Agora. All rights reserved.
-//
 
 #include "loguru.hpp"
 #include "node_log.h"
@@ -12,6 +6,7 @@
 #include <CoreGraphics/CoreGraphics.h>
 #include <CoreServices/CoreServices.h>
 #include <ImageIO/ImageIO.h>
+
 
 void copyImageDataToWindowInfo(CGImageRef image, ScreenWindowInfo &windowInfo) {
   int maxSize = IMAGE_MAX_PIXEL_SIZE;
@@ -144,6 +139,11 @@ bool setWindowInfoWithDictionary(ScreenWindowInfo &windowInfo,
 
   windowInfo.width = CGRectGetWidth(bounds);
   windowInfo.height = CGRectGetHeight(bounds);
+  windowInfo.x = bounds.origin.x;
+  windowInfo.y = bounds.origin.y;
+
+  windowInfo.originWidth = CGRectGetWidth(bounds);
+  windowInfo.originHeight = CGRectGetHeight(bounds);
 
   CFStringRef name =
       static_cast<CFStringRef>(CFDictionaryGetValue(windowDic, kCGWindowName));
@@ -157,6 +157,16 @@ bool setWindowInfoWithDictionary(ScreenWindowInfo &windowInfo,
     windowInfo.ownerName = convertCFStringToStdString(ownerName);
   }
 
+  CFNumberRef pid = static_cast<CFNumberRef>(
+      CFDictionaryGetValue(windowDic, kCGWindowOwnerPID));
+
+  if (pid) {
+    int processId = 0;
+    CFNumberGetValue(pid, kCFNumberSInt32Type, &processId);
+    windowInfo.processId = processId;
+  }
+
+  windowInfo.currentProcessId = getpid();
   return true;
 }
 
@@ -227,12 +237,17 @@ std::vector<ScreenDisplayInfo> getAllDisplayInfo() {
   for (uint32_t index = 0; index < displayCount; index++) {
     CGDirectDisplayID displayID = displayIDs[index];
     ScreenDisplayInfo screenDisplay;
-    screenDisplay.displayId.idVal = displayID;
+    screenDisplay.displayId = displayID;
     screenDisplay.width = CGDisplayPixelsWide(displayID);
     screenDisplay.height = CGDisplayPixelsHigh(displayID);
     screenDisplay.isActive = CGDisplayIsActive(displayID);
     screenDisplay.isMain = CGDisplayIsMain(displayID);
     screenDisplay.isBuiltin = CGDisplayIsBuiltin(displayID);
+    CGRect rect = CGDisplayBounds(displayID);
+    screenDisplay.x = rect.origin.x;
+    screenDisplay.y = rect.origin.y;
+    screenDisplay.width = rect.size.width;
+    screenDisplay.height = rect.size.height;
 
     CGImageRef screenshot = CGDisplayCreateImage(displayID);
     if (screenshot) {

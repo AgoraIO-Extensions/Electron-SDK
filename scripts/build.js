@@ -14,7 +14,7 @@ const gyp_exec = `node ${gyp_path}`
 const agora_node_ext_path = `${path.resolve(__dirname, '../build/Release/agora_node_ext.node')}`
 
 module.exports = ({
-  electronVersion='5.0.8',
+  electronVersion='12.0.0',
   runtime='electron',
   platform=process.platform,
   packageVersion,
@@ -84,19 +84,6 @@ module.exports = ({
           if (code !== 0) {
             logger.error(stderr);
             process.exit(1)
-          }
-          
-          if(platform === "darwin") {
-            logger.info(`patch loader path for mac build..`)
-            shell.exec(`install_name_tool -add_rpath "@loader_path" ${agora_node_ext_path}`, {silent}, (code, stdout, stderr) => {
-              if (code !== 0) {
-                logger.error(stderr);
-                process.exit(1)
-              }
-              // handle success
-              logger.info('Build complete')
-              process.exit(0)
-            })
           }
         })
       }

@@ -1,3 +1,7 @@
+## 3.7.202-rc.207-build.527(May 27th, 2022)
+* update native sdk
+* fix getScreenWindowsInfo
+
 ## 3.7.202-rc.206-build.511(May 11th, 2022)
 * update native sdk
 
