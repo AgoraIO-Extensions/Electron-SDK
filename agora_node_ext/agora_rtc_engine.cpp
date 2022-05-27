@@ -4461,6 +4461,22 @@ NAPI_API_DEFINE(NodeRtcEngine, sendCustomReportMessage) {
   if (obj.IsEmpty())                                                           \
     break;
 
+#define NODE_SET_OBJ_PROP_Number(isolate, obj, name, val)                \
+  {                                                                      \
+    Local<Value> propName =                                              \
+        String::NewFromUtf8(isolate, name, NewStringType::kInternalized) \
+            .ToLocalChecked();                                           \
+    Local<Value> propVal = v8::Number::New(isolate, val);                \
+    CHECK_NAPI_OBJ(propVal);                                             \
+    v8::Maybe<bool> ret =                                                \
+        obj->Set(isolate->GetCurrentContext(), propName, propVal);       \
+    if (!ret.IsNothing()) {                                              \
+      if (!ret.ToChecked()) {                                            \
+        break;                                                           \
+      }                                                                  \
+    }                                                                    \
+  }
+
 #define NODE_SET_OBJ_PROP_UINT32(isolate, obj, name, val)                      \
   {                                                                            \
     Local<Value> propName =                                                    \
@@ -4551,10 +4567,15 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenWindowsInfo) {
 #endif
       NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowId", windowId);
       NODE_SET_OBJ_PROP_String(isolate, obj, "name", windowInfo.name.c_str());
-      NODE_SET_OBJ_PROP_String(isolate, obj, "ownerName",
-                               windowInfo.ownerName.c_str());
+      NODE_SET_OBJ_PROP_String(isolate, obj, "ownerName", windowInfo.ownerName.c_str());
       NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", windowInfo.width);
       NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", windowInfo.height);
+      NODE_SET_OBJ_PROP_Number(isolate, obj, "x", windowInfo.x);
+      NODE_SET_OBJ_PROP_Number(isolate, obj, "y", windowInfo.y);
+      NODE_SET_OBJ_PROP_UINT32(isolate, obj, "originWidth", windowInfo.originWidth);
+      NODE_SET_OBJ_PROP_UINT32(isolate, obj, "originHeight", windowInfo.originHeight);
+      NODE_SET_OBJ_PROP_Number(isolate, obj, "processId", windowInfo.processId);
+      NODE_SET_OBJ_PROP_Number(isolate, obj, "currentProcessId", windowInfo.currentProcessId);
 
       if (windowInfo.imageData) {
         buffer_info imageInfo;
@@ -4567,29 +4588,6 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenWindowsInfo) {
 
       infos->Set(context, i, obj);
     }
-#if 0 // APPLE
-                std::vector<ScreenWindowInfo> allWindows = getAllWindowInfo();
-                for (unsigned int i = 0; i < allWindows.size(); ++i) {
-                    ScreenWindowInfo windowInfo = allWindows[i];
-                    Local<v8::Object> obj = Object::New(isolate);
-                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "windowId", windowInfo.windowId);
-                    NODE_SET_OBJ_PROP_String(isolate, obj, "name", windowInfo.name.c_str());
-                    NODE_SET_OBJ_PROP_String(isolate, obj, "ownerName", windowInfo.ownerName.c_str());
-                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", windowInfo.width);
-                    NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", windowInfo.height);
-                    
-                    if (windowInfo.imageData) {
-                        buffer_info imageInfo;
-                        imageInfo.buffer = windowInfo.imageData;
-                        imageInfo.length = windowInfo.imageDataLength;
-                        NODE_SET_OBJ_WINDOWINFO_DATA(isolate, obj, "image", imageInfo);
-                        
-                        free(windowInfo.imageData);
-                    }
-                    
-                    infos->Set(context, i, obj);
-                }
-#endif
 
     napi_set_array_result(args, infos);
   } while (false);
@@ -4612,17 +4610,14 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenDisplaysInfo) {
     for (unsigned int i = 0; i < allDisplays.size(); ++i) {
       ScreenDisplayInfo displayInfo = allDisplays[i];
       Local<v8::Object> obj = Object::New(isolate);
-      ScreenIDType displayId = displayInfo.displayId;
+      
       Local<v8::Object> displayIdObj = Object::New(isolate);
-#ifdef _WIN32
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "x", displayId.x);
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "y", displayId.y);
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "width", displayId.width);
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "height",
-                               displayId.height);
-#elif defined(__APPLE__)
-      NODE_SET_OBJ_PROP_UINT32(isolate, displayIdObj, "id", displayId.idVal);
-#endif
+      NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "x", displayInfo.x);
+      NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "y", displayInfo.y);
+      NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "width", displayInfo.width);
+      NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "height",
+        displayInfo.height);
+      NODE_SET_OBJ_PROP_Number(isolate, displayIdObj, "id", displayInfo.displayId);
       Local<Value> propName = String::NewFromUtf8(isolate, "displayId",
                                                   NewStringType::kInternalized)
                                   .ToLocalChecked();
@@ -4630,6 +4625,8 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenDisplaysInfo) {
 
       NODE_SET_OBJ_PROP_UINT32(isolate, obj, "width", displayInfo.width);
       NODE_SET_OBJ_PROP_UINT32(isolate, obj, "height", displayInfo.height);
+      NODE_SET_OBJ_PROP_Number(isolate, obj, "x", displayInfo.x);
+      NODE_SET_OBJ_PROP_Number(isolate, obj, "y", displayInfo.y);
       NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isMain", displayInfo.isMain);
       NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isActive", displayInfo.isActive);
       NODE_SET_OBJ_PROP_BOOL(isolate, obj, "isBuiltin", displayInfo.isBuiltin);
@@ -4649,7 +4646,6 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenDisplaysInfo) {
   } while (false);
   LOG_LEAVE;
 }
-
 NAPI_API_DEFINE(NodeRtcEngine, getVideoCapability) {
   LOG_ENTER;
   int result = -1;
@@ -5140,8 +5136,6 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByScreen) {
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
 
-    // screenId
-    ScreenIDType screen;
 #ifdef _WIN32
     if (!args[0]->IsObject()) {
       status = napi_invalid_arg;
@@ -5164,8 +5158,8 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByScreen) {
     status = napi_get_object_property_int32_(isolate, screenRectObj, "height",
                                              screenRect.height);
     CHECK_NAPI_STATUS(pEngine, status);
-    screen = screenRect;
 #elif defined(__APPLE__)
+    uint32_t displayID;
     if (!args[0]->IsObject()) {
       status = napi_invalid_arg;
       CHECK_NAPI_STATUS(pEngine, status);
@@ -5173,8 +5167,7 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByScreen) {
     Local<Object> displayIdObj;
     status = napi_get_value_object_(isolate, args[0], displayIdObj);
     CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_uint32_(isolate, displayIdObj, "id",
-                                              screen.idVal);
+    status = napi_get_object_property_uint32_(isolate, displayIdObj, "id", displayID);
     CHECK_NAPI_STATUS(pEngine, status);
 #endif
 
@@ -5230,10 +5223,10 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByScreen) {
 
 #if defined(_WIN32)
     result = pEngine->m_engine->startScreenCaptureByScreenRect(
-        screen, regionRect, captureParams);
+        screenRect, regionRect, captureParams);
 #elif defined(__APPLE__)
     result = pEngine->m_engine->startScreenCaptureByDisplayId(
-        screen.idVal, regionRect, captureParams);
+        displayID, regionRect, captureParams);
 #endif
   } while (false);
   napi_set_int_result(args, result);

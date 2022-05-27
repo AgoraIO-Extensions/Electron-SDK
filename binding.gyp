@@ -166,7 +166,14 @@
                     'CoreAudio.framework',
                     'Foundation.framework',
                     'AVFoundation.framework'
-                    ]
+                    ],
+                    "xcode_settings": {
+                        "OTHER_LDFLAGS": [
+                            "-Wl",
+                            "-rpath",
+                            "@loader_path"
+                            ]
+                    }
                 },
                 'sources': [
                     './common/node_process_unix.cpp',
