@@ -373,6 +373,7 @@ export abstract class IAudioFrameObserverBase {
 }
 
 export abstract class IAudioFrameObserver extends IAudioFrameObserverBase {
+  // @ts-ignore
   onPlaybackAudioFrameBeforeMixing?(channelId: string, uid: number, audioFrame: AudioFrame): boolean;
 }
 

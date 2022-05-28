@@ -54,12 +54,6 @@ napi_ref* NodeIrisRtcEngine::_ref_construcotr_ptr = nullptr;
 NodeIrisRtcEngine::NodeIrisRtcEngine() {
   LOG_F(INFO, "NodeIrisRtcEngine::NodeIrisRtcEngine()");
   // ::UseJsonArray();
-  // main_process
-  _iris_api_engine = std::make_shared<IrisApiEngine>();
-  _iris_video_frame_buffer_manager = std::make_shared<iris::IrisVideoFrameBufferManager>();
-  _iris_event_handler = std::make_shared<NodeIrisEventHandler>();
-  _iris_api_engine->SetIrisRtcEngineEventHandler(_iris_event_handler.get());
-  _iris_api_engine->Attach(_iris_video_frame_buffer_manager.get());
 }
 
 NodeIrisRtcEngine::~NodeIrisRtcEngine() {
@@ -77,11 +71,12 @@ napi_value NodeIrisRtcEngine::Init(napi_env env, napi_value exports) {
       DECLARE_NAPI_METHOD("DisableVideoFrameCache", DisableVideoFrameCache),
       DECLARE_NAPI_METHOD("GetVideoStreamData", GetVideoStreamData),
       DECLARE_NAPI_METHOD("SetAddonLogFile", SetAddonLogFile),
-      DECLARE_NAPI_METHOD("Release", Release)};
+      DECLARE_NAPI_METHOD("InitializeEnv", InitializeEnv),
+      DECLARE_NAPI_METHOD("ReleaseEnv", ReleaseEnv)};
 
   napi_value cons;
   status = napi_define_class(env, _class_name, NAPI_AUTO_LENGTH, New, nullptr,
-                             12, properties, &cons);
+                             10, properties, &cons);
   assert(status == napi_ok);
 
   // #if NAPI_VERSION >= 6
@@ -161,8 +156,8 @@ void NodeIrisRtcEngine::Destructor(napi_env env,
 
 napi_value NodeIrisRtcEngine::CallApi(napi_env env, napi_callback_info info) {
   napi_status status;
-  size_t argc = 2;
-  napi_value args[2];
+  size_t argc = 4;
+  napi_value args[4];
   napi_value jsthis;
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
   assert(status == napi_ok);
@@ -544,7 +539,7 @@ napi_value NodeIrisRtcEngine::GetVideoStreamData(napi_env env,
   return retObj;
 }
 
-napi_value NodeIrisRtcEngine::Release(napi_env env, napi_callback_info info) {
+napi_value NodeIrisRtcEngine::InitializeEnv(napi_env env, napi_callback_info info){
   napi_status status;
   napi_value jsthis;
   size_t argc = 2;
@@ -554,15 +549,51 @@ napi_value NodeIrisRtcEngine::Release(napi_env env, napi_callback_info info) {
   NodeIrisRtcEngine* nodeIrisRtcEngine;
   status =
       napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
-  nodeIrisRtcEngine->_iris_api_engine->Detach(nodeIrisRtcEngine->_iris_video_frame_buffer_manager.get());
-  nodeIrisRtcEngine->_iris_event_handler.reset();
-  // nodeIrisRtcEngine->_iris_raw_data_plugin_manager = nullptr;
-  // nodeIrisRtcEngine->_iris_raw_data = nullptr;
-  // nodeIrisRtcEngine->_iris_engine.reset();
-  nodeIrisRtcEngine->_iris_video_frame_buffer_manager.reset();
   
-  LOG_F(INFO, "NodeIrisRtcEngine::Release done");
+  //create
+  auto engine = std::make_shared<IrisApiEngine>();
+  auto buffer_manager = std::make_shared<iris::IrisVideoFrameBufferManager>();
+  auto eventHandler = std::make_shared<NodeIrisEventHandler>();
+  
+  //combine
+  engine.get()->SetIrisRtcEngineEventHandler(eventHandler.get());
+  engine.get()->Attach(buffer_manager.get());
+  
+  //assign
+  nodeIrisRtcEngine->_iris_api_engine = engine;
+  nodeIrisRtcEngine->_iris_video_frame_buffer_manager = buffer_manager;
+  nodeIrisRtcEngine->_iris_event_handler = eventHandler;
+  
+  LOG_F(INFO, "NodeIrisRtcEngine::InitializeEnv");
+  napi_value retValue = nullptr;
+  return retValue;
+}
+napi_value NodeIrisRtcEngine::ReleaseEnv(napi_env env, napi_callback_info info) {
+  napi_status status;
+  napi_value jsthis;
+  size_t argc = 2;
+  napi_value args[2];
+  status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
 
+  NodeIrisRtcEngine* nodeIrisRtcEngine;
+  status =
+      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
+  
+  //define
+  auto engine = nodeIrisRtcEngine->_iris_api_engine;
+  auto buffer_manager = nodeIrisRtcEngine->_iris_video_frame_buffer_manager;
+  auto eventHandler = nodeIrisRtcEngine->_iris_event_handler;
+  
+  //uncontrol
+  engine->Detach(buffer_manager.get());
+  engine.get()->UnsetIrisRtcEngineEventHandler(eventHandler.get());
+  
+  //reset
+  eventHandler.reset();
+  buffer_manager.reset();
+  engine.reset();
+  
+  LOG_F(INFO, "NodeIrisRtcEngine::ReleaseEnv");
   napi_value retValue = nullptr;
   return retValue;
 }
