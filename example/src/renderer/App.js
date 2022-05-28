@@ -186,7 +186,6 @@ export default class App extends Component {
 
   onPressSetViewForFirstCamera = () => {
     const { isSetFirstCameraView } = this.state;
-    // rtcEngine.setRenderMode(2);
     let dom = document.getElementById("firstCamera");
     let domAppend = document.getElementById("firstCamera-append");
     rtcEngine.setView({
@@ -729,7 +728,6 @@ export default class App extends Component {
               height: 250,
               background: "green",
               display: "block",
-              overflow: "hidden",
             }}
             video-source-type={VideoSourceType.VideoSourceCamera}
             uid={0}
