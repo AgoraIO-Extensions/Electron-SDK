@@ -1,5 +1,6 @@
 ﻿import { VideoSourceType } from "./AgoraSdk";
 import { RtcEngineContext } from "./Private/IAgoraRtcEngine";
+import { IRtcEngineExImpl } from "./Private/impl/IAgoraRtcEngineExImpl";
 import { IRtcEngineImpl } from "./Private/impl/IAgoraRtcEngineImpl";
 import { getBridge, sendMsg } from "./Private/internal/IrisApiEngine";
 import { RendererManager } from "./Renderer/RendererManager";
@@ -20,7 +21,7 @@ import {
 /**
  * The AgoraRtcEngine class.
  */
-export class AgoraRtcEngine extends IRtcEngineImpl {
+export class AgoraRtcEngine extends IRtcEngineExImpl {
   // _rtcDeviceManager: NodeIrisRtcDeviceManager;
 
   engineId = `${parseInt(`${Math.random() * 100000}`)}`;

@@ -14,26 +14,26 @@ import AgoraRtcEngine, {
 } from "../../../";
 
 import { APP_ID } from "../utils/settings";
-
-let rtcEngine;
+const rtcEngine = new AgoraRtcEngine();
+window.rtcEngine = rtcEngine;
 class RemoteWindow extends Component {
   constructor(props) {
     super(props);
   }
 
   componentDidMount() {
-    const { uid, channelId } = this.props;
-    const id = `remoteVideo-${uid}`;
-    let dom = document.getElementById(id);
-    setTimeout(() => {
-      rtcEngine.setView({
-        videoSourceType: VideoSourceType.kVideoSourceTypeRemote,
-        uid,
-        channelId,
-        view: dom,
-        rendererOptions: { mirror: true, contentMode: 1 },
-      });
-    }, 1000);
+    // const { uid, channelId } = this.props;
+    // const id = `remoteVideo-${uid}`;
+    // let dom = document.getElementById(id);
+    // setTimeout(() => {
+    //   rtcEngine.setView({
+    //     videoSourceType: VideoSourceType.kVideoSourceTypeRemote,
+    //     uid,
+    //     channelId,
+    //     view: dom,
+    //     rendererOptions: { mirror: true, contentMode: 1 },
+    //   });
+    // }, 1000);
   }
   componentWillUnmount() {
     const { uid, channelId } = this.props;
@@ -80,12 +80,10 @@ export default class App extends Component {
   }
 
   onPressInitialize = () => {
-    if (rtcEngine) {
+    console.log("onPressInitialize", rtcEngine);
+    if (!rtcEngine) {
       return;
     }
-    rtcEngine = window.rtcEngine = new AgoraRtcEngine();
-
-    window.rtcEngine = rtcEngine;
 
     let res = rtcEngine.initialize({
       appId: APP_ID,
@@ -131,7 +129,7 @@ export default class App extends Component {
     const ver = rtcEngine.getVersion();
     console.log("getVersion", ver);
     rtcEngine.startPreview();
-    rtcEngine.registerEventHandler(this);
+    // rtcEngine.registerEventHandler(this);
   };
   subscribeEvent = () => {
     rtcEngine.on(EngineEvents.ERROR, (...args) => {
@@ -172,15 +170,7 @@ export default class App extends Component {
   };
   onPressJoin = () => {
     const { channelId } = this.state;
-    let res = rtcEngine.joinChannel(null, channelId, "", window.uid || 10001, {
-      autoSubscribeAudio: true,
-      autoSubscribeVideo: true,
-      publishAudioTrack: true,
-      publishCameraTrack: true,
-      publishScreenTrack: true,
-      clientRoleType: CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER,
-      channelProfile: CHANNEL_PROFILE_TYPE.CHANNEL_PROFILE_LIVE_BROADCASTING,
-    });
+    let res = rtcEngine.joinChannel("", channelId, "", window.uid || 10001);
     console.log("joinChannel", res);
   };
   onPressRelease = () => {
