@@ -7,7 +7,6 @@ import {
   CONTENT_MODE,
 } from "../Renderer/type";
 
-
 export const TAG = "[Agora]: ";
 export const DEBUG_TAG = "[Agora]: ";
 
@@ -151,3 +150,29 @@ export const getRendererConfigInternal = (
 export const EVENT_ENGINE_INITIALIZE = "onEngineInitialize";
 export const EVENT_ENGINE_RELEASE = "onEngineRelease";
 export const agoraEventEmitter = new EventEmitter();
+
+export function classMix(...mixins: any[]): any {
+  class MixClass {
+    constructor() {
+      for (let mixin of mixins) {
+        copyProperties(this, new mixin()); // 拷贝实例属性
+      }
+    }
+  }
+
+  for (let mixin of mixins) {
+    copyProperties(MixClass, mixin); // 拷贝静态属性
+    copyProperties(MixClass.prototype, mixin.prototype); // 拷贝原型属性
+  }
+
+  return MixClass;
+}
+
+function copyProperties<T>(target: T, source: any) {
+  for (let key of Reflect.ownKeys(source)) {
+    if (key !== "constructor" && key !== "prototype" && key !== "name") {
+      let desc = Object.getOwnPropertyDescriptor(source, key)!;
+      Object.defineProperty(target, key, desc);
+    }
+  }
+}

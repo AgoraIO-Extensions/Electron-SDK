@@ -1,28 +1,44 @@
-﻿
-import { VideoSourceType } from "./AgoraSdk";
+﻿import { VideoSourceType } from "./AgoraSdk";
 import { RtcEngineContext } from "./Private/IAgoraRtcEngine";
-import { IRtcEngineImpl } from './Private/impl/IAgoraRtcEngineImpl';
+import { IRtcEngineImpl } from "./Private/impl/IAgoraRtcEngineImpl";
 import { getBridge, sendMsg } from "./Private/internal/IrisApiEngine";
 import { RendererManager } from "./Renderer/RendererManager";
 import {
-  Channel, RendererConfig, RendererConfigInternal, RENDER_MODE
+  Channel,
+  CONTENT_MODE,
+  RendererConfig,
+  RendererConfigInternal,
+  RENDER_MODE,
 } from "./Renderer/type";
 import {
+  classMix,
   formatVideoFrameBufferConfig,
-  getRendererConfigInternal, logInfo, logWarn
+  getRendererConfigInternal,
+  logInfo,
+  logWarn,
 } from "./Utils";
 
+// class AgoraRenderAPI {
+//   _rendererManager?: RendererManager;
+//   constructor() {
+//     logInfo("AgoraRtcEngine constructor()");
+    
+//   }
+  
+// }
 
 /**
  * The AgoraRtcEngine class.
  */
-export class AgoraRtcEngine extends IRtcEngineImpl {
+export class AgoraRtcEngine extends IRtcEngineImpl{
   // _rtcDeviceManager: NodeIrisRtcDeviceManager;
   _rendererManager?: RendererManager;
+
   engineId = `${parseInt(`${Math.random() * 100000}`)}`;
 
   constructor() {
     super();
+    this._rendererManager = new RendererManager();
     logInfo("AgoraRtcEngine constructor()");
     // this._rtcDeviceManager = this._rtcEngine.GetDeviceManager();
 
@@ -47,66 +63,6 @@ export class AgoraRtcEngine extends IRtcEngineImpl {
     //   filter: this.engineFilterEventWithBuffer,
     // })
     // this._rendererManager = new RendererManager(this._rtcEngine);
-  }
-
-
-  // initialize(context: RtcEngineContext): number {
-  //   AgoraView.rtcEngine = this;
-  //   agoraEventEmitter.emit(EVENT_ENGINE_INITIALIZE, this);
-  //   const ret = this._rtcEngine.CallApi(
-  //     ApiTypeEngine.kEngineInitialize,
-  //     JSON.stringify({ context })
-  //   );
-
-  //   this._rendererManager?.startRenderer();
-  //   return ret.retCode;
-  // }
-
-  /**
-   * Decide whether to use webgl/software/custom rendering.
-   * @param {RENDER_MODE} mode:
-   * - 1 for old webgl rendering.
-   * - 2 for software rendering.
-   * - 3 for custom rendering.
-   */
-  setRenderMode(mode: RENDER_MODE): void {
-    this._rendererManager?.setRenderMode(mode);
-  }
-
-  /**
-   * @private
-   * @ignore
-   * check if WebGL will be available with appropriate features
-   * @return {boolean}
-   */
-  _checkWebGL(): boolean {
-    let gl;
-    const canvas = document.createElement("canvas");
-    canvas.width = 1;
-    canvas.height = 1;
-    const options = {
-      // Turn off things we don't need
-      alpha: false,
-      depth: false,
-      stencil: false,
-      antialias: false,
-      preferLowPowerToHighPerformance: true,
-    };
-
-    try {
-      gl =
-        canvas.getContext("webgl", options) ||
-        canvas.getContext("experimental-webgl", options);
-    } catch (e) {
-      logWarn("webGL not support");
-      return false;
-    }
-
-    if (gl) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   // /**
@@ -230,42 +186,6 @@ export class AgoraRtcEngine extends IRtcEngineImpl {
   //   }
   // };
 
-  setView(rendererConfig: RendererConfig): void {
-    const config: RendererConfigInternal =
-      getRendererConfigInternal(rendererConfig);
-
-    if (rendererConfig.view) {
-      this._rendererManager?.setRenderer(config);
-    } else {
-      logWarn("Note: setView view is null!");
-      this._rendererManager?.removeRendererByConfig(config);
-    }
-  }
-  destroyRendererByView(view: Element): void {
-    this._rendererManager?.removeRendererByView(view);
-  }
-
-  /**
-   * Destroys the renderer.
-   * @param key Key for the map that store the renderers,
-   * e.g, `uid` or `videosource` or `local`.
-   * @param onFailure The error callback for the {@link destroyRenderer}
-   * method.
-   */
-  destroyRendererByConfig(
-    videoSourceType: VideoSourceType,
-    channelId?: Channel,
-    uid?: number
-  ) {
-    const config = formatVideoFrameBufferConfig(
-      videoSourceType,
-      channelId,
-      uid
-    );
-    this._rendererManager?.removeRendererByConfig(config);
-  }
-
-
   // override initialize(context: RtcEngineContext): number {
   //   const apiType = 'RtcEngine_initialize'
   //   const jsonParams = {
@@ -290,4 +210,80 @@ export class AgoraRtcEngine extends IRtcEngineImpl {
   //   bridge.sendMsg(apiType, jsonParams);
   //   bridge.ReleaseEnv();
   // }
+
+  setView(rendererConfig: RendererConfig): void {
+    const config: RendererConfigInternal =
+      getRendererConfigInternal(rendererConfig);
+
+    if (rendererConfig.view) {
+      this._rendererManager?.setRenderer(config);
+    } else {
+      logWarn("Note: setView view is null!");
+      this._rendererManager?.removeRendererByConfig(config);
+    }
+  }
+  destroyRendererByView(view: Element): void {
+    this._rendererManager?.removeRendererByView(view);
+  }
+
+  destroyRendererByConfig(
+    videoSourceType: VideoSourceType,
+    channelId?: Channel,
+    uid?: number
+  ) {
+    const config = formatVideoFrameBufferConfig(
+      videoSourceType,
+      channelId,
+      uid
+    );
+    this._rendererManager?.removeRendererByConfig(config);
+  }
+
+  setRenderOption(
+    view: HTMLElement,
+    contentMode = CONTENT_MODE.FIT,
+    mirror: boolean = false
+  ): void {
+    this._rendererManager?.setRenderOption(view, contentMode, mirror);
+  }
+
+  setRenderMode(mode: RENDER_MODE): void {
+    this._rendererManager?.setRenderMode(mode);
+  }
+
+  /**
+   * @private
+   * @ignore
+   * check if WebGL will be available with appropriate features
+   * @return {boolean}
+   */
+  _checkWebGL(): boolean {
+    let gl;
+    const canvas = document.createElement("canvas");
+    canvas.width = 1;
+    canvas.height = 1;
+    const options = {
+      // Turn off things we don't need
+      alpha: false,
+      depth: false,
+      stencil: false,
+      antialias: false,
+      preferLowPowerToHighPerformance: true,
+    };
+
+    try {
+      gl =
+        canvas.getContext("webgl", options) ||
+        canvas.getContext("experimental-webgl", options);
+    } catch (e) {
+      logWarn("webGL not support");
+      return false;
+    }
+
+    if (gl) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

@@ -28,7 +28,6 @@ export type User = "local" | "videoSource" | number | string;
 
 export type Channel = "" | string;
 
-
 export interface RendererConfig {
   videoSourceType: VideoSourceType;
   channelId?: Channel;
@@ -44,4 +43,58 @@ export interface RendererConfigInternal {
   rendererOptions: RendererOptions;
 }
 
+export interface VideoFrameCacheConfig {
+  uid: number;
+  channelId: string;
+  videoSourceType: VideoSourceType;
+  width?: number;
+  height?: number;
+}
+export interface VideoFrame {
+  width: number;
+  height: number;
+  yStride: number;
+  yBuffer: Buffer | Uint8Array;
+  uBuffer: Buffer | Uint8Array;
+  vBuffer: Buffer | Uint8Array;
+  mirror?: boolean;
+  rotation?: number;
+  uid?: number;
+  channelId?: string;
+  videoSourceType: VideoSourceType;
+}
+export interface Result {
+  retCode: number;
+  result: string;
+}
+export interface AgoraElectronBridge {
+  OnEvent(callbackName: string, callback: Function): void;
+  CallApi(
+    funcName: string,
+    params: any,
+    buffer?: ArrayBufferLike,
+    bufferCount?: number
+  ): Result;
+  InitializeEnv(): void;
+  ReleaseEnv(): void;
 
+  sendMsg: (
+    funcName: string,
+    params: any,
+    buffer?: ArrayBufferLike,
+    bufferCount?: number
+  ) => any;
+
+  // PluginCallApi(apiType: ApiTypeRawDataPluginManager, params: string): Result;
+  EnableVideoFrameCache(config: VideoFrameCacheConfig): Result;
+  DisableVideoFrameCache(config: VideoFrameCacheConfig): Result;
+  GetVideoStreamData(streamInfo: VideoFrame): {
+    ret: boolean;
+    isNewFrame: boolean;
+    yStride: number;
+    width: number;
+    height: number;
+    rotation: number;
+    timestamp: number;
+  };
+}
