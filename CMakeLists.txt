@@ -72,23 +72,11 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
             ${AGORA_IRIS_SDK_PATH}/*.framework
             )
 
-    set(AGORA_RTC_SDK_HEADER_FILE_DIR
-            ${AGORA_RTC_SDK_PATH}/AgoraRtcKit.framework/Headers
-            )
     # iris sdk include file
     set(AGORA_IRIS_SDK_HEADER_FILE_DIR
             ${AGORA_IRIS_SDK_PATH}/AgoraRtcWrapper.framework/Headers
             )
-    set(AGORA_RTC_FRAMEWORKS
-            "-framework Agoraffmpeg"
-            "-framework AgoraDav1dExtension"
-            "-framework AgoraPvcExtension"
-            "-framework AgoraVideoProcessExtension"
-            "-framework AgoraVideoSegmentationExtension"
-            "-framework AgoraRtcKit"
-            "-framework AgoraRTE"
-            "-framework av1"
-            )
+
     set(AGORA_IRIS_FRAMEWORKS
             "-framework AgoraRtcWrapper"
             )
@@ -136,9 +124,6 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
             ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/include
             )
 
-    set(AGORA_RTC_SDK_HEADER_FILE_DIR
-            ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_FULL/${AGORA_RTC_PROJECT_ARCH}/rtc/sdk/high_level_api/include
-            )
     set(AGORA_IRIS_SDK_LIB
             ${AGORA_IRIS_SDK_PATH}/${AGORA_DCG_SDK_ARCH_FILE_NAME}/AgoraRtcWrapper.lib
             )
@@ -160,9 +145,6 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
             ${AGORA_RTC_SDK_PATH}/x86_64/*.so
             )
 
-    set(AGORA_RTC_SDK_HEADER_FILE_DIR
-            ${AGORA_RTC_SDK_PATH}/high_level_api/include
-            )
     # iris sdk path
     set(AGORA_IRIS_SDK_PATH
             ${CMAKE_CURRENT_SOURCE_DIR}/iris
@@ -178,9 +160,6 @@ endif ()
  message(=====iris include ===== ${AGORA_IRIS_SDK_HEADER_FILE_DIR} )
  message(=======iris windows lib= IRIs == ${AGORA_IRIS_SDK_LIB})
 
-file(GLOB COMMON_FILE1
-        ${AGORA_RTC_SDK_HEADER_FILE_DIR}/*.h
-        )
 file(GLOB COMMON_FILE2
         ${AGORA_IRIS_SDK_HEADER_FILE_DIR}/*.h
         )
@@ -188,7 +167,6 @@ file(GLOB COMMON_FILE2
 function(build_target_agora_node_ext)
     if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
         add_library(${AGORA_NODE_EXT_NAME} SHARED
-                ${COMMON_FILE1}
                 ${COMMON_FILE2}
                 ${COMMON_FILE}
                 ${COMMON_RAW_DATA_FILE}
@@ -200,7 +178,6 @@ function(build_target_agora_node_ext)
                 LINK_FLAGS "-Wl -F ${AGORA_RTC_SDK_PATH} -F ${AGORA_IRIS_SDK_PATH} -rpath @loader_path"
                 )
         target_link_libraries(${AGORA_NODE_EXT_NAME}
-                ${AGORA_RTC_FRAMEWORKS}
                 ${AGORA_IRIS_FRAMEWORKS}
                 ${SYSTEM_FRAMEWORK}
                 ${CMAKE_JS_LIB}
@@ -214,7 +191,6 @@ function(build_target_agora_node_ext)
                 ${CMAKE_JS_SRC}
                 )
         target_link_libraries(${AGORA_NODE_EXT_NAME}
-                ${AGORA_RTC_SDK_LIB}
                 ${AGORA_IRIS_SDK_LIB}
                 ${CMAKE_JS_LIB}
                 gdiplus.lib
@@ -234,7 +210,6 @@ function(build_target_agora_node_ext)
         )
 
         add_library(${AGORA_NODE_EXT_NAME} SHARED
-                ${COMMON_FILE1}
                 ${COMMON_FILE2}
                 ${COMMON_FILE}
                 ${COMMON_RAW_DATA_FILE}
