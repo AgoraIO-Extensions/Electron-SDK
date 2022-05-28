@@ -40,7 +40,8 @@ class NodeIrisRtcEngine {
                                            napi_callback_info info);
   static napi_value GetVideoStreamData(napi_env env, napi_callback_info info);
   static napi_value SetAddonLogFile(napi_env env, napi_callback_info info);
-  static napi_value Release(napi_env env, napi_callback_info info);
+  static napi_value InitializeEnv(napi_env env, napi_callback_info info);
+  static napi_value ReleaseEnv(napi_env env, napi_callback_info info);
   void OnApiError(const char* errorMessage);
 
   napi_env _env;
@@ -48,7 +49,7 @@ class NodeIrisRtcEngine {
 
   static const char* _class_name;
 
- private:
+ public:
   static napi_ref* _ref_construcotr_ptr;
   static const char* _ret_code_str;
   static const char* _ret_result_str;

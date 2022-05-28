@@ -1,13 +1,12 @@
 import { EventEmitter } from "events";
+import { VideoSourceType } from "../AgoraSdk";
 
 import {
-  VideoSourceType,
   RendererConfigInternal,
   RendererConfig,
   CONTENT_MODE,
 } from "../Renderer/type";
 
-import { EngineEvents } from "../Common/JSEvents";
 
 export const TAG = "[Agora]: ";
 export const DEBUG_TAG = "[Agora]: ";
@@ -67,33 +66,33 @@ interface ForwardEventParam {
 }
 const onApiErrorEventName = "onApiError";
 
-export const forwardEvent = ({
-  event: { eventName, params, buffer, changeNameHandler },
-  fire,
-  filter,
-}: ForwardEventParam) => {
-  if (eventName === onApiErrorEventName) {
-    console.error(eventName, params);
-    fire(EngineEvents.API_ERROR, params);
-    return;
-  }
-  try {
-    const _params = JSON.parse(params);
-    const isFilter = filter(eventName, _params, buffer);
-    if (isFilter || !fire) {
-      return;
-    }
-    const finalEventName = changeNameHandler(eventName);
+// export const forwardEvent = ({
+//   event: { eventName, params, buffer, changeNameHandler },
+//   fire,
+//   filter,
+// }: ForwardEventParam) => {
+//   if (eventName === onApiErrorEventName) {
+//     console.error(eventName, params);
+//     fire(EngineEvents.API_ERROR, params);
+//     return;
+//   }
+//   try {
+//     const _params = JSON.parse(params);
+//     const isFilter = filter(eventName, _params, buffer);
+//     if (isFilter || !fire) {
+//       return;
+//     }
+//     const finalEventName = changeNameHandler(eventName);
 
-    fire(finalEventName, ..._params);
-    fire(finalEventName.toLocaleLowerCase(), ..._params);
-  } catch (error) {
-    console.error(
-      `forwardEvent eventName:${eventName}  params:${params}  error:`,
-      error
-    );
-  }
-};
+//     fire(finalEventName, ..._params);
+//     fire(finalEventName.toLocaleLowerCase(), ..._params);
+//   } catch (error) {
+//     console.error(
+//       `forwardEvent eventName:${eventName}  params:${params}  error:`,
+//       error
+//     );
+//   }
+// };
 
 export const formatVideoFrameBufferConfig = (
   videoSourceType: VideoSourceType,
@@ -111,14 +110,14 @@ export const formatVideoFrameBufferConfig = (
   let channelId = originChannelId;
 
   switch (videoSourceType) {
-    case VideoSourceType.kVideoSourceTypeCameraPrimary:
-    case VideoSourceType.kVideoSourceTypeCameraSecondary:
-    case VideoSourceType.kVideoSourceTypeScreenPrimary:
-    case VideoSourceType.kVideoSourceTypeScreenSecondary:
+    case VideoSourceType.VideoSourceCamera:
+    case VideoSourceType.VideoSourceCameraPrimary:
+    case VideoSourceType.VideoSourceScreen:
+    case VideoSourceType.VideoSourceScreenSecondary:
       channelId = "";
       uid = 0;
       break;
-    case VideoSourceType.kVideoSourceTypeRemote:
+    case VideoSourceType.VideoSourceRemote:
       if (!uid || !channelId) {
         throw new Error(`must have uid:${uid}}  channelId:${channelId}`);
       }

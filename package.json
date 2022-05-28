@@ -7,7 +7,7 @@
   "author": "agora.io",
   "gypfile": true,
   "scripts": {
-    "install": "cross-env-shell gulp NPM_Install --INIT_CWD=$INIT_CWD",
+    "install": "pwd",
     "totalBuild": "cross-env-shell gulp totalBuild --INIT_CWD=$INIT_CWD",
     "build": "cross-env-shell gulp build --INIT_CWD=$INIT_CWD",
     "clean": "cross-env-shell gulp clean --INIT_CWD=$INIT_CWD",
@@ -32,7 +32,6 @@
   },
   "dependencies": {
     "bindings": "1.2.1",
-    "bluebird": "^3.7.2",
     "cross-env": "^7.0.3",
     "download": "^8.0.0",
     "extract-zip": "^2.0.1",
@@ -57,7 +56,6 @@
     "gulpfile.*",
     "agora_node_ext",
     "common",
-    "video_source",
     "extra"
   ],
   "devDependencies": {
