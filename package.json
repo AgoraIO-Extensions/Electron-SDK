@@ -26,7 +26,7 @@
   },
   "agora_electron": {
     "iris_sdk_win": "http://192.168.99.149:8086/CSDC_repo/iris_0.0.0_DCG_Windows_20220215_0857.zip",
-    "iris_sdk_mac": "http://192.168.99.149:8086/CSDC_repo/iris_0.0.0_DCG_Mac_20220524_0329.zip",
+    "iris_sdk_mac": "http://192.168.99.149:8086/CSDC_repo/iris_0.0.0_DCG_Mac_20220527_0101.zip",
     "no_symbol": true,
     "prebuilt": true
   },

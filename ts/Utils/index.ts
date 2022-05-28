@@ -5,7 +5,7 @@ import {
   RendererConfigInternal,
   RendererConfig,
   CONTENT_MODE,
-} from "../Renderer/type";
+} from "../types";
 
 export const TAG = "[Agora]: ";
 export const DEBUG_TAG = "[Agora]: ";

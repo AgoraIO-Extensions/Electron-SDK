@@ -7,7 +7,7 @@
 import { AgoraRtcEngine } from "./AgoraRtcEngine";
 import "./Api/AgoraRtcEngineEvent";
 import "./Renderer/AgoraView";
-export * from "./Renderer/type";
+export * from "./types";
 export * from "./Private/AgoraBase";
 
 export default AgoraRtcEngine;

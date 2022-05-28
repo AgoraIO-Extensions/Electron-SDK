@@ -9,7 +9,7 @@ import {
   RendererConfig,
   RendererConfigInternal,
   RENDER_MODE,
-} from "./Renderer/type";
+} from "./types";
 import {
   classMix,
   formatVideoFrameBufferConfig,
@@ -18,19 +18,92 @@ import {
   logWarn,
 } from "./Utils";
 
-// class AgoraRenderAPI {
-//   _rendererManager?: RendererManager;
-//   constructor() {
-//     logInfo("AgoraRtcEngine constructor()");
-    
-//   }
-  
-// }
+class AgoraRenderAPI {
+  _rendererManager?: RendererManager;
+  constructor() {
+    this._rendererManager = new RendererManager();
+  }
+   setView(rendererConfig: RendererConfig): void {
+    const config: RendererConfigInternal =
+      getRendererConfigInternal(rendererConfig);
+
+    if (rendererConfig.view) {
+      this._rendererManager?.setRenderer(config);
+    } else {
+      logWarn("Note: setView view is null!");
+      this._rendererManager?.removeRendererByConfig(config);
+    }
+  }
+  destroyRendererByView(view: Element): void {
+    this._rendererManager?.removeRendererByView(view);
+  }
+
+  destroyRendererByConfig(
+    videoSourceType: VideoSourceType,
+    channelId?: Channel,
+    uid?: number
+  ) {
+    const config = formatVideoFrameBufferConfig(
+      videoSourceType,
+      channelId,
+      uid
+    );
+    this._rendererManager?.removeRendererByConfig(config);
+  }
+
+  setRenderOption(
+    view: HTMLElement,
+    contentMode = CONTENT_MODE.FIT,
+    mirror: boolean = false
+  ): void {
+    this._rendererManager?.setRenderOption(view, contentMode, mirror);
+  }
+
+  setRenderMode(mode: RENDER_MODE): void {
+    this._rendererManager?.setRenderMode(mode);
+  }
+
+  /**
+   * @private
+   * @ignore
+   * check if WebGL will be available with appropriate features
+   * @return {boolean}
+   */
+  _checkWebGL(): boolean {
+    let gl;
+    const canvas = document.createElement("canvas");
+    canvas.width = 1;
+    canvas.height = 1;
+    const options = {
+      // Turn off things we don't need
+      alpha: false,
+      depth: false,
+      stencil: false,
+      antialias: false,
+      preferLowPowerToHighPerformance: true,
+    };
+
+    try {
+      gl =
+        canvas.getContext("webgl", options) ||
+        canvas.getContext("experimental-webgl", options);
+    } catch (e) {
+      logWarn("webGL not support");
+      return false;
+    }
+
+    if (gl) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+}
 
 /**
  * The AgoraRtcEngine class.
  */
-export class AgoraRtcEngine extends IRtcEngineImpl{
+export class AgoraRtcEngine extends IRtcEngineImpl {
   // _rtcDeviceManager: NodeIrisRtcDeviceManager;
   _rendererManager?: RendererManager;
 
@@ -38,7 +111,7 @@ export class AgoraRtcEngine extends IRtcEngineImpl{
 
   constructor() {
     super();
-    this._rendererManager = new RendererManager();
+
     logInfo("AgoraRtcEngine constructor()");
     // this._rtcDeviceManager = this._rtcEngine.GetDeviceManager();
 
@@ -210,80 +283,4 @@ export class AgoraRtcEngine extends IRtcEngineImpl{
   //   bridge.sendMsg(apiType, jsonParams);
   //   bridge.ReleaseEnv();
   // }
-
-  setView(rendererConfig: RendererConfig): void {
-    const config: RendererConfigInternal =
-      getRendererConfigInternal(rendererConfig);
-
-    if (rendererConfig.view) {
-      this._rendererManager?.setRenderer(config);
-    } else {
-      logWarn("Note: setView view is null!");
-      this._rendererManager?.removeRendererByConfig(config);
-    }
-  }
-  destroyRendererByView(view: Element): void {
-    this._rendererManager?.removeRendererByView(view);
-  }
-
-  destroyRendererByConfig(
-    videoSourceType: VideoSourceType,
-    channelId?: Channel,
-    uid?: number
-  ) {
-    const config = formatVideoFrameBufferConfig(
-      videoSourceType,
-      channelId,
-      uid
-    );
-    this._rendererManager?.removeRendererByConfig(config);
-  }
-
-  setRenderOption(
-    view: HTMLElement,
-    contentMode = CONTENT_MODE.FIT,
-    mirror: boolean = false
-  ): void {
-    this._rendererManager?.setRenderOption(view, contentMode, mirror);
-  }
-
-  setRenderMode(mode: RENDER_MODE): void {
-    this._rendererManager?.setRenderMode(mode);
-  }
-
-  /**
-   * @private
-   * @ignore
-   * check if WebGL will be available with appropriate features
-   * @return {boolean}
-   */
-  _checkWebGL(): boolean {
-    let gl;
-    const canvas = document.createElement("canvas");
-    canvas.width = 1;
-    canvas.height = 1;
-    const options = {
-      // Turn off things we don't need
-      alpha: false,
-      depth: false,
-      stencil: false,
-      antialias: false,
-      preferLowPowerToHighPerformance: true,
-    };
-
-    try {
-      gl =
-        canvas.getContext("webgl", options) ||
-        canvas.getContext("experimental-webgl", options);
-    } catch (e) {
-      logWarn("webGL not support");
-      return false;
-    }
-
-    if (gl) {
-      return true;
-    } else {
-      return false;
-    }
-  }
 }

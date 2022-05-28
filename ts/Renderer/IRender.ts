@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { CONTENT_MODE, RendererOptions, VideoFrame } from "./type";
+import { CONTENT_MODE, RendererOptions, VideoFrame } from "../types";
 
 export type RenderFailCallback = ((obj: { error: string }) => void) | undefined | null;
 export class IRenderer {

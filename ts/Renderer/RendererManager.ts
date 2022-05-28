@@ -20,7 +20,7 @@ import {
   VideoFrame,
   AgoraElectronBridge,
 } from "../AgoraSdk";
-import { VideoFrameCacheConfig } from "./type";
+import { VideoFrameCacheConfig } from "../types";
 import { getBridge } from "../Private/internal/IrisApiEngine";
 
 interface RenderConfig {

@@ -1,4 +1,4 @@
-import { VideoSourceType } from "../AgoraSdk";
+import { VideoSourceType } from "./AgoraSdk";
 
 export enum CONTENT_MODE {
   CROPPED = 0,
