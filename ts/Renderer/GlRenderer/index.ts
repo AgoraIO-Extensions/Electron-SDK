@@ -484,6 +484,7 @@ export class GlRenderer extends IRenderer {
     this.container.style.display = "flex";
     this.container.style.justifyContent = "center";
     this.container.style.alignItems = "center";
+    this.container.style.overflow = "hidden";
     this.parentElement.appendChild(this.container);
 
     this.canvas = document.createElement("canvas");

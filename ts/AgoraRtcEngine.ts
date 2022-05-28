@@ -2,70 +2,44 @@
 import { RtcEngineContext } from "./Private/IAgoraRtcEngine";
 import { IRtcEngineExImpl } from "./Private/impl/IAgoraRtcEngineExImpl";
 import { getBridge, sendMsg } from "./Private/internal/IrisApiEngine";
-import { RendererManager } from "./Renderer/RendererManager";
+import AgoraRenderManager from "./Renderer/RendererManager";
 import {
   Channel,
-  CONTENT_MODE,
+  ContentMode,
   RendererConfig,
   RendererConfigInternal,
   RENDER_MODE,
 } from "./types";
-import {
-  formatVideoFrameBufferConfig,
-  getRendererConfigInternal,
-  logInfo,
-  logWarn,
-} from "./Utils";
+import { getRendererConfigInternal, logInfo, logWarn } from "./Utils";
 
 /**
  * The AgoraRtcEngine class.
  */
 export class AgoraRtcEngine extends IRtcEngineExImpl {
   // _rtcDeviceManager: NodeIrisRtcDeviceManager;
-
-  engineId = `${parseInt(`${Math.random() * 100000}`)}`;
-  _rendererManager?: RendererManager;
+  static hasInitialize = false;
   constructor() {
     super();
 
     logInfo("AgoraRtcEngine constructor()");
-    this._rendererManager = new RendererManager();
-
-    // forwardEvent({
-    //   event: {
-    //     eventName,
-    //     params: eventData,
-    //     changeNameHandler: changeEventNameForOnXX,
-    //   },
-    //   fire: this.fire,
-    //   filter: this.engineFilterEvent,
-    // })
-
-    // forwardEvent({
-    //   event: {
-    //     eventName,
-    //     params: eventData,
-    //     buffer: eventBuffer,
-    //     changeNameHandler: changeEventNameForOnXX,
-    //   },
-    //   fire: this.fire,
-    //   filter: this.engineFilterEventWithBuffer,
-    // })
-    // this._rendererManager = new RendererManager(this._rtcEngine);
   }
   setView(rendererConfig: RendererConfig): void {
     const config: RendererConfigInternal =
       getRendererConfigInternal(rendererConfig);
 
     if (rendererConfig.view) {
-      this._rendererManager?.setRenderer(config);
+      AgoraRenderManager.setupVideo(config);
     } else {
       logWarn("Note: setView view is null!");
-      this._rendererManager?.removeRendererByConfig(config);
+      AgoraRenderManager.destroyRenderersByConfig(
+        rendererConfig.videoSourceType,
+        rendererConfig.channelId,
+        rendererConfig.uid
+      );
     }
   }
   destroyRendererByView(view: Element): void {
-    this._rendererManager?.removeRendererByView(view);
+    AgoraRenderManager.destroyRendererByView(view);
   }
 
   destroyRendererByConfig(
@@ -73,74 +47,54 @@ export class AgoraRtcEngine extends IRtcEngineExImpl {
     channelId?: Channel,
     uid?: number
   ) {
-    const config = formatVideoFrameBufferConfig(
+    AgoraRenderManager.destroyRenderersByConfig(
       videoSourceType,
       channelId,
       uid
     );
-    this._rendererManager?.removeRendererByConfig(config);
   }
 
   setRenderOption(
     view: HTMLElement,
-    contentMode = CONTENT_MODE.FIT,
+    contentMode = ContentMode.Fit,
     mirror: boolean = false
   ): void {
-    this._rendererManager?.setRenderOption(view, contentMode, mirror);
+    AgoraRenderManager.setRenderOption(view, contentMode, mirror);
   }
 
   setRenderMode(mode = RENDER_MODE.WEBGL): void {
-    this._rendererManager?.setRenderMode(mode);
+    AgoraRenderManager.setRenderMode(mode);
   }
 
-  // /**
-  //  * @private
-  //  * @ignore
-  //  */
-  // resizeBuffer(
-  //   uid: number,
-  //   channelId: string,
-  //   yStride: number,
-  //   height: number,
-  //   videoSourceType: VideoSourceType
-  // ): VideoFrame {
-  //   yStride = ((yStride + 15) >> 4) << 4;
-  //   return {
-  //     uid,
-  //     channelId,
-  //     yBuffer: Buffer.alloc(yStride * height),
-  //     uBuffer: Buffer.alloc((yStride * height) / 4),
-  //     vBuffer: Buffer.alloc((yStride * height) / 4),
-  //     yStride,
-  //     width: 0,
-  //     height,
-  //     videoSourceType,
-  //   };
-  // }
-
   override initialize(context: RtcEngineContext): number {
-    const apiType = "RtcEngine_initialize";
-    const jsonParams = {
+    if (AgoraRtcEngine.hasInitialize) {
+      console.error("already initialize rtcEngine");
+      return -1;
+    }
+    AgoraRtcEngine.hasInitialize = true;
+    const bridge = getBridge();
+    bridge.InitializeEnv();
+    const { retCode } = bridge.sendMsg("RtcEngine_initialize", {
       context,
       toJSON: () => {
         return { context };
       },
-    };
-    const bridge = getBridge();
-    bridge.InitializeEnv();
-    return bridge.sendMsg(apiType, jsonParams).retCode;
+    });
+    return retCode;
   }
-  override release(sync?: boolean): void {
-    this._rendererManager?.enableRender(false);
-    const apiType = "RtcEngine_release";
-    const jsonParams = {
+  override release(sync = false): void {
+    if (!AgoraRtcEngine.hasInitialize) {
+      console.error("have not initialize rtcEngine");
+      return;
+    }
+    AgoraRtcEngine.hasInitialize = false;
+    const bridge = getBridge();
+    bridge.sendMsg("RtcEngine_release", {
       sync,
       toJSON: () => {
         return { sync };
       },
-    };
-    const bridge = getBridge();
-    bridge.sendMsg(apiType, jsonParams);
+    });
     bridge.ReleaseEnv();
   }
 }

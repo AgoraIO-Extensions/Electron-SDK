@@ -4,7 +4,7 @@ import { VideoSourceType } from "../AgoraSdk";
 import {
   RendererConfigInternal,
   RendererConfig,
-  CONTENT_MODE,
+  ContentMode,
 } from "../types";
 
 export const TAG = "[Agora]: ";
@@ -132,7 +132,7 @@ export const getRendererConfigInternal = (
 ): RendererConfigInternal => {
   const rendererOptions = Object.assign(
     {
-      contentMode: CONTENT_MODE.FIT,
+      contentMode: ContentMode.Fit,
       mirror: false,
     },
     config.rendererOptions

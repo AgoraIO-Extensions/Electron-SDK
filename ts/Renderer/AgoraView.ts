@@ -1,11 +1,11 @@
-import { VideoSourceType, CONTENT_MODE } from "../AgoraSdk";
-import { AgoraRtcEngine } from "../AgoraRtcEngine";
+import { VideoSourceType, ContentMode } from "../AgoraSdk";
 import {
   agoraEventEmitter,
   EVENT_ENGINE_INITIALIZE,
   EVENT_ENGINE_RELEASE,
   logWarn,
 } from "../Utils";
+import AgoraRenderManager from "./RendererManager";
 
 const VIDEO_SOURCE_TYPE_STRING = "video-source-type";
 const UID_STRING = "uid";
@@ -26,7 +26,7 @@ declare global {
     "video-source-type": VideoSourceType;
     uid: number;
     "channel-id": string;
-    "renderer-content-mode": CONTENT_MODE;
+    "renderer-content-mode": ContentMode;
     "renderer-mirror": boolean;
     style: any;
   }
@@ -38,10 +38,6 @@ declare global {
 }
 
 export default class AgoraView extends HTMLElement {
-  static rtcEngine?: AgoraRtcEngine;
-  static errorForEngineInitialize = new Error(
-    "must initialize a AgoraRtcEngine"
-  );
   isConnectedCallback = false;
   static get observedAttributes() {
     return observedAttributes;
@@ -83,11 +79,11 @@ export default class AgoraView extends HTMLElement {
     }
   }
 
-  get renderContentMode(): CONTENT_MODE {
+  get renderContentMode(): ContentMode {
     const number = Number(
-      this.getAttribute(RENDERER_CONTENT_MODE_STRING) || CONTENT_MODE.FIT
+      this.getAttribute(RENDERER_CONTENT_MODE_STRING) || ContentMode.Fit
     );
-    return isNaN(number) ? CONTENT_MODE.FIT : number;
+    return isNaN(number) ? ContentMode.Fit : number;
   }
 
   set renderContentMode(val) {
@@ -113,23 +109,11 @@ export default class AgoraView extends HTMLElement {
     super();
 
     agoraEventEmitter.on(EVENT_ENGINE_INITIALIZE, this.initializeRender);
-    agoraEventEmitter.on(EVENT_ENGINE_RELEASE, this.removeRender);
+    agoraEventEmitter.on(EVENT_ENGINE_RELEASE, this.destroyRender);
   }
-  initializeRender = (rtcEngine?: AgoraRtcEngine) => {
-    if (!!AgoraView.rtcEngine && !!rtcEngine) {
-      AgoraView.rtcEngine = rtcEngine;
-    } else if (!!AgoraView.rtcEngine && !rtcEngine) {
-      rtcEngine = AgoraView.rtcEngine;
-    } else if (!AgoraView.rtcEngine && !!rtcEngine) {
-      AgoraView.rtcEngine = rtcEngine;
-    } else if (!AgoraView.rtcEngine && !rtcEngine) {
-    }
-
-    if (!rtcEngine) {
-      throw AgoraView.errorForEngineInitialize;
-    }
-    rtcEngine.destroyRendererByView(this);
-    rtcEngine.setView({
+  initializeRender = () => {
+    AgoraRenderManager.destroyRendererByView(this);
+    AgoraRenderManager.setupVideo({
       videoSourceType: this.videoSourceType,
       view: this,
       uid: this.uid,
@@ -140,15 +124,8 @@ export default class AgoraView extends HTMLElement {
       },
     });
   };
-  removeRender = () => {
-    const rtcEngine = AgoraView.rtcEngine;
-    if (!rtcEngine) {
-      logWarn(
-        "It is recommended to remove the dom node before the engine is released"
-      );
-      return;
-    }
-    rtcEngine.destroyRendererByView(this);
+  destroyRender = () => {
+    AgoraRenderManager.destroyRendererByView(this);
   };
 
   connectedCallback() {
@@ -164,12 +141,9 @@ export default class AgoraView extends HTMLElement {
       RENDERER_CONTENT_MODE_STRING,
       RENDERER_MIRROR_STRING,
     ].includes(attrName);
-    const rtcEngine = AgoraView.rtcEngine;
-    if (!rtcEngine) {
-      throw AgoraView.errorForEngineInitialize;
-    }
+
     if (isSetRenderOption) {
-      rtcEngine.setRenderOption(
+      AgoraRenderManager.setRenderOption(
         this,
         this.renderContentMode,
         this.renderMirror
@@ -192,7 +166,7 @@ export default class AgoraView extends HTMLElement {
       EVENT_ENGINE_RELEASE,
       this.disconnectedCallback
     );
-    this.removeRender();
+    this.destroyRender();
   }
 }
 

@@ -12,7 +12,7 @@ import AgoraRtcEngine, {
   VideoCodecType,
   VideoMirrorModeType,
   VideoSourceType,
-  CONTENT_MODE
+  ContentMode,
 } from "../../../";
 
 import { APP_ID } from "../utils/settings";
@@ -115,10 +115,11 @@ export default class App extends Component {
 
     res = rtcEngine.enableWebSdkInteroperability(true);
     console.log("enableWebSdkInteroperability", res);
+    rtcEngine.setRenderMode(2);
 
     res = rtcEngine.setVideoEncoderConfiguration({
       codecType: VideoCodecType.VideoCodecH264,
-      dimensions: { width: 300, height: 300 },
+      dimensions: { width: 300, height: 120 },
       frameRate: 15,
       bitrate: 65,
       minBitrate: 1,
@@ -185,20 +186,19 @@ export default class App extends Component {
 
   onPressSetViewForFirstCamera = () => {
     const { isSetFirstCameraView } = this.state;
-    // rtcEngine.setRenderMode(2);
     let dom = document.getElementById("firstCamera");
     let domAppend = document.getElementById("firstCamera-append");
     rtcEngine.setView({
       videoSourceType: VideoSourceType.VideoSourceCameraPrimary,
 
       view: isSetFirstCameraView ? null : dom,
-      rendererOptions: { mirror: false, contentMode: CONTENT_MODE.FIT },
+      rendererOptions: { mirror: false, contentMode: ContentMode.Fit },
     });
     rtcEngine.setView({
       videoSourceType: VideoSourceType.VideoSourceCameraPrimary,
 
       view: isSetFirstCameraView ? null : domAppend,
-      rendererOptions: { mirror: true, contentMode: CONTENT_MODE.CROPPED },
+      rendererOptions: { mirror: true, contentMode: ContentMode.Cropped },
     });
     this.setState({ isSetFirstCameraView: !isSetFirstCameraView });
   };
@@ -722,19 +722,19 @@ export default class App extends Component {
           >
             testDestoryLocalCameraView
           </button>
-          {/* <agora-view
+          <agora-view
             style={{
               width: 250,
               height: 250,
               background: "green",
               display: "block",
             }}
-            video-source-type={VideoSourceType.kVideoSourceTypeCameraPrimary}
+            video-source-type={VideoSourceType.VideoSourceCamera}
             uid={0}
             channel-id={""}
-            renderer-content-mode={CONTENT_MODE.FIT}
+            renderer-content-mode={ContentMode.Fit}
             renderer-mirror={false}
-          ></agora-view> */}
+          ></agora-view>
           {this.renderViews()}
         </div>
       </div>

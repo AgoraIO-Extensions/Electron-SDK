@@ -9,7 +9,7 @@ const YUVBuffer = require("yuv-buffer");
 const YUVCanvas = require("yuv-canvas");
 const isEqual = require("lodash.isequal");
 
-import { CanvasOptions, CONTENT_MODE, ShareVideoFrame } from "../../types";
+import { CanvasOptions, ContentMode, ShareVideoFrame } from "../../types";
 import { IRenderer } from "../IRender";
 import { logDebug } from "../../Utils";
 
@@ -81,7 +81,7 @@ export class YUVCanvasRenderer extends IRenderer {
 
   zoom(
     vertical: boolean,
-    contentMode: CONTENT_MODE = CONTENT_MODE.CROPPED,
+    contentMode: ContentMode = ContentMode.Cropped,
     width: number,
     height: number,
     clientWidth: number,
@@ -93,7 +93,7 @@ export class YUVCanvasRenderer extends IRenderer {
       return 1;
     }
 
-    if (contentMode === CONTENT_MODE.CROPPED) {
+    if (contentMode === ContentMode.Cropped) {
       if (vertical) {
         return clientHeight / clientWidth < width / height
           ? clientWidth / height
@@ -164,6 +164,7 @@ export class YUVCanvasRenderer extends IRenderer {
         options.clientHeight
       );
 
+      //@ts-ignore
       this.canvas.style.zoom = scale.toString();
 
       if (transformItems.length > 0) {

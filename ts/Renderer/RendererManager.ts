@@ -1,65 +1,96 @@
+import { VideoSourceType } from "../AgoraSdk";
+import { getBridge } from "../Private/internal/IrisApiEngine";
 import {
-  logInfo,
-  logWarn,
-  logDebug,
+  AgoraElectronBridge,
+  Channel,
+  ChannelIdMap,
+  ContentMode,
+  RenderConfig,
+  RendererConfig,
+  RendererConfigInternal,
+  RenderMap,
+  RENDER_MODE,
+  ShareVideoFrame,
+  UidMap,
+  VideoFrameCacheConfig,
+} from "../types";
+import {
+  formatVideoFrameBufferConfig,
   getRendererConfigInternal,
   logError,
+  logInfo,
+  logWarn,
 } from "../Utils";
-
+import GlRenderer from "./GlRenderer";
 import { IRenderer, RenderFailCallback } from "./IRender";
 import { YUVCanvasRenderer } from "./YUVCanvasRenderer";
-import GlRenderer from "./GlRenderer";
-import {
-  VideoSourceType,
-  RENDER_MODE,
-  Channel,
-  RendererConfigInternal,
-  CONTENT_MODE,
-  RendererConfig,
-  ShareVideoFrame,
-  AgoraElectronBridge,
-} from "../AgoraSdk";
-import { VideoFrameCacheConfig } from "../types";
-import { getBridge } from "../Private/internal/IrisApiEngine";
 
-interface RenderConfig {
-  renders: IRenderer[];
-  shareVideoFrame: ShareVideoFrame;
-}
-
-export type UidMap = Map<number, RenderConfig>;
-export type ChannelIdMap = Map<Channel, UidMap>;
-export type RenderMap = Map<VideoSourceType, ChannelIdMap>;
 class RendererManager {
-  _isRendering = false;
-  videoFps: number;
+  isRendering = false;
+  renderFps: number;
   videoFrameUpdateInterval?: NodeJS.Timeout;
   renderers: RenderMap;
   renderMode: RENDER_MODE;
-  _bridge: AgoraElectronBridge;
+  msgBridge: AgoraElectronBridge;
 
   constructor() {
-    this.videoFps = 15;
+    this.renderFps = 15;
     this.renderers = new Map();
-    this.renderMode = this._checkWebGL()
+    this.renderMode = this.checkWebglEnv()
       ? RENDER_MODE.WEBGL
       : RENDER_MODE.SOFTWARE;
 
-    this._bridge = getBridge();
+    this.msgBridge = getBridge();
+  }
+  setRenderMode(mode: RENDER_MODE) {
+    this.renderMode = mode;
+  }
+  setFPS(fps: number) {
+    this.renderFps = fps;
+    this.restartRender();
   }
 
-  clear(): void {
-    this.stopRenderer();
-    this.removeAllRenderer();
+  public setRenderOption(
+    view: HTMLElement,
+    contentMode = ContentMode.Fit,
+    mirror: boolean = false
+  ): void {
+    if (!view) {
+      console.error("setRenderOption: view not exist", view);
+    }
+    this.forEachStream(({ renders }) => {
+      renders?.forEach((render) => {
+        if (render.equalsElement(view)) {
+          render.setRenderOption({ contentMode, mirror });
+        }
+      });
+    });
   }
+  public setRenderOptionByConfig(rendererConfig: RendererConfig): number {
+    const {
+      uid,
+      channelId,
+      rendererOptions,
+      videoSourceType,
+    }: RendererConfigInternal = getRendererConfigInternal(rendererConfig);
 
-  /**
-   * @private
-   * @ignore
-   * check if WebGL will be available with appropriate features
-   * @return {boolean}
-   */
-  _checkWebGL(): boolean {
+    if (!rendererConfig.view) {
+      logError("setRenderOptionByView");
+    }
+    const renderList = this.getRenderers({ uid, channelId, videoSourceType });
+    console.log("renderList", renderList);
+    renderList
+      ? renderList
+          .filter((renderItem) =>
+            renderItem.equalsElement(rendererConfig.view!)
+          )
+          .forEach((renderItem) => renderItem.setRenderOption(rendererOptions))
+      : console.warn(
+          `RenderStreamType: ${videoSourceType} channelId:${channelId} uid:${uid} have no render view, you need to call this api after setView`
+        );
+    return 0;
+  }
+  public checkWebglEnv(): boolean {
     let gl;
     const canvas = document.createElement("canvas");
 
@@ -78,45 +109,8 @@ class RendererManager {
       return false;
     }
   }
-  _checkWebGL2(): boolean {
-    let gl;
-    const canvas = document.createElement("canvas");
-    canvas.width = 1;
-    canvas.height = 1;
-    const options = {
-      // Turn off things we don't need
-      alpha: false,
-      depth: false,
-      stencil: false,
-      antialias: false,
-      preferLowPowerToHighPerformance: true,
-    };
 
-    try {
-      gl =
-        canvas.getContext("webgl", options) ||
-        canvas.getContext("experimental-webgl", options);
-    } catch (e) {
-      logWarn("webGL not support");
-      return false;
-    }
-
-    if (gl) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  setRenderMode(mode: RENDER_MODE) {
-    this.renderMode = mode;
-  }
-
-  /**
-   * @private
-   * @ignore
-   */
-  setRenderer(rendererConfig: RendererConfigInternal): void {
+  public setupVideo(rendererConfig: RendererConfigInternal): void {
     const { uid, channelId, videoSourceType, rendererOptions } = rendererConfig;
     const config = {
       uid,
@@ -125,91 +119,23 @@ class RendererManager {
       width: 0,
       height: 0,
     };
-    this.enableVideoFrameCache(config);
-    const render = this.addRenderer(rendererConfig, rendererConfig.view!);
+    // ensure a render to RenderMap
+    const render = this.bindHTMLElementToRender(
+      rendererConfig,
+      rendererConfig.view!
+    );
+
+    // render config
     render.setRenderOption(rendererOptions);
 
+    // enable iris videoFrame
+    this.enableVideoFrameCache(config);
+
+    // enable render
     this.enableRender(true);
   }
 
-  /**
-   * @private
-   * @ignore
-   */
-  createRenderer(failCallback?: RenderFailCallback): IRenderer {
-    if (this.renderMode === RENDER_MODE.SOFTWARE) {
-      return new YUVCanvasRenderer(false);
-    } else {
-      return new GlRenderer(failCallback);
-    }
-  }
-
-  /**
-   * @private
-   * @ignore
-   */
-  addRenderer(config: RendererConfigInternal, view: HTMLElement): IRenderer {
-    this.ensureRendererConfig(config);
-    const renders = this.getRenderers(config);
-    const filterRenders =
-      renders?.filter((render) => render.equalsElement(view)) || [];
-    const hasBeenAdd = filterRenders.length > 0;
-    if (hasBeenAdd) {
-      console.warn("addRenderer: this view exists in list, ignore");
-      return filterRenders[0];
-    }
-    const renderer = this.createRenderer(() => {
-      const renderConfig = this.getRenderConfig(config);
-      if (!renderConfig) {
-        return;
-      }
-      renderConfig.renders = renders.filter((r) => r !== renderer);
-      const contentMode = renderer.contentMode;
-      renderer.unbind();
-      this.setRenderMode(RENDER_MODE.SOFTWARE);
-      const newRender = this.createRenderer();
-      newRender.contentMode = contentMode;
-      newRender.bind(view);
-      renderConfig.renders.push(newRender);
-    });
-    renderer.bind(view);
-    renders.push(renderer);
-    return renderer;
-  }
-
-  /**
-   * @private
-   * @ignore
-   */
-  getRenderers({
-    videoSourceType,
-    channelId,
-    uid,
-  }: VideoFrameCacheConfig): IRenderer[] {
-    return (
-      this.renderers.get(videoSourceType)?.get(channelId)?.get(uid)?.renders ||
-      []
-    );
-  }
-
-  getRenderConfig({ videoSourceType, channelId, uid }: VideoFrameCacheConfig) {
-    return this.renderers.get(videoSourceType)?.get(channelId)?.get(uid);
-  }
-
-  removeRendererByConfig(config: VideoFrameCacheConfig): void {
-    const { videoSourceType, channelId, uid } = config;
-    this.disableVideoFrameCache(config);
-    const uidMap = this.renderers.get(videoSourceType)?.get(channelId);
-    const renderMap = uidMap?.get(uid);
-    if (!renderMap) {
-      return;
-    }
-    renderMap.renders?.forEach((renderItem) => {
-      renderItem.unbind();
-    });
-    renderMap.renders = [];
-  }
-  removeRendererByView(view: Element): void {
+  public destroyRendererByView(view: Element): void {
     const renders = this.renderers;
     renders.forEach((channelMap, videoSourceType) => {
       channelMap.forEach((uidMap, channelId) => {
@@ -236,8 +162,33 @@ class RendererManager {
       });
     });
   }
+  public destroyRenderersByConfig(
+    videoSourceType: VideoSourceType,
+    channelId?: Channel,
+    uid?: number
+  ): void {
+    const config = formatVideoFrameBufferConfig(
+      videoSourceType,
+      channelId,
+      uid
+    );
+    videoSourceType = config.videoSourceType;
+    channelId = config.channelId;
+    uid = config.uid;
 
-  removeAllRenderer(): void {
+    this.disableVideoFrameCache(config);
+    const uidMap = this.renderers.get(videoSourceType)?.get(channelId);
+    const renderMap = uidMap?.get(uid);
+    if (!renderMap) {
+      return;
+    }
+    renderMap.renders?.forEach((renderItem) => {
+      renderItem.unbind();
+    });
+    renderMap.renders = [];
+  }
+
+  public removeAllRenderer(): void {
     const renderMap = this.forEachStream(
       (renderConfig, videoFrameCacheConfig) => {
         this.disableVideoFrameCache(videoFrameCacheConfig);
@@ -249,8 +200,147 @@ class RendererManager {
     );
     renderMap.clear();
   }
+  clear(): void {
+    this.stopRender();
+    this.removeAllRenderer();
+  }
 
-  forEachStream(
+  public enableRender(enabled = true): void {
+    if (enabled && this.isRendering) {
+      //is already _isRendering
+    } else if (enabled && !this.isRendering) {
+      this.startRenderer();
+    } else {
+      this.stopRender();
+    }
+  }
+
+  public startRenderer(): void {
+    this.isRendering = true;
+    const renderFunc = (
+      rendererItem: RenderConfig,
+      config: VideoFrameCacheConfig
+    ) => {
+      const { renders } = rendererItem;
+      if (!renders || renders?.length === 0) {
+        return;
+      }
+      let finalResult = this.msgBridge.GetVideoStreamData(
+        rendererItem.shareVideoFrame
+      );
+
+      switch (finalResult.ret) {
+        case 0: // IRIS_VIDEO_PROCESS_ERR::ERR_OK = 0,
+          break;
+        case 1: // IRIS_VIDEO_PROCESS_ERR::ERR_NULL_POINTER = 1,
+          return;
+        case 2: // IRIS_VIDEO_PROCESS_ERR::ERR_SIZE_NOT_MATCHING
+          const { width, height } = finalResult;
+          const { videoSourceType, channelId, uid } = config;
+          const newShareVideoFrame = this.resizeShareVideoFrame(
+            videoSourceType,
+            channelId,
+            uid,
+            width,
+            height
+          );
+          rendererItem.shareVideoFrame = newShareVideoFrame;
+          finalResult = this.msgBridge.GetVideoStreamData(newShareVideoFrame);
+          break;
+        case 5: // IRIS_VIDEO_PROCESS_ERR::ERR_BUFFER_EMPTY
+          return;
+        default:
+          return;
+      }
+      if (finalResult.ret !== 0) {
+        console.log("native get size error");
+        return;
+      }
+      const renderVideoFrame = rendererItem.shareVideoFrame;
+      if (renderVideoFrame.width > 0 && renderVideoFrame.height > 0) {
+        renders.forEach((renderItem) => {
+          renderItem.drawFrame(rendererItem.shareVideoFrame);
+        });
+      }
+    };
+    this.videoFrameUpdateInterval = setInterval(() => {
+      this.forEachStream(renderFunc);
+    }, 1000 / this.renderFps);
+  }
+
+  public stopRender(): void {
+    this.isRendering = false;
+    if (this.videoFrameUpdateInterval) {
+      clearInterval(this.videoFrameUpdateInterval);
+      this.videoFrameUpdateInterval = undefined;
+    }
+  }
+
+  public restartRender(): void {
+    if (this.videoFrameUpdateInterval) {
+      this.stopRender();
+      this.startRenderer();
+      logInfo(`setFps ${this.renderFps} restartInterval`);
+    }
+  }
+  private createRenderer(failCallback?: RenderFailCallback): IRenderer {
+    if (this.renderMode === RENDER_MODE.SOFTWARE) {
+      return new YUVCanvasRenderer(false);
+    } else {
+      return new GlRenderer(failCallback);
+    }
+  }
+  private getRender({
+    videoSourceType,
+    channelId,
+    uid,
+  }: VideoFrameCacheConfig) {
+    return this.renderers.get(videoSourceType)?.get(channelId)?.get(uid);
+  }
+  private getRenderers({
+    videoSourceType,
+    channelId,
+    uid,
+  }: VideoFrameCacheConfig): IRenderer[] {
+    return (
+      this.renderers.get(videoSourceType)?.get(channelId)?.get(uid)?.renders ||
+      []
+    );
+  }
+
+  private bindHTMLElementToRender(
+    config: RendererConfigInternal,
+    view: HTMLElement
+  ): IRenderer {
+    this.ensureRendererConfig(config);
+    const renders = this.getRenderers(config);
+    const filterRenders =
+      renders?.filter((render) => render.equalsElement(view)) || [];
+    const hasBeenAdd = filterRenders.length > 0;
+    if (hasBeenAdd) {
+      console.warn("addRenderer: this view exists in list, ignore");
+      return filterRenders[0];
+    }
+    const renderer = this.createRenderer(() => {
+      const renderConfig = this.getRender(config);
+      if (!renderConfig) {
+        return;
+      }
+      renderConfig.renders = renders.filter((r) => r !== renderer);
+      const contentMode = renderer.contentMode;
+      renderer.unbind();
+      this.setRenderMode(RENDER_MODE.SOFTWARE);
+      const newRender = this.createRenderer();
+      newRender.contentMode = contentMode;
+      newRender.bind(view);
+      renderConfig.renders.push(newRender);
+    });
+    renderer.bind(view);
+    renders.push(renderer);
+    return renderer;
+  }
+
+  private forEachStream(
     callbackfn: (
       renderConfig: RenderConfig,
       videoFrameCacheConfig: VideoFrameCacheConfig,
@@ -275,106 +365,22 @@ class RendererManager {
     return renders;
   }
 
-  enableRender(enabled = true): void {
-    if (enabled && this._isRendering) {
-      //is already _isRendering
-    } else if (enabled && !this._isRendering) {
-      this.startRenderer();
-    } else {
-      this.stopRenderer();
-    }
-  }
-  /**
-   * @private
-   * @ignore
-   */
-  startRenderer(): void {
-    this._isRendering = true;
-    const renderFunc = (
-      rendererItem: RenderConfig,
-      config: VideoFrameCacheConfig
-    ) => {
-      const { renders } = rendererItem;
-      if (!renders || renders?.length === 0) {
-        return;
-      }
-      let finalResult = this._bridge.GetVideoStreamData(
-        rendererItem.shareVideoFrame
-      );
-
-      switch (finalResult.ret) {
-        case 0: // IRIS_VIDEO_PROCESS_ERR::ERR_OK = 0,
-          break;
-        case 1: // IRIS_VIDEO_PROCESS_ERR::ERR_NULL_POINTER = 1,
-          return;
-        case 2: // IRIS_VIDEO_PROCESS_ERR::ERR_SIZE_NOT_MATCHING
-          const { width, height } = finalResult;
-          const { videoSourceType, channelId, uid } = config;
-          const newShareVideoFrame = this.resizeShareVideoFrame(
-            videoSourceType,
-            channelId,
-            uid,
-            width,
-            height
-          );
-          rendererItem.shareVideoFrame = newShareVideoFrame;
-          finalResult = this._bridge.GetVideoStreamData(newShareVideoFrame);
-          break;
-        case 5: // IRIS_VIDEO_PROCESS_ERR::ERR_BUFFER_EMPTY
-          return;
-        default:
-          return;
-      }
-      if (finalResult.ret !== 0) {
-        console.log("native get size error");
-        return;
-      }
-
-      renders.forEach((renderItem) => {
-        renderItem.drawFrame(rendererItem.shareVideoFrame);
-      });
-    };
-    this.videoFrameUpdateInterval = setInterval(() => {
-      this.forEachStream(renderFunc);
-    }, 1000 / this.videoFps);
-  }
-
-  /**
-   * @private
-   * @ignore
-   */
-  stopRenderer(): void {
-    this._isRendering = false;
-    if (this.videoFrameUpdateInterval) {
-      clearInterval(this.videoFrameUpdateInterval);
-      this.videoFrameUpdateInterval = undefined;
-    }
-  }
-
-  /**
-   * @private
-   * @ignore
-   */
-  restartRenderer(): void {
-    if (this.videoFrameUpdateInterval) {
-      this.stopRenderer();
-      this.startRenderer();
-      logInfo(`setFps ${this.videoFps} restartInterval`);
-    }
-  }
-
-  enableVideoFrameCache(videoFrameCacheConfig: VideoFrameCacheConfig): number {
+  private enableVideoFrameCache(
+    videoFrameCacheConfig: VideoFrameCacheConfig
+  ): number {
     logInfo(`enableVideoFrameCache ${JSON.stringify(videoFrameCacheConfig)}`);
-    let ret = this._bridge.EnableVideoFrameCache(videoFrameCacheConfig);
+    let ret = this.msgBridge.EnableVideoFrameCache(videoFrameCacheConfig);
     return ret.retCode;
   }
 
-  disableVideoFrameCache(videoFrameCacheConfig: VideoFrameCacheConfig): number {
-    let ret = this._bridge.DisableVideoFrameCache(videoFrameCacheConfig);
+  private disableVideoFrameCache(
+    videoFrameCacheConfig: VideoFrameCacheConfig
+  ): number {
+    let ret = this.msgBridge.DisableVideoFrameCache(videoFrameCacheConfig);
     return ret.retCode;
   }
 
-  ensureRendererConfig(config: VideoFrameCacheConfig):
+  private ensureRendererConfig(config: VideoFrameCacheConfig):
     | Map<
         number,
         {
@@ -416,14 +422,13 @@ class RendererManager {
     }
     return channelMap;
   }
-  resizeShareVideoFrame(
+  private resizeShareVideoFrame(
     videoSourceType: VideoSourceType,
     channelId: string,
     uid: number,
     width = 0,
     height = 0
   ): ShareVideoFrame {
-    // width = ((width + 15) >> 4) << 4;
     return {
       videoSourceType,
       channelId,
@@ -436,7 +441,7 @@ class RendererManager {
     };
   }
 
-  updateVideoFrameCacheInMap(
+  private updateVideoFrameCacheInMap(
     config: VideoFrameCacheConfig,
     shareVideoFrame: ShareVideoFrame
   ): void {
@@ -449,43 +454,9 @@ class RendererManager {
           `updateVideoFrameCacheInMap videoSourceType:${config.videoSourceType} channelId:${config.channelId} uid:${config.uid} rendererConfigMap is null`
         );
   }
-
-  setRenderOptionByView(rendererConfig: RendererConfig): number {
-    const {
-      uid,
-      channelId,
-      rendererOptions,
-      videoSourceType,
-    }: RendererConfigInternal = getRendererConfigInternal(rendererConfig);
-
-    if (!rendererConfig.view) {
-      logError("setRenderOptionByView");
-    }
-    const renderList = this.getRenderers({ uid, channelId, videoSourceType });
-    renderList
-      ? renderList
-          .filter((renderItem) =>
-            renderItem.equalsElement(rendererConfig.view!)
-          )
-          .forEach((renderItem) => renderItem.setRenderOption(rendererOptions))
-      : console.warn(
-          `RenderStreamType: ${videoSourceType} channelId:${channelId} uid:${uid} have no render view, you need to call this api after setView`
-        );
-    return 0;
-  }
-  setRenderOption(
-    view: HTMLElement,
-    contentMode = CONTENT_MODE.FIT,
-    mirror: boolean = false
-  ): void {
-    this.forEachStream(({ renders }) => {
-      renders?.forEach((render) => {
-        if (render.equalsElement(view)) {
-          render.setRenderOption({ contentMode, mirror });
-        }
-      });
-    });
-  }
 }
 
 export { RendererManager };
+
+const AgoraRenderManager = new RendererManager();
+export default AgoraRenderManager;

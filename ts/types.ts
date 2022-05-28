@@ -1,27 +1,27 @@
 import { VideoSourceType } from "./AgoraSdk";
+import { IRenderer } from "./Renderer/IRender";
 
-export enum CONTENT_MODE {
-  CROPPED = 0,
-  FIT = 1,
+export enum ContentMode {
+  Cropped = 0,
+  Fit = 1,
 }
 export interface CanvasOptions {
   frameWidth: number;
   frameHeight: number;
   rotation: number;
-  contentMode: CONTENT_MODE;
+  contentMode: ContentMode;
   clientWidth: number;
   clientHeight: number;
 }
 
 export interface RendererOptions {
-  contentMode: CONTENT_MODE;
+  contentMode: ContentMode;
   mirror: boolean;
 }
 
 export enum RENDER_MODE {
   WEBGL = 1,
   SOFTWARE = 2,
-  CUSTOM = 3,
 }
 
 export type User = "local" | "videoSource" | number | string;
@@ -47,8 +47,6 @@ export interface VideoFrameCacheConfig {
   uid: number;
   channelId: string;
   videoSourceType: VideoSourceType;
-  width?: number;
-  height?: number;
 }
 export interface ShareVideoFrame {
   width: number;
@@ -86,14 +84,6 @@ export interface AgoraElectronBridge {
   InitializeEnv(): void;
   ReleaseEnv(): void;
 
-  sendMsg: (
-    funcName: string,
-    params: any,
-    buffer?: ArrayBufferLike,
-    bufferCount?: number
-  ) => Result;
-
-  // PluginCallApi(apiType: ApiTypeRawDataPluginManager, params: string): Result;
   EnableVideoFrameCache(config: VideoFrameCacheConfig): Result;
   DisableVideoFrameCache(config: VideoFrameCacheConfig): Result;
   GetVideoStreamData(streamInfo: ShareVideoFrame): {
@@ -105,4 +95,19 @@ export interface AgoraElectronBridge {
     rotation: number;
     timestamp: number;
   };
+  sendMsg: (
+    funcName: string,
+    params: any,
+    buffer?: ArrayBufferLike,
+    bufferCount?: number
+  ) => Result;
 }
+
+export interface RenderConfig {
+  renders: IRenderer[];
+  shareVideoFrame: ShareVideoFrame;
+}
+
+export type UidMap = Map<number, RenderConfig>;
+export type ChannelIdMap = Map<Channel, UidMap>;
+export type RenderMap = Map<VideoSourceType, ChannelIdMap>;

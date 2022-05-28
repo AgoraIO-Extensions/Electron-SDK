@@ -1,12 +1,15 @@
 import { EventEmitter } from "events";
-import { CONTENT_MODE, RendererOptions, ShareVideoFrame } from "../types";
+import { ContentMode, RendererOptions, ShareVideoFrame } from "../types";
 
-export type RenderFailCallback = ((obj: { error: string }) => void) | undefined | null;
+export type RenderFailCallback =
+  | ((obj: { error: string }) => void)
+  | undefined
+  | null;
 export class IRenderer {
   parentElement?: HTMLElement;
   canvas?: HTMLCanvasElement;
   event?: EventEmitter;
-  contentMode = CONTENT_MODE.FIT;
+  contentMode = ContentMode.Fit;
   mirror?: boolean;
 
   snapshot(fileType = "image/png") {
