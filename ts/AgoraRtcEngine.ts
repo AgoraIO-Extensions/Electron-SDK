@@ -11,19 +11,49 @@ import {
   RENDER_MODE,
 } from "./types";
 import {
-  classMix,
   formatVideoFrameBufferConfig,
   getRendererConfigInternal,
   logInfo,
   logWarn,
 } from "./Utils";
 
-class AgoraRenderAPI {
+/**
+ * The AgoraRtcEngine class.
+ */
+export class AgoraRtcEngine extends IRtcEngineImpl {
+  // _rtcDeviceManager: NodeIrisRtcDeviceManager;
+
+  engineId = `${parseInt(`${Math.random() * 100000}`)}`;
   _rendererManager?: RendererManager;
   constructor() {
+    super();
+
+    logInfo("AgoraRtcEngine constructor()");
     this._rendererManager = new RendererManager();
+
+    // forwardEvent({
+    //   event: {
+    //     eventName,
+    //     params: eventData,
+    //     changeNameHandler: changeEventNameForOnXX,
+    //   },
+    //   fire: this.fire,
+    //   filter: this.engineFilterEvent,
+    // })
+
+    // forwardEvent({
+    //   event: {
+    //     eventName,
+    //     params: eventData,
+    //     buffer: eventBuffer,
+    //     changeNameHandler: changeEventNameForOnXX,
+    //   },
+    //   fire: this.fire,
+    //   filter: this.engineFilterEventWithBuffer,
+    // })
+    // this._rendererManager = new RendererManager(this._rtcEngine);
   }
-   setView(rendererConfig: RendererConfig): void {
+  setView(rendererConfig: RendererConfig): void {
     const config: RendererConfigInternal =
       getRendererConfigInternal(rendererConfig);
 
@@ -69,74 +99,6 @@ class AgoraRenderAPI {
    * check if WebGL will be available with appropriate features
    * @return {boolean}
    */
-  _checkWebGL(): boolean {
-    let gl;
-    const canvas = document.createElement("canvas");
-    canvas.width = 1;
-    canvas.height = 1;
-    const options = {
-      // Turn off things we don't need
-      alpha: false,
-      depth: false,
-      stencil: false,
-      antialias: false,
-      preferLowPowerToHighPerformance: true,
-    };
-
-    try {
-      gl =
-        canvas.getContext("webgl", options) ||
-        canvas.getContext("experimental-webgl", options);
-    } catch (e) {
-      logWarn("webGL not support");
-      return false;
-    }
-
-    if (gl) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-}
-
-/**
- * The AgoraRtcEngine class.
- */
-export class AgoraRtcEngine extends IRtcEngineImpl {
-  // _rtcDeviceManager: NodeIrisRtcDeviceManager;
-  _rendererManager?: RendererManager;
-
-  engineId = `${parseInt(`${Math.random() * 100000}`)}`;
-
-  constructor() {
-    super();
-
-    logInfo("AgoraRtcEngine constructor()");
-    // this._rtcDeviceManager = this._rtcEngine.GetDeviceManager();
-
-    // forwardEvent({
-    //   event: {
-    //     eventName,
-    //     params: eventData,
-    //     changeNameHandler: changeEventNameForOnXX,
-    //   },
-    //   fire: this.fire,
-    //   filter: this.engineFilterEvent,
-    // })
-
-    // forwardEvent({
-    //   event: {
-    //     eventName,
-    //     params: eventData,
-    //     buffer: eventBuffer,
-    //     changeNameHandler: changeEventNameForOnXX,
-    //   },
-    //   fire: this.fire,
-    //   filter: this.engineFilterEventWithBuffer,
-    // })
-    // this._rendererManager = new RendererManager(this._rtcEngine);
-  }
 
   // /**
   //  * @private

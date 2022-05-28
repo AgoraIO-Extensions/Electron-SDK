@@ -122,16 +122,16 @@ export default class App extends Component {
       frameRate: 15,
       bitrate: 65,
       minBitrate: 1,
-      orientationMode: OrientationMode,
+      orientationMode: OrientationMode.OrientationModeAdaptive,
       degradationPreference: DegradationPreference.MaintainBalanced,
-      mirrorMode: VideoMirrorModeType,
+      mirrorMode: VideoMirrorModeType.VideoMirrorModeAuto,
     });
     console.log("setVideoEncoderConfiguration", res);
 
     const ver = rtcEngine.getVersion();
     console.log("getVersion", ver);
     rtcEngine.startPreview();
-    // this.subscribeEvent();
+    rtcEngine.registerEventHandler(this);
   };
   subscribeEvent = () => {
     rtcEngine.on(EngineEvents.ERROR, (...args) => {

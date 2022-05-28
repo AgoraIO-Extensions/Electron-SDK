@@ -79,6 +79,35 @@ class RendererManager {
       return false;
     }
   }
+  _checkWebGL2(): boolean {
+    let gl;
+    const canvas = document.createElement("canvas");
+    canvas.width = 1;
+    canvas.height = 1;
+    const options = {
+      // Turn off things we don't need
+      alpha: false,
+      depth: false,
+      stencil: false,
+      antialias: false,
+      preferLowPowerToHighPerformance: true,
+    };
+
+    try {
+      gl =
+        canvas.getContext("webgl", options) ||
+        canvas.getContext("experimental-webgl", options);
+    } catch (e) {
+      logWarn("webGL not support");
+      return false;
+    }
+
+    if (gl) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   setRenderMode(mode: RENDER_MODE) {
     this.renderMode = mode;

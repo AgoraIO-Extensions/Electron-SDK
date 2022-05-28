@@ -68,7 +68,16 @@ export interface Result {
   result: string;
 }
 export interface AgoraElectronBridge {
-  OnEvent(callbackName: string, callback: Function): void;
+  OnEvent(
+    callbackName: string,
+    callback: (
+      event: string,
+      data: string,
+      buffer: ArrayBufferLike,
+      bufferLength: number,
+      bufferCount: number
+    ) => void
+  ): void;
   CallApi(
     funcName: string,
     params: any,
@@ -83,7 +92,7 @@ export interface AgoraElectronBridge {
     params: any,
     buffer?: ArrayBufferLike,
     bufferCount?: number
-  ) => any;
+  ) => Result;
 
   // PluginCallApi(apiType: ApiTypeRawDataPluginManager, params: string): Result;
   EnableVideoFrameCache(config: VideoFrameCacheConfig): Result;

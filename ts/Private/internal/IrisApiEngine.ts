@@ -3,6 +3,7 @@ import {
   CONTENT_MODE,
   VideoFrame,
   AgoraElectronBridge,
+  Result,
 } from "../../AgoraSdk";
 
 import { VideoSourceType } from "../AgoraBase";
@@ -11,7 +12,6 @@ import { processIRtcEngineEventHandlerEx } from "../impl/IAgoraRtcEngineExImpl";
 import { processIRtcEngineEventHandler } from "../impl/IAgoraRtcEngineImpl";
 
 const agora = require("../../../build/Release/agora_node_ext");
-
 //名字可以全平台对齐 electron rn
 let agoraElectronBridge: AgoraElectronBridge;
 
@@ -30,7 +30,7 @@ export const sendMsg = (
   params: any,
   buffer?: ArrayBufferLike,
   bufferCount = 0
-) => {
+): Result => {
   const ret = getBridge().CallApi(
     funcName,
     JSON.stringify(params),
@@ -38,31 +38,46 @@ export const sendMsg = (
     bufferCount
   );
   console.log("callApi", funcName, JSON.stringify(params), ret);
-  const { retCode, result } = ret;
-
-  if (retCode !== 0) {
-    return retCode;
-  }
   try {
-    return JSON.parse(result);
+    return JSON.parse(ret.result);
   } catch (error) {
-    console.error("returnValue parse", error);
-    return -1;
+    console.error("returnValue parse happen error: ", error);
+    return ret;
   }
 };
-// AgoraElectronNative.addListener('onEvent', function (args: any) {
-//   console.log('onEvent', args);
-//   const methodName = args.methodName;
-//   const data = JSON.parse(args.data);
-//   // const buffer = args.buffer;
-//   // if (methodName === 'onStreamMessage') {
-//   //   data.splice(3, 0, buffer);
-//   // }
-//   IrisApiEngine._handlers.forEach((value) => {
-//     processIRtcEngineEventHandlerEx(value, methodName, data);
-//     processIRtcEngineEventHandler(value, methodName, data);
-//   });
-// });
+const handlerEvent = function (
+  event: string,
+  data: string,
+  buffer: ArrayBufferLike,
+  bufferLength: number,
+  bufferCount: number
+) {
+  console.log(
+    "event",
+    event,
+    "data",
+    data,
+    "buffer",
+    buffer,
+    "bufferLength",
+    bufferLength,
+    "bufferCount",
+    bufferCount
+  );
+  try {
+    const obj = JSON.parse(data);
+    // // const buffer = args.buffer;
+    // // if (methodName === 'onStreamMessage') {
+    // //   data.splice(3, 0, buffer);
+    // // }
+    // IrisApiEngine._handlers.forEach((value) => {
+    //   processIRtcEngineEventHandlerEx(value, event, obj);
+    //   processIRtcEngineEventHandler(value, event, obj);
+    // });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 export default class IrisApiEngine {
   static _handlers: IRtcEngineEventHandler[] = [];
@@ -72,13 +87,15 @@ export default class IrisApiEngine {
     params: any,
     buffer?: ArrayBufferLike
   ): any {
+    const bridge = getBridge();
     switch (funcName) {
       case "RtcEngine_initialize":
-        getBridge().InitializeEnv();
+        bridge.InitializeEnv();
+        bridge.OnEvent("call_back_with_buffer", handlerEvent);
         return sendMsg(funcName, params, buffer);
       case "RtcEngine_release":
         sendMsg(funcName, params, buffer);
-        getBridge().ReleaseEnv();
+        bridge.ReleaseEnv();
         return true;
       case "RtcEngine_registerEventHandler":
         this._handlers.push(params.eventHandler);
