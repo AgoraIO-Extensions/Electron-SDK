@@ -456,7 +456,9 @@ class RendererManager {
   }
 }
 
-export { RendererManager };
-
 const AgoraRenderManager = new RendererManager();
+//@ts-ignore
+(window || global).AgoraRenderManager = AgoraRenderManager;
+
 export default AgoraRenderManager;
+export { RendererManager };
