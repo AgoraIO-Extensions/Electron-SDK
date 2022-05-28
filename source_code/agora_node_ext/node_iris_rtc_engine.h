@@ -5,8 +5,8 @@
  * @Last Modified time: 2021-10-19 18:14:39
  */
 #pragma once
-#include <exception>
 #include <node_api.h>
+#include <exception>
 #include "iris_api_type.h"
 #include "iris_rtc_cxx_api.h"
 #include "iris_video_processor_cxx.h"
@@ -55,7 +55,8 @@ class NodeIrisRtcEngine {
   static const char* _ret_result_str;
   std::shared_ptr<IrisApiEngine> _iris_api_engine;
   std::shared_ptr<NodeIrisEventHandler> _iris_event_handler;
-  std::shared_ptr<iris::IrisVideoFrameBufferManager> _iris_video_frame_buffer_manager;
+  std::shared_ptr<iris::IrisVideoFrameBufferManager>
+      _iris_video_frame_buffer_manager;
 
   /*iris::rtc::IrisRtcRawData* _iris_raw_data;
   iris::rtc::IrisRtcRawDataPluginManager* _iris_raw_data_plugin_manager;*/

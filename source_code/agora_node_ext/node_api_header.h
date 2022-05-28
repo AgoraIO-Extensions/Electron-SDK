@@ -6,8 +6,8 @@
  */
 #pragma once
 #include <node_buffer.h>
-#include <memory>
 #include <string.h>
+#include <memory>
 #include <vector>
 #include "node_base.h"
 
