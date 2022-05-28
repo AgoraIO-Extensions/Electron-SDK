@@ -52,18 +52,19 @@ const handlerEvent = function (
   bufferLength: number,
   bufferCount: number
 ) {
-  console.log(
-    "event",
-    event,
-    "data",
-    data,
-    "buffer",
-    buffer,
-    "bufferLength",
-    bufferLength,
-    "bufferCount",
-    bufferCount
-  );
+  return;
+  // console.log(
+  //   "event",
+  //   event,
+  //   "data",
+  //   data,
+  //   "buffer",
+  //   buffer,
+  //   "bufferLength",
+  //   bufferLength,
+  //   "bufferCount",
+  //   bufferCount
+  // );
   try {
     const obj = JSON.parse(data);
     // // const buffer = args.buffer;

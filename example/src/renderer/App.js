@@ -11,6 +11,8 @@ import AgoraRtcEngine, {
   OrientationMode,
   VideoCodecType,
   VideoMirrorModeType,
+  VideoSourceType,
+  CONTENT_MODE
 } from "../../../";
 
 import { APP_ID } from "../utils/settings";
@@ -184,17 +186,17 @@ export default class App extends Component {
 
   onPressSetViewForFirstCamera = () => {
     const { isSetFirstCameraView } = this.state;
-    rtcEngine.setRenderMode(2);
+    // rtcEngine.setRenderMode(2);
     let dom = document.getElementById("firstCamera");
     let domAppend = document.getElementById("firstCamera-append");
     rtcEngine.setView({
-      videoSourceType: VideoSourceType.kVideoSourceTypeCameraPrimary,
+      videoSourceType: VideoSourceType.VideoSourceCameraPrimary,
 
       view: isSetFirstCameraView ? null : dom,
       rendererOptions: { mirror: false, contentMode: CONTENT_MODE.FIT },
     });
     rtcEngine.setView({
-      videoSourceType: VideoSourceType.kVideoSourceTypeCameraPrimary,
+      videoSourceType: VideoSourceType.VideoSourceCameraPrimary,
 
       view: isSetFirstCameraView ? null : domAppend,
       rendererOptions: { mirror: true, contentMode: CONTENT_MODE.CROPPED },
@@ -244,7 +246,7 @@ export default class App extends Component {
     rtcEngine.setRenderMode(2);
     let dom = document.getElementById("scrrenShare1");
     rtcEngine.setView({
-      videoSourceType: VideoSourceType.kVideoSourceTypeScreenPrimary,
+      videoSourceType: VideoSourceType.VideoSourceScreen,
 
       view: isSetFirstScreenShareView ? null : dom,
       rendererOptions: { mirror: true, contentMode: 1 },
@@ -733,8 +735,8 @@ export default class App extends Component {
             channel-id={""}
             renderer-content-mode={CONTENT_MODE.FIT}
             renderer-mirror={false}
-          ></agora-view>
-          {this.renderViews()} */}
+          ></agora-view> */}
+          {this.renderViews()}
         </div>
       </div>
     );

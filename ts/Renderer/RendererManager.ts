@@ -7,7 +7,6 @@ import {
 } from "../Utils";
 
 import { IRenderer, RenderFailCallback } from "./IRender";
-
 import { YUVCanvasRenderer } from "./YUVCanvasRenderer";
 import GlRenderer from "./GlRenderer";
 import {
@@ -32,6 +31,7 @@ export type UidMap = Map<number, RenderConfig>;
 export type ChannelIdMap = Map<Channel, UidMap>;
 export type RenderMap = Map<VideoSourceType, ChannelIdMap>;
 class RendererManager {
+  _isRendering = false;
   videoFps: number;
   videoFrameUpdateInterval?: NodeJS.Timeout;
   renderers: RenderMap;
@@ -45,7 +45,6 @@ class RendererManager {
       ? RENDER_MODE.WEBGL
       : RENDER_MODE.SOFTWARE;
 
-    logDebug(`renderMode: ${this.renderMode === RENDER_MODE.WEBGL}`);
     this._bridge = getBridge();
   }
 
@@ -129,6 +128,8 @@ class RendererManager {
     this.enableVideoFrameCache(config);
     const render = this.addRenderer(rendererConfig, rendererConfig.view!);
     render.setRenderOption(rendererOptions);
+
+    this.enableRender(true);
   }
 
   /**
@@ -165,7 +166,7 @@ class RendererManager {
       renderConfig.renders = renders.filter((r) => r !== renderer);
       const contentMode = renderer.contentMode;
       renderer.unbind();
-      this.renderMode = RENDER_MODE.SOFTWARE;
+      this.setRenderMode(RENDER_MODE.SOFTWARE);
       const newRender = this.createRenderer();
       newRender.contentMode = contentMode;
       newRender.bind(view);
@@ -197,7 +198,7 @@ class RendererManager {
 
   removeRendererByConfig(config: VideoFrameCacheConfig): void {
     const { videoSourceType, channelId, uid } = config;
-    // this.disableVideoFrameCache(config);
+    this.disableVideoFrameCache(config);
     const uidMap = this.renderers.get(videoSourceType)?.get(channelId);
     const renderMap = uidMap?.get(uid);
     if (!renderMap) {
@@ -274,11 +275,21 @@ class RendererManager {
     return renders;
   }
 
+  enableRender(enabled = true): void {
+    if (enabled && this._isRendering) {
+      //is already _isRendering
+    } else if (enabled && !this._isRendering) {
+      this.startRenderer();
+    } else {
+      this.stopRenderer();
+    }
+  }
   /**
    * @private
    * @ignore
    */
   startRenderer(): void {
+    this._isRendering = true;
     const renderFunc = (
       rendererItem: RenderConfig,
       config: VideoFrameCacheConfig
@@ -340,6 +351,7 @@ class RendererManager {
    * @ignore
    */
   stopRenderer(): void {
+    this._isRendering = false;
     if (this.videoFrameUpdateInterval) {
       clearInterval(this.videoFrameUpdateInterval);
       this.videoFrameUpdateInterval = undefined;

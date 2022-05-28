@@ -43,46 +43,20 @@ void NodeIrisEventHandler::addEvent(const std::string& eventName,
   _callbacks[eventName] = callback;
 }
 
-/*void NodeIrisEventHandler::OnEvent(const char* event, const char* data) {
-  std::string _eventName(event);
-  std::string _eventData(data);
-  node_async_call::async_call([this, _eventName, _eventData] {
-    auto it = _callbacks.find("call_back");
-    if (it != _callbacks.end()) {
-      size_t argc = 2;
-      napi_value args[2];
-      napi_value result;
-      napi_status status;
-      status = napi_create_string_utf8(it->second->env, _eventName.c_str(),
-                                       _eventName.length(), &args[0]);
-      status = napi_create_string_utf8(it->second->env, _eventData.c_str(),
-                                       _eventData.length(), &args[1]);
-
-      napi_value call_back_value;
-      status = napi_get_reference_value(
-          it->second->env, it->second->call_back_ref, &call_back_value);
-
-      napi_value recv_value;
-      status = napi_get_undefined(it->second->env, &recv_value);
-
-      status = napi_call_function(it->second->env, recv_value, call_back_value,
-                                  argc, args, &result);
-    }
-  });
-}*/
-
 void NodeIrisEventHandler::OnEvent(const char *event, const char *data, const void *buffer,
                                     unsigned int *length, unsigned int buffer_count) {
   std::string _eventName(event);
   std::string _eventData(data);
   std::vector<char> stringData;
+//  stringData.push_back('test');
   
   if(buffer_count == 1) {
       stringData.resize(*length + 1, '\0');
       memcpy(stringData.data(), buffer, *length);
   }
     
-  std::string _eventBuffer(stringData.data());
+//  std::string _eventBuffer(stringData.data());
+  std::string _eventBuffer("123");
   node_async_call::async_call([this, _eventName, _eventData, _eventBuffer] {
     auto it = _callbacks.find("call_back_with_buffer");
     if (it != _callbacks.end()) {
