@@ -12,7 +12,7 @@ import AgoraRtcEngine, {
   VideoCodecType,
   VideoMirrorModeType,
   VideoSourceType,
-  CONTENT_MODE
+  ContentMode
 } from "../../../";
 
 import { APP_ID } from "../utils/settings";
@@ -115,6 +115,7 @@ export default class App extends Component {
 
     res = rtcEngine.enableWebSdkInteroperability(true);
     console.log("enableWebSdkInteroperability", res);
+    rtcEngine.setRenderMode(2);
 
     res = rtcEngine.setVideoEncoderConfiguration({
       codecType: VideoCodecType.VideoCodecH264,
@@ -192,13 +193,13 @@ export default class App extends Component {
       videoSourceType: VideoSourceType.VideoSourceCameraPrimary,
 
       view: isSetFirstCameraView ? null : dom,
-      rendererOptions: { mirror: false, contentMode: CONTENT_MODE.FIT },
+      rendererOptions: { mirror: false, contentMode: ContentMode.Fit },
     });
     rtcEngine.setView({
       videoSourceType: VideoSourceType.VideoSourceCameraPrimary,
 
       view: isSetFirstCameraView ? null : domAppend,
-      rendererOptions: { mirror: true, contentMode: CONTENT_MODE.CROPPED },
+      rendererOptions: { mirror: false, contentMode: ContentMode.Cropped },
     });
     this.setState({ isSetFirstCameraView: !isSetFirstCameraView });
   };
@@ -722,19 +723,19 @@ export default class App extends Component {
           >
             testDestoryLocalCameraView
           </button>
-          {/* <agora-view
+          <agora-view
             style={{
               width: 250,
               height: 250,
               background: "green",
               display: "block",
             }}
-            video-source-type={VideoSourceType.kVideoSourceTypeCameraPrimary}
+            video-source-type={VideoSourceType.VideoSourceCamera}
             uid={0}
             channel-id={""}
-            renderer-content-mode={CONTENT_MODE.FIT}
-            renderer-mirror={false}
-          ></agora-view> */}
+            renderer-content-mode={ContentMode.Fit}
+            renderer-mirror={true}
+          ></agora-view>
           {this.renderViews()}
         </div>
       </div>
