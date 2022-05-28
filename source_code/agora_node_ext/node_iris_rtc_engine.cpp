@@ -116,11 +116,11 @@ napi_value NodeIrisRtcEngine::New(napi_env env, napi_callback_info info) {
     status = napi_get_cb_info(env, info, nullptr, nullptr, &jsthis, nullptr);
     assert(status == napi_ok);
 
-    auto iris_engine = new NodeIrisRtcEngine();
-    iris_engine->_env = env;
+    auto irisEngine = new NodeIrisRtcEngine();
+    irisEngine->_env = env;
     status =
-        napi_wrap(env, jsthis, reinterpret_cast<void*>(iris_engine),
-                  NodeIrisRtcEngine::Destructor, nullptr, &iris_engine->_ref);
+        napi_wrap(env, jsthis, reinterpret_cast<void*>(irisEngine),
+                  NodeIrisRtcEngine::Destructor, nullptr, &irisEngine->_ref);
     assert(status == napi_ok);
     return jsthis;
   } else {
@@ -166,14 +166,14 @@ napi_value NodeIrisRtcEngine::CallApi(napi_env env, napi_callback_info info) {
   status =
       napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
 
-  std::string func_name = "";
+  std::string funcName = "";
   std::string parameter = "";
-  uint32_t buffer_count = 0;
+  uint32_t bufferCount = 0;
  
-  status = napi_get_value_utf8string(env, args[0], func_name);
+  status = napi_get_value_utf8string(env, args[0], funcName);
   status = napi_get_value_utf8string(env, args[1], parameter);
  
-  status = napi_get_value_uint32(env, args[3], &buffer_count);
+  status = napi_get_value_uint32(env, args[3], &bufferCount);
   
   if (strcmp(parameter.c_str(), "") == 0) {
     parameter = "{}";
@@ -183,44 +183,44 @@ napi_value NodeIrisRtcEngine::CallApi(napi_env env, napi_callback_info info) {
   memset(result, '\0', kBasicResultLength);
 
   int ret = ERROR_PARAMETER_1;
-  std::shared_ptr<IrisApiEngine> finalEngine =
+  std::shared_ptr<IrisApiEngine> irisApiEngine =
       nodeIrisRtcEngine->_iris_api_engine;
-  if (finalEngine) {
+  if (irisApiEngine) {
     try {
 
-      if (func_name.compare(FUNC_RTCENGINE_SETUPLOCALVIDEO) == 0 ||
-          func_name.compare(FUNC_RTCENGINE_SETUPREMOTEVIDEO) == 0 ||
-          func_name.compare(FUNC_RTCENGINE_SENDSTREAMMESSAGE) == 0 ||
-          func_name.compare(FUNC_RTCENGINEEX_SENDSTREAMMESSAGEEX) == 0 ||
-          func_name.compare(FUNC_MEDIAENGINE_PULLAUDIOFRAME) == 0 ||
-          func_name.compare(FUNC_MEDIAENGINE_PUSHAUDIOFRAME) == 0 ||
-          func_name.compare(FUNC_MEDIAENGINE_PUSHENCODEDVIDEOIMAGE) == 0 ||
-          func_name.compare(FUNC_MEDIAENGINE_PUSHENCODEDVIDEOIMAGE2) == 0) {
+      if (funcName.compare(FUNC_RTCENGINE_SETUPLOCALVIDEO) == 0 ||
+          funcName.compare(FUNC_RTCENGINE_SETUPREMOTEVIDEO) == 0 ||
+          funcName.compare(FUNC_RTCENGINE_SENDSTREAMMESSAGE) == 0 ||
+          funcName.compare(FUNC_RTCENGINEEX_SENDSTREAMMESSAGEEX) == 0 ||
+          funcName.compare(FUNC_MEDIAENGINE_PULLAUDIOFRAME) == 0 ||
+          funcName.compare(FUNC_MEDIAENGINE_PUSHAUDIOFRAME) == 0 ||
+          funcName.compare(FUNC_MEDIAENGINE_PUSHENCODEDVIDEOIMAGE) == 0 ||
+          funcName.compare(FUNC_MEDIAENGINE_PUSHENCODEDVIDEOIMAGE2) == 0) {
         uint64* buffer = nullptr; // get node buffer  todo
-        ret = finalEngine->CallIrisApi(func_name.c_str(), parameter.c_str(),
-                                       parameter.length(), buffer, buffer_count,
+        ret = irisApiEngine->CallIrisApi(funcName.c_str(), parameter.c_str(),
+                                       parameter.length(), buffer, bufferCount,
                                        result);
       }
-      else if (func_name.compare(FUNC_MEDIAENGINE_PUSHVIDEOFRAME) == 0 ||
-        func_name.compare(FUNC_MEDIAENGINE_PUSHVIDEOFRAME2) == 0) {
+      else if (funcName.compare(FUNC_MEDIAENGINE_PUSHVIDEOFRAME) == 0 ||
+        funcName.compare(FUNC_MEDIAENGINE_PUSHVIDEOFRAME2) == 0) {
         uint64* buffer = nullptr; // todo get node buffers
-        ret = finalEngine->CallIrisApi(func_name.c_str(), parameter.c_str(),
-          parameter.length(), buffer, buffer_count,
+        ret = irisApiEngine->CallIrisApi(funcName.c_str(), parameter.c_str(),
+          parameter.length(), buffer, bufferCount,
           result);
       }
       else
-        ret = finalEngine->CallIrisApi(func_name.c_str(), parameter.c_str(),
+        ret = irisApiEngine->CallIrisApi(funcName.c_str(), parameter.c_str(),
                                        parameter.length(), nullptr, 0, result);
       LOG_F(INFO, "CallApi(func name:%s) parameter: %s, ret: %d",
-            func_name.c_str(), parameter.c_str(), ret);
+            funcName.c_str(), parameter.c_str(), ret);
     } catch (std::exception& e) {
       nodeIrisRtcEngine->OnApiError(e.what());
       LOG_F(INFO, "CallApi(func name:%s) parameter: catch excepton msg: %s",
-            func_name.c_str(), e.what());
+            funcName.c_str(), e.what());
     }
   } else {
     LOG_F(INFO, "CallApi(func name:%s) parameter did not initialize engine yet",
-          func_name.c_str());
+          funcName.c_str());
     ret = ERROR_NOT_INIT;
   }
   RETURE_NAPI_OBJ();
@@ -266,9 +266,9 @@ napi_value NodeIrisRtcEngine::GetScreenWindowsInfo(napi_env env,
   napi_value array;
   napi_create_array(env, &array);
 
-  auto _allWindows = getAllWindowInfo();
-  for (auto i = 0; i < _allWindows.size(); i++) {
-    auto _windowInfo = _allWindows[i];
+  auto allWindows = getAllWindowInfo();
+  for (auto i = 0; i < allWindows.size(); i++) {
+    auto _windowInfo = allWindows[i];
     napi_value obj;
     napi_create_object(env, &obj);
 #ifdef _WIN32
@@ -306,37 +306,37 @@ napi_value NodeIrisRtcEngine::GetScreenDisplaysInfo(napi_env env,
   napi_value array;
   napi_create_array(env, &array);
 
-  auto _allDisplays = getAllDisplayInfo();
+  auto allDisplays = getAllDisplayInfo();
 
-  for (auto i = 0; i < _allDisplays.size(); i++) {
+  for (auto i = 0; i < allDisplays.size(); i++) {
     napi_value displayObj;
     napi_create_object(env, &displayObj);
-    auto _displayInfo = _allDisplays[i];
+    auto displayInfo = allDisplays[i];
 #ifdef WIN32 // __WIN32
-    auto _displayId = _displayInfo.displayInfo;
+    auto displayId = displayInfo.displayInfo;
 #else
-    auto _displayId = _displayInfo.displayId;
+    auto displayId = displayInfo.displayId;
 #endif
     napi_value obj;
     napi_create_object(env, &obj);
 
-    napi_obj_set_property(env, obj, "x", _displayInfo.x);
-    napi_obj_set_property(env, obj, "y", _displayInfo.y);
-    napi_obj_set_property(env, obj, "width", _displayInfo.width);
-    napi_obj_set_property(env, obj, "height", _displayInfo.height);
-    napi_obj_set_property(env, obj, "id", _displayId.idVal);
+    napi_obj_set_property(env, obj, "x", displayInfo.x);
+    napi_obj_set_property(env, obj, "y", displayInfo.y);
+    napi_obj_set_property(env, obj, "width", displayInfo.width);
+    napi_obj_set_property(env, obj, "height", displayInfo.height);
+    napi_obj_set_property(env, obj, "id", displayId.idVal);
     napi_obj_set_property(env, displayObj, "displayId", obj);
-    napi_obj_set_property(env, displayObj, "width", _displayInfo.width);
-    napi_obj_set_property(env, displayObj, "height", _displayInfo.height);
-    napi_obj_set_property(env, displayObj, "x", _displayInfo.x);
-    napi_obj_set_property(env, displayObj, "y", _displayInfo.y);
-    napi_obj_set_property(env, displayObj, "isMain", _displayInfo.isMain);
-    napi_obj_set_property(env, displayObj, "isActive", _displayInfo.isActive);
-    napi_obj_set_property(env, displayObj, "isBuiltin", _displayInfo.isBuiltin);
-    if (_displayInfo.imageData) {
-      napi_obj_set_property(env, displayObj, "image", _displayInfo.imageData,
-                            _displayInfo.imageDataLength);
-      free(_displayInfo.imageData);
+    napi_obj_set_property(env, displayObj, "width", displayInfo.width);
+    napi_obj_set_property(env, displayObj, "height", displayInfo.height);
+    napi_obj_set_property(env, displayObj, "x", displayInfo.x);
+    napi_obj_set_property(env, displayObj, "y", displayInfo.y);
+    napi_obj_set_property(env, displayObj, "isMain", displayInfo.isMain);
+    napi_obj_set_property(env, displayObj, "isActive", displayInfo.isActive);
+    napi_obj_set_property(env, displayObj, "isBuiltin", displayInfo.isBuiltin);
+    if (displayInfo.imageData) {
+      napi_obj_set_property(env, displayObj, "image", displayInfo.imageData,
+                            displayInfo.imageDataLength);
+      free(displayInfo.imageData);
     }
     napi_set_element(env, array, i, displayObj);
   }
@@ -509,13 +509,12 @@ napi_value NodeIrisRtcEngine::GetVideoStreamData(napi_env env,
   napi_obj_get_property(env, obj, "height", height);
   napi_obj_get_property(env, obj, "width", width);
 
-  IrisVideoFrame _videoFrame = IrisVideoFrame_default;
-  _videoFrame.y_buffer = y_buffer;
-  _videoFrame.u_buffer = u_buffer;
-  _videoFrame.v_buffer = v_buffer;
-  _videoFrame.height = height;
-  
-  _videoFrame.width = width;
+  IrisVideoFrame videoFrame = IrisVideoFrame_default;
+  videoFrame.y_buffer = y_buffer;
+  videoFrame.u_buffer = u_buffer;
+  videoFrame.v_buffer = v_buffer;
+  videoFrame.height = height;
+  videoFrame.width = width;
 
   bool isFresh = false;
 
@@ -525,24 +524,27 @@ napi_value NodeIrisRtcEngine::GetVideoStreamData(napi_env env,
 //    ERR_SIZE_NOT_MATCHING = 2,
 //    ERR_BUFFER_EMPTY = 5,
 //  } IRIS_VIDEO_PROCESS_ERR;
+  napi_value retObj;
+  int32_t ret = ERROR_NOT_INIT;
+  status = napi_create_object(env, &retObj);
+
   if (!nodeIrisRtcEngine->_iris_video_frame_buffer_manager.get()) {
+    napi_obj_set_property(env, retObj, "ret", ret);
     LOG_F(INFO, "IrisVideoFrameBufferManager Not Init");
-    return;
+    return retObj;
   }
   
-  uint32_t ret = nodeIrisRtcEngine->_iris_video_frame_buffer_manager->GetVideoFrame(_videoFrame,
+  ret = nodeIrisRtcEngine->_iris_video_frame_buffer_manager->GetVideoFrame(videoFrame,
       isFresh, &config);
   
   unsigned int rotation = 0;
-  napi_value retObj;
-  status = napi_create_object(env, &retObj);
   napi_obj_set_property(env, retObj, "ret", ret);
   napi_obj_set_property(env, retObj, "isNewFrame", isFresh);
-  napi_obj_set_property(env, retObj, "width", _videoFrame.width);
-  napi_obj_set_property(env, retObj, "height", _videoFrame.height);
-  napi_obj_set_property(env, retObj, "yStride", _videoFrame.y_stride);
+  napi_obj_set_property(env, retObj, "width", videoFrame.width);
+  napi_obj_set_property(env, retObj, "height", videoFrame.height);
+  napi_obj_set_property(env, retObj, "yStride", videoFrame.y_stride);
   napi_obj_set_property(env, retObj, "rotation", rotation);
-  napi_obj_set_property(env, retObj, "timestamp", _videoFrame.render_time_ms);
+  napi_obj_set_property(env, retObj, "timestamp", videoFrame.render_time_ms);
   return retObj;
 }
 
@@ -559,16 +561,16 @@ napi_value NodeIrisRtcEngine::InitializeEnv(napi_env env, napi_callback_info inf
   
   //create
   auto engine = std::make_shared<IrisApiEngine>();
-  auto buffer_manager = std::make_shared<iris::IrisVideoFrameBufferManager>();
+  auto bufferManager = std::make_shared<iris::IrisVideoFrameBufferManager>();
   auto eventHandler = std::make_shared<NodeIrisEventHandler>();
   
   //combine
   engine.get()->SetIrisRtcEngineEventHandler(eventHandler.get());
-  engine.get()->Attach(buffer_manager.get());
+  engine.get()->Attach(bufferManager.get());
   
   //assign
   nodeIrisRtcEngine->_iris_api_engine = engine;
-  nodeIrisRtcEngine->_iris_video_frame_buffer_manager = buffer_manager;
+  nodeIrisRtcEngine->_iris_video_frame_buffer_manager = bufferManager;
   nodeIrisRtcEngine->_iris_event_handler = eventHandler;
   
   LOG_F(INFO, "NodeIrisRtcEngine::InitializeEnv");
@@ -588,16 +590,16 @@ napi_value NodeIrisRtcEngine::ReleaseEnv(napi_env env, napi_callback_info info) 
   
   //define
   auto engine = nodeIrisRtcEngine->_iris_api_engine;
-  auto buffer_manager = nodeIrisRtcEngine->_iris_video_frame_buffer_manager;
+  auto bufferManager = nodeIrisRtcEngine->_iris_video_frame_buffer_manager;
   auto eventHandler = nodeIrisRtcEngine->_iris_event_handler;
   
   //uncontrol
-  engine->Detach(buffer_manager.get());
+  engine->Detach(bufferManager.get());
   engine.get()->UnsetIrisRtcEngineEventHandler(eventHandler.get());
   
   //reset
   eventHandler.reset();
-  buffer_manager.reset();
+  bufferManager.reset();
   engine.reset();
   
   LOG_F(INFO, "NodeIrisRtcEngine::ReleaseEnv");
