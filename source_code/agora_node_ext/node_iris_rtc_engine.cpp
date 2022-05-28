@@ -4,9 +4,9 @@
  * @Last Modified by: zhangtao@agora.io
  * @Last Modified time: 2021-10-19 18:43:09
  */
-#include "node_iris_rtc_engine.h"
-#include <assert.h>
 #include <memory>
+#include "iris_base.h"
+#include "node_iris_rtc_engine.h"
 #include "node_iris_event_handler.h"
 
 namespace agora {
@@ -179,8 +179,8 @@ napi_value NodeIrisRtcEngine::CallApi(napi_env env, napi_callback_info info) {
     parameter = "{}";
   }
 
-  char result[kMaxResultLength];
-  memset(result, '\0', kMaxResultLength);
+  char result[kBasicResultLength];
+  memset(result, '\0', kBasicResultLength);
 
   int ret = ERROR_PARAMETER_1;
   std::shared_ptr<IrisApiEngine> finalEngine =
@@ -358,16 +358,16 @@ napi_value NodeIrisRtcEngine::SetAddonLogFile(napi_env env,
   std::string file_path = "";
   status = napi_get_value_utf8string(env, args[0], file_path);
 
-  char result[kMaxResultLength];
+  char result[kBasicStringLength];
   int ret = ERROR_PARAMETER_1;
-  memset(result, '\0', kMaxResultLength);
+  memset(result, '\0', kBasicStringLength);
 
   ret = startLogService(file_path.c_str());
   RETURE_NAPI_OBJ();
 }
 
 void NodeIrisRtcEngine::OnApiError(const char* errorMessage) {
-  _iris_event_handler->OnEvent("onApiError", errorMessage, nullptr, 0);
+  _iris_event_handler->OnEvent("onApiError", errorMessage, nullptr, nullptr, 0);
 }
 
 napi_value NodeIrisRtcEngine::EnableVideoFrameCache(napi_env env,
@@ -398,8 +398,8 @@ napi_value NodeIrisRtcEngine::EnableVideoFrameCache(napi_env env,
   napi_obj_get_property(env, obj, "width", width);
   napi_obj_get_property(env, obj, "height", height);
 
-  char result[kMaxResultLength];
-  memset(result, '\0', kMaxResultLength);
+  char result[kBasicStringLength];
+  memset(result, '\0', kBasicStringLength);
   int ret = ERROR_PARAMETER_1;
   
   if (!nodeIrisRtcEngine->_iris_video_frame_buffer_manager) {
@@ -443,8 +443,8 @@ napi_value NodeIrisRtcEngine::DisableVideoFrameCache(napi_env env,
   napi_obj_get_property(env, obj, "channelId", channelId);
   strcpy(config.key, channelId.c_str());
 
-  char result[kMaxResultLength];
-  memset(result, '\0', kMaxResultLength);
+  char result[kBasicStringLength];
+  memset(result, '\0', kBasicStringLength);
   int ret = ERROR_PARAMETER_1;
 
   if (!nodeIrisRtcEngine->_iris_video_frame_buffer_manager) {

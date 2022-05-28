@@ -71,16 +71,17 @@ void NodeIrisEventHandler::addEvent(const std::string& eventName,
   });
 }*/
 
-void NodeIrisEventHandler::OnEvent(const char* event,
-                                   const char* data,
-                                   const void* buffer,
-                                   unsigned int length) {
+void NodeIrisEventHandler::OnEvent(const char *event, const char *data, const void *buffer,
+                                    unsigned int *length, unsigned int buffer_count) {
   std::string _eventName(event);
   std::string _eventData(data);
   std::vector<char> stringData;
-  stringData.resize(length + 1, '\0');
-
-  memcpy(stringData.data(), buffer, length);
+  
+  if(buffer_count == 1) {
+      stringData.resize(*length + 1, '\0');
+      memcpy(stringData.data(), buffer, *length);
+  }
+    
   std::string _eventBuffer(stringData.data());
   node_async_call::async_call([this, _eventName, _eventData, _eventBuffer] {
     auto it = _callbacks.find("call_back_with_buffer");
