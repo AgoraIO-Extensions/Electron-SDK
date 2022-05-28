@@ -12,7 +12,7 @@ import AgoraRtcEngine, {
   VideoCodecType,
   VideoMirrorModeType,
   VideoSourceType,
-  ContentMode
+  ContentMode,
 } from "../../../";
 
 import { APP_ID } from "../utils/settings";
@@ -119,7 +119,7 @@ export default class App extends Component {
 
     res = rtcEngine.setVideoEncoderConfiguration({
       codecType: VideoCodecType.VideoCodecH264,
-      dimensions: { width: 300, height: 300 },
+      dimensions: { width: 300, height: 120 },
       frameRate: 15,
       bitrate: 65,
       minBitrate: 1,
@@ -199,7 +199,7 @@ export default class App extends Component {
       videoSourceType: VideoSourceType.VideoSourceCameraPrimary,
 
       view: isSetFirstCameraView ? null : domAppend,
-      rendererOptions: { mirror: false, contentMode: ContentMode.Cropped },
+      rendererOptions: { mirror: true, contentMode: ContentMode.Cropped },
     });
     this.setState({ isSetFirstCameraView: !isSetFirstCameraView });
   };
@@ -729,12 +729,13 @@ export default class App extends Component {
               height: 250,
               background: "green",
               display: "block",
+              overflow: "hidden",
             }}
             video-source-type={VideoSourceType.VideoSourceCamera}
             uid={0}
             channel-id={""}
             renderer-content-mode={ContentMode.Fit}
-            renderer-mirror={true}
+            renderer-mirror={false}
           ></agora-view>
           {this.renderViews()}
         </div>
