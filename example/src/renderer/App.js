@@ -180,7 +180,6 @@ export default class App extends Component {
       return;
     }
     rtcEngine.release();
-    rtcEngine = null;
     this.setState(defaultState);
   };
 

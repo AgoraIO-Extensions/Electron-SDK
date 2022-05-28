@@ -16,15 +16,15 @@ import {
   RendererConfigInternal,
   CONTENT_MODE,
   RendererConfig,
-  VideoFrame,
+  ShareVideoFrame,
   AgoraElectronBridge,
 } from "../AgoraSdk";
 import { VideoFrameCacheConfig } from "../types";
 import { getBridge } from "../Private/internal/IrisApiEngine";
 
 interface RenderConfig {
-  renders?: IRenderer[];
-  cachedVideoFrame?: VideoFrame;
+  renders: IRenderer[];
+  shareVideoFrame: ShareVideoFrame;
 }
 
 export type UidMap = Map<number, RenderConfig>;
@@ -294,52 +294,45 @@ class RendererManager {
       rendererItem: RenderConfig,
       config: VideoFrameCacheConfig
     ) => {
-      const { cachedVideoFrame, renders } = rendererItem;
+      const { renders } = rendererItem;
       if (!renders || renders?.length === 0) {
         return;
       }
-      const { videoSourceType, channelId, uid } = config;
+      let finalResult = this._bridge.GetVideoStreamData(
+        rendererItem.shareVideoFrame
+      );
 
-      if (!cachedVideoFrame) {
-        logWarn(
-          `VideoSourceType:${videoSourceType} Channel: ${channelId} Uid: ${uid} have no cachedVideoFrame`
-        );
+      switch (finalResult.ret) {
+        case 0: // IRIS_VIDEO_PROCESS_ERR::ERR_OK = 0,
+          break;
+        case 1: // IRIS_VIDEO_PROCESS_ERR::ERR_NULL_POINTER = 1,
+          return;
+        case 2: // IRIS_VIDEO_PROCESS_ERR::ERR_SIZE_NOT_MATCHING
+          const { width, height } = finalResult;
+          const { videoSourceType, channelId, uid } = config;
+          const newShareVideoFrame = this.resizeShareVideoFrame(
+            videoSourceType,
+            channelId,
+            uid,
+            width,
+            height
+          );
+          rendererItem.shareVideoFrame = newShareVideoFrame;
+          finalResult = this._bridge.GetVideoStreamData(newShareVideoFrame);
+          break;
+        case 5: // IRIS_VIDEO_PROCESS_ERR::ERR_BUFFER_EMPTY
+          return;
+        default:
+          return;
+      }
+      if (finalResult.ret !== 0) {
+        console.log("native get size error");
         return;
       }
 
-      let retObj;
-      retObj = this._bridge.GetVideoStreamData(cachedVideoFrame);
-
-      if (!retObj || !retObj.ret) {
-        logWarn(
-          `VideoSourceType:${videoSourceType} Channel: ${channelId} Uid: ${uid} have no stream`
-        );
-        return;
-      }
-
-      if (!retObj.isNewFrame) return;
-      const { yBuffer, uBuffer, vBuffer } = cachedVideoFrame;
-      let videoFrame: VideoFrame = {
-        width: retObj.width,
-        height: retObj.height,
-        yBuffer,
-        uBuffer,
-        vBuffer,
-        mirror: false,
-        yStride: retObj.yStride,
-        rotation: retObj.rotation,
-        videoSourceType: config.videoSourceType,
-      };
-
-      if (renders) {
-        renders.forEach((renderItem) => {
-          renderItem.drawFrame(videoFrame);
-        });
-      } else {
-        logWarn(
-          `VideoSourceType:${videoSourceType} Channel: ${channelId} Uid: ${uid} have no renderer`
-        );
-      }
+      renders.forEach((renderItem) => {
+        renderItem.drawFrame(rendererItem.shareVideoFrame);
+      });
     };
     this.videoFrameUpdateInterval = setInterval(() => {
       this.forEachStream(renderFunc);
@@ -385,13 +378,20 @@ class RendererManager {
     | Map<
         number,
         {
-          cachedVideoFrame?: VideoFrame;
-          renders?: IRenderer[];
+          shareVideoFrame: ShareVideoFrame;
+          renders: IRenderer[];
         }
       >
     | undefined {
     const { videoSourceType, uid, channelId } = config;
-    const emptyRenderConfig = { renders: [] };
+    const emptyRenderConfig = {
+      renders: [],
+      shareVideoFrame: this.resizeShareVideoFrame(
+        videoSourceType,
+        channelId,
+        uid
+      ),
+    };
     const emptyUidMap = new Map([[uid, emptyRenderConfig]]);
     const emptyChannelMap = new Map([[channelId, emptyUidMap]]);
 
@@ -416,15 +416,34 @@ class RendererManager {
     }
     return channelMap;
   }
+  resizeShareVideoFrame(
+    videoSourceType: VideoSourceType,
+    channelId: string,
+    uid: number,
+    width = 0,
+    height = 0
+  ): ShareVideoFrame {
+    // width = ((width + 15) >> 4) << 4;
+    return {
+      videoSourceType,
+      channelId,
+      uid,
+      yBuffer: Buffer.alloc(width * height),
+      uBuffer: Buffer.alloc((width * height) / 4),
+      vBuffer: Buffer.alloc((width * height) / 4),
+      width,
+      height,
+    };
+  }
 
   updateVideoFrameCacheInMap(
     config: VideoFrameCacheConfig,
-    videoFrame: VideoFrame
+    shareVideoFrame: ShareVideoFrame
   ): void {
     let rendererConfigMap = this.ensureRendererConfig(config);
     rendererConfigMap
       ? Object.assign(rendererConfigMap.get(config.uid), {
-          cachedVideoFrame: videoFrame,
+          shareVideoFrame,
         })
       : logWarn(
           `updateVideoFrameCacheInMap videoSourceType:${config.videoSourceType} channelId:${config.channelId} uid:${config.uid} rendererConfigMap is null`

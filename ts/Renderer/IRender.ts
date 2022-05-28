@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { CONTENT_MODE, RendererOptions, VideoFrame } from "../types";
+import { CONTENT_MODE, RendererOptions, ShareVideoFrame } from "../types";
 
 export type RenderFailCallback = ((obj: { error: string }) => void) | undefined | null;
 export class IRenderer {
@@ -37,7 +37,7 @@ export class IRenderer {
     return element === this.parentElement;
   }
 
-  drawFrame(imageData: VideoFrame) {
+  drawFrame(imageData: ShareVideoFrame) {
     throw new Error("You have to declare your own custom render");
   }
 

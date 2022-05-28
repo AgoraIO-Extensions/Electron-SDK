@@ -50,10 +50,9 @@ export interface VideoFrameCacheConfig {
   width?: number;
   height?: number;
 }
-export interface VideoFrame {
+export interface ShareVideoFrame {
   width: number;
   height: number;
-  yStride: number;
   yBuffer: Buffer | Uint8Array;
   uBuffer: Buffer | Uint8Array;
   vBuffer: Buffer | Uint8Array;
@@ -97,8 +96,8 @@ export interface AgoraElectronBridge {
   // PluginCallApi(apiType: ApiTypeRawDataPluginManager, params: string): Result;
   EnableVideoFrameCache(config: VideoFrameCacheConfig): Result;
   DisableVideoFrameCache(config: VideoFrameCacheConfig): Result;
-  GetVideoStreamData(streamInfo: VideoFrame): {
-    ret: boolean;
+  GetVideoStreamData(streamInfo: ShareVideoFrame): {
+    ret: number;
     isNewFrame: boolean;
     yStride: number;
     width: number;

@@ -489,7 +489,7 @@ napi_value NodeIrisRtcEngine::GetVideoStreamData(napi_env env,
   void* v_buffer;
   size_t v_length;
   int height;
-  int y_stride;
+  int width;
 
   napi_obj_get_property(env, obj, "uid", config.id);
   napi_obj_get_property(env, obj, "videoSourceType", videoSourceType);
@@ -507,25 +507,32 @@ napi_value NodeIrisRtcEngine::GetVideoStreamData(napi_env env,
   napi_get_buffer_info(env, v_buffer_obj, &v_buffer, &v_length);
 
   napi_obj_get_property(env, obj, "height", height);
-  napi_obj_get_property(env, obj, "yStride", y_stride);
+  napi_obj_get_property(env, obj, "width", width);
 
   IrisVideoFrame _videoFrame = IrisVideoFrame_default;
   _videoFrame.y_buffer = y_buffer;
   _videoFrame.u_buffer = u_buffer;
   _videoFrame.v_buffer = v_buffer;
   _videoFrame.height = height;
-  _videoFrame.y_stride = y_stride;
+  
+  _videoFrame.width = width;
 
   bool isFresh = false;
-  bool ret = false;
-  
-  if (nodeIrisRtcEngine->_iris_video_frame_buffer_manager) {
-    ret = nodeIrisRtcEngine->_iris_video_frame_buffer_manager->GetVideoFrame(_videoFrame,
-        isFresh, &config);
-  } else {
-    ret = false;
+
+//  typedef enum IRIS_VIDEO_PROCESS_ERR {
+//    ERR_OK = 0,
+//    ERR_NULL_POINTER = 1,
+//    ERR_SIZE_NOT_MATCHING = 2,
+//    ERR_BUFFER_EMPTY = 5,
+//  } IRIS_VIDEO_PROCESS_ERR;
+  if (!nodeIrisRtcEngine->_iris_video_frame_buffer_manager.get()) {
     LOG_F(INFO, "IrisVideoFrameBufferManager Not Init");
+    return;
   }
+  
+  uint32_t ret = nodeIrisRtcEngine->_iris_video_frame_buffer_manager->GetVideoFrame(_videoFrame,
+      isFresh, &config);
+  
   unsigned int rotation = 0;
   napi_value retObj;
   status = napi_create_object(env, &retObj);

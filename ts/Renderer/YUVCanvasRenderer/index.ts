@@ -9,7 +9,7 @@ const YUVBuffer = require("yuv-buffer");
 const YUVCanvas = require("yuv-canvas");
 const isEqual = require("lodash.isequal");
 
-import { CanvasOptions, CONTENT_MODE, VideoFrame } from "../../types";
+import { CanvasOptions, CONTENT_MODE, ShareVideoFrame } from "../../types";
 import { IRenderer } from "../IRender";
 import { logDebug } from "../../Utils";
 
@@ -18,7 +18,7 @@ export class YUVCanvasRenderer extends IRenderer {
   private _yuvCanvasSink?: any;
   private _container?: HTMLElement;
   private _isWebGL: boolean;
-  private _videoFrame: VideoFrame;
+  private _videoFrame: ShareVideoFrame;
 
   constructor(isWebGL: boolean) {
     super();
@@ -27,7 +27,6 @@ export class YUVCanvasRenderer extends IRenderer {
       rotation: 0,
       width: 0,
       height: 0,
-      yStride: 0,
       yBuffer: new Uint8Array(0),
       uBuffer: new Uint8Array(0),
       vBuffer: new Uint8Array(0),
@@ -174,12 +173,12 @@ export class YUVCanvasRenderer extends IRenderer {
     }
   }
 
-  drawFrame(frame: VideoFrame) {
+  drawFrame(frame: ShareVideoFrame) {
     if (!this._container || !this._yuvCanvasSink) {
       return;
     }
 
-    let frameWidth = frame.yStride;
+    let frameWidth = frame.width;
     let frameHeight = frame.height;
 
     if (

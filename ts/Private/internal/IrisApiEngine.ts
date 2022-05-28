@@ -1,12 +1,4 @@
-import {
-  CanvasOptions,
-  CONTENT_MODE,
-  VideoFrame,
-  AgoraElectronBridge,
-  Result,
-} from "../../AgoraSdk";
-
-import { VideoSourceType } from "../AgoraBase";
+import { AgoraElectronBridge, Result } from "../../AgoraSdk";
 import { IRtcEngineEventHandler } from "../IAgoraRtcEngine";
 import { processIRtcEngineEventHandlerEx } from "../impl/IAgoraRtcEngineExImpl";
 import { processIRtcEngineEventHandler } from "../impl/IAgoraRtcEngineImpl";

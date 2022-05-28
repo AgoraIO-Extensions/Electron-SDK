@@ -2,7 +2,7 @@ const createProgramFromSources =
   require("./webgl-utils").createProgramFromSources;
 
 import { EventEmitter } from "events";
-import { VideoFrame } from "../../types";
+import { ShareVideoFrame } from "../../types";
 import { IRenderer, RenderFailCallback } from "../IRender";
 
 const vertexShaderSource =
@@ -285,7 +285,7 @@ export class GlRenderer extends IRenderer {
     gl.uniform2f(resolutionLocation, width, height);
   }
 
-  drawFrame(videoFrame: VideoFrame) {
+  drawFrame(videoFrame: ShareVideoFrame) {
     let error;
     try {
       this.renderImage({
