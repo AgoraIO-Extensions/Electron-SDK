@@ -3,7 +3,6 @@
 
 #include <string>
 #include <vector>
-#include "IAgoraRtcEngine.h"
 
 #if defined(_WIN32)
 #include <windows.h>
@@ -20,6 +19,27 @@ typedef DisplayID ScreenIDType;
 #elif defined(_WIN32)
 typedef agora::rtc::Rectangle ScreenIDType;
 #endif
+
+/** The relative location of the region to the screen or window.
+ */
+struct Rectangle {
+  /** The horizontal offset from the top-left corner.
+   */
+  int x;
+  /** The vertical offset from the top-left corner.
+   */
+  int y;
+  /** The width of the region.
+   */
+  int width;
+  /** The height of the region.
+   */
+  int height;
+
+  Rectangle() : x(0), y(0), width(0), height(0) {}
+  Rectangle(int xx, int yy, int ww, int hh) : x(xx), y(yy), width(ww), height(hh) {}
+};
+
 
 typedef struct DisplayInfo {
   DisplayInfo() : idVal(0) {}

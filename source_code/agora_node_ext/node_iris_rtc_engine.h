@@ -5,13 +5,13 @@
  * @Last Modified time: 2021-10-19 18:14:39
  */
 #pragma once
+#include <exception>
+#include <node_api.h>
 #include "iris_api_type.h"
 #include "iris_rtc_cxx_api.h"
 #include "iris_video_processor_cxx.h"
 #include "node_base.h"
 #include "node_screen_window_info.h"
-#include <exception>
-#include <node_api.h>
 
 namespace agora {
 namespace rtc {
