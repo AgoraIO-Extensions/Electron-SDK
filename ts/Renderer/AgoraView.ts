@@ -1,11 +1,12 @@
-import { AgoraRtcEngine } from "../Api/AgoraRtcEngine";
+import { VideoSourceType } from "../AgoraSdk";
+import { AgoraRtcEngine } from "../AgoraRtcEngine";
 import {
   agoraEventEmitter,
   EVENT_ENGINE_INITIALIZE,
   EVENT_ENGINE_RELEASE,
-  logWarn,
+  logWarn
 } from "../Utils";
-import { CONTENT_MODE, VideoSourceType } from "./type";
+import { CONTENT_MODE } from "./type";
 
 const VIDEO_SOURCE_TYPE_STRING = "video-source-type";
 const UID_STRING = "uid";

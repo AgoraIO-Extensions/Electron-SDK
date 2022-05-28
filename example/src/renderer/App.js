@@ -1,41 +1,21 @@
 import React, { Component, useEffect } from "react";
 import electron from "electron";
 window.electron = electron;
+
 import AgoraRtcEngine, {
-  ApiTypeEngine,
-  CHANNEL_PROFILE_TYPE,
-  CLIENT_ROLE_TYPE,
-  AUDIO_PROFILE_TYPE,
-  AUDIO_SCENARIO_TYPE,
-  VideoSourceType,
-  FRAME_RATE,
-  EngineEvents,
-  ENCRYPTION_MODE,
-  ChannelMediaOptions,
-  AUDIO_ENCODED_FRAME_OBSERVER_POSITION,
-  AUDIO_ENCODING_TYPE,
-  LOG_LEVEL,
-  RAW_AUDIO_FRAME_OP_MODE_TYPE,
-  MEDIA_SOURCE_TYPE,
-  VIDEO_SOURCE_TYPE,
-  VIDEO_ORIENTATION,
-  METADATA_TYPE,
-  AUDIO_CODEC_PROFILE_TYPE,
-  VIDEO_CODEC_TYPE,
-  ORIENTATION_MODE,
-  DEGRADATION_PREFERENCE,
-  VIDEO_MIRROR_MODE_TYPE,
-  TCcMode,
-  VOICE_CONVERSION_PRESET,
-  AUDIENCE_LATENCY_LEVEL_TYPE,
-  VIDEO_STREAM_TYPE,
-  CONTENT_MODE,
+  AudioProfileType,
+  AudioScenarioType,
+  ChannelProfileType,
+  ClientRoleType,
+  DegradationPreference,
+  OrientationMode,
+  VideoCodecType,
+  VideoMirrorModeType,
 } from "../../../";
 
 import { APP_ID } from "../utils/settings";
 
 let rtcEngine;
-window.ApiTypeEngine = ApiTypeEngine;
 class RemoteWindow extends Component {
   constructor(props) {
     super(props);
@@ -109,28 +89,23 @@ export default class App extends Component {
 
     let res = rtcEngine.initialize({
       appId: APP_ID,
-      areaCode: 1,
-      logConfig: {
-        filePath: "/home/parallels/projects/Electron-SDK/example/linux_e.log",
-        fileSize: 1024,
-        level: 1,
-      },
     });
+    console.log("initialize", res);
 
-    console.log("initialize res", res);
-    rtcEngine.setRenderMode(1);
+    // console.log("initialize res", res);
+    // rtcEngine.setRenderMode(1);
 
     res = rtcEngine.setChannelProfile(
-      CHANNEL_PROFILE_TYPE.CHANNEL_PROFILE_LIVE_BROADCASTING
+      ChannelProfileType.ChannelProfileLiveBroadcasting
     );
     console.log("setChannelProfile", res);
 
-    res = rtcEngine.setClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+    res = rtcEngine.setClientRole(ClientRoleType.ClientRoleBroadcaster);
     console.log("setClientRole", res);
 
     res = rtcEngine.setAudioProfile(
-      AUDIO_PROFILE_TYPE.AUDIO_PROFILE_DEFAULT,
-      AUDIO_SCENARIO_TYPE.AUDIO_SCENARIO_CHATROOM_ENTERTAINMENT
+      AudioProfileType.AudioProfileDefault,
+      AudioScenarioType.AudioScenarioChatroom
     );
 
     console.log("setAudioProfile", res);
@@ -142,18 +117,21 @@ export default class App extends Component {
     console.log("enableWebSdkInteroperability", res);
 
     res = rtcEngine.setVideoEncoderConfiguration({
-      //      label: "160x120	15fps	65kbps",
-      width: 160,
-      height: 120,
+      codecType: VideoCodecType.VideoCodecH264,
+      dimensions: { width: 300, height: 300 },
       frameRate: 15,
       bitrate: 65,
+      minBitrate: 1,
+      orientationMode: OrientationMode,
+      degradationPreference: DegradationPreference.MaintainBalanced,
+      mirrorMode: VideoMirrorModeType,
     });
     console.log("setVideoEncoderConfiguration", res);
 
     const ver = rtcEngine.getVersion();
     console.log("getVersion", ver);
-    // rtcEngine.startPreview();
-    this.subscribeEvent();
+    rtcEngine.startPreview();
+    // this.subscribeEvent();
   };
   subscribeEvent = () => {
     rtcEngine.on(EngineEvents.ERROR, (...args) => {
@@ -753,7 +731,7 @@ export default class App extends Component {
           >
             testDestoryLocalCameraView
           </button>
-          <agora-view
+          {/* <agora-view
             style={{
               width: 250,
               height: 250,
@@ -766,7 +744,7 @@ export default class App extends Component {
             renderer-content-mode={CONTENT_MODE.FIT}
             renderer-mirror={false}
           ></agora-view>
-          {this.renderViews()}
+          {this.renderViews()} */}
         </div>
       </div>
     );

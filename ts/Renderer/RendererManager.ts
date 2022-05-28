@@ -1,4 +1,4 @@
-import { NodeIrisRtcEngine } from "../Api/internal/native_interface";
+
 import {
   logError,
   logInfo,
@@ -13,13 +13,15 @@ import {
   RendererConfig,
   VideoFrame,
   VideoFrameCacheConfig,
-  VideoSourceType,
   Channel,
   RendererConfigInternal,
   CONTENT_MODE,
 } from "./type";
 import { YUVCanvasRenderer } from "./YUVCanvasRenderer";
 import GlRenderer from "./GlRenderer";
+import { VideoSourceType } from "../AgoraSdk";
+import { AgoraElectronBridge, getBridge } from "../Private/internal/IrisApiEngine";
+
 
 interface RenderConfig {
   renders?: IRenderer[];
@@ -34,9 +36,9 @@ class RendererManager {
   videoFrameUpdateInterval?: NodeJS.Timeout;
   renderers: RenderMap;
   renderMode: RENDER_MODE;
-  _rtcEngine: NodeIrisRtcEngine;
+  _bridge: AgoraElectronBridge;
 
-  constructor(rtcEngine: NodeIrisRtcEngine) {
+  constructor() {
     this.videoFps = 15;
     this.renderers = new Map();
     this.renderMode = this._checkWebGL()
@@ -44,8 +46,7 @@ class RendererManager {
       : RENDER_MODE.SOFTWARE;
 
     logDebug(`renderMode: ${this.renderMode === RENDER_MODE.WEBGL}`);
-
-    this._rtcEngine = rtcEngine;
+    this._bridge = getBridge();
   }
 
   clear(): void {
@@ -267,7 +268,7 @@ class RendererManager {
       }
 
       let retObj;
-      retObj = this._rtcEngine.GetVideoStreamData(cachedVideoFrame);
+      retObj = this._bridge.GetVideoStreamData(cachedVideoFrame);
 
       if (!retObj || !retObj.ret) {
         logWarn(
@@ -330,23 +331,23 @@ class RendererManager {
 
   enableVideoFrameCache(videoFrameCacheConfig: VideoFrameCacheConfig): number {
     logInfo(`enableVideoFrameCache ${JSON.stringify(videoFrameCacheConfig)}`);
-    let ret = this._rtcEngine.EnableVideoFrameCache(videoFrameCacheConfig);
+    let ret = this._bridge.EnableVideoFrameCache(videoFrameCacheConfig);
     return ret.retCode;
   }
 
   disableVideoFrameCache(videoFrameCacheConfig: VideoFrameCacheConfig): number {
-    let ret = this._rtcEngine.DisableVideoFrameCache(videoFrameCacheConfig);
+    let ret = this._bridge.DisableVideoFrameCache(videoFrameCacheConfig);
     return ret.retCode;
   }
 
   ensureRendererConfig(config: VideoFrameCacheConfig):
     | Map<
-        number,
-        {
-          cachedVideoFrame?: VideoFrame;
-          renders?: IRenderer[];
-        }
-      >
+      number,
+      {
+        cachedVideoFrame?: VideoFrame;
+        renders?: IRenderer[];
+      }
+    >
     | undefined {
     const { videoSourceType, uid, channelId } = config;
     const emptyRenderConfig = { renders: [] };
@@ -382,11 +383,11 @@ class RendererManager {
     let rendererConfigMap = this.ensureRendererConfig(config);
     rendererConfigMap
       ? Object.assign(rendererConfigMap.get(config.uid), {
-          cachedVideoFrame: videoFrame,
-        })
+        cachedVideoFrame: videoFrame,
+      })
       : logWarn(
-          `updateVideoFrameCacheInMap videoSourceType:${config.videoSourceType} channelId:${config.channelId} uid:${config.uid} rendererConfigMap is null`
-        );
+        `updateVideoFrameCacheInMap videoSourceType:${config.videoSourceType} channelId:${config.channelId} uid:${config.uid} rendererConfigMap is null`
+      );
   }
 
   // setRenderOptionByView(rendererConfig: RendererConfig): number {

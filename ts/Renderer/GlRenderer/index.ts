@@ -152,30 +152,38 @@ export class GlRenderer extends IRenderer {
         // Cover
         if (rotation === 0 || rotation === 180) {
           if (this.clientWidth / this.clientHeight > width / height) {
+            // @ts-ignore
             this.canvas.style.zoom = this.clientWidth / width;
           } else {
+            // @ts-ignore
             this.canvas.style.zoom = this.clientHeight / height;
           }
         } else {
           // 90, 270
           if (this.clientHeight / this.clientWidth > width / height) {
+            // @ts-ignore
             this.canvas.style.zoom = this.clientHeight / width;
           } else {
+            // @ts-ignore
             this.canvas.style.zoom = this.clientWidth / height;
           }
         }
         // Contain
       } else if (rotation === 0 || rotation === 180) {
         if (this.clientWidth / this.clientHeight > width / height) {
+          // @ts-ignore
           this.canvas.style.zoom = this.clientHeight / height;
         } else {
+          // @ts-ignore
           this.canvas.style.zoom = this.clientWidth / width;
         }
       } else {
         // 90, 270
         if (this.clientHeight / this.clientWidth > width / height) {
+          // @ts-ignore
           this.canvas.style.zoom = this.clientWidth / height;
         } else {
+          // @ts-ignore
           this.canvas.style.zoom = this.clientHeight / width;
         }
       }
