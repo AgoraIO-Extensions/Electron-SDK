@@ -1,27 +1,27 @@
-
 import {
-  logError,
   logInfo,
   logWarn,
-  getRendererConfigInternal,
   logDebug,
+  getRendererConfigInternal,
+  logError,
 } from "../Utils";
 
 import { IRenderer, RenderFailCallback } from "./IRender";
+
+import { YUVCanvasRenderer } from "./YUVCanvasRenderer";
+import GlRenderer from "./GlRenderer";
 import {
+  VideoSourceType,
   RENDER_MODE,
-  RendererConfig,
-  VideoFrame,
-  VideoFrameCacheConfig,
   Channel,
   RendererConfigInternal,
   CONTENT_MODE,
-} from "./type";
-import { YUVCanvasRenderer } from "./YUVCanvasRenderer";
-import GlRenderer from "./GlRenderer";
-import { VideoSourceType } from "../AgoraSdk";
-import { AgoraElectronBridge, getBridge } from "../Private/internal/IrisApiEngine";
-
+  RendererConfig,
+  VideoFrame,
+  AgoraElectronBridge,
+} from "../AgoraSdk";
+import { VideoFrameCacheConfig } from "./type";
+import { getBridge } from "../Private/internal/IrisApiEngine";
 
 interface RenderConfig {
   renders?: IRenderer[];
@@ -342,12 +342,12 @@ class RendererManager {
 
   ensureRendererConfig(config: VideoFrameCacheConfig):
     | Map<
-      number,
-      {
-        cachedVideoFrame?: VideoFrame;
-        renders?: IRenderer[];
-      }
-    >
+        number,
+        {
+          cachedVideoFrame?: VideoFrame;
+          renders?: IRenderer[];
+        }
+      >
     | undefined {
     const { videoSourceType, uid, channelId } = config;
     const emptyRenderConfig = { renders: [] };
@@ -383,36 +383,36 @@ class RendererManager {
     let rendererConfigMap = this.ensureRendererConfig(config);
     rendererConfigMap
       ? Object.assign(rendererConfigMap.get(config.uid), {
-        cachedVideoFrame: videoFrame,
-      })
+          cachedVideoFrame: videoFrame,
+        })
       : logWarn(
-        `updateVideoFrameCacheInMap videoSourceType:${config.videoSourceType} channelId:${config.channelId} uid:${config.uid} rendererConfigMap is null`
-      );
+          `updateVideoFrameCacheInMap videoSourceType:${config.videoSourceType} channelId:${config.channelId} uid:${config.uid} rendererConfigMap is null`
+        );
   }
 
-  // setRenderOptionByView(rendererConfig: RendererConfig): number {
-  //   const {
-  //     uid,
-  //     channelId,
-  //     rendererOptions,
-  //     videoSourceType,
-  //   }: RendererConfigInternal = getRendererConfigInternal(rendererConfig);
+  setRenderOptionByView(rendererConfig: RendererConfig): number {
+    const {
+      uid,
+      channelId,
+      rendererOptions,
+      videoSourceType,
+    }: RendererConfigInternal = getRendererConfigInternal(rendererConfig);
 
-  //   if (!rendererConfig.view) {
-  //     logError("setRenderOptionByView");
-  //   }
-  //   const renderList = this.getRenderers({ uid, channelId, videoSourceType });
-  //   renderList
-  //     ? renderList
-  //         .filter((renderItem) =>
-  //           renderItem.equalsElement(rendererConfig.view!)
-  //         )
-  //         .forEach((renderItem) => renderItem.setRenderOption(rendererOptions))
-  //     : console.warn(
-  //         `RenderStreamType: ${videoSourceType} channelId:${channelId} uid:${uid} have no render view, you need to call this api after setView`
-  //       );
-  //   return 0;
-  // }
+    if (!rendererConfig.view) {
+      logError("setRenderOptionByView");
+    }
+    const renderList = this.getRenderers({ uid, channelId, videoSourceType });
+    renderList
+      ? renderList
+          .filter((renderItem) =>
+            renderItem.equalsElement(rendererConfig.view!)
+          )
+          .forEach((renderItem) => renderItem.setRenderOption(rendererOptions))
+      : console.warn(
+          `RenderStreamType: ${videoSourceType} channelId:${channelId} uid:${uid} have no render view, you need to call this api after setView`
+        );
+    return 0;
+  }
   setRenderOption(
     view: HTMLElement,
     contentMode = CONTENT_MODE.FIT,
