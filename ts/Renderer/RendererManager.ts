@@ -15,6 +15,7 @@ import {
   VideoFrameCacheConfig,
 } from "../Types";
 import {
+  AgoraEnv,
   formatConfigByVideoSourceType,
   getDefaultRendererVideoConfig,
   logError,
@@ -44,6 +45,9 @@ class RendererManager {
   }
   setRenderMode(mode: RENDER_MODE) {
     this.renderMode = mode;
+    logInfo(
+      "setRenderMode:  new render mode will take effect only if reinstall view to renderer "
+    );
   }
   setFPS(fps: number) {
     this.renderFps = fps;
@@ -491,8 +495,8 @@ class RendererManager {
 }
 
 const AgoraRendererManager = new RendererManager();
-//@ts-ignore
-(window || global).AgoraRenderManager = AgoraRendererManager;
+
+AgoraEnv.AgoraRendererManager = AgoraRendererManager;
 
 export default AgoraRendererManager;
 export { RendererManager };

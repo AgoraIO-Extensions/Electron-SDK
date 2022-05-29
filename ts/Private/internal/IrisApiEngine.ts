@@ -1,4 +1,4 @@
-import { logInfo, parseJSON } from "../../Utils";
+import { AgoraEnv, logInfo, parseJSON } from "../../Utils";
 import { AgoraElectronBridge, CallBackModule, Result } from "../../Types";
 import { IRtcEngineEventHandler } from "../IAgoraRtcEngine";
 import { processIRtcEngineEventHandlerEx } from "../impl/IAgoraRtcEngineExImpl";
@@ -6,17 +6,16 @@ import { processIRtcEngineEventHandler } from "../impl/IAgoraRtcEngineImpl";
 
 const agora = require("../../../build/Release/agora_node_ext");
 //名字可以全平台对齐 electron rn
-let agoraElectronBridge: AgoraElectronBridge;
 let _handlers: IRtcEngineEventHandler[] = [];
 
 export const getBridge = (): AgoraElectronBridge => {
-  if (!agoraElectronBridge) {
-    agoraElectronBridge = new agora.AgoraElectronBridge();
-    agoraElectronBridge.sendMsg = sendMsg;
-    // @ts-ignore
-    (window || global).AgoraElectronBridge = agoraElectronBridge;
+  let bridge = AgoraEnv.AgoraElectronBridge;
+  if (!bridge) {
+    bridge = new agora.AgoraElectronBridge();
+    bridge!.sendMsg = sendMsg;
+    AgoraEnv.AgoraElectronBridge = bridge;
   }
-  return agoraElectronBridge;
+  return bridge!;
 };
 
 export const handlerRTCEvent = function (

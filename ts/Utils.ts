@@ -4,31 +4,44 @@ import {
   FormatRendererVideoConfig,
   RendererVideoConfig,
   ContentMode,
+  AgoraElectronBridge,
 } from "./Types";
+import { RendererManager } from "./Renderer/RendererManager";
 
 export const TAG = "[Agora]: ";
-export const DEBUG_TAG = "[Agora]: ";
+export const DEBUG_TAG = "[Agora Debug]: ";
 
-export const deprecate = (originApi?: string, replaceApi?: string) => {
-  console.warn(
+export const deprecate = (originApi?: string, replaceApi?: string) =>
+  logWarn(
     `${TAG} This method ${originApi} will be deprecated soon. `,
     replaceApi ? `Please use ${replaceApi} instead` : ""
   );
-};
 
 export const logWarn = (msg: string, ...optParams: any[]) => {
+  if (!AgoraEnv.enableLogging) {
+    return;
+  }
   console.warn(`${TAG} ${msg}`, ...optParams);
 };
 
 export const logError = (msg: string, ...optParams: any[]) => {
+  if (!AgoraEnv.enableLogging) {
+    return;
+  }
   console.error(`${TAG} ${msg}`, ...optParams);
 };
 
 export const logInfo = (msg: string, ...optParams: any[]) => {
+  if (!AgoraEnv.enableLogging) {
+    return;
+  }
   console.log(`${TAG} ${msg}`, ...optParams);
 };
 export const logDebug = (msg: string, ...optParams: any[]) => {
-  console.warn(`${TAG} ${msg}`, ...optParams);
+  if (!AgoraEnv.enableLogging || !AgoraEnv.enableDebugLogging) {
+    return;
+  }
+  console.warn(`${DEBUG_TAG} ${msg}`, ...optParams);
 };
 
 export const parseJSON = (jsonString: string) => {
@@ -134,3 +147,17 @@ function copyProperties<T>(target: T, source: any) {
     }
   }
 }
+
+interface AgoraEnv {
+  AgoraElectronBridge?: AgoraElectronBridge;
+  AgoraRendererManager?: RendererManager;
+  enableLogging: boolean;
+  enableDebugLogging: boolean;
+}
+export const AgoraEnv: AgoraEnv = {
+  enableLogging: true,
+  enableDebugLogging: false,
+};
+
+//@ts-ignore
+(window || global).AgoraEnv = AgoraEnv;

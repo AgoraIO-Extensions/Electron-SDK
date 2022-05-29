@@ -13,7 +13,9 @@ import AgoraRtcEngine, {
   VideoMirrorModeType,
   VideoSourceType,
   ContentMode,
+  AgoraEnv,
 } from "../../../";
+console.log("AgoraEnv", AgoraEnv);
 
 import { APP_ID } from "../utils/settings";
 const rtcEngine = new AgoraRtcEngine();
@@ -87,9 +89,7 @@ export default class App extends Component {
       return;
     }
 
-    let res = rtcEngine.initialize({
-      appId: APP_ID,
-    });
+    let res = rtcEngine.initialize({ appId: APP_ID });
     console.log("initialize", res);
 
     // console.log("initialize res", res);
