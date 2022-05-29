@@ -76,7 +76,7 @@ export const handlerRTCEvent = function (
 export const handlerMPKEvent = function (
   event: string,
   data: string,
-  buffer: ArrayBufferLike,
+  buffer: Uint8Array[],
   bufferLength: number,
   bufferCount: number
 ) {

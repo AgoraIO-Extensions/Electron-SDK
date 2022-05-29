@@ -6,8 +6,8 @@ import {
   ChannelIdMap,
   ContentMode,
   RenderConfig,
-  RendererConfig,
-  RendererConfigInternal,
+  RenderVideoConfig,
+  FormatRenderVideoConfig,
   RenderMap,
   RENDER_MODE,
   ShareVideoFrame,
@@ -15,8 +15,8 @@ import {
   VideoFrameCacheConfig,
 } from "../types";
 import {
-  formatVideoFrameBufferConfig,
-  getRendererConfigInternal,
+  formatConfigByVideoSourceType,
+  getDefaultRenderVideoConfig,
   logError,
   logInfo,
   logWarn,
@@ -66,13 +66,13 @@ class RendererManager {
       });
     });
   }
-  public setRenderOptionByConfig(rendererConfig: RendererConfig): number {
+  public setRenderOptionByConfig(rendererConfig: RenderVideoConfig): number {
     const {
       uid,
       channelId,
       rendererOptions,
       videoSourceType,
-    }: RendererConfigInternal = getRendererConfigInternal(rendererConfig);
+    }: FormatRenderVideoConfig = getDefaultRenderVideoConfig(rendererConfig);
 
     if (!rendererConfig.view) {
       logError("setRenderOptionByView");
@@ -110,29 +110,59 @@ class RendererManager {
     }
   }
 
-  public setupVideo(rendererConfig: RendererConfigInternal): void {
-    const { uid, channelId, videoSourceType, rendererOptions } = rendererConfig;
-    const config = {
-      uid,
-      channelId,
-      videoSourceType,
-      width: 0,
-      height: 0,
-    };
+  public setupVideo(renderVideoConfig: RenderVideoConfig): void {
+    const formatConfig = getDefaultRenderVideoConfig(renderVideoConfig);
+
+    const { uid, channelId, videoSourceType, rendererOptions, view } =
+      formatConfig;
+
+    if (!formatConfig.view) {
+      logWarn("Note: setupVideo view is null!");
+      AgoraRenderManager.destroyRenderersByConfig(
+        videoSourceType,
+        channelId,
+        uid
+      );
+      return;
+    }
+
     // ensure a render to RenderMap
-    const render = this.bindHTMLElementToRender(
-      rendererConfig,
-      rendererConfig.view!
-    );
+    const render = this.bindHTMLElementToRender(formatConfig, view!);
 
     // render config
     render.setRenderOption(rendererOptions);
 
     // enable iris videoFrame
-    this.enableVideoFrameCache(config);
+    this.enableVideoFrameCache({
+      uid,
+      channelId,
+      videoSourceType,
+    });
 
     // enable render
     this.enableRender(true);
+  }
+
+  public setupLocalVideo(rendererConfig: RenderVideoConfig): number {
+    const { videoSourceType } = rendererConfig;
+    if (videoSourceType === VideoSourceType.VideoSourceRemote) {
+      console.error("setupLocalVideo videoSourceType error", videoSourceType);
+      return -1;
+    }
+    this.setupVideo({ ...rendererConfig });
+    return 0;
+  }
+  public setupRemoteVideo(rendererConfig: RenderVideoConfig): number {
+    const { videoSourceType } = rendererConfig;
+    if (videoSourceType !== VideoSourceType.VideoSourceRemote) {
+      console.error("setupLocalVideo videoSourceType error", videoSourceType);
+      return -1;
+    }
+    this.setupVideo({
+      ...rendererConfig,
+      videoSourceType: VideoSourceType.VideoSourceRemote,
+    });
+    return 0;
   }
 
   public destroyRendererByView(view: Element): void {
@@ -167,7 +197,7 @@ class RendererManager {
     channelId?: Channel,
     uid?: number
   ): void {
-    const config = formatVideoFrameBufferConfig(
+    const config = formatConfigByVideoSourceType(
       videoSourceType,
       channelId,
       uid
@@ -309,7 +339,7 @@ class RendererManager {
   }
 
   private bindHTMLElementToRender(
-    config: RendererConfigInternal,
+    config: FormatRenderVideoConfig,
     view: HTMLElement
   ): IRenderer {
     this.ensureRendererConfig(config);
@@ -456,7 +486,9 @@ class RendererManager {
   }
 }
 
-export { RendererManager };
-
 const AgoraRenderManager = new RendererManager();
+//@ts-ignore
+(window || global).AgoraRenderManager = AgoraRenderManager;
+
 export default AgoraRenderManager;
+export { RendererManager };
