@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:37
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2022-05-29 14:20:22
+ * @Last Modified time: 2022-05-29 21:30:09
  */
 #include "agora_electron_bridge.h"
 #include <memory>
@@ -46,24 +46,9 @@ napi_value AgoraElectronBridge::Init(napi_env env, napi_value exports) {
                              10, properties, &cons);
   assert(status == napi_ok);
 
-  // #if NAPI_VERSION >= 6
-  // napi_ref* constructor = new napi_ref();
-  // status = napi_create_reference(env, cons, 1, constructor);
-  // assert(status == napi_ok);
-  // status = napi_set_instance_data(
-  //     env, constructor,
-  //     [](napi_env env, void* data, void* hint) {
-  //       napi_ref* constructor = static_cast<napi_ref*>(data);
-  //       napi_status status = napi_delete_reference(env, *constructor);
-  //       assert(status == napi_ok);
-  //       delete constructor;
-  //     },
-  //     nullptr);
-  // #else
   AgoraElectronBridge::_ref_construcotr_ptr = new napi_ref();
   status = napi_create_reference(env, cons, 1,
                                  AgoraElectronBridge::_ref_construcotr_ptr);
-  // #endif
 
   assert(status == napi_ok);
   status = napi_set_named_property(env, exports, _class_name, cons);
@@ -103,16 +88,8 @@ napi_value AgoraElectronBridge::Constructor(napi_env env) {
   void* instance = nullptr;
   napi_value cons;
   napi_status status;
-  // #if NAPI_VERSION >= 6
-  // status = napi_get_instance_data(env, &instance);
-  // assert(status == napi_ok);
-  // napi_ref* constructor = static_cast<napi_ref*>(instance);
-  // status = napi_get_reference_value(env, *constructor, &cons);
-  // #else
   status = napi_get_reference_value(
       env, *AgoraElectronBridge::_ref_construcotr_ptr, &cons);
-  // #endif
-
   assert(status == napi_ok);
   return cons;
 }
