@@ -13,7 +13,7 @@ import {
   ShareVideoFrame,
   UidMap,
   VideoFrameCacheConfig,
-} from "../types";
+} from "../Types";
 import {
   formatConfigByVideoSourceType,
   getDefaultRenderVideoConfig,

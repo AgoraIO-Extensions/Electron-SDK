@@ -3,7 +3,7 @@ import { RtcEngineContext } from "./Private/IAgoraRtcEngine";
 import { IRtcEngineExImpl } from "./Private/impl/IAgoraRtcEngineExImpl";
 import { getBridge } from "./Private/internal/IrisApiEngine";
 import AgoraRenderManager from "./Renderer/RendererManager";
-import { Channel, ContentMode, RenderVideoConfig, RENDER_MODE } from "./types";
+import { Channel, ContentMode, RenderVideoConfig, RENDER_MODE } from "./Types";
 import { logInfo, logWarn } from "./Utils";
 
 /**

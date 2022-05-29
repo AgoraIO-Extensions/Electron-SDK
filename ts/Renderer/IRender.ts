@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { ContentMode, RendererOptions, ShareVideoFrame } from "../types";
+import { ContentMode, RendererOptions, ShareVideoFrame } from "../Types";
 
 export type RenderFailCallback =
   | ((obj: { error: string }) => void)

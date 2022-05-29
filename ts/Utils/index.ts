@@ -5,7 +5,7 @@ import {
   FormatRenderVideoConfig,
   RenderVideoConfig,
   ContentMode,
-} from "../types";
+} from "../Types";
 
 export const TAG = "[Agora]: ";
 export const DEBUG_TAG = "[Agora]: ";
