@@ -296,7 +296,7 @@ class RendererManager {
         return;
       }
       if (!finalResult.isNewFrame) {
-        logWarn("GetVideoStreamData isNewFrame is false");
+        logDebug("GetVideoStreamData isNewFrame is false");
         return;
       }
       const renderVideoFrame = rendererItem.shareVideoFrame;
