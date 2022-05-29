@@ -36,15 +36,18 @@ export const handlerRTCEvent = function (
     "bufferCount",
     bufferCount
   );
-
-  try {
-    AgoraEnv.engineEventHandlers.forEach((value) => {
+  AgoraEnv.engineEventHandlers.forEach((value) => {
+    try {
       processIRtcEngineEventHandlerEx(value, event, obj);
+    } catch (error) {
+      logError("engineEventHandlers::processIRtcEngineEventHandlerEx", error);
+    }
+    try {
       processIRtcEngineEventHandler(value, event, obj);
-    });
-  } catch (error) {
-    logError("_engineHandlers::forEach", error);
-  }
+    } catch (error) {
+      logError("engineEventHandlers::processIRtcEngineEventHandler", error);
+    }
+  });
 };
 
 export const handlerMPKEvent = function (
