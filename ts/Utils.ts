@@ -12,7 +12,7 @@ export const TAG = "[Agora]: ";
 export const DEBUG_TAG = "[Agora Debug]: ";
 
 export const deprecate = (originApi?: string, replaceApi?: string) =>
-  logWarn(
+  logError(
     `${TAG} This method ${originApi} will be deprecated soon. `,
     replaceApi ? `Please use ${replaceApi} instead` : ""
   );

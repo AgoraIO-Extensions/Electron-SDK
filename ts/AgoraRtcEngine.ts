@@ -14,7 +14,7 @@ import {
   RENDER_MODE,
   CallBackModule,
 } from "./Types";
-import { logError, logInfo, logWarn } from "./Utils";
+import { deprecate, logError, logInfo, logWarn } from "./Utils";
 
 /**
  * The AgoraRtcEngine class.
@@ -91,7 +91,123 @@ export class AgoraRtcEngine extends IRtcEngineExImpl {
     AgoraRendererManager.setRenderOption(view, contentMode, mirror);
   }
 
+  setRenderOptionByConfig(rendererConfig: RendererVideoConfig): void {
+    AgoraRendererManager.setRenderOptionByConfig(rendererConfig);
+  }
+
   setRenderMode(mode = RENDER_MODE.WEBGL): void {
     AgoraRendererManager.setRenderMode(mode);
+  }
+
+  // @mark old api will deprecate
+  // @mark old api will deprecate
+  // @mark old api will deprecate
+  // @mark old api will deprecate
+  // @mark old api will deprecate
+  // @mark old api will deprecate
+  // @mark old api will deprecate
+
+  _setupLocalVideo(view: Element): number {
+    deprecate("_setupLocalVideo", "setupVideo or setupLocalVideo");
+    this.setupLocalVideo({
+      videoSourceType: VideoSourceType.VideoSourceCamera,
+    });
+    return 0;
+  }
+
+  _setupViewContentMode(
+    uid: number | "local" | "videosource",
+    mode: 0 | 1,
+    channelId: string
+  ): number {
+    deprecate(
+      "_setupViewContentMode",
+      "setRenderOptionByConfig or setRenderOption"
+    );
+
+    const contentMode = mode === 1 ? ContentMode.Fit : ContentMode.Cropped;
+    const mirror = false;
+    switch (uid) {
+      case "local":
+        this.setRenderOptionByConfig({
+          videoSourceType: VideoSourceType.VideoSourceCamera,
+          rendererOptions: {
+            contentMode,
+            mirror,
+          },
+        });
+        break;
+      case "videosource":
+        this.setRenderOptionByConfig({
+          videoSourceType: VideoSourceType.VideoSourceScreen,
+          rendererOptions: {
+            contentMode,
+            mirror,
+          },
+        });
+        break;
+      default:
+        this.setRenderOptionByConfig({
+          videoSourceType: VideoSourceType.VideoSourceRemote,
+          channelId,
+          rendererOptions: {
+            contentMode,
+            mirror,
+          },
+        });
+        break;
+    }
+    return 0;
+  }
+  _destroyRenderView(
+    key: "local" | "videosource" | number,
+    channelId: string | undefined,
+    view: Element,
+    onFailure?: (err: Error) => void
+  ) {
+    deprecate(
+      "_destroyRenderView",
+      "destroyRendererByView or destroyRendererByConfig"
+    );
+    switch (key) {
+      case "local":
+        break;
+      case "videosource":
+        break;
+
+      default:
+        break;
+    }
+  }
+  _subscribe(
+    uid: number,
+    view: Element,
+    options?: {
+      append: boolean;
+    }
+  ) {
+    deprecate("_subscribe", "setupVideo or setupRemoteVideo");
+  }
+  _setupLocalVideoSource(view: HTMLElement) {
+    deprecate("_setupLocalVideoSource", "setupVideo or setupLocalVideo");
+    this.setupVideo({
+      videoSourceType: VideoSourceType.VideoSourceScreen,
+      view,
+    });
+  }
+  _setupRemoteVideo(
+    uid: number,
+    view?: HTMLElement,
+    channelId?: string,
+    options?: {
+      append: boolean;
+    }
+  ) {
+    deprecate("_setupRemoteVideo", "setupVideo or setupRemoteVideo");
+    this.setupVideo({
+      videoSourceType: VideoSourceType.VideoSourceRemote,
+      view,
+      channelId,
+    });
   }
 }
