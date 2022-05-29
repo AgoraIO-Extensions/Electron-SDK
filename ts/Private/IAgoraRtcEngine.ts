@@ -121,7 +121,7 @@ export class LocalVideoStats {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       uid: this.uid,
       sentBitrate: this.sentBitrate,
@@ -185,7 +185,7 @@ export class RemoteVideoStats {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       uid: this.uid,
       delay: this.delay,
@@ -229,7 +229,7 @@ export class Region {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       uid: this.uid,
       x: this.x,
@@ -263,7 +263,7 @@ export class VideoCompositingLayout {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       canvasWidth: this.canvasWidth,
       canvasHeight: this.canvasHeight,
@@ -297,7 +297,7 @@ export class InjectStreamConfig {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       width: this.width,
       height: this.height,
@@ -348,7 +348,7 @@ export class PublisherConfiguration {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       width: this.width,
       height: this.height,
@@ -375,7 +375,7 @@ export class AudioTrackConfig {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       enableLocalPlayback: this.enableLocalPlayback
     }
@@ -403,7 +403,7 @@ export class CameraCapturerConfiguration {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       cameraDirection: this.cameraDirection,
       format: this.format
@@ -429,7 +429,7 @@ export class ScreenCaptureConfiguration {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       isCaptureWindow: this.isCaptureWindow,
       displayId: this.displayId,
@@ -457,7 +457,7 @@ export class AudioOptionsExternal {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       enable_aec_external_custom_: this.enableAecExternalCustom,
       enable_agc_external_custom_: this.enableAgcExternalCustom,
@@ -482,7 +482,7 @@ export class ThumbImageBuffer {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       length: this.length,
       width: this.width,
@@ -522,7 +522,7 @@ export class ScreenCaptureSourceInfo {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       type: this.type,
       sourceId: this.sourceId,
@@ -611,7 +611,7 @@ export class ChannelMediaOptions {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       publishCameraTrack: this.publishCameraTrack,
       publishSecondaryCameraTrack: this.publishSecondaryCameraTrack,
@@ -670,7 +670,7 @@ export class LocalAccessPointConfiguration {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       ipList: this.ipList,
       ipListSize: this.ipListSize,
@@ -694,7 +694,7 @@ export class LeaveChannelOptions {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       stopAudioMixing: this.stopAudioMixing,
       stopAllEffect: this.stopAllEffect,
@@ -718,7 +718,7 @@ export abstract class IRtcEngineEventHandler {
 
   onLastmileProbeResult?(result: LastmileProbeResult): void;
 
-  onAudioVolumeIndication?(speakers: AudioVolumeInfo, speakerNumber: number, totalVolume: number): void;
+  onAudioVolumeIndication?(speakers: AudioVolumeInfo[], speakerNumber: number, totalVolume: number): void;
 
   onLeaveChannel?(stats: RtcStats): void;
 
@@ -980,7 +980,7 @@ export class Metadata {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       uid: this.uid,
       size: this.size,
@@ -1031,7 +1031,7 @@ export class DirectCdnStreamingStats {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       videoWidth: this.videoWidth,
       videoHeight: this.videoHeight,
@@ -1066,7 +1066,7 @@ export class DirectCdnStreamingMediaOptions {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       publishCameraTrack: this.publishCameraTrack,
       publishMicrophoneTrack: this.publishMicrophoneTrack,
@@ -1079,7 +1079,7 @@ export class DirectCdnStreamingMediaOptions {
 }
 
 export abstract class IRtcEngine {
-abstract release(sync: boolean): void;
+abstract release(sync?: boolean): void;
 
 abstract initialize(context: RtcEngineContext): number;
 
@@ -1129,7 +1129,7 @@ abstract stopLastmileProbeTest(): number;
 
 abstract setVideoEncoderConfiguration(config: VideoEncoderConfiguration): number;
 
-abstract setBeautyEffectOptions(enabled: boolean, options: BeautyOptions, type: MediaSourceType): number;
+abstract setBeautyEffectOptions(enabled: boolean, options: BeautyOptions, type?: MediaSourceType): number;
 
 abstract enableVirtualBackground(enabled: boolean, backgroundSource: VirtualBackgroundSource): number;
 
@@ -1219,11 +1219,11 @@ abstract getEffectsVolume(): number;
 
 abstract setEffectsVolume(volume: number): number;
 
-abstract preloadEffect(soundId: number, filePath: string, startPos: number): number;
+abstract preloadEffect(soundId: number, filePath: string, startPos?: number): number;
 
-abstract playEffect(soundId: number, filePath: string, loopCount: number, pitch: number, pan: number, gain: number, publish: boolean, startPos: number): number;
+abstract playEffect(soundId: number, filePath: string, loopCount: number, pitch: number, pan: number, gain: number, publish?: boolean, startPos?: number): number;
 
-abstract playAllEffects(loopCount: number, pitch: number, pan: number, gain: number, publish: boolean): number;
+abstract playAllEffects(loopCount: number, pitch: number, pan: number, gain: number, publish?: boolean): number;
 
 abstract getVolumeOfEffect(soundId: number): number;
 
@@ -1315,7 +1315,7 @@ abstract setMixedAudioFrameParameters(sampleRate: number, channel: number, sampl
 
 abstract setPlaybackAudioFrameBeforeMixingParameters(sampleRate: number, channel: number): number;
 
-abstract enableAudioSpectrumMonitor(intervalInMS: number): number;
+abstract enableAudioSpectrumMonitor(intervalInMS?: number): number;
 
 abstract disableAudioSpectrumMonitor(): number;
 
@@ -1349,11 +1349,11 @@ abstract loadExtensionProvider(extensionLibPath: string): number;
 
 abstract setExtensionProviderProperty(provider: string, key: string, value: string): number;
 
-abstract enableExtension(provider: string, extension: string, enable: boolean, type: MediaSourceType): number;
+abstract enableExtension(provider: string, extension: string, enable?: boolean, type?: MediaSourceType): number;
 
-abstract setExtensionProperty(provider: string, extension: string, key: string, value: string, type: MediaSourceType): number;
+abstract setExtensionProperty(provider: string, extension: string, key: string, value: string, type?: MediaSourceType): number;
 
-abstract getExtensionProperty(provider: string, extension: string, key: string, bufLen: number, type: MediaSourceType): string;
+abstract getExtensionProperty(provider: string, extension: string, key: string, bufLen: number, type?: MediaSourceType): string;
 
 abstract setCameraCapturerConfiguration(config: CameraCapturerConfiguration): number;
 

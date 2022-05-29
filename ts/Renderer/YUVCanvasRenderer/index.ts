@@ -10,7 +10,7 @@ const YUVCanvas = require("yuv-canvas");
 const isEqual = require("lodash.isequal");
 
 import { CanvasOptions, ContentMode, ShareVideoFrame } from "../../Types";
-import { IRenderer } from "../IRender";
+import { IRenderer } from "../IRenderer";
 import { logDebug } from "../../Utils";
 
 export class YUVCanvasRenderer extends IRenderer {

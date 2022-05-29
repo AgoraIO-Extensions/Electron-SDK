@@ -4,7 +4,7 @@
  * @Last Modified by: zhangtao@agora.io
  * @Last Modified time: 2022-05-29 14:20:22
  */
-#include "node_iris_rtc_engine.h"
+#include "agora_electron_bridge.h"
 #include <memory>
 #include "iris_base.h"
 #include "node_iris_event_handler.h"
@@ -14,21 +14,20 @@ namespace rtc {
 namespace electron {
 using namespace iris::rtc;
 using namespace agora::iris::rtc;
-const char* NodeIrisRtcEngine::_class_name = "NodeIrisRtcEngine";
-const char* NodeIrisRtcEngine::_ret_code_str = "retCode";
-const char* NodeIrisRtcEngine::_ret_result_str = "result";
-napi_ref* NodeIrisRtcEngine::_ref_construcotr_ptr = nullptr;
+const char* AgoraElectronBridge::_class_name = "AgoraElectronBridge";
+const char* AgoraElectronBridge::_ret_code_str = "retCode";
+const char* AgoraElectronBridge::_ret_result_str = "result";
+napi_ref* AgoraElectronBridge::_ref_construcotr_ptr = nullptr;
 
-NodeIrisRtcEngine::NodeIrisRtcEngine() {
-  LOG_F(INFO, "NodeIrisRtcEngine::NodeIrisRtcEngine()");
-  // ::UseJsonArray();
+AgoraElectronBridge::AgoraElectronBridge() {
+  LOG_F(INFO, "AgoraElectronBridge::AgoraElectronBridge()");
 }
 
-NodeIrisRtcEngine::~NodeIrisRtcEngine() {
-  LOG_F(INFO, "NodeIrisRtcEngine::~NodeIrisRtcEngine");
+AgoraElectronBridge::~AgoraElectronBridge() {
+  LOG_F(INFO, "AgoraElectronBridge::~AgoraElectronBridge");
 }
 
-napi_value NodeIrisRtcEngine::Init(napi_env env, napi_value exports) {
+napi_value AgoraElectronBridge::Init(napi_env env, napi_value exports) {
   napi_status status = napi_ok;
   napi_property_descriptor properties[] = {
       DECLARE_NAPI_METHOD("CallApi", CallApi),
@@ -61,9 +60,9 @@ napi_value NodeIrisRtcEngine::Init(napi_env env, napi_value exports) {
   //     },
   //     nullptr);
   // #else
-  NodeIrisRtcEngine::_ref_construcotr_ptr = new napi_ref();
+  AgoraElectronBridge::_ref_construcotr_ptr = new napi_ref();
   status = napi_create_reference(env, cons, 1,
-                                 NodeIrisRtcEngine::_ref_construcotr_ptr);
+                                 AgoraElectronBridge::_ref_construcotr_ptr);
   // #endif
 
   assert(status == napi_ok);
@@ -72,7 +71,7 @@ napi_value NodeIrisRtcEngine::Init(napi_env env, napi_value exports) {
   return exports;
 }
 
-napi_value NodeIrisRtcEngine::New(napi_env env, napi_callback_info info) {
+napi_value AgoraElectronBridge::New(napi_env env, napi_callback_info info) {
   napi_status status;
   napi_value target;
   status = napi_get_new_target(env, info, &target);
@@ -85,11 +84,11 @@ napi_value NodeIrisRtcEngine::New(napi_env env, napi_callback_info info) {
     status = napi_get_cb_info(env, info, nullptr, nullptr, &jsthis, nullptr);
     assert(status == napi_ok);
 
-    auto irisEngine = new NodeIrisRtcEngine();
+    auto irisEngine = new AgoraElectronBridge();
     irisEngine->_env = env;
     status =
         napi_wrap(env, jsthis, reinterpret_cast<void*>(irisEngine),
-                  NodeIrisRtcEngine::Destructor, nullptr, &irisEngine->_ref);
+                  AgoraElectronBridge::Destructor, nullptr, &irisEngine->_ref);
     assert(status == napi_ok);
     return jsthis;
   } else {
@@ -100,7 +99,7 @@ napi_value NodeIrisRtcEngine::New(napi_env env, napi_callback_info info) {
   }
 }
 
-napi_value NodeIrisRtcEngine::Constructor(napi_env env) {
+napi_value AgoraElectronBridge::Constructor(napi_env env) {
   void* instance = nullptr;
   napi_value cons;
   napi_status status;
@@ -111,20 +110,20 @@ napi_value NodeIrisRtcEngine::Constructor(napi_env env) {
   // status = napi_get_reference_value(env, *constructor, &cons);
   // #else
   status = napi_get_reference_value(
-      env, *NodeIrisRtcEngine::_ref_construcotr_ptr, &cons);
+      env, *AgoraElectronBridge::_ref_construcotr_ptr, &cons);
   // #endif
 
   assert(status == napi_ok);
   return cons;
 }
 
-void NodeIrisRtcEngine::Destructor(napi_env env,
+void AgoraElectronBridge::Destructor(napi_env env,
                                    void* nativeObject,
                                    void* finalize_hint) {
-  reinterpret_cast<NodeIrisRtcEngine*>(nativeObject)->~NodeIrisRtcEngine();
+  reinterpret_cast<AgoraElectronBridge*>(nativeObject)->~AgoraElectronBridge();
 }
 
-napi_value NodeIrisRtcEngine::CallApi(napi_env env, napi_callback_info info) {
+napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
   napi_status status;
   size_t argc = 4;
   napi_value args[4];
@@ -132,9 +131,9 @@ napi_value NodeIrisRtcEngine::CallApi(napi_env env, napi_callback_info info) {
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
   assert(status == napi_ok);
 
-  NodeIrisRtcEngine* nodeIrisRtcEngine;
+  AgoraElectronBridge* agoraElectronBridge;
   status =
-      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
+      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&agoraElectronBridge));
 
   std::string funcName = "";
   std::string parameter = "";
@@ -148,11 +147,11 @@ napi_value NodeIrisRtcEngine::CallApi(napi_env env, napi_callback_info info) {
     parameter = "{}";
   }
 
-  memset(nodeIrisRtcEngine->_result, '\0', kBasicResultLength);
+  memset(agoraElectronBridge->_result, '\0', kBasicResultLength);
 
   int ret = ERROR_PARAMETER_1;
   std::shared_ptr<IrisApiEngine> irisApiEngine =
-      nodeIrisRtcEngine->_iris_api_engine;
+      agoraElectronBridge->_iris_api_engine;
 
   // if (irisApiEngine) {
   //   try {
@@ -174,15 +173,15 @@ napi_value NodeIrisRtcEngine::CallApi(napi_env env, napi_callback_info info) {
   //       ret = irisApiEngine->CallIrisApi(funcName.c_str(), parameter.c_str(),
   //                                        parameter.length(), data.data(),
   //                                        bufferCount,
-  //                                        nodeIrisRtcEngine->_result);
+  //                                        agoraElectronBridge->_result);
   //     } else {
   //       ret =
   //           irisApiEngine->CallIrisApi(funcName.c_str(), parameter.c_str(),
   //                                      parameter.length(), nullptr, 0,
-  //                                      nodeIrisRtcEngine->_result);
+  //                                      agoraElectronBridge->_result);
   //     }
   //   } catch (std::exception& e) {
-  //     nodeIrisRtcEngine->OnApiError(e.what());
+  //     agoraElectronBridge->OnApiError(e.what());
   //     LOG_F(INFO, "CallApi(func name:%s) parameter: catch excepton msg: %s",
   //           funcName.c_str(), e.what());
   //   }
@@ -206,21 +205,21 @@ napi_value NodeIrisRtcEngine::CallApi(napi_env env, napi_callback_info info) {
         uint64* buffer = nullptr;  // get node buffer  todo
         ret = irisApiEngine->CallIrisApi(
             funcName.c_str(), parameter.c_str(), parameter.length(), buffer,
-            bufferCount, nodeIrisRtcEngine->_result);
+            bufferCount, agoraElectronBridge->_result);
       } else if (funcName.compare(FUNC_MEDIAENGINE_PUSHVIDEOFRAME) == 0 ||
                  funcName.compare(FUNC_MEDIAENGINE_PUSHVIDEOFRAME2) == 0) {
         uint64* buffer = nullptr;  // todo get node buffers
         ret = irisApiEngine->CallIrisApi(
             funcName.c_str(), parameter.c_str(), parameter.length(), buffer,
-            bufferCount, nodeIrisRtcEngine->_result);
+            bufferCount, agoraElectronBridge->_result);
       } else
         ret = irisApiEngine->CallIrisApi(funcName.c_str(), parameter.c_str(),
                                          parameter.length(), nullptr, 0,
-                                         nodeIrisRtcEngine->_result);
+                                         agoraElectronBridge->_result);
       LOG_F(INFO, "CallApi(func name:%s) parameter: %s, ret: %d",
             funcName.c_str(), parameter.c_str(), ret);
     } catch (std::exception& e) {
-      nodeIrisRtcEngine->OnApiError(e.what());
+      agoraElectronBridge->OnApiError(e.what());
       LOG_F(INFO, "CallApi(func name:%s) parameter: catch excepton msg: %s",
             funcName.c_str(), e.what());
     }
@@ -232,7 +231,7 @@ napi_value NodeIrisRtcEngine::CallApi(napi_env env, napi_callback_info info) {
   RETURE_NAPI_OBJ();
 }
 
-napi_value NodeIrisRtcEngine::OnEvent(napi_env env, napi_callback_info info) {
+napi_value AgoraElectronBridge::OnEvent(napi_env env, napi_callback_info info) {
   napi_status status;
   size_t argc = 3;
   napi_value args[3];
@@ -242,9 +241,9 @@ napi_value NodeIrisRtcEngine::OnEvent(napi_env env, napi_callback_info info) {
 
   assert(status == napi_ok);
 
-  NodeIrisRtcEngine* nodeIrisRtcEngine;
+  AgoraElectronBridge* agoraElectronBridge;
   status =
-      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
+      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&agoraElectronBridge));
   assert(status == napi_ok);
   uint32_t callBackModule = CallBackModule::RTC;
   status = napi_get_value_uint32(env, args[0], &callBackModule);
@@ -257,25 +256,25 @@ napi_value NodeIrisRtcEngine::OnEvent(napi_env env, napi_callback_info info) {
   napi_value global;
   status = napi_get_global(env, &global);
   assert(status == napi_ok);
-  if (nodeIrisRtcEngine->_iris_api_engine) {
+  if (agoraElectronBridge->_iris_api_engine) {
     if (callBackModule == CallBackModule::RTC)
-      nodeIrisRtcEngine->_iris_rtc_event_handler->addEvent(eventName, env, cb,
+      agoraElectronBridge->_iris_rtc_event_handler->addEvent(eventName, env, cb,
                                                            global);
     else if (callBackModule == CallBackModule::MPK)
-      nodeIrisRtcEngine->_iris_mpk_event_handler->addEvent(eventName, env, cb,
+      agoraElectronBridge->_iris_mpk_event_handler->addEvent(eventName, env, cb,
                                                            global);
 
     ret = ERROR_OK;
   } else {
     ret = ERROR_NOT_INIT;
-    LOG_F(INFO, "NodeIrisRtcEngine::OnEvent error Not Init Engine");
+    LOG_F(INFO, "AgoraElectronBridge::OnEvent error Not Init Engine");
   }
 
   char result[1];
   RETURE_NAPI_OBJ();
 }
 
-napi_value NodeIrisRtcEngine::GetScreenWindowsInfo(napi_env env,
+napi_value AgoraElectronBridge::GetScreenWindowsInfo(napi_env env,
                                                    napi_callback_info info) {
   napi_status status;
   napi_value jsthis;
@@ -315,7 +314,7 @@ napi_value NodeIrisRtcEngine::GetScreenWindowsInfo(napi_env env,
   return array;
 }
 
-napi_value NodeIrisRtcEngine::GetScreenDisplaysInfo(napi_env env,
+napi_value AgoraElectronBridge::GetScreenDisplaysInfo(napi_env env,
                                                     napi_callback_info info) {
   napi_status status;
   napi_value jsthis;
@@ -361,7 +360,7 @@ napi_value NodeIrisRtcEngine::GetScreenDisplaysInfo(napi_env env,
   return array;
 }
 
-napi_value NodeIrisRtcEngine::SetAddonLogFile(napi_env env,
+napi_value AgoraElectronBridge::SetAddonLogFile(napi_env env,
                                               napi_callback_info info) {
   napi_status status;
   napi_value jsthis;
@@ -369,9 +368,9 @@ napi_value NodeIrisRtcEngine::SetAddonLogFile(napi_env env,
   napi_value args[2];
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
 
-  NodeIrisRtcEngine* nodeIrisRtcEngine;
+  AgoraElectronBridge* agoraElectronBridge;
   status =
-      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
+      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&agoraElectronBridge));
 
   std::string file_path = "";
   status = napi_get_value_utf8string(env, args[0], file_path);
@@ -384,12 +383,12 @@ napi_value NodeIrisRtcEngine::SetAddonLogFile(napi_env env,
   RETURE_NAPI_OBJ();
 }
 
-void NodeIrisRtcEngine::OnApiError(const char* errorMessage) {
+void AgoraElectronBridge::OnApiError(const char* errorMessage) {
   _iris_rtc_event_handler->OnEvent("onApiError", errorMessage, nullptr, nullptr,
                                    0);
 }
 
-napi_value NodeIrisRtcEngine::EnableVideoFrameCache(napi_env env,
+napi_value AgoraElectronBridge::EnableVideoFrameCache(napi_env env,
                                                     napi_callback_info info) {
   napi_status status;
   napi_value jsthis;
@@ -397,9 +396,9 @@ napi_value NodeIrisRtcEngine::EnableVideoFrameCache(napi_env env,
   napi_value args[1];
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
 
-  NodeIrisRtcEngine* nodeIrisRtcEngine;
+  AgoraElectronBridge* agoraElectronBridge;
   status =
-      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
+      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&agoraElectronBridge));
 
   IrisVideoFrameBufferConfig config;
   napi_value obj = args[0];
@@ -421,26 +420,26 @@ napi_value NodeIrisRtcEngine::EnableVideoFrameCache(napi_env env,
   memset(result, '\0', kBasicStringLength);
   int ret = ERROR_PARAMETER_1;
 
-  if (!nodeIrisRtcEngine->_iris_video_frame_buffer_manager) {
+  if (!agoraElectronBridge->_iris_video_frame_buffer_manager) {
     ret = ERROR_NOT_INIT;
     LOG_F(INFO, "IrisVideoFrameBufferManager Not Init");
   } else {
     try {
       iris::IrisVideoFrameBuffer buffer(
           IrisVideoFrameType::kVideoFrameTypeYUV420, nullptr, width, height);
-      nodeIrisRtcEngine->_iris_video_frame_buffer_manager
+      agoraElectronBridge->_iris_video_frame_buffer_manager
           ->EnableVideoFrameBuffer(buffer, &config);
       ret = ERROR_OK;
     } catch (std::exception& e) {
       LOG_F(INFO, "EnableVideoFrameCache catch exception %s", e.what());
-      nodeIrisRtcEngine->OnApiError(e.what());
+      agoraElectronBridge->OnApiError(e.what());
     }
   }
 
   RETURE_NAPI_OBJ();
 }
 
-napi_value NodeIrisRtcEngine::DisableVideoFrameCache(napi_env env,
+napi_value AgoraElectronBridge::DisableVideoFrameCache(napi_env env,
                                                      napi_callback_info info) {
   napi_status status;
   napi_value jsthis;
@@ -448,9 +447,9 @@ napi_value NodeIrisRtcEngine::DisableVideoFrameCache(napi_env env,
   napi_value args[1];
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
 
-  NodeIrisRtcEngine* nodeIrisRtcEngine;
+  AgoraElectronBridge* agoraElectronBridge;
   status =
-      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
+      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&agoraElectronBridge));
 
   napi_value obj = args[0];
   IrisVideoFrameBufferConfig config;
@@ -468,24 +467,24 @@ napi_value NodeIrisRtcEngine::DisableVideoFrameCache(napi_env env,
   memset(result, '\0', kBasicStringLength);
   int ret = ERROR_PARAMETER_1;
 
-  if (!nodeIrisRtcEngine->_iris_video_frame_buffer_manager) {
+  if (!agoraElectronBridge->_iris_video_frame_buffer_manager) {
     ret = ERROR_NOT_INIT;
     LOG_F(INFO, "IrisVideoFrameBufferManager Not Init");
   } else {
     try {
-      nodeIrisRtcEngine->_iris_video_frame_buffer_manager
+      agoraElectronBridge->_iris_video_frame_buffer_manager
           ->DisableVideoFrameBuffer(&config);
       ret = ERROR_OK;
     } catch (std::exception& e) {
       LOG_F(INFO, "DisableVideoFrameCache catch exception %s", e.what());
-      nodeIrisRtcEngine->OnApiError(e.what());
+      agoraElectronBridge->OnApiError(e.what());
     }
   }
 
   RETURE_NAPI_OBJ();
 }
 
-napi_value NodeIrisRtcEngine::GetVideoStreamData(napi_env env,
+napi_value AgoraElectronBridge::GetVideoStreamData(napi_env env,
                                                  napi_callback_info info) {
   napi_status status;
   napi_value jsthis;
@@ -493,9 +492,9 @@ napi_value NodeIrisRtcEngine::GetVideoStreamData(napi_env env,
   napi_value args[1];
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
 
-  NodeIrisRtcEngine* nodeIrisRtcEngine;
+  AgoraElectronBridge* agoraElectronBridge;
   status =
-      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
+      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&agoraElectronBridge));
   IrisVideoFrameBufferConfig config;
 
   napi_value obj = args[0];
@@ -543,13 +542,13 @@ napi_value NodeIrisRtcEngine::GetVideoStreamData(napi_env env,
   int32_t ret = ERROR_NOT_INIT;
   status = napi_create_object(env, &retObj);
 
-  if (!nodeIrisRtcEngine->_iris_video_frame_buffer_manager.get()) {
+  if (!agoraElectronBridge->_iris_video_frame_buffer_manager.get()) {
     napi_obj_set_property(env, retObj, "ret", ret);
     LOG_F(INFO, "IrisVideoFrameBufferManager Not Init");
     return retObj;
   }
 
-  ret = nodeIrisRtcEngine->_iris_video_frame_buffer_manager->GetVideoFrame(
+  ret = agoraElectronBridge->_iris_video_frame_buffer_manager->GetVideoFrame(
       videoFrame, isFresh, &config);
 
   unsigned int rotation = 0;
@@ -563,7 +562,7 @@ napi_value NodeIrisRtcEngine::GetVideoStreamData(napi_env env,
   return retObj;
 }
 
-napi_value NodeIrisRtcEngine::InitializeEnv(napi_env env,
+napi_value AgoraElectronBridge::InitializeEnv(napi_env env,
                                             napi_callback_info info) {
   napi_status status;
   napi_value jsthis;
@@ -571,9 +570,9 @@ napi_value NodeIrisRtcEngine::InitializeEnv(napi_env env,
   napi_value args[2];
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
 
-  NodeIrisRtcEngine* nodeIrisRtcEngine;
+  AgoraElectronBridge* agoraElectronBridge;
   status =
-      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
+      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&agoraElectronBridge));
 
   // create
   auto engine = std::make_shared<IrisApiEngine>();
@@ -587,17 +586,17 @@ napi_value NodeIrisRtcEngine::InitializeEnv(napi_env env,
   engine->Attach(bufferManager.get());
 
   // assign
-  nodeIrisRtcEngine->_iris_api_engine = engine;
-  nodeIrisRtcEngine->_iris_video_frame_buffer_manager = bufferManager;
-  nodeIrisRtcEngine->_iris_rtc_event_handler = rtcEventHandler;
-  nodeIrisRtcEngine->_iris_mpk_event_handler = mpkEventHandler;
+  agoraElectronBridge->_iris_api_engine = engine;
+  agoraElectronBridge->_iris_video_frame_buffer_manager = bufferManager;
+  agoraElectronBridge->_iris_rtc_event_handler = rtcEventHandler;
+  agoraElectronBridge->_iris_mpk_event_handler = mpkEventHandler;
 
-  LOG_F(INFO, "NodeIrisRtcEngine::InitializeEnv");
+  LOG_F(INFO, "AgoraElectronBridge::InitializeEnv");
   napi_value retValue = nullptr;
   return retValue;
 }
 
-napi_value NodeIrisRtcEngine::ReleaseEnv(napi_env env,
+napi_value AgoraElectronBridge::ReleaseEnv(napi_env env,
                                          napi_callback_info info) {
   napi_status status;
   napi_value jsthis;
@@ -605,15 +604,15 @@ napi_value NodeIrisRtcEngine::ReleaseEnv(napi_env env,
   napi_value args[2];
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
 
-  NodeIrisRtcEngine* nodeIrisRtcEngine;
+  AgoraElectronBridge* agoraElectronBridge;
   status =
-      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&nodeIrisRtcEngine));
+      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&agoraElectronBridge));
 
   // define
-  auto engine = nodeIrisRtcEngine->_iris_api_engine;
-  auto bufferManager = nodeIrisRtcEngine->_iris_video_frame_buffer_manager;
-  auto rtcEventHandler = nodeIrisRtcEngine->_iris_rtc_event_handler;
-  auto mpkEventHandler = nodeIrisRtcEngine->_iris_mpk_event_handler;
+  auto engine = agoraElectronBridge->_iris_api_engine;
+  auto bufferManager = agoraElectronBridge->_iris_video_frame_buffer_manager;
+  auto rtcEventHandler = agoraElectronBridge->_iris_rtc_event_handler;
+  auto mpkEventHandler = agoraElectronBridge->_iris_mpk_event_handler;
 
   // uncontrol
   engine->Detach(bufferManager.get());
@@ -626,7 +625,7 @@ napi_value NodeIrisRtcEngine::ReleaseEnv(napi_env env,
   bufferManager.reset();
   engine.reset();
 
-  LOG_F(INFO, "NodeIrisRtcEngine::ReleaseEnv");
+  LOG_F(INFO, "AgoraElectronBridge::ReleaseEnv");
   napi_value retValue = nullptr;
   return retValue;
 }

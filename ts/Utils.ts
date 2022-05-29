@@ -1,11 +1,10 @@
-import { EventEmitter } from "events";
-import { VideoSourceType } from "../AgoraSdk";
+import { VideoSourceType } from "./Private/AgoraBase";
 
 import {
-  FormatRenderVideoConfig,
-  RenderVideoConfig,
+  FormatRendererVideoConfig,
+  RendererVideoConfig,
   ContentMode,
-} from "../Types";
+} from "./Types";
 
 export const TAG = "[Agora]: ";
 export const DEBUG_TAG = "[Agora]: ";
@@ -45,6 +44,7 @@ export const objsKeysToLowerCase = (array: Array<any>) => {
 
 export const changeEventNameForOnXX = (eventName: string) =>
   eventName.slice(2, 3).toLocaleLowerCase() + eventName.slice(3);
+
 export const jsonStringToArray = (jsonString: string) => {
   try {
     return JSON.parse(jsonString);
@@ -53,45 +53,6 @@ export const jsonStringToArray = (jsonString: string) => {
     return [];
   }
 };
-interface ForwardEventParam {
-  event: {
-    eventName: string;
-    params: string;
-    buffer?: string;
-    changeNameHandler: (_eventName: string) => string;
-  };
-  fire: (eventName: string, ...arg: any[]) => void;
-  filter: (eventName: string, params: Array<any>, buffer?: string) => Boolean;
-}
-const onApiErrorEventName = "onApiError";
-
-// export const forwardEvent = ({
-//   event: { eventName, params, buffer, changeNameHandler },
-//   fire,
-//   filter,
-// }: ForwardEventParam) => {
-//   if (eventName === onApiErrorEventName) {
-//     console.error(eventName, params);
-//     fire(EngineEvents.API_ERROR, params);
-//     return;
-//   }
-//   try {
-//     const _params = JSON.parse(params);
-//     const isFilter = filter(eventName, _params, buffer);
-//     if (isFilter || !fire) {
-//       return;
-//     }
-//     const finalEventName = changeNameHandler(eventName);
-
-//     fire(finalEventName, ..._params);
-//     fire(finalEventName.toLocaleLowerCase(), ..._params);
-//   } catch (error) {
-//     console.error(
-//       `forwardEvent eventName:${eventName}  params:${params}  error:`,
-//       error
-//     );
-//   }
-// };
 
 export const formatConfigByVideoSourceType = (
   videoSourceType?: VideoSourceType,
@@ -127,9 +88,9 @@ export const formatConfigByVideoSourceType = (
   return { uid, channelId, videoSourceType };
 };
 
-export const getDefaultRenderVideoConfig = (
-  config: RenderVideoConfig
-): FormatRenderVideoConfig => {
+export const getDefaultRendererVideoConfig = (
+  config: RendererVideoConfig
+): FormatRendererVideoConfig => {
   const rendererOptions = Object.assign(
     {
       contentMode: ContentMode.Fit,
@@ -146,10 +107,6 @@ export const getDefaultRenderVideoConfig = (
 
   return { ...config, uid, channelId, videoSourceType, rendererOptions };
 };
-
-export const EVENT_ENGINE_INITIALIZE = "onEngineInitialize";
-export const EVENT_ENGINE_RELEASE = "onEngineRelease";
-export const agoraEventEmitter = new EventEmitter();
 
 export function classMix(...mixins: any[]): any {
   class MixClass {
@@ -176,3 +133,43 @@ function copyProperties<T>(target: T, source: any) {
     }
   }
 }
+
+// interface ForwardEventParam {
+//   event: {
+//     eventName: string;
+//     params: string;
+//     buffer?: string;
+//     changeNameHandler: (_eventName: string) => string;
+//   };
+//   fire: (eventName: string, ...arg: any[]) => void;
+//   filter: (eventName: string, params: Array<any>, buffer?: string) => Boolean;
+// }
+// const onApiErrorEventName = "onApiError";
+
+// export const forwardEvent = ({
+//   event: { eventName, params, buffer, changeNameHandler },
+//   fire,
+//   filter,
+// }: ForwardEventParam) => {
+//   if (eventName === onApiErrorEventName) {
+//     console.error(eventName, params);
+//     fire(EngineEvents.API_ERROR, params);
+//     return;
+//   }
+//   try {
+//     const _params = JSON.parse(params);
+//     const isFilter = filter(eventName, _params, buffer);
+//     if (isFilter || !fire) {
+//       return;
+//     }
+//     const finalEventName = changeNameHandler(eventName);
+
+//     fire(finalEventName, ..._params);
+//     fire(finalEventName.toLocaleLowerCase(), ..._params);
+//   } catch (error) {
+//     console.error(
+//       `forwardEvent eventName:${eventName}  params:${params}  error:`,
+//       error
+//     );
+//   }
+// };

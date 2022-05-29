@@ -1,4 +1,4 @@
-import IrisApiEngine from '../internal/IrisApiEngine'
+import { callIrisApi } from '../internal/IrisApiEngine'
 import { IMediaEngine } from '../IAgoraMediaEngine'
 import { IAudioFrameObserver, IVideoFrameObserver, MediaSourceType, AudioFrame, ExternalVideoSourceType, ExternalVideoFrame } from '../AgoraMediaBase'
 import { IVideoEncodedImageReceiver, EncodedVideoFrameInfo } from '../AgoraBase'
@@ -13,7 +13,7 @@ export class IMediaEngineImpl implements IMediaEngine {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -26,7 +26,7 @@ export class IMediaEngineImpl implements IMediaEngine {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -39,7 +39,7 @@ export class IMediaEngineImpl implements IMediaEngine {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -59,7 +59,7 @@ export class IMediaEngineImpl implements IMediaEngine {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -71,7 +71,7 @@ export class IMediaEngineImpl implements IMediaEngine {
         return { frame }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -83,7 +83,7 @@ export class IMediaEngineImpl implements IMediaEngine {
         return { frame }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -95,7 +95,7 @@ export class IMediaEngineImpl implements IMediaEngine {
         return { frame }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -103,7 +103,7 @@ export class IMediaEngineImpl implements IMediaEngine {
     const apiType = 'MediaEngine_pullAudioFrame'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const frame = jsonResults.frame
     return frame
   }
@@ -122,7 +122,7 @@ export class IMediaEngineImpl implements IMediaEngine {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -146,7 +146,7 @@ export class IMediaEngineImpl implements IMediaEngine {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -162,7 +162,7 @@ export class IMediaEngineImpl implements IMediaEngine {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -178,7 +178,7 @@ export class IMediaEngineImpl implements IMediaEngine {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -194,7 +194,7 @@ export class IMediaEngineImpl implements IMediaEngine {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -206,7 +206,7 @@ export class IMediaEngineImpl implements IMediaEngine {
         return { frame }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -222,7 +222,7 @@ export class IMediaEngineImpl implements IMediaEngine {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -239,7 +239,7 @@ export class IMediaEngineImpl implements IMediaEngine {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -258,7 +258,7 @@ export class IMediaEngineImpl implements IMediaEngine {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -266,6 +266,6 @@ export class IMediaEngineImpl implements IMediaEngine {
     const apiType = 'MediaEngine_release'
     const jsonParams = {
     }
-    IrisApiEngine.callApi(apiType, jsonParams)
+    callIrisApi.call(this, apiType, jsonParams)
   }
 }

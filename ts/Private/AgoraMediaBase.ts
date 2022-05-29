@@ -37,7 +37,7 @@ export class AudioParameters {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       sample_rate: this.sampleRate,
       channels: this.channels,
@@ -68,10 +68,6 @@ TranscodedVideoSource = 12,
 UnknownMediaSource = 100,
 }
 
-export enum MaxMetadataSizeType {
-MaxMetadataSizeInByte = 1024,
-}
-
 export class PacketOptions {
   timestamp?: number
   audioLevelIndication?: number
@@ -82,7 +78,7 @@ export class PacketOptions {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       timestamp: this.timestamp,
       audioLevelIndication: this.audioLevelIndication
@@ -103,7 +99,7 @@ export class AdvancedAudioOptions {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       audioProcessingChannels: this.audioProcessingChannels
     }
@@ -120,7 +116,7 @@ export class AudioEncodedFrameInfo {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       sendTs: this.sendTs,
       codec: this.codec
@@ -146,7 +142,7 @@ export class AudioPcmFrame {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       capture_timestamp: this.captureTimestamp,
       samples_per_channel_: this.samplesPerChannel,
@@ -232,7 +228,7 @@ export class ExternalVideoFrame {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       type: this.type,
       format: this.format,
@@ -292,7 +288,7 @@ export class VideoFrame {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       type: this.type,
       width: this.width,
@@ -349,7 +345,7 @@ export class AudioFrame {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       type: this.type,
       samplesPerChannel: this.samplesPerChannel,
@@ -368,12 +364,9 @@ export abstract class IAudioFrameObserverBase {
   onPlaybackAudioFrame?(channelId: string, audioFrame: AudioFrame): boolean;
 
   onMixedAudioFrame?(channelId: string, audioFrame: AudioFrame): boolean;
-
-  onPlaybackAudioFrameBeforeMixing?(channelId: string, userId: string, audioFrame: AudioFrame): boolean;
 }
 
 export abstract class IAudioFrameObserver extends IAudioFrameObserverBase {
-  // @ts-ignore
   onPlaybackAudioFrameBeforeMixing?(channelId: string, uid: number, audioFrame: AudioFrame): boolean;
 }
 
@@ -387,7 +380,7 @@ export class AudioSpectrumData {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       audioSpectrumData: this.audioSpectrumData,
       dataLength: this.dataLength
@@ -405,7 +398,7 @@ export class UserAudioSpectrumInfo {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       uid: this.uid,
       spectrumData: this.spectrumData
@@ -416,7 +409,7 @@ export class UserAudioSpectrumInfo {
 export abstract class IAudioSpectrumObserver {
   onLocalAudioSpectrum?(data: AudioSpectrumData): boolean;
 
-  onRemoteAudioSpectrum?(spectrums: UserAudioSpectrumInfo, spectrumNumber: number): boolean;
+  onRemoteAudioSpectrum?(spectrums: UserAudioSpectrumInfo[], spectrumNumber: number): boolean;
 }
 
 export abstract class IVideoEncodedFrameObserver {
@@ -493,7 +486,7 @@ export class ContentInspectModule {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       type: this.type,
       frequency: this.frequency
@@ -521,7 +514,7 @@ export class ContentInspectConfig {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       enable: this.enable,
       DeviceWork: this.DeviceWork,
@@ -546,7 +539,7 @@ export class SnapShotConfig {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       channel: this.channel,
       uid: this.uid,

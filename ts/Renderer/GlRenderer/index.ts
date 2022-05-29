@@ -3,7 +3,7 @@ const createProgramFromSources =
 
 import { EventEmitter } from "events";
 import { ShareVideoFrame } from "../../Types";
-import { IRenderer, RenderFailCallback } from "../IRender";
+import { IRenderer, RenderFailCallback } from "../IRenderer";
 
 const vertexShaderSource =
   "attribute vec2 a_position;" +
@@ -304,7 +304,10 @@ export class GlRenderer extends IRenderer {
       error = err;
     }
     if (!this.gl || error) {
-      this.failInitRenderCB && this.failInitRenderCB({ error: "webgl lost or webgl initialize failed" });
+      this.failInitRenderCB &&
+        this.failInitRenderCB({
+          error: "webgl lost or webgl initialize failed",
+        });
       this.failInitRenderCB = null;
       return;
     }

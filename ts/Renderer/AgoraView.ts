@@ -1,11 +1,6 @@
-import { VideoSourceType, ContentMode } from "../AgoraSdk";
-import {
-  agoraEventEmitter,
-  EVENT_ENGINE_INITIALIZE,
-  EVENT_ENGINE_RELEASE,
-  logWarn,
-} from "../Utils";
-import AgoraRenderManager from "./RendererManager";
+import { ContentMode } from "../Types";
+import { VideoSourceType } from "../Private/AgoraBase";
+import AgoraRendererManager from "./RendererManager";
 
 const VIDEO_SOURCE_TYPE_STRING = "video-source-type";
 const UID_STRING = "uid";
@@ -107,13 +102,10 @@ export default class AgoraView extends HTMLElement {
 
   constructor() {
     super();
-
-    agoraEventEmitter.on(EVENT_ENGINE_INITIALIZE, this.initializeRender);
-    agoraEventEmitter.on(EVENT_ENGINE_RELEASE, this.destroyRender);
   }
   initializeRender = () => {
-    AgoraRenderManager.destroyRendererByView(this);
-    AgoraRenderManager.setupVideo({
+    AgoraRendererManager.destroyRendererByView(this);
+    AgoraRendererManager.setupVideo({
       videoSourceType: this.videoSourceType,
       view: this,
       uid: this.uid,
@@ -125,7 +117,7 @@ export default class AgoraView extends HTMLElement {
     });
   };
   destroyRender = () => {
-    AgoraRenderManager.destroyRendererByView(this);
+    AgoraRendererManager.destroyRendererByView(this);
   };
 
   connectedCallback() {
@@ -143,7 +135,7 @@ export default class AgoraView extends HTMLElement {
     ].includes(attrName);
 
     if (isSetRenderOption) {
-      AgoraRenderManager.setRenderOption(
+      AgoraRendererManager.setRenderOption(
         this,
         this.renderContentMode,
         this.renderMirror
@@ -158,14 +150,6 @@ export default class AgoraView extends HTMLElement {
   }
   disconnectedCallback() {
     this.isConnectedCallback = false;
-    agoraEventEmitter.removeListener(
-      EVENT_ENGINE_INITIALIZE,
-      this.initializeRender
-    );
-    agoraEventEmitter.removeListener(
-      EVENT_ENGINE_RELEASE,
-      this.disconnectedCallback
-    );
     this.destroyRender();
   }
 }

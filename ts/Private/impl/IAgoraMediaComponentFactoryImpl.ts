@@ -1,4 +1,4 @@
-import IrisApiEngine from '../internal/IrisApiEngine'
+import { callIrisApi } from '../internal/IrisApiEngine'
 import { IMediaComponentFactory } from '../IAgoraMediaComponentFactory'
 import { MediaPlayerSourceType } from '../AgoraMediaBase'
 import { IMediaPlayer } from '../IAgoraMediaPlayer'
@@ -11,7 +11,7 @@ export class IMediaComponentFactoryImpl implements IMediaComponentFactory {
         return { type }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 }

@@ -1,6 +1,6 @@
-import IrisApiEngine from '../internal/IrisApiEngine'
+import { callIrisApi } from '../internal/IrisApiEngine'
 import { IMediaPlayer } from '../IAgoraMediaPlayer'
-import { IMediaPlayerCustomDataProvider } from '../IAgoraMediaPlayerSource'
+import { IMediaPlayerCustomDataProvider, IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource'
 import { PlayerStreamInfo, MediaPlayerState } from '../AgoraMediaPlayerTypes'
 import { RenderModeType, IAudioSpectrumObserver, AudioDualMonoMode } from '../AgoraMediaBase'
 import { SpatialAudioParams } from '../AgoraBase'
@@ -9,7 +9,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     const apiType = 'MediaPlayer_getMediaPlayerId'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -25,7 +25,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -38,7 +38,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { startPos }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -46,7 +46,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     const apiType = 'MediaPlayer_play'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -54,7 +54,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     const apiType = 'MediaPlayer_pause'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -62,7 +62,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     const apiType = 'MediaPlayer_stop'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -70,7 +70,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     const apiType = 'MediaPlayer_resume'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -82,7 +82,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { newPos }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -94,7 +94,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { pitch }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -102,7 +102,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     const apiType = 'MediaPlayer_getDuration'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const duration = jsonResults.duration
     return duration
   }
@@ -111,7 +111,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     const apiType = 'MediaPlayer_getPlayPosition'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const pos = jsonResults.pos
     return pos
   }
@@ -120,7 +120,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     const apiType = 'MediaPlayer_getStreamCount'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const count = jsonResults.count
     return count
   }
@@ -133,7 +133,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { index }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const info = jsonResults.info
     return info
   }
@@ -146,7 +146,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { loopCount }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -158,7 +158,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { audio_mute: audioMute }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -166,7 +166,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     const apiType = 'MediaPlayer_isAudioMuted'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -178,7 +178,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { video_mute: videoMute }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -186,7 +186,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     const apiType = 'MediaPlayer_isVideoMuted'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -198,7 +198,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { speed }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -210,7 +210,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { index }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -226,7 +226,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -242,7 +242,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -254,7 +254,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { filename }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -266,7 +266,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { index }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -278,7 +278,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { url }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -286,7 +286,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     const apiType = 'MediaPlayer_getState'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -298,7 +298,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { mute }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -306,7 +306,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     const apiType = 'MediaPlayer_getMute'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const mute = jsonResults.mute
     return mute
   }
@@ -319,7 +319,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { volume }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -327,7 +327,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     const apiType = 'MediaPlayer_getPlayoutVolume'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const volume = jsonResults.volume
     return volume
   }
@@ -340,7 +340,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { volume }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -348,7 +348,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     const apiType = 'MediaPlayer_getPublishSignalVolume'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const volume = jsonResults.volume
     return volume
   }
@@ -361,7 +361,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { view }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -373,7 +373,33 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { renderMode }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
+    return jsonResults.result
+  }
+
+  registerPlayerSourceObserver (observer: IMediaPlayerSourceObserver): number {
+    const apiType = 'MediaPlayer_registerPlayerSourceObserver'
+    const jsonParams = {
+      observer,
+      toJSON: () => {
+        return {
+        }
+      }
+    }
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
+    return jsonResults.result
+  }
+
+  unregisterPlayerSourceObserver (observer: IMediaPlayerSourceObserver): number {
+    const apiType = 'MediaPlayer_unregisterPlayerSourceObserver'
+    const jsonParams = {
+      observer,
+      toJSON: () => {
+        return {
+        }
+      }
+    }
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -386,7 +412,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { intervalInMS }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -399,7 +425,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -411,7 +437,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { mode }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -419,7 +445,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     const apiType = 'MediaPlayer_getPlayerSdkVersion'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -427,7 +453,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     const apiType = 'MediaPlayer_getPlaySrc'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -443,7 +469,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -451,7 +477,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     const apiType = 'MediaPlayer_getAgoraCDNLineCount'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -463,7 +489,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { index }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -471,7 +497,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
     const apiType = 'MediaPlayer_getCurrentAgoraCDNIndex'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -483,7 +509,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { enable }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -499,7 +525,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -515,7 +541,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -531,7 +557,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -547,7 +573,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -559,7 +585,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { src }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -571,7 +597,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { src }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -583,7 +609,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
         return { params }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 }

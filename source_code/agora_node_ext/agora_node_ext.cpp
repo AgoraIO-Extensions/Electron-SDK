@@ -5,11 +5,11 @@
  * @Last Modified time: 2021-10-10 22:07:49
  */
 
-#include "node_iris_rtc_engine.h"
+#include "agora_electron_bridge.h"
 
 using namespace agora::rtc::electron;
 
 napi_value Init(napi_env env, napi_value exports) {
-  return NodeIrisRtcEngine::Init(env, exports);
+  return AgoraElectronBridge::Init(env, exports);
 }
 NAPI_MODULE(NODE_GYP_MODULE_NAME, Init)

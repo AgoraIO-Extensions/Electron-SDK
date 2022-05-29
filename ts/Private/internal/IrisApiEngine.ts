@@ -1,4 +1,4 @@
-import { AgoraElectronBridge, CallBackModule, Result } from "../../AgoraSdk";
+import { AgoraElectronBridge, CallBackModule, Result } from "../../Types";
 import { IRtcEngineEventHandler } from "../IAgoraRtcEngine";
 import { processIRtcEngineEventHandlerEx } from "../impl/IAgoraRtcEngineExImpl";
 import { processIRtcEngineEventHandler } from "../impl/IAgoraRtcEngineImpl";
@@ -9,7 +9,7 @@ let agoraElectronBridge: AgoraElectronBridge;
 
 export const getBridge = (): AgoraElectronBridge => {
   if (!agoraElectronBridge) {
-    agoraElectronBridge = new agora.NodeIrisRtcEngine();
+    agoraElectronBridge = new agora.AgoraElectronBridge();
     agoraElectronBridge.sendMsg = sendMsg;
     // @ts-ignore
     (window || global).AgoraElectronBridge = agoraElectronBridge;
@@ -40,7 +40,7 @@ export const sendMsg = (
 export const handlerRTCEvent = function (
   event: string,
   data: string,
-  buffer: Uint8Array [],
+  buffer: Uint8Array[],
   bufferLength: number,
   bufferCount: number
 ) {
@@ -109,51 +109,38 @@ export const handlerMPKEvent = function (
   }
 };
 
-export default class IrisApiEngine {
-  static _handlers: IRtcEngineEventHandler[] = [];
+let _handlers: IRtcEngineEventHandler[] = [];
 
-  static callApi<T>(
-    funcName: string,
-    params: any,
-    buffer?: ArrayBufferLike
-  ): any {
-    const bridge = getBridge();
-    switch (funcName) {
-      case "RtcEngine_initialize":
-        bridge.InitializeEnv();
-        bridge.OnEvent(CallBackModule.RTC, "call_back_with_buffer", handlerRTCEvent);
-        bridge.OnEvent(CallBackModule.MPK, "call_back_with_buffer", handlerMPKEvent);
-        return sendMsg(funcName, params, buffer);
-      case "RtcEngine_release":
-        sendMsg(funcName, params, buffer);
-        bridge.ReleaseEnv();
-        return true;
-      case "RtcEngine_registerEventHandler":
-        this._handlers.push(params.eventHandler);
-        // @ts-ignore
-        return true;
-      case "RtcEngine_unregisterEventHandler":
-        this._handlers = this._handlers.filter(
-          (value) => value !== params.eventHandler
-        );
-        // @ts-ignore
-        return true;
-    }
-    return sendMsg(funcName, params, buffer);
+export const callIrisApi = (
+  funcName: string,
+  params: any,
+  buffer?: ArrayBufferLike
+): any => {
+  switch (funcName) {
+    case "RtcEngine_initialize":
+      return true;
+    case "RtcEngine_release":
+      return true;
+    case "RtcEngine_registerEventHandler":
+      _handlers.push(params.eventHandler);
+      return true;
+    case "RtcEngine_unregisterEventHandler":
+      _handlers = _handlers.filter((value) => value !== params.eventHandler);
+      return true;
   }
-}
-
-const getCircularReplacer = () => {
-  const seen = new WeakSet();
-  // @ts-ignore
-  return (key, value) => {
-    console.log(key, value);
-    if (typeof value === "object" && value !== null) {
-      if (seen.has(value)) {
-        return;
-      }
-      seen.add(value);
-    }
-    return value;
-  };
+  return sendMsg(funcName, params, buffer);
 };
+// const getCircularReplacer = () => {
+//   const seen = new WeakSet();
+//   // @ts-ignore
+//   return (key, value) => {
+//     console.log(key, value);
+//     if (typeof value === "object" && value !== null) {
+//       if (seen.has(value)) {
+//         return;
+//       }
+//       seen.add(value);
+//     }
+//     return value;
+//   };
+// };

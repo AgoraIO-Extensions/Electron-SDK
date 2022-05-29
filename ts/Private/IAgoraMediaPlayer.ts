@@ -1,4 +1,4 @@
-import { IMediaPlayerCustomDataProvider } from './IAgoraMediaPlayerSource'
+import { IMediaPlayerCustomDataProvider, IMediaPlayerSourceObserver } from './IAgoraMediaPlayerSource'
 import { PlayerStreamInfo, MediaPlayerState } from './AgoraMediaPlayerTypes'
 import { RenderModeType, IAudioSpectrumObserver, AudioDualMonoMode } from './AgoraMediaBase'
 import { SpatialAudioParams } from './AgoraBase'
@@ -72,6 +72,10 @@ abstract setView(view: any): number;
 
 abstract setRenderMode(renderMode: RenderModeType): number;
 
+abstract registerPlayerSourceObserver(observer: IMediaPlayerSourceObserver): number;
+
+abstract unregisterPlayerSourceObserver(observer: IMediaPlayerSourceObserver): number;
+
 abstract registerMediaPlayerAudioSpectrumObserver(observer: IAudioSpectrumObserver, intervalInMS: number): number;
 
 abstract unregisterMediaPlayerAudioSpectrumObserver(observer: IAudioSpectrumObserver): number;
@@ -94,9 +98,9 @@ abstract enableAutoSwitchAgoraCDN(enable: boolean): number;
 
 abstract renewAgoraCDNSrcToken(token: string, ts: number): number;
 
-abstract switchAgoraCDNSrc(src: string, syncPts: boolean): number;
+abstract switchAgoraCDNSrc(src: string, syncPts?: boolean): number;
 
-abstract switchSrc(src: string, syncPts: boolean): number;
+abstract switchSrc(src: string, syncPts?: boolean): number;
 
 abstract preloadSrc(src: string, startPos: number): number;
 

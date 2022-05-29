@@ -16,7 +16,7 @@ namespace rtc {
 namespace electron {
 enum CallBackModule { RTC = 0, MPK };
 
-class NodeIrisRtcEngine;
+class AgoraElectronBridge;
 class NodeIrisEventHandler : public iris::IrisEventHandler {
  public:
   typedef struct NodeEventCallback {

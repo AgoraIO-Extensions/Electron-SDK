@@ -1,4 +1,4 @@
-import IrisApiEngine from '../internal/IrisApiEngine'
+import { callIrisApi } from '../internal/IrisApiEngine'
 import { ICloudSpatialAudioEventHandler, IBaseSpatialAudioEngine, RemoteVoicePositionInfo, ICloudSpatialAudioEngine, CloudSpatialAudioConfig, AudioRangeModeType, ILocalSpatialAudioEngine, LocalSpatialAudioConfig } from '../IAgoraSpatialAudio'
 import { RtcConnection } from '../IAgoraRtcEngineEx'
 
@@ -35,7 +35,7 @@ export class IBaseSpatialAudioEngineImpl implements IBaseSpatialAudioEngine {
     const apiType = 'BaseSpatialAudioEngine_release'
     const jsonParams = {
     }
-    IrisApiEngine.callApi(apiType, jsonParams)
+    callIrisApi.call(this, apiType, jsonParams)
   }
 
   setMaxAudioRecvCount (maxCount: number): number {
@@ -46,7 +46,7 @@ export class IBaseSpatialAudioEngineImpl implements IBaseSpatialAudioEngine {
         return { maxCount }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -58,7 +58,7 @@ export class IBaseSpatialAudioEngineImpl implements IBaseSpatialAudioEngine {
         return { range }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -70,7 +70,7 @@ export class IBaseSpatialAudioEngineImpl implements IBaseSpatialAudioEngine {
         return { unit }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -90,7 +90,7 @@ export class IBaseSpatialAudioEngineImpl implements IBaseSpatialAudioEngine {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -112,7 +112,7 @@ export class IBaseSpatialAudioEngineImpl implements IBaseSpatialAudioEngine {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -128,7 +128,7 @@ export class IBaseSpatialAudioEngineImpl implements IBaseSpatialAudioEngine {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -140,7 +140,7 @@ export class IBaseSpatialAudioEngineImpl implements IBaseSpatialAudioEngine {
         return { params }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -152,7 +152,7 @@ export class IBaseSpatialAudioEngineImpl implements IBaseSpatialAudioEngine {
         return { mute }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -164,7 +164,7 @@ export class IBaseSpatialAudioEngineImpl implements IBaseSpatialAudioEngine {
         return { mute }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 }
@@ -178,7 +178,7 @@ export class ICloudSpatialAudioEngineImpl extends IBaseSpatialAudioEngineImpl im
         return { config }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -191,7 +191,7 @@ export class ICloudSpatialAudioEngineImpl extends IBaseSpatialAudioEngineImpl im
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -204,7 +204,7 @@ export class ICloudSpatialAudioEngineImpl extends IBaseSpatialAudioEngineImpl im
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -220,7 +220,7 @@ export class ICloudSpatialAudioEngineImpl extends IBaseSpatialAudioEngineImpl im
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -232,7 +232,7 @@ export class ICloudSpatialAudioEngineImpl extends IBaseSpatialAudioEngineImpl im
         return { teamId }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -244,7 +244,7 @@ export class ICloudSpatialAudioEngineImpl extends IBaseSpatialAudioEngineImpl im
         return { rangeMode }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -262,7 +262,7 @@ export class ICloudSpatialAudioEngineImpl extends IBaseSpatialAudioEngineImpl im
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -274,7 +274,7 @@ export class ICloudSpatialAudioEngineImpl extends IBaseSpatialAudioEngineImpl im
         return { token }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -282,11 +282,11 @@ export class ICloudSpatialAudioEngineImpl extends IBaseSpatialAudioEngineImpl im
     const apiType = 'CloudSpatialAudioEngine_exitRoom'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
-  getTeammates (uids: number): number {
+  getTeammates (uids: number[]): number {
     const apiType = 'CloudSpatialAudioEngine_getTeammates'
     const jsonParams = {
       uids,
@@ -294,7 +294,7 @@ export class ICloudSpatialAudioEngineImpl extends IBaseSpatialAudioEngineImpl im
         return { uids }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const userCount = jsonResults.userCount
     return userCount
   }
@@ -309,7 +309,7 @@ export class ILocalSpatialAudioEngineImpl extends IBaseSpatialAudioEngineImpl im
         return { config }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -325,7 +325,7 @@ export class ILocalSpatialAudioEngineImpl extends IBaseSpatialAudioEngineImpl im
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -343,7 +343,7 @@ export class ILocalSpatialAudioEngineImpl extends IBaseSpatialAudioEngineImpl im
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -355,7 +355,7 @@ export class ILocalSpatialAudioEngineImpl extends IBaseSpatialAudioEngineImpl im
         return { uid }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -371,7 +371,7 @@ export class ILocalSpatialAudioEngineImpl extends IBaseSpatialAudioEngineImpl im
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -379,7 +379,7 @@ export class ILocalSpatialAudioEngineImpl extends IBaseSpatialAudioEngineImpl im
     const apiType = 'LocalSpatialAudioEngine_clearRemotePositions'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -391,7 +391,7 @@ export class ILocalSpatialAudioEngineImpl extends IBaseSpatialAudioEngineImpl im
         return { connection }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 }

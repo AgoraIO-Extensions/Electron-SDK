@@ -1,4 +1,4 @@
-import IrisApiEngine from '../internal/IrisApiEngine'
+import { callIrisApi } from '../internal/IrisApiEngine'
 import { ILogWriter, LogLevel } from '../IAgoraLog'
 
 export class ILogWriterImpl implements ILogWriter {
@@ -16,7 +16,7 @@ export class ILogWriterImpl implements ILogWriter {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 }

@@ -1,317 +1,317 @@
 import { MediaSourceType, RenderModeType } from './AgoraMediaBase'
 
 export enum ChannelProfileType {
-  ChannelProfileCommunication = 0,
-  ChannelProfileLiveBroadcasting = 1,
-  ChannelProfileGame = 2,
-  ChannelProfileCloudGaming = 3,
-  ChannelProfileCommunication1v1 = 4,
-  ChannelProfileLiveBroadcasting2 = 5,
+ChannelProfileCommunication = 0,
+ChannelProfileLiveBroadcasting = 1,
+ChannelProfileGame = 2,
+ChannelProfileCloudGaming = 3,
+ChannelProfileCommunication1v1 = 4,
+ChannelProfileLiveBroadcasting2 = 5,
 }
 
 export enum WarnCodeType {
-  WarnInvalidView = 8,
-  WarnInitVideo = 16,
-  WarnPending = 20,
-  WarnNoAvailableChannel = 103,
-  WarnLookupChannelTimeout = 104,
-  WarnLookupChannelRejected = 105,
-  WarnOpenChannelTimeout = 106,
-  WarnOpenChannelRejected = 107,
-  WarnSwitchLiveVideoTimeout = 111,
-  WarnSetClientRoleTimeout = 118,
-  WarnOpenChannelInvalidTicket = 121,
-  WarnOpenChannelTryNextVos = 122,
-  WarnChannelConnectionUnrecoverable = 131,
-  WarnChannelConnectionIpChanged = 132,
-  WarnChannelConnectionPortChanged = 133,
-  WarnChannelSocketError = 134,
-  WarnAudioMixingOpenError = 701,
-  WarnAdmRuntimePlayoutWarning = 1014,
-  WarnAdmRuntimeRecordingWarning = 1016,
-  WarnAdmRecordAudioSilence = 1019,
-  WarnAdmPlayoutMalfunction = 1020,
-  WarnAdmRecordMalfunction = 1021,
-  WarnAdmIosCategoryNotPlayandrecord = 1029,
-  WarnAdmIosSamplerateChange = 1030,
-  WarnAdmRecordAudioLowlevel = 1031,
-  WarnAdmPlayoutAudioLowlevel = 1032,
-  WarnAdmWindowsNoDataReadyEvent = 1040,
-  WarnApmHowling = 1051,
-  WarnAdmGlitchState = 1052,
-  WarnAdmImproperSettings = 1053,
-  WarnAdmWinCoreNoRecordingDevice = 1322,
-  WarnAdmWinCoreNoPlayoutDevice = 1323,
-  WarnAdmWinCoreImproperCaptureRelease = 1324,
+WarnInvalidView = 8,
+WarnInitVideo = 16,
+WarnPending = 20,
+WarnNoAvailableChannel = 103,
+WarnLookupChannelTimeout = 104,
+WarnLookupChannelRejected = 105,
+WarnOpenChannelTimeout = 106,
+WarnOpenChannelRejected = 107,
+WarnSwitchLiveVideoTimeout = 111,
+WarnSetClientRoleTimeout = 118,
+WarnOpenChannelInvalidTicket = 121,
+WarnOpenChannelTryNextVos = 122,
+WarnChannelConnectionUnrecoverable = 131,
+WarnChannelConnectionIpChanged = 132,
+WarnChannelConnectionPortChanged = 133,
+WarnChannelSocketError = 134,
+WarnAudioMixingOpenError = 701,
+WarnAdmRuntimePlayoutWarning = 1014,
+WarnAdmRuntimeRecordingWarning = 1016,
+WarnAdmRecordAudioSilence = 1019,
+WarnAdmPlayoutMalfunction = 1020,
+WarnAdmRecordMalfunction = 1021,
+WarnAdmIosCategoryNotPlayandrecord = 1029,
+WarnAdmIosSamplerateChange = 1030,
+WarnAdmRecordAudioLowlevel = 1031,
+WarnAdmPlayoutAudioLowlevel = 1032,
+WarnAdmWindowsNoDataReadyEvent = 1040,
+WarnApmHowling = 1051,
+WarnAdmGlitchState = 1052,
+WarnAdmImproperSettings = 1053,
+WarnAdmWinCoreNoRecordingDevice = 1322,
+WarnAdmWinCoreNoPlayoutDevice = 1323,
+WarnAdmWinCoreImproperCaptureRelease = 1324,
 }
 
 export enum ErrorCodeType {
-  ErrOk = 0,
-  ErrFailed = 1,
-  ErrInvalidArgument = 2,
-  ErrNotReady = 3,
-  ErrNotSupported = 4,
-  ErrRefused = 5,
-  ErrBufferTooSmall = 6,
-  ErrNotInitialized = 7,
-  ErrInvalidState = 8,
-  ErrNoPermission = 9,
-  ErrTimedout = 10,
-  ErrCanceled = 11,
-  ErrTooOften = 12,
-  ErrBindSocket = 13,
-  ErrNetDown = 14,
-  ErrNetNobufs = 15,
-  ErrJoinChannelRejected = 17,
-  ErrLeaveChannelRejected = 18,
-  ErrAlreadyInUse = 19,
-  ErrAborted = 20,
-  ErrInitNetEngine = 21,
-  ErrResourceLimited = 22,
-  ErrInvalidAppId = 101,
-  ErrInvalidChannelName = 102,
-  ErrNoServerResources = 103,
-  ErrTokenExpired = 109,
-  ErrInvalidToken = 110,
-  ErrConnectionInterrupted = 111,
-  ErrConnectionLost = 112,
-  ErrNotInChannel = 113,
-  ErrSizeTooLarge = 114,
-  ErrBitrateLimit = 115,
-  ErrTooManyDataStreams = 116,
-  ErrStreamMessageTimeout = 117,
-  ErrSetClientRoleNotAuthorized = 119,
-  ErrDecryptionFailed = 120,
-  ErrInvalidUserId = 121,
-  ErrClientIsBannedByServer = 123,
-  ErrWatermarkParam = 124,
-  ErrWatermarkPath = 125,
-  ErrWatermarkPng = 126,
-  ErrWatermarkrInfo = 127,
-  ErrWatermarkArgb = 128,
-  ErrWatermarkRead = 129,
-  ErrEncryptedStreamNotAllowedPublish = 130,
-  ErrLicenseCredentialInvalid = 131,
-  ErrInvalidUserAccount = 134,
-  ErrCertRaw = 157,
-  ErrCertJsonPart = 158,
-  ErrCertJsonInval = 159,
-  ErrCertJsonNomem = 160,
-  ErrCertCustom = 161,
-  ErrCertCredential = 162,
-  ErrCertSign = 163,
-  ErrCertFail = 164,
-  ErrCertBuf = 165,
-  ErrCertNull = 166,
-  ErrCertDuedate = 167,
-  ErrCertRequest = 168,
-  ErrPcmsendFormat = 200,
-  ErrPcmsendBufferoverflow = 201,
-  ErrLogoutOther = 400,
-  ErrLogoutUser = 401,
-  ErrLogoutNet = 402,
-  ErrLogoutKicked = 403,
-  ErrLogoutPacket = 404,
-  ErrLogoutTokenExpired = 405,
-  ErrLogoutOldversion = 406,
-  ErrLogoutTokenWrong = 407,
-  ErrLogoutAlreadyLogout = 408,
-  ErrLoginOther = 420,
-  ErrLoginNet = 421,
-  ErrLoginFailed = 422,
-  ErrLoginCanceled = 423,
-  ErrLoginTokenExpired = 424,
-  ErrLoginOldVersion = 425,
-  ErrLoginTokenWrong = 426,
-  ErrLoginTokenKicked = 427,
-  ErrLoginAlreadyLogin = 428,
-  ErrJoinChannelOther = 440,
-  ErrSendMessageOther = 440,
-  ErrSendMessageTimeout = 441,
-  ErrQueryUsernumOther = 450,
-  ErrQueryUsernumTimeout = 451,
-  ErrQueryUsernumByuser = 452,
-  ErrLeaveChannelOther = 460,
-  ErrLeaveChannelKicked = 461,
-  ErrLeaveChannelByuser = 462,
-  ErrLeaveChannelLogout = 463,
-  ErrLeaveChannelDisconnected = 464,
-  ErrInviteOther = 470,
-  ErrInviteReinvite = 471,
-  ErrInviteNet = 472,
-  ErrInvitePeerOffline = 473,
-  ErrInviteTimeout = 474,
-  ErrInviteCantRecv = 475,
-  ErrLoadMediaEngine = 1001,
-  ErrStartCall = 1002,
-  ErrStartCamera = 1003,
-  ErrStartVideoRender = 1004,
-  ErrAdmGeneralError = 1005,
-  ErrAdmJavaResource = 1006,
-  ErrAdmSampleRate = 1007,
-  ErrAdmInitPlayout = 1008,
-  ErrAdmStartPlayout = 1009,
-  ErrAdmStopPlayout = 1010,
-  ErrAdmInitRecording = 1011,
-  ErrAdmStartRecording = 1012,
-  ErrAdmStopRecording = 1013,
-  ErrAdmRuntimePlayoutError = 1015,
-  ErrAdmRuntimeRecordingError = 1017,
-  ErrAdmRecordAudioFailed = 1018,
-  ErrAdmInitLoopback = 1022,
-  ErrAdmStartLoopback = 1023,
-  ErrAdmNoPermission = 1027,
-  ErrAdmRecordAudioIsActive = 1033,
-  ErrAdmAndroidJniJavaResource = 1101,
-  ErrAdmAndroidJniNoRecordFrequency = 1108,
-  ErrAdmAndroidJniNoPlaybackFrequency = 1109,
-  ErrAdmAndroidJniJavaStartRecord = 1111,
-  ErrAdmAndroidJniJavaStartPlayback = 1112,
-  ErrAdmAndroidJniJavaRecordError = 1115,
-  ErrAdmAndroidOpenslCreateEngine = 1151,
-  ErrAdmAndroidOpenslCreateAudioRecorder = 1153,
-  ErrAdmAndroidOpenslStartRecorderThread = 1156,
-  ErrAdmAndroidOpenslCreateAudioPlayer = 1157,
-  ErrAdmAndroidOpenslStartPlayerThread = 1160,
-  ErrAdmIosInputNotAvailable = 1201,
-  ErrAdmIosActivateSessionFail = 1206,
-  ErrAdmIosVpioInitFail = 1210,
-  ErrAdmIosVpioReinitFail = 1213,
-  ErrAdmIosVpioRestartFail = 1214,
-  ErrAdmIosSetRenderCallbackFail = 1219,
-  ErrAdmIosSessionSampleratrZero = 1221,
-  ErrAdmWinCoreInit = 1301,
-  ErrAdmWinCoreInitRecording = 1303,
-  ErrAdmWinCoreInitPlayout = 1306,
-  ErrAdmWinCoreInitPlayoutNull = 1307,
-  ErrAdmWinCoreStartRecording = 1309,
-  ErrAdmWinCoreCreateRecThread = 1311,
-  ErrAdmWinCoreCaptureNotStartup = 1314,
-  ErrAdmWinCoreCreateRenderThread = 1319,
-  ErrAdmWinCoreRenderNotStartup = 1320,
-  ErrAdmWinCoreNoRecordingDevice = 1322,
-  ErrAdmWinCoreNoPlayoutDevice = 1323,
-  ErrAdmWinWaveInit = 1351,
-  ErrAdmWinWaveInitRecording = 1353,
-  ErrAdmWinWaveInitMicrophone = 1354,
-  ErrAdmWinWaveInitPlayout = 1355,
-  ErrAdmWinWaveInitSpeaker = 1356,
-  ErrAdmWinWaveStartRecording = 1357,
-  ErrAdmWinWaveStartPlayout = 1358,
-  ErrAdmNoRecordingDevice = 1359,
-  ErrAdmNoPlayoutDevice = 1360,
-  ErrVdmCameraNotAuthorized = 1501,
-  ErrVdmWinDeviceInUse = 1502,
-  ErrVcmUnknownError = 1600,
-  ErrVcmEncoderInitError = 1601,
-  ErrVcmEncoderEncodeError = 1602,
-  ErrVcmEncoderSetError = 1603,
+ErrOk = 0,
+ErrFailed = 1,
+ErrInvalidArgument = 2,
+ErrNotReady = 3,
+ErrNotSupported = 4,
+ErrRefused = 5,
+ErrBufferTooSmall = 6,
+ErrNotInitialized = 7,
+ErrInvalidState = 8,
+ErrNoPermission = 9,
+ErrTimedout = 10,
+ErrCanceled = 11,
+ErrTooOften = 12,
+ErrBindSocket = 13,
+ErrNetDown = 14,
+ErrNetNobufs = 15,
+ErrJoinChannelRejected = 17,
+ErrLeaveChannelRejected = 18,
+ErrAlreadyInUse = 19,
+ErrAborted = 20,
+ErrInitNetEngine = 21,
+ErrResourceLimited = 22,
+ErrInvalidAppId = 101,
+ErrInvalidChannelName = 102,
+ErrNoServerResources = 103,
+ErrTokenExpired = 109,
+ErrInvalidToken = 110,
+ErrConnectionInterrupted = 111,
+ErrConnectionLost = 112,
+ErrNotInChannel = 113,
+ErrSizeTooLarge = 114,
+ErrBitrateLimit = 115,
+ErrTooManyDataStreams = 116,
+ErrStreamMessageTimeout = 117,
+ErrSetClientRoleNotAuthorized = 119,
+ErrDecryptionFailed = 120,
+ErrInvalidUserId = 121,
+ErrClientIsBannedByServer = 123,
+ErrWatermarkParam = 124,
+ErrWatermarkPath = 125,
+ErrWatermarkPng = 126,
+ErrWatermarkrInfo = 127,
+ErrWatermarkArgb = 128,
+ErrWatermarkRead = 129,
+ErrEncryptedStreamNotAllowedPublish = 130,
+ErrLicenseCredentialInvalid = 131,
+ErrInvalidUserAccount = 134,
+ErrCertRaw = 157,
+ErrCertJsonPart = 158,
+ErrCertJsonInval = 159,
+ErrCertJsonNomem = 160,
+ErrCertCustom = 161,
+ErrCertCredential = 162,
+ErrCertSign = 163,
+ErrCertFail = 164,
+ErrCertBuf = 165,
+ErrCertNull = 166,
+ErrCertDuedate = 167,
+ErrCertRequest = 168,
+ErrPcmsendFormat = 200,
+ErrPcmsendBufferoverflow = 201,
+ErrLogoutOther = 400,
+ErrLogoutUser = 401,
+ErrLogoutNet = 402,
+ErrLogoutKicked = 403,
+ErrLogoutPacket = 404,
+ErrLogoutTokenExpired = 405,
+ErrLogoutOldversion = 406,
+ErrLogoutTokenWrong = 407,
+ErrLogoutAlreadyLogout = 408,
+ErrLoginOther = 420,
+ErrLoginNet = 421,
+ErrLoginFailed = 422,
+ErrLoginCanceled = 423,
+ErrLoginTokenExpired = 424,
+ErrLoginOldVersion = 425,
+ErrLoginTokenWrong = 426,
+ErrLoginTokenKicked = 427,
+ErrLoginAlreadyLogin = 428,
+ErrJoinChannelOther = 440,
+ErrSendMessageOther = 440,
+ErrSendMessageTimeout = 441,
+ErrQueryUsernumOther = 450,
+ErrQueryUsernumTimeout = 451,
+ErrQueryUsernumByuser = 452,
+ErrLeaveChannelOther = 460,
+ErrLeaveChannelKicked = 461,
+ErrLeaveChannelByuser = 462,
+ErrLeaveChannelLogout = 463,
+ErrLeaveChannelDisconnected = 464,
+ErrInviteOther = 470,
+ErrInviteReinvite = 471,
+ErrInviteNet = 472,
+ErrInvitePeerOffline = 473,
+ErrInviteTimeout = 474,
+ErrInviteCantRecv = 475,
+ErrLoadMediaEngine = 1001,
+ErrStartCall = 1002,
+ErrStartCamera = 1003,
+ErrStartVideoRender = 1004,
+ErrAdmGeneralError = 1005,
+ErrAdmJavaResource = 1006,
+ErrAdmSampleRate = 1007,
+ErrAdmInitPlayout = 1008,
+ErrAdmStartPlayout = 1009,
+ErrAdmStopPlayout = 1010,
+ErrAdmInitRecording = 1011,
+ErrAdmStartRecording = 1012,
+ErrAdmStopRecording = 1013,
+ErrAdmRuntimePlayoutError = 1015,
+ErrAdmRuntimeRecordingError = 1017,
+ErrAdmRecordAudioFailed = 1018,
+ErrAdmInitLoopback = 1022,
+ErrAdmStartLoopback = 1023,
+ErrAdmNoPermission = 1027,
+ErrAdmRecordAudioIsActive = 1033,
+ErrAdmAndroidJniJavaResource = 1101,
+ErrAdmAndroidJniNoRecordFrequency = 1108,
+ErrAdmAndroidJniNoPlaybackFrequency = 1109,
+ErrAdmAndroidJniJavaStartRecord = 1111,
+ErrAdmAndroidJniJavaStartPlayback = 1112,
+ErrAdmAndroidJniJavaRecordError = 1115,
+ErrAdmAndroidOpenslCreateEngine = 1151,
+ErrAdmAndroidOpenslCreateAudioRecorder = 1153,
+ErrAdmAndroidOpenslStartRecorderThread = 1156,
+ErrAdmAndroidOpenslCreateAudioPlayer = 1157,
+ErrAdmAndroidOpenslStartPlayerThread = 1160,
+ErrAdmIosInputNotAvailable = 1201,
+ErrAdmIosActivateSessionFail = 1206,
+ErrAdmIosVpioInitFail = 1210,
+ErrAdmIosVpioReinitFail = 1213,
+ErrAdmIosVpioRestartFail = 1214,
+ErrAdmIosSetRenderCallbackFail = 1219,
+ErrAdmIosSessionSampleratrZero = 1221,
+ErrAdmWinCoreInit = 1301,
+ErrAdmWinCoreInitRecording = 1303,
+ErrAdmWinCoreInitPlayout = 1306,
+ErrAdmWinCoreInitPlayoutNull = 1307,
+ErrAdmWinCoreStartRecording = 1309,
+ErrAdmWinCoreCreateRecThread = 1311,
+ErrAdmWinCoreCaptureNotStartup = 1314,
+ErrAdmWinCoreCreateRenderThread = 1319,
+ErrAdmWinCoreRenderNotStartup = 1320,
+ErrAdmWinCoreNoRecordingDevice = 1322,
+ErrAdmWinCoreNoPlayoutDevice = 1323,
+ErrAdmWinWaveInit = 1351,
+ErrAdmWinWaveInitRecording = 1353,
+ErrAdmWinWaveInitMicrophone = 1354,
+ErrAdmWinWaveInitPlayout = 1355,
+ErrAdmWinWaveInitSpeaker = 1356,
+ErrAdmWinWaveStartRecording = 1357,
+ErrAdmWinWaveStartPlayout = 1358,
+ErrAdmNoRecordingDevice = 1359,
+ErrAdmNoPlayoutDevice = 1360,
+ErrVdmCameraNotAuthorized = 1501,
+ErrVdmWinDeviceInUse = 1502,
+ErrVcmUnknownError = 1600,
+ErrVcmEncoderInitError = 1601,
+ErrVcmEncoderEncodeError = 1602,
+ErrVcmEncoderSetError = 1603,
 }
 
 export enum AudioSessionOperationRestriction {
-  AudioSessionOperationRestrictionNone = 0,
-  AudioSessionOperationRestrictionSetCategory = 1,
-  AudioSessionOperationRestrictionConfigureSession = 1 << 1,
-  AudioSessionOperationRestrictionDeactivateSession = 1 << 2,
-  AudioSessionOperationRestrictionAll = 1 << 7,
+AudioSessionOperationRestrictionNone = 0,
+AudioSessionOperationRestrictionSetCategory = 1,
+AudioSessionOperationRestrictionConfigureSession = 1 << 1,
+AudioSessionOperationRestrictionDeactivateSession = 1 << 2,
+AudioSessionOperationRestrictionAll = 1 << 7,
 }
 
 export enum UserOfflineReasonType {
-  UserOfflineQuit = 0,
-  UserOfflineDropped = 1,
-  UserOfflineBecomeAudience = 2,
+UserOfflineQuit = 0,
+UserOfflineDropped = 1,
+UserOfflineBecomeAudience = 2,
 }
 
 export enum InterfaceIdType {
-  AgoraIidAudioDeviceManager = 1,
-  AgoraIidVideoDeviceManager = 2,
-  AgoraIidParameterEngine = 3,
-  AgoraIidMediaEngine = 4,
-  AgoraIidAudioEngine = 5,
-  AgoraIidVideoEngine = 6,
-  AgoraIidRtcConnection = 7,
-  AgoraIidSignalingEngine = 8,
-  AgoraIidMediaEngineRegulator = 9,
-  AgoraIidCloudSpatialAudio = 10,
-  AgoraIidLocalSpatialAudio = 11,
+AgoraIidAudioDeviceManager = 1,
+AgoraIidVideoDeviceManager = 2,
+AgoraIidParameterEngine = 3,
+AgoraIidMediaEngine = 4,
+AgoraIidAudioEngine = 5,
+AgoraIidVideoEngine = 6,
+AgoraIidRtcConnection = 7,
+AgoraIidSignalingEngine = 8,
+AgoraIidMediaEngineRegulator = 9,
+AgoraIidCloudSpatialAudio = 10,
+AgoraIidLocalSpatialAudio = 11,
 }
 
 export enum QualityType {
-  QualityUnknown = 0,
-  QualityExcellent = 1,
-  QualityGood = 2,
-  QualityPoor = 3,
-  QualityBad = 4,
-  QualityVbad = 5,
-  QualityDown = 6,
-  QualityUnsupported = 7,
-  QualityDetecting = 8,
+QualityUnknown = 0,
+QualityExcellent = 1,
+QualityGood = 2,
+QualityPoor = 3,
+QualityBad = 4,
+QualityVbad = 5,
+QualityDown = 6,
+QualityUnsupported = 7,
+QualityDetecting = 8,
 }
 
 export enum FitModeType {
-  ModeCover = 1,
-  ModeContain = 2,
+ModeCover = 1,
+ModeContain = 2,
 }
 
 export enum VideoOrientation {
-  VideoOrientation0 = 0,
-  VideoOrientation90 = 90,
-  VideoOrientation180 = 180,
-  VideoOrientation270 = 270,
+VideoOrientation0 = 0,
+VideoOrientation90 = 90,
+VideoOrientation180 = 180,
+VideoOrientation270 = 270,
 }
 
 export enum FrameRate {
-  FrameRateFps1 = 1,
-  FrameRateFps7 = 7,
-  FrameRateFps10 = 10,
-  FrameRateFps15 = 15,
-  FrameRateFps24 = 24,
-  FrameRateFps30 = 30,
-  FrameRateFps60 = 60,
+FrameRateFps1 = 1,
+FrameRateFps7 = 7,
+FrameRateFps10 = 10,
+FrameRateFps15 = 15,
+FrameRateFps24 = 24,
+FrameRateFps30 = 30,
+FrameRateFps60 = 60,
 }
 
 export enum FrameWidth {
-  FrameWidth640 = 640,
+FrameWidth640 = 640,
 }
 
 export enum FrameHeight {
-  FrameHeight360 = 360,
+FrameHeight360 = 360,
 }
 
 export enum VideoFrameType {
-  VideoFrameTypeBlankFrame = 0,
-  VideoFrameTypeKeyFrame = 3,
-  VideoFrameTypeDeltaFrame = 4,
-  VideoFrameTypeBFrame = 5,
-  VideoFrameTypeDroppableFrame = 6,
-  VideoFrameTypeUnknow = 7,
+VideoFrameTypeBlankFrame = 0,
+VideoFrameTypeKeyFrame = 3,
+VideoFrameTypeDeltaFrame = 4,
+VideoFrameTypeBFrame = 5,
+VideoFrameTypeDroppableFrame = 6,
+VideoFrameTypeUnknow = 7,
 }
 
 export enum OrientationMode {
-  OrientationModeAdaptive = 0,
-  OrientationModeFixedLandscape = 1,
-  OrientationModeFixedPortrait = 2,
+OrientationModeAdaptive = 0,
+OrientationModeFixedLandscape = 1,
+OrientationModeFixedPortrait = 2,
 }
 
 export enum DegradationPreference {
-  MaintainQuality = 0,
-  MaintainFramerate = 1,
-  MaintainBalanced = 2,
-  MaintainResolution = 3,
-  DISABLED = 100,
+MaintainQuality = 0,
+MaintainFramerate = 1,
+MaintainBalanced = 2,
+MaintainResolution = 3,
+DISABLED = 100,
 }
 
 export class VideoDimensions {
   width?: number
   height?: number
-  static fromJSON(json: any): VideoDimensions {
+  static fromJSON (json: any): VideoDimensions {
     const obj = new VideoDimensions()
     obj.width = json.width
     obj.height = json.height
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       width: this.width,
       height: this.height
@@ -320,59 +320,59 @@ export class VideoDimensions {
 }
 
 export enum VideoCodecType {
-  VideoCodecNone = 0,
-  VideoCodecVp8 = 1,
-  VideoCodecH264 = 2,
-  VideoCodecH265 = 3,
-  VideoCodecVp9 = 5,
-  VideoCodecGeneric = 6,
-  VideoCodecGenericH264 = 7,
-  VideoCodecAv1 = 12,
-  VideoCodecGenericJpeg = 20,
+VideoCodecNone = 0,
+VideoCodecVp8 = 1,
+VideoCodecH264 = 2,
+VideoCodecH265 = 3,
+VideoCodecVp9 = 5,
+VideoCodecGeneric = 6,
+VideoCodecGenericH264 = 7,
+VideoCodecAv1 = 12,
+VideoCodecGenericJpeg = 20,
 }
 
 export enum AudioCodecType {
-  AudioCodecOpus = 1,
-  AudioCodecPcma = 3,
-  AudioCodecPcmu = 4,
-  AudioCodecG722 = 5,
-  AudioCodecAaclc = 8,
-  AudioCodecHeaac = 9,
-  AudioCodecJc1 = 10,
-  AudioCodecHeaac2 = 11,
-  AudioCodecLpcnet = 12,
+AudioCodecOpus = 1,
+AudioCodecPcma = 3,
+AudioCodecPcmu = 4,
+AudioCodecG722 = 5,
+AudioCodecAaclc = 8,
+AudioCodecHeaac = 9,
+AudioCodecJc1 = 10,
+AudioCodecHeaac2 = 11,
+AudioCodecLpcnet = 12,
 }
 
 export enum AudioEncodingType {
-  AudioEncodingTypeAac16000Low = 0x010101,
-  AudioEncodingTypeAac16000Medium = 0x010102,
-  AudioEncodingTypeAac32000Low = 0x010201,
-  AudioEncodingTypeAac32000Medium = 0x010202,
-  AudioEncodingTypeAac32000High = 0x010203,
-  AudioEncodingTypeAac48000Medium = 0x010302,
-  AudioEncodingTypeAac48000High = 0x010303,
-  AudioEncodingTypeOpus16000Low = 0x020101,
-  AudioEncodingTypeOpus16000Medium = 0x020102,
-  AudioEncodingTypeOpus48000Medium = 0x020302,
-  AudioEncodingTypeOpus48000High = 0x020303,
+AudioEncodingTypeAac16000Low = 0x010101,
+AudioEncodingTypeAac16000Medium = 0x010102,
+AudioEncodingTypeAac32000Low = 0x010201,
+AudioEncodingTypeAac32000Medium = 0x010202,
+AudioEncodingTypeAac32000High = 0x010203,
+AudioEncodingTypeAac48000Medium = 0x010302,
+AudioEncodingTypeAac48000High = 0x010303,
+AudioEncodingTypeOpus16000Low = 0x020101,
+AudioEncodingTypeOpus16000Medium = 0x020102,
+AudioEncodingTypeOpus48000Medium = 0x020302,
+AudioEncodingTypeOpus48000High = 0x020303,
 }
 
 export enum WatermarkFitMode {
-  FitModeCoverPosition = 0,
-  FitModeUseImageRatio = 1,
+FitModeCoverPosition = 0,
+FitModeUseImageRatio = 1,
 }
 
 export class EncodedAudioFrameAdvancedSettings {
   speech?: boolean
   sendEvenIfEmpty?: boolean
-  static fromJSON(json: any): EncodedAudioFrameAdvancedSettings {
+  static fromJSON (json: any): EncodedAudioFrameAdvancedSettings {
     const obj = new EncodedAudioFrameAdvancedSettings()
     obj.speech = json.speech
     obj.sendEvenIfEmpty = json.sendEvenIfEmpty
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       speech: this.speech,
       sendEvenIfEmpty: this.sendEvenIfEmpty
@@ -386,7 +386,7 @@ export class EncodedAudioFrameInfo {
   samplesPerChannel?: number
   numberOfChannels?: number
   advancedSettings?: EncodedAudioFrameAdvancedSettings
-  static fromJSON(json: any): EncodedAudioFrameInfo {
+  static fromJSON (json: any): EncodedAudioFrameInfo {
     const obj = new EncodedAudioFrameInfo()
     obj.codec = json.codec
     obj.sampleRateHz = json.sampleRateHz
@@ -396,7 +396,7 @@ export class EncodedAudioFrameInfo {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       codec: this.codec,
       sampleRateHz: this.sampleRateHz,
@@ -413,7 +413,7 @@ export class AudioPcmDataInfo {
   samplesOut?: number
   elapsedTimeMs?: number
   ntpTimeMs?: number
-  static fromJSON(json: any): AudioPcmDataInfo {
+  static fromJSON (json: any): AudioPcmDataInfo {
     const obj = new AudioPcmDataInfo()
     obj.samplesPerChannel = json.samplesPerChannel
     obj.channelNum = json.channelNum
@@ -423,7 +423,7 @@ export class AudioPcmDataInfo {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       samplesPerChannel: this.samplesPerChannel,
       channelNum: this.channelNum,
@@ -435,13 +435,13 @@ export class AudioPcmDataInfo {
 }
 
 export enum H264PacketizeMode {
-  NonInterleaved = 0,
-  SingleNalUnit = 1,
+NonInterleaved = 0,
+SingleNalUnit = 1,
 }
 
 export enum VideoStreamType {
-  VideoStreamHigh = 0,
-  VideoStreamLow = 1,
+VideoStreamHigh = 0,
+VideoStreamLow = 1,
 }
 
 export class EncodedVideoFrameInfo {
@@ -456,7 +456,7 @@ export class EncodedVideoFrameInfo {
   internalSendTs?: number
   uid?: number
   streamType?: VideoStreamType
-  static fromJSON(json: any): EncodedVideoFrameInfo {
+  static fromJSON (json: any): EncodedVideoFrameInfo {
     const obj = new EncodedVideoFrameInfo()
     obj.codecType = json.codecType
     obj.width = json.width
@@ -472,7 +472,7 @@ export class EncodedVideoFrameInfo {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       codecType: this.codecType,
       width: this.width,
@@ -490,9 +490,9 @@ export class EncodedVideoFrameInfo {
 }
 
 export enum VideoMirrorModeType {
-  VideoMirrorModeAuto = 0,
-  VideoMirrorModeEnabled = 1,
-  VideoMirrorModeDisabled = 2,
+VideoMirrorModeAuto = 0,
+VideoMirrorModeEnabled = 1,
+VideoMirrorModeDisabled = 2,
 }
 
 export class VideoEncoderConfiguration {
@@ -504,7 +504,7 @@ export class VideoEncoderConfiguration {
   orientationMode?: OrientationMode
   degradationPreference?: DegradationPreference
   mirrorMode?: VideoMirrorModeType
-  static fromJSON(json: any): VideoEncoderConfiguration {
+  static fromJSON (json: any): VideoEncoderConfiguration {
     const obj = new VideoEncoderConfiguration()
     obj.codecType = json.codecType
     obj.dimensions = VideoDimensions.fromJSON(json.dimensions)
@@ -517,7 +517,7 @@ export class VideoEncoderConfiguration {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       codecType: this.codecType,
       dimensions: this.dimensions,
@@ -534,14 +534,14 @@ export class VideoEncoderConfiguration {
 export class DataStreamConfig {
   syncWithAudio?: boolean
   ordered?: boolean
-  static fromJSON(json: any): DataStreamConfig {
+  static fromJSON (json: any): DataStreamConfig {
     const obj = new DataStreamConfig()
     obj.syncWithAudio = json.syncWithAudio
     obj.ordered = json.ordered
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       syncWithAudio: this.syncWithAudio,
       ordered: this.ordered
@@ -553,7 +553,7 @@ export class SimulcastStreamConfig {
   dimensions?: VideoDimensions
   bitrate?: number
   framerate?: number
-  static fromJSON(json: any): SimulcastStreamConfig {
+  static fromJSON (json: any): SimulcastStreamConfig {
     const obj = new SimulcastStreamConfig()
     obj.dimensions = VideoDimensions.fromJSON(json.dimensions)
     obj.bitrate = json.bitrate
@@ -561,7 +561,7 @@ export class SimulcastStreamConfig {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       dimensions: this.dimensions,
       bitrate: this.bitrate,
@@ -575,7 +575,7 @@ export class Rectangle {
   y?: number
   width?: number
   height?: number
-  static fromJSON(json: any): Rectangle {
+  static fromJSON (json: any): Rectangle {
     const obj = new Rectangle()
     obj.x = json.x
     obj.y = json.y
@@ -584,7 +584,7 @@ export class Rectangle {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       x: this.x,
       y: this.y,
@@ -598,7 +598,7 @@ export class WatermarkRatio {
   xRatio?: number
   yRatio?: number
   widthRatio?: number
-  static fromJSON(json: any): WatermarkRatio {
+  static fromJSON (json: any): WatermarkRatio {
     const obj = new WatermarkRatio()
     obj.xRatio = json.xRatio
     obj.yRatio = json.yRatio
@@ -606,7 +606,7 @@ export class WatermarkRatio {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       xRatio: this.xRatio,
       yRatio: this.yRatio,
@@ -621,7 +621,7 @@ export class WatermarkOptions {
   positionInPortraitMode?: Rectangle
   watermarkRatio?: WatermarkRatio
   mode?: WatermarkFitMode
-  static fromJSON(json: any): WatermarkOptions {
+  static fromJSON (json: any): WatermarkOptions {
     const obj = new WatermarkOptions()
     obj.visibleInPreview = json.visibleInPreview
     obj.positionInLandscapeMode = Rectangle.fromJSON(json.positionInLandscapeMode)
@@ -631,7 +631,7 @@ export class WatermarkOptions {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       visibleInPreview: this.visibleInPreview,
       positionInLandscapeMode: this.positionInLandscapeMode,
@@ -676,7 +676,7 @@ export class RtcStats {
   firstVideoKeyFrameRenderedDurationAfterUnmute?: number
   txPacketLossRate?: number
   rxPacketLossRate?: number
-  static fromJSON(json: any): RtcStats {
+  static fromJSON (json: any): RtcStats {
     const obj = new RtcStats()
     obj.duration = json.duration
     obj.txBytes = json.txBytes
@@ -714,7 +714,7 @@ export class RtcStats {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       duration: this.duration,
       txBytes: this.txBytes,
@@ -754,48 +754,48 @@ export class RtcStats {
 }
 
 export enum VideoSourceType {
-  VideoSourceCameraPrimary = 0,
-  VideoSourceCamera = 0,
-  VideoSourceCameraSecondary = 1,
-  VideoSourceScreenPrimary = 2,
-  VideoSourceScreen = 2,
-  VideoSourceScreenSecondary = 3,
-  VideoSourceCustom = 4,
-  VideoSourceMediaPlayer = 5,
-  VideoSourceRtcImagePng = 6,
-  VideoSourceRtcImageJpeg = 7,
-  VideoSourceRtcImageGif = 8,
-  VideoSourceRemote = 9,
-  VideoSourceTranscoded = 10,
-  VideoSourceUnknown = 100,
+VideoSourceCameraPrimary = 0,
+VideoSourceCamera = 0,
+VideoSourceCameraSecondary = 1,
+VideoSourceScreenPrimary = 2,
+VideoSourceScreen = 2,
+VideoSourceScreenSecondary = 3,
+VideoSourceCustom = 4,
+VideoSourceMediaPlayer = 5,
+VideoSourceRtcImagePng = 6,
+VideoSourceRtcImageJpeg = 7,
+VideoSourceRtcImageGif = 8,
+VideoSourceRemote = 9,
+VideoSourceTranscoded = 10,
+VideoSourceUnknown = 100,
 }
 
 export enum ClientRoleType {
-  ClientRoleBroadcaster = 1,
-  ClientRoleAudience = 2,
+ClientRoleBroadcaster = 1,
+ClientRoleAudience = 2,
 }
 
 export enum QualityAdaptIndication {
-  AdaptNone = 0,
-  AdaptUpBandwidth = 1,
-  AdaptDownBandwidth = 2,
+AdaptNone = 0,
+AdaptUpBandwidth = 1,
+AdaptDownBandwidth = 2,
 }
 
 export enum AudienceLatencyLevelType {
-  AudienceLatencyLevelLowLatency = 1,
-  AudienceLatencyLevelUltraLowLatency = 2,
-  AudienceLatencyLevelHighLatency = 3,
+AudienceLatencyLevelLowLatency = 1,
+AudienceLatencyLevelUltraLowLatency = 2,
+AudienceLatencyLevelHighLatency = 3,
 }
 
 export class ClientRoleOptions {
   audienceLatencyLevel?: AudienceLatencyLevelType
-  static fromJSON(json: any): ClientRoleOptions {
+  static fromJSON (json: any): ClientRoleOptions {
     const obj = new ClientRoleOptions()
     obj.audienceLatencyLevel = json.audienceLatencyLevel
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       audienceLatencyLevel: this.audienceLatencyLevel
     }
@@ -803,8 +803,8 @@ export class ClientRoleOptions {
 }
 
 export enum ExperienceQualityType {
-  ExperienceQualityGood = 0,
-  ExperienceQualityBad = 1,
+ExperienceQualityGood = 0,
+ExperienceQualityBad = 1,
 }
 
 export class RemoteAudioStats {
@@ -822,7 +822,7 @@ export class RemoteAudioStats {
   totalActiveTime?: number
   publishDuration?: number
   qoeQuality?: number
-  static fromJSON(json: any): RemoteAudioStats {
+  static fromJSON (json: any): RemoteAudioStats {
     const obj = new RemoteAudioStats()
     obj.uid = json.uid
     obj.quality = json.quality
@@ -841,7 +841,7 @@ export class RemoteAudioStats {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       uid: this.uid,
       quality: this.quality,
@@ -862,30 +862,30 @@ export class RemoteAudioStats {
 }
 
 export enum AudioProfileType {
-  AudioProfileDefault = 0,
-  AudioProfileSpeechStandard = 1,
-  AudioProfileMusicStandard = 2,
-  AudioProfileMusicStandardStereo = 3,
-  AudioProfileMusicHighQuality = 4,
-  AudioProfileMusicHighQualityStereo = 5,
-  AudioProfileIot = 6,
-  AudioProfileNum = 7,
+AudioProfileDefault = 0,
+AudioProfileSpeechStandard = 1,
+AudioProfileMusicStandard = 2,
+AudioProfileMusicStandardStereo = 3,
+AudioProfileMusicHighQuality = 4,
+AudioProfileMusicHighQualityStereo = 5,
+AudioProfileIot = 6,
+AudioProfileNum = 7,
 }
 
 export enum AudioScenarioType {
-  AudioScenarioDefault = 0,
-  AudioScenarioGameStreaming = 3,
-  AudioScenarioChatroom = 5,
-  AudioScenarioHighDefinition = 6,
-  AudioScenarioChorus = 7,
-  AudioScenarioNum = 8,
+AudioScenarioDefault = 0,
+AudioScenarioGameStreaming = 3,
+AudioScenarioChatroom = 5,
+AudioScenarioHighDefinition = 6,
+AudioScenarioChorus = 7,
+AudioScenarioNum = 8,
 }
 
 export class VideoFormat {
   width?: number
   height?: number
   fps?: number
-  static fromJSON(json: any): VideoFormat {
+  static fromJSON (json: any): VideoFormat {
     const obj = new VideoFormat()
     obj.width = json.width
     obj.height = json.height
@@ -893,7 +893,7 @@ export class VideoFormat {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       width: this.width,
       height: this.height,
@@ -903,100 +903,100 @@ export class VideoFormat {
 }
 
 export enum VideoContentHint {
-  ContentHintNone = 0,
-  ContentHintMotion = 1,
-  ContentHintDetails = 2,
+ContentHintNone = 0,
+ContentHintMotion = 1,
+ContentHintDetails = 2,
 }
 
 export enum LocalAudioStreamState {
-  LocalAudioStreamStateStopped = 0,
-  LocalAudioStreamStateRecording = 1,
-  LocalAudioStreamStateEncoding = 2,
-  LocalAudioStreamStateFailed = 3,
+LocalAudioStreamStateStopped = 0,
+LocalAudioStreamStateRecording = 1,
+LocalAudioStreamStateEncoding = 2,
+LocalAudioStreamStateFailed = 3,
 }
 
 export enum LocalAudioStreamError {
-  LocalAudioStreamErrorOk = 0,
-  LocalAudioStreamErrorFailure = 1,
-  LocalAudioStreamErrorDeviceNoPermission = 2,
-  LocalAudioStreamErrorDeviceBusy = 3,
-  LocalAudioStreamErrorRecordFailure = 4,
-  LocalAudioStreamErrorEncodeFailure = 5,
+LocalAudioStreamErrorOk = 0,
+LocalAudioStreamErrorFailure = 1,
+LocalAudioStreamErrorDeviceNoPermission = 2,
+LocalAudioStreamErrorDeviceBusy = 3,
+LocalAudioStreamErrorRecordFailure = 4,
+LocalAudioStreamErrorEncodeFailure = 5,
 }
 
 export enum LocalVideoStreamState {
-  LocalVideoStreamStateStopped = 0,
-  LocalVideoStreamStateCapturing = 1,
-  LocalVideoStreamStateEncoding = 2,
-  LocalVideoStreamStateFailed = 3,
+LocalVideoStreamStateStopped = 0,
+LocalVideoStreamStateCapturing = 1,
+LocalVideoStreamStateEncoding = 2,
+LocalVideoStreamStateFailed = 3,
 }
 
 export enum LocalVideoStreamError {
-  LocalVideoStreamErrorOk = 0,
-  LocalVideoStreamErrorFailure = 1,
-  LocalVideoStreamErrorDeviceNoPermission = 2,
-  LocalVideoStreamErrorDeviceBusy = 3,
-  LocalVideoStreamErrorCaptureFailure = 4,
-  LocalVideoStreamErrorEncodeFailure = 5,
-  LocalVideoStreamErrorCaptureInbackground = 6,
-  LocalVideoStreamErrorCaptureMultipleForegroundApps = 7,
-  LocalVideoStreamErrorDeviceNotFound = 8,
-  LocalVideoStreamErrorDeviceDisconnected = 9,
-  LocalVideoStreamErrorDeviceInvalidId = 10,
-  LocalVideoStreamErrorDeviceSystemPressure = 101,
-  LocalVideoStreamErrorScreenCaptureWindowMinimized = 11,
-  LocalVideoStreamErrorScreenCaptureWindowClosed = 12,
-  LocalVideoStreamErrorScreenCaptureWindowOccluded = 13,
-  LocalVideoStreamErrorScreenCaptureWindowNotSupported = 20,
+LocalVideoStreamErrorOk = 0,
+LocalVideoStreamErrorFailure = 1,
+LocalVideoStreamErrorDeviceNoPermission = 2,
+LocalVideoStreamErrorDeviceBusy = 3,
+LocalVideoStreamErrorCaptureFailure = 4,
+LocalVideoStreamErrorEncodeFailure = 5,
+LocalVideoStreamErrorCaptureInbackground = 6,
+LocalVideoStreamErrorCaptureMultipleForegroundApps = 7,
+LocalVideoStreamErrorDeviceNotFound = 8,
+LocalVideoStreamErrorDeviceDisconnected = 9,
+LocalVideoStreamErrorDeviceInvalidId = 10,
+LocalVideoStreamErrorDeviceSystemPressure = 101,
+LocalVideoStreamErrorScreenCaptureWindowMinimized = 11,
+LocalVideoStreamErrorScreenCaptureWindowClosed = 12,
+LocalVideoStreamErrorScreenCaptureWindowOccluded = 13,
+LocalVideoStreamErrorScreenCaptureWindowNotSupported = 20,
 }
 
 export enum RemoteAudioState {
-  RemoteAudioStateStopped = 0,
-  RemoteAudioStateStarting = 1,
-  RemoteAudioStateDecoding = 2,
-  RemoteAudioStateFrozen = 3,
-  RemoteAudioStateFailed = 4,
+RemoteAudioStateStopped = 0,
+RemoteAudioStateStarting = 1,
+RemoteAudioStateDecoding = 2,
+RemoteAudioStateFrozen = 3,
+RemoteAudioStateFailed = 4,
 }
 
 export enum RemoteAudioStateReason {
-  RemoteAudioReasonInternal = 0,
-  RemoteAudioReasonNetworkCongestion = 1,
-  RemoteAudioReasonNetworkRecovery = 2,
-  RemoteAudioReasonLocalMuted = 3,
-  RemoteAudioReasonLocalUnmuted = 4,
-  RemoteAudioReasonRemoteMuted = 5,
-  RemoteAudioReasonRemoteUnmuted = 6,
-  RemoteAudioReasonRemoteOffline = 7,
+RemoteAudioReasonInternal = 0,
+RemoteAudioReasonNetworkCongestion = 1,
+RemoteAudioReasonNetworkRecovery = 2,
+RemoteAudioReasonLocalMuted = 3,
+RemoteAudioReasonLocalUnmuted = 4,
+RemoteAudioReasonRemoteMuted = 5,
+RemoteAudioReasonRemoteUnmuted = 6,
+RemoteAudioReasonRemoteOffline = 7,
 }
 
 export enum RemoteVideoState {
-  RemoteVideoStateStopped = 0,
-  RemoteVideoStateStarting = 1,
-  RemoteVideoStateDecoding = 2,
-  RemoteVideoStateFrozen = 3,
-  RemoteVideoStateFailed = 4,
+RemoteVideoStateStopped = 0,
+RemoteVideoStateStarting = 1,
+RemoteVideoStateDecoding = 2,
+RemoteVideoStateFrozen = 3,
+RemoteVideoStateFailed = 4,
 }
 
 export enum RemoteVideoStateReason {
-  RemoteVideoStateReasonInternal = 0,
-  RemoteVideoStateReasonNetworkCongestion = 1,
-  RemoteVideoStateReasonNetworkRecovery = 2,
-  RemoteVideoStateReasonLocalMuted = 3,
-  RemoteVideoStateReasonLocalUnmuted = 4,
-  RemoteVideoStateReasonRemoteMuted = 5,
-  RemoteVideoStateReasonRemoteUnmuted = 6,
-  RemoteVideoStateReasonRemoteOffline = 7,
-  RemoteVideoStateReasonAudioFallback = 8,
-  RemoteVideoStateReasonAudioFallbackRecovery = 9,
-  RemoteVideoStateReasonVideoStreamTypeChangeToLow = 10,
-  RemoteVideoStateReasonVideoStreamTypeChangeToHigh = 11,
+RemoteVideoStateReasonInternal = 0,
+RemoteVideoStateReasonNetworkCongestion = 1,
+RemoteVideoStateReasonNetworkRecovery = 2,
+RemoteVideoStateReasonLocalMuted = 3,
+RemoteVideoStateReasonLocalUnmuted = 4,
+RemoteVideoStateReasonRemoteMuted = 5,
+RemoteVideoStateReasonRemoteUnmuted = 6,
+RemoteVideoStateReasonRemoteOffline = 7,
+RemoteVideoStateReasonAudioFallback = 8,
+RemoteVideoStateReasonAudioFallbackRecovery = 9,
+RemoteVideoStateReasonVideoStreamTypeChangeToLow = 10,
+RemoteVideoStateReasonVideoStreamTypeChangeToHigh = 11,
 }
 
 export enum RemoteUserState {
-  UserStateMuteAudio = (1 << 0),
-  UserStateMuteVideo = (1 << 1),
-  UserStateEnableVideo = (1 << 4),
-  UserStateEnableLocalVideo = (1 << 8),
+UserStateMuteAudio = (1 << 0),
+UserStateMuteVideo = (1 << 1),
+UserStateEnableVideo = (1 << 4),
+UserStateEnableLocalVideo = (1 << 8),
 }
 
 export class VideoTrackInfo {
@@ -1009,7 +1009,7 @@ export class VideoTrackInfo {
   encodedFrameOnly?: boolean
   sourceType?: VideoSourceType
   observationPosition?: number
-  static fromJSON(json: any): VideoTrackInfo {
+  static fromJSON (json: any): VideoTrackInfo {
     const obj = new VideoTrackInfo()
     obj.isLocal = json.isLocal
     obj.ownerUid = json.ownerUid
@@ -1023,7 +1023,7 @@ export class VideoTrackInfo {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       isLocal: this.isLocal,
       ownerUid: this.ownerUid,
@@ -1039,11 +1039,11 @@ export class VideoTrackInfo {
 }
 
 export enum RemoteVideoDownscaleLevel {
-  RemoteVideoDownscaleLevelNone = 0,
-  RemoteVideoDownscaleLevel1 = 1,
-  RemoteVideoDownscaleLevel2 = 2,
-  RemoteVideoDownscaleLevel3 = 3,
-  RemoteVideoDownscaleLevel4 = 4,
+RemoteVideoDownscaleLevelNone = 0,
+RemoteVideoDownscaleLevel1 = 1,
+RemoteVideoDownscaleLevel2 = 2,
+RemoteVideoDownscaleLevel3 = 3,
+RemoteVideoDownscaleLevel4 = 4,
 }
 
 export class AudioVolumeInfo {
@@ -1051,7 +1051,7 @@ export class AudioVolumeInfo {
   volume?: number
   vad?: number
   voicePitch?: number
-  static fromJSON(json: any): AudioVolumeInfo {
+  static fromJSON (json: any): AudioVolumeInfo {
     const obj = new AudioVolumeInfo()
     obj.uid = json.uid
     obj.volume = json.volume
@@ -1060,7 +1060,7 @@ export class AudioVolumeInfo {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       uid: this.uid,
       volume: this.volume,
@@ -1072,13 +1072,13 @@ export class AudioVolumeInfo {
 
 export class DeviceInfo {
   isLowLatencyAudioSupported?: boolean
-  static fromJSON(json: any): DeviceInfo {
+  static fromJSON (json: any): DeviceInfo {
     const obj = new DeviceInfo()
     obj.isLowLatencyAudioSupported = json.isLowLatencyAudioSupported
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       isLowLatencyAudioSupported: this.isLowLatencyAudioSupported
     }
@@ -1088,14 +1088,14 @@ export class DeviceInfo {
 export class Packet {
   buffer?: number[]
   size?: number
-  static fromJSON(json: any): Packet {
+  static fromJSON (json: any): Packet {
     const obj = new Packet()
     obj.buffer = json.buffer
     obj.size = json.size
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       buffer: this.buffer,
       size: this.size
@@ -1118,26 +1118,26 @@ export abstract class IVideoEncodedImageReceiver {
 }
 
 export enum AudioSampleRateType {
-  AudioSampleRate32000 = 32000,
-  AudioSampleRate44100 = 44100,
-  AudioSampleRate48000 = 48000,
+AudioSampleRate32000 = 32000,
+AudioSampleRate44100 = 44100,
+AudioSampleRate48000 = 48000,
 }
 
 export enum VideoCodecTypeForStream {
-  VideoCodecH264ForStream = 1,
-  VideoCodecH265ForStream = 2,
+VideoCodecH264ForStream = 1,
+VideoCodecH265ForStream = 2,
 }
 
 export enum VideoCodecProfileType {
-  VideoCodecProfileBaseline = 66,
-  VideoCodecProfileMain = 77,
-  VideoCodecProfileHigh = 100,
+VideoCodecProfileBaseline = 66,
+VideoCodecProfileMain = 77,
+VideoCodecProfileHigh = 100,
 }
 
 export enum AudioCodecProfileType {
-  AudioCodecProfileLcAac = 0,
-  AudioCodecProfileHeAac = 1,
-  AudioCodecProfileHeAacV2 = 2,
+AudioCodecProfileLcAac = 0,
+AudioCodecProfileHeAac = 1,
+AudioCodecProfileHeAacV2 = 2,
 }
 
 export class LocalAudioStats {
@@ -1146,7 +1146,7 @@ export class LocalAudioStats {
   sentBitrate?: number
   internalCodec?: number
   txPacketLossRate?: number
-  static fromJSON(json: any): LocalAudioStats {
+  static fromJSON (json: any): LocalAudioStats {
     const obj = new LocalAudioStats()
     obj.numChannels = json.numChannels
     obj.sentSampleRate = json.sentSampleRate
@@ -1156,7 +1156,7 @@ export class LocalAudioStats {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       numChannels: this.numChannels,
       sentSampleRate: this.sentSampleRate,
@@ -1168,38 +1168,38 @@ export class LocalAudioStats {
 }
 
 export enum RtmpStreamPublishState {
-  RtmpStreamPublishStateIdle = 0,
-  RtmpStreamPublishStateConnecting = 1,
-  RtmpStreamPublishStateRunning = 2,
-  RtmpStreamPublishStateRecovering = 3,
-  RtmpStreamPublishStateFailure = 4,
-  RtmpStreamPublishStateDisconnecting = 5,
+RtmpStreamPublishStateIdle = 0,
+RtmpStreamPublishStateConnecting = 1,
+RtmpStreamPublishStateRunning = 2,
+RtmpStreamPublishStateRecovering = 3,
+RtmpStreamPublishStateFailure = 4,
+RtmpStreamPublishStateDisconnecting = 5,
 }
 
 export enum RtmpStreamPublishErrorType {
-  RtmpStreamPublishErrorOk = 0,
-  RtmpStreamPublishErrorInvalidArgument = 1,
-  RtmpStreamPublishErrorEncryptedStreamNotAllowed = 2,
-  RtmpStreamPublishErrorConnectionTimeout = 3,
-  RtmpStreamPublishErrorInternalServerError = 4,
-  RtmpStreamPublishErrorRtmpServerError = 5,
-  RtmpStreamPublishErrorTooOften = 6,
-  RtmpStreamPublishErrorReachLimit = 7,
-  RtmpStreamPublishErrorNotAuthorized = 8,
-  RtmpStreamPublishErrorStreamNotFound = 9,
-  RtmpStreamPublishErrorFormatNotSupported = 10,
-  RtmpStreamPublishErrorNotBroadcaster = 11,
-  RtmpStreamPublishErrorTranscodingNoMixStream = 13,
-  RtmpStreamPublishErrorNetDown = 14,
-  RtmpStreamPublishErrorInvalidAppid = 15,
-  RtmpStreamUnpublishErrorOk = 100,
+RtmpStreamPublishErrorOk = 0,
+RtmpStreamPublishErrorInvalidArgument = 1,
+RtmpStreamPublishErrorEncryptedStreamNotAllowed = 2,
+RtmpStreamPublishErrorConnectionTimeout = 3,
+RtmpStreamPublishErrorInternalServerError = 4,
+RtmpStreamPublishErrorRtmpServerError = 5,
+RtmpStreamPublishErrorTooOften = 6,
+RtmpStreamPublishErrorReachLimit = 7,
+RtmpStreamPublishErrorNotAuthorized = 8,
+RtmpStreamPublishErrorStreamNotFound = 9,
+RtmpStreamPublishErrorFormatNotSupported = 10,
+RtmpStreamPublishErrorNotBroadcaster = 11,
+RtmpStreamPublishErrorTranscodingNoMixStream = 13,
+RtmpStreamPublishErrorNetDown = 14,
+RtmpStreamPublishErrorInvalidAppid = 15,
+RtmpStreamUnpublishErrorOk = 100,
 }
 
 export enum RtmpStreamingEvent {
-  RtmpStreamingEventFailedLoadImage = 1,
-  RtmpStreamingEventUrlAlreadyInUse = 2,
-  RtmpStreamingEventAdvancedFeatureNotSupport = 3,
-  RtmpStreamingEventRequestTooOften = 4,
+RtmpStreamingEventFailedLoadImage = 1,
+RtmpStreamingEventUrlAlreadyInUse = 2,
+RtmpStreamingEventAdvancedFeatureNotSupport = 3,
+RtmpStreamingEventRequestTooOften = 4,
 }
 
 export class RtcImage {
@@ -1210,7 +1210,7 @@ export class RtcImage {
   height?: number
   zOrder?: number
   alpha?: number
-  static fromJSON(json: any): RtcImage {
+  static fromJSON (json: any): RtcImage {
     const obj = new RtcImage()
     obj.url = json.url
     obj.x = json.x
@@ -1222,7 +1222,7 @@ export class RtcImage {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       url: this.url,
       x: this.x,
@@ -1238,14 +1238,14 @@ export class RtcImage {
 export class LiveStreamAdvancedFeature {
   featureName?: string
   opened?: boolean
-  static fromJSON(json: any): LiveStreamAdvancedFeature {
+  static fromJSON (json: any): LiveStreamAdvancedFeature {
     const obj = new LiveStreamAdvancedFeature()
     obj.featureName = json.featureName
     obj.opened = json.opened
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       featureName: this.featureName,
       opened: this.opened
@@ -1254,11 +1254,11 @@ export class LiveStreamAdvancedFeature {
 }
 
 export enum ConnectionStateType {
-  ConnectionStateDisconnected = 1,
-  ConnectionStateConnecting = 2,
-  ConnectionStateConnected = 3,
-  ConnectionStateReconnecting = 4,
-  ConnectionStateFailed = 5,
+ConnectionStateDisconnected = 1,
+ConnectionStateConnecting = 2,
+ConnectionStateConnected = 3,
+ConnectionStateReconnecting = 4,
+ConnectionStateFailed = 5,
 }
 
 export class TranscodingUser {
@@ -1270,7 +1270,7 @@ export class TranscodingUser {
   zOrder?: number
   alpha?: number
   audioChannel?: number
-  static fromJSON(json: any): TranscodingUser {
+  static fromJSON (json: any): TranscodingUser {
     const obj = new TranscodingUser()
     obj.uid = json.uid
     obj.x = json.x
@@ -1283,7 +1283,7 @@ export class TranscodingUser {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       uid: this.uid,
       x: this.x,
@@ -1321,7 +1321,7 @@ export class LiveTranscoding {
   audioCodecProfile?: AudioCodecProfileType
   advancedFeatures?: LiveStreamAdvancedFeature[]
   advancedFeatureCount?: number
-  static fromJSON(json: any): LiveTranscoding {
+  static fromJSON (json: any): LiveTranscoding {
     const obj = new LiveTranscoding()
     obj.width = json.width
     obj.height = json.height
@@ -1349,7 +1349,7 @@ export class LiveTranscoding {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       width: this.width,
       height: this.height,
@@ -1389,7 +1389,7 @@ export class TranscodingVideoStream {
   zOrder?: number
   alpha?: number
   mirror?: boolean
-  static fromJSON(json: any): TranscodingVideoStream {
+  static fromJSON (json: any): TranscodingVideoStream {
     const obj = new TranscodingVideoStream()
     obj.sourceType = json.sourceType
     obj.remoteUserUid = json.remoteUserUid
@@ -1404,7 +1404,7 @@ export class TranscodingVideoStream {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       sourceType: this.sourceType,
       remoteUserUid: this.remoteUserUid,
@@ -1424,7 +1424,7 @@ export class LocalTranscoderConfiguration {
   streamCount?: number
   VideoInputStreams?: TranscodingVideoStream[]
   videoOutputConfiguration?: VideoEncoderConfiguration
-  static fromJSON(json: any): LocalTranscoderConfiguration {
+  static fromJSON (json: any): LocalTranscoderConfiguration {
     const obj = new LocalTranscoderConfiguration()
     obj.streamCount = json.streamCount
     obj.VideoInputStreams = json.VideoInputStreams?.map((it: any) => TranscodingVideoStream.fromJSON(it))
@@ -1432,7 +1432,7 @@ export class LocalTranscoderConfiguration {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       streamCount: this.streamCount,
       VideoInputStreams: this.VideoInputStreams,
@@ -1446,7 +1446,7 @@ export class LastmileProbeConfig {
   probeDownlink?: boolean
   expectedUplinkBitrate?: number
   expectedDownlinkBitrate?: number
-  static fromJSON(json: any): LastmileProbeConfig {
+  static fromJSON (json: any): LastmileProbeConfig {
     const obj = new LastmileProbeConfig()
     obj.probeUplink = json.probeUplink
     obj.probeDownlink = json.probeDownlink
@@ -1455,7 +1455,7 @@ export class LastmileProbeConfig {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       probeUplink: this.probeUplink,
       probeDownlink: this.probeDownlink,
@@ -1466,16 +1466,16 @@ export class LastmileProbeConfig {
 }
 
 export enum LastmileProbeResultState {
-  LastmileProbeResultComplete = 1,
-  LastmileProbeResultIncompleteNoBwe = 2,
-  LastmileProbeResultUnavailable = 3,
+LastmileProbeResultComplete = 1,
+LastmileProbeResultIncompleteNoBwe = 2,
+LastmileProbeResultUnavailable = 3,
 }
 
 export class LastmileProbeOneWayResult {
   packetLossRate?: number
   jitter?: number
   availableBandwidth?: number
-  static fromJSON(json: any): LastmileProbeOneWayResult {
+  static fromJSON (json: any): LastmileProbeOneWayResult {
     const obj = new LastmileProbeOneWayResult()
     obj.packetLossRate = json.packetLossRate
     obj.jitter = json.jitter
@@ -1483,7 +1483,7 @@ export class LastmileProbeOneWayResult {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       packetLossRate: this.packetLossRate,
       jitter: this.jitter,
@@ -1497,7 +1497,7 @@ export class LastmileProbeResult {
   uplinkReport?: LastmileProbeOneWayResult
   downlinkReport?: LastmileProbeOneWayResult
   rtt?: number
-  static fromJSON(json: any): LastmileProbeResult {
+  static fromJSON (json: any): LastmileProbeResult {
     const obj = new LastmileProbeResult()
     obj.state = json.state
     obj.uplinkReport = LastmileProbeOneWayResult.fromJSON(json.uplinkReport)
@@ -1506,7 +1506,7 @@ export class LastmileProbeResult {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       state: this.state,
       uplinkReport: this.uplinkReport,
@@ -1517,50 +1517,50 @@ export class LastmileProbeResult {
 }
 
 export enum ConnectionChangedReasonType {
-  ConnectionChangedConnecting = 0,
-  ConnectionChangedJoinSuccess = 1,
-  ConnectionChangedInterrupted = 2,
-  ConnectionChangedBannedByServer = 3,
-  ConnectionChangedJoinFailed = 4,
-  ConnectionChangedLeaveChannel = 5,
-  ConnectionChangedInvalidAppId = 6,
-  ConnectionChangedInvalidChannelName = 7,
-  ConnectionChangedInvalidToken = 8,
-  ConnectionChangedTokenExpired = 9,
-  ConnectionChangedRejectedByServer = 10,
-  ConnectionChangedSettingProxyServer = 11,
-  ConnectionChangedRenewToken = 12,
-  ConnectionChangedClientIpAddressChanged = 13,
-  ConnectionChangedKeepAliveTimeout = 14,
-  ConnectionChangedRejoinSuccess = 15,
-  ConnectionChangedLost = 16,
-  ConnectionChangedEchoTest = 17,
-  ConnectionChangedClientIpAddressChangedByUser = 18,
-  ConnectionChangedSameUidLogin = 19,
-  ConnectionChangedTooManyBroadcasters = 20,
+ConnectionChangedConnecting = 0,
+ConnectionChangedJoinSuccess = 1,
+ConnectionChangedInterrupted = 2,
+ConnectionChangedBannedByServer = 3,
+ConnectionChangedJoinFailed = 4,
+ConnectionChangedLeaveChannel = 5,
+ConnectionChangedInvalidAppId = 6,
+ConnectionChangedInvalidChannelName = 7,
+ConnectionChangedInvalidToken = 8,
+ConnectionChangedTokenExpired = 9,
+ConnectionChangedRejectedByServer = 10,
+ConnectionChangedSettingProxyServer = 11,
+ConnectionChangedRenewToken = 12,
+ConnectionChangedClientIpAddressChanged = 13,
+ConnectionChangedKeepAliveTimeout = 14,
+ConnectionChangedRejoinSuccess = 15,
+ConnectionChangedLost = 16,
+ConnectionChangedEchoTest = 17,
+ConnectionChangedClientIpAddressChangedByUser = 18,
+ConnectionChangedSameUidLogin = 19,
+ConnectionChangedTooManyBroadcasters = 20,
 }
 
 export enum ClientRoleChangeFailedReason {
-  ClientRoleChangeFailedTooManyBroadcasters = 1,
-  ClientRoleChangeFailedNotAuthorized = 2,
-  ClientRoleChangeFailedRequestTimeOut = 3,
-  ClientRoleChangeFailedConnectionFailed = 4,
+ClientRoleChangeFailedTooManyBroadcasters = 1,
+ClientRoleChangeFailedNotAuthorized = 2,
+ClientRoleChangeFailedRequestTimeOut = 3,
+ClientRoleChangeFailedConnectionFailed = 4,
 }
 
 export enum NetworkType {
-  NetworkTypeUnknown = -1,
-  NetworkTypeDisconnected = 0,
-  NetworkTypeLan = 1,
-  NetworkTypeWifi = 2,
-  NetworkTypeMobile2g = 3,
-  NetworkTypeMobile3g = 4,
-  NetworkTypeMobile4g = 5,
+NetworkTypeUnknown = -1,
+NetworkTypeDisconnected = 0,
+NetworkTypeLan = 1,
+NetworkTypeWifi = 2,
+NetworkTypeMobile2g = 3,
+NetworkTypeMobile3g = 4,
+NetworkTypeMobile4g = 5,
 }
 
 export enum VideoViewSetupMode {
-  VideoViewSetupReplace = 0,
-  VideoViewSetupAdd = 1,
-  VideoViewSetupRemove = 2,
+VideoViewSetupReplace = 0,
+VideoViewSetupAdd = 1,
+VideoViewSetupRemove = 2,
 }
 
 export class VideoCanvas {
@@ -1574,7 +1574,7 @@ export class VideoCanvas {
   sourceType?: VideoSourceType
   cropArea?: Rectangle
   setupMode?: VideoViewSetupMode
-  static fromJSON(json: any): VideoCanvas {
+  static fromJSON (json: any): VideoCanvas {
     const obj = new VideoCanvas()
     obj.view = json.view
     obj.renderMode = json.renderMode
@@ -1589,7 +1589,7 @@ export class VideoCanvas {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       view: this.view,
       renderMode: this.renderMode,
@@ -1605,9 +1605,9 @@ export class VideoCanvas {
 }
 
 export enum LighteningContrastLevel {
-  LighteningContrastLow = 0,
-  LighteningContrastNormal = 1,
-  LighteningContrastHigh = 2,
+LighteningContrastLow = 0,
+LighteningContrastNormal = 1,
+LighteningContrastHigh = 2,
 }
 
 export class BeautyOptions {
@@ -1616,7 +1616,7 @@ export class BeautyOptions {
   smoothnessLevel?: number
   rednessLevel?: number
   sharpnessLevel?: number
-  static fromJSON(json: any): BeautyOptions {
+  static fromJSON (json: any): BeautyOptions {
     const obj = new BeautyOptions()
     obj.lighteningContrastLevel = json.lighteningContrastLevel
     obj.lighteningLevel = json.lighteningLevel
@@ -1626,7 +1626,7 @@ export class BeautyOptions {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       lighteningContrastLevel: this.lighteningContrastLevel,
       lighteningLevel: this.lighteningLevel,
@@ -1638,15 +1638,15 @@ export class BeautyOptions {
 }
 
 export enum BackgroundSourceType {
-  BackgroundColor = 1,
-  BackgroundImg = 2,
-  BackgroundBlur = 3,
+BackgroundColor = 1,
+BackgroundImg = 2,
+BackgroundBlur = 3,
 }
 
 export enum BackgroundBlurDegree {
-  BlurDegreeLow = 1,
-  BlurDegreeMedium = 2,
-  BlurDegreeHigh = 3,
+BlurDegreeLow = 1,
+BlurDegreeMedium = 2,
+BlurDegreeHigh = 3,
 }
 
 export class VirtualBackgroundSource {
@@ -1654,7 +1654,7 @@ export class VirtualBackgroundSource {
   color?: number
   source?: string
   blurDegree?: BackgroundBlurDegree
-  static fromJSON(json: any): VirtualBackgroundSource {
+  static fromJSON (json: any): VirtualBackgroundSource {
     const obj = new VirtualBackgroundSource()
     obj.backgroundSourceType = json.background_source_type
     obj.color = json.color
@@ -1663,7 +1663,7 @@ export class VirtualBackgroundSource {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       background_source_type: this.backgroundSourceType,
       color: this.color,
@@ -1681,7 +1681,7 @@ export class FishCorrectionParams {
   PolFocalLength?: number
   SplitHeight?: number
   Ss?: number[]
-  static fromJSON(json: any): FishCorrectionParams {
+  static fromJSON (json: any): FishCorrectionParams {
     const obj = new FishCorrectionParams()
     obj.XCenter = json._x_center
     obj.YCenter = json._y_center
@@ -1693,7 +1693,7 @@ export class FishCorrectionParams {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       _x_center: this.XCenter,
       _y_center: this.YCenter,
@@ -1707,50 +1707,50 @@ export class FishCorrectionParams {
 }
 
 export enum VoiceBeautifierPreset {
-  VoiceBeautifierOff = 0x00000000,
-  ChatBeautifierMagnetic = 0x01010100,
-  ChatBeautifierFresh = 0x01010200,
-  ChatBeautifierVitality = 0x01010300,
-  SingingBeautifier = 0x01020100,
-  TimbreTransformationVigorous = 0x01030100,
-  TimbreTransformationDeep = 0x01030200,
-  TimbreTransformationMellow = 0x01030300,
-  TimbreTransformationFalsetto = 0x01030400,
-  TimbreTransformationFull = 0x01030500,
-  TimbreTransformationClear = 0x01030600,
-  TimbreTransformationResounding = 0x01030700,
-  TimbreTransformationRinging = 0x01030800,
-  UltraHighQualityVoice = 0x01040100,
+VoiceBeautifierOff = 0x00000000,
+ChatBeautifierMagnetic = 0x01010100,
+ChatBeautifierFresh = 0x01010200,
+ChatBeautifierVitality = 0x01010300,
+SingingBeautifier = 0x01020100,
+TimbreTransformationVigorous = 0x01030100,
+TimbreTransformationDeep = 0x01030200,
+TimbreTransformationMellow = 0x01030300,
+TimbreTransformationFalsetto = 0x01030400,
+TimbreTransformationFull = 0x01030500,
+TimbreTransformationClear = 0x01030600,
+TimbreTransformationResounding = 0x01030700,
+TimbreTransformationRinging = 0x01030800,
+UltraHighQualityVoice = 0x01040100,
 }
 
 export enum AudioEffectPreset {
-  AudioEffectOff = 0x00000000,
-  RoomAcousticsKtv = 0x02010100,
-  RoomAcousticsVocalConcert = 0x02010200,
-  RoomAcousticsStudio = 0x02010300,
-  RoomAcousticsPhonograph = 0x02010400,
-  RoomAcousticsVirtualStereo = 0x02010500,
-  RoomAcousticsSpacial = 0x02010600,
-  RoomAcousticsEthereal = 0x02010700,
-  RoomAcoustics3dVoice = 0x02010800,
-  VoiceChangerEffectUncle = 0x02020100,
-  VoiceChangerEffectOldman = 0x02020200,
-  VoiceChangerEffectBoy = 0x02020300,
-  VoiceChangerEffectSister = 0x02020400,
-  VoiceChangerEffectGirl = 0x02020500,
-  VoiceChangerEffectPigking = 0x02020600,
-  VoiceChangerEffectHulk = 0x02020700,
-  StyleTransformationRnb = 0x02030100,
-  StyleTransformationPopular = 0x02030200,
-  PitchCorrection = 0x02040100,
+AudioEffectOff = 0x00000000,
+RoomAcousticsKtv = 0x02010100,
+RoomAcousticsVocalConcert = 0x02010200,
+RoomAcousticsStudio = 0x02010300,
+RoomAcousticsPhonograph = 0x02010400,
+RoomAcousticsVirtualStereo = 0x02010500,
+RoomAcousticsSpacial = 0x02010600,
+RoomAcousticsEthereal = 0x02010700,
+RoomAcoustics3dVoice = 0x02010800,
+VoiceChangerEffectUncle = 0x02020100,
+VoiceChangerEffectOldman = 0x02020200,
+VoiceChangerEffectBoy = 0x02020300,
+VoiceChangerEffectSister = 0x02020400,
+VoiceChangerEffectGirl = 0x02020500,
+VoiceChangerEffectPigking = 0x02020600,
+VoiceChangerEffectHulk = 0x02020700,
+StyleTransformationRnb = 0x02030100,
+StyleTransformationPopular = 0x02030200,
+PitchCorrection = 0x02040100,
 }
 
 export enum VoiceConversionPreset {
-  VoiceConversionOff = 0x00000000,
-  VoiceChangerNeutral = 0x03010100,
-  VoiceChangerSweet = 0x03010200,
-  VoiceChangerSolid = 0x03010300,
-  VoiceChangerBass = 0x03010400,
+VoiceConversionOff = 0x00000000,
+VoiceChangerNeutral = 0x03010100,
+VoiceChangerSweet = 0x03010200,
+VoiceChangerSolid = 0x03010300,
+VoiceChangerBass = 0x03010400,
 }
 
 export class ScreenCaptureParameters {
@@ -1761,7 +1761,7 @@ export class ScreenCaptureParameters {
   windowFocus?: boolean
   excludeWindowList?: any[]
   excludeWindowCount?: number
-  static fromJSON(json: any): ScreenCaptureParameters {
+  static fromJSON (json: any): ScreenCaptureParameters {
     const obj = new ScreenCaptureParameters()
     obj.dimensions = VideoDimensions.fromJSON(json.dimensions)
     obj.frameRate = json.frameRate
@@ -1773,7 +1773,7 @@ export class ScreenCaptureParameters {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       dimensions: this.dimensions,
       frameRate: this.frameRate,
@@ -1787,21 +1787,21 @@ export class ScreenCaptureParameters {
 }
 
 export enum AudioRecordingQualityType {
-  AudioRecordingQualityLow = 0,
-  AudioRecordingQualityMedium = 1,
-  AudioRecordingQualityHigh = 2,
+AudioRecordingQualityLow = 0,
+AudioRecordingQualityMedium = 1,
+AudioRecordingQualityHigh = 2,
 }
 
 export enum AudioFileRecordingType {
-  AudioFileRecordingMic = 1,
-  AudioFileRecordingPlayback = 2,
-  AudioFileRecordingMixed = 3,
+AudioFileRecordingMic = 1,
+AudioFileRecordingPlayback = 2,
+AudioFileRecordingMixed = 3,
 }
 
 export enum AudioEncodedFrameObserverPosition {
-  AudioEncodedFrameObserverPositionRecord = 1,
-  AudioEncodedFrameObserverPositionPlayback = 2,
-  AudioEncodedFrameObserverPositionMixed = 3,
+AudioEncodedFrameObserverPositionRecord = 1,
+AudioEncodedFrameObserverPositionPlayback = 2,
+AudioEncodedFrameObserverPositionMixed = 3,
 }
 
 export class AudioRecordingConfiguration {
@@ -1810,7 +1810,7 @@ export class AudioRecordingConfiguration {
   sampleRate?: number
   fileRecordingType?: AudioFileRecordingType
   quality?: AudioRecordingQualityType
-  static fromJSON(json: any): AudioRecordingConfiguration {
+  static fromJSON (json: any): AudioRecordingConfiguration {
     const obj = new AudioRecordingConfiguration()
     obj.filePath = json.filePath
     obj.encode = json.encode
@@ -1820,7 +1820,7 @@ export class AudioRecordingConfiguration {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       filePath: this.filePath,
       encode: this.encode,
@@ -1834,14 +1834,14 @@ export class AudioRecordingConfiguration {
 export class AudioEncodedFrameObserverConfig {
   postionType?: AudioEncodedFrameObserverPosition
   encodingType?: AudioEncodingType
-  static fromJSON(json: any): AudioEncodedFrameObserverConfig {
+  static fromJSON (json: any): AudioEncodedFrameObserverConfig {
     const obj = new AudioEncodedFrameObserverConfig()
     obj.postionType = json.postionType
     obj.encodingType = json.encodingType
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       postionType: this.postionType,
       encodingType: this.encodingType
@@ -1858,69 +1858,69 @@ export abstract class IAudioEncodedFrameObserver {
 }
 
 export enum AreaCode {
-  AreaCodeCn = 0x00000001,
-  AreaCodeNa = 0x00000002,
-  AreaCodeEu = 0x00000004,
-  AreaCodeAs = 0x00000008,
-  AreaCodeJp = 0x00000010,
-  AreaCodeIn = 0x00000020,
-  AreaCodeGlob = (0xFFFFFFFF),
+AreaCodeCn = 0x00000001,
+AreaCodeNa = 0x00000002,
+AreaCodeEu = 0x00000004,
+AreaCodeAs = 0x00000008,
+AreaCodeJp = 0x00000010,
+AreaCodeIn = 0x00000020,
+AreaCodeGlob = (0xFFFFFFFF),
 }
 
 export enum AreaCodeEx {
-  AreaCodeOc = 0x00000040,
-  AreaCodeSa = 0x00000080,
-  AreaCodeAf = 0x00000100,
-  AreaCodeKr = 0x00000200,
-  AreaCodeOvs = 0xFFFFFFFE,
+AreaCodeOc = 0x00000040,
+AreaCodeSa = 0x00000080,
+AreaCodeAf = 0x00000100,
+AreaCodeKr = 0x00000200,
+AreaCodeOvs = 0xFFFFFFFE,
 }
 
 export enum ChannelMediaRelayError {
-  RelayOk = 0,
-  RelayErrorServerErrorResponse = 1,
-  RelayErrorServerNoResponse = 2,
-  RelayErrorNoResourceAvailable = 3,
-  RelayErrorFailedJoinSrc = 4,
-  RelayErrorFailedJoinDest = 5,
-  RelayErrorFailedPacketReceivedFromSrc = 6,
-  RelayErrorFailedPacketSentToDest = 7,
-  RelayErrorServerConnectionLost = 8,
-  RelayErrorInternalError = 9,
-  RelayErrorSrcTokenExpired = 10,
-  RelayErrorDestTokenExpired = 11,
+RelayOk = 0,
+RelayErrorServerErrorResponse = 1,
+RelayErrorServerNoResponse = 2,
+RelayErrorNoResourceAvailable = 3,
+RelayErrorFailedJoinSrc = 4,
+RelayErrorFailedJoinDest = 5,
+RelayErrorFailedPacketReceivedFromSrc = 6,
+RelayErrorFailedPacketSentToDest = 7,
+RelayErrorServerConnectionLost = 8,
+RelayErrorInternalError = 9,
+RelayErrorSrcTokenExpired = 10,
+RelayErrorDestTokenExpired = 11,
 }
 
 export enum ChannelMediaRelayEvent {
-  RelayEventNetworkDisconnected = 0,
-  RelayEventNetworkConnected = 1,
-  RelayEventPacketJoinedSrcChannel = 2,
-  RelayEventPacketJoinedDestChannel = 3,
-  RelayEventPacketSentToDestChannel = 4,
-  RelayEventPacketReceivedVideoFromSrc = 5,
-  RelayEventPacketReceivedAudioFromSrc = 6,
-  RelayEventPacketUpdateDestChannel = 7,
-  RelayEventPacketUpdateDestChannelRefused = 8,
-  RelayEventPacketUpdateDestChannelNotChange = 9,
-  RelayEventPacketUpdateDestChannelIsNull = 10,
-  RelayEventVideoProfileUpdate = 11,
-  RelayEventPauseSendPacketToDestChannelSuccess = 12,
-  RelayEventPauseSendPacketToDestChannelFailed = 13,
-  RelayEventResumeSendPacketToDestChannelSuccess = 14,
-  RelayEventResumeSendPacketToDestChannelFailed = 15,
+RelayEventNetworkDisconnected = 0,
+RelayEventNetworkConnected = 1,
+RelayEventPacketJoinedSrcChannel = 2,
+RelayEventPacketJoinedDestChannel = 3,
+RelayEventPacketSentToDestChannel = 4,
+RelayEventPacketReceivedVideoFromSrc = 5,
+RelayEventPacketReceivedAudioFromSrc = 6,
+RelayEventPacketUpdateDestChannel = 7,
+RelayEventPacketUpdateDestChannelRefused = 8,
+RelayEventPacketUpdateDestChannelNotChange = 9,
+RelayEventPacketUpdateDestChannelIsNull = 10,
+RelayEventVideoProfileUpdate = 11,
+RelayEventPauseSendPacketToDestChannelSuccess = 12,
+RelayEventPauseSendPacketToDestChannelFailed = 13,
+RelayEventResumeSendPacketToDestChannelSuccess = 14,
+RelayEventResumeSendPacketToDestChannelFailed = 15,
 }
 
 export enum ChannelMediaRelayState {
-  RelayStateIdle = 0,
-  RelayStateConnecting = 1,
-  RelayStateRunning = 2,
-  RelayStateFailure = 3,
+RelayStateIdle = 0,
+RelayStateConnecting = 1,
+RelayStateRunning = 2,
+RelayStateFailure = 3,
 }
 
 export class ChannelMediaInfo {
   channelName?: string
   token?: string
   uid?: number
-  static fromJSON(json: any): ChannelMediaInfo {
+  static fromJSON (json: any): ChannelMediaInfo {
     const obj = new ChannelMediaInfo()
     obj.channelName = json.channelName
     obj.token = json.token
@@ -1928,7 +1928,7 @@ export class ChannelMediaInfo {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       channelName: this.channelName,
       token: this.token,
@@ -1941,7 +1941,7 @@ export class ChannelMediaRelayConfiguration {
   srcInfo?: ChannelMediaInfo
   destInfos?: ChannelMediaInfo[]
   destCount?: number
-  static fromJSON(json: any): ChannelMediaRelayConfiguration {
+  static fromJSON (json: any): ChannelMediaRelayConfiguration {
     const obj = new ChannelMediaRelayConfiguration()
     obj.srcInfo = ChannelMediaInfo.fromJSON(json.srcInfo)
     obj.destInfos = json.destInfos?.map((it: any) => ChannelMediaInfo.fromJSON(it))
@@ -1949,7 +1949,7 @@ export class ChannelMediaRelayConfiguration {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       srcInfo: this.srcInfo,
       destInfos: this.destInfos,
@@ -1960,13 +1960,13 @@ export class ChannelMediaRelayConfiguration {
 
 export class UplinkNetworkInfo {
   videoEncoderTargetBitrateBps?: number
-  static fromJSON(json: any): UplinkNetworkInfo {
+  static fromJSON (json: any): UplinkNetworkInfo {
     const obj = new UplinkNetworkInfo()
     obj.videoEncoderTargetBitrateBps = json.video_encoder_target_bitrate_bps
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       video_encoder_target_bitrate_bps: this.videoEncoderTargetBitrateBps
     }
@@ -1978,7 +1978,7 @@ export class PeerDownlinkInfo {
   streamType?: VideoStreamType
   currentDownscaleLevel?: RemoteVideoDownscaleLevel
   expectedBitrateBps?: number
-  static fromJSON(json: any): PeerDownlinkInfo {
+  static fromJSON (json: any): PeerDownlinkInfo {
     const obj = new PeerDownlinkInfo()
     obj.uid = json.uid
     obj.streamType = json.stream_type
@@ -1987,7 +1987,7 @@ export class PeerDownlinkInfo {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       uid: this.uid,
       stream_type: this.streamType,
@@ -2003,7 +2003,7 @@ export class DownlinkNetworkInfo {
   totalDownscaleLevelCount?: number
   peerDownlinkInfo?: PeerDownlinkInfo[]
   totalReceivedVideoCount?: number
-  static fromJSON(json: any): DownlinkNetworkInfo {
+  static fromJSON (json: any): DownlinkNetworkInfo {
     const obj = new DownlinkNetworkInfo()
     obj.lastmileBufferDelayTimeMs = json.lastmile_buffer_delay_time_ms
     obj.bandwidthEstimationBps = json.bandwidth_estimation_bps
@@ -2013,7 +2013,7 @@ export class DownlinkNetworkInfo {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       lastmile_buffer_delay_time_ms: this.lastmileBufferDelayTimeMs,
       bandwidth_estimation_bps: this.bandwidthEstimationBps,
@@ -2025,22 +2025,22 @@ export class DownlinkNetworkInfo {
 }
 
 export enum EncryptionMode {
-  Aes128Xts = 1,
-  Aes128Ecb = 2,
-  Aes256Xts = 3,
-  Sm4128Ecb = 4,
-  Aes128Gcm = 5,
-  Aes256Gcm = 6,
-  Aes128Gcm2 = 7,
-  Aes256Gcm2 = 8,
-  ModeEnd = 9,
+Aes128Xts = 1,
+Aes128Ecb = 2,
+Aes256Xts = 3,
+Sm4128Ecb = 4,
+Aes128Gcm = 5,
+Aes256Gcm = 6,
+Aes128Gcm2 = 7,
+Aes256Gcm2 = 8,
+ModeEnd = 9,
 }
 
 export class EncryptionConfig {
   encryptionMode?: EncryptionMode
   encryptionKey?: string
   encryptionKdfSalt?: number[]
-  static fromJSON(json: any): EncryptionConfig {
+  static fromJSON (json: any): EncryptionConfig {
     const obj = new EncryptionConfig()
     obj.encryptionMode = json.encryptionMode
     obj.encryptionKey = json.encryptionKey
@@ -2048,7 +2048,7 @@ export class EncryptionConfig {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       encryptionMode: this.encryptionMode,
       encryptionKey: this.encryptionKey
@@ -2057,51 +2057,51 @@ export class EncryptionConfig {
 }
 
 export enum EncryptionErrorType {
-  EncryptionErrorInternalFailure = 0,
-  EncryptionErrorDecryptionFailure = 1,
-  EncryptionErrorEncryptionFailure = 2,
+EncryptionErrorInternalFailure = 0,
+EncryptionErrorDecryptionFailure = 1,
+EncryptionErrorEncryptionFailure = 2,
 }
 
 export enum UploadErrorReason {
-  UploadSuccess = 0,
-  UploadNetError = 1,
-  UploadServerError = 2,
+UploadSuccess = 0,
+UploadNetError = 1,
+UploadServerError = 2,
 }
 
 export enum PermissionType {
-  RecordAudio = 0,
-  CAMERA = 1,
+RecordAudio = 0,
+CAMERA = 1,
 }
 
 export enum MaxUserAccountLengthType {
-  MaxUserAccountLength = 256,
+MaxUserAccountLength = 256,
 }
 
 export enum StreamSubscribeState {
-  SubStateIdle = 0,
-  SubStateNoSubscribed = 1,
-  SubStateSubscribing = 2,
-  SubStateSubscribed = 3,
+SubStateIdle = 0,
+SubStateNoSubscribed = 1,
+SubStateSubscribing = 2,
+SubStateSubscribed = 3,
 }
 
 export enum StreamPublishState {
-  PubStateIdle = 0,
-  PubStateNoPublished = 1,
-  PubStatePublishing = 2,
-  PubStatePublished = 3,
+PubStateIdle = 0,
+PubStateNoPublished = 1,
+PubStatePublishing = 2,
+PubStatePublished = 3,
 }
 
 export class UserInfo {
   uid?: number
   userAccount?: string
-  static fromJSON(json: any): UserInfo {
+  static fromJSON (json: any): UserInfo {
     const obj = new UserInfo()
     obj.uid = json.uid
     obj.userAccount = json.userAccount
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       uid: this.uid,
       userAccount: this.userAccount
@@ -2110,18 +2110,18 @@ export class UserInfo {
 }
 
 export enum EarMonitoringFilterType {
-  EarMonitoringFilterNone = (1 << 0),
-  EarMonitoringFilterBuiltInAudioFilters = (1 << 1),
-  EarMonitoringFilterNoiseSuppression = (1 << 2),
+EarMonitoringFilterNone = (1 << 0),
+EarMonitoringFilterBuiltInAudioFilters = (1 << 1),
+EarMonitoringFilterNoiseSuppression = (1 << 2),
 }
 
 export enum ThreadPriorityType {
-  LOWEST = 0,
-  LOW = 1,
-  NORMAL = 2,
-  HIGH = 3,
-  HIGHEST = 4,
-  CRITICAL = 5,
+LOWEST = 0,
+LOW = 1,
+NORMAL = 2,
+HIGH = 3,
+HIGHEST = 4,
+CRITICAL = 5,
 }
 
 export abstract class LicenseCallback {
@@ -2141,7 +2141,7 @@ export class SpatialAudioParams {
   speakerOrientation?: number
   enableBlur?: boolean
   enableAirAbsorb?: boolean
-  static fromJSON(json: any): SpatialAudioParams {
+  static fromJSON (json: any): SpatialAudioParams {
     const obj = new SpatialAudioParams()
     obj.speakerAzimuth = json.speaker_azimuth
     obj.speakerElevation = json.speaker_elevation
@@ -2152,7 +2152,7 @@ export class SpatialAudioParams {
     return obj
   }
 
-  toJSON() {
+  toJSON? () {
     return {
       speaker_azimuth: this.speakerAzimuth,
       speaker_elevation: this.speakerElevation,

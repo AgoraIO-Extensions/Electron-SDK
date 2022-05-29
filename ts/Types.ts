@@ -1,5 +1,5 @@
-import { VideoSourceType } from "./AgoraSdk";
-import { IRenderer } from "./Renderer/IRender";
+import { VideoSourceType } from "./Private/AgoraBase";
+import { IRenderer } from "./Renderer/IRenderer";
 
 export enum ContentMode {
   Cropped = 0,
@@ -28,14 +28,14 @@ export type User = "local" | "videoSource" | number | string;
 
 export type Channel = "" | string;
 
-export interface RenderVideoConfig {
+export interface RendererVideoConfig {
   videoSourceType?: VideoSourceType;
   channelId?: Channel;
   uid?: number;
   view?: HTMLElement;
   rendererOptions?: RendererOptions;
 }
-export interface FormatRenderVideoConfig {
+export interface FormatRendererVideoConfig {
   videoSourceType: VideoSourceType;
   channelId: Channel;
   uid: number;
@@ -67,7 +67,7 @@ export interface Result {
 
 export enum CallBackModule {
   RTC = 0,
-  MPK
+  MPK,
 }
 
 export interface AgoraElectronBridge {

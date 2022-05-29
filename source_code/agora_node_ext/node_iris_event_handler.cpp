@@ -8,7 +8,7 @@
 #include <memory.h>
 #include <node_api.h>
 #include <string>
-#include "node_iris_rtc_engine.h"
+#include "agora_electron_bridge.h"
 namespace agora {
 namespace rtc {
 namespace electron {

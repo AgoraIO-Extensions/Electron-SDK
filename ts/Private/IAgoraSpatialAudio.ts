@@ -33,7 +33,7 @@ export class RemoteVoicePositionInfo {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       position: this.position,
       forward: this.forward
@@ -72,7 +72,7 @@ export class CloudSpatialAudioConfig {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       appId: this.appId,
       deployRegion: this.deployRegion
@@ -88,7 +88,7 @@ export class LocalSpatialAudioConfig {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
     }
   }
@@ -135,7 +135,7 @@ abstract renewToken(token: string): number;
 
 abstract exitRoom(): number;
 
-abstract getTeammates(uids: number): number;
+abstract getTeammates(uids: number[]): number;
 }
 
 export abstract class ILocalSpatialAudioEngine extends IBaseSpatialAudioEngine {

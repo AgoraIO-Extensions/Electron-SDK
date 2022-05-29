@@ -1,4 +1,4 @@
-import IrisApiEngine from '../internal/IrisApiEngine'
+import { callIrisApi } from '../internal/IrisApiEngine'
 import { IAudioFrameObserverBase, IAudioFrameObserver, IAudioSpectrumObserver, IVideoEncodedFrameObserver, IVideoFrameObserver, ISnapshotCallback } from '../AgoraMediaBase'
 
 export function processIAudioFrameObserverBase (handler: IAudioFrameObserverBase, event: string, jsonParams: any) {
@@ -18,12 +18,6 @@ export function processIAudioFrameObserverBase (handler: IAudioFrameObserverBase
     case 'onMixedAudioFrame':
       if (handler.onMixedAudioFrame !== undefined) {
         handler.onMixedAudioFrame(jsonParams.channelId, jsonParams.audioFrame)
-      }
-      break
-
-    case 'onPlaybackAudioFrameBeforeMixing':
-      if (handler.onPlaybackAudioFrameBeforeMixing !== undefined) {
-        handler.onPlaybackAudioFrameBeforeMixing(jsonParams.channelId, jsonParams.userId, jsonParams.audioFrame)
       }
       break
   }

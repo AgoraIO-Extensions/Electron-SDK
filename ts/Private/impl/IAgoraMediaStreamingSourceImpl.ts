@@ -1,4 +1,4 @@
-import IrisApiEngine from '../internal/IrisApiEngine'
+import { callIrisApi } from '../internal/IrisApiEngine'
 import { IMediaStreamingSource, StreamingSrcState, InputSeiData, IMediaStreamingSourceObserver } from '../IAgoraMediaStreamingSource'
 import { PlayerStreamInfo } from '../AgoraMediaPlayerTypes'
 
@@ -17,7 +17,7 @@ export class IMediaStreamingSourceImpl implements IMediaStreamingSource {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -25,7 +25,7 @@ export class IMediaStreamingSourceImpl implements IMediaStreamingSource {
     const apiType = 'MediaStreamingSource_close'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -33,7 +33,7 @@ export class IMediaStreamingSourceImpl implements IMediaStreamingSource {
     const apiType = 'MediaStreamingSource_getSourceId'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -41,7 +41,7 @@ export class IMediaStreamingSourceImpl implements IMediaStreamingSource {
     const apiType = 'MediaStreamingSource_isVideoValid'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -49,7 +49,7 @@ export class IMediaStreamingSourceImpl implements IMediaStreamingSource {
     const apiType = 'MediaStreamingSource_isAudioValid'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -57,7 +57,7 @@ export class IMediaStreamingSourceImpl implements IMediaStreamingSource {
     const apiType = 'MediaStreamingSource_getDuration'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const duration = jsonResults.duration
     return duration
   }
@@ -66,7 +66,7 @@ export class IMediaStreamingSourceImpl implements IMediaStreamingSource {
     const apiType = 'MediaStreamingSource_getStreamCount'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const count = jsonResults.count
     return count
   }
@@ -79,7 +79,7 @@ export class IMediaStreamingSourceImpl implements IMediaStreamingSource {
         return { index }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const outInfo = jsonResults.out_info
     return outInfo
   }
@@ -92,7 +92,7 @@ export class IMediaStreamingSourceImpl implements IMediaStreamingSource {
         return { loop_count: loopCount }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -100,7 +100,7 @@ export class IMediaStreamingSourceImpl implements IMediaStreamingSource {
     const apiType = 'MediaStreamingSource_play'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -108,7 +108,7 @@ export class IMediaStreamingSourceImpl implements IMediaStreamingSource {
     const apiType = 'MediaStreamingSource_pause'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -116,7 +116,7 @@ export class IMediaStreamingSourceImpl implements IMediaStreamingSource {
     const apiType = 'MediaStreamingSource_stop'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -128,7 +128,7 @@ export class IMediaStreamingSourceImpl implements IMediaStreamingSource {
         return { new_pos: newPos }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -136,7 +136,7 @@ export class IMediaStreamingSourceImpl implements IMediaStreamingSource {
     const apiType = 'MediaStreamingSource_getCurrPosition'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const pos = jsonResults.pos
     return pos
   }
@@ -145,7 +145,7 @@ export class IMediaStreamingSourceImpl implements IMediaStreamingSource {
     const apiType = 'MediaStreamingSource_getCurrState'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -157,7 +157,7 @@ export class IMediaStreamingSourceImpl implements IMediaStreamingSource {
         return { inSeiData }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -170,7 +170,7 @@ export class IMediaStreamingSourceImpl implements IMediaStreamingSource {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -183,7 +183,7 @@ export class IMediaStreamingSourceImpl implements IMediaStreamingSource {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -201,7 +201,7 @@ export class IMediaStreamingSourceImpl implements IMediaStreamingSource {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 }

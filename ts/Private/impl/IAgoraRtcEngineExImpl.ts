@@ -1,4 +1,4 @@
-import IrisApiEngine from '../internal/IrisApiEngine'
+import { callIrisApi } from '../internal/IrisApiEngine'
 import { IRtcEngineEventHandlerEx, IRtcEngineEx, RtcConnection } from '../IAgoraRtcEngineEx'
 import { IRtcEngineImpl } from './IAgoraRtcEngineImpl'
 import { ChannelMediaOptions, IRtcEngineEventHandler } from '../IAgoraRtcEngine'
@@ -337,7 +337,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -349,7 +349,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         return { connection }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -365,7 +365,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -381,7 +381,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -397,7 +397,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -415,7 +415,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -433,7 +433,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -451,7 +451,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -471,7 +471,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -489,7 +489,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -509,7 +509,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -527,7 +527,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -539,7 +539,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         return { connection }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -557,7 +557,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -575,7 +575,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const streamId = jsonResults.streamId
     return streamId
   }
@@ -592,7 +592,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const streamId = jsonResults.streamId
     return streamId
   }
@@ -612,7 +612,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -630,7 +630,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -642,7 +642,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         return { connection }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -666,7 +666,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -686,7 +686,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -702,7 +702,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const userInfo = jsonResults.userInfo
     return userInfo
   }
@@ -719,7 +719,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const userInfo = jsonResults.userInfo
     return userInfo
   }
@@ -740,7 +740,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -760,7 +760,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -778,7 +778,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 }

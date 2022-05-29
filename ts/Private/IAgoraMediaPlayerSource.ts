@@ -78,7 +78,7 @@ abstract enableAutoSwitchAgoraCDN(enable: boolean): number;
 
 abstract renewAgoraCDNSrcToken(token: string, ts: number): number;
 
-abstract switchAgoraCDNSrc(src: string, syncPts: boolean): number;
+abstract switchAgoraCDNSrc(src: string, syncPts?: boolean): number;
 
 abstract switchSrc(src: string, syncPts: boolean): number;
 

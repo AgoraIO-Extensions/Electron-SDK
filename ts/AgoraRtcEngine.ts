@@ -1,11 +1,20 @@
-﻿import { VideoSourceType } from "./AgoraSdk";
+﻿import { VideoSourceType } from "./Private/AgoraBase";
 import { RtcEngineContext } from "./Private/IAgoraRtcEngine";
 import { IRtcEngineExImpl } from "./Private/impl/IAgoraRtcEngineExImpl";
-import { getBridge, handlerMPKEvent, handlerRTCEvent } from "./Private/internal/IrisApiEngine";
-import AgoraRenderManager from "./Renderer/RendererManager";
-import { Channel, ContentMode, RenderVideoConfig, RENDER_MODE, CallBackModule } from "./Types";
+import {
+  getBridge,
+  handlerMPKEvent,
+  handlerRTCEvent,
+} from "./Private/internal/IrisApiEngine";
+import AgoraRendererManager from "./Renderer/RendererManager";
+import {
+  Channel,
+  ContentMode,
+  RendererVideoConfig,
+  RENDER_MODE,
+  CallBackModule,
+} from "./Types";
 import { logInfo, logWarn } from "./Utils";
-
 
 /**
  * The AgoraRtcEngine class.
@@ -32,8 +41,16 @@ export class AgoraRtcEngine extends IRtcEngineExImpl {
         return { context };
       },
     });
-    bridge.OnEvent(CallBackModule.RTC, "call_back_with_buffer", handlerRTCEvent);
-    bridge.OnEvent(CallBackModule.MPK, "call_back_with_buffer", handlerMPKEvent);
+    bridge.OnEvent(
+      CallBackModule.RTC,
+      "call_back_with_buffer",
+      handlerRTCEvent
+    );
+    bridge.OnEvent(
+      CallBackModule.MPK,
+      "call_back_with_buffer",
+      handlerMPKEvent
+    );
 
     return retCode;
   }
@@ -52,18 +69,18 @@ export class AgoraRtcEngine extends IRtcEngineExImpl {
     });
     bridge.ReleaseEnv();
   }
-  override setupLocalVideo(rendererConfig: RenderVideoConfig): number {
-    return AgoraRenderManager.setupLocalVideo(rendererConfig);
+  override setupLocalVideo(rendererConfig: RendererVideoConfig): number {
+    return AgoraRendererManager.setupLocalVideo(rendererConfig);
   }
-  override setupRemoteVideo(rendererConfig: RenderVideoConfig): number {
-    return AgoraRenderManager.setupRemoteVideo(rendererConfig);
+  override setupRemoteVideo(rendererConfig: RendererVideoConfig): number {
+    return AgoraRendererManager.setupRemoteVideo(rendererConfig);
   }
-  setupVideo(rendererConfig: RenderVideoConfig): void {
-    AgoraRenderManager.setupVideo(rendererConfig);
+  setupVideo(rendererConfig: RendererVideoConfig): void {
+    AgoraRendererManager.setupVideo(rendererConfig);
   }
 
   destroyRendererByView(view: Element): void {
-    AgoraRenderManager.destroyRendererByView(view);
+    AgoraRendererManager.destroyRendererByView(view);
   }
 
   destroyRendererByConfig(
@@ -71,7 +88,7 @@ export class AgoraRtcEngine extends IRtcEngineExImpl {
     channelId?: Channel,
     uid?: number
   ) {
-    AgoraRenderManager.destroyRenderersByConfig(
+    AgoraRendererManager.destroyRenderersByConfig(
       videoSourceType,
       channelId,
       uid
@@ -83,10 +100,10 @@ export class AgoraRtcEngine extends IRtcEngineExImpl {
     contentMode = ContentMode.Fit,
     mirror: boolean = false
   ): void {
-    AgoraRenderManager.setRenderOption(view, contentMode, mirror);
+    AgoraRendererManager.setRenderOption(view, contentMode, mirror);
   }
 
   setRenderMode(mode = RENDER_MODE.WEBGL): void {
-    AgoraRenderManager.setRenderMode(mode);
+    AgoraRendererManager.setRenderMode(mode);
   }
 }

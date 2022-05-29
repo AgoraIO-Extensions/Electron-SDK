@@ -1,4 +1,4 @@
-import IrisApiEngine from '../internal/IrisApiEngine'
+import { callIrisApi } from '../internal/IrisApiEngine'
 import { IPacketObserver, IVideoEncodedImageReceiver, IAudioEncodedFrameObserver, LicenseCallback } from '../AgoraBase'
 
 export function processIPacketObserver (handler: IPacketObserver, event: string, jsonParams: any) {

@@ -23,7 +23,7 @@ namespace electron {
   status = napi_create_object(env, &retObj);              \
   napi_obj_set_property(env, retObj, _ret_code_str, ret); \
   napi_obj_set_property(env, retObj, _ret_result_str,     \
-                        nodeIrisRtcEngine->_result);      \
+                        agoraElectronBridge->_result);      \
   return retObj
 
 napi_status napi_get_value_utf8string(napi_env& env,

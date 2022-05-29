@@ -33,7 +33,7 @@ export class LogConfig {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       filePath: this.filePath,
       fileSizeInKB: this.fileSizeInKB,

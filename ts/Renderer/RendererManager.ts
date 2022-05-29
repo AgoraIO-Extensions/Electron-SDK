@@ -1,4 +1,4 @@
-import { VideoSourceType } from "../AgoraSdk";
+import { VideoSourceType } from "../Private/AgoraBase";
 import { getBridge } from "../Private/internal/IrisApiEngine";
 import {
   AgoraElectronBridge,
@@ -6,8 +6,8 @@ import {
   ChannelIdMap,
   ContentMode,
   RenderConfig,
-  RenderVideoConfig,
-  FormatRenderVideoConfig,
+  RendererVideoConfig,
+  FormatRendererVideoConfig,
   RenderMap,
   RENDER_MODE,
   ShareVideoFrame,
@@ -16,13 +16,13 @@ import {
 } from "../Types";
 import {
   formatConfigByVideoSourceType,
-  getDefaultRenderVideoConfig,
+  getDefaultRendererVideoConfig,
   logError,
   logInfo,
   logWarn,
 } from "../Utils";
 import GlRenderer from "./GlRenderer";
-import { IRenderer, RenderFailCallback } from "./IRender";
+import { IRenderer, RenderFailCallback } from "./IRenderer";
 import { YUVCanvasRenderer } from "./YUVCanvasRenderer";
 
 class RendererManager {
@@ -66,13 +66,14 @@ class RendererManager {
       });
     });
   }
-  public setRenderOptionByConfig(rendererConfig: RenderVideoConfig): number {
+  public setRenderOptionByConfig(rendererConfig: RendererVideoConfig): number {
     const {
       uid,
       channelId,
       rendererOptions,
       videoSourceType,
-    }: FormatRenderVideoConfig = getDefaultRenderVideoConfig(rendererConfig);
+    }: FormatRendererVideoConfig =
+      getDefaultRendererVideoConfig(rendererConfig);
 
     if (!rendererConfig.view) {
       logError("setRenderOptionByView");
@@ -110,15 +111,15 @@ class RendererManager {
     }
   }
 
-  public setupVideo(renderVideoConfig: RenderVideoConfig): void {
-    const formatConfig = getDefaultRenderVideoConfig(renderVideoConfig);
+  public setupVideo(rendererVideoConfig: RendererVideoConfig): void {
+    const formatConfig = getDefaultRendererVideoConfig(rendererVideoConfig);
 
     const { uid, channelId, videoSourceType, rendererOptions, view } =
       formatConfig;
 
     if (!formatConfig.view) {
       logWarn("Note: setupVideo view is null!");
-      AgoraRenderManager.destroyRenderersByConfig(
+      AgoraRendererManager.destroyRenderersByConfig(
         videoSourceType,
         channelId,
         uid
@@ -143,7 +144,7 @@ class RendererManager {
     this.enableRender(true);
   }
 
-  public setupLocalVideo(rendererConfig: RenderVideoConfig): number {
+  public setupLocalVideo(rendererConfig: RendererVideoConfig): number {
     const { videoSourceType } = rendererConfig;
     if (videoSourceType === VideoSourceType.VideoSourceRemote) {
       console.error("setupLocalVideo videoSourceType error", videoSourceType);
@@ -152,7 +153,7 @@ class RendererManager {
     this.setupVideo({ ...rendererConfig });
     return 0;
   }
-  public setupRemoteVideo(rendererConfig: RenderVideoConfig): number {
+  public setupRemoteVideo(rendererConfig: RendererVideoConfig): number {
     const { videoSourceType } = rendererConfig;
     if (videoSourceType !== VideoSourceType.VideoSourceRemote) {
       console.error("setupLocalVideo videoSourceType error", videoSourceType);
@@ -339,7 +340,7 @@ class RendererManager {
   }
 
   private bindHTMLElementToRender(
-    config: FormatRenderVideoConfig,
+    config: FormatRendererVideoConfig,
     view: HTMLElement
   ): IRenderer {
     this.ensureRendererConfig(config);
@@ -486,9 +487,9 @@ class RendererManager {
   }
 }
 
-const AgoraRenderManager = new RendererManager();
+const AgoraRendererManager = new RendererManager();
 //@ts-ignore
-(window || global).AgoraRenderManager = AgoraRenderManager;
+(window || global).AgoraRenderManager = AgoraRendererManager;
 
-export default AgoraRenderManager;
+export default AgoraRendererManager;
 export { RendererManager };

@@ -1,11 +1,11 @@
-import IrisApiEngine from '../internal/IrisApiEngine'
+import { callIrisApi } from '../internal/IrisApiEngine'
 import { IAgoraParameter } from '../IAgoraParameter'
 export class IAgoraParameterImpl implements IAgoraParameter {
   release (): void {
     const apiType = 'AgoraParameter_release'
     const jsonParams = {
     }
-    IrisApiEngine.callApi(apiType, jsonParams)
+    callIrisApi.call(this, apiType, jsonParams)
   }
 
   setBool (key: string, value: boolean): number {
@@ -20,7 +20,7 @@ export class IAgoraParameterImpl implements IAgoraParameter {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -36,7 +36,7 @@ export class IAgoraParameterImpl implements IAgoraParameter {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -52,7 +52,7 @@ export class IAgoraParameterImpl implements IAgoraParameter {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -68,7 +68,7 @@ export class IAgoraParameterImpl implements IAgoraParameter {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -84,7 +84,7 @@ export class IAgoraParameterImpl implements IAgoraParameter {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -100,7 +100,7 @@ export class IAgoraParameterImpl implements IAgoraParameter {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -116,7 +116,7 @@ export class IAgoraParameterImpl implements IAgoraParameter {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -128,7 +128,7 @@ export class IAgoraParameterImpl implements IAgoraParameter {
         return { key }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const value = jsonResults.value
     return value
   }
@@ -141,7 +141,7 @@ export class IAgoraParameterImpl implements IAgoraParameter {
         return { key }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const value = jsonResults.value
     return value
   }
@@ -154,7 +154,7 @@ export class IAgoraParameterImpl implements IAgoraParameter {
         return { key }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const value = jsonResults.value
     return value
   }
@@ -167,7 +167,7 @@ export class IAgoraParameterImpl implements IAgoraParameter {
         return { key }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const value = jsonResults.value
     return value
   }
@@ -180,7 +180,7 @@ export class IAgoraParameterImpl implements IAgoraParameter {
         return { key }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const value = jsonResults.value
     return value
   }
@@ -193,7 +193,7 @@ export class IAgoraParameterImpl implements IAgoraParameter {
         return { key }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const value = jsonResults.value
     return value
   }
@@ -210,7 +210,7 @@ export class IAgoraParameterImpl implements IAgoraParameter {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const value = jsonResults.value
     return value
   }
@@ -223,7 +223,7 @@ export class IAgoraParameterImpl implements IAgoraParameter {
         return { parameters }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -239,7 +239,7 @@ export class IAgoraParameterImpl implements IAgoraParameter {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 }

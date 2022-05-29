@@ -51,7 +51,7 @@ export class InputSeiData {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       type: this.type,
       timestamp: this.timestamp,
@@ -62,7 +62,7 @@ export class InputSeiData {
 }
 
 export abstract class IMediaStreamingSource {
-abstract open(url: string, startPos: number, autoPlay: boolean): number;
+abstract open(url: string, startPos: number, autoPlay?: boolean): number;
 
 abstract close(): number;
 

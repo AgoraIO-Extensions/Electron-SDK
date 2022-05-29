@@ -1,4 +1,4 @@
-import IrisApiEngine from '../internal/IrisApiEngine'
+import { callIrisApi } from '../internal/IrisApiEngine'
 import { IAudioDeviceCollection, IAudioDeviceManager } from '../IAudioDeviceManager'
 
 export class IAudioDeviceCollectionImpl implements IAudioDeviceCollection {
@@ -6,7 +6,7 @@ export class IAudioDeviceCollectionImpl implements IAudioDeviceCollection {
     const apiType = 'AudioDeviceCollection_getCount'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -18,7 +18,7 @@ export class IAudioDeviceCollectionImpl implements IAudioDeviceCollection {
         return { index }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const deviceName = jsonResults.deviceName
     const deviceId = jsonResults.deviceId
     return {
@@ -35,7 +35,7 @@ export class IAudioDeviceCollectionImpl implements IAudioDeviceCollection {
         return { deviceId }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -47,7 +47,7 @@ export class IAudioDeviceCollectionImpl implements IAudioDeviceCollection {
         return { volume }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -55,7 +55,7 @@ export class IAudioDeviceCollectionImpl implements IAudioDeviceCollection {
     const apiType = 'AudioDeviceCollection_getApplicationVolume'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const volume = jsonResults.volume
     return volume
   }
@@ -68,7 +68,7 @@ export class IAudioDeviceCollectionImpl implements IAudioDeviceCollection {
         return { mute }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -76,7 +76,7 @@ export class IAudioDeviceCollectionImpl implements IAudioDeviceCollection {
     const apiType = 'AudioDeviceCollection_isApplicationMute'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const mute = jsonResults.mute
     return mute
   }
@@ -85,7 +85,7 @@ export class IAudioDeviceCollectionImpl implements IAudioDeviceCollection {
     const apiType = 'AudioDeviceCollection_release'
     const jsonParams = {
     }
-    IrisApiEngine.callApi(apiType, jsonParams)
+    callIrisApi.call(this, apiType, jsonParams)
   }
 }
 
@@ -94,7 +94,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     const apiType = 'AudioDeviceManager_enumeratePlaybackDevices'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -102,7 +102,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     const apiType = 'AudioDeviceManager_enumerateRecordingDevices'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -114,7 +114,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
         return { deviceId }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -122,7 +122,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     const apiType = 'AudioDeviceManager_getPlaybackDevice'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const deviceId = jsonResults.deviceId
     return deviceId
   }
@@ -131,7 +131,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     const apiType = 'AudioDeviceManager_getPlaybackDeviceInfo'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const deviceId = jsonResults.deviceId
     const deviceName = jsonResults.deviceName
     return {
@@ -148,7 +148,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
         return { volume }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -156,7 +156,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     const apiType = 'AudioDeviceManager_getPlaybackDeviceVolume'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const volume = jsonResults.volume
     return volume
   }
@@ -169,7 +169,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
         return { deviceId }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -177,7 +177,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     const apiType = 'AudioDeviceManager_getRecordingDevice'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const deviceId = jsonResults.deviceId
     return deviceId
   }
@@ -186,7 +186,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     const apiType = 'AudioDeviceManager_getRecordingDeviceInfo'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const deviceId = jsonResults.deviceId
     const deviceName = jsonResults.deviceName
     return {
@@ -203,7 +203,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
         return { volume }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -211,7 +211,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     const apiType = 'AudioDeviceManager_getRecordingDeviceVolume'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const volume = jsonResults.volume
     return volume
   }
@@ -224,7 +224,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
         return { mute }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -232,7 +232,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     const apiType = 'AudioDeviceManager_getPlaybackDeviceMute'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const mute = jsonResults.mute
     return mute
   }
@@ -245,7 +245,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
         return { mute }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -253,7 +253,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     const apiType = 'AudioDeviceManager_getRecordingDeviceMute'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     const mute = jsonResults.mute
     return mute
   }
@@ -266,7 +266,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
         return { testAudioFilePath }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -274,7 +274,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     const apiType = 'AudioDeviceManager_stopPlaybackDeviceTest'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -286,7 +286,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
         return { indicationInterval }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -294,7 +294,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     const apiType = 'AudioDeviceManager_stopRecordingDeviceTest'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -306,7 +306,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
         return { indicationInterval }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -314,7 +314,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     const apiType = 'AudioDeviceManager_stopAudioDeviceLoopbackTest'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -322,6 +322,6 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     const apiType = 'AudioDeviceManager_release'
     const jsonParams = {
     }
-    IrisApiEngine.callApi(apiType, jsonParams)
+    callIrisApi.call(this, apiType, jsonParams)
   }
 }

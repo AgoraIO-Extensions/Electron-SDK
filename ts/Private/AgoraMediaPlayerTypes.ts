@@ -99,7 +99,7 @@ export class PlayerStreamInfo {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       streamIndex: this.streamIndex,
       streamType: this.streamType,
@@ -128,7 +128,7 @@ export class SrcInfo {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       bitrateInKbps: this.bitrateInKbps,
       name: this.name
@@ -151,7 +151,7 @@ export class PlayerUpdatedInfo {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       playerId: this.playerId,
       deviceId: this.deviceId

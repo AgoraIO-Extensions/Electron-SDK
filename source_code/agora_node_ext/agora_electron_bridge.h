@@ -19,10 +19,10 @@ namespace electron {
 
 class NodeIrisEventHandler;
 
-class NodeIrisRtcEngine {
+class AgoraElectronBridge {
  public:
-  explicit NodeIrisRtcEngine();
-  virtual ~NodeIrisRtcEngine();
+  explicit AgoraElectronBridge();
+  virtual ~AgoraElectronBridge();
 
   static napi_value Init(napi_env env, napi_value exports);
   static napi_value Constructor(napi_env env);

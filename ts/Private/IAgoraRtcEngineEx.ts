@@ -12,7 +12,7 @@ export class RtcConnection {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       channelId: this.channelId,
       localUid: this.localUid
@@ -29,7 +29,7 @@ export abstract class IRtcEngineEventHandlerEx extends IRtcEngineEventHandler {
 
   onAudioQualityEx?(connection: RtcConnection, remoteUid: number, quality: number, delay: number, lost: number): void;
 
-  onAudioVolumeIndicationEx?(connection: RtcConnection, speakers: AudioVolumeInfo, speakerNumber: number, totalVolume: number): void;
+  onAudioVolumeIndicationEx?(connection: RtcConnection, speakers: AudioVolumeInfo[], speakerNumber: number, totalVolume: number): void;
 
   onLeaveChannelEx?(connection: RtcConnection, stats: RtcStats): void;
 

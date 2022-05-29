@@ -1,4 +1,4 @@
-import IrisApiEngine from '../internal/IrisApiEngine'
+import { callIrisApi } from '../internal/IrisApiEngine'
 import { IRhythmPlayer, AgoraRhythmPlayerConfig } from '../IAgoraRhythmPlayer'
 
 export class IRhythmPlayerImpl implements IRhythmPlayer {
@@ -16,7 +16,7 @@ export class IRhythmPlayerImpl implements IRhythmPlayer {
         }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -24,7 +24,7 @@ export class IRhythmPlayerImpl implements IRhythmPlayer {
     const apiType = 'RhythmPlayer_stopRhythm'
     const jsonParams = {
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 
@@ -36,7 +36,7 @@ export class IRhythmPlayerImpl implements IRhythmPlayer {
         return { config }
       }
     }
-    const jsonResults = IrisApiEngine.callApi(apiType, jsonParams)
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
 }

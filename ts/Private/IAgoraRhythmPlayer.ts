@@ -25,7 +25,7 @@ export class AgoraRhythmPlayerConfig {
     return obj
   }
 
-  toJSON () {
+  toJSON? () {
     return {
       beatsPerMeasure: this.beatsPerMeasure,
       beatsPerMinute: this.beatsPerMinute
