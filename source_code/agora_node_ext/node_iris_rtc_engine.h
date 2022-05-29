@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:44
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2021-10-19 18:14:39
+ * @Last Modified time: 2022-05-29 14:18:55
  */
 #pragma once
 #include <node_api.h>
@@ -44,15 +44,13 @@ class NodeIrisRtcEngine {
   static napi_value ReleaseEnv(napi_env env, napi_callback_info info);
   void OnApiError(const char* errorMessage);
 
-  napi_env _env;
-  napi_ref _ref;
-
+ private:
   static const char* _class_name;
-
- public:
   static napi_ref* _ref_construcotr_ptr;
   static const char* _ret_code_str;
   static const char* _ret_result_str;
+  napi_env _env;
+  napi_ref _ref;
   std::shared_ptr<IrisApiEngine> _iris_api_engine;
   std::shared_ptr<NodeIrisEventHandler> _iris_rtc_event_handler;
   std::shared_ptr<NodeIrisEventHandler> _iris_mpk_event_handler;
