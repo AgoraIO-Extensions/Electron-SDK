@@ -7,6 +7,7 @@ import {
   AgoraElectronBridge,
 } from "./Types";
 import { RendererManager } from "./Renderer/RendererManager";
+import { IRtcEngineEventHandler } from "./Private/IAgoraRtcEngine";
 
 export const TAG = "[Agora]: ";
 export const DEBUG_TAG = "[Agora Debug]: ";
@@ -153,10 +154,12 @@ interface AgoraEnv {
   AgoraRendererManager?: RendererManager;
   enableLogging: boolean;
   enableDebugLogging: boolean;
+  engineEventHandlers: IRtcEngineEventHandler[];
 }
 export const AgoraEnv: AgoraEnv = {
   enableLogging: true,
   enableDebugLogging: false,
+  engineEventHandlers: [],
 };
 
 //@ts-ignore

@@ -6,9 +6,6 @@ import { processIRtcEngineEventHandler } from "../impl/IAgoraRtcEngineImpl";
 
 const agora = require("../../../build/Release/agora_node_ext");
 
-//名字可以全平台对齐 electron rn
-let _engineHandlers: IRtcEngineEventHandler[] = [];
-
 export const getBridge = (): AgoraElectronBridge => {
   let bridge = AgoraEnv.AgoraElectronBridge;
   if (!bridge) {
@@ -41,7 +38,7 @@ export const handlerRTCEvent = function (
   );
 
   try {
-    _engineHandlers.forEach((value) => {
+    AgoraEnv.engineEventHandlers.forEach((value) => {
       processIRtcEngineEventHandlerEx(value, event, obj);
       processIRtcEngineEventHandler(value, event, obj);
     });
@@ -95,10 +92,10 @@ export const callIrisApi = (
 ): any => {
   switch (funcName) {
     case "RtcEngine_registerEventHandler":
-      _engineHandlers.push(params.eventHandler);
+      AgoraEnv.engineEventHandlers.push(params.eventHandler);
       return ResultOk;
     case "RtcEngine_unregisterEventHandler":
-      _engineHandlers = _engineHandlers.filter(
+      AgoraEnv.engineEventHandlers = AgoraEnv.engineEventHandlers.filter(
         (value) => value !== params.eventHandler
       );
       return ResultOk;

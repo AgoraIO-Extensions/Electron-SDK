@@ -1,5 +1,6 @@
 import React, { Component, useEffect } from "react";
 import electron from "electron";
+
 window.electron = electron;
 
 import AgoraRtcEngine, {
@@ -83,6 +84,10 @@ export default class App extends Component {
   state = Object.assign({}, defaultState);
   componentDidMount() {
     console.log("## pid", process.pid);
+    rtcEngine.registerEventHandler(this);
+  }
+  componentWillUnmount(){
+    rtcEngine.unregisterEventHandler(this);
   }
 
   onPressInitialize = () => {
@@ -134,7 +139,7 @@ export default class App extends Component {
     const ver = rtcEngine.getVersion();
     console.log("getVersion", ver);
     rtcEngine.startPreview();
-    rtcEngine.registerEventHandler(this);
+    
   };
   onJoinChannelSuccessEx(connection, elapsed) {
     this.setState({ isJoin: true });
