@@ -292,7 +292,11 @@ class RendererManager {
           return;
       }
       if (finalResult.ret !== 0) {
-        logWarn("RendererManager::startRenderer::renderFunc buffer not ready");
+        logWarn("GetVideoStreamData ret is", finalResult.ret);
+        return;
+      }
+      if (!finalResult.isNewFrame) {
+        logWarn("GetVideoStreamData isNewFrame is false");
         return;
       }
       const renderVideoFrame = rendererItem.shareVideoFrame;
