@@ -18,6 +18,7 @@ import {
   AgoraEnv,
   formatConfigByVideoSourceType,
   getDefaultRendererVideoConfig,
+  logDebug,
   logError,
   logInfo,
   logWarn,
@@ -35,7 +36,7 @@ class RendererManager {
   msgBridge: AgoraElectronBridge;
 
   constructor() {
-    this.renderFps = 15;
+    this.renderFps = 18;
     this.renderers = new Map();
     this.renderMode = this.checkWebglEnv()
       ? RENDER_MODE.WEBGL
@@ -46,7 +47,7 @@ class RendererManager {
   setRenderMode(mode: RENDER_MODE) {
     this.renderMode = mode;
     logInfo(
-      "setRenderMode:  new render mode will take effect only if reinstall view to renderer "
+      "setRenderMode:  new render mode will take effect only if new view bind to render"
     );
   }
   setFPS(fps: number) {
@@ -252,7 +253,7 @@ class RendererManager {
     this.isRendering = true;
     const renderFunc = (
       rendererItem: RenderConfig,
-      config: VideoFrameCacheConfig
+      { videoSourceType, channelId, uid }: VideoFrameCacheConfig
     ) => {
       const { renders } = rendererItem;
       if (!renders || renders?.length === 0) {
@@ -272,7 +273,6 @@ class RendererManager {
           break;
         case 2: // IRIS_VIDEO_PROCESS_ERR::ERR_SIZE_NOT_MATCHING
           const { width, height } = finalResult;
-          const { videoSourceType, channelId, uid } = config;
           const newShareVideoFrame = this.resizeShareVideoFrame(
             videoSourceType,
             channelId,
@@ -284,21 +284,15 @@ class RendererManager {
           finalResult = this.msgBridge.GetVideoStreamData(newShareVideoFrame);
           break;
         case 5:
-          logWarn("IRIS_VIDEO_PROCESS_ERR::ERR_BUFFER_EMPTY");
           // IRIS_VIDEO_PROCESS_ERR::ERR_BUFFER_EMPTY
           // setupVideo/AgoraView render before initialize
-
-          // todo
-          // const { videoSourceType, channelId, uid } = config;
-          // this.enableVideoFrameCache({ videoSourceType, channelId, uid });
+          this.enableVideoFrameCache({ videoSourceType, channelId, uid });
           return;
         default:
           return;
       }
       if (finalResult.ret !== 0) {
-        logInfo(
-          "iris GetVideoStreamData return ret IRIS_VIDEO_PROCESS_ERR::ERR_OK"
-        );
+        logWarn("RendererManager::startRenderer::renderFunc buffer not ready");
         return;
       }
       const renderVideoFrame = rendererItem.shareVideoFrame;
@@ -325,7 +319,7 @@ class RendererManager {
     if (this.videoFrameUpdateInterval) {
       this.stopRender();
       this.startRenderer();
-      logInfo(`setFps ${this.renderFps} restartInterval`);
+      logInfo(`restartRender: Fps: ${this.renderFps} restartInterval`);
     }
   }
   private createRenderer(failCallback?: RenderFailCallback): IRenderer {
@@ -416,14 +410,14 @@ class RendererManager {
   private enableVideoFrameCache(
     videoFrameCacheConfig: VideoFrameCacheConfig
   ): void {
-    logInfo(`enableVideoFrameCache ${JSON.stringify(videoFrameCacheConfig)}`);
+    logDebug(`enableVideoFrameCache ${JSON.stringify(videoFrameCacheConfig)}`);
     this.msgBridge.EnableVideoFrameCache(videoFrameCacheConfig);
   }
 
   private disableVideoFrameCache(
     videoFrameCacheConfig: VideoFrameCacheConfig
   ): void {
-    logInfo(`disableVideoFrameCache ${JSON.stringify(videoFrameCacheConfig)}`);
+    logDebug(`disableVideoFrameCache ${JSON.stringify(videoFrameCacheConfig)}`);
     this.msgBridge.DisableVideoFrameCache(videoFrameCacheConfig);
   }
 

@@ -1,12 +1,13 @@
-import { AgoraEnv, logDebug, logInfo, parseJSON } from "../../Utils";
+import { AgoraEnv, logDebug, logError, logInfo, parseJSON } from "../../Utils";
 import { AgoraElectronBridge, CallBackModule, Result } from "../../Types";
 import { IRtcEngineEventHandler } from "../IAgoraRtcEngine";
 import { processIRtcEngineEventHandlerEx } from "../impl/IAgoraRtcEngineExImpl";
 import { processIRtcEngineEventHandler } from "../impl/IAgoraRtcEngineImpl";
 
 const agora = require("../../../build/Release/agora_node_ext");
+
 //名字可以全平台对齐 electron rn
-let _handlers: IRtcEngineEventHandler[] = [];
+let _engineHandlers: IRtcEngineEventHandler[] = [];
 
 export const getBridge = (): AgoraElectronBridge => {
   let bridge = AgoraEnv.AgoraElectronBridge;
@@ -25,11 +26,12 @@ export const handlerRTCEvent = function (
   bufferLength: number,
   bufferCount: number
 ) {
-  logInfo(
+  const obj = parseJSON(data);
+  logDebug(
     "event",
     event,
     "data",
-    data,
+    obj,
     "buffer",
     buffer,
     "bufferLength",
@@ -37,17 +39,14 @@ export const handlerRTCEvent = function (
     "bufferCount",
     bufferCount
   );
+
   try {
-    // // const buffer = args.buffer;
-    // // if (methodName === 'onStreamMessage') {
-    // //   data.splice(3, 0, buffer);
-    // // }
-    // IrisApiEngine._handlers.forEach((value) => {
-    //   processIRtcEngineEventHandlerEx(value, event, obj);
-    //   processIRtcEngineEventHandler(value, event, obj);
-    // });
+    _engineHandlers.forEach((value) => {
+      processIRtcEngineEventHandlerEx(value, event, obj);
+      processIRtcEngineEventHandler(value, event, obj);
+    });
   } catch (error) {
-    console.log(error);
+    logError("_engineHandlers::forEach", error);
   }
 };
 
@@ -58,7 +57,7 @@ export const handlerMPKEvent = function (
   bufferLength: number,
   bufferCount: number
 ) {
-  logInfo("handlerMPKEvent", data);
+  logDebug("handlerMPKEvent", data);
 };
 
 export const sendMsg = (
@@ -96,10 +95,12 @@ export const callIrisApi = (
 ): any => {
   switch (funcName) {
     case "RtcEngine_registerEventHandler":
-      _handlers.push(params.eventHandler);
+      _engineHandlers.push(params.eventHandler);
       return ResultOk;
     case "RtcEngine_unregisterEventHandler":
-      _handlers = _handlers.filter((value) => value !== params.eventHandler);
+      _engineHandlers = _engineHandlers.filter(
+        (value) => value !== params.eventHandler
+      );
       return ResultOk;
   }
   return sendMsg(funcName, params, buffer);

@@ -14,12 +14,14 @@ import AgoraRtcEngine, {
   VideoSourceType,
   ContentMode,
   AgoraEnv,
+  RtcConnection
 } from "../../../";
 
 AgoraEnv.enableLogging = true;
-AgoraEnv.enableDebugLogging = true;
+AgoraEnv.enableDebugLogging = false;
 
 import { APP_ID } from "../utils/settings";
+
 const rtcEngine = new AgoraRtcEngine();
 window.rtcEngine = rtcEngine;
 class RemoteWindow extends Component {
@@ -132,8 +134,12 @@ export default class App extends Component {
     const ver = rtcEngine.getVersion();
     console.log("getVersion", ver);
     rtcEngine.startPreview();
-    // rtcEngine.registerEventHandler(this);
+    rtcEngine.registerEventHandler(this);
   };
+  onJoinChannelSuccessEx(connection, elapsed) {
+    this.setState({ isJoin: true });
+    console.info("JOINED_CHANNEL", connection, elapsed);
+  }
   subscribeEvent = () => {
     rtcEngine.on(EngineEvents.ERROR, (...args) => {
       console.log("EngineEvents.ERROR", args);

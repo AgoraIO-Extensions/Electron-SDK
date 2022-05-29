@@ -14,7 +14,7 @@ import {
   RENDER_MODE,
   CallBackModule,
 } from "./Types";
-import { deprecate, logError, logInfo, logWarn } from "./Utils";
+import { deprecate, logDebug, logError, logInfo, logWarn } from "./Utils";
 
 /**
  * The AgoraRtcEngine class.
@@ -24,7 +24,7 @@ export class AgoraRtcEngine extends IRtcEngineExImpl {
   constructor() {
     super();
 
-    logInfo("AgoraRtcEngine constructor()");
+    logDebug("AgoraRtcEngine constructor()");
   }
 
   override initialize(context: RtcEngineContext): number {
