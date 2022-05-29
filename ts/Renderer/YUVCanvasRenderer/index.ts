@@ -54,12 +54,10 @@ export class YUVCanvasRenderer extends IRenderer {
 
   unbind() {
     if (this._container) {
-      // @ts-ignore
       this._container.replaceChildren();
       this._container = undefined;
     }
     if (this.parentElement) {
-      // @ts-ignore
       this.parentElement.replaceChildren();
       this.parentElement = undefined;
     }

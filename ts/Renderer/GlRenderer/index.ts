@@ -98,6 +98,7 @@ export class GlRenderer extends IRenderer {
   }
 
   unbind() {
+    //@ts-ignore
     this.observer && this.observer.unobserve && this.observer.disconnect();
     this.program = undefined;
     this.positionLocation = undefined;

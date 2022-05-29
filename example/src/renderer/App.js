@@ -28,18 +28,16 @@ class RemoteWindow extends Component {
   }
 
   componentDidMount() {
-    // const { uid, channelId } = this.props;
-    // const id = `remoteVideo-${uid}`;
-    // let dom = document.getElementById(id);
-    // setTimeout(() => {
-    //   rtcEngine.setupVideo({
-    //     videoSourceType: VideoSourceType.kVideoSourceTypeRemote,
-    //     uid,
-    //     channelId,
-    //     view: dom,
-    //     rendererOptions: { mirror: true, contentMode: 1 },
-    //   });
-    // }, 1000);
+    const { uid, channelId } = this.props;
+    const id = `remoteVideo-${uid}`;
+    let dom = document.getElementById(id);
+    rtcEngine.setupVideo({
+      videoSourceType: VideoSourceType.kVideoSourceTypeRemote,
+      uid,
+      channelId,
+      view: dom,
+      rendererOptions: { mirror: true, contentMode: 1 },
+    });
   }
   componentWillUnmount() {
     const { uid, channelId } = this.props;

@@ -495,7 +495,8 @@ class RendererManager {
   ): void {
     let rendererConfigMap = this.ensureRendererConfig(config);
     rendererConfigMap
-      ? Object.assign(rendererConfigMap.get(config.uid), {
+      ? //@ts-ignore
+        Object.assign(rendererConfigMap.get(config.uid), {
           shareVideoFrame,
         })
       : logWarn(
