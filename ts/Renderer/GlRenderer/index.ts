@@ -2,7 +2,7 @@ const createProgramFromSources =
   require("./webgl-utils").createProgramFromSources;
 
 import { EventEmitter } from "events";
-import { ShareVideoFrame } from "../../types";
+import { ShareVideoFrame } from "../../Types";
 import { IRenderer, RenderFailCallback } from "../IRender";
 
 const vertexShaderSource =

@@ -9,7 +9,7 @@ const YUVBuffer = require("yuv-buffer");
 const YUVCanvas = require("yuv-canvas");
 const isEqual = require("lodash.isequal");
 
-import { CanvasOptions, ContentMode, ShareVideoFrame } from "../../types";
+import { CanvasOptions, ContentMode, ShareVideoFrame } from "../../Types";
 import { IRenderer } from "../IRender";
 import { logDebug } from "../../Utils";
 

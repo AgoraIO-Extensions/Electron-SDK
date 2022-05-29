@@ -1,6 +1,6 @@
 import { AgoraRtcEngine } from "./AgoraRtcEngine";
 import "./Renderer/AgoraView";
-export * from "./types";
+export * from "./Types";
 export * from "./Private/AgoraBase";
 export * from "./Renderer/RendererManager";
 
