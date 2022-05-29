@@ -52,26 +52,22 @@ void NodeIrisEventHandler::OnEvent(const char* event,
   std::string _eventData(data);
   std::vector<char> stringData;
 
-  if (buffer_count == 1) {
-    stringData.resize(*length + 1, '\0');
-    memcpy(stringData.data(), buffer, *length);
-  }
-
-  //  std::string _eventBuffer(stringData.data());
-  std::string _eventBuffer("123");
-  node_async_call::async_call([this, _eventName, _eventData, _eventBuffer] {
+  node_async_call::async_call([this, _eventName, _eventData] {
     auto it = _callbacks.find("call_back_with_buffer");
     if (it != _callbacks.end()) {
-      size_t argc = 3;
-      napi_value args[3];
+      size_t argc = 5;
+      napi_value args[5];
       napi_value result;
       napi_status status;
       status = napi_create_string_utf8(it->second->env, _eventName.c_str(),
                                        _eventName.length(), &args[0]);
       status = napi_create_string_utf8(it->second->env, _eventData.c_str(),
                                        _eventData.length(), &args[1]);
-      status = napi_create_string_utf8(it->second->env, _eventBuffer.c_str(),
-                                       _eventBuffer.length(), &args[2]);
+    status = napi_create_array(it->second->env, &args[2]);
+    status = napi_create_uint32(it->second->env, 0, &args[3]);
+    status = napi_create_uint32(it->second->env, 0, &args[4]);
+      
+        
 
       napi_value call_back_value;
       status = napi_get_reference_value(

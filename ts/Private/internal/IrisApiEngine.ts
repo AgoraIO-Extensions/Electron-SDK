@@ -1,4 +1,4 @@
-import { AgoraElectronBridge, Result } from "../../AgoraSdk";
+import { AgoraElectronBridge, CallBackModule, Result } from "../../AgoraSdk";
 import { IRtcEngineEventHandler } from "../IAgoraRtcEngine";
 import { processIRtcEngineEventHandlerEx } from "../impl/IAgoraRtcEngineExImpl";
 import { processIRtcEngineEventHandler } from "../impl/IAgoraRtcEngineImpl";
@@ -37,13 +37,50 @@ export const sendMsg = (
     return ret;
   }
 };
-const handlerEvent = function (
+export const handlerRTCEvent = function (
+  event: string,
+  data: string,
+  buffer: Uint8Array [],
+  bufferLength: number,
+  bufferCount: number
+) {
+  console.log("handlerRTCEvent", data);
+  return;
+  // console.log(
+  //   "event",
+  //   event,
+  //   "data",
+  //   data,
+  //   "buffer",
+  //   buffer,
+  //   "bufferLength",
+  //   bufferLength,
+  //   "bufferCount",
+  //   bufferCount
+  // );
+  try {
+    const obj = JSON.parse(data);
+    // // const buffer = args.buffer;
+    // // if (methodName === 'onStreamMessage') {
+    // //   data.splice(3, 0, buffer);
+    // // }
+    // IrisApiEngine._handlers.forEach((value) => {
+    //   processIRtcEngineEventHandlerEx(value, event, obj);
+    //   processIRtcEngineEventHandler(value, event, obj);
+    // });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const handlerMPKEvent = function (
   event: string,
   data: string,
   buffer: ArrayBufferLike,
   bufferLength: number,
   bufferCount: number
 ) {
+  console.log("handlerMPKEvent", data);
   return;
   // console.log(
   //   "event",
@@ -84,7 +121,8 @@ export default class IrisApiEngine {
     switch (funcName) {
       case "RtcEngine_initialize":
         bridge.InitializeEnv();
-        bridge.OnEvent("call_back_with_buffer", handlerEvent);
+        bridge.OnEvent(CallBackModule.RTC, "call_back_with_buffer", handlerRTCEvent);
+        bridge.OnEvent(CallBackModule.MPK, "call_back_with_buffer", handlerMPKEvent);
         return sendMsg(funcName, params, buffer);
       case "RtcEngine_release":
         sendMsg(funcName, params, buffer);

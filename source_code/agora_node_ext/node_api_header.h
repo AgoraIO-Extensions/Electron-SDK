@@ -18,12 +18,12 @@ namespace electron {
 #define DECLARE_NAPI_METHOD(name, func) \
   { name, 0, func, 0, 0, 0, napi_default, 0 }
 
-#define RETURE_NAPI_OBJ()                                         \
-  napi_value retObj;                                              \
-  status = napi_create_object(env, &retObj);                      \
-  std::string resultStr = std::string(result);                    \
-  napi_obj_set_property(env, retObj, _ret_code_str, ret);         \
-  napi_obj_set_property(env, retObj, _ret_result_str, resultStr); \
+#define RETURE_NAPI_OBJ()                                 \
+  napi_value retObj;                                      \
+  status = napi_create_object(env, &retObj);              \
+  napi_obj_set_property(env, retObj, _ret_code_str, ret); \
+  napi_obj_set_property(env, retObj, _ret_result_str,     \
+                        nodeIrisRtcEngine->_result);      \
   return retObj
 
 napi_status napi_get_value_utf8string(napi_env& env,
@@ -39,7 +39,7 @@ napi_status napi_obj_set_property(napi_env& env,
 napi_status napi_obj_set_property(napi_env& env,
                                   napi_value& object,
                                   const char* utf8name,
-                                  std::string& value,
+                                  const char* value,
                                   int length = 0);
 
 napi_status napi_obj_set_property(napi_env& env,

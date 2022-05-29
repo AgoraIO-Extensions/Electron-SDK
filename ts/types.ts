@@ -64,8 +64,15 @@ export interface Result {
   retCode: number;
   result: string;
 }
+
+export enum CallBackModule {
+  RTC = 0,
+  MPK
+}
+
 export interface AgoraElectronBridge {
   OnEvent(
+    module: CallBackModule,
     callbackName: string,
     callback: (
       event: string,

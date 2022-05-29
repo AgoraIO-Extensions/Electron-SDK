@@ -1,7 +1,7 @@
 ﻿import { VideoSourceType } from "./AgoraSdk";
 import { RtcEngineContext } from "./Private/IAgoraRtcEngine";
 import { IRtcEngineExImpl } from "./Private/impl/IAgoraRtcEngineExImpl";
-import { getBridge, sendMsg } from "./Private/internal/IrisApiEngine";
+import { getBridge, sendMsg, handlerMPKEvent, handlerRTCEvent } from "./Private/internal/IrisApiEngine";
 import AgoraRenderManager from "./Renderer/RendererManager";
 import {
   Channel,
@@ -9,6 +9,7 @@ import {
   RendererConfig,
   RendererConfigInternal,
   RENDER_MODE,
+  CallBackModule
 } from "./types";
 import { getRendererConfigInternal, logInfo, logWarn } from "./Utils";
 
@@ -80,6 +81,9 @@ export class AgoraRtcEngine extends IRtcEngineExImpl {
         return { context };
       },
     });
+    bridge.OnEvent(CallBackModule.RTC, "call_back_with_buffer", handlerRTCEvent);
+    bridge.OnEvent(CallBackModule.MPK, "call_back_with_buffer", handlerMPKEvent);
+
     return retCode;
   }
   override release(sync = false): void {

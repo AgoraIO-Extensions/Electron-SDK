@@ -38,12 +38,11 @@ napi_status napi_obj_set_property(napi_env& env,
 napi_status napi_obj_set_property(napi_env& env,
                                   napi_value& object,
                                   const char* utf8name,
-                                  std::string& value,
+                                  const char* value,
                                   int length) {
   napi_status status;
   napi_value n_value;
-  status = napi_create_string_utf8(env, value.c_str(), strlen(value.c_str()),
-                                   &n_value);
+  status = napi_create_string_utf8(env, value, strlen(value), &n_value);
   status = napi_set_named_property(env, object, utf8name, n_value);
   return status;
 }

@@ -54,12 +54,13 @@ class NodeIrisRtcEngine {
   static const char* _ret_code_str;
   static const char* _ret_result_str;
   std::shared_ptr<IrisApiEngine> _iris_api_engine;
-  std::shared_ptr<NodeIrisEventHandler> _iris_event_handler;
+  std::shared_ptr<NodeIrisEventHandler> _iris_rtc_event_handler;
+  std::shared_ptr<NodeIrisEventHandler> _iris_mpk_event_handler;
   std::shared_ptr<iris::IrisVideoFrameBufferManager>
       _iris_video_frame_buffer_manager;
 
-  /*iris::rtc::IrisRtcRawData* _iris_raw_data;
-  iris::rtc::IrisRtcRawDataPluginManager* _iris_raw_data_plugin_manager;*/
+ private:
+  char _result[kBasicResultLength];
 };
 }  // namespace electron
 }  // namespace rtc

@@ -14,6 +14,8 @@
 namespace agora {
 namespace rtc {
 namespace electron {
+enum CallBackModule { RTC = 0, MPK };
+
 class NodeIrisRtcEngine;
 class NodeIrisEventHandler : public iris::IrisEventHandler {
  public:
