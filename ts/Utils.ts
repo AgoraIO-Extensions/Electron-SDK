@@ -16,19 +16,29 @@ export const deprecate = (originApi?: string, replaceApi?: string) => {
   );
 };
 
-export const logWarn = (msg: string, tag: string = TAG) => {
-  console.warn(`${tag} ${msg}`);
+export const logWarn = (msg: string, ...optParams: any[]) => {
+  console.warn(`${TAG} ${msg}`, ...optParams);
 };
 
-export const logError = (msg: string, tag: string = TAG) => {
-  console.error(`${tag} ${msg}`);
+export const logError = (msg: string, ...optParams: any[]) => {
+  console.error(`${TAG} ${msg}`, ...optParams);
 };
 
-export const logInfo = (msg: string, tag: string = TAG) => {
-  console.log(`${tag} ${msg}`);
+export const logInfo = (msg: string, ...optParams: any[]) => {
+  console.log(`${TAG} ${msg}`, ...optParams);
 };
-export const logDebug = (msg: string, tag: string = DEBUG_TAG) => {
-  console.warn(`${tag} ${msg}`);
+export const logDebug = (msg: string, ...optParams: any[]) => {
+  console.warn(`${TAG} ${msg}`, ...optParams);
+};
+
+export const parseJSON = (jsonString: string) => {
+  let obj;
+  try {
+    obj = JSON.parse(jsonString);
+  } catch (error) {
+    logError("parseJSON", error);
+  }
+  return obj || jsonString;
 };
 
 export const objsKeysToLowerCase = (array: Array<any>) => {
@@ -44,15 +54,6 @@ export const objsKeysToLowerCase = (array: Array<any>) => {
 
 export const changeEventNameForOnXX = (eventName: string) =>
   eventName.slice(2, 3).toLocaleLowerCase() + eventName.slice(3);
-
-export const jsonStringToArray = (jsonString: string) => {
-  try {
-    return JSON.parse(jsonString);
-  } catch (error) {
-    logError(`jsonStringToArray error: ${jsonString}`);
-    return [];
-  }
-};
 
 export const formatConfigByVideoSourceType = (
   videoSourceType?: VideoSourceType,
@@ -133,43 +134,3 @@ function copyProperties<T>(target: T, source: any) {
     }
   }
 }
-
-// interface ForwardEventParam {
-//   event: {
-//     eventName: string;
-//     params: string;
-//     buffer?: string;
-//     changeNameHandler: (_eventName: string) => string;
-//   };
-//   fire: (eventName: string, ...arg: any[]) => void;
-//   filter: (eventName: string, params: Array<any>, buffer?: string) => Boolean;
-// }
-// const onApiErrorEventName = "onApiError";
-
-// export const forwardEvent = ({
-//   event: { eventName, params, buffer, changeNameHandler },
-//   fire,
-//   filter,
-// }: ForwardEventParam) => {
-//   if (eventName === onApiErrorEventName) {
-//     console.error(eventName, params);
-//     fire(EngineEvents.API_ERROR, params);
-//     return;
-//   }
-//   try {
-//     const _params = JSON.parse(params);
-//     const isFilter = filter(eventName, _params, buffer);
-//     if (isFilter || !fire) {
-//       return;
-//     }
-//     const finalEventName = changeNameHandler(eventName);
-
-//     fire(finalEventName, ..._params);
-//     fire(finalEventName.toLocaleLowerCase(), ..._params);
-//   } catch (error) {
-//     console.error(
-//       `forwardEvent eventName:${eventName}  params:${params}  error:`,
-//       error
-//     );
-//   }
-// };

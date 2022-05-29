@@ -91,8 +91,8 @@ export interface AgoraElectronBridge {
   InitializeEnv(): void;
   ReleaseEnv(): void;
 
-  EnableVideoFrameCache(config: VideoFrameCacheConfig): Result;
-  DisableVideoFrameCache(config: VideoFrameCacheConfig): Result;
+  EnableVideoFrameCache(config: VideoFrameCacheConfig): void;
+  DisableVideoFrameCache(config: VideoFrameCacheConfig): void;
   GetVideoStreamData(streamInfo: ShareVideoFrame): {
     ret: number;
     isNewFrame: boolean;

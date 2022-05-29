@@ -2,6 +2,7 @@ const createProgramFromSources =
   require("./webgl-utils").createProgramFromSources;
 
 import { EventEmitter } from "events";
+import { logError, logWarn } from "../../Utils";
 import { ShareVideoFrame } from "../../Types";
 import { IRenderer, RenderFailCallback } from "../IRenderer";
 
@@ -132,7 +133,7 @@ export class GlRenderer extends IRenderer {
         this.parentElement.removeChild(this.container);
       }
     } catch (e) {
-      console.warn(e);
+      logWarn("webgl renderer unbind happen some error", e);
     }
 
     this.canvas = undefined;
@@ -188,9 +189,7 @@ export class GlRenderer extends IRenderer {
         }
       }
     } catch (e) {
-      console.log(`updateCanvas 00001 gone ${this.canvas}`);
-
-      console.error(e);
+      logError("webgl updateViewZoomLevel", e);
       return false;
     }
 
@@ -221,7 +220,6 @@ export class GlRenderer extends IRenderer {
     gl.enableVertexAttribArray(this.positionLocation);
     gl.vertexAttribPointer(this.positionLocation, 2, gl.FLOAT, false, 0, 0);
 
-    // Console.log('image rotation from ', this.imageRotation, ' to ', rotation);
     // 4 vertex, 1(x1,y1), 2(x2,y1), 3(x2,y2), 4(x1,y2)
     //  0: 1,2,4/4,2,3
     // 90: 2,3,1/1,3,4
@@ -344,12 +342,8 @@ export class GlRenderer extends IRenderer {
     ) {
       const view = this.parentElement!;
       this.unbind();
-      // Console.log('init canvas ' + image.width + "*" + image.height + " rotation " + image.rotation);
-      this.initCanvas(view, image.width, image.height, image.rotation, (e) => {
-        const errStr = `webgl lost or initialize failed`;
-        console.error(errStr);
-        this.failInitRenderCB && this.failInitRenderCB!({ error: errStr });
-      });
+
+      this.initCanvas(view, image.width, image.height, image.rotation);
       const ResizeObserver = window.ResizeObserver;
       if (ResizeObserver) {
         this.observer = new ResizeObserver(() => {
@@ -473,8 +467,7 @@ export class GlRenderer extends IRenderer {
     view: HTMLElement,
     width: number,
     height: number,
-    rotation: number,
-    onFailure: RenderFailCallback
+    rotation: number
   ) {
     this.clientWidth = view.clientWidth;
     this.clientHeight = view.clientHeight;
@@ -519,12 +512,13 @@ export class GlRenderer extends IRenderer {
               false
             );
         } catch (error) {
-          console.warn("webglcontextlost error", error);
+          logWarn("webglcontextlost error", error);
         } finally {
-          console.warn("webglcontextlost");
           this.gl = undefined;
-          onFailure &&
-            onFailure({ error: "Browser not support! No WebGL detected." });
+          this.failInitRenderCB &&
+            this.failInitRenderCB({
+              error: "Browser not support! No WebGL detected.",
+            });
         }
       };
       this.canvas.addEventListener(
@@ -533,11 +527,13 @@ export class GlRenderer extends IRenderer {
         false
       );
     } catch (e) {
-      console.log(e);
+      logWarn("webgl create happen some warming", this.gl, this.canvas);
     }
     if (!this.gl) {
-      onFailure &&
-        onFailure({ error: "Browser not support! No WebGL detected." });
+      this.failInitRenderCB &&
+        this.failInitRenderCB({
+          error: "Browser not support! No WebGL detected.",
+        });
       return;
     }
     const gl = this.gl as WebGL2RenderingContext;

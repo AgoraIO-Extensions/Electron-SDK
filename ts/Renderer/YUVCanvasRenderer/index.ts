@@ -11,18 +11,15 @@ const isEqual = require("lodash.isequal");
 
 import { CanvasOptions, ContentMode, ShareVideoFrame } from "../../Types";
 import { IRenderer } from "../IRenderer";
-import { logDebug } from "../../Utils";
 
 export class YUVCanvasRenderer extends IRenderer {
   private _cacheCanvasOptions?: CanvasOptions;
   private _yuvCanvasSink?: any;
   private _container?: HTMLElement;
-  private _isWebGL: boolean;
   private _videoFrame: ShareVideoFrame;
 
-  constructor(isWebGL: boolean) {
+  constructor() {
     super();
-    this._isWebGL = isWebGL;
     this._videoFrame = {
       rotation: 0,
       width: 0,
@@ -50,9 +47,8 @@ export class YUVCanvasRenderer extends IRenderer {
     this.canvas = document.createElement("canvas");
     this._container.appendChild(this.canvas);
 
-    logDebug(`current render is webGL ${this._isWebGL}`);
     this._yuvCanvasSink = YUVCanvas.attach(this.canvas, {
-      webGL: this._isWebGL,
+      webGL: false,
     });
   }
 
@@ -70,11 +66,7 @@ export class YUVCanvasRenderer extends IRenderer {
     if (this.canvas) {
       this.canvas = undefined;
     }
-    if (
-      this._isWebGL &&
-      this._yuvCanvasSink &&
-      this._yuvCanvasSink?.loseContext
-    ) {
+    if (this._yuvCanvasSink && this._yuvCanvasSink?.loseContext) {
       this._yuvCanvasSink?.loseContext();
     }
   }
@@ -188,9 +180,6 @@ export class YUVCanvasRenderer extends IRenderer {
       this._videoFrame.width != frame.width ||
       this._videoFrame.height != frame.height
     ) {
-      logDebug(
-        `YUVCanvasRenderer new Uint8Array before width ${this._videoFrame.width}, height ${this._videoFrame.height}, current: width ${frameWidth} height ${frameHeight}`
-      );
       this._videoFrame.yBuffer = new Uint8Array(frameWidth * frameHeight);
       this._videoFrame.uBuffer = new Uint8Array((frameWidth * frameHeight) / 4);
       this._videoFrame.vBuffer = new Uint8Array((frameWidth * frameHeight) / 4);

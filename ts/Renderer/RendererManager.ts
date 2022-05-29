@@ -56,7 +56,7 @@ class RendererManager {
     mirror: boolean = false
   ): void {
     if (!view) {
-      console.error("setRenderOption: view not exist", view);
+      logError("setRenderOption: view not exist", view);
     }
     this.forEachStream(({ renders }) => {
       renders?.forEach((render) => {
@@ -76,17 +76,16 @@ class RendererManager {
       getDefaultRendererVideoConfig(rendererConfig);
 
     if (!rendererConfig.view) {
-      logError("setRenderOptionByView");
+      logError("setRenderOptionByView: view not exist");
     }
     const renderList = this.getRenderers({ uid, channelId, videoSourceType });
-    console.log("renderList", renderList);
     renderList
       ? renderList
           .filter((renderItem) =>
             renderItem.equalsElement(rendererConfig.view!)
           )
           .forEach((renderItem) => renderItem.setRenderOption(rendererOptions))
-      : console.warn(
+      : logWarn(
           `RenderStreamType: ${videoSourceType} channelId:${channelId} uid:${uid} have no render view, you need to call this api after setView`
         );
     return 0;
@@ -118,7 +117,7 @@ class RendererManager {
       formatConfig;
 
     if (!formatConfig.view) {
-      logWarn("Note: setupVideo view is null!");
+      logWarn("setupVideo->destroyRenderersByConfig, because of view is null");
       AgoraRendererManager.destroyRenderersByConfig(
         videoSourceType,
         channelId,
@@ -147,7 +146,7 @@ class RendererManager {
   public setupLocalVideo(rendererConfig: RendererVideoConfig): number {
     const { videoSourceType } = rendererConfig;
     if (videoSourceType === VideoSourceType.VideoSourceRemote) {
-      console.error("setupLocalVideo videoSourceType error", videoSourceType);
+      logError("setupLocalVideo videoSourceType error", videoSourceType);
       return -1;
     }
     this.setupVideo({ ...rendererConfig });
@@ -156,7 +155,7 @@ class RendererManager {
   public setupRemoteVideo(rendererConfig: RendererVideoConfig): number {
     const { videoSourceType } = rendererConfig;
     if (videoSourceType !== VideoSourceType.VideoSourceRemote) {
-      console.error("setupLocalVideo videoSourceType error", videoSourceType);
+      logError("setupLocalVideo videoSourceType error", videoSourceType);
       return -1;
     }
     this.setupVideo({
@@ -284,7 +283,9 @@ class RendererManager {
           return;
       }
       if (finalResult.ret !== 0) {
-        console.log("native get size error");
+        logInfo(
+          "iris GetVideoStreamData return ret IRIS_VIDEO_PROCESS_ERR::ERR_OK"
+        );
         return;
       }
       const renderVideoFrame = rendererItem.shareVideoFrame;
@@ -316,7 +317,7 @@ class RendererManager {
   }
   private createRenderer(failCallback?: RenderFailCallback): IRenderer {
     if (this.renderMode === RENDER_MODE.SOFTWARE) {
-      return new YUVCanvasRenderer(false);
+      return new YUVCanvasRenderer();
     } else {
       return new GlRenderer(failCallback);
     }
@@ -349,7 +350,10 @@ class RendererManager {
       renders?.filter((render) => render.equalsElement(view)) || [];
     const hasBeenAdd = filterRenders.length > 0;
     if (hasBeenAdd) {
-      console.warn("addRenderer: this view exists in list, ignore");
+      logWarn(
+        "bindHTMLElementToRender: this view has bind to render",
+        filterRenders
+      );
       return filterRenders[0];
     }
     const renderer = this.createRenderer(() => {
@@ -398,17 +402,16 @@ class RendererManager {
 
   private enableVideoFrameCache(
     videoFrameCacheConfig: VideoFrameCacheConfig
-  ): number {
+  ): void {
     logInfo(`enableVideoFrameCache ${JSON.stringify(videoFrameCacheConfig)}`);
-    let ret = this.msgBridge.EnableVideoFrameCache(videoFrameCacheConfig);
-    return ret.retCode;
+    this.msgBridge.EnableVideoFrameCache(videoFrameCacheConfig);
   }
 
   private disableVideoFrameCache(
     videoFrameCacheConfig: VideoFrameCacheConfig
-  ): number {
-    let ret = this.msgBridge.DisableVideoFrameCache(videoFrameCacheConfig);
-    return ret.retCode;
+  ): void {
+    logInfo(`disableVideoFrameCache ${JSON.stringify(videoFrameCacheConfig)}`);
+    this.msgBridge.DisableVideoFrameCache(videoFrameCacheConfig);
   }
 
   private ensureRendererConfig(config: VideoFrameCacheConfig):

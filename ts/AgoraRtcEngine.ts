@@ -14,7 +14,7 @@ import {
   RENDER_MODE,
   CallBackModule,
 } from "./Types";
-import { logInfo, logWarn } from "./Utils";
+import { logError, logInfo, logWarn } from "./Utils";
 
 /**
  * The AgoraRtcEngine class.
@@ -29,18 +29,12 @@ export class AgoraRtcEngine extends IRtcEngineExImpl {
 
   override initialize(context: RtcEngineContext): number {
     if (AgoraRtcEngine.hasInitialize) {
-      console.error("already initialize rtcEngine");
+      logWarn("initialize: already initialize rtcEngine");
       return -1;
     }
     AgoraRtcEngine.hasInitialize = true;
     const bridge = getBridge();
     bridge.InitializeEnv();
-    const { retCode } = bridge.sendMsg("RtcEngine_initialize", {
-      context,
-      toJSON: () => {
-        return { context };
-      },
-    });
     bridge.OnEvent(
       CallBackModule.RTC,
       "call_back_with_buffer",
@@ -51,23 +45,17 @@ export class AgoraRtcEngine extends IRtcEngineExImpl {
       "call_back_with_buffer",
       handlerMPKEvent
     );
-
-    return retCode;
+    const ret = super.initialize(context);
+    return ret;
   }
   override release(sync = false): void {
     if (!AgoraRtcEngine.hasInitialize) {
-      console.error("have not initialize rtcEngine");
+      logWarn("release: rtcEngine have not initialize");
       return;
     }
     AgoraRtcEngine.hasInitialize = false;
-    const bridge = getBridge();
-    bridge.sendMsg("RtcEngine_release", {
-      sync,
-      toJSON: () => {
-        return { sync };
-      },
-    });
-    bridge.ReleaseEnv();
+    super.release(sync);
+    getBridge().ReleaseEnv();
   }
   override setupLocalVideo(rendererConfig: RendererVideoConfig): number {
     return AgoraRendererManager.setupLocalVideo(rendererConfig);
