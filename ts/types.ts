@@ -28,14 +28,14 @@ export type User = "local" | "videoSource" | number | string;
 
 export type Channel = "" | string;
 
-export interface RendererConfig {
-  videoSourceType: VideoSourceType;
+export interface RenderVideoConfig {
+  videoSourceType?: VideoSourceType;
   channelId?: Channel;
   uid?: number;
   view?: HTMLElement;
   rendererOptions?: RendererOptions;
 }
-export interface RendererConfigInternal {
+export interface FormatRenderVideoConfig {
   videoSourceType: VideoSourceType;
   channelId: Channel;
   uid: number;

@@ -2,8 +2,8 @@ import { EventEmitter } from "events";
 import { VideoSourceType } from "../AgoraSdk";
 
 import {
-  RendererConfigInternal,
-  RendererConfig,
+  FormatRenderVideoConfig,
+  RenderVideoConfig,
   ContentMode,
 } from "../types";
 
@@ -93,8 +93,8 @@ const onApiErrorEventName = "onApiError";
 //   }
 // };
 
-export const formatVideoFrameBufferConfig = (
-  videoSourceType: VideoSourceType,
+export const formatConfigByVideoSourceType = (
+  videoSourceType?: VideoSourceType,
   originChannelId = "",
   originUid = 0
 ): {
@@ -127,9 +127,9 @@ export const formatVideoFrameBufferConfig = (
   return { uid, channelId, videoSourceType };
 };
 
-export const getRendererConfigInternal = (
-  config: RendererConfig
-): RendererConfigInternal => {
+export const getDefaultRenderVideoConfig = (
+  config: RenderVideoConfig
+): FormatRenderVideoConfig => {
   const rendererOptions = Object.assign(
     {
       contentMode: ContentMode.Fit,
@@ -138,13 +138,13 @@ export const getRendererConfigInternal = (
     config.rendererOptions
   );
 
-  const { uid, channelId } = formatVideoFrameBufferConfig(
+  const { uid, channelId, videoSourceType } = formatConfigByVideoSourceType(
     config.videoSourceType,
     config.channelId,
     config.uid
   );
 
-  return { ...config, uid, channelId, rendererOptions };
+  return { ...config, uid, channelId, videoSourceType, rendererOptions };
 };
 
 export const EVENT_ENGINE_INITIALIZE = "onEngineInitialize";

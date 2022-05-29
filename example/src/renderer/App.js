@@ -28,7 +28,7 @@ class RemoteWindow extends Component {
     // const id = `remoteVideo-${uid}`;
     // let dom = document.getElementById(id);
     // setTimeout(() => {
-    //   rtcEngine.setView({
+    //   rtcEngine.setupVideo({
     //     videoSourceType: VideoSourceType.kVideoSourceTypeRemote,
     //     uid,
     //     channelId,
@@ -188,13 +188,13 @@ export default class App extends Component {
     const { isSetFirstCameraView } = this.state;
     let dom = document.getElementById("firstCamera");
     let domAppend = document.getElementById("firstCamera-append");
-    rtcEngine.setView({
+    rtcEngine.setupVideo({
       videoSourceType: VideoSourceType.VideoSourceCameraPrimary,
 
       view: isSetFirstCameraView ? null : dom,
       rendererOptions: { mirror: false, contentMode: ContentMode.Fit },
     });
-    rtcEngine.setView({
+    rtcEngine.setupVideo({
       videoSourceType: VideoSourceType.VideoSourceCameraPrimary,
 
       view: isSetFirstCameraView ? null : domAppend,
@@ -219,7 +219,7 @@ export default class App extends Component {
     const { isSetSecondCameraView } = this.state;
     rtcEngine.setRenderMode(2);
     let dom = document.getElementById("secondCamera");
-    rtcEngine.setView({
+    rtcEngine.setupVideo({
       videoSourceType: VideoSourceType.kVideoSourceTypeCameraSecondary,
 
       view: isSetSecondCameraView ? null : dom,
@@ -244,7 +244,7 @@ export default class App extends Component {
     const { isSetFirstScreenShareView } = this.state;
     rtcEngine.setRenderMode(2);
     let dom = document.getElementById("scrrenShare1");
-    rtcEngine.setView({
+    rtcEngine.setupVideo({
       videoSourceType: VideoSourceType.VideoSourceScreen,
 
       view: isSetFirstScreenShareView ? null : dom,
@@ -332,7 +332,7 @@ export default class App extends Component {
     const { isSetSecondScreenShareView } = this.state;
     rtcEngine.setRenderMode(2);
     let dom = document.getElementById("scrrenShare2");
-    rtcEngine.setView({
+    rtcEngine.setupVideo({
       videoSourceType: VideoSourceType.kVideoSourceTypeScreenSecondary,
 
       view: isSetSecondScreenShareView ? null : dom,

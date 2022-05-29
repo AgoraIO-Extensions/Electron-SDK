@@ -1,69 +1,20 @@
 ﻿import { VideoSourceType } from "./AgoraSdk";
 import { RtcEngineContext } from "./Private/IAgoraRtcEngine";
 import { IRtcEngineExImpl } from "./Private/impl/IAgoraRtcEngineExImpl";
-import { getBridge, sendMsg } from "./Private/internal/IrisApiEngine";
+import { getBridge } from "./Private/internal/IrisApiEngine";
 import AgoraRenderManager from "./Renderer/RendererManager";
-import {
-  Channel,
-  ContentMode,
-  RendererConfig,
-  RendererConfigInternal,
-  RENDER_MODE,
-} from "./types";
-import { getRendererConfigInternal, logInfo, logWarn } from "./Utils";
+import { Channel, ContentMode, RenderVideoConfig, RENDER_MODE } from "./types";
+import { logInfo, logWarn } from "./Utils";
 
 /**
  * The AgoraRtcEngine class.
  */
 export class AgoraRtcEngine extends IRtcEngineExImpl {
-  // _rtcDeviceManager: NodeIrisRtcDeviceManager;
   static hasInitialize = false;
   constructor() {
     super();
 
     logInfo("AgoraRtcEngine constructor()");
-  }
-  setView(rendererConfig: RendererConfig): void {
-    const config: RendererConfigInternal =
-      getRendererConfigInternal(rendererConfig);
-
-    if (rendererConfig.view) {
-      AgoraRenderManager.setupVideo(config);
-    } else {
-      logWarn("Note: setView view is null!");
-      AgoraRenderManager.destroyRenderersByConfig(
-        rendererConfig.videoSourceType,
-        rendererConfig.channelId,
-        rendererConfig.uid
-      );
-    }
-  }
-  destroyRendererByView(view: Element): void {
-    AgoraRenderManager.destroyRendererByView(view);
-  }
-
-  destroyRendererByConfig(
-    videoSourceType: VideoSourceType,
-    channelId?: Channel,
-    uid?: number
-  ) {
-    AgoraRenderManager.destroyRenderersByConfig(
-      videoSourceType,
-      channelId,
-      uid
-    );
-  }
-
-  setRenderOption(
-    view: HTMLElement,
-    contentMode = ContentMode.Fit,
-    mirror: boolean = false
-  ): void {
-    AgoraRenderManager.setRenderOption(view, contentMode, mirror);
-  }
-
-  setRenderMode(mode = RENDER_MODE.WEBGL): void {
-    AgoraRenderManager.setRenderMode(mode);
   }
 
   override initialize(context: RtcEngineContext): number {
@@ -96,5 +47,42 @@ export class AgoraRtcEngine extends IRtcEngineExImpl {
       },
     });
     bridge.ReleaseEnv();
+  }
+  override setupLocalVideo(rendererConfig: RenderVideoConfig): number {
+    return AgoraRenderManager.setupLocalVideo(rendererConfig);
+  }
+  override setupRemoteVideo(rendererConfig: RenderVideoConfig): number {
+    return AgoraRenderManager.setupRemoteVideo(rendererConfig);
+  }
+  setupVideo(rendererConfig: RenderVideoConfig): void {
+    AgoraRenderManager.setupVideo(rendererConfig);
+  }
+
+  destroyRendererByView(view: Element): void {
+    AgoraRenderManager.destroyRendererByView(view);
+  }
+
+  destroyRendererByConfig(
+    videoSourceType: VideoSourceType,
+    channelId?: Channel,
+    uid?: number
+  ) {
+    AgoraRenderManager.destroyRenderersByConfig(
+      videoSourceType,
+      channelId,
+      uid
+    );
+  }
+
+  setRenderOption(
+    view: HTMLElement,
+    contentMode = ContentMode.Fit,
+    mirror: boolean = false
+  ): void {
+    AgoraRenderManager.setRenderOption(view, contentMode, mirror);
+  }
+
+  setRenderMode(mode = RENDER_MODE.WEBGL): void {
+    AgoraRenderManager.setRenderMode(mode);
   }
 }
