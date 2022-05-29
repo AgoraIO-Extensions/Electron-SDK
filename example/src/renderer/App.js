@@ -14,7 +14,7 @@ import AgoraRtcEngine, {
   VideoSourceType,
   ContentMode,
   AgoraEnv,
-  RtcConnection
+  RtcConnection,
 } from "../../../";
 
 AgoraEnv.enableLogging = true;
@@ -34,7 +34,7 @@ class RemoteWindow extends Component {
     const id = `remoteVideo-${uid}`;
     let dom = document.getElementById(id);
     rtcEngine.setupVideo({
-      videoSourceType: VideoSourceType.kVideoSourceTypeRemote,
+      videoSourceType: VideoSourceType.VideoSourceRemote,
       uid,
       channelId,
       view: dom,
@@ -74,7 +74,7 @@ const defaultState = {
   isStartSecondScreenShare: false,
 
   users: [],
-  channelId: "testLinux",
+  channelId: "testElectron",
 };
 export default class App extends Component {
   constructor(props) {
@@ -140,47 +140,40 @@ export default class App extends Component {
     this.setState({ isJoin: true });
     console.info("JOINED_CHANNEL", connection, elapsed);
   }
-  subscribeEvent = () => {
-    rtcEngine.on(EngineEvents.ERROR, (...args) => {
-      console.log("EngineEvents.ERROR", args);
-    });
-    rtcEngine.on(EngineEvents.JOINED_CHANNEL, (connection, elapsed) => {
-      this.setState({ isJoin: true });
-      console.info("JOINED_CHANNEL", connection, elapsed);
-    });
-    rtcEngine.on(EngineEvents.LEAVE_CHANNEL, (stats) => {
-      console.info("LEAVE_CHANNEL", stats);
-    });
+  onLeaveChannelEx(connection, stats) {
+    console.info("LEAVE_CHANNEL", connection, stats);
+  }
+  onUserJoinedEx(connection, remoteUid, elapsed) {
+    console.info("USER_JOINED", connection, remoteUid, elapsed);
+    if (remoteUid === 10001 || remoteUid === 10011 || remoteUid === 10012) {
+      console.log("USER_JOINED 过滤", remoteUid);
+      return;
+    }
+    const { users } = this.state;
+    console.log("USER_JOINED", users);
 
-    rtcEngine.on(EngineEvents.USER_OFFLINE, (connection, remoteUid, reason) => {
-      console.info("USER_OFFLINE", connection, remoteUid, reason);
+    if (users.filter((id) => id === remoteUid).length > 0) {
+      console.log("USER_JOINED filterUser length", filterUser);
+      return;
+    }
 
-      const { users } = this.state;
-      this.setState({ users: users.filter((uid) => uid !== remoteUid) });
-    });
+    console.log("USER_JOINED 没有过滤", remoteUid);
+    this.setState({ users: [...users, remoteUid] });
+  }
+  onUserOfflineEx(connection, remoteUid, reason) {
+    console.info("USER_OFFLINE", connection, remoteUid, reason);
 
-    rtcEngine.on(EngineEvents.USER_JOINED, (connection, uid, elapsed) => {
-      console.info("USER_JOINED", connection, uid, elapsed);
-      if (uid === 10001 || uid === 10011 || uid === 10012) {
-        console.log("USER_JOINED 过滤", uid);
-        return;
-      }
-      const { users } = this.state;
-      console.log("USER_JOINED", users);
+    const { users } = this.state;
+    this.setState({ users: users.filter((uid) => uid !== remoteUid) });
+  }
 
-      if (users.filter((id) => id === uid).length > 0) {
-        console.log("USER_JOINED filterUser length", filterUser);
-        return;
-      }
-
-      console.log("USER_JOINED 没有过滤", uid);
-      this.setState({ users: [...users, uid] });
-    });
-  };
   onPressJoin = () => {
     const { channelId } = this.state;
     let res = rtcEngine.joinChannel("", channelId, "", window.uid || 10001);
     console.log("joinChannel", res);
+  };
+  onPressLeaveChannel = () => {
+    rtcEngine.leaveChannel();
   };
   onPressRelease = () => {
     if (!rtcEngine) {
@@ -668,17 +661,8 @@ export default class App extends Component {
         <button onClick={this.onPressInitialize}>Initialize</button>
         <button onClick={this.onPressRelease}>Release</button>
         <button onClick={this.onPressJoin}>JoinChannel</button>
-        <button
-          onClick={() => {
-            // console.log(rtcEngine.getVideoDevices());
-            // const res = rtcEngine.startPreview();
-            // console.log("startPreview", res);
+        <button onClick={this.onPressLeaveChannel}>leaveChannel</button>
 
-            console.log(this.state.users);
-          }}
-        >
-          Test
-        </button>
         <div>
           FirstCamera:
           <button onClick={this.onPressSetViewForFirstCamera}>
@@ -719,15 +703,6 @@ export default class App extends Component {
           <button onClick={this.onPressTest}>test</button>
         </div>
         <div>
-          <button
-            onClick={() => {
-              rtcEngine.destroyRendererByView(
-                document.getElementById("firstCamera")
-              );
-            }}
-          >
-            testDestoryLocalCameraView
-          </button>
           <agora-view
             style={{
               width: 250,
