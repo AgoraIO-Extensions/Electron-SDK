@@ -1,4 +1,4 @@
-import { AgoraEnv, logInfo, parseJSON } from "../../Utils";
+import { AgoraEnv, logDebug, logInfo, parseJSON } from "../../Utils";
 import { AgoraElectronBridge, CallBackModule, Result } from "../../Types";
 import { IRtcEngineEventHandler } from "../IAgoraRtcEngine";
 import { processIRtcEngineEventHandlerEx } from "../impl/IAgoraRtcEngineExImpl";
@@ -67,15 +67,22 @@ export const sendMsg = (
   buffer?: ArrayBufferLike,
   bufferCount = 0
 ): Result => {
-  const ret = getBridge().CallApi(
+  const irisReturnValue = getBridge().CallApi(
     funcName,
     JSON.stringify(params),
     buffer,
     bufferCount
   );
-  console.log("callApi", funcName, JSON.stringify(params), ret);
-
-  const result = parseJSON(ret.result);
+  logDebug(
+    "sendMsg",
+    "funcName",
+    funcName,
+    "params",
+    params,
+    "irisReturnValue",
+    irisReturnValue
+  );
+  const result = parseJSON(irisReturnValue.callApiResult);
   return result;
 };
 

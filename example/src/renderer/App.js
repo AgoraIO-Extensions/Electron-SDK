@@ -15,7 +15,9 @@ import AgoraRtcEngine, {
   ContentMode,
   AgoraEnv,
 } from "../../../";
-console.log("AgoraEnv", AgoraEnv);
+
+AgoraEnv.enableLogging = true;
+AgoraEnv.enableDebugLogging = true;
 
 import { APP_ID } from "../utils/settings";
 const rtcEngine = new AgoraRtcEngine();

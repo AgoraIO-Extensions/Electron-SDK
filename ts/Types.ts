@@ -61,8 +61,8 @@ export interface ShareVideoFrame {
   videoSourceType: VideoSourceType;
 }
 export interface Result {
-  retCode: number;
-  result: string;
+  callApiReturnCode: number;
+  callApiResult: string;
 }
 
 export enum CallBackModule {

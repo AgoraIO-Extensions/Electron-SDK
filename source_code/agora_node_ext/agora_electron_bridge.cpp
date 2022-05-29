@@ -15,8 +15,8 @@ namespace electron {
 using namespace iris::rtc;
 using namespace agora::iris::rtc;
 const char* AgoraElectronBridge::_class_name = "AgoraElectronBridge";
-const char* AgoraElectronBridge::_ret_code_str = "retCode";
-const char* AgoraElectronBridge::_ret_result_str = "result";
+const char* AgoraElectronBridge::_ret_code_str = "callApiReturnCode";
+const char* AgoraElectronBridge::_ret_result_str = "callApiResult";
 napi_ref* AgoraElectronBridge::_ref_construcotr_ptr = nullptr;
 
 AgoraElectronBridge::AgoraElectronBridge() {

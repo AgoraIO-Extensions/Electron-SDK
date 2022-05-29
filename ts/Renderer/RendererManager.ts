@@ -264,10 +264,13 @@ class RendererManager {
       );
 
       switch (finalResult.ret) {
-        case 0: // IRIS_VIDEO_PROCESS_ERR::ERR_OK = 0,
+        case 0:
+          // IRIS_VIDEO_PROCESS_ERR::ERR_OK = 0,
+          // everything is ok
           break;
-        case 1: // IRIS_VIDEO_PROCESS_ERR::ERR_NULL_POINTER = 1,
-          return;
+        case 1:
+          // IRIS_VIDEO_PROCESS_ERR::ERR_NULL_POINTER = 1,
+          break;
         case 2: // IRIS_VIDEO_PROCESS_ERR::ERR_SIZE_NOT_MATCHING
           const { width, height } = finalResult;
           const { videoSourceType, channelId, uid } = config;
@@ -281,7 +284,14 @@ class RendererManager {
           rendererItem.shareVideoFrame = newShareVideoFrame;
           finalResult = this.msgBridge.GetVideoStreamData(newShareVideoFrame);
           break;
-        case 5: // IRIS_VIDEO_PROCESS_ERR::ERR_BUFFER_EMPTY
+        case 5:
+          logWarn("IRIS_VIDEO_PROCESS_ERR::ERR_BUFFER_EMPTY");
+          // IRIS_VIDEO_PROCESS_ERR::ERR_BUFFER_EMPTY
+          // setupVideo/AgoraView render before initialize
+
+          // todo
+          // const { videoSourceType, channelId, uid } = config;
+          // this.enableVideoFrameCache({ videoSourceType, channelId, uid });
           return;
         default:
           return;
