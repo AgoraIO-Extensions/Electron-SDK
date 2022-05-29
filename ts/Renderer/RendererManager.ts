@@ -70,7 +70,7 @@ class RendererManager {
       });
     });
   }
-  public setRenderOptionByConfig(rendererConfig: RendererVideoConfig): number {
+  public setRenderOptionByConfig(rendererConfig: RendererVideoConfig) {
     const {
       uid,
       channelId,
@@ -92,7 +92,6 @@ class RendererManager {
       : logWarn(
           `RenderStreamType: ${videoSourceType} channelId:${channelId} uid:${uid} have no render view, you need to call this api after setView`
         );
-    return 0;
   }
   public checkWebglEnv(): boolean {
     let gl;
