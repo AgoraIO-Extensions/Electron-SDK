@@ -16,16 +16,19 @@ import AgoraRtcEngine, {
   ContentMode,
   AgoraEnv,
   RtcConnection,
+  IVideoDeviceManagerImpl,
+  IAudioDeviceManagerImpl,
 } from "../../../";
 
 AgoraEnv.enableLogging = true;
-AgoraEnv.enableDebugLogging = false;
+AgoraEnv.enableDebugLogging = true;
 
 import { APP_ID } from "../utils/settings";
 
 const rtcEngine = new AgoraRtcEngine();
 window.rtcEngine = rtcEngine;
 let mpk;
+
 class RemoteWindow extends Component {
   constructor(props) {
     super(props);
@@ -191,6 +194,25 @@ export default class App extends Component {
   };
   onPressLeaveChannel = () => {
     rtcEngine.leaveChannel();
+  };
+  onPressTestDeviceManager = () => {
+    const videoDeviceManager = new IVideoDeviceManagerImpl();
+    window.videoDeviceManage = videoDeviceManager;
+    console.log(
+      "videoDeviceManager:enumerateVideoDevices",
+      videoDeviceManager.enumerateVideoDevices()
+    );
+
+    const audioDeviceManager = new IAudioDeviceManagerImpl();
+    window.audioDeviceManager = audioDeviceManager;
+    console.log(
+      "audioDeviceManager::enumeratePlaybackDevices",
+      audioDeviceManager.enumeratePlaybackDevices()
+    );
+    console.log(
+      "audioDeviceManager::enumerateRecordingDevices",
+      audioDeviceManager.enumerateRecordingDevices()
+    );
   };
   onPressCreateMediaPlayer = () => {
     window.mpk = mpk = rtcEngine.createMediaPlayer();
@@ -701,6 +723,7 @@ export default class App extends Component {
         <button onClick={this.onPressRelease}>Release</button>
         <button onClick={this.onPressJoin}>JoinChannel</button>
         <button onClick={this.onPressLeaveChannel}>leaveChannel</button>
+        <button onClick={this.onPressTestDeviceManager}>testDevice</button>
         <button onClick={this.onPressCreateMediaPlayer}>
           createMediaPlayer
         </button>
