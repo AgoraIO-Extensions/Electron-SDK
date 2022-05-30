@@ -1,8 +1,12 @@
-import { AgoraEnv, logDebug, logError, logInfo, parseJSON } from "../../Utils";
-import { AgoraElectronBridge, CallBackModule, Result } from "../../Types";
-import { IRtcEngineEventHandler } from "../IAgoraRtcEngine";
+import { AgoraElectronBridge, Result } from "../../Types";
+import { AgoraEnv, logDebug, logError, parseJSON } from "../../Utils";
+import { IMediaPlayer } from "../IAgoraMediaPlayer";
+import { IDirectCdnStreamingEventHandler } from "../IAgoraRtcEngine";
 import { processIRtcEngineEventHandlerEx } from "../impl/IAgoraRtcEngineExImpl";
-import { processIRtcEngineEventHandler } from "../impl/IAgoraRtcEngineImpl";
+import {
+  processIDirectCdnStreamingEventHandler,
+  processIRtcEngineEventHandler
+} from "../impl/IAgoraRtcEngineImpl";
 
 const agora = require("../../../build/Release/agora_node_ext");
 
@@ -36,11 +40,28 @@ export const handlerRTCEvent = function (
     "bufferCount",
     bufferCount
   );
+
+  const isEx = event.endsWith("Ex");
   AgoraEnv.engineEventHandlers.forEach((value) => {
+    if (isEx) {
+      try {
+        processIRtcEngineEventHandlerEx(value, event, obj);
+      } catch (error) {
+        logError("engineEventHandlers::processIRtcEngineEventHandlerEx", error);
+      }
+      return;
+    }
     try {
-      processIRtcEngineEventHandlerEx(value, event, obj);
+      processIDirectCdnStreamingEventHandler(
+        value as IDirectCdnStreamingEventHandler,
+        event,
+        obj
+      );
     } catch (error) {
-      logError("engineEventHandlers::processIRtcEngineEventHandlerEx", error);
+      logError(
+        "engineEventHandlers::processIDirectCdnStreamingEventHandler",
+        error
+      );
     }
     try {
       processIRtcEngineEventHandler(value, event, obj);
@@ -48,16 +69,6 @@ export const handlerRTCEvent = function (
       logError("engineEventHandlers::processIRtcEngineEventHandler", error);
     }
   });
-};
-
-export const handlerMPKEvent = function (
-  event: string,
-  data: string,
-  buffer: Uint8Array[],
-  bufferLength: number,
-  bufferCount: number
-) {
-  logDebug("handlerMPKEvent", data);
 };
 
 export const sendMsg = (
@@ -88,20 +99,48 @@ export const sendMsg = (
 const ResultOk = {
   result: 0,
 };
-export const callIrisApi = (
+export function callIrisApi(
   funcName: string,
   params: any,
   buffer?: ArrayBufferLike
-): any => {
-  switch (funcName) {
-    case "RtcEngine_registerEventHandler":
-      AgoraEnv.engineEventHandlers.push(params.eventHandler);
-      return ResultOk;
-    case "RtcEngine_unregisterEventHandler":
-      AgoraEnv.engineEventHandlers = AgoraEnv.engineEventHandlers.filter(
-        (value) => value !== params.eventHandler
-      );
-      return ResultOk;
+): any {
+  if (funcName.startsWith("MediaPlayer_")) {
+    //@ts-ignore
+    params.mediaPlayerId = (this as IMediaPlayer).getMediaPlayerId();
+    const json = params.toJSON?.call();
+    params.toJSON = function () {
+      return { ...json, playerId: params.mediaPlayerId };
+    };
+  } else {
+    switch (funcName) {
+      case "RtcEngine_registerEventHandler":
+        AgoraEnv.engineEventHandlers.push(params.eventHandler);
+        return ResultOk;
+      case "RtcEngine_unregisterEventHandler":
+        AgoraEnv.engineEventHandlers = AgoraEnv.engineEventHandlers.filter(
+          (value) => value !== params.eventHandler
+        );
+        return ResultOk;
+      case "RtcEngine_sendStreamMessage":
+      case "RtcEngine_sendStreamMessageEx":
+        // data
+        break;
+      case "MediaEngine_pullAudioFrame":
+      case "MediaEngine_pushAudioFrame":
+        // frame.buffer
+        break;
+      case "MediaEngine_pushEncodedVideoImage":
+      case "MediaEngine_pushEncodedVideoImage2":
+        // imageBuffer
+        break;
+      case "MediaEngine_pushVideoFrame":
+      case "MediaEngine_pushVideoFrame2":
+        // frame.buffer
+        // frame.eglContext
+        // frame.metadata_buffer
+        break;
+    }
   }
+
   return sendMsg(funcName, params, buffer);
-};
+}

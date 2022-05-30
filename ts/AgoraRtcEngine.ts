@@ -1,26 +1,31 @@
 ﻿import { VideoSourceType } from "./Private/AgoraBase";
-import { RtcEngineContext } from "./Private/IAgoraRtcEngine";
-import { IRtcEngineExImpl } from "./Private/impl/IAgoraRtcEngineExImpl";
+import { IMediaPlayer } from "./Private/IAgoraMediaPlayer";
 import {
-  getBridge,
+  ChannelMediaOptions,
+  IRtcEngineEventHandler,
+  RtcEngineContext,
+} from "./Private/IAgoraRtcEngine";
+import { RtcConnection } from "./Private/IAgoraRtcEngineEx";
+import { IRtcEngineExImpl } from "./Private/impl/IAgoraRtcEngineExImpl";
+import { getBridge, handlerRTCEvent } from "./Private/internal/IrisApiEngine";
+import {
   handlerMPKEvent,
-  handlerRTCEvent,
-} from "./Private/internal/IrisApiEngine";
+  MediaPlayerInternal,
+} from "./Private/internal/MediaPlayerInternal";
 import AgoraRendererManager from "./Renderer/RendererManager";
 import {
+  CallBackModule,
   Channel,
   ContentMode,
   RendererVideoConfig,
   RENDER_MODE,
-  CallBackModule,
 } from "./Types";
-import { deprecate, logDebug, logError, logInfo, logWarn } from "./Utils";
+import { AgoraEnv, deprecate, logDebug, logError, logWarn } from "./Utils";
 
 /**
  * The AgoraRtcEngine class.
  */
 export class AgoraRtcEngine extends IRtcEngineExImpl {
-  static hasInitialize = false;
   constructor() {
     super();
 
@@ -28,11 +33,11 @@ export class AgoraRtcEngine extends IRtcEngineExImpl {
   }
 
   override initialize(context: RtcEngineContext): number {
-    if (AgoraRtcEngine.hasInitialize) {
+    if (AgoraEnv.isInitializeEngine) {
       logWarn("initialize: already initialize rtcEngine");
       return -1;
     }
-    AgoraRtcEngine.hasInitialize = true;
+    AgoraEnv.isInitializeEngine = true;
     const bridge = getBridge();
     bridge.InitializeEnv();
     bridge.OnEvent(
@@ -49,14 +54,34 @@ export class AgoraRtcEngine extends IRtcEngineExImpl {
     return ret;
   }
   override release(sync = false): void {
-    if (!AgoraRtcEngine.hasInitialize) {
+    if (!AgoraEnv.isInitializeEngine) {
       logWarn("release: rtcEngine have not initialize");
       return;
     }
-    AgoraRtcEngine.hasInitialize = false;
+    AgoraEnv.isInitializeEngine = false;
     super.release(sync);
     getBridge().ReleaseEnv();
   }
+
+  createMediaPlayer(): IMediaPlayer {
+    if (!AgoraEnv.isInitializeEngine) {
+      logError("createMediaPlayer: rtcEngine have not initialize");
+    }
+    // @ts-ignore
+    const mediaPlayerId = super.createMediaPlayer() as number;
+    return new MediaPlayerInternal(mediaPlayerId);
+  }
+
+  override joinChannelEx(
+    token: string,
+    connection: RtcConnection,
+    options: ChannelMediaOptions,
+    eventHandler: IRtcEngineEventHandler
+  ): number {
+    this.registerEventHandler(eventHandler);
+    return super.joinChannelEx(token, connection, options, eventHandler);
+  }
+
   override setupLocalVideo(rendererConfig: RendererVideoConfig): number {
     return AgoraRendererManager.setupLocalVideo(rendererConfig);
   }

@@ -1,13 +1,13 @@
 import { VideoSourceType } from "./Private/AgoraBase";
-
-import {
-  FormatRendererVideoConfig,
-  RendererVideoConfig,
-  ContentMode,
-  AgoraElectronBridge,
-} from "./Types";
-import { RendererManager } from "./Renderer/RendererManager";
+import { IMediaPlayerSourceObserver } from "./Private/IAgoraMediaPlayerSource";
 import { IRtcEngineEventHandler } from "./Private/IAgoraRtcEngine";
+import { RendererManager } from "./Renderer/RendererManager";
+import {
+  AgoraElectronBridge,
+  ContentMode,
+  FormatRendererVideoConfig,
+  RendererVideoConfig
+} from "./Types";
 
 export const TAG = "[Agora]: ";
 export const DEBUG_TAG = "[Agora Debug]: ";
@@ -94,7 +94,13 @@ export const formatConfigByVideoSourceType = (
       break;
     case VideoSourceType.VideoSourceRemote:
       if (!uid || !channelId) {
-        throw new Error(`must have uid:${uid}}  channelId:${channelId}`);
+        throw new Error(`must set uid:${uid}} and channelId:${channelId}`);
+      }
+      break;
+    case VideoSourceType.VideoSourceMediaPlayer:
+      channelId = "";
+      if (!uid) {
+        throw new Error(`must set uid(mediaPlayerId):${uid}}}`);
       }
       break;
     default:
@@ -150,16 +156,20 @@ function copyProperties<T>(target: T, source: any) {
 }
 
 interface AgoraEnv {
-  AgoraElectronBridge?: AgoraElectronBridge;
-  AgoraRendererManager?: RendererManager;
   enableLogging: boolean;
   enableDebugLogging: boolean;
+  isInitializeEngine: boolean;
   engineEventHandlers: IRtcEngineEventHandler[];
+  mediaPlayerEventHandlers: IMediaPlayerSourceObserver[];
+  AgoraElectronBridge?: AgoraElectronBridge;
+  AgoraRendererManager?: RendererManager;
 }
 export const AgoraEnv: AgoraEnv = {
   enableLogging: true,
   enableDebugLogging: false,
+  isInitializeEngine: false,
   engineEventHandlers: [],
+  mediaPlayerEventHandlers: [],
 };
 
 //@ts-ignore

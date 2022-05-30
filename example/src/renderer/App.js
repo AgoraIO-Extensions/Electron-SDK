@@ -25,6 +25,7 @@ import { APP_ID } from "../utils/settings";
 
 const rtcEngine = new AgoraRtcEngine();
 window.rtcEngine = rtcEngine;
+let mpk;
 class RemoteWindow extends Component {
   constructor(props) {
     super(props);
@@ -86,8 +87,9 @@ export default class App extends Component {
     console.log("## pid", process.pid);
     rtcEngine.registerEventHandler(this);
   }
-  componentWillUnmount(){
+  componentWillUnmount() {
     rtcEngine.unregisterEventHandler(this);
+    mpk.unregisterPlayerSourceObserver(this);
   }
 
   onPressInitialize = () => {
@@ -139,7 +141,6 @@ export default class App extends Component {
     const ver = rtcEngine.getVersion();
     console.log("getVersion", ver);
     rtcEngine.startPreview();
-    
   };
   onJoinChannelSuccessEx(connection, elapsed) {
     this.setState({ isJoin: true });
@@ -171,6 +172,17 @@ export default class App extends Component {
     const { users } = this.state;
     this.setState({ users: users.filter((uid) => uid !== remoteUid) });
   }
+  onPlayerSourceStateChanged(state, ec) {
+    switch (state) {
+      case 2:
+        console.log("onPlayerSourceStateChanged1:open finish");
+        mpk?.play();
+        break;
+      default:
+        break;
+    }
+    console.log("onPlayerSourceStateChanged", state, ec);
+  }
 
   onPressJoin = () => {
     const { channelId } = this.state;
@@ -180,6 +192,29 @@ export default class App extends Component {
   onPressLeaveChannel = () => {
     rtcEngine.leaveChannel();
   };
+  onPressCreateMediaPlayer = () => {
+    window.mpk = mpk = rtcEngine.createMediaPlayer();
+    mpk.registerPlayerSourceObserver(this);
+    console.log("createMediaPlayer", mpk);
+    let res = mpk.open(
+      "https://agora-adc-artifacts.oss-cn-beijing.aliyuncs.com/video/meta_live_mpk.mov",
+      0
+    );
+    console.log("mpk::open", res);
+
+    this.setState({ isPlaying: true });
+  };
+
+  onPressMpkStopOrResume = () => {
+    const { isPlaying } = this.state;
+    if (isPlaying) {
+      mpk?.pause();
+    } else {
+      mpk?.resume();
+    }
+    this.setState({ isPlaying: !isPlaying });
+  };
+
   onPressRelease = () => {
     if (!rtcEngine) {
       return;
@@ -401,7 +436,6 @@ export default class App extends Component {
     this.setState({ isStartSecondScreenShare: !isStartSecondScreenShare });
   };
   renderViews = () => {
-    const { users, channelId } = this.state;
     return (
       <div className="renderViewList">
         <div className="renderViewListForRow">
@@ -431,11 +465,6 @@ export default class App extends Component {
             id={"scrrenShare2"}
             style={{ backgroundColor: "blue" }}
           />
-        </div>
-        <div className="renderViewListForRow">
-          {users.map((uid) => (
-            <RemoteWindow uid={uid} channelId={channelId} key={"view" + uid} />
-          ))}
         </div>
       </div>
     );
@@ -658,15 +687,28 @@ export default class App extends Component {
   };
 
   render() {
-    const { isOpenFirstCamera, isOpenSecondCamera, isStartFirstScreenShare } =
-      this.state;
+    const {
+      isOpenFirstCamera,
+      isOpenSecondCamera,
+      isStartFirstScreenShare,
+      isPlaying,
+      users,
+    } = this.state;
     return (
       <div className="content">
-        <p>process uid:{process.pid}</p>
+        <div>process uid:{process.pid}</div>
         <button onClick={this.onPressInitialize}>Initialize</button>
         <button onClick={this.onPressRelease}>Release</button>
         <button onClick={this.onPressJoin}>JoinChannel</button>
         <button onClick={this.onPressLeaveChannel}>leaveChannel</button>
+        <button onClick={this.onPressCreateMediaPlayer}>
+          createMediaPlayer
+        </button>
+        {isPlaying !== undefined && (
+          <button onClick={this.onPressMpkStopOrResume}>
+            {isPlaying ? "press to stop" : "press to play"}
+          </button>
+        )}
 
         <div>
           FirstCamera:
@@ -708,19 +750,45 @@ export default class App extends Component {
           <button onClick={this.onPressTest}>test</button>
         </div>
         <div>
-          <agora-view
-            style={{
-              width: 250,
-              height: 250,
-              background: "green",
-              display: "block",
-            }}
-            video-source-type={VideoSourceType.VideoSourceCamera}
-            uid={0}
-            channel-id={""}
-            renderer-content-mode={ContentMode.Fit}
-            renderer-mirror={false}
-          ></agora-view>
+          <div style={{ display: "flex" }}>
+            <agora-view
+              style={{
+                width: 250,
+                height: 250,
+                background: "green",
+                display: "inline-block",
+              }}
+              video-source-type={VideoSourceType.VideoSourceCamera}
+              uid={0}
+              channel-id={""}
+              renderer-content-mode={ContentMode.Fit}
+              renderer-mirror={false}
+            ></agora-view>
+            {this.state.isPlaying !== undefined && (
+              <agora-view
+                style={{
+                  width: 250,
+                  height: 250,
+                  background: "green",
+                  display: "inline-block",
+                }}
+                video-source-type={VideoSourceType.VideoSourceMediaPlayer}
+                uid={mpk.getMediaPlayerId()}
+                channel-id={""}
+                renderer-content-mode={ContentMode.Fit}
+                renderer-mirror={false}
+              ></agora-view>
+            )}
+            <div className="renderViewListForRow">
+              {users.map((uid) => (
+                <RemoteWindow
+                  uid={uid}
+                  channelId={channelId}
+                  key={"view" + uid}
+                />
+              ))}
+            </div>
+          </div>
           {this.renderViews()}
         </div>
       </div>
