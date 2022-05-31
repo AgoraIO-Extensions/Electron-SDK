@@ -1,29 +1,29 @@
-import React, { Component, useEffect } from "react";
-import electron from "electron";
-
-window.electron = electron;
-
+import electron, { ipcRenderer } from "electron";
+import React, { Component } from "react";
 import AgoraRtcEngine, {
+  AgoraEnv,
   AudioProfileType,
   AudioScenarioType,
   ChannelProfileType,
   ClientRoleType,
+  ContentMode,
   DegradationPreference,
+  IAudioDeviceManagerImpl,
+  IVideoDeviceManagerImpl,
   OrientationMode,
   VideoCodecType,
   VideoMirrorModeType,
   VideoSourceType,
-  ContentMode,
-  AgoraEnv,
-  RtcConnection,
-  IVideoDeviceManagerImpl,
-  IAudioDeviceManagerImpl,
 } from "../../../";
+import { APP_ID } from "../utils/settings";
+const desktopCapturer = {
+  getSources: (opts) =>
+    ipcRenderer.invoke("DESKTOP_CAPTURER_GET_SOURCES", opts),
+};
+window.electron = electron;
 
 AgoraEnv.enableLogging = true;
 AgoraEnv.enableDebugLogging = true;
-
-import { APP_ID } from "../utils/settings";
 
 const rtcEngine = new AgoraRtcEngine();
 window.rtcEngine = rtcEngine;
@@ -321,7 +321,7 @@ export default class App extends Component {
     //   displayId: { id },
     // } = displayList[0];
     // const { windowId } = windowList[0];
-    const res = await electron.desktopCapturer.getSources({
+    const res = await desktopCapturer.getSources({
       types: ["window", "screen"],
     });
     const id = res[0].id.split(":")[1];
@@ -369,23 +369,10 @@ export default class App extends Component {
           clientRoleType: 1,
         }
       );
-      // const res = rtcEngine.startScreenCaptureByScreen(
-      //   list[0].displayId,
-      //   { x: 0, y: 0, width: 0, height: 0 },
-      //   {
-      //     width: 1920,
-      //     height: 1080,
-      //     bitrate: 1000,
-      //     frameRate: 15,
-      //     captureMouseCursor: false,
-      //     windowFocus: false,
-      //     excludeWindowList: [],
-      //     excludeWindowCount: [],
-      //   }
-      // );
       console.log("startSecondaryScreenCapture", res);
     } else {
-      rtcEngine.stopPrimaryScreenCapture();
+      const res = rtcEngine.stopPrimaryScreenCapture();
+      console.log("stopPrimaryScreenCapture", res);
     }
     this.setState({ isStartFirstScreenShare: !isStartFirstScreenShare });
   };
@@ -395,7 +382,6 @@ export default class App extends Component {
     let dom = document.getElementById("scrrenShare2");
     rtcEngine.setupVideo({
       videoSourceType: VideoSourceType.kVideoSourceTypeScreenSecondary,
-
       view: isSetSecondScreenShareView ? null : dom,
       rendererOptions: { mirror: true, contentMode: 1 },
     });
@@ -492,10 +478,14 @@ export default class App extends Component {
     );
   };
   onPressTest = async () => {
-    const res = await electron.desktopCapturer.getSources({
-      types: ["window", "screen"],
-    });
-    console.log("getScreenSources", res);
+    const res = rtcEngine.getScreenCaptureSources(200, 200, true);
+    console.log("getScreenCaptureSources", res);
+
+    // return;
+    // const res = await electron.desktopCapturer.getSources({
+    //   types: ["window", "screen"],
+    // });
+    // console.log("getScreenSources", res);
     return;
     const mediaOpt = {
       autoSubscribeAudio: true,
@@ -734,40 +724,46 @@ export default class App extends Component {
         )}
 
         <div>
-          FirstCamera:
-          <button onClick={this.onPressSetViewForFirstCamera}>
-            setViewForFirstCamera
-          </button>
-          <button onClick={this.onPressToggleFirstCamera}>
-            {!isOpenFirstCamera ? "Open FirstCamera" : "Close FirstCamera"}
-          </button>
+          <div style={{ display: "inline-block" }}>
+            FirstCamera:
+            <button onClick={this.onPressSetViewForFirstCamera}>
+              setViewForFirstCamera
+            </button>
+            <button onClick={this.onPressToggleFirstCamera}>
+              {!isOpenFirstCamera ? "Open FirstCamera" : "Close FirstCamera"}
+            </button>
+          </div>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <div style={{ display: "inline-block" }}>
+            SecondCamera:
+            <button onClick={this.onPressSetViewForSecondCamera}>
+              setViewForSecondCamera
+            </button>
+            <button onClick={this.onPressToggleSecondCamera}>
+              {!isOpenSecondCamera ? "Open SecondCamera" : "Close SecondCamera"}
+            </button>
+          </div>
         </div>
         <div>
-          SecondCamera:
-          <button onClick={this.onPressSetViewForSecondCamera}>
-            setViewForSecondCamera
-          </button>
-          <button onClick={this.onPressToggleSecondCamera}>
-            {!isOpenSecondCamera ? "Open SecondCamera" : "Close SecondCamera"}
-          </button>
-        </div>
-        <div>
-          FirstScreenShare:
-          <button onClick={this.onPressSetViewForFirstScreenShare}>
-            setViewForFirstScreenShare
-          </button>
-          <button onClick={this.onPressToggleFirstScreenShare}>
-            StartFirstScreenShare
-          </button>
-        </div>
-        <div>
-          SecondScreenShare:
-          <button onClick={this.onPressSetViewForSecondScreenShare}>
-            setViewForSecondScreenShare
-          </button>
-          <button onClick={this.onPressToggleSecondScreenShare}>
-            StartSecondScreenShare
-          </button>
+          <div style={{ display: "inline-block" }}>
+            FirstScreenShare:
+            <button onClick={this.onPressSetViewForFirstScreenShare}>
+              setViewForFirstScreenShare
+            </button>
+            <button onClick={this.onPressToggleFirstScreenShare}>
+              StartFirstScreenShare
+            </button>
+          </div>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <div style={{ display: "inline-block" }}>
+            SecondScreenShare:
+            <button onClick={this.onPressSetViewForSecondScreenShare}>
+              setViewForSecondScreenShare
+            </button>
+            <button onClick={this.onPressToggleSecondScreenShare}>
+              StartSecondScreenShare
+            </button>
+          </div>
         </div>
         <div>
           <button onClick={this.onPressTest}>test</button>

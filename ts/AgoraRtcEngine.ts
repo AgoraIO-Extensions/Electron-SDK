@@ -76,10 +76,13 @@ export class AgoraRtcEngine extends IRtcEngineExImpl {
     token: string,
     connection: RtcConnection,
     options: ChannelMediaOptions,
-    eventHandler: IRtcEngineEventHandler
+    eventHandler?: IRtcEngineEventHandler
   ): number {
-    this.registerEventHandler(eventHandler);
-    return super.joinChannelEx(token, connection, options, eventHandler);
+    if (eventHandler) {
+      this.registerEventHandler(eventHandler);
+    }
+
+    return super.joinChannelEx(token, connection, options, eventHandler!);
   }
 
   override setupLocalVideo(rendererConfig: RendererVideoConfig): number {

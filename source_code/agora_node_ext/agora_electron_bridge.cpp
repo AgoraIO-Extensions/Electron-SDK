@@ -182,13 +182,13 @@ napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
           funcName.compare(FUNC_MEDIAENGINE_PUSHENCODEDVIDEOIMAGE2) == 0) {
         uint64* buffer = nullptr;  // get node buffer  todo
         ret = irisApiEngine->CallIrisApi(
-            funcName.c_str(), parameter.c_str(), parameter.length(), buffer,
+            funcName.c_str(), parameter.c_str(), parameter.length(), nullptr,
             bufferCount, agoraElectronBridge->_result);
       } else if (funcName.compare(FUNC_MEDIAENGINE_PUSHVIDEOFRAME) == 0 ||
                  funcName.compare(FUNC_MEDIAENGINE_PUSHVIDEOFRAME2) == 0) {
         uint64* buffer = nullptr;  // todo get node buffers
         ret = irisApiEngine->CallIrisApi(
-            funcName.c_str(), parameter.c_str(), parameter.length(), buffer,
+            funcName.c_str(), parameter.c_str(), parameter.length(), nullptr,
             bufferCount, agoraElectronBridge->_result);
       } else
         ret = irisApiEngine->CallIrisApi(funcName.c_str(), parameter.c_str(),

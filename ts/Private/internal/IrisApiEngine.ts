@@ -43,6 +43,9 @@ export const handlerRTCEvent = function (
 
   const isEx = event.endsWith("Ex");
   AgoraEnv.engineEventHandlers.forEach((value) => {
+    if (!value) {
+      return
+    }
     if (isEx) {
       try {
         processIRtcEngineEventHandlerEx(value, event, obj);
