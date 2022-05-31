@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:44
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2022-05-29 14:18:55
+ * @Last Modified time: 2022-05-31 14:37:15
  */
 #pragma once
 #include <node_api.h>
@@ -43,6 +43,7 @@ class AgoraElectronBridge {
   static napi_value InitializeEnv(napi_env env, napi_callback_info info);
   static napi_value ReleaseEnv(napi_env env, napi_callback_info info);
   void OnApiError(const char* errorMessage);
+  void Release();
 
  private:
   static const char* _class_name;

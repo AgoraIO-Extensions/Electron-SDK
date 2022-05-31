@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:37
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2022-05-29 21:30:09
+ * @Last Modified time: 2022-05-31 14:42:31
  */
 #include "agora_electron_bridge.h"
 #include <memory>
@@ -25,6 +25,7 @@ AgoraElectronBridge::AgoraElectronBridge() {
 
 AgoraElectronBridge::~AgoraElectronBridge() {
   LOG_F(INFO, "AgoraElectronBridge::~AgoraElectronBridge");
+  Release();
 }
 
 napi_value AgoraElectronBridge::Init(napi_env env, napi_value exports) {
@@ -585,26 +586,26 @@ napi_value AgoraElectronBridge::ReleaseEnv(napi_env env,
   status =
       napi_unwrap(env, jsthis, reinterpret_cast<void**>(&agoraElectronBridge));
 
-  // define
-  auto engine = agoraElectronBridge->_iris_api_engine;
-  auto bufferManager = agoraElectronBridge->_iris_video_frame_buffer_manager;
-  auto rtcEventHandler = agoraElectronBridge->_iris_rtc_event_handler;
-  auto mpkEventHandler = agoraElectronBridge->_iris_mpk_event_handler;
-
-  // uncontrol
-  engine->Detach(bufferManager.get());
-  engine->UnsetIrisRtcEngineEventHandler(rtcEventHandler.get());
-  engine->UnsetIrisMediaPlayerEventHandler(mpkEventHandler.get());
-
-  // reset
-  rtcEventHandler.reset();
-  mpkEventHandler.reset();
-  bufferManager.reset();
-  engine.reset();
-
+  agoraElectronBridge->Release();
   LOG_F(INFO, "AgoraElectronBridge::ReleaseEnv");
   napi_value retValue = nullptr;
   return retValue;
+}
+
+void AgoraElectronBridge::Release() {
+  if (!_iris_api_engine)
+    LOG_F(INFO, "AgoraElectronBridge::Release  _iris_api_engine null");
+  // uncontrol
+  _iris_api_engine->Detach(_iris_video_frame_buffer_manager.get());
+  _iris_api_engine->UnsetIrisRtcEngineEventHandler(_iris_rtc_event_handler.get());
+  _iris_api_engine->UnsetIrisMediaPlayerEventHandler(_iris_mpk_event_handler.get());
+
+  // reset
+  _iris_rtc_event_handler.reset();
+  _iris_mpk_event_handler.reset();
+  _iris_video_frame_buffer_manager.reset();
+  _iris_api_engine.reset();
+  LOG_F(INFO, "AgoraElectronBridge::Release");
 }
 }  // namespace electron
 }  // namespace rtc
