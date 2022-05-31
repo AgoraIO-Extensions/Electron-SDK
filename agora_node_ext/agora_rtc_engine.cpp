@@ -5766,7 +5766,6 @@ NAPI_API_DEFINE(NodeRtcEngine, startTertiaryCameraCapture) {
     CHECK_NATIVE_THIS(pEngine);
     CameraCapturerConfiguration configuration;
     VideoFormat format;
-    configuration.format = format;
     Local<Object> obj;
     Local<Object> formatObj;
     status = napi_get_value_object_(isolate, args[0], obj);
@@ -5791,7 +5790,7 @@ NAPI_API_DEFINE(NodeRtcEngine, startTertiaryCameraCapture) {
 
     status = napi_get_object_property_int32_(isolate, formatObj, "fps", format.fps);
     CHECK_NAPI_STATUS(pEngine, status);
-
+    configuration.format = format;
     result = pEngine->m_engine->startTertiaryCameraCapture(configuration);
   } while (false);
   napi_set_int_result(args, result);
@@ -5811,7 +5810,6 @@ NAPI_API_DEFINE(NodeRtcEngine, startQuaternaryCameraCapture) {
     CHECK_NATIVE_THIS(pEngine);
     CameraCapturerConfiguration configuration;
     VideoFormat format;
-    configuration.format = format;
     Local<Object> obj;
     Local<Object> formatObj;
     status = napi_get_value_object_(isolate, args[0], obj);
@@ -5836,7 +5834,7 @@ NAPI_API_DEFINE(NodeRtcEngine, startQuaternaryCameraCapture) {
 
     status = napi_get_object_property_int32_(isolate, formatObj, "fps", format.fps);
     CHECK_NAPI_STATUS(pEngine, status);
-
+    configuration.format = format;
     result = pEngine->m_engine->startQuaternaryCameraCapture(configuration);
   } while (false);
   napi_set_int_result(args, result);
