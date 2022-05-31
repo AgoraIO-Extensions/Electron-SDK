@@ -1465,6 +1465,7 @@ export interface VideoFormat {
 
 /** Camera capturer configuration. */
 export interface CameraCapturerConfiguration {
+  cameraDirection: CAMERA_DIRECTION,
   deviceId: String,
   format: VideoFormat
 }
@@ -4040,10 +4041,10 @@ export interface NodeRtcEngine {
    * @ignore
    */
   stopSecondaryCameraCapture(): number;
-  // startTertiaryCameraCapture(config: CameraCapturerConfiguration): number;
-  // startQuaternaryCameraCapture(config: CameraCapturerConfiguration): number;
-  // stopTertiaryCameraCapture(): number;
-  // stopQuaternaryCameraCapture(): number;
+  startTertiaryCameraCapture(config: CameraCapturerConfiguration): number;
+  startQuaternaryCameraCapture(config: CameraCapturerConfiguration): number;
+  stopTertiaryCameraCapture(): number;
+  stopQuaternaryCameraCapture(): number;
   /**
    * @ignore
    */

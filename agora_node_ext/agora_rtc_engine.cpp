@@ -285,10 +285,10 @@ void NodeRtcEngine::Init(Local<Object> &module) {
   PROPERTY_METHOD_DEFINE(stopPrimaryScreenCapture);
   PROPERTY_METHOD_DEFINE(stopSecondaryScreenCapture);
 
-  // PROPERTY_METHOD_DEFINE(startTertiaryCameraCapture);
-  // PROPERTY_METHOD_DEFINE(startQuaternaryCameraCapture);
-  // PROPERTY_METHOD_DEFINE(stopTertiaryCameraCapture);
-  // PROPERTY_METHOD_DEFINE(stopQuaternaryCameraCapture);
+  PROPERTY_METHOD_DEFINE(startTertiaryCameraCapture);
+  PROPERTY_METHOD_DEFINE(startQuaternaryCameraCapture);
+  PROPERTY_METHOD_DEFINE(stopTertiaryCameraCapture);
+  PROPERTY_METHOD_DEFINE(stopQuaternaryCameraCapture);
 
   PROPERTY_METHOD_DEFINE(adjustLoopbackRecordingVolume);
   PROPERTY_METHOD_DEFINE(setCameraDeviceOrientation);
@@ -5753,126 +5753,124 @@ NAPI_API_DEFINE(NodeRtcEngine, stopSecondaryScreenCapture) {
   LOG_LEAVE;
 }
 
-// NAPI_API_DEFINE(NodeRtcEngine, startTertiaryCameraCapture) {
-//   LOG_ENTER;
-//   napi_status status = napi_ok;
-//   int result = -1;
-//   std::string key = "";
-//   NodeString deviceId;
-//   do {
-//     Isolate* isolate = args.GetIsolate();
-//     NodeRtcEngine* pEngine = nullptr;
-//     napi_get_native_this(args, pEngine);
-//     CHECK_NATIVE_THIS(pEngine);
-//     CameraCapturerConfiguration configuration;
-//     VideoFormat format;
-//     configuration.format = format;
-//     Local<Object> obj;
-//     Local<Object> formatObj;
-//     status = napi_get_value_object_(isolate, args[0], obj);
-//     CHECK_NAPI_STATUS(pEngine, status);
+NAPI_API_DEFINE(NodeRtcEngine, startTertiaryCameraCapture) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  std::string key = "";
+  NodeString deviceId;
+  do {
+    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine* pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    CameraCapturerConfiguration configuration;
+    VideoFormat format;
+    Local<Object> obj;
+    Local<Object> formatObj;
+    status = napi_get_value_object_(isolate, args[0], obj);
+    CHECK_NAPI_STATUS(pEngine, status);
 
-//     key = "deviceId";
-//     uint32_t cameraDirection;
-//     status = napi_get_object_property_nodestring_(isolate, obj, key, deviceId);
-//     CHECK_NAPI_STATUS(pEngine, status);
+    key = "deviceId";
+    uint32_t cameraDirection;
+    status = napi_get_object_property_nodestring_(isolate, obj, key, deviceId);
+    CHECK_NAPI_STATUS(pEngine, status);
 
-//     memset(configuration.deviceId, 0, MAX_DEVICE_ID_LENGTH);
-//     memcpy(configuration.deviceId, deviceId, strlen(deviceId));
+    memset(configuration.deviceId, 0, MAX_DEVICE_ID_LENGTH);
+    memcpy(configuration.deviceId, deviceId, strlen(deviceId));
 
-//     status = napi_get_object_property_object_(isolate, obj, "format", formatObj);
-//     CHECK_NAPI_STATUS(pEngine, status);
+    status = napi_get_object_property_object_(isolate, obj, "format", formatObj);
+    CHECK_NAPI_STATUS(pEngine, status);
 
-//     status = napi_get_object_property_int32_(isolate, formatObj, "width", format.width);
-//     CHECK_NAPI_STATUS(pEngine, status);
+    status = napi_get_object_property_int32_(isolate, formatObj, "width", format.width);
+    CHECK_NAPI_STATUS(pEngine, status);
 
-//     status = napi_get_object_property_int32_(isolate, formatObj, "height", format.height);
-//     CHECK_NAPI_STATUS(pEngine, status);
+    status = napi_get_object_property_int32_(isolate, formatObj, "height", format.height);
+    CHECK_NAPI_STATUS(pEngine, status);
 
-//     status = napi_get_object_property_int32_(isolate, formatObj, "fps", format.fps);
-//     CHECK_NAPI_STATUS(pEngine, status);
+    status = napi_get_object_property_int32_(isolate, formatObj, "fps", format.fps);
+    CHECK_NAPI_STATUS(pEngine, status);
+    configuration.format = format;
+    result = pEngine->m_engine->startTertiaryCameraCapture(configuration);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
 
-//     result = pEngine->m_engine->startTertiaryCameraCapture(configuration);
-//   } while (false);
-//   napi_set_int_result(args, result);
-//   LOG_LEAVE;
-// }
+NAPI_API_DEFINE(NodeRtcEngine, startQuaternaryCameraCapture) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  std::string key = "";
+  NodeString deviceId;
+  do {
+    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine* pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    CameraCapturerConfiguration configuration;
+    VideoFormat format;
+    Local<Object> obj;
+    Local<Object> formatObj;
+    status = napi_get_value_object_(isolate, args[0], obj);
+    CHECK_NAPI_STATUS(pEngine, status);
 
-// NAPI_API_DEFINE(NodeRtcEngine, startQuaternaryCameraCapture) {
-//   LOG_ENTER;
-//   napi_status status = napi_ok;
-//   int result = -1;
-//   std::string key = "";
-//   NodeString deviceId;
-//   do {
-//     Isolate* isolate = args.GetIsolate();
-//     NodeRtcEngine* pEngine = nullptr;
-//     napi_get_native_this(args, pEngine);
-//     CHECK_NATIVE_THIS(pEngine);
-//     CameraCapturerConfiguration configuration;
-//     VideoFormat format;
-//     configuration.format = format;
-//     Local<Object> obj;
-//     Local<Object> formatObj;
-//     status = napi_get_value_object_(isolate, args[0], obj);
-//     CHECK_NAPI_STATUS(pEngine, status);
+    key = "deviceId";
+    uint32_t cameraDirection;
+    status = napi_get_object_property_nodestring_(isolate, obj, key, deviceId);
+    CHECK_NAPI_STATUS(pEngine, status);
 
-//     key = "deviceId";
-//     uint32_t cameraDirection;
-//     status = napi_get_object_property_nodestring_(isolate, obj, key, deviceId);
-//     CHECK_NAPI_STATUS(pEngine, status);
+    memset(configuration.deviceId, 0, MAX_DEVICE_ID_LENGTH);
+    memcpy(configuration.deviceId, deviceId, strlen(deviceId));
 
-//     memset(configuration.deviceId, 0, MAX_DEVICE_ID_LENGTH);
-//     memcpy(configuration.deviceId, deviceId, strlen(deviceId));
+    status = napi_get_object_property_object_(isolate, obj, "format", formatObj);
+    CHECK_NAPI_STATUS(pEngine, status);
 
-//     status = napi_get_object_property_object_(isolate, obj, "format", formatObj);
-//     CHECK_NAPI_STATUS(pEngine, status);
+    status = napi_get_object_property_int32_(isolate, formatObj, "width", format.width);
+    CHECK_NAPI_STATUS(pEngine, status);
 
-//     status = napi_get_object_property_int32_(isolate, formatObj, "width", format.width);
-//     CHECK_NAPI_STATUS(pEngine, status);
+    status = napi_get_object_property_int32_(isolate, formatObj, "height", format.height);
+    CHECK_NAPI_STATUS(pEngine, status);
 
-//     status = napi_get_object_property_int32_(isolate, formatObj, "height", format.height);
-//     CHECK_NAPI_STATUS(pEngine, status);
-
-//     status = napi_get_object_property_int32_(isolate, formatObj, "fps", format.fps);
-//     CHECK_NAPI_STATUS(pEngine, status);
-
-//     result = pEngine->m_engine->startQuaternaryCameraCapture(configuration);
-//   } while (false);
-//   napi_set_int_result(args, result);
-//   LOG_LEAVE;
-// }
+    status = napi_get_object_property_int32_(isolate, formatObj, "fps", format.fps);
+    CHECK_NAPI_STATUS(pEngine, status);
+    configuration.format = format;
+    result = pEngine->m_engine->startQuaternaryCameraCapture(configuration);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
 
 
-// NAPI_API_DEFINE(NodeRtcEngine, stopTertiaryCameraCapture) {
-//   LOG_ENTER;
-//   napi_status status = napi_ok;
-//   int result = -1;
-//   do {
-//     Isolate* isolate = args.GetIsolate();
-//     NodeRtcEngine* pEngine = nullptr;
-//     napi_get_native_this(args, pEngine);
-//     CHECK_NATIVE_THIS(pEngine);
-//     result = pEngine->m_engine->stopTertiaryCameraCapture();
-//   } while (false);
-//   napi_set_int_result(args, result);
-//   LOG_LEAVE;
-// }
+NAPI_API_DEFINE(NodeRtcEngine, stopTertiaryCameraCapture) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  do {
+    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine* pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    result = pEngine->m_engine->stopTertiaryCameraCapture();
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
 
-// NAPI_API_DEFINE(NodeRtcEngine, stopQuaternaryCameraCapture) {
-//   LOG_ENTER;
-//   napi_status status = napi_ok;
-//   int result = -1;
-//   do {
-//     Isolate* isolate = args.GetIsolate();
-//     NodeRtcEngine* pEngine = nullptr;
-//     napi_get_native_this(args, pEngine);
-//     CHECK_NATIVE_THIS(pEngine);
-//     result = pEngine->m_engine->stopQuaternaryCameraCapture();
-//   } while (false);
-//   napi_set_int_result(args, result);
-//   LOG_LEAVE;
-// }
+NAPI_API_DEFINE(NodeRtcEngine, stopQuaternaryCameraCapture) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  do {
+    Isolate* isolate = args.GetIsolate();
+    NodeRtcEngine* pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    result = pEngine->m_engine->stopQuaternaryCameraCapture();
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
 
 NAPI_API_DEFINE(NodeRtcEngine, enableEncryption) {
   LOG_ENTER;

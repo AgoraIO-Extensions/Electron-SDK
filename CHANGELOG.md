@@ -1,3 +1,7 @@
+## 3.7.204-rtc.231-build.531(May 31th, 2022)
+- update native sdk
+- revert code for four camera
+
 ## 3.7.204-build.510(May 10th, 2022)
 - fix error of addonVersion for just-task
 
