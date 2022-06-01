@@ -1,12 +1,12 @@
 import { VideoSourceType } from "./Private/AgoraBase";
 import { IMediaPlayerSourceObserver } from "./Private/IAgoraMediaPlayerSource";
-import { IRtcEngineEventHandler } from "./Private/IAgoraRtcEngine";
+import { IRtcEngineEventHandlerEx } from "./Private/IAgoraRtcEngineEx";
 import { RendererManager } from "./Renderer/RendererManager";
 import {
   AgoraElectronBridge,
   ContentMode,
   FormatRendererVideoConfig,
-  RendererVideoConfig
+  RendererVideoConfig,
 } from "./Types";
 
 export const TAG = "[Agora]: ";
@@ -159,7 +159,7 @@ interface AgoraEnv {
   enableLogging: boolean;
   enableDebugLogging: boolean;
   isInitializeEngine: boolean;
-  engineEventHandlers: IRtcEngineEventHandler[];
+  engineEventHandlers: IRtcEngineEventHandlerEx[];
   mediaPlayerEventHandlers: IMediaPlayerSourceObserver[];
   AgoraElectronBridge?: AgoraElectronBridge;
   AgoraRendererManager?: RendererManager;

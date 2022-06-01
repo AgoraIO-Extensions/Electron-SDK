@@ -2,11 +2,15 @@
 import { IMediaPlayer } from "./Private/IAgoraMediaPlayer";
 import {
   ChannelMediaOptions,
-  IRtcEngineEventHandler,
   RtcEngineContext,
 } from "./Private/IAgoraRtcEngine";
-import { RtcConnection } from "./Private/IAgoraRtcEngineEx";
+import {
+  IRtcEngineEventHandlerEx,
+  RtcConnection,
+} from "./Private/IAgoraRtcEngineEx";
 import { IRtcEngineExImpl } from "./Private/impl/IAgoraRtcEngineExImpl";
+import { IVideoDeviceManagerImpl } from "./Private/impl/IAgoraRtcEngineImpl";
+import { IAudioDeviceManagerImpl } from "./Private/impl/IAudioDeviceManagerImpl";
 import { getBridge, handlerRTCEvent } from "./Private/internal/IrisApiEngine";
 import {
   handlerMPKEvent,
@@ -21,8 +25,6 @@ import {
   RENDER_MODE,
 } from "./Types";
 import { AgoraEnv, deprecate, logDebug, logError, logWarn } from "./Utils";
-import { IVideoDeviceManagerImpl } from "./Private/impl/IAgoraRtcEngineImpl";
-import { IAudioDeviceManagerImpl } from "./Private/impl/IAudioDeviceManagerImpl";
 
 /**
  * The AgoraRtcEngine class.
@@ -73,12 +75,22 @@ export class AgoraRtcEngine extends IRtcEngineExImpl {
     const mediaPlayerId = super.createMediaPlayer() as number;
     return new MediaPlayerInternal(mediaPlayerId);
   }
+  override registerEventHandler(
+    eventHandler: IRtcEngineEventHandlerEx
+  ): boolean {
+    return super.registerEventHandler(eventHandler);
+  }
+  override unregisterEventHandler(
+    eventHandler: IRtcEngineEventHandlerEx
+  ): boolean {
+    return super.unregisterEventHandler(eventHandler);
+  }
 
   override joinChannelEx(
     token: string,
     connection: RtcConnection,
     options: ChannelMediaOptions,
-    eventHandler?: IRtcEngineEventHandler
+    eventHandler?: IRtcEngineEventHandlerEx
   ): number {
     if (eventHandler) {
       this.registerEventHandler(eventHandler);
@@ -137,16 +149,16 @@ export class AgoraRtcEngine extends IRtcEngineExImpl {
   // @mark old api will deprecate
   // @mark old api will deprecate
   getVideoDevices(): Array<{
-    deviceNameUTF8: string;
-    deviceIdUTF8: string;
+    deviceId: string;
+    deviceName: string;
   }> {
     const videoDeviceManager = new IVideoDeviceManagerImpl();
     const res = videoDeviceManager.enumerateVideoDevices() as any;
     return res;
   }
-  setVideoDevice(deviceIdUTF8: string): number {
+  setVideoDevice(deviceId: string): number {
     const videoDeviceManager = new IVideoDeviceManagerImpl();
-    const res = videoDeviceManager.setDevice(deviceIdUTF8);
+    const res = videoDeviceManager.setDevice(deviceId);
     return res;
   }
   getAudioPlaybackDevices(): {
@@ -174,7 +186,6 @@ export class AgoraRtcEngine extends IRtcEngineExImpl {
   setAudioRecordingDevice(deviceId: string): number {
     const audioDeviceManager = new IAudioDeviceManagerImpl();
     const res = audioDeviceManager.setRecordingDevice(deviceId);
-    audioDeviceManager.release();
     return res;
   }
 
