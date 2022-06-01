@@ -29,21 +29,21 @@ void decodeChannelMediaOptions(ChannelMediaOptions &option, std::string &token,
     option.publishSecondaryCameraTrack = publishSecondaryCameraTrack;
   }
 
-  // //publishTertiaryCameraTrack;//3
-  // bool publishTertiaryCameraTrack = false;
-  // status = napi_get_object_property_bool_(isolate, value,
-  // "publishTertiaryCameraTrack", publishTertiaryCameraTrack); if (status ==
-  // napi_ok) {
-  //   option.publishTertiaryCameraTrack = publishTertiaryCameraTrack;
-  // }
+  //publishTertiaryCameraTrack;//3
+  bool publishTertiaryCameraTrack = false;
+  status = napi_get_object_property_bool_(isolate, value,
+  "publishTertiaryCameraTrack", publishTertiaryCameraTrack); if (status ==
+  napi_ok) {
+    option.publishTertiaryCameraTrack = publishTertiaryCameraTrack;
+  }
 
-  // //publishQuaternaryCameraTrack;//4
-  // bool publishQuaternaryCameraTrack = false;
-  // status = napi_get_object_property_bool_(isolate, value,
-  // "publishQuaternaryCameraTrack", publishQuaternaryCameraTrack); if (status
-  // == napi_ok) {
-  //   option.publishQuaternaryCameraTrack = publishQuaternaryCameraTrack;
-  // }
+  //publishQuaternaryCameraTrack;//4
+  bool publishQuaternaryCameraTrack = false;
+  status = napi_get_object_property_bool_(isolate, value,
+  "publishQuaternaryCameraTrack", publishQuaternaryCameraTrack); if (status
+  == napi_ok) {
+    option.publishQuaternaryCameraTrack = publishQuaternaryCameraTrack;
+  }
 
   // publishAudioTrack;//5
   bool publishAudioTrack = false;

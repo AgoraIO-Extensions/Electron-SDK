@@ -1,3 +1,5 @@
+## 3.7.204-rtc.231-build.601(Jun 01th, 2022)
+- fix decode ChannelMediaOption
 ## 3.7.204-rtc.231-build.531(May 31th, 2022)
 - update native sdk
 - revert code for four camera
