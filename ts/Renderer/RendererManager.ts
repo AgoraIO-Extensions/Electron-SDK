@@ -307,6 +307,10 @@ class RendererManager {
       }
     };
     this.videoFrameUpdateInterval = setInterval(() => {
+      if (!AgoraEnv.isInitializeEngine) {
+        logDebug("rtcEngine is not initialize");
+        return;
+      }
       this.forEachStream(renderFunc);
     }, 1000 / this.renderFps);
   }
