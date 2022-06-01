@@ -80,14 +80,15 @@
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
                         './sdk/agora_rtc_sdk.dll',
+                        './sdk/av1.dll',
+                        './sdk/bequic.dll',
                         './sdk/libagora-ffmpeg.dll',
                         './sdk/libagora-wgc.dll',
-                        './sdk/libagora_video_process_extension.dll',
-                        './sdk/libagora_segmentation_extension.dll',
+                        './sdk/libagora_dav1d_extension.dll',
                         './sdk/libagora_pvc_extension.dll',
-                        './sdk/glfw3.dll',
-                        './sdk/agora_rtm_sdk.dll',
-                        './sdk/bequic.dll',
+                        './sdk/libagora_quality_education_video_process.dll',
+                        './sdk/libagora_segmentation_extension.dll',
+                        './sdk/libagora_video_process_extension.dll',
                     ]
                 }],
                 'library_dirs': [

@@ -172,7 +172,7 @@ public:
   // NAPI_API(setRemoteSubscribeFallbackOption);
   NAPI_API(pauseAudio);
   NAPI_API(resumeAudio);
-  NAPI_API(setExternalAudioSource);
+  // NAPI_API(setExternalAudioSource);
 #if defined(__APPLE__) || defined(_WIN32)
   NAPI_API(getScreenWindowsInfo);
   NAPI_API(getScreenDisplaysInfo);
@@ -263,8 +263,8 @@ public:
    * 2.4.0 apis
    */
   // NAPI_API(setBeautyEffectOptions);
-  NAPI_API(setLocalVoiceChanger);
-  NAPI_API(setLocalVoiceReverbPreset);
+  // NAPI_API(setLocalVoiceChanger);
+  // NAPI_API(setLocalVoiceReverbPreset);
   // NAPI_API(enableSoundPositionIndication);
   // NAPI_API(setRemoteVoicePosition);
   NAPI_API(startLastmileProbeTest);
