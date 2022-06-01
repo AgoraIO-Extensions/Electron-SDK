@@ -196,6 +196,11 @@ export default class App extends Component {
     rtcEngine.leaveChannel();
   };
   onPressTestDeviceManager = () => {
+    console.log(
+      rtcEngine.getVideoDevices(),
+      rtcEngine.getAudioPlaybackDevices(),
+      rtcEngine.getAudioPlaybackDevices()
+    );
     const videoDeviceManager = new IVideoDeviceManagerImpl();
     window.videoDeviceManage = videoDeviceManager;
     console.log(
