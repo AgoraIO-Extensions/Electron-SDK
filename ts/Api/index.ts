@@ -1379,14 +1379,10 @@ class AgoraRtcEngine extends EventEmitter {
   enableVirtualBackground(
     enable: boolean,
     backgroundSource: VirtualBackgroundSource,
-    segpropert: SegmentationProperty,
-    type: MEDIA_SOURCE_TYPE
   ) {
     return this.rtcEngine.enableVirtualBackground(
       enable,
       backgroundSource,
-      segpropert,
-      type
     );
   }
 
@@ -2773,9 +2769,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {VoiceChangerPreset} preset The local voice changer option. 
    * See {@link VoiceChangerPreset}.
    */
-  setLocalVoiceChanger(preset: VoiceChangerPreset): number {
-    return this.rtcEngine.setLocalVoiceChanger(preset);
-  }
+  // setLocalVoiceChanger(preset: VoiceChangerPreset): number {
+  //   return this.rtcEngine.setLocalVoiceChanger(preset);
+  // }
 
   /**
    * Sets the preset local voice reverberation effect.
@@ -2787,9 +2783,9 @@ class AgoraRtcEngine extends EventEmitter {
    * @param {AudioReverbPreset} preset The local voice reverberation preset. 
    * See {@link AudioReverbPreset}.
    */
-  setLocalVoiceReverbPreset(preset: AudioReverbPreset) {
-    return this.rtcEngine.setLocalVoiceReverbPreset(preset);
-  }
+  // setLocalVoiceReverbPreset(preset: AudioReverbPreset) {
+  //   return this.rtcEngine.setLocalVoiceReverbPreset(preset);
+  // }
 
   /**
    * Adjusts the recording volume.

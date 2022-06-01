@@ -270,61 +270,61 @@ void decodeChannelMediaOptions(ChannelMediaOptions &option, std::string &token,
     option.isInteractiveAudience = isInteractiveAudience;
   }
 
-  Local<Object> encodedVideoTrackOptionObj;
-  status = napi_get_object_property_object_(
-      isolate, value, "encodedVideoTrackOption", encodedVideoTrackOptionObj);
-  if (status == napi_ok && encodedVideoTrackOptionObj->IsObject()) {
-    // Optional<TCcMode> ccMode;
-    // Optional<VIDEO_CODEC_TYPE> codecType;
-    // Optional<int> targetBitrate;
-
-    int32_t ccMode = 0;
-    status = napi_get_object_property_int32_(
-        isolate, encodedVideoTrackOptionObj, "ccMode", ccMode);
-    if (status == napi_ok) {
-      option.encodedVideoTrackOption.ccMode = (TCcMode)ccMode;
-    }
-
-    int32_t codecType = 0;
-    status = napi_get_object_property_int32_(
-        isolate, encodedVideoTrackOptionObj, "codecType", codecType);
-    if (status == napi_ok) {
-      option.encodedVideoTrackOption.codecType = (VIDEO_CODEC_TYPE)codecType;
-    }
-
-    int32_t targetBitrate = 0;
-    status = napi_get_object_property_int32_(
-        isolate, encodedVideoTrackOptionObj, "targetBitrate", targetBitrate);
-    if (status == napi_ok) {
-      option.encodedVideoTrackOption.targetBitrate = targetBitrate;
-    }
-  }
-
-  Local<Object> audioOptionsAdvancedObj;
-  status = napi_get_object_property_object_(
-      isolate, value, "audioOptionsAdvanced", audioOptionsAdvancedObj);
-  if (status == napi_ok && audioOptionsAdvancedObj->IsObject()) {
-    // Optional<bool> enable_aec_external_custom_;
-    // Optional<bool> enable_aec_external_loopback_;
-
-    bool enable_aec_external_custom_ = 0;
-    status = napi_get_object_property_bool_(isolate, audioOptionsAdvancedObj,
-                                            "enable_aec_external_custom_",
-                                            enable_aec_external_custom_);
-    if (status == napi_ok) {
-      option.audioOptionsAdvanced.enable_aec_external_custom_ =
-          enable_aec_external_custom_;
-    }
-
-    bool enable_aec_external_loopback_ = 0;
-    status = napi_get_object_property_bool_(isolate, audioOptionsAdvancedObj,
-                                            "enable_aec_external_loopback_",
-                                            enable_aec_external_loopback_);
-    if (status == napi_ok) {
-      option.audioOptionsAdvanced.enable_aec_external_loopback_ =
-          enable_aec_external_loopback_;
-    }
-  }
+//  Local<Object> encodedVideoTrackOptionObj;
+//  status = napi_get_object_property_object_(
+//      isolate, value, "encodedVideoTrackOption", encodedVideoTrackOptionObj);
+//  if (status == napi_ok && encodedVideoTrackOptionObj->IsObject()) {
+//    // Optional<TCcMode> ccMode;
+//    // Optional<VIDEO_CODEC_TYPE> codecType;
+//    // Optional<int> targetBitrate;
+//
+//    int32_t ccMode = 0;
+//    status = napi_get_object_property_int32_(
+//        isolate, encodedVideoTrackOptionObj, "ccMode", ccMode);
+//    if (status == napi_ok) {
+//      option.encodedVideoTrackOption.ccMode = (TCcMode)ccMode;
+//    }
+//
+//    int32_t codecType = 0;
+//    status = napi_get_object_property_int32_(
+//        isolate, encodedVideoTrackOptionObj, "codecType", codecType);
+//    if (status == napi_ok) {
+//      option.encodedVideoTrackOption.codecType = (VIDEO_CODEC_TYPE)codecType;
+//    }
+//
+//    int32_t targetBitrate = 0;
+//    status = napi_get_object_property_int32_(
+//        isolate, encodedVideoTrackOptionObj, "targetBitrate", targetBitrate);
+//    if (status == napi_ok) {
+//      option.encodedVideoTrackOption.targetBitrate = targetBitrate;
+//    }
+//  }
+//
+//  Local<Object> audioOptionsAdvancedObj;
+//  status = napi_get_object_property_object_(
+//      isolate, value, "audioOptionsAdvanced", audioOptionsAdvancedObj);
+//  if (status == napi_ok && audioOptionsAdvancedObj->IsObject()) {
+//    // Optional<bool> enable_aec_external_custom_;
+//    // Optional<bool> enable_aec_external_loopback_;
+//
+//    bool enable_aec_external_custom_ = 0;
+//    status = napi_get_object_property_bool_(isolate, audioOptionsAdvancedObj,
+//                                            "enable_aec_external_custom_",
+//                                            enable_aec_external_custom_);
+//    if (status == napi_ok) {
+//      option.audioOptionsAdvanced.enable_aec_external_custom_ =
+//          enable_aec_external_custom_;
+//    }
+//
+//    bool enable_aec_external_loopback_ = 0;
+//    status = napi_get_object_property_bool_(isolate, audioOptionsAdvancedObj,
+//                                            "enable_aec_external_loopback_",
+//                                            enable_aec_external_loopback_);
+//    if (status == napi_ok) {
+//      option.audioOptionsAdvanced.enable_aec_external_loopback_ =
+//          enable_aec_external_loopback_;
+//    }
+//  }
 
   // Optional<bool> publishCameraTrack; 1
   // Optional<bool> publishSecondaryCameraTrack; 2

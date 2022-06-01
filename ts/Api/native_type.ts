@@ -2610,8 +2610,8 @@ export interface ChannelMediaOptions {
   /**
    * The sender option for video encoded track.
    */
-  encodedVideoTrackOption?: EncodedVideoTrackOptions;
-  audioOptionsAdvanced?: AudioOptionsAdvanced;
+  // encodedVideoTrackOption?: EncodedVideoTrackOptions;
+  // audioOptionsAdvanced?: AudioOptionsAdvanced;
 }
 /**
  * The watermark's options.
@@ -3246,8 +3246,6 @@ export interface NodeRtcEngine {
    enableVirtualBackground(
     enable: boolean,
     backgroundSource: VirtualBackgroundSource,
-    segpropert: SegmentationProperty,
-    type: MEDIA_SOURCE_TYPE
   ): number;
   /**
    * @ignore

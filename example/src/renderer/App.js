@@ -201,16 +201,6 @@ export default class App extends Component {
       )}  ret: ${rett}`
     )
 
-    let ret1 = rtcEngine.setLocalVoiceChanger(this.state.voiceChangerPreset)
-    console.log(
-      `setLocalVoiceChanger : ${ret1} -- e ${this.state.voiceChangerPreset}`
-    )
-
-    let ret2 = rtcEngine.setLocalVoiceReverbPreset(this.state.voiceReverbPreset)
-    console.log(
-      `setLocalVoiceReverbPreset : ${ret2} -- e ${this.state.voiceReverbPreset}`
-    )
-
     if (this.state.videoDevices.length > 0) {
       rtcEngine.setVideoDevice(
         this.state.videoDevices[this.state.camera].deviceid

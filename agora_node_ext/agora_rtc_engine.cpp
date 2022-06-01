@@ -120,7 +120,7 @@ void NodeRtcEngine::Init(Local<Object> &module) {
   PROPERTY_METHOD_DEFINE(setAudioProfile)
   PROPERTY_METHOD_DEFINE(pauseAudio)
   PROPERTY_METHOD_DEFINE(resumeAudio)
-  PROPERTY_METHOD_DEFINE(setExternalAudioSource)
+  // PROPERTY_METHOD_DEFINE(setExternalAudioSource)
   PROPERTY_METHOD_DEFINE(getScreenWindowsInfo)
   PROPERTY_METHOD_DEFINE(getScreenDisplaysInfo)
   // PROPERTY_METHOD_DEFINE(startScreenCapture)
@@ -215,8 +215,8 @@ void NodeRtcEngine::Init(Local<Object> &module) {
 
   // 2.4.0 apis
   // PROPERTY_METHOD_DEFINE(setBeautyEffectOptions);
-  PROPERTY_METHOD_DEFINE(setLocalVoiceChanger);
-  PROPERTY_METHOD_DEFINE(setLocalVoiceReverbPreset);
+  // PROPERTY_METHOD_DEFINE(setLocalVoiceChanger);
+  // PROPERTY_METHOD_DEFINE(setLocalVoiceReverbPreset);
   // PROPERTY_METHOD_DEFINE(enableSoundPositionIndication);
   // PROPERTY_METHOD_DEFINE(setRemoteVoicePosition);
   PROPERTY_METHOD_DEFINE(startLastmileProbeTest);
@@ -1304,45 +1304,45 @@ NAPI_API_DEFINE_WRAPPER_PARAM_1(removeInjectStreamUrl, nodestring);
 //     LOG_LEAVE;
 // }
 
-NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceChanger) {
-  LOG_ENTER;
-  napi_status status = napi_ok;
-  int result = -1;
-  do {
-    NodeRtcEngine *pEngine = nullptr;
-    napi_get_native_this(args, pEngine);
-    CHECK_NATIVE_THIS(pEngine);
-    VOICE_CHANGER_PRESET preset = VOICE_CHANGER_OFF;
-    int preset_value = 0;
-    status = napi_get_value_int32_(args[0], preset_value);
-    CHECK_NAPI_STATUS(pEngine, status);
+//NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceChanger) {
+//  LOG_ENTER;
+//  napi_status status = napi_ok;
+//  int result = -1;
+//  do {
+//    NodeRtcEngine *pEngine = nullptr;
+//    napi_get_native_this(args, pEngine);
+//    CHECK_NATIVE_THIS(pEngine);
+//    VOICE_CHANGER_PRESET preset = VOICE_CHANGER_OFF;
+//    int preset_value = 0;
+//    status = napi_get_value_int32_(args[0], preset_value);
+//    CHECK_NAPI_STATUS(pEngine, status);
+//
+//    result = pEngine->m_engine->setLocalVoiceChanger(
+//        VOICE_CHANGER_PRESET(preset_value));
+//  } while (false);
+//  napi_set_int_result(args, result);
+//  LOG_LEAVE;
+//}
 
-    result = pEngine->m_engine->setLocalVoiceChanger(
-        VOICE_CHANGER_PRESET(preset_value));
-  } while (false);
-  napi_set_int_result(args, result);
-  LOG_LEAVE;
-}
-
-NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceReverbPreset) {
-  LOG_ENTER;
-  napi_status status = napi_ok;
-  int result = -1;
-  do {
-    NodeRtcEngine *pEngine = nullptr;
-    napi_get_native_this(args, pEngine);
-    CHECK_NATIVE_THIS(pEngine);
-
-    int preset_value = 0;
-    status = napi_get_value_int32_(args[0], preset_value);
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    result = pEngine->m_engine->setLocalVoiceReverbPreset(
-        AUDIO_REVERB_PRESET(preset_value));
-  } while (false);
-  napi_set_int_result(args, result);
-  LOG_LEAVE;
-}
+//NAPI_API_DEFINE(NodeRtcEngine, setLocalVoiceReverbPreset) {
+//  LOG_ENTER;
+//  napi_status status = napi_ok;
+//  int result = -1;
+//  do {
+//    NodeRtcEngine *pEngine = nullptr;
+//    napi_get_native_this(args, pEngine);
+//    CHECK_NATIVE_THIS(pEngine);
+//
+//    int preset_value = 0;
+//    status = napi_get_value_int32_(args[0], preset_value);
+//    CHECK_NAPI_STATUS(pEngine, status);
+//
+//    result = pEngine->m_engine->setLocalVoiceReverbPreset(
+//        AUDIO_REVERB_PRESET(preset_value));
+//  } while (false);
+//  napi_set_int_result(args, result);
+//  LOG_LEAVE;
+//}
 
 // NAPI_API_DEFINE(NodeRtcEngine, enableSoundPositionIndication)
 // {
@@ -1916,29 +1916,29 @@ NAPI_API_DEFINE(NodeRtcEngine, convertPath) {
   } while (false);
   LOG_LEAVE;
 }
-
-NAPI_API_DEFINE(NodeRtcEngine, setExternalAudioSource) {
-  LOG_ENTER;
-  napi_status status = napi_ok;
-  int result = -1;
-  do {
-    NodeRtcEngine *pEngine = nullptr;
-    napi_get_native_this(args, pEngine);
-    CHECK_NATIVE_THIS(pEngine);
-    int sampleRate, channels;
-    bool enabled;
-    status = napi_get_value_bool_(args[0], enabled);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_value_int32_(args[1], sampleRate);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_value_int32_(args[2], channels);
-    CHECK_NAPI_STATUS(pEngine, status);
-    result = pEngine->m_engine->setExternalAudioSource(enabled, sampleRate,
-                                                       channels);
-  } while (false);
-  napi_set_int_result(args, result);
-  LOG_LEAVE;
-}
+//
+//NAPI_API_DEFINE(NodeRtcEngine, setExternalAudioSource) {
+//  LOG_ENTER;
+//  napi_status status = napi_ok;
+//  int result = -1;
+//  do {
+//    NodeRtcEngine *pEngine = nullptr;
+//    napi_get_native_this(args, pEngine);
+//    CHECK_NATIVE_THIS(pEngine);
+//    int sampleRate, channels;
+//    bool enabled;
+//    status = napi_get_value_bool_(args[0], enabled);
+//    CHECK_NAPI_STATUS(pEngine, status);
+//    status = napi_get_value_int32_(args[1], sampleRate);
+//    CHECK_NAPI_STATUS(pEngine, status);
+//    status = napi_get_value_int32_(args[2], channels);
+//    CHECK_NAPI_STATUS(pEngine, status);
+//    result = pEngine->m_engine->setExternalAudioSource(enabled, sampleRate,
+//                                                       channels);
+//  } while (false);
+//  napi_set_int_result(args, result);
+//  LOG_LEAVE;
+//}
 
 NAPI_API_DEFINE(NodeRtcEngine, setLocalVideoMirrorMode) {
   LOG_ENTER;
@@ -6248,11 +6248,9 @@ NAPI_API_DEFINE(NodeRtcEngine, enableVirtualBackground) {
 
   bool enabled;
   VirtualBackgroundSource backgroundSource;
-  SegmentationProperty segpropert;
-  uint32 background_source_type, blur_degree, modeltype, modeltypeSegpropert, type;
+  uint32 background_source_type, blur_degree;
 
   nodestring source;
-  double greencapacity, greencapacitySegpropert;
   Isolate *isolate = args.GetIsolate();
 
   do {
@@ -6294,38 +6292,7 @@ NAPI_API_DEFINE(NodeRtcEngine, enableVirtualBackground) {
         (VirtualBackgroundSource::BACKGROUND_BLUR_DEGREE)blur_degree;
     CHECK_NAPI_STATUS(pEngine, status);
 
-    
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    if (!args[2]->IsObject()) {
-      status = napi_invalid_arg;
-      CHECK_NAPI_STATUS(pEngine, status);
-    }
-
-    Local<Object> segpropertObj;
-    status = napi_get_value_object_(isolate, args[2], segpropertObj);
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    status = napi_get_object_property_uint32_(isolate, segpropertObj,
-                                              "modelType", modeltypeSegpropert);
-    segpropert.modelType =
-        (SegmentationProperty::SEG_MODEL_TYPE)modeltypeSegpropert;
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    //status = napi_get_object_property_int32_(
-    //    isolate, segpropertObj, "preferVelocity", segpropert.preferVelocity);
-    //CHECK_NAPI_STATUS(pEngine, status);
-
-    status = napi_get_object_property_double_(
-        isolate, segpropertObj, "greenCapacity", greencapacitySegpropert);
-    segpropert.greenCapacity = greencapacitySegpropert;
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    status = napi_get_value_uint32_(args[3], type);
-    CHECK_NAPI_STATUS(pEngine, status);
-
-    result = pEngine->m_engine->enableVirtualBackground(
-        enabled, backgroundSource, segpropert, (agora::media::MEDIA_SOURCE_TYPE)type);
+    result = pEngine->m_engine->enableVirtualBackground(enabled, backgroundSource);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;

@@ -1,3 +1,13 @@
+## 3.8.200-build.601(Jun 1th, 2022)
+- update native sdk
+- remove api
+  - setLocalVoiceChanger
+  - setLocalVoiceReverbPreset
+  - ChannelMediaOption::encodedVideoTrackOption
+  - ChannelMediaOption::audioOptionsAdvanced
+  - enableVirtualBackground::segpropert
+  - enableVirtualBackground::type
+
 ## 3.7.204-build.510(May 10th, 2022)
 - fix error of addonVersion for just-task
 

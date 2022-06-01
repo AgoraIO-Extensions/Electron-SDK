@@ -433,7 +433,7 @@ void NodeEventHandler::onAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType,
 
 void NodeEventHandler::onRtmpStreamingStateChanged(
     const char *url, RTMP_STREAM_PUBLISH_STATE state,
-    RTMP_STREAM_PUBLISH_ERROR errCode) {
+    RTMP_STREAM_PUBLISH_ERROR_TYPE errCode) {
   FUNC_TRACE;
   std::string sUrl(url);
   node_async_call::async_call([this, sUrl, state, errCode] {
