@@ -21,6 +21,8 @@ import {
   RENDER_MODE,
 } from "./Types";
 import { AgoraEnv, deprecate, logDebug, logError, logWarn } from "./Utils";
+import { IVideoDeviceManagerImpl } from "./Private/impl/IAgoraRtcEngineImpl";
+import { IAudioDeviceManagerImpl } from "./Private/impl/IAudioDeviceManagerImpl";
 
 /**
  * The AgoraRtcEngine class.
@@ -134,6 +136,47 @@ export class AgoraRtcEngine extends IRtcEngineExImpl {
   // @mark old api will deprecate
   // @mark old api will deprecate
   // @mark old api will deprecate
+  getVideoDevices(): Array<{
+    deviceNameUTF8: string;
+    deviceIdUTF8: string;
+  }> {
+    const videoDeviceManager = new IVideoDeviceManagerImpl();
+    const res = videoDeviceManager.enumerateVideoDevices() as any;
+    return res;
+  }
+  setVideoDevice(deviceIdUTF8: string): number {
+    const videoDeviceManager = new IVideoDeviceManagerImpl();
+    const res = videoDeviceManager.setDevice(deviceIdUTF8);
+    return res;
+  }
+  getAudioPlaybackDevices(): {
+    deviceName: string;
+    deviceId: string;
+  }[] {
+    const audioDeviceManager = new IAudioDeviceManagerImpl();
+    const res = audioDeviceManager.enumeratePlaybackDevices() as any;
+    return res;
+  }
+  setAudioPlaybackDevice(deviceId: string): number {
+    const audioDeviceManager = new IAudioDeviceManagerImpl();
+    const res = audioDeviceManager.setPlaybackDevice(deviceId);
+    return res;
+  }
+  getAudioRecordingDevices(): {
+    deviceName: string;
+    deviceId: string;
+  }[] {
+    const audioDeviceManager = new IAudioDeviceManagerImpl();
+    const res = audioDeviceManager.enumerateRecordingDevices() as any;
+    return res;
+  }
+
+  setAudioRecordingDevice(deviceId: string): number {
+    const audioDeviceManager = new IAudioDeviceManagerImpl();
+    const res = audioDeviceManager.setRecordingDevice(deviceId);
+    audioDeviceManager.release();
+    return res;
+  }
 
   _setupLocalVideo(view: Element): number {
     deprecate("_setupLocalVideo", "setupVideo or setupLocalVideo");
