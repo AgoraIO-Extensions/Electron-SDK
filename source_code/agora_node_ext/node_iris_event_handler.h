@@ -30,9 +30,10 @@ class NodeIrisEventHandler : public iris::IrisEventHandler {
 
   // virtual void OnEvent(const char* event, const char* data) override;
 
+  
   virtual void OnEvent(const char* event,
                        const char* data,
-                       const void* buffer,
+                       const void** buffer,
                        unsigned int* length,
                        unsigned int buffer_count) override;
 
