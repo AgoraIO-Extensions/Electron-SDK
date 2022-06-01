@@ -54,6 +54,7 @@ export class AgoraRtcEngine extends IRtcEngineExImpl {
       "call_back_with_buffer",
       handlerMPKEvent
     );
+    AgoraEnv.AgoraRendererManager?.enableRender();
     const ret = super.initialize(context);
     return ret;
   }
@@ -62,6 +63,7 @@ export class AgoraRtcEngine extends IRtcEngineExImpl {
       logWarn("release: rtcEngine have not initialize");
       return;
     }
+    AgoraEnv.AgoraRendererManager?.enableRender(false);
     AgoraEnv.isInitializeEngine = false;
     super.release(sync);
     getBridge().ReleaseEnv();
