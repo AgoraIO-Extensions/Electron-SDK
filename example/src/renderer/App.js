@@ -315,21 +315,13 @@ export default class App extends Component {
   };
   onPressToggleFirstScreenShare = async () => {
     const { isStartFirstScreenShare } = this.state;
-    // const displayList = rtcEngine.getScreenDisplaysInfo();
-    // const windowList = rtcEngine.getScreenWindowsInfo();
-    // const {
-    //   displayId: { id },
-    // } = displayList[0];
-    // const { windowId } = windowList[0];
+
     const res = await desktopCapturer.getSources({
       types: ["window", "screen"],
     });
     const id = res[0].id.split(":")[1];
     const windowId = res[1].id.split(":")[1];
     console.log("getSources", res);
-    // console.log("getScreenDisplaysInfo", displayList);
-    // console.log("getScreenWindowsInfo", windowList);
-    // return
     console.log("getSources  id", id, "  windowId", windowId);
     if (!isStartFirstScreenShare) {
       const res = rtcEngine.startPrimaryScreenCapture({
@@ -381,29 +373,28 @@ export default class App extends Component {
     rtcEngine.setRenderMode(2);
     let dom = document.getElementById("scrrenShare2");
     rtcEngine.setupVideo({
-      videoSourceType: VideoSourceType.kVideoSourceTypeScreenSecondary,
+      videoSourceType: VideoSourceType.VideoSourceScreenSecondary,
       view: isSetSecondScreenShareView ? null : dom,
       rendererOptions: { mirror: true, contentMode: 1 },
     });
     this.setState({ isSetSecondScreenShareView: !isSetSecondScreenShareView });
   };
-  onPressToggleSecondScreenShare = () => {
+  onPressToggleSecondScreenShare = async () => {
     const { isStartSecondScreenShare } = this.state;
-    const displayList = rtcEngine.getScreenDisplaysInfo();
-    const windowList = rtcEngine.getScreenWindowsInfo();
-    const {
-      displayId: { id },
-    } = displayList[1];
-    const { windowId } = windowList[2];
-    console.log("getScreenDisplaysInfo", displayList);
-    console.log("getScreenWindowsInfo", windowList);
+    const res = await desktopCapturer.getSources({
+      types: ["window", "screen"],
+    });
+    const id = res[0].id.split(":")[1];
+    const windowId = res[1].id.split(":")[1];
+    console.log("getSources", res);
+    console.log("getSources  id", id, "  windowId", windowId);
 
     if (!isStartSecondScreenShare) {
       const res = rtcEngine.startSecondaryScreenCapture({
-        isCaptureWindow: false,
-        displayId: id,
+        isCaptureWindow: true,
+        displayId: parseInt(id),
         screenRect: { width: 0, height: 0, x: 0, y: 0 },
-        windowId: windowId,
+        windowId: parseInt(windowId),
         params: {
           dimensions: { width: 1920, height: 1080 },
           bitrate: 1000,
