@@ -19,6 +19,18 @@ const macExtractPromise = () => {
 const globPromise = promisify(glob)
 
 
+const createMoveTask = async name => {
+  const file1 = await globPromise(
+    path.join(
+      __dirname,
+      `../tmp/Agora_Native_SDK_for_Mac_*/libs/${name}.framework`
+    )
+  );
+  await fs.move(
+    file1[0],
+    path.join(__dirname, `../sdk/lib/mac/${name}.framework`)
+  );
+};
 const macPrepare = () => {
   return new Promise((resolve, reject) => {
     Promise.all([
@@ -26,30 +38,17 @@ const macPrepare = () => {
     ]).then(() => {
       return fs.mkdirp(path.join(__dirname, '../sdk/lib/mac'))
     }).then(async () => {
-      const file1 = await globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_*/libs/AgoraRtcKit.framework'))
-      await fs.move(
-        file1[0],
-        path.join(__dirname, '../sdk/lib/mac/AgoraRtcKit.framework')
-      );
-
-      const file2 = await globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_*/libs/Agoraffmpeg.framework'))
-      await fs.move(
-        file2[0],
-        path.join(__dirname, '../sdk/lib/mac/Agoraffmpeg.framework')
-      )
-      const file3 = await globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_*/libs/AgoraPvcExtension.framework'))
-      await fs.move(
-        file3[0],
-        path.join(__dirname, '../sdk/lib/mac/AgoraPvcExtension.framework')
-      )
-
-      const file4 = await globPromise(path.join(__dirname, '../tmp/Agora_Native_SDK_for_Mac_*/libs/AgoraRtmKit.framework'))
-      await fs.move(
-        file4[0],
-        path.join(__dirname, '../sdk/lib/mac/AgoraRtmKit.framework')
-      )
-      
-      return Promise.resolve();
+      const tasks = [
+        "AgoraRtcKit",
+        "Agoraffmpeg",
+        "AgoraPvcExtension",
+        "AgoraDav1dExtension",
+        "AgoraRTE",
+        "AgoraVideoProcessExtension",
+        "AgoraVideoSegmentationExtension",
+        "av1"
+      ].map(name=>createMoveTask(name));
+      return await Promise.all(tasks);
     }).then(() => {
       resolve()
     }).catch(e => {

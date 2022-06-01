@@ -187,7 +187,7 @@ public:
                                           int volume, bool muted) override;
   virtual void
   onRtmpStreamingStateChanged(const char *url, RTMP_STREAM_PUBLISH_STATE state,
-                              RTMP_STREAM_PUBLISH_ERROR errCode) override;
+                              RTMP_STREAM_PUBLISH_ERROR_TYPE errCode) override;
   virtual void onStreamPublished(const char *url, int error) override;
   virtual void onStreamUnpublished(const char *url) override;
   virtual void onTranscodingUpdated() override;

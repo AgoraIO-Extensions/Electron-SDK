@@ -9,6 +9,9 @@ IAVFramePluginManager::IAVFramePluginManager() {}
 
 IAVFramePluginManager::~IAVFramePluginManager() {}
 
+bool IAVFramePluginManager::onEarMonitoringAudioFrame(AudioFrame& audioFrame){
+  return true;
+}
 bool IAVFramePluginManager::onCaptureVideoFrame(VideoFrame &videoFrame) {
   for (auto const &element : m_mapPlugins) {
     if (element.second.enabled) {

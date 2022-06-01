@@ -24,7 +24,7 @@ class IAVFramePluginManager : public agora::media::IAudioFrameObserver {
 public:
   IAVFramePluginManager();
   ~IAVFramePluginManager();
-
+  virtual bool onEarMonitoringAudioFrame(AudioFrame& audioFrame);
   virtual bool onCaptureVideoFrame(agora::media::base::VideoFrame &videoFrame);
   bool onRenderVideoFrame(agora::rtc::uid_t uid,
                           agora::rtc::conn_id_t connectionId,
