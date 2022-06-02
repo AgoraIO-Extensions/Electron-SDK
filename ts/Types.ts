@@ -1,7 +1,9 @@
 import { VideoSourceType } from "./Private/AgoraBase";
 import { RenderModeType } from "./Private/AgoraMediaBase";
 import { IMediaPlayerSourceObserver } from "./Private/IAgoraMediaPlayerSource";
+import { IVideoDeviceManager } from "./Private/IAgoraRtcEngine";
 import { IRtcEngineEventHandlerEx } from "./Private/IAgoraRtcEngineEx";
+import { IAudioDeviceManager } from "./Private/IAudioDeviceManager";
 import { IRenderer } from "./Renderer/IRenderer";
 import { RendererManager } from "./Renderer/RendererManager";
 
@@ -13,6 +15,8 @@ export interface AgoraEnvType {
   mediaPlayerEventHandlers: IMediaPlayerSourceObserver[];
   AgoraElectronBridge?: AgoraElectronBridge;
   AgoraRendererManager?: RendererManager;
+  AgoraAudioDeviceManager: IAudioDeviceManager;
+  AgoraVideoDeviceManager: IVideoDeviceManager;
 }
 
 export interface CanvasOptions {
