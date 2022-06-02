@@ -4,7 +4,6 @@ import {
   AgoraElectronBridge,
   Channel,
   ChannelIdMap,
-  ContentMode,
   RenderConfig,
   RendererVideoConfig,
   FormatRendererVideoConfig,
@@ -26,6 +25,7 @@ import {
 import GlRenderer from "./GlRenderer";
 import { IRenderer, RenderFailCallback } from "./IRenderer";
 import { YUVCanvasRenderer } from "./YUVCanvasRenderer";
+import { RenderModeType } from '../Private/AgoraMediaBase';
 
 class RendererManager {
   isRendering = false;
@@ -57,7 +57,7 @@ class RendererManager {
 
   public setRenderOption(
     view: HTMLElement,
-    contentMode = ContentMode.Fit,
+    contentMode = RenderModeType.RenderModeFit,
     mirror: boolean = false
   ): void {
     if (!view) {

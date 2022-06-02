@@ -4,10 +4,10 @@ import { IRtcEngineEventHandlerEx } from "./Private/IAgoraRtcEngineEx";
 import { RendererManager } from "./Renderer/RendererManager";
 import {
   AgoraElectronBridge,
-  ContentMode,
   FormatRendererVideoConfig,
   RendererVideoConfig,
 } from "./Types";
+import { RenderModeType } from './Private/AgoraMediaBase';
 
 export const TAG = "[Agora]: ";
 export const DEBUG_TAG = "[Agora Debug]: ";
@@ -114,7 +114,7 @@ export const getDefaultRendererVideoConfig = (
 ): FormatRendererVideoConfig => {
   const rendererOptions = Object.assign(
     {
-      contentMode: ContentMode.Fit,
+      contentMode: RenderModeType.RenderModeFit,
       mirror: false,
     },
     config.rendererOptions

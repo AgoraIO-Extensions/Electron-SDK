@@ -1,4 +1,3 @@
-import { ContentMode } from "../../Types";
 import { AgoraEnv, logDebug, logError, logWarn, parseJSON } from "../../Utils";
 import { VideoSourceType } from "../AgoraBase";
 import { RenderModeType } from "../AgoraMediaBase";
@@ -82,8 +81,8 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
       rendererOptions: {
         contentMode:
           renderMode === RenderModeType.RenderModeFit
-            ? ContentMode.Fit
-            : ContentMode.Cropped,
+            ? RenderModeType.RenderModeFit
+            : RenderModeType.RenderModeHidden,
         mirror: true,
       },
     });

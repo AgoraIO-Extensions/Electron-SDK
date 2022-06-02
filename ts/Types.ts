@@ -1,22 +1,19 @@
 import { VideoSourceType } from "./Private/AgoraBase";
 import { IRenderer } from "./Renderer/IRenderer";
+import { RenderModeType } from "./Private/AgoraMediaBase";
 
-export enum ContentMode {
-  Cropped = 0,
-  Fit = 1,
-}
 export interface CanvasOptions {
   frameWidth: number;
   frameHeight: number;
   rotation: number;
-  contentMode: ContentMode;
+  contentMode: RenderModeType;
   clientWidth: number;
   clientHeight: number;
 }
 
 export interface RendererOptions {
-  contentMode: ContentMode;
-  mirror: boolean;
+  contentMode?: RenderModeType;
+  mirror?: boolean;
 }
 
 export enum RENDER_MODE {
@@ -35,6 +32,7 @@ export interface RendererVideoConfig {
   view?: HTMLElement;
   rendererOptions?: RendererOptions;
 }
+type TodoPreview = Pick<FormatRendererVideoConfig, "uid" | "view">;
 export interface FormatRendererVideoConfig {
   videoSourceType: VideoSourceType;
   channelId: Channel;
@@ -62,7 +60,7 @@ export interface ShareVideoFrame {
 }
 export interface Result {
   callApiReturnCode: number;
-  callApiResult: string;
+  callApiResult: any;
 }
 
 export enum CallBackModule {

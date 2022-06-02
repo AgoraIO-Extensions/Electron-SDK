@@ -6,7 +6,7 @@ import AgoraRtcEngine, {
   AudioScenarioType,
   ChannelProfileType,
   ClientRoleType,
-  ContentMode,
+  RenderModeType,
   DegradationPreference,
   IAudioDeviceManagerImpl,
   IVideoDeviceManagerImpl,
@@ -24,6 +24,7 @@ window.electron = electron;
 
 AgoraEnv.enableLogging = true;
 AgoraEnv.enableDebugLogging = true;
+const { AgoraRendererManager } = AgoraEnv;
 
 const rtcEngine = new AgoraRtcEngine();
 window.rtcEngine = rtcEngine;
@@ -38,7 +39,7 @@ class RemoteWindow extends Component {
     const { uid, channelId } = this.props;
     const id = `remoteVideo-${uid}`;
     let dom = document.getElementById(id);
-    rtcEngine.setupVideo({
+    AgoraRendererManager.setupVideo({
       videoSourceType: VideoSourceType.VideoSourceRemote,
       uid,
       channelId,
@@ -127,7 +128,7 @@ export default class App extends Component {
 
     res = rtcEngine.enableWebSdkInteroperability(true);
     console.log("enableWebSdkInteroperability", res);
-    rtcEngine.setRenderMode(2);
+    // rtcEngine.setRenderMode(2);
 
     res = rtcEngine.setVideoEncoderConfiguration({
       codecType: VideoCodecType.VideoCodecH264,
@@ -254,17 +255,23 @@ export default class App extends Component {
     const { isSetFirstCameraView } = this.state;
     let dom = document.getElementById("firstCamera");
     let domAppend = document.getElementById("firstCamera-append");
-    rtcEngine.setupVideo({
+    AgoraRendererManager.setupVideo({
       videoSourceType: VideoSourceType.VideoSourceCameraPrimary,
 
       view: isSetFirstCameraView ? null : dom,
-      rendererOptions: { mirror: false, contentMode: ContentMode.Fit },
+      rendererOptions: {
+        mirror: false,
+        contentMode: RenderModeType.RenderModeFit,
+      },
     });
-    rtcEngine.setupVideo({
+    AgoraRendererManager.setupVideo({
       videoSourceType: VideoSourceType.VideoSourceCameraPrimary,
 
       view: isSetFirstCameraView ? null : domAppend,
-      rendererOptions: { mirror: true, contentMode: ContentMode.Cropped },
+      rendererOptions: {
+        mirror: true,
+        contentMode: RenderModeType.RenderModeHidden,
+      },
     });
     this.setState({ isSetFirstCameraView: !isSetFirstCameraView });
   };
@@ -283,9 +290,9 @@ export default class App extends Component {
   };
   onPressSetViewForSecondCamera = () => {
     const { isSetSecondCameraView } = this.state;
-    rtcEngine.setRenderMode(2);
+    // rtcEngine.setRenderMode(2);
     let dom = document.getElementById("secondCamera");
-    rtcEngine.setupVideo({
+    AgoraRendererManager.setupVideo({
       videoSourceType: VideoSourceType.kVideoSourceTypeCameraSecondary,
 
       view: isSetSecondCameraView ? null : dom,
@@ -308,9 +315,9 @@ export default class App extends Component {
   };
   onPressSetViewForFirstScreenShare = () => {
     const { isSetFirstScreenShareView } = this.state;
-    rtcEngine.setRenderMode(2);
+    // rtcEngine.setRenderMode(2);
     let dom = document.getElementById("scrrenShare1");
-    rtcEngine.setupVideo({
+    AgoraRendererManager.setupVideo({
       videoSourceType: VideoSourceType.VideoSourceScreen,
 
       view: isSetFirstScreenShareView ? null : dom,
@@ -375,9 +382,9 @@ export default class App extends Component {
   };
   onPressSetViewForSecondScreenShare = () => {
     const { isSetSecondScreenShareView } = this.state;
-    rtcEngine.setRenderMode(2);
+    // rtcEngine.setRenderMode(2);
     let dom = document.getElementById("scrrenShare2");
-    rtcEngine.setupVideo({
+    AgoraRendererManager.setupVideo({
       videoSourceType: VideoSourceType.VideoSourceScreenSecondary,
       view: isSetSecondScreenShareView ? null : dom,
       rendererOptions: { mirror: true, contentMode: 1 },
@@ -702,6 +709,8 @@ export default class App extends Component {
       isPlaying,
       users,
     } = this.state;
+    const mpkId = mpk && mpk.getMediaPlayerId();
+    console.log("getMediaPlayerId", mpkId);
     return (
       <div className="content">
         <div>process uid:{process.pid}</div>
@@ -776,7 +785,7 @@ export default class App extends Component {
               video-source-type={VideoSourceType.VideoSourceCamera}
               uid={0}
               channel-id={""}
-              renderer-content-mode={ContentMode.Fit}
+              renderer-content-mode={RenderModeType.RenderModeFit}
               renderer-mirror={false}
             ></agora-view>
             {this.state.isPlaying !== undefined && (
@@ -788,9 +797,9 @@ export default class App extends Component {
                   display: "inline-block",
                 }}
                 video-source-type={VideoSourceType.VideoSourceMediaPlayer}
-                uid={mpk.getMediaPlayerId()}
+                uid={mpkId}
                 channel-id={""}
-                renderer-content-mode={ContentMode.Fit}
+                renderer-content-mode={RenderModeType.RenderModeFit}
                 renderer-mirror={false}
               ></agora-view>
             )}

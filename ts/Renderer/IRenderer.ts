@@ -1,5 +1,6 @@
 import { EventEmitter } from "events";
-import { ContentMode, RendererOptions, ShareVideoFrame } from "../Types";
+import { RendererOptions, ShareVideoFrame } from "../Types";
+import { RenderModeType } from "../Private/AgoraMediaBase";
 
 export type RenderFailCallback =
   | ((obj: { error: string }) => void)
@@ -9,7 +10,7 @@ export class IRenderer {
   parentElement?: HTMLElement;
   canvas?: HTMLCanvasElement;
   event?: EventEmitter;
-  contentMode = ContentMode.Fit;
+  contentMode = RenderModeType.RenderModeFit;
   mirror?: boolean;
 
   snapshot(fileType = "image/png") {
@@ -45,7 +46,8 @@ export class IRenderer {
   }
 
   setRenderOption({ contentMode, mirror }: RendererOptions) {
-    this.contentMode = contentMode;
+    this.contentMode =
+      contentMode === undefined ? RenderModeType.RenderModeFit : contentMode;
     this.mirror = mirror;
     Object.assign(this.parentElement!.style, {
       transform: mirror ? "rotateY(180deg)" : "",

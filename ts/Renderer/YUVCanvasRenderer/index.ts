@@ -9,7 +9,8 @@ const YUVBuffer = require("yuv-buffer");
 const YUVCanvas = require("yuv-canvas");
 const isEqual = require("lodash.isequal");
 
-import { CanvasOptions, ContentMode, ShareVideoFrame } from "../../Types";
+import { RenderModeType } from "../../Private/AgoraMediaBase";
+import { CanvasOptions, ShareVideoFrame } from "../../Types";
 import { IRenderer } from "../IRenderer";
 
 export class YUVCanvasRenderer extends IRenderer {
@@ -71,7 +72,7 @@ export class YUVCanvasRenderer extends IRenderer {
 
   zoom(
     vertical: boolean,
-    contentMode: ContentMode = ContentMode.Cropped,
+    contentMode: RenderModeType = RenderModeType.RenderModeFit,
     width: number,
     height: number,
     clientWidth: number,
@@ -83,7 +84,7 @@ export class YUVCanvasRenderer extends IRenderer {
       return 1;
     }
 
-    if (contentMode === ContentMode.Cropped) {
+    if (contentMode === RenderModeType.RenderModeHidden) {
       if (vertical) {
         return clientHeight / clientWidth < width / height
           ? clientWidth / height

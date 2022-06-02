@@ -1,6 +1,6 @@
-import { ContentMode } from "../Types";
 import { VideoSourceType } from "../Private/AgoraBase";
 import AgoraRendererManager from "./RendererManager";
+import { RenderModeType } from "../Private/AgoraMediaBase";
 
 const VIDEO_SOURCE_TYPE_STRING = "video-source-type";
 const UID_STRING = "uid";
@@ -21,7 +21,7 @@ declare global {
     "video-source-type": VideoSourceType;
     uid: number;
     "channel-id": string;
-    "renderer-content-mode": ContentMode;
+    "renderer-content-mode": RenderModeType;
     "renderer-mirror": boolean;
     style: any;
   }
@@ -74,11 +74,12 @@ export default class AgoraView extends HTMLElement {
     }
   }
 
-  get renderContentMode(): ContentMode {
+  get renderContentMode(): RenderModeType {
     const number = Number(
-      this.getAttribute(RENDERER_CONTENT_MODE_STRING) || ContentMode.Fit
+      this.getAttribute(RENDERER_CONTENT_MODE_STRING) ||
+        RenderModeType.RenderModeFit
     );
-    return isNaN(number) ? ContentMode.Fit : number;
+    return isNaN(number) ? RenderModeType.RenderModeFit : number;
   }
 
   set renderContentMode(val) {
