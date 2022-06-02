@@ -1,12 +1,13 @@
 import { VideoSourceType } from "../Private/AgoraBase";
+import { RenderModeType } from "../Private/AgoraMediaBase";
 import { getBridge } from "../Private/internal/IrisApiEngine";
 import {
   AgoraElectronBridge,
   Channel,
   ChannelIdMap,
+  FormatRendererVideoConfig,
   RenderConfig,
   RendererVideoConfig,
-  FormatRendererVideoConfig,
   RenderMap,
   RENDER_MODE,
   ShareVideoFrame,
@@ -25,7 +26,6 @@ import {
 import GlRenderer from "./GlRenderer";
 import { IRenderer, RenderFailCallback } from "./IRenderer";
 import { YUVCanvasRenderer } from "./YUVCanvasRenderer";
-import { RenderModeType } from '../Private/AgoraMediaBase';
 
 class RendererManager {
   isRendering = false;

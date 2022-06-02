@@ -1,6 +1,6 @@
 import { VideoSourceType } from "../Private/AgoraBase";
-import AgoraRendererManager from "./RendererManager";
 import { RenderModeType } from "../Private/AgoraMediaBase";
+import AgoraRendererManager from "./RendererManager";
 
 const VIDEO_SOURCE_TYPE_STRING = "video-source-type";
 const UID_STRING = "uid";

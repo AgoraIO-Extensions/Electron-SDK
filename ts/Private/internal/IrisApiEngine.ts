@@ -1,19 +1,12 @@
-import { AgoraElectronBridge, CallBackModule, Result } from "../../Types";
-import { AgoraEnv, logDebug, logError, logWarn, parseJSON } from "../../Utils";
-import {
-  VideoCanvas,
-  VideoMirrorModeType,
-  VideoSourceType,
-} from "../AgoraBase";
+import { AgoraElectronBridge, Result } from "../../Types";
+import { AgoraEnv, logDebug, logError, parseJSON } from "../../Utils";
 import { IMediaPlayer } from "../IAgoraMediaPlayer";
 import { IDirectCdnStreamingEventHandler } from "../IAgoraRtcEngine";
-import { RtcConnection } from "../IAgoraRtcEngineEx";
 import { processIRtcEngineEventHandlerEx } from "../impl/IAgoraRtcEngineExImpl";
 import {
   processIDirectCdnStreamingEventHandler,
   processIRtcEngineEventHandler,
 } from "../impl/IAgoraRtcEngineImpl";
-import { handlerMPKEvent, MediaPlayerInternal } from "./MediaPlayerInternal";
 const agora = require("../../../build/Release/agora_node_ext");
 
 export const getBridge = (): AgoraElectronBridge => {
@@ -125,54 +118,6 @@ export function callIrisApi(
     };
   } else {
     switch (funcName) {
-      case "RtcEngine_initialize":
-        {
-          if (AgoraEnv.isInitializeEngine) {
-            logWarn("initialize: already initialize rtcEngine");
-            return ResultFail;
-          }
-          AgoraEnv.isInitializeEngine = true;
-          const bridge = getBridge();
-          bridge.InitializeEnv();
-          bridge.OnEvent(
-            CallBackModule.RTC,
-            "call_back_with_buffer",
-            handlerRTCEvent
-          );
-          bridge.OnEvent(
-            CallBackModule.MPK,
-            "call_back_with_buffer",
-            handlerMPKEvent
-          );
-          AgoraEnv.AgoraRendererManager?.enableRender();
-        }
-        break;
-      case "RtcEngineParameter_release":
-        {
-          if (!AgoraEnv.isInitializeEngine) {
-            logWarn("release: rtcEngine have not initialize");
-            return;
-          }
-          AgoraEnv.AgoraRendererManager?.enableRender(false);
-          AgoraEnv.isInitializeEngine = false;
-          sendMsg(funcName, params, buffer);
-          getBridge().ReleaseEnv();
-        }
-        break;
-      case "RtcEngine_createMediaPlayer":
-        {
-          if (!AgoraEnv.isInitializeEngine) {
-            logError("createMediaPlayer: rtcEngine have not initialize");
-          }
-          // @ts-ignore
-          const msgResult = sendMsg(funcName, params, buffer);
-          const mediaPlayerId =
-            msgResult &&
-            msgResult.callApiResult &&
-            msgResult.callApiResult.result;
-          return { result: new MediaPlayerInternal(mediaPlayerId) };
-        }
-        break;
       case "RtcEngine_registerEventHandler":
         AgoraEnv.engineEventHandlers.push(params.eventHandler);
         return ResultOk;
@@ -195,57 +140,6 @@ export function callIrisApi(
         break;
       case "MediaEngine_pushVideoFrame":
       case "MediaEngine_pushVideoFrame2":
-      // frame.buffer
-      // frame.eglContext
-      // frame.metadata_buffer
-      case "RtcEngine_setupLocalVideo":
-        {
-          const { sourceType, uid, view, renderMode, mirrorMode } =
-            params.canvas as VideoCanvas;
-          AgoraEnv.AgoraRendererManager?.setupLocalVideo({
-            videoSourceType: sourceType,
-            channelId: "",
-            uid,
-            view,
-            rendererOptions: {
-              contentMode: renderMode,
-              mirror: mirrorMode === VideoMirrorModeType.VideoMirrorModeEnabled,
-            },
-          });
-        }
-        break;
-      case "RtcEngine_setupRemoteVideo":
-        {
-          const { sourceType, uid, view, renderMode, mirrorMode } =
-            params.canvas as VideoCanvas;
-          AgoraEnv.AgoraRendererManager?.setupRemoteVideo({
-            videoSourceType: sourceType,
-            channelId: "",
-            uid,
-            view,
-            rendererOptions: {
-              contentMode: renderMode,
-              mirror: mirrorMode === VideoMirrorModeType.VideoMirrorModeEnabled,
-            },
-          });
-        }
-        break;
-      case "RtcEngineEx_setupRemoteVideoEx":
-        {
-          const { sourceType, uid, view, renderMode, mirrorMode } =
-            params.canvas as VideoCanvas;
-          const { channelId } = params.connection as RtcConnection;
-          AgoraEnv.AgoraRendererManager?.setupRemoteVideo({
-            videoSourceType: sourceType,
-            channelId,
-            uid,
-            view,
-            rendererOptions: {
-              contentMode: renderMode,
-              mirror: mirrorMode === VideoMirrorModeType.VideoMirrorModeEnabled,
-            },
-          });
-        }
         break;
     }
   }

@@ -28,20 +28,20 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-'use strict';
+"use strict";
 
-(function(root, factory) {
-  if (typeof define === 'function' && define.amd) {
+(function (root, factory) {
+  if (typeof define === "function" && define.amd) {
     // AMD. Register as an anonymous module.
     define([], factory);
   } else {
     // Browser globals
     var lib = factory.call(root);
-    Object.keys(lib).forEach(function(key) {
+    Object.keys(lib).forEach(function (key) {
       root[key] = lib[key];
     });
   }
-})(this, function() {
+})(this, function () {
   var topWindow = this;
 
   /** @module webgl-utils */
@@ -78,15 +78,15 @@
    */
   function makeFailHTML(msg) {
     return (
-      '' +
+      "" +
       '<table style="background-color: #8CE; width: 100%; height: 100%;"><tr>' +
       '<td align="center">' +
       '<div style="display: table-cell; vertical-align: middle;">' +
       '<div style="">' +
       msg +
-      '</div>' +
-      '</div>' +
-      '</td></tr></table>'
+      "</div>" +
+      "</div>" +
+      "</td></tr></table>"
     );
   }
 
@@ -95,8 +95,8 @@
    * @type {string}
    */
   var GET_A_WEBGL_BROWSER =
-    '' +
-    'This page requires a browser that supports WebGL.<br/>' +
+    "" +
+    "This page requires a browser that supports WebGL.<br/>" +
     '<a href="http://get.webgl.org">Click here to upgrade your browser.</a>';
 
   /**
@@ -104,7 +104,7 @@
    * @type {string}
    */
   var OTHER_PROBLEM =
-    '' +
+    "" +
     "It doesn't appear your computer can support WebGL.<br/>" +
     '<a href="http://get.webgl.org/troubleshooting/">Click here for more information.</a>';
 
@@ -116,7 +116,7 @@
    * @return {WebGLRenderingContext} The created context.
    */
   function create3DContext(canvas, opt_attribs) {
-    var names = ['webgl', 'experimental-webgl'];
+    var names = ["webgl", "experimental-webgl"];
     var context = null;
     for (var ii = 0; ii < names.length; ++ii) {
       try {
@@ -162,7 +162,7 @@
 
   function updateCSSIfInIFrame() {
     if (isInIFrame()) {
-      document.body.className = 'iframe';
+      document.body.className = "iframe";
     }
   }
 
@@ -196,7 +196,7 @@
       }
     } else if (!options.noTitle && options.title !== false) {
       var title = document.title;
-      var h1 = document.createElement('h1');
+      var h1 = document.createElement("h1");
       h1.innerText = title;
       document.body.insertBefore(h1, document.body.children[0]);
     }
@@ -263,11 +263,11 @@
   ) {
     var errFn = opt_errorCallback || error;
     var program = gl.createProgram();
-    shaders.forEach(function(shader) {
+    shaders.forEach(function (shader) {
       gl.attachShader(program, shader);
     });
     if (opt_attribs) {
-      obj_attrib.forEach(function(attrib, ndx) {
+      obj_attrib.forEach(function (attrib, ndx) {
         gl.bindAttribLocation(
           program,
           opt_locations ? opt_locations[ndx] : ndx,
@@ -282,7 +282,7 @@
     if (!linked) {
       // something went wrong with the link
       var lastError = gl.getProgramInfoLog(program);
-      errFn('Error in program linking:' + lastError);
+      errFn("Error in program linking:" + lastError);
 
       gl.deleteProgram(program);
       return null;
@@ -305,24 +305,24 @@
     opt_shaderType,
     opt_errorCallback
   ) {
-    var shaderSource = '';
+    var shaderSource = "";
     var shaderType;
     var shaderScript = document.getElementById(scriptId);
     if (!shaderScript) {
-      throw '*** Error: unknown script element' + scriptId;
+      throw "*** Error: unknown script element" + scriptId;
     }
     shaderSource = shaderScript.text;
 
     if (!opt_shaderType) {
-      if (shaderScript.type === 'x-shader/x-vertex') {
+      if (shaderScript.type === "x-shader/x-vertex") {
         shaderType = gl.VERTEX_SHADER;
-      } else if (shaderScript.type === 'x-shader/x-fragment') {
+      } else if (shaderScript.type === "x-shader/x-fragment") {
         shaderType = gl.FRAGMENT_SHADER;
       } else if (
         shaderType !== gl.VERTEX_SHADER &&
         shaderType !== gl.FRAGMENT_SHADER
       ) {
-        throw '*** Error: unknown shader type';
+        throw "*** Error: unknown shader type";
       }
     }
 
@@ -334,7 +334,7 @@
     );
   }
 
-  var defaultShaderType = ['VERTEX_SHADER', 'FRAGMENT_SHADER'];
+  var defaultShaderType = ["VERTEX_SHADER", "FRAGMENT_SHADER"];
 
   /**
    * Creates a program from 2 script tags.
@@ -457,89 +457,89 @@
       var type = uniformInfo.type;
       // Check if this uniform is an array
       var isArray =
-        uniformInfo.size > 1 && uniformInfo.name.substr(-3) === '[0]';
+        uniformInfo.size > 1 && uniformInfo.name.substr(-3) === "[0]";
       if (type === gl.FLOAT && isArray) {
-        return function(v) {
+        return function (v) {
           gl.uniform1fv(location, v);
         };
       }
       if (type === gl.FLOAT) {
-        return function(v) {
+        return function (v) {
           gl.uniform1f(location, v);
         };
       }
       if (type === gl.FLOAT_VEC2) {
-        return function(v) {
+        return function (v) {
           gl.uniform2fv(location, v);
         };
       }
       if (type === gl.FLOAT_VEC3) {
-        return function(v) {
+        return function (v) {
           gl.uniform3fv(location, v);
         };
       }
       if (type === gl.FLOAT_VEC4) {
-        return function(v) {
+        return function (v) {
           gl.uniform4fv(location, v);
         };
       }
       if (type === gl.INT && isArray) {
-        return function(v) {
+        return function (v) {
           gl.uniform1iv(location, v);
         };
       }
       if (type === gl.INT) {
-        return function(v) {
+        return function (v) {
           gl.uniform1i(location, v);
         };
       }
       if (type === gl.INT_VEC2) {
-        return function(v) {
+        return function (v) {
           gl.uniform2iv(location, v);
         };
       }
       if (type === gl.INT_VEC3) {
-        return function(v) {
+        return function (v) {
           gl.uniform3iv(location, v);
         };
       }
       if (type === gl.INT_VEC4) {
-        return function(v) {
+        return function (v) {
           gl.uniform4iv(location, v);
         };
       }
       if (type === gl.BOOL) {
-        return function(v) {
+        return function (v) {
           gl.uniform1iv(location, v);
         };
       }
       if (type === gl.BOOL_VEC2) {
-        return function(v) {
+        return function (v) {
           gl.uniform2iv(location, v);
         };
       }
       if (type === gl.BOOL_VEC3) {
-        return function(v) {
+        return function (v) {
           gl.uniform3iv(location, v);
         };
       }
       if (type === gl.BOOL_VEC4) {
-        return function(v) {
+        return function (v) {
           gl.uniform4iv(location, v);
         };
       }
       if (type === gl.FLOAT_MAT2) {
-        return function(v) {
+        return function (v) {
           gl.uniformMatrix2fv(location, false, v);
         };
       }
       if (type === gl.FLOAT_MAT3) {
-        return function(v) {
+        return function (v) {
           gl.uniformMatrix3fv(location, false, v);
         };
       }
       if (type === gl.FLOAT_MAT4) {
-        return function(v) {
+        return function (v) {
           gl.uniformMatrix4fv(location, false, v);
         };
       }
@@ -548,10 +548,10 @@
         for (var ii = 0; ii < info.size; ++ii) {
           units.push(textureUnit++);
         }
-        return (function(bindPoint, units) {
-          return function(textures) {
+        return (function (bindPoint, units) {
+          return function (textures) {
             gl.uniform1iv(location, units);
-            textures.forEach(function(texture, index) {
+            textures.forEach(function (texture, index) {
               gl.activeTexture(gl.TEXTURE0 + units[index]);
               gl.bindTexture(bindPoint, texture);
             });
@@ -559,15 +559,15 @@
         })(getBindPointForSamplerType(gl, type), units);
       }
       if (type === gl.SAMPLER_2D || type === gl.SAMPLER_CUBE) {
-        return (function(bindPoint, unit) {
-          return function(texture) {
+        return (function (bindPoint, unit) {
+          return function (texture) {
             gl.uniform1i(location, unit);
             gl.activeTexture(gl.TEXTURE0 + unit);
             gl.bindTexture(bindPoint, texture);
           };
         })(getBindPointForSamplerType(gl, type), textureUnit++);
       }
-      throw 'unknown type: 0x' + type.toString(16); // we should never get here.
+      throw "unknown type: 0x" + type.toString(16); // we should never get here.
     }
 
     var uniformSetters = {};
@@ -580,7 +580,7 @@
       }
       var name = uniformInfo.name;
       // remove the array suffix.
-      if (name.substr(-3) === '[0]') {
+      if (name.substr(-3) === "[0]") {
         name = name.substr(0, name.length - 3);
       }
       var setter = createUniformSetter(program, uniformInfo);
@@ -668,7 +668,7 @@
    * @memberOf module:webgl-utils
    */
   function setUniforms(setters, values) {
-    Object.keys(values).forEach(function(name) {
+    Object.keys(values).forEach(function (name) {
       var setter = setters[name];
       if (setter) {
         setter(values[name]);
@@ -689,7 +689,7 @@
     var attribSetters = {};
 
     function createAttribSetter(index) {
-      return function(b) {
+      return function (b) {
         gl.bindBuffer(gl.ARRAY_BUFFER, b.buffer);
         gl.enableVertexAttribArray(index);
         gl.vertexAttribPointer(
@@ -770,7 +770,7 @@
    * @deprecated use {@link module:webgl-utils.setBuffersAndAttributes}
    */
   function setAttributes(setters, buffers) {
-    Object.keys(buffers).forEach(function(name) {
+    Object.keys(buffers).forEach(function (name) {
       var setter = setters[name];
       if (setter) {
         setter(buffers[name]);
@@ -816,7 +816,7 @@
     opt_locations,
     opt_errorCallback
   ) {
-    shaderSources = shaderSources.map(function(source) {
+    shaderSources = shaderSources.map(function (source) {
       var script = document.getElementById(source);
       return script ? script.text : source;
     });
@@ -883,7 +883,7 @@
   }
 
   // Add your prefix here.
-  var browserPrefixes = ['', 'MOZ_', 'OP_', 'WEBKIT_'];
+  var browserPrefixes = ["", "MOZ_", "OP_", "WEBKIT_"];
 
   /**
    * Given an extension name like WEBGL_compressed_texture_s3tc
@@ -932,7 +932,7 @@
     if (!isInIFrame(window)) {
       return;
     }
-    var iframes = window.parent.document.getElementsByTagName('iframe');
+    var iframes = window.parent.document.getElementsByTagName("iframe");
     for (var ii = 0; ii < iframes.length; ++ii) {
       var iframe = iframes[ii];
       if (iframe.contentDocument === window.document) {
@@ -988,7 +988,7 @@
   // don't have to manually compute offsets
   function augmentTypedArray(typedArray, numComponents) {
     var cursor = 0;
-    typedArray.push = function() {
+    typedArray.push = function () {
       for (var ii = 0; ii < arguments.length; ++ii) {
         var value = arguments[ii];
         if (
@@ -1003,12 +1003,12 @@
         }
       }
     };
-    typedArray.reset = function(opt_index) {
+    typedArray.reset = function (opt_index) {
       cursor = opt_index || 0;
     };
     typedArray.numComponents = numComponents;
-    Object.defineProperty(typedArray, 'numElements', {
-      get: function() {
+    Object.defineProperty(typedArray, "numElements", {
+      get: function () {
         return (this.length / this.numComponents) | 0;
       },
     });
@@ -1054,15 +1054,15 @@
   }
 
   function allButIndices(name) {
-    return name !== 'indices';
+    return name !== "indices";
   }
 
   function createMapping(obj) {
     var mapping = {};
     Object.keys(obj)
       .filter(allButIndices)
-      .forEach(function(key) {
-        mapping['a_' + key] = key;
+      .forEach(function (key) {
+        mapping["a_" + key] = key;
       });
     return mapping;
   }
@@ -1089,7 +1089,7 @@
     if (typedArray instanceof Float32Array) {
       return gl.FLOAT;
     } // eslint-disable-line
-    throw 'unsupported typed array type';
+    throw "unsupported typed array type";
   }
 
   // This is really just a guess. Though I can't really imagine using
@@ -1110,16 +1110,16 @@
 
   function guessNumComponentsFromName(name, length) {
     var numComponents;
-    if (name.indexOf('coord') >= 0) {
+    if (name.indexOf("coord") >= 0) {
       numComponents = 2;
-    } else if (name.indexOf('color') >= 0) {
+    } else if (name.indexOf("color") >= 0) {
       numComponents = 4;
     } else {
       numComponents = 3; // position, normals, indices ...
     }
 
     if (length % numComponents > 0) {
-      throw 'can not guess numComponents. You should specify it.';
+      throw "can not guess numComponents. You should specify it.";
     }
 
     return numComponents;
@@ -1142,7 +1142,7 @@
 
     var type = array.type;
     if (!type) {
-      if (name === 'indices') {
+      if (name === "indices") {
         type = Uint16Array;
       }
     }
@@ -1199,7 +1199,7 @@
   function createAttribsFromArrays(gl, arrays, opt_mapping) {
     var mapping = opt_mapping || createMapping(arrays);
     var attribs = {};
-    Object.keys(mapping).forEach(function(attribName) {
+    Object.keys(mapping).forEach(function (attribName) {
       var bufferName = mapping[attribName];
       var array = makeTypedArray(arrays[bufferName], bufferName);
       attribs[attribName] = {
@@ -1361,7 +1361,7 @@
     };
     var indices = arrays.indices;
     if (indices) {
-      indices = makeTypedArray(indices, 'indices');
+      indices = makeTypedArray(indices, "indices");
       bufferInfo.indices = createBufferFromTypedArray(
         gl,
         indices,
@@ -1401,8 +1401,8 @@
    */
   function createBuffersFromArrays(gl, arrays) {
     var buffers = {};
-    Object.keys(arrays).forEach(function(key) {
-      var type = key === 'indices' ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
+    Object.keys(arrays).forEach(function (key) {
+      var type = key === "indices" ? gl.ELEMENT_ARRAY_BUFFER : gl.ARRAY_BUFFER;
       var array = makeTypedArray(arrays[key], name);
       buffers[key] = createBufferFromTypedArray(gl, array, type);
     });
@@ -1460,7 +1460,7 @@
     var lastUsedProgramInfo = null;
     var lastUsedBufferInfo = null;
 
-    objectsToDraw.forEach(function(object) {
+    objectsToDraw.forEach(function (object) {
       var programInfo = object.programInfo;
       var bufferInfo = object.bufferInfo;
       var bindBuffers = false;

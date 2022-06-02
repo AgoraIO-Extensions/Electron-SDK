@@ -1,13 +1,13 @@
 import { VideoSourceType } from "./Private/AgoraBase";
-import { IMediaPlayerSourceObserver } from "./Private/IAgoraMediaPlayerSource";
-import { IRtcEngineEventHandlerEx } from "./Private/IAgoraRtcEngineEx";
-import { RendererManager } from "./Renderer/RendererManager";
+import { RenderModeType } from "./Private/AgoraMediaBase";
+import { IRtcEngine } from "./Private/IAgoraRtcEngine";
+import { IRtcEngineEx } from "./Private/IAgoraRtcEngineEx";
+import { RtcEngineExImplInternal } from "./Private/internal/RtcEngineExImplInternal";
 import {
-  AgoraElectronBridge,
+  AgoraEnvType,
   FormatRendererVideoConfig,
   RendererVideoConfig,
 } from "./Types";
-import { RenderModeType } from './Private/AgoraMediaBase';
 
 export const TAG = "[Agora]: ";
 export const DEBUG_TAG = "[Agora Debug]: ";
@@ -155,16 +155,11 @@ function copyProperties<T>(target: T, source: any) {
   }
 }
 
-interface AgoraEnv {
-  enableLogging: boolean;
-  enableDebugLogging: boolean;
-  isInitializeEngine: boolean;
-  engineEventHandlers: IRtcEngineEventHandlerEx[];
-  mediaPlayerEventHandlers: IMediaPlayerSourceObserver[];
-  AgoraElectronBridge?: AgoraElectronBridge;
-  AgoraRendererManager?: RendererManager;
-}
-export const AgoraEnv: AgoraEnv = {
+export const createAgoraRtcEngine = (): IRtcEngine &
+  IRtcEngineEx &
+  RtcEngineExImplInternal => new RtcEngineExImplInternal();
+
+export const AgoraEnv: AgoraEnvType = {
   enableLogging: true,
   enableDebugLogging: false,
   isInitializeEngine: false,

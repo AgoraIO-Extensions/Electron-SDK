@@ -1,6 +1,6 @@
 import { EventEmitter } from "events";
-import { RendererOptions, ShareVideoFrame } from "../Types";
 import { RenderModeType } from "../Private/AgoraMediaBase";
+import { RendererOptions, ShareVideoFrame } from "../Types";
 
 export type RenderFailCallback =
   | ((obj: { error: string }) => void)

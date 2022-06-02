@@ -2,8 +2,8 @@ const createProgramFromSources =
   require("./webgl-utils").createProgramFromSources;
 
 import { EventEmitter } from "events";
-import { logError, logWarn } from "../../Utils";
 import { ShareVideoFrame } from "../../Types";
+import { logError, logWarn } from "../../Utils";
 import { IRenderer, RenderFailCallback } from "../IRenderer";
 
 const vertexShaderSource =

@@ -1,16 +1,16 @@
 import electron, { ipcRenderer } from "electron";
 import React, { Component } from "react";
-import AgoraRtcEngine, {
+import createAgoraRtcEngine, {
   AgoraEnv,
   AudioProfileType,
   AudioScenarioType,
   ChannelProfileType,
   ClientRoleType,
-  RenderModeType,
   DegradationPreference,
   IAudioDeviceManagerImpl,
   IVideoDeviceManagerImpl,
   OrientationMode,
+  RenderModeType,
   VideoCodecType,
   VideoMirrorModeType,
   VideoSourceType,
@@ -26,7 +26,7 @@ AgoraEnv.enableLogging = true;
 AgoraEnv.enableDebugLogging = true;
 const { AgoraRendererManager } = AgoraEnv;
 
-const rtcEngine = new AgoraRtcEngine();
+const rtcEngine = createAgoraRtcEngine();
 window.rtcEngine = rtcEngine;
 let mpk;
 
@@ -197,11 +197,6 @@ export default class App extends Component {
     rtcEngine.leaveChannel();
   };
   onPressTestDeviceManager = () => {
-    console.log(
-      rtcEngine.getVideoDevices(),
-      rtcEngine.getAudioPlaybackDevices(),
-      rtcEngine.getAudioPlaybackDevices()
-    );
     const videoDeviceManager = new IVideoDeviceManagerImpl();
     window.videoDeviceManage = videoDeviceManager;
     console.log(

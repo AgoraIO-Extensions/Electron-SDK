@@ -1,6 +1,19 @@
 import { VideoSourceType } from "./Private/AgoraBase";
-import { IRenderer } from "./Renderer/IRenderer";
 import { RenderModeType } from "./Private/AgoraMediaBase";
+import { IMediaPlayerSourceObserver } from "./Private/IAgoraMediaPlayerSource";
+import { IRtcEngineEventHandlerEx } from "./Private/IAgoraRtcEngineEx";
+import { IRenderer } from "./Renderer/IRenderer";
+import { RendererManager } from "./Renderer/RendererManager";
+
+export interface AgoraEnvType {
+  enableLogging: boolean;
+  enableDebugLogging: boolean;
+  isInitializeEngine: boolean;
+  engineEventHandlers: IRtcEngineEventHandlerEx[];
+  mediaPlayerEventHandlers: IMediaPlayerSourceObserver[];
+  AgoraElectronBridge?: AgoraElectronBridge;
+  AgoraRendererManager?: RendererManager;
+}
 
 export interface CanvasOptions {
   frameWidth: number;
@@ -32,7 +45,7 @@ export interface RendererVideoConfig {
   view?: HTMLElement;
   rendererOptions?: RendererOptions;
 }
-type TodoPreview = Pick<FormatRendererVideoConfig, "uid" | "view">;
+
 export interface FormatRendererVideoConfig {
   videoSourceType: VideoSourceType;
   channelId: Channel;
