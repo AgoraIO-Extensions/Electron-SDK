@@ -27,20 +27,9 @@ export const handlerRTCEvent = function (
   bufferCount: number
 ) {
   const obj = parseJSON(data);
-  logDebug(
-    "event",
-    event,
-    "data",
-    obj,
-    "buffer",
-    buffer,
-    "bufferLength",
-    bufferLength,
-    "bufferCount",
-    bufferCount
-  );
-
   const isEx = event.endsWith("Ex");
+  preProcessEvent(event, obj, buffer, bufferLength, bufferCount);
+
   AgoraEnv.engineEventHandlers.forEach((value) => {
     if (!value) {
       return;
@@ -76,7 +65,7 @@ export const handlerRTCEvent = function (
 export const sendMsg = (
   funcName: string,
   params: any,
-  buffer?: ArrayBufferLike,
+  buffer?: Uint8Array[],
   bufferCount = 0
 ): Result => {
   const irisReturnValue = getBridge().CallApi(
@@ -85,15 +74,7 @@ export const sendMsg = (
     buffer,
     bufferCount
   );
-  logDebug(
-    "sendMsg",
-    "funcName",
-    funcName,
-    "params",
-    params,
-    "irisReturnValue",
-    irisReturnValue
-  );
+
   const result = parseJSON(irisReturnValue.callApiResult);
   return result;
 };
@@ -107,7 +88,8 @@ const ResultFail = {
 export function callIrisApi(
   funcName: string,
   params: any,
-  buffer?: ArrayBufferLike
+  buffer?: Uint8Array[],
+  bufferCount: number = 0
 ): any {
   if (funcName.startsWith("MediaPlayer_")) {
     //@ts-ignore
@@ -126,23 +108,21 @@ export function callIrisApi(
           (value) => value !== params.eventHandler
         );
         return ResultOk;
-      case "RtcEngine_sendStreamMessage":
-      case "RtcEngine_sendStreamMessageEx":
-        // data
-        break;
-      case "MediaEngine_pullAudioFrame":
-      case "MediaEngine_pushAudioFrame":
-        // frame.buffer
-        break;
-      case "MediaEngine_pushEncodedVideoImage":
-      case "MediaEngine_pushEncodedVideoImage2":
-        // imageBuffer
-        break;
-      case "MediaEngine_pushVideoFrame":
-      case "MediaEngine_pushVideoFrame2":
-        break;
     }
   }
 
-  return sendMsg(funcName, params, buffer);
+  return sendMsg(funcName, params, buffer, bufferCount);
+}
+
+function preProcessEvent(event: string,
+  data: any,
+  buffer: Uint8Array[],
+  bufferLength: number,
+  bufferCount: number): any {
+  switch (event) {
+    case "onStreamMessage":
+    case "onStreamMessageEx":
+      data.data = new Uint8Array(buffer[0]);
+      break;
+  }
 }

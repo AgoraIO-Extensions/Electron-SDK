@@ -100,7 +100,7 @@ export interface AgoraElectronBridge {
   CallApi(
     funcName: string,
     params: any,
-    buffer?: ArrayBufferLike,
+    buffer?: Uint8Array[],
     bufferCount?: number
   ): Result;
   InitializeEnv(): void;
@@ -120,7 +120,7 @@ export interface AgoraElectronBridge {
   sendMsg: (
     funcName: string,
     params: any,
-    buffer?: ArrayBufferLike,
+    buffer?: Uint8Array[],
     bufferCount?: number
   ) => Result;
 }

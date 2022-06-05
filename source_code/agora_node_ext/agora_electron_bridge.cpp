@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:37
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2022-05-31 14:42:31
+ * @Last Modified time: 2022-06-05 17:45:19
  */
 #include "agora_electron_bridge.h"
 #include <memory>
@@ -29,6 +29,7 @@ AgoraElectronBridge::~AgoraElectronBridge() {
 }
 
 napi_value AgoraElectronBridge::Init(napi_env env, napi_value exports) {
+  LOG_F(INFO, "AgoraElectronBridge::Init()");
   napi_status status = napi_ok;
   napi_property_descriptor properties[] = {
       DECLARE_NAPI_METHOD("CallApi", CallApi),
@@ -96,9 +97,10 @@ napi_value AgoraElectronBridge::Constructor(napi_env env) {
 }
 
 void AgoraElectronBridge::Destructor(napi_env env,
-                                   void* nativeObject,
-                                   void* finalize_hint) {
+                                     void* nativeObject,
+                                     void* finalize_hint) {
   reinterpret_cast<AgoraElectronBridge*>(nativeObject)->~AgoraElectronBridge();
+  LOG_F(INFO, "AgoraElectronBridge::Destructor()");
 }
 
 napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
@@ -131,78 +133,37 @@ napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
   std::shared_ptr<IrisApiEngine> irisApiEngine =
       agoraElectronBridge->_iris_api_engine;
 
-  // if (irisApiEngine) {
-  //   try {
-  //     if (bufferCount > 0) {
-  //       std::vector<void*> data;
-  //       if (bufferCount > 0) {
-  //         data.resize(bufferCount);
-  //         bool result = false;
-  //         napi_is_array(env, args[2], &result);
-  //         assert(result == true);
-  //         napi_value item[bufferCount];
-  //         for (int i = 0; i < bufferCount; i++) {
-  //           napi_get_element(env, args[2], i, &item[i]);
-  //           napi_get_typedarray_info(env, item[i], nullptr, nullptr,
-  //           &data[i],
-  //                                    nullptr, nullptr);
-  //         }
-  //       }
-  //       ret = irisApiEngine->CallIrisApi(funcName.c_str(), parameter.c_str(),
-  //                                        parameter.length(), data.data(),
-  //                                        bufferCount,
-  //                                        agoraElectronBridge->_result);
-  //     } else {
-  //       ret =
-  //           irisApiEngine->CallIrisApi(funcName.c_str(), parameter.c_str(),
-  //                                      parameter.length(), nullptr, 0,
-  //                                      agoraElectronBridge->_result);
-  //     }
-  //   } catch (std::exception& e) {
-  //     agoraElectronBridge->OnApiError(e.what());
-  //     LOG_F(INFO, "CallApi(func name:%s) parameter: catch excepton msg: %s",
-  //           funcName.c_str(), e.what());
-  //   }
-  // } else {
-  //   LOG_F(INFO, "CallApi(func name:%s) parameter did not initialize engine
-  //   yet",
-  //         funcName.c_str());
-  //   ret = ERROR_NOT_INIT;
-  // }
-
   if (irisApiEngine) {
     try {
-      if (funcName.compare(FUNC_RTCENGINE_SETUPLOCALVIDEO) == 0 ||
-          funcName.compare(FUNC_RTCENGINE_SETUPREMOTEVIDEO) == 0 ||
-          funcName.compare(FUNC_RTCENGINE_SENDSTREAMMESSAGE) == 0 ||
-          funcName.compare(FUNC_RTCENGINEEX_SENDSTREAMMESSAGEEX) == 0 ||
-          funcName.compare(FUNC_MEDIAENGINE_PULLAUDIOFRAME) == 0 ||
-          funcName.compare(FUNC_MEDIAENGINE_PUSHAUDIOFRAME) == 0 ||
-          funcName.compare(FUNC_MEDIAENGINE_PUSHENCODEDVIDEOIMAGE) == 0 ||
-          funcName.compare(FUNC_MEDIAENGINE_PUSHENCODEDVIDEOIMAGE2) == 0) {
-        uint64* buffer = nullptr;  // get node buffer  todo
+      if (bufferCount > 0) {
+        std::vector<void*> data;
+        data.resize(bufferCount);
+        bool result = false;
+        napi_is_array(env, args[2], &result);
+        assert(result == true);
+        napi_value item[bufferCount];
+        for (int i = 0; i < bufferCount; i++) {
+          napi_get_element(env, args[2], i, &item[i]);
+          napi_get_typedarray_info(env, item[i], nullptr, nullptr, &data[i],
+                                   nullptr, nullptr);
+        }
+
         ret = irisApiEngine->CallIrisApi(
-            funcName.c_str(), parameter.c_str(), parameter.length(), nullptr,
-            bufferCount, agoraElectronBridge->_result);
-      } else if (funcName.compare(FUNC_MEDIAENGINE_PUSHVIDEOFRAME) == 0 ||
-                 funcName.compare(FUNC_MEDIAENGINE_PUSHVIDEOFRAME2) == 0) {
-        uint64* buffer = nullptr;  // todo get node buffers
-        ret = irisApiEngine->CallIrisApi(
-            funcName.c_str(), parameter.c_str(), parameter.length(), nullptr,
-            bufferCount, agoraElectronBridge->_result);
-      } else
+            funcName.c_str(), parameter.c_str(), parameter.length(),
+            data.data(), bufferCount, agoraElectronBridge->_result);
+
+      } else {
         ret = irisApiEngine->CallIrisApi(funcName.c_str(), parameter.c_str(),
                                          parameter.length(), nullptr, 0,
                                          agoraElectronBridge->_result);
-      LOG_F(INFO, "CallApi(func name:%s) parameter: %s, ret: %d",
-            funcName.c_str(), parameter.c_str(), ret);
+      }
     } catch (std::exception& e) {
       agoraElectronBridge->OnApiError(e.what());
       LOG_F(INFO, "CallApi(func name:%s) parameter: catch excepton msg: %s",
             funcName.c_str(), e.what());
     }
   } else {
-    LOG_F(INFO, "CallApi(func name:%s) parameter did not initialize engine yet",
+    LOG_F(INFO, "CallApi(func name:%s) fail, not init engine",
           funcName.c_str());
     ret = ERROR_NOT_INIT;
   }
@@ -237,10 +198,10 @@ napi_value AgoraElectronBridge::OnEvent(napi_env env, napi_callback_info info) {
   if (agoraElectronBridge->_iris_api_engine) {
     if (callBackModule == CallBackModule::RTC)
       agoraElectronBridge->_iris_rtc_event_handler->addEvent(eventName, env, cb,
-                                                           global);
+                                                             global);
     else if (callBackModule == CallBackModule::MPK)
       agoraElectronBridge->_iris_mpk_event_handler->addEvent(eventName, env, cb,
-                                                           global);
+                                                             global);
 
     ret = ERROR_OK;
   } else {
@@ -253,7 +214,7 @@ napi_value AgoraElectronBridge::OnEvent(napi_env env, napi_callback_info info) {
 }
 
 napi_value AgoraElectronBridge::GetScreenWindowsInfo(napi_env env,
-                                                   napi_callback_info info) {
+                                                     napi_callback_info info) {
   napi_status status;
   napi_value jsthis;
   status = napi_get_cb_info(env, info, nullptr, nullptr, &jsthis, nullptr);
@@ -293,7 +254,7 @@ napi_value AgoraElectronBridge::GetScreenWindowsInfo(napi_env env,
 }
 
 napi_value AgoraElectronBridge::GetScreenDisplaysInfo(napi_env env,
-                                                    napi_callback_info info) {
+                                                      napi_callback_info info) {
   napi_status status;
   napi_value jsthis;
   status = napi_get_cb_info(env, info, nullptr, nullptr, &jsthis, nullptr);
@@ -339,7 +300,7 @@ napi_value AgoraElectronBridge::GetScreenDisplaysInfo(napi_env env,
 }
 
 napi_value AgoraElectronBridge::SetAddonLogFile(napi_env env,
-                                              napi_callback_info info) {
+                                                napi_callback_info info) {
   napi_status status;
   napi_value jsthis;
   size_t argc = 2;
@@ -367,7 +328,7 @@ void AgoraElectronBridge::OnApiError(const char* errorMessage) {
 }
 
 napi_value AgoraElectronBridge::EnableVideoFrameCache(napi_env env,
-                                                    napi_callback_info info) {
+                                                      napi_callback_info info) {
   napi_status status;
   napi_value jsthis;
   size_t argc = 1;
@@ -417,8 +378,9 @@ napi_value AgoraElectronBridge::EnableVideoFrameCache(napi_env env,
   RETURE_NAPI_OBJ();
 }
 
-napi_value AgoraElectronBridge::DisableVideoFrameCache(napi_env env,
-                                                     napi_callback_info info) {
+napi_value AgoraElectronBridge::DisableVideoFrameCache(
+    napi_env env,
+    napi_callback_info info) {
   napi_status status;
   napi_value jsthis;
   size_t argc = 1;
@@ -463,7 +425,7 @@ napi_value AgoraElectronBridge::DisableVideoFrameCache(napi_env env,
 }
 
 napi_value AgoraElectronBridge::GetVideoStreamData(napi_env env,
-                                                 napi_callback_info info) {
+                                                   napi_callback_info info) {
   napi_status status;
   napi_value jsthis;
   size_t argc = 1;
@@ -541,7 +503,7 @@ napi_value AgoraElectronBridge::GetVideoStreamData(napi_env env,
 }
 
 napi_value AgoraElectronBridge::InitializeEnv(napi_env env,
-                                            napi_callback_info info) {
+                                              napi_callback_info info) {
   napi_status status;
   napi_value jsthis;
   size_t argc = 2;
@@ -575,7 +537,7 @@ napi_value AgoraElectronBridge::InitializeEnv(napi_env env,
 }
 
 napi_value AgoraElectronBridge::ReleaseEnv(napi_env env,
-                                         napi_callback_info info) {
+                                           napi_callback_info info) {
   napi_status status;
   napi_value jsthis;
   size_t argc = 2;
@@ -593,19 +555,24 @@ napi_value AgoraElectronBridge::ReleaseEnv(napi_env env,
 }
 
 void AgoraElectronBridge::Release() {
-  if (!_iris_api_engine)
-    LOG_F(INFO, "AgoraElectronBridge::Release  _iris_api_engine null");
-  // uncontrol
-  _iris_api_engine->Detach(_iris_video_frame_buffer_manager.get());
-  _iris_api_engine->UnsetIrisRtcEngineEventHandler(_iris_rtc_event_handler.get());
-  _iris_api_engine->UnsetIrisMediaPlayerEventHandler(_iris_mpk_event_handler.get());
+  LOG_F(INFO, "AgoraElectronBridge::Release()");
 
-  // reset
-  _iris_rtc_event_handler.reset();
-  _iris_mpk_event_handler.reset();
-  _iris_video_frame_buffer_manager.reset();
-  _iris_api_engine.reset();
-  LOG_F(INFO, "AgoraElectronBridge::Release");
+  if (_iris_api_engine) {
+    LOG_F(INFO, "AgoraElectronBridge::Release() reset rtcEngine"); 
+    // uncontrol
+    _iris_api_engine->Detach(_iris_video_frame_buffer_manager.get());
+    _iris_api_engine->UnsetIrisRtcEngineEventHandler(
+        _iris_rtc_event_handler.get());
+    _iris_api_engine->UnsetIrisMediaPlayerEventHandler(
+        _iris_mpk_event_handler.get());
+
+    // reset
+    _iris_rtc_event_handler.reset();
+    _iris_mpk_event_handler.reset();
+    _iris_video_frame_buffer_manager.reset();
+    _iris_api_engine.reset();
+    LOG_F(INFO, "AgoraElectronBridge::Release");
+  }
 }
 }  // namespace electron
 }  // namespace rtc

@@ -38,7 +38,7 @@ export const logInfo = (msg: string, ...optParams: any[]) => {
   if (!AgoraEnv.enableLogging) {
     return;
   }
-  console.log(`${TAG} ${msg}`, ...optParams);
+ console.log(`${TAG} ${msg}`, ...optParams);
 };
 export const logDebug = (msg: string, ...optParams: any[]) => {
   if (!AgoraEnv.enableLogging || !AgoraEnv.enableDebugLogging) {

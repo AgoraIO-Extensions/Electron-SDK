@@ -10,7 +10,7 @@ import { IMediaPlayer } from "../IAgoraMediaPlayer";
 import { ChannelMediaOptions, RtcEngineContext } from "../IAgoraRtcEngine";
 import { IRtcEngineEventHandlerEx, RtcConnection } from "../IAgoraRtcEngineEx";
 import { IRtcEngineExImpl } from "../impl/IAgoraRtcEngineExImpl";
-import { getBridge, handlerRTCEvent } from "./IrisApiEngine";
+import { callIrisApi, getBridge, handlerRTCEvent } from "./IrisApiEngine";
 import { handlerMPKEvent, MediaPlayerInternal } from "./MediaPlayerInternal";
 
 export class RtcEngineExImplInternal extends IRtcEngineExImpl {
@@ -124,6 +124,24 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
       },
     });
     return 0;
+  }
+
+  override sendStreamMessage (streamId: number, data: Uint8Array, length: number): number {
+    console.log('agora, sendStreamMessage===');
+    const apiType = 'RtcEngine_sendStreamMessage'
+    const jsonParams = {
+      streamId,
+      length,
+      toJSON: () => {
+        return {
+          streamId,
+          length
+        }
+      }
+    }
+    let bufferArray = [data];
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams, bufferArray, bufferArray.length);
+    return jsonResults.result
   }
 
   destroyRendererByView(view: Element): void {
