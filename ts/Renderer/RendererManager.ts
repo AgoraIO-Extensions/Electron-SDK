@@ -292,11 +292,11 @@ class RendererManager {
           return;
       }
       if (finalResult.ret !== 0) {
-        logWarn("GetVideoStreamData ret is", finalResult.ret);
+        logWarn("GetVideoStreamData ret is", finalResult.ret, rendererItem);
         return;
       }
       if (!finalResult.isNewFrame) {
-        logDebug("GetVideoStreamData isNewFrame is false");
+        logDebug("GetVideoStreamData isNewFrame is false", rendererItem);
         return;
       }
       const renderVideoFrame = rendererItem.shareVideoFrame;

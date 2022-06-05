@@ -404,7 +404,7 @@ napi_value AgoraElectronBridge::EnableVideoFrameCache(napi_env env,
   } else {
     try {
       iris::IrisVideoFrameBuffer buffer(
-          IrisVideoFrameType::kVideoFrameTypeYUV420, nullptr, width, height);
+          IrisVideoFrameType::kVideoFrameTypeYUV420);
       agoraElectronBridge->_iris_video_frame_buffer_manager
           ->EnableVideoFrameBuffer(buffer, &config);
       ret = ERROR_OK;

@@ -5,6 +5,8 @@ import { IMediaPlayerSourceObserver } from "../IAgoraMediaPlayerSource";
 import { IMediaPlayerImpl } from "../impl/IAgoraMediaPlayerImpl";
 import { processIMediaPlayerSourceObserver } from "../impl/IAgoraMediaPlayerSourceImpl";
 
+const MediaPlayerSplitString = "MediaPlayerSourceObserver_";
+
 export const handlerMPKEvent = function (
   event: string,
   data: string,
@@ -25,13 +27,16 @@ export const handlerMPKEvent = function (
     "bufferCount",
     bufferCount
   );
-
+  
+  
+  let splitStr = event.split(MediaPlayerSplitString);
+  logDebug("agora  ", splitStr);
   AgoraEnv.mediaPlayerEventHandlers.forEach((value) => {
     if (!value) {
       return;
     }
     try {
-      processIMediaPlayerSourceObserver(value, event, obj);
+      processIMediaPlayerSourceObserver(value, splitStr[1], obj);
     } catch (error) {
       logError("mediaPlayerEventHandlers::processIMediaPlayerSourceObserver");
     }
