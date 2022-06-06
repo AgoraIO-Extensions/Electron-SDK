@@ -26,9 +26,21 @@ export const handlerRTCEvent = function (
   bufferLength: number,
   bufferCount: number
 ) {
-  const obj = parseJSON(data);
+  const parseData = "onApiError" === event ? data : parseJSON(data);
+  logDebug(
+    "event",
+    event,
+    "data",
+    parseData,
+    "buffer",
+    buffer,
+    "bufferLength",
+    bufferLength,
+    "bufferCount",
+    bufferCount
+  );
   const isEx = event.endsWith("Ex");
-  preProcessEvent(event, obj, buffer, bufferLength, bufferCount);
+  preProcessEvent(event, parseData, buffer, bufferLength, bufferCount);
 
   AgoraEnv.engineEventHandlers.forEach((value) => {
     if (!value) {
@@ -36,7 +48,7 @@ export const handlerRTCEvent = function (
     }
     if (isEx) {
       try {
-        processIRtcEngineEventHandlerEx(value, event, obj);
+        processIRtcEngineEventHandlerEx(value, event, parseData);
       } catch (error) {
         logError("engineEventHandlers::processIRtcEngineEventHandlerEx", error);
       }
@@ -46,7 +58,7 @@ export const handlerRTCEvent = function (
       processIDirectCdnStreamingEventHandler(
         value as IDirectCdnStreamingEventHandler,
         event,
-        obj
+        parseData
       );
     } catch (error) {
       logError(
@@ -55,7 +67,7 @@ export const handlerRTCEvent = function (
       );
     }
     try {
-      processIRtcEngineEventHandler(value, event, obj);
+      processIRtcEngineEventHandler(value, event, parseData);
     } catch (error) {
       logError("engineEventHandlers::processIRtcEngineEventHandler", error);
     }
@@ -73,6 +85,15 @@ export const sendMsg = (
     JSON.stringify(params),
     buffer,
     bufferCount
+  );
+  logDebug(
+    "sendMsg",
+    "funcName",
+    funcName,
+    "params",
+    params,
+    "irisReturnValue",
+    irisReturnValue
   );
 
   const result = parseJSON(irisReturnValue.callApiResult);
@@ -114,11 +135,13 @@ export function callIrisApi(
   return sendMsg(funcName, params, buffer, bufferCount);
 }
 
-function preProcessEvent(event: string,
+function preProcessEvent(
+  event: string,
   data: any,
   buffer: Uint8Array[],
   bufferLength: number,
-  bufferCount: number): any {
+  bufferCount: number
+): any {
   switch (event) {
     case "onStreamMessage":
     case "onStreamMessageEx":

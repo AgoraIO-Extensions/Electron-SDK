@@ -126,22 +126,32 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     return 0;
   }
 
-  override sendStreamMessage (streamId: number, data: Uint8Array, length: number): number {
-    console.log('agora, sendStreamMessage===');
-    const apiType = 'RtcEngine_sendStreamMessage'
+  override sendStreamMessage(
+    streamId: number,
+    data: Uint8Array,
+    length: number
+  ): number {
+    console.log("agora, sendStreamMessage===");
+    const apiType = "RtcEngine_sendStreamMessage";
     const jsonParams = {
       streamId,
       length,
       toJSON: () => {
         return {
           streamId,
-          length
-        }
-      }
-    }
+          length,
+        };
+      },
+    };
     let bufferArray = [data];
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams, bufferArray, bufferArray.length);
-    return jsonResults.result
+    const jsonResults = callIrisApi.call(
+      this,
+      apiType,
+      jsonParams,
+      bufferArray,
+      bufferArray.length
+    );
+    return jsonResults.result;
   }
 
   destroyRendererByView(view: Element): void {
@@ -160,4 +170,3 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     );
   }
 }
-
