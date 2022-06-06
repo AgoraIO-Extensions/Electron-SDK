@@ -1202,6 +1202,20 @@ export interface LocalAudioStats {
   sentBitrate: number;
 }
 
+/**
+* Video COMPRESSION PREFERENCE.
+*/
+export enum COMPRESSION_PREFERENCE {
+  /**
+  * Prefer low latency, it is default behavior, normally in real-time communication, latency is the first priority.
+   */
+  PREFER_LOW_LATENCY,
+  /**
+  * Prefer quality in sacrifice of a degree of latency, usually around 30ms ~ 150ms, depends target fps
+  */
+  PREFER_QUALITY,
+};
+
 /** VideoEncoderConfiguration */
 export interface VideoEncoderConfiguration {
   /**
@@ -1302,6 +1316,10 @@ export interface VideoEncoderConfiguration {
    * If mirror_type is set to VIDEO_MIRROR_MODE_ENABLED, then the video frame would be mirrored before encoding.
    */
   mirrorMode: VIDEO_MIRROR_MODE_TYPE;
+  /**
+   * The video compressionPreference: #compressionPreference.
+   */
+  compressionPreference: COMPRESSION_PREFERENCE;
 }
 
 /**
