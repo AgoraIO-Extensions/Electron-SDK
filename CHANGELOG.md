@@ -1,3 +1,7 @@
+## 3.8.200-rc.220-build.606(Jun 06th, 2022)
+- update native sdk
+- update  VideoEncoderConfiguration::compressionPreference
+
 ## 3.8.200-build.601(Jun 1th, 2022)
 - update native sdk
 - remove api

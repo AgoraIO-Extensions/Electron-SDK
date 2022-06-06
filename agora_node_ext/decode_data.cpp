@@ -443,6 +443,15 @@ void decodeVideoEncoderConfiguration(
   }
 
   config.mirrorMode = (VIDEO_MIRROR_MODE_TYPE)mirrorMode;
+
+  int32_t compressionPreference = 0;
+  status = napi_get_object_property_int32_(
+      isolate, value, "compressionPreference", compressionPreference);
+  if (status != napi_ok) {
+    return;
+  }
+
+  config.compressionPreference = (COMPRESSION_PREFERENCE)compressionPreference;
 }
 
 void decodeRtcConnection(RtcConnection &connection, std::string &channelId,
