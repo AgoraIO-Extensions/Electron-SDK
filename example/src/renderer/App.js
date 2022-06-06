@@ -9,6 +9,7 @@ import createAgoraRtcEngine, {
   DegradationPreference,
   IAudioDeviceManagerImpl,
   IVideoDeviceManagerImpl,
+  logDebug,
   OrientationMode,
   RenderModeType,
   VideoCodecType,
@@ -149,32 +150,54 @@ export default class App extends Component {
   onJoinChannelSuccessEx(connection, elapsed) {
     this.setState({ isJoin: true });
     console.info("JOINED_CHANNEL", connection, elapsed);
+    let streamId = rtcEngine.createDataStream(true, true);
+    setInterval(() => {
+      console.log('streamId:  ', streamId)
+      let buffer = new Uint8Array(6)
+      buffer[0] = 100
+      buffer[1] = 9
+      buffer[2] = 8
+      buffer[3] = 4
+      buffer[4] = 6
+      let streamMessage  = rtcEngine.sendStreamMessage(streamId, buffer, buffer.length)
+      console.log('sendStreamMessage:  ', streamMessage, buffer.length, buffer[3])
+    }, 50);
   }
+
+  onStreamMessageEx(connection, remoteUid, streamId, data, length, sentTs) {
+    console.log("onStreamMessageEx ======= ", connection, remoteUid, streamId, data[0], data[1], data[2], data[3], data[4], length, sentTs);
+  }
+
+  onApiCallExecuted(err, api, result) {
+    console.log("onApiCallExecuted  ", err, api, result)
+  }
+
   onLeaveChannelEx(connection, stats) {
     console.info("LEAVE_CHANNEL", connection, stats);
   }
+  
   onUserJoinedEx(connection, remoteUid, elapsed) {
-    console.info("USER_JOINED", connection, remoteUid, elapsed);
-    if (remoteUid === 10001 || remoteUid === 10011 || remoteUid === 10012) {
-      console.log("USER_JOINED 过滤", remoteUid);
-      return;
-    }
-    const { users } = this.state;
-    console.log("USER_JOINED", users);
+    // console.info("USER_JOINED", connection, remoteUid, elapsed);
+    // if (remoteUid === 10001 || remoteUid === 10011 || remoteUid === 10012) {
+    //   console.log("USER_JOINED 过滤", remoteUid);
+    //   return;
+    // }
+    // const { users } = this.state;
+    // console.log("USER_JOINED", users);
 
-    if (users.filter((id) => id === remoteUid).length > 0) {
-      console.log("USER_JOINED filterUser length", filterUser);
-      return;
-    }
+    // if (users.filter((id) => id === remoteUid).length > 0) {
+    //   console.log("USER_JOINED filterUser length", filterUser);
+    //   return;
+    // }
 
-    console.log("USER_JOINED 没有过滤", remoteUid);
-    this.setState({ users: [...users, remoteUid] });
+    // console.log("USER_JOINED 没有过滤", remoteUid);
+    // this.setState({ users: [...users, remoteUid] });
   }
   onUserOfflineEx(connection, remoteUid, reason) {
-    console.info("USER_OFFLINE", connection, remoteUid, reason);
+    // console.info("USER_OFFLINE", connection, remoteUid, reason);
 
-    const { users } = this.state;
-    this.setState({ users: users.filter((uid) => uid !== remoteUid) });
+    // const { users } = this.state;
+    // this.setState({ users: users.filter((uid) => uid !== remoteUid) });
   }
   onPlayerSourceStateChanged(state, ec) {
     switch (state) {
@@ -190,7 +213,7 @@ export default class App extends Component {
 
   onPressJoin = () => {
     const { channelId } = this.state;
-    let res = rtcEngine.joinChannel("", channelId, "", window.uid || 10001);
+    let res = rtcEngine.joinChannel("", channelId, "", 0);
     console.log("joinChannel", res);
   };
   onPressLeaveChannel = () => {
@@ -569,7 +592,7 @@ export default class App extends Component {
     };
     const videoEncoderConf = {
       codecType: VIDEO_CODEC_TYPE.VIDEO_CODEC_E264,
-      dimensions: { width: 300, height: 300 },
+      dimensions: { width: 640, height: 300 },
       frameRate: FRAME_RATE.FRAME_RATE_FPS_10,
       bitrate: 200,
       minFrameRate: 200,
@@ -671,7 +694,7 @@ export default class App extends Component {
       AUDIO_CODEC_PROFILE_TYPE.AUDIO_CODEC_PROFILE_HE_AAC
     );
 
-    rtcEngine.setDirectCdnStreamingVideoConfiguration(videoEncoderConf);
+   // rtcEngine.setDirectCdnStreamingVideoConfiguration(videoEncoderConf);
 
     rtcEngine.startDirectCdnStreaming("12321", directCdnStreamingMediaOpt);
     rtcEngine.stopDirectCdnStreaming();
@@ -679,7 +702,7 @@ export default class App extends Component {
     rtcEngine.joinChannelEx("token", rtcConnection, channelMediaOpt);
     rtcEngine.leaveChannelEx(rtcConnection);
     rtcEngine.updateChannelMediaOptionsEx(channelMediaOpt, rtcConnection);
-    rtcEngine.setVideoEncoderConfigurationEx(videoEncoderConf, rtcConnection);
+   // rtcEngine.setVideoEncoderConfigurationEx(videoEncoderConf, rtcConnection);
     rtcEngine.setAppType();
 
     rtcEngine.setExternalVideoSource(
