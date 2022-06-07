@@ -1,5 +1,5 @@
 import { AgoraElectronBridge, Result } from "../../Types";
-import { AgoraEnv, logDebug, logError, parseJSON } from "../../Utils";
+import { AgoraEnv, logDebug, logError, logWarn, parseJSON } from "../../Utils";
 import { IMediaPlayer } from "../IAgoraMediaPlayer";
 import { IDirectCdnStreamingEventHandler } from "../IAgoraRtcEngine";
 import { processIRtcEngineEventHandlerEx } from "../impl/IAgoraRtcEngineExImpl";
@@ -121,9 +121,17 @@ export function callIrisApi(
     };
   } else {
     switch (funcName) {
-      case "RtcEngine_registerEventHandler":
+      case "RtcEngine_registerEventHandler": {
+        const res = AgoraEnv.engineEventHandlers.filter(
+          (handler) => handler === params.eventHandler
+        );
+        if (res && res.length > 0) {
+          logWarn(`ignore this call ${funcName}: EventHandler has exist`);
+          return;
+        }
         AgoraEnv.engineEventHandlers.push(params.eventHandler);
         return ResultOk;
+      }
       case "RtcEngine_unregisterEventHandler":
         AgoraEnv.engineEventHandlers = AgoraEnv.engineEventHandlers.filter(
           (value) => value !== params.eventHandler
