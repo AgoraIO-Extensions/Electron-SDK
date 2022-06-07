@@ -2,17 +2,16 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:44
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2022-05-31 14:37:15
+ * @Last Modified time: 2022-06-07 18:56:40
  */
 #pragma once
 #include <node_api.h>
 #include <exception>
+#include <memory>
 #include "iris_api_type.h"
 #include "iris_rtc_cxx_api.h"
 #include "iris_video_processor_cxx.h"
 #include "node_base.h"
-#include "node_iris_event_handler.h"
-
 
 namespace agora {
 namespace rtc {
@@ -30,8 +29,8 @@ class AgoraElectronBridge {
   static napi_value New(napi_env env, napi_callback_info info);
   static void Destructor(napi_env env, void* nativeObject, void* finalize_hint);
   static napi_value CallApi(napi_env env, napi_callback_info info);
+  static napi_value GetBuffer(napi_env env, napi_callback_info info);
   static napi_value OnEvent(napi_env env, napi_callback_info info);
-
   static napi_value EnableVideoFrameCache(napi_env env,
                                           napi_callback_info info);
   static napi_value DisableVideoFrameCache(napi_env env,

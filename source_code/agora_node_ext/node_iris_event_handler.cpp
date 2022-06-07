@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:49
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2022-06-05 16:58:09
+ * @Last Modified time: 2022-06-07 19:29:15
  */
 #include "node_iris_event_handler.h"
 #include <memory.h>
@@ -82,20 +82,9 @@ void NodeIrisEventHandler::OnEvent(const char* event,
       std::vector<napi_value> buffer_array_item;
       buffer_array_item.resize(buffer_count);
       for (int i = 0; i < buffer_count; i++) {
-        napi_status status;
-
-        // just for get ArrayBuffer pointer.
-        unsigned char* array_buffer = (unsigned char *)buffer_array[i].data();
-        status = napi_create_arraybuffer(it->second->env, buffer_lengths[i],
-                                         (void**)&array_buffer,
-                                         &buffer_array_item[i]);
-        memcpy(array_buffer, buffer_array[i].data(), buffer_lengths[i]);
-
-        napi_value typed_array_value;
-        status = napi_create_typedarray(it->second->env, napi_uint8_array,
-                                        buffer_lengths[i], buffer_array_item[i],
-                                        0, &typed_array_value);
-
+        napi_create_buffer_copy(it->second->env, buffer_lengths[i],
+                                buffer_array[i].data(), nullptr,
+                                &buffer_array_item[i]);
         napi_set_element(it->second->env, args[2], i, buffer_array_item[i]);
       }
 

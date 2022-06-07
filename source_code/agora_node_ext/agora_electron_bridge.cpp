@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:37
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2022-06-05 17:45:19
+ * @Last Modified time: 2022-06-07 18:54:16
  */
 #include "agora_electron_bridge.h"
 #include <memory>
@@ -34,6 +34,7 @@ napi_value AgoraElectronBridge::Init(napi_env env, napi_value exports) {
   napi_property_descriptor properties[] = {
       DECLARE_NAPI_METHOD("CallApi", CallApi),
       DECLARE_NAPI_METHOD("OnEvent", OnEvent),
+      DECLARE_NAPI_METHOD("GetBuffer", GetBuffer),
       DECLARE_NAPI_METHOD("EnableVideoFrameCache", EnableVideoFrameCache),
       DECLARE_NAPI_METHOD("DisableVideoFrameCache", DisableVideoFrameCache),
       DECLARE_NAPI_METHOD("GetVideoStreamData", GetVideoStreamData),
@@ -142,7 +143,6 @@ napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
 
         std::vector<napi_value> itemVec;
         itemVec.reserve(bufferCount);
-
         for (int i = 0; i < bufferCount; i++) {
           napi_get_element(env, args[2], i, &itemVec[i]);
           napi_get_typedarray_info(env, itemVec[i], nullptr, nullptr, &data[i],
@@ -169,6 +169,28 @@ napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
     ret = ERROR_NOT_INIT;
   }
   RETURE_NAPI_OBJ();
+}
+
+napi_value AgoraElectronBridge::GetBuffer(napi_env env,
+                                          napi_callback_info info) {
+  napi_status status;
+  size_t argc = 2;
+  napi_value args[2];
+  napi_value jsthis;
+  status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
+  assert(status == napi_ok);
+
+  long long bufferPtr;
+  int bufferSize;
+
+  status = napi_get_value_int64(env, args[0], &bufferPtr);
+  status = napi_get_value_int32(env, args[1], &bufferSize);
+
+  napi_value value;
+  napi_create_buffer_copy(env, bufferSize, (const void*)bufferPtr, nullptr,
+                          &value);
+
+  return value;
 }
 
 napi_value AgoraElectronBridge::OnEvent(napi_env env, napi_callback_info info) {
@@ -213,7 +235,6 @@ napi_value AgoraElectronBridge::OnEvent(napi_env env, napi_callback_info info) {
   char result[1];
   RETURE_NAPI_OBJ();
 }
-
 
 napi_value AgoraElectronBridge::SetAddonLogFile(napi_env env,
                                                 napi_callback_info info) {
@@ -474,7 +495,7 @@ void AgoraElectronBridge::Release() {
   LOG_F(INFO, "AgoraElectronBridge::Release()");
 
   if (_iris_api_engine) {
-    LOG_F(INFO, "AgoraElectronBridge::Release() reset rtcEngine"); 
+    LOG_F(INFO, "AgoraElectronBridge::Release() reset rtcEngine");
     // uncontrol
     _iris_api_engine->Detach(_iris_video_frame_buffer_manager.get());
     _iris_api_engine->UnsetIrisRtcEngineEventHandler(

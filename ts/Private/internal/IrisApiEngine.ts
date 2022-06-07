@@ -153,7 +153,7 @@ function preProcessEvent(
   switch (event) {
     case "onStreamMessage":
     case "onStreamMessageEx":
-      data.data = new Uint8Array(buffer[0]);
+      data.data = buffer[0];
       break;
   }
 }

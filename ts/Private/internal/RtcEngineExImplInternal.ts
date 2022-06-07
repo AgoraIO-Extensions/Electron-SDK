@@ -177,6 +177,11 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
       },
     };
     const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    logDebug("getScreenCaptureSource ===== ", jsonResults.result)
+
+    jsonResults.result.forEach( function(element: any) {
+      logDebug("getScreenCapture buffer ==== ", getBridge().GetBuffer(element.thumbImage.buffer, element.thumbImage.length))
+    });
     return jsonResults.result;
   }
 

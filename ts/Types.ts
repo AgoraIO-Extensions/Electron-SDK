@@ -108,6 +108,7 @@ export interface AgoraElectronBridge {
 
   EnableVideoFrameCache(config: VideoFrameCacheConfig): void;
   DisableVideoFrameCache(config: VideoFrameCacheConfig): void;
+  GetBuffer(ptr: number, length: number): Buffer;
   GetVideoStreamData(streamInfo: ShareVideoFrame): {
     ret: number;
     isNewFrame: boolean;

@@ -105,7 +105,7 @@ export default class App extends Component {
 
     let res = rtcEngine.initialize({ appId: APP_ID });
     console.log("initialize", res);
-
+    rtcEngine.getScreenCaptureSources({width: 100, height: 100}, {width: 100, height: 100}, true)
     // console.log("initialize res", res);
     // rtcEngine.setRenderMode(1);
 
