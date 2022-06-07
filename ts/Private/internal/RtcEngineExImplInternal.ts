@@ -9,8 +9,8 @@ import {
 import { IMediaPlayer } from "../IAgoraMediaPlayer";
 import {
   ChannelMediaOptions,
-  IScreenCaptureSourceList,
   RtcEngineContext,
+  SIZE,
 } from "../IAgoraRtcEngine";
 import { IRtcEngineEventHandlerEx, RtcConnection } from "../IAgoraRtcEngineEx";
 import { IRtcEngineExImpl } from "../impl/IAgoraRtcEngineExImpl";
@@ -67,19 +67,6 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     // @ts-ignore
     const mediaPlayerId = super.createMediaPlayer() as number;
     return new MediaPlayerInternal(mediaPlayerId);
-  }
-
-  override joinChannelEx(
-    token: string,
-    connection: RtcConnection,
-    options: ChannelMediaOptions,
-    eventHandler?: IRtcEngineEventHandlerEx
-  ): number {
-    if (eventHandler) {
-      this.registerEventHandler(eventHandler);
-    }
-
-    return super.joinChannelEx(token, connection, options, eventHandler!);
   }
 
   override setupLocalVideo(canvas: VideoCanvas): number {
@@ -159,8 +146,8 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   }
 
   override getScreenCaptureSources(
-    thumbSize: { width: number; height: number },
-    iconSize: { width: number; height: number },
+    thumbSize: SIZE,
+    iconSize: SIZE,
     includeScreen: boolean
   ): any[] {
     const apiType = "RtcEngine_getScreenCaptureSources";
@@ -185,11 +172,11 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     return jsonResults.result;
   }
 
-  destroyRendererByView(view: Element): void {
+  override destroyRendererByView(view: Element): void {
     AgoraRendererManager.destroyRendererByView(view);
   }
 
-  destroyRendererByConfig(
+  override destroyRendererByConfig(
     videoSourceType: VideoSourceType,
     channelId?: Channel,
     uid?: number
