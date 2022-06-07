@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:37
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2022-06-07 18:54:16
+ * @Last Modified time: 2022-06-07 21:28:37
  */
 #include "agora_electron_bridge.h"
 #include <memory>
@@ -43,8 +43,10 @@ napi_value AgoraElectronBridge::Init(napi_env env, napi_value exports) {
       DECLARE_NAPI_METHOD("ReleaseEnv", ReleaseEnv)};
 
   napi_value cons;
+  
+  // method count !!!
   status = napi_define_class(env, _class_name, NAPI_AUTO_LENGTH, New, nullptr,
-                             8, properties, &cons);
+                             9, properties, &cons);
   assert(status == napi_ok);
 
   AgoraElectronBridge::_ref_construcotr_ptr = new napi_ref();
