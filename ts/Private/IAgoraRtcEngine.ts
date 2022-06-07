@@ -1565,7 +1565,7 @@ abstract setAVSyncSource(channelId: string, uid: number): number;
 
 abstract destroyRendererByView(view: any): void;
 
-abstract destroyRendererByConfig(sourceType: VideoSourceType, channelId: string, uid: number): void;
+abstract destroyRendererByConfig(sourceType: VideoSourceType, channelId?: string, uid?: number): void;
 
 abstract getAudioDeviceManager(): IAudioDeviceManager;
 

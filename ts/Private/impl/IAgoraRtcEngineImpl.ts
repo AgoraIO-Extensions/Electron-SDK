@@ -3809,7 +3809,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     callIrisApi.call(this, apiType, jsonParams)
   }
 
-  destroyRendererByConfig (sourceType: VideoSourceType, channelId: string, uid: number): void {
+  destroyRendererByConfig (sourceType: VideoSourceType, channelId?: string, uid?: number): void {
     const apiType = 'RtcEngine_destroyRendererByConfig'
     const jsonParams = {
       sourceType,
