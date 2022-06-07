@@ -34,8 +34,6 @@ napi_value AgoraElectronBridge::Init(napi_env env, napi_value exports) {
   napi_property_descriptor properties[] = {
       DECLARE_NAPI_METHOD("CallApi", CallApi),
       DECLARE_NAPI_METHOD("OnEvent", OnEvent),
-      DECLARE_NAPI_METHOD("GetScreenWindowsInfo", GetScreenWindowsInfo),
-      DECLARE_NAPI_METHOD("GetScreenDisplaysInfo", GetScreenDisplaysInfo),
       DECLARE_NAPI_METHOD("EnableVideoFrameCache", EnableVideoFrameCache),
       DECLARE_NAPI_METHOD("DisableVideoFrameCache", DisableVideoFrameCache),
       DECLARE_NAPI_METHOD("GetVideoStreamData", GetVideoStreamData),
@@ -45,7 +43,7 @@ napi_value AgoraElectronBridge::Init(napi_env env, napi_value exports) {
 
   napi_value cons;
   status = napi_define_class(env, _class_name, NAPI_AUTO_LENGTH, New, nullptr,
-                             10, properties, &cons);
+                             8, properties, &cons);
   assert(status == napi_ok);
 
   AgoraElectronBridge::_ref_construcotr_ptr = new napi_ref();
@@ -141,10 +139,13 @@ napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
         bool result = false;
         napi_is_array(env, args[2], &result);
         assert(result == true);
-        napi_value item[bufferCount];
+
+        std::vector<napi_value> itemVec;
+        itemVec.reserve(bufferCount);
+
         for (int i = 0; i < bufferCount; i++) {
-          napi_get_element(env, args[2], i, &item[i]);
-          napi_get_typedarray_info(env, item[i], nullptr, nullptr, &data[i],
+          napi_get_element(env, args[2], i, &itemVec[i]);
+          napi_get_typedarray_info(env, itemVec[i], nullptr, nullptr, &data[i],
                                    nullptr, nullptr);
         }
 
@@ -213,91 +214,6 @@ napi_value AgoraElectronBridge::OnEvent(napi_env env, napi_callback_info info) {
   RETURE_NAPI_OBJ();
 }
 
-napi_value AgoraElectronBridge::GetScreenWindowsInfo(napi_env env,
-                                                     napi_callback_info info) {
-  napi_status status;
-  napi_value jsthis;
-  status = napi_get_cb_info(env, info, nullptr, nullptr, &jsthis, nullptr);
-
-  napi_value array;
-  napi_create_array(env, &array);
-
-  auto allWindows = getAllWindowInfo();
-  for (auto i = 0; i < allWindows.size(); i++) {
-    auto _windowInfo = allWindows[i];
-    napi_value obj;
-    napi_create_object(env, &obj);
-#ifdef _WIN32
-    UINT32 windowId = (UINT32)_windowInfo.windowId;
-#elif defined(__APPLE__) || (__linux__)
-    unsigned int windowId = _windowInfo.windowId;
-#endif
-
-    napi_obj_set_property(env, obj, "windowId", windowId);
-    napi_obj_set_property(env, obj, "name", _windowInfo.name.c_str());
-    napi_obj_set_property(env, obj, "ownerName", _windowInfo.ownerName.c_str());
-    napi_obj_set_property(env, obj, "width", _windowInfo.width);
-    napi_obj_set_property(env, obj, "height", _windowInfo.height);
-    napi_obj_set_property(env, obj, "x", _windowInfo.x);
-    napi_obj_set_property(env, obj, "y", _windowInfo.y);
-    napi_obj_set_property(env, obj, "originWidth", _windowInfo.originWidth);
-    napi_obj_set_property(env, obj, "originHeight", _windowInfo.originHeight);
-
-    if (_windowInfo.imageData) {
-      napi_obj_set_property(env, obj, "image", _windowInfo.imageData,
-                            _windowInfo.imageDataLength);
-      free(_windowInfo.imageData);
-    }
-    napi_set_element(env, array, i, obj);
-  }
-  return array;
-}
-
-napi_value AgoraElectronBridge::GetScreenDisplaysInfo(napi_env env,
-                                                      napi_callback_info info) {
-  napi_status status;
-  napi_value jsthis;
-  status = napi_get_cb_info(env, info, nullptr, nullptr, &jsthis, nullptr);
-
-  napi_value array;
-  napi_create_array(env, &array);
-
-  auto allDisplays = getAllDisplayInfo();
-
-  for (auto i = 0; i < allDisplays.size(); i++) {
-    napi_value displayObj;
-    napi_create_object(env, &displayObj);
-    auto displayInfo = allDisplays[i];
-#ifdef WIN32  // __WIN32
-    auto displayId = displayInfo.displayInfo;
-#else
-    auto displayId = displayInfo.displayId;
-#endif
-    napi_value obj;
-    napi_create_object(env, &obj);
-
-    napi_obj_set_property(env, obj, "x", displayInfo.x);
-    napi_obj_set_property(env, obj, "y", displayInfo.y);
-    napi_obj_set_property(env, obj, "width", displayInfo.width);
-    napi_obj_set_property(env, obj, "height", displayInfo.height);
-    napi_obj_set_property(env, obj, "id", displayId.idVal);
-    napi_obj_set_property(env, displayObj, "displayId", obj);
-    napi_obj_set_property(env, displayObj, "width", displayInfo.width);
-    napi_obj_set_property(env, displayObj, "height", displayInfo.height);
-    napi_obj_set_property(env, displayObj, "x", displayInfo.x);
-    napi_obj_set_property(env, displayObj, "y", displayInfo.y);
-    napi_obj_set_property(env, displayObj, "isMain", displayInfo.isMain);
-    napi_obj_set_property(env, displayObj, "isActive", displayInfo.isActive);
-    napi_obj_set_property(env, displayObj, "isBuiltin", displayInfo.isBuiltin);
-    if (displayInfo.imageData) {
-      napi_obj_set_property(env, displayObj, "image", displayInfo.imageData,
-                            displayInfo.imageDataLength);
-      free(displayInfo.imageData);
-    }
-    napi_set_element(env, array, i, displayObj);
-  }
-  return array;
-}
 
 napi_value AgoraElectronBridge::SetAddonLogFile(napi_env env,
                                                 napi_callback_info info) {

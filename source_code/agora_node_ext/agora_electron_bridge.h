@@ -11,7 +11,8 @@
 #include "iris_rtc_cxx_api.h"
 #include "iris_video_processor_cxx.h"
 #include "node_base.h"
-#include "node_screen_window_info.h"
+#include "node_iris_event_handler.h"
+
 
 namespace agora {
 namespace rtc {
@@ -31,9 +32,6 @@ class AgoraElectronBridge {
   static napi_value CallApi(napi_env env, napi_callback_info info);
   static napi_value OnEvent(napi_env env, napi_callback_info info);
 
-  static napi_value GetScreenWindowsInfo(napi_env env, napi_callback_info info);
-  static napi_value GetScreenDisplaysInfo(napi_env env,
-                                          napi_callback_info info);
   static napi_value EnableVideoFrameCache(napi_env env,
                                           napi_callback_info info);
   static napi_value DisableVideoFrameCache(napi_env env,

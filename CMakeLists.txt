@@ -27,23 +27,6 @@ file(GLOB COMMON_FILE
         ${COMMON_FILE_DIR}/*.cpp
         )
 
-set(COMMON_WINDOW_INFO_FILE_DIR
-        ${SOURCE_CODE_PATH}/window_Info
-        )
-
-# platform file
-set(PLATFORM_MAC_FILE
-        ${SOURCE_CODE_PATH}/window_Info/node_screen_window_info_mac.cpp
-        )
-
-set(PLATFORM_WIN_FILE
-        ${SOURCE_CODE_PATH}/window_Info/node_screen_window_info_win.cpp
-        )
-
-set(PLATFORM_LINUX_FILE
-        ${SOURCE_CODE_PATH}/window_Info/node_screen_linux_info.cpp
-        )
-
 # different target file
 set(TARGET_AGORA_NODE_EXT_FILE_DIR
         ${SOURCE_CODE_PATH}/agora_node_ext
@@ -171,7 +154,6 @@ function(build_target_agora_node_ext)
                 ${COMMON_FILE}
                 ${COMMON_RAW_DATA_FILE}
                 ${TARGET_AGORA_NODE_EXT_FILE}
-                ${PLATFORM_MAC_FILE}
                 ${CMAKE_JS_SRC}
                 )
         set_target_properties(${AGORA_NODE_EXT_NAME} PROPERTIES
@@ -187,7 +169,6 @@ function(build_target_agora_node_ext)
                 ${COMMON_FILE}
                 ${COMMON_RAW_DATA_FILE}
                 ${TARGET_AGORA_NODE_EXT_FILE}
-                ${PLATFORM_WIN_FILE}
                 ${CMAKE_JS_SRC}
                 )
         target_link_libraries(${AGORA_NODE_EXT_NAME}
@@ -214,7 +195,6 @@ function(build_target_agora_node_ext)
                 ${COMMON_FILE}
                 ${COMMON_RAW_DATA_FILE}
                 ${TARGET_AGORA_NODE_EXT_FILE}
-                ${PLATFORM_LINUX_FILE}
                 ${CMAKE_JS_SRC}
                 )
         target_link_libraries(${AGORA_NODE_EXT_NAME}
@@ -227,7 +207,6 @@ function(build_target_agora_node_ext)
             ${COMMON_FILE_DIR}
             ${COMMON_PROCESS_FILE_DIR}
             ${TARGET_AGORA_NODE_EXT_FILE_DIR}
-            ${COMMON_WINDOW_INFO_FILE_DIR}
             ${AGORA_RTC_SDK_HEADER_FILE_DIR}
             ${AGORA_IRIS_SDK_HEADER_FILE_DIR}
             )
