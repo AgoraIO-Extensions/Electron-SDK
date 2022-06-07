@@ -87,7 +87,7 @@ export abstract class IRtcEngineEventHandlerEx extends IRtcEngineEventHandler {
 
   onConnectionBannedEx?(connection: RtcConnection): void;
 
-  onStreamMessageEx?(connection: RtcConnection, remoteUid: number, streamId: number, data: number[], length: number, sentTs: number): void;
+  onStreamMessageEx?(connection: RtcConnection, remoteUid: number, streamId: number, data: Uint8Array, length: number, sentTs: number): void;
 
   onStreamMessageErrorEx?(connection: RtcConnection, remoteUid: number, streamId: number, code: number, missed: number, cached: number): void;
 
@@ -127,7 +127,7 @@ export abstract class IRtcEngineEventHandlerEx extends IRtcEngineEventHandler {
 }
 
 export abstract class IRtcEngineEx extends IRtcEngine {
-abstract joinChannelEx(token: string, connection: RtcConnection, options: ChannelMediaOptions, eventHandler: IRtcEngineEventHandler): number;
+abstract joinChannelEx(token: string, connection: RtcConnection, options: ChannelMediaOptions): number;
 
 abstract leaveChannelEx(connection: RtcConnection): number;
 
@@ -159,7 +159,7 @@ abstract createDataStreamEx(reliable: boolean, ordered: boolean, connection: Rtc
 
 abstract createDataStreamEx2(config: DataStreamConfig, connection: RtcConnection): number;
 
-abstract sendStreamMessageEx(streamId: number, data: number[], length: number, connection: RtcConnection): number;
+abstract sendStreamMessageEx(streamId: number, data: Uint8Array, length: number, connection: RtcConnection): number;
 
 abstract addVideoWatermarkEx(watermarkUrl: string, options: WatermarkOptions, connection: RtcConnection): number;
 

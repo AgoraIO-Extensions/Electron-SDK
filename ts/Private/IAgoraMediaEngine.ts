@@ -1,14 +1,8 @@
-import { IAudioFrameObserver, IVideoFrameObserver, MediaSourceType, AudioFrame, ExternalVideoSourceType, ExternalVideoFrame } from './AgoraMediaBase'
-import { IVideoEncodedImageReceiver, EncodedVideoFrameInfo } from './AgoraBase'
+import { MediaSourceType, AudioFrame, ExternalVideoSourceType, ExternalVideoFrame } from './AgoraMediaBase'
 import { RtcConnection } from './IAgoraRtcEngineEx'
+import { EncodedVideoFrameInfo } from './AgoraBase'
 
 export abstract class IMediaEngine {
-abstract registerAudioFrameObserver(observer: IAudioFrameObserver): number;
-
-abstract registerVideoFrameObserver(observer: IVideoFrameObserver): number;
-
-abstract registerVideoEncodedImageReceiver(receiver: IVideoEncodedImageReceiver): number;
-
 abstract pushAudioFrame(type: MediaSourceType, frame: AudioFrame, wrap?: boolean, sourceId?: number): number;
 
 abstract pushCaptureAudioFrame(frame: AudioFrame): number;
@@ -33,9 +27,9 @@ abstract pushVideoFrame(frame: ExternalVideoFrame): number;
 
 abstract pushVideoFrame2(frame: ExternalVideoFrame, connection: RtcConnection): number;
 
-abstract pushEncodedVideoImage(imageBuffer: number[], length: number, videoEncodedFrameInfo: EncodedVideoFrameInfo): number;
+abstract pushEncodedVideoImage(imageBuffer: Uint8Array, length: number, videoEncodedFrameInfo: EncodedVideoFrameInfo): number;
 
-abstract pushEncodedVideoImage2(imageBuffer: number[], length: number, videoEncodedFrameInfo: EncodedVideoFrameInfo, connection: RtcConnection): number;
+abstract pushEncodedVideoImage2(imageBuffer: Uint8Array, length: number, videoEncodedFrameInfo: EncodedVideoFrameInfo, connection: RtcConnection): number;
 
 abstract release(): void;
 }

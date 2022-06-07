@@ -1,8 +1,8 @@
 import { callIrisApi } from '../internal/IrisApiEngine'
 import { IMediaPlayer } from '../IAgoraMediaPlayer'
-import { IMediaPlayerCustomDataProvider, IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource'
 import { PlayerStreamInfo, MediaPlayerState } from '../AgoraMediaPlayerTypes'
-import { RenderModeType, IAudioSpectrumObserver, AudioDualMonoMode } from '../AgoraMediaBase'
+import { RenderModeType, AudioDualMonoMode } from '../AgoraMediaBase'
+import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource'
 import { SpatialAudioParams } from '../AgoraBase'
 export class IMediaPlayerImpl implements IMediaPlayer {
   getMediaPlayerId (): number {
@@ -23,19 +23,6 @@ export class IMediaPlayerImpl implements IMediaPlayer {
           url,
           startPos
         }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
-  }
-
-  openWithCustomSource (startPos: number, provider: IMediaPlayerCustomDataProvider): number {
-    const apiType = 'MediaPlayer_openWithCustomSource'
-    const jsonParams = {
-      startPos,
-      provider,
-      toJSON: () => {
-        return { startPos }
       }
     }
     const jsonResults = callIrisApi.call(this, apiType, jsonParams)
@@ -392,32 +379,6 @@ export class IMediaPlayerImpl implements IMediaPlayer {
 
   unregisterPlayerSourceObserver (observer: IMediaPlayerSourceObserver): number {
     const apiType = 'MediaPlayer_unregisterPlayerSourceObserver'
-    const jsonParams = {
-      observer,
-      toJSON: () => {
-        return {
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
-  }
-
-  registerMediaPlayerAudioSpectrumObserver (observer: IAudioSpectrumObserver, intervalInMS: number): number {
-    const apiType = 'MediaPlayer_registerMediaPlayerAudioSpectrumObserver'
-    const jsonParams = {
-      observer,
-      intervalInMS,
-      toJSON: () => {
-        return { intervalInMS }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
-  }
-
-  unregisterMediaPlayerAudioSpectrumObserver (observer: IAudioSpectrumObserver): number {
-    const apiType = 'MediaPlayer_unregisterMediaPlayerAudioSpectrumObserver'
     const jsonParams = {
       observer,
       toJSON: () => {

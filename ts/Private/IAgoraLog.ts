@@ -7,10 +7,6 @@ LogLevelError = 0x0004,
 LogLevelFatal = 0x0008,
 }
 
-export abstract class ILogWriter {
-abstract writeLog(level: LogLevel, message: string, length: number): number;
-}
-
 export enum LogFilterType {
 LogFilterOff = 0,
 LogFilterDebug = 0x080f,

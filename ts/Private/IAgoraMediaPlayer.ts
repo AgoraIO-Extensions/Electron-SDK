@@ -1,14 +1,12 @@
-import { IMediaPlayerCustomDataProvider, IMediaPlayerSourceObserver } from './IAgoraMediaPlayerSource'
 import { PlayerStreamInfo, MediaPlayerState } from './AgoraMediaPlayerTypes'
-import { RenderModeType, IAudioSpectrumObserver, AudioDualMonoMode } from './AgoraMediaBase'
+import { RenderModeType, AudioDualMonoMode } from './AgoraMediaBase'
+import { IMediaPlayerSourceObserver } from './IAgoraMediaPlayerSource'
 import { SpatialAudioParams } from './AgoraBase'
 
 export abstract class IMediaPlayer {
 abstract getMediaPlayerId(): number;
 
 abstract open(url: string, startPos: number): number;
-
-abstract openWithCustomSource(startPos: number, provider: IMediaPlayerCustomDataProvider): number;
 
 abstract play(): number;
 
@@ -75,10 +73,6 @@ abstract setRenderMode(renderMode: RenderModeType): number;
 abstract registerPlayerSourceObserver(observer: IMediaPlayerSourceObserver): number;
 
 abstract unregisterPlayerSourceObserver(observer: IMediaPlayerSourceObserver): number;
-
-abstract registerMediaPlayerAudioSpectrumObserver(observer: IAudioSpectrumObserver, intervalInMS: number): number;
-
-abstract unregisterMediaPlayerAudioSpectrumObserver(observer: IAudioSpectrumObserver): number;
 
 abstract setAudioDualMonoMode(mode: AudioDualMonoMode): number;
 

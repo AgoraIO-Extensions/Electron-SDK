@@ -1070,23 +1070,8 @@ export class AudioVolumeInfo {
   }
 }
 
-export class DeviceInfo {
-  isLowLatencyAudioSupported?: boolean
-  static fromJSON (json: any): DeviceInfo {
-    const obj = new DeviceInfo()
-    obj.isLowLatencyAudioSupported = json.isLowLatencyAudioSupported
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      isLowLatencyAudioSupported: this.isLowLatencyAudioSupported
-    }
-  }
-}
-
 export class Packet {
-  buffer?: number[]
+  buffer?: Uint8Array
   size?: number
   static fromJSON (json: any): Packet {
     const obj = new Packet()
@@ -1101,20 +1086,6 @@ export class Packet {
       size: this.size
     }
   }
-}
-
-export abstract class IPacketObserver {
-  onSendAudioPacket?(packet: Packet): boolean;
-
-  onSendVideoPacket?(packet: Packet): boolean;
-
-  onReceiveAudioPacket?(packet: Packet): boolean;
-
-  onReceiveVideoPacket?(packet: Packet): boolean;
-}
-
-export abstract class IVideoEncodedImageReceiver {
-  OnEncodedVideoImageReceived?(imageBuffer: number[], length: number, videoEncodedFrameInfo: EncodedVideoFrameInfo): boolean;
 }
 
 export enum AudioSampleRateType {
@@ -1849,14 +1820,6 @@ export class AudioEncodedFrameObserverConfig {
   }
 }
 
-export abstract class IAudioEncodedFrameObserver {
-  OnRecordAudioEncodedFrame?(frameBuffer: number[], length: number, audioEncodedFrameInfo: EncodedAudioFrameInfo): void;
-
-  OnPlaybackAudioEncodedFrame?(frameBuffer: number[], length: number, audioEncodedFrameInfo: EncodedAudioFrameInfo): void;
-
-  OnMixedAudioEncodedFrame?(frameBuffer: number[], length: number, audioEncodedFrameInfo: EncodedAudioFrameInfo): void;
-}
-
 export enum AreaCode {
 AreaCodeCn = 0x00000001,
 AreaCodeNa = 0x00000002,
@@ -2122,16 +2085,6 @@ NORMAL = 2,
 HIGH = 3,
 HIGHEST = 4,
 CRITICAL = 5,
-}
-
-export abstract class LicenseCallback {
-  onCertificateRequired?(): void;
-
-  onLicenseRequest?(): void;
-
-  onLicenseValidated?(): void;
-
-  onLicenseError?(result: number): void;
 }
 
 export class SpatialAudioParams {

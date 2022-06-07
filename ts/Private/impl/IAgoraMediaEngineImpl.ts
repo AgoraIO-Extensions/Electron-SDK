@@ -1,48 +1,9 @@
 import { callIrisApi } from '../internal/IrisApiEngine'
 import { IMediaEngine } from '../IAgoraMediaEngine'
-import { IAudioFrameObserver, IVideoFrameObserver, MediaSourceType, AudioFrame, ExternalVideoSourceType, ExternalVideoFrame } from '../AgoraMediaBase'
-import { IVideoEncodedImageReceiver, EncodedVideoFrameInfo } from '../AgoraBase'
+import { MediaSourceType, AudioFrame, ExternalVideoSourceType, ExternalVideoFrame } from '../AgoraMediaBase'
 import { RtcConnection } from '../IAgoraRtcEngineEx'
+import { EncodedVideoFrameInfo } from '../AgoraBase'
 export class IMediaEngineImpl implements IMediaEngine {
-  registerAudioFrameObserver (observer: IAudioFrameObserver): number {
-    const apiType = 'MediaEngine_registerAudioFrameObserver'
-    const jsonParams = {
-      observer,
-      toJSON: () => {
-        return {
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
-  }
-
-  registerVideoFrameObserver (observer: IVideoFrameObserver): number {
-    const apiType = 'MediaEngine_registerVideoFrameObserver'
-    const jsonParams = {
-      observer,
-      toJSON: () => {
-        return {
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
-  }
-
-  registerVideoEncodedImageReceiver (receiver: IVideoEncodedImageReceiver): number {
-    const apiType = 'MediaEngine_registerVideoEncodedImageReceiver'
-    const jsonParams = {
-      receiver,
-      toJSON: () => {
-        return {
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
-  }
-
   pushAudioFrame (type: MediaSourceType, frame: AudioFrame, wrap = false, sourceId = 0): number {
     const apiType = 'MediaEngine_pushAudioFrame'
     const jsonParams = {
@@ -226,7 +187,7 @@ export class IMediaEngineImpl implements IMediaEngine {
     return jsonResults.result
   }
 
-  pushEncodedVideoImage (imageBuffer: number[], length: number, videoEncodedFrameInfo: EncodedVideoFrameInfo): number {
+  pushEncodedVideoImage (imageBuffer: Uint8Array, length: number, videoEncodedFrameInfo: EncodedVideoFrameInfo): number {
     const apiType = 'MediaEngine_pushEncodedVideoImage'
     const jsonParams = {
       imageBuffer,
@@ -243,7 +204,7 @@ export class IMediaEngineImpl implements IMediaEngine {
     return jsonResults.result
   }
 
-  pushEncodedVideoImage2 (imageBuffer: number[], length: number, videoEncodedFrameInfo: EncodedVideoFrameInfo, connection: RtcConnection): number {
+  pushEncodedVideoImage2 (imageBuffer: Uint8Array, length: number, videoEncodedFrameInfo: EncodedVideoFrameInfo, connection: RtcConnection): number {
     const apiType = 'MediaEngine_pushEncodedVideoImage2'
     const jsonParams = {
       imageBuffer,

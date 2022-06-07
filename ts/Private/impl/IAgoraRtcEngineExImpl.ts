@@ -1,7 +1,7 @@
 import { callIrisApi } from '../internal/IrisApiEngine'
 import { IRtcEngineEventHandlerEx, IRtcEngineEx, RtcConnection } from '../IAgoraRtcEngineEx'
 import { IRtcEngineImpl } from './IAgoraRtcEngineImpl'
-import { ChannelMediaOptions, IRtcEngineEventHandler } from '../IAgoraRtcEngine'
+import { ChannelMediaOptions } from '../IAgoraRtcEngine'
 import { VideoEncoderConfiguration, VideoCanvas, VideoStreamType, SpatialAudioParams, VideoMirrorModeType, ConnectionStateType, EncryptionConfig, DataStreamConfig, WatermarkOptions, UserInfo, VideoSourceType, SimulcastStreamConfig } from '../AgoraBase'
 import { RenderModeType } from '../AgoraMediaBase'
 
@@ -322,13 +322,12 @@ export function processIRtcEngineEventHandlerEx (handler: IRtcEngineEventHandler
 }
 
 export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
-  joinChannelEx (token: string, connection: RtcConnection, options: ChannelMediaOptions, eventHandler: IRtcEngineEventHandler): number {
+  joinChannelEx (token: string, connection: RtcConnection, options: ChannelMediaOptions): number {
     const apiType = 'RtcEngineEx_joinChannelEx'
     const jsonParams = {
       token,
       connection,
       options,
-      eventHandler,
       toJSON: () => {
         return {
           token,
@@ -597,7 +596,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
     return streamId
   }
 
-  sendStreamMessageEx (streamId: number, data: number[], length: number, connection: RtcConnection): number {
+  sendStreamMessageEx (streamId: number, data: Uint8Array, length: number, connection: RtcConnection): number {
     const apiType = 'RtcEngineEx_sendStreamMessageEx'
     const jsonParams = {
       streamId,

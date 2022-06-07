@@ -1,8 +1,9 @@
-import { QualityAdaptIndication, VideoCodecType, VideoStreamType, AudioSampleRateType, VideoFormat, Rectangle, ScreenCaptureParameters, ClientRoleType, AudienceLatencyLevelType, ChannelProfileType, LastmileProbeResult, AudioVolumeInfo, RtcStats, UplinkNetworkInfo, DownlinkNetworkInfo, VideoSourceType, LocalVideoStreamState, LocalVideoStreamError, RemoteVideoState, RemoteVideoStateReason, UserOfflineReasonType, LocalAudioStats, RemoteAudioStats, LocalAudioStreamState, LocalAudioStreamError, RemoteAudioState, RemoteAudioStateReason, ClientRoleChangeFailedReason, RtmpStreamPublishState, RtmpStreamPublishErrorType, RtmpStreamingEvent, ConnectionStateType, ConnectionChangedReasonType, NetworkType, EncryptionErrorType, PermissionType, UserInfo, UploadErrorReason, StreamSubscribeState, StreamPublishState, AudioScenarioType, ThreadPriorityType, ClientRoleOptions, LastmileProbeConfig, VideoEncoderConfiguration, BeautyOptions, VirtualBackgroundSource, VideoCanvas, AudioProfileType, AudioRecordingQualityType, AudioRecordingConfiguration, AudioEncodedFrameObserverConfig, IAudioEncodedFrameObserver, SpatialAudioParams, VoiceBeautifierPreset, AudioEffectPreset, VoiceConversionPreset, VideoMirrorModeType, SimulcastStreamConfig, AudioSessionOperationRestriction, DeviceInfo, VideoContentHint, LiveTranscoding, LocalTranscoderConfiguration, VideoOrientation, IPacketObserver, EncryptionConfig, DataStreamConfig, RtcImage, WatermarkOptions, ChannelMediaRelayConfiguration, FishCorrectionParams } from './AgoraBase'
-import { RenderModeType, NlpAggressiveness, ContentInspectResult, MediaSourceType, RawAudioFrameOpModeType, IAudioSpectrumObserver, ExternalVideoFrame, SnapShotConfig, ISnapshotCallback, ContentInspectConfig, AdvancedAudioOptions } from './AgoraMediaBase'
+import { QualityAdaptIndication, VideoCodecType, VideoStreamType, AudioSampleRateType, VideoFormat, Rectangle, ScreenCaptureParameters, ClientRoleType, AudienceLatencyLevelType, ChannelProfileType, LastmileProbeResult, AudioVolumeInfo, RtcStats, UplinkNetworkInfo, DownlinkNetworkInfo, VideoSourceType, LocalVideoStreamState, LocalVideoStreamError, RemoteVideoState, RemoteVideoStateReason, UserOfflineReasonType, LocalAudioStats, RemoteAudioStats, LocalAudioStreamState, LocalAudioStreamError, RemoteAudioState, RemoteAudioStateReason, ClientRoleChangeFailedReason, RtmpStreamPublishState, RtmpStreamPublishErrorType, RtmpStreamingEvent, ChannelMediaRelayState, ChannelMediaRelayError, ConnectionStateType, ConnectionChangedReasonType, NetworkType, EncryptionErrorType, PermissionType, UserInfo, UploadErrorReason, StreamSubscribeState, StreamPublishState, AudioScenarioType, ThreadPriorityType, InterfaceIdType, ClientRoleOptions, LastmileProbeConfig, VideoEncoderConfiguration, BeautyOptions, VirtualBackgroundSource, VideoCanvas, AudioProfileType, AudioRecordingQualityType, AudioRecordingConfiguration, SpatialAudioParams, VoiceBeautifierPreset, AudioEffectPreset, VoiceConversionPreset, VideoMirrorModeType, SimulcastStreamConfig, AudioSessionOperationRestriction, VideoContentHint, LiveTranscoding, LocalTranscoderConfiguration, VideoOrientation, EncryptionConfig, DataStreamConfig, RtcImage, WatermarkOptions, ChannelMediaRelayConfiguration, FishCorrectionParams } from './AgoraBase'
+import { RenderModeType, NlpAggressiveness, ContentInspectResult, MediaSourceType, RawAudioFrameOpModeType, ExternalVideoFrame, SnapShotConfig, ContentInspectConfig, AdvancedAudioOptions } from './AgoraMediaBase'
 import { RhythmPlayerStateType, RhythmPlayerErrorType, AgoraRhythmPlayerConfig } from './IAgoraRhythmPlayer'
 import { LogConfig, LogLevel } from './IAgoraLog'
 import { IMediaPlayer } from './IAgoraMediaPlayer'
+import { IAudioDeviceManager } from './IAudioDeviceManager'
 
 export enum MediaDeviceType {
 UnknownAudioDevice = -1,
@@ -249,7 +250,7 @@ export class VideoCompositingLayout {
   backgroundColor?: string
   regions?: Region[]
   regionCount?: number
-  appData?: number[]
+  appData?: Uint8Array
   appDataLength?: number
   static fromJSON (json: any): VideoCompositingLayout {
     const obj = new VideoCompositingLayout()
@@ -395,10 +396,12 @@ TcpProxy = 2,
 
 export class CameraCapturerConfiguration {
   cameraDirection?: CameraDirection
+  deviceId?: string
   format?: VideoFormat
   static fromJSON (json: any): CameraCapturerConfiguration {
     const obj = new CameraCapturerConfiguration()
     obj.cameraDirection = json.cameraDirection
+    obj.deviceId = json.deviceId
     obj.format = VideoFormat.fromJSON(json.format)
     return obj
   }
@@ -406,6 +409,7 @@ export class CameraCapturerConfiguration {
   toJSON? () {
     return {
       cameraDirection: this.cameraDirection,
+      deviceId: this.deviceId,
       format: this.format
     }
   }
@@ -468,8 +472,26 @@ export class AudioOptionsExternal {
   }
 }
 
+export class SIZE {
+  width?: number
+  height?: number
+  static fromJSON (json: any): SIZE {
+    const obj = new SIZE()
+    obj.width = json.width
+    obj.height = json.height
+    return obj
+  }
+
+  toJSON? () {
+    return {
+      width: this.width,
+      height: this.height
+    }
+  }
+}
+
 export class ThumbImageBuffer {
-  buffer?: number[]
+  buffer?: Uint8Array
   length?: number
   width?: number
   height?: number
@@ -535,14 +557,6 @@ export class ScreenCaptureSourceInfo {
       isOccluded: this.isOccluded
     }
   }
-}
-
-export abstract class IScreenCaptureSourceList {
-abstract getCount(): number;
-
-abstract getSourceInfo(index: number): ScreenCaptureSourceInfo;
-
-abstract release(): void;
 }
 
 export class ChannelMediaOptions {
@@ -804,7 +818,7 @@ export abstract class IRtcEngineEventHandler {
 
   onConnectionBanned?(): void;
 
-  onStreamMessage?(userId: number, streamId: number, data: number[], length: number, sentTs: number): void;
+  onStreamMessage?(userId: number, streamId: number, data: Uint8Array, length: number, sentTs: number): void;
 
   onStreamMessageError?(userId: number, streamId: number, code: number, missed: number, cached: number): void;
 
@@ -846,7 +860,7 @@ export abstract class IRtcEngineEventHandler {
 
   onAudioRoutingChanged?(routing: number): void;
 
-  onChannelMediaRelayStateChanged?(state: number, code: number): void;
+  onChannelMediaRelayStateChanged?(state: ChannelMediaRelayState, code: ChannelMediaRelayError): void;
 
   onChannelMediaRelayEvent?(code: number): void;
 
@@ -891,18 +905,8 @@ export abstract class IRtcEngineEventHandler {
   onUserAccountUpdated?(uid: number, userAccount: string): void;
 }
 
-export abstract class IVideoDeviceCollection {
-abstract getCount(): number;
-
-abstract setDevice(deviceIdUTF8: string): number;
-
-abstract getDevice(index: number): { deviceNameUTF8: string, deviceIdUTF8: string };
-
-abstract release(): void;
-}
-
 export abstract class IVideoDeviceManager {
-abstract enumerateVideoDevices(): IVideoDeviceCollection;
+abstract enumerateVideoDevices(): DeviceInfo[];
 
 abstract setDevice(deviceIdUTF8: string): number;
 
@@ -916,9 +920,7 @@ abstract release(): void;
 }
 
 export class RtcEngineContext {
-  eventHandler?: IRtcEngineEventHandler
   appId?: string
-  context?: any
   enableAudioDevice?: boolean
   channelProfile?: ChannelProfileType
   audioScenario?: AudioScenarioType
@@ -928,9 +930,7 @@ export class RtcEngineContext {
   useExternalEglContext?: boolean
   static fromJSON (json: any): RtcEngineContext {
     const obj = new RtcEngineContext()
-    obj.eventHandler = json.eventHandler
     obj.appId = json.appId
-    obj.context = json.context
     obj.enableAudioDevice = json.enableAudioDevice
     obj.channelProfile = json.channelProfile
     obj.audioScenario = json.audioScenario
@@ -969,7 +969,7 @@ MaxMetadataSizeInByte = 1024,
 export class Metadata {
   uid?: number
   size?: number
-  buffer?: number[]
+  buffer?: Uint8Array
   timeStampMs?: number
   static fromJSON (json: any): Metadata {
     const obj = new Metadata()
@@ -991,10 +991,6 @@ export class Metadata {
 }
 
 export abstract class IMetadataObserver {
-  getMaxMetadataSize?(): number;
-
-  onReadyToSendMetadata?(metadata: Metadata, sourceType: VideoSourceType): boolean;
-
   onMetadataReceived?(metadata: Metadata): void;
 }
 
@@ -1083,7 +1079,9 @@ abstract release(sync?: boolean): void;
 
 abstract initialize(context: RtcEngineContext): number;
 
-abstract getVersion(build: number): string;
+abstract queryInterface(iid: InterfaceIdType): any;
+
+abstract getVersion(): { build: number, result: string };
 
 abstract getErrorDescription(code: number): string;
 
@@ -1178,8 +1176,6 @@ abstract startAudioRecording(filePath: string, quality: AudioRecordingQualityTyp
 abstract startAudioRecording2(filePath: string, sampleRate: number, quality: AudioRecordingQualityType): number;
 
 abstract startAudioRecording3(config: AudioRecordingConfiguration): number;
-
-abstract registerAudioEncodedFrameObserver(config: AudioEncodedFrameObserverConfig, observer: IAudioEncodedFrameObserver): number;
 
 abstract stopAudioRecording(): number;
 
@@ -1319,10 +1315,6 @@ abstract enableAudioSpectrumMonitor(intervalInMS?: number): number;
 
 abstract disableAudioSpectrumMonitor(): number;
 
-abstract registerAudioSpectrumObserver(observer: IAudioSpectrumObserver): number;
-
-abstract unregisterAudioSpectrumObserver(observer: IAudioSpectrumObserver): number;
-
 abstract adjustRecordingSignalVolume(volume: number): number;
 
 abstract muteRecordingSignal(mute: boolean): number;
@@ -1395,13 +1387,15 @@ abstract setEnableSpeakerphone(speakerOn: boolean): number;
 
 abstract isSpeakerphoneEnabled(): boolean;
 
-abstract getScreenCaptureSources(thumbSize: number, iconSize: number, includeScreen: boolean): IScreenCaptureSourceList;
+abstract getScreenCaptureSources(thumbSize: SIZE, iconSize: SIZE, includeScreen: boolean): ScreenCaptureSourceInfo[];
 
 abstract setAudioSessionOperationRestriction(restriction: AudioSessionOperationRestriction): number;
 
+abstract startScreenCaptureByDisplayId(displayId: number, regionRect: Rectangle, captureParams: ScreenCaptureParameters): number;
+
 abstract startScreenCaptureByScreenRect(screenRect: Rectangle, regionRect: Rectangle, captureParams: ScreenCaptureParameters): number;
 
-abstract startScreenCapture(mediaProjectionPermissionResultData: number[], captureParams: ScreenCaptureParameters): number;
+abstract startScreenCapture(mediaProjectionPermissionResultData: Uint8Array, captureParams: ScreenCaptureParameters): number;
 
 abstract getAudioDeviceInfo(): DeviceInfo;
 
@@ -1469,8 +1463,6 @@ abstract unregisterEventHandler(eventHandler: IRtcEngineEventHandler): boolean;
 
 abstract setRemoteUserPriority(uid: number, userPriority: PriorityType): number;
 
-abstract registerPacketObserver(observer: IPacketObserver): number;
-
 abstract setEncryptionMode(encryptionMode: string): number;
 
 abstract setEncryptionSecret(secret: string): number;
@@ -1481,7 +1473,7 @@ abstract createDataStream(reliable: boolean, ordered: boolean): number;
 
 abstract createDataStream2(config: DataStreamConfig): number;
 
-abstract sendStreamMessage(streamId: number, data: number[], length: number): number;
+abstract sendStreamMessage(streamId: number, data: Uint8Array, length: number): number;
 
 abstract addVideoWatermark(watermark: RtcImage): number;
 
@@ -1545,7 +1537,7 @@ abstract updateDirectCdnStreamingMediaOptions(options: DirectCdnStreamingMediaOp
 
 abstract pushDirectCdnStreamingCustomVideoFrame(frame: ExternalVideoFrame): number;
 
-abstract takeSnapshot(config: SnapShotConfig, callback: ISnapshotCallback): number;
+abstract takeSnapshot(config: SnapShotConfig): number;
 
 abstract SetContentInspect(config: ContentInspectConfig): number;
 
@@ -1570,48 +1562,16 @@ abstract enableFishCorrection(enabled: boolean, params: FishCorrectionParams): n
 abstract setAdvancedAudioOptions(options: AdvancedAudioOptions): number;
 
 abstract setAVSyncSource(channelId: string, uid: number): number;
-}
 
-export abstract class IRtcEngineParameter {
-abstract release(): void;
+abstract destroyRendererByView(view: any): void;
 
-abstract setBool(key: string, value: boolean): number;
+abstract destroyRendererByConfig(sourceType: VideoSourceType, channelId: string, uid: number): void;
 
-abstract setInt(key: string, value: number): number;
+abstract getAudioDeviceManager(): IAudioDeviceManager;
 
-abstract setUInt(key: string, value: number): number;
+abstract getVideoDeviceManager(): IVideoDeviceManager;
 
-abstract setNumber(key: string, value: number): number;
-
-abstract setString(key: string, value: string): number;
-
-abstract setObject(key: string, value: string): number;
-
-abstract getBool(key: string): boolean;
-
-abstract getInt(key: string): number;
-
-abstract getUInt(key: string): number;
-
-abstract getNumber(key: string): number;
-
-abstract getString(key: string): string;
-
-abstract getObject(key: string): string;
-
-abstract getArray(key: string): string;
-
-abstract setParameters(parameters: string): number;
-
-abstract setProfile(profile: string, merge: boolean): number;
-
-abstract convertPath(filePath: string, value: string): number;
-}
-
-export abstract class AAudioDeviceManager {
-}
-
-export abstract class AVideoDeviceManager {
+abstract sendMetaData(metadata: Metadata, sourceType: VideoSourceType): number;
 }
 
 export enum QualityReportFormatType {
@@ -1699,4 +1659,22 @@ VideoProfilePortrait1440p2 = 1067,
 VideoProfilePortrait4k = 1070,
 VideoProfilePortrait4k3 = 1072,
 VideoProfileDefault = 30,
+}
+
+export class DeviceInfo {
+  deviceId?: string
+  deviceName?: string
+  static fromJSON (json: any): DeviceInfo {
+    const obj = new DeviceInfo()
+    obj.deviceId = json.deviceId
+    obj.deviceName = json.deviceName
+    return obj
+  }
+
+  toJSON? () {
+    return {
+      deviceId: this.deviceId,
+      deviceName: this.deviceName
+    }
+  }
 }

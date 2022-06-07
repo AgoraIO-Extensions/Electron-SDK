@@ -1,96 +1,9 @@
 import { callIrisApi } from '../internal/IrisApiEngine'
-import { IAudioDeviceCollection, IAudioDeviceManager } from '../IAudioDeviceManager'
-
-export class IAudioDeviceCollectionImpl implements IAudioDeviceCollection {
-  getCount (): number {
-    const apiType = 'AudioDeviceCollection_getCount'
-    const jsonParams = {
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
-  }
-
-  getDevice (index: number): { deviceName: string, deviceId: string } {
-    const apiType = 'AudioDeviceCollection_getDevice'
-    const jsonParams = {
-      index,
-      toJSON: () => {
-        return { index }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    const deviceName = jsonResults.deviceName
-    const deviceId = jsonResults.deviceId
-    return {
-      deviceName,
-      deviceId
-    }
-  }
-
-  setDevice (deviceId: string): number {
-    const apiType = 'AudioDeviceCollection_setDevice'
-    const jsonParams = {
-      deviceId,
-      toJSON: () => {
-        return { deviceId }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
-  }
-
-  setApplicationVolume (volume: number): number {
-    const apiType = 'AudioDeviceCollection_setApplicationVolume'
-    const jsonParams = {
-      volume,
-      toJSON: () => {
-        return { volume }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
-  }
-
-  getApplicationVolume (): number {
-    const apiType = 'AudioDeviceCollection_getApplicationVolume'
-    const jsonParams = {
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    const volume = jsonResults.volume
-    return volume
-  }
-
-  setApplicationMute (mute: boolean): number {
-    const apiType = 'AudioDeviceCollection_setApplicationMute'
-    const jsonParams = {
-      mute,
-      toJSON: () => {
-        return { mute }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
-  }
-
-  isApplicationMute (): boolean {
-    const apiType = 'AudioDeviceCollection_isApplicationMute'
-    const jsonParams = {
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    const mute = jsonResults.mute
-    return mute
-  }
-
-  release (): void {
-    const apiType = 'AudioDeviceCollection_release'
-    const jsonParams = {
-    }
-    callIrisApi.call(this, apiType, jsonParams)
-  }
-}
+import { IAudioDeviceManager } from '../IAudioDeviceManager'
+import { DeviceInfo } from '../IAgoraRtcEngine'
 
 export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
-  enumeratePlaybackDevices (): IAudioDeviceCollection {
+  enumeratePlaybackDevices (): DeviceInfo[] {
     const apiType = 'AudioDeviceManager_enumeratePlaybackDevices'
     const jsonParams = {
     }
@@ -98,7 +11,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     return jsonResults.result
   }
 
-  enumerateRecordingDevices (): IAudioDeviceCollection {
+  enumerateRecordingDevices (): DeviceInfo[] {
     const apiType = 'AudioDeviceManager_enumerateRecordingDevices'
     const jsonParams = {
     }

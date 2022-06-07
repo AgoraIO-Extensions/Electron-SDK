@@ -32,11 +32,3 @@ export class AgoraRhythmPlayerConfig {
     }
   }
 }
-
-export abstract class IRhythmPlayer {
-abstract playRhythm(sound1: string, sound2: string, config: AgoraRhythmPlayerConfig): number;
-
-abstract stopRhythm(): number;
-
-abstract configRhythmPlayer(config: AgoraRhythmPlayerConfig): number;
-}

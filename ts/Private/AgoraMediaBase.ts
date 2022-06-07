@@ -1,4 +1,3 @@
-import { EncodedVideoFrameInfo } from './AgoraBase'
 
 export enum AudioRoute {
 RouteDefault = -1,
@@ -175,6 +174,7 @@ VideoPixelI422 = 16,
 export enum RenderModeType {
 RenderModeHidden = 1,
 RenderModeFit = 2,
+RenderModeAdaptive = 3,
 }
 
 export enum EglContextType {
@@ -191,7 +191,7 @@ VideoBufferTexture = 3,
 export class ExternalVideoFrame {
   type?: VideoBufferType
   format?: VideoPixelFormat
-  buffer?: number[]
+  buffer?: Uint8Array
   stride?: number
   height?: number
   cropLeft?: number
@@ -204,7 +204,7 @@ export class ExternalVideoFrame {
   eglType?: EglContextType
   textureId?: number
   matrix?: number[]
-  metadataBuffer?: number[]
+  metadataBuffer?: Uint8Array
   metadataSize?: number
   static fromJSON (json: any): ExternalVideoFrame {
     const obj = new ExternalVideoFrame()
@@ -255,13 +255,13 @@ export class VideoFrame {
   yStride?: number
   uStride?: number
   vStride?: number
-  yBuffer?: number[]
-  uBuffer?: number[]
-  vBuffer?: number[]
+  yBuffer?: Uint8Array
+  uBuffer?: Uint8Array
+  vBuffer?: Uint8Array
   rotation?: number
   renderTimeMs?: number
   avsyncType?: number
-  metadataBuffer?: number[]
+  metadataBuffer?: Uint8Array
   metadataSize?: number
   sharedContext?: any
   textureId?: number
@@ -329,7 +329,7 @@ export class AudioFrame {
   bytesPerSample?: BytesPerSample
   channels?: number
   samplesPerSec?: number
-  buffer?: number[]
+  buffer?: Uint8Array
   renderTimeMs?: number
   avsyncType?: number
   static fromJSON (json: any): AudioFrame {
@@ -356,18 +356,6 @@ export class AudioFrame {
       avsync_type: this.avsyncType
     }
   }
-}
-
-export abstract class IAudioFrameObserverBase {
-  onRecordAudioFrame?(channelId: string, audioFrame: AudioFrame): boolean;
-
-  onPlaybackAudioFrame?(channelId: string, audioFrame: AudioFrame): boolean;
-
-  onMixedAudioFrame?(channelId: string, audioFrame: AudioFrame): boolean;
-}
-
-export abstract class IAudioFrameObserver extends IAudioFrameObserverBase {
-  onPlaybackAudioFrameBeforeMixing?(channelId: string, uid: number, audioFrame: AudioFrame): boolean;
 }
 
 export class AudioSpectrumData {
@@ -406,55 +394,9 @@ export class UserAudioSpectrumInfo {
   }
 }
 
-export abstract class IAudioSpectrumObserver {
-  onLocalAudioSpectrum?(data: AudioSpectrumData): boolean;
-
-  onRemoteAudioSpectrum?(spectrums: UserAudioSpectrumInfo[], spectrumNumber: number): boolean;
-}
-
-export abstract class IVideoEncodedFrameObserver {
-  OnEncodedVideoFrame?(uid: number, imageBuffer: number[], length: number, videoEncodedFrameInfo: EncodedVideoFrameInfo): boolean;
-}
-
 export enum VideoFrameProcessMode {
 ProcessModeReadOnly = 0,
 ProcessModeReadWrite = 1,
-}
-
-export abstract class IVideoFrameObserver {
-  onCaptureVideoFrame?(videoFrame: VideoFrame): boolean;
-
-  onPreEncodeVideoFrame?(videoFrame: VideoFrame): boolean;
-
-  onSecondaryCameraCaptureVideoFrame?(videoFrame: VideoFrame): boolean;
-
-  onSecondaryPreEncodeCameraVideoFrame?(videoFrame: VideoFrame): boolean;
-
-  onScreenCaptureVideoFrame?(videoFrame: VideoFrame): boolean;
-
-  onPreEncodeScreenVideoFrame?(videoFrame: VideoFrame): boolean;
-
-  onMediaPlayerVideoFrame?(videoFrame: VideoFrame, mediaPlayerId: number): boolean;
-
-  onSecondaryScreenCaptureVideoFrame?(videoFrame: VideoFrame): boolean;
-
-  onSecondaryPreEncodeScreenVideoFrame?(videoFrame: VideoFrame): boolean;
-
-  onRenderVideoFrame?(channelId: string, remoteUid: number, videoFrame: VideoFrame): boolean;
-
-  onTranscodedVideoFrame?(videoFrame: VideoFrame): boolean;
-
-  getVideoFrameProcessMode?(): VideoFrameProcessMode;
-
-  getVideoPixelFormatPreference?(): VideoPixelFormat;
-
-  getRotationApplied?(): boolean;
-
-  getMirrorApplied?(): boolean;
-
-  getObservedFramePosition?(): number;
-
-  isExternal?(): boolean;
 }
 
 export enum ContentInspectResult {
@@ -546,10 +488,6 @@ export class SnapShotConfig {
       filePath: this.filePath
     }
   }
-}
-
-export abstract class ISnapshotCallback {
-  onSnapshotTaken?(channel: string, uid: number, filePath: string, width: number, height: number, errCode: number): void;
 }
 
 export enum ExternalVideoSourceType {
