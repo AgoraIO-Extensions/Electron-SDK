@@ -7,7 +7,11 @@ import {
   VideoSourceType,
 } from "../AgoraBase";
 import { IMediaPlayer } from "../IAgoraMediaPlayer";
-import { ChannelMediaOptions, RtcEngineContext } from "../IAgoraRtcEngine";
+import {
+  ChannelMediaOptions,
+  IScreenCaptureSourceList,
+  RtcEngineContext,
+} from "../IAgoraRtcEngine";
 import { IRtcEngineEventHandlerEx, RtcConnection } from "../IAgoraRtcEngineEx";
 import { IRtcEngineExImpl } from "../impl/IAgoraRtcEngineExImpl";
 import { callIrisApi, getBridge, handlerRTCEvent } from "./IrisApiEngine";
@@ -151,6 +155,28 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
       bufferArray,
       bufferArray.length
     );
+    return jsonResults.result;
+  }
+
+  override getScreenCaptureSources(
+    thumbSize: { width: number; height: number },
+    iconSize: { width: number; height: number },
+    includeScreen: boolean
+  ): any[] {
+    const apiType = "RtcEngine_getScreenCaptureSources";
+    const jsonParams = {
+      thumbSize,
+      iconSize,
+      includeScreen,
+      toJSON: () => {
+        return {
+          thumbSize,
+          iconSize,
+          includeScreen,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return jsonResults.result;
   }
 
