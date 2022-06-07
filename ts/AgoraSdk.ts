@@ -3,6 +3,7 @@ import { createAgoraRtcEngine } from "./Utils";
 
 export * from "./Private/AgoraBase";
 export * from "./Private/AgoraMediaBase";
+export * from "./Private/IAgoraMediaPlayer";
 export * from "./Private/IAgoraRtcEngine";
 export * from "./Private/IAgoraRtcEngineEx";
 export * from "./Private/impl/IAgoraRtcEngineImpl";
