@@ -228,6 +228,8 @@ void NodeRtcEngine::Init(Local<Object> &module) {
   PROPERTY_METHOD_DEFINE(setRemoteUserPriority);
   // PROPERTY_METHOD_DEFINE(startEchoTestWithInterval);
   PROPERTY_METHOD_DEFINE(startRecordingDeviceTest);
+  PROPERTY_METHOD_DEFINE(setLoopbackDevice);
+  PROPERTY_METHOD_DEFINE(getLoopbackDevice);
   PROPERTY_METHOD_DEFINE(stopRecordingDeviceTest);
   // PROPERTY_METHOD_DEFINE(setCameraCapturerConfiguration);
   PROPERTY_METHOD_DEFINE(setLogFileSize);
@@ -1462,6 +1464,55 @@ NAPI_API_DEFINE(NodeRtcEngine, setRemoteUserPriority) {
 //     LOG_LEAVE;
 // }
 
+NAPI_API_DEFINE(NodeRtcEngine, setLoopbackDevice) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  do {
+    NodeRtcEngine* pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    NodeString deviceId;
+    status = napi_get_value_nodestring_(args[0], deviceId);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    if (!pEngine->m_audioVdm) {
+      pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
+    }
+
+    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+    if (adm)
+    {
+      result = adm->setLoopbackDevice(deviceId);
+    }
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, getLoopbackDevice) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  do {
+    NodeRtcEngine* pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    char deviceId[MAX_DEVICE_ID_LENGTH] = { 0 };
+    if (!pEngine->m_audioVdm) {
+      pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
+    }
+
+    IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
+    if (adm)
+    {
+      adm->getLoopbackDevice(deviceId);
+    }
+    napi_set_string_result(args, deviceId);
+  } while (false);
+  LOG_LEAVE;
+}
 NAPI_API_DEFINE(NodeRtcEngine, startRecordingDeviceTest) {
   LOG_ENTER;
   napi_status status = napi_ok;

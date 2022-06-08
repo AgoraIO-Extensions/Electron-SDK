@@ -273,6 +273,8 @@ public:
   NAPI_API(stopLastmileProbeTest);
   NAPI_API(setRemoteUserPriority);
   // NAPI_API(startEchoTestWithInterval);
+  NAPI_API(setLoopbackDevice);
+  NAPI_API(getLoopbackDevice);
   NAPI_API(startRecordingDeviceTest);
   NAPI_API(stopRecordingDeviceTest);
   // NAPI_API(setCameraCapturerConfiguration);

@@ -1,4 +1,7 @@
-## 3.7.202-rc.207-build.527(May 27th, 2022)
+## 3.7.202-rc.208-build.608(May 27th, 2022)
+* add api: setLoopbackDevice getLoopbackDevice
+
+## 3.7.202-rc.208-build.608(May 27th, 2022)
 * update native sdk
 * fix getScreenWindowsInfo
 
