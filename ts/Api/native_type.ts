@@ -3477,6 +3477,8 @@ export interface NodeRtcEngine {
    * @ignore
    */
   getCurrentVideoDevice(): Object;
+  setLoopbackDevice(deviceId: string): number;
+  getLoopbackDevice(): string;
   /**
    * @ignore
    */
