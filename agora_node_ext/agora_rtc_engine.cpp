@@ -1482,7 +1482,10 @@ NAPI_API_DEFINE(NodeRtcEngine, setLoopbackDevice) {
     }
 
     IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-    result = adm->setLoopbackDevice(deviceId);
+    if (adm)
+    {
+      result = adm->setLoopbackDevice(deviceId);
+    }
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -1502,7 +1505,10 @@ NAPI_API_DEFINE(NodeRtcEngine, getLoopbackDevice) {
     }
 
     IAudioDeviceManager* adm = pEngine->m_audioVdm->get();
-    adm->getLoopbackDevice(deviceId);
+    if (adm)
+    {
+      adm->getLoopbackDevice(deviceId);
+    }
     napi_set_string_result(args, deviceId);
   } while (false);
   LOG_LEAVE;
