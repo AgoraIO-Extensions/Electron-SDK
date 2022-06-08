@@ -9,11 +9,16 @@ import {
 import { IMediaPlayer } from "../IAgoraMediaPlayer";
 import {
   ChannelMediaOptions,
+  IVideoDeviceManager,
   RtcEngineContext,
   SIZE,
 } from "../IAgoraRtcEngine";
 import { IRtcEngineEventHandlerEx, RtcConnection } from "../IAgoraRtcEngineEx";
+import { IAudioDeviceManager } from "../IAudioDeviceManager";
+import { IMediaPlayerImpl } from "../impl/IAgoraMediaPlayerImpl";
 import { IRtcEngineExImpl } from "../impl/IAgoraRtcEngineExImpl";
+import { IVideoDeviceManagerImpl } from "../impl/IAgoraRtcEngineImpl";
+import { IAudioDeviceManagerImpl } from "../impl/IAudioDeviceManagerImpl";
 import { callIrisApi, getBridge, handlerRTCEvent } from "./IrisApiEngine";
 import { handlerMPKEvent, MediaPlayerInternal } from "./MediaPlayerInternal";
 
@@ -164,16 +169,36 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
       },
     };
     const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    logDebug("getScreenCaptureSource ===== ", jsonResults.result)
 
-    jsonResults.result.forEach( function(element: any) {
-      logDebug("getScreenCapture buffer ==== ", getBridge().GetBuffer(element.thumbImage.buffer, element.thumbImage.length))
+    jsonResults.result.forEach(function(element: any) {
+      if (element.thumbImage.buffer == 0) {
+        element.thumbImage.buffer = null;
+      }
+      else {
+        element.thumbImage.buffer = getBridge().GetBuffer(element.thumbImage.buffer, element.thumbImage.length);
+      }
+
+      if (element.iconImage.buffer == 0) {
+        element.iconImage.buffer = null;
+      } else {
+        element.iconImage.buffer = getBridge().GetBuffer(element.iconImage.buffer, element.iconImage.length)
+      }
     });
+
+    logDebug("getScreenCaptureSource ===== ", jsonResults.result)
     return jsonResults.result;
   }
 
   override destroyRendererByView(view: Element): void {
     AgoraRendererManager.destroyRendererByView(view);
+  }
+
+  override getAudioDeviceManager(): IAudioDeviceManager {
+    return new IAudioDeviceManagerImpl();
+  }
+
+  override getVideoDeviceManager(): IVideoDeviceManager {
+    return new IVideoDeviceManagerImpl();
   }
 
   override destroyRendererByConfig(
