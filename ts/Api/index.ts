@@ -2836,6 +2836,12 @@ class AgoraRtcEngine extends EventEmitter {
   getCurrentVideoDevice(): Object {
     return this.rtcEngine.getCurrentVideoDevice();
   }
+  setLoopbackDevice(deviceId: string): number {
+    return this.rtcEngine.setLoopbackDevice(deviceId);
+  }
+  getLoopbackDevice(): string {
+    return this.rtcEngine.getLoopbackDevice();
+  }
 
   /**
    * Starts a video-capture device test.
