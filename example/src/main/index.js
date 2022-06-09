@@ -1,17 +1,27 @@
 "use strict";
 
-import { app, BrowserWindow, desktopCapturer, ipcMain } from "electron";
+import {
+  app,
+  BrowserWindow,
+  desktopCapturer,
+  ipcMain,
+  systemPreferences,
+} from "electron";
 import * as path from "path";
 import { format as formatUrl } from "url";
+
+if (systemPreferences.askForMediaAccess) {
+  systemPreferences.askForMediaAccess("camera");
+  systemPreferences.askForMediaAccess("microphone");
+}
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 if (process.platform === "linux") {
   app.disableHardwareAcceleration();
 }
-ipcMain.handle(
-  'DESKTOP_CAPTURER_GET_SOURCES',
-  (event, opts) => desktopCapturer.getSources(opts)
-)
+ipcMain.handle("DESKTOP_CAPTURER_GET_SOURCES", (event, opts) =>
+  desktopCapturer.getSources(opts)
+);
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 let mainWindow;
 app.allowRendererProcessReuse = true;
