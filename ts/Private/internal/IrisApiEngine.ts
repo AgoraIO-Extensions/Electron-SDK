@@ -5,9 +5,12 @@ import { IDirectCdnStreamingEventHandler } from "../IAgoraRtcEngine";
 import { processIRtcEngineEventHandlerEx } from "../impl/IAgoraRtcEngineExImpl";
 import {
   processIDirectCdnStreamingEventHandler,
+  processIMetadataObserver,
   processIRtcEngineEventHandler,
 } from "../impl/IAgoraRtcEngineImpl";
 const agora = require("../../../build/Release/agora_node_ext");
+
+const MetadataSplitString = "MetadataObserver_";
 
 export const getBridge = (): AgoraElectronBridge => {
   let bridge = AgoraEnv.AgoraElectronBridge;
@@ -40,38 +43,51 @@ export const handlerRTCEvent = function (
     bufferCount
   );
   const isEx = event.endsWith("Ex");
+  const isMetdata = event.startsWith("MetadataObserver");
   preProcessEvent(event, parseData, buffer, bufferLength, bufferCount);
 
-  AgoraEnv.engineEventHandlers.forEach((value) => {
-    if (!value) {
-      return;
-    }
-    if (isEx) {
-      try {
-        processIRtcEngineEventHandlerEx(value, event, parseData);
-      } catch (error) {
-        logError("engineEventHandlers::processIRtcEngineEventHandlerEx", error);
+  if (!isMetdata) {
+    AgoraEnv.engineEventHandlers.forEach((value) => {
+      if (!value) {
+        return;
       }
-      return;
-    }
-    try {
-      processIDirectCdnStreamingEventHandler(
-        value as IDirectCdnStreamingEventHandler,
-        event,
-        parseData
-      );
-    } catch (error) {
-      logError(
-        "engineEventHandlers::processIDirectCdnStreamingEventHandler",
-        error
-      );
-    }
-    try {
-      processIRtcEngineEventHandler(value, event, parseData);
-    } catch (error) {
-      logError("engineEventHandlers::processIRtcEngineEventHandler", error);
-    }
-  });
+      if (isEx) {
+        try {
+          processIRtcEngineEventHandlerEx(value, event, parseData);
+        } catch (error) {
+          logError(
+            "engineEventHandlers::processIRtcEngineEventHandlerEx",
+            error
+          );
+        }
+        return;
+      }
+      try {
+        processIDirectCdnStreamingEventHandler(
+          value as IDirectCdnStreamingEventHandler,
+          event,
+          parseData
+        );
+      } catch (error) {
+        logError(
+          "engineEventHandlers::processIDirectCdnStreamingEventHandler",
+          error
+        );
+      }
+      try {
+        processIRtcEngineEventHandler(value, event, parseData);
+      } catch (error) {
+        logError("engineEventHandlers::processIRtcEngineEventHandler", error);
+      }
+    });
+  }
+
+  if (isMetdata) {
+    let splitStr = event.split(MetadataSplitString);
+    AgoraEnv.metadataObservers.forEach((value) => {
+      processIMetadataObserver(value, splitStr[1], parseData);
+    });
+  }
 };
 
 export const sendMsg = (
@@ -112,7 +128,8 @@ export function callIrisApi(
   buffer?: Uint8Array[],
   bufferCount: number = 0
 ): any {
-  if (funcName.startsWith("MediaPlayer_")) {
+  const isMediaPlayer = funcName.startsWith("MediaPlayer_");
+  if (isMediaPlayer) {
     //@ts-ignore
     params.mediaPlayerId = (this as IMediaPlayer).getMediaPlayerId();
     const json = params.toJSON?.call();
@@ -137,6 +154,21 @@ export function callIrisApi(
           (value) => value !== params.eventHandler
         );
         return ResultOk;
+      case "RtcEngine_registerMediaMetadataObserver":
+        const res = AgoraEnv.metadataObservers.filter(
+          (observer) => observer === params.observer
+        );
+        if (res && res.length > 0) {
+          logWarn(`ignore this call ${funcName}: Observer has exist`);
+          break;
+        }
+        AgoraEnv.metadataObservers.push(params.observer);
+        break;
+      case "RtcEngine_unregisterMediaMetadataObserver":
+        AgoraEnv.metadataObservers = AgoraEnv.metadataObservers.filter(
+          (value) => value !== params.observer
+        );
+        break;
     }
   }
 
@@ -154,6 +186,9 @@ function preProcessEvent(
     case "onStreamMessage":
     case "onStreamMessageEx":
       data.data = buffer[0];
+      break;
+    case "MetadataObserver_onMetadataReceived":
+      data.metadata.buffer = buffer[0];
       break;
   }
 }

@@ -252,6 +252,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
       bufferArray,
       bufferArray.length
     );
+
     return jsonResults.result;
   }
 }
