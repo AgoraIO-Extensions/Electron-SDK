@@ -43,10 +43,10 @@ export const handlerRTCEvent = function (
     bufferCount
   );
   const isEx = event.endsWith("Ex");
-  const isMetdata = event.startsWith("MetadataObserver");
+  const isMetadata = event.startsWith("MetadataObserver");
   preProcessEvent(event, parseData, buffer, bufferLength, bufferCount);
 
-  if (!isMetdata) {
+  if (!isMetadata) {
     AgoraEnv.engineEventHandlers.forEach((value) => {
       if (!value) {
         return;
@@ -82,7 +82,7 @@ export const handlerRTCEvent = function (
     });
   }
 
-  if (isMetdata) {
+  if (isMetadata) {
     let splitStr = event.split(MetadataSplitString);
     AgoraEnv.metadataObservers.forEach((value) => {
       processIMetadataObserver(value, splitStr[1], parseData);
