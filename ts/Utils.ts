@@ -94,6 +94,7 @@ export const formatConfigByVideoSourceType = (
     case VideoSourceType.VideoSourceCameraPrimary:
     case VideoSourceType.VideoSourceScreen:
     case VideoSourceType.VideoSourceScreenSecondary:
+    case VideoSourceType.VideoSourceTranscoded:
       channelId = "";
       uid = 0;
       break;
