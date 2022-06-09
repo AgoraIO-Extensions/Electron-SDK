@@ -25,8 +25,8 @@
     "build_linux_release": "cmake-js rebuild --arch=x64 --CDCMAKE_BUILD_TYPE=Release -G \"Unix Makefiles\""
   },
   "agora_electron": {
-    "iris_sdk_win": "http://192.168.99.149:8086/CSDC_repo/iris_3.8.201_DCG_Windows_20220607_0410.zip",
-    "iris_sdk_mac": "http://192.168.99.149:8086/CSDC_repo/iris_3.8.201_DCG_Mac_20220607_0405.zip",
+    "iris_sdk_win": "http://192.168.99.149:8086/CSDC_repo/iris_3.8.201_DCG_Windows_20220609_1006.zip",
+    "iris_sdk_mac": "http://192.168.99.149:8086/CSDC_repo/iris_3.8.201_DCG_Mac_20220609_1003.zip",
     "no_symbol": true,
     "prebuilt": true
   },
