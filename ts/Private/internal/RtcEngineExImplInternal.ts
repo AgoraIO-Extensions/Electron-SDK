@@ -2,6 +2,7 @@
 import { CallBackModule, Channel } from "../../Types";
 import { AgoraEnv, logDebug, logError, logWarn } from "../../Utils";
 import {
+  ErrorCodeType,
   VideoCanvas,
   VideoMirrorModeType,
   VideoSourceType,
@@ -10,6 +11,7 @@ import { IMediaPlayer } from "../IAgoraMediaPlayer";
 import {
   ChannelMediaOptions,
   IVideoDeviceManager,
+  Metadata,
   RtcEngineContext,
   SIZE,
 } from "../IAgoraRtcEngine";
@@ -139,6 +141,10 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
         };
       },
     };
+
+    if (data == null || data == undefined)
+      return ErrorCodeType.ErrInvalidArgument;
+
     let bufferArray = [data];
     const jsonResults = callIrisApi.call(
       this,
@@ -170,22 +176,27 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     };
     const jsonResults = callIrisApi.call(this, apiType, jsonParams);
 
-    jsonResults.result.forEach(function(element: any) {
+    jsonResults.result.forEach(function (element: any) {
       if (element.thumbImage.buffer == 0) {
         element.thumbImage.buffer = null;
-      }
-      else {
-        element.thumbImage.buffer = getBridge().GetBuffer(element.thumbImage.buffer, element.thumbImage.length);
+      } else {
+        element.thumbImage.buffer = getBridge().GetBuffer(
+          element.thumbImage.buffer,
+          element.thumbImage.length
+        );
       }
 
       if (element.iconImage.buffer == 0) {
         element.iconImage.buffer = null;
       } else {
-        element.iconImage.buffer = getBridge().GetBuffer(element.iconImage.buffer, element.iconImage.length)
+        element.iconImage.buffer = getBridge().GetBuffer(
+          element.iconImage.buffer,
+          element.iconImage.length
+        );
       }
     });
 
-    logDebug("getScreenCaptureSource ===== ", jsonResults.result)
+    logDebug("getScreenCaptureSource ===== ", jsonResults.result);
     return jsonResults.result;
   }
 
@@ -211,5 +222,36 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
       channelId,
       uid
     );
+  }
+
+  override sendMetaData(
+    metadata: Metadata,
+    sourceType: VideoSourceType
+  ): number {
+    const apiType = "RtcEngine_sendMetaData";
+    const jsonParams = {
+      metadata,
+      source_type: sourceType,
+      toJSON: () => {
+        return {
+          metadata,
+          source_type: sourceType,
+        };
+      },
+    };
+
+    if (metadata.buffer == null || metadata.buffer == undefined)
+      return ErrorCodeType.ErrInvalidArgument;
+
+    let bufferArray = [metadata.buffer!];
+
+    const jsonResults = callIrisApi.call(
+      this,
+      apiType,
+      jsonParams,
+      bufferArray,
+      bufferArray.length
+    );
+    return jsonResults.result;
   }
 }
