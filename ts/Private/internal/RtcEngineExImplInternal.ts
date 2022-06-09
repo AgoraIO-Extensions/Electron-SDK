@@ -9,15 +9,15 @@ import {
 } from "../AgoraBase";
 import { IMediaPlayer } from "../IAgoraMediaPlayer";
 import {
-  ChannelMediaOptions,
+  DirectCdnStreamingMediaOptions,
+  IDirectCdnStreamingEventHandler,
   IVideoDeviceManager,
   Metadata,
   RtcEngineContext,
   SIZE,
 } from "../IAgoraRtcEngine";
-import { IRtcEngineEventHandlerEx, RtcConnection } from "../IAgoraRtcEngineEx";
+import { RtcConnection } from "../IAgoraRtcEngineEx";
 import { IAudioDeviceManager } from "../IAudioDeviceManager";
-import { IMediaPlayerImpl } from "../impl/IAgoraMediaPlayerImpl";
 import { IRtcEngineExImpl } from "../impl/IAgoraRtcEngineExImpl";
 import { IVideoDeviceManagerImpl } from "../impl/IAgoraRtcEngineImpl";
 import { IAudioDeviceManagerImpl } from "../impl/IAudioDeviceManagerImpl";
@@ -154,6 +154,23 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
       bufferArray.length
     );
     return jsonResults.result;
+  }
+  override startDirectCdnStreaming(
+    eventHandler: IDirectCdnStreamingEventHandler,
+    publishUrl: string,
+    options: DirectCdnStreamingMediaOptions
+  ): number {
+    const result = AgoraEnv.cdnEventHandlers.filter(
+      (handler) => handler === eventHandler
+    );
+    if (result.length === 0) {
+      AgoraEnv.cdnEventHandlers.push(eventHandler);
+    }
+    return super.startDirectCdnStreaming(eventHandler, publishUrl, options);
+  }
+  override stopDirectCdnStreaming(): number {
+    AgoraEnv.cdnEventHandlers = [];
+    return super.stopDirectCdnStreaming();
   }
 
   override getScreenCaptureSources(

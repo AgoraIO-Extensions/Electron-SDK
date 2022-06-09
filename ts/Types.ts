@@ -1,7 +1,11 @@
 import { VideoSourceType } from "./Private/AgoraBase";
 import { RenderModeType } from "./Private/AgoraMediaBase";
 import { IMediaPlayerSourceObserver } from "./Private/IAgoraMediaPlayerSource";
-import { IVideoDeviceManager, IMetadataObserver } from "./Private/IAgoraRtcEngine";
+import {
+  IDirectCdnStreamingEventHandler,
+  IMetadataObserver,
+  IVideoDeviceManager,
+} from "./Private/IAgoraRtcEngine";
 import { IRtcEngineEventHandlerEx } from "./Private/IAgoraRtcEngineEx";
 import { IAudioDeviceManager } from "./Private/IAudioDeviceManager";
 import { IRenderer } from "./Renderer/IRenderer";
@@ -14,6 +18,7 @@ export interface AgoraEnvType {
   engineEventHandlers: IRtcEngineEventHandlerEx[];
   mediaPlayerEventHandlers: IMediaPlayerSourceObserver[];
   metadataObservers: IMetadataObserver[];
+  cdnEventHandlers: IDirectCdnStreamingEventHandler[];
   AgoraElectronBridge?: AgoraElectronBridge;
   AgoraRendererManager?: RendererManager;
   AgoraAudioDeviceManager: IAudioDeviceManager;
