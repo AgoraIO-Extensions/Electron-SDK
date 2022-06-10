@@ -3857,4 +3857,16 @@ export class IRtcEngineImpl implements IRtcEngine {
     const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
   }
+
+  setMaxMetadataSize (size: number): number {
+    const apiType = 'RtcEngine_setMaxMetadataSize'
+    const jsonParams = {
+      size,
+      toJSON: () => {
+        return { size }
+      }
+    }
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
+    return jsonResults.result
+  }
 }

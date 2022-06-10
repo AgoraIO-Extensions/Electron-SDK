@@ -1572,6 +1572,8 @@ abstract getAudioDeviceManager(): IAudioDeviceManager;
 abstract getVideoDeviceManager(): IVideoDeviceManager;
 
 abstract sendMetaData(metadata: Metadata, sourceType: VideoSourceType): number;
+
+abstract setMaxMetadataSize(size: number): number;
 }
 
 export enum QualityReportFormatType {
