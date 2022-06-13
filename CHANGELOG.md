@@ -1,3 +1,6 @@
+## 3.8.200-build.613(Jun 13th, 2022)
+- update native sdk
+
 ## 3.8.200-build.601(Jun 1th, 2022)
 - update native sdk
 - remove api
