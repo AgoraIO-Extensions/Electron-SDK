@@ -1,11 +1,10 @@
 {
-  "name": "agora-electron-sdk",
-  "version": "3.8.201-iris.1-dcg.1",
-  "description": "agora-electron-sdk",
+  "name": "electron-agora-rtc-ng",
+  "version": "3.8.201",
+  "description": "electron-agora-rtc-ng",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
   "author": "agora.io",
-  "gypfile": true,
   "scripts": {
     "install": "cross-env-shell gulp NPM_Install --INIT_CWD=$INIT_CWD",
     "totalBuild": "cross-env-shell gulp totalBuild --INIT_CWD=$INIT_CWD",
