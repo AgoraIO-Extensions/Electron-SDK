@@ -1231,7 +1231,7 @@ class AgoraRtcEngine extends EventEmitter {
         if(localRenderers.size === 0) {
           this.localStreams.delete(type)
         }
-      } catch (err: any) {
+      } catch (err) {
         onFailure && onFailure(err)
       }
     }
@@ -1264,7 +1264,7 @@ class AgoraRtcEngine extends EventEmitter {
         if(channelStreams.size === 0) {
           this.streams.delete(channelId)
         }
-      } catch (err: any) {
+      } catch (err) {
         onFailure && onFailure(err)
       }
     }
@@ -1302,7 +1302,7 @@ class AgoraRtcEngine extends EventEmitter {
         if(localRenderers.size === 0) {
           this.localStreams.delete(type);
         }
-      } catch (err: any) {
+      } catch (err) {
         exception = err
         console.error(`${err.stack}`)
       }
@@ -1340,7 +1340,7 @@ class AgoraRtcEngine extends EventEmitter {
         if(channelStreams.size === 0) {
           this.streams.delete(channelId)
         }
-      } catch (err: any) {
+      } catch (err) {
         exception = err
         console.error(`${err.stack}`)
       }
