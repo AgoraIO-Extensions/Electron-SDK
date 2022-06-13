@@ -7,7 +7,7 @@
   "author": "agora.io",
   "gypfile": true,
   "scripts": {
-    "install": "pwd",
+    "install": "cross-env-shell gulp NPM_Install --INIT_CWD=$INIT_CWD",
     "totalBuild": "cross-env-shell gulp totalBuild --INIT_CWD=$INIT_CWD",
     "build": "cross-env-shell gulp build --INIT_CWD=$INIT_CWD",
     "clean": "cross-env-shell gulp clean --INIT_CWD=$INIT_CWD",
