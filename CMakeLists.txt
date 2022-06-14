@@ -9,7 +9,7 @@ set(BUILD_TYPE ${CMAKE_BUILD_TYPE})
 message(====agora_electron_sdk==== build config: build_type=${BUILD_TYPE}, CMAKE_JS_INC==${CMAKE_JS_INC} arch: ${CMAKE_OSX_ARCHITECTURES}, platform: ${CMAKE_SYSTEM_NAME})
 # library name
 set(AGORA_NODE_EXT_NAME agora_node_ext)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/${BUILD_TYPE})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/build/Release)
 
 message(=====Node js include ===== ${CMAKE_JS_SRC} == lib === ${CMAKE_JS_LIB})
 
@@ -99,7 +99,7 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
             ${AGORA_IRIS_SDK_PATH}/${AGORA_DCG_SDK_ARCH_FILE_NAME}/*.lib
             )
     file(GLOB AGORA_IRIS_SDK_LIBRARY
-            ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/${BUILD_TYPE}/*.dll
+            ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/Release/*.dll
             )
   
     # iris sdk include file
