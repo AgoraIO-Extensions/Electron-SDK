@@ -178,6 +178,7 @@ function(build_target_agora_node_ext)
                 Rpcrt4.lib
                 ws2_32.lib
                 )
+        set_target_properties(${AGORA_NODE_EXT_NAME} PROPERTIES LINK_FLAGS "/DEBUG /PDBSTRIPPED:${AGORA_NODE_EXT_NAME}.pdb" )
     elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
         set(CMAKE_BUILD_WITH_INSTALL_RPATH true)
         set(CMAKE_INSTALL_RPATH "\${ORIGIN}")
@@ -212,7 +213,7 @@ function(build_target_agora_node_ext)
             )
     set_target_properties(${AGORA_NODE_EXT_NAME} PROPERTIES
             LIBRARY_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-            PDB_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+            CMAKE_PDB_OUTPUT_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
             PREFIX ""
             SUFFIX ".node"
             )
