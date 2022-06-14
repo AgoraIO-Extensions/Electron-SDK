@@ -1,0 +1,42 @@
+.screen {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  .card {
+    height: 340px;
+  }
+  .content {
+    overflow: auto;
+    max-height: 630px;
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    background-color: rgb(238, 240, 243);
+  }
+  .rightBar {
+    overflow: auto;
+    max-height: 630px;
+    display: flex;
+    width: 40%;
+    flex-direction: column;
+    padding: 16px 16px 0 16px;
+    box-sizing: border-box;
+    background-color: white;
+    align-items: stretch;
+    justify-content: space-between;
+  }
+  .rightBarBig {
+    @extend .rightBar;
+    width: 50%;
+  }
+
+  .selectedItem {
+    margin-top: 16px;
+    .require {
+      color: red;
+    }
+  }
+}
