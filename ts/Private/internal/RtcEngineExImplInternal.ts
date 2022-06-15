@@ -129,7 +129,6 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     data: Uint8Array,
     length: number
   ): number {
-    console.log("agora, sendStreamMessage===");
     const apiType = "RtcEngine_sendStreamMessage";
     const jsonParams = {
       streamId,
