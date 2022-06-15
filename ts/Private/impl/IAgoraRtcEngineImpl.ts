@@ -639,17 +639,21 @@ export function processIMetadataObserver (handler: IMetadataObserver, event: str
 
 export function processIDirectCdnStreamingEventHandler (handler: IDirectCdnStreamingEventHandler, event: string, jsonParams: any) {
   switch (event) {
-    case 'onDirectCdnStreamingStateChanged':
+    case "DirectCdnStreamingEventHandler_onDirectCdnStreamingStateChanged":
       if (handler.onDirectCdnStreamingStateChanged !== undefined) {
-        handler.onDirectCdnStreamingStateChanged(jsonParams.state, jsonParams.error, jsonParams.message)
+        handler.onDirectCdnStreamingStateChanged(
+          jsonParams.state,
+          jsonParams.error,
+          jsonParams.message
+        );
       }
-      break
+      break;
 
-    case 'onDirectCdnStreamingStats':
+    case "DirectCdnStreamingEventHandler_onDirectCdnStreamingStats":
       if (handler.onDirectCdnStreamingStats !== undefined) {
-        handler.onDirectCdnStreamingStats(jsonParams.stats)
+        handler.onDirectCdnStreamingStats(jsonParams.stats);
       }
-      break
+      break;
   }
 }
 
