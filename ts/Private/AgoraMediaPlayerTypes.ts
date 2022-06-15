@@ -81,59 +81,11 @@ export class PlayerStreamInfo {
   audioChannels?: number
   audioBitsPerSample?: number
   duration?: number
-  static fromJSON (json: any): PlayerStreamInfo {
-    const obj = new PlayerStreamInfo()
-    obj.streamIndex = json.streamIndex
-    obj.streamType = json.streamType
-    obj.codecName = json.codecName
-    obj.language = json.language
-    obj.videoFrameRate = json.videoFrameRate
-    obj.videoBitRate = json.videoBitRate
-    obj.videoWidth = json.videoWidth
-    obj.videoHeight = json.videoHeight
-    obj.videoRotation = json.videoRotation
-    obj.audioSampleRate = json.audioSampleRate
-    obj.audioChannels = json.audioChannels
-    obj.audioBitsPerSample = json.audioBitsPerSample
-    obj.duration = json.duration
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      streamIndex: this.streamIndex,
-      streamType: this.streamType,
-      codecName: this.codecName,
-      language: this.language,
-      videoFrameRate: this.videoFrameRate,
-      videoBitRate: this.videoBitRate,
-      videoWidth: this.videoWidth,
-      videoHeight: this.videoHeight,
-      videoRotation: this.videoRotation,
-      audioSampleRate: this.audioSampleRate,
-      audioChannels: this.audioChannels,
-      audioBitsPerSample: this.audioBitsPerSample,
-      duration: this.duration
-    }
-  }
 }
 
 export class SrcInfo {
   bitrateInKbps?: number
   name?: string
-  static fromJSON (json: any): SrcInfo {
-    const obj = new SrcInfo()
-    obj.bitrateInKbps = json.bitrateInKbps
-    obj.name = json.name
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      bitrateInKbps: this.bitrateInKbps,
-      name: this.name
-    }
-  }
 }
 
 export enum MediaPlayerMetadataType {
@@ -144,17 +96,4 @@ PlayerMetadataTypeSei = 1,
 export class PlayerUpdatedInfo {
   playerId?: string
   deviceId?: string
-  static fromJSON (json: any): PlayerUpdatedInfo {
-    const obj = new PlayerUpdatedInfo()
-    obj.playerId = json.playerId
-    obj.deviceId = json.deviceId
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      playerId: this.playerId,
-      deviceId: this.deviceId
-    }
-  }
 }

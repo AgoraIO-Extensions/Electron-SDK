@@ -26,19 +26,6 @@ AudioRangeModeTeam = 1,
 export class RemoteVoicePositionInfo {
   position?: number[]
   forward?: number[]
-  static fromJSON (json: any): RemoteVoicePositionInfo {
-    const obj = new RemoteVoicePositionInfo()
-    obj.position = json.position
-    obj.forward = json.forward
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      position: this.position,
-      forward: this.forward
-    }
-  }
 }
 
 export enum SaeDeployRegion {
@@ -63,35 +50,10 @@ export class CloudSpatialAudioConfig {
   eventHandler?: ICloudSpatialAudioEventHandler
   appId?: string
   deployRegion?: number
-  static fromJSON (json: any): CloudSpatialAudioConfig {
-    const obj = new CloudSpatialAudioConfig()
-    obj.rtcEngine = json.rtcEngine
-    obj.eventHandler = json.eventHandler
-    obj.appId = json.appId
-    obj.deployRegion = json.deployRegion
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      appId: this.appId,
-      deployRegion: this.deployRegion
-    }
-  }
 }
 
 export class LocalSpatialAudioConfig {
   rtcEngine?: IRtcEngine
-  static fromJSON (json: any): LocalSpatialAudioConfig {
-    const obj = new LocalSpatialAudioConfig()
-    obj.rtcEngine = json.rtcEngine
-    return obj
-  }
-
-  toJSON? () {
-    return {
-    }
-  }
 }
 
 export abstract class IBaseSpatialAudioEngine {

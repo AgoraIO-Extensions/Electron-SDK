@@ -18,17 +18,4 @@ RhythmPlayerErrorFileOverDurationLimit = 803,
 export class AgoraRhythmPlayerConfig {
   beatsPerMeasure?: number
   beatsPerMinute?: number
-  static fromJSON (json: any): AgoraRhythmPlayerConfig {
-    const obj = new AgoraRhythmPlayerConfig()
-    obj.beatsPerMeasure = json.beatsPerMeasure
-    obj.beatsPerMinute = json.beatsPerMinute
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      beatsPerMeasure: this.beatsPerMeasure,
-      beatsPerMinute: this.beatsPerMinute
-    }
-  }
 }

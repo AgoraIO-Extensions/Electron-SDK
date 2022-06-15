@@ -21,19 +21,4 @@ export class LogConfig {
   filePath?: string
   fileSizeInKB?: number
   level?: LogLevel
-  static fromJSON (json: any): LogConfig {
-    const obj = new LogConfig()
-    obj.filePath = json.filePath
-    obj.fileSizeInKB = json.fileSizeInKB
-    obj.level = json.level
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      filePath: this.filePath,
-      fileSizeInKB: this.fileSizeInKB,
-      level: this.level
-    }
-  }
 }

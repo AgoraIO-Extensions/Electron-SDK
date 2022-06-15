@@ -97,55 +97,6 @@ export class LocalVideoStats {
   encodedFrameCount?: number
   codecType?: VideoCodecType
   txPacketLossRate?: number
-  static fromJSON (json: any): LocalVideoStats {
-    const obj = new LocalVideoStats()
-    obj.uid = json.uid
-    obj.sentBitrate = json.sentBitrate
-    obj.sentFrameRate = json.sentFrameRate
-    obj.captureFrameRate = json.captureFrameRate
-    obj.captureFrameWidth = json.captureFrameWidth
-    obj.captureFrameHeight = json.captureFrameHeight
-    obj.regulatedCaptureFrameRate = json.regulatedCaptureFrameRate
-    obj.regulatedCaptureFrameWidth = json.regulatedCaptureFrameWidth
-    obj.regulatedCaptureFrameHeight = json.regulatedCaptureFrameHeight
-    obj.encoderOutputFrameRate = json.encoderOutputFrameRate
-    obj.encodedFrameWidth = json.encodedFrameWidth
-    obj.encodedFrameHeight = json.encodedFrameHeight
-    obj.rendererOutputFrameRate = json.rendererOutputFrameRate
-    obj.targetBitrate = json.targetBitrate
-    obj.targetFrameRate = json.targetFrameRate
-    obj.qualityAdaptIndication = json.qualityAdaptIndication
-    obj.encodedBitrate = json.encodedBitrate
-    obj.encodedFrameCount = json.encodedFrameCount
-    obj.codecType = json.codecType
-    obj.txPacketLossRate = json.txPacketLossRate
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      uid: this.uid,
-      sentBitrate: this.sentBitrate,
-      sentFrameRate: this.sentFrameRate,
-      captureFrameRate: this.captureFrameRate,
-      captureFrameWidth: this.captureFrameWidth,
-      captureFrameHeight: this.captureFrameHeight,
-      regulatedCaptureFrameRate: this.regulatedCaptureFrameRate,
-      regulatedCaptureFrameWidth: this.regulatedCaptureFrameWidth,
-      regulatedCaptureFrameHeight: this.regulatedCaptureFrameHeight,
-      encoderOutputFrameRate: this.encoderOutputFrameRate,
-      encodedFrameWidth: this.encodedFrameWidth,
-      encodedFrameHeight: this.encodedFrameHeight,
-      rendererOutputFrameRate: this.rendererOutputFrameRate,
-      targetBitrate: this.targetBitrate,
-      targetFrameRate: this.targetFrameRate,
-      qualityAdaptIndication: this.qualityAdaptIndication,
-      encodedBitrate: this.encodedBitrate,
-      encodedFrameCount: this.encodedFrameCount,
-      codecType: this.codecType,
-      txPacketLossRate: this.txPacketLossRate
-    }
-  }
 }
 
 export class RemoteVideoStats {
@@ -165,47 +116,6 @@ export class RemoteVideoStats {
   totalActiveTime?: number
   publishDuration?: number
   superResolutionType?: number
-  static fromJSON (json: any): RemoteVideoStats {
-    const obj = new RemoteVideoStats()
-    obj.uid = json.uid
-    obj.delay = json.delay
-    obj.width = json.width
-    obj.height = json.height
-    obj.receivedBitrate = json.receivedBitrate
-    obj.decoderOutputFrameRate = json.decoderOutputFrameRate
-    obj.rendererOutputFrameRate = json.rendererOutputFrameRate
-    obj.frameLossRate = json.frameLossRate
-    obj.packetLossRate = json.packetLossRate
-    obj.rxStreamType = json.rxStreamType
-    obj.totalFrozenTime = json.totalFrozenTime
-    obj.frozenRate = json.frozenRate
-    obj.avSyncTimeMs = json.avSyncTimeMs
-    obj.totalActiveTime = json.totalActiveTime
-    obj.publishDuration = json.publishDuration
-    obj.superResolutionType = json.superResolutionType
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      uid: this.uid,
-      delay: this.delay,
-      width: this.width,
-      height: this.height,
-      receivedBitrate: this.receivedBitrate,
-      decoderOutputFrameRate: this.decoderOutputFrameRate,
-      rendererOutputFrameRate: this.rendererOutputFrameRate,
-      frameLossRate: this.frameLossRate,
-      packetLossRate: this.packetLossRate,
-      rxStreamType: this.rxStreamType,
-      totalFrozenTime: this.totalFrozenTime,
-      frozenRate: this.frozenRate,
-      avSyncTimeMs: this.avSyncTimeMs,
-      totalActiveTime: this.totalActiveTime,
-      publishDuration: this.publishDuration,
-      superResolutionType: this.superResolutionType
-    }
-  }
 }
 
 export class Region {
@@ -217,31 +127,6 @@ export class Region {
   zOrder?: number
   alpha?: number
   renderMode?: RenderModeType
-  static fromJSON (json: any): Region {
-    const obj = new Region()
-    obj.uid = json.uid
-    obj.x = json.x
-    obj.y = json.y
-    obj.width = json.width
-    obj.height = json.height
-    obj.zOrder = json.zOrder
-    obj.alpha = json.alpha
-    obj.renderMode = json.renderMode
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      uid: this.uid,
-      x: this.x,
-      y: this.y,
-      width: this.width,
-      height: this.height,
-      zOrder: this.zOrder,
-      alpha: this.alpha,
-      renderMode: this.renderMode
-    }
-  }
 }
 
 export class VideoCompositingLayout {
@@ -252,28 +137,6 @@ export class VideoCompositingLayout {
   regionCount?: number
   appData?: Uint8Array
   appDataLength?: number
-  static fromJSON (json: any): VideoCompositingLayout {
-    const obj = new VideoCompositingLayout()
-    obj.canvasWidth = json.canvasWidth
-    obj.canvasHeight = json.canvasHeight
-    obj.backgroundColor = json.backgroundColor
-    obj.regions = json.regions?.map((it: any) => Region.fromJSON(it))
-    obj.regionCount = json.regionCount
-    obj.appData = json.appData
-    obj.appDataLength = json.appDataLength
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      canvasWidth: this.canvasWidth,
-      canvasHeight: this.canvasHeight,
-      backgroundColor: this.backgroundColor,
-      regions: this.regions,
-      regionCount: this.regionCount,
-      appDataLength: this.appDataLength
-    }
-  }
 }
 
 export class InjectStreamConfig {
@@ -285,31 +148,6 @@ export class InjectStreamConfig {
   audioSampleRate?: AudioSampleRateType
   audioBitrate?: number
   audioChannels?: number
-  static fromJSON (json: any): InjectStreamConfig {
-    const obj = new InjectStreamConfig()
-    obj.width = json.width
-    obj.height = json.height
-    obj.videoGop = json.videoGop
-    obj.videoFramerate = json.videoFramerate
-    obj.videoBitrate = json.videoBitrate
-    obj.audioSampleRate = json.audioSampleRate
-    obj.audioBitrate = json.audioBitrate
-    obj.audioChannels = json.audioChannels
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      width: this.width,
-      height: this.height,
-      videoGop: this.videoGop,
-      videoFramerate: this.videoFramerate,
-      videoBitrate: this.videoBitrate,
-      audioSampleRate: this.audioSampleRate,
-      audioBitrate: this.audioBitrate,
-      audioChannels: this.audioChannels
-    }
-  }
 }
 
 export enum RtmpStreamLifeCycleType {
@@ -331,56 +169,10 @@ export class PublisherConfiguration {
   publishUrl?: string
   rawStreamUrl?: string
   extraInfo?: string
-  static fromJSON (json: any): PublisherConfiguration {
-    const obj = new PublisherConfiguration()
-    obj.width = json.width
-    obj.height = json.height
-    obj.framerate = json.framerate
-    obj.bitrate = json.bitrate
-    obj.defaultLayout = json.defaultLayout
-    obj.lifecycle = json.lifecycle
-    obj.owner = json.owner
-    obj.injectStreamWidth = json.injectStreamWidth
-    obj.injectStreamHeight = json.injectStreamHeight
-    obj.injectStreamUrl = json.injectStreamUrl
-    obj.publishUrl = json.publishUrl
-    obj.rawStreamUrl = json.rawStreamUrl
-    obj.extraInfo = json.extraInfo
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      width: this.width,
-      height: this.height,
-      framerate: this.framerate,
-      bitrate: this.bitrate,
-      defaultLayout: this.defaultLayout,
-      lifecycle: this.lifecycle,
-      owner: this.owner,
-      injectStreamWidth: this.injectStreamWidth,
-      injectStreamHeight: this.injectStreamHeight,
-      injectStreamUrl: this.injectStreamUrl,
-      publishUrl: this.publishUrl,
-      rawStreamUrl: this.rawStreamUrl,
-      extraInfo: this.extraInfo
-    }
-  }
 }
 
 export class AudioTrackConfig {
   enableLocalPlayback?: boolean
-  static fromJSON (json: any): AudioTrackConfig {
-    const obj = new AudioTrackConfig()
-    obj.enableLocalPlayback = json.enableLocalPlayback
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      enableLocalPlayback: this.enableLocalPlayback
-    }
-  }
 }
 
 export enum CameraDirection {
@@ -398,21 +190,6 @@ export class CameraCapturerConfiguration {
   cameraDirection?: CameraDirection
   deviceId?: string
   format?: VideoFormat
-  static fromJSON (json: any): CameraCapturerConfiguration {
-    const obj = new CameraCapturerConfiguration()
-    obj.cameraDirection = json.cameraDirection
-    obj.deviceId = json.deviceId
-    obj.format = VideoFormat.fromJSON(json.format)
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      cameraDirection: this.cameraDirection,
-      deviceId: this.deviceId,
-      format: this.format
-    }
-  }
 }
 
 export class ScreenCaptureConfiguration {
@@ -422,72 +199,19 @@ export class ScreenCaptureConfiguration {
   windowId?: any
   params?: ScreenCaptureParameters
   regionRect?: Rectangle
-  static fromJSON (json: any): ScreenCaptureConfiguration {
-    const obj = new ScreenCaptureConfiguration()
-    obj.isCaptureWindow = json.isCaptureWindow
-    obj.displayId = json.displayId
-    obj.screenRect = Rectangle.fromJSON(json.screenRect)
-    obj.windowId = json.windowId
-    obj.params = ScreenCaptureParameters.fromJSON(json.params)
-    obj.regionRect = Rectangle.fromJSON(json.regionRect)
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      isCaptureWindow: this.isCaptureWindow,
-      displayId: this.displayId,
-      screenRect: this.screenRect,
-      windowId: this.windowId,
-      params: this.params,
-      regionRect: this.regionRect
-    }
-  }
 }
 
 export class AudioOptionsExternal {
-  enableAecExternalCustom?: boolean
-  enableAgcExternalCustom?: boolean
-  enableAnsExternalCustom?: boolean
-  aecAggressivenessExternalCustom?: NlpAggressiveness
-  enableAecExternalLoopback?: boolean
-  static fromJSON (json: any): AudioOptionsExternal {
-    const obj = new AudioOptionsExternal()
-    obj.enableAecExternalCustom = json.enable_aec_external_custom_
-    obj.enableAgcExternalCustom = json.enable_agc_external_custom_
-    obj.enableAnsExternalCustom = json.enable_ans_external_custom_
-    obj.aecAggressivenessExternalCustom = json.aec_aggressiveness_external_custom_
-    obj.enableAecExternalLoopback = json.enable_aec_external_loopback_
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      enable_aec_external_custom_: this.enableAecExternalCustom,
-      enable_agc_external_custom_: this.enableAgcExternalCustom,
-      enable_ans_external_custom_: this.enableAnsExternalCustom,
-      aec_aggressiveness_external_custom_: this.aecAggressivenessExternalCustom,
-      enable_aec_external_loopback_: this.enableAecExternalLoopback
-    }
-  }
+  enable_aec_external_custom_?: boolean
+  enable_agc_external_custom_?: boolean
+  enable_ans_external_custom_?: boolean
+  aec_aggressiveness_external_custom_?: NlpAggressiveness
+  enable_aec_external_loopback_?: boolean
 }
 
 export class SIZE {
   width?: number
   height?: number
-  static fromJSON (json: any): SIZE {
-    const obj = new SIZE()
-    obj.width = json.width
-    obj.height = json.height
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      width: this.width,
-      height: this.height
-    }
-  }
 }
 
 export class ThumbImageBuffer {
@@ -495,22 +219,6 @@ export class ThumbImageBuffer {
   length?: number
   width?: number
   height?: number
-  static fromJSON (json: any): ThumbImageBuffer {
-    const obj = new ThumbImageBuffer()
-    obj.buffer = json.buffer
-    obj.length = json.length
-    obj.width = json.width
-    obj.height = json.height
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      length: this.length,
-      width: this.width,
-      height: this.height
-    }
-  }
 }
 
 export enum ScreenCaptureSourceType {
@@ -530,33 +238,6 @@ export class ScreenCaptureSourceInfo {
   sourceTitle?: string
   primaryMonitor?: boolean
   isOccluded?: boolean
-  static fromJSON (json: any): ScreenCaptureSourceInfo {
-    const obj = new ScreenCaptureSourceInfo()
-    obj.type = json.type
-    obj.sourceId = json.sourceId
-    obj.sourceName = json.sourceName
-    obj.thumbImage = ThumbImageBuffer.fromJSON(json.thumbImage)
-    obj.iconImage = ThumbImageBuffer.fromJSON(json.iconImage)
-    obj.processPath = json.processPath
-    obj.sourceTitle = json.sourceTitle
-    obj.primaryMonitor = json.primaryMonitor
-    obj.isOccluded = json.isOccluded
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      type: this.type,
-      sourceId: this.sourceId,
-      sourceName: this.sourceName,
-      thumbImage: this.thumbImage,
-      iconImage: this.iconImage,
-      processPath: this.processPath,
-      sourceTitle: this.sourceTitle,
-      primaryMonitor: this.primaryMonitor,
-      isOccluded: this.isOccluded
-    }
-  }
 }
 
 export class ChannelMediaOptions {
@@ -590,75 +271,6 @@ export class ChannelMediaOptions {
   enableBuiltInMediaEncryption?: boolean
   publishRhythmPlayerTrack?: boolean
   audioOptionsExternal?: AudioOptionsExternal
-  static fromJSON (json: any): ChannelMediaOptions {
-    const obj = new ChannelMediaOptions()
-    obj.publishCameraTrack = json.publishCameraTrack
-    obj.publishSecondaryCameraTrack = json.publishSecondaryCameraTrack
-    obj.publishAudioTrack = json.publishAudioTrack
-    obj.publishScreenTrack = json.publishScreenTrack
-    obj.publishSecondaryScreenTrack = json.publishSecondaryScreenTrack
-    obj.publishCustomAudioTrack = json.publishCustomAudioTrack
-    obj.publishCustomAudioSourceId = json.publishCustomAudioSourceId
-    obj.publishCustomAudioTrackEnableAec = json.publishCustomAudioTrackEnableAec
-    obj.publishDirectCustomAudioTrack = json.publishDirectCustomAudioTrack
-    obj.publishCustomAudioTrackAec = json.publishCustomAudioTrackAec
-    obj.publishCustomVideoTrack = json.publishCustomVideoTrack
-    obj.publishEncodedVideoTrack = json.publishEncodedVideoTrack
-    obj.publishMediaPlayerAudioTrack = json.publishMediaPlayerAudioTrack
-    obj.publishMediaPlayerVideoTrack = json.publishMediaPlayerVideoTrack
-    obj.publishTrancodedVideoTrack = json.publishTrancodedVideoTrack
-    obj.autoSubscribeAudio = json.autoSubscribeAudio
-    obj.autoSubscribeVideo = json.autoSubscribeVideo
-    obj.startPreview = json.startPreview
-    obj.enableAudioRecordingOrPlayout = json.enableAudioRecordingOrPlayout
-    obj.publishMediaPlayerId = json.publishMediaPlayerId
-    obj.clientRoleType = json.clientRoleType
-    obj.audienceLatencyLevel = json.audienceLatencyLevel
-    obj.defaultVideoStreamType = json.defaultVideoStreamType
-    obj.channelProfile = json.channelProfile
-    obj.audioDelayMs = json.audioDelayMs
-    obj.mediaPlayerAudioDelayMs = json.mediaPlayerAudioDelayMs
-    obj.token = json.token
-    obj.enableBuiltInMediaEncryption = json.enableBuiltInMediaEncryption
-    obj.publishRhythmPlayerTrack = json.publishRhythmPlayerTrack
-    obj.audioOptionsExternal = AudioOptionsExternal.fromJSON(json.audioOptionsExternal)
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      publishCameraTrack: this.publishCameraTrack,
-      publishSecondaryCameraTrack: this.publishSecondaryCameraTrack,
-      publishAudioTrack: this.publishAudioTrack,
-      publishScreenTrack: this.publishScreenTrack,
-      publishSecondaryScreenTrack: this.publishSecondaryScreenTrack,
-      publishCustomAudioTrack: this.publishCustomAudioTrack,
-      publishCustomAudioSourceId: this.publishCustomAudioSourceId,
-      publishCustomAudioTrackEnableAec: this.publishCustomAudioTrackEnableAec,
-      publishDirectCustomAudioTrack: this.publishDirectCustomAudioTrack,
-      publishCustomAudioTrackAec: this.publishCustomAudioTrackAec,
-      publishCustomVideoTrack: this.publishCustomVideoTrack,
-      publishEncodedVideoTrack: this.publishEncodedVideoTrack,
-      publishMediaPlayerAudioTrack: this.publishMediaPlayerAudioTrack,
-      publishMediaPlayerVideoTrack: this.publishMediaPlayerVideoTrack,
-      publishTrancodedVideoTrack: this.publishTrancodedVideoTrack,
-      autoSubscribeAudio: this.autoSubscribeAudio,
-      autoSubscribeVideo: this.autoSubscribeVideo,
-      startPreview: this.startPreview,
-      enableAudioRecordingOrPlayout: this.enableAudioRecordingOrPlayout,
-      publishMediaPlayerId: this.publishMediaPlayerId,
-      clientRoleType: this.clientRoleType,
-      audienceLatencyLevel: this.audienceLatencyLevel,
-      defaultVideoStreamType: this.defaultVideoStreamType,
-      channelProfile: this.channelProfile,
-      audioDelayMs: this.audioDelayMs,
-      mediaPlayerAudioDelayMs: this.mediaPlayerAudioDelayMs,
-      token: this.token,
-      enableBuiltInMediaEncryption: this.enableBuiltInMediaEncryption,
-      publishRhythmPlayerTrack: this.publishRhythmPlayerTrack,
-      audioOptionsExternal: this.audioOptionsExternal
-    }
-  }
 }
 
 export enum LocalProxyMode {
@@ -673,48 +285,12 @@ export class LocalAccessPointConfiguration {
   domainListSize?: number
   verifyDomainName?: string
   mode?: LocalProxyMode
-  static fromJSON (json: any): LocalAccessPointConfiguration {
-    const obj = new LocalAccessPointConfiguration()
-    obj.ipList = json.ipList
-    obj.ipListSize = json.ipListSize
-    obj.domainList = json.domainList
-    obj.domainListSize = json.domainListSize
-    obj.verifyDomainName = json.verifyDomainName
-    obj.mode = json.mode
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      ipList: this.ipList,
-      ipListSize: this.ipListSize,
-      domainList: this.domainList,
-      domainListSize: this.domainListSize,
-      verifyDomainName: this.verifyDomainName,
-      mode: this.mode
-    }
-  }
 }
 
 export class LeaveChannelOptions {
   stopAudioMixing?: boolean
   stopAllEffect?: boolean
   stopMicrophoneRecording?: boolean
-  static fromJSON (json: any): LeaveChannelOptions {
-    const obj = new LeaveChannelOptions()
-    obj.stopAudioMixing = json.stopAudioMixing
-    obj.stopAllEffect = json.stopAllEffect
-    obj.stopMicrophoneRecording = json.stopMicrophoneRecording
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      stopAudioMixing: this.stopAudioMixing,
-      stopAllEffect: this.stopAllEffect,
-      stopMicrophoneRecording: this.stopMicrophoneRecording
-    }
-  }
 }
 
 export abstract class IRtcEngineEventHandler {
@@ -928,31 +504,6 @@ export class RtcEngineContext {
   logConfig?: LogConfig
   threadPriority?: ThreadPriorityType
   useExternalEglContext?: boolean
-  static fromJSON (json: any): RtcEngineContext {
-    const obj = new RtcEngineContext()
-    obj.appId = json.appId
-    obj.enableAudioDevice = json.enableAudioDevice
-    obj.channelProfile = json.channelProfile
-    obj.audioScenario = json.audioScenario
-    obj.areaCode = json.areaCode
-    obj.logConfig = LogConfig.fromJSON(json.logConfig)
-    obj.threadPriority = json.threadPriority
-    obj.useExternalEglContext = json.useExternalEglContext
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      appId: this.appId,
-      enableAudioDevice: this.enableAudioDevice,
-      channelProfile: this.channelProfile,
-      audioScenario: this.audioScenario,
-      areaCode: this.areaCode,
-      logConfig: this.logConfig,
-      threadPriority: this.threadPriority,
-      useExternalEglContext: this.useExternalEglContext
-    }
-  }
 }
 
 export enum MetadataType {
@@ -971,23 +522,6 @@ export class Metadata {
   size?: number
   buffer?: Uint8Array
   timeStampMs?: number
-  static fromJSON (json: any): Metadata {
-    const obj = new Metadata()
-    obj.uid = json.uid
-    obj.size = json.size
-    obj.buffer = json.buffer
-    obj.timeStampMs = json.timeStampMs
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      uid: this.uid,
-      size: this.size,
-      buffer: this.buffer,
-      timeStampMs: this.timeStampMs
-    }
-  }
 }
 
 export abstract class IMetadataObserver {
@@ -1017,25 +551,6 @@ export class DirectCdnStreamingStats {
   fps?: number
   videoBitrate?: number
   audioBitrate?: number
-  static fromJSON (json: any): DirectCdnStreamingStats {
-    const obj = new DirectCdnStreamingStats()
-    obj.videoWidth = json.videoWidth
-    obj.videoHeight = json.videoHeight
-    obj.fps = json.fps
-    obj.videoBitrate = json.videoBitrate
-    obj.audioBitrate = json.audioBitrate
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      videoWidth: this.videoWidth,
-      videoHeight: this.videoHeight,
-      fps: this.fps,
-      videoBitrate: this.videoBitrate,
-      audioBitrate: this.audioBitrate
-    }
-  }
 }
 
 export abstract class IDirectCdnStreamingEventHandler {
@@ -1051,27 +566,6 @@ export class DirectCdnStreamingMediaOptions {
   publishCustomVideoTrack?: boolean
   publishMediaPlayerAudioTrack?: boolean
   publishMediaPlayerId?: number
-  static fromJSON (json: any): DirectCdnStreamingMediaOptions {
-    const obj = new DirectCdnStreamingMediaOptions()
-    obj.publishCameraTrack = json.publishCameraTrack
-    obj.publishMicrophoneTrack = json.publishMicrophoneTrack
-    obj.publishCustomAudioTrack = json.publishCustomAudioTrack
-    obj.publishCustomVideoTrack = json.publishCustomVideoTrack
-    obj.publishMediaPlayerAudioTrack = json.publishMediaPlayerAudioTrack
-    obj.publishMediaPlayerId = json.publishMediaPlayerId
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      publishCameraTrack: this.publishCameraTrack,
-      publishMicrophoneTrack: this.publishMicrophoneTrack,
-      publishCustomAudioTrack: this.publishCustomAudioTrack,
-      publishCustomVideoTrack: this.publishCustomVideoTrack,
-      publishMediaPlayerAudioTrack: this.publishMediaPlayerAudioTrack,
-      publishMediaPlayerId: this.publishMediaPlayerId
-    }
-  }
 }
 
 export abstract class IRtcEngine {
@@ -1666,17 +1160,4 @@ VideoProfileDefault = 30,
 export class DeviceInfo {
   deviceId?: string
   deviceName?: string
-  static fromJSON (json: any): DeviceInfo {
-    const obj = new DeviceInfo()
-    obj.deviceId = json.deviceId
-    obj.deviceName = json.deviceName
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      deviceId: this.deviceId,
-      deviceName: this.deviceName
-    }
-  }
 }

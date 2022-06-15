@@ -25,24 +25,9 @@ TwoBytesPerSample = 2,
 }
 
 export class AudioParameters {
-  sampleRate?: number
+  sample_rate?: number
   channels?: number
-  framesPerBuffer?: number
-  static fromJSON (json: any): AudioParameters {
-    const obj = new AudioParameters()
-    obj.sampleRate = json.sample_rate
-    obj.channels = json.channels
-    obj.framesPerBuffer = json.frames_per_buffer
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      sample_rate: this.sampleRate,
-      channels: this.channels,
-      frames_per_buffer: this.framesPerBuffer
-    }
-  }
+  frames_per_buffer?: number
 }
 
 export enum RawAudioFrameOpModeType {
@@ -70,19 +55,6 @@ UnknownMediaSource = 100,
 export class PacketOptions {
   timestamp?: number
   audioLevelIndication?: number
-  static fromJSON (json: any): PacketOptions {
-    const obj = new PacketOptions()
-    obj.timestamp = json.timestamp
-    obj.audioLevelIndication = json.audioLevelIndication
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      timestamp: this.timestamp,
-      audioLevelIndication: this.audioLevelIndication
-    }
-  }
 }
 
 export enum AudioProcessingChannels {
@@ -92,64 +64,20 @@ AudioProcessingStereo = 2,
 
 export class AdvancedAudioOptions {
   audioProcessingChannels?: AudioProcessingChannels
-  static fromJSON (json: any): AdvancedAudioOptions {
-    const obj = new AdvancedAudioOptions()
-    obj.audioProcessingChannels = json.audioProcessingChannels
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      audioProcessingChannels: this.audioProcessingChannels
-    }
-  }
 }
 
 export class AudioEncodedFrameInfo {
   sendTs?: number
   codec?: number
-  static fromJSON (json: any): AudioEncodedFrameInfo {
-    const obj = new AudioEncodedFrameInfo()
-    obj.sendTs = json.sendTs
-    obj.codec = json.codec
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      sendTs: this.sendTs,
-      codec: this.codec
-    }
-  }
 }
 
 export class AudioPcmFrame {
-  captureTimestamp?: number
-  samplesPerChannel?: number
-  sampleRateHz?: number
-  numChannels?: number
-  bytesPerSample?: BytesPerSample
-  data?: number[]
-  static fromJSON (json: any): AudioPcmFrame {
-    const obj = new AudioPcmFrame()
-    obj.captureTimestamp = json.capture_timestamp
-    obj.samplesPerChannel = json.samples_per_channel_
-    obj.sampleRateHz = json.sample_rate_hz_
-    obj.numChannels = json.num_channels_
-    obj.bytesPerSample = json.bytes_per_sample
-    obj.data = json.data_
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      capture_timestamp: this.captureTimestamp,
-      samples_per_channel_: this.samplesPerChannel,
-      sample_rate_hz_: this.sampleRateHz,
-      num_channels_: this.numChannels,
-      bytes_per_sample: this.bytesPerSample
-    }
-  }
+  capture_timestamp?: number
+  samples_per_channel_?: number
+  sample_rate_hz_?: number
+  num_channels_?: number
+  bytes_per_sample?: BytesPerSample
+  data_?: number[]
 }
 
 export enum AudioDualMonoMode {
@@ -204,48 +132,8 @@ export class ExternalVideoFrame {
   eglType?: EglContextType
   textureId?: number
   matrix?: number[]
-  metadataBuffer?: Uint8Array
-  metadataSize?: number
-  static fromJSON (json: any): ExternalVideoFrame {
-    const obj = new ExternalVideoFrame()
-    obj.type = json.type
-    obj.format = json.format
-    obj.buffer = json.buffer
-    obj.stride = json.stride
-    obj.height = json.height
-    obj.cropLeft = json.cropLeft
-    obj.cropTop = json.cropTop
-    obj.cropRight = json.cropRight
-    obj.cropBottom = json.cropBottom
-    obj.rotation = json.rotation
-    obj.timestamp = json.timestamp
-    obj.eglContext = json.eglContext
-    obj.eglType = json.eglType
-    obj.textureId = json.textureId
-    obj.matrix = json.matrix
-    obj.metadataBuffer = json.metadata_buffer
-    obj.metadataSize = json.metadata_size
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      type: this.type,
-      format: this.format,
-      stride: this.stride,
-      height: this.height,
-      cropLeft: this.cropLeft,
-      cropTop: this.cropTop,
-      cropRight: this.cropRight,
-      cropBottom: this.cropBottom,
-      rotation: this.rotation,
-      timestamp: this.timestamp,
-      eglType: this.eglType,
-      textureId: this.textureId,
-      matrix: this.matrix,
-      metadata_size: this.metadataSize
-    }
-  }
+  metadata_buffer?: Uint8Array
+  metadata_size?: number
 }
 
 export class VideoFrame {
@@ -260,50 +148,12 @@ export class VideoFrame {
   vBuffer?: Uint8Array
   rotation?: number
   renderTimeMs?: number
-  avsyncType?: number
-  metadataBuffer?: Uint8Array
-  metadataSize?: number
+  avsync_type?: number
+  metadata_buffer?: Uint8Array
+  metadata_size?: number
   sharedContext?: any
   textureId?: number
   matrix?: number[]
-  static fromJSON (json: any): VideoFrame {
-    const obj = new VideoFrame()
-    obj.type = json.type
-    obj.width = json.width
-    obj.height = json.height
-    obj.yStride = json.yStride
-    obj.uStride = json.uStride
-    obj.vStride = json.vStride
-    obj.yBuffer = json.yBuffer
-    obj.uBuffer = json.uBuffer
-    obj.vBuffer = json.vBuffer
-    obj.rotation = json.rotation
-    obj.renderTimeMs = json.renderTimeMs
-    obj.avsyncType = json.avsync_type
-    obj.metadataBuffer = json.metadata_buffer
-    obj.metadataSize = json.metadata_size
-    obj.sharedContext = json.sharedContext
-    obj.textureId = json.textureId
-    obj.matrix = json.matrix
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      type: this.type,
-      width: this.width,
-      height: this.height,
-      yStride: this.yStride,
-      uStride: this.uStride,
-      vStride: this.vStride,
-      rotation: this.rotation,
-      renderTimeMs: this.renderTimeMs,
-      avsync_type: this.avsyncType,
-      metadata_size: this.metadataSize,
-      textureId: this.textureId,
-      matrix: this.matrix
-    }
-  }
 }
 
 export enum MediaPlayerSourceType {
@@ -331,67 +181,17 @@ export class AudioFrame {
   samplesPerSec?: number
   buffer?: Uint8Array
   renderTimeMs?: number
-  avsyncType?: number
-  static fromJSON (json: any): AudioFrame {
-    const obj = new AudioFrame()
-    obj.type = json.type
-    obj.samplesPerChannel = json.samplesPerChannel
-    obj.bytesPerSample = json.bytesPerSample
-    obj.channels = json.channels
-    obj.samplesPerSec = json.samplesPerSec
-    obj.buffer = json.buffer
-    obj.renderTimeMs = json.renderTimeMs
-    obj.avsyncType = json.avsync_type
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      type: this.type,
-      samplesPerChannel: this.samplesPerChannel,
-      bytesPerSample: this.bytesPerSample,
-      channels: this.channels,
-      samplesPerSec: this.samplesPerSec,
-      renderTimeMs: this.renderTimeMs,
-      avsync_type: this.avsyncType
-    }
-  }
+  avsync_type?: number
 }
 
 export class AudioSpectrumData {
   audioSpectrumData?: number[]
   dataLength?: number
-  static fromJSON (json: any): AudioSpectrumData {
-    const obj = new AudioSpectrumData()
-    obj.audioSpectrumData = json.audioSpectrumData
-    obj.dataLength = json.dataLength
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      audioSpectrumData: this.audioSpectrumData,
-      dataLength: this.dataLength
-    }
-  }
 }
 
 export class UserAudioSpectrumInfo {
   uid?: number
   spectrumData?: AudioSpectrumData
-  static fromJSON (json: any): UserAudioSpectrumInfo {
-    const obj = new UserAudioSpectrumInfo()
-    obj.uid = json.uid
-    obj.spectrumData = AudioSpectrumData.fromJSON(json.spectrumData)
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      uid: this.uid,
-      spectrumData: this.spectrumData
-    }
-  }
 }
 
 export enum VideoFrameProcessMode {
@@ -421,19 +221,6 @@ ContentInspectSupervise = 2,
 export class ContentInspectModule {
   type?: ContentInspectType
   frequency?: number
-  static fromJSON (json: any): ContentInspectModule {
-    const obj = new ContentInspectModule()
-    obj.type = json.type
-    obj.frequency = json.frequency
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      type: this.type,
-      frequency: this.frequency
-    }
-  }
 }
 
 export class ContentInspectConfig {
@@ -444,50 +231,12 @@ export class ContentInspectConfig {
   extraInfo?: string
   modules?: ContentInspectModule[]
   moduleCount?: number
-  static fromJSON (json: any): ContentInspectConfig {
-    const obj = new ContentInspectConfig()
-    obj.enable = json.enable
-    obj.DeviceWork = json.DeviceWork
-    obj.CloudWork = json.CloudWork
-    obj.DeviceworkType = json.DeviceworkType
-    obj.extraInfo = json.extraInfo
-    obj.modules = json.modules?.map((it: any) => ContentInspectModule.fromJSON(it))
-    obj.moduleCount = json.moduleCount
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      enable: this.enable,
-      DeviceWork: this.DeviceWork,
-      CloudWork: this.CloudWork,
-      DeviceworkType: this.DeviceworkType,
-      extraInfo: this.extraInfo,
-      modules: this.modules,
-      moduleCount: this.moduleCount
-    }
-  }
 }
 
 export class SnapShotConfig {
   channel?: string
   uid?: number
   filePath?: string
-  static fromJSON (json: any): SnapShotConfig {
-    const obj = new SnapShotConfig()
-    obj.channel = json.channel
-    obj.uid = json.uid
-    obj.filePath = json.filePath
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      channel: this.channel,
-      uid: this.uid,
-      filePath: this.filePath
-    }
-  }
 }
 
 export enum ExternalVideoSourceType {

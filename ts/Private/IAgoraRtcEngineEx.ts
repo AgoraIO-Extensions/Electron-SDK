@@ -5,19 +5,6 @@ import { ContentInspectResult, RenderModeType } from './AgoraMediaBase'
 export class RtcConnection {
   channelId?: string
   localUid?: number
-  static fromJSON (json: any): RtcConnection {
-    const obj = new RtcConnection()
-    obj.channelId = json.channelId
-    obj.localUid = json.localUid
-    return obj
-  }
-
-  toJSON? () {
-    return {
-      channelId: this.channelId,
-      localUid: this.localUid
-    }
-  }
 }
 
 export abstract class IRtcEngineEventHandlerEx extends IRtcEngineEventHandler {
