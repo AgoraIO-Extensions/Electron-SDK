@@ -1,3 +1,6 @@
+## 3.6.1-rc.233-build.615(June 15th, 2022)
+- update windows native sdk to 3.6.1.233
+
 ## 3.6.1-rc.6-build.526(May 11th, 2022)
 - delete api
   - pauseAudio
