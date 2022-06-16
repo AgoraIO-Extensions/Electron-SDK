@@ -6,7 +6,7 @@ const logger = require("./logger");
 const { cleanBuildDir, cleanJSDir, buildDir } = require("./clean");
 const getConfig = require("./getConfig");
 
-const { electronVersion, platform, packageVersion, arch, no_symbol } =
+const { platform, packageVersion, arch, no_symbol } =
   getConfig();
 
 const workspaceDir = `${path.join(__dirname, "..")}`;
@@ -79,7 +79,6 @@ module.exports = async (cb) => {
   logger.info("Package Version: %s", packageVersion);
   logger.info("Platform: %s", platform);
   if (arch) logger.info("Arch: %s", arch);
-  logger.info("Electron Version: %s", electronVersion);
   logger.info("Download URL  %s ", downloadUrl);
 
   logger.info("Downloading prebuilt C++ addon for Agora Electron SDK...");
