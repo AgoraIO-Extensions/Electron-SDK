@@ -18,9 +18,9 @@ _其他语言版本： [简体中文](README.zh.md)_
     <a href="https://docs.agora.io/en/Video/API%20Reference/electron/index.html"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/AgoraIO-Community/Agora-Electron-Quickstart">View Demo</a>
+    <a href="https://github.com/AgoraIO-Community/electron-agora-rtc-ng/tree/main/example">View Demo</a>
     ·
-    <a href="https://github.com/AgoraIO/Electron-SDK/issues">Report Bug</a>
+    <a href="https://github.com/AgoraIO-Community/electron-agora-rtc-ng/issues">Report Bug</a>
     ·
     <a href="#plugins">Plugins :new:</a>
   </p>
@@ -47,21 +47,7 @@ Recommend to install through npm:
 
 ```bash
 # install newest sdk and download prebuilt binary file automatically
-npm install agora-electron-sdk@alpha
-```
-
-Prebuilt c++ addon supported electron version 1.8.3, 3.0.6, 4.2.8, 5.0.8, 6.1.5, 7.1.2, 9.0.0, 10.0.0, 11.2.0, 11.0.0, 12.0.0
-Usually you have to specify electron version of your application and whether to download prebuilt c++ addon or do node-gyp building locally by configuration in package.json:
-
-```
-// package.json
-{
-...
-  "agora_electron": {
-    "prebuilt": true
-  }
-...
-}
+npm install electron-agora-rtc-ng@alpha
 ```
 
 **For more detail of configuration, visit [wiki](https://github.com/AgoraIO/Electron-SDK/wiki/Installation-Configuration-in-package.json).**
@@ -80,7 +66,7 @@ You will need to build **Agora RTC Electron SDK** from source if you want to wor
   - VisualStudio.Workload.CoreEditor
   - VisualStudio.Component.NuGet
   - VisualStudio.Component.Roslyn.Compiler
-  - VisualStudio.Component.Roslyn.  - LanguageServices
+  - VisualStudio.Component.Roslyn. - LanguageServices
   - Net.Component.4.8.SDK
   - Net.Component.4.7.2.TargetingPack
   - Net.ComponentGroup.DevelopmentPrerequisites
@@ -91,7 +77,8 @@ You will need to build **Agora RTC Electron SDK** from source if you want to wor
   - VisualStudio.Component.AppInsights.Tools
   - VisualStudio.Component.IntelliCode
   - VisualStudio.Component.VSSDK
-  - VisualStudio.ComponentGroup.  - VisualStudioExtension.Prerequisites
+  - VisualStudio.ComponentGroup.
+  - VisualStudioExtension.Prerequisites
   - VisualStudio.Workload.VisualStudioExtension
 
 ###### MacOS
@@ -103,10 +90,15 @@ You will need to build **Agora RTC Electron SDK** from source if you want to wor
 
 ###### Installing the fork
 
-You just to install `agora-electron-sdk` from your fork. For example, to install the master branch from the official repo, run the following:
+You just to install `electron-agora-rtc-ng` from your fork. For example, to install the master branch from the official repo, run the following:
 
 ```sh
-npm install --save github:AgoraIO/Electron-SDK#dev/electron_iris --verbose --agora_electron_sdk_pre_built=false
+# mac
+npm install electron-agora-rtc-ng 
+# win32
+npm install electron-agora-rtc-ng --agora_electron_sdk_arch=x64
+# win32
+npm install electron-agora-rtc-ng --agora_electron_sdk_arch=ia32
 ```
 
 Alternatively, you can clone the repo to your `node_modules` directory and run `npm install --verbose --agora_electron_sdk_pre_built=false` inside the cloned repo.
@@ -118,15 +110,15 @@ Building from source can take a long time, especially for the first build, as it
 ### Usage
 
 ```javascript
-import AgoraRtcEngine from "agora-electron-sdk";
+import creteAgoraRtcEngine from 'electron-agora-rtc-ng';
 
-const rtcEngine = new AgoraRtcEngine();
-rtcEngine.initialize("<your agora app id>");
+const rtcEngine = creteAgoraRtcEngine();
+rtcEngine.initialize({ appId: "<your agora app id>" });
 ```
 
 ### When using without electron-webpack
 
-When using directly within a web electron project with custom webpack configuration, you may see errors when compiling. It's because you have not properly configured loader for node addon. A convenient way to skip the compile process is to set `externals` property of your webpack config to `{"agora-electron-sdk": "commonjs2 agora-electron-sdk"}`
+When using directly within a web electron project with custom webpack configuration, you may see errors when compiling. It's because you have not properly configured loader for node addon. A convenient way to skip the compile process is to set `externals` property of your webpack config to `{"electron-agora-rtc-ng": "commonjs2 electron-agora-rtc-ng"}`
 
 <!-- RESOURCES -->
 
@@ -170,7 +162,7 @@ Contributions are what make the open source community such an amazing place to b
 [build-url]: https://travis-ci.org/AgoraIO-Usecase/eEducation
 [windows-build-shield]: https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?branch=dev/2.9.0&svg=true
 [windows-build-url]: https://ci.appveyor.com/project/menthays/electron-sdk/branch/dev/2.9.0
-[npm-shield]: https://img.shields.io/npm/v/agora-electron-sdk/latest
-[npm]: https://npmjs.com/package/agora-electron-sdk/v/2.9.0-hotfix.2
+[npm-shield]: https://img.shields.io/npm/v/electron-agora-rtc-ng/latest
+[npm]: https://npmjs.com/package/electron-agora-rtc-ng/v/2.9.0-hotfix.2
 [license-shield]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: https://choosealicense.com/licenses/mit
