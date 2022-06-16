@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 set(CMAKE_CXX_STANDARD 11)
 
-project(agora-electron-dcg-sdk)
+project(electron-agora-rtc-ng)
 
 include_directories(${CMAKE_JS_INC})
 set(BUILD_TYPE ${CMAKE_BUILD_TYPE})
