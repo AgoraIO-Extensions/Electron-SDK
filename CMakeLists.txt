@@ -87,9 +87,18 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     set(AGORA_RTC_SDK_PATH
             ${CMAKE_CURRENT_SOURCE_DIR}/iris/DCG)
 
-    file(GLOB AGORA_RTC_SDK_LIBRARY
-            ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_FULL/${AGORA_RTC_PROJECT_ARCH}/rtc/sdk/*.dll
+    #file(GLOB AGORA_RTC_SDK_LIBRARY
+    #       ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_FULL/${AGORA_RTC_PROJECT_ARCH}/rtc/sdk/*.dll
+    #       )
+    if (${AGORA_RTC_PROJECT_ARCH} STREQUAL "x86")
+        file(GLOB AGORA_RTC_SDK_LIBRARY
+            ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_x86_rel.v3.8.201.2_64129_20220608_2205_full/rtc/sdk/*.dll
             )
+    elseif (${AGORA_RTC_PROJECT_ARCH} STREQUAL "x86_64")
+        file(GLOB AGORA_RTC_SDK_LIBRARY
+            ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_x64_rel.v3.8.201.2_64130_20220608_2214_full/rtc/sdk/*.dll
+            )
+    endif ()
 
     # iris sdk path
     set(AGORA_IRIS_SDK_PATH
