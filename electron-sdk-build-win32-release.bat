@@ -6,6 +6,7 @@ call npm config list
 del /f/q/s node_modules
 call npm config set registry https://registry.npm.taobao.org/
 call npm config set ELECTRON_MIRROR http://npm.taobao.org/mirrors/electron/
+call npm cache clean -f
 call npm install --verbose
 call npm run switch:arch
 call npm run sync:lib -- --liburl_win=%RTC_SDK_URL%
