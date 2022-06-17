@@ -13,6 +13,9 @@ rm -rf node_modules
 rm -rf sdk
 rm -rf tmp
 npm cache clean -f
+npm install -g nvm
+nvm install 14.18.1
+nvm use 14.18.1
 npm install --verbose
 npm run sync:lib
 npm run build:electron -- --electron_version=${ELECTRON_VERSION} 
