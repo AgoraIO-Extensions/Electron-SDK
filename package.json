@@ -1,6 +1,6 @@
 {
   "name": "electron-agora-rtc-ng",
-  "version": "3.8.201-alpha.616",
+  "version": "3.8.201-alpha.618",
   "description": "electron-agora-rtc-ng",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -24,8 +24,8 @@
     "build_linux_release": "cmake-js rebuild --arch=x64 --CDCMAKE_BUILD_TYPE=Release -G \"Unix Makefiles\""
   },
   "agora_electron": {
-    "iris_sdk_win": "http://192.168.99.149:8086/CSDC_repo/iris_0.0.0_DCG_Windows_20220615_1141.zip",
-    "iris_sdk_mac": "http://192.168.99.149:8086/CSDC_repo/iris_3.8.201_DCG_Mac_20220615_1001.zip",
+    "iris_sdk_win": "http://192.168.99.149:8086/CSDC_repo/iris_3.8.201_DCG_Windows_20220617_0637.zip",
+    "iris_sdk_mac": "http://192.168.99.149:8086/CSDC_repo/iris_3.8.201_DCG_Mac_20220617_0632.zip",
     "no_symbol": true,
     "prebuilt": true
   },
