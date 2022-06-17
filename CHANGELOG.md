@@ -1,3 +1,6 @@
+## 3.6.1-rc.233-build.617(June 17th, 2022)
+- update native sdk
+
 ## 3.6.1-rc.233-build.615(June 15th, 2022)
 - update windows native sdk to 3.6.1.233
 
