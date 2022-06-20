@@ -29,6 +29,7 @@ void ConvertRGBToBMP(void *srcRGBABuffer, BufferInfo &bufferInfo, int32_t width,
   CFRelease(cgImage);
   CFRelease(bitmapContext);
   CGImageDestinationFinalize(dest);
+  CFRelease(dest);
 
   unsigned int imageDataLength = (unsigned int)CFDataGetLength(cfImageData);
   if (imageDataLength > 0) {
