@@ -63,7 +63,7 @@ const winPrepare = (folder) => {
       fs.remove(path.join(__dirname, '../sdk'))
     ]).then(() => {
       return Promise.all([
-        fs.move(path.join(folder, './rtc/sdk/'), path.join(__dirname, '../sdk/')),
+        fs.move(path.join(folder, './x86/rtc/sdk/'), path.join(__dirname, '../sdk/')),
         // fs.move(path.join(folder, './rtc/sdk/high_level_api'), path.join(__dirname, '../sdk/high_level_api')),
         // fs.move(path.join(folder, './rtc/sdk/lib'), path.join(__dirname, '../sdk/lib')),
         // fs.move(path.join(folder, './sdk/low_level_api'), path.join(__dirname, '../sdk/low_level_api')),
@@ -82,7 +82,7 @@ const win64Prepare = (folder) => {
       fs.remove(path.join(__dirname, '../sdk'))
     ]).then(() => {
       return Promise.all([
-        fs.move(path.join(folder, './rtc/sdk/'), path.join(__dirname, '../sdk/')),
+        fs.move(path.join(folder, './x86_64/rtc/sdk/'), path.join(__dirname, '../sdk/')),
         // fs.move(path.join(folder, './sdk/high_level_api'), path.join(__dirname, '../sdk/high_level_api')),
         // fs.move(path.join(folder, './sdk/lib'), path.join(__dirname, '../sdk/lib')),
         // fs.move(path.join(folder, './sdk/low_level_api'), path.join(__dirname, '../sdk/low_level_api')),
@@ -124,11 +124,12 @@ module.exports = ({
         downloadUrl = libUrl.mac
       }
     } else {
-      if (arch === 'ia32') {
-        downloadUrl = libUrl.win
-      } else {
-        downloadUrl = libUrl.win64
-      }
+      // if (arch === 'ia32') {
+      //   downloadUrl = libUrl.win
+      // } else {
+      //   downloadUrl = libUrl.win64
+      // }
+      downloadUrl = libUrl.win
       if(!downloadUrl){
         logger.error(`no windows lib specified`)
         return reject(new Error(`no windows lib specified`))
