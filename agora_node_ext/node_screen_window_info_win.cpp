@@ -738,8 +738,8 @@ void ConvertRGBToBMP(void *srcRGBABuffer, BufferInfo &bufferInfo, int32_t width,
   unsigned int rawDataLength = height * dwPitch;
 
   bufferInfo.buffer =
-      new unsigned char[sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) +
-                        rawDataLength];
+      (unsigned char *)malloc(sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) +
+                        rawDataLength);
   bufferInfo.length =
       sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + rawDataLength;
   memcpy(bufferInfo.buffer, &bfh, sizeof(BITMAPFILEHEADER));
