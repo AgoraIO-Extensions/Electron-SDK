@@ -62,7 +62,7 @@
     ]
   },
   "dependencies": {
-    "electron-agora-rtc-ng": "file:../../electron-agora-rtc-ng",
+    "electron-agora-rtc-ng": "latest",
     "antd": "^4.20.3",
     "history": "^5.0.0",
     "react": "^18.1.0",
