@@ -1,7 +1,7 @@
 import { callIrisApi } from '../internal/IrisApiEngine'
-import { IRtcEngineEventHandler, IVideoDeviceManager, DeviceInfo, IMetadataObserver, IDirectCdnStreamingEventHandler, IRtcEngine, RtcEngineContext, ChannelMediaOptions, LeaveChannelOptions, AudioEqualizationBandFrequency, AudioReverbType, AudioTrackConfig, StreamFallbackOptions, CameraCapturerConfiguration, SIZE, ScreenCaptureSourceInfo, ScreenCaptureConfiguration, PriorityType, InjectStreamConfig, MetadataType, DirectCdnStreamingMediaOptions, CloudProxyType, LocalAccessPointConfiguration, Metadata } from '../IAgoraRtcEngine'
-import { InterfaceIdType, ChannelProfileType, ClientRoleType, ClientRoleOptions, VideoSourceType, LastmileProbeConfig, VideoEncoderConfiguration, BeautyOptions, VirtualBackgroundSource, VideoCanvas, AudioProfileType, AudioScenarioType, VideoStreamType, AudioRecordingQualityType, AudioRecordingConfiguration, SpatialAudioParams, VoiceBeautifierPreset, AudioEffectPreset, VoiceConversionPreset, VideoMirrorModeType, SimulcastStreamConfig, AudioSessionOperationRestriction, Rectangle, ScreenCaptureParameters, VideoContentHint, LiveTranscoding, LocalTranscoderConfiguration, VideoOrientation, ConnectionStateType, EncryptionConfig, DataStreamConfig, RtcImage, WatermarkOptions, UserInfo, ChannelMediaRelayConfiguration, FishCorrectionParams } from '../AgoraBase'
-import { MediaSourceType, RenderModeType, RawAudioFrameOpModeType, ExternalVideoFrame, SnapShotConfig, ContentInspectConfig, AdvancedAudioOptions } from '../AgoraMediaBase'
+import { IRtcEngineEventHandler, IVideoDeviceManager, VideoDeviceInfo, IMetadataObserver, IDirectCdnStreamingEventHandler, IRtcEngine, RtcEngineContext, SDKBuildInfo, ChannelMediaOptions, LeaveChannelOptions, AudioEqualizationBandFrequency, AudioReverbType, AudioTrackConfig, StreamFallbackOptions, CameraCapturerConfiguration, SIZE, ScreenCaptureSourceInfo, ScreenCaptureConfiguration, PriorityType, InjectStreamConfig, MetadataType, DirectCdnStreamingMediaOptions, CloudProxyType, LocalAccessPointConfiguration, Metadata } from '../IAgoraRtcEngine'
+import { ChannelProfileType, ClientRoleType, ClientRoleOptions, VideoSourceType, LastmileProbeConfig, VideoEncoderConfiguration, BeautyOptions, VirtualBackgroundSource, VideoCanvas, AudioProfileType, AudioScenarioType, VideoStreamType, AudioRecordingQualityType, AudioRecordingConfiguration, SpatialAudioParams, VoiceBeautifierPreset, AudioEffectPreset, VoiceConversionPreset, VideoMirrorModeType, SimulcastStreamConfig, AudioSessionOperationRestriction, Rectangle, ScreenCaptureParameters, DeviceInfo, VideoContentHint, LiveTranscoding, LocalTranscoderConfiguration, VideoOrientation, ConnectionStateType, EncryptionConfig, DataStreamConfig, RtcImage, WatermarkOptions, UserInfo, ChannelMediaRelayConfiguration, FishCorrectionParams } from '../AgoraBase'
+import { MediaSourceType, RenderModeType, RawAudioFrameOpModeType, SnapShotConfig, ContentInspectConfig, AdvancedAudioOptions } from '../AgoraMediaBase'
 import { IMediaPlayer } from '../IAgoraMediaPlayer'
 import { LogLevel } from '../IAgoraLog'
 import { AgoraRhythmPlayerConfig } from '../IAgoraRhythmPlayer'
@@ -9,21 +9,15 @@ import { IAudioDeviceManager } from '../IAudioDeviceManager'
 
 export function processIRtcEngineEventHandler (handler: IRtcEngineEventHandler, event: string, jsonParams: any) {
   switch (event) {
-    case 'eventHandlerType':
-      if (handler.eventHandlerType !== undefined) {
-        handler.eventHandlerType()
-      }
-      break
-
     case 'onJoinChannelSuccess':
       if (handler.onJoinChannelSuccess !== undefined) {
-        handler.onJoinChannelSuccess(jsonParams.channel, jsonParams.uid, jsonParams.elapsed)
+        handler.onJoinChannelSuccess(jsonParams.connection, jsonParams.elapsed)
       }
       break
 
     case 'onRejoinChannelSuccess':
       if (handler.onRejoinChannelSuccess !== undefined) {
-        handler.onRejoinChannelSuccess(jsonParams.channel, jsonParams.uid, jsonParams.elapsed)
+        handler.onRejoinChannelSuccess(jsonParams.connection, jsonParams.elapsed)
       }
       break
 
@@ -41,7 +35,7 @@ export function processIRtcEngineEventHandler (handler: IRtcEngineEventHandler, 
 
     case 'onAudioQuality':
       if (handler.onAudioQuality !== undefined) {
-        handler.onAudioQuality(jsonParams.uid, jsonParams.quality, jsonParams.delay, jsonParams.lost)
+        handler.onAudioQuality(jsonParams.connection, jsonParams.remoteUid, jsonParams.quality, jsonParams.delay, jsonParams.lost)
       }
       break
 
@@ -53,19 +47,19 @@ export function processIRtcEngineEventHandler (handler: IRtcEngineEventHandler, 
 
     case 'onAudioVolumeIndication':
       if (handler.onAudioVolumeIndication !== undefined) {
-        handler.onAudioVolumeIndication(jsonParams.speakers, jsonParams.speakerNumber, jsonParams.totalVolume)
+        handler.onAudioVolumeIndication(jsonParams.connection, jsonParams.speakers, jsonParams.speakerNumber, jsonParams.totalVolume)
       }
       break
 
     case 'onLeaveChannel':
       if (handler.onLeaveChannel !== undefined) {
-        handler.onLeaveChannel(jsonParams.stats)
+        handler.onLeaveChannel(jsonParams.connection, jsonParams.stats)
       }
       break
 
     case 'onRtcStats':
       if (handler.onRtcStats !== undefined) {
-        handler.onRtcStats(jsonParams.stats)
+        handler.onRtcStats(jsonParams.connection, jsonParams.stats)
       }
       break
 
@@ -101,13 +95,13 @@ export function processIRtcEngineEventHandler (handler: IRtcEngineEventHandler, 
 
     case 'onNetworkQuality':
       if (handler.onNetworkQuality !== undefined) {
-        handler.onNetworkQuality(jsonParams.uid, jsonParams.txQuality, jsonParams.rxQuality)
+        handler.onNetworkQuality(jsonParams.connection, jsonParams.remoteUid, jsonParams.txQuality, jsonParams.rxQuality)
       }
       break
 
     case 'onIntraRequestReceived':
       if (handler.onIntraRequestReceived !== undefined) {
-        handler.onIntraRequestReceived()
+        handler.onIntraRequestReceived(jsonParams.connection)
       }
       break
 
@@ -131,91 +125,91 @@ export function processIRtcEngineEventHandler (handler: IRtcEngineEventHandler, 
 
     case 'onFirstLocalVideoFrame':
       if (handler.onFirstLocalVideoFrame !== undefined) {
-        handler.onFirstLocalVideoFrame(jsonParams.width, jsonParams.height, jsonParams.elapsed)
+        handler.onFirstLocalVideoFrame(jsonParams.connection, jsonParams.width, jsonParams.height, jsonParams.elapsed)
       }
       break
 
     case 'onFirstLocalVideoFramePublished':
       if (handler.onFirstLocalVideoFramePublished !== undefined) {
-        handler.onFirstLocalVideoFramePublished(jsonParams.elapsed)
+        handler.onFirstLocalVideoFramePublished(jsonParams.connection, jsonParams.elapsed)
       }
       break
 
     case 'onVideoSourceFrameSizeChanged':
       if (handler.onVideoSourceFrameSizeChanged !== undefined) {
-        handler.onVideoSourceFrameSizeChanged(jsonParams.sourceType, jsonParams.width, jsonParams.height)
+        handler.onVideoSourceFrameSizeChanged(jsonParams.connection, jsonParams.sourceType, jsonParams.width, jsonParams.height)
       }
       break
 
     case 'onFirstRemoteVideoDecoded':
       if (handler.onFirstRemoteVideoDecoded !== undefined) {
-        handler.onFirstRemoteVideoDecoded(jsonParams.uid, jsonParams.width, jsonParams.height, jsonParams.elapsed)
+        handler.onFirstRemoteVideoDecoded(jsonParams.connection, jsonParams.remoteUid, jsonParams.width, jsonParams.height, jsonParams.elapsed)
       }
       break
 
     case 'onVideoSizeChanged':
       if (handler.onVideoSizeChanged !== undefined) {
-        handler.onVideoSizeChanged(jsonParams.uid, jsonParams.width, jsonParams.height, jsonParams.rotation)
+        handler.onVideoSizeChanged(jsonParams.connection, jsonParams.uid, jsonParams.width, jsonParams.height, jsonParams.rotation)
       }
       break
 
     case 'onLocalVideoStateChanged':
       if (handler.onLocalVideoStateChanged !== undefined) {
-        handler.onLocalVideoStateChanged(jsonParams.state, jsonParams.error)
+        handler.onLocalVideoStateChanged(jsonParams.connection, jsonParams.state, jsonParams.errorCode)
       }
       break
 
     case 'onRemoteVideoStateChanged':
       if (handler.onRemoteVideoStateChanged !== undefined) {
-        handler.onRemoteVideoStateChanged(jsonParams.uid, jsonParams.state, jsonParams.reason, jsonParams.elapsed)
+        handler.onRemoteVideoStateChanged(jsonParams.connection, jsonParams.remoteUid, jsonParams.state, jsonParams.reason, jsonParams.elapsed)
       }
       break
 
     case 'onFirstRemoteVideoFrame':
       if (handler.onFirstRemoteVideoFrame !== undefined) {
-        handler.onFirstRemoteVideoFrame(jsonParams.userId, jsonParams.width, jsonParams.height, jsonParams.elapsed)
+        handler.onFirstRemoteVideoFrame(jsonParams.connection, jsonParams.remoteUid, jsonParams.width, jsonParams.height, jsonParams.elapsed)
       }
       break
 
     case 'onUserJoined':
       if (handler.onUserJoined !== undefined) {
-        handler.onUserJoined(jsonParams.uid, jsonParams.elapsed)
+        handler.onUserJoined(jsonParams.connection, jsonParams.remoteUid, jsonParams.elapsed)
       }
       break
 
     case 'onUserOffline':
       if (handler.onUserOffline !== undefined) {
-        handler.onUserOffline(jsonParams.uid, jsonParams.reason)
+        handler.onUserOffline(jsonParams.connection, jsonParams.remoteUid, jsonParams.reason)
       }
       break
 
     case 'onUserMuteAudio':
       if (handler.onUserMuteAudio !== undefined) {
-        handler.onUserMuteAudio(jsonParams.uid, jsonParams.muted)
+        handler.onUserMuteAudio(jsonParams.connection, jsonParams.remoteUid, jsonParams.muted)
       }
       break
 
     case 'onUserMuteVideo':
       if (handler.onUserMuteVideo !== undefined) {
-        handler.onUserMuteVideo(jsonParams.userId, jsonParams.muted)
+        handler.onUserMuteVideo(jsonParams.connection, jsonParams.remoteUid, jsonParams.muted)
       }
       break
 
     case 'onUserEnableVideo':
       if (handler.onUserEnableVideo !== undefined) {
-        handler.onUserEnableVideo(jsonParams.uid, jsonParams.enabled)
+        handler.onUserEnableVideo(jsonParams.connection, jsonParams.remoteUid, jsonParams.enabled)
       }
       break
 
     case 'onUserStateChanged':
       if (handler.onUserStateChanged !== undefined) {
-        handler.onUserStateChanged(jsonParams.uid, jsonParams.state)
+        handler.onUserStateChanged(jsonParams.connection, jsonParams.remoteUid, jsonParams.state)
       }
       break
 
     case 'onUserEnableLocalVideo':
       if (handler.onUserEnableLocalVideo !== undefined) {
-        handler.onUserEnableLocalVideo(jsonParams.uid, jsonParams.enabled)
+        handler.onUserEnableLocalVideo(jsonParams.connection, jsonParams.remoteUid, jsonParams.enabled)
       }
       break
 
@@ -227,25 +221,25 @@ export function processIRtcEngineEventHandler (handler: IRtcEngineEventHandler, 
 
     case 'onLocalAudioStats':
       if (handler.onLocalAudioStats !== undefined) {
-        handler.onLocalAudioStats(jsonParams.stats)
+        handler.onLocalAudioStats(jsonParams.connection, jsonParams.stats)
       }
       break
 
     case 'onRemoteAudioStats':
       if (handler.onRemoteAudioStats !== undefined) {
-        handler.onRemoteAudioStats(jsonParams.stats)
+        handler.onRemoteAudioStats(jsonParams.connection, jsonParams.stats)
       }
       break
 
     case 'onLocalVideoStats':
       if (handler.onLocalVideoStats !== undefined) {
-        handler.onLocalVideoStats(jsonParams.stats)
+        handler.onLocalVideoStats(jsonParams.connection, jsonParams.stats)
       }
       break
 
     case 'onRemoteVideoStats':
       if (handler.onRemoteVideoStats !== undefined) {
-        handler.onRemoteVideoStats(jsonParams.stats)
+        handler.onRemoteVideoStats(jsonParams.connection, jsonParams.stats)
       }
       break
 
@@ -293,79 +287,79 @@ export function processIRtcEngineEventHandler (handler: IRtcEngineEventHandler, 
 
     case 'onConnectionLost':
       if (handler.onConnectionLost !== undefined) {
-        handler.onConnectionLost()
+        handler.onConnectionLost(jsonParams.connection)
       }
       break
 
     case 'onConnectionInterrupted':
       if (handler.onConnectionInterrupted !== undefined) {
-        handler.onConnectionInterrupted()
+        handler.onConnectionInterrupted(jsonParams.connection)
       }
       break
 
     case 'onConnectionBanned':
       if (handler.onConnectionBanned !== undefined) {
-        handler.onConnectionBanned()
+        handler.onConnectionBanned(jsonParams.connection)
       }
       break
 
     case 'onStreamMessage':
       if (handler.onStreamMessage !== undefined) {
-        handler.onStreamMessage(jsonParams.userId, jsonParams.streamId, jsonParams.data, jsonParams.length, jsonParams.sentTs)
+        handler.onStreamMessage(jsonParams.connection, jsonParams.remoteUid, jsonParams.streamId, jsonParams.data, jsonParams.length, jsonParams.sentTs)
       }
       break
 
     case 'onStreamMessageError':
       if (handler.onStreamMessageError !== undefined) {
-        handler.onStreamMessageError(jsonParams.userId, jsonParams.streamId, jsonParams.code, jsonParams.missed, jsonParams.cached)
+        handler.onStreamMessageError(jsonParams.connection, jsonParams.remoteUid, jsonParams.streamId, jsonParams.code, jsonParams.missed, jsonParams.cached)
       }
       break
 
     case 'onRequestToken':
       if (handler.onRequestToken !== undefined) {
-        handler.onRequestToken()
+        handler.onRequestToken(jsonParams.connection)
       }
       break
 
     case 'onTokenPrivilegeWillExpire':
       if (handler.onTokenPrivilegeWillExpire !== undefined) {
-        handler.onTokenPrivilegeWillExpire(jsonParams.token)
+        handler.onTokenPrivilegeWillExpire(jsonParams.connection, jsonParams.token)
       }
       break
 
     case 'onFirstLocalAudioFramePublished':
       if (handler.onFirstLocalAudioFramePublished !== undefined) {
-        handler.onFirstLocalAudioFramePublished(jsonParams.elapsed)
+        handler.onFirstLocalAudioFramePublished(jsonParams.connection, jsonParams.elapsed)
       }
       break
 
     case 'onFirstRemoteAudioFrame':
       if (handler.onFirstRemoteAudioFrame !== undefined) {
-        handler.onFirstRemoteAudioFrame(jsonParams.uid, jsonParams.elapsed)
+        handler.onFirstRemoteAudioFrame(jsonParams.connection, jsonParams.userId, jsonParams.elapsed)
       }
       break
 
     case 'onFirstRemoteAudioDecoded':
       if (handler.onFirstRemoteAudioDecoded !== undefined) {
-        handler.onFirstRemoteAudioDecoded(jsonParams.uid, jsonParams.elapsed)
+        handler.onFirstRemoteAudioDecoded(jsonParams.connection, jsonParams.uid, jsonParams.elapsed)
       }
       break
 
     case 'onLocalAudioStateChanged':
       if (handler.onLocalAudioStateChanged !== undefined) {
-        handler.onLocalAudioStateChanged(jsonParams.state, jsonParams.error)
+        handler.onLocalAudioStateChanged(jsonParams.connection, jsonParams.state, jsonParams.error)
       }
       break
 
     case 'onRemoteAudioStateChanged':
       if (handler.onRemoteAudioStateChanged !== undefined) {
-        handler.onRemoteAudioStateChanged(jsonParams.uid, jsonParams.state, jsonParams.reason, jsonParams.elapsed)
+        handler.onRemoteAudioStateChanged(jsonParams.connection, jsonParams.remoteUid, jsonParams.state, jsonParams.reason, jsonParams.elapsed)
       }
       break
 
     case 'onActiveSpeaker':
       if (handler.onActiveSpeaker !== undefined) {
-        handler.onActiveSpeaker(jsonParams.userId)
+        handler.onActiveSpeaker(jsonParams.connection, jsonParams.uid)
       }
       break
 
@@ -377,19 +371,19 @@ export function processIRtcEngineEventHandler (handler: IRtcEngineEventHandler, 
 
     case 'onSnapshotTaken':
       if (handler.onSnapshotTaken !== undefined) {
-        handler.onSnapshotTaken(jsonParams.channel, jsonParams.uid, jsonParams.filePath, jsonParams.width, jsonParams.height, jsonParams.errCode)
+        handler.onSnapshotTaken(jsonParams.connection, jsonParams.filePath, jsonParams.width, jsonParams.height, jsonParams.errCode)
       }
       break
 
     case 'onClientRoleChanged':
       if (handler.onClientRoleChanged !== undefined) {
-        handler.onClientRoleChanged(jsonParams.oldRole, jsonParams.newRole)
+        handler.onClientRoleChanged(jsonParams.connection, jsonParams.oldRole, jsonParams.newRole)
       }
       break
 
     case 'onClientRoleChangeFailed':
       if (handler.onClientRoleChangeFailed !== undefined) {
-        handler.onClientRoleChangeFailed(jsonParams.reason, jsonParams.currentRole)
+        handler.onClientRoleChangeFailed(jsonParams.connection, jsonParams.reason, jsonParams.currentRole)
       }
       break
 
@@ -461,31 +455,31 @@ export function processIRtcEngineEventHandler (handler: IRtcEngineEventHandler, 
 
     case 'onRemoteAudioTransportStats':
       if (handler.onRemoteAudioTransportStats !== undefined) {
-        handler.onRemoteAudioTransportStats(jsonParams.uid, jsonParams.delay, jsonParams.lost, jsonParams.rxKBitRate)
+        handler.onRemoteAudioTransportStats(jsonParams.connection, jsonParams.remoteUid, jsonParams.delay, jsonParams.lost, jsonParams.rxKBitRate)
       }
       break
 
     case 'onRemoteVideoTransportStats':
       if (handler.onRemoteVideoTransportStats !== undefined) {
-        handler.onRemoteVideoTransportStats(jsonParams.uid, jsonParams.delay, jsonParams.lost, jsonParams.rxKBitRate)
+        handler.onRemoteVideoTransportStats(jsonParams.connection, jsonParams.remoteUid, jsonParams.delay, jsonParams.lost, jsonParams.rxKBitRate)
       }
       break
 
     case 'onConnectionStateChanged':
       if (handler.onConnectionStateChanged !== undefined) {
-        handler.onConnectionStateChanged(jsonParams.state, jsonParams.reason)
+        handler.onConnectionStateChanged(jsonParams.connection, jsonParams.state, jsonParams.reason)
       }
       break
 
     case 'onNetworkTypeChanged':
       if (handler.onNetworkTypeChanged !== undefined) {
-        handler.onNetworkTypeChanged(jsonParams.type)
+        handler.onNetworkTypeChanged(jsonParams.connection, jsonParams.type)
       }
       break
 
     case 'onEncryptionError':
       if (handler.onEncryptionError !== undefined) {
-        handler.onEncryptionError(jsonParams.errorType)
+        handler.onEncryptionError(jsonParams.connection, jsonParams.errorType)
       }
       break
 
@@ -509,7 +503,7 @@ export function processIRtcEngineEventHandler (handler: IRtcEngineEventHandler, 
 
     case 'onUploadLogResult':
       if (handler.onUploadLogResult !== undefined) {
-        handler.onUploadLogResult(jsonParams.requestId, jsonParams.success, jsonParams.reason)
+        handler.onUploadLogResult(jsonParams.connection, jsonParams.requestId, jsonParams.success, jsonParams.reason)
       }
       break
 
@@ -563,14 +557,14 @@ export function processIRtcEngineEventHandler (handler: IRtcEngineEventHandler, 
 
     case 'onUserAccountUpdated':
       if (handler.onUserAccountUpdated !== undefined) {
-        handler.onUserAccountUpdated(jsonParams.uid, jsonParams.userAccount)
+        handler.onUserAccountUpdated(jsonParams.connection, jsonParams.remoteUid, jsonParams.userAccount)
       }
       break
   }
 }
 
 export class IVideoDeviceManagerImpl implements IVideoDeviceManager {
-  enumerateVideoDevices (): DeviceInfo[] {
+  enumerateVideoDevices (): VideoDeviceInfo[] {
     const apiType = 'VideoDeviceManager_enumerateVideoDevices'
     const jsonParams = {
     }
@@ -639,21 +633,17 @@ export function processIMetadataObserver (handler: IMetadataObserver, event: str
 
 export function processIDirectCdnStreamingEventHandler (handler: IDirectCdnStreamingEventHandler, event: string, jsonParams: any) {
   switch (event) {
-    case "DirectCdnStreamingEventHandler_onDirectCdnStreamingStateChanged":
+    case 'onDirectCdnStreamingStateChanged':
       if (handler.onDirectCdnStreamingStateChanged !== undefined) {
-        handler.onDirectCdnStreamingStateChanged(
-          jsonParams.state,
-          jsonParams.error,
-          jsonParams.message
-        );
+        handler.onDirectCdnStreamingStateChanged(jsonParams.state, jsonParams.error, jsonParams.message)
       }
-      break;
+      break
 
-    case "DirectCdnStreamingEventHandler_onDirectCdnStreamingStats":
+    case 'onDirectCdnStreamingStats':
       if (handler.onDirectCdnStreamingStats !== undefined) {
-        handler.onDirectCdnStreamingStats(jsonParams.stats);
+        handler.onDirectCdnStreamingStats(jsonParams.stats)
       }
-      break;
+      break
   }
 }
 
@@ -681,30 +671,12 @@ export class IRtcEngineImpl implements IRtcEngine {
     return jsonResults.result
   }
 
-  queryInterface (iid: InterfaceIdType): any {
-    const apiType = 'RtcEngine_queryInterface'
-    const jsonParams = {
-      iid,
-      toJSON: () => {
-        return { iid }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    const inter = jsonResults.inter
-    return inter
-  }
-
-  getVersion (): { build: number, result: string } {
+  getVersion (): SDKBuildInfo {
     const apiType = 'RtcEngine_getVersion'
     const jsonParams = {
     }
     const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    const build = jsonResults.build
-    const result = jsonResults.result
-    return {
-      build,
-      result
-    }
+    return jsonResults.result
   }
 
   getErrorDescription (code: number): string {
@@ -1318,7 +1290,8 @@ export class IRtcEngineImpl implements IRtcEngine {
     const jsonParams = {
       media_player: mediaPlayer,
       toJSON: () => {
-        return { media_player: mediaPlayer }
+        return {
+        }
       }
     }
     const jsonResults = callIrisApi.call(this, apiType, jsonParams)
@@ -2341,12 +2314,12 @@ export class IRtcEngineImpl implements IRtcEngine {
     return jsonResults.result
   }
 
-  loadExtensionProvider (extensionLibPath: string): number {
+  loadExtensionProvider (path: string): number {
     const apiType = 'RtcEngine_loadExtensionProvider'
     const jsonParams = {
-      extension_lib_path: extensionLibPath,
+      path,
       toJSON: () => {
-        return { extension_lib_path: extensionLibPath }
+        return { path }
       }
     }
     const jsonResults = callIrisApi.call(this, apiType, jsonParams)
@@ -2704,19 +2677,6 @@ export class IRtcEngineImpl implements IRtcEngine {
           regionRect,
           captureParams
         }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
-  }
-
-  startScreenCapture (mediaProjectionPermissionResultData: Uint8Array, captureParams: ScreenCaptureParameters): number {
-    const apiType = 'RtcEngine_startScreenCapture'
-    const jsonParams = {
-      mediaProjectionPermissionResultData,
-      captureParams,
-      toJSON: () => {
-        return { captureParams }
       }
     }
     const jsonResults = callIrisApi.call(this, apiType, jsonParams)
@@ -3456,14 +3416,13 @@ export class IRtcEngineImpl implements IRtcEngine {
     return jsonResults.result
   }
 
-  joinChannelWithUserAccountEx (token: string, channelId: string, userAccount: string, options: ChannelMediaOptions, eventHandler: IRtcEngineEventHandler): number {
+  joinChannelWithUserAccountEx (token: string, channelId: string, userAccount: string, options: ChannelMediaOptions): number {
     const apiType = 'RtcEngine_joinChannelWithUserAccountEx'
     const jsonParams = {
       token,
       channelId,
       userAccount,
       options,
-      eventHandler,
       toJSON: () => {
         return {
           token,
@@ -3606,18 +3565,6 @@ export class IRtcEngineImpl implements IRtcEngine {
       options,
       toJSON: () => {
         return { options }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    return jsonResults.result
-  }
-
-  pushDirectCdnStreamingCustomVideoFrame (frame: ExternalVideoFrame): number {
-    const apiType = 'RtcEngine_pushDirectCdnStreamingCustomVideoFrame'
-    const jsonParams = {
-      frame,
-      toJSON: () => {
-        return { frame }
       }
     }
     const jsonResults = callIrisApi.call(this, apiType, jsonParams)

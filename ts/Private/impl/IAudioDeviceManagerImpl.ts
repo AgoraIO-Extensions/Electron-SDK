@@ -1,9 +1,9 @@
 import { callIrisApi } from '../internal/IrisApiEngine'
 import { IAudioDeviceManager } from '../IAudioDeviceManager'
-import { DeviceInfo } from '../IAgoraRtcEngine'
+import { AudioDeviceInfo } from '../IAgoraRtcEngine'
 
 export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
-  enumeratePlaybackDevices (): DeviceInfo[] {
+  enumeratePlaybackDevices (): AudioDeviceInfo[] {
     const apiType = 'AudioDeviceManager_enumeratePlaybackDevices'
     const jsonParams = {
     }
@@ -11,7 +11,7 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     return jsonResults.result
   }
 
-  enumerateRecordingDevices (): DeviceInfo[] {
+  enumerateRecordingDevices (): AudioDeviceInfo[] {
     const apiType = 'AudioDeviceManager_enumerateRecordingDevices'
     const jsonParams = {
     }
@@ -40,17 +40,12 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     return deviceId
   }
 
-  getPlaybackDeviceInfo (): { deviceId: string, deviceName: string } {
+  getPlaybackDeviceInfo (): AudioDeviceInfo {
     const apiType = 'AudioDeviceManager_getPlaybackDeviceInfo'
     const jsonParams = {
     }
     const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    const deviceId = jsonResults.deviceId
-    const deviceName = jsonResults.deviceName
-    return {
-      deviceId,
-      deviceName
-    }
+    return jsonResults.result
   }
 
   setPlaybackDeviceVolume (volume: number): number {
@@ -95,17 +90,12 @@ export class IAudioDeviceManagerImpl implements IAudioDeviceManager {
     return deviceId
   }
 
-  getRecordingDeviceInfo (): { deviceId: string, deviceName: string } {
+  getRecordingDeviceInfo (): AudioDeviceInfo {
     const apiType = 'AudioDeviceManager_getRecordingDeviceInfo'
     const jsonParams = {
     }
     const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    const deviceId = jsonResults.deviceId
-    const deviceName = jsonResults.deviceName
-    return {
-      deviceId,
-      deviceName
-    }
+    return jsonResults.result
   }
 
   setRecordingDeviceVolume (volume: number): number {

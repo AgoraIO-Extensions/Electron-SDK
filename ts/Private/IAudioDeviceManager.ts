@@ -1,19 +1,19 @@
-import { DeviceInfo } from './IAgoraRtcEngine'
+import { AudioDeviceInfo } from './IAgoraRtcEngine'
 
 export enum MaxDeviceIdLengthType {
 MaxDeviceIdLength = 512,
 }
 
 export abstract class IAudioDeviceManager {
-abstract enumeratePlaybackDevices(): DeviceInfo[];
+abstract enumeratePlaybackDevices(): AudioDeviceInfo[];
 
-abstract enumerateRecordingDevices(): DeviceInfo[];
+abstract enumerateRecordingDevices(): AudioDeviceInfo[];
 
 abstract setPlaybackDevice(deviceId: string): number;
 
 abstract getPlaybackDevice(): string;
 
-abstract getPlaybackDeviceInfo(): { deviceId: string, deviceName: string };
+abstract getPlaybackDeviceInfo(): AudioDeviceInfo;
 
 abstract setPlaybackDeviceVolume(volume: number): number;
 
@@ -23,7 +23,7 @@ abstract setRecordingDevice(deviceId: string): number;
 
 abstract getRecordingDevice(): string;
 
-abstract getRecordingDeviceInfo(): { deviceId: string, deviceName: string };
+abstract getRecordingDeviceInfo(): AudioDeviceInfo;
 
 abstract setRecordingDeviceVolume(volume: number): number;
 

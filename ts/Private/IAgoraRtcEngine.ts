@@ -1,5 +1,6 @@
-import { QualityAdaptIndication, VideoCodecType, VideoStreamType, AudioSampleRateType, VideoFormat, Rectangle, ScreenCaptureParameters, ClientRoleType, AudienceLatencyLevelType, ChannelProfileType, LastmileProbeResult, AudioVolumeInfo, RtcStats, UplinkNetworkInfo, DownlinkNetworkInfo, VideoSourceType, LocalVideoStreamState, LocalVideoStreamError, RemoteVideoState, RemoteVideoStateReason, UserOfflineReasonType, LocalAudioStats, RemoteAudioStats, LocalAudioStreamState, LocalAudioStreamError, RemoteAudioState, RemoteAudioStateReason, ClientRoleChangeFailedReason, RtmpStreamPublishState, RtmpStreamPublishErrorType, RtmpStreamingEvent, ChannelMediaRelayState, ChannelMediaRelayError, ConnectionStateType, ConnectionChangedReasonType, NetworkType, EncryptionErrorType, PermissionType, UserInfo, UploadErrorReason, StreamSubscribeState, StreamPublishState, AudioScenarioType, ThreadPriorityType, InterfaceIdType, ClientRoleOptions, LastmileProbeConfig, VideoEncoderConfiguration, BeautyOptions, VirtualBackgroundSource, VideoCanvas, AudioProfileType, AudioRecordingQualityType, AudioRecordingConfiguration, SpatialAudioParams, VoiceBeautifierPreset, AudioEffectPreset, VoiceConversionPreset, VideoMirrorModeType, SimulcastStreamConfig, AudioSessionOperationRestriction, VideoContentHint, LiveTranscoding, LocalTranscoderConfiguration, VideoOrientation, EncryptionConfig, DataStreamConfig, RtcImage, WatermarkOptions, ChannelMediaRelayConfiguration, FishCorrectionParams } from './AgoraBase'
-import { RenderModeType, NlpAggressiveness, ContentInspectResult, MediaSourceType, RawAudioFrameOpModeType, ExternalVideoFrame, SnapShotConfig, ContentInspectConfig, AdvancedAudioOptions } from './AgoraMediaBase'
+import { QualityAdaptIndication, VideoCodecType, VideoStreamType, AudioSampleRateType, VideoFormat, Rectangle, ScreenCaptureParameters, ClientRoleType, AudienceLatencyLevelType, ChannelProfileType, LastmileProbeResult, AudioVolumeInfo, RtcStats, UplinkNetworkInfo, DownlinkNetworkInfo, VideoSourceType, LocalVideoStreamState, LocalVideoStreamError, RemoteVideoState, RemoteVideoStateReason, UserOfflineReasonType, LocalAudioStats, RemoteAudioStats, LocalAudioStreamState, LocalAudioStreamError, RemoteAudioState, RemoteAudioStateReason, ClientRoleChangeFailedReason, RtmpStreamPublishState, RtmpStreamPublishErrorType, RtmpStreamingEvent, ChannelMediaRelayState, ChannelMediaRelayError, ConnectionStateType, ConnectionChangedReasonType, NetworkType, EncryptionErrorType, PermissionType, UserInfo, UploadErrorReason, StreamSubscribeState, StreamPublishState, AudioScenarioType, ThreadPriorityType, ClientRoleOptions, LastmileProbeConfig, VideoEncoderConfiguration, BeautyOptions, VirtualBackgroundSource, VideoCanvas, AudioProfileType, AudioRecordingQualityType, AudioRecordingConfiguration, SpatialAudioParams, VoiceBeautifierPreset, AudioEffectPreset, VoiceConversionPreset, VideoMirrorModeType, SimulcastStreamConfig, AudioSessionOperationRestriction, DeviceInfo, VideoContentHint, LiveTranscoding, LocalTranscoderConfiguration, VideoOrientation, EncryptionConfig, DataStreamConfig, RtcImage, WatermarkOptions, ChannelMediaRelayConfiguration, FishCorrectionParams } from './AgoraBase'
+import { RenderModeType, NlpAggressiveness, ContentInspectResult, MediaSourceType, RawAudioFrameOpModeType, SnapShotConfig, ContentInspectConfig, AdvancedAudioOptions } from './AgoraMediaBase'
+import { RtcConnection } from './IAgoraRtcEngineEx'
 import { RhythmPlayerStateType, RhythmPlayerErrorType, AgoraRhythmPlayerConfig } from './IAgoraRhythmPlayer'
 import { LogConfig, LogLevel } from './IAgoraLog'
 import { IMediaPlayer } from './IAgoraMediaPlayer'
@@ -294,25 +295,23 @@ export class LeaveChannelOptions {
 }
 
 export abstract class IRtcEngineEventHandler {
-  eventHandlerType?(): string;
+  onJoinChannelSuccess?(connection: RtcConnection, elapsed: number): void;
 
-  onJoinChannelSuccess?(channel: string, uid: number, elapsed: number): void;
-
-  onRejoinChannelSuccess?(channel: string, uid: number, elapsed: number): void;
+  onRejoinChannelSuccess?(connection: RtcConnection, elapsed: number): void;
 
   onWarning?(warn: number, msg: string): void;
 
   onError?(err: number, msg: string): void;
 
-  onAudioQuality?(uid: number, quality: number, delay: number, lost: number): void;
+  onAudioQuality?(connection: RtcConnection, remoteUid: number, quality: number, delay: number, lost: number): void;
 
   onLastmileProbeResult?(result: LastmileProbeResult): void;
 
-  onAudioVolumeIndication?(speakers: AudioVolumeInfo[], speakerNumber: number, totalVolume: number): void;
+  onAudioVolumeIndication?(connection: RtcConnection, speakers: AudioVolumeInfo[], speakerNumber: number, totalVolume: number): void;
 
-  onLeaveChannel?(stats: RtcStats): void;
+  onLeaveChannel?(connection: RtcConnection, stats: RtcStats): void;
 
-  onRtcStats?(stats: RtcStats): void;
+  onRtcStats?(connection: RtcConnection, stats: RtcStats): void;
 
   onAudioDeviceStateChanged?(deviceId: string, deviceType: number, deviceState: number): void;
 
@@ -324,9 +323,9 @@ export abstract class IRtcEngineEventHandler {
 
   onMediaDeviceChanged?(deviceType: number): void;
 
-  onNetworkQuality?(uid: number, txQuality: number, rxQuality: number): void;
+  onNetworkQuality?(connection: RtcConnection, remoteUid: number, txQuality: number, rxQuality: number): void;
 
-  onIntraRequestReceived?(): void;
+  onIntraRequestReceived?(connection: RtcConnection): void;
 
   onUplinkNetworkInfoUpdated?(info: UplinkNetworkInfo): void;
 
@@ -334,45 +333,45 @@ export abstract class IRtcEngineEventHandler {
 
   onLastmileQuality?(quality: number): void;
 
-  onFirstLocalVideoFrame?(width: number, height: number, elapsed: number): void;
+  onFirstLocalVideoFrame?(connection: RtcConnection, width: number, height: number, elapsed: number): void;
 
-  onFirstLocalVideoFramePublished?(elapsed: number): void;
+  onFirstLocalVideoFramePublished?(connection: RtcConnection, elapsed: number): void;
 
-  onVideoSourceFrameSizeChanged?(sourceType: VideoSourceType, width: number, height: number): void;
+  onVideoSourceFrameSizeChanged?(connection: RtcConnection, sourceType: VideoSourceType, width: number, height: number): void;
 
-  onFirstRemoteVideoDecoded?(uid: number, width: number, height: number, elapsed: number): void;
+  onFirstRemoteVideoDecoded?(connection: RtcConnection, remoteUid: number, width: number, height: number, elapsed: number): void;
 
-  onVideoSizeChanged?(uid: number, width: number, height: number, rotation: number): void;
+  onVideoSizeChanged?(connection: RtcConnection, uid: number, width: number, height: number, rotation: number): void;
 
-  onLocalVideoStateChanged?(state: LocalVideoStreamState, error: LocalVideoStreamError): void;
+  onLocalVideoStateChanged?(connection: RtcConnection, state: LocalVideoStreamState, errorCode: LocalVideoStreamError): void;
 
-  onRemoteVideoStateChanged?(uid: number, state: RemoteVideoState, reason: RemoteVideoStateReason, elapsed: number): void;
+  onRemoteVideoStateChanged?(connection: RtcConnection, remoteUid: number, state: RemoteVideoState, reason: RemoteVideoStateReason, elapsed: number): void;
 
-  onFirstRemoteVideoFrame?(userId: number, width: number, height: number, elapsed: number): void;
+  onFirstRemoteVideoFrame?(connection: RtcConnection, remoteUid: number, width: number, height: number, elapsed: number): void;
 
-  onUserJoined?(uid: number, elapsed: number): void;
+  onUserJoined?(connection: RtcConnection, remoteUid: number, elapsed: number): void;
 
-  onUserOffline?(uid: number, reason: UserOfflineReasonType): void;
+  onUserOffline?(connection: RtcConnection, remoteUid: number, reason: UserOfflineReasonType): void;
 
-  onUserMuteAudio?(uid: number, muted: boolean): void;
+  onUserMuteAudio?(connection: RtcConnection, remoteUid: number, muted: boolean): void;
 
-  onUserMuteVideo?(userId: number, muted: boolean): void;
+  onUserMuteVideo?(connection: RtcConnection, remoteUid: number, muted: boolean): void;
 
-  onUserEnableVideo?(uid: number, enabled: boolean): void;
+  onUserEnableVideo?(connection: RtcConnection, remoteUid: number, enabled: boolean): void;
 
-  onUserStateChanged?(uid: number, state: number): void;
+  onUserStateChanged?(connection: RtcConnection, remoteUid: number, state: number): void;
 
-  onUserEnableLocalVideo?(uid: number, enabled: boolean): void;
+  onUserEnableLocalVideo?(connection: RtcConnection, remoteUid: number, enabled: boolean): void;
 
   onApiCallExecuted?(err: number, api: string, result: string): void;
 
-  onLocalAudioStats?(stats: LocalAudioStats): void;
+  onLocalAudioStats?(connection: RtcConnection, stats: LocalAudioStats): void;
 
-  onRemoteAudioStats?(stats: RemoteAudioStats): void;
+  onRemoteAudioStats?(connection: RtcConnection, stats: RemoteAudioStats): void;
 
-  onLocalVideoStats?(stats: LocalVideoStats): void;
+  onLocalVideoStats?(connection: RtcConnection, stats: LocalVideoStats): void;
 
-  onRemoteVideoStats?(stats: RemoteVideoStats): void;
+  onRemoteVideoStats?(connection: RtcConnection, stats: RemoteVideoStats): void;
 
   onCameraReady?(): void;
 
@@ -388,39 +387,39 @@ export abstract class IRtcEngineEventHandler {
 
   onRhythmPlayerStateChanged?(state: RhythmPlayerStateType, errorCode: RhythmPlayerErrorType): void;
 
-  onConnectionLost?(): void;
+  onConnectionLost?(connection: RtcConnection): void;
 
-  onConnectionInterrupted?(): void;
+  onConnectionInterrupted?(connection: RtcConnection): void;
 
-  onConnectionBanned?(): void;
+  onConnectionBanned?(connection: RtcConnection): void;
 
-  onStreamMessage?(userId: number, streamId: number, data: Uint8Array, length: number, sentTs: number): void;
+  onStreamMessage?(connection: RtcConnection, remoteUid: number, streamId: number, data: Uint8Array, length: number, sentTs: number): void;
 
-  onStreamMessageError?(userId: number, streamId: number, code: number, missed: number, cached: number): void;
+  onStreamMessageError?(connection: RtcConnection, remoteUid: number, streamId: number, code: number, missed: number, cached: number): void;
 
-  onRequestToken?(): void;
+  onRequestToken?(connection: RtcConnection): void;
 
-  onTokenPrivilegeWillExpire?(token: string): void;
+  onTokenPrivilegeWillExpire?(connection: RtcConnection, token: string): void;
 
-  onFirstLocalAudioFramePublished?(elapsed: number): void;
+  onFirstLocalAudioFramePublished?(connection: RtcConnection, elapsed: number): void;
 
-  onFirstRemoteAudioFrame?(uid: number, elapsed: number): void;
+  onFirstRemoteAudioFrame?(connection: RtcConnection, userId: number, elapsed: number): void;
 
-  onFirstRemoteAudioDecoded?(uid: number, elapsed: number): void;
+  onFirstRemoteAudioDecoded?(connection: RtcConnection, uid: number, elapsed: number): void;
 
-  onLocalAudioStateChanged?(state: LocalAudioStreamState, error: LocalAudioStreamError): void;
+  onLocalAudioStateChanged?(connection: RtcConnection, state: LocalAudioStreamState, error: LocalAudioStreamError): void;
 
-  onRemoteAudioStateChanged?(uid: number, state: RemoteAudioState, reason: RemoteAudioStateReason, elapsed: number): void;
+  onRemoteAudioStateChanged?(connection: RtcConnection, remoteUid: number, state: RemoteAudioState, reason: RemoteAudioStateReason, elapsed: number): void;
 
-  onActiveSpeaker?(userId: number): void;
+  onActiveSpeaker?(connection: RtcConnection, uid: number): void;
 
   onContentInspectResult?(result: ContentInspectResult): void;
 
-  onSnapshotTaken?(channel: string, uid: number, filePath: string, width: number, height: number, errCode: number): void;
+  onSnapshotTaken?(connection: RtcConnection, filePath: string, width: number, height: number, errCode: number): void;
 
-  onClientRoleChanged?(oldRole: ClientRoleType, newRole: ClientRoleType): void;
+  onClientRoleChanged?(connection: RtcConnection, oldRole: ClientRoleType, newRole: ClientRoleType): void;
 
-  onClientRoleChangeFailed?(reason: ClientRoleChangeFailedReason, currentRole: ClientRoleType): void;
+  onClientRoleChangeFailed?(connection: RtcConnection, reason: ClientRoleChangeFailedReason, currentRole: ClientRoleType): void;
 
   onAudioDeviceVolumeChanged?(deviceType: MediaDeviceType, volume: number, muted: boolean): void;
 
@@ -444,15 +443,15 @@ export abstract class IRtcEngineEventHandler {
 
   onRemoteSubscribeFallbackToAudioOnly?(uid: number, isFallbackOrRecover: boolean): void;
 
-  onRemoteAudioTransportStats?(uid: number, delay: number, lost: number, rxKBitRate: number): void;
+  onRemoteAudioTransportStats?(connection: RtcConnection, remoteUid: number, delay: number, lost: number, rxKBitRate: number): void;
 
-  onRemoteVideoTransportStats?(uid: number, delay: number, lost: number, rxKBitRate: number): void;
+  onRemoteVideoTransportStats?(connection: RtcConnection, remoteUid: number, delay: number, lost: number, rxKBitRate: number): void;
 
-  onConnectionStateChanged?(state: ConnectionStateType, reason: ConnectionChangedReasonType): void;
+  onConnectionStateChanged?(connection: RtcConnection, state: ConnectionStateType, reason: ConnectionChangedReasonType): void;
 
-  onNetworkTypeChanged?(type: NetworkType): void;
+  onNetworkTypeChanged?(connection: RtcConnection, type: NetworkType): void;
 
-  onEncryptionError?(errorType: EncryptionErrorType): void;
+  onEncryptionError?(connection: RtcConnection, errorType: EncryptionErrorType): void;
 
   onPermissionError?(permissionType: PermissionType): void;
 
@@ -460,7 +459,7 @@ export abstract class IRtcEngineEventHandler {
 
   onUserInfoUpdated?(uid: number, info: UserInfo): void;
 
-  onUploadLogResult?(requestId: string, success: boolean, reason: UploadErrorReason): void;
+  onUploadLogResult?(connection: RtcConnection, requestId: string, success: boolean, reason: UploadErrorReason): void;
 
   onAudioSubscribeStateChanged?(channel: string, uid: number, oldState: StreamSubscribeState, newState: StreamSubscribeState, elapseSinceLastState: number): void;
 
@@ -478,11 +477,11 @@ export abstract class IRtcEngineEventHandler {
 
   onExtensionErrored?(provider: string, extName: string, error: number, msg: string): void;
 
-  onUserAccountUpdated?(uid: number, userAccount: string): void;
+  onUserAccountUpdated?(connection: RtcConnection, remoteUid: number, userAccount: string): void;
 }
 
 export abstract class IVideoDeviceManager {
-abstract enumerateVideoDevices(): DeviceInfo[];
+abstract enumerateVideoDevices(): VideoDeviceInfo[];
 
 abstract setDevice(deviceIdUTF8: string): number;
 
@@ -573,9 +572,7 @@ abstract release(sync?: boolean): void;
 
 abstract initialize(context: RtcEngineContext): number;
 
-abstract queryInterface(iid: InterfaceIdType): any;
-
-abstract getVersion(): { build: number, result: string };
+abstract getVersion(): SDKBuildInfo;
 
 abstract getErrorDescription(code: number): string;
 
@@ -831,7 +828,7 @@ abstract enableInEarMonitoring(enabled: boolean, includeAudioFilters: number): n
 
 abstract setInEarMonitoringVolume(volume: number): number;
 
-abstract loadExtensionProvider(extensionLibPath: string): number;
+abstract loadExtensionProvider(path: string): number;
 
 abstract setExtensionProviderProperty(provider: string, key: string, value: string): number;
 
@@ -888,8 +885,6 @@ abstract setAudioSessionOperationRestriction(restriction: AudioSessionOperationR
 abstract startScreenCaptureByDisplayId(displayId: number, regionRect: Rectangle, captureParams: ScreenCaptureParameters): number;
 
 abstract startScreenCaptureByScreenRect(screenRect: Rectangle, regionRect: Rectangle, captureParams: ScreenCaptureParameters): number;
-
-abstract startScreenCapture(mediaProjectionPermissionResultData: Uint8Array, captureParams: ScreenCaptureParameters): number;
 
 abstract getAudioDeviceInfo(): DeviceInfo;
 
@@ -1003,7 +998,7 @@ abstract joinChannelWithUserAccount(token: string, channelId: string, userAccoun
 
 abstract joinChannelWithUserAccount2(token: string, channelId: string, userAccount: string, options: ChannelMediaOptions): number;
 
-abstract joinChannelWithUserAccountEx(token: string, channelId: string, userAccount: string, options: ChannelMediaOptions, eventHandler: IRtcEngineEventHandler): number;
+abstract joinChannelWithUserAccountEx(token: string, channelId: string, userAccount: string, options: ChannelMediaOptions): number;
 
 abstract getUserInfoByUserAccount(userAccount: string): UserInfo;
 
@@ -1028,8 +1023,6 @@ abstract startDirectCdnStreaming(eventHandler: IDirectCdnStreamingEventHandler, 
 abstract stopDirectCdnStreaming(): number;
 
 abstract updateDirectCdnStreamingMediaOptions(options: DirectCdnStreamingMediaOptions): number;
-
-abstract pushDirectCdnStreamingCustomVideoFrame(frame: ExternalVideoFrame): number;
 
 abstract takeSnapshot(config: SnapShotConfig): number;
 
@@ -1157,7 +1150,17 @@ VideoProfilePortrait4k3 = 1072,
 VideoProfileDefault = 30,
 }
 
-export class DeviceInfo {
+export class SDKBuildInfo {
+  build?: number
+  version?: string
+}
+
+export class VideoDeviceInfo {
+  deviceId?: string
+  deviceName?: string
+}
+
+export class AudioDeviceInfo {
   deviceId?: string
   deviceName?: string
 }
