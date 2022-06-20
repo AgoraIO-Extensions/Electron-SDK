@@ -1,3 +1,6 @@
+## 3.8.202-build.619(Jun 19th, 2022)
+- update native sdk to 3.8.202
+
 ## 3.8.200-build.613(Jun 13th, 2022)
 - update native sdk
 
