@@ -1,4 +1,4 @@
-chooseExampleType=$1
+
 outterZipName="electronDemo.zip"
 
 packExample() {
@@ -6,7 +6,15 @@ packExample() {
   pushd $1
   echo 当前工作路径:$(pwd)
   rm -rf node_modules dist
-  yarn
+
+  if [ -n "$2" ]
+  then
+      echo 选择了 electron_version:$2
+      yarn add electron@$2            
+  else
+      echo 安装example 依赖
+      yarn
+  fi
   cp -P -R ../Electron-*/* node_modules/electron-agora-rtc-ng/
   yarn dist:mac
 
@@ -16,7 +24,7 @@ packExample() {
   popd
 }
 
-packExample example
+packExample example $1
 
 # case $chooseExampleType in
 # 1)
