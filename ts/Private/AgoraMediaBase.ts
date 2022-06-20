@@ -116,46 +116,6 @@ VideoBufferArray = 2,
 VideoBufferTexture = 3,
 }
 
-export class ExternalVideoFrame {
-  type?: VideoBufferType
-  format?: VideoPixelFormat
-  buffer?: Uint8Array
-  stride?: number
-  height?: number
-  cropLeft?: number
-  cropTop?: number
-  cropRight?: number
-  cropBottom?: number
-  rotation?: number
-  timestamp?: number
-  eglContext?: any
-  eglType?: EglContextType
-  textureId?: number
-  matrix?: number[]
-  metadata_buffer?: Uint8Array
-  metadata_size?: number
-}
-
-export class VideoFrame {
-  type?: VideoPixelFormat
-  width?: number
-  height?: number
-  yStride?: number
-  uStride?: number
-  vStride?: number
-  yBuffer?: Uint8Array
-  uBuffer?: Uint8Array
-  vBuffer?: Uint8Array
-  rotation?: number
-  renderTimeMs?: number
-  avsync_type?: number
-  metadata_buffer?: Uint8Array
-  metadata_size?: number
-  sharedContext?: any
-  textureId?: number
-  matrix?: number[]
-}
-
 export enum MediaPlayerSourceType {
 MediaPlayerSourceDefault = 0,
 MediaPlayerSourceFullFeatured = 1,
@@ -171,17 +131,6 @@ PositionPostFilters = 1 << 3,
 
 export enum AudioFrameType {
 FrameTypePcm16 = 0,
-}
-
-export class AudioFrame {
-  type?: AudioFrameType
-  samplesPerChannel?: number
-  bytesPerSample?: BytesPerSample
-  channels?: number
-  samplesPerSec?: number
-  buffer?: Uint8Array
-  renderTimeMs?: number
-  avsync_type?: number
 }
 
 export class AudioSpectrumData {
