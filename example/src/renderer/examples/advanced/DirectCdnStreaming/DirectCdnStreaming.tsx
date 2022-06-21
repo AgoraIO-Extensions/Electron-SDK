@@ -10,7 +10,7 @@ import creteAgoraRtcEngine, {
   IAudioDeviceManager,
   IDirectCdnStreamingEventHandler,
   IRtcEngine,
-  IRtcEngineEventHandlerEx,
+  IRtcEngineEventHandler,
   IRtcEngineEx,
   IVideoDeviceManager,
   MediaSourceType,
@@ -60,7 +60,7 @@ interface State {
 
 export default class DirectCdnStreaming
   extends Component<{}, State, any>
-  implements IRtcEngineEventHandlerEx, IDirectCdnStreamingEventHandler
+  implements IRtcEngineEventHandler, IDirectCdnStreamingEventHandler
 {
   rtcEngine?: IRtcEngineEx & IRtcEngine & RtcEngineExImplInternal
 
@@ -121,7 +121,7 @@ export default class DirectCdnStreaming
     return this.rtcEngine
   }
 
-  onJoinChannelSuccessEx(
+  onJoinChannelSuccess(
     { channelId, localUid }: RtcConnection,
     elapsed: number
   ): void {
@@ -134,13 +134,13 @@ export default class DirectCdnStreaming
     })
   }
 
-  onUserJoinedEx(
+  onUserJoined(
     connection: RtcConnection,
     remoteUid: number,
     elapsed: number
   ): void {
     console.log(
-      'onUserJoinedEx',
+      'onUserJoined',
       'connection',
       connection,
       'remoteUid',
@@ -155,12 +155,12 @@ export default class DirectCdnStreaming
     })
   }
 
-  onUserOfflineEx(
+  onUserOffline(
     { localUid, channelId }: RtcConnection,
     remoteUid: number,
     reason: UserOfflineReasonType
   ): void {
-    console.log('onUserOfflineEx', channelId, remoteUid)
+    console.log('onUserOffline', channelId, remoteUid)
 
     const { allUser: oldAllUser } = this.state
     const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
@@ -169,7 +169,7 @@ export default class DirectCdnStreaming
     })
   }
 
-  onLeaveChannelEx(connection: RtcConnection, stats: RtcStats): void {
+  onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
     this.setState({
       isJoined: false,
       allUser: [],

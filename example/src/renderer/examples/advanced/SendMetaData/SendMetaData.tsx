@@ -1,9 +1,10 @@
+import { Card, Input, List } from 'antd'
 import creteAgoraRtcEngine, {
   ChannelProfileType,
   ClientRoleType,
   IMetadataObserver,
   IRtcEngine,
-  IRtcEngineEventHandlerEx,
+  IRtcEngineEventHandler,
   IRtcEngineEx,
   Metadata,
   MetadataType,
@@ -13,7 +14,6 @@ import creteAgoraRtcEngine, {
   UserOfflineReasonType,
   VideoSourceType,
 } from 'electron-agora-rtc-ng'
-import { Card, Input, List } from 'antd'
 import { Component } from 'react'
 import JoinChannelBar from '../../component/JoinChannelBar'
 import config from '../../config/agora.config'
@@ -36,7 +36,7 @@ const localUid = getRandomInt(1, 9999999)
 
 export default class SendMetaData
   extends Component<State>
-  implements IRtcEngineEventHandlerEx, IMetadataObserver
+  implements IRtcEngineEventHandler, IMetadataObserver
 {
   rtcEngine?: IRtcEngineEx & IRtcEngine & RtcEngineExImplInternal
 
@@ -79,7 +79,7 @@ export default class SendMetaData
     return this.rtcEngine
   }
 
-  onJoinChannelSuccessEx(
+  onJoinChannelSuccess(
     { channelId, localUid }: RtcConnection,
     elapsed: number
   ): void {
@@ -96,13 +96,13 @@ export default class SendMetaData
     }
   }
 
-  onUserJoinedEx(
+  onUserJoined(
     connection: RtcConnection,
     remoteUid: number,
     elapsed: number
   ): void {
     console.log(
-      'onUserJoinedEx',
+      'onUserJoined',
       'connection',
       connection,
       'remoteUid',
@@ -117,12 +117,12 @@ export default class SendMetaData
     })
   }
 
-  onUserOfflineEx(
+  onUserOffline(
     { localUid, channelId }: RtcConnection,
     remoteUid: number,
     reason: UserOfflineReasonType
   ): void {
-    console.log('onUserOfflineEx', channelId, remoteUid)
+    console.log('onUserOffline', channelId, remoteUid)
 
     const { allUser: oldAllUser } = this.state
     const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
@@ -131,7 +131,7 @@ export default class SendMetaData
     })
   }
 
-  onLeaveChannelEx(connection: RtcConnection, stats: RtcStats): void {
+  onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
     this.setState({
       isJoined: false,
       allUser: [],

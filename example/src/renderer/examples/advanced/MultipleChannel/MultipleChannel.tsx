@@ -1,10 +1,11 @@
+import { Button, Card, Input, List } from 'antd'
 import creteAgoraRtcEngine, {
   AudioProfileType,
   AudioScenarioType,
   ChannelProfileType,
   ClientRoleType,
   IRtcEngine,
-  IRtcEngineEventHandlerEx,
+  IRtcEngineEventHandler,
   IRtcEngineEx,
   RtcConnection,
   RtcEngineExImplInternal,
@@ -12,7 +13,6 @@ import creteAgoraRtcEngine, {
   UserOfflineReasonType,
   VideoSourceType,
 } from 'electron-agora-rtc-ng'
-import { Button, Card, Input, List } from 'antd'
 import { Component } from 'react'
 import Window from '../../component/Window'
 import config from '../../config/agora.config'
@@ -41,7 +41,7 @@ interface State {
 
 export default class MultipleChannel
   extends Component<{}, State, any>
-  implements IRtcEngineEventHandlerEx
+  implements IRtcEngineEventHandler
 {
   rtcEngine?: IRtcEngineEx & IRtcEngine & RtcEngineExImplInternal
 
@@ -77,11 +77,11 @@ export default class MultipleChannel
     return this.rtcEngine
   }
 
-  onJoinChannelSuccessEx(
+  onJoinChannelSuccess(
     { channelId, localUid }: RtcConnection,
     elapsed: number
   ): void {
-    console.log('onJoinChannelSuccessEx', channelId, localUid)
+    console.log('onJoinChannelSuccess', channelId, localUid)
     if (localUid === localUid1) {
       this.setState({ isJoined1: true })
     } else if (localUid === localUid2) {
@@ -89,18 +89,12 @@ export default class MultipleChannel
     }
   }
 
-  onUserJoinedEx(
+  onUserJoined(
     { localUid, channelId }: RtcConnection,
     remoteUid: number,
     elapsed: number
   ): void {
-    console.log(
-      'onUserJoinedEx',
-      'channelId',
-      channelId,
-      'remoteUid',
-      remoteUid
-    )
+    console.log('onUserJoined', 'channelId', channelId, 'remoteUid', remoteUid)
 
     if (localUid === localUid1) {
       const { allUser1: oldAllUser } = this.state
@@ -127,12 +121,12 @@ export default class MultipleChannel
     }
   }
 
-  onUserOfflineEx(
+  onUserOffline(
     { localUid, channelId }: RtcConnection,
     remoteUid: number,
     reason: UserOfflineReasonType
   ): void {
-    console.log('onUserOfflineEx', channelId, localUid, remoteUid)
+    console.log('onUserOffline', channelId, localUid, remoteUid)
     const { channel1, channel2 } = this.state
     if (channelId === channel1) {
       const { allUser1: oldAllUser } = this.state
@@ -149,11 +143,11 @@ export default class MultipleChannel
     }
   }
 
-  onLeaveChannelEx(
+  onLeaveChannel(
     { channelId, localUid }: RtcConnection,
     stats: RtcStats
   ): void {
-    console.log('onLeaveChannelEx', channelId, localUid)
+    console.log('onLeaveChannel', channelId, localUid)
     const { channel1, channel2 } = this.state
     if (channelId === channel1) {
       this.setState({ isJoined1: false, allUser1: [] })

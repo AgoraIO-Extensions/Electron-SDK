@@ -1,28 +1,21 @@
-import { Component } from 'react'
+import { Card, Input, List } from 'antd'
 import creteAgoraRtcEngine, {
-  AudioProfileType,
-  AudioScenarioType,
   ChannelProfileType,
-  DegradationPreference,
-  IRtcEngineEventHandlerEx,
+  ClientRoleType,
   IRtcEngine,
+  IRtcEngineEventHandler,
   IRtcEngineEx,
-  OrientationMode,
   RtcConnection,
   RtcEngineExImplInternal,
   RtcStats,
   UserOfflineReasonType,
-  VideoCodecType,
-  VideoMirrorModeType,
-  VideoSourceType,
-  ClientRoleType,
 } from 'electron-agora-rtc-ng'
-import { List, Card, Input } from 'antd'
+import { Component } from 'react'
+import JoinChannelBar from '../../component/JoinChannelBar'
 import config from '../../config/agora.config'
 import styles from '../../config/public.scss'
-import JoinChannelBar from '../../component/JoinChannelBar'
-import createDataStreamStyle from './CreateDataStream.scss'
 import { getRandomInt } from '../../util'
+import createDataStreamStyle from './CreateDataStream.scss'
 const { Search } = Input
 interface User {
   isMyself: boolean
@@ -37,7 +30,7 @@ interface State {
 
 export default class CreateDataStream
   extends Component<State>
-  implements IRtcEngineEventHandlerEx
+  implements IRtcEngineEventHandler
 {
   rtcEngine?: IRtcEngineEx & IRtcEngine & RtcEngineExImplInternal
 
@@ -72,7 +65,7 @@ export default class CreateDataStream
     return this.rtcEngine
   }
 
-  onJoinChannelSuccessEx(
+  onJoinChannelSuccess(
     { channelId, localUid }: RtcConnection,
     elapsed: number
   ): void {
@@ -89,13 +82,13 @@ export default class CreateDataStream
     }
   }
 
-  onUserJoinedEx(
+  onUserJoined(
     connection: RtcConnection,
     remoteUid: number,
     elapsed: number
   ): void {
     console.log(
-      'onUserJoinedEx',
+      'onUserJoined',
       'connection',
       connection,
       'remoteUid',
@@ -110,12 +103,12 @@ export default class CreateDataStream
     })
   }
 
-  onUserOfflineEx(
+  onUserOffline(
     { localUid, channelId }: RtcConnection,
     remoteUid: number,
     reason: UserOfflineReasonType
   ): void {
-    console.log('onUserOfflineEx', channelId, remoteUid)
+    console.log('onUserOffline', channelId, remoteUid)
 
     const { allUser: oldAllUser } = this.state
     const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
@@ -124,7 +117,7 @@ export default class CreateDataStream
     })
   }
 
-  onLeaveChannelEx(connection: RtcConnection, stats: RtcStats): void {
+  onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
     this.setState({
       isJoined: false,
       allUser: [],

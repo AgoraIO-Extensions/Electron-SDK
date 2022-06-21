@@ -3,14 +3,11 @@ import creteAgoraRtcEngine, {
   ClientRoleType,
   DegradationPreference,
   IRtcEngine,
-  IRtcEngineEventHandlerEx,
+  IRtcEngineEventHandler,
   IRtcEngineEx,
   IVideoDeviceManager,
   OrientationMode,
-  RtcConnection,
   RtcEngineExImplInternal,
-  RtcStats,
-  UserOfflineReasonType,
   VideoCodecType,
   VideoMirrorModeType,
   VideoSourceType,
@@ -51,7 +48,7 @@ interface Device {
 
 export default class CameraAndScreenShare
   extends Component<{}, State, any>
-  implements IRtcEngineEventHandlerEx
+  implements IRtcEngineEventHandler
 {
   videoDeviceManager: IVideoDeviceManager
 
@@ -123,62 +120,6 @@ export default class CameraAndScreenShare
     }
 
     return this.rtcEngine
-  }
-
-  onJoinChannelSuccessEx(
-    { channelId, localUid }: RtcConnection,
-    elapsed: number
-  ): void {
-    // this.setState({
-    //   localVideoSourceUid: connection.localUid,
-    // })
-    // const { allUser: oldAllUser } = this.state
-    // const newAllUser = [...oldAllUser]
-    // newAllUser.push({ isMyself: true, uid: localUid })
-    // this.setState({
-    //   isJoined: true,
-    //   allUser: newAllUser,
-    // })
-  }
-
-  onUserJoinedEx(
-    connection: RtcConnection,
-    remoteUid: number,
-    elapsed: number
-  ): void {
-    // console.log(
-    //   'onUserJoinedEx',
-    //   'connection',
-    //   connection,
-    //   'remoteUid',
-    //   remoteUid
-    // )
-    // const { allUser: oldAllUser } = this.state
-    // const newAllUser = [...oldAllUser]
-    // newAllUser.push({ isMyself: false, uid: remoteUid })
-    // this.setState({
-    //   allUser: newAllUser,
-    // })
-  }
-
-  onUserOfflineEx(
-    { localUid, channelId }: RtcConnection,
-    remoteUid: number,
-    reason: UserOfflineReasonType
-  ): void {
-    // console.log('onUserOfflineEx', channelId, remoteUid)
-    // const { allUser: oldAllUser } = this.state
-    // const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
-    // this.setState({
-    //   allUser: newAllUser,
-    // })
-  }
-
-  onLeaveChannelEx(connection: RtcConnection, stats: RtcStats): void {
-    // this.setState({
-    //   isJoined: false,
-    //   allUser: [],
-    // })
   }
 
   onError(err: number, msg: string): void {

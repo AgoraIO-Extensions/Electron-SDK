@@ -39,7 +39,7 @@ file(GLOB TARGET_AGORA_NODE_EXT_FILE
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     set(AGORA_IRIS_PROJECT_ARCH "MAC")
     set(AGORA_RTC_SDK_PATH
-            ${CMAKE_CURRENT_SOURCE_DIR}/iris/DCG/Agora_Native_SDK_for_Mac_rel.v3.8.201.2_39877_full_20220608_2158/libs
+            ${CMAKE_CURRENT_SOURCE_DIR}/iris/DCG/Agora_Native_SDK_for_Mac_rel.v3.8.201.2_40228_full_20220616_2135_210770/libs
             )
     # native rtc sdk library
     file(GLOB AGORA_RTC_SDK_LIBRARY
@@ -92,11 +92,11 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     #       )
     if (${AGORA_RTC_PROJECT_ARCH} STREQUAL "x86")
         file(GLOB AGORA_RTC_SDK_LIBRARY
-            ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_x86_rel.v3.8.201.2_64129_20220608_2205_full/rtc/sdk/*.dll
+            ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_x86_rel.v3.8.201.2_64826_20220616_2136_full_210769/rtc/sdk/*.dll
             )
     elseif (${AGORA_RTC_PROJECT_ARCH} STREQUAL "x86_64")
         file(GLOB AGORA_RTC_SDK_LIBRARY
-            ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_x64_rel.v3.8.201.2_64130_20220608_2214_full/rtc/sdk/*.dll
+            ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_x64_rel.v3.8.201.2_64827_20220616_2136_full_210768/rtc/sdk/*.dll
             )
     endif ()
 
