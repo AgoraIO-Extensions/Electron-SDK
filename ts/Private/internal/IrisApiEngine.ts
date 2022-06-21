@@ -2,7 +2,6 @@ import { AgoraElectronBridge, Result } from "../../Types";
 import { AgoraEnv, logDebug, logError, logWarn, parseJSON } from "../../Utils";
 import { IMediaPlayer } from "../IAgoraMediaPlayer";
 import { IDirectCdnStreamingEventHandler } from "../IAgoraRtcEngine";
-import { processIRtcEngineEventHandlerEx } from "../impl/IAgoraRtcEngineExImpl";
 import {
   processIDirectCdnStreamingEventHandler,
   processIMetadataObserver,
@@ -51,29 +50,27 @@ export const handlerRTCEvent = function (
       if (!value) {
         return;
       }
-      if (isEx) {
+      if (event.endsWith("Ex")) {
+        event = event.replace("Ex", "");
+      }
+
+      if (event.startsWith("DirectCdnStreamingEventHandler_")) {
+        event = event.replace("DirectCdnStreamingEventHandler_", "");
         try {
-          processIRtcEngineEventHandlerEx(value, event, parseData);
+          processIDirectCdnStreamingEventHandler(
+            value as IDirectCdnStreamingEventHandler,
+            event,
+            parseData
+          );
         } catch (error) {
           logError(
-            "engineEventHandlers::processIRtcEngineEventHandlerEx",
+            "engineEventHandlers::processIDirectCdnStreamingEventHandler",
             error
           );
         }
         return;
       }
-      try {
-        processIDirectCdnStreamingEventHandler(
-          value as IDirectCdnStreamingEventHandler,
-          event,
-          parseData
-        );
-      } catch (error) {
-        logError(
-          "engineEventHandlers::processIDirectCdnStreamingEventHandler",
-          error
-        );
-      }
+
       try {
         processIRtcEngineEventHandler(value, event, parseData);
       } catch (error) {

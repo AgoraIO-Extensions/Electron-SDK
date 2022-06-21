@@ -14,13 +14,14 @@ import {
   IVideoDeviceManager,
   Metadata,
   RtcEngineContext,
+  SDKBuildInfo,
   SIZE,
 } from "../IAgoraRtcEngine";
 import { RtcConnection } from "../IAgoraRtcEngineEx";
 import { IAudioDeviceManager } from "../IAudioDeviceManager";
 import { IRtcEngineExImpl } from "../impl/IAgoraRtcEngineExImpl";
 import { IVideoDeviceManagerImpl } from "../impl/IAgoraRtcEngineImpl";
-import { IAudioDeviceManagerImpl } from "../impl/IAudioDeviceManagerImpl";
+import { AudioDeviceManagerImplInternal } from "./AudioDeviceManagerImplInternal";
 import { callIrisApi, getBridge, handlerRTCEvent } from "./IrisApiEngine";
 import { handlerMPKEvent, MediaPlayerInternal } from "./MediaPlayerInternal";
 
@@ -65,6 +66,16 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     AgoraEnv.isInitializeEngine = false;
     super.release(sync);
     getBridge().ReleaseEnv();
+  }
+
+  override getVersion(): SDKBuildInfo {
+    const apiType = "RtcEngine_getVersion";
+    const jsonParams = {};
+    const jsonResults = callIrisApi(apiType, jsonParams);
+    return {
+      build: jsonResults.build,
+      version: jsonResults.result,
+    };
   }
 
   override createMediaPlayer(): IMediaPlayer {
@@ -221,7 +232,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   }
 
   override getAudioDeviceManager(): IAudioDeviceManager {
-    return new IAudioDeviceManagerImpl();
+    return new AudioDeviceManagerImplInternal();
   }
 
   override getVideoDeviceManager(): IVideoDeviceManager {
