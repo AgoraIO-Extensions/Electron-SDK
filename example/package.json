@@ -9,8 +9,8 @@
     "dist:mac": "yarn dist --dir -c.compression=store -c.mac.identity=null",
     "dist:win32": "yarn compile && electron-builder --publish never --win --ia32",
     "dist:win64": "yarn compile && electron-builder --publish never --win --x64",
-    "switchEnv:win32": "cd .. && @powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./packager-win.ps1 1 1",
-    "switchEnv:win64": "cd .. && @powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./packager-win.ps1 1 2"
+    "switchEnv:win32": "cd .. && @powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./ci/packager-win.ps1 1 switchEnv",
+    "switchEnv:win64": "cd .. && @powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./ci/packager-win.ps1 2 switchEnv"
   },
   "build": {
     "asar": false,
