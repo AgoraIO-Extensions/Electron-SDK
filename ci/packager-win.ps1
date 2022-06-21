@@ -2,9 +2,12 @@ $chooseExampleType=$args[0]
 $electronVersion=$args[1]
 $outterZipName="electronDemo.zip"
 
+pushd example
 
 function ChooseArch($type)
 {
+  # remove node_modules
+  Remove-Item -Path node_modules -Recurse -Force -ErrorAction Ignore;
   if($type -eq 1){
     write-host("ChooseArch x32")
     Copy-Item -Path ../ci/.npmrc_x32 -Destination ./.npmrc -Force
@@ -16,9 +19,17 @@ function ChooseArch($type)
   }
 }
 
+if($electronVersion -eq "switchEnv"){
+    write-host("switchEnv")
+    ChooseArch -type $chooseExampleType
+    yarn
+    popd
+    return
+}
+
 function DistByArch($type)
 {
-  
+
   if($type -eq 1){
     write-host("distByArch x32")
     yarn dist:win32
@@ -32,24 +43,24 @@ function DistByArch($type)
 
 function Package($archNum,$electronVersion){
   # remove zip
-  Remove-Item -Path $outterZipName -Recurse -Force -ErrorAction Ignore;
-  pushd example
-  # choose arch
-  ChooseArch -type $archNum
-  # remove node_modules
-  Remove-Item -Path node_modules -Recurse -Force -ErrorAction Ignore;
+  Remove-Item -Path ../$outterZipName -Recurse -Force -ErrorAction Ignore;
   
   # remove dist
   Remove-Item -Path dist -Recurse -Force -ErrorAction Ignore;
+
+  # choose arch
+  ChooseArch -type $archNum
+  
   If([String]::IsNullOrEmpty($electronVersion))
   {
-    Write-Host "选择了 electron_version:$electronVersion"
-    yarn add electron@$electronVersion --verbose
+    Write-Host "安装example 依赖"
+    yarn
   }
   Else
   {
-    Write-Host "安装example 依赖"
-    yarn --verbose
+    
+    Write-Host "选择了 electron_version:$electronVersion"
+    yarn add electron@$electronVersion
   }
 
   # copy native sdk
@@ -58,11 +69,11 @@ function Package($archNum,$electronVersion){
   DistByArch -type $archNum
   # move zip
   Copy-Item -Path dist/ElectronReact-*.zip -Destination ../$outterZipName -Recurse -Force
-  popd;
 }
 
 write-host("Package win:1")
 Package -archNum $chooseExampleType -electronVersion $electronVersion
+popd;
 
 # switch -Regex ($chooseExampleType)
 # {

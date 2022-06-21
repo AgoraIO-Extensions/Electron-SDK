@@ -3930,8 +3930,10 @@ ejs@^3.1.6:
   dependencies:
     jake "^10.8.5"
 
-"electron-agora-rtc-ng@file:..":
+electron-agora-rtc-ng@latest:
   version "3.8.201-alpha.616"
+  resolved "https://registry.npmmirror.com/electron-agora-rtc-ng/-/electron-agora-rtc-ng-3.8.201-alpha.616.tgz#5001ccf004bb09acfc80522e0afc031f5f668bf1"
+  integrity sha512-kU2ejPc28aQTuREVCQCDzvih/4L1Kgkms/+ytQSc86EYPgbKnuuuKER5f0DITXA7fcxve5Nud88ANzbi1ziQKA==
   dependencies:
     bindings "1.2.1"
     cross-env "^7.0.3"
