@@ -3,7 +3,7 @@ import creteAgoraRtcEngine, {
   ClientRoleType,
   IAudioDeviceManager,
   IRtcEngine,
-  IRtcEngineEventHandlerEx,
+  IRtcEngineEventHandler,
   IRtcEngineEx,
   RtcConnection,
   RtcEngineExImplInternal,
@@ -45,7 +45,7 @@ interface State {
 
 export default class RhythmPlayer
   extends Component<State>
-  implements IRtcEngineEventHandlerEx
+  implements IRtcEngineEventHandler
 {
   rtcEngine?: IRtcEngineEx & IRtcEngine & RtcEngineExImplInternal
 
@@ -94,7 +94,7 @@ export default class RhythmPlayer
     return this.rtcEngine
   }
 
-  onJoinChannelSuccessEx(
+  onJoinChannelSuccess(
     { channelId, localUid }: RtcConnection,
     elapsed: number
   ): void {
@@ -107,13 +107,13 @@ export default class RhythmPlayer
     })
   }
 
-  onUserJoinedEx(
+  onUserJoined(
     connection: RtcConnection,
     remoteUid: number,
     elapsed: number
   ): void {
     console.log(
-      'onUserJoinedEx',
+      'onUserJoined',
       'connection',
       connection,
       'remoteUid',
@@ -128,12 +128,12 @@ export default class RhythmPlayer
     })
   }
 
-  onUserOfflineEx(
+  onUserOffline(
     { localUid, channelId }: RtcConnection,
     remoteUid: number,
     reason: UserOfflineReasonType
   ): void {
-    console.log('onUserOfflineEx', channelId, remoteUid)
+    console.log('onUserOffline', channelId, remoteUid)
 
     const { allUser: oldAllUser } = this.state
     const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
@@ -142,7 +142,7 @@ export default class RhythmPlayer
     })
   }
 
-  onLeaveChannelEx(connection: RtcConnection, stats: RtcStats): void {
+  onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
     this.setState({
       isJoined: false,
       allUser: [],

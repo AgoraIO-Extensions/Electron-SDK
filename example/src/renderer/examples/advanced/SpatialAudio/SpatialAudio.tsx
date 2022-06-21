@@ -1,15 +1,15 @@
+import { Card, Divider, List, Switch } from 'antd'
 import creteAgoraRtcEngine, {
   ClientRoleType,
   IAudioDeviceManager,
   IRtcEngine,
-  IRtcEngineEventHandlerEx,
+  IRtcEngineEventHandler,
   IRtcEngineEx,
   RtcConnection,
   RtcEngineExImplInternal,
   RtcStats,
   UserOfflineReasonType,
 } from 'electron-agora-rtc-ng'
-import { Card, List, Switch } from 'antd'
 import { Component } from 'react'
 import DropDownButton from '../../component/DropDownButton'
 import JoinChannelBar from '../../component/JoinChannelBar'
@@ -38,7 +38,7 @@ interface State {
 
 export default class JoinChannelAudio
   extends Component<State>
-  implements IRtcEngineEventHandlerEx
+  implements IRtcEngineEventHandler
 {
   rtcEngine?: IRtcEngineEx & IRtcEngine & RtcEngineExImplInternal
 
@@ -82,7 +82,7 @@ export default class JoinChannelAudio
     return this.rtcEngine
   }
 
-  onJoinChannelSuccessEx(
+  onJoinChannelSuccess(
     { channelId, localUid }: RtcConnection,
     elapsed: number
   ): void {
@@ -95,13 +95,13 @@ export default class JoinChannelAudio
     })
   }
 
-  onUserJoinedEx(
+  onUserJoined(
     connection: RtcConnection,
     remoteUid: number,
     elapsed: number
   ): void {
     console.log(
-      'onUserJoinedEx',
+      'onUserJoined',
       'connection',
       connection,
       'remoteUid',
@@ -116,12 +116,12 @@ export default class JoinChannelAudio
     })
   }
 
-  onUserOfflineEx(
+  onUserOffline(
     { localUid, channelId }: RtcConnection,
     remoteUid: number,
     reason: UserOfflineReasonType
   ): void {
-    console.log('onUserOfflineEx', channelId, remoteUid)
+    console.log('onUserOffline', channelId, remoteUid)
 
     const { allUser: oldAllUser } = this.state
     const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
@@ -130,7 +130,7 @@ export default class JoinChannelAudio
     })
   }
 
-  onLeaveChannelEx(connection: RtcConnection, stats: RtcStats): void {
+  onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
     this.setState({
       isJoined: false,
       allUser: [],
@@ -163,22 +163,6 @@ export default class JoinChannelAudio
     return (
       <div className={styles.rightBar}>
         <div>
-          <div
-            style={{
-              display: 'flex',
-              textAlign: 'center',
-              alignItems: 'center',
-            }}
-          >
-            {'SpatialAudio:   '}
-            <Switch
-              checkedChildren='Enable'
-              unCheckedChildren='Disable'
-              defaultChecked={false}
-              onChange={this.onPressSpatialAudio}
-            />
-          </div>
-          <br></br>
           <DropDownButton
             options={configMapToOptions(AudioProfileList)}
             onPress={(res) =>
@@ -225,6 +209,22 @@ export default class JoinChannelAudio
               this.rtcEngine?.adjustPlaybackSignalVolume(value)
             }}
           />
+          <Divider>Spatial Audio</Divider>
+          <div
+            style={{
+              display: 'flex',
+              textAlign: 'center',
+              alignItems: 'center',
+            }}
+          >
+            {'SpatialAudio:   '}
+            <Switch
+              checkedChildren='Enable'
+              unCheckedChildren='Disable'
+              defaultChecked={false}
+              onChange={this.onPressSpatialAudio}
+            />
+          </div>
         </div>
         <JoinChannelBar
           onPressJoin={(channelId) => {

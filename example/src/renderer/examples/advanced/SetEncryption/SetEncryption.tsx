@@ -1,3 +1,4 @@
+import { Card, Input, List } from 'antd'
 import creteAgoraRtcEngine, {
   AudioProfileType,
   AudioScenarioType,
@@ -15,7 +16,6 @@ import creteAgoraRtcEngine, {
   VideoMirrorModeType,
   VideoSourceType,
 } from 'electron-agora-rtc-ng'
-import { Card, Input, List } from 'antd'
 import { Component } from 'react'
 import DropDownButton from '../../component/DropDownButton'
 import JoinChannelBar from '../../component/JoinChannelBar'
@@ -72,7 +72,7 @@ export default class SetEncryption extends Component<{}, State, any> {
     return this.rtcEngine
   }
 
-  onJoinChannelSuccessEx(
+  onJoinChannelSuccess(
     { channelId, localUid }: RtcConnection,
     elapsed: number
   ): void {
@@ -85,13 +85,13 @@ export default class SetEncryption extends Component<{}, State, any> {
     })
   }
 
-  onUserJoinedEx(
+  onUserJoined(
     connection: RtcConnection,
     remoteUid: number,
     elapsed: number
   ): void {
     console.log(
-      'onUserJoinedEx',
+      'onUserJoined',
       'connection',
       connection,
       'remoteUid',
@@ -106,12 +106,12 @@ export default class SetEncryption extends Component<{}, State, any> {
     })
   }
 
-  onUserOfflineEx(
+  onUserOffline(
     { localUid, channelId }: RtcConnection,
     remoteUid: number,
     reason: UserOfflineReasonType
   ): void {
-    console.log('onUserOfflineEx', channelId, remoteUid)
+    console.log('onUserOffline', channelId, remoteUid)
 
     const { allUser: oldAllUser } = this.state
     const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
@@ -120,7 +120,7 @@ export default class SetEncryption extends Component<{}, State, any> {
     })
   }
 
-  onLeaveChannelEx(connection: RtcConnection, stats: RtcStats): void {
+  onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
     this.setState({
       isJoined: false,
       allUser: [],

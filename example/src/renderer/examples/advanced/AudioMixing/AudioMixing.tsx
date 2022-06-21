@@ -1,16 +1,16 @@
-import { Button, Card, List, Switch } from 'antd'
+import { Button, Card, Divider, List, Switch } from 'antd'
 import creteAgoraRtcEngine, {
   AudioProfileType,
   AudioScenarioType,
   ChannelProfileType,
+  IAudioDeviceManager,
   IRtcEngine,
-  IRtcEngineEventHandlerEx,
+  IRtcEngineEventHandler,
   IRtcEngineEx,
   RtcConnection,
   RtcEngineExImplInternal,
   RtcStats,
   UserOfflineReasonType,
-  IAudioDeviceManager,
 } from 'electron-agora-rtc-ng'
 import { Component } from 'react'
 import DropDownButton from '../../component/DropDownButton'
@@ -47,7 +47,7 @@ interface State {
 
 export default class AudioMixing
   extends Component<{}, State, any>
-  implements IRtcEngineEventHandlerEx
+  implements IRtcEngineEventHandler
 {
   rtcEngine?: IRtcEngineEx & IRtcEngine & RtcEngineExImplInternal
 
@@ -96,7 +96,7 @@ export default class AudioMixing
     return this.rtcEngine
   }
 
-  onJoinChannelSuccessEx(
+  onJoinChannelSuccess(
     { channelId, localUid }: RtcConnection,
     elapsed: number
   ): void {
@@ -109,13 +109,13 @@ export default class AudioMixing
     })
   }
 
-  onUserJoinedEx(
+  onUserJoined(
     connection: RtcConnection,
     remoteUid: number,
     elapsed: number
   ): void {
     console.log(
-      'onUserJoinedEx',
+      'onUserJoined',
       'connection',
       connection,
       'remoteUid',
@@ -130,12 +130,12 @@ export default class AudioMixing
     })
   }
 
-  onUserOfflineEx(
+  onUserOffline(
     { localUid, channelId }: RtcConnection,
     remoteUid: number,
     reason: UserOfflineReasonType
   ): void {
-    console.log('onUserOfflineEx', channelId, remoteUid)
+    console.log('onUserOffline', channelId, remoteUid)
 
     const { allUser: oldAllUser } = this.state
     const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
@@ -144,7 +144,7 @@ export default class AudioMixing
     })
   }
 
-  onLeaveChannelEx(connection: RtcConnection, stats: RtcStats): void {
+  onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
     this.setState({
       isJoined: false,
       allUser: [],
@@ -191,12 +191,34 @@ export default class AudioMixing
             title='Microphone'
             options={audioRecordDevices.map((obj) => {
               const { deviceId, deviceName } = obj
-              return { dropId: deviceId, dropText: deviceName, ...obj }
+              return {
+                dropId: deviceId,
+                dropText: deviceName,
+                ...obj,
+              }
             })}
             onPress={(res) => {
               this.audioDeviceManager.setRecordingDevice(res.dropId)
             }}
           />
+
+          <Divider>Audio Mixing</Divider>
+          <Button
+            htmlType='button'
+            onClick={() => {
+              this.getRtcEngine().startAudioMixing(mp3Path, true, false, -1)
+            }}
+          >
+            Start Audio Mixing
+          </Button>
+          <Button
+            htmlType='button'
+            onClick={() => {
+              this.getRtcEngine().stopAudioMixing()
+            }}
+          >
+            Stop Audio Mixing
+          </Button>
           <SliderBar
             max={100}
             title='Mixing Volume'
@@ -218,7 +240,9 @@ export default class AudioMixing
               this.rtcEngine?.adjustAudioMixingPublishVolume(value)
             }}
           />
-          <p>Audio Effect Controls</p>
+
+          <Divider>Audio Effect Controls</Divider>
+
           <SliderBar
             max={1}
             min={-1}
@@ -259,6 +283,7 @@ export default class AudioMixing
               this.setState({ effectGain: value })
             }}
           />
+          <br></br>
           <div
             style={{
               display: 'flex',
@@ -276,6 +301,7 @@ export default class AudioMixing
               }}
             />
           </div>
+          <br></br>
           <Button
             htmlType='button'
             onClick={() => {
@@ -326,6 +352,8 @@ export default class AudioMixing
           >
             Stop
           </Button>
+          <br></br>
+          <br></br>
           <SliderBar
             max={100}
             title='Effect Volume'
@@ -340,6 +368,8 @@ export default class AudioMixing
               this.rtcEngine?.adjustLoopbackRecordingVolume(value)
             }}
           />
+          <br></br>
+
           <div
             style={{
               display: 'flex',
@@ -357,26 +387,6 @@ export default class AudioMixing
               }}
             />
           </div>
-
-          <br />
-          <br />
-          <p>Audio Mixing</p>
-          <Button
-            htmlType='button'
-            onClick={() => {
-              this.getRtcEngine().startAudioMixing(mp3Path, true, false, -1)
-            }}
-          >
-            Start Audio Mixing
-          </Button>
-          <Button
-            htmlType='button'
-            onClick={() => {
-              this.getRtcEngine().stopAudioMixing()
-            }}
-          >
-            Stop Audio Mixing
-          </Button>
         </div>
         <JoinChannelBar
           onPressJoin={(channelId: string) => {

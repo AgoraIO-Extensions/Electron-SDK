@@ -1,17 +1,17 @@
+import { Card, List } from 'antd'
 import creteAgoraRtcEngine, {
   AudioProfileType,
   AudioScenarioType,
   ChannelProfileType,
   IAudioDeviceManager,
   IRtcEngine,
-  IRtcEngineEventHandlerEx,
+  IRtcEngineEventHandler,
   IRtcEngineEx,
   RtcConnection,
   RtcEngineExImplInternal,
   RtcStats,
   UserOfflineReasonType,
 } from 'electron-agora-rtc-ng'
-import { Card, List } from 'antd'
 import { Component } from 'react'
 import DropDownButton from '../../component/DropDownButton'
 import JoinChannelBar from '../../component/JoinChannelBar'
@@ -52,7 +52,7 @@ interface State {
 
 export default class VoiceChanger
   extends Component<{}, State, any>
-  implements IRtcEngineEventHandlerEx
+  implements IRtcEngineEventHandler
 {
   rtcEngine?: IRtcEngineEx & IRtcEngine & RtcEngineExImplInternal
 
@@ -98,7 +98,7 @@ export default class VoiceChanger
     return this.rtcEngine
   }
 
-  onJoinChannelSuccessEx(
+  onJoinChannelSuccess(
     { channelId, localUid }: RtcConnection,
     elapsed: number
   ): void {
@@ -117,7 +117,7 @@ export default class VoiceChanger
     elapsed: number
   ): void {
     console.log(
-      'onUserJoinedEx',
+      'onUserJoined',
       'connection',
       connection,
       'remoteUid',
@@ -137,7 +137,7 @@ export default class VoiceChanger
     remoteUid: number,
     reason: UserOfflineReasonType
   ): void {
-    console.log('onUserOfflineEx', channelId, remoteUid)
+    console.log('onUserOffline', channelId, remoteUid)
 
     const { allUser: oldAllUser } = this.state
     const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
@@ -146,7 +146,7 @@ export default class VoiceChanger
     })
   }
 
-  onLeaveChannelEx(connection: RtcConnection, stats: RtcStats): void {
+  onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
     this.setState({
       isJoined: false,
       allUser: [],
