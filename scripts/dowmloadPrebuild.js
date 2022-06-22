@@ -11,7 +11,7 @@ const { platform, packageVersion, arch, no_symbol } =
 
 const workspaceDir = `${path.join(__dirname, "..")}`;
 
-const addonVersion = "3.8.201-alpha.618";
+const addonVersion = "3.8.201-alpha.622";
 
 const getDownloadURL = () => {
   let downloadUrl = `http://download.agora.io/sdk/release/Electron-${getOS()}-${addonVersion}-napi.zip`;

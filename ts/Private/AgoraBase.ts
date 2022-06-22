@@ -318,6 +318,17 @@ VideoCodecAv1 = 12,
 VideoCodecGenericJpeg = 20,
 }
 
+export enum TCcMode {
+CcEnabled = 0,
+CcDisabled = 1,
+}
+
+export class SenderOptions {
+  ccMode?: TCcMode
+  codecType?: VideoCodecType
+  targetBitrate?: number
+}
+
 export enum AudioCodecType {
 AudioCodecOpus = 1,
 AudioCodecPcma = 3,
@@ -687,6 +698,10 @@ export class AudioVolumeInfo {
   volume?: number
   vad?: number
   voicePitch?: number
+}
+
+export class DeviceInfo {
+  isLowLatencyAudioSupported?: boolean
 }
 
 export class Packet {

@@ -3,7 +3,7 @@ import { RenderModeType } from "./Private/AgoraMediaBase";
 import { IRtcEngine } from "./Private/IAgoraRtcEngine";
 import { IRtcEngineEx } from "./Private/IAgoraRtcEngineEx";
 import { IVideoDeviceManagerImpl } from "./Private/impl/IAgoraRtcEngineImpl";
-import { IAudioDeviceManagerImpl } from "./Private/impl/IAudioDeviceManagerImpl";
+import { AudioDeviceManagerImplInternal } from "./Private/internal/AudioDeviceManagerImplInternal";
 import { RtcEngineExImplInternal } from "./Private/internal/RtcEngineExImplInternal";
 import {
   AgoraEnvType,
@@ -173,7 +173,7 @@ export const AgoraEnv: AgoraEnvType = {
   mediaPlayerEventHandlers: [],
   metadataObservers: [],
   cdnEventHandlers: [],
-  AgoraAudioDeviceManager: new IAudioDeviceManagerImpl(),
+  AgoraAudioDeviceManager: new AudioDeviceManagerImplInternal(),
   AgoraVideoDeviceManager: new IVideoDeviceManagerImpl(),
 };
 
