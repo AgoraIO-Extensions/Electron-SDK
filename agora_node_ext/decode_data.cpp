@@ -472,3 +472,44 @@ void decodeRtcConnection(RtcConnection &connection, std::string &channelId,
     return;
   }
 }
+void decodeStreamConfig(StreamConfig &config,
+                        const Nan::FunctionCallbackInfo<Value> &args,
+                        const Local<Object> &value) {
+  Isolate *isolate = args.GetIsolate();
+  status = napi_invalid_arg;
+
+  if (!value->IsObject() || value->IsUndefined()) {
+    status = napi_invalid_arg;
+    return;
+  }
+
+  if (status != napi_ok) {
+    return;
+  }
+
+  Local<Object> dimensionsObj;
+  status = napi_get_object_property_object_(isolate, value, "dimensions",
+                                            dimensionsObj);
+  if (status != napi_ok) {
+    return;
+  } else {
+    status = napi_get_object_property_int32_(isolate, dimensionsObj, "width",
+                                             config.dimensions.width);
+    if (status != napi_ok) {
+      return;
+    }
+    status = napi_get_object_property_int32_(isolate, dimensionsObj, "height",
+                                             config.dimensions.height);
+    if (status != napi_ok) {
+      return;
+    }
+  }
+
+  status = napi_get_object_property_uint32_(isolate, value, "bitrate",
+                                            config.bitrate);
+  status = napi_get_object_property_uint32_(isolate, value, "framerate",
+                                            config.bitrate);
+  if (status != napi_ok) {
+    return;
+  }
+}
