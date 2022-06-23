@@ -229,22 +229,7 @@ export default class App extends Component {
 
     rtcEngine.enableDualStreamMode(true)
     rtcEngine.enableAudioVolumeIndication(1000, 3, false)
-    rtcEngine.enableDualStreamModeEx(
-      0, true,
-      {
-        dimensions: {
-          width: 192, 
-          height: 108
-        },
-        bitrate: 50, 
-        frameRate: 5
-      },
-      {
-        channelId:this.state.channel,
-        localUid:LOCAL_USER_ID
-      }
-    )
-    console.log("enableDualStreamModeEx")
+   
 
     rtcEngine.setRenderMode(1)
     rtcEngine.joinChannelEx(
@@ -355,6 +340,7 @@ export default class App extends Component {
         windowFocus: false,
       }
     )
+    console.log("enableDualStreamModeEx")
     console.warn(
       'ce sho',
       '',
@@ -374,6 +360,21 @@ export default class App extends Component {
         autoSubscribeAudio: false,
         autoSubscribeVideo: false,
         clientRoleType: 1,
+      }
+    )
+    rtcEngine.enableDualStreamModeEx(
+      0, true,
+      {
+        dimensions: {
+          width: 192, 
+          height: 108
+        },
+        bitrate: 50, 
+        frameRate: 5
+      },
+      {
+        channelId:this.state.channel,
+        localUid:LOCAL_USER_ID
       }
     )
     this.state.screenShareConnectionId = rtcEngine.joinChannelEx(
