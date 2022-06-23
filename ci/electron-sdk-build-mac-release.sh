@@ -8,8 +8,8 @@ rm -rf tmp
 # npm install --verbose
 #
 # Example 2
-yarn --verbose --agora_electron_sdk_pre_built=false
-yarn zipBuild
+npm install --agora_electron_sdk_pre_built=false
+npm run zipBuild
 #
 # Example 3
 # npm run build  -- --prebuilt=false --electronVersion=5.0.8 --arch=x64
