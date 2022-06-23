@@ -230,7 +230,7 @@ export default class App extends Component {
     rtcEngine.enableDualStreamMode(true)
     rtcEngine.enableAudioVolumeIndication(1000, 3, false)
     rtcEngine.enableDualStreamModeEx(
-      VIDEO_SOURCE_CAMERA_PRIMARY, true,
+      0, true,
       {
         dimensions: {
           width: 192, 
@@ -244,6 +244,8 @@ export default class App extends Component {
         localUid:LOCAL_USER_ID
       }
     )
+    console.log("enableDualStreamModeEx")
+
     rtcEngine.setRenderMode(1)
     rtcEngine.joinChannelEx(
       this.state.token || null,
