@@ -1,116 +1,75 @@
-<!-- PROJECT SHIELDS -->
+# Agora RTC SDK for Electron
 
-[![Mac Build Status][build-shield]][build-url]
-[![Windows Build Status][windows-build-shield]][windows-build-url]
-[![Npm Package][npm-shield]][npm]
-[![MIT License][license-shield]][license-url]
+<div align="left">
+    <a href="https://pub.dev/packages/agora_rtc_engine"><img src="https://img.shields.io/badge/Platform-macOS--x86--64%20%7C%20macOS--arm64%20%7C%20win--32%20%7C%20win--64-blue?logo=Electron&labelColor=fff" alt="Platform"/></a>
+    <a href="https://www.npmjs.com/package/electron-agora-rtc-ng"><img alt="npm" src="https://img.shields.io/npm/v/electron-agora-rtc-ng?color=blue&style=flat-square&logo=npm"></a>
+    <a href="https://www.npmjs.com/package/electron-agora-rtc-ng"><img alt="npm" src="https://img.shields.io/npm/dm/electron-agora-rtc-ng?color=blue&style=flat-square&logo=npm"></a>
+    <a href="./LICENSE"><img src="https://img.shields.io/github/license/agoraio-community/electron-agora-rtc-ng?color=blue&style=flat-square" alt="License"/></a>
+    <a href="https://github.com/AgoraIO-Community/electron-agora-rtc-ng/issues"><img src="https://flat.badgen.net/github/label-issues/AgoraIO-Community/electron-agora-rtc-ng/help%20wanted/open" alt="License"/></a>
 
-_其他语言版本： [简体中文](README.zh.md)_
+</div>
 
-<!-- PROJECT LOGO -->
-<br />
-<p align="center">
-  <h1 align="center">Agora RTC Electron SDK</h1>
+## ✨ Features
 
-  <p align="center">
-    Agora RTC Electron SDK uses Agora RTC SDK (Windows & macOS) as NodeJS C++ addon for rapid RTC application development
-    <br />
-    <a href="https://docs.agora.io/en/Video/API%20Reference/electron/index.html"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/AgoraIO-Community/electron-agora-rtc-ng/tree/main/example">View Demo</a>
-    ·
-    <a href="https://github.com/AgoraIO-Community/electron-agora-rtc-ng/issues">Report Bug</a>
-    ·
-    <a href="#plugins">Plugins :new:</a>
-  </p>
-</p>
+- 📦 Newly designed middle-tier API and Native C++ SDK.
+- 🛡 Written in TypeScript with predictable static types.
 
-<!-- TABLE OF CONTENTS -->
+## 🖥 Environment Support
 
-## Table of Contents
+- 🌈 Support macOS x86-64 and arm64 ([Electron 11+](https://www.electronjs.org/zh/blog/apple-silicon))
+- ⚙️ Support Windows ia32 and x64
+- [Electron](https://www.electronjs.org/): 4.x ~ latest
 
-- [Getting Started](#getting-started)
-  - [Installation](#installation)
-  - [Usage](#usage)
-- [Resources](#resources)
-- [Plugins](#plugins)
-- [Contributing](#contributing)
+| [<img src="https://simpleicons.org/icons/macos.svg" alt="Chrome" width="48px" height="24px" />]()<br>macOS | [<img src="https://simpleicons.org/icons/windows.svg" alt="Safari" width="24px" height="24px" />]()<br>Windows | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/electron/electron_48x48.png" alt="Electron" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br>Electron |
+| ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| x86 \| arm64                                                                                               | ia32 \| x64                                                                                                    | 4.0.0 ~ Latest                                                                                                                                                                                                       |
 
-<!-- GETTING STARTED -->
+## 📦 Install
 
-## Getting Started
+In newest version you can define installation configuration in package.json (or .npmrc, while package.json has a higher priority), usually you can just provide "prebuilt", and "arch".
 
-### Installation
+```json
+// package.json
+{
+...
+  "agora_electron": {
+      "prebuilt": true,
+      "arch": "x64",
+  }
+...
+}
 
-Recommend to install through npm:
+
+// .npmrc
+agora_electron_sdk_pre_built=true // defalut value is true
+agora_electron_sdk_arch=x64 // only support windows:
+```
+
+Properties detail:
+
+- **prebuilt** whether to automatically download prebuilt NodeJS C++ Addon or build locally(which need to provide development env)
+- **arch**: If not set, the script will automatically choose the arch. **only support windows**
+- **platform** darwin or win32
 
 ```bash
-# install newest sdk and download prebuilt binary file automatically
-npm install electron-agora-rtc-ng@alpha
+## Automatic platform and architecture selection
+npm install electron-agora-rtc-ng
 ```
 
-**For more detail of configuration, visit [wiki](https://github.com/AgoraIO/Electron-SDK/wiki/Installation-Configuration-in-package.json).**
+or
 
-#### Build From Source Code
+```bash
+## or select 32 bit architecture on Windows
+npm install --agora_electron_sdk_arch=x64
 
-You will need to build **Agora RTC Electron SDK** from source if you want to work on a new feature/bug fix, try out the latest features which are not released yet, or maintain your own fork with patches that cannot be merged to the core.
-
-##### Prerequisites
-
-###### Windows
-
-- Python 2.7
-- Visual Studio Code C++ Desktop Develop Framework
-  - VisualStudio.Component.CoreEditor
-  - VisualStudio.Workload.CoreEditor
-  - VisualStudio.Component.NuGet
-  - VisualStudio.Component.Roslyn.Compiler
-  - VisualStudio.Component.Roslyn. - LanguageServices
-  - Net.Component.4.8.SDK
-  - Net.Component.4.7.2.TargetingPack
-  - Net.ComponentGroup.DevelopmentPrerequisites
-  - Component.MSBuild
-  - VisualStudio.Component.TextTemplating
-  - Net.Component.4.6.TargetingPack
-  - VisualStudio.Component.DiagnosticTools
-  - VisualStudio.Component.AppInsights.Tools
-  - VisualStudio.Component.IntelliCode
-  - VisualStudio.Component.VSSDK
-  - VisualStudio.ComponentGroup.
-  - VisualStudioExtension.Prerequisites
-  - VisualStudio.Workload.VisualStudioExtension
-
-###### MacOS
-
-- Python 2.7
-- XCode
-
-##### Building the source
-
-###### Installing the fork
-
-You just to install `electron-agora-rtc-ng` from your fork. For example, to install the master branch from the official repo, run the following:
-
-```sh
-# mac
-npm install electron-agora-rtc-ng 
-# win32
-npm install electron-agora-rtc-ng --agora_electron_sdk_arch=x64
-# win32
-npm install electron-agora-rtc-ng --agora_electron_sdk_arch=ia32
+## or select 64 bit architecture on Windows
+npm install --agora_electron_sdk_arch=ia32
 ```
 
-Alternatively, you can clone the repo to your `node_modules` directory and run `npm install --verbose --agora_electron_sdk_pre_built=false` inside the cloned repo.
-
-### Additional notes
-
-Building from source can take a long time, especially for the first build, as it needs to download ~200 MB of artifacts and compile the native code. Every time you update the `Agora RTC Electron SDK` version from your repo, the build directory may get deleted, and all the files are re-downloaded.
-
-### Usage
+## 🔨 Usage
 
 ```javascript
-import creteAgoraRtcEngine from 'electron-agora-rtc-ng';
+import creteAgoraRtcEngine from "electron-agora-rtc-ng";
 
 const rtcEngine = creteAgoraRtcEngine();
 rtcEngine.initialize({ appId: "<your agora app id>" });
@@ -120,49 +79,57 @@ rtcEngine.initialize({ appId: "<your agora app id>" });
 
 When using directly within a web electron project with custom webpack configuration, you may see errors when compiling. It's because you have not properly configured loader for node addon. A convenient way to skip the compile process is to set `externals` property of your webpack config to `{"electron-agora-rtc-ng": "commonjs2 electron-agora-rtc-ng"}`
 
-<!-- RESOURCES -->
-
-## Resources
+## 🔗 Links
 
 - [Document](https://docs.agora.io/en/Video/API%20Reference/electron/index.html) - Official document
 
 - [e-Education Application](https://github.com/AgoraIO/ARD-eEducation-with-Electron) - A complete e-education Application based on this repo
 
-- [Demo](https://github.com/AgoraIO-Community/Agora-Electron-Quickstart) - A quick start demo based on Vue/React and this repo
+- [Demo](./example/) - A quick start demo based on Vue/React and this repo
 
 - [Changelog](./CHANGELOG.md) - Attention to newest information
 
-<!-- Plugins -->
+## ⌨️ Development
 
-## Plugins
+### Build From Source Code
 
-In newest version we have supported plugins for customize videoFrame and audioFrame data. In other words, you can integrate cool features like video filter, face recognition with your own plugins in C++.
+You will need to build **Agora RTC Electron SDK** from source if you want to work on a new feature/bug fix, try out the latest features which are not released yet, or maintain your own fork with patches that cannot be merged to the core.
 
-We have already implement an official plugin for video filter based on FaceUnity:
+### Prerequisites
 
-- [Agora-Electron-FaceUnity-Plugin](https://github.com/AgoraIO-Community/Agora-Electron-FaceUnity-Plugin)
+#### Windows
 
-For more detail about how plugins work and how to write your own plugins, visit [wiki](https://github.com/AgoraIO/Electron-SDK/wiki/How-plugins-work).
+- Python 2.7
+- Visual Studio Code C++ Desktop Develop Framework
 
-<!-- CONTRIBUTING -->
+#### MacOS
 
-## Contributing
+- Python 2.7
+- XCode
 
-Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+### Clone locally:
+
+```bash
+$ git clone git@github.com:AgoraIO-Community/electron-agora-rtc-ng.git
+$ cd electron-agora-rtc-ng
+$ npm install #or yarn
+
+# build macOS
+$ yarn --verbose --agora_electron_sdk_pre_built=false
+
+# build window:ia32
+$ yarn --verbose --agora_electron_sdk_pre_built=false
+
+# build window:x64
+$ npm install --verbose --agora_electron_sdk_pre_built=false  --agora_electron_sdk_arch=x64
+```
+
+## 🤝 Contributing [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/AgoraIO-Community/electron-agora-rtc-ng/pulls)
+
+Read our contributing guide and let's build a better antd together. :)
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
-<!-- MARKDOWN LINKS & IMAGES -->
-
-[build-shield]: https://img.shields.io/travis/AgoraIO-Usecase/eEducation/master.svg?style=flat-square
-[build-url]: https://travis-ci.org/AgoraIO-Usecase/eEducation
-[windows-build-shield]: https://ci.appveyor.com/api/projects/status/github/AgoraIO/Electron-SDK?branch=dev/2.9.0&svg=true
-[windows-build-url]: https://ci.appveyor.com/project/menthays/electron-sdk/branch/dev/2.9.0
-[npm-shield]: https://img.shields.io/npm/v/electron-agora-rtc-ng/latest
-[npm]: https://npmjs.com/package/electron-agora-rtc-ng/v/2.9.0-hotfix.2
-[license-shield]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
-[license-url]: https://choosealicense.com/licenses/mit
