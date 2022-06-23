@@ -472,7 +472,7 @@ void decodeRtcConnection(RtcConnection &connection, std::string &channelId,
     return;
   }
 }
-void decodeStreamConfig(StreamConfig &config,
+void decodeStreamConfig(SimulcastStreamConfig &config,
                         const Nan::FunctionCallbackInfo<Value> &args,
                         const Local<Object> &value) {
   Isolate *isolate = args.GetIsolate();
