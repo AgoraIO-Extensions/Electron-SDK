@@ -506,9 +506,9 @@ void decodeStreamConfig(SimulcastStreamConfig &config,
     }
   }
 
-  status = napi_get_object_property_uint32_(isolate, value, "bitrate",
+  status = napi_get_object_property_int32_(isolate, value, "bitrate",
                                             config.bitrate);
-  status = napi_get_object_property_uint32_(isolate, value, "framerate",
+  status = napi_get_object_property_int32_(isolate, value, "framerate",
                                             config.bitrate);
   if (status != napi_ok) {
     return;
