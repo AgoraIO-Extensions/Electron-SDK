@@ -1,5 +1,6 @@
 $chooseExampleType=$args[0]
 $electronVersion=$args[1]
+$example_sdk_mode=$args[2]
 $outterZipName="electronDemo.zip"
 
 pushd example
@@ -41,7 +42,7 @@ function DistByArch($type)
   }
 }
 
-function Package($archNum,$electronVersion){
+function Package($archNum,$electronVersion,$example_sdk_mode){
   # remove zip
   Remove-Item -Path ../$outterZipName -Recurse -Force -ErrorAction Ignore;
   
@@ -62,9 +63,11 @@ function Package($archNum,$electronVersion){
     Write-Host "选择了 electron_version:$electronVersion"
     yarn add electron@$electronVersion
   }
-
-  # copy native sdk
-  Copy-Item -Path ../Electron-*/* -Destination src/node_modules/electron-agora-rtc-ng/ -Recurse -Force
+  if($example_sdk_mode -eq 1){
+    # copy native sdk
+    Copy-Item -Path ../Electron-*/* -Destination src/node_modules/electron-agora-rtc-ng/ -Recurse -Force
+  }
+  
   # dist start
   DistByArch -type $archNum
   # move zip
@@ -72,7 +75,7 @@ function Package($archNum,$electronVersion){
 }
 
 write-host("Package win:1")
-Package -archNum $chooseExampleType -electronVersion $electronVersion
+Package -archNum $chooseExampleType -electronVersion $electronVersion -example_sdk_mode $example_sdk_mode
 popd;
 
 # switch -Regex ($chooseExampleType)

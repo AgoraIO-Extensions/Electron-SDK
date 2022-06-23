@@ -15,7 +15,11 @@ packExample() {
       echo 安装example 依赖
       yarn
   fi
-  cp -P -R ../Electron-*/* node_modules/electron-agora-rtc-ng/
+
+  if [ "$3" -eq 2 ]
+  then
+    cp -P -R ../Electron-*/* node_modules/electron-agora-rtc-ng/
+  fi
   yarn dist:mac
 
   pushd dist/mac
@@ -24,25 +28,4 @@ packExample() {
   popd
 }
 
-packExample example $1
-
-# case $chooseExampleType in
-# 1)
-#   echo 'package mac: 1'
-#   packExample Agora-Electron-API-Example
-#   ;;
-# 2)
-#   echo 'package mac: 2'
-#   packExample Agora-Electron-API-Example
-#   ;;
-# 3)
-#   echo 'package mac:3 '
-#   packExample Agora-Electron-API-Example
-#   ;;
-# 4)
-#   echo '你选择了 4'
-#   ;;
-# *)
-#   echo '你没有输入 1 到 4 之间的数字'
-#   ;;
-# esac
+packExample example $1 $2
