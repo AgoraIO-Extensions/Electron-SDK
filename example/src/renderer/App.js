@@ -173,7 +173,7 @@ export default class App extends Component {
       return
     }
     let rtcEngine = this.getRtcEngine()
-    // rtcEngine.setLogFile('./agora_native.log')
+    rtcEngine.setLogFile('./agora_native.log')
     rtcEngine.setChannelProfile(1)
     rtcEngine.setClientRole(this.state.role)
     rtcEngine.setAudioProfile(0, 1)
