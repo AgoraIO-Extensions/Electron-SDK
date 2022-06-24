@@ -1,6 +1,6 @@
 {
   "name": "electron-agora-rtc-ng",
-  "version": "3.8.201-alpha.622",
+  "version": "3.8.201-alpha.624",
   "description": "electron-agora-rtc-ng",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
