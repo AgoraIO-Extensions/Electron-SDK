@@ -229,7 +229,22 @@ export default class App extends Component {
 
     rtcEngine.enableDualStreamMode(true)
     rtcEngine.enableAudioVolumeIndication(1000, 3, false)
-   
+    console.log("enableDualStreamModeEx");
+    rtcEngine.enableDualStreamModeEx(
+      0, true,
+      {
+        dimensions: {
+          width: 192, 
+          height: 108
+        },
+        bitrate: 50, 
+        framerate: 5
+      },
+      {
+        channelId:this.state.channel,
+        localUid:LOCAL_USER_ID
+      }
+    )
 
     rtcEngine.setRenderMode(1)
     rtcEngine.joinChannelEx(
@@ -335,7 +350,7 @@ export default class App extends Component {
         width: 1920,
         height: 1080,
         bitrate: 500,
-        frameRate: 15,
+        framerate: 15,
         captureMouseCursor: false,
         windowFocus: false,
       }
@@ -386,7 +401,7 @@ export default class App extends Component {
 
   startScreenShareByDisplay(displayId) {
     let rtcEngine = this.getRtcEngine()
-    console.log("enableDualStreamModeEx")
+    console.log("enableDualStreamModeEx");
     rtcEngine.enableDualStreamModeEx(
       0, true,
       {
@@ -399,9 +414,10 @@ export default class App extends Component {
       },
       {
         channelId:this.state.channel,
-        localUid:LOCAL_USER_ID
+        localUid:SHARE_ID
       }
     )
+
     let excludeWindowList = []
     console.log("startScreenShareByDisplay", displayId);
     rtcEngine.startScreenCaptureByDisplayId(
