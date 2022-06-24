@@ -1,6 +1,13 @@
 
 outterZipName="electronDemo.zip"
 
+example_sdk_mode=${1:-1}
+
+example_electron_version=${2:-'18.2.3'}
+
+echo example_sdk_mode: $example_sdk_mode 
+echo example_electron_version: $example_electron_version
+
 packExample() {
   rm $outterZipName
   pushd $1
@@ -16,10 +23,12 @@ packExample() {
       yarn
   fi
 
-  if [ "$3" -eq 2 ]
+  if [ "$3" -eq 1 ]
   then
+    rm -rf node_modules/electron-agora-rtc-ng/build
     cp -P -R ../Electron-*/* node_modules/electron-agora-rtc-ng/
   fi
+  export USE_HARD_LINKS=false
   yarn dist:mac
 
   pushd dist/mac
@@ -28,4 +37,4 @@ packExample() {
   popd
 }
 
-packExample example $1 $2
+packExample example $example_electron_version $example_sdk_mode
