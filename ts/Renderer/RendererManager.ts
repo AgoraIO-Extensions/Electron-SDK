@@ -36,7 +36,7 @@ class RendererManager {
   msgBridge: AgoraElectronBridge;
 
   constructor() {
-    this.renderFps = 15;
+    this.renderFps = 10;
     this.renderers = new Map();
     this.renderMode = this.checkWebglEnv()
       ? RENDER_MODE.WEBGL
