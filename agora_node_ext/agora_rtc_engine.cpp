@@ -308,7 +308,7 @@ void NodeRtcEngine::Init(Local<Object> &module) {
   PROPERTY_METHOD_DEFINE(setProcessDpiAwareness);
   PROPERTY_METHOD_DEFINE(enableVirtualBackground);
   PROPERTY_METHOD_DEFINE(startScreenCaptureByDisplayId);
-    
+  PROPERTY_METHOD_DEFINE(enableDualStreamModeEx);
   EN_PROPERTY_DEFINE()
   module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(),
               tpl->GetFunction(context).ToLocalChecked());
@@ -6324,6 +6324,46 @@ NAPI_API_DEFINE(NodeRtcEngine, enableVirtualBackground) {
 
     result = pEngine->m_engine->enableVirtualBackground(
         enabled, backgroundSource, segpropert, (agora::media::MEDIA_SOURCE_TYPE)type);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, enableDualStreamModeEx) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  Isolate *isolate = args.GetIsolate();
+  do {
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+    uint32_t sourceType = 0;
+    status = napi_get_value_uint32_(args[0], sourceType);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    bool enabled = true;
+    status = napi_get_value_bool_(args[1], enabled);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    SimulcastStreamConfig streamConfig;
+    Local<Object> configObj;
+    status = napi_get_value_object_(isolate, args[2], configObj);
+    decodeStreamConfig(streamConfig, status, args, configObj);
+
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    RtcConnection rtcConnection;
+    std::string channelId;
+
+    Local<Object> connectionObj;
+    status = napi_get_value_object_(isolate, args[3], connectionObj);
+    decodeRtcConnection(rtcConnection, channelId, status, args, connectionObj);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    IRtcEngineEx *engineEx = (IRtcEngineEx *)pEngine->m_engine;
+    result = engineEx->enableDualStreamModeEx(
+        (VIDEO_SOURCE_TYPE)sourceType, enabled, streamConfig, rtcConnection);
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;

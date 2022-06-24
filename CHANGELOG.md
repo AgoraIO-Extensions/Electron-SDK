@@ -1,3 +1,5 @@
+## 3.7.204-rc.232-build.624(Jun 24th, 2022)
+- enableDualStreamModeEx
 ## 3.7.204-rc.232-build.623(Jun 23th, 2022)
 - fix decode ChannelMediaOption
 ## 3.7.204-rtc.231-build.601(Jun 01th, 2022)

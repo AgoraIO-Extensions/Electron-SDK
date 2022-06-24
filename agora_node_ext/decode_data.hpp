@@ -28,4 +28,8 @@ void decodeRtcConnection(RtcConnection &connection, std::string &channelId,
                          napi_status &status,
                          const Nan::FunctionCallbackInfo<Value> &args,
                          const Local<Object> &value);
+void decodeStreamConfig(SimulcastStreamConfig &config,
+                        napi_status &status,
+                        const Nan::FunctionCallbackInfo<Value> &args,
+                        const Local<Object> &value);
 #endif /* encoder_data_hpp */
