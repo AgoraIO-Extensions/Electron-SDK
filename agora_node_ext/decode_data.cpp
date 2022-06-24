@@ -477,11 +477,6 @@ void decodeStreamConfig(SimulcastStreamConfig &config,
                         const Nan::FunctionCallbackInfo<Value> &args,
                         const Local<Object> &value) {
   Isolate *isolate = args.GetIsolate();
-  status = napi_ok;
-
-  if (status != napi_ok) {
-    return;
-  }
 
   Local<Object> dimensionsObj;
   status = napi_get_object_property_object_(isolate, value, "dimensions",
