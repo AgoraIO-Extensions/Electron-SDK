@@ -80,7 +80,7 @@
     "@typescript-eslint/eslint-plugin": "^5.22.0",
     "@typescript-eslint/parser": "^5.22.0",
     "electron": "18.2.3",
-    "electron-builder": "^22.4.1",
+    "electron-builder": "^23.1.0",
     "electron-webpack": "^2.8.2",
     "electron-webpack-ts": "^4.0.1",
     "eslint": "^8.15.0",
