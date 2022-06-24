@@ -340,7 +340,6 @@ export default class App extends Component {
         windowFocus: false,
       }
     )
-    console.log("enableDualStreamModeEx")
     console.warn(
       'ce sho',
       '',
@@ -362,21 +361,7 @@ export default class App extends Component {
         clientRoleType: 1,
       }
     )
-    rtcEngine.enableDualStreamModeEx(
-      0, true,
-      {
-        dimensions: {
-          width: 192, 
-          height: 108
-        },
-        bitrate: 50, 
-        frameRate: 5
-      },
-      {
-        channelId:this.state.channel,
-        localUid:LOCAL_USER_ID
-      }
-    )
+  
     this.state.screenShareConnectionId = rtcEngine.joinChannelEx(
       '',
       {
@@ -401,7 +386,22 @@ export default class App extends Component {
 
   startScreenShareByDisplay(displayId) {
     let rtcEngine = this.getRtcEngine()
-
+    console.log("enableDualStreamModeEx")
+    rtcEngine.enableDualStreamModeEx(
+      0, true,
+      {
+        dimensions: {
+          width: 192, 
+          height: 108
+        },
+        bitrate: 50, 
+        frameRate: 5
+      },
+      {
+        channelId:this.state.channel,
+        localUid:LOCAL_USER_ID
+      }
+    )
     let excludeWindowList = []
     console.log("startScreenShareByDisplay", displayId);
     rtcEngine.startScreenCaptureByDisplayId(
