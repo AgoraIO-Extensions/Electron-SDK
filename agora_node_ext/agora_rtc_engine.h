@@ -358,6 +358,7 @@ public:
   NAPI_API(setProcessDpiAwareness);
   NAPI_API(enableVirtualBackground);
   NAPI_API(startScreenCaptureByDisplayId);
+  NAPI_API(enableDualStreamModeEx);
 
 public:
   Isolate *getIsolate() { return m_isolate; }

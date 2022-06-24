@@ -3197,6 +3197,11 @@ export enum MEDIA_PLAYER_EVENT {
     VIDEO_STREAM_LOW :1
   };
 
+  export interface SimulcastStreamConfig {
+    dimensions: VideoDimensions;
+    bitrate: number;
+    framerate: number;
+  }
 /**
  * The downscale level of the remote video stream . The higher the downscale level, the more the video downscales.
  */
@@ -4017,6 +4022,12 @@ export interface NodeRtcEngine {
    * @ignore
    */
   leaveChannelEx(connection: RtcConnection): number;
+  /**
+   * @ignore
+   */
+  enableDualStreamModeEx(sourceType: VIDEO_SOURCE_TYPE, enabled: boolean,
+                         streamConfig: SimulcastStreamConfig,
+                         connection: RtcConnection): number;
   /**
    * @ignore
    */

@@ -16,7 +16,6 @@ import DisplayPicker from './components/DisplayPicker/index.js'
 import Window from './components/Window'
 import os from 'os'
 
-
 export default class App extends Component {
   constructor(props) {
     super(props)
@@ -174,7 +173,7 @@ export default class App extends Component {
       return
     }
     let rtcEngine = this.getRtcEngine()
-    // rtcEngine.setLogFile('./agora_native.log')
+    rtcEngine.setLogFile('./agora_native.log')
     rtcEngine.setChannelProfile(1)
     rtcEngine.setClientRole(this.state.role)
     rtcEngine.setAudioProfile(0, 1)
@@ -229,6 +228,22 @@ export default class App extends Component {
 
     rtcEngine.enableDualStreamMode(true)
     rtcEngine.enableAudioVolumeIndication(1000, 3, false)
+    console.log("enableDualStreamModeEx");
+    rtcEngine.enableDualStreamModeEx(
+      0, true,
+      {
+        dimensions: {
+          width: 192, 
+          height: 108
+        },
+        bitrate: 50, 
+        framerate: 5
+      },
+      {
+        channelId:this.state.channel,
+        localUid:LOCAL_USER_ID
+      }
+    )
 
     rtcEngine.setRenderMode(1)
     rtcEngine.joinChannelEx(
@@ -334,7 +349,7 @@ export default class App extends Component {
         width: 1920,
         height: 1080,
         bitrate: 500,
-        frameRate: 15,
+        framerate: 15,
         captureMouseCursor: false,
         windowFocus: false,
       }
@@ -360,6 +375,7 @@ export default class App extends Component {
         clientRoleType: 1,
       }
     )
+  
     this.state.screenShareConnectionId = rtcEngine.joinChannelEx(
       '',
       {
