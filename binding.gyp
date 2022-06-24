@@ -12,15 +12,13 @@
         ],
         'sources': [
         './common/node_log.cpp',
-        './common/node_log.hpp',
+        './common/node_log.h',
         './common/node_process.h',
         './common/node_error.h',
-        './common/loguru.h',
+        './common/loguru.hpp',
         './common/loguru.cpp',
         './agora_node_ext/decode_data.hpp',
         './agora_node_ext/decode_data.cpp',
-        './agora_node_ext/win_enumer.h',
-        './agora_node_ext/win_enumer.cpp',
         './agora_node_ext/agora_node_ext.cpp',
         './agora_node_ext/agora_node_ext.h',
         './agora_node_ext/agora_rtc_engine.cpp',
@@ -81,13 +79,7 @@
                     'files': [
                         './sdk/agora_rtc_sdk.dll',
                         './sdk/libagora-ffmpeg.dll',
-                        './sdk/libagora-wgc.dll',
-                        './sdk/libagora_video_process_extension.dll',
-                        './sdk/libagora_segmentation_extension.dll',
-                        './sdk/libagora_pvc_extension.dll',
-                        './sdk/glfw3.dll',
-                        './sdk/agora_rtm_sdk.dll',
-                        './sdk/bequic.dll',
+                        './sdk/libagora-wgc.dll'
                     ]
                 }],
                 'library_dirs': [
@@ -154,7 +146,9 @@
                     'destination': '<(PRODUCT_DIR)',
                     'files': [
                         './sdk/lib/mac/AgoraRtcKit.framework',
-                        './sdk/lib/mac/Agoraffmpeg.framework'
+                        './sdk/lib/mac/Agoraffmpeg.framework',
+                        './sdk/lib/mac/AgoraPvcExtension.framework',
+                        './sdk/lib/mac/AgoraRtmKit.framework',
                     ]
                 }],
                 'link_settings': {
@@ -176,7 +170,14 @@
                     'CoreAudio.framework',
                     'Foundation.framework',
                     'AVFoundation.framework'
-                    ]
+                    ],
+                    "xcode_settings": {
+                        "OTHER_LDFLAGS": [
+                            "-Wl",
+                            "-rpath",
+                            "@loader_path"
+                            ]
+                    }
                 },
                 'sources': [
                     './common/node_process_unix.cpp',
@@ -195,19 +196,20 @@
                     '_NOEXCEPT',
                     '-std=c++11'
                 ],
-                'OTHER_CFLAGS' : [
-                    '-std=c++11',
-                    '-stdlib=libc++',
-                    '-fexceptions'
-                ],
                 'xcode_settings': {
                     'MACOSX_DEPLOYMENT_TARGET': '10.11',
                     'EXECUTABLE_EXTENSION': 'node',
                     'FRAMEWORK_SEARCH_PATHS': [
-                    './sdk/lib/mac'
+                        './sdk/lib/mac'
                     ],
-                    "DEBUG_INFORMATION_FORMAT": "dwarf-with-dsym"
-                },
+                    "DEBUG_INFORMATION_FORMAT": "dwarf-with-dsym",
+                    'OTHER_CFLAGS' : [
+                        # '-std=c++11',
+                        '-stdlib=libc++',
+                        '-fexceptions',
+                        '-Wno-error=non-pod-varargs'
+                    ],
+                }
             }
             ]
         ]
