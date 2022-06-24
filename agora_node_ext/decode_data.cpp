@@ -477,7 +477,7 @@ void decodeStreamConfig(SimulcastStreamConfig &config,
                         const Nan::FunctionCallbackInfo<Value> &args,
                         const Local<Object> &value) {
   Isolate *isolate = args.GetIsolate();
-  status = napi_invalid_arg;
+  status = napi_ok;
 
   if (!value->IsObject() || value->IsUndefined()) {
     status = napi_invalid_arg;
