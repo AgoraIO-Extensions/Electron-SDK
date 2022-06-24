@@ -479,11 +479,6 @@ void decodeStreamConfig(SimulcastStreamConfig &config,
   Isolate *isolate = args.GetIsolate();
   status = napi_ok;
 
-  if (!value->IsObject() || value->IsUndefined()) {
-    status = napi_invalid_arg;
-    return;
-  }
-
   if (status != napi_ok) {
     return;
   }

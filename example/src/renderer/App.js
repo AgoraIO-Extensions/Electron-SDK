@@ -16,7 +16,6 @@ import DisplayPicker from './components/DisplayPicker/index.js'
 import Window from './components/Window'
 import os from 'os'
 
-
 export default class App extends Component {
   constructor(props) {
     super(props)
@@ -401,22 +400,6 @@ export default class App extends Component {
 
   startScreenShareByDisplay(displayId) {
     let rtcEngine = this.getRtcEngine()
-    console.log("enableDualStreamModeEx");
-    rtcEngine.enableDualStreamModeEx(
-      0, true,
-      {
-        dimensions: {
-          width: 192, 
-          height: 108
-        },
-        bitrate: 50, 
-        frameRate: 5
-      },
-      {
-        channelId:this.state.channel,
-        localUid:SHARE_ID
-      }
-    )
 
     let excludeWindowList = []
     console.log("startScreenShareByDisplay", displayId);
