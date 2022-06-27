@@ -28,7 +28,6 @@ packExample() {
     rm -rf node_modules/electron-agora-rtc-ng/build
     cp -P -R ../Electron-*/* node_modules/electron-agora-rtc-ng/
   fi
-  export USE_HARD_LINKS=false
   yarn dist:mac
 
   pushd dist/mac
