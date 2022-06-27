@@ -1,6 +1,6 @@
 $chooseExampleType=$args[0]
-$electronVersion=$args[1]
-$example_sdk_mode=$args[2]
+$example_sdk_mode=$args[1]
+$electronVersion=$args[2]
 $outterZipName="electronDemo.zip"
 
 pushd example
@@ -9,10 +9,10 @@ function ChooseArch($type)
 {
   # remove node_modules
   Remove-Item -Path node_modules -Recurse -Force -ErrorAction Ignore;
-  if($type -eq 1){
-    write-host("ChooseArch x32")
+  if($type -eq "ia32"){
+    write-host("ChooseArch ia32")
     Copy-Item -Path ../ci/.npmrc_x32 -Destination ./.npmrc -Force
-  } elseif($type -eq 2){
+  } elseif($type -eq "x64"){
     write-host("ChooseArch x64")
     Copy-Item -Path ../ci/.npmrc_x64 -Destination ./.npmrc -Force
   }else {
@@ -31,10 +31,10 @@ if($electronVersion -eq "switchEnv"){
 function DistByArch($type)
 {
 
-  if($type -eq 1){
+  if($type -eq "ia32"){
     write-host("distByArch x32")
     yarn dist:win32
-  } elseif($type -eq 2){
+  } elseif($type -eq "x64"){
     write-host("distByArch x64")
     yarn dist:win64
   }else {
@@ -64,8 +64,11 @@ function Package($archNum,$electronVersion,$example_sdk_mode){
     yarn add electron@$electronVersion
   }
   if($example_sdk_mode -eq 1){
+    Remove-Item -Path  node_modules/electron-agora-rtc-ng/build -Recurse -Force -ErrorAction Ignore;
+    Remove-Item -Path  node_modules/electron-agora-rtc-ng/js -Recurse -Force -ErrorAction Ignore;
+    Remove-Item -Path  node_modules/electron-agora-rtc-ng/type -Recurse -Force -ErrorAction Ignore;
     # copy native sdk
-    Copy-Item -Path ../Electron-*/* -Destination src/node_modules/electron-agora-rtc-ng/ -Recurse -Force
+    Copy-Item -Path ../Electron-*/* -Destination node_modules/electron-agora-rtc-ng/ -Recurse -Force
   }
   
   # dist start
