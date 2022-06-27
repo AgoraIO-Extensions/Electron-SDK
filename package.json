@@ -58,7 +58,7 @@
     "extra"
   ],
   "devDependencies": {
-    "cmake-js": "^6.2.1"
+    "cmake-js": "6.3.2"
   },
   "bundledDependencies": []
 }
