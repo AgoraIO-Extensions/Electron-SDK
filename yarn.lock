@@ -290,11 +290,6 @@ bl@^1.0.0:
     readable-stream "^2.3.5"
     safe-buffer "^5.1.1"
 
-bluebird@^3:
-  version "3.7.2"
-  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.7.2.tgz#9f229c15be272454ffa973ace0dbee79a1b0c36f"
-  integrity sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==
-
 bluebird@~3.4.1:
   version "3.4.7"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.4.7.tgz#f72d760be09b7f76d08ed8fae98b289a8d05fab3"
@@ -507,13 +502,11 @@ cloneable-readable@^1.0.0:
     process-nextick-args "^2.0.0"
     readable-stream "^2.3.5"
 
-cmake-js@^6.2.1:
-  version "6.3.2"
-  resolved "https://registry.yarnpkg.com/cmake-js/-/cmake-js-6.3.2.tgz#4ee827bea99205e1bfda86f5883994873af357b6"
-  integrity sha512-7MfiQ/ijzeE2kO+WFB9bv4QP5Dn2yVaAP2acFJr4NIFy2hT4w6O4EpOTLNcohR5IPX7M4wNf/5taIqMj7UA9ug==
+"cmake-js@github:cmake-js/cmake-js#e311b71564":
+  version "6.1.0"
+  resolved "https://codeload.github.com/cmake-js/cmake-js/tar.gz/e311b71564be3925f35f0861f85817a823d4cff0"
   dependencies:
     axios "^0.21.1"
-    bluebird "^3"
     debug "^4"
     fs-extra "^5.0.0"
     is-iojs "^1.0.1"
