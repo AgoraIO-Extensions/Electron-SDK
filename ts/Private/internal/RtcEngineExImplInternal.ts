@@ -56,7 +56,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     AgoraEnv.AgoraRendererManager?.enableRender();
     const ret = super.initialize(context);
     callIrisApi("RtcEngine_setAppType", {
-      appType: 8,
+      appType: 3,
     });
     return ret;
   }
