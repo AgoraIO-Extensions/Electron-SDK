@@ -128,7 +128,7 @@ export default class CreateDataStream
     console.error(err, msg)
   }
 
-  onStreamMessageEx?(
+  onStreamMessage?(
     connection: RtcConnection,
     remoteUid: number,
     streamId: number,
