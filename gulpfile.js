@@ -21,11 +21,7 @@ const clean = async (cb) => {
 const totalBuild = series(clean, syncLib, build, buildJS);
 
 const wrapDownloadPreBuild = async (cb) => {
-  try {
-    await dowmloadPrebuild(cb);
-  } catch (error) {
-    totalBuild(cb);
-  }
+  dowmloadPrebuild(cb);
 };
 
 const NPM_Install = config.prebuilt ? wrapDownloadPreBuild : totalBuild;
