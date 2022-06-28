@@ -51,9 +51,15 @@
     "yuv-canvas": "^1.2.1"
   },
   "devDependencies": {
+    "@commitlint/config-conventional": "^17.0.3",
+    "@release-it/conventional-changelog": "^5.0.0",
     "@types/node": "10.17.5",
+    "commitlint": "^17.0.3",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^8.0.1",
     "jest": "^27.4.7",
     "prettier": "1.19.1",
+    "release-it": "^15.1.0",
     "ts-jest": "^27.1.2",
     "ts-node": "8.4.1",
     "tslint": "5.20.1",
@@ -81,5 +87,39 @@
   "bugs": {
     "url": "https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron/issues"
   },
-  "homepage": "https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron#readme"
+  "homepage": "https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron#readme",
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "yarn lint && yarn typescript"
+    }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "release-it": {
+    "git": {
+      "commitMessage": "chore: release ${version}",
+      "tagName": "v${version}"
+    },
+    "npm": {
+      "publish": true
+    },
+    "github": {
+      "release": true
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": "angular",
+        "infile": "CHANGELOG.md"
+      }
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
 }
