@@ -1,6 +1,6 @@
 # change log
 
-## 3.8.201-alpha.628 (Jun 28th, 2022)
+## 3.8.201-alpha.629 (Jun 28th, 2022)
 
 - setAppType
 
