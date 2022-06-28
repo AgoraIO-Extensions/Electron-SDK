@@ -88,9 +88,9 @@ module.exports = async (cb) => {
       extract: true,
     });
   } catch (error) {
-    logger.error(errStr);
+    logger.error(error);
     logger.error("Agora sdk download base sdk error");
-    throw new Error(errStr);
+    throw new Error(error);
   }
 
   if (no_symbol) {
