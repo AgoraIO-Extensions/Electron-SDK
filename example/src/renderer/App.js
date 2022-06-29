@@ -481,6 +481,9 @@ export default class App extends Component {
           frameRate: 15,
           captureMouseCursor: false,
           windowFocus: false,
+          enableHighLight: true,
+          highLightWidth: 2,
+          highLightColor: 0xFF0000,
         }
       );
       rtcEngine.startScreenCapturePreview();
@@ -513,6 +516,9 @@ export default class App extends Component {
           frameRate: 5,
           captureMouseCursor: false,
           windowFocus: false,
+          enableHighLight: true,
+          highLightWidth: 2,
+          highLightColor: 0xFF0000,
         }
       );
 
