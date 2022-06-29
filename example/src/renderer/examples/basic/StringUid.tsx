@@ -1,6 +1,7 @@
 import { Card, List } from 'antd'
 import creteAgoraRtcEngine, {
   ClientRoleType,
+  ErrorCodeType,
   IAudioDeviceManager,
   IRtcEngine,
   IRtcEngineEx,
@@ -131,7 +132,7 @@ export default class StringUid extends Component<State> {
     })
   }
 
-  onError(err: number, msg: string): void {
+  onError(err: ErrorCodeType, msg: string): void {
     console.error(err, msg)
   }
 

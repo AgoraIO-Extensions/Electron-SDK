@@ -1,5 +1,5 @@
 import { IRtcEngine, ChannelMediaOptions } from './IAgoraRtcEngine'
-import { VideoEncoderConfiguration, VideoCanvas, VideoStreamType, SpatialAudioParams, VideoMirrorModeType, ConnectionStateType, EncryptionConfig, DataStreamConfig, WatermarkOptions, UserInfo, VideoSourceType, SimulcastStreamConfig } from './AgoraBase'
+import { VideoEncoderConfiguration, VideoCanvas, VideoStreamType, SpatialAudioParams, VideoMirrorModeType, ConnectionStateType, EncryptionConfig, WatermarkOptions, UserInfo, VideoSourceType, SimulcastStreamConfig, DataStreamConfig } from './AgoraBase'
 import { RenderModeType } from './AgoraMediaBase'
 
 export class RtcConnection {
@@ -36,10 +36,6 @@ abstract getConnectionStateEx(connection: RtcConnection): ConnectionStateType;
 
 abstract enableEncryptionEx(connection: RtcConnection, enabled: boolean, config: EncryptionConfig): number;
 
-abstract createDataStreamEx(reliable: boolean, ordered: boolean, connection: RtcConnection): number;
-
-abstract createDataStreamEx2(config: DataStreamConfig, connection: RtcConnection): number;
-
 abstract sendStreamMessageEx(streamId: number, data: Uint8Array, length: number, connection: RtcConnection): number;
 
 abstract addVideoWatermarkEx(watermarkUrl: string, options: WatermarkOptions, connection: RtcConnection): number;
@@ -59,4 +55,6 @@ abstract setVideoProfileEx(width: number, height: number, frameRate: number, bit
 abstract enableDualStreamModeEx(sourceType: VideoSourceType, enabled: boolean, streamConfig: SimulcastStreamConfig, connection: RtcConnection): number;
 
 abstract addPublishStreamUrlEx(url: string, transcodingEnabled: boolean, connection: RtcConnection): number;
+
+abstract createDataStreamEx(config: DataStreamConfig, connection: RtcConnection): number;
 }
