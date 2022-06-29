@@ -64,7 +64,7 @@ export default class LocalVideoTranscoder
   extends Component<{}, State, any>
   implements IRtcEngineEventHandler, IMediaPlayerSourceObserver
 {
-  rtcEngine?: IRtcEngineEx & IRtcEngine & RtcEngineExImplInternal
+  rtcEngine?: IRtcEngineEx
 
   videoDeviceManager: IVideoDeviceManager
 

@@ -33,7 +33,7 @@ interface State {
 }
 
 export default class ScreenShare extends Component<{}, State, any> {
-  rtcEngine?: IRtcEngineEx & IRtcEngine & RtcEngineExImplInternal
+  rtcEngine?: IRtcEngineEx
 
   state: State = {
     captureInfoList: [],

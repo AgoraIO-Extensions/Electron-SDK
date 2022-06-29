@@ -43,7 +43,7 @@ export default class MultipleChannel
   extends Component<{}, State, any>
   implements IRtcEngineEventHandler
 {
-  rtcEngine?: IRtcEngineEx & IRtcEngine & RtcEngineExImplInternal
+  rtcEngine?: IRtcEngineEx
 
   state: State = {
     allUser1: [],

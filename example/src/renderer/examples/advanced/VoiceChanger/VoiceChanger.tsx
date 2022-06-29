@@ -54,7 +54,7 @@ export default class VoiceChanger
   extends Component<{}, State, any>
   implements IRtcEngineEventHandler
 {
-  rtcEngine?: IRtcEngineEx & IRtcEngine & RtcEngineExImplInternal
+  rtcEngine?: IRtcEngineEx
 
   audioDeviceManager: IAudioDeviceManager
 

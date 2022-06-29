@@ -12,7 +12,7 @@ import { getRandomInt } from '../../util'
 import styles from './index.scss'
 
 interface WindowProps {
-  rtcEngine: IRtcEngineEx & IRtcEngine & RtcEngineExImplInternal
+  rtcEngine: IRtcEngineEx
   uid?: number
   videoSourceType: VideoSourceType
   channelId?: string

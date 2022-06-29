@@ -161,9 +161,8 @@ function copyProperties<T>(target: T, source: any) {
   }
 }
 
-export const createAgoraRtcEngine = (): IRtcEngine &
-  IRtcEngineEx &
-  RtcEngineExImplInternal => new RtcEngineExImplInternal();
+export const createAgoraRtcEngine = (): IRtcEngineEx =>
+  new RtcEngineExImplInternal();
 
 export const AgoraEnv: AgoraEnvType = {
   enableLogging: true,

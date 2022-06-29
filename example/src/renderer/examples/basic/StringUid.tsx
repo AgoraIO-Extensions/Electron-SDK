@@ -35,7 +35,7 @@ interface State {
 }
 
 export default class StringUid extends Component<State> {
-  rtcEngine?: IRtcEngineEx & IRtcEngine & RtcEngineExImplInternal
+  rtcEngine?: IRtcEngineEx
 
   audioDeviceManager: IAudioDeviceManager
 

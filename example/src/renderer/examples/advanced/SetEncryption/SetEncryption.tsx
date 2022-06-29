@@ -41,7 +41,7 @@ interface State {
 }
 
 export default class SetEncryption extends Component<{}, State, any> {
-  rtcEngine?: IRtcEngineEx & IRtcEngine & RtcEngineExImplInternal
+  rtcEngine?: IRtcEngineEx
 
   state: State = {
     channelId: '',

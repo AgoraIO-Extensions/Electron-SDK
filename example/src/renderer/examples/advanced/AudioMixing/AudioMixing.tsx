@@ -49,7 +49,7 @@ export default class AudioMixing
   extends Component<{}, State, any>
   implements IRtcEngineEventHandler
 {
-  rtcEngine?: IRtcEngineEx & IRtcEngine & RtcEngineExImplInternal
+  rtcEngine?: IRtcEngineEx
 
   audioDeviceManager: IAudioDeviceManager
 

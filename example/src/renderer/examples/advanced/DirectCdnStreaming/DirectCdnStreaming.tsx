@@ -62,7 +62,7 @@ export default class DirectCdnStreaming
   extends Component<{}, State, any>
   implements IRtcEngineEventHandler, IDirectCdnStreamingEventHandler
 {
-  rtcEngine?: IRtcEngineEx & IRtcEngine & RtcEngineExImplInternal
+  rtcEngine?: IRtcEngineEx
 
   videoDeviceManager: IVideoDeviceManager
 
