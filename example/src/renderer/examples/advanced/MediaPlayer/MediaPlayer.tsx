@@ -28,7 +28,7 @@ export default class MediaPlayer
   extends Component<State>
   implements IMediaPlayerSourceObserver
 {
-  rtcEngine?: IRtcEngineEx & IRtcEngine & RtcEngineExImplInternal
+  rtcEngine?: IRtcEngineEx
 
   mpk?: IMediaPlayer
 

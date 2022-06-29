@@ -32,7 +32,7 @@ export default class CreateDataStream
   extends Component<State>
   implements IRtcEngineEventHandler
 {
-  rtcEngine?: IRtcEngineEx & IRtcEngine & RtcEngineExImplInternal
+  rtcEngine?: IRtcEngineEx
 
   streamId?: number
 

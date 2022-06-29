@@ -38,7 +38,7 @@ export default class SendMetaData
   extends Component<State>
   implements IRtcEngineEventHandler, IMetadataObserver
 {
-  rtcEngine?: IRtcEngineEx & IRtcEngine & RtcEngineExImplInternal
+  rtcEngine?: IRtcEngineEx
 
   streamId?: number
 
