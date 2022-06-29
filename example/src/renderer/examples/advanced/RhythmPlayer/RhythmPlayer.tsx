@@ -1,6 +1,7 @@
 import { Card, Input, List, Switch } from 'antd'
 import creteAgoraRtcEngine, {
   ClientRoleType,
+  ErrorCodeType,
   IAudioDeviceManager,
   IRtcEngine,
   IRtcEngineEventHandler,
@@ -149,7 +150,7 @@ export default class RhythmPlayer
     })
   }
 
-  onError(err: number, msg: string): void {
+  onError(err: ErrorCodeType, msg: string): void {
     console.error(err, msg)
   }
 

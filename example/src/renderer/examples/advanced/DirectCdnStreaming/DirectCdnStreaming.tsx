@@ -7,6 +7,7 @@ import creteAgoraRtcEngine, {
   DirectCdnStreamingError,
   DirectCdnStreamingState,
   DirectCdnStreamingStats,
+  ErrorCodeType,
   IAudioDeviceManager,
   IDirectCdnStreamingEventHandler,
   IRtcEngine,
@@ -176,7 +177,7 @@ export default class DirectCdnStreaming
     })
   }
 
-  onError(err: number, msg: string): void {
+  onError(err: ErrorCodeType, msg: string): void {
     console.error(err, msg)
   }
 

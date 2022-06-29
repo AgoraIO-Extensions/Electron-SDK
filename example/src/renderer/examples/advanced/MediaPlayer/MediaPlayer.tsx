@@ -148,7 +148,7 @@ export default class MediaPlayer
             />
             <Button
               onClick={() => {
-                const res = this.rtcEngine.joinChannel2(
+                const res = this.rtcEngine.joinChannelWithOptions(
                   '',
                   config.defaultChannelId,
                   getRandomInt(),

@@ -2,7 +2,7 @@ import { callIrisApi } from '../internal/IrisApiEngine'
 import { IRtcEngineImpl } from './IAgoraRtcEngineImpl'
 import { IRtcEngineEx, RtcConnection } from '../IAgoraRtcEngineEx'
 import { ChannelMediaOptions } from '../IAgoraRtcEngine'
-import { VideoEncoderConfiguration, VideoCanvas, VideoStreamType, SpatialAudioParams, VideoMirrorModeType, ConnectionStateType, EncryptionConfig, DataStreamConfig, WatermarkOptions, UserInfo, VideoSourceType, SimulcastStreamConfig } from '../AgoraBase'
+import { VideoEncoderConfiguration, VideoCanvas, VideoStreamType, SpatialAudioParams, VideoMirrorModeType, ConnectionStateType, EncryptionConfig, WatermarkOptions, UserInfo, VideoSourceType, SimulcastStreamConfig, DataStreamConfig } from '../AgoraBase'
 import { RenderModeType } from '../AgoraMediaBase'
 
 export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
@@ -244,42 +244,6 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
     return jsonResults.result
   }
 
-  createDataStreamEx (reliable: boolean, ordered: boolean, connection: RtcConnection): number {
-    const apiType = 'RtcEngineEx_createDataStreamEx'
-    const jsonParams = {
-      reliable,
-      ordered,
-      connection,
-      toJSON: () => {
-        return {
-          reliable,
-          ordered,
-          connection
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    const streamId = jsonResults.streamId
-    return streamId
-  }
-
-  createDataStreamEx2 (config: DataStreamConfig, connection: RtcConnection): number {
-    const apiType = 'RtcEngineEx_createDataStreamEx2'
-    const jsonParams = {
-      config,
-      connection,
-      toJSON: () => {
-        return {
-          config,
-          connection
-        }
-      }
-    }
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
-    const streamId = jsonResults.streamId
-    return streamId
-  }
-
   sendStreamMessageEx (streamId: number, data: Uint8Array, length: number, connection: RtcConnection): number {
     const apiType = 'RtcEngineEx_sendStreamMessageEx'
     const jsonParams = {
@@ -463,5 +427,22 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
     }
     const jsonResults = callIrisApi.call(this, apiType, jsonParams)
     return jsonResults.result
+  }
+
+  createDataStreamEx (config: DataStreamConfig, connection: RtcConnection): number {
+    const apiType = 'RtcEngineEx_createDataStreamEx'
+    const jsonParams = {
+      config,
+      connection,
+      toJSON: () => {
+        return {
+          config,
+          connection
+        }
+      }
+    }
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams)
+    const streamId = jsonResults.streamId
+    return streamId
   }
 }

@@ -4,6 +4,7 @@ import creteAgoraRtcEngine, {
   AudioScenarioType,
   ChannelProfileType,
   DegradationPreference,
+  ErrorCodeType,
   IMediaPlayer,
   IMediaPlayerSourceObserver,
   IRtcEngine,
@@ -184,7 +185,7 @@ export default class LocalVideoTranscoder
     })
   }
 
-  onError(err: number, msg: string): void {
+  onError(err: ErrorCodeType, msg: string): void {
     console.error(err, msg)
   }
 
@@ -247,7 +248,7 @@ export default class LocalVideoTranscoder
       'https://agora-adc-artifacts.oss-cn-beijing.aliyuncs.com/video/meta_live_mpk.mov',
       0
     )
-    this.rtcEngine.joinChannel2('', channelId, localUid1, {
+    this.rtcEngine.joinChannelWithOptions('', channelId, localUid1, {
       publishCameraTrack: false,
       publishScreenTrack: false,
       publishTrancodedVideoTrack: true,

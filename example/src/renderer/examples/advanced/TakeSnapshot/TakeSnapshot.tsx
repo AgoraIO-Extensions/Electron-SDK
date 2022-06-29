@@ -3,6 +3,7 @@ import creteAgoraRtcEngine, {
   AudioScenarioType,
   ChannelProfileType,
   DegradationPreference,
+  ErrorCodeType,
   IAudioDeviceManager,
   IRtcEngine,
   IRtcEngineEventHandler,
@@ -154,7 +155,7 @@ export default class TakeSnapshot
     })
   }
 
-  onError(err: number, msg: string): void {
+  onError(err: ErrorCodeType, msg: string): void {
     console.error(err, msg)
   }
 

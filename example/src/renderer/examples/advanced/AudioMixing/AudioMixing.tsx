@@ -3,6 +3,7 @@ import creteAgoraRtcEngine, {
   AudioProfileType,
   AudioScenarioType,
   ChannelProfileType,
+  ErrorCodeType,
   IAudioDeviceManager,
   IRtcEngine,
   IRtcEngineEventHandler,
@@ -151,7 +152,7 @@ export default class AudioMixing
     })
   }
 
-  onError(err: number, msg: string): void {
+  onError(err: ErrorCodeType, msg: string): void {
     console.error(err, msg)
   }
 
