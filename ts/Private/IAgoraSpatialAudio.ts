@@ -97,7 +97,7 @@ abstract renewToken(token: string): number;
 
 abstract exitRoom(): number;
 
-abstract getTeammates(uids: number[]): number;
+abstract getTeammates(): number[];
 }
 
 export abstract class ILocalSpatialAudioEngine extends IBaseSpatialAudioEngine {

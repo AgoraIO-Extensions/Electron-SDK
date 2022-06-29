@@ -42,10 +42,6 @@ abstract setPlaybackSpeed(speed: number): number;
 
 abstract selectAudioTrack(index: number): number;
 
-abstract setPlayerOption(key: string, value: number): number;
-
-abstract setPlayerOption2(key: string, value: string): number;
-
 abstract takeScreenshot(filename: string): number;
 
 abstract selectInternalSubtitle(index: number): number;
@@ -103,4 +99,8 @@ abstract playPreloadedSrc(src: string): number;
 abstract unloadSrc(src: string): number;
 
 abstract setSpatialAudioParams(params: SpatialAudioParams): number;
+
+abstract setPlayerOptionInInt(key: string, value: number): number;
+
+abstract setPlayerOptionInString(key: string, value: string): number;
 }

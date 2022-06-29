@@ -8,6 +8,7 @@ import {
   IVideoDeviceManager,
 } from "./Private/IAgoraRtcEngine";
 import { IAudioDeviceManager } from "./Private/IAudioDeviceManager";
+import { IMediaPlayerImpl } from "./Private/impl/IAgoraMediaPlayerImpl";
 import { IRenderer } from "./Renderer/IRenderer";
 import { RendererManager } from "./Renderer/RendererManager";
 
@@ -16,7 +17,10 @@ export interface AgoraEnvType {
   enableDebugLogging: boolean;
   isInitializeEngine: boolean;
   engineEventHandlers: IRtcEngineEventHandler[];
-  mediaPlayerEventHandlers: IMediaPlayerSourceObserver[];
+  mediaPlayerEventManager: {
+    mpk: IMediaPlayerImpl;
+    handler: IMediaPlayerSourceObserver;
+  }[];
   metadataObservers: IMetadataObserver[];
   cdnEventHandlers: IDirectCdnStreamingEventHandler[];
   AgoraElectronBridge?: AgoraElectronBridge;

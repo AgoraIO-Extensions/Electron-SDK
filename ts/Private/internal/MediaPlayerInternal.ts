@@ -4,6 +4,7 @@ import { RenderModeType } from "../AgoraMediaBase";
 import { IMediaPlayerSourceObserver } from "../IAgoraMediaPlayerSource";
 import { IMediaPlayerImpl } from "../impl/IAgoraMediaPlayerImpl";
 import { processIMediaPlayerSourceObserver } from "../impl/IAgoraMediaPlayerSourceImpl";
+import { callIrisApi } from "./IrisApiEngine";
 
 const MediaPlayerSplitString = "MediaPlayerSourceObserver_";
 
@@ -27,16 +28,15 @@ export const handlerMPKEvent = function (
     "bufferCount",
     bufferCount
   );
-  
-  
+
   let splitStr = event.split(MediaPlayerSplitString);
   logDebug("agora  ", splitStr);
-  AgoraEnv.mediaPlayerEventHandlers.forEach((value) => {
+  AgoraEnv.mediaPlayerEventManager.forEach((value) => {
     if (!value) {
       return;
     }
     try {
-      processIMediaPlayerSourceObserver(value, splitStr[1], obj);
+      processIMediaPlayerSourceObserver(value.handler, splitStr[1], obj);
     } catch (error) {
       logError("mediaPlayerEventHandlers::processIMediaPlayerSourceObserver");
     }
@@ -57,14 +57,14 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
   }
 
   registerPlayerSourceObserver(observer: IMediaPlayerSourceObserver): number {
-    AgoraEnv.mediaPlayerEventHandlers.push(observer);
-
+    AgoraEnv.mediaPlayerEventManager.push({ mpk: this, handler: observer });
     return 0;
   }
 
   unregisterPlayerSourceObserver(observer: IMediaPlayerSourceObserver): number {
-    AgoraEnv.mediaPlayerEventHandlers =
-      AgoraEnv.mediaPlayerEventHandlers.filter((value) => value !== observer);
+    AgoraEnv.mediaPlayerEventManager = AgoraEnv.mediaPlayerEventManager.filter(
+      (value) => value.handler !== observer
+    );
     return 0;
   }
   override setView(view: HTMLElement): number {
@@ -92,5 +92,37 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
       },
     });
     return 0;
+  }
+
+  setPlayerOptionInInt(key: string, value: number): number {
+    const apiType = "MediaPlayer_setPlayerOption";
+    const jsonParams = {
+      key,
+      value,
+      toJSON: () => {
+        return {
+          key,
+          value,
+        };
+      },
+    };
+    const jsonResults = callIrisApi(apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  setPlayerOptionInString(key: string, value: string): number {
+    const apiType = "MediaPlayer_setPlayerOption2";
+    const jsonParams = {
+      key,
+      value,
+      toJSON: () => {
+        return {
+          key,
+          value,
+        };
+      },
+    };
+    const jsonResults = callIrisApi(apiType, jsonParams);
+    return jsonResults.result;
   }
 }
