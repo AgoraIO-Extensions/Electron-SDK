@@ -7685,6 +7685,7 @@ NAPI_API_DEFINE(NodeRtcEngine, getScreenCaptureSources) {
                                sourceTitle.c_str());
       NODE_SET_OBJ_PROP_BOOL(isolate, obj, "primaryMonitor", primaryMonitor);
       #ifdef _WIN32
+      bool minimizeWindow = info.minimizeWindow;
       NODE_SET_OBJ_PROP_BOOL(isolate, obj, "minimizeWindow", minimizeWindow);
       #endif
 
