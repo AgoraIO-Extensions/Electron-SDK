@@ -1,7 +1,7 @@
 # Agora RTC SDK for Electron
 
 <div align="left">
-    <a href="https://pub.dev/packages/agora_rtc_engine"><img src="https://img.shields.io/badge/Platform-macOS--x86--64%20%7C%20macOS--arm64%20%7C%20win--32%20%7C%20win--64-blue?logo=Electron&labelColor=fff" alt="Platform"/></a>
+    <a href="https://github.com/AgoraIO-Community/electron-agora-rtc-ng"><img src="https://img.shields.io/badge/Platform-macOS--x86--64%20%7C%20macOS--arm64%20%7C%20win--32%20%7C%20win--64-blue?logo=Electron&labelColor=fff" alt="Platform"/></a>
     <a href="https://www.npmjs.com/package/electron-agora-rtc-ng"><img alt="npm" src="https://img.shields.io/npm/v/electron-agora-rtc-ng?color=blue&style=flat-square&logo=npm"></a>
     <a href="https://www.npmjs.com/package/electron-agora-rtc-ng"><img alt="npm" src="https://img.shields.io/npm/dm/electron-agora-rtc-ng?color=blue&style=flat-square&logo=npm"></a>
     <a href="./LICENSE"><img src="https://img.shields.io/github/license/agoraio-community/electron-agora-rtc-ng?color=blue&style=flat-square" alt="License"/></a>
