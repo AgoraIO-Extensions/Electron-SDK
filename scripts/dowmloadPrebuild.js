@@ -6,15 +6,12 @@ const logger = require("./logger");
 const { cleanBuildDir, cleanJSDir, buildDir } = require("./clean");
 const getConfig = require("./getConfig");
 
-const { platform, packageVersion, arch, no_symbol } =
-  getConfig();
+const { platform, packageVersion, arch, no_symbol } = getConfig();
 
 const workspaceDir = `${path.join(__dirname, "..")}`;
 
-const addonVersion = "3.8.201-alpha.629";
-
 const getDownloadURL = () => {
-  let downloadUrl = `http://download.agora.io/sdk/release/Electron-${getOS()}-${addonVersion}-napi.zip`;
+  let downloadUrl = `http://download.agora.io/sdk/release/Electron-${getOS()}-${packageVersion}-napi.zip`;
   if (platform === "win32" && arch === "x64") {
     downloadUrl = `http://download.agora.io/sdk/release/Electron-win64-${addonVersion}-napi.zip`;
   }
