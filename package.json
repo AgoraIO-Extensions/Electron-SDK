@@ -4,6 +4,7 @@
   "description": "electron-agora-rtc-ng",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
+  "repository": "github:AgoraIO-Community/electron-agora-rtc-ng",
   "author": "agora.io",
   "scripts": {
     "install": "cross-env-shell gulp NPM_Install --INIT_CWD=$INIT_CWD",

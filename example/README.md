@@ -1,46 +1,75 @@
-# electron-webpack-quick-start
-> A bare minimum project structure to get started developing with [`electron-webpack`](https://github.com/electron-userland/electron-webpack).
+# Agora-Electron-API-Example
 
-Thanks to the power of `electron-webpack` this template comes packed with...
+The Example project is an open-source demo that will show you different scenes on how to integrate Agora SDK APIs into your project.
 
-* Use of [`webpack-dev-server`](https://github.com/webpack/webpack-dev-server) for development
-* HMR for both `renderer` and `main` processes
-* Use of [`babel-preset-env`](https://github.com/babel/babel-preset-env) that is automatically configured based on your `electron` version
-* Use of [`electron-builder`](https://github.com/electron-userland/electron-builder) to package and build a distributable electron application
+Any scene of this project can run successfully alone.
 
-Make sure to check out [`electron-webpack`'s documentation](https://webpack.electron.build/) for more details.
+## Quick Start
 
-## Getting Started
-Simply clone down this repository, install dependencies, and get started on your application.
+### 📋 Requirements
 
-The use of the [yarn](https://yarnpkg.com/) package manager is **strongly** recommended, as opposed to using `npm`.
+- Agora.io [Developer Account](https://dashboard.agora.io/signin/)
+- [Node.js 14](https://nodejs.org/en/download/) with C++11 support
+- [Yarn](https://yarnpkg.com/) package manager
+
+### 🎉 Steps to run
+
+First, create a developer account at [Agora.io](https://dashboard.agora.io/signin/), and obtain an App ID.
+
+Then do the following:
 
 ```bash
-# create a directory of your choice, and copy template using curl
-mkdir new-electron-webpack-project && cd new-electron-webpack-project
-curl -fsSL https://github.com/electron-userland/electron-webpack-quick-start/archive/master.tar.gz | tar -xz --strip-components 1
-
-# or copy template using git clone
-git clone https://github.com/electron-userland/electron-webpack-quick-start.git
-cd electron-webpack-quick-start
-rm -rf .git
-
-# install dependencies
+git clone git@github.com:AgoraIO-Community/electron-agora-rtc-ng.git
+cd example
 yarn
+yarn dev
 ```
 
-### Development Scripts
+#### (Optional) Build From Local SDK
 
 ```bash
-# run application in development mode
-yarn dev
-
-# compile source code and create webpack output
-yarn compile
-
-# `yarn compile` & create build with electron-builder
-yarn dist
-
-# `yarn compile` & create unpacked build with electron-builder
-yarn dist:dir
+# example path
+rm -rf node_modules/electron-agora-rtc-ng
+# sdk path
+cd .. && npm install --agora_electron_sdk_pre_built=false && yarn link
+# example path
+cd example && yarn link "electron-agora-rtc-ng"
 ```
+
+## 📖 Project structure
+
+- **Basic demos:**
+
+| Demo                                                                         | Description                                        | APIs                                                                                                                                               |
+| ---------------------------------------------------------------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [JoinChannelAudio](./src/renderer/examples/basic/JoinChannelAudio.tsx) | basic demo to show audio call                      | getAudioDeviceManager, setAudioProfile,setRecordingDevice, adjustRecordingSignalVolume, adjustAudioMixingPlayoutVolume, adjustPlaybackSignalVolume |
+| [JoinChannelVideo](./src/renderer/examples/basic/JoinChannelVideo.tsx) | video demo with role selection in Editor Inspector | enableVideo, getVideoDeviceManager,setChannelProfile, joinChannelEx, setAudioProfile, setVideoEncoderConfiguration                                 |
+| [StringUid](./src/renderer/examples/basic/StringUid.tsx)               | basic demo with string uid                         | joinChannelWithUserAccount                                                                                                                         |
+
+- **Advanced demos:**
+
+| Demo                                                                                                                                                                   | Description                     | APIs                                                                                           |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------- |
+| [ScreenShare](./src/renderer/examples/advanced/ScreenShare/ScreenShare.tsx) | sharing application screen view | getScreenCaptureSources, startPrimaryScreenCapture, startSecondaryScreenCapture, joinChannelEx |
+| ...                                                                                                                                                                    | ...                             | ...                                                                                            |
+
+## 👏 Feedback
+
+If you have any problems or suggestions regarding the sample projects, feel free to file an issue.
+
+## 🚀 Reference
+
+- You can find full API document at [Document Center](https://docs.agora.io/en/Video/API%20Reference/electron/index.html)
+- You can file issues about this demo at [issue](https://github.com/AgoraIO-Community/electron-agora-rtc-ng/issues)
+
+## 🚀 Related resources
+
+- Check our [FAQ](https://docs.agora.io/en/faq) to see if your issue has been recorded.
+- Dive into [Agora SDK Samples](https://github.com/AgoraIO) to see more tutorials
+- Take a look at [Agora Use Case](https://github.com/AgoraIO-usecase) for more complicated real use case
+- Repositories managed by developer communities can be found at [Agora Community](https://github.com/AgoraIO-Community)
+- If you encounter problems during integration, feel free to ask questions in [Stack Overflow](https://stackoverflow.com/questions/tagged/agora.io)
+
+## 📄 License
+
+The sample projects are under the MIT license.
