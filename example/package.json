@@ -1,7 +1,10 @@
 {
-  "name": "electron-webpack-quick-start",
-  "version": "0.0.0",
+  "name": "Agora-Electron-API-Example",
+  "version": "1.0.0",
   "license": "MIT",
+  "engines": {
+    "node": "14"
+  },
   "scripts": {
     "dev": "electron-webpack dev",
     "compile": "electron-webpack",
@@ -14,8 +17,8 @@
   },
   "build": {
     "asar": false,
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "Agora-Electron-API-Example",
+    "appId": "agora.io.ElectronApiExample",
     "files": [
       "!*.log"
     ],
