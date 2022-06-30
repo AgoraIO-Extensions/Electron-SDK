@@ -3,6 +3,7 @@ import creteAgoraRtcEngine, {
   AudioProfileType,
   AudioScenarioType,
   ChannelProfileType,
+  ClientRoleType,
   DegradationPreference,
   ErrorCodeType,
   IMediaPlayer,
@@ -252,6 +253,7 @@ export default class LocalVideoTranscoder
       publishCameraTrack: false,
       publishScreenTrack: false,
       publishTrancodedVideoTrack: true,
+      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
     })
   }
 
