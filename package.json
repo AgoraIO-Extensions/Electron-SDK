@@ -22,7 +22,9 @@
     "build_windows_x64_debug": "cmake-js rebuild --arch=x64 --CDCMAKE_OSX_ARCHITECTURES=\"x86_64\" --CDCMAKE_BUILD_TYPE=Debug -G \"Visual Studio 16 2019\"",
     "build_windows_x64_release": "cmake-js rebuild --arch=x64 --CDCMAKE_OSX_ARCHITECTURES=\"x86_64\" --CDCMAKE_BUILD_TYPE=Release",
     "build_linux_debug": "cmake-js rebuild --arch=x64 --CDCMAKE_BUILD_TYPE=Debug --CDCMAKE_CXX_FLAGS=-g -G \"Unix Makefiles\"",
-    "build_linux_release": "cmake-js rebuild --arch=x64 --CDCMAKE_BUILD_TYPE=Release -G \"Unix Makefiles\""
+    "build_linux_release": "cmake-js rebuild --arch=x64 --CDCMAKE_BUILD_TYPE=Release -G \"Unix Makefiles\"",
+    "changelog": "conventional-changelog -p angular -u -i CHANGELOG.md -s -r 0",
+    "prepare": "husky install"
   },
   "agora_electron": {
     "iris_sdk_win": "http://192.168.99.149:8086/CSDC_repo/iris_3.8.201.2_DCG_Windows_Video_20220627_1049.zip",
@@ -59,7 +61,16 @@
     "extra"
   ],
   "devDependencies": {
-    "cmake-js": "6.3.2"
+    "@commitlint/cli": "^17.0.3",
+    "@commitlint/config-conventional": "^17.0.3",
+    "cmake-js": "6.3.2",
+    "conventional-changelog-cli": "^2.2.2",
+    "husky": "^8.0.1",
+    "prettier": "^2.7.1"
   },
-  "bundledDependencies": []
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  }
 }
