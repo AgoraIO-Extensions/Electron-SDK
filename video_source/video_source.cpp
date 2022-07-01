@@ -124,6 +124,8 @@ bool AgoraVideoSource::initialize() {
   // prevent videosource from getting camera causing problems in windows
   agora::rtc::AParameter ap(m_rtcEngine.get());
   ap->setParameters("{\"che.video.local.camera_index\":1024}");
+  ap->setParameters("{\"che.video.videoFullrange\":0}");
+  ap->setParameters("{\"che.video.matrixCoefficients\":6}");
 
   m_ipc->sendMessage(AGORA_IPC_SOURCE_READY, nullptr, 0);
   m_initialized = true;
