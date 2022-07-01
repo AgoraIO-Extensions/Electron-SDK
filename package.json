@@ -74,10 +74,16 @@
     "yuv-canvas": "^1.2.1"
   },
   "devDependencies": {
+    "@commitlint/config-conventional": "^17.0.3",
+    "@release-it/conventional-changelog": "^5.0.0",
     "@types/node": "10.17.5",
-    "jest": "24.9.0",
+    "commitlint": "^17.0.3",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^8.0.1",
+    "jest": "^27.4.7",
     "prettier": "1.19.1",
-    "ts-jest": "24.1.0",
+    "release-it": "^15.1.0",
+    "ts-jest": "^27.1.2",
     "ts-node": "8.4.1",
     "tslint": "5.20.1",
     "typedoc": "0.15.0",
@@ -92,7 +98,7 @@
   },
   "agora_electron": {
     "lib_sdk_win": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Windows_v4.0.0-beta.2_FULL.zip",
-    "lib_sdk_mac": "https://download.agora.io/sdk/release/Agora_Native_SDK_for_Mac_v4.0.0-beta.2_FULL.zip"
+    "lib_sdk_mac": "http://10.80.1.174:8090/agora_sdk/3.8.202.1/official_build/2022-06-23/mac/full/Agora_Native_SDK_for_Mac_rel.v3.8.202.1_40461_full_20220623_1246_213117.zip"
   },
   "keywords": [
     "electron",
@@ -104,5 +110,39 @@
   "bugs": {
     "url": "https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron/issues"
   },
-  "homepage": "https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron#readme"
+  "homepage": "https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron#readme",
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "yarn lint && yarn typescript"
+    }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "release-it": {
+    "git": {
+      "commitMessage": "chore: release ${version}",
+      "tagName": "v${version}"
+    },
+    "npm": {
+      "publish": true
+    },
+    "github": {
+      "release": true
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": "angular",
+        "infile": "CHANGELOG.md"
+      }
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
 }
