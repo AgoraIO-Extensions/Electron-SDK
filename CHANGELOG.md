@@ -1,3 +1,16 @@
+## 3.8.202-build.1.701 (2022-07-01)
+
+
+### Features
+
+* add videoSourceUpdateScreenCaptureRegion api ([fa85a70](https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron/commit/fa85a70ce5ab592e3119401df99c3d837b2c777a))
+* support 3.8.202.1 ([#788](https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron/issues/788)) ([ee13d44](https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron/commit/ee13d44b59f7553acbaa077ed200ced31b720019))
+
+
+### Reverts
+
+* Revert "fu plugin" ([3860f87](https://github.com/AgoraIO-Community/Agora-RTC-SDK-for-Electron/commit/3860f874d7d8a4766e915f8c5b50cb439b61cbee))
+
 ## 3.8.202-build.619(Jun 19th, 2022)
 - update native sdk to 3.8.202
 
