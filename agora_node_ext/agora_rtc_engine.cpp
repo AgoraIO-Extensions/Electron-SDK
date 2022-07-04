@@ -5397,11 +5397,11 @@ NAPI_API_DEFINE(NodeRtcEngine, startPrimaryCameraCapture) {
     status = napi_get_value_object_(isolate, args[0], obj);
     CHECK_NAPI_STATUS(pEngine, status);
     CameraCapturerConfiguration config;
-    int cameraDirection = 0;
+    // int cameraDirection = 0;
 
-    status = napi_get_object_property_int32_(isolate, obj, "cameraDirection",
-                                             cameraDirection);
-    CHECK_NAPI_STATUS(pEngine, status);
+    // status = napi_get_object_property_int32_(isolate, obj, "cameraDirection",
+    //                                          cameraDirection);
+    // CHECK_NAPI_STATUS(pEngine, status);
 
     nodestring deviceId;
     status = napi_get_object_property_nodestring_(isolate, obj, "deviceId",
@@ -5446,11 +5446,11 @@ NAPI_API_DEFINE(NodeRtcEngine, startSecondaryCameraCapture) {
     status = napi_get_value_object_(isolate, args[0], obj);
     CHECK_NAPI_STATUS(pEngine, status);
     CameraCapturerConfiguration config;
-    int cameraDirection = 0;
+    // int cameraDirection = 0;
 
-    status = napi_get_object_property_int32_(isolate, obj, "cameraDirection",
-                                             cameraDirection);
-    CHECK_NAPI_STATUS(pEngine, status);
+    // status = napi_get_object_property_int32_(isolate, obj, "cameraDirection",
+    //                                          cameraDirection);
+    // CHECK_NAPI_STATUS(pEngine, status);
 
     nodestring deviceId;
     status = napi_get_object_property_nodestring_(isolate, obj, "deviceId",
