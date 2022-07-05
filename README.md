@@ -60,10 +60,10 @@ or
 
 ```bash
 ## or select 32 bit architecture on Windows
-npm install --agora_electron_sdk_arch=x64
+npm install --agora_electron_sdk_arch=ia32
 
 ## or select 64 bit architecture on Windows
-npm install --agora_electron_sdk_arch=ia32
+npm install --agora_electron_sdk_arch=x64
 ```
 
 ## 🔨 Usage
@@ -115,12 +115,12 @@ $ cd electron-agora-rtc-ng
 $ npm install #or yarn
 
 # build macOS
-$ yarn --verbose --agora_electron_sdk_pre_built=false
+$ npm install --agora_electron_sdk_pre_built=false
 
-# build window:ia32
-$ yarn --verbose --agora_electron_sdk_pre_built=false
+# build  32 bit architecture on Windows
+$ npm install --verbose --agora_electron_sdk_pre_built=false  --agora_electron_sdk_arch=ia32
 
-# build window:x64
+# build  64 bit architecture on Windows
 $ npm install --verbose --agora_electron_sdk_pre_built=false  --agora_electron_sdk_arch=x64
 ```
 
