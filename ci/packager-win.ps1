@@ -74,7 +74,7 @@ function Package($archNum,$electronVersion,$example_sdk_mode){
   # dist start
   DistByArch -type $archNum
   # move zip
-  Copy-Item -Path dist/ElectronReact-*.zip -Destination ../$outterZipName -Recurse -Force
+  Copy-Item -Path dist/Agora-Electron-API-Example-*.zip -Destination ../$outterZipName -Recurse -Force
 }
 
 write-host("Package win:1")

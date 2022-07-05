@@ -32,7 +32,7 @@ packExample() {
   yarn dist:mac
 
   pushd dist/mac
-  zip -ry $(pwd)/../../../${outterZipName} ElectronReact.app
+  zip -ry $(pwd)/../../../${outterZipName} Agora-Electron-API-Example.app
   popd
   popd
 }
