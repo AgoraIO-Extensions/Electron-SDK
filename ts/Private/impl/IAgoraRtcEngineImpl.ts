@@ -1,6 +1,6 @@
 import { callIrisApi } from '../internal/IrisApiEngine'
 import { IRtcEngineEventHandler, IVideoDeviceManager, VideoDeviceInfo, IMetadataObserver, IDirectCdnStreamingEventHandler, IRtcEngine, RtcEngineContext, SDKBuildInfo, ChannelMediaOptions, AudioEqualizationBandFrequency, AudioReverbType, AudioTrackConfig, StreamFallbackOptions, CameraCapturerConfiguration, SIZE, ScreenCaptureSourceInfo, ScreenCaptureConfiguration, PriorityType, InjectStreamConfig, MetadataType, DirectCdnStreamingMediaOptions, CloudProxyType, LocalAccessPointConfiguration, LeaveChannelOptions, Metadata } from '../IAgoraRtcEngine'
-import { ChannelProfileType, LastmileProbeConfig, VideoEncoderConfiguration, BeautyOptions, VirtualBackgroundSource, VideoCanvas, VideoStreamType, SpatialAudioParams, VoiceBeautifierPreset, AudioEffectPreset, VoiceConversionPreset, VideoMirrorModeType, AudioSessionOperationRestriction, Rectangle, ScreenCaptureParameters, DeviceInfo, VideoContentHint, LiveTranscoding, LocalTranscoderConfiguration, VideoSourceType, VideoOrientation, ConnectionStateType, EncryptionConfig, UserInfo, ChannelMediaRelayConfiguration, AudioProfileType, FishCorrectionParams, ClientRoleType, ClientRoleOptions, AudioScenarioType, AudioRecordingConfiguration, SimulcastStreamConfig, DataStreamConfig, WatermarkOptions } from '../AgoraBase'
+import { ChannelProfileType, LastmileProbeConfig, VideoEncoderConfiguration, BeautyOptions, VirtualBackgroundSource, VideoCanvas, VideoStreamType, SpatialAudioParams, VoiceBeautifierPreset, AudioEffectPreset, VoiceConversionPreset, VideoMirrorModeType, EarMonitoringFilterType, AudioSessionOperationRestriction, Rectangle, ScreenCaptureParameters, DeviceInfo, VideoContentHint, LiveTranscoding, LocalTranscoderConfiguration, VideoSourceType, VideoOrientation, ConnectionStateType, EncryptionConfig, UserInfo, ChannelMediaRelayConfiguration, AudioProfileType, FishCorrectionParams, ClientRoleType, ClientRoleOptions, AudioScenarioType, AudioRecordingConfiguration, SimulcastStreamConfig, DataStreamConfig, WatermarkOptions } from '../AgoraBase'
 import { MediaSourceType, RenderModeType, RawAudioFrameOpModeType, SnapShotConfig, ContentInspectConfig, AdvancedAudioOptions } from '../AgoraMediaBase'
 import { IMediaPlayer } from '../IAgoraMediaPlayer'
 import { LogFilterType, LogLevel } from '../IAgoraLog'
@@ -1948,7 +1948,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     return jsonResults.result
   }
 
-  enableInEarMonitoring (enabled: boolean, includeAudioFilters: number): number {
+  enableInEarMonitoring (enabled: boolean, includeAudioFilters: EarMonitoringFilterType): number {
     const apiType = 'RtcEngine_enableInEarMonitoring'
     const jsonParams = {
       enabled,
