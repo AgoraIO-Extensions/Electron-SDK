@@ -1,4 +1,4 @@
-import { QualityAdaptIndication, VideoCodecType, VideoStreamType, AudioSampleRateType, VideoFormat, Rectangle, ScreenCaptureParameters, ClientRoleType, AudienceLatencyLevelType, ChannelProfileType, WarnCodeType, ErrorCodeType, QualityType, LastmileProbeResult, AudioVolumeInfo, RtcStats, UplinkNetworkInfo, DownlinkNetworkInfo, VideoSourceType, LocalVideoStreamState, LocalVideoStreamError, RemoteVideoState, RemoteVideoStateReason, UserOfflineReasonType, LocalAudioStats, RemoteAudioStats, LocalAudioStreamState, LocalAudioStreamError, RemoteAudioState, RemoteAudioStateReason, ClientRoleChangeFailedReason, RtmpStreamPublishState, RtmpStreamPublishErrorType, RtmpStreamingEvent, ChannelMediaRelayState, ChannelMediaRelayError, ChannelMediaRelayEvent, ConnectionStateType, ConnectionChangedReasonType, NetworkType, EncryptionErrorType, PermissionType, UserInfo, UploadErrorReason, StreamSubscribeState, StreamPublishState, AudioScenarioType, ThreadPriorityType, LastmileProbeConfig, VideoEncoderConfiguration, BeautyOptions, VirtualBackgroundSource, VideoCanvas, SpatialAudioParams, VoiceBeautifierPreset, AudioEffectPreset, VoiceConversionPreset, VideoMirrorModeType, AudioSessionOperationRestriction, DeviceInfo, VideoContentHint, LiveTranscoding, LocalTranscoderConfiguration, VideoOrientation, EncryptionConfig, ChannelMediaRelayConfiguration, AudioProfileType, FishCorrectionParams, ClientRoleOptions, AudioRecordingConfiguration, SimulcastStreamConfig, DataStreamConfig, WatermarkOptions } from './AgoraBase'
+import { QualityAdaptIndication, VideoCodecType, VideoStreamType, AudioSampleRateType, VideoFormat, Rectangle, ScreenCaptureParameters, ClientRoleType, AudienceLatencyLevelType, ChannelProfileType, WarnCodeType, ErrorCodeType, QualityType, LastmileProbeResult, AudioVolumeInfo, RtcStats, UplinkNetworkInfo, DownlinkNetworkInfo, VideoSourceType, LocalVideoStreamState, LocalVideoStreamError, RemoteVideoState, RemoteVideoStateReason, UserOfflineReasonType, LocalAudioStats, RemoteAudioStats, LocalAudioStreamState, LocalAudioStreamError, RemoteAudioState, RemoteAudioStateReason, ClientRoleChangeFailedReason, RtmpStreamPublishState, RtmpStreamPublishErrorType, RtmpStreamingEvent, ChannelMediaRelayState, ChannelMediaRelayError, ChannelMediaRelayEvent, ConnectionStateType, ConnectionChangedReasonType, NetworkType, EncryptionErrorType, PermissionType, UserInfo, UploadErrorReason, StreamSubscribeState, StreamPublishState, AudioScenarioType, ThreadPriorityType, LastmileProbeConfig, VideoEncoderConfiguration, BeautyOptions, VirtualBackgroundSource, VideoCanvas, SpatialAudioParams, VoiceBeautifierPreset, AudioEffectPreset, VoiceConversionPreset, VideoMirrorModeType, EarMonitoringFilterType, AudioSessionOperationRestriction, DeviceInfo, VideoContentHint, LiveTranscoding, LocalTranscoderConfiguration, VideoOrientation, EncryptionConfig, ChannelMediaRelayConfiguration, AudioProfileType, FishCorrectionParams, ClientRoleOptions, AudioRecordingConfiguration, SimulcastStreamConfig, DataStreamConfig, WatermarkOptions } from './AgoraBase'
 import { RenderModeType, NlpAggressiveness, ContentInspectResult, MediaSourceType, RawAudioFrameOpModeType, SnapShotConfig, ContentInspectConfig, AdvancedAudioOptions } from './AgoraMediaBase'
 import { RtcConnection } from './IAgoraRtcEngineEx'
 import { RhythmPlayerStateType, RhythmPlayerErrorType, AgoraRhythmPlayerConfig } from './IAgoraRhythmPlayer'
@@ -280,9 +280,9 @@ kLocalOnly = 1,
 }
 
 export class LocalAccessPointConfiguration {
-  ipList?: string
+  ipList?: string[]
   ipListSize?: number
-  domainList?: string
+  domainList?: string[]
   domainListSize?: number
   verifyDomainName?: string
   mode?: LocalProxyMode
@@ -319,11 +319,11 @@ export abstract class IRtcEngineEventHandler {
 
   onAudioEffectFinished?(soundId: number): void;
 
-  onVideoDeviceStateChanged?(deviceId: string, deviceType: number, deviceState: number): void;
+  onVideoDeviceStateChanged?(deviceId: string, deviceType: MediaDeviceType, deviceState: number): void;
 
   onMediaDeviceChanged?(deviceType: MediaDeviceType): void;
 
-  onNetworkQuality?(connection: RtcConnection, remoteUid: number, txQuality: number, rxQuality: number): void;
+  onNetworkQuality?(connection: RtcConnection, remoteUid: number, txQuality: QualityType, rxQuality: QualityType): void;
 
   onIntraRequestReceived?(connection: RtcConnection): void;
 
@@ -776,7 +776,7 @@ abstract adjustLoopbackRecordingVolume(volume: number): number;
 
 abstract getLoopbackRecordingVolume(): number;
 
-abstract enableInEarMonitoring(enabled: boolean, includeAudioFilters: number): number;
+abstract enableInEarMonitoring(enabled: boolean, includeAudioFilters: EarMonitoringFilterType): number;
 
 abstract setInEarMonitoringVolume(volume: number): number;
 
