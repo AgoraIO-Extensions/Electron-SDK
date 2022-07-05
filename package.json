@@ -1,6 +1,6 @@
 {
   "name": "electron-agora-rtc-ng",
-  "version": "3.8.201-alpha.629",
+  "version": "3.8.201-alpha.705",
   "description": "electron-agora-rtc-ng",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -27,8 +27,8 @@
     "prepare": "husky install"
   },
   "agora_electron": {
-    "iris_sdk_win": "http://192.168.99.149:8086/CSDC_repo/iris_3.8.201.2_DCG_Windows_Video_20220627_1049.zip",
-    "iris_sdk_mac": "http://192.168.99.149:8086/CSDC_repo/iris_3.8.201.2_DCG_Mac_Video_20220627_1047.zip",
+    "iris_sdk_win": "http://192.168.99.149:8086/CSDC_repo/iris_3.8.201_DCG_Windows_Video_20220705_0618.zip",
+    "iris_sdk_mac": "http://192.168.99.149:8086/CSDC_repo/iris_3.8.201_DCG_Mac_Video_20220705_0617.zip",
     "no_symbol": true,
     "prebuilt": true
   },
