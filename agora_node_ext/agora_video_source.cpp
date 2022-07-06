@@ -74,6 +74,7 @@ namespace agora{
             virtual node_error enableEncryption(bool enable, EncryptionConfig encryptionConfig) override;
             virtual node_error setEncryptionSecret(const char* secret) override;
             virtual node_error setProcessDpiAwareness() override;
+            virtual node_error setAddonLogFile(const char* path) override;
         private:
             void msgThread();
             void deliverFrame(const char* payload, int len);
@@ -568,6 +569,14 @@ namespace agora{
                 return m_ipcMsg->sendMessage(AGORA_IPC_SET_PROCESS_DPI_AWARE_NESS, nullptr, 0) ? node_ok : node_generic_error;
             }
             return node_status_error;
+        }
+
+        node_error AgoraVideoSourceSink::setAddonLogFile(const char* path)
+        {
+          if (m_initialized) {
+            return m_ipcMsg->sendMessage(AGORA_IPC_SET_ADDON_LOGFILE, (char*)path, strlen(path)) ? node_ok : node_generic_error;
+          }
+          return node_status_error;
         }
 
         void AgoraVideoSourceSink::deliverFrame(const char* payload , int len)
