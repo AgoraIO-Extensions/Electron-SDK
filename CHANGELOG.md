@@ -1,5 +1,5 @@
-## 3.4.2 (May 17th, 2021)
-
+## 3.4.2-build.706 (July 16th, 2022)
+videoSourceSetAddonLogFile
 ## 3.4.1 (April 26st, 2021)
 * add new api:
   - adjustLoopbackRecordingSignalVolume
