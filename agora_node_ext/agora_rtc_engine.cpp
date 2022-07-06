@@ -194,6 +194,7 @@ namespace agora {
                 PROPERTY_METHOD_DEFINE(videoSourceEnableEncryption)
                 PROPERTY_METHOD_DEFINE(videoSourceSetEncryptionMode)
                 PROPERTY_METHOD_DEFINE(videoSourceSetEncryptionSecret);
+                PROPERTY_METHOD_DEFINE(videoSourceSetAddonLogFile);
                 PROPERTY_METHOD_DEFINE(setBool);
                 PROPERTY_METHOD_DEFINE(setInt);
                 PROPERTY_METHOD_DEFINE(setUInt);
@@ -2548,6 +2549,29 @@ namespace agora {
                 CHECK_NAPI_STATUS(pEngine, status);
 
                 if (!pEngine->m_videoSourceSink.get() || pEngine->m_videoSourceSink->setEncryptionSecret(secret) != node_ok) {
+                    break;
+                }
+                result = 0;
+            } while (false);
+            napi_set_int_result(args, result);
+            LOG_LEAVE;
+        }
+
+        NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetAddonLogFile)
+        {
+            LOG_ENTER;
+            napi_status status = napi_ok;
+            int result = -1;
+            do{
+                NodeRtcEngine *pEngine = nullptr;
+                napi_get_native_this(args, pEngine);
+                CHECK_NATIVE_THIS(pEngine);
+                nodestring path;
+                napi_get_param_1(args, nodestring, path);
+                string sPath;
+                sPath = path ? string(path) : "";
+                
+                if (!pEngine->m_videoSourceSink.get() || pEngine->m_videoSourceSink->setAddonLogFile(sPath.c_str()) != node_ok) {
                     break;
                 }
                 result = 0;

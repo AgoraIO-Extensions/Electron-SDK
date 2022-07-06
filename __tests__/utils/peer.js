@@ -14,7 +14,7 @@ console.log(`joining ${channel} with uid ${uid}`);
 let rtcEngine = new AgoraRtcEngine();
 rtcEngine.onRegisterDeliverFrame = () => {};
 rtcEngine.initRender = () => {};
-rtcEngine.initialize('aab8b8f5a8cd4469a63042fcfafe7063');
+rtcEngine.initialize('');
 rtcEngine.setChannelProfile(1);
 rtcEngine.setClientRole(1);
 rtcEngine.setupLocalVideo();

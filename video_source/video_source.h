@@ -95,6 +95,7 @@ protected:
     void notifyLocalVideoStateChanged(agora::rtc::LOCAL_VIDEO_STREAM_STATE localVideoState, agora::rtc::LOCAL_VIDEO_STREAM_ERROR error);
     void notifyLocalAudioStateChanged(agora::rtc::LOCAL_AUDIO_STREAM_STATE state, agora::rtc::LOCAL_AUDIO_STREAM_ERROR error);
     void setProcessDpiAwareness();
+    void setAddonLogFile(const char* path);
 private:
     void exit(bool notifySink);
 private:

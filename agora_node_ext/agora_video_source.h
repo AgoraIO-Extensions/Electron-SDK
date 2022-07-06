@@ -195,6 +195,7 @@ namespace agora{
             virtual node_error enableEncryption(bool enable, EncryptionConfig encryptionConfig) = 0;
             virtual node_error setEncryptionSecret(const char* secret) = 0;
             virtual node_error setProcessDpiAwareness() = 0;
+            virtual node_error setAddonLogFile(const char* path) = 0;
         };
 
         /**

@@ -330,12 +330,14 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
         rep.enableWebSdkInteroperability((bool)*payload);
     }
     else if (msg == AGORA_IPC_ENABLE_DUAL_STREAM_MODE) {
-        agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
-        rep.enableDualStreamMode((bool)*payload);
+      agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
+      rep.enableDualStreamMode((bool)*payload);
     }
     else if (msg == AGORA_IPC_SET_LOGFILE) {
-        agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
-        rep.setLogFile((char*)payload);
+      std::string sPath((const char*)payload, len);
+      agora::rtc::RtcEngineParameters rep(m_rtcEngine.get());
+      LOG_INFO("setLogFile %s", sPath.c_str());
+      m_rtcEngine->setLogFile(sPath.c_str());
     }
     else if (msg == AGORA_IPC_SET_PARAMETER) {
         if (len != sizeof(SetParameterCmd))
@@ -434,7 +436,12 @@ void AgoraVideoSource::onMessage(unsigned int msg, char* payload, unsigned int l
     } else if(msg == AGORA_IPC_SET_PROCESS_DPI_AWARE_NESS) {
         setProcessDpiAwareness();
     }
-
+    else if (msg == AGORA_IPC_SET_ADDON_LOGFILE) {
+        std::string sPath((const char*)payload, len);
+        LOG_INFO("videosource addon log %s", sPath.c_str());
+        stopLogService();
+        startLogService(sPath.c_str());
+    }
     LOG_LEAVE;
 }
 
@@ -513,7 +520,7 @@ void initLogService()
 
 int main(int argc, char* argv[])
 {
-    initLogService();
+   // initLogService();
     if (argc < 3){
         LOG_ERROR("Need at least 3 parameter. Current parameter num : %d\n", argc);
         return 0;
