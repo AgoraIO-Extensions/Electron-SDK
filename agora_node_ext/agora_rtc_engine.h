@@ -253,6 +253,7 @@ namespace agora {
             NAPI_API(videoSourceEnableEncryption);
             NAPI_API(videoSourceSetEncryptionMode);
             NAPI_API(videoSourceSetEncryptionSecret);
+            NAPI_API(videoSourceSetAddonLogFile);
             /*
             * Native interface used to setup local and remote video canvas.
             */

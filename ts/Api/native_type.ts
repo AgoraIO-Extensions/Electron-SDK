@@ -3010,6 +3010,10 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
+  videoSourceSetAddonLogFile(filepath: string): number;
+  /**
+   * @ignore
+   */
   setLogFilter(filter: number): number;
   /**
    * @ignore
