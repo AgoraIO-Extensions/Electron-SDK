@@ -359,7 +359,6 @@ export default class App extends Component {
       try {
         rtcEngine.videoSourceInitialize(APP_ID);
         let logpath = path.resolve(os.homedir(), "./agorascreenshare.log")
-        rtcEngine.videoSourceSetLogFile(logpath)
         rtcEngine.videoSourceSetChannelProfile(1);
         rtcEngine.videoSourceEnableWebSdkInteroperability(true)
         // rtcEngine.videoSourceSetVideoProfile(50, false);
