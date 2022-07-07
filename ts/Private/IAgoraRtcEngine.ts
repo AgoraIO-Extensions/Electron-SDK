@@ -1543,7 +1543,12 @@ export abstract class IRtcEngineEventHandler {
   onVideoStopped?(): void;
 
   /*
-   * TODO(doc)
+   * 音乐文件的播放状态已改变回调。
+   * 该回调在音乐文件播放状态发生改变时触发，并报告当前的播放状态和错误码。
+   *
+   * @param state 音乐文件播放状态。详见 AudioMixingStateType 。
+   *
+   * @param errorCode 错误码。详见 AudioMixingErrorType 。
    */
   onAudioMixingStateChanged?(state: AudioMixingStateType, errorCode: AudioMixingErrorType): void;
 
@@ -3484,7 +3489,15 @@ abstract setLocalVoiceEqualization(bandFrequency: AudioEqualizationBandFrequency
 abstract setLocalVoiceReverb(reverbKey: AudioReverbType, value: number): number;
 
 /*
- * TODO(doc)
+ * 设置日志文件
+ * 弃用：
+ * 此方法已废弃，请改用 initialize 中的 logConfig 参数设置日志文件路径 。 设置 SDK 的输出 log 文件。SDK 运行时产生的所有 log 将写入该文件。App 必须保证指定的目录存在而且可写。 如需调用本方法，请在调用 initialize 方法初始化 IRtcEngine 对象后立即调用，否则输出日志可能不完整。
+ *
+ * @param filePath 日志文件的完整路径。该日志文件为 UTF-8 编码。
+ *
+ * @returns
+ * 0: 方法调用成功
+ * < 0: 方法调用失败
  */
 abstract setLogFile(filePath: string): number;
 
@@ -3517,7 +3530,23 @@ abstract setLogFilter(filter: LogFilterType): number;
 abstract setLogLevel(level: LogLevel): number;
 
 /*
- * TODO(doc)
+ * 设置 SDK 输出的日志文件的大小。
+ * 弃用：
+ * 该方法已废弃，请改用 initialize 中的 logConfig 参数设置日志文件大小。 默认情况下，SDK 会生成 5 个 SDK 日志文件和 5 个 API 调用日志文件，规则如下： SDK 日志文件的名称分别为：agorasdk.log、agorasdk.1.log、agorasdk.2.log、agorasdk.3.log、agorasdk.4.log。
+ * API 调用日志文件的名称分别为：agoraapi.log、agoraapi.1.log、agoraapi.2.log、agoraapi.3.log、agoraapi.4.log。
+ * 每个 SDK 日志文件的默认大小为 1,024 KB；API 调用日志文件的默认大小为 2,048 KB。日志文件均为 UTF-8 编码。
+ * 最新的日志永远写在 agorasdk.log 和 agoraapi.log 中。
+ * 当 agorasdk.log 写满后，SDK 会按照以下顺序对日志文件进行操作： 删除 agorasdk.4.log 文件（如有）。
+ * 将agorasdk.3.log 重命名为 agorasdk.4.log。
+ * 将agorasdk.2.log 重命名为 agorasdk.3.log。
+ * 将agorasdk.1.log 重命名为 agorasdk.2.log。
+ * 新建 agorasdk.log 文件。 agoraapi.log 文件的覆盖规则与 agorasdk.log 相同。 该方法仅用于设置 agorasdk.log 文件的大小，对agoraapi.log不生效。
+ *
+ * @param fileSizeInKBytes 单个 agorasdk.log 日志文件的大小，单位为 KB，取值范围为 [128,20480]，默认值为 1,024 KB。 如果你将 fileSizeInKByte 设为小于 128 KB，SDK 会自动调整到 128 KB；如果你将 fileSizeInKByte 设为大于 20,480 KB，SDK 会自动调整到 20,480 KB。
+ *
+ * @returns
+ * 0: 方法调用成功。
+ * < 0: 方法调用失败。
  */
 abstract setLogFileSize(fileSizeInKBytes: number): number;
 
@@ -3626,7 +3655,13 @@ abstract setRecordingAudioFrameParameters(sampleRate: number, channel: number, m
 abstract setPlaybackAudioFrameParameters(sampleRate: number, channel: number, mode: RawAudioFrameOpModeType, samplesPerCall: number): number;
 
 /*
- * TODO(doc)
+ * 设置 报告的音频数据格式。
+ *
+ * @param sampleRate 音频数据采样率 (Hz)，可设置为 8000、 16000、32000、 44100 或 48000。
+ *
+ * @param channel 音频数据声道数，可设置为 1（单声道） 或 2（双声道）。
+ *
+ * @param samplesPerCall 音频数据采样点数。旁路推流场景下通常设为 1024。
  */
 abstract setMixedAudioFrameParameters(sampleRate: number, channel: number, samplesPerCall: number): number;
 
@@ -3740,7 +3775,17 @@ abstract setLocalPublishFallbackOption(option: StreamFallbackOptions): number;
 abstract setRemoteSubscribeFallbackOption(option: StreamFallbackOptions): number;
 
 /*
- * TODO(doc)
+ * 开启声卡采集。
+ * 启用声卡采集功能后，声卡播放的声音会被合到本地音频流中，从而可以发送到远端。 该方法仅适用于 macOS 和 Windows 平台。
+ * macOS 系统默认声卡不支持采集功能，如果你需要使用该功能，请启用一个虚拟声卡，并将该虚拟声卡的名字传入 deviceName 参数。Agora 推荐你使用虚拟声卡 Soundflower 进行声卡采集。
+ * 该方法在加入频道前后都能调用。
+ *
+ * @param enabled 是否开启声卡采集: 
+ *  true: 开启声卡采集。
+ *  false:（默认）关闭声卡采集。
+ *
+ * @param deviceName macOS: 虚拟声卡的设备名。默认为空，代表使用 Soundflower 虚拟声卡进行采集。
+ *  Windows: 声卡的设备名。默认为空，代表使用设备自带的声卡进行采集。
  */
 abstract enableLoopbackRecording(enabled: boolean, deviceName?: string): number;
 
@@ -4840,7 +4885,34 @@ abstract setAVSyncSource(channelId: string, uid: number): number;
 abstract joinChannel(token: string, channelId: string, info: string, uid: number): number;
 
 /*
- * TODO(doc)
+ * 设置媒体选项并加入频道。
+ * 该方法让用户加入通话频道，在同一个频道内的用户可以互相通话，多个用户加入同一个频道，可以群聊。 使用不同 App ID 的 app 不能互通。
+ * 成功调用该方法加入频道后会触发以下回调： 
+ * 本地会触发 onJoinChannelSuccess 和 onConnectionStateChanged 回调。
+ * 通信场景下的用户和直播场景下的主播加入频道后，远端会触发 onUserJoined 回调。 在网络状况不理想的情况下，客户端可能会与 Agora 服务器失去连接；SDK 会自动尝试重连，重连成功后，本地会触发 onRejoinChannelSuccess 回调。 该方法允许用户一次加入仅一个频道。
+ * 请务必确保用于生成 Token 的 App ID 和 initialize 方法初始化引擎时用的是同一个 App ID，否则使用 Token 加入频道失败。
+ *
+ * @param token 在服务端生成的用于鉴权的动态密钥。详见
+ *
+ * @param channelId 频道名。该参数标识用户进行实时音视频互动的频道。App ID 一致的前提下，填入相同频道名的用户会进入同一个频道进行音视频互动。该参数为长度在 64 字节以内的字符串。以下为支持的字符集范围（共 89 个字符）: 26 个小写英文字母 a~z
+ *  26 个大写英文字母 A~Z
+ *  10 个数字 0~9
+ *  空格
+ *  "!"、"#"、"$"、"%"、"&"、"("、")"、"+"、"-"、":"、";"、"<"、"="、"."、">"、"?"、"@"、"["、"]"、"^"、"_"、"{"、"}"、"|"、"~"、"," 
+ *
+ * @param uid 用户 ID。该参数用于标识在实时音视频互动频道中的用户。你需要自行设置和管理用户 ID，并确保同一频道内的每个用户 ID 是唯一的。该参数为 32 位无符号整数。 建议设置范围：1 到 232-1。如果不指定（即设为 0），SDK 会自动分配一个，并在 onJoinChannelSuccess 回调中返回， app 层必须记住该返回值并维护，SDK 不对该返回值进行维护。
+ *
+ * @param options 频道媒体设置选项。详见 ChannelMediaOptions 。
+ *
+ * @returns
+ * 0：方法调用成功。
+ * < 0：方法调用失败。 -2：传入的参数无效。例如，使用了不合法的 Token，uid 参数未设置为整型， ChannelMediaOptions 结构体成员值不合法。你需要填入有效的参数，重新加入频道。
+ * -3： IRtcEngine 对象初始化失败。你需要重新初始化 IRtcEngine 对象。
+ * -7：IRtcEngine 对象尚未初始化。你需要在调用该方法前成功初始化 IRtcEngine 对象。
+ * -8：IRtcEngine 对象内部状态错误。可能的原因是：调用 startEchoTest 开始通话回路测试后，未调用 stopEchoTest 停止测试就调用该方法加入频道。你需要在该方法前调用 stopEchoTest。
+ * -17：加入频道被拒绝。可能的原因是用户已经在频道中。Agora 推荐通过 onConnectionStateChanged 回调判断用户是否在频道中。除收到 ConnectionStateDisconnected(1) 状态外，不要再次调用该方法加入频道。
+ * -102：频道名无效。你需要在 channelId 中填入有效的频道名，重新加入频道。
+ * -121：用户 ID 无效。你需要在 uid 中填入有效的用户 ID，重新加入频道。
  */
 abstract joinChannelWithOptions(token: string, channelId: string, uid: number, options: ChannelMediaOptions): number;
 
@@ -4932,7 +5004,17 @@ abstract stopPreview(sourceType?: VideoSourceType): number;
 abstract setAudioProfile(profile: AudioProfileType, scenario?: AudioScenarioType): number;
 
 /*
- * TODO(doc)
+ * 开始客户端录音。
+ * Agora SDK 支持通话过程中在客户端进行录音。调用该方法后，你可以录制频道内用户的音频，并得到一个录音文件。录音文件格式可以为: 
+ * WAV: 音质保真度较高，文件较大。例如，采样率为 32000 Hz，录音时长为 10 分钟的文件大小约为 73 M。
+ * AAC: 音质保真度较低，文件较小。例如，采样率为 32000 Hz，录音音质为 AudioRecordingQualityMedium，录音时长为 10 分钟的文件大小约为 2 M。 用户离开频道后，录音会自动停止。
+ * 该方法需要在加入频道后调用。
+ *
+ * @param config 录音配置。详见 AudioRecordingConfiguration 。
+ *
+ * @returns
+ * 0: 方法调用成功
+ * < 0: 方法调用失败
  */
 abstract startAudioRecording(config: AudioRecordingConfiguration): number;
 
