@@ -45,11 +45,13 @@ export abstract class IMediaPlayerSourceObserver {
   onMetaData?(data: Uint8Array, length: number): void;
 
   /*
-@ignore   */
+   * @ignore
+   */
   onPlayBufferUpdated?(playCachedBuffer: number): void;
 
   /*
-@ignore   */
+   * @ignore
+   */
   onPreloadEvent?(src: string, event: PlayerPreloadEvent): void;
 
   /*
@@ -58,18 +60,22 @@ export abstract class IMediaPlayerSourceObserver {
   onCompleted?(): void;
 
   /*
-@ignore   */
+   * @ignore
+   */
   onAgoraCDNTokenWillExpire?(): void;
 
   /*
-@ignore   */
+   * @ignore
+   */
   onPlayerSrcInfoChanged?(from: SrcInfo, to: SrcInfo): void;
 
   /*
-@ignore   */
+   * @ignore
+   */
   onPlayerInfoUpdated?(info: PlayerUpdatedInfo): void;
 
   /*
-@ignore   */
+   * @ignore
+   */
   onAudioVolumeIndication?(volume: number): void;
 }
