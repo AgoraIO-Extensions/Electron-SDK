@@ -2892,7 +2892,8 @@ export class LiveTranscoding {
    */
   videoBitrate?: number
   /*
-   * @ignore
+   * Frame rate (in fps) of the output video stream set for Media Push. The default value is 15 , and the value range is (0,30].
+   * The Agora server adjusts any value over 30 to 30.
    */
   videoFramerate?: number
   /*
@@ -3606,7 +3607,8 @@ RoomAcousticsSpacial = 0x02010600,
  */
 RoomAcousticsEthereal = 0x02010700,
 /*
- * @ignore
+ * A 3D voice effect that makes the voice appear to be moving around the user. The default movement cycle is 10 seconds. After setting this effect, you can call to setAudioEffectParameters modify the movement period. Before using this preset, set the profile parameter of setAudioProfile to AudioProfileMusicStandardStereo or AudioProfileMusicHighQualityStereo; otherwise, the preset setting is invalid.
+ * If the 3D voice effect is enabled, users need to use stereo audio playback devices to hear the anticipated voice effect.
  */
 RoomAcoustics3dVoice = 0x02010800,
 /*
