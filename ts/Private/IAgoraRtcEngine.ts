@@ -211,32 +211,33 @@ AudioReverbStrength = 4,
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export enum StreamFallbackOptions {
 /*
- * 0: No fallback behavior for the local/remote video stream when the uplink/downlink network conditions are poor. The quality of the stream is not guaranteed.
+ * @ignore
  */
 StreamFallbackOptionDisabled = 0,
 /*
- * 1: Under poor downlink network conditions, the remote video stream, to which you subscribe, falls back to the low-quality (low resolution and low bitrate) video stream.
- * This option is only valid for setRemoteSubscribeFallbackOption . 
+ * @ignore
  */
 StreamFallbackOptionVideoStreamLow = 1,
 /*
- * 2: Under poor uplink network conditions, the published video stream falls back to audio-only. Under poor downlink network conditions, the remote video stream, to which you subscribe, first falls back to the low-quality (low resolution and low bitrate) video stream; and then to an audio-only stream if the network conditions worsen.
+ * @ignore
  */
 StreamFallbackOptionAudioOnly = 2,
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export enum PriorityType {
 /*
- * The user's priority is high.
+ * @ignore
  */
 PriorityHigh = 50,
 /*
- * (Default) The user's priority is normal.
+ * @ignore
  */
 PriorityNormal = 100,
 }
@@ -709,14 +710,15 @@ export class AudioOptionsExternal {
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export class SIZE {
 /*
- * The target width (px) for the thumbnail or icon. The default value is 0.
+ * @ignore
  */
   width?: number
   /*
-   * The target height (px) for the thumbnail or icon. The default value is 0.
+   * @ignore
    */
   height?: number
 }
@@ -1729,11 +1731,13 @@ export abstract class IRtcEngineEventHandler {
   onActiveSpeaker?(connection: RtcConnection, uid: number): void;
 
   /*
-@ignore   */
+   * @ignore
+   */
   onContentInspectResult?(result: ContentInspectResult): void;
 
   /*
-@ignore   */
+   * @ignore
+   */
   onSnapshotTaken?(connection: RtcConnection, filePath: string, width: number, height: number, errCode: number): void;
 
   /*
@@ -1837,7 +1841,8 @@ export abstract class IRtcEngineEventHandler {
   onTranscodingUpdated?(): void;
 
   /*
-@ignore   */
+   * @ignore
+   */
   onAudioRoutingChanged?(routing: number): void;
 
   /*
@@ -1863,7 +1868,8 @@ export abstract class IRtcEngineEventHandler {
   onLocalPublishFallbackToAudioOnly?(isFallbackOrRecover: boolean): void;
 
   /*
-@ignore   */
+   * @ignore
+   */
   onRemoteSubscribeFallbackToAudioOnly?(uid: number, isFallbackOrRecover: boolean): void;
 
   /*
@@ -2227,105 +2233,108 @@ export abstract class IMetadataObserver {
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export enum DirectCdnStreamingError {
 /*
- * 0: No error.
+ * @ignore
  */
 DirectCdnStreamingErrorOk = 0,
 /*
- * 1: General error, no clear reason. You can try to push the stream again.
+ * @ignore
  */
 DirectCdnStreamingErrorFailed = 1,
 /*
- * 2: An error occurs when pushing audio streams. For example, the local audio capture device is not working properly, is occupied by another process, or does not get the permission.
+ * @ignore
  */
 DirectCdnStreamingErrorAudioPublication = 2,
 /*
- * 3: An error occurs when pushing video streams. For example, the local video capture device is not working properly, is occupied by another process, or does not get the permission.
+ * @ignore
  */
 DirectCdnStreamingErrorVideoPublication = 3,
 /*
- * 4: Fails to connect to the CDN.
+ * @ignore
  */
 DirectCdnStreamingErrorNetConnect = 4,
 /*
- * 5: The URL is already being used. Use a new media push URL.
+ * @ignore
  */
 DirectCdnStreamingErrorBadName = 5,
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export enum DirectCdnStreamingState {
 /*
- * 0: The initial state before the CDN streaming starts.
+ * @ignore
  */
 DirectCdnStreamingStateIdle = 0,
 /*
- * 1: Streams are being pushed to the CDN. 
- * After you call startDirectCdnStreaming to stop streaming, the SDK returns this value.
+ * @ignore
  */
 DirectCdnStreamingStateRunning = 1,
 /*
- * 100: The streaming has been stopped normally. 2: Stops pushing streams to the CDN. After you call stopDirectCdnStreaming to stop streaming, the SDK returns this value.
+ * @ignore
  */
 DirectCdnStreamingStateStopped = 2,
 /*
- * 3: Fails to push streams to the CDN.
- * You can troubleshoot the issue with the information reported by the onDirectCdnStreamingStateChanged callback, and then push streams to the CDN again.
+ * @ignore
  */
 DirectCdnStreamingStateFailed = 3,
 /*
- * 4: Tries to reconnect Agora server to the CDN. The SDK attempts to reconnect a maximum of 10 times, if the connection is not restored, the streaming state becomes DirectCdnStreamingStateFailed.
+ * @ignore
  */
 DirectCdnStreamingStateRecovering = 4,
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export class DirectCdnStreamingStats {
 /*
- * 视频的宽度（px）。
+ * @ignore
  */
   videoWidth?: number
   /*
-   * 视频的高度（px）。
+   * @ignore
    */
   videoHeight?: number
   /*
-   * 当前视频帧率（fps）。
+   * @ignore
    */
   fps?: number
   /*
-   * 当前视频码率（bps）。
+   * @ignore
    */
   videoBitrate?: number
   /*
-   * 当前音频码率（bps）。
+   * @ignore
    */
   audioBitrate?: number
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export abstract class IDirectCdnStreamingEventHandler {
 /*
-@ignore */
+ * @ignore
+ */
   onDirectCdnStreamingStateChanged?(state: DirectCdnStreamingState, error: DirectCdnStreamingError, message: string): void;
 
   /*
-@ignore   */
+   * @ignore
+   */
   onDirectCdnStreamingStats?(stats: DirectCdnStreamingStats): void;
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export class DirectCdnStreamingMediaOptions {
 /*
- * Set whether to publish the video captured by the camera.
- * true: Publish the video captured by the camera.
- * false: (default) Do not publish video captured by the camera.
+ * @ignore
  */
   publishCameraTrack?: boolean
   /*
@@ -2333,15 +2342,11 @@ export class DirectCdnStreamingMediaOptions {
    */
   publishMicrophoneTrack?: boolean
   /*
-   * Set whether to publish custom captured audio.
-   * true: Publish custom captured audio.
-   * false: (default) Do not publish custom captured audio.
+   * @ignore
    */
   publishCustomAudioTrack?: boolean
   /*
-   * Set whether to publish custom captured videos.
-   * true: Publish custom captured videos.
-   * false: (default) Do not publish custom captured videos.
+   * @ignore
    */
   publishCustomVideoTrack?: boolean
   /*
@@ -3253,11 +3258,13 @@ abstract enableSoundPositionIndication(enabled: boolean): number;
 abstract setRemoteVoicePosition(uid: number, pan: number, gain: number): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract enableSpatialAudio(enabled: boolean): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract setRemoteUserSpatialAudioParams(uid: number, params: SpatialAudioParams): number;
 
 /*
@@ -3548,7 +3555,8 @@ abstract setRemoteRenderMode(uid: number, renderMode: RenderModeType, mirrorMode
 abstract setLocalVideoMirrorMode(mirrorMode: VideoMirrorModeType): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract enableEchoCancellationExternal(enabled: boolean, audioSourceDelay: number): number;
 
 /* api_irtcengine_enablecustomaudiolocalplayback */
@@ -3567,27 +3575,33 @@ abstract startSecondaryCustomAudioTrack(config: AudioTrackConfig): number;
 abstract stopSecondaryCustomAudioTrack(): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract setRecordingAudioFrameParameters(sampleRate: number, channel: number, mode: RawAudioFrameOpModeType, samplesPerCall: number): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract setPlaybackAudioFrameParameters(sampleRate: number, channel: number, mode: RawAudioFrameOpModeType, samplesPerCall: number): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract setMixedAudioFrameParameters(sampleRate: number, channel: number, samplesPerCall: number): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract setPlaybackAudioFrameBeforeMixingParameters(sampleRate: number, channel: number): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract enableAudioSpectrumMonitor(intervalInMS?: number): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract disableAudioSpectrumMonitor(): number;
 
 /*
@@ -3652,7 +3666,8 @@ abstract adjustUserPlaybackSignalVolume(uid: number, volume: number): number;
 abstract setLocalPublishFallbackOption(option: StreamFallbackOptions): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract setRemoteSubscribeFallbackOption(option: StreamFallbackOptions): number;
 
 /*
@@ -3766,7 +3781,8 @@ abstract switchCamera(): number;
 abstract isCameraZoomSupported(): boolean;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract isCameraFaceDetectSupported(): boolean;
 
 /* api_irtcengine_iscameratorchsupported */
@@ -4531,26 +4547,31 @@ abstract pauseAllChannelMediaRelay(): number;
 abstract resumeAllChannelMediaRelay(): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract setDirectCdnStreamingAudioConfiguration(profile: AudioProfileType): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract setDirectCdnStreamingVideoConfiguration(config: VideoEncoderConfiguration): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract startDirectCdnStreaming(eventHandler: IDirectCdnStreamingEventHandler, publishUrl: string, options: DirectCdnStreamingMediaOptions): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract stopDirectCdnStreaming(): number;
 
 /* api_irtcengine_updatedirectcdnstreamingmediaoptions */
 abstract updateDirectCdnStreamingMediaOptions(options: DirectCdnStreamingMediaOptions): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract takeSnapshot(config: SnapShotConfig): number;
 
 /* api_irtcengine_setcontentinspect */
@@ -5008,14 +5029,15 @@ abstract setMaxMetadataSize(size: number): number;
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export enum QualityReportFormatType {
 /*
- * 0: The quality report in JSON format.
+ * @ignore
  */
 QualityReportJson = 0,
 /*
- * 1: The quality report in HTML format.
+ * @ignore
  */
 QualityReportHtml = 1,
 }

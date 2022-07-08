@@ -285,7 +285,7 @@ AudioDualMonoMix = 3,
 }
 
 /*
- * The video pixel format.
+ * @ignore
  */
 export enum VideoPixelFormat {
 /*
@@ -293,11 +293,11 @@ export enum VideoPixelFormat {
  */
 VideoPixelUnknown = 0,
 /*
- * 1: The format is I420.
+ * @ignore
  */
 VideoPixelI420 = 1,
 /*
- * 2: The format is BGRA.
+ * @ignore
  */
 VideoPixelBgra = 2,
 /*
@@ -309,7 +309,7 @@ VideoPixelNv21 = 3,
  */
 VideoPixelRgba = 4,
 /*
- * 8: The format is NV12.
+ * @ignore
  */
 VideoPixelNv12 = 8,
 /*
@@ -427,66 +427,68 @@ FrameTypePcm16 = 0,
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export class AudioSpectrumData {
 /*
- * The audio spectrum data. Agora divides the audio frequency into 160 frequency domains, and reports the energy value of each frequency domain through this parameter. The value range of each energy type is [0, 1].
+ * @ignore
  */
   audioSpectrumData?: number[]
   /*
-   * The length of the audio spectrum data in byte.
+   * @ignore
    */
   dataLength?: number
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export class UserAudioSpectrumInfo {
 /*
- * The user ID of the remote user.
+ * @ignore
  */
   uid?: number
   /*
-   * Audio spectrum information of the remote user.  AudioSpectrumData 
+   * @ignore
    */
   spectrumData?: AudioSpectrumData
 }
 
 /*
- * The process mode of the video frame:
+ * @ignore
  */
 export enum VideoFrameProcessMode {
 /*
- * Read-only mode.
- * In this mode, you do not modify the video frame. The video frame observer is a renderer.
+ * @ignore
  */
 ProcessModeReadOnly = 0,
 /*
- * Read and write mode.
- * In this mode, you modify the video frame. The video frame observer is a video filter.
+ * @ignore
  */
 ProcessModeReadWrite = 1,
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export enum ContentInspectResult {
 /*
- * 1：正常图片。
+ * @ignore
  */
 ContentInspectNeutral = 1,
 /*
- * 2：性感图片。
+ * @ignore
  */
 ContentInspectSexy = 2,
 /*
- * 3：色情图片。
+ * @ignore
  */
 ContentInspectPorn = 3,
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export enum ContentInspectDeviceType {
 /*
  * @ignore
@@ -507,7 +509,8 @@ ContentInspectDeviceTupu = 3,
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export enum ContentInspectType {
 /*
  * @ignore
@@ -524,10 +527,11 @@ ContentInspectSupervise = 2,
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export class ContentInspectModule {
 /*
- * 
+ * @ignore
  */
   type?: ContentInspectType
   /*
@@ -571,24 +575,19 @@ export class ContentInspectConfig {
 }
 
 /*
- * 视频截图设置。
+ * @ignore
  */
 export class SnapShotConfig {
 /*
- * The channel name.
+ * @ignore
  */
   channel?: string
   /*
-   * The user ID. Set uid as 0 if you want to take a snapshot of the local user's video.
+   * @ignore
    */
   uid?: number
   /*
-   * 截图的本地保存路径，需精确到文件名及格式， 例如： 
-   * Windows: C:\Users\<user_name>\AppData\Local\Agora\<process_name>\example.jpg
-   * iOS: /App Sandbox/Library/Caches/example.jpg
-   * macOS: ～/Library/Logs/example.jpg
-   * Android: /storage/emulated/0/Android/data/<package name>/files/example.jpg
-   * Ensure that the path you specify exists and is writable.
+   * @ignore
    */
   filePath?: string
 }
