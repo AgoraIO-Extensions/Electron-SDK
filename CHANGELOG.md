@@ -1,4 +1,6 @@
-## 3.4.2-build.706 (July 16th, 2022)
+## 3.4.2-build.708 (July 8th, 2022)
+remove default addon log file
+## 3.4.2-build.706 (July 6th, 2022)
 videoSourceSetAddonLogFile
 ## 3.4.1 (April 26st, 2021)
 * add new api:
