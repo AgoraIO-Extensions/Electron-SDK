@@ -1,66 +1,66 @@
 
 /*
- * TODO(doc)
+ * @ignore
  */
 export enum RhythmPlayerStateType {
 /*
- * TODO(doc)
+ * @ignore
  */
 RhythmPlayerStateIdle = 810,
 /*
- * TODO(doc)
+ * @ignore
  */
 RhythmPlayerStateOpening = 811,
 /*
- * TODO(doc)
+ * @ignore
  */
 RhythmPlayerStateDecoding = 812,
 /*
- * TODO(doc)
+ * @ignore
  */
 RhythmPlayerStatePlaying = 813,
 /*
- * TODO(doc)
+ * @ignore
  */
 RhythmPlayerStateFailed = 814,
 }
 
 /*
- * TODO(doc)
+ * @ignore
  */
 export enum RhythmPlayerErrorType {
 /*
- * TODO(doc)
+ * @ignore
  */
 RhythmPlayerErrorOk = 0,
 /*
- * TODO(doc)
+ * @ignore
  */
 RhythmPlayerErrorFailed = 1,
 /*
- * TODO(doc)
+ * @ignore
  */
 RhythmPlayerErrorCanNotOpen = 801,
 /*
- * TODO(doc)
+ * @ignore
  */
 RhythmPlayerErrorCanNotPlay = 802,
 /*
- * TODO(doc)
+ * @ignore
  */
 RhythmPlayerErrorFileOverDurationLimit = 803,
 }
 
 /*
- * TODO(doc)
+ * @ignore
  */
 export class AgoraRhythmPlayerConfig {
 /*
- * TODO(doc)
+ * @ignore
  */
   beatsPerMeasure?: number
   /*
-   * TODO(doc)
+   * @ignore
    */
   beatsPerMinute?: number
 }
