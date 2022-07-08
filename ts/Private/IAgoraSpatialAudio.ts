@@ -28,31 +28,31 @@ SaeConnectionStateReconnected = 4,
 }
 
 /*
- * SDK 与 Agora 空间音效服务器连接状态发生改变的原因。
+ * @ignore
  */
 export enum SaeConnectionChangedReasonType {
 /*
- * 0: 正常。
+ * @ignore
  */
 SaeConnectionChangedDefault = 0,
 /*
- * 1: SDK 建立连接中。
+ * @ignore
  */
 SaeConnectionChangedConnecting = 1,
 /*
- * 2: SDK 创建房间失败。
+ * @ignore
  */
 SaeConnectionChangedCreateRoomFail = 2,
 /*
- * 3: SDK 与 RTM 系统连接中断。
+ * @ignore
  */
 SaeConnectionChangedRtmDisconnect = 3,
 /*
- * 4: 用户被 RTM 系统踢出。
+ * @ignore
  */
 SaeConnectionChangedRtmAborted = 4,
 /*
- * 5: SDK 超过 15 秒未收到 Agora 空间音效服务器的消息。
+ * @ignore
  */
 SaeConnectionChangedLostSync = 5,
 }
@@ -88,23 +88,23 @@ export class RemoteVoicePositionInfo {
 }
 
 /*
- * Agora 空间音效服务器的访问区域。
+ * @ignore
  */
 export enum SaeDeployRegion {
 /*
- * （默认）中国大陆。
+ * @ignore
  */
 SaeDeployRegionCn = 0x00000001,
 /*
- * North America.
+ * @ignore
  */
 SaeDeployRegionNa = 0x00000002,
 /*
- * Europe.
+ * @ignore
  */
 SaeDeployRegionEu = 0x00000004,
 /*
- * Asia, excluding Mainland China.
+ * @ignore
  */
 SaeDeployRegionAs = 0x00000008,
 }
@@ -195,7 +195,9 @@ abstract setDistanceUnit(unit: number): number;
  */
 abstract updateSelfPosition(position: number[], axisForward: number[], axisRight: number[], axisUp: number[]): number;
 
-/* api_ibasespatialaudioengine_updateselfpositionex */
+/*
+ * @ignore
+ */
 abstract updateSelfPositionEx(position: number[], axisForward: number[], axisRight: number[], axisUp: number[], connection: RtcConnection): number;
 
 /*
@@ -203,7 +205,9 @@ abstract updateSelfPositionEx(position: number[], axisForward: number[], axisRig
  */
 abstract updatePlayerPositionInfo(playerId: number, positionInfo: RemoteVoicePositionInfo): number;
 
-/* api_ibasespatialaudioengine_setparameters */
+/*
+ * @ignore
+ */
 abstract setParameters(params: string): number;
 
 /*
@@ -286,7 +290,9 @@ abstract initialize(config: LocalSpatialAudioConfig): number;
  */
 abstract updateRemotePosition(uid: number, posInfo: RemoteVoicePositionInfo): number;
 
-/* api_ilocalspatialaudioengine_updateremotepositionex */
+/*
+ * @ignore
+ */
 abstract updateRemotePositionEx(uid: number, posInfo: RemoteVoicePositionInfo, connection: RtcConnection): number;
 
 /*
@@ -294,7 +300,9 @@ abstract updateRemotePositionEx(uid: number, posInfo: RemoteVoicePositionInfo, c
  */
 abstract removeRemotePosition(uid: number): number;
 
-/* api_ilocalspatialaudioengine_removeremotepositionex */
+/*
+ * @ignore
+ */
 abstract removeRemotePositionEx(uid: number, connection: RtcConnection): number;
 
 /*
@@ -302,6 +310,8 @@ abstract removeRemotePositionEx(uid: number, connection: RtcConnection): number;
  */
 abstract clearRemotePositions(): number;
 
-/* api_ilocalspatialaudioengine_clearremotepositionsex */
+/*
+ * @ignore
+ */
 abstract clearRemotePositionsEx(connection: RtcConnection): number;
 }
