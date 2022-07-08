@@ -17,15 +17,39 @@ const observedAttributes = [
 ];
 
 declare global {
+  /*
+   * Attributes of the Agora custom element.
+   */
   interface AgoraView {
+    /*
+     * @ignore
+     */
     "video-source-type": VideoSourceType;
+    /*
+     * The ID of the remote user.
+     */
     uid: number;
+    /*
+     * @ignore
+     */
     "channel-id": string;
+    /*
+     * @ignore
+     */
     "renderer-content-mode": RenderModeType;
+    /*
+     * @ignore
+     */
     "renderer-mirror": boolean;
+    /*
+     * The inline style of elements. See style 属性 .
+     */
     style: any;
   }
   namespace JSX {
+    /*
+     * The custom HTML elements defined by Agora.
+     */
     interface IntrinsicElements {
       "agora-view": AgoraView | HTMLElement;
     }
