@@ -859,14 +859,15 @@ UserOfflineBecomeAudience = 2,
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export enum InterfaceIdType {
 /*
- * The IAudioDeviceManager interface class.
+ * @ignore
  */
 AgoraIidAudioDeviceManager = 1,
 /*
- * The IVideoDeviceManager interface class.
+ * @ignore
  */
 AgoraIidVideoDeviceManager = 2,
 /*
@@ -890,7 +891,7 @@ AgoraIidVideoEngine = 6,
  */
 AgoraIidRtcConnection = 7,
 /*
- * This interface class is deprecated.
+ * @ignore
  */
 AgoraIidSignalingEngine = 8,
 /*
@@ -2487,7 +2488,8 @@ export class AudioVolumeInfo {
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export class DeviceInfo {
 /*
  * @ignore
@@ -2496,15 +2498,15 @@ export class DeviceInfo {
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export class Packet {
 /*
- * The buffer address of the sent or received data.
- * Agora 建议 buffer 值不要小于 2048 字节，否则有可能会出现未定义行为（例如崩溃）。
+ * @ignore
  */
   buffer?: Uint8Array
   /*
-   * 将要发送或接收的数据的缓存大小。
+   * @ignore
    */
   size?: number
 }
@@ -3760,18 +3762,19 @@ AudioFileRecordingMixed = 3,
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export enum AudioEncodedFrameObserverPosition {
 /*
- * 1: Only records the audio of the local user.
+ * @ignore
  */
 AudioEncodedFrameObserverPositionRecord = 1,
 /*
- * 2: Only records the audio of all remote users.
+ * @ignore
  */
 AudioEncodedFrameObserverPositionPlayback = 2,
 /*
- * 3: Records the mixed audio of the local and all remote users.
+ * @ignore
  */
 AudioEncodedFrameObserverPositionMixed = 3,
 }
@@ -4217,18 +4220,19 @@ EncryptionErrorEncryptionFailure = 2,
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export enum UploadErrorReason {
 /*
- * 0: Successfully upload the log files.
+ * @ignore
  */
 UploadSuccess = 0,
 /*
- * 1: Network error. Check the network connection and call to retransmit.
+ * @ignore
  */
 UploadNetError = 1,
 /*
- * 2: An error occurs in the Agora server. Try uploading the log files later.
+ * @ignore
  */
 UploadServerError = 2,
 }
@@ -4376,45 +4380,31 @@ CRITICAL = 5,
 }
 
 /*
- * The spatial audio parameters.
+ * @ignore
  */
 export class SpatialAudioParams {
 /*
- * The azimuth angle of the remote user or media player relative to the local user. The value range is [0,360], and the unit is degrees, as defined by the following main directions:
- * 0: (Default) 0 degrees, which means directly to the front on the horizontal plane.
- * 90: 90 degrees, which means directly to the left on the horizontal plane.
- * 180: 180 degrees, which means directly to the back on the horizontal plane.
- * 270: 270 degrees, which means directly to the right on the horizontal plane.
- * 360: 360 degrees, which means directly to the front on the horizontal plane.
+ * @ignore
  */
   speaker_azimuth?: number
   /*
-   * The elevation angle of the remote user or media player relative to the local user. The value range is [-90,90], and the unit is degrees, as defined by the following main directions:
-   * 0: (Default) 0 degrees, which means that the horizontal plane is not rotated.
-   * -90: -90 degrees, which means that the horizontal plane is rotated 90 degrees downwards.
-   * 90: 90 degrees, which means that the horizontal plane is rotated 90 degrees upwards.
+   * @ignore
    */
   speaker_elevation?: number
   /*
-   * The distance of the remote user or media player relative to the local user. The value range is [1,50], and the unit is meters. The default value is 1 meter.
+   * @ignore
    */
   speaker_distance?: number
   /*
-   * The orientation of the remote user or media player relative to the local user. The value range is [0,180], and the unit is degrees, as defined by the following main directions:
-   * 0: (Default) 0 degrees, which means that the sound source and listener face the same direction.
-   * 180: 180 degrees, which means that the sound source and listener face each other.
+   * @ignore
    */
   speaker_orientation?: number
   /*
-   * Whether to enable audio blurring:
-   * true: Enable blurring.
-   * false: (Default) Disable blurring.
+   * @ignore
    */
   enable_blur?: boolean
   /*
-   * Whether to enable air absorption. This function simulates the energy attenuation of audio when the audio transmits in the air:
-   * true: (Default) Enable air absorption.
-   * false: Disable air absorption.
+   * @ignore
    */
   enable_air_absorb?: boolean
 }

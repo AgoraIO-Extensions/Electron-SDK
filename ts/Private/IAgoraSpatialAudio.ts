@@ -2,26 +2,27 @@ import { IRtcEngine } from './IAgoraRtcEngine'
 import { RtcConnection } from './IAgoraRtcEngineEx'
 
 /*
-@ignore */
+ * @ignore
+ */
 export enum SaeConnectionStateType {
 /*
- * 0: 建立连接中。
+ * @ignore
  */
 SaeConnectionStateConnecting = 0,
 /*
- * 1: 已连接。 该状态下， updateSelfPosition 等空间音效设置才会生效。
+ * @ignore
  */
 SaeConnectionStateConnected = 1,
 /*
- * 2: 连接断开。
+ * @ignore
  */
 SaeConnectionStateDisconnected = 2,
 /*
- * 3: 重新建立连接中。
+ * @ignore
  */
 SaeConnectionStateReconnecting = 3,
 /*
- * 4: 已重新建立连接。
+ * @ignore
  */
 SaeConnectionStateReconnected = 4,
 }
@@ -73,14 +74,15 @@ AudioRangeModeTeam = 1,
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export class RemoteVoicePositionInfo {
 /*
- * The coordinates in the world coordinate system. This parameter is an array of length 3, and the three values represent the front, right, and top coordinates in turn.
+ * @ignore
  */
   position?: number[]
   /*
-   * The unit vector of the x axis in the coordinate system. This parameter is an array of length 3, and the three values represent the front, right, and top coordinates in turn.
+   * @ignore
    */
   forward?: number[]
 }
@@ -108,27 +110,33 @@ SaeDeployRegionAs = 0x00000008,
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export abstract class ICloudSpatialAudioEventHandler {
 /*
-@ignore */
+ * @ignore
+ */
   onTokenWillExpire?(): void;
 
   /*
-@ignore   */
+   * @ignore
+   */
   onConnectionStateChange?(state: SaeConnectionStateType, reason: SaeConnectionChangedReasonType): void;
 
   /*
-@ignore   */
+   * @ignore
+   */
   onTeammateLeft?(uid: number): void;
 
   /*
-@ignore   */
+   * @ignore
+   */
   onTeammateJoined?(uid: number): void;
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export class CloudSpatialAudioConfig {
 /*
  * @ignore
@@ -149,7 +157,8 @@ export class CloudSpatialAudioConfig {
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export class LocalSpatialAudioConfig {
 /*
  * @ignore
@@ -158,114 +167,139 @@ export class LocalSpatialAudioConfig {
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export abstract class IBaseSpatialAudioEngine {
 /*
-@ignore */
+ * @ignore
+ */
 abstract release(): void;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract setMaxAudioRecvCount(maxCount: number): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract setAudioRecvRange(range: number): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract setDistanceUnit(unit: number): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract updateSelfPosition(position: number[], axisForward: number[], axisRight: number[], axisUp: number[]): number;
 
 /* api_ibasespatialaudioengine_updateselfpositionex */
 abstract updateSelfPositionEx(position: number[], axisForward: number[], axisRight: number[], axisUp: number[], connection: RtcConnection): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract updatePlayerPositionInfo(playerId: number, positionInfo: RemoteVoicePositionInfo): number;
 
 /* api_ibasespatialaudioengine_setparameters */
 abstract setParameters(params: string): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract muteLocalAudioStream(mute: boolean): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract muteAllRemoteAudioStreams(mute: boolean): number;
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export abstract class ICloudSpatialAudioEngine extends IBaseSpatialAudioEngine {
 /*
-@ignore */
+ * @ignore
+ */
 abstract initialize(config: CloudSpatialAudioConfig): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract addEventHandler(eventHandler: ICloudSpatialAudioEventHandler): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract removeEventHandler(eventHandler: ICloudSpatialAudioEventHandler): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract enableSpatializer(enable: boolean, applyToTeam: boolean): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract setTeamId(teamId: number): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract setAudioRangeMode(rangeMode: AudioRangeModeType): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract enterRoom(token: string, roomName: string, uid: number): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract renewToken(token: string): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract exitRoom(): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract getTeammates(): number[];
 }
 
 /*
-@ignore */
+ * @ignore
+ */
 export abstract class ILocalSpatialAudioEngine extends IBaseSpatialAudioEngine {
 /*
-@ignore */
+ * @ignore
+ */
 abstract initialize(config: LocalSpatialAudioConfig): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract updateRemotePosition(uid: number, posInfo: RemoteVoicePositionInfo): number;
 
 /* api_ilocalspatialaudioengine_updateremotepositionex */
 abstract updateRemotePositionEx(uid: number, posInfo: RemoteVoicePositionInfo, connection: RtcConnection): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract removeRemotePosition(uid: number): number;
 
 /* api_ilocalspatialaudioengine_removeremotepositionex */
 abstract removeRemotePositionEx(uid: number, connection: RtcConnection): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract clearRemotePositions(): number;
 
 /* api_ilocalspatialaudioengine_clearremotepositionsex */

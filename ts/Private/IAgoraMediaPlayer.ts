@@ -161,7 +161,8 @@ abstract isVideoMuted(): boolean;
 abstract setPlaybackSpeed(speed: number): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract selectAudioTrack(index: number): number;
 
 /* api_imediaplayer_takescreenshot */
@@ -302,51 +303,63 @@ abstract getPlayerSdkVersion(): string;
 abstract getPlaySrc(): string;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract openWithAgoraCDNSrc(src: string, startPos: number): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract getAgoraCDNLineCount(): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract switchAgoraCDNLineByIndex(index: number): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract getCurrentAgoraCDNIndex(): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract enableAutoSwitchAgoraCDN(enable: boolean): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract renewAgoraCDNSrcToken(token: string, ts: number): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract switchAgoraCDNSrc(src: string, syncPts?: boolean): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract switchSrc(src: string, syncPts?: boolean): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract preloadSrc(src: string, startPos: number): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract playPreloadedSrc(src: string): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract unloadSrc(src: string): number;
 
 /*
-@ignore */
+ * @ignore
+ */
 abstract setSpatialAudioParams(params: SpatialAudioParams): number;
 
 /* api_imediaplayer_setplayeroptioninint */
