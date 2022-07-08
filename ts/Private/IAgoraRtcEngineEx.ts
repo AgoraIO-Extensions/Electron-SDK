@@ -142,7 +142,9 @@ abstract muteRemoteAudioStreamEx(uid: number, mute: boolean, connection: RtcConn
  */
 abstract muteRemoteVideoStreamEx(uid: number, mute: boolean, connection: RtcConnection): number;
 
-/* api_irtcengineex_setremotevideostreamtypeex */
+/*
+ * @ignore
+ */
 abstract setRemoteVideoStreamTypeEx(uid: number, streamType: VideoStreamType, connection: RtcConnection): number;
 
 /*
@@ -168,10 +170,14 @@ abstract setRemoteVideoStreamTypeEx(uid: number, streamType: VideoStreamType, co
  */
 abstract setRemoteVoicePositionEx(uid: number, pan: number, gain: number, connection: RtcConnection): number;
 
-/* api_irtcengineex_setremoteuserspatialaudioparamsex */
+/*
+ * @ignore
+ */
 abstract setRemoteUserSpatialAudioParamsEx(uid: number, params: SpatialAudioParams, connection: RtcConnection): number;
 
-/* api_irtcengineex_setremoterendermodeex */
+/*
+ * @ignore
+ */
 abstract setRemoteRenderModeEx(uid: number, renderMode: RenderModeType, mirrorMode: VideoMirrorModeType, connection: RtcConnection): number;
 
 /*
@@ -203,7 +209,9 @@ abstract enableLoopbackRecordingEx(connection: RtcConnection, enabled: boolean, 
  */
 abstract getConnectionStateEx(connection: RtcConnection): ConnectionStateType;
 
-/* api_irtcengineex_enableencryptionex */
+/*
+ * @ignore
+ */
 abstract enableEncryptionEx(connection: RtcConnection, enabled: boolean, config: EncryptionConfig): number;
 
 /*
@@ -272,19 +280,29 @@ abstract clearVideoWatermarkEx(connection: RtcConnection): number;
  */
 abstract sendCustomReportMessageEx(id: string, category: string, event: string, label: string, value: number, connection: RtcConnection): number;
 
-/* api_irtcengineex_enableaudiovolumeindicationex */
+/*
+ * @ignore
+ */
 abstract enableAudioVolumeIndicationEx(interval: number, smooth: number, reportVad: boolean, connection: RtcConnection): number;
 
-/* api_irtcengineex_getuserinfobyuseraccountex */
+/*
+ * @ignore
+ */
 abstract getUserInfoByUserAccountEx(userAccount: string, connection: RtcConnection): UserInfo;
 
-/* api_irtcengineex_getuserinfobyuidex */
+/*
+ * @ignore
+ */
 abstract getUserInfoByUidEx(uid: number, connection: RtcConnection): UserInfo;
 
-/* api_irtcengineex_setvideoprofileex */
+/*
+ * @ignore
+ */
 abstract setVideoProfileEx(width: number, height: number, frameRate: number, bitrate: number): number;
 
-/* api_irtcengineex_enabledualstreammodeex */
+/*
+ * @ignore
+ */
 abstract enableDualStreamModeEx(sourceType: VideoSourceType, enabled: boolean, streamConfig: SimulcastStreamConfig, connection: RtcConnection): number;
 
 /*

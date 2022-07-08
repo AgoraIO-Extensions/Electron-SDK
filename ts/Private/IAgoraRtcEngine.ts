@@ -163,23 +163,23 @@ AudioEqualizationBand250 = 3,
  */
 AudioEqualizationBand500 = 4,
 /*
- * @ignore
+ * 5: 1 kHz
  */
 AudioEqualizationBand1k = 5,
 /*
- * @ignore
+ * 6: 2 kHz
  */
 AudioEqualizationBand2k = 6,
 /*
- * @ignore
+ * 7: 4 kHz
  */
 AudioEqualizationBand4k = 7,
 /*
- * @ignore
+ * 8: 8 kHz
  */
 AudioEqualizationBand8k = 8,
 /*
- * @ignore
+ * 9: 16 kHz
  */
 AudioEqualizationBand16k = 9,
 }
@@ -491,7 +491,7 @@ export class InjectStreamConfig {
    */
   videoGop?: number
   /*
-   * @ignore
+   * The frame rate (fps) of injecting the external video stream. The default rate is 15 fps.
    */
   videoFramerate?: number
   /*
@@ -523,11 +523,11 @@ export class InjectStreamConfig {
  */
 export enum RtmpStreamLifeCycleType {
 /*
- * @ignore
+ * Bind to the channel lifecycle. If all hosts leave the channel, the CDN live streaming stops after 30 seconds.
  */
 RtmpStreamLifeCycleBind2channel = 1,
 /*
- * @ignore
+ * Bind to the owner of the RTMP stream. If the owner leaves the channel, the CDN live streaming stops immediately.
  */
 RtmpStreamLifeCycleBind2owner = 2,
 }
@@ -615,19 +615,19 @@ CameraFront = 1,
 }
 
 /*
- * @ignore
+ * The cloud proxy type.
  */
 export enum CloudProxyType {
 /*
- * @ignore
+ * 0: The automatic mode. In this mode, the SDK attempts a direct connection to SD-RTN™ and automatically switches to TCP/TLS 443 if the attempt fails. 
  */
 NoneProxy = 0,
 /*
- * @ignore
+ * 1: The cloud proxy for the UDP protocol, that is, the Force UDP cloud proxy mode. In this mode, the SDK always transmits data over UDP.
  */
 UdpProxy = 1,
 /*
- * @ignore
+ * 2: The cloud proxy for the TCP (encryption) protocol, that is, the Force TCP cloud proxy mode. In this mode, the SDK always transmits data over TCP/TLS 443.
  */
 TcpProxy = 2,
 }
@@ -751,19 +751,19 @@ export class ThumbImageBuffer {
  */
 export enum ScreenCaptureSourceType {
 /*
- * @ignore
+ * -1: Unknown type.
  */
 ScreencapturesourcetypeUnknown = -1,
 /*
- * @ignore
+ * 0: The shared target is a window.
  */
 ScreencapturesourcetypeWindow = 0,
 /*
- * @ignore
+ * 1: The share target is the screen of a particular monitor.
  */
 ScreencapturesourcetypeScreen = 1,
 /*
- * @ignore
+ * 6: Reserved parameter
  */
 ScreencapturesourcetypeCustom = 2,
 }
@@ -2114,10 +2114,14 @@ abstract setDevice(deviceIdUTF8: string): number;
  */
 abstract getDevice(): string;
 
-/* api_ivideodevicemanager_startdevicetest */
+/*
+ * @ignore
+ */
 abstract startDeviceTest(hwnd: any): number;
 
-/* api_ivideodevicemanager_stopdevicetest */
+/*
+ * @ignore
+ */
 abstract stopDeviceTest(): number;
 
 /*
@@ -2127,31 +2131,43 @@ abstract release(): void;
 }
 
 /*
- * @ignore
+ * Definition of RtcEngineContext.
  */
 export class RtcEngineContext {
 /*
- * @ignore
+ * The App ID issued by Agora for your project. Only users in apps with the same App ID can join the same channel and communicate with each other. An App ID can only be used to create one IRtcEngine instance. To change your App ID, call release to destroy the current IRtcEngine instance, and then create a new one.
  */
   appId?: string
   /*
-   * @ignore
+   * Whether to allow the SDK to use audio devices:
+   * true: (Default) Allow the SDK to use audio devices.
+   * false: Do not allow the SDK to use audio devices.
    */
   enableAudioDevice?: boolean
   /*
-   * @ignore
+   * The channel profile. See ChannelProfileType .
    */
   channelProfile?: ChannelProfileType
   /*
-   * @ignore
+   * The audio scenario.  Under different audio scenarios, the device uses different volume types.
    */
   audioScenario?: AudioScenarioType
   /*
-   * @ignore
+   * The region for connection. This is an advanced feature and applies to scenarios that have regional restrictions. For the regions that Agora supports, see AreaCode . The area codes support bitwise operation.After specifying the region, the app integrated with the Agora SDK connects to the Agora servers within that region.
    */
   areaCode?: number
   /*
-   * @ignore
+   * The SDK log files are: agorasdk.log, agorasdk.1.log, agorasdk.2.log, agorasdk.3.log, and agorasdk.4.log.
+   * The API call log files are: agoraapi.log, agoraapi.1.log, agoraapi.2.log, agoraapi.3.log, and agoraapi.4.log.
+   * The default size for each SDK log file is 1,024 KB; the default size for each API call log file is 2,048 KB. These log files are encoded in UTF-8.
+   * The SDK writes the latest logs in agorasdk.log or agoraapi.log.
+   * When agorasdk.log is full, the SDK processes the log files in the following order:
+   * Delete the agorasdk.4.log file (if any).
+   * Rename agorasdk.3.log to agorasdk.4.log.
+   * Rename agorasdk.2.log to agorasdk.3.log.
+   * Rename agorasdk.1.log to agorasdk.2.log.
+   * Create a new agorasdk.log file. The overwrite rules for the agoraapi.log file are the same as for agorasdk.log. The log files that the SDK outputs. See LogConfig .
+   * By default, the SDK generates five SDK log files and five API call log files with the following rules:
    */
   logConfig?: LogConfig
   /*
@@ -2586,7 +2602,9 @@ abstract setBeautyEffectOptions(enabled: boolean, options: BeautyOptions, type?:
  */
 abstract enableVirtualBackground(enabled: boolean, backgroundSource: VirtualBackgroundSource): number;
 
-/* api_irtcengine_enableremotesuperresolution */
+/*
+ * @ignore
+ */
 abstract enableRemoteSuperResolution(userId: number, enable: boolean): number;
 
 /*
@@ -3418,7 +3436,9 @@ abstract setAudioEffectParameters(preset: AudioEffectPreset, param1: number, par
  */
 abstract setVoiceBeautifierParameters(preset: VoiceBeautifierPreset, param1: number, param2: number): number;
 
-/* api_irtcengine_setvoiceconversionparameters */
+/*
+ * @ignore
+ */
 abstract setVoiceConversionParameters(preset: VoiceConversionPreset, param1: number, param2: number): number;
 
 /*
@@ -3524,7 +3544,9 @@ abstract setLogLevel(level: LogLevel): number;
  */
 abstract setLogFileSize(fileSizeInKBytes: number): number;
 
-/* api_irtcengine_uploadlogfile */
+/*
+ * @ignore
+ */
 abstract uploadLogFile(requestId: string): number;
 
 /*
@@ -3559,19 +3581,29 @@ abstract setLocalVideoMirrorMode(mirrorMode: VideoMirrorModeType): number;
  */
 abstract enableEchoCancellationExternal(enabled: boolean, audioSourceDelay: number): number;
 
-/* api_irtcengine_enablecustomaudiolocalplayback */
+/*
+ * @ignore
+ */
 abstract enableCustomAudioLocalPlayback(sourceId: number, enabled: boolean): number;
 
-/* api_irtcengine_startprimarycustomaudiotrack */
+/*
+ * @ignore
+ */
 abstract startPrimaryCustomAudioTrack(config: AudioTrackConfig): number;
 
-/* api_irtcengine_stopprimarycustomaudiotrack */
+/*
+ * @ignore
+ */
 abstract stopPrimaryCustomAudioTrack(): number;
 
-/* api_irtcengine_startsecondarycustomaudiotrack */
+/*
+ * @ignore
+ */
 abstract startSecondaryCustomAudioTrack(config: AudioTrackConfig): number;
 
-/* api_irtcengine_stopsecondarycustomaudiotrack */
+/*
+ * @ignore
+ */
 abstract stopSecondaryCustomAudioTrack(): number;
 
 /*
@@ -3662,7 +3694,9 @@ abstract adjustPlaybackSignalVolume(volume: number): number;
  */
 abstract adjustUserPlaybackSignalVolume(uid: number, volume: number): number;
 
-/* api_irtcengine_setlocalpublishfallbackoption */
+/*
+ * @ignore
+ */
 abstract setLocalPublishFallbackOption(option: StreamFallbackOptions): number;
 
 /*
@@ -3697,13 +3731,19 @@ abstract enableLoopbackRecording(enabled: boolean, deviceName?: string): number;
  */
 abstract adjustLoopbackRecordingVolume(volume: number): number;
 
-/* api_irtcengine_getloopbackrecordingvolume */
+/*
+ * @ignore
+ */
 abstract getLoopbackRecordingVolume(): number;
 
-/* api_irtcengine_enableinearmonitoring */
+/*
+ * @ignore
+ */
 abstract enableInEarMonitoring(enabled: boolean, includeAudioFilters: EarMonitoringFilterType): number;
 
-/* api_irtcengine_setinearmonitoringvolume */
+/*
+ * @ignore
+ */
 abstract setInEarMonitoringVolume(volume: number): number;
 
 /*
@@ -3768,16 +3808,24 @@ abstract enableExtension(provider: string, extension: string, enable?: boolean, 
  */
 abstract setExtensionProperty(provider: string, extension: string, key: string, value: string, type?: MediaSourceType): number;
 
-/* api_irtcengine_getextensionproperty */
+/*
+ * @ignore
+ */
 abstract getExtensionProperty(provider: string, extension: string, key: string, bufLen: number, type?: MediaSourceType): string;
 
-/* api_irtcengine_setcameracapturerconfiguration */
+/*
+ * @ignore
+ */
 abstract setCameraCapturerConfiguration(config: CameraCapturerConfiguration): number;
 
-/* api_irtcengine_switchcamera */
+/*
+ * @ignore
+ */
 abstract switchCamera(): number;
 
-/* api_irtcengine_iscamerazoomsupported */
+/*
+ * @ignore
+ */
 abstract isCameraZoomSupported(): boolean;
 
 /*
@@ -3785,52 +3833,84 @@ abstract isCameraZoomSupported(): boolean;
  */
 abstract isCameraFaceDetectSupported(): boolean;
 
-/* api_irtcengine_iscameratorchsupported */
+/*
+ * @ignore
+ */
 abstract isCameraTorchSupported(): boolean;
 
-/* api_irtcengine_iscamerafocussupported */
+/*
+ * @ignore
+ */
 abstract isCameraFocusSupported(): boolean;
 
-/* api_irtcengine_iscameraautofocusfacemodesupported */
+/*
+ * @ignore
+ */
 abstract isCameraAutoFocusFaceModeSupported(): boolean;
 
-/* api_irtcengine_setcamerazoomfactor */
+/*
+ * @ignore
+ */
 abstract setCameraZoomFactor(factor: number): number;
 
-/* api_irtcengine_enablefacedetection */
+/*
+ * @ignore
+ */
 abstract enableFaceDetection(enabled: boolean): number;
 
-/* api_irtcengine_getcameramaxzoomfactor */
+/*
+ * @ignore
+ */
 abstract getCameraMaxZoomFactor(): number;
 
-/* api_irtcengine_setcamerafocuspositioninpreview */
+/*
+ * @ignore
+ */
 abstract setCameraFocusPositionInPreview(positionX: number, positionY: number): number;
 
-/* api_irtcengine_setcameratorchon */
+/*
+ * @ignore
+ */
 abstract setCameraTorchOn(isOn: boolean): number;
 
-/* api_irtcengine_setcameraautofocusfacemodeenabled */
+/*
+ * @ignore
+ */
 abstract setCameraAutoFocusFaceModeEnabled(enabled: boolean): number;
 
-/* api_irtcengine_iscameraexposurepositionsupported */
+/*
+ * @ignore
+ */
 abstract isCameraExposurePositionSupported(): boolean;
 
-/* api_irtcengine_setcameraexposureposition */
+/*
+ * @ignore
+ */
 abstract setCameraExposurePosition(positionXinView: number, positionYinView: number): number;
 
-/* api_irtcengine_iscameraautoexposurefacemodesupported */
+/*
+ * @ignore
+ */
 abstract isCameraAutoExposureFaceModeSupported(): boolean;
 
-/* api_irtcengine_setcameraautoexposurefacemodeenabled */
+/*
+ * @ignore
+ */
 abstract setCameraAutoExposureFaceModeEnabled(enabled: boolean): number;
 
-/* api_irtcengine_setdefaultaudioroutetospeakerphone */
+/*
+ * @ignore
+ */
 abstract setDefaultAudioRouteToSpeakerphone(defaultToSpeaker: boolean): number;
 
-/* api_irtcengine_setenablespeakerphone */
+/*
+ * @ignore
+ */
 abstract setEnableSpeakerphone(speakerOn: boolean): number;
 
-/* api_irtcengine_isspeakerphoneenabled */
+/*
+ * @ignore
+ */
 abstract isSpeakerphoneEnabled(): boolean;
 
 /*
@@ -3851,7 +3931,9 @@ abstract isSpeakerphoneEnabled(): boolean;
  */
 abstract getScreenCaptureSources(thumbSize: SIZE, iconSize: SIZE, includeScreen: boolean): ScreenCaptureSourceInfo[];
 
-/* api_irtcengine_setaudiosessionoperationrestriction */
+/*
+ * @ignore
+ */
 abstract setAudioSessionOperationRestriction(restriction: AudioSessionOperationRestriction): number;
 
 /*
@@ -3891,7 +3973,9 @@ abstract startScreenCaptureByDisplayId(displayId: number, regionRect: Rectangle,
  */
 abstract startScreenCaptureByScreenRect(screenRect: Rectangle, regionRect: Rectangle, captureParams: ScreenCaptureParameters): number;
 
-/* api_irtcengine_getaudiodeviceinfo */
+/*
+ * @ignore
+ */
 abstract getAudioDeviceInfo(): DeviceInfo;
 
 /*
@@ -4119,13 +4203,19 @@ abstract updateRtmpTranscoding(transcoding: LiveTranscoding): number;
  */
 abstract stopRtmpStream(url: string): number;
 
-/* api_irtcengine_startlocalvideotranscoder */
+/*
+ * @ignore
+ */
 abstract startLocalVideoTranscoder(config: LocalTranscoderConfiguration): number;
 
-/* api_irtcengine_updatelocaltranscoderconfiguration */
+/*
+ * @ignore
+ */
 abstract updateLocalTranscoderConfiguration(config: LocalTranscoderConfiguration): number;
 
-/* api_irtcengine_stoplocalvideotranscoder */
+/*
+ * @ignore
+ */
 abstract stopLocalVideoTranscoder(): number;
 
 /*
@@ -4180,7 +4270,9 @@ abstract stopSecondaryCameraCapture(): number;
  */
 abstract setCameraDeviceOrientation(type: VideoSourceType, orientation: VideoOrientation): number;
 
-/* api_irtcengine_setscreencaptureorientation */
+/*
+ * @ignore
+ */
 abstract setScreenCaptureOrientation(type: VideoSourceType, orientation: VideoOrientation): number;
 
 /*
@@ -4243,7 +4335,9 @@ abstract registerEventHandler(eventHandler: IRtcEngineEventHandler): boolean;
  */
 abstract unregisterEventHandler(eventHandler: IRtcEngineEventHandler): boolean;
 
-/* api_irtcengine_setremoteuserpriority */
+/*
+ * @ignore
+ */
 abstract setRemoteUserPriority(uid: number, userPriority: PriorityType): number;
 
 /*
@@ -4323,7 +4417,9 @@ abstract enableEncryption(enabled: boolean, config: EncryptionConfig): number;
  */
 abstract sendStreamMessage(streamId: number, data: Uint8Array, length: number): number;
 
-/* api_irtcengine_clearvideowatermark */
+/*
+ * @ignore
+ */
 abstract clearVideoWatermark(): number;
 
 /*
@@ -4367,10 +4463,14 @@ abstract addInjectStreamUrl(url: string, config: InjectStreamConfig): number;
  */
 abstract removeInjectStreamUrl(url: string): number;
 
-/* api_irtcengine_pauseaudio */
+/*
+ * @ignore
+ */
 abstract pauseAudio(): number;
 
-/* api_irtcengine_resumeaudio */
+/*
+ * @ignore
+ */
 abstract resumeAudio(): number;
 
 /*
@@ -4424,10 +4524,14 @@ abstract registerMediaMetadataObserver(observer: IMetadataObserver, type: Metada
  */
 abstract unregisterMediaMetadataObserver(observer: IMetadataObserver, type: MetadataType): number;
 
-/* api_irtcengine_startaudioframedump */
+/*
+ * @ignore
+ */
 abstract startAudioFrameDump(channelId: string, userId: number, location: string, uuid: string, passwd: string, durationMs: number, autoUpload: boolean): number;
 
-/* api_irtcengine_stopaudioframedump */
+/*
+ * @ignore
+ */
 abstract stopAudioFrameDump(channelId: string, userId: number, location: string): number;
 
 /*
@@ -4455,7 +4559,9 @@ abstract stopAudioFrameDump(channelId: string, userId: number, location: string)
  */
 abstract registerLocalUserAccount(appId: string, userAccount: string): number;
 
-/* api_irtcengine_joinchannelwithuseraccountex */
+/*
+ * @ignore
+ */
 abstract joinChannelWithUserAccountEx(token: string, channelId: string, userAccount: string, options: ChannelMediaOptions): number;
 
 /*
@@ -4566,7 +4672,9 @@ abstract startDirectCdnStreaming(eventHandler: IDirectCdnStreamingEventHandler, 
  */
 abstract stopDirectCdnStreaming(): number;
 
-/* api_irtcengine_updatedirectcdnstreamingmediaoptions */
+/*
+ * @ignore
+ */
 abstract updateDirectCdnStreamingMediaOptions(options: DirectCdnStreamingMediaOptions): number;
 
 /*
@@ -4574,25 +4682,39 @@ abstract updateDirectCdnStreamingMediaOptions(options: DirectCdnStreamingMediaOp
  */
 abstract takeSnapshot(config: SnapShotConfig): number;
 
-/* api_irtcengine_setcontentinspect */
+/*
+ * @ignore
+ */
 abstract SetContentInspect(config: ContentInspectConfig): number;
 
-/* api_irtcengine_switchchannel */
+/*
+ * @ignore
+ */
 abstract switchChannel(token: string, channel: string): number;
 
-/* api_irtcengine_startrhythmplayer */
+/*
+ * @ignore
+ */
 abstract startRhythmPlayer(sound1: string, sound2: string, config: AgoraRhythmPlayerConfig): number;
 
-/* api_irtcengine_stoprhythmplayer */
+/*
+ * @ignore
+ */
 abstract stopRhythmPlayer(): number;
 
-/* api_irtcengine_configrhythmplayer */
+/*
+ * @ignore
+ */
 abstract configRhythmPlayer(config: AgoraRhythmPlayerConfig): number;
 
-/* api_irtcengine_adjustcustomaudiopublishvolume */
+/*
+ * @ignore
+ */
 abstract adjustCustomAudioPublishVolume(sourceId: number, volume: number): number;
 
-/* api_irtcengine_adjustcustomaudioplayoutvolume */
+/*
+ * @ignore
+ */
 abstract adjustCustomAudioPlayoutVolume(sourceId: number, volume: number): number;
 
 /*
@@ -4615,10 +4737,14 @@ abstract adjustCustomAudioPlayoutVolume(sourceId: number, volume: number): numbe
  */
 abstract setCloudProxy(proxyType: CloudProxyType): number;
 
-/* api_irtcengine_setlocalaccesspoint */
+/*
+ * @ignore
+ */
 abstract setLocalAccessPoint(config: LocalAccessPointConfiguration): number;
 
-/* api_irtcengine_enablefishcorrection */
+/*
+ * @ignore
+ */
 abstract enableFishCorrection(enabled: boolean, params: FishCorrectionParams): number;
 
 /*

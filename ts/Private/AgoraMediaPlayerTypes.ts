@@ -267,7 +267,7 @@ export class PlayerStreamInfo {
    */
   videoFrameRate?: number
   /*
-   * @ignore
+   * This parameter only takes effect for video streams, and indicates the video bitrate (bps).
    */
   videoBitRate?: number
   /*

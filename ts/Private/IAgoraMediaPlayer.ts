@@ -145,19 +145,29 @@ abstract getStreamInfo(index: number): PlayerStreamInfo;
  */
 abstract setLoopCount(loopCount: number): number;
 
-/* api_imediaplayer_muteaudio */
+/*
+ * @ignore
+ */
 abstract muteAudio(audioMute: boolean): number;
 
-/* api_imediaplayer_isaudiomuted */
+/*
+ * @ignore
+ */
 abstract isAudioMuted(): boolean;
 
-/* api_imediaplayer_mutevideo */
+/*
+ * @ignore
+ */
 abstract muteVideo(videoMute: boolean): number;
 
-/* api_imediaplayer_isvideomuted */
+/*
+ * @ignore
+ */
 abstract isVideoMuted(): boolean;
 
-/* api_imediaplayer_setplaybackspeed */
+/*
+ * @ignore
+ */
 abstract setPlaybackSpeed(speed: number): number;
 
 /*
@@ -165,13 +175,19 @@ abstract setPlaybackSpeed(speed: number): number;
  */
 abstract selectAudioTrack(index: number): number;
 
-/* api_imediaplayer_takescreenshot */
+/*
+ * @ignore
+ */
 abstract takeScreenshot(filename: string): number;
 
-/* api_imediaplayer_selectinternalsubtitle */
+/*
+ * @ignore
+ */
 abstract selectInternalSubtitle(index: number): number;
 
-/* api_imediaplayer_setexternalsubtitle */
+/*
+ * @ignore
+ */
 abstract setExternalSubtitle(url: string): number;
 
 /*
@@ -293,13 +309,19 @@ abstract registerPlayerSourceObserver(observer: IMediaPlayerSourceObserver): num
  */
 abstract unregisterPlayerSourceObserver(observer: IMediaPlayerSourceObserver): number;
 
-/* api_imediaplayer_setaudiodualmonomode */
+/*
+ * @ignore
+ */
 abstract setAudioDualMonoMode(mode: AudioDualMonoMode): number;
 
-/* api_imediaplayer_getplayersdkversion */
+/*
+ * @ignore
+ */
 abstract getPlayerSdkVersion(): string;
 
-/* api_imediaplayer_getplaysrc */
+/*
+ * @ignore
+ */
 abstract getPlaySrc(): string;
 
 /*
@@ -362,9 +384,13 @@ abstract unloadSrc(src: string): number;
  */
 abstract setSpatialAudioParams(params: SpatialAudioParams): number;
 
-/* api_imediaplayer_setplayeroptioninint */
+/*
+ * @ignore
+ */
 abstract setPlayerOptionInInt(key: string, value: number): number;
 
-/* api_imediaplayer_setplayeroptioninstring */
+/*
+ * @ignore
+ */
 abstract setPlayerOptionInString(key: string, value: string): number;
 }
