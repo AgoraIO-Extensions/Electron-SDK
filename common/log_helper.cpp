@@ -24,7 +24,7 @@ LogHelper::LogHelper(const char* log_path)
         INodeProcess::getCurrentModuleFileName(path);
         path.append("log.txt");
     }
-    startLogService(path.c_str());
+    //startLogService(path.c_str());
 }
 
 int LogHelper::setAddonLogPath(const char* log_path)
