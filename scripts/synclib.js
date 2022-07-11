@@ -138,10 +138,10 @@ const win64Prepare = (folder) => {
       return Promise.all([
         fs.move(path.join(folder, './libs/include'), path.join(__dirname, '../sdk/include')),
         fs.move(path.join(folder, './libs/x86_64/agora_rtc_sdk.dll'), path.join(__dirname, '../sdk/dll/agora_rtc_sdk.dll')),
-        fs.move(path.join(folder, './libs/x86/libagora-wgc.dll'), path.join(__dirname, '../sdk/dll/libagora-wgc.dll')),
+        fs.move(path.join(folder, './libs/x86_64/libagora-wgc.dll'), path.join(__dirname, '../sdk/dll/libagora-wgc.dll')),
         fs.move(path.join(folder, './libs/x86_64/libagora_fdkaac.dll'), path.join(__dirname, '../sdk/dll/libagora_fdkaac.dll')),
-        fs.move(path.join(folder, './libs/x86_64/libagora_ci_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_ci_extension.dll')),
-        fs.move(path.join(folder, './libs/x86_64/libagora_fd_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_fd_extension.dll')),
+        // fs.move(path.join(folder, './libs/x86_64/libagora_ci_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_ci_extension.dll')),
+        // fs.move(path.join(folder, './libs/x86_64/libagora_fd_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_fd_extension.dll')),
         fs.move(path.join(folder, './libs/x86_64/libagora_mpg123.dll'), path.join(__dirname, '../sdk/dll/libagora_mpg123.dll')),
         fs.move(path.join(folder, './libs/x86_64/libagora_video_process_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_video_process_extension.dll')),
         fs.move(path.join(folder, './libs/x86_64/libagora-ffmpeg.dll'), path.join(__dirname, '../sdk/dll/libagora-ffmpeg.dll')),
@@ -150,10 +150,10 @@ const win64Prepare = (folder) => {
         fs.move(path.join(folder, './libs/x86_64/agora_rtc_sdk.lib'), path.join(__dirname, '../sdk/lib/agora_rtc_sdk.lib')),
         fs.move(path.join(folder, './libs/x86_64/av1.dll'), path.join(__dirname, '../sdk/dll/av1.dll')),
         fs.move(path.join(folder, './libs/x86_64/libagora_ai_denoise_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_ai_denoise_extension.dll')),
-        fs.move(path.join(folder, './libs/x86_64/libagora_dav1d_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_dav1d_extension.dll')),
+        // fs.move(path.join(folder, './libs/x86_64/libagora_dav1d_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_dav1d_extension.dll')),
         fs.move(path.join(folder, './libs/x86_64/libagora-core.dll'), path.join(__dirname, '../sdk/dll/libagora-core.dll')),
         fs.move(path.join(folder, './libs/x86_64/libagora_segmentation_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_segmentation_extension.dll')),
-        fs.move(path.join(folder, './libs/x86_64/libagora_jnd_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_jnd_extension.dll')),
+        // fs.move(path.join(folder, './libs/x86_64/libagora_jnd_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_jnd_extension.dll')),
       ])
     }).then(() => {
       resolve()
