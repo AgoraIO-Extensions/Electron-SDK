@@ -275,7 +275,6 @@
                     'files': [
                         './sdk/dll/agora_rtc_sdk.dll',
                         './sdk/dll/libagora-wgc.dll',
-                        './sdk/dll/libagora-wgc.dll',
                         './sdk/dll/libagora_fdkaac.dll',
                         # './sdk/dll/libagora_ci_extension.dll',
                         # './sdk/dll/libagora_fd_extension.dll',
