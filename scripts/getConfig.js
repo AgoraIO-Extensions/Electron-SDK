@@ -12,7 +12,8 @@ logger.info(`process.env.INIT_CWD  ${process.env.INIT_CWD}`);
 
 const getArgvFromPkgJson = () => {
   const projectDir = path.join(INIT_CWD, "package.json");
-  const { agora_electron = {}, version } = require(projectDir);
+  const { agora_electron = {} } = require(projectDir);
+  const { version } = require(path.join(process.env.INIT_CWD, "package.json"));
   const {
     prebuilt = true,
     platform = process.platform,
