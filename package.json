@@ -72,7 +72,7 @@
       "mediaPlayer_win64": "https://download.agora.io/sdk/release/Agora_Media_Player_for_Windows_x64_rel.v1.1.0.16487_20200507_1546.zip"
     },
     "lib_sdk_win": "https://www.baidu.com",
-    "lib_sdk_mac": "https://www.baidu.com"
+    "lib_sdk_mac": "https://www.baidu.com/dsds"
   },
   "keywords": [
     "electron",
