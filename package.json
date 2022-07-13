@@ -1,6 +1,6 @@
 {
   "name": "agora-electron-sdk",
-  "version": "2.9.0-rc.104-build.553",
+  "version": "3.1.0+build.0713",
   "description": "agora-electron-sdk",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
@@ -70,7 +70,9 @@
       "mediaPlayer_mac": "http://10.80.1.174:8090/agora_sdk/mac/2020-06-28/Agora_Media_Player_for_Mac_x64_tongjiangyong_16698_20200628_1057.zip",
       "mediaPlayer_win": "http://10.70.1.19:9091/file/api/download/share/tongjiangyong/winSDK/Agora_Media_Player_for_Windows_7_20_x86.zip",
       "mediaPlayer_win64": "https://download.agora.io/sdk/release/Agora_Media_Player_for_Windows_x64_rel.v1.1.0.16487_20200507_1546.zip"
-    }
+    },
+    "lib_sdk_win": "https://www.baidu.com",
+    "lib_sdk_mac": "https://www.baidu.com"
   },
   "keywords": [
     "electron",
