@@ -1,3 +1,10 @@
+# [4.0.0-beta.2](https://github.com/AgoraIO-Community/electron-agora-rtc-ng/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2022-07-13)
+
+
+### Bug Fixes
+
+* download addon version issue ([19d542c](https://github.com/AgoraIO-Community/electron-agora-rtc-ng/commit/19d542c7d9ceba9226ac25ad4f6a4c361d47f31b))
+
 # 4.0.0-beta.1 (2022-07-11)
 
 
