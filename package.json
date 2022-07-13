@@ -1,6 +1,6 @@
 {
   "name": "electron-agora-rtc-ng",
-  "version": "4.0.0-beta.1",
+  "version": "4.0.0-beta.2",
   "description": "electron-agora-rtc-ng",
   "main": "js/AgoraSdk.js",
   "types": "types/AgoraSdk.d.ts",
