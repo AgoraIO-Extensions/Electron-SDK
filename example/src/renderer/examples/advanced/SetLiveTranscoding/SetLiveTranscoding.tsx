@@ -1,5 +1,5 @@
 import { Button, Card, Input, List, message } from 'antd'
-import creteAgoraRtcEngine, {
+import createAgoraRtcEngine, {
   AudioCodecProfileType,
   AudioProfileType,
   AudioSampleRateType,
@@ -74,7 +74,7 @@ export default class SetLiveTranscoding
 
   getRtcEngine() {
     if (!this.rtcEngine) {
-      this.rtcEngine = creteAgoraRtcEngine()
+      this.rtcEngine = createAgoraRtcEngine()
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
       const res = this.rtcEngine.initialize({ appId: config.appID })

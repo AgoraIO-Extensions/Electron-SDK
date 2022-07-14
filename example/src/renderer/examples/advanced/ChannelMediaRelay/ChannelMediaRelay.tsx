@@ -1,5 +1,5 @@
 import { Card, Input, List } from 'antd'
-import creteAgoraRtcEngine, {
+import createAgoraRtcEngine, {
   AudioProfileType,
   AudioScenarioType,
   ChannelProfileType,
@@ -63,7 +63,7 @@ export default class ChannelMediaRelay
 
   getRtcEngine() {
     if (!this.rtcEngine) {
-      this.rtcEngine = creteAgoraRtcEngine()
+      this.rtcEngine = createAgoraRtcEngine()
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
       const res = this.rtcEngine.initialize({ appId: config.appID })

@@ -1,4 +1,4 @@
-import creteAgoraRtcEngine, {
+import createAgoraRtcEngine, {
   ClientRoleType,
   IMediaPlayer,
   IMediaPlayerSourceObserver,
@@ -51,7 +51,7 @@ export default class MediaPlayer
 
   getRtcEngine() {
     if (!this.rtcEngine) {
-      this.rtcEngine = creteAgoraRtcEngine()
+      this.rtcEngine = createAgoraRtcEngine()
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
       const res = this.rtcEngine.initialize({ appId: config.appID })
