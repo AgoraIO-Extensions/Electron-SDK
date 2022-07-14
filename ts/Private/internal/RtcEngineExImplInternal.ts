@@ -1,5 +1,4 @@
-﻿import AgoraRendererManager from "../../Renderer/RendererManager";
-import { CallBackModule, Channel } from "../../Types";
+﻿import { CallBackModule, Channel } from "../../Types";
 import { AgoraEnv, logDebug, logError, logWarn } from "../../Utils";
 import {
   AudioRecordingConfiguration,
@@ -103,10 +102,9 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     const jsonParams = {
       playerId: mediaPlayer.getMediaPlayerId(),
     };
-    AgoraEnv.mediaPlayerEventManager =
-      AgoraEnv.mediaPlayerEventManager.filter(
-        (obj) => obj.mpk !== mediaPlayer
-      );
+    AgoraEnv.mediaPlayerEventManager = AgoraEnv.mediaPlayerEventManager.filter(
+      (obj) => obj.mpk !== mediaPlayer
+    );
     const jsonResults = callIrisApi(apiType, jsonParams);
     return jsonResults.result;
   }
@@ -125,9 +123,10 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     });
     return 0;
   }
+
   override setupRemoteVideo(canvas: VideoCanvas): number {
     const { sourceType, uid, view, renderMode, mirrorMode } = canvas;
-    AgoraEnv.AgoraRendererManager?.setupLocalVideo({
+    AgoraEnv.AgoraRendererManager?.setupRemoteVideo({
       videoSourceType: sourceType,
       channelId: "",
       uid,
@@ -189,6 +188,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     );
     return jsonResults.result;
   }
+
   override startDirectCdnStreaming(
     eventHandler: IDirectCdnStreamingEventHandler,
     publishUrl: string,
@@ -202,6 +202,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     }
     return super.startDirectCdnStreaming(eventHandler, publishUrl, options);
   }
+
   override stopDirectCdnStreaming(): number {
     AgoraEnv.cdnEventHandlers = [];
     return super.stopDirectCdnStreaming();
@@ -252,7 +253,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   }
 
   override destroyRendererByView(view: Element): void {
-    AgoraRendererManager.destroyRendererByView(view);
+    AgoraEnv.AgoraRendererManager?.destroyRendererByView(view);
   }
 
   override getAudioDeviceManager(): IAudioDeviceManager {
@@ -268,7 +269,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     channelId?: Channel,
     uid?: number
   ) {
-    AgoraRendererManager.destroyRenderersByConfig(
+    AgoraEnv.AgoraRendererManager?.destroyRenderersByConfig(
       videoSourceType,
       channelId,
       uid
