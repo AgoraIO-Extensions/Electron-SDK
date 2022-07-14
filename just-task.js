@@ -116,7 +116,7 @@ task('build:node', () => {
 // npm run download --
 task('download', () => {
   // work-around
-  const addonVersion = '3.5.0-rc.3-build.907'
+  const addonVersion = packageVersion
   cleanup(path.join(__dirname, "./build")).then(_ => {
     cleanup(path.join(__dirname, './js')).then(_ => {
       download({
@@ -137,7 +137,7 @@ task('install', () => {
   }
   
   // work-around
-  const addonVersion = '3.5.0-rc.3-build.907'
+  const addonVersion = packageVersion
   if (config.prebuilt) {
     download({
       electronVersion: config.electronVersion, 
