@@ -1,3 +1,5 @@
+## 3.6.1-rc.7-build.714(July 14th, 2022)
+VIDEO_SOURCE_BLOCK_NUM 10 ==> 32
 ## 3.6.1-rc.6-build.526(May 11th, 2022)
 - delete api
   - pauseAudio
