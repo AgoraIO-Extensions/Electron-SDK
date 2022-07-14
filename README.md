@@ -69,9 +69,9 @@ npm install --agora_electron_sdk_arch=x64
 ## 🔨 Usage
 
 ```javascript
-import creteAgoraRtcEngine from "electron-agora-rtc-ng";
+import createAgoraRtcEngine from "electron-agora-rtc-ng";
 
-const rtcEngine = creteAgoraRtcEngine();
+const rtcEngine = createAgoraRtcEngine();
 rtcEngine.initialize({ appId: "<your agora app id>" });
 ```
 
