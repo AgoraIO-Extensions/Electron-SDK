@@ -1,5 +1,5 @@
 import { Card, Switch } from 'antd'
-import creteAgoraRtcEngine, {
+import createAgoraRtcEngine, {
   ClientRoleType,
   DegradationPreference,
   ErrorCodeType,
@@ -112,7 +112,7 @@ export default class CameraAndScreenShare
 
   getRtcEngine() {
     if (!this.rtcEngine) {
-      this.rtcEngine = creteAgoraRtcEngine()
+      this.rtcEngine = createAgoraRtcEngine()
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
       const res = this.rtcEngine.initialize({ appId: config.appID })
