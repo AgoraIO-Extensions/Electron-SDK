@@ -1,5 +1,5 @@
 import { Card, Input, List } from 'antd'
-import creteAgoraRtcEngine, {
+import createAgoraRtcEngine, {
   ChannelProfileType,
   ClientRoleType,
   ErrorCodeType,
@@ -69,7 +69,7 @@ export default class SendMetaData
 
   getRtcEngine() {
     if (!this.rtcEngine) {
-      this.rtcEngine = creteAgoraRtcEngine()
+      this.rtcEngine = createAgoraRtcEngine()
       //@ts-ignore
       window.rtcEngine = this.rtcEngine
       const res = this.rtcEngine.initialize({ appId: config.appID })

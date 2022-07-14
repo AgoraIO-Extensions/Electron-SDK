@@ -3934,9 +3934,9 @@ ejs@^3.1.7:
     jake "^10.8.5"
 
 electron-agora-rtc-ng@latest:
-  version "3.8.201-alpha.616"
-  resolved "https://registry.npmmirror.com/electron-agora-rtc-ng/-/electron-agora-rtc-ng-3.8.201-alpha.616.tgz#5001ccf004bb09acfc80522e0afc031f5f668bf1"
-  integrity sha512-kU2ejPc28aQTuREVCQCDzvih/4L1Kgkms/+ytQSc86EYPgbKnuuuKER5f0DITXA7fcxve5Nud88ANzbi1ziQKA==
+  version "4.0.0-beta.2"
+  resolved "https://registry.npmmirror.com/electron-agora-rtc-ng/-/electron-agora-rtc-ng-4.0.0-beta.2.tgz#f57dc2cc1b425a10f0276182d33b514d30c692f0"
+  integrity sha512-YULt0YgnKTmv1knlSfnWfYhKp2r2+dY8sYXOA6x4/Qu/4DLf0OW6zI8khVW+DSvg86YRgF+kZCHjKRQI96aC3w==
   dependencies:
     bindings "1.2.1"
     cross-env "^7.0.3"
