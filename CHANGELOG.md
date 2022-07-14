@@ -1,3 +1,10 @@
+# [4.0.0-beta.3](https://github.com/AgoraIO-Community/electron-agora-rtc-ng/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2022-07-14)
+
+
+### Bug Fixes
+
+* some issue about AgoraRendererManager ([3415871](https://github.com/AgoraIO-Community/electron-agora-rtc-ng/commit/3415871b0d5a2e93086e8e88ce50d296ab994fff))
+
 # [4.0.0-beta.2](https://github.com/AgoraIO-Community/electron-agora-rtc-ng/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2022-07-13)
 
 
