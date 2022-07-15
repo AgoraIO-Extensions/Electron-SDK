@@ -6997,8 +6997,8 @@ NAPI_API_DEFINE(NodeRtcEngine, startAudioRecordingWithConfig) {
                                       recordingPosition);
       CHECK_NAPI_STATUS(pEngine, status);
 
-      int sampleRate;
-      napi_get_object_property_int32_(isolate, obj, "sampleRate", sampleRate);
+      int recordingSampleRate;
+      napi_get_object_property_int32_(isolate, obj, "recordingSampleRate", recordingSampleRate);
       CHECK_NAPI_STATUS(pEngine, status);
 
       int recordingChannel;
@@ -7010,7 +7010,7 @@ NAPI_API_DEFINE(NodeRtcEngine, startAudioRecordingWithConfig) {
       config.filePath = (char *)filePath;
       config.recordingQuality = (AUDIO_RECORDING_QUALITY_TYPE)recordingQuality;
       config.recordingPosition = (AUDIO_RECORDING_POSITION)recordingPosition;
-      config.recordingSampleRate = sampleRate;
+      config.recordingSampleRate = recordingSampleRate;
       config.recordingChannel = recordingChannel;
       result = pEngine->m_engine->startAudioRecording(config);
     }
