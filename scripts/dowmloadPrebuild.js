@@ -13,7 +13,7 @@ const workspaceDir = `${path.join(__dirname, "..")}`;
 const getDownloadURL = () => {
   let downloadUrl = `http://download.agora.io/sdk/release/Electron-${getOS()}-${packageVersion}-napi.zip`;
   if (platform === "win32" && arch === "x64") {
-    downloadUrl = `http://download.agora.io/sdk/release/Electron-win64-${addonVersion}-napi.zip`;
+    downloadUrl = `http://download.agora.io/sdk/release/Electron-win64-${packageVersion}-napi.zip`;
   }
   return downloadUrl;
 };
