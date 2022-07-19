@@ -5,7 +5,7 @@ const fs = require('fs-extra');
 
 
 module.exports = ({
-  electronVersion = "5.0.8",
+  electronVersion = "12.0.0",
   platform = process.platform,
   packageVersion,
   arch,

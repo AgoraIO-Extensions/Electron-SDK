@@ -25,7 +25,7 @@ class DisplayItem extends React.Component {
 }
 
 DisplayItem.propTypes = {
-  displayId: PropTypes.object,
+  displayId: PropTypes.number,
   name: PropTypes.string,
   ownerName: PropTypes.string,
   active: PropTypes.bool,

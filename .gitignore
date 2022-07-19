@@ -20,5 +20,5 @@ types/
 package-lock.json
 yarn.lock
 .history/
-
+.idea/
 *.pid
