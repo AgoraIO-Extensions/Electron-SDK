@@ -9,7 +9,7 @@ const synclib = require('./scripts/synclib')
 const cleanup = require('./scripts/cleanup')
 const {getArgvFromNpmEnv, getArgvFromPkgJson} = require('./scripts/npm_argv')
 
-option('electron_version', {default: '5.0.8'});
+option('electron_version', {default: '12.0.0'});
 option('runtime', {default: 'electron', choices: ['electron', 'node']});
 option('platform', {default: process.platform, choices: ['darwin', 'win32', 'linux']});
 // option('packageVersion');
@@ -44,7 +44,7 @@ task('sync:lib', () => {
   });
 })
 
-// npm run build:electron -- 
+// npm run build:electron --
 task("build:electron", async () => {
   await cleanup(path.join(__dirname, "./build"));
   const electronVersion = argv().electron_version;
@@ -104,11 +104,11 @@ const buildMacArm64 = async electronVersion => {
 // npm run build:node --
 task('build:node', () => {
   build({
-    electronVersion: argv().electron_version, 
+    electronVersion: argv().electron_version,
     runtime: 'node',
     packageVersion,
     platform: argv().platform,
-    debug: argv().debug, 
+    debug: argv().debug,
     silent: argv().silent,
     msvsVersion: argv().msvs_version
   })
@@ -120,8 +120,8 @@ task('download', () => {
   cleanup(path.join(__dirname, "./build")).then(_ => {
     cleanup(path.join(__dirname, './js')).then(_ => {
       download({
-        electronVersion: argv().electron_version, 
-        platform: argv().platform, 
+        electronVersion: argv().electron_version,
+        platform: argv().platform,
         packageVersion: addonVersion,
         arch: argv().arch
       })
@@ -135,13 +135,13 @@ task('install', () => {
     ...getArgvFromPkgJson(),
     arch:getArgvFromNpmEnv().arch || getArgvFromPkgJson().arch || process.arch,
   }
-  
+
   // work-around
   const addonVersion = packageVersion
   if (config.prebuilt) {
     download({
-      electronVersion: config.electronVersion, 
-      platform: config.platform, 
+      electronVersion: config.electronVersion,
+      platform: config.platform,
       packageVersion: addonVersion,
       arch: config.arch,
       no_symbol: config.no_symbol,
