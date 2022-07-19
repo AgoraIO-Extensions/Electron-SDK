@@ -118,13 +118,11 @@ task('download', () => {
   // work-around
   const addonVersion = packageVersion
   cleanup(path.join(__dirname, "./build")).then(_ => {
-    cleanup(path.join(__dirname, './js')).then(_ => {
-      download({
-        electronVersion: argv().electron_version,
-        platform: argv().platform,
-        packageVersion: addonVersion,
-        arch: argv().arch
-      })
+    download({
+      electronVersion: argv().electron_version,
+      platform: argv().platform,
+      packageVersion: addonVersion,
+      arch: argv().arch
     })
   })
 })
