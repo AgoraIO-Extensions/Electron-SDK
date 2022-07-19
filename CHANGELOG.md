@@ -1,8 +1,9 @@
-# [4.0.0-beta.3](https://github.com/AgoraIO-Community/electron-agora-rtc-ng/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2022-07-14)
+# [4.0.0-beta.3](https://github.com/AgoraIO-Community/electron-agora-rtc-ng/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2022-07-19)
 
 
 ### Bug Fixes
 
+* build error on windows x64 ([9331172](https://github.com/AgoraIO-Community/electron-agora-rtc-ng/commit/9331172b2ba2db5bf72323a23b7a2ac5b7ebeeb5))
 * some issue about AgoraRendererManager ([3415871](https://github.com/AgoraIO-Community/electron-agora-rtc-ng/commit/3415871b0d5a2e93086e8e88ce50d296ab994fff))
 
 # [4.0.0-beta.2](https://github.com/AgoraIO-Community/electron-agora-rtc-ng/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2022-07-13)
