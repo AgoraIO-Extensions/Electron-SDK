@@ -118,11 +118,13 @@ task('download', () => {
   // work-around
   const addonVersion = packageVersion
   cleanup(path.join(__dirname, "./build")).then(_ => {
-    download({
-      electronVersion: argv().electron_version,
-      platform: argv().platform,
-      packageVersion: addonVersion,
-      arch: argv().arch
+    cleanup(path.join(__dirname, './js')).then(_ => {
+      download({
+        electronVersion: argv().electron_version,
+        platform: argv().platform,
+        packageVersion: addonVersion,
+        arch: argv().arch
+      })
     })
   })
 })
@@ -144,14 +146,12 @@ task('install', () => {
   const addonVersion = packageVersion
   if (config.prebuilt) {
     cleanup(path.join(__dirname, "./build")).then(_ => {
-      cleanup(path.join(__dirname, './js')).then(_ => {
-        download({
-          electronVersion: config.electronVersion,
-          platform: config.platform,
-          packageVersion: addonVersion,
-          arch: config.arch,
-          no_symbol: config.no_symbol,
-        })
+      download({
+        electronVersion: config.electronVersion,
+        platform: config.platform,
+        packageVersion: addonVersion,
+        arch: config.arch,
+        no_symbol: config.no_symbol,
       })
     })
   } else {
