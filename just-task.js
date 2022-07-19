@@ -130,21 +130,31 @@ task('download', () => {
 })
 // trigger when run npm install
 task('install', () => {
+  const mergeObject = (A, B) => {
+    let res = {};
+    Object.keys({ ...A, ...B }).map(key => {
+      res[key] = B[key] || A[key]
+    });
+    return res;
+  }
   const config = {
-    ...getArgvFromNpmEnv(),
-    ...getArgvFromPkgJson(),
+    ...mergeObject(getArgvFromNpmEnv(), getArgvFromPkgJson()),
     arch:getArgvFromNpmEnv().arch || getArgvFromPkgJson().arch || process.arch,
   }
 
   // work-around
   const addonVersion = packageVersion
   if (config.prebuilt) {
-    download({
-      electronVersion: config.electronVersion,
-      platform: config.platform,
-      packageVersion: addonVersion,
-      arch: config.arch,
-      no_symbol: config.no_symbol,
+    cleanup(path.join(__dirname, "./build")).then(_ => {
+      cleanup(path.join(__dirname, './js')).then(_ => {
+        download({
+          electronVersion: config.electronVersion,
+          platform: config.platform,
+          packageVersion: addonVersion,
+          arch: config.arch,
+          no_symbol: config.no_symbol,
+        })
+      })
     })
   } else {
     return new Promise((resolve, reject) => {
