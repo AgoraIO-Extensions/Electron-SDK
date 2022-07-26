@@ -79,6 +79,7 @@ import {
   LocalAccessPointConfiguration,
   UInt8ArrayBuffer,
   ScreenCaptureSourceInfo,
+  SCREEN_SCENARIO_TYPE,
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -6857,6 +6858,18 @@ class AgoraRtcEngine extends EventEmitter {
     buffer: UInt8ArrayBuffer
   ): number {
     return this.rtcEngine.sendStreamMessageWithArrayBuffer(streamId, buffer);
+  }
+
+  videoSourceSetCloudProxy(proxuType: CLOUD_PROXY_TYPE): number{
+    return this.rtcEngine.videoSourceSetCloudProxy(proxuType);
+  }
+
+  videoSourceMuteLocalVideoStream(mute: boolean): number{
+    return this.rtcEngine.videoSourceMuteLocalVideoStream(mute);
+  }
+
+  videoSourceSetScreenCaptureScenario(type: SCREEN_SCENARIO_TYPE): number{
+    return this.rtcEngine.videoSourceSetScreenCaptureScenario(type);
   }
 }
 /** The AgoraRtcEngine interface. */

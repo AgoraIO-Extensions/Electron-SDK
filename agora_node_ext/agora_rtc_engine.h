@@ -451,7 +451,13 @@ class NodeRtcEngine : public node::ObjectWrap {
   NAPI_API(setLocalAccessPoint);
   NAPI_API(videoSourceSetLocalAccessPoint);
   NAPI_API(sendStreamMessageWithArrayBuffer);
-  
+  /* 
+   * 3.6.1.8
+   */
+  NAPI_API(videoSourceSetCloudProxy);
+  NAPI_API(videoSourceMuteLocalVideoStream);
+  NAPI_API(videoSourceSetScreenCaptureScenario);
+
  public:
   Isolate* getIsolate() { return m_isolate; }
   IRtcEngine* getRtcEngine() { return m_engine; }
