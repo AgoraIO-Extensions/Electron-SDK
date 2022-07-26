@@ -36,7 +36,7 @@ task('sync:lib', () => {
     libUrl: {
       win: argv().liburl_win || pkgConfigs.lib_sdk_win || argvConfigs.lib_sdk_win,
       mac: argv().liburl_mac || pkgConfigs.lib_sdk_mac || argvConfigs.lib_sdk_mac,
-      // win64: argv().liburl_win64 || pkgConfigs.lib_sdk_win64 || argvConfigs.lib_sdk_win64
+      win64: argv().liburl_win64 || pkgConfigs.lib_sdk_win64 || argvConfigs.lib_sdk_win64
     },
     downloadKey: pkgConfigs.downloadKey
   });
