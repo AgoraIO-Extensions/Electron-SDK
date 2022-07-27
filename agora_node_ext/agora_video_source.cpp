@@ -375,8 +375,8 @@ void AgoraVideoSourceSink::onStartPreviewComplete() {
 
 node_error AgoraVideoSourceSink::stopPreview() {
   LOG_ENTER;
-  if (!m_ipcReceiver)
-    return node_status_error;
+  //if (!m_ipcReceiver)
+  //  return node_status_error;
 
   return m_ipcMsg->sendMessage(AGORA_IPC_STOP_VS_PREVIEW, nullptr, 0)
              ? node_ok

@@ -614,18 +614,18 @@ void AgoraVideoSource::onMessage(unsigned int msg,
   }
   else if (msg == AGORA_IPC_SET_CLOUD_PROXY) {
     agora::rtc::CLOUD_PROXY_TYPE proxyType = (agora::rtc::CLOUD_PROXY_TYPE)*payload;
-    m_rtcEngine->setCloudProxy(proxyType);
-    LOG_INFO("setCloudProxy, %d", proxyType);
+    int result = m_rtcEngine->setCloudProxy(proxyType);
+    LOG_INFO("setCloudProxy, %d, result: %d", proxyType, result);
   }
   else if (msg == AGORA_IPC_MUTE_LOCAL_VIDEO_STREAM) {
     bool mute = (bool)*payload;
-    m_rtcEngine->muteLocalVideoStream(mute);
-    LOG_INFO("muteLocalVideoStream, %d", mute);
+    int result = m_rtcEngine->muteLocalVideoStream(mute);
+    LOG_INFO("muteLocalVideoStream, %d, result: %d", mute, result);
   }
   else if (msg == AGORA_IPC_SET_SCREEN_CAPTURE_SCENARIO) {
     agora::rtc::SCREEN_SCENARIO_TYPE type = (agora::rtc::SCREEN_SCENARIO_TYPE)*payload;
-    m_rtcEngine->setScreenCaptureScenario(type);
-    LOG_INFO("setScreenCaptureScenario, %d", type);
+    int result = m_rtcEngine->setScreenCaptureScenario(type);
+    LOG_INFO("setScreenCaptureScenario, type: %d, result: %d", type, result);
   }
 
   LOG_LEAVE;
