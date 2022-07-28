@@ -3185,41 +3185,41 @@ export enum MEDIA_PLAYER_EVENT {
   total_received_video_count: number;
   };
 
-  export interface VIDEO_STREAM_TYPE {
+  export enum VIDEO_STREAM_TYPE {
     /**
      * 0: The high-quality video stream, which has a higher resolution and bitrate.
      */
-    VIDEO_STREAM_HIGH : 0,
+    VIDEO_STREAM_HIGH = 0,
     /**
      * 1: The low-quality video stream, which has a lower resolution and bitrate.
      */
-    VIDEO_STREAM_LOW :1
+    VIDEO_STREAM_LOW = 1
   };
 
 /**
  * The downscale level of the remote video stream . The higher the downscale level, the more the video downscales.
  */
-export interface  REMOTE_VIDEO_DOWNSCALE_LEVEL {
+export enum REMOTE_VIDEO_DOWNSCALE_LEVEL {
   /**
    * No downscale.
    */
-  REMOTE_VIDEO_DOWNSCALE_LEVEL_NONE: 0,
+  REMOTE_VIDEO_DOWNSCALE_LEVEL_NONE = 0,
   /**
    * Downscale level 1.
    */
-  REMOTE_VIDEO_DOWNSCALE_LEVEL_1: 1,
+  REMOTE_VIDEO_DOWNSCALE_LEVEL_1 = 1,
   /**
    * Downscale level 2.
    */
-  REMOTE_VIDEO_DOWNSCALE_LEVEL_2: 2,
+  REMOTE_VIDEO_DOWNSCALE_LEVEL_2 = 2,
   /**
    * Downscale level 3.
    */
-  REMOTE_VIDEO_DOWNSCALE_LEVEL_3 : 3,
+  REMOTE_VIDEO_DOWNSCALE_LEVEL_3 = 3,
   /**
    * Downscale level 4.
    */
-  REMOTE_VIDEO_DOWNSCALE_LEVEL_4: 4
+  REMOTE_VIDEO_DOWNSCALE_LEVEL_4 = 4
 };
 
 /**
