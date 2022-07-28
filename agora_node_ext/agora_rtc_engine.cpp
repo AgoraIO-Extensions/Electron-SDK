@@ -791,6 +791,14 @@ void NodeRtcEngine::Init(Local<Object>& module) {
   PROPERTY_METHOD_DEFINE(setLocalAccessPoint);
   PROPERTY_METHOD_DEFINE(videoSourceSetLocalAccessPoint);
   PROPERTY_METHOD_DEFINE(sendStreamMessageWithArrayBuffer);
+
+  /* 
+   * 3.6.1.8
+   */
+  PROPERTY_METHOD_DEFINE(videoSourceSetCloudProxy);
+  PROPERTY_METHOD_DEFINE(videoSourceMuteLocalVideoStream);
+  PROPERTY_METHOD_DEFINE(videoSourceSetScreenCaptureScenario);
+  
   EN_PROPERTY_DEFINE()
   module->Set(context, Nan::New<v8::String>("NodeRtcEngine").ToLocalChecked(),
               tpl->GetFunction(context).ToLocalChecked());
@@ -1681,6 +1689,74 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetLocalAccessPoint) {
       pEngine->m_videoSourceSink->setLocalAccessPoint(cmd);
       result = 0;
     }
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetCloudProxy) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  do {
+    NodeRtcEngine* pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    uint32 proxyType;
+    status = napi_get_value_uint32_(args[0], proxyType);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    if (!pEngine->m_videoSourceSink.get() ||
+      pEngine->m_videoSourceSink->setCloudProxy((agora::rtc::CLOUD_PROXY_TYPE)proxyType) != node_ok) {
+      break;
+    }
+    result = 0;
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, videoSourceMuteLocalVideoStream) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  do {
+    NodeRtcEngine* pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    bool mute;
+    status = napi_get_value_bool_(args[0], mute);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    if (!pEngine->m_videoSourceSink.get() ||
+      pEngine->m_videoSourceSink->muteLocalVideoStream(mute) != node_ok) {
+      break;
+    }
+    result = 0;
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetScreenCaptureScenario) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  do {
+    NodeRtcEngine* pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    uint32 type;
+    status = napi_get_value_uint32_(args[0], type);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    if (!pEngine->m_videoSourceSink.get() ||
+      pEngine->m_videoSourceSink->setScreenCaptureScenario((agora::rtc::SCREEN_SCENARIO_TYPE)type) != node_ok) {
+      break;
+    }
+    result = 0;
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;

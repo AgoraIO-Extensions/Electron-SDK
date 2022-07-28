@@ -79,6 +79,7 @@ import {
   LocalAccessPointConfiguration,
   UInt8ArrayBuffer,
   ScreenCaptureSourceInfo,
+  SCREEN_SCENARIO_TYPE,
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -234,7 +235,7 @@ class AgoraRtcEngine extends EventEmitter {
               to see if it matches properly.`);
     });
 
-    this.rtcEngine.onEvent('joinchannel', function(
+    this.rtcEngine.onEvent('joinchannel', function (
       channel: string,
       uid: number,
       elapsed: number
@@ -243,7 +244,7 @@ class AgoraRtcEngine extends EventEmitter {
       fire('joinedChannel', channel, uid, elapsed);
     });
 
-    this.rtcEngine.onEvent('rejoinchannel', function(
+    this.rtcEngine.onEvent('rejoinchannel', function (
       channel: string,
       uid: number,
       elapsed: number
@@ -252,11 +253,11 @@ class AgoraRtcEngine extends EventEmitter {
       fire('rejoinedChannel', channel, uid, elapsed);
     });
 
-    this.rtcEngine.onEvent('warning', function(warn: number, msg: string) {
+    this.rtcEngine.onEvent('warning', function (warn: number, msg: string) {
       fire('warning', warn, msg);
     });
 
-    this.rtcEngine.onEvent('error', function(err: number, msg: string) {
+    this.rtcEngine.onEvent('error', function (err: number, msg: string) {
       fire('error', err, msg);
     });
 
@@ -265,7 +266,7 @@ class AgoraRtcEngine extends EventEmitter {
     //   fire('audioQuality', uid, quality, delay, lost);
     // });
 
-    this.rtcEngine.onEvent('audiovolumeindication', function(
+    this.rtcEngine.onEvent('audiovolumeindication', function (
       speakers: {
         uid: number;
         volume: number;
@@ -278,39 +279,39 @@ class AgoraRtcEngine extends EventEmitter {
       fire('groupAudioVolumeIndication', speakers, speakerNumber, totalVolume);
     });
 
-    this.rtcEngine.onEvent('leavechannel', function(rtcStats: RtcStats) {
+    this.rtcEngine.onEvent('leavechannel', function (rtcStats: RtcStats) {
       fire('leavechannel', rtcStats);
       fire('leaveChannel', rtcStats);
     });
 
-    this.rtcEngine.onEvent('rtcstats', function(stats: RtcStats) {
+    this.rtcEngine.onEvent('rtcstats', function (stats: RtcStats) {
       fire('rtcstats', stats);
       fire('rtcStats', stats);
     });
 
-    this.rtcEngine.onEvent('localvideostats', function(stats: LocalVideoStats) {
+    this.rtcEngine.onEvent('localvideostats', function (stats: LocalVideoStats) {
       fire('localvideostats', stats);
       fire('localVideoStats', stats);
     });
 
-    this.rtcEngine.onEvent('localAudioStats', function(stats: LocalAudioStats) {
+    this.rtcEngine.onEvent('localAudioStats', function (stats: LocalAudioStats) {
       fire('localAudioStats', stats);
     });
 
-    this.rtcEngine.onEvent('remotevideostats', function(
+    this.rtcEngine.onEvent('remotevideostats', function (
       stats: RemoteVideoStats
     ) {
       fire('remotevideostats', stats);
       fire('remoteVideoStats', stats);
     });
 
-    this.rtcEngine.onEvent('remoteAudioStats', function(
+    this.rtcEngine.onEvent('remoteAudioStats', function (
       stats: RemoteAudioStats
     ) {
       fire('remoteAudioStats', stats);
     });
 
-    this.rtcEngine.onEvent('remoteAudioTransportStats', function(
+    this.rtcEngine.onEvent('remoteAudioTransportStats', function (
       uid: number,
       delay: number,
       lost: number,
@@ -324,7 +325,7 @@ class AgoraRtcEngine extends EventEmitter {
       });
     });
 
-    this.rtcEngine.onEvent('remoteVideoTransportStats', function(
+    this.rtcEngine.onEvent('remoteVideoTransportStats', function (
       uid: number,
       delay: number,
       lost: number,
@@ -337,14 +338,14 @@ class AgoraRtcEngine extends EventEmitter {
         rxKBitRate,
       });
     });
-    this.rtcEngine.onEvent('requestAudioFileInfo', function(
+    this.rtcEngine.onEvent('requestAudioFileInfo', function (
       info: AudioFileInfo,
       error: AUDIO_FILE_INFO_ERROR
     ) {
       fire('requestAudioFileInfo', info, error);
     });
 
-    this.rtcEngine.onEvent('audiodevicestatechanged', function(
+    this.rtcEngine.onEvent('audiodevicestatechanged', function (
       deviceId: string,
       deviceType: number,
       deviceState: number
@@ -358,14 +359,14 @@ class AgoraRtcEngine extends EventEmitter {
     //   fire('audioMixingFinished');
     // });
 
-    this.rtcEngine.onEvent('audioMixingStateChanged', function(
+    this.rtcEngine.onEvent('audioMixingStateChanged', function (
       state: number,
       reason: number
     ) {
       fire('audioMixingStateChanged', state, reason);
     });
 
-    this.rtcEngine.onEvent('apicallexecuted', function(
+    this.rtcEngine.onEvent('apicallexecuted', function (
       api: string,
       err: number
     ) {
@@ -373,22 +374,22 @@ class AgoraRtcEngine extends EventEmitter {
       fire('apiCallExecuted', api, err);
     });
 
-    this.rtcEngine.onEvent('remoteaudiomixingbegin', function() {
+    this.rtcEngine.onEvent('remoteaudiomixingbegin', function () {
       fire('remoteaudiomixingbegin');
       fire('remoteAudioMixingBegin');
     });
 
-    this.rtcEngine.onEvent('remoteaudiomixingend', function() {
+    this.rtcEngine.onEvent('remoteaudiomixingend', function () {
       fire('remoteaudiomixingend');
       fire('remoteAudioMixingEnd');
     });
 
-    this.rtcEngine.onEvent('audioeffectfinished', function(soundId: number) {
+    this.rtcEngine.onEvent('audioeffectfinished', function (soundId: number) {
       fire('audioeffectfinished', soundId);
       fire('audioEffectFinished', soundId);
     });
 
-    this.rtcEngine.onEvent('videodevicestatechanged', function(
+    this.rtcEngine.onEvent('videodevicestatechanged', function (
       deviceId: string,
       deviceType: number,
       deviceState: number
@@ -397,7 +398,7 @@ class AgoraRtcEngine extends EventEmitter {
       fire('videoDeviceStateChanged', deviceId, deviceType, deviceState);
     });
 
-    this.rtcEngine.onEvent('networkquality', function(
+    this.rtcEngine.onEvent('networkquality', function (
       uid: number,
       txquality: AgoraNetworkQuality,
       rxquality: AgoraNetworkQuality
@@ -406,20 +407,20 @@ class AgoraRtcEngine extends EventEmitter {
       fire('networkQuality', uid, txquality, rxquality);
     });
 
-    this.rtcEngine.onEvent('lastmilequality', function(
+    this.rtcEngine.onEvent('lastmilequality', function (
       quality: AgoraNetworkQuality
     ) {
       fire('lastmilequality', quality);
       fire('lastMileQuality', quality);
     });
 
-    this.rtcEngine.onEvent('lastmileProbeResult', function(
+    this.rtcEngine.onEvent('lastmileProbeResult', function (
       result: LastmileProbeResult
     ) {
       fire('lastmileProbeResult', result);
     });
 
-    this.rtcEngine.onEvent('firstlocalvideoframe', function(
+    this.rtcEngine.onEvent('firstlocalvideoframe', function (
       width: number,
       height: number,
       elapsed: number
@@ -428,7 +429,7 @@ class AgoraRtcEngine extends EventEmitter {
       fire('firstLocalVideoFrame', width, height, elapsed);
     });
 
-    this.rtcEngine.onEvent('firstremotevideodecoded', function(
+    this.rtcEngine.onEvent('firstremotevideodecoded', function (
       uid: number,
       width: number,
       height: number,
@@ -439,7 +440,7 @@ class AgoraRtcEngine extends EventEmitter {
       fire('firstRemoteVideoDecoded', uid, width, height, elapsed);
     });
 
-    this.rtcEngine.onEvent('videosizechanged', function(
+    this.rtcEngine.onEvent('videosizechanged', function (
       uid: number,
       width: number,
       height: number,
@@ -449,7 +450,7 @@ class AgoraRtcEngine extends EventEmitter {
       fire('videoSizeChanged', uid, width, height, rotation);
     });
 
-    this.rtcEngine.onEvent('firstremotevideoframe', function(
+    this.rtcEngine.onEvent('firstremotevideoframe', function (
       uid: number,
       width: number,
       height: number,
@@ -459,7 +460,7 @@ class AgoraRtcEngine extends EventEmitter {
       fire('firstRemoteVideoFrame', uid, width, height, elapsed);
     });
 
-    this.rtcEngine.onEvent('userjoined', function(
+    this.rtcEngine.onEvent('userjoined', function (
       uid: number,
       elapsed: number
     ) {
@@ -468,7 +469,7 @@ class AgoraRtcEngine extends EventEmitter {
       fire('userJoined', uid, elapsed);
     });
 
-    this.rtcEngine.onEvent('useroffline', function(
+    this.rtcEngine.onEvent('useroffline', function (
       uid: number,
       reason: number
     ) {
@@ -484,7 +485,7 @@ class AgoraRtcEngine extends EventEmitter {
       fire('removeStream', uid, reason);
     });
 
-    this.rtcEngine.onEvent('usermuteaudio', function(
+    this.rtcEngine.onEvent('usermuteaudio', function (
       uid: number,
       muted: boolean
     ) {
@@ -492,7 +493,7 @@ class AgoraRtcEngine extends EventEmitter {
       fire('userMuteAudio', uid, muted);
     });
 
-    this.rtcEngine.onEvent('usermutevideo', function(
+    this.rtcEngine.onEvent('usermutevideo', function (
       uid: number,
       muted: boolean
     ) {
@@ -500,7 +501,7 @@ class AgoraRtcEngine extends EventEmitter {
       fire('userMuteVideo', uid, muted);
     });
 
-    this.rtcEngine.onEvent('userenablevideo', function(
+    this.rtcEngine.onEvent('userenablevideo', function (
       uid: number,
       enabled: boolean
     ) {
@@ -508,7 +509,7 @@ class AgoraRtcEngine extends EventEmitter {
       fire('userEnableVideo', uid, enabled);
     });
 
-    this.rtcEngine.onEvent('userenablelocalvideo', function(
+    this.rtcEngine.onEvent('userenablelocalvideo', function (
       uid: number,
       enabled: boolean
     ) {
@@ -516,29 +517,29 @@ class AgoraRtcEngine extends EventEmitter {
       fire('userEnableLocalVideo', uid, enabled);
     });
 
-    this.rtcEngine.onEvent('cameraready', function() {
+    this.rtcEngine.onEvent('cameraready', function () {
       fire('cameraready');
       fire('cameraReady');
     });
 
-    this.rtcEngine.onEvent('videostopped', function() {
+    this.rtcEngine.onEvent('videostopped', function () {
       fire('videostopped');
       fire('videoStopped');
     });
 
-    this.rtcEngine.onEvent('connectionlost', function() {
+    this.rtcEngine.onEvent('connectionlost', function () {
       fire('connectionlost');
       fire('connectionLost');
     });
 
-    this.rtcEngine.onEvent('snapshotTaken', function(
+    this.rtcEngine.onEvent('snapshotTaken', function (
       channel: string,
       uid: number,
       elapsed: number
     ) {
       fire('snapshotTaken', channel, uid, elapsed);
     });
-    this.rtcEngine.onEvent('audioDeviceTestVolumeIndication', function(
+    this.rtcEngine.onEvent('audioDeviceTestVolumeIndication', function (
       volumeType: AudioDeviceTestVolumeType,
       volume: number
     ) {
@@ -560,7 +561,7 @@ class AgoraRtcEngine extends EventEmitter {
     //   fire('refreshRecordingServiceStatus', status);
     // });
 
-    this.rtcEngine.onEvent('streammessage', function(
+    this.rtcEngine.onEvent('streammessage', function (
       uid: number,
       streamId: number,
       msg: string,
@@ -570,7 +571,7 @@ class AgoraRtcEngine extends EventEmitter {
       fire('streamMessage', uid, streamId, msg, len);
     });
 
-    this.rtcEngine.onEvent('streammessageerror', function(
+    this.rtcEngine.onEvent('streammessageerror', function (
       uid: number,
       streamId: number,
       code: number,
@@ -581,22 +582,22 @@ class AgoraRtcEngine extends EventEmitter {
       fire('streamMessageError', uid, streamId, code, missed, cached);
     });
 
-    this.rtcEngine.onEvent('mediaenginestartcallsuccess', function() {
+    this.rtcEngine.onEvent('mediaenginestartcallsuccess', function () {
       fire('mediaenginestartcallsuccess');
       fire('mediaEngineStartCallSuccess');
     });
 
-    this.rtcEngine.onEvent('requestchannelkey', function() {
+    this.rtcEngine.onEvent('requestchannelkey', function () {
       fire('requestchannelkey');
       fire('requestChannelKey');
     });
 
-    this.rtcEngine.onEvent('firstlocalaudioframe', function(elapsed: number) {
+    this.rtcEngine.onEvent('firstlocalaudioframe', function (elapsed: number) {
       fire('firstlocalaudioframe', elapsed);
       fire('firstLocalAudioFrame', elapsed);
     });
 
-    this.rtcEngine.onEvent('firstremoteaudioframe', function(
+    this.rtcEngine.onEvent('firstremoteaudioframe', function (
       uid: number,
       elapsed: number
     ) {
@@ -604,14 +605,14 @@ class AgoraRtcEngine extends EventEmitter {
       fire('firstRemoteAudioFrame', uid, elapsed);
     });
 
-    this.rtcEngine.onEvent('firstRemoteAudioDecoded', function(
+    this.rtcEngine.onEvent('firstRemoteAudioDecoded', function (
       uid: number,
       elapsed: number
     ) {
       fire('firstRemoteAudioDecoded', uid, elapsed);
     });
 
-    this.rtcEngine.onEvent('remoteVideoStateChanged', function(
+    this.rtcEngine.onEvent('remoteVideoStateChanged', function (
       uid: number,
       state: RemoteVideoState,
       reason: RemoteVideoStateReason,
@@ -620,7 +621,7 @@ class AgoraRtcEngine extends EventEmitter {
       fire('remoteVideoStateChanged', uid, state, reason, elapsed);
     });
 
-    this.rtcEngine.onEvent('cameraFocusAreaChanged', function(
+    this.rtcEngine.onEvent('cameraFocusAreaChanged', function (
       x: number,
       y: number,
       width: number,
@@ -629,7 +630,7 @@ class AgoraRtcEngine extends EventEmitter {
       fire('cameraFocusAreaChanged', x, y, width, height);
     });
 
-    this.rtcEngine.onEvent('cameraExposureAreaChanged', function(
+    this.rtcEngine.onEvent('cameraExposureAreaChanged', function (
       x: number,
       y: number,
       width: number,
@@ -638,26 +639,26 @@ class AgoraRtcEngine extends EventEmitter {
       fire('cameraExposureAreaChanged', x, y, width, height);
     });
 
-    this.rtcEngine.onEvent('tokenPrivilegeWillExpire', function(token: string) {
+    this.rtcEngine.onEvent('tokenPrivilegeWillExpire', function (token: string) {
       fire('tokenPrivilegeWillExpire', token);
     });
 
-    this.rtcEngine.onEvent('streamPublished', function(
+    this.rtcEngine.onEvent('streamPublished', function (
       url: string,
       error: number
     ) {
       fire('streamPublished', url, error);
     });
 
-    this.rtcEngine.onEvent('streamUnpublished', function(url: string) {
+    this.rtcEngine.onEvent('streamUnpublished', function (url: string) {
       fire('streamUnpublished', url);
     });
 
-    this.rtcEngine.onEvent('transcodingUpdated', function() {
+    this.rtcEngine.onEvent('transcodingUpdated', function () {
       fire('transcodingUpdated');
     });
 
-    this.rtcEngine.onEvent('streamInjectStatus', function(
+    this.rtcEngine.onEvent('streamInjectStatus', function (
       url: string,
       uid: number,
       status: number
@@ -665,24 +666,24 @@ class AgoraRtcEngine extends EventEmitter {
       fire('streamInjectStatus', url, uid, status);
     });
 
-    this.rtcEngine.onEvent('localPublishFallbackToAudioOnly', function(
+    this.rtcEngine.onEvent('localPublishFallbackToAudioOnly', function (
       isFallbackOrRecover: boolean
     ) {
       fire('localPublishFallbackToAudioOnly', isFallbackOrRecover);
     });
 
-    this.rtcEngine.onEvent('remoteSubscribeFallbackToAudioOnly', function(
+    this.rtcEngine.onEvent('remoteSubscribeFallbackToAudioOnly', function (
       uid: number,
       isFallbackOrRecover: boolean
     ) {
       fire('remoteSubscribeFallbackToAudioOnly', uid, isFallbackOrRecover);
     });
 
-    this.rtcEngine.onEvent('microphoneEnabled', function(enabled: boolean) {
+    this.rtcEngine.onEvent('microphoneEnabled', function (enabled: boolean) {
       fire('microphoneEnabled', enabled);
     });
 
-    this.rtcEngine.onEvent('connectionStateChanged', function(
+    this.rtcEngine.onEvent('connectionStateChanged', function (
       state: ConnectionState,
       reason: ConnectionChangeReason
     ) {
@@ -693,12 +694,12 @@ class AgoraRtcEngine extends EventEmitter {
       fire('networkTypeChanged', type);
     });
 
-    this.rtcEngine.onEvent('activespeaker', function(uid: number) {
+    this.rtcEngine.onEvent('activespeaker', function (uid: number) {
       fire('activespeaker', uid);
       fire('activeSpeaker', uid);
     });
 
-    this.rtcEngine.onEvent('clientrolechanged', function(
+    this.rtcEngine.onEvent('clientrolechanged', function (
       oldRole: ClientRoleType,
       newRole: ClientRoleType
     ) {
@@ -706,7 +707,7 @@ class AgoraRtcEngine extends EventEmitter {
       fire('clientRoleChanged', oldRole, newRole);
     });
 
-    this.rtcEngine.onEvent('audiodevicevolumechanged', function(
+    this.rtcEngine.onEvent('audiodevicevolumechanged', function (
       deviceType: MediaDeviceType,
       volume: number,
       muted: boolean
@@ -715,34 +716,34 @@ class AgoraRtcEngine extends EventEmitter {
       fire('audioDeviceVolumeChanged', deviceType, volume, muted);
     });
 
-    this.rtcEngine.onEvent('videosourcejoinsuccess', function(uid: number) {
+    this.rtcEngine.onEvent('videosourcejoinsuccess', function (uid: number) {
       fire('videosourcejoinedsuccess', uid);
       fire('videoSourceJoinedSuccess', uid);
     });
 
-    this.rtcEngine.onEvent('videosourcerequestnewtoken', function() {
+    this.rtcEngine.onEvent('videosourcerequestnewtoken', function () {
       fire('videosourcerequestnewtoken');
       fire('videoSourceRequestNewToken');
     });
 
-    this.rtcEngine.onEvent('videosourceleavechannel', function() {
+    this.rtcEngine.onEvent('videosourceleavechannel', function () {
       fire('videosourceleavechannel');
       fire('videoSourceLeaveChannel');
     });
 
-    this.rtcEngine.onEvent('videoSourceLocalAudioStats', function(
+    this.rtcEngine.onEvent('videoSourceLocalAudioStats', function (
       stats: LocalAudioStats
     ) {
       fire('videoSourceLocalAudioStats', stats);
     });
 
-    this.rtcEngine.onEvent('videoSourceLocalVideoStats', function(
+    this.rtcEngine.onEvent('videoSourceLocalVideoStats', function (
       stats: LocalVideoStats
     ) {
       fire('videoSourceLocalVideoStats', stats);
     });
 
-    this.rtcEngine.onEvent('videoSourceVideoSizeChanged', function(
+    this.rtcEngine.onEvent('videoSourceVideoSizeChanged', function (
       uid: number,
       width: number,
       height: number,
@@ -751,35 +752,35 @@ class AgoraRtcEngine extends EventEmitter {
       fire('videoSourceVideoSizeChanged', uid, width, height, rotation);
     });
 
-    this.rtcEngine.onEvent('localUserRegistered', function(
+    this.rtcEngine.onEvent('localUserRegistered', function (
       uid: number,
       userAccount: string
     ) {
       fire('localUserRegistered', uid, userAccount);
     });
 
-    this.rtcEngine.onEvent('userInfoUpdated', function(
+    this.rtcEngine.onEvent('userInfoUpdated', function (
       uid: number,
       userInfo: UserInfo
     ) {
       fire('userInfoUpdated', uid, userInfo);
     });
 
-    this.rtcEngine.onEvent('localVideoStateChanged', function(
+    this.rtcEngine.onEvent('localVideoStateChanged', function (
       localVideoState: LOCAL_VIDEO_STREAM_STATE,
       err: LOCAL_VIDEO_STREAM_ERROR
     ) {
       fire('localVideoStateChanged', localVideoState, err);
     });
 
-    this.rtcEngine.onEvent('localAudioStateChanged', function(
+    this.rtcEngine.onEvent('localAudioStateChanged', function (
       state: LOCAL_AUDIO_STREAM_STATE,
       err: LOCAL_AUDIO_STREAM_ERROR
     ) {
       fire('localAudioStateChanged', state, err);
     });
 
-    this.rtcEngine.onEvent('remoteAudioStateChanged', function(
+    this.rtcEngine.onEvent('remoteAudioStateChanged', function (
       uid: number,
       state: RemoteAudioState,
       reason: RemoteAudioStateReason,
@@ -788,27 +789,27 @@ class AgoraRtcEngine extends EventEmitter {
       fire('remoteAudioStateChanged', uid, state, reason, elapsed);
     });
 
-    this.rtcEngine.onEvent('audioMixingStateChanged', function(
+    this.rtcEngine.onEvent('audioMixingStateChanged', function (
       state: number,
       reason: number
     ) {
       fire('audioMixingStateChanged', state, reason);
     });
 
-    this.rtcEngine.onEvent('channelMediaRelayState', function(
+    this.rtcEngine.onEvent('channelMediaRelayState', function (
       state: ChannelMediaRelayState,
       code: ChannelMediaRelayError
     ) {
       fire('channelMediaRelayState', state, code);
     });
 
-    this.rtcEngine.onEvent('channelMediaRelayEvent', function(
+    this.rtcEngine.onEvent('channelMediaRelayEvent', function (
       event: ChannelMediaRelayEvent
     ) {
       fire('channelMediaRelayEvent', event);
     });
 
-    this.rtcEngine.onEvent('rtmpStreamingStateChanged', function(
+    this.rtcEngine.onEvent('rtmpStreamingStateChanged', function (
       url: string,
       state: number,
       errCode: number
@@ -816,26 +817,26 @@ class AgoraRtcEngine extends EventEmitter {
       fire('rtmpStreamingStateChanged', url, state, errCode);
     });
 
-    this.rtcEngine.onEvent('firstLocalAudioFramePublished', function(
+    this.rtcEngine.onEvent('firstLocalAudioFramePublished', function (
       elapsed: number
     ) {
       fire('firstLocalAudioFramePublished', elapsed);
     });
 
-    this.rtcEngine.onEvent('firstLocalVideoFramePublished', function(
+    this.rtcEngine.onEvent('firstLocalVideoFramePublished', function (
       elapsed: number
     ) {
       fire('firstLocalVideoFramePublished', elapsed);
     });
 
-    this.rtcEngine.onEvent('rtmpStreamingEvent', function(
+    this.rtcEngine.onEvent('rtmpStreamingEvent', function (
       url: string,
       eventCode: RTMP_STREAMING_EVENT
     ) {
       fire('rtmpStreamingEvent', url, eventCode);
     });
 
-    this.rtcEngine.onEvent('audioPublishStateChanged', function(
+    this.rtcEngine.onEvent('audioPublishStateChanged', function (
       channel: string,
       oldState: STREAM_PUBLISH_STATE,
       newState: STREAM_PUBLISH_STATE,
@@ -850,7 +851,7 @@ class AgoraRtcEngine extends EventEmitter {
       );
     });
 
-    this.rtcEngine.onEvent('videoPublishStateChanged', function(
+    this.rtcEngine.onEvent('videoPublishStateChanged', function (
       channel: string,
       oldState: STREAM_PUBLISH_STATE,
       newState: STREAM_PUBLISH_STATE,
@@ -865,7 +866,7 @@ class AgoraRtcEngine extends EventEmitter {
       );
     });
 
-    this.rtcEngine.onEvent('audioSubscribeStateChanged', function(
+    this.rtcEngine.onEvent('audioSubscribeStateChanged', function (
       channel: string,
       uid: number,
       oldState: STREAM_SUBSCRIBE_STATE,
@@ -882,7 +883,7 @@ class AgoraRtcEngine extends EventEmitter {
       );
     });
 
-    this.rtcEngine.onEvent('videoSubscribeStateChanged', function(
+    this.rtcEngine.onEvent('videoSubscribeStateChanged', function (
       channel: string,
       uid: number,
       oldState: STREAM_SUBSCRIBE_STATE,
@@ -899,47 +900,47 @@ class AgoraRtcEngine extends EventEmitter {
       );
     });
 
-    this.rtcEngine.onEvent('audioRouteChanged', function(
+    this.rtcEngine.onEvent('audioRouteChanged', function (
       routing: AUDIO_ROUTE_TYPE
     ) {
       fire('audioRouteChanged', routing);
     });
 
-    this.rtcEngine.onEvent('uploadLogResult', function(
+    this.rtcEngine.onEvent('uploadLogResult', function (
       requestId: string,
       success: boolean,
       reason: number
     ) {
       fire('uploadLogResult', requestId, success, reason);
     });
-    this.rtcEngine.onEvent('virtualBackgroundSourceEnabled', function(
+    this.rtcEngine.onEvent('virtualBackgroundSourceEnabled', function (
       enabled: boolean,
       reason: VIRTUAL_BACKGROUND_SOURCE_STATE_REASON
     ) {
       fire('virtualBackgroundSourceEnabled', enabled, reason);
     });
 
-    this.rtcEngine.onEvent('videoSourceLocalAudioStateChanged', function(
+    this.rtcEngine.onEvent('videoSourceLocalAudioStateChanged', function (
       state: LOCAL_AUDIO_STREAM_STATE,
       error: LOCAL_AUDIO_STREAM_ERROR
     ) {
       fire('videoSourceLocalAudioStateChanged', state, error);
     });
 
-    this.rtcEngine.onEvent('videoSourceLocalVideoStateChanged', function(
+    this.rtcEngine.onEvent('videoSourceLocalVideoStateChanged', function (
       state: LOCAL_VIDEO_STREAM_STATE,
       error: LOCAL_VIDEO_STREAM_ERROR
     ) {
       fire('videoSourceLocalVideoStateChanged', state, error);
     });
 
-    this.rtcEngine.onEvent('videoSourceScreenCaptureInfoUpdated', function(
+    this.rtcEngine.onEvent('videoSourceScreenCaptureInfoUpdated', function (
       info: ScreenCaptureInfo
     ) {
       fire('videoSourceScreenCaptureInfoUpdated', info);
     });
 
-    this.rtcEngine.registerDeliverFrame(function(infos: any) {
+    this.rtcEngine.registerDeliverFrame(function (infos: any) {
       fire('agoraVideoRawData', infos);
       fire('agoraVideoRowData', infos);
       if (!self.pauseRender) {
@@ -1020,11 +1021,11 @@ class AgoraRtcEngine extends EventEmitter {
     ) {
       console.error(
         'invalid image header ' +
-          ydata.byteLength +
-          ' ' +
-          udata.byteLength +
-          ' ' +
-          vdata.byteLength
+        ydata.byteLength +
+        ' ' +
+        udata.byteLength +
+        ' ' +
+        vdata.byteLength
       );
       return false;
     }
@@ -1046,13 +1047,13 @@ class AgoraRtcEngine extends EventEmitter {
       if (!header || !ydata || !udata || !vdata) {
         console.log(
           'Invalid data param ： ' +
-            header +
-            ' ' +
-            ydata +
-            ' ' +
-            udata +
-            ' ' +
-            vdata
+          header +
+          ' ' +
+          ydata +
+          ' ' +
+          udata +
+          ' ' +
+          vdata
         );
         continue;
       }
@@ -1129,7 +1130,7 @@ class AgoraRtcEngine extends EventEmitter {
           options
         );
         this.renderMode = renderMode;
-        this.destroyRender(key, channelId, () => {});
+        this.destroyRender(key, channelId, () => { });
         this.initRender(key, view, channelId, options);
         this.setupViewContentMode(key, contentMode, channelId);
       } catch (error) {
@@ -4054,11 +4055,18 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @deprecated This method is deprecated. Use {@link videoSourceSetupLocalVideo} instead.
+   */
+  setupLocalVideoSource(view: Element): void {
+    this.videoSourceSetupLocalVideo(view);
+  }
+
+  /**
    * Sets the video renderer for video source.
    * @param {Element} view The dom element where video source should be
    * displayed.
    */
-  setupLocalVideoSource(view: Element): void {
+  videoSourceSetupLocalVideo(view: Element): void {
     this.initRender('videosource', view, '');
   }
 
@@ -4263,13 +4271,27 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @deprecated This method is deprecated. Use {@link videoSourceStopScreenCapture} instead.
+   */
+  stopScreenCapture2(): number {
+    return this.videoSourceStopScreenCapture();
+  }
+
+  /**
    * Stops the screen sharing when using the video source.
    * @return
    * - 0: Success.
    * - < 0: Failure.
    */
-  stopScreenCapture2(): number {
+  videoSourceStopScreenCapture(): number {
     return this.rtcEngine.stopScreenCapture2();
+  }
+
+  /**
+   * @deprecated This method is deprecated. Use {@link videoSourceStartPreview} instead.
+   */
+  startScreenCapturePreview(): number {
+    return this.videoSourceStartPreview();
   }
 
   /**
@@ -4278,9 +4300,10 @@ class AgoraRtcEngine extends EventEmitter {
    * - 0: Success
    * - < 0: Failure
    */
-  startScreenCapturePreview(): number {
+  videoSourceStartPreview(): number {
     return this.rtcEngine.videoSourceStartPreview();
   }
+
   /**
    * Shares the whole or part of a window by specifying the window symbol.
    *
@@ -4356,12 +4379,19 @@ class AgoraRtcEngine extends EventEmitter {
   }
 
   /**
+   * @deprecated This method is deprecated. Use {@link videoSourceStopPreview} instead.
+   */
+  stopScreenCapturePreview(): number {
+    return this.videoSourceStopPreview();
+  }
+
+  /**
    * Stops the local video preview when using the video source.
    * @return
    * - 0: Success.
    * - < 0: Failure.
    */
-  stopScreenCapturePreview(): number {
+  videoSourceStopPreview(): number {
     return this.rtcEngine.videoSourceStopPreview();
   }
 
@@ -6858,6 +6888,18 @@ class AgoraRtcEngine extends EventEmitter {
   ): number {
     return this.rtcEngine.sendStreamMessageWithArrayBuffer(streamId, buffer);
   }
+
+  videoSourceSetCloudProxy(proxuType: CLOUD_PROXY_TYPE): number {
+    return this.rtcEngine.videoSourceSetCloudProxy(proxuType);
+  }
+
+  videoSourceMuteLocalVideoStream(mute: boolean): number {
+    return this.rtcEngine.videoSourceMuteLocalVideoStream(mute);
+  }
+
+  videoSourceSetScreenCaptureScenario(type: SCREEN_SCENARIO_TYPE): number {
+    return this.rtcEngine.videoSourceSetScreenCaptureScenario(type);
+  }
 }
 /** The AgoraRtcEngine interface. */
 declare interface AgoraRtcEngine {
@@ -8477,7 +8519,7 @@ class AgoraRtcChannel extends EventEmitter {
       }
     );
 
-    this.rtcChannel.onEvent('audioPublishStateChanged', function(
+    this.rtcChannel.onEvent('audioPublishStateChanged', function (
       oldState: STREAM_PUBLISH_STATE,
       newState: STREAM_PUBLISH_STATE,
       elapseSinceLastState: number
@@ -8490,7 +8532,7 @@ class AgoraRtcChannel extends EventEmitter {
       );
     });
 
-    this.rtcChannel.onEvent('videoPublishStateChanged', function(
+    this.rtcChannel.onEvent('videoPublishStateChanged', function (
       oldState: STREAM_PUBLISH_STATE,
       newState: STREAM_PUBLISH_STATE,
       elapseSinceLastState: number
@@ -8503,7 +8545,7 @@ class AgoraRtcChannel extends EventEmitter {
       );
     });
 
-    this.rtcChannel.onEvent('audioSubscribeStateChanged', function(
+    this.rtcChannel.onEvent('audioSubscribeStateChanged', function (
       uid: number,
       oldState: STREAM_SUBSCRIBE_STATE,
       newState: STREAM_SUBSCRIBE_STATE,
@@ -8518,7 +8560,7 @@ class AgoraRtcChannel extends EventEmitter {
       );
     });
 
-    this.rtcChannel.onEvent('videoSubscribeStateChanged', function(
+    this.rtcChannel.onEvent('videoSubscribeStateChanged', function (
       uid: number,
       oldState: STREAM_SUBSCRIBE_STATE,
       newState: STREAM_SUBSCRIBE_STATE,
