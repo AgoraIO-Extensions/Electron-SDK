@@ -1414,6 +1414,12 @@ export enum VideoContentHint {
   CONTENT_HINT_DETAILS = 2,
 }
 
+export enum SCREEN_SCENARIO_TYPE {
+  SCREEN_SCENARIO_DOCUMENT = 1,
+  SCREEN_SCENARIO_GAMING = 2,
+  SCREEN_SCENARIO_VIDEO = 3,
+  SCREEN_SCENARIO_RDC = 4,
+}
 /**
  * @deprecated This callback is deprecated. Use the remoteVideoStats callback
  * instead.
@@ -3072,6 +3078,9 @@ export enum LOCAL_VIDEO_STREAM_ERROR {
    * @since v3.6.1.4
    */
   LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_NOT_SUPPORTED = 20,
+  /** 21: The screen capture fails. */
+  LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_FAILURE = 21,
+  LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_NO_PERMISSION = 22,
 }
 
 /** Local audio state types.
@@ -4735,6 +4744,19 @@ export interface NodeRtcEngine {
     streamId: number,
     buffer: UInt8ArrayBuffer
   ): number;
+
+  videoSourceSetCloudProxy(
+    proxyType: CLOUD_PROXY_TYPE
+  ): number;
+
+  videoSourceMuteLocalVideoStream(
+    mute: boolean
+  ): number;
+
+  videoSourceSetScreenCaptureScenario(
+    type: SCREEN_SCENARIO_TYPE
+  ): number;
+  
 }
 /**
  * @ignore

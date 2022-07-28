@@ -123,7 +123,9 @@ class AgoraVideoSourceSink : public AgoraVideoSource, public AgoraIpcListener {
 
   virtual node_error setLocalAccessPoint(
       std::unique_ptr<LocalAccessPointConfigurationCmd> &cmd) override;
-
+  virtual node_error setCloudProxy(agora::rtc::CLOUD_PROXY_TYPE type) override;
+  virtual node_error muteLocalVideoStream(bool mute) override;
+  virtual node_error setScreenCaptureScenario(agora::rtc::SCREEN_SCENARIO_TYPE type) override;
 private:
   void msgThread();
   void deliverFrame(const char* payload, int len);
@@ -373,8 +375,8 @@ void AgoraVideoSourceSink::onStartPreviewComplete() {
 
 node_error AgoraVideoSourceSink::stopPreview() {
   LOG_ENTER;
-  if (!m_ipcReceiver)
-    return node_status_error;
+  //if (!m_ipcReceiver)
+  //  return node_status_error;
 
   return m_ipcMsg->sendMessage(AGORA_IPC_STOP_VS_PREVIEW, nullptr, 0)
              ? node_ok
@@ -531,6 +533,36 @@ node_error AgoraVideoSourceSink::setVideoSourceVideoProfile(
   return node_status_error;
 }
 
+node_error AgoraVideoSourceSink::setCloudProxy(agora::rtc::CLOUD_PROXY_TYPE type)
+{
+  LOG_ENTER;
+  if (m_initialized) {
+    return m_ipcMsg->sendMessage(AGORA_IPC_SET_CLOUD_PROXY, (char*)&type, sizeof(type)) ? node_ok : node_generic_error;
+  }
+  return node_status_error;
+  LOG_LEAVE;
+}
+
+node_error AgoraVideoSourceSink::muteLocalVideoStream(bool mute)
+{
+  LOG_ENTER;
+  if (m_initialized) {
+    return m_ipcMsg->sendMessage(AGORA_IPC_MUTE_LOCAL_VIDEO_STREAM, (char*)&mute, sizeof(mute)) ? node_ok : node_generic_error;
+  }
+  return node_status_error;
+  LOG_LEAVE;
+}
+
+node_error AgoraVideoSourceSink::setScreenCaptureScenario(agora::rtc::SCREEN_SCENARIO_TYPE type)
+{
+  LOG_ENTER;
+  if (m_initialized) {
+    return m_ipcMsg->sendMessage(AGORA_IPC_SET_SCREEN_CAPTURE_SCENARIO, (char*)&type, sizeof(type)) ? node_ok : node_generic_error;
+  }
+  return node_status_error;
+  LOG_LEAVE;
+}
+
 void AgoraVideoSourceSink::onMessage(unsigned int msg,
                                      char* payload,
                                      unsigned int len) {
@@ -623,7 +655,7 @@ node_error AgoraVideoSourceSink::captureScreen(
     agora::rtc::Rect* rect,
     int bitrate) {
   LOG_ENTER;
-  if (m_initialized && m_peerJoined) {
+  if (m_initialized) {
     CaptureScreenCmd cmd;
     cmd.windowid = id;
     cmd.captureFreq = captureFreq;
@@ -649,7 +681,7 @@ node_error AgoraVideoSourceSink::updateScreenCapture(agora::rtc::Rect* rect) {
     LOG_ERROR("updateScreenCapture fail: not exist rect");
     return node_invalid_args;
   }
-  if (m_initialized && m_peerJoined) {
+  if (m_initialized) {
     return m_ipcMsg->sendMessage(AGORA_IPC_UPDATE_CAPTURE_SCREEN, (char*)rect,
                                  sizeof(*rect))
                ? node_ok
@@ -661,7 +693,7 @@ node_error AgoraVideoSourceSink::updateScreenCapture(agora::rtc::Rect* rect) {
 
 node_error AgoraVideoSourceSink::stopCaptureScreen() {
   LOG_ENTER;
-  if (m_initialized && m_peerJoined) {
+  if (m_initialized) {
     return m_ipcMsg->sendMessage(AGORA_IPC_STOP_CAPTURE_SCREEN, nullptr, 0)
                ? node_ok
                : node_generic_error;
@@ -673,7 +705,7 @@ node_error AgoraVideoSourceSink::stopCaptureScreen() {
 node_error AgoraVideoSourceSink::setScreenCaptureContentHint(
     VideoContentHint contentHint) {
   LOG_ENTER;
-  if (m_initialized && m_peerJoined) {
+  if (m_initialized) {
     return m_ipcMsg->sendMessage(AGORA_IPC_SET_SCREEN_CAPTURE_CONTENT_HINT,
                                  (char*)&contentHint, sizeof(contentHint))
                ? node_ok
@@ -689,7 +721,7 @@ node_error AgoraVideoSourceSink::startScreenCaptureByScreen(
     const agora::rtc::ScreenCaptureParameters& captureParams,
     const std::vector<agora::rtc::IRtcEngine::WindowIDType>& excludeWindows) {
   LOG_ENTER;
-  if (m_initialized && m_peerJoined) {
+  if (m_initialized) {
     CaptureScreenByDisplayCmd cmd;
 
     int count = MAX_WINDOW_ID_COUNT < excludeWindows.size()
@@ -718,7 +750,7 @@ node_error AgoraVideoSourceSink::startScreenCaptureByDisplayId(
     const Rectangle& regionRect,
     const agora::rtc::ScreenCaptureParameters& captureParams,
     const std::vector<agora::rtc::IRtcEngine::WindowIDType>& excludeWindows) {
-  if (m_initialized && m_peerJoined) {
+  if (m_initialized) {
     CaptureScreenByDisplayCmd cmd;
 
     int count = MAX_WINDOW_ID_COUNT < excludeWindows.size()
@@ -746,7 +778,7 @@ node_error AgoraVideoSourceSink::startScreenCaptureByWindow(
     const Rectangle& regionRect,
     const agora::rtc::ScreenCaptureParameters& captureParams) {
   LOG_ENTER;
-  if (m_initialized && m_peerJoined) {
+  if (m_initialized) {
     CaptureScreenByWinCmd cmd;
     cmd.windowId = windowId;
     cmd.regionRect = regionRect;
@@ -764,7 +796,7 @@ node_error AgoraVideoSourceSink::updateScreenCaptureParameters(
     const agora::rtc::ScreenCaptureParameters& captureParams,
     const std::vector<agora::rtc::IRtcEngine::WindowIDType>& excludeWindows) {
   LOG_ENTER;
-  if (m_initialized && m_peerJoined) {
+  if (m_initialized) {
     ScreenCaptureParametersCmd cmd;
 
     int count = MAX_WINDOW_ID_COUNT < excludeWindows.size()
@@ -790,7 +822,7 @@ node_error AgoraVideoSourceSink::enableLoopbackRecording(
     bool enabled,
     const char* deviceName) {
   LOG_ENTER;
-  if (m_initialized && m_peerJoined) {
+  if (m_initialized) {
     LoopbackRecordingCmd cmd;
     cmd.enabled = enabled;
     if (deviceName != NULL) {
@@ -807,7 +839,7 @@ node_error AgoraVideoSourceSink::enableLoopbackRecording(
 
 node_error AgoraVideoSourceSink::enableAudio() {
   LOG_ENTER;
-  if (m_initialized && m_peerJoined) {
+  if (m_initialized) {
     return m_ipcMsg->sendMessage(AGORA_IPC_ENABLE_AUDIO, nullptr, 0)
                ? node_ok
                : node_generic_error;
@@ -908,7 +940,7 @@ node_error AgoraVideoSourceSink::adjustRecordingSignalVolume(int32 volume) {
 
 node_error
 AgoraVideoSourceSink::adjustLoopbackRecordingSignalVolume(int32 volume) {
-  if (m_initialized && m_peerJoined) {
+  if (m_initialized) {
     return m_ipcMsg->sendMessage(
                AGORA_IPC_ADJUST_LOOPBACK_RECORDING_SIGNAL_VOLUME,
                (char *)&volume, sizeof(volume))
@@ -918,7 +950,7 @@ AgoraVideoSourceSink::adjustLoopbackRecordingSignalVolume(int32 volume) {
   return node_status_error;
 }
 node_error AgoraVideoSourceSink::disableAudio() {
-  if (m_initialized && m_peerJoined) {
+  if (m_initialized) {
     return m_ipcMsg->sendMessage(AGORA_IPC_DISABLE_AUDIO, nullptr, 0)
                ? node_ok
                : node_generic_error;
