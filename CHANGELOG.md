@@ -1,3 +1,11 @@
+## 3.6.1-rc.8-build.726(July 26th, 2022)
+- add api
+  - videoSourceSetCloudProxy
+  - videoSourceMuteLocalVideoStream
+  - videoSourceSetScreenCaptureScenario
+- call videoSource api before videoSource join success
+- call stopPreview in videoSourceStopPreview
+- LOCAL_VIDEO_STREAM_ERROR add enum value
 ## 3.6.1-rc.7-build.715(July 15th, 2022)
 VIDEO_SOURCE_BLOCK_NUM 32 ==> 64
 ## 3.6.1-rc.7-build.714(July 14th, 2022)

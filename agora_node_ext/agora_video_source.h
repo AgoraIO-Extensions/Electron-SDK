@@ -247,6 +247,11 @@ class AgoraVideoSource {
   virtual node_error muteAllRemoteVideoStreams(bool mute) = 0;
   
   virtual node_error setLocalAccessPoint(std::unique_ptr<LocalAccessPointConfigurationCmd> &cmd) = 0;
+
+  virtual node_error setCloudProxy(agora::rtc::CLOUD_PROXY_TYPE type) = 0;
+
+  virtual node_error muteLocalVideoStream(bool mute) = 0;
+  virtual node_error setScreenCaptureScenario(agora::rtc::SCREEN_SCENARIO_TYPE type) = 0;
 };
 
 /**
