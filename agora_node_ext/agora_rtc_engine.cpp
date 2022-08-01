@@ -1705,7 +1705,10 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceSetCloudProxy) {
     uint32 proxyType;
     status = napi_get_value_uint32_(args[0], proxyType);
     CHECK_NAPI_STATUS(pEngine, status);
-
+    if (proxyType < NONE_PROXY || proxyType > TCP_PROXY) {
+      result = -2;
+      break;
+    }
     if (!pEngine->m_videoSourceSink.get() ||
       pEngine->m_videoSourceSink->setCloudProxy((agora::rtc::CLOUD_PROXY_TYPE)proxyType) != node_ok) {
       break;
