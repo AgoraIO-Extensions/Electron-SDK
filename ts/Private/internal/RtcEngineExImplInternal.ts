@@ -81,7 +81,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
   override getVersion(): SDKBuildInfo {
     const apiType = "RtcEngine_getVersion";
     const jsonParams = {};
-    const jsonResults = callIrisApi(apiType, jsonParams);
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return {
       build: jsonResults.build,
       version: jsonResults.result,
@@ -105,7 +105,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
     AgoraEnv.mediaPlayerEventManager = AgoraEnv.mediaPlayerEventManager.filter(
       (obj) => obj.mpk !== mediaPlayer
     );
-    const jsonResults = callIrisApi(apiType, jsonParams);
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return jsonResults.result;
   }
 
@@ -226,7 +226,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
         };
       },
     };
-    const jsonResults = callIrisApi(apiType, jsonParams);
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
 
     jsonResults.result.forEach(function (element: any) {
       if (element.thumbImage.buffer == 0) {
@@ -329,7 +329,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
         };
       },
     };
-    const jsonResults = callIrisApi(apiType, jsonParams);
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return jsonResults.result;
   }
 
@@ -344,7 +344,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
         return { options };
       },
     };
-    const jsonResults = callIrisApi(apiType, jsonParams);
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return jsonResults.result;
   }
 
@@ -363,7 +363,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
         };
       },
     };
-    const jsonResults = callIrisApi(apiType, jsonParams);
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return jsonResults.result;
   }
 
@@ -375,7 +375,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
         return { intervalInSeconds };
       },
     };
-    const jsonResults = callIrisApi(apiType, jsonParams);
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return jsonResults.result;
   }
 
@@ -389,7 +389,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
         return { sourceType };
       },
     };
-    const jsonResults = callIrisApi(apiType, jsonParams);
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return jsonResults.result;
   }
 
@@ -403,7 +403,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
         return { sourceType };
       },
     };
-    const jsonResults = callIrisApi(apiType, jsonParams);
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return jsonResults.result;
   }
 
@@ -415,7 +415,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
         return { config };
       },
     };
-    const jsonResults = callIrisApi(apiType, jsonParams);
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return jsonResults.result;
   }
 
@@ -443,7 +443,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
         };
       },
     };
-    const jsonResults = callIrisApi(apiType, jsonParams);
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return jsonResults.result;
   }
 
@@ -468,7 +468,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
         };
       },
     };
-    const jsonResults = callIrisApi(apiType, jsonParams);
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return jsonResults.result;
   }
 
@@ -480,7 +480,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
         return { config };
       },
     };
-    const jsonResults = callIrisApi(apiType, jsonParams);
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return jsonResults.streamId;
   }
 
@@ -496,7 +496,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
         };
       },
     };
-    const jsonResults = callIrisApi(apiType, jsonParams);
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return jsonResults.result;
   }
 
@@ -524,7 +524,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
         };
       },
     };
-    const jsonResults = callIrisApi(apiType, jsonParams);
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return jsonResults.result;
   }
 
@@ -543,7 +543,7 @@ export class RtcEngineExImplInternal extends IRtcEngineExImpl {
         };
       },
     };
-    const jsonResults = callIrisApi(apiType, jsonParams);
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return jsonResults.streamId;
   }
 }
