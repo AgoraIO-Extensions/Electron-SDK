@@ -106,7 +106,7 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
         };
       },
     };
-    const jsonResults = callIrisApi(apiType, jsonParams);
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return jsonResults.result;
   }
 
@@ -122,7 +122,7 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
         };
       },
     };
-    const jsonResults = callIrisApi(apiType, jsonParams);
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return jsonResults.result;
   }
 }
