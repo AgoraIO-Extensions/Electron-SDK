@@ -29,7 +29,7 @@ const macPrepare = async () => {
     fs.move(
       path.join(
         __dirname,
-        `../tmp/Agora_Native_SDK_for_Mac_FULL/libs/${fileName}.xcframework/macos-x86_64_arm64/${fileName}.framework`
+        `../tmp/Agora_Native_SDK_for_Mac_FULL/libs/${fileName}.xcframework/macos-arm64_x86_64/${fileName}.framework`
       ),
       path.join(__dirname, `../sdk/lib/mac/${fileName}.framework`)
     )
