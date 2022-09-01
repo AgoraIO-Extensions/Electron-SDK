@@ -90,7 +90,7 @@
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-react": "^7.29.4",
-    "node-sass": "^5.0.0",
+    "node-sass": "^7.0.0",
     "prettier": "2.7.1",
     "react-refresh": "^0.13.0",
     "sass-loader": "~10.2.1",
