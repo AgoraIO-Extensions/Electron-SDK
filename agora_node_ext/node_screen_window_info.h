@@ -18,6 +18,12 @@
 
 #include "IAgoraRtcEngine.h"
 
+
+struct BufferInfo {
+  unsigned char *buffer;
+  uint32_t length;
+};
+
 struct ScreenDisplayInfo {
 
   std::string name;
@@ -72,6 +78,9 @@ struct ScreenWindowInfo {
 std::vector<ScreenDisplayInfo> getAllDisplayInfo();
 std::vector<ScreenWindowInfo> getAllWindowInfo();
 
+void ConvertRGBToBMP(void *srcRGBABuffer, BufferInfo &bufferInfo, int32_t width,
+                     int32_t height);
+                     
 #if defined(_WIN32)
 void DestroyGdiplus();
 #endif

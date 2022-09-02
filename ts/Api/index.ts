@@ -80,7 +80,8 @@ import {
   AUDIO_MIXING_ERROR_TYPE,
   VirtualBackgroundSource,
   SegmentationProperty,
-  VideoFormat
+  VideoFormat,
+  SIZE
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -3172,6 +3173,46 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.stopAudioRecordingDeviceTest();
   }
 
+   /**
+   * Gets a list of shareable screens and windows.
+   *
+   * @since v3.6.1.4
+   *
+   * You can call this method before sharing a screen or window to get a list of shareable screens and windows, which
+   * enables a user to use thumbnails in the list to easily choose a particular screen or window to share. This list
+   * also contains important information such as window ID and screen ID, with which you can
+   * call {@link startScreenCaptureByWindow} or
+   * {@link startScreenCaptureByDisplayId} to start the sharing.
+   *
+   * @note This method applies to macOS and Windows only.
+   *
+   * @param thumbSize The target size of the screen or window thumbnail. The width and height are in pixels. See SIZE.
+   * The SDK scales the original image to make the length of the longest side of the image the same as that of the
+   * target size without distorting the original image. For example, if the original image is 400 × 300 and `thumbSize`
+   * is 100 × 100, the actual size of the thumbnail is 100 × 75. If the target size is larger than the original size,
+   * the thumbnail is the original image and the SDK does not scale it.
+   * @param iconSize The target size of the icon corresponding to the application program. The width and height are in
+   * pixels. See SIZE. The SDK scales the original image to make the length of the longest side of the image the same
+   * as that of the target size without distorting the original image. For example, if the original image is 400 × 300
+   * and `iconSize` is 100 × 100, the actual size of the icon is 100 × 75. If the target size is larger than the
+   * original size, the icon is the original image and the SDK does not scale it.
+   * @param includeScreen Whether the SDK returns screen information in addition to window information:
+   * - true: The SDK returns screen and window information.
+   * - false: The SDK returns window information only.
+   *
+   * @return Array of ScreenCaptureSources objects
+   */
+    getScreenCaptureSources(
+      thumbSize: SIZE,
+      iconSize: SIZE,
+      includeScreen: boolean
+    ): Array<Object> {
+      return this.rtcEngine.getScreenCaptureSources(
+        thumbSize,
+        iconSize,
+        includeScreen
+      );
+  }
   /**
    * check whether selected audio playback device is muted
    * @return {boolean} muted/unmuted
