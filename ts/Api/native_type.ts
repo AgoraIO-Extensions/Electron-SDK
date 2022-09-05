@@ -9,6 +9,11 @@ export interface RendererOptions
   append: boolean
 }
 
+export interface SIZE {
+  width: number;
+  height: number;
+}
+
 export enum BACKGROUND_SOURCE_TYPE {
   /**
    * 1: (Default) The background image is a solid color.
@@ -3581,6 +3586,14 @@ export interface NodeRtcEngine {
    * @ignore
    */
   getAudioPlaybackDeviceMute(): boolean;
+    /**
+   * @ignore
+   */
+  getScreenCaptureSources(
+    thumbSize: SIZE,
+    iconSize: SIZE,
+    includeScreen: boolean
+  ): Array<Object>;
   /**
    * @ignore
    */

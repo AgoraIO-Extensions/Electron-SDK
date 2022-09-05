@@ -708,3 +708,44 @@ std::vector<ScreenDisplayInfo> getAllDisplayInfo() {
   }
   return _display_infos;
 }
+
+void ConvertRGBToBMP(void *srcRGBABuffer, BufferInfo &bufferInfo, int32_t width,
+                     int32_t height) {
+  DWORD bits = 32;
+
+  BITMAPFILEHEADER bfh;
+  ZeroMemory(&bfh, sizeof(BITMAPFILEHEADER));
+  bfh.bfType = ((WORD)('M' << 8) | 'B');
+  bfh.bfSize = 0;
+  bfh.bfReserved2 = 0;
+  bfh.bfReserved1 = 0;
+  bfh.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
+  BITMAPINFO BitmapInfo;
+  BitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  BitmapInfo.bmiHeader.biPlanes = 1;
+  BitmapInfo.bmiHeader.biBitCount = bits;
+  BitmapInfo.bmiHeader.biCompression = BI_RGB;
+  BitmapInfo.bmiHeader.biSizeImage = 0;
+  BitmapInfo.bmiHeader.biXPelsPerMeter = 0;
+  BitmapInfo.bmiHeader.biYPelsPerMeter = 0;
+  BitmapInfo.bmiHeader.biClrUsed = 0;
+  BitmapInfo.bmiHeader.biClrImportant = 0;
+  BitmapInfo.bmiHeader.biWidth = width;
+  BitmapInfo.bmiHeader.biHeight = (long)(-height);
+  int dwPitch = width * bits / 8;
+  while (dwPitch % 4 != 0)
+    dwPitch++;
+  unsigned int rawDataLength = height * dwPitch;
+
+  bufferInfo.buffer =
+      (unsigned char *)malloc(sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) +
+                        rawDataLength);
+  bufferInfo.length =
+      sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + rawDataLength;
+  memcpy(bufferInfo.buffer, &bfh, sizeof(BITMAPFILEHEADER));
+  memcpy(bufferInfo.buffer + sizeof(BITMAPFILEHEADER), &BitmapInfo,
+         sizeof(BITMAPINFOHEADER));
+  memcpy(bufferInfo.buffer + sizeof(BITMAPFILEHEADER) +
+             sizeof(BITMAPINFOHEADER),
+         srcRGBABuffer, rawDataLength);
+}
