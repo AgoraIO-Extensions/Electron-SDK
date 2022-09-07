@@ -1428,7 +1428,48 @@ void NodeEventHandler::onUserAccountUpdated(const RtcConnection &connection,
     this->sendJSWithConnection(RTC_EVENT_USER_ACCOUNT_UPDATED, 3, _connection,
                                napi_create_uint32_(isolate, remoteUid),
                                napi_create_string_(isolate, userAccount));
+  }); 
+}
+
+void NodeEventHandler::onLocalVideoTranscoderError(const TranscodingVideoStream *stream,
+                                                   VIDEO_TRANSCODER_ERROR error) {
+  FUNC_TRACE;   
+  node_async_call::async_call([this, stream, error] {
+    this->onLocalVideoTranscoderError_node(stream, error);
   });
+}
+
+void NodeEventHandler::onLocalVideoTranscoderError_node(const TranscodingVideoStream *stream,
+                                                        VIDEO_TRANSCODER_ERROR error) {
+  FUNC_TRACE;
+  do {
+    Isolate *isolate = Isolate::GetCurrent();
+    HandleScope scope(isolate);    
+    Local<Context> context = isolate->GetCurrentContext(); 
+    Local<Object> obj = Object::New(isolate); 
+    CHECK_NAPI_OBJ(obj); 
+    NODE_SET_OBJ_PROP_NUMBER(odj, "sourceType", stream.sourceType);
+    NODE_SET_OBJ_PROP_UID(odj, "remoteUserUid", stream.remoteUserUid);
+    NODE_SET_OBJ_PROP_STRING(odj, "imageUrl", stream.imageUrl);
+    NODE_SET_OBJ_PROP_NUMBER(odj, "mediaPlayerId", stream.mediaPlayerId);
+    NODE_SET_OBJ_PROP_NUMBER(odj, "x", stream.x);
+    NODE_SET_OBJ_PROP_NUMBER(odj, "y", stream.y);
+    NODE_SET_OBJ_PROP_NUMBER(odj, "width", stream.width);
+    NODE_SET_OBJ_PROP_NUMBER(odj, "height", stream.height);
+    NODE_SET_OBJ_PROP_NUMBER(odj, "zOrder", stream.zOrder);
+    obj->Set(context, napi_create_string_(isolate, "alpha"),
+                      napi_create_double_(isolate, stream.alpha));
+    obj->Set(context, napi_create_string_(isolate, "mirror"),
+                      napi_create_bool_(isolate, stream.mirror));
+    
+    Local<Value> arg[2] = {obj, napi_create_int32_(isolate, error)};
+    auto it = m_callbacks.find(RTC_EVENT_LOCAL_VIDEO_TRANSCODER_ERROR);
+    if (it != m_callbacks.end()) {
+      it->second->callback.Get(isolate)->Call(
+          context, it->second->js_this.Get(isolate), 2, arg);
+    }
+
+  } while (false);
 }
 
 void NodeEventHandler::onRtcStats_node_with_type(

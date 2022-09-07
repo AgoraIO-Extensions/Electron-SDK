@@ -18,6 +18,7 @@
 #include <string>
 #include <unordered_map>
 #include <uv.h>
+#include "AgoraBase.h"
 namespace agora {
 namespace rtc {
 #define RTC_EVENT_WARNING "warning"
@@ -130,7 +131,7 @@ namespace rtc {
 #define RTC_EVENT_VIDEO_SOURCE_REQUEST_NEW_TOKEN "videosourcerequestnewtoken"
 #define RTC_EVENT_VIDEO_SOURCE_LEAVE_CHANNEL "videosourceleavechannel"
 #define RTC_EVENT_API_ERROR "apierror"
-
+#define RTC_EVENT_LOCAL_VIDEO_TRANSCODER_ERROR "localVideotranscodererror"
 class NodeRtcEngine;
 class NodeUid;
 class CustomRtcConnection;
@@ -351,6 +352,9 @@ public:
                                     uid_t remoteUid,
                                     const char *userAccount) override;
 
+  virtual void onLocalVideoTranscoderError(const TranscodingVideoStream *stream,
+                                           VIDEO_TRANSCODER_ERROR error) override;
+
 private:
   std::unordered_map<std::string, NodeEventCallback *> m_callbacks;
   NodeRtcEngine *m_engine;
@@ -374,6 +378,8 @@ private:
                                const RemoteAudioStats &stats);
   void sendJSWithConnection(const char *type, int count,
                             const CustomRtcConnection connection, ...);
+  void onLocalVideoTranscoderError_node(const TranscodingVideoStream *stream,
+                                                        VIDEO_TRANSCODER_ERROR error);                            
 };
 } // namespace rtc
 } // namespace agora
