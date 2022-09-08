@@ -97,6 +97,19 @@ export interface RtcConnection {
  localUid:number;
 };
 
+export interface TranscodingVideoStream {
+  sourceType: VIDEO_SOURCE_TYPE;
+  remoteUserUid: number;
+  imageUrl: string;
+  mediaPlayerId: number;
+  x: number;
+  y:  number;
+  width: number;
+  height: number;
+  zOrder: number;
+  alpha: number;
+  mirror: boolean;
+}
 /**
  * Network quality types:
  *

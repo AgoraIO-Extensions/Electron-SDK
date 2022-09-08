@@ -653,7 +653,7 @@ NAPI_API_DEFINE(NodeRtcEngine, startLocalVideoTranscoder) {
         napi_get_object_property_bool_(isolate, videoInputStreamObj, "mirror",
                                        videoInputStreams[i].mirror);
       }
-      localTranscoderConfiguration.VideoInputStreams = videoInputStreams;
+      localTranscoderConfiguration.videoInputStreams = videoInputStreams;
     }
 
     VideoDimensions dimensions;
@@ -858,7 +858,7 @@ NAPI_API_DEFINE(NodeRtcEngine, updateLocalTranscoderConfiguration) {
         napi_get_object_property_bool_(isolate, videoInputStreamObj, "mirror",
                                        videoInputStreams[i].mirror);
       }
-      localTranscoderConfiguration.VideoInputStreams = videoInputStreams;
+      localTranscoderConfiguration.videoInputStreams = videoInputStreams;
     }
 
     VideoDimensions dimensions;
