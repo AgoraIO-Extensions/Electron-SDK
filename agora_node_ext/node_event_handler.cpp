@@ -1431,11 +1431,25 @@ void NodeEventHandler::onUserAccountUpdated(const RtcConnection &connection,
   }); 
 }
 
-void NodeEventHandler::onLocalVideoTranscoderError(const TranscodingVideoStream *stream,
+void NodeEventHandler::onLocalVideoTranscoderError(const TranscodingVideoStream &stream,
                                                    VIDEO_TRANSCODER_ERROR error) {
-  FUNC_TRACE;   
-  node_async_call::async_call([this, stream, error] {
-    this->onLocalVideoTranscoderError_node(stream, error);
+  FUNC_TRACE;
+  std::string imageUrl = stream.imageUrl;
+  TranscodingVideoStream *temp = new TranscodingVideoStream;
+  temp->sourceType = stream.sourceType;
+  temp->remoteUserUid = stream.remoteUserUid;
+  temp->mediaPlayerId = stream.mediaPlayerId;
+  temp->x = stream.x;
+  temp->y = stream.y;
+  temp->width = stream.width;
+  temp->height = stream.height;
+  temp->zOrder = stream.zOrder;
+  temp->alpha = stream.alpha;
+  temp->mirror = stream.mirror;
+  node_async_call::async_call([this, temp,imageUrl, error] {
+    temp->imageUrl = imageUrl.c_str();
+    this->onLocalVideoTranscoderError_node(temp, error);
+    delete temp;
   });
 }
 
@@ -1448,19 +1462,19 @@ void NodeEventHandler::onLocalVideoTranscoderError_node(const TranscodingVideoSt
     Local<Context> context = isolate->GetCurrentContext(); 
     Local<Object> obj = Object::New(isolate); 
     CHECK_NAPI_OBJ(obj); 
-    NODE_SET_OBJ_PROP_NUMBER(odj, "sourceType", stream.sourceType);
-    NODE_SET_OBJ_PROP_UID(odj, "remoteUserUid", stream.remoteUserUid);
-    NODE_SET_OBJ_PROP_STRING(odj, "imageUrl", stream.imageUrl);
-    NODE_SET_OBJ_PROP_NUMBER(odj, "mediaPlayerId", stream.mediaPlayerId);
-    NODE_SET_OBJ_PROP_NUMBER(odj, "x", stream.x);
-    NODE_SET_OBJ_PROP_NUMBER(odj, "y", stream.y);
-    NODE_SET_OBJ_PROP_NUMBER(odj, "width", stream.width);
-    NODE_SET_OBJ_PROP_NUMBER(odj, "height", stream.height);
-    NODE_SET_OBJ_PROP_NUMBER(odj, "zOrder", stream.zOrder);
+    NODE_SET_OBJ_PROP_NUMBER(obj, "sourceType", stream->sourceType);
+    NODE_SET_OBJ_PROP_UID(obj, "remoteUserUid", stream->remoteUserUid);
+    NODE_SET_OBJ_PROP_STRING(obj, "imageUrl", stream->imageUrl);
+    NODE_SET_OBJ_PROP_NUMBER(obj, "mediaPlayerId", stream->mediaPlayerId);
+    NODE_SET_OBJ_PROP_NUMBER(obj, "x", stream->x);
+    NODE_SET_OBJ_PROP_NUMBER(obj, "y", stream->y);
+    NODE_SET_OBJ_PROP_NUMBER(obj, "width", stream->width);
+    NODE_SET_OBJ_PROP_NUMBER(obj, "height", stream->height);
+    NODE_SET_OBJ_PROP_NUMBER(obj, "zOrder", stream->zOrder);
     obj->Set(context, napi_create_string_(isolate, "alpha"),
-                      napi_create_double_(isolate, stream.alpha));
+                      napi_create_double_(isolate, stream->alpha));
     obj->Set(context, napi_create_string_(isolate, "mirror"),
-                      napi_create_bool_(isolate, stream.mirror));
+                      napi_create_bool_(isolate, stream->mirror));
     
     Local<Value> arg[2] = {obj, napi_create_int32_(isolate, error)};
     auto it = m_callbacks.find(RTC_EVENT_LOCAL_VIDEO_TRANSCODER_ERROR);

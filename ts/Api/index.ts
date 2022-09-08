@@ -80,7 +80,8 @@ import {
   AUDIO_MIXING_ERROR_TYPE,
   VirtualBackgroundSource,
   SegmentationProperty,
-  VideoFormat
+  VideoFormat,
+  TranscodingVideoStream
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -263,6 +264,11 @@ class AgoraRtcEngine extends EventEmitter {
     this.rtcEngine.onEvent('error', function( err: number, msg: string) {
       fire('error', err, msg);
     });
+
+    this.rtcEngine.onEvent('localvideotranscodererror', function( stream: TranscodingVideoStream, error: number) {
+      fire('localvideotranscodererror', stream, error);
+    });
+
 
     this.rtcEngine.onEvent('audioquality', function(connection: RtcConnection, remoteUid: number, quality: number, delay: number, lost: number) {
       fire('audioquality', connection, remoteUid, quality, delay, lost);
@@ -4601,6 +4607,10 @@ declare interface AgoraRtcEngine {
    */
   on(evt: 'audioQuality', cb: (
     connection: RtcConnection, remoteUid: number, quality: number, delay: number, lost: number
+  ) => void): this;
+
+  on(evt: 'localvideotranscodererror', cb: (
+    stream: TranscodingVideoStream, error: number, 
   ) => void): this;
 
   on(

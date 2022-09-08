@@ -131,7 +131,7 @@ namespace rtc {
 #define RTC_EVENT_VIDEO_SOURCE_REQUEST_NEW_TOKEN "videosourcerequestnewtoken"
 #define RTC_EVENT_VIDEO_SOURCE_LEAVE_CHANNEL "videosourceleavechannel"
 #define RTC_EVENT_API_ERROR "apierror"
-#define RTC_EVENT_LOCAL_VIDEO_TRANSCODER_ERROR "localVideotranscodererror"
+#define RTC_EVENT_LOCAL_VIDEO_TRANSCODER_ERROR "localvideotranscodererror"
 class NodeRtcEngine;
 class NodeUid;
 class CustomRtcConnection;
@@ -352,7 +352,7 @@ public:
                                     uid_t remoteUid,
                                     const char *userAccount) override;
 
-  virtual void onLocalVideoTranscoderError(const TranscodingVideoStream *stream,
+  virtual void onLocalVideoTranscoderError(const TranscodingVideoStream &stream,
                                            VIDEO_TRANSCODER_ERROR error) override;
 
 private:
