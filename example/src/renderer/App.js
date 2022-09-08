@@ -70,6 +70,7 @@ export default class App extends Component {
       
       this.subscribeEvents(this.rtcEngine)
       window.rtcEngine = this.rtcEngine
+      this.rtcEngine.enableVideo();
 
       this.setState({
         videoDevices: rtcEngine.getVideoDevices(),
@@ -405,45 +406,59 @@ export default class App extends Component {
     )
   }
 
-  handleScreenSharing = (e) => {
+  handleWindowSharing = e => {
     // getWindowInfo and open Modal
-    let rtcEngine = this.getRtcEngine()
-    let list = rtcEngine.getScreenWindowsInfo()
-    Promise.all(list.map((item) => readImage(item.image))).then((imageList) => {
-      let windowList = list.map((item, index) => {
-        return {
-          ownerName: item.ownerName,
-          name: item.name,
-          windowId: item.windowId,
-          image: imageList[index],
-        }
-      })
-      this.setState({
-        showScreenPicker: true,
-        windowList: windowList,
-      })
-    })
-  }
+    let rtcEngine = this.getRtcEngine();
+    // let list = rtcEngine.getScreenWindowsInfo();
+    let list = rtcEngine.getScreenCaptureSources(
+      { width: 400, height: 400 },
+      { width: 400, height: 400 },
+      false
+    );
+
+    Promise.all(list.map(item => readImage(item.thumbImage.buffer))).then(
+      imageList => {
+        let windowList = list.map((item, index) => {
+          console.log(item.sourceTitle, item, item.sourceId);
+          return {
+            ownerName: item.sourceName,
+            name: item.sourceTitle,
+            windowId: item.sourceId,
+            image: imageList[index],
+          };
+        });
+
+        this.setState({
+          showScreenPicker: true,
+          windowList: windowList,
+        });
+      }
+    );
+  };
 
   handleDisplaySharing = (e) => {
-    // getWindowInfo and open Modal
     let rtcEngine = this.getRtcEngine()
-    let list = rtcEngine.getScreenDisplaysInfo()
-    Promise.all(list.map((item) => readImage(item.image))).then((imageList) => {
-      let displayList = list.map((item, index) => {
-        let name = `Display ${index + 1}`
-        return {
-          ownerName: '',
-          name: name,
-          displayId: item.displayId,
-          image: imageList[index],
-        }
-      })
-      this.setState({
-        showDisplayPicker: true,
-        displayList: displayList,
-      })
-    })
+    let list = rtcEngine.getScreenCaptureSources(
+        { width: 400, height: 400 },
+        { width: 400, height: 400 },
+        true
+    ).filter(obj => obj.type === 1);
+    Promise.all(list.map(item => readImage(item.thumbImage.buffer))).then(
+      imageList => {
+        let displayList = list.map((item, index) => {
+          return {
+            ownerName: '',
+            name: `Display ${index + 1}`,
+            displayId: {x: 0, y: 0, width:400, height:400, id: item.sourceId},//item.sourceId,
+            image: imageList[index],
+          };
+        });
+        this.setState({
+          showDisplayPicker: true,
+          displayList: displayList,
+        });
+      }
+    );
   }
 
   handleRelease = () => {
@@ -872,7 +887,7 @@ export default class App extends Component {
                 {this.state.lastmileTestOn ? 'stop' : 'start'}
               </button>
             </div>
-          </div>
+          </div>   
           <label className='label'>Screen Share</label>
           <div
             className={
@@ -881,14 +896,12 @@ export default class App extends Component {
                 : 'field is-grouped'
             }
           >
-            <div
-              className={this.state.localSharing ? 'hidden control' : 'control'}
-            >
+            <div className="control">
               <button
-                onClick={this.handleScreenSharing}
-                className='button is-link'
+                onClick={this.handleWindowSharing}
+                className="button is-link"
               >
-                Screen Share
+                Window Share
               </button>
             </div>
             <div
