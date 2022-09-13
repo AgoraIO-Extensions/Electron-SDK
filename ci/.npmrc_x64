@@ -5,7 +5,7 @@ sass_binary_site=https://npmmirror.com/mirrors/node-sass/
 
 # for electron
 arch=x64
-# for electron-agora-rtc-ng
+# for agora-electron-sdk
 agora_electron_arch=x64
-# for electron-agora-rtc-ng(iris)
+# for agora-electron-sdk(iris)
 agora_electron_sdk_arch=x64

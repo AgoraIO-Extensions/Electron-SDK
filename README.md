@@ -1,11 +1,11 @@
 # Agora RTC SDK for Electron
 
 <div align="left">
-    <a href="https://github.com/AgoraIO-Community/electron-agora-rtc-ng"><img src="https://img.shields.io/badge/Platform-macOS--x86--64%20%7C%20macOS--arm64%20%7C%20win--32%20%7C%20win--64-blue?logo=Electron&labelColor=fff" alt="Platform"/></a>
-    <a href="https://www.npmjs.com/package/electron-agora-rtc-ng"><img alt="npm" src="https://img.shields.io/npm/v/electron-agora-rtc-ng?color=blue&style=flat-square&logo=npm"></a>
-    <a href="https://www.npmjs.com/package/electron-agora-rtc-ng"><img alt="npm" src="https://img.shields.io/npm/dm/electron-agora-rtc-ng?color=blue&style=flat-square&logo=npm"></a>
-    <a href="./LICENSE"><img src="https://img.shields.io/github/license/agoraio-community/electron-agora-rtc-ng?color=blue&style=flat-square" alt="License"/></a>
-    <a href="https://github.com/AgoraIO-Community/electron-agora-rtc-ng/issues"><img src="https://flat.badgen.net/github/label-issues/AgoraIO-Community/electron-agora-rtc-ng/help%20wanted/open" alt="License"/></a>
+    <a href="https://github.com/AgoraIO-Extensions/Electron-SDK"><img src="https://img.shields.io/badge/Platform-macOS--x86--64%20%7C%20macOS--arm64%20%7C%20win--32%20%7C%20win--64-blue?logo=Electron&labelColor=fff" alt="Platform"/></a>
+    <a href="https://www.npmjs.com/package/agora-electron-sdk"><img alt="npm" src="https://img.shields.io/npm/v/agora-electron-sdk?color=blue&style=flat-square&logo=npm"></a>
+    <a href="https://www.npmjs.com/package/agora-electron-sdk"><img alt="npm" src="https://img.shields.io/npm/dm/agora-electron-sdk?color=blue&style=flat-square&logo=npm"></a>
+    <a href="./LICENSE"><img src="https://img.shields.io/github/license/agoraio-extensions/electron-sdk?color=blue&style=flat-square" alt="License"/></a>
+    <a href="https://github.com/AgoraIO-Extensions/Electron-SDK/issues"><img src="https://flat.badgen.net/github/label-issues/AgoraIO-Extensions/Electron-SDK/help%20wanted/open" alt="License"/></a>
 
 </div>
 
@@ -55,7 +55,7 @@ Properties detail:
 
 ```bash
 ## Automatic platform and architecture selection
-npm install electron-agora-rtc-ng
+npm install agora-electron-sdk
 ```
 
 or
@@ -71,7 +71,7 @@ npm install --agora_electron_sdk_arch=x64
 ## 🔨 Usage
 
 ```javascript
-import createAgoraRtcEngine from "electron-agora-rtc-ng";
+import createAgoraRtcEngine from "agora-electron-sdk";
 
 const rtcEngine = createAgoraRtcEngine();
 rtcEngine.initialize({appId: "<your agora app id>"});
@@ -81,7 +81,7 @@ rtcEngine.initialize({appId: "<your agora app id>"});
 
 When using directly within a web electron project with custom webpack configuration, you may see errors when compiling.
 It's because you have not properly configured loader for node addon. A convenient way to skip the compile process is to
-set `externals` property of your webpack config to `{"electron-agora-rtc-ng": "commonjs2 electron-agora-rtc-ng"}`
+set `externals` property of your webpack config to `{"agora-electron-sdk": "commonjs2 agora-electron-sdk"}`
 
 ## 🔗 Links
 
@@ -119,8 +119,8 @@ latest features which are not released yet, or maintain your own fork with patch
 ### Clone locally:
 
 ```bash
-$ git clone git@github.com:AgoraIO-Community/electron-agora-rtc-ng.git
-$ cd electron-agora-rtc-ng
+$ git clone git@github.com:AgoraIO-Extensions/Electron-SDK.git
+$ cd Electron-SDK
 $ npm install #or yarn
 
 # build macOS
@@ -133,7 +133,7 @@ $ npm install --verbose --agora_electron_sdk_pre_built=false  --agora_electron_s
 $ npm install --verbose --agora_electron_sdk_pre_built=false  --agora_electron_sdk_arch=x64
 ```
 
-## 🤝 Contributing [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/AgoraIO-Community/electron-agora-rtc-ng/pulls)
+## 🤝 Contributing [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/AgoraIO-Extensions/Electron-SDK/pulls)
 
 Read our contributing guide and let's build a better antd together. :)
 
