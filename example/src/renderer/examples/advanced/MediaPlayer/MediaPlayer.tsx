@@ -8,7 +8,7 @@ import {
   MediaPlayerEvent,
   MediaPlayerState,
   VideoSourceType,
-} from 'electron-agora-rtc-ng';
+} from 'agora-electron-sdk';
 
 import Config from '../../../config/agora.config';
 

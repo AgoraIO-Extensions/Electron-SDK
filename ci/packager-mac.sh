@@ -5,7 +5,7 @@ example_sdk_mode=${1:-1}
 
 example_electron_version=${2:-'18.2.3'}
 
-echo example_sdk_mode: $example_sdk_mode 
+echo example_sdk_mode: $example_sdk_mode
 echo example_electron_version: $example_electron_version
 
 packExample() {
@@ -17,7 +17,7 @@ packExample() {
   if [ -n "$2" ]
   then
       echo 选择了 electron_version:$2
-      yarn add electron@$2            
+      yarn add electron@$2
   else
       echo 安装example 依赖
       yarn
@@ -25,8 +25,8 @@ packExample() {
 
   if [ "$3" -eq 1 ]
   then
-    rm -rf node_modules/electron-agora-rtc-ng/build
-    cp -P -R ../Electron-*/* node_modules/electron-agora-rtc-ng/
+    rm -rf node_modules/agora-electron-sdk/build
+    cp -P -R ../Electron-*/* node_modules/agora-electron-sdk/
   fi
   export USE_HARD_LINKS=false
   yarn dist:mac

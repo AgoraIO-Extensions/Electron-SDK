@@ -12,7 +12,7 @@ import {
   RtcStats,
   VideoDeviceInfo,
   VideoSourceType,
-} from 'electron-agora-rtc-ng';
+} from 'agora-electron-sdk';
 
 import Config from '../../../config/agora.config';
 

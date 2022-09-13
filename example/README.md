@@ -19,7 +19,7 @@ First, create a developer account at [Agora.io](https://dashboard.agora.io/signi
 Then do the following:
 
 ```bash
-git clone git@github.com:AgoraIO-Community/electron-agora-rtc-ng.git
+git clone git@github.com:AgoraIO-Extensions/Electron-SDK.git
 cd example
 yarn
 yarn dev
@@ -29,11 +29,11 @@ yarn dev
 
 ```bash
 # example path
-rm -rf node_modules/electron-agora-rtc-ng
+rm -rf node_modules/agora-electron-sdk
 # sdk path
 cd .. && npm install --agora_electron_sdk_pre_built=false && yarn link
 # example path
-cd example && yarn link "electron-agora-rtc-ng"
+cd example && yarn link "agora-electron-sdk"
 ```
 
 ## 📖 Project structure
@@ -60,7 +60,7 @@ If you have any problems or suggestions regarding the sample projects, feel free
 ## 🚀 Reference
 
 - You can find full API document at [Document Center](https://docs.agora.io/en/Video/API%20Reference/electron/index.html)
-- You can file issues about this demo at [issue](https://github.com/AgoraIO-Community/electron-agora-rtc-ng/issues)
+- You can file issues about this demo at [issue](https://github.com/AgoraIO-Extensions/Electron-SDK/issues)
 
 ## 🚀 Related resources
 

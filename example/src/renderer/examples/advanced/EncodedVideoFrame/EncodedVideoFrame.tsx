@@ -11,7 +11,7 @@ import {
   RtcConnection,
   VideoCodecType,
   VideoFrameType,
-} from 'electron-agora-rtc-ng';
+} from 'agora-electron-sdk';
 import { Buffer } from 'buffer';
 
 import Config from '../../../config/agora.config';

@@ -6,7 +6,7 @@ import {
   Link,
   Redirect,
 } from 'react-router-dom';
-import { createAgoraRtcEngine } from 'electron-agora-rtc-ng';
+import { createAgoraRtcEngine } from 'agora-electron-sdk';
 import {
   HomeOutlined,
   DingtalkOutlined,

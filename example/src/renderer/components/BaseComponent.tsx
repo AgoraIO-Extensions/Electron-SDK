@@ -6,7 +6,7 @@ import {
   RtcConnection,
   RtcStats,
   UserOfflineReasonType,
-} from 'electron-agora-rtc-ng';
+} from 'agora-electron-sdk';
 import { Card, List } from 'antd';
 
 import AgoraStyle from '../examples/config/public.scss';

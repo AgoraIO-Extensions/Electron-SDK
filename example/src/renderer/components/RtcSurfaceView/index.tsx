@@ -8,7 +8,7 @@ import {
   createAgoraRtcEngine,
   IRtcEngineEx,
   IMediaPlayer,
-} from 'electron-agora-rtc-ng';
+} from 'agora-electron-sdk';
 
 import { getRandomInt } from '../../utils';
 import styles from './index.scss';
