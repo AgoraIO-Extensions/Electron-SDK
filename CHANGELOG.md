@@ -1,3 +1,10 @@
+# [4.0.0-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.0-rc.1...v4.0.0-rc.2) (2022-09-13)
+
+
+### Bug Fixes
+
+* cross-env-shell error ([cfdf132](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/cfdf132fe983f897919c32d4513c89249d2f2826))
+
 # 4.0.0-rc.1 (2022-09-13)
 
 
