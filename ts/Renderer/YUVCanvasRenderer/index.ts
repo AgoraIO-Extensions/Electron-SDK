@@ -5,13 +5,13 @@
  * @Last Modified time: 2021-05-19 15:59:03
  */
 
-const YUVBuffer = require("yuv-buffer");
-const YUVCanvas = require("yuv-canvas");
-const isEqual = require("lodash.isequal");
+const YUVBuffer = require('yuv-buffer');
+const YUVCanvas = require('yuv-canvas');
+const isEqual = require('lodash.isequal');
 
-import { RenderModeType } from "../../Private/AgoraMediaBase";
-import { CanvasOptions, ShareVideoFrame } from "../../Types";
-import { IRenderer } from "../IRenderer";
+import { RenderModeType } from '../../Private/AgoraMediaBase';
+import { CanvasOptions, ShareVideoFrame } from '../../Types';
+import { IRenderer } from '../IRenderer';
 
 export class YUVCanvasRenderer extends IRenderer {
   private _cacheCanvasOptions?: CanvasOptions;
@@ -34,18 +34,18 @@ export class YUVCanvasRenderer extends IRenderer {
 
   bind(element: HTMLElement) {
     super.bind(element);
-    let container = document.createElement("div");
+    let container = document.createElement('div');
     Object.assign(container.style, {
-      width: "100%",
-      height: "100%",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      overflow: "hidden",
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      overflow: 'hidden',
     });
     this._container = container;
     this.parentElement!.appendChild(this._container);
-    this.canvas = document.createElement("canvas");
+    this.canvas = document.createElement('canvas');
     this._container.appendChild(this.canvas);
 
     this._yuvCanvasSink = YUVCanvas.attach(this.canvas, {
@@ -130,16 +130,16 @@ export class YUVCanvasRenderer extends IRenderer {
         this.canvas.width = options.frameWidth;
         this.canvas.height = options.frameHeight;
         Object.assign(this.canvas.style, {
-          width: options.frameWidth + "px",
-          height: options.frameHeight + "px",
-          "object-fit": "cover",
+          'width': options.frameWidth + 'px',
+          'height': options.frameHeight + 'px',
+          'object-fit': 'cover',
         });
       } else if (options.rotation === 90 || options.rotation === 270) {
         this.canvas.height = options.frameWidth;
         this.canvas.width = options.frameHeight;
       } else {
         throw new Error(
-          "Invalid value for rotation. Only support 0, 90, 180, 270"
+          'Invalid value for rotation. Only support 0, 90, 180, 270'
         );
       }
 
@@ -159,7 +159,7 @@ export class YUVCanvasRenderer extends IRenderer {
       this.canvas.style.zoom = scale.toString();
 
       if (transformItems.length > 0) {
-        let transform = `${transformItems.join(" ")}`;
+        let transform = `${transformItems.join(' ')}`;
         this.canvas.style.transform = transform;
       }
     }

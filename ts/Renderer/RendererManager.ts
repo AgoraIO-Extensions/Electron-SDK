@@ -1,6 +1,6 @@
-import { VideoSourceType } from "../Private/AgoraBase";
-import { RenderModeType } from "../Private/AgoraMediaBase";
-import { getBridge } from "../Private/internal/IrisApiEngine";
+import { VideoSourceType } from '../Private/AgoraBase';
+import { RenderModeType } from '../Private/AgoraMediaBase';
+import { getBridge } from '../Private/internal/IrisApiEngine';
 import {
   AgoraElectronBridge,
   Channel,
@@ -13,7 +13,7 @@ import {
   ShareVideoFrame,
   UidMap,
   VideoFrameCacheConfig,
-} from "../Types";
+} from '../Types';
 import {
   AgoraEnv,
   formatConfigByVideoSourceType,
@@ -22,15 +22,15 @@ import {
   logError,
   logInfo,
   logWarn,
-} from "../Utils";
-import GlRenderer from "./GlRenderer";
-import { IRenderer, RenderFailCallback } from "./IRenderer";
-import { YUVCanvasRenderer } from "./YUVCanvasRenderer";
+} from '../Utils';
+import GlRenderer from './GlRenderer';
+import { IRenderer, RenderFailCallback } from './IRenderer';
+import { YUVCanvasRenderer } from './YUVCanvasRenderer';
 
 class RendererManager {
   isRendering = false;
   renderFps: number;
-  videoFrameUpdateInterval?: NodeJS.Timeout;
+  videoFrameUpdateInterval?: NodeJS.Timer;
   renderers: RenderMap;
   renderMode: RENDER_MODE;
   msgBridge: AgoraElectronBridge;
@@ -47,7 +47,7 @@ class RendererManager {
   setRenderMode(mode: RENDER_MODE) {
     this.renderMode = mode;
     logInfo(
-      "setRenderMode:  new render mode will take effect only if new view bind to render"
+      'setRenderMode:  new render mode will take effect only if new view bind to render'
     );
   }
   setFPS(fps: number) {
@@ -61,7 +61,7 @@ class RendererManager {
     mirror: boolean = false
   ): void {
     if (!view) {
-      logError("setRenderOption: view not exist", view);
+      logError('setRenderOption: view not exist', view);
     }
     this.forEachStream(({ renders }) => {
       renders?.forEach((render) => {
@@ -81,7 +81,7 @@ class RendererManager {
       getDefaultRendererVideoConfig(rendererConfig);
 
     if (!rendererConfig.view) {
-      logError("setRenderOptionByView: view not exist");
+      logError('setRenderOptionByView: view not exist');
     }
     const renderList = this.getRenderers({ uid, channelId, videoSourceType });
     renderList
@@ -96,14 +96,14 @@ class RendererManager {
   }
   public checkWebglEnv(): boolean {
     let gl;
-    const canvas = document.createElement("canvas");
+    const canvas = document.createElement('canvas');
 
     try {
       gl =
-        canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-      logInfo("Your browser support webGL");
+        canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      logInfo('Your browser support webGL');
     } catch (e) {
-      logWarn("Your browser may not support webGL");
+      logWarn('Your browser may not support webGL');
       return false;
     }
 
@@ -121,7 +121,7 @@ class RendererManager {
       formatConfig;
 
     if (!formatConfig.view) {
-      logWarn("setupVideo->destroyRenderersByConfig, because of view is null");
+      logWarn('setupVideo->destroyRenderersByConfig, because of view is null');
       AgoraRendererManager.destroyRenderersByConfig(
         videoSourceType,
         channelId,
@@ -150,16 +150,17 @@ class RendererManager {
   public setupLocalVideo(rendererConfig: RendererVideoConfig): number {
     const { videoSourceType } = rendererConfig;
     if (videoSourceType === VideoSourceType.VideoSourceRemote) {
-      logError("setupLocalVideo videoSourceType error", videoSourceType);
+      logError('setupLocalVideo videoSourceType error', videoSourceType);
       return -1;
     }
     this.setupVideo({ ...rendererConfig });
     return 0;
   }
+
   public setupRemoteVideo(rendererConfig: RendererVideoConfig): number {
     const { videoSourceType } = rendererConfig;
     if (videoSourceType !== VideoSourceType.VideoSourceRemote) {
-      logError("setupLocalVideo videoSourceType error", videoSourceType);
+      logError('setupRemoteVideo videoSourceType error', videoSourceType);
       return -1;
     }
     this.setupVideo({
@@ -259,7 +260,7 @@ class RendererManager {
       if (!renders || renders?.length === 0) {
         return;
       }
-      let finalResult = this.msgBridge.GetVideoStreamData(
+      let finalResult = this.msgBridge.GetVideoFrame(
         rendererItem.shareVideoFrame
       );
 
@@ -271,7 +272,8 @@ class RendererManager {
         case 1:
           // IRIS_VIDEO_PROCESS_ERR::ERR_NULL_POINTER = 1,
           break;
-        case 2: // IRIS_VIDEO_PROCESS_ERR::ERR_SIZE_NOT_MATCHING
+        case 2: {
+          // IRIS_VIDEO_PROCESS_ERR::ERR_SIZE_NOT_MATCHING
           const { width, height } = finalResult;
           const newShareVideoFrame = this.resizeShareVideoFrame(
             videoSourceType,
@@ -281,8 +283,9 @@ class RendererManager {
             height
           );
           rendererItem.shareVideoFrame = newShareVideoFrame;
-          finalResult = this.msgBridge.GetVideoStreamData(newShareVideoFrame);
+          finalResult = this.msgBridge.GetVideoFrame(newShareVideoFrame);
           break;
+        }
         case 5:
           // IRIS_VIDEO_PROCESS_ERR::ERR_BUFFER_EMPTY
           // setupVideo/AgoraView render before initialize
@@ -292,11 +295,11 @@ class RendererManager {
           return;
       }
       if (finalResult.ret !== 0) {
-        logWarn("GetVideoStreamData ret is", finalResult.ret, rendererItem);
+        logWarn('GetVideoFrame ret is', finalResult.ret, rendererItem);
         return;
       }
       if (!finalResult.isNewFrame) {
-        logDebug("GetVideoStreamData isNewFrame is false", rendererItem);
+        logDebug('GetVideoFrame isNewFrame is false', rendererItem);
         return;
       }
       const renderVideoFrame = rendererItem.shareVideoFrame;
@@ -308,7 +311,7 @@ class RendererManager {
     };
     this.videoFrameUpdateInterval = setInterval(() => {
       if (!AgoraEnv.isInitializeEngine) {
-        logDebug("rtcEngine is not initialize");
+        logDebug('rtcEngine is not initialize');
         return;
       }
       this.forEachStream(renderFunc);
@@ -366,7 +369,7 @@ class RendererManager {
     const hasBeenAdd = filterRenders.length > 0;
     if (hasBeenAdd) {
       logWarn(
-        "bindHTMLElementToRender: this view has bind to render",
+        'bindHTMLElementToRender: this view has bind to render',
         filterRenders
       );
       return filterRenders[0];
