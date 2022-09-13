@@ -41,7 +41,8 @@
     "buffer": "^6.0.3",
     "yuv-buffer": "1.0.0",
     "yuv-canvas": "1.2.6",
-    "lodash.isequal": "^4.5.0"
+    "lodash.isequal": "^4.5.0",
+    "cross-env": "^7.0.3"
   },
   "files": [
     "js",
@@ -64,7 +65,6 @@
     "bindings": "1.2.1",
     "cmake-js": "6.3.2",
     "commitlint": "^17.0.2",
-    "cross-env": "^7.0.3",
     "cz-conventional-changelog": "3.3.0",
     "download": "^8.0.0",
     "eslint": "^8.4.1",
