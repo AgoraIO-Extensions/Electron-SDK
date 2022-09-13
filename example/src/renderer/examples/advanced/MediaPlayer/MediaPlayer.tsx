@@ -1,201 +1,387 @@
-import createAgoraRtcEngine, {
-  ClientRoleType,
+import React from 'react';
+import {
+  createAgoraRtcEngine,
   IMediaPlayer,
   IMediaPlayerSourceObserver,
-  IRtcEngine,
-  IRtcEngineEx,
+  IRtcEngineEventHandler,
   MediaPlayerError,
+  MediaPlayerEvent,
   MediaPlayerState,
-  RtcEngineExImplInternal,
   VideoSourceType,
-} from 'electron-agora-rtc-ng'
-import { Button, Input } from 'antd'
-import { Component } from 'react'
-import SliderBar from '../../component/SliderBar'
-import Window from '../../component/Window'
-import config from '../../config/agora.config'
-import styles from '../../config/public.scss'
-import { getRandomInt } from '../../util'
-const { Search } = Input
+} from 'electron-agora-rtc-ng';
 
-interface State {
-  isPlaying: boolean
-  mpkState?: MediaPlayerState
-  duration: number
+import Config from '../../../config/agora.config';
+
+import {
+  BaseComponent,
+  BaseComponentState,
+} from '../../../components/BaseComponent';
+import {
+  AgoraButton,
+  AgoraDivider,
+  AgoraSlider,
+  AgoraTextInput,
+} from '../../../components/ui';
+import RtcSurfaceView from '../../../components/RtcSurfaceView';
+
+interface State extends BaseComponentState {
+  url: string;
+  open: boolean;
+  play: boolean;
+  pause: boolean;
+  position: number;
+  duration: number;
+  mute: boolean;
+  playoutVolume: number;
+  loopCount: number;
 }
 
 export default class MediaPlayer
-  extends Component<State>
-  implements IMediaPlayerSourceObserver
+  extends BaseComponent<{}, State>
+  implements IRtcEngineEventHandler, IMediaPlayerSourceObserver
 {
-  rtcEngine?: IRtcEngineEx
+  protected player?: IMediaPlayer;
 
-  mpk?: IMediaPlayer
-
-  streamId?: number
-
-  state: State = {
-    isPlaying: false,
-    mpkState: undefined,
-    duration: 100000,
+  protected createState(): State {
+    return {
+      appId: Config.appId,
+      enableVideo: true,
+      url: 'https://agora-adc-artifacts.oss-cn-beijing.aliyuncs.com/video/meta_live_mpk.mov',
+      open: false,
+      play: false,
+      pause: false,
+      position: 0,
+      duration: 0,
+      mute: false,
+      playoutVolume: 100,
+      loopCount: 1,
+    };
   }
 
-  componentDidMount() {
-    this.getMediaPlayer().registerPlayerSourceObserver(this)
-  }
-
-  componentWillUnmount() {
-    this.getMediaPlayer().unregisterPlayerSourceObserver(this)
-    this.rtcEngine?.release()
-  }
-
-  getRtcEngine() {
-    if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine()
-      //@ts-ignore
-      window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appID })
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath)
-      console.log('initialize:', res)
+  /**
+   * Step 1: initRtcEngine
+   */
+  protected async initRtcEngine() {
+    const { appId } = this.state;
+    if (!appId) {
+      this.error(`appId is invalid`);
     }
-    return this.rtcEngine
+
+    this.engine = createAgoraRtcEngine();
+    this.engine.registerEventHandler(this);
+    this.engine.initialize({
+      appId,
+    });
+
+    this.createMediaPlayer();
   }
 
-  getMediaPlayer = () => {
-    if (!this.mpk) {
-      const mpk = this.getRtcEngine().createMediaPlayer()
-      this.mpk = mpk
-      return mpk
-    }
-    return this.mpk
-  }
+  /**
+   * Step 2: createMediaPlayer
+   */
+  createMediaPlayer = () => {
+    this.player = this.engine?.createMediaPlayer();
+    this.player?.registerPlayerSourceObserver(this);
+  };
 
-  onPlayerSourceStateChanged(
-    state: MediaPlayerState,
-    ec: MediaPlayerError
-  ): void {
-    switch (state) {
-      case MediaPlayerState.PlayerStateOpenCompleted:
-        console.log('onPlayerSourceStateChanged1:open finish')
-        this.getMediaPlayer().play()
-        const duration = this.getMediaPlayer().getDuration()
-        this.setState({ duration })
-        break
-      default:
-        break
-    }
-    console.log('onPlayerSourceStateChanged', state, ec)
-    this.setState({ mpkState: state })
-  }
-
-  onPositionChanged?(position: number): void {
-    console.log('onPositionChanged', position)
-  }
-
-  onPressMpk = (url) => {
+  /**
+   * Step 3-1: open
+   */
+  open = () => {
+    const { url } = this.state;
     if (!url) {
-      return
+      this.error('url is invalid');
     }
-    const { isPlaying } = this.state
-    const mpk = this.getMediaPlayer()
 
-    if (isPlaying) {
-      mpk.stop()
+    this.player?.open(url, 0);
+  };
+
+  /**
+   * Step 3-2: play
+   */
+  play = () => {
+    const { position, duration } = this.state;
+    if (position === duration) {
+      this.player?.seek(0);
     } else {
-      mpk.open(url, 0)
+      this.player?.play();
+    }
+  };
+
+  /**
+   * Step 3-3 (Optional): seek
+   */
+  seek = (position: number) => {
+    const { duration } = this.state;
+
+    if (duration <= 0) {
+      this.error(`duration is invalid`);
+      return;
     }
 
-    this.setState({ isPlaying: !isPlaying })
+    if (position < 0 || position > duration) {
+      this.error(`percent is invalid`);
+      return;
+    }
+
+    this.player?.seek(position);
+  };
+
+  /**
+   * Step 3-4 (Optional): pause
+   */
+  pause = () => {
+    this.player?.pause();
+  };
+
+  /**
+   * Step 3-5 (Optional): resume
+   */
+  resume = () => {
+    this.player?.resume();
+  };
+
+  /**
+   * Step 3-6 (Optional): mute
+   */
+  mute = () => {
+    this.player?.mute(true);
+    this.setState({ mute: true });
+  };
+
+  /**
+   * Step 3-7 (Optional): unmute
+   */
+  unmute = () => {
+    this.player?.mute(false);
+    this.setState({ mute: false });
+  };
+
+  /**
+   * Step 3-8 (Optional): adjustPlayoutVolume
+   */
+  adjustPlayoutVolume = () => {
+    const { playoutVolume } = this.state;
+    this.player?.adjustPlayoutVolume(playoutVolume);
+  };
+
+  /**
+   * Step 3-9 (Optional): setLoopCount
+   */
+  setLoopCount = () => {
+    const { loopCount } = this.state;
+    this.player?.setLoopCount(loopCount);
+  };
+
+  /**
+   * Step 3-10 (Optional): getStreamInfo
+   */
+  getStreamInfo = () => {
+    const streamCount = this.player?.getStreamCount();
+    if (streamCount === undefined || streamCount <= 0) {
+      this.error(`streamCount is invalid`);
+    }
+
+    const streamInfo = this.player?.getStreamInfo(0);
+    if (streamInfo) {
+      this.debug('getStreamInfo', 'streamInfo', streamInfo);
+    } else {
+      this.error('getStreamInfo');
+    }
+  };
+
+  /**
+   * Step 3-11: stop
+   */
+  stop = () => {
+    this.player?.stop();
+  };
+
+  /**
+   * Step 4: destroyMediaPlayer
+   */
+  protected destroyMediaPlayer() {
+    if (!this.player) return;
+    this.engine?.destroyMediaPlayer(this.player);
   }
 
-  renderRightBar = () => {
-    const { isPlaying, duration } = this.state
+  /**
+   * Step 5: releaseRtcEngine
+   */
+  protected releaseRtcEngine() {
+    this.destroyMediaPlayer();
+
+    this.engine?.release();
+  }
+
+  onPlayerSourceStateChanged(state: MediaPlayerState, ec: MediaPlayerError) {
+    this.info('onPlayerSourceStateChanged', 'state', state, 'ec', ec);
+    switch (state) {
+      case MediaPlayerState.PlayerStateIdle:
+        break;
+      case MediaPlayerState.PlayerStateOpening:
+        break;
+      case MediaPlayerState.PlayerStateOpenCompleted:
+        this.setState({ open: true, duration: this.player?.getDuration()! });
+        break;
+      case MediaPlayerState.PlayerStatePlaying:
+        this.setState({ play: true, pause: false });
+        break;
+      case MediaPlayerState.PlayerStatePaused:
+        this.setState({ pause: true });
+        break;
+      case MediaPlayerState.PlayerStatePlaybackCompleted:
+      case MediaPlayerState.PlayerStatePlaybackAllLoopsCompleted:
+        this.setState({ play: false });
+        break;
+      case MediaPlayerState.PlayerStateStopped:
+        this.setState({ open: false, play: false, pause: false, mute: false });
+        break;
+      case MediaPlayerState.PlayerStatePausingInternal:
+        break;
+      case MediaPlayerState.PlayerStateStoppingInternal:
+        break;
+      case MediaPlayerState.PlayerStateSeekingInternal:
+        break;
+      case MediaPlayerState.PlayerStateGettingInternal:
+        break;
+      case MediaPlayerState.PlayerStateNoneInternal:
+        break;
+      case MediaPlayerState.PlayerStateDoNothingInternal:
+        break;
+      case MediaPlayerState.PlayerStateSetTrackInternal:
+        break;
+      case MediaPlayerState.PlayerStateFailed:
+        break;
+    }
+  }
+
+  onPositionChanged(position: number) {
+    this.info('onPositionChanged', 'position', position);
+    this.setState({ position: position });
+  }
+
+  onPlayerEvent(
+    eventCode: MediaPlayerEvent,
+    elapsedTime: number,
+    message: string
+  ) {
+    this.info(
+      'onPlayerEvent',
+      'eventCode',
+      eventCode,
+      'elapsedTime',
+      elapsedTime,
+      'message',
+      message
+    );
+  }
+
+  protected renderChannel(): React.ReactNode {
+    return undefined;
+  }
+
+  protected renderConfiguration(): React.ReactNode {
+    const { url, open, position, duration, playoutVolume } = this.state;
     return (
-      <div className={styles.rightBar} style={{ justifyContent: 'flex-start' }}>
-        <Search
-          placeholder={'please input url for media'}
-          defaultValue='https://agora-adc-artifacts.oss-cn-beijing.aliyuncs.com/video/meta_live_mpk.mov'
-          allowClear
-          enterButton={!isPlaying ? 'Play' : 'Stop'}
-          size='small'
-          onSearch={this.onPressMpk}
+      <>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            this.setState({ url: text });
+          }}
+          placeholder={'url'}
+          value={url}
         />
-        <br />
-        {isPlaying && (
-          <>
-            <Button
-              onClick={() => {
-                this.getMediaPlayer().pause()
-              }}
-            >
-              Pause
-            </Button>
-            <Button
-              onClick={() => {
-                this.getMediaPlayer().resume()
-              }}
-            >
-              Resume
-            </Button>
-            <SliderBar
-              max={100}
-              min={0}
-              step={1}
-              title='Process'
-              onChange={(value) => {
-                this.getMediaPlayer().seek((value / 100) * this.state.duration)
-              }}
-            />
-            <Button
-              onClick={() => {
-                const res = this.rtcEngine.joinChannelWithOptions(
-                  '',
-                  config.defaultChannelId,
-                  getRandomInt(),
-                  {
-                    publishMediaPlayerId:
-                      this.getMediaPlayer().getMediaPlayerId(),
-                    autoSubscribeAudio: false,
-                    autoSubscribeVideo: false,
-                    publishMediaPlayerAudioTrack: true,
-                    publishMediaPlayerVideoTrack: true,
-                    clientRoleType: ClientRoleType.ClientRoleBroadcaster,
-                  }
-                )
-                console.log('joinChannel2', res)
-              }}
-            >
-              Publish
-            </Button>
-            <Button
-              onClick={() => {
-                this.rtcEngine.leaveChannel()
-              }}
-            >
-              UnPublish
-            </Button>
-          </>
-        )}
-      </div>
-    )
+        <AgoraSlider
+          disabled={!open}
+          title={`${position} ms : ${duration} ms`}
+          minimumValue={0}
+          maximumValue={duration}
+          step={1000}
+          value={position}
+          onSlidingComplete={(value) => {
+            this.seek(value);
+          }}
+        />
+        <AgoraDivider />
+        <AgoraSlider
+          title={`playoutVolume ${playoutVolume}`}
+          minimumValue={0}
+          maximumValue={400}
+          step={1}
+          value={playoutVolume}
+          onSlidingComplete={(value) => {
+            this.setState({ playoutVolume: value });
+          }}
+        />
+        <AgoraButton
+          disabled={!open}
+          title={'adjust Playout Volume'}
+          onPress={this.adjustPlayoutVolume}
+        />
+        <AgoraDivider />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              loopCount: text === '' ? this.createState().loopCount : +text,
+            });
+          }}
+          placeholder={`loopCount (defaults: ${this.createState().loopCount})`}
+        />
+        <AgoraButton
+          disabled={!open}
+          title={'set Loop Count'}
+          onPress={this.setLoopCount}
+        />
+        <AgoraDivider />
+      </>
+    );
   }
 
-  render() {
-    const { isPlaying } = this.state
+  protected renderUsers(): React.ReactNode {
+    const { open, channelId, uid } = this.state;
     return (
-      <div className={styles.screen}>
-        <div className={styles.content}>
-          {isPlaying && (
-            <Window
-              uid={this.getMediaPlayer().getMediaPlayerId()}
-              rtcEngine={this.rtcEngine!}
-              videoSourceType={VideoSourceType.VideoSourceMediaPlayer}
-              channelId={''}
-            />
-          )}
-        </div>
-        {this.renderRightBar()}
-      </div>
-    )
+      <>
+        {open ? (
+          <RtcSurfaceView
+            canvas={{
+              uid: this.player?.getMediaPlayerId(),
+              sourceType: VideoSourceType.VideoSourceMediaPlayer,
+            }}
+            connection={{ channelId, localUid: uid }}
+          />
+        ) : undefined}
+      </>
+    );
+  }
+
+  protected renderAction(): React.ReactNode {
+    const { open, play, pause, mute } = this.state;
+    return (
+      <>
+        <AgoraButton disabled={open} title={`open`} onPress={this.open} />
+        <AgoraButton
+          disabled={!open}
+          title={`${play ? 'stop' : 'play'} Media Player`}
+          onPress={play ? this.stop : this.play}
+        />
+        <AgoraButton
+          disabled={!play}
+          title={`${pause ? 'resume' : 'pause'} Media Player`}
+          onPress={pause ? this.resume : this.pause}
+        />
+        <AgoraButton
+          disabled={!open}
+          title={`${mute ? 'un' : ''}mute`}
+          onPress={mute ? this.unmute : this.mute}
+        />
+        <AgoraButton
+          disabled={!open}
+          title={`get Stream Info`}
+          onPress={this.getStreamInfo}
+        />
+      </>
+    );
   }
 }

@@ -1,12 +1,12 @@
-import { VideoSourceType } from "../Private/AgoraBase";
-import { RenderModeType } from "../Private/AgoraMediaBase";
-import AgoraRendererManager from "./RendererManager";
+import { VideoSourceType } from '../Private/AgoraBase';
+import { RenderModeType } from '../Private/AgoraMediaBase';
+import AgoraRendererManager from './RendererManager';
 
-const VIDEO_SOURCE_TYPE_STRING = "video-source-type";
-const UID_STRING = "uid";
-const CHANNEL_ID_STRING = "channel-id";
-const RENDERER_CONTENT_MODE_STRING = "renderer-content-mode";
-const RENDERER_MIRROR_STRING = "renderer-mirror";
+const VIDEO_SOURCE_TYPE_STRING = 'video-source-type';
+const UID_STRING = 'uid';
+const CHANNEL_ID_STRING = 'channel-id';
+const RENDERER_CONTENT_MODE_STRING = 'renderer-content-mode';
+const RENDERER_MIRROR_STRING = 'renderer-mirror';
 
 const observedAttributes = [
   VIDEO_SOURCE_TYPE_STRING,
@@ -17,41 +17,50 @@ const observedAttributes = [
 ];
 
 declare global {
-  /*
+  /**
    * Attributes of the Agora custom element.
+   * You can use this custom element as follows:<agora-view video-source-type="{VideoSourceType.VideoSourceCamera}" channel-id="" uid="{0}"></agora-view>
    */
   interface AgoraView {
-    /*
-     * @ignore
+    /**
+     * The type of the video source. See VideoSourceType .
      */
-    "video-source-type": VideoSourceType;
-    /*
+    'video-source-type': VideoSourceType;
+    /**
      * The ID of the remote user.
      */
-    uid: number;
-    /*
-     * @ignore
+    'uid': number;
+    /**
+     * The channel name. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters:
+     * All lowercase English letters: a to z.
+     * All uppercase English letters: A to Z.
+     * All numeric characters: 0 to 9.
+     * Space
+     * "!", "#", "$", "%", "&amp;", "(", ")", "+", "-", ":", ";", "&lt;", "= ", ".", "&gt;", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
      */
-    "channel-id": string;
-    /*
-     * @ignore
+    'channel-id': string;
+    /**
+     * The video display mode.
      */
-    "renderer-content-mode": RenderModeType;
-    /*
-     * @ignore
+    'renderer-content-mode': RenderModeType;
+    /**
+     * Whether to enable mirror mode when rendering video: true: Enable mirror mode.false: Do not enable mirror mode.
      */
-    "renderer-mirror": boolean;
-    /*
-     * The inline style of elements. See style 属性 .
+    'renderer-mirror': boolean;
+    /**
+     * The inline style of elements. See style .
      */
-    style: any;
+    'style': any;
   }
   namespace JSX {
-    /*
+    /**
      * The custom HTML elements defined by Agora.
      */
     interface IntrinsicElements {
-      "agora-view": AgoraView | HTMLElement;
+      /**
+       * The name of the custom element, which supports rendering an AgoraView or HTMLElement object.
+       */
+      'agora-view': AgoraView | HTMLElement;
     }
   }
 }
@@ -87,7 +96,7 @@ export default class AgoraView extends HTMLElement {
     }
   }
   get channelId(): string {
-    return this.getAttribute(CHANNEL_ID_STRING) || "";
+    return this.getAttribute(CHANNEL_ID_STRING) || '';
   }
 
   set channelId(val) {
@@ -114,7 +123,7 @@ export default class AgoraView extends HTMLElement {
     }
   }
   get renderMirror(): boolean {
-    return this.getAttribute(RENDERER_MIRROR_STRING) === "true";
+    return this.getAttribute(RENDERER_MIRROR_STRING) === 'true';
   }
 
   set renderMirror(val) {
@@ -179,4 +188,4 @@ export default class AgoraView extends HTMLElement {
   }
 }
 
-window.customElements.define("agora-view", AgoraView);
+window.customElements.define('agora-view', AgoraView);

@@ -1,5 +1,5 @@
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
-const isDevelopment = process.env.NODE_ENV === 'development'
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const isDevelopment = process.env.NODE_ENV === 'development';
 
 const fixModuleRules = (config) => {
   config.module.rules = [
@@ -35,11 +35,11 @@ const fixModuleRules = (config) => {
     //     },
     //   ],
     // },
-  ]
+  ];
 
   config.module.rules.forEach((rule) => {
     if (rule.test.toString().match(/s\(\[ac\]\)ss/)) {
-      rule.exclude = /\.global\.(scss|sass)$/
+      rule.exclude = /\.global\.(scss|sass)$/;
       rule.use = [
         {
           loader: 'style-loader',
@@ -59,29 +59,29 @@ const fixModuleRules = (config) => {
         {
           loader: 'sass-loader',
         },
-      ]
-      return
+      ];
+      return;
     }
-  })
-}
+  });
+};
 module.exports = function (config) {
-  fixModuleRules(config)
+  fixModuleRules(config);
   if (isDevelopment) {
     config.devServer = {
       ...config.devServer,
       historyApiFallback: true,
-    }
+    };
     config.plugins = [
       ...config.plugins,
       new ReactRefreshWebpackPlugin(),
-    ].filter(Boolean)
+    ].filter(Boolean);
   }
 
   config.externals = [
     // ...config.externals,
     'webpack',
     'electron-agora-rtc-ng',
-  ]
-  console.log('config', config.module.rules)
-  return config
-}
+  ];
+  console.log('config', config.module.rules);
+  return config;
+};

@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from 'react'
-import { DownOutlined } from '@ant-design/icons'
-import { Menu, Dropdown, Button, Popover } from 'antd'
+import React, { useEffect, useState } from 'react';
+import { DownOutlined } from '@ant-design/icons';
+import { Menu, Dropdown, Button, Popover } from 'antd';
 
 interface OptionProps {
-  dropId: string | number | any
-  dropText: string
+  dropId: string | number | any;
+  dropText: string;
 }
 
 interface DropDownButtonProps {
-  onPress?: (res: OptionProps) => void
-  options?: OptionProps[]
-  defaultIndex?: number
-  title?: string
-  PopContent?: (dropId: any) => React.ReactNode
-  PopContentTitle?: string
+  onPress?: (res: OptionProps) => void;
+  options?: OptionProps[];
+  defaultIndex?: number;
+  title?: string;
+  PopContent?: (dropId: any) => React.ReactNode;
+  PopContentTitle?: string;
 }
 
 const DropDownButton = ({
@@ -24,23 +24,23 @@ const DropDownButton = ({
   PopContent = undefined,
   PopContentTitle = '',
 }: DropDownButtonProps) => {
-  const [selectIndex, setSelectIndex] = useState(defaultIndex)
+  const [selectIndex, setSelectIndex] = useState(defaultIndex);
 
   const warpOnPress = ({ key }) => {
-    const value = options[key]
+    const value = options[key];
     if (value) {
-      setSelectIndex(key)
+      setSelectIndex(key);
       console.log(
         `DropDownButton title:   ${title} \nclick:                  ${value.dropText}\nvalue:`,
         value
-      )
-      onPress(value)
+      );
+      onPress(value);
     }
-  }
-  const { dropText: currentText } = options[selectIndex] || {}
+  };
+  const { dropText: currentText } = options[selectIndex] || {};
   useEffect(() => {
-    warpOnPress({ key: selectIndex })
-  }, [options.length])
+    warpOnPress({ key: selectIndex });
+  }, [options.length]);
   return (
     <div>
       {title && (
@@ -55,7 +55,7 @@ const DropDownButton = ({
               <Menu.Item key={index}>
                 {PopContent ? (
                   <Popover
-                    placement='left'
+                    placement="left"
                     content={() => PopContent(dropId)}
                     title={PopContentTitle}
                   >
@@ -74,6 +74,7 @@ const DropDownButton = ({
         </Button>
       </Dropdown>
     </div>
-  )
-}
-export default DropDownButton
+  );
+};
+
+export default DropDownButton;

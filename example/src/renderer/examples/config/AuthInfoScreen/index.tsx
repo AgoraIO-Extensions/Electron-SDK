@@ -1,8 +1,8 @@
-import { Input, Row, Card, Form, Button, Checkbox } from 'antd'
-import { AgoraEnv } from 'electron-agora-rtc-ng'
-import config from '../agora.config'
+import { Input, Row, Card, Form, Button, Checkbox } from 'antd';
+import { AgoraEnv } from 'electron-agora-rtc-ng';
+import config from '../../../config/agora.config';
 
-console.log('config', config)
+console.log('config', config);
 
 const layout = {
   labelCol: {
@@ -11,33 +11,37 @@ const layout = {
   wrapperCol: {
     span: 16,
   },
-}
+};
+
 const tailLayout = {
   wrapperCol: {
     offset: 8,
     span: 16,
   },
-}
+};
+
 const onFinish = (values: any) => {
-  console.log('Success:', values)
+  console.log('Success:', values);
 
-  config.appID = values.appID
-  config.defaultChannelId = values.defaultChannelId
-  config.token = values.token
-  config.pluginPath = values.pluginPath
+  config.appId = values.appId;
+  config.channelId = values.channelId;
+  config.token = values.token;
+  config.uid = values.uid;
+  config.pluginPath = values.pluginPath;
 
-  config.addonLogPath = values.addonLogPath
-  config.nativeSDKLogPath = values.nativeSDKLogPath
+  config.addonLogPath = values.addonLogPath;
+  config.nativeSDKLogPath = values.nativeSDKLogPath;
 
-  config.enableSDKLogging = values.enableSDKDebugLogging
-  config.enableSDKDebugLogging = values.enableSDKLogging
-  AgoraEnv.enableDebugLogging = values.enableSDKDebugLogging
-  AgoraEnv.enableLogging = values.enableSDKLogging
-}
+  config.enableSDKLogging = values.enableSDKDebugLogging;
+  config.enableSDKDebugLogging = values.enableSDKLogging;
+  AgoraEnv.enableDebugLogging = values.enableSDKDebugLogging;
+  AgoraEnv.enableLogging = values.enableSDKLogging;
+};
 
 const onFinishFailed = (errorInfo: any) => {
-  console.log('Failed:', errorInfo)
-}
+  console.log('Failed:', errorInfo);
+};
+
 const AuthInfoScreen = () => {
   return (
     <div
@@ -47,18 +51,18 @@ const AuthInfoScreen = () => {
         justifyContent: 'center',
       }}
     >
-      <Row justify='center' align='middle'>
-        <Card title='Auth Info' style={{ width: 800 }}>
+      <Row justify="center" align="middle">
+        <Card title="Auth Info" style={{ width: 800 }}>
           <Form
             {...layout}
-            name='basic'
+            name="basic"
             initialValues={config}
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
           >
             <Form.Item
-              label='App ID'
-              name='appID'
+              label="App ID"
+              name="appId"
               rules={[
                 {
                   required: true,
@@ -68,10 +72,9 @@ const AuthInfoScreen = () => {
             >
               <Input />
             </Form.Item>
-
             <Form.Item
-              label='Channel ID'
-              name='defaultChannelId'
+              label="Channel ID"
+              name="channelId"
               rules={[
                 {
                   required: true,
@@ -82,8 +85,8 @@ const AuthInfoScreen = () => {
               <Input />
             </Form.Item>
             <Form.Item
-              label='Token (Optional)'
-              name='token'
+              label="Token (Optional)"
+              name="token"
               rules={[
                 {
                   required: false,
@@ -94,8 +97,20 @@ const AuthInfoScreen = () => {
               <Input />
             </Form.Item>
             <Form.Item
-              label='Plugin Path'
-              name='pluginPath'
+              label="UID"
+              name="uid"
+              rules={[
+                {
+                  required: false,
+                  message: 'Please input your uid!',
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label="Plugin Path"
+              name="pluginPath"
               rules={[
                 {
                   required: false,
@@ -106,8 +121,8 @@ const AuthInfoScreen = () => {
               <Input />
             </Form.Item>
             <Form.Item
-              label='Native SDK Log Path'
-              name='nativeSDKLogPath'
+              label="Native SDK Log Path"
+              name="nativeSDKLogPath"
               rules={[
                 {
                   required: true,
@@ -118,8 +133,8 @@ const AuthInfoScreen = () => {
               <Input />
             </Form.Item>
             <Form.Item
-              label='Addon Log Path'
-              name='addonLogPath'
+              label="Addon Log Path"
+              name="addonLogPath"
               rules={[
                 {
                   required: true,
@@ -130,23 +145,21 @@ const AuthInfoScreen = () => {
               <Input />
             </Form.Item>
             <Form.Item
-              label='Enable SDK Logging'
-              name='enableSDKLogging'
-              valuePropName='checked'
+              label="Enable SDK Logging"
+              name="enableSDKLogging"
+              valuePropName="checked"
             >
-              <Checkbox defaultChecked={config.enableSDKLogging}></Checkbox>
+              <Checkbox defaultChecked={config.enableSDKLogging} />
             </Form.Item>
             <Form.Item
-              label='Enable SDK Debug Logging'
-              name='enableSDKDebugLogging'
-              valuePropName='checked'
+              label="Enable SDK Debug Logging"
+              name="enableSDKDebugLogging"
+              valuePropName="checked"
             >
-              <Checkbox
-                defaultChecked={config.enableSDKDebugLogging}
-              ></Checkbox>
+              <Checkbox defaultChecked={config.enableSDKDebugLogging} />
             </Form.Item>
             <Form.Item {...tailLayout}>
-              <Button type='primary' htmlType='submit'>
+              <Button type="primary" htmlType="submit">
                 Save
               </Button>
             </Form.Item>
@@ -154,6 +167,7 @@ const AuthInfoScreen = () => {
         </Card>
       </Row>
     </div>
-  )
-}
-export default AuthInfoScreen
+  );
+};
+
+export default AuthInfoScreen;

@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:49
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2022-06-07 19:29:15
+ * @Last Modified time: 2022-07-31 14:38:39
  */
 #include "node_iris_event_handler.h"
 #include <memory.h>
@@ -35,12 +35,15 @@ void NodeIrisEventHandler::addEvent(const std::string& eventName,
                                     napi_env& env,
                                     napi_value& call_bcak,
                                     napi_value& global) {
-  auto callback = new EventCallback();
-  callback->env = env;
+  auto it = _callbacks.find(eventName);
+  if (it == _callbacks.end()) {
+    auto callback = new EventCallback();
+    callback->env = env;
+    _callbacks[eventName] = callback;
+  }
 
-  napi_status status =
-      napi_create_reference(env, call_bcak, 1, &(callback->call_back_ref));
-  _callbacks[eventName] = callback;
+  napi_status status = napi_create_reference(
+      env, call_bcak, 1, &(_callbacks[eventName]->call_back_ref));
 }
 
 void NodeIrisEventHandler::OnEvent(const char* event,
@@ -48,8 +51,34 @@ void NodeIrisEventHandler::OnEvent(const char* event,
                                    const void** buffer,
                                    unsigned int* length,
                                    unsigned int buffer_count) {
-  std::string eventName(event);
-  std::string eventData(data);
+  fireEvent(_callback_key, event, data, buffer, length, buffer_count);
+}
+
+void NodeIrisEventHandler::OnEvent(const char* event,
+                                   const char* data,
+                                   char result[kBasicResultLength],
+                                   const void** buffer,
+                                   unsigned int* length,
+                                   unsigned int buffer_count) {
+  fireEvent(_callback_key, event, data, buffer, length,
+            buffer_count);
+}
+
+void NodeIrisEventHandler::fireEvent(const char* callback_name,
+                                     const char* event,
+                                     const char* data,
+                                     const void** buffer,
+                                     unsigned int* length,
+                                     unsigned int buffer_count) {
+  std::string eventName = "";
+  if (event) {
+    eventName = event;
+  }
+  std::string eventData = "";
+  if (data) {
+    eventData = data;
+  }
+  std::string callback_name_str(callback_name);
   std::vector<std::vector<unsigned char>> buffer_array;
   buffer_array.resize(buffer_count);
 
@@ -65,9 +94,9 @@ void NodeIrisEventHandler::OnEvent(const char* event,
     buffer_lengths[i] = length[i];
   }
 
-  node_async_call::async_call([this, eventName, eventData, buffer_array,
-                               buffer_lengths, buffer_count] {
-    auto it = _callbacks.find("call_back_with_buffer");
+  node_async_call::async_call([this, callback_name_str, eventName, eventData,
+                               buffer_array, buffer_lengths, buffer_count] {
+    auto it = _callbacks.find(callback_name_str.c_str());
     if (it != _callbacks.end()) {
       size_t argc = 5;
       napi_value args[5];

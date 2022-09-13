@@ -1,327 +1,253 @@
-import { Card, Input, List, Switch } from 'antd'
-import createAgoraRtcEngine, {
+import React from 'react';
+import {
+  ChannelProfileType,
   ClientRoleType,
-  ErrorCodeType,
-  IAudioDeviceManager,
-  IRtcEngine,
+  createAgoraRtcEngine,
   IRtcEngineEventHandler,
-  IRtcEngineEx,
+  RhythmPlayerErrorType,
+  RhythmPlayerStateType,
   RtcConnection,
-  RtcEngineExImplInternal,
   RtcStats,
-  UserOfflineReasonType,
-} from 'electron-agora-rtc-ng'
-import { Component } from 'react'
-import DropDownButton from '../../component/DropDownButton'
-import JoinChannelBar from '../../component/JoinChannelBar'
-import SliderBar from '../../component/SliderBar'
-import { AudioProfileList, AudioScenarioList } from '../../config'
-import config from '../../config/agora.config'
-import styles from '../../config/public.scss'
-import { configMapToOptions, getRandomInt, getResourcePath } from '../../util'
+} from 'electron-agora-rtc-ng';
 
-const { Search } = Input
+import Config from '../../../config/agora.config';
 
-interface User {
-  isMyself: boolean
-  uid: number
-}
+import {
+  BaseAudioComponentState,
+  BaseComponent,
+} from '../../../components/BaseComponent';
+import {
+  AgoraButton,
+  AgoraDivider,
+  AgoraSlider,
+  AgoraTextInput,
+} from '../../../components/ui';
+import { getResourcePath } from '../../../utils';
 
-interface Device {
-  deviceId: string
-  deviceName: string
-}
-interface State {
-  audioRecordDevices: Device[]
-  audioProfile: number
-  audioScenario: number
-  allUser: User[]
-  isJoined: boolean
-  beatsPerMeasure: number
-  beatsPerMinute: number
-  file1: string
-  file2: string
-  enableRhythm: boolean
+interface State extends BaseAudioComponentState {
+  sound1: string;
+  sound2: string;
+  beatsPerMeasure: number;
+  beatsPerMinute: number;
+  startRhythmPlayer?: boolean;
 }
 
 export default class RhythmPlayer
-  extends Component<State>
+  extends BaseComponent<{}, State>
   implements IRtcEngineEventHandler
 {
-  rtcEngine?: IRtcEngineEx
-
-  audioDeviceManager: IAudioDeviceManager
-
-  state: State = {
-    audioRecordDevices: [],
-    audioProfile: AudioProfileList.SpeechStandard,
-    audioScenario: AudioScenarioList.Standard,
-    allUser: [],
-    isJoined: false,
-    beatsPerMeasure: 4,
-    beatsPerMinute: 60,
-    file1: getResourcePath('dang.mp3'),
-    file2: getResourcePath('ding.mp3'),
-    enableRhythm: false,
+  protected createState(): State {
+    return {
+      appId: Config.appId,
+      enableVideo: false,
+      channelId: Config.channelId,
+      token: Config.token,
+      uid: Config.uid,
+      joinChannelSuccess: false,
+      remoteUsers: [],
+      sound1: getResourcePath('ding.mp3'),
+      sound2: getResourcePath('dang.mp3'),
+      beatsPerMeasure: 4,
+      beatsPerMinute: 60,
+      startRhythmPlayer: false,
+    };
   }
 
-  componentDidMount() {
-    this.getRtcEngine().registerEventHandler(this)
-
-    this.audioDeviceManager = this.getRtcEngine().getAudioDeviceManager()
-
-    this.setState({
-      audioRecordDevices:
-        this.audioDeviceManager.enumerateRecordingDevices() as any,
-    })
-  }
-
-  componentWillUnmount() {
-    this.rtcEngine?.unregisterEventHandler(this)
-    this.rtcEngine?.leaveChannel()
-    this.rtcEngine?.release()
-  }
-
-  getRtcEngine() {
-    if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine()
-      //@ts-ignore
-      window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appID })
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath)
-      console.log('initialize:', res)
+  /**
+   * Step 1: initRtcEngine
+   */
+  protected async initRtcEngine() {
+    const { appId } = this.state;
+    if (!appId) {
+      this.error(`appId is invalid`);
     }
 
-    return this.rtcEngine
+    this.engine = createAgoraRtcEngine();
+    this.engine.registerEventHandler(this);
+    this.engine.initialize({
+      appId,
+      // Should use ChannelProfileLiveBroadcasting on most of cases
+      channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
+    });
+
+    // Only need to enable audio on this case
+    this.engine.enableAudio();
   }
 
-  onJoinChannelSuccess(
-    { channelId, localUid }: RtcConnection,
-    elapsed: number
-  ): void {
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: true, uid: localUid })
-    this.setState({
-      isJoined: true,
-      allUser: newAllUser,
-    })
-  }
-
-  onUserJoined(
-    connection: RtcConnection,
-    remoteUid: number,
-    elapsed: number
-  ): void {
-    console.log(
-      'onUserJoined',
-      'connection',
-      connection,
-      'remoteUid',
-      remoteUid
-    )
-
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: false, uid: remoteUid })
-    this.setState({
-      allUser: newAllUser,
-    })
-  }
-
-  onUserOffline(
-    { localUid, channelId }: RtcConnection,
-    remoteUid: number,
-    reason: UserOfflineReasonType
-  ): void {
-    console.log('onUserOffline', channelId, remoteUid)
-
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
-    this.setState({
-      allUser: newAllUser,
-    })
-  }
-
-  onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
-    this.setState({
-      isJoined: false,
-      allUser: [],
-    })
-  }
-
-  onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg)
-  }
-
-  setAudioProfile = () => {
-    const { audioProfile, audioScenario } = this.state
-    this.rtcEngine?.setAudioProfile(audioProfile, audioScenario)
-  }
-
-  onPressRhythmPlayer = (enableRhythm) => {
-    this.setState({ enableRhythm })
-    if (enableRhythm) {
-      const { beatsPerMeasure, beatsPerMinute, file1, file2 } = this.state
-      const res = this.getRtcEngine().startRhythmPlayer(file1, file2, {
-        beatsPerMeasure,
-        beatsPerMinute,
-      })
-      console.log('startRhythmPlayer\nres:', res)
-    } else {
-      this.getRtcEngine().stopRhythmPlayer()
+  /**
+   * Step 2: joinChannel
+   */
+  protected joinChannel() {
+    const { channelId, token, uid } = this.state;
+    if (!channelId) {
+      this.error('channelId is invalid');
+      return;
     }
+    if (uid < 0) {
+      this.error('uid is invalid');
+      return;
+    }
+
+    // start joining channel
+    // 1. Users can only see each other after they join the
+    // same channel successfully using the same app id.
+    // 2. If app certificate is turned on at dashboard, token is needed
+    // when joining channel. The channel name and uid used to calculate
+    // the token has to match the ones used for channel join
+    this.engine?.joinChannel(token, channelId, uid, {
+      // Make myself as the broadcaster to send stream to remote
+      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+      // ⚠️ Must be true, if you want to publish to remote
+      publishRhythmPlayerTrack: true,
+    });
   }
 
-  renderItem = ({ isMyself, uid }) => {
-    return (
-      <List.Item>
-        <Card title={`${isMyself ? 'Local' : 'Remote'} `}>Uid: {uid}</Card>
-      </List.Item>
-    )
-  }
+  /**
+   * Step 3-1: startRhythmPlayer
+   */
+  startRhythmPlayer = async () => {
+    const { sound1, sound2, beatsPerMeasure, beatsPerMinute } = this.state;
+    if (!sound1) {
+      this.error('sound1 is invalid');
+      return;
+    }
+    if (!sound2) {
+      this.error('sound2 is invalid');
+      return;
+    }
 
-  renderRightBar = () => {
-    const {
-      audioRecordDevices: audioDevices,
-      file1,
-      file2,
-      enableRhythm,
+    this.engine?.startRhythmPlayer(sound1, sound2, {
       beatsPerMeasure,
       beatsPerMinute,
-    } = this.state
-    return (
-      <div className={styles.rightBar}>
-        <div>
-          <DropDownButton
-            options={configMapToOptions(AudioProfileList)}
-            onPress={(res) =>
-              this.setState({ audioProfile: res.dropId }, this.setAudioProfile)
-            }
-            title='Audio Profile'
-          />
-          <DropDownButton
-            options={configMapToOptions(AudioScenarioList)}
-            onPress={(res) =>
-              this.setState({ audioScenario: res.dropId }, this.setAudioProfile)
-            }
-            title='Audio Scenario'
-          />
-          <DropDownButton
-            title='Microphone'
-            options={audioDevices.map((obj) => {
-              const { deviceId, deviceName } = obj
-              return { dropId: deviceId, dropText: deviceName, ...obj }
-            })}
-            onPress={(res) => {
-              this.audioDeviceManager.setRecordingDevice(res.dropId)
-            }}
-          />
-          <br></br>
-          <div
-            style={{
-              display: 'flex',
-              textAlign: 'center',
-              alignItems: 'center',
-            }}
-          >
-            {'RhythmPlayer:   '}
-            <Switch
-              checkedChildren='Enable'
-              unCheckedChildren='Disable'
-              defaultChecked={enableRhythm}
-              onChange={this.onPressRhythmPlayer}
-            />
-          </div>
-          <br></br>
-          {!enableRhythm && (
-            <>
-              <Search
-                placeholder={'please input path or url'}
-                defaultValue={file1}
-                allowClear
-                enterButton={'File1'}
-                size='small'
-                onChange={(value) => {
-                  this.setState({ file1: value })
-                }}
-              />
-              <br />
-              <Search
-                placeholder={'please input path or url'}
-                defaultValue={file2}
-                allowClear
-                enterButton={'File2'}
-                size='small'
-                onChange={(value) => {
-                  this.setState({ file2: value })
-                }}
-              />
-              <br />
+    });
+  };
 
-              <SliderBar
-                max={9}
-                min={1}
-                value={beatsPerMeasure}
-                step={1}
-                title='Beats Per Measure'
-                onChange={(value) => {
-                  this.setState({
-                    beatsPerMeasure: value,
-                  })
-                }}
-              />
-              <SliderBar
-                max={360}
-                min={60}
-                value={beatsPerMinute}
-                step={1}
-                title='Beats Per Minute'
-                onChange={(value) => {
-                  this.setState({
-                    beatsPerMinute: value,
-                  })
-                }}
-              />
-            </>
-          )}
-        </div>
-        <JoinChannelBar
-          onPressJoin={(channelId) => {
-            const rtcEngine = this.getRtcEngine()
+  /**
+   * Step 3-2 (Optional): configRhythmPlayer
+   */
+  configRhythmPlayer = () => {
+    const { beatsPerMeasure, beatsPerMinute } = this.state;
+    this.engine?.configRhythmPlayer({
+      beatsPerMeasure,
+      beatsPerMinute,
+    });
+  };
 
-            rtcEngine.disableVideo()
-            rtcEngine.enableAudio()
-            rtcEngine.setClientRole(ClientRoleType.ClientRoleBroadcaster)
-            const localUid = getRandomInt(1, 9999999)
-            console.log(`localUid: ${localUid}`)
-            this.rtcEngine?.joinChannel('', channelId, '', localUid)
-          }}
-          onPressLeave={() => {
-            this.getRtcEngine().leaveChannel()
-          }}
-        />
-      </div>
-    )
+  /**
+   * Step 3-3: stopRhythmPlayer
+   */
+  stopRhythmPlayer = () => {
+    this.engine?.stopRhythmPlayer();
+    this.setState({ startRhythmPlayer: false });
+  };
+
+  /**
+   * Step 4: leaveChannel
+   */
+  protected leaveChannel() {
+    this.engine?.leaveChannel();
   }
 
-  render() {
-    const { isJoined, allUser } = this.state
+  /**
+   * Step 5: releaseRtcEngine
+   */
+  protected releaseRtcEngine() {
+    this.engine?.release();
+  }
 
+  onLeaveChannel(connection: RtcConnection, stats: RtcStats) {
+    this.info('onLeaveChannel', 'connection', connection, 'stats', stats);
+    const state = this.createState();
+    delete state.startRhythmPlayer;
+    this.setState(state);
+  }
+
+  onRhythmPlayerStateChanged(
+    state: RhythmPlayerStateType,
+    errorCode: RhythmPlayerErrorType
+  ) {
+    this.info(
+      'onRhythmPlayerStateChanged',
+      'state',
+      state,
+      'errorCode',
+      errorCode
+    );
+    switch (state) {
+      case RhythmPlayerStateType.RhythmPlayerStateIdle:
+        break;
+      case RhythmPlayerStateType.RhythmPlayerStateOpening:
+        break;
+      case RhythmPlayerStateType.RhythmPlayerStateDecoding:
+        break;
+      case RhythmPlayerStateType.RhythmPlayerStatePlaying:
+        this.setState({ startRhythmPlayer: true });
+        break;
+      case RhythmPlayerStateType.RhythmPlayerStateFailed:
+        break;
+    }
+  }
+
+  protected renderConfiguration(): React.ReactNode {
+    const { sound1, sound2, beatsPerMeasure, beatsPerMinute } = this.state;
     return (
-      <div className={styles.screen}>
-        <div className={styles.content}>
-          {isJoined && (
-            <List
-              style={{ width: '100%' }}
-              grid={{ gutter: 16, column: 4 }}
-              dataSource={allUser}
-              renderItem={this.renderItem}
-            />
-          )}
-        </div>
-        {this.renderRightBar()}
-      </div>
-    )
+      <>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            this.setState({ sound1: text });
+          }}
+          placeholder={'sound1'}
+          value={sound1}
+        />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            this.setState({ sound2: text });
+          }}
+          placeholder={'sound2'}
+          value={sound2}
+        />
+        <AgoraSlider
+          title={`beatsPerMeasure ${beatsPerMeasure}`}
+          minimumValue={1}
+          maximumValue={9}
+          step={1}
+          value={beatsPerMeasure}
+          onSlidingComplete={(value) => {
+            this.setState({ beatsPerMeasure: value });
+          }}
+        />
+        <AgoraDivider />
+        <AgoraSlider
+          title={`beatsPerMinute ${beatsPerMinute}`}
+          minimumValue={60}
+          maximumValue={360}
+          step={1}
+          value={beatsPerMinute}
+          onSlidingComplete={(value) => {
+            this.setState({ beatsPerMinute: value });
+          }}
+        />
+        <AgoraDivider />
+      </>
+    );
+  }
+
+  protected renderAction(): React.ReactNode {
+    const { startRhythmPlayer } = this.state;
+    return (
+      <>
+        <AgoraButton
+          title={`${startRhythmPlayer ? 'stop' : 'start'} Rhythm Player`}
+          onPress={
+            startRhythmPlayer ? this.stopRhythmPlayer : this.startRhythmPlayer
+          }
+        />
+        <AgoraButton
+          disabled={!startRhythmPlayer}
+          title={`config Rhythm Player`}
+          onPress={this.configRhythmPlayer}
+        />
+      </>
+    );
   }
 }

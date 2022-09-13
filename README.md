@@ -26,17 +26,18 @@
 
 ## 📦 Install
 
-In newest version you can define installation configuration in package.json (or .npmrc, while package.json has a higher priority), usually you can just provide "prebuilt", and "arch".
+In newest version you can define installation configuration in package.json (or .npmrc, while package.json has a higher
+priority), usually you can just provide "prebuilt", and "arch".
 
 ```json
 // package.json
 {
-...
+  ...
   "agora_electron": {
-      "prebuilt": true,
-      "arch": "x64",
+    "prebuilt": true,
+    "arch": "x64"
   }
-...
+  ...
 }
 
 
@@ -47,7 +48,8 @@ agora_electron_sdk_arch=x64 // only support windows:
 
 Properties detail:
 
-- **prebuilt** whether to automatically download prebuilt NodeJS C++ Addon or build locally(which need to provide development env)
+- **prebuilt** whether to automatically download prebuilt NodeJS C++ Addon or build locally(which need to provide
+  development env)
 - **arch**: If not set, the script will automatically choose the arch. **only support windows**
 - **platform** darwin or win32
 
@@ -72,28 +74,35 @@ npm install --agora_electron_sdk_arch=x64
 import createAgoraRtcEngine from "electron-agora-rtc-ng";
 
 const rtcEngine = createAgoraRtcEngine();
-rtcEngine.initialize({ appId: "<your agora app id>" });
+rtcEngine.initialize({appId: "<your agora app id>"});
 ```
 
 ### When using without electron-webpack
 
-When using directly within a web electron project with custom webpack configuration, you may see errors when compiling. It's because you have not properly configured loader for node addon. A convenient way to skip the compile process is to set `externals` property of your webpack config to `{"electron-agora-rtc-ng": "commonjs2 electron-agora-rtc-ng"}`
+When using directly within a web electron project with custom webpack configuration, you may see errors when compiling.
+It's because you have not properly configured loader for node addon. A convenient way to skip the compile process is to
+set `externals` property of your webpack config to `{"electron-agora-rtc-ng": "commonjs2 electron-agora-rtc-ng"}`
 
 ## 🔗 Links
 
 - [Document](https://docs.agora.io/en/Video/API%20Reference/electron/index.html) - Official document
 
-- [e-Education Application](https://github.com/AgoraIO/ARD-eEducation-with-Electron) - A complete e-education Application based on this repo
+- [e-Education Application](https://github.com/AgoraIO/ARD-eEducation-with-Electron) - A complete e-education
+  Application based on this repo
 
 - [Demo](./example/) - A quick start demo based on Vue/React and this repo
 
 - [Changelog](./CHANGELOG.md) - Attention to newest information
 
+- [Release Notes](https://docs.agora.io/en/video-call-4.x/release_electron_ng?platform=Electron) - Attention to newest
+  information
+
 ## ⌨️ Development
 
 ### Build From Source Code
 
-You will need to build **Agora RTC Electron SDK** from source if you want to work on a new feature/bug fix, try out the latest features which are not released yet, or maintain your own fork with patches that cannot be merged to the core.
+You will need to build **Agora RTC Electron SDK** from source if you want to work on a new feature/bug fix, try out the
+latest features which are not released yet, or maintain your own fork with patches that cannot be merged to the core.
 
 ### Prerequisites
 

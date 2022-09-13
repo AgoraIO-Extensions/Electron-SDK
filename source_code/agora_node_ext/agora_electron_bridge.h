@@ -2,7 +2,7 @@
  * @Author: zhangtao@agora.io
  * @Date: 2021-04-22 20:53:44
  * @Last Modified by: zhangtao@agora.io
- * @Last Modified time: 2022-06-07 18:56:40
+ * @Last Modified time: 2022-08-04 21:18:20
  */
 #pragma once
 #include <node_api.h>
@@ -35,10 +35,11 @@ class AgoraElectronBridge {
                                           napi_callback_info info);
   static napi_value DisableVideoFrameCache(napi_env env,
                                            napi_callback_info info);
-  static napi_value GetVideoStreamData(napi_env env, napi_callback_info info);
+  static napi_value GetVideoFrame(napi_env env, napi_callback_info info);
   static napi_value SetAddonLogFile(napi_env env, napi_callback_info info);
   static napi_value InitializeEnv(napi_env env, napi_callback_info info);
   static napi_value ReleaseEnv(napi_env env, napi_callback_info info);
+
   void OnApiError(const char* errorMessage);
   void Release();
 
@@ -52,6 +53,7 @@ class AgoraElectronBridge {
   std::shared_ptr<IrisApiEngine> _iris_api_engine;
   std::shared_ptr<NodeIrisEventHandler> _iris_rtc_event_handler;
   std::shared_ptr<NodeIrisEventHandler> _iris_mpk_event_handler;
+  std::shared_ptr<NodeIrisEventHandler> _iris_observer_event_handler;
   std::shared_ptr<iris::IrisVideoFrameBufferManager>
       _iris_video_frame_buffer_manager;
 
