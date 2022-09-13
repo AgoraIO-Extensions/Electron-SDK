@@ -7,7 +7,7 @@ import {
   IAudioSpectrumObserver,
   IRtcEngineEventHandler,
   UserAudioSpectrumInfo,
-} from 'electron-agora-rtc-ng';
+} from 'agora-electron-sdk';
 import {
   CartesianGrid,
   Line,

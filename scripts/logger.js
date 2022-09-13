@@ -16,10 +16,10 @@ const formatList = [
 const logger = createLogger({
   level: 'silly',
   format: format.combine(...formatList),
-  defaultMeta: { service: 'electron-agora-rtc-ng-log' },
+  defaultMeta: { service: 'agora-electron-sdk-log' },
   transports: [
     // - Write to all logs with level `info` and below to `quick-start-combined.log`.
-    new transports.File({ filename: 'electron-agora-rtc-ng-script.log' }),
+    new transports.File({ filename: 'agora-electron-sdk-script.log' }),
   ],
   silent: false,
 });

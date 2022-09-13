@@ -2,7 +2,7 @@ import {
   AudioEffectPreset,
   AudioReverbType,
   VoiceBeautifierPreset,
-} from 'electron-agora-rtc-ng';
+} from 'agora-electron-sdk';
 
 export const VoiceBeautifierPresetParam1Limit: Map<
   VoiceBeautifierPreset,

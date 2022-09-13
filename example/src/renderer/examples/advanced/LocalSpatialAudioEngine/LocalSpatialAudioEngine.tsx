@@ -5,7 +5,7 @@ import {
   ClientRoleType,
   createAgoraRtcEngine,
   IRtcEngineEventHandler,
-} from 'electron-agora-rtc-ng';
+} from 'agora-electron-sdk';
 
 import Config from '../../../config/agora.config';
 

@@ -45,13 +45,13 @@ function DistByArch($type)
 function Package($archNum,$electronVersion,$example_sdk_mode){
   # remove zip
   Remove-Item -Path ../$outterZipName -Recurse -Force -ErrorAction Ignore;
-  
+
   # remove dist
   Remove-Item -Path dist -Recurse -Force -ErrorAction Ignore;
 
   # choose arch
   ChooseArch -type $archNum
-  
+
   If([String]::IsNullOrEmpty($electronVersion))
   {
     Write-Host "安装example 依赖"
@@ -59,18 +59,18 @@ function Package($archNum,$electronVersion,$example_sdk_mode){
   }
   Else
   {
-    
+
     Write-Host "选择了 electron_version:$electronVersion"
     yarn add electron@$electronVersion
   }
   if($example_sdk_mode -eq 1){
-    Remove-Item -Path  node_modules/electron-agora-rtc-ng/build -Recurse -Force -ErrorAction Ignore;
-    Remove-Item -Path  node_modules/electron-agora-rtc-ng/js -Recurse -Force -ErrorAction Ignore;
-    Remove-Item -Path  node_modules/electron-agora-rtc-ng/type -Recurse -Force -ErrorAction Ignore;
+    Remove-Item -Path  node_modules/agora-electron-sdk/build -Recurse -Force -ErrorAction Ignore;
+    Remove-Item -Path  node_modules/agora-electron-sdk/js -Recurse -Force -ErrorAction Ignore;
+    Remove-Item -Path  node_modules/agora-electron-sdk/type -Recurse -Force -ErrorAction Ignore;
     # copy native sdk
-    Copy-Item -Path ../Electron-*/* -Destination node_modules/electron-agora-rtc-ng/ -Recurse -Force
+    Copy-Item -Path ../Electron-*/* -Destination node_modules/agora-electron-sdk/ -Recurse -Force
   }
-  
+
   # dist start
   DistByArch -type $archNum
   # move zip

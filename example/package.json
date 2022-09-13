@@ -66,7 +66,7 @@
   },
   "dependencies": {
     "antd": "^4.20.3",
-    "electron-agora-rtc-ng": "latest",
+    "agora-electron-sdk": "latest",
     "history": "^5.0.0",
     "react": "^18.1.0",
     "react-color": "^2.19.3",

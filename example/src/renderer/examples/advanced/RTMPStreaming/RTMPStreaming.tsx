@@ -13,7 +13,7 @@ import {
   TranscodingUser,
   VideoCodecProfileType,
   VideoCodecTypeForStream,
-} from 'electron-agora-rtc-ng';
+} from 'agora-electron-sdk';
 import { SketchPicker } from 'react-color';
 
 import Config from '../../../config/agora.config';

@@ -21,7 +21,7 @@ import createAgoraRtcEngine, {
   VideoCodecType,
   VideoMirrorModeType,
   VideoSourceType,
-} from 'electron-agora-rtc-ng';
+} from 'agora-electron-sdk';
 import { Component } from 'react';
 import DropDownButton from '../../component/DropDownButton';
 import JoinChannelBar from '../../component/JoinChannelBar';
