@@ -1,409 +1,362 @@
-import { Card, Input, List } from 'antd'
-import createAgoraRtcEngine, {
-  AudioProfileType,
-  AudioScenarioType,
+import React from 'react';
+import {
   ChannelProfileType,
+  ClientRoleType,
+  createAgoraRtcEngine,
   DegradationPreference,
   DirectCdnStreamingError,
   DirectCdnStreamingState,
   DirectCdnStreamingStats,
-  ErrorCodeType,
-  IAudioDeviceManager,
   IDirectCdnStreamingEventHandler,
-  IRtcEngine,
   IRtcEngineEventHandler,
-  IRtcEngineEx,
-  IVideoDeviceManager,
-  MediaSourceType,
   OrientationMode,
   RtcConnection,
-  RtcEngineExImplInternal,
   RtcStats,
-  UserOfflineReasonType,
   VideoCodecType,
   VideoMirrorModeType,
-  VideoSourceType,
-} from 'electron-agora-rtc-ng'
-import { Component } from 'react'
-import DropDownButton from '../../component/DropDownButton'
-import JoinChannelBar from '../../component/JoinChannelBar'
-import Window from '../../component/Window'
-import { FpsMap, ResolutionMap, RoleTypeMap } from '../../config'
-import config from '../../config/agora.config'
-import styles from '../../config/public.scss'
-import { configMapToOptions, getRandomInt } from '../../util'
-import './DirectCdnStreaming.scss'
+} from 'electron-agora-rtc-ng';
 
-const { Search } = Input
+import Config from '../../../config/agora.config';
 
-interface Device {
-  deviceId: string
-  deviceName: string
-}
+import {
+  BaseComponent,
+  BaseVideoComponentState,
+} from '../../../components/BaseComponent';
+import {
+  AgoraButton,
+  AgoraDivider,
+  AgoraDropdown,
+  AgoraStyle,
+  AgoraTextInput,
+  AgoraView,
+} from '../../../components/ui';
+import { enumToItems } from '../../../utils';
 
-interface User {
-  isMyself: boolean
-  uid: number
-}
-
-interface State {
-  isJoined: boolean
-  channelId: string
-  allUser: User[]
-  audioRecordDevices: Device[]
-  cameraDevices: Device[]
-  currentFps?: number
-  currentResolution?: { width: number; height: number }
-  cdnResult: string
-  isStartCDN: boolean
-  publishUrl: string
+interface State extends BaseVideoComponentState {
+  url: string;
+  codecType: VideoCodecType;
+  width: number;
+  height: number;
+  frameRate: number;
+  bitrate: number;
+  minBitrate: number;
+  orientationMode: OrientationMode;
+  degradationPreference: DegradationPreference;
+  mirrorMode: VideoMirrorModeType;
+  startDirectCdnStreaming: boolean;
 }
 
 export default class DirectCdnStreaming
-  extends Component<{}, State, any>
+  extends BaseComponent<{}, State>
   implements IRtcEngineEventHandler, IDirectCdnStreamingEventHandler
 {
-  rtcEngine?: IRtcEngineEx
-
-  videoDeviceManager: IVideoDeviceManager
-
-  audioDeviceManager: IAudioDeviceManager
-
-  state: State = {
-    channelId: '',
-    allUser: [],
-    isJoined: false,
-    audioRecordDevices: [],
-    cameraDevices: [],
-    cdnResult: '',
-    isStartCDN: false,
-    publishUrl:
-      'rtmp://vid-218.push.chinanetcenter.broadcastapp.agora.io/live/test',
-  }
-
-  componentDidMount() {
-    const rtcEngine = this.getRtcEngine()
-    let res = rtcEngine.enableExtension(
-      'agora_segmentation',
-      'PortraitSegmentation',
-      true,
-      MediaSourceType.PrimaryCameraSource
-    )
-    console.log('enableExtension', res)
-
-    this.getRtcEngine().registerEventHandler(this)
-    this.videoDeviceManager = this.getRtcEngine().getVideoDeviceManager()
-    this.audioDeviceManager = this.getRtcEngine().getAudioDeviceManager()
-
-    this.setState({
-      audioRecordDevices:
-        this.audioDeviceManager.enumerateRecordingDevices() as any,
-      cameraDevices: this.videoDeviceManager.enumerateVideoDevices() as any,
-    })
-  }
-
-  componentWillUnmount() {
-    this.rtcEngine?.unregisterEventHandler(this)
-    this.rtcEngine?.leaveChannel()
-    this.rtcEngine?.release()
-  }
-
-  getRtcEngine() {
-    if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine()
-      //@ts-ignore
-      window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({
-        appId: config.appID,
-      })
-      console.log('initialize:', res)
-    }
-
-    return this.rtcEngine
-  }
-
-  onJoinChannelSuccess(
-    { channelId, localUid }: RtcConnection,
-    elapsed: number
-  ): void {
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: true, uid: localUid })
-    this.setState({
-      isJoined: true,
-      allUser: newAllUser,
-    })
-  }
-
-  onUserJoined(
-    connection: RtcConnection,
-    remoteUid: number,
-    elapsed: number
-  ): void {
-    console.log(
-      'onUserJoined',
-      'connection',
-      connection,
-      'remoteUid',
-      remoteUid
-    )
-
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: false, uid: remoteUid })
-    this.setState({
-      allUser: newAllUser,
-    })
-  }
-
-  onUserOffline(
-    { localUid, channelId }: RtcConnection,
-    remoteUid: number,
-    reason: UserOfflineReasonType
-  ): void {
-    console.log('onUserOffline', channelId, remoteUid)
-
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
-    this.setState({
-      allUser: newAllUser,
-    })
-  }
-
-  onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
-    this.setState({
-      isJoined: false,
-      allUser: [],
-    })
-  }
-
-  onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg)
-  }
-
-  onPressJoinChannel = (channelId: string) => {
-    this.setState({ channelId })
-    this.rtcEngine.enableAudio()
-    this.rtcEngine.enableVideo()
-    this.rtcEngine?.setChannelProfile(
-      ChannelProfileType.ChannelProfileLiveBroadcasting
-    )
-    this.rtcEngine?.setAudioProfile(
-      AudioProfileType.AudioProfileDefault,
-      AudioScenarioType.AudioScenarioChatroom
-    )
-
-    this.rtcEngine?.joinChannel('', channelId, '', getRandomInt(1, 9999999))
-  }
-
-  setVideoConfig = () => {
-    const { currentFps, currentResolution } = this.state
-    if (!currentResolution || !currentFps) {
-      return
-    }
-
-    this.getRtcEngine().setVideoEncoderConfiguration({
+  protected createState(): State {
+    return {
+      appId: Config.appId,
+      enableVideo: true,
+      channelId: Config.channelId,
+      token: Config.token,
+      uid: Config.uid,
+      joinChannelSuccess: false,
+      remoteUsers: [],
+      startPreview: false,
+      url: 'rtmp://vid-218.push.chinanetcenter.broadcastapp.agora.io/live/test',
       codecType: VideoCodecType.VideoCodecH264,
-      dimensions: currentResolution!,
-      frameRate: currentFps,
-      bitrate: 65,
-      minBitrate: 1,
+      width: 640,
+      height: 360,
+      frameRate: 15,
+      bitrate: 0,
+      minBitrate: -1,
       orientationMode: OrientationMode.OrientationModeAdaptive,
-      degradationPreference: DegradationPreference.MaintainBalanced,
-      mirrorMode: VideoMirrorModeType.VideoMirrorModeAuto,
-    })
+      degradationPreference: DegradationPreference.MaintainQuality,
+      mirrorMode: VideoMirrorModeType.VideoMirrorModeDisabled,
+      startDirectCdnStreaming: false,
+    };
   }
 
-  onDirectCdnStreamingStateChanged = (
+  /**
+   * Step 1: initRtcEngine
+   */
+  protected async initRtcEngine() {
+    const { appId } = this.state;
+    if (!appId) {
+      this.error(`appId is invalid`);
+    }
+
+    this.engine = createAgoraRtcEngine();
+    this.engine.registerEventHandler(this);
+    this.engine.initialize({
+      appId,
+      // Should use ChannelProfileLiveBroadcasting on most of cases
+      channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
+    });
+
+    // Need to enable video on this case
+    // If you only call `enableAudio`, only relay the audio stream to the target channel
+    this.engine.enableVideo();
+  }
+
+  /**
+   * Step 2: joinChannel
+   */
+  protected joinChannel() {
+    const { channelId, token, uid } = this.state;
+    if (!channelId) {
+      this.error('channelId is invalid');
+      return;
+    }
+    if (uid < 0) {
+      this.error('uid is invalid');
+      return;
+    }
+
+    // start joining channel
+    // 1. Users can only see each other after they join the
+    // same channel successfully using the same app id.
+    // 2. If app certificate is turned on at dashboard, token is needed
+    // when joining channel. The channel name and uid used to calculate
+    // the token has to match the ones used for channel join
+    this.engine?.joinChannel(token, channelId, uid, {
+      // Make myself as the broadcaster to send stream to remote
+      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+    });
+  }
+
+  /**
+   * Step 3-1 (Optional): setDirectCdnStreamingVideoConfiguration
+   */
+  setDirectCdnStreamingVideoConfiguration = () => {
+    const {
+      codecType,
+      width,
+      height,
+      frameRate,
+      bitrate,
+      minBitrate,
+      orientationMode,
+      degradationPreference,
+      mirrorMode,
+    } = this.state;
+    this.engine?.setDirectCdnStreamingVideoConfiguration({
+      codecType,
+      dimensions: {
+        width: width,
+        height: height,
+      },
+      frameRate,
+      bitrate,
+      minBitrate,
+      orientationMode,
+      degradationPreference,
+      mirrorMode,
+    });
+  };
+
+  /**
+   * Step 3-2: startDirectCdnStreaming
+   */
+  startDirectCdnStreaming = () => {
+    const { url } = this.state;
+    if (!url) {
+      this.error('url is invalid');
+      return;
+    }
+
+    this.engine?.startDirectCdnStreaming(this, url, {
+      publishCameraTrack: true,
+      publishMicrophoneTrack: true,
+    });
+  };
+
+  /**
+   * Step 3-3: stopDirectCdnStreaming
+   */
+  stopDirectCdnStreaming = () => {
+    this.engine?.stopDirectCdnStreaming();
+  };
+
+  /**
+   * Step 4: leaveChannel
+   */
+  protected leaveChannel() {
+    this.engine?.leaveChannel();
+  }
+
+  /**
+   * Step 5: releaseRtcEngine
+   */
+  protected releaseRtcEngine() {
+    this.engine?.release();
+  }
+
+  onLeaveChannel(connection: RtcConnection, stats: RtcStats) {
+    const { startDirectCdnStreaming } = this.state;
+    if (startDirectCdnStreaming) {
+      this.stopDirectCdnStreaming();
+    }
+    super.onLeaveChannel(connection, stats);
+  }
+
+  onDirectCdnStreamingStateChanged(
     state: DirectCdnStreamingState,
     error: DirectCdnStreamingError,
     message: string
-  ) => {
-    console.log('onDirectCdnStreamingStateChanged', state, error, message)
-
-    let cdnResult = ''
+  ) {
+    this.info(
+      'onDirectCdnStreamingStateChanged',
+      'state',
+      state,
+      'error',
+      error,
+      'message',
+      message
+    );
     switch (state) {
       case DirectCdnStreamingState.DirectCdnStreamingStateIdle:
-        cdnResult = 'Idle'
-        break
+        break;
       case DirectCdnStreamingState.DirectCdnStreamingStateRunning:
-        cdnResult = 'Running'
-        break
+        this.setState({ startDirectCdnStreaming: true });
+        break;
       case DirectCdnStreamingState.DirectCdnStreamingStateStopped:
-        cdnResult = 'Stopped'
-        break
       case DirectCdnStreamingState.DirectCdnStreamingStateFailed:
-        cdnResult = 'Failed'
-        break
+        this.setState({ startDirectCdnStreaming: false });
+        break;
       case DirectCdnStreamingState.DirectCdnStreamingStateRecovering:
-        cdnResult = 'Recovering'
-        break
-      default:
-        break
+        break;
     }
-    this.setState({ cdnResult })
   }
 
-  onDirectCdnStreamingStats = (stats: DirectCdnStreamingStats) => {
-    console.log('onDirectCdnStreamingStats', stats)
+  onDirectCdnStreamingStats(stats: DirectCdnStreamingStats) {
+    this.info('onDirectCdnStreamingStats', 'stats', stats);
   }
 
-  onPressStartOrStop = (publishUrl) => {
-    const { currentFps, currentResolution, isStartCDN } = this.state
-    const rtcEngine = this.getRtcEngine()
-    let res
-    if (!isStartCDN) {
-      rtcEngine.setDirectCdnStreamingVideoConfiguration({
-        codecType: VideoCodecType.VideoCodecAv1,
-        dimensions: currentResolution,
-        frameRate: currentFps,
-        bitrate: 500,
-        minBitrate: 1,
-        orientationMode: OrientationMode.OrientationModeAdaptive,
-        degradationPreference: DegradationPreference.MaintainBalanced,
-        mirrorMode: VideoMirrorModeType.VideoMirrorModeAuto,
-      })
-      res = rtcEngine.startDirectCdnStreaming(this, publishUrl, {
-        publishCameraTrack: true,
-        publishMicrophoneTrack: false,
-        publishCustomAudioTrack: false,
-        publishCustomVideoTrack: false,
-        publishMediaPlayerAudioTrack: false,
-      })
-      console.log('startDirectCdnStreaming', '\nres:', res)
-    } else {
-      res = rtcEngine.stopDirectCdnStreaming()
-      console.log('stopDirectCdnStreaming', '\nres:', res)
-    }
-    this.setState({ isStartCDN: !isStartCDN, publishUrl })
-  }
-
-  renderRightBar = () => {
+  protected renderConfiguration(): React.ReactNode {
     const {
-      audioRecordDevices,
-      cameraDevices,
-      isJoined,
-      cdnResult,
-      isStartCDN,
-      publishUrl,
-    } = this.state
-
+      url,
+      codecType,
+      orientationMode,
+      degradationPreference,
+      mirrorMode,
+    } = this.state;
     return (
-      <div className={styles.rightBar}>
-        <div>
-          <DropDownButton
-            options={cameraDevices.map((obj) => {
-              const { deviceId, deviceName } = obj
-              return { dropId: deviceId, dropText: deviceName, ...obj }
-            })}
-            onPress={(res) => {
-              this.videoDeviceManager.setDevice(res.dropId)
-            }}
-            title='Camera'
-          />
-          <DropDownButton
-            title='Microphone'
-            options={audioRecordDevices.map((obj) => {
-              const { deviceId, deviceName } = obj
-              return { dropId: deviceId, dropText: deviceName, ...obj }
-            })}
-            onPress={(res) => {
-              this.audioDeviceManager.setRecordingDevice(res.dropId)
-            }}
-          />
-          <DropDownButton
-            title='Role'
-            options={configMapToOptions(RoleTypeMap)}
-            onPress={(res) => {
-              this.getRtcEngine().setClientRole(res.dropId)
-            }}
-          />
-          <DropDownButton
-            title='Resolution'
-            options={configMapToOptions(ResolutionMap)}
-            onPress={(res) => {
-              this.setState(
-                { currentResolution: res.dropId },
-                this.setVideoConfig
-              )
-            }}
-          />
-          <DropDownButton
-            title='FPS'
-            options={configMapToOptions(FpsMap)}
-            onPress={(res) => {
-              this.setState({ currentFps: res.dropId }, this.setVideoConfig)
-            }}
-          />
-          <br />
-          <Search
-            placeholder='publishUrl'
-            allowClear
-            defaultValue={publishUrl}
-            enterButton={!isStartCDN ? 'Start CDN' : 'Stop CDN'}
-            size='small'
-            onSearch={this.onPressStartOrStop}
-          />
-
-          {isStartCDN && (
-            <>
-              <p>{'Result: ' + cdnResult.replace('push', 'pull')}</p>
-              <pre>ffplay {publishUrl}</pre>
-            </>
-          )}
-        </div>
-        <JoinChannelBar
-          onPressJoin={this.onPressJoinChannel}
-          onPressLeave={() => {
-            this.rtcEngine?.leaveChannel()
+      <>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            this.setState({ url: text });
+          }}
+          placeholder={`url`}
+          value={url}
+        />
+        <AgoraDropdown
+          title={'codecType'}
+          items={enumToItems(VideoCodecType)}
+          value={codecType}
+          onValueChange={(value) => {
+            this.setState({ codecType: value });
           }}
         />
-      </div>
-    )
-  }
-
-  renderItem = ({ isMyself, uid }: User) => {
-    const { channelId } = this.state
-    const videoSourceType = isMyself
-      ? VideoSourceType.VideoSourceCameraPrimary
-      : VideoSourceType.VideoSourceRemote
-    return (
-      <List.Item>
-        <Card title={`${isMyself ? 'Local' : 'Remote'} Uid: ${uid}`}>
-          <Window
-            uid={uid}
-            rtcEngine={this.rtcEngine!}
-            videoSourceType={videoSourceType}
-            channelId={channelId}
+        <AgoraDivider />
+        <AgoraView>
+          <AgoraTextInput
+            style={AgoraStyle.fullSize}
+            onChangeText={(text) => {
+              if (isNaN(+text)) return;
+              this.setState({
+                width: text === '' ? this.createState().width : +text,
+              });
+            }}
+            placeholder={`width (defaults: ${this.createState().width})`}
           />
-        </Card>
-      </List.Item>
-    )
+          <AgoraTextInput
+            style={AgoraStyle.fullSize}
+            onChangeText={(text) => {
+              if (isNaN(+text)) return;
+              this.setState({
+                height: text === '' ? this.createState().height : +text,
+              });
+            }}
+            placeholder={`height (defaults: ${this.createState().height})`}
+          />
+        </AgoraView>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              frameRate: text === '' ? this.createState().frameRate : +text,
+            });
+          }}
+          placeholder={`frameRate (defaults: ${this.createState().frameRate})`}
+        />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              bitrate: text === '' ? this.createState().bitrate : +text,
+            });
+          }}
+          placeholder={`bitrate (defaults: ${this.createState().bitrate})`}
+        />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              minBitrate: text === '' ? this.createState().minBitrate : +text,
+            });
+          }}
+          placeholder={`minBitrate (defaults: ${
+            this.createState().minBitrate
+          })`}
+        />
+        <AgoraDropdown
+          title={'orientationMode'}
+          items={enumToItems(OrientationMode)}
+          value={orientationMode}
+          onValueChange={(value) => {
+            this.setState({ orientationMode: value });
+          }}
+        />
+        <AgoraDivider />
+        <AgoraDropdown
+          title={'degradationPreference'}
+          items={enumToItems(DegradationPreference)}
+          value={degradationPreference}
+          onValueChange={(value) => {
+            this.setState({ degradationPreference: value });
+          }}
+        />
+        <AgoraDivider />
+        <AgoraDropdown
+          title={'mirrorMode'}
+          items={enumToItems(VideoMirrorModeType)}
+          value={mirrorMode}
+          onValueChange={(value) => {
+            this.setState({ mirrorMode: value });
+          }}
+        />
+      </>
+    );
   }
 
-  render() {
-    const { isJoined, allUser } = this.state
+  protected renderAction(): React.ReactNode {
+    const { startDirectCdnStreaming } = this.state;
     return (
-      <div className={styles.screen}>
-        <div className={styles.content}>
-          {isJoined && (
-            <List
-              grid={{
-                gutter: 16,
-                xs: 1,
-                sm: 1,
-                md: 1,
-                lg: 1,
-                xl: 1,
-                xxl: 2,
-              }}
-              dataSource={allUser}
-              renderItem={this.renderItem}
-            />
-          )}
-        </div>
-        {this.renderRightBar()}
-      </div>
-    )
+      <>
+        <AgoraButton
+          disabled={startDirectCdnStreaming}
+          title={`set Direct Cdn Streaming Video Configuration`}
+          onPress={this.setDirectCdnStreamingVideoConfiguration}
+        />
+        <AgoraButton
+          title={`${
+            startDirectCdnStreaming ? 'stop' : 'start'
+          } Direct Cdn Streaming`}
+          onPress={
+            startDirectCdnStreaming
+              ? this.stopDirectCdnStreaming
+              : this.startDirectCdnStreaming
+          }
+        />
+      </>
+    );
   }
 }

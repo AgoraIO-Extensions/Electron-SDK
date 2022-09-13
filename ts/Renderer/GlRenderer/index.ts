@@ -1,44 +1,44 @@
 const createProgramFromSources =
-  require("./webgl-utils").createProgramFromSources;
+  require('./webgl-utils').createProgramFromSources;
 
-import { EventEmitter } from "events";
-import { ShareVideoFrame } from "../../Types";
-import { logError, logWarn } from "../../Utils";
-import { IRenderer, RenderFailCallback } from "../IRenderer";
+import { EventEmitter } from 'events';
+import { ShareVideoFrame } from '../../Types';
+import { logError, logWarn } from '../../Utils';
+import { IRenderer, RenderFailCallback } from '../IRenderer';
 
 const vertexShaderSource =
-  "attribute vec2 a_position;" +
-  "attribute vec2 a_texCoord;" +
-  "uniform vec2 u_resolution;" +
-  "varying vec2 v_texCoord;" +
-  "void main() {" +
-  "vec2 zeroToOne = a_position / u_resolution;" +
-  "   vec2 zeroToTwo = zeroToOne * 2.0;" +
-  "   vec2 clipSpace = zeroToTwo - 1.0;" +
-  "   gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);" +
-  "v_texCoord = a_texCoord;" +
-  "}";
+  'attribute vec2 a_position;' +
+  'attribute vec2 a_texCoord;' +
+  'uniform vec2 u_resolution;' +
+  'varying vec2 v_texCoord;' +
+  'void main() {' +
+  'vec2 zeroToOne = a_position / u_resolution;' +
+  '   vec2 zeroToTwo = zeroToOne * 2.0;' +
+  '   vec2 clipSpace = zeroToTwo - 1.0;' +
+  '   gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);' +
+  'v_texCoord = a_texCoord;' +
+  '}';
 const yuvShaderSource =
-  "precision mediump float;" +
-  "uniform sampler2D Ytex;" +
-  "uniform sampler2D Utex,Vtex;" +
-  "varying vec2 v_texCoord;" +
-  "void main(void) {" +
-  "  float nx,ny,r,g,b,y,u,v;" +
-  "  mediump vec4 txl,ux,vx;" +
-  "  nx=v_texCoord[0];" +
-  "  ny=v_texCoord[1];" +
-  "  y=texture2D(Ytex,vec2(nx,ny)).r;" +
-  "  u=texture2D(Utex,vec2(nx,ny)).r;" +
-  "  v=texture2D(Vtex,vec2(nx,ny)).r;" +
-  "  y=1.1643*(y-0.0625);" +
-  "  u=u-0.5;" +
-  "  v=v-0.5;" +
-  "  r=y+1.5958*v;" +
-  "  g=y-0.39173*u-0.81290*v;" +
-  "  b=y+2.017*u;" +
-  "  gl_FragColor=vec4(r,g,b,1.0);" +
-  "}";
+  'precision mediump float;' +
+  'uniform sampler2D Ytex;' +
+  'uniform sampler2D Utex,Vtex;' +
+  'varying vec2 v_texCoord;' +
+  'void main(void) {' +
+  '  float nx,ny,r,g,b,y,u,v;' +
+  '  mediump vec4 txl,ux,vx;' +
+  '  nx=v_texCoord[0];' +
+  '  ny=v_texCoord[1];' +
+  '  y=texture2D(Ytex,vec2(nx,ny)).r;' +
+  '  u=texture2D(Utex,vec2(nx,ny)).r;' +
+  '  v=texture2D(Vtex,vec2(nx,ny)).r;' +
+  '  y=1.1643*(y-0.0625);' +
+  '  u=u-0.5;' +
+  '  v=v-0.5;' +
+  '  r=y+1.5958*v;' +
+  '  g=y-0.39173*u-0.81290*v;' +
+  '  b=y+2.017*u;' +
+  '  gl_FragColor=vec4(r,g,b,1.0);' +
+  '}';
 
 export class GlRenderer extends IRenderer {
   gl: WebGL2RenderingContext | undefined | null;
@@ -134,7 +134,7 @@ export class GlRenderer extends IRenderer {
         this.parentElement.removeChild(this.container);
       }
     } catch (e) {
-      logWarn("webgl renderer unbind happen some error", e);
+      logWarn('webgl renderer unbind happen some error', e);
     }
 
     this.canvas = undefined;
@@ -190,7 +190,7 @@ export class GlRenderer extends IRenderer {
         }
       }
     } catch (e) {
-      logError("webgl updateViewZoomLevel", e);
+      logError('webgl updateViewZoomLevel', e);
       return false;
     }
 
@@ -279,7 +279,7 @@ export class GlRenderer extends IRenderer {
 
     const resolutionLocation = gl.getUniformLocation(
       this.program,
-      "u_resolution"
+      'u_resolution'
     );
     gl.uniform2f(resolutionLocation, width, height);
   }
@@ -305,7 +305,7 @@ export class GlRenderer extends IRenderer {
     if (!this.gl || error) {
       this.failInitRenderCB &&
         this.failInitRenderCB({
-          error: "webgl lost or webgl initialize failed",
+          error: 'webgl lost or webgl initialize failed',
         });
       this.failInitRenderCB = null;
       return;
@@ -390,7 +390,7 @@ export class GlRenderer extends IRenderer {
 
     if (!this.firstFrameRender) {
       this.firstFrameRender = true;
-      this.event.emit("ready");
+      this.event.emit('ready');
     }
   }
 
@@ -438,7 +438,7 @@ export class GlRenderer extends IRenderer {
 
     gl.activeTexture(gl.TEXTURE2);
     gl.bindTexture(gl.TEXTURE_2D, this.vTexture);
-    ("");
+    ('');
     gl.texImage2D(
       gl.TEXTURE_2D,
       0,
@@ -475,16 +475,16 @@ export class GlRenderer extends IRenderer {
 
     this.parentElement = view;
 
-    this.container = document.createElement("div");
-    this.container.style.width = "100%";
-    this.container.style.height = "100%";
-    this.container.style.display = "flex";
-    this.container.style.justifyContent = "center";
-    this.container.style.alignItems = "center";
-    this.container.style.overflow = "hidden";
+    this.container = document.createElement('div');
+    this.container.style.width = '100%';
+    this.container.style.height = '100%';
+    this.container.style.display = 'flex';
+    this.container.style.justifyContent = 'center';
+    this.container.style.alignItems = 'center';
+    this.container.style.overflow = 'hidden';
     this.parentElement.appendChild(this.container);
 
-    this.canvas = document.createElement("canvas");
+    this.canvas = document.createElement('canvas');
     if (rotation == 0 || rotation == 180) {
       this.canvas.width = width;
       this.canvas.height = height;
@@ -499,7 +499,7 @@ export class GlRenderer extends IRenderer {
     this.container.appendChild(this.canvas);
     try {
       // Try to grab the standard context. If it fails, fallback to experimental.
-      this.gl = this.canvas.getContext("webgl2", {
+      this.gl = this.canvas.getContext('webgl2', {
         preserveDrawingBuffer: true,
       });
       // context list after toggle resolution on electron 12.0.6
@@ -508,32 +508,32 @@ export class GlRenderer extends IRenderer {
           this.gl = null;
           this.canvas &&
             this.canvas.removeEventListener(
-              "webglcontextlost",
+              'webglcontextlost',
               handleContextLost,
               false
             );
         } catch (error) {
-          logWarn("webglcontextlost error", error);
+          logWarn('webglcontextlost error', error);
         } finally {
           this.gl = undefined;
           this.failInitRenderCB &&
             this.failInitRenderCB({
-              error: "Browser not support! No WebGL detected.",
+              error: 'Browser not support! No WebGL detected.',
             });
         }
       };
       this.canvas.addEventListener(
-        "webglcontextlost",
+        'webglcontextlost',
         handleContextLost,
         false
       );
     } catch (e) {
-      logWarn("webgl create happen some warming", this.gl, this.canvas);
+      logWarn('webgl create happen some warming', this.gl, this.canvas);
     }
     if (!this.gl) {
       this.failInitRenderCB &&
         this.failInitRenderCB({
-          error: "Browser not support! No WebGL detected.",
+          error: 'Browser not support! No WebGL detected.',
         });
       return;
     }
@@ -564,8 +564,8 @@ export class GlRenderer extends IRenderer {
     }
     let program = this.program;
 
-    this.positionLocation = gl.getAttribLocation(program, "a_position");
-    this.texCoordLocation = gl.getAttribLocation(program, "a_texCoord");
+    this.positionLocation = gl.getAttribLocation(program, 'a_position');
+    this.texCoordLocation = gl.getAttribLocation(program, 'a_texCoord');
 
     this.surfaceBuffer = gl.createBuffer();
     this.texCoordBuffer = gl.createBuffer();
@@ -598,13 +598,13 @@ export class GlRenderer extends IRenderer {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
-    const y = gl.getUniformLocation(program, "Ytex");
+    const y = gl.getUniformLocation(program, 'Ytex');
     gl.uniform1i(y, 0); /* Bind Ytex to texture unit 0 */
 
-    const u = gl.getUniformLocation(program, "Utex");
+    const u = gl.getUniformLocation(program, 'Utex');
     gl.uniform1i(u, 1); /* Bind Utex to texture unit 1 */
 
-    const v = gl.getUniformLocation(program, "Vtex");
+    const v = gl.getUniformLocation(program, 'Vtex');
     gl.uniform1i(v, 2); /* Bind Vtex to texture unit 2 */
   }
 }

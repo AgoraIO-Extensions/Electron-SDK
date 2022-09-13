@@ -39,7 +39,7 @@ file(GLOB TARGET_AGORA_NODE_EXT_FILE
 if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     set(AGORA_IRIS_PROJECT_ARCH "MAC")
     set(AGORA_RTC_SDK_PATH
-            ${CMAKE_CURRENT_SOURCE_DIR}/iris/DCG/Agora_Native_SDK_for_Mac_rel.v3.8.201.2_40757_full_20220704_1649_216494/libs
+            ${CMAKE_CURRENT_SOURCE_DIR}/iris/DCG/Agora_Native_SDK_for_Mac_FULL/libs
             )
     # native rtc sdk library
     file(GLOB AGORA_RTC_SDK_LIBRARY
@@ -87,18 +87,18 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     set(AGORA_RTC_SDK_PATH
             ${CMAKE_CURRENT_SOURCE_DIR}/iris/DCG)
 
-    #file(GLOB AGORA_RTC_SDK_LIBRARY
-    #       ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_FULL/${AGORA_RTC_PROJECT_ARCH}/rtc/sdk/*.dll
-    #       )
-    if (${AGORA_RTC_PROJECT_ARCH} STREQUAL "x86")
-        file(GLOB AGORA_RTC_SDK_LIBRARY
-            ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_x86_rel.v3.8.201.2_65934_20220704_1631_full_216487/rtc/sdk/*.dll
+    file(GLOB AGORA_RTC_SDK_LIBRARY
+            ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_FULL/sdk/${AGORA_RTC_PROJECT_ARCH}/*.dll
             )
-    elseif (${AGORA_RTC_PROJECT_ARCH} STREQUAL "x86_64")
-        file(GLOB AGORA_RTC_SDK_LIBRARY
-            ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_x64_rel.v3.8.201.2_65935_20220704_1632_full_216486/rtc/sdk/*.dll
-            )
-    endif ()
+    #if (${AGORA_RTC_PROJECT_ARCH} STREQUAL "x86")
+    #    file(GLOB AGORA_RTC_SDK_LIBRARY
+    #        ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_x86_rel.v3.8.201.2_65934_20220704_1631_full_216487/rtc/sdk/*.dll
+    #        )
+    #elseif (${AGORA_RTC_PROJECT_ARCH} STREQUAL "x86_64")
+    #    file(GLOB AGORA_RTC_SDK_LIBRARY
+    #        ${AGORA_RTC_SDK_PATH}/Agora_Native_SDK_for_Windows_x64_rel.v3.8.201.2_65935_20220704_1632_full_216486/rtc/sdk/*.dll
+    #        )
+    #endif ()
 
     # iris sdk path
     set(AGORA_IRIS_SDK_PATH
@@ -110,7 +110,7 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     file(GLOB AGORA_IRIS_SDK_LIBRARY
             ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/Release/*.dll
             )
-  
+
     # iris sdk include file
     set(AGORA_IRIS_SDK_HEADER_FILE_DIR
             ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/include

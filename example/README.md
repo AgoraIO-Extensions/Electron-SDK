@@ -42,9 +42,9 @@ cd example && yarn link "electron-agora-rtc-ng"
 
 | Demo                                                                         | Description                                        | APIs                                                                                                                                               |
 | ---------------------------------------------------------------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [JoinChannelAudio](./src/renderer/examples/basic/JoinChannelAudio.tsx) | basic demo to show audio call                      | getAudioDeviceManager, setAudioProfile,setRecordingDevice, adjustRecordingSignalVolume, adjustAudioMixingPlayoutVolume, adjustPlaybackSignalVolume |
-| [JoinChannelVideo](./src/renderer/examples/basic/JoinChannelVideo.tsx) | video demo with role selection in Editor Inspector | enableVideo, getVideoDeviceManager,setChannelProfile, joinChannelEx, setAudioProfile, setVideoEncoderConfiguration                                 |
-| [StringUid](./src/renderer/examples/basic/StringUid.tsx)               | basic demo with string uid                         | joinChannelWithUserAccount                                                                                                                         |
+| [JoinChannelAudio](src/renderer/examples/basic/JoinChannelAudio/JoinChannelAudio.tsx) | basic demo to show audio call                      | getAudioDeviceManager, setAudioProfile,setRecordingDevice, adjustRecordingSignalVolume, adjustAudioMixingPlayoutVolume, adjustPlaybackSignalVolume |
+| [JoinChannelVideo](src/renderer/examples/basic/JoinChannelVideo/JoinChannelVideo.tsx) | video demo with role selection in Editor Inspector | enableVideo, getVideoDeviceManager,setChannelProfile, joinChannelEx, setAudioProfile, setVideoEncoderConfiguration                                 |
+| [StringUid](src/renderer/examples/basic/StringUid/StringUid.tsx)               | basic demo with string uid                         | joinChannelWithUserAccount                                                                                                                         |
 
 - **Advanced demos:**
 

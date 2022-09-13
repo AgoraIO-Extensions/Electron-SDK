@@ -1,340 +1,436 @@
-import { Card, List } from 'antd'
-import createAgoraRtcEngine, {
-  AudioProfileType,
-  AudioScenarioType,
-  ChannelProfileType,
-  ErrorCodeType,
-  IAudioDeviceManager,
-  IRtcEngine,
-  IRtcEngineEventHandler,
-  IRtcEngineEx,
-  RtcConnection,
-  RtcEngineExImplInternal,
-  RtcStats,
-  UserOfflineReasonType,
-} from 'electron-agora-rtc-ng'
-import { Component } from 'react'
-import DropDownButton from '../../component/DropDownButton'
-import JoinChannelBar from '../../component/JoinChannelBar'
-import SliderBar from '../../component/SliderBar'
+import React from 'react';
 import {
-  AudioEffectMap,
-  EqualizationReverbMap,
-  VoiceBeautifierMap,
-} from '../../config'
-import config from '../../config/agora.config'
-import styles from '../../config/public.scss'
-import { configMapToOptions, getRandomInt } from '../../util'
+  AudioEffectPreset,
+  AudioEqualizationBandFrequency,
+  AudioReverbType,
+  ChannelProfileType,
+  ClientRoleType,
+  createAgoraRtcEngine,
+  IRtcEngineEventHandler,
+  VoiceBeautifierPreset,
+  VoiceConversionPreset,
+} from 'electron-agora-rtc-ng';
 
-interface User {
-  isMyself: boolean
-  uid: number
-}
+import Config from '../../../config/agora.config';
 
-interface Device {
-  deviceName: string
-  deviceId: string
-}
-interface State {
-  audioRecordDevices: Device[]
-  audioEffectMode: number
-  equalizationReverbConfig: {
-    min: number
-    max: number
-    defaultValue: number
-    audioReverbType: number
-    title: string
-  }
-  allUser: User[]
-  isJoined: boolean
-  pitchCorrectionParam1: number
-  pitchCorrectionParam2: number
+import {
+  BaseAudioComponentState,
+  BaseComponent,
+} from '../../../components/BaseComponent';
+import {
+  AudioEffectPresetParam1Limit,
+  AudioEffectPresetParam2Limit,
+  AudioReverbTypeValueLimit,
+  VoiceBeautifierPresetParam1Limit,
+  VoiceBeautifierPresetParam2Limit,
+} from './VoiceChangerConfig';
+import {
+  AgoraButton,
+  AgoraDivider,
+  AgoraDropdown,
+  AgoraSlider,
+} from '../../../components/ui';
+import { enumToItems } from '../../../utils';
+
+interface State extends BaseAudioComponentState {
+  voiceBeautifierPreset: VoiceBeautifierPreset;
+  audioEffectPreset: AudioEffectPreset;
+  param1: number;
+  param2: number;
+  reverbKey: AudioReverbType;
+  value: number;
+  bandFrequency: AudioEqualizationBandFrequency;
+  bandGain: number;
+  pitch: number;
+  voiceConversionPreset: VoiceConversionPreset;
 }
 
 export default class VoiceChanger
-  extends Component<{}, State, any>
+  extends BaseComponent<{}, State>
   implements IRtcEngineEventHandler
 {
-  rtcEngine?: IRtcEngineEx
-
-  audioDeviceManager: IAudioDeviceManager
-
-  state: State = {
-    audioRecordDevices: [],
-    audioEffectMode: AudioEffectMap.AUDIO_EFFECT_OFF,
-    equalizationReverbConfig: EqualizationReverbMap['Dry Level'],
-    allUser: [],
-    isJoined: false,
-    pitchCorrectionParam1: 1,
-    pitchCorrectionParam2: 1,
+  protected createState(): State {
+    return {
+      appId: Config.appId,
+      enableVideo: false,
+      channelId: Config.channelId,
+      token: Config.token,
+      uid: Config.uid,
+      joinChannelSuccess: false,
+      remoteUsers: [],
+      voiceBeautifierPreset: VoiceBeautifierPreset.VoiceBeautifierOff,
+      audioEffectPreset: AudioEffectPreset.AudioEffectOff,
+      param1: 0,
+      param2: 0,
+      reverbKey: AudioReverbType.AudioReverbDryLevel,
+      value: 0,
+      bandFrequency: AudioEqualizationBandFrequency.AudioEqualizationBand31,
+      bandGain: 0,
+      pitch: 1.0,
+      voiceConversionPreset: VoiceConversionPreset.VoiceConversionOff,
+    };
   }
 
-  componentDidMount() {
-    this.getRtcEngine().registerEventHandler(this)
-
-    this.audioDeviceManager = this.getRtcEngine().getAudioDeviceManager()
-
-    this.setState({
-      audioRecordDevices:
-        this.audioDeviceManager.enumerateRecordingDevices() as any,
-    })
-  }
-
-  componentWillUnmount() {
-    this.rtcEngine?.unregisterEventHandler(this)
-    this.rtcEngine?.leaveChannel()
-    this.rtcEngine?.release()
-  }
-
-  getRtcEngine() {
-    if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine()
-      //@ts-ignore
-      window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appID })
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath)
-      console.log('initialize:', res)
+  /**
+   * Step 1: initRtcEngine
+   */
+  protected async initRtcEngine() {
+    const { appId } = this.state;
+    if (!appId) {
+      this.error(`appId is invalid`);
     }
 
-    return this.rtcEngine
+    this.engine = createAgoraRtcEngine();
+    this.engine.registerEventHandler(this);
+    this.engine.initialize({
+      appId,
+      // Should use ChannelProfileLiveBroadcasting on most of cases
+      channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
+    });
+
+    // Only need to enable audio on this case
+    this.engine.enableAudio();
   }
 
-  onJoinChannelSuccess(
-    { channelId, localUid }: RtcConnection,
-    elapsed: number
-  ): void {
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: true, uid: localUid })
-    this.setState({
-      isJoined: true,
-      allUser: newAllUser,
-    })
+  /**
+   * Step 2: joinChannel
+   */
+  protected joinChannel() {
+    const { channelId, token, uid } = this.state;
+    if (!channelId) {
+      this.error('channelId is invalid');
+      return;
+    }
+    if (uid < 0) {
+      this.error('uid is invalid');
+      return;
+    }
+
+    // start joining channel
+    // 1. Users can only see each other after they join the
+    // same channel successfully using the same app id.
+    // 2. If app certificate is turned on at dashboard, token is needed
+    // when joining channel. The channel name and uid used to calculate
+    // the token has to match the ones used for channel join
+    this.engine?.joinChannel(token, channelId, uid, {
+      // Make myself as the broadcaster to send stream to remote
+      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+    });
   }
 
-  onUserJoinedEx(
-    connection: RtcConnection,
-    remoteUid: number,
-    elapsed: number
-  ): void {
-    console.log(
-      'onUserJoined',
-      'connection',
-      connection,
-      'remoteUid',
-      remoteUid
-    )
+  /**
+   * Step 3-1 (Optional): setVoiceBeautifierPreset
+   */
+  setVoiceBeautifierPreset = () => {
+    const { voiceBeautifierPreset } = this.state;
+    this.engine?.setVoiceBeautifierPreset(voiceBeautifierPreset);
+  };
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: false, uid: remoteUid })
-    this.setState({
-      allUser: newAllUser,
-    })
-  }
+  /**
+   * Step 3-2 (Optional): setVoiceBeautifierParameters
+   */
+  setVoiceBeautifierParameters = () => {
+    const { voiceBeautifierPreset, param1, param2 } = this.state;
+    this.engine?.setVoiceBeautifierParameters(
+      voiceBeautifierPreset,
+      param1,
+      param2
+    );
+  };
 
-  onUserOfflineEx(
-    { localUid, channelId }: RtcConnection,
-    remoteUid: number,
-    reason: UserOfflineReasonType
-  ): void {
-    console.log('onUserOffline', channelId, remoteUid)
+  /**
+   * Step 3-3 (Optional): setAudioEffectPreset
+   */
+  setAudioEffectPreset = () => {
+    const { audioEffectPreset } = this.state;
+    this.engine?.setAudioEffectPreset(audioEffectPreset);
+  };
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
-    this.setState({
-      allUser: newAllUser,
-    })
-  }
-
-  onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
-    this.setState({
-      isJoined: false,
-      allUser: [],
-    })
-  }
-
-  onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg)
-  }
-
+  /**
+   * Step 3-4 (Optional): setAudioEffectParameters
+   */
   setAudioEffectParameters = () => {
-    const { pitchCorrectionParam2, pitchCorrectionParam1 } = this.state
-    this.getRtcEngine().setAudioEffectParameters(
-      AudioEffectMap.PITCH_CORRECTION,
-      pitchCorrectionParam1,
-      pitchCorrectionParam2
-    )
+    const { audioEffectPreset, param1, param2 } = this.state;
+    this.engine?.setAudioEffectParameters(audioEffectPreset, param1, param2);
+  };
+
+  /**
+   * Step 3-5 (Optional): setLocalVoiceReverb
+   */
+  setLocalVoiceReverb = () => {
+    const { reverbKey, value } = this.state;
+    this.engine?.setLocalVoiceReverb(reverbKey, value);
+  };
+
+  /**
+   * Step 3-6 (Optional): setLocalVoiceEqualization
+   */
+  setLocalVoiceEqualization = () => {
+    const { bandFrequency, bandGain } = this.state;
+    this.engine?.setLocalVoiceEqualization(bandFrequency, bandGain);
+  };
+
+  /**
+   * Step 3-7 (Optional): setLocalVoicePitch
+   */
+  setLocalVoicePitch = () => {
+    const { pitch } = this.state;
+    this.engine?.setLocalVoicePitch(pitch);
+  };
+
+  /**
+   * Step 3-8 (Optional): setVoiceConversionPreset
+   */
+  setVoiceConversionPreset = () => {
+    const { voiceConversionPreset } = this.state;
+    this.engine?.setVoiceConversionPreset(voiceConversionPreset);
+  };
+
+  /**
+   * Step 4: leaveChannel
+   */
+  protected leaveChannel() {
+    this.engine?.leaveChannel();
   }
 
-  renderItem = ({ isMyself, uid }: User) => {
-    return (
-      <List.Item>
-        <Card title={`${isMyself ? 'Local' : 'Remote'} `}>Uid: {uid}</Card>
-      </List.Item>
-    )
+  /**
+   * Step 5: releaseRtcEngine
+   */
+  protected releaseRtcEngine() {
+    this.engine?.release();
   }
 
-  renderRightBar = () => {
-    const { audioRecordDevices, audioEffectMode, equalizationReverbConfig } =
-      this.state
-
+  protected renderConfiguration(): React.ReactNode {
     return (
-      <div className={styles.rightBar}>
-        <div>
-          <DropDownButton
-            title='Microphone'
-            options={audioRecordDevices.map((obj) => {
-              const { deviceId, deviceName } = obj
-              return { dropId: deviceId, dropText: deviceName, ...obj }
-            })}
-            onPress={(res) => {
-              this.audioDeviceManager.setRecordingDevice(res.dropId)
-            }}
-          />
-          <DropDownButton
-            title='Voice Beautifier'
-            options={configMapToOptions(VoiceBeautifierMap)}
-            onPress={(res) => {
-              this.rtcEngine?.setVoiceBeautifierPreset(res.dropId)
-            }}
-          />
-          <DropDownButton
-            title='Audio Effect'
-            options={configMapToOptions(AudioEffectMap)}
-            onPress={(res) => {
-              const mode = res.dropId
-              this.setState({ audioEffectMode: mode })
-              this.rtcEngine?.setAudioEffectPreset(mode)
-            }}
-          />
-          {AudioEffectMap.PITCH_CORRECTION === audioEffectMode && (
-            <>
-              <SliderBar
-                max={3}
-                min={1}
-                title='PitchCorrection Param 1'
-                onChange={(value) => {
-                  this.setState(
-                    { pitchCorrectionParam1: value },
-                    this.setAudioEffectParameters
-                  )
-                  this.rtcEngine?.adjustRecordingSignalVolume(value)
-                }}
-              />
-              <SliderBar
-                max={12}
-                min={1}
-                title='PitchCorrection Param 2'
-                onChange={(value) => {
-                  this.setState(
-                    { pitchCorrectionParam2: value },
-                    this.setAudioEffectParameters
-                  )
-                }}
-              />
-            </>
-          )}
-          <DropDownButton
-            title='Equalization Reverb'
-            options={configMapToOptions(EqualizationReverbMap)}
-            onPress={(res) => {
-              this.setState({ equalizationReverbConfig: res.dropId })
-            }}
-          />
-          <SliderBar
-            max={equalizationReverbConfig.max}
-            min={equalizationReverbConfig.min}
-            value={equalizationReverbConfig.defaultValue}
-            step={1}
-            title={equalizationReverbConfig.title}
-            onChange={(value) => {
-              this.getRtcEngine().setLocalVoiceReverb(
-                equalizationReverbConfig.audioReverbType,
-                value
-              )
-            }}
-          />
+      <>
+        {this._renderVoiceBeautifierPreset()}
+        <AgoraDivider />
+        {this._renderAudioEffectPreset()}
+        <AgoraDivider />
+        {this._renderAudioReverbType()}
+        <AgoraDivider />
+        {this._renderAudioEqualizationBandFrequency()}
+        <AgoraDivider />
+        {this._renderLocalVoicePitch()}
+        <AgoraDivider />
+        {this._renderVoiceConversionPreset()}
+        <AgoraDivider />
+      </>
+    );
+  }
 
-          <SliderBar
-            max={2.0}
-            min={0.5}
-            step={0.01}
-            title='Voice Pitch'
-            onChange={(value) => {
-              this.getRtcEngine().setLocalVoicePitch(value)
-            }}
-          />
-          <SliderBar
-            max={15}
-            min={-15}
-            step={1}
-            title='Equalization Band 31Hz'
-            onChange={(value) => {
-              // enum AUDIO_EQUALIZATION_BAND_FREQUENCY {
-              //   /** 0: 31 Hz */
-              //   AUDIO_EQUALIZATION_BAND_31 = 0,
-              //   /** 1: 62 Hz */
-              //   AUDIO_EQUALIZATION_BAND_62 = 1,
-              //   /** 2: 125 Hz */
-              //   AUDIO_EQUALIZATION_BAND_125 = 2,
-              //   /** 3: 250 Hz */
-              //   AUDIO_EQUALIZATION_BAND_250 = 3,
-              //   /** 4: 500 Hz */
-              //   AUDIO_EQUALIZATION_BAND_500 = 4,
-              //   /** 5: 1 kHz */
-              //   AUDIO_EQUALIZATION_BAND_1K = 5,
-              //   /** 6: 2 kHz */
-              //   AUDIO_EQUALIZATION_BAND_2K = 6,
-              //   /** 7: 4 kHz */
-              //   AUDIO_EQUALIZATION_BAND_4K = 7,
-              //   /** 8: 8 kHz */
-              //   AUDIO_EQUALIZATION_BAND_8K = 8,
-              //   /** 9: 16 kHz */
-              //   AUDIO_EQUALIZATION_BAND_16K = 9,
-              // };
-              this.getRtcEngine().setLocalVoiceEqualization(0, value)
-            }}
-          />
-        </div>
-        <JoinChannelBar
-          onPressJoin={(channelId: string) => {
-            this.rtcEngine?.setChannelProfile(
-              ChannelProfileType.ChannelProfileLiveBroadcasting
-            )
-            this.rtcEngine?.setAudioProfile(
-              AudioProfileType.AudioProfileDefault,
-              AudioScenarioType.AudioScenarioChatroom
-            )
-
-            const localUid = getRandomInt(1, 9999999)
-            console.log(`localUid: ${localUid}`)
-            this.rtcEngine?.joinChannel('', channelId, '', localUid)
-          }}
-          onPressLeave={() => {
-            this.getRtcEngine().leaveChannel()
+  _renderVoiceBeautifierPreset = () => {
+    const { voiceBeautifierPreset, param1, param2 } = this.state;
+    const limit1 = VoiceBeautifierPresetParam1Limit.get(voiceBeautifierPreset);
+    const limit2 = VoiceBeautifierPresetParam2Limit.get(voiceBeautifierPreset);
+    return (
+      <>
+        <AgoraDropdown
+          title={'voiceBeautifierPreset'}
+          items={enumToItems(VoiceBeautifierPreset)}
+          value={voiceBeautifierPreset}
+          onValueChange={(value) => {
+            this.setState({ voiceBeautifierPreset: value });
           }}
         />
-      </div>
-    )
-  }
+        <AgoraButton
+          title={'set Voice Beautifier Preset'}
+          onPress={this.setVoiceBeautifierPreset}
+        />
+        {limit1 !== undefined ? (
+          <AgoraSlider
+            title={`param1 ${param1}`}
+            minimumValue={limit1.min}
+            maximumValue={limit1.max}
+            step={1}
+            value={param1}
+            onSlidingComplete={(value) => {
+              this.setState({ param1: value });
+            }}
+          />
+        ) : undefined}
+        {limit2 !== undefined ? (
+          <AgoraSlider
+            title={`param2 ${param2}`}
+            minimumValue={limit2.min}
+            maximumValue={limit2.max}
+            step={1}
+            value={param2}
+            onSlidingComplete={(value) => {
+              this.setState({ param2: value });
+            }}
+          />
+        ) : undefined}
+        {limit1 !== undefined && limit2 !== undefined ? (
+          <AgoraButton
+            title={'set Voice Beautifier Parameters'}
+            onPress={this.setVoiceBeautifierParameters}
+          />
+        ) : undefined}
+      </>
+    );
+  };
 
-  render() {
-    const { isJoined, allUser } = this.state
+  _renderAudioEffectPreset = () => {
+    const { audioEffectPreset, param1, param2 } = this.state;
+    const limit1 = AudioEffectPresetParam1Limit.get(audioEffectPreset);
+    const limit2 = AudioEffectPresetParam2Limit.get(audioEffectPreset);
     return (
-      <div className={styles.screen}>
-        <div className={styles.content}>
-          {isJoined && (
-            <List
-              style={{ width: '100%' }}
-              grid={{ gutter: 16, column: 4 }}
-              dataSource={allUser}
-              renderItem={this.renderItem}
-            />
-          )}
-        </div>
-        {this.renderRightBar()}
-      </div>
-    )
-  }
+      <>
+        <AgoraDropdown
+          title={'audioEffectPreset'}
+          items={enumToItems(AudioEffectPreset)}
+          value={audioEffectPreset}
+          onValueChange={(value) => {
+            this.setState({ audioEffectPreset: value });
+          }}
+        />
+        <AgoraButton
+          title={'set Audio Effect Preset'}
+          onPress={this.setAudioEffectPreset}
+        />
+        {limit1 !== undefined ? (
+          <AgoraSlider
+            title={`param1 ${param1}`}
+            minimumValue={limit1.min}
+            maximumValue={limit1.max}
+            step={1}
+            value={param1}
+            onSlidingComplete={(value) => {
+              this.setState({ param1: value });
+            }}
+          />
+        ) : undefined}
+        {limit2 !== undefined ? (
+          <AgoraSlider
+            title={`param2 ${param2}`}
+            minimumValue={limit2.min}
+            maximumValue={limit2.max}
+            step={1}
+            value={param2}
+            onSlidingComplete={(value) => {
+              this.setState({ param2: value });
+            }}
+          />
+        ) : undefined}
+        {limit1 !== undefined && limit2 !== undefined ? (
+          <AgoraButton
+            title={'set Audio Effect Parameters'}
+            onPress={this.setAudioEffectParameters}
+          />
+        ) : undefined}
+      </>
+    );
+  };
+
+  _renderAudioReverbType = () => {
+    const { reverbKey, value } = this.state;
+    const limit = AudioReverbTypeValueLimit.get(reverbKey);
+    return (
+      <>
+        <AgoraDropdown
+          title={'reverbKey'}
+          items={enumToItems(AudioReverbType)}
+          value={reverbKey}
+          onValueChange={(v) => {
+            this.setState({ reverbKey: v });
+          }}
+        />
+        {limit !== undefined ? (
+          <AgoraSlider
+            title={`value ${value}`}
+            minimumValue={limit.min}
+            maximumValue={limit.max}
+            step={1}
+            value={value}
+            onSlidingComplete={(v) => {
+              this.setState({ value: v });
+            }}
+          />
+        ) : undefined}
+        {limit !== undefined ? (
+          <AgoraButton
+            title={'set Local Voice Reverb'}
+            onPress={this.setLocalVoiceReverb}
+          />
+        ) : undefined}
+      </>
+    );
+  };
+
+  _renderAudioEqualizationBandFrequency = () => {
+    const { bandFrequency, bandGain } = this.state;
+    const min = -15;
+    const max = 15;
+    return (
+      <>
+        <AgoraDropdown
+          title={'bandFrequency'}
+          items={enumToItems(AudioEqualizationBandFrequency)}
+          value={bandFrequency}
+          onValueChange={(value) => {
+            this.setState({ bandFrequency: value });
+          }}
+        />
+        <AgoraSlider
+          title={`bandGain ${bandGain}`}
+          minimumValue={min}
+          maximumValue={max}
+          step={1}
+          value={bandGain}
+          onSlidingComplete={(value) => {
+            this.setState({ bandGain: value });
+          }}
+        />
+        <AgoraButton
+          title={'set Local Voice Equalization'}
+          onPress={this.setLocalVoiceEqualization}
+        />
+      </>
+    );
+  };
+
+  _renderLocalVoicePitch = () => {
+    const { pitch } = this.state;
+    const min = 0.5;
+    const max = 2.0;
+    return (
+      <>
+        <AgoraSlider
+          title={`pitch ${pitch}`}
+          minimumValue={min}
+          maximumValue={max}
+          step={0.1}
+          value={pitch}
+          onSlidingComplete={(value) => {
+            this.setState({ pitch: value });
+          }}
+        />
+        <AgoraButton
+          title={'set Local Voice Pitch'}
+          onPress={this.setLocalVoicePitch}
+        />
+      </>
+    );
+  };
+
+  _renderVoiceConversionPreset = () => {
+    const { voiceConversionPreset } = this.state;
+    return (
+      <>
+        <AgoraDropdown
+          title={'voiceConversionPreset'}
+          items={enumToItems(VoiceConversionPreset)}
+          value={voiceConversionPreset}
+          onValueChange={(value) => {
+            this.setState({ voiceConversionPreset: value });
+          }}
+        />
+        <AgoraButton
+          title={'set Voice Conversion Preset'}
+          onPress={this.setVoiceConversionPreset}
+        />
+      </>
+    );
+  };
 }

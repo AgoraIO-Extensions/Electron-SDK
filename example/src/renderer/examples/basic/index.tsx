@@ -1,6 +1,6 @@
-import JoinChannelAudio from './JoinChannelAudio'
-import JoinChannelVideo from './JoinChannelVideo'
-import StringUid from './StringUid'
+import JoinChannelAudio from './JoinChannelAudio/JoinChannelAudio';
+import JoinChannelVideo from './JoinChannelVideo/JoinChannelVideo';
+import StringUid from './StringUid/StringUid';
 
 const basicRoutes = [
   {
@@ -18,6 +18,6 @@ const basicRoutes = [
     component: StringUid,
     title: 'StringUid',
   },
-]
+];
 
-export default basicRoutes
+export default basicRoutes;

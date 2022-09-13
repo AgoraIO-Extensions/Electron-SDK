@@ -1,329 +1,201 @@
-import createAgoraRtcEngine, {
-  AudioProfileType,
-  AudioScenarioType,
+import React from 'react';
+import os from 'os';
+import {
   ChannelProfileType,
-  DegradationPreference,
+  ClientRoleType,
+  createAgoraRtcEngine,
   ErrorCodeType,
-  IAudioDeviceManager,
-  IRtcEngine,
   IRtcEngineEventHandler,
-  IRtcEngineEx,
-  IVideoDeviceManager,
-  OrientationMode,
   RtcConnection,
-  RtcEngineExImplInternal,
-  RtcStats,
-  UserOfflineReasonType,
-  VideoCodecType,
-  VideoMirrorModeType,
-  VideoSourceType,
-} from 'electron-agora-rtc-ng'
-import { Button, Card, Divider, List } from 'antd'
-import os from 'os'
-import path from 'path'
-import { Component } from 'react'
-import DropDownButton from '../../component/DropDownButton'
-import JoinChannelBar from '../../component/JoinChannelBar'
-import Window from '../../component/Window'
-import { FpsMap, ResolutionMap, RoleTypeMap } from '../../config'
-import config from '../../config/agora.config'
-import styles from '../../config/public.scss'
-import { configMapToOptions, getRandomInt } from '../../util'
+} from 'electron-agora-rtc-ng';
 
-interface Device {
-  deviceId: string
-  deviceName: string
-}
+import Config from '../../../config/agora.config';
 
-interface User {
-  isMyself: boolean
-  uid: number
-}
+import {
+  BaseComponent,
+  BaseVideoComponentState,
+} from '../../../components/BaseComponent';
+import {
+  AgoraButton,
+  AgoraDivider,
+  AgoraDropdown,
+  AgoraImage,
+} from '../../../components/ui';
+import { arrayToItems } from '../../../utils';
 
-interface State {
-  isJoined: boolean
-  channelId: string
-  allUser: User[]
-  audioRecordDevices: Device[]
-  cameraDevices: Device[]
-  currentFps?: number
-  currentResolution?: { width: number; height: number }
+interface State extends BaseVideoComponentState {
+  targetUid: number;
+  filePath: string;
+  takeSnapshot: boolean;
 }
-const localUid = getRandomInt(1, 9999999)
 
 export default class TakeSnapshot
-  extends Component<{}, State, any>
+  extends BaseComponent<{}, State>
   implements IRtcEngineEventHandler
 {
-  rtcEngine?: IRtcEngineEx
-
-  videoDeviceManager: IVideoDeviceManager
-
-  audioDeviceManager: IAudioDeviceManager
-
-  state: State = {
-    channelId: '',
-    allUser: [],
-    isJoined: false,
-    audioRecordDevices: [],
-    cameraDevices: [],
+  protected createState(): State {
+    return {
+      appId: Config.appId,
+      enableVideo: true,
+      channelId: Config.channelId,
+      token: Config.token,
+      uid: Config.uid,
+      joinChannelSuccess: false,
+      remoteUsers: [],
+      startPreview: false,
+      targetUid: 0,
+      filePath: os.homedir(),
+      takeSnapshot: false,
+    };
   }
 
-  componentDidMount() {
-    this.getRtcEngine().registerEventHandler(this)
-    this.videoDeviceManager = this.getRtcEngine().getVideoDeviceManager()
-    this.audioDeviceManager = this.getRtcEngine().getAudioDeviceManager()
-
-    this.setState({
-      audioRecordDevices:
-        this.audioDeviceManager.enumerateRecordingDevices() as any,
-      cameraDevices: this.videoDeviceManager.enumerateVideoDevices() as any,
-    })
-  }
-
-  componentWillUnmount() {
-    this.rtcEngine?.unregisterEventHandler(this)
-    this.rtcEngine?.leaveChannel()
-    this.rtcEngine?.release()
-  }
-
-  getRtcEngine() {
-    if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine()
-      //@ts-ignore
-      window.rtcEngine = this.rtcEngine
-      const res = this.rtcEngine.initialize({ appId: config.appID })
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath)
-      console.log('initialize:', res)
+  /**
+   * Step 1: initRtcEngine
+   */
+  protected async initRtcEngine() {
+    const { appId } = this.state;
+    if (!appId) {
+      this.error(`appId is invalid`);
     }
 
-    return this.rtcEngine
+    this.engine = createAgoraRtcEngine();
+    this.engine.registerEventHandler(this);
+    this.engine.initialize({
+      appId,
+      // Should use ChannelProfileLiveBroadcasting on most of cases
+      channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
+    });
+
+    // Need to enable video on this case
+    // If you only call `enableAudio`, only relay the audio stream to the target channel
+    this.engine.enableVideo();
   }
 
-  onJoinChannelSuccess(
-    { channelId, localUid }: RtcConnection,
-    elapsed: number
-  ): void {
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: true, uid: localUid })
-    this.setState({
-      isJoined: true,
-      allUser: newAllUser,
-    })
+  /**
+   * Step 2: joinChannel
+   */
+  protected joinChannel() {
+    const { channelId, token, uid } = this.state;
+    if (!channelId) {
+      this.error('channelId is invalid');
+      return;
+    }
+    if (uid < 0) {
+      this.error('uid is invalid');
+      return;
+    }
+
+    // start joining channel
+    // 1. Users can only see each other after they join the
+    // same channel successfully using the same app id.
+    // 2. If app certificate is turned on at dashboard, token is needed
+    // when joining channel. The channel name and uid used to calculate
+    // the token has to match the ones used for channel join
+    this.engine?.joinChannel(token, channelId, uid, {
+      // Make myself as the broadcaster to send stream to remote
+      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+    });
   }
 
-  onUserJoined(
-    connection: RtcConnection,
-    remoteUid: number,
-    elapsed: number
-  ): void {
-    console.log(
-      'onUserJoined',
-      'connection',
-      connection,
-      'remoteUid',
-      remoteUid
-    )
+  /**
+   * Step 3: takeSnapshot
+   */
+  takeSnapshot = () => {
+    const { targetUid, filePath } = this.state;
+    if (!filePath) {
+      this.error('filePath is invalid');
+      return;
+    }
 
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser]
-    newAllUser.push({ isMyself: false, uid: remoteUid })
-    this.setState({
-      allUser: newAllUser,
-    })
+    this.engine?.takeSnapshot(targetUid, `${filePath}/${targetUid}.jpg`);
+  };
+
+  /**
+   * Step 4: leaveChannel
+   */
+  protected leaveChannel() {
+    this.engine?.leaveChannel();
   }
 
-  onUserOffline(
-    { localUid, channelId }: RtcConnection,
-    remoteUid: number,
-    reason: UserOfflineReasonType
-  ): void {
-    console.log('onUserOffline', channelId, remoteUid)
-
-    const { allUser: oldAllUser } = this.state
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)]
-    this.setState({
-      allUser: newAllUser,
-    })
-  }
-
-  onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
-    this.setState({
-      isJoined: false,
-      allUser: [],
-    })
-  }
-
-  onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg)
+  /**
+   * Step 5: releaseRtcEngine
+   */
+  protected releaseRtcEngine() {
+    this.engine?.release();
   }
 
   onSnapshotTaken(
     connection: RtcConnection,
+    uid: number,
     filePath: string,
     width: number,
     height: number,
     errCode: number
-  ): void {
-    console.log('onSnapshotTaken', connection, filePath, width, height, errCode)
-  }
-
-  onPressJoinChannel = (channelId: string) => {
-    this.setState({ channelId })
-    this.rtcEngine.enableAudio()
-    this.rtcEngine.enableVideo()
-    this.rtcEngine?.setChannelProfile(
-      ChannelProfileType.ChannelProfileLiveBroadcasting
-    )
-    this.rtcEngine?.setAudioProfile(
-      AudioProfileType.AudioProfileDefault,
-      AudioScenarioType.AudioScenarioChatroom
-    )
-
-    console.log(`localUid: ${localUid}`)
-    this.rtcEngine?.joinChannel('', channelId, '', localUid)
-  }
-
-  setVideoConfig = () => {
-    const { currentFps, currentResolution } = this.state
-    if (!currentResolution || !currentFps) {
-      return
-    }
-
-    this.getRtcEngine().setVideoEncoderConfiguration({
-      codecType: VideoCodecType.VideoCodecH264,
-      dimensions: currentResolution!,
-      frameRate: currentFps,
-      bitrate: 65,
-      minBitrate: 1,
-      orientationMode: OrientationMode.OrientationModeAdaptive,
-      degradationPreference: DegradationPreference.MaintainBalanced,
-      mirrorMode: VideoMirrorModeType.VideoMirrorModeAuto,
-    })
-  }
-
-  onPressTakeSnapshot = () => {
-    const { channelId } = this.state
-    const filePath = path.resolve(os.homedir(), `./snapshot${getRandomInt()}`)
-    const res = this.getRtcEngine().takeSnapshot({
-      channel: channelId,
-      uid: 0,
+  ) {
+    this.info(
+      'onSnapshotTaken',
+      'connection',
+      connection,
+      'uid',
+      uid,
+      'filePath',
       filePath,
-    })
-    console.log(`takeSnapshot ${filePath}: `, res)
+      'width',
+      width,
+      'height',
+      height,
+      'errCode',
+      errCode
+    );
+    const { targetUid, filePath: path } = this.state;
+    if (filePath === `${path}/${targetUid}.jpg`) {
+      this.setState({ takeSnapshot: errCode === ErrorCodeType.ErrOk });
+    }
   }
 
-  renderRightBar = () => {
-    const { audioRecordDevices, cameraDevices, isJoined } = this.state
-
+  protected renderConfiguration(): React.ReactNode {
+    const { remoteUsers, targetUid, filePath, takeSnapshot } = this.state;
     return (
-      <div className={styles.rightBar}>
-        <div>
-          <DropDownButton
-            options={cameraDevices.map((obj) => {
-              const { deviceId, deviceName } = obj
-              return { dropId: deviceId, dropText: deviceName, ...obj }
-            })}
-            onPress={(res) => {
-              this.videoDeviceManager.setDevice(res.dropId)
-            }}
-            title='Camera'
-          />
-          <DropDownButton
-            title='Microphone'
-            options={audioRecordDevices.map((obj) => {
-              const { deviceId, deviceName } = obj
-              return { dropId: deviceId, dropText: deviceName, ...obj }
-            })}
-            onPress={(res) => {
-              this.audioDeviceManager.setRecordingDevice(res.dropId)
-            }}
-          />
-          <DropDownButton
-            title='Role'
-            options={configMapToOptions(RoleTypeMap)}
-            onPress={(res) => {
-              this.getRtcEngine().setClientRole(res.dropId)
-            }}
-          />
-          <DropDownButton
-            title='Resolution'
-            options={configMapToOptions(ResolutionMap)}
-            onPress={(res) => {
-              this.setState(
-                { currentResolution: res.dropId },
-                this.setVideoConfig
-              )
-            }}
-          />
-          <DropDownButton
-            title='FPS'
-            options={configMapToOptions(FpsMap)}
-            onPress={(res) => {
-              this.setState({ currentFps: res.dropId }, this.setVideoConfig)
-            }}
-          />
-
-          {isJoined && (
-            <>
-              <Divider></Divider>
-              <Button onClick={this.onPressTakeSnapshot}>Take Snapshot</Button>
-            </>
-          )}
-        </div>
-        <JoinChannelBar
-          onPressJoin={this.onPressJoinChannel}
-          onPressLeave={() => {
-            this.rtcEngine?.leaveChannel()
+      <>
+        <AgoraDropdown
+          title={'targetUid'}
+          items={arrayToItems([0, ...remoteUsers])}
+          value={targetUid}
+          onValueChange={(value) => {
+            this.setState({ targetUid: value });
           }}
         />
-      </div>
-    )
-  }
-
-  renderItem = ({ isMyself, uid }: User) => {
-    const { channelId } = this.state
-    const videoSourceType = isMyself
-      ? VideoSourceType.VideoSourceCameraPrimary
-      : VideoSourceType.VideoSourceRemote
-    return (
-      <List.Item>
-        <Card title={`${isMyself ? 'Local' : 'Remote'} Uid: ${uid}`}>
-          <Window
-            uid={uid}
-            rtcEngine={this.rtcEngine!}
-            videoSourceType={videoSourceType}
-            channelId={channelId}
-          />
-        </Card>
-      </List.Item>
-    )
-  }
-
-  render() {
-    const { isJoined, allUser } = this.state
-    return (
-      <div className={styles.screen}>
-        <div className={styles.content}>
-          {isJoined && (
-            <List
-              grid={{
-                gutter: 16,
-                xs: 1,
-                sm: 1,
-                md: 1,
-                lg: 1,
-                xl: 1,
-                xxl: 2,
-              }}
-              dataSource={allUser}
-              renderItem={this.renderItem}
+        {takeSnapshot ? (
+          <>
+            <AgoraDivider />
+            <AgoraImage
+              style={styles.image}
+              source={`file://${filePath}/${targetUid}.jpg`}
             />
-          )}
-        </div>
-        {this.renderRightBar()}
-      </div>
-    )
+          </>
+        ) : undefined}
+        <AgoraDivider />
+      </>
+    );
+  }
+
+  protected renderAction(): React.ReactNode {
+    const { joinChannelSuccess } = this.state;
+    return (
+      <>
+        <AgoraButton
+          disabled={!joinChannelSuccess}
+          title={`take Snapshot`}
+          onPress={this.takeSnapshot}
+        />
+      </>
+    );
   }
 }
+
+const styles = {
+  image: {
+    width: 120,
+    height: 120,
+  },
+};

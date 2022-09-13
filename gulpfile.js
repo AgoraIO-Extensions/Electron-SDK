@@ -1,12 +1,12 @@
-const { series } = require("gulp");
-const syncLib = require("./scripts/synclib");
-const build = require("./scripts/build");
-const getConfig = require("./scripts/getConfig");
-const dowmloadPrebuild = require("./scripts/dowmloadPrebuild");
-const { cleanBuildDir, cleanJSDir, cleanIrisDir } = require("./scripts/clean");
-const buildJS = require("./scripts/buildJS");
-const logger = require("./scripts/logger");
-const zipBuild = require("./scripts/zipBuild");
+const { series } = require('gulp');
+const syncLib = require('./scripts/synclib');
+const build = require('./scripts/build');
+const getConfig = require('./scripts/getConfig');
+const dowmloadPrebuild = require('./scripts/dowmloadPrebuild');
+const { cleanBuildDir, cleanJSDir, cleanIrisDir } = require('./scripts/clean');
+const buildJS = require('./scripts/buildJS');
+const logger = require('./scripts/logger');
+const zipBuild = require('./scripts/zipBuild');
 
 const config = getConfig();
 logger.info(`Get Config: \n${JSON.stringify(config, undefined, 4)}`);
