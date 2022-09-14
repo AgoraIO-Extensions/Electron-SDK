@@ -1379,15 +1379,15 @@ export interface CaptureParam {
   excludeWindowCount: number;
   /** The select window show highligt frame width.
    */
-  highLightWidth: number;
+  highLightWidth?: number;
   /** The select window show highligt frame color RGBA.
    */
-  highLightColor: number;
+  highLightColor?: number;
   /** The select window show highligt frame
    - true: show highligt frame
    - false: (Default) not show highligt frame
    */
-  enableHighLight: boolean;
+  enableHighLight?: boolean;
 }
 
 /**
