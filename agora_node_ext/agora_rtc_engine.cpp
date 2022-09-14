@@ -423,17 +423,14 @@ getScreenCaptureParameters(Local<Object> &obj,
       key = "highLightWidth";
       status =
           napi_get_object_property_int32_(isolate, obj, key, captureParams->highLightWidth);
-      CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
 
       key = "highLightColor";
       status =
           napi_get_object_property_uint32_(isolate, obj, key, captureParams->highLightColor);
-      CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
 
       key = "enableHighLight";
       status =
           napi_get_object_property_bool_(isolate, obj, key, captureParams->enableHighLight);
-      CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
 
       return captureParams;
     } while (false);
