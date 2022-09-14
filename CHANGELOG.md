@@ -1,3 +1,10 @@
+# [4.0.0-rc.3](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.0-rc.2...v4.0.0-rc.3) (2022-09-14)
+
+
+### Bug Fixes
+
+* npm install failed ([8b04ff4](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/8b04ff49a6d7b2b5d54188bb7628bb095f629736))
+
 # [4.0.0-rc.2](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.0-rc.1...v4.0.0-rc.2) (2022-09-13)
 
 
