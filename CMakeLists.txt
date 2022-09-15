@@ -3,6 +3,22 @@ set(CMAKE_CXX_STANDARD 11)
 
 project(agora-electron-sdk)
 
+if (MSVC)
+    if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+        add_compile_options(
+                $<$<CONFIG:>:/MD> #---------|
+                $<$<CONFIG:Debug>:/MDd> #---|-- Dynamically link the runtime libraries
+                $<$<CONFIG:Release>:/MD> #--|
+        )
+    else ()
+        add_compile_options(
+                $<$<CONFIG:>:/MT> #---------|
+                $<$<CONFIG:Debug>:/MTd> #---|-- Statically link the runtime libraries
+                $<$<CONFIG:Release>:/MT> #--|
+        )
+    endif ()
+endif ()
+
 include_directories(${CMAKE_JS_INC})
 set(BUILD_TYPE ${CMAKE_BUILD_TYPE})
 
@@ -71,16 +87,16 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
             "-framework ImageIO"
             )
 elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
-   if (${CMAKE_OSX_ARCHITECTURES} STREQUAL "i386")
+    if (${CMAKE_OSX_ARCHITECTURES} STREQUAL "i386")
         set(AGORA_RTC_PROJECT_ARCH "x86")
         set(AGORA_IRIS_PROJECT_ARCH "Win32")
         set(AGORA_DCG_SDK_ARCH_FILE_NAME
-              "Win32/Release")
+                "Win32/Release")
     elseif (${CMAKE_OSX_ARCHITECTURES} STREQUAL "x86_64")
         set(AGORA_RTC_PROJECT_ARCH "x86_64")
         set(AGORA_IRIS_PROJECT_ARCH "x64")
         set(AGORA_DCG_SDK_ARCH_FILE_NAME
-               "x64/Release")
+                "x64/Release")
     endif ()
 
     # native rtc sdk path
@@ -145,12 +161,12 @@ elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
             ${AGORA_IRIS_SDK_PATH}/x86_64/*
             )
     # iris sdk include file
-   set(AGORA_IRIS_SDK_HEADER_FILE_DIR
+    set(AGORA_IRIS_SDK_HEADER_FILE_DIR
             ${AGORA_IRIS_SDK_PATH}/${AGORA_IRIS_PROJECT_ARCH}/include
             )
 endif ()
- message(=====iris include ===== ${AGORA_IRIS_SDK_HEADER_FILE_DIR} )
- message(=======iris windows lib= IRIs == ${AGORA_IRIS_SDK_LIB})
+message(=====iris include ===== ${AGORA_IRIS_SDK_HEADER_FILE_DIR})
+message(=======iris windows lib= IRIs == ${AGORA_IRIS_SDK_LIB})
 
 file(GLOB COMMON_FILE2
         ${AGORA_IRIS_SDK_HEADER_FILE_DIR}/*.h
@@ -187,7 +203,7 @@ function(build_target_agora_node_ext)
                 Rpcrt4.lib
                 ws2_32.lib
                 )
-        set_target_properties(${AGORA_NODE_EXT_NAME} PROPERTIES LINK_FLAGS "/DEBUG /PDBSTRIPPED:${AGORA_NODE_EXT_NAME}.pdb" )
+        set_target_properties(${AGORA_NODE_EXT_NAME} PROPERTIES LINK_FLAGS "/DEBUG /PDBSTRIPPED:${AGORA_NODE_EXT_NAME}.pdb")
     elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
         set(CMAKE_BUILD_WITH_INSTALL_RPATH true)
         set(CMAKE_INSTALL_RPATH "\${ORIGIN}")
