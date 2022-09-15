@@ -1,3 +1,6 @@
+> NOTE: These sdk and samples only for the Agora Video 4.x APIs. For examples using previous releases please see the following branches:
+>  - [3.x](https://github.com/AgoraIO-Extensions/Electron-SDK/tree/3.x)
+
 # Agora RTC SDK for Electron
 
 <div align="left">
@@ -6,7 +9,6 @@
     <a href="https://www.npmjs.com/package/agora-electron-sdk"><img alt="npm" src="https://img.shields.io/npm/dm/agora-electron-sdk?color=blue&style=flat-square&logo=npm"></a>
     <a href="./LICENSE"><img src="https://img.shields.io/github/license/agoraio-extensions/electron-sdk?color=blue&style=flat-square" alt="License"/></a>
     <a href="https://github.com/AgoraIO-Extensions/Electron-SDK/issues"><img src="https://flat.badgen.net/github/label-issues/AgoraIO-Extensions/Electron-SDK/help%20wanted/open" alt="License"/></a>
-
 </div>
 
 ## ✨ Features
@@ -85,10 +87,7 @@ set `externals` property of your webpack config to `{"agora-electron-sdk": "comm
 
 ## 🔗 Links
 
-- [Document](https://docs.agora.io/en/Video/API%20Reference/electron/index.html) - Official document
-
-- [e-Education Application](https://github.com/AgoraIO/ARD-eEducation-with-Electron) - A complete e-education
-  Application based on this repo
+- [Document](https://docs.agora.io/en/video-call-4.x/API%20Reference/electron_ng/API/rtc_api_overview_ng.html) - Official document
 
 - [Demo](./example/) - A quick start demo based on Vue/React and this repo
 
