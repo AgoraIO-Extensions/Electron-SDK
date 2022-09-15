@@ -11,6 +11,7 @@
 #include <Windows.h>
 #include <memory>
 #include <thread>
+#include <clocale>
 #include "loguru.hpp"
 #include "node_log.h"
 #include "node_process.h"
@@ -182,6 +183,7 @@ int INodeProcess::GetCurrentNodeProcessId() {
 }
 
 bool INodeProcess::getCurrentModuleFileName(std::string& targetPath) {
+  setlocale(LC_ALL, "");
   HMODULE module = NULL;
   if (!GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
                           (LPCSTR)&getCurrentModuleFileName, &module)) {
