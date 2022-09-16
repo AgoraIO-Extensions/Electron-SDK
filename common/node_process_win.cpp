@@ -17,6 +17,19 @@
 #include "node_process.h"
 
 using namespace std;
+
+std::wstring utf82wide(const std::string& utf8) {
+  if (utf8.empty()) return std::move(std::wstring());
+  int len = MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), utf8.size(), nullptr, 0);
+  wchar_t* buf = new wchar_t[len + 1];
+  if (!buf) return std::move(std::wstring());
+  ZeroMemory(buf, sizeof(wchar_t) * (len + 1));
+  MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), utf8.size(), buf, sizeof(wchar_t) * (len + 1));
+  std::wstring result(buf);
+  delete[] buf;
+  return std::move(result);
+}
+
 class NodeProcessWinImpl : public INodeProcess {
  public:
   NodeProcessWinImpl(HANDLE hProcess, int pid);
@@ -99,7 +112,7 @@ void replaceSpecialString(std::string& cmdline) {
 INodeProcess* INodeProcess::CreateNodeProcess(const char* path,
                                               const char** params,
                                               unsigned int flag) {
-  STARTUPINFOA info = {0};
+  STARTUPINFOW info = {0};
   info.cb = sizeof(info);
   PROCESS_INFORMATION pi = {0};
   DWORD err;
@@ -117,14 +130,16 @@ INodeProcess* INodeProcess::CreateNodeProcess(const char* path,
   }
 
   LOG_INFO("%s, cmdline : %s\n", __FUNCTION__, cmdline.c_str());
-  if (!CreateProcessA(NULL, (LPSTR)cmdline.c_str(), NULL, NULL, FALSE,
+
+  if (!CreateProcessW(NULL, (LPWSTR)utf82wide(cmdline.c_str()).c_str(), NULL, NULL, FALSE,
                       CREATE_NO_WINDOW, NULL, NULL, &info, &pi)) {
     err = GetLastError();
     LOG_ERROR("%s, create process failed with error %d\n", __FUNCTION__, err);
 
     // windows special path replace
     replaceSpecialString(cmdline);
-    if (!CreateProcessA(NULL, (LPSTR)cmdline.c_str(), NULL, NULL, FALSE,
+    
+    if (!CreateProcessW(NULL, (LPWSTR)utf82wide(cmdline.c_str()).c_str(), NULL, NULL, FALSE,
                         CREATE_NO_WINDOW, NULL, NULL, &info, &pi)) {
       err = GetLastError();
       LOG_ERROR("%s, again create process failed with error %d\n", __FUNCTION__,
