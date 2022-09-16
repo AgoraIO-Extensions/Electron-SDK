@@ -200,6 +200,19 @@ string WCharToMByte(LPCWSTR lpcwszStr) {
 	return str;
 }
 
+std::string wide2utf8(const std::wstring& wide) {
+  if (wide.empty()) return std::move(std::string());
+  int len =
+      WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), wide.size(), nullptr, 0, nullptr, nullptr);
+  char* buf = new char[len + 1];
+  if (!buf) return std::move(std::string());
+  ZeroMemory(buf, len + 1);
+  WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), wide.size(), buf, len + 1, nullptr, nullptr);
+  std::string result(buf);
+  delete[] buf;
+  return std::move(result);
+}
+
 bool INodeProcess::getCurrentModuleFileName(std::string& targetPath) {
   HMODULE module = NULL;
   if (!GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
@@ -213,6 +226,6 @@ bool INodeProcess::getCurrentModuleFileName(std::string& targetPath) {
     return false;
   }
   
-  targetPath.assign(WCharToMByte(pwsz1));
+  targetPath.assign(wide2utf8(pwsz1));
   return true;
 }
