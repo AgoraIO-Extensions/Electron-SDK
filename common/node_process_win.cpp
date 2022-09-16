@@ -16,6 +16,7 @@
 #include "node_log.h"
 #include "node_process.h"
 
+using namespace std;
 class NodeProcessWinImpl : public INodeProcess {
  public:
   NodeProcessWinImpl(HANDLE hProcess, int pid);
@@ -182,8 +183,24 @@ int INodeProcess::GetCurrentNodeProcessId() {
   return GetCurrentProcessId();
 }
 
+
+string WCharToMByte(LPCWSTR lpcwszStr) {
+	string str;
+	DWORD dwMinSize = 0;
+	LPSTR lpszStr = NULL;
+	dwMinSize = WideCharToMultiByte(CP_OEMCP, NULL, lpcwszStr, -1, NULL, 0, NULL, FALSE);
+	if (0 == dwMinSize)
+	{
+		return FALSE;
+	}
+	lpszStr = new char[dwMinSize];
+	WideCharToMultiByte(CP_OEMCP, NULL, lpcwszStr, -1, lpszStr, dwMinSize, NULL, FALSE);
+	str = lpszStr;
+	delete[] lpszStr;
+	return str;
+}
+
 bool INodeProcess::getCurrentModuleFileName(std::string& targetPath) {
-  setlocale(LC_ALL, "");
   HMODULE module = NULL;
   if (!GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
                           (LPCSTR)&getCurrentModuleFileName, &module)) {
@@ -191,9 +208,11 @@ bool INodeProcess::getCurrentModuleFileName(std::string& targetPath) {
   }
 
   char path[MAX_PATH] = {0};
-  if (!GetModuleFileNameA(module, path, MAX_PATH)) {
+  LPWSTR pwsz1 = new WCHAR[MAX_PATH]; 
+  if (!GetModuleFileNameW(module, pwsz1, MAX_PATH)) {
     return false;
   }
-  targetPath.assign(path);
+  
+  targetPath.assign(WCharToMByte(pwsz1));
   return true;
 }
