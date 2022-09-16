@@ -4298,7 +4298,7 @@ namespace agora {
                 if (pEngine->m_avPluginManager.get())
                 {
                     pMediaEngine->registerVideoFrameObserver(pEngine->m_avPluginManager.get());
-                    pMediaEngine->registerAudioFrameObserver(pEngine->m_avPluginManager.get());
+                    //pMediaEngine->registerAudioFrameObserver(pEngine->m_avPluginManager.get());
                     result = 0;
                 }
             } while (false);
@@ -4318,7 +4318,7 @@ namespace agora {
                 agora::media::IMediaEngine* pMediaEngine = nullptr;
                 pEngine->getRtcEngine()->queryInterface(agora::AGORA_IID_MEDIA_ENGINE, (void**)&pMediaEngine);
                 pMediaEngine->registerVideoFrameObserver(NULL);
-                pMediaEngine->registerAudioFrameObserver(NULL);
+                // pMediaEngine->registerAudioFrameObserver(NULL);
                 result = 0;
             } while (false);
             napi_set_int_result(args, result);
