@@ -1,541 +1,571 @@
-import { Card, List, Switch } from 'antd';
+import React from 'react';
 import createAgoraRtcEngine, {
   ChannelProfileType,
   ClientRoleType,
-  DegradationPreference,
-  ErrorCodeType,
   IMediaPlayer,
   IMediaPlayerSourceObserver,
   IRtcEngineEventHandler,
-  IRtcEngineEx,
-  IVideoDeviceManager,
-  LocalTranscoderConfiguration,
   MediaPlayerError,
   MediaPlayerState,
-  MediaSourceType,
-  OrientationMode,
   RtcConnection,
   RtcStats,
+  ScreenCaptureSourceInfo,
+  ScreenCaptureSourceType,
   TranscodingVideoStream,
-  UserOfflineReasonType,
-  VideoCodecType,
-  VideoMirrorModeType,
+  VideoDeviceInfo,
   VideoSourceType,
+  VideoTranscoderError,
 } from 'agora-electron-sdk';
-import { Component } from 'react';
-import DropDownButton from '../../component/DropDownButton';
-import JoinChannelBar from '../../component/JoinChannelBar';
-import { FpsMap, ResolutionMap } from '../../config';
-import config from '../../../config/agora.config';
-import styles from '../../config/public.scss';
+
+import Config from '../../../config/agora.config';
+
+import { getResourcePath } from '../../../utils';
 import {
-  configMapToOptions,
-  getRandomInt,
-  getResourcePath,
-} from '../../../utils';
+  BaseComponent,
+  BaseVideoComponentState,
+} from '../../../components/BaseComponent';
+import {
+  AgoraButton,
+  AgoraDivider,
+  AgoraDropdown,
+  AgoraImage,
+  AgoraText,
+  AgoraTextInput,
+} from '../../../components/ui';
+import { Card, List } from 'antd';
 import RtcSurfaceView from '../../../components/RtcSurfaceView';
+import { rgbImageBufferToBase64 } from '../../../utils/base64';
 
-const localUid1 = getRandomInt();
-
-interface Device {
-  deviceId: string;
-  deviceName: string;
-}
-
-interface User {
-  isMyself: boolean;
-  uid: number;
-}
-
-interface State {
-  isJoined: boolean;
-  channelId: string;
-  allUser: User[];
-  cameraDevices: Device[];
-  currentFps?: number;
-  currentResolution?: { width: number; height: number };
-  isAddScreenShare: boolean;
-  videoDeviceId: string;
-  isAddPNG: boolean;
-  isAddGIF: boolean;
-  isAddMPK: boolean;
+interface State extends BaseVideoComponentState {
+  videoDevices?: VideoDeviceInfo[];
+  videoDeviceId?: string[];
+  sources?: ScreenCaptureSourceInfo[];
+  targetSource?: ScreenCaptureSourceInfo;
+  startScreenCapture: boolean;
+  url: string;
+  open: boolean;
+  imageUrl: string;
+  startLocalVideoTranscoder: boolean;
+  videoInputStreams: TranscodingVideoStream[];
 }
 
 export default class LocalVideoTranscoder
-  extends Component<{}, State, any>
+  extends BaseComponent<{}, State>
   implements IRtcEngineEventHandler, IMediaPlayerSourceObserver
 {
-  rtcEngine?: IRtcEngineEx;
+  protected player?: IMediaPlayer;
 
-  videoDeviceManager: IVideoDeviceManager;
-
-  mpk?: IMediaPlayer;
-
-  state: State = {
-    channelId: '',
-    allUser: [],
-    isJoined: false,
-    cameraDevices: [],
-    isAddScreenShare: false,
-    videoDeviceId: '',
-    isAddPNG: false,
-    isAddGIF: false,
-    isAddMPK: false,
-  };
-
-  componentDidMount() {
-    this.getRtcEngine().registerEventHandler(this);
-    this.getMediaPlayer().registerPlayerSourceObserver(this);
-    this.videoDeviceManager = this.getRtcEngine().getVideoDeviceManager();
-
-    this.setState({
-      cameraDevices: this.videoDeviceManager.enumerateVideoDevices() as any,
-    });
+  protected createState(): State {
+    return {
+      appId: Config.appId,
+      enableVideo: true,
+      channelId: Config.channelId,
+      token: Config.token,
+      uid: Config.uid,
+      joinChannelSuccess: false,
+      remoteUsers: [],
+      startPreview: false,
+      videoDevices: [],
+      videoDeviceId: [],
+      sources: [],
+      targetSource: undefined,
+      startScreenCapture: false,
+      url: 'https://agora-adc-artifacts.oss-cn-beijing.aliyuncs.com/video/meta_live_mpk.mov',
+      open: false,
+      imageUrl: getResourcePath('png.png'),
+      startLocalVideoTranscoder: false,
+      videoInputStreams: [],
+    };
   }
 
-  componentWillUnmount() {
-    this.getRtcEngine().unregisterEventHandler(this);
-    this.getMediaPlayer().unregisterPlayerSourceObserver(this);
-    this.onPressLeaveChannel();
-    this.getRtcEngine().release();
-  }
-
-  getRtcEngine() {
-    if (!this.rtcEngine) {
-      this.rtcEngine = createAgoraRtcEngine();
-      //@ts-ignore
-      window.rtcEngine = this.rtcEngine;
-      const res = this.rtcEngine.initialize({
-        appId: config.appId,
-      });
-      this.rtcEngine.setLogFile(config.nativeSDKLogPath);
-      console.log('initialize:', res);
+  /**
+   * Step 1: initRtcEngine
+   */
+  protected async initRtcEngine() {
+    const { appId } = this.state;
+    if (!appId) {
+      this.error(`appId is invalid`);
     }
 
-    return this.rtcEngine;
-  }
-
-  onPlayerSourceStateChanged(
-    state: MediaPlayerState,
-    ec: MediaPlayerError
-  ): void {
-    switch (state) {
-      case MediaPlayerState.PlayerStateOpenCompleted:
-        console.log('onPlayerSourceStateChanged1:open finish');
-        this.getMediaPlayer().play();
-
-        break;
-      default:
-        break;
-    }
-  }
-
-  onJoinChannelSuccess(
-    { channelId, localUid }: RtcConnection,
-    elapsed: number
-  ): void {
-    const { allUser: oldAllUser } = this.state;
-    const newAllUser = [...oldAllUser];
-    newAllUser.push({ isMyself: true, uid: localUid });
-    this.setState({
-      isJoined: true,
-      allUser: newAllUser,
-    });
-  }
-
-  onUserJoined(
-    connection: RtcConnection,
-    remoteUid: number,
-    elapsed: number
-  ): void {
-    console.log(
-      'onUserJoined',
-      'connection',
-      connection,
-      'remoteUid',
-      remoteUid
-    );
-
-    const { allUser: oldAllUser } = this.state;
-    const newAllUser = [...oldAllUser];
-    newAllUser.push({ isMyself: false, uid: remoteUid });
-    this.setState({
-      allUser: newAllUser,
-    });
-  }
-
-  onUserOffline(
-    { localUid, channelId }: RtcConnection,
-    remoteUid: number,
-    reason: UserOfflineReasonType
-  ): void {
-    console.log('onUserOffline', channelId, remoteUid);
-
-    const { allUser: oldAllUser } = this.state;
-    const newAllUser = [...oldAllUser.filter((obj) => obj.uid !== remoteUid)];
-    this.setState({
-      allUser: newAllUser,
-    });
-  }
-
-  onLeaveChannel(connection: RtcConnection, stats: RtcStats): void {
-    this.setState({
-      isJoined: false,
-      allUser: [],
-    });
-  }
-
-  onError(err: ErrorCodeType, msg: string): void {
-    console.error(err, msg);
-  }
-
-  enableScreenShare = (enable: boolean) => {
-    const rtcEngine = this.getRtcEngine();
-    if (!enable) {
-      rtcEngine.stopPrimaryScreenCapture();
-      return;
-    }
-    const list = rtcEngine
-      .getScreenCaptureSources(
-        { width: 0, height: 0 },
-        { width: 0, height: 0 },
-        true
-      )
-      .filter((info) => info.primaryMonitor);
-    if (list.length !== 1) {
-      return;
-    }
-    const sourceId = list[0].sourceId;
-    const res = rtcEngine.startPrimaryScreenCapture({
-      isCaptureWindow: false,
-      screenRect: { width: 0, height: 0, x: 0, y: 0 },
-      windowId: sourceId,
-      displayId: sourceId,
-      params: {
-        dimensions: { width: 1920, height: 1080 },
-        bitrate: 1000,
-        frameRate: 15,
-        captureMouseCursor: false,
-        windowFocus: false,
-        excludeWindowList: [],
-        excludeWindowCount: 0,
-      },
-
-      regionRect: { x: 0, y: 0, width: 0, height: 0 },
-    });
-    console.log('startPrimaryScreenCapture', res);
-  };
-
-  onPressJoinChannel = (channelId: string) => {
-    this.setState({ channelId });
-    const { videoDeviceId } = this.state;
-    this.getRtcEngine().enableVideo();
-    this.getRtcEngine().startPrimaryCameraCapture({
-      deviceId: videoDeviceId,
-    });
-    this.enableScreenShare(true);
-    const localTranscoderConfiguration = this.getLocalTranscoderConfiguration();
-    this.getRtcEngine().startLocalVideoTranscoder(localTranscoderConfiguration);
-    this.getMediaPlayer().open(
-      'https://agora-adc-artifacts.oss-cn-beijing.aliyuncs.com/video/meta_live_mpk.mov',
-      0
-    );
-    this.getRtcEngine().joinChannel('', channelId, localUid1, {
-      publishCameraTrack: false,
-      publishScreenTrack: false,
-      publishTrancodedVideoTrack: true,
+    this.engine = createAgoraRtcEngine();
+    this.engine.registerEventHandler(this);
+    this.engine.initialize({
+      appId,
+      // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
-      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
     });
-  };
 
-  setVideoConfig = () => {
-    const { currentFps, currentResolution } = this.state;
-    if (!currentResolution || !currentFps) {
+    // Need to enable video on this case
+    // If you only call `enableAudio`, only relay the audio stream to the target channel
+    this.engine.enableVideo();
+
+    // Start preview before joinChannel
+    this.engine.startPreview();
+    this.setState({ startPreview: true });
+
+    this.enumerateDevices();
+    this.getScreenCaptureSources();
+  }
+
+  /**
+   * Step 2: joinChannel
+   */
+  protected joinChannel() {
+    const { channelId, token, uid } = this.state;
+    if (!channelId) {
+      this.error('channelId is invalid');
+      return;
+    }
+    if (uid < 0) {
+      this.error('uid is invalid');
       return;
     }
 
-    this.getRtcEngine().setVideoEncoderConfiguration({
-      codecType: VideoCodecType.VideoCodecH264,
-      dimensions: currentResolution!,
-      frameRate: currentFps,
-      bitrate: 65,
-      minBitrate: 1,
-      orientationMode: OrientationMode.OrientationModeAdaptive,
-      degradationPreference: DegradationPreference.MaintainBalanced,
-      mirrorMode: VideoMirrorModeType.VideoMirrorModeAuto,
+    // start joining channel
+    // 1. Users can only see each other after they join the
+    // same channel successfully using the same app id.
+    // 2. If app certificate is turned on at dashboard, token is needed
+    // when joining channel. The channel name and uid used to calculate
+    // the token has to match the ones used for channel join
+    this.engine?.joinChannel(token, channelId, uid, {
+      // Make myself as the broadcaster to send stream to remote
+      clientRoleType: ClientRoleType.ClientRoleBroadcaster,
+      publishMicrophoneTrack: false,
+      publishCameraTrack: false,
+      publishTrancodedVideoTrack: true,
+    });
+  }
+
+  /**
+   * Step 3-1: enumerateDevices
+   */
+  enumerateDevices = () => {
+    const videoDevices = this.engine
+      .getVideoDeviceManager()
+      .enumerateVideoDevices();
+
+    this.setState({
+      videoDevices,
+      videoDeviceId: [videoDevices[0].deviceId],
     });
   };
 
-  getLocalTranscoderConfiguration = () => {
-    const { isAddScreenShare, isAddPNG, isAddGIF, isAddMPK } = this.state;
-    const cameraStream = {
-      sourceType: MediaSourceType.PrimaryCameraSource,
-      x: 0,
-      y: 0,
-      width: 640,
-      height: 320,
-      zOrder: 1,
-      alpha: 1,
-      mirror: true,
-    };
-    const streams: TranscodingVideoStream[] = [cameraStream];
-    if (isAddPNG) {
-      streams.push({
-        sourceType: MediaSourceType.RtcImagePngSource,
-        imageUrl: getResourcePath('png.png'),
-        x: 640,
-        y: 0,
-        width: 300,
-        height: 300,
-        zOrder: 1,
-        alpha: 1,
-        mirror: true,
-      });
-    }
-    if (isAddGIF) {
-      streams.push({
-        sourceType: MediaSourceType.RtcImageGifSource,
-        imageUrl: getResourcePath('gif.gif'),
-        x: 320,
-        y: 160,
-        width: 300,
-        height: 300,
-        zOrder: 2,
-        alpha: 1,
-        mirror: true,
-      });
-    }
-
-    if (isAddScreenShare) {
-      streams.push({
-        sourceType: MediaSourceType.PrimaryScreenSource,
-        x: 0,
-        y: 320,
-        width: 640,
-        height: 320,
-        zOrder: 1,
-        alpha: 1,
-        mirror: true,
-      });
-    }
-
-    if (isAddMPK) {
-      streams.push({
-        sourceType: MediaSourceType.MediaPlayerSource,
-        imageUrl: this.getMediaPlayer().getMediaPlayerId().toString(),
-        x: 320,
-        y: 640,
-        width: 640,
-        height: 320,
-        zOrder: 1,
-        alpha: 1,
-        mirror: true,
-      });
-    }
-    const localTranscoderConfiguration: LocalTranscoderConfiguration = {
-      streamCount: streams.length,
-      VideoInputStreams: streams,
-      videoOutputConfiguration: { dimensions: { width: 1080, height: 720 } },
-    };
-    return localTranscoderConfiguration;
+  startCameraCapture = (deviceId: string) => {
+    this.engine?.startCameraCapture(this._getVideoSourceTypeCamera(deviceId), {
+      deviceId,
+    });
   };
 
-  onPressLeaveChannel = () => {
-    this.enableScreenShare(false);
-    this.getMediaPlayer().stop();
-    this.getRtcEngine().leaveChannel();
-    this.getRtcEngine().stopLocalVideoTranscoder();
+  stopCameraCapture = (deviceId: string) => {
+    this.engine?.stopCameraCapture(this._getVideoSourceTypeCamera(deviceId));
   };
 
-  updateTranscoderConfiguration = () => {
-    const newConfig = this.getLocalTranscoderConfiguration();
-    this.getRtcEngine().updateLocalTranscoderConfiguration(newConfig);
+  /**
+   * Step 3-2: getScreenCaptureSources
+   */
+  getScreenCaptureSources = () => {
+    const sources = this.engine?.getScreenCaptureSources(
+      { width: 1920, height: 1080 },
+      { width: 64, height: 64 },
+      true
+    );
+    this.setState({
+      sources,
+      targetSource: sources[0],
+    });
   };
 
-  getMediaPlayer = () => {
-    if (!this.mpk) {
-      const mpk = this.getRtcEngine().createMediaPlayer();
-      this.mpk = mpk;
-      return mpk;
+  /**
+   * Step 3-3 (Optional): startScreenCapture
+   */
+  startScreenCapture = () => {
+    const { targetSource } = this.state;
+    const isCaptureWindow =
+      targetSource.type ===
+      ScreenCaptureSourceType.ScreencapturesourcetypeWindow;
+    this.engine?.startScreenCaptureWithType(
+      VideoSourceType.VideoSourceScreenPrimary,
+      {
+        isCaptureWindow,
+        ...(isCaptureWindow
+          ? { windowId: targetSource.sourceId }
+          : { displayId: targetSource.sourceId }),
+      }
+    );
+    this.setState({ startScreenCapture: true });
+  };
+
+  /**
+   * Step 3-4 (Optional): stopScreenCapture
+   */
+  stopScreenCapture = () => {
+    this.engine?.stopScreenCaptureWithType(
+      VideoSourceType.VideoSourceScreenPrimary
+    );
+    this.setState({ startScreenCapture: false });
+  };
+
+  /**
+   * Step 3-3 (Optional): createMediaPlayer
+   */
+  createMediaPlayer = () => {
+    const { url } = this.state;
+    if (!url) {
+      this.error('url is invalid');
     }
-    return this.mpk;
+
+    this.player = this.engine?.createMediaPlayer();
+    this.player?.registerPlayerSourceObserver(this);
+    this.player?.open(url, 0);
   };
 
-  renderRightBar = () => {
-    const { cameraDevices, isJoined } = this.state;
+  /**
+   * Step 3-4 (Optional): destroyMediaPlayer
+   */
+  destroyMediaPlayer = () => {
+    if (!this.player) {
+      return;
+    }
 
-    return (
-      <div className={styles.rightBar}>
-        <div>
-          <DropDownButton
-            options={cameraDevices.map((obj) => {
-              const { deviceId, deviceName } = obj;
-              return { dropId: deviceId, dropText: deviceName, ...obj };
-            })}
-            onPress={(res) => {
-              this.setState({ videoDeviceId: res.dropId });
-            }}
-            title="Camera"
-          />
+    this.engine?.destroyMediaPlayer(this.player);
+    this.setState({ open: false });
+  };
 
-          <DropDownButton
-            title="Resolution"
-            options={configMapToOptions(ResolutionMap)}
-            onPress={(res) => {
-              this.setState(
-                { currentResolution: res.dropId },
-                this.setVideoConfig
-              );
-            }}
-          />
-          <DropDownButton
-            title="FPS"
-            options={configMapToOptions(FpsMap)}
-            onPress={(res) => {
-              this.setState({ currentFps: res.dropId }, this.setVideoConfig);
-            }}
-          />
-          {isJoined && (
-            <>
-              <br />
-              <div
-                style={{
-                  display: 'flex',
-                  textAlign: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                {'Add Screen Share'}
-                <Switch
-                  checkedChildren="Enable"
-                  unCheckedChildren="Disable"
-                  defaultChecked={this.state.isAddScreenShare}
-                  onChange={(isAddScreenShare) => {
-                    this.setState(
-                      { isAddScreenShare },
-                      this.updateTranscoderConfiguration
-                    );
-                  }}
-                />
-              </div>
-              <br />
-              <div
-                style={{
-                  display: 'flex',
-                  textAlign: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                {'Add PNG'}
-                <Switch
-                  checkedChildren="Enable"
-                  unCheckedChildren="Disable"
-                  defaultChecked={this.state.isAddPNG}
-                  onChange={(isAddPNG) => {
-                    this.setState(
-                      { isAddPNG },
-                      this.updateTranscoderConfiguration
-                    );
-                  }}
-                />
-              </div>
-              <br />
-              <div
-                style={{
-                  display: 'flex',
-                  textAlign: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                {'Add GIF'}
-                <Switch
-                  checkedChildren="Enable"
-                  unCheckedChildren="Disable"
-                  defaultChecked={this.state.isAddGIF}
-                  onChange={(isAddGIF) => {
-                    this.setState(
-                      { isAddGIF },
-                      this.updateTranscoderConfiguration
-                    );
-                  }}
-                />
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  textAlign: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                {'Add MPK'}
-                <Switch
-                  checkedChildren="Enable"
-                  unCheckedChildren="Disable"
-                  defaultChecked={this.state.isAddMPK}
-                  onChange={(isAddMPK) => {
-                    this.setState(
-                      { isAddMPK },
-                      this.updateTranscoderConfiguration
-                    );
-                  }}
-                />
-              </div>
-            </>
-          )}
-        </div>
-        <JoinChannelBar
-          onPressJoin={this.onPressJoinChannel}
-          onPressLeave={this.onPressLeaveChannel}
-        />
-      </div>
+  /**
+   * Step 3-5: startLocalVideoTranscoder
+   */
+  startLocalVideoTranscoder = () => {
+    this.engine?.startLocalVideoTranscoder(
+      this._generateLocalTranscoderConfiguration()
+    );
+    this.setState({ startLocalVideoTranscoder: true });
+  };
+
+  /**
+   * Step 3-6 (Optional): updateLocalTranscoderConfiguration
+   */
+  updateLocalTranscoderConfiguration = () => {
+    this.engine?.updateLocalTranscoderConfiguration(
+      this._generateLocalTranscoderConfiguration()
     );
   };
 
-  renderItem = ({ isMyself, uid }: User) => {
-    const { channelId } = this.state;
-    const videoSourceType = isMyself
-      ? VideoSourceType.VideoSourceTranscoded
-      : VideoSourceType.VideoSourceRemote;
+  /**
+   * Step 3-7: stopLocalVideoTranscoder
+   */
+  stopLocalVideoTranscoder = () => {
+    this.engine?.stopLocalVideoTranscoder();
+    this.setState({ startLocalVideoTranscoder: false });
+  };
 
+  _getVideoSourceTypeCamera = (value: string) => {
+    const { videoDevices } = this.state;
+    return [
+      VideoSourceType.VideoSourceCameraPrimary,
+      VideoSourceType.VideoSourceCameraSecondary,
+      VideoSourceType.VideoSourceCameraThird,
+      VideoSourceType.VideoSourceCameraFourth,
+    ][videoDevices.findIndex(({ deviceId }) => deviceId === value)];
+  };
+
+  _generateLocalTranscoderConfiguration = () => {
+    const { videoDeviceId, startScreenCapture, open, imageUrl } = this.state;
+    const max_width = 1080,
+      max_height = 720,
+      width = 300,
+      height = 300;
+
+    const streams: TranscodingVideoStream[] = [];
+
+    streams.push(
+      ...videoDeviceId.map((value) => {
+        return {
+          sourceType: this._getVideoSourceTypeCamera(value),
+        };
+      })
+    );
+
+    if (startScreenCapture) {
+      streams.push({
+        sourceType: VideoSourceType.VideoSourceScreenPrimary,
+      });
+    }
+
+    if (open) {
+      streams.push({
+        sourceType: VideoSourceType.VideoSourceMediaPlayer,
+        mediaPlayerId: this.player.getMediaPlayerId(),
+      });
+    }
+
+    if (imageUrl) {
+      const getImageType = (url) => {
+        if (url.endsWith('.png')) {
+          return VideoSourceType.VideoSourceRtcImagePng;
+        } else if (url.endsWith('.jepg') || url.endsWith('.jpg')) {
+          return VideoSourceType.VideoSourceRtcImageJpeg;
+        } else if (url.endsWith('.gif')) {
+          return VideoSourceType.VideoSourceRtcImageGif;
+        }
+      };
+      streams.push({
+        sourceType: getImageType(imageUrl),
+        imageUrl: imageUrl,
+      });
+    }
+
+    streams.map((value, index) => {
+      const maxNumPerRow = Math.floor(max_width / width);
+      const numOfRow = Math.floor(index / maxNumPerRow);
+      const numOfColumn = Math.floor(index % maxNumPerRow);
+      value.x = numOfColumn * width;
+      value.y = numOfRow * height;
+      value.width = width;
+      value.height = height;
+      value.zOrder = 1;
+      value.alpha = 1;
+      value.mirror = false;
+    });
+
+    return {
+      streamCount: streams.length,
+      videoInputStreams: streams,
+      videoOutputConfiguration: {
+        dimensions: { width: max_width, height: max_height },
+      },
+    };
+  };
+
+  /**
+   * Step 4: leaveChannel
+   */
+  protected leaveChannel() {
+    this.destroyMediaPlayer();
+    this.engine?.leaveChannel();
+  }
+
+  /**
+   * Step 5: releaseRtcEngine
+   */
+  protected releaseRtcEngine() {
+    this.engine?.release();
+  }
+
+  onLeaveChannel(connection: RtcConnection, stats: RtcStats) {
+    this.info('onLeaveChannel', 'connection', connection, 'stats', stats);
+    const state = this.createState();
+    delete state.videoDevices;
+    delete state.videoDeviceId;
+    this.setState(state);
+  }
+
+  onPlayerSourceStateChanged(state: MediaPlayerState, ec: MediaPlayerError) {
+    this.info('onPlayerSourceStateChanged', 'state', state, 'ec', ec);
+    switch (state) {
+      case MediaPlayerState.PlayerStateIdle:
+        break;
+      case MediaPlayerState.PlayerStateOpening:
+        break;
+      case MediaPlayerState.PlayerStateOpenCompleted:
+        this.setState({ open: true });
+        // Auto play on this case
+        this.player?.play();
+        break;
+      case MediaPlayerState.PlayerStatePlaying:
+        break;
+      case MediaPlayerState.PlayerStatePaused:
+        break;
+      case MediaPlayerState.PlayerStatePlaybackCompleted:
+        break;
+      case MediaPlayerState.PlayerStatePlaybackAllLoopsCompleted:
+        break;
+      case MediaPlayerState.PlayerStateStopped:
+        break;
+      case MediaPlayerState.PlayerStatePausingInternal:
+        break;
+      case MediaPlayerState.PlayerStateStoppingInternal:
+        break;
+      case MediaPlayerState.PlayerStateSeekingInternal:
+        break;
+      case MediaPlayerState.PlayerStateGettingInternal:
+        break;
+      case MediaPlayerState.PlayerStateNoneInternal:
+        break;
+      case MediaPlayerState.PlayerStateDoNothingInternal:
+        break;
+      case MediaPlayerState.PlayerStateSetTrackInternal:
+        break;
+      case MediaPlayerState.PlayerStateFailed:
+        break;
+    }
+  }
+
+  onLocalVideoTranscoderError(
+    stream: TranscodingVideoStream,
+    error: VideoTranscoderError
+  ) {
+    console.error('onLocalVideoTranscoderError', stream, error);
+  }
+
+  protected renderVideo(uid: number, channelId?: string): React.ReactNode {
+    const { startLocalVideoTranscoder } = this.state;
     return (
       <List.Item>
-        <Card title={`${isMyself ? 'Local' : 'Remote'} Uid: ${uid}`}>
+        <Card title={`ChannelId: ${channelId} Uid: ${uid}`}>
+          <AgoraText>Click view to mirror</AgoraText>
           <RtcSurfaceView
             canvas={{
               uid,
-              sourceType: videoSourceType,
+              sourceType:
+                uid === 0
+                  ? startLocalVideoTranscoder
+                    ? VideoSourceType.VideoSourceTranscoded
+                    : VideoSourceType.VideoSourceCamera
+                  : VideoSourceType.VideoSourceRemote,
             }}
             connection={{ channelId }}
           />
         </Card>
       </List.Item>
     );
-  };
+  }
 
-  render() {
-    const { isJoined, allUser } = this.state;
+  protected renderUsers(): React.ReactNode {
+    const { videoDeviceId, channelId } = this.state;
     return (
-      <div className={styles.screen}>
-        <div className={styles.content}>
-          {isJoined && (
-            <List
-              grid={{
-                gutter: 16,
-                xs: 1,
-                sm: 1,
-                md: 1,
-                lg: 1,
-                xl: 1,
-                xxl: 2,
+      <>
+        {super.renderUsers()}
+        {videoDeviceId.map((value) => {
+          return (
+            <RtcSurfaceView
+              key={value}
+              canvas={{
+                uid: 0,
+                sourceType: this._getVideoSourceTypeCamera(value),
               }}
-              dataSource={allUser}
-              renderItem={this.renderItem}
+              connection={{ channelId }}
             />
-          )}
-        </div>
-        {this.renderRightBar()}
-      </div>
+          );
+        })}
+      </>
+    );
+  }
+
+  protected renderConfiguration(): React.ReactNode {
+    const {
+      videoDevices,
+      videoDeviceId,
+      sources,
+      targetSource,
+      startScreenCapture,
+      url,
+      open,
+      imageUrl,
+    } = this.state;
+    return (
+      <>
+        <AgoraDropdown
+          title={'videoDeviceId'}
+          items={videoDevices.map((value) => {
+            return {
+              value: value.deviceId,
+              label: value.deviceName,
+            };
+          })}
+          value={videoDeviceId}
+          onValueChange={(value, index) => {
+            if (videoDeviceId.indexOf(value) === -1) {
+              this.startCameraCapture(value);
+              this.setState({
+                videoDeviceId: [...videoDeviceId, value],
+              });
+            } else {
+              this.stopCameraCapture(value);
+              this.setState({
+                videoDeviceId: videoDeviceId.filter((v) => v !== value),
+              });
+            }
+          }}
+        />
+        <AgoraDivider />
+        <AgoraDropdown
+          title={'targetSource'}
+          items={sources.map((value) => {
+            return {
+              value: value.sourceId,
+              label: value.sourceName,
+            };
+          })}
+          value={targetSource?.sourceId}
+          onValueChange={(value, index) => {
+            this.setState({ targetSource: sources[index] });
+          }}
+        />
+        {targetSource ? (
+          <AgoraImage
+            source={rgbImageBufferToBase64(targetSource.thumbImage)}
+          />
+        ) : undefined}
+        <AgoraButton
+          title={`${startScreenCapture ? 'stop' : 'start'} Screen Capture`}
+          onPress={
+            startScreenCapture
+              ? this.stopScreenCapture
+              : this.startScreenCapture
+          }
+        />
+        <AgoraDivider />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            this.setState({ url: text });
+          }}
+          placeholder={'url'}
+          value={url}
+        />
+        {open ? (
+          <RtcSurfaceView
+            canvas={{
+              uid: this.player?.getMediaPlayerId(),
+              sourceType: VideoSourceType.VideoSourceMediaPlayer,
+            }}
+          />
+        ) : undefined}
+        <AgoraButton
+          title={`${open ? 'destroy' : 'create'} Media Player`}
+          onPress={open ? this.destroyMediaPlayer : this.createMediaPlayer}
+        />
+        <AgoraDivider />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            this.setState({ imageUrl: text });
+          }}
+          placeholder={'imageUrl'}
+          value={imageUrl}
+        />
+      </>
+    );
+  }
+
+  protected renderAction(): React.ReactNode {
+    const { startLocalVideoTranscoder } = this.state;
+    return (
+      <>
+        <AgoraButton
+          title={`${
+            startLocalVideoTranscoder ? 'stop' : 'start'
+          } Local Video Transcoder`}
+          onPress={
+            startLocalVideoTranscoder
+              ? this.stopLocalVideoTranscoder
+              : this.startLocalVideoTranscoder
+          }
+        />
+        <AgoraButton
+          disabled={!startLocalVideoTranscoder}
+          title={`update Local Transcoder Configuration`}
+          onPress={this.updateLocalTranscoderConfiguration}
+        />
+      </>
     );
   }
 }

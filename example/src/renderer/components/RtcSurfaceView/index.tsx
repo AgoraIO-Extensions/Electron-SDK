@@ -35,6 +35,20 @@ class RtcSurfaceView extends Component<Props> {
   };
 
   componentDidMount() {
+    this.updateRender();
+  }
+
+  componentDidUpdate() {
+    this.updateRender();
+  }
+
+  componentWillUnmount() {
+    const dom = this.getHTMLElement();
+
+    createAgoraRtcEngine().destroyRendererByView(dom);
+  }
+
+  updateRender = () => {
     const { canvas, connection } = this.props;
     const dom = this.getHTMLElement();
     const engine = createAgoraRtcEngine();
@@ -63,14 +77,9 @@ class RtcSurfaceView extends Component<Props> {
       funcName = engine.setupRemoteVideoEx;
     }
 
+    engine.destroyRendererByView(dom);
     funcName.call(this, { ...canvas, view: dom }, connection);
-  }
-
-  componentWillUnmount() {
-    const dom = this.getHTMLElement();
-
-    createAgoraRtcEngine().destroyRendererByView(dom);
-  }
+  };
 
   updateMirror = () => {
     const { isMirror } = this.state;
