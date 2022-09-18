@@ -50,6 +50,8 @@ import {
   UploadErrorReason,
   StreamSubscribeState,
   StreamPublishState,
+  TranscodingVideoStream,
+  VideoTranscoderError,
   AudioScenarioType,
   ThreadPriorityType,
   LastmileProbeConfig,
@@ -931,7 +933,7 @@ export class ChannelMediaOptions {
    */
   publishSecondaryCameraTrack?: boolean;
   /**
-   * Whether to publish the captured audio:true: (Default) Publish the captured audio.false: Do not publish the captured audio.Since v4.0.0, the parameter name has been changed from publishAudioTrack to publishMicrophoneTrack.
+   * Whether to publish the audio captured by the microphone:true: (Default) Publish the audio captured by the microphone.false: Do not publish the audio captured by the microphone.Since v4.0.0, the parameter name has been changed from publishAudioTrack to publishMicrophoneTrack.
    */
   publishMicrophoneTrack?: boolean;
   /**
@@ -1007,7 +1009,7 @@ export class ChannelMediaOptions {
    */
   publishMediaPlayerId?: number;
   /**
-   * The user role. See ClientRoleType for details.
+   * The user role. See ClientRoleType .
    */
   clientRoleType?: ClientRoleType;
   /**
@@ -2390,6 +2392,14 @@ export interface IRtcEngineEventHandler {
     remoteUid: number,
     userAccount: string
   ): void;
+
+  /**
+   * @ignore
+   */
+  onLocalVideoTranscoderError?(
+    stream: TranscodingVideoStream,
+    error: VideoTranscoderError
+  ): void;
 }
 
 /**
@@ -2729,18 +2739,18 @@ export abstract class IRtcEngine {
    * Releases the IRtcEngine instance.
    * This method releases all resources used by the Agora SDK. Use this method for apps in which users occasionally make voice or video calls. When users do not make calls, you can free up resources for other operations.After a successful method call, you can no longer use any method or callback in the SDK anymore. If you want to use the real-time communication functions again, you must call createAgoraRtcEngine and initialize to create a new IRtcEngine instance.If you want to create a new IRtcEngine instance after destroying the current one, ensure that you wait till the release method execution to complete.
    *
-   * @param sync true: Synchronous call. Agora suggests calling this method in a sub-thread to avoid congestion in the main thread because the synchronous call and the app cannot move on to another task until the resources used by IRtcEngine are released. Besides, you cannot call release in any method or callback of the SDK. Otherwise, the SDK cannot release the resources until the callbacks return results, which may result in a deadlock. The SDK automatically detects the deadlock and converts this method into an asynchronous call, causing the test to take additional time.false: Asynchronous call. The app can move on to another task, no matter the resources used by IRtcEngine are released or not. Do not immediately uninstall the SDK's dynamic library after the call; otherwise, it may cause a crash due to the SDK clean-up thread not quitting.
+   * @param sync true: Synchronous call. Agora suggests calling this method in a sub-thread to avoid congestion in the main thread because the synchronous call and the app cannot move on to another task until the resources used by IRtcEngine are released. Besides, you cannot call release in any method or callback of the SDK. Otherwise, the SDK cannot release the resources until the callbacks return results, which may result in a deadlock. The SDK automatically detects the deadlock and converts this method into an asynchronous call, causing the test to take additional time.false: Asynchronous call. The app can move on toanother task, no matter the resources used by IRtcEngine are released or not. Do not immediately uninstall the SDK's dynamic library after the call; otherwise, it may cause a crash due to the SDK clean-up thread not quitting.
    */
   abstract release(sync?: boolean): void;
 
   /**
    * Creates and initializes IRtcEngine .
-   * All called methods provided by the IRtcEngine class are executed asynchronously. Agora recommends calling these methods in the same thread.Before calling other APIs, you must call createAgoraRtcEngine and IRtcEngine to create and initialize the initialize object.The SDK supports creating only one IRtcEngine instance for an app.
+   * All called methods provided by the IRtcEngine class are executed asynchronously. Agora recommends calling these methods in the same thread.Before calling other APIs, you must call createAgoraRtcEngine and initialize to create and initialize the IRtcEngine object.The SDK supports creating only one IRtcEngine instance for an app.
    *
    * @param context Configurations for the IRtcEngine instance. See RtcEngineContext .
    *
    * @returns
-   * 0: Success.< 0: Failure.-1: A general error occurs (no specified reason).-2: An invalid parameter is used.-7: The SDK is not initialized.-22: The resource request failed. The SDK fails to allocate resources because your app consumes too many system resources or the system resources are insufficient.-101: The App ID is invalid.
+   * 0: Success.< 0: Failure.-1: A general error occurs (no specified reason).-2: The parameter is invalid.-7: The SDK is not initialized.-22: The resource request failed. The SDK fails to allocate resources because your app consumes too much system resource or the system resources are insufficient.-101: The App ID is invalid.
    */
   abstract initialize(context: RtcEngineContext): number;
 
@@ -3146,15 +3156,7 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
-   * Options for subscribing remote video streams.
-   * When a remote user has enabled the dual-stream mode, you can call this method to choose the option for subscribing the video streams sent by the remote user.Agora recommends calling this method after receiving the onUserJoined callback.
-   *
-   * @param uid The user ID of the remote user.
-   *
-   * @param options The video subscription options. See VideoSubscriptionOptions .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
+   * @ignore
    */
   abstract setRemoteVideoSubscriptionOptions(
     uid: number,
@@ -3173,10 +3175,10 @@ export abstract class IRtcEngine {
   abstract setRemoteDefaultVideoStreamType(streamType: VideoStreamType): number;
 
   /**
-   * Set the blacklist of subscriptions for audio streams.
-   * You can call this method to specify the audio streams of a user that you do not want to subscribe to.You can call this method either before or after joining a channel.The blacklist is not affected by the setting in muteRemoteAudioStream , muteAllRemoteAudioStreams and autoSubscribeAudio in ChannelMediaOptions .Once the blacklist of subscriptions is set, it is effective even if you leave the current channel and rejoin the channel.If a user is added in the whitelist and blacklist at the same time, only the blacklist takes effect.
+   * Set the blocklist of subscriptions for audio streams.
+   * You can call this method to specify the audio streams of a user that you do not want to subscribe to.You can call this method either before or after joining a channel.The blocklist is not affected by the setting in muteRemoteAudioStream , muteAllRemoteAudioStreams and autoSubscribeAudio in ChannelMediaOptions .Once the blocklist of subscriptions is set, it is effective even if you leave the current channel and rejoin the channel.If a user is added in the allowlist and blocklist at the same time, only the blocklist takes effect.
    *
-   * @param uidList The user ID list of users that you do not want to subscribe to.If you want to specify the audio streams of a user that you do not want to subscribe to, add the user ID in this list. If you want to remove a user from the blacklist, you need to call the setSubscribeAudioBlacklist method to update the user ID list; this means you only add the uid of users that you do not want to subscribe to in the new user ID list.
+   * @param uidList The user ID list of users that you do not want to subscribe to.If you want to specify the audio streams of a user that you do not want to subscribe to, add the user ID in this list. If you want to remove a user from the blocklist, you need to call the setSubscribeAudioBlacklist method to update the user ID list; this means you only add the uid of users that you do not want to subscribe to in the new user ID list.
    *
    * @param uidNumber The number of users in the user ID list.
    *
@@ -3189,10 +3191,10 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
-   * Sets the whitelist of subscriptions for audio streams.
-   * You can call this method to specify the audio streams of a user that you want to subscribe to.If a user is added in the whitelist and blacklist at the same time, only the blacklist takes effect.You can call this method either before or after joining a channel.The whitelist is not affected by the setting in muteRemoteAudioStream , muteAllRemoteAudioStreams and autoSubscribeAudio in ChannelMediaOptions .Once the whitelist of subscriptions is set, it is effective even if you leave the current channel and rejoin the channel.
+   * Sets the allowlist of subscriptions for audio streams.
+   * You can call this method to specify the audio streams of a user that you want to subscribe to.If a user is added in the allowlist and blocklist at the same time, only the blocklist takes effect.You can call this method either before or after joining a channel.The allowlist is not affected by the setting in muteRemoteAudioStream , muteAllRemoteAudioStreams and autoSubscribeAudio in ChannelMediaOptions .Once the allowlist of subscriptions is set, it is effective even if you leave the current channel and rejoin the channel.
    *
-   * @param uidList The user ID list of users that you want to subscribe to.If you want to specify the audio streams of a user for subscription, add the user ID in this list. If you want to remove a user from the whitelist, you need to call the setSubscribeAudioWhitelist method to update the user ID list; this means you only add the uid of users that you want to subscribe to in the new user ID list.
+   * @param uidList The user ID list of users that you want to subscribe to.If you want to specify the audio streams of a user for subscription, add the user ID in this list. If you want to remove a user from the allowlist, you need to call the setSubscribeAudioWhitelist method to update the user ID list; this means you only add the uid of users that you want to subscribe to in the new user ID list.
    *
    * @param uidNumber The number of users in the user ID list.
    *
@@ -3205,12 +3207,12 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
-   * Set the blacklist of subscriptions for video streams.
-   * You can call this method to specify the video streams of a user that you do not want to subscribe to.If a user is added in the whitelist and blacklist at the same time, only the blacklist takes effect.Once the blacklist of subscriptions is set, it is effective even if you leave the current channel and rejoin the channel.You can call this method either before or after joining a channel.The blacklist is not affected by the setting in muteRemoteVideoStream , muteAllRemoteVideoStreams and autoSubscribeAudio in ChannelMediaOptions .
+   * Set the bocklist of subscriptions for video streams.
+   * You can call this method to specify the video streams of a user that you do not want to subscribe to.If a user is added in the allowlist and blocklist at the same time, only the blocklist takes effect.Once the blocklist of subscriptions is set, it is effective even if you leave the current channel and rejoin the channel.You can call this method either before or after joining a channel.The blocklist is not affected by the setting in muteRemoteVideoStream , muteAllRemoteVideoStreams and autoSubscribeAudio in ChannelMediaOptions .
    *
    * @param uidNumber The number of users in the user ID list.
    *
-   * @param uidList The user ID list of users that you do not want to subscribe to.If you want to specify the video streams of a user that you do not want to subscribe to, add the user ID of that user in this list. If you want to remove a user from the blacklist, you need to call the setSubscribeVideoBlacklist method to update the user ID list; this means you only add the uid of users that you do not want to subscribe to in the new user ID list.
+   * @param uidList The user ID list of users that you do not want to subscribe to.If you want to specify the video streams of a user that you do not want to subscribe to, add the user ID of that user in this list. If you want to remove a user from the blocklist, you need to call the setSubscribeVideoBlacklist method to update the user ID list; this means you only add the uid of users that you do not want to subscribe to in the new user ID list.
    *
    * @returns
    * 0: Success.< 0: Failure.
@@ -3221,13 +3223,13 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
-   * Set the whitelist of subscriptions for video streams.
-   * You can call this method to specify the video streams of a user that you want to subscribe to.If a user is added in the whitelist and blacklist at the same time, only the blacklist takes effect.Once the whitelist of subscriptions is set, it is effective even if you leave the current channel and rejoin the channel.
-   * You can call this method either before or after joining a channel.The whitelist is not affected by the setting in muteRemoteVideoStream , muteAllRemoteVideoStreams and autoSubscribeAudio in ChannelMediaOptions .
+   * Set the allowlist of subscriptions for video streams.
+   * You can call this method to specify the video streams of a user that you want to subscribe to.If a user is added in the allowlist and blocklist at the same time, only the blocklist takes effect.Once the allowlist of subscriptions is set, it is effective even if you leave the current channel and rejoin the channel.
+   * You can call this method either before or after joining a channel.The allowlist is not affected by the setting in muteRemoteVideoStream , muteAllRemoteVideoStreams and autoSubscribeAudio in ChannelMediaOptions .
    *
    * @param uidNumber The number of users in the user ID list.
    *
-   * @param uidList The user ID list of users that you want to subscribe to.If you want to specify the video streams of a user for subscription, add the user ID of that user in this list. If you want to remove a user from the whitelist, you need to call the setSubscribeVideoWhitelist method to update the user ID list; this means you only add the uid of users that you want to subscribe to in the new user ID list.
+   * @param uidList The user ID list of users that you want to subscribe to.If you want to specify the video streams of a user for subscription, add the user ID of that user in this list. If you want to remove a user from the allowlist, you need to call the setSubscribeVideoWhitelist method to update the user ID list; this means you only add the uid of users that you want to subscribe to in the new user ID list.
    *
    * @returns
    * 0: Success.< 0: Failure.
@@ -4537,21 +4539,7 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
-   * Shares the whole or part of a screen by specifying the screen rect.
-   * There are two ways to start screen sharing, you can choose one according to the actual needs:
-   * Call this method before joining a channel, and then call joinChannel [2/2] to join a channel and set publishScreenTrack or publishSecondaryScreenTrack to true to start screen sharing.
-   * Call this method after joining a channel, and then call updateChannelMediaOptions and set publishScreenTrack or publishSecondaryScreenTrack to true to start screen sharing. Deprecated:This method is deprecated. Use startScreenCaptureByDisplayId instead. Agora strongly recommends using startScreenCaptureByDisplayId if you need to start screen sharing on a device connected to another display.This method shares a screen or part of the screen. You need to specify the area of the screen to be shared.This method applies to Windows only.
-   *
-   * @param screenRect Sets the relative location of the screen to the virtual screen.
-   *
-   * @param regionRect  Rectangle . If the specified region overruns the screen, the SDK shares only the region within it; if you set width or height as 0, the SDK shares the whole screen.
-   *
-   * @param captureParams The screen sharing encoding parameters. The default video dimension is 1920 x 1080, that is, 2,073,600 pixels. Agora uses the value of this parameter to calculate the charges. See ScreenCaptureParameters .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   * ERR_INVALID_STATE: The screen sharing state is invalid. Probably because you have shared other screens or windows. Try calling stopScreenCapture to stop the current sharing and start sharing the screen again.
-   * ERR_INVALID_ARGUMENT: The parameter is invalid.
+   * @ignore
    */
   abstract startScreenCaptureByScreenRect(
     screenRect: Rectangle,
@@ -4625,7 +4613,7 @@ export abstract class IRtcEngine {
 
   /**
    * Updates the screen sharing parameters.
-   * Call this method after starting screen sharing or window sharing.
+   * This method is for Windows and macOS only.Call this method after starting screen sharing or window sharing.
    *
    * @param captureParams The screen sharing encoding parameters. The default video dimension is 1920 x 1080, that is, 2,073,600 pixels. Agora uses the value of this parameter to calculate the charges. See ScreenCaptureParameters
    *
@@ -4637,34 +4625,9 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
-   * Starts screen sharing.
-   *
-   * @param captureParams The screen sharing encoding parameters. The default video dimension is 1920 x 1080, that is, 2,073,600 pixels. Agora uses the value of this parameter to calculate the charges. See ScreenCaptureParameters2 .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.-2: The parameter is null.
-   */
-  abstract startScreenCapture(captureParams: ScreenCaptureParameters2): number;
-
-  /**
-   * Updates the screen sharing parameters.
-   *
-   * @param captureParams The screen sharing encoding parameters. The default video dimension is 1920 x 1080, that is, 2,073,600 pixels. Agora uses the value of this parameter to calculate the charges. See ScreenCaptureParameters2 .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   * ERR_INVALID_STATE: The screen sharing state is invalid. Probably because you have shared other screens or windows. Try calling stopScreenCapture to stop the current sharing and start sharing the screen again.
-   * ERR_INVALID_ARGUMENT: The parameter is invalid.
+   * @ignore
    */
   abstract updateScreenCapture(captureParams: ScreenCaptureParameters2): number;
-
-  /**
-   * Stops screen sharing.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract stopScreenCapture(): number;
 
   /**
    * Retrieves the call ID.
@@ -4788,43 +4751,17 @@ export abstract class IRtcEngine {
   abstract stopLocalVideoTranscoder(): number;
 
   /**
-   * Starts video capture with a primary camera.
-   *
-   * @param config The configuration of the video capture with a primary camera. See CameraCapturerConfiguration .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
+   * @ignore
    */
-  abstract startPrimaryCameraCapture(
+  abstract startCameraCapture(
+    type: VideoSourceType,
     config: CameraCapturerConfiguration
   ): number;
 
   /**
-   * Starts video capture with a secondary camera.
-   *
-   * @param config The configuration of the video capture with a primary camera. See CameraCapturerConfiguration .
+   * @ignore
    */
-  abstract startSecondaryCameraCapture(
-    config: CameraCapturerConfiguration
-  ): number;
-
-  /**
-   * Stops capturing video through a primary camera.
-   * You can call this method to stop capturing video through the primary camera after calling the startPrimaryCameraCapture .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract stopPrimaryCameraCapture(): number;
-
-  /**
-   * Stops capturing video through the secondary camera.
-   * You can call this method to stop capturing video through the secondary camera after calling the startSecondaryCameraCapture .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract stopSecondaryCameraCapture(): number;
+  abstract stopCameraCapture(type: VideoSourceType): number;
 
   /**
    * Sets the rotation angle of the captured video.
@@ -4849,42 +4786,6 @@ export abstract class IRtcEngine {
     type: VideoSourceType,
     orientation: VideoOrientation
   ): number;
-
-  /**
-   * Starts sharing the primary screen.
-   *
-   * @param config The configuration of the captured screen. See ScreenCaptureConfiguration .
-   */
-  abstract startPrimaryScreenCapture(
-    config: ScreenCaptureConfiguration
-  ): number;
-
-  /**
-   * Starts sharing a secondary screen.
-   *
-   * @param config The configuration of the captured screen. See ScreenCaptureConfiguration .
-   */
-  abstract startSecondaryScreenCapture(
-    config: ScreenCaptureConfiguration
-  ): number;
-
-  /**
-   * Stop sharing the first screen.
-   * After calling startPrimaryScreenCapture , you can call this method to stop sharing the first screen.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract stopPrimaryScreenCapture(): number;
-
-  /**
-   * Stops sharing the secondary screen.
-   * After calling startSecondaryScreenCapture , you can call this method to stop sharing the secondary screen.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract stopSecondaryScreenCapture(): number;
 
   /**
    * Gets the current connection state of the SDK.
@@ -5123,8 +5024,8 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
-   * Gets the user information by passing in the user account.
-   * After a remote user joins the channel, the SDK gets the UID and user account of the remote user, caches them in a mapping table object, and triggers the onUserInfoUpdated callback on the local client. After receiving the callback, you can call this method to get the user account of the remote user from the UserInfo object by passing in the user ID.
+   * Gets the user information by passing in the User Account.
+   * After a remote user joins the channel, the SDK gets the UID and User Account of the remote user, caches them in a mapping table object, and triggers the onUserInfoUpdated callback on the local client. After receiving the callback, you can call this method to get the user account of the remote user from the UserInfo object by passing in the user ID.
    *
    * @param userAccount The user account.
    *
@@ -5136,7 +5037,7 @@ export abstract class IRtcEngine {
 
   /**
    * Gets the user information by passing in the user ID.
-   * After a remote user joins the channel, the SDK gets the UID and user account of the remote user, caches them in a mapping table object, and triggers the onUserInfoUpdated callback on the local client. After receiving the callback, you can call this method to get the user account of the remote user from the UserInfo object by passing in the user ID.
+   * After a remote user joins the channel, the SDK gets the UID and User Account of the remote user, caches them in a mapping table object, and triggers the onUserInfoUpdated callback on the local client. After receiving the callback, you can call this method to get the user account of the remote user from the UserInfo object by passing in the user ID.
    *
    * @param uid The user ID.
    *
@@ -5437,7 +5338,7 @@ export abstract class IRtcEngine {
 
   /**
    * Leaves a channel.
-   * This method releases all resources related to the session. This method call is asynchronous. When this method returns, it does not necessarily mean that the user has left the channel.After joining the channel, you must call this method or leaveChannel to end the call, otherwise, the next call cannot be started.If you successfully call this method and leave the channel, the following callbacks are triggered:The local client: onLeaveChannel .The remote client: onUserOffline , if the user joining the channel is in the Communication profile, or is a host in the Live-broadcasting profile.If you call release immediately after calling this method, the SDK does not trigger the onLeaveChannel callback.
+   * This method releases all resources related to the session.This method call is asynchronous. When this method returns, it does not necessarily mean that the user has left the channel.After joining the channel, you must call this method or leaveChannel to end the call, otherwise, the next call cannot be started.If you successfully call this method and leave the channel, the following callbacks are triggered:The local client: onLeaveChannel .The remote client: onUserOffline , if the user joining the channel is in the Communication profile, or is a host in the Live-broadcasting profile.If you call release immediately after calling this method, the SDK does not trigger the onLeaveChannel callback.
    *
    * @returns
    * 0: Success.< 0: Failure.-1(ERR_FAILED): A general error occurs (no specified reason).-2 (ERR_INVALID_ARGUMENT): The parameter is invalid.-7(ERR_NOT_INITIALIZED): The SDK is not initialized.
@@ -5729,6 +5630,32 @@ export abstract class IRtcEngine {
    * 0: Success.< 0: Failure.
    */
   abstract setParameters(parameters: string): number;
+
+  /**
+   * @ignore
+   */
+  abstract startScreenCaptureWithType(
+    type: VideoSourceType,
+    config: ScreenCaptureConfiguration
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract stopScreenCaptureWithType(type: VideoSourceType): number;
+
+  /**
+   * @ignore
+   */
+  abstract startScreenCapture(captureParams: ScreenCaptureParameters2): number;
+
+  /**
+   * Stops screen sharing.
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
+  abstract stopScreenCapture(): number;
 }
 
 /**

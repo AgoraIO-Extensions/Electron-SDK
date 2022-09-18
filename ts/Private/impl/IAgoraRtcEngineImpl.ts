@@ -16,7 +16,6 @@ import {
   CameraCapturerConfiguration,
   Size,
   ScreenCaptureSourceInfo,
-  ScreenCaptureConfiguration,
   PriorityType,
   InjectStreamConfig,
   MetadataType,
@@ -27,6 +26,7 @@ import {
   ImageTrackOptions,
   LeaveChannelOptions,
   Metadata,
+  ScreenCaptureConfiguration,
 } from '../IAgoraRtcEngine';
 import {
   VideoFormat,
@@ -894,6 +894,15 @@ export function processIRtcEngineEventHandler(
           jsonParams.connection,
           jsonParams.remoteUid,
           jsonParams.userAccount
+        );
+      }
+      break;
+
+    case 'onLocalVideoTranscoderError':
+      if (handler.onLocalVideoTranscoderError !== undefined) {
+        handler.onLocalVideoTranscoderError(
+          jsonParams.stream,
+          jsonParams.error
         );
       }
       break;
@@ -4485,26 +4494,6 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_updateScreenCaptureParameters';
   }
 
-  startScreenCapture(captureParams: ScreenCaptureParameters2): number {
-    const apiType = this.getApiTypeFromStartScreenCapture(captureParams);
-    const jsonParams = {
-      captureParams: captureParams,
-      toJSON: () => {
-        return {
-          captureParams: captureParams,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromStartScreenCapture(
-    captureParams: ScreenCaptureParameters2
-  ): string {
-    return 'RtcEngine_startScreenCapture';
-  }
-
   updateScreenCapture(captureParams: ScreenCaptureParameters2): number {
     const apiType = this.getApiTypeFromUpdateScreenCapture(captureParams);
     const jsonParams = {
@@ -4523,17 +4512,6 @@ export class IRtcEngineImpl implements IRtcEngine {
     captureParams: ScreenCaptureParameters2
   ): string {
     return 'RtcEngine_updateScreenCapture';
-  }
-
-  stopScreenCapture(): number {
-    const apiType = this.getApiTypeFromStopScreenCapture();
-    const jsonParams = {};
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromStopScreenCapture(): string {
-    return 'RtcEngine_stopScreenCapture';
   }
 
   getCallId(): string {
@@ -4738,12 +4716,17 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_stopLocalVideoTranscoder';
   }
 
-  startPrimaryCameraCapture(config: CameraCapturerConfiguration): number {
-    const apiType = this.getApiTypeFromStartPrimaryCameraCapture(config);
+  startCameraCapture(
+    type: VideoSourceType,
+    config: CameraCapturerConfiguration
+  ): number {
+    const apiType = this.getApiTypeFromStartCameraCapture(type, config);
     const jsonParams = {
+      type: type,
       config: config,
       toJSON: () => {
         return {
+          type: type,
           config: config,
         };
       },
@@ -4752,19 +4735,20 @@ export class IRtcEngineImpl implements IRtcEngine {
     return jsonResults.result;
   }
 
-  protected getApiTypeFromStartPrimaryCameraCapture(
+  protected getApiTypeFromStartCameraCapture(
+    type: VideoSourceType,
     config: CameraCapturerConfiguration
   ): string {
-    return 'RtcEngine_startPrimaryCameraCapture';
+    return 'RtcEngine_startCameraCapture';
   }
 
-  startSecondaryCameraCapture(config: CameraCapturerConfiguration): number {
-    const apiType = this.getApiTypeFromStartSecondaryCameraCapture(config);
+  stopCameraCapture(type: VideoSourceType): number {
+    const apiType = this.getApiTypeFromStopCameraCapture(type);
     const jsonParams = {
-      config: config,
+      type: type,
       toJSON: () => {
         return {
-          config: config,
+          type: type,
         };
       },
     };
@@ -4772,32 +4756,8 @@ export class IRtcEngineImpl implements IRtcEngine {
     return jsonResults.result;
   }
 
-  protected getApiTypeFromStartSecondaryCameraCapture(
-    config: CameraCapturerConfiguration
-  ): string {
-    return 'RtcEngine_startSecondaryCameraCapture';
-  }
-
-  stopPrimaryCameraCapture(): number {
-    const apiType = this.getApiTypeFromStopPrimaryCameraCapture();
-    const jsonParams = {};
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromStopPrimaryCameraCapture(): string {
-    return 'RtcEngine_stopPrimaryCameraCapture';
-  }
-
-  stopSecondaryCameraCapture(): number {
-    const apiType = this.getApiTypeFromStopSecondaryCameraCapture();
-    const jsonParams = {};
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromStopSecondaryCameraCapture(): string {
-    return 'RtcEngine_stopSecondaryCameraCapture';
+  protected getApiTypeFromStopCameraCapture(type: VideoSourceType): string {
+    return 'RtcEngine_stopCameraCapture';
   }
 
   setCameraDeviceOrientation(
@@ -4856,68 +4816,6 @@ export class IRtcEngineImpl implements IRtcEngine {
     orientation: VideoOrientation
   ): string {
     return 'RtcEngine_setScreenCaptureOrientation';
-  }
-
-  startPrimaryScreenCapture(config: ScreenCaptureConfiguration): number {
-    const apiType = this.getApiTypeFromStartPrimaryScreenCapture(config);
-    const jsonParams = {
-      config: config,
-      toJSON: () => {
-        return {
-          config: config,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromStartPrimaryScreenCapture(
-    config: ScreenCaptureConfiguration
-  ): string {
-    return 'RtcEngine_startPrimaryScreenCapture';
-  }
-
-  startSecondaryScreenCapture(config: ScreenCaptureConfiguration): number {
-    const apiType = this.getApiTypeFromStartSecondaryScreenCapture(config);
-    const jsonParams = {
-      config: config,
-      toJSON: () => {
-        return {
-          config: config,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromStartSecondaryScreenCapture(
-    config: ScreenCaptureConfiguration
-  ): string {
-    return 'RtcEngine_startSecondaryScreenCapture';
-  }
-
-  stopPrimaryScreenCapture(): number {
-    const apiType = this.getApiTypeFromStopPrimaryScreenCapture();
-    const jsonParams = {};
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromStopPrimaryScreenCapture(): string {
-    return 'RtcEngine_stopPrimaryScreenCapture';
-  }
-
-  stopSecondaryScreenCapture(): number {
-    const apiType = this.getApiTypeFromStopSecondaryScreenCapture();
-    const jsonParams = {};
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromStopSecondaryScreenCapture(): string {
-    return 'RtcEngine_stopSecondaryScreenCapture';
   }
 
   getConnectionState(): ConnectionStateType {
@@ -6504,5 +6402,82 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromSetParameters(parameters: string): string {
     return 'RtcEngine_setParameters';
+  }
+
+  startScreenCaptureWithType(
+    type: VideoSourceType,
+    config: ScreenCaptureConfiguration
+  ): number {
+    const apiType = this.getApiTypeFromStartScreenCaptureWithType(type, config);
+    const jsonParams = {
+      type: type,
+      config: config,
+      toJSON: () => {
+        return {
+          type: type,
+          config: config,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromStartScreenCaptureWithType(
+    type: VideoSourceType,
+    config: ScreenCaptureConfiguration
+  ): string {
+    return 'RtcEngine_startScreenCaptureWithType';
+  }
+
+  stopScreenCaptureWithType(type: VideoSourceType): number {
+    const apiType = this.getApiTypeFromStopScreenCaptureWithType(type);
+    const jsonParams = {
+      type: type,
+      toJSON: () => {
+        return {
+          type: type,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromStopScreenCaptureWithType(
+    type: VideoSourceType
+  ): string {
+    return 'RtcEngine_stopScreenCaptureWithType';
+  }
+
+  startScreenCapture(captureParams: ScreenCaptureParameters2): number {
+    const apiType = this.getApiTypeFromStartScreenCapture(captureParams);
+    const jsonParams = {
+      captureParams: captureParams,
+      toJSON: () => {
+        return {
+          captureParams: captureParams,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromStartScreenCapture(
+    captureParams: ScreenCaptureParameters2
+  ): string {
+    return 'RtcEngine_startScreenCapture';
+  }
+
+  stopScreenCapture(): number {
+    const apiType = this.getApiTypeFromStopScreenCapture();
+    const jsonParams = {};
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromStopScreenCapture(): string {
+    return 'RtcEngine_stopScreenCapture';
   }
 }

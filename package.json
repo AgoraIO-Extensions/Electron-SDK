@@ -32,8 +32,8 @@
     "bootstrap": "yarn example && yarn"
   },
   "agora_electron": {
-    "iris_sdk_win": "https://download.agora.io/sdk/release/iris_4.0.0_DCG_Windows_Video_20220910_0326.zip",
-    "iris_sdk_mac": "https://download.agora.io/sdk/release/iris_4.0.0_DCG_Mac_Video_20220910_0344.zip",
+    "iris_sdk_win": "http://192.168.99.149:8086/CSDC_repo/iris_4.0.0.121_DCG_Windows_Video_20220918_0752.zip",
+    "iris_sdk_mac": "http://192.168.99.149:8086/CSDC_repo/iris_4.0.0.121_DCG_Mac_Video_20220918_0749.zip",
     "no_symbol": true,
     "prebuilt": true
   },
@@ -46,6 +46,7 @@
     "gulp": "^4.0.2",
     "gulp-cli": "^2.3.0",
     "gulp-zip": "^5.1.0",
+    "jsonfile": "^6.0.1",
     "lodash.isequal": "^4.5.0",
     "minimist": "^1.2.5",
     "rimraf": "^3.0.0",

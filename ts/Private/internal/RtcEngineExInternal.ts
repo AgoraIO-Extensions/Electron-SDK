@@ -29,6 +29,7 @@ import {
   Metadata,
   MetadataType,
   RtcEngineContext,
+  ScreenCaptureConfiguration,
   SDKBuildInfo,
   Size,
 } from '../IAgoraRtcEngine';
@@ -355,6 +356,19 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     connection: RtcConnection
   ): string {
     return 'RtcEngineEx_createDataStreamEx2';
+  }
+
+  protected getApiTypeFromStartScreenCaptureWithType(
+    type: VideoSourceType,
+    config: ScreenCaptureConfiguration
+  ): string {
+    return 'RtcEngine_startScreenCapture2';
+  }
+
+  protected getApiTypeFromStopScreenCaptureWithType(
+    type: VideoSourceType
+  ): string {
+    return 'RtcEngine_stopScreenCapture2';
   }
 
   getAudioDeviceManager(): IAudioDeviceManager {

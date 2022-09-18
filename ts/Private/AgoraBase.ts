@@ -1,5 +1,5 @@
 import './extension/AgoraBaseExtension';
-import { MediaSourceType, RenderModeType } from './AgoraMediaBase';
+import { RenderModeType } from './AgoraMediaBase';
 /**
  * The channel profile.
  */
@@ -520,6 +520,10 @@ export enum InterfaceIdType {
    * The IMediaRecorder interface class.
    */
   AgoraIidMediaRecorder = 12,
+  /**
+   * @ignore
+   */
+  AgoraIidMusicContentCenter = 13,
 }
 
 /**
@@ -1162,7 +1166,7 @@ export enum SimulcastStreamMode {
   /**
    * @ignore
    */
-  DisableSimulcastStrem = 0,
+  DisableSimulcastStream = 0,
   /**
    * @ignore
    */
@@ -1448,6 +1452,22 @@ export enum VideoSourceType {
    * A transcoded video source.
    */
   VideoSourceTranscoded = 10,
+  /**
+   * @ignore
+   */
+  VideoSourceCameraThird = 11,
+  /**
+   * @ignore
+   */
+  VideoSourceCameraFourth = 12,
+  /**
+   * @ignore
+   */
+  VideoSourceScreenThird = 13,
+  /**
+   * @ignore
+   */
+  VideoSourceScreenFourth = 14,
   /**
    * An unknown video source.
    */
@@ -1933,7 +1953,7 @@ export enum LocalVideoStreamError {
  */
 export enum RemoteAudioState {
   /**
-   * 0: The local audio is in the initial state. The SDK reports this state in the case of RemoteAudioReasonLocalMuted, RemoteAudioReasonRemoteMuted or RemoteAudioReasonRemoteOffline.
+   * 0: The local audio is in the initial state. The SDK reports this state in the case of RemoteAudioLocalMuted, RemoteAudioReasonRemoteMuted or RemoteAudioReasonRemoteOffline.
    */
   RemoteAudioStateStopped = 0,
   /**
@@ -1941,11 +1961,11 @@ export enum RemoteAudioState {
    */
   RemoteAudioStateStarting = 1,
   /**
-   * 2: The remote audio stream is decoded and plays normally. The SDK reports this state in the case of RemoteAudioReasonNetworkRecovery, RemoteAudioReasonLocalUnmuted or RemoteAudioReasonRemoteUnmuted.
+   * 2: The remote audio stream is decoded and plays normally. The SDK reports this state in the case of RemoteAudioNetworkRecovery, RemoteAudioReasonLocalUnmuted or RemoteAudioReasonRemoteUnmuted.
    */
   RemoteAudioStateDecoding = 2,
   /**
-   * 3: The remote audio is frozen. The SDK reports this state in the case of RemoteAudioReasonNetworkCongestion.
+   * 3: The remote audio is frozen. The SDK reports this state in the case of RemoteAudioNetworkCongestion.
    */
   RemoteAudioStateFrozen = 3,
   /**
@@ -1963,15 +1983,15 @@ export enum RemoteAudioStateReason {
    */
   RemoteAudioReasonInternal = 0,
   /**
-   * 1: Network congestion.
+   * @ignore
    */
   RemoteAudioReasonNetworkCongestion = 1,
   /**
-   * 2: Network recovery.
+   * @ignore
    */
   RemoteAudioReasonNetworkRecovery = 2,
   /**
-   * 3: The local user stops receiving the remote audio stream or disables the audio module.
+   * @ignore
    */
   RemoteAudioReasonLocalMuted = 3,
   /**
@@ -2658,7 +2678,7 @@ export class TranscodingVideoStream {
   /**
    * The source type of video for the video mixing on the local client. See VideoSourceType .
    */
-  sourceType?: MediaSourceType;
+  sourceType?: VideoSourceType;
   /**
    * The ID of the remote user.Use this parameter only when the source type of the video for the video mixing on the local client is VideoSourceRemote.
    */
@@ -2667,6 +2687,10 @@ export class TranscodingVideoStream {
    * The URL of the image.
    */
   imageUrl?: string;
+  /**
+   * @ignore
+   */
+  mediaPlayerId?: number;
   /**
    * The horizontal displacement of the top-left corner of the video for the video mixing on the client relative to the top-left corner (origin) of the canvas for this video mixing.
    */
@@ -2708,11 +2732,45 @@ export class LocalTranscoderConfiguration {
   /**
    * The video streams for the video mixing on the local client. See TranscodingVideoStream .
    */
-  VideoInputStreams?: TranscodingVideoStream[];
+  videoInputStreams?: TranscodingVideoStream[];
   /**
    * The encoding configuration of the mixed video stream after the video mixing on the local client. See VideoEncoderConfiguration .
    */
   videoOutputConfiguration?: VideoEncoderConfiguration;
+}
+
+/**
+ * @ignore
+ */
+export enum VideoTranscoderError {
+  /**
+   * @ignore
+   */
+  VtErrOk = 0,
+  /**
+   * @ignore
+   */
+  VtErrVideoSourceNotReady = 1,
+  /**
+   * @ignore
+   */
+  VtErrInvalidMediaSourceType = 2,
+  /**
+   * @ignore
+   */
+  VtErrInvalidImagePath = 3,
+  /**
+   * @ignore
+   */
+  VtErrUnsupportImageFormat = 4,
+  /**
+   * @ignore
+   */
+  VtErrInvalidLayout = 5,
+  /**
+   * @ignore
+   */
+  VtErrInternal = 20,
 }
 
 /**

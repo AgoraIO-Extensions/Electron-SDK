@@ -1,5 +1,5 @@
 import './extension/AgoraMediaBaseExtension';
-import { EncodedVideoFrameInfo } from './AgoraBase';
+import { EncodedVideoFrameInfo, VideoSourceType } from './AgoraBase';
 /**
  * The type of the audio route.
  */
@@ -372,6 +372,24 @@ export enum RenderModeType {
    * @ignore
    */
   RenderModeAdaptive = 3,
+}
+
+/**
+ * @ignore
+ */
+export enum CameraVideoSourceType {
+  /**
+   * @ignore
+   */
+  CameraSourceFront = 0,
+  /**
+   * @ignore
+   */
+  CameraSourceBack = 1,
+  /**
+   * @ignore
+   */
+  VideoSourceUnspecified = 2,
 }
 
 /**
@@ -867,7 +885,7 @@ export interface IVideoFrameObserver {
    * @returns
    * When the video processing mode is ProcessModeReadOnly:true:The SDK ignores this return value.false:The SDK ignores this return value.When the video processing mode is ProcessModeReadWrite:true: Sets the SDK to receive the video frame.false: Sets the SDK to discard the video frame.
    */
-  onCaptureVideoFrame?(videoFrame: VideoFrame): boolean;
+  onCaptureVideoFrame?(type: VideoSourceType, videoFrame: VideoFrame): boolean;
 
   /**
    * Occurs each time the SDK receives a video frame before encoding.
@@ -878,45 +896,10 @@ export interface IVideoFrameObserver {
    * @returns
    * When the video processing mode is ProcessModeReadOnly:true:The SDK ignores this return value.false:The SDK ignores this return value.When the video processing mode is ProcessModeReadWrite:true: Sets the SDK to receive the video frame.false: Sets the SDK to discard the video frame.
    */
-  onPreEncodeVideoFrame?(videoFrame: VideoFrame): boolean;
-
-  /**
-   * @ignore
-   */
-  onSecondaryCameraCaptureVideoFrame?(videoFrame: VideoFrame): boolean;
-
-  /**
-   * Gets the video data captured from the second camera before encoding.
-   * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data captured from the second camera before encoding and then process the data according to your particular scenarios.After processing, you can send the processed video data back to the SDK in this callback.
-   *
-   * @param videoFrame The video frame. See VideoFrame .
-   *
-   * @returns
-   * true: Sets the SDK to receive the video frame.false: Sets the SDK to discard the video frame.
-   */
-  onSecondaryPreEncodeCameraVideoFrame?(videoFrame: VideoFrame): boolean;
-
-  /**
-   * Occurs each time the SDK receives a video frame captured by the screen.
-   * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data for screen sharing. You can then pre-process the data according to your scenarios.After pre-processing, you can send the processed video data back to the SDK through this callback.This callback does not support sending processed RGBA video data back to the SDK.The video data that this callback gets has not been pre-processed, and is not watermarked, cropped, rotated or beautified.
-   *
-   * @param videoFrame The video frame. See VideoFrame .
-   *
-   * @returns
-   * true: Sets the SDK to receive the video frame.false: Sets the SDK to discard the video frame.
-   */
-  onScreenCaptureVideoFrame?(videoFrame: VideoFrame): boolean;
-
-  /**
-   * Gets the video data captured from the screen before encoding.
-   * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data captured from the screen before encoding and then process the data according to your particular scenarios.After processing, you can send the processed video data back to the SDK in this callback.The video data that this callback gets has been preprocessed, with its content cropped and rotated, and the image enhanced.This callback does not support sending processed RGBA video data back to the SDK.
-   *
-   * @param videoFrame The video frame. See VideoFrame .
-   *
-   * @returns
-   * When the video processing mode is ProcessModeReadOnly:true:The SDK ignores this return value.false:The SDK ignores this return value.When the video processing mode is ProcessModeReadWrite:true: Sets the SDK to receive the video frame.false: Sets the SDK to discard the video frame.
-   */
-  onPreEncodeScreenVideoFrame?(videoFrame: VideoFrame): boolean;
+  onPreEncodeVideoFrame?(
+    type: VideoSourceType,
+    videoFrame: VideoFrame
+  ): boolean;
 
   /**
    * Gets the video data of the media player.
@@ -937,22 +920,6 @@ export interface IVideoFrameObserver {
     videoFrame: VideoFrame,
     mediaPlayerId: number
   ): boolean;
-
-  /**
-   * @ignore
-   */
-  onSecondaryScreenCaptureVideoFrame?(videoFrame: VideoFrame): boolean;
-
-  /**
-   * Gets the video data captured from the second screen before encoding.
-   * After you successfully register the video frame observer, the SDK triggers this callback each time it receives a video frame. In this callback, you can get the video data captured from the second screen before encoding and then process the data according to your particular scenarios.After processing, you can send the processed video data back to the SDK in this callback.
-   *
-   * @param videoFrame The video frame. See VideoFrame .
-   *
-   * @returns
-   * true: Sets the SDK to receive the video frame.false: Sets the SDK to discard the video frame.
-   */
-  onSecondaryPreEncodeScreenVideoFrame?(videoFrame: VideoFrame): boolean;
 
   /**
    * Occurs each time the SDK receives a video frame sent by the remote user.
