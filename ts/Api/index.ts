@@ -89,6 +89,7 @@ import {
   AUDIO_RECORDING_POSITION,
   SpatialAudioParams,
   UInt8ArrayBuffer,
+  ScreenCaptureSourceInfo
 } from './native_type';
 import { EventEmitter } from 'events';
 import { deprecate, config, Config } from '../Utils';
@@ -6866,7 +6867,7 @@ class AgoraRtcEngine extends EventEmitter {
     thumbSize: SIZE,
     iconSize: SIZE,
     includeScreen: boolean
-  ): Array<Object> {
+  ): Array<ScreenCaptureSourceInfo> {
     return this.rtcEngine.getScreenCaptureSources(
       thumbSize,
       iconSize,
