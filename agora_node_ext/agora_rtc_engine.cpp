@@ -4094,7 +4094,7 @@ NAPI_API_DEFINE(NodeRtcEngine, release) {
     NodeRtcEngine* pEngine = nullptr;
     napi_get_native_this(args, pEngine);
     CHECK_NATIVE_THIS(pEngine);
-    bool sync = false;
+    bool sync = true;
     napi_get_value_bool_(args[0], sync);
 
     LOG_F(INFO, "release engine :%d", sync);
