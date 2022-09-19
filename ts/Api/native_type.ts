@@ -29,6 +29,97 @@ export interface SIZE {
 }
 
 /**
+ * The image content of the thumbnail or icon.
+ *
+ * @since v3.5.2
+ *
+ * @note The default image is in the RGBA format. If you need to use another format, you need to convert the image on
+ * your own.
+ */
+ export interface ThumbImageBuffer {
+  /**
+   * The buffer of the thumbnail or icon.
+   */
+  buffer: Uint8ArrayBuffer;
+  /**
+   * The actual width (px) of the thumbnail or icon.
+   */
+  width: number;
+  /**
+   * The actual height (px) of the thumbnail or icon.
+   */
+  height: number;
+};
+/**
+ * The type of the shared target.
+ *
+ * @since v3.5.2
+ */
+ enum ScreenCaptureSourceType {
+  /**
+   * -1: Unknown type.
+   */
+  ScreenCaptureSourceType_Unknown = -1,
+  /**
+   * 0: The shared target is a window.
+   */
+  ScreenCaptureSourceType_Window = 0,
+  /**
+   * 1: The shared target is a screen of a particular monitor.
+   */
+  ScreenCaptureSourceType_Screen = 1,
+  /**
+   * 2: Reserved parameter.
+   */
+  ScreenCaptureSourceType_Custom = 2,
+};
+/**
+ * The information about the specified shareable window or screen.
+ *
+ * @since v3.5.2
+ */
+ export interface ScreenCaptureSourceInfo {
+  /**
+   * The type of the shared target. See \ref agora::rtc::ScreenCaptureSourceType "ScreenCaptureSourceType".
+   */
+  type: ScreenCaptureSourceType;
+  /**
+   * The window ID for a window or the display ID for a screen.
+   */
+  sourceId: number;
+  /**
+   * The name of the window or screen. UTF-8 encoding.
+   */
+  sourceName: string;
+  /**
+   * The image content of the thumbnail. See ThumbImageBuffer.
+   */
+  thumbImage: ThumbImageBuffer;
+  /**
+   * The image content of the icon. See ThumbImageBuffer.
+   */
+  iconImage: ThumbImageBuffer;
+  /**
+   * The process to which the window belongs. UTF-8 encoding.
+   */
+  processPath: string;
+  /**
+   * The title of the window. UTF-8 encoding.
+   */
+  sourceTitle: string;
+  /**
+   * Determines whether the screen is the primary display:
+   * - true: The screen is the primary display.
+   * - false: The screen is not the primary display.
+   */
+  primaryMonitor: boolean;
+  /**
+   * Determines whether the window is minimized.
+   */
+  minimizeWindow?: boolean;
+};
+
+/**
  * Network quality types:
  *
  * - 0: The network quality is unknown.
@@ -1311,6 +1402,17 @@ export interface CaptureParam {
    * @since v3.2.0
    */
   excludeWindowCount: number;
+  /** The select window show highligt frame width.
+   */
+  highLightWidth?: number;
+  /** The select window show highligt frame color RGBA.
+   */
+  highLightColor?: number;
+  /** The select window show highligt frame
+   - true: show highligt frame
+   - false: (Default) not show highligt frame
+   */
+  enableHighLight?: boolean;
 }
 
 /**
@@ -4704,7 +4806,7 @@ export interface NodeRtcEngine {
     thumbSize: SIZE,
     iconSize: SIZE,
     includeScreen: boolean
-  ): Array<Object>;
+  ): Array<ScreenCaptureSourceInfo>;
 
   setLowlightEnhanceOptions(
     enabled: boolean,
