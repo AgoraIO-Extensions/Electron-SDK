@@ -77,7 +77,11 @@ class RtcSurfaceView extends Component<Props> {
       funcName = engine.setupRemoteVideoEx;
     }
 
-    engine.destroyRendererByView(dom);
+    try {
+      engine.destroyRendererByView(dom);
+    } catch (e) {
+      console.warn(e);
+    }
     funcName.call(this, { ...canvas, view: dom }, connection);
   };
 
