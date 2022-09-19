@@ -2708,39 +2708,6 @@ NAPI_API_DEFINE(NodeRtcEngine, videosourceStartScreenCaptureByScreen) {
     }
     status = napi_get_value_object_(isolate, args[2], obj);
     CHECK_NAPI_STATUS(pEngine, status);
-    // luz33c
-    ScreenCaptureParameters captureParams;
-    VideoDimensions dimensions;
-    key = "width";
-    status =
-        napi_get_object_property_int32_(isolate, obj, key, dimensions.width);
-    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-
-    key = "height";
-    status =
-        napi_get_object_property_int32_(isolate, obj, key, dimensions.height);
-    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-
-    key = "frameRate";
-    status = napi_get_object_property_int32_(isolate, obj, key,
-                                             captureParams.frameRate);
-    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-
-    key = "bitrate";
-    status = napi_get_object_property_int32_(isolate, obj, "bitrate",
-                                             captureParams.bitrate);
-    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-
-    key = "captureMouseCursor";
-    status = napi_get_object_property_bool_(isolate, obj, "captureMouseCursor",
-                                            captureParams.captureMouseCursor);
-    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-
-    key = "windowFocus";
-    status = napi_get_object_property_bool_(isolate, obj, "windowFocus",
-                                            captureParams.windowFocus);
-    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-    captureParams.dimensions = dimensions;
 
     key = "excludeWindowList";
     std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
@@ -2756,35 +2723,42 @@ NAPI_API_DEFINE(NodeRtcEngine, videosourceStartScreenCaptureByScreen) {
         agora::rtc::IRtcEngine::WindowIDType windowId;
         Local<Value> value =
             excludeWindowListValue->Get(context, i).ToLocalChecked();
-#if defined(__APPLE__)
-        status = napi_get_value_uint32_(value, windowId);
-        CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-#elif defined(_WIN32)
-#if defined(_WIN64)
-        int64_t wid;
-        status = napi_get_value_int64_(value, wid);
-#else
-        uint32_t wid;
-        status = napi_get_value_uint32_(value, wid);
-#endif
+        #if defined(__APPLE__)
+                status = napi_get_value_uint32_(value, windowId);
+                CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+        #elif defined(_WIN32)
+        #if defined(_WIN64)
+                int64_t wid;
+                status = napi_get_value_int64_(value, wid);
+        #else
+                uint32_t wid;
+                status = napi_get_value_uint32_(value, wid);
+        #endif
 
-        CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-        windowId = (HWND)wid;
-#endif
-        excludeWindows.push_back(windowId);
-      }
+                CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
+                windowId = (HWND)wid;
+        #endif
+                excludeWindows.push_back(windowId);
+              }
     }
+
+    ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
+    if (captureParams == nullptr) {
+      break;
+    }
+
     if (pEngine->m_videoSourceSink.get()) {
       pEngine->m_videoSourceSink->startScreenCaptureByScreen(
-          screen, regionRect, captureParams, excludeWindows);
+          screen, regionRect, *captureParams, excludeWindows);
       result = 0;
     }
+
+    delete captureParams;
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
 }
 
-// luz33c待验证
 NAPI_API_DEFINE(NodeRtcEngine, videoSourceStartScreenCaptureByDisplayId) {
   LOG_ENTER;
   napi_status status = napi_ok;
@@ -2846,10 +2820,8 @@ NAPI_API_DEFINE(NodeRtcEngine, videoSourceStartScreenCaptureByDisplayId) {
     }
     status = napi_get_value_object_(isolate, args[2], obj);
     CHECK_NAPI_STATUS(pEngine, status);
-
     std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
-    // luz33c
-     ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
+    ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
     if (captureParams == nullptr) {
       break;
     }
@@ -2927,41 +2899,14 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByDisplayId) {
     }
     status = napi_get_value_object_(isolate, args[2], obj);
     CHECK_NAPI_STATUS(pEngine, status);
-    ScreenCaptureParameters captureParams;
-    VideoDimensions dimensions;
-    key = "width";
-    status =
-        napi_get_object_property_int32_(isolate, obj, key, dimensions.width);
-    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-
-    key = "height";
-    status =
-        napi_get_object_property_int32_(isolate, obj, key, dimensions.height);
-    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-
-    key = "frameRate";
-    status = napi_get_object_property_int32_(isolate, obj, key,
-                                             captureParams.frameRate);
-    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-
-    key = "bitrate";
-    status = napi_get_object_property_int32_(isolate, obj, "bitrate",
-                                             captureParams.bitrate);
-    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-
-    key = "captureMouseCursor";
-    status = napi_get_object_property_bool_(isolate, obj, "captureMouseCursor",
-                                            captureParams.captureMouseCursor);
-    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-
-    key = "windowFocus";
-    status = napi_get_object_property_bool_(isolate, obj, "windowFocus",
-                                            captureParams.windowFocus);
-    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-    captureParams.dimensions = dimensions;
+    
 
     key = "excludeWindowList";
     std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
+    ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
+    if (captureParams == nullptr) {
+      break;
+    }
     Local<Name> keyName = String::NewFromUtf8(isolate, "excludeWindowList",
                                               NewStringType::kInternalized)
                               .ToLocalChecked();
@@ -2993,7 +2938,9 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByDisplayId) {
       }
     }
     result = pEngine->m_engine->startScreenCaptureByDisplayId(
-          displayInfo.idVal, regionRect, captureParams);
+          displayInfo.idVal, regionRect, *captureParams);
+
+    delete captureParams;
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -3061,14 +3008,13 @@ NAPI_API_DEFINE(NodeRtcEngine, videosourceStartScreenCaptureByWindow) {
     }
     status = napi_get_value_object_(isolate, args[2], obj);
     CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-    // luz33c windows  videoSourceStartScreenCaptureByWindow
+    
     std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
     ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
     if (captureParams == nullptr) {
       break;
     }
 
-    
     if (pEngine->m_videoSourceSink.get()) {
       pEngine->m_videoSourceSink->startScreenCaptureByWindow(
           windowId, regionRect, *captureParams);
@@ -3101,35 +3047,12 @@ NAPI_API_DEFINE(NodeRtcEngine, videosourceUpdateScreenCaptureParameters) {
     Local<Object> obj;
     status = napi_get_value_object_(isolate, args[0], obj);
     CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-    ScreenCaptureParameters captureParams;
-    VideoDimensions dimensions;
-    key = "width";
-    status =
-        napi_get_object_property_int32_(isolate, obj, key, dimensions.width);
-    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-    key = "height";
-    status =
-        napi_get_object_property_int32_(isolate, obj, key, dimensions.height);
-    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-    key = "frameRate";
-    status = napi_get_object_property_int32_(isolate, obj, key,
-                                             captureParams.frameRate);
-    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-    key = "bitrate";
-    status = napi_get_object_property_int32_(isolate, obj, key,
-                                             captureParams.bitrate);
-    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-    key = "captureMouseCursor";
-    status = napi_get_object_property_bool_(isolate, obj, key,
-                                            captureParams.captureMouseCursor);
-    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-    key = "windowFocus";
-    status = napi_get_object_property_bool_(isolate, obj, key,
-                                            captureParams.windowFocus);
-    CHECK_NAPI_STATUS_PARAM(pEngine, status, key);
-    captureParams.dimensions = dimensions;
-
+    
     std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
+    ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
+    if (captureParams == nullptr) {
+      break;
+    }
     Local<Name> keyName = String::NewFromUtf8(isolate, "excludeWindowList",
                                               NewStringType::kInternalized)
                               .ToLocalChecked();
@@ -3162,10 +3085,12 @@ NAPI_API_DEFINE(NodeRtcEngine, videosourceUpdateScreenCaptureParameters) {
       }
     }
     if (pEngine->m_videoSourceSink.get()) {
-      pEngine->m_videoSourceSink->updateScreenCaptureParameters(captureParams,
+      pEngine->m_videoSourceSink->updateScreenCaptureParameters(*captureParams,
                                                                 excludeWindows);
       result = 0;
     }
+
+    delete captureParams;
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -6251,31 +6176,18 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByWindow) {
     }
     status = napi_get_value_object_(isolate, args[2], obj);
     CHECK_NAPI_STATUS(pEngine, status);
-    ScreenCaptureParameters captureParams;
-    VideoDimensions dimensions;
-    status = napi_get_object_property_int32_(isolate, obj, "width",
-                                             dimensions.width);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_int32_(isolate, obj, "height",
-                                             dimensions.height);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_int32_(isolate, obj, "frameRate",
-                                             captureParams.frameRate);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_int32_(isolate, obj, "bitrate",
-                                             captureParams.bitrate);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_bool_(isolate, obj, "captureMouseCursor",
-                                            captureParams.captureMouseCursor);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_bool_(isolate, obj, "windowFocus",
-                                            captureParams.windowFocus);
-    CHECK_NAPI_STATUS(pEngine, status);
-    captureParams.dimensions = dimensions;
+    
+    std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
+    ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
+    if (captureParams == nullptr) {
+      break;
+    }
 
     result = pEngine->m_engine->startScreenCaptureByWindowId(
         reinterpret_cast<agora::rtc::view_t>(windowId), regionRect,
-        captureParams);
+        *captureParams);
+
+    delete captureParams;
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -6357,35 +6269,21 @@ NAPI_API_DEFINE(NodeRtcEngine, startScreenCaptureByScreen) {
     }
     status = napi_get_value_object_(isolate, args[2], obj);
     CHECK_NAPI_STATUS(pEngine, status);
-    ScreenCaptureParameters captureParams;
-    VideoDimensions dimensions;
-    status = napi_get_object_property_int32_(isolate, obj, "width",
-                                             dimensions.width);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_int32_(isolate, obj, "height",
-                                             dimensions.height);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_int32_(isolate, obj, "frameRate",
-                                             captureParams.frameRate);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_int32_(isolate, obj, "bitrate",
-                                             captureParams.bitrate);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_bool_(isolate, obj, "captureMouseCursor",
-                                            captureParams.captureMouseCursor);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_bool_(isolate, obj, "windowFocus",
-                                            captureParams.windowFocus);
-    CHECK_NAPI_STATUS(pEngine, status);
-    captureParams.dimensions = dimensions;
+    
+    std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
+    ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
+    if (captureParams == nullptr) {
+      break;
+    }
 
 #if defined(_WIN32)
     result = pEngine->m_engine->startScreenCaptureByScreenRect(
-        screen, regionRect, captureParams);
+        screen, regionRect, *captureParams);
 #elif defined(__APPLE__)
     result = pEngine->m_engine->startScreenCaptureByDisplayId(
-        screen.idVal, regionRect, captureParams);
+        screen.idVal, regionRect, *captureParams);
 #endif
+    delete captureParams;
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
@@ -6409,29 +6307,16 @@ NAPI_API_DEFINE(NodeRtcEngine, updateScreenCaptureParameters) {
     Local<Object> obj;
     status = napi_get_value_object_(isolate, args[0], obj);
     CHECK_NAPI_STATUS(pEngine, status);
-    ScreenCaptureParameters captureParams;
-    VideoDimensions dimensions;
-    status = napi_get_object_property_int32_(isolate, obj, "width",
-                                             dimensions.width);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_int32_(isolate, obj, "height",
-                                             dimensions.height);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_int32_(isolate, obj, "frameRate",
-                                             captureParams.frameRate);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_int32_(isolate, obj, "bitrate",
-                                             captureParams.bitrate);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_bool_(isolate, obj, "captureMouseCursor",
-                                            captureParams.captureMouseCursor);
-    CHECK_NAPI_STATUS(pEngine, status);
-    status = napi_get_object_property_bool_(isolate, obj, "windowFocus",
-                                            captureParams.windowFocus);
-    CHECK_NAPI_STATUS(pEngine, status);
-    captureParams.dimensions = dimensions;
+    
+    std::vector<agora::rtc::IRtcEngine::WindowIDType> excludeWindows;
+    ScreenCaptureParameters *captureParams = getScreenCaptureParameters(obj, args, pEngine, excludeWindows);
+    if (captureParams == nullptr) {
+      break;
+    }
 
-    result = pEngine->m_engine->updateScreenCaptureParameters(captureParams);
+    result = pEngine->m_engine->updateScreenCaptureParameters(*captureParams);
+
+    delete captureParams;
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;
