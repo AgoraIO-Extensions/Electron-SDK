@@ -199,21 +199,6 @@ int INodeProcess::GetCurrentNodeProcessId() {
 }
 
 
-string WCharToMByte(LPCWSTR lpcwszStr) {
-	string str;
-	DWORD dwMinSize = 0;
-	LPSTR lpszStr = NULL;
-	dwMinSize = WideCharToMultiByte(CP_OEMCP, NULL, lpcwszStr, -1, NULL, 0, NULL, FALSE);
-	if (0 == dwMinSize)
-	{
-		return FALSE;
-	}
-	lpszStr = new char[dwMinSize];
-	WideCharToMultiByte(CP_OEMCP, NULL, lpcwszStr, -1, lpszStr, dwMinSize, NULL, FALSE);
-	str = lpszStr;
-	delete[] lpszStr;
-	return str;
-}
 
 std::string wide2utf8(const std::wstring& wide) {
   if (wide.empty()) return std::move(std::string());
