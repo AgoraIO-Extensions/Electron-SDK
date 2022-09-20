@@ -1,3 +1,17 @@
+# [4.0.0-build.121-alpha.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.0-rc.3...v4.0.0-build.121-alpha.1) (2022-09-20)
+
+
+### Bug Fixes
+
+* catch RtcSurfaceView throw exception ([f913280](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/f9132805c136f41d818b9d5d4bdee4e1ecc6b074))
+* set windows msvc link as MT ([341c9ee](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/341c9ee600d5230ac40dd8c6b0226dfaaf96354e))
+
+
+### Features
+
+* optimize startScreenCaptureWithType for darwin ([0a7a341](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/0a7a3414676c5645bcad819055b8a299331581b9))
+* support native 4.0.0.121 ([3b2fc3a](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/3b2fc3a910342359a75c07547ad4f43cb1777b01))
+
 # [4.0.0-rc.3](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.0-rc.2...v4.0.0-rc.3) (2022-09-14)
 
 
