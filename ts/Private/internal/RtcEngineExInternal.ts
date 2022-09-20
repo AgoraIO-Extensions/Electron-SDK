@@ -371,6 +371,30 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return 'RtcEngine_stopScreenCapture2';
   }
 
+  startScreenCaptureWithType(
+    type: VideoSourceType,
+    config: ScreenCaptureConfiguration
+  ): number {
+    if (process.platform == 'darwin') {
+      if (type === VideoSourceType.VideoSourceScreenPrimary) {
+        if (config.isCaptureWindow) {
+          return this.startScreenCaptureByWindowId(
+            config.windowId,
+            config.regionRect ?? {},
+            config.params ?? {}
+          );
+        } else {
+          return this.startScreenCaptureByDisplayId(
+            config.displayId ?? 0,
+            config.regionRect ?? {},
+            config.params ?? {}
+          );
+        }
+      }
+    }
+    return super.startScreenCaptureWithType(type, config);
+  }
+
   getAudioDeviceManager(): IAudioDeviceManager {
     return this._audio_device_manager;
   }
