@@ -11,12 +11,9 @@
 #include <Windows.h>
 #include <memory>
 #include <thread>
-#include <clocale>
 #include "loguru.hpp"
 #include "node_log.h"
 #include "node_process.h"
-
-using namespace std;
 
 std::wstring utf82wide(const std::string& utf8) {
   if (utf8.empty()) return std::move(std::wstring());
@@ -197,8 +194,6 @@ void INodeProcess::DestroyNodeProcess(INodeProcess* pProcess, bool terminate) {
 int INodeProcess::GetCurrentNodeProcessId() {
   return GetCurrentProcessId();
 }
-
-
 
 std::string wide2utf8(const std::wstring& wide) {
   if (wide.empty()) return std::move(std::string());
