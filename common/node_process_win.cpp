@@ -15,6 +15,18 @@
 #include "node_log.h"
 #include "node_process.h"
 
+std::wstring utf82wide(const std::string& utf8) {
+  if (utf8.empty()) return std::move(std::wstring());
+  int len = MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), utf8.size(), nullptr, 0);
+  wchar_t* buf = new wchar_t[len + 1];
+  if (!buf) return std::move(std::wstring());
+  ZeroMemory(buf, sizeof(wchar_t) * (len + 1));
+  MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), utf8.size(), buf, sizeof(wchar_t) * (len + 1));
+  std::wstring result(buf);
+  delete[] buf;
+  return std::move(result);
+}
+
 class NodeProcessWinImpl : public INodeProcess {
  public:
   NodeProcessWinImpl(HANDLE hProcess, int pid);
@@ -97,7 +109,7 @@ void replaceSpecialString(std::string& cmdline) {
 INodeProcess* INodeProcess::CreateNodeProcess(const char* path,
                                               const char** params,
                                               unsigned int flag) {
-  STARTUPINFOA info = {0};
+  STARTUPINFOW info = {0};
   info.cb = sizeof(info);
   PROCESS_INFORMATION pi = {0};
   DWORD err;
@@ -115,14 +127,16 @@ INodeProcess* INodeProcess::CreateNodeProcess(const char* path,
   }
 
   LOG_INFO("%s, cmdline : %s\n", __FUNCTION__, cmdline.c_str());
-  if (!CreateProcessA(NULL, (LPSTR)cmdline.c_str(), NULL, NULL, FALSE,
+
+  if (!CreateProcessW(NULL, (LPWSTR)utf82wide(cmdline.c_str()).c_str(), NULL, NULL, FALSE,
                       CREATE_NO_WINDOW, NULL, NULL, &info, &pi)) {
     err = GetLastError();
     LOG_ERROR("%s, create process failed with error %d\n", __FUNCTION__, err);
 
     // windows special path replace
     replaceSpecialString(cmdline);
-    if (!CreateProcessA(NULL, (LPSTR)cmdline.c_str(), NULL, NULL, FALSE,
+    
+    if (!CreateProcessW(NULL, (LPWSTR)utf82wide(cmdline.c_str()).c_str(), NULL, NULL, FALSE,
                         CREATE_NO_WINDOW, NULL, NULL, &info, &pi)) {
       err = GetLastError();
       LOG_ERROR("%s, again create process failed with error %d\n", __FUNCTION__,
@@ -181,6 +195,21 @@ int INodeProcess::GetCurrentNodeProcessId() {
   return GetCurrentProcessId();
 }
 
+
+
+std::string wide2utf8(const std::wstring& wide) {
+  if (wide.empty()) return std::move(std::string());
+  int len =
+      WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), wide.size(), nullptr, 0, nullptr, nullptr);
+  char* buf = new char[len + 1];
+  if (!buf) return std::move(std::string());
+  ZeroMemory(buf, len + 1);
+  WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), wide.size(), buf, len + 1, nullptr, nullptr);
+  std::string result(buf);
+  delete[] buf;
+  return std::move(result);
+}
+
 bool INodeProcess::getCurrentModuleFileName(std::string& targetPath) {
   HMODULE module = NULL;
   if (!GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
@@ -189,9 +218,11 @@ bool INodeProcess::getCurrentModuleFileName(std::string& targetPath) {
   }
 
   char path[MAX_PATH] = {0};
-  if (!GetModuleFileNameA(module, path, MAX_PATH)) {
+  LPWSTR pwsz1 = new WCHAR[MAX_PATH]; 
+  if (!GetModuleFileNameW(module, pwsz1, MAX_PATH)) {
     return false;
   }
-  targetPath.assign(path);
+  
+  targetPath.assign(wide2utf8(pwsz1));
   return true;
 }
