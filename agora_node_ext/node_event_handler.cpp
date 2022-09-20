@@ -1434,7 +1434,7 @@ void NodeEventHandler::onUserAccountUpdated(const RtcConnection &connection,
 void NodeEventHandler::onLocalVideoTranscoderError(const TranscodingVideoStream &stream,
                                                    VIDEO_TRANSCODER_ERROR error) {
   FUNC_TRACE;
-  std::string imageUrl = stream.imageUrl;
+  std::string imageUrl = stream.imageUrl ==  nullptr ? "" : stream.imageUrl;
   TranscodingVideoStream *temp = new TranscodingVideoStream;
   temp->sourceType = stream.sourceType;
   temp->remoteUserUid = stream.remoteUserUid;
