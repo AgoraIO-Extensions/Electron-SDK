@@ -136,6 +136,7 @@ node_error AgoraVideoSource::startPreview() {
   int status = 0;
   do {
     std::string id = m_paramParser->getParameter("id");
+    std::lock_guard <std::mutex> lock(m_ipcSenderMutex);
     m_ipcSender.reset(new AgoraIpcDataSender());
     if (!m_ipcSender->initialize(id + DATA_IPC_NAME)) {
       LOG_ERROR("%s, ipc sender init fail.", __FUNCTION__);
@@ -645,7 +646,6 @@ bool AgoraVideoSource::sendData(char *payload, int len) {
     return false;
 
   std::lock_guard<std::mutex> lock(m_ipcSenderMutex);
-
   if (m_ipcSender) {
     m_ipcSender->sendData(payload, len);
     return true;
