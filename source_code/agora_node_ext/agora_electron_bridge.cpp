@@ -5,21 +5,24 @@
  * @Last Modified time: 2022-08-05 11:12:05
  */
 #include "agora_electron_bridge.h"
-#include <memory>
 #include "iris_base.h"
 #include "node_iris_event_handler.h"
+#include <memory>
+#include <regex>
 
 namespace agora {
 namespace rtc {
 namespace electron {
+
 using namespace iris::rtc;
 using namespace agora::iris::rtc;
-const char* AgoraElectronBridge::_class_name = "AgoraElectronBridge";
-const char* AgoraElectronBridge::_ret_code_str = "callApiReturnCode";
-const char* AgoraElectronBridge::_ret_result_str = "callApiResult";
-napi_ref* AgoraElectronBridge::_ref_construcotr_ptr = nullptr;
+const char *AgoraElectronBridge::_class_name = "AgoraElectronBridge";
+const char *AgoraElectronBridge::_ret_code_str = "callApiReturnCode";
+const char *AgoraElectronBridge::_ret_result_str = "callApiResult";
+napi_ref *AgoraElectronBridge::_ref_construcotr_ptr = nullptr;
 
-AgoraElectronBridge::AgoraElectronBridge() {
+AgoraElectronBridge::AgoraElectronBridge()
+    : _env(nullptr), _ref(nullptr), _result("\0") {
   LOG_F(INFO, "AgoraElectronBridge::AgoraElectronBridge()");
 }
 
@@ -75,7 +78,7 @@ napi_value AgoraElectronBridge::New(napi_env env, napi_callback_info info) {
     auto irisEngine = new AgoraElectronBridge();
     irisEngine->_env = env;
     status =
-        napi_wrap(env, jsthis, reinterpret_cast<void*>(irisEngine),
+        napi_wrap(env, jsthis, reinterpret_cast<void *>(irisEngine),
                   AgoraElectronBridge::Destructor, nullptr, &irisEngine->_ref);
     assert(status == napi_ok);
     return jsthis;
@@ -88,7 +91,7 @@ napi_value AgoraElectronBridge::New(napi_env env, napi_callback_info info) {
 }
 
 napi_value AgoraElectronBridge::Constructor(napi_env env) {
-  void* instance = nullptr;
+  void *instance = nullptr;
   napi_value cons;
   napi_status status;
   status = napi_get_reference_value(
@@ -97,10 +100,9 @@ napi_value AgoraElectronBridge::Constructor(napi_env env) {
   return cons;
 }
 
-void AgoraElectronBridge::Destructor(napi_env env,
-                                     void* nativeObject,
-                                     void* finalize_hint) {
-  reinterpret_cast<AgoraElectronBridge*>(nativeObject)->~AgoraElectronBridge();
+void AgoraElectronBridge::Destructor(napi_env env, void *nativeObject,
+                                     void *finalize_hint) {
+  reinterpret_cast<AgoraElectronBridge *>(nativeObject)->~AgoraElectronBridge();
   LOG_F(INFO, "AgoraElectronBridge::Destructor()");
 }
 
@@ -112,9 +114,9 @@ napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
   assert(status == napi_ok);
 
-  AgoraElectronBridge* agoraElectronBridge;
+  AgoraElectronBridge *agoraElectronBridge;
   status =
-      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&agoraElectronBridge));
+      napi_unwrap(env, jsthis, reinterpret_cast<void **>(&agoraElectronBridge));
 
   std::string funcName = "";
   std::string parameter = "";
@@ -124,9 +126,7 @@ napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
   status = napi_get_value_utf8string(env, args[1], parameter);
   status = napi_get_value_uint32(env, args[3], &bufferCount);
 
-  if (strcmp(parameter.c_str(), "") == 0) {
-    parameter = "{}";
-  }
+  if (strcmp(parameter.c_str(), "") == 0) { parameter = "{}"; }
 
   memset(agoraElectronBridge->_result, '\0', kBasicResultLength);
 
@@ -136,53 +136,46 @@ napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
 
   if (irisApiEngine) {
     try {
-      if (bufferCount > 0) {
-        std::vector<void*> data;
-        data.resize(bufferCount);
-        bool result = false;
-        napi_is_array(env, args[2], &result);
-        assert(result == true);
+      std::vector<void *> buffer;
+      std::vector<unsigned int> length;
 
-        std::vector<napi_value> itemVec;
-        itemVec.reserve(bufferCount);
+      if (bufferCount > 0) {
+        buffer.resize(bufferCount);
+        length.resize(bufferCount);
+
+        bool flag = false;
+        napi_is_array(env, args[2], &flag);
+        assert(flag == true);
+
+        std::vector<napi_value> itemVec(bufferCount);
         for (int i = 0; i < bufferCount; i++) {
           napi_get_element(env, args[2], i, &itemVec[i]);
-          napi_get_typedarray_info(env, itemVec[i], nullptr, nullptr, &data[i],
-                                   nullptr, nullptr);
+          napi_get_typedarray_info(env, itemVec[i], nullptr,
+                                   (size_t *) &length[i], &buffer[i], nullptr,
+                                   nullptr);
         }
-
-        ret = irisApiEngine->CallIrisApi(
-            funcName.c_str(), parameter.c_str(), parameter.length(),
-            data.data(), bufferCount, agoraElectronBridge->_result);
-
       } else {
-        bool registerApi = funcName.find("_register") != std::string::npos;
-        bool unRegisterApi = funcName.find("_unregister") != std::string::npos;
-
-        if (registerApi) {
-          auto observer = irisApiEngine->CreateObserver(
-              funcName.c_str(),
-              agoraElectronBridge->_iris_observer_event_handler.get(),
-              parameter.c_str(), parameter.length());
-
-          void* ptrList[1];
-          ptrList[0] = observer;
-          ret = irisApiEngine->CallIrisApi(funcName.c_str(), parameter.c_str(),
-                                           parameter.length(), ptrList, 1,
-                                           agoraElectronBridge->_result);
-        } else if (unRegisterApi) {
-          ret = irisApiEngine->CallIrisApi(funcName.c_str(), parameter.c_str(),
-                                           parameter.length(), nullptr, 0,
-                                           agoraElectronBridge->_result);
-          auto observer = irisApiEngine->GetObserver(funcName.c_str());
-          irisApiEngine->DestroyObserver(funcName.c_str(), observer);
-        } else {
-          ret = irisApiEngine->CallIrisApi(funcName.c_str(), parameter.c_str(),
-                                           parameter.length(), nullptr, 0,
-                                           agoraElectronBridge->_result);
+        std::smatch output;
+        std::regex pattern =
+            std::regex("^.*(Observer|Handler|Callback|Receiver)$");
+        if (std::regex_match(funcName, output, pattern)) {
+          bufferCount = 1;
+          buffer.resize(bufferCount);
+          buffer[0] = agoraElectronBridge->_iris_rtc_event_handler.get();
         }
       }
-    } catch (std::exception& e) {
+
+      ApiParam apiParam = {
+          .event = funcName.c_str(),
+          .data = parameter.c_str(),
+          .data_size = (unsigned int) parameter.length(),
+          .result = agoraElectronBridge->_result,
+          .buffer = buffer.data(),
+          .length = length.data(),
+          .buffer_count = bufferCount,
+      };
+      ret = irisApiEngine->CallIrisApi(&apiParam);
+    } catch (std::exception &e) {
       agoraElectronBridge->OnApiError(e.what());
       LOG_F(INFO, "CallApi(func name:%s) parameter: catch excepton msg: %s",
             funcName.c_str(), e.what());
@@ -211,7 +204,7 @@ napi_value AgoraElectronBridge::GetBuffer(napi_env env,
   status = napi_get_value_int32(env, args[1], &bufferSize);
 
   napi_value value;
-  napi_create_buffer_copy(env, bufferSize, (const void*)bufferPtr, nullptr,
+  napi_create_buffer_copy(env, bufferSize, (const void *) bufferPtr, nullptr,
                           &value);
 
   return value;
@@ -227,9 +220,9 @@ napi_value AgoraElectronBridge::OnEvent(napi_env env, napi_callback_info info) {
 
   assert(status == napi_ok);
 
-  AgoraElectronBridge* agoraElectronBridge;
+  AgoraElectronBridge *agoraElectronBridge;
   status =
-      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&agoraElectronBridge));
+      napi_unwrap(env, jsthis, reinterpret_cast<void **>(&agoraElectronBridge));
   assert(status == napi_ok);
   uint32_t callBackModule = CallBackModule::RTC;
   status = napi_get_value_uint32(env, args[0], &callBackModule);
@@ -271,9 +264,9 @@ napi_value AgoraElectronBridge::SetAddonLogFile(napi_env env,
   napi_value args[2];
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
 
-  AgoraElectronBridge* agoraElectronBridge;
+  AgoraElectronBridge *agoraElectronBridge;
   status =
-      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&agoraElectronBridge));
+      napi_unwrap(env, jsthis, reinterpret_cast<void **>(&agoraElectronBridge));
 
   std::string file_path = "";
   status = napi_get_value_utf8string(env, args[0], file_path);
@@ -286,9 +279,8 @@ napi_value AgoraElectronBridge::SetAddonLogFile(napi_env env,
   RETURE_NAPI_OBJ();
 }
 
-void AgoraElectronBridge::OnApiError(const char* errorMessage) {
-  _iris_rtc_event_handler->OnEvent("onApiError", errorMessage, nullptr, nullptr,
-                                   0);
+void AgoraElectronBridge::OnApiError(const char *errorMessage) {
+  //  _iris_rtc_event_handler->OnEvent("onApiError", errorMessage, nullptr, nullptr, 0);
 }
 
 napi_value AgoraElectronBridge::EnableVideoFrameCache(napi_env env,
@@ -299,9 +291,9 @@ napi_value AgoraElectronBridge::EnableVideoFrameCache(napi_env env,
   napi_value args[1];
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
 
-  AgoraElectronBridge* agoraElectronBridge;
+  AgoraElectronBridge *agoraElectronBridge;
   status =
-      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&agoraElectronBridge));
+      napi_unwrap(env, jsthis, reinterpret_cast<void **>(&agoraElectronBridge));
 
   IrisVideoFrameBufferConfig config;
   napi_value obj = args[0];
@@ -313,7 +305,7 @@ napi_value AgoraElectronBridge::EnableVideoFrameCache(napi_env env,
 
   napi_obj_get_property(env, obj, "uid", config.id);
   napi_obj_get_property(env, obj, "videoSourceType", videoSourceType);
-  config.type = (IrisVideoSourceType)videoSourceType;
+  config.type = (IrisVideoSourceType) videoSourceType;
   napi_obj_get_property(env, obj, "channelId", channelId);
   strcpy(config.key, channelId.c_str());
   napi_obj_get_property(env, obj, "width", width);
@@ -333,7 +325,7 @@ napi_value AgoraElectronBridge::EnableVideoFrameCache(napi_env env,
       agoraElectronBridge->_iris_video_frame_buffer_manager
           ->EnableVideoFrameBuffer(buffer, &config);
       ret = ERROR_OK;
-    } catch (std::exception& e) {
+    } catch (std::exception &e) {
       LOG_F(INFO, "EnableVideoFrameCache catch exception %s", e.what());
       agoraElectronBridge->OnApiError(e.what());
     }
@@ -342,18 +334,18 @@ napi_value AgoraElectronBridge::EnableVideoFrameCache(napi_env env,
   RETURE_NAPI_OBJ();
 }
 
-napi_value AgoraElectronBridge::DisableVideoFrameCache(
-    napi_env env,
-    napi_callback_info info) {
+napi_value
+AgoraElectronBridge::DisableVideoFrameCache(napi_env env,
+                                            napi_callback_info info) {
   napi_status status;
   napi_value jsthis;
   size_t argc = 1;
   napi_value args[1];
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
 
-  AgoraElectronBridge* agoraElectronBridge;
+  AgoraElectronBridge *agoraElectronBridge;
   status =
-      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&agoraElectronBridge));
+      napi_unwrap(env, jsthis, reinterpret_cast<void **>(&agoraElectronBridge));
 
   napi_value obj = args[0];
   IrisVideoFrameBufferConfig config;
@@ -363,7 +355,7 @@ napi_value AgoraElectronBridge::DisableVideoFrameCache(
 
   napi_obj_get_property(env, obj, "uid", config.id);
   napi_obj_get_property(env, obj, "videoSourceType", videoSourceType);
-  config.type = (IrisVideoSourceType)videoSourceType;
+  config.type = (IrisVideoSourceType) videoSourceType;
   napi_obj_get_property(env, obj, "channelId", channelId);
   strcpy(config.key, channelId.c_str());
 
@@ -379,7 +371,7 @@ napi_value AgoraElectronBridge::DisableVideoFrameCache(
       agoraElectronBridge->_iris_video_frame_buffer_manager
           ->DisableVideoFrameBuffer(&config);
       ret = ERROR_OK;
-    } catch (std::exception& e) {
+    } catch (std::exception &e) {
       LOG_F(INFO, "DisableVideoFrameCache catch exception %s", e.what());
       agoraElectronBridge->OnApiError(e.what());
     }
@@ -396,29 +388,29 @@ napi_value AgoraElectronBridge::GetVideoFrame(napi_env env,
   napi_value args[1];
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
 
-  AgoraElectronBridge* agoraElectronBridge;
+  AgoraElectronBridge *agoraElectronBridge;
   status =
-      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&agoraElectronBridge));
+      napi_unwrap(env, jsthis, reinterpret_cast<void **>(&agoraElectronBridge));
   IrisVideoFrameBufferConfig config;
 
   napi_value obj = args[0];
   int videoSourceType;
   std::string channel_id;
   napi_value y_buffer_obj;
-  void* y_buffer;
+  void *y_buffer;
   size_t y_length;
   napi_value u_buffer_obj;
-  void* u_buffer;
+  void *u_buffer;
   size_t u_length;
   napi_value v_buffer_obj;
-  void* v_buffer;
+  void *v_buffer;
   size_t v_length;
   int height;
   int width;
 
   napi_obj_get_property(env, obj, "uid", config.id);
   napi_obj_get_property(env, obj, "videoSourceType", videoSourceType);
-  config.type = (IrisVideoSourceType)videoSourceType;
+  config.type = (IrisVideoSourceType) videoSourceType;
   napi_obj_get_property(env, obj, "channelId", channel_id);
   strcpy(config.key, channel_id.c_str());
 
@@ -474,9 +466,9 @@ napi_value AgoraElectronBridge::InitializeEnv(napi_env env,
   napi_value args[2];
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
 
-  AgoraElectronBridge* agoraElectronBridge;
+  AgoraElectronBridge *agoraElectronBridge;
   status =
-      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&agoraElectronBridge));
+      napi_unwrap(env, jsthis, reinterpret_cast<void **>(&agoraElectronBridge));
 
   // create
   auto engine = std::make_shared<IrisApiEngine>();
@@ -487,9 +479,6 @@ napi_value AgoraElectronBridge::InitializeEnv(napi_env env,
   ::enableUseJsonArray(true);
 
   // combine
-  engine->SetIrisRtcEngineEventHandler(rtcEventHandler.get());
-  engine->SetIrisMediaPlayerEventHandler(mpkEventHandler.get());
-  engine->SetIrisMediaRecorderEventHandler(rtcEventHandler.get());
   engine->Attach(bufferManager.get());
 
   // assign
@@ -512,9 +501,9 @@ napi_value AgoraElectronBridge::ReleaseEnv(napi_env env,
   napi_value args[2];
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
 
-  AgoraElectronBridge* agoraElectronBridge;
+  AgoraElectronBridge *agoraElectronBridge;
   status =
-      napi_unwrap(env, jsthis, reinterpret_cast<void**>(&agoraElectronBridge));
+      napi_unwrap(env, jsthis, reinterpret_cast<void **>(&agoraElectronBridge));
 
   agoraElectronBridge->Release();
   LOG_F(INFO, "AgoraElectronBridge::ReleaseEnv");
@@ -529,12 +518,6 @@ void AgoraElectronBridge::Release() {
     LOG_F(INFO, "AgoraElectronBridge::Release() reset rtcEngine");
     // uncontrol
     _iris_api_engine->Detach(_iris_video_frame_buffer_manager.get());
-    _iris_api_engine->UnsetIrisRtcEngineEventHandler(
-        _iris_rtc_event_handler.get());
-    _iris_api_engine->UnsetIrisMediaPlayerEventHandler(
-        _iris_mpk_event_handler.get());
-    _iris_api_engine->UnsetIrisMediaRecorderEventHandler(
-        _iris_rtc_event_handler.get());
     // reset
     _iris_rtc_event_handler.reset();
     _iris_mpk_event_handler.reset();
@@ -544,6 +527,7 @@ void AgoraElectronBridge::Release() {
     LOG_F(INFO, "AgoraElectronBridge::Release");
   }
 }
-}  // namespace electron
-}  // namespace rtc
-}  // namespace agora
+
+}// namespace electron
+}// namespace rtc
+}// namespace agora

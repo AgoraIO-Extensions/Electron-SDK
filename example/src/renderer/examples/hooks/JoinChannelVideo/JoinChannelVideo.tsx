@@ -42,7 +42,6 @@ export default function JoinChannelVideoWithAddlisten() {
       error(`appId is invalid`);
     }
 
-    engine.registerEventHandler(this);
     engine.initialize({
       appId,
       // Should use ChannelProfileLiveBroadcasting on most of cases
@@ -92,7 +91,6 @@ export default function JoinChannelVideoWithAddlisten() {
    * Step 4: releaseRtcEngine
    */
   const releaseRtcEngine = () => {
-    engine?.unregisterEventHandler(this);
     engine?.release();
   };
 

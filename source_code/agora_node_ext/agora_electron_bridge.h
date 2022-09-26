@@ -5,13 +5,13 @@
  * @Last Modified time: 2022-08-04 21:18:20
  */
 #pragma once
-#include <node_api.h>
-#include <exception>
-#include <memory>
 #include "iris_api_type.h"
-#include "iris_rtc_cxx_api.h"
+#include "iris_cxx_api.h"
 #include "iris_video_processor_cxx.h"
 #include "node_base.h"
+#include <exception>
+#include <memory>
+#include <node_api.h>
 
 namespace agora {
 namespace rtc {
@@ -27,7 +27,7 @@ class AgoraElectronBridge {
   static napi_value Init(napi_env env, napi_value exports);
   static napi_value Constructor(napi_env env);
   static napi_value New(napi_env env, napi_callback_info info);
-  static void Destructor(napi_env env, void* nativeObject, void* finalize_hint);
+  static void Destructor(napi_env env, void *nativeObject, void *finalize_hint);
   static napi_value CallApi(napi_env env, napi_callback_info info);
   static napi_value GetBuffer(napi_env env, napi_callback_info info);
   static napi_value OnEvent(napi_env env, napi_callback_info info);
@@ -40,14 +40,14 @@ class AgoraElectronBridge {
   static napi_value InitializeEnv(napi_env env, napi_callback_info info);
   static napi_value ReleaseEnv(napi_env env, napi_callback_info info);
 
-  void OnApiError(const char* errorMessage);
+  void OnApiError(const char *errorMessage);
   void Release();
 
  private:
-  static const char* _class_name;
-  static napi_ref* _ref_construcotr_ptr;
-  static const char* _ret_code_str;
-  static const char* _ret_result_str;
+  static const char *_class_name;
+  static napi_ref *_ref_construcotr_ptr;
+  static const char *_ret_code_str;
+  static const char *_ret_result_str;
   napi_env _env;
   napi_ref _ref;
   std::shared_ptr<IrisApiEngine> _iris_api_engine;
@@ -60,6 +60,7 @@ class AgoraElectronBridge {
  private:
   char _result[kBasicResultLength];
 };
-}  // namespace electron
-}  // namespace rtc
-}  // namespace agora
+
+}// namespace electron
+}// namespace rtc
+}// namespace agora

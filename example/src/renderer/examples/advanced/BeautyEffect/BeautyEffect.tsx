@@ -63,12 +63,12 @@ export default class BeautyEffect
     }
 
     this.engine = createAgoraRtcEngine();
-    this.engine.registerEventHandler(this);
     this.engine.initialize({
       appId,
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
+    this.engine.registerEventHandler(this);
 
     this.engine?.enableExtension(
       'agora_video_filters_clear_vision',
@@ -152,6 +152,7 @@ export default class BeautyEffect
    * Step 5: releaseRtcEngine
    */
   protected releaseRtcEngine() {
+    this.engine?.unregisterEventHandler(this);
     this.engine?.release();
   }
 

@@ -29,6 +29,7 @@ import {
   Metadata,
   MetadataType,
   RtcEngineContext,
+  ScreenCaptureSourceInfo,
   SDKBuildInfo,
   Size,
 } from '../IAgoraRtcEngine';
@@ -93,7 +94,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   initialize(context: RtcEngineContext): number {
     if (AgoraEnv.isInitializeEngine) {
       logWarn('initialize: already initialize rtcEngine');
-      return -1;
+      return -ErrorCodeType.ErrNotInitialized;
     }
     AgoraEnv.isInitializeEngine = true;
     const bridge = getBridge();
@@ -188,12 +189,10 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   }
 
   getVersion(): SDKBuildInfo {
-    const apiType = 'RtcEngine_getVersion';
-    const jsonParams = {};
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    const ret: any = super.getVersion();
     return {
-      build: jsonResults.build,
-      version: jsonResults.result,
+      build: ret.build,
+      version: ret.result,
     };
   }
 
@@ -203,14 +202,14 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     ) {
       RtcEngineExInternal._handlers.push(eventHandler);
     }
-    return true;
+    return super.registerEventHandler(eventHandler);
   }
 
   unregisterEventHandler(eventHandler: IRtcEngineEventHandler): boolean {
     RtcEngineExInternal._handlers = RtcEngineExInternal._handlers.filter(
       (value) => value !== eventHandler
     );
-    return true;
+    return super.unregisterEventHandler(eventHandler);
   }
 
   createMediaPlayer(): IMediaPlayer {
@@ -424,44 +423,28 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     thumbSize: Size,
     iconSize: Size,
     includeScreen: boolean
-  ): any[] {
-    const apiType = 'RtcEngine_getScreenCaptureSources';
-    const jsonParams = {
-      thumbSize,
-      iconSize,
-      includeScreen,
-      toJSON: () => {
-        return {
-          thumbSize,
-          iconSize,
-          includeScreen,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-
-    jsonResults.result.forEach(function (element: any) {
-      if (element.thumbImage.buffer == 0) {
-        element.thumbImage.buffer = null;
-      } else {
-        element.thumbImage.buffer = getBridge().GetBuffer(
-          element.thumbImage.buffer,
-          element.thumbImage.length
-        );
-      }
-
-      if (element.iconImage.buffer == 0) {
-        element.iconImage.buffer = null;
-      } else {
-        element.iconImage.buffer = getBridge().GetBuffer(
-          element.iconImage.buffer,
-          element.iconImage.length
-        );
-      }
-    });
-
-    logDebug('getScreenCaptureSource ===== ', jsonResults.result);
-    return jsonResults.result;
+  ): ScreenCaptureSourceInfo[] {
+    return super
+      .getScreenCaptureSources(thumbSize, iconSize, includeScreen)
+      .map((value: any) => {
+        if (value.thumbImage.buffer == 0) {
+          value.thumbImage.buffer = undefined;
+        } else {
+          value.thumbImage.buffer = getBridge().GetBuffer(
+            value.thumbImage.buffer,
+            value.thumbImage?.length
+          );
+        }
+        if (value.iconImage.buffer == 0) {
+          value.iconImage.buffer = undefined;
+        } else {
+          value.iconImage.buffer = getBridge().GetBuffer(
+            value.iconImage.buffer,
+            value.iconImage.length
+          );
+        }
+        return value;
+      });
   }
 
   setupLocalVideo(canvas: VideoCanvas): number {
@@ -472,17 +455,18 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       renderMode,
       mirrorMode,
     } = canvas;
-    AgoraEnv.AgoraRendererManager?.setupLocalVideo({
-      videoSourceType: sourceType,
-      channelId: '',
-      uid,
-      view,
-      rendererOptions: {
-        contentMode: renderMode,
-        mirror: mirrorMode === VideoMirrorModeType.VideoMirrorModeEnabled,
-      },
-    });
-    return 0;
+    return (
+      AgoraEnv.AgoraRendererManager?.setupLocalVideo({
+        videoSourceType: sourceType,
+        channelId: '',
+        uid,
+        view,
+        rendererOptions: {
+          contentMode: renderMode,
+          mirror: mirrorMode === VideoMirrorModeType.VideoMirrorModeEnabled,
+        },
+      }) ?? -ErrorCodeType.ErrNotInitialized
+    );
   }
 
   setupRemoteVideo(canvas: VideoCanvas): number {
@@ -493,17 +477,18 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       renderMode,
       mirrorMode,
     } = canvas;
-    AgoraEnv.AgoraRendererManager?.setupRemoteVideo({
-      videoSourceType: sourceType,
-      channelId: '',
-      uid,
-      view,
-      rendererOptions: {
-        contentMode: renderMode,
-        mirror: mirrorMode === VideoMirrorModeType.VideoMirrorModeEnabled,
-      },
-    });
-    return 0;
+    return (
+      AgoraEnv.AgoraRendererManager?.setupRemoteVideo({
+        videoSourceType: sourceType,
+        channelId: '',
+        uid,
+        view,
+        rendererOptions: {
+          contentMode: renderMode,
+          mirror: mirrorMode === VideoMirrorModeType.VideoMirrorModeEnabled,
+        },
+      }) ?? -ErrorCodeType.ErrNotInitialized
+    );
   }
 
   setupRemoteVideoEx(canvas: VideoCanvas, connection: RtcConnection): number {
@@ -515,17 +500,18 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       mirrorMode,
     } = canvas;
     const { channelId } = connection;
-    AgoraEnv.AgoraRendererManager?.setupRemoteVideo({
-      videoSourceType: sourceType,
-      channelId,
-      uid,
-      view,
-      rendererOptions: {
-        contentMode: renderMode,
-        mirror: mirrorMode === VideoMirrorModeType.VideoMirrorModeEnabled,
-      },
-    });
-    return 0;
+    return (
+      AgoraEnv.AgoraRendererManager?.setupRemoteVideo({
+        videoSourceType: sourceType,
+        channelId,
+        uid,
+        view,
+        rendererOptions: {
+          contentMode: renderMode,
+          mirror: mirrorMode === VideoMirrorModeType.VideoMirrorModeEnabled,
+        },
+      }) ?? -ErrorCodeType.ErrNotInitialized
+    );
   }
 
   sendStreamMessage(
