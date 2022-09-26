@@ -68,10 +68,10 @@ export default class MediaPlayer
     }
 
     this.engine = createAgoraRtcEngine();
-    this.engine.registerEventHandler(this);
     this.engine.initialize({
       appId,
     });
+    this.engine.registerEventHandler(this);
 
     this.createMediaPlayer();
   }
@@ -210,7 +210,7 @@ export default class MediaPlayer
    */
   protected releaseRtcEngine() {
     this.destroyMediaPlayer();
-
+    this.engine?.unregisterEventHandler(this);
     this.engine?.release();
   }
 

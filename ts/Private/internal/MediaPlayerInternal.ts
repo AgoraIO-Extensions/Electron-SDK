@@ -247,29 +247,31 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
 
   setView(view: HTMLElement): number {
     logWarn('Also can use other api setupLocalVideo');
-    AgoraEnv.AgoraRendererManager?.setupVideo({
-      videoSourceType: VideoSourceType.VideoSourceMediaPlayer,
-      uid: this._mediaPlayerId,
-      view,
-    });
-    return 0;
+    return (
+      AgoraEnv.AgoraRendererManager?.setupVideo({
+        videoSourceType: VideoSourceType.VideoSourceMediaPlayer,
+        uid: this._mediaPlayerId,
+        view,
+      }) ?? -ErrorCodeType.ErrNotInitialized
+    );
   }
 
   setRenderMode(renderMode: RenderModeType): number {
     logWarn(
       'Also can use other api setRenderOption or setRenderOptionByConfig'
     );
-    AgoraEnv.AgoraRendererManager?.setRenderOptionByConfig({
-      videoSourceType: VideoSourceType.VideoSourceMediaPlayer,
-      uid: this._mediaPlayerId,
-      rendererOptions: {
-        contentMode:
-          renderMode === RenderModeType.RenderModeFit
-            ? RenderModeType.RenderModeFit
-            : RenderModeType.RenderModeHidden,
-        mirror: true,
-      },
-    });
-    return 0;
+    return (
+      AgoraEnv.AgoraRendererManager?.setRenderOptionByConfig({
+        videoSourceType: VideoSourceType.VideoSourceMediaPlayer,
+        uid: this._mediaPlayerId,
+        rendererOptions: {
+          contentMode:
+            renderMode === RenderModeType.RenderModeFit
+              ? RenderModeType.RenderModeFit
+              : RenderModeType.RenderModeHidden,
+          mirror: true,
+        },
+      }) ?? -ErrorCodeType.ErrNotInitialized
+    );
   }
 }

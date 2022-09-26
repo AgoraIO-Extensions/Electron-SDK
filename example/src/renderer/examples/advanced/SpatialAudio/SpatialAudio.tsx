@@ -67,13 +67,13 @@ export default class SpatialAudio
     }
 
     this.engine = createAgoraRtcEngine();
-    this.engine.registerEventHandler(this);
     this.engine.initialize({
       appId,
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
       audioScenario: AudioScenarioType.AudioScenarioGameStreaming,
     });
+    this.engine.registerEventHandler(this);
 
     this.engine.setParameters(
       JSON.stringify({ 'rtc.audio.force_bluetooth_a2dp': true })
@@ -160,6 +160,7 @@ export default class SpatialAudio
    * Step 5: releaseRtcEngine
    */
   protected releaseRtcEngine() {
+    this.engine?.unregisterEventHandler(this);
     this.engine?.release();
   }
 

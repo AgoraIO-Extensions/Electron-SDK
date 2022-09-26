@@ -5,16 +5,15 @@
  * @Last Modified time: 2022-07-31 14:38:39
  */
 #include "node_iris_event_handler.h"
+#include "agora_electron_bridge.h"
 #include <memory.h>
 #include <node_api.h>
-#include <string>
-#include "agora_electron_bridge.h"
+
 namespace agora {
 namespace rtc {
 namespace electron {
-NodeIrisEventHandler::NodeIrisEventHandler() {
-  node_async_call::close(false);
-}
+
+NodeIrisEventHandler::NodeIrisEventHandler() { node_async_call::close(false); }
 
 NodeIrisEventHandler::~NodeIrisEventHandler() {
   node_async_call::close(true);
@@ -31,10 +30,8 @@ NodeIrisEventHandler::~NodeIrisEventHandler() {
   _callbacks.clear();
 }
 
-void NodeIrisEventHandler::addEvent(const std::string& eventName,
-                                    napi_env& env,
-                                    napi_value& call_bcak,
-                                    napi_value& global) {
+void NodeIrisEventHandler::addEvent(const std::string &eventName, napi_env &env,
+                                    napi_value &call_bcak, napi_value &global) {
   auto it = _callbacks.find(eventName);
   if (it == _callbacks.end()) {
     auto callback = new EventCallback();
@@ -46,38 +43,19 @@ void NodeIrisEventHandler::addEvent(const std::string& eventName,
       env, call_bcak, 1, &(_callbacks[eventName]->call_back_ref));
 }
 
-void NodeIrisEventHandler::OnEvent(const char* event,
-                                   const char* data,
-                                   const void** buffer,
-                                   unsigned int* length,
-                                   unsigned int buffer_count) {
-  fireEvent(_callback_key, event, data, buffer, length, buffer_count);
+void NodeIrisEventHandler::OnEvent(EventParam *param) {
+  fireEvent(_callback_key, param->event, param->data, param->buffer,
+            param->length, param->buffer_count);
 }
 
-void NodeIrisEventHandler::OnEvent(const char* event,
-                                   const char* data,
-                                   char result[kBasicResultLength],
-                                   const void** buffer,
-                                   unsigned int* length,
-                                   unsigned int buffer_count) {
-  fireEvent(_callback_key, event, data, buffer, length,
-            buffer_count);
-}
-
-void NodeIrisEventHandler::fireEvent(const char* callback_name,
-                                     const char* event,
-                                     const char* data,
-                                     const void** buffer,
-                                     unsigned int* length,
+void NodeIrisEventHandler::fireEvent(const char *callback_name,
+                                     const char *event, const char *data,
+                                     void **buffer, unsigned int *length,
                                      unsigned int buffer_count) {
   std::string eventName = "";
-  if (event) {
-    eventName = event;
-  }
+  if (event) { eventName = event; }
   std::string eventData = "";
-  if (data) {
-    eventData = data;
-  }
+  if (data) { eventData = data; }
   std::string callback_name_str(callback_name);
   std::vector<std::vector<unsigned char>> buffer_array;
   buffer_array.resize(buffer_count);
@@ -90,9 +68,7 @@ void NodeIrisEventHandler::fireEvent(const char* callback_name,
   std::vector<unsigned int> buffer_lengths;
   buffer_lengths.resize(buffer_count);
 
-  for (int i = 0; i < buffer_count; i++) {
-    buffer_lengths[i] = length[i];
-  }
+  for (int i = 0; i < buffer_count; i++) { buffer_lengths[i] = length[i]; }
 
   node_async_call::async_call([this, callback_name_str, eventName, eventData,
                                buffer_array, buffer_lengths, buffer_count] {
@@ -143,6 +119,6 @@ void NodeIrisEventHandler::fireEvent(const char* callback_name,
   });
 }
 
-}  // namespace electron
-}  // namespace rtc
-}  // namespace agora
+}// namespace electron
+}// namespace rtc
+}// namespace agora
