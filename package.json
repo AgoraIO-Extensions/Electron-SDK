@@ -32,8 +32,8 @@
     "bootstrap": "yarn example && yarn"
   },
   "agora_electron": {
-    "iris_sdk_win": "http://192.168.99.149:8086/CSDC_repo/iris_4.0.0.121_DCG_Windows_Video_20220920_0621.zip",
-    "iris_sdk_mac": "http://192.168.99.149:8086/CSDC_repo/iris_4.0.0.121_DCG_Mac_Video_20220920_0618.zip",
+    "iris_sdk_win": "http://192.168.99.149:8086/CSDC_repo/iris_4.0.0.121_DCG_Windows_Video_20220927_0714.zip",
+    "iris_sdk_mac": "http://192.168.99.149:8086/CSDC_repo/iris_4.0.0.121_DCG_Mac_Video_20220927_0713.zip",
     "no_symbol": true,
     "prebuilt": true
   },
