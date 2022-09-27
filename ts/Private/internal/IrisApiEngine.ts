@@ -4,6 +4,7 @@ import { AgoraElectronBridge, Result } from '../../Types';
 import { AgoraEnv, logDebug, parseJSON } from '../../Utils';
 import {
   AudioFrame,
+  AudioPcmFrame,
   IAudioFrameObserver,
   IAudioSpectrumObserver,
   IMediaRecorderObserver,
@@ -145,8 +146,8 @@ export const EVENT_PROCESSORS = {
         (data.videoFrame as VideoFrame).yBuffer = buffers[0];
         (data.videoFrame as VideoFrame).uBuffer = buffers[1];
         (data.videoFrame as VideoFrame).vBuffer = buffers[2];
-        // (data.videoFrame as VideoFrame).metadata_buffer = buffers[3];
-        // (data.videoFrame as VideoFrame).alphaBuffer = buffers[4];
+        (data.videoFrame as VideoFrame).metadata_buffer = buffers[3];
+        (data.videoFrame as VideoFrame).alphaBuffer = buffers[4];
       }
     },
     handlers: () => MediaEngineInternal._video_frame_observers,
@@ -210,19 +211,19 @@ export const EVENT_PROCESSORS = {
       MediaPlayerInternal._source_observers.get(data.playerId),
   },
   IMediaPlayerAudioFrameObserver: {
-    suffix: 'MediaPlayerAudioFrameObserver_',
+    suffix: 'MediaPlayer_AudioFrameObserver_',
     type: EVENT_TYPE.IMediaPlayer,
     func: [processIMediaPlayerAudioFrameObserver],
     preprocess: (event: string, data: any, buffers: Uint8Array[]) => {
-      // if (data.frame) {
-      //   (data.frame as AudioPcmFrame).data_ = buffers[0];
-      // }
+      if (data.frame) {
+        (data.frame as AudioPcmFrame).data_ = Array.from(buffers[0]);
+      }
     },
     handlers: (data: any) =>
       MediaPlayerInternal._audio_frame_observers.get(data.playerId),
   },
   IMediaPlayerVideoFrameObserver: {
-    suffix: 'MediaPlayerVideoFrameObserver_',
+    suffix: 'MediaPlayer_VideoFrameObserver_',
     type: EVENT_TYPE.IMediaPlayer,
     func: [processIMediaPlayerVideoFrameObserver],
     preprocess: (event: string, data: any, buffers: Uint8Array[]) => {
