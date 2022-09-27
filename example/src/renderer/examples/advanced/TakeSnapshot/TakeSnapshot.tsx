@@ -59,12 +59,12 @@ export default class TakeSnapshot
     }
 
     this.engine = createAgoraRtcEngine();
-    this.engine.registerEventHandler(this);
     this.engine.initialize({
       appId,
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
+    this.engine.registerEventHandler(this);
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
@@ -121,6 +121,7 @@ export default class TakeSnapshot
    * Step 5: releaseRtcEngine
    */
   protected releaseRtcEngine() {
+    this.engine?.unregisterEventHandler(this);
     this.engine?.release();
   }
 

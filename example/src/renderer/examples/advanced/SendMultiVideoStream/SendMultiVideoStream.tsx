@@ -1,16 +1,23 @@
 import React from 'react';
 import {
+  AudioFrame,
+  AudioPcmFrame,
   ChannelProfileType,
   ClientRoleType,
   createAgoraRtcEngine,
+  IAudioFrameObserver,
   IMediaPlayer,
+  IMediaPlayerAudioFrameObserver,
   IMediaPlayerSourceObserver,
+  IMediaPlayerVideoFrameObserver,
   IRtcEngineEventHandler,
   IRtcEngineEx,
+  IVideoFrameObserver,
   MediaPlayerError,
   MediaPlayerState,
   RtcConnection,
   UserOfflineReasonType,
+  VideoFrame,
   VideoSourceType,
 } from 'agora-electron-sdk';
 
@@ -32,7 +39,13 @@ interface State extends BaseVideoComponentState {
 
 export default class SendMultiVideoStream
   extends BaseComponent<{}, State>
-  implements IRtcEngineEventHandler, IMediaPlayerSourceObserver
+  implements
+    IRtcEngineEventHandler,
+    IMediaPlayerSourceObserver,
+    IAudioFrameObserver,
+    IVideoFrameObserver,
+    IMediaPlayerAudioFrameObserver,
+    IMediaPlayerVideoFrameObserver
 {
   // @ts-ignore
   protected engine?: IRtcEngineEx;
@@ -65,12 +78,14 @@ export default class SendMultiVideoStream
     }
 
     this.engine = createAgoraRtcEngine() as IRtcEngineEx;
-    this.engine.registerEventHandler(this);
     this.engine.initialize({
       appId,
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
     });
+    this.engine.registerEventHandler(this);
+    // this.engine.getMediaEngine().registerAudioFrameObserver(this);
+    this.engine.getMediaEngine().registerVideoFrameObserver(this);
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
@@ -113,8 +128,10 @@ export default class SendMultiVideoStream
     }
 
     this.player = this.engine?.createMediaPlayer();
-    this.player?.registerPlayerSourceObserver(this);
-    this.player?.open(url, 0);
+    // this.player.registerAudioFrameObserver(this);
+    // this.player.registerVideoFrameObserver(this);
+    this.player.registerPlayerSourceObserver(this);
+    this.player.open(url, 0);
   };
 
   /**
@@ -156,6 +173,8 @@ export default class SendMultiVideoStream
       return;
     }
 
+    // this.player?.unregisterAudioFrameObserver(this);
+    // this.player?.unregisterVideoFrameObserver(this);
     this.engine?.destroyMediaPlayer(this.player);
     this.setState({ open: false });
   };
@@ -172,6 +191,9 @@ export default class SendMultiVideoStream
    * Step 5: releaseRtcEngine
    */
   protected releaseRtcEngine() {
+    // this.engine?.getMediaEngine().unregisterAudioFrameObserver(this);
+    this.engine?.getMediaEngine().unregisterVideoFrameObserver(this);
+    this.engine?.unregisterEventHandler(this);
     this.engine?.release();
   }
 
@@ -243,6 +265,28 @@ export default class SendMultiVideoStream
     // Auto replay on this case
     this.player?.seek(0);
     this.player?.play();
+  }
+
+  onRecordAudioFrame(channelId: string, audioFrame: AudioFrame): boolean {
+    this.info('onRecordAudioFrame', channelId, audioFrame);
+    return true;
+  }
+
+  onCaptureVideoFrame(videoFrame: VideoFrame): boolean {
+    this.info('onCaptureVideoFrame', videoFrame);
+    return true;
+  }
+
+  onMediaPlayerVideoFrame(
+    videoFrame: VideoFrame,
+    mediaPlayerId: number
+  ): boolean {
+    this.info('onMediaPlayerVideoFrame', videoFrame, mediaPlayerId);
+    return true;
+  }
+
+  onFrame(frame: AudioPcmFrame | VideoFrame) {
+    this.info('onFrame', frame);
   }
 
   protected renderConfiguration(): React.ReactNode {
