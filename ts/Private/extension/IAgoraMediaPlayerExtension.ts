@@ -26,6 +26,6 @@ declare module '../IAgoraMediaPlayer' {
       eventType?: EventType
     ): void;
 
-    release?(): void;
+    release(): void;
   }
 }
