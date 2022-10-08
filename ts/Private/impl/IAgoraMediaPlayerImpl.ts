@@ -17,6 +17,7 @@ import {
 } from '../AgoraMediaBase';
 import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource';
 import { SpatialAudioParams } from '../AgoraBase';
+// @ts-ignore
 export class IMediaPlayerImpl implements IMediaPlayer {
   getMediaPlayerId(): number {
     const apiType = this.getApiTypeFromGetMediaPlayerId();
@@ -943,6 +944,7 @@ export class IMediaPlayerImpl implements IMediaPlayer {
   }
 }
 
+// @ts-ignore
 export class IMediaPlayerCacheManagerImpl implements IMediaPlayerCacheManager {
   removeAllCaches(): number {
     const apiType = this.getApiTypeFromRemoveAllCaches();

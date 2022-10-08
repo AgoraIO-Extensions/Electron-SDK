@@ -216,7 +216,7 @@ export const EVENT_PROCESSORS = {
       MediaPlayerInternal._source_observers.get(data.playerId),
   },
   IMediaPlayerAudioFrameObserver: {
-    suffix: 'MediaPlayerAudioFrameObserver_',
+    suffix: 'MediaPlayer_AudioFrameObserver_',
     type: EVENT_TYPE.IMediaPlayer,
     func: [processIMediaPlayerAudioFrameObserver],
     preprocess: (event: string, data: any, buffers: Uint8Array[]) => {
@@ -228,7 +228,7 @@ export const EVENT_PROCESSORS = {
       MediaPlayerInternal._audio_frame_observers.get(data.playerId),
   },
   IMediaPlayerVideoFrameObserver: {
-    suffix: 'MediaPlayerVideoFrameObserver_',
+    suffix: 'MediaPlayer_VideoFrameObserver_',
     type: EVENT_TYPE.IMediaPlayer,
     func: [processIMediaPlayerVideoFrameObserver],
     preprocess: (event: string, data: any, buffers: Uint8Array[]) => {
@@ -331,14 +331,15 @@ export function handleEvent(
       processor.handlers(_data) !== undefined
     ) {
       processor = p;
-      _event = _event.replace(processor.suffix, '');
+      const reg = new RegExp(`^${processor.suffix}`, 'g');
+      _event = _event.replace(reg, '');
       return true;
     }
     return false;
   });
 
   if (_event.endsWith('Ex')) {
-    _event = _event.replace('Ex', '');
+    _event = _event.replace(/Ex$/g, '');
   }
 
   const buffers: Uint8Array[] = buffer;

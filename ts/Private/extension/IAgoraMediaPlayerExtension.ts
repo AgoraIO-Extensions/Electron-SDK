@@ -12,20 +12,32 @@ export type IMediaPlayerEvent = IMediaPlayerSourceObserver &
 
 declare module '../IAgoraMediaPlayer' {
   interface IMediaPlayer {
-    addListener?<EventType extends keyof IMediaPlayerEvent>(
+    /**
+     * @ignore
+     */
+    addListener<EventType extends keyof IMediaPlayerEvent>(
       eventType: EventType,
       listener: IMediaPlayerEvent[EventType]
     ): void;
 
-    removeListener?<EventType extends keyof IMediaPlayerEvent>(
+    /**
+     * @ignore
+     */
+    removeListener<EventType extends keyof IMediaPlayerEvent>(
       eventType: EventType,
       listener: IMediaPlayerEvent[EventType]
     ): void;
 
-    removeAllListeners?<EventType extends keyof IMediaPlayerEvent>(
+    /**
+     * @ignore
+     */
+    removeAllListeners<EventType extends keyof IMediaPlayerEvent>(
       eventType?: EventType
     ): void;
 
-    release?(): void;
+    /**
+     * @ignore
+     */
+    release(): void;
   }
 }
