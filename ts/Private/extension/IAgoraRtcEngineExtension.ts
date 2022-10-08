@@ -14,17 +14,26 @@ export type IRtcEngineEvent = IRtcEngineEventHandler &
 
 declare module '../IAgoraRtcEngine' {
   interface IRtcEngine {
-    addListener?<EventType extends keyof IRtcEngineEvent>(
+    /**
+     * @ignore
+     */
+    addListener<EventType extends keyof IRtcEngineEvent>(
       eventType: EventType,
       listener: IRtcEngineEvent[EventType]
     ): void;
 
-    removeListener?<EventType extends keyof IRtcEngineEvent>(
+    /**
+     * @ignore
+     */
+    removeListener<EventType extends keyof IRtcEngineEvent>(
       eventType: EventType,
       listener: IRtcEngineEvent[EventType]
     ): void;
 
-    removeAllListeners?<EventType extends keyof IRtcEngineEvent>(
+    /**
+     * @ignore
+     */
+    removeAllListeners<EventType extends keyof IRtcEngineEvent>(
       eventType?: EventType
     ): void;
   }

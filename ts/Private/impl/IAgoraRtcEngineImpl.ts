@@ -900,6 +900,7 @@ export function processIRtcEngineEventHandler(
   }
 }
 
+// @ts-ignore
 export class IVideoDeviceManagerImpl implements IVideoDeviceManager {
   enumerateVideoDevices(): VideoDeviceInfo[] {
     const apiType = this.getApiTypeFromEnumerateVideoDevices();
@@ -1067,6 +1068,7 @@ export function processIDirectCdnStreamingEventHandler(
   }
 }
 
+// @ts-ignore
 export class IRtcEngineImpl implements IRtcEngine {
   release(sync = false): void {
     const apiType = this.getApiTypeFromRelease(sync);

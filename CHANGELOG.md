@@ -1,3 +1,21 @@
+# [4.0.0](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.0-rc.3...v4.0.0) (2022-09-28)
+
+
+### Bug Fixes
+
+* set windows msvc link as MT ([341c9ee](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/341c9ee600d5230ac40dd8c6b0226dfaaf96354e))
+* some AudioFrameObserver & VideoFrameObserver issue ([58063be](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/58063be50f8156e24118b707dfe14fd28f03f405))
+
+
+### Features
+
+* complete,hook ([#881](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/881)) ([a9f679b](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/a9f679b73bb6896e84106a3284e49c86b8ba4927))
+
+
+### Reverts
+
+* iris url ([60492eb](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/60492ebccb79929a0ff206f013ffd24ba2b2e106))
+
 # [4.0.0-rc.3](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.0-rc.2...v4.0.0-rc.3) (2022-09-14)
 
 

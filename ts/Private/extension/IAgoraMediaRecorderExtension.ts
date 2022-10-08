@@ -4,17 +4,26 @@ export type IMediaRecorderEvent = IMediaRecorderObserver;
 
 declare module '../IAgoraMediaRecorder' {
   interface IMediaRecorder {
-    addListener?<EventType extends keyof IMediaRecorderEvent>(
+    /**
+     * @ignore
+     */
+    addListener<EventType extends keyof IMediaRecorderEvent>(
       eventType: EventType,
       listener: IMediaRecorderEvent[EventType]
     ): void;
 
-    removeListener?<EventType extends keyof IMediaRecorderEvent>(
+    /**
+     * @ignore
+     */
+    removeListener<EventType extends keyof IMediaRecorderEvent>(
       eventType: EventType,
       listener: IMediaRecorderEvent[EventType]
     ): void;
 
-    removeAllListeners?<EventType extends keyof IMediaRecorderEvent>(
+    /**
+     * @ignore
+     */
+    removeAllListeners<EventType extends keyof IMediaRecorderEvent>(
       eventType?: EventType
     ): void;
   }

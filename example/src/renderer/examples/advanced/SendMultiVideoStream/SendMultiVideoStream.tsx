@@ -173,6 +173,8 @@ export default class SendMultiVideoStream
       return;
     }
 
+    // this.player?.unregisterAudioFrameObserver(this);
+    // this.player?.unregisterVideoFrameObserver(this);
     this.engine?.destroyMediaPlayer(this.player);
     this.setState({ open: false });
   };
@@ -189,6 +191,8 @@ export default class SendMultiVideoStream
    * Step 5: releaseRtcEngine
    */
   protected releaseRtcEngine() {
+    // this.engine?.getMediaEngine().unregisterAudioFrameObserver(this);
+    // this.engine?.getMediaEngine().unregisterVideoFrameObserver(this);
     this.engine?.unregisterEventHandler(this);
     this.engine?.release();
   }
@@ -270,6 +274,14 @@ export default class SendMultiVideoStream
 
   onCaptureVideoFrame(videoFrame: VideoFrame): boolean {
     this.info('onCaptureVideoFrame', videoFrame);
+    return true;
+  }
+
+  onMediaPlayerVideoFrame(
+    videoFrame: VideoFrame,
+    mediaPlayerId: number
+  ): boolean {
+    this.info('onMediaPlayerVideoFrame', videoFrame, mediaPlayerId);
     return true;
   }
 
