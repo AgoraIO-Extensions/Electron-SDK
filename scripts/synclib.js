@@ -138,7 +138,7 @@ const win64Prepare = (folder) => {
       return Promise.all([
         fs.move(path.join(folder, './libs/include'), path.join(__dirname, '../sdk/include')),
         fs.move(path.join(folder, './libs/x86_64/agora_rtc_sdk.dll'), path.join(__dirname, '../sdk/dll/agora_rtc_sdk.dll')),
-        fs.move(path.join(folder, './libs/x86/libagora-wgc.dll'), path.join(__dirname, '../sdk/dll/libagora-wgc.dll')),
+        fs.move(path.join(folder, './libs/x86_64/libagora-wgc.dll'), path.join(__dirname, '../sdk/dll/libagora-wgc.dll')),
         fs.move(path.join(folder, './libs/x86_64/libagora_fdkaac.dll'), path.join(__dirname, '../sdk/dll/libagora_fdkaac.dll')),
         fs.move(path.join(folder, './libs/x86_64/libagora_ci_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_ci_extension.dll')),
         fs.move(path.join(folder, './libs/x86_64/libagora_fd_extension.dll'), path.join(__dirname, '../sdk/dll/libagora_fd_extension.dll')),
