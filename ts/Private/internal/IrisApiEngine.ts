@@ -314,7 +314,8 @@ export function handleEvent(
     const p = it as EventProcessor;
     if (_event.startsWith(p.suffix)) {
       processor = p;
-      _event = _event.replace(processor.suffix, '');
+      const reg = new RegExp(`^${processor.suffix}`, 'g');
+      _event = _event.replace(reg, '');
       return true;
     }
     return false;
@@ -328,7 +329,7 @@ export function handleEvent(
   const buffers: Uint8Array[] = buffer;
 
   if (_event.endsWith('Ex')) {
-    _event = _event.replace('Ex', '');
+    _event = _event.replace(/Ex$/g, '');
   }
 
   if (processor.preprocess) processor.preprocess!(_event, _data, buffers);
