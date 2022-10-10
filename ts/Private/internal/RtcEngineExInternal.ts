@@ -189,10 +189,12 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   }
 
   getVersion(): SDKBuildInfo {
-    const ret: any = super.getVersion();
+    const apiType = 'RtcEngine_getVersion';
+    const jsonParams = {};
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
     return {
-      build: ret.build,
-      version: ret.result,
+      build: jsonResults.build,
+      version: jsonResults.result,
     };
   }
 
