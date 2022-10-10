@@ -149,7 +149,7 @@ export class MediaEngineInternal extends IMediaEngineImpl {
 
     if (!frame.buffer == null) return ErrorCodeType.ErrInvalidArgument;
 
-    let buffers = [frame.buffer, undefined, undefined];
+    const buffers = [frame.buffer, undefined, undefined];
     frame.buffer = undefined;
     const jsonResults = callIrisApi.call(
       this,
@@ -183,7 +183,7 @@ export class MediaEngineInternal extends IMediaEngineImpl {
 
     if (!imageBuffer) return ErrorCodeType.ErrInvalidArgument;
 
-    let bufferArray = [imageBuffer];
+    const bufferArray = [imageBuffer];
 
     const jsonResults = callIrisApi.call(
       this,
@@ -218,7 +218,7 @@ export class MediaEngineInternal extends IMediaEngineImpl {
     };
     if (!frame.buffer) return ErrorCodeType.ErrInvalidArgument;
 
-    let bufferArray = [frame.buffer];
+    const bufferArray = [frame.buffer];
     frame.buffer = undefined;
 
     const jsonResults = callIrisApi.call(

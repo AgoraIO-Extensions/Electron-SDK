@@ -1,4 +1,14 @@
 import './extension/IAgoraMediaEngineExtension';
+import {
+  IAudioFrameObserver,
+  IVideoFrameObserver,
+  IVideoEncodedFrameObserver,
+  MediaSourceType,
+  AudioFrame,
+  ExternalVideoSourceType,
+  ExternalVideoFrame,
+} from './AgoraMediaBase';
+import { SenderOptions, EncodedVideoFrameInfo } from './AgoraBase';
 /**
  * The channel mode.
  */

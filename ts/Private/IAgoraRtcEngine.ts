@@ -1,4 +1,114 @@
 import './extension/IAgoraRtcEngineExtension';
+import {
+  QualityAdaptIndication,
+  VideoCodecType,
+  CaptureBrightnessLevelType,
+  VideoStreamType,
+  AudioSampleRateType,
+  VideoFormat,
+  Rectangle,
+  ScreenCaptureParameters,
+  VideoMirrorModeType,
+  ClientRoleType,
+  AudienceLatencyLevelType,
+  ChannelProfileType,
+  ErrorCodeType,
+  QualityType,
+  LastmileProbeResult,
+  AudioVolumeInfo,
+  RtcStats,
+  UplinkNetworkInfo,
+  DownlinkNetworkInfo,
+  VideoSourceType,
+  LocalVideoStreamState,
+  LocalVideoStreamError,
+  RemoteVideoState,
+  RemoteVideoStateReason,
+  UserOfflineReasonType,
+  LocalAudioStats,
+  RemoteAudioStats,
+  LicenseErrorType,
+  LocalAudioStreamState,
+  LocalAudioStreamError,
+  RemoteAudioState,
+  RemoteAudioStateReason,
+  ClientRoleChangeFailedReason,
+  RtmpStreamPublishState,
+  RtmpStreamPublishErrorType,
+  RtmpStreamingEvent,
+  ChannelMediaRelayState,
+  ChannelMediaRelayError,
+  ChannelMediaRelayEvent,
+  ConnectionStateType,
+  ConnectionChangedReasonType,
+  WlaccMessageReason,
+  WlaccSuggestAction,
+  WlAccStats,
+  NetworkType,
+  EncryptionErrorType,
+  PermissionType,
+  UserInfo,
+  UploadErrorReason,
+  StreamSubscribeState,
+  StreamPublishState,
+  AudioScenarioType,
+  ThreadPriorityType,
+  LastmileProbeConfig,
+  VideoEncoderConfiguration,
+  BeautyOptions,
+  LowlightEnhanceOptions,
+  VideoDenoiserOptions,
+  ColorEnhanceOptions,
+  VirtualBackgroundSource,
+  SegmentationProperty,
+  VideoCanvas,
+  VideoSubscriptionOptions,
+  AudioEncodedFrameObserverConfig,
+  IAudioEncodedFrameObserver,
+  SpatialAudioParams,
+  VoiceBeautifierPreset,
+  AudioEffectPreset,
+  VoiceConversionPreset,
+  HeadphoneEqualizerPreset,
+  EarMonitoringFilterType,
+  SenderOptions,
+  AudioSessionOperationRestriction,
+  DeviceInfo,
+  VideoContentHint,
+  ScreenScenarioType,
+  ScreenCaptureParameters2,
+  LiveTranscoding,
+  LocalTranscoderConfiguration,
+  VideoOrientation,
+  EncryptionConfig,
+  ChannelMediaRelayConfiguration,
+  AudioProfileType,
+  ClientRoleOptions,
+  AudioRecordingConfiguration,
+  SimulcastStreamConfig,
+  DataStreamConfig,
+  WatermarkOptions,
+} from './AgoraBase';
+import {
+  RenderModeType,
+  ContentInspectResult,
+  MediaSourceType,
+  RawAudioFrameOpModeType,
+  IAudioSpectrumObserver,
+  ContentInspectConfig,
+} from './AgoraMediaBase';
+import { RtcConnection } from './IAgoraRtcEngineEx';
+import {
+  RhythmPlayerStateType,
+  RhythmPlayerErrorType,
+  AgoraRhythmPlayerConfig,
+} from './IAgoraRhythmPlayer';
+import { LogConfig, LogFilterType, LogLevel } from './IAgoraLog';
+import { IMediaPlayer } from './IAgoraMediaPlayer';
+import { AudioMixingDualMonoMode, IMediaEngine } from './IAgoraMediaEngine';
+import { IAudioDeviceManager } from './IAudioDeviceManager';
+import { IMediaRecorder } from './IAgoraMediaRecorder';
+import { ILocalSpatialAudioEngine } from './IAgoraSpatialAudio';
 /**
  * Media device types.
  */
@@ -3257,15 +3367,15 @@ export abstract class IRtcEngine {
   abstract resumeAudioMixing(): number;
 
   /**
- * Selects the audio track used during playback.
- * After getting the track index of the audio file, you can call this method to specify any track to play. For example, if different tracks of a multi-track file store songs in different languages, you can call this method to set the playback language.For the supported formats of audio files, see .You need to call this method after calling startAudioMixing and receiving the onAudioMixingStateChanged (AudioMixingStatePlaying) callback.
- *
- * @param index
+   * Selects the audio track used during playback.
+   * After getting the track index of the audio file, you can call this method to specify any track to play. For example, if different tracks of a multi-track file store songs in different languages, you can call this method to set the playback language.For the supported formats of audio files, see .You need to call this method after calling startAudioMixing and receiving the onAudioMixingStateChanged (AudioMixingStatePlaying) callback.
+   *
+   * @param index
  The audio track you want to specify. The value range is [0, getAudioTrackCount ()].
- *
- * @returns
- * 0: Success.< 0: Failure.
- */
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
   abstract selectAudioTrack(index: number): number;
 
   /**

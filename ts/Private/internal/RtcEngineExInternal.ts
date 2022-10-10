@@ -109,7 +109,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return ret;
   }
 
-  release(sync: boolean = false) {
+  release(sync = false) {
     if (!AgoraEnv.isInitializeEngine) {
       logWarn('release: rtcEngine have not initialize');
       return;
@@ -285,9 +285,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       : 'RtcEngine_setClientRole2';
   }
 
-  protected getApiTypeFromStartEchoTest(
-    intervalInSeconds: number = 10
-  ): string {
+  protected getApiTypeFromStartEchoTest(intervalInSeconds = 10): string {
     return 'RtcEngine_startEchoTest2';
   }
 
@@ -313,7 +311,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     filePath: string,
     loopback: boolean,
     cycle: number,
-    startPos: number = 0
+    startPos = 0
   ): string {
     return 'RtcEngine_startAudioMixing2';
   }
@@ -547,7 +545,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
 
     if (!data) return ErrorCodeType.ErrInvalidArgument;
 
-    let bufferArray = [data];
+    const bufferArray = [data];
     const jsonResults = callIrisApi.call(
       this,
       apiType,
@@ -589,7 +587,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
 
     if (!metadata.buffer) return ErrorCodeType.ErrInvalidArgument;
 
-    let bufferArray = [metadata.buffer!];
+    const bufferArray = [metadata.buffer!];
     metadata.buffer = undefined;
 
     const jsonResults = callIrisApi.call(
