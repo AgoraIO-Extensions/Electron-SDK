@@ -152,7 +152,6 @@ export default class LocalVideoTranscoder
   };
 
   startCameraCapture = (deviceId: string) => {
-    console.log('start啥几把玩意？',this._getVideoSourceTypeCamera(deviceId));
     if(VideoSourceType.VideoSourceCameraPrimary === this._getVideoSourceTypeCamera(deviceId)) {
       this.engine?.startPrimaryCameraCapture({
         deviceId,
