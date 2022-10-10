@@ -1,12 +1,4 @@
 import './extension/IAgoraMediaPlayerSourceExtension';
-import {
-  MediaPlayerState,
-  MediaPlayerError,
-  MediaPlayerEvent,
-  PlayerPreloadEvent,
-  SrcInfo,
-  PlayerUpdatedInfo,
-} from './AgoraMediaPlayerTypes';
 /**
  * Provides callbacks for media players.
  */

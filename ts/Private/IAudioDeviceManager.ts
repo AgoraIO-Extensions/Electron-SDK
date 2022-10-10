@@ -1,5 +1,4 @@
 import './extension/IAudioDeviceManagerExtension';
-import { AudioDeviceInfo } from './IAgoraRtcEngine';
 /**
  * The maximum length of the device ID.
  */
@@ -105,6 +104,16 @@ export abstract class IAudioDeviceManager {
   /**
    * @ignore
    */
+  abstract setLoopbackDevice(deviceId: string): number;
+
+  /**
+   * @ignore
+   */
+  abstract getLoopbackDevice(): string;
+
+  /**
+   * @ignore
+   */
   abstract setPlaybackDeviceMute(mute: boolean): number;
 
   /**
@@ -201,6 +210,11 @@ export abstract class IAudioDeviceManager {
    * 0: Success.< 0: Failure.
    */
   abstract followSystemRecordingDevice(enable: boolean): number;
+
+  /**
+   * @ignore
+   */
+  abstract followSystemLoopbackDevice(enable: boolean): number;
 
   /**
    * Releases all the resources occupied by the IAudioDeviceManager object.

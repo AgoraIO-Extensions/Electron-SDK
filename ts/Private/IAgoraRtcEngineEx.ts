@@ -1,22 +1,4 @@
 import './extension/IAgoraRtcEngineExExtension';
-import { IRtcEngine, ChannelMediaOptions } from './IAgoraRtcEngine';
-import {
-  VideoEncoderConfiguration,
-  VideoCanvas,
-  VideoStreamType,
-  VideoSubscriptionOptions,
-  SpatialAudioParams,
-  VideoMirrorModeType,
-  ConnectionStateType,
-  EncryptionConfig,
-  WatermarkOptions,
-  UserInfo,
-  VideoSourceType,
-  SimulcastStreamConfig,
-  SimulcastStreamMode,
-  DataStreamConfig,
-} from './AgoraBase';
-import { RenderModeType } from './AgoraMediaBase';
 /**
  * Contains connection information.
  */
@@ -117,6 +99,22 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
+   * @ignore
+   */
+  abstract muteLocalAudioStreamEx(
+    mute: boolean,
+    connection: RtcConnection
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract muteLocalVideoStreamEx(
+    mute: boolean,
+    connection: RtcConnection
+  ): number;
+
+  /**
    * Stops or resumes receiving the audio stream of a specified user.
    * This method is used to stops or resumes receiving the audio stream of a specified user. You can call this method before or after joining a channel. If a user leaves a channel, the settings in this method become invalid.
    *
@@ -136,6 +134,14 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
+   * @ignore
+   */
+  abstract muteAllRemoteAudioStreamsEx(
+    mute: boolean,
+    connection: RtcConnection
+  ): number;
+
+  /**
    * Stops or resumes receiving the video stream of a specified user.
    * This method is used to stops or resumes receiving the video stream of a specified user. You can call this method before or after joining a channel. If a user leaves a channel, the settings in this method become invalid.
    *
@@ -150,6 +156,14 @@ export abstract class IRtcEngineEx extends IRtcEngine {
    */
   abstract muteRemoteVideoStreamEx(
     uid: number,
+    mute: boolean,
+    connection: RtcConnection
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract muteAllRemoteVideoStreamsEx(
     mute: boolean,
     connection: RtcConnection
   ): number;
@@ -417,6 +431,67 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * @ignore
    */
+  abstract startRtmpStreamWithoutTranscodingEx(
+    url: string,
+    connection: RtcConnection
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract startRtmpStreamWithTranscodingEx(
+    url: string,
+    transcoding: LiveTranscoding,
+    connection: RtcConnection
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract updateRtmpTranscodingEx(
+    transcoding: LiveTranscoding,
+    connection: RtcConnection
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract stopRtmpStreamEx(url: string, connection: RtcConnection): number;
+
+  /**
+   * @ignore
+   */
+  abstract startChannelMediaRelayEx(
+    configuration: ChannelMediaRelayConfiguration,
+    connection: RtcConnection
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract updateChannelMediaRelayEx(
+    configuration: ChannelMediaRelayConfiguration,
+    connection: RtcConnection
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract stopChannelMediaRelayEx(connection: RtcConnection): number;
+
+  /**
+   * @ignore
+   */
+  abstract pauseAllChannelMediaRelayEx(connection: RtcConnection): number;
+
+  /**
+   * @ignore
+   */
+  abstract resumeAllChannelMediaRelayEx(connection: RtcConnection): number;
+
+  /**
+   * @ignore
+   */
   abstract getUserInfoByUserAccountEx(
     userAccount: string,
     connection: RtcConnection
@@ -441,7 +516,6 @@ export abstract class IRtcEngineEx extends IRtcEngine {
    * @ignore
    */
   abstract enableDualStreamModeEx(
-    sourceType: VideoSourceType,
     enabled: boolean,
     streamConfig: SimulcastStreamConfig,
     connection: RtcConnection
@@ -451,7 +525,6 @@ export abstract class IRtcEngineEx extends IRtcEngine {
    * @ignore
    */
   abstract setDualStreamModeEx(
-    sourceType: VideoSourceType,
     mode: SimulcastStreamMode,
     streamConfig: SimulcastStreamConfig,
     connection: RtcConnection

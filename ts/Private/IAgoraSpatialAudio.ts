@@ -1,5 +1,4 @@
 import './extension/IAgoraSpatialAudioExtension';
-import { RtcConnection } from './IAgoraRtcEngineEx';
 /**
  * The spatial position of the remote user or the media player.
  */
@@ -12,6 +11,48 @@ export class RemoteVoicePositionInfo {
    * The unit vector of the x axis in the coordinate system. This parameter is an array of length 3, and the three values represent the front, right, and top coordinates in turn.
    */
   forward?: number[];
+}
+
+/**
+ * @ignore
+ */
+export class SpatialAudioZone {
+  /**
+   * @ignore
+   */
+  zoneSetId?: number;
+  /**
+   * @ignore
+   */
+  position?: number[];
+  /**
+   * @ignore
+   */
+  forward?: number[];
+  /**
+   * @ignore
+   */
+  right?: number[];
+  /**
+   * @ignore
+   */
+  up?: number[];
+  /**
+   * @ignore
+   */
+  forwardLength?: number;
+  /**
+   * @ignore
+   */
+  rightLength?: number;
+  /**
+   * @ignore
+   */
+  upLength?: number;
+  /**
+   * @ignore
+   */
+  audioAttenuation?: number;
 }
 
 /**
@@ -133,6 +174,25 @@ export abstract class IBaseSpatialAudioEngine {
    * 0: Success.< 0: Failure.
    */
   abstract muteAllRemoteAudioStreams(mute: boolean): number;
+
+  /**
+   * @ignore
+   */
+  abstract setZones(zones: SpatialAudioZone, zoneCount: number): number;
+
+  /**
+   * @ignore
+   */
+  abstract setPlayerAttenuation(
+    playerId: number,
+    attenuation: number,
+    forceSet: boolean
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract muteRemoteAudioStream(uid: number, mute: boolean): number;
 }
 
 /**
@@ -206,4 +266,13 @@ export abstract class ILocalSpatialAudioEngine extends IBaseSpatialAudioEngine {
    * @ignore
    */
   abstract clearRemotePositionsEx(connection: RtcConnection): number;
+
+  /**
+   * @ignore
+   */
+  abstract setRemoteAudioAttenuation(
+    uid: number,
+    attenuation: number,
+    forceSet: boolean
+  ): number;
 }

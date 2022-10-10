@@ -1,112 +1,4 @@
 import './extension/IAgoraRtcEngineExtension';
-import {
-  QualityAdaptIndication,
-  VideoCodecType,
-  CaptureBrightnessLevelType,
-  VideoStreamType,
-  AudioSampleRateType,
-  VideoFormat,
-  Rectangle,
-  ScreenCaptureParameters,
-  VideoMirrorModeType,
-  ClientRoleType,
-  AudienceLatencyLevelType,
-  ChannelProfileType,
-  ErrorCodeType,
-  QualityType,
-  LastmileProbeResult,
-  AudioVolumeInfo,
-  RtcStats,
-  UplinkNetworkInfo,
-  DownlinkNetworkInfo,
-  VideoSourceType,
-  LocalVideoStreamState,
-  LocalVideoStreamError,
-  RemoteVideoState,
-  RemoteVideoStateReason,
-  UserOfflineReasonType,
-  LocalAudioStats,
-  RemoteAudioStats,
-  LocalAudioStreamState,
-  LocalAudioStreamError,
-  RemoteAudioState,
-  RemoteAudioStateReason,
-  ClientRoleChangeFailedReason,
-  RtmpStreamPublishState,
-  RtmpStreamPublishErrorType,
-  RtmpStreamingEvent,
-  ChannelMediaRelayState,
-  ChannelMediaRelayError,
-  ChannelMediaRelayEvent,
-  ConnectionStateType,
-  ConnectionChangedReasonType,
-  WlaccMessageReason,
-  WlaccSuggestAction,
-  WlAccStats,
-  NetworkType,
-  EncryptionErrorType,
-  PermissionType,
-  UserInfo,
-  UploadErrorReason,
-  StreamSubscribeState,
-  StreamPublishState,
-  AudioScenarioType,
-  ThreadPriorityType,
-  LastmileProbeConfig,
-  VideoEncoderConfiguration,
-  BeautyOptions,
-  LowlightEnhanceOptions,
-  VideoDenoiserOptions,
-  ColorEnhanceOptions,
-  VirtualBackgroundSource,
-  SegmentationProperty,
-  VideoCanvas,
-  VideoSubscriptionOptions,
-  AudioEncodedFrameObserverConfig,
-  IAudioEncodedFrameObserver,
-  SpatialAudioParams,
-  VoiceBeautifierPreset,
-  AudioEffectPreset,
-  VoiceConversionPreset,
-  EarMonitoringFilterType,
-  SenderOptions,
-  AudioSessionOperationRestriction,
-  DeviceInfo,
-  VideoContentHint,
-  ScreenScenarioType,
-  ScreenCaptureParameters2,
-  LiveTranscoding,
-  LocalTranscoderConfiguration,
-  VideoOrientation,
-  EncryptionConfig,
-  ChannelMediaRelayConfiguration,
-  AudioProfileType,
-  ClientRoleOptions,
-  AudioRecordingConfiguration,
-  SimulcastStreamConfig,
-  DataStreamConfig,
-  WatermarkOptions,
-} from './AgoraBase';
-import {
-  RenderModeType,
-  ContentInspectResult,
-  MediaSourceType,
-  RawAudioFrameOpModeType,
-  IAudioSpectrumObserver,
-  ContentInspectConfig,
-} from './AgoraMediaBase';
-import { RtcConnection } from './IAgoraRtcEngineEx';
-import {
-  RhythmPlayerStateType,
-  RhythmPlayerErrorType,
-  AgoraRhythmPlayerConfig,
-} from './IAgoraRhythmPlayer';
-import { LogConfig, LogFilterType, LogLevel } from './IAgoraLog';
-import { IMediaPlayer } from './IAgoraMediaPlayer';
-import { AudioMixingDualMonoMode, IMediaEngine } from './IAgoraMediaEngine';
-import { IAudioDeviceManager } from './IAudioDeviceManager';
-import { IMediaRecorder } from './IAgoraMediaRecorder';
-import { ILocalSpatialAudioEngine } from './IAgoraSpatialAudio';
 /**
  * Media device types.
  */
@@ -453,6 +345,10 @@ export class RemoteVideoStats {
    * Deprecated:In scenarios where audio and video are synchronized, you can get the video delay data from networkTransportDelay and jitterBufferDelay in RemoteAudioStats .The video delay (ms).
    */
   delay?: number;
+  /**
+   * @ignore
+   */
+  e2eDelay?: number;
   /**
    * The width (pixels) of the video.
    */
@@ -886,6 +782,10 @@ export class ScreenCaptureSourceInfo {
    * @ignore
    */
   isOccluded?: boolean;
+  /**
+   * @ignore
+   */
+  minimizeWindow?: boolean;
 }
 
 /**
@@ -1286,6 +1186,11 @@ export interface IRtcEngineEventHandler {
     deviceType: MediaDeviceType,
     deviceState: number
   ): void;
+
+  /**
+   * @ignore
+   */
+  onAudioMixingPositionChanged?(position: number): void;
 
   /**
    * Occurs when the playback of the local music file finishes.
@@ -1858,6 +1763,14 @@ export interface IRtcEngineEventHandler {
    * @param token The token that expires in 30 seconds.
    */
   onTokenPrivilegeWillExpire?(connection: RtcConnection, token: string): void;
+
+  /**
+   * @ignore
+   */
+  onLicenseValidationFailure?(
+    connection: RtcConnection,
+    reason: LicenseErrorType
+  ): void;
 
   /**
    * Occurs when the first audio frame is published.
@@ -2477,6 +2390,10 @@ export class RtcEngineContext {
    */
   channelProfile?: ChannelProfileType;
   /**
+   * @ignore
+   */
+  license?: string;
+  /**
    * The audio scenarios. See AudioScenarioType . Under different audio scenarios, the device uses different volume types.
    */
   audioScenario?: AudioScenarioType;
@@ -2716,6 +2633,28 @@ export class DirectCdnStreamingMediaOptions {
    * The video track ID returned by calling the createCustomVideoTrack method. The default value is 0.
    */
   customVideoTrackId?: number;
+}
+
+/**
+ * @ignore
+ */
+export class ExtensionInfo {
+  /**
+   * @ignore
+   */
+  mediaSourceType?: MediaSourceType;
+  /**
+   * @ignore
+   */
+  remoteUid?: number;
+  /**
+   * @ignore
+   */
+  channelId?: string;
+  /**
+   * @ignore
+   */
+  localUid?: number;
 }
 
 /**
@@ -3318,15 +3257,15 @@ export abstract class IRtcEngine {
   abstract resumeAudioMixing(): number;
 
   /**
-   * Selects the audio track used during playback.
-   * After getting the track index of the audio file, you can call this method to specify any track to play. For example, if different tracks of a multi-track file store songs in different languages, you can call this method to set the playback language.For the supported formats of audio files, see .You need to call this method after calling startAudioMixing and receiving the onAudioMixingStateChanged (AudioMixingStatePlaying) callback.
-   *
-   * @param index
+ * Selects the audio track used during playback.
+ * After getting the track index of the audio file, you can call this method to specify any track to play. For example, if different tracks of a multi-track file store songs in different languages, you can call this method to set the playback language.For the supported formats of audio files, see .You need to call this method after calling startAudioMixing and receiving the onAudioMixingStateChanged (AudioMixingStatePlaying) callback.
+ *
+ * @param index
  The audio track you want to specify. The value range is [0, getAudioTrackCount ()].
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
+ *
+ * @returns
+ * 0: Success.< 0: Failure.
+ */
   abstract selectAudioTrack(index: number): number;
 
   /**
@@ -3833,6 +3772,16 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
+   * @ignore
+   */
+  abstract setHeadphoneEQPreset(preset: HeadphoneEqualizerPreset): number;
+
+  /**
+   * @ignore
+   */
+  abstract setHeadphoneEQParameters(lowGain: number, highGain: number): number;
+
+  /**
    * Sets the log file.
    * Deprecated:Use the mLogConfig parameter in initialize method instead.Specifies an SDK output log file. The log file records all log data for the SDK’s operation. Ensure that the directory for the log file exists and is writable.Ensure that you call this method immediately after calling the initialize method to initialize the IRtcEngine , or the output log may not be complete.
    *
@@ -4003,6 +3952,16 @@ export abstract class IRtcEngine {
   abstract setMixedAudioFrameParameters(
     sampleRate: number,
     channel: number,
+    samplesPerCall: number
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract setEarMonitoringAudioFrameParameters(
+    sampleRate: number,
+    channel: number,
+    mode: RawAudioFrameOpModeType,
     samplesPerCall: number
   ): number;
 
@@ -4206,72 +4165,6 @@ export abstract class IRtcEngine {
     key: string,
     value: string
   ): number;
-
-  /**
-   * Enables/Disables extensions.
-   * Ensure that you call this method before joining a channel.If you want to enable multiple extensions, you need to call this method multiple times.The data processing order of different extensions in the SDK is determined by the order in which the extensions are enabled. That is, the extension that is enabled first will process the data first.
-   *
-   * @param extension The name of the extension.
-   *
-   * @param provider The name of the extension provider.
-   *
-   * @param enable Whether to enable the extension:true: Enable the extension.false: Disable the extension.
-   *
-   * @param type Type of media source. See MediaSourceType . In this method, this parameter supports only the following two settings:The default value is UnknownMediaSource.If you want to use the second camera to capture video, set this parameter to SecondaryCameraSource.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract enableExtension(
-    provider: string,
-    extension: string,
-    enable?: boolean,
-    type?: MediaSourceType
-  ): number;
-
-  /**
-   * Sets the properties of the extension.
-   * After enabling the extension, you can call this method to set the properties of the extension.
-   *
-   * @param provider The name of the extension provider.
-   *
-   * @param extension The name of the extension.
-   *
-   * @param key The key of the extension.
-   *
-   * @param value The value of the extension key.
-   *
-   * @param type The type of the video source. See MediaSourceType .
-   */
-  abstract setExtensionProperty(
-    provider: string,
-    extension: string,
-    key: string,
-    value: string,
-    type?: MediaSourceType
-  ): number;
-
-  /**
-   * Gets detailed information of the extension.
-   *
-   * @param key The key of the extension.
-   *
-   * @param extension The name of the extension.
-   *
-   * @param provider The name of the extension provider.
-   *
-   * @param sourceType Source type of the extension. See MediaSourceType .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract getExtensionProperty(
-    provider: string,
-    extension: string,
-    key: string,
-    bufLen: number,
-    type?: MediaSourceType
-  ): string;
 
   /**
    * Sets the camera capture configuration.
@@ -4943,27 +4836,12 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
-   * @ignore
-   */
-  abstract clearVideoWatermark(): number;
-
-  /**
    * Removes the watermark image from the video stream.
    *
    * @returns
    * 0: Success.< 0: Failure.
    */
   abstract clearVideoWatermarks(): number;
-
-  /**
-   * @ignore
-   */
-  abstract addInjectStreamUrl(url: string, config: InjectStreamConfig): number;
-
-  /**
-   * @ignore
-   */
-  abstract removeInjectStreamUrl(url: string): number;
 
   /**
    * @ignore
@@ -5332,7 +5210,10 @@ export abstract class IRtcEngine {
    * Sets audio advanced options.
    * If you have advanced audio processing requirements, such as capturing and sending stereo audio, you can call this method to set advanced audio options.Call this method after calling joinChannel [2/2] , enableAudio and enableLocalAudio .
    */
-  abstract setAdvancedAudioOptions(options: AdvancedAudioOptions): number;
+  abstract setAdvancedAudioOptions(
+    options: AdvancedAudioOptions,
+    sourceType?: number
+  ): number;
 
   /**
    * Sets the pitch of the local music file.
@@ -5366,7 +5247,17 @@ export abstract class IRtcEngine {
   /**
    * @ignore
    */
+  abstract getCurrentMonotonicTimeInMs(): number;
+
+  /**
+   * @ignore
+   */
   abstract enableWirelessAccelerate(enabled: boolean): number;
+
+  /**
+   * @ignore
+   */
+  abstract getNetworkType(): number;
 
   /**
    * Joins a channel.

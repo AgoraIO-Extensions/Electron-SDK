@@ -1,18 +1,4 @@
 import './extension/IAgoraMediaPlayerExtension';
-import {
-  MediaSource,
-  PlayerStreamInfo,
-  MediaPlayerState,
-} from './AgoraMediaPlayerTypes';
-import {
-  RenderModeType,
-  IAudioSpectrumObserver,
-  AudioDualMonoMode,
-  AudioPcmFrame,
-  VideoFrame,
-} from './AgoraMediaBase';
-import { IMediaPlayerSourceObserver } from './IAgoraMediaPlayerSource';
-import { SpatialAudioParams } from './AgoraBase';
 /**
  * This class provides media player functions and supports multiple instances.
  */
@@ -163,15 +149,15 @@ export abstract class IMediaPlayer {
   abstract setPlaybackSpeed(speed: number): number;
 
   /**
-   * Selects the audio track used during playback.
-   * After getting the track index of the audio file, you can call this method to specify any track to play. For example, if different tracks of a multi-track file store songs in different languages, you can call this method to set the playback language.You need to call this method after calling getStreamInfo to get the audio stream index value.
-   *
-   * @param index
+ * Selects the audio track used during playback.
+ * After getting the track index of the audio file, you can call this method to specify any track to play. For example, if different tracks of a multi-track file store songs in different languages, you can call this method to set the playback language.You need to call this method after calling getStreamInfo to get the audio stream index value.
+ *
+ * @param index
  The index of the audio track.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
+ *
+ * @returns
+ * 0: Success.< 0: Failure.
+ */
   abstract selectAudioTrack(index: number): number;
 
   /**
