@@ -84,6 +84,7 @@ import {
   ClientRoleOptions,
   AudioRecordingConfiguration,
   SimulcastStreamConfig,
+  SimulcastStreamMode,
   DataStreamConfig,
   WatermarkOptions,
 } from './AgoraBase';
@@ -5518,6 +5519,15 @@ export abstract class IRtcEngine {
    */
   abstract enableDualStreamMode(
     enabled: boolean,
+    sourceType?: VideoSourceType,
+    streamConfig?: SimulcastStreamConfig
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract setDualStreamMode(
+    mode: SimulcastStreamMode,
     sourceType?: VideoSourceType,
     streamConfig?: SimulcastStreamConfig
   ): number;
