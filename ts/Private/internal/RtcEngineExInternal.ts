@@ -9,6 +9,7 @@ import {
   ErrorCodeType,
   IAudioEncodedFrameObserver,
   SimulcastStreamConfig,
+  SimulcastStreamMode,
   VideoCanvas,
   VideoMirrorModeType,
   VideoSourceType,
@@ -109,7 +110,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return ret;
   }
 
-  release(sync = false) {
+  release(sync: boolean = false) {
     if (!AgoraEnv.isInitializeEngine) {
       logWarn('release: rtcEngine have not initialize');
       return;
@@ -285,7 +286,9 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
       : 'RtcEngine_setClientRole2';
   }
 
-  protected getApiTypeFromStartEchoTest(intervalInSeconds = 10): string {
+  protected getApiTypeFromStartEchoTest(
+    intervalInSeconds: number = 10
+  ): string {
     return 'RtcEngine_startEchoTest2';
   }
 
@@ -311,7 +314,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     filePath: string,
     loopback: boolean,
     cycle: number,
-    startPos = 0
+    startPos: number = 0
   ): string {
     return 'RtcEngine_startAudioMixing2';
   }
@@ -324,6 +327,16 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     return streamConfig === undefined
       ? 'RtcEngine_enableDualStreamMode2'
       : 'RtcEngine_enableDualStreamMode3';
+  }
+
+  protected getApiTypeFromSetDualStreamMode(
+    mode: SimulcastStreamMode,
+    sourceType: VideoSourceType = VideoSourceType.VideoSourceCameraPrimary,
+    streamConfig?: SimulcastStreamConfig
+  ): string {
+    return streamConfig === undefined
+      ? 'RtcEngine_setDualStreamMode2'
+      : 'RtcEngine_setDualStreamMode3';
   }
 
   protected getApiTypeFromCreateDataStream(config: DataStreamConfig): string {
@@ -545,7 +558,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
 
     if (!data) return ErrorCodeType.ErrInvalidArgument;
 
-    const bufferArray = [data];
+    let bufferArray = [data];
     const jsonResults = callIrisApi.call(
       this,
       apiType,
@@ -587,7 +600,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
 
     if (!metadata.buffer) return ErrorCodeType.ErrInvalidArgument;
 
-    const bufferArray = [metadata.buffer!];
+    let bufferArray = [metadata.buffer!];
     metadata.buffer = undefined;
 
     const jsonResults = callIrisApi.call(

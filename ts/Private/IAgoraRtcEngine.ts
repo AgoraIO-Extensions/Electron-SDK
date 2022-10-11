@@ -4118,7 +4118,8 @@ export abstract class IRtcEngine {
    */
   abstract enableDualStreamMode(
     enabled: boolean,
-    streamConfig: SimulcastStreamConfig
+    sourceType?: VideoSourceType,
+    streamConfig?: SimulcastStreamConfig
   ): number;
 
   /**
@@ -4126,7 +4127,8 @@ export abstract class IRtcEngine {
    */
   abstract setDualStreamMode(
     mode: SimulcastStreamMode,
-    streamConfig: SimulcastStreamConfig
+    sourceType?: VideoSourceType,
+    streamConfig?: SimulcastStreamConfig
   ): number;
 
   /**

@@ -3421,18 +3421,22 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   enableDualStreamMode(
     enabled: boolean,
-    streamConfig: SimulcastStreamConfig
+    sourceType: VideoSourceType = VideoSourceType.VideoSourceCameraPrimary,
+    streamConfig?: SimulcastStreamConfig
   ): number {
     const apiType = this.getApiTypeFromEnableDualStreamMode(
       enabled,
+      sourceType,
       streamConfig
     );
     const jsonParams = {
       enabled: enabled,
+      sourceType: sourceType,
       streamConfig: streamConfig,
       toJSON: () => {
         return {
           enabled: enabled,
+          sourceType: sourceType,
           streamConfig: streamConfig,
         };
       },
@@ -3443,22 +3447,30 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromEnableDualStreamMode(
     enabled: boolean,
-    streamConfig: SimulcastStreamConfig
+    sourceType: VideoSourceType = VideoSourceType.VideoSourceCameraPrimary,
+    streamConfig?: SimulcastStreamConfig
   ): string {
     return 'RtcEngine_enableDualStreamMode';
   }
 
   setDualStreamMode(
     mode: SimulcastStreamMode,
-    streamConfig: SimulcastStreamConfig
+    sourceType: VideoSourceType = VideoSourceType.VideoSourceCameraPrimary,
+    streamConfig?: SimulcastStreamConfig
   ): number {
-    const apiType = this.getApiTypeFromSetDualStreamMode(mode, streamConfig);
+    const apiType = this.getApiTypeFromSetDualStreamMode(
+      mode,
+      sourceType,
+      streamConfig
+    );
     const jsonParams = {
       mode: mode,
+      sourceType: sourceType,
       streamConfig: streamConfig,
       toJSON: () => {
         return {
           mode: mode,
+          sourceType: sourceType,
           streamConfig: streamConfig,
         };
       },
@@ -3469,7 +3481,8 @@ export class IRtcEngineImpl implements IRtcEngine {
 
   protected getApiTypeFromSetDualStreamMode(
     mode: SimulcastStreamMode,
-    streamConfig: SimulcastStreamConfig
+    sourceType: VideoSourceType = VideoSourceType.VideoSourceCameraPrimary,
+    streamConfig?: SimulcastStreamConfig
   ): string {
     return 'RtcEngine_setDualStreamMode';
   }
