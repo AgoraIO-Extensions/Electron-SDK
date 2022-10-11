@@ -4125,26 +4125,26 @@ export class IRtcEngineImpl implements IRtcEngine {
   enableExtension(
     provider: string,
     extension: string,
-    enable = true,
-    type: MediaSourceType = MediaSourceType.UnknownMediaSource
+    extensionInfo: ExtensionInfo,
+    enable = true
   ): number {
     const apiType = this.getApiTypeFromEnableExtension(
       provider,
       extension,
-      enable,
-      type
+      extensionInfo,
+      enable
     );
     const jsonParams = {
       provider: provider,
       extension: extension,
+      extensionInfo: extensionInfo,
       enable: enable,
-      type: type,
       toJSON: () => {
         return {
           provider: provider,
           extension: extension,
+          extensionInfo: extensionInfo,
           enable: enable,
-          type: type,
         };
       },
     };
@@ -4155,8 +4155,8 @@ export class IRtcEngineImpl implements IRtcEngine {
   protected getApiTypeFromEnableExtension(
     provider: string,
     extension: string,
-    enable = true,
-    type: MediaSourceType = MediaSourceType.UnknownMediaSource
+    extensionInfo: ExtensionInfo,
+    enable = true
   ): string {
     return 'RtcEngine_enableExtension';
   }
@@ -4203,90 +4203,6 @@ export class IRtcEngineImpl implements IRtcEngine {
     value: string
   ): string {
     return 'RtcEngine_setExtensionProperty';
-  }
-
-  getExtensionProperty(
-    provider: string,
-    extension: string,
-    key: string,
-    bufLen: number,
-    type: MediaSourceType = MediaSourceType.UnknownMediaSource
-  ): string {
-    const apiType = this.getApiTypeFromGetExtensionProperty(
-      provider,
-      extension,
-      key,
-      bufLen,
-      type
-    );
-    const jsonParams = {
-      provider: provider,
-      extension: extension,
-      key: key,
-      buf_len: bufLen,
-      type: type,
-      toJSON: () => {
-        return {
-          provider: provider,
-          extension: extension,
-          key: key,
-          buf_len: bufLen,
-          type: type,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    const value = jsonResults.value;
-    return value;
-  }
-
-  protected getApiTypeFromGetExtensionProperty(
-    provider: string,
-    extension: string,
-    key: string,
-    bufLen: number,
-    type: MediaSourceType = MediaSourceType.UnknownMediaSource
-  ): string {
-    return 'RtcEngine_getExtensionProperty';
-  }
-
-  enableExtension(
-    provider: string,
-    extension: string,
-    extensionInfo: ExtensionInfo,
-    enable = true
-  ): number {
-    const apiType = this.getApiTypeFromEnableExtension(
-      provider,
-      extension,
-      extensionInfo,
-      enable
-    );
-    const jsonParams = {
-      provider: provider,
-      extension: extension,
-      extensionInfo: extensionInfo,
-      enable: enable,
-      toJSON: () => {
-        return {
-          provider: provider,
-          extension: extension,
-          extensionInfo: extensionInfo,
-          enable: enable,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
-  }
-
-  protected getApiTypeFromEnableExtension(
-    provider: string,
-    extension: string,
-    extensionInfo: ExtensionInfo,
-    enable = true
-  ): string {
-    return 'RtcEngine_enableExtension';
   }
 
   getExtensionProperty(

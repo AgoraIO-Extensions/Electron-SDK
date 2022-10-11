@@ -4456,8 +4456,8 @@ export abstract class IRtcEngine {
   abstract enableExtension(
     provider: string,
     extension: string,
-    enable?: boolean,
-    type?: MediaSourceType
+    extensionInfo: ExtensionInfo,
+    enable?: boolean
   ): number;
 
   /**
@@ -4496,19 +4496,6 @@ export abstract class IRtcEngine {
    * @returns
    * 0: Success.< 0: Failure.
    */
-  abstract getExtensionProperty(
-    provider: string,
-    extension: string,
-    key: string,
-    bufLen: number,
-    type?: MediaSourceType
-  ): string;
-  abstract enableExtension(
-    provider: string,
-    extension: string,
-    extensionInfo: ExtensionInfo,
-    enable?: boolean
-  ): number;
   abstract getExtensionProperty(
     provider: string,
     extension: string,
