@@ -121,7 +121,7 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
   }
 
   unregisterPlayerSourceObserver(observer: IMediaPlayerSourceObserver): number {
-    let observers = MediaPlayerInternal._source_observers.get(
+    const observers = MediaPlayerInternal._source_observers.get(
       this._mediaPlayerId
     );
     if (observers === undefined) return -ErrorCodeType.ErrFailed;
@@ -152,7 +152,7 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
   unregisterAudioFrameObserver(
     observer: IMediaPlayerAudioFrameObserver
   ): number {
-    let observers = MediaPlayerInternal._audio_frame_observers.get(
+    const observers = MediaPlayerInternal._audio_frame_observers.get(
       this._mediaPlayerId
     );
     if (observers === undefined) return -ErrorCodeType.ErrFailed;
@@ -183,7 +183,7 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
   unregisterVideoFrameObserver(
     observer: IMediaPlayerVideoFrameObserver
   ): number {
-    let observers = MediaPlayerInternal._video_frame_observers.get(
+    const observers = MediaPlayerInternal._video_frame_observers.get(
       this._mediaPlayerId
     );
     if (observers === undefined) return -ErrorCodeType.ErrFailed;
@@ -220,7 +220,7 @@ export class MediaPlayerInternal extends IMediaPlayerImpl {
   unregisterMediaPlayerAudioSpectrumObserver(
     observer: IAudioSpectrumObserver
   ): number {
-    let observers = MediaPlayerInternal._audio_spectrum_observers.get(
+    const observers = MediaPlayerInternal._audio_spectrum_observers.get(
       this._mediaPlayerId
     );
     if (observers === undefined) return -ErrorCodeType.ErrFailed;
