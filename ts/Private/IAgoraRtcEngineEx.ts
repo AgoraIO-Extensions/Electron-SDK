@@ -9,13 +9,13 @@ import {
   VideoMirrorModeType,
   ConnectionStateType,
   EncryptionConfig,
+  DataStreamConfig,
   WatermarkOptions,
   LiveTranscoding,
   ChannelMediaRelayConfiguration,
   UserInfo,
   SimulcastStreamConfig,
   SimulcastStreamMode,
-  DataStreamConfig,
 } from './AgoraBase';
 import { RenderModeType } from './AgoraMediaBase';
 /**
@@ -372,6 +372,22 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
+   * Creates a data stream.
+   * Creates a data stream. Each user can create up to five data streams in a single channel.Compared with createDataStreamEx , this method does not support data reliability. If a data packet is not received five seconds after it was sent, the SDK directly discards the data.
+   *
+   * @param connection The connection information. See RtcConnection .
+   *
+   * @param config The configurations for the data stream. See DataStreamConfig .
+   *
+   * @returns
+   * ID of the created data stream, if the method call succeeds.< 0: Failure.
+   */
+  abstract createDataStreamEx(
+    config: DataStreamConfig,
+    connection: RtcConnection
+  ): number;
+
+  /**
    * Sends data stream messages.
    * After calling createDataStreamEx , you can call this method to send data stream messages to all users in the channel.The SDK has the following restrictions on this method:Up to 30 packets can be sent per second in a channel with each packet having a maximum size of 1 kB.Each client can send up to 6 KB of data per second.Each user can have up to five data streams simultaneously.A successful method call triggers the onStreamMessage callback on the remote client, from which the remote user gets the stream message.
    * A failed method call triggers the onStreamMessageError callback on the remote client.Ensure that you call createDataStreamEx to create a data channel before calling this method.This method applies only to the COMMUNICATION profile or to the hosts in the LIVE_BROADCASTING profile. If an audience in the LIVE_BROADCASTING profile calls this method, the audience may be switched to a host.
@@ -571,21 +587,5 @@ export abstract class IRtcEngineEx extends IRtcEngine {
     connection: RtcConnection,
     uid: number,
     filePath: string
-  ): number;
-
-  /**
-   * Creates a data stream.
-   * Creates a data stream. Each user can create up to five data streams in a single channel.Compared with createDataStreamEx , this method does not support data reliability. If a data packet is not received five seconds after it was sent, the SDK directly discards the data.
-   *
-   * @param connection The connection information. See RtcConnection .
-   *
-   * @param config The configurations for the data stream. See DataStreamConfig .
-   *
-   * @returns
-   * ID of the created data stream, if the method call succeeds.< 0: Failure.
-   */
-  abstract createDataStreamEx(
-    config: DataStreamConfig,
-    connection: RtcConnection
   ): number;
 }

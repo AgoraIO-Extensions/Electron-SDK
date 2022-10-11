@@ -53,6 +53,7 @@ import {
   StreamPublishState,
   AudioScenarioType,
   ThreadPriorityType,
+  ClientRoleOptions,
   LastmileProbeConfig,
   VideoEncoderConfiguration,
   BeautyOptions,
@@ -62,7 +63,9 @@ import {
   VirtualBackgroundSource,
   SegmentationProperty,
   VideoCanvas,
+  AudioProfileType,
   VideoSubscriptionOptions,
+  AudioRecordingConfiguration,
   AudioEncodedFrameObserverConfig,
   IAudioEncodedFrameObserver,
   SpatialAudioParams,
@@ -70,6 +73,8 @@ import {
   AudioEffectPreset,
   VoiceConversionPreset,
   HeadphoneEqualizerPreset,
+  SimulcastStreamConfig,
+  SimulcastStreamMode,
   EarMonitoringFilterType,
   SenderOptions,
   AudioSessionOperationRestriction,
@@ -81,13 +86,9 @@ import {
   LocalTranscoderConfiguration,
   VideoOrientation,
   EncryptionConfig,
-  ChannelMediaRelayConfiguration,
-  AudioProfileType,
-  ClientRoleOptions,
-  AudioRecordingConfiguration,
-  SimulcastStreamConfig,
   DataStreamConfig,
   WatermarkOptions,
+  ChannelMediaRelayConfiguration,
 } from './AgoraBase';
 import {
   RenderModeType,
@@ -2810,6 +2811,28 @@ export abstract class IRtcEngine {
   abstract getErrorDescription(code: number): string;
 
   /**
+   * Joins a channel.
+   * When the connection between the client and Agora's server is interrupted due to poor network conditions, the SDK tries reconnecting to the server. When the local client successfully rejoins the channel, the SDK triggers the onRejoinChannelSuccess callback on the local client.A successful call of this method triggers the following callbacks: The local client: The onJoinChannelSuccess and onConnectionStateChanged callbacks.The remote client: onUserJoined , if the user joining the channel is in the Communication profile or is a host in the Live-broadcasting profile.This method enables users to join a channel. Users in the same channel can talk to each other, and multiple users in the same channel can start a group chat. Users with different App IDs cannot call each other.Once a user joins the channel, the user subscribes to the audio and video streams of all the other users in the channel by default, giving rise to usage and billing calculation. To stop subscribing to a specified stream or all remote streams, call the corresponding mute methods.
+   *
+   * @param channelId The channel name. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters:All lowercase English letters: a to z.All uppercase English letters: A to Z.All numeric characters: 0 to 9.Space"!", "#", "$", "%", "&amp;", "(", ")", "+", "-", ":", ";", "&lt;", "= ", ".", "&gt;", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
+   *
+   * @param token The token generated on your server for authentication.
+   *
+   * @param info (Optional) Reserved for future use.
+   *
+   * @param uid The user ID. This parameter is used to identify the user in the channel for real-time audio and video interaction. You need to set and manage user IDs yourself, and ensure that each user ID in the same channel is unique. This parameter is a 32-bit unsigned integer. The value range is 1 to 232-1. If the user ID is not assigned (or set to 0), the SDK assigns a random user ID and returns it in the onJoinChannelSuccess callback. Your application must record and maintain the returned user ID, because the SDK does not do so.
+   *
+   * @returns
+   * 0: Success.< 0: Failure.-2: The parameter is invalid. For example, the token is invalid, the uid parameter is not set to an integer, or the value of a member in the ChannelMediaOptions structure is invalid. You need to pass in a valid parameter and join the channel again.-3: Failes to initialize the IRtcEngine object. You need to reinitialize the IRtcEngine object.-7: The IRtcEngine object has not been initialized. You need to initialize the IRtcEngine object before calling this method.-8: IRtcEngineThe internal state of the object is wrong. The typical cause is that you call this method to join the channel without calling stopEchoTest to stop the test after calling startEchoTest to start a call loop test. You need to call stopEchoTest before calling this method.-17: The request to join the channel is rejected. The typical cause is that the user is in the channel. Agora recommends using the onConnectionStateChanged callback to get whether the user is in the channel. Do not call this method to join the channel unless you receive the ConnectionStateDisconnected(1) state.-102: The channel name is invalid. You need to pass in a valid channel name inchannelId to rejoin the channel.-121: The user ID is invalid. You need to pass in a valid user ID in uid to rejoin the channel.
+   */
+  abstract joinChannel(
+    token: string,
+    channelId: string,
+    uid: number,
+    options: ChannelMediaOptions
+  ): number;
+
+  /**
    * Updates the channel media options after joining the channel.
    *
    * @param options The channel media options. See ChannelMediaOptions .
@@ -2818,6 +2841,15 @@ export abstract class IRtcEngine {
    * 0: Success.< 0: Failure.-2: The value of a member in the ChannelMediaOptions structure is invalid. For example, the token or the user ID is invalid. You need to fill in a valid parameter.-7: The IRtcEngine object has not been initialized. You need to initialize the IRtcEngine object before calling this method.-8: The internal state of the IRtcEngine object is wrong. The possible reason is that the user is not in the channel. Agora recommends using the onConnectionStateChanged callback to get whether the user is in the channel. If you receive the ConnectionStateDisconnected (1) or ConnectionStateFailed (5) state, the user is not in the channel. You need to call joinChannel [2/2] to join a channel before calling this method.
    */
   abstract updateChannelMediaOptions(options: ChannelMediaOptions): number;
+
+  /**
+   * Leaves a channel.
+   * This method releases all resources related to the session.This method call is asynchronous. When this method returns, it does not necessarily mean that the user has left the channel.After joining the channel, you must call this method or leaveChannel to end the call, otherwise, the next call cannot be started.If you successfully call this method and leave the channel, the following callbacks are triggered:The local client: onLeaveChannel .The remote client: onUserOffline , if the user joining the channel is in the Communication profile, or is a host in the Live-broadcasting profile.If you call release immediately after calling this method, the SDK does not trigger the onLeaveChannel callback.
+   *
+   * @returns
+   * 0: Success.< 0: Failure.-1(ERR_FAILED): A general error occurs (no specified reason).-2 (ERR_INVALID_ARGUMENT): The parameter is invalid.-7(ERR_NOT_INITIALIZED): The SDK is not initialized.
+   */
+  abstract leaveChannel(options?: LeaveChannelOptions): number;
 
   /**
    * Gets a new token when the current token expires after a period of time.
@@ -2840,6 +2872,31 @@ export abstract class IRtcEngine {
    * 0(ERR_OK): Success.< 0: Failure.-2(ERR_INVALID_ARGUMENT): The parameter is invalid.-7(ERR_NOT_INITIALIZED): The SDK is not initialized.
    */
   abstract setChannelProfile(profile: ChannelProfileType): number;
+
+  /**
+   * Sets the client role.
+   * If you call this method to set the user's role as the host before joining the channel and set the local video property through the setupLocalVideo method, the local video preview is automatically enabled when the user joins the channel.You can call this method either before or after joining the channel to set the user role as audience or host.If you call this method to switch the user role after joining the channel, the SDK triggers the following callbacks:The local client: onClientRoleChanged .The remote client: onUserJoined or onUserOffline (UserOfflineBecomeAudience).
+   *
+   * @param role The user role. See ClientRoleType .
+   *
+   * @returns
+   * 0: Success.< 0: Failure.-1: A general error occurs (no specified reason).-2: The parameter is invalid.-7: The SDK is not initialized.
+   */
+  abstract setClientRole(
+    role: ClientRoleType,
+    options?: ClientRoleOptions
+  ): number;
+
+  /**
+   * Starts an audio call test.
+   * This method starts an audio call test to determine whether the audio devices (for example, headset and speaker) and the network connection are working properly. To conduct the test, let the user speak for a while, and the recording is played back within the set interval. If the user can hear the recording within the interval, the audio devices and network connection are working properly.Call this method before joining a channel.After calling startEchoTest, you must call stopEchoTest to end the test. Otherwise, the app cannot perform the next echo test, and you cannot join the channel.In the live streaming channels, only a host can call this method.
+   *
+   * @param intervalInSeconds The time interval (s) between when you speak and when the recording plays back. The value range is [2, 10], and the default value is 10.
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
+  abstract startEchoTest(intervalInSeconds?: number): number;
 
   /**
    * Stops the audio call test.
@@ -2867,6 +2924,24 @@ export abstract class IRtcEngine {
    * 0: Success.< 0: Failure.
    */
   abstract disableVideo(): number;
+
+  /**
+   * Enables the local video preview.
+   * This method starts the local video preview before joining the channel. Before calling this method, ensure that you do the following:Call setView to set the local preview window.Call enableVideo to enable the video.The local preview enables the mirror mode by default.After the local video preview is enabled, if you call leaveChannel [1/2] to exit the channel, the local preview remains until you call stopPreview [1/2] to disable it.
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
+  abstract startPreview(sourceType?: VideoSourceType): number;
+
+  /**
+   * Stops the local video preview.
+   * After calling startPreview [1/2] to start the preview, if you want to close the local video preview, please call this method.Please call this method before joining a channel or after leaving a channel.
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
+  abstract stopPreview(sourceType?: VideoSourceType): number;
 
   /**
    * Starts the last mile network probe test.
@@ -3049,6 +3124,22 @@ export abstract class IRtcEngine {
    * 0: Success.< 0: Failure.
    */
   abstract disableAudio(): number;
+
+  /**
+   * Sets the audio profile and audio scenario.
+   * Deprecated:This method is deprecated. If you need to set the audio profile, use setAudioProfile [2/2] ; if you need to set the audio scenario, use setAudioScenario .You can call this method either before or after joining a channel.In scenarios requiring high-quality audio, such as online music tutoring, Agora recommends you set profile as AudioProfileMusicHighQuality(4)and scenario as AudioScenarioGameStreaming(3).
+   *
+   * @param profile The audio profile, including the sampling rate, bitrate, encoding mode, and the number of channels. See AudioProfileType .
+   *
+   * @param scenario The audio scenarios. See AudioScenarioType . Under different audio scenarios, the device uses different volume types.
+   *
+   * @returns
+   * 0: Success. < 0: Failure.
+   */
+  abstract setAudioProfile(
+    profile: AudioProfileType,
+    scenario?: AudioScenarioType
+  ): number;
 
   /**
    * Sets audio scenarios.
@@ -3300,6 +3391,17 @@ export abstract class IRtcEngine {
   ): number;
 
   /**
+   * Starts the audio recording on the client.
+   * The Agora SDK allows recording during a call. After successfully calling this method, you can record the audio of all the users in the channel and get an audio recording file. Supported formats of the recording file are as follows:WAV: High-fidelity files with typically larger file sizes. For example, the size of a WAV file with a sample rate of 32,000 Hz and a recording duration of 10 minutes is around 73 MB.AAC: Low-fidelity files with typically smaller file sizes. For example, if the sample rate is 32,000 Hz and the recording quality is AudioRecordingQualityMedium, the file size for a 10-minute recording is approximately 2 MB.Once the user leaves the channel, the recording automatically stops.Call this method after joining a channel.
+   *
+   * @param config Recording configuration. See AudioRecordingConfiguration .
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
+  abstract startAudioRecording(config: AudioRecordingConfiguration): number;
+
+  /**
    * Registers an encoded audio observer.
    * Call this method after joining a channel.You can call this method or the startAudioRecording method to set the audio content and audio quality. Agora recommends not using this method and startAudioRecording at the same time; otherwise, only the method called later takes effect.
    *
@@ -3338,6 +3440,28 @@ export abstract class IRtcEngine {
    * ≥ 0: Success. Returns the ID of media player source instance.< 0: Failure.
    */
   abstract destroyMediaPlayer(mediaPlayer: IMediaPlayer): number;
+
+  /**
+   * Starts playing the music file.
+   * This method mixes the specified local or online audio file with the audio from the microphone, or replaces the microphone's audio with the specified local or remote audio file. A successful method call triggers the onAudioMixingStateChanged (AudioMixingStatePlaying) callback. When the audio mixing file playback finishes, the SDK triggers the onAudioMixingStateChanged(AudioMixingStateStopped) callback on the local client.For the audio file formats supported by this method, see What formats of audio files the Agora RTC SDK support.You can call this method either before or after joining a channel. If you need to call startAudioMixing multiple times, ensure that the time interval between calling this method is more than 500 ms.If the local music file does not exist, the SDK does not support the file format, or the the SDK cannot access the music file URL, the SDK reports the warn code 701.
+   *
+   * @param filePath File path:Windows: The absolute path or URL address (including the suffixes of the filename) of the audio effect file. For example: C:\music\audio.mp4.macOS: The absolute path or URL address (including the suffixes of the filename) of the audio effect file. For example: /var/mobile/Containers/Data/audio.mp4.
+   *
+   * @param loopback Whether to only play music files on the local client:true: Only play music files on the local client so that only the local user can hear the music.false: Publish music files to remote clients so that both the local user and remote users can hear the music.
+   *
+   * @param cycle The number of times the music file plays.≥ 0: The number of playback times. For example, 0 means that the SDK does not play the music file while 1 means that the SDK plays once.-1: Play the audio file in an infinite loop.
+   *
+   * @param startPos The playback position (ms) of the music file.
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
+  abstract startAudioMixing(
+    filePath: string,
+    loopback: boolean,
+    cycle: number,
+    startPos?: number
+  ): number;
 
   /**
    * Stops playing and mixing the music file.
@@ -3941,6 +4065,22 @@ export abstract class IRtcEngine {
   abstract uploadLogFile(requestId: string): number;
 
   /**
+   * Updates the display mode of the local video view.
+   * After initializing the local video view, you can call this method to update its rendering and mirror modes. It affects only the video view that the local user sees, not the published local video stream.Ensure that you have called the setupLocalVideo method to initialize the local video view before calling this method.During a call, you can call this method as many times as necessary to update the display mode of the local video view.
+   *
+   * @param renderMode The local video display mode. See RenderModeType .
+   *
+   * @param mirrorMode The rendering mode of the local video view. See VideoMirrorModeType .If you use a front camera, the SDK enables the mirror mode by default; if you use a rear camera, the SDK disables the mirror mode by default.
+   *
+   * @returns
+   * 0: Success. < 0: Failure.
+   */
+  abstract setLocalRenderMode(
+    renderMode: RenderModeType,
+    mirrorMode?: VideoMirrorModeType
+  ): number;
+
+  /**
    * Updates the display mode of the video view of a remote user.
    * After initializing the video view of a remote user, you can call this method to update its rendering and mirror modes. This method affects only the video view that the local user sees.Please call this method after initializing the remote view by calling the setupRemoteVideo method.During a call, you can call this method as many times as necessary to update the display mode of the video view of a remote user.
    *
@@ -3966,6 +4106,28 @@ export abstract class IRtcEngine {
    * 0: Success.< 0: Failure.
    */
   abstract setLocalVideoMirrorMode(mirrorMode: VideoMirrorModeType): number;
+
+  /**
+   * Enables/Disables dual-stream mode.
+   * Sets the stream mode to the single-stream (default) or dual-stream mode. (LIVE_BROADCASTING only.) You can call this method to enable or disable the dual-stream mode on the publisher side.Dual streams are a hybrid of a high-quality video stream and a low-quality video stream:High-quality video stream: High bitrate, high resolution.Low-quality video stream: Low bitrate, low resolution.After you enable the dual-stream mode, you can call setRemoteVideoStreamType to choose toreceive the high-quality video stream or low-quality video stream on the subscriber side.This method only takes effect for the video stream captured by the SDK through the camera. If you use video streams from the custom video source or captured by the SDK through the screen, you need to call enableDualStreamMode [2/3] or enableDualStreamMode to enable dual-stream mode.You can call this method either before or after joining a channel.
+   *
+   * @param enabled Whether to enable dual-stream mode.true: Enable dual-stream mode.false: Disable dual-stream mode.
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
+  abstract enableDualStreamMode(
+    enabled: boolean,
+    streamConfig: SimulcastStreamConfig
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract setDualStreamMode(
+    mode: SimulcastStreamMode,
+    streamConfig: SimulcastStreamConfig
+  ): number;
 
   /**
    * @ignore
@@ -4275,6 +4437,85 @@ export abstract class IRtcEngine {
     key: string,
     value: string
   ): number;
+
+  /**
+   * Enables/Disables extensions.
+   * Ensure that you call this method before joining a channel.If you want to enable multiple extensions, you need to call this method multiple times.The data processing order of different extensions in the SDK is determined by the order in which the extensions are enabled. That is, the extension that is enabled first will process the data first.
+   *
+   * @param extension The name of the extension.
+   *
+   * @param provider The name of the extension provider.
+   *
+   * @param enable Whether to enable the extension:true: Enable the extension.false: Disable the extension.
+   *
+   * @param type Type of media source. See MediaSourceType . In this method, this parameter supports only the following two settings:The default value is UnknownMediaSource.If you want to use the second camera to capture video, set this parameter to SecondaryCameraSource.
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
+  abstract enableExtension(
+    provider: string,
+    extension: string,
+    enable?: boolean,
+    type?: MediaSourceType
+  ): number;
+
+  /**
+   * Sets the properties of the extension.
+   * After enabling the extension, you can call this method to set the properties of the extension.
+   *
+   * @param provider The name of the extension provider.
+   *
+   * @param extension The name of the extension.
+   *
+   * @param key The key of the extension.
+   *
+   * @param value The value of the extension key.
+   *
+   * @param type The type of the video source. See MediaSourceType .
+   */
+  abstract setExtensionProperty(
+    provider: string,
+    extension: string,
+    extensionInfo: ExtensionInfo,
+    key: string,
+    value: string
+  ): number;
+
+  /**
+   * Gets detailed information of the extension.
+   *
+   * @param key The key of the extension.
+   *
+   * @param extension The name of the extension.
+   *
+   * @param provider The name of the extension provider.
+   *
+   * @param sourceType Source type of the extension. See MediaSourceType .
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
+  abstract getExtensionProperty(
+    provider: string,
+    extension: string,
+    key: string,
+    bufLen: number,
+    type?: MediaSourceType
+  ): string;
+  abstract enableExtension(
+    provider: string,
+    extension: string,
+    extensionInfo: ExtensionInfo,
+    enable?: boolean
+  ): number;
+  abstract getExtensionProperty(
+    provider: string,
+    extension: string,
+    extensionInfo: ExtensionInfo,
+    key: string,
+    bufLen: number
+  ): string;
 
   /**
    * Sets the camera capture configuration.
@@ -4926,6 +5167,17 @@ export abstract class IRtcEngine {
   abstract enableEncryption(enabled: boolean, config: EncryptionConfig): number;
 
   /**
+   * Creates a data stream.
+   * Creates a data stream. Each user can create up to five data streams in a single channel.
+   *
+   * @param config The configurations for the data stream. See DataStreamConfig .
+   *
+   * @returns
+   * ID of the created data stream, if the method call succeeds.< 0: Failure.
+   */
+  abstract createDataStream(config: DataStreamConfig): number;
+
+  /**
    * Sends data stream messages.
    * Sends data stream messages to all users in a channel. The SDK has the following restrictions on this method:Up to 30 packets can be sent per second in a channel with each packet having a maximum size of 1 KB.Each client can send up to 6 KB of data per second.Each user can have up to five data streams simultaneously.A successful method call triggers the onStreamMessage callback on the remote client, from which the remote user gets the stream message.
    * A failed method call triggers the onStreamMessageError callback on the remote client.Ensure that you call createDataStream to create a data channel before calling this method.In live streaming scenarios, this method only applies to hosts.
@@ -4943,6 +5195,22 @@ export abstract class IRtcEngine {
     streamId: number,
     data: Uint8Array,
     length: number
+  ): number;
+
+  /**
+   * Adds a watermark image to the local video.
+   * This method adds a PNG watermark image to the local video in the live streaming. Once the watermark image is added, all the audience in the channel (CDN audience included), and the capturing device can see and capture it. Agora supports adding only one watermark image onto the local video, and the newly watermark image replaces the previous one.The watermark coordinatesare dependent on the settings in the setVideoEncoderConfiguration method:If the orientation mode of the encoding video ( OrientationMode ) is fixed landscape mode or the adaptive landscape mode, the watermark uses the landscape orientation.If the orientation mode of the encoding video (OrientationMode) is fixed portrait mode or the adaptive portrait mode, the watermark uses the portrait orientation.When setting the watermark position, the region must be less than thesetVideoEncoderConfiguration dimensions set in the method; otherwise, the watermark image will be cropped.Ensure that call this method after enableVideo .If you only want to add a watermark to the Media Push, you can call this method or the setLiveTranscoding method.This method supports adding a watermark image in the PNG file format only. Supported pixel formats of the PNG image are RGBA, RGB, Palette, Gray, and Alpha_gray.If the dimensions of the PNG image differ from your settings in this method, the image will be cropped or zoomed to conform to your settings.If you have enabledthe local video preview by calling the startPreview method, you can use the visibleInPreview member to set whether or not the watermark is visible in the preview.If you have enabled the mirror mode for the local video, the watermark on the local video is also mirrored. To avoid mirroring the watermark, Agora recommends that you do not use the mirror and watermark functions for the local video at the same time. You can implement the watermark function in your application layer.
+   *
+   * @param watermarkUrl The local file path of the watermark image to be added. This method supports adding a watermark image from the local absolute or relative file path.
+   *
+   * @param options The options of the watermark image to be added.
+   *
+   * @returns
+   * 0: Success.< 0: Failure.
+   */
+  abstract addVideoWatermark(
+    watermarkUrl: string,
+    options: WatermarkOptions
   ): number;
 
   /**
@@ -5052,6 +5320,28 @@ export abstract class IRtcEngine {
    * 0: Success.< 0: Failure.
    */
   abstract registerLocalUserAccount(appId: string, userAccount: string): number;
+
+  /**
+   * Joins the channel with a user account, and configures whether to automatically subscribe to audio or video streams after joining the channel.
+   * This method allows a user to join the channel with the user account. After the user successfully joins the channel, the SDK triggers the following callbacks:The local client: onLocalUserRegistered , onJoinChannelSuccess and onConnectionStateChanged callbacks.The remote client: The onUserJoined callback if the user is in the COMMUNICATION profile, and the onUserInfoUpdated callback if the user is a host in the LIVE_BROADCASTING profile.Once a user joins the channel, the user subscribes to the audio and video streams of all the other users in the channel by default, giving rise to usage and billing calculation. To stop subscribing to a specified stream or all remote streams, call the corresponding mute methods.To ensure smooth communication, use the same parameter type to identify the user. For example, if a user joins the channel with a user ID, then ensure all the other users use the user ID too. The same applies to the user account. If a user joins the channel with the Agora Web SDK, ensure that the ID of the user is set to the same parameter type.
+   *
+   * @param options The channel media options. See ChannelMediaOptions .
+   *
+   * @param token The token generated on your server for authentication.
+   *
+   * @param channelId The channel name. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters:All lowercase English letters: a to z.All uppercase English letters: A to Z.All numeric characters: 0 to 9.Space"!", "#", "$", "%", "&amp;", "(", ")", "+", "-", ":", ";", "&lt;", "= ", ".", "&gt;", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
+   *
+   * @param userAccount The user account. This parameter is used to identify the user in the channel for real-time audio and video engagement. You need to set and manage user accounts yourself and ensure that each user account in the same channel is unique. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as NULL. Supported characters are (89 in total):The 26 lowercase English letters: a to z.The 26 uppercase English letters: A to Z.All numeric characters: 0 to 9.Space"!", "#", "$", "%", "&amp;", "(", ")", "+", "-", ":", ";", "&lt;", "= ", ".", "&gt;", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
+   *
+   * @returns
+   * 0: Success.< 0: Failure.-2: The parameter is invalid. For example, the token is invalid, the uid parameter is not set to an integer, or the value of a member in the ChannelMediaOptions structure is invalid. You need to pass in a valid parameter and join the channel again.-3: Failes to initialize the IRtcEngine object. You need to reinitialize the IRtcEngine object.-7: The IRtcEngine object has not been initialized. You need to initialize the IRtcEngine object before calling this method.-8: IRtcEngineThe internal state of the object is wrong. The typical cause is that you call this method to join the channel without calling stopEchoTest to stop the test after calling startEchoTest to start a call loop test. You need to call stopEchoTest before calling this method.-17: The request to join the channel is rejected. The typical cause is that the user is in the channel. Agora recommends using the onConnectionStateChanged callback to get whether the user is in the channel. Do not call this method to join the channel unless you receive the ConnectionStateDisconnected(1) state.-102: The channel name is invalid. You need to pass in a valid channel name inchannelId to rejoin the channel.-121: The user ID is invalid. You need to pass in a valid user ID in uid to rejoin the channel.
+   */
+  abstract joinChannelWithUserAccount(
+    token: string,
+    channelId: string,
+    userAccount: string,
+    options?: ChannelMediaOptions
+  ): number;
 
   /**
    * Joins the channel with a user account, and configures whether to automatically subscribe to audio or video streams after joining the channel.
@@ -5368,209 +5658,6 @@ export abstract class IRtcEngine {
    * @ignore
    */
   abstract getNetworkType(): number;
-
-  /**
-   * Joins a channel.
-   * When the connection between the client and Agora's server is interrupted due to poor network conditions, the SDK tries reconnecting to the server. When the local client successfully rejoins the channel, the SDK triggers the onRejoinChannelSuccess callback on the local client.A successful call of this method triggers the following callbacks: The local client: The onJoinChannelSuccess and onConnectionStateChanged callbacks.The remote client: onUserJoined , if the user joining the channel is in the Communication profile or is a host in the Live-broadcasting profile.This method enables users to join a channel. Users in the same channel can talk to each other, and multiple users in the same channel can start a group chat. Users with different App IDs cannot call each other.Once a user joins the channel, the user subscribes to the audio and video streams of all the other users in the channel by default, giving rise to usage and billing calculation. To stop subscribing to a specified stream or all remote streams, call the corresponding mute methods.
-   *
-   * @param channelId The channel name. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters:All lowercase English letters: a to z.All uppercase English letters: A to Z.All numeric characters: 0 to 9.Space"!", "#", "$", "%", "&amp;", "(", ")", "+", "-", ":", ";", "&lt;", "= ", ".", "&gt;", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
-   *
-   * @param token The token generated on your server for authentication.
-   *
-   * @param info (Optional) Reserved for future use.
-   *
-   * @param uid The user ID. This parameter is used to identify the user in the channel for real-time audio and video interaction. You need to set and manage user IDs yourself, and ensure that each user ID in the same channel is unique. This parameter is a 32-bit unsigned integer. The value range is 1 to 232-1. If the user ID is not assigned (or set to 0), the SDK assigns a random user ID and returns it in the onJoinChannelSuccess callback. Your application must record and maintain the returned user ID, because the SDK does not do so.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.-2: The parameter is invalid. For example, the token is invalid, the uid parameter is not set to an integer, or the value of a member in the ChannelMediaOptions structure is invalid. You need to pass in a valid parameter and join the channel again.-3: Failes to initialize the IRtcEngine object. You need to reinitialize the IRtcEngine object.-7: The IRtcEngine object has not been initialized. You need to initialize the IRtcEngine object before calling this method.-8: IRtcEngineThe internal state of the object is wrong. The typical cause is that you call this method to join the channel without calling stopEchoTest to stop the test after calling startEchoTest to start a call loop test. You need to call stopEchoTest before calling this method.-17: The request to join the channel is rejected. The typical cause is that the user is in the channel. Agora recommends using the onConnectionStateChanged callback to get whether the user is in the channel. Do not call this method to join the channel unless you receive the ConnectionStateDisconnected(1) state.-102: The channel name is invalid. You need to pass in a valid channel name inchannelId to rejoin the channel.-121: The user ID is invalid. You need to pass in a valid user ID in uid to rejoin the channel.
-   */
-  abstract joinChannel(
-    token: string,
-    channelId: string,
-    uid: number,
-    options: ChannelMediaOptions
-  ): number;
-
-  /**
-   * Leaves a channel.
-   * This method releases all resources related to the session.This method call is asynchronous. When this method returns, it does not necessarily mean that the user has left the channel.After joining the channel, you must call this method or leaveChannel to end the call, otherwise, the next call cannot be started.If you successfully call this method and leave the channel, the following callbacks are triggered:The local client: onLeaveChannel .The remote client: onUserOffline , if the user joining the channel is in the Communication profile, or is a host in the Live-broadcasting profile.If you call release immediately after calling this method, the SDK does not trigger the onLeaveChannel callback.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.-1(ERR_FAILED): A general error occurs (no specified reason).-2 (ERR_INVALID_ARGUMENT): The parameter is invalid.-7(ERR_NOT_INITIALIZED): The SDK is not initialized.
-   */
-  abstract leaveChannel(options?: LeaveChannelOptions): number;
-
-  /**
-   * Sets the client role.
-   * If you call this method to set the user's role as the host before joining the channel and set the local video property through the setupLocalVideo method, the local video preview is automatically enabled when the user joins the channel.You can call this method either before or after joining the channel to set the user role as audience or host.If you call this method to switch the user role after joining the channel, the SDK triggers the following callbacks:The local client: onClientRoleChanged .The remote client: onUserJoined or onUserOffline (UserOfflineBecomeAudience).
-   *
-   * @param role The user role. See ClientRoleType .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.-1: A general error occurs (no specified reason).-2: The parameter is invalid.-7: The SDK is not initialized.
-   */
-  abstract setClientRole(
-    role: ClientRoleType,
-    options?: ClientRoleOptions
-  ): number;
-
-  /**
-   * Starts an audio call test.
-   * This method starts an audio call test to determine whether the audio devices (for example, headset and speaker) and the network connection are working properly. To conduct the test, let the user speak for a while, and the recording is played back within the set interval. If the user can hear the recording within the interval, the audio devices and network connection are working properly.Call this method before joining a channel.After calling startEchoTest, you must call stopEchoTest to end the test. Otherwise, the app cannot perform the next echo test, and you cannot join the channel.In the live streaming channels, only a host can call this method.
-   *
-   * @param intervalInSeconds The time interval (s) between when you speak and when the recording plays back. The value range is [2, 10], and the default value is 10.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract startEchoTest(intervalInSeconds?: number): number;
-
-  /**
-   * Enables the local video preview.
-   * This method starts the local video preview before joining the channel. Before calling this method, ensure that you do the following:Call setView to set the local preview window.Call enableVideo to enable the video.The local preview enables the mirror mode by default.After the local video preview is enabled, if you call leaveChannel [1/2] to exit the channel, the local preview remains until you call stopPreview [1/2] to disable it.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract startPreview(sourceType?: VideoSourceType): number;
-
-  /**
-   * Stops the local video preview.
-   * After calling startPreview [1/2] to start the preview, if you want to close the local video preview, please call this method.Please call this method before joining a channel or after leaving a channel.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract stopPreview(sourceType?: VideoSourceType): number;
-
-  /**
-   * Sets the audio profile and audio scenario.
-   * Deprecated:This method is deprecated. If you need to set the audio profile, use setAudioProfile [2/2] ; if you need to set the audio scenario, use setAudioScenario .You can call this method either before or after joining a channel.In scenarios requiring high-quality audio, such as online music tutoring, Agora recommends you set profile as AudioProfileMusicHighQuality(4)and scenario as AudioScenarioGameStreaming(3).
-   *
-   * @param profile The audio profile, including the sampling rate, bitrate, encoding mode, and the number of channels. See AudioProfileType .
-   *
-   * @param scenario The audio scenarios. See AudioScenarioType . Under different audio scenarios, the device uses different volume types.
-   *
-   * @returns
-   * 0: Success. < 0: Failure.
-   */
-  abstract setAudioProfile(
-    profile: AudioProfileType,
-    scenario?: AudioScenarioType
-  ): number;
-
-  /**
-   * Starts the audio recording on the client.
-   * The Agora SDK allows recording during a call. After successfully calling this method, you can record the audio of all the users in the channel and get an audio recording file. Supported formats of the recording file are as follows:WAV: High-fidelity files with typically larger file sizes. For example, the size of a WAV file with a sample rate of 32,000 Hz and a recording duration of 10 minutes is around 73 MB.AAC: Low-fidelity files with typically smaller file sizes. For example, if the sample rate is 32,000 Hz and the recording quality is AudioRecordingQualityMedium, the file size for a 10-minute recording is approximately 2 MB.Once the user leaves the channel, the recording automatically stops.Call this method after joining a channel.
-   *
-   * @param config Recording configuration. See AudioRecordingConfiguration .
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract startAudioRecording(config: AudioRecordingConfiguration): number;
-
-  /**
-   * Starts playing the music file.
-   * This method mixes the specified local or online audio file with the audio from the microphone, or replaces the microphone's audio with the specified local or remote audio file. A successful method call triggers the onAudioMixingStateChanged (AudioMixingStatePlaying) callback. When the audio mixing file playback finishes, the SDK triggers the onAudioMixingStateChanged(AudioMixingStateStopped) callback on the local client.For the audio file formats supported by this method, see What formats of audio files the Agora RTC SDK support.You can call this method either before or after joining a channel. If you need to call startAudioMixing multiple times, ensure that the time interval between calling this method is more than 500 ms.If the local music file does not exist, the SDK does not support the file format, or the the SDK cannot access the music file URL, the SDK reports the warn code 701.
-   *
-   * @param filePath File path:Windows: The absolute path or URL address (including the suffixes of the filename) of the audio effect file. For example: C:\music\audio.mp4.macOS: The absolute path or URL address (including the suffixes of the filename) of the audio effect file. For example: /var/mobile/Containers/Data/audio.mp4.
-   *
-   * @param loopback Whether to only play music files on the local client:true: Only play music files on the local client so that only the local user can hear the music.false: Publish music files to remote clients so that both the local user and remote users can hear the music.
-   *
-   * @param cycle The number of times the music file plays.≥ 0: The number of playback times. For example, 0 means that the SDK does not play the music file while 1 means that the SDK plays once.-1: Play the audio file in an infinite loop.
-   *
-   * @param startPos The playback position (ms) of the music file.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract startAudioMixing(
-    filePath: string,
-    loopback: boolean,
-    cycle: number,
-    startPos?: number
-  ): number;
-
-  /**
-   * Updates the display mode of the local video view.
-   * After initializing the local video view, you can call this method to update its rendering and mirror modes. It affects only the video view that the local user sees, not the published local video stream.Ensure that you have called the setupLocalVideo method to initialize the local video view before calling this method.During a call, you can call this method as many times as necessary to update the display mode of the local video view.
-   *
-   * @param renderMode The local video display mode. See RenderModeType .
-   *
-   * @param mirrorMode The rendering mode of the local video view. See VideoMirrorModeType .If you use a front camera, the SDK enables the mirror mode by default; if you use a rear camera, the SDK disables the mirror mode by default.
-   *
-   * @returns
-   * 0: Success. < 0: Failure.
-   */
-  abstract setLocalRenderMode(
-    renderMode: RenderModeType,
-    mirrorMode?: VideoMirrorModeType
-  ): number;
-
-  /**
-   * Enables/Disables dual-stream mode.
-   * Sets the stream mode to the single-stream (default) or dual-stream mode. (LIVE_BROADCASTING only.) You can call this method to enable or disable the dual-stream mode on the publisher side.Dual streams are a hybrid of a high-quality video stream and a low-quality video stream:High-quality video stream: High bitrate, high resolution.Low-quality video stream: Low bitrate, low resolution.After you enable the dual-stream mode, you can call setRemoteVideoStreamType to choose toreceive the high-quality video stream or low-quality video stream on the subscriber side.This method only takes effect for the video stream captured by the SDK through the camera. If you use video streams from the custom video source or captured by the SDK through the screen, you need to call enableDualStreamMode [2/3] or enableDualStreamMode to enable dual-stream mode.You can call this method either before or after joining a channel.
-   *
-   * @param enabled Whether to enable dual-stream mode.true: Enable dual-stream mode.false: Disable dual-stream mode.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract enableDualStreamMode(
-    enabled: boolean,
-    sourceType?: VideoSourceType,
-    streamConfig?: SimulcastStreamConfig
-  ): number;
-
-  /**
-   * Creates a data stream.
-   * Creates a data stream. Each user can create up to five data streams in a single channel.
-   *
-   * @param config The configurations for the data stream. See DataStreamConfig .
-   *
-   * @returns
-   * ID of the created data stream, if the method call succeeds.< 0: Failure.
-   */
-  abstract createDataStream(config: DataStreamConfig): number;
-
-  /**
-   * Adds a watermark image to the local video.
-   * This method adds a PNG watermark image to the local video in the live streaming. Once the watermark image is added, all the audience in the channel (CDN audience included), and the capturing device can see and capture it. Agora supports adding only one watermark image onto the local video, and the newly watermark image replaces the previous one.The watermark coordinatesare dependent on the settings in the setVideoEncoderConfiguration method:If the orientation mode of the encoding video ( OrientationMode ) is fixed landscape mode or the adaptive landscape mode, the watermark uses the landscape orientation.If the orientation mode of the encoding video (OrientationMode) is fixed portrait mode or the adaptive portrait mode, the watermark uses the portrait orientation.When setting the watermark position, the region must be less than thesetVideoEncoderConfiguration dimensions set in the method; otherwise, the watermark image will be cropped.Ensure that call this method after enableVideo .If you only want to add a watermark to the Media Push, you can call this method or the setLiveTranscoding method.This method supports adding a watermark image in the PNG file format only. Supported pixel formats of the PNG image are RGBA, RGB, Palette, Gray, and Alpha_gray.If the dimensions of the PNG image differ from your settings in this method, the image will be cropped or zoomed to conform to your settings.If you have enabledthe local video preview by calling the startPreview method, you can use the visibleInPreview member to set whether or not the watermark is visible in the preview.If you have enabled the mirror mode for the local video, the watermark on the local video is also mirrored. To avoid mirroring the watermark, Agora recommends that you do not use the mirror and watermark functions for the local video at the same time. You can implement the watermark function in your application layer.
-   *
-   * @param watermarkUrl The local file path of the watermark image to be added. This method supports adding a watermark image from the local absolute or relative file path.
-   *
-   * @param options The options of the watermark image to be added.
-   *
-   * @returns
-   * 0: Success.< 0: Failure.
-   */
-  abstract addVideoWatermark(
-    watermarkUrl: string,
-    options: WatermarkOptions
-  ): number;
-
-  /**
-   * Joins the channel with a user account, and configures whether to automatically subscribe to audio or video streams after joining the channel.
-   * This method allows a user to join the channel with the user account. After the user successfully joins the channel, the SDK triggers the following callbacks:The local client: onLocalUserRegistered , onJoinChannelSuccess and onConnectionStateChanged callbacks.The remote client: The onUserJoined callback if the user is in the COMMUNICATION profile, and the onUserInfoUpdated callback if the user is a host in the LIVE_BROADCASTING profile.Once a user joins the channel, the user subscribes to the audio and video streams of all the other users in the channel by default, giving rise to usage and billing calculation. To stop subscribing to a specified stream or all remote streams, call the corresponding mute methods.To ensure smooth communication, use the same parameter type to identify the user. For example, if a user joins the channel with a user ID, then ensure all the other users use the user ID too. The same applies to the user account. If a user joins the channel with the Agora Web SDK, ensure that the ID of the user is set to the same parameter type.
-   *
-   * @param options The channel media options. See ChannelMediaOptions .
-   *
-   * @param token The token generated on your server for authentication.
-   *
-   * @param channelId The channel name. This parameter signifies the channel in which users engage in real-time audio and video interaction. Under the premise of the same App ID, users who fill in the same channel ID enter the same channel for audio and video interaction. The string length must be less than 64 bytes. Supported characters:All lowercase English letters: a to z.All uppercase English letters: A to Z.All numeric characters: 0 to 9.Space"!", "#", "$", "%", "&amp;", "(", ")", "+", "-", ":", ";", "&lt;", "= ", ".", "&gt;", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
-   *
-   * @param userAccount The user account. This parameter is used to identify the user in the channel for real-time audio and video engagement. You need to set and manage user accounts yourself and ensure that each user account in the same channel is unique. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as NULL. Supported characters are (89 in total):The 26 lowercase English letters: a to z.The 26 uppercase English letters: A to Z.All numeric characters: 0 to 9.Space"!", "#", "$", "%", "&amp;", "(", ")", "+", "-", ":", ";", "&lt;", "= ", ".", "&gt;", "?", "@", "[", "]", "^", "_", "{", "}", "|", "~", ","
-   *
-   * @returns
-   * 0: Success.< 0: Failure.-2: The parameter is invalid. For example, the token is invalid, the uid parameter is not set to an integer, or the value of a member in the ChannelMediaOptions structure is invalid. You need to pass in a valid parameter and join the channel again.-3: Failes to initialize the IRtcEngine object. You need to reinitialize the IRtcEngine object.-7: The IRtcEngine object has not been initialized. You need to initialize the IRtcEngine object before calling this method.-8: IRtcEngineThe internal state of the object is wrong. The typical cause is that you call this method to join the channel without calling stopEchoTest to stop the test after calling startEchoTest to start a call loop test. You need to call stopEchoTest before calling this method.-17: The request to join the channel is rejected. The typical cause is that the user is in the channel. Agora recommends using the onConnectionStateChanged callback to get whether the user is in the channel. Do not call this method to join the channel unless you receive the ConnectionStateDisconnected(1) state.-102: The channel name is invalid. You need to pass in a valid channel name inchannelId to rejoin the channel.-121: The user ID is invalid. You need to pass in a valid user ID in uid to rejoin the channel.
-   */
-  abstract joinChannelWithUserAccount(
-    token: string,
-    channelId: string,
-    userAccount: string,
-    options?: ChannelMediaOptions
-  ): number;
 
   /**
    * Destroys a video renderer object.
