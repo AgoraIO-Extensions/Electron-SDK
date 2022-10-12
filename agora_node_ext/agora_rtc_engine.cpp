@@ -1559,6 +1559,7 @@ NAPI_API_DEFINE(NodeRtcEngine, startAudioDeviceLoopbackTest) {
     {
       pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
     }
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
     result = adm->startAudioDeviceLoopbackTest(interval);
   } while (false);
   napi_set_int_result(args, result);
