@@ -3057,6 +3057,10 @@ class AgoraRtcEngine extends EventEmitter {
     return this.rtcEngine.startRecordingDeviceTest(interval);
   }
 
+  startAudioDeviceLoopbackTest(interval: number): number {
+    return this.rtcEngine.startAudioDeviceLoopbackTest(interval);
+  }
+
   /**
    * Stops the audio device loopback test.
    *
