@@ -93,7 +93,7 @@ export default class Extension
    */
   disableExtension = () => {
     const { provider, extension } = this.state;
-    this.engine?.enableExtension(provider, extension, {} ,false);
+    this.engine?.enableExtension(provider, extension, {}, false);
     this.setState({ enableExtension: false });
   };
 
