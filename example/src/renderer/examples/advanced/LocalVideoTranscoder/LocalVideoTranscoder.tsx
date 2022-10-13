@@ -255,7 +255,6 @@ export default class LocalVideoTranscoder
    */
   startLocalVideoTranscoder = () => {
     const config = this._generateLocalTranscoderConfiguration();
-    console.log('config data\n', config);
 
     this.engine?.startLocalVideoTranscoder(config);
     this.setState({ startLocalVideoTranscoder: true });
@@ -377,7 +376,6 @@ export default class LocalVideoTranscoder
 
   onPlayerSourceStateChanged(state: MediaPlayerState, ec: MediaPlayerError) {
     this.info('onPlayerSourceStateChanged', 'state', state, 'ec', ec);
-    console.log('播放');
     switch (state) {
       case MediaPlayerState.PlayerStateIdle:
         break;
@@ -426,7 +424,6 @@ export default class LocalVideoTranscoder
           : VideoSourceType.VideoSourceCamera
         : VideoSourceType.VideoSourceRemote;
 
-    console.log({ startLocalVideoTranscoder, uid, sourceType });
     return (
       <List.Item>
         <Card title={`ChannelId: ${channelId} Uid: ${uid}`}>
@@ -504,7 +501,6 @@ export default class LocalVideoTranscoder
         <AgoraDropdown
           title={'targetSource'}
           items={sources.map((value) => {
-            console.log('targetSource\n', value);
             return {
               value: value.sourceId,
               label: value.sourceName,
