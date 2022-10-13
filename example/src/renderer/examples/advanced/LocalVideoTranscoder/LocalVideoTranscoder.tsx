@@ -15,7 +15,7 @@ import createAgoraRtcEngine, {
   VideoDeviceInfo,
   VideoSourceType,
   MediaSourceType,
-  LocalTranscoderConfiguration
+  LocalTranscoderConfiguration,
 } from 'agora-electron-sdk';
 
 import Config from '../../../config/agora.config';
@@ -152,12 +152,18 @@ export default class LocalVideoTranscoder
   };
 
   startCameraCapture = (deviceId: string) => {
-    if(VideoSourceType.VideoSourceCameraPrimary === this._getVideoSourceTypeCamera(deviceId)) {
+    if (
+      VideoSourceType.VideoSourceCameraPrimary ===
+      this._getVideoSourceTypeCamera(deviceId)
+    ) {
       this.engine?.startPrimaryCameraCapture({
         deviceId,
       });
     }
-    if(VideoSourceType.VideoSourceCameraSecondary === this._getVideoSourceTypeCamera(deviceId)) {
+    if (
+      VideoSourceType.VideoSourceCameraSecondary ===
+      this._getVideoSourceTypeCamera(deviceId)
+    ) {
       this.engine?.startSecondaryCameraCapture({
         deviceId,
       });
@@ -165,10 +171,16 @@ export default class LocalVideoTranscoder
   };
 
   stopCameraCapture = (deviceId: string) => {
-    if(VideoSourceType.VideoSourceCameraPrimary === this._getVideoSourceTypeCamera(deviceId)) {
+    if (
+      VideoSourceType.VideoSourceCameraPrimary ===
+      this._getVideoSourceTypeCamera(deviceId)
+    ) {
       this.engine?.stopPrimaryCameraCapture();
     }
-    if(VideoSourceType.VideoSourceCameraSecondary === this._getVideoSourceTypeCamera(deviceId)) {
+    if (
+      VideoSourceType.VideoSourceCameraSecondary ===
+      this._getVideoSourceTypeCamera(deviceId)
+    ) {
       this.engine?.stopSecondaryCameraCapture();
     }
   };
@@ -193,7 +205,9 @@ export default class LocalVideoTranscoder
    */
   startScreenCapture = () => {
     const { targetSource } = this.state;
-    const isCaptureWindow = targetSource.type === ScreenCaptureSourceType.ScreencapturesourcetypeWindow;
+    const isCaptureWindow =
+      targetSource.type ===
+      ScreenCaptureSourceType.ScreencapturesourcetypeWindow;
 
     const res = this.engine?.startPrimaryScreenCapture({
       isCaptureWindow: false,
@@ -214,11 +228,11 @@ export default class LocalVideoTranscoder
     });
     this.setState({ startScreenCapture: true });
   };
-  
+
   /**
    * Step 3-4 (Optional): stopScreenCapture
    */
-  stopScreenCapture = () => { 
+  stopScreenCapture = () => {
     this.engine?.stopPrimaryScreenCapture();
     this.setState({ startScreenCapture: false });
   };
@@ -285,13 +299,13 @@ export default class LocalVideoTranscoder
     ][videoDevices.findIndex(({ deviceId }) => deviceId === value)];
   };
 
-  _generateLocalTranscoderConfiguration = ():LocalTranscoderConfiguration => {
+  _generateLocalTranscoderConfiguration = (): LocalTranscoderConfiguration => {
     const { videoDeviceId, startScreenCapture, open, imageUrl } = this.state;
     const max_width = 1080,
       max_height = 720,
       width = 300,
       height = 300;
-    
+
     const streams: TranscodingVideoStream[] = [];
     if (videoDeviceId.length) {
       streams.push({
@@ -312,7 +326,6 @@ export default class LocalVideoTranscoder
       });
     }
 
-
     if (imageUrl) {
       const getImageType = (url) => {
         if (url.endsWith('.png')) {
@@ -322,7 +335,7 @@ export default class LocalVideoTranscoder
         } else if (url.endsWith('.gif')) {
           return MediaSourceType.RtcImageGifSource;
         }
-      }; 
+      };
       streams.push({
         sourceType: getImageType(imageUrl),
         imageUrl: imageUrl,
