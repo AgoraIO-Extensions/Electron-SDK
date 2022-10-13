@@ -58,6 +58,8 @@ export abstract class BaseComponent<
 
   componentDidMount() {
     this.initRtcEngine();
+    // @ts-ignore
+    window.agoraRtcEngine = this.engine;
   }
 
   componentWillUnmount() {
