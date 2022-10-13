@@ -397,7 +397,6 @@ export default class JoinMultipleChannel
       channelId2,
       joinChannelSuccess,
       joinChannelSuccess2,
-      uid,
       remoteUsers,
       remoteUsers2,
     } = this.state;
@@ -415,7 +414,7 @@ export default class JoinMultipleChannel
               xl: 1,
               xxl: 2,
             }}
-            dataSource={[uid, ...remoteUsers, ...remoteUsers2]}
+            dataSource={[0, ...remoteUsers, ...remoteUsers2]}
             renderItem={(item) => {
               return this.renderVideo(
                 item,
