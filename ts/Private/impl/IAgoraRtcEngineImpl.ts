@@ -992,6 +992,7 @@ export class IVideoDeviceManagerImpl implements IVideoDeviceManager {
       toJSON: () => {
         return {
           deviceIdUTF8: deviceIdUTF8,
+          deviceCapabilityNumber: deviceCapabilityNumber,
         };
       },
     };
