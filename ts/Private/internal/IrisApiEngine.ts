@@ -98,21 +98,20 @@ export type EventProcessor = {
   preprocess?: (event: string, data: any, buffers: Uint8Array[]) => void;
   handlers: (
     data: any
-  ) =>
-    | (
-        | IAudioFrameObserver
-        | IVideoFrameObserver
-        | IAudioSpectrumObserver
-        | IAudioEncodedFrameObserver
-        | IVideoEncodedFrameObserver
-        | IMediaPlayerSourceObserver
-        | IMediaPlayerAudioFrameObserver
-        | IMediaPlayerVideoFrameObserver
-        | IMediaRecorderObserver
-        | IMetadataObserver
-        | IDirectCdnStreamingEventHandler
-        | IRtcEngineEventHandler
-      )[];
+  ) => (
+    | IAudioFrameObserver
+    | IVideoFrameObserver
+    | IAudioSpectrumObserver
+    | IAudioEncodedFrameObserver
+    | IVideoEncodedFrameObserver
+    | IMediaPlayerSourceObserver
+    | IMediaPlayerAudioFrameObserver
+    | IMediaPlayerVideoFrameObserver
+    | IMediaRecorderObserver
+    | IMetadataObserver
+    | IDirectCdnStreamingEventHandler
+    | IRtcEngineEventHandler
+  )[];
 };
 
 export enum EVENT_TYPE {
@@ -352,7 +351,7 @@ export function callIrisApi(
   funcName: string,
   params: any,
   buffer?: (Uint8Array | undefined)[],
-  bufferCount: number = 0
+  bufferCount = 0
 ): any {
   const isMediaPlayer = funcName.startsWith('MediaPlayer_');
   if (isMediaPlayer) {

@@ -424,6 +424,36 @@ export enum ErrorCodeType {
 }
 
 /**
+ * @ignore
+ */
+export enum LicenseErrorType {
+  /**
+   * @ignore
+   */
+  LicenseErrInvalid = 1,
+  /**
+   * @ignore
+   */
+  LicenseErrExpire = 2,
+  /**
+   * @ignore
+   */
+  LicenseErrMinutesExceed = 3,
+  /**
+   * @ignore
+   */
+  LicenseErrLimitedPeriod = 4,
+  /**
+   * @ignore
+   */
+  LicenseErrDiffDevices = 5,
+  /**
+   * @ignore
+   */
+  LicenseErrInternal = 99,
+}
+
+/**
  * The operation permissions of the SDK on the audio session.
  */
 export enum AudioSessionOperationRestriction {
@@ -523,7 +553,11 @@ export enum InterfaceIdType {
   /**
    * @ignore
    */
-  AgoraIidMusicContentCenter = 13,
+  AgoraIidStateSync = 13,
+  /**
+   * @ignore
+   */
+  AgoraIidMetachatService = 14,
 }
 
 /**
@@ -1075,6 +1109,10 @@ export class EncodedVideoFrameInfo {
    */
   captureTimeMs?: number;
   /**
+   * @ignore
+   */
+  decodeTimeMs?: number;
+  /**
    * The user ID to push the externally encoded video frame.
    */
   uid?: number;
@@ -1182,9 +1220,9 @@ export class SimulcastStreamConfig {
    */
   dimensions?: VideoDimensions;
   /**
-   * Video receive bitrate (Kbps). The default value is 65.
+   * @ignore
    */
-  bitrate?: number;
+  kBitrate?: number;
   /**
    * The capture frame rate (fps) of the local video. The default value is 5.
    */
@@ -1930,6 +1968,14 @@ export enum LocalVideoStreamError {
    * @ignore
    */
   LocalVideoStreamErrorScreenCaptureWindowNotSupported = 20,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamErrorScreenCaptureFailure = 21,
+  /**
+   * @ignore
+   */
+  LocalVideoStreamErrorScreenCaptureNoPermission = 22,
 }
 
 /**
@@ -2717,6 +2763,10 @@ export class LocalTranscoderConfiguration {
    * The encoding configuration of the mixed video stream after the video mixing on the local client. See VideoEncoderConfiguration .
    */
   videoOutputConfiguration?: VideoEncoderConfiguration;
+  /**
+   * @ignore
+   */
+  sync_with_primary_camera?: boolean;
 }
 
 /**
@@ -2887,6 +2937,10 @@ export enum ConnectionChangedReasonType {
    * @ignore
    */
   ConnectionChangedTooManyBroadcasters = 20,
+  /**
+   * @ignore
+   */
+  ConnectionChangedLicenseVerifyFailed = 21,
 }
 
 /**
@@ -3468,6 +3522,24 @@ export enum VoiceConversionPreset {
    * A deep voice. To avoid audio distortion, ensure that you use this enumerator to process a male-sounding voice.
    */
   VoiceChangerBass = 0x03010400,
+}
+
+/**
+ * @ignore
+ */
+export enum HeadphoneEqualizerPreset {
+  /**
+   * @ignore
+   */
+  HeadphoneEqualizerOff = 0x00000000,
+  /**
+   * @ignore
+   */
+  HeadphoneEqualizerOverear = 0x04000001,
+  /**
+   * @ignore
+   */
+  HeadphoneEqualizerInear = 0x04000002,
 }
 
 /**
@@ -4353,4 +4425,8 @@ export class SpatialAudioParams {
    * @ignore
    */
   speaker_attenuation?: number;
+  /**
+   * @ignore
+   */
+  enable_doppler?: boolean;
 }
