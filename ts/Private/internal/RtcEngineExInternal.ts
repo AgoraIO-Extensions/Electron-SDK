@@ -9,6 +9,7 @@ import {
   ErrorCodeType,
   IAudioEncodedFrameObserver,
   SimulcastStreamConfig,
+  SimulcastStreamMode,
   VideoCanvas,
   VideoMirrorModeType,
   VideoSourceType,
@@ -321,8 +322,17 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
     streamConfig?: SimulcastStreamConfig
   ): string {
     return streamConfig === undefined
-      ? 'RtcEngine_enableDualStreamMode2'
-      : 'RtcEngine_enableDualStreamMode3';
+      ? 'RtcEngine_enableDualStreamMode'
+      : 'RtcEngine_enableDualStreamMode2';
+  }
+
+  protected getApiTypeFromSetDualStreamMode(
+    mode: SimulcastStreamMode,
+    streamConfig?: SimulcastStreamConfig
+  ): string {
+    return streamConfig === undefined
+      ? 'RtcEngine_setDualStreamMode'
+      : 'RtcEngine_setDualStreamMode2';
   }
 
   protected getApiTypeFromCreateDataStream(config: DataStreamConfig): string {
