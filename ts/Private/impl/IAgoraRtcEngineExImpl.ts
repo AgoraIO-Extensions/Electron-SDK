@@ -11,12 +11,12 @@ import {
   VideoMirrorModeType,
   ConnectionStateType,
   EncryptionConfig,
+  DataStreamConfig,
   WatermarkOptions,
   UserInfo,
   VideoSourceType,
   SimulcastStreamConfig,
   SimulcastStreamMode,
-  DataStreamConfig,
 } from '../AgoraBase';
 import { RenderModeType } from '../AgoraMediaBase';
 // @ts-ignore
@@ -626,6 +626,33 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
     return 'RtcEngineEx_enableEncryptionEx';
   }
 
+  createDataStreamEx(
+    config: DataStreamConfig,
+    connection: RtcConnection
+  ): number {
+    const apiType = this.getApiTypeFromCreateDataStreamEx(config, connection);
+    const jsonParams = {
+      config: config,
+      connection: connection,
+      toJSON: () => {
+        return {
+          config: config,
+          connection: connection,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    const streamId = jsonResults.streamId;
+    return streamId;
+  }
+
+  protected getApiTypeFromCreateDataStreamEx(
+    config: DataStreamConfig,
+    connection: RtcConnection
+  ): string {
+    return 'RtcEngineEx_createDataStreamEx';
+  }
+
   sendStreamMessageEx(
     streamId: number,
     data: Uint8Array,
@@ -1027,32 +1054,5 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
     filePath: string
   ): string {
     return 'RtcEngineEx_takeSnapshotEx';
-  }
-
-  createDataStreamEx(
-    config: DataStreamConfig,
-    connection: RtcConnection
-  ): number {
-    const apiType = this.getApiTypeFromCreateDataStreamEx(config, connection);
-    const jsonParams = {
-      config: config,
-      connection: connection,
-      toJSON: () => {
-        return {
-          config: config,
-          connection: connection,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    const streamId = jsonResults.streamId;
-    return streamId;
-  }
-
-  protected getApiTypeFromCreateDataStreamEx(
-    config: DataStreamConfig,
-    connection: RtcConnection
-  ): string {
-    return 'RtcEngineEx_createDataStreamEx';
   }
 }
