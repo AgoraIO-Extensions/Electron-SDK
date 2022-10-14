@@ -9,12 +9,13 @@ import {
   VideoMirrorModeType,
   ConnectionStateType,
   EncryptionConfig,
+  DataStreamConfig,
   WatermarkOptions,
+  LiveTranscoding,
+  ChannelMediaRelayConfiguration,
   UserInfo,
-  VideoSourceType,
   SimulcastStreamConfig,
   SimulcastStreamMode,
-  DataStreamConfig,
 } from './AgoraBase';
 import { RenderModeType } from './AgoraMediaBase';
 /**
@@ -117,6 +118,22 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
+   * @ignore
+   */
+  abstract muteLocalAudioStreamEx(
+    mute: boolean,
+    connection: RtcConnection
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract muteLocalVideoStreamEx(
+    mute: boolean,
+    connection: RtcConnection
+  ): number;
+
+  /**
    * Stops or resumes receiving the audio stream of a specified user.
    * This method is used to stops or resumes receiving the audio stream of a specified user. You can call this method before or after joining a channel. If a user leaves a channel, the settings in this method become invalid.
    *
@@ -136,6 +153,14 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
+   * @ignore
+   */
+  abstract muteAllRemoteAudioStreamsEx(
+    mute: boolean,
+    connection: RtcConnection
+  ): number;
+
+  /**
    * Stops or resumes receiving the video stream of a specified user.
    * This method is used to stops or resumes receiving the video stream of a specified user. You can call this method before or after joining a channel. If a user leaves a channel, the settings in this method become invalid.
    *
@@ -150,6 +175,14 @@ export abstract class IRtcEngineEx extends IRtcEngine {
    */
   abstract muteRemoteVideoStreamEx(
     uid: number,
+    mute: boolean,
+    connection: RtcConnection
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract muteAllRemoteVideoStreamsEx(
     mute: boolean,
     connection: RtcConnection
   ): number;
@@ -339,6 +372,22 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   ): number;
 
   /**
+   * Creates a data stream.
+   * Creates a data stream. Each user can create up to five data streams in a single channel.Compared with createDataStreamEx , this method does not support data reliability. If a data packet is not received five seconds after it was sent, the SDK directly discards the data.
+   *
+   * @param connection The connection information. See RtcConnection .
+   *
+   * @param config The configurations for the data stream. See DataStreamConfig .
+   *
+   * @returns
+   * ID of the created data stream, if the method call succeeds.< 0: Failure.
+   */
+  abstract createDataStreamEx(
+    config: DataStreamConfig,
+    connection: RtcConnection
+  ): number;
+
+  /**
    * Sends data stream messages.
    * After calling createDataStreamEx , you can call this method to send data stream messages to all users in the channel.The SDK has the following restrictions on this method:Up to 30 packets can be sent per second in a channel with each packet having a maximum size of 1 kB.Each client can send up to 6 KB of data per second.Each user can have up to five data streams simultaneously.A successful method call triggers the onStreamMessage callback on the remote client, from which the remote user gets the stream message.
    * A failed method call triggers the onStreamMessageError callback on the remote client.Ensure that you call createDataStreamEx to create a data channel before calling this method.This method applies only to the COMMUNICATION profile or to the hosts in the LIVE_BROADCASTING profile. If an audience in the LIVE_BROADCASTING profile calls this method, the audience may be switched to a host.
@@ -417,6 +466,67 @@ export abstract class IRtcEngineEx extends IRtcEngine {
   /**
    * @ignore
    */
+  abstract startRtmpStreamWithoutTranscodingEx(
+    url: string,
+    connection: RtcConnection
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract startRtmpStreamWithTranscodingEx(
+    url: string,
+    transcoding: LiveTranscoding,
+    connection: RtcConnection
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract updateRtmpTranscodingEx(
+    transcoding: LiveTranscoding,
+    connection: RtcConnection
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract stopRtmpStreamEx(url: string, connection: RtcConnection): number;
+
+  /**
+   * @ignore
+   */
+  abstract startChannelMediaRelayEx(
+    configuration: ChannelMediaRelayConfiguration,
+    connection: RtcConnection
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract updateChannelMediaRelayEx(
+    configuration: ChannelMediaRelayConfiguration,
+    connection: RtcConnection
+  ): number;
+
+  /**
+   * @ignore
+   */
+  abstract stopChannelMediaRelayEx(connection: RtcConnection): number;
+
+  /**
+   * @ignore
+   */
+  abstract pauseAllChannelMediaRelayEx(connection: RtcConnection): number;
+
+  /**
+   * @ignore
+   */
+  abstract resumeAllChannelMediaRelayEx(connection: RtcConnection): number;
+
+  /**
+   * @ignore
+   */
   abstract getUserInfoByUserAccountEx(
     userAccount: string,
     connection: RtcConnection
@@ -441,7 +551,6 @@ export abstract class IRtcEngineEx extends IRtcEngine {
    * @ignore
    */
   abstract enableDualStreamModeEx(
-    sourceType: VideoSourceType,
     enabled: boolean,
     streamConfig: SimulcastStreamConfig,
     connection: RtcConnection
@@ -451,7 +560,6 @@ export abstract class IRtcEngineEx extends IRtcEngine {
    * @ignore
    */
   abstract setDualStreamModeEx(
-    sourceType: VideoSourceType,
     mode: SimulcastStreamMode,
     streamConfig: SimulcastStreamConfig,
     connection: RtcConnection
@@ -479,21 +587,5 @@ export abstract class IRtcEngineEx extends IRtcEngine {
     connection: RtcConnection,
     uid: number,
     filePath: string
-  ): number;
-
-  /**
-   * Creates a data stream.
-   * Creates a data stream. Each user can create up to five data streams in a single channel.Compared with createDataStreamEx , this method does not support data reliability. If a data packet is not received five seconds after it was sent, the SDK directly discards the data.
-   *
-   * @param connection The connection information. See RtcConnection .
-   *
-   * @param config The configurations for the data stream. See DataStreamConfig .
-   *
-   * @returns
-   * ID of the created data stream, if the method call succeeds.< 0: Failure.
-   */
-  abstract createDataStreamEx(
-    config: DataStreamConfig,
-    connection: RtcConnection
   ): number;
 }

@@ -39,6 +39,7 @@ interface State extends BaseVideoComponentState {
   recordingDeviceMute?: boolean;
   videoDevices?: VideoDeviceInfo[];
   videoDeviceId?: string;
+  loopbackDeviceId?: string;
 }
 
 export default class DeviceManager
@@ -65,6 +66,7 @@ export default class DeviceManager
       recordingDeviceMute: false,
       videoDevices: [],
       videoDeviceId: undefined,
+      loopbackDeviceId: undefined,
     };
   }
 
@@ -96,6 +98,7 @@ export default class DeviceManager
     this.enumerateDevices();
     this.getDeviceMute();
     this.getDeviceVolume();
+    (window as any).engine = this.engine;
   }
 
   /**
@@ -145,6 +148,7 @@ export default class DeviceManager
       recordingDeviceId: recordingDevices[0].deviceId,
       videoDevices,
       videoDeviceId: videoDevices[0].deviceId,
+      loopbackDeviceId: playbackDevices[0].deviceId,
     });
   };
 
@@ -211,6 +215,19 @@ export default class DeviceManager
     this.engine
       .getAudioDeviceManager()
       .setRecordingDeviceVolume(recordingDeviceVolume);
+  };
+
+  /**
+   * Step 3-7 (Optional): setLoopbackDevice
+   */
+  setLoopbackDevice = () => {
+    const { loopbackDeviceId } = this.state;
+    console.log('setLoopbackDevice:', loopbackDeviceId);
+    this.engine?.getAudioDeviceManager().setLoopbackDevice(loopbackDeviceId);
+    console.log(
+      'getLoopbackDevice:',
+      this.engine?.getAudioDeviceManager().getLoopbackDevice()
+    );
   };
 
   /**
@@ -324,6 +341,7 @@ export default class DeviceManager
       recordingDeviceVolume,
       videoDevices,
       videoDeviceId,
+      loopbackDeviceId,
     } = this.state;
     return (
       <>
@@ -375,6 +393,22 @@ export default class DeviceManager
           }}
         />
         <AgoraDivider />
+        <AgoraDropdown
+          title={'loopbackDeviceId'}
+          items={playbackDevices.map((value) => {
+            return {
+              value: value.deviceId,
+              label: value.deviceName,
+            };
+          })}
+          value={loopbackDeviceId}
+          onValueChange={(value, index) => {
+            this.setState({
+              loopbackDeviceId: playbackDevices[index].deviceId,
+            });
+          }}
+        />
+        <AgoraDivider />
         <AgoraButton title={`setDevice`} onPress={this.setDevice} />
         <AgoraDivider />
         <AgoraSwitch
@@ -421,6 +455,11 @@ export default class DeviceManager
         />
         <AgoraDivider />
         <AgoraButton title={`setDeviceVolume`} onPress={this.setDeviceVolume} />
+        <AgoraDivider />
+        <AgoraButton
+          title={`setLoopbackDevice`}
+          onPress={this.setLoopbackDevice}
+        />
       </>
     );
   }

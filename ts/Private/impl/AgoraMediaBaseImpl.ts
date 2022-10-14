@@ -33,6 +33,18 @@ export function processIAudioFrameObserverBase(
         handler.onMixedAudioFrame(jsonParams.channelId, jsonParams.audioFrame);
       }
       break;
+
+    case 'onEarMonitoringAudioFrame':
+      if (handler.onEarMonitoringAudioFrame !== undefined) {
+        handler.onEarMonitoringAudioFrame(jsonParams.audioFrame);
+      }
+      break;
+
+    case 'getEarMonitoringAudioParams':
+      if (handler.getEarMonitoringAudioParams !== undefined) {
+        handler.getEarMonitoringAudioParams();
+      }
+      break;
   }
 }
 
@@ -83,7 +95,7 @@ export function processIVideoEncodedFrameObserver(
   jsonParams: any
 ) {
   switch (event) {
-    case 'OnEncodedVideoFrameReceived':
+    case 'onEncodedVideoFrameReceived':
       if (handler.onEncodedVideoFrameReceived !== undefined) {
         handler.onEncodedVideoFrameReceived(
           jsonParams.uid,
