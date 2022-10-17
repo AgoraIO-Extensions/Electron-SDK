@@ -79,7 +79,7 @@ export class IRtcEngineExImpl extends IRtcEngineImpl implements IRtcEngineEx {
     connection: RtcConnection,
     options?: LeaveChannelOptions
   ): string {
-    return 'RtcEngineEx_leaveChannelEx';
+    return 'RtcEngineEx_leaveChannelEx2';
   }
 
   updateChannelMediaOptionsEx(
