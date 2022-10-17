@@ -3498,9 +3498,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     mode: SimulcastStreamMode,
     streamConfig?: SimulcastStreamConfig
   ): string {
-    return streamConfig === undefined
-    ?'RtcEngine_setDualStreamMode'
-    :'RtcEngine_setDualStreamMode2';
+    return 'RtcEngine_setDualStreamMode';
   }
 
   enableEchoCancellationExternal(
@@ -4187,7 +4185,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     extensionInfo: ExtensionInfo,
     enable = true
   ): string {
-    return 'RtcEngine_enableExtension2';
+    return 'RtcEngine_enableExtension';
   }
 
   setExtensionProperty(
@@ -4231,7 +4229,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     key: string,
     value: string
   ): string {
-    return 'RtcEngine_setExtensionProperty2';
+    return 'RtcEngine_setExtensionProperty';
   }
 
   getExtensionProperty(
@@ -4276,7 +4274,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     key: string,
     bufLen: number
   ): string {
-    return 'RtcEngine_getExtensionProperty2';
+    return 'RtcEngine_getExtensionProperty';
   }
 
   setCameraCapturerConfiguration(config: CameraCapturerConfiguration): number {
