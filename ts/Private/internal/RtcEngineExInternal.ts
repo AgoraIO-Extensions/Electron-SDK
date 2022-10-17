@@ -9,6 +9,7 @@ import {
   ErrorCodeType,
   IAudioEncodedFrameObserver,
   SimulcastStreamConfig,
+  SimulcastStreamMode,
   VideoCanvas,
   VideoMirrorModeType,
   VideoSourceType,
@@ -32,6 +33,7 @@ import {
   ScreenCaptureSourceInfo,
   SDKBuildInfo,
   Size,
+  ExtensionInfo
 } from '../IAgoraRtcEngine';
 import { RtcConnection } from '../IAgoraRtcEngineEx';
 import { IAudioDeviceManager } from '../IAudioDeviceManager';
@@ -321,12 +323,57 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
 
   protected getApiTypeFromEnableDualStreamMode(
     enabled: boolean,
-    sourceType: VideoSourceType = VideoSourceType.VideoSourceCameraPrimary,
     streamConfig?: SimulcastStreamConfig
   ): string {
     return streamConfig === undefined
-      ? 'RtcEngine_enableDualStreamMode2'
-      : 'RtcEngine_enableDualStreamMode3';
+      ? 'RtcEngine_enableDualStreamMode'
+      : 'RtcEngine_enableDualStreamMode2';
+  }
+
+  protected getApiTypeFromSetDualStreamMode(
+    mode: SimulcastStreamMode,
+    streamConfig?: SimulcastStreamConfig
+  ): string {
+    return streamConfig === undefined
+    ?'RtcEngine_setDualStreamMode'
+    :'RtcEngine_setDualStreamMode2';
+  }
+
+  protected getApiTypeFromLeaveChannelEx(
+    connection: RtcConnection,
+    options?: LeaveChannelOptions
+  ): string {
+    return 'RtcEngineEx_leaveChannelEx2';
+  }
+
+  protected getApiTypeFromGetExtensionProperty(
+    provider: string,
+    extension: string,
+    extensionInfo: ExtensionInfo,
+    key: string,
+    bufLen: number
+  ): string {
+    return 'RtcEngine_getExtensionProperty2';
+  }
+
+  protected getApiTypeFromEnableExtension(
+    provider: string,
+    extension: string,
+    extensionInfo: ExtensionInfo,
+    enable = true
+  ): string {
+    return 'RtcEngine_enableExtension2';
+  }
+
+  
+  protected getApiTypeFromSetExtensionProperty(
+    provider: string,
+    extension: string,
+    extensionInfo: ExtensionInfo,
+    key: string,
+    value: string
+  ): string {
+    return 'RtcEngine_setExtensionProperty2';
   }
 
   protected getApiTypeFromCreateDataStream(config: DataStreamConfig): string {
