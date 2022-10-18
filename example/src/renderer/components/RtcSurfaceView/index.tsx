@@ -34,6 +34,9 @@ class RtcSurfaceView extends Component<Props> {
     ) as HTMLElement;
   };
 
+  componentDidMount() {
+    this.updateRender();
+  }
 
   componentDidUpdate() {
     this.updateRender();
