@@ -225,6 +225,8 @@ void NodeRtcEngine::Init(Local<Object> &module) {
   // PROPERTY_METHOD_DEFINE(startEchoTestWithInterval);
   PROPERTY_METHOD_DEFINE(startRecordingDeviceTest);
   PROPERTY_METHOD_DEFINE(stopRecordingDeviceTest);
+  PROPERTY_METHOD_DEFINE(startAudioDeviceLoopbackTest);
+  PROPERTY_METHOD_DEFINE(stopAudioDeviceLoopbackTest);
   // PROPERTY_METHOD_DEFINE(setCameraCapturerConfiguration);
   PROPERTY_METHOD_DEFINE(setLogFileSize);
 
@@ -1534,6 +1536,50 @@ NAPI_API_DEFINE(NodeRtcEngine, stopRecordingDeviceTest) {
     }
     IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
     result = adm->stopRecordingDeviceTest();
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, startAudioDeviceLoopbackTest) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  do
+  {
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    int interval;
+    status = napi_get_value_int32_(args[0], interval);
+    CHECK_NAPI_STATUS(pEngine, status);
+
+    if (!pEngine->m_audioVdm)
+    {
+      pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
+    }
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
+    result = adm->startAudioDeviceLoopbackTest(interval);
+  } while (false);
+  napi_set_int_result(args, result);
+  LOG_LEAVE;
+}
+
+NAPI_API_DEFINE(NodeRtcEngine, stopAudioDeviceLoopbackTest) {
+  LOG_ENTER;
+  napi_status status = napi_ok;
+  int result = -1;
+  do {
+    NodeRtcEngine *pEngine = nullptr;
+    napi_get_native_this(args, pEngine);
+    CHECK_NATIVE_THIS(pEngine);
+
+    if (!pEngine->m_audioVdm) {
+      pEngine->m_audioVdm = new AAudioDeviceManager(pEngine->m_engine);
+    }
+    IAudioDeviceManager *adm = pEngine->m_audioVdm->get();
+    result = adm->stopAudioDeviceLoopbackTest();
   } while (false);
   napi_set_int_result(args, result);
   LOG_LEAVE;

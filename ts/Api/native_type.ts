@@ -3629,6 +3629,10 @@ export interface NodeRtcEngine {
   /**
    * @ignore
    */
+  startAudioDeviceLoopbackTest(interval: number): number;
+  /**
+   * @ignore
+   */
   stopAudioDeviceLoopbackTest(): number;
   /**
    * @ignore

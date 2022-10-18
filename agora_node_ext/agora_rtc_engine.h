@@ -273,6 +273,8 @@ public:
   // NAPI_API(startEchoTestWithInterval);
   NAPI_API(startRecordingDeviceTest);
   NAPI_API(stopRecordingDeviceTest);
+  NAPI_API(startAudioDeviceLoopbackTest);
+  NAPI_API(stopAudioDeviceLoopbackTest);
   // NAPI_API(setCameraCapturerConfiguration);
   NAPI_API(setLogFileSize);
 

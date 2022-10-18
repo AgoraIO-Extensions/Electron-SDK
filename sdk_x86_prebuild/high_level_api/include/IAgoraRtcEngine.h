@@ -2281,6 +2281,38 @@ class IAudioDeviceManager {
    */
   virtual int stopRecordingDeviceTest() = 0;
 
+   /**
+   * Starts the audio device loopback test.
+   *
+   * This method tests whether the local audio devices are working properly.
+   * After calling this method, the microphone captures the local audio and
+   * plays it through the speaker, and the \ref
+   * IRtcEngineEventHandler::onAudioVolumeIndication "onAudioVolumeIndication"
+   * callback returns the local audio volume information at the set interval.
+   *
+   * @note This method tests the local audio devices and does not report the
+   * network conditions.
+   * @param indicationInterval The time interval (ms) at which the \ref
+   * IRtcEngineEventHandler::onAudioVolumeIndication "onAudioVolumeIndication"
+   * callback returns.
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int startAudioDeviceLoopbackTest(int indicationInterval) = 0;
+
+  /**
+   * Stops the audio device loopback test.
+   *
+   * @note Ensure that you call this method to stop the loopback test after
+   * calling the \ref IAudioDeviceManager::startAudioDeviceLoopbackTest
+   * "startAudioDeviceLoopbackTest" method.
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int stopAudioDeviceLoopbackTest() = 0;
+
   /**
    * Releases all IAudioDeviceManager resources.
    */
