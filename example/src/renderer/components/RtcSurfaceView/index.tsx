@@ -38,6 +38,18 @@ class RtcSurfaceView extends Component<Props> {
     this.updateRender();
   }
 
+  shouldComponentUpdate(
+    nextProps: Readonly<Props>,
+    nextState: Readonly<{}>,
+    nextContext: any
+  ): boolean {
+    return (
+      JSON.stringify(this.props.canvas) !== JSON.stringify(nextProps.canvas) ||
+      JSON.stringify(this.props.connection) !==
+        JSON.stringify(nextProps.connection)
+    );
+  }
+
   componentDidUpdate() {
     this.updateRender();
   }
