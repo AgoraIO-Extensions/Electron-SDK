@@ -58,6 +58,8 @@ export abstract class BaseComponent<
 
   componentDidMount() {
     this.initRtcEngine();
+    // @ts-ignore
+    window.agoraRtcEngine = this.engine;
   }
 
   componentWillUnmount() {
@@ -184,7 +186,6 @@ export abstract class BaseComponent<
       channelId,
       joinChannelSuccess,
       remoteUsers,
-      uid,
     } = this.state;
     return (
       <>
@@ -207,7 +208,7 @@ export abstract class BaseComponent<
                     column: 4,
                   }
             }
-            dataSource={[uid, ...remoteUsers]}
+            dataSource={[0, ...remoteUsers]}
             renderItem={(item) => {
               return this.renderVideo(item, channelId);
             }}

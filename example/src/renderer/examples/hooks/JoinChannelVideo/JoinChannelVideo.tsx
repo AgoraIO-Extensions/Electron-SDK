@@ -252,7 +252,7 @@ export default function JoinChannelVideoWithAddlisten() {
               xl: 1,
               xxl: 2,
             }}
-            dataSource={[uid, ...remoteUsers]}
+            dataSource={[0, ...remoteUsers]}
             renderItem={renderVideo.bind(window)}
           />
         ) : undefined}
@@ -284,7 +284,7 @@ export default function JoinChannelVideoWithAddlisten() {
     return undefined;
   }
 
-  function renderVideo() {
+  function renderVideo(uid: number) {
     return (
       <List.Item>
         <Card title={`${uid === 0 ? 'Local' : 'Remote'} Uid: ${uid}`}>
