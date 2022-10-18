@@ -108,6 +108,7 @@ import { LogConfig, LogFilterType, LogLevel } from './IAgoraLog';
 import { IMediaPlayer } from './IAgoraMediaPlayer';
 import { AudioMixingDualMonoMode, IMediaEngine } from './IAgoraMediaEngine';
 import { IAudioDeviceManager } from './IAudioDeviceManager';
+import { IMusicContentCenter } from './IAgoraMusicContentCenter';
 import { IMediaRecorder } from './IAgoraMediaRecorder';
 import { ILocalSpatialAudioEngine } from './IAgoraSpatialAudio';
 /**
@@ -5695,6 +5696,11 @@ export abstract class IRtcEngine {
    * One IVideoDeviceManager object.
    */
   abstract getVideoDeviceManager(): IVideoDeviceManager;
+
+  /**
+   * @ignore
+   */
+  abstract getMusicContentCenter(): IMusicContentCenter;
 
   /**
    * Gets one IMediaEngine object.
