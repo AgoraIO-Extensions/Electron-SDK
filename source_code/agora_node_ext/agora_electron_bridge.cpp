@@ -11,11 +11,12 @@
 #include <regex>
 
 namespace agora {
+
+using namespace iris;
+
 namespace rtc {
 namespace electron {
 
-using namespace iris::rtc;
-using namespace agora::iris::rtc;
 const char *AgoraElectronBridge::_class_name = "AgoraElectronBridge";
 const char *AgoraElectronBridge::_ret_code_str = "callApiReturnCode";
 const char *AgoraElectronBridge::_ret_result_str = "callApiResult";
@@ -131,7 +132,7 @@ napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
   memset(agoraElectronBridge->_result, '\0', kBasicResultLength);
 
   int ret = ERROR_PARAMETER_1;
-  std::shared_ptr<IrisApiEngine> irisApiEngine =
+  std::shared_ptr<IApiEngineBase> irisApiEngine =
       agoraElectronBridge->_iris_api_engine;
 
   if (irisApiEngine) {
@@ -471,7 +472,7 @@ napi_value AgoraElectronBridge::InitializeEnv(napi_env env,
       napi_unwrap(env, jsthis, reinterpret_cast<void **>(&agoraElectronBridge));
 
   // create
-  auto engine = std::make_shared<IrisApiEngine>();
+  auto engine = createIrisRtcEngine(nullptr);
   auto bufferManager = std::make_shared<iris::IrisVideoFrameBufferManager>();
   auto rtcEventHandler = std::make_shared<NodeIrisEventHandler>();
   auto mpkEventHandler = std::make_shared<NodeIrisEventHandler>();
@@ -482,7 +483,7 @@ napi_value AgoraElectronBridge::InitializeEnv(napi_env env,
   engine->Attach(bufferManager.get());
 
   // assign
-  agoraElectronBridge->_iris_api_engine = engine;
+  agoraElectronBridge->_iris_api_engine.reset(engine);
   agoraElectronBridge->_iris_video_frame_buffer_manager = bufferManager;
   agoraElectronBridge->_iris_rtc_event_handler = rtcEventHandler;
   agoraElectronBridge->_iris_mpk_event_handler = mpkEventHandler;

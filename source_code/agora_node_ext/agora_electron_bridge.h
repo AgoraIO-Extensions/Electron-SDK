@@ -5,8 +5,7 @@
  * @Last Modified time: 2022-08-04 21:18:20
  */
 #pragma once
-#include "iris_api_type.h"
-#include "iris_cxx_api.h"
+#include "iris_engine_base.h"
 #include "iris_video_processor_cxx.h"
 #include "node_base.h"
 #include <exception>
@@ -50,7 +49,7 @@ class AgoraElectronBridge {
   static const char *_ret_result_str;
   napi_env _env;
   napi_ref _ref;
-  std::shared_ptr<IrisApiEngine> _iris_api_engine;
+  std::shared_ptr<IApiEngineBase> _iris_api_engine;
   std::shared_ptr<NodeIrisEventHandler> _iris_rtc_event_handler;
   std::shared_ptr<NodeIrisEventHandler> _iris_mpk_event_handler;
   std::shared_ptr<NodeIrisEventHandler> _iris_observer_event_handler;
