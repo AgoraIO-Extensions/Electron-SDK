@@ -85,7 +85,7 @@ export default class SendMultiVideoStream
     });
     this.engine.registerEventHandler(this);
     // this.engine.getMediaEngine().registerAudioFrameObserver(this);
-    this.engine.getMediaEngine().registerVideoFrameObserver(this);
+    // this.engine.getMediaEngine().registerVideoFrameObserver(this);
 
     // Need to enable video on this case
     // If you only call `enableAudio`, only relay the audio stream to the target channel
@@ -192,7 +192,7 @@ export default class SendMultiVideoStream
    */
   protected releaseRtcEngine() {
     // this.engine?.getMediaEngine().unregisterAudioFrameObserver(this);
-    this.engine?.getMediaEngine().unregisterVideoFrameObserver(this);
+    // this.engine?.getMediaEngine().unregisterVideoFrameObserver(this);
     this.engine?.unregisterEventHandler(this);
     this.engine?.release();
   }
