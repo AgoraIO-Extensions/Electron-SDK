@@ -35,7 +35,7 @@
     "iris_sdk_win": "http://192.168.99.149:8086/CSDC_repo/iris_0.0.0_DCG_Windows_Video_20220930_1101.zip",
     "iris_sdk_mac": "http://192.168.99.149:8086/CSDC_repo/iris_0.0.0_DCG_Mac_Video_20220930_1122.zip",
     "no_symbol": true,
-    "prebuilt": true
+    "prebuilt": false
   },
   "dependencies": {
     "bindings": "1.2.1",

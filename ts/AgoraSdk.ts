@@ -16,6 +16,7 @@ export * from './Private/IAgoraRtcEngine';
 export * from './Private/IAgoraRtcEngineEx';
 export * from './Private/IAgoraSpatialAudio';
 export * from './Private/IAudioDeviceManager';
+export * from './Private/IAgoraMusicContentCenter';
 export * from './Renderer/RendererManager';
 export * from './Types';
 export * from './Utils';

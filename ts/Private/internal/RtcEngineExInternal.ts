@@ -52,7 +52,8 @@ import { MediaRecorderInternal } from './MediaRecorderInternal';
 import { ILocalSpatialAudioEngine } from '../IAgoraSpatialAudio';
 import { LocalSpatialAudioEngineInternal } from './LocalSpatialAudioEngineInternal';
 import { IAudioDeviceManagerImpl } from '../impl/IAudioDeviceManagerImpl';
-import { IMusicContentCenterImpl } from '../impl/IAgoraMusicContentCenterImpl';
+import { IMusicContentCenterImpl, processIMusicContentCenterEventHandler } from '../impl/IAgoraMusicContentCenterImpl';
+import { MusicContentCenterInternal } from './MusicContentCenterInternal';
 import {
   processIDirectCdnStreamingEventHandler,
   processIMetadataObserver,
@@ -79,7 +80,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   private _media_engine: IMediaEngine = new MediaEngineInternal();
   private _media_recorder: IMediaRecorder = new MediaRecorderInternal();
   private _music_content_center: IMusicContentCenter =
-    new IMusicContentCenterImpl();
+    new MusicContentCenterInternal();
   private _local_spatial_audio_engine: ILocalSpatialAudioEngine =
     new LocalSpatialAudioEngineInternal();
   private _events: Map<

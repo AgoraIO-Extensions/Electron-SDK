@@ -17,6 +17,11 @@ import {
   IMediaPlayerAudioFrameObserver,
   IMediaPlayerVideoFrameObserver,
 } from '../IAgoraMediaPlayer';
+
+import {
+  IMusicContentCenterEventHandler
+} from '../IAgoraMusicContentCenter';
+
 import {
   IDirectCdnStreamingEventHandler,
   IMetadataObserver,
@@ -42,12 +47,14 @@ import {
   processIMetadataObserver,
   processIRtcEngineEventHandler,
 } from '../impl/IAgoraRtcEngineImpl';
+import { processIMusicContentCenterEventHandler } from '../impl/IAgoraMusicContentCenterImpl'
 import { IAudioEncodedFrameObserver } from '../AgoraBase';
 import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource';
 import { MediaPlayerInternal } from './MediaPlayerInternal';
 import { MediaEngineInternal } from './MediaEngineInternal';
 import { RtcEngineExInternal } from './RtcEngineExInternal';
 import { MediaRecorderInternal } from './MediaRecorderInternal';
+import { MusicContentCenterInternal } from './MusicContentCenterInternal';
 
 const agora = require('../../../build/Release/agora_node_ext');
 
@@ -112,6 +119,7 @@ export type EventProcessor = {
         | IMetadataObserver
         | IDirectCdnStreamingEventHandler
         | IRtcEngineEventHandler
+        | IMusicContentCenterEventHandler
       )[];
 };
 
@@ -120,6 +128,7 @@ export enum EVENT_TYPE {
   IMediaPlayer,
   IMediaRecorder,
   IRtcEngine,
+  IMusicContentCenter
 }
 
 /**
@@ -288,6 +297,12 @@ export const EVENT_PROCESSORS = {
     },
     handlers: () => RtcEngineExInternal._handlers,
   },
+  IMusicContentCenterEventHandler: {
+    suffix: 'processIMusicContentCenterEventHandler_',
+    type: EVENT_TYPE.IRtcEngine,
+    func: [processIMusicContentCenterEventHandler],
+    handlers: () => MusicContentCenterInternal._handlers,
+  },   
 };
 
 /**
