@@ -87,7 +87,6 @@ class App extends React.Component {
             <Content style={{ flex: 1 }}>
               <Switch>
                 <Route path="/" children={<AuthInfoScreen />} exact={true} />
-
                 {basicRoute.map((route: any, index) => (
                   <Route
                     key={`${index}`}
@@ -102,7 +101,6 @@ class App extends React.Component {
                     children={<route.component />}
                   />
                 ))}
-
                 {advanceRoute.map((route: any, index) => (
                   <Route
                     key={`${index}`}

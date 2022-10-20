@@ -26,7 +26,7 @@ const onFinish = (values: any) => {
   config.appId = values.appId;
   config.channelId = values.channelId;
   config.token = values.token;
-  config.uid = values.uid;
+  config.uid = +values.uid;
   config.pluginPath = values.pluginPath;
 
   config.addonLogPath = values.addonLogPath;
