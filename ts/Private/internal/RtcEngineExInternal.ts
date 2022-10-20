@@ -49,16 +49,16 @@ import { MediaPlayerInternal } from './MediaPlayerInternal';
 import { MediaRecorderInternal } from './MediaRecorderInternal';
 import { ILocalSpatialAudioEngine } from '../IAgoraSpatialAudio';
 import { LocalSpatialAudioEngineInternal } from './LocalSpatialAudioEngineInternal';
-import { IAudioDeviceManagerImpl } from '../impl/IAudioDeviceManagerImpl';
 import {
+  IVideoDeviceManagerImpl,
   processIDirectCdnStreamingEventHandler,
   processIMetadataObserver,
-  IVideoDeviceManagerImpl,
   processIRtcEngineEventHandler,
 } from '../impl/IAgoraRtcEngineImpl';
 import { IRtcEngineEvent } from '../extension/IAgoraRtcEngineExtension';
 import { processIAudioEncodedFrameObserver } from '../impl/AgoraBaseImpl';
 import { processIAudioSpectrumObserver } from '../impl/AgoraMediaBaseImpl';
+import { AudioDeviceManagerInternal } from './AudioDeviceManagerInternal';
 
 export class RtcEngineExInternal extends IRtcEngineExImpl {
   static _handlers: (
@@ -70,7 +70,7 @@ export class RtcEngineExInternal extends IRtcEngineExImpl {
   static _audio_spectrum_observers: IAudioSpectrumObserver[] = [];
   private readonly eventKey: string;
   private _audio_device_manager: IAudioDeviceManager =
-    new IAudioDeviceManagerImpl();
+    new AudioDeviceManagerInternal();
   private _video_device_manager: IVideoDeviceManager =
     new IVideoDeviceManagerImpl();
   private _media_engine: IMediaEngine = new MediaEngineInternal();
