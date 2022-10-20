@@ -384,6 +384,8 @@ export default class LocalVideoTranscoder
     const state = this.createState();
     delete state.videoDevices;
     delete state.videoDeviceId;
+    delete state.sources;
+    delete state.targetSource;
     this.setState(state);
   }
 
