@@ -221,4 +221,14 @@ export abstract class IAudioDeviceManager {
    * Releases all the resources occupied by the IAudioDeviceManager object.
    */
   abstract release(): void;
+
+  /**
+   * @ignore
+   */
+  abstract getPlaybackDefaultDevice(): AudioDeviceInfo;
+
+  /**
+   * @ignore
+   */
+  abstract getRecordingDefaultDevice(): AudioDeviceInfo;
 }
