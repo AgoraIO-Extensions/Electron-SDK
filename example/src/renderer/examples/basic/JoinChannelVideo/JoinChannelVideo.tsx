@@ -166,7 +166,7 @@ export default class JoinChannelVideo
   }
 
   protected renderUsers(): React.ReactNode {
-    const { startPreview, joinChannelSuccess, remoteUsers, uid } = this.state;
+    const { startPreview, joinChannelSuccess, remoteUsers } = this.state;
     return (
       <>
         {startPreview || joinChannelSuccess ? (
@@ -181,7 +181,7 @@ export default class JoinChannelVideo
               xl: 1,
               xxl: 2,
             }}
-            dataSource={[uid, ...remoteUsers]}
+            dataSource={[0, ...remoteUsers]}
             renderItem={this.renderVideo.bind(this)}
           />
         ) : undefined}
