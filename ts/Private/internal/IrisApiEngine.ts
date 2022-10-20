@@ -298,7 +298,7 @@ export const EVENT_PROCESSORS = {
     handlers: () => RtcEngineExInternal._handlers,
   },
   IMusicContentCenterEventHandler: {
-    suffix: 'processIMusicContentCenterEventHandler_',
+    suffix: 'MusicContentCenterEventHandler_',
     type: EVENT_TYPE.IRtcEngine,
     func: [processIMusicContentCenterEventHandler],
     handlers: () => MusicContentCenterInternal._handlers,
