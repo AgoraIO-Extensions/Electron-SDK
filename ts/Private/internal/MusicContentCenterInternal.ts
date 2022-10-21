@@ -46,6 +46,10 @@ export class MusicPlayerInternal
   extends MediaPlayerInternal
   implements IMusicPlayer
 {
+  constructor(mediaPlayerId: number) {
+    super(mediaPlayerId);
+  }
+  
   openWithSongCode(songCode: number, startPos = 0): number {
     const apiType = this.getApiTypeFromOpenWithSongCode(songCode, startPos);
     const jsonParams = {
@@ -75,7 +79,6 @@ export class MusicCollectionInternal extends MusicCollectionImpl {
 
   constructor(musicCollectionJson: IMusicCollectionJson) {
     super();
-    console.log('MusicCollectionInternal__resultjson:', musicCollectionJson);
     this._musicCollectionJson = musicCollectionJson;
   }
 

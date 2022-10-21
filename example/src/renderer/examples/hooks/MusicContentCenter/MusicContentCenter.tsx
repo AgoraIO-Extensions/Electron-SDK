@@ -13,7 +13,8 @@ import {
   MusicChartInfo,
   MusicCollection,
   Music,
-  PreloadStatusCode
+  PreloadStatusCode,
+  MediaPlayerState
 } from 'agora-electron-sdk';
 
 import Config from '../../../config/agora.config';
@@ -172,12 +173,9 @@ export default function JoinChannelVideoWithAddlisten() {
             msg,
             lyricUrl,
           });
-          if(status === PreloadStatusCode.KPreloadStatusPreloading) {
+          if (status === PreloadStatusCode.KPreloadStatusPreloading) {
             console.log('加载完成');
-            const openwithsongcodeRes = musicPlayer.openWithSongCode(songCode);
-            console.log('openwithsongcodeRes\n', openwithsongcodeRes);
           }
-        
         },
         onLyricResult: (requestId, lyricUrl) => {
           console.log('onLyricResult', { requestId, lyricUrl });
@@ -186,7 +184,6 @@ export default function JoinChannelVideoWithAddlisten() {
 
     setMusicPlayer(musicContentCenter.createMusicPlayer());
     setinitedMusicContentCenter(true);
-    // (window as any).playMusic = playMusic;
   };
 
   /**
@@ -206,6 +203,38 @@ export default function JoinChannelVideoWithAddlisten() {
     );
   };
 
+  /**
+   * MusicContentCenter Step 4: preload
+   */
+  const preload = (songCode: number) => {
+    console.log(preload);
+    musicContentCenter.preload(songCode);
+  };
+
+  /**
+   * MusicContentCenter Step 5: openWithSongCode
+   */
+  const openWithSongCode = (songCode: number) => {
+    musicPlayer.openWithSongCode(songCode);
+  };
+  
+
+  useEffect(() => {
+    if(musicPlayer) {
+
+      musicPlayer.registerPlayerSourceObserver({
+        onPlayerSourceStateChanged:(state, ec) => {
+          console.log('');
+          if (state === MediaPlayerState.PlayerStateOpenCompleted) {
+            musicPlayer.play();
+          }
+          
+        }
+      });
+      (window as any).musicPlayer = musicPlayer;
+    }
+  }, [musicPlayer]);
+  
   useEffect(() => {
     initRtcEngine();
 
@@ -297,7 +326,7 @@ export default function JoinChannelVideoWithAddlisten() {
       releaseRtcEngine();
     };
   }, []);
-
+  
   const configuration = renderConfiguration();
   return (
     <AgoraView className={AgoraStyle.screen}>
@@ -305,8 +334,8 @@ export default function JoinChannelVideoWithAddlisten() {
         {musicCollection && (
           <MusicsList
             musicList={musicList}
-            musicPlayer={musicPlayer}
-            musicContentCenter={musicContentCenter}
+            preload={(songCode: number)=> preload(songCode)}
+            openWithSongCode={(songCode: number)=> openWithSongCode(songCode)}
           />
         )}
       </AgoraView>
@@ -323,7 +352,6 @@ export default function JoinChannelVideoWithAddlisten() {
 
         <AgoraDivider />
         <AgoraText>MusicContentCenter:</AgoraText>
-
         {renderAction()}
       </AgoraView>
     </AgoraView>

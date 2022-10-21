@@ -16,16 +16,15 @@ import {
 import { List, Button } from 'antd';
 const MusicsList = (props: {
   musicList: Music[];
-  musicPlayer: IMusicPlayer;
-  musicContentCenter: IMusicContentCenter;
+  preload: any;
+  openWithSongCode: any;
 }) => {
-  const { musicList, musicContentCenter } = props;
+  const { musicList, preload, openWithSongCode } = props;
   console.log(musicList);
   useEffect(() => {}, []);
 
   const preparePlay = (item: Music) => {
-    musicContentCenter.preload(item.songCode);
-    musicContentCenter.getLyric(item.songCode);
+    preload(item.songCode);
   };
 
   return (
@@ -35,7 +34,12 @@ const MusicsList = (props: {
         dataSource={musicList}
         renderItem={(item) => (
           <List.Item
-            actions={[<Button onClick={() => preparePlay(item)}>play</Button>]}
+            actions={[
+              <Button onClick={() => preparePlay(item)}> preload</Button>,
+              <Button onClick={() => openWithSongCode(item.songCode)}>
+                play
+              </Button>,
+            ]}
           >
             <List.Item.Meta title={<div>{item.name}</div>} />
             <div>{item.singer}</div>
