@@ -384,7 +384,8 @@ export function callIrisApi(
   bufferCount: number = 0
 ): any {
   const isMediaPlayer = funcName.startsWith('MediaPlayer_');
-  if (isMediaPlayer) {
+  const isMusicPlayer = funcName.startsWith('MusicPlayer_');
+  if (isMediaPlayer || isMusicPlayer) {
     // @ts-ignore
     params.mediaPlayerId = (this as IMediaPlayer).getMediaPlayerId();
     const json = params.toJSON?.call();
