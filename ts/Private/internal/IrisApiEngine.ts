@@ -54,7 +54,10 @@ import { MediaPlayerInternal } from './MediaPlayerInternal';
 import { MediaEngineInternal } from './MediaEngineInternal';
 import { RtcEngineExInternal } from './RtcEngineExInternal';
 import { MediaRecorderInternal } from './MediaRecorderInternal';
-import { MusicContentCenterInternal } from './MusicContentCenterInternal';
+import {
+  MusicContentCenterInternal,
+  processIMusicContentCenterServer,
+} from './MusicContentCenterInternal';
 
 const agora = require('../../../build/Release/agora_node_ext');
 
@@ -300,9 +303,9 @@ export const EVENT_PROCESSORS = {
   IMusicContentCenterEventHandler: {
     suffix: 'MusicContentCenterEventHandler_',
     type: EVENT_TYPE.IRtcEngine,
-    func: [processIMusicContentCenterEventHandler],
+    func: [processIMusicContentCenterServer],
     handlers: () => MusicContentCenterInternal._handlers,
-  },   
+  },
 };
 
 /**
