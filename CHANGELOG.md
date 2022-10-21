@@ -1,3 +1,15 @@
+## [4.0.1-xhs.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.1-rc.1...v4.0.1-xhs.1) (2022-10-21)
+
+
+### Bug Fixes
+
+* `deviceCapabilityNumber` issue ([7d6c0c3](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/7d6c0c37bd6b9577d66a70e4b9aee2818446daed))
+
+
+### Features
+
+* support 4.0.1  ([#894](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/894)) ([b6e22ee](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/b6e22ee97ddb9e2dc164e9c0e058912da0d56420))
+
 ## [4.0.1-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.0...v4.0.1-rc.1) (2022-10-21)
 
 
