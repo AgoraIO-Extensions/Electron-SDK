@@ -1,3 +1,14 @@
+## [4.0.1-rc.1](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.0...v4.0.1-rc.1) (2022-10-21)
+
+
+### Bug Fixes
+
+* `deviceCapabilityNumber` issue ([58a38ae](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/58a38ae9046750f35a90a55fe72f4f4dbacbb1b4))
+* `getPlaybackDeviceInfo` and `getRecordingDeviceInfo` issue ([6517c6c](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/6517c6cd96539e4556ca01f3b10376c3ccdab50a))
+* `LocalTranscoderConfiguration` json parse issue #EP-172 ([45cbfe3](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/45cbfe3c04a493a3e888afde6f4bdff898e4ea5d)), closes [#EP-172](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/EP-172)
+* add `setDualStreamMode` method ([9f18cfc](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/9f18cfcdefbea4cb7a3c1948d0e6a0c911a5016a))
+* the event which named contains `Ex` not triggered issue (such as `onTokenPrivilegeWillExpire`) ([#892](https://github.com/AgoraIO-Extensions/Electron-SDK/issues/892)) ([abe8b55](https://github.com/AgoraIO-Extensions/Electron-SDK/commit/abe8b55f09c8af23cb9f578c0643d176852cbe11))
+
 # [4.0.0](https://github.com/AgoraIO-Extensions/Electron-SDK/compare/v4.0.0-rc.3...v4.0.0) (2022-09-28)
 
 
