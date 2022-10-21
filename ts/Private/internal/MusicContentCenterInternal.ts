@@ -66,7 +66,7 @@ export class MusicPlayerInternal
     songCode: number,
     startPos = 0
   ): string {
-    return 'MusicPlayer_openWithSongCode';
+    return 'MusicPlayer_open';
   }
 }
 
@@ -119,7 +119,6 @@ export function processIMusicContentCenterServer(
     case 'onMusicCollectionResult':
       if (handler.onMusicCollectionResult !== undefined) {
         let result = new MusicCollectionInternal(jsonParams.result);
-        console.log('onMusicChartsResult:::::', jsonParams, result);
         handler.onMusicCollectionResult(
           jsonParams.requestId,
           jsonParams.status,

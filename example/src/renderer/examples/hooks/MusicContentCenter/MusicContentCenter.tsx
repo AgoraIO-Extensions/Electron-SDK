@@ -12,6 +12,8 @@ import {
   MusicContentCenterStatusCode,
   MusicChartInfo,
   MusicCollection,
+  Music,
+  PreloadStatusCode
 } from 'agora-electron-sdk';
 
 import Config from '../../../config/agora.config';
@@ -37,19 +39,18 @@ export default function JoinChannelVideoWithAddlisten() {
   const [enableVideo] = useState(true);
   const [channelId, setChannelId] = useState(Config.channelId);
 
-  //
-  const [mccUid, setMccUid] = useState<number>(333);
+  const [mccUid] = useState<number>(333);
   const [rtmToken, setRtmToken] = useState(
-    '006695752b975654e44bea00137d084c71cIACEI8tOU0O5z1EoQoZkl0kwonNd1G1gHYbbMnA1XURO3P2G15IAAAAAEABmOrPdchJSYwEA6ANyElJj'
+    '006695752b975654e44bea00137d084c71cIABuvxvygEFterthWg0JvQZQqLOYK3969qaDJiKCpgnezf2G15IAAAAAEAAFKVBPBGdTYwEA6AMEZ1Nj'
   );
   const [initedMusicContentCenter, setinitedMusicContentCenter] =
     useState(false);
-  const [requestId, setRequestId] = useState<string>();
+  // const [requestId, setRequestId] = useState<string>();
   const [musicCollectionRequestId, setMusicCollectionRequestId] =
     useState<string>();
   const [musicChartInfos, setMusicChartInfos] = useState<MusicChartInfo[]>([]);
-  const [MusicCollection, setMusicCollection] = useState<MusicCollection>();
-
+  const [musicCollection, setMusicCollection] = useState<MusicCollection>();
+  const [musicList, setMusiclist] = useState<Music[]>();
   const [token] = useState(Config.token);
   const [uid] = useState(Config.uid);
   const [joinChannelSuccess, setJoinChannelSuccess] = useState(false);
@@ -134,8 +135,7 @@ export default function JoinChannelVideoWithAddlisten() {
       rtmToken,
       mccUid,
     });
-    console.log('initMusicContentCenter:', result);
-    console.log('存在initedMusicContentCenter？', initedMusicContentCenter);
+
     initedMusicContentCenter ||
       musicContentCenter.registerEventHandler({
         onMusicChartsResult: (requestId, status, result) => {
@@ -143,7 +143,7 @@ export default function JoinChannelVideoWithAddlisten() {
             status === MusicContentCenterStatusCode.KMusicContentCenterStatusOk
           ) {
             setMusicChartInfos(result);
-            console.log('onMusicChartsResult:\n', {
+            console.log('onMusicChartsResult:musicCollectionRequestId\n', {
               requestId,
               status,
               result,
@@ -151,38 +151,59 @@ export default function JoinChannelVideoWithAddlisten() {
           }
         },
         onMusicCollectionResult: (requestId, status, result) => {
-          if (musicCollectionRequestId == requestId) {
-            console.log('onMusicCollectionResult:\n', {
-              requestId,
-              status,
-              result,
-            });
-            setMusicCollection(result);
+          console.log('onMusicCollectionResult:\n', {
+            requestId,
+            status,
+            result,
+          });
+
+          let collection: Music[] = [];
+          for (let i = 0; i < result.getCount(); i++) {
+            collection.push(result.getMusic(i));
           }
+          setMusiclist(collection);
+          setMusicCollection(result);
         },
         onPreLoadEvent: (songCode, percent, status, msg, lyricUrl) => {
-          console.log('onMusicCollectionResult:\n', {
+          console.log('资源加载onPreLoadEvent:\n', {
             songCode,
             percent,
             status,
             msg,
             lyricUrl,
           });
+          if(status === PreloadStatusCode.KPreloadStatusPreloading) {
+            console.log('加载完成');
+            const openwithsongcodeRes = musicPlayer.openWithSongCode(songCode);
+            console.log('openwithsongcodeRes\n', openwithsongcodeRes);
+          }
+        
+        },
+        onLyricResult: (requestId, lyricUrl) => {
+          console.log('onLyricResult', { requestId, lyricUrl });
         },
       });
 
-    const playMusic = musicContentCenter.createMusicPlayer();
-    console.log('playMusic', musicContentCenter, playMusic);
+    setMusicPlayer(musicContentCenter.createMusicPlayer());
     setinitedMusicContentCenter(true);
+    // (window as any).playMusic = playMusic;
   };
 
   /**
-   * Step 2: getMusicCollectionByMusicChartId
+   * MusicContentCenter Step 2: getMusicCharts
    */
   const getMusicCharts = () => {
-    setRequestId(musicContentCenter.getMusicCharts());
-    // const _musicCollectionRequestId = musicContentCenter.getMusicCollectionByMusicChartId(1, 1, 20);
-    // console.log('_musicCollectionRequestId', _musicCollectionRequestId);
+    musicContentCenter.getMusicCharts();
+    // setRequestId(musicContentCenter.getMusicCharts());
+  };
+
+  /**
+   * MusicContentCenter Step 3: getMusicCollectionByMusicChartId
+   */
+  const getMusicCollectionByMusicChartId = (musicChartId) => {
+    setMusicCollectionRequestId(
+      musicContentCenter.getMusicCollectionByMusicChartId(musicChartId, 1, 20)
+    );
   };
 
   useEffect(() => {
@@ -272,7 +293,7 @@ export default function JoinChannelVideoWithAddlisten() {
       engine.removeAllListeners('onUserOffline');
       engine.removeAllListeners('onUserJoined');
       engine.removeAllListeners('onError');
-      musicContentCenter.unregisterEventHandler();
+      // musicContentCenter.unregisterEventHandler();
       releaseRtcEngine();
     };
   }, []);
@@ -281,11 +302,16 @@ export default function JoinChannelVideoWithAddlisten() {
   return (
     <AgoraView className={AgoraStyle.screen}>
       <AgoraView className={AgoraStyle.content}>
-        <MusicsList />
+        {musicCollection && (
+          <MusicsList
+            musicList={musicList}
+            musicPlayer={musicPlayer}
+            musicContentCenter={musicContentCenter}
+          />
+        )}
       </AgoraView>
       <AgoraView className={AgoraStyle.rightBar}>
         {renderChannel()}
-
         {configuration ? (
           <>
             <AgoraDivider>
@@ -306,29 +332,6 @@ export default function JoinChannelVideoWithAddlisten() {
   function renderConfiguration() {
     return undefined;
   }
-
-  // function renderUsers() {
-  //   return (
-  //     <>
-  //       {startPreview || joinChannelSuccess ? (
-  //         <List
-  //           style={{ width: '100%' }}
-  //           grid={{
-  //             gutter: 16,
-  //             xs: 1,
-  //             sm: 1,
-  //             md: 1,
-  //             lg: 1,
-  //             xl: 1,
-  //             xxl: 2,
-  //           }}
-  //           dataSource={[uid, ...remoteUsers]}
-  //           renderItem={renderVideo.bind(window)}
-  //         />
-  //       ) : undefined}
-  //     </>
-  //   );
-  // }
 
   function renderChannel() {
     return (
@@ -385,20 +388,7 @@ export default function JoinChannelVideoWithAddlisten() {
             })}
             value={musicChartInfos.length ? musicChartInfos[0].id : null}
             onValueChange={(value, index) => {
-              // musicChartId
-              const musicCollectionRequestId =
-                musicContentCenter.getMusicCollectionByMusicChartId(
-                  value,
-                  1,
-                  20
-                );
-              setMusicCollectionRequestId(musicCollectionRequestId);
-              console.log(
-                '_musicCollectionRequestId',
-                musicCollectionRequestId,
-                value
-              );
-              // this.setState({ targetSource: sources[index] });
+              getMusicCollectionByMusicChartId(value);
             }}
           />
         ) : null}
