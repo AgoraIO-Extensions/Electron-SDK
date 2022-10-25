@@ -3,23 +3,12 @@ import {
   IMusicPlayerImpl,
   MusicCollectionImpl,
 } from '../impl/IAgoraMusicContentCenterImpl';
-
 import {
-  IMusicPlayer,
   IMusicContentCenterEventHandler,
+  IMusicPlayer,
   Music,
 } from '../IAgoraMusicContentCenter';
-
 import { MediaPlayerInternal } from './MediaPlayerInternal';
-import { callIrisApi } from './IrisApiEngine';
-
-interface IMusicCollectionJson {
-  count: number;
-  music: Music[];
-  page: number;
-  pageSize: number;
-  total: number;
-}
 
 export class MusicContentCenterInternal extends IMusicContentCenterImpl {
   static _handlers: IMusicContentCenterEventHandler[] = [];
@@ -35,6 +24,16 @@ export class MusicContentCenterInternal extends IMusicContentCenterImpl {
     return super.registerEventHandler(eventHandler);
   }
 
+  unregisterEventHandler(): number {
+    MusicContentCenterInternal._handlers = [];
+    return super.unregisterEventHandler();
+  }
+
+  release() {
+    MusicContentCenterInternal._handlers = [];
+    super.release();
+  }
+
   createMusicPlayer(): IMusicPlayer {
     // @ts-ignore
     const mediaPlayerId = super.createMusicPlayer() as number;
@@ -42,28 +41,16 @@ export class MusicContentCenterInternal extends IMusicContentCenterImpl {
   }
 }
 
-export class MusicPlayerInternal
-  extends MediaPlayerInternal
-  implements IMusicPlayer
-{
+class _MusicPlayerInternal extends IMusicPlayerImpl {
+  private readonly _mediaPlayerId: number;
+
   constructor(mediaPlayerId: number) {
-    super(mediaPlayerId);
+    super();
+    this._mediaPlayerId = mediaPlayerId;
   }
-  
-  openWithSongCode(songCode: number, startPos = 0): number {
-    const apiType = this.getApiTypeFromOpenWithSongCode(songCode, startPos);
-    const jsonParams = {
-      songCode: songCode,
-      startPos: startPos,
-      toJSON: () => {
-        return {
-          songCode: songCode,
-          startPos: startPos,
-        };
-      },
-    };
-    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
-    return jsonResults.result;
+
+  getMediaPlayerId(): number {
+    return this._mediaPlayerId;
   }
 
   protected getApiTypeFromOpenWithSongCode(
@@ -74,78 +61,56 @@ export class MusicPlayerInternal
   }
 }
 
-export class MusicCollectionInternal extends MusicCollectionImpl {
-  private readonly _musicCollectionJson: IMusicCollectionJson;
+export class MusicPlayerInternal
+  extends MediaPlayerInternal
+  implements IMusicPlayer
+{
+  private readonly _musicPlayer: IMusicPlayer;
 
-  constructor(musicCollectionJson: IMusicCollectionJson) {
-    super();
-    this._musicCollectionJson = musicCollectionJson;
+  constructor(mediaPlayerId: number) {
+    super(mediaPlayerId);
+    // @ts-ignore
+    this._musicPlayer = new _MusicPlayerInternal(mediaPlayerId);
   }
 
-  getCount(): number {
-    return this._musicCollectionJson.count;
-  }
-
-  getMusic(index: number): Music {
-    return this._musicCollectionJson.music[index];
-  }
-
-  getPage(): number {
-    return this._musicCollectionJson.page;
-  }
-
-  getPageSize(): number {
-    return this._musicCollectionJson.pageSize;
-  }
-
-  getTotal(): number {
-    return this._musicCollectionJson.total;
+  openWithSongCode(songCode: number, startPos?: number): number {
+    return this._musicPlayer.openWithSongCode(songCode, startPos);
   }
 }
 
-export function processIMusicContentCenterServer(
-  handler: IMusicContentCenterEventHandler,
-  event: string,
-  jsonParams: any
-) {
-  switch (event) {
-    case 'onMusicChartsResult':
-      if (handler.onMusicChartsResult !== undefined) {
-        handler.onMusicChartsResult(
-          jsonParams.requestId,
-          jsonParams.status,
-          jsonParams.result
-        );
-      }
-      break;
+interface _MusicCollection {
+  count: number;
+  music: Music[];
+  page: number;
+  pageSize: number;
+  total: number;
+}
 
-    case 'onMusicCollectionResult':
-      if (handler.onMusicCollectionResult !== undefined) {
-        let result = new MusicCollectionInternal(jsonParams.result);
-        handler.onMusicCollectionResult(
-          jsonParams.requestId,
-          jsonParams.status,
-          result
-        );
-      }
-      break;
+export class MusicCollectionInternal extends MusicCollectionImpl {
+  private readonly _musicCollection: _MusicCollection;
 
-    case 'onLyricResult':
-      if (handler.onLyricResult !== undefined) {
-        handler.onLyricResult(jsonParams.requestId, jsonParams.lyricUrl);
-      }
-      break;
+  constructor(musicCollection: _MusicCollection) {
+    super();
+    this._musicCollection = musicCollection;
+  }
 
-    case 'onPreLoadEvent':
-      if (handler.onPreLoadEvent !== undefined) {
-        handler.onPreLoadEvent(
-          jsonParams.songCode,
-          jsonParams.percent,
-          jsonParams.status,
-          jsonParams.msg,
-          jsonParams.lyricUrl
-        );
-      }
-      break;
+  getCount(): number {
+    return this._musicCollection.count;
+  }
+
+  getMusic(index: number): Music {
+    return this._musicCollection.music[index];
+  }
+
+  getPage(): number {
+    return this._musicCollection.page;
+  }
+
+  getPageSize(): number {
+    return this._musicCollection.pageSize;
+  }
+
+  getTotal(): number {
+    return this._musicCollection.total;
   }
 }

@@ -51,7 +51,6 @@ import { MediaPlayerInternal } from './MediaPlayerInternal';
 import { MediaRecorderInternal } from './MediaRecorderInternal';
 import { ILocalSpatialAudioEngine } from '../IAgoraSpatialAudio';
 import { LocalSpatialAudioEngineInternal } from './LocalSpatialAudioEngineInternal';
-import { IMusicContentCenterImpl, processIMusicContentCenterEventHandler } from '../impl/IAgoraMusicContentCenterImpl';
 import { MusicContentCenterInternal } from './MusicContentCenterInternal';
 import {
   IVideoDeviceManagerImpl,

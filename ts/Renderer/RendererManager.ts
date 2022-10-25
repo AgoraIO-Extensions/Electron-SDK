@@ -44,12 +44,14 @@ class RendererManager {
 
     this.msgBridge = getBridge();
   }
+
   setRenderMode(mode: RENDER_MODE) {
     this.renderMode = mode;
     logInfo(
       'setRenderMode:  new render mode will take effect only if new view bind to render'
     );
   }
+
   setFPS(fps: number) {
     this.renderFps = fps;
     this.restartRender();
@@ -71,7 +73,8 @@ class RendererManager {
       });
     });
   }
-  public setRenderOptionByConfig(rendererConfig: RendererVideoConfig) {
+
+  public setRenderOptionByConfig(rendererConfig: RendererVideoConfig): number {
     const {
       uid,
       channelId,
@@ -82,7 +85,9 @@ class RendererManager {
 
     if (!rendererConfig.view) {
       logError('setRenderOptionByView: view not exist');
+      return -1;
     }
+
     const renderList = this.getRenderers({ uid, channelId, videoSourceType });
     renderList
       ? renderList
@@ -93,7 +98,9 @@ class RendererManager {
       : logWarn(
           `RenderStreamType: ${videoSourceType} channelId:${channelId} uid:${uid} have no render view, you need to call this api after setView`
         );
+    return 0;
   }
+
   public checkWebglEnv(): boolean {
     let gl;
     const canvas = document.createElement('canvas');
@@ -114,7 +121,7 @@ class RendererManager {
     }
   }
 
-  public setupVideo(rendererVideoConfig: RendererVideoConfig): void {
+  public setupVideo(rendererVideoConfig: RendererVideoConfig): number {
     const formatConfig = getDefaultRendererVideoConfig(rendererVideoConfig);
 
     const { uid, channelId, videoSourceType, rendererOptions, view } =
@@ -127,7 +134,7 @@ class RendererManager {
         channelId,
         uid
       );
-      return;
+      return -1;
     }
 
     // ensure a render to RenderMap
@@ -145,6 +152,7 @@ class RendererManager {
 
     // enable render
     this.enableRender(true);
+    return 0;
   }
 
   public setupLocalVideo(rendererConfig: RendererVideoConfig): number {
@@ -197,6 +205,7 @@ class RendererManager {
       });
     });
   }
+
   public destroyRenderersByConfig(
     videoSourceType: VideoSourceType,
     channelId?: Channel,
@@ -235,6 +244,7 @@ class RendererManager {
     );
     renderMap.clear();
   }
+
   clear(): void {
     this.stopRender();
     this.removeAllRenderer();
@@ -333,6 +343,7 @@ class RendererManager {
       logInfo(`restartRender: Fps: ${this.renderFps} restartInterval`);
     }
   }
+
   private createRenderer(failCallback?: RenderFailCallback): IRenderer {
     if (this.renderMode === RENDER_MODE.SOFTWARE) {
       return new YUVCanvasRenderer();
@@ -340,6 +351,7 @@ class RendererManager {
       return new GlRenderer(failCallback);
     }
   }
+
   private getRender({
     videoSourceType,
     channelId,
@@ -347,6 +359,7 @@ class RendererManager {
   }: VideoFrameCacheConfig) {
     return this.renderers.get(videoSourceType)?.get(channelId)?.get(uid);
   }
+
   private getRenderers({
     videoSourceType,
     channelId,
@@ -474,6 +487,7 @@ class RendererManager {
     }
     return channelMap;
   }
+
   private resizeShareVideoFrame(
     videoSourceType: VideoSourceType,
     channelId: string,

@@ -36,6 +36,8 @@ export const rgbImageBufferToBase64 = (target) => {
 
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
+  if (!ctx) return '';
+
   const width = (canvas.width = target.width);
   const height = (canvas.height = target.height);
 

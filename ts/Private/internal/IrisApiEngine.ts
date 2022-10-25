@@ -17,11 +17,7 @@ import {
   IMediaPlayerAudioFrameObserver,
   IMediaPlayerVideoFrameObserver,
 } from '../IAgoraMediaPlayer';
-
-import {
-  IMusicContentCenterEventHandler
-} from '../IAgoraMusicContentCenter';
-
+import { IMusicContentCenterEventHandler } from '../IAgoraMusicContentCenter';
 import {
   IDirectCdnStreamingEventHandler,
   IMetadataObserver,
@@ -47,7 +43,7 @@ import {
   processIMetadataObserver,
   processIRtcEngineEventHandler,
 } from '../impl/IAgoraRtcEngineImpl';
-import { processIMusicContentCenterEventHandler } from '../impl/IAgoraMusicContentCenterImpl'
+import { processIMusicContentCenterEventHandler } from '../impl/IAgoraMusicContentCenterImpl';
 import { IAudioEncodedFrameObserver } from '../AgoraBase';
 import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource';
 import { MediaPlayerInternal } from './MediaPlayerInternal';
@@ -55,8 +51,8 @@ import { MediaEngineInternal } from './MediaEngineInternal';
 import { RtcEngineExInternal } from './RtcEngineExInternal';
 import { MediaRecorderInternal } from './MediaRecorderInternal';
 import {
+  MusicCollectionInternal,
   MusicContentCenterInternal,
-  processIMusicContentCenterServer,
 } from './MusicContentCenterInternal';
 
 const agora = require('../../../build/Release/agora_node_ext');
@@ -131,7 +127,7 @@ export enum EVENT_TYPE {
   IMediaPlayer,
   IMediaRecorder,
   IRtcEngine,
-  IMusicContentCenter
+  IMusicContentCenter,
 }
 
 /**
@@ -303,7 +299,16 @@ export const EVENT_PROCESSORS = {
   IMusicContentCenterEventHandler: {
     suffix: 'MusicContentCenterEventHandler_',
     type: EVENT_TYPE.IRtcEngine,
-    func: [processIMusicContentCenterServer],
+    func: [processIMusicContentCenterEventHandler],
+    preprocess: (event: string, data: any, buffers: Uint8Array[]) => {
+      switch (event) {
+        case 'onMusicCollectionResult': {
+          const result = data.result;
+          data.result = new MusicCollectionInternal(result);
+          break;
+        }
+      }
+    },
     handlers: () => MusicContentCenterInternal._handlers,
   },
 };

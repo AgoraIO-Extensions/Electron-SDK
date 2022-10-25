@@ -94,14 +94,14 @@ class RtcSurfaceView extends Component<Props> {
     } catch (e) {
       console.warn(e);
     }
-    funcName.call(this, { ...canvas, view: dom }, connection);
+    funcName.call(this, { ...canvas, view: dom }, connection!);
   };
 
   updateMirror = () => {
     const { isMirror } = this.state;
     const dom = this.getHTMLElement();
 
-    AgoraEnv.AgoraRendererManager.setRenderOption(
+    AgoraEnv.AgoraRendererManager?.setRenderOption(
       dom,
       RenderModeType.RenderModeAdaptive,
       isMirror

@@ -1,19 +1,16 @@
 import React from 'react';
 import {
   BrowserRouter as Router,
-  Switch,
-  Route,
   Link,
   Redirect,
+  Route,
+  Switch,
 } from 'react-router-dom';
 import { createAgoraRtcEngine } from 'agora-electron-sdk';
-import {
-  HomeOutlined,
-  DingtalkOutlined,
-  InfoCircleOutlined,
-} from '@ant-design/icons';
-import './App.global.scss';
+import { GithubOutlined, SettingOutlined } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
+
+import './App.global.scss';
 import AuthInfoScreen from './examples/config/AuthInfoScreen';
 import basicRoute from './examples/basic';
 import hooksRoutes from './examples/hooks';
@@ -49,10 +46,10 @@ class App extends React.Component {
           <Sider collapsible collapsed={collapsed} onCollapse={this.onCollapse}>
             <div className="logo" />
             <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
-              <Menu.Item key="1" icon={<InfoCircleOutlined />}>
+              <Menu.Item key="1" icon={<SettingOutlined />}>
                 <Link to="/">Setting</Link>
               </Menu.Item>
-              <SubMenu key="sub1" icon={<HomeOutlined />} title="Basic">
+              <SubMenu key="sub1" icon={<GithubOutlined />} title="Basic">
                 {basicRoute.map(({ path, title }, index) => {
                   console.log('path, title ', path, title);
                   return (
@@ -62,9 +59,8 @@ class App extends React.Component {
                   );
                 })}
               </SubMenu>
-              <SubMenu key="sub2" icon={<HomeOutlined />} title="Hooks">
-                {hooksRoutes.map(({ path, title }, index) => {
-                  console.log('path, title---> ', path, title);
+              <SubMenu key="sub3" icon={<GithubOutlined />} title="Advanced">
+                {advanceRoute.map(({ path, title }, index) => {
                   return (
                     <Menu.Item key={`${index} ${title}`}>
                       <Link to={path}>{title}</Link>
@@ -72,8 +68,9 @@ class App extends React.Component {
                   );
                 })}
               </SubMenu>
-              <SubMenu key="sub3" icon={<DingtalkOutlined />} title="Advanced">
-                {advanceRoute.map(({ path, title }, index) => {
+              <SubMenu key="sub2" icon={<GithubOutlined />} title="Hooks">
+                {hooksRoutes.map(({ path, title }, index) => {
+                  console.log('path, title---> ', path, title);
                   return (
                     <Menu.Item key={`${index} ${title}`}>
                       <Link to={path}>{title}</Link>

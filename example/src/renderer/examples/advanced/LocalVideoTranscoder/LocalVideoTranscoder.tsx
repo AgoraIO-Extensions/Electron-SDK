@@ -142,12 +142,14 @@ export default class LocalVideoTranscoder
    */
   enumerateDevices = () => {
     const videoDevices = this.engine
-      .getVideoDeviceManager()
+      ?.getVideoDeviceManager()
       .enumerateVideoDevices();
 
     this.setState({
       videoDevices,
-      videoDeviceId: [videoDevices[0].deviceId],
+      videoDeviceId: videoDevices?.length
+        ? [videoDevices!.at(0)!.deviceId!]
+        : [],
     });
   };
 
@@ -196,7 +198,7 @@ export default class LocalVideoTranscoder
     );
     this.setState({
       sources,
-      targetSource: sources[0],
+      targetSource: sources?.at(0),
     });
   };
 
@@ -205,15 +207,17 @@ export default class LocalVideoTranscoder
    */
   startScreenCapture = () => {
     const { targetSource } = this.state;
-    const isCaptureWindow =
-      targetSource.type ===
-      ScreenCaptureSourceType.ScreencapturesourcetypeWindow;
+    if (!targetSource) {
+      this.error(`targetSource is invalid`);
+    }
 
-    const res = this.engine?.startPrimaryScreenCapture({
-      isCaptureWindow: false,
+    this.engine?.startPrimaryScreenCapture({
+      isCaptureWindow:
+        targetSource!.type ===
+        ScreenCaptureSourceType.ScreencapturesourcetypeWindow,
       screenRect: { width: 0, height: 0, x: 0, y: 0 },
-      windowId: targetSource.sourceId,
-      displayId: targetSource.sourceId,
+      windowId: targetSource!.sourceId,
+      displayId: targetSource!.sourceId,
       params: {
         dimensions: { width: 1920, height: 1080 },
         bitrate: 1000,
@@ -296,7 +300,7 @@ export default class LocalVideoTranscoder
     return [
       VideoSourceType.VideoSourceCameraPrimary,
       VideoSourceType.VideoSourceCameraSecondary,
-    ][videoDevices.findIndex(({ deviceId }) => deviceId === value)];
+    ][videoDevices?.findIndex(({ deviceId }) => deviceId === value) ?? -1];
   };
 
   _generateLocalTranscoderConfiguration = (): LocalTranscoderConfiguration => {
@@ -307,7 +311,7 @@ export default class LocalVideoTranscoder
       height = 300;
 
     const streams: TranscodingVideoStream[] = [];
-    if (videoDeviceId.length) {
+    if (videoDeviceId?.length) {
       streams.push({
         sourceType: MediaSourceType.PrimaryCameraSource,
       });
@@ -322,7 +326,7 @@ export default class LocalVideoTranscoder
     if (open) {
       streams.push({
         sourceType: MediaSourceType.MediaPlayerSource,
-        imageUrl: this.player.getMediaPlayerId().toString(),
+        imageUrl: this.player?.getMediaPlayerId().toString(),
       });
     }
 
@@ -460,7 +464,7 @@ export default class LocalVideoTranscoder
     return (
       <>
         {super.renderUsers()}
-        {videoDeviceId.map((value) => {
+        {videoDeviceId?.map((value) => {
           return (
             <RtcSurfaceView
               key={value}
@@ -491,15 +495,15 @@ export default class LocalVideoTranscoder
       <>
         <AgoraDropdown
           title={'videoDeviceId'}
-          items={videoDevices.map((value) => {
+          items={videoDevices?.map((value) => {
             return {
-              value: value.deviceId,
-              label: value.deviceName,
+              value: value.deviceId!,
+              label: value.deviceName!,
             };
           })}
           value={videoDeviceId}
           onValueChange={(value, index) => {
-            if (videoDeviceId.indexOf(value) === -1) {
+            if (videoDeviceId?.indexOf(value) === -1) {
               this.startCameraCapture(value);
               this.setState({
                 videoDeviceId: [...videoDeviceId, value],
@@ -507,7 +511,7 @@ export default class LocalVideoTranscoder
             } else {
               this.stopCameraCapture(value);
               this.setState({
-                videoDeviceId: videoDeviceId.filter((v) => v !== value),
+                videoDeviceId: videoDeviceId?.filter((v) => v !== value),
               });
             }
           }}
@@ -515,15 +519,15 @@ export default class LocalVideoTranscoder
         <AgoraDivider />
         <AgoraDropdown
           title={'targetSource'}
-          items={sources.map((value) => {
+          items={sources?.map((value) => {
             return {
-              value: value.sourceId,
-              label: value.sourceName,
+              value: value.sourceId!,
+              label: value.sourceName!,
             };
           })}
           value={targetSource?.sourceId}
           onValueChange={(value, index) => {
-            this.setState({ targetSource: sources[index] });
+            this.setState({ targetSource: sources?.at(index) });
           }}
         />
         {targetSource ? (

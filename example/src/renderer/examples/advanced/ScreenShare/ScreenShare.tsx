@@ -156,7 +156,7 @@ export default class ScreenShare
     );
     this.setState({
       sources,
-      targetSource: sources[0],
+      targetSource: sources?.at(0),
     });
   };
 
@@ -417,15 +417,15 @@ export default class ScreenShare
       <>
         <AgoraDropdown
           title={'targetSource'}
-          items={sources.map((value) => {
+          items={sources?.map((value) => {
             return {
-              value: value.sourceId,
-              label: value.sourceName,
+              value: value.sourceId!,
+              label: value.sourceName!,
             };
           })}
           value={targetSource?.sourceId}
           onValueChange={(value, index) => {
-            this.setState({ targetSource: sources[index] });
+            this.setState({ targetSource: sources?.at(index) });
           }}
         />
         {targetSource ? (
@@ -514,15 +514,15 @@ export default class ScreenShare
             <AgoraDropdown
               title={'excludeWindowList'}
               items={sources
-                .filter(
+                ?.filter(
                   (value) =>
                     value.type ===
                     ScreenCaptureSourceType.ScreencapturesourcetypeWindow
                 )
                 .map((value) => {
                   return {
-                    value: value.sourceId,
-                    label: value.sourceName,
+                    value: value.sourceId!,
+                    label: value.sourceName!,
                   };
                 })}
               value={excludeWindowList}

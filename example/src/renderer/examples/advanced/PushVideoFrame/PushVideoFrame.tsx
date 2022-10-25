@@ -122,7 +122,7 @@ export default class PushVideoFrame
     );
     this.setState({
       sources,
-      targetSource: sources[0],
+      targetSource: sources?.at(0),
     });
   };
 
@@ -139,9 +139,9 @@ export default class PushVideoFrame
     this.engine?.getMediaEngine().pushVideoFrame({
       type: VideoBufferType.VideoBufferRawData,
       format: VideoPixelFormat.VideoPixelRgba,
-      buffer: targetSource.thumbImage.buffer,
-      stride: targetSource.thumbImage.width,
-      height: targetSource.thumbImage.height,
+      buffer: targetSource!.thumbImage?.buffer,
+      stride: targetSource!.thumbImage?.width,
+      height: targetSource!.thumbImage?.height,
     });
   };
 
@@ -174,15 +174,15 @@ export default class PushVideoFrame
       <>
         <AgoraDropdown
           title={'targetSource'}
-          items={sources.map((value) => {
+          items={sources?.map((value) => {
             return {
-              value: value.sourceId,
-              label: value.sourceName,
+              value: value.sourceId!,
+              label: value.sourceName!,
             };
           })}
           value={targetSource?.sourceId}
           onValueChange={(value, index) => {
-            this.setState({ targetSource: sources[index] });
+            this.setState({ targetSource: sources?.at(index) });
           }}
         />
         {targetSource ? (
