@@ -91,14 +91,14 @@ class App extends React.Component {
                     children={<route.component />}
                   />
                 ))}
-                {hooksRoutes.map((route: any, index) => (
+                {advanceRoute.map((route: any, index) => (
                   <Route
                     key={`${index}`}
                     path={route.path}
                     children={<route.component />}
                   />
                 ))}
-                {advanceRoute.map((route: any, index) => (
+                {hooksRoutes.map((route: any, index) => (
                   <Route
                     key={`${index}`}
                     path={route.path}

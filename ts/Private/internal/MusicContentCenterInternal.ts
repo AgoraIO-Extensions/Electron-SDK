@@ -4,16 +4,83 @@ import {
   Music,
 } from '../IAgoraMusicContentCenter';
 
+import { IMusicContentCenterEvent } from '../extension/IAgoraMusicContentCenterExtension';
+
 import {
   IMusicContentCenterImpl,
   IMusicPlayerImpl,
   MusicCollectionImpl,
+  processIMusicContentCenterEventHandler,
 } from '../impl/IAgoraMusicContentCenterImpl';
 
 import { MediaPlayerInternal } from './MediaPlayerInternal';
 
+import { EmitterSubscription } from './emitter/EventEmitter';
+import { DeviceEventEmitter, EVENT_TYPE } from './IrisApiEngine';
+
 export class MusicContentCenterInternal extends IMusicContentCenterImpl {
   static _handlers: IMusicContentCenterEventHandler[] = [];
+  private _events: Map<
+    any,
+    {
+      eventType: string;
+      subscription: EmitterSubscription;
+    }
+  > = new Map<
+    any,
+    {
+      eventType: string;
+      subscription: EmitterSubscription;
+    }
+  >();
+
+  addListener<EventType extends keyof IMusicContentCenterEvent>(
+    eventType: EventType,
+    listener: IMusicContentCenterEvent[EventType]
+  ): EmitterSubscription {
+    const callback = (...data: any[]) => {
+      if (data[0] !== EVENT_TYPE.IMusicContentCenter) {
+        return;
+      }
+      processIMusicContentCenterEventHandler(
+        { [eventType]: listener },
+        eventType,
+        data[1]
+      );
+    };
+    const subscription = DeviceEventEmitter.addListener(eventType, callback);
+    this._events.set(listener, { eventType, subscription });
+    return subscription;
+  }
+
+  removeListener<EventType extends keyof IMusicContentCenterEvent>(
+    eventType: EventType,
+    listener: IMusicContentCenterEvent[EventType]
+  ) {
+    if (!this._events.has(listener)) return;
+    DeviceEventEmitter.removeSubscription(
+      this._events.get(listener)!.subscription
+    );
+    this._events.delete(listener);
+  }
+
+  removeAllListeners<EventType extends keyof IMusicContentCenterEvent>(
+    eventType?: EventType
+  ) {
+    if (eventType === undefined) {
+      this._events.forEach((value) => {
+        DeviceEventEmitter.removeAllListeners(value.eventType);
+      });
+      this._events.clear();
+    } else {
+      DeviceEventEmitter.removeAllListeners(eventType);
+      this._events.forEach((value, key) => {
+        if (value.eventType === eventType) {
+          this._events.delete(key);
+        }
+      });
+    }
+  }
 
   registerEventHandler(eventHandler: IMusicContentCenterEventHandler): number {
     if (
