@@ -417,12 +417,13 @@ export function callIrisApi<T>(funcName: string, params: any): any {
       }
     }
 
-    let ret = AgoraRtcNg.CallApi(
+    let { callApiReturnCode, callApiResult } = AgoraRtcNg.CallApi(
       funcName,
       JSON.stringify(params),
       buffers,
       buffers.length
-    ).callApiResult;
+    );
+    let ret = callApiResult;
     if (ret !== undefined && ret !== null && ret !== '') {
       ret = JSON.parse(ret);
       if (isDebuggable()) {
@@ -433,6 +434,23 @@ export function callIrisApi<T>(funcName: string, params: any): any {
         }
       }
       return ret;
+    } else {
+      if (isDebuggable()) {
+        console.error(
+          'callApi',
+          funcName,
+          JSON.stringify(params),
+          callApiReturnCode
+        );
+      } else {
+        console.warn(
+          'callApi',
+          funcName,
+          JSON.stringify(params),
+          callApiReturnCode
+        );
+      }
+      return { result: callApiReturnCode };
     }
   } catch (e) {
     if (isDebuggable()) {
