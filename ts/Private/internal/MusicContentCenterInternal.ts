@@ -1,13 +1,15 @@
 import {
-  IMusicContentCenterImpl,
-  IMusicPlayerImpl,
-  MusicCollectionImpl,
-} from '../impl/IAgoraMusicContentCenterImpl';
-import {
   IMusicContentCenterEventHandler,
   IMusicPlayer,
   Music,
 } from '../IAgoraMusicContentCenter';
+
+import {
+  IMusicContentCenterImpl,
+  IMusicPlayerImpl,
+  MusicCollectionImpl,
+} from '../impl/IAgoraMusicContentCenterImpl';
+
 import { MediaPlayerInternal } from './MediaPlayerInternal';
 
 export class MusicContentCenterInternal extends IMusicContentCenterImpl {

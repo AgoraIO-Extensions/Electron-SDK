@@ -216,7 +216,6 @@ export default class VoiceChanger
         {this._renderLocalVoicePitch()}
         <AgoraDivider />
         {this._renderVoiceConversionPreset()}
-        <AgoraDivider />
       </>
     );
   }

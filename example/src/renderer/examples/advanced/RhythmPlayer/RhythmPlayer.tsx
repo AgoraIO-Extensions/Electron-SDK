@@ -229,7 +229,6 @@ export default class RhythmPlayer
             this.setState({ beatsPerMinute: value });
           }}
         />
-        <AgoraDivider />
       </>
     );
   }

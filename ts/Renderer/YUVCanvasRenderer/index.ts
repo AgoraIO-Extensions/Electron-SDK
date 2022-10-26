@@ -155,7 +155,7 @@ export class YUVCanvasRenderer extends IRenderer {
         options.clientHeight
       );
 
-      //@ts-ignore
+      // @ts-ignore
       this.canvas.style.zoom = scale.toString();
 
       if (transformItems.length > 0) {

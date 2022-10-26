@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "bindings": "1.2.1",
+    "buffer": "^6.0.3",
     "cross-env": "^7.0.3",
     "download": "^8.0.0",
     "extract-zip": "^2.0.1",
@@ -51,7 +52,6 @@
     "rimraf": "^3.0.0",
     "shelljs": "^0.8.4",
     "winston": "^3.3.3",
-    "buffer": "^6.0.3",
     "yuv-buffer": "1.0.0",
     "yuv-canvas": "1.2.6"
   },

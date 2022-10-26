@@ -66,8 +66,9 @@ const removeFileByFilter = async () => {
   }
   logger.info('Success: Download and cleanup finished');
 };
+
 module.exports = async (cb) => {
-  cleanBuildDir();
+  await cleanBuildDir();
   // cleanJSDir();
 
   const downloadUrl = getDownloadURL();

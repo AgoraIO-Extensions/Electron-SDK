@@ -335,7 +335,6 @@ export default class MediaPlayer
           title={'set Loop Count'}
           onPress={this.setLoopCount}
         />
-        <AgoraDivider />
       </>
     );
   }

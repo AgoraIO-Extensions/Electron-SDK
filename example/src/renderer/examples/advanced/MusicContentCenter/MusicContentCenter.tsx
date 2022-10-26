@@ -30,7 +30,8 @@ import {
 } from '../../../components/ui';
 
 interface State extends BaseComponentState {
-  requestId?: string;
+  rtmToken: string; // generate for test https://webdemo.agora.io/token-builder/
+  mccUid: number;
   musicChartInfos: MusicChartInfo[];
   musicChartId: number;
   page: number;
@@ -57,10 +58,8 @@ export default class MusicContentCenter
     return {
       appId: Config.appId,
       enableVideo: false,
-      token:
-        '006695752b975654e44bea00137d084c71cIADAW+woy7XCs5JJaYVihoWnkOAV6dR2d0th+laIBV7B0P2G15IAAAAAEAADIPCp0p5YYwEA6APSnlhj',
-      uid: 333,
-      requestId: undefined,
+      rtmToken: '',
+      mccUid: 0,
       musicChartInfos: [],
       musicChartId: -1,
       page: 0,
@@ -91,23 +90,21 @@ export default class MusicContentCenter
       appId,
       logConfig: { filePath: Config.SDKLogPath },
     });
-
-    this.initMusicContentCenter();
   }
 
   /**
    * Step 2: initMusicContentCenter
    */
   initMusicContentCenter = () => {
-    const { appId, token, uid } = this.state;
+    const { appId, rtmToken, mccUid } = this.state;
     if (!appId) {
       this.error(`appId is invalid`);
     }
-    if (!token) {
-      this.error(`token is invalid`);
+    if (!rtmToken) {
+      this.error(`rtmToken is invalid`);
     }
-    if (!uid) {
-      this.error(`uid is invalid`);
+    if (!mccUid) {
+      this.error(`mccUid is invalid`);
     }
 
     this.musicContentCenter = this.engine?.getMusicContentCenter();
@@ -115,8 +112,8 @@ export default class MusicContentCenter
 
     this.musicContentCenter?.initialize({
       appId,
-      rtmToken: token,
-      mccUid: uid,
+      rtmToken,
+      mccUid,
     });
 
     this.getMusicCharts();
@@ -126,8 +123,7 @@ export default class MusicContentCenter
    * Step 3: getMusicCharts
    */
   getMusicCharts = () => {
-    const requestId = this.musicContentCenter?.getMusicCharts();
-    this.setState({ requestId });
+    this.musicContentCenter?.getMusicCharts();
   };
 
   /**
@@ -368,6 +364,7 @@ export default class MusicContentCenter
 
   protected renderConfiguration(): React.ReactNode {
     const {
+      rtmToken,
       musicChartInfos,
       musicChartId,
       musics,
@@ -379,6 +376,17 @@ export default class MusicContentCenter
     } = this.state;
     return (
       <>
+        <AgoraTextInput
+          onChangeText={(text) => {
+            this.setState({ rtmToken: text });
+          }}
+          placeholder={`rtmToken`}
+          value={rtmToken}
+        />
+        <AgoraButton
+          title={`init Music Content Center`}
+          onPress={this.initMusicContentCenter}
+        />
         <AgoraDropdown
           title={'musicChartInfos:'}
           items={musicChartInfos?.map((value) => {

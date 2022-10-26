@@ -1,6 +1,5 @@
 import { VideoSourceType } from '../Private/AgoraBase';
 import { RenderModeType } from '../Private/AgoraMediaBase';
-import { getBridge } from '../Private/internal/IrisApiEngine';
 import {
   AgoraElectronBridge,
   Channel,
@@ -42,7 +41,7 @@ class RendererManager {
       ? RENDER_MODE.WEBGL
       : RENDER_MODE.SOFTWARE;
 
-    this.msgBridge = getBridge();
+    this.msgBridge = AgoraEnv.AgoraElectronBridge;
   }
 
   setRenderMode(mode: RENDER_MODE) {
@@ -320,10 +319,6 @@ class RendererManager {
       }
     };
     this.videoFrameUpdateInterval = setInterval(() => {
-      if (!AgoraEnv.isInitializeEngine) {
-        logDebug('rtcEngine is not initialize');
-        return;
-      }
       this.forEachStream(renderFunc);
     }, 1000 / this.renderFps);
   }
@@ -513,7 +508,7 @@ class RendererManager {
   ): void {
     let rendererConfigMap = this.ensureRendererConfig(config);
     rendererConfigMap
-      ? //@ts-ignore
+      ? // @ts-ignore
         Object.assign(rendererConfigMap.get(config.uid), {
           shareVideoFrame,
         })

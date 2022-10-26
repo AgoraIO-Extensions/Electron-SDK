@@ -496,7 +496,6 @@ export default class RTMPStreaming
             />
           </>
         ) : undefined}
-        <AgoraDivider />
       </>
     );
   }

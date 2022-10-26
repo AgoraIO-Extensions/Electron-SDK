@@ -4,6 +4,7 @@ import {
   IMediaPlayerVideoFrameObserver,
 } from '../IAgoraMediaPlayer';
 import { IAudioSpectrumObserver } from '../AgoraMediaBase';
+import { EmitterSubscription } from '../internal/emitter/EventEmitter';
 
 export type IMediaPlayerEvent = IMediaPlayerSourceObserver &
   IMediaPlayerAudioFrameObserver &
@@ -26,7 +27,7 @@ declare module '../IAgoraMediaPlayer' {
     addListener<EventType extends keyof IMediaPlayerEvent>(
       eventType: EventType,
       listener: IMediaPlayerEvent[EventType]
-    ): void;
+    ): EmitterSubscription;
 
     /**
      * Removes the specified IMediaPlayerEvent listener.

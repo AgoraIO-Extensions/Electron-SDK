@@ -250,7 +250,6 @@ export default class SpatialAudio
             });
           }}
         />
-        <AgoraDivider />
       </>
     );
   }

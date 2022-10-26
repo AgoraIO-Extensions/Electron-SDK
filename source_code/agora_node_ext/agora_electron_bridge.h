@@ -51,8 +51,6 @@ class AgoraElectronBridge {
   napi_ref _ref;
   std::shared_ptr<IApiEngineBase> _iris_api_engine;
   std::shared_ptr<NodeIrisEventHandler> _iris_rtc_event_handler;
-  std::shared_ptr<NodeIrisEventHandler> _iris_mpk_event_handler;
-  std::shared_ptr<NodeIrisEventHandler> _iris_observer_event_handler;
   std::shared_ptr<iris::IrisVideoFrameBufferManager>
       _iris_video_frame_buffer_manager;
 

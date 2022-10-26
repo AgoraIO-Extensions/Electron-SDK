@@ -1,7 +1,6 @@
-import { EventEmitter } from 'events';
+import { AgoraEnv } from '../../Utils';
 
-import { AgoraElectronBridge, Result } from '../../Types';
-import { AgoraEnv, logDebug, parseJSON } from '../../Utils';
+import { IAudioEncodedFrameObserver } from '../AgoraBase';
 import {
   AudioFrame,
   AudioPcmFrame,
@@ -13,17 +12,19 @@ import {
   VideoFrame,
 } from '../AgoraMediaBase';
 import {
-  IMediaPlayer,
-  IMediaPlayerAudioFrameObserver,
-  IMediaPlayerVideoFrameObserver,
-} from '../IAgoraMediaPlayer';
-import { IMusicContentCenterEventHandler } from '../IAgoraMusicContentCenter';
-import {
   IDirectCdnStreamingEventHandler,
   IMetadataObserver,
   IRtcEngineEventHandler,
   Metadata,
 } from '../IAgoraRtcEngine';
+import {
+  IMediaPlayer,
+  IMediaPlayerAudioFrameObserver,
+  IMediaPlayerVideoFrameObserver,
+} from '../IAgoraMediaPlayer';
+import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource';
+import { IMusicContentCenterEventHandler } from '../IAgoraMusicContentCenter';
+
 import { processIAudioEncodedFrameObserver } from '../impl/AgoraBaseImpl';
 import {
   processIAudioFrameObserver,
@@ -34,65 +35,48 @@ import {
   processIVideoFrameObserver,
 } from '../impl/AgoraMediaBaseImpl';
 import {
-  processIMediaPlayerAudioFrameObserver,
-  processIMediaPlayerVideoFrameObserver,
-} from '../impl/IAgoraMediaPlayerImpl';
-import { processIMediaPlayerSourceObserver } from '../impl/IAgoraMediaPlayerSourceImpl';
-import {
   processIDirectCdnStreamingEventHandler,
   processIMetadataObserver,
   processIRtcEngineEventHandler,
 } from '../impl/IAgoraRtcEngineImpl';
+import {
+  processIMediaPlayerAudioFrameObserver,
+  processIMediaPlayerVideoFrameObserver,
+} from '../impl/IAgoraMediaPlayerImpl';
+import { processIMediaPlayerSourceObserver } from '../impl/IAgoraMediaPlayerSourceImpl';
 import { processIMusicContentCenterEventHandler } from '../impl/IAgoraMusicContentCenterImpl';
-import { IAudioEncodedFrameObserver } from '../AgoraBase';
-import { IMediaPlayerSourceObserver } from '../IAgoraMediaPlayerSource';
-import { MediaPlayerInternal } from './MediaPlayerInternal';
+
 import { MediaEngineInternal } from './MediaEngineInternal';
-import { RtcEngineExInternal } from './RtcEngineExInternal';
+import { MediaPlayerInternal } from './MediaPlayerInternal';
 import { MediaRecorderInternal } from './MediaRecorderInternal';
 import {
   MusicCollectionInternal,
   MusicContentCenterInternal,
 } from './MusicContentCenterInternal';
+import { RtcEngineExInternal } from './RtcEngineExInternal';
 
-const agora = require('../../../build/Release/agora_node_ext');
+import EventEmitter from './emitter/EventEmitter';
 
+// @ts-ignore
 export const DeviceEventEmitter = new EventEmitter();
 
-export const getBridge = (): AgoraElectronBridge => {
-  let bridge = AgoraEnv.AgoraElectronBridge;
-  if (!bridge) {
-    bridge = new agora.AgoraElectronBridge();
-    bridge!.sendMsg = sendMsg;
-    AgoraEnv.AgoraElectronBridge = bridge;
-  }
-  return bridge!;
-};
+const AgoraRtcNg = AgoraEnv.AgoraElectronBridge;
+AgoraRtcNg.OnEvent('call_back_with_buffer', handleEvent);
 
-const sendMsg = (
-  funcName: string,
-  params: any,
-  buffer?: (Uint8Array | undefined)[],
-  bufferCount = 0
-): Result => {
-  const irisReturnValue = getBridge().CallApi(
-    funcName,
-    JSON.stringify(params),
-    buffer,
-    bufferCount
-  );
-  logDebug(
-    'sendMsg',
-    'funcName',
-    funcName,
-    'params',
-    params,
-    'irisReturnValue',
-    irisReturnValue
-  );
+/**
+ * @internal
+ */
+export function setDebuggable(flag: boolean) {
+  AgoraEnv.enableLogging = flag;
+  AgoraEnv.enableDebugLogging = flag;
+}
 
-  return parseJSON(irisReturnValue.callApiResult);
-};
+/**
+ * @internal
+ */
+export function isDebuggable() {
+  return AgoraEnv.enableLogging && AgoraEnv.enableDebugLogging;
+}
 
 /**
  * @internal
@@ -313,28 +297,10 @@ export const EVENT_PROCESSORS = {
   },
 };
 
-/**
- * @internal
- */
-export function handleEvent(
-  event: string,
-  data: string,
-  buffer: Uint8Array[],
-  bufferLength: number[],
-  bufferCount: number
-) {
-  logDebug(
-    'event',
-    event,
-    'data',
-    data,
-    'buffer',
-    buffer,
-    'bufferLength',
-    bufferLength,
-    'bufferCount',
-    bufferCount
-  );
+function handleEvent(...[event, data, buffers]: any) {
+  if (isDebuggable()) {
+    console.info('onEvent', event, data, buffers);
+  }
 
   let _data: any;
   try {
@@ -365,8 +331,8 @@ export function handleEvent(
     _event = _event.replace(/Ex$/g, '');
   }
 
-  const buffers: Uint8Array[] = buffer;
-  if (processor.preprocess) processor.preprocess!(_event, _data, buffers);
+  const _buffers: Uint8Array[] = buffers;
+  if (processor.preprocess) processor.preprocess!(_event, _data, _buffers);
 
   processor.handlers(_data)?.map((value) => {
     if (value) {
@@ -382,29 +348,100 @@ export function handleEvent(
 /**
  * @internal
  */
-export function callIrisApi(
-  funcName: string,
-  params: any,
-  buffer?: (Uint8Array | undefined)[],
-  bufferCount: number = 0
-): any {
-  const isMediaPlayer = funcName.startsWith('MediaPlayer_');
-  const isMusicPlayer = funcName.startsWith('MusicPlayer_');
-  if (isMediaPlayer || isMusicPlayer) {
-    // @ts-ignore
-    params.mediaPlayerId = (this as IMediaPlayer).getMediaPlayerId();
-    const json = params.toJSON?.call();
-    params.toJSON = function () {
-      return { ...json, playerId: params.mediaPlayerId };
-    };
-  } else if (funcName === 'RtcEngine_destroyMediaPlayer') {
-    // @ts-ignore
-    params.mediaPlayerId = params.media_player.getMediaPlayerId();
-    params.toJSON = function () {
-      return { playerId: params.mediaPlayerId };
-    };
+export function callIrisApi<T>(funcName: string, params: any): any {
+  try {
+    const buffers: Uint8Array[] = [];
+
+    if (funcName.startsWith('MediaEngine_')) {
+      switch (funcName) {
+        case 'MediaEngine_pushAudioFrame':
+        case 'MediaEngine_pushCaptureAudioFrame':
+        case 'MediaEngine_pushReverseAudioFrame':
+        case 'MediaEngine_pushDirectAudioFrame':
+          // frame.buffer
+          buffers.push(params.frame.buffer);
+          break;
+        case 'MediaEngine_pushVideoFrame':
+          // frame.buffer
+          buffers.push(params.frame.buffer);
+          // frame.eglContext
+          buffers.push(Buffer.from(''));
+          // frame.metadata_buffer
+          buffers.push(Buffer.from(''));
+          break;
+        case 'MediaEngine_pushEncodedVideoImage':
+          // imageBuffer
+          buffers.push(params.imageBuffer);
+          break;
+      }
+    } else if (
+      funcName.startsWith('MediaPlayer_') ||
+      funcName.startsWith('MusicPlayer_')
+    ) {
+      // @ts-ignore
+      params.mediaPlayerId = (this as IMediaPlayer).getMediaPlayerId();
+      const json = params.toJSON?.call();
+      params.toJSON = function () {
+        return { ...json, playerId: params.mediaPlayerId };
+      };
+    } else if (funcName.startsWith('RtcEngine_')) {
+      switch (funcName) {
+        case 'RtcEngine_initialize':
+          AgoraRtcNg.InitializeEnv();
+          break;
+        case 'RtcEngine_release':
+          AgoraRtcNg.CallApi(
+            funcName,
+            JSON.stringify(params),
+            buffers,
+            buffers.length
+          );
+          AgoraRtcNg.ReleaseEnv();
+          return;
+        case 'RtcEngine_sendMetaData':
+          // metadata.buffer
+          buffers.push(params.metadata.buffer);
+          break;
+        case 'RtcEngine_sendStreamMessage':
+        case 'RtcEngine_sendStreamMessageEx':
+          // data
+          buffers.push(params.data);
+          break;
+        case 'RtcEngine_destroyMediaPlayer':
+          // @ts-ignore
+          params.mediaPlayerId = params.media_player.getMediaPlayerId();
+          params.toJSON = function () {
+            return { playerId: params.mediaPlayerId };
+          };
+          break;
+      }
+    }
+
+    let ret = AgoraRtcNg.CallApi(
+      funcName,
+      JSON.stringify(params),
+      buffers,
+      buffers.length
+    ).callApiResult;
+    if (ret !== undefined && ret !== null && ret !== '') {
+      ret = JSON.parse(ret);
+      if (isDebuggable()) {
+        if (typeof ret.result === 'number' && ret.result < 0) {
+          console.error('callApi', funcName, JSON.stringify(params), ret);
+        } else {
+          console.debug('callApi', funcName, JSON.stringify(params), ret);
+        }
+      }
+      return ret;
+    }
+  } catch (e) {
+    if (isDebuggable()) {
+      console.error('callApi', funcName, JSON.stringify(params), e);
+    } else {
+      console.warn('callApi', funcName, JSON.stringify(params), e);
+    }
+    return {};
   }
-  return sendMsg(funcName, params, buffer, bufferCount);
 }
 
 /**

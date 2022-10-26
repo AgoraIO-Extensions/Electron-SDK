@@ -182,7 +182,6 @@ export default class Encryption
           value={encryptionKdfSalt.join(' ')}
         />
         <AgoraText>{`encryptionKdfSaltLength: ${encryptionKdfSalt.length}`}</AgoraText>
-        <AgoraDivider />
       </>
     );
   }

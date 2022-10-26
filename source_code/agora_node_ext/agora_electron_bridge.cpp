@@ -23,7 +23,8 @@ const char *AgoraElectronBridge::_ret_result_str = "callApiResult";
 napi_ref *AgoraElectronBridge::_ref_construcotr_ptr = nullptr;
 
 AgoraElectronBridge::AgoraElectronBridge()
-    : _env(nullptr), _ref(nullptr), _result("\0") {
+    : _env(nullptr), _ref(nullptr), _result("\0"),
+      _iris_rtc_event_handler(new NodeIrisEventHandler) {
   LOG_F(INFO, "AgoraElectronBridge::AgoraElectronBridge()");
 }
 
@@ -213,45 +214,30 @@ napi_value AgoraElectronBridge::GetBuffer(napi_env env,
 
 napi_value AgoraElectronBridge::OnEvent(napi_env env, napi_callback_info info) {
   napi_status status;
-  size_t argc = 3;
-  napi_value args[3];
+  size_t argc = 2;
+  napi_value args[2];
   napi_value jsthis;
   int ret = ERROR_PARAMETER_1;
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
-
   assert(status == napi_ok);
 
   AgoraElectronBridge *agoraElectronBridge;
   status =
       napi_unwrap(env, jsthis, reinterpret_cast<void **>(&agoraElectronBridge));
   assert(status == napi_ok);
-  uint32_t callBackModule = CallBackModule::RTC;
-  status = napi_get_value_uint32(env, args[0], &callBackModule);
 
   std::string eventName = "";
-  status = napi_get_value_utf8string(env, args[1], eventName);
+  status = napi_get_value_utf8string(env, args[0], eventName);
   assert(status == napi_ok);
-  napi_value cb = args[2];
 
+  napi_value cb = args[1];
   napi_value global;
   status = napi_get_global(env, &global);
   assert(status == napi_ok);
-  if (agoraElectronBridge->_iris_api_engine) {
-    if (callBackModule == CallBackModule::RTC)
-      agoraElectronBridge->_iris_rtc_event_handler->addEvent(eventName, env, cb,
-                                                             global);
-    else if (callBackModule == CallBackModule::MPK)
-      agoraElectronBridge->_iris_mpk_event_handler->addEvent(eventName, env, cb,
-                                                             global);
-    else if (callBackModule == CallBackModule::OBSERVER)
-      agoraElectronBridge->_iris_observer_event_handler->addEvent(
-          eventName, env, cb, global);
 
-    ret = ERROR_OK;
-  } else {
-    ret = ERROR_NOT_INIT;
-    LOG_F(INFO, "AgoraElectronBridge::OnEvent error Not Init Engine");
-  }
+  agoraElectronBridge->_iris_rtc_event_handler->addEvent(eventName, env, cb,
+                                                         global);
+  ret = ERROR_OK;
 
   char result[1];
   RETURE_NAPI_OBJ();
@@ -474,9 +460,6 @@ napi_value AgoraElectronBridge::InitializeEnv(napi_env env,
   // create
   auto engine = createIrisRtcEngine(nullptr);
   auto bufferManager = std::make_shared<iris::IrisVideoFrameBufferManager>();
-  auto rtcEventHandler = std::make_shared<NodeIrisEventHandler>();
-  auto mpkEventHandler = std::make_shared<NodeIrisEventHandler>();
-  auto observerEventHandler = std::make_shared<NodeIrisEventHandler>();
   ::enableUseJsonArray(true);
 
   // combine
@@ -485,9 +468,6 @@ napi_value AgoraElectronBridge::InitializeEnv(napi_env env,
   // assign
   agoraElectronBridge->_iris_api_engine.reset(engine);
   agoraElectronBridge->_iris_video_frame_buffer_manager = bufferManager;
-  agoraElectronBridge->_iris_rtc_event_handler = rtcEventHandler;
-  agoraElectronBridge->_iris_mpk_event_handler = mpkEventHandler;
-  agoraElectronBridge->_iris_observer_event_handler = observerEventHandler;
 
   LOG_F(INFO, "AgoraElectronBridge::InitializeEnv");
   napi_value retValue = nullptr;
@@ -520,9 +500,6 @@ void AgoraElectronBridge::Release() {
     // uncontrol
     _iris_api_engine->Detach(_iris_video_frame_buffer_manager.get());
     // reset
-    _iris_rtc_event_handler.reset();
-    _iris_mpk_event_handler.reset();
-    _iris_observer_event_handler.reset();
     _iris_video_frame_buffer_manager.reset();
     _iris_api_engine.reset();
     LOG_F(INFO, "AgoraElectronBridge::Release");

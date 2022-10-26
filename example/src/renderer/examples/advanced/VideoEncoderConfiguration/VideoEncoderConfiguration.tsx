@@ -253,7 +253,6 @@ export default class VideoEncoderConfiguration
             this.setState({ mirrorMode: value });
           }}
         />
-        <AgoraDivider />
       </>
     );
   }

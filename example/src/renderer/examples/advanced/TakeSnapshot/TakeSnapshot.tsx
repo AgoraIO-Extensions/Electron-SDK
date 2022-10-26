@@ -176,7 +176,6 @@ export default class TakeSnapshot
             />
           </>
         ) : undefined}
-        <AgoraDivider />
       </>
     );
   }

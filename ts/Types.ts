@@ -6,8 +6,7 @@ import { RendererManager } from './Renderer/RendererManager';
 export interface AgoraEnvType {
   enableLogging: boolean;
   enableDebugLogging: boolean;
-  isInitializeEngine: boolean;
-  AgoraElectronBridge?: AgoraElectronBridge;
+  AgoraElectronBridge: AgoraElectronBridge;
   AgoraRendererManager?: RendererManager;
 }
 
@@ -82,7 +81,6 @@ export enum CallBackModule {
 
 export interface AgoraElectronBridge {
   OnEvent(
-    module: CallBackModule,
     callbackName: string,
     callback: (
       event: string,

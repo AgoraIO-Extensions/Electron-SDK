@@ -228,7 +228,6 @@ export default class ChannelMediaRelay
           value={destChannelNames.join(' ')}
         />
         <AgoraText>{`destCount: ${destChannelNames.length}`}</AgoraText>
-        <AgoraDivider />
       </>
     );
   }
