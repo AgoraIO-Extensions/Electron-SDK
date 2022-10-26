@@ -6648,4 +6648,15 @@ export class IRtcEngineImpl implements IRtcEngine {
   protected getApiTypeFromSetParameters(parameters: string): string {
     return 'RtcEngine_setParameters';
   }
+
+  getNativeHandle(): number {
+    const apiType = this.getApiTypeFromGetNativeHandle();
+    const jsonParams = {};
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromGetNativeHandle(): string {
+    return 'RtcEngine_getNativeHandle';
+  }
 }
