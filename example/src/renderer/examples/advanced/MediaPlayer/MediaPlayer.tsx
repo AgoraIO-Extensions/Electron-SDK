@@ -70,6 +70,7 @@ export default class MediaPlayer
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
+      logConfig: { filePath: Config.SDKLogPath },
     });
     this.engine.registerEventHandler(this);
 

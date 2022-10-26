@@ -89,6 +89,7 @@ export default class MusicContentCenter
     this.engine = createAgoraRtcEngine();
     this.engine.initialize({
       appId,
+      logConfig: { filePath: Config.SDKLogPath },
     });
 
     this.initMusicContentCenter();
@@ -225,7 +226,7 @@ export default class MusicContentCenter
   };
 
   /**
-   * Step 7-11: stop
+   * Step 7-6: stop
    */
   stop = () => {
     this.player?.stop();
@@ -466,7 +467,7 @@ export default class MusicContentCenter
         {songCode >= 0 ? (
           <AgoraImage
             source={
-              musics.find((value, index) => {
+              musics.find((value) => {
                 return value.songCode === songCode;
               })?.poster
             }
