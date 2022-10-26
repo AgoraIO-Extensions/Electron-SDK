@@ -383,6 +383,15 @@ export default class MusicContentCenter
           placeholder={`rtmToken`}
           value={rtmToken}
         />
+        <AgoraTextInput
+          onChangeText={(text) => {
+            if (isNaN(+text)) return;
+            this.setState({
+              mccUid: text === '' ? this.createState().mccUid : +text,
+            });
+          }}
+          placeholder={`mccUid (defaults: ${this.createState().mccUid})`}
+        />
         <AgoraButton
           title={`init Music Content Center`}
           onPress={this.initMusicContentCenter}
