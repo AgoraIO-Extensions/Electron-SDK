@@ -168,13 +168,13 @@ napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
       }
 
       ApiParam apiParam = {
-          .event = funcName.c_str(),
-          .data = parameter.c_str(),
-          .data_size = (unsigned int) parameter.length(),
-          .result = agoraElectronBridge->_result,
-          .buffer = buffer.data(),
-          .length = length.data(),
-          .buffer_count = bufferCount,
+          funcName.c_str(),
+          parameter.c_str(),
+          (unsigned int) parameter.length(),
+          agoraElectronBridge->_result,
+          buffer.data(),
+          length.data(),
+          bufferCount,
       };
       ret = irisApiEngine->CallIrisApi(&apiParam);
     } catch (std::exception &e) {
