@@ -26,6 +26,7 @@ AgoraElectronBridge::AgoraElectronBridge()
     : _env(nullptr), _ref(nullptr), _result("\0"),
       _iris_rtc_event_handler(new NodeIrisEventHandler) {
   LOG_F(INFO, "AgoraElectronBridge::AgoraElectronBridge()");
+  memset(_result, '\0', kBasicResultLength);
 }
 
 AgoraElectronBridge::~AgoraElectronBridge() {
