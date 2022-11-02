@@ -176,6 +176,9 @@ export default class MediaRecorder
         break;
       case RecorderState.RecorderStateError:
       case RecorderState.RecorderStateStop:
+        // ⚠️ You should call stopRecording if received the event with state Error or Stop,
+        // otherwise you can't call startRecording again
+        this.stopRecording();
         this.setState({ startRecoding: false });
         break;
     }

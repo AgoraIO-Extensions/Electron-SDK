@@ -158,8 +158,8 @@ napi_value AgoraElectronBridge::CallApi(napi_env env, napi_callback_info info) {
         }
       } else {
         std::smatch output;
-        std::regex pattern =
-            std::regex("^.*(Observer|Handler|Callback|Receiver)$");
+        std::regex pattern = std::regex(
+            "^.*(Observer|Handler|Callback|Receiver|DirectCdnStreaming)$");
         if (std::regex_match(funcName, output, pattern)) {
           bufferCount = 1;
           buffer.resize(bufferCount);

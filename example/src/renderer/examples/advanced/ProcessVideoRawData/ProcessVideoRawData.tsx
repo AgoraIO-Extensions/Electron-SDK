@@ -125,7 +125,7 @@ export default class ProcessVideoRawData
     this.pluginLibrary ??= ffi.Library(getResourcePath(pluginName), {
       EnablePlugin: ['bool', [VoidPtr]],
       DisablePlugin: ['bool', [VoidPtr]],
-      CreateSamplePlugin: [VoidPtr, ['long']],
+      CreateSamplePlugin: [VoidPtr, ['ulonglong']],
       DestroySamplePlugin: ['void', [VoidPtr]],
     });
 

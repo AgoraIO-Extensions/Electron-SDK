@@ -210,12 +210,6 @@ export function processIRtcEngineEventHandler(
       }
       break;
 
-    case 'onMediaDeviceChanged':
-      if (handler.onMediaDeviceChanged !== undefined) {
-        handler.onMediaDeviceChanged(jsonParams.deviceType);
-      }
-      break;
-
     case 'onNetworkQuality':
       if (handler.onNetworkQuality !== undefined) {
         handler.onNetworkQuality(
@@ -4148,6 +4142,40 @@ export class IRtcEngineImpl implements IRtcEngine {
     value: string
   ): string {
     return 'RtcEngine_setExtensionProviderProperty';
+  }
+
+  registerExtension(
+    provider: string,
+    extension: string,
+    type: MediaSourceType = MediaSourceType.UnknownMediaSource
+  ): number {
+    const apiType = this.getApiTypeFromRegisterExtension(
+      provider,
+      extension,
+      type
+    );
+    const jsonParams = {
+      provider: provider,
+      extension: extension,
+      type: type,
+      toJSON: () => {
+        return {
+          provider: provider,
+          extension: extension,
+          type: type,
+        };
+      },
+    };
+    const jsonResults = callIrisApi.call(this, apiType, jsonParams);
+    return jsonResults.result;
+  }
+
+  protected getApiTypeFromRegisterExtension(
+    provider: string,
+    extension: string,
+    type: MediaSourceType = MediaSourceType.UnknownMediaSource
+  ): string {
+    return 'RtcEngine_registerExtension';
   }
 
   enableExtension(

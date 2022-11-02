@@ -340,7 +340,7 @@ export default class MediaPlayer
   }
 
   protected renderUsers(): React.ReactNode {
-    const { open, channelId, uid } = this.state;
+    const { open } = this.state;
     return (
       <>
         {open ? (
@@ -349,7 +349,6 @@ export default class MediaPlayer
               uid: this.player?.getMediaPlayerId(),
               sourceType: VideoSourceType.VideoSourceMediaPlayer,
             }}
-            connection={{ channelId, localUid: uid }}
           />
         ) : undefined}
       </>

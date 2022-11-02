@@ -41,7 +41,7 @@ export default class JoinChannelAudio
       uid: Config.uid,
       joinChannelSuccess: false,
       remoteUsers: [],
-      enableLocalAudio: false,
+      enableLocalAudio: true,
       muteLocalAudioStream: false,
       recordingSignalVolume: 100,
       playbackSignalVolume: 100,
