@@ -21,6 +21,7 @@ napi_ref* AgoraElectronBridge::_ref_construcotr_ptr = nullptr;
 
 AgoraElectronBridge::AgoraElectronBridge() {
   LOG_F(INFO, "AgoraElectronBridge::AgoraElectronBridge()");
+  memset(_result, '\0', kBasicResultLength);
 }
 
 AgoraElectronBridge::~AgoraElectronBridge() {
