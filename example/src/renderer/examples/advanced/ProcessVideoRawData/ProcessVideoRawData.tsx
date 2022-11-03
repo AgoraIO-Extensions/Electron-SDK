@@ -20,8 +20,7 @@ import { AgoraButton } from '../../../components/ui';
 const ffi = require('ffi-napi');
 const ref = require('ref-napi');
 
-const Void = ref.types.void;
-const VoidPtr = ref.refType(Void);
+const Pointer = 'uint64';
 
 let pluginName = 'VideoObserverPlugin';
 let postfix = `_${process.arch}`;
@@ -123,10 +122,10 @@ export default class ProcessVideoRawData
     }
 
     this.pluginLibrary ??= ffi.Library(getResourcePath(pluginName), {
-      EnablePlugin: ['bool', [VoidPtr]],
-      DisablePlugin: ['bool', [VoidPtr]],
-      CreateSamplePlugin: [VoidPtr, ['ulonglong']],
-      DestroySamplePlugin: ['void', [VoidPtr]],
+      EnablePlugin: ['bool', [Pointer]],
+      DisablePlugin: ['bool', [Pointer]],
+      CreateSamplePlugin: [Pointer, [Pointer]],
+      DestroySamplePlugin: ['void', [Pointer]],
     });
 
     const handle = this.engine?.getNativeHandle();
