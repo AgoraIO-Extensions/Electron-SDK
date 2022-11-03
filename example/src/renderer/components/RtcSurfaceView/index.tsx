@@ -15,15 +15,22 @@ import styles from './index.scss';
 
 interface Props {
   canvas: VideoCanvas;
-
   connection?: RtcConnection;
 }
 
-class RtcSurfaceView extends Component<Props> {
-  state = {
-    isMirror: false,
-    uniqueId: getRandomInt(),
-  };
+interface State {
+  isMirror: boolean;
+  uniqueId: number;
+}
+
+class RtcSurfaceView extends Component<Props, State> {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isMirror: false,
+      uniqueId: getRandomInt(),
+    };
+  }
 
   getHTMLElement = () => {
     const { uniqueId } = this.state;
@@ -46,7 +53,8 @@ class RtcSurfaceView extends Component<Props> {
     return (
       JSON.stringify(this.props.canvas) !== JSON.stringify(nextProps.canvas) ||
       JSON.stringify(this.props.connection) !==
-        JSON.stringify(nextProps.connection)
+        JSON.stringify(nextProps.connection) ||
+      JSON.stringify(this.state) !== JSON.stringify(nextState)
     );
   }
 
@@ -116,7 +124,11 @@ class RtcSurfaceView extends Component<Props> {
       <div
         className={styles['window-item']}
         onClick={() => {
-          this.setState({ isMirror: !isMirror }, this.updateMirror);
+          this.setState({ isMirror: !isMirror }, () => {
+            setTimeout(() => {
+              this.updateMirror();
+            });
+          });
         }}
       >
         <div
