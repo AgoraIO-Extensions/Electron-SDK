@@ -33,6 +33,7 @@ import {
   ChannelProfileType,
   ClientRoleType,
   ClientRoleOptions,
+  EchoTestConfiguration,
   VideoSourceType,
   LastmileProbeConfig,
   VideoEncoderConfiguration,
@@ -1285,13 +1286,13 @@ export class IRtcEngineImpl implements IRtcEngine {
     return 'RtcEngine_setClientRole';
   }
 
-  startEchoTest(intervalInSeconds = 10): number {
-    const apiType = this.getApiTypeFromStartEchoTest(intervalInSeconds);
+  startEchoTest(config: EchoTestConfiguration): number {
+    const apiType = this.getApiTypeFromStartEchoTest(config);
     const jsonParams = {
-      intervalInSeconds: intervalInSeconds,
+      config: config,
       toJSON: () => {
         return {
-          intervalInSeconds: intervalInSeconds,
+          config: config,
         };
       },
     };
@@ -1299,7 +1300,7 @@ export class IRtcEngineImpl implements IRtcEngine {
     return jsonResults.result;
   }
 
-  protected getApiTypeFromStartEchoTest(intervalInSeconds = 10): string {
+  protected getApiTypeFromStartEchoTest(config: EchoTestConfiguration): string {
     return 'RtcEngine_startEchoTest';
   }
 
