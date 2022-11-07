@@ -47,6 +47,7 @@
     "gulp": "^4.0.2",
     "gulp-cli": "^2.3.0",
     "gulp-zip": "^5.1.0",
+    "json-bigint": "^1.0.0",
     "jsonfile": "^6.1.0",
     "lodash.isequal": "^4.5.0",
     "minimist": "^1.2.5",

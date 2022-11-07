@@ -1,3 +1,4 @@
+const JSON = require('json-bigint');
 import { AgoraEnv } from '../../Utils';
 
 import { IAudioEncodedFrameObserver } from '../AgoraBase';
