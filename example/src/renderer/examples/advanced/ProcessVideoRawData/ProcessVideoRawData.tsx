@@ -7,6 +7,8 @@ import {
 } from 'agora-electron-sdk';
 import download from 'download';
 import fs from 'fs';
+import os from 'os';
+import path from 'path';
 
 import Config from '../../../config/agora.config';
 
@@ -18,8 +20,6 @@ import { getResourcePath } from '../../../utils';
 import { AgoraButton } from '../../../components/ui';
 
 const ffi = require('ffi-napi');
-const ref = require('ref-napi');
-
 const Pointer = 'uint64';
 
 let pluginName = 'VideoObserverPlugin';
@@ -115,9 +115,9 @@ export default class ProcessVideoRawData
   enablePlugin = async () => {
     const version = '4.1.0-beta.1';
     const url = `https://github.com/AgoraIO-Extensions/RawDataPluginSample/releases/download/${version}/${pluginName}`;
-    if (!fs.existsSync(getResourcePath(pluginName))) {
+    if (!fs.existsSync(path.resolve(os.tmpdir(), pluginName))) {
       console.log(`start downloading plugin ${url}`);
-      await download(url, getResourcePath(''));
+      await download(url, os.tmpdir());
       console.log(`download success`);
     }
 
