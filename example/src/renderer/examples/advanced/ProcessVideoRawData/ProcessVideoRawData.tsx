@@ -115,13 +115,14 @@ export default class ProcessVideoRawData
   enablePlugin = async () => {
     const version = '4.1.0-beta.1';
     const url = `https://github.com/AgoraIO-Extensions/RawDataPluginSample/releases/download/${version}/${pluginName}`;
-    if (!fs.existsSync(path.resolve(os.tmpdir(), pluginName))) {
-      console.log(`start downloading plugin ${url}`);
+    const dllPath = path.resolve(os.tmpdir(), pluginName);
+    if (!fs.existsSync(dllPath)) {
+      console.log(`start downloading plugin ${url} to ${dllPath}`);
       await download(url, os.tmpdir());
       console.log(`download success`);
     }
 
-    this.pluginLibrary ??= ffi.Library(getResourcePath(pluginName), {
+    this.pluginLibrary ??= ffi.Library(dllPath, {
       EnablePlugin: ['bool', [Pointer]],
       DisablePlugin: ['bool', [Pointer]],
       CreateSamplePlugin: [Pointer, [Pointer]],
