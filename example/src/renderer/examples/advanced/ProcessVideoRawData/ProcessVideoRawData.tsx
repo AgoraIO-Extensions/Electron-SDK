@@ -16,7 +16,6 @@ import {
   BaseComponent,
   BaseVideoComponentState,
 } from '../../../components/BaseComponent';
-import { getResourcePath } from '../../../utils';
 import { AgoraButton } from '../../../components/ui';
 
 const ffi = require('ffi-napi');
