@@ -35,6 +35,7 @@ import {
 import RtcSurfaceView from '../../../components/RtcSurfaceView';
 import { rgbImageBufferToBase64 } from '../../../utils/base64';
 import { ScreenCaptureSourceType } from '../../../../../../ts/Private/IAgoraRtcEngine';
+import { LiveTranscoding, TranscodingUser } from '../../../../../../ts/Private/AgoraBase';
 
 interface State extends BaseVideoComponentState {
   token2: string;
@@ -53,6 +54,7 @@ interface State extends BaseVideoComponentState {
   enableHighLight: boolean;
   startScreenCapture: boolean;
   publishScreenCapture: boolean;
+  startRtmpStreaming: boolean;
 }
 
 export default class ScreenShare
@@ -88,6 +90,7 @@ export default class ScreenShare
       enableHighLight: false,
       startScreenCapture: false,
       publishScreenCapture: false,
+      startRtmpStreaming: true
     };
   }
 
@@ -105,6 +108,9 @@ export default class ScreenShare
       appId,
       // Should use ChannelProfileLiveBroadcasting on most of cases
       channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
+      logConfig: {
+        filePath: "./agoralog.txt"
+      }
     });
     this.engine.registerEventHandler(this);
 
@@ -112,10 +118,14 @@ export default class ScreenShare
     // If you only call `enableAudio`, only relay the audio stream to the target channel
     this.engine.enableVideo();
 
+    this.engine.setVideoEncoderConfiguration({
+      dimensions: {width: 1920, height: 1080},
+      frameRate: 30
+    })
+
     // Start preview before joinChannel
     this.engine.startPreview();
     this.setState({ startPreview: true });
-
     this.getScreenCaptureSources();
   }
 
@@ -191,8 +201,8 @@ export default class ScreenShare
         targetSource.sourceId,
         {},
         {
-          dimensions: { width, height },
-          frameRate,
+          dimensions: { width: 1920, height: 1080 },
+          frameRate: 30,
           bitrate,
           captureMouseCursor,
           excludeWindowList,
@@ -207,8 +217,8 @@ export default class ScreenShare
         targetSource.sourceId,
         {},
         {
-          dimensions: { width, height },
-          frameRate,
+          dimensions: { width: 1920, height: 1080 },
+          frameRate: 30,
           bitrate,
           windowFocus,
           highLightWidth,
@@ -300,6 +310,55 @@ export default class ScreenShare
    */
   protected leaveChannel() {
     this.engine?.leaveChannel();
+  }
+
+  _generateLiveTranscoding = (): LiveTranscoding => {
+    let transcodingUsers: TranscodingUser[] = [];
+    this.state.joinChannelSuccess ? transcodingUsers.push({
+      uid: this.state.uid,
+      x: 0,
+      y: 0,
+      width: 1920,
+      height: 1080,
+      zOrder: 1
+    }):console.log("no camera source");
+
+    this.state.startScreenCapture ? transcodingUsers.push({
+      uid: this.state.uid2,
+      x: 500,
+      y: 500,
+      width: 1920,
+      height: 1080,
+      zOrder: 2
+    }):console.log("no screen source");
+
+
+    return {
+      width: 1920,
+      height: 1080,
+      videoFramerate: 30,
+      userCount: transcodingUsers.length,
+      transcodingUsers: transcodingUsers
+    };
+  };
+
+  protected startRtmpStreaming() {
+    debugger
+    if (this.state.startRtmpStreaming) {
+      let transcoding = this._generateLiveTranscoding();
+      debugger
+      let ret = this.engine.startRtmpStreamWithTranscoding("rtmp://push.lxtest.agoramdn.com/live/xxxxx", transcoding);
+      this.setState({ 
+        startRtmpStreaming: false
+      })
+      console.log(`startRtmpStreamWithTranscoding  ret  ${ret}`)
+    } else {
+      let ret = this.engine.stopRtmpStream("rtmp://push.lxtest.agoramdn.com/live/xxxxx");
+      console.log(`stopRtmpStream  ret  ${ret}`)
+      this.setState({ 
+        startRtmpStreaming: true
+      })
+    }
   }
 
   /**
@@ -581,7 +640,7 @@ export default class ScreenShare
   }
 
   protected renderAction(): React.ReactNode {
-    const { startScreenCapture, publishScreenCapture } = this.state;
+    const { startScreenCapture, publishScreenCapture, startRtmpStreaming } = this.state;
     return (
       <>
         <AgoraButton
@@ -606,6 +665,12 @@ export default class ScreenShare
               ? this.unpublishScreenCapture
               : this.publishScreenCapture
           }
+        />
+        <AgoraButton
+          title={`${startRtmpStreaming ? 'Start' : 'Stop'} Rtmp`}
+          onPress={() => {
+            this.startRtmpStreaming()
+          }}
         />
       </>
     );

@@ -70,7 +70,7 @@ export default class RTMPStreaming
       joinChannelSuccess: false,
       remoteUsers: [],
       startPreview: false,
-      url: 'rtmp://vid-218.push.chinanetcenter.broadcastapp.agora.io/live/test',
+      url: 'rtmp://push.lxtest.agoramdn.com/live/xxxxx',
       startRtmpStreamWithTranscoding: false,
       width: 360,
       height: 640,
