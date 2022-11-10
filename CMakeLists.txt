@@ -86,6 +86,10 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
             "-framework CoreServices"
             "-framework ImageIO"
             )
+     # for xcode build
+     set(CMAKE_XCODE_ATTRIBUTE_MACOSX_DEPLOYMENT_TARGET "10.10")
+     # for cmake build
+     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.10)
 elseif (${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     if (${CMAKE_OSX_ARCHITECTURES} STREQUAL "i386")
         set(AGORA_RTC_PROJECT_ARCH "x86")
